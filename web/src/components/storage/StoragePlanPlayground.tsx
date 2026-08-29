@@ -94,7 +94,6 @@ import ConnectedDevicesMenu from "~/components/storage/ConnectedDevicesMenu";
 import ProposalActions from "~/components/storage/ProposalActions";
 import ProposalResultTable from "~/components/storage/ProposalResultTable";
 import DevicesManager from "~/model/storage/devices-manager";
-import SearchedDeviceMenu from "~/components/storage/SearchedDeviceMenu";
 import SearchedVolumeGroupMenu from "~/components/storage/SearchedVolumeGroupMenu";
 import Text from "~/components/core/Text";
 import configModel from "~/model/storage/config-model";
@@ -130,6 +129,7 @@ import {
 import { isDrive, isMd, isVolumeGroup } from "~/model/storage/device";
 import {
   useConfigModel as useRealConfigModel,
+  useConvertPartitionableToVolumeGroup,
   STORAGE_MODEL_QUERY_KEY,
 } from "~/hooks/model/storage/config-model";
 import { PROPOSAL_QUERY_KEY, EXTENDED_CONFIG_QUERY_KEY } from "~/hooks/model/proposal";
@@ -1570,6 +1570,17 @@ const withLogicalVolumeSpace = (
  * MenuButton clones a custom toggle with its ref, click handler and expanded
  * state, so this has to forward a ref to the button it renders.
  */
+/* How anything inside the page or the sheet opens something else in the sheet.
+   Declared here because a row's menu is the first thing to use it. */
+const PanelNavContext = React.createContext<{
+  /** Opens an entry's sheet, on a named tab where the caller has one in mind. */
+  goToDevice: (selection: Selection, tab?: PanelTab) => void;
+  goToBoot: () => void;
+}>({
+  goToDevice: () => undefined,
+  goToBoot: () => undefined,
+});
+
 type ActionItem = {
   title: string;
   onClick: () => void;
@@ -1651,6 +1662,21 @@ KebabToggle.displayName = "KebabToggle";
  * dropping it from the configuration are what those menus already do, including
  * the device selector dialog and every explanation attached to it.
  */
+/**
+ * What a row offers about the device it names.
+ *
+ * Written here rather than taken from `SearchedDeviceMenu`, which the shipping
+ * proposal page uses: this is a wording exploration, and the words it wants are
+ * not the words that page should change to on the strength of a playground.
+ *
+ * Opening the device leads, because it is what clicking the row does. A menu
+ * whose first item is the row's own act is a menu that says what the row does
+ * for a reader who never discovers that rows are clickable, and for one who
+ * cannot click.
+ *
+ * Everything below it is in the vocabulary the rest of the page uses for the
+ * same acts, so a reader meets one name per act wherever it is offered.
+ */
 const PartitionableActions = ({
   collection,
   index,
@@ -1661,19 +1687,81 @@ const PartitionableActions = ({
   const config = useConfigModel();
   const deleteDrive = useDeleteDrive();
   const deleteMdRaid = useDeleteMdRaid();
+  const convertToVg = useConvertPartitionableToVolumeGroup();
+  const convertDevice = useConvertDevice();
+  const available = useAvailableDevices();
+  const { goToDevice } = React.useContext(PanelNavContext);
+  const [isSelectorOpen, setIsSelectorOpen] = useState(false);
   const device = config[collection]?.[index] as Partitionable | undefined;
   const systemDevice = useDevice(device?.name || "");
 
   if (!device || !systemDevice) return null;
 
+  const name = baseName(device.name);
+  /* Every device the plan does not already hold, plus the one it is on, which
+     is how the dialog shows what is selected. */
+  const usedNames = configModel
+    .devices(config)
+    .map((entry) => entry.name)
+    .filter((used) => used !== device.name);
+  const targets = available.filter((candidate) => !usedNames.includes(candidate.name));
+  const groups = configModel.partitionable.filterVolumeGroups(config, device);
+
+  const items: ActionItem[] = [
+    {
+      title: t(`Configure ${name}`),
+      onClick: () => goToDevice({ collection, index }),
+    },
+    {
+      title: t("Use another device"),
+      /* What "another device" costs, which the title cannot say: the plan is
+         not being rebuilt, it is being moved. A reader who has spent time on
+         this device's content needs to know it comes with them. */
+      description: t(`Everything planned for ${name} moves to the device you pick.`),
+      onClick: () => setIsSelectorOpen(true),
+    },
+  ];
+
+  if (!device.filesystem) {
+    items.push({
+      title: groups.length
+        ? t(`Create another LVM volume group on ${name}`)
+        : t(`Create LVM volume group on ${name}`),
+      onClick: () => convertToVg(device.name),
+      hasDividerBefore: true,
+    });
+  }
+
+  /* Dropping the only device leaves a plan with nowhere to go, so the offer is
+     made where there is somewhere else for the installation to live. */
+  if (configModel.hasAdditionalDevices(config)) {
+    items.push({
+      title: t("Do not use this device"),
+      isDanger: true,
+      hasDividerBefore: device.filesystem !== undefined,
+      onClick: () => (collection === "drives" ? deleteDrive(index) : deleteMdRaid(index)),
+    });
+  }
+
   return (
-    <SearchedDeviceMenu
-      modelDevice={device}
-      selected={systemDevice}
-      toggle={<KebabToggle label={t(`Actions for ${baseName(device.name)}`)} />}
-      popperProps={{ position: "end" }}
-      deleteFn={() => (collection === "drives" ? deleteDrive(index) : deleteMdRaid(index))}
-    />
+    <>
+      <ActionsMenu label={t(`Actions for ${name}`)} items={items} position="end" />
+      {isSelectorOpen && (
+        <DeviceSelectorModal
+          title={t("Use another device")}
+          intro={t(`The plan stays as it is. Everything ${name} was going to hold moves.`)}
+          selected={systemDevice}
+          disks={targets.filter(isDrive)}
+          mdRaids={targets.filter(isMd)}
+          volumeGroups={targets.filter(isVolumeGroup)}
+          onCancel={() => setIsSelectorOpen(false)}
+          onConfirm={([target]) => {
+            setIsSelectorOpen(false);
+            convertDevice(device.name, target.name);
+          }}
+        />
+      )}
+    </>
   );
 };
 
@@ -2772,15 +2860,6 @@ const TAB_SUMMARIES: Record<PanelTab, string> = {
  * Naming one without being able to reach it leaves the reader to find it by
  * hand.
  */
-const PanelNavContext = React.createContext<{
-  /** Opens an entry's sheet, on a named tab where the caller has one in mind. */
-  goToDevice: (selection: Selection, tab?: PanelTab) => void;
-  goToBoot: () => void;
-}>({
-  goToDevice: () => undefined,
-  goToBoot: () => undefined,
-});
-
 type Related = { name: string; selection?: Selection };
 
 type Relationship = { label: string; items: Related[] };
