@@ -3477,10 +3477,17 @@ const RetargetButton = ({
   device,
   label,
   variant = "secondary",
+  isBlocked = false,
+  hintId,
 }: {
   device: Partitionable;
   label: string;
   variant?: "link" | "secondary" | "plain";
+  /** Offered and refused, with the reason printed beside it by the caller. */
+  isBlocked?: boolean;
+  /** The reason, so the button is described by it rather than only sitting
+      near it. */
+  hintId?: string;
 }) => {
   const [isSelectorOpen, setIsSelectorOpen] = useState(false);
   const config = useConfigModel();
@@ -3508,7 +3515,15 @@ const RetargetButton = ({
           through the button's icon slot, which sets the mark smaller and on the
           text's baseline. Side by side the two were visibly a pair of
           different things. */}
-      <Button variant={variant} onClick={() => setIsSelectorOpen(true)}>
+      {/* Aria disabled rather than disabled, so a reader can still reach the
+          control, hear its name and hear why it will not act. A disabled
+          button is skipped, and the explanation beside it is never met. */}
+      <Button
+        variant={variant}
+        isAriaDisabled={isBlocked}
+        aria-describedby={hintId}
+        onClick={isBlocked ? undefined : () => setIsSelectorOpen(true)}
+      >
         <Flex alignItems={{ default: "alignItemsCenter" }} gap={{ default: "gapSm" }}>
           <Icon name="change_circle" /> {label}
         </Flex>
@@ -3552,23 +3567,50 @@ const DeviceActionButtons = ({
   const config = useConfigModel();
   const deleteDrive = useDeleteDrive();
   const deleteMdRaid = useDeleteMdRaid();
+  const hintId = useId();
   /* Dropping the only device leaves a plan with nowhere to go, so the offer is
      made where there is somewhere else for the installation to live. */
   const canDrop = configModel.hasAdditionalDevices(config);
+  /* The same answer the menu in the header gives, from the same place. The two
+     offered the same act and disagreed about whether it was possible: the menu
+     refused it and the button beside the table opened a dialog with one device
+     in it. */
+  const blocked = retargetBlock(config, device);
 
   return (
-    <>
-      <RetargetButton device={device} label={t("Use another device")} variant="link" />
-      {canDrop && (
-        <Button
-          variant="link"
-          isDanger
-          onClick={() => (collection === "drives" ? deleteDrive(index) : deleteMdRaid(index))}
-        >
-          {t("Do not use this device")}
-        </Button>
+    <Flex direction={{ default: "column" }} gap={{ default: "gapXs" }}>
+      <FlexItem>
+        <Flex gap={{ default: "gapSm" }} alignItems={{ default: "alignItemsCenter" }}>
+          <RetargetButton
+            device={device}
+            label={t("Use another device")}
+            variant="link"
+            isBlocked={blocked !== null}
+            hintId={blocked ? hintId : undefined}
+          />
+          {canDrop && (
+            <Button
+              variant="link"
+              isDanger
+              onClick={() => (collection === "drives" ? deleteDrive(index) : deleteMdRaid(index))}
+            >
+              {t("Do not use this device")}
+            </Button>
+          )}
+        </Flex>
+      </FlexItem>
+      {/* Under the offer rather than inside it, which is how the rest of the
+          interface explains a control it will not let you use: the install
+          button, the product form and the device dialog all leave the control
+          where it was and put the reason beside it. */}
+      {blocked && (
+        <FlexItem>
+          <HelperText id={hintId}>
+            <HelperTextItem variant="indeterminate">{blocked}</HelperTextItem>
+          </HelperText>
+        </FlexItem>
       )}
-    </>
+    </Flex>
   );
 };
 
