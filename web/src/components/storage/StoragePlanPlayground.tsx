@@ -311,10 +311,10 @@ const DEFAULT_VARIANTS: Variants = {
      reader who came to change it. The value line, quieter and shaped like
      every other setting on the page, is one switch away. */
   spaceShape: "toggles",
-  /* The button, which is what the page has had since it was drawn. The name as
-     the way in is the thing to compare it against: one button fewer, and the
-     way in on the word the sheet is about. */
-  wayIn: "button",
+  /* The name. The page carries one button fewer, and the way in is the word the
+     sheet is about, which is where a reader looks for it: the disk is what they
+     came to open. The button under the sentence is one switch away. */
+  wayIn: "name",
   /* The machine the playground runs on, which is the only data that is
      true. The scenarios are for the states it does not have. */
   data: "real",
@@ -7535,9 +7535,10 @@ const PlanSummary = ({
               one disk finds it on eight. */}
           <ConfigureDeviceMenu
             label={t("Add more devices")}
-            /* Aligned on the toggle's trailing edge, so the menu opens back
-               over the page rather than off it. */
-            popperProps={{ position: "right" }}
+            /* Aligned on the toggle's leading edge, since the toggle now opens
+               the row: the menu grows across the page rather than off its
+               start. */
+            popperProps={{ position: "left" }}
           />
           {/* Plain, and the words the sheet uses for the same act. As a
               bordered control beside the primary action it read as a second
@@ -7761,12 +7762,12 @@ const VARIANT_CONTROLS: VariantControl[] = [
   {
     key: "data",
     label: "Machine",
-    options: ["real", "one-disk-in-use", "empty-disk", "lvm-over-three-disks"],
+    options: ["real", "one-disk-in-use", "alongside-windows", "empty-disk", "lvm-over-three-disks"],
   },
   { key: "page", label: "Page", options: ["summary", "list"] },
   { key: "summarySpace", label: "Space on summary", options: ["shown", "hidden"] },
   { key: "spaceShape", label: "Space shape", options: ["value", "toggles"] },
-  { key: "wayIn", label: "Way into the sheet", options: ["button", "name"] },
+  { key: "wayIn", label: "Way into the sheet", options: ["name", "button"] },
   { key: "structure", label: "Panel structure", options: ["blocks", "flat"] },
   { key: "sections", label: "Panel halves", options: ["tabs", "stacked"] },
   { key: "settings", label: "Settings", options: ["beside", "above"] },
@@ -8011,7 +8012,7 @@ function StoragePlan({
             '  summarySpace("shown" | "hidden")   the space decision on the one device page',
             '  spaceShape("value" | "toggles")    that decision as a term and its value, or as four buttons',
             '  wayIn("button" | "name")           the sheet opened by a button under the sentence, or by the device named in it',
-            '  data("real"|"one-disk-in-use"|"empty-disk"|"lvm-over-three-disks")  the machine the page reads',
+            '  data("real"|"one-disk-in-use"|"alongside-windows"|"empty-disk"|"lvm-over-three-disks")  the machine the page reads',
             '  panelMode("reflow"|"over"|"inline")  the page relays out, stays put, or is pushed aside',
             "  bootDebug()                        what the proposal reports about every partition",
           ].join("\n"),

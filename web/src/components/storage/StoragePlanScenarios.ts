@@ -158,7 +158,8 @@ const fs = (type: ConfigModel.FilesystemType): ConfigModel.Filesystem => ({
   mountOptions: [],
 });
 
-export type ScenarioKey = "one-disk-in-use" | "empty-disk" | "lvm-over-three-disks";
+export type ScenarioKey =
+  "one-disk-in-use" | "alongside-windows" | "empty-disk" | "lvm-over-three-disks";
 
 export type Scenario = {
   /** What the switch calls it. */
@@ -221,6 +222,83 @@ const oneDiskInUse: Scenario = {
             filesystem: fs("swap"),
             size: { default: true, min: 2 * GiB },
           },
+        ],
+      },
+    ],
+  },
+};
+
+/**
+ * One disk, nearly full of Windows, and room made by shrinking it.
+ *
+ * The installation most readers arrive with and the one state the page had no
+ * example of: nothing is deleted, something is made smaller, and the reader
+ * needs to see that the difference is reported as a difference. "Delete
+ * everything" on the same disk tells the other story, which is the point of
+ * having it here.
+ *
+ * The layout is a stock Windows one: an EFI partition, the reserved partition,
+ * the volume itself, and a recovery partition at the end. The plan leaves all
+ * four alone and takes what it needs out of the volume, which can go down to
+ * 100 GiB.
+ *
+ * The installer would normally write its boot files into the EFI partition
+ * already there. This one does not: reuse is a story of its own and it would
+ * cross the one this scenario is for.
+ */
+const alongsideWindows: Scenario = {
+  label: "One disk, alongside Windows",
+  system: machine([
+    {
+      name: "/dev/nvme0n1",
+      size: 500 * GiB,
+      model: "WDC PC SN730",
+      path: "pci-0000:04:00.0-nvme-1",
+      ptable: "gpt",
+      partitions: [
+        {
+          name: "/dev/nvme0n1p1",
+          size: 512 * MiB,
+          description: "EFI System Partition",
+          filesystem: { type: "vfat", mountPath: "/boot/efi" },
+        },
+        {
+          name: "/dev/nvme0n1p2",
+          size: 16 * MiB,
+          description: "Microsoft Reserved Partition",
+        },
+        {
+          name: "/dev/nvme0n1p3",
+          size: 480 * GiB,
+          systems: ["Windows 11"],
+          description: "NTFS Partition",
+          filesystem: { type: "ntfs" },
+          minSize: 100 * GiB,
+        },
+        {
+          name: "/dev/nvme0n1p4",
+          size: 1 * GiB,
+          description: "Windows Recovery Partition",
+          filesystem: { type: "ntfs" },
+        },
+      ],
+    },
+  ]),
+  config: {
+    boot: { configure: true, device: { default: true } },
+    drives: [
+      {
+        name: "/dev/nvme0n1",
+        /* The whole scenario: what is there stays, and the installer takes what
+           it is short of out of whatever will give it. */
+        spacePolicy: "resize",
+        partitions: [
+          {
+            mountPath: "/",
+            filesystem: fs("btrfsSnapshots"),
+            size: { default: true, min: 40 * GiB },
+          },
+          { mountPath: "swap", filesystem: fs("swap"), size: { default: true, min: 2 * GiB } },
         ],
       },
     ],
@@ -346,6 +424,7 @@ const lvmOverThreeDisks: Scenario = {
 
 export const SCENARIOS: Record<ScenarioKey, Scenario> = {
   "one-disk-in-use": oneDiskInUse,
+  "alongside-windows": alongsideWindows,
   "empty-disk": emptyDisk,
   "lvm-over-three-disks": lvmOverThreeDisks,
 };
