@@ -2073,8 +2073,8 @@ const VolumeGroupRow = (props: RowProps) => {
   const hosts = (group.targetDevices || []).map((name) => baseName(name));
   const on = (() => {
     if (!hosts.length) return t("Create LVM volume group");
-    if (hosts.length === 1) return t(`Create LVM volume group on top of ${hosts[0]}`);
-    return t(`Create LVM volume group on top of ${hosts.length} disks`);
+    if (hosts.length === 1) return t(`Create LVM volume group on ${hosts[0]}`);
+    return t(`Create LVM volume group on ${hosts.length} disks`);
   })();
 
   return (
@@ -7784,8 +7784,8 @@ const PlanTitle = () => {
         <Interpolate
           sentence={
             onDisk
-              ? t("Create LVM volume group %1$s on top of disk %2$s")
-              : t("Create LVM volume group %1$s on top of RAID %2$s")
+              ? t("Create LVM volume group %1$s on disk %2$s")
+              : t("Create LVM volume group %1$s on RAID %2$s")
           }
         >
           {[() => <NameValue>{named[0]}</NameValue>, () => host(hosts[0])]}
@@ -7798,8 +7798,8 @@ const PlanTitle = () => {
         <Interpolate
           sentence={
             onDisk
-              ? t("Create LVM volume groups %1$s and %2$s on top of disk %3$s")
-              : t("Create LVM volume groups %1$s and %2$s on top of RAID %3$s")
+              ? t("Create LVM volume groups %1$s and %2$s on disk %3$s")
+              : t("Create LVM volume groups %1$s and %2$s on RAID %3$s")
           }
         >
           {[
@@ -7815,8 +7815,8 @@ const PlanTitle = () => {
       <Interpolate
         sentence={
           onDisk
-            ? t("Create %1$s LVM volume groups on top of disk %2$s")
-            : t("Create %1$s LVM volume groups on top of RAID %2$s")
+            ? t("Create %1$s LVM volume groups on disk %2$s")
+            : t("Create %1$s LVM volume groups on RAID %2$s")
         }
       >
         {[() => <>{groups.length}</>, () => host(hosts[0])]}
