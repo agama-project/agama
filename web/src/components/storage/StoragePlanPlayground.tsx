@@ -7872,11 +7872,13 @@ const PlanOverview = ({
           stands between the sentence and the entries that sentence is about.
 
           At the foot of the page it opens upwards, since what is under it is
-          the edge of the window. */}
+          the edge of the window, and from its leading edge, since the toggle
+          sits at the start of the line and a menu aligned on its other edge
+          grows off the page. */}
       <FlexItem>
         <ConfigureDeviceMenu
           label={t("Add more devices")}
-          popperProps={{ position: "right", direction: "up" }}
+          popperProps={{ position: "left", direction: "up" }}
         />
       </FlexItem>
     </Flex>
