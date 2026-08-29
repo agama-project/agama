@@ -223,7 +223,7 @@ type WayIn = "button" | "name";
 /** Which machine the page reads: this one, or one of the scenarios. */
 type DataSource = "real" | ScenarioKey;
 /** How the drawer holding the sheet opens. */
-type PanelMode = "reflow" | "over" | "inline";
+type PanelMode = "aside" | "over" | "inline";
 type Variants = {
   cost: CostStyle;
   sections: PanelSections;
@@ -318,11 +318,16 @@ const DEFAULT_VARIANTS: Variants = {
   /* The machine the playground runs on, which is the only data that is
      true. The scenarios are for the states it does not have. */
   data: "real",
-  /* The sheet comes over the page, and the page lays itself out again in the
-     width it is left with. A translate was tried first and dropped: it moved
-     the summary without rearranging it, so what landed beside the sheet was a
-     slice through the middle of the page rather than a narrow view of it. */
-  panelMode: "reflow",
+  /* The sheet comes over the page and the page moves aside for it, keeping the
+     arrangement it had. Laying it out again in the width it is left with was
+     tried and dropped: rearranging a page nobody can touch spends a relayout on
+     something the reader is not reading, and the summary they were looking at
+     is not where they left it when the sheet closes.
+
+     A shift rather than a re-centring, and a modest one: the page is behind the
+     sheet to say what the reader came from, and moving it far enough to centre
+     what is left cuts the start off anything as wide as the measure. */
+  panelMode: "aside",
 };
 
 type PlanApi = {
@@ -5967,18 +5972,24 @@ const PLAN_CSS = `
   font-size: var(--pf-t--global--font--size--xs);
 }
 
-/* The page takes the width an open sheet leaves it and lays itself out in it,
-   rather than being read from behind the panel while the strip beside it sits
-   blank. The summary is fluid and re-centres; anything with a width of its own,
-   a table above all, scrolls inside the strip rather than pushing it wider.
+/* What the page reports moves aside for the sheet rather than being laid out
+   again inside what is left. Nothing about it changes shape: the same page, a
+   little further over, dimmed and out of reach behind the thing the reader is
+   in.
 
-   On our own wrapper rather than on the drawer's content box, since the panel
-   is positioned against that box and would narrow with it. */
-.agm-plan-drawer-reflow.pf-m-expanded .agm-plan-summary-page {
-  max-width: calc(100% - ${PANEL_WIDTH});
-  overflow-x: auto;
-  transition: max-width var(--pf-t--global--motion--duration--fade--default, 200ms)
-    var(--pf-t--global--motion--timing-function--default, ease-in-out);
+   Modest on purpose. Far enough to say the sheet pushed something, and not so
+   far that a block as wide as the reading measure loses its start, which is
+   what the earlier attempt at this did.
+
+   The line above it stays where it is. It is the page's own furniture rather
+   than part of what the sheet is about, and furniture sliding with the content
+   it introduces reads as the whole window shifting. */
+.agm-plan-page-body {
+  transition: transform var(--pf-t--global--motion--duration--fade--default, 200ms) ease-in-out;
+}
+
+.agm-plan-drawer-aside .agm-plan-covered .agm-plan-page-body {
+  transform: translateX(-8%);
 }
 
 /* The column every state of the page opens with. What the empty state used to
@@ -7770,7 +7781,7 @@ type VariantControl<K extends keyof Variants = keyof Variants> = {
 };
 
 const VARIANT_CONTROLS: VariantControl[] = [
-  { key: "panelMode", label: "Drawer", options: ["reflow", "over", "inline"] },
+  { key: "panelMode", label: "Drawer", options: ["aside", "over", "inline"] },
   {
     key: "data",
     label: "Machine",
@@ -7925,19 +7936,11 @@ function StoragePlan({
      width it had when it left. Everything the page sizes by that width stayed
      small however wide the window went afterwards.
 
-     The node is state, so the observer follows the element that exists. */
-  const pageRef = useRef<HTMLDivElement | null>(null);
+     Held as state, so the observer follows the element that exists. */
   const [pageNode, setPageNode] = useState<HTMLDivElement | null>(null);
-  const takePage = useCallback((node: HTMLDivElement | null) => {
-    pageRef.current = node;
-    setPageNode(node);
-  }, []);
-  /* Where the reader was before the sheet opened. Laying the page out again in
-     a narrower box changes how tall everything is, and the scroll that was
-     showing the fifth device ends up showing the first. */
-  const scrolledTo = useRef(0);
   /* What the page can afford is a question about the page rather than about the
-     window: beside an open sheet it is a strip, however wide the screen is. */
+     window: an inline sheet takes its width out of the page, and the strip that
+     is left is narrow however wide the screen is. */
   const isNarrow = useWidth(pageNode) < TIGHT;
 
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -7959,32 +7962,6 @@ function StoragePlan({
   /* Whatever is left of the page beside an open sheet is there to be read and
      not to be used: the sheet is what the reader is in. */
   const isCovered = variants.panelMode !== "inline" && isPanelOpen && hasPanelContent;
-
-  /* The page keeps its place when the sheet takes half of it: laying it out
-     again in a narrower box changes how tall everything is, and the scroll that
-     was showing the fifth device ends up showing the first. */
-  useEffect(() => {
-    const scroller = pageRef.current?.closest<HTMLElement>(
-      ".pf-v6-c-drawer__content, .agm-plan-narrow",
-    );
-    if (!scroller) return;
-
-    const remember = () => {
-      if (!isCovered) scrolledTo.current = scroller.scrollTop;
-    };
-
-    scroller.addEventListener("scroll", remember, { passive: true });
-    /* Once the browser has laid the narrower page out, so the value is put back
-       against the height the page ends up with rather than the one it had. */
-    const frame = window.requestAnimationFrame(() => {
-      scroller.scrollTop = scrolledTo.current;
-    });
-
-    return () => {
-      scroller.removeEventListener("scroll", remember);
-      window.cancelAnimationFrame(frame);
-    };
-  }, [isCovered]);
 
   /* Console driven, so the page itself stays screenshot clean. */
   useEffect(() => {
@@ -8025,7 +8002,7 @@ function StoragePlan({
             '  spaceShape("value" | "toggles")    that decision as a term and its value, or as four buttons',
             '  wayIn("button" | "name")           the sheet opened by a button under the sentence, or by the device named in it',
             '  data("real"|"one-disk-in-use"|"alongside-windows"|"empty-disk"|"lvm-over-three-disks")  the machine the page reads',
-            '  panelMode("reflow"|"over"|"inline")  the page relays out, stays put, or is pushed aside',
+            '  panelMode("aside"|"over"|"inline")  the page slides aside, stays put, or gives up its width',
             "  bootDebug()                        what the proposal reports about every partition",
           ].join("\n"),
         );
@@ -8298,7 +8275,7 @@ function StoragePlan({
   const page = showsSummary ? (
     <div
       className={isNarrow ? "agm-plan-summary-page agm-plan-page-narrow" : "agm-plan-summary-page"}
-      ref={takePage}
+      ref={setPageNode}
     >
       {/* One line above the page: what it is on the left, and on the right the
           two decisions about no device in particular and the one destructive
@@ -8377,7 +8354,10 @@ function StoragePlan({
           </Flex>
         </FlexItem>
       </Flex>
-      {summary()}
+      {/* What moves aside when the sheet opens. The line above it does not:
+          it is the page's own furniture, and furniture that slides with the
+          content it introduces reads as the whole window shifting. */}
+      <div className="agm-plan-page-body">{summary()}</div>
     </div>
   ) : (
     <>
@@ -8397,7 +8377,7 @@ function StoragePlan({
       isExpanded={isStatic ? isPanelOpen : isPanelOpen && hasPanelContent}
       isStatic={isStatic}
       isInline={isInlineDrawer}
-      className={variants.panelMode === "reflow" ? "agm-plan-drawer-reflow" : undefined}
+      className={variants.panelMode === "aside" ? "agm-plan-drawer-aside" : undefined}
       position="end"
     >
       <DrawerContent
