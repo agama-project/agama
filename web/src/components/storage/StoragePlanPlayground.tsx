@@ -6038,6 +6038,12 @@ const PLAN_CSS = `
   flex-shrink: 0;
 }
 
+/* PatternFly gives a paragraph room under it, which is room this one does not
+   want: it is the last line of a block, not a paragraph with another after it. */
+.agm-plan-headline-body {
+  margin-block-end: 0;
+}
+
 /* Short and centred. A rule the width of the text above it divides the page
    in two; this one closes a paragraph of it and lets the actions under it read
    as the answer to what was just reported. */
@@ -7282,30 +7288,50 @@ const PlanHeadline = ({
         .filter(Boolean)
         .join(" ")}
     >
-      <FlexItem className="agm-plan-headline-measure">
-        <Title headingLevel="h2" size={isNarrow ? "lg" : "xl"} className="agm-plan-headline-title">
-          {title}
-        </Title>
+      {/* What the page reports, as one block. The lines of it are set close
+          enough to be read as consecutive sentences rather than as three
+          separate announcements; the room is kept for what comes after them,
+          which is a different kind of thing. */}
+      <FlexItem>
+        <Flex
+          direction={{ default: "column" }}
+          alignItems={{ default: isNarrow ? "alignItemsStretch" : "alignItemsCenter" }}
+          gap={{ default: "gapXs" }}
+        >
+          <FlexItem className="agm-plan-headline-measure">
+            <Title
+              headingLevel="h2"
+              size={isNarrow ? "lg" : "xl"}
+              className="agm-plan-headline-title"
+            >
+              {title}
+            </Title>
+          </FlexItem>
+          {/* Above the consequence it changes, so the reader sees what it did.
+              It keeps room of its own: a control read at the spacing of prose
+              reads as a line of the prose. */}
+          {control && <FlexItem className="agm-plan-summary-control">{control}</FlexItem>}
+          {notice && (
+            <FlexItem className="agm-plan-summary-notice agm-plan-headline-measure">
+              {notice}
+            </FlexItem>
+          )}
+          {/* Under the sentence, and above the line explaining what to do next:
+              what the plan costs is the second thing the reader wants, and an
+              instruction about the list below is the last. */}
+          {!notice && count && <FlexItem className="agm-plan-headline-measure">{count}</FlexItem>}
+          {/* A line about what to do with what follows, not a second heading:
+              smaller and lighter than everything above it, so the three are
+              read in the order they matter. */}
+          {body && (
+            <FlexItem className="agm-plan-headline-measure">
+              <Content component="p" className="agm-plan-headline-body">
+                <Text textStyle={["fontSizeXs", "textColorSubtle"]}>{body}</Text>
+              </Content>
+            </FlexItem>
+          )}
+        </Flex>
       </FlexItem>
-      {/* Above the consequence it changes, so the reader sees what it did. */}
-      {control && <FlexItem className="agm-plan-summary-control">{control}</FlexItem>}
-      {notice && (
-        <FlexItem className="agm-plan-summary-notice agm-plan-headline-measure">{notice}</FlexItem>
-      )}
-      {/* Under the sentence, and above the line explaining what to do next:
-          what the plan costs is the second thing the reader wants, and an
-          instruction about the list below is the last. */}
-      {!notice && count && <FlexItem className="agm-plan-headline-measure">{count}</FlexItem>}
-      {/* A line about what to do with what follows, not a second heading:
-          smaller and lighter than everything above it, so the three are read in
-          the order they matter. */}
-      {body && (
-        <FlexItem className="agm-plan-headline-measure">
-          <Content component="p">
-            <Text textStyle={["fontSizeXs", "textColorSubtle"]}>{body}</Text>
-          </Content>
-        </FlexItem>
-      )}
       {(primary || secondary) && (
         <>
           {/* A short rule, centred: what is above it is the page reporting,
