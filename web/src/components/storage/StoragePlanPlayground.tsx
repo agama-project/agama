@@ -130,6 +130,7 @@ import {
 } from "~/components/storage/utils";
 import { deviceSystems, supportShrink } from "~/model/storage/device";
 import { formatList } from "~/i18n";
+import { unique } from "radashi";
 import { SCENARIOS, simulate } from "~/components/storage/StoragePlanScenarios";
 import { generateEncodedPath } from "~/utils";
 import { typeDescription } from "~/components/storage/utils/device";
@@ -7122,33 +7123,85 @@ const NameValue = ({ children }: React.PropsWithChildren) => (
 );
 
 /**
- * How much the installer will do, and the way to the whole picture.
+ * The worst thing the plan does, named, and how much work it is part of.
  *
- * A count is a fact and a link at once: a reader wondering whether fourteen is
- * a lot presses the number that worries them, and lands on the list of what
- * those fourteen are. "See all actions" would be a label for a button, and a
- * button here is what the page is trying not to have.
+ * A count on its own answers "how much" and leaves the reader to open the sheet
+ * to learn whether any of it matters. Naming the worst act in front of the count
+ * answers the question they actually have, in one clause, without becoming the
+ * paragraph of consequences this line replaced.
  *
- * It goes red where any of those actions deletes something, which is the one
- * thing a reader has to know before they read anything else and the reason this
- * line can replace a paragraph of consequences. The colour is reinforcement:
- * what it means is said in words a screen reader gets.
+ * Deliberately not a summary. Where a plan both deletes and shrinks, only the
+ * deletion is named: the sheet holds the rest, and the list below reads both
+ * per device. What this line promises is the worst of it and the size of it,
+ * not all of it.
+ *
+ * The threshold is the page's own: two systems are named, three are counted,
+ * and partitions are counted where the machine reports no system on them.
+ */
+const destructionOf = (manager: DevicesManager): string | null => {
+  /* A name always survives, however many there are: "3 existing systems" tells
+     a reader with Windows on the disk nothing they can recognise, and
+     recognising it is the whole reason the line names anything. Past two, the
+     first is named and the rest are counted. */
+  const named = (systems: string[]): string => {
+    if (systems.length === 1) return systems[0];
+    if (systems.length === 2) return t(`${systems[0]} and ${systems[1]}`);
+
+    const rest = systems.length - 1;
+    return t(`${systems[0]} and ${rest} other ${rest === 1 ? "system" : "systems"}`);
+  };
+
+  const counted = (count: number): string =>
+    t(`${count} ${count === 1 ? "partition" : "partitions"}`);
+
+  const deletedSystems = unique(manager.deletedSystems());
+  const deleted = manager.deletedDevices().length;
+  if (deletedSystems.length) return t(`Deleting ${named(deletedSystems)}`);
+  if (deleted) return t(`Deleting ${counted(deleted)}`);
+
+  const resizedSystems = unique(manager.resizedSystems());
+  const resized = manager.resizedDevices().length;
+  if (resizedSystems.length) return t(`Shrinking ${named(resizedSystems)}`);
+  if (resized) return t(`Shrinking ${counted(resized)}`);
+
+  return null;
+};
+
+/**
+ * How much the installer will do, what the worst of it is, and the way to see
+ * the rest.
+ *
+ * A count is a fact and a link at once: a reader wondering whether five is a lot
+ * presses the number that worries them, and lands on the list of what those five
+ * are. "See all actions" would be a label for a button, and a button here is
+ * what the page is trying not to have.
+ *
+ * It goes red where any of those actions deletes something, and says so in
+ * words rather than leaving the colour to carry it.
  *
  * Subvolume actions are left out, the way the list itself folds them away: they
  * are the file system's business rather than the machine's, and counting them
- * turns fourteen into ninety.
+ * turns five into ninety.
  */
-const PlanCount = ({
-  actions,
-  onShowResult,
-}: {
-  actions: Proposal.Action[];
-  onShowResult: () => void;
-}) => {
+const PlanCount = ({ onShowResult }: { onShowResult: () => void }) => {
+  const system = useFlattenDevices();
+  const staging = useStagingDevices();
+  const actions = useActions();
   const counted = actions.filter((action) => !action.subvol);
-  const destroys = counted.some((action) => action.delete);
 
   if (!counted.length) return null;
+
+  const manager = new DevicesManager(system, staging, actions);
+  const destruction = destructionOf(manager);
+  const destroys = counted.some((action) => action.delete);
+  const total = counted.length;
+
+  /* "Needed" rather than "in total": the number follows from the plan the
+     reader has chosen, and saying so is what stops five actions reading as five
+     things the installer decided to do on its own. */
+  const label = destruction
+    ? t(`${destruction} as part of the ${total} needed ${total === 1 ? "action" : "actions"}`)
+    : t(`${total} ${total === 1 ? "action" : "actions"} needed`);
 
   return (
     <Button
@@ -7158,11 +7211,7 @@ const PlanCount = ({
       aria-controls={PANEL_ID}
       onClick={onShowResult}
     >
-      {t(`${counted.length} ${counted.length === 1 ? "action" : "actions"} in total`)}
-      {/* What the colour says, for a reader who cannot see it. The visible
-          count stays a count: spelling the caution out beside it is the
-          paragraph this line replaced. */}
-      {destroys && <Text srOnly>{t(", some of which destroy data")}</Text>}
+      {label}
     </Button>
   );
 };
@@ -7350,7 +7399,6 @@ const PlanSummary = ({
   const config = useConfigModel();
   const device = config[collection]?.[index] as Partitionable | undefined;
   const systemDevice = useDevice(device?.name || "");
-  const actions = useActions();
   const { summarySpace } = useVariants();
   const space = useSpacePolicy(collection, index, device?.spacePolicy || "keep");
   const notice = usePlanNotice();
@@ -7408,7 +7456,7 @@ const PlanSummary = ({
           />
         ) : undefined
       }
-      count={<PlanCount actions={actions} onShowResult={onShowResult} />}
+      count={<PlanCount onShowResult={onShowResult} />}
       notice={
         notice && <DeviceNotice device={device} systemDevice={systemDevice} fallback={notice} />
       }
@@ -7574,7 +7622,6 @@ const PlanOverview = ({
   /** Opens the whole picture: what the installer does, and what it leaves. */
   onShowResult: () => void;
 }) => {
-  const actions = useActions();
   const notice = usePlanNotice();
 
   /* A flex column rather than a stack: PatternFly's Stack is full height, and
@@ -7601,7 +7648,7 @@ const PlanOverview = ({
           /* The same way in as the one device page offers, in the same place
              and the same words: a page that shows the big picture on a full
              disk and hides it on a plan of eight is a page with two shapes. */
-          count={<PlanCount actions={actions} onShowResult={onShowResult} />}
+          count={<PlanCount onShowResult={onShowResult} />}
           notice={notice}
         />
       </FlexItem>
