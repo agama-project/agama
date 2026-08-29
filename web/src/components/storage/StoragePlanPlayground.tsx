@@ -1,68 +1,46 @@
 /*
- * TEMPORARY: the storage configuration redesigned as a plan.
+ * TEMPORARY: the main storage page, redesigned as a plan.
  *
- * Built from `agama-notes/web/storage-configuration-redesign.md`. It keeps the
- * primary/detail layout settled by the earlier exploration and changes what
- * fills it:
+ * Two pages and a sheet. The page reports what the installation will do and
+ * routes to where it can be changed; the sheet does the work. A plan of one
+ * device gets a sentence about that device; a plan of several gets a sentence
+ * about the plan and an index of its entries under it. Both open with the same
+ * skeleton, so a reader who learned the page with one disk recognises it with
+ * eight.
  *
- *   - A row is a four slot grid (glyph, identity, purpose, cost) instead of
- *     three stacked lines of prose, so a list of disks reads down a column.
- *   - Consequences are text with one leading mark, not chips. A bordered pill
- *     is a button silhouette whatever is written in it.
- *   - The panel stacks two sections instead of splitting the disk into tabs,
- *     and the space decision sits in the second section's heading.
- *   - The per row menu offers the whole config model vocabulary, including the
- *     two entries nothing in the real interface can write today: shrinking to a
- *     chosen size, and deleting only if the installer runs short of space.
- *   - Existing content lists free space, names the operating systems a plan
- *     removes, and bounds the shrink control by what the device reports.
+ * What it looks like now, what was decided and why, and what is still open:
+ * `agama-notes/web/storage-main-page-iteration-2.md`. The rounds before it are
+ * in `storage-main-page-iteration-1.md` and the plan that started this one.
+ * Read the iteration note first: this file is the drawing, that is the argument.
  *
  * Nothing is mocked. It reads the real config model, the real system and the
  * real proposal, writes through the real endpoint, and navigates to the real
- * forms, so it needs a running backend.
+ * forms, so it needs a running backend. Reach it at `#/storage-plan-playground`
+ * while the temporary route in `router.tsx` is in place.
  *
- * Console driven, so the page stays screenshot clean:
+ * Because the machine it runs on has the disks it has, and the states worth
+ * arguing about are the ones nobody has to hand, it can also be pointed at a
+ * scenario: a machine and a configuration written out in
+ * `StoragePlanScenarios.ts`, with an approximation of the solver behind it so
+ * that changing a space policy still moves the page.
+ *
+ *     storagePlan.data("alongside-windows")
+ *
+ * Every arrangement still under discussion is a switch. They are in the
+ * Variants panel at the bottom right of the page, and on the console, which
+ * lists them all:
  *
  *     storagePlan.help()
- *     storagePlan.select("drives:0")     // or null
- *     storagePlan.panel(true | false)
- *     storagePlan.cost("text" | "chips")
- *     storagePlan.sections("stacked" | "tabs")
- *     storagePlan.scroll("body" | "sections")
- *     storagePlan.offers(true | false)
- *     storagePlan.density("comfortable" | "compact")
- *     storagePlan.structure("blocks" | "flat")
- *     storagePlan.spacePlacement("settings" | "content")
- *     storagePlan.explanations("always" | "sparse")
  *
- * The panel is three blocks: identity and actions, what is decided about the
- * device, and what it holds. `structure` switches back to the flat stack the
- * earlier rounds had, `spacePlacement` moves the space decision between the
- * settings block and the head of the table it governs, and `explanations` is
- * the height question: a line under every setting, or only under the ones
- * whose value leaves something unsaid.
+ * The two that hold open questions are `wayIn`, which decides whether the
+ * device sheet is opened by the device named in the sentence or by a button
+ * under it, and `spaceShape`, which decides whether the space decision shows
+ * all four answers or the one the plan has. Everything else is either settled
+ * or a way of reaching a state that is hard to reach otherwise: `panelMode`
+ * ("inline" is the only way to see the page's narrow arrangements on a wide
+ * screen), and `page`, which falls back to the device list this replaced.
  *
- * Boot and encryption are the two decisions about no device in particular, so
- * they are read in the bar above the list, as values with a way in, and each
- * opens a panel of its own: the machine wide choices, and under them what those
- * choices reach. Boot's panel puts the partitions the boot loader costs, read
- * from the proposal, under the three settings that cause them.
- *
- * `boot` decides what a device panel says about booting: a line pointing at the
- * boot panel, or the setting row of the earlier rounds, which is the
- * arrangement the team turned down. Boot partitions are the solver's doing
- * rather than anything the configuration asks for, and a boot loader type is
- * not a statement about a disk at all.
- *
- * The `scroll` switch exists because "the heading keeps the decision reachable"
- * is only true while the heading can stick. With the whole panel body as one
- * scroll container, a long enough first section pushes the second heading off
- * screen before it ever sticks. "sections" gives each section its own scroll
- * container, which is the arrangement that actually holds the claim up. Compare
- * them on a small viewport with a disk carrying many partitions.
- *
- * NOT meant to be committed. Reach it at `#/storage-plan-playground` while the
- * temporary route in router.tsx is in place.
+ * NOT meant to be committed, and neither is the route that reaches it.
  */
 
 import React, { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
