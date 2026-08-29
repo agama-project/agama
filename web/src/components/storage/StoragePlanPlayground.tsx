@@ -1570,6 +1570,46 @@ const withLogicalVolumeSpace = (
  * MenuButton clones a custom toggle with its ref, click handler and expanded
  * state, so this has to forward a ref to the button it renders.
  */
+/**
+ * Why the installation cannot be moved off this device, where it cannot.
+ *
+ * Swapping a device moves everything planned for it somewhere else, and there
+ * are plans that cannot travel: a file system kept as it is, partitions reused
+ * where they already are, a group or a boot loader that was put on this disk on
+ * purpose. The configuration knows all four; none of them has ever been said to
+ * the reader, who saw an offer wearing its own refusal as a title.
+ *
+ * Returns null where the swap is possible, and the reason where it is not, in
+ * words a reader can act on: each one names the decision that would have to
+ * change first.
+ */
+const retargetBlock = (config: ConfigModel.Config, device: Partitionable): string | null => {
+  if (device.filesystem?.reuse) {
+    return t("Its file system is being kept as it is, and a file system cannot be moved.");
+  }
+
+  if (configModel.partitionable.isReusingPartitions(device)) {
+    return t("Partitions already on this device are being reused, and they cannot be moved.");
+  }
+
+  /* A disk carrying nothing of its own, chosen for something that lives on it.
+     Where it also holds mount paths, those can travel and the swap is offered. */
+  if (!configModel.partitionable.usedMountPaths(device).length) {
+    const groups = configModel.partitionable.filterVolumeGroups(config, device);
+    if (groups.length === 1) {
+      return t(`The LVM volume group '${groups[0].vgName}' is built on this device.`);
+    }
+    if (groups.length > 1) {
+      return t(`${groups.length} LVM volume groups are built on this device.`);
+    }
+    if (configModel.boot.hasExplicitDevice(config, device.name)) {
+      return t("It was chosen for booting. Change that in Boot options first.");
+    }
+  }
+
+  return null;
+};
+
 /* How anything inside the page or the sheet opens something else in the sheet.
    Declared here because a row's menu is the first thing to use it. */
 const PanelNavContext = React.createContext<{
@@ -1585,8 +1625,14 @@ type ActionItem = {
   title: string;
   onClick: () => void;
   isDanger?: boolean;
-  /** What the item does, where the title alone leaves the reader guessing. */
+  /** What the item does, where the title alone leaves the reader guessing, or
+      why it cannot be done where it is offered and refused. */
   description?: string;
+  /** Offered and refused. The title stays what the act is called, so a reader
+      still finds the thing they came for, and the description says why it is
+      out of reach. Aria disabled rather than disabled, so it can still be
+      reached by keyboard and the reason still read. */
+  isBlocked?: boolean;
   /** Opens a run of items about something else. */
   hasDividerBefore?: boolean;
 };
@@ -1634,10 +1680,18 @@ const ActionsMenu = ({
       )}
     >
       <DropdownList>
-        {items.map(({ title, onClick, isDanger, description, hasDividerBefore }, i) => (
+        {items.map(({ title, onClick, isDanger, description, isBlocked, hasDividerBefore }, i) => (
           <React.Fragment key={i}>
-            {hasDividerBefore && <Divider />}
-            <DropdownItem onClick={onClick} isDanger={isDanger} description={description}>
+            {/* Always before anything destructive, whatever else the run does:
+                a rule is the pause that stops a reader arriving at "Do not use
+                this device" with the momentum of the item above it. */}
+            {(hasDividerBefore || isDanger) && <Divider />}
+            <DropdownItem
+              onClick={isBlocked ? undefined : onClick}
+              isAriaDisabled={isBlocked}
+              isDanger={isDanger}
+              description={description}
+            >
               {title}
             </DropdownItem>
           </React.Fragment>
@@ -1680,9 +1734,12 @@ KebabToggle.displayName = "KebabToggle";
 const PartitionableActions = ({
   collection,
   index,
+  opensDevice = true,
 }: {
   collection: PartitionableCollection;
   index: number;
+  /** False in the sheet's own header, where the reader is already inside it. */
+  opensDevice?: boolean;
 }) => {
   const config = useConfigModel();
   const deleteDrive = useDeleteDrive();
@@ -1707,17 +1764,21 @@ const PartitionableActions = ({
   const targets = available.filter((candidate) => !usedNames.includes(candidate.name));
   const groups = configModel.partitionable.filterVolumeGroups(config, device);
 
+  const blocked = retargetBlock(config, device);
   const items: ActionItem[] = [
+    ...(opensDevice
+      ? [{ title: t(`Configure ${name}`), onClick: () => goToDevice({ collection, index }) }]
+      : []),
     {
-      title: t(`Configure ${name}`),
-      onClick: () => goToDevice({ collection, index }),
-    },
-    {
+      /* The title stays what the act is called even where the act cannot be
+         done, so a reader looking for it finds it and learns why rather than
+         hunting for an offer that renamed itself into a refusal. */
       title: t("Use another device"),
       /* What "another device" costs, which the title cannot say: the plan is
          not being rebuilt, it is being moved. A reader who has spent time on
          this device's content needs to know it comes with them. */
-      description: t(`Everything planned for ${name} moves to the device you pick.`),
+      description: blocked || t(`Everything planned for ${name} moves to the device you pick.`),
+      isBlocked: blocked !== null,
       onClick: () => setIsSelectorOpen(true),
     },
   ];
@@ -1738,7 +1799,6 @@ const PartitionableActions = ({
     items.push({
       title: t("Do not use this device"),
       isDanger: true,
-      hasDividerBefore: device.filesystem !== undefined,
       onClick: () => (collection === "drives" ? deleteDrive(index) : deleteMdRaid(index)),
     });
   }
@@ -7026,7 +7086,7 @@ const PartitionableHeader = ({
       /* Identity and its menu. Swapping the target used to sit here as a
          button, which reads as the first thing to do on a panel opened to read
          something else; it is offered under the table it changes instead. */
-      actions={<PartitionableActions collection={collection} index={index} />}
+      actions={<PartitionableActions collection={collection} index={index} opensDevice={false} />}
     />
   );
 };
