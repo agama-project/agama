@@ -1,0 +1,48 @@
+name: CI - Kiwi Configuration
+
+permissions:
+  contents: read
+
+on:
+  push:
+    paths:
+      # NOTE: GitHub Actions do not allow using YAML references, the same path
+      # list is used below for the pull request event. Keep both lists in sync!!
+
+      # this file as well
+      - .github/workflows/ci-live-kiwi.yml
+      # any change in the Kiwi definition
+      - live/src/*.kiwi
+
+  pull_request:
+    paths:
+      # NOTE: GitHub Actions do not allow using YAML references, the same path
+      # list is used above for the push event. Keep both lists in sync!!
+
+      # this file as well
+      - .github/workflows/ci-live-kiwi.yml
+      # any change in the Kiwi definition
+      - live/src/*.kiwi
+
+  # allow running manually
+  workflow_dispatch:
+
+jobs:
+  kiwi-validate:
+    runs-on: ubuntu-latest
+    container:
+      image: registry.opensuse.org/opensuse/tumbleweed:latest
+
+    steps:
+      - name: Configure and refresh repositories
+        # disable unused repositories to have faster refresh
+        run: zypper modifyrepo -d repo-non-oss repo-openh264 repo-update && zypper ref
+
+      - name: Install the required tools
+        run: zypper --non-interactive install --no-recommends python3-kiwi git
+
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Validate the Kiwi image definition
+        run: kiwi-ng image info --description live/src
