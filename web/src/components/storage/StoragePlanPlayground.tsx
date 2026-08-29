@@ -3350,7 +3350,7 @@ const RetargetButton = ({
 }: {
   device: Partitionable;
   label: string;
-  variant?: "link" | "secondary" | "control";
+  variant?: "link" | "secondary" | "plain";
 }) => {
   const [isSelectorOpen, setIsSelectorOpen] = useState(false);
   const config = useConfigModel();
@@ -3369,8 +3369,19 @@ const RetargetButton = ({
 
   return (
     <>
+      {/* The mark travels with the offer, so the same act is recognisable
+          wherever it is made: on the page beside "Add more devices", and in the
+          sheet under the content it would move. Two circled glyphs side by side
+          read as two offers of the same kind, which is what they are.
+
+          Laid out the way the menu beside it lays out its own, rather than
+          through the button's icon slot, which sets the mark smaller and on the
+          text's baseline. Side by side the two were visibly a pair of
+          different things. */}
       <Button variant={variant} onClick={() => setIsSelectorOpen(true)}>
-        {label}
+        <Flex alignItems={{ default: "alignItemsCenter" }} gap={{ default: "gapSm" }}>
+          <Icon name="change_circle" /> {label}
+        </Flex>
       </Button>
       {isSelectorOpen && (
         <DeviceSelectorModal
@@ -7467,11 +7478,11 @@ const PlanSummary = ({
       }
       secondary={
         <>
-          <RetargetButton
-            device={device}
-            label={t("Change installation device")}
-            variant="control"
-          />
+          {/* Plain, and the words the sheet uses for the same act. As a
+              bordered control beside the primary action it read as a second
+              call to action; plain, it reads as the offer it is, and the page
+              carries one filled button rather than two heavy ones. */}
+          <RetargetButton device={device} label={t("Use another device")} variant="plain" />
           {/* Beside it rather than under the page: changing the device and
               adding another are the two things a reader does about the device
               the sentence names. */}

@@ -27,6 +27,7 @@ import React from "react";
 // value.
 import Add from "@icons/add.svg?component";
 import AddCircle from "@icons/add_circle.svg?component";
+import ChangeCircle from "@icons/change_circle.svg?component";
 import Amend from "@icons/amend.svg?component";
 import Apps from "@icons/apps.svg?component";
 import AppsOutage from "@icons/apps_outage.svg?component";
@@ -112,6 +113,7 @@ import Schema from "@icons/schema.svg?component";
 const icons = {
   add: Add,
   add_circle: AddCircle,
+  change_circle: ChangeCircle,
   amend: Amend,
   apps: Apps,
   apps_outage: AppsOutage,
