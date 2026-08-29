@@ -7286,21 +7286,26 @@ const PlanHeadline = ({
         <Title headingLevel="h2" size={isNarrow ? "lg" : "xl"} className="agm-plan-headline-title">
           {title}
         </Title>
-        {/* A line about what to do with what follows, not a second heading:
-            smaller and lighter than the sentence it sits under, so the two are
-            read in the order they matter. */}
-        {body && (
-          <Content component="p">
-            <Text textStyle={["fontSizeXs", "textColorSubtle"]}>{body}</Text>
-          </Content>
-        )}
       </FlexItem>
       {/* Above the consequence it changes, so the reader sees what it did. */}
       {control && <FlexItem className="agm-plan-summary-control">{control}</FlexItem>}
       {notice && (
         <FlexItem className="agm-plan-summary-notice agm-plan-headline-measure">{notice}</FlexItem>
       )}
+      {/* Under the sentence, and above the line explaining what to do next:
+          what the plan costs is the second thing the reader wants, and an
+          instruction about the list below is the last. */}
       {!notice && count && <FlexItem className="agm-plan-headline-measure">{count}</FlexItem>}
+      {/* A line about what to do with what follows, not a second heading:
+          smaller and lighter than everything above it, so the three are read in
+          the order they matter. */}
+      {body && (
+        <FlexItem className="agm-plan-headline-measure">
+          <Content component="p">
+            <Text textStyle={["fontSizeXs", "textColorSubtle"]}>{body}</Text>
+          </Content>
+        </FlexItem>
+      )}
       {(primary || secondary) && (
         <>
           {/* A short rule, centred: what is above it is the page reporting,
