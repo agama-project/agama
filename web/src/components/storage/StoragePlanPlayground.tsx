@@ -3594,6 +3594,15 @@ const DeviceActionButtons = ({ device }: { device: Partitionable }) => {
      in it. */
   const blocked = retargetBlock(config, device);
 
+  /* This offer belongs to the content above it. Under a tab that has just said
+     nothing is planned here, moving what is planned is not an act the reader
+     can want, and offering it greyed out is worse than not offering it: it
+     asks them to work out why something they were not looking for is refused.
+
+     The device as a whole is still swappable business, and the menu in the
+     header is where the device as a whole is dealt with. */
+  if (!hasPlannedContent(device)) return null;
+
   return (
     <Flex direction={{ default: "column" }} gap={{ default: "gapXs" }}>
       <FlexItem>
