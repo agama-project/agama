@@ -3550,27 +3550,18 @@ const RetargetButton = ({
 /**
  * What the reader does about the device, rather than about its content.
  *
- * Plain buttons after the table they belong under: swapping the target and
- * dropping the device from the plan are both about this entry as a whole, and
- * neither is worth the weight of a control in the header, which reads as
- * something to do before anything else on the panel.
+ * One offer, after the table it belongs under: swapping the target is about
+ * this entry as a whole, and it is not worth the weight of a control in the
+ * header, which reads as something to do before anything else on the panel.
+ *
+ * Dropping the device used to sit beside it and does not any more. Anything
+ * destructive is offered in one place, the menu in the sheet's header, so a
+ * reader learns where those live rather than meeting them wherever a component
+ * happened to have room.
  */
-const DeviceActionButtons = ({
-  collection,
-  index,
-  device,
-}: {
-  collection: PartitionableCollection;
-  index: number;
-  device: Partitionable;
-}) => {
+const DeviceActionButtons = ({ device }: { device: Partitionable }) => {
   const config = useConfigModel();
-  const deleteDrive = useDeleteDrive();
-  const deleteMdRaid = useDeleteMdRaid();
   const hintId = useId();
-  /* Dropping the only device leaves a plan with nowhere to go, so the offer is
-     made where there is somewhere else for the installation to live. */
-  const canDrop = configModel.hasAdditionalDevices(config);
   /* The same answer the menu in the header gives, from the same place. The two
      offered the same act and disagreed about whether it was possible: the menu
      refused it and the button beside the table opened a dialog with one device
@@ -3580,24 +3571,13 @@ const DeviceActionButtons = ({
   return (
     <Flex direction={{ default: "column" }} gap={{ default: "gapXs" }}>
       <FlexItem>
-        <Flex gap={{ default: "gapSm" }} alignItems={{ default: "alignItemsCenter" }}>
-          <RetargetButton
-            device={device}
-            label={t("Use another device")}
-            variant="link"
-            isBlocked={blocked !== null}
-            hintId={blocked ? hintId : undefined}
-          />
-          {canDrop && (
-            <Button
-              variant="link"
-              isDanger
-              onClick={() => (collection === "drives" ? deleteDrive(index) : deleteMdRaid(index))}
-            >
-              {t("Do not use this device")}
-            </Button>
-          )}
-        </Flex>
+        <RetargetButton
+          device={device}
+          label={t("Use another device")}
+          variant="link"
+          isBlocked={blocked !== null}
+          hintId={blocked ? hintId : undefined}
+        />
       </FlexItem>
       {/* Under the offer rather than inside it, which is how the rest of the
           interface explains a control it will not let you use: the install
@@ -4388,7 +4368,7 @@ const PartitionableDetail = ({
       systemDevice={systemDevice}
       explanation={notes?.planned}
       statements={structure === "blocks" ? plannedStatements : undefined}
-      deviceActions={<DeviceActionButtons collection={collection} index={index} device={device} />}
+      deviceActions={<DeviceActionButtons device={device} />}
       onGoToCurrent={sections === "tabs" ? goToCurrent : undefined}
     />
   );
