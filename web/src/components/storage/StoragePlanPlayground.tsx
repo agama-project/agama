@@ -7523,8 +7523,20 @@ const PlanSummary = ({
       }
       primary={
         wayIn === "button" ? (
+          /* Named after the device it opens, and with the verb the rest of the
+             interface already uses for reaching a working surface: Configure
+             iSCSI, Configure zFCP, Configure DASD.
+
+             Not "details": the count beside it opens details too, and the word
+             says nothing about which of the two a reader is about to get. What
+             tells them apart is scope, so the label carries the scope.
+
+             Whether the button teaches the same gesture as a row in a plan of
+             several entries is not something a caption can fix, and it is what
+             the other arrangement is for: there the device named in the
+             sentence is itself the way in, which is the row's act exactly. */
           <Button variant="primary" aria-controls={PANEL_ID} onClick={() => onOpenTab("result")}>
-            {t("View details")}
+            {t(`Configure ${name}`)}
           </Button>
         ) : undefined
       }
