@@ -1571,6 +1571,17 @@ const withLogicalVolumeSpace = (
  * state, so this has to forward a ref to the button it renders.
  */
 /**
+ * Whether the plan puts anything on this device that a swap would carry over.
+ *
+ * A disk whose whole space goes to a volume group has nothing of its own: the
+ * group is built on it, which is a different fact and one the reader is told
+ * separately. Saying "everything planned here moves" about such a disk promises
+ * a move of nothing.
+ */
+const hasPlannedContent = (device: Partitionable): boolean =>
+  device.filesystem !== undefined || (device.partitions || []).length > 0;
+
+/**
  * Why the installation cannot be moved off this device, where it cannot.
  *
  * Swapping a device moves everything planned for it somewhere else, and there
@@ -1776,8 +1787,15 @@ const PartitionableActions = ({
       title: t("Use another device"),
       /* What "another device" costs, which the title cannot say: the plan is
          not being rebuilt, it is being moved. A reader who has spent time on
-         this device's content needs to know it comes with them. */
-      description: blocked || t(`Everything planned for ${name} moves to the device you pick.`),
+         this device's content needs to know it comes with them.
+
+         Only where there is content to carry. On a disk the plan puts nothing
+         of its own on, the sentence promises the move of nothing. */
+      description:
+        blocked ||
+        (hasPlannedContent(device)
+          ? t(`Everything planned for ${name} moves to the device you pick.`)
+          : undefined),
       isBlocked: blocked !== null,
       onClick: () => setIsSelectorOpen(true),
     },
@@ -1809,7 +1827,11 @@ const PartitionableActions = ({
       {isSelectorOpen && (
         <DeviceSelectorModal
           title={t("Use another device")}
-          intro={t(`The plan stays as it is. Everything ${name} was going to hold moves.`)}
+          intro={
+            hasPlannedContent(device)
+              ? t(`The plan stays as it is. Everything ${name} was going to hold moves.`)
+              : t("The plan stays as it is.")
+          }
           selected={systemDevice}
           disks={targets.filter(isDrive)}
           mdRaids={targets.filter(isMd)}
@@ -3531,7 +3553,11 @@ const RetargetButton = ({
       {isSelectorOpen && (
         <DeviceSelectorModal
           title={label}
-          intro={t(`The plan stays as it is. Everything ${name} was going to hold moves.`)}
+          intro={
+            hasPlannedContent(device)
+              ? t(`The plan stays as it is. Everything ${name} was going to hold moves.`)
+              : t("The plan stays as it is.")
+          }
           selected={systemDevice}
           disks={targets.filter(isDrive)}
           mdRaids={targets.filter(isMd)}
