@@ -1573,13 +1573,18 @@ const withLogicalVolumeSpace = (
 /**
  * Whether the plan puts anything on this device that a swap would carry over.
  *
- * A disk whose whole space goes to a volume group has nothing of its own: the
- * group is built on it, which is a different fact and one the reader is told
- * separately. Saying "everything planned here moves" about such a disk promises
- * a move of nothing.
+ * What the plan creates here, and not what the device already has. A drive's
+ * partition list holds an entry per existing partition the configuration has
+ * something to say about, deletions and reuses included, so its length says
+ * nothing about whether the plan builds anything: a disk whose whole space goes
+ * to a volume group carries entries for the partitions being cleared off it and
+ * plans nothing of its own.
+ *
+ * The group built on such a disk is a different fact, and one the reader is
+ * told separately.
  */
 const hasPlannedContent = (device: Partitionable): boolean =>
-  device.filesystem !== undefined || (device.partitions || []).length > 0;
+  device.filesystem !== undefined || newEntries(device).length > 0;
 
 /**
  * Why the installation cannot be moved off this device, where it cannot.
