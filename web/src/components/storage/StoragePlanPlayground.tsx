@@ -218,6 +218,8 @@ type PageShape = "summary" | "list";
 type SummarySpace = "shown" | "hidden";
 /** Which shape that decision takes on the page: all four answers, or the one it has. */
 type SpaceShape = "toggles" | "value";
+/** How the one device page opens the sheet: from a button, or from the device's name. */
+type WayIn = "button" | "name";
 /** Which machine the page reads: this one, or one of the scenarios. */
 type DataSource = "real" | ScenarioKey;
 /** How the drawer holding the sheet opens. */
@@ -254,6 +256,7 @@ type Variants = {
   page: PageShape;
   summarySpace: SummarySpace;
   spaceShape: SpaceShape;
+  wayIn: WayIn;
   data: DataSource;
   panelMode: PanelMode;
 };
@@ -308,6 +311,10 @@ const DEFAULT_VARIANTS: Variants = {
      reader who came to change it. The value line, quieter and shaped like
      every other setting on the page, is one switch away. */
   spaceShape: "toggles",
+  /* The button, which is what the page has had since it was drawn. The name as
+     the way in is the thing to compare it against: one button fewer, and the
+     way in on the word the sheet is about. */
+  wayIn: "button",
   /* The machine the playground runs on, which is the only data that is
      true. The scenarios are for the states it does not have. */
   data: "real",
@@ -350,6 +357,7 @@ type PlanApi = {
   page: (shape: PageShape) => void;
   summarySpace: (mode: SummarySpace) => void;
   spaceShape: (mode: SpaceShape) => void;
+  wayIn: (mode: WayIn) => void;
   data: (source: DataSource) => void;
   panelMode: (mode: PanelMode) => void;
   bootDebug: () => void;
@@ -7437,7 +7445,7 @@ const PlanSummary = ({
   const config = useConfigModel();
   const device = config[collection]?.[index] as Partitionable | undefined;
   const systemDevice = useDevice(device?.name || "");
-  const { summarySpace } = useVariants();
+  const { summarySpace, wayIn } = useVariants();
   const space = useSpacePolicy(collection, index, device?.spacePolicy || "keep");
   const notice = usePlanNotice();
 
@@ -7469,14 +7477,29 @@ const PlanSummary = ({
       : t("Use disk %s as installation device");
   })();
 
+  /* Two ways into the device sheet, one switch apart.
+
+     As a button, the sentence is read and never pressed, and what the reader
+     does about the device is offered under it with everything else. As the
+     name, the page carries one button fewer and the way in is the thing the
+     sheet is about, which is where a reader looks for it: the disk is what
+     they came to open. Against it, a name that is also a control asks to be
+     recognised as one, and nothing else in the sentence is pressable. */
+  const openable = (named: React.ReactNode) =>
+    wayIn === "name" ? (
+      <Button variant="link" isInline aria-controls={PANEL_ID} onClick={() => onOpenTab("result")}>
+        {named}
+      </Button>
+    ) : (
+      named
+    );
+
   return (
     <PlanHeadline
       isNarrow={isNarrow}
-      /* The sentence is read, not pressed: what a reader does about this device
-         is offered under it, where the page keeps its actions. */
       title={
         <Interpolate sentence={sentence}>
-          {() => <DeviceValue name={name} size={systemDevice?.block?.size} />}
+          {() => openable(<DeviceValue name={name} size={systemDevice?.block?.size} />)}
         </Interpolate>
       }
       control={
@@ -7499,26 +7522,27 @@ const PlanSummary = ({
         notice && <DeviceNotice device={device} systemDevice={systemDevice} fallback={notice} />
       }
       primary={
-        <Button variant="primary" aria-controls={PANEL_ID} onClick={() => onOpenTab("result")}>
-          {t("View details")}
-        </Button>
+        wayIn === "button" ? (
+          <Button variant="primary" aria-controls={PANEL_ID} onClick={() => onOpenTab("result")}>
+            {t("View details")}
+          </Button>
+        ) : undefined
       }
       secondary={
         <>
-          {/* Plain, and the words the sheet uses for the same act. As a
-              bordered control beside the primary action it read as a second
-              call to action; plain, it reads as the offer it is, and the page
-              carries one filled button rather than two heavy ones. */}
-          <RetargetButton device={device} label={t("Use another device")} variant="plain" />
-          {/* Beside it rather than under the page: changing the device and
-              adding another are the two things a reader does about the device
-              the sentence names. */}
+          {/* First, and in the same order on every page: adding a device is
+              about the plan, and a reader who learned where that offer sits on
+              one disk finds it on eight. */}
           <ConfigureDeviceMenu
             label={t("Add more devices")}
             /* Aligned on the toggle's trailing edge, so the menu opens back
                over the page rather than off it. */
             popperProps={{ position: "right" }}
           />
+          {/* Plain, and the words the sheet uses for the same act. As a
+              bordered control beside the primary action it read as a second
+              call to action; plain, it reads as the offer it is. */}
+          <RetargetButton device={device} label={t("Use another device")} variant="plain" />
         </>
       }
     />
@@ -7742,6 +7766,7 @@ const VARIANT_CONTROLS: VariantControl[] = [
   { key: "page", label: "Page", options: ["summary", "list"] },
   { key: "summarySpace", label: "Space on summary", options: ["shown", "hidden"] },
   { key: "spaceShape", label: "Space shape", options: ["value", "toggles"] },
+  { key: "wayIn", label: "Way into the sheet", options: ["button", "name"] },
   { key: "structure", label: "Panel structure", options: ["blocks", "flat"] },
   { key: "sections", label: "Panel halves", options: ["tabs", "stacked"] },
   { key: "settings", label: "Settings", options: ["beside", "above"] },
@@ -7985,6 +8010,7 @@ function StoragePlan({
             '  page("summary" | "list")           a one entry plan as a summary, or as the device list',
             '  summarySpace("shown" | "hidden")   the space decision on the one device page',
             '  spaceShape("value" | "toggles")    that decision as a term and its value, or as four buttons',
+            '  wayIn("button" | "name")           the sheet opened by a button under the sentence, or by the device named in it',
             '  data("real"|"one-disk-in-use"|"empty-disk"|"lvm-over-three-disks")  the machine the page reads',
             '  panelMode("reflow"|"over"|"inline")  the page relays out, stays put, or is pushed aside',
             "  bootDebug()                        what the proposal reports about every partition",
@@ -8027,6 +8053,7 @@ function StoragePlan({
       page: (page) => patch({ page }),
       summarySpace: (summarySpace) => patch({ summarySpace }),
       spaceShape: (spaceShape) => patch({ spaceShape }),
+      wayIn: (wayIn) => patch({ wayIn }),
       data: (data) => patch({ data }),
       panelMode: (panelMode) => patch({ panelMode }),
       bootDebug: () => bootDebugRef.current(),
