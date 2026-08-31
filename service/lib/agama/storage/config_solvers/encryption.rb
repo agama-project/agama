@@ -72,7 +72,6 @@ module Agama
           return unless config.physical_volumes_encryption
 
           encryption = config.physical_volumes_encryption
-          encryption.method ||= default_encryption.method
           solve_encryption_values(encryption)
         end
 
