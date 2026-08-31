@@ -36,9 +36,10 @@
  * device sheet is opened by the device named in the sentence or by a button
  * under it, and `spaceShape`, which decides whether the space decision shows
  * all four answers or the one the plan has. Everything else is either settled
- * or a way of reaching a state that is hard to reach otherwise: `panelMode`
- * ("inline" is the only way to see the page's narrow arrangements on a wide
- * screen), and `page`, which falls back to the device list this replaced.
+ * or a way of reaching a state that is hard to reach otherwise: `panelMode`,
+ * which follows the window unless it is told not to and is the way to see the
+ * other arrangement without resizing anything, and `page`, which falls back to
+ * the device list this replaced.
  *
  * NOT meant to be committed, and neither is the route that reaches it.
  */
@@ -202,7 +203,7 @@ type WayIn = "button" | "name";
 /** Which machine the page reads: this one, or one of the scenarios. */
 type DataSource = "real" | ScenarioKey;
 /** How the drawer holding the sheet opens. */
-type PanelMode = "aside" | "over" | "inline";
+type PanelMode = "auto" | "over" | "inline";
 type Variants = {
   cost: CostStyle;
   sections: PanelSections;
@@ -297,16 +298,9 @@ const DEFAULT_VARIANTS: Variants = {
   /* The machine the playground runs on, which is the only data that is
      true. The scenarios are for the states it does not have. */
   data: "real",
-  /* The sheet comes over the page and the page moves aside for it, keeping the
-     arrangement it had. Laying it out again in the width it is left with was
-     tried and dropped: rearranging a page nobody can touch spends a relayout on
-     something the reader is not reading, and the summary they were looking at
-     is not where they left it when the sheet closes.
-
-     A shift rather than a re-centring, and a modest one: the page is behind the
-     sheet to say what the reader came from, and moving it far enough to centre
-     what is left cuts the start off anything as wide as the measure. */
-  panelMode: "aside",
+  /* The window decides. The two arrangements stay reachable as an override,
+     since resizing a development machine is a poor way to compare them. */
+  panelMode: "auto",
 };
 
 type PlanApi = {
@@ -626,6 +620,8 @@ const PANEL_ID = "storage-plan-panel";
 /** How much of the window the sheet takes when it comes over the page. */
 const PANEL_WIDTH = "70%";
 const LIST_ID = "storage-plan-list";
+/* PatternFly's xl. Above it the page and the sheet share the width; below it
+   the sheet comes over the page. */
 const XL = "(min-width: 1200px)";
 /* Wide enough for the list to stay readable with a panel over part of it, and
    not wide enough for the two to sit side by side. */
@@ -6268,26 +6264,6 @@ const PLAN_CSS = `
   font-size: var(--pf-t--global--font--size--xs);
 }
 
-/* What the page reports moves aside for the sheet rather than being laid out
-   again inside what is left. Nothing about it changes shape: the same page, a
-   little further over, dimmed and out of reach behind the thing the reader is
-   in.
-
-   Modest on purpose. Far enough to say the sheet pushed something, and not so
-   far that a block as wide as the reading measure loses its start, which is
-   what the earlier attempt at this did.
-
-   The line above it stays where it is. It is the page's own furniture rather
-   than part of what the sheet is about, and furniture sliding with the content
-   it introduces reads as the whole window shifting. */
-.agm-plan-page-body {
-  transition: transform var(--pf-t--global--motion--duration--fade--default, 200ms) ease-in-out;
-}
-
-.agm-plan-drawer-aside .agm-plan-covered .agm-plan-page-body {
-  transform: translateX(-8%);
-}
-
 /* The column every state of the page opens with. What the empty state used to
    give it and it still needs: room above, and a measure narrow enough that a
    sentence is read in one sweep rather than scanned across a monitor. */
@@ -8094,7 +8070,7 @@ type VariantControl<K extends keyof Variants = keyof Variants> = {
 };
 
 const VARIANT_CONTROLS: VariantControl[] = [
-  { key: "panelMode", label: "Drawer", options: ["aside", "over", "inline"] },
+  { key: "panelMode", label: "Drawer", options: ["auto", "over", "inline"] },
   {
     key: "data",
     label: "Machine",
@@ -8274,7 +8250,18 @@ function StoragePlan({
   const hasPanelContent = showsResult || showsBoot || showsEncryption || selectedId !== null;
   /* Whatever is left of the page beside an open sheet is there to be read and
      not to be used: the sheet is what the reader is in. */
-  const isCovered = variants.panelMode !== "inline" && isPanelOpen && hasPanelContent;
+  /* Three bands, not two. Under lg the sheet replaces the page, because an
+     overlay on a page that narrow covers all of it anyway. From there to xl it
+     comes over the page, which is dimmed and out of reach behind it. At xl and
+     above the two share the width and the page stays usable.
+
+     xl rather than a number of our own: 1024 is not a breakpoint, it falls
+     between lg and xl, and the difference between a 1024 window and a 1199 one
+     is not a difference this page behaves differently at. */
+  const fitsBoth = useMedia(XL);
+  const isInlineDrawer =
+    variants.panelMode === "inline" || (variants.panelMode === "auto" && fitsBoth);
+  const isCovered = !isInlineDrawer && isPanelOpen && hasPanelContent;
 
   /* Console driven, so the page itself stays screenshot clean. */
   useEffect(() => {
@@ -8315,7 +8302,7 @@ function StoragePlan({
             '  spaceShape("value" | "toggles")    that decision as a term and its value, or as four buttons',
             '  wayIn("button" | "name")           the sheet opened by a button under the sentence, or by the device named in it',
             '  data("real"|"one-disk-in-use"|"alongside-windows"|"empty-disk"|"lvm-over-three-disks")  the machine the page reads',
-            '  panelMode("aside"|"over"|"inline")  the page slides aside, stays put, or gives up its width',
+            '  panelMode("auto"|"over"|"inline")  the window decides, or force the sheet over the page or beside it',
             "  bootDebug()                        what the proposal reports about every partition",
           ].join("\n"),
         );
@@ -8667,10 +8654,7 @@ function StoragePlan({
           </Flex>
         </FlexItem>
       </Flex>
-      {/* What moves aside when the sheet opens. The line above it does not:
-          it is the page's own furniture, and furniture that slides with the
-          content it introduces reads as the whole window shifting. */}
-      <div className="agm-plan-page-body">{summary()}</div>
+      {summary()}
     </div>
   ) : (
     <>
@@ -8683,14 +8667,11 @@ function StoragePlan({
   /* Inline, the panel takes its width out of the page and the two share the
      window. Otherwise it comes over the page, which either keeps its width
      and is covered, or gives way to the sheet and uses what is left. */
-  const isInlineDrawer = variants.panelMode === "inline";
-
   const drawer = (isStatic: boolean) => (
     <Drawer
       isExpanded={isStatic ? isPanelOpen : isPanelOpen && hasPanelContent}
       isStatic={isStatic}
       isInline={isInlineDrawer}
-      className={variants.panelMode === "aside" ? "agm-plan-drawer-aside" : undefined}
       position="end"
     >
       <DrawerContent
