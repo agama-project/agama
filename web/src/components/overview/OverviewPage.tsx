@@ -113,7 +113,7 @@ const ProductNotFound = () => (
 export default function OverviewPage() {
   const issues = useIssues();
   const product = useProductInfo();
-  const missingProduct = issues.some((i) => i.class === "missing_product");
+  const missingProduct = issues.some((i) => i.class === "missingProduct");
 
   return (
     <Page
