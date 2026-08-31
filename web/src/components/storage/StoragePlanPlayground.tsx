@@ -8676,7 +8676,19 @@ function StoragePlan({
      and is covered, or gives way to the sheet and uses what is left. */
   const drawer = (isStatic: boolean) => (
     <Drawer
-      isExpanded={isStatic ? isPanelOpen : isPanelOpen && hasPanelContent}
+      /* Where the two share the width, the sheet keeps its column whether or
+         not anything is in it. The page is centred in what is left, so opening
+         the sheet on a reserved column leaves the summary where it was, and
+         opening it on an unreserved one slides the sentence the reader is
+         reading out from under them.
+
+         The empty column is not empty: it holds the same "Nothing selected"
+         state the narrow arrangement shows, which is also how a reader learns
+         there is a sheet before they open one.
+
+         Where the sheet comes over the page there is nothing to reserve, and a
+         panel over the page with nothing in it is a panel in the way. */
+      isExpanded={isPanelOpen && (isInlineDrawer || hasPanelContent)}
       isStatic={isStatic}
       isInline={isInlineDrawer}
       position="end"
