@@ -134,6 +134,8 @@
     <!-- packages for local installation (desktop, browser, etc.) -->
     <packages type="image" profiles="Leap_16.0,openSUSE,SUSE_SLE_16">
         <package name="bluez-firmware"/>
+        <!-- for openQA to run their puppeteer tests, just injecting a *.js file -->
+        <package name="nodejs(engine)"/>
         <package name="fontconfig"/>
         <package name="fonts-config"/>
         <package name="xauth"/>
