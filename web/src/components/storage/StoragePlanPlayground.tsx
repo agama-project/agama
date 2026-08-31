@@ -3509,7 +3509,7 @@ const RetargetButton = ({
 }: {
   device: Partitionable;
   label: string;
-  variant?: "link" | "secondary" | "plain";
+  variant?: "link" | "secondary" | "plain" | "primary";
   /** Offered and refused, with the reason printed beside it by the caller. */
   isBlocked?: boolean;
   /** The reason, so the button is described by it rather than only sitting
@@ -7747,22 +7747,20 @@ const PlanSummary = ({
       }
       secondary={
         <>
-          {/* First, and the heaviest thing on the row. A plan of one device is
-              the state a reader is most likely to want to leave: the page has
-              just told them what one disk will hold, and the question it
-              raises is whether that disk is all of it. Swapping the disk keeps
-              the plan the size it is; adding one is the act that changes it. */}
+          {/* First, and the heaviest thing on the row. The page has just named
+              one disk and said what it will hold, so the question it raises is
+              about that disk: whether it is the right one. Changing it is the
+              act that answers the sentence above; adding another device is a
+              different plan, offered beside it. */}
+          <RetargetButton device={device} label={t("Use another device")} variant="primary" />
+          {/* Plain beside it, and last, which is where a plan of several
+              entries keeps the same offer: at the end of what it appends to. */}
           <ConfigureDeviceMenu
             label={t("Add more devices")}
-            toggleVariant="primary"
-            /* Aligned on the toggle's leading edge, since the toggle opens the
-               row: the menu grows across the page rather than off its start. */
-            popperProps={{ position: "left" }}
+            /* Aligned on the toggle's trailing edge, since the toggle now ends
+               the row: the menu grows back over the page rather than off it. */
+            popperProps={{ position: "right" }}
           />
-          {/* Plain, and the words the sheet uses for the same act. As a
-              bordered control beside the primary action it read as a second
-              call to action; plain, it reads as the offer it is. */}
-          <RetargetButton device={device} label={t("Use another device")} variant="plain" />
         </>
       }
     />
