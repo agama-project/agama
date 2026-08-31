@@ -53,7 +53,7 @@ export default function ProductRegistrationForm() {
   const config = useConfig();
   const product = useProduct();
   const issues = useIssues("product");
-  const registrationIssue = issues.find((i) => i.class === "system_registration_failed");
+  const registrationIssue = issues.find((i) => i.class === "systemRegistrationFailed");
 
   // Track system query which refetches after putConfig completes (success or failure).
   // On success: parent sees new registration data and unmounts this component.

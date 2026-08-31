@@ -122,8 +122,8 @@ chmod -x /usr/lib/systemd/system-generators/systemd-gpt-auto-generator
 # the "eurlatgr" is the default font for the English locale
 echo -e "\nFONT=eurlatgr.psfu" >> /etc/vconsole.conf
 
-# configure self-update in SLES
-if [[ "$kiwi_profiles" == *SLE* ]]; then
+# configure self-update in SLES (but omit it in the SLES for NVIDIA)
+if [[ "$kiwi_profiles" == *SUSE_SLE_16* ]]; then
   echo "Configuring the installer self-update..."
   # read the self-update configuration variables
   . /usr/lib/live-self-update/conf.sh
