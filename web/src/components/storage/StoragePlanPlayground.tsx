@@ -155,7 +155,7 @@ type Selection = { collection: Collection; index: number };
 
 type CostStyle = "text" | "chips";
 type PanelSections = "stacked" | "tabs";
-type PanelTab = "result" | "planned" | "current";
+type PanelTab = "result" | "planned" | "members" | "current";
 /** Whether the tab strip runs across the top of the panel or down its side. */
 type TabLayout = "horizontal" | "vertical";
 /** How the sentence a tab opens with is set out. */
@@ -2901,6 +2901,7 @@ const PanelSection = ({
 const SECTION_TITLES = {
   result: "Final layout",
   planned: "Planned content",
+  members: "Properties",
   current: "Current content",
 };
 
@@ -2910,6 +2911,9 @@ const SECTION_TITLES = {
 const TAB_ICONS: Record<PanelTab, React.ComponentProps<typeof Icon>["name"]> = {
   result: "schema",
   planned: "pending_actions",
+  /* The only tab about other entries rather than about this one, so it takes
+     the mark the page already uses for a relationship. */
+  members: "device_hub",
   current: "hard_drive",
 };
 
@@ -2922,6 +2926,7 @@ const TAB_ICONS: Record<PanelTab, React.ComponentProps<typeof Icon>["name"]> = {
 const TAB_SUMMARIES: Record<PanelTab, string> = {
   result: "After installing",
   planned: "For the new system",
+  members: "What it is made of",
   current: "Already here",
 };
 
@@ -3467,6 +3472,14 @@ const tabExplanations = (
         </>
       ) : undefined,
     },
+    members: {
+      lead: t(`What ${subject} is made of, and how it is defined.`),
+      where: (
+        <>
+          {t("What it will hold is in the")} {link("planned")} {t("tab.")}
+        </>
+      ),
+    },
     current: {
       lead: t("What to do with the existing partitions"),
       /* About this tab, not about the control under it: a sentence that points
@@ -3484,6 +3497,7 @@ const tabExplanations = (
   return {
     result: <TabNote {...explanations.result} />,
     planned: <TabNote {...explanations.planned} />,
+    members: <TabNote {...explanations.members} />,
     current: <TabNote {...explanations.current} />,
   };
 };
@@ -3631,6 +3645,71 @@ const DeviceActionButtons = ({ device }: { device: Partitionable }) => {
         </FlexItem>
       )}
     </Flex>
+  );
+};
+
+/**
+ * What a multi device entry is made of, and how it is defined.
+ *
+ * A volume group and a software RAID are the two entries in the plan that are
+ * not a piece of hardware: they are defined, and what defines them is a list of
+ * other entries plus a few decisions about how to use them. None of that is
+ * content, so none of it belongs in the tab about content, and it was reading
+ * there as though the group already sat on those disks.
+ *
+ * Its own tab instead, which also gives the properties somewhere to grow: today
+ * it holds what the entry is built on and how much of it is taken, and the form
+ * behind the link at the foot has more to say than the panel wants to repeat.
+ */
+const EntryPropertiesSection = ({
+  members,
+  properties,
+  editPath,
+  editLabel,
+  explanation,
+}: {
+  /** The entries this one is built from. */
+  members: Relationship[];
+  /** Everything else the configuration says about it. */
+  properties?: Setting[];
+  /** The form that changes all of it, where there is one. */
+  editPath?: string;
+  editLabel?: string;
+  /** What this tab holds, and which tabs change it. */
+  explanation?: React.ReactNode;
+}) => {
+  const navigate = useNavigate();
+  const { relationIcon } = useVariants();
+  const headingId = useId();
+  const settings = settingsOf([
+    ...relationshipSettings(members, relationIcon),
+    ...(properties || []),
+  ]);
+
+  return (
+    <PanelSection
+      title={t(SECTION_TITLES.members)}
+      icon={TAB_ICONS.members}
+      headingId={headingId}
+      intro={explanation}
+    >
+      <SettingsList settings={settings} />
+      {/* At the foot, after what it changes. The panel says what the entry is;
+          the form is where it becomes something else, and a reader reaches for
+          it having read the answer they came for. */}
+      {editPath && (
+        <Flex className="agm-plan-section-body">
+          <Button
+            variant="link"
+            isInline
+            icon={<Icon name="edit_square" size="sm" />}
+            onClick={() => navigate(editPath)}
+          >
+            {editLabel}
+          </Button>
+        </Flex>
+      )}
+    </PanelSection>
   );
 };
 
@@ -4309,7 +4388,13 @@ const PartitionableDetail = ({
 
   if (!device) return null;
 
-  const tabOrder: PanelTab[] = ["result", "planned", "current"];
+  /* A RAID is defined rather than found: it is made of other devices, and what
+     it is made of is a property of it, not content on it. A disk is the
+     hardware itself and has nothing of the kind to show. */
+  const isDefined = collection === "mdRaids";
+  const tabOrder: PanelTab[] = isDefined
+    ? ["result", "planned", "members", "current"]
+    : ["result", "planned", "current"];
 
   /* A link that opens a tab has to put the reader on it. Without the focus
    * move a keyboard reader is left wherever the link was, several blocks above
@@ -4425,16 +4510,28 @@ const PartitionableDetail = ({
     />
   );
 
+  const members = isDefined ? (
+    <EntryPropertiesSection
+      key={key}
+      members={[{ label: t("Uses"), items: membersOf(systemDevice, allDevices, config) }]}
+      properties={settingsOf([ptableSetting(device)])}
+      explanation={notes?.members}
+    />
+  ) : null;
+
+  const panels: Partial<Record<PanelTab, React.ReactNode>> = {
+    result,
+    planned: first,
+    members,
+    current: second,
+  };
+
   const content =
     sections === "tabs" ? (
       <PanelTabs
         deviceName={baseName(device.name)}
-        tabs={[
-          { key: "result", content: result },
-          { key: "planned", content: first },
-          { key: "current", content: second },
-        ]}
-        active={tab}
+        tabs={tabOrder.map((key) => ({ key, content: panels[key] }))}
+        active={tabOrder.includes(tab) ? tab : "result"}
         onSelect={onTab}
         stripRef={tabsRef}
       />
@@ -4452,10 +4549,14 @@ const PartitionableDetail = ({
        the partition table, come last: they are read on purpose rather than
        looked for. */
     const settings = settingsOf([
-      ...relationshipSettings(
-        [{ label: t("Uses"), items: membersOf(systemDevice, allDevices, config) }],
-        relationIcon,
-      ),
+      /* A RAID reads what it is made of in its own tab; a disk has no such tab
+         and nothing to put in one. */
+      ...(isDefined
+        ? []
+        : relationshipSettings(
+            [{ label: t("Uses"), items: membersOf(systemDevice, allDevices, config) }],
+            relationIcon,
+          )),
       spacePlacement === "settings" &&
         spaceSetting({
           space,
@@ -4463,7 +4564,7 @@ const PartitionableDetail = ({
           entryName: "partition",
           onGoToCurrent: goToCurrent,
         }),
-      ptableSetting(device),
+      isDefined ? false : ptableSetting(device),
     ]);
 
     return (
@@ -4775,7 +4876,6 @@ const VolumeGroupDetail = ({
     structure,
     spacePlacement,
     explanations,
-    relationIcon,
     settings: settingsPlacement,
   } = useVariants();
   const tabsRef = useRef<HTMLDivElement>(null);
@@ -4802,7 +4902,9 @@ const VolumeGroupDetail = ({
      existing content to offer and no tab to name for it. */
   const isNew = existing.length === 0;
 
-  const tabOrder: PanelTab[] = isNew ? ["result", "planned"] : ["result", "planned", "current"];
+  const tabOrder: PanelTab[] = isNew
+    ? ["result", "planned", "members"]
+    : ["result", "planned", "members", "current"];
   /* A group being defined has no content of its own yet, so a request to open
      the tab about it lands on the one tab every entry has. */
   const active = tabOrder.includes(tab) ? tab : "result";
@@ -4819,20 +4921,7 @@ const VolumeGroupDetail = ({
   const notes =
     sections === "tabs" ? tabExplanations("this volume group", tabOrder, goToTab) : undefined;
 
-  /* Which devices the group is built from, read above the tabs rather than
-     inside one of them.
-
-     It was in the planned content on the grounds that the group does not sit on
-     those disks yet, which is true and beside the point: the tab lists what the
-     group will hold, and the disks under it are not among them. It is the same
-     fact a RAID's own panel has always shown above its tabs, and it belongs in
-     the same place for the same reason, so that a reader opening either panel
-     places the entry before reading what is in it.
-
-     Inline, since the value is a name: read as a sentence, "Uses vdd" says the
-     whole thing. */
   const settings = settingsOf([
-    ...relationshipSettings(targets, relationIcon),
     !isNew &&
       spacePlacement === "settings" &&
       spaceSetting({
@@ -4860,6 +4949,33 @@ const VolumeGroupDetail = ({
     />
   );
 
+  /* How much of the disks under it the group takes, which is the other half of
+     what "built on vdd" means and a decision the reader made in the form. */
+  const spread: Setting[] = group.targetDevicesPolicy
+    ? [
+        {
+          key: "spread",
+          icon: "compress" as const,
+          term: t("Space taken"),
+          value:
+            group.targetDevicesPolicy === "useNeeded"
+              ? t("Only what its volumes need")
+              : t("All the space available on those devices"),
+        },
+      ]
+    : [];
+
+  const members = (
+    <EntryPropertiesSection
+      key={group.vgName}
+      members={targets}
+      properties={spread}
+      editPath={generateEncodedPath(PATHS.volumeGroup.edit, { id: group.vgName })}
+      editLabel={t("Edit the volume group")}
+      explanation={notes?.members}
+    />
+  );
+
   const current = isNew ? null : (
     <VolumeGroupCurrentSection
       key={group.vgName}
@@ -4883,7 +4999,7 @@ const VolumeGroupDetail = ({
       );
     }
 
-    const panels = { result, planned, current };
+    const panels = { result, planned, members, current };
 
     return (
       <PanelTabs
