@@ -7347,7 +7347,7 @@ const NameValue = ({ children }: React.PropsWithChildren) => (
  * The threshold is the page's own: two systems are named, three are counted,
  * and partitions are counted where the machine reports no system on them.
  */
-const destructionOf = (manager: DevicesManager): string | null => {
+const destructionOf = (manager: DevicesManager): { text: string; kind: CostKind } | null => {
   /* A name always survives, however many there are: "3 existing systems" tells
      a reader with Windows on the disk nothing they can recognise, and
      recognising it is the whole reason the line names anything. Past two, the
@@ -7365,32 +7365,50 @@ const destructionOf = (manager: DevicesManager): string | null => {
 
   const deletedSystems = unique(manager.deletedSystems());
   const deleted = manager.deletedDevices().length;
-  if (deletedSystems.length) return t(`Deleting ${named(deletedSystems)}`);
-  if (deleted) return t(`Deleting ${counted(deleted)}`);
+  if (deletedSystems.length)
+    return { text: t(`Deleting ${named(deletedSystems)}`), kind: "destroys" };
+  if (deleted) return { text: t(`Deleting ${counted(deleted)}`), kind: "destroys" };
 
   const resizedSystems = unique(manager.resizedSystems());
   const resized = manager.resizedDevices().length;
-  if (resizedSystems.length) return t(`Shrinking ${named(resizedSystems)}`);
-  if (resized) return t(`Shrinking ${counted(resized)}`);
+  if (resizedSystems.length)
+    return { text: t(`Shrinking ${named(resizedSystems)}`), kind: "shrinks" };
+  if (resized) return { text: t(`Shrinking ${counted(resized)}`), kind: "shrinks" };
 
   return null;
 };
 
 /**
- * How much the installer will do, what the worst of it is, and the way to see
- * the rest.
+ * What the plan costs, and the way to the whole of it: two statements, one line.
  *
- * A count is a fact and a link at once: a reader wondering whether five is a lot
- * presses the number that worries them, and lands on the list of what those five
- * are. "See all actions" would be a label for a button, and a button here is
- * what the page is trying not to have.
+ * These answer two different questions, and for a while they were one control.
+ * "Deleting Windows 11 as part of the 5 needed actions" made the risk itself
+ * the thing to press, which asked one element to serve two goals at once:
+ * understanding what the installation destroys, and inspecting what it will do
+ * step by step. A reader has the first question whether or not they ever have
+ * the second.
  *
- * It goes red where any of those actions deletes something, and says so in
- * words rather than leaving the colour to carry it.
+ * So the risk is a statement and the inspection is a link. The statement ends
+ * with a full stop, carries the colour, and cannot be pressed. The link is
+ * named after where it goes.
  *
- * Subvolume actions are left out, the way the list itself folds them away: they
- * are the file system's business rather than the machine's, and counting them
- * turns five into ninety.
+ * Three things follow from the split, each of which was wrong before it:
+ *
+ *   - The colour belongs to the loss rather than to the control. A link that
+ *     changes appearance with what the plan happens to do is a link the reader
+ *     has to identify twice, and its danger was never its own: it opens a list.
+ *   - The link has a name that stands alone. Listed among the page's links, it
+ *     used to read as a report of what the plan destroys, which is not a name
+ *     for anywhere to go.
+ *   - Nothing depends on seeing red. The words say what is deleted, so the
+ *     colour is reinforcement and the screen reader clause that stood in for it
+ *     is no longer needed.
+ *
+ * One line either way: two sentences of running text, not two blocks.
+ *
+ * Subvolume actions are left out of the count, the way the list itself folds
+ * them away: they are the file system's business rather than the machine's, and
+ * counting them turns five into ninety.
  */
 const PlanCount = ({ onShowResult }: { onShowResult: () => void }) => {
   const system = useFlattenDevices();
@@ -7402,26 +7420,23 @@ const PlanCount = ({ onShowResult }: { onShowResult: () => void }) => {
 
   const manager = new DevicesManager(system, staging, actions);
   const destruction = destructionOf(manager);
-  const destroys = counted.some((action) => action.delete);
   const total = counted.length;
 
-  /* "Needed" rather than "in total": the number follows from the plan the
-     reader has chosen, and saying so is what stops five actions reading as five
-     things the installer decided to do on its own. */
-  const label = destruction
-    ? t(`${destruction} as part of the ${total} needed ${total === 1 ? "action" : "actions"}`)
-    : t(`${total} ${total === 1 ? "action" : "actions"} needed`);
-
   return (
-    <Button
-      variant="link"
-      isInline
-      isDanger={destroys}
-      aria-controls={PANEL_ID}
-      onClick={onShowResult}
-    >
-      {label}
-    </Button>
+    <>
+      {/* The report, ended. It is a statement about the machine and nothing
+          the reader can press, and the colour belongs to it alone: what is
+          coloured is what is lost. */}
+      {destruction && (
+        <span className={COST_CLASS[destruction.kind]}>{t(`${destruction.text}.`)} </span>
+      )}
+      {/* The offer, always the same. A link that looks different depending on
+          what the plan happens to do is a link the reader has to identify
+          twice, and its danger was never its own: it opens a list. */}
+      <Button variant="link" isInline aria-controls={PANEL_ID} onClick={onShowResult}>
+        {t(`View all ${total} needed ${total === 1 ? "action" : "actions"}`)}
+      </Button>
+    </>
   );
 };
 
