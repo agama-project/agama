@@ -134,7 +134,6 @@
     <!-- packages for local installation (desktop, browser, etc.) -->
     <packages type="image" profiles="Leap_16.0,openSUSE,SUSE_SLE_16">
         <package name="bluez-firmware"/>
-        <package name="agama-integration-tests"/>
         <package name="fontconfig"/>
         <package name="fonts-config"/>
         <package name="xauth"/>
