@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Oct 19 14:14:07 UTC 2026 - Martin Vidner <mvidner@suse.com>
+
+- Remove agama-integration-tests, keep just nodejs(engine)
+  (jsc#PED-16992)
+
+-------------------------------------------------------------------
 Mon Oct 12 12:59:34 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
 
 - Use the new "cc-password-check" script for checking the password
