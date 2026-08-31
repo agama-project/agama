@@ -5333,6 +5333,9 @@ const PLAN_CSS = `
 
 .agm-plan-list {
   padding: var(--pf-t--global--spacer--md) var(--pf-t--global--spacer--md);
+  /* Where the table cannot have the width it needs, it keeps it and this
+     scrolls. Anything else crushes the columns it exists to line up. */
+  overflow-x: auto;
 }
 
 .agm-plan-devices { table-layout: auto; }
@@ -6362,10 +6365,13 @@ const PLAN_CSS = `
    the accessibility tree, and nothing about that reaches a reader who is
    looking at it. Dimmed and softened, it reads as what it is, the page behind
    the thing they are in. */
-/* A table has columns to compare, and a strip narrower than they need turns
-   them into a stack of wrapped words. It keeps the width it reads at and the
-   page scrolls to the rest. */
-.agm-plan-page-narrow .agm-plan-table {
+/* A table has columns to compare, and a column narrower than the words in it
+   turns a row into a stack of one word per line. It keeps the width it reads at
+   whatever it is given, and what it is given scrolls to the rest.
+
+   Not conditional on the page being narrow: what makes the list narrow is the
+   sheet beside it, and the arrangement that does that has no such class. */
+.agm-plan-table {
   min-width: 32rem;
 }
 
@@ -6374,6 +6380,13 @@ const PLAN_CSS = `
    it wraps and stays whole, and the text stays centred by the rule above. */
 .agm-plan-page-narrow .agm-plan-headline-measure {
   max-width: 100%;
+}
+
+/* What the sheet reads well at. Past this it is spending width on nothing and
+   taking it from the list, which has columns to line up and needs every pixel
+   it can get. */
+.agm-plan-panel-inline {
+  max-width: 44rem;
 }
 
 .agm-plan-covered {
@@ -8697,12 +8710,23 @@ function StoragePlan({
         panelContent={
           <DrawerPanelContent
             id={PANEL_ID}
-            /* The panel is where the work happens and the list beside it is
-               being scanned rather than read. Set as a size rather than through
-               the widths prop, whose steps jump from three quarters to the
-               whole width. */
-            defaultSize={isInlineDrawer ? "60%" : PANEL_WIDTH}
-            className={isStatic || isInlineDrawer ? undefined : "agm-plan-panel-floating"}
+            /* Set as a size rather than through the widths prop, whose steps
+               jump from three quarters to the whole width.
+
+               Over the page, the panel is what the reader is in and the page
+               behind it is out of reach, so it takes most of the width. Beside
+               the page, both halves are being used: at 60% the list was left
+               with columns a word wide and the sheet's own tabs wrapped into a
+               stack. Half each, and capped, because the wider the window the
+               less of it the sheet needs: a panel has a width it reads well at
+               and everything past that is spent on nothing. */
+            defaultSize={isInlineDrawer ? "50%" : PANEL_WIDTH}
+            className={[
+              isStatic || isInlineDrawer ? "" : "agm-plan-panel-floating",
+              isInlineDrawer ? "agm-plan-panel-inline" : "",
+            ]
+              .filter(Boolean)
+              .join(" ")}
           >
             <DrawerPanelBody hasNoPadding>{panelBody}</DrawerPanelBody>
           </DrawerPanelContent>
