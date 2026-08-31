@@ -71,7 +71,7 @@ export default function Questions(): React.ReactNode {
   }
 
   // special popup for self signed registration certificate
-  if (questionClass === "selfSignedRegcert") {
+  if (questionClass === "selfSignedRegCert") {
     QuestionComponent = RegistrationCertificateQuestion;
   }
 

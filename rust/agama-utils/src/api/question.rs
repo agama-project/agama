@@ -90,7 +90,7 @@ fn resolve_class(class: &str) -> &str {
         "autoyast.popup" => "autoyastPopup",
         "autoyast.unsupported" => "autoyastUnsupported",
         "load.retry" => "loadConfigError",
-        "registration.certificate" => "selfSignedRegcert",
+        "registration.certificate" => "selfSignedRegCert",
         "scripts.retry" => "retryScript",
         "software.digest.no_digest" => "noDigest",
         "software.digest.unknown_digest" => "unknownDigest",
