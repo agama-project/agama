@@ -4819,19 +4819,20 @@ const VolumeGroupDetail = ({
   const notes =
     sections === "tabs" ? tabExplanations("this volume group", tabOrder, goToTab) : undefined;
 
-  /* Which devices the group is built from is a decision, not a property of the
-     group: it is asked for in the configuration and it is what the group will
-     be made of once the installer runs. It reads with the rest of what is
-     planned rather than above the tabs, where it read as a fact already true.
+  /* Which devices the group is built from, read above the tabs rather than
+     inside one of them.
+
+     It was in the planned content on the grounds that the group does not sit on
+     those disks yet, which is true and beside the point: the tab lists what the
+     group will hold, and the disks under it are not among them. It is the same
+     fact a RAID's own panel has always shown above its tabs, and it belongs in
+     the same place for the same reason, so that a reader opening either panel
+     places the entry before reading what is in it.
 
      Inline, since the value is a name: read as a sentence, "Uses vdd" says the
      whole thing. */
-  const plannedStatements = relationshipSettings(targets, relationIcon).map((setting) => ({
-    ...setting,
-    layout: "inline" as const,
-  }));
-
   const settings = settingsOf([
+    ...relationshipSettings(targets, relationIcon),
     !isNew &&
       spacePlacement === "settings" &&
       spaceSetting({
@@ -4856,7 +4857,6 @@ const VolumeGroupDetail = ({
       index={index}
       standalone={isNew && sections === "stacked"}
       explanation={notes?.planned}
-      statements={structure === "blocks" ? plannedStatements : undefined}
     />
   );
 
