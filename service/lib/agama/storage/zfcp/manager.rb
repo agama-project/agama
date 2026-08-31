@@ -203,7 +203,7 @@ module Agama
           @issues << Issue.new(
             # TRANSLATORS: %s is replaced by a zFCP channel (e.g., "0.0.5223").
             format(_("The zFCP controller %s cannot be activated"), channel),
-            kind: :zfcp_controller_activation
+            kind: :zfcpControllerActivation
           )
 
           false
@@ -243,7 +243,7 @@ module Agama
             # TRANSLATORS: %s is replaced by a zFCP device (e.g.,
             #   "0.0.5223 0x500507681015a2b2 0x0186000000000000").
             format(_("The zFCP device %s cannot be activated"), "#{channel} #{wwpn} #{lun}"),
-            kind: :zfcp_lun_activation
+            kind: :zfcpLunActivation
           )
 
           false
@@ -287,7 +287,7 @@ module Agama
             # TRANSLATORS: %s is replaced by a zFCP device (e.g.,
             #   "0.0.5223 0x500507681015a2b2 0x0186000000000000").
             format(_("The zFCP device %s cannot be deactivated"), "#{channel} #{wwpn} #{lun}"),
-            kind: :zfcp_lun_deactivation
+            kind: :zfcpLunDeactivation
           )
 
           false

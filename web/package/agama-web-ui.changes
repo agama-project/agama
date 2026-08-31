@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Aug 28 13:08:30 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Rename questions and issues classes to use a consistent naming
+  scheme (bsc#1277393).
+
+-------------------------------------------------------------------
 Fri Aug 28 05:51:20 UTC 2026 - Martin Vidner <mvidner@suse.com>
 
 - update development dependencies to:

@@ -46,7 +46,7 @@ impl UserQuestions {
     ) -> anyhow::Result<Option<String>> {
         let localized_retry = gettextrs::gettext("Reload configuration");
         let localized_manual = gettextrs::gettext("Skip and configure manually");
-        let question = QuestionSpec::new(text, "load.retry")
+        let question = QuestionSpec::new(text, "loadConfigError")
             .with_actions(&[
                 ("Retry", localized_retry.as_str()),
                 ("Manual", localized_manual.as_str()),
@@ -91,7 +91,7 @@ impl UserQuestions {
 
         let localized_continue = gettextrs::gettext("Continue");
         let localized_abort = gettextrs::gettext("Abort");
-        let question = QuestionSpec::new(&text, "autoyast.unsupported")
+        let question = QuestionSpec::new(&text, "autoyastUnsupported")
             .with_actions(&[
                 ("Continue", localized_continue.as_str()),
                 ("Abort", localized_abort.as_str()),
