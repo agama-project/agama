@@ -221,7 +221,7 @@ describe("ProductRegistrationForm", () => {
     });
   });
 
-  describe("when a configurations using a \"custom\" URL was already provided", () => {
+  describe("when a custom URL was already provided", () => {
     it("defaults to the URL from the extended configuration", async () => {
       mockExtendedProductConfig({
         id: "sle",
