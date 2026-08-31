@@ -1,8 +1,8 @@
 -------------------------------------------------------------------
 Fri Aug 28 13:08:30 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
-- Rename the question classes to use a consistent naming scheme
-  (bsc#1277393).
+- Rename questions and issues classes to use a consistent naming
+  scheme (bsc#1277393).
 
 -------------------------------------------------------------------
 Mon Aug 17 09:07:56 UTC 2026 - Knut Anderssen <kanderssen@suse.com>

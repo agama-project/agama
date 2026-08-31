@@ -1,10 +1,10 @@
 -------------------------------------------------------------------
 Fri Aug 28 13:08:30 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
-- Rename the question classes to use a consistent naming scheme
-  and make the answer matching backward compatible with the
-  previous class names and tolerant to the data keys naming
-  convention (bsc#1277393).
+- Rename question and issues classes to use a consistent naming
+  scheme. Make the answer matching backward compatible with the
+  previous class names and support using camelCase and snake_case
+  in the questions "data" object (bsc#1277393).
 
 -------------------------------------------------------------------
 Wed Aug 26 12:06:59 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
