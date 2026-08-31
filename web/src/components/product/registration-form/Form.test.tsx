@@ -163,34 +163,6 @@ describe("ProductRegistrationForm", () => {
     });
   });
 
-  it("defaults to the URL from the extended configuration (e.g., set via inst.register_url)", async () => {
-    mockExtendedProductConfig({
-      id: "sle",
-      mode: "standard",
-      registrationUrl: "https://preconfigured-server.test",
-    });
-
-    const { user } = installerRender(<ProductRegistrationForm />);
-    const registrationCodeInput = screen.getByLabelText(/Registration code/);
-    await user.type(registrationCodeInput, "INTERNAL-USE-ONLY-1234-5678");
-    const submitButton = screen.getByRole("button", { name: "Register" });
-
-    await user.click(submitButton);
-
-    await waitFor(() => {
-      expect(putConfig).toHaveBeenCalledWith({
-        ...mockConfig,
-        product: {
-          id: "sle",
-          mode: "standard",
-          registrationUrl: "https://preconfigured-server.test",
-          registrationCode: "INTERNAL-USE-ONLY-1234-5678",
-          registrationEmail: undefined,
-        },
-      });
-    });
-  });
-
   describe("if registering with the default server", () => {
     it("shows an error when no registration code is provided", async () => {
       const { user } = installerRender(<ProductRegistrationForm />);
@@ -241,6 +213,36 @@ describe("ProductRegistrationForm", () => {
             id: "sle",
             mode: "standard",
             registrationUrl: "https://custom-server.test",
+            registrationCode: "INTERNAL-USE-ONLY-1234-5678",
+            registrationEmail: undefined,
+          },
+        });
+      });
+    });
+  });
+
+  describe("when a configurations using a \"custom\" URL was already provided", () => {
+    it("defaults to the URL from the extended configuration", async () => {
+      mockExtendedProductConfig({
+        id: "sle",
+        mode: "standard",
+        registrationUrl: "https://preconfigured-server.test",
+      });
+
+      const { user } = installerRender(<ProductRegistrationForm />);
+      const registrationCodeInput = screen.getByLabelText(/Registration code/);
+      await user.type(registrationCodeInput, "INTERNAL-USE-ONLY-1234-5678");
+      const submitButton = screen.getByRole("button", { name: "Register" });
+
+      await user.click(submitButton);
+
+      await waitFor(() => {
+        expect(putConfig).toHaveBeenCalledWith({
+          ...mockConfig,
+          product: {
+            id: "sle",
+            mode: "standard",
+            registrationUrl: "https://preconfigured-server.test",
             registrationCode: "INTERNAL-USE-ONLY-1234-5678",
             registrationEmail: undefined,
           },
