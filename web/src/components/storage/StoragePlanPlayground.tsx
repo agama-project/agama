@@ -2630,18 +2630,19 @@ const SpacePolicyControl = ({
 const SummarySpaceDecision = ({
   current,
   onChoose,
-  isNarrow,
 }: {
   current: ConfigModel.SpacePolicy;
   onChoose: (policy: ConfigModel.SpacePolicy) => void;
-  /* Four buttons do not fit a strip and do not wrap into anything worth
-     reading, so there the decision is always the value line. */
-  isNarrow: boolean;
 }) => {
   const { spaceShape } = useVariants();
   const termId = useId();
 
-  if (!isNarrow && spaceShape === "toggles") {
+  /* One shape at every width. The four buttons used to fold into the value line
+     in a strip, on the grounds that they do not fit; they wrap, which is worse
+     to look at and better than meeting a different control on a narrow window.
+     A decision the reader has to find twice is a decision they have to learn
+     twice. */
+  if (spaceShape === "toggles") {
     /* Set smaller than the sentence above it. Four buttons at the size of the
        page's own text read as four things to do; at xs they read as the four
        answers to one question, which is what they are. */
@@ -6313,6 +6314,13 @@ const PLAN_CSS = `
   font-size: var(--pf-t--global--font--size--xs);
 }
 
+/* Wrapping into two rows is what the four do in a strip. PatternFly lays a
+   toggle group out on one line and lets it overflow; two rows of buttons are
+   read, and a row running off the page is not. */
+.agm-plan-space-quiet .pf-v6-c-toggle-group {
+  flex-wrap: wrap;
+}
+
 /* A flex item will not shrink below the width of its longest word unless it is
    told it may, which is what turns a row that could hold both halves into two
    rows. Told it may, the sentence wraps inside its own column and the controls
@@ -7803,7 +7811,6 @@ const PlanSummary = ({
       control={
         summarySpace === "shown" && (systemDevice?.partitions || []).length > 0 ? (
           <SummarySpaceDecision
-            isNarrow={isNarrow}
             current={space.policy}
             onChoose={(policy) => {
               space.choose(policy);
