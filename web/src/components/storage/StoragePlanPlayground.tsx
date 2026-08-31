@@ -5501,9 +5501,14 @@ const PLAN_CSS = `
   font-size: var(--pf-t--global--font--size--body--sm);
 }
 
-/* The panel: a background step and a leading border, never an outline. */
+/* The panel: a background step and a leading border, never an outline.
+
+   It is also what the rules inside it measure themselves against. Inline size
+   only: its height is settled by the drawer and by its own scrolling. */
 
 .agm-plan-panel {
+  container-type: inline-size;
+  container-name: sheet;
   display: flex;
   flex-direction: column;
   padding: var(--pf-t--global--spacer--lg) var(--pf-t--global--spacer--xl);
@@ -5818,10 +5823,22 @@ const PLAN_CSS = `
 
 .agm-plan-split > * { min-height: 0; }
 
-@media (min-width: 87.5rem) {
+/* Against the sheet's own width, not the window's. The sheet is a column of a
+   page that may itself be sharing the width, so a window wide enough for two
+   columns says nothing about whether this panel is: at 1500px the rule fired on
+   a panel of 660, gave the settings a third of it and left the tabs and the
+   table wrapping in what was left. */
+@container sheet (min-width: 60rem) {
   .agm-plan-split-beside {
     grid-template-columns: minmax(16rem, 1fr) minmax(0, 2fr);
   }
+}
+
+/* Nothing to put beside. A panel whose statements have all moved into the tabs
+   has one child, and a column reserved for the other one is width taken from
+   the only thing there is to read. */
+.agm-plan-split:has(> :only-child) {
+  grid-template-columns: 1fr;
 }
 
 /* Volumes */
