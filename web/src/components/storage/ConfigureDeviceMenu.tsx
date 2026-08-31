@@ -24,6 +24,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router";
 import MenuButton, { MenuButtonItem } from "~/components/core/MenuButton";
 import { Divider, Flex, MenuItemProps } from "@patternfly/react-core";
+import type { MenuToggleProps } from "@patternfly/react-core";
 import { useAvailableDevices } from "~/hooks/model/system/storage";
 import {
   useConfigModel,
@@ -134,11 +135,15 @@ export type ConfigureDeviceMenuProps = {
   label?: TranslatedString;
   /** Where the menu opens, for callers whose toggle sits against an edge. */
   popperProps?: MenuButtonProps["menuProps"]["popperProps"];
+  /** How much weight the toggle carries, for callers where adding a device is
+   * the act the page is for rather than one offer among several. */
+  toggleVariant?: MenuToggleProps["variant"];
 };
 
 export default function ConfigureDeviceMenu({
   label,
   popperProps = { position: "left" },
+  toggleVariant = "plain",
 }: ConfigureDeviceMenuProps = {}): React.ReactNode {
   const [deviceSelectorOpen, setDeviceSelectorOpen] = useState(false);
   const openDeviceSelector = () => setDeviceSelectorOpen(true);
@@ -180,7 +185,7 @@ export default function ConfigureDeviceMenu({
           "aria-label": _("Configure device menu"),
           popperProps,
         }}
-        toggleProps={{ variant: "plain" }}
+        toggleProps={{ variant: toggleVariant }}
         items={[
           <AddDeviceMenuItem
             key="select-disk-option"

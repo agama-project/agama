@@ -7747,20 +7747,25 @@ const PlanSummary = ({
       }
       secondary={
         <>
-          {/* First, and in the same order on every page: adding a device is
-              about the plan, and a reader who learned where that offer sits on
-              one disk finds it on eight. */}
-          <ConfigureDeviceMenu
-            label={t("Add more devices")}
-            /* Aligned on the toggle's leading edge, since the toggle now opens
-               the row: the menu grows across the page rather than off its
-               start. */
-            popperProps={{ position: "left" }}
-          />
           {/* Plain, and the words the sheet uses for the same act. As a
               bordered control beside the primary action it read as a second
               call to action; plain, it reads as the offer it is. */}
           <RetargetButton device={device} label={t("Use another device")} variant="plain" />
+          {/* Last, and the heaviest thing on the row. A plan of one device is
+              the state a reader is most likely to want to leave: the page has
+              just told them what one disk will hold, and the question it
+              raises is whether that disk is all of it. Swapping the disk keeps
+              the plan the size it is; adding one is the act that changes it.
+
+              Last also puts it where a plan of several entries keeps it, at the
+              end of what it appends to. */}
+          <ConfigureDeviceMenu
+            label={t("Add more devices")}
+            toggleVariant="primary"
+            /* Aligned on the toggle's trailing edge, since the toggle now ends
+               the row: the menu grows back over the page rather than off it. */
+            popperProps={{ position: "right" }}
+          />
         </>
       }
     />
