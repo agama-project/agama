@@ -102,7 +102,7 @@ fn resolve_class(class: &str) -> &str {
         "software.unknown_gpg" => "unknownGpg",
         "software.unsigned_file" => "unsignedFile",
         "software.verification_failed" => "gpgVerificationError",
-        "storage.activate_multipath" => "activateMultipath",
+        "storage.activate_multipath" => "multipathActivation",
         "storage.commit_error" => "storageCommitError",
         "storage.luks_activation" => "luksActivation",
         "write_file_failed" => "writeFileError",
