@@ -6406,14 +6406,6 @@ const PLAN_CSS = `
   max-width: 44rem;
 }
 
-.agm-plan-covered {
-  opacity: 0.55;
-  filter: blur(2px);
-  transition:
-    opacity var(--pf-t--global--motion--duration--fade--default, 200ms) ease-in-out,
-    filter var(--pf-t--global--motion--duration--fade--default, 200ms) ease-in-out;
-}
-
 /* What is wrong reads as prose, not as a centred banner: an alert is a heading
    and a paragraph, and both are read from their own left edge. */
 .agm-plan-summary-notice {
@@ -8285,8 +8277,6 @@ function StoragePlan({
   bootDebugRef.current = bootDebug;
 
   const hasPanelContent = showsResult || showsBoot || showsEncryption || selectedId !== null;
-  /* Whatever is left of the page beside an open sheet is there to be read and
-     not to be used: the sheet is what the reader is in. */
   /* Three bands, not two. Under lg the sheet replaces the page, because an
      overlay on a page that narrow covers all of it anyway. From there to xl it
      comes over the page, which is dimmed and out of reach behind it. At xl and
@@ -8298,7 +8288,6 @@ function StoragePlan({
   const fitsBoth = useMedia(XL);
   const isInlineDrawer =
     variants.panelMode === "inline" || (variants.panelMode === "auto" && fitsBoth);
-  const isCovered = !isInlineDrawer && isPanelOpen && hasPanelContent;
 
   /* Console driven, so the page itself stays screenshot clean. */
   useEffect(() => {
@@ -8753,19 +8742,10 @@ function StoragePlan({
             covers it the way it covers everything else on that side. It
             stays pinned by sticking to the top of the list's own scroll.
 
-            While the sheet is over it, the page is inert: whatever is still on
-            screen beside the panel, a clipped button included, is out of the
-            tab order, out of the accessibility tree and not clickable. A
-            drawer that covers the page does not do that on its own.
-
-            As an empty string rather than as a boolean, which is what React 18
-            passes through as the bare attribute the browser wants. */}
-        <DrawerContentBody
-          className={isCovered ? "agm-plan-covered" : undefined}
-          {...(isCovered ? { inert: "" } : {})}
-        >
-          {page}
-        </DrawerContentBody>
+            The page under an overlaying sheet is left alone: not dimmed, not
+            blurred, not inert. What that costs and what it would buy is a
+            question of its own, written up in the iteration note. */}
+        <DrawerContentBody>{page}</DrawerContentBody>
       </DrawerContent>
     </Drawer>
   );
