@@ -41,15 +41,14 @@ impl Callback for CommitDownload {
         description: String,
     ) -> zypp_agama::callbacks::ProblemResponse {
         let error_str = error.to_string();
-        let question =
-            QuestionSpec::new(description.as_str(), "software.package_error.provide_error")
-                // TODO: make it generic for any problemResponse questions
-                // TODO: we need support for abort and make it default action
-                .with_action_ids(&[gettext_noop("Retry"), gettext_noop("Ignore")])
-                .with_data(&[
-                    ("package", name.as_str()),
-                    ("error_code", error_str.as_str()),
-                ]);
+        let question = QuestionSpec::new(description.as_str(), "packageProvideError")
+            // TODO: make it generic for any problemResponse questions
+            // TODO: we need support for abort and make it default action
+            .with_action_ids(&[gettext_noop("Retry"), gettext_noop("Ignore")])
+            .with_data(&[
+                ("package", name.as_str()),
+                ("error_code", error_str.as_str()),
+            ]);
         let result = ask_software_question(&self.questions, question);
         let Ok(answer) = result else {
             tracing::warn!("Failed to ask question {:?}", result);

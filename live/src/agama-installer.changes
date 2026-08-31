@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Aug 28 15:31:19 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Added Kiwi profile definition for the SLES for NVIDIA product,
+  use kernel-nvidia instead of kernel-default, disable self-update
+  for it (jsc#PED-16833)
+
+-------------------------------------------------------------------
 Tue Aug 25 10:12:59 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
 
 - Omit the "multipath" dracut module from the initrd, it might

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-14 04:33+0000\n"
+"POT-Creation-Date: 2026-08-26 11:36+0000\n"
 "PO-Revision-Date: 2026-08-19 15:13+0000\n"
 "Last-Translator: Bone NI <bounkirdni@gmail.com>\n"
 "Language-Team: Lao <https://l10n.opensuse.org/projects/agama/agama-rust-"
@@ -19,24 +19,35 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: Weblate 2026.8.1\n"
 
-#: agama-autoinstall/src/auto_loader.rs:115
+#: agama-autoinstall/src/auto_loader.rs:142
 msgid ""
 "Configuration cannot be applied because it is invalid or could not be "
 "reached."
-msgstr ""
-"ບໍ່ສາມາດນຳໃຊ້ການຕັ້ງຄ່າໄດ້ ເນື່ອງຈາກມັນບໍ່ຖືກຕ້ອງ ຫຼື ບໍ່ສາມາດເຂົ້າເຖິງໄດ້."
+msgstr "ບໍ່ສາມາດນຳໃຊ້ການຕັ້ງຄ່າໄດ້ ເນື່ອງຈາກມັນບໍ່ຖືກຕ້ອງ ຫຼື ບໍ່ສາມາດເຂົ້າເຖິງໄດ້."
 
-#: agama-autoinstall/src/questions.rs:44
+#: agama-autoinstall/src/questions.rs:47
 msgid "Reload configuration"
 msgstr "ໂຫລດການຕັ້ງຄ່າຄືນໃໝ່"
 
-#: agama-autoinstall/src/questions.rs:45
+#: agama-autoinstall/src/questions.rs:48
 msgid "Skip and configure manually"
 msgstr "ຂ້າມ ແລະ ຕັ້ງຄ່າດ້ວຍຕົນເອງ"
 
+#: agama-autoinstall/src/questions.rs:77 agama-cli/src/config.rs:371
+msgid "Found unsupported elements in the AutoYaST profile:"
+msgstr ""
+
+#: agama-autoinstall/src/questions.rs:92
+#: agama-software/src/callbacks/install.rs:81
+msgid "Continue"
+msgstr "ດຳເນີນການຕໍ່"
+
+#: agama-autoinstall/src/questions.rs:93
+msgid "Abort"
+msgstr ""
+
 #. TRANSLATORS: {0} is a URL
 #: agama-autoinstall/src/scripts.rs:135
-#, rust-format
 msgid ""
 "It was not possible to load the script from {0}. Do you want to try again?"
 msgstr "ບໍ່ສາມາດໂຫລດສະຄຣິບຈາກ {0} ໄດ້. ເຈົ້າຕ້ອງການລອງໃໝ່ບໍ່?"
@@ -63,16 +74,16 @@ msgid ""
 "this command does not affect the root user."
 msgstr ""
 "ນອກຈາກເຈົ້າຈະກຳລັງໃຊ້ງານໂປຣແກຣມນີ້ໃນຖານະ root, ເຈົ້າຈຳເປັນຕ້ອງໄດ້ຢືນຢັນຕົວຕົນກັບເຊີບເວີຂອງ "
-"Agama ສຳລັບການເຮັດວຽກສ່ວນໃຫຍ່. ເຈົ້າສາມາດເຂົ້າສູ່ລະບົບໄດ້ໂດຍການລະບຸລະຫັດຜ່ານຂອງ root ຜ່ານຄຳສັ່"
-"ງ \"auth login\". ເມື່ອຢືນຢັນຕົວຕົນສຳເລັດ, ເຊີບເວີຈະສົ່ງ JSON Web Token (JWT) ກັບຄືນມາ ເຊິ່ງ"
-"ຈະຖືກເກັບໄວ້ເພື່ອໃຊ້ຢືນຢັນຕົວຕົນໃນຄຳຮ້ອງຂໍຕໍ່ໆໄປ.\n"
+"Agama ສຳລັບການເຮັດວຽກສ່ວນໃຫຍ່. ເຈົ້າສາມາດເຂົ້າສູ່ລະບົບໄດ້ໂດຍການລະບຸລະຫັດຜ່ານຂອງ root "
+"ຜ່ານຄຳສັ່ງ \"auth login\". ເມື່ອຢືນຢັນຕົວຕົນສຳເລັດ, ເຊີບເວີຈະສົ່ງ JSON Web Token (JWT) "
+"ກັບຄືນມາ ເຊິ່ງຈະຖືກເກັບໄວ້ເພື່ອໃຊ້ຢືນຢັນຕົວຕົນໃນຄຳຮ້ອງຂໍຕໍ່ໆໄປ.\n"
 "\n"
-"ຖ້າເຈົ້າໃຊ້ງານໂປຣແກຣມນີ້ໃນເຄື່ອງໂດຍກົງໃນຖານະ root, ເຈົ້າສາມາດຂ້າມຂັ້ນຕອນການຢືນຢັນຕົວຕົນໄດ້ ເພາະມັ"
-"ນຈະໃຊ້ໂທເຄັນຫຼັກ (master token) ຢູ່ທີ່ /run/agama/token ໂດຍອັດຕະໂນມັດ. ມີພຽງແຕ່ຜູ້ໃຊ້ root ເ"
-"ທົ່ານັ້ນທີ່ຕ້ອງມີສິດເຂົ້າເຖິງໄຟລ໌ດັ່ງກ່າວ.\n"
+"ຖ້າເຈົ້າໃຊ້ງານໂປຣແກຣມນີ້ໃນເຄື່ອງໂດຍກົງໃນຖານະ root, ເຈົ້າສາມາດຂ້າມຂັ້ນຕອນການຢືນຢັນຕົວຕົນໄດ້ "
+"ເພາະມັນຈະໃຊ້ໂທເຄັນຫຼັກ (master token) ຢູ່ທີ່ /run/agama/token ໂດຍອັດຕະໂນມັດ. ມີພຽງແຕ່ຜູ້ໃຊ້ "
+"root ເທົ່ານັ້ນທີ່ຕ້ອງມີສິດເຂົ້າເຖິງໄຟລ໌ດັ່ງກ່າວ.\n"
 "\n"
-"ເຈົ້າສາມາດອອກຈາກລະບົບໄດ້ທຸກເວລາໂດຍການໃຊ້ຄຳສັ່ງ \"auth logout\", ເຖິງແມ່ນວ່າຄຳສັ່ງນີ້ຈະບໍ່ມີຜົນກັບ"
-"ຜູ້ໃຊ້ root ກໍຕາມ."
+"ເຈົ້າສາມາດອອກຈາກລະບົບໄດ້ທຸກເວລາໂດຍການໃຊ້ຄຳສັ່ງ \"auth logout\", "
+"ເຖິງແມ່ນວ່າຄຳສັ່ງນີ້ຈະບໍ່ມີຜົນກັບຜູ້ໃຊ້ root ກໍຕາມ."
 
 #. TRANSLATORS: CLI help for: agama auth logout
 #: agama-cli/src/auth.rs:88
@@ -97,9 +108,9 @@ msgid ""
 "token in .agama/agama-jwt. The token will be automatically sent to "
 "authenticate the following requests."
 msgstr ""
-"ຄຳສັ່ງນີ້ຈະພະຍາຍາມດຶງເອົາລະຫັດຜ່ານຈາກ standard input. ຖ້າບໍ່ມີ, ມັນຈະສອບຖາມຜູ້ໃຊ້ໂດຍກົງ. ເມື່ອເຂົ້"
-"າສູ່ລະບົບສຳເລັດ, ມັນຈະເກັບໂທເຄັນໄວ້ໃນ .agama/agama-jwt. ໂທເຄັນຈະຖືກສົ່ງໄປເພື່ອຢືນຢັນຕົວຕົນສຳລັບຄ"
-"ຳຮ້ອງຂໍຕໍ່ໆໄປໂດຍອັດຕະໂນມັດ."
+"ຄຳສັ່ງນີ້ຈະພະຍາຍາມດຶງເອົາລະຫັດຜ່ານຈາກ standard input. ຖ້າບໍ່ມີ, ມັນຈະສອບຖາມຜູ້ໃຊ້ໂດຍກົງ. "
+"ເມື່ອເຂົ້າສູ່ລະບົບສຳເລັດ, ມັນຈະເກັບໂທເຄັນໄວ້ໃນ .agama/agama-jwt. "
+"ໂທເຄັນຈະຖືກສົ່ງໄປເພື່ອຢືນຢັນຕົວຕົນສຳລັບຄຳຮ້ອງຂໍຕໍ່ໆໄປໂດຍອັດຕະໂນມັດ."
 
 #: agama-cli/src/auth.rs:141
 msgid "Please enter the root password:"
@@ -107,7 +118,6 @@ msgstr "ກະລຸນາປ້ອນລະຫັດຜ່ານ root:"
 
 #. TRANSLATORS: {0} is a host name
 #: agama-cli/src/auth.rs:179
-#, rust-format
 msgid "Not authenticated in {0}"
 msgstr "ຍັງບໍ່ໄດ້ຢືນຢັນຕົວຕົນໃນ {0}"
 
@@ -124,9 +134,9 @@ msgid ""
 "devices, and more. The 'probe' command initiates this analysis process and "
 "returns immediately."
 msgstr ""
-"ໃນຄຳສັບສະເພາະຂອງ Agama, ຄຳວ່າ 'probing' ໝາຍເຖິງຂະບວນການ 'ວິເຄາະ' ລະບົບ. ເຊິ່ງລວມເຖິງກ"
-"ານອ່ານຄັງຊອບແວ (repositories), ການວິເຄາະອຸປະກອນຈັດເກັບຂໍ້ມູນ ແລະ ອື່ນໆ. ຄຳສັ່ງ 'probe' ຈະເ"
-"ລີ່ມຂະບວນການວິເຄາະນີ້ ແລະ ສົ່ງຜົນຄືນມາໃນທັນທີ."
+"ໃນຄຳສັບສະເພາະຂອງ Agama, ຄຳວ່າ 'probing' ໝາຍເຖິງຂະບວນການ 'ວິເຄາະ' ລະບົບ. "
+"ເຊິ່ງລວມເຖິງການອ່ານຄັງຊອບແວ (repositories), ການວິເຄາະອຸປະກອນຈັດເກັບຂໍ້ມູນ ແລະ ອື່ນໆ. ຄຳສັ່ງ "
+"'probe' ຈະເລີ່ມຂະບວນການວິເຄາະນີ້ ແລະ ສົ່ງຜົນຄືນມາໃນທັນທີ."
 
 #. TRANSLATORS: CLI help for: agama install
 #: agama-cli/src/commands.rs:53
@@ -143,11 +153,11 @@ msgid ""
 "When the preconditions for the installation are not met, it informs the user "
 "and returns, making no changes to the system."
 msgstr ""
-"ຄຳສັ່ງນີ້ຈະເລີ່ມຂະບວນການຕິດຕັ້ງ. ກະລຸນາລະວັງ ເນື່ອງຈາກມັນແມ່ນການເຮັດວຽກທີ່ອາດເຮັດໃຫ້ຂໍ້ມູນເສຍຫາຍ ເພາ"
-"ະມັນຈະມີການຕັ້ງຄ່າອຸປະກອນຈັດເກັບຂໍ້ມູນ, ຕິດຕັ້ງແພັກເກດ ແລະ ອື່ນໆ.\n"
+"ຄຳສັ່ງນີ້ຈະເລີ່ມຂະບວນການຕິດຕັ້ງ. ກະລຸນາລະວັງ ເນື່ອງຈາກມັນແມ່ນການເຮັດວຽກທີ່ອາດເຮັດໃຫ້ຂໍ້ມູນເສຍຫາຍ "
+"ເພາະມັນຈະມີການຕັ້ງຄ່າອຸປະກອນຈັດເກັບຂໍ້ມູນ, ຕິດຕັ້ງແພັກເກດ ແລະ ອື່ນໆ.\n"
 "\n"
-"ເມື່ອເງື່ອນໄຂເບື້ອງຕົ້ນສຳລັບການຕິດຕັ້ງບໍ່ຄົບຖ້ວນ, ມັນຈະແຈ້ງໃຫ້ຜູ້ໃຊ້ຊາບ ແລະ ຢຸດການເຮັດວຽກ ໂດຍທີ່ບໍ່ມີການປ່ຽ"
-"ນແປງໃດໆຕໍ່ລະບົບ."
+"ເມື່ອເງື່ອນໄຂເບື້ອງຕົ້ນສຳລັບການຕິດຕັ້ງບໍ່ຄົບຖ້ວນ, ມັນຈະແຈ້ງໃຫ້ຜູ້ໃຊ້ຊາບ ແລະ ຢຸດການເຮັດວຽກ "
+"ໂດຍທີ່ບໍ່ມີການປ່ຽນແປງໃດໆຕໍ່ລະບົບ."
 
 #. TRANSLATORS: CLI help for: agama download
 #: agama-cli/src/commands.rs:78
@@ -163,10 +173,10 @@ msgid ""
 "autoinstallation profiles. If you want to convert an AutoYaST profile, use "
 "\"agama config generate\"."
 msgstr ""
-"ຈຸດປະສົງຂອງຄຳສັ່ງນີ້ແມ່ນເພື່ອດາວໂຫລດໄຟລ໌ໂດຍໃຊ້ຮູບແບບທີ່ AutoYaST ຮອງຮັບ (ຕົວຢ່າງ device://). ມັ"
-"ນສາມາດໃຊ້ເພື່ອດາວໂຫລດສະຄຣິບເພີ່ມເຕີມ, ໄຟລ໌ການຕັ້ງຄ່າ ແລະ ອື່ນໆ. ເເຈົ້າສາມາດໃຊ້ມັນເພື່ອດາວໂຫລດໂປຣ"
-"ໄຟລ໌ການຕິດຕັ້ງອັດຕະໂນມັດຂອງ Agama ໄດ້. ຖ້າເຈົ້າຕ້ອງການແປງໂປຣໄຟລ໌ AutoYaST, ໃຫ້ໃຊ້ຄຳສັ່ງ "
-"\"agama config generate\"."
+"ຈຸດປະສົງຂອງຄຳສັ່ງນີ້ແມ່ນເພື່ອດາວໂຫລດໄຟລ໌ໂດຍໃຊ້ຮູບແບບທີ່ AutoYaST ຮອງຮັບ (ຕົວຢ່າງ device://). "
+"ມັນສາມາດໃຊ້ເພື່ອດາວໂຫລດສະຄຣິບເພີ່ມເຕີມ, ໄຟລ໌ການຕັ້ງຄ່າ ແລະ ອື່ນໆ. "
+"ເເຈົ້າສາມາດໃຊ້ມັນເພື່ອດາວໂຫລດໂປຣໄຟລ໌ການຕິດຕັ້ງອັດຕະໂນມັດຂອງ Agama ໄດ້. "
+"ຖ້າເຈົ້າຕ້ອງການແປງໂປຣໄຟລ໌ AutoYaST, ໃຫ້ໃຊ້ຄຳສັ່ງ \"agama config generate\"."
 
 #. TRANSLATORS: CLI help for: agama download <URL>
 #: agama-cli/src/commands.rs:94
@@ -174,8 +184,8 @@ msgid ""
 "URL reference pointing to file for download. If a relative URL is provided, "
 "it will be resolved against the current working directory"
 msgstr ""
-"URL ທີ່ຊີ້ໄປຫາໄຟລ໌ເພື່ອດາວໂຫລດ. ຖ້າລະບຸເປັນ relative URL, ມັນຈະຖືກອ້າງອີງຕາມໂຟນເດີທີ່ກຳລັງເຮັດວຽ"
-"ກຢູ່ໃນປັດຈຸບັນ"
+"URL ທີ່ຊີ້ໄປຫາໄຟລ໌ເພື່ອດາວໂຫລດ. ຖ້າລະບຸເປັນ relative URL, "
+"ມັນຈະຖືກອ້າງອີງຕາມໂຟນເດີທີ່ກຳລັງເຮັດວຽກຢູ່ໃນປັດຈຸບັນ"
 
 #. TRANSLATORS: CLI help for: agama download <DESTINATION>
 #: agama-cli/src/commands.rs:104
@@ -205,8 +215,8 @@ msgstr ""
 "\n"
 "   stop - ບໍ່ຕ້ອງບູດເຄື່ອງໃໝ່ ແລະ ໃຫ້ລະບົບເບື້ອງຫຼັງຂອງ Agama ເຮັດວຽກຕໍ່ໄປ.\n"
 "\n"
-"   reboot - ບູດເຄື່ອງໃໝ່ເຂົ້າສູ່ລະບົບທີ່ຕິດຕັ້ງແລ້ວ. ນີ້ແມ່ນຄ່າມາດຕະຖານ. ເຊິ່ງສາມາດປ່ຽນແປງໄດ້ໂດຍການຕັ້"
-"ງຄ່າ inst.finish ໃນ kernel command-line.\n"
+"   reboot - ບູດເຄື່ອງໃໝ່ເຂົ້າສູ່ລະບົບທີ່ຕິດຕັ້ງແລ້ວ. ນີ້ແມ່ນຄ່າມາດຕະຖານ. "
+"ເຊິ່ງສາມາດປ່ຽນແປງໄດ້ໂດຍການຕັ້ງຄ່າ inst.finish ໃນ kernel command-line.\n"
 "\n"
 "   halt - ຢຸດການເຮັດວຽກຂອງເຄື່ອງ.\n"
 "\n"
@@ -255,8 +265,8 @@ msgid ""
 "If you want to change any configuration value, you can load a profile "
 "(complete or partial) using the \"load\" subcommand."
 msgstr ""
-"ເຈົ້າສາມາດກວດສອບ ແລະ ປ່ຽນແປງການຕັ້ງຄ່າການຕິດຕັ້ງໄດ້ຈາກ command-line. ຄຳສັ່ງຍ່ອຍ \"show\" ຈ"
-"ະສ້າງ \"ໂປຣໄຟລ໌\" ເຊິ່ງເປັນເອກະສານ JSON ທີ່ອະທິບາຍການຕັ້ງຄ່າປັດຈຸບັນ.\n"
+"ເຈົ້າສາມາດກວດສອບ ແລະ ປ່ຽນແປງການຕັ້ງຄ່າການຕິດຕັ້ງໄດ້ຈາກ command-line. ຄຳສັ່ງຍ່ອຍ \"show\" "
+"ຈະສ້າງ \"ໂປຣໄຟລ໌\" ເຊິ່ງເປັນເອກະສານ JSON ທີ່ອະທິບາຍການຕັ້ງຄ່າປັດຈຸບັນ.\n"
 "\n"
 "ຖ້າເຈົ້າຕ້ອງການປ່ຽນຄ່າການຕັ້ງຄ່າໃດໆ, ເຈົ້າສາມາດໂຫລດໂປຣໄຟລ໌ (ທັງໝົດ ຫຼື ບາງສ່ວນ) ໂດຍໃຊ້ຄຳສັ່ງຍ່ອຍ "
 "\"load\"."
@@ -305,8 +315,8 @@ msgid ""
 "Schema is available at /usr/share/agama/schema/profile.schema.json Note: "
 "validation is always done as part of all other \"agama config\" commands."
 msgstr ""
-"Schema ມີໃຫ້ຢູ່ທີ່ /usr/share/agama/schema/profile.schema.json ໝາຍເຫດ: ການກວດສອບຄວາ"
-"ມຖືກຕ້ອງຈະຖືກເຮັດເປັນສ່ວນໜຶ່ງຂອງທຸກໆຄຳສັ່ງ \"agama config\" ອື່ນໆ."
+"Schema ມີໃຫ້ຢູ່ທີ່ /usr/share/agama/schema/profile.schema.json ໝາຍເຫດ: "
+"ການກວດສອບຄວາມຖືກຕ້ອງຈະຖືກເຮັດເປັນສ່ວນໜຶ່ງຂອງທຸກໆຄຳສັ່ງ \"agama config\" ອື່ນໆ."
 
 #. TRANSLATORS: CLI help for: agama config validate <URL_OR_PATH>
 #: agama-cli/src/config.rs:129
@@ -384,7 +394,7 @@ msgstr "ຄຳສັ່ງຂອງໂປຣແກຣມແກ້ໄຂ (ລວ�
 msgid "It is not a valid JSON file"
 msgstr "ມັນບໍ່ແມ່ນໄຟລ໌ JSON ທີ່ຖືກຕ້ອງ"
 
-#: agama-cli/src/config.rs:416
+#: agama-cli/src/config.rs:434
 msgid "Ignoring the changes because the editor was closed with an error code."
 msgstr "ບໍ່ສົນໃຈການປ່ຽນແປງ ເພາະໂປຣແກຣມແກ້ໄຂຖືກປິດດ້ວຍລະຫັດຂໍ້ຜິດພາດ."
 
@@ -402,8 +412,8 @@ msgid ""
 "\n"
 "Please, use the \"help\" command to learn more."
 msgstr ""
-"ໂປຣແກຣມນີ້ອະນຸຍາດໃຫ້ກວດສອບ ຫຼື ປ່ຽນແປງການຕັ້ງຄ່າຂອງ Agama, ຈັດການໂປຣໄຟລ໌ການຕິດຕັ້ງ, ເລີ່ມການຕິດ"
-"ຕັ້ງ, ຕິດຕາມຂະບວນການ ແລະ ອື່ນໆ.\n"
+"ໂປຣແກຣມນີ້ອະນຸຍາດໃຫ້ກວດສອບ ຫຼື ປ່ຽນແປງການຕັ້ງຄ່າຂອງ Agama, ຈັດການໂປຣໄຟລ໌ການຕິດຕັ້ງ, "
+"ເລີ່ມການຕິດຕັ້ງ, ຕິດຕາມຂະບວນການ ແລະ ອື່ນໆ.\n"
 "\n"
 "ກະລຸນາໃຊ້ຄຳສັ່ງ \"help\" ເພື່ອຮຽນຮູ້ເພີ່ມເຕີມ."
 
@@ -421,16 +431,14 @@ msgstr ""
 #. TRANSLATORS: CLI help for: agama --insecure
 #: agama-cli/src/lib.rs:127
 msgid "Whether to accept invalid (self-signed, ...) certificates or not"
-msgstr ""
-"ຈະຍອມຮັບໃບຢັ້ງຢືນທີ່ບໍ່ຖືກຕ້ອງ (ໃບຢັ້ງຢືນທີ່ເຊັນດ້ວຍຕົນເອງ, ...) ຫຼື ບໍ່"
+msgstr "ຈະຍອມຮັບໃບຢັ້ງຢືນທີ່ບໍ່ຖືກຕ້ອງ (ໃບຢັ້ງຢືນທີ່ເຊັນດ້ວຍຕົນເອງ, ...) ຫຼື ບໍ່"
 
 #. TRANSLATORS: CLI help for: agama --local
 #: agama-cli/src/lib.rs:135
 msgid ""
 "Some commands could be able to work even without connection to the agama "
 "server"
-msgstr ""
-"ບາງຄຳສັ່ງອາດຈະສາມາດເຮັດວຽກໄດ້ ເຖິງແມ່ນວ່າຈະບໍ່ມີການເຊື່ອມຕໍ່ກັບເຊີບເວີ agama ກໍຕາມ"
+msgstr "ບາງຄຳສັ່ງອາດຈະສາມາດເຮັດວຽກໄດ້ ເຖິງແມ່ນວ່າຈະບໍ່ມີການເຊື່ອມຕໍ່ກັບເຊີບເວີ agama ກໍຕາມ"
 
 #. TRANSLATORS: CLI help for: agama logs
 #: agama-cli/src/logs.rs:31
@@ -444,9 +452,9 @@ msgid ""
 "inspection. The file includes system and Agama-specific logs and "
 "configuration files. They are crucial to troubleshoot and debug problems."
 msgstr ""
-"ລັອກຂອງຕົວຕິດຕັ້ງຈະຖືກເກັບໄວ້ໃນໄຟລ໌ບີບອັດເພື່ອການກວດສອບໃນຂັ້ນຕໍ່ໄປ. ໄຟລ໌ດັ່ງກ່າວລວມມີລັອກຂອງລະບົບ ແລ"
-"ະ ລັອກສະເພາະຂອງ Agama ລວມທັງໄຟລ໌ການຕັ້ງຄ່າ. ພວກມັນມີຄວາມສຳຄັນຫຼາຍໃນການແກ້ໄຂບັນຫາ ແລະ ກວດຫ"
-"າຂໍ້ຜິດພາດ."
+"ລັອກຂອງຕົວຕິດຕັ້ງຈະຖືກເກັບໄວ້ໃນໄຟລ໌ບີບອັດເພື່ອການກວດສອບໃນຂັ້ນຕໍ່ໄປ. ໄຟລ໌ດັ່ງກ່າວລວມມີລັອກຂອງລະບົບ "
+"ແລະ ລັອກສະເພາະຂອງ Agama ລວມທັງໄຟລ໌ການຕັ້ງຄ່າ. ພວກມັນມີຄວາມສຳຄັນຫຼາຍໃນການແກ້ໄຂບັນຫາ ແລະ "
+"ກວດຫາຂໍ້ຜິດພາດ."
 
 #. TRANSLATORS: CLI help for: agama logs store
 #: agama-cli/src/logs.rs:50
@@ -458,8 +466,7 @@ msgstr "ເກັບກຳ ແລະ ບັນທຶກລັອກໄວ້ໃ�
 msgid ""
 "Path to destination directory and, optionally, the archive file name. The "
 "extension will be added automatically"
-msgstr ""
-"ທີ່ຢູ່ຂອງໂຟນເດີປາຍທາງ ແລະ ຊື່ໄຟລ໌ (ຖ້າຕ້ອງການ). ນາມສະກຸນໄຟລ໌ຈະຖືກເພີ່ມໃຫ້ໂດຍອັດຕະໂນມັດ"
+msgstr "ທີ່ຢູ່ຂອງໂຟນເດີປາຍທາງ ແລະ ຊື່ໄຟລ໌ (ຖ້າຕ້ອງການ). ນາມສະກຸນໄຟລ໌ຈະຖືກເພີ່ມໃຫ້ໂດຍອັດຕະໂນມັດ"
 
 #. TRANSLATORS: CLI help for: agama logs list
 #: agama-cli/src/logs.rs:65
@@ -690,9 +697,9 @@ msgid ""
 "\n"
 "This command allows answering such questions directly from the command-line."
 msgstr ""
-"Agama ອາດຈະຕ້ອງການໃຫ້ຜູ້ໃຊ້ເຂົ້າໄປຈັດການບາງຢ່າງໃນບາງເວລາ. ເຊັ່ນ: ການໃຫ້ຂໍ້ມູນທີ່ຍັງຂາດຫາຍ (ຕົວຢ່າ"
-"ງ: ລະຫັດຜ່ານເພື່ອຖອດລະຫັດລະບົບໄຟລ໌) ຫຼື ການຕັດສິນໃຈວ່າຈະເຮັດແນວໃດເມື່ອເກີດຂໍ້ຜິດພາດ (ຕົວຢ່າງ: ບໍ່ສາມ"
-"າດເຊື່ອມຕໍ່ກັບຄັງຊອບແວໄດ້).\n"
+"Agama ອາດຈະຕ້ອງການໃຫ້ຜູ້ໃຊ້ເຂົ້າໄປຈັດການບາງຢ່າງໃນບາງເວລາ. ເຊັ່ນ: ການໃຫ້ຂໍ້ມູນທີ່ຍັງຂາດຫາຍ "
+"(ຕົວຢ່າງ: ລະຫັດຜ່ານເພື່ອຖອດລະຫັດລະບົບໄຟລ໌) ຫຼື ການຕັດສິນໃຈວ່າຈະເຮັດແນວໃດເມື່ອເກີດຂໍ້ຜິດພາດ "
+"(ຕົວຢ່າງ: ບໍ່ສາມາດເຊື່ອມຕໍ່ກັບຄັງຊອບແວໄດ້).\n"
 "\n"
 "ຄຳສັ່ງນີ້ອະນຸຍາດໃຫ້ຕອບຄຳຖາມດັ່ງກ່າວໄດ້ໂດຍກົງຈາກ command-line."
 
@@ -729,8 +736,8 @@ msgid ""
 "Please check Agama documentation for more details and examples: https://"
 "github.com/openSUSE/agama/blob/master/doc/questions."
 msgstr ""
-"ມັນອະນຸຍາດໃຫ້ກຳນົດຄຳຕອບໄວ້ລ່ວງໜ້າສຳລັບຄຳຖາມສະເພາະ ເພື່ອຂ້າມພວກມັນໃນໂໝດໂຕ້ຕອບ ຫຼື ປ່ຽນຄຳຕອບໃນໂ"
-"ໝດອັດຕະໂນມັດ.\n"
+"ມັນອະນຸຍາດໃຫ້ກຳນົດຄຳຕອບໄວ້ລ່ວງໜ້າສຳລັບຄຳຖາມສະເພາະ ເພື່ອຂ້າມພວກມັນໃນໂໝດໂຕ້ຕອບ ຫຼື "
+"ປ່ຽນຄຳຕອບໃນໂໝດອັດຕະໂນມັດ.\n"
 "\n"
 "ກະລຸນາກວດສອບເອກະສານຂອງ Agama ສຳລັບລາຍລະອຽດ ແລະ ຕົວຢ່າງເພີ່ມເຕີມ: https://github.com/"
 "openSUSE/agama/blob/master/doc/questions."
@@ -745,8 +752,8 @@ msgid ""
 "The installation failed. Use the \"agama logs store\" command to get the "
 "logs to troubleshoot or share with support."
 msgstr ""
-"ການຕິດຕັ້ງຫຼົ້ມເຫຼວ. ໃຫ້ໃຊ້ຄຳສັ່ງ \"agama logs store\" ເພື່ອດຶງເອົາລັອກໄປວິເຄາະຫາສາເຫດ ຫຼື ສົ່ງໃຫ້ທີ"
-"ມງານຊ່ວຍເຫຼືອ."
+"ການຕິດຕັ້ງຫຼົ້ມເຫຼວ. ໃຫ້ໃຊ້ຄຳສັ່ງ \"agama logs store\" ເພື່ອດຶງເອົາລັອກໄປວິເຄາະຫາສາເຫດ ຫຼື "
+"ສົ່ງໃຫ້ທີມງານຊ່ວຍເຫຼືອ."
 
 #: agama-cli/src/status.rs:80
 msgid "The installation finished successfully."
@@ -765,8 +772,8 @@ msgid ""
 "There are unanswered questions. Use the \"agama monitor\" command or the web "
 "user interface to answer them:"
 msgstr ""
-"ມີຄຳຖາມທີ່ຍັງບໍ່ໄດ້ຕອບ. ໃຫ້ໃຊ້ຄຳສັ່ງ \"agama monitor\" ຫຼື ສ່ວນຕິດຕໍ່ຜູ້ໃຊ້ທາງເວັບເພື່ອຕອບຄຳຖາມເຫຼົ່ານັ້"
-"ນ:"
+"ມີຄຳຖາມທີ່ຍັງບໍ່ໄດ້ຕອບ. ໃຫ້ໃຊ້ຄຳສັ່ງ \"agama monitor\" ຫຼື "
+"ສ່ວນຕິດຕໍ່ຜູ້ໃຊ້ທາງເວັບເພື່ອຕອບຄຳຖາມເຫຼົ່ານັ້ນ:"
 
 #. TRANSLATORS: %s is replaced by the script name.
 #: agama-files/src/service.rs:184
@@ -910,23 +917,23 @@ msgid ""
 msgstr ""
 "ກຳລັງພະຍາຍາມນຳເຂົ້າໃບຢັ້ງຢືນທີ່ເຊັນດ້ວຍຕົນເອງ. ເຈົ້າຕ້ອງການເຊື່ອຖືມັນ ແລະ ລົງທະບຽນຜະລິດຕະພັນບໍ່?"
 
-#: agama-server/src/profile/web.rs:82
+#: agama-server/src/profile/web.rs:85
 msgid "Profile validation failed"
 msgstr "ການກວດສອບຄວາມຖືກຕ້ອງຂອງໂປຣໄຟລ໌ຫຼົ້ມເຫຼວ"
 
-#: agama-server/src/profile/web.rs:85
+#: agama-server/src/profile/web.rs:88
 msgid "Could not retrieve profile"
 msgstr "ບໍ່ສາມາດດຶງຂໍ້ມູນໂປຣໄຟລ໌ໄດ້"
 
-#: agama-server/src/profile/web.rs:88
+#: agama-server/src/profile/web.rs:91
 msgid "Invalid profile encoding"
 msgstr "ການເຂົ້າລະຫັດໂປຣໄຟລ໌ບໍ່ຖືກຕ້ອງ"
 
-#: agama-server/src/profile/web.rs:91
+#: agama-server/src/profile/web.rs:94
 msgid "Invalid profile request"
 msgstr "ຄຳຮ້ອງຂໍໂປຣໄຟລ໌ບໍ່ຖືກຕ້ອງ"
 
-#: agama-server/src/profile/web.rs:94
+#: agama-server/src/profile/web.rs:97
 msgid "AutoYaST conversion failed"
 msgstr "ການແປງ AutoYaST ຫຼົ້ມເຫຼວ"
 
@@ -953,18 +960,12 @@ msgstr "ລອງໃໝ່"
 msgid "There was a problem running a package script."
 msgstr "ເກີດບັນຫາໃນການລັນສະຄຣິບຂອງແພັກເກດ."
 
-#: agama-software/src/callbacks/install.rs:81
-msgid "Continue"
-msgstr "ດຳເນີນການຕໍ່"
-
 #. TRANSLATORS: substituting: key ID, (key name), fingerprint
 #: agama-software/src/callbacks/security.rs:104
-#, rust-format
 msgid ""
 "The key {0} ({1}) with fingerprint {2} is unknown. Do you want to trust this "
 "key?"
-msgstr ""
-"ຄີ {0} ({1}) ທີ່ມີ fingerprint {2} ແມ່ນບໍ່ຮູ້ຈັກ. ເຈົ້າຕ້ອງການເຊື່ອຖືຄີນີ້ບໍ່?"
+msgstr "ຄີ {0} ({1}) ທີ່ມີ fingerprint {2} ແມ່ນບໍ່ຮູ້ຈັກ. ເຈົ້າຕ້ອງການເຊື່ອຖືຄີນີ້ບໍ່?"
 
 #: agama-software/src/callbacks/security.rs:111
 msgid "Skip"

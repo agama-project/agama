@@ -1105,7 +1105,7 @@
           "title": "Question class",
           "description": "Each question has a \"class\" which works as an identifier.",
           "type": "string",
-          "examples": ["storage.activate_multipath"]
+          "examples": ["multipathActivation"]
         },
         "text": {
           "title": "Question text",
