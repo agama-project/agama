@@ -3,7 +3,8 @@ Mon Aug 31 15:53:32 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Default the registration form to the effective registration URL
   (e.g., the one set via the inst.register_url boot argument),
-  instead of only showing it when the user typed a custom one.
+  instead of only showing it when the user typed a custom one
+  (bsc#1277099).
 
 -------------------------------------------------------------------
 Fri Aug 28 13:08:30 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
