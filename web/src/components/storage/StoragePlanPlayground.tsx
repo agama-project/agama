@@ -5263,7 +5263,7 @@ const PlanBar = ({
             </FlexItem>
             <FlexItem>
               <span className="agm-plan-muted">{t("Encryption")}</span>{" "}
-              <Button variant="link" isInline aria-controls={PANEL_ID} onClick={onShowEncryption}>
+              <Button variant="link" isInline onClick={onShowEncryption}>
                 {t(installationEncryption(config))}
               </Button>
             </FlexItem>
@@ -8544,13 +8544,14 @@ function StoragePlan({
     setIsPanelOpen(true);
   };
 
-  const goToEncryption = () => {
-    setShowsResult(false);
-    setShowsBoot(false);
-    setSelectedId(null);
-    setShowsEncryption(true);
-    setIsPanelOpen(true);
-  };
+  /* A page, like boot options and for the same reason: both forms are due a
+     migration onto the current form conventions, and a sheet holding a form
+     nobody has rewritten is a form that gets rewritten twice. The two
+     installation decisions also behave alike now, which they did not while one
+     opened a sheet and the other left the page.
+
+     The sheet the earlier rounds built is still on `select("encryption")`. */
+  const goToEncryption = () => navigate(PATHS.editEncryption);
 
   /* One entry gets the summary of that device, and only where the entry is a
      device the summary can read: a lone volume group is a plan about disks it
