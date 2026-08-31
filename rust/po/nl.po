@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-14 04:33+0000\n"
+"POT-Creation-Date: 2026-08-26 11:36+0000\n"
 "PO-Revision-Date: 2026-05-31 13:12+0000\n"
 "Last-Translator: Feike Donia <feikedonia@proton.me>\n"
 "Language-Team: Dutch <https://l10n.opensuse.org/projects/agama/agama-rust-"
@@ -19,19 +19,32 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Generator: Weblate 2026.5\n"
 
-#: agama-autoinstall/src/auto_loader.rs:115
+#: agama-autoinstall/src/auto_loader.rs:142
 msgid ""
 "Configuration cannot be applied because it is invalid or could not be "
 "reached."
 msgstr ""
 
-#: agama-autoinstall/src/questions.rs:44
+#: agama-autoinstall/src/questions.rs:47
 #, fuzzy
 msgid "Reload configuration"
 msgstr "Netwerkconfiguratie opslaan"
 
-#: agama-autoinstall/src/questions.rs:45
+#: agama-autoinstall/src/questions.rs:48
 msgid "Skip and configure manually"
+msgstr ""
+
+#: agama-autoinstall/src/questions.rs:77 agama-cli/src/config.rs:371
+msgid "Found unsupported elements in the AutoYaST profile:"
+msgstr ""
+
+#: agama-autoinstall/src/questions.rs:92
+#: agama-software/src/callbacks/install.rs:81
+msgid "Continue"
+msgstr "Doorgaan"
+
+#: agama-autoinstall/src/questions.rs:93
+msgid "Abort"
 msgstr ""
 
 #. TRANSLATORS: {0} is a URL
@@ -321,7 +334,7 @@ msgstr ""
 msgid "It is not a valid JSON file"
 msgstr ""
 
-#: agama-cli/src/config.rs:416
+#: agama-cli/src/config.rs:434
 msgid "Ignoring the changes because the editor was closed with an error code."
 msgstr ""
 
@@ -842,25 +855,25 @@ msgstr ""
 "Poging om een zelf-ondertekend certificaat te importeren. Wilt u het "
 "vertrouwen en het product registreren?"
 
-#: agama-server/src/profile/web.rs:82
+#: agama-server/src/profile/web.rs:85
 #, fuzzy
 msgid "Profile validation failed"
 msgstr "Installatie mislukt."
 
-#: agama-server/src/profile/web.rs:85
+#: agama-server/src/profile/web.rs:88
 #, fuzzy
 msgid "Could not retrieve profile"
 msgstr "Kon de pakketbronnen niet lezen"
 
-#: agama-server/src/profile/web.rs:88
+#: agama-server/src/profile/web.rs:91
 msgid "Invalid profile encoding"
 msgstr ""
 
-#: agama-server/src/profile/web.rs:91
+#: agama-server/src/profile/web.rs:94
 msgid "Invalid profile request"
 msgstr ""
 
-#: agama-server/src/profile/web.rs:94
+#: agama-server/src/profile/web.rs:97
 msgid "AutoYaST conversion failed"
 msgstr ""
 
@@ -886,10 +899,6 @@ msgstr "Opnieuw proberen"
 #: agama-software/src/callbacks/install.rs:78
 msgid "There was a problem running a package script."
 msgstr "Een van de pakketscripts gaf problemen tijdens de uitvoering."
-
-#: agama-software/src/callbacks/install.rs:81
-msgid "Continue"
-msgstr "Doorgaan"
 
 #. TRANSLATORS: substituting: key ID, (key name), fingerprint
 #: agama-software/src/callbacks/security.rs:104

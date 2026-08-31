@@ -35,7 +35,7 @@ import { _ } from "~/i18n";
  * These issues signal that the product cannot be found, either because
  * registration is required but missing, or because product detection failed.
  */
-export const PRODUCT_AVAILABILITY_ISSUES = ["missing_registration", "missing_product"];
+export const PRODUCT_AVAILABILITY_ISSUES = ["missingRegistration", "missingProduct"];
 
 /**
  * Empty state shown when software selection is unavailable.
@@ -52,8 +52,8 @@ export default function PatternSelectionUnavailable() {
   const issues = useIssues("software");
   const { all: patterns } = useAvailablePatterns();
 
-  const missingRegistration = issues.find((i) => i.class === "missing_registration");
-  const missingProduct = issues.find((i) => i.class === "missing_product");
+  const missingRegistration = issues.find((i) => i.class === "missingRegistration");
+  const missingProduct = issues.find((i) => i.class === "missingProduct");
 
   // TRANSLATORS: empty state title when software cannot be selected
   const title = _("Software selection is not available");

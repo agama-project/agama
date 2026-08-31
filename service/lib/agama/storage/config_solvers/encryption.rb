@@ -19,16 +19,19 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "agama/storage/config_solvers/base"
-
 module Agama
   module Storage
     module ConfigSolvers
       # Solver for the encryption configs.
       #
-      # The encryption configs are solved by assigning the default encryption values defined by the
-      # productd, if needed.
-      class Encryption < Base
+      # The encryption configs are solved by assigning the default encryption values required by the
+      # used bootloader, if needed.
+      class Encryption
+        # @param bootloader_config [Storage::BootloaderConfig]
+        def initialize(bootloader_config)
+          @bootloader_config = bootloader_config
+        end
+
         # Solves all the encryption configs within a given config.
         #
         # @note The config object is modified.
@@ -43,6 +46,12 @@ module Agama
 
       private
 
+        # @return [Storage::BootloaderConfig]
+        attr_reader :bootloader_config
+
+        # @return [Config]
+        attr_reader :config
+
         def solve_encryptions
           config.supporting_encryption.each { |c| solve_encryption(c) }
         end
@@ -51,9 +60,7 @@ module Agama
         def solve_encryption(config)
           return unless config.encryption
 
-          encryption = config.encryption
-          encryption.method ||= default_encryption.method
-          solve_encryption_values(encryption)
+          solve_encryption_values(config.encryption)
         end
 
         def solve_physical_volumes_encryptions
@@ -65,30 +72,19 @@ module Agama
           return unless config.physical_volumes_encryption
 
           encryption = config.physical_volumes_encryption
-          encryption.method ||= default_encryption.method
           solve_encryption_values(encryption)
         end
 
         # @param config [Configs::Encryption]
         def solve_encryption_values(config)
-          # FIXME: We need better mechanisms to define these values (eg. the process for TpmFde
-          # enforces pbkdf2, but that is not reflected in the case of planned devices).
-          # As a first (not perfect) control mechanism, the values are ignored if the default
-          # encryption type does not match
-          return if config.method.encryption_type != default_encryption.method.encryption_type
+          bootloader_type = bootloader_config.type
+          # The bootloader type is always known because bootloader_config is already solved,
+          # but this is defensive code to ensure backwards compatibility even with the tests
+          return if bootloader_type && !bootloader_type.is?(:grub2)
 
-          config.password ||= default_encryption.password
-          config.pbkd_function ||= default_encryption.pbkd_function
-          config.label ||= default_encryption.label
-          config.cipher ||= default_encryption.cipher
-          config.key_size ||= default_encryption.key_size
-        end
-
-        # Default encryption defined by the product.
-        #
-        # @return [Configs::Encryption]
-        def default_encryption
-          @default_encryption ||= config_builder.default_encryption
+          # Grub2 can only open encryption devices using PBKDF2, so let's be conservative
+          # and use that function by default for all devices.
+          config.pbkd_function ||= Y2Storage::PbkdFunction::PBKDF2
         end
       end
     end

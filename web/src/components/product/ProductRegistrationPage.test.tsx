@@ -320,7 +320,7 @@ describe("ProductRegistrationPage", () => {
           mockIssues = [
             {
               scope: "product",
-              class: "addon_registration_failed[sle-ha]",
+              class: "addonRegistrationFailed[sle-ha]",
               description: "Failed to register the add-on sle-ha",
               details: "No subscription with registration code 'jkljkljkl' found",
             },
@@ -355,7 +355,7 @@ describe("ProductRegistrationPage", () => {
     mockIssues = [
       {
         scope: "product",
-        class: "system_registration_failed",
+        class: "systemRegistrationFailed",
         description: "Failed to register",
       },
       {
@@ -378,7 +378,7 @@ describe("ProductRegistrationPage", () => {
     mockIssues = [
       {
         scope: "product",
-        class: "system_registration_failed",
+        class: "systemRegistrationFailed",
         description: "Failed to register",
       },
     ];

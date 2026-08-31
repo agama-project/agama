@@ -173,7 +173,7 @@ impl Service {
         let mut issues = vec![];
         if self.full_config.is_empty() {
             issues.push(Issue::new(
-                "users.no_auth",
+                "noAuth",
                 &gettext(
                     "Defining a user, setting the root password or a SSH public key is required",
                 ),
@@ -187,7 +187,7 @@ impl Service {
             .is_some_and(|u| !u.is_valid())
         {
             issues.push(Issue::new(
-                "users.invalid_user",
+                "invalidUser",
                 &gettext("First user information is incomplete"),
             ));
         }

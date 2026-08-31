@@ -91,7 +91,7 @@ async fn main() {
         value: None,
     };
     let rule = AnswerRule {
-        class: Some("software.import_gpg".to_string()),
+        class: Some("importGpg".to_string()),
         text: None,
         data: None,
         answer,

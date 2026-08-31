@@ -220,7 +220,7 @@ describe("ProductRegistrationForm", () => {
       mockIssues = [
         {
           scope: "software",
-          class: "system_registration_failed",
+          class: "systemRegistrationFailed",
           description: "Unauthorized code",
         },
       ];
@@ -269,7 +269,7 @@ describe("ProductRegistrationForm", () => {
       mockIssues = [
         {
           scope: "software",
-          class: "system_registration_failed",
+          class: "systemRegistrationFailed",
           description: "Unauthorized code",
         },
       ];
@@ -320,7 +320,7 @@ describe("ProductRegistrationForm", () => {
       mockIssues = [
         {
           scope: "software",
-          class: "system_registration_failed",
+          class: "systemRegistrationFailed",
           description: "Invalid registration code",
         },
       ];
@@ -343,7 +343,7 @@ describe("ProductRegistrationForm", () => {
     it("re-enables button when backend returns same registration issue object", async () => {
       const sameIssue = {
         scope: "software" as const,
-        class: "system_registration_failed",
+        class: "systemRegistrationFailed",
         description: "Unauthorized code",
       };
 
