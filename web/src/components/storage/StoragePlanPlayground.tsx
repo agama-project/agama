@@ -86,6 +86,7 @@ import {
 } from "@patternfly/react-core";
 import Icon from "~/components/layout/Icon";
 import Interpolate from "~/components/core/Interpolate";
+import Link from "~/components/core/Link";
 import NestedContent from "~/components/core/NestedContent";
 import Page from "~/components/core/Page";
 import DeviceSelectorModal from "~/components/storage/DeviceSelectorModal";
@@ -3678,7 +3679,6 @@ const EntryPropertiesSection = ({
   /** What this tab holds, and which tabs change it. */
   explanation?: React.ReactNode;
 }) => {
-  const navigate = useNavigate();
   const { relationIcon } = useVariants();
   const headingId = useId();
   const settings = settingsOf([
@@ -3696,17 +3696,18 @@ const EntryPropertiesSection = ({
       <SettingsList settings={settings} />
       {/* At the foot, after what it changes. The panel says what the entry is;
           the form is where it becomes something else, and a reader reaches for
-          it having read the answer they came for. */}
+          it having read the answer they came for.
+
+          A button rather than a link, since it is the one thing to do on this
+          tab and everything above it is a value being read. An anchor
+          underneath, because it goes to a page of its own: it opens in a new
+          tab where a reader asks for that, and the browser knows where it
+          leads before it is pressed. */}
       {editPath && (
         <Flex className="agm-plan-section-body">
-          <Button
-            variant="link"
-            isInline
-            icon={<Icon name="edit_square" size="sm" />}
-            onClick={() => navigate(editPath)}
-          >
+          <Link to={editPath} icon={<Icon name="edit_square" size="sm" />}>
             {editLabel}
-          </Button>
+          </Link>
         </Flex>
       )}
     </PanelSection>
