@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Aug 31 12:02:23 UTC 2026 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Adjust default encryption derivation function (PBKDF) according
+  to the used bootloader (bsc#1258955).
+
+-------------------------------------------------------------------
 Fri Aug 28 13:08:30 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Rename questions and issues classes to use a consistent naming
