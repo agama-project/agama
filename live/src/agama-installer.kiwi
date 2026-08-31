@@ -154,7 +154,8 @@
     <!-- packages for local installation (desktop, browser, etc.) -->
     <packages type="image" profiles="Leap_16.1,openSUSE,SUSE_SLE_16.1,SUSE_SLE_NV_16.1">
         <package name="bluez-firmware"/>
-        <package name="agama-integration-tests"/>
+        <!-- for openQA to run their puppeteer tests, just injecting a *.js file -->
+        <package name="nodejs(engine)"/>
         <package name="fontconfig"/>
         <package name="fonts-config"/>
         <package name="xauth"/>
