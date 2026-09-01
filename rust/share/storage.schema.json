@@ -1426,7 +1426,8 @@
     },
     "encryptionKeySize": {
       "description": "The value (in bits) has to be a multiple of 8. The possible key sizes are limited by the used cipher.",
-      "type": "integer"
+      "type": "integer",
+      "multipleOf": 8
     },
     "encryptionPbkdFunction": {
       "enum": ["pbkdf2", "argon2i", "argon2id"]
