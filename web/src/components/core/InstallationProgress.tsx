@@ -22,7 +22,7 @@
 
 import React from "react";
 import { HelperText, HelperTextItem } from "@patternfly/react-core";
-import Page from "~/components/core/Page";
+import Page from "~/components/layout/Page";
 import ProgressReport from "~/components/core/ProgressReport";
 import ProductLogo from "~/components/product/ProductLogo";
 import SideBySideLayout from "~/components/layout/SideBySideLayout";
@@ -33,7 +33,7 @@ export default function InstallationProgress() {
   const product = useProductInfo();
 
   return (
-    <Page noDefaultProgressMonitor>
+    <Page showProgressMonitor={false}>
       <Page.Content>
         <SideBySideLayout
           icon="deployed_code_update"

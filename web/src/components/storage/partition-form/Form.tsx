@@ -23,7 +23,7 @@
 import React, { useMemo } from "react";
 import { useParams, useNavigate } from "react-router";
 import { ActionGroup, Alert, Form } from "@patternfly/react-core";
-import Page from "~/components/core/Page";
+import Page from "~/components/layout/Page";
 import ResourceNotFound from "~/components/core/ResourceNotFound";
 import NestedContent from "~/components/core/NestedContent";
 import { createPartitionableLocation } from "~/components/storage/utils";

@@ -57,6 +57,10 @@ translations:
       "stabili" e più recenti.
     ja: 実験的なディストリビューションではありますが、 Tumbleweed よりは比較的ゆっくりした、かつ Leap よりは速いペースで公開される
       openSUSE ローリングリリース型ディストリビューションです。 "安定性" と最新パッケージの中間を目指しています。
+    lo: ລຸ້ນ rolling release ແບບທົດລອງ ແລະ ຊ້າກວ່າຂອງ openSUSE ທີ່ຖືກອອກແບບມາໃຫ້ມີ
+      ການອັບເດດໜ້ອຍກວ່າ Tumbleweed ແຕ່ຫຼາຍກວ່າ Leap
+      ໂດຍທີ່ຜູ້ໃຊ້ບໍ່ຈຳເປັນຕ້ອງເລືອກ ລະຫວ່າງຊຸດຊອບແວທີ່ "ໝັ້ນຄົງ" ຫຼື
+      ຊຸດຊອບແວທີ່ໃໝ່ກວ່າ.
     nb_NO: En eksperimentell og en litt saktere rullende utgivelse av openSUSE, som
       er designet for å oppdatere sjeldnere enn Tumbleweed men oftere enn Leap
       uten å måtte tvinge brukere til å velge mellom "stabile" og nyere pakker.

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE profile>
+<profile xmlns="http://www.suse.com/1.0/yast2ns" xmlns:config="http://www.suse.com/1.0/configns">
+  <networking>
+    <interfaces config:type="list">
+      <interface>
+        <name>bond0</name>
+        <bootproto>dhcp</bootproto>
+        <bonding_master>yes</bonding_master>
+        <bonding_slave0>eth0</bonding_slave0>
+        <bonding_slave1>eth1</bonding_slave1>
+        <bonding_module_opts>mode=active-backup miimon=100</bonding_module_opts>
+      </interface>
+      <interface>
+        <name>br0</name>
+        <bootproto>dhcp</bootproto>
+        <bridge>yes</bridge>
+        <bridge_ports>eth2 eth3</bridge_ports>
+        <bridge_stp>on</bridge_stp>
+        <bridge_forwarddelay>15</bridge_forwarddelay>
+      </interface>
+      <interface>
+        <name>eth4.10</name>
+        <bootproto>static</bootproto>
+        <ipaddr>192.168.10.2</ipaddr>
+        <prefixlen>24</prefixlen>
+        <vlan_id config:type="integer">10</vlan_id>
+        <etherdevice>eth4</etherdevice>
+      </interface>
+    </interfaces>
+  </networking>
+</profile>

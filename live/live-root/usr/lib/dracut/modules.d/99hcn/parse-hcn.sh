@@ -10,9 +10,11 @@
 #    - Scans vdevices (VNIC and Virtual Ethernet)
 # 3. Build MAPPINGS: bond names -> slave devices with MACs and modes
 # 4. Process rd.hcn.ip= and rd.hcn.route= parameters and replace slave references with bonds
-# 5. Generate NetworkManager connections to a temporary directory via nm-initrd-generator
-# 6. Fix up generated connections to use correct bond masters and naming
-# 7. Copy connections to /etc/NetworkManager/system-connections for persistence
+# 5. Carry over the remaining network options of the real kernel command line
+#    (nameserver=, rd.peerdns=, rd.net.dhcp.*)
+# 6. Generate NetworkManager connections to a temporary directory via nm-initrd-generator
+# 7. Fix up generated connections to use correct bond masters and naming
+# 8. Copy connections to /etc/NetworkManager/system-connections for persistence
 #
 # This script runs from hcn-init-initrd.service, once udev has discovered the
 # devices. Much earlier, hcn-cmdline.sh has already told NetworkManager and the
@@ -39,12 +41,26 @@ get_mac() {
   fi
 }
 
+# Number of 3 second waits left for the devices to show up in sysfs after a
+# migration, 3 minutes in total.
+#
+# The budget is global and not per device on purpose: the devices appear in
+# parallel, so waiting for them one by one would multiply the time spent here
+# by the number of devices and hcn-init-initrd.service, which allows 5 minutes
+# for the whole run, would kill the script in the middle of it.
+HCN_WAIT_RETRIES=60
+
 # Function to discover HCN mapping for a device-tree node
+#
+# On success it sets HCN_MAPPING to "bondname devname mac mode" and returns 0.
+# The result is handed over in a variable instead of being printed because the
+# function logs its progress with info(), and under systemd info() writes to
+# stdout, which would end up mixed into the mapping (see carry_over_cmdline).
 get_dev_hcn() {
   local dev=$1
   local hcnid devname mode mac ofpath
-  # Wait up to 3 minutes for device to appear after migration (12 * 15s)
-  local wait=12
+
+  HCN_MAPPING=""
 
   hcnid=$(xdump4 "$dev/ibm,hcn-id")
   [ -z "$hcnid" ] && return 1
@@ -53,15 +69,27 @@ get_dev_hcn() {
   ofpath=${dev#/proc/device-tree}
 
   # Wait for device to appear in sysfs. This might take time after migration.
-  while [ $wait -gt 0 ]; do
-    if devname=$(ofpathname -l "$ofpath" 2>/dev/null) && [ -e "/sys/class/net/$devname" ]; then
+  # Every device is looked up at least once, even with the shared wait budget
+  # already spent by the previous ones. devname is reset on each try because
+  # ofpathname can resolve a name for a device that is not in sysfs yet, and
+  # such a name must not be taken as a valid result once the waiting is over.
+  while :; do
+    devname=$(ofpathname -l "$ofpath" 2>/dev/null)
+    if [ -n "$devname" ] && [ -e "/sys/class/net/$devname" ]; then
       info "parse-hcn: device $devname ready for $ofpath"
       mac=$(get_mac "$dev")
       break
     fi
-    info "parse-hcn: waiting for device for $ofpath (retry $wait)"
-    sleep 15
-    wait=$((wait - 1))
+    devname=""
+    [ "${HCN_WAIT_RETRIES:-0}" -gt 0 ] || break
+    # The tries are short so that a device that is already there is not waited
+    # for longer than needed, but only one out of five is logged, the messages
+    # also go to the console
+    if [ $((HCN_WAIT_RETRIES % 5)) -eq 0 ]; then
+      info "parse-hcn: waiting for device for $ofpath ($HCN_WAIT_RETRIES tries left)"
+    fi
+    sleep 3
+    HCN_WAIT_RETRIES=$((HCN_WAIT_RETRIES - 1))
   done
 
   if [ -z "$devname" ]; then
@@ -69,8 +97,8 @@ get_dev_hcn() {
     return 1
   fi
 
-  # Output the bond mapping: bondname devname mac mode
-  echo "bond$hcnid $devname ${mac:-none} ${mode:-none}"
+  # The bond mapping: bondname devname mac mode
+  HCN_MAPPING="bond$hcnid $devname ${mac:-none} ${mode:-none}"
   return 0
 }
 
@@ -206,6 +234,11 @@ EOF
   for con in "$conn_dir"/*.nmconnection; do
     [ -e "$con" ] || continue
 
+    # Start from scratch, otherwise a connection that is in no mapping and
+    # whose controller is no HCN bond would inherit the values of the previous
+    # iteration and be treated as HCN-related
+    found_master="" found_ifname=""
+
     # Extract connection details
     IFS='|' read -r id uuid ifname master controller mac <<EOF
 $(parse_nm_connection "$con")
@@ -252,7 +285,7 @@ EOF
     if [ -n "$mapping_info" ]; then
       found_master=${mapping_info% *}
       found_ifname=${mapping_info#* }
-    elif strstr " $BOND_NAMES " " ${master:-$controller} "; then
+    elif strstr " $BOND_LIST " " ${master:-$controller} "; then
       found_master=${master:-$controller}
       found_ifname=$ifname
     fi
@@ -287,6 +320,47 @@ EOF
   done
 }
 
+# Carry over the rest of the network command line
+#
+# nm-initrd-generator is called with a command line built from scratch, so any
+# network option the user really passed is invisible to it unless it is copied
+# over here. The generator run NetworkManager does on its own is no substitute:
+# the "ip=hcn" marker keeps that run from producing any connection, so
+# everything it would have parsed into one is lost.
+#
+# Options that end up in a global configuration file rather than in a
+# connection (rd.net.dns, rd.net.dns-backend, rd.net.dns-resolve-mode,
+# rd.net.timeout.carrier) are left out on purpose, the NetworkManager run
+# already wrote them to /run/NetworkManager/conf.d.
+#
+# Only the options that name no device are copied. The ones that do
+# (rd.net.dhcp.client-id=, bootdev=, rd.ethtool=, and the vlan=, bridge= and
+# team= stacked devices) would need the port reference rewritten to its bond,
+# and the generator creates a full connection for any device named in them,
+# which this module would then persist to /etc.
+#
+# Appends the options to NEW_ARGS. The result is not printed on purpose: the
+# function logs what it copies with info(), and info() writes to stdout when
+# DRACUT_SYSTEMD is set, so the output of a function using it cannot be
+# captured with a command substitution without getting the log messages mixed
+# into the value.
+#
+# Only options taking a value can be carried over this way, because getargs()
+# prints nothing for an option given as a bare flag. All the ones below do take
+# one, rd.peerdns is used as rd.peerdns=0. Keep that in mind before adding a
+# boolean option here, it would need getargbool() instead.
+carry_over_cmdline() {
+  local opt val
+
+  for opt in nameserver rd.peerdns rd.net.timeout.dhcp rd.net.dhcp.retry \
+    rd.net.dhcp.vendor-class rd.net.dhcp.dscp; do
+    for val in $(getargs "$opt"); do
+      info "parse-hcn: keeping $opt=$val"
+      NEW_ARGS="$NEW_ARGS $opt=$val"
+    done
+  done
+}
+
 # --- Main Execution ---
 
 info "parse-hcn: starting"
@@ -297,8 +371,8 @@ if [ -d /proc/device-tree ]; then
   for dev in /proc/device-tree/pci*/ethernet*; do
     [ -e "$dev/ibm,hcn-id" ] || continue
     info "parse-hcn: checking PCI device $dev"
-    if res=$(get_dev_hcn "$dev"); then
-      MAPPINGS="$MAPPINGS $res"
+    if get_dev_hcn "$dev"; then
+      MAPPINGS="$MAPPINGS $HCN_MAPPING"
     fi
   done
 
@@ -306,8 +380,8 @@ if [ -d /proc/device-tree ]; then
   for dev in /proc/device-tree/vdevice/vnic* /proc/device-tree/vdevice/l-lan*; do
     [ -e "$dev/ibm,hcn-id" ] || continue
     info "parse-hcn: checking vdevice $dev"
-    if res=$(get_dev_hcn "$dev"); then
-      MAPPINGS="$MAPPINGS $res"
+    if get_dev_hcn "$dev"; then
+      MAPPINGS="$MAPPINGS $HCN_MAPPING"
     fi
   done
 fi
@@ -326,19 +400,23 @@ NM_RUNTIME_DIR="/run/NetworkManager"
 NM_RUNTIME_CONN_DIR="$NM_RUNTIME_DIR/system-connections"
 HCN_RUNTIME_DIR="/run/hcn"
 HCN_RUNTIME_CONN_DIR="$HCN_RUNTIME_DIR/system-connections"
+HCN_RUNTIME_CONF_DIR="$HCN_RUNTIME_DIR/conf.d"
 NEW_ARGS=""
 
 # Extract unique bond names from discovered mappings
 BOND_NAMES=$(echo "$MAPPINGS" | awk '{for(i=1;i<=NF;i+=4) if (!seen[$i]++) print $i}')
 
+# Space separated copy of BOND_NAMES. BOND_NAMES is newline separated, which
+# does not work for the " $list " substring checks done with strstr. The echo
+# is what collapses the newlines, so it is not the useless one it looks like.
+# shellcheck disable=SC2086,SC2116
+BOND_LIST=$(echo $BOND_NAMES)
+
 # First discovered bond. Only unqualified *static* configs (a fixed address
 # with no interface field) fall back to this bond, because a fixed address can
 # belong to a single bond. Method-only configs (dhcp, auto6, ...) carry no
 # per-host address and instead fan out to every discovered bond (see below).
-# NOTE: BOND_NAMES is newline-separated, so it must be left unquoted here for
-# awk to see a single record and return just the first token.
-# shellcheck disable=SC2086
-FIRST_BOND=$(echo $BOND_NAMES | awk '{print $1}')
+FIRST_BOND=${BOND_LIST%% *}
 
 for BONDNAME in $BOND_NAMES; do
   SLAVES="" SLAVE_NAMES="" SLAVE_MACS="" PRIMARY=""
@@ -540,10 +618,13 @@ EOF
   done
 done
 
+carry_over_cmdline
+
 # Write new configuration and update NetworkManager
 if [ -n "$NEW_ARGS" ]; then
-  # Create runtime directory to store HCN connections
-  mkdir -p "$HCN_RUNTIME_CONN_DIR"
+  # Create runtime directories to store HCN connections and the generator
+  # configuration files
+  mkdir -p "$HCN_RUNTIME_CONN_DIR" "$HCN_RUNTIME_CONF_DIR"
 
   # Write new cmdline options
   info "parse-hcn: new cmdline arguments: $NEW_ARGS"
@@ -556,8 +637,12 @@ if [ -n "$NEW_ARGS" ]; then
     generator_found=1
     info "parse-hcn: calling $gen"
     rm -f "$HCN_RUNTIME_CONN_DIR"/*
+    # --run-config-dir points to a scratch directory on purpose. The generator
+    # always writes 15-carrier-timeout.conf, and with the default directory
+    # this run would overwrite the one NetworkManager generated from the real
+    # command line, resetting a user supplied rd.net.timeout.carrier.
     # shellcheck disable=SC2086
-    if "$gen" -c "$HCN_RUNTIME_CONN_DIR" -- $NEW_ARGS; then
+    if "$gen" -c "$HCN_RUNTIME_CONN_DIR" -r "$HCN_RUNTIME_CONF_DIR" -- $NEW_ARGS; then
       if [ "$(ls -A "$HCN_RUNTIME_CONN_DIR")" ]; then
         fixup_nm_connections
         # Persist these new HCN connections to /etc

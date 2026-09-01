@@ -30,7 +30,7 @@ import {
   HelperTextItem,
   Stack,
 } from "@patternfly/react-core";
-import Page from "~/components/core/Page";
+import Page from "~/components/layout/Page";
 import RebootButton from "~/components/core/RebootButton";
 import SideBySideLayout from "~/components/layout/SideBySideLayout";
 import { useIsGrub2WithTpm } from "~/hooks/model/storage/config-model";
@@ -68,7 +68,7 @@ function InstallationFinished() {
   const rebootHint = _("You can reboot the machine to log in to the new system.");
 
   return (
-    <Page noDefaultProgressMonitor>
+    <Page showProgressMonitor={false}>
       <Page.Content>
         <SideBySideLayout
           icon="done_all"

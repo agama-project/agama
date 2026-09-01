@@ -21,7 +21,8 @@
  */
 
 import React from "react";
-import { IssuesAlert, Page } from "~/components/core";
+import { IssuesAlert } from "~/components/core";
+import Page from "~/components/layout/Page";
 import AuthenticationForm from "~/components/users/authentication-form/Form";
 import { useIssues } from "~/hooks/model/issue";
 import { useProposalChanges } from "~/hooks/model/proposal";

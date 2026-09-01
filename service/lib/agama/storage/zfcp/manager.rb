@@ -89,7 +89,6 @@ module Agama
 
           configure_controllers(config)
           configure_devices(config)
-          add_issues(config)
         end
 
         # Whether the option for allowing automatic LUN scan (allow_lun_scan) is active
@@ -182,8 +181,6 @@ module Agama
           ].flatten.uniq
 
           channels
-            .map { |c| find_controller(c) }
-            .compact
             .map { |c| activate_controller(c) }
             .any?
         end
@@ -192,18 +189,20 @@ module Agama
         #
         # @note: If "allow_lun_scan" is active, then all its LUNs are automatically activated.
         #
-        # @param controller [Controller]
+        # @param channel [String]
         # @return [Boolean] Whether the controller was activated.
-        def activate_controller(controller)
-          return false if controller.active?
+        def activate_controller(channel)
+          controller = find_controller(channel)
+          return false if controller&.active?
 
-          logger.info("Activating zFCP controller: #{controller.inspect}")
-          output = yast_zfcp.activate_controller(controller.channel)
+          logger.info("Activating zFCP controller: #{channel}")
+          output = yast_zfcp.activate_controller(channel)
           success = output["exit"] == 0
           return true if success
 
           @issues << Issue.new(
-            format(_("The zFCP controller %s cannot be activated"), controller.channel),
+            # TRANSLATORS: %s is replaced by a zFCP channel (e.g., "0.0.5223").
+            format(_("The zFCP controller %s cannot be activated"), channel),
             kind: :zfcp_controller_activation
           )
 
@@ -217,26 +216,33 @@ module Agama
         def activate_devices(config)
           config.devices
             .select(&:active?)
-            .map { |d| find_device(d.channel, d.wwpn, d.lun) }
-            .compact
-            .map { |d| activate_device(d) }
+            .map { |d| activate_device(d.channel, d.wwpn, d.lun) }
             .any?
         end
 
         # Activates a device if it is not active yet.
         #
-        # @param device [Device]
+        # @note This method receives channel, wwpn and lun instead of a device because in some cases
+        #   the devices are not discoverable (see bsc#1271376).
+        #
+        # @param channel [String]
+        # @param wwpn [String]
+        # @param lun [String]
+        #
         # @return [Boolean] Whether the device was activated.
-        def activate_device(device)
-          return false if device.active?
+        def activate_device(channel, wwpn, lun)
+          device = find_device(channel, wwpn, lun)
+          return false if device&.active?
 
-          logger.info("Activating zFCP device: #{device.inspect}")
-          output = yast_zfcp.activate_disk(device.channel, device.wwpn, device.lun)
+          logger.info("Activating zFCP device: #{channel} #{wwpn} #{lun}")
+          output = yast_zfcp.activate_disk(channel, wwpn, lun)
           success = output["exit"] == 0
           return true if success
 
           @issues << Issue.new(
-            format(_("The zFCP device %s cannot be activated"), device.to_s),
+            # TRANSLATORS: %s is replaced by a zFCP device (e.g.,
+            #   "0.0.5223 0x500507681015a2b2 0x0186000000000000").
+            format(_("The zFCP device %s cannot be activated"), "#{channel} #{wwpn} #{lun}"),
             kind: :zfcp_lun_activation
           )
 
@@ -250,80 +256,41 @@ module Agama
         def deactivate_devices(config)
           config.devices
             .reject(&:active?)
-            .map { |d| find_device(d.channel, d.wwpn, d.lun) }
-            .compact
-            .map { |d| deactivate_device(d) }
+            .map { |d| deactivate_device(d.channel, d.wwpn, d.lun) }
             .any?
         end
 
         # Deactivates a device if it is active.
         #
-        # @note: If "allow_lun_scan" is active, then the disk cannot be deactivated.
+        # @note This method receives channel, wwpn and lun instead of a device because in some cases
+        #   the devices are not discoverable (see bsc#1271376). If the disk is unknown or
+        #   "allow_lun_scan" is active, then the disk deactivation is not performed (noop).
         #
-        # @param device [Device]
+        # @param channel [String]
+        # @param wwpn [String]
+        # @param lun [String]
+        #
         # @return [Boolean] Whether the device was deactivated.
-        def deactivate_device(device)
-          return false unless device.active?
+        def deactivate_device(channel, wwpn, lun)
+          device = find_device(channel, wwpn, lun)
+          return false unless device&.active?
 
-          controller = find_controller(device.channel)
+          controller = find_controller(channel)
           return false if controller&.lun_scan?
 
-          logger.info("Deactivating zFCP device: #{device.inspect}")
-          output = yast_zfcp.deactivate_disk(device.channel, device.wwpn, device.lun)
+          logger.info("Deactivating zFCP device: #{channel} #{wwpn} #{lun}")
+          output = yast_zfcp.deactivate_disk(channel, wwpn, lun)
           success = output["exit"] == 0
           return true if success
 
           @issues << Issue.new(
-            format(_("The zFCP device %s cannot be deactivated"), device.to_s),
+            # TRANSLATORS: %s is replaced by a zFCP device (e.g.,
+            #   "0.0.5223 0x500507681015a2b2 0x0186000000000000").
+            format(_("The zFCP device %s cannot be deactivated"), "#{channel} #{wwpn} #{lun}"),
             kind: :zfcp_lun_deactivation
           )
 
           false
-        end
-
-        # Add issues for missing controllers and devices.
-        #
-        # @param config [Config]
-        def add_issues(config)
-          @issues += missing_controllers_issues(config)
-          @issues += missing_devices_issues(config)
-        end
-
-        # Add issues for missing controllers.
-        #
-        # @param config [Config]
-        def missing_controllers_issues(config)
-          config.controllers.map { |c| missing_controller_issue(c) }.compact
-        end
-
-        # Issue if the controller is missing.
-        #
-        # @param channel [String]
-        # @return [Issue, nil]
-        def missing_controller_issue(channel)
-          return if find_controller(channel)
-
-          Issue.new(
-            format(_("Unknown zFCP controller %s"), channel),
-            kind: :missing_zfcp_controller
-          )
-        end
-
-        # Add issues for missing devices.
-        #
-        # @param config [Config]
-        def missing_devices_issues(config)
-          config.devices.map { |c| missing_device_issue(c) }.compact
-        end
-
-        # Issue if the device is missing.
-        #
-        # @param device_config [Configs::Device]
-        # @return [Issue, nil]
-        def missing_device_issue(device_config)
-          return if find_device(device_config.channel, device_config.wwpn, device_config.lun)
-
-          Issue.new(format(_("Unknown zFCP LUN %s"), device_config.to_s), kind: :missing_zfcp_lun)
         end
 
         # Creates a zFCP controller from a YaST record.

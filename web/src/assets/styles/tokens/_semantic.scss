@@ -34,17 +34,30 @@
 //   --agm-t--status--{info,caution,danger,success,custom}--color
 //                                                 alert / status variants
 //                                                 (caution maps to PF "warning")
-//   --agm-t--border-radius                        base corner radius: every PF
+//   --agm-t--border-radius                        master corner radius: every PF
 //                                                 component across all three PF
-//                                                 radius tiers (small: buttons,
+//                                                 radius tiers at once
+//   --agm-t--border-radius--small                 just the small tier (buttons,
 //                                                 controls, tables, tooltips,
-//                                                 menus; medium: cards, popovers,
-//                                                 expandable sections; large:
-//                                                 modal dialogs)
+//                                                 menus, pills)
+//   --agm-t--border-radius--medium                just the medium tier (cards,
+//                                                 popovers, expandable sections)
+//   --agm-t--border-radius--large                 just the large tier (modal
+//                                                 dialogs, login card, switch and
+//                                                 slider thumbs, calendar dates)
+//                                                 Each tier role wins over the
+//                                                 master; unset ones follow it.
 //   --agm-t--control--border-radius               narrower override for just
 //                                                 buttons, text inputs/textareas
 //                                                 and selects/dropdowns, layered
-//                                                 on top of --agm-t--border-radius
+//                                                 on top of the small tier
+//   --agm-t--button--border-radius                narrower still: only buttons and
+//                                                 the toggles that read as buttons
+//                                                 (split-button children, primary
+//                                                 and secondary menu toggles), so a
+//                                                 brand can round its buttons
+//                                                 without rounding text inputs.
+//                                                 Falls back to the control role
 //   --agm-t--logo--size--header                   product logo width in the masthead
 //                                                 (see layout/Header)
 //   --agm-t--logo--size--inline                   product logo width next to the
@@ -54,13 +67,17 @@
 //                                                 on top of either size role above (see
 //                                                 components/product/ProductLogo)
 //   --agm-t--logo--align                          product logo vertical alignment
+//   --agm-t--radio--body--spacing                 extra space between a radio label
+//                                                 and the content below it (see
+//                                                 components/_patternfly-overrides)
 //
 // Typography roles (convenience; not needed to reskin, override only with strong
 // reasons):
 //   --agm-t--font--family--{body,heading,mono}    font families
 //   --agm-t--font--weight--{body,heading,bold}    font weights
 //   --agm-t--font--size--100 .. --800             font size scale (--200 is body)
-//   --agm-t--icon--size--100 .. --800             icon size scale
+//   --agm-t--icon--size--100 .. --800             icon size scale (Agama's own
+//                                                 icons and PatternFly's alike)
 //
 // High contrast is intentionally excluded from every block here: it is an
 // accessibility mode, so PatternFly's high-contrast theme governs it fully and
@@ -128,30 +145,36 @@
   --pf-t--global--breakpoint--lg: 64rem;
   --pf-t--global--font--size--body--sm: var(--pf-t--global--font--size--sm);
 
-  // Base corner radius override hook. PatternFly splits radius into three
+  // Corner radius override hooks. PatternFly splits radius into three
   // independent tiers (small: buttons/controls/tables/tooltips/menus; medium:
-  // cards/popovers/expandable sections; large: modal dialogs), so this
-  // redefines all three from the one role. Unset by default, so every
-  // component keeps its stock look; redefine --agm-t--border-radius (e.g. to
-  // 0) from a product override to reskin all of them in one shot.
+  // cards/popovers/expandable sections; large: modal dialogs and the login
+  // card, plus the switch/slider thumbs and calendar dates that share the
+  // tier). --agm-t--border-radius is the master: setting it alone retunes all
+  // three at once. Each tier also has its own role, which wins over the master
+  // when set, so a product can fine-tune one tier and let the others follow
+  // the master (or PatternFly, if the master is unset too). Precedence: tier
+  // role, master role, PatternFly default. Everything unset keeps the stock
+  // look, and a skin that only sets the master behaves exactly as before.
   --pf-t--global--border--radius--small: var(
-    --agm-t--border-radius,
-    var(--pf-t--global--border--radius--200)
+    --agm-t--border-radius--small,
+    var(--agm-t--border-radius, var(--pf-t--global--border--radius--200))
   );
   --pf-t--global--border--radius--medium: var(
-    --agm-t--border-radius,
-    var(--pf-t--global--border--radius--300)
+    --agm-t--border-radius--medium,
+    var(--agm-t--border-radius, var(--pf-t--global--border--radius--300))
   );
   --pf-t--global--border--radius--large: var(
-    --agm-t--border-radius,
-    var(--pf-t--global--border--radius--400)
+    --agm-t--border-radius--large,
+    var(--agm-t--border-radius, var(--pf-t--global--border--radius--400))
   );
   // Pill-shaped controls (primary/secondary buttons, split-button children)
-  // follow the same small radius rather than PF's default fully-rounded pill.
+  // follow the same small radius rather than PF's default fully-rounded pill,
+  // so --agm-t--border-radius--small reaches them too.
   --pf-t--global--border--radius--pill: var(--pf-t--global--border--radius--small);
   // Narrower override for just the interactive controls (buttons, text
-  // inputs/textareas, selects/dropdowns), layered on top of the base above so
-  // a product can give controls a different radius than containers.
+  // inputs/textareas, selects/dropdowns), layered on top of the small tier
+  // above so a product can give controls a different radius than the rest of
+  // that tier (tables, tooltips, menus) and than the containers.
   --pf-t--global--border--radius--control--default: var(
     --agm-t--control--border-radius,
     var(--pf-t--global--border--radius--small)
@@ -160,19 +183,33 @@
     --agm-t--control--border-radius,
     var(--pf-t--global--border--radius--small)
   );
+  // Buttons sit one step narrower than the controls role, so a brand can round
+  // its buttons without rounding the text fields (Material is the usual case).
+  // PatternFly keeps a separate radius for the things that read as buttons
+  // without being one: split-button children, and primary and secondary menu
+  // toggles. It defaults to the pill token, which the line above pins to the
+  // small tier, and that is the fallback kept here: deliberately not the
+  // control role, so a skin that sets only --agm-t--control--border-radius
+  // keeps rendering these exactly as it does today.
+  --pf-t--global--border--radius--action--default: var(
+    --agm-t--button--border-radius,
+    var(--pf-t--global--border--radius--pill)
+  );
 
-  // Icon size scale (theme-independent), consumed by the Icon `size` prop via
-  // its CSS classes. Each step defaults to the matching font size, so icons stay
-  // in sync with font-size overrides from a product / color scheme; override the
-  // --agm-t--icon--size--* tokens for icon-only fine-tuning.
-  --agm-t--icon--size--100: var(--pf-t--global--font--size--100);
-  --agm-t--icon--size--200: var(--pf-t--global--font--size--200);
-  --agm-t--icon--size--300: var(--pf-t--global--font--size--300);
-  --agm-t--icon--size--400: var(--pf-t--global--font--size--400);
-  --agm-t--icon--size--500: var(--pf-t--global--font--size--500);
-  --agm-t--icon--size--600: var(--pf-t--global--font--size--600);
-  --agm-t--icon--size--700: var(--pf-t--global--font--size--700);
-  --agm-t--icon--size--800: var(--pf-t--global--font--size--800);
+  // Icon size scale (theme-independent). Unset by default: every consumption
+  // point falls back to the size it would have had anyway, so setting a step
+  // resizes icons and leaving it alone changes nothing. Agama's own icons read
+  // these through the .agm-icon-* classes (components/_agama-custom), and the
+  // block below carries the same steps into PatternFly's icon tokens, so an
+  // icon PatternFly renders itself resizes along with them.
+  //
+  // The two scales do not have the same steps, so each PF size is mapped onto
+  // the closest one of ours. The two largest PF steps (3.5rem and 6rem) are
+  // empty-state illustrations rather than icons, and are left alone.
+  --pf-t--global--icon--size--100: var(--agm-t--icon--size--100, 0.75rem);
+  --pf-t--global--icon--size--200: var(--agm-t--icon--size--200, 0.875rem);
+  --pf-t--global--icon--size--250: var(--agm-t--icon--size--300, 1rem);
+  --pf-t--global--icon--size--300: var(--agm-t--icon--size--500, 1.5rem);
 
   // PF 6.5 switched link underlines to dashed; keep them solid and matching text.
   --pf-t--global--text-decoration--link--style--default: var(

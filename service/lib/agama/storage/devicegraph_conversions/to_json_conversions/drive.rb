@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2025] SUSE LLC
+# Copyright (c) [2025-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -52,7 +52,7 @@ module Agama
               model:     drive_model,
               bus:       drive_bus,
               busId:     drive_bus_id,
-              driver:    drive_driver,
+              drivers:   drive_drivers,
               transport: drive_transport,
               info:      drive_info
             }
@@ -109,7 +109,7 @@ module Agama
           # Kernel drivers used by the device
           #
           # @return [Array<String>]
-          def drive_driver
+          def drive_drivers
             storage_device.driver
           end
 
@@ -135,8 +135,8 @@ module Agama
           # @return [Hash]
           def drive_info
             {
-              sdCard:   storage_device.sd_card?,
-              dellBoss: storage_device.boss?
+              sdCard: storage_device.sd_card?,
+              boss:   storage_device.boss?
             }
           end
         end

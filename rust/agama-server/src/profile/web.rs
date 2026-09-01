@@ -27,11 +27,12 @@ use agama_transfer::Transfer;
 use agama_utils::api::ProblemDetails;
 use gettextrs::gettext;
 
-use agama_lib::profile::{AutoyastProfileImporter, ProfileEvaluator};
+use agama_lib::profile::{AutoyastConversionResult, AutoyastProfileImporter, ProfileEvaluator};
 use aide::axum::ApiRouter;
 use axum::{
     response::{IntoResponse, Response},
     routing::post,
+    Json,
 };
 use serde::Deserialize;
 use std::collections::HashMap;
@@ -65,6 +66,8 @@ pub enum ProfileError {
     UrlParse(#[from] url::ParseError),
     #[error("AutoYaST import failed: {0}")]
     Autoyast(#[from] AutoyastError),
+    #[error("Invalid JSON produced by the AutoYaST conversion: {0}")]
+    InvalidJson(#[from] serde_json::Error),
     #[error("{0}")]
     BadRequest(String),
 }
@@ -93,6 +96,7 @@ impl IntoResponse for ProfileError {
             ProfileError::Autoyast(_) => {
                 ProblemDetails::generic(gettext("AutoYaST conversion failed"), self.to_string())
             }
+            ProfileError::InvalidJson(_) => ProblemDetails::internal_error(self.to_string()),
         };
         problem.into_response()
     }
@@ -160,6 +164,11 @@ impl ProfileBody {
     }
 }
 
+#[allow(
+    clippy::result_large_err,
+    reason = "Response is used to short-circuit with a pre-built HTTP response; the extra \
+              bytes are negligible per-request cost (see tokio-rs/axum#3824)"
+)]
 async fn validate(body: String) -> Result<(), Response> {
     let profile = ProfileBody::from_string(body);
     let profile_content = profile
@@ -189,7 +198,7 @@ async fn evaluate(body: String) -> Result<String, ProfileError> {
     Ok(output)
 }
 
-async fn autoyast(body: String) -> Result<String, ProfileError> {
+async fn autoyast(body: String) -> Result<Json<AutoyastConversionResult>, ProfileError> {
     let profile = ProfileBody::from_string(body);
     if profile.url.is_none() || profile.path.is_some() || profile.json.is_some() {
         return Err(ProfileError::BadRequest(format!(
@@ -202,5 +211,9 @@ async fn autoyast(body: String) -> Result<String, ProfileError> {
 
     let url = Url::parse(profile.url.as_ref().unwrap())?;
     let importer = AutoyastProfileImporter::read(&url).await?;
-    Ok(importer.content)
+    let profile: serde_json::Value = serde_json::from_str(&importer.content)?;
+    Ok(Json(AutoyastConversionResult {
+        profile,
+        unsupported: importer.unsupported,
+    }))
 }

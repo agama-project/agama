@@ -24,7 +24,8 @@ import React, { useState } from "react";
 import { sprintf } from "sprintf-js";
 import { Navigate } from "react-router";
 import { Alert, Button, Content, Flex, Form, FormGroup } from "@patternfly/react-core";
-import { Page, PasswordInput } from "~/components/core";
+import { PasswordInput } from "~/components/core";
+import Page from "~/components/layout/Page";
 import Text from "~/components/core/Text";
 import { AuthErrors, useAuth } from "~/context/auth";
 import SideBySideLayout from "~/components/layout/SideBySideLayout";
@@ -81,7 +82,7 @@ user privileges.",
   ).split(/[[\]]/);
 
   return (
-    <Page variant="minimal" showQuestions={false}>
+    <Page variant="minimal">
       <Page.Content>
         <SideBySideLayout
           icon="lock"

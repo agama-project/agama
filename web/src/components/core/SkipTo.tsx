@@ -24,6 +24,12 @@ import React from "react";
 import { SkipToContent, SkipToContentProps } from "@patternfly/react-core";
 import { _ } from "~/i18n";
 
+/**
+ * Id of the element holding the main content of a page, the default target of
+ * the link. Shared so that the link and its target cannot drift apart.
+ */
+export const MAIN_CONTENT_ID = "main-content";
+
 type SkipToProps = Omit<SkipToContentProps, "href" | "onClick"> & {
   /**
    * The ID (without the "#" prefix) of the element to jump to when the link is activated.
@@ -55,7 +61,7 @@ type SkipToProps = Omit<SkipToContentProps, "href" | "onClick"> & {
  */
 export default function SkipToContentLink({
   children,
-  contentId = "main-content",
+  contentId = MAIN_CONTENT_ID,
   ...props
 }: SkipToProps) {
   const onClick = (e) => {

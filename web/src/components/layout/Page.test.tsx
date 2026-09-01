@@ -22,6 +22,7 @@
 
 import React from "react";
 import { screen, within } from "@testing-library/react";
+import { Button } from "@patternfly/react-core";
 import { installerRender, mockNavigateFn, plainRender } from "~/test-utils";
 import useTrackQueriesRefetch from "~/hooks/use-track-queries-refetch";
 import { _ } from "~/i18n";
@@ -43,10 +44,13 @@ describe("Page", () => {
   beforeAll(() => {
     consoleErrorSpy = jest.spyOn(console, "error");
     consoleErrorSpy.mockImplementation();
+    // .scrollIntoView is not yet implemented at jsdom, https://github.com/jsdom/jsdom/issues/1695
+    HTMLElement.prototype.scrollIntoView = jest.fn();
   });
 
   afterAll(() => {
     consoleErrorSpy.mockRestore();
+    HTMLElement.prototype.scrollIntoView = undefined;
   });
 
   beforeEach(() => {
@@ -71,6 +75,32 @@ describe("Page", () => {
     screen.getByRole("heading", { name: "The Page Component" });
   });
 
+  it("renders a single banner and a single main landmark", () => {
+    installerRender(<Page title="Software">The Content</Page>);
+    expect(screen.getAllByRole("banner")).toHaveLength(1);
+    expect(screen.getAllByRole("main")).toHaveLength(1);
+    expect(screen.queryByRole("contentinfo")).toBeNull();
+  });
+
+  it("renders the given title as the top level heading", () => {
+    installerRender(<Page title="Software">The Content</Page>);
+    screen.getByRole("heading", { level: 1, name: "Software" });
+  });
+
+  it("moves the focus to the content when the user follows the skip link", async () => {
+    const { user } = installerRender(<Page title="Software">The Content</Page>);
+    await user.click(screen.getByRole("link", { name: "Skip to content" }));
+    expect(document.activeElement).toContainElement(screen.getByText("The Content"));
+  });
+
+  describe("minimal variant", () => {
+    it("renders the main landmark but no heading of its own", () => {
+      installerRender(<Page variant="minimal">The Content</Page>);
+      expect(screen.getAllByRole("main")).toHaveLength(1);
+      expect(screen.queryByRole("heading")).toBeNull();
+    });
+  });
+
   describe("when no progress prop is provided", () => {
     it("does not mount ProgressBackdrop", () => {
       installerRender(<Page />);
@@ -82,37 +112,6 @@ describe("Page", () => {
     it("mounts ProgressBackdrop", () => {
       installerRender(<Page progress={{ scope: "software" }} />);
       screen.getByText("ProgressBackdropMock");
-    });
-  });
-
-  describe("Page.Actions", () => {
-    it("renders a footer sticky to bottom", () => {
-      installerRender(
-        <Page.Actions>
-          <Page.Action>Save</Page.Action>
-          <Page.Action>Discard</Page.Action>
-        </Page.Actions>,
-      );
-
-      const footer = screen.getByRole("contentinfo");
-      expect(footer.classList.contains("pf-m-sticky-bottom")).toBe(true);
-    });
-  });
-
-  describe("Page.Action", () => {
-    it("triggers given onClick handler when user clicks on it, if valid", async () => {
-      const onClick = jest.fn();
-      const { user } = installerRender(<Page.Action onClick={onClick}>Cancel</Page.Action>);
-      const button = screen.getByRole("button", { name: "Cancel" });
-      await user.click(button);
-      expect(onClick).toHaveBeenCalled();
-    });
-
-    it("navigates to the path given through 'navigateTo' prop when user clicks on it", async () => {
-      const { user } = installerRender(<Page.Action navigateTo="/somewhere">Cancel</Page.Action>);
-      const button = screen.getByRole("button", { name: "Cancel" });
-      await user.click(button);
-      expect(mockNavigateFn).toHaveBeenCalledWith("/somewhere");
     });
   });
 
@@ -180,52 +179,35 @@ describe("Page", () => {
   });
 
   describe("Page.Section", () => {
-    it.todo("re-activate or drop below test accordingly to decision taken with these attributes");
-    it.skip("outputs to console.error if both are missing, title and aria-label", () => {
-      plainRender(<Page.Section>Content</Page.Section>);
-      expect(console.error).toHaveBeenCalledWith(expect.stringContaining("must have either"));
-    });
-
-    it("renders a section node", () => {
+    it("renders a region named after the aria-label", () => {
       plainRender(<Page.Section aria-label={_("A Page Section")}>The Content</Page.Section>);
-      const section = screen.getByRole("region");
+      const section = screen.getByRole("region", { name: "A Page Section" });
       within(section).getByText("The Content");
     });
 
-    it("adds the aria-labelledby attribute when title is given but aria-label is not", () => {
-      const { rerender } = plainRender(
-        <Page.Section title="A Page Section">The Content</Page.Section>,
-      );
-      const section = screen.getByRole("region");
-      expect(section).toHaveAttribute("aria-labelledby");
+    it("renders a region named after the title", () => {
+      plainRender(<Page.Section title={_("A Page Section")}>The Content</Page.Section>);
+      const section = screen.getByRole("region", { name: "A Page Section" });
+      within(section).getByText("The Content");
+    });
 
-      // aria-label is given through Page.Section props
-      rerender(
-        <Page.Section title="A Page Section" aria-label={_("An aria label")}>
-          The Content
-        </Page.Section>,
-      );
-      expect(section).not.toHaveAttribute("aria-labelledby");
+    it("renders the title as a second level heading by default", () => {
+      plainRender(<Page.Section title={_("A Page Section")}>The Content</Page.Section>);
+      screen.getByRole("heading", { level: 2, name: "A Page Section" });
+    });
 
-      // aria-label is given through pfCardProps
-      rerender(
-        <Page.Section title="A Page Section" pfCardProps={{ "aria-label": "An aria label" }}>
-          The Content
-        </Page.Section>,
-      );
-      expect(section).not.toHaveAttribute("aria-labelledby");
-
-      // None was given, title nor aria-label
-      rerender(<Page.Section>The Content</Page.Section>);
-      expect(section).not.toHaveAttribute("aria-labelledby");
+    it("renders no region when it has neither a title nor a label", () => {
+      plainRender(<Page.Section>The Content</Page.Section>);
+      screen.getByText("The Content");
+      expect(screen.queryByRole("region")).toBeNull();
     });
 
     it("renders given content props (title, description, actions, and children (content)", () => {
       installerRender(
         <Page.Section
-          title="A section"
-          description="Testing section with title, description, content, and actions"
-          actions={<Page.Action>Disable</Page.Action>}
+          title={_("A section")}
+          description={_("Testing section with title, description, content, and actions")}
+          actions={<Button>Disable</Button>}
         >
           The Content
         </Page.Section>,

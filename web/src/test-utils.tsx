@@ -35,7 +35,6 @@ import userEvent from "@testing-library/user-event";
 import { render, renderHook, within } from "@testing-library/react";
 import { isObject, noop } from "radashi";
 import { createClient } from "~/client/index";
-import { StorageUiStateProvider } from "~/context/storage-ui-state";
 import { TerminalProvider } from "~/context/terminal";
 import { AppearanceProvider } from "~/context/appearance";
 import { AnnouncerProvider } from "~/context/announcer";
@@ -368,9 +367,7 @@ const Providers = ({ children }) => {
   return (
     <AppearanceProvider>
       <AnnouncerProvider>
-        <StorageUiStateProvider>
-          <TerminalProvider>{children}</TerminalProvider>
-        </StorageUiStateProvider>
+        <TerminalProvider>{children}</TerminalProvider>
       </AnnouncerProvider>
     </AppearanceProvider>
   );
@@ -422,11 +419,10 @@ const installerRenderHook: typeof renderHook = (hook, options) => {
  *
  * @see #installerRender for using installer providers
  *
- * @note Please, be aware that it's needed to mock the core/Sidebar component
- * when testing a Page with #plainRender helper in order to avoid the test crashing
- * because mounted without provides unless you take care of mocking core/sidebar
- * content. The reason for this is that core/Page is always rendering
- * core/Sidebar as part of the layout.
+ * @note Rendering a page brings its whole shell along, and the header includes
+ * elements that read installer data and navigate, like the localization
+ * selector or the installer options. Render a page with #installerRender, or
+ * mock those parts away.
  */
 const plainRender = (ui, options = {}) => {
   const queryClient = new QueryClient({});

@@ -21,9 +21,11 @@
  */
 
 import React from "react";
-import { Button } from "@patternfly/react-core";
+import { Button, ButtonProps } from "@patternfly/react-core";
 import { useNavigate } from "react-router";
 import { _ } from "~/i18n";
+
+type CancelButtonProps = Omit<ButtonProps, "onClick" | "type">;
 
 /**
  * A Cancel button for use inside a form's action group.
@@ -32,20 +34,23 @@ import { _ } from "~/i18n";
  * component so it is available as `form.CancelButton`, keeping navigation
  * logic out of form components.
  *
+ * Button props (e.g. `size`, `variant`) are forwarded as-is, so it can be
+ * paired with a submit button that is not using the default size.
+ *
  * @example
  * <ActionGroup>
  *   <form.SubmitButton />
  *   <form.CancelButton />
  * </ActionGroup>
  */
-export default function CancelButton() {
+export default function CancelButton({ children, ...props }: CancelButtonProps) {
   const navigate = useNavigate();
+
   return (
-    <Button variant="link" onClick={() => navigate(-1)}>
-      {
+    <Button variant="link" onClick={() => navigate(-1)} {...props}>
+      {children ??
         // TRANSLATORS: label for the form cancel button.
-        _("Cancel")
-      }
+        _("Cancel")}
     </Button>
   );
 }
