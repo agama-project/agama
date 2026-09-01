@@ -36,6 +36,15 @@ import ConnectionForm from "./Form";
 // Mock scrollTo which is not available in jsdom
 Element.prototype.scrollTo = jest.fn();
 
+// The loopback device comes first from the backend, as it does on a real
+// system, so anything that seeds a value from the device list meets it first.
+const mockLoopback = {
+  name: "lo",
+  macAddress: "00:00:00:00:00:00",
+  type: CONNECTION_TYPE.LOOPBACK,
+  state: DeviceState.CONNECTED,
+};
+
 const mockDevice1 = {
   name: "enp1s0",
   macAddress: "00:11:22:33:44:55",
@@ -60,7 +69,7 @@ jest.mock("~/hooks/model/config/network", () => ({
 }));
 
 jest.mock("~/hooks/model/system/network", () => ({
-  useDevices: () => [mockDevice1, mockDevice2],
+  useDevices: () => [mockLoopback, mockDevice1, mockDevice2],
   useSystem: () => mockUseSystem(),
 }));
 
@@ -81,6 +90,13 @@ describe("ConnectionForm", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockParams({});
+  });
+
+  it("does not bind the connection to the loopback device", async () => {
+    const { user } = installerRender(<ConnectionForm />);
+    await user.click(screen.getByLabelText("Device binding"));
+    await user.click(screen.getByRole("option", { name: /Chosen by name/ }));
+    expect(screen.getByLabelText("Device name")).toHaveTextContent("enp1s0");
   });
 
   it("renders common connection fields and options", () => {

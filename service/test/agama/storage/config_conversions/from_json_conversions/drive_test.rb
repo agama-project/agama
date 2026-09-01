@@ -69,7 +69,7 @@ describe Agama::Storage::ConfigConversions::FromJSONConversions::Drive do
       it "sets #search to the expected value" do
         drive = subject.convert
         expect(drive.search).to be_a(Agama::Storage::Configs::Search)
-        expect(drive.search.name).to be_nil
+        expect(drive.search.condition_name).to be_nil
         expect(drive.search.if_not_found).to eq(:error)
       end
     end

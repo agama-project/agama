@@ -24,7 +24,8 @@ import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 import { ActionGroup, Divider, Form, FormGroup, Radio, Stack } from "@patternfly/react-core";
 import { DevicesFormSelect } from "~/components/storage";
-import { Page, SubtleContent } from "~/components/core";
+import { SubtleContent } from "~/components/core";
+import Page from "~/components/layout/Page";
 import { deviceLabel, formattedPath } from "~/components/storage/utils";
 import { useCandidateDevices, useDevices } from "~/hooks/model/system/storage";
 import {

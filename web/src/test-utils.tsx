@@ -37,6 +37,7 @@ import { isObject, noop } from "radashi";
 import { createClient } from "~/client/index";
 import { TerminalProvider } from "~/context/terminal";
 import { AppearanceProvider } from "~/context/appearance";
+import { AnnouncerProvider } from "~/context/announcer";
 import { DummyWSClient } from "~/client/ws";
 import { Status } from "~/model/status";
 import { Question } from "~/model/question";
@@ -365,7 +366,9 @@ const Providers = ({ children }) => {
 
   return (
     <AppearanceProvider>
-      <TerminalProvider>{children}</TerminalProvider>
+      <AnnouncerProvider>
+        <TerminalProvider>{children}</TerminalProvider>
+      </AnnouncerProvider>
     </AppearanceProvider>
   );
 };
@@ -416,11 +419,10 @@ const installerRenderHook: typeof renderHook = (hook, options) => {
  *
  * @see #installerRender for using installer providers
  *
- * @note Please, be aware that it's needed to mock the core/Sidebar component
- * when testing a Page with #plainRender helper in order to avoid the test crashing
- * because mounted without provides unless you take care of mocking core/sidebar
- * content. The reason for this is that core/Page is always rendering
- * core/Sidebar as part of the layout.
+ * @note Rendering a page brings its whole shell along, and the header includes
+ * elements that read installer data and navigate, like the localization
+ * selector or the installer options. Render a page with #installerRender, or
+ * mock those parts away.
  */
 const plainRender = (ui, options = {}) => {
   const queryClient = new QueryClient({});
@@ -431,7 +433,9 @@ const plainRender = (ui, options = {}) => {
   const Wrapper = ({ children }) => (
     <QueryClientProvider client={queryClient}>
       <AppearanceProvider>
-        <TerminalProvider>{children}</TerminalProvider>
+        <AnnouncerProvider>
+          <TerminalProvider>{children}</TerminalProvider>
+        </AnnouncerProvider>
       </AppearanceProvider>
     </QueryClientProvider>
   );
@@ -500,6 +504,23 @@ const getColumnValues = (table: HTMLElement | HTMLTableElement, columnName: stri
     .slice(1) // Skip header
     .map((row) => row.querySelector(`[data-label="${columnName}"]`)?.textContent?.trim());
 
+/**
+ * Returns the non-empty messages currently held by ARIA live regions.
+ *
+ * Use it to assert screen reader announcements without coupling the test to
+ * the announcer markup.
+ *
+ * @example
+ * ```ts
+ * await user.click(removeButton);
+ * expect(getAnnouncements()).toContain("alpha removed.");
+ * ```
+ */
+const getAnnouncements = (): string[] =>
+  Array.from(document.body.querySelectorAll("[aria-live]"))
+    .map((node) => node.textContent)
+    .filter((text) => text !== "");
+
 export {
   plainRender,
   installerRender,
@@ -513,6 +534,7 @@ export {
   mockUseRevalidator,
   resetLocalStorage,
   getColumnValues,
+  getAnnouncements,
   mockProgresses,
   mockStage,
   mockTasks,

@@ -22,7 +22,8 @@
 
 import React from "react";
 import { screen } from "@testing-library/react";
-import { plainRender } from "~/test-utils";
+import { installerRender, mockRoutes } from "~/test-utils";
+import { PRODUCT, ROOT } from "~/routes/paths";
 import InstallerOptionsMenu from "./InstallerOptionsMenu";
 
 jest.mock("~/components/core/ChangeProductOption", () => () => (
@@ -35,23 +36,23 @@ jest.mock("~/components/core/ConfigEditor", () => () => <div>ConfigEditor Mock</
 describe("InstallerOptionsMenu", () => {
   describe("toggle button", () => {
     it("renders a toggle with 'More options' aria-label", () => {
-      plainRender(<InstallerOptionsMenu />);
+      installerRender(<InstallerOptionsMenu />);
       screen.getByRole("button", { name: /More options/i });
     });
 
     it("renders the 'More' label by default", () => {
-      plainRender(<InstallerOptionsMenu />);
+      installerRender(<InstallerOptionsMenu />);
       expect(screen.getByRole("button", { name: /More options/i })).toHaveTextContent("More");
     });
 
     it("hides the 'More' label when hideLabel is true", () => {
-      plainRender(<InstallerOptionsMenu hideLabel />);
+      installerRender(<InstallerOptionsMenu hideLabel />);
       const toggle = screen.getByRole("button", { name: /More options/i });
       expect(toggle).not.toHaveTextContent("More");
     });
 
     it("keeps a single accessible name despite the visual tooltip", () => {
-      plainRender(<InstallerOptionsMenu hideLabel />);
+      installerRender(<InstallerOptionsMenu hideLabel />);
       // The visual-only tooltip (aria="none") must not add a second source for
       // the accessible name, so there is exactly one matching control.
       const toggles = screen.getAllByRole("button", { name: "More options" });
@@ -60,7 +61,7 @@ describe("InstallerOptionsMenu", () => {
     });
 
     it("reveals the tooltip text on hover", async () => {
-      const { user } = plainRender(<InstallerOptionsMenu hideLabel />);
+      const { user } = installerRender(<InstallerOptionsMenu hideLabel />);
       const toggle = screen.getByRole("button", { name: "More options" });
       await user.hover(toggle);
       // The tooltip renders its label as visible text (separate from the
@@ -71,18 +72,18 @@ describe("InstallerOptionsMenu", () => {
 
   describe("dropdown open/close behavior", () => {
     it("is closed by default", () => {
-      plainRender(<InstallerOptionsMenu />);
+      installerRender(<InstallerOptionsMenu />);
       expect(screen.queryByRole("menu")).toBeNull();
     });
 
     it("opens the dropdown when the toggle is clicked", async () => {
-      const { user } = plainRender(<InstallerOptionsMenu />);
+      const { user } = installerRender(<InstallerOptionsMenu />);
       await user.click(screen.getByRole("button", { name: /More options/i }));
       screen.getByRole("menu");
     });
 
     it("closes the dropdown after selecting an item", async () => {
-      const { user } = plainRender(<InstallerOptionsMenu />);
+      const { user } = installerRender(<InstallerOptionsMenu />);
       await user.click(screen.getByRole("button", { name: /More options/i }));
       const menu = screen.getByRole("menu");
       await user.click(screen.getByRole("menuitem", { name: /Show configuration/i }));
@@ -91,26 +92,34 @@ describe("InstallerOptionsMenu", () => {
   });
 
   describe("dropdown items", () => {
-    it("renders the 'Change product' option when showChangeProductOption is true", async () => {
-      const { user } = plainRender(<InstallerOptionsMenu showChangeProductOption />);
+    it("renders the 'Change product' option", async () => {
+      const { user } = installerRender(<InstallerOptionsMenu />);
       await user.click(screen.getByRole("button", { name: /More options/i }));
       screen.getByRole("menuitem", { name: /Change product/i });
     });
 
-    it("does not render the 'Change product' option by default", async () => {
-      const { user } = plainRender(<InstallerOptionsMenu />);
+    it("does not render the 'Change product' option on the product selection page", async () => {
+      mockRoutes(PRODUCT.changeProduct);
+      const { user } = installerRender(<InstallerOptionsMenu />);
+      await user.click(screen.getByRole("button", { name: /More options/i }));
+      expect(screen.queryByRole("menuitem", { name: /Change product/i })).not.toBeInTheDocument();
+    });
+
+    it("does not render the 'Change product' option once the installation started", async () => {
+      mockRoutes(ROOT.installationProgress);
+      const { user } = installerRender(<InstallerOptionsMenu />);
       await user.click(screen.getByRole("button", { name: /More options/i }));
       expect(screen.queryByRole("menuitem", { name: /Change product/i })).not.toBeInTheDocument();
     });
 
     it("renders the 'Download config' link", async () => {
-      const { user } = plainRender(<InstallerOptionsMenu />);
+      const { user } = installerRender(<InstallerOptionsMenu />);
       await user.click(screen.getByRole("button", { name: /More options/i }));
       screen.getByRole("menuitem", { name: /Show configuration/i });
     });
 
     it("renders the 'Download logs' link", async () => {
-      const { user } = plainRender(<InstallerOptionsMenu />);
+      const { user } = installerRender(<InstallerOptionsMenu />);
       await user.click(screen.getByRole("button", { name: /More options/i }));
       screen.getByRole("menuitem", { name: /Download logs/i });
     });

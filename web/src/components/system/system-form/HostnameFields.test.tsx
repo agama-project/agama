@@ -21,8 +21,8 @@
  */
 
 import React from "react";
-import { screen } from "@testing-library/react";
-import { installerRender, mockSystem } from "~/test-utils";
+import { screen, within } from "@testing-library/react";
+import { getAnnouncements, installerRender, mockSystem } from "~/test-utils";
 import { useAppForm } from "~/hooks/form";
 import { defaultOptions } from "./fields";
 import HostnameFields from "./HostnameFields";
@@ -102,11 +102,18 @@ describe("HostnameFields", () => {
     });
   });
 
-  describe("aria-live announcements", () => {
-    it("announces helper text changes to screen readers via aria-live", () => {
-      const { container } = installerRender(<TestForm />);
-      const liveRegion = container.querySelector('[aria-live="polite"]');
-      expect(liveRegion).toBeInTheDocument();
+  describe("screen reader announcements", () => {
+    it("announces the behavior of the newly selected mode", async () => {
+      const { user } = installerRender(
+        <TestForm defaultValues={{ hostnameMode: "transient", hostnameValue: "temp-name" }} />,
+      );
+
+      await user.click(screen.getByLabelText("Mode"));
+      await user.click(screen.getByRole("option", { name: /Static/ }));
+
+      expect(getAnnouncements()).toContain(
+        "Hostname will remain unchanged across reboots and network changes.",
+      );
     });
   });
 
@@ -123,7 +130,8 @@ describe("HostnameFields", () => {
       await user.click(staticOption);
 
       screen.getByRole("textbox", { name: "Name" });
-      screen.getByText(/will remain unchanged/);
+      const fieldset = screen.getByRole("group", { name: "Hostname" });
+      within(fieldset).getByText(/will remain unchanged/);
     });
 
     it("switches from static to transient mode", async () => {
@@ -139,7 +147,8 @@ describe("HostnameFields", () => {
 
       screen.getByText("static-name");
       expect(screen.queryByRole("textbox", { name: "Name" })).not.toBeInTheDocument();
-      screen.getByText(/may change after a reboot/);
+      const fieldset = screen.getByRole("group", { name: "Hostname" });
+      within(fieldset).getByText(/may change after a reboot/);
     });
   });
 

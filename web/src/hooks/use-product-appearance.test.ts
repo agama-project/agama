@@ -39,6 +39,18 @@ describe("useProductAppearance", () => {
     expect(window.localStorage.getItem("agm-product-id")).toBeNull();
   });
 
+  it("removes the stylesheet link and the persisted id when the product is deselected", () => {
+    const { rerender } = renderHook(
+      ({ productId }: { productId?: string }) => useProductAppearance(productId),
+      { initialProps: { productId: "Tumbleweed" } },
+    );
+
+    rerender({ productId: undefined });
+
+    expect(getLink()).toBeNull();
+    expect(window.localStorage.getItem("agm-product-id")).toBeNull();
+  });
+
   it("injects the product's stylesheet link and persists the product id", () => {
     renderHook(() => useProductAppearance("Tumbleweed"));
 

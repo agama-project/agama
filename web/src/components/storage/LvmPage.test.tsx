@@ -52,16 +52,15 @@ const sda: Storage.Device = {
     bus: "IDE",
     busId: "",
     transport: "usb",
-    driver: ["ahci", "mmcblk"],
+    drivers: ["ahci", "mmcblk"],
     info: {
-      dellBoss: false,
+      boss: false,
       sdCard: true,
     },
   },
   block: {
     start: 1,
     size: gib(20),
-    active: true,
     encrypted: false,
     systems: [],
     shrinking: { supported: false },
@@ -82,7 +81,7 @@ const sdb: Storage.Device = {
   drive: {
     type: "disk",
     info: {
-      dellBoss: false,
+      boss: false,
       sdCard: false,
     },
   },

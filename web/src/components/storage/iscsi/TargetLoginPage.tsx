@@ -40,7 +40,7 @@ import {
   Split,
   TextInput,
 } from "@patternfly/react-core";
-import Page from "~/components/core/Page";
+import Page from "~/components/layout/Page";
 import NestedContent from "~/components/core/NestedContent";
 import PasswordInput from "~/components/core/PasswordInput";
 import ResourceNotFound from "~/components/core/ResourceNotFound";

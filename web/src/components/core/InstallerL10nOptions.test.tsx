@@ -80,6 +80,22 @@ const renderAndOpen = async (props: InstallerL10nOptionsProps = {}) => {
   return { user };
 };
 
+type User = ReturnType<typeof installerRender>["user"];
+
+/**
+ * Picks a value from one of the dialog selectors, which take two steps: open
+ * the list of options, then choose one.
+ *
+ * Each option is named after its label plus the code shown below it, so the
+ * option is matched by a substring of that name.
+ */
+const chooseOption = async (user: User, dialog: HTMLElement, field: string, option: string) => {
+  await user.click(within(dialog).getByRole("combobox", { name: field }));
+  await user.click(
+    await screen.findByRole("option", { name: (name: string) => name.startsWith(option) }),
+  );
+};
+
 describe("InstallerL10nOptions", () => {
   beforeEach(() => {
     jest.spyOn(utils, "localConnection").mockReturnValue(true);
@@ -144,6 +160,12 @@ describe("InstallerL10nOptions", () => {
       expect(toggle).not.toHaveTextContent("us");
     });
 
+    it("renders a button that tells it opens a dialog", () => {
+      installerRender(<InstallerL10nOptions />);
+      const toggle = screen.getByRole("button", { name: "Language and Keyboard" });
+      expect(toggle).toHaveAttribute("aria-haspopup", "dialog");
+    });
+
     describe("the visual tooltip", () => {
       it("does not add a second source for the accessible name", () => {
         installerRender(<InstallerL10nOptions />);
@@ -164,14 +186,10 @@ describe("InstallerL10nOptions", () => {
     it("allows setting display language and keyboard layout", async () => {
       const { user } = await renderAndOpen();
       const dialog = screen.getByRole("dialog", { name: "Language and keyboard" });
-      const languageSelector = within(dialog).getByRole("combobox", { name: "Language" });
-      const keymapSelector = await within(dialog).findByRole("combobox", {
-        name: "Keyboard layout",
-      });
       const acceptButton = within(dialog).getByRole("button", { name: "Accept" });
 
-      await user.selectOptions(languageSelector, "Español");
-      await user.selectOptions(keymapSelector, "English (UK)");
+      await chooseOption(user, dialog, "Language", "Español");
+      await chooseOption(user, dialog, "Keyboard layout", "English (UK)");
 
       await user.click(acceptButton);
       expect(mockChangeUIL10n).toHaveBeenCalledWith({ language: "es-ES", keymap: "gb" });
@@ -180,10 +198,6 @@ describe("InstallerL10nOptions", () => {
     it("allows reusing settings for the selected product", async () => {
       const { user } = await renderAndOpen();
       const dialog = screen.getByRole("dialog", { name: "Language and keyboard" });
-      const languageSelector = within(dialog).getByRole("combobox", { name: "Language" });
-      const keymapSelector = await within(dialog).findByRole("combobox", {
-        name: "Keyboard layout",
-      });
       const reuseSettings = within(dialog).getByRole("checkbox", {
         name: /Use these same settings/,
       });
@@ -191,8 +205,8 @@ describe("InstallerL10nOptions", () => {
 
       expect(reuseSettings).toBeChecked();
 
-      await user.selectOptions(languageSelector, "Español");
-      await user.selectOptions(keymapSelector, "English (UK)");
+      await chooseOption(user, dialog, "Language", "Español");
+      await chooseOption(user, dialog, "Keyboard layout", "English (UK)");
 
       await user.click(acceptButton);
       expect(mockPatchConfigFn).toHaveBeenCalledWith({
@@ -203,13 +217,23 @@ describe("InstallerL10nOptions", () => {
       });
     });
 
+    it("keeps the product locale when it offers none for the chosen language", async () => {
+      const { user } = await renderAndOpen();
+      const dialog = screen.getByRole("dialog", { name: "Language and keyboard" });
+      const acceptButton = within(dialog).getByRole("button", { name: "Accept" });
+
+      // Catalan is offered for the interface, but the product locales above do
+      // not include it.
+      await chooseOption(user, dialog, "Language", "Català");
+      await chooseOption(user, dialog, "Keyboard layout", "English (UK)");
+
+      await user.click(acceptButton);
+      expect(mockPatchConfigFn).toHaveBeenCalledWith({ l10n: { keymap: "gb" } });
+    });
+
     it("allows not reusing settings for the selected product", async () => {
       const { user } = await renderAndOpen();
       const dialog = screen.getByRole("dialog", { name: "Language and keyboard" });
-      const languageSelector = within(dialog).getByRole("combobox", { name: "Language" });
-      const keymapSelector = await within(dialog).findByRole("combobox", {
-        name: "Keyboard layout",
-      });
       const reuseSettings = within(dialog).getByRole("checkbox", {
         name: /Use these same settings/,
       });
@@ -218,8 +242,8 @@ describe("InstallerL10nOptions", () => {
       expect(reuseSettings).toBeChecked();
       await user.click(reuseSettings);
       expect(reuseSettings).not.toBeChecked();
-      await user.selectOptions(languageSelector, "Español");
-      await user.selectOptions(keymapSelector, "English (UK)");
+      await chooseOption(user, dialog, "Language", "Español");
+      await chooseOption(user, dialog, "Keyboard layout", "English (UK)");
       await user.click(acceptButton);
       expect(mockPatchConfigFn).not.toHaveBeenCalled();
     });
@@ -227,6 +251,37 @@ describe("InstallerL10nOptions", () => {
     it("includes a link to localization page", async () => {
       await renderAndOpen();
       screen.getByRole("link", { name: "language and region" });
+    });
+
+    it("states the language of each option", async () => {
+      const { user } = await renderAndOpen();
+      const dialog = screen.getByRole("dialog", { name: "Language and keyboard" });
+
+      await user.click(within(dialog).getByRole("combobox", { name: "Language" }));
+
+      // The language is stated on the list item wrapping the option, so it
+      // applies to the option text it contains.
+      const japanese = await screen.findByRole("option", { name: /日本語/ });
+      expect(japanese.closest("li")).toHaveAttribute("lang", "ja-JP");
+      const catalan = screen.getByRole("option", { name: /Català/ });
+      expect(catalan.closest("li")).toHaveAttribute("lang", "ca-ES");
+    });
+
+    it("starts from the settings in use when reopened after a dismissed change", async () => {
+      const { user } = await renderAndOpen();
+      const dialog = screen.getByRole("dialog", { name: "Language and keyboard" });
+
+      await chooseOption(user, dialog, "Language", "Español");
+      await user.click(within(dialog).getByRole("checkbox", { name: /Use these same settings/ }));
+      await user.click(within(dialog).getByRole("button", { name: "Cancel" }));
+
+      await user.click(screen.getByRole("button", { name: "Language and Keyboard" }));
+      const reopened = screen.getByRole("dialog", { name: "Language and keyboard" });
+
+      expect(within(reopened).getByRole("combobox", { name: "Language" })).toHaveValue("Deutsch");
+      expect(
+        within(reopened).getByRole("checkbox", { name: /Use these same settings/ }),
+      ).toBeChecked();
     });
 
     describe("but a product is not selected yet", () => {
@@ -264,11 +319,10 @@ describe("InstallerL10nOptions", () => {
       it("does not allow setting the keyboard layout", async () => {
         const { user } = await renderAndOpen();
         const dialog = screen.getByRole("dialog");
-        const languageSelector = within(dialog).getByRole("combobox", { name: "Language" });
         const keymapSelector = within(dialog).queryByRole("combobox", { name: "Keyboard layout" });
         expect(keymapSelector).toBeNull();
         await within(dialog).findByText("Cannot be changed in remote installation");
-        await user.selectOptions(languageSelector, "Español");
+        await chooseOption(user, dialog, "Language", "Español");
         const acceptButton = within(dialog).getByRole("button", { name: "Accept" });
         await user.click(acceptButton);
         expect(mockChangeUIL10n).toHaveBeenCalledWith({ language: "es-ES" });
@@ -286,17 +340,20 @@ describe("InstallerL10nOptions", () => {
       expect(toggle).not.toHaveTextContent("us");
     });
 
+    it("renders a button that tells it opens a dialog", () => {
+      installerRender(<InstallerL10nOptions variant="language" />);
+      const toggle = screen.getByRole("button", { name: "Language" });
+      expect(toggle).toHaveAttribute("aria-haspopup", "dialog");
+    });
+
     it("allows setting only language", async () => {
       const { user } = await renderAndOpen({ variant: "language" });
       const dialog = screen.getByRole("dialog", { name: "Change Language" });
-      const languageSelector = within(dialog).getByRole("combobox", { name: "Language" });
-      const keymapSelector = within(dialog).queryByRole("combobox", {
-        name: "Keyboard layout",
-      });
+      const keymapSelector = within(dialog).queryByRole("combobox", { name: "Keyboard layout" });
       expect(keymapSelector).toBeNull();
       const acceptButton = within(dialog).getByRole("button", { name: "Accept" });
 
-      await user.selectOptions(languageSelector, "Español");
+      await chooseOption(user, dialog, "Language", "Español");
 
       await user.click(acceptButton);
       expect(mockChangeUIL10n).toHaveBeenCalledWith({ language: "es-ES" });
@@ -305,7 +362,6 @@ describe("InstallerL10nOptions", () => {
     it("allows reusing settings for the selected product", async () => {
       const { user } = await renderAndOpen({ variant: "language" });
       const dialog = screen.getByRole("dialog", { name: "Change Language" });
-      const languageSelector = within(dialog).getByRole("combobox", { name: "Language" });
       const reuseSettings = within(dialog).getByRole("checkbox", {
         name: /Use for the selected product too/,
       });
@@ -313,7 +369,7 @@ describe("InstallerL10nOptions", () => {
 
       expect(reuseSettings).toBeChecked();
 
-      await user.selectOptions(languageSelector, "Español");
+      await chooseOption(user, dialog, "Language", "Español");
 
       await user.click(acceptButton);
       expect(mockPatchConfigFn).toHaveBeenCalledWith({
@@ -323,10 +379,22 @@ describe("InstallerL10nOptions", () => {
       });
     });
 
+    it("changes nothing when the product offers no locale for the chosen language", async () => {
+      const { user } = await renderAndOpen({ variant: "language" });
+      const dialog = screen.getByRole("dialog", { name: "Change Language" });
+      const acceptButton = within(dialog).getByRole("button", { name: "Accept" });
+
+      // Catalan is offered for the interface, but the product locales above do
+      // not include it.
+      await chooseOption(user, dialog, "Language", "Català");
+
+      await user.click(acceptButton);
+      expect(mockPatchConfigFn).not.toHaveBeenCalled();
+    });
+
     it("allows not reusing settings for the selected product", async () => {
       const { user } = await renderAndOpen({ variant: "language" });
       const dialog = screen.getByRole("dialog", { name: "Change Language" });
-      const languageSelector = within(dialog).getByRole("combobox", { name: "Language" });
       const reuseSettings = within(dialog).getByRole("checkbox", {
         name: /Use for the selected product too/,
       });
@@ -335,7 +403,7 @@ describe("InstallerL10nOptions", () => {
       expect(reuseSettings).toBeChecked();
       await user.click(reuseSettings);
       expect(reuseSettings).not.toBeChecked();
-      await user.selectOptions(languageSelector, "Español");
+      await chooseOption(user, dialog, "Language", "Español");
       await user.click(acceptButton);
       expect(mockPatchConfigFn).not.toHaveBeenCalled();
     });
@@ -374,17 +442,20 @@ describe("InstallerL10nOptions", () => {
       expect(toggle).toHaveTextContent("us");
     });
 
+    it("renders a button that tells it opens a dialog", () => {
+      installerRender(<InstallerL10nOptions variant="keyboard" />);
+      const toggle = screen.getByRole("button", { name: "Keyboard" });
+      expect(toggle).toHaveAttribute("aria-haspopup", "dialog");
+    });
+
     it("allows setting only keyboard layout", async () => {
       const { user } = await renderAndOpen({ variant: "keyboard" });
       const dialog = screen.getByRole("dialog", { name: "Change keyboard" });
       const languageSelector = within(dialog).queryByRole("combobox", { name: "Language" });
-      const keymapSelector = await within(dialog).findByRole("combobox", {
-        name: "Keyboard layout",
-      });
       expect(languageSelector).toBeNull();
       const acceptButton = within(dialog).getByRole("button", { name: "Accept" });
 
-      await user.selectOptions(keymapSelector, "English (UK)");
+      await chooseOption(user, dialog, "Keyboard layout", "English (UK)");
 
       await user.click(acceptButton);
       expect(mockChangeUIL10n).toHaveBeenCalledWith({ keymap: "gb" });
@@ -393,9 +464,6 @@ describe("InstallerL10nOptions", () => {
     it("allows reusing settings for the selected product", async () => {
       const { user } = await renderAndOpen({ variant: "keyboard" });
       const dialog = screen.getByRole("dialog", { name: "Change keyboard" });
-      const keymapSelector = await within(dialog).findByRole("combobox", {
-        name: "Keyboard layout",
-      });
       const reuseSettings = within(dialog).getByRole("checkbox", {
         name: /Use for the selected product too/,
       });
@@ -403,7 +471,7 @@ describe("InstallerL10nOptions", () => {
 
       expect(reuseSettings).toBeChecked();
 
-      await user.selectOptions(keymapSelector, "English (UK)");
+      await chooseOption(user, dialog, "Keyboard layout", "English (UK)");
 
       await user.click(acceptButton);
       expect(mockPatchConfigFn).toHaveBeenCalledWith({
@@ -416,9 +484,6 @@ describe("InstallerL10nOptions", () => {
     it("allows not reusing settings for the selected product", async () => {
       const { user } = await renderAndOpen({ variant: "keyboard" });
       const dialog = screen.getByRole("dialog", { name: "Change keyboard" });
-      const keymapSelector = await within(dialog).findByRole("combobox", {
-        name: "Keyboard layout",
-      });
       const reuseSettings = within(dialog).getByRole("checkbox", {
         name: /Use for the selected product too/,
       });
@@ -427,7 +492,7 @@ describe("InstallerL10nOptions", () => {
       expect(reuseSettings).toBeChecked();
       await user.click(reuseSettings);
       expect(reuseSettings).not.toBeChecked();
-      await user.selectOptions(keymapSelector, "English (UK)");
+      await chooseOption(user, dialog, "Keyboard layout", "English (UK)");
       await user.click(acceptButton);
       expect(mockPatchConfigFn).not.toHaveBeenCalled();
     });
