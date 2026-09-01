@@ -39,7 +39,7 @@ jobs:
         run: zypper modifyrepo -d repo-non-oss repo-openh264 repo-update && zypper ref
 
       - name: Install the required tools
-        run: zypper --non-interactive install --no-recommends python3-kiwi git
+        run: zypper --non-interactive install --no-recommends python3-kiwi git make
 
       - name: Checkout repository
         uses: actions/checkout@v7
