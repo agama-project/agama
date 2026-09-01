@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-12 13:23+0000\n"
+"POT-Creation-Date: 2026-08-26 11:36+0000\n"
 "PO-Revision-Date: 2026-03-27 22:04+0000\n"
 "Last-Translator: Amger ugurzil <amger_ugurzil@proton.me>\n"
 "Language-Team: Kabyle <https://l10n.opensuse.org/projects/agama/agama-"
@@ -18,14 +18,6 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
 "X-Generator: Weblate 5.16.2\n"
-
-#. Reports the problems and decide whether to continue or not.
-#.
-#. @param elements [Array<Element>] List of unsupported elements.
-#: service/lib/agama/autoyast/profile_reporter.rb:51
-#, perl-brace-format
-msgid "Found unsupported elements in the AutoYaST profile: %{keys}."
-msgstr "Nufa-d iferdisen ur nettwasefrak ara deg umaɣnu AutoYaST: %{keys}."
 
 #. Implementation for the API method #Probe.
 #: service/lib/agama/dbus/storage/dasd.rb:65
@@ -521,6 +513,10 @@ msgstr ""
 #, c-format
 msgid "The zFCP device %s cannot be deactivated"
 msgstr ""
+
+#, perl-brace-format
+#~ msgid "Found unsupported elements in the AutoYaST profile: %{keys}."
+#~ msgstr "Nufa-d iferdisen ur nettwasefrak ara deg umaɣnu AutoYaST: %{keys}."
 
 #~ msgid "Certificate:"
 #~ msgstr "Aselkin:"
