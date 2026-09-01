@@ -19,7 +19,7 @@
         <profile name="SUSE_SLE_NV_16.1" description="SLE-based image for NVIDIA" import="true" />
     </profiles>
     <preferences>
-        <version>23.0.0</version>
+        <version>24.0.0</version>
         <packagemanager>zypper</packagemanager>
         <locale>en_US</locale>
         <keytable>us</keytable>

@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Sep  1 15:51:10 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 24
+
+-------------------------------------------------------------------
 Mon Aug 31 12:55:59 UTC 2026 - Martin Vidner <mvidner@suse.com>
 
 - Remove agama-integration-tests, keep just nodejs(engine)
