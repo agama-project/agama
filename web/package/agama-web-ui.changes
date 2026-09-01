@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Sep  1 13:10:58 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Allow browsing the network devices with more details when binding
+  a connection (gh#agama-project/agama#3822).
+
+-------------------------------------------------------------------
 Tue Sep  1 10:00:00 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Rebuild the product selection form with the new form stack
