@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Tue Sep  1 14:20:00 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Cope with unknown localization settings: report them as an
+  installation issue instead of crashing the overview, and keep the
+  recognized language, keyboard and time zone selected so only the
+  wrong one has to be fixed (bsc#1277313).
+
+-------------------------------------------------------------------
 Mon Aug 31 15:53:32 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Default the registration form to the effective registration URL
