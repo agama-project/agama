@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- OBS-ExclusiveArch: aarch64 ppc64le x86_64 s390x -->
+<!-- OBS-ExclusiveArch: aarch64 ppc64le x86_64 s390x i586 armv6hl armv7hl -->
 <!-- OBS-Profiles: @BUILD_FLAVOR@ -->
 <!-- OBS-Milestone: %current_milestone -->
 
@@ -47,6 +47,12 @@
     with the x86_64 products -->
     <preferences arch="aarch64,x86_64" profiles="openSUSE,SUSE_SLE_16.1,SUSE_SLE_NV_16.1,Leap_16.1">
         <type image="iso" flags="dmsquash" firmware="uefi" mediacheck="true" publisher="SUSE LLC" editbootconfig="fix_bootconfig">
+            <bootloader name="grub2" timeout="10"/>
+        </type>
+    </preferences>
+    <!-- experimental support for 32-bit and armv architectures -->
+    <preferences arch="i586,armv6hl,armv7hl" profiles="openSUSE,SUSE_SLE_16.1,SUSE_SLE_NV_16.1,Leap_16.1">
+        <type image="iso" flags="dmsquash" mediacheck="true" publisher="SUSE LLC" editbootconfig="fix_bootconfig">
             <bootloader name="grub2" timeout="10"/>
         </type>
     </preferences>
@@ -159,7 +165,7 @@
         <package name="fontconfig"/>
         <package name="fonts-config"/>
         <package name="xauth"/>
-        <package name="MozillaFirefox"/>
+        <package name="MozillaFirefox" arch="aarch64,x86_64,ppc64le,s390x"/>
         <package name="gdm-systemd"/>
         <package name="gnome-shell"/>
         <package name="gnome-session-wayland"/>
@@ -171,7 +177,7 @@
     <packages type="image" profiles="Leap_16.1,openSUSE">
         <package name="agama-products-opensuse"/>
         <package name="grub2-branding-openSUSE" arch="aarch64,x86_64"/>
-        <package name="MozillaFirefox-branding-openSUSE"/>
+        <package name="MozillaFirefox-branding-openSUSE" arch="aarch64,x86_64,ppc64le,s390x"/>
         <package name="openSUSE-build-key"/>
         <package name="patterns-openSUSE-base"/>
         <package name="staging-build-key"/>
@@ -190,7 +196,7 @@
         <package name="grub2-branding-SLE" arch="aarch64,x86_64"/>
         <package name="patterns-base-base"/>
         <package name="suse-build-key"/>
-        <package name="MozillaFirefox-branding-SLE"/>
+        <package name="MozillaFirefox-branding-SLE" arch="aarch64,x86_64,ppc64le,s390x"/>
     </packages>
     <!-- SLES specific packages -->
     <packages type="image" profiles="SUSE_SLE_16.1">
