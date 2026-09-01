@@ -35,7 +35,6 @@ import userEvent from "@testing-library/user-event";
 import { render, renderHook, within } from "@testing-library/react";
 import { isObject, noop } from "radashi";
 import { createClient } from "~/client/index";
-import { StorageUiStateProvider } from "~/context/storage-ui-state";
 import { TerminalProvider } from "~/context/terminal";
 import { AppearanceProvider } from "~/context/appearance";
 import { AnnouncerProvider } from "~/context/announcer";
@@ -368,9 +367,7 @@ const Providers = ({ children }) => {
   return (
     <AppearanceProvider>
       <AnnouncerProvider>
-        <StorageUiStateProvider>
-          <TerminalProvider>{children}</TerminalProvider>
-        </StorageUiStateProvider>
+        <TerminalProvider>{children}</TerminalProvider>
       </AnnouncerProvider>
     </AppearanceProvider>
   );

@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useState } from "react";
+import React from "react";
 import {
   Button,
   Content,
@@ -58,8 +58,8 @@ import { STORAGE_MODEL_QUERY_KEY, useConfigModel } from "~/hooks/model/storage/c
 import { PROPOSAL_QUERY_KEY } from "~/hooks/model/proposal";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { _, n_ } from "~/i18n";
-import { useLocation } from "react-router";
-import { useStorageUiState } from "~/context/storage-ui-state";
+import { useSearchParamState, useClearSearchParams } from "~/hooks/use-search-param-state";
+import { EXPANDED, SETTINGS_TAB } from "~/components/storage/ui-state-params";
 import { useSystem as useDASDSystem } from "~/hooks/model/system/dasd";
 import { useSystem as useZFCPSystem } from "~/hooks/model/system/zfcp";
 import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
@@ -181,25 +181,17 @@ function UnavailableDevicesEmptyState(): React.ReactNode {
 }
 
 function ModelSection(): React.ReactNode {
-  const { uiState, setUiState } = useStorageUiState();
+  const [activeTab, setActiveTab] = useSearchParamState(SETTINGS_TAB, "0");
+  const clearSearchParams = useClearSearchParams();
   const reset = useReset();
   const handleTabClick = (
     event: React.MouseEvent | React.KeyboardEvent | MouseEvent,
     tabIndex: number,
-  ) => {
-    setUiState((state) => {
-      state.set("st", tabIndex.toString());
-      return state;
-    });
-  };
+  ) => setActiveTab(tabIndex);
 
   const onReset = () => {
     reset();
-    setUiState((state) => {
-      state.delete("expanded");
-      state.delete("st");
-      return state;
-    });
+    clearSearchParams(EXPANDED, SETTINGS_TAB);
   };
 
   return (
@@ -234,7 +226,7 @@ function ModelSection(): React.ReactNode {
         "Changes in these settings will immediately update the 'Result' section below.",
       )}
     >
-      <Tabs activeKey={uiState.get("st") || "0"} onSelect={handleTabClick} role="region">
+      <Tabs activeKey={activeTab} onSelect={handleTabClick} role="region">
         <Tab
           key="devices"
           eventKey={"0"}
@@ -304,20 +296,7 @@ function ProposalPageContent(): React.ReactNode {
  *  and test them individually. The proposal page should simply mount all those components.
  */
 export default function ProposalPage(): React.ReactNode {
-  const location = useLocation();
-  // Hopefully this could be removed in the future. See rationale at UseStorageUiState
-  const [resetNeeded, setResetNeeded] = useState(location.state?.resetStorageUiState);
-  const { setUiState } = useStorageUiState();
   const zfcpIssues = useIssues("zfcp");
-
-  React.useEffect(() => {
-    if (resetNeeded) {
-      setResetNeeded(false);
-      setUiState(new Map());
-    }
-  }, [resetNeeded, setUiState]);
-
-  if (resetNeeded) return;
 
   return (
     <Page
