@@ -8528,9 +8528,12 @@ function StoragePlan({
     setIsPanelOpen(true);
   };
 
-  /* A page rather than a sheet. The form behind it is due a rewrite onto the
-     current form conventions, and a sheet holding a form nobody has rewritten
-     is a form that gets rewritten twice.
+  /* A page, because a form in Agama is a page. Every other form in the
+     installer lives at a route of its own, and a form that opens in a drawer
+     here would be the only one: a reader learns one way of being asked for
+     input and then meets a second, and everything a form needs, a route to
+     return to, a cancel that goes somewhere, a guard against leaving with
+     unsaved changes, has to be built again inside a panel.
 
      The sheet the earlier rounds built is still there, on `select("boot")`, so
      the two arrangements can be put side by side. */
@@ -8544,11 +8547,10 @@ function StoragePlan({
     setIsPanelOpen(true);
   };
 
-  /* A page, like boot options and for the same reason: both forms are due a
-     migration onto the current form conventions, and a sheet holding a form
-     nobody has rewritten is a form that gets rewritten twice. The two
-     installation decisions also behave alike now, which they did not while one
-     opened a sheet and the other left the page.
+  /* A page, like boot options and for the same reason: forms are pages
+     everywhere else in the installer, and this is not the place to invent a
+     second answer. The two installation decisions also behave alike now, which
+     they did not while one opened a sheet and the other left the page.
 
      The sheet the earlier rounds built is still on `select("encryption")`. */
   const goToEncryption = () => navigate(PATHS.editEncryption);
