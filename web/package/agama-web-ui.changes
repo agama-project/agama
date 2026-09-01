@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Sep  1 10:00:00 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Rebuild the product selection form with the new form stack
+  (gh#agama-project/agama#3791).
+
+-------------------------------------------------------------------
 Tue Sep  1 09:00:28 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Keep the software patterns search in the URL, so reloading or
