@@ -40,6 +40,19 @@ select {
   font: inherit;
 }
 
+// Headings take the heading family. PatternFly assigns it through its Title
+// component, so a heading written as a plain element (the breadcrumb's current
+// page, for one) would otherwise render in the body family and break the
+// typographic pairing a product sets through --agm-t--font--family--heading.
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--pf-t--global--font--family--heading);
+}
+
 // Text-wrapping progressive enhancements (ignored where unsupported): guard
 // against long unbroken strings and let the browser balance short blocks.
 h1,

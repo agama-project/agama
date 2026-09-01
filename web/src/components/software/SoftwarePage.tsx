@@ -40,7 +40,7 @@ import Interpolate from "~/components/core/Interpolate";
 import IssuesAlert from "~/components/core/IssuesAlert";
 import Link from "~/components/core/Link";
 import NestedContent from "~/components/core/NestedContent";
-import Page from "~/components/core/Page";
+import Page from "~/components/layout/Page";
 import SubtleContent from "~/components/core/SubtleContent";
 import Text from "~/components/core/Text";
 import AutoSelectedLabel from "~/components/software/AutoSelectedLabel";
@@ -56,7 +56,7 @@ import { SOFTWARE as PATHS } from "~/routes/paths";
 import { _, n_ } from "~/i18n";
 
 import type { TranslatedString } from "~/i18n";
-import { PROPOSAL_QUERY_KEY, EXTENDED_CONFIG_QUERY_KEY } from "~/hooks/model/proposal";
+import { PROPOSAL_QUERY_KEY } from "~/hooks/model/proposal";
 
 import type { Pattern } from "~/model/system/software";
 import type { PatternsSelection } from "~/model/proposal/software";
@@ -83,7 +83,7 @@ const NothingSelected = ({
   buttonText: TranslatedString;
 }) => (
   // TRANSLATORS: empty state title for a software section with nothing selected
-  <EmptyState headingLevel="h4" titleText={_("None selected")} variant="sm">
+  <EmptyState headingLevel="h3" titleText={_("None selected")} variant="sm">
     <EmptyStateBody>{body}</EmptyStateBody>
     <EmptyStateFooter>
       <EmptyStateActions>
@@ -99,7 +99,7 @@ const NothingSelected = ({
  * Informational empty state shown when patterns are not available.
  */
 const NoAvailable = ({ title, body }: { title: TranslatedString; body: TranslatedString }) => (
-  <EmptyState headingLevel="h4" titleText={title} variant="sm">
+  <EmptyState headingLevel="h3" titleText={title} variant="sm">
     <EmptyStateBody>{body}</EmptyStateBody>
   </EmptyState>
 );
@@ -221,7 +221,7 @@ type SoftwareSectionProps = {
   /** Section heading. */
   title: TranslatedString;
   /** Optional explanatory text rendered below the heading. */
-  description?: React.ReactNode;
+  description?: TranslatedString;
   /** Label for the link that opens the pattern selection page. */
   buttonText: TranslatedString;
   /** Total number of patterns in this group, selected or not. */
@@ -267,7 +267,6 @@ const SoftwareSection = ({
         </>
       }
       description={description}
-      pfCardProps={{ isFullHeight: false }}
       actions={!noneSelected && totalCount > 0 && <Link to={selectionPath}>{buttonText}</Link>}
     >
       <SelectedPatternsList patterns={patterns} selection={selection} emptyContent={emptyContent} />
@@ -395,7 +394,7 @@ function SoftwarePage() {
       breadcrumbs={[{ label: _("Software") }]}
       progress={{
         scope: "software",
-        awaitQueriesRefetch: [PROPOSAL_QUERY_KEY, EXTENDED_CONFIG_QUERY_KEY],
+        awaitQueriesRefetch: [PROPOSAL_QUERY_KEY],
       }}
     >
       <Page.Content>

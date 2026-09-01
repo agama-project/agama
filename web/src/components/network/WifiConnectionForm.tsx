@@ -33,7 +33,8 @@ import {
   FormSelectOption,
 } from "@patternfly/react-core";
 import Icon from "~/components/layout/Icon";
-import { Page, PasswordInput } from "~/components/core";
+import { PasswordInput } from "~/components/core";
+import Page from "~/components/layout/Page";
 import { Connection, WifiNetwork, Wireless } from "~/types/network";
 import { useWifiNetworks } from "~/hooks/model/system/network";
 import { useConnectionMutation } from "~/hooks/model/config/network";
@@ -133,6 +134,7 @@ function WifiConnectionFormContent() {
   if (networks.length === 0)
     return (
       <EmptyState
+        headingLevel="h2"
         titleText={_("No Wi-Fi networks were found")}
         icon={() => <Icon name="error" />}
       />

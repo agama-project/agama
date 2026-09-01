@@ -23,20 +23,11 @@
 import React from "react";
 import { isEmpty } from "radashi";
 import { sprintf } from "sprintf-js";
-import {
-  Content,
-  Divider,
-  EmptyState,
-  EmptyStateBody,
-  Flex,
-  Grid,
-  GridItem,
-  Split,
-} from "@patternfly/react-core";
+import { Divider, EmptyState, EmptyStateBody, Grid, GridItem, Split } from "@patternfly/react-core";
 import { SYSTEM_QUERY_KEY } from "~/hooks/model/system";
 import { CONFIG_QUERY_KEY } from "~/hooks/model/config";
 import Link from "~/components/core/Link";
-import Page from "~/components/core/Page";
+import Page from "~/components/layout/Page";
 import Text from "~/components/core/Text";
 import SubtleContent from "~/components/core/SubtleContent";
 import ZFCPDevicesTable from "~/components/storage/zfcp/ZFCPDevicesTable";
@@ -103,7 +94,9 @@ const ZFCPControllersContent = (): React.ReactNode => {
 
   return (
     <Page.Section
-      aria-label={_("zFCP controllers")}
+      isFullHeight
+      title={<Text textStyle="fontSizeMd">{_("zFCP controllers")}</Text>}
+      description={<Text>{controllers.map((c) => c.channel).join(", ")}</Text>}
       actions={
         !isEmpty(deactivatedControllers) && (
           <Split hasGutter>
@@ -114,17 +107,9 @@ const ZFCPControllersContent = (): React.ReactNode => {
         )
       }
     >
-      <Flex direction={{ default: "column" }}>
-        <Content isEditorial>
-          <Flex gap={{ default: "gapXs" }}>
-            <Text isBold>{_("zFCP controllers")}</Text>{" "}
-            <Text component="small">{controllers.map((c) => c.channel).join(", ")}</Text>
-          </Flex>
-        </Content>
-        <SubtleContent>
-          <ZFCPControllersDescription controllers={controllers} />
-        </SubtleContent>
-      </Flex>
+      <SubtleContent>
+        <ZFCPControllersDescription controllers={controllers} />
+      </SubtleContent>
     </Page.Section>
   );
 };

@@ -21,6 +21,7 @@
  */
 
 import React, { useState } from "react";
+import { useLocation } from "react-router";
 import {
   Divider,
   Dropdown,
@@ -35,6 +36,7 @@ import VisualTooltip from "~/components/core/VisualTooltip";
 import ChangeProductOption from "~/components/core/ChangeProductOption";
 import ConfigDialog from "~/components/core/ConfigDialog";
 import DownloadLogsFeedback from "~/components/core/DownloadLogsFeedback";
+import { PRODUCT, ROOT } from "~/routes/paths";
 import { _ } from "~/i18n";
 
 /**
@@ -46,12 +48,6 @@ export type InstallerOptionsMenuProps = {
    * space is limited or when placed in a narrow slot.
    */
   hideLabel?: boolean;
-  /**
-   * Whether to include the "Change product" entry in the dropdown list. Set
-   * this to `true` only on pages where including the link for switching to
-   * another product or mode make sense (e.g., the Overview page).
-   */
-  showChangeProductOption?: boolean;
 };
 
 /** Renders a menu item label with a leading icon, aligned consistently. */
@@ -66,10 +62,18 @@ const ItemContent = ({ icon, text }: { icon: IconProps["name"]; text: string }) 
  * A dropdown menu containing some installer options, such as
  * product switching and log downloading.
  */
-export default function InstallerOptionsMenu({
-  hideLabel = false,
-  showChangeProductOption = false,
-}: InstallerOptionsMenuProps) {
+export default function InstallerOptionsMenu({ hideLabel = false }: InstallerOptionsMenuProps) {
+  const location = useLocation();
+  // Changing the product or mode makes no sense on the product selection page
+  // itself nor during/after the installation.
+  const showChangeProductOption = ![
+    PRODUCT.changeProduct,
+    ROOT.installation,
+    ROOT.installationProgress,
+    ROOT.installationFinished,
+    ROOT.installationExit,
+  ].includes(location.pathname);
+
   const [isOpen, setIsOpen] = useState(false);
   const [isConfigOpen, setIsConfigOpen] = useState(false);
   const toggle = () => setIsOpen(!isOpen);
