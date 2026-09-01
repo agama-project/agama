@@ -45,4 +45,5 @@ jobs:
         uses: actions/checkout@v7
 
       - name: Validate the Kiwi image definition
-        run: kiwi-ng image info --description live/src
+        run: make validate
+        working-directory: live/
