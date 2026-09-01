@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import { Page } from "~/components/core";
+import Page from "~/components/layout/Page";
 import SystemForm from "~/components/system/system-form/Form";
 import { _ } from "~/i18n";
 

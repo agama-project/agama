@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Aug 18 06:28:54 UTC 2026 - Dominique Leuenberger <dimstar@opensuse.org>
+
+- Microos/Kalpa: No longer reference deprecated microos_hardware
+  pattern (boo#1275469).
+
+-------------------------------------------------------------------
 Fri Jul 24 07:03:30 UTC 2026 - Ancor Gonzalez Sosa <ancor@suse.com>
 
 - Added generic storage volumes to the immutables modes, as
