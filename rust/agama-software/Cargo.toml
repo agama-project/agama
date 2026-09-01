@@ -16,7 +16,7 @@ i18n-format = { workspace = true }
 openssl = { workspace = true }
 schemars = { workspace = true }
 serde = { workspace = true }
-suseconnect-agama = { workspace = true }
+strum = { workspace = true }
 thiserror = { workspace = true }
 tokio = { workspace = true }
 tracing = { workspace = true }
@@ -27,3 +27,7 @@ zypp-agama = { workspace = true }
 serde_yaml = { workspace = true }
 tempfile = { workspace = true }
 tracing-subscriber = { workspace = true }
+
+# suse connect is available only on 64-bit systems so registration depedency is only for 64bit archs
+[target.'cfg(target_pointer_width = "64")'.dependencies]
+suseconnect-agama = { path = "../suseconnect-agama" }

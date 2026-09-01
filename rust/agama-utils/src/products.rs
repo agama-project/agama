@@ -649,10 +649,10 @@ mod test {
         assert!(description["cs"].contains("verze"));
 
         let software = &tw.software;
-        assert_eq!(software.installation_repositories.len(), 12);
-        assert_eq!(software.installation_labels.len(), 4);
+        assert_eq!(software.installation_repositories.len(), 21);
+        assert_eq!(software.installation_labels.len(), 7);
         assert_eq!(software.base_product.as_ref().unwrap(), "openSUSE");
-        assert_eq!(software.user_patterns.len(), 11);
+        assert_eq!(software.user_patterns.len(), 12);
 
         let selinux = software
             .user_patterns
