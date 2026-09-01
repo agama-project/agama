@@ -26,7 +26,7 @@ import { installerRender } from "~/test-utils";
 
 const mockPatchConfig = jest.fn();
 const mockSystem = jest.fn();
-const mockProposal = jest.fn();
+const mockConfig = jest.fn();
 
 jest.mock("~/api", () => ({
   ...jest.requireActual("~/api"),
@@ -37,8 +37,8 @@ jest.mock("~/hooks/model/system/l10n", () => ({
   useSystem: () => mockSystem(),
 }));
 
-jest.mock("~/hooks/model/proposal/l10n", () => ({
-  useProposal: () => mockProposal(),
+jest.mock("~/hooks/model/config/l10n", () => ({
+  useExtendedL10n: () => mockConfig(),
 }));
 
 const SYSTEM = {
@@ -61,7 +61,7 @@ const SYSTEM = {
   ],
 };
 
-const PROPOSAL = {
+const CONFIG = {
   locale: "en_US.UTF-8",
   keymap: "us",
   timezone: "America/New_York",
@@ -72,7 +72,7 @@ const accept = () => screen.getByRole("button", { name: "Accept" });
 
 beforeEach(() => {
   mockSystem.mockReturnValue(SYSTEM);
-  mockProposal.mockReturnValue(PROPOSAL);
+  mockConfig.mockReturnValue(CONFIG);
   mockPatchConfig.mockResolvedValue(true);
 });
 
