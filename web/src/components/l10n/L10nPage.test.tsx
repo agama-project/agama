@@ -26,10 +26,12 @@ import { installerRender } from "~/test-utils";
 import { useSystem } from "~/hooks/model/system/l10n";
 import { useExtendedL10n } from "~/hooks/model/config/l10n";
 import { Keymap, Locale, Timezone } from "~/model/system/l10n";
+import type { Issue } from "~/model/issue";
 import L10nPage from "./L10nPage";
 
 let mockSystemData: ReturnType<typeof useSystem>;
 let mockConfigData: ReturnType<typeof useExtendedL10n>;
+let mockIssues: Issue[];
 
 const locales: Locale[] = [
   { id: "en_US.UTF-8", language: "English", territory: "United States" },
@@ -60,6 +62,11 @@ jest.mock("~/hooks/model/config/l10n", () => ({
   useExtendedL10n: () => mockConfigData,
 }));
 
+jest.mock("~/hooks/model/issue", () => ({
+  ...jest.requireActual("~/hooks/model/issue"),
+  useIssues: () => mockIssues,
+}));
+
 beforeEach(() => {
   mockSystemData = {
     locales,
@@ -72,6 +79,8 @@ beforeEach(() => {
     keymap: "us",
     timezone: "Europe/Berlin",
   };
+
+  mockIssues = [];
 });
 
 it("renders a clarification about settings", () => {
@@ -90,6 +99,23 @@ it("renders the language, keyboard and time zone selectors", () => {
   screen.getByRole("combobox", { name: "Language" });
   screen.getByRole("combobox", { name: "Keyboard" });
   screen.getByRole("combobox", { name: "Time zone" });
+});
+
+describe("when the backend reports localization issues", () => {
+  beforeEach(() => {
+    mockIssues = [
+      {
+        scope: "l10n",
+        class: "unknown_timezone",
+        description: "Timezone 'Europe/ndorra' is unknown",
+      },
+    ];
+  });
+
+  it("tells the user what is not recognized", () => {
+    installerRender(<L10nPage />);
+    screen.getByText("Timezone 'Europe/ndorra' is unknown");
+  });
 });
 
 describe("when a configured id is not recognized", () => {
