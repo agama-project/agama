@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-11 12:03+0000\n"
+"POT-Creation-Date: 2026-08-24 09:16+0000\n"
 "PO-Revision-Date: 2026-08-19 16:13+0000\n"
 "Last-Translator: Bone NI <bounkirdni@gmail.com>\n"
 "Language-Team: Lao <https://l10n.opensuse.org/projects/agama/agama-service-"
@@ -66,11 +66,11 @@ msgstr "ໂຫຼດຄຳແປບ່ອນເກັບຂໍ້ມູນ"
 #. @return [Agama::Question]
 #: service/lib/agama/registration.rb:423
 msgid ""
-"Trying to import a self signed certificate. Do you want to trust it and regist"
-"er the product?"
+"Trying to import a self signed certificate. Do you want to trust it and "
+"register the product?"
 msgstr ""
-"ກຳລັງພະຍາຍາມນຳເຂົ້າໃບຮັບຮອງທີ່ລົງລາຍເຊັນດ້ວຍຕົນເອງ. ເຈົ້າຕ້ອງການເຊື່ອຖືມັນ ແລະ ລົງທະບຽນຜະລິດຕະພັນ"
-"ບໍ່?"
+"ກຳລັງພະຍາຍາມນຳເຂົ້າໃບຮັບຮອງທີ່ລົງລາຍເຊັນດ້ວຍຕົນເອງ. ເຈົ້າຕ້ອງການເຊື່ອຖືມັນ ແລະ "
+"ລົງທະບຽນຜະລິດຕະພັນບໍ່?"
 
 #. TRANSLATORS: button label, try downloading the failed package again
 #: service/lib/agama/software/callbacks/base.rb:48
@@ -109,12 +109,13 @@ msgstr "ບໍ່"
 #: service/lib/agama/software/callbacks/digest.rb:58
 #, perl-brace-format
 msgid ""
-"No checksum for the file %{file} was found in the repository. This means that "
-"although the file is part of the signed repository, the list of checksums does"
-" not mention this file. Use it anyway?"
+"No checksum for the file %{file} was found in the repository. This means "
+"that although the file is part of the signed repository, the list of "
+"checksums does not mention this file. Use it anyway?"
 msgstr ""
-"ບໍ່ພົບຄ່າ checksum ສຳລັບໄຟລ໌ %{file} ໃນຄັງເກັບ. ນີ້ໝາຍຄວາມວ່າ ເຖິງແມ່ນວ່າໄຟລ໌ຈະເປັນສ່ວນໜຶ່ງຂອງຄັງ"
-"ເກັບທີ່ມີລາຍເຊັນ, ແຕ່ລາຍຊື່ checksum ບໍ່ໄດ້ລະບຸໄຟລ໌ນີ້. ຕ້ອງການໃຊ້ຕໍ່ໄປບໍ່?"
+"ບໍ່ພົບຄ່າ checksum ສຳລັບໄຟລ໌ %{file} ໃນຄັງເກັບ. ນີ້ໝາຍຄວາມວ່າ "
+"ເຖິງແມ່ນວ່າໄຟລ໌ຈະເປັນສ່ວນໜຶ່ງຂອງຄັງເກັບທີ່ມີລາຍເຊັນ, ແຕ່ລາຍຊື່ checksum ບໍ່ໄດ້ລະບຸໄຟລ໌ນີ້. "
+"ຕ້ອງການໃຊ້ຕໍ່ໄປບໍ່?"
 
 #. Callback to accept an unknown digest
 #.
@@ -124,12 +125,12 @@ msgstr ""
 #: service/lib/agama/software/callbacks/digest.rb:84
 #, perl-brace-format
 msgid ""
-"The checksum of the file %{file} is \"%{digest}\" but the expected checksum is u"
-"nknown. This means that the origin and integrity of the file cannot be verifie"
-"d. Use it anyway?"
+"The checksum of the file %{file} is \"%{digest}\" but the expected checksum "
+"is unknown. This means that the origin and integrity of the file cannot be "
+"verified. Use it anyway?"
 msgstr ""
-"ຄ່າ checksum ຂອງໄຟລ໌ %{file} ແມ່ນ \"%{digest}\" ແຕ່ບໍ່ຮູ້ຄ່າ checksum ທີ່ຄາດໄວ້. ນີ້ໝາຍຄວາມ"
-"ວ່າບໍ່ສາມາດກວດສອບແຫຼ່ງທີ່ມາ ແລະ ຄວາມຖືກຕ້ອງຂອງໄຟລ໌ໄດ້. ຕ້ອງການໃຊ້ຕໍ່ໄປບໍ່?"
+"ຄ່າ checksum ຂອງໄຟລ໌ %{file} ແມ່ນ \"%{digest}\" ແຕ່ບໍ່ຮູ້ຄ່າ checksum ທີ່ຄາດໄວ້. "
+"ນີ້ໝາຍຄວາມວ່າບໍ່ສາມາດກວດສອບແຫຼ່ງທີ່ມາ ແລະ ຄວາມຖືກຕ້ອງຂອງໄຟລ໌ໄດ້. ຕ້ອງການໃຊ້ຕໍ່ໄປບໍ່?"
 
 #. Callback to accept wrong digest
 #.
@@ -140,9 +141,9 @@ msgstr ""
 #: service/lib/agama/software/callbacks/digest.rb:111
 #, perl-brace-format
 msgid ""
-"The expected checksum of file %{file} is \"%{found}\" but it was expected to be "
-"\"%{expected}\". The file has changed by accident or by an attacker since the cr"
-"eater signed it. Use it anyway?"
+"The expected checksum of file %{file} is \"%{found}\" but it was expected to "
+"be \"%{expected}\". The file has changed by accident or by an attacker since "
+"the creater signed it. Use it anyway?"
 msgstr ""
 "ຄ່າ checksum ທີ່ພົບຂອງໄຟລ໌ %{file} ແມ່ນ \"%{found}\" ແຕ່ຄ່າທີ່ຄາດໄວ້ແມ່ນ \"%{expected}"
 "\". ໄຟລ໌ມີການປ່ຽນແປງໂດຍບັງເອີນ ຫຼື ໂດຍຜູ້ບຸກລຸກຕັ້ງແຕ່ຕອນສ້າງລາຍເຊັນ. ຕ້ອງການໃຊ້ຕໍ່ໄປບໍ່?"
@@ -163,20 +164,20 @@ msgstr "ເກີດບັນຫາໃນການລັນສະຄຣິບຂ
 #: service/lib/agama/software/callbacks/signature.rb:66
 #, perl-brace-format
 msgid ""
-"The file %{filename} from %{repo_url} is not digitally signed. The origin and "
-"integrity of the file cannot be verified. Use it anyway?"
+"The file %{filename} from %{repo_url} is not digitally signed. The origin "
+"and integrity of the file cannot be verified. Use it anyway?"
 msgstr ""
-"ໄຟລ໌ %{filename} ຈາກ %{repo_url} ບໍ່ມີລາຍເຊັນດິຈິຕອນ. ບໍ່ສາມາດກວດສອບແຫຼ່ງທີ່ມາ ແລະ ຄວາມຖືກຕ້"
-"ອງຂອງໄຟລ໌ໄດ້. ຕ້ອງການໃຊ້ຕໍ່ໄປບໍ່?"
+"ໄຟລ໌ %{filename} ຈາກ %{repo_url} ບໍ່ມີລາຍເຊັນດິຈິຕອນ. ບໍ່ສາມາດກວດສອບແຫຼ່ງທີ່ມາ ແລະ "
+"ຄວາມຖືກຕ້ອງຂອງໄຟລ໌ໄດ້. ຕ້ອງການໃຊ້ຕໍ່ໄປບໍ່?"
 
 #: service/lib/agama/software/callbacks/signature.rb:72
 #, perl-brace-format
 msgid ""
-"The file %{filename} is not digitally signed. The origin and integrity of the "
-"file cannot be verified. Use it anyway?"
+"The file %{filename} is not digitally signed. The origin and integrity of "
+"the file cannot be verified. Use it anyway?"
 msgstr ""
-"ໄຟລ໌ %{filename} ບໍ່ມີລາຍເຊັນດິຈິຕອນ. ບໍ່ສາມາດກວດສອບແຫຼ່ງທີ່ມາ ແລະ ຄວາມຖືກຕ້ອງຂອງໄຟລ໌ໄດ້. ຕ້ອງກ"
-"ານໃຊ້ຕໍ່ໄປບໍ່?"
+"ໄຟລ໌ %{filename} ບໍ່ມີລາຍເຊັນດິຈິຕອນ. ບໍ່ສາມາດກວດສອບແຫຼ່ງທີ່ມາ ແລະ ຄວາມຖືກຕ້ອງຂອງໄຟລ໌ໄດ້. "
+"ຕ້ອງການໃຊ້ຕໍ່ໄປບໍ່?"
 
 #. Callback to handle signature verification failures
 #.
@@ -185,10 +186,9 @@ msgstr ""
 #: service/lib/agama/software/callbacks/signature.rb:100
 #, perl-brace-format
 msgid ""
-"The key %{id} (%{name}) with fingerprint %{fingerprint} is unknown. Do you wan"
-"t to trust this key?"
-msgstr ""
-"ຄີ %{id} (%{name}) ທີ່ມີລາຍນິ້ວມື %{fingerprint} ແມ່ນບໍ່ຮູ້ຈັກ. ເຈົ້າຕ້ອງການເຊື່ອຖືຄີນີ້ບໍ່?"
+"The key %{id} (%{name}) with fingerprint %{fingerprint} is unknown. Do you "
+"want to trust this key?"
+msgstr "ຄີ %{id} (%{name}) ທີ່ມີລາຍນິ້ວມື %{fingerprint} ແມ່ນບໍ່ຮູ້ຈັກ. ເຈົ້າຕ້ອງການເຊື່ອຖືຄີນີ້ບໍ່?"
 
 #. Callback to handle unknown GPG keys
 #.
@@ -198,8 +198,8 @@ msgstr ""
 #: service/lib/agama/software/callbacks/signature.rb:131
 #, perl-brace-format
 msgid ""
-"The file %{filename} from %{repo_url} is digitally signed with the following u"
-"nknown GnuPG key: %{key_id}. Use it anyway?"
+"The file %{filename} from %{repo_url} is digitally signed with the following "
+"unknown GnuPG key: %{key_id}. Use it anyway?"
 msgstr ""
 "ໄຟລ໌ %{filename} ຈາກ %{repo_url} ຖືກລົງລາຍເຊັນດິຈິຕອນດ້ວຍຄີ GnuPG ທີ່ບໍ່ຮູ້ຈັກຕໍ່ໄປນີ້: %"
 "{key_id}. ຕ້ອງການໃຊ້ຕໍ່ໄປບໍ່?"
@@ -207,8 +207,8 @@ msgstr ""
 #: service/lib/agama/software/callbacks/signature.rb:137
 #, perl-brace-format
 msgid ""
-"The file %{filename} is digitally signed with the following unknown GnuPG key:"
-" %{key_id}. Use it anyway?"
+"The file %{filename} is digitally signed with the following unknown GnuPG "
+"key: %{key_id}. Use it anyway?"
 msgstr ""
 "ໄຟລ໌ %{filename} ຖືກລົງລາຍເຊັນດິຈິຕອນດ້ວຍຄີ GnuPG ທີ່ບໍ່ຮູ້ຈັກຕໍ່ໄປນີ້: %{key_id}. ຕ້ອງການໃຊ້ຕໍ່ໄປບໍ່?"
 
@@ -220,18 +220,18 @@ msgstr ""
 #: service/lib/agama/software/callbacks/signature.rb:168
 #, perl-brace-format
 msgid ""
-"The file %{filename} from %{repo_url} is digitally signed with the following G"
-"nuPG key, but the integrity check failed: %{key_id} (%{key_name}). Use it anyw"
-"ay?"
+"The file %{filename} from %{repo_url} is digitally signed with the following "
+"GnuPG key, but the integrity check failed: %{key_id} (%{key_name}). Use it "
+"anyway?"
 msgstr ""
-"ໄຟລ໌ %{filename} ຈາກ %{repo_url} ຖືກລົງລາຍເຊັນດິຈິຕອນດ້ວຍຄີ GnuPG ຕໍ່ໄປນີ້, ແຕ່ການກວດສອບຄວ"
-"າມຖືກຕ້ອງຫຼົ້ມເຫຼວ: %{key_id} (%{key_name}). ຕ້ອງການໃຊ້ຕໍ່ໄປບໍ່?"
+"ໄຟລ໌ %{filename} ຈາກ %{repo_url} ຖືກລົງລາຍເຊັນດິຈິຕອນດ້ວຍຄີ GnuPG ຕໍ່ໄປນີ້, "
+"ແຕ່ການກວດສອບຄວາມຖືກຕ້ອງຫຼົ້ມເຫຼວ: %{key_id} (%{key_name}). ຕ້ອງການໃຊ້ຕໍ່ໄປບໍ່?"
 
 #: service/lib/agama/software/callbacks/signature.rb:175
 #, perl-brace-format
 msgid ""
-"The file %{filename} is digitally signed with the following GnuPG key, but the"
-" integrity check failed: %{key_id} (%{key_name}). Use it anyway?"
+"The file %{filename} is digitally signed with the following GnuPG key, but "
+"the integrity check failed: %{key_id} (%{key_name}). Use it anyway?"
 msgstr ""
 "ໄຟລ໌ %{filename} ຖືກລົງລາຍເຊັນດິຈິຕອນດ້ວຍຄີ GnuPG ຕໍ່ໄປນີ້, ແຕ່ການກວດສອບຄວາມຖືກຕ້ອງຫຼົ້ມເຫຼວ: %"
 "{key_id} (%{key_name}). ຕ້ອງການໃຊ້ຕໍ່ໄປບໍ່?"
@@ -366,8 +366,8 @@ msgstr "ອຸປະກອນທີ່ມີນາມແຝງ '%s' ຖືກໃ
 #: service/lib/agama/storage/config_checkers/alias.rb:95
 #, c-format
 msgid ""
-"The device with alias '%s' cannot be formatted because it is used by other dev"
-"ice"
+"The device with alias '%s' cannot be formatted because it is used by other "
+"device"
 msgstr "ອຸປະກອນທີ່ມີນາມແຝງ '%s' ບໍ່ສາມາດຟໍແມັດໄດ້ ເພາະມັນຖືກໃຊ້ໂດຍອຸປະກອນອື່ນ"
 
 #. Issue when the device has both partitions and a user.
@@ -376,10 +376,9 @@ msgstr "ອຸປະກອນທີ່ມີນາມແຝງ '%s' ບໍ່ສ
 #: service/lib/agama/storage/config_checkers/alias.rb:118
 #, c-format
 msgid ""
-"The device with alias '%s' cannot be partitioned because it is used by other d"
-"evice"
-msgstr ""
-"ອຸປະກອນທີ່ມີນາມແຝງ '%s' ບໍ່ສາມາດແບ່ງພາທິຊັນໄດ້ ເພາະມັນຖືກໃຊ້ໂດຍອຸປະກອນອື່ນ"
+"The device with alias '%s' cannot be partitioned because it is used by other "
+"device"
+msgstr "ອຸປະກອນທີ່ມີນາມແຝງ '%s' ບໍ່ສາມາດແບ່ງພາທິຊັນໄດ້ ເພາະມັນຖືກໃຊ້ໂດຍອຸປະກອນອື່ນ"
 
 #. Error if a boot device is required and unknown.
 #.
@@ -401,7 +400,8 @@ msgstr "ບໍ່ມີອຸປະກອນບູດທີ່ມີນາມແ
 #. (e.g., 'luks1', 'random_swap').
 #: service/lib/agama/storage/config_checkers/encryption.rb:78
 #, perl-brace-format
-msgid "No passphrase provided (required for using the method '%{crypt_method}')."
+msgid ""
+"No passphrase provided (required for using the method '%{crypt_method}')."
 msgstr "ບໍ່ມີການລະບຸລະຫັດຜ່ານ (ຈຳເປັນສຳລັບການໃຊ້ວິທີ '%{crypt_method}')."
 
 #. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device
@@ -465,10 +465,9 @@ msgstr "ຕ້ອງການຢ່າງໜ້ອຍ %s ອຸປະກອນ�
 #: service/lib/agama/storage/config_checkers/md_raid.rb:168
 #, perl-brace-format
 msgid ""
-"The device '%{member}' cannot be deleted because it is part of the MD RAID %{m"
-"d_raid}"
-msgstr ""
-"ອຸປະກອນ '%{member}' ບໍ່ສາມາດລຶບໄດ້ ເພາະມັນເປັນສ່ວນໜຶ່ງຂອງ MD RAID %{md_raid}"
+"The device '%{member}' cannot be deleted because it is part of the MD RAID %"
+"{md_raid}"
+msgstr "ອຸປະກອນ '%{member}' ບໍ່ສາມາດລຶບໄດ້ ເພາະມັນເປັນສ່ວນໜຶ່ງຂອງ MD RAID %{md_raid}"
 
 #. Issue if the device member is resized.
 #.
@@ -477,8 +476,8 @@ msgstr ""
 #: service/lib/agama/storage/config_checkers/md_raid.rb:191
 #, perl-brace-format
 msgid ""
-"The device '%{member}' cannot be resized because it is part of the MD RAID %{m"
-"d_raid}"
+"The device '%{member}' cannot be resized because it is part of the MD RAID %"
+"{md_raid}"
 msgstr ""
 "ອຸປະກອນ '%{member}' ບໍ່ສາມາດປ່ຽນຂະໜາດໄດ້ ເພາະມັນເປັນສ່ວນໜຶ່ງຂອງ MD RAID %{md_raid}"
 
@@ -489,10 +488,9 @@ msgstr ""
 #: service/lib/agama/storage/config_checkers/md_raid.rb:214
 #, perl-brace-format
 msgid ""
-"The device '%{member}' cannot be formatted because it is part of the MD RAID %"
-"{md_raid}"
-msgstr ""
-"ອຸປະກອນ '%{member}' ບໍ່ສາມາດຟໍແມັດໄດ້ ເພາະມັນເປັນສ່ວນໜຶ່ງຂອງ MD RAID %{md_raid}"
+"The device '%{member}' cannot be formatted because it is part of the MD RAID "
+"%{md_raid}"
+msgstr "ອຸປະກອນ '%{member}' ບໍ່ສາມາດຟໍແມັດໄດ້ ເພາະມັນເປັນສ່ວນໜຶ່ງຂອງ MD RAID %{md_raid}"
 
 #. Issue if the device member is partitioned.
 #.
@@ -501,8 +499,8 @@ msgstr ""
 #: service/lib/agama/storage/config_checkers/md_raid.rb:237
 #, perl-brace-format
 msgid ""
-"The device '%{member}' cannot be partitioned because it is part of the MD RAID"
-" %{md_raid}"
+"The device '%{member}' cannot be partitioned because it is part of the MD "
+"RAID %{md_raid}"
 msgstr ""
 "ອຸປະກອນ '%{member}' ບໍ່ສາມາດແບ່ງພາທິຊັນໄດ້ ເພາະມັນເປັນສ່ວນໜຶ່ງຂອງ MD RAID %{md_raid}"
 
@@ -513,10 +511,9 @@ msgstr ""
 #: service/lib/agama/storage/config_checkers/md_raid.rb:259
 #, perl-brace-format
 msgid ""
-"The device '%{member}' cannot be used because it is part of the MD RAID %{md_r"
-"aid}"
-msgstr ""
-"ອຸປະກອນ '%{member}' ບໍ່ສາມາດໃຊ້ງານໄດ້ ເພາະມັນເປັນສ່ວນໜຶ່ງຂອງ MD RAID %{md_raid}"
+"The device '%{member}' cannot be used because it is part of the MD RAID %"
+"{md_raid}"
+msgstr "ອຸປະກອນ '%{member}' ບໍ່ສາມາດໃຊ້ງານໄດ້ ເພາະມັນເປັນສ່ວນໜຶ່ງຂອງ MD RAID %{md_raid}"
 
 #. Issue if the parent of the device member is formatted.
 #.
@@ -525,10 +522,9 @@ msgstr ""
 #: service/lib/agama/storage/config_checkers/md_raid.rb:284
 #, perl-brace-format
 msgid ""
-"The device '%{device}' cannot be formatted because it is part of the MD RAID %"
-"{md_raid}"
-msgstr ""
-"ອຸປະກອນ '%{device}' ບໍ່ສາມາດຟໍແມັດໄດ້ ເພາະມັນເປັນສ່ວນໜຶ່ງຂອງ MD RAID %{md_raid}"
+"The device '%{device}' cannot be formatted because it is part of the MD RAID "
+"%{md_raid}"
+msgstr "ອຸປະກອນ '%{device}' ບໍ່ສາມາດຟໍແມັດໄດ້ ເພາະມັນເປັນສ່ວນໜຶ່ງຂອງ MD RAID %{md_raid}"
 
 #. TRANSLATORS: 'method' is the identifier of the method to encrypt the device
 #. (e.g., 'luks1').
@@ -587,11 +583,11 @@ msgstr "ບໍ່ມີ LVM physical volume ທີ່ມີນາມແຝງ '%
 #: service/lib/agama/storage/config_checkers/volume_group.rb:133
 #, c-format
 msgid ""
-"The list of target devices for the volume group '%s' is mixing reused devices "
-"and new devices"
+"The list of target devices for the volume group '%s' is mixing reused "
+"devices and new devices"
 msgstr ""
-"ລາຍຊື່ອຸປະກອນເປົ້າໝາຍສຳລັບ volume group '%s' ມີການປົນກັນລະຫວ່າງອຸປະກອນທີ່ນຳມາໃຊ້ໃໝ່ ແລະ ອຸປະກ"
-"ອນໃໝ່"
+"ລາຍຊື່ອຸປະກອນເປົ້າໝາຍສຳລັບ volume group '%s' ມີການປົນກັນລະຫວ່າງອຸປະກອນທີ່ນຳມາໃຊ້ໃໝ່ ແລະ "
+"ອຸປະກອນໃໝ່"
 
 #. TRANSLATORS: %s is the replaced by a device alias (e.g., "disk1").
 #: service/lib/agama/storage/config_checkers/volume_group.rb:153
@@ -602,7 +598,8 @@ msgstr "ບໍ່ມີອຸປະກອນເປົ້າໝາຍສຳລັ
 #. TRANSLATORS: %s is the replaced by a device alias (e.g., "disk1").
 #: service/lib/agama/storage/config_checkers/volume_groups.rb:66
 #, c-format
-msgid "The device '%s' is used several times as target device for physical volumes"
+msgid ""
+"The device '%s' is used several times as target device for physical volumes"
 msgstr "ອຸປະກອນ '%s' ຖືກໃຊ້ຫຼາຍຄັ້ງເປັນອຸປະກອນເປົ້າໝາຍສຳລັບ physical volumes"
 
 #. Text of the reason preventing to shrink because there is no content.
@@ -610,12 +607,12 @@ msgstr "ອຸປະກອນ '%s' ຖືກໃຊ້ຫຼາຍຄັ້ງເ
 #. @return [String, nil] nil if there is content or there is any other reasons.
 #: service/lib/agama/storage/device_shrinking.rb:151
 msgid ""
-"Neither a file system nor a storage system was detected on the device. In case"
-" the device does contain a file system or a storage system that is not support"
-"ed, resizing will most likely cause data loss."
+"Neither a file system nor a storage system was detected on the device. In "
+"case the device does contain a file system or a storage system that is not "
+"supported, resizing will most likely cause data loss."
 msgstr ""
-"ບໍ່ພົບທັງລະບົບໄຟລ໌ ແລະ ລະບົບການເກັບຂໍ້ມູນໃນອຸປະກອນ. ໃນກໍລະນີທີ່ອຸປະກອນມີລະບົບໄຟລ໌ ຫຼື ລະບົບການເກັບຂໍ້ມູນ"
-"ທີ່ບໍ່ຮອງຮັບ, ການປ່ຽນຂະໜາດອາດຈະເຮັດໃຫ້ຂໍ້ມູນສູນຫາຍ."
+"ບໍ່ພົບທັງລະບົບໄຟລ໌ ແລະ ລະບົບການເກັບຂໍ້ມູນໃນອຸປະກອນ. ໃນກໍລະນີທີ່ອຸປະກອນມີລະບົບໄຟລ໌ ຫຼື "
+"ລະບົບການເກັບຂໍ້ມູນທີ່ບໍ່ຮອງຮັບ, ການປ່ຽນຂະໜາດອາດຈະເຮັດໃຫ້ຂໍ້ມູນສູນຫາຍ."
 
 #. Text of the reason preventing to shrink because there is no valid minimum size.
 #.
@@ -761,10 +758,12 @@ msgstr "ບໍ່ມີອຸປະກອນທີ່ຖືກເລືອກສ
 #: service/lib/agama/storage/proposal_strategies/guided.rb:151
 #, perl-brace-format
 msgid "The following selected device is not found in the system: %{devices}"
-msgid_plural "The following selected devices are not found in the system: %{devices}"
+msgid_plural ""
+"The following selected devices are not found in the system: %{devices}"
 msgstr[0] "ບໍ່ພົບອຸປະກອນທີ່ເລືອກຕໍ່ໄປນີ້ໃນລະບົບ: %{devices}"
 
 #. Recalculates the list of issues
 #: service/lib/agama/users.rb:154
-msgid "Defining a user, setting the root password or a SSH public key is required"
+msgid ""
+"Defining a user, setting the root password or a SSH public key is required"
 msgstr "ຈຳເປັນຕ້ອງໄດ້ກຳນົດຜູ້ໃຊ້, ຕັ້ງລະຫັດຜ່ານ root ຫຼື SSH public key"
