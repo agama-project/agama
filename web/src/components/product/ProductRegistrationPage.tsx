@@ -35,7 +35,8 @@ import {
   Divider,
   Title,
 } from "@patternfly/react-core";
-import { IssuesAlert, Link, NestedContent, Page } from "~/components/core";
+import { IssuesAlert, Link, NestedContent } from "~/components/core";
+import Page from "~/components/layout/Page";
 import Interpolate from "~/components/core/Interpolate";
 import Text from "~/components/core/Text";
 import RegistrationExtension from "~/components/product/RegistrationExtension";
@@ -203,7 +204,7 @@ const Extensions = () => {
   return (
     <>
       <Divider />
-      <Title headingLevel="h3">{_("Extensions")}</Title>
+      <Title headingLevel="h2">{_("Extensions")}</Title>
       <NestedContent>
         <Flex gap={{ default: "gap2xl" }} direction={{ default: "column" }}>
           {extensionComponents}

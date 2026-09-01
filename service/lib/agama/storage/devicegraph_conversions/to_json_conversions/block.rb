@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2025] SUSE LLC
+# Copyright (c) [2025-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -39,7 +39,6 @@ module Agama
           def conversions
             {
               start:     block_start,
-              active:    block_active,
               encrypted: block_encrypted,
               udevIds:   block_udev_ids,
               udevPaths: block_udev_paths,
@@ -54,13 +53,6 @@ module Agama
           # @return [Integer]
           def block_start
             storage_device.start
-          end
-
-          # Whether the block device is currently active
-          #
-          # @return [Boolean]
-          def block_active
-            storage_device.active?
           end
 
           # Whether the block device is encrypted.

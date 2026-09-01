@@ -91,6 +91,20 @@ export type SelectableDataTableColumn = {
    * sorting.
    */
   sortingKey?: string | ((item: object) => string | number);
+
+  /**
+   * Name identifying the column when its sorting is written somewhere outside
+   * the table, such as a URL search param.
+   *
+   * Only needed when `sortingKey` is a function, since when it is a string it
+   * already names the field. Keep it stable: changing it invalidates the links
+   * people saved.
+   *
+   * @example
+   * { name: _("Channel"), sortingKey: (d) => hex(d.channel), sortingId: "channel" }
+   */
+  sortingId?: string;
+
   /**
    * A space-separated string of additional CSS class names to apply to the column's cells.
    * Useful for custom styling or conditional formatting.

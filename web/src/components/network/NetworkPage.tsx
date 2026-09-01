@@ -22,7 +22,8 @@
 
 import React from "react";
 import { Flex, Stack } from "@patternfly/react-core";
-import { Link, Page } from "~/components/core";
+import { Link } from "~/components/core";
+import Page from "~/components/layout/Page";
 import Text from "~/components/core/Text";
 import Icon from "~/components/layout/Icon";
 import NoPersistentConnectionsAlert from "~/components/network/NoPersistentConnectionsAlert";
@@ -51,7 +52,6 @@ export default function NetworkPage() {
             {_("Manage available connections, connect to Wi-Fi, or add a new connection.")}
           </Text>
           <Page.Section
-            pfCardProps={{ isCompact: true, component: "div", isFullHeight: false }}
             actions={
               <>
                 <Link to={NETWORK.connection.new} variant="plain">

@@ -18,7 +18,6 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::api::manager::License;
 use schemars::JsonSchema;
 use serde::Serialize;
 
@@ -28,8 +27,6 @@ use serde::Serialize;
 pub struct SystemInfo {
     /// List of known products.
     pub products: Vec<Product>,
-    /// List of known licenses
-    pub licenses: Vec<License>,
     /// Hardware information
     pub hardware: HardwareInfo,
 }

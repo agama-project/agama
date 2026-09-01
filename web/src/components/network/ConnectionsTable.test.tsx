@@ -22,7 +22,7 @@
 
 import React from "react";
 import { screen, within } from "@testing-library/react";
-import { installerRender, mockNavigateFn } from "~/test-utils";
+import { installerRender, mockNavigateFn, mockRoutes } from "~/test-utils";
 import ConnectionsTable from "~/components/network/ConnectionsTable";
 import { Connection, ConnectionState, ConnectionStatus } from "~/types/network";
 
@@ -113,6 +113,22 @@ describe("ConnectionsTable", () => {
     expect(screen.queryByText("Wired connection 0")).not.toBeInTheDocument();
     expect(screen.getByText("Wifi1")).toBeInTheDocument();
     expect(screen.getByText("MAC connection")).toBeInTheDocument();
+  });
+
+  it("filters by what the address says, without touching any control", () => {
+    mockRoutes("/network?state=activated");
+    installerRender(<ConnectionsTable />);
+
+    screen.getByText("Wired connection 0");
+    expect(screen.queryByText("Wifi1")).toBeNull();
+  });
+
+  it("renders every connection when the address names an unknown state", () => {
+    mockRoutes("/network?state=nonsense");
+    installerRender(<ConnectionsTable />);
+
+    screen.getByText("Wired connection 0");
+    screen.getByText("Wifi1");
   });
 
   it("calls mutateConnection with status UP when 'Connect' is clicked", async () => {

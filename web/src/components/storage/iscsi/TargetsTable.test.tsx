@@ -22,7 +22,7 @@
 
 import React from "react";
 import { screen, within } from "@testing-library/react";
-import { installerRender, mockNavigateFn } from "~/test-utils";
+import { installerRender, mockNavigateFn, mockRoutes } from "~/test-utils";
 import TargetsTable from "./TargetsTable";
 import { omit } from "radashi";
 
@@ -303,6 +303,24 @@ describe("TargetsTable", () => {
       screen.getByText("iqn.2023-01.com.example:connected");
       screen.getByText("iqn.2023-01.com.example:connection_failed");
       expect(screen.queryByText("No targets matches filters")).toBeNull();
+    });
+
+    it("filters by what the address says, without touching any control", () => {
+      mockRoutes("/storage/iscsi?name=connection_failed");
+      installerRender(<TargetsTable />);
+
+      screen.getByText("iqn.2023-01.com.example:connection_failed");
+      expect(screen.queryByText("iqn.2023-01.com.example:connected")).toBeNull();
+      expect(screen.queryByText("iqn.2023-01.com.example:missing")).toBeNull();
+    });
+
+    it("renders every target when the address names an unknown status", () => {
+      mockRoutes("/storage/iscsi?status=nonsense");
+      installerRender(<TargetsTable />);
+
+      screen.getByText("iqn.2023-01.com.example:connected");
+      screen.getByText("iqn.2023-01.com.example:connection_failed");
+      screen.getByText("iqn.2023-01.com.example:missing");
     });
   });
 

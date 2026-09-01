@@ -23,6 +23,16 @@ module Agama
   module AutoYaST
     # Builds an Agama "bond" section from an AutoYaST InterfaceSection.
     class BondReader
+      # Bonding modes indexed by their kernel mode number.
+      #
+      # AutoYaST accepts both the name and the number (e.g., `mode=1`), but Agama only
+      # understands the names.
+      MODES = [
+        "balance-rr", "active-backup", "balance-xor", "broadcast", "802.3ad", "balance-tlb",
+        "balance-alb"
+      ].freeze
+      private_constant :MODES
+
       # @param section [Y2Network::AutoinstProfile::InterfaceSection] Interface section
       #   Section to extract the information from
       def initialize(section)
@@ -65,12 +75,13 @@ module Agama
 
       # Extracts the `mode` from the kernel module options.
       #
-      # @return [String, nil]
+      # @return [String, nil] nil if no (valid) `mode` option is given.
       def read_mode
-        options = section.bonding_module_opts.to_s
-        return nil if options.empty?
+        mode = section.bonding_module_opts.to_s[/mode=\S+/]
+        return nil if mode.nil?
 
-        options[/mode=\S+/].split("=").last
+        mode = mode.split("=").last
+        mode.match?(/\A\d+\z/) ? MODES[mode.to_i] : mode
       end
 
       # Reads the kernel module options removing the `mode` option

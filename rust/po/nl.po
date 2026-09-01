@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-29 12:57+0000\n"
+"POT-Creation-Date: 2026-08-14 04:33+0000\n"
 "PO-Revision-Date: 2026-05-31 13:12+0000\n"
 "Last-Translator: Feike Donia <feikedonia@proton.me>\n"
 "Language-Team: Dutch <https://l10n.opensuse.org/projects/agama/agama-rust-"
@@ -904,7 +904,7 @@ msgstr ""
 msgid "Skip"
 msgstr "Overslaan"
 
-#: agama-software/src/service.rs:304
+#: agama-software/src/service.rs:296
 msgid ""
 "Due to an internal error, it was not possible to create a software proposal."
 msgstr "Kon geen softwarevoorstel doen door een interne fout."
@@ -966,7 +966,7 @@ msgstr "Er zijn conflicten in de softwareselectie"
 msgid "Could not select %s '%s' for installation"
 msgstr "Kon het %s ‘%s’ niet selecteren voor installatie"
 
-#: agama-software/src/zypp_server.rs:1031
+#: agama-software/src/zypp_server.rs:1010
 msgid "Failed to register the system"
 msgstr "Kon het systeem niet registreren"
 

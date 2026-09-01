@@ -33,7 +33,8 @@ import {
   Split,
   TextInput,
 } from "@patternfly/react-core";
-import { NestedContent, Page, PasswordInput, SwitchEnhanced } from "~/components/core";
+import { NestedContent, PasswordInput, SwitchEnhanced } from "~/components/core";
+import Page from "~/components/layout/Page";
 import { isValidIp } from "~/utils/network";
 import { isEmpty, pick } from "radashi";
 import { discoverISCSIAction } from "~/api";

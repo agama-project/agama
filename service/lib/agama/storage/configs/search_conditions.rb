@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2025] SUSE LLC
+# Copyright (c) [2025-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -30,3 +30,19 @@ module Agama
 end
 
 require "agama/storage/configs/search_conditions/size"
+require "agama/storage/configs/search_conditions/name"
+require "agama/storage/configs/search_conditions/driver"
+require "agama/storage/configs/search_conditions/boss"
+require "agama/storage/configs/search_conditions/partition_number"
+require "agama/storage/configs/search_conditions/partition_id"
+require "agama/storage/configs/search_conditions/filesystem"
+require "agama/storage/configs/search_conditions/filesystem_type"
+require "agama/storage/configs/search_conditions/filesystem_label"
+require "agama/storage/configs/search_conditions/partitions"
+require "agama/storage/configs/search_conditions/partitions_any"
+require "agama/storage/configs/search_conditions/partitions_none"
+require "agama/storage/configs/search_conditions/partitions_all"
+require "agama/storage/configs/search_conditions/partitions_count"
+require "agama/storage/configs/search_conditions/and"
+require "agama/storage/configs/search_conditions/or"
+require "agama/storage/configs/search_conditions/not"

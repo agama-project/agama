@@ -101,7 +101,6 @@ describe("ProductSelectionPage", () => {
     mockUseSystemSoftwareFn.mockReturnValue({
       addons: [],
       patterns: [],
-      repositories: [],
     });
   });
 
@@ -204,7 +203,6 @@ describe("ProductSelectionPage", () => {
     mockUseSystemSoftwareFn.mockReturnValue({
       addons: [],
       patterns: [],
-      repositories: [],
       registration: { code: "INTERNAL-USE-ONLY-1234-5678", addons: [] },
     });
     installerRender(<ProductSelectionPage />);

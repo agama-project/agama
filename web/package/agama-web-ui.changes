@@ -1,8 +1,79 @@
 -------------------------------------------------------------------
-Tue Aug  4 08:00:00 UTC 2026 - David Diaz <dgonzalez@suse.com>
+Tue Sep  1 10:00:00 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Rebuild the product selection form with the new form stack
   (gh#agama-project/agama#3791).
+
+-------------------------------------------------------------------
+Tue Sep  1 09:00:28 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Keep the software patterns search in the URL, so reloading or
+  sharing the link opens the same filtered list
+  (gh#agama-project/agama#3788).
+
+-------------------------------------------------------------------
+Tue Sep  1 08:49:04 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Keep the table filters in the URL, so reloading or sharing the
+  link opens the same list (gh#agama-project/agama#3787).
+
+-------------------------------------------------------------------
+Tue Sep  1 08:11:20 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Keep the sorted column of the DASD, zFCP, iSCSI targets and
+  network connections tables in the URL, so reloading or sharing
+  the link opens the table sorted the same way
+  (gh#agama-project/agama#3785).
+
+-------------------------------------------------------------------
+Thu Aug 27 09:00:00 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Keep the expanded sections and the selected tabs of the storage
+  page in the URL, so reloading or sharing the link opens the same
+  view (gh#agama-project/agama#3773).
+
+-------------------------------------------------------------------
+Tue Aug 25 12:05:19 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Allow restyling the whole medium with an optional brand appearance
+  (gh#agama-project/agama#3834).
+- Add appearance roles to set the corner radius per shape size and
+  for buttons alone (gh#agama-project/agama#3834).
+
+-------------------------------------------------------------------
+Fri Aug 14 07:16:16 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Do not bind new connections to the loopback device
+  (gh#agama-project/agama#3821).
+
+-------------------------------------------------------------------
+Thu Aug 13 10:46:43 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Do not wait in the selection page after selecting a product
+  (related to bsc#1275030, gh#agama-project/agama#3820).
+- Fix an sporadic issue with "software" and "storage" skeletons
+  not disappearing (bsc#1275027, gh#agama-project/agama#3819).
+
+-------------------------------------------------------------------
+Tue Aug 11 10:57:37 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Add an application-wide live region for announcing status changes
+  to screen reader users (gh#agama-project/agama#3759).
+
+-------------------------------------------------------------------
+Fri Aug  7 15:07:47 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Fix typography and layout details that a product skin makes
+  visible: the breadcrumb trail, plain headings, the summary icon
+  and the header logo (gh#agama-project/agama#3797).
+- Document how to design, verify and ship a product skin
+  (gh#agama-project/agama#3797).
+
+-------------------------------------------------------------------
+Wed Aug  5 15:16:36 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Adapt types to changes in the storage system and proposal schemas
+  (gh#agama-project/agama#3800).
 
 -------------------------------------------------------------------
 Mon Aug  3 10:25:04 UTC 2026 - David Diaz <dgonzalez@suse.com>

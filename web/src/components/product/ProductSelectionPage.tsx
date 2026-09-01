@@ -35,7 +35,8 @@ import {
   Title,
 } from "@patternfly/react-core";
 import { Navigate, useNavigate, useSearchParams } from "react-router";
-import { Page, SubtleContent } from "~/components/core";
+import { SubtleContent } from "~/components/core";
+import Page from "~/components/layout/Page";
 import ProductLogo from "~/components/product/ProductLogo";
 import LicenseButton from "~/components/product/LicenseButton";
 import ProductForm from "~/components/product/product-selection-form/Form";

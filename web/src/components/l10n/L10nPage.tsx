@@ -24,7 +24,7 @@ import React from "react";
 import { Button } from "@patternfly/react-core";
 import InstallerL10nOptions from "~/components/core/InstallerL10nOptions";
 import Interpolate from "~/components/core/Interpolate";
-import Page from "~/components/core/Page";
+import Page from "~/components/layout/Page";
 import Text from "~/components/core/Text";
 import L10nForm from "~/components/l10n/l10n-form/Form";
 import { localConnection } from "~/utils";

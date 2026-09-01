@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useState } from "react";
+import React from "react";
 import {
   Button,
   Content,
@@ -33,14 +33,13 @@ import {
   EmptyStateFooter,
   List,
   ListItem,
-  Flex,
-  FlexItem,
   Tab,
   Tabs,
   TabTitleText,
 } from "@patternfly/react-core";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
-import { Page, Link, NestedContent } from "~/components/core/";
+import { Link, NestedContent } from "~/components/core/";
+import Page from "~/components/layout/Page";
 import Icon from "~/components/layout/Icon";
 import MenuButton from "~/components/core/MenuButton";
 import ConfigEditor from "./ConfigEditor";
@@ -56,11 +55,11 @@ import { useIssues } from "~/hooks/model/issue";
 import { useReset } from "~/hooks/model/config/storage";
 import { useProposal } from "~/hooks/model/proposal/storage";
 import { STORAGE_MODEL_QUERY_KEY, useConfigModel } from "~/hooks/model/storage/config-model";
-import { PROPOSAL_QUERY_KEY, EXTENDED_CONFIG_QUERY_KEY } from "~/hooks/model/proposal";
+import { PROPOSAL_QUERY_KEY } from "~/hooks/model/proposal";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { _, n_ } from "~/i18n";
-import { useLocation } from "react-router";
-import { useStorageUiState } from "~/context/storage-ui-state";
+import { useSearchParamState, useClearSearchParams } from "~/hooks/use-search-param-state";
+import { EXPANDED, SETTINGS_TAB } from "~/components/storage/ui-state-params";
 import { useSystem as useDASDSystem } from "~/hooks/model/system/dasd";
 import { useSystem as useZFCPSystem } from "~/hooks/model/system/zfcp";
 import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
@@ -76,6 +75,7 @@ function InvalidConfigEmptyState({ issues }: InvalidConfigEmptyStateProps): Reac
 
   return (
     <EmptyState
+      headingLevel="h2"
       titleText={_("Invalid storage settings")}
       icon={() => <Icon name="error" />}
       status="warning"
@@ -113,6 +113,7 @@ function UnknownConfigEmptyState(): React.ReactNode {
 
   return (
     <EmptyState
+      headingLevel="h2"
       titleText={_("Unable to modify the settings")}
       icon={() => <Icon name="error" />}
       status="warning"
@@ -146,6 +147,7 @@ function UnavailableDevicesEmptyState(): React.ReactNode {
 
   return (
     <EmptyState
+      headingLevel="h2"
       titleText={_("No devices found")}
       icon={() => <Icon name="error" />}
       status="warning"
@@ -179,62 +181,52 @@ function UnavailableDevicesEmptyState(): React.ReactNode {
 }
 
 function ModelSection(): React.ReactNode {
-  const { uiState, setUiState } = useStorageUiState();
+  const [activeTab, setActiveTab] = useSearchParamState(SETTINGS_TAB, "0");
+  const clearSearchParams = useClearSearchParams();
   const reset = useReset();
   const handleTabClick = (
     event: React.MouseEvent | React.KeyboardEvent | MouseEvent,
     tabIndex: number,
-  ) => {
-    setUiState((state) => {
-      state.set("st", tabIndex.toString());
-      return state;
-    });
-  };
+  ) => setActiveTab(tabIndex);
 
   const onReset = () => {
     reset();
-    setUiState((state) => {
-      state.delete("expanded");
-      state.delete("st");
-      return state;
-    });
+    clearSearchParams(EXPANDED, SETTINGS_TAB);
   };
 
   return (
     <Page.Section
+      isFullHeight
       title={_("Settings")}
       titleActions={
-        <Flex>
-          <FlexItem grow={{ default: "grow" }} />
-          <MenuButton
-            menuProps={{
-              popperProps: {
-                position: "end",
-              },
-            }}
-            toggleProps={{
-              variant: "plain",
-              className: spacingStyles.p_0,
-            }}
-            items={[
-              <MenuButton.Item
-                key="reset-link"
-                onClick={onReset}
-                description={_("Start from scratch with the default configuration")}
-              >
-                {_("Reset to defaults")}
-              </MenuButton.Item>,
-            ]}
-          >
-            <Icon name="more_horiz" className="agm-three-dots-icon" />
-          </MenuButton>
-        </Flex>
+        <MenuButton
+          menuProps={{
+            popperProps: {
+              position: "end",
+            },
+          }}
+          toggleProps={{
+            variant: "plain",
+            className: spacingStyles.p_0,
+          }}
+          items={[
+            <MenuButton.Item
+              key="reset-link"
+              onClick={onReset}
+              description={_("Start from scratch with the default configuration")}
+            >
+              {_("Reset to defaults")}
+            </MenuButton.Item>,
+          ]}
+        >
+          <Icon name="more_horiz" className="agm-three-dots-icon" />
+        </MenuButton>
       }
       description={_(
         "Changes in these settings will immediately update the 'Result' section below.",
       )}
     >
-      <Tabs activeKey={uiState.get("st") || "0"} onSelect={handleTabClick} role="region">
+      <Tabs activeKey={activeTab} onSelect={handleTabClick} role="region">
         <Tab
           key="devices"
           eventKey={"0"}
@@ -304,20 +296,7 @@ function ProposalPageContent(): React.ReactNode {
  *  and test them individually. The proposal page should simply mount all those components.
  */
 export default function ProposalPage(): React.ReactNode {
-  const location = useLocation();
-  // Hopefully this could be removed in the future. See rationale at UseStorageUiState
-  const [resetNeeded, setResetNeeded] = useState(location.state?.resetStorageUiState);
-  const { setUiState } = useStorageUiState();
   const zfcpIssues = useIssues("zfcp");
-
-  React.useEffect(() => {
-    if (resetNeeded) {
-      setResetNeeded(false);
-      setUiState(new Map());
-    }
-  }, [resetNeeded, setUiState]);
-
-  if (resetNeeded) return;
 
   return (
     <Page
@@ -325,11 +304,7 @@ export default function ProposalPage(): React.ReactNode {
       additionalContent={<ConnectedDevicesMenu />}
       progress={{
         scope: "storage",
-        awaitQueriesRefetch: [
-          PROPOSAL_QUERY_KEY,
-          EXTENDED_CONFIG_QUERY_KEY,
-          STORAGE_MODEL_QUERY_KEY,
-        ],
+        awaitQueriesRefetch: [PROPOSAL_QUERY_KEY, STORAGE_MODEL_QUERY_KEY],
       }}
     >
       <Page.Content>

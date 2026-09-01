@@ -38,7 +38,8 @@ import {
 } from "@patternfly/react-core";
 import { generatePath } from "react-router";
 import Text from "~/components/core/Text";
-import { Link, NestedContent, Page } from "~/components/core";
+import { Link, NestedContent } from "~/components/core";
+import Page from "~/components/layout/Page";
 import InstallationOnlySwitch from "~/components/network/InstallationOnlySwitch";
 import { Connection, Device } from "~/types/network";
 import { connectionBindingMode, formatIp } from "~/utils/network";
@@ -71,7 +72,7 @@ const NetworkDetails = ({ connection }: { connection: Connection }) => {
   const network = networks.find((c) => c.ssid === connection.wireless?.ssid);
 
   return (
-    <Page.Section title={_("Network")} pfCardProps={{ isPlain: false, isFullHeight: false }}>
+    <Page.Section title={_("Network")}>
       <DescriptionList aria-label={_("Network details")} isHorizontal>
         <DescriptionListGroup>
           <DescriptionListTerm>{_("SSID")}</DescriptionListTerm>
@@ -107,7 +108,7 @@ const NetworkDetails = ({ connection }: { connection: Connection }) => {
 
 const BondDetails = ({ connection }: { connection: Connection }) => {
   return (
-    <Page.Section title={_("Bond")} pfCardProps={{ isPlain: false, isFullHeight: false }}>
+    <Page.Section title={_("Bond")}>
       <DescriptionList aria-label={_("Bond details")} isHorizontal>
         <DescriptionListGroup>
           <DescriptionListTerm>{_("Bond mode")}</DescriptionListTerm>
@@ -140,7 +141,7 @@ const BridgeDetails = ({ connection }: { connection: Connection }) => {
   const isStpEnabled = !!connection.bridge?.stp;
 
   return (
-    <Page.Section title={_("Bridge")} pfCardProps={{ isPlain: false, isFullHeight: false }}>
+    <Page.Section title={_("Bridge")}>
       <DescriptionList aria-label={_("Bridge details")} isHorizontal>
         <DescriptionListGroup>
           <DescriptionListTerm>{_("STP")}</DescriptionListTerm>
@@ -189,7 +190,7 @@ const BridgeDetails = ({ connection }: { connection: Connection }) => {
 
 const VlanDetails = ({ connection }: { connection: Connection }) => {
   return (
-    <Page.Section title={_("VLAN")} pfCardProps={{ isPlain: false, isFullHeight: false }}>
+    <Page.Section title={_("VLAN")}>
       <DescriptionList aria-label={_("VLAN details")} isHorizontal>
         <DescriptionListGroup>
           <DescriptionListTerm>{_("VLAN ID")}</DescriptionListTerm>
@@ -312,10 +313,7 @@ const DevicesDetails = ({ connection }: { connection: Connection }) => {
   const multiple = connectedDevices.length > 1;
 
   return (
-    <Page.Section
-      title={onlyOne ? _("Connected device") : _("Connected devices")}
-      pfCardProps={{ isPlain: false, isFullHeight: false }}
-    >
+    <Page.Section title={onlyOne ? _("Connected device") : _("Connected devices")}>
       {none && _("No device is currently using this connection.")}
       {onlyOne && <DeviceDetails device={connectedDevices[0]} />}
       {multiple && (
@@ -345,7 +343,6 @@ const SettingsCard = ({ connection }: { connection: Connection }) => {
   return (
     <Page.Section
       title={_("Settings")}
-      pfCardProps={{ isPlain: false, isFullHeight: false }}
       actions={
         <Link to={generatePath(NETWORK.connection.edit, { id: connection.id })}>
           {_("Edit connection settings")}

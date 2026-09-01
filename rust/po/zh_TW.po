@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-29 12:57+0000\n"
+"POT-Creation-Date: 2026-08-14 04:33+0000\n"
 "PO-Revision-Date: 2026-07-27 04:12+0000\n"
 "Last-Translator: Grace Yu <grace.yu@excel-gits.com>\n"
 "Language-Team: Chinese (Taiwan) <https://l10n.opensuse.org/projects/agama/"
@@ -949,7 +949,7 @@ msgstr "指紋為 {2} 的金鑰 {0} ({1}) 未知。是否信任該金鑰？"
 msgid "Skip"
 msgstr "跳過"
 
-#: agama-software/src/service.rs:304
+#: agama-software/src/service.rs:296
 msgid ""
 "Due to an internal error, it was not possible to create a software proposal."
 msgstr "由於出現內部錯誤，無法建立軟體建議。"
@@ -1007,7 +1007,7 @@ msgstr "軟體選擇存在衝突"
 msgid "Could not select %s '%s' for installation"
 msgstr "無法選取 %s '%s' 進行安裝"
 
-#: agama-software/src/zypp_server.rs:1031
+#: agama-software/src/zypp_server.rs:1010
 msgid "Failed to register the system"
 msgstr "無法註冊系統"
 
