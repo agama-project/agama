@@ -43,3 +43,6 @@ zvariant = "5.5.2"
 [dev-dependencies]
 test-context = { workspace = true }
 tokio-test = { workspace = true }
+
+[package.metadata.cargo-machete]
+ignored = ["tokio-test"]

@@ -15,7 +15,5 @@ tokio = { workspace = true }
 tracing = { workspace = true }
 
 [dev-dependencies]
-agama-l10n = { workspace = true }
 serde_json = { workspace = true }
 test-context = { workspace = true }
-tokio-test = { workspace = true }

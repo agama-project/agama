@@ -8,7 +8,6 @@ edition.workspace = true
 agama-storage-client = { workspace = true }
 agama-utils = { workspace = true }
 async-trait = { workspace = true }
-gettext-rs = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
 thiserror = { workspace = true }
@@ -17,5 +16,7 @@ tracing = { workspace = true }
 zbus = { workspace = true }
 
 [dev-dependencies]
-test-context = { workspace = true }
 tokio-test = { workspace = true }
+
+[package.metadata.cargo-machete]
+ignored = ["tokio-test"]

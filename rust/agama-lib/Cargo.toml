@@ -35,5 +35,4 @@ zbus = { workspace = true }
 zypp-agama = { workspace = true }
 
 [dev-dependencies]
-env_logger = "0.11.5"
 httpmock = "0.8.3"
