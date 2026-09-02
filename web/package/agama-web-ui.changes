@@ -7,7 +7,6 @@ Tue Sep  1 14:20:00 UTC 2026 - David Diaz <dgonzalez@suse.com>
   wrong one has to be fixed (bsc#1277313).
 
 -------------------------------------------------------------------
-
 Tue Sep  1 13:10:58 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Allow browsing the network devices with more details when binding
