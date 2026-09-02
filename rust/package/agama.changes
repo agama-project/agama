@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Wed Sep  2 09:31:32 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Use camelCase consistently for the JSON API keys renaming the
+  network connection "ieee-8021x" key to "ieee8021x", still
+  accepting the old name for backward compatibility
+  (gh#agama-project/agama#3858).
+
+-------------------------------------------------------------------
 Fri Aug 28 15:32:30 UTC 2026 - Martin Vidner <mvidner@suse.com>
 
 - update runtime dependencies to:
