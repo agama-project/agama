@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Sep  1 15:51:08 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 24
+
+-------------------------------------------------------------------
 Tue Sep  1 14:20:00 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Cope with unknown localization settings: report them as an
