@@ -5,13 +5,11 @@ rust-version.workspace = true
 edition.workspace = true
 
 [dependencies]
-agama-cli = { path = "../agama-cli" }
-agama-server = { path = "../agama-server" }
+agama-cli = { workspace = true }
+agama-server = { workspace = true }
 agama-utils = { workspace = true }
-clap = { workspace = true }
 clap-markdown = "0.1.4"
 clap_complete = "4.5.32"
 clap_mangen = "0.2.23"
 serde_json = { workspace = true }
 serde_yaml = { workspace = true }
-tokio = { workspace = true }

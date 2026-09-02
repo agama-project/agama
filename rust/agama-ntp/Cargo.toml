@@ -13,6 +13,5 @@ tokio = { workspace = true }
 tracing = { workspace = true }
 
 [dev-dependencies]
-agama-l10n = { workspace = true }
 tempfile = { workspace = true }
 test-context = { workspace = true }

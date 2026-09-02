@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Sep  2 14:09:43 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Sanitize rust dependencies and add CI task to check unused
+  dependencies (gh#agama-project/agama#3856).
+
+-------------------------------------------------------------------
 Tue Sep  1 15:51:02 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 24

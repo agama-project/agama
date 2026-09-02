@@ -19,7 +19,6 @@ zbus = { workspace = true }
 
 [dev-dependencies]
 test-context = { workspace = true }
-tokio-test = { workspace = true }
 
 [lints.rust]
 unexpected_cfgs = { level = "warn", check-cfg = ['cfg(ci)'] }

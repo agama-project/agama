@@ -13,7 +13,6 @@ agama-utils = { workspace = true }
 anyhow = { workspace = true }
 chrono = { workspace = true }
 clap = { workspace = true }
-console = "0.15.8"
 crossterm = { version = "0.29", features = ["event-stream"] }
 fluent-uri = { workspace = true }
 futures-util = { workspace = true }

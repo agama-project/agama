@@ -9,15 +9,11 @@ rust-version.workspace = true
 [dependencies]
 agama-l10n = { workspace = true }
 agama-lib = { workspace = true }
-agama-locale-data = { workspace = true }
-agama-manager = { path = "../agama-manager" }
-agama-network = { workspace = true }
-agama-software = { workspace = true }
+agama-manager = { workspace = true }
 agama-transfer = { workspace = true }
 agama-utils = { workspace = true }
 aide = { version = "0.16.0-alpha.4", features = ["axum", "axum-extra", "axum-json", "axum-query", "macros"] }
 anyhow = { workspace = true }
-async-trait = { workspace = true }
 axum = { version = "0.8.9", features = ["ws", "macros"] }
 axum-extra = { version = "0.12.6", features = ["cookie", "typed-header"] }
 clap = { workspace = true }
@@ -54,15 +50,16 @@ name = "agama-web-server"
 path = "src/agama-web-server.rs"
 
 [dev-dependencies]
-http-body-util = "0.1.2"
 test-context = { workspace = true }
-tokio-test = { workspace = true }
 
 [lints.rust]
 unexpected_cfgs = { level = "warn", check-cfg = ['cfg(ci)'] }
 
-# here we force runtime for bindgen otherwise pam-sys fails.
-# Also it intentionally force old version of bindgen, which is
-# the exact one that is used for pam-sys ( it looks like unmaintained for some years )
+# Forces "runtime" feature on bindgen 0.69.5 (the version pam-sys uses) via Cargo feature
+# unification, so pam-sys's build script can load libclang dynamically. No build.rs needed.
 [build-dependencies]
 bindgen = { version = "0.69.5", features = ["runtime"] }
+
+[package.metadata.cargo-machete]
+ignored = ["bindgen"]
+

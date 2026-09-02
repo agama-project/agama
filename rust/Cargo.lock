@@ -14,10 +14,6 @@ version = "0.1.0"
 dependencies = [
  "agama-utils",
  "async-trait",
- "gettext-rs",
- "openssl",
- "tempfile",
- "test-context",
  "thiserror 2.0.18",
  "tokio",
  "tracing",
@@ -27,7 +23,6 @@ dependencies = [
 name = "agama-autoinstall"
 version = "0.1.0"
 dependencies = [
- "agama-l10n",
  "agama-lib",
  "agama-transfer",
  "agama-utils",
@@ -49,10 +44,8 @@ dependencies = [
  "agama-storage-client",
  "agama-utils",
  "async-trait",
- "gettext-rs",
  "serde",
  "serde_json",
- "test-context",
  "thiserror 2.0.18",
  "tokio",
  "tokio-test",
@@ -71,7 +64,6 @@ dependencies = [
  "anyhow",
  "chrono",
  "clap",
- "console",
  "crossterm",
  "fluent-uri 0.4.1",
  "futures-util",
@@ -93,7 +85,6 @@ dependencies = [
 name = "agama-files"
 version = "0.1.0"
 dependencies = [
- "agama-l10n",
  "agama-utils",
  "async-trait",
  "gettext-rs",
@@ -103,7 +94,6 @@ dependencies = [
  "test-context",
  "thiserror 2.0.18",
  "tokio",
- "tokio-test",
  "tracing",
 ]
 
@@ -155,7 +145,6 @@ dependencies = [
  "thiserror 2.0.18",
  "tokio",
  "tokio-stream",
- "tokio-test",
  "tracing",
  "zbus",
 ]
@@ -168,7 +157,6 @@ dependencies = [
  "agama-utils",
  "anyhow",
  "chrono",
- "env_logger",
  "fluent-uri 0.4.1",
  "fs_extra",
  "home",
@@ -238,7 +226,6 @@ dependencies = [
  "test-context",
  "thiserror 2.0.18",
  "tokio",
- "tokio-test",
  "tracing",
  "zbus",
 ]
@@ -271,7 +258,6 @@ dependencies = [
 name = "agama-ntp"
 version = "0.1.0"
 dependencies = [
- "agama-l10n",
  "agama-utils",
  "async-trait",
  "merge",
@@ -289,7 +275,6 @@ dependencies = [
  "agama-utils",
  "anyhow",
  "async-trait",
- "gettext-rs",
  "strum",
  "tempfile",
  "thiserror 2.0.18",
@@ -336,15 +321,11 @@ version = "0.1.0"
 dependencies = [
  "agama-l10n",
  "agama-lib",
- "agama-locale-data",
  "agama-manager",
- "agama-network",
- "agama-software",
  "agama-transfer",
  "agama-utils",
  "aide",
  "anyhow",
- "async-trait",
  "axum",
  "axum-extra",
  "bindgen 0.69.5",
@@ -353,7 +334,6 @@ dependencies = [
  "futures-util",
  "gethostname",
  "gettext-rs",
- "http-body-util",
  "hyper",
  "hyper-util",
  "indexmap 2.13.0",
@@ -370,7 +350,6 @@ dependencies = [
  "tokio",
  "tokio-openssl",
  "tokio-stream",
- "tokio-test",
  "tokio-util",
  "tower",
  "tower-http",
@@ -395,7 +374,6 @@ dependencies = [
  "schemars 1.2.1",
  "serde",
  "serde_yaml",
- "strum",
  "suseconnect-agama",
  "tempfile",
  "thiserror 2.0.18",
@@ -458,10 +436,8 @@ dependencies = [
  "gettext-rs",
  "schemars 1.2.1",
  "serde",
- "test-context",
  "thiserror 2.0.18",
  "tokio",
- "tokio-test",
  "tracing",
 ]
 
@@ -1385,19 +1361,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "console"
-version = "0.15.11"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "054ccb5b10f9f2cbf51eb355ca1d05c2d279ce1804688d0db74b4733a5aeafd8"
-dependencies = [
- "encode_unicode",
- "libc",
- "once_cell",
- "unicode-width",
- "windows-sys 0.59.0",
-]
-
-[[package]]
 name = "const-random"
 version = "0.1.18"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1764,12 +1727,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "encode_unicode"
-version = "1.0.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "34aa73646ffb006b8f5147f3dc182bd4bcb190227ce861fc4a4844bf8e3cb2c0"
-
-[[package]]
 name = "encoding_rs"
 version = "0.8.35"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1803,29 +1760,6 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn 2.0.117",
-]
-
-[[package]]
-name = "env_filter"
-version = "1.0.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7a1c3cc8e57274ec99de65301228b537f1e4eedc1b8e0f9411c6caac8ae7308f"
-dependencies = [
- "log",
- "regex",
-]
-
-[[package]]
-name = "env_logger"
-version = "0.11.9"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b2daee4ea451f429a58296525ddf28b45a3b64f1acf6587e2067437bb11e218d"
-dependencies = [
- "anstream",
- "anstyle",
- "env_filter",
- "jiff",
- "log",
 ]
 
 [[package]]
@@ -2788,7 +2722,7 @@ dependencies = [
  "portable-atomic",
  "portable-atomic-util",
  "serde_core",
- "windows-sys 0.52.0",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -4780,7 +4714,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "32497e9a4c7b38532efcdebeef879707aa9f794296a4f0244f6f69e9bc8574bd"
 dependencies = [
  "fastrand",
- "getrandom 0.3.4",
+ "getrandom 0.4.1",
  "once_cell",
  "rustix 1.1.4",
  "windows-sys 0.61.2",
@@ -6070,13 +6004,11 @@ dependencies = [
  "agama-cli",
  "agama-server",
  "agama-utils",
- "clap",
  "clap-markdown",
  "clap_complete",
  "clap_mangen",
  "serde_json",
  "serde_yaml",
- "tokio",
 ]
 
 [[package]]

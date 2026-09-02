@@ -7,12 +7,7 @@ edition.workspace = true
 [dependencies]
 agama-utils = { workspace = true }
 async-trait = { workspace = true }
-gettext-rs = { workspace = true }
-openssl = { workspace = true }
 thiserror = { workspace = true }
 tokio = { workspace = true }
 tracing = { workspace = true }
 
-[dev-dependencies]
-tempfile = { workspace = true }
-test-context = { workspace = true }
