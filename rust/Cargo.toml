@@ -22,8 +22,9 @@ members = [
     "agama-transfer",
     "agama-utils",
     "agama-users",
-    "suseconnect-agama",
-    "suseconnect-agama/suseconnect-agama-sys",
+#   suse connect members below are build only if agama-software require it to avoid build on 32-bit arch
+#   "suseconnect-agama",
+#   "suseconnect-agama/suseconnect-agama-sys",
     "xtask",
     "zypp-agama",
     "zypp-agama/zypp-agama-sys"

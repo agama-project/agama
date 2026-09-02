@@ -1,22 +1,35 @@
-use std::env;
+#[cfg(target_pointer_width = "64")]
+mod example {
+    use std::env;
 
-use suseconnect_agama::{announce_system, ConnectParams};
+    use suseconnect_agama::{announce_system, ConnectParams};
 
+    pub fn main() {
+        tracing_subscriber::fmt::init();
+        let args: Vec<String> = env::args().collect();
+        let Some(code) = args.get(1) else {
+            eprintln!("Provide reg code as first parameter");
+            return;
+        };
+
+        let params = ConnectParams {
+            language: Some("en_US".to_string()),
+            url: None,
+            token: Some(code.to_string()),
+            email: None,
+        };
+
+        let result = announce_system(params, "SLES-16-x86_64");
+        println!("{:?}", result);
+    }
+}
+
+#[cfg(target_pointer_width = "64")]
 pub fn main() {
-    tracing_subscriber::fmt::init();
-    let args: Vec<String> = env::args().collect();
-    let Some(code) = args.get(1) else {
-        eprintln!("Provide reg code as first parameter");
-        return;
-    };
+    example::main();
+}
 
-    let params = ConnectParams {
-        language: Some("en_US".to_string()),
-        url: None,
-        token: Some(code.to_string()),
-        email: None,
-    };
-
-    let result = announce_system(params, "SLES-16-x86_64");
-    println!("{:?}", result);
+#[cfg(not(target_pointer_width = "64"))]
+pub fn main() {
+    println!("This example is only supported on 64-bit architectures.");
 }

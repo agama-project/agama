@@ -20,6 +20,10 @@ fn update_file(file_path: &str, contents: &str) {
 }
 
 fn main() {
+    // no suseconnect on 32 bit target
+    #[cfg(not(target_pointer_width = "64"))]
+    return;
+
     let bindings = builder()
         .header("./headers.h")
         .merge_extern_blocks(true)
