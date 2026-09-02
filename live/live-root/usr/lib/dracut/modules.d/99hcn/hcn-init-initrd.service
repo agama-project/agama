@@ -10,13 +10,19 @@ ConditionKernelCommandLine=!rd.hcn=0
 ConditionKernelCommandLine=|rd.hcn=1
 ConditionKernelCommandLine=|rd.hcn.ip
 ConditionKernelCommandLine=|rd.hcn.route
+Conflicts=shutdown.target emergency.target
 
 [Service]
+Environment=DRACUT_SYSTEMD=1
 Type=oneshot
 ExecStart=/usr/bin/parse-hcn
 SyslogIdentifier=hcn-init-initrd
+StandardInput=null
 StandardOutput=journal+console
 StandardError=journal+console
+# parse-hcn waits up to 3 minutes in total for the HCN devices to show up in
+# sysfs, which is longer than the default start timeout
+TimeoutStartSec=300
 RemainAfterExit=yes
 
 [Install]

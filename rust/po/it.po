@@ -7,9 +7,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-29 12:57+0000\n"
-"PO-Revision-Date: 2026-06-24 08:12+0000\n"
-"Last-Translator: Davide Aiello <davide.aiello@novilingulists.com>\n"
+"POT-Creation-Date: 2026-08-26 11:36+0000\n"
+"PO-Revision-Date: 2026-08-04 15:13+0000\n"
+"Last-Translator: Valentina Leonardi <valentina.leonardi@vistatec.com>\n"
 "Language-Team: Italian <https://l10n.opensuse.org/projects/agama/agama-rust-"
 "master/it/>\n"
 "Language: it\n"
@@ -17,9 +17,9 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 2026.6.1\n"
+"X-Generator: Weblate 2026.8\n"
 
-#: agama-autoinstall/src/auto_loader.rs:115
+#: agama-autoinstall/src/auto_loader.rs:142
 msgid ""
 "Configuration cannot be applied because it is invalid or could not be "
 "reached."
@@ -27,13 +27,26 @@ msgstr ""
 "La configurazione non può essere applicata perché non è valida o non è "
 "raggiungibile."
 
-#: agama-autoinstall/src/questions.rs:44
+#: agama-autoinstall/src/questions.rs:47
 msgid "Reload configuration"
 msgstr "Ricarica configurazione"
 
-#: agama-autoinstall/src/questions.rs:45
+#: agama-autoinstall/src/questions.rs:48
 msgid "Skip and configure manually"
 msgstr "Ignora e configura manualmente"
+
+#: agama-autoinstall/src/questions.rs:77 agama-cli/src/config.rs:371
+msgid "Found unsupported elements in the AutoYaST profile:"
+msgstr ""
+
+#: agama-autoinstall/src/questions.rs:92
+#: agama-software/src/callbacks/install.rs:81
+msgid "Continue"
+msgstr "Continua"
+
+#: agama-autoinstall/src/questions.rs:93
+msgid "Abort"
+msgstr ""
 
 #. TRANSLATORS: {0} is a URL
 #: agama-autoinstall/src/scripts.rs:135
@@ -401,7 +414,7 @@ msgstr "Comando dell'editor (comprendente argomenti aggiuntivi, se necessario)"
 msgid "It is not a valid JSON file"
 msgstr "Non è un file JSON valido"
 
-#: agama-cli/src/config.rs:416
+#: agama-cli/src/config.rs:434
 msgid "Ignoring the changes because the editor was closed with an error code."
 msgstr ""
 "Le modifiche saranno ignorate perché l'editor è stato chiuso con un codice "
@@ -838,7 +851,6 @@ msgid "Finishing installation"
 msgstr "Completamento dell'installazione"
 
 #: agama-manager/src/actions.rs:271
-#, fuzzy
 msgid "Finalize installation"
 msgstr "Completa l'installazione"
 
@@ -939,23 +951,23 @@ msgstr ""
 "Tentativo di importazione di un certificato autofirmato. Considerarlo "
 "attendibile e registrare il prodotto?"
 
-#: agama-server/src/profile/web.rs:82
+#: agama-server/src/profile/web.rs:85
 msgid "Profile validation failed"
 msgstr "Convalida del profilo non riuscita"
 
-#: agama-server/src/profile/web.rs:85
+#: agama-server/src/profile/web.rs:88
 msgid "Could not retrieve profile"
 msgstr "Impossibile recuperare il profilo"
 
-#: agama-server/src/profile/web.rs:88
+#: agama-server/src/profile/web.rs:91
 msgid "Invalid profile encoding"
 msgstr "Codifica del profilo non valida"
 
-#: agama-server/src/profile/web.rs:91
+#: agama-server/src/profile/web.rs:94
 msgid "Invalid profile request"
 msgstr "Richiesta del profilo non valida"
 
-#: agama-server/src/profile/web.rs:94
+#: agama-server/src/profile/web.rs:97
 msgid "AutoYaST conversion failed"
 msgstr "Conversione AutoYaST non riuscita"
 
@@ -983,10 +995,6 @@ msgid "There was a problem running a package script."
 msgstr ""
 "Si è verificato un problema durante l'esecuzione di uno script del pacchetto."
 
-#: agama-software/src/callbacks/install.rs:81
-msgid "Continue"
-msgstr "Continua"
-
 #. TRANSLATORS: substituting: key ID, (key name), fingerprint
 #: agama-software/src/callbacks/security.rs:104
 msgid ""
@@ -1000,7 +1008,7 @@ msgstr ""
 msgid "Skip"
 msgstr "Salta"
 
-#: agama-software/src/service.rs:304
+#: agama-software/src/service.rs:296
 msgid ""
 "Due to an internal error, it was not possible to create a software proposal."
 msgstr ""
@@ -1062,7 +1070,7 @@ msgstr "Sono presenti conflitti nella selezione del software"
 msgid "Could not select %s '%s' for installation"
 msgstr "Impossibile selezionare %s '%s' per l'installazione"
 
-#: agama-software/src/zypp_server.rs:1031
+#: agama-software/src/zypp_server.rs:1010
 msgid "Failed to register the system"
 msgstr "Registrazione del sistema non riuscita"
 

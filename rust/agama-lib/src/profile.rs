@@ -48,22 +48,49 @@ pub enum AutoyastError {
     Evaluation(String),
     #[error("Unsupported AutoYaST format at {0}")]
     UnsupportedFormat(Url),
+    #[error("Failed to parse the list of unsupported AutoYaST elements: {0}")]
+    InvalidUnsupported(#[from] serde_json::Error),
+}
+
+/// An AutoYaST element that could not be fully converted to its Agama equivalent.
+#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
+pub struct UnsupportedElement {
+    /// AutoYaST element key (e.g., "networking/backend").
+    pub key: String,
+    /// Support level for this element ("no", "planned" or "partial").
+    pub support: String,
+    /// Additional information about the element, if any.
+    pub notes: Option<String>,
+}
+
+/// Result of converting an AutoYaST profile: the Agama configuration and any
+/// unsupported elements found along the way.
+#[derive(Debug, Serialize, Deserialize, JsonSchema)]
+pub struct AutoyastConversionResult {
+    pub profile: serde_json::Value,
+    pub unsupported: Vec<UnsupportedElement>,
+}
+
+/// Whether the given path looks like an AutoYaST profile source (XML, ERB, or a directory).
+pub fn is_autoyast_path(path: &str) -> bool {
+    path.ends_with(".xml") || path.ends_with(".erb") || path.ends_with('/')
 }
 
 /// Downloads and converts autoyast profile.
 pub struct AutoyastProfileImporter {
     pub content: String,
+    pub unsupported: Vec<UnsupportedElement>,
 }
 
 impl AutoyastProfileImporter {
     pub async fn read(url: &Url) -> Result<Self, AutoyastError> {
-        let path = url.path();
-        if !path.ends_with(".xml") && !path.ends_with(".erb") && !path.ends_with('/') {
+        if !is_autoyast_path(url.path()) {
             return Err(AutoyastError::UnsupportedFormat(url.clone()));
         }
 
         const TMP_DIR_PREFIX: &str = "autoyast";
         const AUTOINST_JSON: &str = "autoinst.json";
+        const UNSUPPORTED_JSON: &str = "unsupported.json";
 
         let tmp_dir = TempDir::with_prefix(TMP_DIR_PREFIX)?;
         let result = tokio::process::Command::new("agama-autoyast")
@@ -81,7 +108,19 @@ impl AutoyastProfileImporter {
 
         let autoinst_json = tmp_dir.path().join(AUTOINST_JSON);
         let content = fs::read_to_string(&autoinst_json)?;
-        Ok(Self { content })
+
+        let unsupported_json = tmp_dir.path().join(UNSUPPORTED_JSON);
+        let unsupported = if unsupported_json.exists() {
+            let raw = fs::read_to_string(&unsupported_json)?;
+            serde_json::from_str(&raw)?
+        } else {
+            Vec::new()
+        };
+
+        Ok(Self {
+            content,
+            unsupported,
+        })
     }
 }
 

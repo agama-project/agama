@@ -285,22 +285,14 @@ impl Service {
             return Ok(());
         };
 
-        let model = self.model.clone();
-        let progress = self.progress.clone();
-        let issues = self.issues.clone();
-        let l10n = self.l10n.clone();
-        let state = self.state.clone();
-        let events = self.events.clone();
         tracing::info!("Synchronizing the wanted software state");
-
-        tokio::task::spawn(async move {
-            let mut my_model = model.lock().await;
-            let found_issues = my_model
-                .write(wanted_state, l10n, progress)
+        let mut my_model = self.model.lock().await;
+        let found_issues = my_model
+            .write(wanted_state, self.l10n.clone(), self.progress.clone())
                 .await
                 .unwrap_or_else(|e| {
                     let new_issue = Issue::new(
-                        "software_proposal_failed",
+                        "softwareProposalFailed",
                         &gettext("Due to an internal error, it was not possible to create a software proposal."),
                     )
                     .with_details(&e.to_string());
@@ -310,18 +302,17 @@ impl Service {
                     }
                 });
 
-            _ = issues.cast(issue::message::Set::new(
-                Scope::Software,
-                found_issues.software,
-            ));
+        _ = self.issues.cast(issue::message::Set::new(
+            Scope::Software,
+            found_issues.software,
+        ));
 
-            _ = issues.cast(issue::message::Set::new(
-                Scope::Product,
-                found_issues.product,
-            ));
+        _ = self.issues.cast(issue::message::Set::new(
+            Scope::Product,
+            found_issues.product,
+        ));
 
-            Self::update_state(state, my_model, events).await;
-        });
+        Self::update_state(self.state.clone(), my_model, self.events.clone()).await;
 
         Ok(())
     }

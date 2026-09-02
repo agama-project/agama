@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-29 12:57+0000\n"
+"POT-Creation-Date: 2026-08-26 11:36+0000\n"
 "PO-Revision-Date: 2026-08-01 10:12+0000\n"
 "Last-Translator: Temuri Doghonadze <temuri.doghonadze@gmail.com>\n"
 "Language-Team: Georgian <https://l10n.opensuse.org/projects/agama/agama-rust-"
@@ -19,7 +19,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Generator: Weblate 2026.7.1\n"
 
-#: agama-autoinstall/src/auto_loader.rs:115
+#: agama-autoinstall/src/auto_loader.rs:142
 msgid ""
 "Configuration cannot be applied because it is invalid or could not be "
 "reached."
@@ -27,13 +27,26 @@ msgstr ""
 "კონფიგურაციის გადატარება შეუძლებელია, რადგან ის ან არასწორია, ან "
 "ხელმიუწვდომელი."
 
-#: agama-autoinstall/src/questions.rs:44
+#: agama-autoinstall/src/questions.rs:47
 msgid "Reload configuration"
 msgstr "კონფიგურაციის თავიდან ჩატვირთვა"
 
-#: agama-autoinstall/src/questions.rs:45
+#: agama-autoinstall/src/questions.rs:48
 msgid "Skip and configure manually"
 msgstr "გამოტოვება და ხელით მორგება"
+
+#: agama-autoinstall/src/questions.rs:77 agama-cli/src/config.rs:371
+msgid "Found unsupported elements in the AutoYaST profile:"
+msgstr ""
+
+#: agama-autoinstall/src/questions.rs:92
+#: agama-software/src/callbacks/install.rs:81
+msgid "Continue"
+msgstr "გაგრძელება"
+
+#: agama-autoinstall/src/questions.rs:93
+msgid "Abort"
+msgstr ""
 
 #. TRANSLATORS: {0} is a URL
 #: agama-autoinstall/src/scripts.rs:135
@@ -318,7 +331,7 @@ msgstr "რედაქტორის ბრძანება (დამატ
 msgid "It is not a valid JSON file"
 msgstr "ეს სწორი JSON ფაილი არაა"
 
-#: agama-cli/src/config.rs:416
+#: agama-cli/src/config.rs:434
 msgid "Ignoring the changes because the editor was closed with an error code."
 msgstr ""
 
@@ -819,23 +832,23 @@ msgstr ""
 "თვითხელმოწერილი სერტიფიკატის შემოტანის მცდელობა. გნებავთ, ენდოთ მას და "
 "დაარეგისტრიროთ პროდუქტი?"
 
-#: agama-server/src/profile/web.rs:82
+#: agama-server/src/profile/web.rs:85
 msgid "Profile validation failed"
 msgstr "პროფილის გადამოწმება ჩავარდა"
 
-#: agama-server/src/profile/web.rs:85
+#: agama-server/src/profile/web.rs:88
 msgid "Could not retrieve profile"
 msgstr "პროფილის მიღება შეუძლებელია"
 
-#: agama-server/src/profile/web.rs:88
+#: agama-server/src/profile/web.rs:91
 msgid "Invalid profile encoding"
 msgstr "არასწორი პროფილის კოდირება"
 
-#: agama-server/src/profile/web.rs:91
+#: agama-server/src/profile/web.rs:94
 msgid "Invalid profile request"
 msgstr "არასწორი პროფილის მოთხოვნა"
 
-#: agama-server/src/profile/web.rs:94
+#: agama-server/src/profile/web.rs:97
 msgid "AutoYaST conversion failed"
 msgstr "AutoYaST-ის გადაყვანა ჩავარდა"
 
@@ -862,10 +875,6 @@ msgstr "თავიდან ცდა"
 msgid "There was a problem running a package script."
 msgstr "პრობლემა პაჯეტის სკრიპტის შესრულებისას."
 
-#: agama-software/src/callbacks/install.rs:81
-msgid "Continue"
-msgstr "გაგრძელება"
-
 #. TRANSLATORS: substituting: key ID, (key name), fingerprint
 #: agama-software/src/callbacks/security.rs:104
 msgid ""
@@ -877,7 +886,7 @@ msgstr "გასაღები {0} ({1}) ანაბეჭდით {2} უ�
 msgid "Skip"
 msgstr "გამოტოვება"
 
-#: agama-software/src/service.rs:304
+#: agama-software/src/service.rs:296
 msgid ""
 "Due to an internal error, it was not possible to create a software proposal."
 msgstr "შიდა შეცდომის გამო პროგრამების შეთავაზების შექმნა შეუძლებელია."
@@ -937,7 +946,7 @@ msgstr "პროგრამების არჩევანში კონ�
 msgid "Could not select %s '%s' for installation"
 msgstr "დაყენებისთვის %s-ის '%s' არჩევა შეუძლებელია"
 
-#: agama-software/src/zypp_server.rs:1031
+#: agama-software/src/zypp_server.rs:1010
 msgid "Failed to register the system"
 msgstr "სისტემის რეგისტრაცია ჩავარდა"
 

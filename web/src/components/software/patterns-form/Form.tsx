@@ -35,7 +35,7 @@ import { group, sort } from "radashi";
 import { sprintf } from "sprintf-js";
 import { Navigate, useNavigate } from "react-router";
 import NestedContent from "~/components/core/NestedContent";
-import Page from "~/components/core/Page";
+import Page from "~/components/layout/Page";
 import SubtleContent from "~/components/core/SubtleContent";
 import Text from "~/components/core/Text";
 import AutoSelectedLabel from "~/components/software/AutoSelectedLabel";
@@ -44,6 +44,7 @@ import { patchConfig } from "~/api";
 import { useAvailablePatterns } from "~/hooks/model/system/software";
 import { useProposal } from "~/hooks/model/proposal/software";
 import { usePristineSafeForm } from "~/hooks/form";
+import useFilterParams, { textFilter } from "~/hooks/use-filter-params";
 import { useAnnounce } from "~/context/announcer";
 import { filterPatterns, groupPatterns, isPatternSelected, sortGroupNames } from "~/utils/software";
 import { SOFTWARE } from "~/routes/paths";
@@ -253,7 +254,10 @@ function SoftwarePatternsSelection({ scope = "all" }: { scope?: Scope }) {
   const { all: systemPatterns, [scope]: scopedPatterns } = useAvailablePatterns();
   const proposal = useProposal();
   const selection = proposal?.patterns || {};
-  const [searchValue, setSearchValue] = useState("");
+  // Keeping the search in the address means reloading the page, or opening a
+  // link someone shared, lands on the same short list.
+  const { filters, setFilter, resetFilters } = useFilterParams({ search: textFilter() });
+  const searchValue = filters.search;
 
   // Category headers stick below the filter as the user scrolls. To position
   // them correctly, we need the filter's height. We measure it dynamically
@@ -391,8 +395,8 @@ function SoftwarePatternsSelection({ scope = "all" }: { scope?: Scope }) {
                   // SearchInput defaults aria-label to "Search input"; override for clarity.
                   aria-label={_("Filter by name and description")}
                   value={searchValue}
-                  onChange={(_event, value) => setSearchValue(value)}
-                  onClear={() => setSearchValue("")}
+                  onChange={(_event, value) => setFilter("search", value)}
+                  onClear={resetFilters}
                   resultsCount={filterResultsCount}
                 />
               </div>
@@ -429,7 +433,7 @@ function SoftwarePatternsSelection({ scope = "all" }: { scope?: Scope }) {
                             spaceItems={{ default: "spaceItemsSm" }}
                             alignItems={{ default: "alignItemsBaseline" }}
                           >
-                            <Title headingLevel="h3" id={headingId}>
+                            <Title headingLevel="h2" id={headingId}>
                               {groupName}
                             </Title>
                             <CategoryCounter

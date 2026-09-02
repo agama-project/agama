@@ -18,6 +18,7 @@ cidr = { workspace = true }
 fluent-uri = { workspace = true }
 fs-err = "3.2.0"
 gettext-rs = { workspace = true }
+heck = "0.5.0"
 libsystemd = "0.7.2"
 macaddr = { workspace = true }
 merge = { workspace = true }

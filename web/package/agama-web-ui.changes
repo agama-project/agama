@@ -1,8 +1,105 @@
 -------------------------------------------------------------------
-Fri Aug 14 15:49:58 UTC 2026 - David Diaz <dgonzalez@suse.com>
+Tue Sep  1 14:20:00 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Cope with unknown localization settings: report them as an
+  installation issue instead of crashing the overview, and keep the
+  recognized language, keyboard and time zone selected so only the
+  wrong one has to be fixed (bsc#1277313).
+
+-------------------------------------------------------------------
+
+Tue Sep  1 13:10:58 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Allow browsing the network devices with more details when binding
   a connection (gh#agama-project/agama#3822).
+
+-------------------------------------------------------------------
+Tue Sep  1 10:00:00 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Rebuild the product selection form with the new form stack
+  (gh#agama-project/agama#3791).
+
+-------------------------------------------------------------------
+Tue Sep  1 09:00:28 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Keep the software patterns search in the URL, so reloading or
+  sharing the link opens the same filtered list
+  (gh#agama-project/agama#3788).
+
+-------------------------------------------------------------------
+Tue Sep  1 08:49:04 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Keep the table filters in the URL, so reloading or sharing the
+  link opens the same list (gh#agama-project/agama#3787).
+
+-------------------------------------------------------------------
+Tue Sep  1 08:11:20 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Keep the sorted column of the DASD, zFCP, iSCSI targets and
+  network connections tables in the URL, so reloading or sharing
+  the link opens the table sorted the same way
+  (gh#agama-project/agama#3785).
+
+-------------------------------------------------------------------
+Mon Aug 31 15:53:32 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Default the registration form to the effective registration URL
+  (e.g., the one set via the inst.register_url boot argument),
+  instead of only showing it when the user typed a custom one
+  (bsc#1277099).
+
+-------------------------------------------------------------------
+Fri Aug 28 13:08:30 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Rename questions and issues classes to use a consistent naming
+  scheme (bsc#1277393).
+
+-------------------------------------------------------------------
+Fri Aug 28 05:51:20 UTC 2026 - Martin Vidner <mvidner@suse.com>
+
+- update development dependencies to:
+  - svgo 3.3.5 and 4.1.0, CVE-2026-73650 (bsc#1275347)
+  - browserslist 4.28.8, CVE-2026-73089 (bsc#1275438),
+      CVE-2026-73088 (bsc#1275424)
+  - nanoid 3.3.18, CVE-2026-73086 (bsc#1276069)
+  - postcss 8.5.26, CVE-2026-69153 (bsc#1276202), CVE-2026-73646 (bsc#1275903)
+- updated on Jul 7, listing its references for tracking:
+  - axios 1.18.1, CVE-2026-67321 (bsc#1273733), CVE-2026-67320 (bsc#1273726),
+    CVE-2026-67319 (bsc#1273718), CVE-2026-67318 (bsc#1273700),
+    CVE-2026-67317 (bsc#1273678), CVE-2026-67316 (bsc#1273659),
+    CVE-2026-67315 (bsc#1273641), CVE-2026-67314 (bsc#1273636),
+    CVE-2026-67313 (bsc#1273629), CVE-2026-67312 (bsc#1273575)
+- updated on Jul 17, listing its references for tracking:
+  - react-router 7.15.1, CVE-2026-33245 (bsc#1267499)
+
+-------------------------------------------------------------------
+Thu Aug 27 09:00:00 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Keep the expanded sections and the selected tabs of the storage
+  page in the URL, so reloading or sharing the link opens the same
+  view (gh#agama-project/agama#3773).
+
+-------------------------------------------------------------------
+Wed Aug 26 11:30:21 UTC 2026 - Martin Vidner <mvidner@suse.com>
+
+- update development dependencies to:
+  - js-yaml 3.15.1 and 4.3.1, CVE-2026-53550 (bsc#1268851)
+  - brace-expansion 5.0.9, CVE-2026-13149 (bsc#1269927)
+- updated previously, listing its references for tracking:
+  - launch-editor 2.14.1, CVE-2026-53632 (bsc#1272319)
+  - http-proxy-middleware 2.0.10, CVE-2026-55602 (bsc#1272318)
+  - @babel/core 7.29.7, CVE-2026-49356 (bsc#1272317)
+  - websocket-driver 0.7.5, CVE-2026-54466 CVE-2026-54490 (bsc#1272312 bsc#1272313)
+  - form-data 4.0.6, CVE-2025-7783 CVE-2026-12143 (bsc#1246822 bsc#1272310)
+  - fast-uri 3.1.3, CVE-2026-13676 (bsc#1269595)
+
+-------------------------------------------------------------------
+Tue Aug 25 12:05:19 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Allow restyling the whole medium with an optional brand appearance
+  (gh#agama-project/agama#3834).
+- Add appearance roles to set the corner radius per shape size and
+  for buttons alone (gh#agama-project/agama#3834).
 
 -------------------------------------------------------------------
 Fri Aug 14 07:16:16 UTC 2026 - David Diaz <dgonzalez@suse.com>
@@ -11,10 +108,33 @@ Fri Aug 14 07:16:16 UTC 2026 - David Diaz <dgonzalez@suse.com>
   (gh#agama-project/agama#3821).
 
 -------------------------------------------------------------------
+Thu Aug 13 10:46:43 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Do not wait in the selection page after selecting a product
+  (related to bsc#1275030, gh#agama-project/agama#3820).
+- Fix an sporadic issue with "software" and "storage" skeletons
+  not disappearing (bsc#1275027, gh#agama-project/agama#3819).
+
+-------------------------------------------------------------------
 Tue Aug 11 10:57:37 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Add an application-wide live region for announcing status changes
   to screen reader users (gh#agama-project/agama#3759).
+
+-------------------------------------------------------------------
+Fri Aug  7 15:07:47 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Fix typography and layout details that a product skin makes
+  visible: the breadcrumb trail, plain headings, the summary icon
+  and the header logo (gh#agama-project/agama#3797).
+- Document how to design, verify and ship a product skin
+  (gh#agama-project/agama#3797).
+
+-------------------------------------------------------------------
+Wed Aug  5 15:16:36 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Adapt types to changes in the storage system and proposal schemas
+  (gh#agama-project/agama#3800).
 
 -------------------------------------------------------------------
 Mon Aug  3 10:25:04 UTC 2026 - David Diaz <dgonzalez@suse.com>

@@ -21,7 +21,7 @@
  */
 import { useCallback } from "react";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { extendedConfigQuery } from "~/hooks/model/config";
+import { configQuery, extendedConfigQuery } from "~/hooks/model/config";
 import { useSystem } from "~/hooks/model/system";
 import type { Config, Product } from "~/model/config";
 import type * as System from "~/model/system";
@@ -29,6 +29,17 @@ import type * as System from "~/model/system";
 const selectProduct = (data: Config | null): Product.Config | null => data?.product;
 
 function useProduct(): Product.Config | null {
+  const { data } = useSuspenseQuery({
+    ...configQuery,
+    select: selectProduct,
+  });
+  return data;
+}
+
+// Returns the product configuration, completed with the default values computed
+// by the backend (e.g., the registration URL coming from the `inst.register_url`
+// boot argument when the user did not set one explicitly).
+function useExtendedProduct(): Product.Config | null {
   const { data } = useSuspenseQuery({
     ...extendedConfigQuery,
     select: selectProduct,
@@ -41,7 +52,7 @@ function useProduct(): Product.Config | null {
 function useProductInfo(): System.Product | null {
   const products = useSystem()?.products;
   const { data } = useSuspenseQuery({
-    ...extendedConfigQuery,
+    ...configQuery,
     select: useCallback(
       (data: Config | null): System.Product | null => {
         return products?.find((p) => p.id === data?.product?.id) || null;
@@ -52,4 +63,4 @@ function useProductInfo(): System.Product | null {
   return data;
 }
 
-export { useProduct, useProductInfo };
+export { useProduct, useExtendedProduct, useProductInfo };

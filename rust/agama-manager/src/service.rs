@@ -405,7 +405,7 @@ impl Starter {
             software,
             storage,
             products: products::Registry::default(),
-            licenses: licenses::Registry::default(),
+            licenses: licenses::Registry::from_default_path()?,
             hardware,
             config: Config::default(),
             system: manager::SystemInfo::default(),
@@ -481,13 +481,11 @@ impl Service {
     }
 
     async fn read_system_info(&mut self) -> Result<(), Error> {
-        self.licenses.read()?;
         self.products.read()?;
         if let Err(error) = self.hardware.read().await {
             tracing::warn!("Failed to read hardware information: {error}");
         }
 
-        self.system.licenses = self.licenses.licenses().into_iter().cloned().collect();
         self.system.products = self.products.products();
         self.system.hardware = self.hardware.to_hardware_info();
 
@@ -609,7 +607,7 @@ impl Service {
             self.issues
                 .cast(issue::message::Clear::new(Scope::Manager))?;
         } else {
-            let issue = Issue::new("no_product", "No product has been selected.");
+            let issue = Issue::new("noProduct", "No product has been selected.");
             self.issues
                 .cast(issue::message::Set::new(Scope::Manager, vec![issue]))?;
         }
@@ -672,7 +670,6 @@ impl MessageHandler<message::GetSystem> for Service {
     /// It returns the information of the underlying system.
     async fn handle(&mut self, _message: message::GetSystem) -> Result<SystemInfo, Error> {
         let hostname = self.hostname.call(hostname::message::GetSystem).await?;
-        let proxy = self.proxy.call(proxy::message::GetSystem).await?;
         let l10n = self.l10n.call(l10n::message::GetSystem).await?;
 
         let lang = &l10n.locale.language;
@@ -703,7 +700,6 @@ impl MessageHandler<message::GetSystem> for Service {
 
         Ok(SystemInfo {
             hostname,
-            proxy,
             l10n,
             manager,
             network,

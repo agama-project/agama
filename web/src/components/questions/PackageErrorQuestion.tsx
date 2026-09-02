@@ -41,8 +41,7 @@ export default function PackageErrorQuestion({
   answerCallback: AnswerCallback;
 }): React.ReactNode {
   const warning =
-    question.class === "software.package_error.provide_error" &&
-    question.data.error_code === "INVALID"
+    question.class === "packageProvideError" && question.data.error_code === "INVALID"
       ? // TRANSLATORS: a special warning message for installing broken package
         _("Installing a broken package affects system stability and is a big security risk!")
       : // TRANSLATORS: a generic warning message, consequences of skipping a package installation

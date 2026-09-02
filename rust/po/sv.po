@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-29 12:57+0000\n"
-"PO-Revision-Date: 2026-07-01 07:12+0000\n"
+"POT-Creation-Date: 2026-08-26 11:36+0000\n"
+"PO-Revision-Date: 2026-08-30 15:13+0000\n"
 "Last-Translator: Luna  Jernberg <bittin@opensuse.org>\n"
 "Language-Team: Swedish <https://l10n.opensuse.org/projects/agama/agama-rust-"
 "master/sv/>\n"
@@ -17,9 +17,9 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 2026.6.1\n"
+"X-Generator: Weblate 2026.8.1\n"
 
-#: agama-autoinstall/src/auto_loader.rs:115
+#: agama-autoinstall/src/auto_loader.rs:142
 msgid ""
 "Configuration cannot be applied because it is invalid or could not be "
 "reached."
@@ -27,13 +27,26 @@ msgstr ""
 "Konfiguration kan inte tillämpas eftersom den är ogiltig eller inte kunde "
 "nås."
 
-#: agama-autoinstall/src/questions.rs:44
+#: agama-autoinstall/src/questions.rs:47
 msgid "Reload configuration"
 msgstr "Ladda om konfiguration"
 
-#: agama-autoinstall/src/questions.rs:45
+#: agama-autoinstall/src/questions.rs:48
 msgid "Skip and configure manually"
 msgstr "Hoppa över och konfigurera manuellt"
+
+#: agama-autoinstall/src/questions.rs:77 agama-cli/src/config.rs:371
+msgid "Found unsupported elements in the AutoYaST profile:"
+msgstr "Hittade element som inte stöds i AutoYaST-profil:"
+
+#: agama-autoinstall/src/questions.rs:92
+#: agama-software/src/callbacks/install.rs:81
+msgid "Continue"
+msgstr "Fortsätt"
+
+#: agama-autoinstall/src/questions.rs:93
+msgid "Abort"
+msgstr "Avbryt"
 
 #. TRANSLATORS: {0} is a URL
 #: agama-autoinstall/src/scripts.rs:135
@@ -399,7 +412,7 @@ msgstr "Redigeringskommando (inklusive ytterligare argument om det behövs)"
 msgid "It is not a valid JSON file"
 msgstr "Det är inte en giltig JSON-fil"
 
-#: agama-cli/src/config.rs:416
+#: agama-cli/src/config.rs:434
 msgid "Ignoring the changes because the editor was closed with an error code."
 msgstr "Ignorerar ändringarna eftersom redigeraren stängdes med en felkod."
 
@@ -930,23 +943,23 @@ msgstr ""
 "Försöker importera ett självsignerat certifikat. Vill du lita på det och "
 "registrera produkten?"
 
-#: agama-server/src/profile/web.rs:82
+#: agama-server/src/profile/web.rs:85
 msgid "Profile validation failed"
 msgstr "Profilvalidering misslyckades"
 
-#: agama-server/src/profile/web.rs:85
+#: agama-server/src/profile/web.rs:88
 msgid "Could not retrieve profile"
 msgstr "Kunde inte hämta profil"
 
-#: agama-server/src/profile/web.rs:88
+#: agama-server/src/profile/web.rs:91
 msgid "Invalid profile encoding"
 msgstr "Ogiltig profilkodning"
 
-#: agama-server/src/profile/web.rs:91
+#: agama-server/src/profile/web.rs:94
 msgid "Invalid profile request"
 msgstr "Ogiltig profilförfrågan"
 
-#: agama-server/src/profile/web.rs:94
+#: agama-server/src/profile/web.rs:97
 msgid "AutoYaST conversion failed"
 msgstr "AutoYaST konvertering misslyckades"
 
@@ -973,10 +986,6 @@ msgstr "Försök igen"
 msgid "There was a problem running a package script."
 msgstr "Det uppstod ett problem när ett paketskript kördes."
 
-#: agama-software/src/callbacks/install.rs:81
-msgid "Continue"
-msgstr "Fortsätt"
-
 #. TRANSLATORS: substituting: key ID, (key name), fingerprint
 #: agama-software/src/callbacks/security.rs:104
 msgid ""
@@ -990,7 +999,7 @@ msgstr ""
 msgid "Skip"
 msgstr "Hoppa över"
 
-#: agama-software/src/service.rs:304
+#: agama-software/src/service.rs:296
 msgid ""
 "Due to an internal error, it was not possible to create a software proposal."
 msgstr ""
@@ -1051,7 +1060,7 @@ msgstr "Det finns konflikter i programvaruval"
 msgid "Could not select %s '%s' for installation"
 msgstr "Kunde inte välja %s '%s' för installation"
 
-#: agama-software/src/zypp_server.rs:1031
+#: agama-software/src/zypp_server.rs:1010
 msgid "Failed to register the system"
 msgstr "Misslyckades att registrera systemet"
 

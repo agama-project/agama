@@ -38,7 +38,7 @@ module Agama
         MISUSED_MD_MEMBER        = :configMisusedMdMember
 
         # A device that is a PV of a reused VG is chosen to be used with other purpose
-        MISUSED_PV               = :configMisusedMdMember
+        MISUSED_PV               = :configMisusedPv
 
         # Reused and new devices are both used as target for generating PVs for the same LV
         INCOMPATIBLE_PV_TARGETS  = :configIncompatiblePvTargets

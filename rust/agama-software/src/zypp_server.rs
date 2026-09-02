@@ -22,7 +22,7 @@ use agama_security as security;
 use agama_utils::{
     actor::Handler,
     api::{
-        self, l10n,
+        l10n,
         question::QuestionSpec,
         software::{Pattern, SelectedBy, SoftwareProposal, SystemInfo},
         Issue, Progress, Scope,
@@ -311,8 +311,7 @@ impl ZyppServer {
 
             let text =
                 gettext("Packages download and installation failed. Would you like to retry?");
-            let question_spec =
-                QuestionSpec::new(&text, "software.installation_retry").with_yes_no_actions();
+            let question_spec = QuestionSpec::new(&text, "retryInstallation").with_yes_no_actions();
             // TODO: it would be nice if we can in backend split between auto selected option and focused option
             // TODO: if needed we would need to extend C API to get more details about failure
             let answer = ask_software_question(&question, question_spec);
@@ -429,9 +428,9 @@ impl ZyppServer {
 
             if let Err(error) = result {
                 let message = format!("Could not add the repository {}", repo.alias);
-                issues.software.push(
-                    Issue::new("software.add_repo", &message).with_details(&error.to_string()),
-                );
+                issues
+                    .software
+                    .push(Issue::new("addRepo", &message).with_details(&error.to_string()));
             }
         }
 
@@ -446,9 +445,9 @@ impl ZyppServer {
                 let message = gettext("Could not remove the repository %s")
                     .as_str()
                     .replace("%s", &repo.alias);
-                issues.software.push(
-                    Issue::new("software.remove_repo", &message).with_details(&error.to_string()),
-                );
+                issues
+                    .software
+                    .push(Issue::new("removeRepo", &message).with_details(&error.to_string()));
             }
         }
 
@@ -464,9 +463,9 @@ impl ZyppServer {
 
         if let Err(error) = result {
             let message = gettext("Could not read the repositories");
-            issues.software.push(
-                Issue::new("software.load_source", &message).with_details(&error.to_string()),
-            );
+            issues
+                .software
+                .push(Issue::new("loadSource", &message).with_details(&error.to_string()));
         }
 
         // repositories refresh finished
@@ -500,10 +499,10 @@ impl ZyppServer {
 
             let issue = if state.allow_registration && !self.is_registered() {
                 let message = gettext("Failed to find the product in the repositories. You might need to register the system.");
-                Issue::new("missing_registration", &message).with_details(&error.to_string())
+                Issue::new("missingRegistration", &message).with_details(&error.to_string())
             } else {
                 let message = gettext("Failed to find the product in the repositories.");
-                Issue::new("missing_product", &message).with_details(&error.to_string())
+                Issue::new("missingProduct", &message).with_details(&error.to_string())
             };
 
             issues.software.push(issue);
@@ -566,9 +565,7 @@ impl ZyppServer {
 
         if let Ok(false) = zypp.run_solver(self.only_required, self.save_solver_testcase) {
             let message = gettext("There are conflicts in the software selection");
-            issues
-                .software
-                .push(Issue::new("software.conflict", &message));
+            issues.software.push(Issue::new("conflict", &message));
         }
 
         Self::send_issues_and_finish(issues, tx, progress)
@@ -599,8 +596,7 @@ impl ZyppServer {
                     .replacen("%s", &r#type.to_string(), 1)
                     .replace("%s", name);
                 issues.push(
-                    Issue::new("software.select_resolvable", &message)
-                        .with_details(&error.to_string()),
+                    Issue::new("selectResolvable", &message).with_details(&error.to_string()),
                 );
             }
         }
@@ -759,7 +755,6 @@ impl ZyppServer {
         zypp: &zypp_agama::Zypp,
     ) -> Result<(), ZyppDispatchError> {
         let patterns = self.patterns(&product, zypp)?;
-        let repositories = self.repositories(zypp)?;
         // let registration = self.registration.as_ref().map(|r| r.to_registration_info());
         let registration = match &self.registration {
             RegistrationStatus::Registered(registration) => {
@@ -770,7 +765,6 @@ impl ZyppServer {
 
         let system_info = SystemInfo {
             patterns,
-            repositories,
             registration,
         };
 
@@ -849,7 +843,6 @@ impl ZyppServer {
                     name: p.name,
                     category: p.category,
                     description: p.description,
-                    icon: p.icon,
                     summary: p.summary,
                     order: p.order,
                     preselected,
@@ -858,24 +851,6 @@ impl ZyppServer {
             })
             .collect();
         Ok(patterns)
-    }
-
-    fn repositories(&self, zypp: &zypp_agama::Zypp) -> ZyppResult<Vec<api::software::Repository>> {
-        let result = zypp
-            .list_repositories()?
-            .into_iter()
-            .map(|r| api::software::Repository {
-                alias: r.alias.clone(),
-                name: r.alias,
-                url: r.url,
-                enabled: r.enabled,
-                // At this point, there is no way to determine if the repository is
-                // predefined or not. It will be adjusted in the Model::repositories
-                // function.
-                predefined: false,
-            })
-            .collect();
-        Ok(result)
     }
 
     fn initialize_target_dir(&self) -> Result<zypp_agama::Zypp, ZyppDispatchError> {
@@ -1027,7 +1002,7 @@ impl ZyppServer {
             Err(error) => {
                 issues.product.push(
                     Issue::new(
-                        "system_registration_failed",
+                        "systemRegistrationFailed",
                         &gettext("Failed to register the system"),
                     )
                     .with_details(&error.to_string()),
@@ -1056,7 +1031,7 @@ impl ZyppServer {
             }
             if let Err(error) = registration.register_addon(zypp, security, addon) {
                 let message = format!("Failed to register the add-on {}", addon.id);
-                let issue_id = format!("addon_registration_failed[{}]", addon.id);
+                let issue_id = format!("addonRegistrationFailed[{}]", addon.id);
                 let issue = Issue::new(&issue_id, &message).with_details(&error.to_string());
                 issues.product.push(issue);
             }

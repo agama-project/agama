@@ -15,11 +15,6 @@
   }
 }
 
-// Product selection cards: cap logo size and align the radio inputs.
-#productSelectionForm img {
-  max-inline-size: 100px;
-}
-
 // Sticky category header inside the scrollable patterns list.
 .agm-sticky-category-header {
   position: sticky;
@@ -30,24 +25,19 @@
   border-bottom: var(--pf-t--global--border--width--regular) solid rgb(0 0 0 / 10%);
 }
 
-#productSelectionForm {
-  input[type="radio"] {
-    align-self: center;
-  }
+// Every step inside a product option is the same size: from the product name
+// to its details, and between the details themselves. The radio grid gap sets
+// that step, and the details follow its lead.
+#productSelectionForm .pf-v6-c-radio .pf-v6-l-stack.pf-m-gutter {
+  --pf-v6-l-stack--m-gutter--Gap: var(--pf-v6-c-radio--GridGap);
+}
 
-  .pf-v6-c-card {
-    img {
-      max-inline-size: 80px;
-    }
-
-    label {
-      cursor: pointer;
-    }
-  }
-
-  .pf-v6-c-radio {
-    row-gap: 0;
-  }
+// The submit button names the product being selected, and product names get
+// long. Cap the label at a comfortable reading width and spread it evenly over
+// the lines it needs, rather than letting it stretch or shred the button.
+#productSelectionForm button[type="submit"] {
+  max-inline-size: 40ch;
+  text-wrap: balance;
 }
 
 // Material Symbol icons (rendered by the Icon component) ship without a fill,
@@ -68,36 +58,59 @@ svg[data-icon-name] {
 // Named icon sizes for the Icon `size` prop. The size is driven by font-size
 // (icons are 1em) and reads a customizable role token, so a product can resize
 // them without touching markup.
+//
+// An icon with no size of its own takes the same step as body text, which is
+// what it inherited before: unset, the role below resolves to 1em, so the icon
+// still follows the text around it.
+.agm-icon-inline {
+  font-size: var(--agm-t--icon--size--200, 1em);
+}
+
 .agm-icon-xs {
-  font-size: var(--agm-t--icon--size--100);
+  font-size: var(--agm-t--icon--size--100, var(--pf-t--global--font--size--100));
 }
 
 .agm-icon-sm {
-  font-size: var(--agm-t--icon--size--200);
+  font-size: var(--agm-t--icon--size--200, var(--pf-t--global--font--size--200));
 }
 
 .agm-icon-md {
-  font-size: var(--agm-t--icon--size--300);
+  font-size: var(--agm-t--icon--size--300, var(--pf-t--global--font--size--300));
 }
 
 .agm-icon-lg {
-  font-size: var(--agm-t--icon--size--400);
+  font-size: var(--agm-t--icon--size--400, var(--pf-t--global--font--size--400));
 }
 
 .agm-icon-xl {
-  font-size: var(--agm-t--icon--size--500);
+  font-size: var(--agm-t--icon--size--500, var(--pf-t--global--font--size--500));
 }
 
 .agm-icon-2xl {
-  font-size: var(--agm-t--icon--size--600);
+  font-size: var(--agm-t--icon--size--600, var(--pf-t--global--font--size--600));
 }
 
 .agm-icon-3xl {
-  font-size: var(--agm-t--icon--size--700);
+  font-size: var(--agm-t--icon--size--700, var(--pf-t--global--font--size--700));
 }
 
 .agm-icon-4xl {
-  font-size: var(--agm-t--icon--size--800);
+  font-size: var(--agm-t--icon--size--800, var(--pf-t--global--font--size--800));
+}
+
+// Overview summary: the icon gets a column of its own, and the text under the
+// title starts where the title does. The indent then follows the icon size
+// instead of being a fixed spacer, so a product resizing the icons keeps the
+// block aligned.
+.agm-summary {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: var(--pf-t--global--spacer--xs);
+  align-items: center;
+}
+
+.agm-summary__body {
+  grid-column: 2;
 }
 
 // Inline kebab ("three dots") action icon, sized to sit with adjacent text.
@@ -124,9 +137,46 @@ span.in-quotes {
   }
 }
 
+// The text column has to be allowed to shrink below the width of its longest
+// line, or a long trail pushes the header wider than the page.
+.agm-header-heading > *:last-child {
+  min-width: 0;
+}
+
+nav.agm-breadcrumb {
+  // The trail carries the page title, so it takes the room it can get instead
+  // of a fixed step: it grows on a wide header and gives way on a narrow one,
+  // which is where a long trail starts wrapping onto a second line.
+  //
+  // Measured against the viewport rather than against the masthead: from the xl
+  // breakpoint on, PatternFly lays the masthead out as a subgrid of the page,
+  // and an element carrying size containment cannot be a subgrid, so making the
+  // masthead a container drops it back to a single column and stacks the
+  // heading above the toolbar. The masthead spans the page anyway, so the two
+  // measures only differ by its own padding.
+  font-size: clamp(
+    var(--pf-t--global--font--size--200),
+    1.6vw,
+    var(--pf-t--global--font--size--400)
+  );
+}
+
 nav.agm-breadcrumb h1 {
   // Allow heading in breadcrumb use fontSize from its parent
   font-size: inherit;
+}
+
+// The leading items read a step above the rest of the trail, relative to its
+// fluid size rather than against a fixed one.
+nav.agm-breadcrumb .agm-breadcrumb-editorial {
+  font-size: 1.15em;
+}
+
+// The trail is one sentence, but only its last item is a heading: the previous
+// ones are links. Without this they render in the body family, which shows as
+// soon as a product pairs two different families.
+nav.agm-breadcrumb > ol > li > a {
+  font-family: var(--pf-t--global--font--family--heading);
 }
 
 // Standalone screens layout (see layout/SideBySideLayout): the DOM stays in

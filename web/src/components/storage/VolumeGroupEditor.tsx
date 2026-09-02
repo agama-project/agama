@@ -38,11 +38,8 @@ import {
   Title,
 } from "@patternfly/react-core";
 import { useNavigate } from "react-router";
-import {
-  useStorageUiState,
-  isExpandedInState,
-  toggleExpandedInState,
-} from "~/context/storage-ui-state";
+import { useSearchParamTokens } from "~/hooks/use-search-param-state";
+import { EXPANDED, volumeGroupToken } from "~/components/storage/ui-state-params";
 import * as partitionUtils from "~/components/storage/utils/partition";
 import { NestedContent } from "../core";
 import Text from "~/components/core/Text";
@@ -212,7 +209,7 @@ const VgHeader = ({ deviceConfig, device }: VgHeaderProps) => {
       : _("Empty LVM volume group %s");
   }
 
-  return <Title headingLevel="h4">{sprintf(title, deviceConfig.vgName)}</Title>;
+  return <Title headingLevel="h3">{sprintf(title, deviceConfig.vgName)}</Title>;
 };
 
 type VgMenuToggleProps = CustomToggleProps & {
@@ -302,15 +299,13 @@ const AddLvButton = ({ index }: { index: number }) => {
 const LogicalVolumes = ({ index }: { index: number }) => {
   const toggleId = useId();
   const contentId = useId();
-  const { uiState, setUiState } = useStorageUiState();
+  const { hasSearchParamToken, toggleSearchParamToken } = useSearchParamTokens(EXPANDED);
   const vg = useVolumeGroup(index);
-  const uiIndex = `vg${vg.vgName}`;
-  const isExpanded = isExpandedInState(uiState, uiIndex);
+  const token = volumeGroupToken(vg.vgName);
+  const isExpanded = hasSearchParamToken(token);
   const menuAriaLabel = sprintf(_("Logical volumes for %s"), vg.vgName);
 
-  const onToggle = () => {
-    setUiState((state) => toggleExpandedInState(state, uiIndex));
-  };
+  const onToggle = () => toggleSearchParamToken(token);
 
   const iconName: IconProps["name"] = isExpanded ? "unfold_less" : "unfold_more";
   const commonProps: Pick<ExpandableSectionProps, "toggleId" | "contentId" | "isExpanded"> = {

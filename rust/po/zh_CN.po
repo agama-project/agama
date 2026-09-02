@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-29 12:57+0000\n"
+"POT-Creation-Date: 2026-08-26 11:36+0000\n"
 "PO-Revision-Date: 2026-07-27 04:12+0000\n"
 "Last-Translator: Grace Yu <grace.yu@excel-gits.com>\n"
 "Language-Team: Chinese (China) <https://l10n.opensuse.org/projects/agama/"
@@ -19,19 +19,32 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: Weblate 2026.7.1\n"
 
-#: agama-autoinstall/src/auto_loader.rs:115
+#: agama-autoinstall/src/auto_loader.rs:142
 msgid ""
 "Configuration cannot be applied because it is invalid or could not be "
 "reached."
 msgstr "无法应用配置，因为配置无效或无法访问。"
 
-#: agama-autoinstall/src/questions.rs:44
+#: agama-autoinstall/src/questions.rs:47
 msgid "Reload configuration"
 msgstr "重新加载配置"
 
-#: agama-autoinstall/src/questions.rs:45
+#: agama-autoinstall/src/questions.rs:48
 msgid "Skip and configure manually"
 msgstr "跳过并手动配置"
+
+#: agama-autoinstall/src/questions.rs:77 agama-cli/src/config.rs:371
+msgid "Found unsupported elements in the AutoYaST profile:"
+msgstr ""
+
+#: agama-autoinstall/src/questions.rs:92
+#: agama-software/src/callbacks/install.rs:81
+msgid "Continue"
+msgstr "继续"
+
+#: agama-autoinstall/src/questions.rs:93
+msgid "Abort"
+msgstr ""
 
 #. TRANSLATORS: {0} is a URL
 #: agama-autoinstall/src/scripts.rs:135
@@ -374,7 +387,7 @@ msgstr "编辑器命令（如果需要，可包含额外参数）"
 msgid "It is not a valid JSON file"
 msgstr "这不是有效的 JSON 文件"
 
-#: agama-cli/src/config.rs:416
+#: agama-cli/src/config.rs:434
 msgid "Ignoring the changes because the editor was closed with an error code."
 msgstr "由于编辑器关闭时返回了错误代码，更改将被忽略。"
 
@@ -892,23 +905,23 @@ msgid ""
 "register the product?"
 msgstr "正在尝试导入自我签名证书。是否信任该证书并注册产品？"
 
-#: agama-server/src/profile/web.rs:82
+#: agama-server/src/profile/web.rs:85
 msgid "Profile validation failed"
 msgstr "配置文件验证失败"
 
-#: agama-server/src/profile/web.rs:85
+#: agama-server/src/profile/web.rs:88
 msgid "Could not retrieve profile"
 msgstr "无法检索配置文件"
 
-#: agama-server/src/profile/web.rs:88
+#: agama-server/src/profile/web.rs:91
 msgid "Invalid profile encoding"
 msgstr "配置文件编码无效"
 
-#: agama-server/src/profile/web.rs:91
+#: agama-server/src/profile/web.rs:94
 msgid "Invalid profile request"
 msgstr "配置文件请求无效"
 
-#: agama-server/src/profile/web.rs:94
+#: agama-server/src/profile/web.rs:97
 msgid "AutoYaST conversion failed"
 msgstr "AutoYaST 转换失败"
 
@@ -935,10 +948,6 @@ msgstr "重试"
 msgid "There was a problem running a package script."
 msgstr "运行软件包脚本时出现问题。"
 
-#: agama-software/src/callbacks/install.rs:81
-msgid "Continue"
-msgstr "继续"
-
 #. TRANSLATORS: substituting: key ID, (key name), fingerprint
 #: agama-software/src/callbacks/security.rs:104
 msgid ""
@@ -950,7 +959,7 @@ msgstr "指纹为 {2} 的密钥 {0} ({1}) 未知。是否信任该密钥？"
 msgid "Skip"
 msgstr "跳过"
 
-#: agama-software/src/service.rs:304
+#: agama-software/src/service.rs:296
 msgid ""
 "Due to an internal error, it was not possible to create a software proposal."
 msgstr "由于出现内部错误，无法创建软件提案。"
@@ -1008,7 +1017,7 @@ msgstr "软件选择项存在冲突"
 msgid "Could not select %s '%s' for installation"
 msgstr "无法选择 %s '%s' 进行安装"
 
-#: agama-software/src/zypp_server.rs:1031
+#: agama-software/src/zypp_server.rs:1010
 msgid "Failed to register the system"
 msgstr "系统注册失败"
 

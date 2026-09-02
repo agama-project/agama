@@ -70,10 +70,11 @@ module Agama
           search = config.search
           return if search.device || search.create_device? || search.skip_device?
 
-          if search.name
+          name = search.condition_name
+          if name
             error(
               # TRANSLATORS: %s is replaced by a device name (e.g., "/dev/vda").
-              format(_("Mandatory device %s not found"), search.name),
+              format(_("Mandatory device %s not found"), name),
               kind: IssueClasses::Config::SEARCH_NOT_FOUND
             )
           else

@@ -20,7 +20,10 @@
 
 //! This module offers a mechanism to ask questions to users.
 
-use agama_lib::{http::BaseHTTPClient, questions::http_client::HTTPClient as QuestionsHTTPClient};
+use agama_lib::{
+    http::BaseHTTPClient, profile::UnsupportedElement,
+    questions::http_client::HTTPClient as QuestionsHTTPClient,
+};
 use agama_utils::api::question::QuestionSpec;
 
 pub struct UserQuestions {
@@ -43,7 +46,7 @@ impl UserQuestions {
     ) -> anyhow::Result<Option<String>> {
         let localized_retry = gettextrs::gettext("Reload configuration");
         let localized_manual = gettextrs::gettext("Skip and configure manually");
-        let question = QuestionSpec::new(text, "load.retry")
+        let question = QuestionSpec::new(text, "loadConfigError")
             .with_actions(&[
                 ("Retry", localized_retry.as_str()),
                 ("Manual", localized_manual.as_str()),
@@ -59,5 +62,48 @@ impl UserQuestions {
         } else {
             Ok(Some(answer.value.unwrap_or(url.to_string())))
         }
+    }
+
+    /// Asks the user whether to continue despite unsupported AutoYaST elements.
+    ///
+    /// Returns `true` if the user chose to continue.
+    pub async fn ask_unsupported_elements(
+        &self,
+        elements: &[UnsupportedElement],
+    ) -> anyhow::Result<bool> {
+        let keys: Vec<&str> = elements.iter().map(|e| e.key.as_str()).collect();
+        let text = format!(
+            "{} {}.",
+            gettextrs::gettext("Found unsupported elements in the AutoYaST profile:"),
+            keys.join(", ")
+        );
+
+        let unsupported: Vec<&str> = elements
+            .iter()
+            .filter(|e| e.support == "no")
+            .map(|e| e.key.as_str())
+            .collect();
+        let planned: Vec<&str> = elements
+            .iter()
+            .filter(|e| e.support == "planned")
+            .map(|e| e.key.as_str())
+            .collect();
+
+        let localized_continue = gettextrs::gettext("Continue");
+        let localized_abort = gettextrs::gettext("Abort");
+        let question = QuestionSpec::new(&text, "autoyastUnsupported")
+            .with_actions(&[
+                ("Continue", localized_continue.as_str()),
+                ("Abort", localized_abort.as_str()),
+            ])
+            .with_default_action("Continue")
+            .with_data(&[
+                ("planned", planned.join(",").as_str()),
+                ("unsupported", unsupported.join(",").as_str()),
+            ]);
+
+        let question = self.questions.create_question(&question).await?;
+        let answer = self.questions.get_answer(question.id).await?;
+        Ok(answer.action == "Continue")
     }
 }

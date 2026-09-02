@@ -1,0 +1,517 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR SuSE Linux Products GmbH, Nuernberg
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-08-26 11:36+0000\n"
+"PO-Revision-Date: 2026-08-19 16:13+0000\n"
+"Last-Translator: Bone NI <bounkirdni@gmail.com>\n"
+"Language-Team: Lao <https://l10n.opensuse.org/projects/agama/agama-service-"
+"master/lo/>\n"
+"Language: lo\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 2026.8.1\n"
+
+#. Implementation for the API method #Probe.
+#: service/lib/agama/dbus/storage/dasd.rb:65
+msgid "Probing DASD devices"
+msgstr "ກຳລັງກວດຫາອຸປະກອນ DASD"
+
+#. Do not configure if there is nothing to change.
+#: service/lib/agama/dbus/storage/dasd.rb:87
+msgid "Configuring DASD"
+msgstr "ກຳລັງກຳນົດຄ່າ DASD"
+
+#. Do not configure if there is nothing to change.
+#: service/lib/agama/dbus/storage/iscsi.rb:79
+msgid "Configuring iSCSI"
+msgstr "ກຳລັງກຳນົດຄ່າ iSCSI"
+
+#. Performs an iSCSI discovery.
+#.
+#. @param serialized_options [String] Serialized dicovery options.
+#. @return [Number] 0 success; 1 failure.
+#: service/lib/agama/dbus/storage/iscsi.rb:120
+msgid "Performing iSCSI discovery"
+msgstr "ກຳລັງດຳເນີນການຄົ້ນຫາ iSCSI"
+
+#. Implementation for the API method #Install.
+#: service/lib/agama/dbus/storage/manager.rb:192
+msgid "Preparing bootloader proposal"
+msgstr "ກຳລັງກະກຽມຂໍ້ສະເໜີບູດໂຫຼດເດີ"
+
+#: service/lib/agama/dbus/storage/manager.rb:195
+msgid "Preparing the storage devices"
+msgstr "ກຳລັງກະກຽມອຸປະກອນເກັບຂໍ້ມູນ"
+
+#: service/lib/agama/dbus/storage/manager.rb:198
+msgid "Writing bootloader sysconfig"
+msgstr "ກຳລັງຂຽນຄ່າ sysconfig ຂອງບູດໂຫຼດເດີ"
+
+#. Implementation for the API method #Finish.
+#: service/lib/agama/dbus/storage/manager.rb:206
+msgid "Finishing installation"
+msgstr "ກຳລັງສຳເລັດການຕິດຕັ້ງ"
+
+#. Implementation for the API method #Umount.
+#: service/lib/agama/dbus/storage/manager.rb:213
+msgid "Unmounting devices"
+msgstr "ກຳລັງຖອນການເຊື່ອມຕໍ່ອຸປະກອນ"
+
+#. after loading config try to apply it, so proper packages can be requested
+#. TODO: generate also new issue from configuration
+#: service/lib/agama/dbus/storage/manager.rb:252
+msgid "Activating storage devices"
+msgstr "ກຳລັງເປີດໃຊ້ງານອຸປະກອນເກັບຂໍ້ມູນ"
+
+#: service/lib/agama/dbus/storage/manager.rb:255
+msgid "Probing storage devices"
+msgstr "ກຳລັງກວດຫາອຸປະກອນເກັບຂໍ້ມູນ"
+
+#: service/lib/agama/dbus/storage/manager.rb:258
+msgid "Applying storage configuration"
+msgstr "ກຳລັງນຳໃຊ້ການກຳນົດຄ່າບ່ອນເກັບຂໍ້ມູນ"
+
+#. Issue when the device has several users.
+#.
+#. @return [Issue, nil]
+#: service/lib/agama/storage/config_checkers/alias.rb:74
+#, c-format
+msgid "The device with alias '%s' is used by more than one device"
+msgstr "ອຸປະກອນທີ່ມີນາມແຝງ '%s' ຖືກໃຊ້ໂດຍຫຼາຍກວ່າໜຶ່ງອຸປະກອນ"
+
+#. Issue when the device has both filesystem and a user.
+#.
+#. @return [Issue, nil]
+#: service/lib/agama/storage/config_checkers/alias.rb:95
+#, c-format
+msgid ""
+"The device with alias '%s' cannot be formatted because it is used by other "
+"device"
+msgstr "ອຸປະກອນທີ່ມີນາມແຝງ '%s' ບໍ່ສາມາດຟໍແມັດໄດ້ ເພາະມັນຖືກໃຊ້ໂດຍອຸປະກອນອື່ນ"
+
+#. Issue when the device has both partitions and a user.
+#.
+#. @return [Issue, nil]
+#: service/lib/agama/storage/config_checkers/alias.rb:118
+#, c-format
+msgid ""
+"The device with alias '%s' cannot be partitioned because it is used by other "
+"device"
+msgstr "ອຸປະກອນທີ່ມີນາມແຝງ '%s' ບໍ່ສາມາດແບ່ງພາທິຊັນໄດ້ ເພາະມັນຖືກໃຊ້ໂດຍອຸປະກອນອື່ນ"
+
+#. Error if a boot device is required and unknown.
+#.
+#. This happens when the config solver is not able to infer a boot device, see
+#. {ConfigSolvers::Boot}.
+#.
+#. @return [Issue, nil]
+#: service/lib/agama/storage/config_checkers/boot.rb:75
+msgid "The boot device cannot be automatically selected"
+msgstr "ບໍ່ສາມາດເລືອກອຸປະກອນບູດໂດຍອັດຕະໂນມັດໄດ້"
+
+#. TRANSLATORS: %s is replaced by a device alias (e.g., "boot").
+#: service/lib/agama/storage/config_checkers/boot.rb:86
+#, c-format
+msgid "There is no boot device with alias '%s'"
+msgstr "ບໍ່ມີອຸປະກອນບູດທີ່ມີນາມແຝງ '%s'"
+
+#. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device
+#. (e.g., 'luks1', 'random_swap').
+#: service/lib/agama/storage/config_checkers/encryption.rb:79
+#, perl-brace-format
+msgid ""
+"No passphrase provided (required for using the method '%{crypt_method}')."
+msgstr "ບໍ່ມີການລະບຸລະຫັດຜ່ານ (ຈຳເປັນສຳລັບການໃຊ້ວິທີ '%{crypt_method}')."
+
+#. TRANSLATORS: %{crypt_method} is the identifier of the method to encrypt the device
+#. (e.g., "luks1", "random swap").
+#: service/lib/agama/storage/config_checkers/encryption.rb:95
+#, perl-brace-format
+msgid "%{crypt_method} is not available in this system."
+msgstr "%{crypt_method} ບໍ່ມີໃຫ້ໃຊ້ໃນລະບົບນີ້."
+
+#. TRANSLATORS: %{crypt_method} is the identifier of the method to encrypt the device
+#. (e.g., "luks1", "random swap").
+#: service/lib/agama/storage/config_checkers/encryption.rb:112
+#, perl-brace-format
+msgid "%{crypt_method} is not suitable for a device different to swap."
+msgstr "%{crypt_method} ບໍ່ເໝາະສົມສຳລັບອຸປະກອນອື່ນທີ່ບໍ່ແມ່ນ swap."
+
+#. TRANSLATORS: %{crypt_method} is the identifier of the method to encrypt the device
+#. (e.g., "luks1", "random swap") and %{bootloader} by a bootloader name (e.g.,
+#. "grub2").
+#: service/lib/agama/storage/config_checkers/encryption.rb:131
+#, perl-brace-format
+msgid "%{crypt_method} is not suitable for the bootloader %{bootloader}."
+msgstr "%{crypt_method} ບໍ່ເໝາະສົມສຳລັບບູດໂຫຼດເດີ %{bootloader}."
+
+#. TRANSLATORS: %s is replaced by a mount path (e.g., "/home").
+#: service/lib/agama/storage/config_checkers/filesystem.rb:75
+#, c-format
+msgid "Missing file system type for '%s'"
+msgstr "ບໍ່ພົບປະເພດລະບົບໄຟລ໌ສຳລັບ '%s'"
+
+#. TRANSLATORS: %{filesystem} is replaced by a file system type (e.g., "Btrfs") and
+#. %{path} is replaced by a mount path (e.g., "/home").
+#: service/lib/agama/storage/config_checkers/filesystem.rb:98
+#, perl-brace-format
+msgid "The file system type '%{filesystem}' is not suitable for '%{path}'"
+msgstr "ປະເພດລະບົບໄຟລ໌ '%{filesystem}' ບໍ່ເໝາະສົມສຳລັບ '%{path}'"
+
+#. TRANSLATORS: %s is the replaced by a device alias (e.g., "pv1").
+#: service/lib/agama/storage/config_checkers/logical_volume.rb:100
+#, c-format
+msgid "There is no LVM thin pool volume with alias '%s'"
+msgstr "ບໍ່ມີ LVM thin pool volume ທີ່ມີນາມແຝງ '%s'"
+
+#. TRANSLATORS: %s is the replaced by a device alias (e.g., "md1").
+#: service/lib/agama/storage/config_checkers/md_raid.rb:102
+#, c-format
+msgid "There is no MD RAID member device with alias '%s'"
+msgstr "ບໍ່ມີອຸປະກອນສະມາຊິກ MD RAID ທີ່ມີນາມແຝງ '%s'"
+
+#. Issue if the MD RAID level is missing and the device is not reused.
+#.
+#. @return [Issue, nil]
+#: service/lib/agama/storage/config_checkers/md_raid.rb:115
+msgid "There is a MD RAID without level"
+msgstr "ມີ MD RAID ທີ່ບໍ່ມີລະດັບ (level)"
+
+#. Issue if the MD RAID does not contain enough member devices.
+#.
+#. @return [Issue, nil]
+#: service/lib/agama/storage/config_checkers/md_raid.rb:128
+#, c-format
+msgid "At least %s devices are required for %s"
+msgstr "ຕ້ອງການຢ່າງໜ້ອຍ %s ອຸປະກອນສຳລັບ %s"
+
+#. TRANSLATORS: 'method' is the identifier of the method to encrypt the device
+#. (e.g., 'luks1').
+#: service/lib/agama/storage/config_checkers/physical_volumes_encryption.rb:62
+#, perl-brace-format
+msgid "%{method} is not suitable to encrypt the physical volumes."
+msgstr "%{method} ບໍ່ເໝາະສົມໃນການເຂົ້າລະຫັດ physical volumes."
+
+#. TRANSLATORS: %s is replaced by a device name (e.g., "/dev/vda").
+#: service/lib/agama/storage/config_checkers/search.rb:77
+#, c-format
+msgid "Mandatory device %s not found"
+msgstr "ບໍ່ພົບອຸປະກອນທີ່ຈຳເປັນ %s"
+
+#. TRANSLATORS: %s is replaced by a device type (e.g., "drive").
+#: service/lib/agama/storage/config_checkers/search.rb:83
+#, c-format
+msgid "Mandatory %s not found"
+msgstr "ບໍ່ພົບ %s ທີ່ຈຳເປັນ"
+
+#. Issue if the parent of the member device is formatted.
+#.
+#. @param device [Y2Storage::BlkDevice] Parent of the member device.
+#. @return [Issue, nil]
+#: service/lib/agama/storage/config_checkers/search.rb:127
+#, perl-brace-format
+msgid ""
+"The device '%{parent_name}' cannot be formatted because it is part of the "
+"reused MD RAID '%{reused_name}'"
+msgstr ""
+"ອຸປະກອນ '%{parent_name}' ບໍ່ສາມາດຟໍແມັດໄດ້ ເພາະມັນເປັນສ່ວນໜຶ່ງຂອງ MD RAID '%"
+"{reused_name}' ທີ່ນຳມາໃຊ້ໃໝ່"
+
+#. TRANSLATORS: %{parent_name} and %{reused_name} are replaced by device names (e.g.,
+#. "/dev/vda", "/dev/md0").
+#: service/lib/agama/storage/config_checkers/search.rb:137
+#, perl-brace-format
+msgid ""
+"The device '%{parent_name}' cannot be formatted because it is a physical "
+"volume of the reused LVM volume group '%{reused_name}'"
+msgstr ""
+"ອຸປະກອນ '%{parent_name}' ບໍ່ສາມາດຟໍແມັດໄດ້ ເພາະມັນເປັນ physical volume ຂອງ LVM "
+"volume group '%{reused_name}' ທີ່ນຳມາໃຊ້ໃໝ່"
+
+#. Issue if the member device is deleted.
+#.
+#. @param member_config [#search]
+#. @return [Issue, nil]
+#: service/lib/agama/storage/config_checkers/search.rb:167
+#, perl-brace-format
+msgid ""
+"The device '%{member_name}' cannot be deleted because it is part of the "
+"reused MD RAID '%{reused_name}'"
+msgstr ""
+"ອຸປະກອນ '%{member_name}' ບໍ່ສາມາດລຶບໄດ້ ເພາະມັນເປັນສ່ວນໜຶ່ງຂອງ MD RAID '%"
+"{reused_name}' ທີ່ນຳມາໃຊ້ໃໝ່"
+
+#. TRANSLATORS: %{member_name} and %{reused_name} are replaced by device names (e.g.,
+#. "/dev/vda", "/dev/md0").
+#: service/lib/agama/storage/config_checkers/search.rb:177
+#, perl-brace-format
+msgid ""
+"The device '%{member_name}' cannot be deleted because it is a physical "
+"volume of the reused LVM volume group '%{reused_name}'"
+msgstr ""
+"ອຸປະກອນ '%{member_name}' ບໍ່ສາມາດລຶບໄດ້ ເພາະມັນເປັນ physical volume ຂອງ LVM volume "
+"group '%{reused_name}' ທີ່ນຳມາໃຊ້ໃໝ່"
+
+#. Issue if the device member is resized.
+#.
+#. @param member_config [#search]
+#. @return [Issue, nil]
+#: service/lib/agama/storage/config_checkers/search.rb:207
+#, perl-brace-format
+msgid ""
+"The device '%{member_name}' cannot be resized because it is part of the "
+"reused MD RAID '%{reused_name}'"
+msgstr ""
+"ອຸປະກອນ '%{member_name}' ບໍ່ສາມາດປ່ຽນຂະໜາດໄດ້ ເພາະມັນເປັນສ່ວນໜຶ່ງຂອງ MD RAID '%"
+"{reused_name}' ທີ່ນຳມາໃຊ້ໃໝ່"
+
+#. TRANSLATORS: %{member_name} and %{reused_name} are replaced by device names (e.g.,
+#. "/dev/vda", "/dev/md0").
+#: service/lib/agama/storage/config_checkers/search.rb:217
+#, perl-brace-format
+msgid ""
+"The device '%{member_name}' cannot be resized because it is a physical "
+"volume of the reused LVM volume group '%{reused_name}'"
+msgstr ""
+"ອຸປະກອນ '%{member_name}' ບໍ່ສາມາດປ່ຽນຂະໜາດໄດ້ ເພາະມັນເປັນ physical volume ຂອງ LVM "
+"volume group '%{reused_name}' ທີ່ນຳມາໃຊ້ໃໝ່"
+
+#. Issue if the device member is formatted.
+#.
+#. @param member_config [#search]
+#. @return [Issue, nil]
+#: service/lib/agama/storage/config_checkers/search.rb:247
+#, perl-brace-format
+msgid ""
+"The device '%{member_name}' cannot be formatted because it is part of the "
+"reused MD RAID '%{reused_name}'"
+msgstr ""
+"ອຸປະກອນ '%{member_name}' ບໍ່ສາມາດຟໍແມັດໄດ້ ເພາະມັນເປັນສ່ວນໜຶ່ງຂອງ MD RAID '%"
+"{reused_name}' ທີ່ນຳມາໃຊ້ໃໝ່"
+
+#. TRANSLATORS: %{member_name} and %{reused_name} are replaced by device names (e.g.,
+#. "/dev/vda", "/dev/md0").
+#: service/lib/agama/storage/config_checkers/search.rb:257
+#, perl-brace-format
+msgid ""
+"The device '%{member_name}' cannot be formatted because it is a physical "
+"volume of the reused LVM volume group '%{reused_name}'"
+msgstr ""
+"ອຸປະກອນ '%{member_name}' ບໍ່ສາມາດຟໍແມັດໄດ້ ເພາະມັນເປັນ physical volume ຂອງ LVM "
+"volume group '%{reused_name}' ທີ່ນຳມາໃຊ້ໃໝ່"
+
+#. Issue if the device member is partitioned.
+#.
+#. @param member_config [#search]
+#. @return [Issue, nil]
+#: service/lib/agama/storage/config_checkers/search.rb:287
+#, perl-brace-format
+msgid ""
+"The device '%{member_name}' cannot be partitioned because it is part of the "
+"reused MD RAID '%{reused_name}'"
+msgstr ""
+"ອຸປະກອນ '%{member_name}' ບໍ່ສາມາດແບ່ງພາທິຊັນໄດ້ ເພາະມັນເປັນສ່ວນໜຶ່ງຂອງ MD RAID '%"
+"{reused_name}' ທີ່ນຳມາໃຊ້ໃໝ່"
+
+#. TRANSLATORS: %{member_name} and %{reused_name} are replaced by device names (e.g.,
+#. "/dev/vda", "/dev/md0").
+#: service/lib/agama/storage/config_checkers/search.rb:297
+#, perl-brace-format
+msgid ""
+"The device '%{member_name}' cannot be partitioned because it is a physical "
+"volume of the reused LVM volume group '%{reused_name}'"
+msgstr ""
+"ອຸປະກອນ '%{member_name}' ບໍ່ສາມາດແບ່ງພາທິຊັນໄດ້ ເພາະມັນເປັນ physical volume ຂອງ LVM "
+"volume group '%{reused_name}' ທີ່ນຳມາໃຊ້ໃໝ່"
+
+#. Issue if the device member is used by other device (e.g., as target for physical volumes).
+#.
+#. @param member_config [#search]
+#. @return [Issue, nil]
+#: service/lib/agama/storage/config_checkers/search.rb:326
+#, perl-brace-format
+msgid ""
+"The device '%{member_name}' cannot be used because it is part of the reused "
+"MD RAID '%{reused_name}'"
+msgstr ""
+"ອຸປະກອນ '%{member_name}' ບໍ່ສາມາດໃຊ້ໄດ້ ເພາະມັນເປັນສ່ວນໜຶ່ງຂອງ MD RAID '%"
+"{reused_name}' ທີ່ນຳມາໃຊ້ໃໝ່"
+
+#. TRANSLATORS: %{member_name} and %{reused_name} are replaced by device names (e.g.,
+#. "/dev/vda", "/dev/md0").
+#: service/lib/agama/storage/config_checkers/search.rb:336
+#, perl-brace-format
+msgid ""
+"The device '%{member_name}' cannot be used because it is a physical volume "
+"of the reused LVM volume group '%{reused_name}'"
+msgstr ""
+"ອຸປະກອນ '%{member_name}' ບໍ່ສາມາດໃຊ້ໄດ້ ເພາະມັນເປັນ physical volume ຂອງ LVM volume "
+"group '%{reused_name}' ທີ່ນຳມາໃຊ້ໃໝ່"
+
+#. @return [String]
+#: service/lib/agama/storage/config_checkers/search.rb:384
+msgid "drive"
+msgstr "ໄດຣຟ໌ (drive)"
+
+#: service/lib/agama/storage/config_checkers/search.rb:386
+msgid "MD RAID"
+msgstr "MD RAID"
+
+#: service/lib/agama/storage/config_checkers/search.rb:388
+msgid "partition"
+msgstr "ພາທິຊັນ (partition)"
+
+#: service/lib/agama/storage/config_checkers/search.rb:390
+msgid "LVM logical volume"
+msgstr "ໂວນລູມຕາມຕັກກະ LVM"
+
+#: service/lib/agama/storage/config_checkers/search.rb:392
+msgid "LVM volume group"
+msgstr "ກຸ່ມບໍລິມາດ LVM"
+
+#: service/lib/agama/storage/config_checkers/search.rb:394
+msgid "device"
+msgstr "ອຸປະກອນ"
+
+#. Issue if the volume group name is missing.
+#.
+#. @return [Issue, nil]
+#: service/lib/agama/storage/config_checkers/volume_group.rb:85
+msgid "There is a volume group without name"
+msgstr "ມີ volume group ທີ່ບໍ່ມີຊື່"
+
+#. TRANSLATORS: %s is the replaced by a device alias (e.g., "pv1").
+#: service/lib/agama/storage/config_checkers/volume_group.rb:117
+#, c-format
+msgid "There is no LVM physical volume with alias '%s'"
+msgstr "ບໍ່ມີ LVM physical volume ທີ່ມີນາມແຝງ '%s'"
+
+#. TRANSLATORS: %s is the replaced by a device alias (e.g., "pv1").
+#: service/lib/agama/storage/config_checkers/volume_group.rb:144
+#, c-format
+msgid ""
+"The list of target devices for the volume group '%s' is mixing reused "
+"devices and new devices"
+msgstr ""
+"ລາຍຊື່ອຸປະກອນເປົ້າໝາຍສຳລັບ volume group '%s' ມີການປົນກັນລະຫວ່າງອຸປະກອນທີ່ນຳມາໃຊ້ໃໝ່ ແລະ "
+"ອຸປະກອນໃໝ່"
+
+#. TRANSLATORS: %s is the replaced by a device alias (e.g., "disk1").
+#: service/lib/agama/storage/config_checkers/volume_group.rb:164
+#, c-format
+msgid "There is no target device for LVM physical volumes with alias '%s'"
+msgstr "ບໍ່ມີອຸປະກອນເປົ້າໝາຍສຳລັບ LVM physical volumes ທີ່ມີນາມແຝງ '%s'"
+
+#. TRANSLATORS: %s is the replaced by a device alias (e.g., "disk1").
+#: service/lib/agama/storage/config_checkers/volume_groups.rb:66
+#, c-format
+msgid ""
+"The device '%s' is used several times as target device for physical volumes"
+msgstr "ອຸປະກອນ '%s' ຖືກໃຊ້ຫຼາຍຄັ້ງເປັນອຸປະກອນເປົ້າໝາຍສຳລັບ physical volumes"
+
+#. Text of the reason preventing to shrink because there is no content.
+#.
+#. @return [String, nil] nil if there is content or there is any other reasons.
+#: service/lib/agama/storage/device_shrinking.rb:151
+msgid ""
+"Neither a file system nor a storage system was detected on the device. In "
+"case the device does contain a file system or a storage system that is not "
+"supported, resizing will most likely cause data loss."
+msgstr ""
+"ບໍ່ພົບທັງລະບົບໄຟລ໌ ແລະ ລະບົບການເກັບຂໍ້ມູນໃນອຸປະກອນ. ໃນກໍລະນີທີ່ອຸປະກອນມີລະບົບໄຟລ໌ ຫຼື "
+"ລະບົບການເກັບຂໍ້ມູນທີ່ບໍ່ຮອງຮັບ, ການປ່ຽນຂະໜາດອາດຈະເຮັດໃຫ້ຂໍ້ມູນສູນຫາຍ."
+
+#. Text of the reason preventing to shrink because there is no valid minimum size.
+#.
+#. @return [String, nil] nil if there is a minimum size or there is any other reasons.
+#: service/lib/agama/storage/device_shrinking.rb:162
+msgid "Shrinking is not supported by this device"
+msgstr "ອຸປະກອນນີ້ບໍ່ຮອງຮັບການຫຍໍ້ຂະໜາດ"
+
+#. Copy /etc/nvme/host* to keep NVMe working after installation, bsc#1238038
+#: service/lib/agama/storage/finisher.rb:126
+msgid "Copying important installation files to the target system"
+msgstr "ກຳລັງຄັດລອກໄຟລ໌ການຕິດຕັ້ງທີ່ສຳຄັນໄປຍັງລະບົບເປົ້າໝາຍ"
+
+#. Step to write the bootloader configuration
+#: service/lib/agama/storage/finisher.rb:161
+msgid "Installing bootloader"
+msgstr "ກຳລັງຕິດຕັ້ງບູດໂຫຼດເດີ"
+
+#. Step to finish the Y2Storage configuration
+#: service/lib/agama/storage/finisher.rb:178
+msgid "Adjusting storage configuration"
+msgstr "ກຳລັງປັບແຕ່ງການກຳນົດຄ່າບ່ອນເກັບຂໍ້ມູນ"
+
+#. Step to finish the iSCSI configuration
+#: service/lib/agama/storage/finisher.rb:189
+msgid "Adjusting iSCSI configuration"
+msgstr "ກຳລັງປັບແຕ່ງການກຳນົດຄ່າ iSCSI"
+
+#. Step to configure the file-system snapshots
+#: service/lib/agama/storage/finisher.rb:200
+msgid "Configuring file systems snapshots"
+msgstr "ກຳລັງກຳນົດຄ່າສະແນັບຊອດ (snapshots) ຂອງລະບົບໄຟລ໌"
+
+#. Returns an issue if there is no candidate device for installation
+#.
+#. @return [Issue, nil]
+#: service/lib/agama/storage/manager.rb:316
+msgid "There is no suitable device for installation"
+msgstr "ບໍ່ມີອຸປະກອນທີ່ເໝາະສົມສຳລັບການຕິດຕັ້ງ"
+
+#. Issue representing the proposal is not valid.
+#.
+#. @return [Issue]
+#: service/lib/agama/storage/proposal.rb:351
+msgid "Cannot calculate a valid storage setup with the current configuration"
+msgstr "ບໍ່ສາມາດຄຳນວນການຕັ້ງຄ່າບ່ອນເກັບຂໍ້ມູນທີ່ຖືກຕ້ອງດ້ວຍການກຳນົດຄ່າປັດຈຸບັນ"
+
+#. Issue to communicate a generic Y2Storage error.
+#.
+#. @return [Issue]
+#: service/lib/agama/storage/proposal.rb:361
+msgid "A problem occurred while calculating the storage setup"
+msgstr "ເກີດບັນຫາຂຶ້ນໃນຂະນະທີ່ກຳລັງຄຳນວນການຕັ້ງຄ່າບ່ອນເກັບຂໍ້ມູນ"
+
+#. Step to copy the installation logs
+#: service/lib/agama/storage/umounter.rb:112
+msgid "Copying logs"
+msgstr "ກຳລັງຄັດລອກບັນທຶກ (logs)"
+
+#. Step to unmount the target file-systems
+#: service/lib/agama/storage/umounter.rb:153
+msgid "Unmounting storage devices"
+msgstr "ກຳລັງຖອນການເຊື່ອມຕໍ່ອຸປະກອນເກັບຂໍ້ມູນ"
+
+#. TRANSLATORS: %s is replaced by a zFCP channel (e.g., "0.0.5223").
+#: service/lib/agama/storage/zfcp/manager.rb:205
+#, c-format
+msgid "The zFCP controller %s cannot be activated"
+msgstr "ຕົວຄວບຄຸມ zFCP %s ບໍ່ສາມາດເປີດໃຊ້ງານໄດ້"
+
+#. TRANSLATORS: %s is replaced by a zFCP device (e.g.,
+#. "0.0.5223 0x500507681015a2b2 0x0186000000000000").
+#: service/lib/agama/storage/zfcp/manager.rb:245
+#, c-format
+msgid "The zFCP device %s cannot be activated"
+msgstr "ອຸປະກອນ zFCP %s ບໍ່ສາມາດເປີດໃຊ້ງານໄດ້"
+
+#. TRANSLATORS: %s is replaced by a zFCP device (e.g.,
+#. "0.0.5223 0x500507681015a2b2 0x0186000000000000").
+#: service/lib/agama/storage/zfcp/manager.rb:289
+#, c-format
+msgid "The zFCP device %s cannot be deactivated"
+msgstr "ອຸປະກອນ zFCP %s ບໍ່ສາມາດປິດການໃຊ້ງານໄດ້"
+
+#, perl-brace-format
+#~ msgid "Found unsupported elements in the AutoYaST profile: %{keys}."
+#~ msgstr "ພົບອົງປະກອບທີ່ບໍ່ຮອງຮັບໃນໂປຣໄຟລ໌ AutoYaST: %{keys}."

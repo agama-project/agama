@@ -64,7 +64,7 @@ shared_examples "without spacePolicy" do |volumes_property|
       expect(volumes.size).to eq(1)
 
       volume = volumes.first
-      expect(volume.search.name).to be_nil
+      expect(volume.search.condition_name).to be_nil
       expect(volume.search.if_not_found).to eq(:skip)
       expect(volume.search.max).to be_nil
       expect(volume.delete?).to eq(true)
@@ -80,7 +80,7 @@ shared_examples "without spacePolicy" do |volumes_property|
       expect(volumes.size).to eq(1)
 
       volume = volumes.first
-      expect(volume.search.name).to be_nil
+      expect(volume.search.condition_name).to be_nil
       expect(volume.search.if_not_found).to eq(:skip)
       expect(volume.search.max).to be_nil
       expect(volume.delete?).to eq(false)
@@ -130,7 +130,7 @@ shared_examples "with name" do
   it "sets #search to the expected value" do
     config = subject.convert
     expect(config.search).to be_a(Agama::Storage::Configs::Search)
-    expect(config.search.name).to eq("/dev/vda")
+    expect(config.search.condition_name).to eq("/dev/vda")
     expect(config.search.max).to be_nil
     expect(config.search.if_not_found).to eq(:error)
   end
@@ -528,7 +528,7 @@ shared_examples "with spacePolicy" do
       expect(volumes.size).to eq(1)
 
       volume = volumes.first
-      expect(volume.search.name).to be_nil
+      expect(volume.search.condition_name).to be_nil
       expect(volume.search.if_not_found).to eq(:skip)
       expect(volume.search.max).to be_nil
       expect(volume.delete?).to eq(true)
@@ -544,7 +544,7 @@ shared_examples "with spacePolicy" do
       expect(volumes.size).to eq(1)
 
       volume = volumes.first
-      expect(volume.search.name).to be_nil
+      expect(volume.search.condition_name).to be_nil
       expect(volume.search.if_not_found).to eq(:skip)
       expect(volume.search.max).to be_nil
       expect(volume.delete?).to eq(false)
@@ -640,9 +640,9 @@ shared_examples "with spacePolicy and volumes" do
       config = subject.convert
       volumes = volumes_config(config)
       expect(volumes.size).to eq(5)
-      expect(volumes[0].search.name).to eq("/dev/vol1")
-      expect(volumes[1].search.name).to eq("/dev/vol2")
-      expect(volumes[2].search.name).to eq("/dev/vol3")
+      expect(volumes[0].search.condition_name).to eq("/dev/vol1")
+      expect(volumes[1].search.condition_name).to eq("/dev/vol2")
+      expect(volumes[2].search.condition_name).to eq("/dev/vol3")
       expect(volumes[3].filesystem).to be_nil
       expect(volumes[4].filesystem.path).to eq("/")
     end
@@ -655,12 +655,12 @@ shared_examples "with spacePolicy and volumes" do
       config = subject.convert
       volumes = volumes_config(config)
       expect(volumes.size).to eq(6)
-      expect(volumes[0].search.name).to eq("/dev/vol1")
-      expect(volumes[1].search.name).to eq("/dev/vol2")
-      expect(volumes[2].search.name).to eq("/dev/vol3")
+      expect(volumes[0].search.condition_name).to eq("/dev/vol1")
+      expect(volumes[1].search.condition_name).to eq("/dev/vol2")
+      expect(volumes[2].search.condition_name).to eq("/dev/vol3")
       expect(volumes[3].filesystem).to be_nil
       expect(volumes[4].filesystem.path).to eq("/")
-      expect(volumes[5].search.name).to be_nil
+      expect(volumes[5].search.condition_name).to be_nil
       expect(volumes[5].search.max).to be_nil
       expect(volumes[5].delete).to eq(true)
     end
@@ -673,12 +673,12 @@ shared_examples "with spacePolicy and volumes" do
       config = subject.convert
       volumes = volumes_config(config)
       expect(volumes.size).to eq(6)
-      expect(volumes[0].search.name).to eq("/dev/vol1")
-      expect(volumes[1].search.name).to eq("/dev/vol2")
-      expect(volumes[2].search.name).to eq("/dev/vol3")
+      expect(volumes[0].search.condition_name).to eq("/dev/vol1")
+      expect(volumes[1].search.condition_name).to eq("/dev/vol2")
+      expect(volumes[2].search.condition_name).to eq("/dev/vol3")
       expect(volumes[3].filesystem).to be_nil
       expect(volumes[4].filesystem.path).to eq("/")
-      expect(volumes[5].search.name).to be_nil
+      expect(volumes[5].search.condition_name).to be_nil
       expect(volumes[5].search.max).to be_nil
       expect(volumes[5].size.default?).to eq(false)
       expect(volumes[5].size.min).to eq(Y2Storage::DiskSize.zero)
@@ -693,15 +693,15 @@ shared_examples "with spacePolicy and volumes" do
       config = subject.convert
       volumes = volumes_config(config)
       expect(volumes.size).to eq(9)
-      expect(volumes[0].search.name).to eq("/dev/vol1")
-      expect(volumes[1].search.name).to eq("/dev/vol2")
-      expect(volumes[2].search.name).to eq("/dev/vol3")
+      expect(volumes[0].search.condition_name).to eq("/dev/vol1")
+      expect(volumes[1].search.condition_name).to eq("/dev/vol2")
+      expect(volumes[2].search.condition_name).to eq("/dev/vol3")
       expect(volumes[3].filesystem).to be_nil
       expect(volumes[4].filesystem.path).to eq("/")
-      expect(volumes[5].search.name).to eq("/dev/vol4")
-      expect(volumes[6].search.name).to eq("/dev/vol5")
-      expect(volumes[7].search.name).to eq("/dev/vol6")
-      expect(volumes[8].search.name).to eq("/dev/vol7")
+      expect(volumes[5].search.condition_name).to eq("/dev/vol4")
+      expect(volumes[6].search.condition_name).to eq("/dev/vol5")
+      expect(volumes[7].search.condition_name).to eq("/dev/vol6")
+      expect(volumes[8].search.condition_name).to eq("/dev/vol7")
     end
   end
 end

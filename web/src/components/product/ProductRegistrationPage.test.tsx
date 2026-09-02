@@ -262,7 +262,7 @@ describe("ProductRegistrationPage", () => {
         // heading without "BETA"
         const title = screen.getByRole("heading", {
           name: /SUSE Linux Enterprise High Availability Extension 16.0 x86_64/,
-          level: 4,
+          level: 3,
         });
         const extensionNode = title.parentElement!;
 
@@ -320,7 +320,7 @@ describe("ProductRegistrationPage", () => {
           mockIssues = [
             {
               scope: "product",
-              class: "addon_registration_failed[sle-ha]",
+              class: "addonRegistrationFailed[sle-ha]",
               description: "Failed to register the add-on sle-ha",
               details: "No subscription with registration code 'jkljkljkl' found",
             },
@@ -355,7 +355,7 @@ describe("ProductRegistrationPage", () => {
     mockIssues = [
       {
         scope: "product",
-        class: "system_registration_failed",
+        class: "systemRegistrationFailed",
         description: "Failed to register",
       },
       {
@@ -378,7 +378,7 @@ describe("ProductRegistrationPage", () => {
     mockIssues = [
       {
         scope: "product",
-        class: "system_registration_failed",
+        class: "systemRegistrationFailed",
         description: "Failed to register",
       },
     ];

@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-29 12:57+0000\n"
-"PO-Revision-Date: 2026-07-01 03:12+0000\n"
+"POT-Creation-Date: 2026-08-26 11:36+0000\n"
+"PO-Revision-Date: 2026-08-27 05:55+0000\n"
 "Last-Translator: Yasuhiko Kamata <belphegor@belbel.or.jp>\n"
 "Language-Team: Japanese <https://l10n.opensuse.org/projects/agama/agama-rust-"
 "master/ja/>\n"
@@ -17,22 +17,35 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 2026.6.1\n"
+"X-Generator: Weblate 2026.8.1\n"
 
-#: agama-autoinstall/src/auto_loader.rs:115
+#: agama-autoinstall/src/auto_loader.rs:142
 msgid ""
 "Configuration cannot be applied because it is invalid or could not be "
 "reached."
 msgstr ""
 "内容が正しくないか、もしくはアクセスできないため、設定を適用できません。"
 
-#: agama-autoinstall/src/questions.rs:44
+#: agama-autoinstall/src/questions.rs:47
 msgid "Reload configuration"
 msgstr "設定の再読み込み"
 
-#: agama-autoinstall/src/questions.rs:45
+#: agama-autoinstall/src/questions.rs:48
 msgid "Skip and configure manually"
 msgstr "処理を飛ばして手作業で設定する"
+
+#: agama-autoinstall/src/questions.rs:77 agama-cli/src/config.rs:371
+msgid "Found unsupported elements in the AutoYaST profile:"
+msgstr "AutoYaST プロファイル内にサポート対象外の要素が見つかりました:"
+
+#: agama-autoinstall/src/questions.rs:92
+#: agama-software/src/callbacks/install.rs:81
+msgid "Continue"
+msgstr "続行"
+
+#: agama-autoinstall/src/questions.rs:93
+msgid "Abort"
+msgstr "中止"
 
 #. TRANSLATORS: {0} is a URL
 #: agama-autoinstall/src/scripts.rs:135
@@ -398,7 +411,7 @@ msgstr "エディタコマンド (必要であれば追加のパラメータも�
 msgid "It is not a valid JSON file"
 msgstr "JSON ファイルの形式が正しくありません"
 
-#: agama-cli/src/config.rs:416
+#: agama-cli/src/config.rs:434
 msgid "Ignoring the changes because the editor was closed with an error code."
 msgstr "エディタがエラー終了したため、変更点を適用しません。"
 
@@ -928,23 +941,23 @@ msgstr ""
 "自己署名型の証明書を取り込もうとしています。この証明書を信用し、製品を登録し"
 "てよろしいですか？"
 
-#: agama-server/src/profile/web.rs:82
+#: agama-server/src/profile/web.rs:85
 msgid "Profile validation failed"
 msgstr "プロファイルの検証に失敗しました"
 
-#: agama-server/src/profile/web.rs:85
+#: agama-server/src/profile/web.rs:88
 msgid "Could not retrieve profile"
 msgstr "プロファイルを取得できません"
 
-#: agama-server/src/profile/web.rs:88
+#: agama-server/src/profile/web.rs:91
 msgid "Invalid profile encoding"
 msgstr "プロファイルのエンコーディングが正しくありません"
 
-#: agama-server/src/profile/web.rs:91
+#: agama-server/src/profile/web.rs:94
 msgid "Invalid profile request"
 msgstr "プロファイルリクエストが正しくありません"
 
-#: agama-server/src/profile/web.rs:94
+#: agama-server/src/profile/web.rs:97
 msgid "AutoYaST conversion failed"
 msgstr "AudoYaST からの変換に失敗しました"
 
@@ -971,10 +984,6 @@ msgstr "再試行"
 msgid "There was a problem running a package script."
 msgstr "パッケージスクリプトの実行にあたって問題が発生しました。"
 
-#: agama-software/src/callbacks/install.rs:81
-msgid "Continue"
-msgstr "続行"
-
 #. TRANSLATORS: substituting: key ID, (key name), fingerprint
 #: agama-software/src/callbacks/security.rs:104
 msgid ""
@@ -987,7 +996,7 @@ msgstr ""
 msgid "Skip"
 msgstr "飛ばす"
 
-#: agama-software/src/service.rs:304
+#: agama-software/src/service.rs:296
 msgid ""
 "Due to an internal error, it was not possible to create a software proposal."
 msgstr "内部エラーにより、ソフトウエアの提案内容を作成できませんでした。"
@@ -1046,7 +1055,7 @@ msgstr "ソフトウエア選択において競合が発生しています"
 msgid "Could not select %s '%s' for installation"
 msgstr "%s '%s' をインストール用に選択できませんでした"
 
-#: agama-software/src/zypp_server.rs:1031
+#: agama-software/src/zypp_server.rs:1010
 msgid "Failed to register the system"
 msgstr "システムの登録に失敗しました"
 

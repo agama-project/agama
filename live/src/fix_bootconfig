@@ -31,12 +31,6 @@ if [ -f $bootfix ] ; then
   echo "bootconfig script found: \"$bootfix\""
 fi
 
-if [ $arch = ppc64le ] ; then
-  mkdir -p $dst/boot/grub2
-  cp -r usr/share/grub2/powerpc-ieee1275 $dst/boot/grub2
-  mv $dst/boot/grub2/powerpc-ieee1275/grub.elf $dst/boot/grub2
-fi
-
 cat <<XXX >/usr/local/bin/xorriso
 #! /bin/bash
 

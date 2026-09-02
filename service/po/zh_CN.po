@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-02 08:45+0000\n"
+"POT-Creation-Date: 2026-08-26 11:36+0000\n"
 "PO-Revision-Date: 2026-06-25 09:55+0000\n"
 "Last-Translator: Grace Yu <grace.yu@excel-gits.com>\n"
 "Language-Team: Chinese (China) <https://l10n.opensuse.org/projects/agama/"
@@ -18,14 +18,6 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: Weblate 2026.6.1\n"
-
-#. Reports the problems and decide whether to continue or not.
-#.
-#. @param elements [Array<Element>] List of unsupported elements.
-#: service/lib/agama/autoyast/profile_reporter.rb:51
-#, perl-brace-format
-msgid "Found unsupported elements in the AutoYaST profile: %{keys}."
-msgstr "在 AutoYaST 配置文件中发现不支持的元素：%{keys}。"
 
 #. Implementation for the API method #Probe.
 #: service/lib/agama/dbus/storage/dasd.rb:65
@@ -209,13 +201,13 @@ msgid "%{method} is not suitable to encrypt the physical volumes."
 msgstr "%{method} 不适合用来加密物理卷。"
 
 #. TRANSLATORS: %s is replaced by a device name (e.g., "/dev/vda").
-#: service/lib/agama/storage/config_checkers/search.rb:76
+#: service/lib/agama/storage/config_checkers/search.rb:77
 #, c-format
 msgid "Mandatory device %s not found"
 msgstr "未找到必需的设备 %s"
 
 #. TRANSLATORS: %s is replaced by a device type (e.g., "drive").
-#: service/lib/agama/storage/config_checkers/search.rb:82
+#: service/lib/agama/storage/config_checkers/search.rb:83
 #, c-format
 msgid "Mandatory %s not found"
 msgstr "未找到必需的%s"
@@ -224,7 +216,7 @@ msgstr "未找到必需的%s"
 #.
 #. @param device [Y2Storage::BlkDevice] Parent of the member device.
 #. @return [Issue, nil]
-#: service/lib/agama/storage/config_checkers/search.rb:126
+#: service/lib/agama/storage/config_checkers/search.rb:127
 #, perl-brace-format
 msgid ""
 "The device '%{parent_name}' cannot be formatted because it is part of the "
@@ -235,7 +227,7 @@ msgstr ""
 
 #. TRANSLATORS: %{parent_name} and %{reused_name} are replaced by device names (e.g.,
 #. "/dev/vda", "/dev/md0").
-#: service/lib/agama/storage/config_checkers/search.rb:136
+#: service/lib/agama/storage/config_checkers/search.rb:137
 #, perl-brace-format
 msgid ""
 "The device '%{parent_name}' cannot be formatted because it is a physical "
@@ -248,7 +240,7 @@ msgstr ""
 #.
 #. @param member_config [#search]
 #. @return [Issue, nil]
-#: service/lib/agama/storage/config_checkers/search.rb:166
+#: service/lib/agama/storage/config_checkers/search.rb:167
 #, perl-brace-format
 msgid ""
 "The device '%{member_name}' cannot be deleted because it is part of the "
@@ -258,7 +250,7 @@ msgstr ""
 
 #. TRANSLATORS: %{member_name} and %{reused_name} are replaced by device names (e.g.,
 #. "/dev/vda", "/dev/md0").
-#: service/lib/agama/storage/config_checkers/search.rb:176
+#: service/lib/agama/storage/config_checkers/search.rb:177
 #, perl-brace-format
 msgid ""
 "The device '%{member_name}' cannot be deleted because it is a physical "
@@ -271,7 +263,7 @@ msgstr ""
 #.
 #. @param member_config [#search]
 #. @return [Issue, nil]
-#: service/lib/agama/storage/config_checkers/search.rb:206
+#: service/lib/agama/storage/config_checkers/search.rb:207
 #, perl-brace-format
 msgid ""
 "The device '%{member_name}' cannot be resized because it is part of the "
@@ -282,7 +274,7 @@ msgstr ""
 
 #. TRANSLATORS: %{member_name} and %{reused_name} are replaced by device names (e.g.,
 #. "/dev/vda", "/dev/md0").
-#: service/lib/agama/storage/config_checkers/search.rb:216
+#: service/lib/agama/storage/config_checkers/search.rb:217
 #, perl-brace-format
 msgid ""
 "The device '%{member_name}' cannot be resized because it is a physical "
@@ -295,7 +287,7 @@ msgstr ""
 #.
 #. @param member_config [#search]
 #. @return [Issue, nil]
-#: service/lib/agama/storage/config_checkers/search.rb:246
+#: service/lib/agama/storage/config_checkers/search.rb:247
 #, perl-brace-format
 msgid ""
 "The device '%{member_name}' cannot be formatted because it is part of the "
@@ -306,7 +298,7 @@ msgstr ""
 
 #. TRANSLATORS: %{member_name} and %{reused_name} are replaced by device names (e.g.,
 #. "/dev/vda", "/dev/md0").
-#: service/lib/agama/storage/config_checkers/search.rb:256
+#: service/lib/agama/storage/config_checkers/search.rb:257
 #, perl-brace-format
 msgid ""
 "The device '%{member_name}' cannot be formatted because it is a physical "
@@ -319,7 +311,7 @@ msgstr ""
 #.
 #. @param member_config [#search]
 #. @return [Issue, nil]
-#: service/lib/agama/storage/config_checkers/search.rb:286
+#: service/lib/agama/storage/config_checkers/search.rb:287
 #, perl-brace-format
 msgid ""
 "The device '%{member_name}' cannot be partitioned because it is part of the "
@@ -330,7 +322,7 @@ msgstr ""
 
 #. TRANSLATORS: %{member_name} and %{reused_name} are replaced by device names (e.g.,
 #. "/dev/vda", "/dev/md0").
-#: service/lib/agama/storage/config_checkers/search.rb:296
+#: service/lib/agama/storage/config_checkers/search.rb:297
 #, perl-brace-format
 msgid ""
 "The device '%{member_name}' cannot be partitioned because it is a physical "
@@ -343,7 +335,7 @@ msgstr ""
 #.
 #. @param member_config [#search]
 #. @return [Issue, nil]
-#: service/lib/agama/storage/config_checkers/search.rb:325
+#: service/lib/agama/storage/config_checkers/search.rb:326
 #, perl-brace-format
 msgid ""
 "The device '%{member_name}' cannot be used because it is part of the reused "
@@ -353,7 +345,7 @@ msgstr ""
 
 #. TRANSLATORS: %{member_name} and %{reused_name} are replaced by device names (e.g.,
 #. "/dev/vda", "/dev/md0").
-#: service/lib/agama/storage/config_checkers/search.rb:335
+#: service/lib/agama/storage/config_checkers/search.rb:336
 #, perl-brace-format
 msgid ""
 "The device '%{member_name}' cannot be used because it is a physical volume "
@@ -363,27 +355,27 @@ msgstr ""
 "卷"
 
 #. @return [String]
-#: service/lib/agama/storage/config_checkers/search.rb:383
+#: service/lib/agama/storage/config_checkers/search.rb:384
 msgid "drive"
 msgstr "驱动器"
 
-#: service/lib/agama/storage/config_checkers/search.rb:385
+#: service/lib/agama/storage/config_checkers/search.rb:386
 msgid "MD RAID"
 msgstr "MD RAID"
 
-#: service/lib/agama/storage/config_checkers/search.rb:387
+#: service/lib/agama/storage/config_checkers/search.rb:388
 msgid "partition"
 msgstr "分区"
 
-#: service/lib/agama/storage/config_checkers/search.rb:389
+#: service/lib/agama/storage/config_checkers/search.rb:390
 msgid "LVM logical volume"
 msgstr "LVM 逻辑卷"
 
-#: service/lib/agama/storage/config_checkers/search.rb:391
+#: service/lib/agama/storage/config_checkers/search.rb:392
 msgid "LVM volume group"
 msgstr "LVM 卷组"
 
-#: service/lib/agama/storage/config_checkers/search.rb:393
+#: service/lib/agama/storage/config_checkers/search.rb:394
 msgid "device"
 msgstr "设备"
 
@@ -496,54 +488,37 @@ msgstr "正在复制日志"
 msgid "Unmounting storage devices"
 msgstr "正在卸载存储设备"
 
-#. Activates the controller if it is not active yet.
-#.
-#. @note: If "allow_lun_scan" is active, then all its LUNs are automatically activated.
-#.
-#. @param controller [Controller]
-#. @return [Boolean] Whether the controller was activated.
-#: service/lib/agama/storage/zfcp/manager.rb:206
+#. TRANSLATORS: %s is replaced by a zFCP channel (e.g., "0.0.5223").
+#: service/lib/agama/storage/zfcp/manager.rb:205
 #, c-format
 msgid "The zFCP controller %s cannot be activated"
 msgstr "无法激活 zFCP 控制器 %s"
 
-#. Activates a device if it is not active yet.
-#.
-#. @param device [Device]
-#. @return [Boolean] Whether the device was activated.
-#: service/lib/agama/storage/zfcp/manager.rb:239
+#. TRANSLATORS: %s is replaced by a zFCP device (e.g.,
+#. "0.0.5223 0x500507681015a2b2 0x0186000000000000").
+#: service/lib/agama/storage/zfcp/manager.rb:245
 #, c-format
 msgid "The zFCP device %s cannot be activated"
 msgstr "无法激活 zFCP 设备 %s"
 
-#. Deactivates a device if it is active.
-#.
-#. @note: If "allow_lun_scan" is active, then the disk cannot be deactivated.
-#.
-#. @param device [Device]
-#. @return [Boolean] Whether the device was deactivated.
-#: service/lib/agama/storage/zfcp/manager.rb:277
+#. TRANSLATORS: %s is replaced by a zFCP device (e.g.,
+#. "0.0.5223 0x500507681015a2b2 0x0186000000000000").
+#: service/lib/agama/storage/zfcp/manager.rb:289
 #, c-format
 msgid "The zFCP device %s cannot be deactivated"
 msgstr "无法停用 zFCP 设备 %s"
 
-#. Issue if the controller is missing.
-#.
-#. @param channel [String]
-#. @return [Issue, nil]
-#: service/lib/agama/storage/zfcp/manager.rb:307
-#, c-format
-msgid "Unknown zFCP controller %s"
-msgstr "未知 zFCP 控制器 %s"
+#, perl-brace-format
+#~ msgid "Found unsupported elements in the AutoYaST profile: %{keys}."
+#~ msgstr "在 AutoYaST 配置文件中发现不支持的元素：%{keys}。"
 
-#. Issue if the device is missing.
-#.
-#. @param device_config [Configs::Device]
-#. @return [Issue, nil]
-#: service/lib/agama/storage/zfcp/manager.rb:326
 #, c-format
-msgid "Unknown zFCP LUN %s"
-msgstr "未知 zFCP LUN %s"
+#~ msgid "Unknown zFCP controller %s"
+#~ msgstr "未知 zFCP 控制器 %s"
+
+#, c-format
+#~ msgid "Unknown zFCP LUN %s"
+#~ msgstr "未知 zFCP LUN %s"
 
 #~ msgid "Certificate:"
 #~ msgstr "证书："

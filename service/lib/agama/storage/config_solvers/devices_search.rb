@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2025] SUSE LLC
+# Copyright (c) [2025-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -19,6 +19,7 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "agama/storage/config_solvers/search_matchers"
 require "agama/storage/configs/sort_criteria"
 
 module Agama
@@ -49,16 +50,23 @@ module Agama
         # @return [Array<Integer>]
         attr_reader :assigned_sids
 
-        # Whether the given device matches the search condition.
+        # Matcher used for evaluating the search conditions.
         #
         # @note Derived classes must define this method.
         #
-        # @param _device_config [#search]
-        # @param _device [Y2Storage#device]
+        # @return [SearchMatchers::Base]
+        def matcher
+          raise NotImplementedError
+        end
+
+        # Whether the given device matches the search condition.
+        #
+        # @param device_config [#search]
+        # @param device [Y2Storage#device]
         #
         # @return [Boolean]
-        def match_condition?(_device_config, _device)
-          raise NotImplementedError
+        def match_condition?(device_config, device)
+          matcher.match?(device_config.search&.condition, device)
         end
 
         # Compares the order of two devices, based on the configuration.
