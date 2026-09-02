@@ -16,5 +16,4 @@ tracing = { workspace = true }
 zbus = { workspace = true }
 
 [dev-dependencies]
-tempfile = { workspace = true }
 test-context = { workspace = true }
