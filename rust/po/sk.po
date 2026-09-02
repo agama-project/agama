@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-14 04:33+0000\n"
-"PO-Revision-Date: 2026-08-22 15:13+0000\n"
+"POT-Creation-Date: 2026-08-26 11:36+0000\n"
+"PO-Revision-Date: 2026-08-28 12:13+0000\n"
 "Last-Translator: Ferdinand Galko <galko.ferdinand@gmail.com>\n"
 "Language-Team: Slovak <https://l10n.opensuse.org/projects/agama/agama-rust-"
 "master/sk/>\n"
@@ -19,20 +19,33 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
 "X-Generator: Weblate 2026.8.1\n"
 
-#: agama-autoinstall/src/auto_loader.rs:115
+#: agama-autoinstall/src/auto_loader.rs:142
 msgid ""
 "Configuration cannot be applied because it is invalid or could not be "
 "reached."
 msgstr ""
 "Konfiguráciu nie je možné použiť, pretože je neplatná alebo nie je dostupná."
 
-#: agama-autoinstall/src/questions.rs:44
+#: agama-autoinstall/src/questions.rs:47
 msgid "Reload configuration"
 msgstr "Opätovne načítať konfiguráciu"
 
-#: agama-autoinstall/src/questions.rs:45
+#: agama-autoinstall/src/questions.rs:48
 msgid "Skip and configure manually"
 msgstr "Preskočiť a konfigurovať ručne"
+
+#: agama-autoinstall/src/questions.rs:77 agama-cli/src/config.rs:371
+msgid "Found unsupported elements in the AutoYaST profile:"
+msgstr "V profile AutoYaST boli nájdené nepodporované prvky:"
+
+#: agama-autoinstall/src/questions.rs:92
+#: agama-software/src/callbacks/install.rs:81
+msgid "Continue"
+msgstr "Pokračovať"
+
+#: agama-autoinstall/src/questions.rs:93
+msgid "Abort"
+msgstr "Prerušiť"
 
 #. TRANSLATORS: {0} is a URL
 #: agama-autoinstall/src/scripts.rs:135
@@ -393,7 +406,7 @@ msgstr "Príkaz editora (vrátane ďalších argumentov, ak treba)"
 msgid "It is not a valid JSON file"
 msgstr "Nie je to platný súbor JSON"
 
-#: agama-cli/src/config.rs:416
+#: agama-cli/src/config.rs:434
 msgid "Ignoring the changes because the editor was closed with an error code."
 msgstr "Ignorovanie zmien, pretože editor bol zatvorený s chybovým kódom."
 
@@ -922,23 +935,23 @@ msgstr ""
 "Snaha o import certifikátu s vlastným podpisom. Chcete mu dôverovať a "
 "zaregistrovať produkt?"
 
-#: agama-server/src/profile/web.rs:82
+#: agama-server/src/profile/web.rs:85
 msgid "Profile validation failed"
 msgstr "Overenie profilu zlyhalo"
 
-#: agama-server/src/profile/web.rs:85
+#: agama-server/src/profile/web.rs:88
 msgid "Could not retrieve profile"
 msgstr "Profil sa nepodarilo načítať"
 
-#: agama-server/src/profile/web.rs:88
+#: agama-server/src/profile/web.rs:91
 msgid "Invalid profile encoding"
 msgstr "Neplatné kódovanie profilu"
 
-#: agama-server/src/profile/web.rs:91
+#: agama-server/src/profile/web.rs:94
 msgid "Invalid profile request"
 msgstr "Neplatná žiadosť profilu"
 
-#: agama-server/src/profile/web.rs:94
+#: agama-server/src/profile/web.rs:97
 msgid "AutoYaST conversion failed"
 msgstr "Konverzia AutoYaST zlyhala"
 
@@ -964,10 +977,6 @@ msgstr "Znovu"
 #: agama-software/src/callbacks/install.rs:78
 msgid "There was a problem running a package script."
 msgstr "Pri spúšťaní skriptu balíka nastal problém."
-
-#: agama-software/src/callbacks/install.rs:81
-msgid "Continue"
-msgstr "Pokračovať"
 
 #. TRANSLATORS: substituting: key ID, (key name), fingerprint
 #: agama-software/src/callbacks/security.rs:104

@@ -269,6 +269,7 @@ function ProposalPageContent(): React.ReactNode {
     "configMissingPaths",
     "configOverusedPvTarget",
     "configMisusedMdMember",
+    "configMisusedPv",
     "proposal",
   ];
   const configIssues = issues.filter((i) => i.class !== "proposal");

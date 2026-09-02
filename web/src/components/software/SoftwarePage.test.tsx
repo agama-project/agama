@@ -245,12 +245,12 @@ describe("SoftwarePage", () => {
       mockUseIssues.mockReturnValue([
         {
           scope: "software",
-          class: "missing_registration",
+          class: "missingRegistration",
           description: "Product registration is required",
         },
         {
           scope: "software",
-          class: "missing_product",
+          class: "missingProduct",
           description: "Product is not available",
         },
         {
@@ -302,7 +302,7 @@ describe("SoftwarePage", () => {
         mockUseIssues.mockReturnValue([
           {
             scope: "software",
-            class: "software.load_source",
+            class: "loadSource",
             description: "Could not read the repositories",
           },
         ]);

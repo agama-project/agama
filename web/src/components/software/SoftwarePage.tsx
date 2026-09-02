@@ -68,7 +68,7 @@ import { SelectedBy } from "~/model/proposal/software";
  * Reading them requires a working connection, so it shows up when the
  * installation medium has no access to the network.
  */
-const UNREADABLE_SOURCES_ISSUE = "software.load_source";
+const UNREADABLE_SOURCES_ISSUE = "loadSource";
 
 /**
  * Empty state for a software section where nothing has been selected yet.

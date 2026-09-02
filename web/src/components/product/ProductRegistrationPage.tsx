@@ -185,7 +185,7 @@ const Extensions = () => {
   if (!extensions || extensions.length === 0) return null;
 
   const extensionComponents = extensions.map((ext) => {
-    const issue = issues.find((i) => i.class === `addon_registration_failed[${ext.id}]`);
+    const issue = issues.find((i) => i.class === `addonRegistrationFailed[${ext.id}]`);
     const config = (product?.addons || []).find((c) => c.id === ext.id);
 
     return (
@@ -217,8 +217,8 @@ const Extensions = () => {
 export default function ProductRegistrationPage() {
   const { registration } = useSystem();
   const issues = useIssues("product");
-  const registrationIssue = issues.find((i) => i.class === "system_registration_failed");
-  const nonRegistrationIssues = issues.filter((i) => i.class !== "system_registration_failed");
+  const registrationIssue = issues.find((i) => i.class === "systemRegistrationFailed");
+  const nonRegistrationIssues = issues.filter((i) => i.class !== "systemRegistrationFailed");
   // Avoid repeating the alert after registration attempt
   const showHostnameAlert = !registration && !registrationIssue;
 

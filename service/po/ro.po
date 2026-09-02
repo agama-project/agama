@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-12 13:23+0000\n"
+"POT-Creation-Date: 2026-08-26 11:36+0000\n"
 "PO-Revision-Date: 2026-02-13 10:41+0000\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -17,14 +17,6 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n==1 ? 0 : (n==0 || (n%100 > 0 && n%100 < "
 "20)) ? 1 : 2;\n"
-
-#. Reports the problems and decide whether to continue or not.
-#.
-#. @param elements [Array<Element>] List of unsupported elements.
-#: service/lib/agama/autoyast/profile_reporter.rb:51
-#, perl-brace-format
-msgid "Found unsupported elements in the AutoYaST profile: %{keys}."
-msgstr ""
 
 #. Implementation for the API method #Probe.
 #: service/lib/agama/dbus/storage/dasd.rb:65

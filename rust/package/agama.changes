@@ -1,4 +1,28 @@
 -------------------------------------------------------------------
+Fri Aug 28 15:32:30 UTC 2026 - Martin Vidner <mvidner@suse.com>
+
+- update runtime dependencies to:
+  - serde_with 3.22.0, GHSA-7gcf-g7xr-8hxj (bsc#1271854)
+- updated on Mar 3, listing for tracking:
+  - bytes 1.11.1, CVE-2026-25541 (bsc#1274203)
+- updated on Dec 11, listing for tracking:
+  - tracing-subscriber 0.3.20 (now 0.3.22), CVE-2025-58160 (bsc#1249014)
+
+-------------------------------------------------------------------
+Fri Aug 28 13:08:30 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Rename question and issues classes to use a consistent naming
+  scheme. Make the answer matching backward compatible with the
+  previous class names and support using camelCase and snake_case
+  in the questions "data" object (bsc#1277393).
+
+-------------------------------------------------------------------
+Wed Aug 26 12:06:59 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Do not cancel remaining tasks if some part of the network
+  configuration cannot be applied (bsc#1276875).
+
+-------------------------------------------------------------------
 Wed Aug 26 09:57:09 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - "agama config generate" prints unsupported AutoYaST elements

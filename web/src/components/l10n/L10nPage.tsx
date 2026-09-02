@@ -25,8 +25,10 @@ import { Button } from "@patternfly/react-core";
 import InstallerL10nOptions from "~/components/core/InstallerL10nOptions";
 import Interpolate from "~/components/core/Interpolate";
 import Page from "~/components/layout/Page";
+import IssuesAlert from "~/components/core/IssuesAlert";
 import Text from "~/components/core/Text";
 import L10nForm from "~/components/l10n/l10n-form/Form";
+import { useIssues } from "~/hooks/model/issue";
 import { localConnection } from "~/utils";
 import { _ } from "~/i18n";
 
@@ -64,12 +66,19 @@ const InstallerL10nSettingsInfo = () => {
 
 /**
  * Page for configuring localization.
+ *
+ * Reports the localization issues found by the backend, which is where users
+ * learn which of the three settings is not recognized after the overview flags
+ * them as invalid.
  */
 export default function L10nPage() {
+  const issues = useIssues("l10n");
+
   return (
     <Page breadcrumbs={[{ label: "Language and region" }]}>
       <Page.Content>
         <InstallerL10nSettingsInfo />
+        <IssuesAlert issues={issues} />
         <L10nForm />
       </Page.Content>
     </Page>

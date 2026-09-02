@@ -607,7 +607,7 @@ impl Service {
             self.issues
                 .cast(issue::message::Clear::new(Scope::Manager))?;
         } else {
-            let issue = Issue::new("no_product", "No product has been selected.");
+            let issue = Issue::new("noProduct", "No product has been selected.");
             self.issues
                 .cast(issue::message::Set::new(Scope::Manager, vec![issue]))?;
         }

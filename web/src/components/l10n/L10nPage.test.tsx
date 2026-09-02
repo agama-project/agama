@@ -24,12 +24,14 @@ import React from "react";
 import { screen, within } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import { useSystem } from "~/hooks/model/system/l10n";
-import { useProposal } from "~/hooks/model/proposal/l10n";
+import { useExtendedL10n } from "~/hooks/model/config/l10n";
 import { Keymap, Locale, Timezone } from "~/model/system/l10n";
+import type { Issue } from "~/model/issue";
 import L10nPage from "./L10nPage";
 
 let mockSystemData: ReturnType<typeof useSystem>;
-let mockProposedData: ReturnType<typeof useProposal>;
+let mockConfigData: ReturnType<typeof useExtendedL10n>;
+let mockIssues: Issue[];
 
 const locales: Locale[] = [
   { id: "en_US.UTF-8", language: "English", territory: "United States" },
@@ -55,9 +57,14 @@ jest.mock("~/hooks/model/system/l10n", () => ({
   useSystem: () => mockSystemData,
 }));
 
-jest.mock("~/hooks/model/proposal/l10n", () => ({
-  ...jest.requireActual("~/hooks/model/proposal/l10n"),
-  useProposal: () => mockProposedData,
+jest.mock("~/hooks/model/config/l10n", () => ({
+  ...jest.requireActual("~/hooks/model/config/l10n"),
+  useExtendedL10n: () => mockConfigData,
+}));
+
+jest.mock("~/hooks/model/issue", () => ({
+  ...jest.requireActual("~/hooks/model/issue"),
+  useIssues: () => mockIssues,
 }));
 
 beforeEach(() => {
@@ -67,11 +74,13 @@ beforeEach(() => {
     timezones,
   };
 
-  mockProposedData = {
+  mockConfigData = {
     locale: "en_US.UTF-8",
     keymap: "us",
     timezone: "Europe/Berlin",
   };
+
+  mockIssues = [];
 });
 
 it("renders a clarification about settings", () => {
@@ -90,4 +99,47 @@ it("renders the language, keyboard and time zone selectors", () => {
   screen.getByRole("combobox", { name: "Language" });
   screen.getByRole("combobox", { name: "Keyboard" });
   screen.getByRole("combobox", { name: "Time zone" });
+});
+
+describe("when the backend reports localization issues", () => {
+  beforeEach(() => {
+    mockIssues = [
+      {
+        scope: "l10n",
+        class: "unknown_timezone",
+        description: "Timezone 'Europe/ndorra' is unknown",
+      },
+    ];
+  });
+
+  it("tells the user what is not recognized", () => {
+    installerRender(<L10nPage />);
+    screen.getByText("Timezone 'Europe/ndorra' is unknown");
+  });
+});
+
+describe("when a configured id is not recognized", () => {
+  beforeEach(() => {
+    mockConfigData = { locale: "es_ES.UTF-8", keymap: "us", timezone: "Europe/ndorra" };
+  });
+
+  it("keeps the recognized settings selected", () => {
+    installerRender(<L10nPage />);
+    screen.getByRole("combobox", { name: "Language" });
+    expect(screen.getByRole("combobox", { name: "Language" })).toHaveValue("Spanish (Spain)");
+    expect(screen.getByRole("combobox", { name: "Keyboard" })).toHaveValue("English");
+  });
+});
+
+describe("when the system reports no localization data yet", () => {
+  beforeEach(() => {
+    mockSystemData = null;
+  });
+
+  it("renders the selectors with no options to choose from", () => {
+    installerRender(<L10nPage />);
+    expect(screen.getByRole("combobox", { name: "Language" })).toHaveValue("");
+    expect(screen.getByRole("combobox", { name: "Keyboard" })).toHaveValue("");
+    expect(screen.getByRole("combobox", { name: "Time zone" })).toHaveValue("");
+  });
 });

@@ -20,16 +20,21 @@
  * find current contact information at www.suse.com.
  */
 
-import { useProposal } from "~/hooks/model/proposal/l10n";
+import { useExtendedL10n } from "~/hooks/model/config/l10n";
 import { useSystem } from "~/hooks/model/system/l10n";
 
 import type { Keymap, Locale, Timezone } from "~/model/system/l10n";
 
 /**
  * Everything the localization form needs in one shape: the option lists to
- * choose from (from the system) and the currently selected ids (from the
- * proposal). Aggregated here so the form can be wrapped in `withFrozenQuery`
- * and the lists/values do not shift mid-edit.
+ * choose from (from the system) and the ids currently in use (from the extended
+ * configuration). Aggregated here so the form can be wrapped in
+ * `withFrozenQuery` and the lists/values do not shift mid-edit.
+ *
+ * The ids come from the configuration rather than from the proposal because the
+ * backend drops the whole proposal as soon as one of the three values is
+ * unknown. Reading the configuration keeps the two valid fields preselected so
+ * the user only has to correct the one that is actually wrong.
  */
 type L10nData = {
   locales: Locale[];
@@ -42,15 +47,15 @@ type L10nData = {
 
 function useL10nData(): L10nData {
   const system = useSystem();
-  const proposal = useProposal();
+  const config = useExtendedL10n();
 
   return {
     locales: system?.locales ?? [],
     keymaps: system?.keymaps ?? [],
     timezones: system?.timezones ?? [],
-    locale: proposal?.locale,
-    keymap: proposal?.keymap,
-    timezone: proposal?.timezone,
+    locale: config?.locale,
+    keymap: config?.keymap,
+    timezone: config?.timezone,
   };
 }
 

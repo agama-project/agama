@@ -292,7 +292,7 @@ impl Service {
                 .await
                 .unwrap_or_else(|e| {
                     let new_issue = Issue::new(
-                        "software_proposal_failed",
+                        "softwareProposalFailed",
                         &gettext("Due to an internal error, it was not possible to create a software proposal."),
                     )
                     .with_details(&e.to_string());

@@ -199,6 +199,7 @@ const mockUseProductInfo: jest.Mock<Product> = jest.fn().mockReturnValue({
 });
 
 const mockUseProduct = jest.fn().mockReturnValue(null);
+const mockUseExtendedProduct = jest.fn().mockReturnValue(null);
 
 /**
  * Allows mocking useProductInfo for testing purpose
@@ -215,14 +216,28 @@ const mockUseProduct = jest.fn().mockReturnValue(null);
 const mockProduct = (product: Product) => mockUseProductInfo.mockReturnValue(product);
 
 /**
- * Allows mocking useProduct for testing purpose
+ * Allows mocking useProduct and useExtendedProduct for testing purpose.
+ *
+ * By default, both hooks are mocked to return the same value. Use
+ * `mockExtendedProductConfig` if a test needs the extended (computed)
+ * configuration to differ from the plain, user-set one (e.g., to simulate a
+ * value coming from a boot argument such as `inst.register_url`).
  */
-const mockProductConfig = (product: ProductConfig | null) =>
+const mockProductConfig = (product: ProductConfig | null) => {
   mockUseProduct.mockReturnValue(product);
+  mockUseExtendedProduct.mockReturnValue(product);
+};
+
+/**
+ * Allows mocking useExtendedProduct independently of useProduct.
+ */
+const mockExtendedProductConfig = (product: ProductConfig | null) =>
+  mockUseExtendedProduct.mockReturnValue(product);
 
 jest.mock("~/hooks/model/config/product", () => ({
   useProductInfo: () => mockUseProductInfo(),
   useProduct: () => mockUseProduct(),
+  useExtendedProduct: () => mockUseExtendedProduct(),
 }));
 
 /**
@@ -540,6 +555,7 @@ export {
   mockTasks,
   mockProduct,
   mockProductConfig,
+  mockExtendedProductConfig,
   mockSystem,
   mockL10n,
   loadTranslations,

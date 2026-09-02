@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-12 13:23+0000\n"
+"POT-Creation-Date: 2026-08-26 11:36+0000\n"
 "PO-Revision-Date: 2026-06-25 09:55+0000\n"
 "Last-Translator: Sophie Leroy <sophie@stoquart.com>\n"
 "Language-Team: French <https://l10n.opensuse.org/projects/agama/agama-"
@@ -18,14 +18,6 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
 "X-Generator: Weblate 2026.6.1\n"
-
-#. Reports the problems and decide whether to continue or not.
-#.
-#. @param elements [Array<Element>] List of unsupported elements.
-#: service/lib/agama/autoyast/profile_reporter.rb:51
-#, perl-brace-format
-msgid "Found unsupported elements in the AutoYaST profile: %{keys}."
-msgstr "Éléments non pris en charge trouvés dans le profil AutoYaST : %{keys}."
 
 #. Implementation for the API method #Probe.
 #: service/lib/agama/dbus/storage/dasd.rb:65
@@ -548,6 +540,11 @@ msgstr "L'appareil zFCP %s ne peut pas être activé"
 #, c-format
 msgid "The zFCP device %s cannot be deactivated"
 msgstr "L'appareil zFCP %s ne peut pas être désactivé"
+
+#, perl-brace-format
+#~ msgid "Found unsupported elements in the AutoYaST profile: %{keys}."
+#~ msgstr ""
+#~ "Éléments non pris en charge trouvés dans le profil AutoYaST : %{keys}."
 
 #, c-format
 #~ msgid "Unknown zFCP controller %s"

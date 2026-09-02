@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-12 13:23+0000\n"
+"POT-Creation-Date: 2026-08-26 11:36+0000\n"
 "PO-Revision-Date: 2026-08-19 16:13+0000\n"
 "Last-Translator: Bone NI <bounkirdni@gmail.com>\n"
 "Language-Team: Lao <https://l10n.opensuse.org/projects/agama/agama-service-"
@@ -18,14 +18,6 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: Weblate 2026.8.1\n"
-
-#. Reports the problems and decide whether to continue or not.
-#.
-#. @param elements [Array<Element>] List of unsupported elements.
-#: service/lib/agama/autoyast/profile_reporter.rb:51
-#, perl-brace-format
-msgid "Found unsupported elements in the AutoYaST profile: %{keys}."
-msgstr "ພົບອົງປະກອບທີ່ບໍ່ຮອງຮັບໃນໂປຣໄຟລ໌ AutoYaST: %{keys}."
 
 #. Implementation for the API method #Probe.
 #: service/lib/agama/dbus/storage/dasd.rb:65
@@ -101,8 +93,8 @@ msgstr "ອຸປະກອນທີ່ມີນາມແຝງ '%s' ຖືກໃ
 #: service/lib/agama/storage/config_checkers/alias.rb:95
 #, c-format
 msgid ""
-"The device with alias '%s' cannot be formatted because it is used by other dev"
-"ice"
+"The device with alias '%s' cannot be formatted because it is used by other "
+"device"
 msgstr "ອຸປະກອນທີ່ມີນາມແຝງ '%s' ບໍ່ສາມາດຟໍແມັດໄດ້ ເພາະມັນຖືກໃຊ້ໂດຍອຸປະກອນອື່ນ"
 
 #. Issue when the device has both partitions and a user.
@@ -111,10 +103,9 @@ msgstr "ອຸປະກອນທີ່ມີນາມແຝງ '%s' ບໍ່ສ
 #: service/lib/agama/storage/config_checkers/alias.rb:118
 #, c-format
 msgid ""
-"The device with alias '%s' cannot be partitioned because it is used by other d"
-"evice"
-msgstr ""
-"ອຸປະກອນທີ່ມີນາມແຝງ '%s' ບໍ່ສາມາດແບ່ງພາທິຊັນໄດ້ ເພາະມັນຖືກໃຊ້ໂດຍອຸປະກອນອື່ນ"
+"The device with alias '%s' cannot be partitioned because it is used by other "
+"device"
+msgstr "ອຸປະກອນທີ່ມີນາມແຝງ '%s' ບໍ່ສາມາດແບ່ງພາທິຊັນໄດ້ ເພາະມັນຖືກໃຊ້ໂດຍອຸປະກອນອື່ນ"
 
 #. Error if a boot device is required and unknown.
 #.
@@ -136,7 +127,8 @@ msgstr "ບໍ່ມີອຸປະກອນບູດທີ່ມີນາມແ
 #. (e.g., 'luks1', 'random_swap').
 #: service/lib/agama/storage/config_checkers/encryption.rb:79
 #, perl-brace-format
-msgid "No passphrase provided (required for using the method '%{crypt_method}')."
+msgid ""
+"No passphrase provided (required for using the method '%{crypt_method}')."
 msgstr "ບໍ່ມີການລະບຸລະຫັດຜ່ານ (ຈຳເປັນສຳລັບການໃຊ້ວິທີ '%{crypt_method}')."
 
 #. TRANSLATORS: %{crypt_method} is the identifier of the method to encrypt the device
@@ -227,8 +219,8 @@ msgstr "ບໍ່ພົບ %s ທີ່ຈຳເປັນ"
 #: service/lib/agama/storage/config_checkers/search.rb:127
 #, perl-brace-format
 msgid ""
-"The device '%{parent_name}' cannot be formatted because it is part of the reus"
-"ed MD RAID '%{reused_name}'"
+"The device '%{parent_name}' cannot be formatted because it is part of the "
+"reused MD RAID '%{reused_name}'"
 msgstr ""
 "ອຸປະກອນ '%{parent_name}' ບໍ່ສາມາດຟໍແມັດໄດ້ ເພາະມັນເປັນສ່ວນໜຶ່ງຂອງ MD RAID '%"
 "{reused_name}' ທີ່ນຳມາໃຊ້ໃໝ່"
@@ -238,8 +230,8 @@ msgstr ""
 #: service/lib/agama/storage/config_checkers/search.rb:137
 #, perl-brace-format
 msgid ""
-"The device '%{parent_name}' cannot be formatted because it is a physical volum"
-"e of the reused LVM volume group '%{reused_name}'"
+"The device '%{parent_name}' cannot be formatted because it is a physical "
+"volume of the reused LVM volume group '%{reused_name}'"
 msgstr ""
 "ອຸປະກອນ '%{parent_name}' ບໍ່ສາມາດຟໍແມັດໄດ້ ເພາະມັນເປັນ physical volume ຂອງ LVM "
 "volume group '%{reused_name}' ທີ່ນຳມາໃຊ້ໃໝ່"
@@ -251,19 +243,19 @@ msgstr ""
 #: service/lib/agama/storage/config_checkers/search.rb:167
 #, perl-brace-format
 msgid ""
-"The device '%{member_name}' cannot be deleted because it is part of the reused"
-" MD RAID '%{reused_name}'"
+"The device '%{member_name}' cannot be deleted because it is part of the "
+"reused MD RAID '%{reused_name}'"
 msgstr ""
-"ອຸປະກອນ '%{member_name}' ບໍ່ສາມາດລຶບໄດ້ ເພາະມັນເປັນສ່ວນໜຶ່ງຂອງ MD RAID '%{reused_name}"
-"' ທີ່ນຳມາໃຊ້ໃໝ່"
+"ອຸປະກອນ '%{member_name}' ບໍ່ສາມາດລຶບໄດ້ ເພາະມັນເປັນສ່ວນໜຶ່ງຂອງ MD RAID '%"
+"{reused_name}' ທີ່ນຳມາໃຊ້ໃໝ່"
 
 #. TRANSLATORS: %{member_name} and %{reused_name} are replaced by device names (e.g.,
 #. "/dev/vda", "/dev/md0").
 #: service/lib/agama/storage/config_checkers/search.rb:177
 #, perl-brace-format
 msgid ""
-"The device '%{member_name}' cannot be deleted because it is a physical volume "
-"of the reused LVM volume group '%{reused_name}'"
+"The device '%{member_name}' cannot be deleted because it is a physical "
+"volume of the reused LVM volume group '%{reused_name}'"
 msgstr ""
 "ອຸປະກອນ '%{member_name}' ບໍ່ສາມາດລຶບໄດ້ ເພາະມັນເປັນ physical volume ຂອງ LVM volume "
 "group '%{reused_name}' ທີ່ນຳມາໃຊ້ໃໝ່"
@@ -275,8 +267,8 @@ msgstr ""
 #: service/lib/agama/storage/config_checkers/search.rb:207
 #, perl-brace-format
 msgid ""
-"The device '%{member_name}' cannot be resized because it is part of the reused"
-" MD RAID '%{reused_name}'"
+"The device '%{member_name}' cannot be resized because it is part of the "
+"reused MD RAID '%{reused_name}'"
 msgstr ""
 "ອຸປະກອນ '%{member_name}' ບໍ່ສາມາດປ່ຽນຂະໜາດໄດ້ ເພາະມັນເປັນສ່ວນໜຶ່ງຂອງ MD RAID '%"
 "{reused_name}' ທີ່ນຳມາໃຊ້ໃໝ່"
@@ -286,8 +278,8 @@ msgstr ""
 #: service/lib/agama/storage/config_checkers/search.rb:217
 #, perl-brace-format
 msgid ""
-"The device '%{member_name}' cannot be resized because it is a physical volume "
-"of the reused LVM volume group '%{reused_name}'"
+"The device '%{member_name}' cannot be resized because it is a physical "
+"volume of the reused LVM volume group '%{reused_name}'"
 msgstr ""
 "ອຸປະກອນ '%{member_name}' ບໍ່ສາມາດປ່ຽນຂະໜາດໄດ້ ເພາະມັນເປັນ physical volume ຂອງ LVM "
 "volume group '%{reused_name}' ທີ່ນຳມາໃຊ້ໃໝ່"
@@ -299,8 +291,8 @@ msgstr ""
 #: service/lib/agama/storage/config_checkers/search.rb:247
 #, perl-brace-format
 msgid ""
-"The device '%{member_name}' cannot be formatted because it is part of the reus"
-"ed MD RAID '%{reused_name}'"
+"The device '%{member_name}' cannot be formatted because it is part of the "
+"reused MD RAID '%{reused_name}'"
 msgstr ""
 "ອຸປະກອນ '%{member_name}' ບໍ່ສາມາດຟໍແມັດໄດ້ ເພາະມັນເປັນສ່ວນໜຶ່ງຂອງ MD RAID '%"
 "{reused_name}' ທີ່ນຳມາໃຊ້ໃໝ່"
@@ -310,8 +302,8 @@ msgstr ""
 #: service/lib/agama/storage/config_checkers/search.rb:257
 #, perl-brace-format
 msgid ""
-"The device '%{member_name}' cannot be formatted because it is a physical volum"
-"e of the reused LVM volume group '%{reused_name}'"
+"The device '%{member_name}' cannot be formatted because it is a physical "
+"volume of the reused LVM volume group '%{reused_name}'"
 msgstr ""
 "ອຸປະກອນ '%{member_name}' ບໍ່ສາມາດຟໍແມັດໄດ້ ເພາະມັນເປັນ physical volume ຂອງ LVM "
 "volume group '%{reused_name}' ທີ່ນຳມາໃຊ້ໃໝ່"
@@ -323,8 +315,8 @@ msgstr ""
 #: service/lib/agama/storage/config_checkers/search.rb:287
 #, perl-brace-format
 msgid ""
-"The device '%{member_name}' cannot be partitioned because it is part of the re"
-"used MD RAID '%{reused_name}'"
+"The device '%{member_name}' cannot be partitioned because it is part of the "
+"reused MD RAID '%{reused_name}'"
 msgstr ""
 "ອຸປະກອນ '%{member_name}' ບໍ່ສາມາດແບ່ງພາທິຊັນໄດ້ ເພາະມັນເປັນສ່ວນໜຶ່ງຂອງ MD RAID '%"
 "{reused_name}' ທີ່ນຳມາໃຊ້ໃໝ່"
@@ -334,8 +326,8 @@ msgstr ""
 #: service/lib/agama/storage/config_checkers/search.rb:297
 #, perl-brace-format
 msgid ""
-"The device '%{member_name}' cannot be partitioned because it is a physical vol"
-"ume of the reused LVM volume group '%{reused_name}'"
+"The device '%{member_name}' cannot be partitioned because it is a physical "
+"volume of the reused LVM volume group '%{reused_name}'"
 msgstr ""
 "ອຸປະກອນ '%{member_name}' ບໍ່ສາມາດແບ່ງພາທິຊັນໄດ້ ເພາະມັນເປັນ physical volume ຂອງ LVM "
 "volume group '%{reused_name}' ທີ່ນຳມາໃຊ້ໃໝ່"
@@ -347,19 +339,19 @@ msgstr ""
 #: service/lib/agama/storage/config_checkers/search.rb:326
 #, perl-brace-format
 msgid ""
-"The device '%{member_name}' cannot be used because it is part of the reused MD"
-" RAID '%{reused_name}'"
+"The device '%{member_name}' cannot be used because it is part of the reused "
+"MD RAID '%{reused_name}'"
 msgstr ""
-"ອຸປະກອນ '%{member_name}' ບໍ່ສາມາດໃຊ້ໄດ້ ເພາະມັນເປັນສ່ວນໜຶ່ງຂອງ MD RAID '%{reused_name}"
-"' ທີ່ນຳມາໃຊ້ໃໝ່"
+"ອຸປະກອນ '%{member_name}' ບໍ່ສາມາດໃຊ້ໄດ້ ເພາະມັນເປັນສ່ວນໜຶ່ງຂອງ MD RAID '%"
+"{reused_name}' ທີ່ນຳມາໃຊ້ໃໝ່"
 
 #. TRANSLATORS: %{member_name} and %{reused_name} are replaced by device names (e.g.,
 #. "/dev/vda", "/dev/md0").
 #: service/lib/agama/storage/config_checkers/search.rb:336
 #, perl-brace-format
 msgid ""
-"The device '%{member_name}' cannot be used because it is a physical volume of "
-"the reused LVM volume group '%{reused_name}'"
+"The device '%{member_name}' cannot be used because it is a physical volume "
+"of the reused LVM volume group '%{reused_name}'"
 msgstr ""
 "ອຸປະກອນ '%{member_name}' ບໍ່ສາມາດໃຊ້ໄດ້ ເພາະມັນເປັນ physical volume ຂອງ LVM volume "
 "group '%{reused_name}' ທີ່ນຳມາໃຊ້ໃໝ່"
@@ -406,11 +398,11 @@ msgstr "ບໍ່ມີ LVM physical volume ທີ່ມີນາມແຝງ '%
 #: service/lib/agama/storage/config_checkers/volume_group.rb:144
 #, c-format
 msgid ""
-"The list of target devices for the volume group '%s' is mixing reused devices "
-"and new devices"
+"The list of target devices for the volume group '%s' is mixing reused "
+"devices and new devices"
 msgstr ""
-"ລາຍຊື່ອຸປະກອນເປົ້າໝາຍສຳລັບ volume group '%s' ມີການປົນກັນລະຫວ່າງອຸປະກອນທີ່ນຳມາໃຊ້ໃໝ່ ແລະ ອຸປະກ"
-"ອນໃໝ່"
+"ລາຍຊື່ອຸປະກອນເປົ້າໝາຍສຳລັບ volume group '%s' ມີການປົນກັນລະຫວ່າງອຸປະກອນທີ່ນຳມາໃຊ້ໃໝ່ ແລະ "
+"ອຸປະກອນໃໝ່"
 
 #. TRANSLATORS: %s is the replaced by a device alias (e.g., "disk1").
 #: service/lib/agama/storage/config_checkers/volume_group.rb:164
@@ -421,7 +413,8 @@ msgstr "ບໍ່ມີອຸປະກອນເປົ້າໝາຍສຳລັ
 #. TRANSLATORS: %s is the replaced by a device alias (e.g., "disk1").
 #: service/lib/agama/storage/config_checkers/volume_groups.rb:66
 #, c-format
-msgid "The device '%s' is used several times as target device for physical volumes"
+msgid ""
+"The device '%s' is used several times as target device for physical volumes"
 msgstr "ອຸປະກອນ '%s' ຖືກໃຊ້ຫຼາຍຄັ້ງເປັນອຸປະກອນເປົ້າໝາຍສຳລັບ physical volumes"
 
 #. Text of the reason preventing to shrink because there is no content.
@@ -429,12 +422,12 @@ msgstr "ອຸປະກອນ '%s' ຖືກໃຊ້ຫຼາຍຄັ້ງເ
 #. @return [String, nil] nil if there is content or there is any other reasons.
 #: service/lib/agama/storage/device_shrinking.rb:151
 msgid ""
-"Neither a file system nor a storage system was detected on the device. In case"
-" the device does contain a file system or a storage system that is not support"
-"ed, resizing will most likely cause data loss."
+"Neither a file system nor a storage system was detected on the device. In "
+"case the device does contain a file system or a storage system that is not "
+"supported, resizing will most likely cause data loss."
 msgstr ""
-"ບໍ່ພົບທັງລະບົບໄຟລ໌ ແລະ ລະບົບການເກັບຂໍ້ມູນໃນອຸປະກອນ. ໃນກໍລະນີທີ່ອຸປະກອນມີລະບົບໄຟລ໌ ຫຼື ລະບົບການເກັບຂໍ້ມູນ"
-"ທີ່ບໍ່ຮອງຮັບ, ການປ່ຽນຂະໜາດອາດຈະເຮັດໃຫ້ຂໍ້ມູນສູນຫາຍ."
+"ບໍ່ພົບທັງລະບົບໄຟລ໌ ແລະ ລະບົບການເກັບຂໍ້ມູນໃນອຸປະກອນ. ໃນກໍລະນີທີ່ອຸປະກອນມີລະບົບໄຟລ໌ ຫຼື "
+"ລະບົບການເກັບຂໍ້ມູນທີ່ບໍ່ຮອງຮັບ, ການປ່ຽນຂະໜາດອາດຈະເຮັດໃຫ້ຂໍ້ມູນສູນຫາຍ."
 
 #. Text of the reason preventing to shrink because there is no valid minimum size.
 #.
@@ -518,3 +511,7 @@ msgstr "ອຸປະກອນ zFCP %s ບໍ່ສາມາດເປີດໃຊ
 #, c-format
 msgid "The zFCP device %s cannot be deactivated"
 msgstr "ອຸປະກອນ zFCP %s ບໍ່ສາມາດປິດການໃຊ້ງານໄດ້"
+
+#, perl-brace-format
+#~ msgid "Found unsupported elements in the AutoYaST profile: %{keys}."
+#~ msgstr "ພົບອົງປະກອບທີ່ບໍ່ຮອງຮັບໃນໂປຣໄຟລ໌ AutoYaST: %{keys}."
