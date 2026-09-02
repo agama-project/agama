@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Wed Sep  2 14:47:52 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Let the dialogs the user can walk away from be closed with Escape
+  or a close button, give every dialog a name for screen readers and
+  make Enter answer the questions asking for a value
+  (gh#agama-project/agama#3859).
+
+-------------------------------------------------------------------
 Tue Sep  1 14:20:00 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Cope with unknown localization settings: report them as an
