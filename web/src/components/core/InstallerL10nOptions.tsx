@@ -22,8 +22,8 @@
 
 /**
  * This module defines the InstallerL10nOptions component, which allows users to
- * configure installer localization settings, with the option to copy them, when
- * applicable, to the product's localization settings.
+ * configure installer localization settings, with the option to copy them to
+ * the product's localization settings.
  *
  * It supports multiple UI variants (language-only, keyboard-only, or both), and
  * manages both form and dialog state. To avoid scattering complex conditional
@@ -210,8 +210,6 @@ const dialogReducer = (state: DialogState, action: DialogAction): DialogState =>
  */
 type DialogProps = {
   isOpen: boolean;
-  /** Whether the settings can also be applied to the product to install. */
-  allowReusingSettings: boolean;
   /** Called when the user dismisses the dialog. */
   onCancel: () => void;
 };
@@ -236,30 +234,6 @@ type ToggleProps = Pick<ButtonProps, "onClick"> & {
    * from the button's aria-label.
    */
   showValues?: boolean;
-};
-
-/**
- * A component that conditionally displays content based on whether settings can
- * be reused.
- *
- * If reuse is allowed, the content (children) is rendered.
- * If reuse is not allowed, a fallback message is displayed instead.
- *
- * This component helps avoid repeating the same condition in each form variant,
- * as the fallback message should remain the same for all of them.
- */
-const ReusableSettings = ({ isReuseAllowed, children }) => {
-  if (isReuseAllowed) {
-    return children;
-  } else {
-    // TRANSLATORS: This message informs users that they are only changing the
-    // interface language and/or keyboard settings here. The term "localization"
-    // is the name of a separate page where they can configure the localization
-    // settings for the product to install.
-    return _(
-      "This will affect only the installer interface, not the product to be installed. You can adjust the product’s localization later in the Localization settings page.",
-    );
-  }
 };
 
 type TextWithLinkToL10nProps = {
@@ -305,7 +279,11 @@ const TextWithLinkToL10n = ({ text, onClick }: TextWithLinkToL10nProps) => {
 
 /**
  * Renders the checkbox for applying the chosen settings to the product to
- * install too, with a link to the page where they can be fine tuned.
+ * install too.
+ *
+ * The checkbox comes with a link to the page where the product settings can be
+ * fine tuned, but only once a product is chosen. Until then that page cannot be
+ * reached, so pointing to it would lead nowhere.
  */
 const ReuseSettingsField = withForm({
   ...defaultOptions,
@@ -316,6 +294,7 @@ const ReuseSettingsField = withForm({
     onLinkClick?: ButtonProps["onClick"];
   },
   render: function Render({ form, label, onLinkClick }) {
+    const product = useProductInfo();
     const description = _(
       // TRANSLATORS: Explains where users can find more language and keyboard
       // options for the product to install. The text in square brackets [] is a
@@ -328,7 +307,7 @@ const ReuseSettingsField = withForm({
         {(field) => (
           <field.CheckboxField
             label={label}
-            description={<TextWithLinkToL10n text={description} onClick={onLinkClick} />}
+            description={product && <TextWithLinkToL10n text={description} onClick={onLinkClick} />}
           />
         )}
       </form.AppField>
@@ -374,7 +353,7 @@ const DialogButtons = withForm({
 const AllSettingsDialog = withForm({
   ...defaultOptions,
   props: {} as DialogProps,
-  render: function Render({ form, isOpen, allowReusingSettings, onCancel }) {
+  render: function Render({ form, isOpen, onCancel }) {
     return (
       <Popup
         isOpen={isOpen}
@@ -386,13 +365,11 @@ const AllSettingsDialog = withForm({
         <Form id="installer-l10n" onSubmit={submitHandler(form)}>
           <LanguageField form={form} />
           <KeyboardField form={form} />
-          <ReusableSettings isReuseAllowed={allowReusingSettings}>
-            <ReuseSettingsField
-              form={form}
-              label={_("Use these same settings for the selected product")}
-              onLinkClick={onCancel}
-            />
-          </ReusableSettings>
+          <ReuseSettingsField
+            form={form}
+            label={_("Use these same settings for the selected product")}
+            onLinkClick={onCancel}
+          />
         </Form>
       </Popup>
     );
@@ -402,7 +379,7 @@ const AllSettingsDialog = withForm({
 const LanguageOnlyDialog = withForm({
   ...defaultOptions,
   props: {} as DialogProps,
-  render: function Render({ form, isOpen, allowReusingSettings, onCancel }) {
+  render: function Render({ form, isOpen, onCancel }) {
     return (
       <Popup
         isOpen={isOpen}
@@ -413,13 +390,11 @@ const LanguageOnlyDialog = withForm({
       >
         <Form id="installer-l10n" onSubmit={submitHandler(form)}>
           <LanguageField form={form} />
-          <ReusableSettings isReuseAllowed={allowReusingSettings}>
-            <ReuseSettingsField
-              form={form}
-              label={_("Use for the selected product too")}
-              onLinkClick={onCancel}
-            />
-          </ReusableSettings>
+          <ReuseSettingsField
+            form={form}
+            label={_("Use for the selected product too")}
+            onLinkClick={onCancel}
+          />
         </Form>
       </Popup>
     );
@@ -429,7 +404,7 @@ const LanguageOnlyDialog = withForm({
 const KeyboardOnlyDialog = withForm({
   ...defaultOptions,
   props: {} as DialogProps,
-  render: function Render({ form, isOpen, allowReusingSettings, onCancel }) {
+  render: function Render({ form, isOpen, onCancel }) {
     if (!localConnection()) {
       return (
         <Popup
@@ -454,13 +429,11 @@ const KeyboardOnlyDialog = withForm({
       >
         <Form id="installer-l10n" onSubmit={submitHandler(form)}>
           <KeyboardField form={form} />
-          <ReusableSettings isReuseAllowed={allowReusingSettings}>
-            <ReuseSettingsField
-              form={form}
-              label={_("Use for the selected product too")}
-              onLinkClick={onCancel}
-            />
-          </ReusableSettings>
+          <ReuseSettingsField
+            form={form}
+            label={_("Use for the selected product too")}
+            onLinkClick={onCancel}
+          />
         </Form>
       </Popup>
     );
@@ -593,8 +566,6 @@ export default function InstallerL10nOptions({
   const locales = useSystem()?.l10n?.locales ?? [];
   const { language, keymap, changeL10n } = useInstallerL10n();
   const { stage } = useStatus();
-  const selectedProduct = useProductInfo();
-  const allowReusingSettings = !!selectedProduct;
   const [dialogState, dispatchDialogAction] = useReducer(dialogReducer, { isOpen: false });
 
   /**
@@ -636,7 +607,7 @@ export default function InstallerL10nOptions({
 
       await changeL10n(l10nOptions);
 
-      allowReusingSettings && values.reuseSettings && reuseSettings(values);
+      values.reuseSettings && reuseSettings(values);
     } catch (e) {
       console.error(e);
     } finally {
@@ -673,12 +644,7 @@ export default function InstallerL10nOptions({
           dispatchDialogAction({ type: "OPEN" });
         }}
       />
-      <Dialog
-        form={form}
-        isOpen={dialogState.isOpen}
-        allowReusingSettings={allowReusingSettings}
-        onCancel={close}
-      />
+      <Dialog form={form} isOpen={dialogState.isOpen} onCancel={close} />
     </>
   );
 }
