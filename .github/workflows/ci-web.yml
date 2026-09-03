@@ -36,6 +36,38 @@ on:
   workflow_dispatch:
 
 jobs:
+  # Detects unused dependencies, files, and exports to prevent them from
+  # accumulating unnoticed. Uses knip.json configuration to reduce false
+  # positives. Runs quickly as it only analyzes the code without compilation.
+  knip:
+    # the default timeout is 6 hours, that's too much if the job gets stuck
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ./web
+
+    strategy:
+      matrix:
+        node-version: ["22.x"]
+
+    steps:
+    - uses: actions/checkout@v7
+
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v6
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+        cache-dependency-path: 'web/package-lock.json'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Run knip
+      run: npx knip
+
   frontend_build:
     # the default timeout is 6 hours, that's too much if the job gets stuck
     timeout-minutes: 60
