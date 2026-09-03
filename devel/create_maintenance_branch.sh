@@ -94,7 +94,6 @@ create_git_branch() {
 
 readonly AGAMA_PACKAGES=(
   agama
-  agama-auto
   agama-installer
   agama-integration-tests
   agama-products
@@ -115,9 +114,11 @@ readonly OBS_MAINTAINERS='  <person userid="IGonzalezSosa" role="maintainer"/>
 
 create_obs_project() {
   local branch_name="$1"
+  local version="$2"
 
+  # create a new OBS project
   echo "Creating OBS project systemsmanagement:Agama:Maintenance:$branch_name..."
-  cat << EOF | osc meta prjconf "systemsmanagement:Agama:Maintenance:$branch_name" -F -
+  cat << EOF | osc meta prj "systemsmanagement:Agama:Maintenance:$branch_name" -F -
 <project name="systemsmanagement:Agama:Maintenance:$branch_name">
   <title>Agama - maintenance project for $branch_name Git branch</title>
   <description>This project contains the maintenance packages from agama-project/agama GitHub repository from the $branch_name branch.</description>
@@ -127,15 +128,15 @@ $OBS_MAINTAINERS
     <disable repository="images"/>
   </build>
   <repository name="standard">
-    <path project="SUSE:SLFO:Main" repository="standard"/>
+    <path project="SUSE:SLFO:Products:SLES:$version" repository="standard"/>
     <arch>x86_64</arch>
     <arch>s390x</arch>
     <arch>aarch64</arch>
     <arch>ppc64le</arch>
   </repository>
   <repository name="images">
-    <path project="SUSE:SLFO:Main" repository="standard"/>
     <path project="systemsmanagement:Agama:Maintenance:$branch_name" repository="standard"/>
+    <path project="SUSE:SLFO:Products:SLES:$version" repository="standard"/>
     <arch>x86_64</arch>
     <arch>s390x</arch>
     <arch>aarch64</arch>
@@ -144,13 +145,47 @@ $OBS_MAINTAINERS
 </project>
 EOF
 
-  echo "Maintenance project systemsmanagement:Agama:Maintenance:$BRANCH_NAME successfully created!"
+  echo "Maintenance project systemsmanagement:Agama:Maintenance:$branch_name successfully created!"
+
+  # configure the "images" build target to build kiwi images instead of RPMs
+  cat << EOF | osc meta prjconf "systemsmanagement:Agama:Maintenance:$branch_name" -F -
+%if "%_repository" == "images"
+Type: kiwi
+Repotype: staticlinks
+Patterntype: none
+
+support: kiwi-systemdeps-disk-images
+support: kiwi-systemdeps-iso-media
+support: kiwi-systemdeps-containers
+
+%ifarch s390x
+  support: kiwi-settings
+  Substitute: python3-kiwi python3-kiwi mksusecd zstd vim
+%endif
+%endif
+EOF
 
   # initialize the project by copying the current packages from systemsmanagement:Agama:Devel
   for package in "${AGAMA_PACKAGES[@]}"; do
     echo "Copying package $package from systemsmanagement:Agama:Devel to systemsmanagement:Agama:Maintenance:$branch_name..."
     osc copypac systemsmanagement:Agama:Devel "$package" "systemsmanagement:Agama:Maintenance:$branch_name"
   done
+
+  # create agama-installer-SLES -> agama-installer link
+  osc linkpac "systemsmanagement:Agama:Maintenance:$branch_name" agama-installer "systemsmanagement:Agama:Maintenance:$branch_name" agama-installer-SLES
+
+  # change the agama-installer-SLES to build the SLES image instead of openSUSE
+  osc co "systemsmanagement:Agama:Maintenance:$branch_name" agama-installer-SLES
+  (
+    cd "systemsmanagement:Agama:Maintenance:$branch_name/agama-installer-SLES"
+    sed -i "s/openSUSE/SUSE_SLE_$version/" _multibuild
+    osc commit -m "Build the SUSE_SLE_$version profile"
+  )
+
+  # disable building the openSUSE image
+  osc meta pkg "systemsmanagement:Agama:Maintenance:$branch_name" agama-installer |
+    sed 's#</build>#<disable repository="images"/></build>#' |
+    osc meta pkg -F - "systemsmanagement:Agama:Maintenance:$branch_name" agama-installer
 }
 
 create_ibs_project() {
@@ -158,7 +193,7 @@ create_ibs_project() {
   local version="$2"
 
   echo "Creating IBS project Devel:YaST:Agama:Maintenance:$branch_name..."
-  cat << EOF | osc -A https://api.suse.de meta prjconf "Devel:YaST:Agama:Maintenance:$branch_name" -F -
+  cat << EOF | osc -A https://api.suse.de meta prj "Devel:YaST:Agama:Maintenance:$branch_name" -F -
 <project name="Devel:YaST:Agama:Maintenance:$branch_name">
   <title>Agama - maintenance project for $branch_name Git branch</title>
   <description>This project contains the maintenance packages from agama-project/agama GitHub repository from the $branch_name branch.</description>
@@ -184,13 +219,34 @@ $OBS_MAINTAINERS
 </project>
 EOF
 
+  # configure the "images" build target to build kiwi images instead of RPMs
+  cat << EOF | osc -A https://api.suse.de meta prjconf "Devel:YaST:Agama:Maintenance:$branch_name" -F -
+%if "%_repository" == "images"
+Type: kiwi
+Repotype: staticlinks
+Patterntype: none
+
+support: kiwi-systemdeps-disk-images
+support: kiwi-systemdeps-iso-media
+support: kiwi-systemdeps-containers
+%endif
+EOF
+
   echo "Maintenance project Devel:YaST:Agama:Maintenance:$branch_name successfully created!"
 
   # link the IBS package to the OBS
   for package in "${AGAMA_PACKAGES[@]}"; do
-    echo "Linking package $package from systemsmanagement:Agama:Maintenance:$branch_name to Devel:YaST:Agama:Maintenance:$branch_name..."
+    echo "Linking package $package from openSUSE.org:systemsmanagement:Agama:Maintenance:$branch_name to Devel:YaST:Agama:Maintenance:$branch_name..."
     osc -A https://api.suse.de linkpac "openSUSE.org:systemsmanagement:Agama:Maintenance:$branch_name" "$package" "Devel:YaST:Agama:Maintenance:$branch_name"
   done
+
+  # link also agama-installer-SLES
+  osc -A https://api.suse.de linkpac "openSUSE.org:systemsmanagement:Agama:Maintenance:$branch_name" agama-installer-SLES "Devel:YaST:Agama:Maintenance:$branch_name"
+
+  # disable building the openSUSE image
+  osc -A https://api.suse.de meta pkg "Devel:YaST:Agama:Maintenance:$branch_name" agama-installer |
+    sed 's#</package>#<build><disable repository="images"/></build></package>#' |
+    osc -A https://api.suse.de meta pkg -F - "Devel:YaST:Agama:Maintenance:$branch_name" agama-installer
 }
 
 # adapt the translation GitHub Actions
@@ -332,7 +388,7 @@ echo "Creating maintenance branch \"$BRANCH_NAME\" for version $VERSION..."
 
 create_git_branch "$BRANCH_NAME"
 
-create_obs_project "$BRANCH_NAME"
+create_obs_project "$BRANCH_NAME" "$VERSION"
 
 create_ibs_project "$BRANCH_NAME" "$VERSION"
 
@@ -348,5 +404,4 @@ create_weblate_components "$BRANCH_NAME"
 
 echo
 echo "NOTES:"
-echo " - The systemsmanagement:Agama:Maintenance:$BRANCH_NAME project builds against SUSE:SLFO:Main, change that to SUSE:SLFO:X.Y when it is available."
 echo " - Manually copy the .github/workflows/weblate-merge-rust-po.yml and adapt it for the $BRANCH_NAME branch, update this script to do that automatically next time."
