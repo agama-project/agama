@@ -1,4 +1,4 @@
-// Copyright (c) [2024] SUSE LLC
+// Copyright (c) [2026] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -18,12 +18,5 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-pub mod cert;
-pub mod dbus;
-pub mod error;
-pub mod profile;
-pub mod terminal;
 pub mod web;
-
-pub mod server;
-pub mod test_utils;
+pub use web::terminal_service;

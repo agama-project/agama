@@ -340,6 +340,7 @@ dependencies = [
  "openssl",
  "pam",
  "pin-project",
+ "pty-process",
  "rand 0.9.4",
  "schemars 1.2.1",
  "sd-notify",
@@ -350,6 +351,7 @@ dependencies = [
  "tokio",
  "tokio-openssl",
  "tokio-stream",
+ "tokio-tungstenite",
  "tokio-util",
  "tower",
  "tower-http",
@@ -3782,6 +3784,16 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8fd00f0bb2e90d81d1044c2b32617f68fcb9fa3bb7640c23e9c748e53fb30934"
 dependencies = [
  "unicode-ident",
+]
+
+[[package]]
+name = "pty-process"
+version = "0.5.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "71cec9e2670207c5ebb9e477763c74436af3b9091dd550b9fb3c1bec7f3ea266"
+dependencies = [
+ "rustix 1.1.4",
+ "tokio",
 ]
 
 [[package]]

@@ -40,6 +40,7 @@ hyper-util = "0.1.9"
 openssl = { workspace = true }
 pam = { git = "https://github.com/1wilkens/pam.git", rev = "daf26ae" }
 pin-project = { workspace = true }
+pty-process = { version = "0.5.3", features = ["async"] }
 sd-notify = "0.4.2"
 tokio-openssl = "0.6.5"
 tokio-util = "0.7.12"
@@ -51,6 +52,7 @@ path = "src/agama-web-server.rs"
 
 [dev-dependencies]
 test-context = { workspace = true }
+tokio-tungstenite = "0.29.0"
 
 [lints.rust]
 unexpected_cfgs = { level = "warn", check-cfg = ['cfg(ci)'] }
