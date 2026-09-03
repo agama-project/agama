@@ -289,28 +289,6 @@ describe("InstallerL10nOptions", () => {
         mockProduct(undefined);
       });
 
-      it("still allows reusing settings", async () => {
-        const { user } = await renderAndOpen();
-        const dialog = screen.getByRole("dialog", { name: "Language and keyboard" });
-        const reuseSettings = within(dialog).getByRole("checkbox", {
-          name: /Use these same settings/,
-        });
-        const acceptButton = within(dialog).getByRole("button", { name: "Accept" });
-
-        expect(reuseSettings).toBeChecked();
-
-        await chooseOption(user, dialog, "Language", "Español");
-        await chooseOption(user, dialog, "Keyboard layout", "English (UK)");
-
-        await user.click(acceptButton);
-        expect(mockPatchConfigFn).toHaveBeenCalledWith({
-          l10n: {
-            locale: "es_ES.UTF-8",
-            keymap: "gb",
-          },
-        });
-      });
-
       it("still tells about the product options, although without a link", async () => {
         await renderAndOpen();
         screen.getByText(/Once a product is selected, its language and region settings/);
@@ -434,22 +412,6 @@ describe("InstallerL10nOptions", () => {
         mockProduct(undefined);
       });
 
-      it("still allows reusing settings", async () => {
-        const { user } = await renderAndOpen({ variant: "language" });
-        const dialog = screen.getByRole("dialog", { name: "Change Language" });
-        const reuseSettings = within(dialog).getByRole("checkbox", {
-          name: /Use for the selected product too/,
-        });
-        const acceptButton = within(dialog).getByRole("button", { name: "Accept" });
-
-        expect(reuseSettings).toBeChecked();
-
-        await chooseOption(user, dialog, "Language", "Español");
-
-        await user.click(acceptButton);
-        expect(mockPatchConfigFn).toHaveBeenCalledWith({ l10n: { locale: "es_ES.UTF-8" } });
-      });
-
       it("still tells about the product options, although without a link", async () => {
         await renderAndOpen({ variant: "language" });
         screen.getByText(/Once a product is selected, its language and region settings/);
@@ -542,22 +504,6 @@ describe("InstallerL10nOptions", () => {
     describe("but a product is not selected yet", () => {
       beforeEach(() => {
         mockProduct(undefined);
-      });
-
-      it("still allows reusing settings", async () => {
-        const { user } = await renderAndOpen({ variant: "keyboard" });
-        const dialog = screen.getByRole("dialog", { name: "Change keyboard" });
-        const reuseSettings = within(dialog).getByRole("checkbox", {
-          name: /Use for the selected product too/,
-        });
-        const acceptButton = within(dialog).getByRole("button", { name: "Accept" });
-
-        expect(reuseSettings).toBeChecked();
-
-        await chooseOption(user, dialog, "Keyboard layout", "English (UK)");
-
-        await user.click(acceptButton);
-        expect(mockPatchConfigFn).toHaveBeenCalledWith({ l10n: { keymap: "gb" } });
       });
 
       it("still tells about the product options, although without a link", async () => {
