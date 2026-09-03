@@ -17,44 +17,21 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Button, Card, CardBody, CardHeader, Flex, Title } from "@patternfly/react-core";
 import Icon from "~/components/layout/Icon";
 import Text from "~/components/core/Text";
 import VisualTooltip from "~/components/core/VisualTooltip";
 import TerminalUnavailable from "~/components/core/TerminalUnavailable";
 import { useTerminal } from "~/context/terminal";
-import { _, N_ } from "~/i18n";
+import { _ } from "~/i18n";
 
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
-
-// Terminal action strings reserved for the translation freeze.
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const FUTURE_TRANSLATIONS = {
-  show: N_("Show terminal"),
-  hide: N_("Hide terminal"),
-  open: N_("Open terminal"),
-  close: N_("Close terminal"),
-};
 
 const DEFAULT_FONT_SIZE = 14;
 const MIN_FONT_SIZE = 8;
 const MAX_FONT_SIZE = 28;
 const FONT_SIZE_STEP = 2;
-
-// Fake shell session shown in the mockup; not user-facing copy, so it is
-// deliberately not translated. Replace with the real terminal integration
-// (an xterm.js instance attached to a shell on the installation environment).
-const mockPrompt = "agama:~ # ▊";
-const mockSession = `agama:~ # agama config show
-{
-  "product": { "id": "Tumbleweed" },
-  ...
-}
-agama:~ # lsblk
-NAME   MAJ:MIN RM  SIZE RO TYPE MOUNTPOINTS
-vda    253:0    0   30G  0 disk
-${mockPrompt}`;
 
 type TerminalPaneProps = {
   /**
@@ -113,12 +90,36 @@ const TerminalToolbar = ({
   );
 };
 
-/** The mockup terminal screen. Replace with the real xterm.js terminal. */
-const TerminalScreen = ({ fontSize, content }: { fontSize: number; content: string }) => (
-  <pre className="agm-terminal__screen" style={{ fontSize: `${fontSize}px` }}>
-    {content}
-  </pre>
-);
+/**
+ * Hosts the xterm.js terminal.
+ *
+ * The terminal instance itself lives in the terminal context (so it survives
+ * this component being hidden or unmounted); this only attaches it to a DOM
+ * element and keeps it fit to that element's size.
+ */
+const TerminalScreen = () => {
+  const { attach, fit } = useTerminal();
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    attach(containerRef.current);
+  }, [attach]);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container || typeof ResizeObserver === "undefined") return;
+
+    // Covers every reason the available space can change: dragging the
+    // panel's divider, minimizing/restoring, changing the font size, or the
+    // panel becoming visible again after being hidden.
+    const observer = new ResizeObserver(() => fit());
+    observer.observe(container);
+
+    return () => observer.disconnect();
+  }, [fit]);
+
+  return <div ref={containerRef} className="agm-terminal__screen" />;
+};
 
 /**
  * Card chrome shared by every terminal state: the title with its icon, an
@@ -177,9 +178,21 @@ const TerminalShell = ({
  * explanatory message instead (see {@link TerminalUnavailable}).
  */
 export default function TerminalPane({ enoughSpace }: TerminalPaneProps) {
-  const { hide, isMinimized, minimize, restore } = useTerminal();
+  const {
+    hide,
+    close,
+    isMinimized,
+    minimize,
+    restore,
+    setFontSize: setSessionFontSize,
+    clear,
+  } = useTerminal();
   const [fontSize, setFontSize] = useState(DEFAULT_FONT_SIZE);
-  const [session, setSession] = useState(mockSession);
+
+  const changeFontSize = (size: number) => {
+    setFontSize(size);
+    setSessionFontSize(size);
+  };
 
   // TRANSLATORS: tooltip and accessible name for the button that hides the
   // terminal panel (it does not end the session)
@@ -187,6 +200,20 @@ export default function TerminalPane({ enoughSpace }: TerminalPaneProps) {
   const hideButton = (
     <VisualTooltip content={hideLabel} position="top">
       <Button variant="plain" aria-label={hideLabel} icon={<Icon name="close" />} onClick={hide} />
+    </VisualTooltip>
+  );
+
+  // TRANSLATORS: tooltip and accessible name for the button that ends the
+  // terminal session (unlike hiding it, this closes the connection)
+  const closeLabel = _("Close terminal");
+  const closeButton = (
+    <VisualTooltip content={closeLabel} position="top">
+      <Button
+        variant="plain"
+        aria-label={closeLabel}
+        icon={<Icon name="delete" />}
+        onClick={close}
+      />
     </VisualTooltip>
   );
 
@@ -220,11 +247,7 @@ export default function TerminalPane({ enoughSpace }: TerminalPaneProps) {
       gap={{ default: "gapXs" }}
     >
       {!isMinimized && (
-        <TerminalToolbar
-          fontSize={fontSize}
-          onFontSizeChange={setFontSize}
-          onClear={() => setSession(mockPrompt)}
-        />
+        <TerminalToolbar fontSize={fontSize} onFontSizeChange={changeFontSize} onClear={clear} />
       )}
       <VisualTooltip content={toggleLabel} position="top">
         <Button
@@ -235,6 +258,7 @@ export default function TerminalPane({ enoughSpace }: TerminalPaneProps) {
         />
       </VisualTooltip>
       {hideButton}
+      {closeButton}
     </Flex>
   );
 
@@ -247,7 +271,7 @@ export default function TerminalPane({ enoughSpace }: TerminalPaneProps) {
       {/* The terminal stays mounted while collapsed, so the session and its
           output are kept; only the body is hidden. */}
       <CardBody isFilled className="agm-terminal__body" hidden={isMinimized}>
-        <TerminalScreen fontSize={fontSize} content={session} />
+        <TerminalScreen />
       </CardBody>
     </TerminalShell>
   );

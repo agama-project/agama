@@ -26,8 +26,9 @@ const wrapper = ({ children }: React.PropsWithChildren) => (
 );
 
 describe("useTerminal", () => {
-  it("starts hidden and expanded", () => {
+  it("starts hidden, expanded, without a session", () => {
     const { result } = renderHook(() => useTerminal(), { wrapper });
+    expect(result.current.isOpen).toBe(false);
     expect(result.current.isVisible).toBe(false);
     expect(result.current.isMinimized).toBe(false);
   });
@@ -43,6 +44,41 @@ describe("useTerminal", () => {
 
     act(() => result.current.toggle());
     expect(result.current.isVisible).toBe(true);
+  });
+
+  it("opens a session on the first show/toggle, and keeps it open while hidden", () => {
+    const { result } = renderHook(() => useTerminal(), { wrapper });
+
+    expect(result.current.isOpen).toBe(false);
+
+    act(() => result.current.show());
+    expect(result.current.isOpen).toBe(true);
+
+    // Hiding does not end the session: isOpen stays true.
+    act(() => result.current.hide());
+    expect(result.current.isOpen).toBe(true);
+    expect(result.current.isVisible).toBe(false);
+
+    act(() => result.current.show());
+    expect(result.current.isVisible).toBe(true);
+  });
+
+  it("toggle() also opens a session the first time it makes the panel visible", () => {
+    const { result } = renderHook(() => useTerminal(), { wrapper });
+
+    act(() => result.current.toggle());
+    expect(result.current.isOpen).toBe(true);
+    expect(result.current.isVisible).toBe(true);
+  });
+
+  it("close() ends the session and hides the panel", () => {
+    const { result } = renderHook(() => useTerminal(), { wrapper });
+
+    act(() => result.current.show());
+    act(() => result.current.close());
+
+    expect(result.current.isOpen).toBe(false);
+    expect(result.current.isVisible).toBe(false);
   });
 
   it("minimizes and restores while staying visible", () => {

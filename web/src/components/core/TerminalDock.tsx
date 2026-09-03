@@ -86,7 +86,7 @@ function useElementSize(ref: React.RefObject<HTMLElement>): Size {
  * and the panel explains it needs more room (see {@link TerminalPane}).
  */
 export default function TerminalDock({ children }: React.PropsWithChildren) {
-  const { isVisible, isMinimized, height, setHeight } = useTerminal();
+  const { isOpen, isVisible, isMinimized, height, setHeight } = useTerminal();
   const containerRef = useRef<HTMLDivElement>(null);
   const { width: containerWidth, height: containerHeight } = useElementSize(containerRef);
 
@@ -130,9 +130,15 @@ export default function TerminalDock({ children }: React.PropsWithChildren) {
       <div className="agm-terminal-dock__main" hidden={isVisible && !enoughSpace}>
         {children}
       </div>
-      {isVisible && (
+      {/*
+       * Mounted for as long as a session exists (isOpen), not only while the
+       * panel is shown (isVisible): unmounting it would tear down the xterm.js
+       * instance and its WebSocket, which must survive the panel being hidden.
+       * Visibility itself is handled with the `hidden` attribute below.
+       */}
+      {isOpen && (
         <>
-          {enoughSpace && !minimized && (
+          {isVisible && enoughSpace && !minimized && (
             <ResizeHandle
               // TRANSLATORS: accessible name for the divider used to resize the
               // terminal panel by dragging or with the arrow keys
@@ -142,6 +148,7 @@ export default function TerminalDock({ children }: React.PropsWithChildren) {
             />
           )}
           <div
+            hidden={!isVisible}
             className={
               minimized
                 ? "agm-terminal-dock__panel agm-terminal-dock__panel--minimized"

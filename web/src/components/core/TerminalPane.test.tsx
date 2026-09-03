@@ -31,6 +31,7 @@ describe("TerminalPane", () => {
       screen.getByRole("button", { name: "Hide terminal" });
       expect(screen.queryByRole("button", { name: "Minimize terminal" })).toBeNull();
       expect(screen.queryByRole("button", { name: "Clear terminal" })).toBeNull();
+      expect(screen.queryByRole("button", { name: "Close terminal" })).toBeNull();
     });
   });
 
@@ -46,6 +47,14 @@ describe("TerminalPane", () => {
       screen.getByRole("button", { name: "Clear terminal" });
       screen.getByRole("button", { name: "Minimize terminal" });
       screen.getByRole("button", { name: "Hide terminal" });
+      screen.getByRole("button", { name: "Close terminal" });
+    });
+
+    it("renders a container for the terminal to attach to", () => {
+      installerRender(<TerminalPane enoughSpace />);
+
+      const region = screen.getByRole("region", { name: "Terminal" });
+      expect(region.querySelector(".agm-terminal__screen")).not.toBeNull();
     });
 
     it("collapses to a bar when minimized, dropping the description and tools", async () => {
@@ -60,6 +69,16 @@ describe("TerminalPane", () => {
           "Linux command-line with administrative privileges on the installer system.",
         ),
       ).toBeNull();
+    });
+
+    it("offers a hide action (session preserved) distinct from close (session ended)", async () => {
+      const { user } = installerRender(<TerminalPane enoughSpace />);
+
+      // Both are always available and do not throw; the actual state
+      // transitions they trigger (isVisible vs isOpen) are covered by
+      // context/terminal.test.tsx and TerminalDock.test.tsx.
+      await user.click(screen.getByRole("button", { name: "Hide terminal" }));
+      await user.click(screen.getByRole("button", { name: "Close terminal" }));
     });
   });
 });

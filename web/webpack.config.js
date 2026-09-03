@@ -122,6 +122,12 @@ module.exports = {
         secure: false,
       },
       {
+        context: ["/api/terminal/ws"],
+        target: agamaServer.replace(/^http/, "ws"),
+        ws: true,
+        secure: false,
+      },
+      {
         context: ["/api"],
         target: agamaServer,
         secure: false,
