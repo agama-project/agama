@@ -1,6 +1,7 @@
 [workspace]
 members = [
     "agama-autoinstall",
+    "agama-bootloader",
     "agama-cli",
     "agama-files",
     "agama-hostname",
@@ -36,14 +37,26 @@ edition = "2021"
 
 [workspace.dependencies]
 agama-access = { path = "agama-access" }
+agama-bootloader = { path = "agama-bootloader" }
+agama-cli = { path = "agama-cli" }
+agama-files = { path = "agama-files" }
+agama-hostname = { path = "agama-hostname" }
+agama-iscsi = { path = "agama-iscsi" }
 agama-l10n = { path = "agama-l10n" }
 agama-lib = { path = "agama-lib" }
 agama-locale-data = { path = "agama-locale-data" }
+agama-manager = { path = "agama-manager" }
 agama-network = { path = "agama-network" }
+agama-ntp = { path = "agama-ntp" }
+agama-proxy = { path = "agama-proxy" }
+agama-s390 = { path = "agama-s390" }
 agama-security = { path = "agama-security" }
+agama-server = { path = "agama-server" }
 agama-software = { path = "agama-software" }
+agama-storage = { path = "agama-storage" }
 agama-storage-client = { path = "agama-storage-client" }
 agama-transfer = { path = "agama-transfer" }
+agama-users = { path = "agama-users" }
 agama-utils = { path = "agama-utils" }
 anyhow = { version = "1.0.100" }
 async-trait = { version = "0.1.89" }
@@ -69,6 +82,7 @@ serde_json = { version = "1.0.145", features = ["raw_value"] }
 serde_with = { version = "3.16.1" }
 serde_yaml = { version = "0.9.34" }
 strum = { version = "0.27.2", features = ["derive"] }
+suseconnect-agama = { path = "suseconnect-agama" }
 tempfile = { version = "3.27.0" }
 test-context = { version = "0.4.1" }
 thiserror = { version = "2.0.18" }

@@ -12,6 +12,11 @@ Wed Sep  2 14:47:52 UTC 2026 - David Diaz <dgonzalez@suse.com>
   (gh#agama-project/agama#3859).
 
 -------------------------------------------------------------------
+Tue Sep  1 15:51:08 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 24
+
+-------------------------------------------------------------------
 Tue Sep  1 14:20:00 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Cope with unknown localization settings: report them as an

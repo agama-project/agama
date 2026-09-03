@@ -6,19 +6,19 @@ edition.workspace = true
 
 [dependencies]
 agama-access = { workspace = true }
-agama-bootloader = { path = "../agama-bootloader" }
-agama-files = { path = "../agama-files" }
-agama-hostname = { path = "../agama-hostname" }
-agama-iscsi = { path = "../agama-iscsi" }
+agama-bootloader = { workspace = true }
+agama-files = { workspace = true }
+agama-hostname = { workspace = true }
+agama-iscsi = { workspace = true }
 agama-l10n = { workspace = true }
 agama-network = { workspace = true }
-agama-ntp = { path = "../agama-ntp" }
-agama-proxy = { version = "0.1.0", path = "../agama-proxy" }
-agama-s390 = { path = "../agama-s390" }
+agama-ntp = { workspace = true }
+agama-proxy = { workspace = true }
+agama-s390 = { workspace = true }
 agama-security = { workspace = true }
 agama-software = { workspace = true }
-agama-storage = { path = "../agama-storage" }
-agama-users = { path = "../agama-users" }
+agama-storage = { workspace = true }
+agama-users = { workspace = true }
 agama-utils = { workspace = true }
 async-trait = { workspace = true }
 gettext-rs = { workspace = true }
@@ -35,7 +35,6 @@ zbus = { workspace = true }
 
 [dev-dependencies]
 test-context = { workspace = true }
-tokio-test = { workspace = true }
 
 [lints.rust]
 unexpected_cfgs = { level = "warn", check-cfg = ['cfg(ci)'] }

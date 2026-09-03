@@ -7,3 +7,6 @@ edition.workspace = true
 
 [build-dependencies]
 bindgen = { workspace = true }
+
+[package.metadata.cargo-machete]
+ignored = ["bindgen"]

@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Sep  1 15:51:00 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 24
+
+-------------------------------------------------------------------
 Mon Aug 31 12:02:23 UTC 2026 - Ancor Gonzalez Sosa <ancor@suse.com>
 
 - Adjust default encryption derivation function (PBKDF) according

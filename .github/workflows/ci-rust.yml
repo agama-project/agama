@@ -67,6 +67,54 @@ jobs:
     - name: Run rustfmt
       run: cargo fmt --all -- --check
 
+  # Detects dependencies which are declared in a Cargo.toml but never used, so
+  # they do not pile up unnoticed. It only parses the manifests and the sources,
+  # no compilation and no system libraries are needed, hence the plain runner.
+  machete:
+    # the default timeout is 6 hours, that's too much if the job gets stuck
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ./rust
+
+    env:
+      # keep the version pinned so the check cannot start failing on its own
+      CARGO_MACHETE_VERSION: 0.9.2
+
+    steps:
+
+    - name: Git Checkout
+      uses: actions/checkout@v7
+
+    - name: Rust toolchain
+      run: |
+        rustup show
+        cargo --version
+
+    - name: cargo-machete cache
+      uses: actions/cache@v5
+      with:
+        path: ~/.cargo/bin/cargo-machete
+        key: ${{ runner.os }}-cargo-machete-${{ env.CARGO_MACHETE_VERSION }}
+
+    - name: Install cargo-machete
+      run: |
+        if ! [ -x ~/.cargo/bin/cargo-machete ]; then
+          cargo install --locked cargo-machete --version "$CARGO_MACHETE_VERSION"
+        fi
+
+    # --with-metadata is required: without it the check reports plenty of false
+    # positives for crates whose library name differs from the package name
+    # (gettext-rs/gettextrs, for instance).
+    #
+    # A dependency which is only used from a doctest is not detected either, as
+    # cargo-machete does not scan doc comments. Add those to the
+    # [package.metadata.cargo-machete] "ignored" list of the affected crate.
+    - name: Run cargo-machete
+      run: cargo machete --with-metadata
+
   clippy:
     # the default timeout is 6 hours, that's too much if the job gets stuck
     timeout-minutes: 20
