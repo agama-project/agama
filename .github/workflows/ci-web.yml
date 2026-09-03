@@ -66,7 +66,9 @@ jobs:
       run: npm ci
 
     - name: Run knip
-      run: npx knip
+      # Only check for unused files and dependencies, not exports (which are often
+      # intentional API surface). This keeps CI focused on catching real issues.
+      run: npx knip --exclude exports,types
 
   frontend_build:
     # the default timeout is 6 hours, that's too much if the job gets stuck

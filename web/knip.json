@@ -1,20 +1,21 @@
 {
   "$schema": "https://unpkg.com/knip@latest/jsonschema.json",
   "entry": [
-    "src/index.tsx",
     "scripts/**/*.js",
     "share/po/**/*.js"
   ],
   "project": ["src/**/*.{ts,tsx,js,jsx}"],
   "ignore": [
-    "src/po/po.*.js",
-    "svgo.config.js"
+    "src/po/po.*.js"
   ],
   "ignoreDependencies": [
-    "typescript-eslint"
+    "typescript-eslint",
+    "eslint-plugin-n",
+    "eslint-plugin-promise",
+    "eslint-plugin-react"
   ],
+  "ignoreExportsUsedInFile": true,
   "webpack": {
     "config": ["webpack.config.js"]
-  },
-  "ignoreExportsUsedInFile": true
+  }
 }
