@@ -47,7 +47,7 @@ local-npm-registry %{_sourcedir} install --with=dev --legacy-peer-deps || ( find
 find src -name *.test.tsx -delete
 
 %build
-NODE_ENV="production" npm run build
+ESLINT=0 NODE_ENV="production" npm run build
 
 %install
 install -D -m 0644 --target-directory=%{buildroot}%{_datadir}/agama/web_ui %{_builddir}/agama/dist/*.{css,gz,html,js,json,map,svg}

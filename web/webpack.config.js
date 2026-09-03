@@ -7,12 +7,7 @@ const TerserJSPlugin = require("terser-webpack-plugin");
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const HtmlMinimizerPlugin = require("html-minimizer-webpack-plugin");
 const CompressionPlugin = require("compression-webpack-plugin");
-const ESLintPlugin = require("eslint-webpack-plugin");
-const StylelintPlugin = require("stylelint-webpack-plugin");
 const TsconfigPathsPlugin = require("tsconfig-paths-webpack-plugin");
-const ReactRefreshWebpackPlugin = require("@pmmmwh/react-refresh-webpack-plugin");
-const ReactRefreshTypeScript = require("react-refresh-typescript");
-const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
 const MonacoWebpackPlugin = require("monaco-editor-webpack-plugin");
 const webpack = require("webpack");
 
@@ -20,11 +15,18 @@ const webpack = require("webpack");
 const production = process.env.NODE_ENV === "production";
 const development = !production;
 
+const ReactRefreshWebpackPlugin = development ? require("@pmmmwh/react-refresh-webpack-plugin") : null;
+const ReactRefreshTypeScript = development ? require("react-refresh-typescript") : null;
+const ForkTsCheckerWebpackPlugin = development ? require("fork-ts-checker-webpack-plugin") : null;
+
 /* development options for faster iteration */
 const eslint = process.env.ESLINT !== "0";
 
 /* Default to disable csslint for faster production builds */
 const stylelint = process.env.STYLELINT ? process.env.STYLELINT !== "0" : development;
+
+const ESLintPlugin = eslint ? require("eslint-webpack-plugin") : null;
+const StylelintPlugin = stylelint ? require("stylelint-webpack-plugin") : null;
 
 // Agama API server. By default it connects to a local development server.
 let agamaServer = process.env.AGAMA_SERVER || "localhost";
@@ -60,7 +62,7 @@ const plugins = [
   }),
   // run the TypeScript type checks in a parallel process (report the problems to the dev server in
   // the development mode)
-  new ForkTsCheckerWebpackPlugin({ devServer: development }),
+  development && new ForkTsCheckerWebpackPlugin({ devServer: development }),
   new MonacoWebpackPlugin({
     // include only support for the JSON format in the Monaco editor
     languages: ["json"],
