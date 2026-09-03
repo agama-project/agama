@@ -123,7 +123,7 @@
         <package name="jq"/>
         <package name="yast2-schema"/>
         <package name="qrencode"/>
-        <package name="qemu-guest-agent" />
+        <package name="qemu-guest-agent" arch="aarch64,x86_64,ppc64le,s390x"/>
         <package name="aaa_base-extras"/>
         <!-- to work correctly with the fips=1 boot parameter -->
         <package name="libopenssl-3-fips-provider"/>
