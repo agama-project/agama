@@ -281,9 +281,10 @@ const TextWithLinkToL10n = ({ text, onClick }: TextWithLinkToL10nProps) => {
  * Renders the checkbox for applying the chosen settings to the product to
  * install too.
  *
- * The checkbox comes with a link to the page where the product settings can be
- * fine tuned, but only once a product is chosen. Until then that page cannot be
- * reached, so pointing to it would lead nowhere.
+ * The checkbox is described by a note about the product offering its own, wider
+ * set of language and region options. Once a product is chosen the note links to
+ * the page holding them. Before that the page cannot be reached, so the note
+ * says when those options come within reach instead of pointing at them.
  */
 const ReuseSettingsField = withForm({
   ...defaultOptions,
@@ -298,8 +299,18 @@ const ReuseSettingsField = withForm({
     const description = _(
       // TRANSLATORS: Explains where users can find more language and keyboard
       // options for the product to install. The text in square brackets [] is a
-      // link to the localization page; keep the brackets.
+      // link to the localization page; keep the brackets. Translate "language
+      // and region" as in the "Language and region" section title, so users
+      // recognize the place being pointed at.
       "The [language and region] settings for the product may offer more options to choose from.",
+    );
+    const pendingDescription = _(
+      // TRANSLATORS: Shown while no product has been chosen yet, to tell users
+      // that more language and keyboard options become available, in the
+      // localization settings, after choosing a product. Translate "language and
+      // region" as in the "Language and region" section title, so users
+      // recognize the place being described.
+      "Once a product is selected, its language and region settings may offer more options to choose from.",
     );
 
     return (
@@ -307,7 +318,13 @@ const ReuseSettingsField = withForm({
         {(field) => (
           <field.CheckboxField
             label={label}
-            description={product && <TextWithLinkToL10n text={description} onClick={onLinkClick} />}
+            description={
+              product ? (
+                <TextWithLinkToL10n text={description} onClick={onLinkClick} />
+              ) : (
+                pendingDescription
+              )
+            }
           />
         )}
       </form.AppField>

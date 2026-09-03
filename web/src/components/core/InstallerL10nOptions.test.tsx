@@ -311,8 +311,9 @@ describe("InstallerL10nOptions", () => {
         });
       });
 
-      it("does not include a link to localization page", async () => {
+      it("still tells about the product options, although without a link", async () => {
         await renderAndOpen();
+        screen.getByText(/Once a product is selected, its language and region settings/);
         expect(screen.queryByRole("link", { name: "language and region" })).toBeNull();
       });
     });
@@ -449,8 +450,9 @@ describe("InstallerL10nOptions", () => {
         expect(mockPatchConfigFn).toHaveBeenCalledWith({ l10n: { locale: "es_ES.UTF-8" } });
       });
 
-      it("does not include a link to localization page", async () => {
+      it("still tells about the product options, although without a link", async () => {
         await renderAndOpen({ variant: "language" });
+        screen.getByText(/Once a product is selected, its language and region settings/);
         expect(screen.queryByRole("link", { name: "language and region" })).toBeNull();
       });
     });
@@ -558,8 +560,9 @@ describe("InstallerL10nOptions", () => {
         expect(mockPatchConfigFn).toHaveBeenCalledWith({ l10n: { keymap: "gb" } });
       });
 
-      it("does not include a link to localization page", async () => {
+      it("still tells about the product options, although without a link", async () => {
         await renderAndOpen({ variant: "keyboard" });
+        screen.getByText(/Once a product is selected, its language and region settings/);
         expect(screen.queryByRole("link", { name: "language and region" })).toBeNull();
       });
     });
