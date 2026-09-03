@@ -1,0 +1,15 @@
+{
+  "product": {
+    "id": "SLES"
+  },
+  "root": {
+    "password": "nots3cr3t",
+    "hashedPassword": false
+  },
+  "user": {
+    "userName": "user",
+    "fullName": "User",
+    "password": "nots3cr3t",
+    "hashedPassword": false
+  }
+}
