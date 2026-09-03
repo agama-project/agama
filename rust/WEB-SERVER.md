@@ -142,5 +142,26 @@ are automatically redirected to HTTPS. *But it still means that the original
 HTTP communication can be intercepted by an attacker, do not rely on this
 redirection!*
 
+## The terminal WebSocket
+
+The server exposes a terminal at `/api/terminal/ws`. Each connection starts a
+new shell on the server. The shell process ends when the connection closes.
+
+The socket carries two kinds of frames:
+
+* Binary frames carry raw bytes: keystrokes from the client, shell output from
+  the server.
+* Text frames carry small JSON control messages. The client can resize the
+  terminal with `{"cols": 80, "rows": 24}`. The server announces the end of
+  the shell with `{"type": "exit", "code": 0}`.
+
+You can try it with `websocat` (see above for how to get a token):
+
+```
+$ websocat ws://localhost/api/terminal/ws \
+    -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3MDg1MTA5MzB9.3HmKAC5u4H_FigMqEa9e74OFAq40UldjlaExrOGqE0U" \
+    --binary
+```
+
 For internal connections coming from the same machine (via the
 `http://localhost` URL) the unencrypted HTTP communication is allowed.
