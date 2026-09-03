@@ -103,6 +103,8 @@ software:
   installation_repositories:
     - url: https://download.opensuse.org/tumbleweed/repo/oss/
       archs: x86_64
+    - url: https://download.opensuse.org/ports/i586/tumbleweed/repo/oss/
+      archs: i586
     - url: https://download.opensuse.org/ports/aarch64/tumbleweed/repo/oss/
       archs: aarch64
     - url: https://download.opensuse.org/ports/zsystems/tumbleweed/repo/oss/
@@ -111,6 +113,8 @@ software:
       archs: ppc
     - url: https://download.opensuse.org/tumbleweed/repo/non-oss/
       archs: x86_64
+    - url: https://download.opensuse.org/ports/i586/tumbleweed/repo/non-oss/
+      archs: i586
     - url: https://download.opensuse.org/ports/aarch64/tumbleweed/repo/non-oss/
       archs: aarch64
     - url: https://download.opensuse.org/ports/zsystems/tumbleweed/repo/non-oss/
@@ -119,6 +123,8 @@ software:
       archs: ppc
     - url: https://download.opensuse.org/update/tumbleweed/
       archs: x86_64
+    - url: https://download.opensuse.org/ports/i586/update/tumbleweed/
+      archs: i586
     - url: https://download.opensuse.org/ports/aarch64/update/tumbleweed/
       archs: aarch64
     - url: https://download.opensuse.org/ports/zsystems/update/tumbleweed/
@@ -129,6 +135,8 @@ software:
   installation_labels:
     - label: openSUSE-Tumbleweed-DVD-x86_64
       archs: x86_64
+    - label: openSUSE-Tumbleweed-DVD-i586
+      archs: i586
     - label: openSUSE-Tumbleweed-DVD-aarch64
       archs: aarch64
     - label: openSUSE-Tumbleweed-DVD-s390x
