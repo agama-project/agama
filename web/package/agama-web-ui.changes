@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Sep  2 14:47:52 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Close dialogs with Escape or a close button, answer questions by
+  pressing Enter, and name every dialog for screen readers
+  (gh#agama-project/agama#3859).
+
+-------------------------------------------------------------------
 Tue Sep  1 14:20:00 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Cope with unknown localization settings: report them as an

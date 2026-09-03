@@ -119,6 +119,32 @@ export default function DeviceSelectorModal({
     return sprintf(_("Use %s"), pick.name);
   };
 
+  const actions = (
+    <Stack hasGutter>
+      {!pick && (
+        <HelperText id={confirmHintId} isLiveRegion>
+          <HelperTextItem>
+            {
+              // TRANSLATORS: shown next to the disabled confirmation button
+              // of the network device dialog, when no device is picked.
+              _("Select a device")
+            }
+          </HelperTextItem>
+        </HelperText>
+      )}
+      <Flex>
+        <Popup.Confirm
+          onClick={() => onConfirm(pick)}
+          isDisabled={!pick}
+          aria-describedby={confirmHintId}
+        >
+          {confirmLabel()}
+        </Popup.Confirm>
+        <Popup.Cancel onClick={onCancel} asLink />
+      </Flex>
+    </Stack>
+  );
+
   return (
     <Popup
       isOpen
@@ -129,6 +155,7 @@ export default function DeviceSelectorModal({
       // and sees first, and the arrow keys move from there.
       elementToFocus={initialDevice ? "input[type=radio]:checked" : undefined}
       onClose={onCancel}
+      actions={actions}
     >
       <Stack hasGutter>
         <SelectableDataTable
@@ -142,31 +169,6 @@ export default function DeviceSelectorModal({
           updateSorting={setSortedBy}
         />
       </Stack>
-      <Popup.Actions>
-        <Stack hasGutter>
-          {!pick && (
-            <HelperText id={confirmHintId} isLiveRegion>
-              <HelperTextItem>
-                {
-                  // TRANSLATORS: shown next to the disabled confirmation button
-                  // of the network device dialog, when no device is picked.
-                  _("Select a device")
-                }
-              </HelperTextItem>
-            </HelperText>
-          )}
-          <Flex>
-            <Popup.Confirm
-              onClick={() => onConfirm(pick)}
-              isDisabled={!pick}
-              aria-describedby={confirmHintId}
-            >
-              {confirmLabel()}
-            </Popup.Confirm>
-            <Popup.Cancel onClick={onCancel} asLink />
-          </Flex>
-        </Stack>
-      </Popup.Actions>
     </Popup>
   );
 }

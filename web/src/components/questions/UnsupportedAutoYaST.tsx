@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2025] SUSE LLC
+ * Copyright (c) [2025-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -30,9 +30,8 @@ import {
   ListVariant,
   Stack,
 } from "@patternfly/react-core";
-import { Popup } from "~/components/core";
 import Page from "~/components/layout/Page";
-import QuestionActions from "~/components/questions/QuestionActions";
+import QuestionDialog from "~/components/questions/QuestionDialog";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
 
@@ -72,16 +71,15 @@ export default function UnsupportedAutoYaST({
   question: Question;
   answerCallback: AnswerCallback;
 }) {
-  const actionCallback = (action: string) => {
-    question.answer = { action };
-    answerCallback(question);
-  };
-
   const planned = question.data.planned ? question.data.planned.split(",") : [];
   const unsupported = question.data.unsupported ? question.data.unsupported.split(",") : [];
 
   return (
-    <Popup isOpen title={_("Unsupported AutoYaST elements")}>
+    <QuestionDialog
+      question={question}
+      answerCallback={answerCallback}
+      title={_("Unsupported AutoYaST elements")}
+    >
       <Stack hasGutter>
         <Content>{_("Some of the elements in your AutoYaST profile are not supported.")}</Content>
         <Grid hasGutter>
@@ -110,13 +108,6 @@ export default function UnsupportedAutoYaST({
           )}
         </Content>
       </Stack>
-      <Popup.Actions>
-        <QuestionActions
-          actions={question.actions}
-          defaultAction={question.defaultAction}
-          actionCallback={actionCallback}
-        />
-      </Popup.Actions>
-    </Popup>
+    </QuestionDialog>
   );
 }

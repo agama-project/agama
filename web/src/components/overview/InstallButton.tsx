@@ -68,7 +68,18 @@ const ConfirmationPopup = ({
   const ConfirmButton = isDangerous ? Popup.DangerousAction : Popup.Confirm;
 
   return (
-    <Popup isOpen title={title}>
+    <Popup
+      isOpen
+      title={title}
+      onClose={onCancel}
+      actions={
+        <>
+          {/* TRANSLATORS: Button to confirm and start the installation */}
+          <ConfirmButton onClick={onConfirm}>{_("Confirm and install")}</ConfirmButton>
+          <Popup.Cancel onClick={onCancel} autoFocus />
+        </>
+      }
+    >
       <Stack hasGutter>
         <Content isEditorial>
           {/* TRANSLATORS: shown at the top of the install confirmation dialog. */}
@@ -77,11 +88,6 @@ const ConfirmationPopup = ({
         {isDesktopMissing && <NoDesktopAlert />}
         {isDangerous && <PotentialDataLossAlert />}
       </Stack>
-      <Popup.Actions>
-        {/* TRANSLATORS: Button to confirm and start the installation */}
-        <ConfirmButton onClick={onConfirm}>{_("Confirm and install")}</ConfirmButton>
-        <Popup.Cancel onClick={onCancel} autoFocus />
-      </Popup.Actions>
     </Popup>
   );
 };

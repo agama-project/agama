@@ -98,3 +98,17 @@ it("calls the callback with answer value and modified url", async () => {
   );
   expect(answerFn).toHaveBeenCalledWith(question);
 });
+
+it("answers the default action once when submitting the form", async () => {
+  answerFn.mockClear();
+  const { user } = renderQuestion();
+
+  const urlInput = screen.getByRole("textbox", { name: "Location" });
+  await user.clear(urlInput);
+  await user.type(urlInput, "http://another.config.file{Enter}");
+
+  expect(question.answer).toEqual(
+    expect.objectContaining({ action: "skip", value: "http://another.config.file" }),
+  );
+  expect(answerFn).toHaveBeenCalledTimes(1);
+});
