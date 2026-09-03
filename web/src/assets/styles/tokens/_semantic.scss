@@ -132,7 +132,7 @@
   // default, so each step keeps the Agama size below. Redefine the
   // --agm-t--font--size--* tokens (e.g. from a product override) to rescale.
   --pf-t--global--font--size--100: var(--agm-t--font--size--100, 0.875rem);
-  --pf-t--global--font--size--200: var(--agm-t--font--size--200, 1em);
+  --pf-t--global--font--size--200: var(--agm-t--font--size--200, 1rem);
   --pf-t--global--font--size--300: var(--agm-t--font--size--300, 1.125rem);
   --pf-t--global--font--size--400: var(--agm-t--font--size--400, 1.25rem);
   --pf-t--global--font--size--500: var(--agm-t--font--size--500, 1.5rem);
