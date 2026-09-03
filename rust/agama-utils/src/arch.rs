@@ -24,6 +24,9 @@
 #[strum(serialize_all = "lowercase")]
 pub enum Arch {
     AARCH64,
+    ARMV6HL,
+    ARMV7HL,
+    I586,
     PPC64LE,
     S390X,
     X86_64,
@@ -42,8 +45,14 @@ impl Arch {
     pub fn current() -> Result<Self, Error> {
         match std::env::consts::ARCH {
             "aarch64" => Ok(Arch::AARCH64),
+            "arm" => {
+                // Return ARMV7HL by default for arm. If more specificity is needed,
+                // /proc/cpuinfo or target features could be checked.
+                Ok(Arch::ARMV7HL)
+            }
             "powerpc64" => Ok(Arch::PPC64LE),
             "s390x" => Ok(Arch::S390X),
+            "x86" => Ok(Arch::I586),
             "x86_64" => Ok(Arch::X86_64),
             _ => Err(Error::Unknown(std::env::consts::ARCH.to_string())),
         }
@@ -53,6 +62,9 @@ impl Arch {
     pub fn to_yast_id(&self) -> String {
         match &self {
             Arch::AARCH64 => "aarch64".to_string(),
+            Arch::ARMV6HL => "armv6hl".to_string(),
+            Arch::ARMV7HL => "armv7hl".to_string(),
+            Arch::I586 => "i586".to_string(),
             Arch::PPC64LE => "ppc".to_string(),
             Arch::S390X => "s390".to_string(),
             Arch::X86_64 => "x86_64".to_string(),
@@ -76,6 +88,9 @@ mod tests {
     #[test]
     fn test_arch_from_string() {
         assert_eq!("aarch64".try_into(), Ok(Arch::AARCH64));
+        assert_eq!("armv6hl".try_into(), Ok(Arch::ARMV6HL));
+        assert_eq!("armv7hl".try_into(), Ok(Arch::ARMV7HL));
+        assert_eq!("i586".try_into(), Ok(Arch::I586));
         assert_eq!("ppc64le".try_into(), Ok(Arch::PPC64LE));
         assert_eq!("s390x".try_into(), Ok(Arch::S390X));
         assert_eq!("x86_64".try_into(), Ok(Arch::X86_64));
@@ -84,6 +99,9 @@ mod tests {
     #[test]
     fn test_arch_to_string() {
         assert_eq!(Arch::AARCH64.to_string(), "aarch64".to_string());
+        assert_eq!(Arch::ARMV6HL.to_string(), "armv6hl".to_string());
+        assert_eq!(Arch::ARMV7HL.to_string(), "armv7hl".to_string());
+        assert_eq!(Arch::I586.to_string(), "i586".to_string());
         assert_eq!(Arch::PPC64LE.to_string(), "ppc64le".to_string());
         assert_eq!(Arch::S390X.to_string(), "s390x".to_string());
         assert_eq!(Arch::X86_64.to_string(), "x86_64".to_string());
@@ -92,6 +110,9 @@ mod tests {
     #[test]
     fn test_to_product_string() {
         assert_eq!(Arch::AARCH64.to_yast_id(), "aarch64".to_string());
+        assert_eq!(Arch::ARMV6HL.to_yast_id(), "armv6hl".to_string());
+        assert_eq!(Arch::ARMV7HL.to_yast_id(), "armv7hl".to_string());
+        assert_eq!(Arch::I586.to_yast_id(), "i586".to_string());
         assert_eq!(Arch::PPC64LE.to_yast_id(), "ppc".to_string());
         assert_eq!(Arch::S390X.to_yast_id(), "s390".to_string());
         assert_eq!(Arch::X86_64.to_yast_id(), "x86_64".to_string());
@@ -101,6 +122,12 @@ mod tests {
     #[test]
     fn test_current_arch_aarch64() {
         assert_eq!(Arch::current().unwrap(), Arch::AARCH64);
+    }
+
+    #[cfg(target_arch = "arm")]
+    #[test]
+    fn test_current_arch_arm() {
+        assert_eq!(Arch::current().unwrap(), Arch::ARMV7HL);
     }
 
     #[cfg(target_arch = "powerpc64")]
@@ -113,6 +140,12 @@ mod tests {
     #[test]
     fn test_current_arch_s390x() {
         assert_eq!(Arch::current().unwrap(), Arch::S390X);
+    }
+
+    #[cfg(target_arch = "x86")]
+    #[test]
+    fn test_current_arch_x86() {
+        assert_eq!(Arch::current().unwrap(), Arch::I586);
     }
 
     #[cfg(target_arch = "x86_64")]
