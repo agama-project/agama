@@ -21,16 +21,32 @@
  */
 
 import React, { useCallback, useMemo, useState } from "react";
+import { useTerminalSession, TerminalSession } from "~/hooks/use-terminal-session";
 
-type TerminalContextValue = {
+type TerminalContextValue = TerminalSession & {
+  /**
+   * Whether a terminal session exists. It becomes `true` the first time the
+   * terminal is shown, and only goes back to `false` when the session is
+   * explicitly closed. Hiding the panel does not affect it: that is the
+   * whole point of the hide/close distinction (see {@link hide} and
+   * {@link close}).
+   */
+  isOpen: boolean;
   /** Whether the terminal panel is currently shown next to the application. */
   isVisible: boolean;
-  /** Shows the terminal panel. */
+  /**
+   * Shows the terminal panel, opening a session first if none exists yet.
+   */
   show: () => void;
   /** Hides the terminal panel without ending the session. */
   hide: () => void;
-  /** Toggles the terminal panel visibility. */
+  /**
+   * Toggles the terminal panel visibility, opening a session first if none
+   * exists yet (see {@link isOpen}).
+   */
   toggle: () => void;
+  /** Ends the session and hides the panel. */
+  close: () => void;
   /** Whether the terminal panel is collapsed to its header bar. */
   isMinimized: boolean;
   /** Collapses the terminal panel to its header bar, keeping the session. */
@@ -67,27 +83,55 @@ function useTerminal(): TerminalContextValue {
  * Provider for the terminal panel state. See {@link useTerminal}.
  */
 function TerminalProvider({ children }: React.PropsWithChildren) {
+  const [isOpen, setIsOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
   const [height, setHeight] = useState<number | undefined>(undefined);
+  // Owns the xterm.js instance and its WebSocket connection for as long as
+  // isOpen is true, independently of the panel being shown, hidden, or
+  // minimized (see `useTerminalSession`).
+  const session = useTerminalSession(isOpen);
 
   // Showing the panel always brings it back expanded, so it never reopens as a
-  // collapsed bar after having been minimized.
+  // collapsed bar after having been minimized. It also opens a session the
+  // first time it is called (isOpen never goes back to false on its own).
   const show = useCallback(() => {
+    setIsOpen(true);
     setIsVisible(true);
     setIsMinimized(false);
   }, []);
   const hide = useCallback(() => setIsVisible(false), []);
   const toggle = useCallback(() => {
-    setIsVisible((visible) => !visible);
+    setIsVisible((visible) => {
+      const next = !visible;
+      if (next) setIsOpen(true);
+      return next;
+    });
     setIsMinimized(false);
+  }, []);
+  const close = useCallback(() => {
+    setIsOpen(false);
+    setIsVisible(false);
   }, []);
   const minimize = useCallback(() => setIsMinimized(true), []);
   const restore = useCallback(() => setIsMinimized(false), []);
 
   const value = useMemo(
-    () => ({ isVisible, show, hide, toggle, isMinimized, minimize, restore, height, setHeight }),
-    [isVisible, show, hide, toggle, isMinimized, minimize, restore, height],
+    () => ({
+      ...session,
+      isOpen,
+      isVisible,
+      show,
+      hide,
+      toggle,
+      close,
+      isMinimized,
+      minimize,
+      restore,
+      height,
+      setHeight,
+    }),
+    [session, isOpen, isVisible, show, hide, toggle, close, isMinimized, minimize, restore, height],
   );
 
   return <TerminalContext.Provider value={value}>{children}</TerminalContext.Provider>;

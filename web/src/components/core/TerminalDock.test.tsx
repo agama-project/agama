@@ -65,12 +65,14 @@ afterEach(() => {
 });
 
 describe("TerminalDock", () => {
-  it("shows only the application while the terminal is hidden", () => {
+  it("shows only the application before the terminal has ever been opened", () => {
     mockResizeObserver(1600, 900);
     installerRender(<Subject />);
 
     expect(screen.getByText(APP_CONTENT)).toBeVisible();
-    expect(screen.queryByRole("region", { name: "Terminal" })).toBeNull();
+    // Not just inaccessible: it is not mounted at all yet, since no session
+    // exists (nothing to open() an xterm.js instance into).
+    expect(screen.queryByRole("region", { name: "Terminal", hidden: true })).toBeNull();
   });
 
   describe("when the terminal is shown and there is enough room", () => {
@@ -98,15 +100,39 @@ describe("TerminalDock", () => {
       expect(screen.getByText(APP_CONTENT)).not.toBeVisible();
     });
 
-    it("can be dismissed with its hide action", async () => {
+    it("can be dismissed with its hide action, keeping the session mounted", async () => {
       mockResizeObserver(1000, 700);
       const { user } = installerRender(<Subject />);
 
       await user.click(screen.getByRole("button", { name: "open terminal" }));
       await user.click(screen.getByRole("button", { name: "Hide terminal" }));
 
+      // Inaccessible (and visually gone, via `[hidden]`)...
       expect(screen.queryByRole("region", { name: "Terminal" })).toBeNull();
+      // ...but still mounted, so its session (and the xterm.js instance
+      // attached to it) is preserved rather than torn down.
+      expect(screen.getByRole("region", { name: "Terminal", hidden: true })).not.toBeVisible();
       expect(screen.getByText(APP_CONTENT)).toBeVisible();
+    });
+  });
+
+  describe("hiding an open terminal", () => {
+    it("keeps the panel mounted (but inaccessible) instead of unmounting it", async () => {
+      mockResizeObserver(1600, 900);
+      const { user } = installerRender(<Subject />);
+
+      await user.click(screen.getByRole("button", { name: "open terminal" }));
+      screen.getByRole("region", { name: "Terminal" });
+
+      await user.click(screen.getByRole("button", { name: "Hide terminal" }));
+
+      expect(screen.queryByRole("region", { name: "Terminal" })).toBeNull();
+      expect(screen.getByRole("region", { name: "Terminal", hidden: true })).not.toBeVisible();
+
+      // Showing it again does not need to recreate anything (no new "open
+      // terminal" click needed): the very same region reappears.
+      await user.click(screen.getByRole("button", { name: "open terminal" }));
+      expect(screen.getByRole("region", { name: "Terminal" })).toBeVisible();
     });
   });
 });

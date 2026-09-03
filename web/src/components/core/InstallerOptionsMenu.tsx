@@ -37,6 +37,7 @@ import ChangeProductOption from "~/components/core/ChangeProductOption";
 import ConfigDialog from "~/components/core/ConfigDialog";
 import DownloadLogsFeedback from "~/components/core/DownloadLogsFeedback";
 import { PRODUCT, ROOT } from "~/routes/paths";
+import { useTerminal } from "~/context/terminal";
 import { _ } from "~/i18n";
 
 /**
@@ -74,9 +75,10 @@ export default function InstallerOptionsMenu({ hideLabel = false }: InstallerOpt
     ROOT.installationExit,
   ].includes(location.pathname);
 
-  const [isOpen, setIsOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isConfigOpen, setIsConfigOpen] = useState(false);
-  const toggle = () => setIsOpen(!isOpen);
+  const { isVisible: isTerminalVisible, toggle: toggleTerminal } = useTerminal();
+  const toggle = () => setIsMenuOpen(!isMenuOpen);
   const toggleConfig = () => setIsConfigOpen(!isConfigOpen);
   // TRANSLATORS: label for the button that opens the menu with additional
   // actions (show settings, download logs, change product...)
@@ -93,7 +95,7 @@ export default function InstallerOptionsMenu({ hideLabel = false }: InstallerOpt
         {({ download: downloadLogs }) => (
           <Dropdown
             popperProps={{ position: "right", appendTo: () => document.body }}
-            isOpen={isOpen}
+            isOpen={isMenuOpen}
             onOpenChange={toggle}
             onSelect={toggle}
             onActionClick={toggle}
@@ -103,7 +105,7 @@ export default function InstallerOptionsMenu({ hideLabel = false }: InstallerOpt
                   ref={toggleRef}
                   onClick={toggle}
                   aria-label={toggleLabel}
-                  isExpanded={isOpen}
+                  isExpanded={isMenuOpen}
                   isFullHeight
                   variant="plain"
                 >
@@ -125,6 +127,15 @@ export default function InstallerOptionsMenu({ hideLabel = false }: InstallerOpt
               <DropdownItem key="download-logs" onClick={downloadLogs}>
                 {/* TRANSLATORS: menu entry to download the installer logs as an archive */}
                 <ItemContent icon="archive" text={_("Download logs")} />
+              </DropdownItem>
+              <DropdownItem key="toggle-terminal" onClick={toggleTerminal}>
+                {/* TRANSLATORS: menu entry that shows or hides the terminal
+                    panel; it only affects the panel's visibility, not the
+                    underlying shell session, which is preserved either way. */}
+                <ItemContent
+                  icon="terminal"
+                  text={isTerminalVisible ? _("Hide terminal") : _("Show terminal")}
+                />
               </DropdownItem>
               {showChangeProductOption && (
                 <>

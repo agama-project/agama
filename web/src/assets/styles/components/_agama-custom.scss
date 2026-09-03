@@ -328,6 +328,13 @@ nav.agm-breadcrumb > ol > li > a {
   background-color: var(--pf-t--global--background--color--secondary--default);
 }
 
+// The panel stays mounted (so the terminal session survives) even while
+// hidden; `display: flex` above would otherwise win over the `[hidden]`
+// attribute's default styling.
+.agm-terminal-dock__panel[hidden] {
+  display: none;
+}
+
 // Collapsed to a bar: trim the surround so it does not waste vertical space.
 .agm-terminal-dock__panel--minimized {
   padding-block: var(--pf-t--global--spacer--sm);
@@ -363,14 +370,14 @@ nav.agm-breadcrumb > ol > li > a {
   display: none;
 }
 
+// Hosts the xterm.js instance. Unlike a plain `<pre>`, xterm.js manages its
+// own internal scrolling and text rendering, so this only needs to give it a
+// definite size and a background matching its own theme (set when the
+// terminal is created; see `useTerminalSession`) for the padding around it.
 .agm-terminal__screen {
   flex: 1;
   min-height: 0;
-  margin: 0;
   padding: var(--pf-t--global--spacer--md);
   border-radius: var(--pf-t--global--border--radius--small);
   background-color: #1e1e1e;
-  color: #d4d4d4;
-  white-space: pre;
-  overflow: auto;
 }
