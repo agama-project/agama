@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Sep  3 08:13:38 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Offer applying the installer language and keyboard to the product
+  to install also while the product is being selected (bsc#1277718).
+
+-------------------------------------------------------------------
 Wed Sep  2 14:47:52 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Close dialogs with Escape or a close button, answer questions by
