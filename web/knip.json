@@ -8,6 +8,11 @@
   "ignore": [
     "src/po/po.*.js"
   ],
+  "ignoreBinaries": [
+    "eslint",
+    "stylelint",
+    "jest"
+  ],
   "ignoreDependencies": [
     "typescript-eslint",
     "eslint-plugin-n",
