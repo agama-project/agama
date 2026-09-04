@@ -189,7 +189,9 @@ describe("useTerminalSession", () => {
     expect(lastTerminal()?.write).toHaveBeenCalledWith(expect.stringContaining("code 7"));
   });
 
-  it("opens a new socket automatically if the connection drops unexpectedly", () => {
+  it("opens a new socket automatically, after a backoff delay, if the connection drops unexpectedly", () => {
+    jest.useFakeTimers();
+
     renderHook(({ container }) => useTerminalSession(container), {
       initialProps: { container: null as HTMLElement | null },
     });
@@ -197,9 +199,45 @@ describe("useTerminalSession", () => {
     expect(MockWebSocket.instances).toHaveLength(1);
     act(() => lastSocket()?.onclose?.());
 
+    // Not reconnected immediately: it waits out the backoff delay first.
+    expect(MockWebSocket.instances).toHaveLength(1);
+
+    act(() => jest.runOnlyPendingTimers());
+
     expect(MockWebSocket.instances).toHaveLength(2);
     // The same terminal instance (and its scrollback) is reused.
     expect(terminalInstances()).toHaveLength(1);
+
+    jest.useRealTimers();
+  });
+
+  it("increases the reconnect delay on repeated failures and resets it after a successful connection", () => {
+    jest.useFakeTimers();
+    const setTimeoutSpy = jest.spyOn(global, "setTimeout");
+
+    renderHook(({ container }) => useTerminalSession(container), {
+      initialProps: { container: null as HTMLElement | null },
+    });
+
+    act(() => lastSocket()?.onclose?.());
+    const firstDelay = setTimeoutSpy.mock.calls.at(-1)?.[1];
+
+    act(() => jest.runOnlyPendingTimers());
+    act(() => lastSocket()?.onclose?.());
+    const secondDelay = setTimeoutSpy.mock.calls.at(-1)?.[1];
+
+    expect(secondDelay).toBeGreaterThan(firstDelay as number);
+
+    act(() => jest.runOnlyPendingTimers());
+    // A successful connection resets the backoff for the next failure.
+    act(() => lastSocket()?.onopen?.());
+    act(() => lastSocket()?.onclose?.());
+    const delayAfterSuccess = setTimeoutSpy.mock.calls.at(-1)?.[1];
+
+    expect(delayAfterSuccess).toBe(firstDelay);
+
+    setTimeoutSpy.mockRestore();
+    jest.useRealTimers();
   });
 
   it("disposes the terminal and closes the socket on unmount", () => {

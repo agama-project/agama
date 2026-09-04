@@ -60,16 +60,24 @@ function terminalWebSocketUrl(): string {
  * the real terminal) — the terminal still connects right away, and attaches
  * to the container as soon as one becomes available.
  *
- * If the WebSocket disconnects unexpectedly, a new one is opened right away
- * (a new backend shell), reusing the same terminal instance and scrollback;
- * per the terminal's error handling rules, there is no attempt to recover
- * the previous shell.
+ * If the WebSocket disconnects unexpectedly, a new one is opened (a new
+ * backend shell), reusing the same terminal instance and scrollback; per the
+ * terminal's error handling rules, there is no attempt to recover the
+ * previous shell. Reconnection attempts back off exponentially (capped) so a
+ * persistently failing connection (e.g., an expired token or a backend that
+ * is down) does not hammer the server with an unbounded, un-throttled retry
+ * loop.
  */
+const RECONNECT_BASE_DELAY_MS = 500;
+const RECONNECT_MAX_DELAY_MS = 10000;
+
 export const useTerminalSession = (container: HTMLElement | null): TerminalSession => {
   const terminalRef = useRef<Terminal | null>(null);
   const fitAddonRef = useRef<FitAddon | null>(null);
   const socketRef = useRef<WebSocket | null>(null);
   const closingRef = useRef(false);
+  const reconnectAttemptRef = useRef(0);
+  const reconnectTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const connect = useCallback(() => {
     const terminal = terminalRef.current;
@@ -79,7 +87,13 @@ export const useTerminalSession = (container: HTMLElement | null): TerminalSessi
     socket.binaryType = "arraybuffer";
     socketRef.current = socket;
 
-    socket.onopen = () => fitAddonRef.current?.fit();
+    socket.onopen = () => {
+      // A successful connection resets the backoff, so a later drop starts
+      // retrying quickly again instead of inheriting a long delay from a
+      // past, unrelated failure streak.
+      reconnectAttemptRef.current = 0;
+      fitAddonRef.current?.fit();
+    };
 
     socket.onmessage = (event) => {
       if (typeof event.data === "string") {
@@ -103,7 +117,11 @@ export const useTerminalSession = (container: HTMLElement | null): TerminalSessi
       if (socketRef.current !== socket || closingRef.current) return;
 
       terminal.write("\r\n[connection lost, starting a new session]\r\n");
-      connect();
+
+      const attempt = reconnectAttemptRef.current;
+      reconnectAttemptRef.current = attempt + 1;
+      const delay = Math.min(RECONNECT_BASE_DELAY_MS * 2 ** attempt, RECONNECT_MAX_DELAY_MS);
+      reconnectTimeoutRef.current = setTimeout(connect, delay);
     };
   }, []);
 
@@ -112,6 +130,7 @@ export const useTerminalSession = (container: HTMLElement | null): TerminalSessi
   // when it closes (this hook's caller unmounts).
   useEffect(() => {
     closingRef.current = false;
+    reconnectAttemptRef.current = 0;
 
     const terminal = new Terminal({
       fontSize: DEFAULT_FONT_SIZE,
@@ -139,6 +158,10 @@ export const useTerminalSession = (container: HTMLElement | null): TerminalSessi
 
     return () => {
       closingRef.current = true;
+      if (reconnectTimeoutRef.current !== null) {
+        clearTimeout(reconnectTimeoutRef.current);
+        reconnectTimeoutRef.current = null;
+      }
       socketRef.current?.close();
       socketRef.current = null;
       terminal.dispose();
