@@ -29,8 +29,8 @@ import Icon from "~/components/layout/Icon";
 import { _ } from "~/i18n";
 
 type TerminalUnavailableProps = {
-  /** Hides the terminal panel. */
-  onHide: () => void;
+  /** Closes the terminal panel, ending its session. */
+  onClose: () => void;
 };
 
 /**
@@ -38,9 +38,9 @@ type TerminalUnavailableProps = {
  * to use it comfortably (for example, on phones or in a narrow window).
  *
  * It states the situation without pointing to a specific device or gesture, so
- * it stays accurate on any screen, and offers to hide the panel.
+ * it stays accurate on any screen, and offers to close the panel.
  */
-export default function TerminalUnavailable({ onHide }: TerminalUnavailableProps) {
+export default function TerminalUnavailable({ onClose }: TerminalUnavailableProps) {
   return (
     <EmptyState
       variant={EmptyStateVariant.sm}
@@ -51,9 +51,9 @@ export default function TerminalUnavailable({ onHide }: TerminalUnavailableProps
     >
       <EmptyStateFooter>
         <EmptyStateActions>
-          {/* TRANSLATORS: button that hides the terminal panel */}
-          <Button variant="primary" onClick={onHide}>
-            {_("Hide terminal")}
+          {/* TRANSLATORS: button that closes the terminal panel */}
+          <Button variant="primary" onClick={onClose}>
+            {_("Close terminal")}
           </Button>
         </EmptyStateActions>
       </EmptyStateFooter>

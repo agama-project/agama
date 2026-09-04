@@ -47,12 +47,12 @@ const mockResizeObserver = (width: number, height: number) => {
   window.ResizeObserver = ResizeObserverMock as unknown as typeof ResizeObserver;
 };
 
-// Renders TerminalDock with a button that reveals the terminal panel on demand.
+// Renders TerminalDock with a button that opens the terminal panel on demand.
 const Subject = () => {
-  const { show } = useTerminal();
+  const { open } = useTerminal();
   return (
     <>
-      <button onClick={show}>open terminal</button>
+      <button onClick={open}>open terminal</button>
       <TerminalDock>
         <div>{APP_CONTENT}</div>
       </TerminalDock>
@@ -65,7 +65,7 @@ afterEach(() => {
 });
 
 describe("TerminalDock", () => {
-  it("shows only the application while the terminal is hidden", () => {
+  it("shows only the application before the terminal has ever been opened", () => {
     mockResizeObserver(1600, 900);
     installerRender(<Subject />);
 
@@ -73,7 +73,7 @@ describe("TerminalDock", () => {
     expect(screen.queryByRole("region", { name: "Terminal" })).toBeNull();
   });
 
-  describe("when the terminal is shown and there is enough room", () => {
+  describe("when the terminal is open and there is enough room", () => {
     it("keeps the application visible and offers a resize handle", async () => {
       mockResizeObserver(1600, 900);
       const { user } = installerRender(<Subject />);
@@ -86,7 +86,7 @@ describe("TerminalDock", () => {
     });
   });
 
-  describe("when the terminal is shown but the screen is below 1024x768", () => {
+  describe("when the terminal is open but the screen is below 1024x768", () => {
     it("hides the application and explains that more space is needed", async () => {
       mockResizeObserver(1000, 700);
       const { user } = installerRender(<Subject />);
@@ -98,15 +98,33 @@ describe("TerminalDock", () => {
       expect(screen.getByText(APP_CONTENT)).not.toBeVisible();
     });
 
-    it("can be dismissed with its hide action", async () => {
+    it("can be dismissed with its close action", async () => {
       mockResizeObserver(1000, 700);
       const { user } = installerRender(<Subject />);
 
       await user.click(screen.getByRole("button", { name: "open terminal" }));
-      await user.click(screen.getByRole("button", { name: "Hide terminal" }));
+      await user.click(screen.getByRole("button", { name: "Close terminal" }));
 
       expect(screen.queryByRole("region", { name: "Terminal" })).toBeNull();
       expect(screen.getByText(APP_CONTENT)).toBeVisible();
+    });
+  });
+
+  describe("closing an open terminal", () => {
+    it("unmounts the panel, ending its session", async () => {
+      mockResizeObserver(1600, 900);
+      const { user } = installerRender(<Subject />);
+
+      await user.click(screen.getByRole("button", { name: "open terminal" }));
+      screen.getByRole("region", { name: "Terminal" });
+
+      await user.click(screen.getByRole("button", { name: "Close terminal" }));
+
+      expect(screen.queryByRole("region", { name: "Terminal" })).toBeNull();
+
+      // Opening it again creates a fresh panel.
+      await user.click(screen.getByRole("button", { name: "open terminal" }));
+      expect(screen.getByRole("region", { name: "Terminal" })).toBeVisible();
     });
   });
 });

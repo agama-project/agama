@@ -25,6 +25,7 @@
 //! * Serve the code for the web user interface (not implemented yet).
 
 use crate::server::{server_service, web::Error};
+use crate::terminal::terminal_service;
 use agama_utils::api::event;
 use aide::axum::ApiRouter;
 
@@ -58,6 +59,7 @@ where
 {
     let router = MainServiceBuilder::new(events.clone(), web_ui_dir)
         .add_service("/", server_service(events, dbus.clone()).await?)
+        .add_service("/terminal", terminal_service())
         .with_config(config)
         .build();
     Ok(router)

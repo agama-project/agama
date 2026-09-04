@@ -24,11 +24,11 @@ import TerminalPane from "~/components/core/TerminalPane";
 
 describe("TerminalPane", () => {
   describe("when there is not enough room", () => {
-    it("shows the message and only the hide action", () => {
+    it("shows the message and only the close action", () => {
       installerRender(<TerminalPane enoughSpace={false} />);
 
       screen.getByText("The terminal requires a larger screen size");
-      screen.getByRole("button", { name: "Hide terminal" });
+      screen.getByRole("button", { name: "Close terminal" });
       expect(screen.queryByRole("button", { name: "Minimize terminal" })).toBeNull();
       expect(screen.queryByRole("button", { name: "Clear terminal" })).toBeNull();
     });
@@ -45,7 +45,14 @@ describe("TerminalPane", () => {
       screen.getByRole("button", { name: "Increase font size" });
       screen.getByRole("button", { name: "Clear terminal" });
       screen.getByRole("button", { name: "Minimize terminal" });
-      screen.getByRole("button", { name: "Hide terminal" });
+      screen.getByRole("button", { name: "Close terminal" });
+    });
+
+    it("renders a container for the terminal to attach to", () => {
+      installerRender(<TerminalPane enoughSpace />);
+
+      const region = screen.getByRole("region", { name: "Terminal" });
+      expect(region.querySelector(".agm-terminal__screen")).not.toBeNull();
     });
 
     it("collapses to a bar when minimized, dropping the description and tools", async () => {
@@ -60,6 +67,14 @@ describe("TerminalPane", () => {
           "Linux command-line with administrative privileges on the installer system.",
         ),
       ).toBeNull();
+    });
+
+    it("offers a close action, always available", async () => {
+      const { user } = installerRender(<TerminalPane enoughSpace />);
+
+      // Does not throw; the actual state transition it triggers (isOpen) is
+      // covered by context/terminal.test.tsx and TerminalDock.test.tsx.
+      await user.click(screen.getByRole("button", { name: "Close terminal" }));
     });
   });
 });
