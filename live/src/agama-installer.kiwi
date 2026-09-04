@@ -50,8 +50,8 @@
             <bootloader name="grub2" timeout="10"/>
         </type>
     </preferences>
-    <!-- experimental support for 32-bit and armv architectures -->
-    <preferences arch="i586,armv6hl,armv7hl" profiles="openSUSE,SUSE_SLE_16.1,SUSE_SLE_NV_16.1,Leap_16.1">
+    <!-- experimental support for 32-bit and armv architectures, i686 is needed for kiwi in OBS as sometimes it builds on newer definition -->
+    <preferences arch="i586,i686,armv6hl,armv7hl" profiles="openSUSE,SUSE_SLE_16.1,SUSE_SLE_NV_16.1,Leap_16.1">
         <type image="iso" flags="dmsquash" mediacheck="true" publisher="SUSE LLC" editbootconfig="fix_bootconfig">
             <bootloader name="grub2" timeout="10"/>
         </type>
