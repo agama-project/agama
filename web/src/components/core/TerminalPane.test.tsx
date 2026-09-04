@@ -24,14 +24,13 @@ import TerminalPane from "~/components/core/TerminalPane";
 
 describe("TerminalPane", () => {
   describe("when there is not enough room", () => {
-    it("shows the message and only the hide action", () => {
+    it("shows the message and only the close action", () => {
       installerRender(<TerminalPane enoughSpace={false} />);
 
       screen.getByText("The terminal requires a larger screen size");
-      screen.getByRole("button", { name: "Hide terminal" });
+      screen.getByRole("button", { name: "Close terminal" });
       expect(screen.queryByRole("button", { name: "Minimize terminal" })).toBeNull();
       expect(screen.queryByRole("button", { name: "Clear terminal" })).toBeNull();
-      expect(screen.queryByRole("button", { name: "Close terminal" })).toBeNull();
     });
   });
 
@@ -46,7 +45,6 @@ describe("TerminalPane", () => {
       screen.getByRole("button", { name: "Increase font size" });
       screen.getByRole("button", { name: "Clear terminal" });
       screen.getByRole("button", { name: "Minimize terminal" });
-      screen.getByRole("button", { name: "Hide terminal" });
       screen.getByRole("button", { name: "Close terminal" });
     });
 
@@ -71,13 +69,11 @@ describe("TerminalPane", () => {
       ).toBeNull();
     });
 
-    it("offers a hide action (session preserved) distinct from close (session ended)", async () => {
+    it("offers a close action, always available", async () => {
       const { user } = installerRender(<TerminalPane enoughSpace />);
 
-      // Both are always available and do not throw; the actual state
-      // transitions they trigger (isVisible vs isOpen) are covered by
-      // context/terminal.test.tsx and TerminalDock.test.tsx.
-      await user.click(screen.getByRole("button", { name: "Hide terminal" }));
+      // Does not throw; the actual state transition it triggers (isOpen) is
+      // covered by context/terminal.test.tsx and TerminalDock.test.tsx.
       await user.click(screen.getByRole("button", { name: "Close terminal" }));
     });
   });

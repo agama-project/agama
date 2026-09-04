@@ -17,13 +17,14 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { Button, Card, CardBody, CardHeader, Flex, Title } from "@patternfly/react-core";
 import Icon from "~/components/layout/Icon";
 import Text from "~/components/core/Text";
 import VisualTooltip from "~/components/core/VisualTooltip";
 import TerminalUnavailable from "~/components/core/TerminalUnavailable";
 import { useTerminal } from "~/context/terminal";
+import { useTerminalSession } from "~/hooks/use-terminal-session";
 import { _ } from "~/i18n";
 
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
@@ -91,37 +92,6 @@ const TerminalToolbar = ({
 };
 
 /**
- * Hosts the xterm.js terminal.
- *
- * The terminal instance itself lives in the terminal context (so it survives
- * this component being hidden or unmounted); this only attaches it to a DOM
- * element and keeps it fit to that element's size.
- */
-const TerminalScreen = () => {
-  const { attach, fit } = useTerminal();
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    attach(containerRef.current);
-  }, [attach]);
-
-  useEffect(() => {
-    const container = containerRef.current;
-    if (!container || typeof ResizeObserver === "undefined") return;
-
-    // Covers every reason the available space can change: dragging the
-    // panel's divider, minimizing/restoring, changing the font size, or the
-    // panel becoming visible again after being hidden.
-    const observer = new ResizeObserver(() => fit());
-    observer.observe(container);
-
-    return () => observer.disconnect();
-  }, [fit]);
-
-  return <div ref={containerRef} className="agm-terminal__screen" />;
-};
-
-/**
  * Card chrome shared by every terminal state: the title with its icon, an
  * optional description, the header actions, and the given body as children.
  */
@@ -178,52 +148,41 @@ const TerminalShell = ({
  * explanatory message instead (see {@link TerminalUnavailable}).
  */
 export default function TerminalPane({ enoughSpace }: TerminalPaneProps) {
-  const {
-    hide,
-    close,
-    isMinimized,
-    minimize,
-    restore,
-    setFontSize: setSessionFontSize,
-    clear,
-  } = useTerminal();
+  const { close, isMinimized, minimize, restore } = useTerminal();
   const [fontSize, setFontSize] = useState(DEFAULT_FONT_SIZE);
+  // A state (rather than a plain ref) so `useTerminalSession` notices when
+  // the container appears (e.g., once there is enough room for it) or
+  // changes, and can (re)attach the terminal to it.
+  const [container, setContainer] = useState<HTMLDivElement | null>(null);
+  const containerRef = useCallback((node: HTMLDivElement | null) => setContainer(node), []);
+  const { setFontSize: setSessionFontSize, clear } = useTerminalSession(container);
 
   const changeFontSize = (size: number) => {
     setFontSize(size);
     setSessionFontSize(size);
   };
 
-  // TRANSLATORS: tooltip and accessible name for the button that hides the
-  // terminal panel (it does not end the session)
-  const hideLabel = _("Hide terminal");
-  const hideButton = (
-    <VisualTooltip content={hideLabel} position="top">
-      <Button variant="plain" aria-label={hideLabel} icon={<Icon name="close" />} onClick={hide} />
-    </VisualTooltip>
-  );
-
   // TRANSLATORS: tooltip and accessible name for the button that ends the
-  // terminal session (unlike hiding it, this closes the connection)
+  // terminal session
   const closeLabel = _("Close terminal");
   const closeButton = (
     <VisualTooltip content={closeLabel} position="top">
       <Button
         variant="plain"
         aria-label={closeLabel}
-        icon={<Icon name="delete" />}
+        icon={<Icon name="close" />}
         onClick={close}
       />
     </VisualTooltip>
   );
 
   // Not enough room for a usable terminal: just explain it. The message offers
-  // its own Hide action, so the header needs no actions here.
+  // its own Close action, so the header needs no actions here.
   if (!enoughSpace) {
     return (
       <TerminalShell>
         <CardBody isFilled className="agm-terminal__body">
-          <TerminalUnavailable onHide={hide} />
+          <TerminalUnavailable onClose={close} />
         </CardBody>
       </TerminalShell>
     );
@@ -253,11 +212,10 @@ export default function TerminalPane({ enoughSpace }: TerminalPaneProps) {
         <Button
           variant="plain"
           aria-label={toggleLabel}
-          icon={<Icon name={isMinimized ? "unfold_more" : "unfold_less"} />}
+          icon={<Icon name={isMinimized ? "select_window" : "minimize"} />}
           onClick={isMinimized ? restore : minimize}
         />
       </VisualTooltip>
-      {hideButton}
       {closeButton}
     </Flex>
   );
@@ -271,7 +229,7 @@ export default function TerminalPane({ enoughSpace }: TerminalPaneProps) {
       {/* The terminal stays mounted while collapsed, so the session and its
           output are kept; only the body is hidden. */}
       <CardBody isFilled className="agm-terminal__body" hidden={isMinimized}>
-        <TerminalScreen />
+        <div ref={containerRef} className="agm-terminal__screen" />
       </CardBody>
     </TerminalShell>
   );

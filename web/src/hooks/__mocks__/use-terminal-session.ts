@@ -18,14 +18,12 @@
  */
 
 // Manual mock for `useTerminalSession`. Applied by default to every test (see
-// setupTests.ts), so components using the terminal context do not end up
+// setupTests.ts), so components using it (TerminalPane) do not end up
 // creating a real xterm.js instance or opening a real WebSocket in jsdom.
 //
 // Tests that need to exercise the real hook (see use-terminal-session.test.ts)
 // can opt back in with `jest.unmock("~/hooks/use-terminal-session")`.
 export const useTerminalSession = jest.fn(() => ({
-  attach: jest.fn(),
   setFontSize: jest.fn(),
   clear: jest.fn(),
-  fit: jest.fn(),
 }));

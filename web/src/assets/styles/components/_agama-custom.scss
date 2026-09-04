@@ -328,13 +328,6 @@ nav.agm-breadcrumb > ol > li > a {
   background-color: var(--pf-t--global--background--color--secondary--default);
 }
 
-// The panel stays mounted (so the terminal session survives) even while
-// hidden; `display: flex` above would otherwise win over the `[hidden]`
-// attribute's default styling.
-.agm-terminal-dock__panel[hidden] {
-  display: none;
-}
-
 // Collapsed to a bar: trim the surround so it does not waste vertical space.
 .agm-terminal-dock__panel--minimized {
   padding-block: var(--pf-t--global--spacer--sm);

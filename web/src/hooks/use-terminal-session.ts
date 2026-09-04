@@ -28,19 +28,10 @@ const DEFAULT_FONT_SIZE = 14;
 type ExitMessage = { type: "exit"; code: number };
 
 export type TerminalSession = {
-  /**
-   * Attaches the terminal to the given DOM element. Safe to call more than
-   * once (e.g., on every render) or before the session itself exists: it
-   * just remembers the element, and the terminal opens in it as soon as
-   * both are available.
-   */
-  attach: (container: HTMLElement | null) => void;
   /** Changes the font size and refits the terminal to its container. */
   setFontSize: (size: number) => void;
   /** Clears the terminal's scrollback and screen. */
   clear: () => void;
-  /** Resizes the terminal to fill its current container size. */
-  fit: () => void;
 };
 
 /**
@@ -57,38 +48,28 @@ function terminalWebSocketUrl(): string {
 }
 
 /**
- * Owns the xterm.js terminal instance and its WebSocket connection for the
- * lifetime of a terminal session (`isOpen`).
+ * Owns an xterm.js terminal instance and its WebSocket connection for as
+ * long as the calling component (`TerminalPane`) is mounted — which, in
+ * turn, only happens while the terminal is open (see `context/terminal.tsx`
+ * and `TerminalDock`). Opening the terminal creates the connection; closing
+ * it (unmounting) ends it. Minimizing never unmounts the caller, so it does
+ * not affect the session.
  *
- * The instance and the connection are independent from whether the terminal
- * panel is currently visible or mounted: they are created the first time
- * `isOpen` becomes `true` (the connection is created when the user opens the
- * terminal for the first time), and only torn down when it goes back to
- * `false` (the user closed the terminal). Hiding or minimizing the panel
- * does not call this hook with a different `isOpen` value, so the session
- * (and its scrollback) survives both.
+ * `container` is the DOM element to render into. It may be `null` at first
+ * (e.g., while the panel is showing its "not enough room" message instead of
+ * the real terminal) — the terminal still connects right away, and attaches
+ * to the container as soon as one becomes available.
  *
  * If the WebSocket disconnects unexpectedly, a new one is opened right away
  * (a new backend shell), reusing the same terminal instance and scrollback;
  * per the terminal's error handling rules, there is no attempt to recover
  * the previous shell.
  */
-export const useTerminalSession = (isOpen: boolean): TerminalSession => {
+export const useTerminalSession = (container: HTMLElement | null): TerminalSession => {
   const terminalRef = useRef<Terminal | null>(null);
   const fitAddonRef = useRef<FitAddon | null>(null);
   const socketRef = useRef<WebSocket | null>(null);
-  const containerRef = useRef<HTMLElement | null>(null);
   const closingRef = useRef(false);
-
-  /** Opens the terminal in its container, if both are ready and it is not open yet. */
-  const openIfReady = useCallback(() => {
-    const terminal = terminalRef.current;
-    const container = containerRef.current;
-    if (terminal && container && !terminal.element) {
-      terminal.open(container);
-      fitAddonRef.current?.fit();
-    }
-  }, []);
 
   const connect = useCallback(() => {
     const terminal = terminalRef.current;
@@ -126,9 +107,10 @@ export const useTerminalSession = (isOpen: boolean): TerminalSession => {
     };
   }, []);
 
-  const ensureSession = useCallback(() => {
-    if (terminalRef.current) return;
-
+  // Terminal and socket lifecycle: created once when the panel opens,
+  // regardless of whether there is a container to render into yet; disposed
+  // when it closes (this hook's caller unmounts).
+  useEffect(() => {
     closingRef.current = false;
 
     const terminal = new Terminal({
@@ -153,41 +135,37 @@ export const useTerminalSession = (isOpen: boolean): TerminalSession => {
 
     terminalRef.current = terminal;
     fitAddonRef.current = fitAddon;
-
-    openIfReady();
     connect();
-  }, [connect, openIfReady]);
 
-  const teardown = useCallback(() => {
-    closingRef.current = true;
-    socketRef.current?.close();
-    socketRef.current = null;
-    terminalRef.current?.dispose();
-    terminalRef.current = null;
-    fitAddonRef.current = null;
-    containerRef.current = null;
-  }, []);
+    return () => {
+      closingRef.current = true;
+      socketRef.current?.close();
+      socketRef.current = null;
+      terminal.dispose();
+      terminalRef.current = null;
+      fitAddonRef.current = null;
+    };
+  }, [connect]);
 
+  // DOM attachment and fit-on-resize: re-run whenever the container element
+  // itself changes, which also covers it appearing later (e.g., once there
+  // is enough room to show the real terminal instead of a message).
   useEffect(() => {
-    if (isOpen) {
-      ensureSession();
-    } else {
-      teardown();
+    const terminal = terminalRef.current;
+    const fitAddon = fitAddonRef.current;
+    if (!container || !terminal || !fitAddon) return;
+
+    if (!terminal.element) {
+      terminal.open(container);
     }
-  }, [isOpen, ensureSession, teardown]);
+    fitAddon.fit();
 
-  // Also tear down if the provider owning this hook ever unmounts (e.g., the
-  // whole application is torn down), so no connection is leaked.
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => teardown, []);
+    if (typeof ResizeObserver === "undefined") return;
 
-  const attach = useCallback(
-    (container: HTMLElement | null) => {
-      containerRef.current = container;
-      openIfReady();
-    },
-    [openIfReady],
-  );
+    const observer = new ResizeObserver(() => fitAddon.fit());
+    observer.observe(container);
+    return () => observer.disconnect();
+  }, [container]);
 
   const setFontSize = useCallback((size: number) => {
     const terminal = terminalRef.current;
@@ -200,9 +178,5 @@ export const useTerminalSession = (isOpen: boolean): TerminalSession => {
     terminalRef.current?.clear();
   }, []);
 
-  const fit = useCallback(() => {
-    fitAddonRef.current?.fit();
-  }, []);
-
-  return { attach, setFontSize, clear, fit };
+  return { setFontSize, clear };
 };
