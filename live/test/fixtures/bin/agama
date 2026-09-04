@@ -1,0 +1,21 @@
+#! /bin/bash
+
+# Mock the "agama" binary to not depend on "agama-cli" when running the tests
+
+# Mock the "agama download <URL> <path>" command
+if [ "$1" = "download" ]; then
+  URL="$2"
+  DEST_PATH="$3"
+
+  if [ -z "$URL" ] || [ -z "$DEST_PATH" ]; then
+    echo "Usage: agama download <URL> <path>" >&2
+    exit 1
+  fi
+
+  # use curl for downloading
+  curl -s -f -L "$URL" -o "$DEST_PATH"
+  exit $?
+else
+  echo "ERROR: unsupported command \"agama $1\"" >&2
+  exit 1
+fi

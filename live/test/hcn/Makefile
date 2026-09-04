@@ -1,7 +1,7 @@
 # Makefile for parse-hcnmgr unit tests
 # Provides convenient targets for running tests
 
-.PHONY: all test test-verbose test-quick test-unit test-integration validate-fixtures clean help install-bats
+.PHONY: all test test-verbose test-quick test-unit test-integration validate-fixtures help install-bats
 
 # Default target
 all: test
@@ -74,12 +74,6 @@ list:
 	@echo "Available tests:"
 	@grep -E "^@test" test_parse-hcnmgr.bats | sed 's/@test "\(.*\)" {/  - \1/'
 
-# Clean temporary test files
-clean:
-	@echo "Cleaning temporary test files..."
-	@rm -rf /tmp/hcnmgr-tests/test.* 2>/dev/null || true
-	@echo "Done."
-
 # Install BATS from GitHub (if not available via package manager)
 install-bats:
 	@if command -v bats >/dev/null 2>&1; then \
@@ -87,9 +81,10 @@ install-bats:
 		bats --version; \
 	else \
 		echo "Installing BATS from GitHub..."; \
-		git clone --depth 1 https://github.com/bats-core/bats-core.git /tmp/bats-core; \
-		cd /tmp/bats-core && sudo ./install.sh /usr/local; \
-		rm -rf /tmp/bats-core; \
+		TMPDIR=$$(mktemp -d); \
+		git clone --depth 1 https://github.com/bats-core/bats-core.git $$TMPDIR; \
+		cd $$TMPDIR && sudo ./install.sh /usr/local; \
+		rm -rf $$TMPDIR; \
 		echo "BATS installed successfully"; \
 		bats --version; \
 	fi
@@ -111,7 +106,6 @@ help:
 	@echo "                         - Run tests matching pattern"
 	@echo "  make validate-fixtures - Validate test fixtures only"
 	@echo "  make list              - List all available tests"
-	@echo "  make clean             - Clean temporary test files"
 	@echo "  make install-bats      - Install BATS from GitHub"
 	@echo "  make help              - Show this help message"
 	@echo ""

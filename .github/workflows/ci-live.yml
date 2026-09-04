@@ -30,35 +30,24 @@ on:
 jobs:
   live_tests:
     runs-on: ubuntu-latest
-    env:
-      COVERAGE: 1
 
     defaults:
       run:
         working-directory: ./live
-
-    strategy:
-      fail-fast: false
-      matrix:
-        distro: [ "tumbleweed" ]
-
-    container:
-      image: registry.opensuse.org/yast/head/containers_${{matrix.distro}}/yast-ruby
 
     steps:
 
     - name: Git Checkout
       uses: actions/checkout@v7
 
-    - name: Configure and refresh repositories
-      # disable unused repositories to have faster refresh
-      run: zypper modifyrepo -d repo-non-oss repo-openh264 repo-update && zypper ref
-
     - name: Install development files
-      run: zypper --non-interactive install ShellCheck make agama-cli
+      run: sudo apt-get install bats
 
     - name: Run shellcheck
       run: make shellcheck
 
     - name: Run the tests
       run: make check
+
+    - name: Run the HCN tests
+      run: make -C test/hcn
