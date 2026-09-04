@@ -77,7 +77,7 @@ export default function InstallerOptionsMenu({ hideLabel = false }: InstallerOpt
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isConfigOpen, setIsConfigOpen] = useState(false);
-  const { isVisible: isTerminalVisible, toggle: toggleTerminal } = useTerminal();
+  const { isOpen: isTerminalOpen, toggle: toggleTerminal } = useTerminal();
   const toggle = () => setIsMenuOpen(!isMenuOpen);
   const toggleConfig = () => setIsConfigOpen(!isConfigOpen);
   // TRANSLATORS: label for the button that opens the menu with additional
@@ -129,12 +129,11 @@ export default function InstallerOptionsMenu({ hideLabel = false }: InstallerOpt
                 <ItemContent icon="archive" text={_("Download logs")} />
               </DropdownItem>
               <DropdownItem key="toggle-terminal" onClick={toggleTerminal}>
-                {/* TRANSLATORS: menu entry that shows or hides the terminal
-                    panel; it only affects the panel's visibility, not the
-                    underlying shell session, which is preserved either way. */}
+                {/* TRANSLATORS: menu entry that opens or closes the terminal
+                    panel, starting or ending its shell session. */}
                 <ItemContent
                   icon="terminal"
-                  text={isTerminalVisible ? _("Hide terminal") : _("Show terminal")}
+                  text={isTerminalOpen ? _("Close terminal") : _("Open terminal")}
                 />
               </DropdownItem>
               {showChangeProductOption && (

@@ -21,32 +21,21 @@
  */
 
 import React, { useCallback, useMemo, useState } from "react";
-import { useTerminalSession, TerminalSession } from "~/hooks/use-terminal-session";
 
-type TerminalContextValue = TerminalSession & {
+type TerminalContextValue = {
   /**
-   * Whether a terminal session exists. It becomes `true` the first time the
-   * terminal is shown, and only goes back to `false` when the session is
-   * explicitly closed. Hiding the panel does not affect it: that is the
-   * whole point of the hide/close distinction (see {@link hide} and
-   * {@link close}).
+   * Whether the terminal panel (and its shell session) is open. `open()`
+   * creates the session; `close()` ends it. There is no separate "hidden but
+   * still connected" state: minimizing is the only way to shrink the panel
+   * while keeping the session alive (see {@link isMinimized}).
    */
   isOpen: boolean;
-  /** Whether the terminal panel is currently shown next to the application. */
-  isVisible: boolean;
-  /**
-   * Shows the terminal panel, opening a session first if none exists yet.
-   */
-  show: () => void;
-  /** Hides the terminal panel without ending the session. */
-  hide: () => void;
-  /**
-   * Toggles the terminal panel visibility, opening a session first if none
-   * exists yet (see {@link isOpen}).
-   */
-  toggle: () => void;
-  /** Ends the session and hides the panel. */
+  /** Opens the panel, creating a new session. */
+  open: () => void;
+  /** Closes the panel, ending the session. */
   close: () => void;
+  /** Toggles between open and closed. */
+  toggle: () => void;
   /** Whether the terminal panel is collapsed to its header bar. */
   isMinimized: boolean;
   /** Collapses the terminal panel to its header bar, keeping the session. */
@@ -65,7 +54,8 @@ type TerminalContextValue = TerminalSession & {
 const TerminalContext = React.createContext<TerminalContextValue | undefined>(undefined);
 
 /**
- * Gives access to the terminal panel state (visibility and preferred width).
+ * Gives access to the terminal panel state (open/closed, minimized, and
+ * preferred height).
  *
  * The state lives above the page-swapping route outlet, so the panel survives
  * navigation between pages and reopens right where the user left it.
@@ -84,54 +74,39 @@ function useTerminal(): TerminalContextValue {
  */
 function TerminalProvider({ children }: React.PropsWithChildren) {
   const [isOpen, setIsOpen] = useState(false);
-  const [isVisible, setIsVisible] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
   const [height, setHeight] = useState<number | undefined>(undefined);
-  // Owns the xterm.js instance and its WebSocket connection for as long as
-  // isOpen is true, independently of the panel being shown, hidden, or
-  // minimized (see `useTerminalSession`).
-  const session = useTerminalSession(isOpen);
 
-  // Showing the panel always brings it back expanded, so it never reopens as a
-  // collapsed bar after having been minimized. It also opens a session the
-  // first time it is called (isOpen never goes back to false on its own).
-  const show = useCallback(() => {
+  // Opening always starts expanded, so it never reopens as a collapsed bar
+  // after having previously been minimized.
+  const open = useCallback(() => {
     setIsOpen(true);
-    setIsVisible(true);
-    setIsMinimized(false);
-  }, []);
-  const hide = useCallback(() => setIsVisible(false), []);
-  const toggle = useCallback(() => {
-    setIsVisible((visible) => {
-      const next = !visible;
-      if (next) setIsOpen(true);
-      return next;
-    });
     setIsMinimized(false);
   }, []);
   const close = useCallback(() => {
     setIsOpen(false);
-    setIsVisible(false);
+    setIsMinimized(false);
+  }, []);
+  const toggle = useCallback(() => {
+    setIsOpen((wasOpen) => !wasOpen);
+    setIsMinimized(false);
   }, []);
   const minimize = useCallback(() => setIsMinimized(true), []);
   const restore = useCallback(() => setIsMinimized(false), []);
 
   const value = useMemo(
     () => ({
-      ...session,
       isOpen,
-      isVisible,
-      show,
-      hide,
-      toggle,
+      open,
       close,
+      toggle,
       isMinimized,
       minimize,
       restore,
       height,
       setHeight,
     }),
-    [session, isOpen, isVisible, show, hide, toggle, close, isMinimized, minimize, restore, height],
+    [isOpen, open, close, toggle, isMinimized, minimize, restore, height],
   );
 
   return <TerminalContext.Provider value={value}>{children}</TerminalContext.Provider>;

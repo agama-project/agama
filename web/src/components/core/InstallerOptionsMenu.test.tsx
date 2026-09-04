@@ -124,22 +124,22 @@ describe("InstallerOptionsMenu", () => {
       screen.getByRole("menuitem", { name: /Download logs/i });
     });
 
-    it("renders a 'Show terminal' entry when the terminal is hidden", async () => {
+    it("renders an 'Open terminal' entry when the terminal is closed", async () => {
       const { user } = plainRender(<InstallerOptionsMenu />);
       await user.click(screen.getByRole("button", { name: /More options/i }));
-      screen.getByRole("menuitem", { name: /Show terminal/i });
+      screen.getByRole("menuitem", { name: /Open terminal/i });
     });
 
-    it("toggles to 'Hide terminal' after selecting it, without closing the session", async () => {
+    it("toggles to 'Close terminal' after selecting it", async () => {
       const { user } = plainRender(<InstallerOptionsMenu />);
 
       await user.click(screen.getByRole("button", { name: /More options/i }));
-      await user.click(screen.getByRole("menuitem", { name: /Show terminal/i }));
+      await user.click(screen.getByRole("menuitem", { name: /Open terminal/i }));
 
       // Selecting an item closes the dropdown (see "dropdown open/close
       // behavior" above); reopen it to check the entry's new label.
       await user.click(screen.getByRole("button", { name: /More options/i }));
-      screen.getByRole("menuitem", { name: /Hide terminal/i });
+      screen.getByRole("menuitem", { name: /Close terminal/i });
     });
   });
 });
