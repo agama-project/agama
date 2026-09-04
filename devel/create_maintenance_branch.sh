@@ -258,6 +258,11 @@ adapt_translation_workflows() {
   local file_suffix="${branch_name//-/}"
   file_suffix="${file_suffix,,}"
 
+  # create a new branch
+  local pr_branch="translation-workflows-$file_suffix"
+  git stash save
+  git checkout -b "$pr_branch" origin/master
+
   # copy files
   local repo_root
   repo_root=$(git rev-parse --show-toplevel)
@@ -271,6 +276,9 @@ adapt_translation_workflows() {
   sed -i "s/SLE-16/$branch_name/g" "$repo_root/.github/workflows/weblate-merge-po-$file_suffix.yml"
   sed -i "s/SLE-16/$branch_name/g" "$repo_root/.github/workflows/weblate-merge-products-po-$file_suffix.yml"
   sed -i "s/SLE-16/$branch_name/g" "$repo_root/.github/workflows/weblate-merge-service-po-$file_suffix.yml"
+  sed -i "s/sle16/$file_suffix/g" "$repo_root/.github/workflows/weblate-merge-po-$file_suffix.yml"
+  sed -i "s/sle16/$file_suffix/g" "$repo_root/.github/workflows/weblate-merge-products-po-$file_suffix.yml"
+  sed -i "s/sle16/$file_suffix/g" "$repo_root/.github/workflows/weblate-merge-service-po-$file_suffix.yml"
 
   # change the used container
   sed -i "s@registry.opensuse.org/opensuse/leap:16.0@registry.opensuse.org/opensuse/leap:$version@" "$repo_root/.github/workflows/weblate-merge-po-$file_suffix.yml"
@@ -278,11 +286,9 @@ adapt_translation_workflows() {
   sed -i "s@registry.opensuse.org/opensuse/leap:16.0@registry.opensuse.org/opensuse/leap:$version@" "$repo_root/.github/workflows/weblate-merge-service-po-$file_suffix.yml"
 
   # commit and push the new files
-  local pr_branch="translation-workflows-$file_suffix"
-  git checkout -b "$pr_branch" origin/master
-  git add ".github/workflows/weblate-merge-po-$file_suffix.yml"
-  git add ".github/workflows/weblate-merge-products-po-$file_suffix.yml"
-  git add ".github/workflows/weblate-merge-service-po-$file_suffix.yml"
+  git add "$repo_root/.github/workflows/weblate-merge-po-$file_suffix.yml"
+  git add "$repo_root/.github/workflows/weblate-merge-products-po-$file_suffix.yml"
+  git add "$repo_root/.github/workflows/weblate-merge-service-po-$file_suffix.yml"
   git commit -m "Added translation workflow files for the $branch_name branch"
   git push -u origin "$pr_branch"
 
