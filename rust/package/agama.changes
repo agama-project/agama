@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Fri Sep  4 13:39:33 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Use camelCase consistently for the JSON API keys renaming the
+  network connection "ieee-8021x" key to "ieee8021x", still
+  accepting the old name for backward compatibility
+  (gh#agama-project/agama#3858).
+
+-------------------------------------------------------------------
 Fri Sep  4 10:52:03 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Do not crash when validating or evaluating a profile without
@@ -15,14 +23,6 @@ Wed Sep  2 14:09:43 UTC 2026 - José Iván López González <jlopez@suse.com>
 
 - Sanitize rust dependencies and add CI task to check unused
   dependencies (gh#agama-project/agama#3856).
-
--------------------------------------------------------------------
-Wed Sep  2 09:31:32 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
-
-- Use camelCase consistently for the JSON API keys renaming the
-  network connection "ieee-8021x" key to "ieee8021x", still
-  accepting the old name for backward compatibility
-  (gh#agama-project/agama#3858).
 
 -------------------------------------------------------------------
 Tue Sep  1 15:51:02 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
