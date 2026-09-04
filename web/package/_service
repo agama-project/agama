@@ -19,6 +19,8 @@
     <param name="cpio">node_modules.obscpio</param>
     <param name="output">node_modules.spec.inc</param>
     <param name="source-offset">1000</param>
+    <!-- Needs https://github.com/openSUSE/obs-service-node_modules/pulls/50 -->
+    <param name="omit-optional">true</param>
   </service>
   <service mode="buildtime" name="tar">
     <param name="obsinfo">agama.obsinfo</param>
