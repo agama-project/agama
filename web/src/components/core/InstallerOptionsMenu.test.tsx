@@ -125,13 +125,13 @@ describe("InstallerOptionsMenu", () => {
     });
 
     it("renders an 'Open terminal' entry when the terminal is closed", async () => {
-      const { user } = plainRender(<InstallerOptionsMenu />);
+      const { user } = installerRender(<InstallerOptionsMenu />);
       await user.click(screen.getByRole("button", { name: /More options/i }));
       screen.getByRole("menuitem", { name: /Open terminal/i });
     });
 
     it("toggles to 'Close terminal' after selecting it", async () => {
-      const { user } = plainRender(<InstallerOptionsMenu />);
+      const { user } = installerRender(<InstallerOptionsMenu />);
 
       await user.click(screen.getByRole("button", { name: /More options/i }));
       await user.click(screen.getByRole("menuitem", { name: /Open terminal/i }));
