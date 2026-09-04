@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2025] SUSE LLC
+ * Copyright (c) [2025-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -22,9 +22,8 @@
 
 import React from "react";
 import { Content, Stack } from "@patternfly/react-core";
-import { Popup } from "~/components/core";
 import { Icon } from "~/components/layout";
-import QuestionActions from "~/components/questions/QuestionActions";
+import QuestionDialog from "~/components/questions/QuestionDialog";
 import { _ } from "~/i18n";
 import type { AnswerCallback, Question } from "~/model/question";
 
@@ -41,11 +40,6 @@ export default function PackageErrorQuestion({
   question: Question;
   answerCallback: AnswerCallback;
 }): React.ReactNode {
-  const actionCallback = (action: string) => {
-    question.answer = { action };
-    answerCallback(question);
-  };
-
   const warning =
     question.class === "packageProvideError" && question.data.error_code === "INVALID"
       ? // TRANSLATORS: a special warning message for installing broken package
@@ -56,8 +50,9 @@ export default function PackageErrorQuestion({
         );
 
   return (
-    <Popup
-      isOpen
+    <QuestionDialog
+      question={question}
+      answerCallback={answerCallback}
       title={_("Package installation failed")}
       titleIconVariant={() => <Icon name="error" />}
     >
@@ -65,13 +60,6 @@ export default function PackageErrorQuestion({
         <Content>{question.text}</Content>
         <Content>{warning}</Content>
       </Stack>
-      <Popup.Actions>
-        <QuestionActions
-          actions={question.actions}
-          defaultAction={question.defaultAction}
-          actionCallback={actionCallback}
-        />
-      </Popup.Actions>
-    </Popup>
+    </QuestionDialog>
   );
 }

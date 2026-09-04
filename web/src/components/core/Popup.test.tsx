@@ -24,17 +24,22 @@ import React, { useState } from "react";
 
 import { screen, within } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
-
-import { Popup } from "~/components/core";
-import { PopupProps } from "./Popup";
 import { _ } from "~/i18n";
+
+import Popup, { PopupProps } from "./Popup";
 
 let isOpen: boolean;
 let isLoading: boolean;
 const confirmFn = jest.fn();
 const cancelFn = jest.fn();
 
-const TestingPopup = (props: PopupProps) => {
+/**
+ * Props for {@link TestingPopup}, which always renders its own title and
+ * content.
+ */
+type TestingPopupProps = Omit<PopupProps, "title" | "aria-label" | "children" | "isOpen">;
+
+const TestingPopup = (props: TestingPopupProps) => {
   const [isMounted, setIsMounted] = useState(true);
   const loadingText = _("Loading text");
 
@@ -46,14 +51,16 @@ const TestingPopup = (props: PopupProps) => {
       isOpen={isOpen}
       isLoading={isLoading}
       loadingText={loadingText}
+      actions={
+        <>
+          <Popup.Confirm onClick={confirmFn} isDisabled />
+          <Popup.Cancel onClick={cancelFn} />
+        </>
+      }
       {...props}
     >
       <p>The Popup Content</p>
       <button onClick={() => setIsMounted(false)}>Unmount Popup</button>
-      <Popup.Actions>
-        <Popup.Confirm onClick={confirmFn} isDisabled />
-        <Popup.Cancel onClick={cancelFn} />
-      </Popup.Actions>
     </Popup>
   );
 };
@@ -67,7 +74,7 @@ describe("Popup", () => {
     });
 
     it("renders nothing", async () => {
-      installerRender(<TestingPopup>Testing</TestingPopup>);
+      installerRender(<TestingPopup />);
 
       const dialog = screen.queryByRole("dialog");
       expect(dialog).toBeNull();
@@ -81,9 +88,9 @@ describe("Popup", () => {
 
     it("renders given title and titleAddon inside PF/ModalHeader", async () => {
       installerRender(
-        <TestingPopup title="Awesome Popup" titleAddon={<button>With action at title</button>}>
-          Testing
-        </TestingPopup>,
+        <Popup isOpen title="Awesome Popup" titleAddon={<button>With action at title</button>}>
+          <p>Testing</p>
+        </Popup>,
       );
 
       const dialog = await screen.findByRole("dialog");
@@ -92,15 +99,69 @@ describe("Popup", () => {
       within(header).getByRole("button", { name: "With action at title" });
     });
 
-    it("does not render header when none, title nor titleAddon, are giving", async () => {
+    it("does not render a header when no title is given", async () => {
       installerRender(
-        <TestingPopup title={undefined} titleAddon={undefined}>
-          Testing
-        </TestingPopup>,
+        <Popup isOpen aria-label="Bare popup" titleAddon={<button>Addon</button>}>
+          <button>Testing</button>
+        </Popup>,
       );
 
       await screen.findByRole("dialog");
       expect(screen.queryByRole("banner")).toBeNull();
+    });
+
+    it("names the dialog after the given title", async () => {
+      installerRender(<TestingPopup />);
+
+      const dialog = await screen.findByRole("dialog");
+      expect(dialog).toHaveAccessibleName("Testing Popup Title");
+    });
+
+    it("describes the dialog with its content", async () => {
+      installerRender(<TestingPopup />);
+
+      const dialog = await screen.findByRole("dialog");
+      expect(dialog).toHaveAccessibleDescription(expect.stringContaining("The Popup Content"));
+    });
+
+    it("names the dialog after aria-label when rendered without a title", async () => {
+      installerRender(
+        <Popup isOpen aria-label="Bare popup">
+          <button>Testing</button>
+        </Popup>,
+      );
+
+      const dialog = await screen.findByRole("dialog");
+      expect(dialog).toHaveAccessibleName("Bare popup");
+    });
+
+    describe("and no onClose callback is given", () => {
+      it("renders no close button and ignores the Escape key", async () => {
+        const { user } = installerRender(<TestingPopup />);
+
+        const dialog = await screen.findByRole("dialog");
+        expect(within(dialog).queryByRole("button", { name: "Close" })).toBeNull();
+
+        await user.keyboard("{Escape}");
+        screen.getByRole("dialog");
+      });
+    });
+
+    describe("and an onClose callback is given", () => {
+      it("renders a close button and honors the Escape key", async () => {
+        const onClose = jest.fn();
+        const { user } = installerRender(<TestingPopup onClose={onClose} />);
+
+        const dialog = await screen.findByRole("dialog");
+        const closeButton = within(dialog).getByRole("button", { name: "Close" });
+
+        await user.click(closeButton);
+        expect(onClose).toHaveBeenCalled();
+
+        onClose.mockClear();
+        await user.keyboard("{Escape}");
+        expect(onClose).toHaveBeenCalled();
+      });
     });
 
     describe("and not loading", () => {
@@ -109,7 +170,7 @@ describe("Popup", () => {
       });
 
       it("renders the popup content inside a PF/Modal", async () => {
-        installerRender(<TestingPopup>Testing</TestingPopup>);
+        installerRender(<TestingPopup />);
 
         const dialog = await screen.findByRole("dialog");
         expect(dialog.classList.contains("pf-v6-c-modal-box")).toBe(true);
@@ -118,7 +179,7 @@ describe("Popup", () => {
       });
 
       it("does not display a progress message", async () => {
-        installerRender(<TestingPopup>Testing</TestingPopup>);
+        installerRender(<TestingPopup />);
 
         const dialog = await screen.findByRole("dialog");
 
@@ -126,7 +187,7 @@ describe("Popup", () => {
       });
 
       it("renders the popup actions inside a PF/Modal footer", async () => {
-        installerRender(<TestingPopup>Testing</TestingPopup>);
+        installerRender(<TestingPopup />);
 
         const dialog = await screen.findByRole("dialog");
         // NOTE: Sadly, PF Modal/ModalFooter does not have a footer or navigation role.
@@ -137,6 +198,38 @@ describe("Popup", () => {
         within(footer).getByText("Confirm");
         within(footer).getByText("Cancel");
       });
+
+      it("renders no footer when no actions are given", async () => {
+        installerRender(
+          <Popup isOpen title="No actions">
+            {/* PF focus trap needs at least one tabbable node inside the dialog */}
+            <button>Just content</button>
+          </Popup>,
+        );
+
+        const dialog = await screen.findByRole("dialog");
+
+        expect(dialog.querySelector("footer")).toBeNull();
+      });
+
+      it("puts actions in the footer no matter how they are nested", async () => {
+        const NestedActions = () => (
+          <>
+            <Popup.Confirm onClick={confirmFn} />
+          </>
+        );
+
+        installerRender(
+          <Popup isOpen title="Nested actions" actions={<NestedActions />}>
+            <p>Just content</p>
+          </Popup>,
+        );
+
+        const dialog = await screen.findByRole("dialog");
+        const footer = dialog.querySelector("footer");
+
+        within(footer).getByRole("button", { name: "Confirm" });
+      });
     });
 
     describe("and loading", () => {
@@ -145,7 +238,7 @@ describe("Popup", () => {
       });
 
       it("displays progress message instead of the content", async () => {
-        installerRender(<TestingPopup>Testing</TestingPopup>);
+        installerRender(<TestingPopup />);
 
         const dialog = await screen.findByRole("dialog");
 
@@ -218,6 +311,55 @@ describe("Popup.Confirm", () => {
       expect(button).not.toBeNull();
       expect(button.classList.contains("pf-m-primary")).toBe(true);
     });
+  });
+});
+
+describe("Popup.Close", () => {
+  it("closes the dialog it belongs to", async () => {
+    const onClose = jest.fn();
+    const { user } = installerRender(
+      <Popup isOpen title="Closable" onClose={onClose} actions={<Popup.Close />}>
+        <p>Content</p>
+      </Popup>,
+    );
+
+    const footer = screen.getByRole("dialog").querySelector("footer");
+    await user.click(within(footer).getByRole("button", { name: "Close" }));
+
+    expect(onClose).toHaveBeenCalled();
+  });
+
+  it("runs its own onClick when given one, using children as content", async () => {
+    const onClose = jest.fn();
+    const onClick = jest.fn();
+    const { user } = installerRender(
+      <Popup
+        isOpen
+        title="Closable"
+        onClose={onClose}
+        actions={<Popup.Close onClick={onClick}>Accept</Popup.Close>}
+      >
+        <p>Content</p>
+      </Popup>,
+    );
+
+    await user.click(screen.getByRole("button", { name: "Accept" }));
+
+    expect(onClick).toHaveBeenCalled();
+    expect(onClose).not.toHaveBeenCalled();
+  });
+
+  it("reports a dialog leaving it with nothing to do", async () => {
+    const consoleError = jest.spyOn(console, "error").mockImplementation(() => undefined);
+
+    installerRender(
+      <Popup isOpen title="Not closable" actions={<Popup.Close />}>
+        <p>Content</p>
+      </Popup>,
+    );
+
+    expect(consoleError).toHaveBeenCalled();
+    consoleError.mockRestore();
   });
 });
 

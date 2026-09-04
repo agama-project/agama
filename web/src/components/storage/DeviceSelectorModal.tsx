@@ -49,6 +49,7 @@ import { STORAGE } from "~/routes/paths";
 import { deviceLabel } from "~/components/storage/utils";
 import { _ } from "~/i18n";
 
+import type { DistributedOmit } from "type-fest";
 import type { PopupProps } from "~/components/core/Popup";
 import type { Storage } from "~/model/system";
 
@@ -87,7 +88,10 @@ export type NewDeviceLinkTexts = {
 };
 
 /** Props for {@link DeviceSelectorModal}. */
-export type DeviceSelectorModalProps = Omit<PopupProps, "children" | "selected" | "description"> & {
+export type DeviceSelectorModalProps = DistributedOmit<
+  PopupProps,
+  "children" | "selected" | "description" | "isOpen" | "actions" | "onClose"
+> & {
   /** General information shown at the top of the modal, above the tabs. */
   intro?: React.ReactNode;
   /** Tab to open initially. Takes precedence over the tab derived from {@link selected}. */
@@ -299,12 +303,41 @@ export default function DeviceSelectorModal({
     return sprintf(_("Change to %s"), deviceLabel(currentDevice));
   };
 
+  const actions = (
+    <Stack hasGutter>
+      {!currentDevice && (
+        <HelperText id={confirmHintId} isLiveRegion>
+          <HelperTextItem variant="warning">{_("Select a device")}</HelperTextItem>
+        </HelperText>
+      )}
+      {currentDevice && currentDevice.sid !== previousDevice?.sid && deviceSideEffectsAlert && (
+        <HelperText id={confirmHintId} isLiveRegion>
+          <HelperTextItem>
+            <Annotation icon="notifications_ative">{deviceSideEffectsAlert}</Annotation>
+          </HelperTextItem>
+        </HelperText>
+      )}
+      <Flex>
+        <Popup.Confirm
+          onClick={() => onConfirm(selectedDevices)}
+          isDisabled={!currentDevice}
+          aria-describedby={confirmHintId}
+        >
+          {confirmLabel()}
+        </Popup.Confirm>
+        <Popup.Cancel onClick={onCancel} asLink />
+      </Flex>
+    </Stack>
+  );
+
   return (
     <Popup
       isOpen
       variant="medium"
       description={_("Use the tabs to browse disks, RAID devices and LVM volume groups.")}
       elementToFocus={deviceInInitialTab ? "input[type=radio]:checked" : undefined}
+      actions={actions}
+      onClose={onCancel}
       {...popupProps}
       style={{ height: "70dvh" }}
     >
@@ -389,32 +422,6 @@ export default function DeviceSelectorModal({
           </Tabs>
         </PageSection>
       </Stack>
-      <Popup.Actions>
-        <Stack hasGutter>
-          {!currentDevice && (
-            <HelperText id={confirmHintId} isLiveRegion>
-              <HelperTextItem variant="warning">{_("Select a device")}</HelperTextItem>
-            </HelperText>
-          )}
-          {currentDevice && currentDevice.sid !== previousDevice?.sid && deviceSideEffectsAlert && (
-            <HelperText id={confirmHintId} isLiveRegion>
-              <HelperTextItem>
-                <Annotation icon="notifications_ative">{deviceSideEffectsAlert}</Annotation>
-              </HelperTextItem>
-            </HelperText>
-          )}
-          <Flex>
-            <Popup.Confirm
-              onClick={() => onConfirm(selectedDevices)}
-              isDisabled={!currentDevice}
-              aria-describedby={confirmHintId}
-            >
-              {confirmLabel()}
-            </Popup.Confirm>
-            <Popup.Cancel onClick={onCancel} asLink />
-          </Flex>
-        </Stack>
-      </Popup.Actions>
     </Popup>
   );
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023] SUSE LLC
+ * Copyright (c) [2022-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,21 +20,36 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
-import { EmptyState } from "~/components/core";
-import { sprintf } from "sprintf-js";
-import { _ } from "~/i18n";
+/**
+ * Field definitions for the product selection form: types and defaults.
+ */
 
-export default function UsedSize({ size }: { size?: string }) {
-  if (size === undefined || size === "" || size === "0 B") return null;
+import { formOptions } from "@tanstack/react-form";
 
-  // TRANSLATORS: %s will be replaced by the estimated installation size,
-  // example: "728.8 MiB"
-  const message = sprintf(_("Installation will take %s."), size);
+import type { Product, Mode } from "~/model/system";
 
-  return (
-    <EmptyState title={message} icon="info" color="success-color-100">
-      <p>{_("This space includes the base system and the selected software patterns, if any.")}</p>
-    </EmptyState>
-  );
-}
+/** Types */
+
+export type FormFields = {
+  selectedProduct?: Product;
+  selectedMode?: Mode;
+  eulaAccepted: boolean;
+};
+
+/** Default values */
+
+/**
+ * Default values for all ProductSelectionForm fields.
+ */
+const defaultValues: FormFields = {
+  selectedProduct: undefined,
+  selectedMode: undefined,
+  eulaAccepted: false,
+};
+
+/**
+ * Shared form options for ProductSelectionForm.
+ */
+export const defaultOptions = formOptions({
+  defaultValues,
+});

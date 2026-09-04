@@ -206,6 +206,12 @@ module.exports = {
               sassOptions: {
                 includePaths: ["node_modules"],
                 outputStyle: production ? "compressed" : undefined,
+                // Never emit a @charset or a byte-order mark. Compressed output
+                // marks a non-ASCII stylesheet with a BOM, and the extracted
+                // stylesheets are concatenated into a single file, so that BOM
+                // would land mid-file, where it is part of the next selector
+                // rather than whitespace and silently kills that rule.
+                charset: false,
                 silenceDeprecations: ["global-builtin", "if-function"],
               },
             },

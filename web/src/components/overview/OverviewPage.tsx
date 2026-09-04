@@ -23,9 +23,9 @@
 import React from "react";
 import { Content, Divider, Flex, Grid, GridItem, Stack } from "@patternfly/react-core";
 import Interpolate from "~/components/core/Interpolate";
-import Page from "~/components/core/Page";
 import ProgressBackdrop from "~/components/core/ProgressBackdrop";
 import Text from "~/components/core/Text";
+import Page from "~/components/layout/Page";
 import MissingProductState from "~/components/product/MissingProductState";
 import InstallButton from "~/components/overview/InstallButton";
 import InstallationSettings from "~/components/overview/InstallationSettings";

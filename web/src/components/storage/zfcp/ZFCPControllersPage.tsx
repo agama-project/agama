@@ -32,7 +32,7 @@ import {
   EmptyStateBody,
   Checkbox,
 } from "@patternfly/react-core";
-import { Page } from "~/components/core";
+import Page from "~/components/layout/Page";
 import { STORAGE } from "~/routes/paths";
 import { _ } from "~/i18n";
 import { useCheckLunScan, useControllers, useSystem } from "~/hooks/model/system/zfcp";

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2025] SUSE LLC
+ * Copyright (c) [2025-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -31,8 +31,7 @@ import {
   Stack,
   StackItem,
 } from "@patternfly/react-core";
-import { Popup } from "~/components/core";
-import QuestionActions from "~/components/questions/QuestionActions";
+import QuestionDialog from "~/components/questions/QuestionDialog";
 import { _ } from "~/i18n";
 
 import type { TranslatedString } from "~/i18n";
@@ -67,13 +66,12 @@ export default function RegistrationCertificateQuestion({
   question: Question;
   answerCallback: AnswerCallback;
 }): React.ReactNode {
-  const actionCallback = (action: string) => {
-    question.answer = { action };
-    answerCallback(question);
-  };
-
   return (
-    <Popup isOpen title={_("Registration certificate")}>
+    <QuestionDialog
+      question={question}
+      answerCallback={answerCallback}
+      title={_("Registration certificate")}
+    >
       <Stack hasGutter>
         <StackItem>
           <Content component="p" isEditorial>
@@ -93,13 +91,6 @@ export default function RegistrationCertificateQuestion({
           </DescriptionList>
         </StackItem>
       </Stack>
-      <Popup.Actions>
-        <QuestionActions
-          actions={question.actions}
-          defaultAction={question.defaultAction}
-          actionCallback={actionCallback}
-        />
-      </Popup.Actions>
-    </Popup>
+    </QuestionDialog>
   );
 }

@@ -110,6 +110,11 @@
   --agm-t--logo--size--inline: 1.5em;
   --agm-t--logo--max-size: 48px;
   --agm-t--logo--align: middle;
+
+  /* Extra space between a radio label and the content below it (a description,
+     a nested control, ...). Unset, that content follows the label by one step
+     of the radio grid gap. */
+  --agm-t--radio--body--spacing: 0.5rem;
 }
 
 /* Light theme. */

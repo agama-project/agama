@@ -289,15 +289,9 @@ describe("InstallerL10nOptions", () => {
         mockProduct(undefined);
       });
 
-      it("does not allow reusing setting", async () => {
+      it("still tells about the product options, although without a link", async () => {
         await renderAndOpen();
-        const dialog = screen.getByRole("dialog");
-        expect(within(dialog).queryByRole("checkbox")).toBeNull();
-        screen.getByText(/This will affect only the installer interface/);
-      });
-
-      it("does not include a link to localization page", async () => {
-        await renderAndOpen();
+        screen.getByText(/Once a product is selected, its language and region settings/);
         expect(screen.queryByRole("link", { name: "language and region" })).toBeNull();
       });
     });
@@ -418,15 +412,9 @@ describe("InstallerL10nOptions", () => {
         mockProduct(undefined);
       });
 
-      it("does not allow reusing setting", async () => {
-        await renderAndOpen();
-        const dialog = screen.getByRole("dialog");
-        expect(within(dialog).queryByRole("checkbox")).toBeNull();
-        screen.getByText(/This will affect only the installer interface/);
-      });
-
-      it("does not include a link to localization page", async () => {
+      it("still tells about the product options, although without a link", async () => {
         await renderAndOpen({ variant: "language" });
+        screen.getByText(/Once a product is selected, its language and region settings/);
         expect(screen.queryByRole("link", { name: "language and region" })).toBeNull();
       });
     });
@@ -518,15 +506,9 @@ describe("InstallerL10nOptions", () => {
         mockProduct(undefined);
       });
 
-      it("does not allow reusing setting", async () => {
-        await renderAndOpen();
-        const dialog = screen.getByRole("dialog");
-        expect(within(dialog).queryByRole("checkbox")).toBeNull();
-        screen.getByText(/This will affect only the installer interface/);
-      });
-
-      it("does not include a link to localization page", async () => {
+      it("still tells about the product options, although without a link", async () => {
         await renderAndOpen({ variant: "keyboard" });
+        screen.getByText(/Once a product is selected, its language and region settings/);
         expect(screen.queryByRole("link", { name: "language and region" })).toBeNull();
       });
     });
