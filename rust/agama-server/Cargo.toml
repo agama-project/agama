@@ -25,7 +25,6 @@ serde = { workspace = true }
 serde_json = { workspace = true }
 thiserror = { workspace = true }
 tokio = { workspace = true }
-tokio-stream = { workspace = true }
 tower = { version = "0.5.2", features = ["util"] }
 tower-http = { version = "0.6.2", features = ["compression-br", "fs", "trace", "set-header",] }
 tracing = { workspace = true }
@@ -39,7 +38,6 @@ hyper = "1.4.1"
 hyper-util = "0.1.9"
 openssl = { workspace = true }
 pam = { git = "https://github.com/1wilkens/pam.git", rev = "daf26ae" }
-pin-project = { workspace = true }
 sd-notify = "0.4.2"
 tokio-openssl = "0.6.5"
 tokio-util = "0.7.12"
