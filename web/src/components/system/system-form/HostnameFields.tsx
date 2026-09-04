@@ -29,7 +29,40 @@ import { Fieldset } from "~/components/form/Fieldset";
 import { defaultOptions, HOSTNAME_MODE } from "./fields";
 import { withForm } from "~/hooks/form";
 import { useSystem } from "~/hooks/model/system";
+import { useAnnounce } from "~/context/announcer";
 import { _ } from "~/i18n";
+
+/**
+ * Sentence explaining the behavior of the given hostname mode. Square
+ * brackets mark the emphasized fragment; render through Interpolate so the
+ * markers never reach the user.
+ */
+function modeSentence(mode: string) {
+  return mode === HOSTNAME_MODE.TRANSIENT
+    ? // TRANSLATORS: explanation of transient hostname behavior.
+      // Text in square brackets will be displayed in bold.
+      _("Hostname is dynamic and [may change after a reboot or network update].")
+    : // TRANSLATORS: helper text for static hostname input.
+      // Text in square brackets will be displayed in bold.
+      _("Hostname [will remain unchanged] across reboots and network changes.");
+}
+
+/**
+ * Same sentence with the emphasized fragment in bold. Shared by the visible
+ * helper texts and the screen reader announcements: emphasis is not spoken,
+ * so the announcement delivers the plain sentence.
+ */
+function modeExplanation(mode: string) {
+  return (
+    <Interpolate sentence={modeSentence(mode)}>
+      {(text) => (
+        <Text component="strong" isBold>
+          {text}
+        </Text>
+      )}
+    </Interpolate>
+  );
+}
 
 /**
  * Displays helper text explaining transient hostname behavior.
@@ -39,19 +72,7 @@ function TransientModeHelperText() {
     <Content>
       <Flex gap={{ default: "gapXs" }} alignItems={{ default: "alignItemsCenter" }}>
         <Icon name="emergency" />
-        <Interpolate
-          sentence={
-            // TRANSLATORS: explanation of transient hostname behavior.
-            // Text in square brackets will be displayed in bold.
-            _("Hostname is dynamic and [may change after a reboot or network update].")
-          }
-        >
-          {(text) => (
-            <Text component="strong" isBold>
-              {text}
-            </Text>
-          )}
-        </Interpolate>
+        {modeExplanation(HOSTNAME_MODE.TRANSIENT)}
       </Flex>
     </Content>
   );
@@ -62,23 +83,7 @@ function TransientModeHelperText() {
  * reboots and network changes.
  */
 function StaticModeHelperText() {
-  return (
-    <Content>
-      <Interpolate
-        sentence={
-          // TRANSLATORS: helper text for static hostname input.
-          // Text in square brackets will be displayed in bold.
-          _("Hostname [will remain unchanged] across reboots and network changes.")
-        }
-      >
-        {(text) => (
-          <Text component="strong" isBold>
-            {text}
-          </Text>
-        )}
-      </Interpolate>
-    </Content>
-  );
+  return <Content>{modeExplanation(HOSTNAME_MODE.STATIC)}</Content>;
 }
 
 /**
@@ -94,6 +99,7 @@ const HostnameFields = withForm({
   render: function Render({ form }) {
     const { software } = useSystem();
     const legendId = React.useId();
+    const announce = useAnnounce();
 
     return (
       <Fieldset
@@ -104,7 +110,15 @@ const HostnameFields = withForm({
         }
       >
         <Flex alignItems={{ default: "alignItemsFlexStart" }} gap={{ default: "gapMd" }}>
-          <form.AppField name="hostnameMode">
+          <form.AppField
+            name="hostnameMode"
+            listeners={{
+              // The helper text below the fields swaps with the mode. Sighted
+              // users see the swap; the announcement delivers the same
+              // sentence to screen reader users.
+              onChange: ({ value }) => announce(modeExplanation(value)),
+            }}
+          >
             {(field) => (
               <field.DropdownField
                 // TRANSLATORS: label for hostname mode selector
@@ -155,19 +169,14 @@ const HostnameFields = withForm({
           </form.Subscribe>
         </Flex>
 
-        {/* TODO: Move this to a global ARIA live region once the application-wide
-            announcement mechanism is implemented. This local aria-live works but
-            a centralized approach would be more maintainable and consistent. */}
         <form.Subscribe selector={(s) => s.values.hostnameMode}>
-          {(mode) => (
-            <div aria-live="polite">
-              {mode === HOSTNAME_MODE.TRANSIENT ? (
-                <TransientModeHelperText />
-              ) : (
-                <StaticModeHelperText />
-              )}
-            </div>
-          )}
+          {(mode) =>
+            mode === HOSTNAME_MODE.TRANSIENT ? (
+              <TransientModeHelperText />
+            ) : (
+              <StaticModeHelperText />
+            )
+          }
         </form.Subscribe>
 
         {software?.registration && (

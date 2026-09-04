@@ -31,6 +31,7 @@ import {
   ConnectionType,
   ConnectionState,
   Device,
+  DeviceState,
   IPAddress,
   Route,
   SecurityProtocols,
@@ -69,6 +70,34 @@ const CONNECTION_STATE_LABELS: Record<ConnectionState, MarkedString> = {
  */
 const connectionStateLabel = (state: ConnectionState): TranslatedString =>
   _(CONNECTION_STATE_LABELS[state]);
+
+/**
+ * Translatable labels for device states.
+ */
+const DEVICE_STATE_LABELS: Record<DeviceState, MarkedString> = {
+  // TRANSLATORS: state of a network device whose situation cannot be determined
+  unknown: N_("Unknown"),
+  // TRANSLATORS: state of a network device that the installer does not manage
+  unmanaged: N_("Unmanaged"),
+  // TRANSLATORS: state of a network device that cannot be used, for example
+  // because its cable is unplugged
+  unavailable: N_("Unavailable"),
+  // TRANSLATORS: state of a network device that is establishing a connection
+  connecting: N_("Connecting"),
+  // TRANSLATORS: state of a network device that is up and running
+  connected: N_("Connected"),
+  // TRANSLATORS: state of a network device that is tearing its connection down
+  disconnecting: N_("Disconnecting"),
+  // TRANSLATORS: state of a network device that is available but not in use
+  disconnected: N_("Disconnected"),
+  // TRANSLATORS: state of a network device whose connection attempt did not succeed
+  failed: N_("Failed"),
+};
+
+/**
+ * Returns the translated label for a device state.
+ */
+const deviceStateLabel = (state: DeviceState): TranslatedString => _(DEVICE_STATE_LABELS[state]);
 
 /**
  * Returns true if the given connection type is virtual.
@@ -421,6 +450,7 @@ export {
   connectionStateLabel,
   connectionType,
   connectionTypeLabel,
+  deviceStateLabel,
   ensureIPPrefix,
   formatIp,
   generateConnectionName,

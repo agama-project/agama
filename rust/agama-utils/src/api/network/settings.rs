@@ -351,7 +351,11 @@ pub struct NetworkConnection {
     #[serde(skip_serializing_if = "is_zero", default)]
     pub mtu: u32,
     /// IEEE 802.1X settings
-    #[serde(rename = "ieee-8021x", skip_serializing_if = "Option::is_none")]
+    #[serde(
+        rename = "ieee8021x",
+        alias = "ieee-8021x",
+        skip_serializing_if = "Option::is_none"
+    )]
     pub ieee_8021x: Option<IEEE8021XSettings>,
     /// Specifies if the connection should automatically connect
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -420,6 +424,36 @@ mod tests {
         }"#;
         let conn: NetworkConnection = serde_json::from_str(json).unwrap();
         assert_eq!(conn.dns_searchlist, vec!["example.org"]);
+    }
+
+    #[test]
+    fn test_network_connection_ieee8021x_serialization() {
+        let json = r#"{
+            "id": "eth0",
+            "ieee8021x": { "eap": ["tls"], "identity": "jane" }
+        }"#;
+        let conn: NetworkConnection = serde_json::from_str(json).unwrap();
+        assert_eq!(
+            conn.ieee_8021x.as_ref().unwrap().identity.as_deref(),
+            Some("jane")
+        );
+
+        let serialized = serde_json::to_string(&conn).unwrap();
+        assert!(serialized.contains("\"ieee8021x\":"));
+        assert!(!serialized.contains("\"ieee-8021x\""));
+    }
+
+    #[test]
+    fn test_network_connection_ieee8021x_alias() {
+        let json = r#"{
+            "id": "eth0",
+            "ieee-8021x": { "eap": ["tls"], "identity": "jane" }
+        }"#;
+        let conn: NetworkConnection = serde_json::from_str(json).unwrap();
+        assert_eq!(
+            conn.ieee_8021x.as_ref().unwrap().identity.as_deref(),
+            Some("jane")
+        );
     }
 
     #[test]

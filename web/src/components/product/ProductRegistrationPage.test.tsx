@@ -262,7 +262,7 @@ describe("ProductRegistrationPage", () => {
         // heading without "BETA"
         const title = screen.getByRole("heading", {
           name: /SUSE Linux Enterprise High Availability Extension 16.0 x86_64/,
-          level: 4,
+          level: 3,
         });
         const extensionNode = title.parentElement!;
 

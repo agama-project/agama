@@ -121,7 +121,7 @@ export default function RegistrationExtension({
   return (
     <Content>
       {/* remove the "(BETA)" suffix, we display a Beta label instead */}
-      <Title headingLevel="h4">
+      <Title headingLevel="h3">
         {extension.label.replace(/\s*\(beta\)$/i, "")}{" "}
         {extension.release === "beta" && (
           <Label color="blue" isCompact>

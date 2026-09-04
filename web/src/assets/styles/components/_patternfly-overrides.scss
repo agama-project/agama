@@ -39,6 +39,17 @@
   }
 }
 
+// Minimal-variant pages (see core/Page) mount an empty masthead, which
+// otherwise collapses to near-zero height. That leaves the main container's
+// block-start edge flush against the viewport, unlike its inline-start/
+// inline-end edges, which already get the page inset as margin (and its
+// block-end edge, which gets it via the default max-height). Give the empty
+// masthead that same inset as a real height, the same mechanism a populated
+// masthead already uses to create top space, so it stays even on every side.
+.agm-minimal-page .pf-v6-c-masthead {
+  min-block-size: var(--pf-v6-c-page--inset);
+}
+
 // Tooltip background and text. PatternFly sets these tokens on the component
 // itself, so the roles are mapped here (not at :root) to take effect. Both
 // default to PF's theme-aware inverse colors; override the roles to retune.
@@ -151,6 +162,15 @@
   }
 }
 
+// PatternFly underlines the text of large buttons while they are hovered,
+// focused or held down. An underline reads as a link, which is misleading on a
+// button that already looks like one, so leave the label undecorated and let
+// the color and background changes signal the state.
+.pf-v6-c-button.pf-m-display-lg {
+  --pf-v6-c-button--m-display-lg--hover--TextDecorationLine: none;
+  --pf-v6-c-button--m-display-lg--m-clicked--TextDecorationLine: none;
+}
+
 // Link-style buttons follow the link color rather than the brand fill, so a
 // product with a vivid brand still gets readable link / heading text. For the
 // default Agama brand, link and brand resolve to the same value, so nothing
@@ -211,10 +231,28 @@ label.pf-m-disabled + .pf-v6-c-check__description {
 
 .pf-v6-c-check {
   row-gap: var(--pf-t--global--spacer--xs);
+}
+
+// Checkboxes and radios share the same layout: the control sits in the first
+// grid row next to the label, with the description and body below.
+.pf-v6-c-check,
+.pf-v6-c-radio {
   align-content: baseline;
 
-  input[type="checkbox"] {
+  // The body already sits in its own grid row, so the grid gap is the only
+  // spacing it needs by default. Its own margin would stack on top of that,
+  // and the --agm-t--radio--body--spacing role brings it back when a design
+  // wants the body set further apart from the label.
+  --pf-v6-c-radio__body--MarginBlockStart: var(--agm-t--radio--body--spacing, 0);
+
+  // The control is vertically centered against the label instead of aligned to
+  // the top of the first text line. PatternFly nudges it with a translation
+  // computed from the default label font size, which drifts as soon as the
+  // label renders bigger (a larger font, an inline logo).
+  input[type="checkbox"],
+  input[type="radio"] {
     align-self: center;
+    transform: none;
   }
 }
 

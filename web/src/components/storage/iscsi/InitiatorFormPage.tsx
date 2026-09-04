@@ -23,7 +23,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router";
 import { Alert, Button, Form, FormGroup, TextInput, ActionGroup } from "@patternfly/react-core";
-import { Page } from "~/components/core";
+import Page from "~/components/layout/Page";
 import { STORAGE } from "~/routes/paths";
 import { _ } from "~/i18n";
 import { useSystem } from "~/hooks/model/system/iscsi";

@@ -23,7 +23,6 @@
 import React from "react";
 import Connected from "~/Connected";
 import { InstallerL10nProvider } from "./installerL10n";
-import { StorageUiStateProvider } from "./storage-ui-state";
 import { TerminalProvider } from "./terminal";
 import {
   DefaultOptions,
@@ -114,9 +113,7 @@ function AppProviders({ children }: React.PropsWithChildren) {
     <Connected>
       <QueryClientProvider client={queryClient}>
         <InstallerL10nProvider>
-          <StorageUiStateProvider>
-            <TerminalProvider>{children}</TerminalProvider>
-          </StorageUiStateProvider>
+          <TerminalProvider>{children}</TerminalProvider>
         </InstallerL10nProvider>
       </QueryClientProvider>
     </Connected>

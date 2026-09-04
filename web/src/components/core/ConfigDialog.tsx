@@ -57,6 +57,7 @@ export default function ConfigDialog({ onClose }: ConfigDialogProps) {
       title={_("Installation settings in JSON format")}
       onClose={onClose}
       variant="medium"
+      actions={<Popup.Close />}
     >
       <Flex direction={{ default: "column" }} gap={{ default: "gapSm" }}>
         <Content>
@@ -68,11 +69,6 @@ export default function ConfigDialog({ onClose }: ConfigDialogProps) {
           <ConfigEditor />
         </Suspense>
       </Flex>
-
-      <Popup.Actions>
-        {/* TRANSLATORS: button to close the config dialog */}
-        <Popup.Confirm onClick={onClose}>{_("Close")}</Popup.Confirm>
-      </Popup.Actions>
     </Popup>
   );
 }

@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useLayoutEffect, useRef, useState } from "react";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import {
   ActionGroup,
   Checkbox,
@@ -35,7 +35,7 @@ import { group, sort } from "radashi";
 import { sprintf } from "sprintf-js";
 import { Navigate, useNavigate } from "react-router";
 import NestedContent from "~/components/core/NestedContent";
-import Page from "~/components/core/Page";
+import Page from "~/components/layout/Page";
 import SubtleContent from "~/components/core/SubtleContent";
 import Text from "~/components/core/Text";
 import AutoSelectedLabel from "~/components/software/AutoSelectedLabel";
@@ -44,6 +44,8 @@ import { patchConfig } from "~/api";
 import { useAvailablePatterns } from "~/hooks/model/system/software";
 import { useProposal } from "~/hooks/model/proposal/software";
 import { usePristineSafeForm } from "~/hooks/form";
+import useFilterParams, { textFilter } from "~/hooks/use-filter-params";
+import { useAnnounce } from "~/context/announcer";
 import { filterPatterns, groupPatterns, isPatternSelected, sortGroupNames } from "~/utils/software";
 import { SOFTWARE } from "~/routes/paths";
 import { N_, _, n_ } from "~/i18n";
@@ -252,7 +254,10 @@ function SoftwarePatternsSelection({ scope = "all" }: { scope?: Scope }) {
   const { all: systemPatterns, [scope]: scopedPatterns } = useAvailablePatterns();
   const proposal = useProposal();
   const selection = proposal?.patterns || {};
-  const [searchValue, setSearchValue] = useState("");
+  // Keeping the search in the address means reloading the page, or opening a
+  // link someone shared, lands on the same short list.
+  const { filters, setFilter, resetFilters } = useFilterParams({ search: textFilter() });
+  const searchValue = filters.search;
 
   // Category headers stick below the filter as the user scrolls. To position
   // them correctly, we need the filter's height. We measure it dynamically
@@ -312,13 +317,6 @@ function SoftwarePatternsSelection({ scope = "all" }: { scope?: Scope }) {
     onSubmitComplete: () => navigate(SOFTWARE.root),
   });
 
-  // Redirect to main software page when no patterns are available for the
-  // current scope. This handles users landing via direct URL or cached links
-  // when desktop patterns don't exist.
-  if (scopedPatterns.length === 0) {
-    return <Navigate to={SOFTWARE.root} replace />;
-  }
-
   // Build the canonical category list from the unfiltered scope so categories
   // never disappear as the user types.
   const sortedPatterns = sort(scopedPatterns, (p) => p.order);
@@ -335,6 +333,18 @@ function SoftwarePatternsSelection({ scope = "all" }: { scope?: Scope }) {
         visiblePatterns.length,
       )
     : "";
+
+  const announce = useAnnounce();
+  useEffect(() => {
+    if (filterAnnouncement) announce(filterAnnouncement);
+  }, [filterAnnouncement, announce]);
+
+  // Redirect to main software page when no patterns are available for the
+  // current scope. This handles users landing via direct URL or cached links
+  // when desktop patterns don't exist.
+  if (scopedPatterns.length === 0) {
+    return <Navigate to={SOFTWARE.root} replace />;
+  }
 
   let filterResultsCount: string | undefined;
   if (isFiltering) {
@@ -363,14 +373,6 @@ function SoftwarePatternsSelection({ scope = "all" }: { scope?: Scope }) {
     >
       <Page.Content>
         <form.AppForm>
-          {/* TODO: extract to global ARIA live region for announcements.
-              Screen reader users need feedback when filter results change, but
-              each component creating its own live region is not ideal. A single
-              global announcements region would be more maintainable and avoid
-              potential conflicts. */}
-          <div aria-live="polite" aria-atomic="true" className="pf-v6-u-screen-reader">
-            {filterAnnouncement}
-          </div>
           <Form
             onSubmit={(e) => {
               e.preventDefault();
@@ -393,8 +395,8 @@ function SoftwarePatternsSelection({ scope = "all" }: { scope?: Scope }) {
                   // SearchInput defaults aria-label to "Search input"; override for clarity.
                   aria-label={_("Filter by name and description")}
                   value={searchValue}
-                  onChange={(_event, value) => setSearchValue(value)}
-                  onClear={() => setSearchValue("")}
+                  onChange={(_event, value) => setFilter("search", value)}
+                  onClear={resetFilters}
                   resultsCount={filterResultsCount}
                 />
               </div>
@@ -431,7 +433,7 @@ function SoftwarePatternsSelection({ scope = "all" }: { scope?: Scope }) {
                             spaceItems={{ default: "spaceItemsSm" }}
                             alignItems={{ default: "alignItemsBaseline" }}
                           >
-                            <Title headingLevel="h3" id={headingId}>
+                            <Title headingLevel="h2" id={headingId}>
                               {groupName}
                             </Title>
                             <CategoryCounter

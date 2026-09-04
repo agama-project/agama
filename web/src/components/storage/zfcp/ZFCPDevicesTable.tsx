@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useReducer } from "react";
+import React from "react";
 import { identity, zipToObject } from "radashi";
 import { sprintf } from "sprintf-js";
 import {
@@ -37,10 +37,13 @@ import {
 } from "@patternfly/react-core";
 import Icon from "~/components/layout/Icon";
 import Text from "~/components/core/Text";
-import SelectableDataTable, { SortedBy } from "~/components/core/SelectableDataTable";
+import SelectableDataTable from "~/components/core/SelectableDataTable";
 import SimpleSelector from "~/components/core/SimpleSelector";
 import { sortCollection, translateEntries } from "~/utils";
 import { _, N_ } from "~/i18n";
+import useSortedByParam from "~/hooks/use-sorted-by-param";
+import useFilterParams, { choiceFilter } from "~/hooks/use-filter-params";
+import { ZFCP_SORT } from "~/components/storage/ui-state-params";
 import { useCheckLunScan } from "~/hooks/model/system/zfcp";
 import { useAddDevices, useRemoveDevices, useConfig } from "~/hooks/model/config/zfcp";
 import type { ZFCP as System } from "~/model/system";
@@ -252,59 +255,6 @@ const buildActions = (
   return actions.filter((a) => keptActions[a.id]);
 };
 
-/** Internal state shape for the zFCP table component. */
-type ZFCPTableState = {
-  /** Current sorting state. */
-  sortedBy: SortedBy;
-  /** Current active filters applied to the device list. */
-  filters: ZFCPDevicesFilters;
-};
-
-/**
- * Union of all actions that can be dispatched to update the zFCP table state.
- **/
-type ZFCPTableAction =
-  | { type: "UPDATE_SORTING"; payload: ZFCPTableState["sortedBy"] }
-  | { type: "UPDATE_FILTERS"; payload: ZFCPTableState["filters"] }
-  | { type: "RESET_FILTERS" };
-
-/**
- * Initial state for `reducer`.
- *
- * @remarks
- * Also serves as the canonical "no filters active" reference: filter changes are detected by
- * comparing the current filters against this object via `JSON.stringify`.
- */
-const initialState: ZFCPTableState = {
-  sortedBy: { index: 0, direction: "asc" },
-  filters: {
-    status: "all",
-    channel: "all",
-    wwpn: "all",
-  },
-};
-
-/**
- * Reducer for the zFCP devices table.
- *
- * Handles all state transitions driven by `ZFCPTableAction` dispatches.
- */
-const reducer = (state: ZFCPTableState, action: ZFCPTableAction): ZFCPTableState => {
-  switch (action.type) {
-    case "UPDATE_SORTING": {
-      return { ...state, sortedBy: action.payload };
-    }
-
-    case "UPDATE_FILTERS": {
-      return { ...state, filters: { ...state.filters, ...action.payload } };
-    }
-
-    case "RESET_FILTERS": {
-      return { ...state, filters: initialState.filters };
-    }
-  }
-};
-
 /**
  * Column definitions for the zFCP devices table.
  *
@@ -355,34 +305,34 @@ type ZFCPDevicesTableProps = {
 
 /**
  * Renders a table for configuring zFCP devices.
- *
- * Manages its own UI state (filters, sorting) via a reducer.
  */
 export default function ZFCPDevicesTable({ devices }: ZFCPDevicesTableProps): React.ReactNode {
-  const [state, dispatch] = useReducer(reducer, initialState);
   const addDevices = useAddDevices();
   const removeDevices = useRemoveDevices();
   const checkLunScan = useCheckLunScan();
   const config = useConfig();
 
   const columns = createColumns(checkLunScan);
+  const [sortedBy, updateSorting] = useSortedByParam(columns, {
+    param: ZFCP_SORT,
+    defaultValue: { index: 0, direction: "asc" },
+  });
 
-  const onSortingChange = (sortedBy: SortedBy) => {
-    dispatch({ type: "UPDATE_SORTING", payload: sortedBy });
-  };
+  const { filters, setFilter, resetFilters, hasActiveFilters } = useFilterParams({
+    status: choiceFilter(["activated", "deactivated"] as const),
+    channel: choiceFilter(devices.map((d) => d.channel)),
+    wwpn: choiceFilter(devices.map((d) => d.wwpn)),
+  });
 
-  const onFilterChange = (filter: keyof ZFCPDevicesFilters, value) => {
-    dispatch({ type: "UPDATE_FILTERS", payload: { [filter]: value } });
-  };
-
-  const resetFilters = () => dispatch({ type: "RESET_FILTERS" });
+  const onFilterChange = (filter: keyof ZFCPDevicesFilters, value: string) =>
+    setFilter(filter, value);
 
   // Filtering
-  const filteredDevices = filterDevices(devices, state.filters);
+  const filteredDevices = filterDevices(devices, filters);
 
   // Sorting
-  const sortingKey = columns[state.sortedBy.index].sortingKey;
-  const sortedDevices = sortCollection(filteredDevices, state.sortedBy.direction, sortingKey);
+  const sortingKey = columns[sortedBy.index].sortingKey;
+  const sortedDevices = sortCollection(filteredDevices, sortedBy.direction, sortingKey);
 
   const deviceConfig = (device: System.Device): Config.Device | null => {
     return config?.devices?.find(
@@ -393,8 +343,8 @@ export default function ZFCPDevicesTable({ devices }: ZFCPDevicesTableProps): Re
   return (
     <Content>
       <FiltersToolbar
-        filters={state.filters}
-        hasActiveFilters={JSON.stringify(state.filters) !== JSON.stringify(initialState.filters)}
+        filters={filters}
+        hasActiveFilters={hasActiveFilters}
         totalDevices={devices.length}
         matchingDevices={filteredDevices.length}
         channels={devices.map((d) => d.channel)}
@@ -408,8 +358,8 @@ export default function ZFCPDevicesTable({ devices }: ZFCPDevicesTableProps): Re
         items={sortedDevices}
         selectionMode="none"
         variant="compact"
-        sortedBy={state.sortedBy}
-        updateSorting={onSortingChange}
+        sortedBy={sortedBy}
+        updateSorting={updateSorting}
         itemActions={(device: System.Device) =>
           buildActions(device, deviceConfig(device), addDevices, removeDevices, checkLunScan)
         }
