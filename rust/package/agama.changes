@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Sep  4 10:52:03 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Do not crash when validating or evaluating a profile without
+  content (bsc#1278737).
+
+-------------------------------------------------------------------
 Wed Sep  2 14:15:16 UTC 2026 - José Iván López González <jlopez@suse.com>
 
 - Improve storage schema to force the encryption key size to be
