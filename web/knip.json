@@ -2,7 +2,11 @@
   "$schema": "https://unpkg.com/knip@latest/jsonschema.json",
   "entry": [
     "scripts/**/*.js",
-    "share/po/**/*.js"
+    "share/po/**/*.js",
+    "src/**/*.test.{ts,tsx,js,jsx}",
+    "src/**/__mocks__/**/*.{ts,tsx,js,jsx}",
+    "src/setupTests.ts",
+    "src/test-utils.tsx"
   ],
   "project": ["src/**/*.{ts,tsx,js,jsx}"],
   "ignore": [
@@ -12,12 +16,6 @@
     "eslint",
     "stylelint",
     "jest"
-  ],
-  "ignoreDependencies": [
-    "typescript-eslint",
-    "eslint-plugin-n",
-    "eslint-plugin-promise",
-    "eslint-plugin-react"
   ],
   "ignoreExportsUsedInFile": true,
   "webpack": {
