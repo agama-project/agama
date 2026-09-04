@@ -104,6 +104,13 @@ pub enum ProblemDetails {
     /// Generic error without specific type (HTTP 500)
     #[serde(rename = "about:blank", rename_all = "camelCase")]
     Generic { title: String, detail: String },
+
+    /// Generic client error (HTTP 400)
+    #[serde(
+        rename = "tag:agama.opensuse.org,2026:problems/bad-request",
+        rename_all = "camelCase"
+    )]
+    BadRequest { title: String, detail: String },
 }
 
 impl ProblemDetails {
@@ -149,6 +156,14 @@ impl ProblemDetails {
             detail: detail.into(),
         }
     }
+
+    /// Creates a generic client error (bad request) problem
+    pub fn bad_request(title: impl Into<String>, detail: impl Into<String>) -> Self {
+        Self::BadRequest {
+            title: title.into(),
+            detail: detail.into(),
+        }
+    }
 }
 
 impl Display for ProblemDetails {
@@ -169,7 +184,8 @@ impl Display for ProblemDetails {
 
             Self::Unauthorized { title, detail }
             | Self::InternalError { title, detail }
-            | Self::Generic { title, detail } => write_problem(f, title, Some(detail), None)?,
+            | Self::Generic { title, detail }
+            | Self::BadRequest { title, detail } => write_problem(f, title, Some(detail), None)?,
 
             ProblemDetails::InvalidJson { title, detail } => {
                 write_problem(f, title, detail.as_deref(), None)?

@@ -70,35 +70,48 @@ pub enum ProfileError {
     InvalidJson(#[from] serde_json::Error),
     #[error("{0}")]
     BadRequest(String),
+    #[error("No profile was given. Provide one of: path, url or profile (request body).")]
+    MissingProfile,
 }
 
-impl IntoResponse for ProfileError {
-    fn into_response(self) -> Response {
-        let problem = match self {
+impl ProfileError {
+    /// Converts this error into RFC 9457 Problem Details
+    ///
+    /// Each variant is mapped to a status code by `ProblemDetails::status_code()`:
+    /// `internal_error()` results in a 500, `bad_request()` results in a 400.
+    pub fn into_problem_details(self) -> ProblemDetails {
+        match self {
             // Server errors (500)
             ProfileError::ValidatorSetup(_) => ProblemDetails::internal_error(self.to_string()),
             ProfileError::Autoyast(AutoyastError::Execute(..)) => {
                 ProblemDetails::internal_error(self.to_string())
             }
+            ProfileError::InvalidJson(_) => ProblemDetails::internal_error(self.to_string()),
             // Client errors (400) - specific titles for better UX
             ProfileError::ValidationError(msg) | ProfileError::EvaluationError(msg) => {
-                ProblemDetails::generic(gettext("Profile validation failed"), msg)
+                ProblemDetails::bad_request(gettext("Profile validation failed"), msg)
             }
             ProfileError::UrlRetrieval { .. } | ProfileError::FileRead { .. } => {
-                ProblemDetails::generic(gettext("Could not retrieve profile"), self.to_string())
+                ProblemDetails::bad_request(gettext("Could not retrieve profile"), self.to_string())
             }
             ProfileError::InvalidUtf8 { .. } => {
-                ProblemDetails::generic(gettext("Invalid profile encoding"), self.to_string())
+                ProblemDetails::bad_request(gettext("Invalid profile encoding"), self.to_string())
             }
-            ProfileError::UrlParse(_) | ProfileError::BadRequest(_) => {
-                ProblemDetails::generic(gettext("Invalid profile request"), self.to_string())
+            ProfileError::UrlParse(_)
+            | ProfileError::BadRequest(_)
+            | ProfileError::MissingProfile => {
+                ProblemDetails::bad_request(gettext("Invalid profile request"), self.to_string())
             }
             ProfileError::Autoyast(_) => {
-                ProblemDetails::generic(gettext("AutoYaST conversion failed"), self.to_string())
+                ProblemDetails::bad_request(gettext("AutoYaST conversion failed"), self.to_string())
             }
-            ProfileError::InvalidJson(_) => ProblemDetails::internal_error(self.to_string()),
-        };
-        problem.into_response()
+        }
+    }
+}
+
+impl IntoResponse for ProfileError {
+    fn into_response(self) -> Response {
+        self.into_problem_details().into_response()
     }
 }
 
@@ -176,7 +189,9 @@ async fn validate(body: String) -> Result<(), Response> {
         .map_err(|e| Error::from(e).bad_request())?;
     let profile_string = match profile_content {
         Some(retrieved) => retrieved,
-        None => profile.json.expect("Missing profile"),
+        None => {
+            return Err(Error::from(ProfileError::MissingProfile).bad_request());
+        }
     };
     let json: serde_json::Value =
         serde_json::from_str(&profile_string).map_err(|e| Error::from(e).bad_request())?;
@@ -188,7 +203,7 @@ async fn evaluate(body: String) -> Result<String, ProfileError> {
     let profile = ProfileBody::from_string(body);
     let profile_string = match profile.retrieve_profile()? {
         Some(retrieved) => retrieved,
-        None => profile.json.expect("Missing profile"),
+        None => return Err(ProfileError::MissingProfile),
     };
     let evaluator = ProfileEvaluator {};
     let output = evaluator
@@ -216,4 +231,43 @@ async fn autoyast(body: String) -> Result<Json<AutoyastConversionResult>, Profil
         profile,
         unsupported: importer.unsupported,
     }))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::web::error::ProblemDetailsExt;
+    use axum::http::StatusCode;
+
+    #[test]
+    fn retrieve_profile_returns_none_without_path_url_or_profile() {
+        let body = ProfileBody::from_string("{}".to_string());
+        let result = body.retrieve_profile().expect("should not fail");
+        assert_eq!(result, None);
+    }
+
+    #[test]
+    fn retrieve_profile_returns_none_for_empty_body() {
+        let body = ProfileBody::from_string(String::new());
+        let result = body.retrieve_profile().expect("should not fail");
+        assert_eq!(result, None);
+    }
+
+    #[test]
+    fn retrieve_profile_returns_inline_json() {
+        let body = ProfileBody::from_string(r#"{"profile": "{\"foo\": 1}"}"#.to_string());
+        let result = body.retrieve_profile().expect("should not fail");
+        assert_eq!(result, Some(r#"{"foo": 1}"#.to_string()));
+    }
+
+    /// Regression test for a bug where an absent profile (no "path", "url" or
+    /// "profile" key) made `retrieve_profile()` return `Ok(None)`, which the
+    /// handlers then unwrapped via `.expect("Missing profile")`, panicking on
+    /// a plain HTTP request instead of returning a proper error.
+    #[test]
+    fn missing_profile_maps_to_a_bad_request_response() {
+        let error = ProfileError::MissingProfile;
+        let problem = error.into_problem_details();
+        assert_eq!(problem.status_code(), StatusCode::BAD_REQUEST);
+    }
 }
