@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Fri Sep  4 12:11:07 UTC 2026 - Martin Vidner <mvidner@suse.com>
+
+- web dependencies: move those not needed for run time or building
+  to optionalDependencies (bsc#1278985)
+- web dependencies: use knip in CI to detect unused dependencies
+  and files (jlopez)
+
+-------------------------------------------------------------------
 Thu Sep  3 08:13:38 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Offer applying the installer language and keyboard to the product
