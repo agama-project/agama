@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Wed Oct  7 11:50:47 UTC 2026 - Martin Vidner <mvidner@suse.com>
+
+- web dependencies: move those not needed for run time or building
+  to optionalDependencies (bsc#1278985)
+- web dependencies: use knip in CI to detect unused dependencies
+  and files (jlopez)
+
+-------------------------------------------------------------------
 Tue Sep 29 16:45:27 UTC 2026 - Martin Pluskal <martin@pluskal.org>
 
 - Do not fail saving a form with "CancelledError" when the
