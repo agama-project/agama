@@ -306,10 +306,6 @@ create_weblate_branch() {
 create_weblate_components() {
   local branch_name="$1"
 
-  # create file name suffix from the branch name: remove dashes, convert uppercase letters to lowercase
-  local file_suffix="${branch_name//-/}"
-  file_suffix="${file_suffix,,}"
-
   local components=(
     "products:Agama Products"
     "service:Agama Service"
@@ -322,22 +318,62 @@ create_weblate_components() {
     local type="${item%%:*}"
     local label="${item#*:}"
 
+    # Weblate component slugs must be lowercase and contain only valid characters (no dots)
+    local branch_slug="${branch_name,,}"
+    branch_slug="${branch_slug//./-}"
+    local target_slug="agama-$type-$branch_slug"
+
+    # The source component slug must be strictly lowercase
+    local from_comp="agama/agama-$type-sle-16"
+
     echo "Creating Weblate component for $branch_name based on agama-$type-sle-16..."
-    local base_url="https://l10n.opensuse.org/api/components/agama/agama-$type-sle-16/"
     local create_url="https://l10n.opensuse.org/api/projects/agama/components/"
 
-    # Fetch base component configuration, adjust properties, and POST to create the new one
-    curl -s -f -H "Authorization: Token $WEBLATE_API_KEY" "$base_url" |
-      jq --arg name "$label ($branch_name)" \
-        --arg slug "agama-$type-$file_suffix" \
-        --arg branch "$branch_name" \
-        '.name = $name | .slug = $slug | .branch = $branch | del(.id, .project, .translations_url, .statistics_url, .changes_url, .repository_url, .git_status)' |
-      curl -s -f -X POST \
-        -H "Authorization: Token $WEBLATE_API_KEY" \
-        -H "Content-Type: application/json" \
-        -d @- "$create_url" > /dev/null
+    # https://docs.weblate.org/en/latest/api.html#post--api-projects-(string-project)-components-
+    local payload
+    payload=$(jq -n --arg fc "$from_comp" --arg name "agama-$type-$branch_name" --arg slug "$target_slug" \
+      '{ from_component: $fc, name: $name, slug: $slug }')
 
-    echo "Weblate component agama-$type-$file_suffix successfully created!"
+    curl -f -X POST \
+      -H "Authorization: Token $WEBLATE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d "$payload" \
+      "$create_url"
+
+    # # FIXME: for some reason this does not work, the PUT request returns Error 400 :-/
+    # # fix this later, so far the new components need to be edited in the web UI
+    #
+    # local update_url="https://l10n.opensuse.org/api/components/agama/$target_slug/"
+    #
+    # # Fetch component configuration, change the branch name and update it back
+    # # https://docs.weblate.org/en/latest/api.html#get--api-components-(string-project)-(string-component)-
+    # # keep only the requested attributes
+    # # https://docs.weblate.org/en/latest/api.html#put--api-components-(string-project)-(string-component)-
+    # curl -s -f -H "Authorization: Token $WEBLATE_API_KEY" "$update_url" |
+    #   jq --arg branch "$branch_name" '
+    #     .branch = $branch |
+    #     {
+    #       branch,
+    #       file_format,
+    #       file_format_params,
+    #       filemask,
+    #       name,
+    #       slug,
+    #       repo,
+    #       template,
+    #       new_base,
+    #       vcs,
+    #       vcs_params,
+    #       hide_glossary_matches,
+    #       contribute_project_tm
+    #     } | with_entries(select(.value != null))' |
+    #   curl -s -f -X PUT \
+    #     -H "Authorization: Token $WEBLATE_API_KEY" \
+    #     -H "Content-Type: application/json" \
+    #     -d @- \
+    #     "$update_url"
+    #
+    # echo "Weblate component $target_slug successfully created!"
   done
 }
 
