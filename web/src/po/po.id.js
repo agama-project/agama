@@ -714,9 +714,6 @@ export default {
   "Configured as %s.": [
     "Dikonfigurasi sebagai %s."
   ],
-  "Configured for installation only": [
-    "Dikonfigurasi hanya untuk pemasangan"
-  ],
   "Configured with %d connection": [
     "Dikonfigurasi dengan %d koneksi"
   ],
@@ -759,8 +756,8 @@ export default {
   "Connected devices tabs": [
     "Tab Perangkat Terhubung"
   ],
-  "Connecting to %s": [
-    "Menghubungkan ke %s"
+  "Connecting": [
+    "Menyambung"
   ],
   "Connection failed": [
     "Koneksi gagal"
@@ -975,6 +972,9 @@ export default {
   "Disconnected by the system": [
     "Terputus oleh sistem"
   ],
+  "Disconnecting": [
+    "Memutuskan sambungan"
+  ],
   "Disconnection failed": [
     "Pemutusan gagal"
   ],
@@ -1143,9 +1143,6 @@ export default {
   "ExFAT": [
     "ExFAT"
   ],
-  "Excellent signal": [
-    "Sinyal sangat baik"
-  ],
   "Expand if possible": [
     "Perluas jika memungkinkan"
   ],
@@ -1178,6 +1175,9 @@ export default {
   ],
   "FAT": [
     "FAT"
+  ],
+  "Failed": [
+    ""
   ],
   "Failed to calculate a storage layout": [
     "Gagal menghitung tata letak penyimpanan"
@@ -1284,9 +1284,6 @@ export default {
   "Go to storage page": [
     "Buka halaman penyimpanan"
   ],
-  "Good signal": [
-    "Sinyal baik"
-  ],
   "Graphical desktop environments for the system.": [
     "Lingkungan desktop grafis untuk sistem."
   ],
@@ -1333,9 +1330,6 @@ export default {
     "Saya telah membaca dan menerima [lisensi] untuk %s"
   ],
   "IP Addresses": [
-    "Alamat IP"
-  ],
-  "IP addresses": [
     "Alamat IP"
   ],
   "IPs": [
@@ -1445,9 +1439,6 @@ export default {
   ],
   "Installation settings in JSON format": [
     "Pengaturan instalasi dalam format JSON"
-  ],
-  "Installation will take %s.": [
-    "Penginstalan akan memakan waktu %s."
   ],
   "Installed system may not have network connections": [
     "Sistem yang dipasang mungkin tidak memiliki koneksi jaringan"
@@ -2040,6 +2031,9 @@ export default {
   "Open terminal": [
     "Buka terminal"
   ],
+  "Opens a dialog": [
+    ""
+  ],
   "Options for partition %s": [
     "Opsi untuk partisi %s"
   ],
@@ -2204,9 +2198,6 @@ export default {
   ],
   "Public key provided for both": [
     "Kunci publik disediakan untuk keduanya"
-  ],
-  "Public network": [
-    "Jaringan publik"
   ],
   "Question": [
     "Pertanyaan"
@@ -2384,9 +2375,6 @@ export default {
   ],
   "SUSE Customer Center (SCC)": [
     "SUSE Customer Center (SCC)"
-  ],
-  "Secured network": [
-    "Jaringan aman"
   ],
   "Security": [
     "Keamanan"
@@ -2979,9 +2967,6 @@ export default {
   "This product does not provide desktop environments.": [
     "Produk ini tidak menyediakan lingkungan desktop."
   ],
-  "This space includes the base system and the selected software patterns, if any.": [
-    "Ruang ini mencakup sistem dasar dan pola perangkat lunak yang dipilih, jika ada."
-  ],
   "This uses existing logical volumes at the volume group": [
     "Ini menggunakan volume logis yang sudah ada pada grup volume"
   ],
@@ -2993,9 +2978,6 @@ export default {
   ],
   "This volume group only occupies the space required by its logical volumes. To expand it to cover all available disk space, recreate the volume group.": [
     "Grup volume ini hanya menempati ruang yang diperlukan oleh volume logisnya. Untuk memperluasnya agar mencakup semua ruang disk yang tersedia, buat ulang grup volume."
-  ],
-  "This will affect only the installer interface, not the product to be installed. You can adjust the product’s localization later in the Localization settings page.": [
-    "Hal ini hanya akan memengaruhi antarmuka penginstal, bukan produk yang akan diinstal. Anda dapat menyesuaikan lokalisasi produk nanti di halaman Pengaturan Lokalisasi."
   ],
   "This will be injected to the command to create the file system (%s).": [
     "Ini akan disisipkan ke dalam perintah untuk membuat filesystem (%s)."
@@ -3041,6 +3023,9 @@ export default {
   ],
   "Unknown error": [
     "Kesalahan tidak diketahui"
+  ],
+  "Unmanaged": [
+    ""
   ],
   "Unsaved changes": [
     "Perubahan belum disimpan"
@@ -3302,9 +3287,6 @@ export default {
   ],
   "Waiting for proposal": [
     "Menunggu proposal"
-  ],
-  "Weak signal": [
-    "Sinyal lemah"
   ],
   "When ready, click on the [install] button at the end of the page.": [
     "Saat siap, klik tombol [instal] di akhir halaman."
