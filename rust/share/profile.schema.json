@@ -524,6 +524,7 @@
                     "type": "array",
                     "items": {
                       "title": "A list of the interfaces or connections to be bonded",
+                      "description": "Each entry is the interface name of a connection or, for a connection that is not bound to an interface, its ID. A name that matches no connection creates an Ethernet one for that interface.",
                       "type": "string"
                     }
                   }
@@ -562,7 +563,37 @@
                     "type": "array",
                     "items": {
                       "title": "A list of the interface(s) or connection(s) to be part of the bridge",
+                      "description": "Each entry is the interface name of a connection or, for a connection that is not bound to an interface, its ID. A name that matches no connection creates an Ethernet one for that interface.",
                       "type": "string"
+                    }
+                  }
+                }
+              },
+              "controller": {
+                "title": "The controller this connection is a port of",
+                "description": "Read-only. It is reported by Agama using the same naming scheme as the 'ports' lists, which are the only way to change the membership. It is ignored when given.",
+                "type": "string"
+              },
+              "port": {
+                "type": "object",
+                "title": "Settings this connection has as a port of a controller",
+                "additionalProperties": false,
+                "properties": {
+                  "bridge": {
+                    "type": "object",
+                    "title": "Settings for a port of a bridge",
+                    "additionalProperties": false,
+                    "properties": {
+                      "priority": {
+                        "title": "Spanning Tree Protocol port priority (lower values are 'better')",
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "pathCost": {
+                        "title": "Spanning Tree Protocol port cost",
+                        "type": "integer",
+                        "minimum": 0
+                      }
                     }
                   }
                 }

@@ -28,8 +28,9 @@ use crate::{
 use anyhow::anyhow;
 use async_trait::async_trait;
 use core::time;
-use std::thread;
+use std::{collections::HashSet, thread};
 use tokio::time::{sleep, Duration, Instant};
+use uuid::Uuid;
 use zbus::zvariant::OwnedObjectPath;
 
 use super::error::NmError;
@@ -306,19 +307,32 @@ impl Adapter for NetworkManagerAdapter<'_> {
 fn ordered_connections(network: &NetworkState) -> Vec<&Connection> {
     let mut conns: Vec<&Connection> = vec![];
     for conn in &network.connections {
-        add_ordered_connections(conn, network, &mut conns);
+        add_ordered_connections(conn, network, &mut conns, &mut HashSet::new());
     }
     conns
 }
 
+/// Adds a connection to the list, making sure that its controller comes first.
+///
+/// * `visited`: connections seen while walking up this chain of controllers. It keeps a loop from
+///   blowing the stack, no matter how the state got into that shape.
 fn add_ordered_connections<'b>(
     conn: &'b Connection,
     network: &'b NetworkState,
     conns: &mut Vec<&'b Connection>,
+    visited: &mut HashSet<Uuid>,
 ) {
+    if !visited.insert(conn.uuid) {
+        tracing::error!(
+            "The connection {} belongs to a loop of controllers",
+            &conn.id
+        );
+        return;
+    }
+
     if let Some(uuid) = conn.controller {
         if let Some(controller) = network.get_connection_by_uuid(uuid) {
-            add_ordered_connections(controller, network, conns);
+            add_ordered_connections(controller, network, conns, visited);
         } else {
             tracing::error!("Could not found the controller {}", &uuid);
         }
@@ -326,5 +340,55 @@ fn add_ordered_connections<'b>(
 
     if !conns.contains(&conn) {
         conns.push(conn);
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::ordered_connections;
+    use crate::{
+        model::{Connection, NetworkState},
+        test_utils::stacked_connections,
+    };
+    use agama_utils::api::network::DeviceType;
+
+    fn state_with(connections: Vec<Connection>) -> NetworkState {
+        NetworkState::new(None, Default::default(), vec![], vec![], connections)
+    }
+
+    /// Returns the position of each connection id in the ordered list.
+    fn position(ordered: &[&Connection], id: &str) -> usize {
+        ordered
+            .iter()
+            .position(|c| c.id == id)
+            .unwrap_or_else(|| panic!("'{id}' is missing from the ordered connections"))
+    }
+
+    #[test]
+    fn test_a_controller_comes_before_its_ports() {
+        let state = state_with(stacked_connections());
+        let ordered = ordered_connections(&state);
+
+        assert_eq!(ordered.len(), 5);
+        // br0 -> bond0 -> eth0 + eth1, each controller written before the ports that join it.
+        assert!(position(&ordered, "br0") < position(&ordered, "bond0"));
+        assert!(position(&ordered, "bond0") < position(&ordered, "eth0"));
+        assert!(position(&ordered, "bond0") < position(&ordered, "eth1"));
+        // The VLAN is not a port, so it only has to be there.
+        position(&ordered, "br0.100");
+    }
+
+    #[test]
+    fn test_a_loop_of_controllers_does_not_overflow_the_stack() {
+        let mut first = Connection::new("first".to_string(), DeviceType::Bridge);
+        let mut second = Connection::new("second".to_string(), DeviceType::Bridge);
+        first.controller = Some(second.uuid);
+        second.controller = Some(first.uuid);
+
+        let state = state_with(vec![first, second]);
+        let ordered = ordered_connections(&state);
+
+        // The loop is reported and the chain is cut, but both connections are still returned.
+        assert_eq!(ordered.len(), 2);
     }
 }
