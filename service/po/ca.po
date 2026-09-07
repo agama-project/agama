@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-08-24 09:16+0000\n"
-"PO-Revision-Date: 2026-02-13 21:04+0000\n"
+"PO-Revision-Date: 2026-09-04 14:14+0000\n"
 "Last-Translator: David Medina <medipas@gmail.com>\n"
 "Language-Team: Catalan <https://l10n.opensuse.org/projects/agama/agama-"
 "service-sle-16/ca/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.15.2\n"
+"X-Generator: Weblate 2026.9\n"
 
 #. Reports the problems and decide whether to continue or not.
 #.
@@ -158,7 +158,7 @@ msgstr ""
 #. @see https://github.com/yast/yast-yast2/blob/19180445ab935a25edd4ae0243aa7a3bcd09c9de/library/packages/src/modules/PackageCallbacks.rb#L620
 #: service/lib/agama/software/callbacks/script.rb:50
 msgid "There was a problem running a package script."
-msgstr "Hi ha hagut un problema en executar un script de paquet."
+msgstr "Hi ha hagut un problema en executar un script del paquet."
 
 #. Callback to handle unsigned files
 #.
@@ -256,7 +256,7 @@ msgstr "Refrescant les metadades dels repositoris"
 
 #: service/lib/agama/software/manager.rb:179
 msgid "Calculating the software proposal"
-msgstr "Calculant la proposta de programari"
+msgstr "Càlcul de la proposta de programari"
 
 #: service/lib/agama/software/manager.rb:183
 msgid "Initializing sources"
@@ -808,8 +808,8 @@ msgstr[1] ""
 msgid ""
 "Defining a user, setting the root password or a SSH public key is required"
 msgstr ""
-"Cal definir un usuari, establir la contrasenya d'arrel o una clau pública "
-"SSH."
+"Cal definir un usuari i establir la contrasenya d'arrel o una clau pública "
+"SSH"
 
 #~ msgid "Selecting Linux Security Modules"
 #~ msgstr "Seleccionant els mòduls de seguretat de Linux"
