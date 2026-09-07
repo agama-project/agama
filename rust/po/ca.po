@@ -8,55 +8,56 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-09-04 12:04+0000\n"
-"PO-Revision-Date: 2026-03-11 07:04+0000\n"
-"Last-Translator: Timo Jyrinki <tjyrinki@suse.com>\n"
-"Language-Team: Finnish <https://l10n.opensuse.org/projects/agama/agama-rust-"
-"master/fi/>\n"
-"Language: fi\n"
+"PO-Revision-Date: 2026-09-04 14:14+0000\n"
+"Last-Translator: David Medina <medipas@gmail.com>\n"
+"Language-Team: Catalan <https://l10n.opensuse.org/projects/agama/agama-rust-"
+"master/ca/>\n"
+"Language: ca\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.16.2\n"
+"X-Generator: Weblate 2026.9\n"
 
 #: agama-autoinstall/src/auto_loader.rs:142
 msgid ""
 "Configuration cannot be applied because it is invalid or could not be "
 "reached."
 msgstr ""
+"La configuració no es pot aplicar perquè no és vàlida o no s'hi ha pogut "
+"accedir."
 
 #: agama-autoinstall/src/questions.rs:47
-#, fuzzy
 msgid "Reload configuration"
-msgstr "Luetaan asetuksia"
+msgstr "Recarrega la configuració"
 
 #: agama-autoinstall/src/questions.rs:48
 msgid "Skip and configure manually"
-msgstr ""
+msgstr "Omet i configura manualment"
 
 #: agama-autoinstall/src/questions.rs:77 agama-cli/src/config.rs:371
 msgid "Found unsupported elements in the AutoYaST profile:"
-msgstr ""
+msgstr "S'han trobat elements no admesos al perfil d'AutoYaST:"
 
 #: agama-autoinstall/src/questions.rs:92
 #: agama-software/src/callbacks/install.rs:81
 msgid "Continue"
-msgstr "Jatka"
+msgstr "Continua"
 
 #: agama-autoinstall/src/questions.rs:93
 msgid "Abort"
-msgstr ""
+msgstr "Avorta"
 
 #. TRANSLATORS: {0} is a URL
 #: agama-autoinstall/src/scripts.rs:135
 msgid ""
 "It was not possible to load the script from {0}. Do you want to try again?"
-msgstr ""
+msgstr "No s'ha pogut carregar l'script des de {0}. Voleu tornar-ho a provar?"
 
 #. TRANSLATORS: CLI help for: agama auth
 #: agama-cli/src/auth.rs:65
 msgid "Authenticate with Agama's server"
-msgstr ""
+msgstr "Autentica amb el servidor d'Agama"
 
 #. TRANSLATORS: CLI help for: agama auth (details)
 #: agama-cli/src/auth.rs:67
@@ -74,21 +75,34 @@ msgid ""
 "You can logout at any time by using the \"auth logout\" command, although "
 "this command does not affect the root user."
 msgstr ""
+"A menys que executeu aquest programa com a usuari d'arrel, cal que us "
+"autentiqueu al servidor d'Agama per a la majoria de les operacions. Podeu "
+"iniciar la sessió especificant la contrasenya d'arrel mitjançant l'ordre "
+"auth login. Un cop l'autenticació és correcta, el servidor retorna un JSON "
+"Web Token (JWT) que es desa per autenticar les peticions posteriors.\n"
+"\n"
+"Si executeu aquest programa localment com a arrel, podeu saltar-vos el pas "
+"d'autenticació, ja que el programa utilitza automàticament el testimoni "
+"mestre situat a /run/agama/token. Només l'usuari d'arrel ha de tenir accés a "
+"aquest fitxer.\n"
+"\n"
+"Podeu tancar la sessió en qualsevol moment amb l'ordre auth logout, tot i "
+"que aquesta ordre no afecta l'usuari d'arrel."
 
 #. TRANSLATORS: CLI help for: agama auth logout
 #: agama-cli/src/auth.rs:88
 msgid "Deauthenticate by removing the token"
-msgstr ""
+msgstr "Cancel·la l'autenticació suprimint-ne el testimoni"
 
 #. TRANSLATORS: CLI help for: agama auth show
 #: agama-cli/src/auth.rs:93
 msgid "Print the used token to the standard output"
-msgstr ""
+msgstr "Imprimeix el testimoni usat a la sortida estàndard"
 
 #. TRANSLATORS: CLI help for: agama auth login
 #: agama-cli/src/auth.rs:99
 msgid "Authenticate with Agama's server and store the token"
-msgstr ""
+msgstr "Autentica amb el servidor d'Agama i desa'n el testimoni"
 
 #. TRANSLATORS: CLI help for: agama auth login (details)
 #: agama-cli/src/auth.rs:101
@@ -98,21 +112,24 @@ msgid ""
 "token in .agama/agama-jwt. The token will be automatically sent to "
 "authenticate the following requests."
 msgstr ""
+"Aquesta ordre intenta obtenir la contrasenya de l'entrada estàndard. Si no "
+"hi és, la demana a l'usuari de manera interactiva. Un cop iniciada la sessió "
+"correctament, en desa el testimoni a .agama/agama-jwt. El testimoni "
+"s'enviarà automàticament per autenticar les peticions posteriors."
 
 #: agama-cli/src/auth.rs:141
 msgid "Please enter the root password:"
-msgstr ""
+msgstr "Si us plau, introduïu la contrasenya d'arrel:"
 
 #. TRANSLATORS: {0} is a host name
 #: agama-cli/src/auth.rs:179
 msgid "Not authenticated in {0}"
-msgstr ""
+msgstr "No autenticat a {0}"
 
 #. TRANSLATORS: CLI help for: agama probe
 #: agama-cli/src/commands.rs:42
-#, fuzzy
 msgid "Analyze the system"
-msgstr "Valmistele järjestelmä"
+msgstr "Analitza el sistema"
 
 #. TRANSLATORS: CLI help for: agama probe (details)
 #: agama-cli/src/commands.rs:44
@@ -122,11 +139,15 @@ msgid ""
 "devices, and more. The 'probe' command initiates this analysis process and "
 "returns immediately."
 msgstr ""
+"En l'argot d'Agama, el terme probing (exploració) es refereix al procés "
+"d'analitzar el sistema. Això inclou la lectura de repositoris de programari, "
+"l'anàlisi de dispositius d'emmagatzematge, entre altres coses. L'ordre probe "
+"inicia aquest procés d'anàlisi i en retorna immediatament el resultat."
 
 #. TRANSLATORS: CLI help for: agama install
 #: agama-cli/src/commands.rs:53
 msgid "Start the system installation"
-msgstr ""
+msgstr "Inicia la instal·lació del sistema"
 
 #. TRANSLATORS: CLI help for: agama install (details)
 #: agama-cli/src/commands.rs:55
@@ -138,11 +159,17 @@ msgid ""
 "When the preconditions for the installation are not met, it informs the user "
 "and returns, making no changes to the system."
 msgstr ""
+"Aquesta ordre inicia el procés d'instal·lació. Tingueu en compte que és una "
+"operació destructiva, ja que configurarà els dispositius d'emmagatzematge, "
+"instal·larà els paquets, etc.\n"
+"\n"
+"Quan no es compleixen les condicions prèvies per a la instal·lació, "
+"n'informa l'usuari i acaba l'execució sense fer cap canvi al sistema."
 
 #. TRANSLATORS: CLI help for: agama download
 #: agama-cli/src/commands.rs:78
 msgid "Download file from a given (AutoYaST) URL"
-msgstr ""
+msgstr "Baixa un fitxer des d'un URL (AutoYaST) determinat"
 
 #. TRANSLATORS: CLI help for: agama download (details)
 #: agama-cli/src/commands.rs:80
@@ -153,6 +180,11 @@ msgid ""
 "autoinstallation profiles. If you want to convert an AutoYaST profile, use "
 "\"agama config generate\"."
 msgstr ""
+"L'objectiu d'aquesta ordre és descarregar fitxers usant esquemes compatibles "
+"amb AutoYaST (p. ex., device://). Es pot fer servir per baixar scripts "
+"addicionals, fitxers de configuració, etc. També la podeu usar per "
+"descarregar perfils d'autoinstal·lació de l'Agama. Si voleu convertir un "
+"perfil d'AutoYaST, useu «agama config generate»."
 
 #. TRANSLATORS: CLI help for: agama download <URL>
 #: agama-cli/src/commands.rs:94
@@ -160,17 +192,18 @@ msgid ""
 "URL reference pointing to file for download. If a relative URL is provided, "
 "it will be resolved against the current working directory"
 msgstr ""
+"Referència d'URL que apunta a un fitxer per baixar. Si es proporciona una "
+"URL relativa, es resoldrà a partir del directori de treball actual"
 
 #. TRANSLATORS: CLI help for: agama download <DESTINATION>
 #: agama-cli/src/commands.rs:104
 msgid "File name"
-msgstr ""
+msgstr "Nom del fitxer"
 
 #. TRANSLATORS: CLI help for: agama finish
 #: agama-cli/src/commands.rs:111
-#, fuzzy
 msgid "Finish the installation"
-msgstr "Lasketaan ohjelmistoehdotusta"
+msgstr "Acaba la instal·lació"
 
 #. TRANSLATORS: CLI help for: agama finish <METHOD>
 #: agama-cli/src/commands.rs:117
@@ -186,11 +219,23 @@ msgid ""
 "\n"
 "   poweroff - power off the installed machine."
 msgstr ""
+"Què fer un cop acabada la instal·lació. Valors possibles:\n"
+"\n"
+"   stop - no reiniciar i mantenir l'aplicació de fons de l'Agama en "
+"execució.\n"
+"\n"
+"   reboot - reiniciar i arrencar el sistema instal·lat. Aquest és el valor "
+"predeterminat. Es pot modificar establint l'argument inst.finish a la línia "
+"d'ordres del nucli.\n"
+"\n"
+"   halt - aturar la màquina instal·lada.\n"
+"\n"
+"   poweroff - apagar la màquina instal·lada."
 
 #. TRANSLATORS: CLI help for: agama monitor
 #: agama-cli/src/commands.rs:135
 msgid "Continuously monitors the Agama service until it finishes"
-msgstr ""
+msgstr "Monitora contínuament el servei d'Agama fins que acaba"
 
 #. TRANSLATORS: CLI help for: agama status
 #: agama-cli/src/commands.rs:142
@@ -198,27 +243,28 @@ msgid ""
 "Prints the current state of the installation (e.g., waiting, blocked, "
 "running, or finished)"
 msgstr ""
+"Mostra l'estat actual de la instal·lació (p. ex., en espera, blocada, en "
+"execució o acabada)"
 
 #. TRANSLATORS: CLI help for: agama status --format <FORMAT>
 #: agama-cli/src/commands.rs:150
 msgid "Specify in which format status will be shown"
-msgstr ""
+msgstr "Especifica en quin format es mostrarà l'estat"
 
 #. TRANSLATORS: CLI help for: agama events
 #: agama-cli/src/commands.rs:157
 msgid "Display Agama events"
-msgstr ""
+msgstr "Mostra els esdeveniments d'Agama"
 
 #. TRANSLATORS: CLI help for: agama events --pretty
 #: agama-cli/src/commands.rs:164
 msgid "Display the events in a more human-readable way"
-msgstr ""
+msgstr "Mostra els esdeveniments d'una manera més llegible per a les persones"
 
 #. TRANSLATORS: CLI help for: agama config
 #: agama-cli/src/config.rs:46
-#, fuzzy
 msgid "Inspect or change the installation settings"
-msgstr "Tallennetaan kotoistusasetuksia"
+msgstr "Revisa o modifica la configuració de la instal·lació"
 
 #. TRANSLATORS: CLI help for: agama config (details)
 #: agama-cli/src/config.rs:48
@@ -230,22 +276,28 @@ msgid ""
 "If you want to change any configuration value, you can load a profile "
 "(complete or partial) using the \"load\" subcommand."
 msgstr ""
+"Podeu inspeccionar i modificar la configuració de la instal·lació des de la "
+"línia d'ordres. La subordre show genera un perfil, que és un document JSON "
+"que descriu la configuració actual.\n"
+"\n"
+"Si voleu modificar algun paràmetre de configuració, podeu carregar un perfil "
+"(complet o parcial) mitjançant la subordre load."
 
 #. TRANSLATORS: CLI help for: agama config load
 #: agama-cli/src/config.rs:64
 msgid "Read and load a profile"
-msgstr ""
+msgstr "Llegeix i carrega un perfil"
 
 #. TRANSLATORS: CLI help for: agama config load <URL_OR_PATH>
 #. TRANSLATORS: CLI help for: agama config generate <URL_OR_PATH>
 #: agama-cli/src/config.rs:70 agama-cli/src/config.rs:166
 msgid "JSON file: URL or path or `-` for standard input"
-msgstr ""
+msgstr "Fitxer JSON: URL, camí o - per a l'entrada estàndard"
 
 #. TRANSLATORS: CLI help for: agama config show
 #: agama-cli/src/config.rs:80
 msgid "Generate an installation profile with the current settings"
-msgstr ""
+msgstr "Genera un perfil d'instal·lació amb la configuració actual"
 
 #. TRANSLATORS: CLI help for: agama config show (details)
 #: agama-cli/src/config.rs:85
@@ -255,16 +307,21 @@ msgid ""
 "\n"
 "The output of command can be used as input for the \"agama config load\"."
 msgstr ""
+"És possible que molts paràmetres de configuració no tinguin un valor. "
+"Aquests paràmetres no s'inclouen a la sortida.\n"
+"\n"
+"La sortida de l'ordre es pot usar com a entrada per a la càrrega de "
+"configuració d'Agama."
 
 #. TRANSLATORS: CLI help for: agama config show --output <FILE_PATH>
 #: agama-cli/src/config.rs:103
 msgid "Save the output here (goes to stdout if not given)"
-msgstr ""
+msgstr "Desa la sortida aquí (va a la sortida estàndard si no s'especifica)"
 
 #. TRANSLATORS: CLI help for: agama config validate
 #: agama-cli/src/config.rs:110
 msgid "Validate a profile using JSON Schema"
-msgstr ""
+msgstr "Valida un perfil usant un esquema de JSON"
 
 #. TRANSLATORS: CLI help for: agama config validate (details)
 #: agama-cli/src/config.rs:115
@@ -272,11 +329,14 @@ msgid ""
 "Schema is available at /usr/share/agama/schema/profile.schema.json Note: "
 "validation is always done as part of all other \"agama config\" commands."
 msgstr ""
+"L'esquema està disponible a /usr/share/agama/schema/profile.schema.json. "
+"Nota: la validació es fa sempre com a part de totes les altres ordres "
+"d'agama config."
 
 #. TRANSLATORS: CLI help for: agama config validate <URL_OR_PATH>
 #: agama-cli/src/config.rs:129
 msgid "JSON file, URL or path or `-` for standard input"
-msgstr ""
+msgstr "Fitxer JSON, URL o camí, o bé - per a l'entrada estàndard"
 
 #. TRANSLATORS: CLI help for: agama config validate --local
 #: agama-cli/src/config.rs:137
@@ -284,6 +344,8 @@ msgid ""
 "Run subcommands (if possible) in local mode - without trying to connect to "
 "remote agama server"
 msgstr ""
+"Executa les subordres (si és possible) en mode local, sense intentar "
+"connectar amb un servidor Agama remot"
 
 #. TRANSLATORS: CLI help for: agama config generate
 #: agama-cli/src/config.rs:144
@@ -291,6 +353,8 @@ msgid ""
 "Generate and print a native Agama JSON configuration from any kind and "
 "location"
 msgstr ""
+"Genera i imprimeix una configuració JSON nativa d'Agama des de qualsevol "
+"tipus i ubicació"
 
 #. TRANSLATORS: CLI help for: agama config generate (details)
 #: agama-cli/src/config.rs:146
@@ -308,11 +372,23 @@ msgid ""
 "https://github.com/openSUSE/agama/blob/master/rust/agama-lib/share/examples/"
 "profile.jsonnet"
 msgstr ""
+"Tipus:\n"
+"- JSON\n"
+"- Jsonnet, injectant la informació del maquinari\n"
+"- Perfil AutoYaST, incloent-hi ERB i regles/classes\n"
+"\n"
+"Ubicacions:\n"
+"- camí\n"
+"- URL (incloent-hi esquemes específics d'AutoYaST)\n"
+"\n"
+"Per veure un exemple de perfil basat en Jsonnet, consulteu\n"
+"https://github.com/openSUSE/agama/blob/master/rust/agama-lib/share/examples/"
+"profile.jsonnet"
 
 #. TRANSLATORS: CLI help for: agama config edit
 #: agama-cli/src/config.rs:172
 msgid "Edit and update installation option using an external editor"
-msgstr ""
+msgstr "Edita i actualitza l'opció d'instal·lació mitjançant un editor extern"
 
 #. TRANSLATORS: CLI help for: agama config edit (details)
 #: agama-cli/src/config.rs:177
@@ -322,24 +398,28 @@ msgid ""
 "If an editor is not specified, it honors the EDITOR environment variable. It "
 "falls back to `/usr/bin/vi` as a last resort."
 msgstr ""
+"Els canvis no s'apliquen si l'editor surt amb un codi d'error.\n"
+"\n"
+"Si no s'especifica un editor, respecta la variable d'entorn EDITOR. Com a "
+"últim recurs, es recorre a /usr/bin/vi."
 
 #. TRANSLATORS: CLI help for: agama config edit --editor <EDITOR>
 #: agama-cli/src/config.rs:194
 msgid "Editor command (including additional arguments if needed)"
-msgstr ""
+msgstr "Ordre de l'editor (inclosos els arguments addicionals, si cal)"
 
 #: agama-cli/src/config.rs:217
 msgid "It is not a valid JSON file"
-msgstr ""
+msgstr "No és un fitxer JSON vàlid"
 
 #: agama-cli/src/config.rs:434
 msgid "Ignoring the changes because the editor was closed with an error code."
-msgstr ""
+msgstr "S'ignoren els canvis perquè l'editor s'ha tancat amb un codi d'error."
 
 #. TRANSLATORS: CLI help for: agama
 #: agama-cli/src/lib.rs:92
 msgid "Agama's command-line interface"
-msgstr ""
+msgstr "La interfície de línia d'ordres d'Agama"
 
 #. TRANSLATORS: CLI help for: agama (details)
 #: agama-cli/src/lib.rs:97
@@ -350,6 +430,11 @@ msgid ""
 "\n"
 "Please, use the \"help\" command to learn more."
 msgstr ""
+"Aquest programa permet inspeccionar o modificar la configuració de l'Agama, "
+"gestionar els perfils d'instal·lació, iniciar la instal·lació, supervisar el "
+"procés, etc.\n"
+"\n"
+"Si us plau, useu l'ordre «help» per obtenir-ne més informació."
 
 #. TRANSLATORS: CLI help for: agama --host <HOST>
 #: agama-cli/src/lib.rs:115
@@ -358,11 +443,14 @@ msgid ""
 "\n"
 "Examples: https://my-server.lan my-server.local localhost:10443"
 msgstr ""
+"URI que apunta a l'amfitrió remot de l'Agama.\n"
+"\n"
+"Exemples: https://my-server.lan my-server.local localhost:10443"
 
 #. TRANSLATORS: CLI help for: agama --insecure
 #: agama-cli/src/lib.rs:127
 msgid "Whether to accept invalid (self-signed, ...) certificates or not"
-msgstr ""
+msgstr "Si s'han d'acceptar o no certificats no vàlids (autosignats, etc.)"
 
 #. TRANSLATORS: CLI help for: agama --local
 #: agama-cli/src/lib.rs:135
@@ -370,11 +458,13 @@ msgid ""
 "Some commands could be able to work even without connection to the agama "
 "server"
 msgstr ""
+"Algunes ordres podrien funcionar fins i tot sense connexió amb el servidor "
+"Agama"
 
 #. TRANSLATORS: CLI help for: agama logs
 #: agama-cli/src/logs.rs:31
 msgid "Collect the installer logs"
-msgstr ""
+msgstr "Recull els registres de l'instal·lador"
 
 #. TRANSLATORS: CLI help for: agama logs (details)
 #: agama-cli/src/logs.rs:36
@@ -383,11 +473,15 @@ msgid ""
 "inspection. The file includes system and Agama-specific logs and "
 "configuration files. They are crucial to troubleshoot and debug problems."
 msgstr ""
+"Els registres de l'instal·lador s'emmagatzemen en un fitxer comprimit per a "
+"una revisió posterior. El fitxer inclou registres del sistema i específics "
+"de l'Agama, així com fitxers de configuració. Són crucials per diagnosticar "
+"i depurar problemes."
 
 #. TRANSLATORS: CLI help for: agama logs store
 #: agama-cli/src/logs.rs:50
 msgid "Collect and store the logs in a tar archive"
-msgstr ""
+msgstr "Recopila i emmagatzema els registres en un fitxer tar"
 
 #. TRANSLATORS: CLI help for: agama logs store --destination <DESTINATION>
 #: agama-cli/src/logs.rs:58
@@ -395,233 +489,227 @@ msgid ""
 "Path to destination directory and, optionally, the archive file name. The "
 "extension will be added automatically"
 msgstr ""
+"Camí al directori de destinació i, opcionalment, el nom del fitxer d'arxiu. "
+"L'extensió s'afegirà automàticament"
 
 #. TRANSLATORS: CLI help for: agama logs list
 #: agama-cli/src/logs.rs:65
 msgid "List the logs to collect"
-msgstr ""
+msgstr "Llista els registres que cal recopilar"
 
 #. TRANSLATORS: an installation "scope", used in the "agama monitor" command
 #: agama-cli/src/monitor/ui.rs:41
 msgid "Bootloader"
-msgstr ""
+msgstr "Carregador d'arrencada"
 
 #. TRANSLATORS: an installation "scope", used in the "agama monitor" command
 #: agama-cli/src/monitor/ui.rs:43
 msgid "Manager"
-msgstr ""
+msgstr "Gestor"
 
 #. TRANSLATORS: an installation "scope", used in the "agama monitor" command
 #: agama-cli/src/monitor/ui.rs:45
 msgid "Network"
-msgstr ""
+msgstr "Xarxa"
 
 #. TRANSLATORS: an installation "scope", used in the "agama monitor" command
 #: agama-cli/src/monitor/ui.rs:47
 msgid "NTP"
-msgstr ""
+msgstr "NTP"
 
 #. TRANSLATORS: an installation "scope", used in the "agama monitor" command
 #: agama-cli/src/monitor/ui.rs:49
 msgid "Hostname"
-msgstr ""
+msgstr "Nom de l'amfitrió"
 
 #. TRANSLATORS: an installation "scope", used in the "agama monitor" command
 #: agama-cli/src/monitor/ui.rs:51
 msgid "Localization"
-msgstr ""
+msgstr "Localització"
 
 #. TRANSLATORS: an installation "scope", used in the "agama monitor" command
 #: agama-cli/src/monitor/ui.rs:53
-#, fuzzy
 msgid "Product"
-msgstr "tuote"
+msgstr "Producte"
 
 #. TRANSLATORS: an installation "scope", used in the "agama monitor" command
 #: agama-cli/src/monitor/ui.rs:55
 msgid "Remote Access"
-msgstr ""
+msgstr "Accés remot"
 
 #. TRANSLATORS: an installation "scope", used in the "agama monitor" command
 #: agama-cli/src/monitor/ui.rs:57
 msgid "Software"
-msgstr ""
+msgstr "Programari"
 
 #. TRANSLATORS: an installation "scope", used in the "agama monitor" command
 #: agama-cli/src/monitor/ui.rs:59
 msgid "Storage"
-msgstr ""
+msgstr "Emmagatzematge"
 
 #. TRANSLATORS: an installation "scope", used in the "agama monitor" command
 #: agama-cli/src/monitor/ui.rs:61
 msgid "Files"
-msgstr ""
+msgstr "Fitxers"
 
 #. TRANSLATORS: an installation "scope", used in the "agama monitor" command
 #: agama-cli/src/monitor/ui.rs:63
 msgid "iSCSI"
-msgstr ""
+msgstr "iSCSI"
 
 #. TRANSLATORS: an installation "scope", used in the "agama monitor" command
 #: agama-cli/src/monitor/ui.rs:65
 msgid "DASD"
-msgstr ""
+msgstr "DASD"
 
 #. TRANSLATORS: an installation "scope", used in the "agama monitor" command
 #: agama-cli/src/monitor/ui.rs:67
 msgid "zFCP"
-msgstr ""
+msgstr "zFCP"
 
 #. TRANSLATORS: an installation "scope", used in the "agama monitor" command
 #: agama-cli/src/monitor/ui.rs:69
 msgid "Users"
-msgstr ""
+msgstr "Usuaris"
 
 #. TRANSLATORS: an installation "scope", used in the "agama monitor" command
 #: agama-cli/src/monitor/ui.rs:71
 msgid "Proxy"
-msgstr ""
+msgstr "Servidor intermediari"
 
 #. TRANSLATORS: an installation "scope", used in the "agama monitor" command
 #: agama-cli/src/monitor/ui.rs:73
 msgid "Questions"
-msgstr ""
+msgstr "Preguntes"
 
 #. TRANSLATORS: an installation "scope", used in the "agama monitor" command
 #: agama-cli/src/monitor/ui.rs:75
 msgid "Security"
-msgstr ""
+msgstr "Seguretat"
 
 #: agama-cli/src/monitor/ui/content.rs:64
-#, fuzzy
 msgid "Installation complete."
-msgstr "Asenna ohjelmistoja"
+msgstr "Instal·lació completada."
 
 #: agama-cli/src/monitor/ui/content.rs:65
 msgid "You can reboot the machine to log in to the new system."
-msgstr ""
+msgstr "Podeu reiniciar la màquina per iniciar sessió al sistema nou."
 
 #: agama-cli/src/monitor/ui/content.rs:68
-#, fuzzy
 msgid "Installation failed."
-msgstr "Asenna ohjelmistoja"
+msgstr "La instal·lació ha fallat."
 
 #: agama-cli/src/monitor/ui/content.rs:69
 msgid "Use the \"agama logs\" command to collect the logs."
-msgstr ""
+msgstr "Useu l'ordre «agama logs» per recopilar els registres."
 
 #: agama-cli/src/monitor/ui/content.rs:100
 msgid "Action needed:"
-msgstr ""
+msgstr "Acció necessària:"
 
 #: agama-cli/src/monitor/ui/content.rs:108
 msgid "No product has been selected yet."
-msgstr ""
+msgstr "Encara no s'ha seleccionat cap producte."
 
 #: agama-cli/src/monitor/ui/content.rs:172 agama-cli/src/status.rs:88
 msgid "Fix invalid settings before starting the installation:"
-msgstr ""
+msgstr "Corregiu la configuració no vàlida abans d'iniciar la instal·lació:"
 
 #: agama-cli/src/monitor/ui/content.rs:193 agama-cli/src/status.rs:81
-#, fuzzy
 msgid "Ready to start the installation."
-msgstr "Lasketaan ohjelmistoehdotusta"
+msgstr "A punt per començar la instal·lació."
 
 #: agama-cli/src/monitor/ui/content.rs:194
-#, fuzzy
 msgid "Starting the installation."
-msgstr "Lasketaan ohjelmistoehdotusta"
+msgstr "S'inicia la instal·lació."
 
 #: agama-cli/src/monitor/ui/content.rs:210
 msgid "Step"
-msgstr ""
+msgstr "Pas"
 
 #: agama-cli/src/monitor/ui/content.rs:212
 msgid "of"
-msgstr ""
+msgstr "de"
 
 #. TRANSLATORS: additional data that question passed to user beside main question message
 #: agama-cli/src/monitor/ui/question.rs:307
 msgid "Technical details"
-msgstr ""
+msgstr "Detalls tècnics"
 
 #. TRANSLATORS: CLI hint how to scroll through additional data
 #: agama-cli/src/monitor/ui/question.rs:317
 msgid "use PageUp/PageDown to scroll"
-msgstr ""
+msgstr "Useu Re Pàg / Av Pàg per al desplaçament"
 
 #: agama-cli/src/monitor/ui/question.rs:371
 msgid "Password"
-msgstr ""
+msgstr "Contrasenya"
 
 #: agama-cli/src/monitor/ui/question.rs:377
 msgid "Location"
-msgstr ""
+msgstr "Ubicació"
 
 #: agama-cli/src/monitor/ui/question.rs:383
 msgid "Value"
-msgstr ""
+msgstr "Valor"
 
 #: agama-cli/src/monitor/ui/summary.rs:47
 msgid "Host: "
-msgstr ""
+msgstr "Amfitrió: "
 
 #: agama-cli/src/monitor/ui/summary.rs:48
 msgid "Model: "
-msgstr ""
+msgstr "Model: "
 
 #: agama-cli/src/monitor/ui/summary.rs:49
-#, fuzzy
 msgid "Product: "
-msgstr "tuote"
+msgstr "Producte: "
 
 #: agama-cli/src/monitor/ui/summary.rs:50
 msgid "Stage: "
-msgstr ""
+msgstr "Pas: "
 
 #: agama-cli/src/monitor/ui/summary.rs:51
 msgid "Status: "
-msgstr ""
+msgstr "Estat: "
 
 #: agama-cli/src/monitor/ui/summary.rs:76
 msgid "Busy"
-msgstr ""
+msgstr "Ocupat"
 
 #: agama-cli/src/monitor/ui/summary.rs:77
 #: agama-cli/src/monitor/ui/summary.rs:105
 msgid "Failed"
-msgstr ""
+msgstr "Ha fallat"
 
 #: agama-cli/src/monitor/ui/summary.rs:78
 msgid "Idle"
-msgstr ""
+msgstr "Inactiu"
 
 #: agama-cli/src/monitor/ui/summary.rs:79
 msgid "Waiting for user"
-msgstr ""
+msgstr "S'espera l'usuari"
 
 #: agama-cli/src/monitor/ui/summary.rs:102
-#, fuzzy
 msgid "Installing"
-msgstr "Rekisteröidään järjestelmää"
+msgstr "S'instal·la"
 
 #: agama-cli/src/monitor/ui/summary.rs:103
-#, fuzzy
 msgid "Configuring"
-msgstr "Tehdään DASD-laitteiden asetuksia"
+msgstr "Es configura"
 
 #: agama-cli/src/monitor/ui/summary.rs:104
 msgid "Finished"
-msgstr ""
+msgstr "Acabat"
 
 #: agama-cli/src/monitor/ui/summary.rs:118
 msgid "Not selected yet"
-msgstr ""
+msgstr "Encara no seleccionat"
 
 #. TRANSLATORS: CLI help for: agama questions
 #: agama-cli/src/questions.rs:33
 msgid "Handle installer questions"
-msgstr ""
+msgstr "Ateneu les preguntes de l'instal·lador"
 
 #. TRANSLATORS: CLI help for: agama questions (details)
 #: agama-cli/src/questions.rs:35
@@ -633,17 +721,24 @@ msgid ""
 "\n"
 "This command allows answering such questions directly from the command-line."
 msgstr ""
+"L'Agama pot requerir la intervenció de l'usuari en qualsevol moment. Els "
+"motius inclouen proporcionar informació que falta (per exemple, la "
+"contrasenya per desencriptar un sistema de fitxers) o decidir què fer en cas "
+"d'error (per exemple, no es pot connectar amb el repositori).\n"
+"\n"
+"Aquesta ordre permet respondre aquestes preguntes directament des de la "
+"línia d'ordres."
 
 #. TRANSLATORS: CLI help for: agama questions mode
 #: agama-cli/src/questions.rs:49
 msgid "Set the mode for answering questions"
-msgstr ""
+msgstr "Establiu el mode de resposta de les preguntes"
 
 #. TRANSLATORS: CLI help for: agama questions list
 #: agama-cli/src/questions.rs:61
 msgid ""
 "Prints the list of questions that are waiting for an answer in JSON format"
-msgstr ""
+msgstr "Imprimeix la llista de preguntes pendents de resposta en format JSON"
 
 #. TRANSLATORS: CLI help for: agama questions ask
 #: agama-cli/src/questions.rs:66
@@ -651,11 +746,13 @@ msgid ""
 "Reads a question definition in JSON from stdin and prints the response when "
 "it is answered"
 msgstr ""
+"Llegeix una definició de pregunta en format JSON des de l'entrada estàndard "
+"i imprimeix la resposta un cop s'ha contestat"
 
 #. TRANSLATORS: CLI help for: agama questions answers
 #: agama-cli/src/questions.rs:72
 msgid "Load predefined answers"
-msgstr ""
+msgstr "Carrega respostes predefinides"
 
 #. TRANSLATORS: CLI help for: agama questions answers (details)
 #: agama-cli/src/questions.rs:77
@@ -666,232 +763,228 @@ msgid ""
 "Please check Agama documentation for more details and examples: https://"
 "github.com/openSUSE/agama/blob/master/doc/questions."
 msgstr ""
+"Permet predefinir respostes per a preguntes específiques, de manera que es "
+"puguin ometre en mode interactiu o modificar-ne la resposta en mode "
+"automàtic.\n"
+"\n"
+"Consulteu la documentació de l'Agama per obtenir-ne més detalls i exemples: "
+"https://github.com/openSUSE/agama/blob/master/doc/questions."
 
 #. TRANSLATORS: CLI help for: agama questions answers <PATH>
 #: agama-cli/src/questions.rs:94
 msgid "Path to a file containing the answers in JSON format"
-msgstr ""
+msgstr "Camí a un fitxer que conté les respostes en format JSON"
 
 #: agama-cli/src/status.rs:77
 msgid ""
 "The installation failed. Use the \"agama logs store\" command to get the "
 "logs to troubleshoot or share with support."
 msgstr ""
+"La instal·lació ha fallat. Useu l'ordre «agama logs store» per obtenir els "
+"registres i diagnosticar el problema o compartir-los amb el servei "
+"d'assistència."
 
 #: agama-cli/src/status.rs:80
-#, fuzzy
 msgid "The installation finished successfully."
-msgstr "Asenna ohjelmistoja"
+msgstr "La instal·lació ha acabat correctament."
 
 #: agama-cli/src/status.rs:82
-#, fuzzy
 msgid "The installation is in progress."
-msgstr "Asenna ohjelmistoja"
+msgstr "La instal·lació està en curs."
 
 #: agama-cli/src/status.rs:83
 msgid "The installer is preparing an installation proposal."
-msgstr ""
+msgstr "L'instal·lador prepara una proposta d'instal·lació."
 
 #: agama-cli/src/status.rs:85
 msgid ""
 "There are unanswered questions. Use the \"agama monitor\" command or the web "
 "user interface to answer them:"
 msgstr ""
+"Hi ha preguntes pendents de resposta. Useu l'ordre agama monitor o la "
+"interfície web d'usuari per respondre-les:"
 
 #. TRANSLATORS: %s is replaced by the script name.
 #: agama-files/src/service.rs:184
 msgid "Failed to retrieve the script %s. Do you want to try again?"
-msgstr ""
+msgstr "No s'ha pogut recuperar l'script %s. Voleu tornar-ho a provar?"
 
 #. TRANSLATORS: %s is replaced by the script name.
 #: agama-files/src/service.rs:208
 msgid "Failed to write the file %s. Do you want to try again?"
-msgstr ""
+msgstr "No s'ha pogut escriure el fitxer %s. Voleu tornar-ho a intentar?"
 
 #: agama-manager/src/actions.rs:78
 msgid "Prepare the system"
-msgstr "Valmistele järjestelmä"
+msgstr "Preparació del sistema"
 
 #: agama-manager/src/actions.rs:79
 msgid "Install software"
-msgstr "Asenna ohjelmistoja"
+msgstr "Instal·lació de programari"
 
 #: agama-manager/src/actions.rs:80
 msgid "Configure the system"
-msgstr "Tee järjestelmän asetukset"
+msgstr "Configuració del sistema"
 
 #: agama-manager/src/actions.rs:94
-#, fuzzy
 msgid "Preparing storage"
-msgstr "Valmistellaan tallennustilaehdotusta"
+msgstr "Preparació de l'emmagatzematge"
 
 #: agama-manager/src/actions.rs:112
-#, fuzzy
 msgid "Running post-partitioning scripts"
-msgstr "Suoritetaan käyttäjään esiasennuskomentojonoja"
+msgstr "Execució d'scripts posteriors a la partició"
 
 #: agama-manager/src/actions.rs:137
-#, fuzzy
 msgid "Installing software"
-msgstr "Asenna ohjelmistoja"
+msgstr "Instal·lació de programari"
 
 #: agama-manager/src/actions.rs:174
-#, fuzzy
 msgid "Configuring the system"
-msgstr "Tee järjestelmän asetukset"
+msgstr "Configuració del sistema"
 
 #: agama-manager/src/actions.rs:242
 msgid "Finishing installation"
-msgstr ""
+msgstr "S'acaba la instal·lació"
 
 #: agama-manager/src/actions.rs:271
-#, fuzzy
 msgid "Finalize installation"
-msgstr "Lasketaan ohjelmistoehdotusta"
+msgstr "Acaba la instal·lació"
 
 #: agama-manager/src/actions.rs:346
 msgid "Storing questions settings"
-msgstr "Tallentaan kysymysasetuksia"
+msgstr "Desament de la configuració de preguntes"
 
 #: agama-manager/src/actions.rs:357
-#, fuzzy
 msgid "Importing user files and scripts"
-msgstr "Tuodaan käyttäjän tiedostoja"
+msgstr "Importació de fitxers i scripts d'usuari"
 
 #: agama-manager/src/actions.rs:371
 msgid "Running user pre-installation scripts"
-msgstr "Suoritetaan käyttäjään esiasennuskomentojonoja"
+msgstr "Execució dels scripts de preinstal·lació de l'usuari"
 
 #: agama-manager/src/actions.rs:386
 msgid "Storing security settings"
-msgstr "Tallennetaan tietoturva-asetuksia"
+msgstr "Desament de la configuració de seguretat"
 
 #: agama-manager/src/actions.rs:396
-#, fuzzy
 msgid "Configuring remote access"
-msgstr "Tehdään DASD-laitteiden asetuksia"
+msgstr "Configuració de l'accés remot"
 
 #: agama-manager/src/actions.rs:406
 msgid "Setting up the hostname"
-msgstr "Asetataan isäntänimi"
+msgstr "Establiment del nom de l'ordinador"
 
 #: agama-manager/src/actions.rs:416
 msgid "Setting up the network proxy"
-msgstr "Asetetaan verkkovälipalvelinta"
+msgstr "Configuració del servidor intermediari de xarxa"
 
 #: agama-manager/src/actions.rs:427
-#, fuzzy
 msgid "Setting up NTP"
-msgstr "Tehdään verkkoasetuksia"
+msgstr "Configuració de l'NTP"
 
 #: agama-manager/src/actions.rs:437
 msgid "Storing localization settings"
-msgstr "Tallennetaan kotoistusasetuksia"
+msgstr "Emmagatzemar la configuració de localització"
 
 #: agama-manager/src/actions.rs:447
 msgid "Storing users settings"
-msgstr "Tallennetaan käyttäjien asetuksia"
+msgstr "Desament de la configuració dels usuaris"
 
 #: agama-manager/src/actions.rs:557
 msgid "Configuring iSCSI devices"
-msgstr "Tehdään iSCSI-laitteiden asetuksia"
+msgstr "Configuració de dispositius iSCSI"
 
 #: agama-manager/src/actions.rs:581
-#, fuzzy
 msgid "Configuring zFCP devices"
-msgstr "Tehdään iSCSI-laitteiden asetuksia"
+msgstr "Configuració de dispositius zFCP"
 
 #: agama-manager/src/actions.rs:606
 msgid "Configuring DASD devices"
-msgstr "Tehdään DASD-laitteiden asetuksia"
+msgstr "Configuració de dispositius DASD"
 
 #: agama-manager/src/actions.rs:631
 msgid "Setting up the network"
-msgstr "Tehdään verkkoasetuksia"
+msgstr "Configuració de la xarxa"
 
 #: agama-manager/src/actions.rs:661
 msgid "Preparing the storage proposal"
-msgstr "Valmistellaan tallennustilaehdotusta"
+msgstr "Preparació de la proposta d'emmagatzematge"
 
 #: agama-manager/src/actions.rs:690
 msgid "Storing bootloader settings"
-msgstr "Tallennetaan käynnistyslataimen asetuksia"
+msgstr "Desament de la configuració del carregador d'arrencada"
 
 #: agama-manager/src/actions.rs:723
 msgid "Preparing the software proposal"
-msgstr "Valmistellaan ohjelmistoehdotusta"
+msgstr "Preparació de la proposta de programari"
 
 #: agama-manager/src/actions.rs:753
-#, fuzzy
 msgid "Configuring SELinux"
-msgstr "Tehdään DASD-laitteiden asetuksia"
+msgstr "Configuració de SELinux"
 
 #: agama-network/src/service.rs:511
-#, fuzzy
 msgid "Writing network configuration"
-msgstr "Kirjoitetaan asetuksia"
+msgstr "Escriptura de la configuració de la xarxa"
 
 #: agama-network/src/service.rs:512
 msgid "Syncing the network service state"
-msgstr ""
+msgstr "Sincronització de l'estat del servei de xarxa"
 
 #: agama-security/src/service.rs:226
 msgid "Reject"
-msgstr "Hylkää"
+msgstr "Rebutja"
 
 #: agama-security/src/service.rs:226
 #: agama-software/src/callbacks/security.rs:111
 msgid "Trust"
-msgstr "Luota"
+msgstr "Confia-hi"
 
 #: agama-security/src/service.rs:227
 msgid ""
 "Trying to import a self-signed certificate. Do you want to trust it and "
 "register the product?"
 msgstr ""
-"Itse allekirjoitettua varmennetta yritetään tuoda. Haluatko luottaa siihen "
-"ja rekisteröidä tuotteen?"
+"S'intenta importar un certificat autosignat. Voleu confiar-hi i registrar el "
+"producte?"
 
 #: agama-server/src/profile/web.rs:92
-#, fuzzy
 msgid "Profile validation failed"
-msgstr "Asenna ohjelmistoja"
+msgstr "La validació del perfil ha fallat"
 
 #: agama-server/src/profile/web.rs:95
-#, fuzzy
 msgid "Could not retrieve profile"
-msgstr "Ohjelmalähteitä ei voi lukea"
+msgstr "No s'ha pogut recuperar el perfil"
 
 #: agama-server/src/profile/web.rs:98
 msgid "Invalid profile encoding"
-msgstr ""
+msgstr "Codificació del perfil no vàlida"
 
 #: agama-server/src/profile/web.rs:103
 msgid "Invalid profile request"
-msgstr ""
+msgstr "Sol·licitud de perfil no vàlida"
 
 #: agama-server/src/profile/web.rs:106
 msgid "AutoYaST conversion failed"
-msgstr ""
+msgstr "La conversió d'AutoYaST ha fallat"
 
 #: agama-server/src/server/web.rs:86
 msgid "Missing Language Tag"
-msgstr ""
+msgstr "Etiqueta de llengua absent"
 
 #: agama-software/src/callbacks/commit_download.rs:47
 #: agama-software/src/callbacks/install.rs:56
 msgid "Ignore"
-msgstr "Ohita"
+msgstr "Ignora-ho"
 
 #: agama-software/src/callbacks/commit_download.rs:47
 #: agama-software/src/callbacks/install.rs:56
 #: agama-software/src/callbacks/install.rs:81
 msgid "Retry"
-msgstr "Yritä uudelleen"
+msgstr "Torna-ho a intentar"
 
 #: agama-software/src/callbacks/install.rs:78
 msgid "There was a problem running a package script."
-msgstr "Pakettikomentojonoa suoritettaessa oli ongelma."
+msgstr "Hi ha hagut un problema en executar un script del paquet."
 
 #. TRANSLATORS: substituting: key ID, (key name), fingerprint
 #: agama-software/src/callbacks/security.rs:104
@@ -899,139 +992,136 @@ msgid ""
 "The key {0} ({1}) with fingerprint {2} is unknown. Do you want to trust this "
 "key?"
 msgstr ""
-"Avain {0} ({1}) sormenjäljellä {2} on tuntematon. Haluatko luottaa tähän "
-"avaimeen?"
+"La clau {0} ({1}) amb l'empremta digital {2} és desconeguda. Voleu confiar "
+"en aquesta clau?"
 
 #: agama-software/src/callbacks/security.rs:111
 msgid "Skip"
-msgstr "Ohita tämä kohta"
+msgstr "Omet"
 
 #: agama-software/src/service.rs:296
 msgid ""
 "Due to an internal error, it was not possible to create a software proposal."
-msgstr "Ohjelmistoehdotusta ei voi luoda sisäisen virheen takia."
+msgstr ""
+"A causa d'un error intern, no ha estat possible crear una proposta de "
+"programari."
 
 #: agama-software/src/zypp_server.rs:300
 msgid "Starting packages installation"
-msgstr ""
+msgstr "S'inicia la instal·lació de paquets"
 
 #: agama-software/src/zypp_server.rs:313
 msgid "Packages download and installation failed. Would you like to retry?"
 msgstr ""
+"La baixada i la instal·lació dels paquets han fallat. Voleu tornar-ho a "
+"intentar?"
 
 #: agama-software/src/zypp_server.rs:367
 msgid "Updating the list of repositories"
-msgstr "Päivitetään ohjelmalähteiden luetteloa"
+msgstr "Actualització de la llista de repositoris"
 
 #: agama-software/src/zypp_server.rs:368
 msgid "Refreshing metadata from the repositories"
-msgstr "Päivitetään metatietoja ohjelmalähteistä"
+msgstr "Actualització de les metadades dels repositoris"
 
 #: agama-software/src/zypp_server.rs:369
 msgid "Calculating the software proposal"
-msgstr "Lasketaan ohjelmistoehdotusta"
+msgstr "Càlcul de la proposta de programari"
 
 #: agama-software/src/zypp_server.rs:372
 msgid "Registering the system"
-msgstr "Rekisteröidään järjestelmää"
+msgstr "Registre del sistema"
 
 #. TRANSLATORS: %s is the alias of the repository.
 #: agama-software/src/zypp_server.rs:445
 msgid "Could not remove the repository %s"
-msgstr "Ohjelmalähdettä %s ei voi poistaa"
+msgstr "No s'ha pogut suprimir el repositori %s"
 
 #: agama-software/src/zypp_server.rs:465
 msgid "Could not read the repositories"
-msgstr "Ohjelmalähteitä ei voi lukea"
+msgstr "No s'han pogut llegir els repositoris"
 
 #: agama-software/src/zypp_server.rs:501
 msgid ""
 "Failed to find the product in the repositories. You might need to register "
 "the system."
 msgstr ""
-"Tuotetta ei löydy ohjelmalähteistä. Järjestelmä tulee mahdollisesti "
-"rekisteröidä."
+"No s'ha pogut trobar el producte als repositoris. És possible que hàgiu de "
+"registrar el sistema."
 
 #: agama-software/src/zypp_server.rs:504
 msgid "Failed to find the product in the repositories."
-msgstr "Tuotetta ei löydy ohjelmalähteistä."
+msgstr "No s'ha trobat el producte als repositoris."
 
 #: agama-software/src/zypp_server.rs:567
 msgid "There are conflicts in the software selection"
-msgstr "Ohjelmistoasetuksissa on ristiriitoja"
+msgstr "Hi ha conflictes en la selecció del programari"
 
 #. TRANSLATORS: the first %s is the kind of resolvable (e.g., "package")
 #. and the second %s is the name of the resolvable.
 #: agama-software/src/zypp_server.rs:594
 msgid "Could not select %s '%s' for installation"
-msgstr "Asennukseen ei voi valita: %s ”%s”"
+msgstr "No s'ha pogut seleccionar l'element %s %s per a la instal·lació"
 
 #: agama-software/src/zypp_server.rs:1006
 msgid "Failed to register the system"
-msgstr "Järjestelmä rekisteröinti ei onnistu"
+msgstr "No s'ha pogut registrar el sistema"
 
 #: agama-users/src/service.rs:178
 msgid ""
 "Defining a user, setting the root password or a SSH public key is required"
 msgstr ""
-"Määritetään käyttäjää, pääkäyttäjän salasana tai julkinen SSH-avain vaaditaan"
+"Cal definir un usuari i establir la contrasenya d'arrel o una clau pública "
+"SSH"
 
 #: agama-users/src/service.rs:191
 msgid "First user information is incomplete"
-msgstr "Ensimmäisen käyttäjän tiedot eivät ole riittävät"
+msgstr "La informació del primer usuari està incompleta"
 
 #: agama-utils/src/api/problem_details.rs:120
-#, fuzzy
 msgid "Schema validation failed"
-msgstr "Asenna ohjelmistoja"
+msgstr "La validació de l'esquema ha fallat"
 
 #: agama-utils/src/api/problem_details.rs:122
 msgid "The provided configuration does not match the required schema"
-msgstr ""
+msgstr "La configuració proporcionada no coincideix amb l'esquema requerit"
 
 #: agama-utils/src/api/problem_details.rs:131
 msgid "Invalid JSON"
-msgstr ""
+msgstr "JSON no vàlid"
 
 #: agama-utils/src/api/problem_details.rs:139
 msgid "Internal server error"
-msgstr ""
+msgstr "Error intern del servidor"
 
 #: agama-utils/src/api/problem_details.rs:147
 msgid "Unauthorized"
-msgstr ""
+msgstr "No autoritzat"
 
 #: agama-utils/src/api/problem_details.rs:205
 msgid "Error:"
-msgstr ""
+msgstr "Error:"
 
 #: agama-utils/src/api/problem_details.rs:208
 msgid "Details:"
-msgstr ""
+msgstr "Detalls:"
 
 #: agama-utils/src/api/question.rs:342 agama-utils/src/question/start.rs:48
 msgid "No"
-msgstr "Ei"
+msgstr "No"
 
 #: agama-utils/src/api/question.rs:342 agama-utils/src/question/start.rs:48
 msgid "Yes"
-msgstr "Kyllä"
+msgstr "Sí"
 
 #: agama-utils/src/resolvable.rs:65
 msgid "package"
-msgstr "paketti"
+msgstr "paquet"
 
 #: agama-utils/src/resolvable.rs:66
 msgid "pattern"
-msgstr "kuvio"
+msgstr "patró"
 
 #: agama-utils/src/resolvable.rs:67
 msgid "product"
-msgstr "tuote"
-
-#, fuzzy
-#~ msgid "Installation is being proposed."
-#~ msgstr "Asenna ohjelmistoja"
-
-#~ msgid "The product must be registered"
-#~ msgstr "Tuote tulaa olla rekisteröity"
+msgstr "producte"

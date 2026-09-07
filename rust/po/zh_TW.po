@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-26 11:36+0000\n"
+"POT-Creation-Date: 2026-09-04 12:04+0000\n"
 "PO-Revision-Date: 2026-07-27 04:12+0000\n"
 "Last-Translator: Grace Yu <grace.yu@excel-gits.com>\n"
 "Language-Team: Chinese (Taiwan) <https://l10n.opensuse.org/projects/agama/"
@@ -904,23 +904,23 @@ msgid ""
 "register the product?"
 msgstr "正在嘗試輸入自行簽署的證書。是否信任該證書並註冊產品？"
 
-#: agama-server/src/profile/web.rs:85
+#: agama-server/src/profile/web.rs:92
 msgid "Profile validation failed"
 msgstr "設定檔驗證失敗"
 
-#: agama-server/src/profile/web.rs:88
+#: agama-server/src/profile/web.rs:95
 msgid "Could not retrieve profile"
 msgstr "無法擷取設定檔"
 
-#: agama-server/src/profile/web.rs:91
+#: agama-server/src/profile/web.rs:98
 msgid "Invalid profile encoding"
 msgstr "設定檔編碼無效"
 
-#: agama-server/src/profile/web.rs:94
+#: agama-server/src/profile/web.rs:103
 msgid "Invalid profile request"
 msgstr "設定檔申請無效"
 
-#: agama-server/src/profile/web.rs:97
+#: agama-server/src/profile/web.rs:106
 msgid "AutoYaST conversion failed"
 msgstr "AutoYaST 轉換失敗"
 
@@ -928,16 +928,12 @@ msgstr "AutoYaST 轉換失敗"
 msgid "Missing Language Tag"
 msgstr "缺少語言標記"
 
-#: agama-server/src/server/web.rs:89
-msgid "Profile error"
-msgstr "設定檔錯誤"
-
-#: agama-software/src/callbacks/commit_download.rs:48
+#: agama-software/src/callbacks/commit_download.rs:47
 #: agama-software/src/callbacks/install.rs:56
 msgid "Ignore"
 msgstr "忽略"
 
-#: agama-software/src/callbacks/commit_download.rs:48
+#: agama-software/src/callbacks/commit_download.rs:47
 #: agama-software/src/callbacks/install.rs:56
 #: agama-software/src/callbacks/install.rs:81
 msgid "Retry"
@@ -971,52 +967,52 @@ msgstr "正在啟動套件安裝程序"
 msgid "Packages download and installation failed. Would you like to retry?"
 msgstr "無法下載和安裝套件。是否要重試？"
 
-#: agama-software/src/zypp_server.rs:368
+#: agama-software/src/zypp_server.rs:367
 msgid "Updating the list of repositories"
 msgstr "正在更新儲存庫清單"
 
-#: agama-software/src/zypp_server.rs:369
+#: agama-software/src/zypp_server.rs:368
 msgid "Refreshing metadata from the repositories"
 msgstr "正在重新整理來自儲存庫的中繼資料"
 
-#: agama-software/src/zypp_server.rs:370
+#: agama-software/src/zypp_server.rs:369
 msgid "Calculating the software proposal"
 msgstr "正在計算軟體建議"
 
-#: agama-software/src/zypp_server.rs:373
+#: agama-software/src/zypp_server.rs:372
 msgid "Registering the system"
 msgstr "正在註冊系統"
 
 #. TRANSLATORS: %s is the alias of the repository.
-#: agama-software/src/zypp_server.rs:446
+#: agama-software/src/zypp_server.rs:445
 msgid "Could not remove the repository %s"
 msgstr "無法移除儲存庫 %s"
 
-#: agama-software/src/zypp_server.rs:466
+#: agama-software/src/zypp_server.rs:465
 msgid "Could not read the repositories"
 msgstr "無法讀取儲存庫"
 
-#: agama-software/src/zypp_server.rs:502
+#: agama-software/src/zypp_server.rs:501
 msgid ""
 "Failed to find the product in the repositories. You might need to register "
 "the system."
 msgstr "在儲存庫中未找到該產品。您可能需要註冊系統。"
 
-#: agama-software/src/zypp_server.rs:505
+#: agama-software/src/zypp_server.rs:504
 msgid "Failed to find the product in the repositories."
 msgstr "在儲存庫中未找到該產品。"
 
-#: agama-software/src/zypp_server.rs:568
+#: agama-software/src/zypp_server.rs:567
 msgid "There are conflicts in the software selection"
 msgstr "軟體選擇存在衝突"
 
 #. TRANSLATORS: the first %s is the kind of resolvable (e.g., "package")
 #. and the second %s is the name of the resolvable.
-#: agama-software/src/zypp_server.rs:597
+#: agama-software/src/zypp_server.rs:594
 msgid "Could not select %s '%s' for installation"
 msgstr "無法選取 %s '%s' 進行安裝"
 
-#: agama-software/src/zypp_server.rs:1010
+#: agama-software/src/zypp_server.rs:1006
 msgid "Failed to register the system"
 msgstr "無法註冊系統"
 
@@ -1029,39 +1025,39 @@ msgstr "必須定義一個使用者、設定 root 密碼或 SSH 公用金鑰"
 msgid "First user information is incomplete"
 msgstr "首個使用者資訊不完整"
 
-#: agama-utils/src/api/problem_details.rs:113
+#: agama-utils/src/api/problem_details.rs:120
 msgid "Schema validation failed"
 msgstr "綱要驗證失敗"
 
-#: agama-utils/src/api/problem_details.rs:115
+#: agama-utils/src/api/problem_details.rs:122
 msgid "The provided configuration does not match the required schema"
 msgstr "提供的組態與所需綱要不符"
 
-#: agama-utils/src/api/problem_details.rs:124
+#: agama-utils/src/api/problem_details.rs:131
 msgid "Invalid JSON"
 msgstr "無效 JSON"
 
-#: agama-utils/src/api/problem_details.rs:132
+#: agama-utils/src/api/problem_details.rs:139
 msgid "Internal server error"
 msgstr "內部伺服器錯誤"
 
-#: agama-utils/src/api/problem_details.rs:140
+#: agama-utils/src/api/problem_details.rs:147
 msgid "Unauthorized"
 msgstr "未授權"
 
-#: agama-utils/src/api/problem_details.rs:189
+#: agama-utils/src/api/problem_details.rs:205
 msgid "Error:"
 msgstr "錯誤："
 
-#: agama-utils/src/api/problem_details.rs:192
+#: agama-utils/src/api/problem_details.rs:208
 msgid "Details:"
 msgstr "詳細資料："
 
-#: agama-utils/src/api/question.rs:293 agama-utils/src/question/start.rs:48
+#: agama-utils/src/api/question.rs:342 agama-utils/src/question/start.rs:48
 msgid "No"
 msgstr "否"
 
-#: agama-utils/src/api/question.rs:293 agama-utils/src/question/start.rs:48
+#: agama-utils/src/api/question.rs:342 agama-utils/src/question/start.rs:48
 msgid "Yes"
 msgstr "是"
 
@@ -1076,3 +1072,6 @@ msgstr "模式"
 #: agama-utils/src/resolvable.rs:67
 msgid "product"
 msgstr "產品"
+
+#~ msgid "Profile error"
+#~ msgstr "設定檔錯誤"
