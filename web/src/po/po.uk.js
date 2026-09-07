@@ -760,9 +760,6 @@ export default {
   "Configured as %s.": [
     "Налаштовано як %s."
   ],
-  "Configured for installation only": [
-    "Налаштовано лише для встановлення"
-  ],
   "Configured with %d connection": [
     "Налаштовано з %d з'єднанням",
     "Налаштовано з %d з'єднаннями",
@@ -807,8 +804,8 @@ export default {
   "Connected devices tabs": [
     "Вкладки підключених пристроїв"
   ],
-  "Connecting to %s": [
-    "З'єднання з мережею %s"
+  "Connecting": [
+    "З'єднання"
   ],
   "Connection failed": [
     "Збій підключення"
@@ -1194,9 +1191,6 @@ export default {
   "ExFAT": [
     "ExFAT"
   ],
-  "Excellent signal": [
-    "Відмінний сигнал"
-  ],
   "Expand if possible": [
     "Розгорнути, якщо можливо"
   ],
@@ -1233,6 +1227,9 @@ export default {
   ],
   "FAT": [
     "FAT"
+  ],
+  "Failed": [
+    ""
   ],
   "Failed to calculate a storage layout": [
     "Не вдалося розрахувати схему зберігання"
@@ -1339,9 +1336,6 @@ export default {
   "Go to storage page": [
     "Перейти до розділу «Сховище»"
   ],
-  "Good signal": [
-    "Гарний сигнал"
-  ],
   "Graphical desktop environments for the system.": [
     "Графічні робочі середовища для системи."
   ],
@@ -1391,9 +1385,6 @@ export default {
   ],
   "IP Addresses": [
     "IP-адреси"
-  ],
-  "IP addresses": [
-    "IP адреси"
   ],
   "IPs": [
     "IP"
@@ -1504,9 +1495,6 @@ export default {
   ],
   "Installation settings in JSON format": [
     "Параметри встановлення у форматі JSON"
-  ],
-  "Installation will take %s.": [
-    "Встановлення займе %s."
   ],
   "Installed system may not have network connections": [
     "Встановлена система може не мати мережевих підключень"
@@ -2103,6 +2091,9 @@ export default {
   "Open terminal": [
     "Відкрити термінал"
   ],
+  "Opens a dialog": [
+    ""
+  ],
   "Options for partition %s": [
     "Параметри розділу %s"
   ],
@@ -2267,9 +2258,6 @@ export default {
   ],
   "Public key provided for both": [
     "Для обох надано відкритий ключ"
-  ],
-  "Public network": [
-    "Загальнодоступна мережа"
   ],
   "Question": [
     "Питання"
@@ -2447,9 +2435,6 @@ export default {
   ],
   "SUSE Customer Center (SCC)": [
     "Центр обслуговування клієнтів SUSE (SCC)"
-  ],
-  "Secured network": [
-    "Захищена мережа"
   ],
   "Security": [
     "Захист"
@@ -3068,9 +3053,6 @@ export default {
   "This product does not provide desktop environments.": [
     "Цей продукт не підтримує робочі середовища."
   ],
-  "This space includes the base system and the selected software patterns, if any.": [
-    "Цей простір включає базову систему та вибрані програмні шаблони, якщо такі є."
-  ],
   "This uses existing logical volumes at the volume group": [
     "При цьому використовують існуючі логічні томи у групі томів"
   ],
@@ -3082,9 +3064,6 @@ export default {
   ],
   "This volume group only occupies the space required by its logical volumes. To expand it to cover all available disk space, recreate the volume group.": [
     "Ця група томів займає лише той простір, який необхідний для її логічних томів. Щоб розширити її на весь доступний простір на диску, створіть групу томів заново."
-  ],
-  "This will affect only the installer interface, not the product to be installed. You can adjust the product’s localization later in the Localization settings page.": [
-    "Це вплине тільки на інтерфейс установника, не на продукт, що встановлюється. Змінити параметри локалізації продукту Ви зможете пізніше на сторінці налаштувань локалізації."
   ],
   "This will be injected to the command to create the file system (%s).": [
     "Це буде додано до команди для створення файлової системи (%s)."
@@ -3130,6 +3109,9 @@ export default {
   ],
   "Unknown error": [
     "Невідома помилка"
+  ],
+  "Unmanaged": [
+    ""
   ],
   "Unsaved changes": [
     "Незбережені зміни"
@@ -3393,9 +3375,6 @@ export default {
   ],
   "Waiting for proposal": [
     "Очікування пропозиції"
-  ],
-  "Weak signal": [
-    "Слабкий сигнал"
   ],
   "When ready, click on the [install] button at the end of the page.": [
     "Коли все буде готово, натисніть кнопку [Встановити] внизу сторінки."

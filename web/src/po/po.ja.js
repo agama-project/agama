@@ -501,6 +501,9 @@ export default {
   "Bridge ports": [
     "ブリッジポート"
   ],
+  "Browse with details...": [
+    "詳細情報を表示して選択..."
+  ],
   "Btrfs": [
     "btrfs"
   ],
@@ -720,9 +723,6 @@ export default {
   "Configured as %s.": [
     "%s として設定済みです。"
   ],
-  "Configured for installation only": [
-    "インストール専用に設定されています"
-  ],
   "Configured with %d connection": [
     "%d 個の接続を設定済み"
   ],
@@ -765,8 +765,8 @@ export default {
   "Connected devices tabs": [
     "接続済みデバイスのタブ"
   ],
-  "Connecting to %s": [
-    "%s に接続しています"
+  "Connecting": [
+    "接続しています"
   ],
   "Connection failed": [
     "接続に失敗しました"
@@ -981,6 +981,9 @@ export default {
   "Disconnected by the system": [
     "システムにより切断済み"
   ],
+  "Disconnecting": [
+    "切断中"
+  ],
   "Disconnection failed": [
     "切断に失敗しました"
   ],
@@ -1152,9 +1155,6 @@ export default {
   "ExFAT": [
     "ExFAT"
   ],
-  "Excellent signal": [
-    "優良な信号強度"
-  ],
   "Expand if possible": [
     "可能であれば拡張する"
   ],
@@ -1187,6 +1187,9 @@ export default {
   ],
   "FAT": [
     "FAT"
+  ],
+  "Failed": [
+    "失敗"
   ],
   "Failed to calculate a storage layout": [
     "ストレージ配置の算出に失敗しました"
@@ -1293,9 +1296,6 @@ export default {
   "Go to storage page": [
     "ストレージページに移動"
   ],
-  "Good signal": [
-    "良好な信号強度"
-  ],
   "Graphical desktop environments for the system.": [
     "システムに対するグラフィカルなデスクトップ環境です。"
   ],
@@ -1342,9 +1342,6 @@ export default {
     "%s に対する [ライセンス] を受け入れます"
   ],
   "IP Addresses": [
-    "IP アドレス"
-  ],
-  "IP addresses": [
     "IP アドレス"
   ],
   "IPs": [
@@ -1454,9 +1451,6 @@ export default {
   ],
   "Installation settings in JSON format": [
     "JSON 形式でのインストール設定"
-  ],
-  "Installation will take %s.": [
-    "インストールするには %s が必要です。"
   ],
   "Installed system may not have network connections": [
     "インストールされたシステムにはネットワーク接続がない可能性があります"
@@ -2034,6 +2028,9 @@ export default {
   "On boot": [
     "システム起動時"
   ],
+  "Once a product is selected, its language and region settings may offer more options to choose from.": [
+    "製品の選択後には、さらに多くの言語や地域を選択できる可能性があります。"
+  ],
   "Only reused logical volumes and space not assigned to any logical volume will be used.": [
     "再利用するよう設定した論理ボリュームと、論理ボリュームに割り当てられていない領域のみを使用します。"
   ],
@@ -2048,6 +2045,9 @@ export default {
   ],
   "Open terminal": [
     "端末を開く"
+  ],
+  "Opens a dialog": [
+    "ダイアログを開きます"
   ],
   "Options for partition %s": [
     "パーティション %s のオプション"
@@ -2213,9 +2213,6 @@ export default {
   ],
   "Public key provided for both": [
     "両方に対して公開鍵を設定済み"
-  ],
-  "Public network": [
-    "公衆ネットワーク"
   ],
   "Question": [
     "質問"
@@ -2394,9 +2391,6 @@ export default {
   "SUSE Customer Center (SCC)": [
     "SUSE Customer Center (SCC)"
   ],
-  "Secured network": [
-    "保護されたネットワーク"
-  ],
   "Security": [
     "セキュリティ"
   ],
@@ -2426,6 +2420,9 @@ export default {
   ],
   "Select a mode and confirm your choice.": [
     "モードを選択したあと、確認のためにボタンを押してください。"
+  ],
+  "Select a network device": [
+    "ネットワークデバイスの選択"
   ],
   "Select a product": [
     "製品の選択"
@@ -2988,9 +2985,6 @@ export default {
   "This product does not provide desktop environments.": [
     "この製品ではデスクトップ環境が提供されていません。"
   ],
-  "This space includes the base system and the selected software patterns, if any.": [
-    "この容量にはシステムの基本部分のほか、選択したソフトウエアパターンが含まれます。"
-  ],
   "This uses existing logical volumes at the volume group": [
     "これはボリュームグループ内の既存の論理ボリュームを使用します"
   ],
@@ -3002,9 +2996,6 @@ export default {
   ],
   "This volume group only occupies the space required by its logical volumes. To expand it to cover all available disk space, recreate the volume group.": [
     "このボリュームグループは、論理ボリュームによって必要とされる領域のみを占有します。利用可能なディスク領域全てを使用するようにしたい場合は、ボリュームグループを作成し直してください。"
-  ],
-  "This will affect only the installer interface, not the product to be installed. You can adjust the product’s localization later in the Localization settings page.": [
-    "ここでの設定はインストーラ自身にのみ適用され、インストールする製品には適用されません。製品に対する設定を行いたい場合は、ローカライゼーション設定のページで行ってください。"
   ],
   "This will be injected to the command to create the file system (%s).": [
     "ここで設定した値は、ファイルシステムの作成コマンド (%s) にそのまま渡されます。"
@@ -3042,6 +3033,9 @@ export default {
   "Unable to modify the settings": [
     "設定を変更できませんでした"
   ],
+  "Unavailable": [
+    "利用不可"
+  ],
   "Unexpected error": [
     "予期しないエラー"
   ],
@@ -3050,6 +3044,9 @@ export default {
   ],
   "Unknown error": [
     "不明なエラー"
+  ],
+  "Unmanaged": [
+    "管理対象外"
   ],
   "Unsaved changes": [
     "未保存の変更点"
@@ -3068,6 +3065,9 @@ export default {
   ],
   "Update available disks and activate crypt devices": [
     "利用可能なディスクの更新と暗号化デバイスの有効化"
+  ],
+  "Use %s": [
+    "%s を使用します"
   ],
   "Use LVM volume group %s": [
     "LVM ボリュームグループ %s の使用"
@@ -3311,9 +3311,6 @@ export default {
   ],
   "Waiting for proposal": [
     "提案内容を作成しています"
-  ],
-  "Weak signal": [
-    "弱い信号強度"
   ],
   "When ready, click on the [install] button at the end of the page.": [
     "準備ができたら、ページ末尾にある [インストール] ボタンを押してください。"

@@ -519,6 +519,9 @@ export default {
   "Bridge ports": [
     "Brückenports"
   ],
+  "Browse with details...": [
+    "Mit Details durchsuchen ..."
+  ],
   "Btrfs": [
     "Btrfs"
   ],
@@ -740,9 +743,6 @@ export default {
   "Configured as %s.": [
     "Als %s konfiguriert."
   ],
-  "Configured for installation only": [
-    "Nur für die Installation konfiguriert"
-  ],
   "Configured with %d connection": [
     "Konfiguriert mit %d Verbindung",
     "Konfiguriert mit %d Verbindungen"
@@ -786,8 +786,8 @@ export default {
   "Connected devices tabs": [
     "Tabs für verbundene Geräte"
   ],
-  "Connecting to %s": [
-    "Verbindung zu %s wird hergestellt"
+  "Connecting": [
+    "Wird verbunden"
   ],
   "Connection failed": [
     "Verbindung fehlgeschlagen"
@@ -1002,6 +1002,9 @@ export default {
   "Disconnected by the system": [
     "Durch das System getrennt"
   ],
+  "Disconnecting": [
+    "Wird getrennt"
+  ],
   "Disconnection failed": [
     "Trennung fehlgeschlagen"
   ],
@@ -1173,9 +1176,6 @@ export default {
   "ExFAT": [
     "ExFAT"
   ],
-  "Excellent signal": [
-    "Ausgezeichnetes Signal"
-  ],
   "Expand if possible": [
     "Wenn möglich erweitern"
   ],
@@ -1210,6 +1210,9 @@ export default {
   ],
   "FAT": [
     "FAT"
+  ],
+  "Failed": [
+    "Fehlgeschlagen"
   ],
   "Failed to calculate a storage layout": [
     "Berechnung einer Speicherungsanordnung ist fehlgeschlagen"
@@ -1316,9 +1319,6 @@ export default {
   "Go to storage page": [
     "Zur Speicherungsseite gehen"
   ],
-  "Good signal": [
-    "Gutes Signal"
-  ],
   "Graphical desktop environments for the system.": [
     "Grafische Desktop-Umgebungen für das System."
   ],
@@ -1366,9 +1366,6 @@ export default {
     "Ich habe die [Lizenz] für %s gelesen und akzeptiere sie"
   ],
   "IP Addresses": [
-    "IP-Adressen"
-  ],
-  "IP addresses": [
     "IP-Adressen"
   ],
   "IPs": [
@@ -1479,9 +1476,6 @@ export default {
   ],
   "Installation settings in JSON format": [
     "Installationseinstellungen im JSON-Format"
-  ],
-  "Installation will take %s.": [
-    "Installation wird %s in Anspruch nehmen."
   ],
   "Installed system may not have network connections": [
     "Das installierte System verfügt möglicherweise nicht über Netzwerkverbindungen"
@@ -1724,7 +1718,7 @@ export default {
     "DASD-Geräte verwalten"
   ],
   "Manage available connections, connect to Wi-Fi, or add a new connection.": [
-    "Verfügbare Verbindungen verwalten, eine WLAN-Verbindung herstellen oder eine neue Verbindung hinzufügen."
+    "Verfügbare Verbindungen verwalten, mit einem WLAN-Netzwerk verbinden oder eine neue Verbindung hinzufügen."
   ],
   "Manual": [
     "Manuell"
@@ -1960,7 +1954,7 @@ export default {
     "Keine Festplatten gefunden"
   ],
   "No iSCSI Boot Firmware Table (iBFT) found. The initiator can be [configured manually.]": [
-    "Keine iSCSI-Boot-Firmware-Tabelle (iBFT) gefunden. Der Initiator kann [manuell konfiguriert werden]."
+    "Keine iSCSI-Boot-Firmware-Tabelle (iBFT) gefunden. Der Initiator kann [manuell konfiguriert werden.]"
   ],
   "No information available yet": [
     "Noch keine Informationen verfügbar"
@@ -2061,6 +2055,9 @@ export default {
   "On boot": [
     "Beim Booten"
   ],
+  "Once a product is selected, its language and region settings may offer more options to choose from.": [
+    "Sobald ein Produkt ausgewählt wurde, stehen unter den Sprach- und Regionseinstellungen möglicherweise weitere Optionen zur Auswahl."
+  ],
   "Only reused logical volumes and space not assigned to any logical volume will be used.": [
     "Es werden nur wiederverwendete logische Volumes und Speicherplatz, der keinem logischen Volume zugewiesen ist, verwendet."
   ],
@@ -2075,6 +2072,9 @@ export default {
   ],
   "Open terminal": [
     "Terminal öffnen"
+  ],
+  "Opens a dialog": [
+    "Öffnet einen Dialog"
   ],
   "Options for partition %s": [
     "Optionen für Partition %s"
@@ -2240,9 +2240,6 @@ export default {
   ],
   "Public key provided for both": [
     "Öffentlicher Schlüssel für beide bereitgestellt"
-  ],
-  "Public network": [
-    "Öffentliches Netzwerk"
   ],
   "Question": [
     "Frage"
@@ -2421,9 +2418,6 @@ export default {
   "SUSE Customer Center (SCC)": [
     "SUSE Customer Center (SCC)"
   ],
-  "Secured network": [
-    "Gesichertes Netzwerk"
-  ],
   "Security": [
     "Sicherheit"
   ],
@@ -2453,6 +2447,9 @@ export default {
   ],
   "Select a mode and confirm your choice.": [
     "Wählen Sie einen Modus aus und bestätigen Sie Ihre Auswahl."
+  ],
+  "Select a network device": [
+    "Netzwerkgerät auswählen"
   ],
   "Select a product": [
     "Wählen Sie ein Produkt aus"
@@ -3028,9 +3025,6 @@ export default {
   "This product does not provide desktop environments.": [
     "Dieses Produkt stellt keine Desktop-Umgebungen bereit."
   ],
-  "This space includes the base system and the selected software patterns, if any.": [
-    "Dieser Bereich umfasst das Basissystem und die ausgewählten Softwaremuster, falls vorhanden."
-  ],
   "This uses existing logical volumes at the volume group": [
     "Dadurch werden vorhandene logische Volumes bei der Volume-Gruppe verwendet"
   ],
@@ -3042,9 +3036,6 @@ export default {
   ],
   "This volume group only occupies the space required by its logical volumes. To expand it to cover all available disk space, recreate the volume group.": [
     "Diese Volume-Gruppe belegt nur den Speicherplatz, der für ihre logischen Volumes erforderlich ist. Um dies zu erweitern, decken Sie den gesamten verfügbaren Festplattenplatz ab und erstellen Sie die Volume-Gruppe neu."
-  ],
-  "This will affect only the installer interface, not the product to be installed. You can adjust the product’s localization later in the Localization settings page.": [
-    "Dies betrifft nur die Oberfläche des Installationsprogramms, nicht das zu installierende Produkt. Sie können die Lokalisierung des Produkts später auf der Seite mit den Lokalisierungseinstellungen anpassen."
   ],
   "This will be injected to the command to create the file system (%s).": [
     "Dies wird in den Befehl zum Erstellen des Dateisystems (%s) injiziert."
@@ -3082,6 +3073,9 @@ export default {
   "Unable to modify the settings": [
     "Einstellungen können nicht geändert werden"
   ],
+  "Unavailable": [
+    "Nicht verfügbar"
+  ],
   "Unexpected error": [
     "Unerwarteter Fehler"
   ],
@@ -3090,6 +3084,9 @@ export default {
   ],
   "Unknown error": [
     "Unbekannter Fehler"
+  ],
+  "Unmanaged": [
+    "Nicht verwaltet"
   ],
   "Unsaved changes": [
     "Nicht gespeicherte Änderungen"
@@ -3108,6 +3105,9 @@ export default {
   ],
   "Update available disks and activate crypt devices": [
     "Verfügbare Festplatten aktualisieren und Kryptogeräte aktivieren"
+  ],
+  "Use %s": [
+    "%s verwenden"
   ],
   "Use LVM volume group %s": [
     "LVM-Volume-Gruppe %s verwenden"
@@ -3352,9 +3352,6 @@ export default {
   ],
   "Waiting for proposal": [
     "Warten auf Vorschlag"
-  ],
-  "Weak signal": [
-    "Schwaches Signal"
   ],
   "When ready, click on the [install] button at the end of the page.": [
     "Wenn Sie bereit sind, klicken Sie auf die Schaltfläche [Installieren] am Ende der Seite."
