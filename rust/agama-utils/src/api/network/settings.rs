@@ -157,6 +157,36 @@ pub struct BridgeSettings {
     pub ports: Vec<String>,
 }
 
+/// Settings a connection has because of its membership in a controller.
+///
+/// Unlike the other sections, these do not describe the device itself but the role it plays in
+/// the bond or bridge it belongs to.
+#[derive(Clone, Debug, Default, Serialize, Deserialize, JsonSchema, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct PortSettings {
+    /// Settings for a port of a bridge
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub bridge: Option<BridgePortSettings>,
+}
+
+impl PortSettings {
+    pub fn is_empty(&self) -> bool {
+        self.bridge.is_none()
+    }
+}
+
+/// Settings for a port of a bridge
+#[derive(Clone, Debug, Default, Serialize, Deserialize, JsonSchema, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct BridgePortSettings {
+    /// Port priority used by the Spanning Tree Protocol
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub priority: Option<u32>,
+    /// Port cost used by the Spanning Tree Protocol
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub path_cost: Option<u32>,
+}
+
 /// VLAN flags controlling behavior
 #[derive(Clone, Copy, Debug, Serialize, Deserialize, JsonSchema, PartialEq, Eq)]
 #[serde(rename_all = "kebab-case")]
@@ -329,9 +359,20 @@ pub struct NetworkConnection {
     /// Match settings for the network connection
     #[serde(rename = "match", skip_serializing_if = "Option::is_none")]
     pub match_settings: Option<MatchSettings>,
-    /// Identifier for the parent connection, if this connection is part of a bond
+    /// Controller this connection is a port of, if any.
+    ///
+    /// It holds the controller's interface name, falling back to its connection ID when the
+    /// controller is not bound to an interface. This is the same naming scheme used by the
+    /// `ports` lists.
+    ///
+    /// This field is read-only: the `ports` list of the controller is the only way to change the
+    /// membership. It is here to save clients from scanning every connection to find out which
+    /// one claims this port.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub parent: Option<String>,
+    pub controller: Option<String>,
+    /// Settings that this connection has because it is a port of a controller
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub port: Option<PortSettings>,
     /// Bonding settings if part of a bond
     #[serde(skip_serializing_if = "Option::is_none")]
     pub bond: Option<BondSettings>,

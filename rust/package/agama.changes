@@ -1,4 +1,22 @@
 -------------------------------------------------------------------
+Mon Sep  7 09:00:00 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Expose the connections that are ports of a bond or a bridge over
+  the HTTP API instead of hiding them behind their controller's
+  "ports" list, so stacked setups like eth0+eth1 -> bond0 -> br0 ->
+  br0.100 can be read and modified.
+- Report the controller of a port through the new read-only
+  "controller" key and its bridge port settings through the new
+  "port" key.
+- Stop dropping the settings that the HTTP API does not model
+  (firewall zone, port settings, custom MAC address, bridge
+  "maxAge") when a connection is updated.
+- Detach the ports that are removed from a controller instead of
+  deleting their connections, and reject the port lists that cannot
+  be applied (ambiguous names, a port claimed by two controllers,
+  loops of controllers).
+
+-------------------------------------------------------------------
 Wed Sep  2 14:15:16 UTC 2026 - José Iván López González <jlopez@suse.com>
 
 - Improve storage schema to force the encryption key size to be

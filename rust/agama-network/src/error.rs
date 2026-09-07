@@ -46,6 +46,8 @@ pub enum NetworkStateError {
     InvalidUuid(String),
     #[error("Invalid IP address: '{0}'")]
     InvalidIpAddr(String),
+    #[error("Invalid MAC address: '{0}'")]
+    InvalidMacAddress(String),
     #[error("Invalid IP method: '{0}'")]
     InvalidIpMethod(u8),
     #[error("Invalid wireless mode: '{0}'")]
@@ -62,6 +64,16 @@ pub enum NetworkStateError {
     InvalidBondOptions,
     #[error("Not a controller connection: '{0}'")]
     NotControllerConnection(String),
+    #[error("The port name '{0}' matches more than one connection")]
+    AmbiguousPort(String),
+    #[error("The port '{0}' of '{1}' is also marked for removal")]
+    RemovedPort(String, String),
+    #[error("The port '{0}' is claimed by both '{1}' and '{2}'")]
+    PortAlreadyClaimed(String, String, String),
+    #[error("The connection '{0}' cannot be a port of itself")]
+    SelfReferencedPort(String),
+    #[error("The connection '{0}' belongs to a loop of controllers")]
+    ControllerCycle(String),
     #[error("Unexpected configuration")]
     UnexpectedConfiguration,
     #[error("Invalid Vlan protocol: '{0}'")]
