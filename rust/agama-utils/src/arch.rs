@@ -25,6 +25,7 @@
 pub enum Arch {
     AARCH64,
     PPC64LE,
+    RISCV64,
     S390X,
     X86_64,
 }
@@ -43,6 +44,7 @@ impl Arch {
         match std::env::consts::ARCH {
             "aarch64" => Ok(Arch::AARCH64),
             "powerpc64" => Ok(Arch::PPC64LE),
+            "riscv64" => Ok(Arch::RISCV64),
             "s390x" => Ok(Arch::S390X),
             "x86_64" => Ok(Arch::X86_64),
             _ => Err(Error::Unknown(std::env::consts::ARCH.to_string())),
@@ -54,6 +56,7 @@ impl Arch {
         match &self {
             Arch::AARCH64 => "aarch64".to_string(),
             Arch::PPC64LE => "ppc".to_string(),
+            Arch::RISCV64 => "riscv64".to_string(),
             Arch::S390X => "s390".to_string(),
             Arch::X86_64 => "x86_64".to_string(),
         }
@@ -77,6 +80,7 @@ mod tests {
     fn test_arch_from_string() {
         assert_eq!("aarch64".try_into(), Ok(Arch::AARCH64));
         assert_eq!("ppc64le".try_into(), Ok(Arch::PPC64LE));
+        assert_eq!("riscv64".try_into(), Ok(Arch::RISCV64));
         assert_eq!("s390x".try_into(), Ok(Arch::S390X));
         assert_eq!("x86_64".try_into(), Ok(Arch::X86_64));
     }
@@ -85,6 +89,7 @@ mod tests {
     fn test_arch_to_string() {
         assert_eq!(Arch::AARCH64.to_string(), "aarch64".to_string());
         assert_eq!(Arch::PPC64LE.to_string(), "ppc64le".to_string());
+        assert_eq!(Arch::RISCV64.to_string(), "riscv64".to_string());
         assert_eq!(Arch::S390X.to_string(), "s390x".to_string());
         assert_eq!(Arch::X86_64.to_string(), "x86_64".to_string());
     }
@@ -93,6 +98,7 @@ mod tests {
     fn test_to_product_string() {
         assert_eq!(Arch::AARCH64.to_yast_id(), "aarch64".to_string());
         assert_eq!(Arch::PPC64LE.to_yast_id(), "ppc".to_string());
+        assert_eq!(Arch::RISCV64.to_yast_id(), "riscv64".to_string());
         assert_eq!(Arch::S390X.to_yast_id(), "s390".to_string());
         assert_eq!(Arch::X86_64.to_yast_id(), "x86_64".to_string());
     }
@@ -107,6 +113,12 @@ mod tests {
     #[test]
     fn test_current_arch_powerpc64() {
         assert_eq!(Arch::current().unwrap(), Arch::PPC64LE);
+    }
+
+    #[cfg(target_arch = "riscv64")]
+    #[test]
+    fn test_current_arch_riscv64() {
+        assert_eq!(Arch::current().unwrap(), Arch::RISCV64);
     }
 
     #[cfg(target_arch = "s390x")]
