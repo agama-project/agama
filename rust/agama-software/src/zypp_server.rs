@@ -1111,10 +1111,26 @@ mod tests {
         let repos_dir = temp_dir.path().join("etc/zypp/repos.d");
         std::fs::create_dir_all(&repos_dir).unwrap();
 
-        std::fs::write(repos_dir.join("agama-1.repo"), "[agama-1]\nenabled=1\nbaseurl=dir:/tmp\n").unwrap();
-        std::fs::write(repos_dir.join("agama-2.repo"), "[agama-2]\nenabled=1\nbaseurl=http://example.com\n").unwrap();
-        std::fs::write(repos_dir.join("agama-3.repo"), "[agama-3]\nenabled=1\nbaseurl=test://invalid_url\n").unwrap();
-        std::fs::write(repos_dir.join("other-repo.repo"), "[other-repo]\nenabled=1\nbaseurl=http://example.com/other\n").unwrap();
+        std::fs::write(
+            repos_dir.join("agama-1.repo"),
+            "[agama-1]\nenabled=1\nbaseurl=dir:/tmp\n",
+        )
+        .unwrap();
+        std::fs::write(
+            repos_dir.join("agama-2.repo"),
+            "[agama-2]\nenabled=1\nbaseurl=http://example.com\n",
+        )
+        .unwrap();
+        std::fs::write(
+            repos_dir.join("agama-3.repo"),
+            "[agama-3]\nenabled=1\nbaseurl=test://invalid_url\n",
+        )
+        .unwrap();
+        std::fs::write(
+            repos_dir.join("other-repo.repo"),
+            "[other-repo]\nenabled=1\nbaseurl=http://example.com/other\n",
+        )
+        .unwrap();
 
         let zypp = zypp_agama::Zypp::init_target(root_dir, |_, _, _| {}).unwrap();
 
@@ -1160,6 +1176,5 @@ mod tests {
             .collect();
         assert!(enabled_repos.len() == 1);
         assert!(enabled_repos.contains(&"other-repo".to_string()));
-
     }
 }
