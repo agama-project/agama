@@ -271,3 +271,73 @@ nav.agm-breadcrumb > ol > li > a {
     }
   }
 }
+
+// The column every state of the storage page opens with. What the empty state
+// used to give it and it still needs: room above, and a measure narrow enough
+// that a sentence is read in one sweep rather than scanned across a monitor.
+.agm-summary-layout {
+  padding-block: var(--pf-t--global--spacer--xl);
+  text-align: center;
+}
+
+.agm-summary-layout__measure {
+  max-width: 44rem;
+}
+
+// Centring on the cross axis has no way to overflow politely: content wider
+// than the strip loses its start, which is where a heading begins. Stretched,
+// it wraps and stays whole, and the text stays centred by the rule above.
+.agm-summary-layout--narrow .agm-summary-layout__measure {
+  max-width: 100%;
+}
+
+// The room a summary keeps under it is the room before whatever it introduces,
+// and a list that starts a screen away from the sentence about it reads as a
+// second page.
+.agm-summary-layout--tight {
+  padding-block-end: var(--pf-t--global--spacer--sm);
+}
+
+// The sentence is the page's own heading and reads as one. Its weight is the
+// framework's, not a size of ours.
+.agm-summary-layout__title {
+  text-wrap: balance;
+}
+
+// PatternFly gives a paragraph room under it, which is room this one does not
+// want: it is the last line of a block, not a paragraph with another after it.
+.agm-summary-layout__body {
+  margin-block-end: 0;
+}
+
+// Short and centred. A rule the width of the text above it divides the page in
+// two; this one closes a paragraph of it and lets the actions under it read as
+// the answer to what was just reported.
+.agm-summary-layout__rule {
+  width: 8rem;
+  margin-inline: auto;
+}
+
+// A name and a size are a value set into a sentence, and the sentence is often
+// a heading: at the heading's own size and weight the monospace reads as
+// something to press. Smaller and at body weight it reads as what it is, a
+// value quoted inside the words about it, and the face is what tells it apart
+// rather than a border or a colour.
+//
+// Kept whole, since a name and its size are one value and a line break between
+// them makes two.
+.agm-device-name {
+  font-family: var(--pf-t--global--font--family--mono);
+  font-size: 0.85em;
+  font-weight: var(--pf-t--global--font--weight--body--default);
+  white-space: nowrap;
+}
+
+// The size is a fact about the name rather than part of it, so it is not set as
+// a name: the brackets hold it apart, and the weight of the heading around it
+// is not what the reader needs on a number.
+.agm-device-name__size {
+  font-size: 0.85em;
+  font-weight: var(--pf-t--global--font--weight--body--default);
+  white-space: nowrap;
+}
