@@ -31,7 +31,6 @@ Source12:       node_modules.sums
 %include %_sourcedir/node_modules.spec.inc
 BuildArch:      noarch
 BuildRequires:  local-npm-registry
-BuildRequires:  appstream-glib
 
 # do not include in the 32bit repos, the Agama is 64bit only
 ExcludeArch:    %ix86 s390 ppc64
