@@ -38,9 +38,9 @@ import configModel from "~/model/storage/config-model";
 import { STORAGE } from "~/routes/paths";
 import { _ } from "~/i18n";
 
-import MountPointField from "~/components/storage/shared/MountPointField";
-import SizeFields from "~/components/storage/shared/SizeFields";
-import FilesystemAdditionalFields from "~/components/storage/shared/FilesystemAdditionalFields";
+import MountPointField from "~/components/storage/shared/form/MountPointField";
+import SizeFields from "~/components/storage/shared/form/SizeFields";
+import FilesystemAdditionalFields from "~/components/storage/shared/form/FilesystemAdditionalFields";
 import LogicalVolumeSourceFields from "./LogicalVolumeSourceFields";
 import LogicalVolumeNameField from "./LogicalVolumeNameField";
 import FilesystemFields from "./FilesystemFields";

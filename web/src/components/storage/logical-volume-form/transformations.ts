@@ -49,14 +49,14 @@
  *
  * ## Shared Helpers
  *
- * This module uses generic transformation helpers from shared/transformations.ts
+ * This module uses generic transformation helpers from shared/form/transformations.ts
  * for filesystem and size configuration. Form-specific logic handles:
  *
  * - The `target` field (name of LV to reuse)
  * - The `lvName` field (name for new LVs)
  * - LV name auto-fill from mount point
  *
- * @see shared/transformations.ts
+ * @see shared/form/transformations.ts
  */
 
 import { useParams } from "react-router";
@@ -68,7 +68,7 @@ import {
   buildSizeConfig,
   inferSizeFields,
   fsConfigValue,
-} from "~/components/storage/shared/transformations";
+} from "~/components/storage/shared/form/transformations";
 import { useVolumeGroupConfig, useInitialLogicalVolumeConfig } from "./queries";
 import {
   FILESYSTEM_TYPE,
@@ -76,7 +76,7 @@ import {
   isReusingLogicalVolume,
   defaultOptions,
 } from "./fields";
-import type { SolvedSizes } from "~/components/storage/shared/SizeFields";
+import type { SolvedSizes } from "~/components/storage/shared/form/SizeFields";
 import type { ConfigModel } from "~/model/storage/config-model";
 
 /**

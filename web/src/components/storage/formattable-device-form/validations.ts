@@ -24,7 +24,7 @@
  * Validation for the formattable device form.
  *
  * Builds on the field definitions from fields.ts and the reusable rules from
- * shared/validation-helpers.ts. The exported validate function is wired into
+ * shared/form/validation-helpers.ts. The exported validate function is wired into
  * the form's onSubmitAsync validator, following the submit-only validation
  * convention.
  */
@@ -34,7 +34,7 @@ import { requiredString } from "~/components/form/validation-helpers";
 import {
   validateMountPoint as validateMountPointValue,
   optionalFilesystemLabel,
-} from "~/components/storage/shared/validation-helpers";
+} from "~/components/storage/shared/form/validation-helpers";
 import { FILESYSTEM_TYPE, FILESYSTEM_ACTION } from "./fields";
 import { _ } from "~/i18n";
 import type {

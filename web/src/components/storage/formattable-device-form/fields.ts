@@ -21,8 +21,8 @@
  */
 
 import { formOptions } from "@tanstack/react-form";
-import { FILESYSTEM_TYPE, FILESYSTEM_ACTION } from "~/components/storage/shared/fields";
-import type { MountPointFields, FilesystemFields } from "~/components/storage/shared/fields";
+import { FILESYSTEM_TYPE, FILESYSTEM_ACTION } from "~/components/storage/shared/form/fields";
+import type { MountPointFields, FilesystemFields } from "~/components/storage/shared/form/fields";
 
 /**
  * Re-exported so form-local code (components, validations, transformations,

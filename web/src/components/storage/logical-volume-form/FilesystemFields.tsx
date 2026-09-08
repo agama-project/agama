@@ -22,7 +22,7 @@
 
 import React from "react";
 import { withForm } from "~/hooks/form";
-import SharedFilesystemFields from "~/components/storage/shared/FilesystemFields";
+import SharedFilesystemFields from "~/components/storage/shared/form/FilesystemFields";
 import { defaultOptions } from "./fields";
 
 import type { Storage as System } from "~/model/system";

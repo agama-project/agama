@@ -41,15 +41,18 @@
  *
  * ## Shared Helpers
  *
- * This module uses generic transformation helpers from shared/transformations.ts
+ * This module uses generic transformation helpers from shared/form/transformations.ts
  * for the filesystem configuration. Unlike the partition and logical volume
  * forms there is no size configuration and no device name field: the whole
  * device is always used.
  *
- * @see shared/transformations.ts
+ * @see shared/form/transformations.ts
  */
 
-import { buildFilesystemConfig, fsConfigValue } from "~/components/storage/shared/transformations";
+import {
+  buildFilesystemConfig,
+  fsConfigValue,
+} from "~/components/storage/shared/form/transformations";
 import { defaultOptions, FILESYSTEM_ACTION } from "./fields";
 import type { Data, Partitionable } from "~/model/storage/config-model";
 

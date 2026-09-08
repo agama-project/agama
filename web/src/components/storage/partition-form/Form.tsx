@@ -40,10 +40,10 @@ import configModel from "~/model/storage/config-model";
 import { STORAGE } from "~/routes/paths";
 import { _ } from "~/i18n";
 
-import MountPointField from "~/components/storage/shared/MountPointField";
-import SizeFields from "~/components/storage/shared/SizeFields";
+import MountPointField from "~/components/storage/shared/form/MountPointField";
+import SizeFields from "~/components/storage/shared/form/SizeFields";
 import PartitionFields from "./PartitionFields";
-import FilesystemAdditionalFields from "~/components/storage/shared/FilesystemAdditionalFields";
+import FilesystemAdditionalFields from "~/components/storage/shared/form/FilesystemAdditionalFields";
 import FilesystemFields from "./FilesystemFields";
 import {
   useDeviceModelFromParams,

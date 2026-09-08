@@ -1481,7 +1481,7 @@ different problem appears when a field derives read-only data from a
 `useSuspenseQuery` that is **re-keyed by what the user types**: size hints
 solved by the backend, availability checks, previews, etc.
 
-The running example is the size hint in `shared/SizeFields.tsx`, which solves
+The running example is the size hint in `shared/form/SizeFields.tsx`, which solves
 min/max sizes for the chosen mount point and filesystem.
 
 ### The Problem
@@ -1783,13 +1783,13 @@ Note: forms migrated before this split may still keep `validate` inside
 
 When several sibling forms share part of their vocabulary (the storage forms
 share filesystem and size fields, for example), the shared constants, types,
-and defaults live once in a `shared/fields.ts` next to the form directories.
+and defaults live once in a `shared/form/fields.ts` next to the form directories.
 
 Form-specific `fields.ts` modules then **import and re-export** what they use:
 
 ```typescript
-import { FILESYSTEM_TYPE, FILESYSTEM_ACTION, SIZE_MODE } from "~/components/storage/shared/fields";
-import type { FilesystemFields, SizeFields } from "~/components/storage/shared/fields";
+import { FILESYSTEM_TYPE, FILESYSTEM_ACTION, SIZE_MODE } from "~/components/storage/shared/form/fields";
+import type { FilesystemFields, SizeFields } from "~/components/storage/shared/form/fields";
 
 export { FILESYSTEM_TYPE, FILESYSTEM_ACTION, SIZE_MODE };
 export type { FilesystemFields, SizeFields };
@@ -1799,7 +1799,7 @@ Do not re-declare shared constants locally, even with identical values: copies
 kept in sync "by convention" drift eventually, and a single concept ends up
 imported from different modules within the same file.
 
-The re-export (rather than having consumers import from `shared/fields.ts`
+The re-export (rather than having consumers import from `shared/form/fields.ts`
 directly) keeps form-local code importing its whole field vocabulary from one
 module, without knowing which parts happen to be shared. It also leaves room
 for divergence: if a form ever needs different values, its `fields.ts` can
@@ -1834,12 +1834,12 @@ gates whether the optional filesystem settings are included at all.
 
 Conventions for control fields:
 
-- **Document them as control fields** in `fields.ts` (or `shared/fields.ts`),
+- **Document them as control fields** in `fields.ts` (or `shared/form/fields.ts`),
   stating what updates them and who reads them. Their purpose is invisible
   from the rendered form, so the comment is the only discoverable explanation.
 - **Keep them out of payload building.** Transformation helpers can make this
   explicit in types, e.g. `Omit<FilesystemFields, "filesystemAction">` in
-  `shared/transformations.ts`.
+  `shared/form/transformations.ts`.
 - **They are not validated**: validation messages point users at inputs, and
   control fields have none.
 - **Update them via listeners or effects**, usually with `dontUpdateMeta`

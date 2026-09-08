@@ -35,8 +35,8 @@ import { createPartitionableLocation } from "~/components/storage/utils";
 import { STORAGE } from "~/routes/paths";
 import { _ } from "~/i18n";
 
-import MountPointField from "~/components/storage/shared/MountPointField";
-import FilesystemAdditionalFields from "~/components/storage/shared/FilesystemAdditionalFields";
+import MountPointField from "~/components/storage/shared/form/MountPointField";
+import FilesystemAdditionalFields from "~/components/storage/shared/form/FilesystemAdditionalFields";
 import FilesystemFields from "./FilesystemFields";
 import { useDeviceModelFromParams, useDeviceFromParams, useUnusedMountPoints } from "./queries";
 import { buildPayload, toFormValues } from "./transformations";

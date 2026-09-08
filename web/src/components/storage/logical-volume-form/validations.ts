@@ -24,7 +24,7 @@
  * Validation for the logical volume form.
  *
  * Builds on the field definitions from fields.ts and the reusable rules from
- * shared/validation-helpers.ts. The exported validate function is wired into
+ * shared/form/validation-helpers.ts. The exported validate function is wired into
  * the form's onSubmitAsync validator, following the submit-only validation
  * convention.
  */
@@ -36,7 +36,7 @@ import {
   sizeRange,
   validateMountPoint as validateMountPointValue,
   optionalFilesystemLabel,
-} from "~/components/storage/shared/validation-helpers";
+} from "~/components/storage/shared/form/validation-helpers";
 import { FILESYSTEM_TYPE, FILESYSTEM_ACTION, SIZE_MODE, isReusingLogicalVolume } from "./fields";
 import { _ } from "~/i18n";
 import type {

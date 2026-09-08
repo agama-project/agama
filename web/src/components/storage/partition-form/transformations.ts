@@ -45,11 +45,11 @@
  *
  * ## Shared Helpers
  *
- * This module uses generic transformation helpers from shared/transformations.ts
+ * This module uses generic transformation helpers from shared/form/transformations.ts
  * for filesystem and size configuration. Form-specific logic handles the
  * partition name field (for reusing existing partitions).
  *
- * @see shared/transformations.ts
+ * @see shared/form/transformations.ts
  */
 
 import { useParams } from "react-router";
@@ -69,9 +69,9 @@ import {
   buildSizeConfig,
   inferSizeFields,
   fsConfigValue,
-} from "~/components/storage/shared/transformations";
+} from "~/components/storage/shared/form/transformations";
 import { FILESYSTEM_TYPE, FILESYSTEM_ACTION, isReusingPartition, defaultOptions } from "./fields";
-import type { SolvedSizes } from "~/components/storage/shared/SizeFields";
+import type { SolvedSizes } from "~/components/storage/shared/form/SizeFields";
 import type { ConfigModel } from "~/model/storage/config-model";
 
 /**
