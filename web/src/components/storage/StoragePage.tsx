@@ -21,24 +21,9 @@
  */
 
 import React from "react";
-import {
-  Button,
-  Content,
-  Grid,
-  Split,
-  SplitItem,
-  Stack,
-  EmptyState,
-  EmptyStateBody,
-  EmptyStateFooter,
-  List,
-  ListItem,
-  Tab,
-  Tabs,
-  TabTitleText,
-} from "@patternfly/react-core";
+import { Grid, Stack, Tab, Tabs, TabTitleText } from "@patternfly/react-core";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
-import { Link, NestedContent } from "~/components/core/";
+import { NestedContent } from "~/components/core/";
 import Page from "~/components/layout/Page";
 import Icon from "~/components/layout/Icon";
 import MenuButton from "~/components/core/MenuButton";
@@ -50,135 +35,20 @@ import FixableConfigInfo from "./FixableConfigInfo";
 import ProposalFailedInfo from "./ProposalFailedInfo";
 import ProposalResultSection from "./ProposalResultSection";
 import UnsupportedModelInfo from "./UnsupportedModelInfo";
+import InvalidConfigMessage from "./storage-page/InvalidConfigMessage";
+import NoDevicesMessage from "./storage-page/NoDevicesMessage";
+import UnknownConfigMessage from "./storage-page/UnknownConfigMessage";
 import { useAvailableDevices } from "~/hooks/model/system/storage";
 import { useIssues } from "~/hooks/model/issue";
 import { useReset } from "~/hooks/model/config/storage";
 import { useProposal } from "~/hooks/model/proposal/storage";
 import { STORAGE_MODEL_QUERY_KEY, useConfigModel } from "~/hooks/model/storage/config-model";
 import { PROPOSAL_QUERY_KEY } from "~/hooks/model/proposal";
-import { STORAGE as PATHS } from "~/routes/paths";
-import { _, n_ } from "~/i18n";
+import { _ } from "~/i18n";
 import { useSearchParamState, useClearSearchParams } from "~/hooks/use-search-param-state";
 import { EXPANDED, SETTINGS_TAB } from "~/components/storage/ui-state-params";
-import { useSystem as useDASDSystem } from "~/hooks/model/system/dasd";
-import { useSystem as useZFCPSystem } from "~/hooks/model/system/zfcp";
 import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
 import IssuesAlert from "~/components/core/IssuesAlert";
-import type { Issue } from "~/model/issue";
-
-type InvalidConfigEmptyStateProps = {
-  issues: Issue[];
-};
-
-function InvalidConfigEmptyState({ issues }: InvalidConfigEmptyStateProps): React.ReactNode {
-  const reset = useReset();
-
-  return (
-    <EmptyState
-      headingLevel="h2"
-      titleText={_("Invalid storage settings")}
-      icon={() => <Icon name="error" />}
-      status="warning"
-    >
-      <EmptyStateBody>
-        <Content component="p">
-          {n_(
-            "The current storage configuration has the following issue:",
-            "The current storage configuration has the following issues:",
-            issues.length,
-          )}
-        </Content>
-        <List isPlain>
-          {issues.map((e, i) => (
-            <ListItem key={i}>{e.description}</ListItem>
-          ))}
-        </List>
-      </EmptyStateBody>
-      <EmptyStateFooter>
-        <Content component="p">
-          {_(
-            "You may want to discard those settings and start from scratch with a simple configuration.",
-          )}
-        </Content>
-        <Button variant="secondary" onClick={() => reset()}>
-          {_("Reset to the default configuration")}
-        </Button>
-      </EmptyStateFooter>
-    </EmptyState>
-  );
-}
-
-function UnknownConfigEmptyState(): React.ReactNode {
-  const reset = useReset();
-
-  return (
-    <EmptyState
-      headingLevel="h2"
-      titleText={_("Unable to modify the settings")}
-      icon={() => <Icon name="error" />}
-      status="warning"
-    >
-      <EmptyStateBody>
-        <Content component="p">
-          {_("The storage configuration uses elements not supported by this interface.")}
-        </Content>
-      </EmptyStateBody>
-      <EmptyStateFooter>
-        <Content component="p">
-          {_(
-            "You may want to discard the current settings and start from scratch with a simple configuration.",
-          )}
-        </Content>
-        <Button variant="secondary" onClick={() => reset()}>
-          {_("Reset to the default configuration")}
-        </Button>
-      </EmptyStateFooter>
-    </EmptyState>
-  );
-}
-
-function UnavailableDevicesEmptyState(): React.ReactNode {
-  const dasdSystem = useDASDSystem();
-  const zfcpSystem = useZFCPSystem();
-
-  const description = _(
-    "There are not disks available for the installation. You may need to configure some device.",
-  );
-
-  return (
-    <EmptyState
-      headingLevel="h2"
-      titleText={_("No devices found")}
-      icon={() => <Icon name="error" />}
-      status="warning"
-    >
-      <EmptyStateBody>{description}</EmptyStateBody>
-      <EmptyStateFooter>
-        <Split hasGutter>
-          <SplitItem>
-            <Link to={PATHS.iscsi.root} variant="link">
-              {_("Connect to iSCSI targets")}
-            </Link>
-          </SplitItem>
-          {zfcpSystem && (
-            <SplitItem>
-              <Link to={PATHS.zfcp.root} variant="link">
-                {_("Activate zFCP disks")}
-              </Link>
-            </SplitItem>
-          )}
-          {dasdSystem && (
-            <SplitItem>
-              <Link to={PATHS.dasd} variant="link">
-                {_("Manage DASD devices")}
-              </Link>
-            </SplitItem>
-          )}
-        </Split>
-      </EmptyStateFooter>
-    </EmptyState>
-  );
-}
 
 function ModelSection(): React.ReactNode {
   const [activeTab, setActiveTab] = useSearchParamState(SETTINGS_TAB, "0");
@@ -276,10 +146,10 @@ function StoragePageContent(): React.ReactNode {
   const unfixableIssues = issues.filter((i) => !fixable.includes(i.class));
   const isModelEditable = model && !unfixableIssues.length;
 
-  if (!availableDevices.length) return <UnavailableDevicesEmptyState />;
+  if (!availableDevices.length) return <NoDevicesMessage />;
   if (configIssues.length && !isModelEditable)
-    return <InvalidConfigEmptyState issues={configIssues} />;
-  if (!configIssues.length && !model && !proposal) return <UnknownConfigEmptyState />;
+    return <InvalidConfigMessage issues={configIssues} />;
+  if (!configIssues.length && !model && !proposal) return <UnknownConfigMessage />;
 
   return (
     <Grid hasGutter>
@@ -293,7 +163,7 @@ function StoragePageContent(): React.ReactNode {
 }
 
 /**
- * @fixme Extract components like ProposalSections, UnknownConfigEmptyState, etc, to separate files
+ * @fixme Extract components like ProposalSections, ModelSection, etc, to separate files
  *  and test them individually. The storage page should simply mount all those components.
  */
 export default function StoragePage(): React.ReactNode {
