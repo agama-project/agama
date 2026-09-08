@@ -689,11 +689,17 @@ impl ZyppServer {
     ///
     /// This covers the installation repositories aliased `agama-0`, `agama-1`,
     /// etc. (see `build_repo` in `model::state`) as well as the Driver Update
-    /// Disk repository.
+    /// Disk repository. The exception is local repositories, as they are only disabled
+    /// so it can be easily readd later for offline scenarios (bsc#1277466)
     fn remove_installation_only_repos(&self, zypp: &zypp_agama::Zypp) -> ZyppServerResult<()> {
         let repos = zypp.list_repositories()?;
         let installation_repos = repos.iter().filter(|r| is_installation_repo(&r.alias));
         for repo in installation_repos {
+            // local repositories are disabled later, so do not remove them
+            // invalid url is considered as remote and should be removed
+            if repo.is_local().unwrap_or(false) {
+                continue;
+            }
             tracing::info!("Removing the installation repository {}", repo.alias);
             // Log the error and keep going: failing to remove one repository
             // should not prevent removing the rest.
@@ -1089,5 +1095,71 @@ mod tests {
         assert!(!is_installation_repo("signed_repo"));
         assert!(!is_installation_repo("repo-agama-0"));
         assert!(!is_installation_repo(""));
+    }
+
+    // this test combines two tests as libzypp does not allow parallel tests, so I embed two into one
+    #[test]
+    fn test_remove_installation_only_repos_and_disable_local() {
+        let temp_dir = tempfile::tempdir().unwrap();
+        let root_dir = temp_dir.path().to_str().unwrap();
+
+        // Init a RPM database to prevent init_target from failing
+        let _ = std::process::Command::new("rpmdb")
+            .args(["--root", root_dir, "--initdb"])
+            .status();
+
+        let repos_dir = temp_dir.path().join("etc/zypp/repos.d");
+        std::fs::create_dir_all(&repos_dir).unwrap();
+
+        std::fs::write(repos_dir.join("agama-1.repo"), "[agama-1]\nenabled=1\nbaseurl=dir:/tmp\n").unwrap();
+        std::fs::write(repos_dir.join("agama-2.repo"), "[agama-2]\nenabled=1\nbaseurl=http://example.com\n").unwrap();
+        std::fs::write(repos_dir.join("agama-3.repo"), "[agama-3]\nenabled=1\nbaseurl=test://invalid_url\n").unwrap();
+        std::fs::write(repos_dir.join("other-repo.repo"), "[other-repo]\nenabled=1\nbaseurl=http://example.com/other\n").unwrap();
+
+        let zypp = zypp_agama::Zypp::init_target(root_dir, |_, _, _| {}).unwrap();
+
+        let server = super::ZyppServer {
+            receiver: tokio::sync::mpsc::unbounded_channel().1,
+            root_dir: temp_dir.path().to_path_buf().try_into().unwrap(),
+            install_dir: temp_dir.path().to_path_buf().try_into().unwrap(),
+            registration: Default::default(),
+            trusted_keys: vec![],
+            unsigned_repos: vec![],
+            only_required: false,
+            save_solver_testcase: false,
+        };
+
+        server.remove_installation_only_repos(&zypp).unwrap();
+
+        let remaining_repos = zypp.list_repositories().unwrap();
+        let remaining_aliases: Vec<_> = remaining_repos.into_iter().map(|r| r.alias).collect();
+
+        // agama-local should be kept because it is local
+        assert!(remaining_aliases.contains(&"agama-1".to_string()));
+        // agama-remote should be removed because it is remote and installation-only
+        assert!(!remaining_aliases.contains(&"agama-2".to_string()));
+        // agama-invalid should be removed because it is invalid (treated as remote) and installation-only
+        assert!(!remaining_aliases.contains(&"agama-3".to_string()));
+        // other-repo should be kept because it is not an installation-only repository
+        assert!(remaining_aliases.contains(&"other-repo".to_string()));
+
+        server.disable_local_repos(&zypp).unwrap();
+        let remaining_repos = zypp.list_repositories().unwrap();
+        let disabled_repos: Vec<_> = remaining_repos
+            .iter()
+            .filter(|r| !r.enabled)
+            .map(|r| r.alias.clone())
+            .collect();
+        assert!(disabled_repos.len() == 1);
+        assert!(disabled_repos.contains(&"agama-1".to_string()));
+
+        let enabled_repos: Vec<_> = remaining_repos
+            .into_iter()
+            .filter(|r| r.enabled)
+            .map(|r| r.alias)
+            .collect();
+        assert!(enabled_repos.len() == 1);
+        assert!(enabled_repos.contains(&"other-repo".to_string()));
+
     }
 }
