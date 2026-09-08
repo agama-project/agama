@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Mon Sep  7 14:00:00 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Report more details about the network devices ("speed",
+  "carrier", "driver", "busPath" and "mtu"), so the user interface
+  can tell one device from another when picking the ports of a bond
+  or a bridge.
+
+-------------------------------------------------------------------
 Fri Sep  4 10:52:03 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Do not crash when validating or evaluating a profile without
