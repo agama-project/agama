@@ -110,6 +110,9 @@ jest.mock("./ConfigEditor", () => () => <div>installation devices</div>);
 jest.mock("./EncryptionSection", () => () => <div>encryption section</div>);
 jest.mock("./BootSection", () => () => <div>boot section</div>);
 jest.mock("./ConnectedDevicesMenu", () => () => <div>connected devices menu</div>);
+jest.mock("./storage-page/ConfigurationSummary", () => () => (
+  <div>what the configuration does</div>
+));
 
 beforeEach(() => {
   mockUseReset.mockReturnValue(jest.fn());
@@ -381,5 +384,23 @@ describe("if the UI supports the configuration (there is a model)", () => {
       installerRender(<StoragePage />);
       expect(screen.queryByText("result")).toBeInTheDocument();
     });
+  });
+
+  it("reports what the configuration does", () => {
+    installerRender(<StoragePage />);
+    expect(screen.queryByText("what the configuration does")).toBeInTheDocument();
+  });
+});
+
+describe("if the UI does not support the configuration", () => {
+  beforeEach(() => {
+    mockUseAvailableDevices.mockReturnValue([disk]);
+    mockUseConfigModel.mockReturnValue(null);
+    mockUseProposal.mockReturnValue({ devices: [], actions: [] });
+  });
+
+  it("does not report what the configuration does", () => {
+    installerRender(<StoragePage />);
+    expect(screen.queryByText("what the configuration does")).not.toBeInTheDocument();
   });
 });
