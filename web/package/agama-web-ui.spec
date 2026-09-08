@@ -42,7 +42,7 @@ Agama web UI for the experimental Agama installer.
 %prep
 %autosetup -p1 -n agama
 rm -f package-lock.json
-local-npm-registry %{_sourcedir} install --legacy-peer-deps || ( find ~/.npm/_logs -name '*-debug.log' -print0 | xargs -0 cat; false)
+local-npm-registry %{_sourcedir} install --legacy-peer-deps || ( find ~/.npm/_logs -name '*-debug*.log' -print0 | xargs -0 cat; false)
 
 %build
 NODE_ENV="production" npm run build
