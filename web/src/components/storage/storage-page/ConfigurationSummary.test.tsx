@@ -34,6 +34,7 @@ jest.mock("~/hooks/model/storage/config-model", () => ({
 }));
 
 jest.mock("./ConfigurationTitle", () => () => <>what the configuration does</>);
+jest.mock("./Consequences", () => () => <>what the configuration costs</>);
 
 const config = (values: Partial<ConfigModel.Config> = {}): ConfigModel.Config => ({
   drives: [],
@@ -59,6 +60,12 @@ describe("ConfigurationSummary", () => {
       mockConfig.mockReturnValue(config({ drives: [{ name: "/dev/vdd" }] }));
     });
 
+    it("reports what it costs, the same as any other configuration", () => {
+      plainRender(<ConfigurationSummary />);
+
+      expect(screen.getByText("what the configuration costs")).toBeInTheDocument();
+    });
+
     it("says nothing about a list, since there is none", () => {
       plainRender(<ConfigurationSummary />);
 
@@ -75,6 +82,12 @@ describe("ConfigurationSummary", () => {
       plainRender(<ConfigurationSummary />);
 
       expect(screen.getByText(new RegExp(guidance))).toBeInTheDocument();
+    });
+
+    it("reports what it costs, the same as a single device", () => {
+      plainRender(<ConfigurationSummary />);
+
+      expect(screen.getByText("what the configuration costs")).toBeInTheDocument();
     });
   });
 

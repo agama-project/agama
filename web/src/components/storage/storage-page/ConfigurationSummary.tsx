@@ -23,6 +23,7 @@
 import React from "react";
 import SummaryLayout from "~/components/storage/storage-page/SummaryLayout";
 import ConfigurationTitle from "~/components/storage/storage-page/ConfigurationTitle";
+import Consequences from "~/components/storage/storage-page/Consequences";
 import { useSingleDevice } from "~/components/storage/storage-page/queries";
 import { _ } from "~/i18n";
 
@@ -47,6 +48,10 @@ export default function ConfigurationSummary(): React.ReactNode {
   return (
     <SummaryLayout
       title={<ConfigurationTitle />}
+      /* The same report either way. A page that names what it destroys on a
+         full disk and stays quiet about a plan of eight is a page with two
+         shapes, and the reader learns which one they got by guessing. */
+      count={<Consequences />}
       /* Closed against the list it introduces, which a single device has
          nothing of. */
       isTight={!singleDevice}

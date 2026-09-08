@@ -37,7 +37,7 @@ export type DeviceNameProps = {
  * and lighter than the sentence around them. At a heading's own weight a
  * monospaced name reads as something to press; smaller and at body weight it
  * reads as what it is, a value quoted inside the words about it, without a
- * border or a colour doing the work.
+ * border or a color doing the work.
  *
  * The size is one node with the name rather than a placeholder of its own,
  * since the brackets are punctuation around a value rather than part of the
