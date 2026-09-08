@@ -17,11 +17,12 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { clamp } from "radashi";
 import ResizeHandle from "~/components/core/ResizeHandle";
 import TerminalPane from "~/components/core/TerminalPane";
 import { useTerminal } from "~/context/terminal";
+import { useElementSize } from "~/hooks/use-element-size";
 import { _ } from "~/i18n";
 
 // Minimum screen size to host a usable terminal. Below it the panel shows an
@@ -38,28 +39,6 @@ const MIN_MAIN_HEIGHT = 320;
 const MIN_TERMINAL_HEIGHT = 200;
 // Height the terminal opens with the first time, before the user resizes it.
 const DEFAULT_TERMINAL_HEIGHT = 360;
-
-type Size = { width: number; height: number };
-
-/** Tracks the rendered size of an element through a ResizeObserver. */
-function useElementSize(ref: React.RefObject<HTMLElement>): Size {
-  const [size, setSize] = useState<Size>({ width: 0, height: 0 });
-
-  useEffect(() => {
-    const node = ref.current;
-    if (!node || typeof ResizeObserver === "undefined") return;
-
-    const observer = new ResizeObserver(([entry]) => {
-      const { width, height } = entry.contentRect;
-      setSize({ width, height });
-    });
-    observer.observe(node);
-
-    return () => observer.disconnect();
-  }, [ref]);
-
-  return size;
-}
 
 /**
  * App-shell layout that optionally docks the terminal panel below the
@@ -87,8 +66,10 @@ function useElementSize(ref: React.RefObject<HTMLElement>): Size {
  */
 export default function TerminalDock({ children }: React.PropsWithChildren) {
   const { isOpen, isMinimized, height, setHeight } = useTerminal();
-  const containerRef = useRef<HTMLDivElement>(null);
-  const { width: containerWidth, height: containerHeight } = useElementSize(containerRef);
+  const [container, setContainer] = useState<HTMLDivElement | null>(null);
+  // Until the dock is measured there is no room for a terminal, so the panel
+  // starts by explaining it needs more of it rather than by opening too small.
+  const { width: containerWidth = 0, height: containerHeight = 0 } = useElementSize(container);
 
   const enoughSpace = containerWidth >= MIN_WIDTH && containerHeight >= MIN_HEIGHT;
 
@@ -109,13 +90,12 @@ export default function TerminalDock({ children }: React.PropsWithChildren) {
 
   const resizeToPointer = useCallback(
     (clientY: number) => {
-      const container = containerRef.current;
       if (!container) return;
 
       const next = container.getBoundingClientRect().bottom - clientY;
       setHeight(clamp(next, MIN_TERMINAL_HEIGHT, maxTerminalHeight));
     },
-    [maxTerminalHeight, setHeight],
+    [container, maxTerminalHeight, setHeight],
   );
 
   const resizeByStep = useCallback(
@@ -126,7 +106,7 @@ export default function TerminalDock({ children }: React.PropsWithChildren) {
   );
 
   return (
-    <div ref={containerRef} className="agm-terminal-dock">
+    <div ref={setContainer} className="agm-terminal-dock">
       <div className="agm-terminal-dock__main" hidden={isOpen && !enoughSpace}>
         {children}
       </div>
