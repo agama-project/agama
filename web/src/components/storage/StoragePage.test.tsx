@@ -21,14 +21,14 @@
  */
 
 /*
- * NOTE: this test is not useful. The ProposalPage loads several queries but,
+ * NOTE: this test is not useful. The StoragePage loads several queries but,
  * perhaps, each nested component should be responsible for loading the
  * information they need.
  */
 import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
-import ProposalPage from "~/components/storage/ProposalPage";
+import StoragePage from "~/components/storage/StoragePage";
 import type { Storage } from "~/model/proposal";
 import type { Issue } from "~/model/issue";
 
@@ -124,17 +124,17 @@ describe("if there are no devices", () => {
   });
 
   it("renders an option for activating iSCSI", () => {
-    installerRender(<ProposalPage />);
+    installerRender(<StoragePage />);
     expect(screen.queryByRole("link", { name: /iSCSI/ })).toBeInTheDocument();
   });
 
   it("does not render the installation devices", () => {
-    installerRender(<ProposalPage />);
+    installerRender(<StoragePage />);
     expect(screen.queryByText("installation devices")).not.toBeInTheDocument();
   });
 
   it("does not render the result", () => {
-    installerRender(<ProposalPage />);
+    installerRender(<StoragePage />);
     expect(screen.queryByText("result")).not.toBeInTheDocument();
   });
 
@@ -144,7 +144,7 @@ describe("if there are no devices", () => {
     });
 
     it("does not render an option for activating zFCP", () => {
-      installerRender(<ProposalPage />);
+      installerRender(<StoragePage />);
       expect(screen.queryByRole("link", { name: /zFCP/ })).not.toBeInTheDocument();
     });
   });
@@ -155,7 +155,7 @@ describe("if there are no devices", () => {
     });
 
     it("does not render an option for activating DASD", () => {
-      installerRender(<ProposalPage />);
+      installerRender(<StoragePage />);
       expect(screen.queryByRole("link", { name: /DASD/ })).not.toBeInTheDocument();
     });
   });
@@ -166,7 +166,7 @@ describe("if there are no devices", () => {
     });
 
     it("renders an option for activating zFCP", () => {
-      installerRender(<ProposalPage />);
+      installerRender(<StoragePage />);
       expect(screen.queryByRole("link", { name: /zFCP/ })).toBeInTheDocument();
     });
   });
@@ -177,7 +177,7 @@ describe("if there are no devices", () => {
     });
 
     it("renders an option for activating DASD", () => {
-      installerRender(<ProposalPage />);
+      installerRender(<StoragePage />);
       expect(screen.queryByRole("link", { name: /DASD/ })).toBeInTheDocument();
     });
   });
@@ -195,22 +195,22 @@ describe("if the UI does not support the current configuration (no model)", () =
     });
 
     it("renders a text explaining the settings are wrong", () => {
-      installerRender(<ProposalPage />);
+      installerRender(<StoragePage />);
       expect(screen.queryByText("Invalid storage settings")).toBeInTheDocument();
     });
 
     it("renders an option for resetting the config", () => {
-      installerRender(<ProposalPage />);
+      installerRender(<StoragePage />);
       expect(screen.queryByRole("button", { name: /Reset/ })).toBeInTheDocument();
     });
 
     it("does not render the installation devices", () => {
-      installerRender(<ProposalPage />);
+      installerRender(<StoragePage />);
       expect(screen.queryByText("installation devices")).not.toBeInTheDocument();
     });
 
     it("does not render the result", () => {
-      installerRender(<ProposalPage />);
+      installerRender(<StoragePage />);
       expect(screen.queryByText("result")).not.toBeInTheDocument();
     });
   });
@@ -221,22 +221,22 @@ describe("if the UI does not support the current configuration (no model)", () =
     });
 
     it("renders a text explaining the settings are wrong", () => {
-      installerRender(<ProposalPage />);
+      installerRender(<StoragePage />);
       expect(screen.queryByText("Invalid storage settings")).toBeInTheDocument();
     });
 
     it("renders an option for resetting the config", () => {
-      installerRender(<ProposalPage />);
+      installerRender(<StoragePage />);
       expect(screen.queryByRole("button", { name: /Reset/ })).toBeInTheDocument();
     });
 
     it("does not render the installation devices", async () => {
-      installerRender(<ProposalPage />);
+      installerRender(<StoragePage />);
       expect(screen.queryByText("installation devices")).not.toBeInTheDocument();
     });
 
     it("does not render the result", () => {
-      installerRender(<ProposalPage />);
+      installerRender(<StoragePage />);
       expect(screen.queryByText("result")).not.toBeInTheDocument();
     });
   });
@@ -248,22 +248,22 @@ describe("if the UI does not support the current configuration (no model)", () =
     });
 
     it("renders a text explaining the settings cannot be adjusted", () => {
-      installerRender(<ProposalPage />);
+      installerRender(<StoragePage />);
       expect(screen.queryByText("Unable to modify the settings")).toBeInTheDocument();
     });
 
     it("renders an option for resetting the config", () => {
-      installerRender(<ProposalPage />);
+      installerRender(<StoragePage />);
       expect(screen.queryByRole("button", { name: /Reset/ })).toBeInTheDocument();
     });
 
     it("does not render the installation devices", () => {
-      installerRender(<ProposalPage />);
+      installerRender(<StoragePage />);
       expect(screen.queryByText("installation devices")).not.toBeInTheDocument();
     });
 
     it("does not render the result", () => {
-      installerRender(<ProposalPage />);
+      installerRender(<StoragePage />);
       expect(screen.queryByText("result")).not.toBeInTheDocument();
     });
   });
@@ -275,17 +275,17 @@ describe("if the UI does not support the current configuration (no model)", () =
     });
 
     it("renders an info block explaining the settings cannot be adjusted", () => {
-      installerRender(<ProposalPage />);
+      installerRender(<StoragePage />);
       expect(screen.queryByText("unsupported model info")).toBeInTheDocument();
     });
 
     it("does not render the installation devices", () => {
-      installerRender(<ProposalPage />);
+      installerRender(<StoragePage />);
       expect(screen.queryByText("installation devices")).not.toBeInTheDocument();
     });
 
     it("renders the result", () => {
-      installerRender(<ProposalPage />);
+      installerRender(<StoragePage />);
       expect(screen.queryByText("result")).toBeInTheDocument();
     });
   });
@@ -303,22 +303,22 @@ describe("if the UI supports the configuration (there is a model)", () => {
     });
 
     it("renders a text explaining the settings are wrong", () => {
-      installerRender(<ProposalPage />);
+      installerRender(<StoragePage />);
       expect(screen.queryByText("Invalid storage settings")).toBeInTheDocument();
     });
 
     it("renders an option for resetting the config", () => {
-      installerRender(<ProposalPage />);
+      installerRender(<StoragePage />);
       expect(screen.queryByRole("button", { name: /Reset/ })).toBeInTheDocument();
     });
 
     it("does not render the installation devices", () => {
-      installerRender(<ProposalPage />);
+      installerRender(<StoragePage />);
       expect(screen.queryByText("installation devices")).not.toBeInTheDocument();
     });
 
     it("does not render the result", () => {
-      installerRender(<ProposalPage />);
+      installerRender(<StoragePage />);
       expect(screen.queryByText("result")).not.toBeInTheDocument();
     });
   });
@@ -329,17 +329,17 @@ describe("if the UI supports the configuration (there is a model)", () => {
     });
 
     it("renders an info block explaining the settings must be fixed", () => {
-      installerRender(<ProposalPage />);
+      installerRender(<StoragePage />);
       expect(screen.queryByText("fixable config info")).toBeInTheDocument();
     });
 
     it("renders the installation devices", () => {
-      installerRender(<ProposalPage />);
+      installerRender(<StoragePage />);
       expect(screen.queryByText("installation devices")).toBeInTheDocument();
     });
 
     it("does not render the result", () => {
-      installerRender(<ProposalPage />);
+      installerRender(<StoragePage />);
       expect(screen.queryByText("result")).not.toBeInTheDocument();
     });
   });
@@ -351,17 +351,17 @@ describe("if the UI supports the configuration (there is a model)", () => {
     });
 
     it("renders an info block explaining the proposal failed", () => {
-      installerRender(<ProposalPage />);
+      installerRender(<StoragePage />);
       expect(screen.queryByText("proposal failed info")).toBeInTheDocument();
     });
 
     it("renders the installation devices", () => {
-      installerRender(<ProposalPage />);
+      installerRender(<StoragePage />);
       expect(screen.queryByText("installation devices")).toBeInTheDocument();
     });
 
     it("does not render the result", () => {
-      installerRender(<ProposalPage />);
+      installerRender(<StoragePage />);
       expect(screen.queryByText("result")).not.toBeInTheDocument();
     });
   });
@@ -373,12 +373,12 @@ describe("if the UI supports the configuration (there is a model)", () => {
     });
 
     it("renders the installation devices", () => {
-      installerRender(<ProposalPage />);
+      installerRender(<StoragePage />);
       expect(screen.queryByText("installation devices")).toBeInTheDocument();
     });
 
     it("renders the result", () => {
-      installerRender(<ProposalPage />);
+      installerRender(<StoragePage />);
       expect(screen.queryByText("result")).toBeInTheDocument();
     });
   });

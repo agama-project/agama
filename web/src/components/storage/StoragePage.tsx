@@ -258,7 +258,7 @@ function ModelSection(): React.ReactNode {
   );
 }
 
-function ProposalPageContent(): React.ReactNode {
+function StoragePageContent(): React.ReactNode {
   const model = useConfigModel();
   const availableDevices = useAvailableDevices();
   const proposal = useProposal();
@@ -294,9 +294,9 @@ function ProposalPageContent(): React.ReactNode {
 
 /**
  * @fixme Extract components like ProposalSections, UnknownConfigEmptyState, etc, to separate files
- *  and test them individually. The proposal page should simply mount all those components.
+ *  and test them individually. The storage page should simply mount all those components.
  */
-export default function ProposalPage(): React.ReactNode {
+export default function StoragePage(): React.ReactNode {
   const zfcpIssues = useIssues("zfcp");
 
   return (
@@ -310,7 +310,7 @@ export default function ProposalPage(): React.ReactNode {
     >
       <Page.Content>
         <IssuesAlert issues={zfcpIssues} />
-        <ProposalPageContent />
+        <StoragePageContent />
       </Page.Content>
     </Page>
   );

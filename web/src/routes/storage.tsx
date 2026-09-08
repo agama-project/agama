@@ -25,7 +25,7 @@ import { Route } from "~/types/routes";
 import BootSelectionPage from "~/components/storage/BootSelectionPage";
 import EncryptionSettingsPage from "~/components/storage/EncryptionSettingsPage";
 import SpacePolicySelectionPage from "~/components/storage/SpacePolicySelectionPage";
-import ProposalPage from "~/components/storage/ProposalPage";
+import StoragePage from "~/components/storage/StoragePage";
 import ISCSIPage from "~/components/storage/ISCSIPage";
 import FormattableDeviceForm from "~/components/storage/formattable-device-form/Form";
 import PartitionForm from "~/components/storage/partition-form/Form";
@@ -45,7 +45,7 @@ const routes = (): Route => ({
   children: [
     {
       index: true,
-      element: <ProposalPage />,
+      element: <StoragePage />,
     },
     {
       path: PATHS.editBootDevice,
