@@ -1,11 +1,26 @@
 # Web Terminal — Follow-up Fixes
 
 Findings from the review of PR #3868 ("Add a web terminal to Agama's web UI").
-One issue was fixed directly (WebSocket reconnect backoff, see
-`web/src/hooks/use-terminal-session.ts`); the remaining two are tracked here
-for follow-up.
+Two issues were fixed directly:
 
-## 1. Terminal loses its DOM attachment when the panel toggles in/out of "not enough space"
+- WebSocket reconnect backoff, see `web/src/hooks/use-terminal-session.ts`.
+- A possible busy-loop between pty EOF and process reap, and the actual bug
+  it was hiding: on Linux, a pty master read returns `EIO`, not a clean EOF,
+  once the shell's side has closed. The read loop treated that `EIO` as a
+  hard error and broke immediately, skipping the "shell exited" message and
+  the graceful close entirely, and dropping the connection right away
+  instead — indistinguishable, from the client, from a real dropped
+  connection. Combined with the reconnect-on-drop logic, that meant typing
+  "exit" or pressing Ctrl-D handed the user a brand new shell, with no way
+  to leave the terminal from the keyboard. Fixed in
+  `rust/agama-server/src/terminal/web.rs` (see
+  `test_exit_is_reported_before_a_graceful_close`), together with the
+  busy-loop itself (both share the same root cause: nothing stopped
+  `output.next()` from being polled once the pty side was done).
+
+The remaining issue is tracked here for follow-up.
+
+## Terminal loses its DOM attachment when the panel toggles in/out of "not enough space"
 
 **File:** `web/src/hooks/use-terminal-session.ts` (DOM attachment effect)
 
@@ -45,36 +60,3 @@ once" — `use-terminal-session.test.ts` only exercises the initial
 changed (e.g., a ref storing the last attached container), rather than a
 one-shot check on `terminal.element`, so re-attachment happens on every
 container swap.
-
-## 2. Possible busy-loop between pty EOF and process reap
-
-**File:** `rust/agama-server/src/terminal/web.rs` (session read loop)
-
-```rust
-chunk = output.next() => {
-    match chunk {
-        ...
-        None => {
-            // The pty's read side closed; the shell is about to exit
-            // (handled by the child.wait() branch below).
-        }
-    }
-}
-```
-
-`tokio_util::io::ReaderStream` is fused: once it returns `None` (pty read
-side closed / EOF), it immediately returns `None` again on every subsequent
-poll. Since this branch does nothing but fall through to the top of the
-`select!` loop, and `socket.recv()` is typically `Pending` while waiting for
-user input, the loop could spin tightly re-polling `output.next()`
-(immediately ready) until `child.wait()` resolves.
-
-In practice the window between pty EOF and process reap should be very
-short, so the practical impact is likely negligible. It's worth confirming
-there is no plausible case (e.g., a shell that forks a detached background
-process that briefly holds the pty open after the main shell process itself
-has already been reaped, or vice versa) where this window is non-trivial.
-
-**Suggested fix (if confirmed necessary):** break out of the read loop, or
-add a short yield/sleep, once `output.next()` returns `None`, instead of
-continuing to poll it on every loop iteration.

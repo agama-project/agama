@@ -251,6 +251,55 @@ async fn test_resize() {
     assert!(output.contains("43 132"));
 }
 
+/// Regression test: on Linux, reading the pty master returns `EIO` once the
+/// shell's side has closed, instead of a clean EOF like a pipe would. The
+/// session used to treat that as a hard I/O error and drop the connection
+/// right away, without ever reporting the exit or closing gracefully — the
+/// client would see the connection reset, indistinguishable from an actual
+/// dropped connection, and (before the reconnect-on-drop logic learned to
+/// tell the difference) would silently get a brand new shell right when the
+/// user typed "exit" or pressed Ctrl-D, with no way to leave the terminal.
+#[tokio::test]
+async fn test_exit_is_reported_before_a_graceful_close() {
+    let url = start_server().await;
+    let mut socket = connect(&url, Some(&auth_token())).await.unwrap();
+
+    socket
+        .send(Message::Binary(b"exit\n".to_vec().into()))
+        .await
+        .unwrap();
+
+    let exit_message = timeout(READ_TIMEOUT, async {
+        loop {
+            match socket.next().await {
+                Some(Ok(Message::Text(text))) => return text.to_string(),
+                Some(Ok(_)) => continue,
+                Some(Err(error)) => {
+                    panic!("websocket error while waiting for the exit message: {error}")
+                }
+                None => panic!("the connection ended without reporting the shell's exit"),
+            }
+        }
+    })
+    .await
+    .expect("timed out waiting for the exit message");
+
+    assert!(
+        exit_message.contains(r#""type":"exit""#) && exit_message.contains(r#""code":0"#),
+        "unexpected message: {exit_message}"
+    );
+
+    // The socket must close gracefully right after (not reset the
+    // connection), or the client cannot tell this apart from a real drop.
+    let next = timeout(READ_TIMEOUT, socket.next())
+        .await
+        .expect("timed out waiting for the socket to close");
+    assert!(
+        matches!(next, Some(Ok(Message::Close(_))) | None),
+        "expected a graceful close after the exit message, got: {next:?}"
+    );
+}
+
 #[tokio::test]
 async fn test_connect_without_token_is_rejected() {
     let url = start_server().await;

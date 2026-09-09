@@ -57,6 +57,11 @@ const DEFAULT_ROWS: u16 = 24;
 const DEFAULT_COLS: u16 = 80;
 /// Shell started for every terminal session.
 const SHELL: &str = "bash";
+/// `EIO` ("Input/output error"), the errno Linux's pty master returns from a
+/// read once its last slave file descriptor has closed, instead of a clean
+/// EOF (unlike a pipe). Reported here as `Some(EIO)` from a `std::io::Error`,
+/// see [`handle_socket`].
+const EIO: i32 = 5;
 
 /// Control message sent by the client to resize the terminal.
 #[derive(Debug, Deserialize)]
@@ -117,6 +122,10 @@ async fn handle_socket(mut socket: WebSocket) {
     };
 
     let mut output = ReaderStream::new(pty_read);
+    // Once the pty read side is done (clean EOF or EIO, see below), stop
+    // polling it: it would otherwise stay immediately "ready" forever,
+    // starving the other branches in the loop below.
+    let mut pty_open = true;
 
     loop {
         tokio::select! {
@@ -147,7 +156,7 @@ async fn handle_socket(mut socket: WebSocket) {
             }
 
             // Output coming from the shell.
-            chunk = output.next() => {
+            chunk = output.next(), if pty_open => {
                 match chunk {
                     Some(Ok(bytes)) => {
                         if socket.send(Message::Binary(bytes)).await.is_err() {
@@ -157,13 +166,21 @@ async fn handle_socket(mut socket: WebSocket) {
                             break;
                         }
                     }
+                    Some(Err(error)) if error.raw_os_error() == Some(EIO) => {
+                        // Expected: on Linux, the pty master's read returns
+                        // EIO (not a clean EOF) once the shell's side has
+                        // closed. Nothing left to read; wait for the
+                        // child.wait() branch below to report the exit.
+                        pty_open = false;
+                    }
                     Some(Err(error)) => {
                         tracing::warn!("terminal: failed to read from the pty: {error}");
                         break;
                     }
                     None => {
-                        // The pty's read side closed; the shell is about to exit
-                        // (handled by the child.wait() branch below).
+                        // Clean EOF (e.g., on non-Linux platforms): same as
+                        // the EIO case above.
+                        pty_open = false;
                     }
                 }
             }
