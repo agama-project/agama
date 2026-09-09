@@ -355,3 +355,61 @@ nav.agm-breadcrumb > ol > li > a {
 .agm-space-decision .pf-v6-c-toggle-group {
   flex-wrap: wrap;
 }
+
+// A panel opened beside, over, or in place of the page it belongs to. It takes
+// the whole height it is given and scrolls its own content, so the heading
+// saying what the reader is looking at stays put while the panel is read.
+.agm-sheet {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  padding: var(--pf-t--global--spacer--lg) var(--pf-t--global--spacer--xl);
+  background: var(--pf-t--global--background--color--primary--default);
+}
+
+// Opening the sheet moves the reader into it, and a panel that takes focus
+// without showing where it went leaves a keyboard reader guessing.
+.agm-sheet:focus-visible {
+  outline: 2px solid var(--pf-t--global--border--color--brand--default);
+  outline-offset: -2px;
+}
+
+.agm-sheet__head {
+  flex: 0 0 auto;
+  padding-block-end: var(--pf-t--global--spacer--sm);
+  margin-block-end: var(--pf-t--global--spacer--md);
+  border-block-end: 1px solid var(--pf-t--global--border--color--default);
+}
+
+// Named rather than sized as a heading: the sheet's title says which thing is
+// being read, and a page whose panel shouts louder than its own sentence has
+// its ranking the wrong way round.
+.agm-sheet__title {
+  margin: 0;
+  font-size: var(--pf-t--global--font--size--body--lg);
+  font-weight: var(--pf-t--global--font--weight--body--bold);
+  line-height: var(--pf-t--global--font--line-height--heading);
+}
+
+.agm-sheet__description {
+  font-size: var(--pf-t--global--font--size--body--sm);
+  color: var(--pf-t--global--text--color--subtle);
+}
+
+.agm-sheet__body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+// The page keeps its edge where the sheet stands beside it.
+.agm-sheet__panel {
+  border-inline-start: 1px solid var(--pf-t--global--border--color--default);
+}
+
+// The wider the window, the less of it the sheet needs: a panel has a width it
+// reads well at, and everything past that is spent on nothing.
+.agm-sheet__panel--share {
+  max-width: 44rem;
+}
