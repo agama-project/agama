@@ -228,8 +228,10 @@ export default function TerminalPane({ enoughSpace }: TerminalPaneProps) {
     >
       {/* The terminal stays mounted while collapsed, so the session and its
           output are kept; only the body is hidden. */}
-      <CardBody isFilled className="agm-terminal__body" hidden={isMinimized}>
-        <div ref={containerRef} className="agm-terminal__screen" />
+      <CardBody isFilled className="agm-terminal__body">
+        <div className="agm-terminal__screen">
+          <div ref={containerRef} className="agm-terminal__container" />
+        </div>
       </CardBody>
     </TerminalShell>
   );

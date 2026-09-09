@@ -185,7 +185,14 @@ export const useTerminalSession = (container: HTMLElement | null): TerminalSessi
 
     if (typeof ResizeObserver === "undefined") return;
 
-    const observer = new ResizeObserver(() => fitAddon.fit());
+    // A collapsed panel takes its container out of the layout, which reports a
+    // zero-sized box. Fitting to it would shrink the terminal to a single row
+    // and tell the shell about it, reflowing the output that is being kept.
+    const observer = new ResizeObserver(([entry]) => {
+      const { width, height } = entry.contentRect;
+      if (width === 0 || height === 0) return;
+      fitAddon.fit();
+    });
     observer.observe(container);
     return () => observer.disconnect();
   }, [container]);

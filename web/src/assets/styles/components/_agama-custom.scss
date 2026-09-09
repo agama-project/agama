@@ -274,12 +274,12 @@ nav.agm-breadcrumb > ol > li > a {
 
 // Terminal panel docked below the application as a resizable split. The panel
 // lives above the page outlet, so its session survives navigation; here it only
-// shares the screen height with the application and provides the resize
+// shares the viewport height with the application and provides the resize
 // affordance.
 //
-// The container keeps a definite height so the application (a PatternFly Page,
-// which is 100vh tall but capped to its parent) shrinks to share the height with
-// the terminal instead of overflowing.
+// The dock has a definite viewport height so the application (a PatternFly
+// Page, which is 100vh tall but capped to its parent) shrinks to share the
+// available height with the terminal instead of overflowing.
 .agm-terminal-dock {
   display: flex;
   flex-direction: column;
@@ -300,10 +300,10 @@ nav.agm-breadcrumb > ol > li > a {
 .agm-terminal-dock__handle {
   flex: 0 0 auto;
   block-size: var(--pf-t--global--spacer--sm);
-  cursor: row-resize;
   display: flex;
   align-items: center;
   justify-content: center;
+  cursor: row-resize;
   background-color: var(--pf-t--global--background--color--secondary--default);
   color: var(--pf-t--global--icon--color--subtle);
   border-block: 1px solid var(--pf-t--global--border--color--default);
@@ -317,8 +317,7 @@ nav.agm-breadcrumb > ol > li > a {
 
 // The docked area uses the page surface (the gray behind the cards) and a bit
 // of padding, so the terminal reads as a card floating on it, matching the main
-// content pane. The card chrome (white surface, radius) comes from the
-// PatternFly Card itself.
+// content pane. The Card itself supplies the white surface and rounded corners.
 .agm-terminal-dock__panel {
   flex: none;
   min-height: 0;
@@ -328,22 +327,25 @@ nav.agm-breadcrumb > ol > li > a {
   background-color: var(--pf-t--global--background--color--secondary--default);
 }
 
-// Collapsed to a bar: trim the surround so it does not waste vertical space.
+// Collapsed to a bar: reduce the vertical surround so the minimized terminal
+// does not consume unnecessary space.
 .agm-terminal-dock__panel--minimized {
   padding-block: var(--pf-t--global--spacer--sm);
 }
 
 .agm-terminal {
-  flex: 1;
+  flex: 1 1 0;
   min-width: 0;
   min-height: 0;
-  // Match the main content pane (PF page main container): the same faint border
-  // and floating shadow, rather than the Card's more visible default border.
+
+  // Match the main content pane (PatternFly Page main container): use the same
+  // faint border and floating shadow rather than the Card's more visible default.
   --pf-v6-c-card--BorderColor: var(--pf-t--global--border--color--main--default);
   box-shadow: var(--pf-t--global--box-shadow--glass--default, none);
 }
 
-// Collapsed to a bar: trim the card header padding so the bar stays slim.
+// Collapsed to a bar: reduce the Card header padding so the minimized terminal
+// remains compact.
 .agm-terminal--minimized {
   --pf-v6-c-card--m-compact--first-child--PaddingBlockStart: var(--pf-t--global--spacer--sm);
   --pf-v6-c-card--m-compact__title--not--last-child--PaddingBlockEnd: var(
@@ -359,18 +361,34 @@ nav.agm-breadcrumb > ol > li > a {
   overflow: hidden;
 }
 
-.agm-terminal__body[hidden] {
-  display: none;
-}
-
-// Hosts the xterm.js instance. xterm.js manages its own internal scrolling and
-// text rendering, so this only needs to give it a definite size and a
-// background matching its own theme (set when the terminal is created; see
-// `useTerminalSession`) for the padding around it.
+// Keep the visual terminal surface separate from the element measured by
+// xterm.js. The screen owns the padding and decoration, while the inner
+// container provides xterm.js with a padding-free box of definite dimensions.
+// This prevents the xterm surface from extending beyond the available height
+// when FitAddon calculates the terminal size.
 .agm-terminal__screen {
-  flex: 1;
+  flex: 1 1 0;
+  min-width: 0;
   min-height: 0;
+  box-sizing: border-box;
   padding: var(--pf-t--global--spacer--md);
   border-radius: var(--pf-t--global--border--radius--small);
   background-color: #1e1e1e;
+  overflow: hidden;
+}
+
+// This element is passed to xterm.js as its host. Keep it padding-free so
+// FitAddon measures exactly the space available for the terminal itself.
+.agm-terminal__container {
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+// When minimized, remove the terminal body from the layout entirely.
+// The Card header becomes the compact restore bar.
+.agm-terminal--minimized .agm-terminal__body {
+  display: none;
 }
