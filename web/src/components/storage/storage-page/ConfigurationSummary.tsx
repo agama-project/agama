@@ -26,6 +26,7 @@ import ConfigurationTitle from "~/components/storage/storage-page/ConfigurationT
 import Consequences from "~/components/storage/storage-page/Consequences";
 import SpaceDecision from "~/components/storage/storage-page/SpaceDecision";
 import DeviceSummary from "~/components/storage/storage-page/DeviceSummary";
+import EntriesTable from "~/components/storage/entries-table/EntriesTable";
 import { baseName } from "~/components/storage/utils";
 import {
   useSingleDevice,
@@ -58,38 +59,44 @@ export default function ConfigurationSummary(): React.ReactNode {
   const spaceDecision = singleDevice && hasExistingContent;
 
   return (
-    <SummaryLayout
-      title={<ConfigurationTitle />}
-      control={
-        spaceDecision && (
-          <SpaceDecision collection={singleDevice.collection} index={singleDevice.index} />
-        )
-      }
-      /* The same report either way. A page that names what it destroys on a
-         full disk and stays quiet about a plan of eight is a page with two
-         shapes, and the reader learns which one they got by guessing. */
-      count={<Consequences />}
-      /* Why there is no plan, in place of what the plan costs. The reader is
-         looking at a page that cannot say what will happen, and the decision
-         that stopped it is above this line. */
-      notice={
-        singleDevice &&
-        noRoomReason && (
-          <DeviceSummary name={baseName(singleDevice.device.name)} reason={noRoomReason} />
-        )
-      }
-      /* Closed against the list it introduces, which a single device has
-         nothing of. */
-      isTight={!singleDevice}
-      body={
-        singleDevice
-          ? undefined
-          : // TRANSLATORS: said under the summary of a configuration made of
-            // several entries, about the list of those entries below it.
-            _(
-              "Review and configure the entries below. You can change, remove, or add entries as needed.",
-            )
-      }
-    />
+    <>
+      <SummaryLayout
+        title={<ConfigurationTitle />}
+        control={
+          spaceDecision && (
+            <SpaceDecision collection={singleDevice.collection} index={singleDevice.index} />
+          )
+        }
+        /* The same report either way. A page that names what it destroys on a
+           full disk and stays quiet about a plan of eight is a page with two
+           shapes, and the reader learns which one they got by guessing. */
+        count={<Consequences />}
+        /* Why there is no plan, in place of what the plan costs. The reader is
+           looking at a page that cannot say what will happen, and the decision
+           that stopped it is above this line. */
+        notice={
+          singleDevice &&
+          noRoomReason && (
+            <DeviceSummary name={baseName(singleDevice.device.name)} reason={noRoomReason} />
+          )
+        }
+        /* Closed against the list it introduces, which a single device has
+           nothing of. */
+        isTight={!singleDevice}
+        body={
+          singleDevice
+            ? undefined
+            : // TRANSLATORS: said under the summary of a configuration made of
+              // several entries, about the list of those entries below it.
+              _(
+                "Review and configure the entries below. You can change, remove, or add entries as needed.",
+              )
+        }
+      />
+      {/* Under the summary rather than inside it: the summary says what the
+          configuration does, and this is what it is made of. A single device is
+          the whole configuration, so it has nothing to list. */}
+      {!singleDevice && <EntriesTable />}
+    </>
   );
 }

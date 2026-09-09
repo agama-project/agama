@@ -49,6 +49,9 @@ jest.mock("./ConfigurationTitle", () => () => <>what the configuration does</>);
 jest.mock("./Consequences", () => () => <>what the configuration costs</>);
 jest.mock("./SpaceDecision", () => () => <>what may happen to what is there</>);
 jest.mock("./DeviceSummary", () => () => <>why the configuration has no layout</>);
+jest.mock("~/components/storage/entries-table/EntriesTable", () => () => (
+  <>what the configuration is made of</>
+));
 
 const config = (values: Partial<ConfigModel.Config> = {}): ConfigModel.Config => ({
   drives: [],
@@ -61,6 +64,7 @@ const guidance = "Review and configure the entries below.";
 const spaceDecision = "what may happen to what is there";
 const cost = "what the configuration costs";
 const noLayout = "why the configuration has no layout";
+const entries = "what the configuration is made of";
 
 /** A disk with something already on it, which is what makes space a question. */
 const usedDisk = { name: "/dev/vdd", partitions: [{ name: "/dev/vdd1" }] };
@@ -108,6 +112,7 @@ describe("ConfigurationSummary", () => {
       plainRender(<ConfigurationSummary />);
 
       expect(screen.queryByText(new RegExp(guidance))).not.toBeInTheDocument();
+      expect(screen.queryByText(entries)).not.toBeInTheDocument();
     });
 
     it("offers the space decision, since there is one device it can be about", () => {
@@ -138,6 +143,12 @@ describe("ConfigurationSummary", () => {
       plainRender(<ConfigurationSummary />);
 
       expect(screen.getByText(new RegExp(guidance))).toBeInTheDocument();
+    });
+
+    it("lists what the configuration is made of", () => {
+      plainRender(<ConfigurationSummary />);
+
+      screen.getByText(entries);
     });
 
     it("reports what it costs, the same as a single device", () => {

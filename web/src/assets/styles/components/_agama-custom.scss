@@ -413,3 +413,38 @@ nav.agm-breadcrumb > ol > li > a {
 .agm-sheet__panel--share {
   max-width: 44rem;
 }
+
+// What the configuration is made of, under the summary of what it does. Where
+// the table cannot have the width its columns need, it keeps that width and
+// this scrolls: anything else crushes the alignment the table exists for.
+.agm-entries-table {
+  overflow-x: auto;
+}
+
+// Entries sit under the name of their category rather than beside it, so the
+// grouping reads without the name having to be repeated on every row.
+.agm-entries-table th[scope="row"] {
+  padding-inline-start: var(--pf-t--global--spacer--lg);
+}
+
+// Set apart from the entries under it by weight and size rather than by a
+// filled band: it names a run of rows, it is not a row itself.
+.agm-entries-table__category th {
+  padding-block: var(--pf-t--global--spacer--lg) var(--pf-t--global--spacer--xs);
+  font-size: var(--pf-t--global--font--size--body--sm);
+  font-weight: var(--pf-t--global--font--weight--body--bold);
+  color: var(--pf-t--global--text--color--subtle);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.agm-entries-table tbody:first-of-type .agm-entries-table__category th {
+  padding-block-start: 0;
+}
+
+// What the entry is, read on the name's own line: a fact about the name rather
+// than a column of its own.
+.agm-entries-table__facts {
+  font-size: var(--pf-t--global--font--size--body--sm);
+  color: var(--pf-t--global--text--color--subtle);
+}
