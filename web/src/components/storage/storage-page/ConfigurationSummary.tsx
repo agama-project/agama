@@ -25,7 +25,13 @@ import SummaryLayout from "~/components/storage/storage-page/SummaryLayout";
 import ConfigurationTitle from "~/components/storage/storage-page/ConfigurationTitle";
 import Consequences from "~/components/storage/storage-page/Consequences";
 import SpaceDecision from "~/components/storage/storage-page/SpaceDecision";
-import { useSingleDevice, useHasExistingContent } from "~/components/storage/storage-page/queries";
+import DeviceSummary from "~/components/storage/storage-page/DeviceSummary";
+import { baseName } from "~/components/storage/utils";
+import {
+  useSingleDevice,
+  useHasExistingContent,
+  useNoRoomReason,
+} from "~/components/storage/storage-page/queries";
 import { _ } from "~/i18n";
 
 /**
@@ -46,6 +52,7 @@ import { _ } from "~/i18n";
 export default function ConfigurationSummary(): React.ReactNode {
   const singleDevice = useSingleDevice();
   const hasExistingContent = useHasExistingContent(singleDevice?.device.name);
+  const noRoomReason = useNoRoomReason();
   /* Offered only where there is one subject for it. On several entries each row
      carries its own, since one answer cannot speak for three disks. */
   const spaceDecision = singleDevice && hasExistingContent;
@@ -62,6 +69,15 @@ export default function ConfigurationSummary(): React.ReactNode {
          full disk and stays quiet about a plan of eight is a page with two
          shapes, and the reader learns which one they got by guessing. */
       count={<Consequences />}
+      /* Why there is no plan, in place of what the plan costs. The reader is
+         looking at a page that cannot say what will happen, and the decision
+         that stopped it is above this line. */
+      notice={
+        singleDevice &&
+        noRoomReason && (
+          <DeviceSummary name={baseName(singleDevice.device.name)} reason={noRoomReason} />
+        )
+      }
       /* Closed against the list it introduces, which a single device has
          nothing of. */
       isTight={!singleDevice}

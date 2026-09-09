@@ -28,6 +28,7 @@ import ConfigurationSummary from "~/components/storage/storage-page/Configuratio
 
 const mockConfig = jest.fn();
 const mockSystemDevice = jest.fn();
+const mockProposal = jest.fn();
 
 jest.mock("~/hooks/model/storage/config-model", () => ({
   ...jest.requireActual("~/hooks/model/storage/config-model"),
@@ -39,9 +40,15 @@ jest.mock("~/hooks/model/system/storage", () => ({
   useDevice: () => mockSystemDevice(),
 }));
 
+jest.mock("~/hooks/model/proposal/storage", () => ({
+  ...jest.requireActual("~/hooks/model/proposal/storage"),
+  useProposal: () => mockProposal(),
+}));
+
 jest.mock("./ConfigurationTitle", () => () => <>what the configuration does</>);
 jest.mock("./Consequences", () => () => <>what the configuration costs</>);
 jest.mock("./SpaceDecision", () => () => <>what may happen to what is there</>);
+jest.mock("./DeviceSummary", () => () => <>why the configuration has no layout</>);
 
 const config = (values: Partial<ConfigModel.Config> = {}): ConfigModel.Config => ({
   drives: [],
@@ -52,6 +59,8 @@ const config = (values: Partial<ConfigModel.Config> = {}): ConfigModel.Config =>
 
 const guidance = "Review and configure the entries below.";
 const spaceDecision = "what may happen to what is there";
+const cost = "what the configuration costs";
+const noLayout = "why the configuration has no layout";
 
 /** A disk with something already on it, which is what makes space a question. */
 const usedDisk = { name: "/dev/vdd", partitions: [{ name: "/dev/vdd1" }] };
@@ -59,6 +68,7 @@ const usedDisk = { name: "/dev/vdd", partitions: [{ name: "/dev/vdd1" }] };
 describe("ConfigurationSummary", () => {
   beforeEach(() => {
     mockSystemDevice.mockReturnValue(usedDisk);
+    mockProposal.mockReturnValue({ actions: [] });
   });
 
   it("opens with what the configuration does", () => {
@@ -78,7 +88,20 @@ describe("ConfigurationSummary", () => {
     it("reports what it costs, the same as any other configuration", () => {
       plainRender(<ConfigurationSummary />);
 
-      expect(screen.getByText("what the configuration costs")).toBeInTheDocument();
+      expect(screen.getByText(cost)).toBeInTheDocument();
+    });
+
+    describe("and the installer worked out no layout for it", () => {
+      beforeEach(() => {
+        mockProposal.mockReturnValue(null);
+      });
+
+      it("says why, in place of what the configuration would have cost", () => {
+        plainRender(<ConfigurationSummary />);
+
+        screen.getByText(noLayout);
+        expect(screen.queryByText(cost)).not.toBeInTheDocument();
+      });
     });
 
     it("says nothing about a list, since there is none", () => {
@@ -120,7 +143,14 @@ describe("ConfigurationSummary", () => {
     it("reports what it costs, the same as a single device", () => {
       plainRender(<ConfigurationSummary />);
 
-      expect(screen.getByText("what the configuration costs")).toBeInTheDocument();
+      expect(screen.getByText(cost)).toBeInTheDocument();
+    });
+
+    it("says nothing about one device having no room, since no device speaks for it", () => {
+      mockProposal.mockReturnValue(null);
+      plainRender(<ConfigurationSummary />);
+
+      expect(screen.queryByText(noLayout)).not.toBeInTheDocument();
     });
 
     it("leaves the space decision to each row, since one answer cannot speak for two disks", () => {

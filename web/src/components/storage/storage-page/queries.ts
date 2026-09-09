@@ -22,6 +22,7 @@
 
 import { isEmpty } from "radashi";
 import { useConfigModel } from "~/hooks/model/storage/config-model";
+import { useProposal } from "~/hooks/model/proposal/storage";
 import { useDevice } from "~/hooks/model/system/storage";
 import type { Partitionable } from "~/model/storage/config-model";
 
@@ -67,4 +68,46 @@ function useHasExistingContent(name?: string): boolean {
   return !isEmpty(device?.partitions || []);
 }
 
-export { useSingleDevice, useHasExistingContent };
+/** Why the new system does not fit on the device the configuration is about. */
+type NoRoomReason = "keptContent" | "tooSmall";
+
+/**
+ * Why a configuration of a single device has no layout, where the page can see
+ * it for itself.
+ *
+ * The installer reports that it could not work one out and not what stopped it.
+ * Two shapes are legible from the configuration and the disk together, and both
+ * name a decision the reader can change. Everything else is left to what the
+ * page says about a failed layout in general, which names the mount paths it
+ * could not place.
+ */
+function useNoRoomReason(): NoRoomReason | null {
+  const proposal = useProposal();
+  const singleDevice = useSingleDevice();
+  const device = useDevice(singleDevice?.device.name || "");
+
+  if (proposal) return null;
+  if (!singleDevice || !device) return null;
+
+  const partitions = device.partitions || [];
+
+  /* The case a reader lands in most: a disk with something on it, and a plan
+     that is not allowed to touch any of it. */
+  const policy = singleDevice.device.spacePolicy || "keep";
+  if (policy === "keep" && !isEmpty(partitions)) return "keptContent";
+
+  /* Nothing to clear away, and nowhere to put anything either. The partition
+     table has to be there for that reading, since unused slots are how a disk
+     reports its free space: without one there is no zero to read, and calling
+     a blank disk too small would be a guess the page cannot back up. */
+  const free = (device.partitionTable?.unusedSlots || []).reduce(
+    (total, slot) => total + slot.size,
+    0,
+  );
+  if (device.partitionTable && isEmpty(partitions) && free === 0) return "tooSmall";
+
+  return null;
+}
+
+export { useSingleDevice, useHasExistingContent, useNoRoomReason };
+export type { NoRoomReason };

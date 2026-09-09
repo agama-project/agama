@@ -60,6 +60,7 @@ const configUnfixableIssue: Issue = {
 };
 
 const mockUseAvailableDevices = jest.fn();
+const mockUseSystemDevice = jest.fn();
 const mockUseReset = jest.fn();
 const mockUseConfigModel = jest.fn();
 const mockUseProposal = jest.fn();
@@ -70,6 +71,7 @@ const mockUseZFCPSystem = jest.fn();
 jest.mock("~/hooks/model/system/storage", () => ({
   ...jest.requireActual("~/hooks/model/system/storage"),
   useAvailableDevices: () => mockUseAvailableDevices(),
+  useDevice: () => mockUseSystemDevice(),
 }));
 
 jest.mock("~/hooks/model/config/storage", () => ({
@@ -119,6 +121,7 @@ beforeEach(() => {
   mockUseIssues.mockReturnValue([]);
   mockUseProposal.mockReturnValue(null);
   mockUseConfigModel.mockReturnValue({ drives: [] });
+  mockUseSystemDevice.mockReturnValue(null);
 });
 
 describe("if there are no devices", () => {

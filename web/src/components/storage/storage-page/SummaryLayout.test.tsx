@@ -58,6 +58,21 @@ describe("SummaryLayout", () => {
     expect(screen.getByText("Review and configure the entries below.")).toBeInTheDocument();
   });
 
+  describe("when there is a notice", () => {
+    it("says what is wrong in place of what the plan costs", () => {
+      plainRender(
+        <SummaryLayout
+          title="Use disk vdd as installation device"
+          notice={<span>There is not enough room on vdd</span>}
+          count={<span>View all 5 needed actions</span>}
+        />,
+      );
+
+      screen.getByText("There is not enough room on vdd");
+      expect(screen.queryByText("View all 5 needed actions")).not.toBeInTheDocument();
+    });
+  });
+
   describe("when there are actions", () => {
     it("closes the report with a rule and offers them after it", () => {
       plainRender(

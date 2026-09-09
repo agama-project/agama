@@ -39,6 +39,7 @@ import ConfigurationSummary from "~/components/storage/storage-page/Configuratio
 import InvalidConfigMessage from "~/components/storage/storage-page/InvalidConfigMessage";
 import NoDevicesMessage from "~/components/storage/storage-page/NoDevicesMessage";
 import UnknownConfigMessage from "~/components/storage/storage-page/UnknownConfigMessage";
+import { useNoRoomReason } from "~/components/storage/storage-page/queries";
 import { useAvailableDevices } from "~/hooks/model/system/storage";
 import { useIssues } from "~/hooks/model/issue";
 import { useReset } from "~/hooks/model/config/storage";
@@ -141,6 +142,7 @@ export default function StoragePageContent(): React.ReactNode {
   const availableDevices = useAvailableDevices();
   const proposal = useProposal();
   const issues = useIssues("storage");
+  const noRoomReason = useNoRoomReason();
 
   const fixable = [
     "configNoRoot",
@@ -161,7 +163,10 @@ export default function StoragePageContent(): React.ReactNode {
 
   return (
     <Grid hasGutter>
-      {!configIssues.length && !proposal && <ProposalFailedInfo />}
+      {/* The general account of a failed layout, which names the mount paths it
+          could not place. Left out where the summary already says why, since
+          the same failure told twice reads as two problems. */}
+      {!configIssues.length && !proposal && !noRoomReason && <ProposalFailedInfo />}
       {!!configIssues.length && <FixableConfigInfo issues={configIssues} />}
       {!model && <UnsupportedModelInfo />}
       {model && <ConfigurationSummary />}

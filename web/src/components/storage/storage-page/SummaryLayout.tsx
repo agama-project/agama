@@ -22,6 +22,7 @@
 
 import React from "react";
 import { Content, Divider, Flex, FlexItem, Title } from "@patternfly/react-core";
+import alignmentStyles from "@patternfly/react-styles/css/utilities/Alignment/alignment";
 import Text from "~/components/core/Text";
 
 export type SummaryLayoutProps = {
@@ -31,6 +32,8 @@ export type SummaryLayoutProps = {
   control?: React.ReactNode;
   /** What the plan costs, and the way into the whole picture. */
   count?: React.ReactNode;
+  /** What is wrong, where something is. It takes the place of the count. */
+  notice?: React.ReactNode;
   /** A line about what the reader does next, where the page has more to it. */
   body?: React.ReactNode;
   /** What the reader can do about all of the above, read as one row. */
@@ -60,6 +63,10 @@ export type SummaryLayoutProps = {
  * order they matter: what is true, then the decision that changes it, then what
  * it costs, then what to do with whatever follows.
  *
+ * A notice takes the place of the count. Where something has gone wrong there
+ * is no plan to price, and printing a cost beside the reason there is none says
+ * two contradictory things at once.
+ *
  * @example
  * <SummaryLayout
  *   title={<ConfigurationTitle />}
@@ -71,6 +78,7 @@ export default function SummaryLayout({
   title,
   control,
   count,
+  notice,
   body,
   actions,
   isNarrow = false,
@@ -104,7 +112,7 @@ export default function SummaryLayout({
         <Flex
           direction={{ default: "column" }}
           alignItems={alignItems}
-          gap={{ default: control ? "gapMd" : "gapXs" }}
+          gap={{ default: control || notice ? "gapMd" : "gapXs" }}
         >
           <FlexItem className="agm-summary-layout__measure">
             <Title
@@ -117,10 +125,19 @@ export default function SummaryLayout({
           </FlexItem>
           {/* Above the consequence it changes, so the reader sees what it did. */}
           {control && <FlexItem>{control}</FlexItem>}
+          {/* Set to the start rather than centred with everything around it:
+              this is the only prose on the page long enough to run to a second
+              line, and centred prose is read line by line instead of down an
+              edge. */}
+          {notice && (
+            <FlexItem className={`agm-summary-layout__measure ${alignmentStyles.textAlignStart}`}>
+              {notice}
+            </FlexItem>
+          )}
           {/* Under the sentence, and above the line explaining what to do next:
               what the plan costs is the second thing the reader wants, and an
               instruction about the list below is the last. */}
-          {count && <FlexItem className="agm-summary-layout__measure">{count}</FlexItem>}
+          {!notice && count && <FlexItem className="agm-summary-layout__measure">{count}</FlexItem>}
           {/* A line about what to do with what follows, not a second heading:
               smaller and lighter than everything above it, so the three are
               read in the order they matter. */}
