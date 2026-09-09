@@ -21,9 +21,10 @@ import React, { useCallback, useState } from "react";
 import { Button, Card, CardBody, CardHeader, Flex, Title } from "@patternfly/react-core";
 import Icon from "~/components/layout/Icon";
 import Text from "~/components/core/Text";
+import SkipTo from "~/components/core/SkipTo";
 import VisualTooltip from "~/components/core/VisualTooltip";
 import TerminalUnavailable from "~/components/core/TerminalUnavailable";
-import { useTerminal } from "~/context/terminal";
+import { TERMINAL_INPUT_ID, useTerminal } from "~/context/terminal";
 import { useTerminalSession } from "~/hooks/use-terminal-session";
 import { _ } from "~/i18n";
 
@@ -94,17 +95,25 @@ const TerminalToolbar = ({
 /**
  * Card chrome shared by every terminal state: the title with its icon, an
  * optional description, the header actions, and the given body as children.
+ *
+ * It opens with the same skip links as the page header, so that reaching the
+ * panel with the keyboard offers a way out (back to the installer content)
+ * and a way in (straight to the terminal, past the panel controls) before
+ * anything else.
  */
 const TerminalShell = ({
+  hasTerminal = false,
   minimized = false,
   description,
   actions,
   children,
 }: React.PropsWithChildren<{
+  hasTerminal?: boolean;
   minimized?: boolean;
   description?: React.ReactNode;
   actions?: React.ReactNode;
 }>) => {
+  const { restore } = useTerminal();
   // TRANSLATORS: accessible name of the terminal panel region
   const regionLabel = _("Terminal");
 
@@ -116,6 +125,15 @@ const TerminalShell = ({
       aria-label={regionLabel}
       className={minimized ? "agm-terminal agm-terminal--minimized" : "agm-terminal"}
     >
+      <SkipTo />
+      {hasTerminal && (
+        // Collapsed panels are expanded on the way, so the link always lands
+        // on a terminal ready to type in.
+        // TRANSLATORS: link that moves the focus into the terminal itself
+        <SkipTo contentId={TERMINAL_INPUT_ID} onSkip={restore} icon="terminal">
+          {_("Skip to terminal")}
+        </SkipTo>
+      )}
       <CardHeader actions={{ actions, hasNoOffset: true }}>
         <Flex
           direction={{ default: "column" }}
@@ -222,6 +240,7 @@ export default function TerminalPane({ enoughSpace }: TerminalPaneProps) {
 
   return (
     <TerminalShell
+      hasTerminal
       minimized={isMinimized}
       description={isMinimized ? undefined : summary}
       actions={actions}

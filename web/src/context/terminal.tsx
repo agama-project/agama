@@ -22,6 +22,12 @@
 
 import React, { useCallback, useMemo, useState } from "react";
 
+/**
+ * Id given to the terminal input, the target of the links that jump into the
+ * terminal. Shared so that the links and their target cannot drift apart.
+ */
+export const TERMINAL_INPUT_ID = "terminal-input";
+
 type TerminalContextValue = {
   /**
    * Whether the terminal panel (and its shell session) is open. `open()`

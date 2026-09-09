@@ -37,6 +37,7 @@ import Breadcrumbs from "~/components/core/Breadcrumbs";
 import Text from "~/components/core/Text";
 import ProductLogo from "~/components/product/ProductLogo";
 import { SkipTo } from "~/components/core";
+import { TERMINAL_INPUT_ID, useTerminal } from "~/context/terminal";
 import { useProductInfo } from "~/hooks/model/config/product";
 import { ROOT } from "~/routes/paths";
 import { _ } from "~/i18n";
@@ -174,10 +175,22 @@ export default function Header({
   additionalContent,
   hideSkipToContent = false,
 }: HeaderProps): React.ReactNode {
+  const { isOpen: isTerminalOpen, restore: restoreTerminal } = useTerminal();
+
   return (
     <Masthead>
       <MastheadMain className={spacingStyles.pXs}>
         {!hideSkipToContent && <SkipTo />}
+        {!hideSkipToContent && isTerminalOpen && (
+          // The terminal sits at the very end of the page, after everything
+          // else, so reaching it with the keyboard takes a long walk. A
+          // collapsed panel is expanded on the way, so the link always lands
+          // on a terminal ready to type in.
+          // TRANSLATORS: link that moves the focus into the terminal itself
+          <SkipTo contentId={TERMINAL_INPUT_ID} onSkip={restoreTerminal} icon="terminal">
+            {_("Skip to terminal")}
+          </SkipTo>
+        )}
         {title ? (
           <Title headingLevel="h1" className={textStyles.fontSizeXl}>
             {title}

@@ -344,6 +344,12 @@ nav.agm-breadcrumb > ol > li > a {
   box-shadow: var(--pf-t--global--box-shadow--glass--default, none);
 }
 
+// The skip links are inserted before the Card header, so PatternFly no longer
+// sees the header as the Card's first child. Restore the expected top padding.
+.agm-terminal .pf-v6-c-card__header {
+  padding-block-start: var(--pf-v6-c-card--first-child--PaddingBlockStart);
+}
+
 // Collapsed to a bar: reduce the Card header padding so the minimized terminal
 // remains compact.
 .agm-terminal--minimized {

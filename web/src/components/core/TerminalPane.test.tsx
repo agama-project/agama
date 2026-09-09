@@ -69,6 +69,32 @@ describe("TerminalPane", () => {
       ).toBeNull();
     });
 
+    it("offers links to the installer content and to the terminal", () => {
+      installerRender(<TerminalPane enoughSpace />);
+
+      expect(screen.getByRole("link", { name: "Skip to content" })).toHaveAttribute(
+        "href",
+        "#main-content",
+      );
+      expect(screen.getByRole("link", { name: "Skip to terminal" })).toHaveAttribute(
+        "href",
+        "#terminal-input",
+      );
+    });
+
+    it("keeps the link to the terminal when minimized, expanding the panel on the way", async () => {
+      const { user } = installerRender(<TerminalPane enoughSpace />);
+
+      await user.click(screen.getByRole("button", { name: "Minimize terminal" }));
+      screen.getByRole("link", { name: "Skip to content" });
+
+      await user.click(screen.getByRole("link", { name: "Skip to terminal" }));
+
+      // Back to its full size: the tools are within reach again.
+      screen.getByRole("button", { name: "Minimize terminal" });
+      screen.getByRole("button", { name: "Clear terminal" });
+    });
+
     it("offers a close action, always available", async () => {
       const { user } = installerRender(<TerminalPane enoughSpace />);
 

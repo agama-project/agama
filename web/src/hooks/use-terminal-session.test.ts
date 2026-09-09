@@ -34,10 +34,12 @@ jest.mock("@xterm/xterm", () => {
       this.element = container;
     });
 
+    textarea: HTMLTextAreaElement = document.createElement("textarea");
     write = jest.fn();
     clear = jest.fn();
     dispose = jest.fn();
     loadAddon = jest.fn();
+    focus = jest.fn();
 
     constructor(options: Record<string, unknown>) {
       this.options = options;
@@ -146,6 +148,17 @@ describe("useTerminalSession", () => {
 
     expect(lastTerminal()?.open).toHaveBeenCalledWith(container);
     expect(lastFitAddon()?.fit).toHaveBeenCalled();
+  });
+
+  it("names the terminal input and focuses it once attached", () => {
+    const { rerender } = renderHook(({ container }) => useTerminalSession(container), {
+      initialProps: { container: null as HTMLElement | null },
+    });
+
+    rerender({ container: document.createElement("div") });
+
+    expect(lastTerminal()?.textarea).toHaveAttribute("id", "terminal-input");
+    expect(lastTerminal()?.focus).toHaveBeenCalled();
   });
 
   it("forwards typed data to the socket as a binary frame", () => {
