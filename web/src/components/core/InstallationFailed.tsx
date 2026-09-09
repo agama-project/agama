@@ -25,6 +25,7 @@ import { Flex, Stack } from "@patternfly/react-core";
 import Page from "~/components/layout/Page";
 import Text from "~/components/core/Text";
 import RebootButton from "~/components/core/RebootButton";
+import TerminalToggleButton from "~/components/core/TerminalToggleButton";
 import SideBySideLayout from "~/components/layout/SideBySideLayout";
 import { _ } from "~/i18n";
 import DownloadLogsButton from "./DownloadLogsButton";
@@ -33,7 +34,8 @@ import DownloadLogsButton from "./DownloadLogsButton";
  * Installation failure screen
  *
  * Displays an error page when the installation process fails, providing users
- * with options to download logs and reboot the system to retry.
+ * with options to download logs, open a terminal to investigate, and reboot
+ * the system to retry.
  *
  */
 export default function InstallationFailed() {
@@ -53,6 +55,7 @@ export default function InstallationFailed() {
           <Flex gap={{ default: "gapSm" }} alignItems={{ default: "alignItemsCenter" }}>
             <RebootButton size="default" />
             <DownloadLogsButton />
+            <TerminalToggleButton />
           </Flex>
         </SideBySideLayout>
       </Page.Content>

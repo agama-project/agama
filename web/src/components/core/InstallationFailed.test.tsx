@@ -50,4 +50,9 @@ describe("InstallationFailed", () => {
     plainRender(<InstallationFailed />);
     screen.getByRole("button", { name: /Download logs/i });
   });
+
+  it("shows an 'Open terminal' button", () => {
+    plainRender(<InstallationFailed />);
+    screen.getByRole("button", { name: "Open terminal" });
+  });
 });
