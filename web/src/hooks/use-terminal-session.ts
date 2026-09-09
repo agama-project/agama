@@ -17,7 +17,7 @@
  * find current contact information at www.suse.com.
  */
 
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef } from "react";
 import { ITheme, Terminal } from "@xterm/xterm";
 import { FitAddon } from "@xterm/addon-fit";
 import { TERMINAL_INPUT_ID } from "~/context/terminal";
@@ -33,6 +33,15 @@ export type TerminalSession = {
   setFontSize: (size: number) => void;
   /** Clears the terminal's scrollback and screen. */
   clear: () => void;
+};
+
+export type TerminalSessionOptions = {
+  /**
+   * Called when the user asks to leave the terminal with the keyboard (see
+   * the escape hatch described below). It is expected to move the focus
+   * somewhere outside the terminal; the session itself is not affected.
+   */
+  onLeave?: () => void;
 };
 
 /**
@@ -99,13 +108,35 @@ function terminalWebSocketUrl(): string {
  * "exit" or hit a transient network blip, with no way to tell from the
  * keyboard. The terminal is left showing why the session ended; the user
  * gets a new one by closing and reopening the panel.
+ *
+ * ## Leaving the terminal with the keyboard
+ *
+ * A terminal has to take over almost every key, Tab included (shells use it
+ * to complete words). That makes it a keyboard trap: once focused, someone
+ * not using a pointer has no way back to the rest of the interface, which
+ * WCAG forbids (SC 2.1.2, "No Keyboard Trap").
+ *
+ * The way out is pressing Escape and then Tab, the same sequence code
+ * editors embedded in a page use for this very problem (Monaco, CodeMirror,
+ * Ace). Escape keeps reaching the shell as usual: only a Tab typed right
+ * after one is taken, and that combination means nothing to a shell. When it
+ * happens, `onLeave` is called so the caller can move the focus out.
  */
-export const useTerminalSession = (container: HTMLElement | null): TerminalSession => {
+export const useTerminalSession = (
+  container: HTMLElement | null,
+  { onLeave }: TerminalSessionOptions = {},
+): TerminalSession => {
   const terminalRef = useRef<Terminal | null>(null);
   const fitAddonRef = useRef<FitAddon | null>(null);
   const socketRef = useRef<WebSocket | null>(null);
   const closingRef = useRef(false);
   const sessionEndedRef = useRef(false);
+  // Read through a ref so a caller passing an inline callback does not tear
+  // down the terminal and its shell on every render.
+  const onLeaveRef = useRef(onLeave);
+  useLayoutEffect(() => {
+    onLeaveRef.current = onLeave;
+  }, [onLeave]);
 
   const connect = useCallback(() => {
     const terminal = terminalRef.current;
@@ -165,6 +196,28 @@ export const useTerminalSession = (container: HTMLElement | null): TerminalSessi
     });
     const fitAddon = new FitAddon();
     terminal.loadAddon(fitAddon);
+
+    // Escape hatch for keyboard users; see "Leaving the terminal with the
+    // keyboard" above. `afterEscape` lives here, next to the terminal it
+    // belongs to, because both are created and dropped together.
+    let afterEscape = false;
+    terminal.attachCustomKeyEventHandler((event) => {
+      // The handler also runs for keypress and keyup; keydown is enough.
+      if (event.type !== "keydown") return true;
+
+      if (afterEscape && event.key === "Tab" && onLeaveRef.current) {
+        afterEscape = false;
+        // The focus is moved by the caller, so the browser must not move it
+        // on its own too.
+        event.preventDefault();
+        onLeaveRef.current();
+        // Keeps xterm.js from sending the key to the shell.
+        return false;
+      }
+
+      afterEscape = event.key === "Escape";
+      return true;
+    });
 
     terminal.onData((data) => {
       if (socketRef.current?.readyState === WebSocket.OPEN) {

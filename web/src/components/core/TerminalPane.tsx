@@ -17,7 +17,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import { Button, Card, CardBody, CardHeader, Flex, Title } from "@patternfly/react-core";
 import Icon from "~/components/layout/Icon";
 import Text from "~/components/core/Text";
@@ -96,18 +96,23 @@ const TerminalToolbar = ({
  * Card chrome shared by every terminal state: the title with its icon, an
  * optional description, the header actions, and the given body as children.
  *
+ * The region is focusable programmatically (but not with Tab) so that callers
+ * can send the focus to it; see {@link TerminalPane}.
+ *
  * It opens with the same skip links as the page header, so that reaching the
  * panel with the keyboard offers a way out (back to the installer content)
  * and a way in (straight to the terminal, past the panel controls) before
  * anything else.
  */
 const TerminalShell = ({
+  regionRef,
   hasTerminal = false,
   minimized = false,
   description,
   actions,
   children,
 }: React.PropsWithChildren<{
+  regionRef?: React.Ref<HTMLDivElement>;
   hasTerminal?: boolean;
   minimized?: boolean;
   description?: React.ReactNode;
@@ -119,6 +124,8 @@ const TerminalShell = ({
 
   return (
     <Card
+      ref={regionRef}
+      tabIndex={-1}
       isFullHeight
       isCompact
       component="section"
@@ -173,7 +180,15 @@ export default function TerminalPane({ enoughSpace }: TerminalPaneProps) {
   // changes, and can (re)attach the terminal to it.
   const [container, setContainer] = useState<HTMLDivElement | null>(null);
   const containerRef = useCallback((node: HTMLDivElement | null) => setContainer(node), []);
-  const { setFontSize: setSessionFontSize, clear } = useTerminalSession(container);
+  const regionRef = useRef<HTMLDivElement>(null);
+  // Where the focus lands when the user leaves the terminal with the keyboard
+  // (see `useTerminalSession`): the panel itself, so screen readers announce
+  // the region being left behind and both the panel actions (Tab) and the
+  // rest of the interface (Shift+Tab) are one step away.
+  const leaveTerminal = useCallback(() => regionRef.current?.focus(), []);
+  const { setFontSize: setSessionFontSize, clear } = useTerminalSession(container, {
+    onLeave: leaveTerminal,
+  });
 
   const changeFontSize = (size: number) => {
     setFontSize(size);
@@ -198,7 +213,7 @@ export default function TerminalPane({ enoughSpace }: TerminalPaneProps) {
   // its own Close action, so the header needs no actions here.
   if (!enoughSpace) {
     return (
-      <TerminalShell>
+      <TerminalShell regionRef={regionRef}>
         <CardBody isFilled className="agm-terminal__body">
           <TerminalUnavailable onClose={close} />
         </CardBody>
@@ -240,6 +255,7 @@ export default function TerminalPane({ enoughSpace }: TerminalPaneProps) {
 
   return (
     <TerminalShell
+      regionRef={regionRef}
       hasTerminal
       minimized={isMinimized}
       description={isMinimized ? undefined : summary}

@@ -30,6 +30,7 @@ jest.mock("@xterm/xterm", () => {
     element: HTMLElement | undefined = undefined;
     onDataCallback: ((data: string) => void) | undefined;
     onResizeCallback: ((size: { cols: number; rows: number }) => void) | undefined;
+    keyEventHandler: ((event: KeyboardEvent) => boolean) | undefined;
     open = jest.fn((container: HTMLElement) => {
       this.element = container;
     });
@@ -52,6 +53,10 @@ jest.mock("@xterm/xterm", () => {
 
     onResize(callback: (size: { cols: number; rows: number }) => void) {
       this.onResizeCallback = callback;
+    }
+
+    attachCustomKeyEventHandler(handler: (event: KeyboardEvent) => boolean) {
+      this.keyEventHandler = handler;
     }
   }
 
@@ -79,6 +84,7 @@ import { useTerminalSession } from "~/hooks/use-terminal-session";
 type MockTerminalInstance = InstanceType<typeof Terminal> & {
   onDataCallback?: (data: string) => void;
   onResizeCallback?: (size: { cols: number; rows: number }) => void;
+  keyEventHandler?: (event: KeyboardEvent) => boolean;
 };
 
 class MockWebSocket {
@@ -264,6 +270,59 @@ describe("useTerminalSession", () => {
 
     // Only the original socket (now closed); no reconnect attempt.
     expect(MockWebSocket.instances).toHaveLength(1);
+  });
+
+  describe("the keyboard escape hatch", () => {
+    const keydown = (key: string) => new KeyboardEvent("keydown", { key, cancelable: true });
+
+    const renderWithOnLeave = (onLeave: () => void) => {
+      renderHook(() => useTerminalSession(null, { onLeave }));
+      return lastTerminal()?.keyEventHandler;
+    };
+
+    it("leaves the terminal when Tab is pressed right after Escape", () => {
+      const onLeave = jest.fn();
+      const handleKey = renderWithOnLeave(onLeave);
+
+      // Escape itself still goes to the shell.
+      expect(handleKey?.(keydown("Escape"))).toBe(true);
+
+      const tab = keydown("Tab");
+      // The Tab is neither sent to the shell nor left to the browser.
+      expect(handleKey?.(tab)).toBe(false);
+      expect(tab.defaultPrevented).toBe(true);
+      expect(onLeave).toHaveBeenCalled();
+    });
+
+    it("leaves Tab to the shell when it does not come right after Escape", () => {
+      const onLeave = jest.fn();
+      const handleKey = renderWithOnLeave(onLeave);
+
+      handleKey?.(keydown("Escape"));
+      handleKey?.(keydown("a"));
+
+      const tab = keydown("Tab");
+      expect(handleKey?.(tab)).toBe(true);
+      expect(tab.defaultPrevented).toBe(false);
+      expect(onLeave).not.toHaveBeenCalled();
+    });
+
+    it("does not restart the session when the callback changes on a rerender", () => {
+      const { rerender } = renderHook(({ onLeave }) => useTerminalSession(null, { onLeave }), {
+        initialProps: { onLeave: jest.fn() },
+      });
+
+      const onLeave = jest.fn();
+      rerender({ onLeave });
+
+      expect(terminalInstances()).toHaveLength(1);
+
+      const handleKey = lastTerminal()?.keyEventHandler;
+      handleKey?.(keydown("Escape"));
+      handleKey?.(keydown("Tab"));
+
+      expect(onLeave).toHaveBeenCalled();
+    });
   });
 
   it("starts a brand new session if mounted again after being closed", () => {

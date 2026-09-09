@@ -18,9 +18,16 @@
  */
 
 import React from "react";
-import { screen } from "@testing-library/react";
+import { act, screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
+import { useTerminalSession } from "~/hooks/use-terminal-session";
 import TerminalPane from "~/components/core/TerminalPane";
+
+/** Runs what the panel passes to the session as its "leave the terminal" action. */
+const leaveTerminal = () => {
+  const [, options] = (useTerminalSession as jest.Mock).mock.calls.at(-1);
+  act(() => options.onLeave());
+};
 
 describe("TerminalPane", () => {
   describe("when there is not enough room", () => {
@@ -93,6 +100,14 @@ describe("TerminalPane", () => {
       // Back to its full size: the tools are within reach again.
       screen.getByRole("button", { name: "Minimize terminal" });
       screen.getByRole("button", { name: "Clear terminal" });
+    });
+
+    it("moves the focus to the panel when the session asks to leave the terminal", () => {
+      installerRender(<TerminalPane enoughSpace />);
+
+      leaveTerminal();
+
+      expect(screen.getByRole("region", { name: "Terminal" })).toHaveFocus();
     });
 
     it("offers a close action, always available", async () => {
