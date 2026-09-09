@@ -51,6 +51,8 @@ export type EntryRowProps = {
   purpose: TranslatedString[];
   /** What that costs whatever is here already. */
   consequences: Consequence[];
+  /** The menu of what can be done to this entry. */
+  menu: React.ReactNode;
 };
 
 /**
@@ -76,6 +78,7 @@ export type EntryRowProps = {
  *   description="60 GiB · Disk · GPT"
  *   purpose={[_("Host LVM and boot")]}
  *   consequences={[{ kind: "destroys", text: "Windows 11 will be deleted" }]}
+ *   menu={<DriveMenu entry={entry} device={device} />}
  * />
  */
 export default function EntryRow({
@@ -83,6 +86,7 @@ export default function EntryRow({
   description,
   purpose,
   consequences,
+  menu,
 }: EntryRowProps): React.ReactNode {
   return (
     <Tr>
@@ -118,6 +122,7 @@ export default function EntryRow({
           ))}
         </Stack>
       </Td>
+      <Td isActionCell>{menu}</Td>
     </Tr>
   );
 }

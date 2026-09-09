@@ -22,7 +22,7 @@
 
 import React from "react";
 import { screen, within } from "@testing-library/react";
-import { plainRender } from "~/test-utils";
+import { installerRender } from "~/test-utils";
 import type { ConfigModel } from "~/model/storage/config-model";
 import EntriesTable from "~/components/storage/entries-table/EntriesTable";
 
@@ -31,15 +31,26 @@ const mockSystemDevice = jest.fn();
 const mockSystemDevices = jest.fn();
 const mockActions = jest.fn();
 
+/**
+ * The acts a row's menu offers, which are real mutations reading a query that
+ * never settles under a synchronous assertion. Unmocked they suspend, and a
+ * suspended tree renders nothing and says nothing about why.
+ */
 jest.mock("~/hooks/model/storage/config-model", () => ({
   ...jest.requireActual("~/hooks/model/storage/config-model"),
   useConfigModel: () => mockConfig(),
+  useConvertDevice: () => jest.fn(),
+  useConvertPartitionableToVolumeGroup: () => jest.fn(),
+  useDeleteDrive: () => jest.fn(),
+  useDeleteMdRaid: () => jest.fn(),
+  useDeleteVolumeGroup: () => jest.fn(),
 }));
 
 jest.mock("~/hooks/model/system/storage", () => ({
   ...jest.requireActual("~/hooks/model/system/storage"),
   useDevice: (name: string) => mockSystemDevice(name),
   useFlattenDevices: () => mockSystemDevices(),
+  useAvailableDevices: () => [],
 }));
 
 jest.mock("~/hooks/model/proposal/storage", () => ({
@@ -87,7 +98,7 @@ describe("EntriesTable", () => {
   describe("when the configuration holds nothing", () => {
     it("renders no list at all", () => {
       mockConfig.mockReturnValue(config());
-      plainRender(<EntriesTable />);
+      installerRender(<EntriesTable />);
 
       expect(screen.queryByRole("table")).not.toBeInTheDocument();
     });
@@ -97,7 +108,7 @@ describe("EntriesTable", () => {
     mockConfig.mockReturnValue(
       config({ drives: [{ name: "/dev/sda" }], volumeGroups: [{ vgName: "system" }] }),
     );
-    plainRender(<EntriesTable />);
+    installerRender(<EntriesTable />);
 
     within(table()).getByRole("rowheader", { name: "Volume groups" });
     within(table()).getByRole("rowheader", { name: "Disks" });
@@ -111,7 +122,7 @@ describe("EntriesTable", () => {
         volumeGroups: [{ vgName: "system" }],
       }),
     );
-    plainRender(<EntriesTable />);
+    installerRender(<EntriesTable />);
 
     expect(names()).toEqual([
       "Volume groups",
@@ -133,14 +144,14 @@ describe("EntriesTable", () => {
       block: { size: 64424509440 },
       partitionTable: { type: "gpt" },
     });
-    plainRender(<EntriesTable />);
+    installerRender(<EntriesTable />);
 
     within(table()).getByRole("rowheader", { name: /sda\s+60 GiB\s+·\s+Disk\s+·\s+GPT/ });
   });
 
   it("says nothing about a device the machine does not have", () => {
     mockConfig.mockReturnValue(config({ drives: [{ name: "/dev/sdz" }] }));
-    plainRender(<EntriesTable />);
+    installerRender(<EntriesTable />);
 
     within(table()).getByRole("rowheader", { name: "sdz" });
   });
@@ -161,7 +172,7 @@ describe("what a row says the installer will do", () => {
         boot: { configure: true, device: { default: false, name: "/dev/sda" } },
       }),
     );
-    plainRender(<EntriesTable />);
+    installerRender(<EntriesTable />);
 
     expect(rowText("sda")).toContain("Host LVM and boot");
   });
@@ -185,7 +196,7 @@ describe("what a row says the installer will do", () => {
         ],
       }),
     );
-    plainRender(<EntriesTable />);
+    installerRender(<EntriesTable />);
 
     expect(rowText("sda")).toContain("Create 2 partitions");
     expect(rowText("sda")).toContain("Reuse 1 partition");
@@ -204,7 +215,7 @@ describe("what a row says the installer will do", () => {
         ],
       }),
     );
-    plainRender(<EntriesTable />);
+    installerRender(<EntriesTable />);
 
     expect(rowText("system")).toContain("Create LVM volume group on sda");
     expect(rowText("system")).toContain("Define 2 logical volumes");
@@ -217,7 +228,7 @@ describe("what a row says the installer will do", () => {
         volumeGroups: [{ vgName: "system", targetDevices: ["/dev/sda", "/dev/sdb"] }],
       }),
     );
-    plainRender(<EntriesTable />);
+    installerRender(<EntriesTable />);
 
     expect(rowText("system")).toContain("Create LVM volume group on 2 disks");
   });
@@ -241,7 +252,7 @@ describe("what a row says it costs", () => {
 
   it("names what the machine loses, rather than counting it", () => {
     mockActions.mockReturnValue([{ device: 41, text: "", delete: true }]);
-    plainRender(<EntriesTable />);
+    installerRender(<EntriesTable />);
 
     expect(rowText("sda")).toContain("Windows 11 will be deleted");
   });
@@ -255,22 +266,80 @@ describe("what a row says it costs", () => {
       { sid: 41, name: "/dev/sda1", class: "partition", block: { systems: [] } },
     ]);
     mockActions.mockReturnValue([{ device: 41, text: "", delete: true }]);
-    plainRender(<EntriesTable />);
+    installerRender(<EntriesTable />);
 
     expect(rowText("sda")).toContain("1 partition will be deleted");
   });
 
   it("tells a shrink apart from a deletion", () => {
     mockActions.mockReturnValue([{ device: 41, text: "", resize: true }]);
-    plainRender(<EntriesTable />);
+    installerRender(<EntriesTable />);
 
     expect(rowText("sda")).toContain("1 partition will shrink");
     expect(rowText("sda")).not.toContain("deleted");
   });
 
   it("says nothing where the installation costs nothing", () => {
-    plainRender(<EntriesTable />);
+    installerRender(<EntriesTable />);
 
     expect(rowText("sda")).toBe("sda");
+  });
+});
+
+describe("what a row offers", () => {
+  beforeEach(() => {
+    mockSystemDevice.mockReturnValue(null);
+    mockSystemDevices.mockReturnValue([]);
+    mockActions.mockReturnValue([]);
+  });
+
+  /** Opens the menu of the row for the given entry. */
+  const openMenu = async (user: ReturnType<typeof installerRender>["user"], name: string) => {
+    await user.click(screen.getByRole("button", { name: `Actions for ${name}` }));
+  };
+
+  it("names each menu after the entry it acts on", () => {
+    mockConfig.mockReturnValue(config({ drives: [{ name: "/dev/sda" }, { name: "/dev/sdb" }] }));
+    installerRender(<EntriesTable />);
+
+    screen.getByRole("button", { name: "Actions for sda" });
+    screen.getByRole("button", { name: "Actions for sdb" });
+  });
+
+  it("offers a disk another device, a volume group, and a way out of the plan", async () => {
+    mockConfig.mockReturnValue(
+      config({
+        drives: [{ name: "/dev/sda", partitions: [] }, { name: "/dev/sdb" }, { name: "/dev/sdc" }],
+      }),
+    );
+    const { user } = installerRender(<EntriesTable />);
+    await openMenu(user, "sda");
+
+    screen.getByRole("menuitem", { name: /Use another device/ });
+    screen.getByRole("menuitem", { name: /Create LVM volume group on sda/ });
+    screen.getByRole("menuitem", { name: /Do not use this device/ });
+  });
+
+  it("does not offer to drop the only device, which would leave nowhere to install", async () => {
+    mockConfig.mockReturnValue(config({ drives: [{ name: "/dev/sda", partitions: [] }] }));
+    const { user } = installerRender(<EntriesTable />);
+    await openMenu(user, "sda");
+
+    screen.getByRole("menuitem", { name: /Use another device/ });
+    expect(screen.queryByRole("menuitem", { name: /Do not use/ })).not.toBeInTheDocument();
+  });
+
+  it("offers a volume group being defined the way it is defined, and a way out", async () => {
+    mockConfig.mockReturnValue(
+      config({
+        drives: [{ name: "/dev/sda", partitions: [] }],
+        volumeGroups: [{ vgName: "system", targetDevices: ["/dev/sda"] }],
+      }),
+    );
+    const { user } = installerRender(<EntriesTable />);
+    await openMenu(user, "system");
+
+    screen.getByRole("menuitem", { name: /Edit the volume group/ });
+    screen.getByRole("menuitem", { name: /Do not use/ });
   });
 });

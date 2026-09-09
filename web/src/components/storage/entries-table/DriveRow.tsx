@@ -23,6 +23,7 @@
 import React from "react";
 import { sprintf } from "sprintf-js";
 import EntryRow from "~/components/storage/entries-table/EntryRow";
+import DriveMenu from "~/components/storage/entries-table/DriveMenu";
 import { consequencesOf } from "~/components/storage/shared/consequences";
 import { useDevicesManager } from "~/components/storage/shared/use-devices-manager";
 import { baseName, deviceSize } from "~/components/storage/utils";
@@ -166,6 +167,7 @@ export default function DriveRow({ name }: DriveRowProps): React.ReactNode {
       description={description}
       purpose={purpose}
       consequences={consequencesOf(manager, device?.partitions || [])}
+      menu={entry && <DriveMenu entry={entry} device={device} />}
     />
   );
 }

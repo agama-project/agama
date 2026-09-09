@@ -30,7 +30,7 @@ import { _, TranslatedString } from "~/i18n";
  * column already carries every row's own name. They are read out instead, to
  * whoever is meeting the list one cell at a time, which is who needs them.
  */
-function columnName(column: "entry" | "content" | "actions"): TranslatedString {
+function columnName(column: "entry" | "content" | "actions" | "options"): TranslatedString {
   switch (column) {
     case "entry":
       // TRANSLATORS: names the column of the list holding what each entry of
@@ -44,6 +44,10 @@ function columnName(column: "entry" | "content" | "actions"): TranslatedString {
       // TRANSLATORS: names the column of the list saying what the installation
       // costs whatever is already on each entry.
       return _("Actions");
+    case "options":
+      // TRANSLATORS: names the column of the list holding the menu of what can
+      // be done to each entry of the installation.
+      return _("Options");
   }
 }
 

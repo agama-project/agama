@@ -621,7 +621,7 @@ export default function SelectableDataTable({
                       variant="plain"
                       aria-label={label}
                     >
-                      <Icon name="more_horiz" />
+                      <Icon name="more_vert" />
                     </MenuToggle>
                   )}
                 />

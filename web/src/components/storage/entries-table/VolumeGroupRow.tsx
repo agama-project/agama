@@ -23,6 +23,7 @@
 import React from "react";
 import { sprintf } from "sprintf-js";
 import EntryRow from "~/components/storage/entries-table/EntryRow";
+import VolumeGroupMenu from "~/components/storage/entries-table/VolumeGroupMenu";
 import { consequencesOf } from "~/components/storage/shared/consequences";
 import { useDevicesManager } from "~/components/storage/shared/use-devices-manager";
 import { baseName } from "~/components/storage/utils";
@@ -113,6 +114,7 @@ export default function VolumeGroupRow({ group }: VolumeGroupRowProps): React.Re
       name={group.vgName}
       purpose={purposeOf(group)}
       consequences={consequencesOf(manager, device?.logicalVolumes || [])}
+      menu={<VolumeGroupMenu group={group} />}
     />
   );
 }

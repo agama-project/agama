@@ -112,12 +112,13 @@ export default function EntriesTable(): React.ReactNode {
             <Th>{columnName("entry")}</Th>
             <Th>{columnName("content")}</Th>
             <Th>{columnName("actions")}</Th>
+            <Th>{columnName("options")}</Th>
           </Tr>
         </Thead>
         {groups.map(({ category, entries }) => (
           <Tbody key={category}>
             <Tr className="agm-entries-table__category">
-              <Th scope="rowgroup" colSpan={3}>
+              <Th scope="rowgroup" colSpan={4}>
                 {categoryTitle(category)}
               </Th>
             </Tr>
