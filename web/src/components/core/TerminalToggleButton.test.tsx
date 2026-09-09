@@ -40,8 +40,9 @@ describe("TerminalToggleButton", () => {
   });
 
   it("accepts custom props", () => {
-    plainRender(<TerminalToggleButton data-testid="custom-terminal-toggle" />);
-    screen.getByTestId("custom-terminal-toggle");
+    plainRender(<TerminalToggleButton autoFocus />);
+    const button = screen.getByRole("button", { name: "Open terminal" });
+    expect(button).toHaveFocus();
   });
 
   it("allows overriding size and variant", () => {
