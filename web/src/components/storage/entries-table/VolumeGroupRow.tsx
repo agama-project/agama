@@ -21,11 +21,76 @@
  */
 
 import React from "react";
+import { sprintf } from "sprintf-js";
 import EntryRow from "~/components/storage/entries-table/EntryRow";
+import { consequencesOf } from "~/components/storage/shared/consequences";
+import { useDevicesManager } from "~/components/storage/shared/use-devices-manager";
+import { baseName } from "~/components/storage/utils";
+import { useDevice } from "~/hooks/model/system/storage";
+import { _, n_, TranslatedString } from "~/i18n";
+import type { ConfigModel } from "~/model/storage/config-model";
+
+/**
+ * What a volume group is, from both ends.
+ *
+ * Where it sits comes first, which is what its row used to lack: a group named
+ * without its disks is a row about something floating, and a reader scanning
+ * two rows should learn the group lives on the disk from whichever they meet
+ * first.
+ *
+ * What it will hold is a count rather than a list. Six logical volumes named
+ * after long mount paths turn a row into four lines of text, which is what the
+ * group's own panel is for.
+ */
+function purposeOf(group: ConfigModel.VolumeGroup): TranslatedString[] {
+  const hosts = group.targetDevices || [];
+  const volumes = (group.logicalVolumes || []).length;
+  const lines: TranslatedString[] = [];
+
+  if (hosts.length === 1) {
+    lines.push(
+      sprintf(
+        // TRANSLATORS: where an LVM volume group will be created. %s is a disk
+        // name, such as "sda".
+        _("Create LVM volume group on %s"),
+        baseName(hosts[0]),
+      ),
+    );
+  } else if (hosts.length > 1) {
+    lines.push(
+      sprintf(
+        // TRANSLATORS: where an LVM volume group will be created. %d is how
+        // many disks it is spread over.
+        n_(
+          "Create LVM volume group on %d disk",
+          "Create LVM volume group on %d disks",
+          hosts.length,
+        ),
+        hosts.length,
+      ),
+    );
+  } else {
+    // TRANSLATORS: said of an LVM volume group with no disk chosen for it yet.
+    lines.push(_("Create LVM volume group"));
+  }
+
+  if (volumes) {
+    lines.push(
+      sprintf(
+        // TRANSLATORS: what an LVM volume group will hold. %d is how many
+        // logical volumes the new system gets from it.
+        n_("Define %d logical volume", "Define %d logical volumes", volumes),
+        volumes,
+      ),
+    );
+  }
+
+  return lines;
+}
 
 export type VolumeGroupRowProps = {
-  /** What the group will be called once it exists. */
-  vgName: string;
+  /** The group as the configuration describes it. */
+  group: ConfigModel.VolumeGroup;
 };
 
 /**
@@ -34,7 +99,20 @@ export type VolumeGroupRowProps = {
  * Nothing beside the name. A group is defined rather than found, so there is no
  * hardware to describe: how big it is follows from the disks under it, and the
  * category it is listed under already says what kind of thing it is.
+ *
+ * A group being defined for the first time costs nothing, since there is
+ * nothing of it on the machine yet. One that already exists is read like any
+ * other entry: what the installer does to what it holds.
  */
-export default function VolumeGroupRow({ vgName }: VolumeGroupRowProps): React.ReactNode {
-  return <EntryRow name={vgName} />;
+export default function VolumeGroupRow({ group }: VolumeGroupRowProps): React.ReactNode {
+  const device = useDevice(group.name || "");
+  const manager = useDevicesManager();
+
+  return (
+    <EntryRow
+      name={group.vgName}
+      purpose={purposeOf(group)}
+      consequences={consequencesOf(manager, device?.logicalVolumes || [])}
+    />
+  );
 }

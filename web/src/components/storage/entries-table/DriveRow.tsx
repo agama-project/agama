@@ -21,10 +21,108 @@
  */
 
 import React from "react";
+import { sprintf } from "sprintf-js";
 import EntryRow from "~/components/storage/entries-table/EntryRow";
+import { consequencesOf } from "~/components/storage/shared/consequences";
+import { useDevicesManager } from "~/components/storage/shared/use-devices-manager";
 import { baseName, deviceSize } from "~/components/storage/utils";
 import { typeDescription } from "~/components/storage/utils/device";
+import { useConfigModel } from "~/hooks/model/storage/config-model";
 import { useDevice } from "~/hooks/model/system/storage";
+import configModel from "~/model/storage/config-model";
+import { _, n_, TranslatedString } from "~/i18n";
+import type { Partitionable } from "~/model/storage/config-model";
+
+/**
+ * What the installer will do here, as counts and never as names.
+ *
+ * The list is read by comparing many devices at a glance, and a row spelling
+ * out six mount paths is taller than the entry it points at. The names are in
+ * the device's own panel, one click away.
+ *
+ * Every line names something the installer does, so the ones about what a disk
+ * carries take a verb like the rest rather than sitting there as a bare count.
+ * Booting joins the hosting line rather than taking one of its own: a disk that
+ * carries a volume group and starts the machine is doing two jobs, and the
+ * reader takes them in as one answer to "what is this disk for".
+ */
+function purposeOf(
+  device: Partitionable.Device,
+  groupCount: number,
+  boots: boolean,
+): TranslatedString[] {
+  const lines: TranslatedString[] = [];
+  const partitions = device.partitions || [];
+  /* A partition asked for by id and nothing else, a BIOS boot or a PReP
+     partition, is planned content too: it takes room and was asked for. */
+  const created = partitions.filter(
+    (partition) => configModel.volume.isNew(partition) && (partition.mountPath || partition.id),
+  ).length;
+  const reused = partitions.filter(configModel.volume.isReused).length;
+
+  if (device.filesystem) {
+    lines.push(
+      device.mountPath
+        ? sprintf(
+            // TRANSLATORS: what the installer will do with a whole disk. %s is
+            // where the new system will mount it, such as "/home".
+            _("Format for %s"),
+            device.mountPath,
+          )
+        : // TRANSLATORS: what the installer will do with a whole disk that the
+          // new system does not mount anywhere.
+          _("Format as a whole"),
+    );
+  }
+
+  if (created) {
+    // TRANSLATORS: what the installer will do here. %d is how many partitions
+    // it will create.
+    lines.push(sprintf(n_("Create %d partition", "Create %d partitions", created), created));
+  }
+
+  if (reused) {
+    // TRANSLATORS: what the installer will do here. %d is how many partitions
+    // already on the disk the new system will take over as they are.
+    lines.push(sprintf(n_("Reuse %d partition", "Reuse %d partitions", reused), reused));
+  }
+
+  if (groupCount === 1) {
+    lines.push(
+      boots
+        ? // TRANSLATORS: what a disk is for: it holds an LVM volume group, and
+          // the machine starts from it.
+          _("Host LVM and boot")
+        : // TRANSLATORS: what a disk is for: it holds an LVM volume group.
+          _("Host LVM"),
+    );
+  } else if (groupCount > 1) {
+    lines.push(
+      sprintf(
+        boots
+          ? // TRANSLATORS: what a disk is for. %d is how many LVM volume groups
+            // it holds, and the machine also starts from it.
+            n_(
+              "Host %d LVM volume group and boot",
+              "Host %d LVM volume groups and boot",
+              groupCount,
+            )
+          : // TRANSLATORS: what a disk is for. %d is how many LVM volume groups
+            // it holds.
+            n_("Host %d LVM volume group", "Host %d LVM volume groups", groupCount),
+        groupCount,
+      ),
+    );
+  }
+
+  /* Nothing else to hang it on, so it is a line of its own. */
+  if (boots && !groupCount) {
+    // TRANSLATORS: what a disk is for: the machine starts from it.
+    lines.push(_("Start the new system"));
+  }
+
+  return lines;
+}
 
 export type DriveRowProps = {
   /** The device the configuration names, as the model spells it. */
@@ -44,8 +142,11 @@ export type DriveRowProps = {
  * every part of that phrase is left out where there is nothing to say.
  */
 export default function DriveRow({ name }: DriveRowProps): React.ReactNode {
+  const config = useConfigModel();
   const device = useDevice(name);
+  const manager = useDevicesManager();
 
+  const entry = configModel.partitionable.findByName(config, name);
   const description = [
     device?.block?.size && deviceSize(device.block.size),
     device && typeDescription(device),
@@ -54,5 +155,17 @@ export default function DriveRow({ name }: DriveRowProps): React.ReactNode {
     .filter(Boolean)
     .join("  ·  ");
 
-  return <EntryRow name={baseName(name)} description={description} />;
+  const groups = entry ? configModel.partitionable.filterVolumeGroups(config, entry) : [];
+  const purpose = entry
+    ? purposeOf(entry, groups.length, configModel.boot.hasDevice(config, name))
+    : ([] as TranslatedString[]);
+
+  return (
+    <EntryRow
+      name={baseName(name)}
+      description={description}
+      purpose={purpose}
+      consequences={consequencesOf(manager, device?.partitions || [])}
+    />
+  );
 }

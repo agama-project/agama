@@ -448,3 +448,18 @@ nav.agm-breadcrumb > ol > li > a {
   font-size: var(--pf-t--global--font--size--body--sm);
   color: var(--pf-t--global--text--color--subtle);
 }
+
+// Color lands on the mark, and never alone: every mark has a word beside it
+// saying the same thing. A shrink keeps its data, so its line is not colored
+// like a deletion, which is a different kind of news.
+.agm-entries-table__cost--destroys {
+  color: var(--pf-t--global--text--color--status--danger--default);
+}
+
+.agm-entries-table__cost--destroys svg {
+  color: var(--pf-t--global--icon--color--status--danger--default);
+}
+
+.agm-entries-table__cost--shrinks svg {
+  color: var(--pf-t--global--icon--color--status--warning--default);
+}

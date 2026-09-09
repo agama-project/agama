@@ -41,6 +41,7 @@ import Terminal from "@icons/terminal.svg?component";
 import TextDecrease from "@icons/text_decrease.svg?component";
 import TextIncrease from "@icons/text_increase.svg?component";
 import CheckCircle from "@icons/check_circle.svg?component";
+import Compress from "@icons/compress.svg?component";
 import ChevronLeft from "@icons/chevron_left.svg?component";
 import ChevronRight from "@icons/chevron_right.svg?component";
 import Monitor from "@icons/monitor.svg?component";
@@ -108,6 +109,7 @@ const icons = {
   chevron_right: ChevronRight,
   clear_all: ClearAll,
   close: Close,
+  compress: Compress,
   drag_indicator: DragIndicator,
   terminal: Terminal,
   text_decrease: TextDecrease,

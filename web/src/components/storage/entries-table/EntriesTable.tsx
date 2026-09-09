@@ -21,7 +21,9 @@
  */
 
 import React from "react";
-import { Table, Tbody, Th, Tr } from "@patternfly/react-table";
+import { Table, Tbody, Th, Thead, Tr } from "@patternfly/react-table";
+import a11yStyles from "@patternfly/react-styles/css/utilities/Accessibility/accessibility";
+import { columnName } from "~/components/storage/entries-table/columns";
 import DriveRow from "~/components/storage/entries-table/DriveRow";
 import VolumeGroupRow from "~/components/storage/entries-table/VolumeGroupRow";
 import { useConfigModel } from "~/hooks/model/storage/config-model";
@@ -102,14 +104,26 @@ export default function EntriesTable(): React.ReactNode {
         // TRANSLATORS: names the list of everything the installation is made of.
         aria-label={_("Configured devices")}
       >
+        {/* Read out and not drawn. A strip of names sitting once at the top of
+            a list of eight devices labels columns that have scrolled away from
+            it, and every row already carries its own name. */}
+        <Thead className={a11yStyles.screenReader}>
+          <Tr>
+            <Th>{columnName("entry")}</Th>
+            <Th>{columnName("content")}</Th>
+            <Th>{columnName("actions")}</Th>
+          </Tr>
+        </Thead>
         {groups.map(({ category, entries }) => (
           <Tbody key={category}>
             <Tr className="agm-entries-table__category">
-              <Th scope="rowgroup">{categoryTitle(category)}</Th>
+              <Th scope="rowgroup" colSpan={3}>
+                {categoryTitle(category)}
+              </Th>
             </Tr>
             {entries.map((entry) =>
               category === "volumeGroups" ? (
-                <VolumeGroupRow key={entry.vgName} vgName={entry.vgName} />
+                <VolumeGroupRow key={entry.vgName} group={entry} />
               ) : (
                 <DriveRow key={entry.name} name={entry.name} />
               ),

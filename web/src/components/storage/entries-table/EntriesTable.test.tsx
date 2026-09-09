@@ -28,6 +28,8 @@ import EntriesTable from "~/components/storage/entries-table/EntriesTable";
 
 const mockConfig = jest.fn();
 const mockSystemDevice = jest.fn();
+const mockSystemDevices = jest.fn();
+const mockActions = jest.fn();
 
 jest.mock("~/hooks/model/storage/config-model", () => ({
   ...jest.requireActual("~/hooks/model/storage/config-model"),
@@ -37,6 +39,13 @@ jest.mock("~/hooks/model/storage/config-model", () => ({
 jest.mock("~/hooks/model/system/storage", () => ({
   ...jest.requireActual("~/hooks/model/system/storage"),
   useDevice: (name: string) => mockSystemDevice(name),
+  useFlattenDevices: () => mockSystemDevices(),
+}));
+
+jest.mock("~/hooks/model/proposal/storage", () => ({
+  ...jest.requireActual("~/hooks/model/proposal/storage"),
+  useFlattenDevices: () => [],
+  useActions: () => mockActions(),
 }));
 
 const config = (values: Partial<ConfigModel.Config> = {}): ConfigModel.Config => ({
@@ -61,9 +70,18 @@ const names = () =>
     .getAllByRole("rowheader")
     .map((cell) => cell.textContent);
 
+/** What the row says the installer will do, and what that costs. */
+const rowText = (name: string) =>
+  within(table())
+    .getAllByRole("row")
+    .find((row) => within(row).queryByRole("rowheader")?.textContent?.startsWith(name))
+    ?.textContent;
+
 describe("EntriesTable", () => {
   beforeEach(() => {
     mockSystemDevice.mockReturnValue(null);
+    mockSystemDevices.mockReturnValue([]);
+    mockActions.mockReturnValue([]);
   });
 
   describe("when the configuration holds nothing", () => {
@@ -125,5 +143,134 @@ describe("EntriesTable", () => {
     plainRender(<EntriesTable />);
 
     within(table()).getByRole("rowheader", { name: "sdz" });
+  });
+});
+
+describe("what a row says the installer will do", () => {
+  beforeEach(() => {
+    mockSystemDevice.mockReturnValue(null);
+    mockSystemDevices.mockReturnValue([]);
+    mockActions.mockReturnValue([]);
+  });
+
+  it("names both jobs of a disk that holds a volume group and starts the machine", () => {
+    mockConfig.mockReturnValue(
+      config({
+        drives: [{ name: "/dev/sda" }],
+        volumeGroups: [{ vgName: "system", targetDevices: ["/dev/sda"] }],
+        boot: { configure: true, device: { default: false, name: "/dev/sda" } },
+      }),
+    );
+    plainRender(<EntriesTable />);
+
+    expect(rowText("sda")).toContain("Host LVM and boot");
+  });
+
+  it("counts the partitions it creates and the ones it takes over", () => {
+    mockConfig.mockReturnValue(
+      config({
+        drives: [
+          {
+            name: "/dev/sda",
+            partitions: [
+              { mountPath: "/" },
+              { mountPath: "swap" },
+              {
+                name: "/dev/sda3",
+                mountPath: "/home",
+                filesystem: { default: false, reuse: true },
+              },
+            ],
+          },
+        ],
+      }),
+    );
+    plainRender(<EntriesTable />);
+
+    expect(rowText("sda")).toContain("Create 2 partitions");
+    expect(rowText("sda")).toContain("Reuse 1 partition");
+  });
+
+  it("says where a volume group sits and what it will hold", () => {
+    mockConfig.mockReturnValue(
+      config({
+        drives: [{ name: "/dev/sda" }],
+        volumeGroups: [
+          {
+            vgName: "system",
+            targetDevices: ["/dev/sda"],
+            logicalVolumes: [{ mountPath: "/" }, { mountPath: "swap" }],
+          },
+        ],
+      }),
+    );
+    plainRender(<EntriesTable />);
+
+    expect(rowText("system")).toContain("Create LVM volume group on sda");
+    expect(rowText("system")).toContain("Define 2 logical volumes");
+  });
+
+  it("counts the disks a volume group is spread over rather than naming them", () => {
+    mockConfig.mockReturnValue(
+      config({
+        drives: [{ name: "/dev/sda" }, { name: "/dev/sdb" }],
+        volumeGroups: [{ vgName: "system", targetDevices: ["/dev/sda", "/dev/sdb"] }],
+      }),
+    );
+    plainRender(<EntriesTable />);
+
+    expect(rowText("system")).toContain("Create LVM volume group on 2 disks");
+  });
+});
+
+describe("what a row says it costs", () => {
+  /** A disk carrying Windows, which the installation is about to remove. */
+  const windowsPartition = {
+    sid: 41,
+    name: "/dev/sda1",
+    class: "partition",
+    block: { systems: ["Windows 11"] },
+  };
+
+  beforeEach(() => {
+    mockConfig.mockReturnValue(config({ drives: [{ name: "/dev/sda" }] }));
+    mockSystemDevice.mockReturnValue({ name: "/dev/sda", partitions: [windowsPartition] });
+    mockSystemDevices.mockReturnValue([windowsPartition]);
+    mockActions.mockReturnValue([]);
+  });
+
+  it("names what the machine loses, rather than counting it", () => {
+    mockActions.mockReturnValue([{ device: 41, text: "", delete: true }]);
+    plainRender(<EntriesTable />);
+
+    expect(rowText("sda")).toContain("Windows 11 will be deleted");
+  });
+
+  it("counts what it cannot name", () => {
+    mockSystemDevice.mockReturnValue({
+      name: "/dev/sda",
+      partitions: [{ sid: 41, name: "/dev/sda1", class: "partition", block: { systems: [] } }],
+    });
+    mockSystemDevices.mockReturnValue([
+      { sid: 41, name: "/dev/sda1", class: "partition", block: { systems: [] } },
+    ]);
+    mockActions.mockReturnValue([{ device: 41, text: "", delete: true }]);
+    plainRender(<EntriesTable />);
+
+    expect(rowText("sda")).toContain("1 partition will be deleted");
+  });
+
+  it("tells a shrink apart from a deletion", () => {
+    mockActions.mockReturnValue([{ device: 41, text: "", resize: true }]);
+    plainRender(<EntriesTable />);
+
+    expect(rowText("sda")).toContain("1 partition will shrink");
+    expect(rowText("sda")).not.toContain("deleted");
+  });
+
+  it("says nothing where the installation costs nothing", () => {
+    plainRender(<EntriesTable />);
+
+    expect(rowText("sda")).toBe("sda");
   });
 });

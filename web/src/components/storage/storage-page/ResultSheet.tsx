@@ -25,12 +25,8 @@ import { Tab, Tabs, TabTitleText } from "@patternfly/react-core";
 import ProposalActions from "~/components/storage/ProposalActions";
 import ProposalResultTable from "~/components/storage/ProposalResultTable";
 import { useSheetTab } from "~/components/storage/shared/use-sheet";
-import DevicesManager from "~/model/storage/devices-manager";
-import { useFlattenDevices as useSystemDevices } from "~/hooks/model/system/storage";
-import {
-  useFlattenDevices as useProposalDevices,
-  useActions,
-} from "~/hooks/model/proposal/storage";
+import { useDevicesManager } from "~/components/storage/shared/use-devices-manager";
+import { useActions } from "~/hooks/model/proposal/storage";
 import { _ } from "~/i18n";
 
 /**
@@ -43,11 +39,9 @@ import { _ } from "~/i18n";
  * to scroll past all of them to see the result.
  */
 export default function ResultSheet(): React.ReactNode {
-  const system = useSystemDevices();
-  const staging = useProposalDevices();
   const actions = useActions();
+  const manager = useDevicesManager();
   const [tab, setTab] = useSheetTab("actions");
-  const manager = new DevicesManager(system, staging, actions);
 
   return (
     <Tabs

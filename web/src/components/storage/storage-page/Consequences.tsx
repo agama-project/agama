@@ -25,12 +25,8 @@ import { unique } from "radashi";
 import { sprintf } from "sprintf-js";
 import Text from "~/components/core/Text";
 import SheetOpener from "~/components/storage/shared/SheetOpener";
-import DevicesManager from "~/model/storage/devices-manager";
-import { useFlattenDevices as useSystemDevices } from "~/hooks/model/system/storage";
-import {
-  useFlattenDevices as useProposalDevices,
-  useActions,
-} from "~/hooks/model/proposal/storage";
+import { useDevicesManager } from "~/components/storage/shared/use-devices-manager";
+import { useActions } from "~/hooks/model/proposal/storage";
 import { _, n_, formatList, TranslatedString } from "~/i18n";
 
 /**
@@ -143,10 +139,8 @@ function shrinking(systems: string[], partitions: number): TranslatedString | nu
  * decided on its own.
  */
 export default function Consequences(): React.ReactNode {
-  const system = useSystemDevices();
-  const staging = useProposalDevices();
   const actions = useActions();
-  const manager = new DevicesManager(system, staging, actions);
+  const manager = useDevicesManager();
 
   /* Subvolumes are how one file system is laid out inside itself, so counting
      them tells a reader how the installer works rather than what it will do. */
