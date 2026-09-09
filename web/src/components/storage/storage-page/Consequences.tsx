@@ -24,6 +24,7 @@ import React from "react";
 import { unique } from "radashi";
 import { sprintf } from "sprintf-js";
 import Text from "~/components/core/Text";
+import SheetOpener from "~/components/storage/shared/SheetOpener";
 import DevicesManager from "~/model/storage/devices-manager";
 import { useFlattenDevices as useSystemDevices } from "~/hooks/model/system/storage";
 import {
@@ -131,8 +132,15 @@ function shrinking(systems: string[], partitions: number): TranslatedString | nu
  * rather than what the configuration asked for. Nothing is reported when there
  * is no proposal to read, which is what leaves room for the page to say why.
  *
- * @fixme The way into the whole picture, "View all N needed actions", belongs
- *  on this line beside the statement. It arrives with the sheet it opens.
+ * Beside it, and never colored with it, the way into the whole picture. What
+ * the plan destroys and what it does step by step are two questions, and a
+ * reader has the first whether or not they ever have the second. A link that
+ * changes appearance with what the plan happens to do is a link they have to
+ * recognize twice, and its danger was never its own: it opens a list.
+ *
+ * "Needed" rather than "in total": the number follows from the plan the reader
+ * chose, and saying so stops five actions reading as five things the installer
+ * decided on its own.
  */
 export default function Consequences(): React.ReactNode {
   const system = useSystemDevices();
@@ -140,13 +148,28 @@ export default function Consequences(): React.ReactNode {
   const actions = useActions();
   const manager = new DevicesManager(system, staging, actions);
 
-  const deleted = deletion(unique(manager.deletedSystems()), manager.deletedDevices().length);
-  if (deleted) return <Text textStyle="textColorStatusDanger">{deleted}</Text>;
+  /* Subvolumes are how one file system is laid out inside itself, so counting
+     them tells a reader how the installer works rather than what it will do. */
+  const counted = actions.filter((action) => !action.subvol);
+  if (!counted.length) return null;
 
+  const deleted = deletion(unique(manager.deletedSystems()), manager.deletedDevices().length);
   /* A shrink loses no data: a partition survives, smaller. Coloring it would
      put it beside deletion, which is a different kind of news. */
   const shrunk = shrinking(unique(manager.resizedSystems()), manager.resizedDevices().length);
-  if (shrunk) return <Text>{shrunk}</Text>;
 
-  return null;
+  return (
+    <>
+      {deleted && <Text textStyle="textColorStatusDanger">{deleted}</Text>}
+      {!deleted && shrunk && <Text>{shrunk}</Text>}{" "}
+      <SheetOpener subject="result">
+        {sprintf(
+          // TRANSLATORS: the way into the list of everything the installer will
+          // do. %d is how many of those there are.
+          n_("View all %d needed action", "View all %d needed actions", counted.length),
+          counted.length,
+        )}
+      </SheetOpener>
+    </>
+  );
 }

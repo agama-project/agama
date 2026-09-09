@@ -21,7 +21,8 @@
  */
 
 import React from "react";
-import { plainRender } from "~/test-utils";
+import { screen } from "@testing-library/react";
+import { installerRender } from "~/test-utils";
 import type { Storage as System } from "~/model/system";
 import type { Storage as Proposal } from "~/model/proposal";
 import Consequences from "~/components/storage/storage-page/Consequences";
@@ -51,8 +52,14 @@ const partition = (sid: number, systems: string[] = []): System.Device => ({
 const deleting = (sid: number): Proposal.Action => ({ device: sid, text: "", delete: true });
 const shrinking = (sid: number): Proposal.Action => ({ device: sid, text: "", resize: true });
 
-/** Everything the line renders, as the reader hears it. */
-const statement = () => document.body.textContent;
+/** What the line states, with the way into the whole picture taken off it. */
+const statement = () => {
+  const wayIn = screen.queryByRole("link")?.textContent || "";
+  return (document.body.textContent || "").replace(wayIn, "").trim();
+};
+
+/** The way into the whole picture, which the line always offers. */
+const wayIn = () => screen.getByRole("link").textContent;
 
 const windows = "Windows 11";
 const leap = "openSUSE Leap 15.2";
@@ -67,18 +74,25 @@ describe("Consequences", () => {
   describe("when nothing is deleted or made smaller", () => {
     beforeEach(() => {
       mockSystemDevices.mockReturnValue([partition(1, [windows])]);
+      mockActions.mockReturnValue([{ device: 1, text: "" }]);
     });
 
-    it("says nothing, since there is nothing to warn about", () => {
-      plainRender(<Consequences />);
+    it("states nothing, since nothing on the machine is lost", () => {
+      installerRender(<Consequences />);
 
       expect(statement()).toBe("");
+    });
+
+    it("still offers the whole picture", () => {
+      installerRender(<Consequences />);
+
+      expect(wayIn()).toBe("View all 1 needed action");
     });
   });
 
   describe("when there is no proposal to read", () => {
     it("says nothing, leaving room for the page to say why", () => {
-      plainRender(<Consequences />);
+      installerRender(<Consequences />);
 
       expect(statement()).toBe("");
     });
@@ -92,7 +106,7 @@ describe("Consequences", () => {
       });
 
       it("names it", () => {
-        plainRender(<Consequences />);
+        installerRender(<Consequences />);
 
         expect(statement()).toBe("Shrinking Windows 11.");
       });
@@ -105,7 +119,7 @@ describe("Consequences", () => {
       });
 
       it("counts what it cannot name", () => {
-        plainRender(<Consequences />);
+        installerRender(<Consequences />);
 
         expect(statement()).toBe("Shrinking 2 partitions.");
       });
@@ -120,7 +134,7 @@ describe("Consequences", () => {
       });
 
       it("names it", () => {
-        plainRender(<Consequences />);
+        installerRender(<Consequences />);
 
         expect(statement()).toBe("Deleting Windows 11.");
       });
@@ -133,7 +147,7 @@ describe("Consequences", () => {
       });
 
       it("names both", () => {
-        plainRender(<Consequences />);
+        installerRender(<Consequences />);
 
         expect(statement()).toBe("Deleting Windows 11 and openSUSE Leap 15.2.");
       });
@@ -150,7 +164,7 @@ describe("Consequences", () => {
       });
 
       it("names one and counts the rest, so the reader still recognizes something", () => {
-        plainRender(<Consequences />);
+        installerRender(<Consequences />);
 
         expect(statement()).toBe("Deleting Windows 11 and 2 other systems.");
       });
@@ -163,7 +177,7 @@ describe("Consequences", () => {
       });
 
       it("counts what it cannot name", () => {
-        plainRender(<Consequences />);
+        installerRender(<Consequences />);
 
         expect(statement()).toBe("Deleting 2 partitions.");
       });
@@ -176,7 +190,7 @@ describe("Consequences", () => {
       });
 
       it("reports only the deletion, which is the worse of the two", () => {
-        plainRender(<Consequences />);
+        installerRender(<Consequences />);
 
         expect(statement()).toBe("Deleting Windows 11.");
       });
@@ -190,7 +204,7 @@ describe("Consequences", () => {
     });
 
     it("names it once", () => {
-      plainRender(<Consequences />);
+      installerRender(<Consequences />);
 
       expect(statement()).toBe("Deleting Windows 11.");
     });

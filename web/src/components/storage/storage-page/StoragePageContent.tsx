@@ -33,12 +33,15 @@ import EncryptionSection from "~/components/storage/EncryptionSection";
 import BootSection from "~/components/storage/BootSection";
 import FixableConfigInfo from "~/components/storage/FixableConfigInfo";
 import ProposalFailedInfo from "~/components/storage/ProposalFailedInfo";
-import ProposalResultSection from "~/components/storage/ProposalResultSection";
 import UnsupportedModelInfo from "~/components/storage/UnsupportedModelInfo";
 import ConfigurationSummary from "~/components/storage/storage-page/ConfigurationSummary";
 import InvalidConfigMessage from "~/components/storage/storage-page/InvalidConfigMessage";
 import NoDevicesMessage from "~/components/storage/storage-page/NoDevicesMessage";
 import UnknownConfigMessage from "~/components/storage/storage-page/UnknownConfigMessage";
+import ResultSheet from "~/components/storage/storage-page/ResultSheet";
+import Sheet, { SheetPlacement } from "~/components/core/Sheet";
+import { useSheet, SHEET_ID } from "~/components/storage/shared/use-sheet";
+import { useMediaQuery } from "~/hooks/use-media-query";
 import { useNoRoomReason } from "~/components/storage/storage-page/queries";
 import { useAvailableDevices } from "~/hooks/model/system/storage";
 import { useIssues } from "~/hooks/model/issue";
@@ -127,6 +130,32 @@ function ModelSection(): React.ReactNode {
   );
 }
 
+/** PatternFly's `lg`, where a panel over the page stops covering all of it. */
+const LG = "(min-width: 62rem)";
+/** PatternFly's `xl`, from where there is room for the page and a panel both. */
+const XL = "(min-width: 75rem)";
+
+/**
+ * How much of the window the sheet takes, and what that leaves the page.
+ *
+ * Three bands rather than two. Below `lg` a panel drawn over the page covers
+ * all of it anyway, so it takes its place instead. From there to `xl` it comes
+ * over the page. At `xl` and above the two share the width and the page keeps
+ * working.
+ *
+ * `xl` rather than a number of our own: 1024 falls between the two, and the
+ * difference between a 1024 window and a 1199 one is not one this page behaves
+ * differently at.
+ */
+function useSheetPlacement(): SheetPlacement {
+  const fitsBoth = useMediaQuery(XL);
+  const fitsOverlay = useMediaQuery(LG);
+
+  if (fitsBoth) return "share";
+  if (fitsOverlay) return "overlay";
+  return "replace";
+}
+
 /**
  * What the storage page shows, and where everything it needs is read.
  *
@@ -134,8 +163,12 @@ function ModelSection(): React.ReactNode {
  * anything else is arranged: no disk to install on, settings this interface
  * cannot read, and a configuration it knows nothing about.
  *
- * @fixme The old settings and result sections are still here. They go as the
- *  parts replacing them arrive, so that the page works at every step.
+ * Everything else is the page, with the sheet the page opens over it. The sheet
+ * wraps rather than sits beside, because two of its three placements are about
+ * what the page does while it is open.
+ *
+ * @fixme The old settings section is still here. It goes as the parts replacing
+ *  it arrive, so that the page works at every step.
  */
 export default function StoragePageContent(): React.ReactNode {
   const model = useConfigModel();
@@ -143,6 +176,8 @@ export default function StoragePageContent(): React.ReactNode {
   const proposal = useProposal();
   const issues = useIssues("storage");
   const noRoomReason = useNoRoomReason();
+  const { subject, close } = useSheet();
+  const placement = useSheetPlacement();
 
   const fixable = [
     "configNoRoot",
@@ -161,7 +196,7 @@ export default function StoragePageContent(): React.ReactNode {
     return <InvalidConfigMessage issues={configIssues} />;
   if (!configIssues.length && !model && !proposal) return <UnknownConfigMessage />;
 
-  return (
+  const body = (
     <Grid hasGutter>
       {/* The general account of a failed layout, which names the mount paths it
           could not place. Left out where the summary already says why, since
@@ -171,7 +206,20 @@ export default function StoragePageContent(): React.ReactNode {
       {!model && <UnsupportedModelInfo />}
       {model && <ConfigurationSummary />}
       {model && <ModelSection />}
-      {proposal && <ProposalResultSection />}
     </Grid>
+  );
+
+  return (
+    <Sheet
+      id={SHEET_ID}
+      isOpen={subject !== null}
+      placement={placement}
+      onClose={close}
+      title={_("Result")}
+      description={_("What the installer will do, and what the machine will look like")}
+      page={body}
+    >
+      <ResultSheet />
+    </Sheet>
   );
 }

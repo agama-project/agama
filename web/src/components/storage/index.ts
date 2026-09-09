@@ -20,6 +20,5 @@
  * find current contact information at www.suse.com.
  */
 
-export { default as ProposalResultSection } from "./ProposalResultSection";
 export { default as DevicesFormSelect } from "./DevicesFormSelect";
 export { default as SpaceActionsTable } from "./SpaceActionsTable";

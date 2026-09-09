@@ -27,7 +27,7 @@
  */
 import React from "react";
 import { screen } from "@testing-library/react";
-import { installerRender } from "~/test-utils";
+import { installerRender, mockRoutes } from "~/test-utils";
 import StoragePage from "~/components/storage/StoragePage";
 import type { Storage } from "~/model/proposal";
 import type { Issue } from "~/model/issue";
@@ -107,7 +107,6 @@ jest.mock("~/hooks/model/system/zfcp", () => ({
 jest.mock("./ProposalFailedInfo", () => () => <div>proposal failed info</div>);
 jest.mock("./UnsupportedModelInfo", () => () => <div>unsupported model info</div>);
 jest.mock("./FixableConfigInfo", () => () => <div>fixable config info</div>);
-jest.mock("./ProposalResultSection", () => () => <div>result</div>);
 jest.mock("./ConfigEditor", () => () => <div>installation devices</div>);
 jest.mock("./EncryptionSection", () => () => <div>encryption section</div>);
 jest.mock("./BootSection", () => () => <div>boot section</div>);
@@ -115,6 +114,7 @@ jest.mock("./ConnectedDevicesMenu", () => () => <div>connected devices menu</div
 jest.mock("./storage-page/ConfigurationSummary", () => () => (
   <div>what the configuration does</div>
 ));
+jest.mock("./storage-page/ResultSheet", () => () => <div>result</div>);
 
 beforeEach(() => {
   mockUseReset.mockReturnValue(jest.fn());
@@ -289,11 +289,6 @@ describe("if the UI does not support the current configuration (no model)", () =
       installerRender(<StoragePage />);
       expect(screen.queryByText("installation devices")).not.toBeInTheDocument();
     });
-
-    it("renders the result", () => {
-      installerRender(<StoragePage />);
-      expect(screen.queryByText("result")).toBeInTheDocument();
-    });
   });
 });
 
@@ -383,9 +378,16 @@ describe("if the UI supports the configuration (there is a model)", () => {
       expect(screen.queryByText("installation devices")).toBeInTheDocument();
     });
 
-    it("renders the result", () => {
+    it("keeps the result out of the page until it is asked for", () => {
       installerRender(<StoragePage />);
-      expect(screen.queryByText("result")).toBeInTheDocument();
+      expect(screen.queryByText("result")).not.toBeInTheDocument();
+    });
+
+    it("shows the result where the address asks for it", () => {
+      mockRoutes("/storage?sheet=result");
+      installerRender(<StoragePage />);
+
+      screen.getByText("result");
     });
   });
 

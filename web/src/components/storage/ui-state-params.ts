@@ -46,8 +46,11 @@ const EXPANDED = "expanded";
 /** Proposal page: selected tab of the settings section. */
 const SETTINGS_TAB = "settingsTab";
 
-/** Proposal page: selected tab of the result section. */
-const RESULT_TAB = "resultTab";
+/** Storage page: what the sheet beside the page is showing. */
+const SHEET = "sheet";
+
+/** Storage page: which half of the open sheet is being read. */
+const SHEET_TAB = "sheetTab";
 
 /** DASD page: sorted column and direction, as in `sortBy=channel:desc`. */
 const DASD_SORT = "sortBy";
@@ -84,7 +87,8 @@ function volumeGroupToken(vgName: string): string {
 export {
   EXPANDED,
   SETTINGS_TAB,
-  RESULT_TAB,
+  SHEET,
+  SHEET_TAB,
   DASD_SORT,
   ZFCP_SORT,
   ISCSI_SORT,
