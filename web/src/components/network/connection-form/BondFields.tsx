@@ -21,12 +21,11 @@
  */
 
 import React from "react";
-import { sprintf } from "sprintf-js";
+import PortsSelector from "./PortsSelector";
 import { defaultOptions } from "./fields";
 import { withForm } from "~/hooks/form";
-import { useDevices } from "~/hooks/model/system/network";
 import { BondMode } from "~/types/network";
-import { _, formatList } from "~/i18n";
+import { _ } from "~/i18n";
 
 /**
  * Bond mode options.
@@ -55,9 +54,6 @@ const BondFields = withForm({
     isEditing: false,
   } as BondFieldsProps,
   render: function Render({ form, isEditing }) {
-    const devices = useDevices();
-    const availableDevices = devices.filter((d) => d.name !== "lo");
-
     return (
       <>
         <form.AppField name="bondIface">
@@ -103,21 +99,7 @@ const BondFields = withForm({
             />
           )}
         </form.AppField>
-        <form.AppField name="bondPorts">
-          {(field) => (
-            <field.ArrayField
-              label={
-                // TRANSLATORS: label for the bond ports field.
-                _("Bond ports")
-              }
-              helperText={
-                // TRANSLATORS: helper text for the bond ports field. %s is a list of available devices.
-                sprintf(_("Available devices: %s"), formatList(availableDevices.map((d) => d.name)))
-              }
-              skipDuplicates
-            />
-          )}
-        </form.AppField>
+        <PortsSelector form={form} kind="bond" />
       </>
     );
   },

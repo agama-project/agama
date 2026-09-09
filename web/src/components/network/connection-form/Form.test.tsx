@@ -70,6 +70,7 @@ jest.mock("~/hooks/model/config/network", () => ({
 
 jest.mock("~/hooks/model/system/network", () => ({
   useDevices: () => [mockLoopback, mockDevice1, mockDevice2],
+  useConnections: () => [],
   useSystem: () => mockUseSystem(),
 }));
 
