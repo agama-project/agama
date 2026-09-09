@@ -29,7 +29,7 @@ import SelectableDataTable from "~/components/core/SelectableDataTable";
 import Text from "~/components/core/Text";
 import { connectionTypeLabel, deviceStateLabel, formatIp } from "~/utils/network";
 import { sortCollection } from "~/utils";
-import { _ } from "~/i18n";
+import { _, n_ } from "~/i18n";
 
 import type { SortedBy } from "~/components/core/SelectableDataTable";
 import type { Device } from "~/types/network";
@@ -38,10 +38,26 @@ import type { Device } from "~/types/network";
 export type DeviceSelectorModalProps = {
   /** Devices offered for selection. */
   devices: Device[];
-  /** Device selected when the dialog opens. */
-  selected?: Device;
-  /** Called with the picked device when the user confirms. */
-  onConfirm: (device: Device) => void;
+  /** Devices selected when the dialog opens. */
+  selected?: Device[];
+  /**
+   * Whether the user picks one device or several.
+   *
+   * In `"single"` mode a device is always picked, defaulting to the first one
+   * offered. In `"multiple"` mode the dialog opens with whatever `selected`
+   * says and nothing otherwise, since the answer is the whole set of picked
+   * devices and starting from an empty one is legitimate.
+   */
+  selectionMode?: "single" | "multiple";
+  /**
+   * Returns the controller a device is already a port of, if any.
+   *
+   * When given, a "Used by" column is added. Devices already in use are still
+   * offered: moving a port from one controller to another is legitimate.
+   */
+  portOf?: (device: Device) => string | undefined;
+  /** Called with the picked devices when the user confirms. */
+  onConfirm: (devices: Device[]) => void;
   /** Called when the user dismisses the dialog. */
   onCancel: () => void;
 };
@@ -51,8 +67,8 @@ const deviceAddresses = (device: Device): string =>
   (device.addresses || []).map((address) => formatIp(address)).join(", ");
 
 /**
- * Dialog for picking a network device from a table showing more details than a
- * dropdown can hold: name, MAC address, type, addresses, and state.
+ * Dialog for picking network devices from a table showing more details than a
+ * dropdown can hold: name, MAC address, type, addresses and state.
  *
  * The table can be sorted, and the pick is only reported to the caller when the
  * user confirms.
@@ -60,17 +76,27 @@ const deviceAddresses = (device: Device): string =>
 export default function DeviceSelectorModal({
   devices,
   selected,
+  selectionMode = "single",
+  portOf,
   onConfirm,
   onCancel,
 }: DeviceSelectorModalProps): React.ReactNode {
   const confirmHintId = useId();
+  const isMultiple = selectionMode === "multiple";
   // No column sorts the table at first, so the rows arrive in the same order as
   // the dropdown the user came from. Sorting starts when a header is clicked.
   const [sortedBy, setSortedBy] = useState<SortedBy>({});
-  // Opening with nothing picked would make the dialog useless until the user
-  // clicks a row, and would leave the initial focus with nowhere to land.
-  const initialDevice = selected ?? first(devices);
-  const [selection, setSelection] = useState<Device[]>(initialDevice ? [initialDevice] : []);
+  // Opening a single-device dialog with nothing picked would make it useless
+  // until the user clicks a row, and would leave the initial focus with nowhere
+  // to land. Picking several is different: what the caller already has is the
+  // starting point, and preselecting a device it did not ask for would be
+  // added behind the user's back on confirm.
+  const defaultSelection = (): Device[] => {
+    if (isMultiple) return [];
+    const firstDevice = first(devices);
+    return firstDevice ? [firstDevice] : [];
+  };
+  const [selection, setSelection] = useState<Device[]>(selected ?? defaultSelection());
 
   const columns = [
     {
@@ -99,6 +125,16 @@ export default function DeviceSelectorModal({
       value: (device: Device) => deviceStateLabel(device.state),
       sortingKey: "state",
     },
+    ...(portOf
+      ? [
+          {
+            // TRANSLATORS: table column telling which bond or bridge already
+            // uses a network device as one of its ports.
+            name: _("Used by"),
+            value: (device: Device) => portOf(device) || "-",
+          },
+        ]
+      : []),
   ];
 
   const sortingKey = sortedBy.index === undefined ? undefined : columns[sortedBy.index].sortingKey;
@@ -111,6 +147,12 @@ export default function DeviceSelectorModal({
   // Names what confirming will do, so the button reads as the action itself
   // rather than a bare "Confirm" whose effect has to be inferred.
   const confirmLabel = (): string => {
+    if (isMultiple) {
+      // TRANSLATORS: confirmation button of the network device dialog when
+      // several devices can be picked. %d is replaced by how many are picked.
+      return sprintf(n_("Use %d device", "Use %d devices", selection.length), selection.length);
+    }
+
     // TRANSLATORS: confirmation button of the network device dialog while no
     // device is picked.
     if (!pick) return _("Select");
@@ -124,17 +166,20 @@ export default function DeviceSelectorModal({
       {!pick && (
         <HelperText id={confirmHintId} isLiveRegion>
           <HelperTextItem>
-            {
-              // TRANSLATORS: shown next to the disabled confirmation button
-              // of the network device dialog, when no device is picked.
-              _("Select a device")
-            }
+            {isMultiple
+              ? // TRANSLATORS: shown next to the disabled confirmation button of
+                // the network device dialog, when no device is picked yet and
+                // several can be.
+                _("Select at least one device")
+              : // TRANSLATORS: shown next to the disabled confirmation button
+                // of the network device dialog, when no device is picked.
+                _("Select a device")}
           </HelperTextItem>
         </HelperText>
       )}
       <Flex>
         <Popup.Confirm
-          onClick={() => onConfirm(pick)}
+          onClick={() => onConfirm(selection)}
           isDisabled={!pick}
           aria-describedby={confirmHintId}
         >
@@ -149,11 +194,16 @@ export default function DeviceSelectorModal({
     <Popup
       isOpen
       variant="medium"
-      // TRANSLATORS: title of the dialog for picking a network device
-      title={_("Select a network device")}
+      title={
+        isMultiple
+          ? // TRANSLATORS: title of the dialog for picking several network devices
+            _("Select network devices")
+          : // TRANSLATORS: title of the dialog for picking a network device
+            _("Select a network device")
+      }
       // Focus starts on the picked device, so its row is what the user hears
       // and sees first, and the arrow keys move from there.
-      elementToFocus={initialDevice ? "input[type=radio]:checked" : undefined}
+      elementToFocus={pick ? "input:checked" : undefined}
       onClose={onCancel}
       actions={actions}
     >
@@ -164,7 +214,8 @@ export default function DeviceSelectorModal({
           itemIdKey="name"
           itemsSelected={selection}
           onSelectionChange={setSelection}
-          selectionMode="single"
+          selectionMode={selectionMode}
+          allowSelectAll={isMultiple}
           sortedBy={sortedBy}
           updateSorting={setSortedBy}
         />

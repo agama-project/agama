@@ -50,14 +50,11 @@ const devices = [ethernet, wireless];
 let onConfirm: jest.Mock;
 let onCancel: jest.Mock;
 
-const renderModal = (selected?: Device) =>
+type ModalProps = Partial<React.ComponentProps<typeof DeviceSelectorModal>>;
+
+const renderModal = (props: ModalProps = {}) =>
   installerRender(
-    <DeviceSelectorModal
-      devices={devices}
-      selected={selected}
-      onConfirm={onConfirm}
-      onCancel={onCancel}
-    />,
+    <DeviceSelectorModal devices={devices} onConfirm={onConfirm} onCancel={onCancel} {...props} />,
   );
 
 const rowFor = (name: string) => screen.getByRole("row", { name: new RegExp(name) });
@@ -93,18 +90,62 @@ describe("DeviceSelectorModal", () => {
 
   describe("when a device is selected", () => {
     it("reports it on confirm", async () => {
-      const { user } = renderModal(ethernet);
+      const { user } = renderModal({ selected: [ethernet] });
       await user.click(within(rowFor("wlan0")).getByRole("radio"));
       await user.click(screen.getByRole("button", { name: "Use wlan0" }));
-      expect(onConfirm).toHaveBeenCalledWith(wireless);
+      expect(onConfirm).toHaveBeenCalledWith([wireless]);
     });
 
     it("reports nothing on cancel", async () => {
-      const { user } = renderModal(ethernet);
+      const { user } = renderModal({ selected: [ethernet] });
       await user.click(within(rowFor("wlan0")).getByRole("radio"));
       await user.click(screen.getByRole("button", { name: "Cancel" }));
       expect(onCancel).toHaveBeenCalled();
       expect(onConfirm).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("when several devices can be picked", () => {
+    const renderMultiple = (props: ModalProps = {}) =>
+      renderModal({ selectionMode: "multiple", ...props });
+
+    it("starts with nothing picked", () => {
+      renderMultiple();
+      expect(screen.getByRole("button", { name: "Use 0 devices" })).toBeDisabled();
+      screen.getByText("Select at least one device");
+    });
+
+    it("starts with the given devices picked, ready to be changed", async () => {
+      const { user } = renderMultiple({ selected: [ethernet] });
+      expect(within(rowFor("enp1s0")).getByRole("checkbox")).toBeChecked();
+      await user.click(within(rowFor("wlan0")).getByRole("checkbox"));
+      await user.click(screen.getByRole("button", { name: "Use 2 devices" }));
+      expect(onConfirm).toHaveBeenCalledWith([ethernet, wireless]);
+    });
+
+    it("reports the devices left picked when one is unpicked", async () => {
+      const { user } = renderMultiple({ selected: [ethernet, wireless] });
+      await user.click(within(rowFor("enp1s0")).getByRole("checkbox"));
+      await user.click(screen.getByRole("button", { name: "Use 1 device" }));
+      expect(onConfirm).toHaveBeenCalledWith([wireless]);
+    });
+
+    it("reports every picked device on confirm", async () => {
+      const { user } = renderMultiple();
+      await user.click(within(rowFor("enp1s0")).getByRole("checkbox"));
+      await user.click(within(rowFor("wlan0")).getByRole("checkbox"));
+      await user.click(screen.getByRole("button", { name: "Use 2 devices" }));
+      expect(onConfirm).toHaveBeenCalledWith([ethernet, wireless]);
+    });
+
+    it("tells which devices are already used, when asked to", () => {
+      renderMultiple({ portOf: (device) => (device.name === "enp1s0" ? "bond0" : undefined) });
+      within(rowFor("enp1s0")).getByText("bond0");
+    });
+
+    it("does not show the 'Used by' column when there is nothing to tell", () => {
+      renderMultiple();
+      expect(screen.queryByRole("columnheader", { name: "Used by" })).toBeNull();
     });
   });
 });

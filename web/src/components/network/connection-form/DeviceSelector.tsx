@@ -120,6 +120,11 @@ const DeviceSelector = withForm({
       };
     });
 
+    const selectedDevice = (value: string): Device[] | undefined => {
+      const device = devices.find((d) => d[valueKey] === value);
+      return device && [device];
+    };
+
     const listeners = {
       // Pre-select the first available device when the selector mounts with no
       // value, e.g. when the user switches from "Any device" binding mode.
@@ -164,8 +169,10 @@ const DeviceSelector = withForm({
             {isModalOpen && (
               <DeviceSelectorModal
                 devices={devices}
-                selected={devices.find((d) => d[valueKey] === field.state.value)}
-                onConfirm={(device) => {
+                // Left unset when the current value matches no device, so the
+                // dialog falls back to picking the first one.
+                selected={selectedDevice(field.state.value)}
+                onConfirm={([device]) => {
                   field.handleChange(device[valueKey]);
                   setIsModalOpen(false);
                 }}
