@@ -24,7 +24,8 @@ import React from "react";
 import SummaryLayout from "~/components/storage/storage-page/SummaryLayout";
 import ConfigurationTitle from "~/components/storage/storage-page/ConfigurationTitle";
 import Consequences from "~/components/storage/storage-page/Consequences";
-import { useSingleDevice } from "~/components/storage/storage-page/queries";
+import SpaceDecision from "~/components/storage/storage-page/SpaceDecision";
+import { useSingleDevice, useHasExistingContent } from "~/components/storage/storage-page/queries";
 import { _ } from "~/i18n";
 
 /**
@@ -44,10 +45,19 @@ import { _ } from "~/i18n";
  */
 export default function ConfigurationSummary(): React.ReactNode {
   const singleDevice = useSingleDevice();
+  const hasExistingContent = useHasExistingContent(singleDevice?.device.name);
+  /* Offered only where there is one subject for it. On several entries each row
+     carries its own, since one answer cannot speak for three disks. */
+  const spaceDecision = singleDevice && hasExistingContent;
 
   return (
     <SummaryLayout
       title={<ConfigurationTitle />}
+      control={
+        spaceDecision && (
+          <SpaceDecision collection={singleDevice.collection} index={singleDevice.index} />
+        )
+      }
       /* The same report either way. A page that names what it destroys on a
          full disk and stays quiet about a plan of eight is a page with two
          shapes, and the reader learns which one they got by guessing. */

@@ -27,14 +27,21 @@ import type { ConfigModel } from "~/model/storage/config-model";
 import ConfigurationSummary from "~/components/storage/storage-page/ConfigurationSummary";
 
 const mockConfig = jest.fn();
+const mockSystemDevice = jest.fn();
 
 jest.mock("~/hooks/model/storage/config-model", () => ({
   ...jest.requireActual("~/hooks/model/storage/config-model"),
   useConfigModel: () => mockConfig(),
 }));
 
+jest.mock("~/hooks/model/system/storage", () => ({
+  ...jest.requireActual("~/hooks/model/system/storage"),
+  useDevice: () => mockSystemDevice(),
+}));
+
 jest.mock("./ConfigurationTitle", () => () => <>what the configuration does</>);
 jest.mock("./Consequences", () => () => <>what the configuration costs</>);
+jest.mock("./SpaceDecision", () => () => <>what may happen to what is there</>);
 
 const config = (values: Partial<ConfigModel.Config> = {}): ConfigModel.Config => ({
   drives: [],
@@ -44,8 +51,16 @@ const config = (values: Partial<ConfigModel.Config> = {}): ConfigModel.Config =>
 });
 
 const guidance = "Review and configure the entries below.";
+const spaceDecision = "what may happen to what is there";
+
+/** A disk with something already on it, which is what makes space a question. */
+const usedDisk = { name: "/dev/vdd", partitions: [{ name: "/dev/vdd1" }] };
 
 describe("ConfigurationSummary", () => {
+  beforeEach(() => {
+    mockSystemDevice.mockReturnValue(usedDisk);
+  });
+
   it("opens with what the configuration does", () => {
     mockConfig.mockReturnValue(config({ drives: [{ name: "/dev/vdd" }] }));
     plainRender(<ConfigurationSummary />);
@@ -71,6 +86,24 @@ describe("ConfigurationSummary", () => {
 
       expect(screen.queryByText(new RegExp(guidance))).not.toBeInTheDocument();
     });
+
+    it("offers the space decision, since there is one device it can be about", () => {
+      plainRender(<ConfigurationSummary />);
+
+      expect(screen.getByText(spaceDecision)).toBeInTheDocument();
+    });
+
+    describe("and there is nothing on it yet", () => {
+      beforeEach(() => {
+        mockSystemDevice.mockReturnValue({ name: "/dev/vdd", partitions: [] });
+      });
+
+      it("does not ask about existing content, since there is none", () => {
+        plainRender(<ConfigurationSummary />);
+
+        expect(screen.queryByText(spaceDecision)).not.toBeInTheDocument();
+      });
+    });
   });
 
   describe("when the configuration is several entries", () => {
@@ -88,6 +121,12 @@ describe("ConfigurationSummary", () => {
       plainRender(<ConfigurationSummary />);
 
       expect(screen.getByText("what the configuration costs")).toBeInTheDocument();
+    });
+
+    it("leaves the space decision to each row, since one answer cannot speak for two disks", () => {
+      plainRender(<ConfigurationSummary />);
+
+      expect(screen.queryByText(spaceDecision)).not.toBeInTheDocument();
     });
   });
 

@@ -341,3 +341,17 @@ nav.agm-breadcrumb > ol > li > a {
   font-weight: var(--pf-t--global--font--weight--body--default);
   white-space: nowrap;
 }
+
+// The space decision on the page is quieter than the same decision in the
+// sheet: there the reader is acting on the table under it, here they are
+// reading a summary and this is one line of it. At the size of the text above
+// them the four options read as four things about to happen.
+.agm-space-decision .pf-v6-c-toggle-group__button {
+  font-size: var(--pf-t--global--font--size--xs);
+}
+
+// PatternFly lays a toggle group out on one line and lets it overflow. Two rows
+// of options are read; a row running off the page is not.
+.agm-space-decision .pf-v6-c-toggle-group {
+  flex-wrap: wrap;
+}

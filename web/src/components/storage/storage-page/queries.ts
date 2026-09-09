@@ -20,9 +20,17 @@
  * find current contact information at www.suse.com.
  */
 
+import { isEmpty } from "radashi";
 import { useConfigModel } from "~/hooks/model/storage/config-model";
-import configModel from "~/model/storage/config-model";
+import { useDevice } from "~/hooks/model/system/storage";
 import type { Partitionable } from "~/model/storage/config-model";
+
+/** A device, and where it is written, which is what changing it needs. */
+export type SingleDevice = {
+  device: Partitionable.Device;
+  collection: Partitionable.CollectionName;
+  index: number;
+};
 
 /**
  * The device the whole configuration is about, where a single one speaks for it.
@@ -35,13 +43,28 @@ import type { Partitionable } from "~/model/storage/config-model";
  * defined rather than found, and a summary of it is a plan about disks it does
  * not name.
  */
-function useSingleDevice(): Partitionable.Device | null {
+function useSingleDevice(): SingleDevice | null {
   const config = useConfigModel();
   if (!config) return null;
-  if ((config.volumeGroups || []).length > 0) return null;
+  if (!isEmpty(config.volumeGroups || [])) return null;
 
-  const devices = configModel.partitionable.all(config);
-  return devices.length === 1 ? devices[0] : null;
+  const drives = config.drives || [];
+  const mdRaids = config.mdRaids || [];
+  if (drives.length + mdRaids.length !== 1) return null;
+
+  if (drives.length === 1) return { device: drives[0], collection: "drives", index: 0 };
+  return { device: mdRaids[0], collection: "mdRaids", index: 0 };
 }
 
-export { useSingleDevice };
+/**
+ * Whether the device already holds something the plan has to decide about.
+ *
+ * On an empty disk there is nothing to keep, shrink or delete, so the decision
+ * has no question to answer and the page does not ask it.
+ */
+function useHasExistingContent(name?: string): boolean {
+  const device = useDevice(name || "");
+  return !isEmpty(device?.partitions || []);
+}
+
+export { useSingleDevice, useHasExistingContent };
