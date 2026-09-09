@@ -185,6 +185,8 @@ jest.mock("~/hooks/model/status", () => ({
     stage: stageMock(),
     tasks: tasksMock(),
   }),
+  // No-op: nothing in tests emits the events it would subscribe to.
+  useStatusChanges: () => {},
 }));
 
 /**
