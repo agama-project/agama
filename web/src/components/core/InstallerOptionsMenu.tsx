@@ -98,6 +98,12 @@ export default function InstallerOptionsMenu({ hideLabel = false }: InstallerOpt
             isOpen={isMenuOpen}
             onOpenChange={toggle}
             onSelect={toggle}
+            // Picking an entry closes the menu, and PatternFly drops the focus
+            // when it goes. Sending it back to the trigger keeps the keyboard
+            // where the user left it, ready to reach the next control or to
+            // reopen the menu. Entries that take the focus somewhere on purpose
+            // (the terminal) still do: they claim it after the menu is gone.
+            shouldFocusToggleOnSelect
             onActionClick={toggle}
             toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
               <VisualTooltip content={toggleLabel}>
