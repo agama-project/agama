@@ -129,11 +129,15 @@ export default function InstallerOptionsMenu({ hideLabel = false }: InstallerOpt
                 <ItemContent icon="archive" text={_("Download logs")} />
               </DropdownItem>
               <DropdownItem key="toggle-terminal" onClick={toggleTerminal}>
-                {/* TRANSLATORS: menu entry that opens or closes the terminal
-                    panel, starting or ending its shell session. */}
                 <ItemContent
                   icon="terminal"
-                  text={isTerminalOpen ? _("Close terminal") : _("Open terminal")}
+                  text={
+                    isTerminalOpen
+                      ? /* TRANSLATORS: menu entry that closes the terminal, closing the session */
+                        _("Close terminal")
+                      : /* TRANSLATORS: menu entry that closes the terminal */
+                        _("Open terminal")
+                  }
                 />
               </DropdownItem>
               {showChangeProductOption && (
