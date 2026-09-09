@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import { screen } from "@testing-library/react";
+import { screen, within } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 import InstallationFailed from "./InstallationFailed";
 
@@ -51,8 +51,13 @@ describe("InstallationFailed", () => {
     screen.getByRole("button", { name: /Download logs/i });
   });
 
-  it("shows an 'Open terminal' button", () => {
-    plainRender(<InstallationFailed />);
-    screen.getByRole("button", { name: "Open terminal" });
+  it("offers the terminal as an additional action", async () => {
+    const { user } = plainRender(<InstallationFailed />);
+
+    expect(screen.queryByRole("menuitem", { name: /Open terminal/ })).toBeNull();
+
+    await user.click(screen.getByRole("button", { name: "More actions" }));
+    const menu = screen.getByRole("menu");
+    within(menu).getByRole("menuitem", { name: /Open terminal/ });
   });
 });
