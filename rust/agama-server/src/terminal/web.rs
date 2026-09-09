@@ -197,9 +197,7 @@ async fn handle_socket(mut socket: WebSocket) {
 fn handle_control_message(text: &str, pty_write: &OwnedWritePty) {
     match serde_json::from_str::<ResizeMessage>(text) {
         Ok(resize) => {
-            if let Err(error) =
-                pty_write.resize(pty_process::Size::new(resize.rows, resize.cols))
-            {
+            if let Err(error) = pty_write.resize(pty_process::Size::new(resize.rows, resize.cols)) {
                 tracing::warn!("terminal: failed to resize the pty: {error}");
             }
         }

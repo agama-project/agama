@@ -261,7 +261,9 @@ async fn test_connect_without_token_is_rejected() {
 #[tokio::test]
 async fn test_connect_with_wrong_token_is_rejected() {
     let url = start_server().await;
-    let wrong_token = AuthToken::generate("a-different-secret").unwrap().to_string();
+    let wrong_token = AuthToken::generate("a-different-secret")
+        .unwrap()
+        .to_string();
     let result = connect(&url, Some(&wrong_token)).await;
     assert!(result.is_err(), "connecting with a wrong token should fail");
 }
