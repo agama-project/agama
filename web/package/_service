@@ -21,6 +21,7 @@
     <param name="source-offset">1000</param>
     <!-- Needs https://github.com/openSUSE/obs-service-node_modules/pulls/50 -->
     <param name="omit-optional">true</param>
+    <param name="legacy-container"/>
   </service>
   <service mode="buildtime" name="tar">
     <param name="obsinfo">agama.obsinfo</param>
