@@ -189,6 +189,27 @@ describe("useTerminalSession", () => {
     expect(lastTerminal()?.write).toHaveBeenCalledWith(expect.stringContaining("code 7"));
   });
 
+  it("does not reconnect after a clean shell exit (e.g. typing 'exit' or Ctrl-D)", () => {
+    jest.useFakeTimers();
+
+    renderHook(({ container }) => useTerminalSession(container), {
+      initialProps: { container: null as HTMLElement | null },
+    });
+
+    act(() => lastSocket()?.onmessage?.({ data: JSON.stringify({ type: "exit", code: 0 }) }));
+    act(() => lastSocket()?.onclose?.());
+    act(() => jest.runOnlyPendingTimers());
+
+    // Only the original (now closed) socket: no new shell was started, or
+    // the user would never be able to leave the terminal from the keyboard.
+    expect(MockWebSocket.instances).toHaveLength(1);
+    expect(lastTerminal()?.write).not.toHaveBeenCalledWith(
+      expect.stringContaining("connection lost"),
+    );
+
+    jest.useRealTimers();
+  });
+
   it("opens a new socket automatically, after a backoff delay, if the connection drops unexpectedly", () => {
     jest.useFakeTimers();
 

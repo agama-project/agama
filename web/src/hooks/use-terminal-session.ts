@@ -67,6 +67,13 @@ function terminalWebSocketUrl(): string {
  * persistently failing connection (e.g., an expired token or a backend that
  * is down) does not hammer the server with an unbounded, un-throttled retry
  * loop.
+ *
+ * A clean shell exit (the user typed `exit`, pressed Ctrl-D, or the process
+ * otherwise ended) is not an unexpected drop, and does not reconnect: the
+ * server reports it with an "exit" message right before closing the socket,
+ * and that is treated as the session being over, not lost. Otherwise, typing
+ * "exit" would just hand the user a brand new shell, with no way to leave
+ * the terminal from the keyboard.
  */
 const RECONNECT_BASE_DELAY_MS = 500;
 const RECONNECT_MAX_DELAY_MS = 10000;
@@ -76,6 +83,7 @@ export const useTerminalSession = (container: HTMLElement | null): TerminalSessi
   const fitAddonRef = useRef<FitAddon | null>(null);
   const socketRef = useRef<WebSocket | null>(null);
   const closingRef = useRef(false);
+  const shellExitedRef = useRef(false);
   const reconnectAttemptRef = useRef(0);
   const reconnectTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -83,6 +91,7 @@ export const useTerminalSession = (container: HTMLElement | null): TerminalSessi
     const terminal = terminalRef.current;
     if (!terminal) return;
 
+    shellExitedRef.current = false;
     const socket = new WebSocket(terminalWebSocketUrl());
     socket.binaryType = "arraybuffer";
     socketRef.current = socket;
@@ -101,6 +110,7 @@ export const useTerminalSession = (container: HTMLElement | null): TerminalSessi
           const message = JSON.parse(event.data) as ExitMessage;
           if (message.type === "exit") {
             terminal.write(`\r\n[exited with code ${message.code}]\r\n`);
+            shellExitedRef.current = true;
           }
         } catch {
           // Not a message this client understands; ignore it.
@@ -116,6 +126,15 @@ export const useTerminalSession = (container: HTMLElement | null): TerminalSessi
       // closed on purpose: nothing to do.
       if (socketRef.current !== socket || closingRef.current) return;
 
+      if (shellExitedRef.current) {
+        // The shell already reported its own exit above: this is the
+        // session ending on purpose, not a dropped connection, so do not
+        // reconnect. The terminal is left showing the exit message; the
+        // user can close (and reopen) the panel for a new shell.
+        socketRef.current = null;
+        return;
+      }
+
       terminal.write("\r\n[connection lost, starting a new session]\r\n");
 
       const attempt = reconnectAttemptRef.current;
@@ -130,6 +149,7 @@ export const useTerminalSession = (container: HTMLElement | null): TerminalSessi
   // when it closes (this hook's caller unmounts).
   useEffect(() => {
     closingRef.current = false;
+    shellExitedRef.current = false;
     reconnectAttemptRef.current = 0;
 
     const terminal = new Terminal({
