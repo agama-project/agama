@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Sep  9 10:21:21 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Disable local installation repositories instead of removing it
+  from target system (bsc#1277466)
+
+-------------------------------------------------------------------
 Tue Sep  1 15:51:02 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 24
