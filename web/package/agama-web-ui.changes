@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Sep 10 13:10:57 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add a terminal panel to the web UI, giving access to a real shell
+  on the system being installed (gh#agama-project/agama#3868).
+
+-------------------------------------------------------------------
 Thu Sep  3 08:13:38 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Offer applying the installer language and keyboard to the product
