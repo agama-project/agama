@@ -60,47 +60,41 @@ function terminalWebSocketUrl(): string {
  * the real terminal) — the terminal still connects right away, and attaches
  * to the container as soon as one becomes available.
  *
- * If the WebSocket disconnects unexpectedly, a new one is opened (a new
- * backend shell), reusing the same terminal instance and scrollback; per the
- * terminal's error handling rules, there is no attempt to recover the
- * previous shell. Reconnection attempts back off exponentially (capped) so a
- * persistently failing connection (e.g., an expired token or a backend that
- * is down) does not hammer the server with an unbounded, un-throttled retry
- * loop.
+ * The session ends, without any attempt to recover it, as soon as its socket
+ * closes for any reason other than the panel itself being closed on purpose:
  *
- * A clean shell exit (the user typed `exit`, pressed Ctrl-D, or the process
- * otherwise ended) is not an unexpected drop, and does not reconnect: the
- * server reports it with an "exit" message right before closing the socket,
- * and that is treated as the session being over, not lost. Otherwise, typing
- * "exit" would just hand the user a brand new shell, with no way to leave
- * the terminal from the keyboard.
+ * - The shell exits on its own (the user typed `exit`, pressed Ctrl-D, or
+ *   the process otherwise ended): the server reports it with an "exit"
+ *   message right before closing the socket.
+ * - The connection drops unexpectedly (e.g., a network issue or the backend
+ *   restarting).
+ *
+ * Either way, there is no automatic reconnect: a new connection always
+ * starts an unrelated, brand new shell (there is no session persistence on
+ * the backend), so silently reconnecting would not actually be resuming
+ * anything — it would just as silently discard whatever the user was doing
+ * (working directory, running command, shell history) right when they typed
+ * "exit" or hit a transient network blip, with no way to tell from the
+ * keyboard. The terminal is left showing why the session ended; the user
+ * gets a new one by closing and reopening the panel.
  */
-const RECONNECT_BASE_DELAY_MS = 500;
-const RECONNECT_MAX_DELAY_MS = 10000;
-
 export const useTerminalSession = (container: HTMLElement | null): TerminalSession => {
   const terminalRef = useRef<Terminal | null>(null);
   const fitAddonRef = useRef<FitAddon | null>(null);
   const socketRef = useRef<WebSocket | null>(null);
   const closingRef = useRef(false);
-  const shellExitedRef = useRef(false);
-  const reconnectAttemptRef = useRef(0);
-  const reconnectTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const sessionEndedRef = useRef(false);
 
   const connect = useCallback(() => {
     const terminal = terminalRef.current;
     if (!terminal) return;
 
-    shellExitedRef.current = false;
+    sessionEndedRef.current = false;
     const socket = new WebSocket(terminalWebSocketUrl());
     socket.binaryType = "arraybuffer";
     socketRef.current = socket;
 
     socket.onopen = () => {
-      // A successful connection resets the backoff, so a later drop starts
-      // retrying quickly again instead of inheriting a long delay from a
-      // past, unrelated failure streak.
-      reconnectAttemptRef.current = 0;
       fitAddonRef.current?.fit();
     };
 
@@ -110,7 +104,7 @@ export const useTerminalSession = (container: HTMLElement | null): TerminalSessi
           const message = JSON.parse(event.data) as ExitMessage;
           if (message.type === "exit") {
             terminal.write(`\r\n[exited with code ${message.code}]\r\n`);
-            shellExitedRef.current = true;
+            sessionEndedRef.current = true;
           }
         } catch {
           // Not a message this client understands; ignore it.
@@ -126,21 +120,12 @@ export const useTerminalSession = (container: HTMLElement | null): TerminalSessi
       // closed on purpose: nothing to do.
       if (socketRef.current !== socket || closingRef.current) return;
 
-      if (shellExitedRef.current) {
-        // The shell already reported its own exit above: this is the
-        // session ending on purpose, not a dropped connection, so do not
-        // reconnect. The terminal is left showing the exit message; the
-        // user can close (and reopen) the panel for a new shell.
-        socketRef.current = null;
-        return;
-      }
+      socketRef.current = null;
 
-      terminal.write("\r\n[connection lost, starting a new session]\r\n");
+      // The shell already reported its own exit above; nothing more to show.
+      if (sessionEndedRef.current) return;
 
-      const attempt = reconnectAttemptRef.current;
-      reconnectAttemptRef.current = attempt + 1;
-      const delay = Math.min(RECONNECT_BASE_DELAY_MS * 2 ** attempt, RECONNECT_MAX_DELAY_MS);
-      reconnectTimeoutRef.current = setTimeout(connect, delay);
+      terminal.write("\r\n[connection lost]\r\n");
     };
   }, []);
 
@@ -149,8 +134,7 @@ export const useTerminalSession = (container: HTMLElement | null): TerminalSessi
   // when it closes (this hook's caller unmounts).
   useEffect(() => {
     closingRef.current = false;
-    shellExitedRef.current = false;
-    reconnectAttemptRef.current = 0;
+    sessionEndedRef.current = false;
 
     const terminal = new Terminal({
       fontSize: DEFAULT_FONT_SIZE,
@@ -178,10 +162,6 @@ export const useTerminalSession = (container: HTMLElement | null): TerminalSessi
 
     return () => {
       closingRef.current = true;
-      if (reconnectTimeoutRef.current !== null) {
-        clearTimeout(reconnectTimeoutRef.current);
-        reconnectTimeoutRef.current = null;
-      }
       socketRef.current?.close();
       socketRef.current = null;
       terminal.dispose();

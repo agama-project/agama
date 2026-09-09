@@ -190,15 +190,12 @@ describe("useTerminalSession", () => {
   });
 
   it("does not reconnect after a clean shell exit (e.g. typing 'exit' or Ctrl-D)", () => {
-    jest.useFakeTimers();
-
     renderHook(({ container }) => useTerminalSession(container), {
       initialProps: { container: null as HTMLElement | null },
     });
 
     act(() => lastSocket()?.onmessage?.({ data: JSON.stringify({ type: "exit", code: 0 }) }));
     act(() => lastSocket()?.onclose?.());
-    act(() => jest.runOnlyPendingTimers());
 
     // Only the original (now closed) socket: no new shell was started, or
     // the user would never be able to leave the terminal from the keyboard.
@@ -206,58 +203,26 @@ describe("useTerminalSession", () => {
     expect(lastTerminal()?.write).not.toHaveBeenCalledWith(
       expect.stringContaining("connection lost"),
     );
-
-    jest.useRealTimers();
   });
 
-  it("opens a new socket automatically, after a backoff delay, if the connection drops unexpectedly", () => {
+  it("shows a message, but does not reconnect, if the connection drops unexpectedly", () => {
     jest.useFakeTimers();
 
     renderHook(({ container }) => useTerminalSession(container), {
       initialProps: { container: null as HTMLElement | null },
     });
 
+    act(() => lastSocket()?.onclose?.());
+    // Give any (would-be) reconnect timer a chance to fire.
+    act(() => jest.runAllTimers());
+
+    // A dropped connection always starts an unrelated brand new shell
+    // anyway, so it is treated the same as a clean exit: reported, and left
+    // for the user to act on (closing and reopening the panel), rather than
+    // silently replaced.
+    expect(lastTerminal()?.write).toHaveBeenCalledWith(expect.stringContaining("connection lost"));
     expect(MockWebSocket.instances).toHaveLength(1);
-    act(() => lastSocket()?.onclose?.());
 
-    // Not reconnected immediately: it waits out the backoff delay first.
-    expect(MockWebSocket.instances).toHaveLength(1);
-
-    act(() => jest.runOnlyPendingTimers());
-
-    expect(MockWebSocket.instances).toHaveLength(2);
-    // The same terminal instance (and its scrollback) is reused.
-    expect(terminalInstances()).toHaveLength(1);
-
-    jest.useRealTimers();
-  });
-
-  it("increases the reconnect delay on repeated failures and resets it after a successful connection", () => {
-    jest.useFakeTimers();
-    const setTimeoutSpy = jest.spyOn(global, "setTimeout");
-
-    renderHook(({ container }) => useTerminalSession(container), {
-      initialProps: { container: null as HTMLElement | null },
-    });
-
-    act(() => lastSocket()?.onclose?.());
-    const firstDelay = setTimeoutSpy.mock.calls.at(-1)?.[1];
-
-    act(() => jest.runOnlyPendingTimers());
-    act(() => lastSocket()?.onclose?.());
-    const secondDelay = setTimeoutSpy.mock.calls.at(-1)?.[1];
-
-    expect(secondDelay).toBeGreaterThan(firstDelay as number);
-
-    act(() => jest.runOnlyPendingTimers());
-    // A successful connection resets the backoff for the next failure.
-    act(() => lastSocket()?.onopen?.());
-    act(() => lastSocket()?.onclose?.());
-    const delayAfterSuccess = setTimeoutSpy.mock.calls.at(-1)?.[1];
-
-    expect(delayAfterSuccess).toBe(firstDelay);
-
-    setTimeoutSpy.mockRestore();
     jest.useRealTimers();
   });
 
