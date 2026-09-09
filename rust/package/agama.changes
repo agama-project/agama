@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Wed Sep 9 15:15:24 - PadaCommit <185716433+PadaCommit@users.noreply.github.com>
+
+- Fix schema URLs in rust/share/
+  - Use parsable URLs for schema IDs
+  - Update schema paths in profile examples
+  - Fix SLE-16 profile schema URL example
+
+-------------------------------------------------------------------
 Fri Sep  4 10:52:03 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Do not crash when validating or evaluating a profile without
