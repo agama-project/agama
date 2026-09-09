@@ -631,7 +631,7 @@ mod test {
     #[test]
     fn test_load_registry(ctx: &mut Context) {
         // ensuring that we can load all products from tests
-        assert_eq!(ctx.registry.products.len(), 8);
+        assert_eq!(ctx.registry.products.len(), 7);
     }
 
     #[test_context(Context)]
