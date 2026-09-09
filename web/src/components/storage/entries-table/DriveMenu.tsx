@@ -27,6 +27,7 @@ import MenuButton, { MenuButtonItem } from "~/components/core/MenuButton";
 import RowMenuToggle from "~/components/storage/entries-table/RowMenuToggle";
 import NewVgMenuOption from "~/components/storage/NewVgMenuOption";
 import DeviceSelectorModal from "~/components/storage/DeviceSelectorModal";
+import { whyItCannotMove } from "~/components/storage/shared/retarget";
 import { baseName } from "~/components/storage/utils";
 import { isDrive, isMd, isVolumeGroup } from "~/model/storage/device";
 import configModel from "~/model/storage/config-model";
@@ -58,6 +59,11 @@ export type DriveMenuProps = {
  *
  * Dropping the only device leaves the installation nowhere to go, so that is
  * offered only where there is somewhere else for it to live.
+ *
+ * An act that cannot be carried out is still offered and still called what it
+ * is called, with the reason where its description goes. It stays reachable by
+ * keyboard: a control the browser disables is skipped, and the explanation
+ * printed beside it is then never met by the reader it was written for.
  */
 export default function DriveMenu({ entry, device }: DriveMenuProps): React.ReactNode {
   const config = useConfigModel();
@@ -89,24 +95,28 @@ export default function DriveMenu({ entry, device }: DriveMenuProps): React.Reac
     .filter((used) => used !== entry.name);
   const targets = available.filter((candidate) => !taken.includes(candidate.name));
 
+  const cannotMove = whyItCannotMove(config, entry);
+
   const items = [
     <MenuButtonItem
       key="retarget"
-      /* What "another device" costs, which the title cannot say: the plan is not
-         being rebuilt, it is being moved, and a reader who has spent time on
-         this device's content needs to know it comes along. Said only where
-         there is content to carry. */
+      isAriaDisabled={cannotMove !== null}
+      /* Why it cannot be done where it cannot, and otherwise what it costs,
+         which the title cannot say: the plan is not being rebuilt, it is being
+         moved, and a reader who has spent time on this device's content needs
+         to know it comes along. Said only where there is content to carry. */
       description={
-        plansContent
+        cannotMove ||
+        (plansContent
           ? sprintf(
               // TRANSLATORS: what happens to the plan when the reader picks a
               // different device for it. %s is a device name, such as "sda".
               _("Everything planned for %s moves to the device you pick."),
               name,
             )
-          : undefined
+          : undefined)
       }
-      onClick={() => setIsSelectorOpen(true)}
+      onClick={cannotMove ? undefined : () => setIsSelectorOpen(true)}
     >
       {/* TRANSLATORS: offered on a device of the installation: put everything
           planned for it somewhere else instead. */}

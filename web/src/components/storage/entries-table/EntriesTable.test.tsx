@@ -343,3 +343,77 @@ describe("what a row offers", () => {
     screen.getByRole("menuitem", { name: /Do not use/ });
   });
 });
+
+describe("when an act cannot be carried out", () => {
+  beforeEach(() => {
+    mockSystemDevice.mockReturnValue(null);
+    mockSystemDevices.mockReturnValue([]);
+    mockActions.mockReturnValue([]);
+  });
+
+  const openMenu = async (user: ReturnType<typeof installerRender>["user"], name: string) => {
+    await user.click(screen.getByRole("button", { name: `Actions for ${name}` }));
+  };
+
+  it("keeps the act's own name, and says what would have to change first", async () => {
+    mockConfig.mockReturnValue(
+      config({
+        drives: [{ name: "/dev/sda", partitions: [] }, { name: "/dev/sdb" }, { name: "/dev/sdc" }],
+        volumeGroups: [{ vgName: "system", targetDevices: ["/dev/sda"] }],
+      }),
+    );
+    const { user } = installerRender(<EntriesTable />);
+    await openMenu(user, "sda");
+
+    /* The reason is read out with the act rather than beside it, since
+       PatternFly puts a menu item's description inside the item's own control.
+       So it needs no `aria-describedby`, and adding one would say it twice. */
+    screen.getByRole("menuitem", {
+      name: /Use another device.*The LVM volume group 'system' is built on this device\./,
+    });
+  });
+
+  it("leaves the act reachable, rather than skipping past the reason", async () => {
+    mockConfig.mockReturnValue(
+      config({
+        drives: [{ name: "/dev/sda", partitions: [] }, { name: "/dev/sdb" }, { name: "/dev/sdc" }],
+        volumeGroups: [{ vgName: "system", targetDevices: ["/dev/sda"] }],
+      }),
+    );
+    const { user } = installerRender(<EntriesTable />);
+    await openMenu(user, "sda");
+
+    const item = screen.getByRole("menuitem", { name: /Use another device/ });
+    expect(item).toHaveAttribute("aria-disabled", "true");
+    expect(item).not.toBeDisabled();
+  });
+
+  it("says what holds a reused file system in place", async () => {
+    mockConfig.mockReturnValue(
+      config({
+        drives: [
+          { name: "/dev/sda", partitions: [], filesystem: { default: false, reuse: true } },
+          { name: "/dev/sdb" },
+          { name: "/dev/sdc" },
+        ],
+      }),
+    );
+    const { user } = installerRender(<EntriesTable />);
+    await openMenu(user, "sda");
+
+    screen.getByRole("menuitem", {
+      name: /Its file system is being kept as it is, and a file system cannot be moved\./,
+    });
+  });
+
+  it("offers the act plainly where nothing holds the plan here", async () => {
+    mockConfig.mockReturnValue(
+      config({ drives: [{ name: "/dev/sda", partitions: [{ mountPath: "/" }] }] }),
+    );
+    const { user } = installerRender(<EntriesTable />);
+    await openMenu(user, "sda");
+
+    const item = screen.getByRole("menuitem", { name: /Use another device/ });
+    expect(item).not.toHaveAttribute("aria-disabled", "true");
+  });
+});
