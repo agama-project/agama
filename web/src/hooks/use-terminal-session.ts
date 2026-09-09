@@ -18,7 +18,7 @@
  */
 
 import { useCallback, useEffect, useRef } from "react";
-import { Terminal } from "@xterm/xterm";
+import { ITheme, Terminal } from "@xterm/xterm";
 import { FitAddon } from "@xterm/addon-fit";
 import "@xterm/xterm/css/xterm.css";
 
@@ -33,6 +33,27 @@ export type TerminalSession = {
   /** Clears the terminal's scrollback and screen. */
   clear: () => void;
 };
+
+/**
+ * Colors the terminal is painted with, taken from the theme.
+ *
+ * xterm.js draws its own surface instead of using CSS, so the values have to be
+ * handed to it as plain strings. Reading them from the same tokens the
+ * stylesheets use (see `tokens/_semantic.scss`) keeps the terminal and its
+ * surroundings the same color, including when a product retunes them.
+ *
+ * A token with no value is left out, so xterm.js falls back to its own default
+ * instead of being told to paint with an empty color.
+ */
+function terminalTheme(): ITheme {
+  const styles = getComputedStyle(document.documentElement);
+  const token = (name: string) => styles.getPropertyValue(name).trim() || undefined;
+
+  return {
+    background: token("--agm-t--terminal--background--color"),
+    foreground: token("--agm-t--terminal--color"),
+  };
+}
 
 /**
  * Builds the terminal WebSocket URL for the current page, following the same
@@ -139,7 +160,7 @@ export const useTerminalSession = (container: HTMLElement | null): TerminalSessi
     const terminal = new Terminal({
       fontSize: DEFAULT_FONT_SIZE,
       cursorBlink: true,
-      theme: { background: "#1e1e1e", foreground: "#d4d4d4" },
+      theme: terminalTheme(),
     });
     const fitAddon = new FitAddon();
     terminal.loadAddon(fitAddon);

@@ -9,8 +9,8 @@
  *
  * This file covers the basics: colors / brand, which is all most products need.
  * example-advanced.css lists and documents EVERY available role (these colors
- * plus typography, font/icon sizes, icon color, disabled and tooltip); reach for
- * it when you need anything beyond the basics here.
+ * plus typography, font/icon sizes, icon color, disabled, tooltip and
+ * terminal); reach for it when you need anything beyond the basics here.
  *
  * Color roles are theme-scoped (set them in the matching block). High contrast
  * is governed by PatternFly; brand only its accent in the HC blocks. Picking
