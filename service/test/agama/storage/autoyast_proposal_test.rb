@@ -27,6 +27,11 @@ require "agama/issue"
 require "y2storage"
 require "yaml"
 
+# Restore the ProductFeatures defaults, this resets the values accidentally read
+# from the /etc/YaST2/control.xml file from the system. This file does not exist
+# in SLE-16.x or Leap 16.x, avoid using it in Tumbleweed or Leap 15.x.
+Yast::ProductFeatures.InitFeatures(true)
+
 describe Agama::Storage::Proposal do
   include Agama::RSpec::StorageHelpers
   using Y2Storage::Refinements::SizeCasts
@@ -470,7 +475,7 @@ describe Agama::Storage::Proposal do
         expect(partitions[0].id.is?(:esp)).to eq(true)
         expect(partitions[1].filesystem.root?).to eq(true)
         expect(partitions[2].filesystem.mount_path).to eq("swap")
-        expect(partitions[2].size).to eq 1.GiB
+        expect(partitions[2].size).to eq 0.5.GiB
       end
     end
 
