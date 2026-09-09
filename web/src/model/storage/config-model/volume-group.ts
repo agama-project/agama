@@ -67,7 +67,10 @@ function filterTargetDevices(
   config: ConfigModel.Config,
   volumeGroup: ConfigModel.VolumeGroup,
 ): (ConfigModel.Drive | ConfigModel.MdRaid)[] {
-  return candidateTargetDevices(config).filter((d) => volumeGroup.targetDevices.includes(d.name));
+  /* Optional in the model, and absent on a group a profile defined without
+     naming disks for it. */
+  const targets = volumeGroup.targetDevices || [];
+  return candidateTargetDevices(config).filter((d) => targets.includes(d.name));
 }
 
 function add(
