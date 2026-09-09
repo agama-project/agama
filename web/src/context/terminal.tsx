@@ -28,6 +28,13 @@ import React, { useCallback, useMemo, useState } from "react";
  */
 export const TERMINAL_INPUT_ID = "terminal-input";
 
+/**
+ * Id given to the text explaining how to leave the terminal with the keyboard.
+ * The terminal input points at it, so that the explanation is announced to
+ * anyone landing on the terminal, not only read by those who can see it.
+ */
+export const TERMINAL_HINT_ID = "terminal-keyboard-hint";
+
 type TerminalContextValue = {
   /**
    * Whether the terminal panel (and its shell session) is open. `open()`

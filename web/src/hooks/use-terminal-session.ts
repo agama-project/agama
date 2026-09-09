@@ -20,7 +20,7 @@
 import { useCallback, useEffect, useLayoutEffect, useRef } from "react";
 import { ITheme, Terminal } from "@xterm/xterm";
 import { FitAddon } from "@xterm/addon-fit";
-import { TERMINAL_INPUT_ID } from "~/context/terminal";
+import { TERMINAL_HINT_ID, TERMINAL_INPUT_ID } from "~/context/terminal";
 import "@xterm/xterm/css/xterm.css";
 
 const DEFAULT_FONT_SIZE = 14;
@@ -256,9 +256,11 @@ export const useTerminalSession = (
     if (!terminal.element) {
       terminal.open(container);
       // xterm.js renders the input the user actually types into. Naming it
-      // makes it a target for the links that jump into the terminal.
+      // makes it a target for the links that jump into the terminal, and
+      // pointing it at the hint gets the way out announced on arrival.
       if (terminal.textarea) {
         terminal.textarea.id = TERMINAL_INPUT_ID;
+        terminal.textarea.setAttribute("aria-describedby", TERMINAL_HINT_ID);
       }
       // Attaching only happens when the panel opens, always after an explicit
       // request from the user, so the terminal takes the focus right away and

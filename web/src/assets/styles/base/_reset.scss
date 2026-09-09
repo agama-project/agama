@@ -167,3 +167,14 @@ fieldset {
     padding: 0 var(--pf-t--global--spacer--sm);
   }
 }
+
+// Keys the user is asked to press, drawn as the keys they are so they stand out
+// from the sentence around them.
+kbd {
+  padding: 0 var(--pf-t--global--spacer--xs);
+  border: var(--pf-t--global--border--width--regular) solid
+    var(--pf-t--global--border--color--default);
+  border-radius: var(--pf-t--global--border--radius--tiny);
+  font-family: var(--pf-t--global--font--family--mono);
+  font-size: inherit;
+}

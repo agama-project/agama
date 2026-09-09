@@ -20,6 +20,7 @@
 import React from "react";
 import { act, screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
+import { TERMINAL_HINT_ID } from "~/context/terminal";
 import { useTerminalSession } from "~/hooks/use-terminal-session";
 import TerminalPane from "~/components/core/TerminalPane";
 
@@ -100,6 +101,14 @@ describe("TerminalPane", () => {
       // Back to its full size: the tools are within reach again.
       screen.getByRole("button", { name: "Minimize terminal" });
       screen.getByRole("button", { name: "Clear terminal" });
+    });
+
+    it("spells out how to leave the terminal, under the id the terminal input points at", () => {
+      const { container } = installerRender(<TerminalPane enoughSpace />);
+
+      const hint = container.querySelector(`#${TERMINAL_HINT_ID}`);
+      expect(hint).toHaveTextContent("Escape then Tab to move focus out");
+      expect(hint.querySelectorAll("kbd")).toHaveLength(2);
     });
 
     it("moves the focus to the panel when the session asks to leave the terminal", () => {

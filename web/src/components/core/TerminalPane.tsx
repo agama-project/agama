@@ -24,7 +24,7 @@ import Text from "~/components/core/Text";
 import SkipTo from "~/components/core/SkipTo";
 import VisualTooltip from "~/components/core/VisualTooltip";
 import TerminalUnavailable from "~/components/core/TerminalUnavailable";
-import { TERMINAL_INPUT_ID, useTerminal } from "~/context/terminal";
+import { TERMINAL_HINT_ID, TERMINAL_INPUT_ID, useTerminal } from "~/context/terminal";
 import { useTerminalSession } from "~/hooks/use-terminal-session";
 import { _ } from "~/i18n";
 
@@ -89,6 +89,37 @@ const TerminalToolbar = ({
         />
       </VisualTooltip>
     </Flex>
+  );
+};
+
+/**
+ * How to get the keyboard focus back out of the terminal.
+ *
+ * Once the terminal has the focus, every key press goes to the shell, so the
+ * sequence that gets it back (see `useTerminalSession`) has to be told rather
+ * than guessed. The terminal input points at this text, so it is announced on
+ * arrival instead of only being there to be read.
+ */
+const KeyboardHint = () => {
+  // TRANSLATORS: how to move the keyboard focus out of the terminal, where
+  // every key press otherwise goes to the shell. %1$s and %2$s are the Escape
+  // and Tab keys, pressed one after the other, and are shown as keys.
+  const hint = _("%1$s then %2$s to move focus out");
+  const keys: Record<string, string> = {
+    // TRANSLATORS: the Escape key, as labeled on the keyboard
+    "%1$s": _("Escape"),
+    // TRANSLATORS: the Tab key, as labeled on the keyboard
+    "%2$s": _("Tab"),
+  };
+
+  return (
+    // A side note to the terminal it sits under, marked up (and read) as one
+    // step quieter than the text around it.
+    <Text id={TERMINAL_HINT_ID} component="small" textStyle={["textColorSubtle", "fontSizeXs"]}>
+      {hint
+        .split(/(%[12]\$s)/)
+        .map((part, index) => (keys[part] ? <kbd key={index}>{keys[part]}</kbd> : part))}
+    </Text>
   );
 };
 
@@ -267,6 +298,7 @@ export default function TerminalPane({ enoughSpace }: TerminalPaneProps) {
         <div className="agm-terminal__screen">
           <div ref={containerRef} className="agm-terminal__container" />
         </div>
+        <KeyboardHint />
       </CardBody>
     </TerminalShell>
   );

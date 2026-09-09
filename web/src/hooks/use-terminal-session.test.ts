@@ -164,6 +164,8 @@ describe("useTerminalSession", () => {
     rerender({ container: document.createElement("div") });
 
     expect(lastTerminal()?.textarea).toHaveAttribute("id", "terminal-input");
+    // So that the way out of the terminal is announced on arrival.
+    expect(lastTerminal()?.textarea).toHaveAttribute("aria-describedby", "terminal-keyboard-hint");
     expect(lastTerminal()?.focus).toHaveBeenCalled();
   });
 
