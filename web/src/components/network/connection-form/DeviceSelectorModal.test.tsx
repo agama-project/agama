@@ -111,8 +111,14 @@ describe("DeviceSelectorModal", () => {
 
     it("starts with nothing picked", () => {
       renderMultiple();
-      expect(screen.getByRole("button", { name: "Use 0 devices" })).toBeDisabled();
-      screen.getByText("Select at least one device");
+      expect(screen.getByRole("button", { name: "Use no device" })).toBeEnabled();
+    });
+
+    it("reports an empty pick, for emptying the list", async () => {
+      const { user } = renderMultiple({ selected: [ethernet] });
+      await user.click(within(rowFor("enp1s0")).getByRole("checkbox"));
+      await user.click(screen.getByRole("button", { name: "Use no device" }));
+      expect(onConfirm).toHaveBeenCalledWith([]);
     });
 
     it("starts with the given devices picked, ready to be changed", async () => {

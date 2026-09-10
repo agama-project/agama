@@ -196,17 +196,70 @@ describe("PortsField", () => {
       expect(entry("enp2s0")).toBeInTheDocument();
     });
 
-    it("keeps the ports matching no offered device untouched", async () => {
+    // The loopback is never offered, so nothing done in the dialog can reach a
+    // port naming it.
+    it("keeps the ports the dialog does not offer untouched", async () => {
+      const { user } = installerRender(
+        <TestForm defaultValues={{ bondPorts: ["lo", "enp1s0"] }} />,
+      );
+      await openDialog(user);
+      await toggleDevice(user, "enp1s0");
+      await user.click(dialog().getByRole("button", { name: "Use no device" }));
+
+      expect(entry("lo")).toBeInTheDocument();
+      expect(entry("enp1s0")).not.toBeInTheDocument();
+    });
+
+    it("drops them all when the user unpicks every one", async () => {
+      const { user } = installerRender(
+        <TestForm defaultValues={{ bondPorts: ["enp1s0", "enp2s0"] }} />,
+      );
+      await openDialog(user);
+      await toggleDevice(user, "enp1s0");
+      await toggleDevice(user, "enp2s0");
+      await user.click(dialog().getByRole("button", { name: "Use no device" }));
+
+      expect(entriesList()).not.toBeInTheDocument();
+    });
+  });
+
+  describe("when a port matches no device found in the system", () => {
+    it("offers it all the same, saying it is not there yet", async () => {
+      const { user } = installerRender(<TestForm defaultValues={{ bondPorts: ["enp9s0"] }} />);
+      await openDialog(user);
+
+      const row = within(deviceRow("enp9s0"));
+      row.getByText("Not present yet");
+      expect(row.getByRole("checkbox")).toBeChecked();
+    });
+
+    it("tells nothing about its hardware", async () => {
+      const { user } = installerRender(<TestForm defaultValues={{ bondPorts: ["enp9s0"] }} />);
+      await openDialog(user);
+
+      // Type, addresses and state have nothing to say about it.
+      const cells = within(deviceRow("enp9s0")).getAllByRole("cell");
+      expect(cells.filter((c) => c.textContent === "-")).toHaveLength(3);
+    });
+
+    it("drops it when the user unpicks it", async () => {
       const { user } = installerRender(
         <TestForm defaultValues={{ bondPorts: ["enp9s0", "enp1s0"] }} />,
       );
       await openDialog(user);
-      await toggleDevice(user, "enp2s0");
-      await user.click(dialog().getByRole("button", { name: "Use 2 devices" }));
+      await toggleDevice(user, "enp9s0");
+      await user.click(dialog().getByRole("button", { name: "Use 1 device" }));
 
-      expect(entry("enp9s0")).toBeInTheDocument();
+      expect(entry("enp9s0")).not.toBeInTheDocument();
       expect(entry("enp1s0")).toBeInTheDocument();
-      expect(entry("enp2s0")).toBeInTheDocument();
+    });
+
+    it("says which controller uses it, when another one does", async () => {
+      mockConnections = [bond("bond1", ["enp9s0"])];
+      const { user } = installerRender(<TestForm defaultValues={{ bondPorts: ["enp9s0"] }} />);
+      await openDialog(user);
+
+      within(deviceRow("enp9s0")).getByText("bond1");
     });
   });
 

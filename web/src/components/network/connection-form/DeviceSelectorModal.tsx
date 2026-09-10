@@ -34,19 +34,40 @@ import { _, n_ } from "~/i18n";
 import type { SortedBy } from "~/components/core/SelectableDataTable";
 import type { Device } from "~/types/network";
 
+/**
+ * A device known by name alone, because the system reports none under it.
+ *
+ * A network device may be named before it exists: a bond port typed by hand, a
+ * card that only shows up once the installed system boots. Listing it lets the
+ * caller offer everything it holds, not only what is plugged in today.
+ */
+export type AbsentDevice = { name: string; isAbsent: true };
+
+/** What the dialog lists: a device the system reports, or a name alone. */
+export type ListedDevice = Device | AbsentDevice;
+
+/** Builds the stand-in for a device the system does not report. */
+export const absentDevice = (name: string): AbsentDevice => ({ name, isAbsent: true });
+
+/**
+ * Whether the system reports the device, and therefore has something to tell
+ * about it beyond its name.
+ */
+const isPresent = (device: ListedDevice): device is Device => !("isAbsent" in device);
+
 /** Props for {@link DeviceSelectorModal}. */
-export type DeviceSelectorModalProps = {
+export type DeviceSelectorModalProps<T extends ListedDevice = Device> = {
   /** Devices offered for selection. */
-  devices: Device[];
+  devices: T[];
   /** Devices selected when the dialog opens. */
-  selected?: Device[];
+  selected?: T[];
   /**
    * Whether the user picks one device or several.
    *
    * In `"single"` mode a device is always picked, defaulting to the first one
-   * offered. In `"multiple"` mode the dialog opens with whatever `selected`
-   * says and nothing otherwise, since the answer is the whole set of picked
-   * devices and starting from an empty one is legitimate.
+   * offered. In `"multiple"` mode the answer is the whole set of picked
+   * devices, so the dialog opens with whatever `selected` says and nothing
+   * otherwise, and confirming an empty set is legitimate.
    */
   selectionMode?: "single" | "multiple";
   /**
@@ -55,9 +76,9 @@ export type DeviceSelectorModalProps = {
    * When given, a "Used by" column is added. Devices already in use are still
    * offered: moving a port from one controller to another is legitimate.
    */
-  portOf?: (device: Device) => string | undefined;
+  portOf?: (device: T) => string | undefined;
   /** Called with the picked devices when the user confirms. */
-  onConfirm: (devices: Device[]) => void;
+  onConfirm: (devices: T[]) => void;
   /** Called when the user dismisses the dialog. */
   onCancel: () => void;
 };
@@ -66,21 +87,29 @@ export type DeviceSelectorModalProps = {
 const deviceAddresses = (device: Device): string =>
   (device.addresses || []).map((address) => formatIp(address)).join(", ");
 
+/** Placeholder for what an absent device cannot tell. */
+const UNKNOWN = "-";
+
 /**
  * Dialog for picking network devices from a table showing more details than a
  * dropdown can hold: name, MAC address, type, addresses and state.
  *
  * The table can be sorted, and the pick is only reported to the caller when the
  * user confirms.
+ *
+ * Devices the system does not report ({@link AbsentDevice}) are listed like any
+ * other, saying so instead of describing hardware nobody has seen. That lets a
+ * caller whose values are names rather than devices offer all of them, so that
+ * what the dialog shows is exactly what the caller holds.
  */
-export default function DeviceSelectorModal({
+export default function DeviceSelectorModal<T extends ListedDevice = Device>({
   devices,
   selected,
   selectionMode = "single",
   portOf,
   onConfirm,
   onCancel,
-}: DeviceSelectorModalProps): React.ReactNode {
+}: DeviceSelectorModalProps<T>): React.ReactNode {
   const confirmHintId = useId();
   const isMultiple = selectionMode === "multiple";
   // No column sorts the table at first, so the rows arrive in the same order as
@@ -91,38 +120,45 @@ export default function DeviceSelectorModal({
   // to land. Picking several is different: what the caller already has is the
   // starting point, and preselecting a device it did not ask for would be
   // added behind the user's back on confirm.
-  const defaultSelection = (): Device[] => {
+  const defaultSelection = (): T[] => {
     if (isMultiple) return [];
     const firstDevice = first(devices);
     return firstDevice ? [firstDevice] : [];
   };
-  const [selection, setSelection] = useState<Device[]>(selected ?? defaultSelection());
+  const [selection, setSelection] = useState<T[]>(selected ?? defaultSelection());
 
   const columns = [
     {
       // TRANSLATORS: table column with the name of a network device and, below
       // it, the hardware identifier of its interface.
       name: _("Device"),
-      value: (device: Device) => (
+      value: (device: T) => (
         <Stack>
           <span>{device.name}</span>
-          <Text textStyle={["textColorSubtle", "fontSizeXs"]}>{device.macAddress}</Text>
+          <Text textStyle={["textColorSubtle", "fontSizeXs"]}>
+            {isPresent(device)
+              ? device.macAddress
+              : // TRANSLATORS: said of a network device named in the
+                // configuration although the system does not report it, e.g. a
+                // bond port typed by hand or a card plugged in later.
+                _("Not present yet")}
+          </Text>
         </Stack>
       ),
       sortingKey: "name",
     },
     {
       name: _("Type"),
-      value: (device: Device) => connectionTypeLabel(device.type),
+      value: (device: T) => (isPresent(device) ? connectionTypeLabel(device.type) : UNKNOWN),
       sortingKey: "type",
     },
     {
       name: _("IP Addresses"),
-      value: (device: Device) => deviceAddresses(device) || "-",
+      value: (device: T) => (isPresent(device) && deviceAddresses(device)) || UNKNOWN,
     },
     {
       name: _("State"),
-      value: (device: Device) => deviceStateLabel(device.state),
+      value: (device: T) => (isPresent(device) ? deviceStateLabel(device.state) : UNKNOWN),
       sortingKey: "state",
     },
     ...(portOf
@@ -131,7 +167,7 @@ export default function DeviceSelectorModal({
             // TRANSLATORS: table column telling which bond or bridge already
             // uses a network device as one of its ports.
             name: _("Used by"),
-            value: (device: Device) => portOf(device) || "-",
+            value: (device: T) => portOf(device) || UNKNOWN,
           },
         ]
       : []),
@@ -149,6 +185,10 @@ export default function DeviceSelectorModal({
   const confirmLabel = (): string => {
     if (isMultiple) {
       // TRANSLATORS: confirmation button of the network device dialog when
+      // several devices can be picked and the user picked none.
+      if (selection.length === 0) return _("Use no device");
+
+      // TRANSLATORS: confirmation button of the network device dialog when
       // several devices can be picked. %d is replaced by how many are picked.
       return sprintf(n_("Use %d device", "Use %d devices", selection.length), selection.length);
     }
@@ -161,27 +201,30 @@ export default function DeviceSelectorModal({
     return sprintf(_("Use %s"), pick.name);
   };
 
+  // Picking nothing is an answer of its own when several devices can be picked:
+  // the caller ends up with an empty list, exactly as it would by unlisting
+  // them one by one. Picking a single device is another matter, there is no
+  // "no device" to hand back.
+  const canConfirm = isMultiple || pick !== undefined;
+
   const actions = (
     <Stack hasGutter>
-      {!pick && (
+      {!canConfirm && (
         <HelperText id={confirmHintId} isLiveRegion>
           <HelperTextItem>
-            {isMultiple
-              ? // TRANSLATORS: shown next to the disabled confirmation button of
-                // the network device dialog, when no device is picked yet and
-                // several can be.
-                _("Select at least one device")
-              : // TRANSLATORS: shown next to the disabled confirmation button
-                // of the network device dialog, when no device is picked.
-                _("Select a device")}
+            {
+              // TRANSLATORS: shown next to the disabled confirmation button
+              // of the network device dialog, when no device is picked.
+              _("Select a device")
+            }
           </HelperTextItem>
         </HelperText>
       )}
       <Flex>
         <Popup.Confirm
           onClick={() => onConfirm(selection)}
-          isDisabled={!pick}
-          aria-describedby={confirmHintId}
+          isDisabled={!canConfirm}
+          aria-describedby={canConfirm ? undefined : confirmHintId}
         >
           {confirmLabel()}
         </Popup.Confirm>

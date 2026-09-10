@@ -25,7 +25,7 @@ import { Button } from "@patternfly/react-core";
 import { mergePicked } from "~/components/form/ArrayField";
 import Icon from "~/components/layout/Icon";
 import VisualTooltip from "~/components/core/VisualTooltip";
-import DeviceSelectorModal from "./DeviceSelectorModal";
+import DeviceSelectorModal, { absentDevice } from "./DeviceSelectorModal";
 import { defaultOptions } from "./fields";
 import { withForm } from "~/hooks/form";
 import { useConnections, useDevices } from "~/hooks/model/system/network";
@@ -34,6 +34,7 @@ import { _ } from "~/i18n";
 
 import type { TranslatedString } from "~/i18n";
 import type { FormFields } from "./fields";
+import type { ListedDevice } from "./DeviceSelectorModal";
 import type { Device } from "~/types/network";
 
 /** The loopback device is never a port of anything. */
@@ -41,20 +42,19 @@ const LOOPBACK = "lo";
 
 type DevicePickerProps = {
   /** Devices offered for picking. */
-  devices: Device[];
+  devices: ListedDevice[];
   /** Devices picked when the dialog opens. */
-  selected: Device[];
+  selected: ListedDevice[];
   /** Returns the controller a device is already a port of, if any. */
-  portOf: (device: Device) => string | undefined;
+  portOf: (device: ListedDevice) => string | undefined;
   /** Accessible name of the button, telling what the devices would be used for. */
   label: TranslatedString;
   /** Called with the devices the user picked. */
-  onConfirm: (devices: Device[]) => void;
+  onConfirm: (devices: ListedDevice[]) => void;
 };
 
 /**
- * Button opening the device dialog, for picking among the devices the system
- * reports.
+ * Button opening the device dialog, for picking among the devices offered.
  *
  * The dialog opens with `selected` picked, so it serves for dropping a device
  * as much as for adding one.
@@ -102,7 +102,22 @@ function DevicePicker({
 }
 
 /** Names of the given devices. */
-const names = (devices: Device[]): string[] => devices.map((d) => d.name);
+const names = (devices: ListedDevice[]): string[] => devices.map((d) => d.name);
+
+/**
+ * Stand-ins for the ports the system reports no device for.
+ *
+ * Such a port was typed by hand, or names a card that will only show up once
+ * the installed system boots. The dialog lists it all the same, so that what it
+ * shows is what the field holds and dropping the port does not mean going back
+ * to the input to erase it.
+ *
+ * Measured against every device rather than the offered ones: a port naming a
+ * device deliberately left out of the offer, the loopback or the controller
+ * itself, is present and has no business being announced as absent.
+ */
+const absentPorts = (ports: string[], devices: Device[]): ListedDevice[] =>
+  ports.filter((p) => !devices.some((d) => d.name === p)).map(absentDevice);
 
 type PortsFieldProps = {
   /** Form field holding the names of the ports. */
@@ -153,7 +168,7 @@ const PortsField = withForm({
               );
               // The controller being edited is not worth mentioning: the user
               // is looking at its own list of ports.
-              const portOf = (device: Device) => {
+              const portOf = (device: ListedDevice) => {
                 const controller = controllerOf(device.name, connections);
                 return controller === controllerIface ? undefined : controller;
               };
@@ -166,19 +181,26 @@ const PortsField = withForm({
                     _("Pick the devices to use as ports, or type the name of one not listed yet.")
                   }
                   skipDuplicates
-                  addOn={({ entries, setEntries }) => (
-                    <DevicePicker
-                      devices={available}
-                      selected={available.filter((d) => entries.includes(d.name))}
-                      portOf={portOf}
-                      label={pickLabel}
-                      // A port may well be typed by hand rather than picked, so
-                      // only what the dialog offered follows the pick.
-                      onConfirm={(picked) =>
-                        setEntries(mergePicked(entries, names(available), names(picked)))
-                      }
-                    />
-                  )}
+                  addOn={({ entries, setEntries }) => {
+                    // Everything the field holds is offered, the devices found
+                    // and the ports naming none, so that picking in the dialog
+                    // and editing the input are two views of the same list.
+                    const offered = [...available, ...absentPorts(entries, devices)];
+
+                    return (
+                      <DevicePicker
+                        devices={offered}
+                        selected={offered.filter((d) => entries.includes(d.name))}
+                        portOf={portOf}
+                        label={pickLabel}
+                        // The ports left out of the offer are kept: the dialog
+                        // never asked about them.
+                        onConfirm={(picked) =>
+                          setEntries(mergePicked(entries, names(offered), names(picked)))
+                        }
+                      />
+                    );
+                  }}
                 />
               );
             }}
