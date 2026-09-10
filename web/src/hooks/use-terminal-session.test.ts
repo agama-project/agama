@@ -31,8 +31,15 @@ jest.mock("@xterm/xterm", () => {
     onDataCallback: ((data: string) => void) | undefined;
     onResizeCallback: ((size: { cols: number; rows: number }) => void) | undefined;
     keyEventHandler: ((event: KeyboardEvent) => boolean) | undefined;
+    // Mirrors real xterm.js: creates its own element and appends it to the
+    // given parent, but only the first time — calling open() again on an
+    // already-open terminal (in the same window) is a no-op, see
+    // CoreBrowserTerminal.ts's open(). Re-attaching to a different parent
+    // has to be done by hand, by moving `element` (see use-terminal-session).
     open = jest.fn((container: HTMLElement) => {
-      this.element = container;
+      if (this.element) return;
+      this.element = document.createElement("div");
+      container.appendChild(this.element);
     });
 
     textarea: HTMLTextAreaElement = document.createElement("textarea");
@@ -160,6 +167,30 @@ describe("useTerminalSession", () => {
 
     expect(lastTerminal()?.open).toHaveBeenCalledWith(container);
     expect(lastFitAddon()?.fit).toHaveBeenCalled();
+  });
+
+  it("re-attaches to a new container after the old one is unmounted", () => {
+    // What TerminalDock does whenever the panel toggles in and out of "not
+    // enough space": the container is unmounted (container -> null) and a
+    // brand new one takes its place once there is room again.
+    const { rerender } = renderSession();
+
+    const firstContainer = document.createElement("div");
+    rerender({ container: firstContainer });
+    const element = lastTerminal()?.element;
+    expect(element?.parentElement).toBe(firstContainer);
+
+    rerender({ container: null });
+    const secondContainer = document.createElement("div");
+    rerender({ container: secondContainer });
+
+    // The same terminal element (session, scrollback) is reused, just moved
+    // into the new container — xterm.js's own open() would not do this on
+    // its own (see the mock above), leaving it attached to the first,
+    // by-then-detached container: blank and impossible to type into.
+    expect(lastTerminal()?.open).toHaveBeenCalledTimes(1);
+    expect(element?.parentElement).toBe(secondContainer);
+    expect(lastTerminal()?.focus).toHaveBeenCalled();
   });
 
   it("names the terminal input and focuses it once attached", () => {

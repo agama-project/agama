@@ -294,6 +294,18 @@ export const useTerminalSession = (
       // request from the user, so the terminal takes the focus right away and
       // is ready to type in.
       terminal.focus();
+    } else if (terminal.element.parentElement !== container) {
+      // The container is unmounted and a new one takes its place whenever
+      // the panel toggles in and out of "not enough space" (see
+      // TerminalDock), so this also runs on every such toggle, not just the
+      // first attachment. xterm.js's own open() does not help here: it only
+      // moves the terminal to a different *browser window*, and is a no-op
+      // if called again for one already open in the same window. Without
+      // this, the existing element stays attached to the old, now-detached
+      // container: blank and impossible to type into, even though the
+      // session underneath is still alive.
+      container.appendChild(terminal.element);
+      terminal.focus();
     }
     fitAddon.fit();
 
