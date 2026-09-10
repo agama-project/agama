@@ -27,6 +27,7 @@ import PlannedContentSection from "~/components/storage/device-sheet/PlannedCont
 import CurrentContentSection from "~/components/storage/device-sheet/CurrentContentSection";
 import PropertiesSection from "~/components/storage/device-sheet/PropertiesSection";
 import { useSheetTab } from "~/components/storage/shared/use-sheet";
+import { useTablistKeyboard } from "~/hooks/use-tablist-keyboard";
 import { _ } from "~/i18n";
 import type { Entry } from "~/components/storage/device-sheet/entry";
 import type { SheetEntry } from "~/components/storage/shared/use-sheet";
@@ -50,73 +51,80 @@ export type DeviceDetailProps = {
  * entry decides its own strip: a disk has nothing that defines it, so it is not
  * offered a view about that.
  *
- * @fixme PatternFly's tabs leave every tab a tab stop and handle no arrow keys,
- *  where the pattern asks for one stop for the strip and arrows within it.
- *  Checked against the installed version rather than assumed. The keyboard
- *  model belongs with the rest of the accessibility work.
+ * The strip carries its own keyboard: PatternFly's tabs are each a tab stop and
+ * no arrow key does anything, where the pattern asks for one stop for the strip
+ * and arrows within it.
  */
 export default function DeviceDetail({ entry, subject }: DeviceDetailProps): React.ReactNode {
   const [tab, setTab] = useSheetTab("result");
+  const views = ["result", "planned", ...(entry.isVolumeGroup ? ["properties"] : []), "current"];
+  const { containerProps, tabProps } = useTablistKeyboard(views, tab, setTab);
 
   return (
-    <Tabs
-      activeKey={tab}
-      onSelect={(_event, key) => setTab(String(key))}
-      // TRANSLATORS: names the strip of views of one device of the installation.
-      aria-label={_("Views of this device")}
-    >
-      <Tab
-        eventKey="result"
-        title={
-          <TabTitleText>
-            {/* TRANSLATORS: names the view of a device showing the shape it is
-                left in once the installation has run. */}
-            {_("Final layout")}
-          </TabTitleText>
-        }
+    <div {...containerProps}>
+      <Tabs
+        activeKey={tab}
+        onSelect={(_event, key) => setTab(String(key))}
+        // TRANSLATORS: names the strip of views of one device of the installation.
+        aria-label={_("Views of this device")}
       >
-        <FinalLayoutSection entry={entry} />
-      </Tab>
-      <Tab
-        eventKey="planned"
-        title={
-          <TabTitleText>
-            {/* TRANSLATORS: names the view of a device showing what the
-                installation will put on it. */}
-            {_("Planned content")}
-          </TabTitleText>
-        }
-      >
-        <PlannedContentSection entry={entry} subject={subject} />
-      </Tab>
-      {/* Only where the entry is defined rather than found. A disk is the
-          hardware, so there is nothing that defines it to show. */}
-      {entry.isVolumeGroup && (
         <Tab
-          eventKey="properties"
+          eventKey="result"
+          {...tabProps("result")}
           title={
             <TabTitleText>
-              {/* TRANSLATORS: names the view of an entry showing the other
-                  entries it is built from. */}
-              {_("Properties")}
+              {/* TRANSLATORS: names the view of a device showing the shape it is
+                  left in once the installation has run. */}
+              {_("Final layout")}
             </TabTitleText>
           }
         >
-          <PropertiesSection entry={entry} />
+          <FinalLayoutSection entry={entry} />
         </Tab>
-      )}
-      <Tab
-        eventKey="current"
-        title={
-          <TabTitleText>
-            {/* TRANSLATORS: names the view of a device showing what was on it
-                before the installation was planned. */}
-            {_("Current content")}
-          </TabTitleText>
-        }
-      >
-        <CurrentContentSection entry={entry} subject={subject} />
-      </Tab>
-    </Tabs>
+        <Tab
+          eventKey="planned"
+          {...tabProps("planned")}
+          title={
+            <TabTitleText>
+              {/* TRANSLATORS: names the view of a device showing what the
+                  installation will put on it. */}
+              {_("Planned content")}
+            </TabTitleText>
+          }
+        >
+          <PlannedContentSection entry={entry} subject={subject} />
+        </Tab>
+        {/* Only where the entry is defined rather than found. A disk is the
+            hardware, so there is nothing that defines it to show. */}
+        {entry.isVolumeGroup && (
+          <Tab
+            eventKey="properties"
+            {...tabProps("properties")}
+            title={
+              <TabTitleText>
+                {/* TRANSLATORS: names the view of an entry showing the other
+                    entries it is built from. */}
+                {_("Properties")}
+              </TabTitleText>
+            }
+          >
+            <PropertiesSection entry={entry} />
+          </Tab>
+        )}
+        <Tab
+          eventKey="current"
+          {...tabProps("current")}
+          title={
+            <TabTitleText>
+              {/* TRANSLATORS: names the view of a device showing what was on it
+                  before the installation was planned. */}
+              {_("Current content")}
+            </TabTitleText>
+          }
+        >
+          <CurrentContentSection entry={entry} subject={subject} />
+        </Tab>
+      </Tabs>
+    </div>
   );
 }

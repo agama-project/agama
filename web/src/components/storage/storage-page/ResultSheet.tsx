@@ -25,6 +25,7 @@ import { Tab, Tabs, TabTitleText } from "@patternfly/react-core";
 import ProposalActions from "~/components/storage/ProposalActions";
 import ProposalResultTable from "~/components/storage/ProposalResultTable";
 import { useSheetTab } from "~/components/storage/shared/use-sheet";
+import { useTablistKeyboard } from "~/hooks/use-tablist-keyboard";
 import { useDevicesManager } from "~/components/storage/shared/use-devices-manager";
 import { useActions } from "~/hooks/model/proposal/storage";
 import { _ } from "~/i18n";
@@ -42,23 +43,34 @@ export default function ResultSheet(): React.ReactNode {
   const actions = useActions();
   const manager = useDevicesManager();
   const [tab, setTab] = useSheetTab("actions");
+  const { containerProps, tabProps } = useTablistKeyboard(["actions", "layout"], tab, setTab);
 
   return (
-    <Tabs
-      activeKey={tab}
-      onSelect={(_event, key) => setTab(String(key))}
-      // TRANSLATORS: names the pair of tabs offering the changes the installer
-      // will make and the layout they leave behind.
-      aria-label={_("What will happen")}
-    >
-      {/* The same word the page's own line uses, since that line is what opens
-          this. Two vocabularies for one fact is worse than either. */}
-      <Tab eventKey="actions" title={<TabTitleText>{_("Actions")}</TabTitleText>}>
-        <ProposalActions actions={actions} />
-      </Tab>
-      <Tab eventKey="layout" title={<TabTitleText>{_("Final layout")}</TabTitleText>}>
-        <ProposalResultTable devicesManager={manager} />
-      </Tab>
-    </Tabs>
+    <div {...containerProps}>
+      <Tabs
+        activeKey={tab}
+        onSelect={(_event, key) => setTab(String(key))}
+        // TRANSLATORS: names the pair of tabs offering the changes the installer
+        // will make and the layout they leave behind.
+        aria-label={_("What will happen")}
+      >
+        {/* The same word the page's own line uses, since that line is what opens
+            this. Two vocabularies for one fact is worse than either. */}
+        <Tab
+          eventKey="actions"
+          {...tabProps("actions")}
+          title={<TabTitleText>{_("Actions")}</TabTitleText>}
+        >
+          <ProposalActions actions={actions} />
+        </Tab>
+        <Tab
+          eventKey="layout"
+          {...tabProps("layout")}
+          title={<TabTitleText>{_("Final layout")}</TabTitleText>}
+        >
+          <ProposalResultTable devicesManager={manager} />
+        </Tab>
+      </Tabs>
+    </div>
   );
 }
