@@ -142,8 +142,12 @@ jobs:
     steps:
 
     - name: Configure and refresh repositories
-      # disable unused repositories to have faster refresh
-      run: zypper modifyrepo -d openSUSE:repo-openh264 && ( zypper ref || zypper ref || zypper ref )
+      # disable unused repositories to have faster refresh, add the Agama repo for
+      # the python3-openapi_spec_validator which is not available in Leap 16.1 repos
+      run: |
+        zypper ar -f https://download.opensuse.org/repositories/systemsmanagement:/Agama:/Maintenance:/SLE-16.1/standard/ Agama-16.1
+        zypper modifyrepo -d openSUSE:repo-openh264
+        zypper --gpg-auto-import-keys ref
 
     - name: Install required packages
       run: zypper --non-interactive install --allow-downgrade
@@ -258,8 +262,12 @@ jobs:
     steps:
 
     - name: Configure and refresh repositories
-      # disable unused repositories to have faster refresh
-      run: zypper modifyrepo -d openSUSE:repo-openh264 && ( zypper ref || zypper ref || zypper ref )
+      # disable unused repositories to have faster refresh, add the Agama repo for
+      # the python3-openapi_spec_validator which is not available in Leap 16.1 repos
+      run: |
+        zypper ar -f https://download.opensuse.org/repositories/systemsmanagement:/Agama:/Maintenance:/SLE-16.1/standard/ Agama-16.1
+        zypper modifyrepo -d openSUSE:repo-openh264
+        zypper --gpg-auto-import-keys ref
 
     - name: Install required packages
       run: zypper --non-interactive install --allow-downgrade
