@@ -356,13 +356,19 @@ nav.agm-breadcrumb > ol > li > a {
   flex-wrap: wrap;
 }
 
-// A panel opened beside, over, or in place of the page it belongs to. It takes
-// the whole height it is given and scrolls its own content, so the heading
-// saying what the reader is looking at stays put while the panel is read.
+// A panel opened beside or over the page it belongs to. It takes the whole
+// height it is given and scrolls its own content, so the heading saying what
+// the reader is looking at stays put while the panel is read.
 .agm-sheet {
   display: flex;
   flex-direction: column;
   height: 100%;
+  // Both zeroes are load-bearing. A flex item is at least as large as its own
+  // content unless told otherwise, and this panel holds tables: without them it
+  // grows past the width it was given, and the width it was given is what the
+  // drawer moves it by to bring it over the page. It then overshoots by exactly
+  // the excess and leaves off the far edge.
+  min-width: 0;
   min-height: 0;
   padding: var(--pf-t--global--spacer--lg) var(--pf-t--global--spacer--xl);
   background: var(--pf-t--global--background--color--primary--default);
@@ -397,14 +403,22 @@ nav.agm-breadcrumb > ol > li > a {
   color: var(--pf-t--global--text--color--subtle);
 }
 
+// Where its content cannot have the width it wants, the content scrolls rather
+// than the panel growing to fit it.
 .agm-sheet__body {
   flex: 1 1 auto;
+  min-width: 0;
   min-height: 0;
-  overflow-y: auto;
+  overflow: auto;
 }
 
 // The page keeps its edge where the sheet stands beside it.
+//
+// The zero is the same one as above, one level out: PatternFly gives this
+// element the width and the drawer moves it by that width, so anything that
+// makes it wider moves it too far.
 .agm-sheet__panel {
+  min-width: 0;
   border-inline-start: 1px solid var(--pf-t--global--border--color--default);
 }
 
