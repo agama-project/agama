@@ -174,7 +174,38 @@ describe("what a row says the installer will do", () => {
     );
     installerRender(<EntriesTable />);
 
-    expect(rowText("sda")).toContain("Host LVM and boot");
+    expect(rowText("sda")).toContain("Host LVM volume group system and boot");
+  });
+
+  it("names what a disk holds, so the relationship reads from either end", () => {
+    mockConfig.mockReturnValue(
+      config({
+        drives: [{ name: "/dev/sda" }],
+        volumeGroups: [
+          { vgName: "system", targetDevices: ["/dev/sda"] },
+          { vgName: "another", targetDevices: ["/dev/sda"] },
+        ],
+      }),
+    );
+    installerRender(<EntriesTable />);
+
+    expect(rowText("sda")).toContain("Host LVM volume groups system and another");
+  });
+
+  it("counts what it has no room to name", () => {
+    mockConfig.mockReturnValue(
+      config({
+        drives: [{ name: "/dev/sda" }],
+        volumeGroups: [
+          { vgName: "one", targetDevices: ["/dev/sda"] },
+          { vgName: "two", targetDevices: ["/dev/sda"] },
+          { vgName: "three", targetDevices: ["/dev/sda"] },
+        ],
+      }),
+    );
+    installerRender(<EntriesTable />);
+
+    expect(rowText("sda")).toContain("Host 3 LVM volume groups");
   });
 
   it("counts the partitions it creates and the ones it takes over", () => {
@@ -221,7 +252,7 @@ describe("what a row says the installer will do", () => {
     expect(rowText("system")).toContain("Define 2 logical volumes");
   });
 
-  it("counts the disks a volume group is spread over rather than naming them", () => {
+  it("names the disks a volume group sits on while there is room", () => {
     mockConfig.mockReturnValue(
       config({
         drives: [{ name: "/dev/sda" }, { name: "/dev/sdb" }],
@@ -230,7 +261,19 @@ describe("what a row says the installer will do", () => {
     );
     installerRender(<EntriesTable />);
 
-    expect(rowText("system")).toContain("Create LVM volume group on 2 disks");
+    expect(rowText("system")).toContain("Create LVM volume group on sda and sdb");
+  });
+
+  it("counts them once there are more than it can name", () => {
+    mockConfig.mockReturnValue(
+      config({
+        drives: [{ name: "/dev/sda" }, { name: "/dev/sdb" }, { name: "/dev/sdc" }],
+        volumeGroups: [{ vgName: "system", targetDevices: ["/dev/sda", "/dev/sdb", "/dev/sdc"] }],
+      }),
+    );
+    installerRender(<EntriesTable />);
+
+    expect(rowText("system")).toContain("Create LVM volume group on 3 disks");
   });
 });
 

@@ -26,6 +26,7 @@ import EntryRow from "~/components/storage/entries-table/EntryRow";
 import VolumeGroupMenu from "~/components/storage/entries-table/VolumeGroupMenu";
 import { consequencesOf } from "~/components/storage/shared/consequences";
 import { useDevicesManager } from "~/components/storage/shared/use-devices-manager";
+import { NAMES_PER_LINE } from "~/components/storage/shared/naming";
 import { baseName } from "~/components/storage/utils";
 import { useDevice } from "~/hooks/model/system/storage";
 import { _, n_, TranslatedString } from "~/i18n";
@@ -58,7 +59,17 @@ function purposeOf(group: ConfigModel.VolumeGroup): TranslatedString[] {
         baseName(hosts[0]),
       ),
     );
-  } else if (hosts.length > 1) {
+  } else if (hosts.length > 1 && hosts.length <= NAMES_PER_LINE) {
+    lines.push(
+      sprintf(
+        // TRANSLATORS: where an LVM volume group will be created. %1$s and %2$s
+        // are disk names, such as "sda" and "sdb".
+        _("Create LVM volume group on %1$s and %2$s"),
+        baseName(hosts[0]),
+        baseName(hosts[1]),
+      ),
+    );
+  } else if (hosts.length > NAMES_PER_LINE) {
     lines.push(
       sprintf(
         // TRANSLATORS: where an LVM volume group will be created. %d is how

@@ -25,6 +25,7 @@ import { sprintf } from "sprintf-js";
 import EntryRow from "~/components/storage/entries-table/EntryRow";
 import DriveMenu from "~/components/storage/entries-table/DriveMenu";
 import { consequencesOf } from "~/components/storage/shared/consequences";
+import { NAMES_PER_LINE } from "~/components/storage/shared/naming";
 import { useDevicesManager } from "~/components/storage/shared/use-devices-manager";
 import { baseName, deviceSize } from "~/components/storage/utils";
 import { typeDescription } from "~/components/storage/utils/device";
@@ -50,7 +51,7 @@ import type { SheetEntry } from "~/components/storage/shared/use-sheet";
  */
 function purposeOf(
   device: Partitionable.Device,
-  groupCount: number,
+  groups: string[],
   boots: boolean,
 ): TranslatedString[] {
   const lines: TranslatedString[] = [];
@@ -89,16 +90,38 @@ function purposeOf(
     lines.push(sprintf(n_("Reuse %d partition", "Reuse %d partitions", reused), reused));
   }
 
-  if (groupCount === 1) {
+  /* Named rather than counted while there is room, which is the other end of
+     what a group's own row says. A reader arriving at the disk used to learn
+     that something LVM was there and had to go looking for what. */
+  if (groups.length === 1) {
     lines.push(
-      boots
-        ? // TRANSLATORS: what a disk is for: it holds an LVM volume group, and
-          // the machine starts from it.
-          _("Host LVM and boot")
-        : // TRANSLATORS: what a disk is for: it holds an LVM volume group.
-          _("Host LVM"),
+      sprintf(
+        boots
+          ? // TRANSLATORS: what a disk is for: it holds an LVM volume group and
+            // the machine starts from it. %s is the group's name, such as
+            // "system".
+            _("Host LVM volume group %s and boot")
+          : // TRANSLATORS: what a disk is for: it holds an LVM volume group.
+            // %s is the group's name, such as "system".
+            _("Host LVM volume group %s"),
+        groups[0],
+      ),
     );
-  } else if (groupCount > 1) {
+  } else if (groups.length > 1 && groups.length <= NAMES_PER_LINE) {
+    lines.push(
+      sprintf(
+        boots
+          ? // TRANSLATORS: what a disk is for: it holds two LVM volume groups
+            // and the machine starts from it. %1$s and %2$s are their names.
+            _("Host LVM volume groups %1$s and %2$s and boot")
+          : // TRANSLATORS: what a disk is for: it holds two LVM volume groups.
+            // %1$s and %2$s are their names.
+            _("Host LVM volume groups %1$s and %2$s"),
+        groups[0],
+        groups[1],
+      ),
+    );
+  } else if (groups.length > NAMES_PER_LINE) {
     lines.push(
       sprintf(
         boots
@@ -107,18 +130,18 @@ function purposeOf(
             n_(
               "Host %d LVM volume group and boot",
               "Host %d LVM volume groups and boot",
-              groupCount,
+              groups.length,
             )
           : // TRANSLATORS: what a disk is for. %d is how many LVM volume groups
             // it holds.
-            n_("Host %d LVM volume group", "Host %d LVM volume groups", groupCount),
-        groupCount,
+            n_("Host %d LVM volume group", "Host %d LVM volume groups", groups.length),
+        groups.length,
       ),
     );
   }
 
   /* Nothing else to hang it on, so it is a line of its own. */
-  if (boots && !groupCount) {
+  if (boots && !groups.length) {
     // TRANSLATORS: what a disk is for: the machine starts from it.
     lines.push(_("Start the new system"));
   }
@@ -161,7 +184,11 @@ export default function DriveRow({ name, subject }: DriveRowProps): React.ReactN
 
   const groups = entry ? configModel.partitionable.filterVolumeGroups(config, entry) : [];
   const purpose = entry
-    ? purposeOf(entry, groups.length, configModel.boot.hasDevice(config, name))
+    ? purposeOf(
+        entry,
+        groups.map((group) => group.vgName),
+        configModel.boot.hasDevice(config, name),
+      )
     : ([] as TranslatedString[]);
 
   return (

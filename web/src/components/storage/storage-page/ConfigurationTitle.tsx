@@ -23,6 +23,7 @@
 import React from "react";
 import Interpolate from "~/components/core/Interpolate";
 import DeviceName from "~/components/storage/shared/DeviceName";
+import { NAMES_PER_LINE } from "~/components/storage/shared/naming";
 import { baseName } from "~/components/storage/utils";
 import { useConfigModel } from "~/hooks/model/storage/config-model";
 import { useDevice } from "~/hooks/model/system/storage";
@@ -102,7 +103,9 @@ export default function ConfigurationTitle(): React.ReactNode {
   if (onlyHost && groups.length > 0) {
     const names = groups.map((group) => group.vgName).filter(Boolean);
 
-    if (groups.length === 1 && names.length === 1) {
+    const named = names.length === groups.length && groups.length <= NAMES_PER_LINE;
+
+    if (named && groups.length === 1) {
       const sentence = onDisk
         ? // TRANSLATORS: the whole storage configuration in one line. %1$s is
           // the name of an LVM volume group and %2$s a disk name and its size,
@@ -120,7 +123,7 @@ export default function ConfigurationTitle(): React.ReactNode {
       );
     }
 
-    if (groups.length === 2 && names.length === 2) {
+    if (named && groups.length === 2) {
       const sentence = onDisk
         ? // TRANSLATORS: the whole storage configuration in one line. %1$s and
           // %2$s are the names of two LVM volume groups, %3$s a disk name and

@@ -24,6 +24,7 @@ import React from "react";
 import { unique } from "radashi";
 import { sprintf } from "sprintf-js";
 import Text from "~/components/core/Text";
+import { NAMES_PER_LINE } from "~/components/storage/shared/naming";
 import SheetOpener from "~/components/storage/shared/SheetOpener";
 import { useDevicesManager } from "~/components/storage/shared/use-devices-manager";
 import { useActions } from "~/hooks/model/proposal/storage";
@@ -36,7 +37,7 @@ import { _, n_, formatList, TranslatedString } from "~/i18n";
  * it, which no amount of joining can produce.
  */
 function deletion(systems: string[], partitions: number): TranslatedString | null {
-  if (systems.length > 2) {
+  if (systems.length > NAMES_PER_LINE) {
     const others = systems.length - 1;
     return sprintf(
       // TRANSLATORS: What the installation destroys, where more systems are
@@ -73,7 +74,7 @@ function deletion(systems: string[], partitions: number): TranslatedString | nul
 
 /** The same four cases as {@link deletion}, for what is made smaller instead. */
 function shrinking(systems: string[], partitions: number): TranslatedString | null {
-  if (systems.length > 2) {
+  if (systems.length > NAMES_PER_LINE) {
     const others = systems.length - 1;
     return sprintf(
       // TRANSLATORS: What the installation makes room in, where more systems
