@@ -141,7 +141,7 @@ export default function InstallerOptionsMenu({ hideLabel = false }: InstallerOpt
                     isTerminalOpen
                       ? /* TRANSLATORS: menu entry that closes the terminal, closing the session */
                         _("Close terminal")
-                      : /* TRANSLATORS: menu entry that closes the terminal */
+                      : /* TRANSLATORS: menu entry that opens the terminal */
                         _("Open terminal")
                   }
                 />
