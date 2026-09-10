@@ -183,11 +183,12 @@ export default function DriveRow({ name, subject }: DriveRowProps): React.ReactN
     .join("  ·  ");
 
   const groups = entry ? configModel.partitionable.filterVolumeGroups(config, entry) : [];
+  const boots = configModel.boot.hasDevice(config, name);
   const purpose = entry
     ? purposeOf(
         entry,
         groups.map((group) => group.vgName),
-        configModel.boot.hasDevice(config, name),
+        boots,
       )
     : ([] as TranslatedString[]);
 
@@ -195,6 +196,8 @@ export default function DriveRow({ name, subject }: DriveRowProps): React.ReactN
     <EntryRow
       name={baseName(name)}
       description={description}
+      // TRANSLATORS: marks the device the machine will start from.
+      marks={boots ? [_("Boot device")] : []}
       purpose={purpose}
       consequences={consequencesOf(manager, device?.partitions || [])}
       menu={entry && <DriveMenu entry={entry} device={device} subject={subject} />}

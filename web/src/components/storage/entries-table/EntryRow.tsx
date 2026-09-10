@@ -22,7 +22,7 @@
 
 import React from "react";
 import { Td, Th, Tr } from "@patternfly/react-table";
-import { Flex, FlexItem, Stack, StackItem } from "@patternfly/react-core";
+import { Flex, FlexItem, Label, Stack, StackItem } from "@patternfly/react-core";
 import Icon from "~/components/layout/Icon";
 import Text from "~/components/core/Text";
 import SheetOpener from "~/components/storage/shared/SheetOpener";
@@ -50,6 +50,8 @@ export type EntryRowProps = {
   name: string;
   /** What it is, beside the name: how big, what kind, how it is partitioned. */
   description?: string;
+  /** What it is for, in the words the panel marks it with. */
+  marks?: string[];
   /** What the installer will do here, one statement per line. */
   purpose: TranslatedString[];
   /** What that costs whatever is here already. */
@@ -90,6 +92,7 @@ export type EntryRowProps = {
 export default function EntryRow({
   name,
   description,
+  marks = [],
   purpose,
   consequences,
   menu,
@@ -112,6 +115,14 @@ export default function EntryRow({
           <Text isBold>{name}</Text>
         </SheetOpener>
         {description && <span className="agm-entries-table__facts"> {description}</span>}
+        {/* The same words the panel puts beside the same name, so the row a
+            reader opened and the panel that opens carry one vocabulary. */}
+        {marks.map((mark) => (
+          <React.Fragment key={mark}>
+            {" "}
+            <Label isCompact>{mark}</Label>
+          </React.Fragment>
+        ))}
       </Th>
       <Td dataLabel={columnName("content")}>
         <Stack>
