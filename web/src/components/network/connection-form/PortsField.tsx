@@ -162,8 +162,9 @@ const PortsField = withForm({
                 <field.ArrayField
                   label={label}
                   helperText={
-                    // TRANSLATORS: helper text for the ports field of a bond or a bridge.
-                    _("Pick the devices to use as ports, or type the name of one not listed yet.")
+                    // TRANSLATORS: helper text for the ports field of a bond or
+                    // a bridge, naming the two ways of filling it in.
+                    _("Enter device names or select from available devices.")
                   }
                   skipDuplicates
                   addOn={({ entries, setEntries }) => (

@@ -380,7 +380,7 @@ reports.
 ```tsx
 <field.ArrayField
   label={label}
-  helperText={_("Pick the devices to use as ports, or type the name of one not listed yet.")}
+  helperText={_("Enter device names or select from available devices.")}
   skipDuplicates
   addOn={({ entries, setEntries }) => (
     <DevicePicker
@@ -397,8 +397,11 @@ rules as a typed value, and is validated the same way. Unlike typing and
 pasting, an add-on leaves the draft input alone: only the caller knows whether
 what the user was half-way through typing still matters.
 
-Say in `helperText` that both routes exist. Nothing else on screen tells the
-user that a field they can type into is also filled in by the button next to it.
+Say in `helperText` that both routes exist, and say it plainly: nothing else on
+screen tells the user that a field they can type into is also filled in by the
+button next to it. Name the two routes and stop there. Explaining when to prefer
+one over the other describes a case most users do not have, in a place everyone
+reads.
 
 #### The button
 
