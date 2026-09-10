@@ -35,6 +35,8 @@ const ethernet = {
   type: CONNECTION_TYPE.ETHERNET,
   state: DeviceState.CONNECTED,
   addresses: [{ address: "192.168.1.10", prefix: 24 }],
+  carrier: true,
+  speed: 1000,
 } as Device;
 
 const wireless = {
@@ -77,8 +79,20 @@ describe("DeviceSelectorModal", () => {
     within(rowFor("enp1s0")).getByText("00:11:22:33:44:55");
     within(rowFor("enp1s0")).getByText("192.168.1.10/24");
     within(rowFor("enp1s0")).getByText("Connected");
+    within(rowFor("enp1s0")).getByText("Up (1000 Mb/s)");
     within(rowFor("wlan0")).getByText("Wi-Fi");
     within(rowFor("wlan0")).getByText("Disconnected");
+    within(rowFor("wlan0")).getByText("Unknown");
+  });
+
+  it("tells a device with no cable plugged in apart from one with an unknown link", () => {
+    renderModal({ devices: [ethernet, { ...wireless, carrier: false }] });
+    within(rowFor("wlan0")).getByText("Down");
+  });
+
+  it("tells a device is up even when its speed is not reported", () => {
+    renderModal({ devices: [ethernet, { ...wireless, carrier: true }] });
+    within(rowFor("wlan0")).getByText("Up");
   });
 
   describe("when no device is bound yet", () => {

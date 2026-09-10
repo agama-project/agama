@@ -22,6 +22,7 @@
 
 import ipaddr from "ipaddr.js";
 import { isUndefined, sift, title } from "radashi";
+import { sprintf } from "sprintf-js";
 import {
   APIRoute,
   ApFlags,
@@ -98,6 +99,38 @@ const DEVICE_STATE_LABELS: Record<DeviceState, MarkedString> = {
  * Returns the translated label for a device state.
  */
 const deviceStateLabel = (state: DeviceState): TranslatedString => _(DEVICE_STATE_LABELS[state]);
+
+/**
+ * Returns the translated label for a device's physical link.
+ *
+ * Both `carrier` and `speed` are best-effort and only reported by wired
+ * devices, and only while a cable is plugged in for the speed. `undefined`
+ * means the device does not say, as opposed to `false`/`0` meaning it does.
+ */
+const deviceLinkLabel = (device: Pick<Device, "carrier" | "speed">): TranslatedString => {
+  const { carrier, speed } = device;
+
+  if (carrier === undefined) {
+    // TRANSLATORS: link state of a network device the system does not report
+    // a carrier for.
+    return _("Unknown");
+  }
+
+  if (!carrier) {
+    // TRANSLATORS: link state of a network device with no cable plugged in.
+    return _("Down");
+  }
+
+  if (speed) {
+    // TRANSLATORS: link state of a network device that is up, running at the
+    // given speed. %d is replaced by the speed in Mb/s, e.g. "Up (1000 Mb/s)".
+    return sprintf(_("Up (%d Mb/s)"), speed);
+  }
+
+  // TRANSLATORS: link state of a network device with a cable plugged in but
+  // unknown speed.
+  return _("Up");
+};
 
 /**
  * Returns true if the given connection type is virtual.
@@ -485,6 +518,7 @@ export {
   connectionTypeLabel,
   controllerOf,
   deviceStateLabel,
+  deviceLinkLabel,
   ensureIPPrefix,
   formatIp,
   generateConnectionName,

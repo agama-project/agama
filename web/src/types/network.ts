@@ -228,6 +228,10 @@ class Device {
   macAddress: string;
   state: DeviceState;
   connection?: string;
+  /** Whether the device currently has a link (carrier). Best-effort: unset when unknown. */
+  carrier?: boolean;
+  /** Link speed in Mb/s, only reported by wired devices while the link is up. */
+  speed?: number;
 
   static fromApi(device: APIDevice) {
     const { ipConfig, stateReason, ...newDevice } = device;
@@ -268,6 +272,8 @@ type APIDevice = {
   connection?: string;
   ipConfig?: IPConfig;
   stateReason: string;
+  carrier?: boolean;
+  speed?: number;
 };
 
 type APIRoute = {

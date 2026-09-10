@@ -27,7 +27,7 @@ import { sprintf } from "sprintf-js";
 import Popup from "~/components/core/Popup";
 import SelectableDataTable from "~/components/core/SelectableDataTable";
 import Text from "~/components/core/Text";
-import { connectionTypeLabel, deviceStateLabel, formatIp } from "~/utils/network";
+import { connectionTypeLabel, deviceLinkLabel, deviceStateLabel, formatIp } from "~/utils/network";
 import { sortCollection } from "~/utils";
 import { _, n_ } from "~/i18n";
 
@@ -68,7 +68,7 @@ const deviceAddresses = (device: Device): string =>
 
 /**
  * Dialog for picking network devices from a table showing more details than a
- * dropdown can hold: name, MAC address, type, addresses and state.
+ * dropdown can hold: name, MAC address, type, addresses, state and link.
  *
  * The table can be sorted, and the pick is only reported to the caller when the
  * user confirms.
@@ -129,6 +129,12 @@ export default function DeviceSelectorModal({
       name: _("State"),
       value: (device: Device) => deviceStateLabel(device.state),
       sortingKey: "state",
+    },
+    {
+      // TRANSLATORS: table column with the physical link of a network device:
+      // whether a cable is plugged in and, if so, at which speed.
+      name: _("Link"),
+      value: (device: Device) => deviceLinkLabel(device),
     },
     ...(portOf
       ? [
