@@ -23,10 +23,7 @@
 import React from "react";
 import { Grid, Stack, Tab, Tabs, TabTitleText } from "@patternfly/react-core";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
-import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
 import { NestedContent } from "~/components/core/";
-import Icon from "~/components/layout/Icon";
-import MenuButton from "~/components/core/MenuButton";
 import Page from "~/components/layout/Page";
 import ConfigEditor from "~/components/storage/ConfigEditor";
 import EncryptionSection from "~/components/storage/EncryptionSection";
@@ -39,61 +36,30 @@ import InvalidConfigMessage from "~/components/storage/storage-page/InvalidConfi
 import NoDevicesMessage from "~/components/storage/storage-page/NoDevicesMessage";
 import UnknownConfigMessage from "~/components/storage/storage-page/UnknownConfigMessage";
 import ResultSheet from "~/components/storage/storage-page/ResultSheet";
+import TopLine from "~/components/storage/storage-page/TopLine";
 import Sheet, { SheetPlacement } from "~/components/core/Sheet";
 import { useSheet, SHEET_ID } from "~/components/storage/shared/use-sheet";
 import { useMediaQuery } from "~/hooks/use-media-query";
 import { useNoRoomReason } from "~/components/storage/storage-page/queries";
 import { useAvailableDevices } from "~/hooks/model/system/storage";
 import { useIssues } from "~/hooks/model/issue";
-import { useReset } from "~/hooks/model/config/storage";
 import { useProposal } from "~/hooks/model/proposal/storage";
 import { useConfigModel } from "~/hooks/model/storage/config-model";
-import { useSearchParamState, useClearSearchParams } from "~/hooks/use-search-param-state";
-import { EXPANDED, SETTINGS_TAB } from "~/components/storage/ui-state-params";
+import { useSearchParamState } from "~/hooks/use-search-param-state";
+import { SETTINGS_TAB } from "~/components/storage/ui-state-params";
 import { _ } from "~/i18n";
 
 function ModelSection(): React.ReactNode {
   const [activeTab, setActiveTab] = useSearchParamState(SETTINGS_TAB, "0");
-  const clearSearchParams = useClearSearchParams();
-  const reset = useReset();
   const handleTabClick = (
     event: React.MouseEvent | React.KeyboardEvent | MouseEvent,
     tabIndex: number,
   ) => setActiveTab(tabIndex);
 
-  const onReset = () => {
-    reset();
-    clearSearchParams(EXPANDED, SETTINGS_TAB);
-  };
-
   return (
     <Page.Section
       isFullHeight
       title={_("Settings")}
-      titleActions={
-        <MenuButton
-          menuProps={{
-            popperProps: {
-              position: "end",
-            },
-          }}
-          toggleProps={{
-            variant: "plain",
-            className: spacingStyles.p_0,
-          }}
-          items={[
-            <MenuButton.Item
-              key="reset-link"
-              onClick={onReset}
-              description={_("Start from scratch with the default configuration")}
-            >
-              {_("Reset to defaults")}
-            </MenuButton.Item>,
-          ]}
-        >
-          <Icon name="more_horiz" className="agm-three-dots-icon" />
-        </MenuButton>
-      }
       description={_(
         "Changes in these settings will immediately update the 'Result' section below.",
       )}
@@ -204,6 +170,7 @@ export default function StoragePageContent(): React.ReactNode {
       {!configIssues.length && !proposal && !noRoomReason && <ProposalFailedInfo />}
       {!!configIssues.length && <FixableConfigInfo issues={configIssues} />}
       {!model && <UnsupportedModelInfo />}
+      {model && <TopLine />}
       {model && <ConfigurationSummary />}
       {model && <ModelSection />}
     </Grid>

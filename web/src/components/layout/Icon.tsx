@@ -40,8 +40,12 @@ import DragIndicator from "@icons/drag_indicator.svg?component";
 import Terminal from "@icons/terminal.svg?component";
 import TextDecrease from "@icons/text_decrease.svg?component";
 import TextIncrease from "@icons/text_increase.svg?component";
+import Block from "@icons/block.svg?component";
 import ChangeCircle from "@icons/change_circle.svg?component";
 import CheckCircle from "@icons/check_circle.svg?component";
+import LockOpen from "@icons/lock_open.svg?component";
+import RotateAuto from "@icons/rotate_auto.svg?component";
+import SettingsBackupRestore from "@icons/settings_backup_restore.svg?component";
 import Compress from "@icons/compress.svg?component";
 import ChevronLeft from "@icons/chevron_left.svg?component";
 import ChevronRight from "@icons/chevron_right.svg?component";
@@ -105,8 +109,12 @@ const icons = {
   archive: Archive,
   arrow_drop_down: ArrowDropDown,
   backspace: Backspace,
+  block: Block,
   change_circle: ChangeCircle,
   check_circle: CheckCircle,
+  lock_open: LockOpen,
+  rotate_auto: RotateAuto,
+  settings_backup_restore: SettingsBackupRestore,
   chevron_left: ChevronLeft,
   chevron_right: ChevronRight,
   clear_all: ClearAll,
