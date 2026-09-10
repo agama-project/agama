@@ -7,7 +7,7 @@ Mon Sep  7 15:00:00 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
   it serves for dropping one as much as for adding one, and it
   tells which devices another bond or bridge already uses. Ports
   naming no device found are left alone: the dialog only offers
-  what the system reports.
+  what the system reports (bsc#1279417).
 
 -------------------------------------------------------------------
 Thu Sep  3 08:13:38 UTC 2026 - David Diaz <dgonzalez@suse.com>
