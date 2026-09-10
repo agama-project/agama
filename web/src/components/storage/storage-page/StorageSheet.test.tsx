@@ -28,6 +28,8 @@ import StorageSheet from "~/components/storage/storage-page/StorageSheet";
 
 const mockConfig = jest.fn();
 const mockSystemDevice = jest.fn();
+const mockProposalDevices = jest.fn();
+const mockActions = jest.fn();
 
 jest.mock("~/hooks/model/storage/config-model", () => ({
   ...jest.requireActual("~/hooks/model/storage/config-model"),
@@ -43,6 +45,13 @@ jest.mock("~/hooks/model/system/storage", () => ({
   ...jest.requireActual("~/hooks/model/system/storage"),
   useDevice: () => mockSystemDevice(),
   useAvailableDevices: () => [],
+  useFlattenDevices: () => [],
+}));
+
+jest.mock("~/hooks/model/proposal/storage", () => ({
+  ...jest.requireActual("~/hooks/model/proposal/storage"),
+  useFlattenDevices: () => mockProposalDevices(),
+  useActions: () => mockActions(),
 }));
 
 jest.mock("~/components/storage/storage-page/ResultSheet", () => () => (
@@ -62,6 +71,8 @@ const sheet = () => screen.queryByRole("region");
 describe("StorageSheet", () => {
   beforeEach(() => {
     mockConfig.mockReturnValue(config());
+    mockProposalDevices.mockReturnValue([]);
+    mockActions.mockReturnValue([]);
     mockSystemDevice.mockReturnValue({
       name: "/dev/sda",
       class: "drive",
@@ -100,6 +111,23 @@ describe("StorageSheet", () => {
       installerRender(<StorageSheet page={page} />);
 
       screen.getByRole("button", { name: "Actions for sda" });
+    });
+
+    it("opens on what the device is left as, which is why a reader came", () => {
+      mockProposalDevices.mockReturnValue([
+        { sid: 59, name: "/dev/sda", class: "drive", block: { size: 64424509440 } },
+      ]);
+      mockActions.mockReturnValue([{ device: 59, text: "" }]);
+      installerRender(<StorageSheet page={page} />);
+
+      screen.getByText("After installing");
+      screen.getByRole("treegrid");
+    });
+
+    it("says so where the installer has worked no layout out", () => {
+      installerRender(<StorageSheet page={page} />);
+
+      screen.getByText(/no layout to show/);
     });
   });
 

@@ -140,21 +140,27 @@ const columns: (devicesManager: DevicesManager) => TreeTableColumn[] = (devicesM
 
 type ProposalResultTableProps = {
   devicesManager: DevicesManager;
+  /**
+   * Which devices to show. Every device the installation uses by default; give
+   * a shorter list where the reader has already narrowed the question, such as
+   * a panel about one of them.
+   */
+  devices?: Proposal.Device[];
 };
 
 /**
  * Renders the proposal result.
  * @component
  */
-export default function ProposalResultTable({ devicesManager }: ProposalResultTableProps) {
+export default function ProposalResultTable({ devicesManager, devices }: ProposalResultTableProps) {
   const model = useConfigModel();
-  const devices = devicesManager.usedDevices(model?.drives?.map((d) => d.name) || []);
+  const shown = devices || devicesManager.usedDevices(model?.drives?.map((d) => d.name) || []);
 
   return (
     <TreeTable
       columns={columns(devicesManager)}
-      items={devices}
-      expandedItems={devices}
+      items={shown}
+      expandedItems={shown}
       itemChildren={deviceChildren}
       rowClassNames={(item: TableItem) => {
         if (!toDevice(item)) return "dimmed-row";

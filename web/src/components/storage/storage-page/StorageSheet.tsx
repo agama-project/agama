@@ -24,6 +24,7 @@ import React from "react";
 import Sheet, { SheetPlacement } from "~/components/core/Sheet";
 import ResultSheet from "~/components/storage/storage-page/ResultSheet";
 import DeviceSheetHeading from "~/components/storage/device-sheet/DeviceSheetHeading";
+import FinalLayoutSection from "~/components/storage/device-sheet/FinalLayoutSection";
 import DriveMenu from "~/components/storage/entries-table/DriveMenu";
 import VolumeGroupMenu from "~/components/storage/entries-table/VolumeGroupMenu";
 import { useEntry } from "~/components/storage/device-sheet/entry";
@@ -75,8 +76,8 @@ export type StorageSheetProps = {
  * sheet. Addresses outlive plans: one can be written down, shared, or reloaded
  * after the entry it named has gone.
  *
- * @fixme The sheet has no content on an entry yet: what a device becomes, what
- *  the plan asks of it and what is on it today arrive as its tabs.
+ * @fixme An entry shows what it becomes and nothing else yet. What the plan
+ *  asks of it and what is on it today join it, and the three become tabs.
  */
 export default function StorageSheet({ page }: StorageSheetProps): React.ReactNode {
   const { subject, close } = useSheet();
@@ -119,6 +120,7 @@ export default function StorageSheet({ page }: StorageSheetProps): React.ReactNo
       page={page}
     >
       {isResult && <ResultSheet />}
+      {entry && <FinalLayoutSection entry={entry} />}
     </Sheet>
   );
 }
