@@ -32,7 +32,7 @@ jobs:
     runs-on: ubuntu-latest
 
     container:
-      image: registry.opensuse.org/opensuse/tumbleweed:latest
+      image: registry.opensuse.org/opensuse/leap:16.0
 
     steps:
 
@@ -41,7 +41,7 @@ jobs:
 
     - name: Configure and refresh repositories
       # disable unused repositories to have faster refresh
-      run: zypper modifyrepo -d repo-non-oss repo-openh264 repo-update && zypper ref
+      run: zypper modifyrepo -d openSUSE:repo-openh264 && zypper ref
 
     - name: Install OBS service
       run: zypper --non-interactive install --no-recommends --allow-downgrade obs-service-source_validator
