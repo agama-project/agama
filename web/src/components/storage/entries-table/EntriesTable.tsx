@@ -122,11 +122,19 @@ export default function EntriesTable(): React.ReactNode {
                 {categoryTitle(category)}
               </Th>
             </Tr>
-            {entries.map((entry) =>
+            {entries.map((entry, index) =>
               category === "volumeGroups" ? (
-                <VolumeGroupRow key={entry.vgName} group={entry} />
+                <VolumeGroupRow
+                  key={entry.vgName}
+                  group={entry}
+                  subject={{ collection: category, index }}
+                />
               ) : (
-                <DriveRow key={entry.name} name={entry.name} />
+                <DriveRow
+                  key={entry.name}
+                  name={entry.name}
+                  subject={{ collection: category, index }}
+                />
               ),
             )}
           </Tbody>

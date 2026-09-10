@@ -29,14 +29,18 @@ import RowMenuToggle from "~/components/storage/entries-table/RowMenuToggle";
 import SearchedVolumeGroupMenu from "~/components/storage/SearchedVolumeGroupMenu";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { generateEncodedPath } from "~/utils";
+import { useSheet } from "~/components/storage/shared/use-sheet";
 import { useDeleteVolumeGroup } from "~/hooks/model/storage/config-model";
 import { useDevice } from "~/hooks/model/system/storage";
 import { _ } from "~/i18n";
 import type { ConfigModel } from "~/model/storage/config-model";
+import type { SheetEntry } from "~/components/storage/shared/use-sheet";
 
 export type VolumeGroupMenuProps = {
   /** The group as the configuration describes it. */
   group: ConfigModel.VolumeGroup;
+  /** Where it is written. Given only where opening it is one of the offers. */
+  subject?: SheetEntry;
 };
 
 /**
@@ -48,10 +52,11 @@ export type VolumeGroupMenuProps = {
  * second exists only here, so what there is to do with it is change how it is
  * defined, or stop defining it.
  */
-export default function VolumeGroupMenu({ group }: VolumeGroupMenuProps): React.ReactNode {
+export default function VolumeGroupMenu({ group, subject }: VolumeGroupMenuProps): React.ReactNode {
   const navigate = useNavigate();
   const deleteVolumeGroup = useDeleteVolumeGroup();
   const device = useDevice(group.name || "");
+  const { openSheet } = useSheet();
   // TRANSLATORS: names the menu of things that can be done to one LVM volume
   // group of the installation. %s is its name, such as "system".
   const label = sprintf(_("Actions for %s"), group.vgName);
@@ -71,6 +76,21 @@ export default function VolumeGroupMenu({ group }: VolumeGroupMenuProps): React.
       menuProps={{ "aria-label": label, popperProps: { position: "end" } }}
       customToggle={<RowMenuToggle label={label} />}
       items={[
+        /* First, because it is what clicking the row does. */
+        ...(subject
+          ? [
+              <MenuButtonItem key="open" onClick={() => openSheet(subject)}>
+                {sprintf(
+                  // TRANSLATORS: opens the panel where one entry of the
+                  // installation is read and changed. %s is its name, such as
+                  // "system".
+                  _("Configure %s"),
+                  group.vgName,
+                )}
+              </MenuButtonItem>,
+              <Divider key="before-edit" />,
+            ]
+          : []),
         <MenuButtonItem
           key="edit"
           onClick={() =>

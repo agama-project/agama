@@ -30,6 +30,7 @@ import { baseName } from "~/components/storage/utils";
 import { useDevice } from "~/hooks/model/system/storage";
 import { _, n_, TranslatedString } from "~/i18n";
 import type { ConfigModel } from "~/model/storage/config-model";
+import type { SheetEntry } from "~/components/storage/shared/use-sheet";
 
 /**
  * What a volume group is, from both ends.
@@ -92,6 +93,8 @@ function purposeOf(group: ConfigModel.VolumeGroup): TranslatedString[] {
 export type VolumeGroupRowProps = {
   /** The group as the configuration describes it. */
   group: ConfigModel.VolumeGroup;
+  /** Where it is written, which is how the sheet is opened on it. */
+  subject: SheetEntry;
 };
 
 /**
@@ -105,7 +108,7 @@ export type VolumeGroupRowProps = {
  * nothing of it on the machine yet. One that already exists is read like any
  * other entry: what the installer does to what it holds.
  */
-export default function VolumeGroupRow({ group }: VolumeGroupRowProps): React.ReactNode {
+export default function VolumeGroupRow({ group, subject }: VolumeGroupRowProps): React.ReactNode {
   const device = useDevice(group.name || "");
   const manager = useDevicesManager();
 
@@ -114,7 +117,8 @@ export default function VolumeGroupRow({ group }: VolumeGroupRowProps): React.Re
       name={group.vgName}
       purpose={purposeOf(group)}
       consequences={consequencesOf(manager, device?.logicalVolumes || [])}
-      menu={<VolumeGroupMenu group={group} />}
+      menu={<VolumeGroupMenu group={group} subject={subject} />}
+      subject={subject}
     />
   );
 }

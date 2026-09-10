@@ -35,11 +35,8 @@ import ConfigurationSummary from "~/components/storage/storage-page/Configuratio
 import InvalidConfigMessage from "~/components/storage/storage-page/InvalidConfigMessage";
 import NoDevicesMessage from "~/components/storage/storage-page/NoDevicesMessage";
 import UnknownConfigMessage from "~/components/storage/storage-page/UnknownConfigMessage";
-import ResultSheet from "~/components/storage/storage-page/ResultSheet";
+import StorageSheet from "~/components/storage/storage-page/StorageSheet";
 import TopLine from "~/components/storage/storage-page/TopLine";
-import Sheet, { SheetPlacement } from "~/components/core/Sheet";
-import { useSheet, SHEET_ID } from "~/components/storage/shared/use-sheet";
-import { useMediaQuery } from "~/hooks/use-media-query";
 import { useNoRoomReason } from "~/components/storage/storage-page/queries";
 import { useAvailableDevices } from "~/hooks/model/system/storage";
 import { useIssues } from "~/hooks/model/issue";
@@ -96,32 +93,6 @@ function ModelSection(): React.ReactNode {
   );
 }
 
-/** PatternFly's `lg`, where a panel over the page stops covering all of it. */
-const LG = "(min-width: 62rem)";
-/** PatternFly's `xl`, from where there is room for the page and a panel both. */
-const XL = "(min-width: 75rem)";
-
-/**
- * How much of the window the sheet takes, and what that leaves the page.
- *
- * Three bands rather than two. Below `lg` a panel drawn over the page covers
- * all of it anyway, so it takes its place instead. From there to `xl` it comes
- * over the page. At `xl` and above the two share the width and the page keeps
- * working.
- *
- * `xl` rather than a number of our own: 1024 falls between the two, and the
- * difference between a 1024 window and a 1199 one is not one this page behaves
- * differently at.
- */
-function useSheetPlacement(): SheetPlacement {
-  const fitsBoth = useMediaQuery(XL);
-  const fitsOverlay = useMediaQuery(LG);
-
-  if (fitsBoth) return "share";
-  if (fitsOverlay) return "overlay";
-  return "replace";
-}
-
 /**
  * What the storage page shows, and where everything it needs is read.
  *
@@ -142,8 +113,6 @@ export default function StoragePageContent(): React.ReactNode {
   const proposal = useProposal();
   const issues = useIssues("storage");
   const noRoomReason = useNoRoomReason();
-  const { subject, close } = useSheet();
-  const placement = useSheetPlacement();
 
   const fixable = [
     "configNoRoot",
@@ -176,17 +145,5 @@ export default function StoragePageContent(): React.ReactNode {
     </Grid>
   );
 
-  return (
-    <Sheet
-      id={SHEET_ID}
-      isOpen={subject !== null}
-      placement={placement}
-      onClose={close}
-      title={_("Result")}
-      description={_("What the installer will do, and what the machine will look like")}
-      page={body}
-    >
-      <ResultSheet />
-    </Sheet>
-  );
+  return <StorageSheet page={body} />;
 }

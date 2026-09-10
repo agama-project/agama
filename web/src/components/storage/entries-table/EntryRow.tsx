@@ -25,8 +25,10 @@ import { Td, Th, Tr } from "@patternfly/react-table";
 import { Flex, FlexItem, Stack, StackItem } from "@patternfly/react-core";
 import Icon from "~/components/layout/Icon";
 import Text from "~/components/core/Text";
+import SheetOpener from "~/components/storage/shared/SheetOpener";
 import { columnName } from "~/components/storage/entries-table/columns";
 import type { Consequence } from "~/components/storage/shared/consequences";
+import type { SheetEntry } from "~/components/storage/shared/use-sheet";
 import type { TranslatedString } from "~/i18n";
 
 /** Marks whose meaning travels with their direction, turned to say it. */
@@ -53,6 +55,8 @@ export type EntryRowProps = {
   consequences: Consequence[];
   /** The menu of what can be done to this entry. */
   menu: React.ReactNode;
+  /** Where this entry is written, which is how the sheet is opened on it. */
+  subject: SheetEntry;
 };
 
 /**
@@ -79,6 +83,7 @@ export type EntryRowProps = {
  *   purpose={[_("Host LVM and boot")]}
  *   consequences={[{ kind: "destroys", text: "Windows 11 will be deleted" }]}
  *   menu={<DriveMenu entry={entry} device={device} />}
+ *   subject={{ collection: "drives", index: 0 }}
  * />
  */
 export default function EntryRow({
@@ -87,11 +92,18 @@ export default function EntryRow({
   purpose,
   consequences,
   menu,
+  subject,
 }: EntryRowProps): React.ReactNode {
   return (
     <Tr>
       <Th scope="row" dataLabel={columnName("entry")}>
-        <Text isBold>{name}</Text>
+        {/* The name is the way in, which is the act a row teaches: what a
+            reader does with a row is open it. There is no button under it
+            saying so, since a button would teach a second gesture for one
+            destination whatever it was called. */}
+        <SheetOpener subject={subject}>
+          <Text isBold>{name}</Text>
+        </SheetOpener>
         {description && <span className="agm-entries-table__facts"> {description}</span>}
       </Th>
       <Td dataLabel={columnName("content")}>

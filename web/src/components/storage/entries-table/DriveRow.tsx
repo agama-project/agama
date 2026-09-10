@@ -33,6 +33,7 @@ import { useDevice } from "~/hooks/model/system/storage";
 import configModel from "~/model/storage/config-model";
 import { _, n_, TranslatedString } from "~/i18n";
 import type { Partitionable } from "~/model/storage/config-model";
+import type { SheetEntry } from "~/components/storage/shared/use-sheet";
 
 /**
  * What the installer will do here, as counts and never as names.
@@ -128,6 +129,8 @@ function purposeOf(
 export type DriveRowProps = {
   /** The device the configuration names, as the model spells it. */
   name: string;
+  /** Where it is written, which is how the sheet is opened on it. */
+  subject: SheetEntry;
 };
 
 /**
@@ -142,7 +145,7 @@ export type DriveRowProps = {
  * does not have, a profile written elsewhere or a disk since unplugged, so
  * every part of that phrase is left out where there is nothing to say.
  */
-export default function DriveRow({ name }: DriveRowProps): React.ReactNode {
+export default function DriveRow({ name, subject }: DriveRowProps): React.ReactNode {
   const config = useConfigModel();
   const device = useDevice(name);
   const manager = useDevicesManager();
@@ -167,7 +170,8 @@ export default function DriveRow({ name }: DriveRowProps): React.ReactNode {
       description={description}
       purpose={purpose}
       consequences={consequencesOf(manager, device?.partitions || [])}
-      menu={entry && <DriveMenu entry={entry} device={device} />}
+      menu={entry && <DriveMenu entry={entry} device={device} subject={subject} />}
+      subject={subject}
     />
   );
 }

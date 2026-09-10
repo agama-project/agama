@@ -31,8 +31,51 @@ import type { To } from "react-router";
  */
 const SHEET_ID = "storage-sheet";
 
-/** What the sheet is showing. */
-type SheetSubject = "result";
+/** Where an entry of the configuration is written, which is how it is addressed. */
+type SheetCollection = "drives" | "mdRaids" | "volumeGroups";
+
+/** One entry of the configuration, as the address names it. */
+type SheetEntry = { collection: SheetCollection; index: number };
+
+/** What the sheet is showing: the whole picture, or one entry of the plan. */
+type SheetSubject = "result" | SheetEntry;
+
+const COLLECTIONS: SheetCollection[] = ["drives", "mdRaids", "volumeGroups"];
+
+/**
+ * The address form of a subject: "result", or "drives.0".
+ *
+ * Readable and editable by hand, which is the point of keeping it in the
+ * address at all. An entry is named by where it is written and its position,
+ * which is how the storage pages already address one.
+ *
+ * A full stop rather than a colon between the two, although a colon is legal in
+ * a query value: the encoder the browser gives us escapes it to `%3A`, and an
+ * address nobody can read by eye is not one anybody will edit by hand.
+ */
+function toParam(subject: SheetSubject): string {
+  return subject === "result" ? subject : `${subject.collection}.${subject.index}`;
+}
+
+/**
+ * The subject an address names, or nothing where it names none.
+ *
+ * Anything the page cannot make sense of reads as a shut sheet rather than as
+ * an error: the address is editable by hand, and a typo in it should leave the
+ * reader on the page rather than on a broken one.
+ */
+function fromParam(value: string | null): SheetSubject | null {
+  if (!value) return null;
+  if (value === "result") return "result";
+
+  const [collection, position] = value.split(".");
+  const index = Number(position);
+
+  if (!COLLECTIONS.includes(collection as SheetCollection)) return null;
+  if (!Number.isInteger(index) || index < 0) return null;
+
+  return { collection: collection as SheetCollection, index };
+}
 
 /**
  * The open state of the storage page's sheet, which lives in the address.
@@ -51,17 +94,33 @@ function useSheet(): {
   subject: SheetSubject | null;
   /** Where a control that opens the sheet on something should point. */
   addressOf: (subject: SheetSubject) => To;
+  /**
+   * Opens it, for a control that cannot carry an address. A menu item is one:
+   * it is a menu item wherever it appears, so it acts rather than links, and
+   * the address it writes is the same one a link would have carried.
+   */
+  openSheet: (subject: SheetSubject) => void;
   /** Shuts it. */
   close: () => void;
 } {
   const [params, setParams] = useSearchParams();
-  const subject = (params.get(SHEET) as SheetSubject) || null;
+  const subject = fromParam(params.get(SHEET));
 
   const addressOf = (subject: SheetSubject): To => {
     const next = new URLSearchParams(params);
-    next.set(SHEET, subject);
+    next.set(SHEET, toParam(subject));
+    /* Opening a different thing starts it on its own first tab rather than on
+       whichever tab the last thing was left on. */
+    next.delete(SHEET_TAB);
     return { search: `?${next}` };
   };
+
+  const openSheet = (subject: SheetSubject) =>
+    setParams((next) => {
+      next.set(SHEET, toParam(subject));
+      next.delete(SHEET_TAB);
+      return next;
+    }, SEARCH_PARAM_UPDATE);
 
   const close = () =>
     setParams((next) => {
@@ -70,7 +129,7 @@ function useSheet(): {
       return next;
     }, SEARCH_PARAM_UPDATE);
 
-  return { subject, addressOf, close };
+  return { subject, addressOf, openSheet, close };
 }
 
 /**
@@ -85,4 +144,4 @@ function useSheetTab(defaultTab: string) {
 }
 
 export { useSheet, useSheetTab, SHEET_ID };
-export type { SheetSubject };
+export type { SheetSubject, SheetEntry, SheetCollection };

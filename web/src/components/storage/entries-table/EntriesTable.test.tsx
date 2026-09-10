@@ -22,7 +22,7 @@
 
 import React from "react";
 import { screen, within } from "@testing-library/react";
-import { installerRender } from "~/test-utils";
+import { installerRender, mockNavigateFn } from "~/test-utils";
 import type { ConfigModel } from "~/model/storage/config-model";
 import EntriesTable from "~/components/storage/entries-table/EntriesTable";
 
@@ -283,6 +283,47 @@ describe("what a row says it costs", () => {
     installerRender(<EntriesTable />);
 
     expect(rowText("sda")).toBe("sda");
+  });
+});
+
+describe("the way into an entry", () => {
+  beforeEach(() => {
+    mockSystemDevice.mockReturnValue(null);
+    mockSystemDevices.mockReturnValue([]);
+    mockActions.mockReturnValue([]);
+    mockConfig.mockReturnValue(
+      config({
+        drives: [{ name: "/dev/sda" }, { name: "/dev/sdb" }],
+        volumeGroups: [{ vgName: "system", targetDevices: ["/dev/sda"] }],
+      }),
+    );
+  });
+
+  it("is the name itself, as a link a reader can copy", async () => {
+    const { user } = installerRender(<EntriesTable />);
+    await user.click(screen.getByRole("link", { name: "sdb" }));
+
+    expect(mockNavigateFn).toHaveBeenCalledWith(
+      { search: "?sheet=drives.1" },
+      expect.objectContaining({ replace: true }),
+    );
+  });
+
+  it("names the group where the group is what the row is about", async () => {
+    const { user } = installerRender(<EntriesTable />);
+    await user.click(screen.getByRole("link", { name: "system" }));
+
+    expect(mockNavigateFn).toHaveBeenCalledWith(
+      { search: "?sheet=volumeGroups.0" },
+      expect.objectContaining({ replace: true }),
+    );
+  });
+
+  it("is also the menu's first offer, for a reader who never tries the name", async () => {
+    const { user } = installerRender(<EntriesTable />);
+    await user.click(screen.getByRole("button", { name: "Actions for sda" }));
+
+    screen.getByRole("menuitem", { name: "Configure sda" });
   });
 });
 

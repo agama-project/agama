@@ -27,6 +27,7 @@ import MenuButton, { MenuButtonItem } from "~/components/core/MenuButton";
 import RowMenuToggle from "~/components/storage/entries-table/RowMenuToggle";
 import NewVgMenuOption from "~/components/storage/NewVgMenuOption";
 import { useRetarget } from "~/components/storage/shared/use-retarget";
+import { useSheet } from "~/components/storage/shared/use-sheet";
 import { baseName } from "~/components/storage/utils";
 import configModel from "~/model/storage/config-model";
 import {
@@ -36,6 +37,7 @@ import {
 } from "~/hooks/model/storage/config-model";
 import { _ } from "~/i18n";
 import type { Partitionable } from "~/model/storage/config-model";
+import type { SheetEntry } from "~/components/storage/shared/use-sheet";
 import type { Storage } from "~/model/system";
 
 export type DriveMenuProps = {
@@ -43,6 +45,8 @@ export type DriveMenuProps = {
   entry: Partitionable.Device;
   /** The same device as the machine reports it, where the machine has it. */
   device: Storage.Device | null;
+  /** Where it is written. Given only where opening it is one of the offers. */
+  subject?: SheetEntry;
 };
 
 /**
@@ -61,11 +65,12 @@ export type DriveMenuProps = {
  * keyboard: a control the browser disables is skipped, and the explanation
  * printed beside it is then never met by the reader it was written for.
  */
-export default function DriveMenu({ entry, device }: DriveMenuProps): React.ReactNode {
+export default function DriveMenu({ entry, device, subject }: DriveMenuProps): React.ReactNode {
   const config = useConfigModel();
   const deleteDrive = useDeleteDrive();
   const deleteMdRaid = useDeleteMdRaid();
   const { cannotMove, note, open, selector } = useRetarget(entry, device);
+  const { openSheet } = useSheet();
 
   const name = baseName(entry.name);
   // TRANSLATORS: names the menu of things that can be done to one device of the
@@ -74,6 +79,25 @@ export default function DriveMenu({ entry, device }: DriveMenuProps): React.Reac
   const location = configModel.partitionable.findLocation(config, entry.name);
 
   const items = [
+    /* First, because it is what clicking the row does. A menu whose first item
+       is the row's own act says what the row does, for a reader who never
+       discovers that rows can be opened and for one who cannot click.
+
+       Left out in the sheet's own header, where the reader is already inside
+       what it would open. */
+    ...(subject
+      ? [
+          <MenuButtonItem key="open" onClick={() => openSheet(subject)}>
+            {sprintf(
+              // TRANSLATORS: opens the panel where one entry of the installation
+              // is read and changed. %s is its name, such as "sda".
+              _("Configure %s"),
+              name,
+            )}
+          </MenuButtonItem>,
+          <Divider key="before-retarget" />,
+        ]
+      : []),
     <MenuButtonItem
       key="retarget"
       isAriaDisabled={cannotMove !== null}
