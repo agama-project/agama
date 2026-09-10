@@ -113,18 +113,28 @@ const lastFitAddon = () =>
   (FitAddon as unknown as { instances: InstanceType<typeof FitAddon>[] }).instances.at(-1);
 const lastSocket = () => MockWebSocket.instances.at(-1);
 
+const mockOnGracefulExit = jest.fn();
+
+// Renders the hook with a container prop and the shared onGracefulExit mock.
+const renderSession = () =>
+  renderHook(
+    ({ container }) => useTerminalSession(container, { onGracefulExit: mockOnGracefulExit }),
+    {
+      initialProps: { container: null as HTMLElement | null },
+    },
+  );
+
 beforeEach(() => {
   (Terminal as unknown as { instances: unknown[] }).instances = [];
   (FitAddon as unknown as { instances: unknown[] }).instances = [];
   MockWebSocket.instances = [];
   (global as unknown as { WebSocket: unknown }).WebSocket = MockWebSocket;
+  mockOnGracefulExit.mockClear();
 });
 
 describe("useTerminalSession", () => {
   it("creates a terminal and connects a socket to the terminal endpoint on mount", () => {
-    renderHook(({ container }) => useTerminalSession(container), {
-      initialProps: { container: null as HTMLElement | null },
-    });
+    renderSession();
 
     expect(terminalInstances()).toHaveLength(1);
     expect(MockWebSocket.instances).toHaveLength(1);
@@ -132,9 +142,7 @@ describe("useTerminalSession", () => {
   });
 
   it("does not create a second session on rerender", () => {
-    const { rerender } = renderHook(({ container }) => useTerminalSession(container), {
-      initialProps: { container: null as HTMLElement | null },
-    });
+    const { rerender } = renderSession();
 
     rerender({ container: null });
 
@@ -143,9 +151,7 @@ describe("useTerminalSession", () => {
   });
 
   it("opens the terminal once a container becomes available", () => {
-    const { rerender } = renderHook(({ container }) => useTerminalSession(container), {
-      initialProps: { container: null as HTMLElement | null },
-    });
+    const { rerender } = renderSession();
 
     expect(lastTerminal()?.open).not.toHaveBeenCalled();
 
@@ -170,9 +176,7 @@ describe("useTerminalSession", () => {
   });
 
   it("forwards typed data to the socket as a binary frame", () => {
-    renderHook(({ container }) => useTerminalSession(container), {
-      initialProps: { container: null as HTMLElement | null },
-    });
+    renderSession();
 
     act(() => lastTerminal()?.onDataCallback?.("echo hi"));
 
@@ -180,9 +184,7 @@ describe("useTerminalSession", () => {
   });
 
   it("sends a resize as a JSON text frame", () => {
-    renderHook(({ container }) => useTerminalSession(container), {
-      initialProps: { container: null as HTMLElement | null },
-    });
+    renderSession();
 
     act(() => lastTerminal()?.onResizeCallback?.({ cols: 100, rows: 30 }));
 
@@ -190,9 +192,7 @@ describe("useTerminalSession", () => {
   });
 
   it("writes incoming binary frames to the terminal", () => {
-    renderHook(({ container }) => useTerminalSession(container), {
-      initialProps: { container: null as HTMLElement | null },
-    });
+    renderSession();
 
     const bytes = new TextEncoder().encode("hello from the shell");
     act(() => lastSocket()?.onmessage?.({ data: bytes.buffer }));
@@ -200,26 +200,63 @@ describe("useTerminalSession", () => {
     expect(lastTerminal()?.write).toHaveBeenCalledWith(new Uint8Array(bytes.buffer));
   });
 
-  it("shows a message when the server reports the shell exited", () => {
-    renderHook(({ container }) => useTerminalSession(container), {
-      initialProps: { container: null as HTMLElement | null },
-    });
+  it("calls onGracefulExit, without writing a message, on a normal shell exit", () => {
+    renderSession();
 
-    act(() => lastSocket()?.onmessage?.({ data: JSON.stringify({ type: "exit", code: 7 }) }));
+    act(() =>
+      lastSocket()?.onmessage?.({
+        data: JSON.stringify({ type: "exit", code: 7, signal: null }),
+      }),
+    );
 
-    expect(lastTerminal()?.write).toHaveBeenCalledWith(expect.stringContaining("code 7"));
+    expect(mockOnGracefulExit).toHaveBeenCalled();
+    expect(lastTerminal()?.write).not.toHaveBeenCalled();
+  });
+
+  it("writes a message, without calling onGracefulExit, when the shell is killed by a signal", () => {
+    renderSession();
+
+    act(() =>
+      lastSocket()?.onmessage?.({
+        data: JSON.stringify({ type: "exit", code: null, signal: 11 }),
+      }),
+    );
+
+    expect(lastTerminal()?.write).toHaveBeenCalledWith(expect.stringContaining("signal 11"));
+    expect(mockOnGracefulExit).not.toHaveBeenCalled();
   });
 
   it("does not reconnect after a clean shell exit (e.g. typing 'exit' or Ctrl-D)", () => {
-    renderHook(({ container }) => useTerminalSession(container), {
-      initialProps: { container: null as HTMLElement | null },
-    });
+    renderSession();
 
-    act(() => lastSocket()?.onmessage?.({ data: JSON.stringify({ type: "exit", code: 0 }) }));
+    act(() =>
+      lastSocket()?.onmessage?.({
+        data: JSON.stringify({ type: "exit", code: 0, signal: null }),
+      }),
+    );
     act(() => lastSocket()?.onclose?.());
 
     // Only the original (now closed) socket: no new shell was started, or
     // the user would never be able to leave the terminal from the keyboard.
+    expect(MockWebSocket.instances).toHaveLength(1);
+    expect(mockOnGracefulExit).toHaveBeenCalled();
+    expect(lastTerminal()?.write).not.toHaveBeenCalledWith(
+      expect.stringContaining("connection lost"),
+    );
+  });
+
+  it("does not reconnect after the shell is killed by a signal", () => {
+    renderSession();
+
+    act(() =>
+      lastSocket()?.onmessage?.({
+        data: JSON.stringify({ type: "exit", code: null, signal: 11 }),
+      }),
+    );
+    act(() => lastSocket()?.onclose?.());
+
+    // Only the original (now closed) socket, and no additional
+    // "connection lost" message on top of the signal one already shown.
     expect(MockWebSocket.instances).toHaveLength(1);
     expect(lastTerminal()?.write).not.toHaveBeenCalledWith(
       expect.stringContaining("connection lost"),
@@ -229,9 +266,7 @@ describe("useTerminalSession", () => {
   it("shows a message, but does not reconnect, if the connection drops unexpectedly", () => {
     jest.useFakeTimers();
 
-    renderHook(({ container }) => useTerminalSession(container), {
-      initialProps: { container: null as HTMLElement | null },
-    });
+    renderSession();
 
     act(() => lastSocket()?.onclose?.());
     // Give any (would-be) reconnect timer a chance to fire.
@@ -248,9 +283,7 @@ describe("useTerminalSession", () => {
   });
 
   it("disposes the terminal and closes the socket on unmount", () => {
-    const { unmount } = renderHook(({ container }) => useTerminalSession(container), {
-      initialProps: { container: null as HTMLElement | null },
-    });
+    const { unmount } = renderSession();
 
     const terminal = lastTerminal();
     const socket = lastSocket();
@@ -262,9 +295,7 @@ describe("useTerminalSession", () => {
   });
 
   it("does not reconnect after being unmounted on purpose", () => {
-    const { unmount } = renderHook(({ container }) => useTerminalSession(container), {
-      initialProps: { container: null as HTMLElement | null },
-    });
+    const { unmount } = renderSession();
 
     const socket = lastSocket();
     unmount();
@@ -328,15 +359,11 @@ describe("useTerminalSession", () => {
   });
 
   it("starts a brand new session if mounted again after being closed", () => {
-    const { unmount } = renderHook(({ container }) => useTerminalSession(container), {
-      initialProps: { container: null as HTMLElement | null },
-    });
+    const { unmount } = renderSession();
 
     unmount();
 
-    renderHook(({ container }) => useTerminalSession(container), {
-      initialProps: { container: null as HTMLElement | null },
-    });
+    renderSession();
 
     expect(terminalInstances()).toHaveLength(2);
     expect(MockWebSocket.instances).toHaveLength(2);

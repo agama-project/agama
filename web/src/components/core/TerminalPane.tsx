@@ -219,6 +219,7 @@ export default function TerminalPane({ enoughSpace }: TerminalPaneProps) {
   const leaveTerminal = useCallback(() => regionRef.current?.focus(), []);
   const { setFontSize: setSessionFontSize, clear } = useTerminalSession(container, {
     onLeave: leaveTerminal,
+    onGracefulExit: close,
   });
 
   const changeFontSize = (size: number) => {

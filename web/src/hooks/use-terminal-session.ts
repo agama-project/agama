@@ -25,8 +25,13 @@ import "@xterm/xterm/css/xterm.css";
 
 const DEFAULT_FONT_SIZE = 14;
 
-/** Control message the server sends when the shell exits. */
-type ExitMessage = { type: "exit"; code: number };
+/**
+ * Control message the server sends when the shell exits. Exactly one of
+ * `code` or `signal` is set: `code` for a normal exit (any way the shell
+ * ends on its own — `exit`, `exit N`, Ctrl-D), `signal` when it was killed
+ * by an unhandled signal instead (e.g., a crash).
+ */
+type ExitMessage = { type: "exit"; code: number | null; signal: number | null };
 
 export type TerminalSession = {
   /** Changes the font size and refits the terminal to its container. */
@@ -42,6 +47,11 @@ export type TerminalSessionOptions = {
    * somewhere outside the terminal; the session itself is not affected.
    */
   onLeave?: () => void;
+  /**
+   * Called when the shell exits normally on its own (see below). Expected to
+   * close the terminal panel; the session itself has already ended.
+   */
+  onGracefulExit?: () => void;
 };
 
 /**
@@ -94,20 +104,28 @@ function terminalWebSocketUrl(): string {
  * The session ends, without any attempt to recover it, as soon as its socket
  * closes for any reason other than the panel itself being closed on purpose:
  *
- * - The shell exits on its own (the user typed `exit`, pressed Ctrl-D, or
- *   the process otherwise ended): the server reports it with an "exit"
- *   message right before closing the socket.
+ * - The shell exits normally on its own (the user typed `exit`, pressed
+ *   Ctrl-D, or the process otherwise returned): the server reports it with
+ *   an "exit" message right before closing the socket, and `onGracefulExit`
+ *   is called — the caller is expected to close the panel in response,
+ *   since that is exactly what closing a terminal window means everywhere
+ *   else. This happens whatever the exit code, since e.g. plain `exit` in
+ *   bash exits with the status of the last command run, which says nothing
+ *   about whether the user actually meant to leave.
+ * - The shell is killed by an unhandled signal instead (a crash, an
+ *   out-of-memory kill, an external `kill`, ...): reported the same way,
+ *   but `onGracefulExit` is *not* called — this is unexpected, so the
+ *   terminal is left open with a message, the same as a dropped connection.
  * - The connection drops unexpectedly (e.g., a network issue or the backend
- *   restarting).
+ *   restarting): also left open with a message.
  *
- * Either way, there is no automatic reconnect: a new connection always
- * starts an unrelated, brand new shell (there is no session persistence on
- * the backend), so silently reconnecting would not actually be resuming
+ * None of these reconnect automatically: a new connection always starts an
+ * unrelated, brand new shell (there is no session persistence on the
+ * backend), so silently reconnecting would not actually be resuming
  * anything — it would just as silently discard whatever the user was doing
- * (working directory, running command, shell history) right when they typed
- * "exit" or hit a transient network blip, with no way to tell from the
- * keyboard. The terminal is left showing why the session ended; the user
- * gets a new one by closing and reopening the panel.
+ * (working directory, running command, shell history), with no way to tell
+ * from the keyboard. Other than a graceful exit (see above), the user gets a
+ * new session by closing and reopening the panel.
  *
  * ## Leaving the terminal with the keyboard
  *
@@ -124,19 +142,21 @@ function terminalWebSocketUrl(): string {
  */
 export const useTerminalSession = (
   container: HTMLElement | null,
-  { onLeave }: TerminalSessionOptions = {},
+  { onLeave, onGracefulExit }: TerminalSessionOptions = {},
 ): TerminalSession => {
   const terminalRef = useRef<Terminal | null>(null);
   const fitAddonRef = useRef<FitAddon | null>(null);
   const socketRef = useRef<WebSocket | null>(null);
   const closingRef = useRef(false);
   const sessionEndedRef = useRef(false);
-  // Read through a ref so a caller passing an inline callback does not tear
+  // Read through refs so a caller passing inline callbacks does not tear
   // down the terminal and its shell on every render.
   const onLeaveRef = useRef(onLeave);
+  const onGracefulExitRef = useRef(onGracefulExit);
   useLayoutEffect(() => {
     onLeaveRef.current = onLeave;
-  }, [onLeave]);
+    onGracefulExitRef.current = onGracefulExit;
+  }, [onLeave, onGracefulExit]);
 
   const connect = useCallback(() => {
     const terminal = terminalRef.current;
@@ -156,8 +176,16 @@ export const useTerminalSession = (
         try {
           const message = JSON.parse(event.data) as ExitMessage;
           if (message.type === "exit") {
-            terminal.write(`\r\n[exited with code ${message.code}]\r\n`);
             sessionEndedRef.current = true;
+
+            if (message.signal !== null) {
+              // Killed by a signal: unexpected, so leave the terminal open
+              // with a message instead of closing the panel.
+              terminal.write(`\r\n[terminated by signal ${message.signal}]\r\n`);
+            } else {
+              // A normal exit: nothing to show, the panel is about to close.
+              onGracefulExitRef.current?.();
+            }
           }
         } catch {
           // Not a message this client understands; ignore it.

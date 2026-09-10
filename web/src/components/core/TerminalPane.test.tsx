@@ -20,7 +20,7 @@
 import React from "react";
 import { act, screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
-import { TERMINAL_HINT_ID } from "~/context/terminal";
+import { TERMINAL_HINT_ID, useTerminal } from "~/context/terminal";
 import { useTerminalSession } from "~/hooks/use-terminal-session";
 import TerminalPane from "~/components/core/TerminalPane";
 
@@ -125,6 +125,29 @@ describe("TerminalPane", () => {
       // Does not throw; the actual state transition it triggers (isOpen) is
       // covered by context/terminal.test.tsx and TerminalDock.test.tsx.
       await user.click(screen.getByRole("button", { name: "Close terminal" }));
+    });
+
+    it("passes the terminal's close action to the session, to end it on a graceful shell exit", () => {
+      // The session itself only calls this back on a graceful exit; that
+      // behavior is covered by use-terminal-session.test.ts. This only
+      // checks that TerminalPane wires the right function through.
+      let capturedClose: (() => void) | undefined;
+      const CaptureClose = () => {
+        capturedClose = useTerminal().close;
+        return null;
+      };
+
+      installerRender(
+        <>
+          <CaptureClose />
+          <TerminalPane enoughSpace />
+        </>,
+      );
+
+      expect(jest.mocked(useTerminalSession)).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.objectContaining({ onGracefulExit: capturedClose }),
+      );
     });
   });
 });
