@@ -47,12 +47,12 @@ jobs:
     runs-on: ubuntu-latest
 
     container:
-      image: registry.opensuse.org/opensuse/tumbleweed:latest
+      image: registry.opensuse.org/opensuse/leap:16.0
 
     steps:
       - name: Configure and refresh repositories
         # disable unused repositories to have a faster refresh
-        run: zypper modifyrepo -d repo-non-oss repo-openh264 repo-update && zypper ref
+        run: zypper modifyrepo -d openSUSE:repo-openh264 && zypper ref
 
       - name: Install Default Ruby
         run: zypper --non-interactive install --no-recommends ruby
