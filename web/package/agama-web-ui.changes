@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Thu Sep 10 12:39:17 UTC 2026 - Alejandro Bonilla <abonilla@suse.com>
+
+- Show the link state and, if up, the speed of each device offered
+  when picking the ports of a bond or a bridge, so a card can be
+  told apart from another without checking its details elsewhere
+  (bsc#1279417).
+
+-------------------------------------------------------------------
 Mon Sep  7 15:00:00 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
 
 - Pick the ports of a bond or a bridge from the devices found in
