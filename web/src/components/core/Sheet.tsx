@@ -56,6 +56,12 @@ export type SheetProps = {
   actions?: React.ReactNode;
   /** What the sheet is opened over. */
   page: React.ReactNode;
+  /**
+   * What the sheet's column holds while nothing is open, where it stands beside
+   * the page. Given one, the column is kept from the start, so opening the
+   * sheet moves nothing the reader was looking at.
+   */
+  placeholder?: React.ReactNode;
   /** What the sheet holds. */
   children?: React.ReactNode;
   /** Lets a control that opens this sheet point at it with `aria-controls`. */
@@ -106,6 +112,7 @@ export default function Sheet({
   description,
   actions,
   page,
+  placeholder,
   children,
   id,
 }: SheetProps): React.ReactNode {
@@ -126,9 +133,16 @@ export default function Sheet({
   }, [isOpen]);
 
   /* Once it exists, not when it is asked for: the panel is focused through the
-     node itself, so this waits for the render that creates it. */
+     node itself, so this waits for the render that creates it.
+
+     Without scrolling, which is the whole trick. A drawer lays its panel out
+     past the edge of the page and brings it into view by moving it, so the
+     panel's real position is still outside what can be seen. Focusing it the
+     ordinary way makes the browser scroll that box into view, and it scrolls to
+     where the panel is laid out rather than to where it was moved: the page
+     slides out to one side and takes the panel with it. */
   React.useEffect(() => {
-    if (isOpen && panel) panel.focus();
+    if (isOpen && panel) panel.focus({ preventScroll: true });
   }, [isOpen, panel]);
 
   const sheet = (
@@ -180,8 +194,14 @@ export default function Sheet({
     </div>
   );
 
+  const isBeside = placement === "share";
+  /* Kept from the start where there is room for it and something to say in it,
+     so that opening the sheet does not slide the sentence the reader is reading
+     out from under them. */
+  const reserves = isBeside && placeholder !== undefined;
+
   return (
-    <Drawer isExpanded={isOpen} isInline={placement === "share"} position="end">
+    <Drawer isExpanded={isOpen || reserves} isInline={isBeside} position="end">
       <DrawerContent
         panelContent={
           <DrawerPanelContent
@@ -189,10 +209,12 @@ export default function Sheet({
                jump from three quarters to the whole width. Over the page the
                sheet is what the reader is in, so it takes most of the room;
                beside it both halves are being read, so they take half each. */
-            defaultSize={placement === "share" ? "50%" : "70%"}
+            defaultSize={isBeside ? "50%" : "70%"}
             className={`agm-sheet__panel agm-sheet__panel--${placement}`}
           >
-            <DrawerPanelBody hasNoPadding>{isOpen && sheet}</DrawerPanelBody>
+            <DrawerPanelBody hasNoPadding>
+              {isOpen ? sheet : reserves && <div className="agm-sheet">{placeholder}</div>}
+            </DrawerPanelBody>
           </DrawerPanelContent>
         }
       >
