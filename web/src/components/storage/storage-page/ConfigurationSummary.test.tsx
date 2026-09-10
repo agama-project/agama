@@ -49,9 +49,6 @@ jest.mock("./ConfigurationTitle", () => () => <>what the configuration does</>);
 jest.mock("./Consequences", () => () => <>what the configuration costs</>);
 jest.mock("./SpaceDecision", () => () => <>what may happen to what is there</>);
 jest.mock("./DeviceSummary", () => () => <>why the configuration has no layout</>);
-jest.mock("~/components/storage/entries-table/EntriesTable", () => () => (
-  <>what the configuration is made of</>
-));
 /* Wrapped, unlike the mocks above: these two are siblings in one row, so as
    bare text they would read as a single run of words. */
 jest.mock("~/components/storage/shared/RetargetOffer", () => () => (
@@ -70,7 +67,6 @@ const guidance = "Review and configure the entries below.";
 const spaceDecision = "what may happen to what is there";
 const cost = "what the configuration costs";
 const noLayout = "why the configuration has no layout";
-const entries = "what the configuration is made of";
 const retarget = "put it somewhere else";
 const addDevices = "bring in more devices";
 
@@ -120,7 +116,6 @@ describe("ConfigurationSummary", () => {
       plainRender(<ConfigurationSummary />);
 
       expect(screen.queryByText(new RegExp(guidance))).not.toBeInTheDocument();
-      expect(screen.queryByText(entries)).not.toBeInTheDocument();
     });
 
     it("leads with the act that answers the sentence, and offers adding after it", () => {
@@ -158,12 +153,6 @@ describe("ConfigurationSummary", () => {
       plainRender(<ConfigurationSummary />);
 
       expect(screen.getByText(new RegExp(guidance))).toBeInTheDocument();
-    });
-
-    it("lists what the configuration is made of", () => {
-      plainRender(<ConfigurationSummary />);
-
-      screen.getByText(entries);
     });
 
     it("reports what it costs, the same as a single device", () => {

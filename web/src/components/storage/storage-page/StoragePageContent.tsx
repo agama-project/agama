@@ -26,12 +26,13 @@ import FixableConfigInfo from "~/components/storage/FixableConfigInfo";
 import ProposalFailedInfo from "~/components/storage/ProposalFailedInfo";
 import UnsupportedModelInfo from "~/components/storage/UnsupportedModelInfo";
 import ConfigurationSummary from "~/components/storage/storage-page/ConfigurationSummary";
+import EntriesTable from "~/components/storage/entries-table/EntriesTable";
 import InvalidConfigMessage from "~/components/storage/storage-page/InvalidConfigMessage";
 import NoDevicesMessage from "~/components/storage/storage-page/NoDevicesMessage";
 import UnknownConfigMessage from "~/components/storage/storage-page/UnknownConfigMessage";
 import StorageSheet from "~/components/storage/storage-page/StorageSheet";
 import TopLine from "~/components/storage/storage-page/TopLine";
-import { useNoRoomReason } from "~/components/storage/storage-page/queries";
+import { useNoRoomReason, useSingleDevice } from "~/components/storage/storage-page/queries";
 import { useAvailableDevices } from "~/hooks/model/system/storage";
 import { useIssues } from "~/hooks/model/issue";
 import { useProposal } from "~/hooks/model/proposal/storage";
@@ -54,6 +55,7 @@ export default function StoragePageContent(): React.ReactNode {
   const proposal = useProposal();
   const issues = useIssues("storage");
   const noRoomReason = useNoRoomReason();
+  const singleDevice = useSingleDevice();
 
   const fixable = [
     "configNoRoot",
@@ -74,14 +76,21 @@ export default function StoragePageContent(): React.ReactNode {
 
   const body = (
     <Grid hasGutter>
+      {model && <TopLine />}
+      {model && <ConfigurationSummary />}
+      {/* Against what they ask the reader to change rather than at the top of
+          the page. Each of these says to adjust the settings below, and above
+          the summary they pushed down the sentence the page is there to give
+          and made a failure the first thing every reader met. */}
       {/* The general account of a failed layout, which names the mount paths it
           could not place. Left out where the summary already says why, since
           the same failure told twice reads as two problems. */}
       {!configIssues.length && !proposal && !noRoomReason && <ProposalFailedInfo />}
       {!!configIssues.length && <FixableConfigInfo issues={configIssues} />}
       {!model && <UnsupportedModelInfo />}
-      {model && <TopLine />}
-      {model && <ConfigurationSummary />}
+      {/* What the configuration is made of. A single device is the whole
+          configuration, so it has nothing to list. */}
+      {model && !singleDevice && <EntriesTable />}
     </Grid>
   );
 

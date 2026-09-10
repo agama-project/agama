@@ -26,7 +26,6 @@ import ConfigurationTitle from "~/components/storage/storage-page/ConfigurationT
 import Consequences from "~/components/storage/storage-page/Consequences";
 import SpaceDecision from "~/components/storage/storage-page/SpaceDecision";
 import DeviceSummary from "~/components/storage/storage-page/DeviceSummary";
-import EntriesTable from "~/components/storage/entries-table/EntriesTable";
 import RetargetOffer from "~/components/storage/shared/RetargetOffer";
 import ConfigureDeviceMenu from "~/components/storage/ConfigureDeviceMenu";
 import { baseName } from "~/components/storage/utils";
@@ -63,69 +62,63 @@ export default function ConfigurationSummary(): React.ReactNode {
   const spaceDecision = singleDevice && hasExistingContent;
 
   return (
-    <>
-      <SummaryLayout
-        title={<ConfigurationTitle />}
-        control={
-          spaceDecision && (
-            <SpaceDecision collection={singleDevice.collection} index={singleDevice.index} />
-          )
-        }
-        /* The same report either way. A page that names what it destroys on a
-           full disk and stays quiet about a plan of eight is a page with two
-           shapes, and the reader learns which one they got by guessing. */
-        count={<Consequences />}
-        /* Why there is no plan, in place of what the plan costs. The reader is
-           looking at a page that cannot say what will happen, and the decision
-           that stopped it is above this line. */
-        notice={
-          singleDevice &&
-          noRoomReason && (
-            <DeviceSummary name={baseName(singleDevice.device.name)} reason={noRoomReason} />
-          )
-        }
-        /* Closed against the list it introduces, which a single device has
-           nothing of. */
-        isTight={!singleDevice}
-        /* What the reader can do about the sentence above, which only a plan of
-           one device has: the page has named a disk and said what it will hold,
-           so the question it raises is whether that is the right disk, and the
-           act answering it leads. Adding a device is a different plan rather
-           than an answer to this one, so it sits plain beside it.
+    <SummaryLayout
+      title={<ConfigurationTitle />}
+      control={
+        spaceDecision && (
+          <SpaceDecision collection={singleDevice.collection} index={singleDevice.index} />
+        )
+      }
+      /* The same report either way. A page that names what it destroys on a
+         full disk and stays quiet about a plan of eight is a page with two
+         shapes, and the reader learns which one they got by guessing. */
+      count={<Consequences />}
+      /* Why there is no plan, in place of what the plan costs. The reader is
+         looking at a page that cannot say what will happen, and the decision
+         that stopped it is above this line. */
+      notice={
+        singleDevice &&
+        noRoomReason && (
+          <DeviceSummary name={baseName(singleDevice.device.name)} reason={noRoomReason} />
+        )
+      }
+      /* Closed against the list it introduces, which a single device has
+         nothing of. */
+      isTight={!singleDevice}
+      /* What the reader can do about the sentence above, which only a plan of
+         one device has: the page has named a disk and said what it will hold,
+         so the question it raises is whether that is the right disk, and the
+         act answering it leads. Adding a device is a different plan rather
+         than an answer to this one, so it sits plain beside it.
 
-           A plan of several entries has no single subject to move, and the
-           offer to add belongs at the foot of the list it appends to rather
-           than above it. */
-        actions={
-          singleDevice && (
-            <>
-              <RetargetOffer entry={singleDevice.device} device={device} />
-              <ConfigureDeviceMenu
-                // TRANSLATORS: offered under the summary of the installation:
-                // bring more disks into it.
-                label={_("Add more devices")}
-                /* Aligned on the toggle's trailing edge, since the toggle ends
-                   the row: the menu grows back over the page rather than off
-                   it. */
-                popperProps={{ position: "right" }}
-              />
-            </>
-          )
-        }
-        body={
-          singleDevice
-            ? undefined
-            : // TRANSLATORS: said under the summary of a configuration made of
-              // several entries, about the list of those entries below it.
-              _(
-                "Review and configure the entries below. You can change, remove, or add entries as needed.",
-              )
-        }
-      />
-      {/* Under the summary rather than inside it: the summary says what the
-          configuration does, and this is what it is made of. A single device is
-          the whole configuration, so it has nothing to list. */}
-      {!singleDevice && <EntriesTable />}
-    </>
+         A plan of several entries has no single subject to move, and the
+         offer to add belongs at the foot of the list it appends to rather
+         than above it. */
+      actions={
+        singleDevice && (
+          <>
+            <RetargetOffer entry={singleDevice.device} device={device} />
+            <ConfigureDeviceMenu
+              // TRANSLATORS: offered under the summary of the installation:
+              // bring more disks into it.
+              label={_("Add more devices")}
+              /* Aligned on the toggle's trailing edge, since the toggle ends
+                 the row: the menu grows back over the page rather than off
+                 it. */
+              popperProps={{ position: "right" }}
+            />
+          </>
+        )
+      }
+      body={
+        singleDevice
+          ? undefined
+          : // TRANSLATORS: said under the summary of a configuration made of
+            // several entries, about the list of those entries below it.
+            _(
+              "Review and configure the entries below. You can change, remove, or add entries as needed.",
+            )
+      }
+    />
   );
 }
