@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Wed Sep  9 12:00:00 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Enhance ports selection for bonds and bridges to allow picking
+  multiple devices at once from a dialog, displaying a "Used by"
+  column for already allocated devices, and maintaining
+  bidirectional sync (bsc#1279417, gh#agama-project/agama#3883).
+
+-------------------------------------------------------------------
 Fri Sep  4 10:52:03 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Do not crash when validating or evaluating a profile without

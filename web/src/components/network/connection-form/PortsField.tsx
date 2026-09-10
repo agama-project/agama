@@ -22,6 +22,7 @@
 
 import React, { useState } from "react";
 import { Button } from "@patternfly/react-core";
+import { mergePicked } from "~/components/form/ArrayField";
 import Icon from "~/components/layout/Icon";
 import VisualTooltip from "~/components/core/VisualTooltip";
 import DeviceSelectorModal from "./DeviceSelectorModal";
@@ -31,38 +32,40 @@ import { useConnections, useDevices } from "~/hooks/model/system/network";
 import { controllerOf } from "~/utils/network";
 import { _ } from "~/i18n";
 
+import type { TranslatedString } from "~/i18n";
+import type { FormFields } from "./fields";
 import type { Device } from "~/types/network";
 
 /** The loopback device is never a port of anything. */
 const LOOPBACK = "lo";
 
-type PortsPickerProps = {
-  /** Devices that can be used as ports. */
+type DevicePickerProps = {
+  /** Devices offered for picking. */
   devices: Device[];
-  /** Devices already listed as ports, shown as picked when the dialog opens. */
+  /** Devices picked when the dialog opens. */
   selected: Device[];
   /** Returns the controller a device is already a port of, if any. */
   portOf: (device: Device) => string | undefined;
   /** Accessible name of the button, telling what the devices would be used for. */
-  label: string;
+  label: TranslatedString;
   /** Called with the devices the user picked. */
   onConfirm: (devices: Device[]) => void;
 };
 
 /**
- * Button opening the device dialog, for picking the ports out of the devices
- * the system reports.
+ * Button opening the device dialog, for picking among the devices the system
+ * reports.
  *
- * The dialog opens with the devices already listed as ports picked, so it
- * serves for dropping a port as much as for adding one.
+ * The dialog opens with `selected` picked, so it serves for dropping a device
+ * as much as for adding one.
  */
-function PortsPicker({
+function DevicePicker({
   devices,
   selected,
   portOf,
   label,
   onConfirm,
-}: PortsPickerProps): React.ReactNode {
+}: DevicePickerProps): React.ReactNode {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   // Devices already used elsewhere are still offered, since moving a port from
   // one controller to another is legitimate. The dialog only grows a column
@@ -73,7 +76,7 @@ function PortsPicker({
     <>
       <VisualTooltip content={label}>
         <Button
-          variant="control"
+          variant="plain"
           aria-label={label}
           isDisabled={devices.length === 0}
           onClick={() => setIsDialogOpen(true)}
@@ -98,30 +101,27 @@ function PortsPicker({
   );
 }
 
-/**
- * Ports left after the user picked in the dialog.
- *
- * The dialog answers with devices alone, so the names it knew nothing about
- * are kept as they were: a port may be typed by hand, and dropping such a name
- * because the dialog did not offer it would lose what the user wrote. The ones
- * it did offer follow what the user picked, keeping the order they were listed
- * in and appending the rest.
- */
-function nextPorts(ports: string[], offered: Device[], picked: Device[]): string[] {
-  const offeredNames = offered.map((d) => d.name);
-  const pickedNames = picked.map((d) => d.name);
-  const kept = ports.filter((p) => !offeredNames.includes(p) || pickedNames.includes(p));
+/** Names of the given devices. */
+const names = (devices: Device[]): string[] => devices.map((d) => d.name);
 
-  return [...kept, ...pickedNames.filter((n) => !kept.includes(n))];
-}
-
-type PortsSelectorProps = {
-  /** Whether the ports being listed are those of a bond or those of a bridge. */
-  kind: "bond" | "bridge";
+type PortsFieldProps = {
+  /** Form field holding the names of the ports. */
+  name: Extract<keyof FormFields, `${string}Ports`>;
+  /**
+   * Form field holding the name of the controller the ports belong to.
+   *
+   * Watched rather than read once: the field is filled while the form is being
+   * used, and a controller cannot be a port of itself.
+   */
+  controllerField: Extract<keyof FormFields, `${string}Iface`>;
+  /** Label of the field. */
+  label: TranslatedString;
+  /** Accessible name of the button opening the device dialog. */
+  pickLabel: TranslatedString;
 };
 
 /**
- * Ports field of a bond or a bridge, with a button for picking them among the
+ * Ports field of a controller device, with a button for picking them among the
  * devices the system reports.
  *
  * Names are still typed and pasted freely, since a port may well be a device
@@ -129,23 +129,16 @@ type PortsSelectorProps = {
  * system boots. The dialog is there so that the common case, picking among
  * what is already there, does not go through copying a name by hand.
  *
+ * What the field is about is left to the caller: which form fields it reads and
+ * writes, how it is labelled, and what the button offering the devices says.
+ *
  * Receives a typed form instance via `withForm`.
  */
-const PortsSelector = withForm({
+const PortsField = withForm({
   ...defaultOptions,
-  props: {
-    kind: "bond",
-  } as PortsSelectorProps,
-  render: function Render({ form, kind }) {
-    const isBond = kind === "bond";
-    const name = isBond ? "bondPorts" : "bridgePorts";
-    const controllerField = isBond ? "bondIface" : "bridgeIface";
-    // TRANSLATORS: label for the bond or bridge ports field.
-    const label = isBond ? _("Bond ports") : _("Bridge ports");
-    // TRANSLATORS: accessible name of the button opening the dialog for picking
-    // the ports of a bond or a bridge among the devices found in the system.
-    const pickLabel = isBond ? _("Select bond ports") : _("Select bridge ports");
-
+  // Only carries the prop types: every caller passes them all.
+  props: {} as PortsFieldProps,
+  render: function Render({ form, name, controllerField, label, pickLabel }) {
     const devices = useDevices();
     const connections = useConnections();
 
@@ -169,17 +162,21 @@ const PortsSelector = withForm({
                 <field.ArrayField
                   label={label}
                   helperText={
-                    // TRANSLATORS: helper text for the bond or bridge ports field.
+                    // TRANSLATORS: helper text for the ports field of a bond or a bridge.
                     _("Pick the devices to use as ports, or type the name of one not listed yet.")
                   }
                   skipDuplicates
                   addOn={({ entries, setEntries }) => (
-                    <PortsPicker
+                    <DevicePicker
                       devices={available}
                       selected={available.filter((d) => entries.includes(d.name))}
                       portOf={portOf}
                       label={pickLabel}
-                      onConfirm={(picked) => setEntries(nextPorts(entries, available, picked))}
+                      // A port may well be typed by hand rather than picked, so
+                      // only what the dialog offered follows the pick.
+                      onConfirm={(picked) =>
+                        setEntries(mergePicked(entries, names(available), names(picked)))
+                      }
                     />
                   )}
                 />
@@ -192,4 +189,4 @@ const PortsSelector = withForm({
   },
 });
 
-export default PortsSelector;
+export default PortsField;

@@ -24,7 +24,7 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { getAnnouncements, installerRender } from "~/test-utils";
 import { useAppForm } from "~/hooks/form";
-import { parsePasteEntries } from "~/components/form/ArrayField";
+import { mergePicked, parsePasteEntries } from "~/components/form/ArrayField";
 import { _ } from "~/i18n";
 
 type TestFormProps = {
@@ -695,5 +695,33 @@ describe("parsePasteEntries", () => {
     it("trims whitespace from entries even with custom pattern", () => {
       expect(parsePasteEntries("  alpha  \n  beta  ", "\n")).toEqual(["alpha", "beta"]);
     });
+  });
+});
+
+describe("mergePicked", () => {
+  it("keeps the entries the picker did not offer", () => {
+    expect(mergePicked(["typed", "alpha"], ["alpha", "beta"], ["alpha"])).toEqual([
+      "typed",
+      "alpha",
+    ]);
+  });
+
+  it("drops the offered entries left unpicked", () => {
+    expect(mergePicked(["alpha", "beta"], ["alpha", "beta"], ["beta"])).toEqual(["beta"]);
+  });
+
+  it("appends the newly picked entries", () => {
+    expect(mergePicked(["alpha"], ["alpha", "beta"], ["alpha", "beta"])).toEqual(["alpha", "beta"]);
+  });
+
+  it("keeps the order the entries were listed in", () => {
+    expect(mergePicked(["beta", "alpha"], ["alpha", "beta"], ["alpha", "beta"])).toEqual([
+      "beta",
+      "alpha",
+    ]);
+  });
+
+  it("lists nothing but the untouched entries when nothing is picked", () => {
+    expect(mergePicked(["typed", "alpha"], ["alpha"], [])).toEqual(["typed"]);
   });
 });

@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import PortsSelector from "./PortsSelector";
+import PortsField from "./PortsField";
 import { defaultOptions } from "./fields";
 import { withForm } from "~/hooks/form";
 import { BondMode } from "~/types/network";
@@ -99,7 +99,20 @@ const BondFields = withForm({
             />
           )}
         </form.AppField>
-        <PortsSelector form={form} kind="bond" />
+        <PortsField
+          form={form}
+          name="bondPorts"
+          controllerField="bondIface"
+          label={
+            // TRANSLATORS: label for the bond ports field.
+            _("Bond ports")
+          }
+          pickLabel={
+            // TRANSLATORS: accessible name of the button opening the dialog for
+            // picking the ports of a bond among the devices found in the system.
+            _("Select bond ports")
+          }
+        />
       </>
     );
   },

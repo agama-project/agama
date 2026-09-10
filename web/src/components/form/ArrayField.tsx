@@ -150,6 +150,24 @@ export function parsePasteEntries(text: string, splitPasteOn?: RegExp | string):
 }
 
 /**
+ * Entries left after a picker offering `offered` answered with `picked`.
+ *
+ * For an `addOn` that lists a known set of values while the field also accepts
+ * typed ones. The entries the picker knew nothing about are kept as they were:
+ * dropping them because the picker did not offer them would lose what the user
+ * wrote. The offered ones follow the pick, keeping the order they were listed
+ * in and appending the rest.
+ *
+ * @example
+ * onConfirm={(picked) => setEntries(mergePicked(entries, offered, picked))}
+ */
+export function mergePicked(entries: string[], offered: string[], picked: string[]): string[] {
+  const kept = entries.filter((e) => !offered.includes(e) || picked.includes(e));
+
+  return [...kept, ...picked.filter((p) => !kept.includes(p))];
+}
+
+/**
  * Returns entries from `normalized` not already in `existing`,
  * also deduplicating within `normalized` itself.
  *
@@ -424,10 +442,9 @@ type ArrayFieldProps = {
    * Content rendered next to the text input, for managing the entries without
    * typing them: a picker, a dialog opener, a list of suggestions.
    *
-   * It receives the current `entries` and `setEntries`, which replaces them,
-   * going through the same normalization and duplicate rules as typing or
-   * pasting them. Replacing rather than only adding lets a picker that shows
-   * what is already listed take back what the user unpicks.
+   * It receives the current `entries` and a `setEntries` that replaces them.
+   * Replacing rather than only adding lets a picker that shows what is already
+   * listed take back what the user unpicks.
    *
    * @example
    * addOn={({ entries, setEntries }) => (
@@ -459,6 +476,12 @@ type ArrayFieldProps = {
  * to the first or last, and Escape exits navigation. Pasting a whitespace- or
  * comma-separated string adds all tokens at once. The splitting pattern can be
  * customized via `splitPasteOn` (e.g., `"\n"` for newline-separated entries).
+ *
+ * However a value arrives, typed, pasted, or set by an `addOn`, it goes through
+ * the same `normalize` and `skipDuplicates` rules and is validated the same
+ * way. Typing and pasting clear the draft once committed; an `addOn` leaves it
+ * alone, since only the caller knows whether what the user was typing still
+ * matters.
  *
  * The component correctly handles newline splitting because the paste event
  * handler reads from `clipboardData.getData('text')` before the browser
@@ -702,12 +725,8 @@ export default function ArrayField({
   };
 
   /**
-   * Commits several values at once, the way a paste does.
-   *
-   * Goes through the same normalization, duplicate and validation rules as a
-   * typed entry, and announces the outcome as a whole instead of once per
-   * value. The draft is left alone: the caller decides whether the text the
-   * user was typing is still relevant.
+   * Appends several values at once, announcing the outcome as a whole instead
+   * of once per value.
    */
   const addEntries = (entries: string[]) => {
     if (entries.length === 0) return;
@@ -736,10 +755,8 @@ export default function ArrayField({
    * Replaces the whole list, the way an add-on picker showing what is already
    * listed does.
    *
-   * Values go through the same normalization and duplicate rules as a typed
-   * entry. What is announced is the resulting list rather than what changed,
-   * since entries may just as well have been dropped. The draft is left alone:
-   * the caller decides whether the text the user was typing is still relevant.
+   * What is announced is the resulting list rather than what changed, since
+   * entries may just as well have been dropped.
    */
   const setEntries = (entries: string[]) => {
     const normalized = entries.map((t) => normalizeValue(t, normalize));

@@ -28,7 +28,8 @@ import { defaultOptions } from "./fields";
 import { BondMode, Connection, DeviceState } from "~/types/network";
 import type { ConnectionType } from "~/types/network";
 import { CONNECTION_TYPE } from "~/utils/network";
-import PortsSelector from "./PortsSelector";
+import { _ } from "~/i18n";
+import PortsField from "./PortsField";
 
 const mockLoopback = {
   name: "lo",
@@ -84,7 +85,13 @@ function TestForm({ defaultValues = {} }: { defaultValues?: object }) {
 
   return (
     <form.AppForm>
-      <PortsSelector form={form} kind="bond" />
+      <PortsField
+        form={form}
+        name="bondPorts"
+        controllerField="bondIface"
+        label={_("Bond ports")}
+        pickLabel={_("Select bond ports")}
+      />
     </form.AppForm>
   );
 }
@@ -111,7 +118,7 @@ const entriesList = () => screen.queryByRole("listbox", { name: "Bond ports entr
 /** The entry for a port already listed, if there is one. */
 const entry = (name: string) => entriesList() && within(entriesList()).queryByText(name);
 
-describe("PortsSelector", () => {
+describe("PortsField", () => {
   beforeEach(() => {
     mockConnections = [];
     mockDevices = [mockLoopback, mockDevice1, mockDevice2, mockBondDevice];

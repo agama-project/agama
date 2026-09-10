@@ -24,7 +24,7 @@ import React from "react";
 import Interpolate from "~/components/core/Interpolate";
 import NestedContent from "~/components/core/NestedContent";
 import LabelText from "~/components/form/LabelText";
-import PortsSelector from "./PortsSelector";
+import PortsField from "./PortsField";
 import { defaultOptions, BridgeStpMode } from "./fields";
 import { withForm } from "~/hooks/form";
 import { _, N_ } from "~/i18n";
@@ -94,7 +94,20 @@ const BridgeFields = withForm({
             )
           }
         </form.AppField>
-        <PortsSelector form={form} kind="bridge" />
+        <PortsField
+          form={form}
+          name="bridgePorts"
+          controllerField="bridgeIface"
+          label={
+            // TRANSLATORS: label for the bridge ports field.
+            _("Bridge ports")
+          }
+          pickLabel={
+            // TRANSLATORS: accessible name of the button opening the dialog for
+            // picking the ports of a bridge among the devices found in the system.
+            _("Select bridge ports")
+          }
+        />
 
         <form.AppField name="bridgeStp">
           {(field) => (
