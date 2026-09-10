@@ -6,10 +6,8 @@ Mon Sep  7 15:00:00 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
   hand. The dialog opens with the ports already listed picked, so
   it serves for dropping one as much as for adding one, and it
   tells which devices another bond or bridge already uses. Ports
-  matching no device found, typed by hand or waiting for a card
-  to show up, are listed too and marked as not present yet, so
-  the dialog holds every port and none has to be dropped from the
-  input.
+  naming no device found are left alone: the dialog only offers
+  what the system reports.
 
 -------------------------------------------------------------------
 Thu Sep  3 08:13:38 UTC 2026 - David Diaz <dgonzalez@suse.com>

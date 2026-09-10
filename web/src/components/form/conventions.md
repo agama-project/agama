@@ -410,15 +410,13 @@ each have one, and "Browse" three times over names none of them.
 Disable it when it has nothing to offer. A dialog that opens on an empty table
 is worse than a button that visibly cannot be pressed.
 
-#### Two-way, or the two views disagree
+#### Two-way, within what it offers
 
 An add-on that only appends is a shortcut. An add-on that opens showing what the
-field already holds is a second view of the same value, and the user will treat
-it as one: what they unpick, they expect gone. Once it can remove, it has to
-account for everything the field holds, or a value becomes unreachable from the
-view the user is looking at.
+field already holds is a second view of the values it knows about, and the user
+will treat it as one: what they unpick, they expect gone.
 
-Four rules, all of which the ports field needed before the two views agreed:
+Three rules, all of which the ports field needed:
 
 1. **Open with the current entries picked.** Otherwise confirming silently drops
    everything already listed.
@@ -426,19 +424,19 @@ Four rules, all of which the ports field needed before the two views agreed:
    confirmable. A picker that requires a non-empty selection cannot empty the
    list, and the user is sent back to the input to finish the job by hand. Name
    the empty answer rather than disabling the button: "Use no device".
-3. **Show the entries the source data knows nothing about.** A typed value that
-   matches no known item still belongs in the dialog, as a stand-in row saying
-   so ("Not present yet") rather than describing details nobody has. Leaving it
-   out means it can be added by typing but never removed by picking.
-4. **Keep untouched what was deliberately not offered.** Values filtered out of
-   the offer on purpose are not absent, and confirming must not drop them.
+3. **Never touch what it does not offer.** Everything else the field holds
+   survives the round trip untouched, whether it was filtered out of the offer
+   on purpose (the loopback device, the controller being edited) or matches
+   nothing the add-on knows about (a name typed by hand).
    `mergePicked(entries, offered, picked)` in `ArrayField` is that rule: entries
    the picker never listed survive, listed ones follow the pick.
 
-Rule 3 has a limit worth being explicit about: only values that match nothing at
-all become stand-ins. A value the offer filtered out on purpose (the loopback
-device, the controller being edited) does exist, and a row claiming otherwise
-would be a lie. Those are the values rule 4 protects instead.
+Rule 3 is what keeps the add-on honest about its own scope. The alternative,
+listing values the source data knows nothing about as stand-in rows so that the
+dialog mirrors the field exactly, was tried on the ports field and dropped:
+typing a name for something that does not exist yet is a special case, and a
+picker of found devices is the wrong place to make it look ordinary. Typing
+stays the way to add such a value, and the input stays the way to remove it.
 
 #### When not to use it
 

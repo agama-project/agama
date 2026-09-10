@@ -34,33 +34,12 @@ import { _, n_ } from "~/i18n";
 import type { SortedBy } from "~/components/core/SelectableDataTable";
 import type { Device } from "~/types/network";
 
-/**
- * A device known by name alone, because the system reports none under it.
- *
- * A network device may be named before it exists: a bond port typed by hand, a
- * card that only shows up once the installed system boots. Listing it lets the
- * caller offer everything it holds, not only what is plugged in today.
- */
-export type AbsentDevice = { name: string; isAbsent: true };
-
-/** What the dialog lists: a device the system reports, or a name alone. */
-export type ListedDevice = Device | AbsentDevice;
-
-/** Builds the stand-in for a device the system does not report. */
-export const absentDevice = (name: string): AbsentDevice => ({ name, isAbsent: true });
-
-/**
- * Whether the system reports the device, and therefore has something to tell
- * about it beyond its name.
- */
-const isPresent = (device: ListedDevice): device is Device => !("isAbsent" in device);
-
 /** Props for {@link DeviceSelectorModal}. */
-export type DeviceSelectorModalProps<T extends ListedDevice = Device> = {
+export type DeviceSelectorModalProps = {
   /** Devices offered for selection. */
-  devices: T[];
+  devices: Device[];
   /** Devices selected when the dialog opens. */
-  selected?: T[];
+  selected?: Device[];
   /**
    * Whether the user picks one device or several.
    *
@@ -76,9 +55,9 @@ export type DeviceSelectorModalProps<T extends ListedDevice = Device> = {
    * When given, a "Used by" column is added. Devices already in use are still
    * offered: moving a port from one controller to another is legitimate.
    */
-  portOf?: (device: T) => string | undefined;
+  portOf?: (device: Device) => string | undefined;
   /** Called with the picked devices when the user confirms. */
-  onConfirm: (devices: T[]) => void;
+  onConfirm: (devices: Device[]) => void;
   /** Called when the user dismisses the dialog. */
   onCancel: () => void;
 };
@@ -87,9 +66,6 @@ export type DeviceSelectorModalProps<T extends ListedDevice = Device> = {
 const deviceAddresses = (device: Device): string =>
   (device.addresses || []).map((address) => formatIp(address)).join(", ");
 
-/** Placeholder for what an absent device cannot tell. */
-const UNKNOWN = "-";
-
 /**
  * Dialog for picking network devices from a table showing more details than a
  * dropdown can hold: name, MAC address, type, addresses and state.
@@ -97,19 +73,19 @@ const UNKNOWN = "-";
  * The table can be sorted, and the pick is only reported to the caller when the
  * user confirms.
  *
- * Devices the system does not report ({@link AbsentDevice}) are listed like any
- * other, saying so instead of describing hardware nobody has seen. That lets a
- * caller whose values are names rather than devices offer all of them, so that
- * what the dialog shows is exactly what the caller holds.
+ * Only devices the system reports are listed. A caller whose values are names
+ * rather than devices, such as the ports of a bond, may well hold a name no
+ * device answers to; the dialog says nothing about it and the caller keeps it
+ * (see `mergePicked`).
  */
-export default function DeviceSelectorModal<T extends ListedDevice = Device>({
+export default function DeviceSelectorModal({
   devices,
   selected,
   selectionMode = "single",
   portOf,
   onConfirm,
   onCancel,
-}: DeviceSelectorModalProps<T>): React.ReactNode {
+}: DeviceSelectorModalProps): React.ReactNode {
   const confirmHintId = useId();
   const isMultiple = selectionMode === "multiple";
   // No column sorts the table at first, so the rows arrive in the same order as
@@ -120,45 +96,38 @@ export default function DeviceSelectorModal<T extends ListedDevice = Device>({
   // to land. Picking several is different: what the caller already has is the
   // starting point, and preselecting a device it did not ask for would be
   // added behind the user's back on confirm.
-  const defaultSelection = (): T[] => {
+  const defaultSelection = (): Device[] => {
     if (isMultiple) return [];
     const firstDevice = first(devices);
     return firstDevice ? [firstDevice] : [];
   };
-  const [selection, setSelection] = useState<T[]>(selected ?? defaultSelection());
+  const [selection, setSelection] = useState<Device[]>(selected ?? defaultSelection());
 
   const columns = [
     {
       // TRANSLATORS: table column with the name of a network device and, below
       // it, the hardware identifier of its interface.
       name: _("Device"),
-      value: (device: T) => (
+      value: (device: Device) => (
         <Stack>
           <span>{device.name}</span>
-          <Text textStyle={["textColorSubtle", "fontSizeXs"]}>
-            {isPresent(device)
-              ? device.macAddress
-              : // TRANSLATORS: said of a network device named in the
-                // configuration although the system does not report it, e.g. a
-                // bond port typed by hand or a card plugged in later.
-                _("Not present yet")}
-          </Text>
+          <Text textStyle={["textColorSubtle", "fontSizeXs"]}>{device.macAddress}</Text>
         </Stack>
       ),
       sortingKey: "name",
     },
     {
       name: _("Type"),
-      value: (device: T) => (isPresent(device) ? connectionTypeLabel(device.type) : UNKNOWN),
+      value: (device: Device) => connectionTypeLabel(device.type),
       sortingKey: "type",
     },
     {
       name: _("IP Addresses"),
-      value: (device: T) => (isPresent(device) && deviceAddresses(device)) || UNKNOWN,
+      value: (device: Device) => deviceAddresses(device) || "-",
     },
     {
       name: _("State"),
-      value: (device: T) => (isPresent(device) ? deviceStateLabel(device.state) : UNKNOWN),
+      value: (device: Device) => deviceStateLabel(device.state),
       sortingKey: "state",
     },
     ...(portOf
@@ -167,7 +136,7 @@ export default function DeviceSelectorModal<T extends ListedDevice = Device>({
             // TRANSLATORS: table column telling which bond or bridge already
             // uses a network device as one of its ports.
             name: _("Used by"),
-            value: (device: T) => portOf(device) || UNKNOWN,
+            value: (device: Device) => portOf(device) || "-",
           },
         ]
       : []),
