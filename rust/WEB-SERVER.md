@@ -153,7 +153,10 @@ The socket carries two kinds of frames:
   the server.
 * Text frames carry small JSON control messages. The client can resize the
   terminal with `{"cols": 80, "rows": 24}`. The server announces the end of
-  the shell with `{"type": "exit", "code": 0}`.
+  the shell with `{"type": "exit", "code": 0, "signal": null}` for a normal
+  exit (any way the shell ends on its own: `exit`, `exit N`, Ctrl-D), or
+  `{"type": "exit", "code": null, "signal": 11}` when it was killed by a
+  signal instead (e.g., a crash).
 
 You can try it with `websocat` (see above for how to get a token):
 

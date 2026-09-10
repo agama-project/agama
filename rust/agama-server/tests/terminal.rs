@@ -285,7 +285,9 @@ async fn test_exit_is_reported_before_a_graceful_close() {
     .expect("timed out waiting for the exit message");
 
     assert!(
-        exit_message.contains(r#""type":"exit""#) && exit_message.contains(r#""code":0"#),
+        exit_message.contains(r#""type":"exit""#)
+            && exit_message.contains(r#""code":0"#)
+            && exit_message.contains(r#""signal":null"#),
         "unexpected message: {exit_message}"
     );
 
@@ -297,6 +299,46 @@ async fn test_exit_is_reported_before_a_graceful_close() {
     assert!(
         matches!(next, Some(Ok(Message::Close(_))) | None),
         "expected a graceful close after the exit message, got: {next:?}"
+    );
+}
+
+/// Regression/coverage test: a shell killed by an unhandled signal (a crash,
+/// an out-of-memory kill, an external `kill`, ...) must be reported
+/// distinctly from a normal exit, so the client can tell the two apart (e.g.,
+/// to only auto-close the terminal panel for a normal exit, not a crash).
+#[tokio::test]
+async fn test_signal_termination_is_reported_distinctly() {
+    let url = start_server().await;
+    let mut socket = connect(&url, Some(&auth_token())).await.unwrap();
+
+    // Make the shell kill itself with SIGSEGV (11), simulating a crash
+    // rather than a normal exit. `$$` is expanded by the shell itself before
+    // running `kill`, so this always targets the shell's own pid.
+    socket
+        .send(Message::Binary(b"kill -SEGV $$\n".to_vec().into()))
+        .await
+        .unwrap();
+
+    let exit_message = timeout(READ_TIMEOUT, async {
+        loop {
+            match socket.next().await {
+                Some(Ok(Message::Text(text))) => return text.to_string(),
+                Some(Ok(_)) => continue,
+                Some(Err(error)) => {
+                    panic!("websocket error while waiting for the exit message: {error}")
+                }
+                None => panic!("the connection ended without reporting the shell's exit"),
+            }
+        }
+    })
+    .await
+    .expect("timed out waiting for the exit message");
+
+    assert!(
+        exit_message.contains(r#""type":"exit""#)
+            && exit_message.contains(r#""code":null"#)
+            && exit_message.contains(r#""signal":11"#),
+        "unexpected message: {exit_message}"
     );
 }
 
