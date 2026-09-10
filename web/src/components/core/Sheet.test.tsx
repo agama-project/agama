@@ -108,16 +108,4 @@ describe("Sheet", () => {
       expect(opener().closest("[inert]")).toBeNull();
     });
   });
-
-  describe("when there is only room for one of the two", () => {
-    it("shows the page until the sheet is opened, and the sheet after", async () => {
-      const { user } = plainRender(<Example placement="replace" />);
-      await user.click(opener());
-
-      sheet();
-      expect(
-        screen.queryByRole("button", { name: "View all 5 needed actions" }),
-      ).not.toBeInTheDocument();
-    });
-  });
 });

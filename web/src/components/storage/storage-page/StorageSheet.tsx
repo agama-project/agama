@@ -33,30 +33,21 @@ import { useMediaQuery } from "~/hooks/use-media-query";
 import { _ } from "~/i18n";
 import type { ConfigModel, Partitionable } from "~/model/storage/config-model";
 
-/** PatternFly's `lg`, where a panel over the page stops covering all of it. */
-const LG = "(min-width: 62rem)";
 /** PatternFly's `xl`, from where there is room for the page and a panel both. */
 const XL = "(min-width: 75rem)";
 
 /**
  * How much of the window the sheet takes, and what that leaves the page.
  *
- * Three bands rather than two. Below `lg` a panel drawn over the page covers
- * all of it anyway, so it takes its place instead. From there to `xl` it comes
- * over the page. At `xl` and above the two share the width and the page keeps
- * working.
+ * Two bands. From `xl` up the two share the width and the page keeps working;
+ * below it the sheet comes over the page, which is where most readers are.
  *
- * `xl` rather than a number of our own: 1024 falls between the two, and the
- * difference between a 1024 window and a 1199 one is not one this page behaves
- * differently at.
+ * `xl` rather than a number of our own: 1024 falls between PatternFly's `lg`
+ * and `xl`, and the difference between a 1024 window and a 1199 one is not one
+ * this page behaves differently at.
  */
 function usePlacement(): SheetPlacement {
-  const fitsBoth = useMediaQuery(XL);
-  const fitsOverlay = useMediaQuery(LG);
-
-  if (fitsBoth) return "share";
-  if (fitsOverlay) return "overlay";
-  return "replace";
+  return useMediaQuery(XL) ? "share" : "overlay";
 }
 
 export type StorageSheetProps = {

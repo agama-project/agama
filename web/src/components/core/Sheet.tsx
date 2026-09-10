@@ -36,8 +36,6 @@ import { _ } from "~/i18n";
 
 /** How a sheet and the page it belongs to divide the window between them. */
 export type SheetPlacement =
-  /** The sheet is all there is room for, and the page waits behind it. */
-  | "replace"
   /** The sheet comes over the page, which is left visible and out of reach. */
   | "overlay"
   /** The two stand side by side, and the page keeps working. */
@@ -65,10 +63,10 @@ export type SheetProps = {
 };
 
 /**
- * A panel that opens beside, over, or in place of the page it belongs to.
+ * A panel that opens beside or over the page it belongs to.
  *
- * The caller decides which of the three applies, since how much room there is
- * and how much the page needs are facts about the page. What each one means for
+ * The caller decides which of the two applies, since how much room there is and
+ * how much the page needs are facts about the page. What each one means for
  * a reader who is not looking at the screen is decided here, once:
  *
  * - Opening it moves the reader into it, so what they asked for is what they
@@ -181,11 +179,6 @@ export default function Sheet({
       <div className="agm-sheet__body">{children}</div>
     </div>
   );
-
-  /* Nothing to arrange: whichever of the two is wanted takes the whole frame.
-     A panel laid over a page this narrow covers all of it anyway, so covering
-     it is what is done instead of drawing both. */
-  if (placement === "replace") return <>{isOpen ? sheet : page}</>;
 
   return (
     <Drawer isExpanded={isOpen} isInline={placement === "share"} position="end">
