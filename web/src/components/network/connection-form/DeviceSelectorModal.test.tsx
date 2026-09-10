@@ -28,6 +28,7 @@ import { CONNECTION_TYPE } from "~/utils/network";
 import DeviceSelectorModal from "./DeviceSelectorModal";
 
 import type { Device } from "~/types/network";
+import type { TranslatedString } from "~/i18n";
 
 const ethernet = {
   name: "enp1s0",
@@ -54,7 +55,13 @@ type ModalProps = Partial<React.ComponentProps<typeof DeviceSelectorModal>>;
 
 const renderModal = (props: ModalProps = {}) =>
   installerRender(
-    <DeviceSelectorModal devices={devices} onConfirm={onConfirm} onCancel={onCancel} {...props} />,
+    <DeviceSelectorModal
+      title={"Select a network device" as TranslatedString}
+      devices={devices}
+      onConfirm={onConfirm}
+      onCancel={onCancel}
+      {...props}
+    />,
   );
 
 const rowFor = (name: string) => screen.getByRole("row", { name: new RegExp(name) });
@@ -81,10 +88,16 @@ describe("DeviceSelectorModal", () => {
     within(rowFor("wlan0")).getByText("Disconnected");
   });
 
+  it("is titled after what the devices will be used for", () => {
+    renderModal({ title: "Select bond ports" as TranslatedString });
+    screen.getByRole("dialog", { name: "Select bond ports" });
+  });
+
   describe("when no device is bound yet", () => {
     it("starts with the first one picked", () => {
       renderModal();
-      expect(screen.getByRole("button", { name: "Use enp1s0" })).toBeEnabled();
+      expect(within(rowFor("enp1s0")).getByRole("radio")).toBeChecked();
+      expect(screen.getByRole("button", { name: "Accept" })).toBeEnabled();
     });
   });
 
@@ -92,7 +105,7 @@ describe("DeviceSelectorModal", () => {
     it("reports it on confirm", async () => {
       const { user } = renderModal({ selected: [ethernet] });
       await user.click(within(rowFor("wlan0")).getByRole("radio"));
-      await user.click(screen.getByRole("button", { name: "Use wlan0" }));
+      await user.click(screen.getByRole("button", { name: "Accept" }));
       expect(onConfirm).toHaveBeenCalledWith([wireless]);
     });
 
@@ -111,13 +124,13 @@ describe("DeviceSelectorModal", () => {
 
     it("starts with nothing picked", () => {
       renderMultiple();
-      expect(screen.getByRole("button", { name: "Use no device" })).toBeEnabled();
+      screen.getAllByRole("checkbox").forEach((box) => expect(box).not.toBeChecked());
     });
 
     it("reports an empty pick, for emptying the list", async () => {
       const { user } = renderMultiple({ selected: [ethernet] });
       await user.click(within(rowFor("enp1s0")).getByRole("checkbox"));
-      await user.click(screen.getByRole("button", { name: "Use no device" }));
+      await user.click(screen.getByRole("button", { name: "Accept" }));
       expect(onConfirm).toHaveBeenCalledWith([]);
     });
 
@@ -125,14 +138,14 @@ describe("DeviceSelectorModal", () => {
       const { user } = renderMultiple({ selected: [ethernet] });
       expect(within(rowFor("enp1s0")).getByRole("checkbox")).toBeChecked();
       await user.click(within(rowFor("wlan0")).getByRole("checkbox"));
-      await user.click(screen.getByRole("button", { name: "Use 2 devices" }));
+      await user.click(screen.getByRole("button", { name: "Accept" }));
       expect(onConfirm).toHaveBeenCalledWith([ethernet, wireless]);
     });
 
     it("reports the devices left picked when one is unpicked", async () => {
       const { user } = renderMultiple({ selected: [ethernet, wireless] });
       await user.click(within(rowFor("enp1s0")).getByRole("checkbox"));
-      await user.click(screen.getByRole("button", { name: "Use 1 device" }));
+      await user.click(screen.getByRole("button", { name: "Accept" }));
       expect(onConfirm).toHaveBeenCalledWith([wireless]);
     });
 
@@ -140,7 +153,7 @@ describe("DeviceSelectorModal", () => {
       const { user } = renderMultiple();
       await user.click(within(rowFor("enp1s0")).getByRole("checkbox"));
       await user.click(within(rowFor("wlan0")).getByRole("checkbox"));
-      await user.click(screen.getByRole("button", { name: "Use 2 devices" }));
+      await user.click(screen.getByRole("button", { name: "Accept" }));
       expect(onConfirm).toHaveBeenCalledWith([ethernet, wireless]);
     });
 

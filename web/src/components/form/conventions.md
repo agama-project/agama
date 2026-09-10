@@ -413,6 +413,18 @@ each have one, and "Browse" three times over names none of them.
 Disable it when it has nothing to offer. A dialog that opens on an empty table
 is worse than a button that visibly cannot be pressed.
 
+Give the dialog that same string as its title, rather than letting it name
+itself after its contents. The field label that gave the context away is no
+longer in sight once the dialog covers the form, and "Select network devices"
+describes what the user can already see: a table of network devices. Reusing
+one string also means what was clicked and what came up say the same thing.
+That is the caller's to supply, so a shared dialog takes a `title` prop instead
+of deriving one.
+
+Confirm with `Accept`, the word the rest of the installer uses. A label that
+restates the selection, "Use 3 devices", changes under the pointer as the user
+ticks boxes and repeats what the ticked boxes already say.
+
 #### Two-way, within what it offers
 
 An add-on that only appends is a shortcut. An add-on that opens showing what the
@@ -425,8 +437,8 @@ Three rules, all of which the ports field needed:
    everything already listed.
 2. **Let it answer with nothing.** Unpicking the last value must be
    confirmable. A picker that requires a non-empty selection cannot empty the
-   list, and the user is sent back to the input to finish the job by hand. Name
-   the empty answer rather than disabling the button: "Use no device".
+   list, and the user is sent back to the input to finish the job by hand.
+   Nothing picked is a legitimate answer, not an unfinished one.
 3. **Never touch what it does not offer.** Everything else the field holds
    survives the round trip untouched, whether it was filtered out of the offer
    on purpose (the loopback device, the controller being edited) or matches

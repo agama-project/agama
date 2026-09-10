@@ -23,19 +23,27 @@
 import React, { useId, useState } from "react";
 import { Flex, HelperText, HelperTextItem, Stack } from "@patternfly/react-core";
 import { first } from "radashi";
-import { sprintf } from "sprintf-js";
 import Popup from "~/components/core/Popup";
 import SelectableDataTable from "~/components/core/SelectableDataTable";
 import Text from "~/components/core/Text";
 import { connectionTypeLabel, deviceStateLabel, formatIp } from "~/utils/network";
 import { sortCollection } from "~/utils";
-import { _, n_ } from "~/i18n";
+import { _ } from "~/i18n";
 
 import type { SortedBy } from "~/components/core/SelectableDataTable";
+import type { TranslatedString } from "~/i18n";
 import type { Device } from "~/types/network";
 
 /** Props for {@link DeviceSelectorModal}. */
 export type DeviceSelectorModalProps = {
+  /**
+   * Title of the dialog, saying what the devices will be used for.
+   *
+   * Left to the caller because the dialog itself only knows it is listing
+   * network devices, which the user can see. "Select bond ports" tells them
+   * what they came for; "Select network devices" tells them nothing.
+   */
+  title: TranslatedString;
   /** Devices offered for selection. */
   devices: Device[];
   /** Devices selected when the dialog opens. */
@@ -79,6 +87,7 @@ const deviceAddresses = (device: Device): string =>
  * (see `mergePicked`).
  */
 export default function DeviceSelectorModal({
+  title,
   devices,
   selected,
   selectionMode = "single",
@@ -149,27 +158,6 @@ export default function DeviceSelectorModal({
 
   const pick = selection[0];
 
-  // Names what confirming will do, so the button reads as the action itself
-  // rather than a bare "Confirm" whose effect has to be inferred.
-  const confirmLabel = (): string => {
-    if (isMultiple) {
-      // TRANSLATORS: confirmation button of the network device dialog when
-      // several devices can be picked and the user picked none.
-      if (selection.length === 0) return _("Use no device");
-
-      // TRANSLATORS: confirmation button of the network device dialog when
-      // several devices can be picked. %d is replaced by how many are picked.
-      return sprintf(n_("Use %d device", "Use %d devices", selection.length), selection.length);
-    }
-
-    // TRANSLATORS: confirmation button of the network device dialog while no
-    // device is picked.
-    if (!pick) return _("Select");
-    // TRANSLATORS: confirmation button of the network device dialog. %s is
-    // replaced by a device name, e.g. "enp1s0".
-    return sprintf(_("Use %s"), pick.name);
-  };
-
   // Picking nothing is an answer of its own when several devices can be picked:
   // the caller ends up with an empty list, exactly as it would by unlisting
   // them one by one. Picking a single device is another matter, there is no
@@ -195,7 +183,10 @@ export default function DeviceSelectorModal({
           isDisabled={!canConfirm}
           aria-describedby={canConfirm ? undefined : confirmHintId}
         >
-          {confirmLabel()}
+          {
+            // TRANSLATORS: confirmation button of the network device dialog.
+            _("Accept")
+          }
         </Popup.Confirm>
         <Popup.Cancel onClick={onCancel} asLink />
       </Flex>
@@ -206,13 +197,7 @@ export default function DeviceSelectorModal({
     <Popup
       isOpen
       variant="medium"
-      title={
-        isMultiple
-          ? // TRANSLATORS: title of the dialog for picking several network devices
-            _("Select network devices")
-          : // TRANSLATORS: title of the dialog for picking a network device
-            _("Select a network device")
-      }
+      title={title}
       // Focus starts on the picked device, so its row is what the user hears
       // and sees first, and the arrow keys move from there.
       elementToFocus={pick ? "input:checked" : undefined}

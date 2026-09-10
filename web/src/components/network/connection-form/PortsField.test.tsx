@@ -153,7 +153,7 @@ describe("PortsField", () => {
     await openDialog(user);
     await toggleDevice(user, "enp1s0");
     await toggleDevice(user, "enp2s0");
-    await user.click(dialog().getByRole("button", { name: "Use 2 devices" }));
+    await user.click(dialog().getByRole("button", { name: "Accept" }));
 
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     expect(entry("enp1s0")).toBeInTheDocument();
@@ -190,7 +190,7 @@ describe("PortsField", () => {
       );
       await openDialog(user);
       await toggleDevice(user, "enp1s0");
-      await user.click(dialog().getByRole("button", { name: "Use 1 device" }));
+      await user.click(dialog().getByRole("button", { name: "Accept" }));
 
       expect(entry("enp1s0")).not.toBeInTheDocument();
       expect(entry("enp2s0")).toBeInTheDocument();
@@ -204,7 +204,7 @@ describe("PortsField", () => {
       );
       await openDialog(user);
       await toggleDevice(user, "enp1s0");
-      await user.click(dialog().getByRole("button", { name: "Use no device" }));
+      await user.click(dialog().getByRole("button", { name: "Accept" }));
 
       expect(entry("lo")).toBeInTheDocument();
       expect(entry("enp1s0")).not.toBeInTheDocument();
@@ -217,7 +217,7 @@ describe("PortsField", () => {
       await openDialog(user);
       await toggleDevice(user, "enp1s0");
       await toggleDevice(user, "enp2s0");
-      await user.click(dialog().getByRole("button", { name: "Use no device" }));
+      await user.click(dialog().getByRole("button", { name: "Accept" }));
 
       expect(entriesList()).not.toBeInTheDocument();
     });
@@ -235,7 +235,7 @@ describe("PortsField", () => {
       const { user } = installerRender(<TestForm defaultValues={{ bondPorts: ["enp9s0"] }} />);
       await openDialog(user);
       await toggleDevice(user, "enp1s0");
-      await user.click(dialog().getByRole("button", { name: "Use 1 device" }));
+      await user.click(dialog().getByRole("button", { name: "Accept" }));
 
       expect(entry("enp9s0")).toBeInTheDocument();
       expect(entry("enp1s0")).toBeInTheDocument();
@@ -256,7 +256,7 @@ describe("PortsField", () => {
       const { user } = installerRender(<TestForm />);
       await openDialog(user);
       await toggleDevice(user, "enp2s0");
-      await user.click(dialog().getByRole("button", { name: "Use 1 device" }));
+      await user.click(dialog().getByRole("button", { name: "Accept" }));
       expect(entry("enp2s0")).toBeInTheDocument();
     });
 

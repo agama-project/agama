@@ -46,7 +46,12 @@ type DevicePickerProps = {
   selected: Device[];
   /** Returns the controller a device is already a port of, if any. */
   portOf: (device: Device) => string | undefined;
-  /** Accessible name of the button, telling what the devices would be used for. */
+  /**
+   * What the devices would be used for, e.g. "Select bond ports".
+   *
+   * Names the button and titles the dialog it opens, so that what was clicked
+   * and what came up say the same thing.
+   */
   label: TranslatedString;
   /** Called with the devices the user picked. */
   onConfirm: (devices: Device[]) => void;
@@ -86,6 +91,7 @@ function DevicePicker({
       </VisualTooltip>
       {isDialogOpen && (
         <DeviceSelectorModal
+          title={label}
           devices={devices}
           selected={selected}
           selectionMode="multiple"
@@ -116,7 +122,11 @@ type PortsFieldProps = {
   controllerField: Extract<keyof FormFields, `${string}Iface`>;
   /** Label of the field. */
   label: TranslatedString;
-  /** Accessible name of the button opening the device dialog. */
+  /**
+   * What the ports are being picked for, e.g. "Select bond ports".
+   *
+   * Names the button opening the device dialog, and titles the dialog itself.
+   */
   pickLabel: TranslatedString;
 };
 
