@@ -47,25 +47,10 @@ jobs:
     env:
       COVERAGE: 1
 
-    defaults:
-      run:
-        working-directory: ./service
-
-    strategy:
-      fail-fast: false
-      matrix:
-        distro: [ "tumbleweed" ]
-
     container:
-      image: registry.opensuse.org/yast/head/containers_${{matrix.distro}}/yast-ruby
+      image: registry.opensuse.org/opensuse/tumbleweed:latest
 
     steps:
-
-    - name: Git Checkout
-      uses: actions/checkout@v7
-
-    - name: Configure git
-      run:  git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
     - name: Configure and refresh repositories
       # disable unused repositories to have faster refresh
@@ -73,35 +58,38 @@ jobs:
 
     - name: Install Ruby development files
       run: zypper --non-interactive install
+        gawk
+        git
         gcc
         gcc-c++
         make
+        libxml2-devel
+        libxslt-devel
         openssl-devel
         ruby-devel
-        augeas-devel
 
     - name: Install required packages
       run: |
         RUBY_VERSION=$(ruby -e "puts RbConfig::CONFIG['ruby_version']")
         zypper --non-interactive install \
-        suseconnect-ruby-bindings \
         autoyast2-installation \
         yast2 \
         yast2-bootloader \
-        yast2-country \
         yast2-devtools \
-        yast2-hardware-detection \
-        yast2-installation \
         yast2-iscsi-client \
         yast2-network \
-        yast2-proxy \
         yast2-storage-ng \
         yast2-users \
-        python3-jsonschema \
         gettext-tools \
         "rubygem(ruby:$RUBY_VERSION:yast-rake)" \
         "rubygem(ruby:$RUBY_VERSION:gettext)" \
         which
+
+    - name: Git Checkout
+      uses: actions/checkout@v7
+
+    - name: Configure git
+      run:  git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
     - name: Bundler cache
       id: bundler-cache
@@ -117,14 +105,19 @@ jobs:
 
     - name: Install RubyGems dependencies
       run: bundle config set --local with 'development' && bundle install
+      working-directory: ./service
+      env:
+        NOKOGIRI_USE_SYSTEM_LIBRARIES: 1
 
     - name: Check collecting translatable strings
       run: |
         rake pot
         msgfmt --statistics ../agama.pot
+      working-directory: ./service
 
     - name: Run the tests and generate coverage report
       run: bundle exec rspec
+      working-directory: ./service
 
     - name: Upload coverage result
       uses: actions/upload-artifact@v6
