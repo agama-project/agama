@@ -22,7 +22,9 @@
 
 import React from "react";
 import { Table, Tbody, Th, Thead, Tr } from "@patternfly/react-table";
+import { Flex, FlexItem } from "@patternfly/react-core";
 import a11yStyles from "@patternfly/react-styles/css/utilities/Accessibility/accessibility";
+import ConfigureDeviceMenu from "~/components/storage/ConfigureDeviceMenu";
 import { columnName } from "~/components/storage/entries-table/columns";
 import DriveRow from "~/components/storage/entries-table/DriveRow";
 import VolumeGroupRow from "~/components/storage/entries-table/VolumeGroupRow";
@@ -87,6 +89,36 @@ function categoryTitle(category: Category): TranslatedString {
  */
 export default function EntriesTable(): React.ReactNode {
   const config = useConfigModel();
+  const list = React.useRef<HTMLDivElement>(null);
+
+  /* Arrow keys walk the entries, which is what a reader expects of a list they
+     are comparing rather than reading once. Every name stays a tab stop, since
+     this is a table to read and not a widget to operate: the arrows are a way
+     of moving faster, not the only way of moving. */
+  const onKeyDown = (event: React.KeyboardEvent) => {
+    const names = [...(list.current?.querySelectorAll<HTMLElement>("[data-entry-name]") || [])];
+    const at = names.indexOf(document.activeElement as HTMLElement);
+    if (at === -1) return;
+
+    const focusAt = (index: number) => {
+      const next = names[Math.max(0, Math.min(index, names.length - 1))];
+      if (!next) return;
+
+      event.preventDefault();
+      next.focus();
+    };
+
+    switch (event.key) {
+      case "ArrowDown":
+        return focusAt(at + 1);
+      case "ArrowUp":
+        return focusAt(at - 1);
+      case "Home":
+        return focusAt(0);
+      case "End":
+        return focusAt(names.length - 1);
+    }
+  };
 
   const groups = CATEGORIES.map((category) => ({
     category,
@@ -96,7 +128,7 @@ export default function EntriesTable(): React.ReactNode {
   if (!groups.length) return null;
 
   return (
-    <div className="agm-entries-table">
+    <div className="agm-entries-table" ref={list} onKeyDown={onKeyDown}>
       <Table
         role="table"
         gridBreakPoint=""
@@ -140,6 +172,19 @@ export default function EntriesTable(): React.ReactNode {
           </Tbody>
         ))}
       </Table>
+      {/* At the end of what it appends to, and at its start edge: adding a
+          device extends this list, and an offer centred above it reads as
+          something the summary is saying rather than as the list's own. */}
+      <Flex className="agm-entries-table__add">
+        <FlexItem>
+          <ConfigureDeviceMenu
+            // TRANSLATORS: offered at the foot of the list of what the
+            // installation is made of: bring more disks into it.
+            label={_("Add more devices")}
+            popperProps={{ position: "left" }}
+          />
+        </FlexItem>
+      </Flex>
     </div>
   );
 }

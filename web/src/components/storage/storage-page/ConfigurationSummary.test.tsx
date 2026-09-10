@@ -179,11 +179,11 @@ describe("ConfigurationSummary", () => {
       expect(screen.queryByText(noLayout)).not.toBeInTheDocument();
     });
 
-    it("leaves moving to each row, since no one device speaks for the plan", () => {
+    it("offers nothing of its own, since the acts belong to the rows and the list", () => {
       plainRender(<ConfigurationSummary />);
 
       expect(screen.queryByText(retarget)).not.toBeInTheDocument();
-      screen.getByText(addDevices);
+      expect(screen.queryByText(addDevices)).not.toBeInTheDocument();
     });
 
     it("leaves the space decision to each row, since one answer cannot speak for two disks", () => {

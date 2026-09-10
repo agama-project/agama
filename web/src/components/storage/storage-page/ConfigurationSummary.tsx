@@ -87,27 +87,30 @@ export default function ConfigurationSummary(): React.ReactNode {
         /* Closed against the list it introduces, which a single device has
            nothing of. */
         isTight={!singleDevice}
-        /* What the reader can do about the sentence above. On one device the
-           page has named a disk and said what it will hold, so the question it
-           raises is whether that is the right disk, and the act answering it
-           leads. Adding a device is a different plan rather than an answer to
-           this one, so it sits plain and last, which is where a plan of several
-           entries keeps the same offer.
+        /* What the reader can do about the sentence above, which only a plan of
+           one device has: the page has named a disk and said what it will hold,
+           so the question it raises is whether that is the right disk, and the
+           act answering it leads. Adding a device is a different plan rather
+           than an answer to this one, so it sits plain beside it.
 
-           A plan of several entries has no single subject to move, so the rows
-           carry that act instead and only the offer to add is left. */
+           A plan of several entries has no single subject to move, and the
+           offer to add belongs at the foot of the list it appends to rather
+           than above it. */
         actions={
-          <>
-            {singleDevice && <RetargetOffer entry={singleDevice.device} device={device} />}
-            <ConfigureDeviceMenu
-              // TRANSLATORS: offered under the summary of the installation:
-              // bring more disks into it.
-              label={_("Add more devices")}
-              /* Aligned on the toggle's trailing edge, since the toggle ends the
-                 row: the menu grows back over the page rather than off it. */
-              popperProps={{ position: "right" }}
-            />
-          </>
+          singleDevice && (
+            <>
+              <RetargetOffer entry={singleDevice.device} device={device} />
+              <ConfigureDeviceMenu
+                // TRANSLATORS: offered under the summary of the installation:
+                // bring more disks into it.
+                label={_("Add more devices")}
+                /* Aligned on the toggle's trailing edge, since the toggle ends
+                   the row: the menu grows back over the page rather than off
+                   it. */
+                popperProps={{ position: "right" }}
+              />
+            </>
+          )
         }
         body={
           singleDevice
