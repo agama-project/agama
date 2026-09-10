@@ -30,7 +30,8 @@ jobs:
     runs-on: ubuntu-latest
 
     container:
-      image: registry.opensuse.org/opensuse/leap:16.1
+      # FIXME: the 16.1 container is not published yet, switch to 16.1 when it is released
+      image: registry.opensuse.org/opensuse/leap:16.0
       volumes:
         # bind mount the GitHub CLI tool from the Ubuntu host,
         # it is a statically linked binary so it should work also in TumbleWeed
