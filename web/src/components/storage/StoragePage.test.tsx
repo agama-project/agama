@@ -107,9 +107,6 @@ jest.mock("~/hooks/model/system/zfcp", () => ({
 jest.mock("./ProposalFailedInfo", () => () => <div>proposal failed info</div>);
 jest.mock("./UnsupportedModelInfo", () => () => <div>unsupported model info</div>);
 jest.mock("./FixableConfigInfo", () => () => <div>fixable config info</div>);
-jest.mock("./ConfigEditor", () => () => <div>installation devices</div>);
-jest.mock("./EncryptionSection", () => () => <div>encryption section</div>);
-jest.mock("./BootSection", () => () => <div>boot section</div>);
 jest.mock("./ConnectedDevicesMenu", () => () => <div>connected devices menu</div>);
 jest.mock("./storage-page/ConfigurationSummary", () => () => (
   <div>what the configuration does</div>
@@ -134,9 +131,9 @@ describe("if there are no devices", () => {
     expect(screen.queryByRole("link", { name: /iSCSI/ })).toBeInTheDocument();
   });
 
-  it("does not render the installation devices", () => {
+  it("does not render the configuration", () => {
     installerRender(<StoragePage />);
-    expect(screen.queryByText("installation devices")).not.toBeInTheDocument();
+    expect(screen.queryByText("what the configuration does")).not.toBeInTheDocument();
   });
 
   it("does not render the result", () => {
@@ -210,9 +207,9 @@ describe("if the UI does not support the current configuration (no model)", () =
       expect(screen.queryByRole("button", { name: /Reset/ })).toBeInTheDocument();
     });
 
-    it("does not render the installation devices", () => {
+    it("does not render the configuration", () => {
       installerRender(<StoragePage />);
-      expect(screen.queryByText("installation devices")).not.toBeInTheDocument();
+      expect(screen.queryByText("what the configuration does")).not.toBeInTheDocument();
     });
 
     it("does not render the result", () => {
@@ -236,9 +233,9 @@ describe("if the UI does not support the current configuration (no model)", () =
       expect(screen.queryByRole("button", { name: /Reset/ })).toBeInTheDocument();
     });
 
-    it("does not render the installation devices", async () => {
+    it("does not render the configuration", async () => {
       installerRender(<StoragePage />);
-      expect(screen.queryByText("installation devices")).not.toBeInTheDocument();
+      expect(screen.queryByText("what the configuration does")).not.toBeInTheDocument();
     });
 
     it("does not render the result", () => {
@@ -263,9 +260,9 @@ describe("if the UI does not support the current configuration (no model)", () =
       expect(screen.queryByRole("button", { name: /Reset/ })).toBeInTheDocument();
     });
 
-    it("does not render the installation devices", () => {
+    it("does not render the configuration", () => {
       installerRender(<StoragePage />);
-      expect(screen.queryByText("installation devices")).not.toBeInTheDocument();
+      expect(screen.queryByText("what the configuration does")).not.toBeInTheDocument();
     });
 
     it("does not render the result", () => {
@@ -285,9 +282,9 @@ describe("if the UI does not support the current configuration (no model)", () =
       expect(screen.queryByText("unsupported model info")).toBeInTheDocument();
     });
 
-    it("does not render the installation devices", () => {
+    it("does not render the configuration", () => {
       installerRender(<StoragePage />);
-      expect(screen.queryByText("installation devices")).not.toBeInTheDocument();
+      expect(screen.queryByText("what the configuration does")).not.toBeInTheDocument();
     });
   });
 });
@@ -313,9 +310,9 @@ describe("if the UI supports the configuration (there is a model)", () => {
       expect(screen.queryByRole("button", { name: /Reset/ })).toBeInTheDocument();
     });
 
-    it("does not render the installation devices", () => {
+    it("does not render the configuration", () => {
       installerRender(<StoragePage />);
-      expect(screen.queryByText("installation devices")).not.toBeInTheDocument();
+      expect(screen.queryByText("what the configuration does")).not.toBeInTheDocument();
     });
 
     it("does not render the result", () => {
@@ -334,9 +331,9 @@ describe("if the UI supports the configuration (there is a model)", () => {
       expect(screen.queryByText("fixable config info")).toBeInTheDocument();
     });
 
-    it("renders the installation devices", () => {
+    it("renders the configuration", () => {
       installerRender(<StoragePage />);
-      expect(screen.queryByText("installation devices")).toBeInTheDocument();
+      expect(screen.queryByText("what the configuration does")).toBeInTheDocument();
     });
 
     it("does not render the result", () => {
@@ -356,9 +353,9 @@ describe("if the UI supports the configuration (there is a model)", () => {
       expect(screen.queryByText("proposal failed info")).toBeInTheDocument();
     });
 
-    it("renders the installation devices", () => {
+    it("renders the configuration", () => {
       installerRender(<StoragePage />);
-      expect(screen.queryByText("installation devices")).toBeInTheDocument();
+      expect(screen.queryByText("what the configuration does")).toBeInTheDocument();
     });
 
     it("does not render the result", () => {
@@ -373,9 +370,9 @@ describe("if the UI supports the configuration (there is a model)", () => {
       mockUseProposal.mockReturnValue({ devices: [], actions: [] });
     });
 
-    it("renders the installation devices", () => {
+    it("renders the configuration", () => {
       installerRender(<StoragePage />);
-      expect(screen.queryByText("installation devices")).toBeInTheDocument();
+      expect(screen.queryByText("what the configuration does")).toBeInTheDocument();
     });
 
     it("keeps the result out of the page until it is asked for", () => {

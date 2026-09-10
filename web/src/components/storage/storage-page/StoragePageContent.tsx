@@ -21,13 +21,7 @@
  */
 
 import React from "react";
-import { Grid, Stack, Tab, Tabs, TabTitleText } from "@patternfly/react-core";
-import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
-import { NestedContent } from "~/components/core/";
-import Page from "~/components/layout/Page";
-import ConfigEditor from "~/components/storage/ConfigEditor";
-import EncryptionSection from "~/components/storage/EncryptionSection";
-import BootSection from "~/components/storage/BootSection";
+import { Grid } from "@patternfly/react-core";
 import FixableConfigInfo from "~/components/storage/FixableConfigInfo";
 import ProposalFailedInfo from "~/components/storage/ProposalFailedInfo";
 import UnsupportedModelInfo from "~/components/storage/UnsupportedModelInfo";
@@ -42,56 +36,6 @@ import { useAvailableDevices } from "~/hooks/model/system/storage";
 import { useIssues } from "~/hooks/model/issue";
 import { useProposal } from "~/hooks/model/proposal/storage";
 import { useConfigModel } from "~/hooks/model/storage/config-model";
-import { useSearchParamState } from "~/hooks/use-search-param-state";
-import { SETTINGS_TAB } from "~/components/storage/ui-state-params";
-import { _ } from "~/i18n";
-
-function ModelSection(): React.ReactNode {
-  const [activeTab, setActiveTab] = useSearchParamState(SETTINGS_TAB, "0");
-  const handleTabClick = (
-    event: React.MouseEvent | React.KeyboardEvent | MouseEvent,
-    tabIndex: number,
-  ) => setActiveTab(tabIndex);
-
-  return (
-    <Page.Section
-      isFullHeight
-      title={_("Settings")}
-      description={_(
-        "Changes in these settings will immediately update the 'Result' section below.",
-      )}
-    >
-      <Tabs activeKey={activeTab} onSelect={handleTabClick} role="region">
-        <Tab
-          key="devices"
-          eventKey={"0"}
-          title={<TabTitleText>{_("Installation devices")}</TabTitleText>}
-        >
-          <NestedContent margin="mtSm">
-            <Stack hasGutter>
-              <div className={textStyles.textColorPlaceholder}>
-                {_(
-                  "Structure of the new system, including disks to use and additional devices like LVM volume groups.",
-                )}
-              </div>
-              <ConfigEditor />
-            </Stack>
-          </NestedContent>
-        </Tab>
-        <Tab key="encryption" eventKey={"1"} title={<TabTitleText>{_("Encryption")}</TabTitleText>}>
-          <NestedContent margin="mtSm">
-            <EncryptionSection />
-          </NestedContent>
-        </Tab>
-        <Tab key="system" eventKey={"2"} title={<TabTitleText>{_("Boot options")}</TabTitleText>}>
-          <NestedContent margin="mtSm">
-            <BootSection />
-          </NestedContent>
-        </Tab>
-      </Tabs>
-    </Page.Section>
-  );
-}
 
 /**
  * What the storage page shows, and where everything it needs is read.
@@ -103,9 +47,6 @@ function ModelSection(): React.ReactNode {
  * Everything else is the page, with the sheet the page opens over it. The sheet
  * wraps rather than sits beside, because two of its three placements are about
  * what the page does while it is open.
- *
- * @fixme The old settings section is still here. It goes as the parts replacing
- *  it arrive, so that the page works at every step.
  */
 export default function StoragePageContent(): React.ReactNode {
   const model = useConfigModel();
@@ -141,7 +82,6 @@ export default function StoragePageContent(): React.ReactNode {
       {!model && <UnsupportedModelInfo />}
       {model && <TopLine />}
       {model && <ConfigurationSummary />}
-      {model && <ModelSection />}
     </Grid>
   );
 

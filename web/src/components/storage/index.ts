@@ -21,4 +21,3 @@
  */
 
 export { default as DevicesFormSelect } from "./DevicesFormSelect";
-export { default as SpaceActionsTable } from "./SpaceActionsTable";

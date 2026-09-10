@@ -24,7 +24,6 @@ import React from "react";
 import { Route } from "~/types/routes";
 import BootSelectionPage from "~/components/storage/BootSelectionPage";
 import EncryptionSettingsPage from "~/components/storage/EncryptionSettingsPage";
-import SpacePolicySelectionPage from "~/components/storage/SpacePolicySelectionPage";
 import StoragePage from "~/components/storage/StoragePage";
 import ISCSIPage from "~/components/storage/ISCSIPage";
 import FormattableDeviceForm from "~/components/storage/formattable-device-form/Form";
@@ -58,10 +57,6 @@ const routes = (): Route => ({
     {
       path: PATHS.editEncryption,
       element: <EncryptionSettingsPage />,
-    },
-    {
-      path: PATHS.editSpacePolicy,
-      element: <SpacePolicySelectionPage />,
     },
     {
       path: PATHS.formatDevice,
