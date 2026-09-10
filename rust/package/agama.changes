@@ -7,7 +7,7 @@ Wed Sep  9 10:21:21 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
 -------------------------------------------------------------------
 Tue Sep 8 14:40:22 UTC 2026 - PadaCommit <185716433+PadaCommit@users.noreply.github.com>
 
-- Fix schema URLs in rust/share/
+- Fix schema URLs in rust/share/ (gh#agama-project/agama#3881):
   - Use parsable URLs for schema IDs
   - Update schema paths in profile examples
   - Fix SLE-16 profile schema URL example
