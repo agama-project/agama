@@ -44,6 +44,7 @@ import Block from "@icons/block.svg?component";
 import ChangeCircle from "@icons/change_circle.svg?component";
 import CheckCircle from "@icons/check_circle.svg?component";
 import LockOpen from "@icons/lock_open.svg?component";
+import NetworkNode from "@icons/network_node.svg?component";
 import RotateAuto from "@icons/rotate_auto.svg?component";
 import SettingsBackupRestore from "@icons/settings_backup_restore.svg?component";
 import Compress from "@icons/compress.svg?component";
@@ -113,6 +114,7 @@ const icons = {
   change_circle: ChangeCircle,
   check_circle: CheckCircle,
   lock_open: LockOpen,
+  network_node: NetworkNode,
   rotate_auto: RotateAuto,
   settings_backup_restore: SettingsBackupRestore,
   chevron_left: ChevronLeft,

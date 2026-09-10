@@ -241,6 +241,51 @@ describe("StorageSheet", () => {
     });
   });
 
+  describe("when the entry is one the configuration defines rather than finds", () => {
+    beforeEach(() => {
+      mockConfig.mockReturnValue(
+        config({
+          drives: [{ name: "/dev/sda", partitions: [] }],
+          volumeGroups: [
+            { vgName: "system", targetDevices: ["/dev/sda"], targetDevicesPolicy: "useNeeded" },
+          ],
+        }),
+      );
+    });
+
+    it("offers a view of what it is made of", () => {
+      renderAt("/storage?sheet=volumeGroups.0");
+
+      screen.getByRole("tab", { name: "Properties" });
+    });
+
+    it("offers a disk no such view, since a disk is the hardware", () => {
+      renderAt("/storage?sheet=drives.0");
+
+      expect(screen.queryByRole("tab", { name: "Properties" })).not.toBeInTheDocument();
+    });
+
+    it("names what it is built on, and offers the way to each", () => {
+      renderAt("/storage?sheet=volumeGroups.0&sheetTab=properties");
+
+      screen.getByText("Uses");
+      screen.getByRole("link", { name: "sda" });
+    });
+
+    it("says how much of those devices it takes", () => {
+      renderAt("/storage?sheet=volumeGroups.0&sheetTab=properties");
+
+      screen.getByText("Space taken");
+      screen.getByText("Only what its volumes need");
+    });
+
+    it("offers the form that changes both, after what it changes", () => {
+      renderAt("/storage?sheet=volumeGroups.0&sheetTab=properties");
+
+      screen.getByRole("link", { name: /Edit the volume group/ });
+    });
+  });
+
   describe("when the address names an entry the configuration no longer has", () => {
     it("leaves the reader on the page rather than on a broken panel", () => {
       renderAt("/storage?sheet=drives.7");

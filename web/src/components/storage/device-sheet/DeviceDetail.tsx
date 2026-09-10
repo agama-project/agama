@@ -25,6 +25,7 @@ import { Tab, Tabs, TabTitleText } from "@patternfly/react-core";
 import FinalLayoutSection from "~/components/storage/device-sheet/FinalLayoutSection";
 import PlannedContentSection from "~/components/storage/device-sheet/PlannedContentSection";
 import CurrentContentSection from "~/components/storage/device-sheet/CurrentContentSection";
+import PropertiesSection from "~/components/storage/device-sheet/PropertiesSection";
 import { useSheetTab } from "~/components/storage/shared/use-sheet";
 import { _ } from "~/i18n";
 import type { Entry } from "~/components/storage/device-sheet/entry";
@@ -45,7 +46,9 @@ export type DeviceDetailProps = {
  * comparing two devices is not sent back to the first view between them.
  *
  * Nothing in the names says partition or volume: the same strip serves a disk,
- * a RAID and a volume group, and what each holds goes by a different word.
+ * a RAID and a volume group, and what each holds goes by a different word. Each
+ * entry decides its own strip: a disk has nothing that defines it, so it is not
+ * offered a view about that.
  *
  * @fixme PatternFly's tabs leave every tab a tab stop and handle no arrow keys,
  *  where the pattern asks for one stop for the strip and arrows within it.
@@ -86,6 +89,22 @@ export default function DeviceDetail({ entry, subject }: DeviceDetailProps): Rea
       >
         <PlannedContentSection entry={entry} subject={subject} />
       </Tab>
+      {/* Only where the entry is defined rather than found. A disk is the
+          hardware, so there is nothing that defines it to show. */}
+      {entry.isVolumeGroup && (
+        <Tab
+          eventKey="properties"
+          title={
+            <TabTitleText>
+              {/* TRANSLATORS: names the view of an entry showing the other
+                  entries it is built from. */}
+              {_("Properties")}
+            </TabTitleText>
+          }
+        >
+          <PropertiesSection entry={entry} />
+        </Tab>
+      )}
       <Tab
         eventKey="current"
         title={
