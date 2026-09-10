@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import { Label, Flex } from "@patternfly/react-core";
+import { Flex } from "@patternfly/react-core";
 import {
   DeviceName,
   DeviceDetails,
@@ -31,14 +31,15 @@ import {
 } from "~/components/storage/device-utils";
 import DevicesManager from "~/model/storage/devices-manager";
 import { TreeTable } from "~/components/core";
-import { _ } from "~/i18n";
+import { _, TranslatedString } from "~/i18n";
 import { sprintf } from "sprintf-js";
 import { deviceChildren, deviceSize } from "~/components/storage/utils";
 import { TreeTableColumn } from "~/components/core/TreeTable";
 import { useConfigModel } from "~/hooks/model/storage/config-model";
 import type { Storage as Proposal } from "~/model/proposal";
 
-type TableItem = Proposal.Device | Proposal.UnusedSlot;
+/** A row of the final layout: a device, or the free space between two of them. */
+export type TableItem = Proposal.Device | Proposal.UnusedSlot;
 
 /**
  * @component
@@ -57,27 +58,45 @@ const MountPoint = ({ item }: { item: TableItem }) => {
 const DeviceCustomDetails = ({
   item,
   devicesManager,
+  link,
 }: {
   item: TableItem;
   devicesManager: DevicesManager;
+  link?: (device: Proposal.Device) => React.ReactNode;
 }) => {
-  const isNew = () => {
-    const device = toDevice(item);
-    if (!device) return false;
+  const device = toDevice(item);
 
+  /* What the installer does to the device, where it does anything: the device
+     is not there yet, or it is there and gets a new file system. Said in words
+     under the details rather than marked, so a reader is not left working out
+     what a colored mark on a row means. */
+  const change = (): TranslatedString | null => {
+    if (!device) return null;
     // FIXME New PVs over a disk is not detected as new.
-    return !devicesManager.existInSystem(device) || devicesManager.hasNewFilesystem(device);
+    if (!devicesManager.existInSystem(device)) {
+      // TRANSLATORS: reads under the details of a device that does not exist yet
+      // and that the installer creates.
+      return _("Newly created");
+    }
+    if (devicesManager.hasNewFilesystem(device)) {
+      // TRANSLATORS: reads under the details of a device that already exists and
+      // that the installer formats, which destroys what is on it.
+      return _("Reformatted");
+    }
+
+    return null;
   };
 
+  const note = change();
+
   return (
-    <Flex direction={{ default: "row" }} gap={{ default: "gapXs" }}>
-      <DeviceDetails item={item} />
-      {isNew() && (
-        <Label color="green" isCompact>
-          {_("New")}
-        </Label>
-      )}
-    </Flex>
+    <>
+      <Flex direction={{ default: "row" }} gap={{ default: "gapXs" }}>
+        <DeviceDetails item={item} />
+        {device && link?.(device)}
+      </Flex>
+      {note && <div className="agm-row-note">{note}</div>}
+    </>
   );
 };
 
@@ -98,22 +117,25 @@ const DeviceCustomSize = ({
     : toPartitionSlot(item)?.size;
 
   return (
-    <Flex direction={{ default: "row" }} gap={{ default: "gapXs" }}>
+    <>
       <DeviceSize item={item} />
       {isResized && (
-        <Label color="orange" isCompact>
+        <div className="agm-row-note">
           {
-            // TRANSLATORS: Label to indicate the device size before resizing, where %s is
-            // replaced by the original size (e.g., 3.00 GiB).
-            sprintf(_("Before %s"), deviceSize(sizeBefore))
+            // TRANSLATORS: reads under the size a device ends up with, where %s
+            // is the size it has today (e.g., 3.00 GiB).
+            sprintf(_("Shrunk from %s"), deviceSize(sizeBefore))
           }
-        </Label>
+        </div>
       )}
-    </Flex>
+    </>
   );
 };
 
-const columns: (devicesManager: DevicesManager) => TreeTableColumn[] = (devicesManager) => {
+const columns: (
+  devicesManager: DevicesManager,
+  link?: (device: Proposal.Device) => React.ReactNode,
+) => TreeTableColumn[] = (devicesManager, link) => {
   const renderDevice: (item: TableItem) => React.ReactNode = (item): React.ReactNode => (
     <DeviceName item={item} />
   );
@@ -123,7 +145,7 @@ const columns: (devicesManager: DevicesManager) => TreeTableColumn[] = (devicesM
   );
 
   const renderDetails: (item: TableItem) => React.ReactNode = (item) => (
-    <DeviceCustomDetails item={item} devicesManager={devicesManager} />
+    <DeviceCustomDetails item={item} devicesManager={devicesManager} link={link} />
   );
 
   const renderSize: (item: TableItem) => React.ReactNode = (item) => (
@@ -132,7 +154,7 @@ const columns: (devicesManager: DevicesManager) => TreeTableColumn[] = (devicesM
 
   return [
     { name: _("Device"), value: renderDevice },
-    { name: _("Mount Point"), value: renderMountPoint },
+    { name: _("Mount point"), value: renderMountPoint },
     { name: _("Details"), value: renderDetails },
     { name: _("Size"), value: renderSize, classNames: "sizes-column" },
   ];
@@ -145,20 +167,26 @@ type ProposalResultTableProps = {
    * a shorter list where the reader has already narrowed the question, such as
    * a panel about one of them.
    */
-  devices?: Proposal.Device[];
+  devices?: TableItem[];
+  /** Reads beside a row's details: where the device that row describes is used. */
+  deviceLink?: (device: Proposal.Device) => React.ReactNode;
 };
 
 /**
  * Renders the proposal result.
  * @component
  */
-export default function ProposalResultTable({ devicesManager, devices }: ProposalResultTableProps) {
+export default function ProposalResultTable({
+  devicesManager,
+  devices,
+  deviceLink,
+}: ProposalResultTableProps) {
   const model = useConfigModel();
   const shown = devices || devicesManager.usedDevices(model?.drives?.map((d) => d.name) || []);
 
   return (
     <TreeTable
-      columns={columns(devicesManager)}
+      columns={columns(devicesManager, deviceLink)}
       items={shown}
       expandedItems={shown}
       itemChildren={deviceChildren}
