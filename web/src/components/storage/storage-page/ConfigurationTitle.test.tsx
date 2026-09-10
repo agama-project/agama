@@ -21,7 +21,8 @@
  */
 
 import React from "react";
-import { plainRender } from "~/test-utils";
+import { screen } from "@testing-library/react";
+import { installerRender } from "~/test-utils";
 import type { ConfigModel } from "~/model/storage/config-model";
 import type { Storage } from "~/model/system";
 import ConfigurationTitle from "~/components/storage/storage-page/ConfigurationTitle";
@@ -58,7 +59,7 @@ beforeEach(() => {
 describe("when the configuration is one disk", () => {
   it("names the disk and what it is for", () => {
     mockConfig.mockReturnValue(config({ drives: [{ name: "/dev/vdd" }] }));
-    plainRender(<ConfigurationTitle />);
+    installerRender(<ConfigurationTitle />);
 
     expect(sentence()).toBe("Use disk vdd (20 GiB) as installation device");
   });
@@ -71,17 +72,25 @@ describe("when the configuration is one disk", () => {
           boot: { configure: true, device: { name: "/dev/vdd", default: false } },
         }),
       );
-      plainRender(<ConfigurationTitle />);
+      installerRender(<ConfigurationTitle />);
 
       expect(sentence()).toBe("Use disk vdd (20 GiB) as installation and boot device");
     });
+  });
+
+  it("makes the device it names the way into it, with no button under the sentence", () => {
+    mockConfig.mockReturnValue(config({ drives: [{ name: "/dev/vdd" }] }));
+    installerRender(<ConfigurationTitle />);
+
+    screen.getByRole("link", { name: /vdd/ });
+    expect(screen.queryByRole("button")).not.toBeInTheDocument();
   });
 });
 
 describe("when the configuration is one software RAID", () => {
   it("calls it a RAID rather than a disk", () => {
     mockConfig.mockReturnValue(config({ mdRaids: [{ name: "/dev/md0" }] }));
-    plainRender(<ConfigurationTitle />);
+    installerRender(<ConfigurationTitle />);
 
     expect(sentence()).toBe("Use RAID md0 (20 GiB) as installation device");
   });
@@ -92,7 +101,7 @@ describe("when there are volume groups over one disk", () => {
     mockConfig.mockReturnValue(
       config({ drives: [{ name: "/dev/vdd" }], volumeGroups: [{ vgName: "system" }] }),
     );
-    plainRender(<ConfigurationTitle />);
+    installerRender(<ConfigurationTitle />);
 
     expect(sentence()).toBe("Create LVM volume group system on disk vdd (20 GiB)");
   });
@@ -104,7 +113,7 @@ describe("when there are volume groups over one disk", () => {
         volumeGroups: [{ vgName: "system" }, { vgName: "another" }],
       }),
     );
-    plainRender(<ConfigurationTitle />);
+    installerRender(<ConfigurationTitle />);
 
     expect(sentence()).toBe("Create LVM volume groups system and another on disk vdd (20 GiB)");
   });
@@ -116,7 +125,7 @@ describe("when there are volume groups over one disk", () => {
         volumeGroups: [{ vgName: "system" }, { vgName: "another" }, { vgName: "third" }],
       }),
     );
-    plainRender(<ConfigurationTitle />);
+    installerRender(<ConfigurationTitle />);
 
     expect(sentence()).toBe("Create 3 LVM volume groups on disk vdd (20 GiB)");
   });
@@ -127,7 +136,7 @@ describe("when the configuration spreads over several disks", () => {
     mockConfig.mockReturnValue(
       config({ drives: [{ name: "/dev/vda" }, { name: "/dev/vdb" }, { name: "/dev/vdc" }] }),
     );
-    plainRender(<ConfigurationTitle />);
+    installerRender(<ConfigurationTitle />);
 
     expect(sentence()).toBe("Set up the new system across 3 disks");
   });
@@ -139,7 +148,7 @@ describe("when the configuration spreads over several disks", () => {
         volumeGroups: [{ vgName: "system" }],
       }),
     );
-    plainRender(<ConfigurationTitle />);
+    installerRender(<ConfigurationTitle />);
 
     expect(sentence()).toBe("Set up the new system across 2 disks");
   });
@@ -150,7 +159,7 @@ describe("when there is no shorter true thing to say", () => {
     mockConfig.mockReturnValue(
       config({ drives: [{ name: "/dev/vda" }], mdRaids: [{ name: "/dev/md0" }] }),
     );
-    plainRender(<ConfigurationTitle />);
+    installerRender(<ConfigurationTitle />);
 
     expect(sentence()).toBe("Set up the new system across multiple devices");
   });

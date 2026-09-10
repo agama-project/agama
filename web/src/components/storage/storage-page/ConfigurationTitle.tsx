@@ -23,6 +23,7 @@
 import React from "react";
 import Interpolate from "~/components/core/Interpolate";
 import DeviceName from "~/components/storage/shared/DeviceName";
+import SheetOpener from "~/components/storage/shared/SheetOpener";
 import { NAMES_PER_LINE } from "~/components/storage/shared/naming";
 import { baseName } from "~/components/storage/utils";
 import { useConfigModel } from "~/hooks/model/storage/config-model";
@@ -66,8 +67,19 @@ export default function ConfigurationTitle(): React.ReactNode {
      languages, and a slot that takes either "disk" or "RAID" leaves a
      translator with no way to make them agree. */
   const onDisk = drives.length === 1;
+  /* The name is the way in, and there is no button under the sentence saying
+     so. Set in monospace, it is already the one thing in the line that reads as
+     a value rather than as words, which is what makes it findable; a button
+     would break the sentence it sits in and teach a second gesture for one
+     destination. */
   const namedHost = () =>
-    onlyHost && <DeviceName name={baseName(onlyHost.name)} size={systemDevice?.block?.size} />;
+    onlyHost && (
+      /* The lone host is whichever of the two collections holds one, so where it
+         is written follows from that rather than from searching for it. */
+      <SheetOpener subject={{ collection: onDisk ? "drives" : "mdRaids", index: 0 }}>
+        <DeviceName name={baseName(onlyHost.name)} size={systemDevice?.block?.size} />
+      </SheetOpener>
+    );
 
   if (onlyHost && groups.length === 0) {
     const boots = configModel.boot.hasDevice(config, onlyHost.name);
