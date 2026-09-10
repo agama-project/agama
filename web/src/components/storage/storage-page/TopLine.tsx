@@ -153,7 +153,11 @@ export default function TopLine(): React.ReactNode {
           flexWrap={{ default: "wrap" }}
         >
           <FlexItem>
-            <DescriptionList isCompact isHorizontal isFluid columnModifier={{ default: "2Col" }}>
+            {/* Laid out as a row of pairs rather than as PatternFly's columns,
+                which share out whatever width they are given: two settings and
+                a sentence spread across a whole strip read as three things
+                placed apart rather than as one line. */}
+            <DescriptionList isCompact isHorizontal isFluid className="agm-top-line__settings">
               <SettingValue
                 icon={bootIcon}
                 // TRANSLATORS: names the setting saying where the machine will

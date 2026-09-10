@@ -463,3 +463,36 @@ nav.agm-breadcrumb > ol > li > a {
 .agm-entries-table__cost--shrinks svg {
   color: var(--pf-t--global--icon--color--status--warning--default);
 }
+
+// The page's own line: what the page is for, and the two decisions that belong
+// to the installation rather than to any one device.
+//
+// Its settings sit together as a row of pairs. PatternFly lays a description
+// list out in columns that share whatever width they are given, which spreads
+// two short values across a whole strip: the line then reads as three things
+// placed apart rather than as one line ending in its settings.
+.agm-top-line__settings {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--pf-t--global--spacer--md) var(--pf-t--global--spacer--lg);
+  width: auto;
+}
+
+// Each pair keeps its own term and value side by side and no wider.
+.agm-top-line__settings > * {
+  display: flex;
+  align-items: baseline;
+  gap: var(--pf-t--global--spacer--sm);
+}
+
+// The add offer belongs next to what it adds to, so it keeps the list's own
+// indent rather than sitting against the edge of the page.
+.agm-entries-table__add {
+  padding-block-start: var(--pf-t--global--spacer--md);
+  padding-inline-start: var(--pf-t--global--spacer--lg);
+}
+
+// The whole row opens the entry, and says so before it is pressed.
+.agm-entries-table__row {
+  cursor: pointer;
+}
