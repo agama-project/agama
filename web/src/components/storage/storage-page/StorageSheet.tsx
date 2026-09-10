@@ -28,8 +28,10 @@ import DeviceDetail from "~/components/storage/device-sheet/DeviceDetail";
 import DriveMenu from "~/components/storage/entries-table/DriveMenu";
 import VolumeGroupMenu from "~/components/storage/entries-table/VolumeGroupMenu";
 import { useEntry } from "~/components/storage/device-sheet/entry";
+import { useSingleDevice } from "~/components/storage/storage-page/queries";
 import { useSheet, SHEET_ID } from "~/components/storage/shared/use-sheet";
 import { useMediaQuery } from "~/hooks/use-media-query";
+import { EmptyState, EmptyStateBody } from "@patternfly/react-core";
 import { _ } from "~/i18n";
 import type { ConfigModel, Partitionable } from "~/model/storage/config-model";
 
@@ -75,6 +77,7 @@ export default function StorageSheet({ page }: StorageSheetProps): React.ReactNo
   const placement = usePlacement();
   const selection = subject === "result" ? null : subject;
   const entry = useEntry(selection);
+  const singleDevice = useSingleDevice();
 
   const isResult = subject === "result";
   const isOpen = isResult || entry !== null;
@@ -109,6 +112,26 @@ export default function StorageSheet({ page }: StorageSheetProps): React.ReactNo
         ))
       }
       page={page}
+      /* Only where there is a list to pick from. On a plan of one device there
+         is nothing to select, and a third of a wide screen saying so reports an
+         absence the reader did not cause. */
+      placeholder={
+        singleDevice ? undefined : (
+          <EmptyState
+            headingLevel="h2"
+            variant="sm"
+            // TRANSLATORS: said in the empty column beside the list, where no
+            // entry of the installation has been opened yet.
+            titleText={_("Nothing selected")}
+          >
+            <EmptyStateBody>
+              {/* TRANSLATORS: says what the empty column beside the list is
+                  for. */}
+              {_("Pick an entry in the list to see and change what happens to it.")}
+            </EmptyStateBody>
+          </EmptyState>
+        )
+      }
     >
       {isResult && <ResultSheet />}
       {entry && selection && <DeviceDetail entry={entry} subject={selection} />}
