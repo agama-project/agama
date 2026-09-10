@@ -428,10 +428,11 @@ type ArrayFieldProps = {
   splitPasteOn?: RegExp | string;
 
   /**
-   * Additional guidance shown alongside the error messages.
+   * Additional guidance shown below the field.
    *
-   * Only rendered when the field has errors. Use to explain the expected
-   * format or other context that helps the user fix invalid entries.
+   * Always rendered, and kept alongside the error messages when there are any.
+   * Use to explain the expected format, or how the entries can be filled in
+   * when the field offers more than typing (see `addOn`).
    */
   helperText?: React.ReactNode;
 

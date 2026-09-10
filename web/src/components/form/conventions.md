@@ -20,6 +20,7 @@ examples and refined patterns.
   - [5. Choice selector (mode or behavior selection)](#5-choice-selector-mode-or-behavior-selection)
   - [6. Revealed by a checkbox](#6-revealed-by-a-checkbox)
   - [7. Footer entry, help that stays out of the way](#7-footer-entry-help-that-stays-out-of-the-way)
+  - [8. Add-on beside a field that takes typed values](#8-add-on-beside-a-field-that-takes-typed-values)
 - [Read-only information](#read-only-information)
 - [Accessibility notes](#accessibility-notes)
 - [Validation](#validation)
@@ -296,7 +297,8 @@ The footer entry costs nothing to anyone who does not open the list, and it sits
 exactly where the user already is at the moment the list turns out not to be
 enough. Prefer it whenever the extra route serves a minority. A separate control
 is right only when most users are expected to take that route, at which point it
-is not a way out but a main path.
+is not a way out but a main path. That case, and the case of a field that has no
+list to hang an entry off in the first place, is pattern 8.
 
 #### Reaching it
 
@@ -346,6 +348,103 @@ footerEntry={{
 
 Available today on `DropdownField` through its `footerEntry` prop. Other
 selectors can grow the same idea when a case for it turns up.
+
+### 8. Add-on beside a field that takes typed values
+
+Like pattern 7, this one is about what a control offers rather than about
+whether a field appears. A second control sits next to the field and fills it
+in: a dialog listing what the system found, a picker, a set of suggestions. The
+field keeps working exactly as before for anyone who types.
+
+Use it when both of these hold:
+
+- **The field takes free text, not a choice from a list.** There is no list to
+  hang a footer entry off. `ArrayField` is the case today: the value is a list
+  of strings the user types, pastes, and edits one token at a time.
+- **The extra route is the main path, not a way out.** Pattern 7 argues against
+  a control beside the field precisely because a footer entry costs nothing to
+  the majority who never take that route. Here the majority does take it:
+  picking the cards the machine already has is the ordinary way to fill in the
+  field, and typing is for the card that is not plugged in yet.
+
+If either fails, use pattern 7 instead.
+
+**Example:** `PortsField`, the ports of a bond or a bridge. The field is an
+`ArrayField` because a port may name a device that does not exist yet, and the
+button beside it opens `DeviceSelectorModal` with the devices the system
+reports.
+
+`ArrayField` supports it through its `addOn` prop, which receives the current
+`entries` and a `setEntries` that replaces them:
+
+```tsx
+<field.ArrayField
+  label={label}
+  helperText={_("Pick the devices to use as ports, or type the name of one not listed yet.")}
+  skipDuplicates
+  addOn={({ entries, setEntries }) => (
+    <DevicePicker
+      devices={offered}
+      selected={offered.filter((d) => entries.includes(d.name))}
+      onConfirm={(picked) => setEntries(mergePicked(entries, names(offered), names(picked)))}
+    />
+  )}
+/>
+```
+
+Whatever the add-on sets goes through the same `normalize` and `skipDuplicates`
+rules as a typed value, and is validated the same way. Unlike typing and
+pasting, an add-on leaves the draft input alone: only the caller knows whether
+what the user was half-way through typing still matters.
+
+Say in `helperText` that both routes exist. Nothing else on screen tells the
+user that a field they can type into is also filled in by the button next to it.
+
+#### The button
+
+An icon button, `variant="plain"`, wrapped in `VisualTooltip` and carrying an
+`aria-label` that says what the values are for, not what the control is:
+`_("Select bond ports")`, not `_("Browse")`. Several fields on the same form may
+each have one, and "Browse" three times over names none of them.
+
+Disable it when it has nothing to offer. A dialog that opens on an empty table
+is worse than a button that visibly cannot be pressed.
+
+#### Two-way, or the two views disagree
+
+An add-on that only appends is a shortcut. An add-on that opens showing what the
+field already holds is a second view of the same value, and the user will treat
+it as one: what they unpick, they expect gone. Once it can remove, it has to
+account for everything the field holds, or a value becomes unreachable from the
+view the user is looking at.
+
+Four rules, all of which the ports field needed before the two views agreed:
+
+1. **Open with the current entries picked.** Otherwise confirming silently drops
+   everything already listed.
+2. **Let it answer with nothing.** Unpicking the last value must be
+   confirmable. A picker that requires a non-empty selection cannot empty the
+   list, and the user is sent back to the input to finish the job by hand. Name
+   the empty answer rather than disabling the button: "Use no device".
+3. **Show the entries the source data knows nothing about.** A typed value that
+   matches no known item still belongs in the dialog, as a stand-in row saying
+   so ("Not present yet") rather than describing details nobody has. Leaving it
+   out means it can be added by typing but never removed by picking.
+4. **Keep untouched what was deliberately not offered.** Values filtered out of
+   the offer on purpose are not absent, and confirming must not drop them.
+   `mergePicked(entries, offered, picked)` in `ArrayField` is that rule: entries
+   the picker never listed survive, listed ones follow the pick.
+
+Rule 3 has a limit worth being explicit about: only values that match nothing at
+all become stand-ins. A value the offer filtered out on purpose (the loopback
+device, the controller being edited) does exist, and a row claiming otherwise
+would be a lie. Those are the values rule 4 protects instead.
+
+#### When not to use it
+
+- The field is a selector: use pattern 7.
+- The add-on only ever appends: it may still be right, but none of the two-way
+  rules apply, and a footer entry on a nearby selector is often cheaper.
 
 ---
 
@@ -491,20 +590,23 @@ Work through these questions in order:
 6. Is the field an advanced option that most users will never need? Use pattern 6.
 7. Do the options serve most users, while a harder setup needs more help than
    the list can give? Add a footer entry to the selector, pattern 7.
+8. Does the field take typed values, with most users better served by picking
+   from what the system already knows? Add a control beside it, pattern 8.
 
 ---
 
 ## Summary
 
-| Pattern                           | Visibility   | Label                             | Validated on submit |
-| --------------------------------- | ------------ | --------------------------------- | ------------------- |
-| Required                          | Always       | No suffix                         | Yes                 |
-| Always optional/context-dependent | Always       | `(optional)` or clarifying suffix | No                  |
-| Conditionally required            | On condition | No suffix                         | Yes                 |
-| Conditionally optional            | On condition | `(optional)`                      | No                  |
-| Choice selector                   | Always       | No suffix                         | Depends on choice   |
-| Checkbox opt-in                   | On checkbox  | No suffix                         | Yes, when rendered  |
-| Footer entry                      | Inside the list | Short, ends in `...`           | Sets no value       |
+| Pattern                           | Visibility       | Label                             | Validated on submit |
+| --------------------------------- | ---------------- | --------------------------------- | ------------------- |
+| Required                          | Always           | No suffix                         | Yes                 |
+| Always optional/context-dependent | Always           | `(optional)` or clarifying suffix | No                  |
+| Conditionally required            | On condition     | No suffix                         | Yes                 |
+| Conditionally optional            | On condition     | `(optional)`                      | No                  |
+| Choice selector                   | Always           | No suffix                         | Depends on choice   |
+| Checkbox opt-in                   | On checkbox      | No suffix                         | Yes, when rendered  |
+| Footer entry                      | Inside the list  | Short, ends in `...`              | Sets no value       |
+| Add-on                            | Beside the field | Icon, named by what it fills in   | Via the field       |
 
 ---
 
@@ -915,6 +1017,58 @@ const PasswordFields = withForm({
   },
 });
 ```
+
+**When the same component serves several fields of the same form**, the field
+name can still be a prop: `withForm` already knows the vocabulary, so type the
+prop as a subset of `keyof FormFields` and TanStack Form accepts it wherever a
+literal name would go.
+
+```tsx
+type PortsFieldProps = {
+  /** Form field holding the names of the ports. */
+  name: Extract<keyof FormFields, `${string}Ports`>;
+  /** Form field holding the name of the controller the ports belong to. */
+  controllerField: Extract<keyof FormFields, `${string}Iface`>;
+  label: TranslatedString;
+  pickLabel: TranslatedString;
+};
+
+const PortsField = withForm({
+  ...defaultOptions,
+  // Only carries the prop types: every caller passes them all.
+  props: {} as PortsFieldProps,
+  render: function Render({ form, name, controllerField, label, pickLabel }) {
+    return (
+      <form.Subscribe selector={(s) => s.values[controllerField]}>
+        {(controllerIface) => <form.AppField name={name}>{/* ... */}</form.AppField>}
+      </form.Subscribe>
+    );
+  },
+});
+
+// Callers say what the field is about
+<PortsField form={form} name="bondPorts" controllerField="bondIface"
+            label={_("Bond ports")} pickLabel={_("Select bond ports")} />
+<PortsField form={form} name="bridgePorts" controllerField="bridgeIface"
+            label={_("Bridge ports")} pickLabel={_("Select bridge ports")} />
+```
+
+The template literal keeps the prop honest: `name="bondMode"` does not compile.
+Widen it to `keyof FormFields` only when the component really does work with any
+field of the right value type.
+
+Prefer this over a discriminator like `kind: "bond" | "bridge"` that the
+component switches on to pick names and labels. The discriminator makes the
+component know every caller, so a third one means editing it; passing the names
+and labels means it knows none, and the strings sit next to the fields they
+describe. `PortsField` was written the first way and changed to the second in
+review.
+
+**`props: {} as XProps` vs a literal default:** `withForm` renders
+`{ ...props, ...innerProps }`, so the declared `props` object is only a source
+of types unless it supplies a default. Use `{} as XProps` when every caller
+passes everything, and a literal (`{ isEditing: false } as BondFieldsProps`)
+when a prop has a genuine default. Both are in use today.
 
 #### Mistake 6: Not calling `field.handleBlur()` in field components
 
@@ -1602,6 +1756,18 @@ Examples:
 
 - Components that group related form fields: `BondFields.tsx`, `IpFields.tsx`
 - Use `*Fields` suffix, not `*Settings` (more accurate naming)
+
+**Single fields**: `*Field.tsx`
+
+- A form-local component rendering one field, however much machinery it needs
+  around it: `PortsField.tsx`
+- Singular or plural says how many fields the component owns, so the name
+  answers on its own whether it can be dropped anywhere a field goes
+- Same rule as the shared field components in `components/form/`
+  (`TextField.tsx`, `ArrayField.tsx`); a form-local one lives in the form
+  directory only because nothing else needs it yet
+- Do not name it after the widget it happens to use (`PortsSelector`,
+  `PortsPicker`): the widget is an implementation detail and changes
 
 ### The fields.ts Module
 
