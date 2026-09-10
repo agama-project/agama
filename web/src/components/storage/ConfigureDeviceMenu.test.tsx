@@ -25,6 +25,7 @@ import { screen, within } from "@testing-library/react";
 import { mockNavigateFn, installerRender } from "~/test-utils";
 import type { Storage } from "~/model/proposal";
 import type { ConfigModel } from "~/model/storage/config-model";
+import { _ } from "~/i18n";
 import ConfigureDeviceMenu from "./ConfigureDeviceMenu";
 
 const vda: Storage.Device = {
@@ -104,6 +105,19 @@ describe("ConfigureDeviceMenu", () => {
   beforeEach(() => {
     mockUseModel.mockReturnValue({ drives: [], mdRaids: [], volumeGroups: [] });
     mockUseAvailableDevices.mockReturnValue([vda, vdb]);
+  });
+
+  it("keeps its own wording where the caller has nothing to add", () => {
+    installerRender(<ConfigureDeviceMenu />);
+
+    screen.getByRole("button", { name: "More devices" });
+  });
+
+  it("takes the words its surroundings need", () => {
+    installerRender(<ConfigureDeviceMenu label={_("Add more devices")} />);
+
+    screen.getByRole("button", { name: "Add more devices" });
+    expect(screen.queryByRole("button", { name: "More devices" })).not.toBeInTheDocument();
   });
 
   it("renders an initially closed menu ", async () => {
