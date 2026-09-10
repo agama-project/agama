@@ -21,14 +21,13 @@
  */
 
 import React from "react";
-import { sprintf } from "sprintf-js";
 import Interpolate from "~/components/core/Interpolate";
 import NestedContent from "~/components/core/NestedContent";
 import LabelText from "~/components/form/LabelText";
+import PortsField from "./PortsField";
 import { defaultOptions, BridgeStpMode } from "./fields";
 import { withForm } from "~/hooks/form";
-import { useDevices } from "~/hooks/model/system/network";
-import { _, N_, formatList } from "~/i18n";
+import { _, N_ } from "~/i18n";
 
 /**
  * STP mode options for the selector.
@@ -75,9 +74,6 @@ const BridgeFields = withForm({
     isEditing: false,
   } as BridgeFieldsProps,
   render: function Render({ form, isEditing }) {
-    const devices = useDevices();
-    const availableDevices = devices.filter((d) => d.name !== "lo");
-
     return (
       <>
         <form.AppField name="bridgeIface">
@@ -98,21 +94,20 @@ const BridgeFields = withForm({
             )
           }
         </form.AppField>
-        <form.AppField name="bridgePorts">
-          {(field) => (
-            <field.ArrayField
-              label={
-                // TRANSLATORS: label for the bridge ports field.
-                _("Bridge ports")
-              }
-              helperText={
-                // TRANSLATORS: helper text for the bridge ports field. %s is a list of available devices.
-                sprintf(_("Available devices: %s"), formatList(availableDevices.map((d) => d.name)))
-              }
-              skipDuplicates
-            />
-          )}
-        </form.AppField>
+        <PortsField
+          form={form}
+          name="bridgePorts"
+          controllerField="bridgeIface"
+          label={
+            // TRANSLATORS: label for the bridge ports field.
+            _("Bridge ports")
+          }
+          pickLabel={
+            // TRANSLATORS: accessible name of the button opening the dialog for
+            // picking the ports of a bridge among the devices found in the system.
+            _("Select bridge ports")
+          }
+        />
 
         <form.AppField name="bridgeStp">
           {(field) => (

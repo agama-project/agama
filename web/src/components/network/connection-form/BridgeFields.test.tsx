@@ -45,6 +45,7 @@ const mockDevice2 = {
 
 jest.mock("~/hooks/model/system/network", () => ({
   useDevices: () => [mockDevice1, mockDevice2],
+  useConnections: () => [],
 }));
 
 function TestForm({
@@ -77,7 +78,7 @@ describe("BridgeFields", () => {
 
     await screen.findByText("Bridge ports");
     screen.getByRole("textbox", { name: "Bridge ports" });
-    screen.getByText(/Available devices: enp1s0 and enp2s0/);
+    screen.getByRole("button", { name: "Select bridge ports" });
     const stpSelector = await screen.findByLabelText("Spanning Tree Protocol (STP)");
     expect(stpSelector).toHaveTextContent("Default");
   });

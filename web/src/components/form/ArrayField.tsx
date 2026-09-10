@@ -24,6 +24,8 @@ import React, { useState, useRef } from "react";
 import { fork, sift, unique } from "radashi";
 import { sprintf } from "sprintf-js";
 import {
+  Flex,
+  FlexItem,
   FormGroup,
   Label,
   TextInputGroup,
@@ -39,7 +41,7 @@ import Interpolate from "~/components/core/Interpolate";
 import { resolveAriaLabelProps, useFieldLabel } from "~/hooks/use-field-label";
 import { useFieldContext } from "~/hooks/form-contexts";
 import { useAnnounce } from "~/context/announcer";
-import { _ } from "~/i18n";
+import { _, n_ } from "~/i18n";
 import type { TranslatedString } from "~/i18n";
 
 /**
@@ -145,6 +147,24 @@ function pasteAnnouncement(
  */
 export function parsePasteEntries(text: string, splitPasteOn?: RegExp | string): string[] {
   return sift(text.split(splitPasteOn ?? /[\s,]+/).map((t) => t.trim()));
+}
+
+/**
+ * Entries left after a picker offering `offered` answered with `picked`.
+ *
+ * For an `addOn` that lists a known set of values while the field also accepts
+ * typed ones. The entries the picker knew nothing about are kept as they were:
+ * dropping them because the picker did not offer them would lose what the user
+ * wrote. The offered ones follow the pick, keeping the order they were listed
+ * in and appending the rest.
+ *
+ * @example
+ * onConfirm={(picked) => setEntries(mergePicked(entries, offered, picked))}
+ */
+export function mergePicked(entries: string[], offered: string[], picked: string[]): string[] {
+  const kept = entries.filter((e) => !offered.includes(e) || picked.includes(e));
+
+  return [...kept, ...picked.filter((p) => !kept.includes(p))];
 }
 
 /**
@@ -408,15 +428,31 @@ type ArrayFieldProps = {
   splitPasteOn?: RegExp | string;
 
   /**
-   * Additional guidance shown alongside the error messages.
+   * Additional guidance shown below the field.
    *
-   * Only rendered when the field has errors. Use to explain the expected
-   * format or other context that helps the user fix invalid entries.
+   * Always rendered, and kept alongside the error messages when there are any.
+   * Use to explain the expected format, or how the entries can be filled in
+   * when the field offers more than typing (see `addOn`).
    */
   helperText?: React.ReactNode;
 
   /** Disables the text input and all entry interactions. */
   isDisabled?: boolean;
+
+  /**
+   * Content rendered next to the text input, for managing the entries without
+   * typing them: a picker, a dialog opener, a list of suggestions.
+   *
+   * It receives the current `entries` and a `setEntries` that replaces them.
+   * Replacing rather than only adding lets a picker that shows what is already
+   * listed take back what the user unpicks.
+   *
+   * @example
+   * addOn={({ entries, setEntries }) => (
+   *   <Button onClick={() => setEntries([...entries, ...pickedNames])}>{_("Add")}</Button>
+   * )}
+   */
+  addOn?: (props: { entries: string[]; setEntries: (values: string[]) => void }) => React.ReactNode;
 
   /**
    * Maximum width for entries in "ch" units.
@@ -441,6 +477,12 @@ type ArrayFieldProps = {
  * to the first or last, and Escape exits navigation. Pasting a whitespace- or
  * comma-separated string adds all tokens at once. The splitting pattern can be
  * customized via `splitPasteOn` (e.g., `"\n"` for newline-separated entries).
+ *
+ * However a value arrives, typed, pasted, or set by an `addOn`, it goes through
+ * the same `normalize` and `skipDuplicates` rules and is validated the same
+ * way. Typing and pasting clear the draft once committed; an `addOn` leaves it
+ * alone, since only the caller knows whether what the user was typing still
+ * matters.
  *
  * The component correctly handles newline splitting because the paste event
  * handler reads from `clipboardData.getData('text')` before the browser
@@ -510,6 +552,7 @@ export default function ArrayField({
   skipDuplicates = false,
   splitPasteOn,
   maxEntryWidth,
+  addOn,
 }: ArrayFieldProps) {
   const field = useFieldContext<string[]>();
   const value = field.state.value;
@@ -682,98 +725,146 @@ export default function ArrayField({
     }
   };
 
-  const onPaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
-    const entries = parsePasteEntries(e.clipboardData.getData("text"), splitPasteOn);
-    if (entries.length <= 1) return;
-    e.preventDefault();
+  /**
+   * Appends several values at once, announcing the outcome as a whole instead
+   * of once per value.
+   */
+  const addEntries = (entries: string[]) => {
+    if (entries.length === 0) return;
 
     const normalized = entries.map((t) => normalizeValue(t, normalize));
     const toAdd = skipDuplicates ? filterNew(value, normalized) : normalized;
     const [valid, invalid] = fork(toAdd, (n) => !validateOnChange?.(n));
     const skipped = normalized.length - toAdd.length;
-    const added = toAdd.length;
 
     onChange([...value, ...toAdd]);
-    setDraft("");
     clearActive();
 
-    announce(pasteAnnouncement(added, skipped, valid, invalid));
+    announce(pasteAnnouncement(toAdd.length, skipped, valid, invalid));
+  };
+
+  const onPaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
+    const entries = parsePasteEntries(e.clipboardData.getData("text"), splitPasteOn);
+    if (entries.length <= 1) return;
+    e.preventDefault();
+
+    addEntries(entries);
+    setDraft("");
+  };
+
+  /**
+   * Replaces the whole list, the way an add-on picker showing what is already
+   * listed does.
+   *
+   * What is announced is the resulting list rather than what changed, since
+   * entries may just as well have been dropped.
+   */
+  const setEntries = (entries: string[]) => {
+    const normalized = entries.map((t) => normalizeValue(t, normalize));
+    const next = skipDuplicates ? unique(normalized) : normalized;
+
+    onChange(next);
+    clearActive();
+
+    announce(
+      // TRANSLATORS: screen reader announcement after an add-on replaced the
+      // entries of a list. %d is replaced by how many are listed now.
+      sprintf(n_("%d entry listed.", "%d entries listed.", next.length), next.length),
+    );
   };
 
   const hasErrors = value?.some(errorFor);
   const entryErrors = unique(sift(value?.map(errorFor)));
   const hasAnyError = hasErrors || fieldErrors?.length > 0;
 
-  return (
-    <FormGroup fieldId={field.name} label={<span id={labelId}>{label}</span>}>
-      <div onClick={() => inputRef.current?.focus()}>
-        <TextInputGroup
-          isDisabled={isDisabled}
-          className={(hasAnyError && "pf-m-error") || undefined}
+  const inputRow = (
+    <div onClick={() => inputRef.current?.focus()}>
+      <TextInputGroup
+        isDisabled={isDisabled}
+        className={(hasAnyError && "pf-m-error") || undefined}
+      >
+        <TextInputGroupMain
+          innerRef={inputRef}
+          value={draft}
+          aria-activedescendant={activeIndex >= 0 ? valueId(activeIndex) : undefined}
+          onChange={(_, v) => {
+            setDraft(v);
+            clearActive();
+          }}
+          onBlur={() => {
+            if (draft.trim()) commit(draft);
+          }}
+          inputProps={{
+            id: field.name,
+            "aria-describedby": `${hintId} ${instructionsId}`,
+            ...inputNameProps,
+            onKeyDown,
+            onPaste,
+          }}
+          style={{ flexBasis: "8rem", flexGrow: 1, display: "block" }}
         >
-          <TextInputGroupMain
-            innerRef={inputRef}
-            value={draft}
-            aria-activedescendant={activeIndex >= 0 ? valueId(activeIndex) : undefined}
-            onChange={(_, v) => {
-              setDraft(v);
-              clearActive();
-            }}
-            onBlur={() => {
-              if (draft.trim()) commit(draft);
-            }}
-            inputProps={{
-              id: field.name,
-              "aria-describedby": `${hintId} ${instructionsId}`,
-              ...inputNameProps,
-              onKeyDown,
-              onPaste,
-            }}
-            style={{ flexBasis: "8rem", flexGrow: 1, display: "block" }}
-          >
-            {/* Holds the list name as a full translated phrase built from the
+          {/* Holds the list name as a full translated phrase built from the
                 label, whatever its shape. Hidden: referenced only, never
                 shown. */}
-            {value.length > 0 && (
-              <span id={listboxNameId} hidden>
-                <Interpolate
-                  // TRANSLATORS: accessible name for the entries list. %s is
-                  // the field label (e.g. "DNS servers").
-                  sentence={_("%s entries")}
-                >
-                  {() => label}
-                </Interpolate>
-              </span>
-            )}
-            {value.length > 0 && (
-              <div
-                role="listbox"
-                {...listboxNameProps}
-                style={{ display: "flex", flexWrap: "wrap", gap: "0.25rem", padding: "0.2rem 0" }}
+          {value.length > 0 && (
+            <span id={listboxNameId} hidden>
+              <Interpolate
+                // TRANSLATORS: accessible name for the entries list. %s is
+                // the field label (e.g. "DNS servers").
+                sentence={_("%s entries")}
               >
-                {value.map((item, index) => {
-                  const error = errorFor(item);
+                {() => label}
+              </Interpolate>
+            </span>
+          )}
+          {value.length > 0 && (
+            <div
+              role="listbox"
+              {...listboxNameProps}
+              style={{ display: "flex", flexWrap: "wrap", gap: "0.25rem", padding: "0.2rem 0" }}
+            >
+              {value.map((item, index) => {
+                const error = errorFor(item);
 
-                  return (
-                    <Entry
-                      key={index}
-                      index={index}
-                      item={item}
-                      isActive={index === activeIndex}
-                      error={error}
-                      toLabel={toLabel}
-                      onEdit={editAt}
-                      onRemove={removeAt}
-                      valueId={valueId}
-                      maxWidth={maxEntryWidth}
-                    />
-                  );
-                })}
-              </div>
-            )}
-          </TextInputGroupMain>
-        </TextInputGroup>
-      </div>
+                return (
+                  <Entry
+                    key={index}
+                    index={index}
+                    item={item}
+                    isActive={index === activeIndex}
+                    error={error}
+                    toLabel={toLabel}
+                    onEdit={editAt}
+                    onRemove={removeAt}
+                    valueId={valueId}
+                    maxWidth={maxEntryWidth}
+                  />
+                );
+              })}
+            </div>
+          )}
+        </TextInputGroupMain>
+      </TextInputGroup>
+    </div>
+  );
+
+  return (
+    <FormGroup fieldId={field.name} label={<span id={labelId}>{label}</span>}>
+      {addOn ? (
+        <Flex
+          gap={{ default: "gapSm" }}
+          flexWrap={{ default: "nowrap" }}
+          alignItems={{ default: "alignItemsFlexStart" }}
+        >
+          {/* The input is not told to grow: it takes the width of what it
+              holds, so the add-on stays right next to it instead of being
+              pushed to the far edge of the form. */}
+          <FlexItem style={{ minWidth: 0 }}>{inputRow}</FlexItem>
+          <FlexItem>{addOn({ entries: value, setEntries })}</FlexItem>
+        </Flex>
+      ) : (
+        inputRow
+      )}
 
       <FormHelperText>
         <HelperText>

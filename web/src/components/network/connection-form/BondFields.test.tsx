@@ -45,6 +45,7 @@ const mockDevice2 = {
 
 jest.mock("~/hooks/model/system/network", () => ({
   useDevices: () => [mockDevice1, mockDevice2],
+  useConnections: () => [],
 }));
 
 function TestForm({
@@ -79,7 +80,7 @@ describe("BondFields", () => {
     await screen.findByLabelText("Bond options");
     await screen.findByText("Bond ports");
     screen.getByRole("textbox", { name: "Bond ports" });
-    screen.getByText(/Available devices: enp1s0 and enp2s0/);
+    screen.getByRole("button", { name: "Select bond ports" });
   });
 
   it("displays bond ports", async () => {

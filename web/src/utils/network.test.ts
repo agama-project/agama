@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import { Connection, SecurityProtocols } from "~/types/network";
+import { BondMode, Connection, SecurityProtocols } from "~/types/network";
 import {
   addDefaultIPPrefix,
   isValidIp,
@@ -28,6 +28,8 @@ import {
   intToIPString,
   stringToIPInt,
   formatIp,
+  connectionForName,
+  controllerOf,
   generateConnectionName,
   ipPrefixFor,
   securityFromFlags,
@@ -90,6 +92,61 @@ describe("formatIp", () => {
     expect(
       formatIp({ address: "1.2.3.4", prefix: "255.255.255.0" }, { removePrefix: true }),
     ).toEqual("1.2.3.4");
+  });
+});
+
+describe("connectionForName", () => {
+  const byIface = new Connection("Ethernet 1", { iface: "enp1s0" });
+  const byId = new Connection("enp1s0", { iface: "enp2s0" });
+
+  it("prefers the connection bound to the interface of that name", () => {
+    expect(connectionForName("enp1s0", [byId, byIface])).toBe(byIface);
+  });
+
+  it("falls back to the connection with that id", () => {
+    expect(connectionForName("enp1s0", [byId])).toBe(byId);
+  });
+
+  it("returns undefined when no connection matches", () => {
+    expect(connectionForName("enp9s0", [byId, byIface])).toBeUndefined();
+  });
+});
+
+describe("controllerOf", () => {
+  const bondWithPorts = (ports: string[], options = {}) =>
+    new Connection("Bond 1", {
+      iface: "bond0",
+      bond: { mode: BondMode.ACTIVE_BACKUP, options: "", ports },
+      ...options,
+    });
+
+  it("returns the bond listing the device among its ports", () => {
+    expect(controllerOf("enp1s0", [bondWithPorts(["enp1s0"])])).toBe("bond0");
+  });
+
+  it("returns the bridge listing the device among its ports", () => {
+    const bridge = new Connection("Bridge 1", { iface: "br0", bridge: { ports: ["enp1s0"] } });
+    expect(controllerOf("enp1s0", [bridge])).toBe("br0");
+  });
+
+  it("names the controller after its connection id when it has no interface", () => {
+    const bond = new Connection("Bond 1", {
+      bond: { mode: BondMode.ACTIVE_BACKUP, options: "", ports: ["enp1s0"] },
+    });
+    expect(controllerOf("enp1s0", [bond])).toBe("Bond 1");
+  });
+
+  it("finds the device listed by the id of the connection bound to it", () => {
+    const port = new Connection("Ethernet 1", { iface: "enp1s0" });
+    expect(controllerOf("enp1s0", [bondWithPorts(["Ethernet 1"]), port])).toBe("bond0");
+  });
+
+  it("returns undefined when no controller lists the device", () => {
+    expect(controllerOf("enp9s0", [bondWithPorts(["enp1s0"])])).toBeUndefined();
+  });
+
+  it("returns undefined when there is no controller at all", () => {
+    expect(controllerOf("enp1s0", [])).toBeUndefined();
   });
 });
 

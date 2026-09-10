@@ -21,7 +21,7 @@
  */
 
 import ipaddr from "ipaddr.js";
-import { isUndefined, title } from "radashi";
+import { isUndefined, sift, title } from "radashi";
 import {
   APIRoute,
   ApFlags,
@@ -343,6 +343,38 @@ const connectionAddresses = (connection: Connection, devices: Device[]): string 
 };
 
 /**
+ * Returns the connection a device name refers to, if there is one.
+ *
+ * The name is matched against the interface first and against the connection
+ * id only then, the same order the backend uses to resolve the names listed as
+ * bond or bridge ports. Going through the same steps keeps what the user is
+ * told about a name and what the backend does with it in agreement.
+ */
+const connectionForName = (name: string, connections: Connection[]): Connection | undefined =>
+  connections.find((c) => c.iface === name) ?? connections.find((c) => c.id === name);
+
+/**
+ * Returns the bond or bridge the given device is already a port of, if any.
+ *
+ * Membership lives in the controller's own `ports` list, so it is found by
+ * going through the controllers instead of asking the port about it. A port is
+ * listed there by its interface name or, lacking one, by its connection id,
+ * and both are worth looking for.
+ *
+ * The answer is the controller's interface name, falling back to its
+ * connection id, which is how a controller is named everywhere else.
+ */
+const controllerOf = (name: string, connections: Connection[]): string | undefined => {
+  const port = connectionForName(name, connections);
+  const names = sift([name, port?.iface, port?.id]);
+  const controller = connections.find((c) =>
+    (c.bond?.ports ?? c.bridge?.ports)?.some((p) => names.includes(p)),
+  );
+
+  return controller && (controller.iface || controller.id);
+};
+
+/**
  * Returns the binding mode for the given connection.
  */
 const connectionBindingMode = (connection: Connection): ConnectionBindingMode => {
@@ -447,9 +479,11 @@ export {
   buildRoutes,
   connectionAddresses,
   connectionBindingMode,
+  connectionForName,
   connectionStateLabel,
   connectionType,
   connectionTypeLabel,
+  controllerOf,
   deviceStateLabel,
   ensureIPPrefix,
   formatIp,
