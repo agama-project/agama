@@ -81,4 +81,4 @@ const typeWithSize = (partition: ConfigModel.Partition | ConfigModel.LogicalVolu
   );
 };
 
-export { pathWithSize, typeWithSize };
+export { pathWithSize, typeDescription, typeWithSize };

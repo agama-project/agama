@@ -39,6 +39,8 @@ jest.mock("~/hooks/model/storage/config-model", () => ({
   useDeleteDrive: () => jest.fn(),
   useDeleteMdRaid: () => jest.fn(),
   useDeleteVolumeGroup: () => jest.fn(),
+  useDeletePartition: () => jest.fn(),
+  useDeleteLogicalVolume: () => jest.fn(),
 }));
 
 jest.mock("~/hooks/model/system/storage", () => ({
@@ -68,6 +70,18 @@ const config = (values: Partial<ConfigModel.Config> = {}): ConfigModel.Config =>
 const page = <div>the storage page</div>;
 const sheet = () => screen.queryByRole("region");
 
+/**
+ * Renders the page at one address.
+ *
+ * The address is set here rather than in a `beforeEach`, because `mockRoutes`
+ * queues one value per call: set in two nested blocks, the outer one is never
+ * consumed and turns up in whatever test runs next.
+ */
+const renderAt = (address: string) => {
+  mockRoutes(address);
+  return installerRender(<StorageSheet page={page} />);
+};
+
 describe("StorageSheet", () => {
   beforeEach(() => {
     mockConfig.mockReturnValue(config());
@@ -90,25 +104,21 @@ describe("StorageSheet", () => {
   });
 
   describe("when the address names an entry", () => {
-    beforeEach(() => {
-      mockRoutes("/storage?sheet=drives.0");
-    });
-
     it("opens on it, saying what it is the way its row says it", () => {
-      installerRender(<StorageSheet page={page} />);
+      renderAt("/storage?sheet=drives.0");
 
       screen.getByRole("region", { name: /sda/ });
       screen.getByText(/60 GiB/);
     });
 
     it("names where the system keeps it, which survives a rename", () => {
-      installerRender(<StorageSheet page={page} />);
+      renderAt("/storage?sheet=drives.0");
 
       screen.getByText("pci-0000:0a:00.0");
     });
 
     it("offers the same acts its row offers", () => {
-      installerRender(<StorageSheet page={page} />);
+      renderAt("/storage?sheet=drives.0");
 
       screen.getByRole("button", { name: "Actions for sda" });
     });
@@ -118,26 +128,75 @@ describe("StorageSheet", () => {
         { sid: 59, name: "/dev/sda", class: "drive", block: { size: 64424509440 } },
       ]);
       mockActions.mockReturnValue([{ device: 59, text: "" }]);
-      installerRender(<StorageSheet page={page} />);
+      renderAt("/storage?sheet=drives.0");
 
       screen.getByText("After installing");
       screen.getByRole("treegrid");
     });
 
     it("says so where the installer has worked no layout out", () => {
-      installerRender(<StorageSheet page={page} />);
+      renderAt("/storage?sheet=drives.0");
 
       screen.getByText(/no layout to show/);
+    });
+
+    it("offers the views of it left to right, as time moving forwards", () => {
+      renderAt("/storage?sheet=drives.0");
+
+      screen.getByRole("tab", { name: "Final layout" });
+      screen.getByRole("tab", { name: "Planned content" });
+    });
+
+    it("opens on what it becomes, not on what there is to change", () => {
+      renderAt("/storage?sheet=drives.0");
+
+      expect(screen.getByRole("tab", { name: "Final layout" })).toHaveAttribute(
+        "aria-selected",
+        "true",
+      );
+    });
+
+    describe("and the address names one of its views", () => {
+      beforeEach(() => {
+        mockConfig.mockReturnValue(
+          config({
+            drives: [
+              {
+                name: "/dev/sda",
+                partitions: [{ mountPath: "/", size: { default: false, min: 1e10 } }],
+              },
+            ],
+          }),
+        );
+      });
+
+      it("opens on that one instead, listing what the new system gets here", () => {
+        renderAt("/storage?sheet=drives.0&sheetTab=planned");
+
+        screen.getByText("For the new system");
+        screen.getByRole("rowheader", { name: /\// });
+      });
+
+      it("offers the one act that changes what is planned here", () => {
+        renderAt("/storage?sheet=drives.0&sheetTab=planned");
+
+        screen.getByRole("link", { name: "Add partition" });
+      });
+    });
+
+    describe("and nothing is planned on it", () => {
+      it("says so, and offers the act that changes it", () => {
+        renderAt("/storage?sheet=drives.0&sheetTab=planned");
+
+        screen.getByText("The installation puts nothing of its own here.");
+        screen.getByRole("link", { name: "Add partition" });
+      });
     });
   });
 
   describe("when the address names an entry the configuration no longer has", () => {
-    beforeEach(() => {
-      mockRoutes("/storage?sheet=drives.7");
-    });
-
     it("leaves the reader on the page rather than on a broken panel", () => {
-      installerRender(<StorageSheet page={page} />);
+      renderAt("/storage?sheet=drives.7");
 
       screen.getByText("the storage page");
       expect(sheet()).not.toBeInTheDocument();
@@ -145,24 +204,16 @@ describe("StorageSheet", () => {
   });
 
   describe("when the address makes no sense at all", () => {
-    beforeEach(() => {
-      mockRoutes("/storage?sheet=nonsense");
-    });
-
     it("reads as a shut panel, since an address can be edited by hand", () => {
-      installerRender(<StorageSheet page={page} />);
+      renderAt("/storage?sheet=nonsense");
 
       expect(sheet()).not.toBeInTheDocument();
     });
   });
 
   describe("when the address names the whole picture", () => {
-    beforeEach(() => {
-      mockRoutes("/storage?sheet=result");
-    });
-
     it("opens on it instead", () => {
-      installerRender(<StorageSheet page={page} />);
+      renderAt("/storage?sheet=result");
 
       screen.getByRole("region", { name: "Result" });
       screen.getByText("everything the installer will do");
