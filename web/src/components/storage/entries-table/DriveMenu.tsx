@@ -26,18 +26,14 @@ import { sprintf } from "sprintf-js";
 import MenuButton, { MenuButtonItem } from "~/components/core/MenuButton";
 import RowMenuToggle from "~/components/storage/entries-table/RowMenuToggle";
 import NewVgMenuOption from "~/components/storage/NewVgMenuOption";
-import DeviceSelectorModal from "~/components/storage/DeviceSelectorModal";
-import { whyItCannotMove } from "~/components/storage/shared/retarget";
+import { useRetarget } from "~/components/storage/shared/use-retarget";
 import { baseName } from "~/components/storage/utils";
-import { isDrive, isMd, isVolumeGroup } from "~/model/storage/device";
 import configModel from "~/model/storage/config-model";
 import {
   useConfigModel,
-  useConvertDevice,
   useDeleteDrive,
   useDeleteMdRaid,
 } from "~/hooks/model/storage/config-model";
-import { useAvailableDevices } from "~/hooks/model/system/storage";
 import { _ } from "~/i18n";
 import type { Partitionable } from "~/model/storage/config-model";
 import type { Storage } from "~/model/system";
@@ -67,35 +63,15 @@ export type DriveMenuProps = {
  */
 export default function DriveMenu({ entry, device }: DriveMenuProps): React.ReactNode {
   const config = useConfigModel();
-  const available = useAvailableDevices();
-  const convertDevice = useConvertDevice();
   const deleteDrive = useDeleteDrive();
   const deleteMdRaid = useDeleteMdRaid();
-  const [isSelectorOpen, setIsSelectorOpen] = React.useState(false);
+  const { cannotMove, note, open, selector } = useRetarget(entry, device);
 
   const name = baseName(entry.name);
   // TRANSLATORS: names the menu of things that can be done to one device of the
   // installation. %s is a device name, such as "sda".
   const label = sprintf(_("Actions for %s"), name);
   const location = configModel.partitionable.findLocation(config, entry.name);
-
-  /* Whether the plan builds anything here, which is not the same question as
-     whether this device has entries: a disk given whole to a volume group
-     carries an entry per partition being cleared off it and builds nothing. */
-  const plansContent =
-    Boolean(entry.filesystem) ||
-    configModel.partitionable.isAddingPartitions(entry) ||
-    configModel.partitionable.isReusingPartitions(entry);
-
-  /* Every device the configuration does not already hold, plus the one it is
-     on, which is how the dialog shows what is currently chosen. */
-  const taken = configModel
-    .devices(config)
-    .map((used) => used.name)
-    .filter((used) => used !== entry.name);
-  const targets = available.filter((candidate) => !taken.includes(candidate.name));
-
-  const cannotMove = whyItCannotMove(config, entry);
 
   const items = [
     <MenuButtonItem
@@ -104,19 +80,9 @@ export default function DriveMenu({ entry, device }: DriveMenuProps): React.Reac
       /* Why it cannot be done where it cannot, and otherwise what it costs,
          which the title cannot say: the plan is not being rebuilt, it is being
          moved, and a reader who has spent time on this device's content needs
-         to know it comes along. Said only where there is content to carry. */
-      description={
-        cannotMove ||
-        (plansContent
-          ? sprintf(
-              // TRANSLATORS: what happens to the plan when the reader picks a
-              // different device for it. %s is a device name, such as "sda".
-              _("Everything planned for %s moves to the device you pick."),
-              name,
-            )
-          : undefined)
-      }
-      onClick={cannotMove ? undefined : () => setIsSelectorOpen(true)}
+         to know it comes along. */
+      description={cannotMove || note || undefined}
+      onClick={cannotMove ? undefined : open}
     >
       {/* TRANSLATORS: offered on a device of the installation: put everything
           planned for it somewhere else instead. */}
@@ -152,32 +118,7 @@ export default function DriveMenu({ entry, device }: DriveMenuProps): React.Reac
         customToggle={<RowMenuToggle label={label} />}
         items={items}
       />
-      {isSelectorOpen && (
-        <DeviceSelectorModal
-          title={_("Use another device")}
-          intro={
-            plansContent
-              ? sprintf(
-                  // TRANSLATORS: said above the list of devices to move the plan
-                  // to. %s is a device name, such as "sda".
-                  _("The plan stays as it is. Everything %s was going to hold moves."),
-                  name,
-                )
-              : // TRANSLATORS: said above the list of devices to move the plan to,
-                // where the installer builds nothing on the current one.
-                _("The plan stays as it is.")
-          }
-          selected={device}
-          disks={targets.filter(isDrive)}
-          mdRaids={targets.filter(isMd)}
-          volumeGroups={targets.filter(isVolumeGroup)}
-          onCancel={() => setIsSelectorOpen(false)}
-          onConfirm={([target]: Storage.Device[]) => {
-            setIsSelectorOpen(false);
-            convertDevice(entry.name, target.name);
-          }}
-        />
-      )}
+      {selector}
     </>
   );
 }

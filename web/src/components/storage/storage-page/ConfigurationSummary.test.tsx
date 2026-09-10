@@ -52,6 +52,12 @@ jest.mock("./DeviceSummary", () => () => <>why the configuration has no layout</
 jest.mock("~/components/storage/entries-table/EntriesTable", () => () => (
   <>what the configuration is made of</>
 ));
+/* Wrapped, unlike the mocks above: these two are siblings in one row, so as
+   bare text they would read as a single run of words. */
+jest.mock("~/components/storage/shared/RetargetOffer", () => () => (
+  <div>put it somewhere else</div>
+));
+jest.mock("~/components/storage/ConfigureDeviceMenu", () => () => <div>bring in more devices</div>);
 
 const config = (values: Partial<ConfigModel.Config> = {}): ConfigModel.Config => ({
   drives: [],
@@ -65,6 +71,8 @@ const spaceDecision = "what may happen to what is there";
 const cost = "what the configuration costs";
 const noLayout = "why the configuration has no layout";
 const entries = "what the configuration is made of";
+const retarget = "put it somewhere else";
+const addDevices = "bring in more devices";
 
 /** A disk with something already on it, which is what makes space a question. */
 const usedDisk = { name: "/dev/vdd", partitions: [{ name: "/dev/vdd1" }] };
@@ -115,6 +123,13 @@ describe("ConfigurationSummary", () => {
       expect(screen.queryByText(entries)).not.toBeInTheDocument();
     });
 
+    it("leads with the act that answers the sentence, and offers adding after it", () => {
+      plainRender(<ConfigurationSummary />);
+
+      screen.getByText(retarget);
+      screen.getByText(addDevices);
+    });
+
     it("offers the space decision, since there is one device it can be about", () => {
       plainRender(<ConfigurationSummary />);
 
@@ -162,6 +177,13 @@ describe("ConfigurationSummary", () => {
       plainRender(<ConfigurationSummary />);
 
       expect(screen.queryByText(noLayout)).not.toBeInTheDocument();
+    });
+
+    it("leaves moving to each row, since no one device speaks for the plan", () => {
+      plainRender(<ConfigurationSummary />);
+
+      expect(screen.queryByText(retarget)).not.toBeInTheDocument();
+      screen.getByText(addDevices);
     });
 
     it("leaves the space decision to each row, since one answer cannot speak for two disks", () => {
