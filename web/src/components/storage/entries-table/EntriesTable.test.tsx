@@ -22,6 +22,7 @@
 
 import React from "react";
 import { screen, within } from "@testing-library/react";
+import { useSearchParams } from "react-router";
 import { installerRender, mockNavigateFn } from "~/test-utils";
 import type { ConfigModel } from "~/model/storage/config-model";
 import EntriesTable from "~/components/storage/entries-table/EntriesTable";
@@ -59,6 +60,8 @@ jest.mock("~/hooks/model/proposal/storage", () => ({
   useActions: () => mockActions(),
 }));
 
+jest.mock("~/components/storage/ConfigureDeviceMenu", () => () => <div>bring in more devices</div>);
+
 const config = (values: Partial<ConfigModel.Config> = {}): ConfigModel.Config => ({
   drives: [],
   mdRaids: [],
@@ -74,6 +77,17 @@ const config = (values: Partial<ConfigModel.Config> = {}): ConfigModel.Config =>
  * is an interactive widget rather than something to read.
  */
 const table = () => screen.getByRole("table", { name: "Configured devices" });
+
+/**
+ * The address, so a test can read what a control wrote to it.
+ *
+ * A row writes through the router's own setter rather than through the navigate
+ * spy, so what it did is visible in the address and nowhere else.
+ */
+const Address = () => {
+  const [params] = useSearchParams();
+  return <output>{params.toString()}</output>;
+};
 
 /** Every name the list reads out, in the order it reads them. */
 const names = () =>
@@ -102,6 +116,13 @@ describe("EntriesTable", () => {
 
       expect(screen.queryByRole("table")).not.toBeInTheDocument();
     });
+  });
+
+  it("closes with the offer to add to it, at the end of what it appends to", () => {
+    mockConfig.mockReturnValue(config({ drives: [{ name: "/dev/sda" }] }));
+    installerRender(<EntriesTable />);
+
+    screen.getByText("bring in more devices");
   });
 
   it("names each category over the entries it heads", () => {
@@ -360,6 +381,44 @@ describe("the way into an entry", () => {
       { search: "?sheet=volumeGroups.0" },
       expect.objectContaining({ replace: true }),
     );
+  });
+
+  it("is the whole row to a mouse, since a row is what a reader clicks", async () => {
+    const { user } = installerRender(
+      <>
+        <EntriesTable />
+        <Address />
+      </>,
+    );
+    await user.click(screen.getByText(/Host LVM volume group/));
+
+    expect(screen.getByRole("status").textContent).toBe("sheet=drives.0");
+  });
+
+  it("leaves the row's menu to the menu, rather than opening both", async () => {
+    const { user } = installerRender(
+      <>
+        <EntriesTable />
+        <Address />
+      </>,
+    );
+    await user.click(screen.getByRole("button", { name: "Actions for sda" }));
+
+    expect(screen.getByRole("status").textContent).toBe("");
+  });
+
+  it("walks the entries with the arrow keys, without taking their tab stops", async () => {
+    const { user } = installerRender(<EntriesTable />);
+    await user.click(screen.getByRole("link", { name: "system" }));
+    await user.keyboard("{ArrowDown}");
+
+    expect(screen.getByRole("link", { name: "sda" })).toHaveFocus();
+
+    await user.keyboard("{End}");
+    expect(screen.getByRole("link", { name: "sdb" })).toHaveFocus();
+
+    await user.keyboard("{Home}");
+    expect(screen.getByRole("link", { name: "system" })).toHaveFocus();
   });
 
   it("is also the menu's first offer, for a reader who never tries the name", async () => {

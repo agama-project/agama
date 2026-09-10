@@ -26,6 +26,7 @@ import { Flex, FlexItem, Stack, StackItem } from "@patternfly/react-core";
 import Icon from "~/components/layout/Icon";
 import Text from "~/components/core/Text";
 import SheetOpener from "~/components/storage/shared/SheetOpener";
+import { useSheet } from "~/components/storage/shared/use-sheet";
 import { columnName } from "~/components/storage/entries-table/columns";
 import type { Consequence } from "~/components/storage/shared/consequences";
 import type { SheetEntry } from "~/components/storage/shared/use-sheet";
@@ -94,8 +95,14 @@ export default function EntryRow({
   menu,
   subject,
 }: EntryRowProps): React.ReactNode {
+  const { openSheet } = useSheet();
+
   return (
-    <Tr>
+    /* A click anywhere on the row opens it. A convenience for a mouse with no
+       keyboard equivalent of its own, which is only acceptable because the name
+       inside it is a link that does the same thing and is where the keyboard
+       lands. */
+    <Tr className="agm-entries-table__row" onClick={() => openSheet(subject)}>
       <Th scope="row" dataLabel={columnName("entry")}>
         {/* The name is the way in, which is the act a row teaches: what a
             reader does with a row is open it. There is no button under it
@@ -134,7 +141,11 @@ export default function EntryRow({
           ))}
         </Stack>
       </Td>
-      <Td isActionCell>{menu}</Td>
+      {/* The menu is not the row: opening a menu on a row that opens on click
+          would open both. */}
+      <Td isActionCell onClick={(event) => event.stopPropagation()}>
+        {menu}
+      </Td>
     </Tr>
   );
 }

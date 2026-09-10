@@ -51,7 +51,16 @@ export default function SheetOpener({ subject, children }: SheetOpenerProps): Re
   const { addressOf } = useSheet();
 
   return (
-    <Link to={addressOf(subject)} replace variant="link" isInline aria-controls={SHEET_ID}>
+    <Link
+      to={addressOf(subject)}
+      replace
+      variant="link"
+      isInline
+      aria-controls={SHEET_ID}
+      /* So the list around it can walk its entries with the arrow keys without
+         knowing how any of them is drawn. */
+      data-entry-name=""
+    >
       {children}
     </Link>
   );
