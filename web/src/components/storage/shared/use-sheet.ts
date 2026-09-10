@@ -99,7 +99,7 @@ function useSheet(): {
    * it is a menu item wherever it appears, so it acts rather than links, and
    * the address it writes is the same one a link would have carried.
    */
-  openSheet: (subject: SheetSubject) => void;
+  openSheet: (subject: SheetSubject, tab?: string) => void;
   /** Shuts it. */
   close: () => void;
 } {
@@ -115,10 +115,17 @@ function useSheet(): {
     return { search: `?${next}` };
   };
 
-  const openSheet = (subject: SheetSubject) =>
+  const openSheet = (subject: SheetSubject, tab?: string) =>
     setParams((next) => {
       next.set(SHEET, toParam(subject));
-      next.delete(SHEET_TAB);
+      /* On its own first view unless the caller has a view in mind, which is
+         what sends a reader straight to the half of the panel they asked
+         about. */
+      if (tab) {
+        next.set(SHEET_TAB, tab);
+      } else {
+        next.delete(SHEET_TAB);
+      }
       return next;
     }, SEARCH_PARAM_UPDATE);
 

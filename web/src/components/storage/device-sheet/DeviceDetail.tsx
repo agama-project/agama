@@ -24,6 +24,7 @@ import React from "react";
 import { Tab, Tabs, TabTitleText } from "@patternfly/react-core";
 import FinalLayoutSection from "~/components/storage/device-sheet/FinalLayoutSection";
 import PlannedContentSection from "~/components/storage/device-sheet/PlannedContentSection";
+import CurrentContentSection from "~/components/storage/device-sheet/CurrentContentSection";
 import { useSheetTab } from "~/components/storage/shared/use-sheet";
 import { _ } from "~/i18n";
 import type { Entry } from "~/components/storage/device-sheet/entry";
@@ -84,6 +85,18 @@ export default function DeviceDetail({ entry, subject }: DeviceDetailProps): Rea
         }
       >
         <PlannedContentSection entry={entry} subject={subject} />
+      </Tab>
+      <Tab
+        eventKey="current"
+        title={
+          <TabTitleText>
+            {/* TRANSLATORS: names the view of a device showing what was on it
+                before the installation was planned. */}
+            {_("Current content")}
+          </TabTitleText>
+        }
+      >
+        <CurrentContentSection entry={entry} subject={subject} />
       </Tab>
     </Tabs>
   );

@@ -22,7 +22,8 @@
 
 import React from "react";
 import { screen, within } from "@testing-library/react";
-import { plainRender, mockNavigateFn } from "~/test-utils";
+import { useSearchParams } from "react-router";
+import { installerRender } from "~/test-utils";
 import type { ConfigModel } from "~/model/storage/config-model";
 import SpaceDecision from "~/components/storage/storage-page/SpaceDecision";
 
@@ -40,13 +41,26 @@ const drive = (spacePolicy?: ConfigModel.SpacePolicy): ConfigModel.Drive =>
 
 const options = () => screen.getByRole("group", { name: "Allowed changes" });
 
+/**
+ * The address, so a test can read what a control wrote to it.
+ *
+ * The setter behind these params is the router's own, not the navigate spy, so
+ * what it does is visible in the address and nowhere else.
+ */
+const Address = () => {
+  const [params] = useSearchParams();
+  return <output>{params.toString()}</output>;
+};
+
+const address = () => screen.getByRole("status").textContent;
+
 describe("SpaceDecision", () => {
   beforeEach(() => {
     mockDeviceConfig.mockReturnValue(drive("keep"));
   });
 
   it("offers the four answers at once, so the reader sees the whole decision", () => {
-    plainRender(<SpaceDecision collection="drives" index={0} />);
+    installerRender(<SpaceDecision collection="drives" index={0} />);
 
     const names = within(options())
       .getAllByRole("button")
@@ -61,7 +75,7 @@ describe("SpaceDecision", () => {
   });
 
   it("says what the plan is doing, which is the one that reads pressed", () => {
-    plainRender(<SpaceDecision collection="drives" index={0} />);
+    installerRender(<SpaceDecision collection="drives" index={0} />);
 
     expect(screen.getByRole("button", { name: "Keeping everything", pressed: true }));
     expect(screen.getByRole("button", { name: "Deleting everything", pressed: false }));
@@ -69,7 +83,7 @@ describe("SpaceDecision", () => {
 
   describe("when another answer is chosen", () => {
     it("writes it to the configuration", async () => {
-      const { user } = plainRender(<SpaceDecision collection="drives" index={0} />);
+      const { user } = installerRender(<SpaceDecision collection="drives" index={0} />);
       await user.click(screen.getByRole("button", { name: "Shrinking if needed" }));
 
       expect(mockSetSpacePolicy).toHaveBeenCalledWith("drives", 0, { type: "resize" });
@@ -77,12 +91,17 @@ describe("SpaceDecision", () => {
   });
 
   describe("when custom is chosen", () => {
-    it("goes to where it is settled, since custom is not an answer but the rest of the question", async () => {
-      const { user } = plainRender(<SpaceDecision collection="drives" index={0} />);
+    it("opens where it is settled, since custom is not an answer but the rest of the question", async () => {
+      const { user } = installerRender(
+        <>
+          <SpaceDecision collection="drives" index={0} />
+          <Address />
+        </>,
+      );
       await user.click(screen.getByRole("button", { name: "Custom" }));
 
       expect(mockSetSpacePolicy).not.toHaveBeenCalled();
-      expect(mockNavigateFn).toHaveBeenCalledWith("/storage/drives/0/space-policy/edit");
+      expect(address()).toBe("sheet=drives.0&sheetTab=current");
     });
   });
 
@@ -92,7 +111,7 @@ describe("SpaceDecision", () => {
     });
 
     it("reads as keeping everything, which is what an unset rule does", () => {
-      plainRender(<SpaceDecision collection="drives" index={0} />);
+      installerRender(<SpaceDecision collection="drives" index={0} />);
 
       expect(screen.getByRole("button", { name: "Keeping everything", pressed: true }));
     });

@@ -21,10 +21,8 @@
  */
 
 import React from "react";
-import { useNavigate } from "react-router";
 import { ToggleGroup, ToggleGroupItem, Tooltip } from "@patternfly/react-core";
-import { STORAGE as PATHS } from "~/routes/paths";
-import { generateEncodedPath } from "~/utils";
+import { useSheet } from "~/components/storage/shared/use-sheet";
 import {
   useDevice as useDeviceConfig,
   useSetSpacePolicy,
@@ -121,20 +119,18 @@ export type SpaceDecisionProps = {
  * read before it is chosen, and it reaches the button as its description.
  *
  * Custom is not a value like the others. It says that what happens is settled
- * partition by partition, so choosing it goes to where that is settled.
- *
- * @fixme Custom leads to the space policy page for now. It becomes the device
- *  sheet, on the tab listing what is on the device, once the sheet exists.
+ * partition by partition, so choosing it opens the device's own panel on what
+ * is there today, which is where that is settled.
  */
 export default function SpaceDecision({ collection, index }: SpaceDecisionProps) {
-  const navigate = useNavigate();
+  const { openSheet } = useSheet();
   const setSpacePolicy = useSetSpacePolicy();
   const deviceConfig = useDeviceConfig(collection, index);
   const current = deviceConfig?.spacePolicy || "keep";
 
   const choose = (policy: ConfigModel.SpacePolicy) => {
     if (policy === "custom") {
-      navigate(generateEncodedPath(PATHS.editSpacePolicy, { collection, index: String(index) }));
+      openSheet({ collection, index }, "current");
       return;
     }
 

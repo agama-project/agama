@@ -86,6 +86,32 @@ function shrunk(count: number): TranslatedString {
   );
 }
 
+/** What the installation does to one thing an entry already holds. */
+type Outcome = "deleted" | "formatted" | "shrunk" | "kept";
+
+/**
+ * What becomes of one thing an entry already holds.
+ *
+ * Read from the plan the solver produced rather than from the configuration, so
+ * a device allowed to lose partitions it did not have to lose reports nothing
+ * lost. The three losses are told apart because they are different news: a
+ * formatted partition survives and its data does not, which is neither of the
+ * other two.
+ *
+ * Formatting is not an action of its own in the plan, so it is read as the
+ * partition surviving with a file system it did not have before.
+ */
+function outcomeOf(manager: DevicesManager, part: System.Device): Outcome {
+  if (manager.deletedDevices().some((device) => device.sid === part.sid)) return "deleted";
+
+  const staged = manager.stagingDevice(part.sid);
+  if (staged && manager.hasNewFilesystem(staged)) return "formatted";
+
+  if (manager.resizedDevices().some((device) => device.sid === part.sid)) return "shrunk";
+
+  return "kept";
+}
+
 const systemsOf = (devices: System.Device[]): string[] =>
   unique(sift(devices.flatMap((device) => device.block?.systems || [])));
 
@@ -107,19 +133,13 @@ const systemsOf = (devices: System.Device[]): string[] =>
 function consequencesOf(manager: DevicesManager, parts: System.Device[]): Consequence[] {
   if (!parts.length) return [];
 
-  const sids = new Set(parts.map((part) => part.sid));
-  const mine = (devices: System.Device[]) => devices.filter((device) => sids.has(device.sid));
+  const of = (outcome: Outcome) => parts.filter((part) => outcomeOf(manager, part) === outcome);
 
-  const gone = mine(manager.deletedDevices());
-  const smaller = mine(manager.resizedDevices());
+  const gone = of("deleted");
   /* Emptied rather than removed: it survives the installation as a partition
-     and loses everything that was on it, which the plan reports as no action of
-     its own. */
-  const emptied = parts.filter((part) => {
-    if (sids.size === 0) return false;
-    const staged = manager.stagingDevice(part.sid);
-    return staged !== undefined && manager.hasNewFilesystem(staged);
-  });
+     and loses everything that was on it. */
+  const emptied = of("formatted");
+  const smaller = of("shrunk");
 
   return sift([
     gone.length && { kind: "destroys" as const, text: deleted(systemsOf(gone), gone.length) },
@@ -131,4 +151,5 @@ function consequencesOf(manager: DevicesManager, parts: System.Device[]): Conseq
   ]);
 }
 
-export { consequencesOf };
+export { consequencesOf, outcomeOf };
+export type { Outcome };

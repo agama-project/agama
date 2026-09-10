@@ -41,6 +41,11 @@ jest.mock("~/hooks/model/storage/config-model", () => ({
   useDeleteVolumeGroup: () => jest.fn(),
   useDeletePartition: () => jest.fn(),
   useDeleteLogicalVolume: () => jest.fn(),
+  useSetSpacePolicy: () => jest.fn(),
+  /* Mocked although the module above it already is: a hook calling another
+     hook of its own module calls the module's binding, not the mocked export,
+     so the real suspense query underneath would run. */
+  useDevice: () => ({ name: "/dev/sda", spacePolicy: "keep" }),
 }));
 
 jest.mock("~/hooks/model/system/storage", () => ({
@@ -181,6 +186,48 @@ describe("StorageSheet", () => {
         renderAt("/storage?sheet=drives.0&sheetTab=planned");
 
         screen.getByRole("link", { name: "Add partition" });
+      });
+    });
+
+    describe("and the address names what is on it today", () => {
+      beforeEach(() => {
+        mockSystemDevice.mockReturnValue({
+          name: "/dev/sda",
+          class: "drive",
+          drive: { type: "disk", info: {} },
+          block: { size: 64424509440 },
+          partitions: [
+            { sid: 41, name: "/dev/sda1", block: { size: 5e10, systems: ["Windows 11"] } },
+          ],
+        });
+      });
+
+      it("names what is there and what becomes of it", () => {
+        renderAt("/storage?sheet=drives.0&sheetTab=current");
+
+        screen.getByText("Already here");
+        screen.getByRole("rowheader", { name: /sda1.*Windows 11/ });
+        screen.getByText("Kept as it is");
+      });
+
+      it("puts the decision above the column it governs", () => {
+        renderAt("/storage?sheet=drives.0&sheetTab=current");
+
+        screen.getByRole("group", { name: "Allowed changes" });
+      });
+
+      it("says so where the device is empty, and asks nothing", () => {
+        mockSystemDevice.mockReturnValue({
+          name: "/dev/sda",
+          class: "drive",
+          drive: { type: "disk", info: {} },
+          block: { size: 64424509440 },
+          partitions: [],
+        });
+        renderAt("/storage?sheet=drives.0&sheetTab=current");
+
+        screen.getByText("There is nothing on this device.");
+        expect(screen.queryByRole("group", { name: "Allowed changes" })).not.toBeInTheDocument();
       });
     });
 
