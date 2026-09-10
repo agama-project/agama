@@ -48,42 +48,42 @@ jobs:
       COVERAGE: 1
 
     container:
-      # TODO: the 16.1 image is not available yet, use 16.0 for now
-      image: registry.opensuse.org/opensuse/leap:16.0
+      image: registry.opensuse.org/opensuse/tumbleweed:latest
 
     steps:
 
     - name: Configure and refresh repositories
       # disable unused repositories to have faster refresh
-      run: zypper modifyrepo -d openSUSE:repo-openh264 && zypper ref
+      run: zypper modifyrepo -d repo-non-oss repo-openh264 repo-update && zypper ref
 
     - name: Install Ruby development files
       run: zypper --non-interactive install
         gawk
+        git
         gcc
         gcc-c++
-        gettext-tools
-        git
-        libffi-devel
+        make
         libxml2-devel
         libxslt-devel
-        libyaml-devel
-        make
+        openssl-devel
         ruby-devel
-        which
 
     - name: Install required packages
-      # install the YaST packages from the 16.1, we needed a newer version of yast2-storage-ng
-      run: zypper ar -f https://download.opensuse.org/distribution/leap/16.1/repo/oss Leap-16.1 &&
-        zypper --non-interactive install
-        autoyast2-installation
-        yast2
-        yast2-bootloader
-        yast2-devtools
-        yast2-iscsi-client
-        yast2-network
-        yast2-storage-ng
-        yast2-users
+      run: |
+        RUBY_VERSION=$(ruby -e "puts RbConfig::CONFIG['ruby_version']")
+        zypper --non-interactive install \
+        autoyast2-installation \
+        yast2 \
+        yast2-bootloader \
+        yast2-devtools \
+        yast2-iscsi-client \
+        yast2-network \
+        yast2-storage-ng \
+        yast2-users \
+        gettext-tools \
+        "rubygem(ruby:$RUBY_VERSION:yast-rake)" \
+        "rubygem(ruby:$RUBY_VERSION:gettext)" \
+        which
 
     - name: Git Checkout
       uses: actions/checkout@v7
@@ -102,13 +102,6 @@ jobs:
           /usr/bin/rspec
           /usr/bin/rxgettext
         key: ${{ runner.os }}-ruby-bundler-master-${{ hashFiles('./service/Gemfile.lock') }}
-
-    # openSUSE Leap 16 does not contain all need Ruby gems, install them with bundler
-    - name: Install additional Ruby gems
-      run: bundle add yast-rake gettext
-      working-directory: ./service
-      env:
-        NOKOGIRI_USE_SYSTEM_LIBRARIES: 1
 
     - name: Install RubyGems dependencies
       run: bundle config set --local with 'development' && bundle install
