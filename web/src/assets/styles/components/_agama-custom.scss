@@ -509,3 +509,24 @@ nav.agm-breadcrumb > ol > li > a {
   font-size: var(--pf-t--global--font--size--body--sm);
   color: var(--pf-t--global--text--color--subtle);
 }
+
+// Things that are true about an entry, read above what it holds. Ruled off from
+// each other with a dashed line and from the content with a solid one: a dashed
+// rule separates without dividing, which is what a run of statements needs.
+.agm-statements {
+  padding-block-end: var(--pf-t--global--spacer--md);
+  margin-block-end: var(--pf-t--global--spacer--md);
+  border-block-end: 1px solid var(--pf-t--global--border--color--default);
+}
+
+.agm-statement + .agm-statement {
+  padding-block-start: var(--pf-t--global--spacer--sm);
+  margin-block-start: var(--pf-t--global--spacer--sm);
+  border-block-start: 1px dashed var(--pf-t--global--border--color--default);
+}
+
+// The mark sits on the first line of what it marks rather than on its baseline.
+.agm-statement svg {
+  margin-block-start: 0.2em;
+  color: var(--pf-t--global--icon--color--subtle);
+}
