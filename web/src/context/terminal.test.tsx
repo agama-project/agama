@@ -26,46 +26,49 @@ const wrapper = ({ children }: React.PropsWithChildren) => (
 );
 
 describe("useTerminal", () => {
-  it("starts hidden and expanded", () => {
+  it("starts closed and expanded", () => {
     const { result } = renderHook(() => useTerminal(), { wrapper });
-    expect(result.current.isVisible).toBe(false);
+    expect(result.current.isOpen).toBe(false);
     expect(result.current.isMinimized).toBe(false);
   });
 
-  it("shows, hides and toggles the panel", () => {
+  it("opens, closes and toggles the panel", () => {
     const { result } = renderHook(() => useTerminal(), { wrapper });
 
-    act(() => result.current.show());
-    expect(result.current.isVisible).toBe(true);
+    act(() => result.current.open());
+    expect(result.current.isOpen).toBe(true);
 
-    act(() => result.current.hide());
-    expect(result.current.isVisible).toBe(false);
+    act(() => result.current.close());
+    expect(result.current.isOpen).toBe(false);
 
     act(() => result.current.toggle());
-    expect(result.current.isVisible).toBe(true);
+    expect(result.current.isOpen).toBe(true);
+
+    act(() => result.current.toggle());
+    expect(result.current.isOpen).toBe(false);
   });
 
-  it("minimizes and restores while staying visible", () => {
+  it("minimizes and restores while staying open", () => {
     const { result } = renderHook(() => useTerminal(), { wrapper });
 
-    act(() => result.current.show());
+    act(() => result.current.open());
     act(() => result.current.minimize());
-    expect(result.current.isVisible).toBe(true);
+    expect(result.current.isOpen).toBe(true);
     expect(result.current.isMinimized).toBe(true);
 
     act(() => result.current.restore());
     expect(result.current.isMinimized).toBe(false);
   });
 
-  it("reopens expanded after having been minimized", () => {
+  it("reopens expanded after having been minimized and closed", () => {
     const { result } = renderHook(() => useTerminal(), { wrapper });
 
-    act(() => result.current.show());
+    act(() => result.current.open());
     act(() => result.current.minimize());
-    act(() => result.current.hide());
-    act(() => result.current.show());
+    act(() => result.current.close());
+    act(() => result.current.open());
 
-    expect(result.current.isVisible).toBe(true);
+    expect(result.current.isOpen).toBe(true);
     expect(result.current.isMinimized).toBe(false);
   });
 

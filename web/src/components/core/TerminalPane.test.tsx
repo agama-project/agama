@@ -18,17 +18,25 @@
  */
 
 import React from "react";
-import { screen } from "@testing-library/react";
+import { act, screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
+import { TERMINAL_HINT_ID, useTerminal } from "~/context/terminal";
+import { useTerminalSession } from "~/hooks/use-terminal-session";
 import TerminalPane from "~/components/core/TerminalPane";
+
+/** Runs what the panel passes to the session as its "leave the terminal" action. */
+const leaveTerminal = () => {
+  const [, options] = (useTerminalSession as jest.Mock).mock.calls.at(-1);
+  act(() => options.onLeave());
+};
 
 describe("TerminalPane", () => {
   describe("when there is not enough room", () => {
-    it("shows the message and only the hide action", () => {
+    it("shows the message and only the close action", () => {
       installerRender(<TerminalPane enoughSpace={false} />);
 
       screen.getByText("The terminal requires a larger screen size");
-      screen.getByRole("button", { name: "Hide terminal" });
+      screen.getByRole("button", { name: "Close terminal" });
       expect(screen.queryByRole("button", { name: "Minimize terminal" })).toBeNull();
       expect(screen.queryByRole("button", { name: "Clear terminal" })).toBeNull();
     });
@@ -45,7 +53,14 @@ describe("TerminalPane", () => {
       screen.getByRole("button", { name: "Increase font size" });
       screen.getByRole("button", { name: "Clear terminal" });
       screen.getByRole("button", { name: "Minimize terminal" });
-      screen.getByRole("button", { name: "Hide terminal" });
+      screen.getByRole("button", { name: "Close terminal" });
+    });
+
+    it("renders a container for the terminal to attach to", () => {
+      installerRender(<TerminalPane enoughSpace />);
+
+      const region = screen.getByRole("region", { name: "Terminal" });
+      expect(region.querySelector(".agm-terminal__screen")).not.toBeNull();
     });
 
     it("collapses to a bar when minimized, dropping the description and tools", async () => {
@@ -60,6 +75,79 @@ describe("TerminalPane", () => {
           "Linux command-line with administrative privileges on the installer system.",
         ),
       ).toBeNull();
+    });
+
+    it("offers links to the installer content and to the terminal", () => {
+      installerRender(<TerminalPane enoughSpace />);
+
+      expect(screen.getByRole("link", { name: "Skip to content" })).toHaveAttribute(
+        "href",
+        "#main-content",
+      );
+      expect(screen.getByRole("link", { name: "Skip to terminal" })).toHaveAttribute(
+        "href",
+        "#terminal-input",
+      );
+    });
+
+    it("keeps the link to the terminal when minimized, expanding the panel on the way", async () => {
+      const { user } = installerRender(<TerminalPane enoughSpace />);
+
+      await user.click(screen.getByRole("button", { name: "Minimize terminal" }));
+      screen.getByRole("link", { name: "Skip to content" });
+
+      await user.click(screen.getByRole("link", { name: "Skip to terminal" }));
+
+      // Back to its full size: the tools are within reach again.
+      screen.getByRole("button", { name: "Minimize terminal" });
+      screen.getByRole("button", { name: "Clear terminal" });
+    });
+
+    it("spells out how to leave the terminal, under the id the terminal input points at", () => {
+      const { container } = installerRender(<TerminalPane enoughSpace />);
+
+      const hint = container.querySelector(`#${TERMINAL_HINT_ID}`);
+      expect(hint).toHaveTextContent("Ctrl+Shift+L to move focus out");
+      expect(hint.querySelectorAll("kbd")).toHaveLength(3);
+    });
+
+    it("moves the focus to the panel's skip to content link when the session asks to leave the terminal", () => {
+      installerRender(<TerminalPane enoughSpace />);
+
+      leaveTerminal();
+
+      expect(screen.getByRole("link", { name: "Skip to content" })).toHaveFocus();
+    });
+
+    it("offers a close action, always available", async () => {
+      const { user } = installerRender(<TerminalPane enoughSpace />);
+
+      // Does not throw; the actual state transition it triggers (isOpen) is
+      // covered by context/terminal.test.tsx and TerminalDock.test.tsx.
+      await user.click(screen.getByRole("button", { name: "Close terminal" }));
+    });
+
+    it("passes the terminal's close action to the session, to end it on a graceful shell exit", () => {
+      // The session itself only calls this back on a graceful exit; that
+      // behavior is covered by use-terminal-session.test.ts. This only
+      // checks that TerminalPane wires the right function through.
+      let capturedClose: (() => void) | undefined;
+      const CaptureClose = () => {
+        capturedClose = useTerminal().close;
+        return null;
+      };
+
+      installerRender(
+        <>
+          <CaptureClose />
+          <TerminalPane enoughSpace />
+        </>,
+      );
+
+      expect(jest.mocked(useTerminalSession)).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.objectContaining({ onGracefulExit: capturedClose }),
+      );
     });
   });
 });

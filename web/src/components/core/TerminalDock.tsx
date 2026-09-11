@@ -86,7 +86,7 @@ function useElementSize(ref: React.RefObject<HTMLElement>): Size {
  * and the panel explains it needs more room (see {@link TerminalPane}).
  */
 export default function TerminalDock({ children }: React.PropsWithChildren) {
-  const { isVisible, isMinimized, height, setHeight } = useTerminal();
+  const { isOpen, isMinimized, height, setHeight } = useTerminal();
   const containerRef = useRef<HTMLDivElement>(null);
   const { width: containerWidth, height: containerHeight } = useElementSize(containerRef);
 
@@ -127,10 +127,10 @@ export default function TerminalDock({ children }: React.PropsWithChildren) {
 
   return (
     <div ref={containerRef} className="agm-terminal-dock">
-      <div className="agm-terminal-dock__main" hidden={isVisible && !enoughSpace}>
+      <div className="agm-terminal-dock__main" hidden={isOpen && !enoughSpace}>
         {children}
       </div>
-      {isVisible && (
+      {isOpen && (
         <>
           {enoughSpace && !minimized && (
             <ResizeHandle

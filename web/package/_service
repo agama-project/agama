@@ -19,6 +19,7 @@
     <param name="cpio">node_modules.obscpio</param>
     <param name="output">node_modules.spec.inc</param>
     <param name="source-offset">1000</param>
+    <param name="legacy-container"/>
   </service>
   <service mode="buildtime" name="tar">
     <param name="obsinfo">agama.obsinfo</param>

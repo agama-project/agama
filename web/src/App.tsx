@@ -70,21 +70,21 @@ const Content = () => {
     return <Navigate to={PRODUCT.root} />;
   }
 
-  if (status?.stage === "failed") {
-    return <InstallationFailed />;
-  }
-
-  if (status?.stage === "installing") {
-    return <InstallationProgress />;
-  }
-
-  if (status?.stage === "finished") {
-    return <InstallationFinished />;
-  }
-
+  // The terminal panel is rendered here, above the stage-driven swap below, so
+  // that opening a shell before installing keeps it running (and reachable)
+  // through the installing/failed/finished screens instead of losing it as
+  // soon as the stage changes.
   return (
     <TerminalDock>
-      <Outlet />
+      {status?.stage === "failed" ? (
+        <InstallationFailed />
+      ) : status?.stage === "installing" ? (
+        <InstallationProgress />
+      ) : status?.stage === "finished" ? (
+        <InstallationFinished />
+      ) : (
+        <Outlet />
+      )}
     </TerminalDock>
   );
 };

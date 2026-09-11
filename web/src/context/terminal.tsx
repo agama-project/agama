@@ -22,14 +22,32 @@
 
 import React, { useCallback, useMemo, useState } from "react";
 
+/**
+ * Id given to the terminal input, the target of the links that jump into the
+ * terminal. Shared so that the links and their target cannot drift apart.
+ */
+export const TERMINAL_INPUT_ID = "terminal-input";
+
+/**
+ * Id given to the text explaining how to leave the terminal with the keyboard.
+ * The terminal input points at it, so that the explanation is announced to
+ * anyone landing on the terminal, not only read by those who can see it.
+ */
+export const TERMINAL_HINT_ID = "terminal-keyboard-hint";
+
 type TerminalContextValue = {
-  /** Whether the terminal panel is currently shown next to the application. */
-  isVisible: boolean;
-  /** Shows the terminal panel. */
-  show: () => void;
-  /** Hides the terminal panel without ending the session. */
-  hide: () => void;
-  /** Toggles the terminal panel visibility. */
+  /**
+   * Whether the terminal panel (and its shell session) is open. `open()`
+   * creates the session; `close()` ends it. There is no separate "hidden but
+   * still connected" state: minimizing is the only way to shrink the panel
+   * while keeping the session alive (see {@link isMinimized}).
+   */
+  isOpen: boolean;
+  /** Opens the panel, creating a new session. */
+  open: () => void;
+  /** Closes the panel, ending the session. */
+  close: () => void;
+  /** Toggles between open and closed. */
   toggle: () => void;
   /** Whether the terminal panel is collapsed to its header bar. */
   isMinimized: boolean;
@@ -49,7 +67,8 @@ type TerminalContextValue = {
 const TerminalContext = React.createContext<TerminalContextValue | undefined>(undefined);
 
 /**
- * Gives access to the terminal panel state (visibility and preferred width).
+ * Gives access to the terminal panel state (open/closed, minimized, and
+ * preferred height).
  *
  * The state lives above the page-swapping route outlet, so the panel survives
  * navigation between pages and reopens right where the user left it.
@@ -67,27 +86,40 @@ function useTerminal(): TerminalContextValue {
  * Provider for the terminal panel state. See {@link useTerminal}.
  */
 function TerminalProvider({ children }: React.PropsWithChildren) {
-  const [isVisible, setIsVisible] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
   const [height, setHeight] = useState<number | undefined>(undefined);
 
-  // Showing the panel always brings it back expanded, so it never reopens as a
-  // collapsed bar after having been minimized.
-  const show = useCallback(() => {
-    setIsVisible(true);
+  // Opening always starts expanded, so it never reopens as a collapsed bar
+  // after having previously been minimized.
+  const open = useCallback(() => {
+    setIsOpen(true);
     setIsMinimized(false);
   }, []);
-  const hide = useCallback(() => setIsVisible(false), []);
+  const close = useCallback(() => {
+    setIsOpen(false);
+    setIsMinimized(false);
+  }, []);
   const toggle = useCallback(() => {
-    setIsVisible((visible) => !visible);
+    setIsOpen((wasOpen) => !wasOpen);
     setIsMinimized(false);
   }, []);
   const minimize = useCallback(() => setIsMinimized(true), []);
   const restore = useCallback(() => setIsMinimized(false), []);
 
   const value = useMemo(
-    () => ({ isVisible, show, hide, toggle, isMinimized, minimize, restore, height, setHeight }),
-    [isVisible, show, hide, toggle, isMinimized, minimize, restore, height],
+    () => ({
+      isOpen,
+      open,
+      close,
+      toggle,
+      isMinimized,
+      minimize,
+      restore,
+      height,
+      setHeight,
+    }),
+    [isOpen, open, close, toggle, isMinimized, minimize, restore, height],
   );
 
   return <TerminalContext.Provider value={value}>{children}</TerminalContext.Provider>;

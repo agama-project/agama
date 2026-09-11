@@ -167,3 +167,23 @@ fieldset {
     padding: 0 var(--pf-t--global--spacer--sm);
   }
 }
+
+// Keys the user is asked to press, drawn as the keys they are so they stand out
+// from the sentence around them: a face slightly off the surface behind it, and
+// a thicker bottom edge, given by a shadow doubling the border there, for the
+// bit of depth a real keycap has.
+kbd {
+  // An inline box would let the line above and below run into the padding and
+  // the border, so the keys are laid out as blocks and centered on the text.
+  display: inline-block;
+  vertical-align: middle;
+  padding: 0 var(--pf-t--global--spacer--xs);
+  border: var(--pf-t--global--border--width--regular) solid
+    var(--pf-t--global--border--color--default);
+  border-radius: var(--pf-t--global--border--radius--tiny);
+  box-shadow: inset 0 calc(-1 * var(--pf-t--global--border--width--regular)) 0
+    var(--pf-t--global--border--color--default);
+  background-color: var(--pf-t--global--background--color--secondary--default);
+  font-family: var(--pf-t--global--font--family--mono);
+  font-size: inherit;
+}

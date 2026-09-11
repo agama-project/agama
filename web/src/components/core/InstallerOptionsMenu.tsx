@@ -37,6 +37,7 @@ import ChangeProductOption from "~/components/core/ChangeProductOption";
 import ConfigDialog from "~/components/core/ConfigDialog";
 import DownloadLogsFeedback from "~/components/core/DownloadLogsFeedback";
 import { PRODUCT, ROOT } from "~/routes/paths";
+import { useTerminal } from "~/context/terminal";
 import { _ } from "~/i18n";
 
 /**
@@ -74,9 +75,10 @@ export default function InstallerOptionsMenu({ hideLabel = false }: InstallerOpt
     ROOT.installationExit,
   ].includes(location.pathname);
 
-  const [isOpen, setIsOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isConfigOpen, setIsConfigOpen] = useState(false);
-  const toggle = () => setIsOpen(!isOpen);
+  const { isOpen: isTerminalOpen, toggle: toggleTerminal } = useTerminal();
+  const toggle = () => setIsMenuOpen(!isMenuOpen);
   const toggleConfig = () => setIsConfigOpen(!isConfigOpen);
   // TRANSLATORS: label for the button that opens the menu with additional
   // actions (show settings, download logs, change product...)
@@ -93,9 +95,15 @@ export default function InstallerOptionsMenu({ hideLabel = false }: InstallerOpt
         {({ download: downloadLogs }) => (
           <Dropdown
             popperProps={{ position: "right", appendTo: () => document.body }}
-            isOpen={isOpen}
+            isOpen={isMenuOpen}
             onOpenChange={toggle}
             onSelect={toggle}
+            // Picking an entry closes the menu, and PatternFly drops the focus
+            // when it goes. Sending it back to the trigger keeps the keyboard
+            // where the user left it, ready to reach the next control or to
+            // reopen the menu. Entries that take the focus somewhere on purpose
+            // (the terminal) still do: they claim it after the menu is gone.
+            shouldFocusToggleOnSelect
             onActionClick={toggle}
             toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
               <VisualTooltip content={toggleLabel}>
@@ -103,7 +111,7 @@ export default function InstallerOptionsMenu({ hideLabel = false }: InstallerOpt
                   ref={toggleRef}
                   onClick={toggle}
                   aria-label={toggleLabel}
-                  isExpanded={isOpen}
+                  isExpanded={isMenuOpen}
                   isFullHeight
                   variant="plain"
                 >
@@ -125,6 +133,18 @@ export default function InstallerOptionsMenu({ hideLabel = false }: InstallerOpt
               <DropdownItem key="download-logs" onClick={downloadLogs}>
                 {/* TRANSLATORS: menu entry to download the installer logs as an archive */}
                 <ItemContent icon="archive" text={_("Download logs")} />
+              </DropdownItem>
+              <DropdownItem key="toggle-terminal" onClick={toggleTerminal}>
+                <ItemContent
+                  icon="terminal"
+                  text={
+                    isTerminalOpen
+                      ? /* TRANSLATORS: menu entry that closes the terminal, closing the session */
+                        _("Close terminal")
+                      : /* TRANSLATORS: menu entry that opens the terminal */
+                        _("Open terminal")
+                  }
+                />
               </DropdownItem>
               {showChangeProductOption && (
                 <>
