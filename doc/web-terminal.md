@@ -2,7 +2,7 @@
 
 Agama's web UI can open a real shell on the system being installed, running as root, right inside
 the browser. It exists for troubleshooting, working around something the installer does not expose,
-mointoring, etc.
+monitoring, etc.
 
 This document explains how the feature is built, end to end: the WebSocket
 protocol, the pty session on the server, and the terminal panel in the web UI.
