@@ -134,11 +134,10 @@ function terminalWebSocketUrl(): string {
  * not using a pointer has no way back to the rest of the interface, which
  * WCAG forbids (SC 2.1.2, "No Keyboard Trap").
  *
- * The way out is pressing Escape and then Tab, the same sequence code
- * editors embedded in a page use for this very problem (Monaco, CodeMirror,
- * Ace). Escape keeps reaching the shell as usual: only a Tab typed right
- * after one is taken, and that combination means nothing to a shell. When it
- * happens, `onLeave` is called so the caller can move the focus out.
+ * The way out is pressing Ctrl+Shift+L. xterm.js sends nothing to the shell
+ * for Ctrl+Shift+letter combinations, so taking this one away from the
+ * terminal costs its users nothing, and browsers leave it unassigned. When it
+ * is pressed, `onLeave` is called so the caller can move the focus out.
  */
 export const useTerminalSession = (
   container: HTMLElement | null,
@@ -226,24 +225,27 @@ export const useTerminalSession = (
     terminal.loadAddon(fitAddon);
 
     // Escape hatch for keyboard users; see "Leaving the terminal with the
-    // keyboard" above. `afterEscape` lives here, next to the terminal it
-    // belongs to, because both are created and dropped together.
-    let afterEscape = false;
+    // keyboard" above.
     terminal.attachCustomKeyEventHandler((event) => {
       // The handler also runs for keypress and keyup; keydown is enough.
       if (event.type !== "keydown") return true;
 
-      if (afterEscape && event.key === "Tab" && onLeaveRef.current) {
-        afterEscape = false;
-        // The focus is moved by the caller, so the browser must not move it
-        // on its own too.
+      const isLeaveShortcut =
+        event.ctrlKey &&
+        event.shiftKey &&
+        !event.altKey &&
+        !event.metaKey &&
+        event.key.toLowerCase() === "l";
+
+      if (isLeaveShortcut && onLeaveRef.current) {
+        // The focus is moved by the caller, so the browser must not act on
+        // the key on its own too.
         event.preventDefault();
         onLeaveRef.current();
-        // Keeps xterm.js from sending the key to the shell.
+        // Keeps xterm.js from handling the key.
         return false;
       }
 
-      afterEscape = event.key === "Escape";
       return true;
     });
 

@@ -107,8 +107,8 @@ describe("TerminalPane", () => {
       const { container } = installerRender(<TerminalPane enoughSpace />);
 
       const hint = container.querySelector(`#${TERMINAL_HINT_ID}`);
-      expect(hint).toHaveTextContent("Escape then Tab to move focus out");
-      expect(hint.querySelectorAll("kbd")).toHaveLength(2);
+      expect(hint).toHaveTextContent("Ctrl+Shift+L to move focus out");
+      expect(hint.querySelectorAll("kbd")).toHaveLength(3);
     });
 
     it("moves the focus to the panel when the session asks to leave the terminal", () => {

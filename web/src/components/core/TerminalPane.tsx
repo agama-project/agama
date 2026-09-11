@@ -102,14 +102,15 @@ const TerminalToolbar = ({
  */
 const KeyboardHint = () => {
   // TRANSLATORS: how to move the keyboard focus out of the terminal, where
-  // every key press otherwise goes to the shell. %1$s and %2$s are the Escape
-  // and Tab keys, pressed one after the other, and are shown as keys.
-  const hint = _("%1$s then %2$s to move focus out");
+  // every key press otherwise goes to the shell. %1$s, %2$s and %3$s are the
+  // Ctrl, Shift and L keys, pressed together, and are shown as keys.
+  const hint = _("%1$s+%2$s+%3$s to move focus out");
   const keys: Record<string, string> = {
-    // TRANSLATORS: the Escape key, as labeled on the keyboard
-    "%1$s": _("Escape"),
-    // TRANSLATORS: the Tab key, as labeled on the keyboard
-    "%2$s": _("Tab"),
+    // TRANSLATORS: the Control key, as labeled on the keyboard
+    "%1$s": _("Ctrl"),
+    // TRANSLATORS: the Shift key, as labeled on the keyboard
+    "%2$s": _("Shift"),
+    "%3$s": "L",
   };
 
   return (
@@ -117,7 +118,7 @@ const KeyboardHint = () => {
     // step quieter than the text around it.
     <Text id={TERMINAL_HINT_ID} component="small" textStyle={["textColorSubtle", "fontSizeXs"]}>
       {hint
-        .split(/(%[12]\$s)/)
+        .split(/(%[123]\$s)/)
         .map((part, index) => (keys[part] ? <kbd key={index}>{keys[part]}</kbd> : part))}
     </Text>
   );

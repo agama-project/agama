@@ -170,10 +170,12 @@ as-is, that is a keyboard trap: once focused, someone not using a pointer has no
 rest of the interface, which WCAG forbids ([SC 2.1.2, "No Keyboard
 Trap"](https://www.w3.org/WAI/WCAG21/Understanding/no-keyboard-trap.html)).
 
-The way out is **Escape, then Tab**, which is the same sequence embedded code editors use for this
-(Monaco, CodeMirror, Ace). Escape still reaches the shell as usual; only a Tab typed right _after_
-an Escape is intercepted, moving the focus to the panel around the terminal instead. That sequence
-cannot be guessed, so `TerminalPane` spells it out under the terminal itself (see `KeyboardHint`),
+The way out is **Ctrl+Shift+L**, which moves the focus to the panel around the terminal. Embedded
+code editors each solve this differently, so there is no shared convention to follow, and most
+alternatives collide with something: Escape then Tab is Meta+Tab for bash, Shift+Tab reaches the
+running program, and Ctrl+M mutes the tab in Firefox. Ctrl+Shift+L is free on both sides: xterm.js
+sends nothing to the shell for Ctrl+Shift+letter combinations, and Firefox leaves this one
+unassigned. That shortcut cannot be guessed, so `TerminalPane` spells it out under the terminal itself (see `KeyboardHint`),
 and the terminal's input element points at that text via `aria-describedby` so it's announced on
 arrival, not only readable by sighted users.
 

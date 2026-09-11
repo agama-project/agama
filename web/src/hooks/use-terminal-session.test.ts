@@ -337,37 +337,37 @@ describe("useTerminalSession", () => {
   });
 
   describe("the keyboard escape hatch", () => {
-    const keydown = (key: string) => new KeyboardEvent("keydown", { key, cancelable: true });
+    const keydown = (key: string, modifiers: KeyboardEventInit = {}) =>
+      new KeyboardEvent("keydown", { key, cancelable: true, ...modifiers });
+    const leaveShortcut = () => keydown("L", { ctrlKey: true, shiftKey: true });
 
     const renderWithOnLeave = (onLeave: () => void) => {
       renderHook(() => useTerminalSession(null, { onLeave }));
       return lastTerminal()?.keyEventHandler;
     };
 
-    it("leaves the terminal when Tab is pressed right after Escape", () => {
+    it("leaves the terminal when Ctrl+Shift+L is pressed", () => {
       const onLeave = jest.fn();
       const handleKey = renderWithOnLeave(onLeave);
 
-      // Escape itself still goes to the shell.
-      expect(handleKey?.(keydown("Escape"))).toBe(true);
-
-      const tab = keydown("Tab");
-      // The Tab is neither sent to the shell nor left to the browser.
-      expect(handleKey?.(tab)).toBe(false);
-      expect(tab.defaultPrevented).toBe(true);
+      const shortcut = leaveShortcut();
+      // The key is neither handled by the terminal nor left to the browser.
+      expect(handleKey?.(shortcut)).toBe(false);
+      expect(shortcut.defaultPrevented).toBe(true);
       expect(onLeave).toHaveBeenCalled();
     });
 
-    it("leaves Tab to the shell when it does not come right after Escape", () => {
+    it.each([
+      ["Ctrl+L", keydown("l", { ctrlKey: true })],
+      ["Shift+L", keydown("L", { shiftKey: true })],
+      ["Ctrl+Alt+Shift+L", keydown("L", { ctrlKey: true, altKey: true, shiftKey: true })],
+      ["Tab", keydown("Tab")],
+    ])("leaves %s to the terminal", (_name, event) => {
       const onLeave = jest.fn();
       const handleKey = renderWithOnLeave(onLeave);
 
-      handleKey?.(keydown("Escape"));
-      handleKey?.(keydown("a"));
-
-      const tab = keydown("Tab");
-      expect(handleKey?.(tab)).toBe(true);
-      expect(tab.defaultPrevented).toBe(false);
+      expect(handleKey?.(event)).toBe(true);
+      expect(event.defaultPrevented).toBe(false);
       expect(onLeave).not.toHaveBeenCalled();
     });
 
@@ -382,8 +382,7 @@ describe("useTerminalSession", () => {
       expect(terminalInstances()).toHaveLength(1);
 
       const handleKey = lastTerminal()?.keyEventHandler;
-      handleKey?.(keydown("Escape"));
-      handleKey?.(keydown("Tab"));
+      handleKey?.(leaveShortcut());
 
       expect(onLeave).toHaveBeenCalled();
     });
