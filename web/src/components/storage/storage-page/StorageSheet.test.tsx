@@ -185,7 +185,7 @@ describe("StorageSheet", () => {
       it("offers the one act that changes what is planned here", () => {
         renderAt("/storage?sheet=drives.0&sheetTab=planned");
 
-        screen.getByRole("link", { name: "Add partition" });
+        screen.getByRole("link", { name: /Add partition/ });
       });
     });
 
@@ -232,11 +232,39 @@ describe("StorageSheet", () => {
     });
 
     describe("and nothing is planned on it", () => {
-      it("says so, and offers the act that changes it", () => {
+      it("says so, and carries the act that changes it", () => {
         renderAt("/storage?sheet=drives.0&sheetTab=planned");
 
-        screen.getByText("The installation puts nothing of its own here.");
-        screen.getByRole("link", { name: "Add partition" });
+        screen.getByRole("heading", { name: "Nothing planned for this device yet" });
+        screen.getByText(/Add a volume, or reuse one of the partitions already on it/);
+        screen.getByRole("link", { name: /Add partition/ });
+      });
+    });
+
+    describe("and the whole device goes to something else", () => {
+      beforeEach(() => {
+        mockConfig.mockReturnValue(
+          config({
+            drives: [{ name: "/dev/sda", partitions: [] }],
+            volumeGroups: [{ vgName: "system", targetDevices: ["/dev/sda"] }],
+          }),
+        );
+      });
+
+      it("says which, and offers the way to it", () => {
+        renderAt("/storage?sheet=drives.0&sheetTab=planned");
+
+        screen.getByRole("heading", { name: "No partitions are planned here" });
+        screen.getByText(/The whole device goes to/);
+        /* Twice: once in the statement above the content, once in the state
+           that says nothing is planned. Both lead to the same entry. */
+        expect(screen.getAllByRole("link", { name: "system" })).toHaveLength(2);
+      });
+
+      it("says so above the content too, since nothing else would", () => {
+        renderAt("/storage?sheet=drives.0&sheetTab=planned");
+
+        screen.getByText("Used by");
       });
     });
   });
