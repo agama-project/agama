@@ -30,6 +30,9 @@ let translations = {};
 // function used for computing the plural form index
 let plural_fn: (n: number) => boolean;
 
+/** One piece of a formatted list: an item of it, or the punctuation between two. */
+type ListPart = { type: "element" | "literal"; value: string };
+
 const agama = {
   // the current language
   language: "en",
@@ -116,6 +119,38 @@ const agama = {
       return list.join(", ");
     }
   },
+
+  /**
+   * The same list, with its separators and its items kept apart.
+   *
+   * For a caller that has to wrap each item in something of its own, a link
+   * say, and must not build the punctuation around them itself: where the
+   * commas and the "and" go, and whether there is an "and" at all, belongs to
+   * the language.
+   *
+   * @param list iterable list of strings to represent
+   * @param options passed to the Intl.ListFormat constructor
+   */
+  formatListToParts: (list: string[], options: object): ListPart[] => {
+    try {
+      const formatter = new Intl.ListFormat(agama.language, options);
+      return formatter.formatToParts(list);
+    } catch (e) {
+      console.warn(
+        `Using fallback list formatting function for language "${agama.language}", details:`,
+        e,
+      );
+      return list.flatMap((value, at) =>
+        at === 0
+          ? [{ type: "element" as const, value }]
+          : [
+              { type: "literal" as const, value: ", " },
+              { type: "element" as const, value },
+            ],
+      );
+    }
+  },
 };
 
 export default agama;
+export type { ListPart };

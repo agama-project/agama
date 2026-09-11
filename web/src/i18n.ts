@@ -27,6 +27,7 @@
  */
 
 import agama from "~/agama";
+import type { ListPart } from "~/agama";
 import type { Tagged } from "type-fest";
 
 // translated text (_() or n_())
@@ -162,4 +163,16 @@ const Nn_ = (str1: string, strN: string, n: number): MarkedString =>
 const formatList = <T extends string | TranslatedString>(list: T[], options: object = {}): T =>
   agama.formatList(list, options) as T;
 
-export { _, n_, N_, Nn_, formatList };
+/**
+ * The same list, with its separators and its items kept apart, for a caller
+ * that has to wrap each item in something of its own.
+ *
+ * @example
+ * formatListToParts(["sda", "sdb"]).map((part) =>
+ *   part.type === "element" ? <Link key={part.value}>{part.value}</Link> : part.value,
+ * );
+ */
+const formatListToParts = (list: string[], options: object = {}): ListPart[] =>
+  agama.formatListToParts(list, options);
+
+export { _, n_, N_, Nn_, formatList, formatListToParts };
