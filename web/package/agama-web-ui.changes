@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Sep 11 08:46:42 UTC 2026 - Martin Vidner <mvidner@suse.com>
+
+- web: update _service to work with obs-service-node_modules 3
+  (gh#openSUSE/obs-service-node_modules#51)
+- web: remove leftovers from spec file
+
+-------------------------------------------------------------------
 Fri Sep  4 12:11:07 UTC 2026 - Martin Vidner <mvidner@suse.com>
 
 - web dependencies: move those not needed for run time or building
