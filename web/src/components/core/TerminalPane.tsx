@@ -21,7 +21,7 @@ import React, { useCallback, useRef, useState } from "react";
 import { Button, Card, CardBody, CardHeader, Flex, Title } from "@patternfly/react-core";
 import Icon from "~/components/layout/Icon";
 import Text from "~/components/core/Text";
-import SkipTo from "~/components/core/SkipTo";
+import SkipTo, { MAIN_CONTENT_ID } from "~/components/core/SkipTo";
 import VisualTooltip from "~/components/core/VisualTooltip";
 import TerminalUnavailable from "~/components/core/TerminalUnavailable";
 import { TERMINAL_HINT_ID, TERMINAL_INPUT_ID, useTerminal } from "~/context/terminal";
@@ -214,10 +214,15 @@ export default function TerminalPane({ enoughSpace }: TerminalPaneProps) {
   const containerRef = useCallback((node: HTMLDivElement | null) => setContainer(node), []);
   const regionRef = useRef<HTMLDivElement>(null);
   // Where the focus lands when the user leaves the terminal with the keyboard
-  // (see `useTerminalSession`): the panel itself, so screen readers announce
-  // the region being left behind and both the panel actions (Tab) and the
-  // rest of the interface (Shift+Tab) are one step away.
-  const leaveTerminal = useCallback(() => regionRef.current?.focus(), []);
+  // (see `useTerminalSession`): the panel's "Skip to content" link, so Enter
+  // goes straight back to the installer content, Tab reaches the way back
+  // into the terminal, and Shift+Tab the rest of the interface. The panel
+  // itself takes the focus if the link is not there.
+  const leaveTerminal = useCallback(() => {
+    const region = regionRef.current;
+    const skipToContent = region?.querySelector<HTMLElement>(`a[href="#${MAIN_CONTENT_ID}"]`);
+    (skipToContent ?? region)?.focus();
+  }, []);
   const { setFontSize: setSessionFontSize, clear } = useTerminalSession(container, {
     onLeave: leaveTerminal,
     onGracefulExit: close,

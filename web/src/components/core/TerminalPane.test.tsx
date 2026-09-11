@@ -111,12 +111,12 @@ describe("TerminalPane", () => {
       expect(hint.querySelectorAll("kbd")).toHaveLength(3);
     });
 
-    it("moves the focus to the panel when the session asks to leave the terminal", () => {
+    it("moves the focus to the panel's skip to content link when the session asks to leave the terminal", () => {
       installerRender(<TerminalPane enoughSpace />);
 
       leaveTerminal();
 
-      expect(screen.getByRole("region", { name: "Terminal" })).toHaveFocus();
+      expect(screen.getByRole("link", { name: "Skip to content" })).toHaveFocus();
     });
 
     it("offers a close action, always available", async () => {

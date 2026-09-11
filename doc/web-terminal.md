@@ -170,7 +170,8 @@ as-is, that is a keyboard trap: once focused, someone not using a pointer has no
 rest of the interface, which WCAG forbids ([SC 2.1.2, "No Keyboard
 Trap"](https://www.w3.org/WAI/WCAG21/Understanding/no-keyboard-trap.html)).
 
-The way out is **Ctrl+Shift+L**, which moves the focus to the panel around the terminal. Embedded
+The way out is **Ctrl+Shift+L**, which moves the focus to the panel's "Skip to content" link (see
+below), so Enter goes straight back to the installer content. Embedded
 code editors each solve this differently, so there is no shared convention to follow, and most
 alternatives collide with something: Escape then Tab is Meta+Tab for bash, Shift+Tab reaches the
 running program, and Ctrl+M mutes the tab in Firefox. Ctrl+Shift+L is free on both sides: xterm.js
