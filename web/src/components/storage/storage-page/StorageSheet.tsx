@@ -35,21 +35,23 @@ import { EmptyState, EmptyStateBody } from "@patternfly/react-core";
 import { _ } from "~/i18n";
 import type { ConfigModel, Partitionable } from "~/model/storage/config-model";
 
-/** PatternFly's `xl`, from where there is room for the page and a panel both. */
-const XL = "(min-width: 75rem)";
+/** PatternFly's `2xl`, from where there is room for the page and a panel both. */
+const WIDE = "(min-width: 90.625rem)";
 
 /**
  * How much of the window the sheet takes, and what that leaves the page.
  *
- * Two bands. From `xl` up the two share the width and the page keeps working;
- * below it the sheet comes over the page, which is where most readers are.
+ * Two bands. Wide enough for both, the two share the width and the page keeps
+ * working; otherwise the sheet comes over the page, which is where most readers
+ * are.
  *
- * `xl` rather than a number of our own: 1024 falls between PatternFly's `lg`
- * and `xl`, and the difference between a 1024 window and a 1199 one is not one
- * this page behaves differently at.
+ * `2xl` rather than `xl`, which was tried first: a page sharing its width from
+ * 1200px keeps the list of entries but crushes it, wrapping a row's every line
+ * into three. Sharing has to leave the page usable, or it is an overlay that
+ * also makes the page hard to read.
  */
 function usePlacement(): SheetPlacement {
-  return useMediaQuery(XL) ? "share" : "overlay";
+  return useMediaQuery(WIDE) ? "share" : "overlay";
 }
 
 export type StorageSheetProps = {
