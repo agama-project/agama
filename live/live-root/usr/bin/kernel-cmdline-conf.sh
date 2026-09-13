@@ -22,7 +22,7 @@ write_kernel_args() {
       _found=1
       ;;
     # remove the Kiwi PXE boot options or Live options
-    rd.kiwi.* | rd.live.* | ramdisk_size=* | initrd=* | BOOT_IMAGE=*)
+    rd.kiwi.* | rd.live.* | rd.ntp* | ramdisk_size=* | initrd=* | BOOT_IMAGE=*)
       _found=1
       ;;
     # remove the network configuration options
