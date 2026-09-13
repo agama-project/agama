@@ -130,7 +130,7 @@ function PartitionFormContent({
 }: PartitionFormContentQuery) {
   // Route params and mutations are not frozen: they don't feed defaultValues
   // and must always reflect the current state.
-  const { collection, index } = useParams();
+  const { collection, index, deviceName } = useParams();
   const navigate = useNavigate();
   const addPartition = useAddPartition();
   const editPartition = useEditPartition();
@@ -178,7 +178,13 @@ function PartitionFormContent({
   });
 
   const form = useAppForm({
-    ...mergeFormDefaults(defaultOptions, toFormValues(initialPartition)),
+    /* Arriving to reuse a partition that is already on the device starts the
+       form with that partition chosen, rather than asking the reader to find
+       again the one they just picked. Editing keeps what is stored. */
+    ...mergeFormDefaults(defaultOptions, {
+      ...toFormValues(initialPartition),
+      ...(!initialPartition && deviceName ? { name: deviceName } : {}),
+    }),
     validators: {
       onSubmitAsync: async (ctx) => {
         // Field validation runs first. If it fails, TanStack Form surfaces

@@ -250,6 +250,33 @@ describe("PartitionForm", () => {
     });
   });
 
+  describe("when arriving to reuse a partition already on the device", () => {
+    beforeEach(() => {
+      mockParams({ collection: "drives", index: "0", deviceName: "vdd1" });
+    });
+
+    it("starts with that partition chosen, rather than asking for it again", () => {
+      installerRender(<PartitionForm />);
+
+      expect(screen.getByLabelText("Partition")).toHaveTextContent(/vdd1/);
+      expect(screen.getByLabelText("File system")).toHaveTextContent(/Current/);
+    });
+
+    it("reuses it when accepted", async () => {
+      const { user } = installerRender(<PartitionForm />);
+      await user.type(screen.getByLabelText("Mount point"), "/data");
+      await user.click(screen.getByRole("button", { name: "Accept" }));
+
+      await waitFor(() =>
+        expect(mockAddPartition).toHaveBeenCalledWith(
+          "drives",
+          0,
+          expect.objectContaining({ name: "vdd1", mountPath: "/data" }),
+        ),
+      );
+    });
+  });
+
   describe("partition selection", () => {
     it("lists available partitions for reuse", async () => {
       const { user } = installerRender(<PartitionForm />);

@@ -81,6 +81,7 @@ const STORAGE = {
   editEncryption: "/storage/encryption/edit",
   formatDevice: "/storage/:collection/:index/format",
   addPartition: "/storage/:collection/:index/partitions/add",
+  reusePartition: "/storage/:collection/:index/partitions/:deviceName/use",
   editPartition: "/storage/:collection/:index/partitions/:partitionId/edit",
   selectDevice: "/storage/devices/select",
   volumeGroup: {
