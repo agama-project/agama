@@ -88,6 +88,13 @@ menuentry "Install $label" --class os --unrestricted {
     echo Loading initrd...
     initrd (\$root)/boot/x86_64/loader/initrd
 }
+menuentry "Install CC Certified $label" --class os --unrestricted {
+    set gfxpayload=keep
+    echo Loading kernel...
+    linux (\$root)/boot/x86_64/loader/linux \${extra_cmdline} \${isoboot} fips=1 systemd.unit=multi-user.target systemd.wants=cc-setup.service
+    echo Loading initrd...
+    initrd (\$root)/boot/x86_64/loader/initrd
+}
 menuentry "Failsafe -- Install $label" --class os --unrestricted {
     set gfxpayload=keep
     echo Loading kernel...

@@ -102,6 +102,13 @@ menuentry "Install $label" --class os --unrestricted {
   initrd /boot/ppc64le/initrd
 }
 
+menuentry "Install CC Certified $label" --class os --unrestricted {
+    echo 'Loading kernel...'
+		linux /boot/ppc64le/linux splash=silent plymouth.ignore-serial-consoles fips=1 systemd.unit=multi-user.target systemd.wants=cc-setup.service
+    echo 'Loading initrd...'
+    initrd /boot/ppc64le/initrd
+}
+
 menuentry "Check Installation Medium" --class os --unrestricted {
   echo 'Loading kernel...'
   linux /boot/ppc64le/linux mediacheck=1 plymouth.enable=0
