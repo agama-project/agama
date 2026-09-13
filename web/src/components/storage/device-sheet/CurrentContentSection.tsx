@@ -22,50 +22,192 @@
 
 import React from "react";
 import { Table, Tbody, Td, Th, Thead, Tr } from "@patternfly/react-table";
-import { Stack, StackItem } from "@patternfly/react-core";
+import { Flex, FlexItem, Label, Stack, StackItem } from "@patternfly/react-core";
 import a11yStyles from "@patternfly/react-styles/css/utilities/Accessibility/accessibility";
+import { sprintf } from "sprintf-js";
 import Text from "~/components/core/Text";
+import Icon from "~/components/layout/Icon";
 import SpaceDecision from "~/components/storage/storage-page/SpaceDecision";
 import { outcomeOf } from "~/components/storage/shared/consequences";
 import { useDevicesManager } from "~/components/storage/shared/use-devices-manager";
-import { baseName, deviceSize } from "~/components/storage/utils";
+import { baseName, deviceSize, formattedPath } from "~/components/storage/utils";
 import { _, TranslatedString } from "~/i18n";
+import type DevicesManager from "~/model/storage/devices-manager";
 import type { Outcome } from "~/components/storage/shared/consequences";
+import type { ConfigModel, Partitionable } from "~/model/storage/config-model";
 import type { Entry } from "~/components/storage/device-sheet/entry";
 import type { SheetEntry } from "~/components/storage/shared/use-sheet";
 import type { Storage as System } from "~/model/system";
 
+type FreeSpace = System.UnusedSlot;
+type Row = System.Device | FreeSpace;
+
+const isFreeSpace = (row: Row): row is FreeSpace => !("sid" in row);
+
 /**
- * What becomes of one thing already on the device, in the reader's words.
+ * What is on the device today, in the order it sits there, free space included.
  *
- * Said as what will happen rather than as the name of a policy: "Deleted" is
- * something a reader can check against what they meant, where "delete" is the
- * setting that produced it.
+ * Free space is a row: "keep everything" is a choice with no visible evidence
+ * behind it otherwise.
  */
-function outcomeLabel(outcome: Outcome): TranslatedString {
+function rowsOf(entry: Entry): Row[] {
+  const device = entry.device;
+  if (!device) return [];
+  if (entry.isVolumeGroup) return device.logicalVolumes || [];
+
+  const parts: [number, Row][] = (device.partitions || []).map((p) => [p.block?.start || 0, p]);
+  const free: [number, Row][] = (device.partitionTable?.unusedSlots || []).map((s) => [s.start, s]);
+
+  return [...parts, ...free].sort((a, b) => a[0] - b[0]).map(([, row]) => row);
+}
+
+/** How a planned action reads, and whether it loses anything. */
+type Report = { text: TranslatedString; kind: "destroys" | "shrinks" | "keeps" };
+
+/**
+ * What the installer will do to one partition, in words a reader can check
+ * against what they meant.
+ *
+ * In the future tense, because nothing has happened yet, and the column is the
+ * last place to suggest otherwise. What it is kept or emptied for is named
+ * where the configuration says, since "to be formatted" alone does not say for
+ * what.
+ */
+function reportFor(outcome: Outcome, reusedAs?: string): Report {
   switch (outcome) {
     case "deleted":
-      // TRANSLATORS: what the installation does to something already on the
-      // disk: removes it, and everything on it.
-      return _("Deleted");
+      // TRANSLATORS: what the installation will do to a partition already on
+      // the disk: remove it and everything on it.
+      return { kind: "destroys", text: _("To be deleted") };
     case "formatted":
-      // TRANSLATORS: what the installation does to something already on the
-      // disk: keeps the partition and empties it.
-      return _("Emptied and reused");
+      return {
+        kind: "destroys",
+        text: reusedAs
+          ? sprintf(
+              // TRANSLATORS: what the installation will do to a partition
+              // already on the disk: empty it and mount it for the new system.
+              // %s is where, such as "/home".
+              _("To be formatted as %s"),
+              reusedAs,
+            )
+          : // TRANSLATORS: what the installation will do to a partition already
+            // on the disk: empty it.
+            _("To be formatted"),
+      };
     case "shrunk":
-      // TRANSLATORS: what the installation does to something already on the
-      // disk: makes it smaller, keeping what is on it.
-      return _("Made smaller");
+      // TRANSLATORS: what the installation will do to a partition already on
+      // the disk: make it smaller, keeping what is on it.
+      return { kind: "shrinks", text: _("To be shrunk") };
     case "kept":
-      // TRANSLATORS: what the installation does to something already on the
-      // disk: nothing at all.
-      return _("Kept as it is");
+      return {
+        kind: "keeps",
+        text: reusedAs
+          ? sprintf(
+              // TRANSLATORS: what the installation will do to a partition already
+              // on the disk: keep it and its data, and mount it for the new
+              // system. %s is where, such as "/home".
+              _("To be reused as %s"),
+              reusedAs,
+            )
+          : // TRANSLATORS: what the installation will do to a partition already
+            // on the disk: nothing.
+            _("Kept"),
+      };
   }
 }
 
-/** What is on the device now, whatever the entry calls its parts. */
-function existing(entry: Entry): System.Device[] {
-  return entry.isVolumeGroup ? entry.device?.logicalVolumes || [] : entry.device?.partitions || [];
+const REPORT_ICON = { destroys: "error_fill", shrinks: "compress" } as const;
+const REPORT_CLASS = {
+  destroys: "agm-entries-table__cost--destroys",
+  shrinks: "agm-entries-table__cost--shrinks",
+} as const;
+
+function PartitionRow({
+  part,
+  manager,
+  entries,
+}: {
+  part: System.Device;
+  manager: DevicesManager;
+  entries: (ConfigModel.Partition | ConfigModel.LogicalVolume)[];
+}) {
+  const outcome = outcomeOf(manager, part);
+  const reusedAs = entries.find((e) => e.name === part.name)?.mountPath;
+  const report = reportFor(outcome, reusedAs && formattedPath(reusedAs));
+  const systems = part.block?.systems || [];
+  const size = part.block?.size;
+  const shrunkTo = outcome === "shrunk" ? manager.stagingDevice(part.sid)?.block?.size : undefined;
+
+  return (
+    <Tr>
+      <Th scope="row">
+        <Text isBold>{baseName(part.name)}</Text>
+        {part.block?.encrypted && (
+          <>
+            {" "}
+            {/* TRANSLATORS: marks a partition whose content is encrypted. */}
+            <Icon name="lock" size="xs" aria-label={_("encrypted")} />
+          </>
+        )}
+      </Th>
+      {/* What is on it. What becomes of it is two columns on, so it is not said
+          here too. A system the machine reports sits beside the file system as
+          a mark: naming Windows is what makes a deletion mean something. */}
+      <Td>
+        <Flex gap={{ default: "gapXs" }} alignItems={{ default: "alignItemsCenter" }}>
+          <FlexItem>
+            {part.filesystem?.type ||
+              part.description ||
+              // TRANSLATORS: said of a partition whose content is not recognized.
+              _("unrecognized")}
+          </FlexItem>
+          {systems.map((system) => (
+            <FlexItem key={system}>
+              <Label isCompact>{system}</Label>
+            </FlexItem>
+          ))}
+        </Flex>
+      </Td>
+      {/* The size it ends at where a shrink is planned, with the size it has
+          today under it: the change beside the value it changes. */}
+      <Td>
+        {shrunkTo !== undefined ? (
+          <>
+            <div>{deviceSize(shrunkTo)}</div>
+            {size !== undefined && (
+              <div className="agm-row-note">
+                {sprintf(
+                  // TRANSLATORS: under the size a partition ends up with. %s is
+                  // the size it has today, such as "3 GiB".
+                  _("Shrunk from %s"),
+                  deviceSize(size),
+                )}
+              </div>
+            )}
+          </>
+        ) : (
+          size !== undefined && deviceSize(size)
+        )}
+      </Td>
+      <Td>
+        {report.kind === "keeps" ? (
+          report.text
+        ) : (
+          <Flex
+            gap={{ default: "gapXs" }}
+            alignItems={{ default: "alignItemsFlexStart" }}
+            flexWrap={{ default: "nowrap" }}
+            className={REPORT_CLASS[report.kind]}
+          >
+            <FlexItem>
+              <Icon name={REPORT_ICON[report.kind]} size="xs" aria-hidden />
+            </FlexItem>
+            <FlexItem>{report.text}</FlexItem>
+          </Flex>
+        )}
+      </Td>
+    </Tr>
+  );
 }
 
 export type CurrentContentSectionProps = {
@@ -78,46 +220,40 @@ export type CurrentContentSectionProps = {
  * What is on the device today, and what the installation will do to it.
  *
  * The one view where a reader can see the whole answer partition by partition
- * rather than as a summary, which is what the fourth space option means when it
- * says the decision is taken one by one.
+ * rather than as a summary. The decision reads above the table it governs,
+ * since it is about the rows below it; and it is a permission rather than an
+ * instruction, which is why a column says what the installer will actually do.
  *
- * The decision sits above the table it governs, so the reader sees the column
- * beside it change as they take it. It is offered only on a device with a space
- * decision to take: a volume group's contents answer to the group, and an entry
- * with nothing on it has no question to answer.
+ * @fixme The playground also decides one partition at a time here, and offers
+ *  to reuse a partition for the new system. Both wait on the design owner: the
+ *  first writes to the configuration in ways the page has no hook for, and the
+ *  second needs a route the partition form does not read.
  */
 export default function CurrentContentSection({
   entry,
   subject,
 }: CurrentContentSectionProps): React.ReactNode {
   const manager = useDevicesManager();
-  const parts = existing(entry);
+  const rows = rowsOf(entry);
+  const entries = entry.isVolumeGroup
+    ? (entry.config as ConfigModel.VolumeGroup).logicalVolumes || []
+    : (entry.config as Partitionable.Device).partitions || [];
 
   return (
     <Stack hasGutter>
-      <StackItem>
-        <Text textStyle={["fontSizeSm", "textColorSubtle"]}>
-          {/* TRANSLATORS: says what this view of a device holds: what was on it
-              before the installation was planned. */}
-          {_("Already here")}
-        </Text>
-      </StackItem>
-      {/* Compared here rather than through a name of its own: it is what tells
-          the type of entry apart as well as what decides the offer. */}
-      {subject.collection !== "volumeGroups" && parts.length > 0 && (
+      {subject.collection !== "volumeGroups" && rows.some((row) => !isFreeSpace(row)) && (
         <StackItem>
           <SpaceDecision collection={subject.collection} index={subject.index} />
         </StackItem>
       )}
-      {parts.length === 0 && (
+      {rows.length === 0 ? (
         <StackItem>
           <Text textStyle="textColorSubtle">
-            {/* TRANSLATORS: said of a device the installation found empty. */}
-            {_("There is nothing on this device.")}
+            {/* TRANSLATORS: said of a device with nothing on it. */}
+            {_("The device is empty.")}
           </Text>
         </StackItem>
-      )}
-      {parts.length > 0 && (
+      ) : (
         <StackItem>
           <Table
             role="table"
@@ -128,27 +264,33 @@ export default function CurrentContentSection({
           >
             <Thead className={a11yStyles.screenReader}>
               <Tr>
-                <Th>{_("Device")}</Th>
+                <Th>{_("Partition")}</Th>
+                <Th>{_("Content")}</Th>
                 <Th>{_("Size")}</Th>
-                <Th>{_("Actions")}</Th>
+                {/* "Planned action" rather than "What happens": nothing has
+                    happened yet. */}
+                <Th>{_("Planned action")}</Th>
               </Tr>
             </Thead>
             <Tbody>
-              {parts.map((part) => (
-                <Tr key={part.sid}>
-                  <Th scope="row">
-                    {baseName(part.name)}
-                    {part.block?.systems?.length > 0 && (
-                      <span className="agm-entries-table__facts">
-                        {" "}
-                        {part.block.systems.join(", ")}
-                      </span>
-                    )}
-                  </Th>
-                  <Td>{part.block?.size !== undefined && deviceSize(part.block.size)}</Td>
-                  <Td>{outcomeLabel(outcomeOf(manager, part))}</Td>
-                </Tr>
-              ))}
+              {rows.map((row, at) =>
+                isFreeSpace(row) ? (
+                  <Tr key={`free-${at}`}>
+                    <Th scope="row">
+                      <Text textStyle="textColorSubtle">
+                        {/* TRANSLATORS: a row for room on a device that no
+                            partition takes. */}
+                        {_("Free space")}
+                      </Text>
+                    </Th>
+                    <Td />
+                    <Td>{deviceSize(row.size)}</Td>
+                    <Td />
+                  </Tr>
+                ) : (
+                  <PartitionRow key={row.sid} part={row} manager={manager} entries={entries} />
+                ),
+              )}
             </Tbody>
           </Table>
         </StackItem>
