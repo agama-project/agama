@@ -21,7 +21,8 @@
  */
 
 import React from "react";
-import { Tab, Tabs, TabTitleText } from "@patternfly/react-core";
+import { Tab, Tabs, TabTitleIcon, TabTitleText } from "@patternfly/react-core";
+import Icon, { IconProps } from "~/components/layout/Icon";
 import FinalLayoutSection from "~/components/storage/device-sheet/FinalLayoutSection";
 import PlannedContentSection from "~/components/storage/device-sheet/PlannedContentSection";
 import CurrentContentSection from "~/components/storage/device-sheet/CurrentContentSection";
@@ -55,6 +56,32 @@ export type DeviceDetailProps = {
  * no arrow key does anything, where the pattern asks for one stop for the strip
  * and arrows within it.
  */
+/**
+ * One mark per view, chosen for what the view is about rather than for storage:
+ * the shape the device ends up in, work still to be carried out, what the entry
+ * is built from, and the hardware as it stands.
+ *
+ * Decorative, and hidden from a screen reader: the words beside each say what
+ * the view holds. The marks are there to tell them apart at a glance.
+ */
+const VIEW_ICONS: Record<string, IconProps["name"]> = {
+  result: "schema",
+  planned: "pending_actions",
+  properties: "device_hub",
+  current: "hard_drive",
+};
+
+function title(view: string, name: React.ReactNode) {
+  return (
+    <>
+      <TabTitleIcon>
+        <Icon name={VIEW_ICONS[view]} size="sm" aria-hidden />
+      </TabTitleIcon>
+      <TabTitleText>{name}</TabTitleText>
+    </>
+  );
+}
+
 export default function DeviceDetail({ entry, subject }: DeviceDetailProps): React.ReactNode {
   const [tab, setTab] = useSheetTab("result");
   const views = ["result", "planned", ...(entry.isVolumeGroup ? ["properties"] : []), "current"];
@@ -71,26 +98,28 @@ export default function DeviceDetail({ entry, subject }: DeviceDetailProps): Rea
         <Tab
           eventKey="result"
           {...tabProps("result")}
-          title={
-            <TabTitleText>
+          title={title(
+            "result",
+            <>
               {/* TRANSLATORS: names the view of a device showing the shape it is
                   left in once the installation has run. */}
               {_("Final layout")}
-            </TabTitleText>
-          }
+            </>,
+          )}
         >
           <FinalLayoutSection entry={entry} />
         </Tab>
         <Tab
           eventKey="planned"
           {...tabProps("planned")}
-          title={
-            <TabTitleText>
+          title={title(
+            "planned",
+            <>
               {/* TRANSLATORS: names the view of a device showing what the
                   installation will put on it. */}
               {_("Planned content")}
-            </TabTitleText>
-          }
+            </>,
+          )}
         >
           <PlannedContentSection entry={entry} subject={subject} />
         </Tab>
@@ -100,13 +129,14 @@ export default function DeviceDetail({ entry, subject }: DeviceDetailProps): Rea
           <Tab
             eventKey="properties"
             {...tabProps("properties")}
-            title={
-              <TabTitleText>
+            title={title(
+              "properties",
+              <>
                 {/* TRANSLATORS: names the view of an entry showing the other
                     entries it is built from. */}
                 {_("Properties")}
-              </TabTitleText>
-            }
+              </>,
+            )}
           >
             <PropertiesSection entry={entry} />
           </Tab>
@@ -114,13 +144,14 @@ export default function DeviceDetail({ entry, subject }: DeviceDetailProps): Rea
         <Tab
           eventKey="current"
           {...tabProps("current")}
-          title={
-            <TabTitleText>
+          title={title(
+            "current",
+            <>
               {/* TRANSLATORS: names the view of a device showing what was on it
                   before the installation was planned. */}
               {_("Current content")}
-            </TabTitleText>
-          }
+            </>,
+          )}
         >
           <CurrentContentSection entry={entry} subject={subject} />
         </Tab>

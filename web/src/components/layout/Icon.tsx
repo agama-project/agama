@@ -42,9 +42,12 @@ import TextDecrease from "@icons/text_decrease.svg?component";
 import TextIncrease from "@icons/text_increase.svg?component";
 import Block from "@icons/block.svg?component";
 import ChangeCircle from "@icons/change_circle.svg?component";
+import DeviceHub from "@icons/device_hub.svg?component";
 import CheckCircle from "@icons/check_circle.svg?component";
 import LockOpen from "@icons/lock_open.svg?component";
 import NetworkNode from "@icons/network_node.svg?component";
+import PendingActions from "@icons/pending_actions.svg?component";
+import Schema from "@icons/schema.svg?component";
 import RotateAuto from "@icons/rotate_auto.svg?component";
 import SettingsBackupRestore from "@icons/settings_backup_restore.svg?component";
 import Compress from "@icons/compress.svg?component";
@@ -112,9 +115,12 @@ const icons = {
   backspace: Backspace,
   block: Block,
   change_circle: ChangeCircle,
+  device_hub: DeviceHub,
   check_circle: CheckCircle,
   lock_open: LockOpen,
   network_node: NetworkNode,
+  pending_actions: PendingActions,
+  schema: Schema,
   rotate_auto: RotateAuto,
   settings_backup_restore: SettingsBackupRestore,
   chevron_left: ChevronLeft,

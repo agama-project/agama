@@ -145,6 +145,15 @@ describe("StorageSheet", () => {
       screen.getByText(/no layout to show/);
     });
 
+    it("marks each view without the mark becoming part of its name", () => {
+      renderAt("/storage?sheet=drives.0");
+
+      /* Exact names: a mark read out with the words would change them. */
+      screen.getByRole("tab", { name: "Final layout" });
+      screen.getByRole("tab", { name: "Planned content" });
+      screen.getByRole("tab", { name: "Current content" });
+    });
+
     it("offers the views of it left to right, as time moving forwards", () => {
       renderAt("/storage?sheet=drives.0");
 
@@ -186,6 +195,12 @@ describe("StorageSheet", () => {
         renderAt("/storage?sheet=drives.0&sheetTab=planned");
 
         screen.getByRole("link", { name: /Add partition/ });
+      });
+
+      it("offers moving what is planned to another device, after what it would move", () => {
+        renderAt("/storage?sheet=drives.0&sheetTab=planned");
+
+        screen.getByRole("button", { name: /Use another device/ });
       });
     });
 
@@ -239,6 +254,14 @@ describe("StorageSheet", () => {
         screen.getByText(/Add a volume, or reuse one of the partitions already on it/);
         screen.getByRole("link", { name: /Add partition/ });
       });
+
+      it("does not offer moving it, since there is nothing to move", () => {
+        renderAt("/storage?sheet=drives.0&sheetTab=planned");
+
+        expect(
+          screen.queryByRole("button", { name: /Use another device/ }),
+        ).not.toBeInTheDocument();
+      });
     });
 
     describe("and the whole device goes to something else", () => {
@@ -261,10 +284,12 @@ describe("StorageSheet", () => {
         expect(screen.getAllByRole("link", { name: "system" })).toHaveLength(2);
       });
 
-      it("says so above the content too, since nothing else would", () => {
+      it("says so above the content too, on one line", () => {
         renderAt("/storage?sheet=drives.0&sheetTab=planned");
 
-        screen.getByText("Used by");
+        /* The heading and what it says share one line rather than stacking. */
+        const heading = screen.getByText("Used by");
+        expect(heading.parentElement).toHaveTextContent(/^Used by system$/);
       });
     });
   });
