@@ -41,6 +41,23 @@ ask_password() {
   done
 }
 
+# Helper function to ask for an NTP server address
+ask_ntp_server() {
+  local prompt="$1"
+  local var_name="$2"
+  local ntp_server
+
+  ntp_server=$(dialog "${DIALOG_COMMON[@]}" --title "NTP Setup" \
+    --inputbox "Enter $prompt (Cancel to skip):" 10 40 3>&1 1>&2 2>&3)
+  
+  if [ $? -eq 0 ]; then
+    eval "$var_name=\"\$ntp_server\""
+    return 0
+  else
+    return 1
+  fi
+}
+
 # read using relative path to this script so it works also when running from Git sources
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)"
 CONFIG="${SCRIPT_DIR}/../share/cc-setup/defaults.json"
@@ -107,6 +124,14 @@ while true; do
     # Interactive mode: User password
     if ! ask_password "password for user '$USERNAME'" USER_PW; then continue; fi
 
+    # Interactive mode: NTP Server
+    USE_DRACUT_NTP=false
+    if [ -f "/run/chrony/dracut.sources.d/dracut.sources" ]; then
+      USE_DRACUT_NTP=true
+    else
+      if ! ask_ntp_server "NTP server address" NTP_SERVER; then continue; fi
+    fi
+
     # Interactive mode: Registration
     REG_ADD=false
     if tmp_email=$(dialog "${DIALOG_COMMON[@]}" --title "Product Registration" \
@@ -133,8 +158,13 @@ while true; do
     USER_PW_DISP=$([ -n "$USER_PW" ] && echo "(set)" || echo "(empty)")
     REG_CODE_DISP=$([ -n "$REG_CODE" ] && echo "(set)" || echo "(empty)")
     REG_EMAIL_DISP=${REG_EMAIL:-(empty)}
+    if [ "$USE_DRACUT_NTP" = true ]; then
+      NTP_SERVER_DISP="(from dracut)"
+    else
+      NTP_SERVER_DISP=${NTP_SERVER:-(empty)}
+    fi
 
-    SUMMARY="Root password: $ROOT_PW_DISP\nUser login: ${USERNAME:-(empty)}\nUser full name: ${FULLNAME:-(empty)}\nUser password: $USER_PW_DISP\nRegistration email: $REG_EMAIL_DISP\nRegistration code: $REG_CODE_DISP"
+    SUMMARY="Root password: $ROOT_PW_DISP\nUser login: ${USERNAME:-(empty)}\nUser full name: ${FULLNAME:-(empty)}\nUser password: $USER_PW_DISP\nNTP server: $NTP_SERVER_DISP\nRegistration email: $REG_EMAIL_DISP\nRegistration code: $REG_CODE_DISP"
   fi
 
   # 3. Confirmation Dialog
@@ -147,23 +177,34 @@ while true; do
 
     # build the JSON and load it to Agama
     if [ "$CHOICE" = "2" ]; then
+      JQ_FILTER='.root.password = $rp | .root.hashedPassword = false | .user.userName = $un | .user.fullName = $fn | .user.password = $up | .user.hashedPassword = false'
+
       if [ "$REG_ADD" = true ]; then
-        jq --arg rp "$ROOT_PW" \
-          --arg un "$USERNAME" \
-          --arg fn "$FULLNAME" \
-          --arg up "$USER_PW" \
-          --arg re "$REG_EMAIL" \
-          --arg rc "$REG_CODE" \
-          '.root.password = $rp | .root.hashedPassword = false | .user.userName = $un | .user.fullName = $fn | .user.password = $up | .user.hashedPassword = false | .product.registrationEmail = $re | .product.registrationCode = $rc' \
-          "$CONFIG" | agama config load
-      else
-        jq --arg rp "$ROOT_PW" \
-          --arg un "$USERNAME" \
-          --arg fn "$FULLNAME" \
-          --arg up "$USER_PW" \
-          '.root.password = $rp | .root.hashedPassword = false | .user.userName = $un | .user.fullName = $fn | .user.password = $up | .user.hashedPassword = false' \
-          "$CONFIG" | agama config load
+        JQ_FILTER="$JQ_FILTER | .product.registrationEmail = \$re | .product.registrationCode = \$rc"
       fi
+
+      if [ "$USE_DRACUT_NTP" = true ]; then
+        # Add file configuration for chrony server using dracut file
+        JQ_FILTER="$JQ_FILTER | .files = ((.files // []) + [{
+          \"destination\": \"/etc/chrony.d/installer.conf\",
+          \"url\": \"file:///run/chrony/dracut.sources.d/dracut.sources\"
+        }])"
+      elif [ -n "$NTP_SERVER" ]; then
+        # Add file configuration for chrony server
+        JQ_FILTER="$JQ_FILTER | .files = ((.files // []) + [{
+          \"destination\": \"/etc/chrony.d/installer.conf\",
+          \"content\": \"server $NTP_SERVER\\n\"
+        }])"
+      fi
+
+      jq --arg rp "$ROOT_PW" \
+        --arg un "$USERNAME" \
+        --arg fn "$FULLNAME" \
+        --arg up "$USER_PW" \
+        --arg re "$REG_EMAIL" \
+        --arg rc "$REG_CODE" \
+        "$JQ_FILTER" \
+        "$CONFIG" | agama config load
     else
       agama config load < "$CONFIG"
     fi
