@@ -32,6 +32,12 @@ export type StatementProps = {
   heading: React.ReactNode;
   /** The statement itself, which may name other entries and lead to them. */
   children: React.ReactNode;
+  /**
+   * Whether the statement reads under its heading rather than beside it. For a
+   * statement that is a sentence rather than a name or two, which run on from
+   * a heading set beside them.
+   */
+  isStacked?: boolean;
 };
 
 /**
@@ -53,7 +59,12 @@ export type StatementProps = {
  *   </Statement>
  * </Statements>
  */
-export default function Statement({ icon, heading, children }: StatementProps): React.ReactNode {
+export default function Statement({
+  icon,
+  heading,
+  children,
+  isStacked = false,
+}: StatementProps): React.ReactNode {
   return (
     <Flex
       className="agm-statement"
@@ -65,7 +76,16 @@ export default function Statement({ icon, heading, children }: StatementProps): 
         <Icon name={icon} size="xs" aria-hidden />
       </FlexItem>
       <FlexItem>
-        <Text isBold>{heading}</Text> {children}
+        {isStacked ? (
+          <>
+            <div>{heading}</div>
+            <div className="agm-statement__detail">{children}</div>
+          </>
+        ) : (
+          <>
+            <Text isBold>{heading}</Text> {children}
+          </>
+        )}
       </FlexItem>
     </Flex>
   );

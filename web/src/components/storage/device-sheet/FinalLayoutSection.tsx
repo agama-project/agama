@@ -99,13 +99,6 @@ export default function FinalLayoutSection({ entry }: FinalLayoutSectionProps): 
   return (
     <Stack hasGutter>
       <StackItem>
-        <Text textStyle={["fontSizeSm", "textColorSubtle"]}>
-          {/* TRANSLATORS: says what the panel's first view holds: the shape the
-              device is left in once the installation has run. */}
-          {_("After installing")}
-        </Text>
-      </StackItem>
-      <StackItem>
         {shown.length ? (
           <ProposalResultTable devicesManager={manager} devices={rows} deviceLink={deviceLink} />
         ) : (

@@ -528,3 +528,10 @@ nav.agm-breadcrumb > ol > li > a {
 .agm-statement svg {
   color: var(--pf-t--global--icon--color--subtle);
 }
+
+// Where a statement's second line is a sentence about where to go next, it is
+// read after the first rather than with it.
+.agm-statement__detail {
+  font-size: var(--pf-t--global--font--size--body--sm);
+  color: var(--pf-t--global--text--color--subtle);
+}

@@ -44,6 +44,7 @@ import Block from "@icons/block.svg?component";
 import ChangeCircle from "@icons/change_circle.svg?component";
 import DeviceHub from "@icons/device_hub.svg?component";
 import CheckCircle from "@icons/check_circle.svg?component";
+import LastPage from "@icons/last_page.svg?component";
 import LockOpen from "@icons/lock_open.svg?component";
 import NetworkNode from "@icons/network_node.svg?component";
 import PendingActions from "@icons/pending_actions.svg?component";
@@ -117,6 +118,7 @@ const icons = {
   change_circle: ChangeCircle,
   device_hub: DeviceHub,
   check_circle: CheckCircle,
+  last_page: LastPage,
   lock_open: LockOpen,
   network_node: NetworkNode,
   pending_actions: PendingActions,

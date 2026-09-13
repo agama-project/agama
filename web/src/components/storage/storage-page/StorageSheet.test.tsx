@@ -135,7 +135,7 @@ describe("StorageSheet", () => {
       mockActions.mockReturnValue([{ device: 59, text: "" }]);
       renderAt("/storage?sheet=drives.0");
 
-      screen.getByText("After installing");
+      screen.getByText("How this disk looks once the installer is done.");
       screen.getByRole("treegrid");
     });
 
@@ -159,6 +159,16 @@ describe("StorageSheet", () => {
 
       screen.getByRole("tab", { name: "Final layout" });
       screen.getByRole("tab", { name: "Planned content" });
+    });
+
+    it("says in each view where what it holds is decided, and leads there", async () => {
+      const { user } = renderAt("/storage?sheet=drives.0");
+      await user.click(screen.getByRole("button", { name: "Current content" }));
+
+      expect(screen.getByRole("tab", { name: "Current content" })).toHaveAttribute(
+        "aria-selected",
+        "true",
+      );
     });
 
     it("opens on what it becomes, not on what there is to change", () => {
@@ -187,7 +197,7 @@ describe("StorageSheet", () => {
       it("opens on that one instead, listing what the new system gets here", () => {
         renderAt("/storage?sheet=drives.0&sheetTab=planned");
 
-        screen.getByText("For the new system");
+        screen.getByText("What this disk will hold for the new system.");
         screen.getByRole("rowheader", { name: /\// });
       });
 
@@ -220,9 +230,27 @@ describe("StorageSheet", () => {
       it("names what is there and what becomes of it", () => {
         renderAt("/storage?sheet=drives.0&sheetTab=current");
 
-        screen.getByText("Already here");
-        screen.getByRole("rowheader", { name: /sda1.*Windows 11/ });
-        screen.getByText("Kept as it is");
+        screen.getByText("What to do with the existing partitions");
+        screen.getByRole("rowheader", { name: "sda1" });
+        /* The system found on it reads in its own column, beside what it is. */
+        screen.getByText("Windows 11");
+        screen.getByText("Kept");
+      });
+
+      it("lists the free space too, so keeping everything has something to show", () => {
+        mockSystemDevice.mockReturnValue({
+          name: "/dev/sda",
+          class: "drive",
+          drive: { type: "disk", info: {} },
+          block: { size: 64424509440 },
+          partitionTable: { type: "gpt", unusedSlots: [{ start: 9e10, size: 1e10 }] },
+          partitions: [
+            { sid: 41, name: "/dev/sda1", block: { start: 0, size: 5e10, systems: [] } },
+          ],
+        });
+        renderAt("/storage?sheet=drives.0&sheetTab=current");
+
+        screen.getByRole("rowheader", { name: "Free space" });
       });
 
       it("puts the decision above the column it governs", () => {
@@ -241,7 +269,7 @@ describe("StorageSheet", () => {
         });
         renderAt("/storage?sheet=drives.0&sheetTab=current");
 
-        screen.getByText("There is nothing on this device.");
+        screen.getByText("The device is empty.");
         expect(screen.queryByRole("group", { name: "Allowed changes" })).not.toBeInTheDocument();
       });
     });
@@ -282,6 +310,35 @@ describe("StorageSheet", () => {
         /* Twice: once in the statement above the content, once in the state
            that says nothing is planned. Both lead to the same entry. */
         expect(screen.getAllByRole("link", { name: "system" })).toHaveLength(2);
+      });
+
+      it("says the device starts the machine, and what that costs it", () => {
+        mockConfig.mockReturnValue(
+          config({
+            drives: [{ name: "/dev/sda", partitions: [] }],
+            volumeGroups: [{ vgName: "system", targetDevices: ["/dev/sda"] }],
+            /* Automatic still records which disk it chose. */
+            boot: { configure: true, device: { default: true, name: "/dev/sda" } },
+          }),
+        );
+        mockProposalDevices.mockReturnValue([
+          {
+            sid: 59,
+            name: "/dev/sda",
+            partitions: [
+              {
+                sid: 90,
+                name: "/dev/sda1",
+                description: "BIOS Boot Partition",
+                block: { size: 8388608 },
+              },
+            ],
+          },
+        ]);
+        renderAt("/storage?sheet=drives.0&sheetTab=planned");
+
+        screen.getByText("Boot device, chosen automatically.");
+        screen.getByText(/Partitions to boot: a new partition \(8 MiB\)\./);
       });
 
       it("says so above the content too, on one line", () => {

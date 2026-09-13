@@ -40,6 +40,7 @@ import Icon from "~/components/layout/Icon";
 import MenuButton, { MenuButtonItem } from "~/components/core/MenuButton";
 import RowMenuToggle from "~/components/storage/entries-table/RowMenuToggle";
 import Statement, { Statements } from "~/components/storage/device-sheet/Statement";
+import BootStatement from "~/components/storage/device-sheet/BootStatement";
 import RelatedNames from "~/components/storage/shared/RelatedNames";
 import RetargetOffer from "~/components/storage/shared/RetargetOffer";
 import { usersOf } from "~/components/storage/shared/users";
@@ -133,6 +134,10 @@ export default function PlannedContentSection({
 
   const planned = plannedOn(entry);
   const users = isVolumeGroup ? [] : usersOf(config, systemDevices, device.name);
+  /* Asked here as well as inside the statement, because a run of statements with
+     nothing in it still draws its rule: an empty ruled box above the content. */
+  const boots =
+    !isVolumeGroup && Boolean(config) && configModel.boot.hasDevice(config, device.name);
   /* A device formatted as a whole has nowhere to put a partition, so the view
      drops the table and the offer with it. */
   const whole = isVolumeGroup ? undefined : device.filesystem;
@@ -180,24 +185,20 @@ export default function PlannedContentSection({
 
   return (
     <Stack hasGutter>
-      <StackItem>
-        <Text textStyle={["fontSizeSm", "textColorSubtle"]}>
-          {/* TRANSLATORS: says what this view of an entry holds: what the
-              installation will put on it. */}
-          {_("For the new system")}
-        </Text>
-      </StackItem>
-      {users.length > 0 && (
+      {(users.length > 0 || boots) && (
         <StackItem>
           <Statements>
-            <Statement
-              icon="network_node"
-              // TRANSLATORS: names the entries of the installation that are
-              // built on this device.
-              heading={_("Used by")}
-            >
-              <RelatedNames items={users} />
-            </Statement>
+            {users.length > 0 && (
+              <Statement
+                icon="network_node"
+                // TRANSLATORS: names the entries of the installation that are
+                // built on this device.
+                heading={_("Used by")}
+              >
+                <RelatedNames items={users} />
+              </Statement>
+            )}
+            <BootStatement entry={entry} />
           </Statements>
         </StackItem>
       )}

@@ -24,7 +24,6 @@ import React from "react";
 import { DescriptionList, Flex, FlexItem, Stack, StackItem } from "@patternfly/react-core";
 import Link from "~/components/core/Link";
 import SettingValue from "~/components/core/SettingValue";
-import Text from "~/components/core/Text";
 import Icon from "~/components/layout/Icon";
 import SheetOpener from "~/components/storage/shared/SheetOpener";
 import { baseName } from "~/components/storage/utils";
@@ -94,13 +93,6 @@ export default function PropertiesSection({ entry }: PropertiesSectionProps): Re
 
   return (
     <Stack hasGutter>
-      <StackItem>
-        <Text textStyle={["fontSizeSm", "textColorSubtle"]}>
-          {/* TRANSLATORS: says what this view of an entry holds: the other
-              entries it is built from, and how it uses them. */}
-          {_("What it is made of")}
-        </Text>
-      </StackItem>
       <StackItem>
         <DescriptionList isCompact isHorizontal isFluid>
           <SettingValue

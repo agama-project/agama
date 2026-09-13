@@ -27,9 +27,10 @@ import FinalLayoutSection from "~/components/storage/device-sheet/FinalLayoutSec
 import PlannedContentSection from "~/components/storage/device-sheet/PlannedContentSection";
 import CurrentContentSection from "~/components/storage/device-sheet/CurrentContentSection";
 import PropertiesSection from "~/components/storage/device-sheet/PropertiesSection";
+import TabNote from "~/components/storage/device-sheet/TabNote";
 import { useSheetTab } from "~/components/storage/shared/use-sheet";
 import { useTablistKeyboard } from "~/hooks/use-tablist-keyboard";
-import { _ } from "~/i18n";
+import { _, TranslatedString } from "~/i18n";
 import type { Entry } from "~/components/storage/device-sheet/entry";
 import type { SheetEntry } from "~/components/storage/shared/use-sheet";
 
@@ -86,6 +87,37 @@ export default function DeviceDetail({ entry, subject }: DeviceDetailProps): Rea
   const [tab, setTab] = useSheetTab("result");
   const views = ["result", "planned", ...(entry.isVolumeGroup ? ["properties"] : []), "current"];
   const { containerProps, tabProps } = useTablistKeyboard(views, tab, setTab);
+  const hasCurrent = views.includes("current");
+
+  /* The views as the notes name them, and the way to each. */
+  const go = (view: string, name: TranslatedString) => ({ name, onGo: () => setTab(view) });
+  // TRANSLATORS: names a view of a device, as a link inside a sentence.
+  const toPlanned = go("planned", _("Planned content"));
+  // TRANSLATORS: names a view of a device, as a link inside a sentence.
+  const toCurrent = go("current", _("Current content"));
+  // TRANSLATORS: names a view of a device, as a link inside a sentence.
+  const toResult = go("result", _("Final layout"));
+
+  /* Whole sentences per kind of entry: an article and a noun agree in most
+     languages, and a slot taking either "disk" or "volume group" would leave a
+     translator unable to make them. */
+  const isRaid = subject.collection === "mdRaids";
+  const resultLead = () => {
+    // TRANSLATORS: opens the view showing the shape an LVM volume group is left in.
+    if (entry.isVolumeGroup) return _("How this volume group looks once the installer is done.");
+    // TRANSLATORS: opens the view showing the shape a software RAID is left in.
+    if (isRaid) return _("How this RAID device looks once the installer is done.");
+    // TRANSLATORS: opens the view showing the shape a disk is left in.
+    return _("How this disk looks once the installer is done.");
+  };
+  const plannedLead = () => {
+    // TRANSLATORS: opens the view showing what an LVM volume group will hold.
+    if (entry.isVolumeGroup) return _("What this volume group will hold for the new system.");
+    // TRANSLATORS: opens the view showing what a software RAID will hold.
+    if (isRaid) return _("What this RAID device will hold for the new system.");
+    // TRANSLATORS: opens the view showing what a disk will hold.
+    return _("What this disk will hold for the new system.");
+  };
 
   return (
     <div {...containerProps}>
@@ -107,6 +139,19 @@ export default function DeviceDetail({ entry, subject }: DeviceDetailProps): Rea
             </>,
           )}
         >
+          <TabNote
+            lead={resultLead()}
+            where={
+              hasCurrent
+                ? // TRANSLATORS: says where the final layout of a device changes.
+                  // %1$s and %2$s are the names of two other views, shown as links.
+                  _("It follows from the %1$s and %2$s tabs, which is where it changes.")
+                : // TRANSLATORS: says where the final layout of a device changes.
+                  // %s is the name of another view, shown as a link.
+                  _("It follows from the %s tab, which is where it changes.")
+            }
+            links={hasCurrent ? [toPlanned, toCurrent] : [toPlanned]}
+          />
           <FinalLayoutSection entry={entry} />
         </Tab>
         <Tab
@@ -121,6 +166,19 @@ export default function DeviceDetail({ entry, subject }: DeviceDetailProps): Rea
             </>,
           )}
         >
+          <TabNote
+            lead={plannedLead()}
+            where={
+              hasCurrent
+                ? // TRANSLATORS: says where room is made for what a device will
+                  // hold. %s is the name of another view, shown as a link.
+                  _(
+                    "Making room for it may mean deleting or shrinking what is there today, decided in the %s tab.",
+                  )
+                : undefined
+            }
+            links={hasCurrent ? [toCurrent] : []}
+          />
           <PlannedContentSection entry={entry} subject={subject} />
         </Tab>
         {/* Only where the entry is defined rather than found. A disk is the
@@ -138,6 +196,15 @@ export default function DeviceDetail({ entry, subject }: DeviceDetailProps): Rea
               </>,
             )}
           >
+            <TabNote
+              // TRANSLATORS: opens the view showing what an LVM volume group is
+              // built from.
+              lead={_("What this volume group is made of, and how it is defined.")}
+              // TRANSLATORS: says where to read what a volume group will hold.
+              // %s is the name of another view, shown as a link.
+              where={_("What it will hold is in the %s tab.")}
+              links={[toPlanned]}
+            />
             <PropertiesSection entry={entry} />
           </Tab>
         )}
@@ -153,6 +220,16 @@ export default function DeviceDetail({ entry, subject }: DeviceDetailProps): Rea
             </>,
           )}
         >
+          <TabNote
+            // TRANSLATORS: opens the view listing what is on a device today.
+            lead={_("What to do with the existing partitions")}
+            // TRANSLATORS: says what this view is for and where its result is
+            // shown. %s is the name of another view, shown as a link.
+            where={_(
+              "Choose how the installer should use the existing partitions. The %s tab shows the resulting disk layout.",
+            )}
+            links={[toResult]}
+          />
           <CurrentContentSection entry={entry} subject={subject} />
         </Tab>
       </Tabs>
