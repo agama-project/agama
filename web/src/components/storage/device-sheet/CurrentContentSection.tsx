@@ -28,6 +28,12 @@ import { sprintf } from "sprintf-js";
 import Text from "~/components/core/Text";
 import Icon from "~/components/layout/Icon";
 import SpaceDecision from "~/components/storage/storage-page/SpaceDecision";
+import MenuButton, { MenuButtonItem } from "~/components/core/MenuButton";
+import RowMenuToggle from "~/components/storage/entries-table/RowMenuToggle";
+import { STORAGE as PATHS } from "~/routes/paths";
+import { generateEncodedPath } from "~/utils";
+import { useDeletePartition } from "~/hooks/model/storage/config-model";
+import PartitionSpaceControl from "~/components/storage/device-sheet/PartitionSpaceControl";
 import { outcomeOf } from "~/components/storage/shared/consequences";
 import { useDevicesManager } from "~/components/storage/shared/use-devices-manager";
 import { baseName, deviceSize, formattedPath } from "~/components/storage/utils";
@@ -59,6 +65,70 @@ function rowsOf(entry: Entry): Row[] {
   const free: [number, Row][] = (device.partitionTable?.unusedSlots || []).map((s) => [s.start, s]);
 
   return [...parts, ...free].sort((a, b) => a[0] - b[0]).map(([, row]) => row);
+}
+
+/**
+ * What can be done to one partition that is already on the device.
+ *
+ * Reusing a partition is not a space decision: it is about what the new system
+ * mounts, and it stays offered whatever the device's space answer is. That is
+ * why it lives in the row's menu rather than in the control beside it.
+ */
+function PartitionMenu({
+  part,
+  reusedAs,
+  collection,
+  index,
+}: {
+  part: System.Device;
+  /** Where the new system mounts it already, where it does. */
+  reusedAs?: string;
+  collection: "drives" | "mdRaids";
+  index: number;
+}) {
+  const deletePartition = useDeletePartition();
+  const name = baseName(part.name);
+  // TRANSLATORS: names the menu of things that can be done to one partition
+  // already on a device. %s is its name, such as "vda2".
+  const menuLabel = sprintf(_("Actions for %s"), name);
+  const at = { collection, index: String(index) };
+
+  const items = reusedAs
+    ? [
+        <MenuButtonItem
+          key="edit"
+          to={generateEncodedPath(PATHS.editPartition, { ...at, partitionId: reusedAs })}
+          keepQuery
+        >
+          {/* TRANSLATORS: offered on a partition the new system already reuses:
+              change how it is used. */}
+          {_("Edit the reused partition")}
+        </MenuButtonItem>,
+        <MenuButtonItem key="stop" onClick={() => deletePartition(collection, index, reusedAs)}>
+          {/* TRANSLATORS: offered on a partition the new system reuses: stop
+              using it, which leaves it to the device's space decision again. */}
+          {_("Stop reusing")}
+        </MenuButtonItem>,
+      ]
+    : [
+        <MenuButtonItem
+          key="reuse"
+          to={generateEncodedPath(PATHS.reusePartition, { ...at, deviceName: part.name })}
+          keepQuery
+        >
+          {/* TRANSLATORS: offered on a partition already on a device: use it for
+              the new system. The ellipsis says a form follows. */}
+          {_("Reuse for the new system…")}
+        </MenuButtonItem>,
+      ];
+
+  return (
+    <MenuButton
+      menuProps={{ "aria-label": menuLabel, popperProps: { position: "end" } }}
+      customToggle={<RowMenuToggle label={menuLabel} />}
+      items={items}
+    />
+  );
 }
 
 /** How a planned action reads, and whether it loses anything. */
@@ -126,10 +196,16 @@ function PartitionRow({
   part,
   manager,
   entries,
+  decides,
+  menu,
 }: {
   part: System.Device;
   manager: DevicesManager;
   entries: (ConfigModel.Partition | ConfigModel.LogicalVolume)[];
+  /** The control deciding this row, where the device decides one at a time. */
+  decides?: React.ReactNode;
+  /** The row's menu, where the device is one a partition can be reused from. */
+  menu?: React.ReactNode;
 }) {
   const outcome = outcomeOf(manager, part);
   const reusedAs = entries.find((e) => e.name === part.name)?.mountPath;
@@ -190,6 +266,10 @@ function PartitionRow({
         )}
       </Td>
       <Td>
+        {/* Reading and deciding share the column: under the fourth space answer
+            the row carries its decision, and what the installer makes of it
+            reads under the control that set it. */}
+        {decides && <div>{decides}</div>}
         {report.kind === "keeps" ? (
           report.text
         ) : (
@@ -206,6 +286,7 @@ function PartitionRow({
           </Flex>
         )}
       </Td>
+      <Td isActionCell>{menu}</Td>
     </Tr>
   );
 }
@@ -224,10 +305,8 @@ export type CurrentContentSectionProps = {
  * since it is about the rows below it; and it is a permission rather than an
  * instruction, which is why a column says what the installer will actually do.
  *
- * @fixme The playground also decides one partition at a time here, and offers
- *  to reuse a partition for the new system. Both wait on the design owner: the
- *  first writes to the configuration in ways the page has no hook for, and the
- *  second needs a route the partition form does not read.
+ * Under the fourth space answer each partition carries its own decision, in the
+ * column that reports what the installer does with it.
  */
 export default function CurrentContentSection({
   entry,
@@ -235,6 +314,7 @@ export default function CurrentContentSection({
 }: CurrentContentSectionProps): React.ReactNode {
   const manager = useDevicesManager();
   const rows = rowsOf(entry);
+  const isCustom = !entry.isVolumeGroup && entry.config.spacePolicy === "custom";
   const entries = entry.isVolumeGroup
     ? (entry.config as ConfigModel.VolumeGroup).logicalVolumes || []
     : (entry.config as Partitionable.Device).partitions || [];
@@ -270,6 +350,7 @@ export default function CurrentContentSection({
                 {/* "Planned action" rather than "What happens": nothing has
                     happened yet. */}
                 <Th>{_("Planned action")}</Th>
+                <Th>{_("Options")}</Th>
               </Tr>
             </Thead>
             <Tbody>
@@ -286,9 +367,44 @@ export default function CurrentContentSection({
                     <Td />
                     <Td>{deviceSize(row.size)}</Td>
                     <Td />
+                    <Td />
                   </Tr>
                 ) : (
-                  <PartitionRow key={row.sid} part={row} manager={manager} entries={entries} />
+                  <PartitionRow
+                    key={row.sid}
+                    part={row}
+                    manager={manager}
+                    entries={entries}
+                    menu={
+                      subject.collection !== "volumeGroups" && (
+                        <PartitionMenu
+                          part={row}
+                          reusedAs={entries.find((e) => e.name === row.name)?.mountPath}
+                          collection={subject.collection}
+                          index={subject.index}
+                        />
+                      )
+                    }
+                    decides={
+                      /* A partition the new system mounts is spoken for, so no
+                         space decision reaches it. */
+                      isCustom &&
+                      subject.collection !== "volumeGroups" &&
+                      !entries.find((e) => e.name === row.name)?.mountPath && (
+                        <PartitionSpaceControl
+                          partition={row}
+                          governed={rows.filter(
+                            (candidate): candidate is System.Device =>
+                              !isFreeSpace(candidate) &&
+                              !entries.find((e) => e.name === candidate.name)?.mountPath,
+                          )}
+                          entries={entries}
+                          collection={subject.collection}
+                          index={subject.index}
+                        />
+                      )
+                    }
+                  />
                 ),
               )}
             </Tbody>

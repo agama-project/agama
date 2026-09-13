@@ -22,12 +22,14 @@
 
 import React from "react";
 import { screen } from "@testing-library/react";
-import { installerRender, mockRoutes } from "~/test-utils";
+import { installerRender, mockNavigateFn, mockRoutes } from "~/test-utils";
 import type { ConfigModel } from "~/model/storage/config-model";
 import StorageSheet from "~/components/storage/storage-page/StorageSheet";
 
 const mockConfig = jest.fn();
 const mockSystemDevice = jest.fn();
+const mockSystemDevices = jest.fn();
+const mockSetSpacePolicy = jest.fn();
 const mockProposalDevices = jest.fn();
 const mockActions = jest.fn();
 
@@ -41,7 +43,7 @@ jest.mock("~/hooks/model/storage/config-model", () => ({
   useDeleteVolumeGroup: () => jest.fn(),
   useDeletePartition: () => jest.fn(),
   useDeleteLogicalVolume: () => jest.fn(),
-  useSetSpacePolicy: () => jest.fn(),
+  useSetSpacePolicy: () => mockSetSpacePolicy,
   /* Mocked although the module above it already is: a hook calling another
      hook of its own module calls the module's binding, not the mocked export,
      so the real suspense query underneath would run. */
@@ -52,7 +54,7 @@ jest.mock("~/hooks/model/system/storage", () => ({
   ...jest.requireActual("~/hooks/model/system/storage"),
   useDevice: () => mockSystemDevice(),
   useAvailableDevices: () => [],
-  useFlattenDevices: () => [],
+  useFlattenDevices: () => mockSystemDevices(),
 }));
 
 jest.mock("~/hooks/model/proposal/storage", () => ({
@@ -92,6 +94,7 @@ describe("StorageSheet", () => {
     mockConfig.mockReturnValue(config());
     mockProposalDevices.mockReturnValue([]);
     mockActions.mockReturnValue([]);
+    mockSystemDevices.mockReturnValue([]);
     mockSystemDevice.mockReturnValue({
       name: "/dev/sda",
       class: "drive",
@@ -419,6 +422,162 @@ describe("StorageSheet", () => {
 
       screen.getByRole("region", { name: "Result" });
       screen.getByText("everything the installer will do");
+    });
+  });
+
+  describe("when a device's space is decided one partition at a time", () => {
+    const sda1 = {
+      sid: 41,
+      name: "/dev/sda1",
+      block: { start: 0, size: 5e10, systems: [], shrinking: { supported: false } },
+    };
+    const sda2 = {
+      sid: 42,
+      name: "/dev/sda2",
+      block: { start: 5e10, size: 5e10, systems: [], shrinking: { supported: true } },
+    };
+
+    beforeEach(() => {
+      mockConfig.mockReturnValue(
+        config({
+          drives: [
+            {
+              name: "/dev/sda",
+              spacePolicy: "custom",
+              partitions: [{ name: "/dev/sda1", delete: true }],
+            },
+          ],
+        }),
+      );
+      mockSystemDevice.mockReturnValue({
+        name: "/dev/sda",
+        class: "drive",
+        drive: { type: "disk", info: {} },
+        block: { size: 1e11 },
+        partitions: [sda1, sda2],
+      });
+    });
+
+    it("gives each partition its own decision, saying what it is now", () => {
+      renderAt("/storage?sheet=drives.0&sheetTab=current");
+
+      screen.getByRole("button", { name: "Changes allowed for sda1: Delete" });
+      screen.getByRole("button", { name: "Changes allowed for sda2: Keep" });
+    });
+
+    it("writes every partition's decision back with the one that changed", async () => {
+      const { user } = renderAt("/storage?sheet=drives.0&sheetTab=current");
+      await user.click(screen.getByRole("button", { name: "Changes allowed for sda2: Keep" }));
+      await user.click(screen.getByRole("menuitem", { name: /Shrink if needed/ }));
+
+      /* sda1 keeps its deletion: the configuration clears every decision before
+         applying the list, so leaving it out would quietly undo it. */
+      expect(mockSetSpacePolicy).toHaveBeenCalledWith("drives", 0, {
+        type: "custom",
+        actions: [
+          { deviceName: "/dev/sda1", value: "delete" },
+          { deviceName: "/dev/sda2", value: "resizeIfNeeded" },
+        ],
+      });
+    });
+
+    it("keeps a shrink it cannot allow offered and says why, rather than hiding it", async () => {
+      const { user } = renderAt("/storage?sheet=drives.0&sheetTab=current");
+      await user.click(screen.getByRole("button", { name: "Changes allowed for sda1: Delete" }));
+
+      const shrink = screen.getByRole("menuitem", { name: /Shrink if needed/ });
+      expect(shrink).toHaveAttribute("aria-disabled", "true");
+      screen.getByText("This partition cannot be made smaller.");
+    });
+
+    it("offers no decision per partition where the device follows one rule", () => {
+      mockConfig.mockReturnValue(
+        config({ drives: [{ name: "/dev/sda", spacePolicy: "keep", partitions: [] }] }),
+      );
+      renderAt("/storage?sheet=drives.0&sheetTab=current");
+
+      expect(screen.queryByRole("button", { name: /Changes allowed for/ })).not.toBeInTheDocument();
+    });
+  });
+
+  describe("what can be done to a partition already on the device", () => {
+    beforeEach(() => {
+      mockSystemDevice.mockReturnValue({
+        name: "/dev/sda",
+        class: "drive",
+        drive: { type: "disk", info: {} },
+        block: { size: 1e11 },
+        partitions: [{ sid: 41, name: "/dev/sda1", block: { start: 0, size: 5e10, systems: [] } }],
+      });
+    });
+
+    it("offers to reuse it for the new system, whatever the space answer", async () => {
+      const { user } = renderAt("/storage?sheet=drives.0&sheetTab=current");
+      await user.click(screen.getByRole("button", { name: "Actions for sda1" }));
+      await user.click(screen.getByRole("menuitem", { name: "Reuse for the new system…" }));
+
+      expect(mockNavigateFn).toHaveBeenCalledWith(
+        expect.objectContaining({
+          pathname: expect.stringMatching(/\/storage\/drives\/0\/partitions\/.*sda1\/use$/),
+        }),
+      );
+    });
+
+    it("offers to change or stop a reuse already planned", async () => {
+      mockConfig.mockReturnValue(
+        config({
+          drives: [{ name: "/dev/sda", partitions: [{ name: "/dev/sda1", mountPath: "/home" }] }],
+        }),
+      );
+      const { user } = renderAt("/storage?sheet=drives.0&sheetTab=current");
+      await user.click(screen.getByRole("button", { name: "Actions for sda1" }));
+
+      screen.getByRole("menuitem", { name: "Edit the reused partition" });
+      screen.getByRole("menuitem", { name: "Stop reusing" });
+    });
+  });
+
+  describe("when the entry is a software RAID", () => {
+    beforeEach(() => {
+      mockConfig.mockReturnValue(
+        config({
+          drives: [{ name: "/dev/sda", partitions: [] }],
+          mdRaids: [{ name: "/dev/md0", ptableType: "gpt", partitions: [] }],
+        }),
+      );
+      mockSystemDevice.mockReturnValue({
+        name: "/dev/md0",
+        class: "mdRaid",
+        block: { size: 1e11 },
+        md: { level: "raid1", devices: [11, 12] },
+      });
+      mockSystemDevices.mockReturnValue([
+        { sid: 11, name: "/dev/sda" },
+        { sid: 12, name: "/dev/sdb" },
+      ]);
+    });
+
+    it("offers a view of what it is made of", () => {
+      renderAt("/storage?sheet=mdRaids.0");
+
+      screen.getByRole("tab", { name: "Properties" });
+    });
+
+    it("names the disks it stands on, leading to those that are entries of the plan", () => {
+      renderAt("/storage?sheet=mdRaids.0&sheetTab=properties");
+
+      screen.getByText("Uses");
+      screen.getByRole("link", { name: "sda" });
+      /* sdb is not an entry of the plan, so there is no panel for it to open. */
+      expect(screen.queryByRole("link", { name: "sdb" })).not.toBeInTheDocument();
+      screen.getByText(/sdb/);
+    });
+
+    it("says how it is partitioned", () => {
+      renderAt("/storage?sheet=mdRaids.0&sheetTab=properties");
+
+      screen.getByText("Partition table");
+      screen.getByText("GPT");
     });
   });
 });
