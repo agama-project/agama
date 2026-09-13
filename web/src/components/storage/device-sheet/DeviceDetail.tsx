@@ -85,7 +85,10 @@ function title(view: string, name: React.ReactNode) {
 
 export default function DeviceDetail({ entry, subject }: DeviceDetailProps): React.ReactNode {
   const [tab, setTab] = useSheetTab("result");
-  const views = ["result", "planned", ...(entry.isVolumeGroup ? ["properties"] : []), "current"];
+  /* Only an entry that is defined rather than found has properties: a volume
+     group, or a RAID made of other disks. A disk is the hardware. */
+  const hasProperties = entry.isVolumeGroup || subject.collection === "mdRaids";
+  const views = ["result", "planned", ...(hasProperties ? ["properties"] : []), "current"];
   const { containerProps, tabProps } = useTablistKeyboard(views, tab, setTab);
   const hasCurrent = views.includes("current");
 
@@ -183,7 +186,7 @@ export default function DeviceDetail({ entry, subject }: DeviceDetailProps): Rea
         </Tab>
         {/* Only where the entry is defined rather than found. A disk is the
             hardware, so there is nothing that defines it to show. */}
-        {entry.isVolumeGroup && (
+        {hasProperties && (
           <Tab
             eventKey="properties"
             {...tabProps("properties")}
@@ -197,9 +200,15 @@ export default function DeviceDetail({ entry, subject }: DeviceDetailProps): Rea
             )}
           >
             <TabNote
-              // TRANSLATORS: opens the view showing what an LVM volume group is
-              // built from.
-              lead={_("What this volume group is made of, and how it is defined.")}
+              lead={
+                entry.isVolumeGroup
+                  ? // TRANSLATORS: opens the view showing what an LVM volume group
+                    // is built from.
+                    _("What this volume group is made of, and how it is defined.")
+                  : // TRANSLATORS: opens the view showing what a software RAID is
+                    // built from.
+                    _("What this RAID device is made of, and how it is defined.")
+              }
               // TRANSLATORS: says where to read what a volume group will hold.
               // %s is the name of another view, shown as a link.
               where={_("What it will hold is in the %s tab.")}

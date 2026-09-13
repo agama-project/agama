@@ -25,8 +25,13 @@ import type { ConfigModel } from "~/model/storage/config-model";
 import type { SheetEntry } from "~/components/storage/shared/use-sheet";
 import type { Storage } from "~/model/system";
 
-/** Another entry of the plan, named and reachable. */
-export type Related = { name: string; subject: SheetEntry };
+/**
+ * Another device, named, and reachable where it is an entry of the plan.
+ *
+ * A RAID can be built from disks the configuration says nothing else about, and
+ * those have no panel of their own to lead to.
+ */
+export type Related = { name: string; subject?: SheetEntry };
 
 /**
  * The entries built on this device, which is what the device is for.
@@ -66,4 +71,28 @@ function usersOf(
   return [...groups, ...raids];
 }
 
-export { usersOf };
+/**
+ * The devices a software RAID is built from.
+ *
+ * The configuration does not record them: a RAID it reuses is described only by
+ * its name. The machine does, so they are read from what it reports, which is
+ * the only place a reader can learn which disks a RAID stands on.
+ */
+function membersOf(
+  config: ConfigModel.Config | null,
+  systemDevices: Storage.Device[],
+  device: Storage.Device | null,
+): Related[] {
+  return (device?.md?.devices || [])
+    .map((sid) => systemDevices.find((candidate) => candidate.sid === sid)?.name)
+    .filter((name): name is string => Boolean(name))
+    .map((name) => {
+      const at = (config?.drives || []).findIndex((drive) => drive.name === name);
+      return {
+        name: baseName(name),
+        subject: at === -1 ? undefined : { collection: "drives" as const, index: at },
+      };
+    });
+}
+
+export { usersOf, membersOf };

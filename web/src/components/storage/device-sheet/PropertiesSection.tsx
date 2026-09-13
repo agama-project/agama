@@ -26,13 +26,16 @@ import Link from "~/components/core/Link";
 import SettingValue from "~/components/core/SettingValue";
 import Icon from "~/components/layout/Icon";
 import SheetOpener from "~/components/storage/shared/SheetOpener";
+import RelatedNames from "~/components/storage/shared/RelatedNames";
+import { membersOf } from "~/components/storage/shared/users";
+import { useFlattenDevices as useSystemDevices } from "~/hooks/model/system/storage";
 import { baseName } from "~/components/storage/utils";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { generateEncodedPath } from "~/utils";
 import configModel from "~/model/storage/config-model";
 import { useConfigModel } from "~/hooks/model/storage/config-model";
 import { _ } from "~/i18n";
-import type { ConfigModel } from "~/model/storage/config-model";
+import type { ConfigModel, Partitionable } from "~/model/storage/config-model";
 import type { Entry } from "~/components/storage/device-sheet/entry";
 
 /**
@@ -60,6 +63,50 @@ export type PropertiesSectionProps = {
   entry: Entry;
 };
 
+/** What each kind of partition table is called, where it has a common name. */
+const PTABLE_NAMES: Record<string, string> = { gpt: "GPT", msdos: "MS-DOS", dasd: "DASD" };
+
+/**
+ * A software RAID's properties: the disks it stands on, and how it is
+ * partitioned.
+ *
+ * There is no form defining a RAID here to lead to: the installer reuses one
+ * the machine already has, so what defines it is read rather than changed.
+ */
+function RaidProperties({ entry }: PropertiesSectionProps): React.ReactNode {
+  const config = useConfigModel();
+  const systemDevices = useSystemDevices();
+  const members = membersOf(config, systemDevices, entry.device);
+  const ptable = (entry.config as Partitionable.Device).ptableType;
+
+  return (
+    <DescriptionList isCompact isHorizontal isFluid>
+      <SettingValue
+        icon="network_node"
+        // TRANSLATORS: names the disks a software RAID is built from.
+        term={_("Uses")}
+        value={
+          members.length ? (
+            <RelatedNames items={members} />
+          ) : (
+            // TRANSLATORS: said of a software RAID whose member disks the
+            // machine does not report.
+            _("Not reported by the system")
+          )
+        }
+      />
+      {ptable && (
+        <SettingValue
+          icon="list_alt"
+          // TRANSLATORS: names how a software RAID is partitioned, such as "GPT".
+          term={_("Partition table")}
+          value={PTABLE_NAMES[ptable] || ptable}
+        />
+      )}
+    </DescriptionList>
+  );
+}
+
 /**
  * What an entry is made of, where the entry is defined rather than found.
  *
@@ -76,6 +123,8 @@ export type PropertiesSectionProps = {
  * changes both.
  */
 export default function PropertiesSection({ entry }: PropertiesSectionProps): React.ReactNode {
+  if (!entry.isVolumeGroup) return <RaidProperties entry={entry} />;
+
   const group = entry.config as ConfigModel.VolumeGroup;
   const targets = group.targetDevices || [];
 

@@ -53,6 +53,9 @@ export default function RelatedNames({ items }: RelatedNamesProps): React.ReactN
         at += 1;
         const item = items[at];
 
+        /* Named and no more where there is no panel for it to lead to. */
+        if (!item.subject) return <React.Fragment key={index}>{item.name}</React.Fragment>;
+
         return (
           <SheetOpener key={index} subject={item.subject}>
             {item.name}
