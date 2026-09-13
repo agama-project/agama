@@ -33,6 +33,12 @@ export type RetargetOfferProps = {
   entry: Partitionable.Device;
   /** The same device as the machine reports it, where the machine has it. */
   device: Storage.Device | null;
+  /**
+   * How much weight it carries. It answers the sentence the page opens with, so
+   * it leads there; beside the content it would move, it is one offer among
+   * several.
+   */
+  variant?: "primary" | "secondary";
 };
 
 /**
@@ -54,7 +60,11 @@ export type RetargetOfferProps = {
  * and stays reachable: a control the browser disables is skipped by keyboard
  * and screen reader, so the explanation written for that reader is never met.
  */
-export default function RetargetOffer({ entry, device }: RetargetOfferProps): React.ReactNode {
+export default function RetargetOffer({
+  entry,
+  device,
+  variant = "primary",
+}: RetargetOfferProps): React.ReactNode {
   const { cannotMove, open, selector } = useRetarget(entry, device);
   const reasonId = React.useId();
 
@@ -62,7 +72,7 @@ export default function RetargetOffer({ entry, device }: RetargetOfferProps): Re
     <>
       <Flex direction={{ default: "column" }} gap={{ default: "gapXs" }}>
         <Button
-          variant="primary"
+          variant={variant}
           isAriaDisabled={cannotMove !== null}
           aria-describedby={cannotMove ? reasonId : undefined}
           onClick={cannotMove ? undefined : open}

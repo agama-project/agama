@@ -27,6 +27,8 @@ import {
   EmptyStateActions,
   EmptyStateBody,
   EmptyStateFooter,
+  Flex,
+  FlexItem,
   Stack,
   StackItem,
 } from "@patternfly/react-core";
@@ -39,6 +41,7 @@ import MenuButton, { MenuButtonItem } from "~/components/core/MenuButton";
 import RowMenuToggle from "~/components/storage/entries-table/RowMenuToggle";
 import Statement, { Statements } from "~/components/storage/device-sheet/Statement";
 import RelatedNames from "~/components/storage/shared/RelatedNames";
+import RetargetOffer from "~/components/storage/shared/RetargetOffer";
 import { usersOf } from "~/components/storage/shared/users";
 import { filesystemType, formattedPath, sizeDescription } from "~/components/storage/utils";
 import { STORAGE as PATHS } from "~/routes/paths";
@@ -341,9 +344,23 @@ export default function PlannedContentSection({
             </Table>
           </StackItem>
           <StackItem>
-            {/* Beside a table that already lists what is planned, the same offer
-                is one option among several rather than the point of the view. */}
-            {add("secondary")}
+            {/* After the table rather than in the header: these are what the
+                reader does about the device rather than about any one row, and
+                neither is urgent enough to sit beside its name.
+
+                Beside a table that already lists what is planned, adding is one
+                option among several rather than the point of the view. And
+                moving the plan is offered only here, where there is something
+                to move: under a view that has just said nothing is planned, it
+                would promise the move of nothing. */}
+            <Flex gap={{ default: "gapSm" }} flexWrap={{ default: "wrap" }}>
+              <FlexItem>{add("secondary")}</FlexItem>
+              {!isVolumeGroup && (
+                <FlexItem>
+                  <RetargetOffer entry={device} device={entry.device} variant="secondary" />
+                </FlexItem>
+              )}
+            </Flex>
           </StackItem>
         </>
       )}
