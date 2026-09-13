@@ -59,16 +59,13 @@ export default function Statement({ icon, heading, children }: StatementProps): 
       className="agm-statement"
       gap={{ default: "gapSm" }}
       flexWrap={{ default: "nowrap" }}
-      alignItems={{ default: "alignItemsFlexStart" }}
+      alignItems={{ default: "alignItemsBaseline" }}
     >
       <FlexItem>
         <Icon name={icon} size="xs" aria-hidden />
       </FlexItem>
       <FlexItem>
-        <div>
-          <Text isBold>{heading}</Text>
-        </div>
-        <div>{children}</div>
+        <Text isBold>{heading}</Text> {children}
       </FlexItem>
     </Flex>
   );

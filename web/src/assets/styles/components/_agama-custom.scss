@@ -525,8 +525,6 @@ nav.agm-breadcrumb > ol > li > a {
   border-block-start: 1px dashed var(--pf-t--global--border--color--default);
 }
 
-// The mark sits on the first line of what it marks rather than on its baseline.
 .agm-statement svg {
-  margin-block-start: 0.2em;
   color: var(--pf-t--global--icon--color--subtle);
 }
