@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-26 11:36+0000\n"
+"POT-Creation-Date: 2026-08-31 11:33+0000\n"
 "PO-Revision-Date: 2026-08-02 14:12+0000\n"
 "Last-Translator: Arif Budiman <arifpedia@gmail.com>\n"
 "Language-Team: Indonesian <https://l10n.opensuse.org/projects/agama/agama-"
@@ -977,12 +977,12 @@ msgstr "Tag Bahasa Hilang"
 msgid "Profile error"
 msgstr "Kesalahan Profil"
 
-#: agama-software/src/callbacks/commit_download.rs:48
+#: agama-software/src/callbacks/commit_download.rs:47
 #: agama-software/src/callbacks/install.rs:56
 msgid "Ignore"
 msgstr "Abaikan"
 
-#: agama-software/src/callbacks/commit_download.rs:48
+#: agama-software/src/callbacks/commit_download.rs:47
 #: agama-software/src/callbacks/install.rs:56
 #: agama-software/src/callbacks/install.rs:81
 msgid "Retry"
@@ -1020,53 +1020,53 @@ msgstr "Memulai instalasi paket"
 msgid "Packages download and installation failed. Would you like to retry?"
 msgstr "Unduhan dan instalasi paket gagal. Apakah Anda ingin mencoba lagi?"
 
-#: agama-software/src/zypp_server.rs:368
+#: agama-software/src/zypp_server.rs:367
 msgid "Updating the list of repositories"
 msgstr "Memperbarui daftar repositori"
 
-#: agama-software/src/zypp_server.rs:369
+#: agama-software/src/zypp_server.rs:368
 msgid "Refreshing metadata from the repositories"
 msgstr "Menyegarkan metadata dari repositori"
 
-#: agama-software/src/zypp_server.rs:370
+#: agama-software/src/zypp_server.rs:369
 msgid "Calculating the software proposal"
 msgstr "Menghitung usulan perangkat lunak"
 
-#: agama-software/src/zypp_server.rs:373
+#: agama-software/src/zypp_server.rs:372
 msgid "Registering the system"
 msgstr "Mendaftarkan sistem"
 
 #. TRANSLATORS: %s is the alias of the repository.
-#: agama-software/src/zypp_server.rs:446
+#: agama-software/src/zypp_server.rs:445
 msgid "Could not remove the repository %s"
 msgstr "Tidak dapat menghapus repositori %s"
 
-#: agama-software/src/zypp_server.rs:466
+#: agama-software/src/zypp_server.rs:465
 msgid "Could not read the repositories"
 msgstr "Tidak dapat membaca repositori"
 
-#: agama-software/src/zypp_server.rs:502
+#: agama-software/src/zypp_server.rs:501
 msgid ""
 "Failed to find the product in the repositories. You might need to register "
 "the system."
 msgstr ""
 "Gagal menemukan produk di repositori. Anda mungkin perlu mendaftarkan sistem."
 
-#: agama-software/src/zypp_server.rs:505
+#: agama-software/src/zypp_server.rs:504
 msgid "Failed to find the product in the repositories."
 msgstr "Gagal menemukan produk di repositori."
 
-#: agama-software/src/zypp_server.rs:568
+#: agama-software/src/zypp_server.rs:567
 msgid "There are conflicts in the software selection"
 msgstr "Terdapat konflik dalam pemilihan perangkat lunak"
 
 #. TRANSLATORS: the first %s is the kind of resolvable (e.g., "package")
 #. and the second %s is the name of the resolvable.
-#: agama-software/src/zypp_server.rs:597
+#: agama-software/src/zypp_server.rs:594
 msgid "Could not select %s '%s' for installation"
 msgstr "Tidak dapat memilih %s '%s' untuk instalasi"
 
-#: agama-software/src/zypp_server.rs:1010
+#: agama-software/src/zypp_server.rs:1006
 msgid "Failed to register the system"
 msgstr "Gagal mendaftarkan sistem"
 
@@ -1109,11 +1109,11 @@ msgstr "Galat:"
 msgid "Details:"
 msgstr "Detail:"
 
-#: agama-utils/src/api/question.rs:293 agama-utils/src/question/start.rs:48
+#: agama-utils/src/api/question.rs:342 agama-utils/src/question/start.rs:48
 msgid "No"
 msgstr "Tidak"
 
-#: agama-utils/src/api/question.rs:293 agama-utils/src/question/start.rs:48
+#: agama-utils/src/api/question.rs:342 agama-utils/src/question/start.rs:48
 msgid "Yes"
 msgstr "Ya"
 

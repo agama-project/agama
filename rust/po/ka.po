@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-26 11:36+0000\n"
-"PO-Revision-Date: 2026-08-01 10:12+0000\n"
+"POT-Creation-Date: 2026-08-31 11:33+0000\n"
+"PO-Revision-Date: 2026-09-03 07:13+0000\n"
 "Last-Translator: Temuri Doghonadze <temuri.doghonadze@gmail.com>\n"
 "Language-Team: Georgian <https://l10n.opensuse.org/projects/agama/agama-rust-"
 "master/ka/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 2026.7.1\n"
+"X-Generator: Weblate 2026.8.1\n"
 
 #: agama-autoinstall/src/auto_loader.rs:142
 msgid ""
@@ -37,7 +37,7 @@ msgstr "გამოტოვება და ხელით მორგებ
 
 #: agama-autoinstall/src/questions.rs:77 agama-cli/src/config.rs:371
 msgid "Found unsupported elements in the AutoYaST profile:"
-msgstr ""
+msgstr "აღმოჩენილია მხარდაუჭერელი ელემენტები AutoYast-ის პროფილში:"
 
 #: agama-autoinstall/src/questions.rs:92
 #: agama-software/src/callbacks/install.rs:81
@@ -46,7 +46,7 @@ msgstr "გაგრძელება"
 
 #: agama-autoinstall/src/questions.rs:93
 msgid "Abort"
-msgstr ""
+msgstr "შეწყვეტა"
 
 #. TRANSLATORS: {0} is a URL
 #: agama-autoinstall/src/scripts.rs:135
@@ -860,12 +860,12 @@ msgstr "აკლია ენის ჭდე"
 msgid "Profile error"
 msgstr "პროფილის შეცდომა"
 
-#: agama-software/src/callbacks/commit_download.rs:48
+#: agama-software/src/callbacks/commit_download.rs:47
 #: agama-software/src/callbacks/install.rs:56
 msgid "Ignore"
 msgstr "იგნორი"
 
-#: agama-software/src/callbacks/commit_download.rs:48
+#: agama-software/src/callbacks/commit_download.rs:47
 #: agama-software/src/callbacks/install.rs:56
 #: agama-software/src/callbacks/install.rs:81
 msgid "Retry"
@@ -899,32 +899,32 @@ msgstr "პაკეტების დაყენების დაწყე�
 msgid "Packages download and installation failed. Would you like to retry?"
 msgstr "პაკეტების გადმოწერა და დაყენება ჩავარდა. გნებავთ, თავიდან ვცადო?"
 
-#: agama-software/src/zypp_server.rs:368
+#: agama-software/src/zypp_server.rs:367
 msgid "Updating the list of repositories"
 msgstr "რეპოზიტორიების სიის განახლება"
 
-#: agama-software/src/zypp_server.rs:369
+#: agama-software/src/zypp_server.rs:368
 msgid "Refreshing metadata from the repositories"
 msgstr "რეპოზიტორიების მეტამონაცემთა განახლება"
 
-#: agama-software/src/zypp_server.rs:370
+#: agama-software/src/zypp_server.rs:369
 msgid "Calculating the software proposal"
 msgstr "პროგრამების შეთავაზების გამოთვლა"
 
-#: agama-software/src/zypp_server.rs:373
+#: agama-software/src/zypp_server.rs:372
 msgid "Registering the system"
 msgstr "სისტემის რეგიტრაცია"
 
 #. TRANSLATORS: %s is the alias of the repository.
-#: agama-software/src/zypp_server.rs:446
+#: agama-software/src/zypp_server.rs:445
 msgid "Could not remove the repository %s"
 msgstr "რეპოზიტორიის %s წაშლა შეუძლებელია"
 
-#: agama-software/src/zypp_server.rs:466
+#: agama-software/src/zypp_server.rs:465
 msgid "Could not read the repositories"
 msgstr "რეპოზიტორიების წაკითხვა შეუძლებელია"
 
-#: agama-software/src/zypp_server.rs:502
+#: agama-software/src/zypp_server.rs:501
 msgid ""
 "Failed to find the product in the repositories. You might need to register "
 "the system."
@@ -932,21 +932,21 @@ msgstr ""
 "რეპოზიტორიებში პროდუქტის პოვნა შეუძლებელია. შეიძლება, სისტემის რეგისტრაციაა "
 "საჭირო."
 
-#: agama-software/src/zypp_server.rs:505
+#: agama-software/src/zypp_server.rs:504
 msgid "Failed to find the product in the repositories."
 msgstr "რეპოზიტორიებში პროდუქტის მოძებნა ჩავარდა."
 
-#: agama-software/src/zypp_server.rs:568
+#: agama-software/src/zypp_server.rs:567
 msgid "There are conflicts in the software selection"
 msgstr "პროგრამების არჩევანში კონფლიქტებია"
 
 #. TRANSLATORS: the first %s is the kind of resolvable (e.g., "package")
 #. and the second %s is the name of the resolvable.
-#: agama-software/src/zypp_server.rs:597
+#: agama-software/src/zypp_server.rs:594
 msgid "Could not select %s '%s' for installation"
 msgstr "დაყენებისთვის %s-ის '%s' არჩევა შეუძლებელია"
 
-#: agama-software/src/zypp_server.rs:1010
+#: agama-software/src/zypp_server.rs:1006
 msgid "Failed to register the system"
 msgstr "სისტემის რეგისტრაცია ჩავარდა"
 
@@ -988,11 +988,11 @@ msgstr "შეცდომა:"
 msgid "Details:"
 msgstr "დეტალები:"
 
-#: agama-utils/src/api/question.rs:293 agama-utils/src/question/start.rs:48
+#: agama-utils/src/api/question.rs:342 agama-utils/src/question/start.rs:48
 msgid "No"
 msgstr "არა"
 
-#: agama-utils/src/api/question.rs:293 agama-utils/src/question/start.rs:48
+#: agama-utils/src/api/question.rs:342 agama-utils/src/question/start.rs:48
 msgid "Yes"
 msgstr "დიახ"
 
