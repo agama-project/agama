@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Sep 10 18:49:38 UTC 2026 - Lubos Kocman <lubos.kocman@suse.com>
+
+- Use license.txt for English in license.opensuse
+  (gh#agama-project/agama#3915)
+
+-------------------------------------------------------------------
 Mon Sep  7 09:43:01 UTC 2026 - Lubos Kocman <lubos.kocman@suse.com>
 
 - Add openSUSE license files (gh#agama-project/agama#3877).
