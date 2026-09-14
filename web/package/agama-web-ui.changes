@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Sep 14 12:51:32 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Remove empty space due to a byte order mark which kills
+  PatternFly's base reset (bsc#1280220).
+
+-------------------------------------------------------------------
 Tue Sep  1 15:51:08 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 24
