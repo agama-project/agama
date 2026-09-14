@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-26 11:36+0000\n"
+"POT-Creation-Date: 2026-09-04 12:04+0000\n"
 "PO-Revision-Date: 2026-08-27 05:55+0000\n"
 "Last-Translator: Yasuhiko Kamata <belphegor@belbel.or.jp>\n"
 "Language-Team: Japanese <https://l10n.opensuse.org/projects/agama/agama-rust-"
@@ -941,23 +941,23 @@ msgstr ""
 "自己署名型の証明書を取り込もうとしています。この証明書を信用し、製品を登録し"
 "てよろしいですか？"
 
-#: agama-server/src/profile/web.rs:85
+#: agama-server/src/profile/web.rs:92
 msgid "Profile validation failed"
 msgstr "プロファイルの検証に失敗しました"
 
-#: agama-server/src/profile/web.rs:88
+#: agama-server/src/profile/web.rs:95
 msgid "Could not retrieve profile"
 msgstr "プロファイルを取得できません"
 
-#: agama-server/src/profile/web.rs:91
+#: agama-server/src/profile/web.rs:98
 msgid "Invalid profile encoding"
 msgstr "プロファイルのエンコーディングが正しくありません"
 
-#: agama-server/src/profile/web.rs:94
+#: agama-server/src/profile/web.rs:103
 msgid "Invalid profile request"
 msgstr "プロファイルリクエストが正しくありません"
 
-#: agama-server/src/profile/web.rs:97
+#: agama-server/src/profile/web.rs:106
 msgid "AutoYaST conversion failed"
 msgstr "AudoYaST からの変換に失敗しました"
 
@@ -965,16 +965,12 @@ msgstr "AudoYaST からの変換に失敗しました"
 msgid "Missing Language Tag"
 msgstr "言語タグがありません"
 
-#: agama-server/src/server/web.rs:89
-msgid "Profile error"
-msgstr "プロファイルエラー"
-
-#: agama-software/src/callbacks/commit_download.rs:48
+#: agama-software/src/callbacks/commit_download.rs:47
 #: agama-software/src/callbacks/install.rs:56
 msgid "Ignore"
 msgstr "無視"
 
-#: agama-software/src/callbacks/commit_download.rs:48
+#: agama-software/src/callbacks/commit_download.rs:47
 #: agama-software/src/callbacks/install.rs:56
 #: agama-software/src/callbacks/install.rs:81
 msgid "Retry"
@@ -1009,53 +1005,53 @@ msgstr "パッケージのインストールを開始しています"
 msgid "Packages download and installation failed. Would you like to retry?"
 msgstr "パッケージのダウンロードとインストールが失敗しました。再試行しますか？"
 
-#: agama-software/src/zypp_server.rs:368
+#: agama-software/src/zypp_server.rs:367
 msgid "Updating the list of repositories"
 msgstr "リポジトリの一覧を更新しています"
 
-#: agama-software/src/zypp_server.rs:369
+#: agama-software/src/zypp_server.rs:368
 msgid "Refreshing metadata from the repositories"
 msgstr "リポジトリのメタデータを更新しています"
 
-#: agama-software/src/zypp_server.rs:370
+#: agama-software/src/zypp_server.rs:369
 msgid "Calculating the software proposal"
 msgstr "ソフトウエアの提案内容を作成しています"
 
-#: agama-software/src/zypp_server.rs:373
+#: agama-software/src/zypp_server.rs:372
 msgid "Registering the system"
 msgstr "システムを登録しています"
 
 #. TRANSLATORS: %s is the alias of the repository.
-#: agama-software/src/zypp_server.rs:446
+#: agama-software/src/zypp_server.rs:445
 msgid "Could not remove the repository %s"
 msgstr "リポジトリ %s を削除できませんでした"
 
-#: agama-software/src/zypp_server.rs:466
+#: agama-software/src/zypp_server.rs:465
 msgid "Could not read the repositories"
 msgstr "リポジトリの読み込みができませんでした"
 
-#: agama-software/src/zypp_server.rs:502
+#: agama-software/src/zypp_server.rs:501
 msgid ""
 "Failed to find the product in the repositories. You might need to register "
 "the system."
 msgstr ""
 "リポジトリ内の製品検索に失敗しました。システムの登録が必要と思われます。"
 
-#: agama-software/src/zypp_server.rs:505
+#: agama-software/src/zypp_server.rs:504
 msgid "Failed to find the product in the repositories."
 msgstr "リポジトリ内の製品検索に失敗しました。"
 
-#: agama-software/src/zypp_server.rs:568
+#: agama-software/src/zypp_server.rs:567
 msgid "There are conflicts in the software selection"
 msgstr "ソフトウエア選択において競合が発生しています"
 
 #. TRANSLATORS: the first %s is the kind of resolvable (e.g., "package")
 #. and the second %s is the name of the resolvable.
-#: agama-software/src/zypp_server.rs:597
+#: agama-software/src/zypp_server.rs:594
 msgid "Could not select %s '%s' for installation"
 msgstr "%s '%s' をインストール用に選択できませんでした"
 
-#: agama-software/src/zypp_server.rs:1010
+#: agama-software/src/zypp_server.rs:1006
 msgid "Failed to register the system"
 msgstr "システムの登録に失敗しました"
 
@@ -1069,39 +1065,39 @@ msgstr ""
 msgid "First user information is incomplete"
 msgstr "最初のユーザ情報が不十分です"
 
-#: agama-utils/src/api/problem_details.rs:113
+#: agama-utils/src/api/problem_details.rs:120
 msgid "Schema validation failed"
 msgstr "スキーマの検証に失敗しました"
 
-#: agama-utils/src/api/problem_details.rs:115
+#: agama-utils/src/api/problem_details.rs:122
 msgid "The provided configuration does not match the required schema"
 msgstr "指定した設定が必要なスキーマに合致していません"
 
-#: agama-utils/src/api/problem_details.rs:124
+#: agama-utils/src/api/problem_details.rs:131
 msgid "Invalid JSON"
 msgstr "JSON 形式が正しくありません"
 
-#: agama-utils/src/api/problem_details.rs:132
+#: agama-utils/src/api/problem_details.rs:139
 msgid "Internal server error"
 msgstr "内部サーバエラー"
 
-#: agama-utils/src/api/problem_details.rs:140
+#: agama-utils/src/api/problem_details.rs:147
 msgid "Unauthorized"
 msgstr "未認証"
 
-#: agama-utils/src/api/problem_details.rs:189
+#: agama-utils/src/api/problem_details.rs:205
 msgid "Error:"
 msgstr "エラー:"
 
-#: agama-utils/src/api/problem_details.rs:192
+#: agama-utils/src/api/problem_details.rs:208
 msgid "Details:"
 msgstr "詳細:"
 
-#: agama-utils/src/api/question.rs:293 agama-utils/src/question/start.rs:48
+#: agama-utils/src/api/question.rs:342 agama-utils/src/question/start.rs:48
 msgid "No"
 msgstr "いいえ"
 
-#: agama-utils/src/api/question.rs:293 agama-utils/src/question/start.rs:48
+#: agama-utils/src/api/question.rs:342 agama-utils/src/question/start.rs:48
 msgid "Yes"
 msgstr "はい"
 
@@ -1116,6 +1112,9 @@ msgstr "パターン"
 #: agama-utils/src/resolvable.rs:67
 msgid "product"
 msgstr "製品"
+
+#~ msgid "Profile error"
+#~ msgstr "プロファイルエラー"
 
 #~ msgid "Additional data"
 #~ msgstr "追加データ"

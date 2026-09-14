@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-26 11:36+0000\n"
+"POT-Creation-Date: 2026-09-04 12:04+0000\n"
 "PO-Revision-Date: 2026-07-27 11:08+0000\n"
 "Last-Translator: Antonio Simón <antonio@trans-mission.com>\n"
 "Language-Team: Spanish <https://l10n.opensuse.org/projects/agama/agama-rust-"
@@ -948,23 +948,23 @@ msgstr ""
 "Intentando importar un certificado autofirmado. ¿Desea confiar en él y "
 "registrar el producto?"
 
-#: agama-server/src/profile/web.rs:85
+#: agama-server/src/profile/web.rs:92
 msgid "Profile validation failed"
 msgstr "Error al validar el perfil"
 
-#: agama-server/src/profile/web.rs:88
+#: agama-server/src/profile/web.rs:95
 msgid "Could not retrieve profile"
 msgstr "No se ha podido recuperar el perfil"
 
-#: agama-server/src/profile/web.rs:91
+#: agama-server/src/profile/web.rs:98
 msgid "Invalid profile encoding"
 msgstr "Codificación del perfil no válida"
 
-#: agama-server/src/profile/web.rs:94
+#: agama-server/src/profile/web.rs:103
 msgid "Invalid profile request"
 msgstr "Petición de perfil no válida"
 
-#: agama-server/src/profile/web.rs:97
+#: agama-server/src/profile/web.rs:106
 msgid "AutoYaST conversion failed"
 msgstr "Error de conversión de AutoYaST"
 
@@ -972,16 +972,12 @@ msgstr "Error de conversión de AutoYaST"
 msgid "Missing Language Tag"
 msgstr "Falta la etiqueta de idioma"
 
-#: agama-server/src/server/web.rs:89
-msgid "Profile error"
-msgstr "Error del perfil"
-
-#: agama-software/src/callbacks/commit_download.rs:48
+#: agama-software/src/callbacks/commit_download.rs:47
 #: agama-software/src/callbacks/install.rs:56
 msgid "Ignore"
 msgstr "Ignorar"
 
-#: agama-software/src/callbacks/commit_download.rs:48
+#: agama-software/src/callbacks/commit_download.rs:47
 #: agama-software/src/callbacks/install.rs:56
 #: agama-software/src/callbacks/install.rs:81
 msgid "Retry"
@@ -1020,32 +1016,32 @@ msgid "Packages download and installation failed. Would you like to retry?"
 msgstr ""
 "Error al descargar e instalar los paquetes. ¿Desea intentarlo de nuevo?"
 
-#: agama-software/src/zypp_server.rs:368
+#: agama-software/src/zypp_server.rs:367
 msgid "Updating the list of repositories"
 msgstr "Actualizando la lista de repositorios"
 
-#: agama-software/src/zypp_server.rs:369
+#: agama-software/src/zypp_server.rs:368
 msgid "Refreshing metadata from the repositories"
 msgstr "Actualizando los metadatos desde los repositorios"
 
-#: agama-software/src/zypp_server.rs:370
+#: agama-software/src/zypp_server.rs:369
 msgid "Calculating the software proposal"
 msgstr "Calculando la propuesta de software"
 
-#: agama-software/src/zypp_server.rs:373
+#: agama-software/src/zypp_server.rs:372
 msgid "Registering the system"
 msgstr "Registrando el sistema"
 
 #. TRANSLATORS: %s is the alias of the repository.
-#: agama-software/src/zypp_server.rs:446
+#: agama-software/src/zypp_server.rs:445
 msgid "Could not remove the repository %s"
 msgstr "No se ha podido eliminar el repositorio %s"
 
-#: agama-software/src/zypp_server.rs:466
+#: agama-software/src/zypp_server.rs:465
 msgid "Could not read the repositories"
 msgstr "No se han podido leer los repositorios"
 
-#: agama-software/src/zypp_server.rs:502
+#: agama-software/src/zypp_server.rs:501
 msgid ""
 "Failed to find the product in the repositories. You might need to register "
 "the system."
@@ -1053,21 +1049,21 @@ msgstr ""
 "Error al buscar el producto en los repositorios. Puede que tenga que "
 "registrar el sistema."
 
-#: agama-software/src/zypp_server.rs:505
+#: agama-software/src/zypp_server.rs:504
 msgid "Failed to find the product in the repositories."
 msgstr "Error al buscar el producto en los repositorios."
 
-#: agama-software/src/zypp_server.rs:568
+#: agama-software/src/zypp_server.rs:567
 msgid "There are conflicts in the software selection"
 msgstr "Hay conflictos en la selección de software"
 
 #. TRANSLATORS: the first %s is the kind of resolvable (e.g., "package")
 #. and the second %s is the name of the resolvable.
-#: agama-software/src/zypp_server.rs:597
+#: agama-software/src/zypp_server.rs:594
 msgid "Could not select %s '%s' for installation"
 msgstr "No se ha podido seleccionar el %s \"%s\" para la instalación"
 
-#: agama-software/src/zypp_server.rs:1010
+#: agama-software/src/zypp_server.rs:1006
 msgid "Failed to register the system"
 msgstr "Error al registrar el sistema"
 
@@ -1082,39 +1078,39 @@ msgstr ""
 msgid "First user information is incomplete"
 msgstr "La información del primer usuario no está completa"
 
-#: agama-utils/src/api/problem_details.rs:113
+#: agama-utils/src/api/problem_details.rs:120
 msgid "Schema validation failed"
 msgstr "Error de validación del esquema"
 
-#: agama-utils/src/api/problem_details.rs:115
+#: agama-utils/src/api/problem_details.rs:122
 msgid "The provided configuration does not match the required schema"
 msgstr "La configuración proporcionada no coincide con el esquema requerido"
 
-#: agama-utils/src/api/problem_details.rs:124
+#: agama-utils/src/api/problem_details.rs:131
 msgid "Invalid JSON"
 msgstr "JSON no válido"
 
-#: agama-utils/src/api/problem_details.rs:132
+#: agama-utils/src/api/problem_details.rs:139
 msgid "Internal server error"
 msgstr "Error del servidor interno"
 
-#: agama-utils/src/api/problem_details.rs:140
+#: agama-utils/src/api/problem_details.rs:147
 msgid "Unauthorized"
 msgstr "Sin autorización"
 
-#: agama-utils/src/api/problem_details.rs:189
+#: agama-utils/src/api/problem_details.rs:205
 msgid "Error:"
 msgstr "Error:"
 
-#: agama-utils/src/api/problem_details.rs:192
+#: agama-utils/src/api/problem_details.rs:208
 msgid "Details:"
 msgstr "Detalles:"
 
-#: agama-utils/src/api/question.rs:293 agama-utils/src/question/start.rs:48
+#: agama-utils/src/api/question.rs:342 agama-utils/src/question/start.rs:48
 msgid "No"
 msgstr "No"
 
-#: agama-utils/src/api/question.rs:293 agama-utils/src/question/start.rs:48
+#: agama-utils/src/api/question.rs:342 agama-utils/src/question/start.rs:48
 msgid "Yes"
 msgstr "Sí"
 
@@ -1129,3 +1125,6 @@ msgstr "patrón"
 #: agama-utils/src/resolvable.rs:67
 msgid "product"
 msgstr "producto"
+
+#~ msgid "Profile error"
+#~ msgstr "Error del perfil"
