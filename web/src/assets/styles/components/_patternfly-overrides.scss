@@ -384,3 +384,12 @@ label.pf-m-disabled + .pf-v6-c-check__description {
 .pf-v6-c-table tbody tr:has(.pf-v6-c-menu-toggle[aria-expanded="true"]) {
   background-color: var(--agm-t--action--background--color--hover);
 }
+
+// A list with an entry pinned to its foot scrolls a little further, so bringing
+// an option into view never parks it under that entry. PatternFly makes both
+// the content and the list itself scrollable, and either may be the one that
+// moves, so both are told to leave the room.
+.agm-field-option-menu .pf-v6-c-menu__content,
+.agm-field-option-menu .pf-v6-c-menu__list {
+  scroll-padding-block-end: 4rem;
+}

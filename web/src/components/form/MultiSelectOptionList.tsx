@@ -112,7 +112,10 @@ export default function MultiSelectOptionList({
           entry={footerEntry}
           id={id}
           isFocused={isFocused}
-          hasDivider={rows.length > 1}
+          // Pinned to the foot of the list, so it draws its own separator
+          // rather than leaving one behind as the options scroll under it.
+          hasDivider={false}
+          className="agm-field-footer-entry"
         />
       );
     }
@@ -150,6 +153,7 @@ export default function MultiSelectOptionList({
     <div onMouseDown={(e: React.MouseEvent) => e.preventDefault()}>
       <Menu
         role="listbox"
+        className="agm-field-option-menu"
         selected={selected}
         onSelect={(_e, value) => typeof value === "string" && handleSelect(value)}
         isScrollable

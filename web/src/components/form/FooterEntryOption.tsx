@@ -107,6 +107,8 @@ type FooterEntryOptionProps = {
   id?: string;
   /** Whether the entry currently carries the list highlight. */
   isFocused?: boolean;
+  /** Extra classes for the entry, for a list that pins it in place. */
+  className?: string;
 };
 
 /**
@@ -121,13 +123,14 @@ export default function FooterEntryOption({
   hasDivider = true,
   id,
   isFocused,
+  className,
 }: FooterEntryOptionProps) {
   const hint = footerEntryHint(entry);
 
   return (
     <>
       {hasDivider && <Divider component="li" />}
-      <SelectOption id={id} value={FOOTER_ENTRY_VALUE} isFocused={isFocused}>
+      <SelectOption id={id} value={FOOTER_ENTRY_VALUE} isFocused={isFocused} className={className}>
         {entry.label}
         {hint && <Text srOnly>{hint}</Text>}
       </SelectOption>

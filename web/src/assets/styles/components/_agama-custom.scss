@@ -315,6 +315,17 @@ nav.agm-breadcrumb > ol > li > a {
   align-self: center;
 }
 
+// The entry leading somewhere else stays in reach: a long or filtered list must
+// never scroll the way out of the field out of sight. It draws the line above
+// itself, since a separate one would slide under it.
+.agm-field-footer-entry {
+  position: sticky;
+  inset-block-end: 0;
+  z-index: 1;
+  background-color: var(--pf-t--global--background--color--primary--default);
+  border-block-start: 1px solid var(--pf-t--global--border--color--default);
+}
+
 // Pressing an entry puts its value back in the text input for editing, so it
 // reads as something to press.
 .agm-field-entry {
