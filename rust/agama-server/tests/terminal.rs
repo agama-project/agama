@@ -285,9 +285,7 @@ async fn test_exit_is_reported_before_a_graceful_close() {
     .expect("timed out waiting for the exit message");
 
     assert!(
-        exit_message.contains(r#""type":"exit""#)
-            && exit_message.contains(r#""code":0"#)
-            && exit_message.contains(r#""signal":null"#),
+        exit_message.contains(r#""type":"exit""#) && exit_message.contains(r#""code":0"#),
         "unexpected message: {exit_message}"
     );
 
@@ -335,9 +333,7 @@ async fn test_signal_termination_is_reported_distinctly() {
     .expect("timed out waiting for the exit message");
 
     assert!(
-        exit_message.contains(r#""type":"exit""#)
-            && exit_message.contains(r#""code":null"#)
-            && exit_message.contains(r#""signal":11"#),
+        exit_message.contains(r#""type":"killed""#) && exit_message.contains(r#""signal":11"#),
         "unexpected message: {exit_message}"
     );
 }

@@ -26,12 +26,12 @@ import "@xterm/xterm/css/xterm.css";
 const DEFAULT_FONT_SIZE = 14;
 
 /**
- * Control message the server sends when the shell exits. Exactly one of
- * `code` or `signal` is set: `code` for a normal exit (any way the shell
- * ends on its own — `exit`, `exit N`, Ctrl-D), `signal` when it was killed
- * by an unhandled signal instead (e.g., a crash).
+ * Control message the server sends when the shell exits: `exit` for a normal
+ * exit (any way the shell ends on its own — `exit`, `exit N`, Ctrl-D),
+ * `killed` when it was killed by an unhandled signal instead (e.g., a
+ * crash).
  */
-type ExitMessage = { type: "exit"; code: number | null; signal: number | null };
+type ExitMessage = { type: "exit"; code: number } | { type: "killed"; signal: number };
 
 export type TerminalSession = {
   /** Changes the font size and refits the terminal to its container. */
@@ -113,9 +113,10 @@ function terminalWebSocketUrl(): string {
  *   bash exits with the status of the last command run, which says nothing
  *   about whether the user actually meant to leave.
  * - The shell is killed by an unhandled signal instead (a crash, an
- *   out-of-memory kill, an external `kill`, ...): reported the same way,
- *   but `onGracefulExit` is *not* called — this is unexpected, so the
- *   terminal is left open with a message, the same as a dropped connection.
+ *   out-of-memory kill, an external `kill`, ...): reported similarly, with a
+ *   "killed" message, but `onGracefulExit` is *not* called — this is
+ *   unexpected, so the terminal is left open with a message, the same as a
+ *   dropped connection.
  * - The connection drops unexpectedly (e.g., a network issue or the backend
  *   restarting): also left open with a message.
  *
@@ -174,17 +175,15 @@ export const useTerminalSession = (
       if (typeof event.data === "string") {
         try {
           const message = JSON.parse(event.data) as ExitMessage;
-          if (message.type === "exit") {
+          if (message.type === "killed") {
+            // Killed by a signal: unexpected, so leave the terminal open
+            // with a message instead of closing the panel.
             sessionEndedRef.current = true;
-
-            if (message.signal !== null) {
-              // Killed by a signal: unexpected, so leave the terminal open
-              // with a message instead of closing the panel.
-              terminal.write(`\r\n[terminated by signal ${message.signal}]\r\n`);
-            } else {
-              // A normal exit: nothing to show, the panel is about to close.
-              onGracefulExitRef.current?.();
-            }
+            terminal.write(`\r\n[terminated by signal ${message.signal}]\r\n`);
+          } else if (message.type === "exit") {
+            // A normal exit: nothing to show, the panel is about to close.
+            sessionEndedRef.current = true;
+            onGracefulExitRef.current?.();
           }
         } catch {
           // Not a message this client understands; ignore it.

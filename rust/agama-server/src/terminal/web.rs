@@ -34,10 +34,10 @@
 //! * Text frames carry small JSON control messages. From the client, the only
 //!   supported message resizes the terminal: `{"cols": 80, "rows": 24}`. From
 //!   the server, a single message announces that the shell exited, right
-//!   before the socket closes: `{"type": "exit", "code": 0, "signal": null}`
-//!   for a normal exit (any way the shell ends on its own — `exit`, `exit N`,
-//!   Ctrl-D), or `{"type": "exit", "code": null, "signal": 11}` when it was
-//!   killed by an unhandled signal instead (e.g., a crash).
+//!   before the socket closes: `{"type": "exit", "code": 0}` for a normal
+//!   exit (any way the shell ends on its own — `exit`, `exit N`, Ctrl-D), or
+//!   `{"type": "killed", "signal": 11}` when it was killed by an unhandled
+//!   signal instead (e.g., a crash).
 
 use aide::axum::ApiRouter;
 use axum::{
@@ -77,21 +77,19 @@ struct ResizeMessage {
 
 /// Control message sent to the client to report that the shell exited.
 ///
-/// Exactly one of `code` or `signal` is set: `code` for a normal exit
-/// (`exit`, `exit N`, Ctrl-D — any way the shell terminates on its own,
-/// whatever the resulting number), `signal` when it was killed by an
-/// unhandled signal instead (a crash, an out-of-memory kill, an external
-/// `kill`, ...).
+/// Either the shell terminated on its own (`Exit`, whatever the resulting
+/// code — `exit`, `exit N`, Ctrl-D all count), or it was killed by an
+/// unhandled signal instead (`Killed`: a crash, an out-of-memory kill, an
+/// external `kill`, ...). There is no message for the (exceptionally rare)
+/// case where the exit status itself could not be determined; see
+/// [`handle_socket`].
 #[derive(Debug, Serialize)]
 #[serde(tag = "type", rename_all = "camelCase")]
 enum ServerMessage {
-    Exit {
-        /// The process's exit code, when it terminated normally.
-        code: Option<i32>,
-        /// The signal that terminated the process, when it was killed by one
-        /// instead of exiting normally.
-        signal: Option<i32>,
-    },
+    /// The shell exited on its own, with this exit code.
+    Exit { code: i32 },
+    /// The shell was killed by this signal.
+    Killed { signal: i32 },
 }
 
 /// Returns the axum service exposing the terminal WebSocket at `/ws`.
@@ -203,16 +201,26 @@ async fn handle_socket(mut socket: WebSocket) {
 
             // The shell process itself.
             status = child.wait() => {
-                // `wait()` itself failing is rare and does not tell us
-                // anything about how the shell ended; fall back to the
-                // normal-exit shape, same as the code did before this
-                // distinction existed.
-                let (code, signal) = match &status {
-                    Ok(status) => (status.code(), status.signal()),
-                    Err(_) => (None, None),
+                let status = match status {
+                    Ok(status) => status,
+                    Err(error) => {
+                        // Exceptionally rare, and does not tell us anything
+                        // about how the shell ended: same treatment as the
+                        // other fatal errors above, no exit message. The
+                        // client sees a plain dropped connection instead,
+                        // which is a more honest description of "we don't
+                        // actually know what happened" than a fabricated one.
+                        tracing::warn!("terminal: failed to wait for the shell: {error}");
+                        break;
+                    }
                 };
-                tracing::info!("terminal: the shell exited (code={code:?}, signal={signal:?})");
-                let message = ServerMessage::Exit { code, signal };
+                let message = match status.signal() {
+                    Some(signal) => ServerMessage::Killed { signal },
+                    // `code()` is only `None` when `signal()` is `Some`; the
+                    // fallback below is unreachable in practice.
+                    None => ServerMessage::Exit { code: status.code().unwrap_or(-1) },
+                };
+                tracing::info!("terminal: the shell exited ({message:?})");
                 if let Ok(json) = serde_json::to_string(&message) {
                     let _ = socket.send(Message::Text(json.into())).await;
                 }

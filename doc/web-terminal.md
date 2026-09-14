@@ -57,25 +57,25 @@ From the client, the only supported message resizes the pty:
 ```
 
 From the server, a single message announces that the shell exited, sent right
-before the socket closes gracefully:
+before the socket closes gracefully, discriminated by `type`:
 
 ```json
-{ "type": "exit", "code": 0, "signal": null }
+{ "type": "exit", "code": 0 }
 ```
 
-Exactly one of `code` and `signal` is set:
+for a normal exit — any way the shell ends on its own: typing `exit`, `exit N`, or pressing Ctrl-D
+— or:
 
-- **`code`** for a normal exit — any way the shell ends on its own: typing
-  `exit`, `exit N`, or pressing Ctrl-D. Whatever the number, this is the shell
-  ending on purpose.
-- **`signal`** when the shell was instead killed by an unhandled signal — a
-  crash, an out-of-memory kill, an external `kill`:
+```json
+{ "type": "killed", "signal": 11 }
+```
 
-  ```json
-  { "type": "exit", "code": null, "signal": 11 }
-  ```
+when it was instead killed by an unhandled signal (a crash, an out-of-memory kill, an external
+`kill`). If the exit status itself cannot be determined at all (only if waiting on the child
+process fails, which is exceptionally rare), no exit message is sent: the socket just closes, and
+the client treats it the same as a dropped connection.
 
-The frontend treats these two cases very differently; see [Session lifecycle](#session-lifecycle).
+The frontend treats these cases very differently; see [Session lifecycle](#session-lifecycle).
 The same protocol is documented for external tools (e.g. testing with `websocat`) in
 [`rust/WEB-SERVER.md`](../rust/WEB-SERVER.md#the-terminal-websocket).
 
@@ -88,9 +88,9 @@ The same protocol is documented for external tools (e.g. testing with `websocat`
    resize request (anything else is logged and ignored, not fatal); the client closing the socket
    ends the loop.
 2. **Output from the shell**: read from the pty master and forwarded as binary frames.
-3. **The shell process itself** (`child.wait()`): once it exits, the server builds the
-   `code`/`signal` pair from `std::os::unix::process::ExitStatusExt`, sends the exit message, then
-   closes the socket gracefully.
+3. **The shell process itself** (`child.wait()`): once it exits, the server picks the `exit` or
+   `killed` message via `std::os::unix::process::ExitStatusExt`, sends it, then closes the socket
+   gracefully (or, if `wait()` itself fails, just closes without a message).
 
 The child is spawned with:
 
@@ -146,12 +146,12 @@ The hook instead moves the existing `terminal.element` into the new container by
 
 A session, once started, ends in exactly one of four ways:
 
-| How it ends                                              | Client sees                  | What happens to the panel                    |
-| -------------------------------------------------------- | ---------------------------- | -------------------------------------------- |
-| Shell exits normally (`exit`, `exit N`, Ctrl-D)          | exit message, `signal: null` | **Closes automatically**                     |
-| Shell killed by a signal (crash, OOM, external `kill`)   | exit message, `signal: <N>`  | Stays open, shows `[terminated by signal N]` |
-| Connection drops unexpectedly (network, backend restart) | socket just closes           | Stays open, shows `[connection lost]`        |
-| User clicks "Close terminal"                             | —                            | Closes (this is what ends the WebSocket)     |
+| How it ends                                              | Client sees               | What happens to the panel                    |
+| -------------------------------------------------------- | ------------------------- | -------------------------------------------- |
+| Shell exits normally (`exit`, `exit N`, Ctrl-D)          | `{"type": "exit", ...}`   | **Closes automatically**                     |
+| Shell killed by a signal (crash, OOM, external `kill`)   | `{"type": "killed", ...}` | Stays open, shows `[terminated by signal N]` |
+| Connection drops unexpectedly (network, backend restart) | socket just closes        | Stays open, shows `[connection lost]`        |
+| User clicks "Close terminal"                             | —                         | Closes (this is what ends the WebSocket)     |
 
 The panel auto-closing on a normal exit matches how every other terminal emulator behaves: typing
 `exit` closes the window. It happens whatever the exit code, deliberately. Plain `exit` in bash

@@ -236,7 +236,7 @@ describe("useTerminalSession", () => {
 
     act(() =>
       lastSocket()?.onmessage?.({
-        data: JSON.stringify({ type: "exit", code: 7, signal: null }),
+        data: JSON.stringify({ type: "exit", code: 7 }),
       }),
     );
 
@@ -249,7 +249,7 @@ describe("useTerminalSession", () => {
 
     act(() =>
       lastSocket()?.onmessage?.({
-        data: JSON.stringify({ type: "exit", code: null, signal: 11 }),
+        data: JSON.stringify({ type: "killed", signal: 11 }),
       }),
     );
 
@@ -262,7 +262,7 @@ describe("useTerminalSession", () => {
 
     act(() =>
       lastSocket()?.onmessage?.({
-        data: JSON.stringify({ type: "exit", code: 0, signal: null }),
+        data: JSON.stringify({ type: "exit", code: 0 }),
       }),
     );
     act(() => lastSocket()?.onclose?.());
@@ -281,7 +281,7 @@ describe("useTerminalSession", () => {
 
     act(() =>
       lastSocket()?.onmessage?.({
-        data: JSON.stringify({ type: "exit", code: null, signal: 11 }),
+        data: JSON.stringify({ type: "killed", signal: 11 }),
       }),
     );
     act(() => lastSocket()?.onclose?.());
