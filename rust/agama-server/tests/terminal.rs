@@ -80,7 +80,7 @@ async fn connect(url: &str, token: Option<&str>) -> Result<TerminalSocket, Box<d
 
 /// Sends a resize control message.
 async fn send_resize(socket: &mut TerminalSocket, cols: u16, rows: u16) {
-    let json = format!(r#"{{"cols":{cols},"rows":{rows}}}"#);
+    let json = format!(r#"{{"type":"resize","cols":{cols},"rows":{rows}}}"#);
     socket.send(Message::Text(json.into())).await.unwrap();
 }
 

@@ -219,7 +219,9 @@ describe("useTerminalSession", () => {
 
     act(() => lastTerminal()?.onResizeCallback?.({ cols: 100, rows: 30 }));
 
-    expect(lastSocket()?.send).toHaveBeenCalledWith(JSON.stringify({ cols: 100, rows: 30 }));
+    expect(lastSocket()?.send).toHaveBeenCalledWith(
+      JSON.stringify({ type: "resize", cols: 100, rows: 30 }),
+    );
   });
 
   it("writes incoming binary frames to the terminal", () => {

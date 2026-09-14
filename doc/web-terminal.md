@@ -48,12 +48,12 @@ The socket carries two kinds of frames:
 
 - **Binary frames** carry raw bytes: keystrokes from the client, the shell's output from the server.
   No framing beyond that — whatever the pty writes is forwarded as-is.
-- **Text frames** carry small JSON control messages.
+- **Text frames** carry small JSON control messages, each tagged with a `type`.
 
 From the client, the only supported message resizes the pty:
 
 ```json
-{ "cols": 80, "rows": 24 }
+{ "type": "resize", "cols": 80, "rows": 24 }
 ```
 
 From the server, a single message announces that the shell exited, sent right

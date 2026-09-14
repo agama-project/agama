@@ -256,7 +256,7 @@ export const useTerminalSession = (
 
     terminal.onResize(({ cols, rows }) => {
       if (socketRef.current?.readyState === WebSocket.OPEN) {
-        socketRef.current.send(JSON.stringify({ cols, rows }));
+        socketRef.current.send(JSON.stringify({ type: "resize", cols, rows }));
       }
     });
 

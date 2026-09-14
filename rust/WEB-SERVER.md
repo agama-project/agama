@@ -151,10 +151,11 @@ The socket carries two kinds of frames:
 
 * Binary frames carry raw bytes: keystrokes from the client, shell output from
   the server.
-* Text frames carry small JSON control messages. The client can resize the
-  terminal with `{"cols": 80, "rows": 24}`. The server announces the end of
-  the shell with `{"type": "exit", "code": 0}` for a normal exit (any way the
-  shell ends on its own: `exit`, `exit N`, Ctrl-D), or
+* Text frames carry small JSON control messages, each tagged with a "type".
+  The client can resize the terminal with
+  `{"type": "resize", "cols": 80, "rows": 24}`. The server announces the end
+  of the shell with `{"type": "exit", "code": 0}` for a normal exit (any way
+  the shell ends on its own: `exit`, `exit N`, Ctrl-D), or
   `{"type": "killed", "signal": 11}` when it was killed by a signal instead
   (e.g., a crash).
 

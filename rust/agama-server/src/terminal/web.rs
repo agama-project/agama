@@ -31,11 +31,12 @@
 //!
 //! * Binary frames carry raw bytes. From the client, they are keystrokes to
 //!   send to the shell. From the server, they are the shell's output.
-//! * Text frames carry small JSON control messages. From the client, the only
-//!   supported message resizes the terminal: `{"cols": 80, "rows": 24}`. From
-//!   the server, a single message announces that the shell exited, right
-//!   before the socket closes: `{"type": "exit", "code": 0}` for a normal
-//!   exit (any way the shell ends on its own — `exit`, `exit N`, Ctrl-D), or
+//! * Text frames carry small JSON control messages, each tagged with a
+//!   `"type"`. From the client, the only supported message resizes the
+//!   terminal: `{"type": "resize", "cols": 80, "rows": 24}`. From the
+//!   server, a single message announces that the shell exited, right before
+//!   the socket closes: `{"type": "exit", "code": 0}` for a normal exit (any
+//!   way the shell ends on its own — `exit`, `exit N`, Ctrl-D), or
 //!   `{"type": "killed", "signal": 11}` when it was killed by an unhandled
 //!   signal instead (e.g., a crash).
 
@@ -54,10 +55,10 @@ use tokio_stream::StreamExt;
 use tokio_util::io::ReaderStream;
 
 /// Number of rows the pty is created with, before the client sends its actual
-/// size (see [`ResizeMessage`]).
+/// size (see [`ClientMessage::Resize`]).
 const DEFAULT_ROWS: u16 = 24;
 /// Number of columns the pty is created with, before the client sends its
-/// actual size (see [`ResizeMessage`]).
+/// actual size (see [`ClientMessage::Resize`]).
 const DEFAULT_COLS: u16 = 80;
 /// Shell started for every terminal session.
 const SHELL: &str = "bash";
@@ -67,12 +68,12 @@ const SHELL: &str = "bash";
 /// see [`handle_socket`].
 const EIO: i32 = 5;
 
-/// Control message sent by the client to resize the terminal.
+/// Control message sent by the client.
 #[derive(Debug, Deserialize)]
-#[serde(rename_all = "camelCase")]
-struct ResizeMessage {
-    cols: u16,
-    rows: u16,
+#[serde(tag = "type", rename_all = "camelCase")]
+enum ClientMessage {
+    /// Resizes the pty to match the terminal's new size.
+    Resize { cols: u16, rows: u16 },
 }
 
 /// Control message sent to the client to report that the shell exited.
@@ -104,7 +105,7 @@ async fn ws_handler(ws: WebSocketUpgrade) -> impl IntoResponse {
 /// Starts a shell attached to a new pty.
 ///
 /// The pty is created with a default size; the client is expected to send a
-/// [`ResizeMessage`] as soon as it knows its actual size.
+/// [`ClientMessage::Resize`] as soon as it knows its actual size.
 fn spawn_shell() -> pty_process::Result<(OwnedReadPty, OwnedWritePty, Child)> {
     let (pty, pts) = pty_process::open()?;
     pty.resize(pty_process::Size::new(DEFAULT_ROWS, DEFAULT_COLS))?;
@@ -243,9 +244,9 @@ async fn handle_socket(mut socket: WebSocket) {
 /// Invalid or unknown messages are logged and ignored: they must not end the
 /// session.
 fn handle_control_message(text: &str, pty_write: &OwnedWritePty) {
-    match serde_json::from_str::<ResizeMessage>(text) {
-        Ok(resize) => {
-            if let Err(error) = pty_write.resize(pty_process::Size::new(resize.rows, resize.cols)) {
+    match serde_json::from_str::<ClientMessage>(text) {
+        Ok(ClientMessage::Resize { cols, rows }) => {
+            if let Err(error) = pty_write.resize(pty_process::Size::new(rows, cols)) {
                 tracing::warn!("terminal: failed to resize the pty: {error}");
             }
         }
