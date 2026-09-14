@@ -24,7 +24,21 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender, plainRender } from "~/test-utils";
 import type { Product } from "~/model/system";
+import { useTerminal } from "~/context/terminal";
 import Header from "./Header";
+
+/** Controls for driving the terminal state the header reacts to, and a readout of it. */
+const TerminalControls = () => {
+  const { open, minimize, isMinimized } = useTerminal();
+
+  return (
+    <>
+      <button onClick={open}>Open the terminal</button>
+      <button onClick={minimize}>Minimize the terminal</button>
+      {isMinimized && <p>The terminal is minimized</p>}
+    </>
+  );
+};
 
 const tumbleweed: Product = {
   id: "Tumbleweed",
@@ -68,6 +82,47 @@ describe("Header", () => {
     expect(screen.queryByRole("link", { name: "Skip to content" })).toBeNull();
     rerender(<Header hideSkipToContent={false} />);
     screen.queryByRole("link", { name: "Skip to content" });
+  });
+
+  it("renders a skip to terminal link while the terminal is open", async () => {
+    const { user } = plainRender(
+      <>
+        <Header />
+        <TerminalControls />
+      </>,
+    );
+
+    expect(screen.queryByRole("link", { name: "Skip to terminal" })).toBeNull();
+
+    await user.click(screen.getByRole("button", { name: "Open the terminal" }));
+
+    expect(screen.getByRole("link", { name: "Skip to terminal" })).toHaveAttribute(
+      "href",
+      "#terminal-input",
+    );
+
+    // Still reachable once collapsed to a bar: it is the same page, and the
+    // terminal is still there.
+    await user.click(screen.getByRole("button", { name: "Minimize the terminal" }));
+
+    screen.getByRole("link", { name: "Skip to terminal" });
+  });
+
+  it("expands a collapsed terminal when skipping to it", async () => {
+    const { user } = plainRender(
+      <>
+        <Header />
+        <TerminalControls />
+      </>,
+    );
+
+    await user.click(screen.getByRole("button", { name: "Open the terminal" }));
+    await user.click(screen.getByRole("button", { name: "Minimize the terminal" }));
+    screen.getByText("The terminal is minimized");
+
+    await user.click(screen.getByRole("link", { name: "Skip to terminal" }));
+
+    expect(screen.queryByText("The terminal is minimized")).toBeNull();
   });
 
   it("renders the given additional content", () => {

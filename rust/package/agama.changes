@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Sep 10 13:10:57 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add a WebSocket-backed terminal endpoint, spawning a shell
+  attached to a pseudo-terminal for the web UI terminal panel
+  (gh#agama-project/agama#3868).
+
+-------------------------------------------------------------------
 Thu Sep 10 08:26:22 UTC 2026 - PadaCommit <185716433+PadaCommit@users.noreply.github.com>
 
 - Fix schema URLs in rust/share/ (gh#agama-project/agama#3881):

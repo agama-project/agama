@@ -344,6 +344,9 @@ label.pf-m-disabled + .pf-v6-c-check__description {
     background: var(--agm-t--brand--color, var(--agm-t--color--waterhole--50));
     color: var(--agm-t--brand--text--color, var(--agm-t--color--fog--50));
     font-size: var(--pf-t--global--font--size--md);
+    // Shown for the instant it takes to tab past it, over whatever the page
+    // happens to have there, so it is set in bold to be read at a glance.
+    font-weight: var(--pf-t--global--font--weight--body--bold);
   }
 }
 
