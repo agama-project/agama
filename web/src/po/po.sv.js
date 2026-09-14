@@ -519,6 +519,9 @@ export default {
   "Bridge ports": [
     "Brygg portar"
   ],
+  "Browse with details...": [
+    "Bläddra med detaljer..."
+  ],
   "Btrfs": [
     "Btrfs"
   ],
@@ -740,9 +743,6 @@ export default {
   "Configured as %s.": [
     "Konfigurerad som %s."
   ],
-  "Configured for installation only": [
-    "Endast konfigurerad för installation"
-  ],
   "Configured with %d connection": [
     "Konfigurerad med %d anslutning",
     "Konfigurerad med %d anslutningar"
@@ -786,8 +786,8 @@ export default {
   "Connected devices tabs": [
     "Anslutna enheter flikar"
   ],
-  "Connecting to %s": [
-    "Ansluter till %s"
+  "Connecting": [
+    "Ansluter"
   ],
   "Connection failed": [
     "Anslutningen misslyckades"
@@ -1002,6 +1002,9 @@ export default {
   "Disconnected by the system": [
     "Frånkopplad av systemet"
   ],
+  "Disconnecting": [
+    "Kopplar från"
+  ],
   "Disconnection failed": [
     "Frånkoppling misslyckades"
   ],
@@ -1173,9 +1176,6 @@ export default {
   "ExFAT": [
     "ExFAT"
   ],
-  "Excellent signal": [
-    "Utmärkt signal"
-  ],
   "Expand if possible": [
     "Expandera om möjligt"
   ],
@@ -1210,6 +1210,9 @@ export default {
   ],
   "FAT": [
     "FAT"
+  ],
+  "Failed": [
+    "Misslyckades"
   ],
   "Failed to calculate a storage layout": [
     "Misslyckades att beräkna en lagringslayout"
@@ -1316,9 +1319,6 @@ export default {
   "Go to storage page": [
     "Gå till lagringssidan"
   ],
-  "Good signal": [
-    "Bra signal"
-  ],
   "Graphical desktop environments for the system.": [
     "Grafiska skrivbordsmiljöer för systemet."
   ],
@@ -1367,9 +1367,6 @@ export default {
   ],
   "IP Addresses": [
     "IP-adresser"
-  ],
-  "IP addresses": [
-    "IP adresser"
   ],
   "IPs": [
     "IP-adresser"
@@ -1479,9 +1476,6 @@ export default {
   ],
   "Installation settings in JSON format": [
     "Installationsinställningar i JSON format"
-  ],
-  "Installation will take %s.": [
-    "Installationen kommer att ta %s."
   ],
   "Installed system may not have network connections": [
     "Det installerade systemet kanske inte har nätverksanslutningar"
@@ -2061,6 +2055,9 @@ export default {
   "On boot": [
     "Vid uppstart"
   ],
+  "Once a product is selected, its language and region settings may offer more options to choose from.": [
+    "När en produkt har valts kan dess språk och regioninställningar erbjuda fler alternativ att välja mellan."
+  ],
   "Only reused logical volumes and space not assigned to any logical volume will be used.": [
     "Endast återanvända logiska volymer och utrymme som inte är tilldelat någon logisk volym kommer att användas."
   ],
@@ -2075,6 +2072,9 @@ export default {
   ],
   "Open terminal": [
     "Öppna terminal"
+  ],
+  "Opens a dialog": [
+    "Öppnar en dialogruta"
   ],
   "Options for partition %s": [
     "Alternativ för partition %s"
@@ -2240,9 +2240,6 @@ export default {
   ],
   "Public key provided for both": [
     "Publik nyckel tillhandahålls för båda"
-  ],
-  "Public network": [
-    "Publikt nätverk"
   ],
   "Question": [
     "Fråga"
@@ -2421,9 +2418,6 @@ export default {
   "SUSE Customer Center (SCC)": [
     "SUSE kundcenter (SCC)"
   ],
-  "Secured network": [
-    "Säkert nätverk"
-  ],
   "Security": [
     "Säkerhet"
   ],
@@ -2453,6 +2447,9 @@ export default {
   ],
   "Select a mode and confirm your choice.": [
     "Välj ett läge och bekräfta ditt val."
+  ],
+  "Select a network device": [
+    "Välj en nätverksenhet"
   ],
   "Select a product": [
     "Välj en produkt"
@@ -3028,9 +3025,6 @@ export default {
   "This product does not provide desktop environments.": [
     "Den här produkten tillhandahåller inte skrivbordsmiljöer."
   ],
-  "This space includes the base system and the selected software patterns, if any.": [
-    "Detta utrymme inkluderar bassystemet och de valda programvarumönsterna, om några."
-  ],
   "This uses existing logical volumes at the volume group": [
     "Detta använder befintliga logiska volymer i volymgrupp"
   ],
@@ -3042,9 +3036,6 @@ export default {
   ],
   "This volume group only occupies the space required by its logical volumes. To expand it to cover all available disk space, recreate the volume group.": [
     "Denna volymgrupp upptar endast det utrymme som krävs av dess logiska volymer. Om du vill expandera den till att täcka allt tillgängligt diskutrymme, återskapa volymgruppen."
-  ],
-  "This will affect only the installer interface, not the product to be installed. You can adjust the product’s localization later in the Localization settings page.": [
-    "Detta påverkar endast installationsgränssnittet, inte produkten som ska installeras. Du kan justera produktens lokalisering senare på sidan Lokaliseringsinställningar."
   ],
   "This will be injected to the command to create the file system (%s).": [
     "Detta kommer att injiceras i kommandot för att skapa filsystem (%s)."
@@ -3082,6 +3073,9 @@ export default {
   "Unable to modify the settings": [
     "Det går inte att ändra inställningarna"
   ],
+  "Unavailable": [
+    "Inte tillgänglig"
+  ],
   "Unexpected error": [
     "Oväntat fel"
   ],
@@ -3090,6 +3084,9 @@ export default {
   ],
   "Unknown error": [
     "Okänt fel"
+  ],
+  "Unmanaged": [
+    "Omanagerad"
   ],
   "Unsaved changes": [
     "Osparade ändringar"
@@ -3108,6 +3105,9 @@ export default {
   ],
   "Update available disks and activate crypt devices": [
     "Uppdatera tillgängliga diskar och aktivera krypteringsenheter"
+  ],
+  "Use %s": [
+    "Använd %s"
   ],
   "Use LVM volume group %s": [
     "Använd LVM volymgrupp %s"
@@ -3352,9 +3352,6 @@ export default {
   ],
   "Waiting for proposal": [
     "Väntar på förslag"
-  ],
-  "Weak signal": [
-    "Svag signal"
   ],
   "When ready, click on the [install] button at the end of the page.": [
     "När du är redo, klicka på [installera] knappen längst ner på sidan."
