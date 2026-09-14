@@ -56,6 +56,11 @@ type MultiSelectKeyboardActions = {
   commitText: () => boolean;
   /** Selects or deselects an option, commits the text, or leaves for elsewhere. */
   activateRow: (row: OptionRow) => void;
+  /**
+   * Adds what a row offers, leaving a value the field already holds alone.
+   * Tab confirms a choice; it is not a way to undo one.
+   */
+  commitRow: (row: OptionRow) => void;
   /** Edits a typed in value, finds a known one in the list, or flips the summary. */
   activateStop: (stop: EntryStop) => void;
   /** Removes the value at a stop. The summary toggle has nothing to remove. */
@@ -143,9 +148,10 @@ function wrap(index: number, count: number, step: number): number {
  * the keyboard with it through `highlightStop`.
  *
  * Tab commits the picked out row, or the text, and then keeps focus only if
- * something was committed and the field asks for it. An entry that leads
- * somewhere else is not something to commit, so Tab moves on instead of
- * following it.
+ * something was committed and the field asks for it. It only ever adds: a
+ * value the field already holds is left where it is, since Tab confirms a
+ * choice rather than undoing one. An entry that leads somewhere else is not
+ * something to commit, so Tab moves on instead of following it.
  */
 export function useMultiSelectKeyboard({
   optionRows,
@@ -216,7 +222,7 @@ export function useMultiSelectKeyboard({
     if (navigation.mode === "options") {
       const row = optionRows[navigation.index];
       if (row && row.kind !== "footer") {
-        actions.activateRow(row);
+        actions.commitRow(row);
         return true;
       }
     }

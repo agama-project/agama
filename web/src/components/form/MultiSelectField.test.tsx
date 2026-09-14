@@ -39,6 +39,7 @@ type TestFormProps = {
   options?: MultiSelectOption[];
   allowCustomEntries?: boolean;
   tabKeepsFocus?: boolean;
+  autoHighlight?: boolean;
   showNoResults?: boolean;
   entriesThreshold?: number;
   overflowBehavior?: "expandOnFocus" | "toggle";
@@ -58,6 +59,7 @@ function TestForm({
   options = OPTIONS,
   allowCustomEntries,
   tabKeepsFocus,
+  autoHighlight,
   showNoResults,
   entriesThreshold,
   overflowBehavior,
@@ -95,6 +97,7 @@ function TestForm({
               options={options}
               allowCustomEntries={allowCustomEntries}
               tabKeepsFocus={tabKeepsFocus}
+              autoHighlight={autoHighlight}
               showNoResults={showNoResults}
               entriesThreshold={entriesThreshold}
               overflowBehavior={overflowBehavior}
@@ -198,12 +201,34 @@ describe("MultiSelectField", () => {
   });
 
   describe("typing", () => {
-    it("opens the list and narrows it down, picking nothing out", async () => {
+    it("opens the list, narrows it down and picks out the best match", async () => {
       const { user } = installerRender(<TestForm />);
       await user.type(combobox(), "Ethernet");
 
       expect(within(optionList()).getAllByRole("option")).toHaveLength(2);
+      expect(activeElement()).toHaveAccessibleName("Ethernet 0");
+    });
+
+    it("picks nothing out when the field is not to choose for the user", async () => {
+      const { user } = installerRender(<TestForm autoHighlight={false} />);
+      await user.type(combobox(), "Ethernet");
+
+      expect(within(optionList()).getAllByRole("option")).toHaveLength(2);
       expect(combobox()).not.toHaveAttribute("aria-activedescendant");
+    });
+
+    it("picks nothing out while the user deletes what they wrote", async () => {
+      const { user } = installerRender(<TestForm />);
+      await user.type(combobox(), "Ethernet{Backspace}");
+
+      expect(combobox()).not.toHaveAttribute("aria-activedescendant");
+    });
+
+    it("picks out the text as typed when the field takes values of its own", async () => {
+      const { user } = installerRender(<TestForm allowCustomEntries />);
+      await user.type(combobox(), "Ethernet");
+
+      expect(activeElement()).toHaveAccessibleName('Use "Ethernet"');
     });
 
     it("says how many options are left once the typing stops", async () => {
@@ -335,6 +360,15 @@ describe("MultiSelectField", () => {
       expect(combobox()).toHaveFocus();
     });
 
+    it("keeps a value the field already holds, instead of taking it back out", async () => {
+      const { user } = installerRender(<TestForm defaultValues={["eth0"]} />);
+      await user.type(combobox(), "Ethernet 0");
+      await user.tab();
+
+      within(entries()).getByRole("option", { name: "Ethernet 0" });
+      expect(announcement()).toContain("Ethernet 0 is already selected.");
+    });
+
     it("commits the text and moves on when the field does not hold focus", async () => {
       const { user } = installerRender(<TestForm tabKeepsFocus={false} />);
       await user.type(combobox(), "eth1");
@@ -371,7 +405,7 @@ describe("MultiSelectField", () => {
     });
 
     it("leaves the values alone while the text box holds something", async () => {
-      const { user } = installerRender(<TestForm defaultValues={["eth0"]} />);
+      const { user } = installerRender(<TestForm defaultValues={["eth0"]} autoHighlight={false} />);
       await user.type(combobox(), "wire{ArrowLeft}");
 
       expect(combobox()).not.toHaveAttribute("aria-activedescendant");

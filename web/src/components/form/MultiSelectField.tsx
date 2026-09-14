@@ -167,6 +167,17 @@ type MultiSelectFieldProps = FieldLabelOptions & {
   tabKeepsFocus?: boolean;
 
   /**
+   * Whether the best match is picked out as the user types, so Enter or Tab
+   * takes it without a trip through the list. On by default.
+   *
+   * Nothing is picked out while the user deletes text, and nothing is ever
+   * typed into the box on their behalf: the text stays exactly as written.
+   * When the field takes values of its own, the row offering the text as
+   * typed is the one picked out, so free entry keeps working.
+   */
+  autoHighlight?: boolean;
+
+  /**
    * Whether the list stays open with a row saying nothing matches.
    *
    * By default the list hides instead, as the combobox pattern does. The list
@@ -299,6 +310,7 @@ export default function MultiSelectField({
   options,
   allowCustomEntries = false,
   tabKeepsFocus = true,
+  autoHighlight = true,
   showNoResults = false,
   entriesThreshold = 0,
   overflowBehavior = "expandOnFocus",
@@ -500,6 +512,19 @@ export default function MultiSelectField({
     toggleOption(row.option.value);
   };
 
+  /** Adds what a row offers. Unlike activating it, never takes a value back out. */
+  const commitRow = (row: OptionRow) => {
+    if (row.kind === "footer") return;
+
+    if (row.kind === "custom") {
+      commitText();
+      return;
+    }
+
+    if (row.option.isDisabled) return;
+    addValue(row.option.value);
+  };
+
   const toggleSummary = () => {
     const next = !isShowingAll;
     const shownCount = next ? values.length : collapsedLayout.shown.length;
@@ -549,6 +574,7 @@ export default function MultiSelectField({
       closeList,
       commitText,
       activateRow,
+      commitRow,
       activateStop,
       removeStop,
       clearText,
@@ -628,9 +654,24 @@ export default function MultiSelectField({
   /** Event handlers */
 
   const onQueryChange = (text: string) => {
+    // A user cutting text back is not choosing anything, so nothing is picked
+    // out for them until they add to it again.
+    const isDeleting = text.length < query.length;
     setQuery(text);
-    keyboard.reset();
     openList();
+
+    // The first row is the best match, except when the field takes values of
+    // its own: then it is the row offering the text as typed, which is what
+    // the user is writing. Either way it is the row Enter would want. The
+    // entry leading elsewhere is never picked out, since it commits nothing.
+    const rows = rowsFor(text);
+    const isPickable = rows.length > 0 && rows[0].kind !== "footer";
+    if (autoHighlight && !isDeleting && text.trim() !== "" && isPickable) {
+      keyboard.highlightRow(0);
+    } else {
+      keyboard.reset();
+    }
+
     announceFilterOutcome(filterOptions(options, text, haystacks).length);
   };
 
