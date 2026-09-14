@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Thu Sep 10 14:00:00 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Report more details about the network devices ("speed",
+  "carrier", "driver", "busPath" and "mtu"), so the user interface
+  can tell one device from another when picking the ports of a bond
+  or a bridge (related to bsc#1279417, gh#agama-project/agama#3884)
+
+-------------------------------------------------------------------
 Thu Sep 10 13:10:57 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Add a WebSocket-backed terminal endpoint, spawning a shell
