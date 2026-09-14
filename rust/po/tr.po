@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-04 12:04+0000\n"
+"POT-Creation-Date: 2026-09-09 11:53+0000\n"
 "PO-Revision-Date: 2026-08-25 15:33+0000\n"
 "Last-Translator: Efe Mert <efemert1@proton.me>\n"
 "Language-Team: Turkish <https://l10n.opensuse.org/projects/agama/agama-rust-"
@@ -950,7 +950,7 @@ msgstr "Yazılım seçiminde çakışmalar var"
 msgid "Could not select %s '%s' for installation"
 msgstr "Kurulum için %s '%s' olarak seçilemedi"
 
-#: agama-software/src/zypp_server.rs:1006
+#: agama-software/src/zypp_server.rs:1012
 msgid "Failed to register the system"
 msgstr "Sistem kaydı başarısız oldu"
 

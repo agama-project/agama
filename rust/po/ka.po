@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-04 12:04+0000\n"
-"PO-Revision-Date: 2026-09-03 07:13+0000\n"
+"POT-Creation-Date: 2026-09-09 11:53+0000\n"
+"PO-Revision-Date: 2026-09-08 02:13+0000\n"
 "Last-Translator: Temuri Doghonadze <temuri.doghonadze@gmail.com>\n"
 "Language-Team: Georgian <https://l10n.opensuse.org/projects/agama/agama-rust-"
 "master/ka/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 2026.8.1\n"
+"X-Generator: Weblate 2026.9\n"
 
 #: agama-autoinstall/src/auto_loader.rs:142
 msgid ""
@@ -239,7 +239,7 @@ msgstr "პროფილის წაკითხვა და ჩატვი
 #. TRANSLATORS: CLI help for: agama config generate <URL_OR_PATH>
 #: agama-cli/src/config.rs:70 agama-cli/src/config.rs:166
 msgid "JSON file: URL or path or `-` for standard input"
-msgstr ""
+msgstr "JSON ფაილი: URL, ან ბილიკი, ან '-' სტანდარტული შეყვანისთვის"
 
 #. TRANSLATORS: CLI help for: agama config show
 #: agama-cli/src/config.rs:80
@@ -361,7 +361,7 @@ msgstr ""
 #. TRANSLATORS: CLI help for: agama --insecure
 #: agama-cli/src/lib.rs:127
 msgid "Whether to accept invalid (self-signed, ...) certificates or not"
-msgstr ""
+msgstr "მოხდება არასწორი (თვითხელმოწერილი, ...) სერტიფიკატების ნდობა, თუ არა"
 
 #. TRANSLATORS: CLI help for: agama --local
 #: agama-cli/src/lib.rs:135
@@ -942,7 +942,7 @@ msgstr "პროგრამების არჩევანში კონ�
 msgid "Could not select %s '%s' for installation"
 msgstr "დაყენებისთვის %s-ის '%s' არჩევა შეუძლებელია"
 
-#: agama-software/src/zypp_server.rs:1006
+#: agama-software/src/zypp_server.rs:1012
 msgid "Failed to register the system"
 msgstr "სისტემის რეგისტრაცია ჩავარდა"
 
@@ -962,7 +962,7 @@ msgstr "სქემის გადამოწმება ჩავარდ�
 
 #: agama-utils/src/api/problem_details.rs:122
 msgid "The provided configuration does not match the required schema"
-msgstr ""
+msgstr "მოწოდებული კონფიგურაცია აუცილებელ სქემას არ ემთხვევა"
 
 #: agama-utils/src/api/problem_details.rs:131
 msgid "Invalid JSON"
