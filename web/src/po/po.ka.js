@@ -519,6 +519,9 @@ export default {
   "Bridge ports": [
     "ხიდის პორტები"
   ],
+  "Browse with details...": [
+    "ძებნა დტალებითs..."
+  ],
   "Btrfs": [
     "Btrfs"
   ],
@@ -1209,7 +1212,7 @@ export default {
     "FAT"
   ],
   "Failed": [
-    ""
+    "ჩავარდა"
   ],
   "Failed to calculate a storage layout": [
     "საცავის განლაგების გამოთვლა ჩავარდა"
@@ -2071,7 +2074,7 @@ export default {
     "ტერმინალის გახსნა"
   ],
   "Opens a dialog": [
-    ""
+    "გახსნის დიალოგს"
   ],
   "Options for partition %s": [
     "პარამეტრები დანაყოფისთვის %s"
@@ -2444,6 +2447,9 @@ export default {
   ],
   "Select a mode and confirm your choice.": [
     "აირჩიეთ რეჟიმი და დაადასტურეთ თქვენი არჩევანი."
+  ],
+  "Select a network device": [
+    "აირჩიეთ ქსელური მოწყობილობა"
   ],
   "Select a product": [
     "აირჩიეთ პროდუქტი"
@@ -3067,6 +3073,9 @@ export default {
   "Unable to modify the settings": [
     "პარამეტრების შეცვლა შეუძლებელია"
   ],
+  "Unavailable": [
+    "ხელმიუწვდომელია"
+  ],
   "Unexpected error": [
     "მოულოდნელი შეცდომა"
   ],
@@ -3077,7 +3086,7 @@ export default {
     "უცნობი შეცდომა"
   ],
   "Unmanaged": [
-    ""
+    "უმართავი"
   ],
   "Unsaved changes": [
     "შეუნახავი ცვლილებები"
@@ -3096,6 +3105,9 @@ export default {
   ],
   "Update available disks and activate crypt devices": [
     "ხელმისაწვდომი დისკების განახლება და კრიპტოგრაფიული მოწყობილობების გააქტიურება"
+  ],
+  "Use %s": [
+    "%s-ის გამოყენება"
   ],
   "Use LVM volume group %s": [
     "LVM-ის ტომების ჯგუფის %s გამოყენება"
