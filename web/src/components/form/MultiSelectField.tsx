@@ -602,22 +602,20 @@ export default function MultiSelectField({
   const { navigation } = keyboard;
   const activeStop = navigation.mode === "entries" ? entryStops[navigation.index] : undefined;
 
-  const activeDescendant = (): string | undefined => {
-    if (navigation.mode === "options") return ids.row(navigation.index);
-    if (navigation.mode === "clearAll") return ids.clearAll;
-    if (activeStop?.kind === "value") return ids.entry(activeStop.index);
-    if (activeStop?.kind === "toggle") return ids.summary;
-    return undefined;
-  };
-
-  /** Which part of the field is being worked on, for the hint it gets. */
-  const activePart = ((): FieldPart | undefined => {
-    if (navigation.mode === "options") return "options";
-    if (navigation.mode === "clearAll") return "clearAll";
-    if (activeStop?.kind === "toggle") return "toggle";
-    if (activeStop?.kind === "value") return "entries";
+  /**
+   * The part of the field being worked on: which one it is, for the hint it
+   * gets, and what names it, for `aria-activedescendant`. Decided once, since
+   * the keyboard is only ever in one place and both answers follow from it.
+   */
+  const active = ((): { part: FieldPart; id: string } | undefined => {
+    if (navigation.mode === "options") return { part: "options", id: ids.row(navigation.index) };
+    if (navigation.mode === "clearAll") return { part: "clearAll", id: ids.clearAll };
+    if (activeStop?.kind === "value") return { part: "entries", id: ids.entry(activeStop.index) };
+    if (activeStop?.kind === "toggle") return { part: "toggle", id: ids.summary };
     return undefined;
   })();
+
+  const activePart = active?.part;
 
   const hintContext: HintContext = {
     allowCustomEntries,
@@ -772,7 +770,7 @@ export default function MultiSelectField({
               role="combobox"
               isExpanded={isListVisible}
               aria-controls={ids.listbox}
-              aria-activedescendant={activeDescendant()}
+              aria-activedescendant={active?.id}
               onChange={(_event, text) => onTextChange(text)}
               onFocus={() => setIsFocused(true)}
               onBlur={onBlur}
