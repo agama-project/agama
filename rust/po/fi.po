@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-04 12:04+0000\n"
+"POT-Creation-Date: 2026-09-09 11:53+0000\n"
 "PO-Revision-Date: 2026-03-11 07:04+0000\n"
 "Last-Translator: Timo Jyrinki <tjyrinki@suse.com>\n"
 "Language-Team: Finnish <https://l10n.opensuse.org/projects/agama/agama-rust-"
@@ -966,7 +966,7 @@ msgstr "Ohjelmistoasetuksissa on ristiriitoja"
 msgid "Could not select %s '%s' for installation"
 msgstr "Asennukseen ei voi valita: %s ”%s”"
 
-#: agama-software/src/zypp_server.rs:1006
+#: agama-software/src/zypp_server.rs:1012
 msgid "Failed to register the system"
 msgstr "Järjestelmä rekisteröinti ei onnistu"
 

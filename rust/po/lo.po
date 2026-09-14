@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-04 12:04+0000\n"
+"POT-Creation-Date: 2026-09-09 11:53+0000\n"
 "PO-Revision-Date: 2026-08-19 15:13+0000\n"
 "Last-Translator: Bone NI <bounkirdni@gmail.com>\n"
 "Language-Team: Lao <https://l10n.opensuse.org/projects/agama/agama-rust-"
@@ -1025,7 +1025,7 @@ msgstr "ມີຂໍ້ຂັດແຍ່ງໃນການເລືອກຊອ
 msgid "Could not select %s '%s' for installation"
 msgstr "ບໍ່ສາມາດເລືອກ %s '%s' ສຳລັບການຕິດຕັ້ງໄດ້"
 
-#: agama-software/src/zypp_server.rs:1006
+#: agama-software/src/zypp_server.rs:1012
 msgid "Failed to register the system"
 msgstr "ລົງທະບຽນລະບົບຫຼົ້ມເຫຼວ"
 

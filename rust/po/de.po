@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-04 12:04+0000\n"
+"POT-Creation-Date: 2026-09-09 11:53+0000\n"
 "PO-Revision-Date: 2026-09-06 09:13+0000\n"
 "Last-Translator: Ettore Atalan <atalanttore@googlemail.com>\n"
 "Language-Team: German <https://l10n.opensuse.org/projects/agama/agama-rust-"
@@ -1084,7 +1084,7 @@ msgstr "Es gibt Konflikte bei der Softwareauswahl"
 msgid "Could not select %s '%s' for installation"
 msgstr "%s ‚%s‘ konnte nicht für die Installation ausgewählt werden"
 
-#: agama-software/src/zypp_server.rs:1006
+#: agama-software/src/zypp_server.rs:1012
 msgid "Failed to register the system"
 msgstr "Das System konnte nicht registriert werden"
 
