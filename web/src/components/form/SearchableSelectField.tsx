@@ -35,27 +35,12 @@ import {
   TextInputGroupMain,
 } from "@patternfly/react-core";
 import { debounce } from "radashi";
+import { buildHaystacks, filterOptions } from "~/components/form/option-filter";
 import { resolveAriaLabelProps, useFieldLabel } from "~/hooks/use-field-label";
 import { useFieldContext } from "~/hooks/form";
 
 import type { FieldLabelOptions } from "~/hooks/use-field-label";
 import type { TranslatedString } from "~/i18n";
-
-// Lowercases and strips diacritics so a query without accents still matches
-// accented text (e.g. typing "ingles" matches "Inglés"). It also turns brackets
-// and list punctuation into spaces so wrapping characters do not glue onto a
-// term and stop it matching: this matters when the committed selection is fed
-// back as the query (e.g. browser autocomplete), where a selectedLabel like
-// "Spanish (Spain)" must still match a filterText of "Spanish Spain es_ES".
-// Symbols that carry meaning for filtering, such as the +/- of a UTC offset, are
-// left untouched. Both the query and the option text are sanitized the same way
-// before they are compared.
-const sanitizeForSearch = (text: string): string =>
-  text
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/\p{Diacritic}/gu, "")
-    .replace(/[()[\]{},]+/g, " ");
 
 type Option = {
   value: string;
@@ -246,26 +231,13 @@ export default function SearchableSelectField({
 
   /** Derived state */
 
-  // Precompute each option's sanitized match text once, keyed by value, so a
-  // burst of keystrokes filters against a ready string instead of rebuilding it
-  // per option per render. `filterText` is the full text to search (label
-  // included); the visible `label` is the fallback. `description` is never here.
-  const haystacks = useMemo(
-    () => new Map(options.map((o) => [o.value, sanitizeForSearch(o.filterText ?? o.label)])),
-    [options],
-  );
+  // The match text of every option, prepared once per list. `description` is
+  // never part of it.
+  const haystacks = useMemo(() => buildHaystacks(options), [options]);
 
   const filteredOptions = useMemo(() => {
     const query = normalizeQuery ? normalizeQuery(appliedFilter) : appliedFilter;
-    const terms = sanitizeForSearch(query).trim().split(/\s+/).filter(Boolean);
-    if (terms.length === 0) return options;
-    // Match each whitespace-separated term against the option's haystack, so a
-    // query spanning several pieces (e.g. "Spanish Argentina") still matches
-    // regardless of word order.
-    return options.filter((o) => {
-      const haystack = haystacks.get(o.value) ?? "";
-      return terms.every((term) => haystack.includes(term));
-    });
+    return filterOptions(options, query, haystacks);
   }, [options, appliedFilter, haystacks, normalizeQuery]);
 
   const selectedOption = options.find((o) => o.value === field.state.value);
