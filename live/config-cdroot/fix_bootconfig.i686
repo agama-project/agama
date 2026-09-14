@@ -19,7 +19,7 @@ fi
 # but that's not the case.
 test -f $dst/.profile && . $dst/.profile
 
-arch=$(uname -m)
+arch="ix86"
 profile=$(echo "$kiwi_profiles" | tr "_" " ")
 label="$profile ($arch)"
 
