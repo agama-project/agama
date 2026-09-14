@@ -537,6 +537,9 @@ export default {
   "Bridge ports": [
     "Порти мосту"
   ],
+  "Browse with details...": [
+    "Переглянути з докладною інформацією..."
+  ],
   "Btrfs": [
     "Btrfs"
   ],
@@ -1020,6 +1023,9 @@ export default {
   "Disconnected by the system": [
     "Відключено системою"
   ],
+  "Disconnecting": [
+    "Перериваємо зв'язок"
+  ],
   "Disconnection failed": [
     "Не вдалося від'єднати"
   ],
@@ -1229,7 +1235,7 @@ export default {
     "FAT"
   ],
   "Failed": [
-    ""
+    "Невдача"
   ],
   "Failed to calculate a storage layout": [
     "Не вдалося розрахувати схему зберігання"
@@ -2076,6 +2082,9 @@ export default {
   "On boot": [
     "При завантаженні"
   ],
+  "Once a product is selected, its language and region settings may offer more options to choose from.": [
+    "Після вибору продукту в налаштуваннях мови та регіону можуть з’явитися додаткові варіанти на вибір."
+  ],
   "Only reused logical volumes and space not assigned to any logical volume will be used.": [
     "Використовуватимуться лише повторно використані логічні томи та простір, який не виділено жодному логічному тому."
   ],
@@ -2092,7 +2101,7 @@ export default {
     "Відкрити термінал"
   ],
   "Opens a dialog": [
-    ""
+    "Відкриває діалогове вікно"
   ],
   "Options for partition %s": [
     "Параметри розділу %s"
@@ -2465,6 +2474,9 @@ export default {
   ],
   "Select a mode and confirm your choice.": [
     "Виберіть режим і підтвердіть свій вибір."
+  ],
+  "Select a network device": [
+    "Виберіть мережевий пристрій"
   ],
   "Select a product": [
     "Оберіть продукт"
@@ -3101,6 +3113,9 @@ export default {
   "Unable to modify the settings": [
     "Не вдається змінити налаштування"
   ],
+  "Unavailable": [
+    "Не доступно"
+  ],
   "Unexpected error": [
     "Несподівана помилка"
   ],
@@ -3111,7 +3126,7 @@ export default {
     "Невідома помилка"
   ],
   "Unmanaged": [
-    ""
+    "Некерований"
   ],
   "Unsaved changes": [
     "Незбережені зміни"
@@ -3130,6 +3145,9 @@ export default {
   ],
   "Update available disks and activate crypt devices": [
     "Оновлення доступних дисків і активація криптопристроїв"
+  ],
+  "Use %s": [
+    "Використати %s"
   ],
   "Use LVM volume group %s": [
     "Використати групу томів LVM %s"
