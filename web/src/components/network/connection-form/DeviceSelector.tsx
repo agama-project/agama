@@ -29,6 +29,8 @@ import { useDevices } from "~/hooks/model/system/network";
 import { Device } from "~/types/network";
 import { _ } from "~/i18n";
 
+import type { TranslatedString } from "~/i18n";
+
 type SyncConfig = {
   /** The form field to keep in sync with the selected device. */
   field: "iface" | "ifaceMac";
@@ -50,6 +52,15 @@ type DeviceSelectorProps = {
   name?: keyof FormFields;
   /** Label for the dropdown. Defaults to "Device name" or "MAC address" based on `by`. */
   label?: React.ReactNode;
+  /**
+   * Title of the dialog listing the devices with their details.
+   *
+   * Defaults to a plain "Select a network device". Worth setting when the
+   * device is picked for something in particular, e.g. to be the parent of a
+   * VLAN, since the dropdown label that gave that away is no longer in sight
+   * once the dialog is open.
+   */
+  title?: TranslatedString;
   /** Sync configuration to update another field when a device is selected. */
   sync?: SyncConfig;
   /** Filter to exclude devices and types from the options list. */
@@ -77,6 +88,7 @@ const DeviceSelector = withForm({
     by: "iface",
     name: undefined,
     label: undefined,
+    title: undefined,
     sync: undefined,
     exclude: {},
     listeners: undefined,
@@ -86,6 +98,7 @@ const DeviceSelector = withForm({
     by,
     name: nameProp,
     label: labelProp,
+    title: titleProp,
     sync,
     exclude = {},
     listeners: listenersProp,
@@ -107,6 +120,9 @@ const DeviceSelector = withForm({
     // to the hardware identifier of the network interface.
     const defaultLabel = by === "iface" ? _("Device name") : _("Device MAC address");
     const label = labelProp ?? defaultLabel;
+    // TRANSLATORS: title of the dialog for picking a network device, when
+    // nothing more specific is known about what it will be used for.
+    const title = titleProp ?? _("Select a network device");
     const options = devices.map((d) => {
       const value = d[valueKey];
       return {
@@ -119,6 +135,11 @@ const DeviceSelector = withForm({
         ),
       };
     });
+
+    const selectedDevice = (value: string): Device[] | undefined => {
+      const device = devices.find((d) => d[valueKey] === value);
+      return device && [device];
+    };
 
     const listeners = {
       // Pre-select the first available device when the selector mounts with no
@@ -163,9 +184,12 @@ const DeviceSelector = withForm({
             />
             {isModalOpen && (
               <DeviceSelectorModal
+                title={title}
                 devices={devices}
-                selected={devices.find((d) => d[valueKey] === field.state.value)}
-                onConfirm={(device) => {
+                // Left unset when the current value matches no device, so the
+                // dialog falls back to picking the first one.
+                selected={selectedDevice(field.state.value)}
+                onConfirm={([device]) => {
                   field.handleChange(device[valueKey]);
                   setIsModalOpen(false);
                 }}

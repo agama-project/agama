@@ -55,6 +55,7 @@ import Error from "@icons/error.svg?component";
 import ErrorFill from "@icons/error-fill.svg?component";
 import ExpandCircleDown from "@icons/expand_circle_down.svg?component";
 import FileJson from "@icons/file_json.svg?component";
+import FormatListBulletedAdd from "@icons/format_list_bulleted_add.svg?component";
 import Fingerprint from "@icons/fingerprint.svg?component";
 import KeyboardArrowDown from "@icons/keyboard_arrow_down.svg?component";
 import Globe from "@icons/globe.svg?component";
@@ -122,6 +123,7 @@ const icons = {
   expand_circle_down: ExpandCircleDown,
   file_json: FileJson,
   fingerprint: Fingerprint,
+  format_list_bulleted_add: FormatListBulletedAdd,
   globe: Globe,
   hard_drive: HardDrive,
   info: Info,

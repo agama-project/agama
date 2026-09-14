@@ -90,6 +90,11 @@ const VlanFields = withForm({
             // TRANSLATORS: label for the VLAN parent device field.
             _("Parent device")
           }
+          title={
+            // TRANSLATORS: title of the dialog for picking the device a VLAN
+            // is built on top of.
+            _("Select the parent device")
+          }
           exclude={{
             devices: [form.getFieldValue("vlanIface")],
             types: [CONNECTION_TYPE.VLAN, CONNECTION_TYPE.LOOPBACK],
