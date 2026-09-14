@@ -41,6 +41,12 @@ type FieldEntryProps = {
   valueId: (index: number) => string;
   /** Maximum width for entries in "ch" units. When undefined, no truncation is applied. */
   maxWidth?: number;
+  /**
+   * How the entry is drawn. Use "outline" for a value the field cannot offer
+   * again, so it reads as something the user brought in themselves. Defaults
+   * to "filled".
+   */
+  variant?: "filled" | "outline";
 };
 
 /**
@@ -62,6 +68,7 @@ export default function FieldEntry({
   onRemove,
   valueId,
   maxWidth,
+  variant = "filled",
 }: FieldEntryProps) {
   // preventDefault keeps focus on the input; the edit moves the value back to draft.
   const handleMouseDown = (e: React.MouseEvent) => {
@@ -105,6 +112,7 @@ export default function FieldEntry({
         // TRANSLATORS: accessible label for an invalid entry. First %s is the entry value, second %s is the validation error.
         aria-label={error ? sprintf(_("%s is invalid: %s"), labelText, error) : labelText}
         color={error ? "red" : undefined}
+        variant={variant}
         closeBtnProps={{
           tabIndex: -1,
           onMouseDown: handleCloseMouseDown,

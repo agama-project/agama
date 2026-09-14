@@ -282,6 +282,21 @@ nav.agm-breadcrumb > ol > li > a {
   padding-block: 0.2rem;
 }
 
+// The text box shares the control with the values already committed: it keeps
+// room to type in and takes whatever is left over, wrapping to a new line when
+// there is none.
+.agm-field-text-input {
+  display: block;
+  flex-basis: 8rem;
+  flex-grow: 1;
+}
+
+// The values are a list for assistive technology, but they lay out as part of
+// the row around them, next to whatever else the control holds.
+.agm-field-entries__listbox {
+  display: contents;
+}
+
 // Pressing an entry puts its value back in the text input for editing, so it
 // reads as something to press.
 .agm-field-entry {
