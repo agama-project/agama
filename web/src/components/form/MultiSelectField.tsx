@@ -80,11 +80,6 @@ const PASTE_SEPARATORS = /[\s,;]+/;
 /** How long the typing has to stop before the outcome of the filter is said. */
 const FILTER_ANNOUNCE_DELAY = 500;
 
-/** Drops the quotation marks wrapping a pasted value. */
-function sanitizePastedValue(text: string): string {
-  return text.replace(/^["']/, "").replace(/["']$/, "");
-}
-
 /** Every DOM id the field hands out, all built from the field name. */
 function fieldIds(name: string) {
   return {
@@ -703,7 +698,7 @@ export default function MultiSelectField({
     const pasted = parsePasteEntries(
       event.clipboardData.getData("text"),
       splitPasteOn ?? PASTE_SEPARATORS,
-    ).map(sanitizePastedValue);
+    );
     if (pasted.length <= 1) return;
     event.preventDefault();
 
