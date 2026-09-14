@@ -483,7 +483,7 @@ export default function ArrayField({
 
     const normalized = entries.map((t) => normalizeValue(t, normalize));
     const toAdd = skipDuplicates ? filterNew(value, normalized) : normalized;
-    const [valid, invalid] = fork(toAdd, (n) => !validateOnChange?.(n));
+    const invalid = toAdd.filter((n) => validateOnChange?.(n));
     const skipped = normalized.length - toAdd.length;
     const added = toAdd.length;
 
@@ -491,7 +491,7 @@ export default function ArrayField({
     setDraft("");
     clearActive();
 
-    announce(pasteAnnouncement(added, skipped, valid, invalid));
+    announce(pasteAnnouncement(added, skipped, { count: invalid.length, kind: "invalid" }));
   };
 
   const hasErrors = value?.some(errorFor);

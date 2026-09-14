@@ -95,36 +95,73 @@ export function processDraft(
   return { normalized, error: validate?.(normalized) };
 }
 
-/** Builds the screen-reader announcement for a multi-entry paste. Pure function. */
+/**
+ * The entries a paste brought in that the field would not take as they were.
+ *
+ * The two fields turn entries down for reasons that do not mean the same
+ * thing, so each says so in its own words. `invalid` counts entries that went
+ * in and are showing an error; `unavailable` counts entries that never went
+ * in, because the field does not offer them. The counts are therefore not
+ * comparable, and nothing here adds them up.
+ */
+type PasteRejection = {
+  count: number;
+  kind: "invalid" | "unavailable";
+};
+
+/**
+ * Builds the screen-reader announcement for a multi-entry paste. Pure function.
+ *
+ * Shared so that the fields holding several values sound like one thing to
+ * someone listening: the same sentence for the same outcome, and a sentence of
+ * their own only where they really differ.
+ */
 export function pasteAnnouncement(
   added: number,
   skipped: number,
-  valid: string[],
-  invalid: string[],
+  rejection: PasteRejection,
 ): TranslatedString {
-  // TRANSLATORS: %d will be replaced with a number of duplicate entries skipped.
-  if (added === 0) return sprintf(_("%d duplicates skipped."), skipped);
+  // Only while it is true: an empty paste may have brought nothing in because
+  // nothing was on offer, and no duplicate was skipped then.
+  if (added === 0 && rejection.count === 0)
+    // TRANSLATORS: %d will be replaced with a number of duplicate entries skipped.
+    return sprintf(_("%d duplicates skipped."), skipped);
+
+  if (skipped === 0 && rejection.count === 0)
+    // TRANSLATORS: %d will be replaced with a number of added entries.
+    return sprintf(_("%d entries added."), added);
+
+  if (rejection.count === 0)
+    // TRANSLATORS: first %d is the number of added entries, second %d is the number of duplicate entries skipped.
+    return sprintf(_("%d entries added, %d duplicates skipped."), added, skipped);
 
   if (skipped === 0) {
-    return invalid.length === 0
-      ? // TRANSLATORS: %d will be replaced with a number of added entries.
-        sprintf(_("%d entries added."), valid.length)
-      : // TRANSLATORS: first %d is the number of added entries, second %d is
+    return rejection.kind === "invalid"
+      ? // TRANSLATORS: first %d is the number of added entries, second %d is
         // the number of invalid entries.
-        sprintf(_("%d entries added, %d invalid."), added, invalid.length);
+        sprintf(_("%d entries added, %d invalid."), added, rejection.count)
+      : // TRANSLATORS: first %d is the number of added entries, second %d is
+        // how many the field does not offer and left out.
+        sprintf(_("%d entries added, %d not available."), added, rejection.count);
   }
 
-  if (invalid.length === 0)
-    // TRANSLATORS: first %d is the number of added entries, second %d is the number of duplicate entries skipped.
-    return sprintf(_("%d entries added, %d duplicates skipped."), valid.length, skipped);
-
-  // TRANSLATORS: first %d is the number of added entries, second %d is the number of invalid entries, third %d is the number of duplicates skipped.
-  return sprintf(
-    _("%d entries added, %d invalid, %d duplicates skipped."),
-    added,
-    invalid.length,
-    skipped,
-  );
+  return rejection.kind === "invalid"
+    ? // TRANSLATORS: first %d is the number of added entries, second %d is the number of invalid entries, third %d is the number of duplicates skipped.
+      sprintf(
+        _("%d entries added, %d invalid, %d duplicates skipped."),
+        added,
+        rejection.count,
+        skipped,
+      )
+    : // TRANSLATORS: first %d is the number of added entries, second %d is how
+      // many the field does not offer and left out, third %d is the number of
+      // duplicate entries skipped.
+      sprintf(
+        _("%d entries added, %d not available, %d duplicates skipped."),
+        added,
+        rejection.count,
+        skipped,
+      );
 }
 
 /**
@@ -148,3 +185,5 @@ export function parsePasteEntries(text: string, splitPasteOn?: RegExp | string):
 export function filterNew(existing: string[], normalized: string[]): string[] {
   return unique([...existing, ...normalized]).slice(existing.length);
 }
+
+export type { PasteRejection };

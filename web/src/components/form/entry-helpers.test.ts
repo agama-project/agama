@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import { parsePasteEntries } from "~/components/form/entry-helpers";
+import { parsePasteEntries, pasteAnnouncement } from "~/components/form/entry-helpers";
 
 // parsePasteEntries is tested directly because the fields using it hold their
 // draft in an <input type="text"> (despite managing multiple values in state). Text inputs strip
@@ -84,5 +84,57 @@ describe("parsePasteEntries", () => {
     it("trims whitespace from entries even with custom pattern", () => {
       expect(parsePasteEntries("  alpha  \n  beta  ", "\n")).toEqual(["alpha", "beta"]);
     });
+  });
+});
+
+// Tested directly because the two fields sharing it reach different branches:
+// each turns entries down for its own reason, and neither exercises the other's
+// wording. The outcomes they do share must read the same in both.
+describe("pasteAnnouncement", () => {
+  const invalid = (count: number) => ({ count, kind: "invalid" }) as const;
+  const unavailable = (count: number) => ({ count, kind: "unavailable" }) as const;
+
+  describe("outcomes both fields share", () => {
+    it("says only what was added when nothing was turned down", () => {
+      expect(pasteAnnouncement(3, 0, invalid(0))).toBe("3 entries added.");
+      expect(pasteAnnouncement(3, 0, unavailable(0))).toBe("3 entries added.");
+    });
+
+    it("adds the duplicates that were skipped", () => {
+      expect(pasteAnnouncement(2, 1, invalid(0))).toBe("2 entries added, 1 duplicates skipped.");
+      expect(pasteAnnouncement(2, 1, unavailable(0))).toBe(
+        "2 entries added, 1 duplicates skipped.",
+      );
+    });
+
+    it("speaks of the duplicates alone when they are the whole story", () => {
+      expect(pasteAnnouncement(0, 2, invalid(0))).toBe("2 duplicates skipped.");
+      expect(pasteAnnouncement(0, 2, unavailable(0))).toBe("2 duplicates skipped.");
+    });
+  });
+
+  describe("the reason each field turns an entry down", () => {
+    it("calls an entry that went in with an error invalid", () => {
+      expect(pasteAnnouncement(3, 0, invalid(1))).toBe("3 entries added, 1 invalid.");
+      expect(pasteAnnouncement(3, 2, invalid(1))).toBe(
+        "3 entries added, 1 invalid, 2 duplicates skipped.",
+      );
+    });
+
+    it("calls an entry the field does not offer unavailable", () => {
+      expect(pasteAnnouncement(3, 0, unavailable(1))).toBe("3 entries added, 1 not available.");
+      expect(pasteAnnouncement(3, 2, unavailable(1))).toBe(
+        "3 entries added, 1 not available, 2 duplicates skipped.",
+      );
+    });
+  });
+
+  // Nothing added can mean nothing was on offer, so the shortcut for a paste
+  // that only met duplicates has to stand aside and let the count be told.
+  it("still tells what was turned down when nothing was added", () => {
+    expect(pasteAnnouncement(0, 0, unavailable(2))).toBe("0 entries added, 2 not available.");
+    expect(pasteAnnouncement(0, 1, unavailable(2))).toBe(
+      "0 entries added, 2 not available, 1 duplicates skipped.",
+    );
   });
 });

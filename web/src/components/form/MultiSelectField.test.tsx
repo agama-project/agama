@@ -690,7 +690,7 @@ describe("MultiSelectField", () => {
       await user.paste("eth0, eth1");
 
       expect(within(entries()).getAllByRole("option")).toHaveLength(2);
-      expect(announcement()).toContain("2 values added.");
+      expect(announcement()).toContain("2 entries added.");
     });
 
     it("leaves out what the field already holds and what it does not offer", async () => {
@@ -699,7 +699,7 @@ describe("MultiSelectField", () => {
       await user.paste("eth0 eth1 nothing");
 
       expect(within(entries()).getAllByRole("option")).toHaveLength(2);
-      expect(announcement()).toContain("1 values added, 1 already there, 1 not available.");
+      expect(announcement()).toContain("1 entries added, 1 not available, 1 duplicates skipped.");
     });
 
     it("leaves a single value in the text box", async () => {

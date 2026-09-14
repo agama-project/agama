@@ -37,7 +37,12 @@ import Icon from "~/components/layout/Icon";
 import Text from "~/components/core/Text";
 import MultiSelectEntries from "~/components/form/MultiSelectEntries";
 import MultiSelectOptionList from "~/components/form/MultiSelectOptionList";
-import { normalizeValue, parsePasteEntries, processDraft } from "~/components/form/entry-helpers";
+import {
+  normalizeValue,
+  parsePasteEntries,
+  pasteAnnouncement,
+  processDraft,
+} from "~/components/form/entry-helpers";
 import { buildHaystacks, filterOptions } from "~/components/form/option-filter";
 import {
   buildEntryStops,
@@ -51,7 +56,6 @@ import {
   filterOutcome,
   focusHintSentences,
   overflowState,
-  pasteSummary,
   sightedHint,
   valueAdded,
   valueAlreadySelected,
@@ -719,7 +723,7 @@ export default function MultiSelectField({
     if (added.length > 0) field.handleChange([...values, ...added]);
     setQuery("");
     keyboard.reset();
-    say(pasteSummary(added.length, duplicates, refused));
+    say(pasteAnnouncement(added.length, duplicates, { count: refused, kind: "unavailable" }));
   };
 
   // A press on the caret, on the button that empties the field, or on a value's

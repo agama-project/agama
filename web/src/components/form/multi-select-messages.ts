@@ -125,39 +125,6 @@ export function filterOutcome(count: number): TranslatedString {
   return sprintf(_("%d options available."), count);
 }
 
-/** Said after a paste brings in several values at once. */
-export function pasteSummary(added: number, duplicates: number, refused: number): TranslatedString {
-  if (duplicates === 0 && refused === 0) {
-    // TRANSLATORS: said after pasting several values into the field. %d is how
-    // many were added.
-    return sprintf(_("%d values added."), added);
-  }
-
-  if (refused === 0) {
-    // TRANSLATORS: said after pasting several values, some of which the field
-    // already held. First %d is how many were added, second %d is how many
-    // were already there.
-    return sprintf(_("%d values added, %d already there."), added, duplicates);
-  }
-
-  if (duplicates === 0) {
-    // TRANSLATORS: said after pasting several values, some of which the field
-    // does not offer and does not take. First %d is how many were added,
-    // second %d is how many were left out.
-    return sprintf(_("%d values added, %d not available."), added, refused);
-  }
-
-  // TRANSLATORS: said after pasting several values, some already in the field
-  // and some it does not offer. First %d is how many were added, second %d is
-  // how many were already there, third %d is how many were left out.
-  return sprintf(
-    _("%d values added, %d already there, %d not available."),
-    added,
-    duplicates,
-    refused,
-  );
-}
-
 /**
  * The short instructions a screen reader reads when the field takes focus.
  *
