@@ -121,13 +121,13 @@ export default function MultiSelectEntries({
   };
 
   return (
-    <div className="agm-field-entries">
+    <div className="agm-field-inline-entries">
       <EntriesListbox
         label={label}
         nameId={nameId}
         aria-labelledby={ariaLabelledBy}
         labelPrefixedBy={labelPrefixedBy}
-        className="agm-field-entries__listbox"
+        className="agm-field-inline-entries__listbox"
       >
         {layout.shown.map((index) => (
           <FieldEntry
@@ -149,7 +149,7 @@ export default function MultiSelectEntries({
         <Label
           id={summary.id}
           variant="overflow"
-          className={summary.isActive ? "agm-field-focus-ring" : undefined}
+          className={`agm-field-inline-entries__summary${summary.isActive ? " agm-field-focus-ring" : ""}`}
           // Not a tab stop: the keyboard reaches it among the values, or never
           // meets it at all when the field expands on focus.
           tabIndex={-1}

@@ -282,19 +282,37 @@ nav.agm-breadcrumb > ol > li > a {
   padding-block: 0.2rem;
 }
 
-// The text box shares the control with the values already committed: it keeps
-// room to type in and takes whatever is left over, wrapping to a new line when
-// there is none.
-.agm-field-text-input {
-  display: block;
-  flex-basis: 8rem;
-  flex-grow: 1;
+// The values of a field that shares its control with a text box. Both wrappers
+// step out of the layout, so the values, the summary and the text box all
+// become items of the control's own wrapping row. That is what lets the text
+// box follow the last value on its line, instead of dropping below a block of
+// values as soon as they wrap. They stay a list for assistive technology: a
+// box taken out of the layout keeps its role.
+.agm-field-inline-entries,
+.agm-field-inline-entries__listbox {
+  display: contents;
 }
 
-// The values are a list for assistive technology, but they lay out as part of
-// the row around them, next to whatever else the control holds.
-.agm-field-entries__listbox {
-  display: contents;
+// The row is as tall as the text box, so the values sit on its line rather than
+// stretching to meet it.
+.agm-field-entry,
+.agm-field-inline-entries__summary {
+  align-self: center;
+}
+
+// A control holding its values grows with them: roomy enough to type in from
+// the start, wider as values are added, and never past the form. At full width
+// a single value would sit alone in a mostly empty box.
+.agm-field-inline-control {
+  inline-size: fit-content;
+  min-inline-size: 20rem;
+  max-inline-size: 100%;
+}
+
+// The button emptying the field lines up with the caret beside it, which the
+// control keeps centred however tall the values make it.
+.agm-field-clear-all {
+  align-self: center;
 }
 
 // Pressing an entry puts its value back in the text input for editing, so it

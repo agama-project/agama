@@ -694,9 +694,12 @@ export default function MultiSelectField({
       >
         <MenuToggle
           variant="typeahead"
-          isFullWidth
+          className="agm-field-inline-control"
           isDisabled={isDisabled}
           isExpanded={isListVisible}
+          // The toggle draws the control's border, so it is also where the
+          // field being in error shows.
+          status={(hasAnyError && "danger") || undefined}
           // Lands on PatternFly's caret button, whose own default name is the
           // untranslated "Menu toggle".
           // TRANSLATORS: accessible name of the arrow that opens the list of
@@ -704,13 +707,11 @@ export default function MultiSelectField({
           aria-label={_("Show options")}
           onClick={() => (isListVisible ? closeList() : openList())}
         >
-          <TextInputGroup
-            isDisabled={isDisabled}
-            className={(hasAnyError && "pf-m-error") || undefined}
-          >
+          {/* Plain, or PatternFly draws a second border inside the toggle's
+              own. Same as SearchableSelectField. */}
+          <TextInputGroup isPlain isDisabled={isDisabled}>
             <TextInputGroupMain
               innerRef={inputRef}
-              className="agm-field-text-input"
               inputId={ids.input}
               value={query}
               placeholder={placeholder}
@@ -761,7 +762,7 @@ export default function MultiSelectField({
               )}
             </TextInputGroupMain>
             {hasClearAll && (
-              <TextInputGroupUtilities>
+              <TextInputGroupUtilities className="agm-field-clear-all">
                 <Button
                   id={ids.clearAll}
                   variant="plain"
