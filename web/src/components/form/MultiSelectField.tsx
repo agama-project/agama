@@ -360,7 +360,7 @@ export default function MultiSelectField({
   // keyboard on it.
   const keyboardRef = useRef<MultiSelectKeyboard | null>(null);
 
-  const [query, setQuery] = useState("");
+  const [text, setText] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
   const [isShowingAll, setIsShowingAll] = useState(false);
@@ -371,16 +371,16 @@ export default function MultiSelectField({
   const knownValues = useMemo(() => new Set(options.map((o) => o.value)), [options]);
   const isKnown = (value: string) => knownValues.has(value);
 
-  const rowsFor = (text: string): OptionRow[] =>
+  const rowsFor = (search: string): OptionRow[] =>
     buildOptionRows({
       options,
-      query: text,
+      text: search,
       haystacks,
       allowCustomEntries,
       hasFooterEntry: Boolean(footerEntry),
     });
 
-  const optionRows = rowsFor(query);
+  const optionRows = rowsFor(text);
   // The list only shows while it has something in it. A field that says so
   // keeps it open with a row telling the user as much.
   const isListVisible = isOpen && (optionRows.length > 0 || showNoResults);
@@ -410,7 +410,7 @@ export default function MultiSelectField({
 
   const hasToggle = overflowBehavior === "toggle" && hasHiddenValues;
   const entryStops = buildEntryStops(layout, hasToggle);
-  const hasClearAll = !isDisabled && (values.length > 0 || query !== "");
+  const hasClearAll = !isDisabled && (values.length > 0 || text !== "");
 
   /** Actions */
 
@@ -424,7 +424,7 @@ export default function MultiSelectField({
 
   const openList = () => setIsOpen(true);
   const closeList = () => setIsOpen(false);
-  const clearText = () => setQuery("");
+  const clearText = () => setText("");
 
   /** Leaves the keyboard on an option of the list, which shows the filter cleared. */
   const highlightOption = (value: string) => {
@@ -439,7 +439,7 @@ export default function MultiSelectField({
    * tells a commit apart from a refusal.
    */
   const addValue = (value: string, error?: string): boolean => {
-    setQuery("");
+    setText("");
 
     if (values.includes(value)) {
       say(valueAlreadySelected(toLabel(value)));
@@ -461,7 +461,7 @@ export default function MultiSelectField({
   const editValue = (index: number) => {
     const value = values[index];
     field.handleChange(values.filter((_v, i) => i !== index));
-    setQuery(value);
+    setText(value);
     // The value is text now, so the keyboard goes back to typing. Left among
     // the values it would sit on whichever one took the place of the edited
     // one, and the first Backspace would remove that one instead of a letter.
@@ -471,7 +471,7 @@ export default function MultiSelectField({
 
   /** Opens the list on a value the field holds, so it can be taken back out. */
   const showInList = (value: string) => {
-    setQuery("");
+    setText("");
     openList();
     highlightOption(value);
     say(valueShownInList(toLabel(value)));
@@ -483,25 +483,25 @@ export default function MultiSelectField({
    * committed.
    */
   const commitText = (): boolean => {
-    const text = query.trim();
-    if (text === "") return false;
+    const trimmed = text.trim();
+    if (trimmed === "") return false;
 
-    const exact = findExactOption(options, text);
+    const exact = findExactOption(options, trimmed);
     if (exact && !exact.isDisabled) return addValue(exact.value);
 
     if (!allowCustomEntries || exact?.isDisabled) {
-      announce(valueNotAvailable(text));
+      announce(valueNotAvailable(trimmed));
       return false;
     }
 
-    const draft = processDraft(text, normalize, validateOnChange);
+    const draft = processDraft(trimmed, normalize, validateOnChange);
     if (!draft) return false;
     return addValue(draft.normalized, draft.error);
   };
 
   const toggleOption = (value: string) => {
     const index = values.indexOf(value);
-    setQuery("");
+    setText("");
 
     if (index >= 0) removeValue(index);
     else addValue(value);
@@ -573,7 +573,7 @@ export default function MultiSelectField({
 
   const clearAll = () => {
     field.handleChange([]);
-    setQuery("");
+    setText("");
     setIsShowingAll(false);
     say(allValuesRemoved());
   };
@@ -583,7 +583,7 @@ export default function MultiSelectField({
     entryStops,
     isListOpen: isListVisible,
     hasClearAll,
-    hasText: query.trim() !== "",
+    hasText: text.trim() !== "",
     tabKeepsFocus,
     actions: {
       openList,
@@ -669,26 +669,26 @@ export default function MultiSelectField({
 
   /** Event handlers */
 
-  const onQueryChange = (text: string) => {
+  const onTextChange = (next: string) => {
     // A user cutting text back is not choosing anything, so nothing is picked
     // out for them until they add to it again.
-    const isDeleting = text.length < query.length;
-    setQuery(text);
+    const isDeleting = next.length < text.length;
+    setText(next);
     openList();
 
     // The first row is the best match, except when the field takes values of
     // its own: then it is the row offering the text as typed, which is what
     // the user is writing. Either way it is the row Enter would want. The
     // entry leading elsewhere is never picked out, since it commits nothing.
-    const rows = rowsFor(text);
+    const rows = rowsFor(next);
     const isPickable = rows.length > 0 && rows[0].kind !== "footer";
-    if (autoHighlight && !isDeleting && text.trim() !== "" && isPickable) {
+    if (autoHighlight && !isDeleting && next.trim() !== "" && isPickable) {
       keyboard.highlightRow(0);
     } else {
       keyboard.reset();
     }
 
-    announceFilterOutcome(filterOptions(options, text, haystacks).length);
+    announceFilterOutcome(filterOptions(options, next, haystacks).length);
   };
 
   const onBlur = () => {
@@ -696,7 +696,7 @@ export default function MultiSelectField({
     hintedParts.current.clear();
     keyboard.reset();
     closeList();
-    if (query.trim()) commitText();
+    if (text.trim()) commitText();
   };
 
   const onPaste = (event: React.ClipboardEvent<HTMLInputElement>) => {
@@ -719,7 +719,7 @@ export default function MultiSelectField({
     const duplicates = acceptable.length - added.length;
 
     if (added.length > 0) field.handleChange([...values, ...added]);
-    setQuery("");
+    setText("");
     keyboard.reset();
     say(pasteAnnouncement(added.length, duplicates, { count: refused, kind: "unavailable" }));
   };
@@ -767,13 +767,13 @@ export default function MultiSelectField({
             <TextInputGroupMain
               innerRef={inputRef}
               inputId={ids.input}
-              value={query}
+              value={text}
               placeholder={placeholder}
               role="combobox"
               isExpanded={isListVisible}
               aria-controls={ids.listbox}
               aria-activedescendant={activeDescendant()}
-              onChange={(_event, text) => onQueryChange(text)}
+              onChange={(_event, text) => onTextChange(text)}
               onFocus={() => setIsFocused(true)}
               onBlur={onBlur}
               inputProps={{
@@ -864,7 +864,7 @@ export default function MultiSelectField({
           />
           <SightedInstructions
             hasEntries={values.length > 0}
-            isDirty={values.length > 0 || query !== ""}
+            isDirty={values.length > 0 || text !== ""}
           />
           <HelperTextItem id={ids.hint}>
             {helperText && <Text textStyle={["fontSizeSm", "textColorSubtle"]}>{helperText}</Text>}

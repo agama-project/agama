@@ -73,7 +73,7 @@ type EntriesLayout = {
 type OptionRowsInput = {
   options: MultiSelectOption[];
   /** What the user typed, used both to filter and to offer committing it. */
-  query: string;
+  text: string;
   /** Match text of the options, from `buildHaystacks`. */
   haystacks: Map<string, string>;
   /** Whether the field accepts a value that is not among the options. */
@@ -123,19 +123,19 @@ export function findExactOption(
  */
 export function buildOptionRows({
   options,
-  query,
+  text,
   haystacks,
   allowCustomEntries,
   hasFooterEntry,
 }: OptionRowsInput): OptionRow[] {
-  const text = query.trim();
+  const trimmed = text.trim();
   const rows: OptionRow[] = [];
 
-  if (allowCustomEntries && text !== "" && !findExactOption(options, text)) {
-    rows.push({ kind: "custom", text });
+  if (allowCustomEntries && trimmed !== "" && !findExactOption(options, trimmed)) {
+    rows.push({ kind: "custom", text: trimmed });
   }
 
-  for (const option of filterOptions(options, query, haystacks)) {
+  for (const option of filterOptions(options, text, haystacks)) {
     rows.push({ kind: "option", option });
   }
 
