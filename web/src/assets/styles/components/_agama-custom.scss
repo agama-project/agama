@@ -281,3 +281,18 @@ nav.agm-breadcrumb > ol > li > a {
   gap: var(--pf-t--global--spacer--xs);
   padding-block: 0.2rem;
 }
+
+// Pressing an entry puts its value back in the text input for editing, so it
+// reads as something to press.
+.agm-field-entry {
+  cursor: pointer;
+}
+
+// Whatever inside the control the keyboard is on. Real focus never leaves the
+// text input, so that part draws the ring itself: the same one every focused
+// control gets (see base/_reset), kept thin and close because the parts sit
+// right next to each other.
+.agm-field-focus-ring {
+  outline: 2px solid var(--agm-t--focus--color, var(--agm-t--color--waterhole--50));
+  outline-offset: 1px;
+}

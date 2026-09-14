@@ -96,9 +96,10 @@ export default function FieldEntry({
   }
 
   return (
-    <span style={{ cursor: "pointer" }} onMouseDown={handleMouseDown}>
+    <span className="agm-field-entry" onMouseDown={handleMouseDown}>
       <Label
         id={valueId(index)}
+        className={isActive ? "agm-field-focus-ring" : undefined}
         role="option"
         aria-selected={isActive}
         // TRANSLATORS: accessible label for an invalid entry. First %s is the entry value, second %s is the validation error.
@@ -111,12 +112,6 @@ export default function FieldEntry({
         onClose={handleRemove}
         // TRANSLATORS: accessible label for the remove button of an entry. %s is the entry value.
         closeBtnAriaLabel={sprintf(_("Remove %s"), labelText)}
-        style={{
-          outline: isActive
-            ? "2px solid var(--pf-v6-global--primary-color--100, #0066cc)"
-            : undefined,
-          outlineOffset: isActive ? 1 : undefined,
-        }}
       >
         {labelContent}
       </Label>
