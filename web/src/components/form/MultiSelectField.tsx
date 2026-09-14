@@ -38,6 +38,7 @@ import Text from "~/components/core/Text";
 import MultiSelectEntries from "~/components/form/MultiSelectEntries";
 import MultiSelectOptionList from "~/components/form/MultiSelectOptionList";
 import {
+  filterNew,
   normalizeValue,
   parsePasteEntries,
   pasteAnnouncement,
@@ -706,19 +707,16 @@ export default function MultiSelectField({
     if (pasted.length <= 1) return;
     event.preventDefault();
 
-    const added: string[] = [];
-    let duplicates = 0;
-    let refused = 0;
+    // A value the field does not offer is turned down before anything asks
+    // whether it is already there, so it is counted once and for one reason.
+    const acceptable = pasted
+      .map((text) => ({ text, exact: findExactOption(options, text) }))
+      .filter(({ exact }) => exact || allowCustomEntries)
+      .map(({ text, exact }) => exact?.value ?? normalizeValue(text, normalize));
 
-    for (const text of pasted) {
-      const exact = findExactOption(options, text);
-      const value = exact?.value ?? normalizeValue(text, normalize);
-      const isAcceptable = Boolean(exact) || allowCustomEntries;
-
-      if (!isAcceptable) refused += 1;
-      else if (values.includes(value) || added.includes(value)) duplicates += 1;
-      else added.push(value);
-    }
+    const refused = pasted.length - acceptable.length;
+    const added = filterNew(values, acceptable);
+    const duplicates = acceptable.length - added.length;
 
     if (added.length > 0) field.handleChange([...values, ...added]);
     setQuery("");

@@ -702,6 +702,15 @@ describe("MultiSelectField", () => {
       expect(announcement()).toContain("1 entries added, 1 not available, 1 duplicates skipped.");
     });
 
+    it("takes a value in once when the paste itself repeats it", async () => {
+      const { user } = installerRender(<TestForm />);
+      await user.click(combobox());
+      await user.paste("eth0 eth0 eth1");
+
+      expect(within(entries()).getAllByRole("option")).toHaveLength(2);
+      expect(announcement()).toContain("2 entries added, 1 duplicates skipped.");
+    });
+
     it("leaves a single value in the text box", async () => {
       const { user } = installerRender(<TestForm />);
       await user.click(combobox());
