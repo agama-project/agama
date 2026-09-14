@@ -21,7 +21,9 @@
  */
 
 import React from "react";
-import { SkipToContent, SkipToContentProps } from "@patternfly/react-core";
+import { flushSync } from "react-dom";
+import { Flex, SkipToContent, SkipToContentProps } from "@patternfly/react-core";
+import Icon, { IconProps } from "~/components/layout/Icon";
 import { _ } from "~/i18n";
 
 /**
@@ -43,6 +45,23 @@ type SkipToProps = Omit<SkipToContentProps, "href" | "onClick"> & {
    * - https://allyant.com/blog/mastering-the-aria-tabindex-attribute-for-enhanced-web-accessibility/
    */
   contentId?: string;
+
+  /**
+   * Runs right before jumping, for targets that are not ready to take the
+   * focus yet (e.g. a collapsed panel that has to expand first). Any state it
+   * changes is applied to the page before the jump happens.
+   */
+  onSkip?: () => void;
+
+  /**
+   * Picture of the destination, shown before the text.
+   *
+   * Skip links appear one after another and only for an instant, so a page
+   * offering more than one benefits from something quicker to tell apart than
+   * the wording. Purely decorative: the text is what names the destination,
+   * for everybody.
+   */
+  icon?: IconProps["name"];
 };
 
 /**
@@ -62,10 +81,17 @@ type SkipToProps = Omit<SkipToContentProps, "href" | "onClick"> & {
 export default function SkipToContentLink({
   children,
   contentId = MAIN_CONTENT_ID,
+  onSkip,
+  icon = "list_alt",
   ...props
 }: SkipToProps) {
   const onClick = (e) => {
     e.preventDefault();
+
+    // Rendered right away instead of at the end of the event, so that a
+    // target that was not displayed yet is in the page, and focusable, by the
+    // time the focus is moved to it.
+    if (onSkip) flushSync(onSkip);
 
     const element = document.getElementById(contentId);
     if (element) {
@@ -75,7 +101,18 @@ export default function SkipToContentLink({
   };
   return (
     <SkipToContent href={`#${contentId}`} onClick={onClick} {...props}>
-      {children || _("Skip to content")}
+      {/* PatternFly puts everything given as children in a single text span,
+          so the icon and the label are laid out here instead of by the button
+          around them. */}
+      <Flex
+        component="span"
+        alignItems={{ default: "alignItemsCenter" }}
+        flexWrap={{ default: "nowrap" }}
+        gap={{ default: "gapSm" }}
+      >
+        <Icon name={icon} size="lg" aria-hidden />
+        {children || _("Skip to content")}
+      </Flex>
     </SkipToContent>
   );
 }

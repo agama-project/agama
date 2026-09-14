@@ -740,9 +740,6 @@ export default {
   "Configured as %s.": [
     "Configurato come %s."
   ],
-  "Configured for installation only": [
-    "Configurata solo per l'Installazione"
-  ],
   "Configured with %d connection": [
     "Configurato con %d connessione",
     "Configurato con %d connessioni"
@@ -786,8 +783,8 @@ export default {
   "Connected devices tabs": [
     "Schede dispositivi connessi"
   ],
-  "Connecting to %s": [
-    "Connessione a %s"
+  "Connecting": [
+    "Connessione"
   ],
   "Connection failed": [
     "Connessione non riuscita"
@@ -1173,9 +1170,6 @@ export default {
   "ExFAT": [
     "ExFAT"
   ],
-  "Excellent signal": [
-    "Segnale eccellente"
-  ],
   "Expand if possible": [
     "Espandi se possibile"
   ],
@@ -1210,6 +1204,9 @@ export default {
   ],
   "FAT": [
     "FAT"
+  ],
+  "Failed": [
+    ""
   ],
   "Failed to calculate a storage layout": [
     "Calcolo di un layout di memorizzazione non riuscito"
@@ -1316,9 +1313,6 @@ export default {
   "Go to storage page": [
     "Vai alla pagina dell'archiviazione"
   ],
-  "Good signal": [
-    "Segnale buono"
-  ],
   "Graphical desktop environments for the system.": [
     "Ambienti desktop grafici per il sistema."
   ],
@@ -1366,9 +1360,6 @@ export default {
     "Confermo di aver letto e accettato la [licenza] per %s"
   ],
   "IP Addresses": [
-    "Indirizzi IP"
-  ],
-  "IP addresses": [
     "Indirizzi IP"
   ],
   "IPs": [
@@ -1479,9 +1470,6 @@ export default {
   ],
   "Installation settings in JSON format": [
     "Impostazioni di installazione in formato JSON"
-  ],
-  "Installation will take %s.": [
-    "L'installazione richiederà %s."
   ],
   "Installed system may not have network connections": [
     "Il sistema installato potrebbe non avere connessioni di rete"
@@ -2076,6 +2064,9 @@ export default {
   "Open terminal": [
     "Apri terminale"
   ],
+  "Opens a dialog": [
+    ""
+  ],
   "Options for partition %s": [
     "Opzioni per la partizione %s"
   ],
@@ -2240,9 +2231,6 @@ export default {
   ],
   "Public key provided for both": [
     "Chiave pubblica fornita per entrambi"
-  ],
-  "Public network": [
-    "Rete pubblica"
   ],
   "Question": [
     "Domanda"
@@ -2420,9 +2408,6 @@ export default {
   ],
   "SUSE Customer Center (SCC)": [
     "SUSE Customer Center (SCC)"
-  ],
-  "Secured network": [
-    "Rete protetta"
   ],
   "Security": [
     "Sicurezza"
@@ -3028,9 +3013,6 @@ export default {
   "This product does not provide desktop environments.": [
     "Questo prodotto non fornisce ambienti desktop."
   ],
-  "This space includes the base system and the selected software patterns, if any.": [
-    "Questo spazio include il sistema di base e i pattern software selezionati, se presenti."
-  ],
   "This uses existing logical volumes at the volume group": [
     "Usa i volumi logici esistenti nel gruppo di volumi"
   ],
@@ -3042,9 +3024,6 @@ export default {
   ],
   "This volume group only occupies the space required by its logical volumes. To expand it to cover all available disk space, recreate the volume group.": [
     "Questo gruppo di volumi occupa soltanto lo spazio richiesto dai relativi volumi logici. Per espanderlo fino a occupare tutto lo spazio su disco disponibile, ricreare il gruppo di volumi."
-  ],
-  "This will affect only the installer interface, not the product to be installed. You can adjust the product’s localization later in the Localization settings page.": [
-    "Questa operazione interesserà solo l'interfaccia del programma di installazione, non il prodotto da installare. È possibile modificare la localizzazione del prodotto successivamente nella pagina Impostazioni di localizzazione."
   ],
   "This will be injected to the command to create the file system (%s).": [
     "Questo valore sarà inviato al comando per creare il file system (%s)."
@@ -3090,6 +3069,9 @@ export default {
   ],
   "Unknown error": [
     "Errore sconosciuto"
+  ],
+  "Unmanaged": [
+    ""
   ],
   "Unsaved changes": [
     "Modifiche non salvate"
@@ -3352,9 +3334,6 @@ export default {
   ],
   "Waiting for proposal": [
     "In attesa della proposta"
-  ],
-  "Weak signal": [
-    "Segnale debole"
   ],
   "When ready, click on the [install] button at the end of the page.": [
     "Quando tutto sarà pronto, fai clic sul pulsante [installa] alla fine della pagina."

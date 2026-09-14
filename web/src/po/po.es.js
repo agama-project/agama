@@ -740,9 +740,6 @@ export default {
   "Configured as %s.": [
     "Configurado como %s."
   ],
-  "Configured for installation only": [
-    "Configurado solo para la instalación"
-  ],
   "Configured with %d connection": [
     "Configurado con %d conexión",
     "Configurado con %d conexiones"
@@ -786,8 +783,8 @@ export default {
   "Connected devices tabs": [
     "Pestañas de dispositivos conectados"
   ],
-  "Connecting to %s": [
-    "Conectándose a %s"
+  "Connecting": [
+    "Conectando"
   ],
   "Connection failed": [
     "Conexión fallida"
@@ -1002,6 +999,9 @@ export default {
   "Disconnected by the system": [
     "Desconectado por el sistema"
   ],
+  "Disconnecting": [
+    "Desconectando"
+  ],
   "Disconnection failed": [
     "Desconexión fallida"
   ],
@@ -1173,9 +1173,6 @@ export default {
   "ExFAT": [
     "ExFAT"
   ],
-  "Excellent signal": [
-    "Señal excelente"
-  ],
   "Expand if possible": [
     "Expandir si es posible"
   ],
@@ -1210,6 +1207,9 @@ export default {
   ],
   "FAT": [
     "FAT"
+  ],
+  "Failed": [
+    "Fallido"
   ],
   "Failed to calculate a storage layout": [
     "Error al calcular una disposición de almacenamiento"
@@ -1316,9 +1316,6 @@ export default {
   "Go to storage page": [
     "Ir a la página de almacenamiento"
   ],
-  "Good signal": [
-    "Señal buena"
-  ],
   "Graphical desktop environments for the system.": [
     "Entornos gráficos de escritorio para el sistema."
   ],
@@ -1366,9 +1363,6 @@ export default {
     "He leído y acepto la [license] para %s"
   ],
   "IP Addresses": [
-    "Direcciones IP"
-  ],
-  "IP addresses": [
     "Direcciones IP"
   ],
   "IPs": [
@@ -1479,9 +1473,6 @@ export default {
   ],
   "Installation settings in JSON format": [
     "Ajustes de instalación en formato JSON"
-  ],
-  "Installation will take %s.": [
-    "La instalación utilizará %s."
   ],
   "Installed system may not have network connections": [
     "Puede que el sistema instalado no tenga conexiones de red"
@@ -2076,6 +2067,9 @@ export default {
   "Open terminal": [
     "Abrir terminal"
   ],
+  "Opens a dialog": [
+    ""
+  ],
   "Options for partition %s": [
     "Opciones para la partición %s"
   ],
@@ -2240,9 +2234,6 @@ export default {
   ],
   "Public key provided for both": [
     "Clave pública proporcionada para ambos"
-  ],
-  "Public network": [
-    "Red pública"
   ],
   "Question": [
     "Pregunta"
@@ -2420,9 +2411,6 @@ export default {
   ],
   "SUSE Customer Center (SCC)": [
     "Centro de servicios al cliente de SUSE (SCC)"
-  ],
-  "Secured network": [
-    "Red segura"
   ],
   "Security": [
     "Seguridad"
@@ -3028,9 +3016,6 @@ export default {
   "This product does not provide desktop environments.": [
     "Este producto no ofrece entornos de escritorio."
   ],
-  "This space includes the base system and the selected software patterns, if any.": [
-    "Este espacio incluye el sistema base y los patrones de software seleccionados, si los hubiera."
-  ],
   "This uses existing logical volumes at the volume group": [
     "Esto utiliza volúmenes lógicos existentes en el grupo de volúmenes"
   ],
@@ -3042,9 +3027,6 @@ export default {
   ],
   "This volume group only occupies the space required by its logical volumes. To expand it to cover all available disk space, recreate the volume group.": [
     "Este grupo de volúmenes solo ocupa el espacio requerido por sus volúmenes lógicos. Para ampliarlo y cubrir todo el espacio disponible en disco, vuelva a crear el grupo de volúmenes."
-  ],
-  "This will affect only the installer interface, not the product to be installed. You can adjust the product’s localization later in the Localization settings page.": [
-    "Esto sólo afectará a la interfaz del instalador, no el producto a instalar. Puede ajustar la ubicación del producto más adelante en la página de configuración de ubicación."
   ],
   "This will be injected to the command to create the file system (%s).": [
     "Esto se inyectará en el comando para crear el sistema de archivos (%s)."
@@ -3090,6 +3072,9 @@ export default {
   ],
   "Unknown error": [
     "Error desconocido"
+  ],
+  "Unmanaged": [
+    ""
   ],
   "Unsaved changes": [
     "Cambios sin guardar"
@@ -3352,9 +3337,6 @@ export default {
   ],
   "Waiting for proposal": [
     "Esperando propuesta"
-  ],
-  "Weak signal": [
-    "Señal débil"
   ],
   "When ready, click on the [install] button at the end of the page.": [
     "Cuando estés listo, haz clic en el botón [instalar] al final de la página."

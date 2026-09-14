@@ -720,9 +720,6 @@ export default {
   "Configured as %s.": [
     "已設定為 %s。"
   ],
-  "Configured for installation only": [
-    "僅為安裝設定"
-  ],
   "Configured with %d connection": [
     "已設定 %d 個連接"
   ],
@@ -764,9 +761,6 @@ export default {
   ],
   "Connected devices tabs": [
     "已連接裝置索引標籤"
-  ],
-  "Connecting to %s": [
-    "正在連接至 %s"
   ],
   "Connection failed": [
     "連接失敗"
@@ -1152,9 +1146,6 @@ export default {
   "ExFAT": [
     "ExFAT"
   ],
-  "Excellent signal": [
-    "訊號極佳"
-  ],
   "Expand if possible": [
     "儘可能擴充"
   ],
@@ -1187,6 +1178,9 @@ export default {
   ],
   "FAT": [
     "FAT"
+  ],
+  "Failed": [
+    ""
   ],
   "Failed to calculate a storage layout": [
     "無法計算儲存配置"
@@ -1293,9 +1287,6 @@ export default {
   "Go to storage page": [
     "前往儲存頁面"
   ],
-  "Good signal": [
-    "訊號良好"
-  ],
   "Graphical desktop environments for the system.": [
     "系統的圖形桌面環境。"
   ],
@@ -1342,9 +1333,6 @@ export default {
     "我已閱讀並接受 %s 的 [授權]"
   ],
   "IP Addresses": [
-    "IP 位址"
-  ],
-  "IP addresses": [
     "IP 位址"
   ],
   "IPs": [
@@ -1454,9 +1442,6 @@ export default {
   ],
   "Installation settings in JSON format": [
     "JSON 格式的安裝設定"
-  ],
-  "Installation will take %s.": [
-    "安裝將會佔用 %s。"
   ],
   "Installed system may not have network connections": [
     "安裝好的系統可能沒有網路連接"
@@ -2049,6 +2034,9 @@ export default {
   "Open terminal": [
     "開啟終端機"
   ],
+  "Opens a dialog": [
+    ""
+  ],
   "Options for partition %s": [
     "分割區 %s 的選項"
   ],
@@ -2213,9 +2201,6 @@ export default {
   ],
   "Public key provided for both": [
     "已為兩個帳戶提供公用金鑰"
-  ],
-  "Public network": [
-    "公用網路"
   ],
   "Question": [
     "問題"
@@ -2393,9 +2378,6 @@ export default {
   ],
   "SUSE Customer Center (SCC)": [
     "SUSE Customer Center (SCC)"
-  ],
-  "Secured network": [
-    "加密網路"
   ],
   "Security": [
     "安全性"
@@ -2988,9 +2970,6 @@ export default {
   "This product does not provide desktop environments.": [
     "此產品未提供桌面環境。"
   ],
-  "This space includes the base system and the selected software patterns, if any.": [
-    "此空間包含基礎系統以及所選軟體模式 (如有)。"
-  ],
   "This uses existing logical volumes at the volume group": [
     "此設定會使用磁碟區群組中的現有邏輯磁碟區"
   ],
@@ -3002,9 +2981,6 @@ export default {
   ],
   "This volume group only occupies the space required by its logical volumes. To expand it to cover all available disk space, recreate the volume group.": [
     "此磁碟區群組僅佔用邏輯磁碟區所需的空間。如需擴充至佔用所有可用磁碟空間，請重新建立磁碟區群組。"
-  ],
-  "This will affect only the installer interface, not the product to be installed. You can adjust the product’s localization later in the Localization settings page.": [
-    "此操作只會影響安裝程式介面，不會影響要安裝的產品。您稍後可以在 \"本土化設定\" 頁面調整產品的本土化。"
   ],
   "This will be injected to the command to create the file system (%s).": [
     "此值將做為參數新增至建立檔案系統的指令 (%s) 中。"
@@ -3050,6 +3026,9 @@ export default {
   ],
   "Unknown error": [
     "未知錯誤"
+  ],
+  "Unmanaged": [
+    ""
   ],
   "Unsaved changes": [
     "未儲存的變更"
@@ -3311,9 +3290,6 @@ export default {
   ],
   "Waiting for proposal": [
     "正在等待建議"
-  ],
-  "Weak signal": [
-    "訊號微弱"
   ],
   "When ready, click on the [install] button at the end of the page.": [
     "準備就緒後，請按一下頁面底部的[安裝]按鈕。"

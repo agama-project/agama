@@ -524,9 +524,6 @@ export default {
   "Configured as %s.": [
     "%s olarak yapılandırıldı."
   ],
-  "Configured for installation only": [
-    "Yalnızca kurulum için yapılandırıldı"
-  ],
   "Configured with %d connection": [
     "bağlantı %d ile ayarlandı",
     "bağlantılar %d ile ayarlandı"
@@ -564,8 +561,8 @@ export default {
   "Connected devices tabs": [
     "Bağlı cihazlar sekmeleri"
   ],
-  "Connecting to %s": [
-    "%s'ye bağlanılıyor"
+  "Connecting": [
+    "Bağlanıyor"
   ],
   "Connection failed": [
     "Bağlantı başarısız"
@@ -900,9 +897,6 @@ export default {
   "ExFAT": [
     "ExFAT"
   ],
-  "Excellent signal": [
-    "Mükemmel sinyal"
-  ],
   "Expand if possible": [
     "Olabiliyorsa büyüt"
   ],
@@ -937,6 +931,9 @@ export default {
   ],
   "FAT": [
     "FAT"
+  ],
+  "Failed": [
+    ""
   ],
   "Failed to calculate a storage layout": [
     "Depolama düzeni hesaplanamadı"
@@ -1025,9 +1022,6 @@ export default {
   "Go to storage page": [
     "Depolama sayfasına git"
   ],
-  "Good signal": [
-    "İyi sinyal"
-  ],
   "Graphical desktop environments for the system.": [
     ""
   ],
@@ -1067,9 +1061,6 @@ export default {
   ],
   "IP Addresses": [
     "IP Adresleri"
-  ],
-  "IP addresses": [
-    "IP adresleri"
   ],
   "IPs": [
     "IP'ler"
@@ -1158,9 +1149,6 @@ export default {
   ],
   "Installation settings in JSON format": [
     "Kurulum ayarları JSON formatında"
-  ],
-  "Installation will take %s.": [
-    "Kurulum %s kadar olacak."
   ],
   "Installed system may not have network connections": [
     "Kurulu sistemde ağ bağlantıları olmayabilir"
@@ -1614,6 +1602,9 @@ export default {
   "On boot": [
     "Önyüklemede"
   ],
+  "Once a product is selected, its language and region settings may offer more options to choose from.": [
+    ""
+  ],
   "Only reused partitions and space not assigned to any partition will be used.": [
     "Sadece yeniden kullanılan bölümler ve herhangi bir bölüme atanmamış alanlar kullanılacaktır."
   ],
@@ -1622,6 +1613,9 @@ export default {
   ],
   "Open terminal": [
     "Terminali aç"
+  ],
+  "Opens a dialog": [
+    ""
   ],
   "Package installation failed": [
     "Paket kurulumu başarısız oldu"
@@ -1748,9 +1742,6 @@ export default {
   ],
   "Public key provided for both": [
     "Her ikisi için de genel anahtar sağlanmıştır"
-  ],
-  "Public network": [
-    "Herkese açık ağ"
   ],
   "Question": [
     "Soru"
@@ -1895,9 +1886,6 @@ export default {
   ],
   "SUSE Customer Center (SCC)": [
     "SUSE Müşteri Merkezi (SMM)"
-  ],
-  "Secured network": [
-    "Güvenli ağ"
   ],
   "Security": [
     "Güvenlik"
@@ -2358,9 +2346,6 @@ export default {
   "This product does not provide desktop environments.": [
     ""
   ],
-  "This space includes the base system and the selected software patterns, if any.": [
-    "Bu alan, varsa temel sistemi ve seçili yazılım desenlerini içerir."
-  ],
   "This uses existing partitions at the disk": [
     "Bu, diskteki mevcut bölümleri kullanır"
   ],
@@ -2369,9 +2354,6 @@ export default {
   ],
   "This volume group only occupies the space required by its logical volumes. To expand it to cover all available disk space, recreate the volume group.": [
     ""
-  ],
-  "This will affect only the installer interface, not the product to be installed. You can adjust the product’s localization later in the Localization settings page.": [
-    "Bu yalnızca yükleyici arayüzünü etkileyecektir, yüklenecek ürünü değil. Ürünün yerelleştirmesini daha sonra Yerelleştirme ayarları sayfasında ayarlayabilirsiniz."
   ],
   "This will be injected to the command to create the file system (%s).": [
     ""
@@ -2411,6 +2393,9 @@ export default {
   ],
   "Unknown error": [
     "Bilinmeyen hata"
+  ],
+  "Unmanaged": [
+    ""
   ],
   "Unsaved changes": [
     "Kaydedilmemiş değişiklikler"
@@ -2627,9 +2612,6 @@ export default {
   ],
   "Waiting for proposal": [
     "Teklif bekleniyor"
-  ],
-  "Weak signal": [
-    "Zayıf sinyal"
   ],
   "When ready, click on the [install] button at the end of the page.": [
     "Hazır olduğunzda sayfanın sonundaki [install] butonuna basın."

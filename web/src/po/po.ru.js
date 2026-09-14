@@ -760,9 +760,6 @@ export default {
   "Configured as %s.": [
     "Настроено как %s."
   ],
-  "Configured for installation only": [
-    "Настроено для доступа только при установке"
-  ],
   "Configured with %d connection": [
     "Настроена: %d подключение",
     "Настроена: %d подключения",
@@ -807,8 +804,8 @@ export default {
   "Connected devices tabs": [
     "Вкладки подключенных устройств"
   ],
-  "Connecting to %s": [
-    "Подключение к сети %s"
+  "Connecting": [
+    "Подключение"
   ],
   "Connection failed": [
     "Сбой подключения"
@@ -1023,6 +1020,9 @@ export default {
   "Disconnected by the system": [
     "Отключено системой"
   ],
+  "Disconnecting": [
+    "Отключение"
+  ],
   "Disconnection failed": [
     "Сбой при отключении"
   ],
@@ -1194,9 +1194,6 @@ export default {
   "ExFAT": [
     "ExFAT"
   ],
-  "Excellent signal": [
-    "Отличный сигнал"
-  ],
   "Expand if possible": [
     "Расширить, если возможно"
   ],
@@ -1233,6 +1230,9 @@ export default {
   ],
   "FAT": [
     "FAT"
+  ],
+  "Failed": [
+    "Сбой"
   ],
   "Failed to calculate a storage layout": [
     "Не удалось рассчитать схему хранилища"
@@ -1339,9 +1339,6 @@ export default {
   "Go to storage page": [
     "Перейти к разделу «Хранилище»"
   ],
-  "Good signal": [
-    "Хороший сигнал"
-  ],
   "Graphical desktop environments for the system.": [
     "Графические среды рабочего стола для системы."
   ],
@@ -1390,9 +1387,6 @@ export default {
     "Я прочитал(-а) и принимаю [лицензию] для %s"
   ],
   "IP Addresses": [
-    "IP-адреса"
-  ],
-  "IP addresses": [
     "IP-адреса"
   ],
   "IPs": [
@@ -1504,9 +1498,6 @@ export default {
   ],
   "Installation settings in JSON format": [
     "Настройки установки в формате JSON"
-  ],
-  "Installation will take %s.": [
-    "Установка займёт %s."
   ],
   "Installed system may not have network connections": [
     "Установленная система может не иметь сетевых подключений"
@@ -2103,6 +2094,9 @@ export default {
   "Open terminal": [
     "Открыть терминал"
   ],
+  "Opens a dialog": [
+    ""
+  ],
   "Options for partition %s": [
     "Параметры для раздела %s"
   ],
@@ -2267,9 +2261,6 @@ export default {
   ],
   "Public key provided for both": [
     "Открытый ключ предоставлен для обоих"
-  ],
-  "Public network": [
-    "Общедоступная сеть"
   ],
   "Question": [
     "Вопрос"
@@ -2447,9 +2438,6 @@ export default {
   ],
   "SUSE Customer Center (SCC)": [
     "Центр обслуживания клиентов SUSE (SCC)"
-  ],
-  "Secured network": [
-    "Защищенная сеть"
   ],
   "Security": [
     "Безопасность"
@@ -3068,9 +3056,6 @@ export default {
   "This product does not provide desktop environments.": [
     "Этот продукт не предоставляет рабочих сред."
   ],
-  "This space includes the base system and the selected software patterns, if any.": [
-    "Это пространство включает в себя базовую систему и выбранные шаблоны программного обеспечения, если таковые имеются."
-  ],
   "This uses existing logical volumes at the volume group": [
     "Это использует существующие логические тома в группе томов"
   ],
@@ -3082,9 +3067,6 @@ export default {
   ],
   "This volume group only occupies the space required by its logical volumes. To expand it to cover all available disk space, recreate the volume group.": [
     "Эта группа томов занимает только пространство, необходимое для её логических томов. Чтобы расширить её на всё доступное дисковое пространство, пересоздайте группу томов."
-  ],
-  "This will affect only the installer interface, not the product to be installed. You can adjust the product’s localization later in the Localization settings page.": [
-    "Это повлияет только на интерфейс программы установки, не на устанавливаемый продукт. Настроить локализацию продукта Вы сможете позже в разделе «Локализация»."
   ],
   "This will be injected to the command to create the file system (%s).": [
     "Это будет передано команде для создания файловой системы (%s)."
@@ -3130,6 +3112,9 @@ export default {
   ],
   "Unknown error": [
     "Неизвестная ошибка"
+  ],
+  "Unmanaged": [
+    ""
   ],
   "Unsaved changes": [
     "Несохранённые изменения"
@@ -3393,9 +3378,6 @@ export default {
   ],
   "Waiting for proposal": [
     "Ожидание предложения"
-  ],
-  "Weak signal": [
-    "Слабый сигнал"
   ],
   "When ready, click on the [install] button at the end of the page.": [
     "Когда будете готовы, нажмите кнопку [установить] в конце страницы."

@@ -23,20 +23,44 @@
 import React from "react";
 import { Flex, Stack } from "@patternfly/react-core";
 import Page from "~/components/layout/Page";
+import Icon, { IconProps } from "~/components/layout/Icon";
 import Text from "~/components/core/Text";
 import RebootButton from "~/components/core/RebootButton";
+import SplitButton from "~/components/core/SplitButton";
+import DownloadLogsFeedback from "~/components/core/DownloadLogsFeedback";
 import SideBySideLayout from "~/components/layout/SideBySideLayout";
+import { useTerminal } from "~/context/terminal";
 import { _ } from "~/i18n";
-import DownloadLogsButton from "./DownloadLogsButton";
+
+/**
+ * Renders an action label with a leading icon.
+ *
+ * The icon and the text are kept inline on purpose: PatternFly aligns the
+ * pieces of a split button on their text baseline, and a flex wrapper would
+ * offer the icon bottom edge instead, growing the button.
+ */
+const ActionContent = ({ icon, text }: { icon: IconProps["name"]; text: string }) => (
+  <>
+    <Icon name={icon} isMiddleAligned /> {text}
+  </>
+);
 
 /**
  * Installation failure screen
  *
  * Displays an error page when the installation process fails, providing users
- * with options to download logs and reboot the system to retry.
+ * with options to download logs, open a terminal to investigate, and reboot
+ * the system to retry.
  *
  */
 export default function InstallationFailed() {
+  const { isOpen: isTerminalOpen, toggle: toggleTerminal } = useTerminal();
+  const terminalLabel = isTerminalOpen
+    ? /* TRANSLATORS: action that closes the terminal, ending the session */
+      _("Close terminal")
+    : /* TRANSLATORS: action that opens a terminal to inspect the failed installation */
+      _("Open terminal");
+
   return (
     <Page variant="minimal">
       <Page.Content>
@@ -52,7 +76,24 @@ export default function InstallationFailed() {
         >
           <Flex gap={{ default: "gapSm" }} alignItems={{ default: "alignItemsCenter" }}>
             <RebootButton size="default" />
-            <DownloadLogsButton />
+            {/* DownloadLogsFeedback must wrap the whole SplitButton so the
+                feedback alert survives the menu opening and closing. */}
+            <DownloadLogsFeedback>
+              {({ download: downloadLogs }) => (
+                <SplitButton
+                  variant="secondary"
+                  onClick={downloadLogs}
+                  label={
+                    /* TRANSLATORS: action to download the installer logs as an archive */
+                    <ActionContent icon="download" text={_("Download logs")} />
+                  }
+                >
+                  <SplitButton.Item onClick={toggleTerminal}>
+                    <ActionContent icon="terminal" text={terminalLabel} />
+                  </SplitButton.Item>
+                </SplitButton>
+              )}
+            </DownloadLogsFeedback>
           </Flex>
         </SideBySideLayout>
       </Page.Content>
