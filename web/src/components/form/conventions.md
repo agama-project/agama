@@ -364,7 +364,9 @@ and takes values written out as well when `allowCustomEntries` is set. Use it
 when most of the values can be enumerated: devices, patterns, anything the
 backend can list. It summarizes the values beyond `entriesThreshold` as
 "N more", so a field holding many of them does not push the rest of the form
-down the page.
+down the page. As the user types it picks out the best match, so Enter or Tab
+takes it without a trip through the list; pass `autoHighlight={false}` where
+guessing for the user would get in their way.
 
 Both keep the committed values inside the control, ahead of the text box, and
 both give the field a single tab stop: the text box holds real focus, and
