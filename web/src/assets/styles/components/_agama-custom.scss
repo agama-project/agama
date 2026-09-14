@@ -271,3 +271,13 @@ nav.agm-breadcrumb > ol > li > a {
     }
   }
 }
+
+// The committed values of a multi-value field, sitting inside the control
+// before the text input. They flow in rows and wrap once the control runs out
+// of width, so no value is ever clipped.
+.agm-field-entries {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--pf-t--global--spacer--xs);
+  padding-block: 0.2rem;
+}
