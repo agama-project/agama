@@ -20,6 +20,7 @@ examples and refined patterns.
   - [5. Choice selector (mode or behavior selection)](#5-choice-selector-mode-or-behavior-selection)
   - [6. Revealed by a checkbox](#6-revealed-by-a-checkbox)
   - [7. Footer entry, help that stays out of the way](#7-footer-entry-help-that-stays-out-of-the-way)
+  - [8. Several values in one field](#8-several-values-in-one-field)
 - [Read-only information](#read-only-information)
 - [Accessibility notes](#accessibility-notes)
 - [Validation](#validation)
@@ -344,8 +345,43 @@ footerEntry={{
 - Most users need the route: give it a control of its own.
 - The route is the only way to reach a value: the list is the wrong control.
 
-Available today on `DropdownField` through its `footerEntry` prop. Other
-selectors can grow the same idea when a case for it turns up.
+Available today on `DropdownField` and `MultiSelectField` through their
+`footerEntry` prop. Both render it from the same piece, so the entry looks and
+reads the same wherever it appears. Other selectors can grow the same idea when
+a case for it turns up.
+
+### 8. Several values in one field
+
+Some fields hold a list rather than a single value: DNS servers, search
+domains, bond ports. Two components cover that, and the choice between them is
+whether the values are known in advance.
+
+`ArrayField` takes whatever the user types. Use it when the application cannot
+know the values beforehand: addresses, domains, names the user invents.
+
+`MultiSelectField` offers a list to choose from, filtered as the user types,
+and takes values written out as well when `allowCustomEntries` is set. Use it
+when most of the values can be enumerated: devices, patterns, anything the
+backend can list. It summarizes the values beyond `entriesThreshold` as
+"N more", so a field holding many of them does not push the rest of the form
+down the page.
+
+Both keep the committed values inside the control, ahead of the text box, and
+both give the field a single tab stop: the text box holds real focus, and
+everything else the keyboard reaches is pointed at with `aria-activedescendant`.
+Prefer growing one of the two over writing a third.
+
+#### Why the options are not checkboxes
+
+A list taking several values invites a checkbox on every option. It was tried
+and dropped. PatternFly's menu item with a checkbox renders a real `<input>`
+and turns the item into a `<label>`, which costs the option its `role="option"`
+and its `aria-selected`: the listbox stops being a listbox, and the keyboard
+model built on `aria-activedescendant` falls apart with it. A native checkbox
+placed inside the option instead is invalid HTML, and tells assistive
+technologies nothing they do not already get. A drawn glyph works, but earns
+its place no better: the list already says it takes several values, and each
+option already says whether it is one of them.
 
 ---
 
@@ -491,20 +527,23 @@ Work through these questions in order:
 6. Is the field an advanced option that most users will never need? Use pattern 6.
 7. Do the options serve most users, while a harder setup needs more help than
    the list can give? Add a footer entry to the selector, pattern 7.
+8. Does the field hold a list of values rather than one? Use pattern 8, picking
+   the component by whether the values are known in advance.
 
 ---
 
 ## Summary
 
-| Pattern                           | Visibility   | Label                             | Validated on submit |
-| --------------------------------- | ------------ | --------------------------------- | ------------------- |
-| Required                          | Always       | No suffix                         | Yes                 |
-| Always optional/context-dependent | Always       | `(optional)` or clarifying suffix | No                  |
-| Conditionally required            | On condition | No suffix                         | Yes                 |
-| Conditionally optional            | On condition | `(optional)`                      | No                  |
-| Choice selector                   | Always       | No suffix                         | Depends on choice   |
-| Checkbox opt-in                   | On checkbox  | No suffix                         | Yes, when rendered  |
-| Footer entry                      | Inside the list | Short, ends in `...`           | Sets no value       |
+| Pattern                           | Visibility      | Label                             | Validated on submit |
+| --------------------------------- | --------------- | --------------------------------- | ------------------- |
+| Required                          | Always          | No suffix                         | Yes                 |
+| Always optional/context-dependent | Always          | `(optional)` or clarifying suffix | No                  |
+| Conditionally required            | On condition    | No suffix                         | Yes                 |
+| Conditionally optional            | On condition    | `(optional)`                      | No                  |
+| Choice selector                   | Always          | No suffix                         | Depends on choice   |
+| Checkbox opt-in                   | On checkbox     | No suffix                         | Yes, when rendered  |
+| Footer entry                      | Inside the list | Short, ends in `...`              | Sets no value       |
+| Several values in one field       | Always          | No suffix                         | Yes                 |
 
 ---
 
@@ -1120,8 +1159,8 @@ These forms require extra care because:
 Three hooks/HOCs cover all persistent-form concerns. Each has a single
 responsibility:
 
-| Abstraction       | File                             | Responsibility                                             |
-| ----------------- | -------------------------------- | ---------------------------------------------------------- |
+| Abstraction       | File                                    | Responsibility                                             |
+| ----------------- | --------------------------------------- | ---------------------------------------------------------- |
 | `withFrozenQuery` | `components/form/with-frozen-query.tsx` | Freeze initial data; protect from refetch re-renders       |
 | `useFormSubmit`   | `hooks/use-form-submit.tsx`             | Submit lifecycle: reset, success alert, error surfacing    |
 | `useUpdateConfig` | `hooks/model/config.ts`                 | Safe write: fetch fresh config at submit time, merge patch |
