@@ -43,6 +43,8 @@ type TestFormProps = {
   showNoResults?: boolean;
   entriesThreshold?: number;
   overflowBehavior?: "expandOnFocus" | "toggle";
+  collapseInputOnBlur?: boolean;
+  hideClearAllOnBlur?: boolean;
   footerEntry?: { label: string; onSelect: () => void };
   validateOnChange?: (value: string) => string | undefined;
   validateOnSubmit?: (value: string) => string | undefined;
@@ -63,6 +65,8 @@ function TestForm({
   showNoResults,
   entriesThreshold,
   overflowBehavior,
+  collapseInputOnBlur,
+  hideClearAllOnBlur,
   footerEntry,
   validateOnChange,
   validateOnSubmit,
@@ -101,6 +105,8 @@ function TestForm({
               showNoResults={showNoResults}
               entriesThreshold={entriesThreshold}
               overflowBehavior={overflowBehavior}
+              collapseInputOnBlur={collapseInputOnBlur}
+              hideClearAllOnBlur={hideClearAllOnBlur}
               footerEntry={footerEntry}
               validateOnChange={validateOnChange}
               validateOnSubmit={validateOnSubmit}
@@ -520,6 +526,50 @@ describe("MultiSelectField", () => {
 
       expect(combobox()).not.toHaveAttribute("aria-activedescendant");
       within(entries()).getByRole("option", { name: "Ethernet 0" });
+    });
+  });
+
+  describe("the field at rest", () => {
+    /**
+     * Whether the text box is shrunk away. Nothing but the class says so: the
+     * box stays in the page and in the tab order, which is the point of it.
+     */
+    const isInputPutAway = () => combobox().closest(".agm-field-collapsed-input") !== null;
+
+    it("puts the text box away when focus leaves, and brings it back with focus", async () => {
+      const { user } = installerRender(<TestForm defaultValues={["eth0"]} collapseInputOnBlur />);
+      expect(isInputPutAway()).toBe(true);
+
+      await user.click(combobox());
+      expect(isInputPutAway()).toBe(false);
+
+      await user.click(screen.getByRole("button", { name: "Other" }));
+      expect(isInputPutAway()).toBe(true);
+    });
+
+    it("keeps the text box when the field holds no value", () => {
+      installerRender(<TestForm collapseInputOnBlur />);
+      expect(isInputPutAway()).toBe(false);
+    });
+
+    it("keeps the text box when it still holds what was written", async () => {
+      const { user } = installerRender(<TestForm defaultValues={["eth0"]} collapseInputOnBlur />);
+      await user.type(combobox(), "nope");
+      await user.click(screen.getByRole("button", { name: "Other" }));
+
+      expect(combobox()).toHaveValue("nope");
+      expect(isInputPutAway()).toBe(false);
+    });
+
+    it("renders the button emptying the field only while the field has focus", async () => {
+      const { user } = installerRender(<TestForm defaultValues={["eth0"]} hideClearAllOnBlur />);
+      expect(screen.queryByRole("button", { name: "Clear all" })).toBeNull();
+
+      await user.click(combobox());
+      screen.getByRole("button", { name: "Clear all" });
+
+      await user.click(screen.getByRole("button", { name: "Other" }));
+      expect(screen.queryByRole("button", { name: "Clear all" })).toBeNull();
     });
   });
 

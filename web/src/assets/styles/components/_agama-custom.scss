@@ -338,6 +338,21 @@ nav.agm-breadcrumb > ol > li > a {
   }
 }
 
+// The text box shrunk away while the field rests with values in it, so the
+// values are all there is to read and no empty box trails them. Shrunk rather
+// than hidden: `display: none` would take it out of the tab order and out of
+// reach of a click on the control, and it has to come back the moment it is
+// focused.
+//
+// Only the box itself is taken down to nothing. Its wrapper keeps the room it
+// was given, so the row is laid out the same whether the box is there to be
+// seen or not, and a click on the space the values leave still lands in it.
+.agm-field-collapsed-input .pf-v6-c-text-input-group__text-input {
+  inline-size: 0;
+  min-inline-size: 0;
+  padding-inline: 0;
+}
+
 // The button emptying the field lines up with the caret beside it, which the
 // control keeps centred however tall the values make it.
 .agm-field-clear-all {

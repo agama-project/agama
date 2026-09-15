@@ -220,6 +220,26 @@ type MultiSelectFieldProps = FieldLabelOptions & {
    */
   overflowBehavior?: "expandOnFocus" | "toggle";
 
+  /**
+   * Whether the text box shrinks away once focus leaves a field holding
+   * values. Off by default.
+   *
+   * At rest the values are everything the field has to say, and a box trailing
+   * them reads as work left unfinished. It is only shrunk, never removed: a
+   * click anywhere on the control, or a Tab into the field, brings it back with
+   * the caret in it.
+   */
+  collapseInputOnBlur?: boolean;
+
+  /**
+   * Whether the button emptying the field is only there while the field has
+   * focus. Off by default.
+   *
+   * One less thing drawn inside a control at rest, at no cost to reaching it:
+   * nothing can be emptied without going into the field first.
+   */
+  hideClearAllOnBlur?: boolean;
+
   /** An entry rendered last in the list, offering something other than a value. */
   footerEntry?: FooterEntry;
 
@@ -330,6 +350,8 @@ export default function MultiSelectField({
   showNoResults = false,
   entriesThreshold = 0,
   overflowBehavior = "expandOnFocus",
+  collapseInputOnBlur = false,
+  hideClearAllOnBlur = false,
   footerEntry,
   validateOnChange,
   validateOnSubmit,
@@ -414,7 +436,12 @@ export default function MultiSelectField({
 
   const hasToggle = overflowBehavior === "toggle" && hasHiddenValues;
   const entryStops = buildEntryStops(layout, hasToggle);
-  const hasClearAll = !isDisabled && (values.length > 0 || text !== "");
+  const hasSomethingToClear = values.length > 0 || text !== "";
+  const hasClearAll = !isDisabled && hasSomethingToClear && (isFocused || !hideClearAllOnBlur);
+  // Only a field at rest with nothing being written puts its text box away: an
+  // empty one has nothing else to show, and text still in the box is the user's
+  // own, even after focus has gone (a commit that was refused leaves it there).
+  const isInputCollapsed = collapseInputOnBlur && !isFocused && text === "" && values.length > 0;
 
   /** Actions */
 
@@ -767,6 +794,7 @@ export default function MultiSelectField({
               own. Same as SearchableSelectField. */}
           <TextInputGroup isPlain isDisabled={isDisabled}>
             <TextInputGroupMain
+              className={isInputCollapsed ? "agm-field-collapsed-input" : undefined}
               innerRef={inputRef}
               inputId={ids.input}
               value={text}
