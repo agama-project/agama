@@ -51,7 +51,7 @@
         </type>
     </preferences>
     <!-- experimental support for 32-bit and armv architectures, i686 is needed for kiwi in OBS as sometimes it builds on newer definition -->
-    <preferences arch="ix86,armv6hl,armv7hl,armv6l,armv7l" profiles="openSUSE,SUSE_SLE_16.1,SUSE_SLE_NV_16.1,Leap_16.1">
+    <preferences arch="i586,i686,armv6hl,armv7hl,armv6l,armv7l" profiles="openSUSE,SUSE_SLE_16.1,SUSE_SLE_NV_16.1,Leap_16.1">
         <type image="iso" flags="dmsquash" mediacheck="true" publisher="SUSE LLC" editbootconfig="fix_bootconfig">
             <bootloader name="grub2" timeout="10"/>
         </type>
@@ -81,6 +81,7 @@
         <package name="vim-data"/>
         <package name="grub2"/>
         <package name="grub2-arm64-efi" arch="aarch64"/>
+        <package name="grub2-arm-efi" arch="armv6hl,armv7hl,armv6l,armv7l"/>
         <package name="grub2-x86_64-efi" arch="x86_64"/>
         <package name="grub2-i386-pc" arch="x86_64,i586,i686"/>
         <package name="grub2-s390x-emu" arch="s390x" />
