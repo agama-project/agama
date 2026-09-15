@@ -300,13 +300,42 @@ nav.agm-breadcrumb > ol > li > a {
   align-self: center;
 }
 
-// A control holding its values grows with them: roomy enough to type in from
-// the start, wider as values are added, and never past the form. At full width
-// a single value would sit alone in a mostly empty box.
+// A control holding its values is only as wide as what it holds: the text box
+// on its own to begin with, the way any other dropdown starts, then wider with
+// every value, and never past the form. Given a width of its own it would have
+// to fill it, and a control at its minimum with one short value in it is all
+// gap: the value at one edge, the caret at the other, nothing in between.
 .agm-field-inline-control {
   inline-size: fit-content;
-  min-inline-size: 20rem;
   max-inline-size: 100%;
+
+  // The text box starts closer to the border than PatternFly puts it. That
+  // room suits a lone line of text, but here it only pushes the values away
+  // from a border they already sit inside.
+  --pf-v6-c-text-input-group__text-input--PaddingInlineStart: var(
+    --pf-t--global--spacer--control--horizontal--compact
+  );
+  --pf-v6-c-text-input-group__text-input--PaddingInlineEnd: var(
+    --pf-t--global--spacer--control--horizontal--compact
+  );
+
+  // The caret sits as far from the end of the control as it does in a plain
+  // dropdown, where the toggle's own padding puts it: both are the same widget
+  // to the eye and the arrow has to land in the same place in each. Only the
+  // room on its other side is taken back, which the dropdown has no say over,
+  // since there the caret follows text rather than a whole row of values.
+  --pf-v6-c-menu-toggle__button--toggle-icon--PaddingInlineStart: var(
+    --pf-t--global--spacer--control--horizontal--compact
+  );
+
+  // The caret ends the control, whatever sits before it. A menu toggle centres
+  // its content, so any room left over inside one is shared out at both ends
+  // and the whole row drifts with the length of the values. Taking that room
+  // as a margin instead keeps the values against one edge and the caret
+  // against the other, however the box is sized.
+  > .pf-v6-c-menu-toggle__button {
+    margin-inline-start: auto;
+  }
 }
 
 // The button emptying the field lines up with the caret beside it, which the
