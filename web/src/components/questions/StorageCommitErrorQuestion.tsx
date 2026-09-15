@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2025] SUSE LLC
+ * Copyright (c) [2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,60 +20,36 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useState } from "react";
-import { Content, Form, FormGroup, Stack, TextInput } from "@patternfly/react-core";
+import React from "react";
+import { Content } from "@patternfly/react-core";
 import { Popup } from "~/components/core";
-import Text from "~/components/core/Text";
 import QuestionActions from "~/components/questions/QuestionActions";
 import ExpandableTechnicalSection from "~/components/questions/ExpandableTechnicalSection";
 import { _ } from "~/i18n";
 import type { AnswerCallback, Question } from "~/model/question";
 
 /**
- * Component for rendering generic questions
+ * Component for rendering storage commit error questions
  *
  * @param question - the question to be answered
  * @param answerCallback - the callback to be triggered on answer
  */
-export default function RetryLoadConfigQuestion({
+export default function StorageCommitErrorQuestion({
   question,
   answerCallback,
 }: {
   question: Question;
   answerCallback: AnswerCallback;
 }): React.ReactNode {
-  const [url, setUrl] = useState(question.data?.originalValue || "");
-
   const actionCallback = (action: string) => {
-    question.answer = { action, value: url };
+    question.answer = { action };
     answerCallback(question);
   };
 
-  const error = question.data?.error;
-
   return (
-    <Popup isOpen variant="medium" title={_("Cannot apply configuration")}>
-      <Stack hasGutter>
-        <Content isEditorial>{question.text}</Content>
-        <Form isWidthLimited={false}>
-          {/* TRANSLATORS: field label for location of configuration file */}
-          <FormGroup label={_("Location")} fieldId="location">
-            <TextInput
-              id="location"
-              size={1000}
-              value={url}
-              onChange={(_event, value) => setUrl(value)}
-            />
-          </FormGroup>
-        </Form>
-        <Content>
-          <Text isBold>
-            {/* TRANSLATORS: help text in popup to clarify what user should do */}
-            {_("Make sure the location is correct and the configuration is valid.")}
-          </Text>
-        </Content>
-        <ExpandableTechnicalSection text={error} />
-      </Stack>
+    <Popup isOpen aria-label={_("Question")} variant="medium">
+      <Content component="p">{question.text}</Content>
+      <ExpandableTechnicalSection text={question.data?.details} />
       <Popup.Actions>
         <QuestionActions
           actions={question.actions}
