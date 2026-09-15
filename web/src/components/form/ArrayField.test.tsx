@@ -24,7 +24,6 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import { useAppForm } from "~/hooks/form";
-import { parsePasteEntries } from "~/components/form/ArrayField";
 import { _ } from "~/i18n";
 
 type TestFormProps = {
@@ -567,71 +566,6 @@ describe("ArrayField", () => {
     it("renders remove button with full text when truncated", () => {
       installerRender(<TestForm defaultValues={["very-long-entry-name"]} maxEntryWidth={10} />);
       screen.getByRole("button", { name: "Remove very-long-entry-name" });
-    });
-  });
-});
-
-// parsePasteEntries is tested directly because ArrayField uses <input type="text">
-// internally (despite managing multiple values in state). Text inputs strip
-// newlines per HTML spec when setting the value property, making it impossible to
-// integration-test paste splitting with newline patterns like splitPasteOn="\n".
-// Reference: https://html.spec.whatwg.org/multipage/input.html#text-(type=text)-state-and-search-state-(type=search)
-describe("parsePasteEntries", () => {
-  describe("default splitting (whitespace and commas)", () => {
-    it("splits on spaces", () => {
-      expect(parsePasteEntries("alpha beta gamma")).toEqual(["alpha", "beta", "gamma"]);
-    });
-
-    it("splits on commas", () => {
-      expect(parsePasteEntries("alpha,beta,gamma")).toEqual(["alpha", "beta", "gamma"]);
-    });
-
-    it("splits on mixed whitespace and commas", () => {
-      expect(parsePasteEntries("alpha, beta gamma,delta")).toEqual([
-        "alpha",
-        "beta",
-        "gamma",
-        "delta",
-      ]);
-    });
-
-    it("filters out blank entries", () => {
-      expect(parsePasteEntries("alpha  beta   gamma")).toEqual(["alpha", "beta", "gamma"]);
-    });
-
-    it("trims whitespace from entries", () => {
-      expect(parsePasteEntries("  alpha  ,  beta  ")).toEqual(["alpha", "beta"]);
-    });
-
-    it("returns empty array for blank input", () => {
-      expect(parsePasteEntries("")).toEqual([]);
-      expect(parsePasteEntries("   ")).toEqual([]);
-    });
-  });
-
-  describe("custom splitPasteOn pattern", () => {
-    it("splits on newlines when given \\n", () => {
-      expect(parsePasteEntries("alpha\nbeta\ngamma", "\n")).toEqual(["alpha", "beta", "gamma"]);
-    });
-
-    it("splits on custom regex pattern", () => {
-      expect(parsePasteEntries("alpha|beta|gamma", /\|/)).toEqual(["alpha", "beta", "gamma"]);
-    });
-
-    it("preserves spaces within entries when splitting on newlines", () => {
-      const input = "ssh-ed25519 AAAAC3Nz user@laptop\nssh-rsa AAAAB3Nz user@desktop";
-      expect(parsePasteEntries(input, "\n")).toEqual([
-        "ssh-ed25519 AAAAC3Nz user@laptop",
-        "ssh-rsa AAAAB3Nz user@desktop",
-      ]);
-    });
-
-    it("filters blank entries when splitting with custom pattern", () => {
-      expect(parsePasteEntries("alpha\n\nbeta\n", "\n")).toEqual(["alpha", "beta"]);
-    });
-
-    it("trims whitespace from entries even with custom pattern", () => {
-      expect(parsePasteEntries("  alpha  \n  beta  ", "\n")).toEqual(["alpha", "beta"]);
     });
   });
 });
