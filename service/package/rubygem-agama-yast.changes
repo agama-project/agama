@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Sep 15 16:16:50 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Generate a D-Bus error if the installation action fails
+  (bsc#1280006).
+
+-------------------------------------------------------------------
 Tue Sep  1 15:51:00 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 24
