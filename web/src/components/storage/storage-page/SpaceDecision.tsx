@@ -23,12 +23,10 @@
 import React from "react";
 import { ToggleGroup, ToggleGroupItem, Tooltip } from "@patternfly/react-core";
 import { useSheet } from "~/components/storage/shared/use-sheet";
-import {
-  useDevice as useDeviceConfig,
-  useSetSpacePolicy,
-} from "~/hooks/model/storage/config-model";
+import { useSpacePolicy } from "~/components/storage/shared/space-policy";
+import { useDevice as useDeviceConfig } from "~/hooks/model/storage/config-model";
 import { _, TranslatedString } from "~/i18n";
-import type { ConfigModel, Partitionable } from "~/model/storage/config-model";
+import type { ConfigModel, DeviceCollection } from "~/model/storage/config-model";
 
 const POLICIES: ConfigModel.SpacePolicy[] = ["delete", "resize", "keep", "custom"];
 
@@ -101,7 +99,7 @@ function SpaceOption({ policy, isSelected, onChoose }: SpaceOptionProps) {
 }
 
 export type SpaceDecisionProps = {
-  collection: Partitionable.CollectionName;
+  collection: DeviceCollection;
   index: number;
 };
 
@@ -118,28 +116,28 @@ export type SpaceDecisionProps = {
  * which part of it is taken. What each one means is a tooltip, so it can be
  * read before it is chosen, and it reaches the button as its description.
  *
- * Custom asks for one thing more than the others. It is a rule like them, and
- * is written like them, but it says the rule is made partition by partition, so
- * taking it also opens the view where those are made. It starts with everything
- * kept: the reader has decided how to decide, not what to decide.
+ * Custom asks for one thing more than the others. It is an answer like them,
+ * but it says the answer is given part by part, so taking it also opens the
+ * view where those are given. It starts with everything kept: the reader has
+ * decided how to decide, not what to decide, which is why it has to be
+ * remembered rather than read back. {@link useSpacePolicy} does that.
  */
 export default function SpaceDecision({ collection, index }: SpaceDecisionProps) {
   const { openSheet } = useSheet();
-  const setSpacePolicy = useSetSpacePolicy();
   const deviceConfig = useDeviceConfig(collection, index);
-  const current = deviceConfig?.spacePolicy || "keep";
+  const { policy: current, choose: answer } = useSpacePolicy(
+    collection,
+    index,
+    deviceConfig?.spacePolicy,
+  );
 
   const choose = (policy: ConfigModel.SpacePolicy) => {
-    /* Already the answer. Said again it changes nothing for three of the four,
-       but custom would clear every decision made under it, which is the
-       opposite of what pressing the answer you are on can mean. */
-    if (policy !== current) setSpacePolicy(collection, index, { type: policy });
+    answer(policy);
 
-    /* Custom is written like the others and then followed up: it says the
-       decision is made partition by partition, so the reader is taken to where
-       those are made. Writing it is what puts the controls there, and the
-       control is read from that view as well as from the page, where following
-       up means staying put. */
+    /* Custom is answered like the others and then followed up: it says the
+       decision is made part by part, so the reader is taken to where those are
+       made. The control is read from that view as well as from the page, where
+       following up means staying put. */
     if (policy === "custom") openSheet({ collection, index }, "current");
   };
 

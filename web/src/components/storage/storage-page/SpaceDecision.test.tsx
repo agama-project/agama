@@ -26,6 +26,7 @@ import { useSearchParams } from "react-router";
 import { installerRender } from "~/test-utils";
 import type { ConfigModel } from "~/model/storage/config-model";
 import SpaceDecision from "~/components/storage/storage-page/SpaceDecision";
+import { SpacePolicyMemory } from "~/components/storage/shared/space-policy";
 
 const mockDeviceConfig = jest.fn();
 const mockSetSpacePolicy = jest.fn();
@@ -104,6 +105,25 @@ describe("SpaceDecision", () => {
          with nothing decided yet, which leaves everything kept. */
       expect(mockSetSpacePolicy).toHaveBeenCalledWith("drives", 0, { type: "custom" });
       expect(address()).toBe("sheet=drives.0&sheetTab=current");
+    });
+  });
+
+  describe("when custom is chosen and the configuration reports keeping everything", () => {
+    it("stays on custom, which is an answer the configuration cannot hold", async () => {
+      const { user } = installerRender(
+        <SpacePolicyMemory>
+          <SpaceDecision collection="drives" index={0} />
+        </SpacePolicyMemory>,
+      );
+      await user.click(screen.getByRole("button", { name: "Custom" }));
+
+      /* The device still reads "keep", and will until something is decided
+         under it: custom with no exceptions is the same configuration, and the
+         service works the answer out from what it can see. Were the answer read
+         back rather than remembered, the control would spring back and the
+         per-partition controls it was asked for would never appear. */
+      screen.getByRole("button", { name: "Custom", pressed: true });
+      screen.getByRole("button", { name: "Keeping everything", pressed: false });
     });
   });
 

@@ -433,6 +433,48 @@ describe("StorageSheet", () => {
 
       screen.getByRole("link", { name: /Edit the volume group/ });
     });
+
+    describe("and it already exists, holding volumes of its own", () => {
+      beforeEach(() => {
+        mockConfig.mockReturnValue(
+          config({
+            drives: [{ name: "/dev/sda", partitions: [] }],
+            volumeGroups: [
+              {
+                vgName: "system",
+                targetDevices: ["/dev/sda"],
+                spacePolicy: "custom",
+                logicalVolumes: [{ name: "/dev/system/home", delete: true }],
+              },
+            ],
+          }),
+        );
+        mockSystemDevice.mockReturnValue({
+          name: "/dev/system",
+          class: "volumeGroup",
+          volumeGroup: { size: 1e11 },
+          logicalVolumes: [
+            { sid: 71, name: "/dev/system/home", block: { size: 5e10, systems: [] } },
+            { sid: 72, name: "/dev/system/data", block: { size: 5e10, systems: [] } },
+          ],
+        });
+      });
+
+      it("lets the group be told what may happen to them, as a disk is", () => {
+        renderAt("/storage?sheet=volumeGroups.0&sheetTab=current");
+
+        screen.getByRole("group", { name: "Allowed changes" });
+      });
+
+      /* A logical volume is governed the same way a partition is, and the
+         playground decides both one at a time. */
+      it("gives each volume its own decision, where they are decided one at a time", () => {
+        renderAt("/storage?sheet=volumeGroups.0&sheetTab=current");
+
+        screen.getByRole("button", { name: "Changes allowed for home: Delete" });
+        screen.getByRole("button", { name: "Changes allowed for data: Keep" });
+      });
+    });
   });
 
   describe("when the address names an entry the configuration no longer has", () => {

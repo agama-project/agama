@@ -33,6 +33,7 @@ import RowMenuToggle from "~/components/storage/entries-table/RowMenuToggle";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { generateEncodedPath } from "~/utils";
 import { useDeletePartition } from "~/hooks/model/storage/config-model";
+import { useSpacePolicy } from "~/components/storage/shared/space-policy";
 import PartitionSpaceControl from "~/components/storage/device-sheet/PartitionSpaceControl";
 import { outcomeOf } from "~/components/storage/shared/consequences";
 import { useDevicesManager } from "~/components/storage/shared/use-devices-manager";
@@ -322,14 +323,20 @@ export default function CurrentContentSection({
 }: CurrentContentSectionProps): React.ReactNode {
   const manager = useDevicesManager();
   const rows = rowsOf(entry);
-  const isCustom = !entry.isVolumeGroup && entry.config.spacePolicy === "custom";
+  /* Asked for rather than read off the entry: custom with nothing decided yet
+     is written down as keeping everything, so the entry cannot report it. */
+  const { policy } = useSpacePolicy(subject.collection, subject.index, entry.config.spacePolicy);
+  const isCustom = policy === "custom";
   const entries = entry.isVolumeGroup
     ? (entry.config as ConfigModel.VolumeGroup).logicalVolumes || []
     : (entry.config as Partitionable.Device).partitions || [];
 
   return (
     <Stack hasGutter>
-      {subject.collection !== "volumeGroups" && rows.some((row) => !isFreeSpace(row)) && (
+      {/* Only where there is something for the rule to be about. A group's
+          logical volumes are governed the same way its disks' partitions are,
+          so the decision is offered there too. */}
+      {rows.some((row) => !isFreeSpace(row)) && (
         <StackItem>
           <SpaceDecision collection={subject.collection} index={subject.index} />
         </StackItem>
@@ -402,10 +409,9 @@ export default function CurrentContentSection({
                     )
                   }
                   decides={
-                    /* A partition the new system mounts is spoken for, so no
-                         space decision reaches it. */
+                    /* One the new system mounts is spoken for, so no space
+                         decision reaches it. */
                     isCustom &&
-                    subject.collection !== "volumeGroups" &&
                     !entries.find((e) => e.name === row.name)?.mountPath && (
                       <PartitionSpaceControl
                         partition={row}

@@ -26,7 +26,7 @@ import { sprintf } from "sprintf-js";
 import { baseName } from "~/components/storage/utils";
 import { useSetSpacePolicy } from "~/hooks/model/storage/config-model";
 import { _, TranslatedString } from "~/i18n";
-import type { ConfigModel } from "~/model/storage/config-model";
+import type { ConfigModel, DeviceCollection } from "~/model/storage/config-model";
 import type { Storage as System } from "~/model/system";
 
 /** What the installer may do to one partition, as the configuration can say it. */
@@ -84,17 +84,17 @@ export type PartitionSpaceControlProps = {
   governed: System.Device[];
   /** The device's configuration entries, which carry the decisions made so far. */
   entries: (ConfigModel.Partition | ConfigModel.LogicalVolume)[];
-  /** Where the device is written. */
-  collection: "drives" | "mdRaids";
+  /** Where the entry is written. */
+  collection: DeviceCollection;
   index: number;
 };
 
 /**
- * What the installer may do to one partition, where that is decided one at a
- * time.
+ * What the installer may do to one partition, or to one logical volume, where
+ * that is decided one at a time.
  *
- * Offered only under the fourth space answer, so a device following one rule
- * carries one control rather than one per partition. It is a permission rather
+ * Offered only under the fourth space answer, so an entry following one rule
+ * carries one control rather than one per part. It is a permission rather
  * than an instruction: the column it sits in says what the installer actually
  * does with it.
  *
