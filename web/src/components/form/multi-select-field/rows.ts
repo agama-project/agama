@@ -29,10 +29,10 @@
  * hook moves along positions without knowing what sits at each one.
  */
 
-import { filterOptions, sanitizeForSearch } from "~/components/form/option-filter";
+import { filterOptions, sanitizeForSearch } from "~/components/form/primitives/option-filter";
 
 import type { ReactNode } from "react";
-import type { SearchableOption } from "~/components/form/option-filter";
+import type { SearchableOption } from "~/components/form/primitives/option-filter";
 
 /** One of the values the field offers. */
 type MultiSelectOption = SearchableOption & {

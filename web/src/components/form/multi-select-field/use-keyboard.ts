@@ -21,9 +21,9 @@
  */
 
 import React, { useEffect, useState } from "react";
-import { NAVIGATION_KEYS } from "~/components/form/entry-helpers";
+import { NAVIGATION_KEYS } from "~/components/form/primitives/entry-helpers";
 
-import type { EntryStop, OptionRow } from "~/components/form/multi-select-rows";
+import type { EntryStop, OptionRow } from "~/components/form/multi-select-field/rows";
 
 /**
  * Where the keyboard currently is.
@@ -44,7 +44,7 @@ type Navigation =
  * What the field does when a key asks for it. None of these decide where the
  * keyboard goes next: that is this hook's job.
  */
-type MultiSelectKeyboardActions = {
+type KeyboardActions = {
   /** Shows the list. */
   openList: () => void;
   /** Hides the list, leaving the text alone. */
@@ -84,10 +84,10 @@ type MultiSelectKeyboardInput = {
   hasText: boolean;
   /** Whether a Tab that commits keeps focus in the field. */
   tabKeepsFocus: boolean;
-  actions: MultiSelectKeyboardActions;
+  actions: KeyboardActions;
 };
 
-type MultiSelectKeyboard = {
+type KeyboardApi = {
   /** Where the keyboard is. Drives the highlight and `aria-activedescendant`. */
   navigation: Navigation;
   /** Handles a key pressed on the input. */
@@ -153,7 +153,7 @@ function wrap(index: number, count: number, step: number): number {
  * choice rather than undoing one. An entry that leads somewhere else is not
  * something to commit, so Tab moves on instead of following it.
  */
-export function useMultiSelectKeyboard({
+export function useKeyboard({
   optionRows,
   entryStops,
   isListOpen,
@@ -161,7 +161,7 @@ export function useMultiSelectKeyboard({
   hasText,
   tabKeepsFocus,
   actions,
-}: MultiSelectKeyboardInput): MultiSelectKeyboard {
+}: MultiSelectKeyboardInput): KeyboardApi {
   const [navigation, setNavigation] = useState<Navigation>(IDLE);
 
   const reset = () => setNavigation(IDLE);
@@ -370,4 +370,4 @@ export function useMultiSelectKeyboard({
   return { navigation, onKeyDown, reset, highlightRow, highlightStop, enterEntries };
 }
 
-export type { MultiSelectKeyboard, MultiSelectKeyboardActions, Navigation };
+export type { KeyboardApi, KeyboardActions, Navigation };

@@ -29,7 +29,7 @@ import CheckboxField from "~/components/form/CheckboxField";
 import DropdownField from "~/components/form/DropdownField";
 import EmailField from "~/components/form/EmailField";
 import MaskedField from "~/components/form/MaskedField";
-import MultiSelectField from "~/components/form/MultiSelectField";
+import MultiSelectField from "~/components/form/multi-select-field/MultiSelectField";
 import ReadOnlyField from "~/components/form/ReadOnlyField";
 import RadioGroupField from "~/components/form/RadioGroupField";
 import NumberField from "~/components/form/NumberField";

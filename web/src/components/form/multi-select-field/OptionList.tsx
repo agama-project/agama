@@ -23,12 +23,14 @@
 import React from "react";
 import { sprintf } from "sprintf-js";
 import { Menu, MenuContent, Popper, SelectList, SelectOption } from "@patternfly/react-core";
-import FooterEntryOption, { FOOTER_ENTRY_VALUE } from "~/components/form/FooterEntryOption";
-import { hasNoMatches } from "~/components/form/multi-select-rows";
+import FooterEntryOption, {
+  FOOTER_ENTRY_VALUE,
+} from "~/components/form/primitives/FooterEntryOption";
+import { hasNoMatches } from "~/components/form/multi-select-field/rows";
 import { _ } from "~/i18n";
 
-import type { FooterEntry } from "~/components/form/FooterEntryOption";
-import type { OptionRow } from "~/components/form/multi-select-rows";
+import type { FooterEntry } from "~/components/form/primitives/FooterEntryOption";
+import type { OptionRow } from "~/components/form/multi-select-field/rows";
 import type { TranslatedString } from "~/i18n";
 
 /**
@@ -44,7 +46,7 @@ function rowValue(row: OptionRow): string {
   return FOOTER_ENTRY_VALUE;
 }
 
-type MultiSelectOptionListProps = {
+type OptionListProps = {
   /** Element the list hangs from and takes its widest measure from. */
   triggerRef: React.RefObject<HTMLElement>;
   /** Whether the list is on screen. */
@@ -82,7 +84,7 @@ type MultiSelectOptionListProps = {
  * need, up to the width of the control. It renders at the end of the document,
  * so whatever follows the field cannot paint over it.
  */
-export default function MultiSelectOptionList({
+export default function OptionList({
   triggerRef,
   isOpen,
   rows,
@@ -95,7 +97,7 @@ export default function MultiSelectOptionList({
   footerEntry,
   noResultsText,
   maxHeight = "20rem",
-}: MultiSelectOptionListProps) {
+}: OptionListProps) {
   const handleSelect = (value: string) => {
     const row = rows.find((r) => rowValue(r) === value);
     if (row) onSelectRow(row);
@@ -185,4 +187,4 @@ export default function MultiSelectOptionList({
   );
 }
 
-export type { MultiSelectOptionListProps };
+export type { OptionListProps };

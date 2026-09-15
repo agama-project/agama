@@ -35,7 +35,7 @@ import {
   TextInputGroupMain,
 } from "@patternfly/react-core";
 import { debounce } from "radashi";
-import { buildHaystacks, filterOptions } from "~/components/form/option-filter";
+import { buildHaystacks, filterOptions } from "~/components/form/primitives/option-filter";
 import { resolveAriaLabelProps, useFieldLabel } from "~/hooks/use-field-label";
 import { useFieldContext } from "~/hooks/form";
 

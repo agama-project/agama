@@ -35,22 +35,22 @@ import {
 } from "@patternfly/react-core";
 import Icon from "~/components/layout/Icon";
 import Text from "~/components/core/Text";
-import MultiSelectEntries from "~/components/form/MultiSelectEntries";
-import MultiSelectOptionList from "~/components/form/MultiSelectOptionList";
+import Entries from "~/components/form/multi-select-field/Entries";
+import OptionList from "~/components/form/multi-select-field/OptionList";
 import {
   filterNew,
   normalizeValue,
   parsePasteEntries,
   pasteAnnouncement,
   processDraft,
-} from "~/components/form/entry-helpers";
-import { buildHaystacks, filterOptions } from "~/components/form/option-filter";
+} from "~/components/form/primitives/entry-helpers";
+import { buildHaystacks, filterOptions } from "~/components/form/primitives/option-filter";
 import {
   buildEntryStops,
   buildOptionRows,
   findExactOption,
   layoutEntries,
-} from "~/components/form/multi-select-rows";
+} from "~/components/form/multi-select-field/rows";
 import {
   allValuesRemoved,
   contextualHint,
@@ -65,18 +65,22 @@ import {
   valueRemoved,
   valueShownInList,
   withHint,
-} from "~/components/form/multi-select-messages";
-import { useMultiSelectKeyboard } from "~/hooks/use-multi-select-keyboard";
+} from "~/components/form/multi-select-field/messages";
+import { useKeyboard } from "~/components/form/multi-select-field/use-keyboard";
 import { resolveAriaLabelProps, useFieldLabel } from "~/hooks/use-field-label";
 import { useFieldContext } from "~/hooks/form-contexts";
 import { useAnnounce } from "~/context/announcer";
 import { _ } from "~/i18n";
 
-import type { FieldPart, HintContext } from "~/components/form/multi-select-messages";
+import type { FieldPart, HintContext } from "~/components/form/multi-select-field/messages";
 import type { FieldLabelOptions } from "~/hooks/use-field-label";
-import type { FooterEntry } from "~/components/form/FooterEntryOption";
-import type { EntryStop, MultiSelectOption, OptionRow } from "~/components/form/multi-select-rows";
-import type { MultiSelectKeyboard } from "~/hooks/use-multi-select-keyboard";
+import type { FooterEntry } from "~/components/form/primitives/FooterEntryOption";
+import type {
+  EntryStop,
+  MultiSelectOption,
+  OptionRow,
+} from "~/components/form/multi-select-field/rows";
+import type { KeyboardApi } from "~/components/form/multi-select-field/use-keyboard";
 import type { TranslatedString } from "~/i18n";
 
 /** What a pasted text is cut into values by, when the caller says nothing. */
@@ -285,7 +289,7 @@ type MultiSelectFieldProps = FieldLabelOptions & {
  * and the values already added, is pointed at with `aria-activedescendant`
  * instead of taking focus. Because that attribute points at one thing at a
  * time, the keyboard is in one part of the field at a time; see
- * {@link useMultiSelectKeyboard} for the whole contract.
+ * {@link useKeyboard} for the whole contract.
  *
  * Validation of the form is deferred to submit, as everywhere else; the
  * per-value validators are about the shape of a single value.
@@ -358,7 +362,7 @@ export default function MultiSelectField({
   // Lets an action ask the keyboard to move, which is otherwise only the
   // keyboard's own business: choosing a value from the list has to leave the
   // keyboard on it.
-  const keyboardRef = useRef<MultiSelectKeyboard | null>(null);
+  const keyboardRef = useRef<KeyboardApi | null>(null);
 
   const [text, setText] = useState("");
   const [isOpen, setIsOpen] = useState(false);
@@ -578,7 +582,7 @@ export default function MultiSelectField({
     say(allValuesRemoved());
   };
 
-  const keyboard = useMultiSelectKeyboard({
+  const keyboard = useKeyboard({
     optionRows,
     entryStops,
     isListOpen: isListVisible,
@@ -784,7 +788,7 @@ export default function MultiSelectField({
               }}
             >
               {values.length > 0 && (
-                <MultiSelectEntries
+                <Entries
                   label={label}
                   nameId={ids.entriesName}
                   aria-labelledby={ariaLabelledBy}
@@ -834,7 +838,7 @@ export default function MultiSelectField({
         </MenuToggle>
       </div>
 
-      <MultiSelectOptionList
+      <OptionList
         triggerRef={controlRef}
         isOpen={isListVisible}
         rows={optionRows}

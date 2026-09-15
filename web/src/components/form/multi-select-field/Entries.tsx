@@ -23,11 +23,11 @@
 import React from "react";
 import { sprintf } from "sprintf-js";
 import { Label } from "@patternfly/react-core";
-import EntriesListbox from "~/components/form/EntriesListbox";
-import FieldEntry from "~/components/form/FieldEntry";
+import EntriesListbox from "~/components/form/primitives/EntriesListbox";
+import FieldEntry from "~/components/form/primitives/FieldEntry";
 import { _ } from "~/i18n";
 
-import type { EntriesLayout, EntryStop } from "~/components/form/multi-select-rows";
+import type { EntriesLayout, EntryStop } from "~/components/form/multi-select-field/rows";
 import type { TranslatedString } from "~/i18n";
 
 /** The label standing for the values the control does not show. */
@@ -46,7 +46,7 @@ type EntriesSummary = {
   isActive: boolean;
 };
 
-type MultiSelectEntriesProps = {
+type EntriesProps = {
   /** The field label, which names the list of values as "<label> entries". */
   label: TranslatedString | Exclude<React.ReactNode, string>;
   /** Id of the hidden phrase naming the list. */
@@ -90,7 +90,7 @@ type MultiSelectEntriesProps = {
  * a value. The list itself lays nothing out, so both share the row the
  * control gives them.
  */
-export default function MultiSelectEntries({
+export default function Entries({
   label,
   nameId,
   "aria-labelledby": ariaLabelledBy,
@@ -106,7 +106,7 @@ export default function MultiSelectEntries({
   onRemove,
   maxEntryWidth,
   summary,
-}: MultiSelectEntriesProps) {
+}: EntriesProps) {
   const activeValueIndex = activeStop?.kind === "value" ? activeStop.index : -1;
 
   const summaryText = () => {
@@ -168,4 +168,4 @@ export default function MultiSelectEntries({
   );
 }
 
-export type { EntriesSummary, MultiSelectEntriesProps };
+export type { EntriesSummary, EntriesProps };

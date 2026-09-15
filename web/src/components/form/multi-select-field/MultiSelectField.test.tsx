@@ -26,7 +26,7 @@ import { getAnnouncements, installerRender } from "~/test-utils";
 import { useAppForm } from "~/hooks/form";
 import { _ } from "~/i18n";
 
-import type { MultiSelectOption } from "~/components/form/multi-select-rows";
+import type { MultiSelectOption } from "~/components/form/multi-select-field/rows";
 
 const OPTIONS: MultiSelectOption[] = [
   { value: "eth0", label: "Ethernet 0" },

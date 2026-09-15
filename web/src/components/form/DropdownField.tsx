@@ -30,13 +30,15 @@ import {
   SelectList,
   SelectOption,
 } from "@patternfly/react-core";
-import FooterEntryOption, { FOOTER_ENTRY_VALUE } from "~/components/form/FooterEntryOption";
+import FooterEntryOption, {
+  FOOTER_ENTRY_VALUE,
+} from "~/components/form/primitives/FooterEntryOption";
 import { useComboboxKeyboard } from "~/hooks/use-combobox-keyboard";
 import { useFieldLabel } from "~/hooks/use-field-label";
 import { useFieldContext } from "~/hooks/form-contexts";
 
 import type { FieldLabelOptions } from "~/hooks/use-field-label";
-import type { FooterEntry } from "~/components/form/FooterEntryOption";
+import type { FooterEntry } from "~/components/form/primitives/FooterEntryOption";
 
 export type DropdownOption<T> =
   | { value: T; label: React.ReactNode; description?: React.ReactNode; isDisabled?: boolean }

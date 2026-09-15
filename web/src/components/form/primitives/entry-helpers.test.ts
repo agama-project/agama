@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import { parsePasteEntries, pasteAnnouncement } from "~/components/form/entry-helpers";
+import { parsePasteEntries, pasteAnnouncement } from "~/components/form/primitives/entry-helpers";
 
 // parsePasteEntries is tested directly because the fields using it hold their
 // draft in an <input type="text"> (despite managing multiple values in state). Text inputs strip

@@ -34,8 +34,8 @@ import {
 } from "@patternfly/react-core";
 import Text from "~/components/core/Text";
 import Interpolate from "~/components/core/Interpolate";
-import EntriesListbox from "~/components/form/EntriesListbox";
-import FieldEntry from "~/components/form/FieldEntry";
+import EntriesListbox from "~/components/form/primitives/EntriesListbox";
+import FieldEntry from "~/components/form/primitives/FieldEntry";
 import {
   filterNew,
   NAVIGATION_KEYS,
@@ -43,7 +43,7 @@ import {
   parsePasteEntries,
   pasteAnnouncement,
   processDraft,
-} from "~/components/form/entry-helpers";
+} from "~/components/form/primitives/entry-helpers";
 import { resolveAriaLabelProps, useFieldLabel } from "~/hooks/use-field-label";
 import { useFieldContext } from "~/hooks/form-contexts";
 import { useAnnounce } from "~/context/announcer";

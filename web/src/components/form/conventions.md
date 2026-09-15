@@ -49,6 +49,7 @@ examples and refined patterns.
   - [When to Use This Pattern](#when-to-use-this-pattern)
 - [Code Organization](#code-organization)
   - [Directory Structure](#directory-structure)
+  - [The Field Library](#the-field-library)
   - [File Naming](#file-naming)
   - [The fields.ts Module](#the-fieldsts-module)
   - [Sharing fields across forms](#sharing-fields-across-forms)
@@ -1577,8 +1578,8 @@ Do not reach for it when:
 ## Code Organization
 
 The following conventions apply to all forms using TanStack Form across the
-application. They ensure forms are discoverable, maintainable, and follow
-consistent patterns.
+application, and to the field library they draw from. They ensure forms are
+discoverable, maintainable, and follow consistent patterns.
 
 ### Directory Structure
 
@@ -1607,6 +1608,67 @@ Examples:
   `network/connection-form/`, `system/system-form/`.
 - Full split (also `queries.ts`, `transformations.ts`, `validations.ts`):
   `storage/partition-form/`, `storage/logical-volume-form/`.
+
+### The Field Library
+
+Forms take their fields from `components/form/`, which is three levels deep and
+organized by who imports what:
+
+```
+components/form/
+  TextField.tsx             # the fields themselves
+  DropdownField.tsx
+  validation-helpers.ts     # what a form author reaches for directly
+  Fieldset.tsx
+  LabelText.tsx
+
+  primitives/               # what fields are built from
+    FieldEntry.tsx
+    EntriesListbox.tsx
+    entry-helpers.ts
+    FooterEntryOption.tsx
+    option-filter.ts
+
+  multi-select-field/       # one field's own modules
+    MultiSelectField.tsx
+    Entries.tsx
+    OptionList.tsx
+    rows.ts
+    messages.ts
+    use-keyboard.ts
+```
+
+**Top level** is the public surface. Anything there is fair game for any form:
+the fields, and the helpers that support writing one.
+
+**`primitives/`** holds what sits below the level of a field: a committed value
+rendered as a label, the accessible list wrapping those values, the footer
+entry of a list, text matching. Fields compose these; forms have no reason to
+import them. They are called primitives rather than parts because the word
+names a level rather than a relation. A field is a part of a form and these are
+parts of a field, so "part" says nothing, while a field is a composite — label,
+validation, form-context binding — and these are the layer beneath it.
+
+A module moves into `primitives/` when a second field needs it, not in
+anticipation of one. Two consumers earns the move; it does not earn a
+subdirectory. Keep `primitives/` flat until one group inside it is large enough
+to be hard to read.
+
+**`<field-name>-field/`** is for a field that outgrew a single file. Only
+`multi-select-field/` qualifies today. Whether a field has earned one is a
+judgment call, not a size threshold: `ArrayField` is large and stays a single
+file, because being long is not the same as having separable parts.
+
+Inside such a directory, the modules private to the field drop the field's
+name, which the directory already carries: `rows.ts`, `messages.ts`,
+`OptionList.tsx`. The field component itself keeps its full name. Forms
+reference it as a registered field component (`<field.MultiSelectField />`), so
+the file should be findable by the name the form says out loud — unlike a
+form's `Form.tsx`, which nothing outside its own directory ever names.
+
+A hook belonging to one field lives with it, not in `hooks/`. `use-keyboard.ts`
+serves only `MultiSelectField`. `hooks/use-combobox-keyboard.ts` stays where it
+is, because `components/core/` uses it too.
 
 ### File Naming
 

@@ -22,7 +22,7 @@
 
 import React from "react";
 import Interpolate from "~/components/core/Interpolate";
-import { resolveListboxNameProps } from "~/components/form/entry-helpers";
+import { resolveListboxNameProps } from "~/components/form/primitives/entry-helpers";
 import { _ } from "~/i18n";
 import type { TranslatedString } from "~/i18n";
 
