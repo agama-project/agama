@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Sep 15 16:19:38 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Cancel actions if setting storage, DASD, zFCP, iSCSI or bootloader
+  configs fail (related to bsc#1280006).
+
+-------------------------------------------------------------------
 Wed Sep  9 10:21:21 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
 
 - Disable local installation repositories instead of removing it
