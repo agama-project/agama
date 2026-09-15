@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Sep 15 16:11:54 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Fix formatting of the storage commit errors
+  (gh#agama-project/agama#3912).
+
+-------------------------------------------------------------------
 Mon Sep 14 12:51:32 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Remove empty space due to a byte order mark which kills
