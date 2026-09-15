@@ -23,6 +23,7 @@
 import React from "react";
 import { Td, Th, Tr } from "@patternfly/react-table";
 import { Flex, FlexItem, Label, Stack, StackItem } from "@patternfly/react-core";
+import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import Icon from "~/components/layout/Icon";
 import Text from "~/components/core/Text";
 import SheetOpener from "~/components/storage/shared/SheetOpener";
@@ -120,7 +121,9 @@ export default function EntryRow({
         {marks.map((mark) => (
           <React.Fragment key={mark}>
             {" "}
-            <Label isCompact>{mark}</Label>
+            <Label isCompact className={textStyles.fontSizeXs}>
+              {mark}
+            </Label>
           </React.Fragment>
         ))}
       </Th>
@@ -144,7 +147,7 @@ export default function EntryRow({
                 className={CONSEQUENCE_CLASS[kind]}
               >
                 <FlexItem>
-                  <Icon name={CONSEQUENCE_ICON[kind]} size="xs" aria-hidden />
+                  <Icon name={CONSEQUENCE_ICON[kind]} size="xs" />
                 </FlexItem>
                 <FlexItem>{text}</FlexItem>
               </Flex>

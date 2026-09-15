@@ -23,7 +23,7 @@
 import React from "react";
 import { Table, Tbody, Td, Th, Thead, Tr } from "@patternfly/react-table";
 import { Flex, FlexItem, Label, Stack, StackItem } from "@patternfly/react-core";
-import a11yStyles from "@patternfly/react-styles/css/utilities/Accessibility/accessibility";
+import alignmentStyles from "@patternfly/react-styles/css/utilities/Alignment/alignment";
 import { sprintf } from "sprintf-js";
 import Text from "~/components/core/Text";
 import Icon from "~/components/layout/Icon";
@@ -65,6 +65,18 @@ function rowsOf(entry: Entry): Row[] {
   const free: [number, Row][] = (device.partitionTable?.unusedSlots || []).map((s) => [s.start, s]);
 
   return [...parts, ...free].sort((a, b) => a[0] - b[0]).map(([, row]) => row);
+}
+
+/**
+ * Whether this entry has anything on it today, which is whether the view has
+ * anything to say.
+ *
+ * Asked by whoever offers the view rather than answered inside it. A view whose
+ * whole answer is that there is nothing costs a reader a click to learn
+ * nothing, and an empty disk or a volume group being defined would carry one.
+ */
+export function hasCurrentContent(entry: Entry): boolean {
+  return rowsOf(entry).length > 0;
 }
 
 /**
@@ -186,11 +198,11 @@ function reportFor(outcome: Outcome, reusedAs?: string): Report {
   }
 }
 
-const REPORT_ICON = { destroys: "error_fill", shrinks: "compress" } as const;
-const REPORT_CLASS = {
-  destroys: "agm-entries-table__cost--destroys",
-  shrinks: "agm-entries-table__cost--shrinks",
-} as const;
+/* The one report that costs the reader something, colored rather than marked.
+   The words say what happens, and a mark beside them in a column of short
+   phrases says it a second time while taking the width the phrases need. The
+   color is the entries table's, so the same news reads the same in both. */
+const DESTROYS_CLASS = "agm-entries-table__cost--destroys";
 
 function PartitionRow({
   part,
@@ -245,8 +257,10 @@ function PartitionRow({
         </Flex>
       </Td>
       {/* The size it ends at where a shrink is planned, with the size it has
-          today under it: the change beside the value it changes. */}
-      <Td>
+          today under it: the change beside the value it changes. On the same
+          edge as every other size, so a column of them is compared by looking
+          down rather than by reading each one. */}
+      <Td className={alignmentStyles.textAlignEnd}>
         {shrunkTo !== undefined ? (
           <>
             <div>{deviceSize(shrunkTo)}</div>
@@ -270,20 +284,10 @@ function PartitionRow({
             the row carries its decision, and what the installer makes of it
             reads under the control that set it. */}
         {decides && <div>{decides}</div>}
-        {report.kind === "keeps" ? (
-          report.text
+        {report.kind === "destroys" ? (
+          <span className={DESTROYS_CLASS}>{report.text}</span>
         ) : (
-          <Flex
-            gap={{ default: "gapXs" }}
-            alignItems={{ default: "alignItemsFlexStart" }}
-            flexWrap={{ default: "nowrap" }}
-            className={REPORT_CLASS[report.kind]}
-          >
-            <FlexItem>
-              <Icon name={REPORT_ICON[report.kind]} size="xs" aria-hidden />
-            </FlexItem>
-            <FlexItem>{report.text}</FlexItem>
-          </Flex>
+          report.text
         )}
       </Td>
       <Td isActionCell>{menu}</Td>
@@ -307,6 +311,10 @@ export type CurrentContentSectionProps = {
  *
  * Under the fourth space answer each partition carries its own decision, in the
  * column that reports what the installer does with it.
+ *
+ * Shown only where there is something to show, which whoever offers the view
+ * settles with {@link hasCurrentContent}. The view never has to say that it has
+ * nothing to say.
  */
 export default function CurrentContentSection({
   entry,
@@ -326,91 +334,98 @@ export default function CurrentContentSection({
           <SpaceDecision collection={subject.collection} index={subject.index} />
         </StackItem>
       )}
-      {rows.length === 0 ? (
-        <StackItem>
-          <Text textStyle="textColorSubtle">
-            {/* TRANSLATORS: said of a device with nothing on it. */}
-            {_("The device is empty.")}
-          </Text>
-        </StackItem>
-      ) : (
-        <StackItem>
-          <Table
-            role="table"
-            gridBreakPoint=""
-            variant="compact"
-            // TRANSLATORS: names the list of what is on a device already.
-            aria-label={_("Current content")}
-          >
-            <Thead className={a11yStyles.screenReader}>
-              <Tr>
-                <Th>{_("Partition")}</Th>
-                <Th>{_("Content")}</Th>
-                <Th>{_("Size")}</Th>
-                {/* "Planned action" rather than "What happens": nothing has
-                    happened yet. */}
-                <Th>{_("Planned action")}</Th>
-                <Th>{_("Options")}</Th>
-              </Tr>
-            </Thead>
-            <Tbody>
-              {rows.map((row, at) =>
-                isFreeSpace(row) ? (
-                  <Tr key={`free-${at}`}>
-                    <Th scope="row">
-                      <Text textStyle="textColorSubtle">
-                        {/* TRANSLATORS: a row for room on a device that no
+      <StackItem>
+        <Table
+          role="table"
+          gridBreakPoint=""
+          variant="compact"
+          // TRANSLATORS: names the list of what is on a device already.
+          aria-label={_("Current content")}
+        >
+          {/* Read rather than hidden from sight: what a column holds is told
+                by what it is called, and a reader left to work that out from
+                the values is being asked to do the heading's job.
+
+                Each heading kept whole. PatternFly cuts one down to whatever
+                its column came out as, which shortens the one thing on the row
+                whose whole job is to be read. */}
+          <Thead>
+            <Tr>
+              <Th modifier="nowrap">{_("Partition")}</Th>
+              <Th modifier="nowrap">{_("Content")}</Th>
+              <Th className={alignmentStyles.textAlignEnd} modifier="nowrap">
+                {_("Size")}
+              </Th>
+              {/* One word, and the page's own. "Action" rather than "What
+                    happens": nothing has happened yet, and a heading is a name
+                    for a column rather than a sentence about it. */}
+              <Th modifier="nowrap">{_("Action")}</Th>
+              <Th>
+                {/* The column of menus has nothing to head: a heading over it
+                      names a column the reader can already see the point of.
+                      "Options" rather than "Actions", which the column beside
+                      it has just spent on what the installer does. */}
+                <Text srOnly>{_("Options")}</Text>
+              </Th>
+            </Tr>
+          </Thead>
+          <Tbody>
+            {rows.map((row, at) =>
+              isFreeSpace(row) ? (
+                <Tr key={`free-${at}`}>
+                  <Th scope="row">
+                    <Text textStyle="textColorSubtle">
+                      {/* TRANSLATORS: a row for room on a device that no
                             partition takes. */}
-                        {_("Free space")}
-                      </Text>
-                    </Th>
-                    <Td />
-                    <Td>{deviceSize(row.size)}</Td>
-                    <Td />
-                    <Td />
-                  </Tr>
-                ) : (
-                  <PartitionRow
-                    key={row.sid}
-                    part={row}
-                    manager={manager}
-                    entries={entries}
-                    menu={
-                      subject.collection !== "volumeGroups" && (
-                        <PartitionMenu
-                          part={row}
-                          reusedAs={entries.find((e) => e.name === row.name)?.mountPath}
-                          collection={subject.collection}
-                          index={subject.index}
-                        />
-                      )
-                    }
-                    decides={
-                      /* A partition the new system mounts is spoken for, so no
+                      {_("Free space")}
+                    </Text>
+                  </Th>
+                  <Td />
+                  <Td className={alignmentStyles.textAlignEnd}>{deviceSize(row.size)}</Td>
+                  <Td />
+                  <Td />
+                </Tr>
+              ) : (
+                <PartitionRow
+                  key={row.sid}
+                  part={row}
+                  manager={manager}
+                  entries={entries}
+                  menu={
+                    subject.collection !== "volumeGroups" && (
+                      <PartitionMenu
+                        part={row}
+                        reusedAs={entries.find((e) => e.name === row.name)?.mountPath}
+                        collection={subject.collection}
+                        index={subject.index}
+                      />
+                    )
+                  }
+                  decides={
+                    /* A partition the new system mounts is spoken for, so no
                          space decision reaches it. */
-                      isCustom &&
-                      subject.collection !== "volumeGroups" &&
-                      !entries.find((e) => e.name === row.name)?.mountPath && (
-                        <PartitionSpaceControl
-                          partition={row}
-                          governed={rows.filter(
-                            (candidate): candidate is System.Device =>
-                              !isFreeSpace(candidate) &&
-                              !entries.find((e) => e.name === candidate.name)?.mountPath,
-                          )}
-                          entries={entries}
-                          collection={subject.collection}
-                          index={subject.index}
-                        />
-                      )
-                    }
-                  />
-                ),
-              )}
-            </Tbody>
-          </Table>
-        </StackItem>
-      )}
+                    isCustom &&
+                    subject.collection !== "volumeGroups" &&
+                    !entries.find((e) => e.name === row.name)?.mountPath && (
+                      <PartitionSpaceControl
+                        partition={row}
+                        governed={rows.filter(
+                          (candidate): candidate is System.Device =>
+                            !isFreeSpace(candidate) &&
+                            !entries.find((e) => e.name === candidate.name)?.mountPath,
+                        )}
+                        entries={entries}
+                        collection={subject.collection}
+                        index={subject.index}
+                      />
+                    )
+                  }
+                />
+              ),
+            )}
+          </Tbody>
+        </Table>
+      </StackItem>
     </Stack>
   );
 }

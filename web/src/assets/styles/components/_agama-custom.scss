@@ -505,18 +505,36 @@ nav.agm-breadcrumb > ol > li > a {
 // work out what a mark on a row means, and the words are what a screen reader
 // gets either way. Subtle rather than colored by what it reports, so a row that
 // says something is not louder than the row it is being compared with.
+//
+// Smaller than the value it sits under and in the face the page gives to values
+// read off the machine, so the line reads as an aside about the cell above it
+// rather than as a second cell.
 .agm-row-note {
-  font-size: var(--pf-t--global--font--size--body--sm);
+  font-family: var(--pf-t--global--font--family--mono);
+  font-size: var(--pf-t--global--font--size--xs);
   color: var(--pf-t--global--text--color--subtle);
 }
 
-// Things that are true about an entry, read above what it holds. Ruled off from
-// each other with a dashed line and from the content with a solid one: a dashed
-// rule separates without dividing, which is what a run of statements needs.
+// Things that are true about an entry, read above what it holds. Separated from
+// each other with a dashed rule and closed with a solid one: dashed separates
+// without dividing, which is what a run of statements needs, and the solid rule
+// is where the prose stops and the content starts.
+//
+// Space on both sides of that rule: the prose is held off the line that closes
+// it, and the content stands clear of it rather than starting against it.
 .agm-statements {
+  padding-block-start: var(--pf-t--global--spacer--sm);
   padding-block-end: var(--pf-t--global--spacer--md);
   margin-block-end: var(--pf-t--global--spacer--md);
   border-block-end: 1px solid var(--pf-t--global--border--color--default);
+}
+
+// Except before a table, which sets its own room above its headings: the two
+// gaps read as one wide one, and the content it introduces falls too far from
+// the line that says it starts there. A view opening on a sentence or a control
+// has no such room of its own and keeps the gap.
+.agm-statements:has(+ * > :first-child .pf-v6-c-table) {
+  margin-block-end: 0;
 }
 
 .agm-statement + .agm-statement {

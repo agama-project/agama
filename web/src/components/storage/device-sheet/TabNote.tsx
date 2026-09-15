@@ -36,6 +36,12 @@ export type TabNoteProps = {
   where?: TranslatedString;
   /** The views named in {@link where}, in placeholder order, and how to reach each. */
   links?: { name: TranslatedString; onGo: () => void }[];
+  /**
+   * Anything else true about the entry that the view opens with, as further
+   * {@link Statement}s. They join the note's own run rather than starting a
+   * second one.
+   */
+  children?: React.ReactNode;
 };
 
 /**
@@ -49,8 +55,18 @@ export type TabNoteProps = {
  * sentence is written whole with the names as placeholders, since splitting it
  * around the controls would leave a translator with pieces rather than a
  * sentence.
+ *
+ * Whatever else the view opens with is passed in and joins this run. What is
+ * said above the content is one block of prose however many facts it holds, and
+ * a view that starts its own run under this one rules the same words off twice
+ * and pushes the content it is about further down the panel.
  */
-export default function TabNote({ lead, where, links = [] }: TabNoteProps): React.ReactNode {
+export default function TabNote({
+  lead,
+  where,
+  links = [],
+  children,
+}: TabNoteProps): React.ReactNode {
   return (
     <Statements>
       {/* The mark points into the view rather than describing the device. A
@@ -66,6 +82,7 @@ export default function TabNote({ lead, where, links = [] }: TabNoteProps): Reac
           </Interpolate>
         )}
       </Statement>
+      {children}
     </Statements>
   );
 }

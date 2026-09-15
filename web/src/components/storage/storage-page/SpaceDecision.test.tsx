@@ -91,7 +91,7 @@ describe("SpaceDecision", () => {
   });
 
   describe("when custom is chosen", () => {
-    it("opens where it is settled, since custom is not an answer but the rest of the question", async () => {
+    it("writes it, and opens where the rest of the question is answered", async () => {
       const { user } = installerRender(
         <>
           <SpaceDecision collection="drives" index={0} />
@@ -100,8 +100,23 @@ describe("SpaceDecision", () => {
       );
       await user.click(screen.getByRole("button", { name: "Custom" }));
 
-      expect(mockSetSpacePolicy).not.toHaveBeenCalled();
+      /* Written, since nothing decides partition by partition until it is, and
+         with nothing decided yet, which leaves everything kept. */
+      expect(mockSetSpacePolicy).toHaveBeenCalledWith("drives", 0, { type: "custom" });
       expect(address()).toBe("sheet=drives.0&sheetTab=current");
+    });
+  });
+
+  describe("when the answer already taken is pressed again", () => {
+    beforeEach(() => {
+      mockDeviceConfig.mockReturnValue(drive("custom"));
+    });
+
+    it("leaves the configuration alone, rather than clearing what was decided under it", async () => {
+      const { user } = installerRender(<SpaceDecision collection="drives" index={0} />);
+      await user.click(screen.getByRole("button", { name: "Custom" }));
+
+      expect(mockSetSpacePolicy).not.toHaveBeenCalled();
     });
   });
 

@@ -149,6 +149,14 @@ describe("StorageSheet", () => {
     });
 
     it("marks each view without the mark becoming part of its name", () => {
+      /* With something on it, so the view of what is there today is offered. */
+      mockSystemDevice.mockReturnValue({
+        name: "/dev/sda",
+        class: "drive",
+        drive: { type: "disk", info: {} },
+        block: { size: 64424509440 },
+        partitions: [{ sid: 41, name: "/dev/sda1", block: { size: 5e10, systems: [] } }],
+      });
       renderAt("/storage?sheet=drives.0");
 
       /* Exact names: a mark read out with the words would change them. */
@@ -165,6 +173,14 @@ describe("StorageSheet", () => {
     });
 
     it("says in each view where what it holds is decided, and leads there", async () => {
+      /* With something on it, so the view of what is there today is offered. */
+      mockSystemDevice.mockReturnValue({
+        name: "/dev/sda",
+        class: "drive",
+        drive: { type: "disk", info: {} },
+        block: { size: 64424509440 },
+        partitions: [{ sid: 41, name: "/dev/sda1", block: { size: 5e10, systems: [] } }],
+      });
       const { user } = renderAt("/storage?sheet=drives.0");
       await user.click(screen.getByRole("button", { name: "Current content" }));
 
@@ -262,7 +278,7 @@ describe("StorageSheet", () => {
         screen.getByRole("group", { name: "Allowed changes" });
       });
 
-      it("says so where the device is empty, and asks nothing", () => {
+      it("is not offered at all where the device is empty", () => {
         mockSystemDevice.mockReturnValue({
           name: "/dev/sda",
           class: "drive",
@@ -272,8 +288,14 @@ describe("StorageSheet", () => {
         });
         renderAt("/storage?sheet=drives.0&sheetTab=current");
 
-        screen.getByText("The device is empty.");
-        expect(screen.queryByRole("group", { name: "Allowed changes" })).not.toBeInTheDocument();
+        expect(screen.queryByRole("tab", { name: "Current content" })).toBeNull();
+        expect(screen.queryByRole("group", { name: "Allowed changes" })).toBeNull();
+        /* The address named a view this device has not got, so the panel opens
+           on the first rather than on a strip with nothing selected. */
+        expect(screen.getByRole("tab", { name: "Final layout" })).toHaveAttribute(
+          "aria-selected",
+          "true",
+        );
       });
     });
 
@@ -342,6 +364,11 @@ describe("StorageSheet", () => {
 
         screen.getByText("Boot device, chosen automatically.");
         screen.getByText(/Partitions to boot: a new partition \(8 MiB\)\./);
+        /* Told what booting costs, and given the page that decides it. */
+        expect(screen.getByRole("link", { name: "Check boot options" })).toHaveAttribute(
+          "href",
+          expect.stringContaining("/storage/boot-device/edit"),
+        );
       });
 
       it("says so above the content too, on one line", () => {
@@ -364,6 +391,15 @@ describe("StorageSheet", () => {
           ],
         }),
       );
+    });
+
+    it("says what kind of thing it is, and the name it will answer to", () => {
+      /* Not on the machine yet, which is the state a group is defined in. */
+      mockSystemDevice.mockReturnValue(null);
+      renderAt("/storage?sheet=volumeGroups.0");
+
+      screen.getByRole("region", { name: "system LVM volume group" });
+      screen.getByText("/dev/system");
     });
 
     it("offers a view of what it is made of", () => {

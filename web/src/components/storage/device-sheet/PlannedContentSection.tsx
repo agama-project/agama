@@ -32,15 +32,13 @@ import {
   Stack,
   StackItem,
 } from "@patternfly/react-core";
-import a11yStyles from "@patternfly/react-styles/css/utilities/Accessibility/accessibility";
+import alignmentStyles from "@patternfly/react-styles/css/utilities/Alignment/alignment";
 import { sprintf } from "sprintf-js";
 import Link from "~/components/core/Link";
 import Text from "~/components/core/Text";
 import Icon from "~/components/layout/Icon";
 import MenuButton, { MenuButtonItem } from "~/components/core/MenuButton";
 import RowMenuToggle from "~/components/storage/entries-table/RowMenuToggle";
-import Statement, { Statements } from "~/components/storage/device-sheet/Statement";
-import BootStatement from "~/components/storage/device-sheet/BootStatement";
 import RelatedNames from "~/components/storage/shared/RelatedNames";
 import RetargetOffer from "~/components/storage/shared/RetargetOffer";
 import { usersOf } from "~/components/storage/shared/users";
@@ -91,9 +89,15 @@ function plannedOn(entry: Entry): Planned[] {
   });
 }
 
-/** What the reader calls one planned thing, which is where it will be mounted. */
+/**
+ * What the reader calls one planned thing, which is where it will be mounted.
+ *
+ * The path bare rather than quoted: quotation marks hold a path apart from the
+ * words around it, and a column of paths has no words around it to be held
+ * apart from.
+ */
 function label(part: Planned): string {
-  if (part.mountPath) return formattedPath(part.mountPath);
+  if (part.mountPath) return part.mountPath;
   return partitionId(part) || "";
 }
 
@@ -109,9 +113,10 @@ export type PlannedContentSectionProps = {
  * The plan rather than the outcome: what the reader asked the installer for
  * here, as against what it worked out, which the first view holds.
  *
- * What has no row to live in reads above the table: a disk given whole to a
- * volume group holds nothing of its own, and where the plan for it is decided
- * is the one thing a reader opening that disk most needs told.
+ * What has no row to live in is said above the view rather than here, among the
+ * note's statements: a fact about the device and a list of what is planned on
+ * it are two kinds of thing, and a view that opens the second with the first
+ * reads as content that starts twice.
  *
  * Where nothing is planned, the state says so and carries the one act that
  * changes it. An empty state and a lone button underneath it are the same offer
@@ -133,11 +138,10 @@ export default function PlannedContentSection({
   const device = entry.config as Partitionable.Device;
 
   const planned = plannedOn(entry);
+  /* Read here for the empty state, which says where the device went rather than
+     that nothing was asked of it. What is used by what reads above the view, in
+     the note's run of statements, rather than as a section of the content. */
   const users = isVolumeGroup ? [] : usersOf(config, systemDevices, device.name);
-  /* Asked here as well as inside the statement, because a run of statements with
-     nothing in it still draws its rule: an empty ruled box above the content. */
-  const boots =
-    !isVolumeGroup && Boolean(config) && configModel.boot.hasDevice(config, device.name);
   /* A device formatted as a whole has nowhere to put a partition, so the view
      drops the table and the offer with it. */
   const whole = isVolumeGroup ? undefined : device.filesystem;
@@ -185,23 +189,6 @@ export default function PlannedContentSection({
 
   return (
     <Stack hasGutter>
-      {(users.length > 0 || boots) && (
-        <StackItem>
-          <Statements>
-            {users.length > 0 && (
-              <Statement
-                icon="network_node"
-                // TRANSLATORS: names the entries of the installation that are
-                // built on this device.
-                heading={_("Used by")}
-              >
-                <RelatedNames items={users} />
-              </Statement>
-            )}
-            <BootStatement entry={entry} />
-          </Statements>
-        </StackItem>
-      )}
       {whole && (
         <StackItem>
           <Text textStyle="textColorSubtle">
@@ -268,12 +255,27 @@ export default function PlannedContentSection({
               // one of its entries.
               aria-label={_("Planned content")}
             >
-              <Thead className={a11yStyles.screenReader}>
+              {/* Read rather than hidden from sight: a column of sizes and a
+                  column of file systems are told apart by what they are called,
+                  and a reader who has to work that out from the values is being
+                  asked to do the heading's job.
+
+                  Each heading kept whole. PatternFly cuts one down to whatever
+                  its column came out as, which shortens the one thing on the
+                  row whose whole job is to be read. */}
+              <Thead>
                 <Tr>
-                  <Th>{_("Mount point")}</Th>
-                  <Th>{_("File system")}</Th>
-                  <Th>{_("Size")}</Th>
-                  <Th>{_("Options")}</Th>
+                  <Th modifier="nowrap">{_("Mount point")}</Th>
+                  <Th modifier="nowrap">{_("File system")}</Th>
+                  <Th className={alignmentStyles.textAlignEnd} modifier="nowrap">
+                    {_("Size")}
+                  </Th>
+                  <Th>
+                    {/* The column of menus has nothing to head: a heading over
+                        it names a column the reader can already see the point
+                        of, and takes the width the sizes beside it need. */}
+                    <Text srOnly>{_("Options")}</Text>
+                  </Th>
                 </Tr>
               </Thead>
               <Tbody>
@@ -297,7 +299,10 @@ export default function PlannedContentSection({
                           // told which file system to use.
                           _("default")}
                       </Td>
-                      <Td>
+                      {/* On the same edge as every other size, so a column of
+                          them is compared by looking down rather than by
+                          reading each one. */}
+                      <Td className={alignmentStyles.textAlignEnd}>
                         {part.size
                           ? sizeDescription(part.size)
                           : // TRANSLATORS: said where the size of something the

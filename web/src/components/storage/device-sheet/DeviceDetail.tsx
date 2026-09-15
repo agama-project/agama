@@ -25,9 +25,13 @@ import { Tab, Tabs, TabTitleIcon, TabTitleText } from "@patternfly/react-core";
 import Icon, { IconProps } from "~/components/layout/Icon";
 import FinalLayoutSection from "~/components/storage/device-sheet/FinalLayoutSection";
 import PlannedContentSection from "~/components/storage/device-sheet/PlannedContentSection";
-import CurrentContentSection from "~/components/storage/device-sheet/CurrentContentSection";
+import CurrentContentSection, {
+  hasCurrentContent,
+} from "~/components/storage/device-sheet/CurrentContentSection";
 import PropertiesSection from "~/components/storage/device-sheet/PropertiesSection";
 import TabNote from "~/components/storage/device-sheet/TabNote";
+import UsedByStatement from "~/components/storage/device-sheet/UsedByStatement";
+import BootStatement from "~/components/storage/device-sheet/BootStatement";
 import { useSheetTab } from "~/components/storage/shared/use-sheet";
 import { useTablistKeyboard } from "~/hooks/use-tablist-keyboard";
 import { _, TranslatedString } from "~/i18n";
@@ -76,7 +80,7 @@ function title(view: string, name: React.ReactNode) {
   return (
     <>
       <TabTitleIcon>
-        <Icon name={VIEW_ICONS[view]} size="sm" aria-hidden />
+        <Icon name={VIEW_ICONS[view]} size="sm" />
       </TabTitleIcon>
       <TabTitleText>{name}</TabTitleText>
     </>
@@ -88,9 +92,23 @@ export default function DeviceDetail({ entry, subject }: DeviceDetailProps): Rea
   /* Only an entry that is defined rather than found has properties: a volume
      group, or a RAID made of other disks. A disk is the hardware. */
   const hasProperties = entry.isVolumeGroup || subject.collection === "mdRaids";
-  const views = ["result", "planned", ...(hasProperties ? ["properties"] : []), "current"];
-  const { containerProps, tabProps } = useTablistKeyboard(views, tab, setTab);
-  const hasCurrent = views.includes("current");
+  /* Only where the machine has something on the entry today. On an empty disk,
+     or a volume group being defined, the view's whole answer is that there is
+     nothing, and a tab whose answer is nothing costs a reader the click that
+     finds it out. */
+  const hasCurrent = hasCurrentContent(entry);
+  const views = [
+    "result",
+    "planned",
+    ...(hasProperties ? ["properties"] : []),
+    ...(hasCurrent ? ["current"] : []),
+  ];
+  /* An address can name a view this entry is not offered: one address serves
+     every entry, and a reader moving from a disk with partitions to one without
+     keeps the view they were reading. That opens on the first rather than on a
+     strip with nothing selected. */
+  const view = views.includes(tab) ? tab : "result";
+  const { containerProps, tabProps } = useTablistKeyboard(views, view, setTab);
 
   /* The views as the notes name them, and the way to each. */
   const go = (view: string, name: TranslatedString) => ({ name, onGo: () => setTab(view) });
@@ -125,7 +143,7 @@ export default function DeviceDetail({ entry, subject }: DeviceDetailProps): Rea
   return (
     <div {...containerProps}>
       <Tabs
-        activeKey={tab}
+        activeKey={view}
         onSelect={(_event, key) => setTab(String(key))}
         // TRANSLATORS: names the strip of views of one device of the installation.
         aria-label={_("Views of this device")}
@@ -181,7 +199,14 @@ export default function DeviceDetail({ entry, subject }: DeviceDetailProps): Rea
                 : undefined
             }
             links={hasCurrent ? [toCurrent] : []}
-          />
+          >
+            {/* What is true of the device itself, said with the note rather
+                than above the table: they are all prose about the device, and
+                the table below is the view's content. Each decides for itself
+                whether it has anything to say. */}
+            <UsedByStatement entry={entry} />
+            <BootStatement entry={entry} />
+          </TabNote>
           <PlannedContentSection entry={entry} subject={subject} />
         </Tab>
         {/* Only where the entry is defined rather than found. A disk is the
@@ -217,30 +242,33 @@ export default function DeviceDetail({ entry, subject }: DeviceDetailProps): Rea
             <PropertiesSection entry={entry} />
           </Tab>
         )}
-        <Tab
-          eventKey="current"
-          {...tabProps("current")}
-          title={title(
-            "current",
-            <>
-              {/* TRANSLATORS: names the view of a device showing what was on it
-                  before the installation was planned. */}
-              {_("Current content")}
-            </>,
-          )}
-        >
-          <TabNote
-            // TRANSLATORS: opens the view listing what is on a device today.
-            lead={_("What to do with the existing partitions")}
-            // TRANSLATORS: says what this view is for and where its result is
-            // shown. %s is the name of another view, shown as a link.
-            where={_(
-              "Choose how the installer should use the existing partitions. The %s tab shows the resulting disk layout.",
+        {/* Only where the machine has something on the entry today. */}
+        {hasCurrent && (
+          <Tab
+            eventKey="current"
+            {...tabProps("current")}
+            title={title(
+              "current",
+              <>
+                {/* TRANSLATORS: names the view of a device showing what was on
+                    it before the installation was planned. */}
+                {_("Current content")}
+              </>,
             )}
-            links={[toResult]}
-          />
-          <CurrentContentSection entry={entry} subject={subject} />
-        </Tab>
+          >
+            <TabNote
+              // TRANSLATORS: opens the view listing what is on a device today.
+              lead={_("What to do with the existing partitions")}
+              // TRANSLATORS: says what this view is for and where its result is
+              // shown. %s is the name of another view, shown as a link.
+              where={_(
+                "Choose how the installer should use the existing partitions. The %s tab shows the resulting disk layout.",
+              )}
+              links={[toResult]}
+            />
+            <CurrentContentSection entry={entry} subject={subject} />
+          </Tab>
+        )}
       </Tabs>
     </div>
   );

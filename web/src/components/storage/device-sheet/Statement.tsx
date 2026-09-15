@@ -73,7 +73,9 @@ export default function Statement({
       alignItems={{ default: "alignItemsBaseline" }}
     >
       <FlexItem>
-        <Icon name={icon} size="xs" aria-hidden />
+        {/* Aligned with the text rather than left on its baseline: a mark
+            standing on the baseline stands above the words it marks. */}
+        <Icon name={icon} size="xs" isMiddleAligned />
       </FlexItem>
       <FlexItem>
         {isStacked ? (

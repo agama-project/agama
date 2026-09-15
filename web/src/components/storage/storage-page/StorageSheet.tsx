@@ -34,6 +34,7 @@ import { useMediaQuery } from "~/hooks/use-media-query";
 import { EmptyState, EmptyStateBody } from "@patternfly/react-core";
 import { _ } from "~/i18n";
 import type { ConfigModel, Partitionable } from "~/model/storage/config-model";
+import type { Entry } from "~/components/storage/device-sheet/entry";
 
 /** PatternFly's `2xl`, from where there is room for the page and a panel both. */
 const WIDE = "(min-width: 90.625rem)";
@@ -52,6 +53,20 @@ const WIDE = "(min-width: 90.625rem)";
  */
 function usePlacement(): SheetPlacement {
   return useMediaQuery(WIDE) ? "share" : "overlay";
+}
+
+/**
+ * Where the system keeps the entry, under the name it answers to.
+ *
+ * For a disk that is the one identifier a reboot renaming sda to sdb does not
+ * change, which is the reason to print it at all. For a volume group it is the
+ * name the group answers to once it exists, worked out rather than read: a
+ * group being defined is not on the machine yet, and the name it will take
+ * follows from what it is called.
+ */
+function systemPath(entry: Entry): string | undefined {
+  if (entry.isVolumeGroup) return entry.device?.name || `/dev/${entry.name}`;
+  return entry.device?.block?.udevPaths?.[0];
 }
 
 export type StorageSheetProps = {
@@ -101,7 +116,7 @@ export default function StorageSheet({ page }: StorageSheetProps): React.ReactNo
         isResult
           ? // TRANSLATORS: says what the panel holding the whole picture is for.
             _("What the installer will do, and what the machine will look like")
-          : entry?.device?.block?.udevPaths?.[0]
+          : entry && systemPath(entry)
       }
       /* The same acts the entry's row offers, so a reader meets one menu per
          entry wherever they open it from. */

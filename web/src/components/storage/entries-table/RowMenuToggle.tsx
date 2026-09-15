@@ -30,13 +30,14 @@ export type RowMenuToggleProps = Omit<MenuToggleProps, "ref"> & {
 };
 
 /**
- * The way into a row's menu: three dots, stacked.
+ * The way into a menu of more options: three dots, in a line.
  *
- * Stacked rather than in a line, which is the disagreement this settles. The
- * installer draws both, and the two are not interchangeable by convention: a
- * column of dots is what a row's own menu wears, a row of them belongs to a
- * card or a section. PatternFly's own tables draw the column, so a row here
- * looks like a row anywhere else in the product.
+ * In a line rather than stacked, which is the disagreement this settles. One
+ * gesture wears one mark: a reader who learns the dots on the page's own line
+ * should meet the same dots on a row, in a table inside the panel, and at the
+ * head of the panel itself. Telling a column of dots from a row of them is a
+ * distinction the reader has to be taught before it says anything, and it says
+ * nothing they cannot see from where the control sits.
  *
  * The label is required rather than defaulted. A list of eight devices carries
  * eight of these, and eight controls all called "Actions" tell a reader who
@@ -45,7 +46,7 @@ export type RowMenuToggleProps = Omit<MenuToggleProps, "ref"> & {
 const RowMenuToggle = React.forwardRef<HTMLButtonElement, RowMenuToggleProps>(
   ({ label, ...props }, ref) => (
     <MenuToggle ref={ref} variant="plain" aria-label={label} {...props}>
-      <Icon name="more_vert" />
+      <Icon name="more_horiz" />
     </MenuToggle>
   ),
 );

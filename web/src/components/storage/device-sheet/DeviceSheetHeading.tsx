@@ -22,6 +22,7 @@
 
 import React from "react";
 import { Label } from "@patternfly/react-core";
+import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import Text from "~/components/core/Text";
 import { deviceSize } from "~/components/storage/utils";
 import { typeDescription } from "~/components/storage/utils/device";
@@ -42,15 +43,23 @@ export type DeviceSheetHeadingProps = {
  * is tied to points away from it rather than describing it, so that reads in
  * the body instead.
  *
- * A volume group has no hardware to describe: how big it is follows from the
- * disks under it, and a group being defined has none of either yet.
+ * A volume group has no hardware to describe, so it carries only what kind of
+ * thing it is. Not its size: that follows from the disks under it, and a group
+ * being defined has none yet, so a heading that gave it would say a different
+ * number of things about the same group depending on when it was opened.
  */
 export default function DeviceSheetHeading({ entry }: DeviceSheetHeadingProps): React.ReactNode {
   const config = useConfigModel();
   const { device, name, isVolumeGroup } = entry;
 
   const facts = isVolumeGroup
-    ? []
+    ? [
+        /* Said rather than read off the machine: a group being defined is not
+           there yet, and a heading that is only a name leaves the reader to
+           remember which list they opened it from. */
+        // TRANSLATORS: what kind of entry of the installation this is.
+        _("LVM volume group"),
+      ]
     : [
         device?.block?.size && deviceSize(device.block.size),
         device && typeDescription(device),
@@ -68,7 +77,10 @@ export default function DeviceSheetHeading({ entry }: DeviceSheetHeadingProps): 
       {boots && (
         <>
           {" "}
-          <Label isCompact>
+          {/* Smaller than the name it stands beside. A mark set at the same
+              size as the heading reads as a second heading, and this one is a
+              note about the device rather than part of what it is called. */}
+          <Label isCompact className={textStyles.fontSizeXs}>
             {/* TRANSLATORS: marks the device the machine will start from. */}
             {_("Boot device")}
           </Label>

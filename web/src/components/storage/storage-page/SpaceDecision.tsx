@@ -118,9 +118,10 @@ export type SpaceDecisionProps = {
  * which part of it is taken. What each one means is a tooltip, so it can be
  * read before it is chosen, and it reaches the button as its description.
  *
- * Custom is not a value like the others. It says that what happens is settled
- * partition by partition, so choosing it opens the device's own panel on what
- * is there today, which is where that is settled.
+ * Custom asks for one thing more than the others. It is a rule like them, and
+ * is written like them, but it says the rule is made partition by partition, so
+ * taking it also opens the view where those are made. It starts with everything
+ * kept: the reader has decided how to decide, not what to decide.
  */
 export default function SpaceDecision({ collection, index }: SpaceDecisionProps) {
   const { openSheet } = useSheet();
@@ -129,12 +130,17 @@ export default function SpaceDecision({ collection, index }: SpaceDecisionProps)
   const current = deviceConfig?.spacePolicy || "keep";
 
   const choose = (policy: ConfigModel.SpacePolicy) => {
-    if (policy === "custom") {
-      openSheet({ collection, index }, "current");
-      return;
-    }
+    /* Already the answer. Said again it changes nothing for three of the four,
+       but custom would clear every decision made under it, which is the
+       opposite of what pressing the answer you are on can mean. */
+    if (policy !== current) setSpacePolicy(collection, index, { type: policy });
 
-    setSpacePolicy(collection, index, { type: policy });
+    /* Custom is written like the others and then followed up: it says the
+       decision is made partition by partition, so the reader is taken to where
+       those are made. Writing it is what puts the controls there, and the
+       control is read from that view as well as from the page, where following
+       up means staying put. */
+    if (policy === "custom") openSheet({ collection, index }, "current");
   };
 
   return (

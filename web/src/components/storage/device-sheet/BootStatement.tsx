@@ -22,9 +22,11 @@
 
 import React from "react";
 import { sprintf } from "sprintf-js";
+import Link from "~/components/core/Link";
 import Statement from "~/components/storage/device-sheet/Statement";
 import { bootPartitionsOf } from "~/components/storage/shared/boot";
 import { deviceSize } from "~/components/storage/utils";
+import { STORAGE as PATHS } from "~/routes/paths";
 import configModel from "~/model/storage/config-model";
 import { useConfigModel } from "~/hooks/model/storage/config-model";
 import { useFlattenDevices as useProposalDevices } from "~/hooks/model/proposal/storage";
@@ -41,7 +43,8 @@ export type BootStatementProps = {
  * The two answers no other view gives: whether the installer picked the device
  * or the reader did, and which partitions booting takes. How the automatic
  * choice is worked out is a longer story, and the boot options page is where it
- * is already told.
+ * is already told, so the statement ends with the way there: a reader who has
+ * just learned the installer chose for them is the one most likely to want it.
  */
 export default function BootStatement({ entry }: BootStatementProps): React.ReactNode {
   const config = useConfigModel();
@@ -87,7 +90,13 @@ export default function BootStatement({ entry }: BootStatementProps): React.Reac
           )
         : // TRANSLATORS: said of a boot device that needs no partition of its
           // own to start the machine.
-          _("No partition to boot needed.")}
+          _("No partition to boot needed.")}{" "}
+      <Link to={PATHS.editBootDevice} keepQuery variant="link" isInline>
+        {
+          // TRANSLATORS: link to the page where booting is decided.
+          _("Check boot options")
+        }
+      </Link>
     </Statement>
   );
 }
