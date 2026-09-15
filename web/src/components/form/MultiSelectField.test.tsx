@@ -466,6 +466,22 @@ describe("MultiSelectField", () => {
       expect(announcement()).toContain("custom0 moved to the text box for editing.");
     });
 
+    it("edits the text rather than the values that are left", async () => {
+      const { user } = installerRender(
+        <TestForm defaultValues={["custom0", "custom1"]} allowCustomEntries />,
+      );
+      await user.click(combobox());
+      await user.keyboard("{ArrowLeft}{Enter}");
+
+      expect(combobox()).toHaveValue("custom1");
+      expect(combobox()).not.toHaveAttribute("aria-activedescendant");
+
+      await user.keyboard("{Backspace}");
+
+      expect(combobox()).toHaveValue("custom");
+      expect(within(entries()).getByRole("option", { name: "custom0" })).toBeInTheDocument();
+    });
+
     it("goes back to typing on a key the values do not use", async () => {
       const { user } = installerRender(<TestForm defaultValues={["eth0"]} />);
       await user.click(combobox());

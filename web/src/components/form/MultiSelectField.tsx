@@ -462,6 +462,10 @@ export default function MultiSelectField({
     const value = values[index];
     field.handleChange(values.filter((_v, i) => i !== index));
     setQuery(value);
+    // The value is text now, so the keyboard goes back to typing. Left among
+    // the values it would sit on whichever one took the place of the edited
+    // one, and the first Backspace would remove that one instead of a letter.
+    keyboardRef.current?.reset();
     say(valueMovedToInput(toLabel(value)));
   };
 
