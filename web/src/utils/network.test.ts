@@ -21,6 +21,7 @@
  */
 
 import { BondMode, Connection, SecurityProtocols } from "~/types/network";
+import type { Device } from "~/types/network";
 import {
   addDefaultIPPrefix,
   isValidIp,
@@ -30,6 +31,8 @@ import {
   formatIp,
   connectionForName,
   controllerOf,
+  deviceLinkLabel,
+  formatLinkSpeed,
   generateConnectionName,
   ipPrefixFor,
   securityFromFlags,
@@ -147,6 +150,42 @@ describe("controllerOf", () => {
 
   it("returns undefined when there is no controller at all", () => {
     expect(controllerOf("enp1s0", [])).toBeUndefined();
+  });
+});
+
+describe("formatLinkSpeed", () => {
+  it("gives rates below a gigabit in Mb/s", () => {
+    expect(formatLinkSpeed(10)).toBe("10 Mb/s");
+    expect(formatLinkSpeed(100)).toBe("100 Mb/s");
+  });
+
+  it("gives rates of a gigabit and above in Gb/s", () => {
+    expect(formatLinkSpeed(1000)).toBe("1 Gb/s");
+    expect(formatLinkSpeed(10000)).toBe("10 Gb/s");
+  });
+
+  it("keeps the decimal of a rate between two whole gigabits", () => {
+    expect(formatLinkSpeed(2500)).toBe("2.5 Gb/s");
+  });
+});
+
+describe("deviceLinkLabel", () => {
+  const device = (props: object): Device => ({ name: "enp1s0", ...props }) as Device;
+
+  it("gives the speed of a device reporting one", () => {
+    expect(deviceLinkLabel(device({ speed: 1000, carrier: true }))).toBe("1 Gb/s");
+  });
+
+  it("says a device with no cable in it has no link, whatever speed it reports", () => {
+    expect(deviceLinkLabel(device({ carrier: false, speed: 1000 }))).toBe("No link");
+  });
+
+  it("says a device with a link but no speed is up", () => {
+    expect(deviceLinkLabel(device({ carrier: true }))).toBe("Link up");
+  });
+
+  it("returns nothing for a device reporting neither", () => {
+    expect(deviceLinkLabel(device({}))).toBeUndefined();
   });
 });
 

@@ -24,160 +24,31 @@ import React, { useState, useRef } from "react";
 import { fork, sift, unique } from "radashi";
 import { sprintf } from "sprintf-js";
 import {
-  Flex,
-  FlexItem,
   FormGroup,
-  Label,
   TextInputGroup,
   TextInputGroupMain,
   FormHelperText,
   HelperText,
   HelperTextItem,
   Button,
-  Truncate,
 } from "@patternfly/react-core";
 import Text from "~/components/core/Text";
 import Interpolate from "~/components/core/Interpolate";
+import EntriesListbox from "~/components/form/primitives/EntriesListbox";
+import FieldEntry from "~/components/form/primitives/FieldEntry";
+import {
+  filterNew,
+  NAVIGATION_KEYS,
+  normalizeValue,
+  parsePasteEntries,
+  pasteAnnouncement,
+  processDraft,
+} from "~/components/form/primitives/entry-helpers";
 import { resolveAriaLabelProps, useFieldLabel } from "~/hooks/use-field-label";
 import { useFieldContext } from "~/hooks/form-contexts";
 import { useAnnounce } from "~/context/announcer";
-import { _, n_ } from "~/i18n";
+import { _ } from "~/i18n";
 import type { TranslatedString } from "~/i18n";
-
-/**
- * Keys owned by the entry navigation handler when an entry is active.
- *
- * Space is included alongside Enter to match the ARIA listbox pattern
- * (https://www.w3.org/WAI/ARIA/apg/patterns/listbox/), where both keys
- * activate the focused option. Any key outside this set exits navigation
- * without consuming the event, so Tab moves focus away and regular characters
- * land in the draft input normally.
- */
-const NAVIGATION_KEYS = new Set([
-  " ",
-  "ArrowLeft",
-  "ArrowUp",
-  "ArrowRight",
-  "ArrowDown",
-  "Home",
-  "End",
-  "Enter",
-  "Delete",
-  "Backspace",
-]);
-
-/** Applies `normalize` to `value` if provided; otherwise returns `value` unchanged. */
-function normalizeValue(value: string, normalize?: (v: string) => string): string {
-  return normalize ? normalize(value) : value;
-}
-
-/**
- * Names the entries list. An explicit `ariaLabelledBy` replaces the name
- * entirely, same as for the input, and wins over `labelPrefixedBy`. Otherwise
- * the name comes from the hidden phrase referenced by `listboxNameId`, with
- * `labelPrefixedBy` prepending its referenced context, so input and list read
- * consistently.
- */
-function resolveListboxNameProps(
-  listboxNameId: string,
-  ariaLabelledBy: string | undefined,
-  labelPrefixedBy: string | undefined,
-): { "aria-labelledby": string } {
-  if (ariaLabelledBy) return { "aria-labelledby": ariaLabelledBy };
-  return { "aria-labelledby": sift([labelPrefixedBy, listboxNameId]).join(" ") };
-}
-
-/**
- * Trims, normalizes, and optionally validates a raw draft string.
- *
- * Returns `null` for empty or whitespace-only input so callers can skip
- * adding an empty entry. Otherwise returns the normalized value and any
- * validation error.
- */
-function processDraft(
-  raw: string,
-  normalize?: (v: string) => string,
-  validate?: (v: string) => string | undefined,
-): { normalized: string; error: string | undefined } | null {
-  const trimmed = raw.trim();
-  if (!trimmed) return null;
-  const normalized = normalizeValue(trimmed, normalize);
-  return { normalized, error: validate?.(normalized) };
-}
-
-/** Builds the screen-reader announcement for a multi-entry paste. Pure function. */
-function pasteAnnouncement(
-  added: number,
-  skipped: number,
-  valid: string[],
-  invalid: string[],
-): TranslatedString {
-  // TRANSLATORS: %d will be replaced with a number of duplicate entries skipped.
-  if (added === 0) return sprintf(_("%d duplicates skipped."), skipped);
-
-  if (skipped === 0) {
-    return invalid.length === 0
-      ? // TRANSLATORS: %d will be replaced with a number of added entries.
-        sprintf(_("%d entries added."), valid.length)
-      : // TRANSLATORS: first %d is the number of added entries, second %d is
-        // the number of invalid entries.
-        sprintf(_("%d entries added, %d invalid."), added, invalid.length);
-  }
-
-  if (invalid.length === 0)
-    // TRANSLATORS: first %d is the number of added entries, second %d is the number of duplicate entries skipped.
-    return sprintf(_("%d entries added, %d duplicates skipped."), valid.length, skipped);
-
-  // TRANSLATORS: first %d is the number of added entries, second %d is the number of invalid entries, third %d is the number of duplicates skipped.
-  return sprintf(
-    _("%d entries added, %d invalid, %d duplicates skipped."),
-    added,
-    invalid.length,
-    skipped,
-  );
-}
-
-/**
- * Splits pasted text into non-empty entries using the given pattern.
- *
- * Defaults to splitting on whitespace and commas. Blank entries produced
- * by the split are always filtered out.
- *
- * @internal Exported for testing only.
- */
-export function parsePasteEntries(text: string, splitPasteOn?: RegExp | string): string[] {
-  return sift(text.split(splitPasteOn ?? /[\s,]+/).map((t) => t.trim()));
-}
-
-/**
- * Entries left after a picker offering `offered` answered with `picked`.
- *
- * For an `addOn` that lists a known set of values while the field also accepts
- * typed ones. The entries the picker knew nothing about are kept as they were:
- * dropping them because the picker did not offer them would lose what the user
- * wrote. The offered ones follow the pick, keeping the order they were listed
- * in and appending the rest.
- *
- * @example
- * onConfirm={(picked) => setEntries(mergePicked(entries, offered, picked))}
- */
-export function mergePicked(entries: string[], offered: string[], picked: string[]): string[] {
-  const kept = entries.filter((e) => !offered.includes(e) || picked.includes(e));
-
-  return [...kept, ...picked.filter((p) => !kept.includes(p))];
-}
-
-/**
- * Returns entries from `normalized` not already in `existing`,
- * also deduplicating within `normalized` itself.
- *
- * Prepends `existing` before deduplication so `unique` sees existing entries
- * first and drops any later occurrence of the same value. Slicing off the
- * first `existing.length` elements then yields only the genuinely new entries.
- */
-function filterNew(existing: string[], normalized: string[]): string[] {
-  return unique([...existing, ...normalized]).slice(existing.length);
-}
 
 /**
  * Renders keyboard usage instructions for screen readers.
@@ -219,102 +90,6 @@ function SightedInstructions({ hasEntries, isDirty }: { hasEntries: boolean; isD
             _("Enter or Tab to add")}
       </Text>
     </HelperTextItem>
-  );
-}
-
-type EntryProps = {
-  /** Raw stored value, not necessarily the display form. */
-  item: string;
-  index: number;
-  /** Whether this entry is currently focused during keyboard navigation. */
-  isActive: boolean;
-  /** Validation error message; undefined means the entry is valid. */
-  error?: string;
-  /** Formats the raw value for display and aria labels. */
-  toLabel: (v: string) => string;
-  onEdit: (index: number) => void;
-  onRemove: (index: number) => void;
-  /** Returns a stable DOM id used for aria-activedescendant. */
-  valueId: (index: number) => string;
-  /** Maximum width for entries in "ch" units. When undefined, no truncation is applied. */
-  maxWidth?: number;
-};
-
-/**
- * A single committed entry, rendered as a listbox option.
- *
- * Both the visual color and the aria-label carry validation state, so
- * sighted and assistive-technology users receive the same information.
- */
-function Entry({
-  item,
-  index,
-  isActive,
-  error,
-  toLabel,
-  onEdit,
-  onRemove,
-  valueId,
-  maxWidth,
-}: EntryProps) {
-  // preventDefault keeps focus on the input; the edit moves the value back to draft.
-  const handleMouseDown = (e: React.MouseEvent) => {
-    e.preventDefault();
-    onEdit(index);
-  };
-
-  // preventDefault avoids blur; stopPropagation prevents the span from triggering edit.
-  const handleCloseMouseDown = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-  };
-
-  const handleRemove = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    onRemove(index);
-  };
-
-  const labelText = toLabel(item);
-
-  let labelContent: React.ReactNode = labelText;
-  if (maxWidth !== undefined) {
-    const trailingNumChars = Math.floor(maxWidth / 2);
-    labelContent = (
-      <Truncate
-        content={labelText}
-        position="middle"
-        trailingNumChars={trailingNumChars}
-        maxCharsDisplayed={maxWidth}
-      />
-    );
-  }
-
-  return (
-    <span style={{ cursor: "pointer" }} onMouseDown={handleMouseDown}>
-      <Label
-        id={valueId(index)}
-        role="option"
-        aria-selected={isActive}
-        // TRANSLATORS: accessible label for an invalid entry. First %s is the entry value, second %s is the validation error.
-        aria-label={error ? sprintf(_("%s is invalid: %s"), labelText, error) : labelText}
-        color={error ? "red" : undefined}
-        closeBtnProps={{
-          tabIndex: -1,
-          onMouseDown: handleCloseMouseDown,
-        }}
-        onClose={handleRemove}
-        // TRANSLATORS: accessible label for the remove button of an entry. %s is the entry value.
-        closeBtnAriaLabel={sprintf(_("Remove %s"), labelText)}
-        style={{
-          outline: isActive
-            ? "2px solid var(--pf-v6-global--primary-color--100, #0066cc)"
-            : undefined,
-          outlineOffset: isActive ? 1 : undefined,
-        }}
-      >
-        {labelContent}
-      </Label>
-    </span>
   );
 }
 
@@ -428,31 +203,15 @@ type ArrayFieldProps = {
   splitPasteOn?: RegExp | string;
 
   /**
-   * Additional guidance shown below the field.
+   * Additional guidance shown alongside the error messages.
    *
-   * Always rendered, and kept alongside the error messages when there are any.
-   * Use to explain the expected format, or how the entries can be filled in
-   * when the field offers more than typing (see `addOn`).
+   * Only rendered when the field has errors. Use to explain the expected
+   * format or other context that helps the user fix invalid entries.
    */
   helperText?: React.ReactNode;
 
   /** Disables the text input and all entry interactions. */
   isDisabled?: boolean;
-
-  /**
-   * Content rendered next to the text input, for managing the entries without
-   * typing them: a picker, a dialog opener, a list of suggestions.
-   *
-   * It receives the current `entries` and a `setEntries` that replaces them.
-   * Replacing rather than only adding lets a picker that shows what is already
-   * listed take back what the user unpicks.
-   *
-   * @example
-   * addOn={({ entries, setEntries }) => (
-   *   <Button onClick={() => setEntries([...entries, ...pickedNames])}>{_("Add")}</Button>
-   * )}
-   */
-  addOn?: (props: { entries: string[]; setEntries: (values: string[]) => void }) => React.ReactNode;
 
   /**
    * Maximum width for entries in "ch" units.
@@ -477,12 +236,6 @@ type ArrayFieldProps = {
  * to the first or last, and Escape exits navigation. Pasting a whitespace- or
  * comma-separated string adds all tokens at once. The splitting pattern can be
  * customized via `splitPasteOn` (e.g., `"\n"` for newline-separated entries).
- *
- * However a value arrives, typed, pasted, or set by an `addOn`, it goes through
- * the same `normalize` and `skipDuplicates` rules and is validated the same
- * way. Typing and pasting clear the draft once committed; an `addOn` leaves it
- * alone, since only the caller knows whether what the user was typing still
- * matters.
  *
  * The component correctly handles newline splitting because the paste event
  * handler reads from `clipboardData.getData('text')` before the browser
@@ -552,7 +305,6 @@ export default function ArrayField({
   skipDuplicates = false,
   splitPasteOn,
   maxEntryWidth,
-  addOn,
 }: ArrayFieldProps) {
   const field = useFieldContext<string[]>();
   const value = field.state.value;
@@ -570,9 +322,8 @@ export default function ArrayField({
   });
   const inputNameProps = resolveAriaLabelProps(labelProps, { "aria-labelledby": labelId });
 
-  // Names the entries list, symmetric with the input: see resolveListboxNameProps.
+  // Names the entries list, symmetric with the input: see EntriesListbox.
   const listboxNameId = `${field.name}-listbox-name`;
-  const listboxNameProps = resolveListboxNameProps(listboxNameId, ariaLabelledBy, labelPrefixedBy);
 
   /**
    * Returns the validation error for an entry, combining both validators.
@@ -725,146 +476,85 @@ export default function ArrayField({
     }
   };
 
-  /**
-   * Appends several values at once, announcing the outcome as a whole instead
-   * of once per value.
-   */
-  const addEntries = (entries: string[]) => {
-    if (entries.length === 0) return;
-
-    const normalized = entries.map((t) => normalizeValue(t, normalize));
-    const toAdd = skipDuplicates ? filterNew(value, normalized) : normalized;
-    const [valid, invalid] = fork(toAdd, (n) => !validateOnChange?.(n));
-    const skipped = normalized.length - toAdd.length;
-
-    onChange([...value, ...toAdd]);
-    clearActive();
-
-    announce(pasteAnnouncement(toAdd.length, skipped, valid, invalid));
-  };
-
   const onPaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
     const entries = parsePasteEntries(e.clipboardData.getData("text"), splitPasteOn);
     if (entries.length <= 1) return;
     e.preventDefault();
 
-    addEntries(entries);
-    setDraft("");
-  };
-
-  /**
-   * Replaces the whole list, the way an add-on picker showing what is already
-   * listed does.
-   *
-   * What is announced is the resulting list rather than what changed, since
-   * entries may just as well have been dropped.
-   */
-  const setEntries = (entries: string[]) => {
     const normalized = entries.map((t) => normalizeValue(t, normalize));
-    const next = skipDuplicates ? unique(normalized) : normalized;
+    const toAdd = skipDuplicates ? filterNew(value, normalized) : normalized;
+    const invalid = toAdd.filter((n) => validateOnChange?.(n));
+    const skipped = normalized.length - toAdd.length;
+    const added = toAdd.length;
 
-    onChange(next);
+    onChange([...value, ...toAdd]);
+    setDraft("");
     clearActive();
 
-    announce(
-      // TRANSLATORS: screen reader announcement after an add-on replaced the
-      // entries of a list. %d is replaced by how many are listed now.
-      sprintf(n_("%d entry listed.", "%d entries listed.", next.length), next.length),
-    );
+    announce(pasteAnnouncement(added, skipped, { count: invalid.length, kind: "invalid" }));
   };
 
   const hasErrors = value?.some(errorFor);
   const entryErrors = unique(sift(value?.map(errorFor)));
   const hasAnyError = hasErrors || fieldErrors?.length > 0;
 
-  const inputRow = (
-    <div onClick={() => inputRef.current?.focus()}>
-      <TextInputGroup
-        isDisabled={isDisabled}
-        className={(hasAnyError && "pf-m-error") || undefined}
-      >
-        <TextInputGroupMain
-          innerRef={inputRef}
-          value={draft}
-          aria-activedescendant={activeIndex >= 0 ? valueId(activeIndex) : undefined}
-          onChange={(_, v) => {
-            setDraft(v);
-            clearActive();
-          }}
-          onBlur={() => {
-            if (draft.trim()) commit(draft);
-          }}
-          inputProps={{
-            id: field.name,
-            "aria-describedby": `${hintId} ${instructionsId}`,
-            ...inputNameProps,
-            onKeyDown,
-            onPaste,
-          }}
-          style={{ flexBasis: "8rem", flexGrow: 1, display: "block" }}
-        >
-          {/* Holds the list name as a full translated phrase built from the
-                label, whatever its shape. Hidden: referenced only, never
-                shown. */}
-          {value.length > 0 && (
-            <span id={listboxNameId} hidden>
-              <Interpolate
-                // TRANSLATORS: accessible name for the entries list. %s is
-                // the field label (e.g. "DNS servers").
-                sentence={_("%s entries")}
-              >
-                {() => label}
-              </Interpolate>
-            </span>
-          )}
-          {value.length > 0 && (
-            <div
-              role="listbox"
-              {...listboxNameProps}
-              style={{ display: "flex", flexWrap: "wrap", gap: "0.25rem", padding: "0.2rem 0" }}
-            >
-              {value.map((item, index) => {
-                const error = errorFor(item);
-
-                return (
-                  <Entry
-                    key={index}
-                    index={index}
-                    item={item}
-                    isActive={index === activeIndex}
-                    error={error}
-                    toLabel={toLabel}
-                    onEdit={editAt}
-                    onRemove={removeAt}
-                    valueId={valueId}
-                    maxWidth={maxEntryWidth}
-                  />
-                );
-              })}
-            </div>
-          )}
-        </TextInputGroupMain>
-      </TextInputGroup>
-    </div>
-  );
-
   return (
     <FormGroup fieldId={field.name} label={<span id={labelId}>{label}</span>}>
-      {addOn ? (
-        <Flex
-          gap={{ default: "gapSm" }}
-          flexWrap={{ default: "nowrap" }}
-          alignItems={{ default: "alignItemsFlexStart" }}
+      <div onClick={() => inputRef.current?.focus()}>
+        <TextInputGroup
+          isDisabled={isDisabled}
+          className={(hasAnyError && "pf-m-error") || undefined}
         >
-          {/* The input is not told to grow: it takes the width of what it
-              holds, so the add-on stays right next to it instead of being
-              pushed to the far edge of the form. */}
-          <FlexItem style={{ minWidth: 0 }}>{inputRow}</FlexItem>
-          <FlexItem>{addOn({ entries: value, setEntries })}</FlexItem>
-        </Flex>
-      ) : (
-        inputRow
-      )}
+          <TextInputGroupMain
+            innerRef={inputRef}
+            value={draft}
+            aria-activedescendant={activeIndex >= 0 ? valueId(activeIndex) : undefined}
+            onChange={(_, v) => {
+              setDraft(v);
+              clearActive();
+            }}
+            onBlur={() => {
+              if (draft.trim()) commit(draft);
+            }}
+            inputProps={{
+              id: field.name,
+              "aria-describedby": `${hintId} ${instructionsId}`,
+              ...inputNameProps,
+              onKeyDown,
+              onPaste,
+            }}
+            style={{ flexBasis: "8rem", flexGrow: 1, display: "block" }}
+          >
+            {value.length > 0 && (
+              <EntriesListbox
+                label={label}
+                nameId={listboxNameId}
+                aria-labelledby={ariaLabelledBy}
+                labelPrefixedBy={labelPrefixedBy}
+              >
+                {value.map((item, index) => {
+                  const error = errorFor(item);
+
+                  return (
+                    <FieldEntry
+                      key={index}
+                      index={index}
+                      item={item}
+                      isActive={index === activeIndex}
+                      error={error}
+                      toLabel={toLabel}
+                      onEdit={editAt}
+                      onRemove={removeAt}
+                      valueId={valueId}
+                      maxWidth={maxEntryWidth}
+                    />
+                  );
+                })}
+              </EntriesListbox>
+            )}
+          </TextInputGroupMain>
+        </TextInputGroup>
+      </div>
 
       <FormHelperText>
         <HelperText>

@@ -26,7 +26,7 @@ import { first } from "radashi";
 import Popup from "~/components/core/Popup";
 import SelectableDataTable from "~/components/core/SelectableDataTable";
 import Text from "~/components/core/Text";
-import { connectionTypeLabel, deviceStateLabel, formatIp } from "~/utils/network";
+import { connectionTypeLabel, deviceLinkLabel, deviceStateLabel, formatIp } from "~/utils/network";
 import { sortCollection } from "~/utils";
 import { _ } from "~/i18n";
 
@@ -76,7 +76,11 @@ const deviceAddresses = (device: Device): string =>
 
 /**
  * Dialog for picking network devices from a table showing more details than a
- * dropdown can hold: name, MAC address, type, addresses and state.
+ * list can hold: name, MAC address, type, driver, link, addresses, state and
+ * location.
+ *
+ * The details a device does not report are left out altogether: a column no
+ * device can fill would be a column of dashes.
  *
  * The table can be sorted, and the pick is only reported to the caller when the
  * user confirms.
@@ -84,7 +88,7 @@ const deviceAddresses = (device: Device): string =>
  * Only devices the system reports are listed. A caller whose values are names
  * rather than devices, such as the ports of a bond, may well hold a name no
  * device answers to; the dialog says nothing about it and the caller keeps it
- * (see `mergePicked`).
+ * (see `mergePicked` in `PortsField`).
  */
 export default function DeviceSelectorModal({
   title,
@@ -112,6 +116,12 @@ export default function DeviceSelectorModal({
   };
   const [selection, setSelection] = useState<Device[]>(selected ?? defaultSelection());
 
+  // The details below are best-effort: a device reports them or it does not,
+  // and a column no device can fill is a column of dashes. They are only added
+  // when at least one device has something to say, the same way "Used by" is.
+  const hasLink = devices.some((device) => deviceLinkLabel(device));
+  const hasBusPath = devices.some((device) => device.busPath);
+
   const columns = [
     {
       // TRANSLATORS: table column with the name of a network device and, below
@@ -126,10 +136,30 @@ export default function DeviceSelectorModal({
       sortingKey: "name",
     },
     {
+      // TRANSLATORS: table column with the type of a network device and, below
+      // it, the kernel driver it runs on.
       name: _("Type"),
-      value: (device: Device) => connectionTypeLabel(device.type),
+      value: (device: Device) => (
+        <Stack>
+          <span>{connectionTypeLabel(device.type)}</span>
+          {device.driver && (
+            <Text textStyle={["textColorSubtle", "fontSizeXs"]}>{device.driver}</Text>
+          )}
+        </Stack>
+      ),
       sortingKey: "type",
     },
+    ...(hasLink
+      ? [
+          {
+            // TRANSLATORS: table column telling whether a network device has a
+            // cable plugged in and, when it does, how fast the link is.
+            name: _("Link"),
+            value: (device: Device) => deviceLinkLabel(device) || "-",
+            sortingKey: "speed",
+          },
+        ]
+      : []),
     {
       name: _("IP Addresses"),
       value: (device: Device) => deviceAddresses(device) || "-",
@@ -139,6 +169,18 @@ export default function DeviceSelectorModal({
       value: (device: Device) => deviceStateLabel(device.state),
       sortingKey: "state",
     },
+    ...(hasBusPath
+      ? [
+          {
+            // TRANSLATORS: table column with where a network device sits in the
+            // machine, e.g. "pci-0000:c5:00.3". It gets a column of its own
+            // because it is long and tells two cards of the same model apart.
+            name: _("Location"),
+            value: (device: Device) => device.busPath || "-",
+            sortingKey: "busPath",
+          },
+        ]
+      : []),
     ...(portOf
       ? [
           {
@@ -196,7 +238,9 @@ export default function DeviceSelectorModal({
   return (
     <Popup
       isOpen
-      variant="medium"
+      // Wide enough for the details the table holds: the location of a device
+      // alone runs to some thirty characters.
+      variant="large"
       title={title}
       // Focus starts on the picked device, so its row is what the user hears
       // and sees first, and the arrow keys move from there.

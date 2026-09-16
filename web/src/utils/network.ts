@@ -22,6 +22,7 @@
 
 import ipaddr from "ipaddr.js";
 import { isUndefined, sift, title } from "radashi";
+import { sprintf } from "sprintf-js";
 import {
   APIRoute,
   ApFlags,
@@ -98,6 +99,48 @@ const DEVICE_STATE_LABELS: Record<DeviceState, MarkedString> = {
  * Returns the translated label for a device state.
  */
 const deviceStateLabel = (state: DeviceState): TranslatedString => _(DEVICE_STATE_LABELS[state]);
+
+/**
+ * Formats a link speed given in Mb/s.
+ *
+ * A rate of a gigabit or more is given in Gb/s, the unit such cards are sold
+ * and talked about in ("10 Gb/s", not "10000 Mb/s"), keeping a decimal for the
+ * rates that fall between two whole gigabits, e.g. "2.5 Gb/s".
+ */
+const formatLinkSpeed = (mbps: number): TranslatedString => {
+  if (mbps < 1000) {
+    // TRANSLATORS: link speed of a network device in megabits per second. %d is
+    // replaced by the number, e.g. "100 Mb/s".
+    return sprintf(_("%d Mb/s"), mbps) as TranslatedString;
+  }
+
+  // TRANSLATORS: link speed of a network device in gigabits per second. %s is
+  // replaced by the number, e.g. "2.5 Gb/s".
+  return sprintf(_("%s Gb/s"), (mbps / 1000).toLocaleString()) as TranslatedString;
+};
+
+/**
+ * Describes the link of a device: its speed, or the lack of a link.
+ *
+ * Returns `undefined` when the device reports neither, which is the ordinary
+ * case for the virtual ones and for anything the kernel driver does not tell.
+ * That is left to the caller to render, since "unknown" and "no link" are
+ * different answers and only the second is the device's own.
+ */
+const deviceLinkLabel = (device: Device): TranslatedString | undefined => {
+  // A device with no cable in it reports no speed, so the missing speed is
+  // never what tells the user about it.
+  if (device.carrier === false) {
+    // TRANSLATORS: shown for a network device with no cable plugged in.
+    return _("No link");
+  }
+  if (device.speed) return formatLinkSpeed(device.speed);
+  // TRANSLATORS: shown for a network device that has a link but does not
+  // report how fast it is, e.g. a wireless or a virtual one.
+  if (device.carrier) return _("Link up");
+
+  return undefined;
+};
 
 /**
  * Returns true if the given connection type is virtual.
@@ -484,9 +527,11 @@ export {
   connectionType,
   connectionTypeLabel,
   controllerOf,
+  deviceLinkLabel,
   deviceStateLabel,
   ensureIPPrefix,
   formatIp,
+  formatLinkSpeed,
   generateConnectionName,
   intToIPString,
   ipPrefixFor,

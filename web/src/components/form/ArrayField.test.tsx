@@ -22,9 +22,8 @@
 
 import React from "react";
 import { screen } from "@testing-library/react";
-import { getAnnouncements, installerRender } from "~/test-utils";
+import { installerRender } from "~/test-utils";
 import { useAppForm } from "~/hooks/form";
-import { mergePicked, parsePasteEntries } from "~/components/form/ArrayField";
 import { _ } from "~/i18n";
 
 type TestFormProps = {
@@ -41,8 +40,6 @@ type TestFormProps = {
   labelPrefixedBy?: string;
   /** Id of an element whose text replaces the accessible names entirely. */
   ariaLabelledBy?: string;
-  /** Values the add-on button lists when clicked, on top of the current ones. */
-  addOnValues?: string[];
 };
 
 function TestForm({
@@ -56,7 +53,6 @@ function TestForm({
   maxEntryWidth,
   labelPrefixedBy,
   ariaLabelledBy,
-  addOnValues,
 }: TestFormProps) {
   const form = useAppForm({
     defaultValues: { tags: defaultValues },
@@ -87,19 +83,6 @@ function TestForm({
               helperText={helperText}
               splitPasteOn={splitPasteOn}
               maxEntryWidth={maxEntryWidth}
-              addOn={
-                addOnValues &&
-                (({ entries, setEntries }) => (
-                  <>
-                    <button type="button" onClick={() => setEntries([...entries, ...addOnValues])}>
-                      Pick
-                    </button>
-                    <button type="button" onClick={() => setEntries(addOnValues)}>
-                      Replace
-                    </button>
-                  </>
-                ))
-              }
             />
           )}
         </form.AppField>
@@ -357,52 +340,6 @@ describe("ArrayField", () => {
     });
   });
 
-  describe("addOn", () => {
-    it("lists the values the add-on commits", async () => {
-      const { user } = installerRender(<TestForm addOnValues={["alpha", "beta"]} />);
-      await user.click(screen.getByRole("button", { name: "Pick" }));
-      screen.getByRole("option", { name: /alpha/ });
-      screen.getByRole("option", { name: /beta/ });
-    });
-
-    it("drops the entries the add-on leaves out", async () => {
-      const { user } = installerRender(
-        <TestForm defaultValues={["alpha", "beta"]} addOnValues={["beta"]} />,
-      );
-      await user.click(screen.getByRole("button", { name: "Replace" }));
-      expect(screen.queryByRole("option", { name: /alpha/ })).not.toBeInTheDocument();
-      screen.getByRole("option", { name: /beta/ });
-    });
-
-    it("keeps the entry the user was typing, committed when the input lost focus", async () => {
-      const { user } = installerRender(<TestForm addOnValues={["alpha"]} />);
-      const input = screen.getByRole("textbox", { name: "Tags" });
-      await user.type(input, "partial");
-      await user.click(screen.getByRole("button", { name: "Pick" }));
-      screen.getByRole("option", { name: /partial/ });
-      screen.getByRole("option", { name: /alpha/ });
-    });
-
-    it("skips values already in the list when skipDuplicates is set", async () => {
-      const { user } = installerRender(
-        <TestForm defaultValues={["alpha"]} addOnValues={["alpha", "beta"]} skipDuplicates />,
-      );
-      await user.click(screen.getByRole("button", { name: "Pick" }));
-      expect(screen.getAllByRole("option")).toHaveLength(2);
-    });
-
-    it("announces how many entries are listed afterwards", async () => {
-      const { user } = installerRender(<TestForm addOnValues={["alpha", "beta"]} />);
-      await user.click(screen.getByRole("button", { name: "Pick" }));
-      expect(getAnnouncements()).toContain("2 entries listed.");
-    });
-
-    it("is not rendered when no add-on is given", () => {
-      installerRender(<TestForm />);
-      expect(screen.queryByRole("button", { name: "Pick" })).not.toBeInTheDocument();
-    });
-  });
-
   describe("paste", () => {
     it("adds multiple entries from a paste", async () => {
       const { user } = installerRender(<TestForm />);
@@ -630,98 +567,5 @@ describe("ArrayField", () => {
       installerRender(<TestForm defaultValues={["very-long-entry-name"]} maxEntryWidth={10} />);
       screen.getByRole("button", { name: "Remove very-long-entry-name" });
     });
-  });
-});
-
-// parsePasteEntries is tested directly because ArrayField uses <input type="text">
-// internally (despite managing multiple values in state). Text inputs strip
-// newlines per HTML spec when setting the value property, making it impossible to
-// integration-test paste splitting with newline patterns like splitPasteOn="\n".
-// Reference: https://html.spec.whatwg.org/multipage/input.html#text-(type=text)-state-and-search-state-(type=search)
-describe("parsePasteEntries", () => {
-  describe("default splitting (whitespace and commas)", () => {
-    it("splits on spaces", () => {
-      expect(parsePasteEntries("alpha beta gamma")).toEqual(["alpha", "beta", "gamma"]);
-    });
-
-    it("splits on commas", () => {
-      expect(parsePasteEntries("alpha,beta,gamma")).toEqual(["alpha", "beta", "gamma"]);
-    });
-
-    it("splits on mixed whitespace and commas", () => {
-      expect(parsePasteEntries("alpha, beta gamma,delta")).toEqual([
-        "alpha",
-        "beta",
-        "gamma",
-        "delta",
-      ]);
-    });
-
-    it("filters out blank entries", () => {
-      expect(parsePasteEntries("alpha  beta   gamma")).toEqual(["alpha", "beta", "gamma"]);
-    });
-
-    it("trims whitespace from entries", () => {
-      expect(parsePasteEntries("  alpha  ,  beta  ")).toEqual(["alpha", "beta"]);
-    });
-
-    it("returns empty array for blank input", () => {
-      expect(parsePasteEntries("")).toEqual([]);
-      expect(parsePasteEntries("   ")).toEqual([]);
-    });
-  });
-
-  describe("custom splitPasteOn pattern", () => {
-    it("splits on newlines when given \\n", () => {
-      expect(parsePasteEntries("alpha\nbeta\ngamma", "\n")).toEqual(["alpha", "beta", "gamma"]);
-    });
-
-    it("splits on custom regex pattern", () => {
-      expect(parsePasteEntries("alpha|beta|gamma", /\|/)).toEqual(["alpha", "beta", "gamma"]);
-    });
-
-    it("preserves spaces within entries when splitting on newlines", () => {
-      const input = "ssh-ed25519 AAAAC3Nz user@laptop\nssh-rsa AAAAB3Nz user@desktop";
-      expect(parsePasteEntries(input, "\n")).toEqual([
-        "ssh-ed25519 AAAAC3Nz user@laptop",
-        "ssh-rsa AAAAB3Nz user@desktop",
-      ]);
-    });
-
-    it("filters blank entries when splitting with custom pattern", () => {
-      expect(parsePasteEntries("alpha\n\nbeta\n", "\n")).toEqual(["alpha", "beta"]);
-    });
-
-    it("trims whitespace from entries even with custom pattern", () => {
-      expect(parsePasteEntries("  alpha  \n  beta  ", "\n")).toEqual(["alpha", "beta"]);
-    });
-  });
-});
-
-describe("mergePicked", () => {
-  it("keeps the entries the picker did not offer", () => {
-    expect(mergePicked(["typed", "alpha"], ["alpha", "beta"], ["alpha"])).toEqual([
-      "typed",
-      "alpha",
-    ]);
-  });
-
-  it("drops the offered entries left unpicked", () => {
-    expect(mergePicked(["alpha", "beta"], ["alpha", "beta"], ["beta"])).toEqual(["beta"]);
-  });
-
-  it("appends the newly picked entries", () => {
-    expect(mergePicked(["alpha"], ["alpha", "beta"], ["alpha", "beta"])).toEqual(["alpha", "beta"]);
-  });
-
-  it("keeps the order the entries were listed in", () => {
-    expect(mergePicked(["beta", "alpha"], ["alpha", "beta"], ["alpha", "beta"])).toEqual([
-      "beta",
-      "alpha",
-    ]);
-  });
-
-  it("lists nothing but the untouched entries when nothing is picked", () => {
-    expect(mergePicked(["typed", "alpha"], ["alpha"], [])).toEqual(["typed"]);
   });
 });

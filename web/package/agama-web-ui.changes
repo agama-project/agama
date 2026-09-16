@@ -1,13 +1,26 @@
 -------------------------------------------------------------------
-Mon Sep  7 15:00:00 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+Tue Sep 16 09:00:00 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
 
 - Pick the ports of a bond or a bridge from the devices found in
-  the system, several at once, instead of typing their names by
-  hand. The dialog opens with the ports already listed picked, so
-  it serves for dropping one as much as for adding one, and it
-  tells which devices another bond or bridge already uses. Ports
-  naming no device found are left alone: the dialog only offers
-  what the system reports (bsc#1279417).
+  the system instead of typing their names by hand: the field
+  offers them in a searchable list, and still takes a name written
+  out for a device that is not there yet. A dialog reached from the
+  foot of that list shows the details the list cannot hold, link
+  and speed, driver, addresses, location, and which devices another
+  bond or bridge already uses (bsc#1279417).
+
+-------------------------------------------------------------------
+Tue Sep 15 09:38:41 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Add a form field for selecting several values from a searchable
+  list of known options, with optional support for custom entries
+  (gh#agama-project/agama#3927).
+
+-------------------------------------------------------------------
+Thu Sep 10 13:10:57 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add a terminal panel to the web UI, giving access to a real shell
+  on the system being installed (gh#agama-project/agama#3868).
 
 -------------------------------------------------------------------
 Thu Sep  3 08:13:38 UTC 2026 - David Diaz <dgonzalez@suse.com>

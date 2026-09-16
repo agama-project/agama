@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import { screen } from "@testing-library/react";
+import { screen, within } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import { useAppForm } from "~/hooks/form";
 import { defaultOptions } from "./fields";
@@ -79,19 +79,21 @@ describe("BondFields", () => {
     await screen.findByLabelText("Bond mode");
     await screen.findByLabelText("Bond options");
     await screen.findByText("Bond ports");
-    screen.getByRole("textbox", { name: "Bond ports" });
-    screen.getByRole("button", { name: "Select bond ports" });
+    screen.getByRole("combobox", { name: "Bond ports" });
   });
 
   it("displays bond ports", async () => {
     const { user } = installerRender(<TestForm />);
 
-    const input = await screen.findByRole("textbox", { name: "Bond ports" });
+    const input = await screen.findByRole("combobox", { name: "Bond ports" });
     await user.type(input, "enp1s0{enter}");
     await user.type(input, "br0{enter}");
 
-    expect(await screen.findByText("enp1s0")).toBeInTheDocument();
-    expect(await screen.findByText("br0")).toBeInTheDocument();
+    // Looked up among the committed values: the list of devices the field
+    // offers is still open behind them, naming the same devices.
+    const entries = within(screen.getByRole("listbox", { name: "Bond ports entries" }));
+    entries.getByRole("option", { name: "enp1s0" });
+    entries.getByRole("option", { name: "br0" });
   });
 
   it("allows defining the device name for a new bond connection", async () => {

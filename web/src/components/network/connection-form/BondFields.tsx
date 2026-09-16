@@ -107,9 +107,9 @@ const BondFields = withForm({
             // TRANSLATORS: label for the bond ports field.
             _("Bond ports")
           }
-          pickLabel={
-            // TRANSLATORS: accessible name of the button opening the dialog for
-            // picking the ports of a bond among the devices found in the system.
+          title={
+            // TRANSLATORS: title of the dialog for picking the ports of a bond
+            // among the devices found in the system.
             _("Select bond ports")
           }
         />

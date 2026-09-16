@@ -55,7 +55,6 @@ import Error from "@icons/error.svg?component";
 import ErrorFill from "@icons/error-fill.svg?component";
 import ExpandCircleDown from "@icons/expand_circle_down.svg?component";
 import FileJson from "@icons/file_json.svg?component";
-import FormatListBulletedAdd from "@icons/format_list_bulleted_add.svg?component";
 import Fingerprint from "@icons/fingerprint.svg?component";
 import KeyboardArrowDown from "@icons/keyboard_arrow_down.svg?component";
 import Globe from "@icons/globe.svg?component";
@@ -68,6 +67,7 @@ import ListAltCheck from "@icons/list_alt_check.svg?component";
 import Lock from "@icons/lock.svg?component";
 import ManageAccounts from "@icons/manage_accounts.svg?component";
 import Menu from "@icons/menu.svg?component";
+import Minimize from "@icons/minimize.svg?component";
 import MoreHoriz from "@bolderIcons/more_horiz.svg?component";
 import MoreVert from "@bolderIcons/more_vert.svg?component";
 import NetworkWifi from "@icons/network_wifi.svg?component";
@@ -78,6 +78,7 @@ import Report from "@icons/report.svg?component";
 import RestartAlt from "@icons/restart_alt.svg?component";
 import Routine from "@icons/routine.svg?component";
 import SearchOff from "@icons/search_off.svg?component";
+import SelectWindow from "@icons/select_window.svg?component";
 import SettingsEthernet from "@icons/settings_ethernet.svg?component";
 import Translate from "@icons/translate.svg?component";
 import UnfoldLess from "@icons/unfold_less.svg?component";
@@ -123,7 +124,6 @@ const icons = {
   expand_circle_down: ExpandCircleDown,
   file_json: FileJson,
   fingerprint: Fingerprint,
-  format_list_bulleted_add: FormatListBulletedAdd,
   globe: Globe,
   hard_drive: HardDrive,
   info: Info,
@@ -135,6 +135,7 @@ const icons = {
   lock: Lock,
   manage_accounts: ManageAccounts,
   menu: Menu,
+  minimize: Minimize,
   monitor: Monitor,
   more_horiz: MoreHoriz,
   more_vert: MoreVert,
@@ -146,6 +147,7 @@ const icons = {
   restart_alt: RestartAlt,
   routine: Routine,
   search_off: SearchOff,
+  select_window: SelectWindow,
   settings_ethernet: SettingsEthernet,
   translate: Translate,
   unfold_less: UnfoldLess,

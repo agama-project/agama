@@ -36,3 +36,8 @@ if (!window.HTMLElement.prototype.scrollIntoView) {
 }
 
 jest.mock("~/context/installerL10n");
+
+// Avoid creating a real xterm.js instance or opening a real WebSocket
+// whenever the terminal context is used in a test. See
+// use-terminal-session.test.ts for the tests that exercise the real hook.
+jest.mock("~/hooks/use-terminal-session");

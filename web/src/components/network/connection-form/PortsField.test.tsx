@@ -43,6 +43,10 @@ const mockDevice1 = {
   macAddress: "00:11:22:33:44:55",
   type: CONNECTION_TYPE.ETHERNET,
   state: DeviceState.CONNECTED,
+  speed: 1000,
+  carrier: true,
+  driver: "e1000e",
+  busPath: "pci-0000:00:1f.6",
 };
 
 const mockDevice2 = {
@@ -50,6 +54,9 @@ const mockDevice2 = {
   macAddress: "AA:BB:CC:DD:EE:FF",
   type: CONNECTION_TYPE.ETHERNET,
   state: DeviceState.DISCONNECTED,
+  carrier: false,
+  driver: "r8169",
+  busPath: "pci-0000:03:00.0",
 };
 
 const mockBondDevice = {
@@ -90,7 +97,7 @@ function TestForm({ defaultValues = {} }: { defaultValues?: object }) {
         name="bondPorts"
         controllerField="bondIface"
         label={_("Bond ports")}
-        pickLabel={_("Select bond ports")}
+        title={_("Select bond ports")}
       />
     </form.AppForm>
   );
@@ -98,9 +105,21 @@ function TestForm({ defaultValues = {} }: { defaultValues?: object }) {
 
 type User = ReturnType<typeof installerRender>["user"];
 
-/** Opens the dialog for picking the ports. */
-const openDialog = async (user: User) =>
-  user.click(screen.getByRole("button", { name: "Select bond ports" }));
+/** Opens the list of devices the field offers. */
+const openList = async (user: User) =>
+  user.click(screen.getByRole("button", { name: "Show options" }));
+
+/** The open list of devices. */
+const list = () => within(screen.getByRole("listbox", { name: "Bond ports" }));
+
+/** The option offering a device in the open list. */
+const deviceOption = (name: string) => list().getByRole("option", { name: new RegExp(name) });
+
+/** Opens the dialog listing the devices with their details. */
+const openDialog = async (user: User) => {
+  await openList(user);
+  await user.click(list().getByRole("option", { name: /Browse with details/ }));
+};
 
 /** The open dialog. */
 const dialog = () => within(screen.getByRole("dialog"));
@@ -126,14 +145,44 @@ describe("PortsField", () => {
 
   it("renders the ports field", () => {
     installerRender(<TestForm />);
-    screen.getByRole("textbox", { name: "Bond ports" });
+    screen.getByRole("combobox", { name: "Bond ports" });
   });
 
   it("offers the devices that can be used as ports", async () => {
     const { user } = installerRender(<TestForm />);
-    await openDialog(user);
-    deviceRow("enp1s0");
-    deviceRow("enp2s0");
+    await openList(user);
+    deviceOption("enp1s0");
+    deviceOption("enp2s0");
+  });
+
+  it("tells the devices apart by what they report", async () => {
+    const { user } = installerRender(<TestForm />);
+    await openList(user);
+    expect(deviceOption("enp1s0")).toHaveTextContent("Ethernet · 1 Gb/s · 00:11:22:33:44:55");
+    expect(deviceOption("enp2s0")).toHaveTextContent("Ethernet · No link · AA:BB:CC:DD:EE:FF");
+  });
+
+  it("finds a device by what its option does not show", async () => {
+    const { user } = installerRender(<TestForm />);
+    await user.type(screen.getByRole("combobox", { name: "Bond ports" }), "r8169");
+
+    deviceOption("enp2s0");
+    expect(list().queryByRole("option", { name: /enp1s0/ })).not.toBeInTheDocument();
+  });
+
+  it("takes the name of a device the system does not report", async () => {
+    const { user } = installerRender(<TestForm />);
+    await user.type(screen.getByRole("combobox", { name: "Bond ports" }), "enp9s0{Enter}");
+
+    expect(entry("enp9s0")).toBeInTheDocument();
+  });
+
+  it("adds the devices chosen from the list", async () => {
+    const { user } = installerRender(<TestForm />);
+    await openList(user);
+    await user.click(deviceOption("enp1s0"));
+
+    expect(entry("enp1s0")).toBeInTheDocument();
   });
 
   it("does not offer the loopback device", async () => {
@@ -146,6 +195,29 @@ describe("PortsField", () => {
     const { user } = installerRender(<TestForm />);
     await openDialog(user);
     expect(dialog().queryByRole("row", { name: /bond0/ })).not.toBeInTheDocument();
+  });
+
+  it("shows in the dialog the details the list cannot hold", async () => {
+    const { user } = installerRender(<TestForm />);
+    await openDialog(user);
+    dialog().getByRole("columnheader", { name: "Link" });
+    dialog().getByRole("columnheader", { name: "Location" });
+    within(deviceRow("enp1s0")).getByText("e1000e");
+    within(deviceRow("enp1s0")).getByText("1 Gb/s");
+    within(deviceRow("enp1s0")).getByText("pci-0000:00:1f.6");
+    within(deviceRow("enp2s0")).getByText("No link");
+  });
+
+  it("leaves out the details no device reports", async () => {
+    mockDevices = [
+      mockLoopback,
+      mockBondDevice,
+      { ...mockDevice1, speed: undefined, carrier: undefined, busPath: undefined },
+    ];
+    const { user } = installerRender(<TestForm />);
+    await openDialog(user);
+    expect(dialog().queryByRole("columnheader", { name: "Link" })).not.toBeInTheDocument();
+    expect(dialog().queryByRole("columnheader", { name: "Location" })).not.toBeInTheDocument();
   });
 
   it("adds the picked devices to the list", async () => {
@@ -170,10 +242,12 @@ describe("PortsField", () => {
     expect(entriesList()).not.toBeInTheDocument();
   });
 
-  it("is disabled when there is no device to offer", () => {
+  it("offers no way into the dialog when there is no device to browse", async () => {
     mockDevices = [mockLoopback, mockBondDevice];
-    installerRender(<TestForm />);
-    expect(screen.getByRole("button", { name: "Select bond ports" })).toBeDisabled();
+    const { user } = installerRender(<TestForm />);
+    await openList(user);
+
+    expect(screen.queryByRole("option", { name: /Browse with details/ })).not.toBeInTheDocument();
   });
 
   describe("when some devices are already listed as ports", () => {

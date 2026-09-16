@@ -20,7 +20,7 @@ examples and refined patterns.
   - [5. Choice selector (mode or behavior selection)](#5-choice-selector-mode-or-behavior-selection)
   - [6. Revealed by a checkbox](#6-revealed-by-a-checkbox)
   - [7. Footer entry, help that stays out of the way](#7-footer-entry-help-that-stays-out-of-the-way)
-  - [8. Add-on beside a field that takes typed values](#8-add-on-beside-a-field-that-takes-typed-values)
+  - [8. Several values in one field](#8-several-values-in-one-field)
 - [Read-only information](#read-only-information)
 - [Accessibility notes](#accessibility-notes)
 - [Validation](#validation)
@@ -49,6 +49,7 @@ examples and refined patterns.
   - [When to Use This Pattern](#when-to-use-this-pattern)
 - [Code Organization](#code-organization)
   - [Directory Structure](#directory-structure)
+  - [The Field Library](#the-field-library)
   - [File Naming](#file-naming)
   - [The fields.ts Module](#the-fieldsts-module)
   - [Sharing fields across forms](#sharing-fields-across-forms)
@@ -297,8 +298,7 @@ The footer entry costs nothing to anyone who does not open the list, and it sits
 exactly where the user already is at the moment the list turns out not to be
 enough. Prefer it whenever the extra route serves a minority. A separate control
 is right only when most users are expected to take that route, at which point it
-is not a way out but a main path. That case, and the case of a field that has no
-list to hang an entry off in the first place, is pattern 8.
+is not a way out but a main path.
 
 #### Reaching it
 
@@ -341,123 +341,91 @@ footerEntry={{
 }}
 ```
 
+#### When the entry opens a dialog over the same values
+
+On a field holding several values, the entry usually opens a dialog showing
+more about those same values than a list can: the ports field opens
+`DeviceSelectorModal`, a sortable table of every device found with its link,
+driver, addresses and location. Such a dialog is a second view of the field,
+and the user will treat it as one: what they unpick there, they expect gone.
+
+Three rules, all of which the ports field needed:
+
+1. **Open with the values already held picked.** Otherwise confirming silently
+   drops everything the field was holding.
+2. **Let it answer with nothing.** Unpicking the last value must be
+   confirmable. A dialog that requires a non-empty selection cannot empty the
+   field, and the user is sent back to the text box to finish the job by hand.
+   Nothing picked is a legitimate answer, not an unfinished one.
+3. **Never touch what it does not offer.** Everything else the field holds
+   survives the round trip untouched, whether it was left out of the offer on
+   purpose (the loopback device, the controller being edited) or matches
+   nothing the dialog knows about (a name written out by hand). `mergePicked`
+   in `PortsField` is that rule: values the dialog never listed survive, listed
+   ones follow the pick.
+
+Rule 3 is what keeps the dialog honest about its own scope. The alternative,
+listing values the source data knows nothing about as stand-in rows so that the
+dialog mirrors the field exactly, was tried on the ports field and dropped:
+naming something that does not exist yet is a special case, and a table of
+found devices is the wrong place to make it look ordinary. The text box stays
+the way to add such a value, and the entry in the control stays the way to
+remove it.
+
+Title the dialog after what the values are for, `_("Select bond ports")`, not
+after what it lists. The entry reads the same on every field it appears on, and
+the field label that gave the context away is no longer in sight once the
+dialog covers the form. That title is the caller's to supply, so a shared
+dialog takes a `title` prop instead of deriving one from its contents.
+
+Confirm with `Accept`, the word the rest of the installer uses. A label
+restating the selection, "Use 3 devices", changes under the pointer as the user
+ticks boxes and repeats what the ticked boxes already say.
+
 #### When not to use it
 
 - Most users need the route: give it a control of its own.
 - The route is the only way to reach a value: the list is the wrong control.
 
-Available today on `DropdownField` through its `footerEntry` prop. Other
-selectors can grow the same idea when a case for it turns up.
+Available today on `DropdownField` and `MultiSelectField` through their
+`footerEntry` prop. Both render it from the same piece, so the entry looks and
+reads the same wherever it appears. Other selectors can grow the same idea when
+a case for it turns up.
 
-### 8. Add-on beside a field that takes typed values
+### 8. Several values in one field
 
-Like pattern 7, this one is about what a control offers rather than about
-whether a field appears. A second control sits next to the field and fills it
-in: a dialog listing what the system found, a picker, a set of suggestions. The
-field keeps working exactly as before for anyone who types.
+Some fields hold a list rather than a single value: DNS servers, search
+domains, bond ports. Two components cover that, and the choice between them is
+whether the values are known in advance.
 
-Use it when both of these hold:
+`ArrayField` takes whatever the user types. Use it when the application cannot
+know the values beforehand: addresses, domains, names the user invents.
 
-- **The field takes free text, not a choice from a list.** There is no list to
-  hang a footer entry off. `ArrayField` is the case today: the value is a list
-  of strings the user types, pastes, and edits one token at a time.
-- **The extra route is the main path, not a way out.** Pattern 7 argues against
-  a control beside the field precisely because a footer entry costs nothing to
-  the majority who never take that route. Here the majority does take it:
-  picking the cards the machine already has is the ordinary way to fill in the
-  field, and typing is for the card that is not plugged in yet.
+`MultiSelectField` offers a list to choose from, filtered as the user types,
+and takes values written out as well when `allowCustomEntries` is set. Use it
+when most of the values can be enumerated: devices, patterns, anything the
+backend can list. It summarizes the values beyond `entriesThreshold` as
+"N more", so a field holding many of them does not push the rest of the form
+down the page. As the user types it picks out the best match, so Enter or Tab
+takes it without a trip through the list; pass `autoHighlight={false}` where
+guessing for the user would get in their way.
 
-If either fails, use pattern 7 instead.
+Both keep the committed values inside the control, ahead of the text box, and
+both give the field a single tab stop: the text box holds real focus, and
+everything else the keyboard reaches is pointed at with `aria-activedescendant`.
+Prefer growing one of the two over writing a third.
 
-**Example:** `PortsField`, the ports of a bond or a bridge. The field is an
-`ArrayField` because a port may name a device that does not exist yet, and the
-button beside it opens `DeviceSelectorModal` with the devices the system
-reports.
+#### Why the options are not checkboxes
 
-`ArrayField` supports it through its `addOn` prop, which receives the current
-`entries` and a `setEntries` that replaces them:
-
-```tsx
-<field.ArrayField
-  label={label}
-  helperText={_("Enter device names or select from available devices.")}
-  skipDuplicates
-  addOn={({ entries, setEntries }) => (
-    <DevicePicker
-      devices={offered}
-      selected={offered.filter((d) => entries.includes(d.name))}
-      onConfirm={(picked) => setEntries(mergePicked(entries, names(offered), names(picked)))}
-    />
-  )}
-/>
-```
-
-Whatever the add-on sets goes through the same `normalize` and `skipDuplicates`
-rules as a typed value, and is validated the same way. Unlike typing and
-pasting, an add-on leaves the draft input alone: only the caller knows whether
-what the user was half-way through typing still matters.
-
-Say in `helperText` that both routes exist, and say it plainly: nothing else on
-screen tells the user that a field they can type into is also filled in by the
-button next to it. Name the two routes and stop there. Explaining when to prefer
-one over the other describes a case most users do not have, in a place everyone
-reads.
-
-#### The button
-
-An icon button, `variant="plain"`, wrapped in `VisualTooltip` and carrying an
-`aria-label` that says what the values are for, not what the control is:
-`_("Select bond ports")`, not `_("Browse")`. Several fields on the same form may
-each have one, and "Browse" three times over names none of them.
-
-Disable it when it has nothing to offer. A dialog that opens on an empty table
-is worse than a button that visibly cannot be pressed.
-
-Give the dialog that same string as its title, rather than letting it name
-itself after its contents. The field label that gave the context away is no
-longer in sight once the dialog covers the form, and "Select network devices"
-describes what the user can already see: a table of network devices. Reusing
-one string also means what was clicked and what came up say the same thing.
-That is the caller's to supply, so a shared dialog takes a `title` prop instead
-of deriving one.
-
-Confirm with `Accept`, the word the rest of the installer uses. A label that
-restates the selection, "Use 3 devices", changes under the pointer as the user
-ticks boxes and repeats what the ticked boxes already say.
-
-#### Two-way, within what it offers
-
-An add-on that only appends is a shortcut. An add-on that opens showing what the
-field already holds is a second view of the values it knows about, and the user
-will treat it as one: what they unpick, they expect gone.
-
-Three rules, all of which the ports field needed:
-
-1. **Open with the current entries picked.** Otherwise confirming silently drops
-   everything already listed.
-2. **Let it answer with nothing.** Unpicking the last value must be
-   confirmable. A picker that requires a non-empty selection cannot empty the
-   list, and the user is sent back to the input to finish the job by hand.
-   Nothing picked is a legitimate answer, not an unfinished one.
-3. **Never touch what it does not offer.** Everything else the field holds
-   survives the round trip untouched, whether it was filtered out of the offer
-   on purpose (the loopback device, the controller being edited) or matches
-   nothing the add-on knows about (a name typed by hand).
-   `mergePicked(entries, offered, picked)` in `ArrayField` is that rule: entries
-   the picker never listed survive, listed ones follow the pick.
-
-Rule 3 is what keeps the add-on honest about its own scope. The alternative,
-listing values the source data knows nothing about as stand-in rows so that the
-dialog mirrors the field exactly, was tried on the ports field and dropped:
-typing a name for something that does not exist yet is a special case, and a
-picker of found devices is the wrong place to make it look ordinary. Typing
-stays the way to add such a value, and the input stays the way to remove it.
-
-#### When not to use it
-
-- The field is a selector: use pattern 7.
-- The add-on only ever appends: it may still be right, but none of the two-way
-  rules apply, and a footer entry on a nearby selector is often cheaper.
+A list taking several values invites a checkbox on every option. It was tried
+and dropped. PatternFly's menu item with a checkbox renders a real `<input>`
+and turns the item into a `<label>`, which costs the option its `role="option"`
+and its `aria-selected`: the listbox stops being a listbox, and the keyboard
+model built on `aria-activedescendant` falls apart with it. A native checkbox
+placed inside the option instead is invalid HTML, and tells assistive
+technologies nothing they do not already get. A drawn glyph works, but earns
+its place no better: the list already says it takes several values, and each
+option already says whether it is one of them.
 
 ---
 
@@ -603,23 +571,23 @@ Work through these questions in order:
 6. Is the field an advanced option that most users will never need? Use pattern 6.
 7. Do the options serve most users, while a harder setup needs more help than
    the list can give? Add a footer entry to the selector, pattern 7.
-8. Does the field take typed values, with most users better served by picking
-   from what the system already knows? Add a control beside it, pattern 8.
+8. Does the field hold a list of values rather than one? Use pattern 8, picking
+   the component by whether the values are known in advance.
 
 ---
 
 ## Summary
 
-| Pattern                           | Visibility       | Label                             | Validated on submit |
-| --------------------------------- | ---------------- | --------------------------------- | ------------------- |
-| Required                          | Always           | No suffix                         | Yes                 |
-| Always optional/context-dependent | Always           | `(optional)` or clarifying suffix | No                  |
-| Conditionally required            | On condition     | No suffix                         | Yes                 |
-| Conditionally optional            | On condition     | `(optional)`                      | No                  |
-| Choice selector                   | Always           | No suffix                         | Depends on choice   |
-| Checkbox opt-in                   | On checkbox      | No suffix                         | Yes, when rendered  |
-| Footer entry                      | Inside the list  | Short, ends in `...`              | Sets no value       |
-| Add-on                            | Beside the field | Icon, named by what it fills in   | Via the field       |
+| Pattern                           | Visibility      | Label                             | Validated on submit |
+| --------------------------------- | --------------- | --------------------------------- | ------------------- |
+| Required                          | Always          | No suffix                         | Yes                 |
+| Always optional/context-dependent | Always          | `(optional)` or clarifying suffix | No                  |
+| Conditionally required            | On condition    | No suffix                         | Yes                 |
+| Conditionally optional            | On condition    | `(optional)`                      | No                  |
+| Choice selector                   | Always          | No suffix                         | Depends on choice   |
+| Checkbox opt-in                   | On checkbox     | No suffix                         | Yes, when rendered  |
+| Footer entry                      | Inside the list | Short, ends in `...`              | Sets no value       |
+| Several values in one field       | Always          | No suffix                         | Yes                 |
 
 ---
 
@@ -1287,8 +1255,8 @@ These forms require extra care because:
 Three hooks/HOCs cover all persistent-form concerns. Each has a single
 responsibility:
 
-| Abstraction       | File                             | Responsibility                                             |
-| ----------------- | -------------------------------- | ---------------------------------------------------------- |
+| Abstraction       | File                                    | Responsibility                                             |
+| ----------------- | --------------------------------------- | ---------------------------------------------------------- |
 | `withFrozenQuery` | `components/form/with-frozen-query.tsx` | Freeze initial data; protect from refetch re-renders       |
 | `useFormSubmit`   | `hooks/use-form-submit.tsx`             | Submit lifecycle: reset, success alert, error surfacing    |
 | `useUpdateConfig` | `hooks/model/config.ts`                 | Safe write: fetch fresh config at submit time, merge patch |
@@ -1703,8 +1671,8 @@ Do not reach for it when:
 ## Code Organization
 
 The following conventions apply to all forms using TanStack Form across the
-application. They ensure forms are discoverable, maintainable, and follow
-consistent patterns.
+application, and to the field library they draw from. They ensure forms are
+discoverable, maintainable, and follow consistent patterns.
 
 ### Directory Structure
 
@@ -1733,6 +1701,67 @@ Examples:
   `network/connection-form/`, `system/system-form/`.
 - Full split (also `queries.ts`, `transformations.ts`, `validations.ts`):
   `storage/partition-form/`, `storage/logical-volume-form/`.
+
+### The Field Library
+
+Forms take their fields from `components/form/`, which is three levels deep and
+organized by who imports what:
+
+```
+components/form/
+  TextField.tsx             # the fields themselves
+  DropdownField.tsx
+  validation-helpers.ts     # what a form author reaches for directly
+  Fieldset.tsx
+  LabelText.tsx
+
+  primitives/               # what fields are built from
+    FieldEntry.tsx
+    EntriesListbox.tsx
+    entry-helpers.ts
+    FooterEntryOption.tsx
+    option-filter.ts
+
+  multi-select-field/       # one field's own modules
+    MultiSelectField.tsx
+    Entries.tsx
+    OptionList.tsx
+    rows.ts
+    messages.ts
+    use-keyboard.ts
+```
+
+**Top level** is the public surface. Anything there is fair game for any form:
+the fields, and the helpers that support writing one.
+
+**`primitives/`** holds what sits below the level of a field: a committed value
+rendered as a label, the accessible list wrapping those values, the footer
+entry of a list, text matching. Fields compose these; forms have no reason to
+import them. They are called primitives rather than parts because the word
+names a level rather than a relation. A field is a part of a form and these are
+parts of a field, so "part" says nothing, while a field is a composite — label,
+validation, form-context binding — and these are the layer beneath it.
+
+A module moves into `primitives/` when a second field needs it, not in
+anticipation of one. Two consumers earns the move; it does not earn a
+subdirectory. Keep `primitives/` flat until one group inside it is large enough
+to be hard to read.
+
+**`<field-name>-field/`** is for a field that outgrew a single file. Only
+`multi-select-field/` qualifies today. Whether a field has earned one is a
+judgment call, not a size threshold: `ArrayField` is large and stays a single
+file, because being long is not the same as having separable parts.
+
+Inside such a directory, the modules private to the field drop the field's
+name, which the directory already carries: `rows.ts`, `messages.ts`,
+`OptionList.tsx`. The field component itself keeps its full name. Forms
+reference it as a registered field component (`<field.MultiSelectField />`), so
+the file should be findable by the name the form says out loud — unlike a
+form's `Form.tsx`, which nothing outside its own directory ever names.
+
+A hook belonging to one field lives with it, not in `hooks/`. `use-keyboard.ts`
+serves only `MultiSelectField`. `hooks/use-combobox-keyboard.ts` stays where it
+is, because `components/core/` uses it too.
 
 ### File Naming
 

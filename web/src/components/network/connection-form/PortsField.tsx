@@ -21,15 +21,14 @@
  */
 
 import React, { useState } from "react";
-import { Button } from "@patternfly/react-core";
-import { mergePicked } from "~/components/form/ArrayField";
-import Icon from "~/components/layout/Icon";
-import VisualTooltip from "~/components/core/VisualTooltip";
+import { sift } from "radashi";
+import { sprintf } from "sprintf-js";
+import Text from "~/components/core/Text";
 import DeviceSelectorModal from "./DeviceSelectorModal";
 import { defaultOptions } from "./fields";
 import { withForm } from "~/hooks/form";
 import { useConnections, useDevices } from "~/hooks/model/system/network";
-import { controllerOf } from "~/utils/network";
+import { connectionTypeLabel, controllerOf, deviceLinkLabel } from "~/utils/network";
 import { _ } from "~/i18n";
 
 import type { TranslatedString } from "~/i18n";
@@ -39,76 +38,22 @@ import type { Device } from "~/types/network";
 /** The loopback device is never a port of anything. */
 const LOOPBACK = "lo";
 
-type DevicePickerProps = {
-  /** Devices offered for picking. */
-  devices: Device[];
-  /** Devices picked when the dialog opens. */
-  selected: Device[];
-  /** Returns the controller a device is already a port of, if any. */
-  portOf: (device: Device) => string | undefined;
-  /**
-   * What the devices would be used for, e.g. "Select bond ports".
-   *
-   * Names the button and titles the dialog it opens, so that what was clicked
-   * and what came up say the same thing.
-   */
-  label: TranslatedString;
-  /** Called with the devices the user picked. */
-  onConfirm: (devices: Device[]) => void;
-};
-
-/**
- * Button opening the device dialog, for picking among the devices the system
- * reports.
- *
- * The dialog opens with `selected` picked, so it serves for dropping a device
- * as much as for adding one.
- */
-function DevicePicker({
-  devices,
-  selected,
-  portOf,
-  label,
-  onConfirm,
-}: DevicePickerProps): React.ReactNode {
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  // Devices already used elsewhere are still offered, since moving a port from
-  // one controller to another is legitimate. The dialog only grows a column
-  // for it when there is something to tell.
-  const hasPortsInUse = devices.some((d) => portOf(d));
-
-  return (
-    <>
-      <VisualTooltip content={label}>
-        <Button
-          variant="plain"
-          aria-label={label}
-          isDisabled={devices.length === 0}
-          onClick={() => setIsDialogOpen(true)}
-        >
-          <Icon name="format_list_bulleted_add" />
-        </Button>
-      </VisualTooltip>
-      {isDialogOpen && (
-        <DeviceSelectorModal
-          title={label}
-          devices={devices}
-          selected={selected}
-          selectionMode="multiple"
-          portOf={hasPortsInUse ? portOf : undefined}
-          onConfirm={(picked) => {
-            onConfirm(picked);
-            setIsDialogOpen(false);
-          }}
-          onCancel={() => setIsDialogOpen(false)}
-        />
-      )}
-    </>
-  );
-}
-
 /** Names of the given devices. */
 const names = (devices: Device[]): string[] => devices.map((d) => d.name);
+
+/**
+ * Ports left after a dialog offering `offered` answered with `picked`.
+ *
+ * The dialog only knows about the devices the system reports, so the ports it
+ * was never offered are kept as they were: dropping them because the dialog
+ * did not list them would lose what the user wrote. The offered ones follow
+ * the pick, keeping the order they were listed in and appending the rest.
+ */
+function mergePicked(ports: string[], offered: string[], picked: string[]): string[] {
+  const kept = ports.filter((p) => !offered.includes(p) || picked.includes(p));
+
+  return [...kept, ...picked.filter((p) => !kept.includes(p))];
+}
 
 type PortsFieldProps = {
   /** Form field holding the names of the ports. */
@@ -123,24 +68,31 @@ type PortsFieldProps = {
   /** Label of the field. */
   label: TranslatedString;
   /**
-   * What the ports are being picked for, e.g. "Select bond ports".
+   * Title of the dialog listing the devices with their details, e.g. "Select
+   * bond ports".
    *
-   * Names the button opening the device dialog, and titles the dialog itself.
+   * The field label that said what the devices are for is no longer in sight
+   * once the dialog covers the form, and the entry that opened it reads the
+   * same on every field, so the dialog cannot name itself.
    */
-  pickLabel: TranslatedString;
+  title: TranslatedString;
 };
 
 /**
- * Ports field of a controller device, with a button for picking them among the
- * devices the system reports.
+ * Ports field of a controller device, offering the devices the system reports
+ * and taking names written out as well.
  *
- * Names are still typed and pasted freely, since a port may well be a device
- * that is not plugged in yet, or one that only shows up once the installed
- * system boots. The dialog is there so that the common case, picking among
- * what is already there, does not go through copying a name by hand.
+ * A port may name a device that is not plugged in yet, or one that only shows
+ * up once the installed system boots, hence `allowCustomEntries`: the list is
+ * for the common case, not a fence around it.
+ *
+ * The details that tell two cards apart, the link, the driver, where the card
+ * sits, do not fit in a list, so the foot of it leads to `DeviceSelectorModal`,
+ * which shows them in a table and picks several ports in one pass.
  *
  * What the field is about is left to the caller: which form fields it reads and
- * writes, how it is labelled, and what the button offering the devices says.
+ * writes, how it is labelled, and what the dialog offering the devices is
+ * titled.
  *
  * Receives a typed form instance via `withForm`.
  */
@@ -148,15 +100,17 @@ const PortsField = withForm({
   ...defaultOptions,
   // Only carries the prop types: every caller passes them all.
   props: {} as PortsFieldProps,
-  render: function Render({ form, name, controllerField, label, pickLabel }) {
+  render: function Render({ form, name, controllerField, label, title }) {
     const devices = useDevices();
     const connections = useConnections();
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
 
     return (
       <form.Subscribe selector={(s) => s.values[controllerField]}>
         {(controllerIface) => (
           <form.AppField name={name}>
             {(field) => {
+              const ports = field.state.value;
               // A controller cannot be a port of itself.
               const available = devices.filter(
                 (d) => d.name !== LOOPBACK && d.name !== controllerIface,
@@ -167,31 +121,89 @@ const PortsField = withForm({
                 const controller = controllerOf(device.name, connections);
                 return controller === controllerIface ? undefined : controller;
               };
+              // Devices already used elsewhere are still offered, since moving
+              // a port from one controller to another is legitimate. The dialog
+              // only grows a column for it when there is something to tell.
+              const hasPortsInUse = available.some((d) => portOf(d));
+
+              const options = available.map((device) => {
+                const controller = portOf(device);
+                // What is worth knowing at a glance, and no more: the table
+                // behind the footer entry is where the rest lives.
+                const detail = sift([
+                  connectionTypeLabel(device.type),
+                  deviceLinkLabel(device),
+                  device.macAddress,
+                  controller &&
+                    // TRANSLATORS: shown next to a network device that another
+                    // bond or bridge already uses. %s is its name, e.g. "bond0".
+                    sprintf(_("used by %s"), controller),
+                ]).join(" · ");
+
+                return {
+                  value: device.name,
+                  label: device.name,
+                  description: <Text textStyle={["fontSizeXs", "textColorSubtle"]}>{detail}</Text>,
+                  // Everything that identifies a card is searchable, including
+                  // what the option does not show: the driver and where it
+                  // sits, which is how a user with a wiring diagram in hand
+                  // looks for one.
+                  filterText: sift([
+                    device.name,
+                    device.macAddress,
+                    connectionTypeLabel(device.type),
+                    device.driver,
+                    device.busPath,
+                  ]).join(" "),
+                };
+              });
 
               return (
-                <field.ArrayField
-                  label={label}
-                  helperText={
-                    // TRANSLATORS: helper text for the ports field of a bond or
-                    // a bridge, naming the two ways of filling it in.
-                    _("Enter device names or select from available devices.")
-                  }
-                  skipDuplicates
-                  addOn={({ entries, setEntries }) => (
-                    <DevicePicker
+                <>
+                  <field.MultiSelectField
+                    label={label}
+                    options={options}
+                    allowCustomEntries
+                    helperText={
+                      // TRANSLATORS: helper text for the ports field of a bond
+                      // or a bridge, naming the two ways of filling it in.
+                      _("Choose the devices found in the system, or enter other names.")
+                    }
+                    // Nothing to browse, nothing to lead to: a dialog opening
+                    // on an empty table is worse than no way in at all.
+                    footerEntry={
+                      available.length > 0
+                        ? {
+                            // TRANSLATORS: entry at the end of the device list,
+                            // leading to a dialog listing the same devices with
+                            // more information about each of them. The trailing
+                            // ellipsis hints that more follows instead of a
+                            // device being picked right away.
+                            label: _("Browse with details..."),
+                            onSelect: () => setIsDialogOpen(true),
+                            opensDialog: true,
+                          }
+                        : undefined
+                    }
+                  />
+                  {isDialogOpen && (
+                    <DeviceSelectorModal
+                      title={title}
                       devices={available}
-                      selected={available.filter((d) => entries.includes(d.name))}
-                      portOf={portOf}
-                      label={pickLabel}
+                      selected={available.filter((d) => ports.includes(d.name))}
+                      selectionMode="multiple"
+                      portOf={hasPortsInUse ? portOf : undefined}
                       // Only the devices found are offered, so a port naming
-                      // none of them, typed by hand or waiting for a card to
-                      // show up, is kept: the dialog never asked about it.
-                      onConfirm={(picked) =>
-                        setEntries(mergePicked(entries, names(available), names(picked)))
-                      }
+                      // none of them, written out by hand or waiting for a card
+                      // to show up, is kept: the dialog never asked about it.
+                      onConfirm={(picked) => {
+                        field.handleChange(mergePicked(ports, names(available), names(picked)));
+                        setIsDialogOpen(false);
+                      }}
+                      onCancel={() => setIsDialogOpen(false)}
                     />
                   )}
-                />
+                </>
               );
             }}
           </form.AppField>

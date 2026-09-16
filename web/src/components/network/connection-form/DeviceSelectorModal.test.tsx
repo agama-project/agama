@@ -88,6 +88,40 @@ describe("DeviceSelectorModal", () => {
     within(rowFor("wlan0")).getByText("Disconnected");
   });
 
+  describe("the details a device may or may not report", () => {
+    const wired = {
+      ...ethernet,
+      driver: "e1000e",
+      busPath: "pci-0000:00:1f.6",
+      carrier: true,
+      speed: 1000,
+    } as Device;
+    const unplugged = { ...wireless, driver: "iwlwifi", carrier: false } as Device;
+
+    it("shows them when at least one device has something to tell", () => {
+      renderModal({ devices: [wired, unplugged] });
+      screen.getByRole("columnheader", { name: "Link" });
+      screen.getByRole("columnheader", { name: "Location" });
+      within(rowFor("enp1s0")).getByText("e1000e");
+      within(rowFor("enp1s0")).getByText("1 Gb/s");
+      within(rowFor("enp1s0")).getByText("pci-0000:00:1f.6");
+      within(rowFor("wlan0")).getByText("iwlwifi");
+      within(rowFor("wlan0")).getByText("No link");
+    });
+
+    it("leaves the column out when no device reports it", () => {
+      renderModal({ devices: [wired, unplugged].map((d) => ({ ...d, busPath: undefined })) });
+      screen.getByRole("columnheader", { name: "Link" });
+      expect(screen.queryByRole("columnheader", { name: "Location" })).toBeNull();
+    });
+
+    it("leaves both out for devices reporting neither", () => {
+      renderModal();
+      expect(screen.queryByRole("columnheader", { name: "Link" })).toBeNull();
+      expect(screen.queryByRole("columnheader", { name: "Location" })).toBeNull();
+    });
+  });
+
   it("is titled after what the devices will be used for", () => {
     renderModal({ title: "Select bond ports" as TranslatedString });
     screen.getByRole("dialog", { name: "Select bond ports" });
