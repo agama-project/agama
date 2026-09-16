@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Sep 16 11:50:51 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Add experimental support for 32 bit architectures which are in
+  TW ports (bsc#1266309)
+
+-------------------------------------------------------------------
 Thu Sep 10 18:49:38 UTC 2026 - Lubos Kocman <lubos.kocman@suse.com>
 
 - Use license.txt for English in license.opensuse

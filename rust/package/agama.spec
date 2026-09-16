@@ -32,9 +32,9 @@ BuildRequires: gcc
 BuildRequires: gcc-c++
 BuildRequires: make
 BuildRequires: libzypp-devel
+%ifnarch %ix86 s390 armv6 armv7
 BuildRequires: libsuseconnect
-# do not build on 32bits, the dependant libsuseconnect is 64bit only
-ExcludeArch:    %ix86 s390 ppc64
+%endif
 
 # defines the "limit_build" macro used in the "build" section below
 BuildRequires:  memory-constraints

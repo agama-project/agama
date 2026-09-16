@@ -83,15 +83,19 @@ systemctl enable live-root-shell.service
 systemctl enable live-self-update.service
 
 systemctl enable checkmedia.service
-systemctl enable qemu-guest-agent.service
+test -f /usr/lib/systemd/system/qemu-guest-agent.service && systemctl enable qemu-guest-agent.service
 systemctl enable setup-systemd-proxy-env.path
 test -f /usr/lib/systemd/system/gdm.service && systemctl enable gdm.service
 test -f /usr/lib/systemd/system/spice-vdagentd.service && systemctl enable spice-vdagentd.service
 systemctl enable zramswap
 
 # set the default target
+arch=$(uname -m)
 if [[ "$kiwi_profiles" == *MINI* ]]; then
   # the MINI images do not include graphical environment
+  systemctl set-default multi-user.target
+elif [[ "$arch" == armv* || "$arch" == i?86 ]]; then
+  # experimental support for these architectures (no Firefox, etc)
   systemctl set-default multi-user.target
 else
   systemctl set-default graphical.target
