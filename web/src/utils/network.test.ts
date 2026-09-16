@@ -32,6 +32,7 @@ import {
   connectionForName,
   controllerOf,
   deviceLinkLabel,
+  deviceLinkRank,
   formatLinkSpeed,
   generateConnectionName,
   ipPrefixFor,
@@ -186,6 +187,30 @@ describe("deviceLinkLabel", () => {
 
   it("returns nothing for a device reporting neither", () => {
     expect(deviceLinkLabel(device({}))).toBeUndefined();
+  });
+});
+
+describe("deviceLinkRank", () => {
+  const device = (props: object): Device => ({ name: "enp1s0", ...props }) as Device;
+
+  it("ranks the devices the way the link column reads", () => {
+    const ranked = [
+      device({ speed: 1000, carrier: true }),
+      device({}),
+      device({ carrier: true }),
+      device({ carrier: false }),
+      device({ speed: 100, carrier: true }),
+    ]
+      .sort((a, b) => deviceLinkRank(a) - deviceLinkRank(b))
+      .map(deviceLinkLabel);
+
+    expect(ranked).toEqual([undefined, "No link", "Link up", "100 Mb/s", "1 Gb/s"]);
+  });
+
+  it("does not let a stale speed outrank a device with no link", () => {
+    expect(deviceLinkRank(device({ carrier: false, speed: 10000 }))).toBeLessThan(
+      deviceLinkRank(device({ carrier: true, speed: 100 })),
+    );
   });
 });
 

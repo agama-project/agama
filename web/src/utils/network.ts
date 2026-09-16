@@ -37,7 +37,7 @@ import {
   Route,
   SecurityProtocols,
 } from "~/types/network";
-import { _, N_ } from "~/i18n";
+import { _, N_, formatNumber } from "~/i18n";
 import type { MarkedString, TranslatedString } from "~/i18n";
 
 /**
@@ -116,7 +116,7 @@ const formatLinkSpeed = (mbps: number): TranslatedString => {
 
   // TRANSLATORS: link speed of a network device in gigabits per second. %s is
   // replaced by the number, e.g. "2.5 Gb/s".
-  return sprintf(_("%s Gb/s"), (mbps / 1000).toLocaleString()) as TranslatedString;
+  return sprintf(_("%s Gb/s"), formatNumber(mbps / 1000)) as TranslatedString;
 };
 
 /**
@@ -140,6 +140,24 @@ const deviceLinkLabel = (device: Device): TranslatedString | undefined => {
   if (device.carrier) return _("Link up");
 
   return undefined;
+};
+
+/**
+ * Ranks the link of a device, for sorting a column showing
+ * {@link deviceLinkLabel}.
+ *
+ * Sorting on the raw speed would order the devices by a number the column does
+ * not show: a card with no cable in it may still report the speed it last ran
+ * at, and would sort among the fast ones while reading "No link". The rank
+ * follows what the column reads instead, from the devices saying nothing, to
+ * those with no link, to those with a link, the faster the further.
+ */
+const deviceLinkRank = (device: Device): number => {
+  if (device.carrier === false) return 0;
+  if (device.speed) return device.speed;
+  if (device.carrier) return 1;
+
+  return -1;
 };
 
 /**
@@ -528,6 +546,7 @@ export {
   connectionTypeLabel,
   controllerOf,
   deviceLinkLabel,
+  deviceLinkRank,
   deviceStateLabel,
   ensureIPPrefix,
   formatIp,
