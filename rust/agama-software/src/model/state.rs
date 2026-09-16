@@ -764,7 +764,9 @@ mod tests {
                 (
                     "os-prober".to_string(),
                     ResolvableType::Package,
-                    ResolvableSelection::AutoSelected { skip_if_missing: true }
+                    ResolvableSelection::AutoSelected {
+                        skip_if_missing: true
+                    }
                 ),
                 (
                     "selinux".to_string(),
@@ -1163,7 +1165,9 @@ mod tests {
                 (
                     "os-prober".to_string(),
                     ResolvableType::Package,
-                    ResolvableSelection::AutoSelected { skip_if_missing: true }
+                    ResolvableSelection::AutoSelected {
+                        skip_if_missing: true
+                    }
                 ),
                 (
                     "sudo-policy-wheel-auth-self".to_string(),

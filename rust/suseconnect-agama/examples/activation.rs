@@ -3,7 +3,8 @@ mod example {
     use std::{env, process::exit};
 
     use suseconnect_agama::{
-        activate_product, announce_system, create_credentials_file, ConnectParams, ProductSpecification,
+        activate_product, announce_system, create_credentials_file, ConnectParams,
+        ProductSpecification,
     };
 
     pub fn main() {

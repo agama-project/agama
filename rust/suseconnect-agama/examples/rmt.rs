@@ -7,7 +7,8 @@ mod example {
     };
 
     use suseconnect_agama::{
-        activate_product, announce_system, create_credentials_file, ConnectParams, ProductSpecification,
+        activate_product, announce_system, create_credentials_file, ConnectParams,
+        ProductSpecification,
     };
     use url::Url;
 
