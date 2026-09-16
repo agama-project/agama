@@ -29,6 +29,7 @@ import { BondMode, Connection, DeviceState } from "~/types/network";
 import type { ConnectionType } from "~/types/network";
 import { CONNECTION_TYPE } from "~/utils/network";
 import { _ } from "~/i18n";
+import { validate } from "./validations";
 import PortsField from "./PortsField";
 
 const mockLoopback = {
@@ -86,17 +87,32 @@ function TestForm({ defaultValues = {} }: { defaultValues?: object }) {
       bondIface: "bond0",
       ...defaultValues,
     },
+    // The real validator, so what marks a port here is what refuses the form.
+    validators: { onSubmitAsync: async (ctx) => validate(ctx.value) },
   });
 
   return (
     <form.AppForm>
-      <PortsField
-        form={form}
-        name="bondPorts"
-        controllerField="bondIface"
-        label={_("Bond ports")}
-        title={_("Select bond ports")}
-      />
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          form.handleSubmit();
+        }}
+      >
+        {/* The name of the bond is part of the real form, and the ports field
+            watches it, so the test form carries it too. */}
+        <form.AppField name="bondIface">
+          {(field) => <field.TextField label={_("Device name")} />}
+        </form.AppField>
+        <PortsField
+          form={form}
+          name="bondPorts"
+          controllerField="bondIface"
+          label={_("Bond ports")}
+          title={_("Select bond ports")}
+        />
+        <button type="submit">Submit</button>
+      </form>
     </form.AppForm>
   );
 }
@@ -181,6 +197,43 @@ describe("PortsField", () => {
     await user.click(deviceOption("enp1s0"));
 
     expect(entry("enp1s0")).toBeInTheDocument();
+  });
+
+  describe("when a port names the bond being configured", () => {
+    const addSelfAsPort = async (user: User) =>
+      user.type(screen.getByRole("combobox", { name: "Bond ports" }), "bond0{Enter}");
+
+    const submit = async (user: User) => user.click(screen.getByRole("button", { name: "Submit" }));
+
+    it("says nothing while the form is being filled in", async () => {
+      const { user } = installerRender(<TestForm />);
+      await addSelfAsPort(user);
+
+      expect(within(entriesList()).queryByRole("option", { name: /invalid/ })).toBeNull();
+    });
+
+    it("marks it once the form is submitted", async () => {
+      const { user } = installerRender(<TestForm />);
+      await addSelfAsPort(user);
+      await submit(user);
+
+      await within(entriesList()).findByRole("option", {
+        name: "bond0 is invalid: bond0 cannot be a port of itself",
+      });
+    });
+
+    it("stops marking it once the device is named something else", async () => {
+      const { user } = installerRender(<TestForm />);
+      await addSelfAsPort(user);
+      await submit(user);
+      await within(entriesList()).findByRole("option", { name: /invalid/ });
+
+      const ifaceField = screen.getByRole("textbox", { name: "Device name" });
+      await user.clear(ifaceField);
+      await user.type(ifaceField, "bond1");
+
+      expect(within(entriesList()).queryByRole("option", { name: /invalid/ })).toBeNull();
+    });
   });
 
   it("does not offer the loopback device", async () => {

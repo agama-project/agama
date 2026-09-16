@@ -168,6 +168,19 @@ const PortsField = withForm({
                       // or a bridge, naming the two ways of filling it in.
                       _("Choose the devices found in the system, or enter other names.")
                     }
+                    // The list leaves the controller out, but a name written by
+                    // hand does not go through it. The form says so on submit
+                    // (see `validatePorts` in validations.ts); this points at
+                    // which of the ports it was talking about, and stays quiet
+                    // until then, as validation does everywhere else.
+                    validateOnSubmit={(value) =>
+                      value === controllerIface
+                        ? // TRANSLATORS: error shown on a port naming the bond
+                          // or bridge being configured. %s is the name of that
+                          // device, e.g. "bond0".
+                          sprintf(_("%s cannot be a port of itself"), value)
+                        : undefined
+                    }
                     // Nothing to browse, nothing to lead to: a dialog opening
                     // on an empty table is worse than no way in at all.
                     footerEntry={
