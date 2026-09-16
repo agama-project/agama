@@ -46,7 +46,6 @@ const mockDevice1 = {
   speed: 1000,
   carrier: true,
   driver: "e1000e",
-  busPath: "pci-0000:00:1f.6",
 };
 
 const mockDevice2 = {
@@ -56,7 +55,6 @@ const mockDevice2 = {
   state: DeviceState.DISCONNECTED,
   carrier: false,
   driver: "r8169",
-  busPath: "pci-0000:03:00.0",
 };
 
 const mockBondDevice = {
@@ -201,10 +199,8 @@ describe("PortsField", () => {
     const { user } = installerRender(<TestForm />);
     await openDialog(user);
     dialog().getByRole("columnheader", { name: "Link" });
-    dialog().getByRole("columnheader", { name: "Location" });
     within(deviceRow("enp1s0")).getByText("e1000e");
     within(deviceRow("enp1s0")).getByText("1 Gb/s");
-    within(deviceRow("enp1s0")).getByText("pci-0000:00:1f.6");
     within(deviceRow("enp2s0")).getByText("No link");
   });
 
@@ -212,12 +208,11 @@ describe("PortsField", () => {
     mockDevices = [
       mockLoopback,
       mockBondDevice,
-      { ...mockDevice1, speed: undefined, carrier: undefined, busPath: undefined },
+      { ...mockDevice1, speed: undefined, carrier: undefined },
     ];
     const { user } = installerRender(<TestForm />);
     await openDialog(user);
     expect(dialog().queryByRole("columnheader", { name: "Link" })).not.toBeInTheDocument();
-    expect(dialog().queryByRole("columnheader", { name: "Location" })).not.toBeInTheDocument();
   });
 
   it("adds the picked devices to the list", async () => {

@@ -76,8 +76,7 @@ const deviceAddresses = (device: Device): string =>
 
 /**
  * Dialog for picking network devices from a table showing more details than a
- * list can hold: name, MAC address, type, driver, link, addresses, state and
- * location.
+ * list can hold: name, MAC address, type, driver, link, addresses and state.
  *
  * The details a device does not report are left out altogether: a column no
  * device can fill would be a column of dashes.
@@ -116,11 +115,10 @@ export default function DeviceSelectorModal({
   };
   const [selection, setSelection] = useState<Device[]>(selected ?? defaultSelection());
 
-  // The details below are best-effort: a device reports them or it does not,
-  // and a column no device can fill is a column of dashes. They are only added
-  // when at least one device has something to say, the same way "Used by" is.
+  // The link is best-effort: a device reports it or it does not, and a column
+  // no device can fill is a column of dashes. It is only added when at least
+  // one device has something to say, the same way "Used by" is.
   const hasLink = devices.some((device) => deviceLinkLabel(device));
-  const hasBusPath = devices.some((device) => device.busPath);
 
   const columns = [
     {
@@ -169,18 +167,6 @@ export default function DeviceSelectorModal({
       value: (device: Device) => deviceStateLabel(device.state),
       sortingKey: "state",
     },
-    ...(hasBusPath
-      ? [
-          {
-            // TRANSLATORS: table column with where a network device sits in the
-            // machine, e.g. "pci-0000:c5:00.3". It gets a column of its own
-            // because it is long and tells two cards of the same model apart.
-            name: _("Location"),
-            value: (device: Device) => device.busPath || "-",
-            sortingKey: "busPath",
-          },
-        ]
-      : []),
     ...(portOf
       ? [
           {
@@ -238,9 +224,7 @@ export default function DeviceSelectorModal({
   return (
     <Popup
       isOpen
-      // Wide enough for the details the table holds: the location of a device
-      // alone runs to some thirty characters.
-      variant="large"
+      variant="medium"
       title={title}
       // Focus starts on the picked device, so its row is what the user hears
       // and sees first, and the arrow keys move from there.

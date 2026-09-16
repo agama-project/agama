@@ -144,16 +144,15 @@ const PortsField = withForm({
                   value: device.name,
                   label: device.name,
                   description: <Text textStyle={["fontSizeXs", "textColorSubtle"]}>{detail}</Text>,
-                  // Everything that identifies a card is searchable, including
-                  // what the option does not show: the driver and where it
-                  // sits, which is how a user with a wiring diagram in hand
-                  // looks for one.
+                  // The driver is searchable although the option does not show
+                  // it: the dialog does, and a user who knows which driver
+                  // their card runs on should not have to open it to find out
+                  // which device that is.
                   filterText: sift([
                     device.name,
                     device.macAddress,
                     connectionTypeLabel(device.type),
                     device.driver,
-                    device.busPath,
                   ]).join(" "),
                 };
               });
