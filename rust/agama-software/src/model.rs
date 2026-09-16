@@ -35,6 +35,11 @@ use crate::{model::state::SoftwareState, service, zypp_server::SoftwareAction};
 
 pub mod conflict;
 pub mod packages;
+#[cfg(target_pointer_width = "64")]
+pub mod registration;
+// replace registration with mocked one on unsupported architectures
+#[cfg(not(target_pointer_width = "64"))]
+#[path = "model/registration_stub.rs"]
 pub mod registration;
 pub mod software_selection;
 pub mod state;
