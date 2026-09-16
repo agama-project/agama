@@ -82,7 +82,7 @@ const deviceAddresses = (device: Device): string =>
 
 /**
  * Dialog for picking network devices from a table showing more details than a
- * list can hold: name, MAC address, type, driver, link, addresses and state.
+ * list can hold: name, MAC address, type, driver, link, state and addresses.
  *
  * The details a device does not report are left out altogether: a column no
  * device can fill would be a column of dashes.
@@ -165,10 +165,6 @@ export default function DeviceSelectorModal({
         ]
       : []),
     {
-      name: _("IP Addresses"),
-      value: (device: Device) => deviceAddresses(device) || "-",
-    },
-    {
       name: _("State"),
       value: (device: Device) => deviceStateLabel(device.state),
       sortingKey: "state",
@@ -183,6 +179,13 @@ export default function DeviceSelectorModal({
           },
         ]
       : []),
+    // Last, and on purpose: it is the widest column and the one that says the
+    // least about which card a row is, so it does not come between the columns
+    // that do.
+    {
+      name: _("IP Addresses"),
+      value: (device: Device) => deviceAddresses(device) || "-",
+    },
   ];
 
   const sortingKey = sortedBy.index === undefined ? undefined : columns[sortedBy.index].sortingKey;
