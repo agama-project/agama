@@ -32,7 +32,6 @@ use agama_utils::{
     },
     issue,
 };
-use async_trait::async_trait;
 use gettextrs::gettext;
 use tokio::sync::broadcast;
 
@@ -209,14 +208,12 @@ impl Actor for Service {
 //   service configuration. So GetConfig in those sub services does
 //   what GetExtendedConfig in manager
 // - GetExtendedConfig doesn't make sense for sub services thought
-#[async_trait]
 impl MessageHandler<message::GetConfig> for Service {
     async fn handle(&mut self, _message: message::GetConfig) -> Result<api::users::Config, Error> {
         Ok(self.full_config.clone())
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::SetConfig<api::users::Config>> for Service {
     async fn handle(
         &mut self,
@@ -264,7 +261,6 @@ impl MessageHandler<message::SetConfig<api::users::Config>> for Service {
 
 // Basically same thing as GetConfig (in case of this service).
 // Only difference is that GetProposal checks for an issues.
-#[async_trait]
 impl MessageHandler<message::GetProposal> for Service {
     async fn handle(
         &mut self,
@@ -274,7 +270,6 @@ impl MessageHandler<message::GetProposal> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::Install> for Service {
     async fn handle(&mut self, _message: message::Install) -> Result<(), Error> {
         if let Some(proposal) = self.get_proposal() {
@@ -289,7 +284,6 @@ impl MessageHandler<message::Install> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::CheckPassword> for Service {
     async fn handle(
         &mut self,
@@ -300,7 +294,6 @@ impl MessageHandler<message::CheckPassword> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::SetLocale> for Service {
     async fn handle(&mut self, _message: message::SetLocale) -> Result<(), Error> {
         self.update_issues()

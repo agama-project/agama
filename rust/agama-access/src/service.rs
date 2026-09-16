@@ -34,7 +34,6 @@ use agama_utils::{
     message::GetResolvables,
     Resolvable,
 };
-use async_trait::async_trait;
 use tokio::sync::broadcast::Sender;
 
 use crate::message;
@@ -234,7 +233,6 @@ impl Actor for Service {
     type Error = Error;
 }
 
-#[async_trait]
 impl MessageHandler<message::SetConfig<api::access::Config>> for Service {
     async fn handle(
         &mut self,
@@ -246,7 +244,6 @@ impl MessageHandler<message::SetConfig<api::access::Config>> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::GetConfig> for Service {
     async fn handle(&mut self, _message: message::GetConfig) -> Result<api::access::Config, Error> {
         // FIXME: remember what is set and what not
@@ -254,7 +251,6 @@ impl MessageHandler<message::GetConfig> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::SetAccess> for Service {
     async fn handle(&mut self, message: message::SetAccess) -> Result<(), Error> {
         self.state.set_module_config(message.id, message.config);
@@ -262,21 +258,18 @@ impl MessageHandler<message::SetAccess> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::GetProposal> for Service {
     async fn handle(&mut self, _message: message::GetProposal) -> Result<ExtendedConfig, Error> {
         Ok(self.state.extended_config())
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::Finish> for Service {
     async fn handle(&mut self, _message: message::Finish) -> Result<(), Error> {
         self.state.write(&self.install_dir).await
     }
 }
 
-#[async_trait]
 impl MessageHandler<GetResolvables> for Service {
     async fn handle(&mut self, _message: GetResolvables) -> Result<Vec<Resolvable>, Error> {
         let mut resolvables = vec![];

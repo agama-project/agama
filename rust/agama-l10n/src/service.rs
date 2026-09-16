@@ -33,7 +33,6 @@ use agama_utils::{
     },
     issue,
 };
-use async_trait::async_trait;
 use tokio::sync::broadcast;
 
 #[derive(thiserror::Error, Debug)]
@@ -212,14 +211,12 @@ impl Actor for Service {
     type Error = Error;
 }
 
-#[async_trait]
 impl MessageHandler<message::GetSystem> for Service {
     async fn handle(&mut self, _message: message::GetSystem) -> Result<SystemInfo, Error> {
         Ok(self.system.clone())
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::SetSystem<SystemConfig>> for Service {
     async fn handle(&mut self, message: message::SetSystem<SystemConfig>) -> Result<(), Error> {
         let config = &message.config;
@@ -251,7 +248,6 @@ impl MessageHandler<message::SetSystem<SystemConfig>> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::GetConfig> for Service {
     async fn handle(&mut self, _message: message::GetConfig) -> Result<api::l10n::Config, Error> {
         Ok(api::l10n::Config {
@@ -262,7 +258,6 @@ impl MessageHandler<message::GetConfig> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::SetConfig<api::l10n::Config>> for Service {
     async fn handle(
         &mut self,
@@ -290,14 +285,12 @@ impl MessageHandler<message::SetConfig<api::l10n::Config>> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::GetProposal> for Service {
     async fn handle(&mut self, _message: message::GetProposal) -> Result<Option<Proposal>, Error> {
         Ok(self.get_proposal())
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::Install> for Service {
     async fn handle(&mut self, _message: message::Install) -> Result<(), Error> {
         let Some(proposal) = self.get_proposal() else {
@@ -310,7 +303,6 @@ impl MessageHandler<message::Install> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::UpdateLocale> for Service {
     async fn handle(&mut self, message: message::UpdateLocale) -> Result<(), Error> {
         self.system.locale = message.locale;
@@ -321,7 +313,6 @@ impl MessageHandler<message::UpdateLocale> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::UpdateKeymap> for Service {
     async fn handle(&mut self, message: message::UpdateKeymap) -> Result<(), Error> {
         self.system.keymap = message.keymap;

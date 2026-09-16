@@ -29,7 +29,6 @@ use agama_utils::{
     },
     command::enable_service,
 };
-use async_trait::async_trait;
 
 use crate::{message, model::ProxyConfig};
 
@@ -205,7 +204,6 @@ impl Actor for Service {
     type Error = Error;
 }
 
-#[async_trait]
 impl MessageHandler<message::SetConfig<api::proxy::Config>> for Service {
     async fn handle(
         &mut self,
@@ -218,7 +216,6 @@ impl MessageHandler<message::SetConfig<api::proxy::Config>> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::GetConfig> for Service {
     async fn handle(
         &mut self,
@@ -228,7 +225,6 @@ impl MessageHandler<message::GetConfig> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::Finish> for Service {
     async fn handle(&mut self, _message: message::Finish) -> Result<(), Error> {
         if let Some(config) = &self.state.config {
@@ -243,7 +239,6 @@ impl MessageHandler<message::Finish> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::SetLocale> for Service {
     async fn handle(&mut self, _message: message::SetLocale) -> Result<(), Error> {
         Ok(())

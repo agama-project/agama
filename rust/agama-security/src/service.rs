@@ -28,7 +28,6 @@ use agama_utils::{
     api::{self, question::QuestionSpec, security::SSLFingerprint},
     question::{self, ask_question},
 };
-use async_trait::async_trait;
 use gettextrs::gettext;
 
 use crate::{certificate::Certificate, message};
@@ -245,7 +244,6 @@ impl Actor for Service {
     type Error = Error;
 }
 
-#[async_trait]
 impl MessageHandler<message::SetConfig<api::security::Config>> for Service {
     async fn handle(
         &mut self,
@@ -263,7 +261,6 @@ impl MessageHandler<message::SetConfig<api::security::Config>> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::GetConfig> for Service {
     async fn handle(
         &mut self,
@@ -275,7 +272,6 @@ impl MessageHandler<message::GetConfig> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::CheckCertificate> for Service {
     async fn handle(&mut self, message: message::CheckCertificate) -> Result<bool, Error> {
         let certificate = Certificate::new(message.certificate);
@@ -307,16 +303,15 @@ impl MessageHandler<message::CheckCertificate> for Service {
             tracing::info!("The user trusts certificate {fingerprint}");
             self.state.trust(&certificate);
             self.state.import(&certificate, &message.name)?;
-            return Ok(true);
+            Ok(true)
         } else {
             tracing::info!("The user rejects the certificate {fingerprint}");
             self.state.reject(&certificate);
-            return Ok(false);
+            Ok(false)
         }
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::Finish> for Service {
     async fn handle(&mut self, _message: message::Finish) -> Result<(), Error> {
         if let Err(error) = self.state.copy_certificates(&self.install_dir) {
@@ -326,7 +321,6 @@ impl MessageHandler<message::Finish> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::SetLocale> for Service {
     async fn handle(&mut self, _message: message::SetLocale) -> Result<(), Error> {
         Ok(())
