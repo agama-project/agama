@@ -425,7 +425,20 @@ describe("the way into an entry", () => {
     const { user } = installerRender(<EntriesTable />);
     await user.click(screen.getByRole("button", { name: "Actions for sda" }));
 
-    screen.getByRole("menuitem", { name: "Configure sda" });
+    /* Named in full where the item is heard on its own, and read as the verb
+       alone on screen, where the row it hangs off says which entry this is. */
+    expect(screen.getByRole("menuitem", { name: "Configure sda" })).toHaveTextContent(
+      /^Configure$/,
+    );
+  });
+
+  it("says what kind of thing a volume group is, whose name alone does not", async () => {
+    const { user } = installerRender(<EntriesTable />);
+    await user.click(screen.getByRole("button", { name: "Actions for system" }));
+
+    expect(
+      screen.getByRole("menuitem", { name: "Configure system LVM volume group" }),
+    ).toHaveTextContent(/^Configure$/);
   });
 });
 

@@ -79,14 +79,25 @@ export default function VolumeGroupMenu({ group, subject }: VolumeGroupMenuProps
         /* First, because it is what clicking the row does. */
         ...(subject
           ? [
-              <MenuButtonItem key="open" onClick={() => openSheet(subject)}>
-                {sprintf(
-                  // TRANSLATORS: opens the panel where one entry of the
-                  // installation is read and changed. %s is its name, such as
-                  // "system".
-                  _("Configure %s"),
+              <MenuButtonItem
+                key="open"
+                /* A group's name is a word the reader chose, so the name alone
+                   does not say what is being configured: "Configure system"
+                   reads as a thing to do to the system. Said in full where the
+                   item is heard rather than seen, and left at the verb on
+                   screen, where the row around it says which group this is. */
+                aria-label={sprintf(
+                  // TRANSLATORS: opens the panel where one LVM volume group of
+                  // the installation is read and changed. %s is its name, such
+                  // as "system".
+                  _("Configure %s LVM volume group"),
                   group.vgName,
                 )}
+                onClick={() => openSheet(subject)}
+              >
+                {/* TRANSLATORS: opens the panel where one entry of the
+                    installation is read and changed. */}
+                {_("Configure")}
               </MenuButtonItem>,
               <Divider key="before-edit" />,
             ]

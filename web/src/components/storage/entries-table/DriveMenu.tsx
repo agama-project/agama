@@ -87,13 +87,22 @@ export default function DriveMenu({ entry, device, subject }: DriveMenuProps): R
        what it would open. */
     ...(subject
       ? [
-          <MenuButtonItem key="open" onClick={() => openSheet(subject)}>
-            {sprintf(
+          <MenuButtonItem
+            key="open"
+            /* Named in full only for a reader who is told the item rather than
+               shown it. On screen the menu hangs off the row it belongs to, and
+               a name the reader can see beside the item is a name repeated. */
+            aria-label={sprintf(
               // TRANSLATORS: opens the panel where one entry of the installation
               // is read and changed. %s is its name, such as "sda".
               _("Configure %s"),
               name,
             )}
+            onClick={() => openSheet(subject)}
+          >
+            {/* TRANSLATORS: opens the panel where one entry of the installation
+                is read and changed. */}
+            {_("Configure")}
           </MenuButtonItem>,
           <Divider key="before-retarget" />,
         ]
