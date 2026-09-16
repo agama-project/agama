@@ -26,10 +26,12 @@ import {
   deviceLabel,
   deviceChildren,
   parseToBytes,
+  partitionIdLabel,
   splitSize,
   hasFS,
   hasSnapshots,
 } from "./utils";
+import type { ConfigModel } from "~/model/storage/config-model";
 import type { Storage } from "~/model/system";
 import type { Volume } from "~/model/system/storage";
 
@@ -278,6 +280,18 @@ describe("splitSize", () => {
 
   it("returns an 'empty' size object when empty string is given", () => {
     expect(splitSize("")).toEqual({ size: undefined, unit: undefined });
+  });
+});
+
+describe("partitionIdLabel", () => {
+  it("gives the words for what a partition is for", () => {
+    expect(partitionIdLabel("bios_boot")).toEqual("BIOS boot partition");
+    expect(partitionIdLabel("esp")).toEqual("EFI system partition");
+    expect(partitionIdLabel("lvm")).toEqual("LVM physical volume");
+  });
+
+  it("falls back to the kind of thing it is for an id it has no words for", () => {
+    expect(partitionIdLabel("whatever" as ConfigModel.PartitionId)).toEqual("Partition");
   });
 });
 

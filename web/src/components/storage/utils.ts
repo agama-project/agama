@@ -371,6 +371,46 @@ const filesystemLabel = (fstype: ConfigModel.FilesystemType): TranslatedString =
 };
 
 /**
+ * Generates a translated label for a partition asked for by what it is for.
+ *
+ * A partition with nowhere to mount is still asked for by id, and the id is the
+ * name the machine uses: "bios_boot" is what the configuration says, not what a
+ * reader calls the thing. Each id is answered with the words for it here, in one
+ * place, so the vocabulary can be read as a set and changed as a set.
+ *
+ * Adapting it is editing a line. Dropping it is dropping the call: what is left
+ * without these words is the id itself, which is worse but not broken.
+ *
+ * @param id - Partition id from ConfigModel
+ * @returns Translated name for what the partition is for
+ */
+const partitionIdLabel = (id: ConfigModel.PartitionId): TranslatedString => {
+  switch (id) {
+    case "bios_boot":
+      return _("BIOS boot partition");
+    case "esp":
+      return _("EFI system partition");
+    case "linux":
+      return _("Linux partition");
+    case "lvm":
+      return _("LVM physical volume");
+    case "prep":
+      return _("PReP boot partition");
+    case "raid":
+      return _("RAID member");
+    case "swap":
+      return _("Swap partition");
+    default:
+      /* An id this page has no words for yet. Said as the kind of thing it is
+         rather than as the id: a reader who cannot act on the name gains
+         nothing from being shown it. */
+      // TRANSLATORS: said of a partition of the installation whose purpose this
+      // page has no words for.
+      return _("Partition");
+  }
+};
+
+/**
  * String to represent the filesystem type
  *
  * @returns undefined if there is not enough information
@@ -448,6 +488,7 @@ export {
   deviceSize,
   filesystemLabel,
   filesystemType,
+  partitionIdLabel,
   formattedPath,
   gib,
   parseToBytes,

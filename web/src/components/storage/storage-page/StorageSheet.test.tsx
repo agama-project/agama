@@ -231,6 +231,42 @@ describe("StorageSheet", () => {
 
         screen.getByRole("button", { name: /Use another device/ });
       });
+
+      it("calls a partition asked for by id what it is for, not what the id is", () => {
+        mockConfig.mockReturnValue(
+          config({ drives: [{ name: "/dev/sda", partitions: [{ id: "bios_boot" }] }] }),
+        );
+        renderAt("/storage?sheet=drives.0&sheetTab=planned");
+
+        screen.getByRole("rowheader", { name: "BIOS boot partition" });
+      });
+
+      it("calls dropping a partition it creates a deletion", async () => {
+        const { user } = renderAt("/storage?sheet=drives.0&sheetTab=planned");
+        await user.click(screen.getByRole("button", { name: "Actions for /" }));
+
+        screen.getByRole("menuitem", { name: "Delete" });
+      });
+
+      it("calls dropping one it takes over an end to the reuse, since it stays", async () => {
+        mockSystemDevice.mockReturnValue({
+          name: "/dev/sda",
+          class: "drive",
+          drive: { type: "disk", info: {} },
+          block: { size: 64424509440 },
+          partitions: [{ sid: 41, name: "/dev/sda1", block: { size: 5e10, systems: [] } }],
+        });
+        mockConfig.mockReturnValue(
+          config({
+            drives: [{ name: "/dev/sda", partitions: [{ name: "/dev/sda1", mountPath: "/home" }] }],
+          }),
+        );
+        const { user } = renderAt("/storage?sheet=drives.0&sheetTab=planned");
+        await user.click(screen.getByRole("button", { name: "Actions for /home" }));
+
+        screen.getByRole("menuitem", { name: "Stop reusing" });
+        expect(screen.queryByRole("menuitem", { name: "Delete" })).not.toBeInTheDocument();
+      });
     });
 
     describe("and the address names what is on it today", () => {

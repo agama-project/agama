@@ -42,7 +42,12 @@ import RowMenuToggle from "~/components/storage/entries-table/RowMenuToggle";
 import RelatedNames from "~/components/storage/shared/RelatedNames";
 import RetargetOffer from "~/components/storage/shared/RetargetOffer";
 import { usersOf } from "~/components/storage/shared/users";
-import { filesystemType, formattedPath, sizeDescription } from "~/components/storage/utils";
+import {
+  filesystemType,
+  formattedPath,
+  partitionIdLabel,
+  sizeDescription,
+} from "~/components/storage/utils";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { generateEncodedPath } from "~/utils";
 import configModel from "~/model/storage/config-model";
@@ -66,7 +71,7 @@ type Planned = ConfigModel.Partition | ConfigModel.LogicalVolume;
  * A logical volume has none: only a partition can be asked for by what it is
  * for rather than by where it is mounted.
  */
-function partitionId(part: Planned): string | undefined {
+function partitionId(part: Planned): ConfigModel.PartitionId | undefined {
   return "id" in part ? part.id : undefined;
 }
 
@@ -95,10 +100,15 @@ function plannedOn(entry: Entry): Planned[] {
  * The path bare rather than quoted: quotation marks hold a path apart from the
  * words around it, and a column of paths has no words around it to be held
  * apart from.
+ *
+ * One asked for by id has no path to be called by, so it is called what it is
+ * for. See {@link partitionIdLabel} for the words and for changing them.
  */
 function label(part: Planned): string {
   if (part.mountPath) return part.mountPath;
-  return partitionId(part) || "";
+
+  const id = partitionId(part);
+  return id ? partitionIdLabel(id) : "";
 }
 
 export type PlannedContentSectionProps = {
@@ -334,10 +344,23 @@ export default function PlannedContentSection({
                               </MenuButtonItem>,
                               <MenuButtonItem
                                 key="delete"
-                                isDanger
+                                /* Dropping the plan for a partition that is
+                                   already there removes the plan, not the
+                                   partition, so it is not offered as a danger
+                                   and is not called a deletion. */
+                                isDanger={!source}
                                 onClick={() => remove(part.mountPath)}
                               >
-                                {_("Delete")}
+                                {source
+                                  ? // TRANSLATORS: offered on a partition the
+                                    // installation takes over: leave it where
+                                    // it is and stop giving it to the new
+                                    // system.
+                                    _("Stop reusing")
+                                  : // TRANSLATORS: offered on something the
+                                    // installation would create: take it out of
+                                    // the plan.
+                                    _("Delete")}
                               </MenuButtonItem>,
                             ]}
                           />
