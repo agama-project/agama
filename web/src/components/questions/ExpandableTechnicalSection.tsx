@@ -46,7 +46,7 @@ export default function ExpandableTechnicalSection({ text }: { text?: string }):
     >
       <NestedContent>
         <CodeBlock>
-          <pre>{text}</pre>
+          <pre className={"mh-60dvh"}>{text}</pre>
         </CodeBlock>
       </NestedContent>
     </ExpandableSection>
