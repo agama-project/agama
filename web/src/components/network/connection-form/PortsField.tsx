@@ -28,7 +28,7 @@ import DeviceSelectorModal from "./DeviceSelectorModal";
 import { defaultOptions } from "./fields";
 import { withForm } from "~/hooks/form";
 import { useConnections, useDevices } from "~/hooks/model/system/network";
-import { connectionTypeLabel, controllerOf, deviceLinkLabel } from "~/utils/network";
+import { connectionTypeLabel, controllerOf } from "~/utils/network";
 import { _ } from "~/i18n";
 
 import type { TranslatedString } from "~/i18n";
@@ -86,9 +86,10 @@ type PortsFieldProps = {
  * up once the installed system boots, hence `allowCustomEntries`: the list is
  * for the common case, not a fence around it.
  *
- * The details that tell two cards apart, the link, the driver, where the card
- * sits, do not fit in a list, so the foot of it leads to `DeviceSelectorModal`,
- * which shows them in a table and picks several ports in one pass.
+ * The details that tell two cards apart, the link, the driver, the addresses,
+ * which controller already uses them, do not fit in a list, so the foot of it
+ * leads to `DeviceSelectorModal`, which shows them in a table and picks several
+ * ports in one pass.
  *
  * What the field is about is left to the caller: which form fields it reads and
  * writes, how it is labelled, and what the dialog offering the devices is
@@ -126,36 +127,28 @@ const PortsField = withForm({
               // only grows a column for it when there is something to tell.
               const hasPortsInUse = available.some((d) => portOf(d));
 
-              const options = available.map((device) => {
-                const controller = portOf(device);
-                // What is worth knowing at a glance, and no more: the table
-                // behind the footer entry is where the rest lives.
-                const detail = sift([
-                  connectionTypeLabel(device.type),
-                  deviceLinkLabel(device),
+              const options = available.map((device) => ({
+                value: device.name,
+                label: device.name,
+                // The hardware identifier, and nothing else: every word here is
+                // read out with the option, so a row telling the whole story
+                // takes longer to hear than the list takes to read. What tells
+                // two cards apart is one entry away, in the table behind the
+                // foot of the list.
+                description: (
+                  <Text textStyle={["fontSizeXs", "textColorSubtle"]}>{device.macAddress}</Text>
+                ),
+                // The type and the driver are searchable although the option
+                // does not show them: the dialog does, and a user who knows
+                // which driver their card runs on should not have to open it to
+                // find out which device that is.
+                filterText: sift([
+                  device.name,
                   device.macAddress,
-                  controller &&
-                    // TRANSLATORS: shown next to a network device that another
-                    // bond or bridge already uses. %s is its name, e.g. "bond0".
-                    sprintf(_("used by %s"), controller),
-                ]).join(" · ");
-
-                return {
-                  value: device.name,
-                  label: device.name,
-                  description: <Text textStyle={["fontSizeXs", "textColorSubtle"]}>{detail}</Text>,
-                  // The driver is searchable although the option does not show
-                  // it: the dialog does, and a user who knows which driver
-                  // their card runs on should not have to open it to find out
-                  // which device that is.
-                  filterText: sift([
-                    device.name,
-                    device.macAddress,
-                    connectionTypeLabel(device.type),
-                    device.driver,
-                  ]).join(" "),
-                };
-              });
+                  connectionTypeLabel(device.type),
+                  device.driver,
+                ]).join(" "),
+              }));
 
               return (
                 <>
@@ -163,6 +156,16 @@ const PortsField = withForm({
                     label={label}
                     options={options}
                     allowCustomEntries
+                    // A bond or a bridge over a handful of ports is common
+                    // enough that the field would otherwise be a wall of
+                    // names; past three the rest is counted instead, and
+                    // comes back whenever the field has focus.
+                    entriesThreshold={3}
+                    // At rest the ports are all the field has to say, so
+                    // neither the text box nor the button emptying it is kept
+                    // on screen. Both come back on focus.
+                    collapseInputOnBlur
+                    hideClearAllOnBlur
                     helperText={
                       // TRANSLATORS: helper text for the ports field of a bond
                       // or a bridge, naming the two ways of filling it in.

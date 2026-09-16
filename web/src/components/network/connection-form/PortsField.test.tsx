@@ -169,11 +169,24 @@ describe("PortsField", () => {
     deviceOption("enp2s0");
   });
 
-  it("tells the devices apart by what they report", async () => {
+  it("tells the devices apart by their hardware identifier", async () => {
     const { user } = installerRender(<TestForm />);
     await openList(user);
-    expect(deviceOption("enp1s0")).toHaveTextContent("Ethernet · 1 Gb/s · 00:11:22:33:44:55");
-    expect(deviceOption("enp2s0")).toHaveTextContent("Ethernet · No link · AA:BB:CC:DD:EE:FF");
+    expect(deviceOption("enp1s0")).toHaveTextContent("00:11:22:33:44:55");
+    expect(deviceOption("enp2s0")).toHaveTextContent("AA:BB:CC:DD:EE:FF");
+  });
+
+  // Every word in an option is read out with it, so the list says the least it
+  // can get away with and the dialog says the rest.
+  it("says no more than that in an option", async () => {
+    mockConnections = [bond("bond1", ["enp1s0"])];
+    const { user } = installerRender(<TestForm />);
+    await openList(user);
+
+    const option = deviceOption("enp1s0");
+    expect(option).not.toHaveTextContent("Ethernet");
+    expect(option).not.toHaveTextContent("1 Gb/s");
+    expect(option).not.toHaveTextContent("bond1");
   });
 
   it("finds a device by what its option does not show", async () => {
