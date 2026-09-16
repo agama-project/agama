@@ -26,7 +26,6 @@ Before=serial-getty@ttysclp0.service
 
 [Service]
 Type=oneshot
-Environment=TERM=linux
 
 # disable the kernel output on the console
 ExecStartPre=dmesg --console-off
