@@ -341,47 +341,6 @@ footerEntry={{
 }}
 ```
 
-#### When the entry opens a dialog over the same values
-
-On a field holding several values, the entry usually opens a dialog showing
-more about those same values than a list can: the ports field opens
-`DeviceSelectorModal`, a sortable table of every device found with its link,
-driver, addresses and location. Such a dialog is a second view of the field,
-and the user will treat it as one: what they unpick there, they expect gone.
-
-Three rules, all of which the ports field needed:
-
-1. **Open with the values already held picked.** Otherwise confirming silently
-   drops everything the field was holding.
-2. **Let it answer with nothing.** Unpicking the last value must be
-   confirmable. A dialog that requires a non-empty selection cannot empty the
-   field, and the user is sent back to the text box to finish the job by hand.
-   Nothing picked is a legitimate answer, not an unfinished one.
-3. **Never touch what it does not offer.** Everything else the field holds
-   survives the round trip untouched, whether it was left out of the offer on
-   purpose (the loopback device, the controller being edited) or matches
-   nothing the dialog knows about (a name written out by hand). `mergePicked`
-   in `PortsField` is that rule: values the dialog never listed survive, listed
-   ones follow the pick.
-
-Rule 3 is what keeps the dialog honest about its own scope. The alternative,
-listing values the source data knows nothing about as stand-in rows so that the
-dialog mirrors the field exactly, was tried on the ports field and dropped:
-naming something that does not exist yet is a special case, and a table of
-found devices is the wrong place to make it look ordinary. The text box stays
-the way to add such a value, and the entry in the control stays the way to
-remove it.
-
-Title the dialog after what the values are for, `_("Select bond ports")`, not
-after what it lists. The entry reads the same on every field it appears on, and
-the field label that gave the context away is no longer in sight once the
-dialog covers the form. That title is the caller's to supply, so a shared
-dialog takes a `title` prop instead of deriving one from its contents.
-
-Confirm with `Accept`, the word the rest of the installer uses. A label
-restating the selection, "Use 3 devices", changes under the pointer as the user
-ticks boxes and repeats what the ticked boxes already say.
-
 #### When not to use it
 
 - Most users need the route: give it a control of its own.
