@@ -62,6 +62,31 @@ jest.mock("~/hooks/model/proposal/storage", () => ({
 
 jest.mock("~/components/storage/ConfigureDeviceMenu", () => () => <div>bring in more devices</div>);
 
+/**
+ * How many things a line names before counting them instead, so a test can move
+ * it.
+ *
+ * The number and the sentence that reads it have to agree on how many names
+ * there is room for. Only running one against the other says whether they do,
+ * and a sentence with too few places for them drops the rest in silence.
+ *
+ * Read through a getter, since a line reads the number as it renders rather
+ * than when the module loads.
+ */
+let mockNamesPerLine = 2;
+
+jest.mock("~/components/storage/shared/naming", () => ({
+  get NAMES_PER_LINE() {
+    return mockNamesPerLine;
+  },
+}));
+
+/* Every group of tests in this file, since a test that moves the number is
+   sitting next to several that read what it produced. */
+beforeEach(() => {
+  mockNamesPerLine = 2;
+});
+
 const config = (values: Partial<ConfigModel.Config> = {}): ConfigModel.Config => ({
   drives: [],
   mdRaids: [],
@@ -229,6 +254,23 @@ describe("what a row says the installer will do", () => {
     expect(rowText("sda")).toContain("Host 3 LVM volume groups");
   });
 
+  it("names all of them where it is given room for all of them", () => {
+    mockNamesPerLine = 3;
+    mockConfig.mockReturnValue(
+      config({
+        drives: [{ name: "/dev/sda" }],
+        volumeGroups: [
+          { vgName: "one", targetDevices: ["/dev/sda"] },
+          { vgName: "two", targetDevices: ["/dev/sda"] },
+          { vgName: "three", targetDevices: ["/dev/sda"] },
+        ],
+      }),
+    );
+    installerRender(<EntriesTable />);
+
+    expect(rowText("sda")).toContain("Host LVM volume groups one, two, and three");
+  });
+
   it("counts the partitions it creates and the ones it takes over", () => {
     mockConfig.mockReturnValue(
       config({
@@ -295,6 +337,19 @@ describe("what a row says the installer will do", () => {
     installerRender(<EntriesTable />);
 
     expect(rowText("system")).toContain("Create LVM volume group on 3 disks");
+  });
+
+  it("names all of them where it is given room for all of them", () => {
+    mockNamesPerLine = 3;
+    mockConfig.mockReturnValue(
+      config({
+        drives: [{ name: "/dev/sda" }, { name: "/dev/sdb" }, { name: "/dev/sdc" }],
+        volumeGroups: [{ vgName: "system", targetDevices: ["/dev/sda", "/dev/sdb", "/dev/sdc"] }],
+      }),
+    );
+    installerRender(<EntriesTable />);
+
+    expect(rowText("system")).toContain("Create LVM volume group on sda, sdb, and sdc");
   });
 });
 

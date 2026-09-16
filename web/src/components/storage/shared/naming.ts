@@ -34,9 +34,18 @@
  * written. They are all here so that the set can be looked at together, which is
  * the only way to tell whether one of them is wrong.
  *
- * Past two, a line is interpolating a list whose separators and conjunction
- * belong to the language, which is a different problem. Solve that properly,
- * with `Intl.ListFormat`, rather than by joining strings.
+ * The separators and the conjunction between the names belong to the language,
+ * so a line reading this writes one sentence with a single hole in it and fills
+ * that hole with `formatList`. A sentence with a hole per name has to agree
+ * with this number on how many there are, and nothing makes them agree: raise
+ * it past what the sentence has room for and the rest of the names are dropped
+ * without a mark.
+ *
+ * `ConfigurationTitle` is the one place still written that way, because its
+ * names are links rather than text and the list has to be punctuated around
+ * them. It is safe, since it asks for one name or two by number and counts
+ * anything else, but raising this past two leaves it counting while the rows
+ * name. See `storage-main-page-naming-decision` in the notes.
  */
 const NAMES_PER_LINE = 2;
 

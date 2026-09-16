@@ -32,7 +32,7 @@ import { typeDescription } from "~/components/storage/utils/device";
 import { useConfigModel } from "~/hooks/model/storage/config-model";
 import { useDevice } from "~/hooks/model/system/storage";
 import configModel from "~/model/storage/config-model";
-import { _, n_, TranslatedString } from "~/i18n";
+import { _, n_, formatList, TranslatedString } from "~/i18n";
 import type { Partitionable } from "~/model/storage/config-model";
 import type { SheetEntry } from "~/components/storage/shared/use-sheet";
 
@@ -92,33 +92,29 @@ function purposeOf(
 
   /* Named rather than counted while there is room, which is the other end of
      what a group's own row says. A reader arriving at the disk used to learn
-     that something LVM was there and had to go looking for what. */
-  if (groups.length === 1) {
+     that something LVM was there and had to go looking for what.
+
+     One sentence whatever the limit is, with the names punctuated by the
+     language rather than by a conjunction of ours. Written with a hole per name
+     instead, the sentence and the limit have to agree on a number, and nothing
+     makes them: a limit raised past what the sentence has room for drops the
+     rest of the names without a mark. */
+  if (groups.length && groups.length <= NAMES_PER_LINE) {
     lines.push(
       sprintf(
         boots
-          ? // TRANSLATORS: what a disk is for: it holds an LVM volume group and
-            // the machine starts from it. %s is the group's name, such as
-            // "system".
-            _("Host LVM volume group %s and boot")
-          : // TRANSLATORS: what a disk is for: it holds an LVM volume group.
-            // %s is the group's name, such as "system".
-            _("Host LVM volume group %s"),
-        groups[0],
-      ),
-    );
-  } else if (groups.length > 1 && groups.length <= NAMES_PER_LINE) {
-    lines.push(
-      sprintf(
-        boots
-          ? // TRANSLATORS: what a disk is for: it holds two LVM volume groups
-            // and the machine starts from it. %1$s and %2$s are their names.
-            _("Host LVM volume groups %1$s and %2$s and boot")
-          : // TRANSLATORS: what a disk is for: it holds two LVM volume groups.
-            // %1$s and %2$s are their names.
-            _("Host LVM volume groups %1$s and %2$s"),
-        groups[0],
-        groups[1],
+          ? // TRANSLATORS: what a disk is for: it holds one or more LVM volume
+            // groups and the machine starts from it. %s is their names, such as
+            // "system" or "system and data".
+            n_(
+              "Host LVM volume group %s and boot",
+              "Host LVM volume groups %s and boot",
+              groups.length,
+            )
+          : // TRANSLATORS: what a disk is for: it holds one or more LVM volume
+            // groups. %s is their names, such as "system" or "system and data".
+            n_("Host LVM volume group %s", "Host LVM volume groups %s", groups.length),
+        formatList(groups),
       ),
     );
   } else if (groups.length > NAMES_PER_LINE) {

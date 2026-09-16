@@ -29,7 +29,7 @@ import { useDevicesManager } from "~/components/storage/shared/use-devices-manag
 import { NAMES_PER_LINE } from "~/components/storage/shared/naming";
 import { baseName } from "~/components/storage/utils";
 import { useDevice } from "~/hooks/model/system/storage";
-import { _, n_, TranslatedString } from "~/i18n";
+import { _, n_, formatList, TranslatedString } from "~/i18n";
 import type { ConfigModel } from "~/model/storage/config-model";
 import type { SheetEntry } from "~/components/storage/shared/use-sheet";
 
@@ -50,23 +50,18 @@ function purposeOf(group: ConfigModel.VolumeGroup): TranslatedString[] {
   const volumes = (group.logicalVolumes || []).length;
   const lines: TranslatedString[] = [];
 
-  if (hosts.length === 1) {
+  /* One sentence whatever the limit is, with the names punctuated by the
+     language rather than by a conjunction of ours. Written with a hole per name
+     instead, the sentence and the limit have to agree on a number, and nothing
+     makes them: a limit raised past what the sentence has room for drops the
+     rest of the names without a mark. */
+  if (hosts.length && hosts.length <= NAMES_PER_LINE) {
     lines.push(
       sprintf(
-        // TRANSLATORS: where an LVM volume group will be created. %s is a disk
-        // name, such as "sda".
+        // TRANSLATORS: where an LVM volume group will be created. %s is one or
+        // more disk names, such as "sda" or "sda and sdb".
         _("Create LVM volume group on %s"),
-        baseName(hosts[0]),
-      ),
-    );
-  } else if (hosts.length > 1 && hosts.length <= NAMES_PER_LINE) {
-    lines.push(
-      sprintf(
-        // TRANSLATORS: where an LVM volume group will be created. %1$s and %2$s
-        // are disk names, such as "sda" and "sdb".
-        _("Create LVM volume group on %1$s and %2$s"),
-        baseName(hosts[0]),
-        baseName(hosts[1]),
+        formatList(hosts.map((host) => baseName(host))),
       ),
     );
   } else if (hosts.length > NAMES_PER_LINE) {
