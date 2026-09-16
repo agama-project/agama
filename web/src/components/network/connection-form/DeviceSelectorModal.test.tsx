@@ -106,6 +106,20 @@ describe("DeviceSelectorModal", () => {
       within(rowFor("wlan0")).getByText("No link");
     });
 
+    it("sorts by what the link column reads, not by the speed behind it", async () => {
+      // An unplugged card may still report the speed it last ran at, which
+      // would sort it among the fast ones while reading "No link".
+      const stale = { ...wireless, carrier: false, speed: 10000 } as Device;
+      const { user } = renderModal({ devices: [wired, stale] });
+
+      const header = screen.getByRole("columnheader", { name: "Link" });
+      await user.click(within(header).getByRole("button"));
+
+      const [firstRow, secondRow] = screen.getAllByRole("row").slice(1);
+      expect(firstRow).toHaveTextContent("No link");
+      expect(secondRow).toHaveTextContent("1 Gb/s");
+    });
+
     it("leaves the column out when no device reports a link", () => {
       renderModal();
       expect(screen.queryByRole("columnheader", { name: "Link" })).toBeNull();

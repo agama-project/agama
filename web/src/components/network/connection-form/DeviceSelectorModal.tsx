@@ -26,7 +26,13 @@ import { first } from "radashi";
 import Popup from "~/components/core/Popup";
 import SelectableDataTable from "~/components/core/SelectableDataTable";
 import Text from "~/components/core/Text";
-import { connectionTypeLabel, deviceLinkLabel, deviceStateLabel, formatIp } from "~/utils/network";
+import {
+  connectionTypeLabel,
+  deviceLinkLabel,
+  deviceLinkRank,
+  deviceStateLabel,
+  formatIp,
+} from "~/utils/network";
 import { sortCollection } from "~/utils";
 import { _ } from "~/i18n";
 
@@ -154,7 +160,7 @@ export default function DeviceSelectorModal({
             // cable plugged in and, when it does, how fast the link is.
             name: _("Link"),
             value: (device: Device) => deviceLinkLabel(device) || "-",
-            sortingKey: "speed",
+            sortingKey: deviceLinkRank,
           },
         ]
       : []),
