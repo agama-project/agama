@@ -85,9 +85,6 @@ export type StorageSheetProps = {
  * An address naming an entry the configuration no longer has reads as a shut
  * sheet. Addresses outlive plans: one can be written down, shared, or reloaded
  * after the entry it named has gone.
- *
- * @fixme What is on an entry today, and what a volume group is made of, are the
- *  two views still to join the strip.
  */
 export default function StorageSheet({ page }: StorageSheetProps): React.ReactNode {
   const { subject, close } = useSheet();
