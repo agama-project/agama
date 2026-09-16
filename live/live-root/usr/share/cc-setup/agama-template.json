@@ -1,0 +1,113 @@
+{
+  "product": {
+    "id": "SLES"
+  },
+  "questions": {
+    "answers": [
+      {
+        "class": "software.package_error.provide_error",
+        "answer": "Continue anyway"
+      },
+      {
+        "class": "storage.luks_activation",
+        "answer": "skip"
+      },
+      {
+        "class": "luksActivation",
+        "answer": "skip"
+      }
+    ]
+  },
+  "root": {
+    "hashedPassword": true,
+    "password": "[to be set]"
+  },
+  "user": {
+    "fullName": "System Administrator",
+    "userName": "sysadmin",
+    "hashedPassword": true,
+    "password": "[to be set]"
+  },
+  "bootloader": {
+    "timeout": 3
+  },
+  "software": {
+    "patterns": [
+      "base",
+      "fips"
+    ],
+    "packages": [
+      "certification-sles-eal4",
+      "chrony",
+      "audit",
+      "aide",
+      "cryptsetup",
+      "lvm2"
+    ]
+  },
+  "storage": {
+    "drives": [
+      {
+        "search": "*",
+        "partitions": [
+          {
+            "search": "*",
+            "delete": true
+          },
+          {
+            "id": "esp",
+            "filesystem": {
+              "path": "/boot/efi",
+              "type": "vfat"
+            },
+            "size": "512 MiB"
+          },
+          {
+            "id": "linux",
+            "filesystem": {
+              "path": "/boot",
+              "type": "ext4"
+            },
+            "size": "1 GiB"
+          },
+          {
+            "alias": "pv",
+            "id": "lvm",
+            "size": {
+              "min": "10 GiB"
+            },
+            "encryption": {
+              "luks2": {
+                "password": "[to be set]"
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "volumeGroups": [
+      {
+        "name": "system_vg",
+        "physicalVolumes": [
+          "pv"
+        ],
+        "logicalVolumes": [
+          {
+            "name": "root",
+            "filesystem": {
+              "path": "/",
+              "type": "btrfs"
+            },
+            "size": {
+              "min": "10 GiB"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "scripts": {
+    "post": [
+    ]
+  }
+}
