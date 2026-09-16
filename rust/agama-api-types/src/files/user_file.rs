@@ -24,7 +24,7 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use std::{io, num::ParseIntError, path::Path, process};
 
-use crate::api::files::{FileSource, FileSourceError, WithFileSource};
+use crate::files::{FileSource, FileSourceError, WithFileSource};
 use agama_transfer::Error as TransferError;
 
 #[derive(thiserror::Error, Debug)]

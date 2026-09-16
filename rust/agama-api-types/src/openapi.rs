@@ -33,7 +33,7 @@ pub mod schemas {
     ///
     /// Example:
     /// ```
-    /// # use agama_utils::openapi::schemas::IpInetSchema;
+    /// # use agama_api_types::openapi::schemas::IpInetSchema;
     /// # use cidr::IpInet;
     ///
     /// #[derive(schemars::JsonSchema)]

@@ -18,28 +18,21 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::api::config::Config;
+//! Representation of the network settings
+
+use crate::network::{AccessPoint, Device, NetworkConnectionsWithStateCollection, StateSettings};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
-use serde_json::Value;
+use std::default::Default;
 
-/// Patch for the config.
-#[derive(Deserialize, Serialize, JsonSchema)]
+/// Network settings for installation
+#[derive(Clone, Debug, Default, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-pub struct Patch {
-    /// Update for the current config.
-    #[schemars(with = "Option<Config>")]
-    pub update: Option<Value>,
-}
-
-impl Patch {
-    pub fn with_update(config: Value) -> Self {
-        Self {
-            update: Some(config),
-        }
-    }
-
-    pub fn with_config(config: &Config) -> Result<Self, serde_json::Error> {
-        Ok(Self::with_update(serde_json::to_value(config)?))
-    }
+#[schemars(rename = "network.SystemInfo")]
+pub struct SystemInfo {
+    pub access_points: Vec<AccessPoint>, // networks or access_points shold be returned
+    /// Connections to use in the installation
+    pub connections: NetworkConnectionsWithStateCollection,
+    pub devices: Vec<Device>,
+    pub state: StateSettings,
 }

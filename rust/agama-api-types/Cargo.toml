@@ -1,0 +1,33 @@
+[package]
+name = "agama-api-types"
+version = "0.1.0"
+rust-version.workspace = true
+edition.workspace = true
+
+[features]
+default = ["curl"]
+curl = ["dep:agama-transfer"]
+
+[dependencies]
+agama-locale-data = { workspace = true }
+agama-transfer = { workspace = true, optional = true }
+cidr = { workspace = true }
+fluent-uri = { workspace = true }
+gettext-rs = { workspace = true }
+heck = "0.5.0"
+macaddr = { workspace = true }
+merge = { workspace = true }
+regex = { workspace = true }
+schemars = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+serde_with = { workspace = true }
+strum = { workspace = true }
+thiserror = { workspace = true }
+tokio = { workspace = true }
+tracing = { workspace = true }
+url = { workspace = true }
+zbus = { workspace = true }
+
+[dev-dependencies]
+tempfile = { workspace = true }

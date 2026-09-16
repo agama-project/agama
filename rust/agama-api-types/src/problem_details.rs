@@ -42,7 +42,7 @@ use serde::{Deserialize, Serialize};
 /// Deserializing a schema validation error from JSON:
 ///
 /// ```
-/// # use agama_utils::api::ProblemDetails;
+/// # use agama_api_types::ProblemDetails;
 /// let json = r#"{
 ///   "type": "tag:agama.opensuse.org,2026:problems/schema-validation-failed",
 ///   "title": "Schema Validation Failed",

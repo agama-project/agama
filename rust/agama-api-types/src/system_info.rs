@@ -1,4 +1,4 @@
-// Copyright (c) [2025] SUSE LLC
+// Copyright (c) [2025-2026] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -18,24 +18,25 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::api::{access::ExtendedConfig, hostname, l10n, network, software, users};
+use crate::{hostname, l10n, manager, network, s390, software};
 use schemars::JsonSchema;
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 use serde_json::Value;
+use serde_with::skip_serializing_none;
 
-#[derive(Clone, Debug, Deserialize, Serialize, JsonSchema)]
+#[skip_serializing_none]
+#[derive(Clone, Debug, Serialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-pub struct Proposal {
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub hostname: Option<hostname::Proposal>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub l10n: Option<l10n::Proposal>,
-    pub network: network::Proposal,
-    pub access: ExtendedConfig,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub software: Option<software::Proposal>,
-    #[serde(skip_serializing_if = "Option::is_none")]
+pub struct SystemInfo {
+    #[serde(flatten)]
+    pub manager: manager::SystemInfo,
+    pub hostname: hostname::SystemInfo,
+    pub l10n: l10n::SystemInfo,
+    pub software: software::SystemInfo,
     pub storage: Option<Value>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub users: Option<users::Config>,
+    pub iscsi: Option<Value>,
+    pub bootloader: Option<Value>,
+    pub network: network::SystemInfo,
+    #[serde(flatten)]
+    pub s390: Option<s390::SystemInfo>,
 }

@@ -22,21 +22,30 @@
 //! other Agama's crates.
 
 pub mod actor;
-pub mod api;
 pub mod arch;
 pub mod command;
 pub mod dbus;
 pub mod issue;
-pub mod kernel_cmdline;
 pub mod licenses;
 pub mod logging;
 pub mod message;
-pub mod openapi;
 pub mod products;
 pub mod progress;
 pub mod question;
 pub mod runtime;
 pub mod test;
+
+// `api`, `kernel_cmdline` and `openapi` live in their own crate
+// (agama-api-types), which carries almost all of the schema/derive-heavy
+// code in what used to be agama-utils. Re-exporting them here keeps every
+// existing `agama_utils::api::...`/`agama_utils::kernel_cmdline::...`/
+// `agama_utils::openapi::...` path working unchanged, while letting Cargo
+// treat the derive-heavy code as a separate compilation unit: touching an
+// unrelated part of agama-utils (this crate) no longer forces recompiling
+// it, and vice versa. See spec/0003-reduce-build-time/plan.md.
+pub use agama_api_types as api;
+pub use agama_api_types::kernel_cmdline;
+pub use agama_api_types::openapi;
 
 mod resolvable;
 pub use resolvable::{Resolvable, ResolvableType};

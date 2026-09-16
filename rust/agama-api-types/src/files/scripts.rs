@@ -23,7 +23,7 @@ use std::{
     path::{Path, PathBuf},
 };
 
-use crate::api::files::{FileSource, FileSourceError, WithFileSource};
+use crate::files::{FileSource, FileSourceError, WithFileSource};
 use agama_transfer::Error as TransferError;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
@@ -326,7 +326,7 @@ mod test {
 
     use tempfile::TempDir;
 
-    use crate::api::files::{
+    use crate::files::{
         scripts::ScriptsGroup, BaseScript, FileSource, InitScript, PostPartitioningScript,
         PostScript, PreScript, Script,
     };

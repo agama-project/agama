@@ -328,7 +328,7 @@ impl QuestionSpec {
     /// # Example
     ///
     /// ```
-    ///   use agama_utils::api::question::QuestionSpec;
+    ///   use agama_api_types::question::QuestionSpec;
     ///   let q = QuestionSpec::new("Continue?", "q.continue").with_yes_no_actions();
     ///   assert_eq!(q.default_action.as_deref(), Some("No"));
     ///   assert_eq!(q.actions.len(), 2);

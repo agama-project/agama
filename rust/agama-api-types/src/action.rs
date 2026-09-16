@@ -20,10 +20,7 @@
 
 use std::str::FromStr;
 
-use crate::{
-    api::{iscsi, l10n, Scope},
-    kernel_cmdline::KernelCmdline,
-};
+use crate::{iscsi, kernel_cmdline::KernelCmdline, l10n, Scope};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 

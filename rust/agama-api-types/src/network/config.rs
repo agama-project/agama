@@ -20,7 +20,7 @@
 
 //! Representation of the network settings
 
-use crate::api::network::{NetworkConnectionsCollection, StateSettings};
+use crate::network::{NetworkConnectionsCollection, StateSettings};
 use merge::Merge;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
@@ -44,8 +44,8 @@ pub struct Config {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::api::network::settings::{NetworkConnection, WirelessSettings}; // Import necessary types
-    use crate::api::network::types::{ConnectivityState, Ipv4Method};
+    use crate::network::settings::{NetworkConnection, WirelessSettings}; // Import necessary types
+    use crate::network::types::{ConnectivityState, Ipv4Method};
 
     #[test]
     fn test_merge_network_config() {

@@ -20,7 +20,7 @@
 
 //! This module define types related to the progress report.
 
-use crate::api::scope::Scope;
+use crate::scope::Scope;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 

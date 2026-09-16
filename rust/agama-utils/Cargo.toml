@@ -6,26 +6,20 @@ edition.workspace = true
 
 [features]
 default = ["curl"]
-curl = ["dep:agama-transfer"]
+# Forwarded to agama-api-types: see the comment on its own "curl" feature.
+curl = ["agama-api-types/curl"]
 
 [dependencies]
+agama-api-types = { workspace = true }
 agama-locale-data = { workspace = true }
-agama-transfer = { workspace = true, optional = true }
 anyhow = { workspace = true }
 async-trait = { workspace = true }
 camino = { workspace = true }
-cidr = { workspace = true }
-fluent-uri = { workspace = true }
 fs-err = "3.2.0"
 gettext-rs = { workspace = true }
-heck = "0.5.0"
 libsystemd = "0.7.2"
-macaddr = { workspace = true }
 merge = { workspace = true }
-regex = { workspace = true }
-schemars = { workspace = true }
 serde = { workspace = true }
-serde_json = { workspace = true }
 serde_with = { workspace = true }
 serde_yaml = { workspace = true }
 strum = { workspace = true }
@@ -35,13 +29,11 @@ tracing = { workspace = true }
 tracing-journald = "0.3.2"
 tracing-subscriber = { workspace = true }
 trait-variant = { workspace = true }
-url = { workspace = true }
 uuid = { workspace = true }
 zbus = { workspace = true }
 zvariant = "5.5.2"
 
 [dev-dependencies]
-tempfile = { workspace = true }
 test-context = { workspace = true }
 tokio-test = { workspace = true }
 

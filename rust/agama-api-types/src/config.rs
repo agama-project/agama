@@ -18,7 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::api::{
+use crate::{
     access, bootloader,
     files::{self, FileSourceError},
     hostname, iscsi, l10n, network, ntp, proxy, question, s390, security,

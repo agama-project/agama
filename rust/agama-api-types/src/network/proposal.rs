@@ -20,7 +20,7 @@
 
 //! Representation of the network settings
 
-use crate::api::network::{NetworkConnectionsCollection, StateSettings};
+use crate::network::{NetworkConnectionsCollection, StateSettings};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use std::default::Default;

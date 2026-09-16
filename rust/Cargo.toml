@@ -1,5 +1,6 @@
 [workspace]
 members = [
+    "agama-api-types",
     "agama-autoinstall",
     "agama-bootloader",
     "agama-cli",
@@ -37,6 +38,7 @@ edition = "2021"
 
 [workspace.dependencies]
 agama-access = { path = "agama-access" }
+agama-api-types = { path = "agama-api-types", default-features = false }
 agama-bootloader = { path = "agama-bootloader" }
 agama-cli = { path = "agama-cli" }
 agama-files = { path = "agama-files" }

@@ -19,6 +19,32 @@ dependencies = [
 ]
 
 [[package]]
+name = "agama-api-types"
+version = "0.1.0"
+dependencies = [
+ "agama-locale-data",
+ "agama-transfer",
+ "cidr",
+ "fluent-uri 0.4.1",
+ "gettext-rs",
+ "heck",
+ "macaddr",
+ "merge",
+ "regex",
+ "schemars 1.2.1",
+ "serde",
+ "serde_json",
+ "serde_with",
+ "strum",
+ "tempfile",
+ "thiserror 2.0.18",
+ "tokio",
+ "tracing",
+ "url",
+ "zbus",
+]
+
+[[package]]
 name = "agama-autoinstall"
 version = "0.1.0"
 dependencies = [
@@ -439,27 +465,19 @@ dependencies = [
 name = "agama-utils"
 version = "0.1.0"
 dependencies = [
+ "agama-api-types",
  "agama-locale-data",
- "agama-transfer",
  "anyhow",
  "async-trait",
  "camino",
- "cidr",
- "fluent-uri 0.4.1",
  "fs-err",
  "gettext-rs",
- "heck",
  "libsystemd",
- "macaddr",
  "merge",
- "regex",
- "schemars 1.2.1",
  "serde",
- "serde_json",
  "serde_with",
  "serde_yaml",
  "strum",
- "tempfile",
  "test-context",
  "thiserror 2.0.18",
  "tokio",
@@ -468,7 +486,6 @@ dependencies = [
  "tracing-journald",
  "tracing-subscriber",
  "trait-variant",
- "url",
  "uuid",
  "zbus",
  "zvariant",

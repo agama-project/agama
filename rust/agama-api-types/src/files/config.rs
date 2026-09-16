@@ -23,7 +23,7 @@ use merge::Merge;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
-use crate::api::files::{
+use crate::files::{
     scripts::{InitScript, PostPartitioningScript, PostScript, PreScript},
     user_file::UserFile,
     FileSourceError, WithFileSource,
@@ -109,7 +109,7 @@ fn resolve_urls_for<T: WithFileSource>(
 
 #[cfg(test)]
 mod tests {
-    use crate::api::files::{BaseScript, FileSource};
+    use crate::files::{BaseScript, FileSource};
 
     use super::*;
 
