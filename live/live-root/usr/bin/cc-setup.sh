@@ -158,23 +158,28 @@ parse_arguments() {
   $ui_forced || detect_ui_mode
 }
 
-# Use the plain line interface when dialog cannot work reasonably: no dialog
-# tool, no terminal, a dumb terminal or a serial console.
+# Decide whether the dialog interface can be used. The line interface is the
+# fallback for the cases where dialog cannot work: it is not installed, there
+# is no terminal at all or the terminal cannot display anything.
+#
+# The dialogs are drawn on the standard error (see show_dialog), so that has to
+# be a terminal, and dialog needs a usable TERM. The service which starts the
+# tool during the boot connects all three standard streams to the console
+# (StandardInput/StandardOutput/StandardError=tty in cc-setup.service).
+#
+# A serial console is not a reason for the line interface, dialog works over a
+# serial line as well; the line interface is chosen with --plain.
 detect_ui_mode() {
-  if ! command -v dialog >/dev/null 2>&1; then
-    DIALOG_MODE=false
-    return
-  fi
-  if [[ ! -t 0 || ! -t 2 ]]; then
-    DIALOG_MODE=false
-    return
-  fi
-  case "${TERM:-dumb}" in
-    dumb|unknown|"") DIALOG_MODE=false; return ;;
+  DIALOG_MODE=false
+
+  command -v dialog >/dev/null 2>&1 || return 0
+  [[ -t 2 ]] || return 0
+
+  case "${TERM-}" in
+    "" | dumb | unknown) return 0 ;;
   esac
-  if [[ -r /proc/consoles ]] && grep -qE '^ttyS' /proc/consoles; then
-    DIALOG_MODE=false
-  fi
+
+  DIALOG_MODE=true
 }
 
 # Keep the secrets out of swap, core dumps and of other users' reach.
@@ -198,8 +203,8 @@ cleanup() {
   fi
   ROOT_PASSWORD="" USER_PASSWORD="" LUKS_PASSWORD=""
   ROOT_PASSWORD_HASH="" USER_PASSWORD_HASH=""
-  if $DIALOG_MODE && command -v dialog >/dev/null 2>&1; then
-    clear 2>/dev/null || true
+  if $DIALOG_MODE; then
+    clear_terminal
   fi
   return $rc
 }
@@ -252,7 +257,6 @@ show_dialog() {
 dialog_full_height() {
   local rows="" size
 
-  # the window size of the controlling terminal
   if size=$(stty size </dev/tty 2>/dev/null); then
     rows=${size%% *}
   fi
@@ -279,38 +283,7 @@ terminal_echo() {
     *) return 0 ;;
   esac
 
-  # the terminal of the stream which is displayed, /dev/tty as a fallback
-  (stty "$mode" <&2) >/dev/null 2>&1 ||
-    (stty "$mode" </dev/tty) >/dev/null 2>&1 || true
-}
-
-# Is the controlling terminal usable? The /dev/tty device node exists even
-# when the process has no controlling terminal, so it has to be tried.
-have_tty() {
-  (: >/dev/tty) 2>/dev/null
-}
-
-# Where the screen really is. Dialog draws its user interface on the standard
-# error (see show_dialog) and when that is not a terminal it falls back to the
-# controlling terminal - everything else has to use the same stream, otherwise
-# it is written somewhere the user does not see.
-# Prints "stderr" or "tty".
-screen_target() {
-  if [[ -t 2 ]]; then
-    printf 'stderr'
-  elif (: >/dev/tty) 2>/dev/null; then
-    printf 'tty'
-  else
-    printf 'stderr'
-  fi
-}
-
-print_to_terminal() {
-  if [[ $(screen_target) == "tty" ]]; then
-    (printf '%s\n' "$1" >/dev/tty) 2>/dev/null || true
-  else
-    printf '%s\n' "$1" >&2
-  fi
+  (stty "$mode" </dev/tty) >/dev/null 2>&1 || true
 }
 
 # Clear the screen, the output of the previous dialog must not stay on it while
@@ -319,7 +292,7 @@ print_to_terminal() {
 # Plain ANSI sequences are used on purpose: the "clear" command needs a working
 # TERM setting and fails silently without it (and then nothing is cleared).
 clear_terminal() {
-  print_to_terminal $'\033[H\033[2J\033[3J'
+  printf '\033[H\033[2J\033[3J' >&2
 }
 
 # Print a message on the terminal, wrapped at word boundaries. The messages
@@ -885,12 +858,28 @@ The installation medium seems to be incomplete."
 # Workflow: interactive input
 # ---------------------------------------------------------------------------
 
-# ask_password TITLE PROMPT -> validated password on stdout
-# The password is asked twice, it is never displayed.
+# ask_password TITLE PROMPT [CURRENT] -> validated password on stdout
+# The password is asked twice, it is never displayed. CURRENT is the password
+# entered in a previous round of the configuration: when it is not empty an
+# empty answer keeps it, so the user does not have to type it again.
 ask_password() {
-  local title=$1 prompt=$2 password confirmation reason
+  local title=$1 prompt=$2 current=${3-} password confirmation reason
+
+  if [[ -n $current ]]; then
+    prompt="$prompt
+
+(leave empty to reuse the previously entered password)"
+  fi
+
   while true; do
     password=$(ui_password "$title" "$prompt") || return 1
+
+    # an empty answer keeps the password from the previous round
+    if [[ -z $password && -n $current ]]; then
+      printf '%s' "$current"
+      return 0
+    fi
+
     if ! reason=$(validate_password "$password"); then
       ui_error --size 10 60 "$reason"
       continue
@@ -898,7 +887,7 @@ ask_password() {
     confirmation=$(ui_password "$title" \
       "Enter the same password again for confirmation:") || return 1
     if [[ $password != "$confirmation" ]]; then
-      ui_error --size 6 40 "The passwords do not match, please try again."
+      ui_error "The passwords do not match, please try again."
       continue
     fi
     printf '%s' "$password"
@@ -923,7 +912,7 @@ ask_validated() {
 ask_root_password() {
   ROOT_PASSWORD=$(ask_password "Root Password" \
     "Enter the password for the administrator
-(root) account:") || return 1
+(root) account:" "$ROOT_PASSWORD") || return 1
   ROOT_PASSWORD_HASH=$(hash_password "$ROOT_PASSWORD") ||
     fatal "Cannot hash the root password, \"openssl passwd -6\" failed."
 }
@@ -934,7 +923,7 @@ ask_user_account() {
   FULL_NAME=$(ask_validated "First User" "Enter the full name of the first user:" \
     "$FULL_NAME" validate_full_name) || return 1
   USER_PASSWORD=$(ask_password "First User Password" \
-    "Enter the password for the user \"$USER_NAME\":") || return 1
+    "Enter the password for the user \"$USER_NAME\":" "$USER_PASSWORD") || return 1
   USER_PASSWORD_HASH=$(hash_password "$USER_PASSWORD") ||
     fatal "Cannot hash the user password, \"openssl passwd -6\" failed."
 }
@@ -944,7 +933,7 @@ ask_luks_password() {
     "Enter the LUKS2 passphrase for the encrypted system volume.
 
 This passphrase must be entered at every boot, it cannot
-be recovered when it is lost.") || return 1
+be recovered when it is lost." "$LUKS_PASSWORD") || return 1
 }
 
 ask_ntp_server() {
@@ -1381,12 +1370,7 @@ start_monitor() {
   clear_terminal
   echo "Installing the system, please wait..."
 
-  # the monitor has to draw where the dialogs are displayed
-  if [[ $(screen_target) == "tty" ]]; then
-    agama monitor >/dev/tty 2>/dev/tty </dev/null &
-  else
-    agama monitor >&2 2>&2 </dev/null &
-  fi
+  agama monitor &
   MONITOR_PID=$!
 }
 
@@ -1412,8 +1396,8 @@ poll_installation() {
     elapsed=$((SECONDS - start))
 
     if ! monitor_running && ((elapsed - heartbeat >= PROGRESS_HEARTBEAT)); then
-      print_to_terminal "$(printf 'still installing, elapsed time: %dm %02ds' \
-        "$((elapsed / 60))" "$((elapsed % 60))")"
+      printf 'still installing, elapsed time: %dm %02ds\n' \
+        "$((elapsed / 60))" "$((elapsed % 60))" >&2
       heartbeat=$elapsed
     fi
 
