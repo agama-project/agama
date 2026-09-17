@@ -34,7 +34,7 @@ import {
   formatIp,
 } from "~/utils/network";
 import { sortCollection } from "~/utils";
-import { _ } from "~/i18n";
+import { _, formatList } from "~/i18n";
 
 import type { SortedBy } from "~/components/core/SelectableDataTable";
 import type { TranslatedString } from "~/i18n";
@@ -77,37 +77,24 @@ export type DeviceSelectorModalProps = {
 };
 
 /**
- * Addresses of a device, one per line.
+ * Addresses of a device, as many to a line as the column has room for.
  *
  * An address is a single unbreakable word, and an IPv6 one is long enough to
- * outgrow the column it sits in: run two of them together on one line and the
- * cell cuts the second one off mid-prefix. A line each, and leave to breaking
- * the address the cases where even that is not enough.
+ * outgrow the column it sits in, which used to cut it off mid-prefix. Breaking
+ * within an address is left as the last resort it should be.
  */
-const deviceAddresses = (device: Device): React.ReactNode => {
-  const addresses = device.addresses || [];
-  if (addresses.length === 0) return "-";
-
-  return (
-    <Stack>
-      {addresses.map((address) => {
-        const text = formatIp(address);
-        return (
-          <Text key={text} textStyle="textBreakWord">
-            {text}
-          </Text>
-        );
-      })}
-    </Stack>
-  );
-};
+const deviceAddresses = (device: Device): React.ReactNode => (
+  <Text textStyle="textBreakWord">
+    {formatList((device.addresses || []).map((address) => formatIp(address)))}
+  </Text>
+);
 
 /**
  * Dialog for picking network devices from a table showing more details than a
  * list can hold: name, MAC address, type, driver, link, state and addresses.
  *
- * The details a device does not report are left out altogether: a column no
- * device can fill would be a column of dashes.
+ * The details no device in the table reports are left out altogether, rather
+ * than drawing a column every row leaves empty.
  *
  * The table can be sorted, and the pick is only reported to the caller when the
  * user confirms.
@@ -131,11 +118,10 @@ export default function DeviceSelectorModal({
   // No column sorts the table at first, so the rows arrive in the same order as
   // the dropdown the user came from. Sorting starts when a header is clicked.
   const [sortedBy, setSortedBy] = useState<SortedBy>({});
-  // Opening a single-device dialog with nothing picked would make it useless
-  // until the user clicks a row, and would leave the initial focus with nowhere
-  // to land. Picking several is different: what the caller already has is the
-  // starting point, and preselecting a device it did not ask for would be
-  // added behind the user's back on confirm.
+  // A dialog picking one device opens on the first one, so there is always an
+  // answer and somewhere for the initial focus to land. One picking several
+  // opens on what the caller already holds: anything else would be added
+  // behind the user's back on confirm.
   const defaultSelection = (): Device[] => {
     if (isMultiple) return [];
     const firstDevice = first(devices);
@@ -143,9 +129,9 @@ export default function DeviceSelectorModal({
   };
   const [selection, setSelection] = useState<Device[]>(selected ?? defaultSelection());
 
-  // The link is best-effort: a device reports it or it does not, and a column
-  // no device can fill is a column of dashes. It is only added when at least
-  // one device has something to say, the same way "Used by" is.
+  // The link is best-effort: a device reports it or it does not. The column is
+  // only added when at least one device has something to say, the same way
+  // "Used by" is.
   const hasLink = devices.some((device) => deviceLinkLabel(device));
 
   const columns = [
@@ -181,7 +167,7 @@ export default function DeviceSelectorModal({
             // TRANSLATORS: table column telling whether a network device has a
             // cable plugged in and, when it does, how fast the link is.
             name: _("Link"),
-            value: (device: Device) => deviceLinkLabel(device) || "-",
+            value: (device: Device) => deviceLinkLabel(device),
             sortingKey: deviceLinkRank,
           },
         ]
@@ -197,7 +183,7 @@ export default function DeviceSelectorModal({
             // TRANSLATORS: table column telling which bond or bridge already
             // uses a network device as one of its ports.
             name: _("Used by"),
-            value: (device: Device) => portOf(device) || "-",
+            value: (device: Device) => portOf(device),
           },
         ]
       : []),

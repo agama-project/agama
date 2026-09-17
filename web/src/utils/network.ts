@@ -101,7 +101,10 @@ const DEVICE_STATE_LABELS: Record<DeviceState, MarkedString> = {
 const deviceStateLabel = (state: DeviceState): TranslatedString => _(DEVICE_STATE_LABELS[state]);
 
 /**
- * Formats a link speed given in Mb/s.
+ * Formats a link speed.
+ *
+ * The number is taken to be in Mb/s, the unit the kernel and NetworkManager
+ * report a link speed in, which is also what `Device.speed` holds.
  *
  * A rate of a gigabit or more is given in Gb/s, the unit such cards are sold
  * and talked about in ("10 Gb/s", not "10000 Mb/s"), keeping a decimal for the
@@ -111,12 +114,12 @@ const formatLinkSpeed = (mbps: number): TranslatedString => {
   if (mbps < 1000) {
     // TRANSLATORS: link speed of a network device in megabits per second. %d is
     // replaced by the number, e.g. "100 Mb/s".
-    return sprintf(_("%d Mb/s"), mbps) as TranslatedString;
+    return sprintf(_("%d Mb/s"), mbps);
   }
 
   // TRANSLATORS: link speed of a network device in gigabits per second. %s is
   // replaced by the number, e.g. "2.5 Gb/s".
-  return sprintf(_("%s Gb/s"), formatNumber(mbps / 1000)) as TranslatedString;
+  return sprintf(_("%s Gb/s"), formatNumber(mbps / 1000));
 };
 
 /**

@@ -96,7 +96,7 @@ const validatePorts = (
   if (iface && ports.includes(iface)) {
     // TRANSLATORS: validation error for the ports field of a bond or a bridge,
     // when it lists the device being configured. %s is its name, e.g. "bond0".
-    return sprintf(_("%s cannot be a port of itself"), iface) as TranslatedString;
+    return sprintf(_("%s cannot be a port of itself"), iface);
   }
 
   return undefined;
