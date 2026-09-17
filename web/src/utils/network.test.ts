@@ -20,7 +20,8 @@
  * find current contact information at www.suse.com.
  */
 
-import { Connection, SecurityProtocols } from "~/types/network";
+import { BondMode, Connection, SecurityProtocols } from "~/types/network";
+import type { Device } from "~/types/network";
 import {
   addDefaultIPPrefix,
   isValidIp,
@@ -28,6 +29,11 @@ import {
   intToIPString,
   stringToIPInt,
   formatIp,
+  connectionForName,
+  controllerOf,
+  deviceLinkLabel,
+  deviceLinkRank,
+  formatLinkSpeed,
   generateConnectionName,
   ipPrefixFor,
   securityFromFlags,
@@ -90,6 +96,121 @@ describe("formatIp", () => {
     expect(
       formatIp({ address: "1.2.3.4", prefix: "255.255.255.0" }, { removePrefix: true }),
     ).toEqual("1.2.3.4");
+  });
+});
+
+describe("connectionForName", () => {
+  const byIface = new Connection("Ethernet 1", { iface: "enp1s0" });
+  const byId = new Connection("enp1s0", { iface: "enp2s0" });
+
+  it("prefers the connection bound to the interface of that name", () => {
+    expect(connectionForName("enp1s0", [byId, byIface])).toBe(byIface);
+  });
+
+  it("falls back to the connection with that id", () => {
+    expect(connectionForName("enp1s0", [byId])).toBe(byId);
+  });
+
+  it("returns undefined when no connection matches", () => {
+    expect(connectionForName("enp9s0", [byId, byIface])).toBeUndefined();
+  });
+});
+
+describe("controllerOf", () => {
+  const bondWithPorts = (ports: string[], options = {}) =>
+    new Connection("Bond 1", {
+      iface: "bond0",
+      bond: { mode: BondMode.ACTIVE_BACKUP, options: "", ports },
+      ...options,
+    });
+
+  it("returns the bond listing the device among its ports", () => {
+    expect(controllerOf("enp1s0", [bondWithPorts(["enp1s0"])])).toBe("bond0");
+  });
+
+  it("returns the bridge listing the device among its ports", () => {
+    const bridge = new Connection("Bridge 1", { iface: "br0", bridge: { ports: ["enp1s0"] } });
+    expect(controllerOf("enp1s0", [bridge])).toBe("br0");
+  });
+
+  it("names the controller after its connection id when it has no interface", () => {
+    const bond = new Connection("Bond 1", {
+      bond: { mode: BondMode.ACTIVE_BACKUP, options: "", ports: ["enp1s0"] },
+    });
+    expect(controllerOf("enp1s0", [bond])).toBe("Bond 1");
+  });
+
+  it("finds the device listed by the id of the connection bound to it", () => {
+    const port = new Connection("Ethernet 1", { iface: "enp1s0" });
+    expect(controllerOf("enp1s0", [bondWithPorts(["Ethernet 1"]), port])).toBe("bond0");
+  });
+
+  it("returns undefined when no controller lists the device", () => {
+    expect(controllerOf("enp9s0", [bondWithPorts(["enp1s0"])])).toBeUndefined();
+  });
+
+  it("returns undefined when there is no controller at all", () => {
+    expect(controllerOf("enp1s0", [])).toBeUndefined();
+  });
+});
+
+describe("formatLinkSpeed", () => {
+  it("gives rates below a gigabit in Mb/s", () => {
+    expect(formatLinkSpeed(10)).toBe("10 Mb/s");
+    expect(formatLinkSpeed(100)).toBe("100 Mb/s");
+  });
+
+  it("gives rates of a gigabit and above in Gb/s", () => {
+    expect(formatLinkSpeed(1000)).toBe("1 Gb/s");
+    expect(formatLinkSpeed(10000)).toBe("10 Gb/s");
+  });
+
+  it("keeps the decimal of a rate between two whole gigabits", () => {
+    expect(formatLinkSpeed(2500)).toBe("2.5 Gb/s");
+  });
+});
+
+describe("deviceLinkLabel", () => {
+  const device = (props: object): Device => ({ name: "enp1s0", ...props }) as Device;
+
+  it("gives the speed of a device reporting one", () => {
+    expect(deviceLinkLabel(device({ speed: 1000, carrier: true }))).toBe("1 Gb/s");
+  });
+
+  it("says a device with no cable in it has no link, whatever speed it reports", () => {
+    expect(deviceLinkLabel(device({ carrier: false, speed: 1000 }))).toBe("No link");
+  });
+
+  it("says a device with a link but no speed is up", () => {
+    expect(deviceLinkLabel(device({ carrier: true }))).toBe("Link up");
+  });
+
+  it("returns nothing for a device reporting neither", () => {
+    expect(deviceLinkLabel(device({}))).toBeUndefined();
+  });
+});
+
+describe("deviceLinkRank", () => {
+  const device = (props: object): Device => ({ name: "enp1s0", ...props }) as Device;
+
+  it("ranks the devices the way the link column reads", () => {
+    const ranked = [
+      device({ speed: 1000, carrier: true }),
+      device({}),
+      device({ carrier: true }),
+      device({ carrier: false }),
+      device({ speed: 100, carrier: true }),
+    ]
+      .sort((a, b) => deviceLinkRank(a) - deviceLinkRank(b))
+      .map(deviceLinkLabel);
+
+    expect(ranked).toEqual([undefined, "No link", "Link up", "100 Mb/s", "1 Gb/s"]);
+  });
+
+  it("does not let a stale speed outrank a device with no link", () => {
+    expect(deviceLinkRank(device({ carrier: false, speed: 10000 }))).toBeLessThan(
+      deviceLinkRank(device({ carrier: true, speed: 100 })),
+    );
   });
 });
 

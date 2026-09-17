@@ -80,6 +80,29 @@ const PRIMARY_BOND_OPTION_MODES: readonly BondMode[] = [
 ];
 
 /**
+ * Validates the ports of a controller device, a bond or a bridge.
+ *
+ * The list of devices the ports field offers leaves the controller out, but a
+ * port can also be a name written by hand, and a device cannot be a port of
+ * itself.
+ */
+const validatePorts = (
+  ports: string[],
+  iface: string,
+  emptyError: TranslatedString,
+): TranslatedString | undefined => {
+  if (ports.length === 0) return emptyError;
+
+  if (iface && ports.includes(iface)) {
+    // TRANSLATORS: validation error for the ports field of a bond or a bridge,
+    // when it lists the device being configured. %s is its name, e.g. "bond0".
+    return sprintf(_("%s cannot be a port of itself"), iface);
+  }
+
+  return undefined;
+};
+
+/**
  * Helper for mode-dependent address validation.
  *
  * In MANUAL and ADVANCED_AUTO modes, at least one address is required.
@@ -221,8 +244,12 @@ const validateBondFields = (fields: BondFormFields): FieldsValidationResult<Bond
     bondIface: requiredString(bondIface, _("Device name is required")),
     // TRANSLATORS: validation error for the bond mode name field.
     bondMode: requiredString(bondMode, _("Bond mode is required")),
-    // TRANSLATORS: validation error for the bond ports field.
-    bondPorts: bondPorts.length === 0 ? _("At least one bond port is required") : undefined,
+    bondPorts: validatePorts(
+      bondPorts,
+      bondIface,
+      // TRANSLATORS: validation error for the bond ports field.
+      _("At least one bond port is required"),
+    ),
     bondOptions: bondOptionsError,
   };
 };
@@ -241,9 +268,12 @@ const validateBridgeFields = (
   return {
     // TRANSLATORS: validation error for the bridge device name field.
     bridgeIface: requiredString(fields.bridgeIface, _("Device name is required")),
-    // TRANSLATORS: validation error for the bridge ports field.
-    bridgePorts:
-      fields.bridgePorts.length === 0 ? _("At least one bridge port is required") : undefined,
+    bridgePorts: validatePorts(
+      fields.bridgePorts,
+      fields.bridgeIface,
+      // TRANSLATORS: validation error for the bridge ports field.
+      _("At least one bridge port is required"),
+    ),
     // STP fields only validated when STP is enabled.
     ...(stpEnabled && {
       // TRANSLATORS: validation error for the bridge priority field.

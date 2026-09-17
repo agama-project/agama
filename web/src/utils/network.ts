@@ -21,7 +21,8 @@
  */
 
 import ipaddr from "ipaddr.js";
-import { isUndefined, title } from "radashi";
+import { isUndefined, sift, title } from "radashi";
+import { sprintf } from "sprintf-js";
 import {
   APIRoute,
   ApFlags,
@@ -36,7 +37,7 @@ import {
   Route,
   SecurityProtocols,
 } from "~/types/network";
-import { _, N_ } from "~/i18n";
+import { _, N_, formatNumber } from "~/i18n";
 import type { MarkedString, TranslatedString } from "~/i18n";
 
 /**
@@ -98,6 +99,69 @@ const DEVICE_STATE_LABELS: Record<DeviceState, MarkedString> = {
  * Returns the translated label for a device state.
  */
 const deviceStateLabel = (state: DeviceState): TranslatedString => _(DEVICE_STATE_LABELS[state]);
+
+/**
+ * Formats a link speed.
+ *
+ * The number is taken to be in Mb/s, the unit the kernel and NetworkManager
+ * report a link speed in, which is also what `Device.speed` holds.
+ *
+ * A rate of a gigabit or more is given in Gb/s, the unit such cards are sold
+ * and talked about in ("10 Gb/s", not "10000 Mb/s"), keeping a decimal for the
+ * rates that fall between two whole gigabits, e.g. "2.5 Gb/s".
+ */
+const formatLinkSpeed = (mbps: number): TranslatedString => {
+  if (mbps < 1000) {
+    // TRANSLATORS: link speed of a network device in megabits per second. %d is
+    // replaced by the number, e.g. "100 Mb/s".
+    return sprintf(_("%d Mb/s"), mbps);
+  }
+
+  // TRANSLATORS: link speed of a network device in gigabits per second. %s is
+  // replaced by the number, e.g. "2.5 Gb/s".
+  return sprintf(_("%s Gb/s"), formatNumber(mbps / 1000));
+};
+
+/**
+ * Describes the link of a device: its speed, or the lack of a link.
+ *
+ * Returns `undefined` when the device reports neither, which is the ordinary
+ * case for the virtual ones and for anything the kernel driver does not tell.
+ * That is left to the caller to render, since "unknown" and "no link" are
+ * different answers and only the second is the device's own.
+ */
+const deviceLinkLabel = (device: Device): TranslatedString | undefined => {
+  // A device with no cable in it reports no speed, so the missing speed is
+  // never what tells the user about it.
+  if (device.carrier === false) {
+    // TRANSLATORS: shown for a network device with no cable plugged in.
+    return _("No link");
+  }
+  if (device.speed) return formatLinkSpeed(device.speed);
+  // TRANSLATORS: shown for a network device that has a link but does not
+  // report how fast it is, e.g. a wireless or a virtual one.
+  if (device.carrier) return _("Link up");
+
+  return undefined;
+};
+
+/**
+ * Ranks the link of a device, for sorting a column showing
+ * {@link deviceLinkLabel}.
+ *
+ * Sorting on the raw speed would order the devices by a number the column does
+ * not show: a card with no cable in it may still report the speed it last ran
+ * at, and would sort among the fast ones while reading "No link". The rank
+ * follows what the column reads instead, from the devices saying nothing, to
+ * those with no link, to those with a link, the faster the further.
+ */
+const deviceLinkRank = (device: Device): number => {
+  if (device.carrier === false) return 0;
+  if (device.speed) return device.speed;
+  if (device.carrier) return 1;
+
+  return -1;
+};
 
 /**
  * Returns true if the given connection type is virtual.
@@ -343,6 +407,38 @@ const connectionAddresses = (connection: Connection, devices: Device[]): string 
 };
 
 /**
+ * Returns the connection a device name refers to, if there is one.
+ *
+ * The name is matched against the interface first and against the connection
+ * id only then, the same order the backend uses to resolve the names listed as
+ * bond or bridge ports. Going through the same steps keeps what the user is
+ * told about a name and what the backend does with it in agreement.
+ */
+const connectionForName = (name: string, connections: Connection[]): Connection | undefined =>
+  connections.find((c) => c.iface === name) ?? connections.find((c) => c.id === name);
+
+/**
+ * Returns the bond or bridge the given device is already a port of, if any.
+ *
+ * Membership lives in the controller's own `ports` list, so it is found by
+ * going through the controllers instead of asking the port about it. A port is
+ * listed there by its interface name or, lacking one, by its connection id,
+ * and both are worth looking for.
+ *
+ * The answer is the controller's interface name, falling back to its
+ * connection id, which is how a controller is named everywhere else.
+ */
+const controllerOf = (name: string, connections: Connection[]): string | undefined => {
+  const port = connectionForName(name, connections);
+  const names = sift([name, port?.iface, port?.id]);
+  const controller = connections.find((c) =>
+    (c.bond?.ports ?? c.bridge?.ports)?.some((p) => names.includes(p)),
+  );
+
+  return controller && (controller.iface || controller.id);
+};
+
+/**
  * Returns the binding mode for the given connection.
  */
 const connectionBindingMode = (connection: Connection): ConnectionBindingMode => {
@@ -447,12 +543,17 @@ export {
   buildRoutes,
   connectionAddresses,
   connectionBindingMode,
+  connectionForName,
   connectionStateLabel,
   connectionType,
   connectionTypeLabel,
+  controllerOf,
+  deviceLinkLabel,
+  deviceLinkRank,
   deviceStateLabel,
   ensureIPPrefix,
   formatIp,
+  formatLinkSpeed,
   generateConnectionName,
   intToIPString,
   ipPrefixFor,
