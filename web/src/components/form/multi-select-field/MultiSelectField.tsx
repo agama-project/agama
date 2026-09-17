@@ -901,10 +901,7 @@ export default function MultiSelectField({
           </HelperTextItem>
           {hasAnyError && (
             <HelperTextItem variant="error">
-              {/* A rule refusing the whole field and the mark pointing at the
-                  value that broke it are often worded the same, and hearing
-                  the same sentence twice says nothing the first one did not. */}
-              {unique(sift([...fieldErrors, ...entryErrors])).join(". ")}
+              {sift([...fieldErrors, ...entryErrors]).join(". ")}
             </HelperTextItem>
           )}
         </HelperText>
