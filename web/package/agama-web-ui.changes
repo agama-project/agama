@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Sep 17 09:00:00 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Show the name of the package being installed in one piece and stop
+  the progress text from moving as packages go by (bsc#1279489).
+
+-------------------------------------------------------------------
 Tue Sep 15 09:38:41 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Add a form field for selecting several values from a searchable
