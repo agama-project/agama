@@ -21,6 +21,9 @@ readonly PROGRAM_NAME="FIPS/CC Installation"
 readonly BACKTITLE="SUSE Linux Enterprise Server 16.0 - FIPS / Common Criteria installation"
 
 readonly LICENSE_FILE="/usr/share/agama/eula/license.final/license.txt"
+# the JSON template installed with the package, used when there is none next to
+# the script
+readonly SYSTEM_TEMPLATE="/usr/share/cc-setup/agama-template.json"
 readonly DRACUT_NTP_FILE="/run/chrony/dracut.sources.d/dracut.sources"
 # the NTP configuration of the installed system, written via the "files"
 # section of the profile
@@ -36,6 +39,8 @@ readonly AGAMA_TOKEN_FILE="/run/agama/token"
 readonly API_URL="http://localhost/api/manager/installer"
 # the storage actions of the current proposal, each object has a "text" attribute
 readonly STORAGE_ACTIONS_URL="http://localhost/api/storage/devices/actions"
+# the available keyboard layouts, objects with "id" and "description" keys
+readonly KEYMAPS_URL="http://localhost/api/l10n/keymaps"
 
 # Installation phase reported by the Agama API when everything is installed.
 readonly FINISH_PHASE=3
@@ -56,6 +61,8 @@ readonly MIN_TERMINAL_HEIGHT=10
 # buttons. DIALOG_TEXT_MARGIN is the frame and the padding around the message,
 # DIALOG_INPUT_WIDTH the default width of such a dialog.
 readonly DIALOG_INPUT_MARGIN=7
+# a menu needs this many lines around the list of the items
+readonly DIALOG_MENU_MARGIN=8
 readonly DIALOG_TEXT_MARGIN=4
 readonly DIALOG_INPUT_WIDTH=70
 readonly MIN_TERMINAL_WIDTH=40
@@ -97,6 +104,9 @@ FULL_NAME="$DEFAULT_FULL_NAME"
 USER_PASSWORD=""
 USER_PASSWORD_HASH=""
 LUKS_PASSWORD=""
+KEYBOARD=""            # keyboard layout id, empty keeps the default
+KEYBOARD_ORIGINAL=""   # layout active in the installer before the first change
+KEYBOARD_APPLIED=false # has any layout been applied in the installer?
 NTP_SERVER=""
 NTP_FROM_DRACUT=false
 REGISTRATION_CODE=""
@@ -120,8 +130,8 @@ Usage: ${0##*/} [OPTIONS]
 
   --dialog          force the dialog based text user interface
   --plain           force the simple line interface (serial console)
-  --template FILE   Agama JSON profile template
-                    (default: agama-template.json next to this script)
+  --template FILE   Agama JSON profile template (default: agama-template.json
+                    next to this script, or /usr/share/cc-setup/agama-template.json)
   --dry-run         only build the profile, do not modify the system
                     (implies CC_NO_REBOOT=1)
   --help            show this help
@@ -136,10 +146,25 @@ therefore it is never stored on disk and never printed.
 EOF
 }
 
-parse_arguments() {
-  local script_dir
+# The JSON template to use by default: the one next to the script (a git
+# checkout) or the one installed with the package.
+default_template() {
+  local script_dir candidate
   script_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
-  TEMPLATE="${CC_TEMPLATE:-$script_dir/agama-template.json}"
+
+  for candidate in "$script_dir/agama-template.json" "$SYSTEM_TEMPLATE"; do
+    if [[ -r $candidate ]]; then
+      printf '%s' "$candidate"
+      return 0
+    fi
+  done
+
+  # none of them exists, report the missing one next to the script
+  printf '%s' "$script_dir/agama-template.json"
+}
+
+parse_arguments() {
+  TEMPLATE="${CC_TEMPLATE:-$(default_template)}"
 
   local ui_forced=false
   while (($# > 0)); do
@@ -302,6 +327,18 @@ clear_terminal() {
   printf '\033[H\033[2J\033[3J' >&2
 }
 
+# Display a file in a pager. "less" must read the keyboard from the terminal:
+# with the standard input it would consume the answers to the next questions.
+page_file() {
+  local file=$1
+
+  if command -v less >/dev/null 2>&1 && (: </dev/tty) 2>/dev/null; then
+    less -- "$file" </dev/tty >&2 || true
+  else
+    cat -- "$file" >&2
+  fi
+}
+
 # Print a message on the terminal, wrapped at word boundaries. The messages
 # contain one long line per paragraph, dialog wraps them to the dialog width
 # and the line interface has to do the same.
@@ -430,11 +467,7 @@ ui_text_file() {
     show_dialog --title "$title" --exit-label "OK" \
       --textbox "$file" "$height" "$width" || true
   else
-    if command -v less >/dev/null 2>&1; then
-      less -- "$file" >&2 || true
-    else
-      cat -- "$file" >&2
-    fi
+    page_file "$file"
   fi
 }
 
@@ -496,11 +529,15 @@ ui_menu() {
   if ui_size "$@"; then shift 3; fi
   local title=$1 text=$2 height=$UI_HEIGHT width=$UI_WIDTH
   shift 2
-  local tag rc=0 index=1 choice
+  local tag rc=0 index=1 choice menu_height=0
   if $DIALOG_MODE; then
-    # the last zero is the menu height, dialog derives it from the box height
+    # the list of the items fills the box; with a zero menu height and an
+    # explicit box height dialog would show only a few items
+    if ((height > DIALOG_MENU_MARGIN)); then
+      menu_height=$((height - DIALOG_MENU_MARGIN))
+    fi
     tag=$(run_dialog --title "$title" --no-cancel \
-      --menu "$text" "$height" "$width" 0 "$@") || rc=$?
+      --menu "$text" "$height" "$width" "$menu_height" "$@") || rc=$?
     ((rc == 0)) || return 1
     printf '%s' "$tag"
     return 0
@@ -596,6 +633,7 @@ check_prerequisites() {
 
   if [[ ! -r $TEMPLATE ]]; then
     printf 'The JSON template is not readable: %s\n' "$TEMPLATE" >&2
+    printf 'Install it to %s or pass it with --template.\n' "$SYSTEM_TEMPLATE" >&2
     exit 1
   fi
   if ! jq -e . "$TEMPLATE" >/dev/null 2>&1; then
@@ -672,16 +710,19 @@ api_get() {
   curl -sS --max-time 15 -K "$API_CONF" "$1" 2>/dev/null
 }
 
+# The keyboard layouts offered by the installer, one "<id><TAB><description>"
+# line each. Prints nothing when the list cannot be read.
+keymaps() {
+  local response
+  response=$(api_get "$KEYMAPS_URL") || return 1
+  [[ -n $response ]] || return 1
+  printf '%s' "$response" |
+    jq -e -r '.[] | "\(.id)\t\(.description)"' 2>/dev/null
+}
+
 # ---------------------------------------------------------------------------
 # Validation helpers
 # ---------------------------------------------------------------------------
-
-# Printable ASCII only?  The C locale makes the range check byte exact, in a
-# UTF-8 locale [[:print:]] matches multibyte characters as well.
-is_printable_ascii() {
-  local LC_ALL=C
-  [[ $1 != *[!\ -~]* ]]
-}
 
 # validate_password PASSWORD -> prints the reason on stdout when invalid
 # TODO(security team): the rules below are placeholders.
@@ -694,10 +735,6 @@ validate_password() {
   fi
   if ((${#password} > MAX_PASSWORD_LENGTH)); then
     printf 'The password must not be longer than %d characters.' "$MAX_PASSWORD_LENGTH"
-    return 1
-  fi
-  if ! is_printable_ascii "$password"; then
-    printf 'The password may contain printable ASCII characters only.'
     return 1
   fi
 
@@ -777,6 +814,191 @@ the system unattended.
 WARNING: All data on the installed disk will be destroyed. Nothing is
 written to the disk before you confirm the summary at the end of
 the configuration."
+}
+
+# Display all the layouts in a pager, the list has hundreds of entries.
+show_keymaps_list() {
+  local file="$SECURE_DIR/keymaps.txt" line
+
+  for line in "$@"; do
+    printf '%-20s %s\n' "${line%%$'\t'*}" "${line#*$'\t'}"
+  done >"$file"
+
+  page_file "$file"
+  rm -f -- "$file"
+}
+
+# Ask for the keyboard layout of the installed system. An empty answer (or an
+# unreadable list) keeps the default, nothing is then put into the profile.
+#
+# The list has almost 400 entries: the dialog interface shows it in a menu, the
+# line interface asks for the id and displays the list in a pager on request.
+ask_keyboard() {
+  local -a maps=() menu=()
+  local line answer
+
+  mapfile -t maps < <(keymaps) || true
+  if ((${#maps[@]} == 0)); then
+    # the installer did not provide the list, keep the default
+    KEYBOARD=""
+    return 0
+  fi
+
+  if $DIALOG_MODE; then
+    menu=(default "Keep the default keyboard layout")
+    for line in "${maps[@]}"; do
+      menu+=("${line%%$'\t'*}" "${line#*$'\t'}")
+    done
+
+    answer=$(ui_menu --size "$(dialog_full_height)" 76 "Keyboard Layout" \
+      "Select the keyboard layout for the current and the installed system:" "${menu[@]}") || answer="default"
+    [[ $answer == "default" ]] && answer=""
+    KEYBOARD="$answer"
+    return 0
+  fi
+
+  while true; do
+    # no default value: an empty answer always means the product default, not
+    # the layout selected in a previous round
+    answer=$(ui_input "Keyboard Layout" "Enter the keyboard layout id for the \
+current and the installed system. Enter \"list\" to display all the available \
+layouts, leave empty to keep the default:") || answer=""
+
+    if [[ -z $answer ]]; then
+      KEYBOARD=""
+      return 0
+    fi
+
+    if [[ $answer == "list" ]]; then
+      show_keymaps_list "${maps[@]}"
+      continue
+    fi
+
+    for line in "${maps[@]}"; do
+      if [[ ${line%%$'\t'*} == "$answer" ]]; then
+        KEYBOARD="$answer"
+        return 0
+      fi
+    done
+
+    ui_error "Unknown keyboard layout \"$answer\". Enter \"list\" to display \
+the available layouts."
+  done
+}
+
+# The installer API reports the keymap with an optional variant in parenthesis
+# ("cz(qwerty)"), localectl expects the variant separated with a dash
+# ("cz-qwerty"). Ids without a variant ("cz") are used as they are.
+localectl_keymap() {
+  local keymap=$1
+
+  if [[ $keymap =~ ^([^()]+)\((.+)\)$ ]]; then
+    printf '%s-%s' "${BASH_REMATCH[1]}" "${BASH_REMATCH[2]}"
+  else
+    printf '%s' "$keymap"
+  fi
+}
+
+# The keyboard layout active in the installer (empty when it cannot be read).
+current_keymap() {
+  command -v localectl >/dev/null 2>&1 || return 0
+  localectl status 2>/dev/null |
+    sed -n 's/^[[:space:]]*VC Keymap:[[:space:]]*//p' | head -n1
+}
+
+# Apply the selected layout to the running installer as well, so that the
+# passwords are typed with the same keyboard as the installed system will use.
+# A failure is not fatal, the layout stays configured for the installed system.
+apply_keyboard() {
+  local error target=""
+
+  # --dry-run must not change anything on the running system
+  $DRY_RUN && return 0
+
+  if [[ -n $KEYBOARD ]]; then
+    target=$KEYBOARD
+  elif $KEYBOARD_APPLIED && [[ -n $KEYBOARD_ORIGINAL ]]; then
+    # the user went back to the default after trying a layout, the installer
+    # must not keep the tried one
+    target=$KEYBOARD_ORIGINAL
+  fi
+  [[ -n $target ]] || return 0
+
+  if ! command -v localectl >/dev/null 2>&1; then
+    ui_error "The keyboard layout cannot be applied in the installer, \
+\"localectl\" is not available. It is configured for the installed system \
+only, so the passwords have to be typed with the current layout."
+    return 0
+  fi
+
+  if localectl set-keymap "$(localectl_keymap "$target")" \
+      >/dev/null 2>"$SECURE_DIR/localectl.err"; then
+    KEYBOARD_APPLIED=true
+    return 0
+  fi
+
+  error=$(tail -n 3 "$SECURE_DIR/localectl.err" 2>/dev/null)
+  ui_error "Applying the keyboard layout \"$target\" in the installer failed:
+
+$error
+
+It is configured for the installed system only, so the passwords have to be \
+typed with the current layout."
+}
+
+# Let the user try the keyboard after the layout was applied: what is typed is
+# displayed, so it is visible whether the layout is the expected one. The text
+# itself is not used for anything.
+# Returns 0 when the layout is accepted, 1 to select a different one.
+verify_keyboard() {
+  local rc=0 answer height width=$DIALOG_INPUT_WIDTH
+  local text="The keyboard layout \"$KEYBOARD\" is active now.
+
+Here you can type few characters to test the keyboard layout.\
+The entered text is not used for anything and is completely ignored.
+
+Select \"Continue\" to keep this layout or \"Back\" to select a different one."
+
+  if $DIALOG_MODE; then
+    height=$(dialog_text_height "$text" "$width" "$DIALOG_INPUT_MARGIN")
+    run_dialog --title "Keyboard Test" \
+      --ok-label "Continue" --cancel-label "Back" \
+      --inputbox "$text" "$height" "$width" >/dev/null || rc=$?
+    # only "Continue" accepts the layout, "Back" and ESC select again
+    ((rc == 0)) && return 0
+    return 1
+  fi
+
+  printf '\n=== Keyboard Test ===\n' >&2
+  print_wrapped "$text"
+  printf 'Type a few characters and press Enter: ' >&2
+  read -r answer || answer=""
+  printf 'The installer received: %s\n' "$answer" >&2
+
+  while true; do
+    printf '[c = continue / b = back to the layout selection] ' >&2
+    read -r answer || return 0
+    case "${answer,,}" in
+      c | continue) return 0 ;;
+      b | back) return 1 ;;
+    esac
+  done
+}
+
+# Ask for the keyboard layout, apply it and let the user check it. The
+# selection is repeated until the layout is accepted.
+configure_keyboard() {
+  KEYBOARD_ORIGINAL=$(current_keymap)
+
+  while true; do
+    ask_keyboard
+    apply_keyboard
+
+    # the default was kept, there is nothing to check
+    [[ -n $KEYBOARD ]] || return 0
+
+    verify_keyboard && return 0
+  done
 }
 
 # Confirm the reboot after the license was rejected. "Back" is the default,
@@ -1149,6 +1371,7 @@ build_summary() {
 Registration server:  $(safe_rmt_url "$RMT_URL")"
 
   cat <<EOF
+Keyboard layout:      ${KEYBOARD:-[default]}
 Root password:        $(secret_state "$ROOT_PASSWORD")
 First user login:     $USER_NAME
 First user full name: $FULL_NAME
@@ -1305,6 +1528,7 @@ build_profile() {
     --rawfile ntp_content "$ntp_content" \
     --arg ntp_destination "$NTP_DESTINATION" \
     --arg ntp_permissions "$NTP_PERMISSIONS" \
+    --arg keyboard "$KEYBOARD" \
     --arg user_name "$USER_NAME" \
     --arg full_name "$FULL_NAME" \
     --arg disk "$TARGET_DISK" \
@@ -1318,6 +1542,9 @@ build_profile() {
     | .user.fullName = $full_name
     | .user.hashedPassword = true
     | .user.password = $user_password
+
+    # the keyboard layout, an empty value keeps the default of the product
+    | if $keyboard != "" then .localization.keyboard = $keyboard else . end
 
     | if $registration_code != "" then .product.registrationCode = $registration_code else . end
     | if $registration_code != "" and $registration_email != ""
@@ -1398,8 +1625,9 @@ monitor_running() {
 poll_installation() {
   local start=$1 deadline=$2 status_file=$3
   local response failures=0 elapsed
-  # the first report comes immediately, the next ones every PROGRESS_HEARTBEAT
-  # seconds - on a dumb terminal it is the only sign that anything happens
+  # the first report comes with the first poll (not at zero seconds), the next
+  # ones every PROGRESS_HEARTBEAT seconds - on a dumb terminal this is the only
+  # sign that anything happens
   local heartbeat=$((-PROGRESS_HEARTBEAT))
 
   while true; do
@@ -1407,7 +1635,7 @@ poll_installation() {
 
     # the monitor displays nothing on a dumb terminal (a serial line without a
     # terminal emulation), report the elapsed time even when it is running
-    if { dumb_terminal || ! monitor_running; } &&
+    if ((elapsed > 0)) && { dumb_terminal || ! monitor_running; } &&
         ((elapsed - heartbeat >= PROGRESS_HEARTBEAT)); then
       printf 'still installing, elapsed time: %dm %02ds\n' \
         "$((elapsed / 60))" "$((elapsed % 60))" >&2
@@ -1663,6 +1891,7 @@ main() {
   detect_registration_requirement
 
   show_welcome
+  configure_keyboard
   show_license
 
   local action="" profile=""
