@@ -88,6 +88,22 @@ describe("DeviceSelectorModal", () => {
     within(rowFor("wlan0")).getByText("Disconnected");
   });
 
+  // An address is a single unbreakable word: two of them run together on one
+  // line outgrew the column, and the second was cut off mid-prefix.
+  it("gives every address of a device a line of its own", () => {
+    const dualStack = {
+      ...ethernet,
+      addresses: [
+        { address: "192.168.1.10", prefix: 24 },
+        { address: "2001:db8:1234:5678:90ab:cdef:1234:5678", prefix: 64 },
+      ],
+    } as Device;
+    renderModal({ devices: [dualStack] });
+
+    within(rowFor("enp1s0")).getByText("192.168.1.10/24");
+    within(rowFor("enp1s0")).getByText("2001:db8:1234:5678:90ab:cdef:1234:5678/64");
+  });
+
   describe("the details a device may or may not report", () => {
     const wired = {
       ...ethernet,

@@ -76,9 +76,31 @@ export type DeviceSelectorModalProps = {
   onCancel: () => void;
 };
 
-/** Addresses of a device, formatted for display. */
-const deviceAddresses = (device: Device): string =>
-  (device.addresses || []).map((address) => formatIp(address)).join(", ");
+/**
+ * Addresses of a device, one per line.
+ *
+ * An address is a single unbreakable word, and an IPv6 one is long enough to
+ * outgrow the column it sits in: run two of them together on one line and the
+ * cell cuts the second one off mid-prefix. A line each, and leave to breaking
+ * the address the cases where even that is not enough.
+ */
+const deviceAddresses = (device: Device): React.ReactNode => {
+  const addresses = device.addresses || [];
+  if (addresses.length === 0) return "-";
+
+  return (
+    <Stack>
+      {addresses.map((address) => {
+        const text = formatIp(address);
+        return (
+          <Text key={text} textStyle="textBreakWord">
+            {text}
+          </Text>
+        );
+      })}
+    </Stack>
+  );
+};
 
 /**
  * Dialog for picking network devices from a table showing more details than a
@@ -184,7 +206,7 @@ export default function DeviceSelectorModal({
     // that do.
     {
       name: _("IP Addresses"),
-      value: (device: Device) => deviceAddresses(device) || "-",
+      value: deviceAddresses,
     },
   ];
 
