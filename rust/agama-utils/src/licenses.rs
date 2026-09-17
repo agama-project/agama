@@ -52,8 +52,6 @@ pub enum Error {
 pub struct Registry {
     /// Repository path.
     path: std::path::PathBuf,
-    /// Licenses metadata.
-    licenses: Vec<License>,
     /// Licenses content for the current language.
     content: Vec<LicenseContent>,
     /// Fallback languages per territory.
@@ -65,7 +63,6 @@ impl Registry {
     pub fn new<P: AsRef<Path>>(path: P, language: LanguageTag) -> Result<Self, Error> {
         let mut registry = Self {
             path: path.as_ref().to_owned(),
-            licenses: vec![],
             content: vec![],
             fallback: HashMap::new(),
         };
@@ -95,7 +92,7 @@ impl Registry {
     /// It should be called again whenever the language changes (e.g., as a reaction to a
     /// ConfigureL10n action).
     pub fn read(&mut self, language: &LanguageTag) -> Result<(), Error> {
-        let mut licenses = vec![];
+        let mut ids = vec![];
         let entries = read_dir(self.path.as_path())?;
 
         for entry in entries {
@@ -104,24 +101,19 @@ impl Registry {
                 let Ok(id) = entry.file_name().into_string() else {
                     continue;
                 };
-                let license = License {
-                    id,
-                    languages: Self::find_translations(&entry.path())?,
-                };
-                licenses.push(license);
+                ids.push(id);
             }
         }
 
         self.fallback = Self::read_fallback_languages()?;
 
         let mut content = vec![];
-        for license in &licenses {
-            if let Some(license_content) = self.read_best_content(&license.id, language) {
+        for id in &ids {
+            if let Some(license_content) = self.read_best_content(id, language) {
                 content.push(license_content);
             }
         }
 
-        self.licenses = licenses;
         self.content = content;
 
         Ok(())
@@ -191,43 +183,6 @@ impl Registry {
         candidates
     }
 
-    /// Finds translations in the given directory.
-    ///
-    /// * `path`: directory to search translations.
-    fn find_translations(path: &PathBuf) -> Result<Vec<LanguageTag>, std::io::Error> {
-        let entries = read_dir(path)?.filter_map(|entry| entry.ok());
-
-        let files = entries
-            .filter(|entry| entry.file_type().is_ok_and(|f| f.is_file()))
-            .filter_map(|entry| {
-                let path = entry.path();
-                let file = path.file_name()?;
-                file.to_owned().into_string().ok()
-            });
-
-        Ok(files
-            .filter_map(|f| Self::language_tag_from_file(&f))
-            .collect())
-    }
-
-    /// Returns the language tag for the given file.
-    ///
-    /// The language is inferred from the file name (e.g., "es-ES" for license.es_ES.txt").
-    fn language_tag_from_file(name: &str) -> Option<LanguageTag> {
-        if !name.starts_with("license") {
-            tracing::warn!("Unexpected file in the licenses directory: {}", &name);
-            return None;
-        }
-        let mut parts = name.split(".");
-        let mut code = parts.nth(1)?;
-
-        if code == "txt" {
-            code = "en"
-        }
-
-        code.try_into().ok()
-    }
-
     /// Read a license content for a given language.
     fn read_license_content(
         &self,
@@ -272,9 +227,15 @@ impl Registry {
         }
     }
 
-    /// Returns a vector with the licenses from the repository.
-    pub fn licenses(&self) -> Vec<&License> {
-        self.licenses.iter().collect()
+    /// Returns the licenses available in the repository (ID and name), in the current language.
+    pub fn licenses(&self) -> Vec<License> {
+        self.content
+            .iter()
+            .map(|c| License {
+                id: c.id.clone(),
+                name: c.name.clone(),
+            })
+            .collect()
     }
 }
 
@@ -290,8 +251,10 @@ mod test {
     #[test]
     fn test_read_licenses_repository() {
         let repo = build_registry(LanguageTag::default());
-        let license = repo.licenses.first().unwrap();
+        let licenses = repo.licenses();
+        let license = licenses.first().unwrap();
         assert_eq!(&license.id, "license.final");
+        assert_eq!(license.name, "End User License Agreement for SUSE Software");
     }
 
     #[test]

@@ -685,6 +685,7 @@ impl MessageHandler<message::GetSystem> for Service {
         // to include only translations for the current language.
         let mut manager = self.system.clone();
         manager.products = self.products.products_for_lang(lang);
+        manager.licenses = self.licenses.licenses();
 
         let storage = self.storage.call(storage::message::GetSystem).await?;
         let iscsi = self.iscsi.call(iscsi::message::GetSystem).await?;

@@ -31,16 +31,13 @@ use thiserror::Error;
 
 /// Represents a product license.
 ///
-/// It contains the license ID and the list of languages that with a translation.
-#[serde_as]
+/// It contains the license ID and name, in the current system language.
 #[derive(Clone, Debug, Serialize, JsonSchema)]
 pub struct License {
     /// License ID.
     pub id: String,
-    /// Languages in which the license is translated.
-    #[serde_as(as = "Vec<DisplayFromStr>")]
-    #[schemars(with = "Vec<String>")]
-    pub languages: Vec<LanguageTag>,
+    /// License name.
+    pub name: String,
 }
 
 /// Represents a license content.
