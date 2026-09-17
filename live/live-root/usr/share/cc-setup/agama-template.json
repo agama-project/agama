@@ -63,14 +63,6 @@
             "size": "512 MiB"
           },
           {
-            "id": "linux",
-            "filesystem": {
-              "path": "/boot",
-              "type": "ext4"
-            },
-            "size": "1 GiB"
-          },
-          {
             "alias": "pv",
             "id": "lvm",
             "size": {
