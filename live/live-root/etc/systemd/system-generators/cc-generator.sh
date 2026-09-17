@@ -32,9 +32,8 @@ ln -sf /usr/lib/systemd/system/multi-user.target "$early_dir/default.target"
 mkdir -p "$normal_dir/multi-user.target.wants"
 ln -sf /etc/systemd/system/cc-setup.service "$normal_dir/multi-user.target.wants/cc-setup.service"
 
-# Equivalent of inst.remote=0 on boot command line, do not add it if remote
-# access was explicitly enabled by user
+# Equivalent of inst.remote=0 on boot command line, do not add it if already present
 agama_conf="/run/agama/cmdline.d/agama.conf"
-if ! grep -q "\binst.remote=1\b" "$agama_conf"; then
+if ! grep -q "\binst.remote=" "$agama_conf"; then
   echo "inst.remote=0" >> "$agama_conf"
 fi
