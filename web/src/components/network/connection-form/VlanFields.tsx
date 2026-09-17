@@ -90,7 +90,7 @@ const VlanFields = withForm({
             // TRANSLATORS: label for the VLAN parent device field.
             _("Parent device")
           }
-          title={
+          dialogTitle={
             // TRANSLATORS: title of the dialog for picking the device a VLAN
             // is built on top of.
             _("Select the parent device")

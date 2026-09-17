@@ -977,7 +977,7 @@ const PortsField = withForm({
   ...defaultOptions,
   // Only carries the prop types: every caller passes them all.
   props: {} as PortsFieldProps,
-  render: function Render({ form, name, controllerField, label, title }) {
+  render: function Render({ form, name, controllerField, label, dialogTitle }) {
     return (
       <form.Subscribe selector={(s) => s.values[controllerField]}>
         {(controllerIface) => <form.AppField name={name}>{/* ... */}</form.AppField>}
@@ -988,9 +988,9 @@ const PortsField = withForm({
 
 // Callers say what the field is about
 <PortsField form={form} name="bondPorts" controllerField="bondIface"
-            label={_("Bond ports")} title={_("Select bond ports")} />
+            label={_("Bond ports")} dialogTitle={_("Select bond ports")} />
 <PortsField form={form} name="bridgePorts" controllerField="bridgeIface"
-            label={_("Bridge ports")} title={_("Select bridge ports")} />
+            label={_("Bridge ports")} dialogTitle={_("Select bridge ports")} />
 ```
 
 The template literal keeps the prop honest: `name="bondMode"` does not compile.

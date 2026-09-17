@@ -60,7 +60,7 @@ type DeviceSelectorProps = {
    * VLAN, since the dropdown label that gave that away is no longer in sight
    * once the dialog is open.
    */
-  title?: TranslatedString;
+  dialogTitle?: TranslatedString;
   /** Sync configuration to update another field when a device is selected. */
   sync?: SyncConfig;
   /** Filter to exclude devices and types from the options list. */
@@ -88,7 +88,7 @@ const DeviceSelector = withForm({
     by: "iface",
     name: undefined,
     label: undefined,
-    title: undefined,
+    dialogTitle: undefined,
     sync: undefined,
     exclude: {},
     listeners: undefined,
@@ -98,7 +98,7 @@ const DeviceSelector = withForm({
     by,
     name: nameProp,
     label: labelProp,
-    title: titleProp,
+    dialogTitle: titleProp,
     sync,
     exclude = {},
     listeners: listenersProp,

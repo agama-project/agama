@@ -102,7 +102,7 @@ const BridgeFields = withForm({
             // TRANSLATORS: label for the bridge ports field.
             _("Bridge ports")
           }
-          title={
+          dialogTitle={
             // TRANSLATORS: title of the dialog for picking the ports of a
             // bridge among the devices found in the system.
             _("Select bridge ports")
