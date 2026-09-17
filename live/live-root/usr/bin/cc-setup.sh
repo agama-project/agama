@@ -1602,9 +1602,13 @@ verify_profile() {
 # anything while the installation is running.
 start_monitor() {
   clear_terminal
-  echo "Installing the system, please wait..."
+  printf 'Installing the system, please wait...\n' >&2
 
-  agama monitor &
+  # The monitor writes to the standard error, that is the stream which is
+  # displayed (dialog draws its interface there as well). Its standard input is
+  # /dev/null: the terminal is needed for the questions of the tool and the
+  # monitor does not read anything.
+  agama monitor >&2 2>&1 </dev/null &
   MONITOR_PID=$!
 }
 
