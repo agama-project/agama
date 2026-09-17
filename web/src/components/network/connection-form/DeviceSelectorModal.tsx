@@ -187,9 +187,8 @@ export default function DeviceSelectorModal({
           },
         ]
       : []),
-    // Last, and on purpose: it is the widest column and the one that says the
-    // least about which card a row is, so it does not come between the columns
-    // that do.
+    // Last on purpose: the widest column, and the one saying least about which
+    // card a row is.
     {
       name: _("IP Addresses"),
       value: deviceAddresses,
