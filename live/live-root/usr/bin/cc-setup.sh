@@ -174,10 +174,7 @@ detect_ui_mode() {
 
   command -v dialog >/dev/null 2>&1 || return 0
   [[ -t 2 ]] || return 0
-
-  case "${TERM-}" in
-    "" | dumb | unknown) return 0 ;;
-  esac
+  dumb_terminal && return 0
 
   DIALOG_MODE=true
 }
@@ -286,12 +283,22 @@ terminal_echo() {
   (stty "$mode" </dev/tty) >/dev/null 2>&1 || true
 }
 
+# A terminal which cannot display the dialogs and which the monitor cannot
+# control either: the escape sequences would be printed as garbage there.
+dumb_terminal() {
+  case "${TERM-}" in
+    "" | dumb | unknown) return 0 ;;
+  esac
+  return 1
+}
+
 # Clear the screen, the output of the previous dialog must not stay on it while
 # the installation progress is displayed.
 #
 # Plain ANSI sequences are used on purpose: the "clear" command needs a working
 # TERM setting and fails silently without it (and then nothing is cleared).
 clear_terminal() {
+  dumb_terminal && return 0
   printf '\033[H\033[2J\033[3J' >&2
 }
 
@@ -887,7 +894,7 @@ ask_password() {
     confirmation=$(ui_password "$title" \
       "Enter the same password again for confirmation:") || return 1
     if [[ $password != "$confirmation" ]]; then
-      ui_error "The passwords do not match, please try again."
+      ui_error --size 6 40 "The passwords do not match, please try again."
       continue
     fi
     printf '%s' "$password"
@@ -1374,7 +1381,7 @@ start_monitor() {
   MONITOR_PID=$!
 }
 
-# Is the monitor still displaying the progress?
+# Is the monitor still running?
 monitor_running() {
   [[ -n $MONITOR_PID ]] && kill -0 "$MONITOR_PID" 2>/dev/null
 }
@@ -1390,12 +1397,18 @@ monitor_running() {
 #     STATUS_FILE gets "finished", "api_failed" or "timeout"
 poll_installation() {
   local start=$1 deadline=$2 status_file=$3
-  local response failures=0 elapsed heartbeat=0
+  local response failures=0 elapsed
+  # the first report comes immediately, the next ones every PROGRESS_HEARTBEAT
+  # seconds - on a dumb terminal it is the only sign that anything happens
+  local heartbeat=$((-PROGRESS_HEARTBEAT))
 
   while true; do
     elapsed=$((SECONDS - start))
 
-    if ! monitor_running && ((elapsed - heartbeat >= PROGRESS_HEARTBEAT)); then
+    # the monitor displays nothing on a dumb terminal (a serial line without a
+    # terminal emulation), report the elapsed time even when it is running
+    if { dumb_terminal || ! monitor_running; } &&
+        ((elapsed - heartbeat >= PROGRESS_HEARTBEAT)); then
       printf 'still installing, elapsed time: %dm %02ds\n' \
         "$((elapsed / 60))" "$((elapsed % 60))" >&2
       heartbeat=$elapsed
