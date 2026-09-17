@@ -22,6 +22,7 @@
 
 use std::fmt::Display;
 
+use agama_locale_data::LocaleId;
 use regex::Regex;
 use schemars::JsonSchema;
 use serde::Serialize;
@@ -86,6 +87,15 @@ impl Display for LanguageTag {
             write!(f, "{}-{}", self.language, territory)
         } else {
             write!(f, "{}", self.language)
+        }
+    }
+}
+
+impl From<&LocaleId> for LanguageTag {
+    fn from(locale: &LocaleId) -> Self {
+        LanguageTag {
+            language: locale.language.clone(),
+            territory: Some(locale.territory.clone()),
         }
     }
 }

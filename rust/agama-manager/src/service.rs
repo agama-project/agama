@@ -30,7 +30,7 @@ use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
     api::{
         self, event,
-        manager::{self, LicenseContent},
+        manager::{self, LanguageTag, LicenseContent},
         status::Stage,
         Action, Config, Event, Issue, IssueMap, Proposal, Scope, Status, SystemInfo,
     },
@@ -284,6 +284,9 @@ impl Starter {
             }
         };
 
+        let l10n_system = l10n.call(l10n::message::GetSystem).await?;
+        let language = LanguageTag::from(&l10n_system.locale);
+
         let security = match self.security {
             Some(security) => security,
             None => security::Service::starter(self.questions.clone()).start()?,
@@ -405,7 +408,7 @@ impl Starter {
             software,
             storage,
             products: products::Registry::default(),
-            licenses: licenses::Registry::from_default_path()?,
+            licenses: licenses::Registry::from_default_path(language)?,
             hardware,
             config: Config::default(),
             system: manager::SystemInfo::default(),
@@ -535,7 +538,7 @@ impl Service {
         Ok(())
     }
 
-    async fn configure_l10n(&self, config: api::l10n::SystemConfig) -> Result<(), Error> {
+    async fn configure_l10n(&mut self, config: api::l10n::SystemConfig) -> Result<(), Error> {
         self.l10n
             .call(l10n::message::SetSystem::new(config.clone()))
             .await?;
@@ -549,6 +552,9 @@ impl Service {
             if let Some(s390) = &self.s390 {
                 s390.cast(s390::message::SetLocale::new(locale.as_str()))?;
             }
+
+            let lang: LanguageTag = locale.as_str().try_into().map_err(licenses::Error::from)?;
+            self.licenses.read(&lang)?;
         }
         Ok(())
     }
@@ -843,7 +849,7 @@ impl MessageHandler<message::GetLicense> for Service {
         &mut self,
         message: message::GetLicense,
     ) -> Result<Option<LicenseContent>, Error> {
-        Ok(self.licenses.find(&message.id, &message.lang))
+        Ok(self.licenses.find(&message.id))
     }
 }
 

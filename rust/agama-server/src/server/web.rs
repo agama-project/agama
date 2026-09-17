@@ -51,7 +51,6 @@ use axum::{
     routing::{get, post},
     Json,
 };
-use gettextrs::gettext;
 use hyper::{header, HeaderMap, StatusCode};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
@@ -68,8 +67,6 @@ pub enum Error {
     ConfigSchema(#[from] config_schema::Error),
     #[error(transparent)]
     Json(#[from] serde_json::Error),
-    #[error("Missing language tag")]
-    MissingLanguageTag,
     #[error(transparent)]
     Profile(#[from] ProfileError),
 }
@@ -82,10 +79,6 @@ impl Error {
             Error::Json(e) => ProblemDetails::invalid_json(e.to_string()),
             Error::Manager(e) => ProblemDetails::internal_error(e.to_string()),
             Error::Questions(e) => ProblemDetails::internal_error(e.to_string()),
-            Error::MissingLanguageTag => ProblemDetails::generic(
-                gettext("Missing Language Tag"),
-                "The language tag is required",
-            ),
             Error::Profile(e) => ProblemDetails::generic(gettext("Profile error"), e.to_string()),
         }
     }
@@ -578,12 +571,6 @@ fn update_question_docs(op: TransformOperation) -> TransformOperation {
 }
 
 #[derive(Deserialize, JsonSchema)]
-struct LicenseQuery {
-    /// License language
-    lang: Option<String>,
-}
-
-#[derive(Deserialize, JsonSchema)]
 #[schemars(inline)]
 // Needed by aide to document path params (see https://github.com/tamasfe/aide/discussions/281).
 struct LicenseParams {
@@ -593,8 +580,8 @@ struct LicenseParams {
 
 /// Returns the license content.
 ///
-/// Optionally it can receive a language tag (RFC 5646). Otherwise, it returns
-/// the license in English.
+/// The license is always returned in the current system language (see the ConfigureL10n
+/// action).
 #[allow(
     clippy::result_large_err,
     reason = "Response is used to short-circuit with a pre-built HTTP response; the extra \
@@ -603,17 +590,10 @@ struct LicenseParams {
 async fn get_license(
     State(state): State<ServerState>,
     Path(license): Path<LicenseParams>,
-    Query(query): Query<LicenseQuery>,
 ) -> Result<Response, Response> {
-    let lang = query.lang.unwrap_or("en".to_string());
-    let lang = lang
-        .as_str()
-        .try_into()
-        .map_err(|_| Error::MissingLanguageTag.bad_request())?;
-
     let license = state
         .manager
-        .call(message::GetLicense::new(license.id.to_string(), lang))
+        .call(message::GetLicense::new(license.id.to_string()))
         .await
         .map_err(|e| Error::from(e).internal_server_error())?;
     if let Some(license) = license {
@@ -627,16 +607,12 @@ fn get_license_docs(op: TransformOperation) -> TransformOperation {
     op.id("getLicenseById")
         .summary("Get license by ID")
         .description(
-            "Returns the content of a specific license. Optionally accepts a language tag \
-            (RFC 5646) via the 'lang' query parameter. If no language is specified, the \
-            license is returned in English.",
+            "Returns the content of a specific license. The license is always returned in \
+            the current system language (see the ConfigureL10n action).",
         )
         .tag("System & Monitoring")
         .response_with::<200, Json<LicenseContent>, _>(|res| {
             res.description("License retrieved successfully")
-        })
-        .response_with::<400, ProblemDetailsResponse, _>(|res| {
-            res.description("The specified language tag is not valid")
         })
         .response::<404, ()>()
         .response_with::<500, ProblemDetailsResponse, _>(|res| {
