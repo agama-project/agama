@@ -271,3 +271,11 @@ nav.agm-breadcrumb > ol > li > a {
     }
   }
 }
+
+// PatternFly's Truncate puts the start of the text and its final characters
+// side by side. Given more room than the text needs, it pushes them to
+// opposite ends, so a shortened name reads as a broken one. Packed together,
+// it stays one name.
+.pf-v6-c-truncate {
+  justify-content: start;
+}
