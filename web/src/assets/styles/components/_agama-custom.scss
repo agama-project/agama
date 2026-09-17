@@ -219,6 +219,15 @@ nav.agm-breadcrumb > ol > li > a {
   }
 }
 
+// Opt-in for content that must keep its size while it changes, so it does not
+// move the rest of the screen around (see the stretchFirstRowEnd prop). It is
+// aligned to the start, having no box of its own to be centered in. It comes
+// after the rules above on purpose, to win over the one it shares weight with.
+.agm-split-info-layout--stretch-first-row-end > .pf-v6-l-grid__item[style*="Order-on-md: 4"] {
+  justify-self: stretch;
+  text-align: start;
+}
+
 // Terminal panel docked below the application as a resizable split. The panel
 // lives above the page outlet, so its session survives navigation; here it only
 // shares the screen height with the application and provides the resize
@@ -328,4 +337,13 @@ nav.agm-breadcrumb > ol > li > a {
 // it stays one name.
 .pf-v6-c-truncate {
   justify-content: start;
+}
+
+// What is being installed right now, under the current step. The name changes
+// several times a second and the line it sits on takes the room the screen
+// gives it, so nothing moves as one package follows another and a name too
+// long for the line is shortened instead of spilling out. The maximum keeps
+// it short enough to stay comfortable to read on a wide screen.
+.agm-progress-detail {
+  max-inline-size: 80ch;
 }

@@ -36,6 +36,7 @@ export default function InstallationProgress() {
     <Page noDefaultProgressMonitor>
       <Page.Content>
         <SplitInfoLayout
+          stretchFirstRowEnd
           icon="deployed_code_update"
           firstRowStart={
             <>

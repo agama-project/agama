@@ -37,6 +37,16 @@ export type SplitInfoLayoutProps = {
    * Content for right side of second row (typically secondary action button)
    */
   secondRowEnd?: React.ReactNode;
+
+  /**
+   * Whether `firstRowEnd` takes all the room it is given instead of being
+   * sized around itself.
+   *
+   * Turn it on when that content changes while the screen is shown and its
+   * size must not follow, so nothing moves as it changes. The content is then
+   * aligned to the start, having no box of its own to be centered in.
+   */
+  stretchFirstRowEnd?: boolean;
 };
 
 /**
@@ -82,6 +92,9 @@ export type SplitInfoLayoutProps = {
  * NOTE: The prop names "Row" and "Start/End" refer to the viewport over "md"
  * breakpoint layout, not the small viewport layout. On small viewports, all
  * content stacks vertically regardless of the "start/end" naming.
+ *
+ * Each piece of content is sized around itself, unless `stretchFirstRowEnd`
+ * is set.
  */
 export default function SplitInfoLayout({
   icon,
@@ -90,10 +103,18 @@ export default function SplitInfoLayout({
   firstRowEnd,
   secondRowStart,
   secondRowEnd,
+  stretchFirstRowEnd = false,
 }: SplitInfoLayoutProps) {
+  const className = [
+    "agm-split-info-layout",
+    stretchFirstRowEnd && "agm-split-info-layout--stretch-first-row-end",
+  ]
+    .filter(Boolean)
+    .join(" ");
+
   return (
     <Grid className="agm-split-info-layout-container">
-      <Grid hasGutter className="agm-split-info-layout">
+      <Grid hasGutter className={className}>
         {icon && (
           <>
             <GridItem span={12} md={6} order={{ md: "1" }}>
