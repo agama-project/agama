@@ -243,12 +243,33 @@ impl Registry {
         };
 
         let license_path = self.path.join(id).join(file_name);
-        let body = std::fs::read_to_string(license_path)?;
+        let text = std::fs::read_to_string(license_path)?;
+        let (name, body) = Self::parse_content(&text);
         Ok(LicenseContent {
             id: id.to_string(),
+            name,
             body,
             language: language.clone(),
         })
+    }
+
+    /// Splits a license text into its name and body.
+    ///
+    /// The name is the first paragraph of the text (usually a couple of lines, joined with a
+    /// space); the body is the rest of it.
+    fn parse_content(text: &str) -> (String, String) {
+        match text.find("\n\n") {
+            Some(index) => {
+                let name = text[..index]
+                    .lines()
+                    .map(str::trim)
+                    .collect::<Vec<_>>()
+                    .join(" ");
+                let body = text[index..].trim().to_string();
+                (name, body)
+            }
+            None => (String::new(), text.trim().to_string()),
+        }
     }
 
     /// Returns a vector with the licenses from the repository.
@@ -278,6 +299,10 @@ mod test {
         let es_language: LanguageTag = "es".try_into().unwrap();
         let repo = build_registry(es_language.clone());
         let license = repo.find("license.final").unwrap();
+        assert_eq!(
+            license.name,
+            "Acuerdo de licencia de usuario final del software de SUSE"
+        );
         assert!(license.body.starts_with("Acuerdo de licencia"));
         assert_eq!(license.language, es_language);
 
@@ -296,8 +321,21 @@ mod test {
         let language: LanguageTag = "xx".try_into().unwrap();
         let repo = build_registry(language);
         let license = repo.find("license.final").unwrap();
+        assert_eq!(license.name, "End User License Agreement for SUSE Software");
         assert!(license.body.starts_with("End User License"));
         assert_eq!(license.language, LanguageTag::default());
+    }
+
+    #[test]
+    fn test_parse_content() {
+        let (name, body) = Registry::parse_content("Name line 1\nName line 2\n\nBody text.");
+        assert_eq!(name, "Name line 1 Name line 2");
+        assert_eq!(body, "Body text.");
+
+        // Without a blank line separating the paragraphs, the whole text is the body.
+        let (name, body) = Registry::parse_content("Just a body, no name paragraph.");
+        assert_eq!(name, "");
+        assert_eq!(body, "Just a body, no name paragraph.");
     }
 
     #[test]

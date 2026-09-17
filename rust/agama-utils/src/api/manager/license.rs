@@ -45,14 +45,15 @@ pub struct License {
 
 /// Represents a license content.
 ///
-/// It contains the license ID and the body.
-///
-/// TODO: in the future it might contain a title, extracted from the text.
+/// It contains the license ID, name and body. The name is extracted from the first paragraph of
+/// the license text; the body is the rest of it.
 #[serde_as]
 #[derive(Clone, Debug, Serialize, JsonSchema)]
 pub struct LicenseContent {
     /// License ID.
     pub id: String,
+    /// License name.
+    pub name: String,
     /// License text.
     pub body: String,
     /// License language.
