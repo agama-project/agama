@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import { screen, within } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import { useAppForm } from "~/hooks/form";
 import { defaultOptions } from "./fields";
@@ -88,12 +88,12 @@ describe("BondFields", () => {
     const input = await screen.findByRole("combobox", { name: "Bond ports" });
     await user.type(input, "enp1s0{enter}");
     await user.type(input, "br0{enter}");
+    // The list of devices the field offers is still open, naming the same
+    // devices as the ports just committed.
+    await user.keyboard("{Escape}");
 
-    // Looked up among the committed values: the list of devices the field
-    // offers is still open behind them, naming the same devices.
-    const entries = within(screen.getByRole("listbox", { name: "Bond ports entries" }));
-    entries.getByRole("option", { name: "enp1s0" });
-    entries.getByRole("option", { name: "br0" });
+    await screen.findByText("enp1s0");
+    await screen.findByText("br0");
   });
 
   it("allows defining the device name for a new bond connection", async () => {

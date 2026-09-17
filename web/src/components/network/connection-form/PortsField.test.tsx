@@ -109,7 +109,7 @@ function TestForm({ defaultValues = {} }: { defaultValues?: object }) {
           name="bondPorts"
           controllerField="bondIface"
           label={_("Bond ports")}
-          title={_("Select bond ports")}
+          dialogTitle={_("Select bond ports")}
         />
         <button type="submit">Submit</button>
       </form>
@@ -189,9 +189,9 @@ describe("PortsField", () => {
     expect(option).not.toHaveTextContent("bond1");
   });
 
-  it("finds a device by what its option does not show", async () => {
+  it("finds a device by its hardware identifier", async () => {
     const { user } = installerRender(<TestForm />);
-    await user.type(screen.getByRole("combobox", { name: "Bond ports" }), "r8169");
+    await user.type(screen.getByRole("combobox", { name: "Bond ports" }), "AA:BB");
 
     deviceOption("enp2s0");
     expect(list().queryByRole("option", { name: /enp1s0/ })).not.toBeInTheDocument();
@@ -222,30 +222,15 @@ describe("PortsField", () => {
       const { user } = installerRender(<TestForm />);
       await addSelfAsPort(user);
 
-      expect(within(entriesList()).queryByRole("option", { name: /invalid/ })).toBeNull();
+      expect(screen.queryByText(/cannot be a port of itself/)).toBeNull();
     });
 
-    it("marks it once the form is submitted", async () => {
+    it("refuses it once the form is submitted", async () => {
       const { user } = installerRender(<TestForm />);
       await addSelfAsPort(user);
       await submit(user);
 
-      await within(entriesList()).findByRole("option", {
-        name: "bond0 is invalid: bond0 cannot be a port of itself",
-      });
-    });
-
-    it("stops marking it once the device is named something else", async () => {
-      const { user } = installerRender(<TestForm />);
-      await addSelfAsPort(user);
-      await submit(user);
-      await within(entriesList()).findByRole("option", { name: /invalid/ });
-
-      const ifaceField = screen.getByRole("textbox", { name: "Device name" });
-      await user.clear(ifaceField);
-      await user.type(ifaceField, "bond1");
-
-      expect(within(entriesList()).queryByRole("option", { name: /invalid/ })).toBeNull();
+      await screen.findByText("bond0 cannot be a port of itself");
     });
   });
 

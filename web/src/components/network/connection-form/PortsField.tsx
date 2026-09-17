@@ -22,32 +22,27 @@
 
 import React, { useState } from "react";
 import { sift } from "radashi";
-import { sprintf } from "sprintf-js";
 import Text from "~/components/core/Text";
 import DeviceSelectorModal from "./DeviceSelectorModal";
 import { defaultOptions } from "./fields";
 import { withForm } from "~/hooks/form";
 import { useConnections, useDevices } from "~/hooks/model/system/network";
-import { connectionTypeLabel, controllerOf } from "~/utils/network";
+import { CONNECTION_TYPE, controllerOf } from "~/utils/network";
 import { _ } from "~/i18n";
 
 import type { TranslatedString } from "~/i18n";
 import type { FormFields } from "./fields";
 import type { Device } from "~/types/network";
 
-/** The loopback device is never a port of anything. */
-const LOOPBACK = "lo";
-
 /** Names of the given devices. */
 const names = (devices: Device[]): string[] => devices.map((d) => d.name);
 
 /**
- * Ports left after a dialog offering `offered` answered with `picked`.
+ * Ports left after the dialog answered with `picked`.
  *
- * The dialog only knows about the devices the system reports, so the ports it
- * was never offered are kept as they were: dropping them because the dialog
- * did not list them would lose what the user wrote. The offered ones follow
- * the pick, keeping the order they were listed in and appending the rest.
+ * Only the `offered` ports follow the pick. The dialog was never told about
+ * the others, names the user wrote for devices the system does not report, so
+ * it has nothing to say about them and they stay.
  */
 function mergePicked(ports: string[], offered: string[], picked: string[]): string[] {
   const kept = ports.filter((p) => !offered.includes(p) || picked.includes(p));
@@ -61,8 +56,8 @@ type PortsFieldProps = {
   /**
    * Form field holding the name of the controller the ports belong to.
    *
-   * Watched rather than read once: the field is filled while the form is being
-   * used, and a controller cannot be a port of itself.
+   * Watched rather than read once, since the name is given while the form is
+   * being filled in and a controller is not offered as a port of itself.
    */
   controllerField: Extract<keyof FormFields, `${string}Iface`>;
   /** Label of the field. */
@@ -75,7 +70,7 @@ type PortsFieldProps = {
    * once the dialog covers the form, and the entry that opened it reads the
    * same on every field, so the dialog cannot name itself.
    */
-  title: TranslatedString;
+  dialogTitle: TranslatedString;
 };
 
 /**
@@ -101,7 +96,7 @@ const PortsField = withForm({
   ...defaultOptions,
   // Only carries the prop types: every caller passes them all.
   props: {} as PortsFieldProps,
-  render: function Render({ form, name, controllerField, label, title }) {
+  render: function Render({ form, name, controllerField, label, dialogTitle }) {
     const devices = useDevices();
     const connections = useConnections();
     const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -112,9 +107,10 @@ const PortsField = withForm({
           <form.AppField name={name}>
             {(field) => {
               const ports = field.state.value;
-              // A controller cannot be a port of itself.
+              // The loopback is never a port of anything, and a controller is
+              // not a port of itself.
               const available = devices.filter(
-                (d) => d.name !== LOOPBACK && d.name !== controllerIface,
+                (d) => d.type !== CONNECTION_TYPE.LOOPBACK && d.name !== controllerIface,
               );
               // The controller being edited is not worth mentioning: the user
               // is looking at its own list of ports.
@@ -130,24 +126,16 @@ const PortsField = withForm({
               const options = available.map((device) => ({
                 value: device.name,
                 label: device.name,
-                // The hardware identifier, and nothing else: every word here is
-                // read out with the option, so a row telling the whole story
-                // takes longer to hear than the list takes to read. What tells
-                // two cards apart is one entry away, in the table behind the
-                // foot of the list.
+                // Keep this to the hardware identifier: putting all the details
+                // in the dropdown creates an accessibility problem, as too much
+                // information is harder to follow when read aloud, and the
+                // common case is better off simple. For the details, the field
+                // already offers "Browse with details...".
                 description: (
                   <Text textStyle={["fontSizeXs", "textColorSubtle"]}>{device.macAddress}</Text>
                 ),
-                // The type and the driver are searchable although the option
-                // does not show them: the dialog does, and a user who knows
-                // which driver their card runs on should not have to open it to
-                // find out which device that is.
-                filterText: sift([
-                  device.name,
-                  device.macAddress,
-                  connectionTypeLabel(device.type),
-                  device.driver,
-                ]).join(" "),
+                // Searchable by what the option shows, and only by that.
+                filterText: sift([device.name, device.macAddress]).join(" "),
               }));
 
               return (
@@ -156,33 +144,13 @@ const PortsField = withForm({
                     label={label}
                     options={options}
                     allowCustomEntries
-                    // A bond or a bridge over a handful of ports is common
-                    // enough that the field would otherwise be a wall of
-                    // names; past three the rest is counted instead, and
-                    // comes back whenever the field has focus.
                     entriesThreshold={3}
-                    // At rest the ports are all the field has to say, so
-                    // neither the text box nor the button emptying it is kept
-                    // on screen. Both come back on focus.
                     collapseInputOnBlur
                     hideClearAllOnBlur
                     helperText={
                       // TRANSLATORS: helper text for the ports field of a bond
                       // or a bridge, naming the two ways of filling it in.
-                      _("Choose the devices found in the system, or enter other names.")
-                    }
-                    // The list leaves the controller out, but a name written by
-                    // hand does not go through it. The form says so on submit
-                    // (see `validatePorts` in validations.ts); this points at
-                    // which of the ports it was talking about, and stays quiet
-                    // until then, as validation does everywhere else.
-                    validateOnSubmit={(value) =>
-                      value === controllerIface
-                        ? // TRANSLATORS: error shown on a port naming the bond
-                          // or bridge being configured. %s is the name of that
-                          // device, e.g. "bond0".
-                          sprintf(_("%s cannot be a port of itself"), value)
-                        : undefined
+                      _("Choose devices or enter their names.")
                     }
                     // Nothing to browse, nothing to lead to: a dialog opening
                     // on an empty table is worse than no way in at all.
@@ -203,7 +171,7 @@ const PortsField = withForm({
                   />
                   {isDialogOpen && (
                     <DeviceSelectorModal
-                      title={title}
+                      title={dialogTitle}
                       devices={available}
                       selected={available.filter((d) => ports.includes(d.name))}
                       selectionMode="multiple"
