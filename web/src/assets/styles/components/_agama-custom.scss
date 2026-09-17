@@ -211,6 +211,14 @@ nav.agm-breadcrumb > ol > li > a {
     grid-area: body;
   }
 
+  // Opt-in for content that must keep its size while it changes, so it does
+  // not move the rest of the screen around (see the stretchBody prop). It is
+  // aligned to the start, having no box of its own to be centered in.
+  &--stretch &__body {
+    justify-self: stretch;
+    text-align: start;
+  }
+
   &__divider {
     display: none;
   }
@@ -278,4 +286,13 @@ nav.agm-breadcrumb > ol > li > a {
 // it stays one name.
 .pf-v6-c-truncate {
   justify-content: start;
+}
+
+// What is being installed right now, under the current step. The name changes
+// several times a second and the line it sits on takes the room the screen
+// gives it, so nothing moves as one package follows another and a name too
+// long for the line is shortened instead of spilling out. The maximum keeps
+// it short enough to stay comfortable to read on a wide screen.
+.agm-progress-detail {
+  max-inline-size: 80ch;
 }

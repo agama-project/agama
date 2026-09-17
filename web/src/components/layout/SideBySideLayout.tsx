@@ -21,6 +21,16 @@ export type SideBySideLayoutProps = {
 
   /** Supporting text rendered below the title. */
   description?: TextContent;
+
+  /**
+   * Whether the content takes all the room it is given instead of being sized
+   * around itself.
+   *
+   * Turn it on when the content changes while the screen is shown and its
+   * size must not follow, so nothing moves as it changes. The content is then
+   * aligned to the start, having no box of its own to be centered in.
+   */
+  stretchBody?: boolean;
 };
 
 /**
@@ -39,6 +49,8 @@ export type SideBySideLayoutProps = {
  * title (a heading) and the body's opening line read as paired despite their
  * different sizes.
  *
+ * The content is sized around itself, unless `stretchBody` is set.
+ *
  * @example
  * ```tsx
  * <SideBySideLayout
@@ -54,10 +66,15 @@ export default function SideBySideLayout({
   icon,
   title,
   description,
+  stretchBody = false,
   children,
 }: React.PropsWithChildren<SideBySideLayoutProps>) {
+  const className = ["agm-side-by-side-layout", stretchBody && "agm-side-by-side-layout--stretch"]
+    .filter(Boolean)
+    .join(" ");
+
   return (
-    <div className="agm-side-by-side-layout">
+    <div className={className}>
       {icon && (
         <div className="agm-side-by-side-layout__icon">
           <Icon name={icon} size="4xl" />
