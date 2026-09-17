@@ -1,9 +1,27 @@
 -------------------------------------------------------------------
+Thu Sep 17 16:00:00 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Show the name of the package being installed in one piece and stop
+  the progress text from moving as packages go by (bsc#1279489).
+
+-------------------------------------------------------------------
+Tue Sep 15 16:11:54 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Fix formatting of the storage commit errors
+  (gh#agama-project/agama#3912).
+
+-------------------------------------------------------------------
 Tue Sep 15 09:38:41 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Add a form field for selecting several values from a searchable
   list of known options, with optional support for custom entries
   (gh#agama-project/agama#3927).
+
+-------------------------------------------------------------------
+Mon Sep 14 12:51:32 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Remove empty space due to a byte order mark which kills
+  PatternFly's base reset (bsc#1280220).
 
 -------------------------------------------------------------------
 Thu Sep 10 13:10:57 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>

@@ -5,6 +5,12 @@ Wed Sep 16 11:50:09 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
   TW ports (bsc#1266309)
 
 -------------------------------------------------------------------
+Tue Sep 15 16:19:38 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Cancel actions if setting storage, DASD, zFCP, iSCSI or bootloader
+  configs fail (related to bsc#1280006).
+
+-------------------------------------------------------------------
 Thu Sep 10 14:00:00 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
 
 - Report more details about the network devices ("speed",
