@@ -61,7 +61,11 @@ const Progress = ({
       if (detail && detail.step !== "") {
         const { step: message, index, size } = detail;
         properties.description = (
-          <Flex direction={{ default: "column" }} rowGap={{ default: "rowGapXs" }}>
+          <Flex
+            direction={{ default: "column" }}
+            rowGap={{ default: "rowGapXs" }}
+            className="agm-progress-detail"
+          >
             <Truncate content={message} trailingNumChars={12} position="middle" />
             <Text component="small">{sprintf(_("Step %1$d of %2$d"), index, size)}</Text>
           </Flex>

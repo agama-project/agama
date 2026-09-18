@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2025] SUSE LLC
+ * Copyright (c) [2022-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -28,6 +28,7 @@ import PackageErrorQuestion from "~/components/questions/PackageErrorQuestion";
 import UnsupportedAutoYaST from "~/components/questions/UnsupportedAutoYaST";
 import RegistrationCertificateQuestion from "~/components/questions/RegistrationCertificateQuestion";
 import LoadConfigRetryQuestion from "~/components/questions/LoadConfigRetryQuestion";
+import StorageCommitErrorQuestion from "~/components/questions/StorageCommitErrorQuestion";
 import { useQuestions, useQuestionsChanges } from "~/hooks/model/question";
 import { patchQuestion } from "~/api";
 import { FieldType } from "~/model/question";
@@ -78,6 +79,11 @@ export default function Questions(): React.ReactNode {
   // special popup for self signed registration certificate
   if (questionClass === "loadConfigError") {
     QuestionComponent = LoadConfigRetryQuestion;
+  }
+
+  // special popup for storage commit errors
+  if (questionClass === "storageCommitError") {
+    QuestionComponent = StorageCommitErrorQuestion;
   }
 
   return <QuestionComponent question={currentQuestion} answerCallback={answerQuestion} />;

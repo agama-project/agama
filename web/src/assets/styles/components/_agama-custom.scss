@@ -211,6 +211,15 @@ nav.agm-breadcrumb > ol > li > a {
     grid-area: body;
   }
 
+  // Opt-in for content that keeps its size while it changes, so it does not
+  // move the rest of the screen around (see the stretchBody prop). It fills
+  // the column and, having no box of its own to be centered in, aligns to
+  // the start.
+  &--stretch &__body {
+    justify-self: stretch;
+    text-align: start;
+  }
+
   &__divider {
     display: none;
   }
@@ -270,4 +279,17 @@ nav.agm-breadcrumb > ol > li > a {
       background: var(--pf-t--global--border--color--default);
     }
   }
+}
+
+// PatternFly's Truncate pushes the start of the text and its final characters
+// to opposite ends when given more room than the text needs, so a shortened
+// name reads as a broken one. Packing them at the start keeps it one name.
+.pf-v6-c-truncate {
+  justify-content: start;
+}
+
+// What is being installed right now, under the current step. The maximum keeps
+// the line short enough to stay comfortable to read on a wide screen.
+.agm-progress-detail {
+  max-inline-size: 80ch;
 }
