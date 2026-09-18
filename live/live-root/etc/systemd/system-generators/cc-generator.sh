@@ -1,10 +1,10 @@
 #!/bin/sh
 
 # This systemd generator allows using single "live.cc-install=1" boot option
-# instead of "systemd.unit=multi-user.target systemd.wants=cc-setup.service"
-# options. The advantage is that we need less boot options and it also avoids
-# saving the systemd.* options also to the installed system which we do not
-# want.
+# instead of "systemd.unit=multi-user.target systemd.wants=cc-setup.service
+# inst.remote=0" options. The advantage is that we need less boot options and it
+# also avoids saving the systemd.* options also to the installed system which we
+# do not want.
 
 # systemd passes: $1 = normal dir, $2 = early dir, $3 = late dir
 set -eu
@@ -22,7 +22,9 @@ for arg in $cmdline; do
   esac
 done
 
-[ "$enabled" = 1 ] || exit 0
+if [ "$enabled" != 1 ]; then
+  exit 0
+fi
 
 # Equivalent of systemd.unit=multi-user.target
 mkdir -p "$early_dir"

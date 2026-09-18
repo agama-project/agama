@@ -45,7 +45,6 @@ readonly KEYMAPS_URL="http://localhost/api/l10n/keymaps"
 # Installation phase reported by the Agama API when everything is installed.
 readonly FINISH_PHASE=3
 readonly POLL_INTERVAL=10          # seconds between two API polls
-readonly PROGRESS_HEARTBEAT=60     # report the elapsed time when nothing happens
 readonly MAX_API_FAILURES=30       # consecutive API errors tolerated
 readonly MAX_INSTALL_SECONDS=14400 # ask whether to keep waiting after 4 hours
 readonly WAIT_QUESTION_TIMEOUT=300 # unanswered "keep waiting?" means "yes"
@@ -133,13 +132,7 @@ Usage: ${0##*/} [OPTIONS]
   --template FILE   Agama JSON profile template (default: agama-template.json
                     next to this script, or /usr/share/cc-setup/agama-template.json)
   --dry-run         only build the profile, do not modify the system
-                    (implies CC_NO_REBOOT=1)
   --help            show this help
-
-Environment:
-  CC_TEMPLATE       path to the JSON template (same as --template)
-  CC_NO_REBOOT=1    never reboot the machine, only report it (for testing)
-  CC_LOCALE         override the locale (default: C.UTF-8, for testing)
 
 The generated profile contains the plain text disk encryption passphrase,
 therefore it is never stored on disk and never printed.
@@ -164,7 +157,7 @@ default_template() {
 }
 
 parse_arguments() {
-  TEMPLATE="${CC_TEMPLATE:-$(default_template)}"
+  TEMPLATE="$(default_template)"
 
   local ui_forced=false
   while (($# > 0)); do
@@ -209,7 +202,7 @@ harden_environment() {
   umask 077
   ulimit -c 0 2>/dev/null || true
   set +o history 2>/dev/null || true
-  export LC_ALL="${CC_LOCALE:-C.UTF-8}"
+  export LC_ALL="C.UTF-8"
   # Only the English locale is used during the setup, a different keyboard
   # layout would change the (not echoed) passwords.
   unset LANG LANGUAGE
@@ -271,11 +264,6 @@ show_dialog() {
 # The height for a dialog which should use the whole terminal: the terminal
 # height minus DIALOG_HEIGHT_MARGIN. Prints 0 (the dialog default, auto size)
 # when the terminal is too small or its size cannot be determined.
-#
-# The size has to be read from the terminal itself. Do not use
-# "dialog --print-maxsize" here: this function is called in a command
-# substitution, where its stdout is a pipe. Dialog does not see any terminal
-# then and reports the terminfo default (24 lines) instead of the real size.
 dialog_full_height() {
   local rows="" size
 
@@ -319,12 +307,9 @@ dumb_terminal() {
 
 # Clear the screen, the output of the previous dialog must not stay on it while
 # the installation progress is displayed.
-#
-# Plain ANSI sequences are used on purpose: the "clear" command needs a working
-# TERM setting and fails silently without it (and then nothing is cleared).
 clear_terminal() {
   dumb_terminal && return 0
-  printf '\033[H\033[2J\033[3J' >&2
+  clear
 }
 
 # Display a file in a pager. "less" must read the keyboard from the terminal:
@@ -598,11 +583,10 @@ fatal() {
 }
 
 do_reboot() {
-  # --dry-run (and CC_NO_REBOOT=1) must never touch the running system, not
-  # even by rebooting it.
-  if $DRY_RUN || [[ ${CC_NO_REBOOT:-0} == "1" ]]; then
+  # --dry-run must never touch the running system, not even by rebooting it
+  if $DRY_RUN; then
     ui_message "Reboot Skipped" "The system would be rebooted now.
-No reboot is done because the tool runs with --dry-run / CC_NO_REBOOT=1."
+No reboot is done because the tool runs with --dry-run."
     exit 0
   fi
 
@@ -1571,24 +1555,6 @@ build_profile() {
     ' "$TEMPLATE"
 }
 
-# Verify that the generated profile really contains the expected values.  The
-# profile itself is never printed, only the result of the checks.
-verify_profile() {
-  local profile=$1
-  local filter='
-    (.product.id == "SLES")
-    and (.root.hashedPassword == true) and ((.root.password | startswith("$6$")))
-    and (.user.userName != "") and ((.user.password | startswith("$6$")))
-    and (.storage.drives[0].search != "*")
-    and ([.storage.drives[0].partitions[] | select(.encryption.luks2)
-          | .encryption.luks2.password | length] | all(. > 0))
-    and ((.files // []) | all((.destination | length) > 0 and (.content | length) > 0))
-  '
-  # a pipe, not a here-string: bash implements "<<<" with a temporary file, so
-  # the profile (with the plain text LUKS passphrase) would be written to disk
-  printf '%s' "$profile" | jq -e "$filter" >/dev/null 2>&1
-}
-
 # ---------------------------------------------------------------------------
 # Installation
 # ---------------------------------------------------------------------------
@@ -1598,7 +1564,7 @@ verify_profile() {
 # pipe does not work (it redraws a single progress line and such output is
 # never flushed), and a detached process has no terminal to draw on.
 #
-# The screen therefore belongs to the monitor, the tool does not display
+# The screen therefore belongs to the monitor, the this script does not display
 # anything while the installation is running.
 start_monitor() {
   clear_terminal
@@ -1612,15 +1578,8 @@ start_monitor() {
   MONITOR_PID=$!
 }
 
-# Is the monitor still running?
-monitor_running() {
-  [[ -n $MONITOR_PID ]] && kill -0 "$MONITOR_PID" 2>/dev/null
-}
-
 # Poll the Agama API until something happens. Nothing is displayed, the
-# progress is displayed by "agama monitor" on the terminal; only when the
-# monitor is not running the elapsed time is reported, so that the screen does
-# not look dead.
+# progress is displayed by "agama monitor" on the terminal
 #
 #   poll_installation START DEADLINE STATUS_FILE
 #     START       value of $SECONDS when the installation was started
@@ -1629,22 +1588,9 @@ monitor_running() {
 poll_installation() {
   local start=$1 deadline=$2 status_file=$3
   local response failures=0 elapsed
-  # the first report comes with the first poll (not at zero seconds), the next
-  # ones every PROGRESS_HEARTBEAT seconds - on a dumb terminal this is the only
-  # sign that anything happens
-  local heartbeat=$((-PROGRESS_HEARTBEAT))
 
   while true; do
     elapsed=$((SECONDS - start))
-
-    # the monitor displays nothing on a dumb terminal (a serial line without a
-    # terminal emulation), report the elapsed time even when it is running
-    if ((elapsed > 0)) && { dumb_terminal || ! monitor_running; } &&
-        ((elapsed - heartbeat >= PROGRESS_HEARTBEAT)); then
-      printf 'still installing, elapsed time: %dm %02ds\n' \
-        "$((elapsed / 60))" "$((elapsed % 60))" >&2
-      heartbeat=$elapsed
-    fi
 
     if response=$(api_get "$API_URL"); then
       failures=0
@@ -1669,7 +1615,6 @@ poll_installation() {
     sleep "$POLL_INTERVAL"
   done
 }
-
 
 stop_monitor() {
   [[ -n $MONITOR_PID ]] || return 0
@@ -1866,11 +1811,6 @@ Reboot now?" 0 0 || rc=$?
     done
   fi
 
-  if [[ ${CC_NO_REBOOT:-0} == "1" ]]; then
-    ui_message "Reboot Skipped" "The system would be rebooted now (CC_NO_REBOOT=1)."
-    return 0
-  fi
-
   if ! agama finish >/dev/null 2>&1; then
     ui_error "Installer reboot failed, rebooting the system directly."
     systemctl reboot || reboot
@@ -1917,8 +1857,6 @@ Do you want to start over?"; then
     esac
 
     profile=$(build_profile) || fatal "Generating the installation profile failed."
-    verify_profile "$profile" ||
-      fatal "The generated installation profile is incomplete or invalid."
 
     # hand the profile over to Agama, it computes the storage proposal from it;
     # this still does not touch the disk
