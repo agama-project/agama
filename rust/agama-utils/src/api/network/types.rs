@@ -64,6 +64,17 @@ pub struct Device {
     // Connection.id
     pub connection: Option<String>,
     pub state: DeviceState,
+    /// Link speed in Mb/s, when the device reports one.
+    ///
+    /// Only wired devices report a speed, and only while the link is up.
+    pub speed: Option<u32>,
+    /// Whether the device currently has a link (carrier).
+    pub carrier: Option<bool>,
+    /// Kernel driver in use, e.g. "e1000e".
+    pub driver: Option<String>,
+    /// Physical location of the device, e.g. "pci-0000:c5:00.3".
+    pub bus_path: Option<String>,
+    pub mtu: Option<u32>,
 }
 
 #[derive(Debug, Default, Clone, PartialEq, Serialize, JsonSchema)]

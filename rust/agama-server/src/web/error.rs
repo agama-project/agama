@@ -55,6 +55,7 @@ impl ProblemDetailsExt for ProblemDetails {
             ProblemDetails::InternalError { .. } => StatusCode::INTERNAL_SERVER_ERROR,
             ProblemDetails::Unauthorized { .. } => StatusCode::UNAUTHORIZED,
             ProblemDetails::Generic { .. } => StatusCode::INTERNAL_SERVER_ERROR,
+            ProblemDetails::BadRequest { .. } => StatusCode::BAD_REQUEST,
         }
     }
 

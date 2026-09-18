@@ -762,6 +762,13 @@ mod tests {
                     }
                 ),
                 (
+                    "os-prober".to_string(),
+                    ResolvableType::Package,
+                    ResolvableSelection::AutoSelected {
+                        skip_if_missing: true
+                    }
+                ),
+                (
                     "selinux".to_string(),
                     ResolvableType::Pattern,
                     ResolvableSelection::Selected
@@ -1153,6 +1160,13 @@ mod tests {
                     ResolvableType::Package,
                     ResolvableSelection::AutoSelected {
                         skip_if_missing: false
+                    }
+                ),
+                (
+                    "os-prober".to_string(),
+                    ResolvableType::Package,
+                    ResolvableSelection::AutoSelected {
+                        skip_if_missing: true
                     }
                 ),
                 (

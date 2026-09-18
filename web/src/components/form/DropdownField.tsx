@@ -30,81 +30,19 @@ import {
   SelectList,
   SelectOption,
 } from "@patternfly/react-core";
-import Text from "~/components/core/Text";
+import FooterEntryOption, {
+  FOOTER_ENTRY_VALUE,
+} from "~/components/form/primitives/FooterEntryOption";
 import { useComboboxKeyboard } from "~/hooks/use-combobox-keyboard";
 import { useFieldLabel } from "~/hooks/use-field-label";
 import { useFieldContext } from "~/hooks/form-contexts";
-import { _ } from "~/i18n";
 
 import type { FieldLabelOptions } from "~/hooks/use-field-label";
-import type { TranslatedString } from "~/i18n";
+import type { FooterEntry } from "~/components/form/primitives/FooterEntryOption";
 
 export type DropdownOption<T> =
   | { value: T; label: React.ReactNode; description?: React.ReactNode; isDisabled?: boolean }
   | { divider: true };
-
-/**
- * The last entry of the list, offering something other than a value.
- *
- * Activating it closes the menu, returns focus to the toggle and leaves the
- * field untouched. What it does from there is up to `onSelect`: open a dialog,
- * go to another page, start creating something the list cannot offer yet.
- *
- * ## Why it lives in the list, not beside the field
- *
- * A second control beside the field would do one job with two elements, and
- * put a tab stop in everyone's path for help that is not always needed. An
- * entry inside the list costs nothing to whoever does not open it, and sits
- * where the user already is when the values on offer turn out not to be
- * enough. Give the route a control of its own only when most users are
- * expected to take it.
- *
- * ## Why not PatternFly's MenuFooter
- *
- * That footer renders outside the list, so whatever it holds is not an option:
- * it falls out of the arrow key sequence and of what a screen reader
- * announces. This entry is a real option, reached like any other.
- *
- * ## Saying that it leads somewhere
- *
- * ARIA does not allow `aria-haspopup` on an option, and there is nowhere else
- * to put it: the list admits only options, and a control outside the list is
- * unreachable with PatternFly's key handling.
- *
- * The label does that work. Keep it to two or three words ending in an
- * ellipsis, the usual sign that more follows rather than a value being set.
- *
- * An ellipsis is silent when read aloud. Set `opensDialog` and screen reader
- * users hear "Opens a dialog" after the label. Set `hint` to have them hear
- * something else.
- */
-export type FooterEntry = {
-  /** Text shown in the entry. */
-  label: React.ReactNode;
-  /** Called when the user activates the entry. */
-  onSelect: () => void;
-  /**
-   * Whether activating the entry opens a dialog, the most common case. It adds
-   * a standard hint after the label for screen reader users, which ARIA cannot
-   * express on an option through `aria-haspopup`.
-   */
-  opensDialog?: boolean;
-  /**
-   * Replaces that hint for an entry doing something else. Wins over
-   * {@link opensDialog}, and works on its own.
-   */
-  hint?: TranslatedString;
-};
-
-/**
- * Value carried by the footer entry.
- *
- * The select reports every activation through a single callback that hands
- * back only the value of what was activated, so the footer entry needs a value
- * of its own to be told apart from the real options. It is never committed to
- * the field, and no realistic field value looks like it.
- */
-const FOOTER_ENTRY_VALUE = "dropdown-field/footer-entry";
 
 type DropdownFieldProps<T> = FieldLabelOptions & {
   /** The field label. */
@@ -198,10 +136,6 @@ export default function DropdownField<T extends string>({
     (opt) => !("divider" in opt) && opt.value === field.state.value,
   );
 
-  // TRANSLATORS: told to screen reader users about an entry that opens a
-  // dialog, since the ellipsis ending its text says nothing when read aloud.
-  const footerEntryHint = footerEntry?.hint ?? (footerEntry?.opensDialog && _("Opens a dialog"));
-
   return (
     <FormGroup fieldId={field.name} label={<span id={labelId}>{label}</span>}>
       <Select
@@ -247,15 +181,7 @@ export default function DropdownField<T extends string>({
               </SelectOption>
             ),
           )}
-          {footerEntry && (
-            <>
-              {options.length > 0 && <Divider component="li" />}
-              <SelectOption value={FOOTER_ENTRY_VALUE}>
-                {footerEntry.label}
-                {footerEntryHint && <Text srOnly>{footerEntryHint}</Text>}
-              </SelectOption>
-            </>
-          )}
+          {footerEntry && <FooterEntryOption entry={footerEntry} hasDivider={options.length > 0} />}
         </SelectList>
       </Select>
       {helperText}

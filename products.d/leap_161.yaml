@@ -1,5 +1,6 @@
 id: openSUSE_Leap
 name: Leap 16.1
+license: "license.opensuse"
 # ------------------------------------------------------------------------------
 # WARNING: When changing the product description delete the translations located
 # at the at translations/description key below to avoid using obsolete
@@ -57,6 +58,106 @@ translations:
       SUSE Linux Enterprise Server.
     zh_CN: 基于 SUSE Linux Enterprise Server 构建的社区发行版的最新版本。
     zh_TW: 根據最新 SUSE Linux Enterprise Server 打造的最新社群版發行版本。
+  mode:
+    standard:
+      name:
+        bg: Стандартен
+        ca: Estàndard
+        cs: Standardní
+        de: Standard
+        el: Τυπικό
+        es: Estándar
+        fi: Tavalinen
+        fr: Standard
+        id: Standar
+        it: Standard
+        ja: 標準
+        ka: სტანდარტული
+        kab: Tizeɣt
+        lo: ມາດຕະຖານ
+        nb_NO: Standard
+        pl: Standardowy
+        pt_BR: Padrão
+        ru: Стандартная
+        sk: Štandardný
+        sv: Standard
+        tr: Standart
+        uk: Стандартний
+        zh_CN: 标准
+        zh_TW: 標準
+      description:
+        bg: Стандартна система
+        ca: Sistema estàndard
+        cs: Standardní systém
+        de: Standardsystem
+        el: Τυπικό σύστημα
+        es: Sistema estándar
+        fi: Tavallinen järjestelmä
+        fr: Système standard
+        id: Sistem standar
+        it: Sistema standard
+        ja: 標準システム
+        ka: სტანდარტული სისტემა
+        kab: Anagraw n tizeɣt
+        lo: ລະບົບມາດຕະຖານ
+        pl: Standardowy system
+        pt_BR: Sistema padrão
+        ru: Стандартная система
+        sk: Štandardný systém
+        sv: Standard system
+        tr: Standart sistem
+        uk: Стандартна система
+        zh_CN: 标准系统
+        zh_TW: 標準系統
+    immutable:
+      name:
+        bg: Неизменен
+        ca: Immutable
+        cs: Neměnitelný
+        de: Unveränderlich
+        el: Αμετάβλητο
+        es: Inmutable
+        fi: Muuttumaton
+        fr: Immuable
+        id: Immutable
+        it: Immutabile
+        ja: 不変型
+        ka: უცვლადი
+        lo: ປ່ຽນແປງບໍ່ໄດ້ (Immutable)
+        nb_NO: Immutable
+        pl: Niezmienny
+        pt_BR: Imutável
+        ru: Неизменяемый
+        sk: Nemenný
+        sv: Oföränderlig
+        tr: Değiştirilemez
+        uk: Незмінний
+        zh_CN: 不可变
+        zh_TW: 不可變
+      description:
+        bg: Неизменима система със атомични обновления
+        ca: Sistema immutable amb actualitzacions atòmiques
+        cs: Neměnitelný systém s atomickými aktualizacemi
+        de: Unveränderliches System mit atomaren Aktualisierungen
+        el: Αμετάβλητο σύστημα με ατομικές ενημερώσεις
+        es: Sistema inmutable con actualizaciones atómicas
+        fi: Muuttumaton järjestelmä atomisilla päivityksillä
+        fr: Système immuable avec mises à jour atomiques
+        id: Sistem immutable dengan pembaruan atomik
+        it: Sistema immutabile con aggiornamenti atomici
+        ja: 不可分な更新機能を持つ不変型システム
+        ka: უცვლელი სისტემა ატომური განახლებებით
+        lo: ລະບົບທີ່ປ່ຽນແປງບໍ່ໄດ້ ພ້ອມກັບການອັບເດດແບບ atomic
+        nb_NO: Et uforanderlig system med atomiske oppdateringer
+        pl: Niezmienny system z atomowymi aktualizacjami
+        pt_BR: Sistema imutável com atualizações atômicas
+        ru: Неизменяемая система с атомарными обновлениями
+        sk: Nemenný systém s atomickými aktualizáciami
+        sv: Oföränderligt system med atomiska uppdateringar
+        tr: Atomik güncellemelerle değiştirilemez sistem
+        uk: Незмінна система з атомарними оновленнями
+        zh_CN: 具备原子更新特性的不可变系统
+        zh_TW: 具有原子更新特性的不可變系統
 desktop_selection: suggested
 software:
   installation_repositories:
@@ -104,82 +205,184 @@ software:
     - printing
   mandatory_packages:
     - NetworkManager
+    # bsc#1241224, bsc#1224868 avoid probe DHCP over all ethernet devices and ignore carrier
+    - NetworkManager-config-server
     - openSUSE-repos-Leap
     - sudo-policy-wheel-auth-self # explicit wheel group policy to conform new auth model
   optional_packages: [ os-prober ]
   base_product: Leap
 
-storage:
-  space_policy: delete
-  volumes:
-    - "/"
-    - "swap"
-  volume_templates:
-    - mount_path: "/"
-      filesystem: btrfs
-      btrfs:
-        snapshots: true
-        read_only: false
-        default_subvolume: "@"
-        subvolumes:
-          - path: home
-          - path: opt
-          - path: root
-          - path: srv
-          - path: usr/local
-          # Unified var subvolume - https://lists.opensuse.org/opensuse-packaging/2017-11/msg00017.html
-          - path: var
-            copy_on_write: false
-      size:
-        auto: true
-      outline:
-        required: true
-        filesystems:
-          - btrfs
-          - ext2
-          - ext3
-          - ext4
-          - xfs
-        auto_size:
-          base_min: 5 GiB
-          base_max: 15 GiB
-          snapshots_increment: 150%
-          max_fallback_for:
-            - "/home"
-        snapshots_configurable: true
-    - mount_path: "swap"
-      filesystem: swap
-      size:
-        min: 1 GiB
-        max: 2 GiB
-      outline:
-        required: false
-        filesystems:
-          - swap
-    - mount_path: "/home"
-      filesystem: xfs
-      size:
-        auto: false
-        min: 5 GiB
-        max: unlimited
-      outline:
-        required: false
-        filesystems:
-          - btrfs
-          - ext2
-          - ext3
-          - ext4
-          - xfs
-    - filesystem: xfs
-      size:
-        auto: false
-        min: 512 MiB
-      outline:
-        required: false
-        filesystems:
-          - btrfs
-          - ext2
-          - ext3
-          - ext4
-          - xfs
-          - vfat
+modes:
+  - id: standard
+    # ------------------------------------------------------------------------------
+    # WARNING: When changing the mode name or description delete the translations
+    # located at the translations/mode/<id> key above to avoid using obsolete
+    # translations!!
+    # ------------------------------------------------------------------------------
+    name: Standard
+    description: Standard system
+
+    software:
+      mandatory_patterns:
+        - enhanced_base
+      mandatory_packages:
+        - Leap-release
+
+    storage:
+      space_policy: delete
+      volumes:
+        - "/"
+        - "swap"
+      volume_templates:
+        - mount_path: "/"
+          filesystem: btrfs
+          btrfs:
+            snapshots: true
+            read_only: false
+            default_subvolume: "@"
+            subvolumes:
+              - path: home
+              - path: opt
+              - path: root
+              - path: srv
+              - path: usr/local
+              # Unified var subvolume - https://lists.opensuse.org/opensuse-packaging/2017-11/msg00017.html
+              - path: var
+                copy_on_write: false
+          size:
+            auto: true
+          outline:
+            required: true
+            filesystems:
+              - btrfs
+              - ext2
+              - ext3
+              - ext4
+              - xfs
+            auto_size:
+              base_min: 5 GiB
+              base_max: 15 GiB
+              snapshots_increment: 150%
+              max_fallback_for:
+                - "/home"
+            snapshots_configurable: true
+        - mount_path: "swap"
+          filesystem: swap
+          size:
+            min: 1 GiB
+            max: 2 GiB
+          outline:
+            required: false
+            filesystems:
+              - swap
+        - mount_path: "/home"
+          filesystem: xfs
+          size:
+            auto: false
+            min: 5 GiB
+            max: unlimited
+          outline:
+            required: false
+            filesystems:
+              - btrfs
+              - ext2
+              - ext3
+              - ext4
+              - xfs
+        - filesystem: xfs
+          size:
+            auto: false
+            min: 512 MiB
+          outline:
+            required: false
+            filesystems:
+              - btrfs
+              - ext2
+              - ext3
+              - ext4
+              - xfs
+              - vfat
+
+  - id: immutable
+    # ------------------------------------------------------------------------------
+    # WARNING: When changing the mode name or description delete the translations
+    # located at the translations/mode/<id> key above to avoid using obsolete
+    # translations!!
+    # ------------------------------------------------------------------------------
+    name: Immutable
+    description: Immutable system with atomic updates
+
+    software:
+      mandatory_patterns:
+        - immutable_base
+      mandatory_packages:
+        - Leap_immutable-release
+      user_patterns:
+        - name: enhanced_base
+          selected: true
+
+    storage:
+      space_policy: delete
+      volumes:
+        - "/"
+        - "/var"
+      volume_templates:
+        - mount_path: "/"
+          filesystem: btrfs
+          btrfs:
+            snapshots: true
+            read_only: true
+            default_subvolume: "@"
+            subvolumes:
+              - path: home
+              - path: opt
+              - path: root
+              - path: srv
+              - path: usr/local
+              - path: boot/writable
+              # Unified var subvolume - https://lists.opensuse.org/opensuse-packaging/2017-11/msg00017.html
+              - path: var
+                copy_on_write: false
+              # Architecture specific subvolumes
+              - path: boot/grub2/arm64-efi
+                archs: aarch64
+              - path: boot/grub2/x86_64-efi
+                archs: x86_64
+          size:
+            auto: true
+          outline:
+            required: true
+            snapshots_configurable: false
+            filesystems:
+              - btrfs
+            auto_size:
+              base_min: 5 GiB
+              base_max: 25 GiB
+              max_fallback_for:
+                - "/var"
+        - mount_path: "/var"
+          filesystem: btrfs
+          mount_options:
+            - "x-initrd.mount"
+            - "nodatacow"
+          size:
+            auto: false
+            min: 5 GiB
+          outline:
+            required: false
+            filesystems:
+              - btrfs
+        - filesystem: xfs
+          size:
+            auto: false
+            min: 512 MiB
+          outline:
+            required: false
+            filesystems:
+              - btrfs
+              - ext2
+              - ext3
+              - ext4
+              - xfs
+              - vfat
+              - swap

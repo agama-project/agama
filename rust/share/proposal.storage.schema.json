@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2019-09/schema",
-  "$id": "https://github.com/openSUSE/agama/blob/master/rust/share/proposal.storage.schema.json",
+  "$id": "https://raw.githubusercontent.com/openSUSE/agama/refs/heads/master/rust/share/proposal.storage.schema.json",
   "title": "Proposal",
   "description": "API description of the storage proposal.",
   "type": "object",

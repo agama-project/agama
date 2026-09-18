@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2019-09/schema",
-  "$id": "https://github.com/openSUSE/agama/blob/master/rust/share/device.storage.schema.json",
+  "$id": "https://raw.githubusercontent.com/openSUSE/agama/refs/heads/master/rust/share/device.storage.schema.json",
   "title": "Device",
   "description": "Schema to describe a device both in 'system' and 'proposal'.",
   "type": "object",

@@ -19,10 +19,9 @@
 // find current contact information at www.suse.com.
 
 pub mod cert;
-pub mod dbus;
-pub mod error;
 pub mod profile;
+pub mod terminal;
 pub mod web;
-pub use web::service;
+
 pub mod server;
 pub mod test_utils;

@@ -236,7 +236,6 @@ else
     echo "  - Run with --verbose to see full output"
     echo "  - Run with --trace to enable bash tracing"
     echo "  - Run with --filter to test specific functions"
-    echo "  - Check /tmp/hcn-tests/ for test artifacts"
     echo ""
-    exit $EXIT_CODE
+    exit 1
 fi

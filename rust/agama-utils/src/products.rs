@@ -631,7 +631,7 @@ mod test {
     #[test]
     fn test_load_registry(ctx: &mut Context) {
         // ensuring that we can load all products from tests
-        assert_eq!(ctx.registry.products.len(), 8);
+        assert_eq!(ctx.registry.products.len(), 7);
     }
 
     #[test_context(Context)]
@@ -649,10 +649,10 @@ mod test {
         assert!(description["cs"].contains("verze"));
 
         let software = &tw.software;
-        assert_eq!(software.installation_repositories.len(), 12);
-        assert_eq!(software.installation_labels.len(), 4);
+        assert_eq!(software.installation_repositories.len(), 21);
+        assert_eq!(software.installation_labels.len(), 7);
         assert_eq!(software.base_product.as_ref().unwrap(), "openSUSE");
-        assert_eq!(software.user_patterns.len(), 11);
+        assert_eq!(software.user_patterns.len(), 12);
 
         let selinux = software
             .user_patterns

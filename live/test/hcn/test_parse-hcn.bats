@@ -15,8 +15,7 @@ MOCK_HCN_DIR="${FIXTURE_DIR}/hcn-connections"
 # Helper functions for testing
 setup_file() {
     # Create a temporary directory for test runs
-    export BATS_TMPDIR="${BATS_TEST_TMPDIR:-/tmp}/hcn-tests"
-    mkdir -p "$BATS_TMPDIR"
+    export BATS_TMPDIR="$(mktemp -d "${BATS_TEST_TMPDIR:-/tmp}/hcn-tests.XXXXXX")"
 }
 
 teardown_file() {

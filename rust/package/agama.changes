@@ -1,5 +1,5 @@
 -------------------------------------------------------------------
-Mon Sep  7 09:00:00 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+Fri Sep 18 06:29:17 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
 
 - Expose the connections that are ports of a bond or a bridge over
   the HTTP API instead of hiding them behind their controller's
@@ -15,6 +15,47 @@ Mon Sep  7 09:00:00 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
   deleting their connections, and reject the port lists that cannot
   be applied (ambiguous names, a port claimed by two controllers,
   loops of controllers).
+
+-------------------------------------------------------------------
+Wed Sep 16 11:50:09 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Add experimental support for 32 bit architectures which are in
+  TW ports (bsc#1266309)
+
+-------------------------------------------------------------------
+Thu Sep 10 14:00:00 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Report more details about the network devices ("speed",
+  "carrier", "driver", "busPath" and "mtu"), so the user interface
+  can tell one device from another when picking the ports of a bond
+  or a bridge (related to bsc#1279417, gh#agama-project/agama#3884)
+
+-------------------------------------------------------------------
+Thu Sep 10 13:10:57 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add a WebSocket-backed terminal endpoint, spawning a shell
+  attached to a pseudo-terminal for the web UI terminal panel
+  (gh#agama-project/agama#3868).
+
+-------------------------------------------------------------------
+Thu Sep 10 08:26:22 UTC 2026 - PadaCommit <185716433+PadaCommit@users.noreply.github.com>
+
+- Fix schema URLs in rust/share/ (gh#agama-project/agama#3881):
+  - Use parsable URLs for schema IDs
+  - Update schema paths in profile examples
+  - Fix SLE-16 profile schema URL example
+
+-------------------------------------------------------------------
+Wed Sep  9 10:21:21 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Disable local installation repositories instead of removing it
+  from target system (bsc#1277466)
+
+-------------------------------------------------------------------
+Fri Sep  4 10:52:03 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Do not crash when validating or evaluating a profile without
+  content (bsc#1278737).
 
 -------------------------------------------------------------------
 Wed Sep  2 14:15:16 UTC 2026 - José Iván López González <jlopez@suse.com>

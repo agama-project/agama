@@ -86,7 +86,7 @@ impl Error {
                 gettext("Missing Language Tag"),
                 "The language tag is required",
             ),
-            Error::Profile(e) => ProblemDetails::generic(gettext("Profile error"), e.to_string()),
+            Error::Profile(e) => e.into_problem_details(),
         }
     }
 
