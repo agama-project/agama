@@ -188,16 +188,20 @@ module Agama
         end
 
         # Implementation for the API method #Install.
+        #
+        # @raise [RuntimeError] If there is an unexpected error or the user decides to abort, see
+        #   bsc#1280006.
         def install
           start_progress(3, _("Preparing bootloader proposal"))
           manager.configure_bootloader
 
           next_progress_step(_("Preparing the storage devices"))
-          manager.install
+          success = manager.install
+          raise "There was an error preparing the storage devices" unless success
 
           next_progress_step(_("Writing bootloader sysconfig"))
           manager.install_bootloader
-
+        ensure
           finish_progress
         end
 
