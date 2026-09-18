@@ -23,7 +23,7 @@
 import React, { useEffect, useState } from "react";
 import { Alert, ModalProps, Stack } from "@patternfly/react-core";
 import { Popup } from "~/components/core";
-import { Product } from "~/model/system";
+import type { License } from "~/model/system";
 import { getLicense } from "~/api";
 import { useInstallerL10n } from "~/context/installerL10n";
 import { sprintf } from "sprintf-js";
@@ -48,25 +48,25 @@ const languagesMatches = (language1: string, language2: string) => {
   return lang1 === lang2;
 };
 
-function LicenseDialog({ onClose, product }: { onClose: ModalProps["onClose"]; product: Product }) {
+function LicenseDialog({ onClose, license }: { onClose: ModalProps["onClose"]; license: License }) {
   const { language: uiLanguage } = useInstallerL10n();
   const [licenseLanguage, setLicenseLanguage] = useState<string | null>(undefined);
-  const [license, setLicense] = useState<string>();
+  const [licenseContent, setLicenseContent] = useState<string>();
 
   useEffect(() => {
-    getLicense(product.license).then(({ body, language }) => {
-      setLicense(body);
+    getLicense(license.id).then(({ body, language }) => {
+      setLicenseContent(body);
       setLicenseLanguage(language);
     });
-  }, [product.license]);
+  }, [license.id]);
 
   return (
-    <Popup isOpen title={product.name} width="auto">
+    <Popup isOpen title={license.name} width="auto">
       <Stack hasGutter>
         {licenseLanguage && !languagesMatches(uiLanguage, licenseLanguage) && (
           <MissingTranslation missing={uiLanguage} />
         )}
-        <pre>{license}</pre>
+        <pre>{licenseContent}</pre>
       </Stack>
       <Popup.Actions>
         <Popup.Confirm onClick={onClose}>{_("Close")}</Popup.Confirm>

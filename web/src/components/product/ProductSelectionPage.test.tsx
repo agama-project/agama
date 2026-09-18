@@ -34,7 +34,7 @@ import {
 import { useSystem as useSystemSoftware } from "~/hooks/model/system/software";
 import { ROOT } from "~/routes/paths";
 import ProductSelectionPage from "./ProductSelectionPage";
-import { Product } from "~/model/system";
+import { License, Product } from "~/model/system";
 
 const tumbleweed: Product = {
   id: "Tumbleweed",
@@ -42,6 +42,7 @@ const tumbleweed: Product = {
   icon: "tumbleweed.svg",
   description: "Tumbleweed description...",
   registration: false,
+  licenses: [],
   modes: [],
 };
 
@@ -51,9 +52,24 @@ const microOs: Product = {
   icon: "microos.svg",
   description: "MicroOS description",
   registration: false,
-  license: "fake.license",
+  licenses: ["fake.license"],
   modes: [],
 };
+
+const serverForApps: Product = {
+  id: "ServerForApps",
+  name: "Server for Apps",
+  icon: "server.svg",
+  description: "Server with application licenses",
+  registration: false,
+  licenses: ["license.server", "license.apps"],
+  modes: [],
+};
+
+const licenses: License[] = [
+  { id: "license.server", name: "Server License" },
+  { id: "license.apps", name: "Apps License" },
+];
 
 const productWithModes: Product = {
   id: "SLES",
@@ -197,6 +213,66 @@ describe("ProductSelectionPage", () => {
 
     // License checkbox should be unchecked
     expect(licenseCheckbox).not.toBeChecked();
+  });
+
+  describe("when the selected product requires several licenses", () => {
+    beforeEach(() => {
+      mockProduct(undefined);
+      mockSystem({ products: [microOs, serverForApps], licenses });
+    });
+
+    it("renders one checkbox per license, named after it", async () => {
+      const { user } = installerRender(<ProductSelectionPage />);
+      await user.click(screen.getByRole("radio", { name: serverForApps.name }));
+      screen.getByRole("checkbox", { name: /for Server License/ });
+      screen.getByRole("checkbox", { name: /for Apps License/ });
+    });
+
+    it("names a license the system does not know after the product", async () => {
+      mockSystem({
+        products: [{ ...serverForApps, licenses: ["license.server", "license.unknown"] }],
+        licenses,
+      });
+      const { user } = installerRender(<ProductSelectionPage />);
+      await user.click(screen.getByRole("radio", { name: serverForApps.name }));
+      screen.getByRole("checkbox", { name: /for Server License/ });
+      screen.getByRole("checkbox", {
+        name: `I have read and accept the license for ${serverForApps.name}`,
+      });
+    });
+
+    it("allows the selection only when all the licenses are accepted", async () => {
+      const { user } = installerRender(<ProductSelectionPage />);
+      const selectButton = screen.getByRole("button", { name: "Select" });
+      await user.click(screen.getByRole("radio", { name: serverForApps.name }));
+      const serverCheckbox = screen.getByRole("checkbox", { name: /for Server License/ });
+      const appsCheckbox = screen.getByRole("checkbox", { name: /for Apps License/ });
+
+      await user.click(serverCheckbox);
+      expect(serverCheckbox).toBeChecked();
+      expect(appsCheckbox).not.toBeChecked();
+      expect(selectButton).toBeDisabled();
+      screen.getByText("License acceptance is required to continue.");
+
+      await user.click(appsCheckbox);
+      expect(selectButton).not.toBeDisabled();
+
+      await user.click(serverCheckbox);
+      expect(selectButton).toBeDisabled();
+    });
+
+    it("resets the acceptance of all the licenses when switching products", async () => {
+      const { user } = installerRender(<ProductSelectionPage />);
+      await user.click(screen.getByRole("radio", { name: serverForApps.name }));
+      await user.click(screen.getByRole("checkbox", { name: /for Server License/ }));
+      await user.click(screen.getByRole("checkbox", { name: /for Apps License/ }));
+
+      await user.click(screen.getByRole("radio", { name: microOs.name }));
+      await user.click(screen.getByRole("radio", { name: serverForApps.name }));
+
+      expect(screen.getByRole("checkbox", { name: /for Server License/ })).not.toBeChecked();
+      expect(screen.getByRole("checkbox", { name: /for Apps License/ })).not.toBeChecked();
+    });
   });
 
   it("navigates to root path when product is registered (registration exists)", async () => {
@@ -843,6 +919,18 @@ describe("ProductSelectionPage", () => {
       const sectionHeading = screen.getByRole("heading", { level: 2, name: "Current selection" });
       const section = sectionHeading.closest("section");
       within(section).getByRole("button", { name: "View license" });
+    });
+
+    it("renders a button per license, named after it, for products with several licenses", () => {
+      mockProduct(serverForApps);
+      mockSystem({ products: [tumbleweed, serverForApps], licenses });
+      installerRender(<ProductSelectionPage />);
+
+      const sectionHeading = screen.getByRole("heading", { level: 2, name: "Current selection" });
+      const section = sectionHeading.closest("section");
+      within(section).getByRole("button", { name: "Server License" });
+      within(section).getByRole("button", { name: "Apps License" });
+      expect(within(section).queryByRole("button", { name: "View license" })).toBeNull();
     });
 
     it("does not render view license button for products without license", () => {

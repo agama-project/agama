@@ -37,6 +37,7 @@ type System = {
   l10n?: L10n.System;
   network?: Network.System;
   products?: Product[];
+  licenses?: License[];
   software?: Software.System;
   storage?: Storage.System;
   iscsi?: ISCSI.System;
@@ -66,12 +67,19 @@ type Product = {
   icon?: string;
   /** If product is registrable or not */
   registration: boolean;
-  /** The product license id, if any */
-  license?: string;
+  /** Ids of the licenses the user must accept to install the product */
+  licenses?: string[];
   /** Desktop selection mode; absent when the product does not declare it */
   desktopSelection?: DesktopSelection;
   /** Available modes for this product (names and descriptions are translated to current UI language) */
   modes: Mode[];
+};
+
+type License = {
+  /** License ID (e.g., "license.final") */
+  id: string;
+  /** License name, in the current system language */
+  name: string;
 };
 
 type Mode = {
@@ -86,6 +94,8 @@ type Mode = {
 type LicenseContent = {
   /** License ID (e.g., "license.sle") */
   id: string;
+  /** License name */
+  name: string;
   /** License body */
   body: string;
   /** License language (e.g., "en-US") */
@@ -96,6 +106,7 @@ export type {
   System,
   Product,
   DesktopSelection,
+  License,
   LicenseContent,
   L10n,
   Hardware,
