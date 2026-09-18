@@ -1554,9 +1554,7 @@ build_profile() {
     | .storage.drives[0].search = $disk
 
     # the LUKS2 passphrase of the encrypted physical volume
-    | .storage.drives[0].partitions |= map(
-        if .encryption.luks2 then .encryption.luks2.password = $luks_password else . end
-      )
+    | .storage.volumeGroups[0].physicalVolumes[0].generate.encryption.luks2.password = $luks_password
 
     # the NTP server: a file in the installed system
     | if $ntp_content != "" then
@@ -1580,8 +1578,7 @@ verify_profile() {
     and (.root.hashedPassword == true) and ((.root.password | startswith("$6$")))
     and (.user.userName != "") and ((.user.password | startswith("$6$")))
     and (.storage.drives[0].search != "*")
-    and ([.storage.drives[0].partitions[] | select(.encryption.luks2)
-          | .encryption.luks2.password | length] | all(. > 0))
+    and ((.storage.volumeGroups[0].physicalVolumes[0].generate.encryption.luks2.password | length) > 0)
     and ((.files // []) | all((.destination | length) > 0 and (.content | length) > 0))
   '
   # a pipe, not a here-string: bash implements "<<<" with a temporary file, so
