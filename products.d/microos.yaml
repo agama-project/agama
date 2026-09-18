@@ -221,3 +221,6 @@ storage:
         required: false
         filesystems:
           - btrfs
+
+boot:
+  default_efi_bootloader: "systemd-boot"
