@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Sep 18 14:13:16 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Avoid blocking storage service (bsc#1280751).
+
+-------------------------------------------------------------------
 Tue Sep 15 16:19:38 UTC 2026 - José Iván López González <jlopez@suse.com>
 
 - Cancel actions if setting storage, DASD, zFCP, iSCSI or bootloader
