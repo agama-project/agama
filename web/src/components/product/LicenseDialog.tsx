@@ -50,17 +50,15 @@ const languagesMatches = (language1: string, language2: string) => {
 
 function LicenseDialog({ onClose, product }: { onClose: ModalProps["onClose"]; product: Product }) {
   const { language: uiLanguage } = useInstallerL10n();
-  const [language] = useState<string>(uiLanguage);
   const [licenseLanguage, setLicenseLanguage] = useState<string | null>(undefined);
   const [license, setLicense] = useState<string>();
 
   useEffect(() => {
-    language &&
-      getLicense(product.license, language).then(({ body, language: foundLanguage }) => {
-        setLicense(body);
-        setLicenseLanguage(foundLanguage);
-      });
-  }, [language, product.license]);
+    getLicense(product.license).then(({ body, language }) => {
+      setLicense(body);
+      setLicenseLanguage(language);
+    });
+  }, [product.license]);
 
   return (
     <Popup isOpen title={product.name} width="auto">

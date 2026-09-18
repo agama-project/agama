@@ -85,10 +85,10 @@ describe("LicenseDialog", () => {
     );
   });
 
-  it("loads given product license in the interface language", async () => {
+  it("loads given product license", async () => {
     installerRender(<LicenseDialog product={product} onClose={onCloseFn} />);
     await waitFor(() => {
-      expect(mockGetLicense).toHaveBeenCalledWith(sle.license, mockUILanguage);
+      expect(mockGetLicense).toHaveBeenCalledWith(sle.license);
       screen.getByText("El contenido de la licencia");
     });
   });
@@ -101,7 +101,7 @@ describe("LicenseDialog", () => {
     it("it warns the user that the license is not translated", async () => {
       installerRender(<LicenseDialog product={product} onClose={onCloseFn} />);
       await waitFor(() => {
-        expect(mockGetLicense).toHaveBeenCalledWith(sle.license, mockUILanguage);
+        expect(mockGetLicense).toHaveBeenCalledWith(sle.license);
         screen.getByText("El contenido de la licencia");
         screen.getByText("Diese Lizenz ist in Deutsch nicht verfügbar.");
       });
