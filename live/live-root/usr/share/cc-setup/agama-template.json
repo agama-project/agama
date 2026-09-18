@@ -86,7 +86,7 @@
           {
             "name": "home",
             "size": { "min": "512 MiB", "max": "2 GiB" },
-            "filesystem": { "path": "/home", "mountOptions": ["acl", "nodev"] }
+            "filesystem": { "path": "/home", "type": "btrfs", "mountOptions": ["acl", "nodev"] }
           },
           {
             "name": "swap",
