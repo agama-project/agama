@@ -8,8 +8,14 @@
 }
 
 // Some utilities not found at PF
+
 .w-14ch {
   inline-size: 14ch;
+}
+
+.mh-60dvh {
+  max-height: 60dvh;
+  overflow: auto;
 }
 
 // Balance multi-line text so wrapped lines are more even. The base reset
