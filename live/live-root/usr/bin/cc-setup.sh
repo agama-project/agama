@@ -651,22 +651,13 @@ detect_registration_requirement() {
   detect_rmt_url
 
   if [[ -d $LOCAL_REPO_DIR ]]; then
+    # On Full medium registration is optional
     REGISTRATION_REQUIRED=false
   else
     REGISTRATION_REQUIRED=true
   fi
 }
 
-# The RMT URL as it may be displayed, a user name or a password possibly
-# embedded in the URL must not be shown.
-safe_rmt_url() {
-  local url=$1
-  if [[ $url =~ ^([A-Za-z][A-Za-z0-9+.-]*://)[^/@]*@(.*)$ ]]; then
-    printf '%s%s' "${BASH_REMATCH[1]}" "${BASH_REMATCH[2]}"
-  else
-    printf '%s' "$url"
-  fi
-}
 
 # ---------------------------------------------------------------------------
 # Agama REST API
@@ -1188,7 +1179,7 @@ ask_registration() {
 Leave it empty to register against the RMT server configured on the \
 boot command line:
 
-  $(safe_rmt_url "$RMT_URL")"
+  $RMT_URL"
     else
       prompt="Enter the registration code.
 
@@ -1348,11 +1339,11 @@ build_summary() {
     if [[ -n $REGISTRATION_CODE ]]; then
       registration_note=" (mandatory, no local package repository)"
     else
-      registration_note=" (not needed, RMT server is configured)"
+      registration_note=" (not needed, using RMT server)"
     fi
   fi
   [[ -z $RMT_URL ]] || registration_server="
-Registration server:  $(safe_rmt_url "$RMT_URL")"
+Registration server:  $RMT_URL"
 
   cat <<EOF
 Keyboard layout:      ${KEYBOARD:-[default]}
