@@ -55,44 +55,47 @@
             "delete": true
           },
           {
-            "id": "esp",
-            "filesystem": {
-              "path": "/boot/efi",
-              "type": "vfat"
-            },
-            "size": "512 MiB"
-          },
-          {
             "alias": "pv",
             "id": "lvm",
-            "size": {
-              "min": "10 GiB"
-            },
-            "encryption": {
-              "luks2": {
-                "password": "[to be set]"
-              }
-            }
+            "size": { "min": "8 GiB" },
+            "encryption": { "luks2": { "password": "[to be set]" } }
           }
         ]
       }
     ],
     "volumeGroups": [
       {
-        "name": "system_vg",
-        "physicalVolumes": [
-          "pv"
-        ],
+        "name": "system",
+        "physicalVolumes": ["pv"],
         "logicalVolumes": [
           {
             "name": "root",
+            "size": { "min": "5 GiB", "max": "40 GiB" },
+            "filesystem": { "path": "/", "mountOptions": ["acl"] }
+          },
+          {
+            "name": "var",
+            "size": { "min": "1 GiB", "max": "3 GiB" },
+            "filesystem": { "path": "/var", "type": "btrfs", "mountOptions": ["acl"] }
+          },
+          {
+            "name": "varlogaudit",
+            "size": { "min": "256 MiB", "max": "1 GiB" },
             "filesystem": {
-              "path": "/",
-              "type": "btrfs"
-            },
-            "size": {
-              "min": "10 GiB"
+              "path": "/var/log/audit",
+              "type": "btrfs",
+              "mountOptions": ["acl", "nodev", "noexec", "nosuid"]
             }
+          },
+          {
+            "name": "home",
+            "size": { "min": "512 MiB", "max": "1 GiB" },
+            "filesystem": { "path": "/home", "type": "btrfs", "mountOptions": ["acl", "nodev"] }
+          },
+          {
+            "name": "swap",
+            "size": { "min": "1 GiB", "max": "2 GiB" },
+            "filesystem": { "path": "swap" }
           }
         ]
       }
