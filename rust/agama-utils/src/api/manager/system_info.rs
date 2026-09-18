@@ -18,6 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+use super::License;
 use schemars::JsonSchema;
 use serde::Serialize;
 
@@ -27,6 +28,8 @@ use serde::Serialize;
 pub struct SystemInfo {
     /// List of known products.
     pub products: Vec<Product>,
+    /// List of available licenses (in the current system language).
+    pub licenses: Vec<License>,
     /// Hardware information
     pub hardware: HardwareInfo,
 }
@@ -45,8 +48,13 @@ pub struct Product {
     pub icon: String,
     /// Registration requirement
     pub registration: bool,
-    /// License ID
+    /// License ID.
+    ///
+    /// Deprecated: use `licenses` instead.
     pub license: Option<String>,
+    /// License IDs (a product may require accepting more than one).
+    #[serde(default)]
+    pub licenses: Vec<String>,
     /// Desktop selection mode
     #[serde(skip_serializing_if = "Option::is_none")]
     pub desktop_selection: Option<DesktopSelection>,
