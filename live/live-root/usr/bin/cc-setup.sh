@@ -21,9 +21,6 @@ readonly PROGRAM_NAME="FIPS/CC Installation"
 readonly BACKTITLE="SUSE Linux Enterprise Server 16.0 - FIPS / Common Criteria installation"
 
 readonly LICENSE_FILE="/usr/share/agama/eula/license.final/license.txt"
-# the JSON template installed with the package, used when there is none next to
-# the script
-readonly SYSTEM_TEMPLATE="/usr/share/cc-setup/agama-template.json"
 readonly DRACUT_NTP_FILE="/run/chrony/dracut.sources.d/dracut.sources"
 # the NTP configuration of the installed system, written via the "files"
 # section of the profile
@@ -32,7 +29,7 @@ readonly NTP_PERMISSIONS="0644"
 # the packages on the installation medium; when it is missing the packages must
 # be downloaded from the registration server and the registration is mandatory
 readonly LOCAL_REPO_DIR="/run/initramfs/live/install"
-readonly CMDLINE_FILE="/proc/cmdline"
+readonly CMDLINE_FILE="/run/agama/cmdline.d/agama.conf"
 # the RMT server URL is passed to Agama on the boot command line
 readonly RMT_URL_OPTION="inst.register_url"
 readonly AGAMA_TOKEN_FILE="/run/agama/token"
@@ -114,10 +111,10 @@ REGISTRATION_REQUIRED=false
 RMT_URL=""             # RMT server from the "inst.register_url" boot option
 TARGET_DISK=""
 TARGET_DISK_LABEL=""
-API_CONF=""            # curl configuration file with the API token
+API_CONF=""             # curl configuration file with the API token
 STORAGE_ACTIONS_TEXT="" # the storage actions as reported by Agama
-UI_HEIGHT=0            # dialog size requested by the "--size" option of the
-UI_WIDTH=0             # ui_* functions, zero means the dialog default
+UI_HEIGHT=0             # dialog size requested by the "--size" option of the
+UI_WIDTH=0              # ui_* functions, zero means the dialog default
 
 # ---------------------------------------------------------------------------
 # Housekeeping
@@ -129,8 +126,8 @@ Usage: ${0##*/} [OPTIONS]
 
   --dialog          force the dialog based text user interface
   --plain           force the simple line interface (serial console)
-  --template FILE   Agama JSON profile template (default: agama-template.json
-                    next to this script, or /usr/share/cc-setup/agama-template.json)
+  --template FILE   Agama JSON profile template (default:
+                    ../share/cc-setup/agama-template.json)
   --dry-run         only build the profile, do not modify the system
   --help            show this help
 
@@ -139,25 +136,10 @@ therefore it is never stored on disk and never printed.
 EOF
 }
 
-# The JSON template to use by default: the one next to the script (a git
-# checkout) or the one installed with the package.
-default_template() {
-  local script_dir candidate
-  script_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
-
-  for candidate in "$script_dir/agama-template.json" "$SYSTEM_TEMPLATE"; do
-    if [[ -r $candidate ]]; then
-      printf '%s' "$candidate"
-      return 0
-    fi
-  done
-
-  # none of them exists, report the missing one next to the script
-  printf '%s' "$script_dir/agama-template.json"
-}
-
 parse_arguments() {
-  TEMPLATE="$(default_template)"
+  local script_dir
+  script_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+  TEMPLATE="$script_dir/../share/cc-setup/agama-template.json"
 
   local ui_forced=false
   while (($# > 0)); do
@@ -212,6 +194,7 @@ cleanup() {
   local rc=$?
   stop_monitor
   terminal_echo on
+  # securely overwrite all temporary files before deleting them
   if [[ -n $SECURE_DIR && -d $SECURE_DIR ]]; then
     find "$SECURE_DIR" -type f -exec shred --remove --zero {} + 2>/dev/null || true
     rm -rf -- "$SECURE_DIR"
@@ -231,6 +214,8 @@ on_error() {
 
 make_secure_dir() {
   local base
+  # During installation everything runs from RAM disk, but if this script is called
+  # in development then /tmp might be actually on a disk so rather prefer /dev/shm or /run
   for base in /dev/shm /run /tmp; do
     [[ -d $base && -w $base ]] || continue
     SECURE_DIR=$(mktemp -d "$base/agama-cc.XXXXXXXX") || continue
@@ -635,7 +620,8 @@ detect_rmt_url() {
 
   RMT_URL=""
   [[ -r $CMDLINE_FILE ]] || return 0
-  read -ra options <"$CMDLINE_FILE" || return 0
+  read -ra options -d '' <"$CMDLINE_FILE" || true
+  ((${#options[@]} > 0)) || return 0
 
   for option in "${options[@]}"; do
     case "$option" in
@@ -1223,8 +1209,8 @@ ask_target_disk() {
   local -a disks=()
   local name size model type readonly_flag note
 
-  # the fields are separated by \037, a tab would be collapsed by "read"
-  # because tab is an IFS whitespace character
+  # the fields are separated by \037 ("Unit Separator") character so normal
+  # whitespace can be included in the fields
   while IFS=$'\037' read -r name type size readonly_flag model; do
     [[ $type == "disk" ]] || continue
     [[ $readonly_flag == "1" ]] && continue
@@ -1265,7 +1251,7 @@ ask_target_disk() {
   done
 }
 
-# Ask all the questions.  Returns 1 when the user cancelled a dialog, the
+# Ask all the questions. Returns 1 when the user cancelled a dialog, the
 # previously entered values are kept as the defaults.
 collect_input() {
   ask_target_disk || return 1
@@ -1280,6 +1266,7 @@ collect_input() {
 # Workflow: summary
 # ---------------------------------------------------------------------------
 
+# Replace a secret value (password) by a placeholder.
 secret_state() {
   [[ -n $1 ]] && printf '[configured]' || printf '[empty]'
 }
