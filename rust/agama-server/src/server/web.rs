@@ -51,6 +51,7 @@ use axum::{
     routing::{get, post},
     Json,
 };
+use gettextrs::gettext;
 use hyper::{header, HeaderMap, StatusCode};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
