@@ -30,6 +30,19 @@ const leaveTerminal = () => {
   act(() => options.onLeave());
 };
 
+const mockFocus = jest.fn();
+
+beforeEach(() => {
+  mockFocus.mockClear();
+  // The default mock builds a brand new session on every render; a fixed one
+  // makes the focus action observable across them.
+  jest.mocked(useTerminalSession).mockReturnValue({
+    setFontSize: jest.fn(),
+    clear: jest.fn(),
+    focus: mockFocus,
+  });
+});
+
 describe("TerminalPane", () => {
   describe("when there is not enough room", () => {
     it("shows the message and only the close action", () => {
@@ -63,6 +76,48 @@ describe("TerminalPane", () => {
       expect(region.querySelector(".agm-terminal__screen")).not.toBeNull();
     });
 
+    describe("the focus stop in front of the shell", () => {
+      it("is a tab stop describing what typing there does and how to get back out", () => {
+        installerRender(<TerminalPane enoughSpace />);
+
+        const stop = screen.getByRole("group", { name: "Terminal" });
+        expect(stop).toHaveAttribute("tabindex", "0");
+        expect(stop).toHaveAccessibleDescription(/Press Enter or Space to type here/);
+        expect(stop).toHaveAccessibleDescription(/or Tab to move on/);
+        expect(stop).toHaveAccessibleDescription(/Then Ctrl.+Shift.+L to move out/);
+      });
+
+      it("is where the link to the terminal lands, rather than in the shell", async () => {
+        const { user } = installerRender(<TerminalPane enoughSpace />);
+
+        await user.click(screen.getByRole("link", { name: "Skip to terminal" }));
+
+        expect(screen.getByRole("group", { name: "Terminal" })).toHaveFocus();
+        expect(mockFocus).not.toHaveBeenCalled();
+      });
+
+      it("enters the shell when activated with the keyboard", async () => {
+        const { user } = installerRender(<TerminalPane enoughSpace />);
+
+        const stop = screen.getByRole("group", { name: "Terminal" });
+        stop.focus();
+
+        await user.keyboard("{Enter}");
+        expect(mockFocus).toHaveBeenCalledTimes(1);
+
+        await user.keyboard(" ");
+        expect(mockFocus).toHaveBeenCalledTimes(2);
+      });
+
+      it("enters the shell when clicked", async () => {
+        const { user } = installerRender(<TerminalPane enoughSpace />);
+
+        await user.click(screen.getByRole("group", { name: "Terminal" }));
+
+        expect(mockFocus).toHaveBeenCalled();
+      });
+    });
+
     it("collapses to a bar when minimized, dropping the description and tools", async () => {
       const { user } = installerRender(<TerminalPane enoughSpace />);
 
@@ -86,7 +141,7 @@ describe("TerminalPane", () => {
       );
       expect(screen.getByRole("link", { name: "Skip to terminal" })).toHaveAttribute(
         "href",
-        "#terminal-input",
+        "#terminal-stop",
       );
     });
 
@@ -111,12 +166,12 @@ describe("TerminalPane", () => {
       expect(hint.querySelectorAll("kbd")).toHaveLength(3);
     });
 
-    it("moves the focus to the panel's skip to content link when the session asks to leave the terminal", () => {
+    it("moves the focus back to the stop when the session asks to leave the terminal", () => {
       installerRender(<TerminalPane enoughSpace />);
 
       leaveTerminal();
 
-      expect(screen.getByRole("link", { name: "Skip to content" })).toHaveFocus();
+      expect(screen.getByRole("group", { name: "Terminal" })).toHaveFocus();
     });
 
     it("offers a close action, always available", async () => {

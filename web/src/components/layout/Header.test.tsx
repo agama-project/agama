@@ -98,7 +98,7 @@ describe("Header", () => {
 
     expect(screen.getByRole("link", { name: "Skip to terminal" })).toHaveAttribute(
       "href",
-      "#terminal-input",
+      "#terminal-stop",
     );
 
     // Still reachable once collapsed to a bar: it is the same page, and the

@@ -23,10 +23,11 @@
 import React, { useCallback, useMemo, useState } from "react";
 
 /**
- * Id given to the terminal input, the target of the links that jump into the
- * terminal. Shared so that the links and their target cannot drift apart.
+ * Id given to the focus stop in front of the shell, the target of the links
+ * that jump to the terminal. Shared so that the links and their target cannot
+ * drift apart.
  */
-export const TERMINAL_INPUT_ID = "terminal-input";
+export const TERMINAL_STOP_ID = "terminal-stop";
 
 /**
  * Id given to the text explaining how to leave the terminal with the keyboard.

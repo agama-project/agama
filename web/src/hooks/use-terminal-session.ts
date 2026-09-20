@@ -20,7 +20,7 @@
 import { useCallback, useEffect, useLayoutEffect, useRef } from "react";
 import { ITheme, Terminal } from "@xterm/xterm";
 import { FitAddon } from "@xterm/addon-fit";
-import { TERMINAL_HINT_ID, TERMINAL_INPUT_ID } from "~/context/terminal";
+import { TERMINAL_HINT_ID } from "~/context/terminal";
 import "@xterm/xterm/css/xterm.css";
 
 const DEFAULT_FONT_SIZE = 14;
@@ -38,6 +38,11 @@ export type TerminalSession = {
   setFontSize: (size: number) => void;
   /** Clears the terminal's scrollback and screen. */
   clear: () => void;
+  /**
+   * Moves the keyboard focus into the shell, ready to type. The only way in,
+   * since the shell is deliberately kept out of the tab order (see below).
+   */
+  focus: () => void;
 };
 
 export type TerminalSessionOptions = {
@@ -128,12 +133,17 @@ function terminalWebSocketUrl(): string {
  * from the keyboard. Other than a graceful exit (see above), the user gets a
  * new session by closing and reopening the panel.
  *
- * ## Leaving the terminal with the keyboard
+ * ## Reaching the terminal with the keyboard
  *
  * A terminal has to take over almost every key, Tab included (shells use it
  * to complete words). That makes it a keyboard trap: once focused, someone
  * not using a pointer has no way back to the rest of the interface, which
  * WCAG forbids (SC 2.1.2, "No Keyboard Trap").
+ *
+ * So the shell is not a tab stop of its own: the element xterm.js types into
+ * is taken out of the tab order, and entering it is an explicit act, by
+ * pointer or by calling `focus`. The caller is expected to offer a way in,
+ * explaining what is about to happen (see `TerminalPane`).
  *
  * The way out is pressing Ctrl+Shift+L. xterm.js sends nothing to the shell
  * for Ctrl+Shift+letter combinations, so taking this one away from the
@@ -223,8 +233,8 @@ export const useTerminalSession = (
     const fitAddon = new FitAddon();
     terminal.loadAddon(fitAddon);
 
-    // Escape hatch for keyboard users; see "Leaving the terminal with the
-    // keyboard" above.
+    // Escape hatch for keyboard users; see the section on reaching the
+    // terminal with the keyboard above.
     terminal.attachCustomKeyEventHandler((event) => {
       // The handler also runs for keypress and keyup; keydown is enough.
       if (event.type !== "keydown") return true;
@@ -284,12 +294,14 @@ export const useTerminalSession = (
 
     if (!terminal.element) {
       terminal.open(container);
-      // xterm.js renders the input the user actually types into. Naming it
-      // makes it a target for the links that jump into the terminal, and
-      // pointing it at the hint gets the way out announced on arrival.
+      // xterm.js renders the input the user actually types into. Pointing it
+      // at the hint gets the way out announced on arrival, and taking it out
+      // of the tab order keeps Tab from walking into the shell (see "Reaching
+      // the terminal with the keyboard" above); it stays focusable on purpose,
+      // which is what `focus` does.
       if (terminal.textarea) {
-        terminal.textarea.id = TERMINAL_INPUT_ID;
         terminal.textarea.setAttribute("aria-describedby", TERMINAL_HINT_ID);
+        terminal.textarea.tabIndex = -1;
       }
       // Attaching only happens when the panel opens, always after an explicit
       // request from the user, so the terminal takes the focus right away and
@@ -335,5 +347,9 @@ export const useTerminalSession = (
     terminalRef.current?.clear();
   }, []);
 
-  return { setFontSize, clear };
+  const focus = useCallback(() => {
+    terminalRef.current?.focus();
+  }, []);
+
+  return { setFontSize, clear, focus };
 };

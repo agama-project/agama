@@ -104,6 +104,9 @@
 // container provides xterm.js with a padding-free box of definite dimensions.
 // This prevents the xterm surface from extending beyond the available height
 // when FitAddon calculates the terminal size.
+//
+// It is also the focus stop in front of the shell (see TerminalPane), so it
+// positions the focus ring and the overlay drawn over it.
 .agm-terminal__screen {
   flex: 1 1 0;
   min-width: 0;
@@ -113,6 +116,71 @@
   border-radius: var(--pf-t--global--border--radius--small);
   background-color: var(--agm-t--terminal--background--color);
   overflow: hidden;
+  position: relative;
+}
+
+// The focus stop's ring, on its own layer so the overlay, which covers the
+// whole surface, does not hide it. It is drawn inset because the panel clips
+// anything outside it, and the screen touches the panel's top edge.
+.agm-terminal__screen:focus-visible::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+  outline: 3px solid var(--agm-t--focus--color, var(--agm-t--color--waterhole--50));
+  outline-offset: -3px;
+  pointer-events: none;
+}
+
+// The hint over the terminal, shown only while the stop has the keyboard
+// focus: a pointer user goes straight into the shell, and someone typing in
+// it needs to see the output. Faded rather than removed, because it is also
+// the stop's accessible description and must stay in the accessibility tree.
+// It ignores clicks, so clicking the terminal still enters it.
+.agm-terminal__overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--pf-t--global--spacer--lg);
+  padding: var(--pf-t--global--spacer--md);
+  text-align: center;
+  color: var(--agm-t--terminal--color);
+  background-color: var(--agm-t--terminal--background--color);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--pf-t--global--motion--duration--fade--default);
+}
+
+.agm-terminal__overlay p {
+  color: var(--agm-t--terminal--color);
+}
+
+// Short of opaque, so that the shell is still made out behind the hint.
+.agm-terminal__screen:focus-visible .agm-terminal__overlay {
+  opacity: 0.8;
+}
+
+// The base kbd style (see base/_reset) is made for the page around the
+// panel. Over the terminal, keycaps take the terminal's colors instead.
+.agm-terminal__overlay kbd {
+  border-color: currentcolor;
+  box-shadow: inset 0 calc(-1 * var(--pf-t--global--border--width--regular)) 0 currentcolor;
+  background-color: transparent;
+}
+
+// The way in comes first and is read first; the way back out is a follow-up.
+.agm-terminal__overlay-enter {
+  margin: 0;
+  font-size: var(--pf-t--global--font--size--lg);
+}
+
+.agm-terminal__overlay-leave {
+  margin: 0;
+  font-size: var(--pf-t--global--font--size--sm);
 }
 
 // This element is passed to xterm.js as its host. Keep it padding-free so
