@@ -17,7 +17,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Button, Card, CardBody, CardHeader, Content, Flex, Title } from "@patternfly/react-core";
 import Icon from "~/components/layout/Icon";
 import Text from "~/components/core/Text";
@@ -326,7 +326,8 @@ const TerminalShell = ({
  * explanatory message instead (see {@link TerminalUnavailable}).
  */
 export default function TerminalPane({ enoughSpace }: TerminalPaneProps) {
-  const { close, isMinimized, minimize, restore } = useTerminal();
+  const { close, isMinimized, minimize, restore, openFocusTarget } = useTerminal();
+  const startsAtStop = openFocusTarget === "stop";
   const [fontSize, setFontSize] = useState(DEFAULT_FONT_SIZE);
   // A state (rather than a plain ref) so `useTerminalSession` notices when
   // the container appears (e.g., once there is enough room for it) or
@@ -348,9 +349,19 @@ export default function TerminalPane({ enoughSpace }: TerminalPaneProps) {
     clear,
     focus: enterTerminal,
   } = useTerminalSession(container, {
+    autoFocus: !startsAtStop,
     onLeave: leaveTerminal,
     onGracefulExit: close,
   });
+
+  // Opening from the keyboard leaves the focus on the opener, nowhere near
+  // the panel that just appeared, so it is moved to the stop. The shell is
+  // then one keystroke away, once the stop has said what it takes over.
+  // `autoFocus` is off above because the session attaches after this runs,
+  // and would otherwise enter the shell right after.
+  useEffect(() => {
+    if (startsAtStop) stopRef.current?.focus();
+  }, [startsAtStop]);
 
   const changeFontSize = (size: number) => {
     setFontSize(size);

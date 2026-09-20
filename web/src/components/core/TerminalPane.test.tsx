@@ -116,6 +116,36 @@ describe("TerminalPane", () => {
 
         expect(mockFocus).toHaveBeenCalled();
       });
+
+      it("takes the focus, instead of the shell, when the terminal was opened from the keyboard", () => {
+        let openTerminal: (options?: { focusTarget?: "shell" | "stop" }) => void;
+        const CaptureOpen = () => {
+          openTerminal = useTerminal().open;
+          return null;
+        };
+
+        installerRender(
+          <>
+            <CaptureOpen />
+            <TerminalPane enoughSpace />
+          </>,
+        );
+
+        // By default the session is the one taking the focus, as soon as
+        // there is a shell to type in.
+        expect(jest.mocked(useTerminalSession)).toHaveBeenLastCalledWith(
+          expect.anything(),
+          expect.objectContaining({ autoFocus: true }),
+        );
+
+        act(() => openTerminal({ focusTarget: "stop" }));
+
+        expect(screen.getByRole("group", { name: "Terminal" })).toHaveFocus();
+        expect(jest.mocked(useTerminalSession)).toHaveBeenLastCalledWith(
+          expect.anything(),
+          expect.objectContaining({ autoFocus: false }),
+        );
+      });
     });
 
     it("collapses to a bar when minimized, dropping the description and tools", async () => {

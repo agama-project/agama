@@ -221,6 +221,20 @@ describe("useTerminalSession", () => {
     expect(lastTerminal()?.focus).toHaveBeenCalled();
   });
 
+  it("does not enter the shell on its own when the caller asked not to", () => {
+    const { rerender } = renderHook(
+      ({ container }) => useTerminalSession(container, { autoFocus: false }),
+      { initialProps: { container: null as HTMLElement | null } },
+    );
+
+    rerender({ container: document.createElement("div") });
+
+    // The terminal is there and ready, the focus is just left where the
+    // caller wants it (on the focus stop, see TerminalPane).
+    expect(lastTerminal()?.open).toHaveBeenCalled();
+    expect(lastTerminal()?.focus).not.toHaveBeenCalled();
+  });
+
   it("forwards typed data to the socket as a binary frame", () => {
     renderSession();
 

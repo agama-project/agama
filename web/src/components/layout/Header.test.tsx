@@ -33,7 +33,7 @@ const TerminalControls = () => {
 
   return (
     <>
-      <button onClick={open}>Open the terminal</button>
+      <button onClick={() => open()}>Open the terminal</button>
       <button onClick={minimize}>Minimize the terminal</button>
       {isMinimized && <p>The terminal is minimized</p>}
     </>

@@ -47,6 +47,16 @@ export type TerminalSession = {
 
 export type TerminalSessionOptions = {
   /**
+   * Whether to enter the shell as soon as it is ready to type in, `true` by
+   * default. Turn it off to leave the focus elsewhere (e.g. on the focus stop
+   * in front of the shell) and let the user step in.
+   *
+   * Only about the first attachment. Moving a terminal to a new container
+   * takes the focus away from it, so it is always handed back afterwards,
+   * whatever this option says.
+   */
+  autoFocus?: boolean;
+  /**
    * Called when the user asks to leave the terminal with the keyboard (see
    * the escape hatch described below). It is expected to move the focus
    * somewhere outside the terminal; the session itself is not affected.
@@ -152,7 +162,7 @@ function terminalWebSocketUrl(): string {
  */
 export const useTerminalSession = (
   container: HTMLElement | null,
-  { onLeave, onGracefulExit }: TerminalSessionOptions = {},
+  { autoFocus = true, onLeave, onGracefulExit }: TerminalSessionOptions = {},
 ): TerminalSession => {
   const terminalRef = useRef<Terminal | null>(null);
   const fitAddonRef = useRef<FitAddon | null>(null);
@@ -160,13 +170,16 @@ export const useTerminalSession = (
   const closingRef = useRef(false);
   const sessionEndedRef = useRef(false);
   // Read through refs so a caller passing inline callbacks does not tear
-  // down the terminal and its shell on every render.
+  // down the terminal and its shell on every render, nor re-attach it just
+  // because it changed its mind about the focus.
+  const autoFocusRef = useRef(autoFocus);
   const onLeaveRef = useRef(onLeave);
   const onGracefulExitRef = useRef(onGracefulExit);
   useLayoutEffect(() => {
+    autoFocusRef.current = autoFocus;
     onLeaveRef.current = onLeave;
     onGracefulExitRef.current = onGracefulExit;
-  }, [onLeave, onGracefulExit]);
+  }, [autoFocus, onLeave, onGracefulExit]);
 
   const connect = useCallback(() => {
     const terminal = terminalRef.current;
@@ -305,8 +318,9 @@ export const useTerminalSession = (
       }
       // Attaching only happens when the panel opens, always after an explicit
       // request from the user, so the terminal takes the focus right away and
-      // is ready to type in.
-      terminal.focus();
+      // is ready to type in, unless the caller asked to keep it out (see
+      // `autoFocus`).
+      if (autoFocusRef.current) terminal.focus();
     } else if (terminal.element.parentElement !== container) {
       // The container is unmounted and a new one takes its place whenever
       // the panel toggles in and out of "not enough space" (see
