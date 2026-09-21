@@ -9,8 +9,8 @@
         "answer": "skip"
       },
       {
-        "class": "luksActivation",
-        "answer": "skip"
+        "class": "storage.activate_multipath",
+        "answer": "yes"
       }
     ]
   },
