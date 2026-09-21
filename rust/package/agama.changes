@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Fri Sep 18 16:29:17 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Recognize the ports whose connection refers to its controller by
+  UUID instead of by interface name, so the bonds and bridges
+  created by dracut are not broken when Agama writes the connections
+  back (gh#agama-project/agama#3562).
+
+-------------------------------------------------------------------
 Fri Sep 18 14:13:16 UTC 2026 - José Iván López González <jlopez@suse.com>
 
 - Avoid blocking storage service (bsc#1280751).
