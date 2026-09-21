@@ -48,7 +48,16 @@ const languagesMatches = (language1: string, language2: string) => {
   return lang1 === lang2;
 };
 
-function LicenseDialog({ onClose, license }: { onClose: ModalProps["onClose"]; license: License }) {
+type LicenseDialogProps = {
+  /** The license to display */
+  license: License;
+  /** The dialog title, the license name by default */
+  title?: string;
+  /** Callback fired when the dialog is closed */
+  onClose: ModalProps["onClose"];
+};
+
+function LicenseDialog({ license, title = license.name, onClose }: LicenseDialogProps) {
   const { language: uiLanguage } = useInstallerL10n();
   const [licenseLanguage, setLicenseLanguage] = useState<string | null>(undefined);
   const [licenseContent, setLicenseContent] = useState<string>();
@@ -61,7 +70,7 @@ function LicenseDialog({ onClose, license }: { onClose: ModalProps["onClose"]; l
   }, [license.id]);
 
   return (
-    <Popup isOpen title={license.name} width="auto">
+    <Popup isOpen title={title} width="auto">
       <Stack hasGutter>
         {licenseLanguage && !languagesMatches(uiLanguage, licenseLanguage) && (
           <MissingTranslation missing={uiLanguage} />

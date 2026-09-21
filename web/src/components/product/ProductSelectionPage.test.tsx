@@ -93,7 +93,9 @@ jest.mock("~/components/core/InstallerL10nOptions", () => () => (
   <div>InstallerL10nOptions Mock</div>
 ));
 
-jest.mock("~/components/product/LicenseDialog", () => () => <div>LicenseDialog Mock</div>);
+jest.mock("~/components/product/LicenseDialog", () => ({ title }) => (
+  <div>LicenseDialog Mock: {title}</div>
+));
 
 jest.mock("~/api", () => ({
   ...jest.requireActual("~/api"),
@@ -967,13 +969,13 @@ describe("ProductSelectionPage", () => {
   });
 
   describe("LicenseButton", () => {
-    it("opens license dialog", async () => {
+    it("opens license dialog titled after the product", async () => {
       mockProduct(microOs);
       const { user } = installerRender(<ProductSelectionPage />);
 
       const viewLicenseButton = screen.getByRole("button", { name: "View license" });
       await user.click(viewLicenseButton);
-      screen.getByText("LicenseDialog Mock");
+      screen.getByText(`LicenseDialog Mock: ${microOs.name}`);
     });
   });
 

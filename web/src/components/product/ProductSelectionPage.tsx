@@ -209,12 +209,14 @@ const ProductFormProductOption = ({
 type LicenseButtonProps = Omit<ButtonProps, "onClick"> & {
   /** The license to display */
   license: License;
+  /** The dialog title, the license name by default */
+  dialogTitle?: string;
 };
 
 /**
  * Button that opens a license dialog when clicked.
  */
-const LicenseButton = ({ license, children, ...props }: LicenseButtonProps) => {
+const LicenseButton = ({ license, dialogTitle, children, ...props }: LicenseButtonProps) => {
   const [showEula, setShowEula] = useState(false);
 
   const open = () => setShowEula(true);
@@ -225,7 +227,7 @@ const LicenseButton = ({ license, children, ...props }: LicenseButtonProps) => {
       <Button {...props} onClick={open}>
         {children}
       </Button>
-      {showEula && <LicenseDialog license={license} onClose={close} />}
+      {showEula && <LicenseDialog license={license} title={dialogTitle} onClose={close} />}
     </>
   );
 };
@@ -265,7 +267,7 @@ const ProductEulaLabel = ({ license, product }: Pick<EulaCheckboxProps, "license
   return (
     <>
       {textStart}{" "}
-      <LicenseButton license={license} variant="link" isInline>
+      <LicenseButton license={license} dialogTitle={product.name} variant="link" isInline>
         {textLink}
       </LicenseButton>{" "}
       {textEnd}
@@ -680,7 +682,12 @@ const CurrentProductInfo = ({ product, modeId, licenses }: CurrentProductInfoPro
           )}
 
           {currentLicenses.length === 1 && (
-            <LicenseButton license={currentLicenses[0]} variant="secondary" isInline>
+            <LicenseButton
+              license={currentLicenses[0]}
+              dialogTitle={product.name}
+              variant="secondary"
+              isInline
+            >
               {_("View license")}
             </LicenseButton>
           )}

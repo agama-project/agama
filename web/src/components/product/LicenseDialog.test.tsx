@@ -81,6 +81,11 @@ describe("LicenseDialog", () => {
     await screen.findByRole("dialog", { name: license.name });
   });
 
+  it("uses the given title instead of the license name", async () => {
+    installerRender(<LicenseDialog license={license} title="SLES" onClose={onCloseFn} />);
+    await screen.findByRole("dialog", { name: "SLES" });
+  });
+
   it("loads the given license", async () => {
     installerRender(<LicenseDialog license={license} onClose={onCloseFn} />);
     await waitFor(() => {
