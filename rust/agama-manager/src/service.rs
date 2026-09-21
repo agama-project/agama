@@ -614,6 +614,40 @@ impl Service {
         Ok(())
     }
 
+    /// Determines whether the storage service is available.
+    ///
+    /// Consider the service as available if it is not in the installing stage or there is no
+    /// pending progress/task.
+    ///
+    /// NOTE: This is a workaround to avoid blocking the agama-storage-client.
+    ///
+    /// How can agama-storage-client get blocked? The D-Bus requests related to the installing stage
+    /// (i.e., install and umount actions) are not performed is a separated Tokio task. If any of
+    /// these actions raises a question, then the service is busy and cannot answer any new request,
+    /// even for getting the cached D-Bus data. Trying to get some information (e.g., system)
+    /// meanwhile the service is busy would produce a deadlock.
+    ///
+    /// What happens with the rest of storage actions (activate and probe)? For these actions, the
+    /// D-Bus call is already done in a separate task, so the main task of the agama-storage-client
+    /// service keeps available.
+    ///
+    /// Why not to move install and umount actions to a separate task? Because this would imply more
+    /// changes in the code, which could be risky at the SLE 16.1 GMC phase. To properly implement
+    /// it, the action calls need to report a receiver channel, so the caller can wait for the
+    /// result and check whether the action was properly executed. Otherwise, the chain of
+    /// installation tasks cannot be canceled if something goes wrong. Note that the curren sync
+    /// version of these actions are already reporting the D-Bus result.
+    ///
+    /// All these action calls will be improved for 16.2, making this method unnecessary.
+    async fn is_storage_available(&self) -> Result<bool, Error> {
+        let status = self.progress.call(progress::message::GetStatus).await?;
+        let is_installing = status.stage == Stage::Installing;
+        let has_progress = status.progresses.iter().any(|p| p.scope == Scope::Storage);
+        let has_tasks = status.tasks.iter().any(|p| p.scope == Scope::Software);
+        let is_busy = is_installing && (has_progress || has_tasks);
+        Ok(!is_busy)
+    }
+
     /// Determines whether the software service is available.
     ///
     /// Consider the service as available if there is no pending progress.
@@ -680,7 +714,13 @@ impl MessageHandler<message::GetSystem> for Service {
         let mut manager = self.system.clone();
         manager.products = self.products.products_for_lang(lang);
 
-        let storage = self.storage.call(storage::message::GetSystem).await?;
+        // If the storage service is busy, it will not answer.
+        let storage = if self.is_storage_available().await? {
+            self.storage.call(storage::message::GetSystem).await?
+        } else {
+            Default::default()
+        };
+
         let iscsi = self.iscsi.call(iscsi::message::GetSystem).await?;
         let bootloader = self.bootloader.call(bootloader::message::GetSystem).await?;
         let network = self.network.get_system().await?;
@@ -735,7 +775,14 @@ impl MessageHandler<message::GetExtendedConfig> for Service {
         let questions = self.questions.call(question::message::GetConfig).await?;
         let network = self.network.get_config().await?;
         let access = self.access.call(agama_access::message::GetConfig).await?;
-        let storage = self.storage.call(storage::message::GetConfig).await?;
+
+        // If the storage service is busy, it will not answer.
+        let storage = if self.is_storage_available().await? {
+            self.storage.call(storage::message::GetConfig).await?
+        } else {
+            Default::default()
+        };
+
         let users = self.users.call(users::message::GetConfig).await?;
 
         let s390 = if let Some(s390) = &self.s390 {
@@ -805,7 +852,14 @@ impl MessageHandler<message::GetProposal> for Service {
     async fn handle(&mut self, _message: message::GetProposal) -> Result<Option<Proposal>, Error> {
         let hostname = self.hostname.call(hostname::message::GetProposal).await?;
         let l10n = self.l10n.call(l10n::message::GetProposal).await?;
-        let storage = self.storage.call(storage::message::GetProposal).await?;
+
+        // If the storage service is busy, it will not answer.
+        let storage = if self.is_storage_available().await? {
+            self.storage.call(storage::message::GetProposal).await?
+        } else {
+            Default::default()
+        };
+
         let network = self.network.get_proposal().await?;
         let users = self.users.call(users::message::GetProposal).await?;
         let access = self.access.call(agama_access::message::GetProposal).await?;
@@ -913,7 +967,11 @@ impl MessageHandler<message::RunAction> for Service {
 impl MessageHandler<message::GetStorageModel> for Service {
     /// It returns the storage model.
     async fn handle(&mut self, _message: message::GetStorageModel) -> Result<Option<Value>, Error> {
-        Ok(self.storage.call(storage::message::GetConfigModel).await?)
+        // If the storage service is busy, it will not answer.
+        if self.is_storage_available().await? {
+            return Ok(self.storage.call(storage::message::GetConfigModel).await?);
+        }
+        Ok(None)
     }
 }
 
