@@ -1383,7 +1383,9 @@ confirm_summary() {
 
   while true; do
     if $DIALOG_MODE; then
-      # the third button is the help button, its exit code is 2
+      # the third button is the help button; dialog only returns exit code 2
+      # for it when triggered via F1, selecting it normally (Tab/Enter) gives
+      # exit code 1, the same as a plain Cancel button
       rc=0
       show_dialog --title "Configuration Summary" \
         --ok-label "Load configuration" --exit-label "Load configuration" \
@@ -1394,7 +1396,7 @@ confirm_summary() {
       case $rc in
         0) action="continue" ;;
         3) action="back" ;;
-        2) action="reboot" ;;
+        1 | 2) action="reboot" ;;
         *) continue ;;  # ESC or an error: display the summary again
       esac
     else
@@ -1434,7 +1436,9 @@ confirm_storage_proposal() {
 
   while true; do
     if $DIALOG_MODE; then
-      # the third button is the help button, its exit code is 2
+      # the third button is the help button; dialog only returns exit code 2
+      # for it when triggered via F1, selecting it normally (Tab/Enter) gives
+      # exit code 1, the same as a plain Cancel button
       rc=0
       show_dialog --title "Storage Proposal" \
         --ok-label "Install" --exit-label "Install" \
@@ -1445,7 +1449,7 @@ confirm_storage_proposal() {
       case $rc in
         0) action="install" ;;
         3) action="back" ;;
-        2) action="reboot" ;;
+        1 | 2) action="reboot" ;;
         *) continue ;;  # ESC or an error: display the proposal again
       esac
     else
