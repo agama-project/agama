@@ -32,7 +32,7 @@ ExecStartPre=dmesg --console-off
 # disable the systemd status messages on the console
 ExecStartPre=kill -SIGRTMIN+21 1
 
-ExecStart=cc-setup.sh --template /usr/share/cc-setup/agama-template.json
+ExecStart=cc-setup.sh
 
 # enable back the kernel output on the console
 ExecStartPost=dmesg --console-on

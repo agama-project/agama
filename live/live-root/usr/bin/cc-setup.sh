@@ -796,7 +796,7 @@ show_keymaps_list() {
 # line interface asks for the id and displays the list in a pager on request.
 ask_keyboard() {
   local -a maps=() menu=()
-  local line answer
+  local line answer default_label
 
   mapfile -t maps < <(keymaps) || true
   if ((${#maps[@]} == 0)); then
@@ -805,8 +805,14 @@ ask_keyboard() {
     return 0
   fi
 
+  if [[ -n $KEYBOARD_ORIGINAL ]]; then
+    default_label="the default (\"$KEYBOARD_ORIGINAL\") keyboard layout"
+  else
+    default_label="the default keyboard layout"
+  fi
+
   if $DIALOG_MODE; then
-    menu=(default "Keep the default keyboard layout")
+    menu=(default "Keep $default_label")
     for line in "${maps[@]}"; do
       menu+=("${line%%$'\t'*}" "${line#*$'\t'}")
     done
@@ -823,7 +829,7 @@ ask_keyboard() {
     # the layout selected in a previous round
     answer=$(ui_input "Keyboard Layout" "Enter the keyboard layout id for the \
 current and the installed system. Enter \"list\" to display all the available \
-layouts, leave empty to keep the default:") || answer=""
+layouts, leave empty to keep $default_label:") || answer=""
 
     if [[ -z $answer ]]; then
       KEYBOARD=""
@@ -1343,12 +1349,15 @@ NTP server:           $ntp_state
 Registration code:    $(secret_state "$REGISTRATION_CODE")${registration_note}
 Registration e-mail:  ${REGISTRATION_EMAIL:-[empty]}${registration_server}
 Target disk:          $TARGET_DISK  $TARGET_DISK_LABEL
+
+The installer will now load and evaluate the configuration.
+Nothing will be written to the disk yet. 
 EOF
 }
 
 # The configuration summary. The text box carries the decision buttons
-# itself: "Continue" (the default), "Configure again" and "Reboot". Rebooting
-# has to be confirmed.
+# itself: "Load configuration" (the default), "Configure again" and "Reboot".
+# Rebooting has to be confirmed.
 # Prints the chosen action: continue | back | reboot
 confirm_summary() {
   local file="$SECURE_DIR/summary.txt" action rc
@@ -1360,7 +1369,7 @@ confirm_summary() {
       # the third button is the help button, its exit code is 2
       rc=0
       show_dialog --title "Configuration Summary" \
-        --ok-label "Continue" --exit-label "Continue" \
+        --ok-label "Load configuration" --exit-label "Load configuration" \
         --extra-button --extra-label "Configure again" \
         --help-button --help-label "Reboot" \
         --textbox "$file" 0 0 || rc=$?
@@ -1376,8 +1385,8 @@ confirm_summary() {
       printf '\n=== Configuration Summary ===\n' >&2
       cat -- "$file" >&2
       action=$(ui_menu "Configuration Summary" \
-        "Nothing has been written to the disk yet. How do you want to continue?" \
-        continue "Continue - let the installer compute the storage proposal" \
+        "How do you want to continue?" \
+        continue "Continue - load and evaluate the configuration" \
         back "Configure again (start over)" \
         reboot "Reboot without modifying the system") || action="back"
     fi
@@ -1756,7 +1765,7 @@ finish_installation() {
 
   local text="The installation finished successfully.
 
-Remove the installation medium and reboot the system."
+Reboot the system to start the newly installed system."
   local rc=0 answer=""
 
   if $DIALOG_MODE; then
