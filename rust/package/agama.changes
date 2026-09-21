@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Sep 21 06:23:54 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Allow defining multiple licenses per product (jsc#PED-16988,
+  gh#agama-project/agama#3953).
+
+-------------------------------------------------------------------
 Fri Sep 18 16:29:17 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
 
 - Recognize the ports whose connection refers to its controller by
