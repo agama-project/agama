@@ -224,18 +224,18 @@ describe("ProductSelectionPage", () => {
     it("renders one checkbox per license, named after it", async () => {
       const { user } = installerRender(<ProductSelectionPage />);
       await user.click(screen.getByRole("radio", { name: serverForApps.name }));
-      screen.getByRole("checkbox", { name: /for Server License/ });
-      screen.getByRole("checkbox", { name: /for Apps License/ });
+      screen.getByRole("checkbox", { name: "I have read and accept the Server License" });
+      screen.getByRole("checkbox", { name: "I have read and accept the Apps License" });
     });
 
-    it("names a license the system does not know after the product", async () => {
+    it("uses the product text for a license the system does not know", async () => {
       mockSystem({
         products: [{ ...serverForApps, licenses: ["license.server", "license.unknown"] }],
         licenses,
       });
       const { user } = installerRender(<ProductSelectionPage />);
       await user.click(screen.getByRole("radio", { name: serverForApps.name }));
-      screen.getByRole("checkbox", { name: /for Server License/ });
+      screen.getByRole("checkbox", { name: "I have read and accept the Server License" });
       screen.getByRole("checkbox", {
         name: `I have read and accept the license for ${serverForApps.name}`,
       });
@@ -245,8 +245,12 @@ describe("ProductSelectionPage", () => {
       const { user } = installerRender(<ProductSelectionPage />);
       const selectButton = screen.getByRole("button", { name: "Select" });
       await user.click(screen.getByRole("radio", { name: serverForApps.name }));
-      const serverCheckbox = screen.getByRole("checkbox", { name: /for Server License/ });
-      const appsCheckbox = screen.getByRole("checkbox", { name: /for Apps License/ });
+      const serverCheckbox = screen.getByRole("checkbox", {
+        name: "I have read and accept the Server License",
+      });
+      const appsCheckbox = screen.getByRole("checkbox", {
+        name: "I have read and accept the Apps License",
+      });
 
       await user.click(serverCheckbox);
       expect(serverCheckbox).toBeChecked();
@@ -264,14 +268,22 @@ describe("ProductSelectionPage", () => {
     it("resets the acceptance of all the licenses when switching products", async () => {
       const { user } = installerRender(<ProductSelectionPage />);
       await user.click(screen.getByRole("radio", { name: serverForApps.name }));
-      await user.click(screen.getByRole("checkbox", { name: /for Server License/ }));
-      await user.click(screen.getByRole("checkbox", { name: /for Apps License/ }));
+      await user.click(
+        screen.getByRole("checkbox", { name: "I have read and accept the Server License" }),
+      );
+      await user.click(
+        screen.getByRole("checkbox", { name: "I have read and accept the Apps License" }),
+      );
 
       await user.click(screen.getByRole("radio", { name: microOs.name }));
       await user.click(screen.getByRole("radio", { name: serverForApps.name }));
 
-      expect(screen.getByRole("checkbox", { name: /for Server License/ })).not.toBeChecked();
-      expect(screen.getByRole("checkbox", { name: /for Apps License/ })).not.toBeChecked();
+      expect(
+        screen.getByRole("checkbox", { name: "I have read and accept the Server License" }),
+      ).not.toBeChecked();
+      expect(
+        screen.getByRole("checkbox", { name: "I have read and accept the Apps License" }),
+      ).not.toBeChecked();
     });
   });
 
@@ -921,15 +933,17 @@ describe("ProductSelectionPage", () => {
       within(section).getByRole("button", { name: "View license" });
     });
 
-    it("renders a button per license, named after it, for products with several licenses", () => {
+    it("lists the accepted licenses, each named after it, for products with several licenses", () => {
       mockProduct(serverForApps);
       mockSystem({ products: [tumbleweed, serverForApps], licenses });
       installerRender(<ProductSelectionPage />);
 
       const sectionHeading = screen.getByRole("heading", { level: 2, name: "Current selection" });
       const section = sectionHeading.closest("section");
-      within(section).getByRole("button", { name: "Server License" });
-      within(section).getByRole("button", { name: "Apps License" });
+      within(section).getByRole("heading", { level: 3, name: "Accepted licenses" });
+      const list = within(section).getByRole("list");
+      within(list).getByRole("button", { name: "Server License" });
+      within(list).getByRole("button", { name: "Apps License" });
       expect(within(section).queryByRole("button", { name: "View license" })).toBeNull();
     });
 

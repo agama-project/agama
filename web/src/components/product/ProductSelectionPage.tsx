@@ -54,6 +54,7 @@ import { Navigate, useNavigate, useSearchParams } from "react-router";
 import { Page, SubtleContent } from "~/components/core";
 import ProductLogo from "~/components/product/ProductLogo";
 import LicenseDialog from "~/components/product/LicenseDialog";
+import Interpolate from "~/components/core/Interpolate";
 import Text from "~/components/core/Text";
 import { patchConfig, putConfig } from "~/api";
 import { useProduct, useProductInfo } from "~/hooks/model/config/product";
@@ -77,6 +78,12 @@ const productLicenses = (product: Product | undefined, licenses: License[] = [])
     const name = licenses.find((l) => l.id === id)?.name;
     return { id, name: name || product.name };
   });
+
+/**
+ * Whether the system knows the given license by name.
+ */
+const hasKnownName = (license: License, licenses: License[] = []): boolean =>
+  licenses.some((l) => l.id === license.id && !isEmpty(l.name));
 
 /**
  * Props for ProductFormProductOption component
@@ -244,6 +251,47 @@ type EulaCheckboxProps = {
 };
 
 /**
+ * Label naming the product, with a link to view its license.
+ */
+const ProductEulaLabel = ({ license, product }: Pick<EulaCheckboxProps, "license" | "product">) => {
+  const [textStart, textLink, textEnd] = sprintf(
+    // TRANSLATORS: Text used for the license acceptance checkbox. %s will be
+    // replaced with the product name and the text in the square brackets [] is
+    // used for the link to show the license, please keep the brackets.
+    _("I have read and accept the [license] for %s"),
+    product.name,
+  ).split(/[[\]]/);
+
+  return (
+    <>
+      {textStart}{" "}
+      <LicenseButton license={license} variant="link" isInline>
+        {textLink}
+      </LicenseButton>{" "}
+      {textEnd}
+    </>
+  );
+};
+
+/**
+ * Label naming the license, which works as a link to view it.
+ */
+const LicenseEulaLabel = ({ license }: Pick<EulaCheckboxProps, "license">) => (
+  <Interpolate
+    // TRANSLATORS: Text used for accepting one of the several licenses of a
+    // product. %s will be replaced with the license name, which is also a link
+    // to show the license.
+    sentence={_("I have read and accept the %s")}
+  >
+    {() => (
+      <LicenseButton license={license} variant="link" isInline>
+        {license.name}
+      </LicenseButton>
+    )}
+  </Interpolate>
+);
+
+/**
  * Checkbox for accepting a product license.
  * Includes a link to view the full license text.
  */
@@ -253,36 +301,20 @@ const EulaCheckbox = ({
   namesLicense = false,
   onChange,
   isChecked,
-}: EulaCheckboxProps) => {
-  // FIXME: reuses the single license text, naming the license instead of the
-  // product, because of the translation freeze. Add a proper text for products
-  // with several licenses once the freeze is over.
-  const subject = namesLicense ? license.name : product.name;
-  const [textStart, textLink, textEnd] = sprintf(
-    // TRANSLATORS: Text used for the license acceptance checkbox. %s will be
-    // replaced with the product name and the text in the square brackets [] is
-    // used for the link to show the license, please keep the brackets.
-    _("I have read and accept the [license] for %s"),
-    subject,
-  ).split(/[[\]]/);
-
-  return (
-    <Checkbox
-      isChecked={isChecked}
-      onChange={(_, accepted) => onChange(accepted)}
-      id={`license-acceptance-${license.id}`}
-      label={
-        <>
-          {textStart}{" "}
-          <LicenseButton license={license} variant="link" isInline>
-            {textLink}
-          </LicenseButton>{" "}
-          {textEnd}
-        </>
-      }
-    />
-  );
-};
+}: EulaCheckboxProps) => (
+  <Checkbox
+    isChecked={isChecked}
+    onChange={(_, accepted) => onChange(accepted)}
+    id={`license-acceptance-${license.id}`}
+    label={
+      namesLicense ? (
+        <LicenseEulaLabel license={license} />
+      ) : (
+        <ProductEulaLabel license={license} product={product} />
+      )
+    }
+  />
+);
 
 /**
  * Props for ProductFormSubmitLabel component
@@ -552,7 +584,7 @@ const ProductForm = ({
                   key={license.id}
                   license={license}
                   product={selectedProduct}
-                  namesLicense={selectedLicenses.length > 1}
+                  namesLicense={selectedLicenses.length > 1 && hasKnownName(license, licenses)}
                   isChecked={acceptedLicenses.includes(license.id)}
                   onChange={() => toggleLicenseAcceptance(license.id)}
                 />
@@ -653,19 +685,24 @@ const CurrentProductInfo = ({ product, modeId, licenses }: CurrentProductInfoPro
             </LicenseButton>
           )}
           {currentLicenses.length > 1 && (
-            <Stack hasGutter>
-              {currentLicenses.map((license) => (
-                <LicenseButton
-                  key={license.id}
-                  license={license}
-                  variant="secondary"
-                  isBlock
-                  style={{ textWrap: "balance" }}
-                >
-                  {license.name}
-                </LicenseButton>
-              ))}
-            </Stack>
+            <>
+              <Title headingLevel="h3">
+                {
+                  // TRANSLATORS: title of the list of licenses accepted for
+                  // the selected product
+                  _("Accepted licenses")
+                }
+              </Title>
+              <List>
+                {currentLicenses.map((license) => (
+                  <ListItem key={license.id}>
+                    <LicenseButton license={license} variant="link" isInline>
+                      {license.name}
+                    </LicenseButton>
+                  </ListItem>
+                ))}
+              </List>
+            </>
           )}
         </Stack>
       </CardBody>
