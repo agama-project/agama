@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-09 11:53+0000\n"
+"POT-Creation-Date: 2026-09-18 08:11+0000\n"
 "PO-Revision-Date: 2026-09-08 02:13+0000\n"
 "Last-Translator: Temuri Doghonadze <temuri.doghonadze@gmail.com>\n"
 "Language-Team: Georgian <https://l10n.opensuse.org/projects/agama/agama-rust-"
@@ -779,31 +779,31 @@ msgstr "მომხმარებლის პარამეტრები�
 msgid "Configuring iSCSI devices"
 msgstr "iSCSI მოწყობილობების დამახსოვრება"
 
-#: agama-manager/src/actions.rs:581
+#: agama-manager/src/actions.rs:582
 msgid "Configuring zFCP devices"
 msgstr "iSCSI მოწყობილობების მორგება"
 
-#: agama-manager/src/actions.rs:606
+#: agama-manager/src/actions.rs:608
 msgid "Configuring DASD devices"
 msgstr "DASD მოწყობილობების მორგება"
 
-#: agama-manager/src/actions.rs:631
+#: agama-manager/src/actions.rs:634
 msgid "Setting up the network"
 msgstr "ქსელის მორგება"
 
-#: agama-manager/src/actions.rs:661
+#: agama-manager/src/actions.rs:664
 msgid "Preparing the storage proposal"
 msgstr "საცავის შეთავაზების მომზადება"
 
-#: agama-manager/src/actions.rs:690
+#: agama-manager/src/actions.rs:694
 msgid "Storing bootloader settings"
 msgstr "ჩამტვირთავის პარამეტრების დამახსოვრება"
 
-#: agama-manager/src/actions.rs:723
+#: agama-manager/src/actions.rs:728
 msgid "Preparing the software proposal"
 msgstr "პროგრამების შეთავაზების მომზადება"
 
-#: agama-manager/src/actions.rs:753
+#: agama-manager/src/actions.rs:758
 msgid "Configuring SELinux"
 msgstr "SELinux-ის მორგება"
 

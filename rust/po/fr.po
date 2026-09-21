@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-09 11:53+0000\n"
+"POT-Creation-Date: 2026-09-18 08:11+0000\n"
 "PO-Revision-Date: 2026-07-27 08:12+0000\n"
 "Last-Translator: Sophie Leroy <sophie@stoquart.com>\n"
 "Language-Team: French <https://l10n.opensuse.org/projects/agama/agama-rust-"
@@ -910,31 +910,31 @@ msgstr "Stockage des paramètres des utilisateurs"
 msgid "Configuring iSCSI devices"
 msgstr "Configuration des périphériques iSCSI"
 
-#: agama-manager/src/actions.rs:581
+#: agama-manager/src/actions.rs:582
 msgid "Configuring zFCP devices"
 msgstr "Configuration des périphériques zFCP"
 
-#: agama-manager/src/actions.rs:606
+#: agama-manager/src/actions.rs:608
 msgid "Configuring DASD devices"
 msgstr "Configuration des périphériques DASD"
 
-#: agama-manager/src/actions.rs:631
+#: agama-manager/src/actions.rs:634
 msgid "Setting up the network"
 msgstr "Configuration du réseau"
 
-#: agama-manager/src/actions.rs:661
+#: agama-manager/src/actions.rs:664
 msgid "Preparing the storage proposal"
 msgstr "Préparation de la proposition de stockage"
 
-#: agama-manager/src/actions.rs:690
+#: agama-manager/src/actions.rs:694
 msgid "Storing bootloader settings"
 msgstr "Stockage des paramètres du chargeur d'amorçage"
 
-#: agama-manager/src/actions.rs:723
+#: agama-manager/src/actions.rs:728
 msgid "Preparing the software proposal"
 msgstr "Préparation de la proposition de logiciel"
 
-#: agama-manager/src/actions.rs:753
+#: agama-manager/src/actions.rs:758
 msgid "Configuring SELinux"
 msgstr "Configuration de SELinux"
 

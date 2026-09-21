@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-09 11:53+0000\n"
+"POT-Creation-Date: 2026-09-18 08:11+0000\n"
 "PO-Revision-Date: 2026-03-11 07:04+0000\n"
 "Last-Translator: Timo Jyrinki <tjyrinki@suse.com>\n"
 "Language-Team: Finnish <https://l10n.opensuse.org/projects/agama/agama-rust-"
@@ -796,32 +796,32 @@ msgstr "Tallennetaan käyttäjien asetuksia"
 msgid "Configuring iSCSI devices"
 msgstr "Tehdään iSCSI-laitteiden asetuksia"
 
-#: agama-manager/src/actions.rs:581
+#: agama-manager/src/actions.rs:582
 #, fuzzy
 msgid "Configuring zFCP devices"
 msgstr "Tehdään iSCSI-laitteiden asetuksia"
 
-#: agama-manager/src/actions.rs:606
+#: agama-manager/src/actions.rs:608
 msgid "Configuring DASD devices"
 msgstr "Tehdään DASD-laitteiden asetuksia"
 
-#: agama-manager/src/actions.rs:631
+#: agama-manager/src/actions.rs:634
 msgid "Setting up the network"
 msgstr "Tehdään verkkoasetuksia"
 
-#: agama-manager/src/actions.rs:661
+#: agama-manager/src/actions.rs:664
 msgid "Preparing the storage proposal"
 msgstr "Valmistellaan tallennustilaehdotusta"
 
-#: agama-manager/src/actions.rs:690
+#: agama-manager/src/actions.rs:694
 msgid "Storing bootloader settings"
 msgstr "Tallennetaan käynnistyslataimen asetuksia"
 
-#: agama-manager/src/actions.rs:723
+#: agama-manager/src/actions.rs:728
 msgid "Preparing the software proposal"
 msgstr "Valmistellaan ohjelmistoehdotusta"
 
-#: agama-manager/src/actions.rs:753
+#: agama-manager/src/actions.rs:758
 #, fuzzy
 msgid "Configuring SELinux"
 msgstr "Tehdään DASD-laitteiden asetuksia"

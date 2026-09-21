@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-09 11:53+0000\n"
+"POT-Creation-Date: 2026-09-18 08:11+0000\n"
 "PO-Revision-Date: 2026-07-27 11:08+0000\n"
 "Last-Translator: Antonio Simón <antonio@trans-mission.com>\n"
 "Language-Team: Spanish <https://l10n.opensuse.org/projects/agama/agama-rust-"
@@ -895,31 +895,31 @@ msgstr "Almacenando los ajustes de los usuarios"
 msgid "Configuring iSCSI devices"
 msgstr "Configurando dispositivos iSCSI"
 
-#: agama-manager/src/actions.rs:581
+#: agama-manager/src/actions.rs:582
 msgid "Configuring zFCP devices"
 msgstr "Configurando dispositivos zFCP"
 
-#: agama-manager/src/actions.rs:606
+#: agama-manager/src/actions.rs:608
 msgid "Configuring DASD devices"
 msgstr "Configurando dispositivos DASD"
 
-#: agama-manager/src/actions.rs:631
+#: agama-manager/src/actions.rs:634
 msgid "Setting up the network"
 msgstr "Configurando la red"
 
-#: agama-manager/src/actions.rs:661
+#: agama-manager/src/actions.rs:664
 msgid "Preparing the storage proposal"
 msgstr "Preparando la propuesta de almacenamiento"
 
-#: agama-manager/src/actions.rs:690
+#: agama-manager/src/actions.rs:694
 msgid "Storing bootloader settings"
 msgstr "Almacenando los ajustes del cargador de arranque"
 
-#: agama-manager/src/actions.rs:723
+#: agama-manager/src/actions.rs:728
 msgid "Preparing the software proposal"
 msgstr "Preparando la propuesta de software"
 
-#: agama-manager/src/actions.rs:753
+#: agama-manager/src/actions.rs:758
 msgid "Configuring SELinux"
 msgstr "Configurando SELinux"
 

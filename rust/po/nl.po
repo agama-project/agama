@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-09 11:53+0000\n"
+"POT-Creation-Date: 2026-09-18 08:11+0000\n"
 "PO-Revision-Date: 2026-05-31 13:12+0000\n"
 "Last-Translator: Feike Donia <feikedonia@proton.me>\n"
 "Language-Team: Dutch <https://l10n.opensuse.org/projects/agama/agama-rust-"
@@ -800,32 +800,32 @@ msgstr "Gebruikersinstellingen opslaan"
 msgid "Configuring iSCSI devices"
 msgstr "iSCSI-apparaten configureren"
 
-#: agama-manager/src/actions.rs:581
+#: agama-manager/src/actions.rs:582
 #, fuzzy
 msgid "Configuring zFCP devices"
 msgstr "iSCSI-apparaten configureren"
 
-#: agama-manager/src/actions.rs:606
+#: agama-manager/src/actions.rs:608
 msgid "Configuring DASD devices"
 msgstr "DASD-apparaten configureren"
 
-#: agama-manager/src/actions.rs:631
+#: agama-manager/src/actions.rs:634
 msgid "Setting up the network"
 msgstr "Het netwerk instellen"
 
-#: agama-manager/src/actions.rs:661
+#: agama-manager/src/actions.rs:664
 msgid "Preparing the storage proposal"
 msgstr "Het opslagvoorstel voorbereiden"
 
-#: agama-manager/src/actions.rs:690
+#: agama-manager/src/actions.rs:694
 msgid "Storing bootloader settings"
 msgstr "Bootloader-instellingen opslaan"
 
-#: agama-manager/src/actions.rs:723
+#: agama-manager/src/actions.rs:728
 msgid "Preparing the software proposal"
 msgstr "Het softwarevoorstel voorbereiden"
 
-#: agama-manager/src/actions.rs:753
+#: agama-manager/src/actions.rs:758
 #, fuzzy
 msgid "Configuring SELinux"
 msgstr "Configureren…"
