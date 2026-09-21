@@ -21,7 +21,7 @@
  */
 
 import React, { useDeferredValue, useEffect, useState } from "react";
-import { isEmpty } from "radashi";
+import { isEmpty, toggle } from "radashi";
 import { sprintf } from "sprintf-js";
 import {
   Button,
@@ -54,16 +54,36 @@ import { Navigate, useNavigate, useSearchParams } from "react-router";
 import { Page, SubtleContent } from "~/components/core";
 import ProductLogo from "~/components/product/ProductLogo";
 import LicenseDialog from "~/components/product/LicenseDialog";
+import Interpolate from "~/components/core/Interpolate";
 import Text from "~/components/core/Text";
 import { patchConfig, putConfig } from "~/api";
 import { useProduct, useProductInfo } from "~/hooks/model/config/product";
 import { useSystem } from "~/hooks/model/system";
 import { useSystem as useSystemSoftware } from "~/hooks/model/system/software";
 import { ROOT } from "~/routes/paths";
-import { Mode, Product } from "~/model/system";
 import { n_, _ } from "~/i18n";
 
 import pfTextStyles from "@patternfly/react-styles/css/utilities/Text/text";
+
+import type { License, Mode, Product } from "~/model/system";
+
+/**
+ * Returns the licenses the user must accept to install the given product.
+ *
+ * Names come from the licenses known by the system. A license the system does
+ * not know, or reports without a name, is named after the product.
+ */
+const productLicenses = (product: Product | undefined, licenses: License[] = []): License[] =>
+  (product?.licenses || []).map((id) => {
+    const name = licenses.find((l) => l.id === id)?.name;
+    return { id, name: name || product.name };
+  });
+
+/**
+ * Whether the system knows the given license by name.
+ */
+const hasKnownName = (license: License, licenses: License[] = []): boolean =>
+  licenses.some((l) => l.id === license.id && !isEmpty(l.name));
 
 /**
  * Props for ProductFormProductOption component
@@ -130,9 +150,9 @@ const ProductFormProductOption = ({
                 }
                 body={
                   <Stack hasGutter id={detailsId}>
-                    {(product.license || product.modes) && (
+                    {(!isEmpty(product.licenses) || product.modes) && (
                       <Split hasGutter>
-                        {product.license && (
+                        {!isEmpty(product.licenses) && (
                           <Label variant="outline" isCompact>
                             <Text component="small">{_("License acceptance required")}</Text>
                           </Label>
@@ -187,14 +207,16 @@ const ProductFormProductOption = ({
  * Props for LicenseButton component
  */
 type LicenseButtonProps = Omit<ButtonProps, "onClick"> & {
-  /** The product whose license will be displayed */
-  product: Product;
+  /** The license to display */
+  license: License;
+  /** The dialog title, the license name by default */
+  dialogTitle?: string;
 };
 
 /**
  * Button that opens a license dialog when clicked.
  */
-const LicenseButton = ({ product, children, ...props }: LicenseButtonProps) => {
+const LicenseButton = ({ license, dialogTitle, children, ...props }: LicenseButtonProps) => {
   const [showEula, setShowEula] = useState(false);
 
   const open = () => setShowEula(true);
@@ -205,7 +227,7 @@ const LicenseButton = ({ product, children, ...props }: LicenseButtonProps) => {
       <Button {...props} onClick={open}>
         {children}
       </Button>
-      {showEula && <LicenseDialog product={product} onClose={close} />}
+      {showEula && <LicenseDialog license={license} title={dialogTitle} onClose={close} />}
     </>
   );
 };
@@ -214,8 +236,16 @@ const LicenseButton = ({ product, children, ...props }: LicenseButtonProps) => {
  * Props for EulaCheckbox component
  */
 type EulaCheckboxProps = {
-  /** The product whose license is being accepted */
+  /** The license being accepted */
+  license: License;
+  /** The product the license belongs to */
   product: Product;
+  /**
+   * Whether the label names the license instead of the product. Meant for
+   * products with several licenses, where each checkbox must tell which
+   * license it is about.
+   */
+  namesLicense?: boolean;
   /** Callback fired when checkbox state changes */
   onChange: (accepted: boolean) => void;
   /** Whether the checkbox is currently checked (i.e., license accepted) */
@@ -223,37 +253,71 @@ type EulaCheckboxProps = {
 };
 
 /**
- * Checkbox for accepting a product's license agreement.
- * Includes a link to view the full license text.
+ * Label naming the product, with a link to view its license.
  */
-const EulaCheckbox = ({ product, onChange, isChecked }: EulaCheckboxProps) => {
-  const [eulaTextStart, eulaTextLink, eulaTextEnd] = sprintf(
+const ProductEulaLabel = ({ license, product }: Pick<EulaCheckboxProps, "license" | "product">) => {
+  const [textStart, textLink, textEnd] = sprintf(
     // TRANSLATORS: Text used for the license acceptance checkbox. %s will be
     // replaced with the product name and the text in the square brackets [] is
     // used for the link to show the license, please keep the brackets.
     _("I have read and accept the [license] for %s"),
-    product?.name,
+    product.name,
   ).split(/[[\]]/);
 
   return (
     <>
-      <Checkbox
-        isChecked={isChecked}
-        onChange={(_, accepted) => onChange(accepted)}
-        id="license-acceptance"
-        label={
-          <>
-            {eulaTextStart}{" "}
-            <LicenseButton product={product} variant="link" isInline>
-              {eulaTextLink}
-            </LicenseButton>{" "}
-            {eulaTextEnd}
-          </>
-        }
-      />
+      {textStart}{" "}
+      <LicenseButton license={license} dialogTitle={product.name} variant="link" isInline>
+        {textLink}
+      </LicenseButton>{" "}
+      {textEnd}
     </>
   );
 };
+
+/**
+ * Label naming the license, which works as a link to view it.
+ */
+const LicenseEulaLabel = ({ license }: Pick<EulaCheckboxProps, "license">) => (
+  <Interpolate
+    // TRANSLATORS: Text used for accepting one of the several licenses of a
+    // product. %s will be replaced with the license name, which is also a link
+    // to show the license.
+    sentence={_("I have read and accept the %s")}
+  >
+    {() => (
+      <LicenseButton license={license} variant="link" isInline>
+        {license.name}
+      </LicenseButton>
+    )}
+  </Interpolate>
+);
+
+/**
+ * Checkbox for accepting a product license.
+ * Includes a link to view the full license text.
+ */
+const EulaCheckbox = ({
+  license,
+  product,
+  namesLicense = false,
+  onChange,
+  isChecked,
+}: EulaCheckboxProps) => (
+  <Checkbox
+    isChecked={isChecked}
+    onChange={(_, accepted) => onChange(accepted)}
+    id={`license-acceptance-${license.id}`}
+    label={
+      namesLicense ? (
+        <LicenseEulaLabel license={license} />
+      ) : (
+        <ProductEulaLabel license={license} product={product} />
+      )
+    }
+  />
+);
+
 /**
  * Props for ProductFormSubmitLabel component
  */
@@ -355,6 +419,8 @@ const ProductFormSubmitLabelHelp = ({
 type ProductFormProps = {
   /** List of all available products */
   products: Product[];
+  /** Licenses known by the system */
+  licenses?: License[];
   /** The product currently configured in the system */
   currentProduct?: Product;
   /** The id of the product mode currently configured in the system */
@@ -446,6 +512,7 @@ const ProductFormLabel = ({ products, currentProduct }: ProductSelectionContextP
  */
 const ProductForm = ({
   products,
+  licenses,
   currentProduct,
   currentModeId,
   isSubmitted,
@@ -453,16 +520,22 @@ const ProductForm = ({
 }: ProductFormProps) => {
   const [selectedProduct, setSelectedProduct] = useState<Product>();
   const [selectedMode, setSelectedMode] = useState<Mode>();
-  const [eulaAccepted, setEulaAccepted] = useState(false);
-  const mountEulaCheckbox = selectedProduct && !isEmpty(selectedProduct.license);
+  const [acceptedLicenses, setAcceptedLicenses] = useState<License["id"][]>([]);
+  const selectedLicenses = productLicenses(selectedProduct, licenses);
+  const mountEulaCheckbox = !isEmpty(selectedLicenses);
+  const eulaAccepted = selectedLicenses.every((l) => acceptedLicenses.includes(l.id));
   const isSelectionDisabled =
     !selectedProduct ||
     isSubmitted ||
     (mountEulaCheckbox && !eulaAccepted) ||
     (!isEmpty(selectedProduct.modes) && !selectedMode);
 
+  const toggleLicenseAcceptance = (id: License["id"]) => {
+    setAcceptedLicenses((ids) => toggle(ids, id));
+  };
+
   const onProductSelectionChange = (product) => {
-    setEulaAccepted(false);
+    setAcceptedLicenses([]);
     setSelectedMode(undefined);
     setSelectedProduct(product);
   };
@@ -507,11 +580,18 @@ const ProductForm = ({
       <Stack hasGutter>
         {mountEulaCheckbox && (
           <StackItem>
-            <EulaCheckbox
-              product={selectedProduct}
-              isChecked={eulaAccepted}
-              onChange={setEulaAccepted}
-            />
+            <Stack hasGutter>
+              {selectedLicenses.map((license) => (
+                <EulaCheckbox
+                  key={license.id}
+                  license={license}
+                  product={selectedProduct}
+                  namesLicense={selectedLicenses.length > 1 && hasKnownName(license, licenses)}
+                  isChecked={acceptedLicenses.includes(license.id)}
+                  onChange={() => toggleLicenseAcceptance(license.id)}
+                />
+              ))}
+            </Stack>
           </StackItem>
         )}
         <StackItem>
@@ -561,15 +641,19 @@ type CurrentProductInfoProps = {
   product?: Product;
   /** The selected mode */
   modeId?: string;
+  /** Licenses known by the system */
+  licenses?: License[];
 };
 
 /**
  * Card displaying information about the currently selected product.
  *
- * Shows product name, description, and a link to view the license if applicable.
+ * Shows product name, description, and links to view the licenses if applicable.
  */
-const CurrentProductInfo = ({ product, modeId }: CurrentProductInfoProps) => {
+const CurrentProductInfo = ({ product, modeId, licenses }: CurrentProductInfoProps) => {
   if (!product) return;
+
+  const currentLicenses = productLicenses(product, licenses);
 
   let mode: Mode;
   if (modeId) {
@@ -597,10 +681,35 @@ const CurrentProductInfo = ({ product, modeId }: CurrentProductInfoProps) => {
             </>
           )}
 
-          {product.license && (
-            <LicenseButton product={product} variant="secondary" isInline>
+          {currentLicenses.length === 1 && (
+            <LicenseButton
+              license={currentLicenses[0]}
+              dialogTitle={product.name}
+              variant="secondary"
+              isInline
+            >
               {_("View license")}
             </LicenseButton>
+          )}
+          {currentLicenses.length > 1 && (
+            <>
+              <Title headingLevel="h3">
+                {
+                  // TRANSLATORS: title of the list of licenses accepted for
+                  // the selected product
+                  _("Accepted licenses")
+                }
+              </Title>
+              <List>
+                {currentLicenses.map((license) => (
+                  <ListItem key={license.id}>
+                    <LicenseButton license={license} variant="link" isInline>
+                      {license.name}
+                    </LicenseButton>
+                  </ListItem>
+                ))}
+              </List>
+            </>
           )}
         </Stack>
       </CardBody>
@@ -677,7 +786,7 @@ const ProductSelectionIntro = ({ products, currentProduct }: ProductSelectionCon
 const ProductSelectionContent = () => {
   const navigate = useNavigate();
   const product = useProduct();
-  const { products } = useSystem();
+  const { products, licenses } = useSystem();
   const currentProduct = useProductInfo();
   const [submittedSelection, setSubmmitedSelection] = useState<Product>();
   const [isSubmitted, setIsSubmmited] = useState(false);
@@ -733,6 +842,7 @@ const ProductSelectionContent = () => {
           <GridItem sm={12} md={8} order={{ default: "1", md: "0" }}>
             <ProductForm
               products={products}
+              licenses={licenses}
               currentProduct={currentProduct}
               currentModeId={product?.mode}
               isSubmitted={isWaiting}
@@ -740,7 +850,13 @@ const ProductSelectionContent = () => {
             />
           </GridItem>
           <GridItem sm={12} md={4} order={{ default: "0", md: "1" }}>
-            {!isWaiting && <CurrentProductInfo product={currentProduct} modeId={product?.mode} />}
+            {!isWaiting && (
+              <CurrentProductInfo
+                product={currentProduct}
+                modeId={product?.mode}
+                licenses={licenses}
+              />
+            )}
           </GridItem>
         </Grid>
       </Page.Content>
