@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Sep 21 09:20:48 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Let keyboard users tab past the terminal panel, which now stops
+  in front of the shell to explain how to enter and leave it
+  (gh#agama-project/agama#3918, gh#agama-project/agama#3964).
+
+-------------------------------------------------------------------
 Fri Sep 18 07:32:00 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Show the name of the package being installed in one piece and stop
