@@ -178,7 +178,6 @@ impl Registry {
                     description: p.description.clone(),
                     icon: p.icon.clone(),
                     registration: p.registration,
-                    license: p.license.clone(),
                     licenses: p.licenses.clone(),
                     desktop_selection,
                     modes,
@@ -237,7 +236,6 @@ impl Registry {
             description,
             icon: template.icon.clone(),
             registration: template.registration,
-            license: template.license.clone(),
             licenses: template.licenses.clone(),
             desktop_selection,
             modes,
@@ -300,10 +298,6 @@ pub struct ProductTemplate {
     #[serde(default)]
     pub registration: bool,
     pub version: Option<String>,
-    /// License ID.
-    ///
-    /// Deprecated: use `licenses` instead.
-    pub license: Option<String>,
     /// License IDs (a product may require accepting more than one).
     #[serde(default)]
     pub licenses: Vec<String>,
@@ -356,7 +350,6 @@ impl ProductTemplate {
             translations: self.translations.clone(),
             registration: self.registration,
             version: self.version.clone(),
-            license: self.license.clone(),
             licenses: self.licenses.clone(),
             desktop_selection: self.desktop_selection.clone(),
             software,
@@ -393,10 +386,6 @@ pub struct ProductSpec {
     #[serde(default)]
     pub registration: bool,
     pub version: Option<String>,
-    /// License ID.
-    ///
-    /// Deprecated: use `licenses` instead.
-    pub license: Option<String>,
     /// License IDs (a product may require accepting more than one).
     #[serde(default)]
     pub licenses: Vec<String>,
@@ -658,7 +647,6 @@ mod test {
         assert_eq!(tw.icon, "Tumbleweed.svg");
         assert!(!tw.registration);
         assert_eq!(tw.version, None);
-        assert_eq!(tw.license, None);
         assert!(tw.licenses.is_empty());
 
         let translations = &tw.translations;
@@ -720,7 +708,6 @@ mod test {
         assert_eq!(sles.name, "SUSE Linux Enterprise Server 16.1");
         assert!(sles.registration);
         assert_eq!(sles.version, Some("16.1".to_string()));
-        assert_eq!(sles.license, Some("license.final".to_string()));
         assert_eq!(
             sles.licenses,
             vec!["license.final".to_string(), "license.beta".to_string()]

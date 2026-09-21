@@ -2,7 +2,6 @@ id: SLES
 name: SUSE Linux Enterprise Server 16.1
 registration: true
 version: "16.1"
-license: "license.final"
 licenses:
   - "license.final"
   - "license.beta"

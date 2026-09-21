@@ -48,10 +48,6 @@ pub struct Product {
     pub icon: String,
     /// Registration requirement
     pub registration: bool,
-    /// License ID.
-    ///
-    /// Deprecated: use `licenses` instead.
-    pub license: Option<String>,
     /// License IDs (a product may require accepting more than one).
     #[serde(default)]
     pub licenses: Vec<String>,
