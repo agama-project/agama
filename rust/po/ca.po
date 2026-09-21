@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-09 11:53+0000\n"
+"POT-Creation-Date: 2026-09-18 08:11+0000\n"
 "PO-Revision-Date: 2026-09-04 14:14+0000\n"
 "Last-Translator: David Medina <medipas@gmail.com>\n"
 "Language-Team: Catalan <https://l10n.opensuse.org/projects/agama/agama-rust-"
@@ -894,31 +894,31 @@ msgstr "Desament de la configuració dels usuaris"
 msgid "Configuring iSCSI devices"
 msgstr "Configuració de dispositius iSCSI"
 
-#: agama-manager/src/actions.rs:581
+#: agama-manager/src/actions.rs:582
 msgid "Configuring zFCP devices"
 msgstr "Configuració de dispositius zFCP"
 
-#: agama-manager/src/actions.rs:606
+#: agama-manager/src/actions.rs:608
 msgid "Configuring DASD devices"
 msgstr "Configuració de dispositius DASD"
 
-#: agama-manager/src/actions.rs:631
+#: agama-manager/src/actions.rs:634
 msgid "Setting up the network"
 msgstr "Configuració de la xarxa"
 
-#: agama-manager/src/actions.rs:661
+#: agama-manager/src/actions.rs:664
 msgid "Preparing the storage proposal"
 msgstr "Preparació de la proposta d'emmagatzematge"
 
-#: agama-manager/src/actions.rs:690
+#: agama-manager/src/actions.rs:694
 msgid "Storing bootloader settings"
 msgstr "Desament de la configuració del carregador d'arrencada"
 
-#: agama-manager/src/actions.rs:723
+#: agama-manager/src/actions.rs:728
 msgid "Preparing the software proposal"
 msgstr "Preparació de la proposta de programari"
 
-#: agama-manager/src/actions.rs:753
+#: agama-manager/src/actions.rs:758
 msgid "Configuring SELinux"
 msgstr "Configuració de SELinux"
 

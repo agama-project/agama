@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-09 11:53+0000\n"
+"POT-Creation-Date: 2026-09-18 08:11+0000\n"
 "PO-Revision-Date: 2026-08-25 15:33+0000\n"
 "Last-Translator: Efe Mert <efemert1@proton.me>\n"
 "Language-Team: Turkish <https://l10n.opensuse.org/projects/agama/agama-rust-"
@@ -785,32 +785,32 @@ msgstr "Kullanıcı ayarlarını sakla"
 msgid "Configuring iSCSI devices"
 msgstr "iSCSI aygıtlarını yapılandır"
 
-#: agama-manager/src/actions.rs:581
+#: agama-manager/src/actions.rs:582
 #, fuzzy
 msgid "Configuring zFCP devices"
 msgstr "iSCSI aygıtlarını yapılandır"
 
-#: agama-manager/src/actions.rs:606
+#: agama-manager/src/actions.rs:608
 msgid "Configuring DASD devices"
 msgstr "DASD cihazlarını yapılandır"
 
-#: agama-manager/src/actions.rs:631
+#: agama-manager/src/actions.rs:634
 msgid "Setting up the network"
 msgstr "Ağ kurulumu"
 
-#: agama-manager/src/actions.rs:661
+#: agama-manager/src/actions.rs:664
 msgid "Preparing the storage proposal"
 msgstr "Depolama teklifinin hazırlanması"
 
-#: agama-manager/src/actions.rs:690
+#: agama-manager/src/actions.rs:694
 msgid "Storing bootloader settings"
 msgstr "Önyükleyici ayarlarının saklanması"
 
-#: agama-manager/src/actions.rs:723
+#: agama-manager/src/actions.rs:728
 msgid "Preparing the software proposal"
 msgstr "Yazılım teklifinin hazırlanması"
 
-#: agama-manager/src/actions.rs:753
+#: agama-manager/src/actions.rs:758
 msgid "Configuring SELinux"
 msgstr "SELinux yapılandırılıyor"
 
