@@ -1,7 +1,8 @@
 -------------------------------------------------------------------
 Mon Sep 21 06:23:54 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
-- Allow defining multiple licenses per product (gh#agama-project/agama#3953).
+- Allow defining multiple licenses per product (jsc#PED-16988,
+  gh#agama-project/agama#3953).
 
 -------------------------------------------------------------------
 Tue Sep 15 16:19:38 UTC 2026 - José Iván López González <jlopez@suse.com>
