@@ -43,8 +43,7 @@ const getExtendedConfig = (): Promise<Config | null> => get("/api/extended_confi
 
 const getSystem = (): Promise<System | null> => get("/api/system");
 
-const getLicense = (id: string, lang: string = "en"): Promise<LicenseContent> =>
-  get(`/api/licenses/${id}?lang=${lang}`);
+const getLicense = (id: string): Promise<LicenseContent> => get(`/api/licenses/${id}`);
 
 const getProposal = (): Promise<Proposal | null> => get("/api/proposal");
 

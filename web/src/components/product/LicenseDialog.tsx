@@ -23,7 +23,7 @@
 import React, { useEffect, useState } from "react";
 import { Alert, ModalProps, Stack } from "@patternfly/react-core";
 import { Popup } from "~/components/core";
-import { Product } from "~/model/system";
+import type { License } from "~/model/system";
 import { getLicense } from "~/api";
 import { useInstallerL10n } from "~/context/installerL10n";
 import { sprintf } from "sprintf-js";
@@ -48,27 +48,34 @@ const languagesMatches = (language1: string, language2: string) => {
   return lang1 === lang2;
 };
 
-function LicenseDialog({ onClose, product }: { onClose: ModalProps["onClose"]; product: Product }) {
+type LicenseDialogProps = {
+  /** The license to display */
+  license: License;
+  /** The dialog title, the license name by default */
+  title?: string;
+  /** Callback fired when the dialog is closed */
+  onClose: ModalProps["onClose"];
+};
+
+function LicenseDialog({ license, title = license.name, onClose }: LicenseDialogProps) {
   const { language: uiLanguage } = useInstallerL10n();
-  const [language] = useState<string>(uiLanguage);
   const [licenseLanguage, setLicenseLanguage] = useState<string | null>(undefined);
-  const [license, setLicense] = useState<string>();
+  const [licenseContent, setLicenseContent] = useState<string>();
 
   useEffect(() => {
-    language &&
-      getLicense(product.license, language).then(({ body, language: foundLanguage }) => {
-        setLicense(body);
-        setLicenseLanguage(foundLanguage);
-      });
-  }, [language, product.license]);
+    getLicense(license.id).then(({ body, language }) => {
+      setLicenseContent(body);
+      setLicenseLanguage(language);
+    });
+  }, [license.id]);
 
   return (
-    <Popup isOpen title={product.name} onClose={onClose} actions={<Popup.Close />}>
+    <Popup isOpen title={title} onClose={onClose} actions={<Popup.Close />}>
       <Stack hasGutter>
         {licenseLanguage && !languagesMatches(uiLanguage, licenseLanguage) && (
           <MissingTranslation missing={uiLanguage} />
         )}
-        <pre>{license}</pre>
+        <pre>{licenseContent}</pre>
       </Stack>
     </Popup>
   );
