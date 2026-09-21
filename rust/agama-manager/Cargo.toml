@@ -20,7 +20,6 @@ agama-software = { workspace = true }
 agama-storage = { workspace = true }
 agama-users = { workspace = true }
 agama-utils = { workspace = true }
-async-trait = { workspace = true }
 gettext-rs = { workspace = true }
 merge = { workspace = true }
 serde = { workspace = true }

@@ -41,7 +41,6 @@
 //! use agama_utils::actor::{
 //!     self, Actor, Error, Message, MessageHandler
 //! };
-//! use async_trait::async_trait;
 //!
 //! #[derive(Default)]
 //! pub struct MyActor {
@@ -72,7 +71,6 @@
 //!     type Reply = u32;
 //! }
 //!
-//! #[async_trait]
 //! impl MessageHandler<Inc> for MyActor {
 //!     async fn handle(&mut self, message: Inc) -> Result<(), MyActorError> {
 //!         self.counter += message.amount;
@@ -80,7 +78,6 @@
 //!     }
 //! }
 //!
-//! #[async_trait]
 //! impl MessageHandler<Get> for MyActor {
 //!     async fn handle(&mut self, _message: Get) -> Result<u32, MyActorError> {
 //!         Ok(self.counter)
@@ -119,8 +116,14 @@ pub enum Error {
 /// Marks its implementors as potential actors.
 ///
 /// It enables those structs to handle actors messages.
-#[async_trait]
-pub trait Actor: 'static + Send {
+///
+/// This trait is never used as a trait object (`dyn Actor`), so it uses
+/// [`trait_variant::make`] instead of `#[async_trait]`: it lets us write plain
+/// `async fn` here while still requiring the generated futures to be `Send`
+/// (needed because actors run inside a `tokio::spawn`ed task), without paying
+/// for `async-trait`'s boxing at every implementation site.
+#[trait_variant::make(Send)]
+pub trait Actor: 'static {
     /// Actor error type. It should implement the conversion from the
     /// [ActorError] type, which represents communication-level problems.
     type Error: std::error::Error + From<Error> + Send + 'static;
@@ -131,7 +134,15 @@ pub trait Actor: 'static + Send {
     }
 
     /// Initializes the actor.
-    async fn init(&mut self) {}
+    ///
+    /// Written with an explicit `-> impl Future` (instead of `async fn`)
+    /// because `trait_variant::make` only rewrites the *signature* of a
+    /// method, not its body: an `async fn ... {}` default body would no
+    /// longer type-check once the signature is rewritten to return `impl
+    /// Future<Output = ()> + Send`.
+    fn init(&mut self) -> impl std::future::Future<Output = ()> {
+        async {}
+    }
 }
 
 /// Marker trait to indicate that a its implementor is a potential message.
@@ -205,7 +216,10 @@ where
 }
 
 /// Implements an [Actor's](Actor) handler for a given [Message].
-#[async_trait]
+///
+/// Like [Actor], this is never used as a trait object, so it uses
+/// [`trait_variant::make`] rather than `#[async_trait]`.
+#[trait_variant::make(Send)]
 pub trait MessageHandler<M: Message>: Actor {
     async fn handle(&mut self, message: M) -> Result<M::Reply, Self::Error>;
 }

@@ -28,7 +28,6 @@ use agama_utils::{
     message::GetResolvables,
     BoxFuture, Resolvable,
 };
-use async_trait::async_trait;
 use serde_json::Value;
 
 #[derive(thiserror::Error, Debug)]
@@ -101,21 +100,18 @@ impl Actor for Service {
     type Error = Error;
 }
 
-#[async_trait]
 impl MessageHandler<message::GetConfig> for Service {
     async fn handle(&mut self, _message: message::GetConfig) -> Result<Config, Error> {
         Ok(self.client.get_config().await?)
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::GetSystem> for Service {
     async fn handle(&mut self, _message: message::GetSystem) -> Result<Option<Value>, Error> {
         Ok(self.client.get_system().await?)
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::SetConfig<Config>> for Service {
     async fn handle(
         &mut self,
@@ -129,7 +125,6 @@ impl MessageHandler<message::SetConfig<Config>> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::SetKernelArg> for Service {
     async fn handle(&mut self, message: message::SetKernelArg) -> Result<(), Error> {
         if let Err(err) = self.client.set_kernel_arg(message.id, message.value).await {
@@ -139,14 +134,12 @@ impl MessageHandler<message::SetKernelArg> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::SetLocale> for Service {
     async fn handle(&mut self, _message: message::SetLocale) -> Result<(), Error> {
         Ok(())
     }
 }
 
-#[async_trait]
 impl MessageHandler<GetResolvables> for Service {
     async fn handle(&mut self, _message: GetResolvables) -> Result<Vec<Resolvable>, Error> {
         Ok(self.client.get_resolvables().await?)
