@@ -493,10 +493,18 @@ ui_password() {
   printf '%s' "$value"
 }
 
-# ui_menu [--size HEIGHT WIDTH] TITLE TEXT TAG1 DESC1 [TAG2 DESC2 ...]
+# ui_menu [--size HEIGHT WIDTH] [--default TAG] TITLE TEXT TAG1 DESC1 [TAG2 DESC2 ...]
 # -> selected tag on stdout
+# "--default TAG" preselects that entry (a no-op if TAG is not among the
+# items), useful to keep a previously selected value highlighted when the
+# same question is asked again.
 ui_menu() {
   if ui_size "$@"; then shift 3; fi
+  local default_tag=""
+  if [[ ${1-} == "--default" ]]; then
+    default_tag=$2
+    shift 2
+  fi
   local title=$1 text=$2 height=$UI_HEIGHT width=$UI_WIDTH
   shift 2
   local tag rc=0 index=1 choice menu_height=0
@@ -506,7 +514,9 @@ ui_menu() {
     if ((height > DIALOG_MENU_MARGIN)); then
       menu_height=$((height - DIALOG_MENU_MARGIN))
     fi
-    tag=$(run_dialog --title "$title" --no-cancel \
+    local -a default_opt=()
+    [[ -n $default_tag ]] && default_opt=(--default-item "$default_tag")
+    tag=$(run_dialog --title "$title" --no-cancel "${default_opt[@]}" \
       --menu "$text" "$height" "$width" "$menu_height" "$@") || rc=$?
     ((rc == 0)) || return 1
     printf '%s' "$tag"
@@ -514,9 +524,11 @@ ui_menu() {
   fi
 
   local -a tags=() descs=()
+  local default_choice=""
   while (($# > 1)); do
     tags+=("$1")
     descs+=("$2")
+    [[ -n $default_tag && $1 == "$default_tag" ]] && default_choice=${#tags[@]}
     shift 2
   done
   while true; do
@@ -526,8 +538,13 @@ ui_menu() {
     for index in "${!tags[@]}"; do
       printf '  %d) %s\n' "$((index + 1))" "${descs[index]}" >&2
     done
-    printf '\nSelection > ' >&2
+    if [[ -n $default_choice ]]; then
+      printf '\nSelection [%s] > ' "$default_choice" >&2
+    else
+      printf '\nSelection > ' >&2
+    fi
     read -r choice || return 1
+    [[ -z $choice ]] && choice=$default_choice
     if [[ $choice =~ ^[0-9]+$ ]] && ((choice >= 1 && choice <= ${#tags[@]})); then
       printf '%s' "${tags[choice - 1]}"
       return 0
@@ -1244,7 +1261,7 @@ ask_target_disk() {
   fi
 
   local selected
-  selected=$(ui_menu "Target Disk" \
+  selected=$(ui_menu --default "$TARGET_DISK" "Target Disk" \
     "Select the disk for the installation. ALL DATA ON IT WILL BE LOST." "${disks[@]}") || return 1
 
   local index
