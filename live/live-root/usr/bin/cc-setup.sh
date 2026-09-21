@@ -66,10 +66,6 @@ readonly MIN_TERMINAL_WIDTH=40
 # width by the line interface (dialog wraps them itself)
 readonly LINE_TEXT_WIDTH=76
 
-# Defaults for the first user account (see SPECIFICATION.md).
-readonly DEFAULT_USER_NAME="sysadmin"
-readonly DEFAULT_FULL_NAME="System Administrator"
-
 # --- Validation policy -----------------------------------------------------
 # TODO(security team): the final validation rules are still to be defined,
 # everything in this block is a placeholder.  The password strength itself is
@@ -95,8 +91,8 @@ declare -a SCRIPT_ARGS=()
 # written to a log, never echoed and never passed on a command line.
 ROOT_PASSWORD=""
 ROOT_PASSWORD_HASH=""
-USER_NAME="$DEFAULT_USER_NAME"
-FULL_NAME="$DEFAULT_FULL_NAME"
+USER_NAME=""
+FULL_NAME=""
 USER_PASSWORD=""
 USER_PASSWORD_HASH=""
 LUKS_PASSWORD=""
@@ -626,6 +622,12 @@ check_prerequisites() {
     printf 'The JSON template is not valid JSON: %s\n' "$TEMPLATE" >&2
     exit 1
   fi
+}
+
+# Extract default values from the JSON template (if present)
+read_template_defaults() {
+  USER_NAME=$(jq -e -r '.user.userName // empty' "$TEMPLATE" 2>/dev/null) || USER_NAME=""
+  FULL_NAME=$(jq -e -r '.user.fullName // empty' "$TEMPLATE" 2>/dev/null) || FULL_NAME=""
 }
 
 # An RMT server configured on the boot command line
@@ -1834,6 +1836,7 @@ main() {
   parse_arguments "$@"
   harden_environment
   check_prerequisites
+  read_template_defaults
   make_secure_dir
 
   trap cleanup EXIT
