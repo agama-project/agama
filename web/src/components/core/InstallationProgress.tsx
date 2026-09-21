@@ -36,6 +36,7 @@ export default function InstallationProgress() {
     <Page showProgressMonitor={false}>
       <Page.Content>
         <SideBySideLayout
+          stretchBody
           icon="deployed_code_update"
           title={
             <>
