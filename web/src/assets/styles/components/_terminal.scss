@@ -148,6 +148,7 @@
   gap: var(--pf-t--global--spacer--lg);
   padding: var(--pf-t--global--spacer--md);
   text-align: center;
+  font-family: var(--pf-t--global--font--family--mono);
   color: var(--agm-t--terminal--color);
   background-color: var(--agm-t--terminal--background--color);
   opacity: 0;
@@ -175,7 +176,7 @@
 // The way in comes first and is read first; the way back out is a follow-up.
 .agm-terminal__overlay-enter {
   margin: 0;
-  font-size: var(--pf-t--global--font--size--lg);
+  font-size: var(--pf-t--global--font--size--md);
 }
 
 .agm-terminal__overlay-leave {
