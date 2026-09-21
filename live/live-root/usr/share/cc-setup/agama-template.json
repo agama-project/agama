@@ -58,7 +58,7 @@
         "logicalVolumes": [
           {
             "name": "root",
-            "size": { "min": "5 GiB", "max": "40 GiB" },
+            "size": { "min": "5 GiB", "max": "20 GiB" },
             "filesystem": { "path": "/", "mountOptions": ["acl"] }
           },
           {
@@ -68,7 +68,7 @@
           },
           {
             "name": "varlogaudit",
-            "size": { "min": "256 MiB", "max": "1 GiB" },
+            "size": { "min": "256 MiB", "max": "512 MiB" },
             "filesystem": {
               "path": "/var/log/audit",
               "type": "btrfs",
