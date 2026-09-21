@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# This systemd generator allows using single "live.cc-install=1" boot option
+# This systemd generator allows using single "inst.cc=1" boot option
 # instead of "systemd.unit=multi-user.target systemd.wants=cc-setup.service
 # inst.remote=0" options. The advantage is that we need less boot options and it
 # also avoids saving the systemd.* options also to the installed system which we
@@ -17,8 +17,8 @@ cmdline="${CC_CMDLINE:-$(cat /proc/cmdline)}" # CC_CMDLINE allows testing
 enabled=0
 for arg in $cmdline; do
   case "$arg" in
-  live.cc-install=1) enabled=1 ;;
-  live.cc-install=*) enabled=0 ;; # last occurrence wins, like the kernel
+  inst.cc=1) enabled=1 ;;
+  inst.cc=*) enabled=0 ;; # last occurrence wins, like the kernel
   esac
 done
 
