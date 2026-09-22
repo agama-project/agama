@@ -22,6 +22,7 @@
 
 use std::fmt::Display;
 
+use agama_locale_data::LocaleId;
 use regex::Regex;
 use schemars::JsonSchema;
 use serde::Serialize;
@@ -30,28 +31,26 @@ use thiserror::Error;
 
 /// Represents a product license.
 ///
-/// It contains the license ID and the list of languages that with a translation.
-#[serde_as]
+/// It contains the license ID and name, in the current system language.
 #[derive(Clone, Debug, Serialize, JsonSchema)]
 pub struct License {
     /// License ID.
     pub id: String,
-    /// Languages in which the license is translated.
-    #[serde_as(as = "Vec<DisplayFromStr>")]
-    #[schemars(with = "Vec<String>")]
-    pub languages: Vec<LanguageTag>,
+    /// License name.
+    pub name: String,
 }
 
 /// Represents a license content.
 ///
-/// It contains the license ID and the body.
-///
-/// TODO: in the future it might contain a title, extracted from the text.
+/// It contains the license ID, name and body. The name is extracted from the first paragraph of
+/// the license text; the body is the rest of it.
 #[serde_as]
 #[derive(Clone, Debug, Serialize, JsonSchema)]
 pub struct LicenseContent {
     /// License ID.
     pub id: String,
+    /// License name.
+    pub name: String,
     /// License text.
     pub body: String,
     /// License language.
@@ -86,6 +85,15 @@ impl Display for LanguageTag {
             write!(f, "{}-{}", self.language, territory)
         } else {
             write!(f, "{}", self.language)
+        }
+    }
+}
+
+impl From<&LocaleId> for LanguageTag {
+    fn from(locale: &LocaleId) -> Self {
+        LanguageTag {
+            language: locale.language.clone(),
+            territory: Some(locale.territory.clone()),
         }
     }
 }

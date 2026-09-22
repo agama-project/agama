@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Sep 21 14:16:54 UTC 2026 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Do not crash if libstorage-ng raises an exception while trying
+  to check if a device can be resized (bsc#1272827).
+
+-------------------------------------------------------------------
 Tue Sep 15 16:16:50 UTC 2026 - José Iván López González <jlopez@suse.com>
 
 - Generate a D-Bus error if the installation action fails
