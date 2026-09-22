@@ -239,6 +239,8 @@ impl TaskManager {
             tracing::warn!("Failed to send TaskAdded event: {}", e);
         }
 
+        tracing::info!("New task added: {metadata:?}");
+
         let state = Arc::clone(&self.state);
         let events = self.events.clone();
 
@@ -252,17 +254,31 @@ impl TaskManager {
             let failed_deps = loop {
                 let state_guard = state.read().await;
 
-                let all_deps_done = dependencies.iter().all(|dep| {
-                    state_guard.succeeded.contains(dep) || state_guard.failed.contains(dep)
-                });
+                // Wait until previous tasks of the same scope are done (bsc#1280257).
+                let same_scope_task = state_guard
+                    .metadata
+                    .values()
+                    .find(|m| m.scope == metadata.scope && m.id < metadata.id);
 
-                if all_deps_done {
-                    let failed: Vec<TaskId> = dependencies
-                        .iter()
-                        .filter(|dep| state_guard.failed.contains(dep))
-                        .copied()
-                        .collect();
-                    break failed;
+                if let Some(m) = same_scope_task {
+                    tracing::info!(
+                        "Task '{}' is waiting for a previous task of the same scope: {:?}",
+                        metadata.id,
+                        m
+                    );
+                } else {
+                    let all_deps_done = dependencies.iter().all(|dep| {
+                        state_guard.succeeded.contains(dep) || state_guard.failed.contains(dep)
+                    });
+
+                    if all_deps_done {
+                        let failed: Vec<TaskId> = dependencies
+                            .iter()
+                            .filter(|dep| state_guard.failed.contains(dep))
+                            .copied()
+                            .collect();
+                        break failed;
+                    }
                 }
 
                 // lets collection notification here to avoid race condition if notification is send immediatelly after drop of guard
