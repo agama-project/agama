@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Sep 22 14:54:01 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Block the registration page while software changes are in progress
+  (bsc#1277099, gh#agama-project/agama#3973).
+
+-------------------------------------------------------------------
 Fri Sep 18 14:30:33 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Ask to accept each license of a product requiring several
