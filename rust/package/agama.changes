@@ -1,4 +1,23 @@
 -------------------------------------------------------------------
+Mon Sep 21 15:32:00 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Allow defining multiple licenses per product (jsc#PED-16988,
+  gh#agama-project/agama#3953).
+
+-------------------------------------------------------------------
+Mon Sep 21 15:31:00 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Recognize the ports whose connection refers to its controller by
+  UUID instead of by interface name, so the bonds and bridges
+  created by dracut are not broken when Agama writes the connections
+  back (gh#agama-project/agama#3562).
+
+-------------------------------------------------------------------
+Mon Sep 21 15:30:00 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Avoid blocking storage service (bsc#1280751).
+
+-------------------------------------------------------------------
 Mon Sep 21 07:11:10 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Drop the dependency on async_trait (gh#agama-project/agama#3950)
