@@ -118,10 +118,6 @@ const PortsField = withForm({
                 const controller = controllerOf(device.name, connections);
                 return controller === controllerIface ? undefined : controller;
               };
-              // Devices already used elsewhere are still offered, since moving
-              // a port from one controller to another is legitimate. The dialog
-              // only grows a column for it when there is something to tell.
-              const hasPortsInUse = available.some((d) => portOf(d));
 
               const options = available.map((device) => ({
                 value: device.name,
@@ -175,7 +171,13 @@ const PortsField = withForm({
                       devices={available}
                       selected={available.filter((d) => ports.includes(d.name))}
                       selectionMode="multiple"
-                      portOf={hasPortsInUse ? portOf : undefined}
+                      // Devices already used elsewhere are still offered, since
+                      // moving a port from one controller to another is
+                      // legitimate; the column only says so. It is asked for
+                      // whenever ports are picked, even when no device is used
+                      // by anything: a column coming and going with the data
+                      // leaves the user wondering what they did to lose it.
+                      portOf={portOf}
                       // Only the devices found are offered, so a port naming
                       // none of them, written out by hand or waiting for a card
                       // to show up, is kept: the dialog never asked about it.

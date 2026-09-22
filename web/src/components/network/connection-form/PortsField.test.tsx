@@ -384,7 +384,15 @@ describe("PortsField", () => {
       mockConnections = [bond("bond0", ["enp2s0"])];
       const { user } = installerRender(<TestForm />);
       await openDialog(user);
-      expect(dialog().queryByRole("columnheader", { name: "Used by" })).not.toBeInTheDocument();
+      expect(within(deviceRow("enp2s0")).queryByText("bond0")).not.toBeInTheDocument();
     });
+  });
+
+  // A column that comes and goes with the data leaves the user wondering what
+  // they did to lose it, so it is there whenever ports are being picked.
+  it("keeps the 'Used by' column even when no device is used by anything", async () => {
+    const { user } = installerRender(<TestForm />);
+    await openDialog(user);
+    dialog().getByRole("columnheader", { name: "Used by" });
   });
 });
