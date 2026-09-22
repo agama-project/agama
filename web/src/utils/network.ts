@@ -579,7 +579,6 @@ export {
   isVirtual,
   isValidIp,
   isValidIpPrefix,
-  LOOPBACK_IFACE,
   securityFromFlags,
   stringToIPInt,
 };

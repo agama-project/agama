@@ -38,7 +38,6 @@ import {
   isValidNameserver,
   isValidDNSSearchDomain,
   isLoopback,
-  LOOPBACK_IFACE,
 } from "~/utils/network";
 
 import BindingModeSelector from "./BindingModeSelector";
@@ -83,13 +82,6 @@ type FormValues = typeof defaultOptions.defaultValues;
  * Stays in useAppForm's validators.onSubmitAsync where TanStack Form expects
  * it. useFormSubmit's onSubmit is only called after field validation passes.
  */
-/**
- * Devices a connection is never bound to. The loopback device is local to the
- * machine, so binding a connection to it would produce a profile that cannot
- * reach anything.
- */
-const UNBINDABLE_DEVICES = [LOOPBACK_IFACE];
-
 function ConnectionFormContent({
   initialConnection,
   devices,
@@ -98,9 +90,13 @@ function ConnectionFormContent({
   const navigate = useNavigate();
   const { mutateAsync: updateConnection } = useConnectionMutation();
   const isEditing = initialConnection !== null;
-  // Asked of the device rather than of its name, so one the system reports as
-  // the loopback under another name is left out too.
+  // A connection is never bound to the loopback device: it is local to the
+  // machine, so the profile would reach nothing. Asked of the device rather
+  // than of its name, so one the system reports as the loopback under another
+  // name is left out too. The selector picks its own devices up and only takes
+  // names, hence the two shapes of the same answer.
   const bindableDevices = devices.filter((d) => !isLoopback(d));
+  const unbindableDevices = devices.filter(isLoopback).map((d) => d.name);
 
   // Generates and writes the auto-computed name when the binding changes, as
   // long as the user has not manually edited it. `isDirty` is used instead of
@@ -231,7 +227,7 @@ function ConnectionFormContent({
                           by="iface"
                           label={_("Device name")}
                           sync={{ field: "ifaceMac", with: (d) => d.macAddress }}
-                          exclude={{ devices: UNBINDABLE_DEVICES }}
+                          exclude={{ devices: unbindableDevices }}
                         />
                       )}
                       {bindingMode === "mac" && (
@@ -240,7 +236,7 @@ function ConnectionFormContent({
                           by="mac"
                           label={_("Device MAC address")}
                           sync={{ field: "iface", with: (d) => d.name }}
-                          exclude={{ devices: UNBINDABLE_DEVICES }}
+                          exclude={{ devices: unbindableDevices }}
                         />
                       )}
                     </>
