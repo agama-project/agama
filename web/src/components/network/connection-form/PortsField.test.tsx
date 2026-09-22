@@ -255,7 +255,9 @@ describe("PortsField", () => {
     within(deviceRow("enp2s0")).getByText("No link");
   });
 
-  it("leaves out the details no device reports", async () => {
+  // A column that comes and goes with the data leaves the user wondering what
+  // they did to lose it, so it stays and the cells are the empty ones.
+  it("keeps the columns whose details no device reports", async () => {
     mockDevices = [
       mockLoopback,
       mockBondDevice,
@@ -263,7 +265,9 @@ describe("PortsField", () => {
     ];
     const { user } = installerRender(<TestForm />);
     await openDialog(user);
-    expect(dialog().queryByRole("columnheader", { name: "Link" })).not.toBeInTheDocument();
+
+    dialog().getByRole("columnheader", { name: "Link" });
+    expect(within(deviceRow("enp1s0")).queryByText(/Gb\/s|Mb\/s|No link/)).not.toBeInTheDocument();
   });
 
   it("adds the picked devices to the list", async () => {

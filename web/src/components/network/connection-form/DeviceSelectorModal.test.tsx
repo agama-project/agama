@@ -136,9 +136,11 @@ describe("DeviceSelectorModal", () => {
       expect(secondRow).toHaveTextContent("1 Gb/s");
     });
 
-    it("leaves the column out when no device reports a link", () => {
+    // A column that comes and goes with the data leaves the user wondering
+    // what they did to lose it, so it stays and the cells are the empty ones.
+    it("keeps the column when no device reports a link", () => {
       renderModal();
-      expect(screen.queryByRole("columnheader", { name: "Link" })).toBeNull();
+      screen.getByRole("columnheader", { name: "Link" });
     });
   });
 

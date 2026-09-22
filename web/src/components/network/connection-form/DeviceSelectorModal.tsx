@@ -93,8 +93,9 @@ const deviceAddresses = (device: Device): React.ReactNode => (
  * Dialog for picking network devices from a table showing more details than a
  * list can hold: name, MAC address, type, driver, link, state and addresses.
  *
- * The details no device in the table reports are left out altogether, rather
- * than drawing a column every row leaves empty.
+ * Every detail gets a column whether or not the devices report it, and the
+ * ones that do not leave the cell empty. A column coming and going with the
+ * data leaves the user wondering what they did to lose it.
  *
  * The table can be sorted, and the pick is only reported to the caller when the
  * user confirms.
@@ -129,11 +130,6 @@ export default function DeviceSelectorModal({
   };
   const [selection, setSelection] = useState<Device[]>(selected ?? defaultSelection());
 
-  // The link is best-effort: a device reports it or it does not. The column is
-  // only added when at least one device has something to say, the same way
-  // "Used by" is.
-  const hasLink = devices.some((device) => deviceLinkLabel(device));
-
   const columns = [
     {
       // TRANSLATORS: table column with the name of a network device and, below
@@ -161,17 +157,17 @@ export default function DeviceSelectorModal({
       ),
       sortingKey: "type",
     },
-    ...(hasLink
-      ? [
-          {
-            // TRANSLATORS: table column telling whether a network device has a
-            // cable plugged in and, when it does, how fast the link is.
-            name: _("Link"),
-            value: (device: Device) => deviceLinkLabel(device),
-            sortingKey: deviceLinkRank,
-          },
-        ]
-      : []),
+    {
+      // TRANSLATORS: table column telling whether a network device has a cable
+      // plugged in and, when it does, how fast the link is.
+      name: _("Link"),
+      // The link is best-effort: a device reports it or it does not, and the
+      // ones that do not leave the cell empty. The column stays either way,
+      // since one that comes and goes with the data leaves the user wondering
+      // what they did to lose it.
+      value: (device: Device) => deviceLinkLabel(device),
+      sortingKey: deviceLinkRank,
+    },
     {
       name: _("State"),
       value: (device: Device) => deviceStateLabel(device.state),
