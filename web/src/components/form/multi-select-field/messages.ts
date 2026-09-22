@@ -101,13 +101,6 @@ export function allValuesRemoved(): TranslatedString {
   return _("All values removed.");
 }
 
-/** Said when the values that did not pass validation are taken out at once. */
-export function invalidValuesRemoved(count: number): TranslatedString {
-  // TRANSLATORS: said after a single press takes out every value of the field
-  // that does not pass validation. %d is how many were removed.
-  return sprintf(_("%d invalid values removed."), count);
-}
-
 /** Said when the field switches between showing every value and summarizing. */
 export function overflowState(shownCount: number, totalCount: number): TranslatedString {
   if (shownCount >= totalCount) {

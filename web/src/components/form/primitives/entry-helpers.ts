@@ -29,7 +29,7 @@
  * journey and the naming of the list the entries live in.
  */
 
-import { sift, unique } from "radashi";
+import { fork, sift, unique } from "radashi";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
 import type { TranslatedString } from "~/i18n";
@@ -162,6 +162,31 @@ export function pasteAnnouncement(
         rejection.count,
         skipped,
       );
+}
+
+/**
+ * Keeps the entries that pass validation and says how many went.
+ *
+ * A field can end up holding several entries in error at once, from a paste or
+ * from a rule that only speaks up on submit, and taking them out one by one to
+ * try again is work the field can do itself. Pure, so each field is left to
+ * store the entries it keeps and to announce the sentence its own way.
+ *
+ * Shared for the same reason as {@link pasteAnnouncement}: the outcome is the
+ * same in every field holding a list, so it is worded the same.
+ */
+export function clearInvalid(
+  entries: string[],
+  errorFor: (entry: string) => string | undefined,
+): { kept: string[]; announcement: TranslatedString } {
+  const [kept, removed] = fork(entries, (entry) => !errorFor(entry));
+
+  return {
+    kept,
+    // TRANSLATORS: screen reader announcement when all invalid entries are
+    // cleared at once. %d is the number of removed entries.
+    announcement: sprintf(_("%d invalid entries removed."), removed.length),
+  };
 }
 
 /**

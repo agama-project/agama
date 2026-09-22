@@ -21,7 +21,7 @@
  */
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { debounce, fork, sift, unique } from "radashi";
+import { debounce, sift, unique } from "radashi";
 import {
   Button,
   FormGroup,
@@ -39,6 +39,7 @@ import Text from "~/components/core/Text";
 import Entries from "~/components/form/multi-select-field/Entries";
 import OptionList from "~/components/form/multi-select-field/OptionList";
 import {
+  clearInvalid as withoutInvalid,
   filterNew,
   normalizeValue,
   parsePasteEntries,
@@ -57,7 +58,6 @@ import {
   contextualHint,
   filterOutcome,
   focusHintSentences,
-  invalidValuesRemoved,
   overflowState,
   sightedHint,
   valueAdded,
@@ -612,17 +612,11 @@ export default function MultiSelectField({
     say(allValuesRemoved());
   };
 
-  /**
-   * Takes out every value that did not pass validation.
-   *
-   * A field can end up with several of them at once, from a paste or from a
-   * rule that only speaks up on submit, and taking them out one by one to try
-   * again is work the field can do itself.
-   */
+  /** Takes out every value that did not pass validation. */
   const clearInvalid = () => {
-    const [valid, invalid] = fork(values, (value) => !errorFor(value));
-    field.handleChange(valid);
-    say(invalidValuesRemoved(invalid.length));
+    const { kept, announcement } = withoutInvalid(values, errorFor);
+    field.handleChange(kept);
+    say(announcement);
     inputRef.current?.focus();
   };
 

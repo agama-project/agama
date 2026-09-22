@@ -21,7 +21,7 @@
  */
 
 import React, { useState, useRef } from "react";
-import { fork, sift, unique } from "radashi";
+import { sift, unique } from "radashi";
 import { sprintf } from "sprintf-js";
 import {
   FormGroup,
@@ -37,6 +37,7 @@ import Interpolate from "~/components/core/Interpolate";
 import EntriesListbox from "~/components/form/primitives/EntriesListbox";
 import FieldEntry from "~/components/form/primitives/FieldEntry";
 import {
+  clearInvalid as withoutInvalid,
   filterNew,
   NAVIGATION_KEYS,
   normalizeValue,
@@ -401,12 +402,10 @@ export default function ArrayField({
   };
 
   const clearInvalid = () => {
-    const [valid, invalid] = fork(value, (v) => !errorFor(v));
-    onChange(valid);
+    const { kept, announcement } = withoutInvalid(value, errorFor);
+    onChange(kept);
     clearActive();
-    // TRANSLATORS: screen reader announcement when all invalid entries are
-    // cleared. %d is the number of removed entries.
-    announce(sprintf(_("%d invalid entries removed."), invalid.length));
+    announce(announcement);
     inputRef.current?.focus();
   };
 
