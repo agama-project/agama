@@ -774,7 +774,11 @@ export default function MultiSelectField({
   /** Render */
 
   const entryErrors = unique(sift(values.map(errorFor)));
-  const hasAnyError = entryErrors.length > 0 || fieldErrors.length > 0;
+  // A rule refusing the whole field and the mark pointing at the value that
+  // broke it are often worded the same, and hearing the same sentence twice
+  // says nothing the first one did not.
+  const errorMessages = unique([...fieldErrors, ...entryErrors]);
+  const hasAnyError = errorMessages.length > 0;
   // The summary sticks around while it can be flipped back, and otherwise only
   // for as long as it stands for something.
   const hasSummary = hasHiddenValues && (hasToggle || !showsEveryValue);
@@ -912,10 +916,7 @@ export default function MultiSelectField({
           </HelperTextItem>
           {hasAnyError && (
             <HelperTextItem variant="error">
-              {/* A rule refusing the whole field and the mark pointing at the
-                  value that broke it are often worded the same, and hearing
-                  the same sentence twice says nothing the first one did not. */}
-              <span>{unique(sift([...fieldErrors, ...entryErrors])).join(". ")}</span>
+              <span>{errorMessages.join(". ")}</span>
               {entryErrors.length > 0 && (
                 <>
                   {". "}
