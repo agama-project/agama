@@ -161,10 +161,6 @@ export default function DeviceSelectorModal({
       // TRANSLATORS: table column telling whether a network device has a cable
       // plugged in and, when it does, how fast the link is.
       name: _("Link"),
-      // The link is best-effort: a device reports it or it does not, and the
-      // ones that do not leave the cell empty. The column stays either way,
-      // since one that comes and goes with the data leaves the user wondering
-      // what they did to lose it.
       value: (device: Device) => deviceLinkLabel(device),
       sortingKey: deviceLinkRank,
     },

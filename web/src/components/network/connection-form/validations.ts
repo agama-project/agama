@@ -27,10 +27,6 @@
  * form/validation-helpers.ts. The exported validate function is wired into the
  * form's onSubmitAsync validator, following the submit-only validation
  * convention.
- *
- * A single rule is exported on its own, `portError`, since the ports field
- * marks the offending port with the very same sentence the form refuses it
- * with.
  */
 
 import { shake } from "radashi";
