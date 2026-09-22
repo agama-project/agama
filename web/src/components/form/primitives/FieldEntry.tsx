@@ -44,7 +44,7 @@ type FieldEntryProps = {
   /**
    * How the entry is drawn. Use "outline" for a value the field cannot offer
    * again, so it reads as something the user brought in themselves. Defaults
-   * to "filled".
+   * to "filled", and an entry in error is filled whatever this says.
    */
   variant?: "filled" | "outline";
 };
@@ -54,6 +54,10 @@ type FieldEntryProps = {
  *
  * Both the visual color and the aria-label carry validation state, so
  * sighted and assistive-technology users receive the same information.
+ *
+ * An entry in error is always filled, so a validation error looks the same
+ * wherever it turns up. Outlined only says the field cannot offer the value
+ * again, which is the lesser thing to know about a value that is wrong.
  *
  * Belongs inside an {@link EntriesListbox}, which gives the group of entries
  * its role and its name.
@@ -112,7 +116,7 @@ export default function FieldEntry({
         // TRANSLATORS: accessible label for an invalid entry. First %s is the entry value, second %s is the validation error.
         aria-label={error ? sprintf(_("%s is invalid: %s"), labelText, error) : labelText}
         color={error ? "red" : undefined}
-        variant={variant}
+        variant={error ? "filled" : variant}
         closeBtnProps={{
           tabIndex: -1,
           onMouseDown: handleCloseMouseDown,
