@@ -1,4 +1,38 @@
 -------------------------------------------------------------------
+Mon Sep 21 07:11:10 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Drop the dependency on async_trait (gh#agama-project/agama#3950)
+  because it is not needed by our use case. This change reduces the
+  build time.
+
+-------------------------------------------------------------------
+Fri Sep 18 07:30:00 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Cancel actions if setting storage, DASD, zFCP, iSCSI or bootloader
+  configs fail (related to bsc#1280006).
+
+-------------------------------------------------------------------
+Wed Sep 16 11:50:09 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Add experimental support for 32 bit architectures which are in
+  TW ports (bsc#1266309)
+
+-------------------------------------------------------------------
+Thu Sep 10 14:00:00 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Report more details about the network devices ("speed",
+  "carrier", "driver", "busPath" and "mtu"), so the user interface
+  can tell one device from another when picking the ports of a bond
+  or a bridge (related to bsc#1279417, gh#agama-project/agama#3884)
+
+-------------------------------------------------------------------
+Thu Sep 10 13:10:57 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add a WebSocket-backed terminal endpoint, spawning a shell
+  attached to a pseudo-terminal for the web UI terminal panel
+  (gh#agama-project/agama#3868).
+
+-------------------------------------------------------------------
 Thu Sep 10 08:26:22 UTC 2026 - PadaCommit <185716433+PadaCommit@users.noreply.github.com>
 
 - Fix schema URLs in rust/share/ (gh#agama-project/agama#3881):

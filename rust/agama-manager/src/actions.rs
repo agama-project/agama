@@ -558,11 +558,12 @@ impl SetConfigAction {
             )
             .depends_on(dependencies)
             .run(|| async move {
-                let future = handler
+                handler
                     .call(iscsi::message::SetConfig::new(iscsi_config))
                     .await
+                    .map_err(TaskError::from_error)?
+                    .await
                     .map_err(TaskError::from_error)?;
-                let _ = future.await;
                 Ok(())
             })
             .await
@@ -582,11 +583,12 @@ impl SetConfigAction {
                 )
                 .depends_on(dependencies)
                 .run(|| async move {
-                    let future = handler
+                    handler
                         .call(s390::message::SetZFCPConfig::new(zfcp_config))
                         .await
+                        .map_err(TaskError::from_error)?
+                        .await
                         .map_err(TaskError::from_error)?;
-                    let _ = future.await;
                     Ok(())
                 })
                 .await,
@@ -607,11 +609,12 @@ impl SetConfigAction {
                 )
                 .depends_on(dependencies)
                 .run(|| async move {
-                    let future = handler
+                    handler
                         .call(s390::message::SetDASDConfig::new(dasd_config))
                         .await
+                        .map_err(TaskError::from_error)?
+                        .await
                         .map_err(TaskError::from_error)?;
-                    let _ = future.await;
                     Ok(())
                 })
                 .await,
@@ -669,11 +672,12 @@ impl SetConfigAction {
                         .await
                         .map_err(TaskError::from_error)?;
                 }
-                let future = handler
+                handler
                     .call(storage::message::SetConfig::new(product, storage_config))
                     .await
+                    .map_err(TaskError::from_error)?
+                    .await
                     .map_err(TaskError::from_error)?;
-                let _ = future.await;
                 Ok(())
             })
             .await
@@ -691,11 +695,12 @@ impl SetConfigAction {
             )
             .depends_on(dependencies)
             .run(|| async move {
-                let future = handler
+                handler
                     .call(bootloader::message::SetConfig::new(bootloader_config))
                     .await
+                    .map_err(TaskError::from_error)?
+                    .await
                     .map_err(TaskError::from_error)?;
-                let _ = future.await;
                 Ok(())
             })
             .await

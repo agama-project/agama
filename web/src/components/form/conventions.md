@@ -20,6 +20,7 @@ examples and refined patterns.
   - [5. Choice selector (mode or behavior selection)](#5-choice-selector-mode-or-behavior-selection)
   - [6. Revealed by a checkbox](#6-revealed-by-a-checkbox)
   - [7. Footer entry, help that stays out of the way](#7-footer-entry-help-that-stays-out-of-the-way)
+  - [8. Several values in one field](#8-several-values-in-one-field)
 - [Read-only information](#read-only-information)
 - [Accessibility notes](#accessibility-notes)
 - [Validation](#validation)
@@ -48,6 +49,7 @@ examples and refined patterns.
   - [When to Use This Pattern](#when-to-use-this-pattern)
 - [Code Organization](#code-organization)
   - [Directory Structure](#directory-structure)
+  - [The Field Library](#the-field-library)
   - [File Naming](#file-naming)
   - [The fields.ts Module](#the-fieldsts-module)
   - [Sharing fields across forms](#sharing-fields-across-forms)
@@ -344,8 +346,45 @@ footerEntry={{
 - Most users need the route: give it a control of its own.
 - The route is the only way to reach a value: the list is the wrong control.
 
-Available today on `DropdownField` through its `footerEntry` prop. Other
-selectors can grow the same idea when a case for it turns up.
+Available today on `DropdownField` and `MultiSelectField` through their
+`footerEntry` prop. Both render it from the same piece, so the entry looks and
+reads the same wherever it appears. Other selectors can grow the same idea when
+a case for it turns up.
+
+### 8. Several values in one field
+
+Some fields hold a list rather than a single value: DNS servers, search
+domains, bond ports. Two components cover that, and the choice between them is
+whether the values are known in advance.
+
+`ArrayField` takes whatever the user types. Use it when the application cannot
+know the values beforehand: addresses, domains, names the user invents.
+
+`MultiSelectField` offers a list to choose from, filtered as the user types,
+and takes values written out as well when `allowCustomEntries` is set. Use it
+when most of the values can be enumerated: devices, patterns, anything the
+backend can list. It summarizes the values beyond `entriesThreshold` as
+"N more", so a field holding many of them does not push the rest of the form
+down the page. As the user types it picks out the best match, so Enter or Tab
+takes it without a trip through the list; pass `autoHighlight={false}` where
+guessing for the user would get in their way.
+
+Both keep the committed values inside the control, ahead of the text box, and
+both give the field a single tab stop: the text box holds real focus, and
+everything else the keyboard reaches is pointed at with `aria-activedescendant`.
+Prefer growing one of the two over writing a third.
+
+#### Why the options are not checkboxes
+
+A list taking several values invites a checkbox on every option. It was tried
+and dropped. PatternFly's menu item with a checkbox renders a real `<input>`
+and turns the item into a `<label>`, which costs the option its `role="option"`
+and its `aria-selected`: the listbox stops being a listbox, and the keyboard
+model built on `aria-activedescendant` falls apart with it. A native checkbox
+placed inside the option instead is invalid HTML, and tells assistive
+technologies nothing they do not already get. A drawn glyph works, but earns
+its place no better: the list already says it takes several values, and each
+option already says whether it is one of them.
 
 ---
 
@@ -491,20 +530,23 @@ Work through these questions in order:
 6. Is the field an advanced option that most users will never need? Use pattern 6.
 7. Do the options serve most users, while a harder setup needs more help than
    the list can give? Add a footer entry to the selector, pattern 7.
+8. Does the field hold a list of values rather than one? Use pattern 8, picking
+   the component by whether the values are known in advance.
 
 ---
 
 ## Summary
 
-| Pattern                           | Visibility   | Label                             | Validated on submit |
-| --------------------------------- | ------------ | --------------------------------- | ------------------- |
-| Required                          | Always       | No suffix                         | Yes                 |
-| Always optional/context-dependent | Always       | `(optional)` or clarifying suffix | No                  |
-| Conditionally required            | On condition | No suffix                         | Yes                 |
-| Conditionally optional            | On condition | `(optional)`                      | No                  |
-| Choice selector                   | Always       | No suffix                         | Depends on choice   |
-| Checkbox opt-in                   | On checkbox  | No suffix                         | Yes, when rendered  |
-| Footer entry                      | Inside the list | Short, ends in `...`           | Sets no value       |
+| Pattern                           | Visibility      | Label                             | Validated on submit |
+| --------------------------------- | --------------- | --------------------------------- | ------------------- |
+| Required                          | Always          | No suffix                         | Yes                 |
+| Always optional/context-dependent | Always          | `(optional)` or clarifying suffix | No                  |
+| Conditionally required            | On condition    | No suffix                         | Yes                 |
+| Conditionally optional            | On condition    | `(optional)`                      | No                  |
+| Choice selector                   | Always          | No suffix                         | Depends on choice   |
+| Checkbox opt-in                   | On checkbox     | No suffix                         | Yes, when rendered  |
+| Footer entry                      | Inside the list | Short, ends in `...`              | Sets no value       |
+| Several values in one field       | Always          | No suffix                         | Yes                 |
 
 ---
 
@@ -1120,8 +1162,8 @@ These forms require extra care because:
 Three hooks/HOCs cover all persistent-form concerns. Each has a single
 responsibility:
 
-| Abstraction       | File                             | Responsibility                                             |
-| ----------------- | -------------------------------- | ---------------------------------------------------------- |
+| Abstraction       | File                                    | Responsibility                                             |
+| ----------------- | --------------------------------------- | ---------------------------------------------------------- |
 | `withFrozenQuery` | `components/form/with-frozen-query.tsx` | Freeze initial data; protect from refetch re-renders       |
 | `useFormSubmit`   | `hooks/use-form-submit.tsx`             | Submit lifecycle: reset, success alert, error surfacing    |
 | `useUpdateConfig` | `hooks/model/config.ts`                 | Safe write: fetch fresh config at submit time, merge patch |
@@ -1536,8 +1578,8 @@ Do not reach for it when:
 ## Code Organization
 
 The following conventions apply to all forms using TanStack Form across the
-application. They ensure forms are discoverable, maintainable, and follow
-consistent patterns.
+application, and to the field library they draw from. They ensure forms are
+discoverable, maintainable, and follow consistent patterns.
 
 ### Directory Structure
 
@@ -1566,6 +1608,67 @@ Examples:
   `network/connection-form/`, `system/system-form/`.
 - Full split (also `queries.ts`, `transformations.ts`, `validations.ts`):
   `storage/partition-form/`, `storage/logical-volume-form/`.
+
+### The Field Library
+
+Forms take their fields from `components/form/`, which is three levels deep and
+organized by who imports what:
+
+```
+components/form/
+  TextField.tsx             # the fields themselves
+  DropdownField.tsx
+  validation-helpers.ts     # what a form author reaches for directly
+  Fieldset.tsx
+  LabelText.tsx
+
+  primitives/               # what fields are built from
+    FieldEntry.tsx
+    EntriesListbox.tsx
+    entry-helpers.ts
+    FooterEntryOption.tsx
+    option-filter.ts
+
+  multi-select-field/       # one field's own modules
+    MultiSelectField.tsx
+    Entries.tsx
+    OptionList.tsx
+    rows.ts
+    messages.ts
+    use-keyboard.ts
+```
+
+**Top level** is the public surface. Anything there is fair game for any form:
+the fields, and the helpers that support writing one.
+
+**`primitives/`** holds what sits below the level of a field: a committed value
+rendered as a label, the accessible list wrapping those values, the footer
+entry of a list, text matching. Fields compose these; forms have no reason to
+import them. They are called primitives rather than parts because the word
+names a level rather than a relation. A field is a part of a form and these are
+parts of a field, so "part" says nothing, while a field is a composite — label,
+validation, form-context binding — and these are the layer beneath it.
+
+A module moves into `primitives/` when a second field needs it, not in
+anticipation of one. Two consumers earns the move; it does not earn a
+subdirectory. Keep `primitives/` flat until one group inside it is large enough
+to be hard to read.
+
+**`<field-name>-field/`** is for a field that outgrew a single file. Only
+`multi-select-field/` qualifies today. Whether a field has earned one is a
+judgment call, not a size threshold: `ArrayField` is large and stays a single
+file, because being long is not the same as having separable parts.
+
+Inside such a directory, the modules private to the field drop the field's
+name, which the directory already carries: `rows.ts`, `messages.ts`,
+`OptionList.tsx`. The field component itself keeps its full name. Forms
+reference it as a registered field component (`<field.MultiSelectField />`), so
+the file should be findable by the name the form says out loud — unlike a
+form's `Form.tsx`, which nothing outside its own directory ever names.
+
+A hook belonging to one field lives with it, not in `hooks/`. `use-keyboard.ts`
+serves only `MultiSelectField`. `hooks/use-combobox-keyboard.ts` stays where it
+is, because `components/core/` uses it too.
 
 ### File Naming
 

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- OBS-ExclusiveArch: aarch64 ppc64le x86_64 s390x -->
+<!-- OBS-ExclusiveArch: aarch64 ppc64le x86_64 s390x i586 armv6hl armv7hl -->
 <!-- OBS-Profiles: @BUILD_FLAVOR@ -->
 <!-- OBS-Milestone: %current_milestone -->
 
@@ -50,6 +50,12 @@
             <bootloader name="grub2" timeout="10"/>
         </type>
     </preferences>
+    <!-- experimental support for 32-bit and armv architectures, i686 is needed for kiwi in OBS as sometimes it builds on newer definition -->
+    <preferences arch="i586,i686,armv6hl,armv7hl,armv6l,armv7l" profiles="openSUSE,SUSE_SLE_16.1,SUSE_SLE_NV_16.1,Leap_16.1">
+        <type image="iso" flags="dmsquash" mediacheck="true" publisher="SUSE LLC" editbootconfig="fix_bootconfig">
+            <bootloader name="grub2" timeout="10"/>
+        </type>
+    </preferences>
     <preferences arch="s390x" profiles="openSUSE,SUSE_SLE_16.1,Leap_16.1">
         <type image="iso" flags="dmsquash" mediacheck="true" publisher="SUSE LLC" editbootconfig="fix_bootconfig">
             <bootloader name="custom" />
@@ -75,8 +81,9 @@
         <package name="vim-data"/>
         <package name="grub2"/>
         <package name="grub2-arm64-efi" arch="aarch64"/>
+        <package name="grub2-arm-efi" arch="armv6hl,armv7hl,armv6l,armv7l"/>
         <package name="grub2-x86_64-efi" arch="x86_64"/>
-        <package name="grub2-i386-pc" arch="x86_64"/>
+        <package name="grub2-i386-pc" arch="x86_64,i586,i686"/>
         <package name="grub2-s390x-emu" arch="s390x" />
         <package name="grub2-powerpc-ieee1275" arch="ppc64le"/>
         <package name="syslinux" arch="x86_64"/>
@@ -117,7 +124,7 @@
         <package name="jq"/>
         <package name="yast2-schema"/>
         <package name="qrencode"/>
-        <package name="qemu-guest-agent" />
+        <package name="qemu-guest-agent" arch="aarch64,x86_64,ppc64le,s390x"/>
         <package name="aaa_base-extras"/>
         <!-- to work correctly with the fips=1 boot parameter -->
         <package name="libopenssl-3-fips-provider"/>
@@ -153,25 +160,25 @@
 
     <!-- packages for local installation (desktop, browser, etc.) -->
     <packages type="image" profiles="Leap_16.1,openSUSE,SUSE_SLE_16.1,SUSE_SLE_NV_16.1">
-        <package name="bluez-firmware"/>
+        <package name="bluez-firmware" arch="aarch64,x86_64,ppc64le,s390x"/>
         <!-- for openQA to run their puppeteer tests, just injecting a *.js file -->
-        <package name="nodejs(engine)"/>
-        <package name="fontconfig"/>
-        <package name="fonts-config"/>
-        <package name="xauth"/>
-        <package name="MozillaFirefox"/>
-        <package name="gdm-systemd"/>
-        <package name="gnome-shell"/>
-        <package name="gnome-session-wayland"/>
-        <package name="gnome-kiosk"/>
-        <package name="spice-vdagent"/>
+        <package name="nodejs(engine)" arch="aarch64,x86_64,ppc64le,s390x"/>
+        <package name="fontconfig" arch="aarch64,x86_64,ppc64le,s390x"/>
+        <package name="fonts-config" arch="aarch64,x86_64,ppc64le,s390x"/>
+        <package name="xauth" arch="aarch64,x86_64,ppc64le,s390x"/>
+        <package name="MozillaFirefox" arch="aarch64,x86_64,ppc64le,s390x"/>
+        <package name="gdm-systemd" arch="aarch64,x86_64,ppc64le,s390x"/>
+        <package name="gnome-shell" arch="aarch64,x86_64,ppc64le,s390x"/>
+        <package name="gnome-session-wayland" arch="aarch64,x86_64,ppc64le,s390x"/>
+        <package name="gnome-kiosk" arch="aarch64,x86_64,ppc64le,s390x"/>
+        <package name="spice-vdagent" arch="aarch64,x86_64,ppc64le,s390x"/>
     </packages>
 
     <!-- common packages for openSUSE Tumbleweed and Leap distributions -->
     <packages type="image" profiles="Leap_16.1,openSUSE">
         <package name="agama-products-opensuse"/>
         <package name="grub2-branding-openSUSE" arch="aarch64,x86_64"/>
-        <package name="MozillaFirefox-branding-openSUSE"/>
+        <package name="MozillaFirefox-branding-openSUSE" arch="aarch64,x86_64,ppc64le,s390x"/>
         <package name="openSUSE-build-key"/>
         <package name="patterns-openSUSE-base"/>
         <package name="staging-build-key"/>
@@ -190,7 +197,7 @@
         <package name="grub2-branding-SLE" arch="aarch64,x86_64"/>
         <package name="patterns-base-base"/>
         <package name="suse-build-key"/>
-        <package name="MozillaFirefox-branding-SLE"/>
+        <package name="MozillaFirefox-branding-SLE" arch="aarch64,x86_64,ppc64le,s390x"/>
     </packages>
     <!-- SLES specific packages -->
     <packages type="image" profiles="SUSE_SLE_16.1">

@@ -4,8 +4,8 @@
  * Same setup as example.css (copy to `<product-id>.css`; loaded after the Agama
  * styles so your `:root` overrides win). This file is the reference: it shows
  * (and documents) EVERY tunable role, the basic colors plus typography
- * (family / weight / size), icon sizes, icon color, disabled background and
- * tooltip. Demo palette: the SUSE brand Persimmon accent
+ * (family / weight / size), icon sizes, icon color, disabled background,
+ * tooltip and terminal. Demo palette: the SUSE brand Persimmon accent
  * (#fe7c3f, see brand.suse.com) on neutral grays, in both light and dark.
  * (example.css shares the light palette but uses a violet dark.)
  *
@@ -115,6 +115,16 @@
      a nested control, ...). Unset, that content follows the label by one step
      of the radio grid gap. */
   --agm-t--radio--body--spacing: 0.5rem;
+
+  /* The terminal surface and the text drawn on it. Theme-independent on
+     purpose: a console reads as a console in any theme, and these are the
+     colors the shell and the programs running in it assume when they paint
+     their own output, so retune them only if your brand has a console palette
+     of its own, and keep them dark-on-light or light-on-dark as the shell
+     expects. Both are used together, by the panel around the terminal and by
+     the terminal itself, so change them as a pair. */
+  --agm-t--terminal--background--color: #1e1e1e;
+  --agm-t--terminal--color: #d4d4d4;
 }
 
 /* Light theme. */

@@ -519,6 +519,9 @@ export default {
   "Bridge ports": [
     "Ports de pont"
   ],
+  "Browse with details...": [
+    "Explora amb detalls..."
+  ],
   "Btrfs": [
     "Btrfs"
   ],
@@ -740,9 +743,6 @@ export default {
   "Configured as %s.": [
     "Configurat com a %s."
   ],
-  "Configured for installation only": [
-    "Configuració només per a la instal·lació"
-  ],
   "Configured with %d connection": [
     "Configurat amb %d connexió",
     "Configurat amb %d connexions"
@@ -786,8 +786,8 @@ export default {
   "Connected devices tabs": [
     "Pestanyes de dispositius connectats"
   ],
-  "Connecting to %s": [
-    "Es connecta amb %s"
+  "Connecting": [
+    "Connectant"
   ],
   "Connection failed": [
     "Ha fallat la connexió"
@@ -1002,6 +1002,9 @@ export default {
   "Disconnected by the system": [
     "Desconnectat pel sistema"
   ],
+  "Disconnecting": [
+    "Desconnectant"
+  ],
   "Disconnection failed": [
     "Ha fallat la desconnexió"
   ],
@@ -1173,9 +1176,6 @@ export default {
   "ExFAT": [
     "ExFAT"
   ],
-  "Excellent signal": [
-    "Senyal excel·lent"
-  ],
   "Expand if possible": [
     "Expandeix-la si és possible"
   ],
@@ -1210,6 +1210,9 @@ export default {
   ],
   "FAT": [
     "FAT"
+  ],
+  "Failed": [
+    "Ha fallat"
   ],
   "Failed to calculate a storage layout": [
     "No s'ha pogut calcular un disseny d'emmagatzematge"
@@ -1316,9 +1319,6 @@ export default {
   "Go to storage page": [
     "Ves a la pàgina de l'emmagatzematge"
   ],
-  "Good signal": [
-    "Senyal bo"
-  ],
   "Graphical desktop environments for the system.": [
     "Entorns d'escriptori gràfics per al sistema."
   ],
@@ -1348,7 +1348,7 @@ export default {
     "Contrast alt"
   ],
   "Hostname": [
-    "Nom d'amfitrió"
+    "Nom de l'amfitrió"
   ],
   "Hostname [will remain unchanged] across reboots and network changes.": [
     "El nom de l'amfitrió [es mantindrà sense canvis] després de reiniciar i canviar de xarxa."
@@ -1366,9 +1366,6 @@ export default {
     "He llegit i accepto la [llicència] de %s"
   ],
   "IP Addresses": [
-    "Adreces IP"
-  ],
-  "IP addresses": [
     "Adreces IP"
   ],
   "IPs": [
@@ -1479,9 +1476,6 @@ export default {
   ],
   "Installation settings in JSON format": [
     "Paràmetres de la instal·lació en format JSON"
-  ],
-  "Installation will take %s.": [
-    "La instal·lació necessitarà %s."
   ],
   "Installed system may not have network connections": [
     "El sistema instal·lat pot no tenir connexions de xarxa."
@@ -2061,6 +2055,9 @@ export default {
   "On boot": [
     "A l'arrencada"
   ],
+  "Once a product is selected, its language and region settings may offer more options to choose from.": [
+    "Un cop seleccionat un producte, la configuració de llengua i regió pot oferir més opcions per triar."
+  ],
   "Only reused logical volumes and space not assigned to any logical volume will be used.": [
     "Només s'usaran els volums lògics reutilitzats i l'espai no assignat a cap volum lògic."
   ],
@@ -2075,6 +2072,9 @@ export default {
   ],
   "Open terminal": [
     "Obre el terminal"
+  ],
+  "Opens a dialog": [
+    "Obre un quadre de diàleg"
   ],
   "Options for partition %s": [
     "Opcions per a la partició %s"
@@ -2240,9 +2240,6 @@ export default {
   ],
   "Public key provided for both": [
     "Clau pública proporcionada per a tots dos"
-  ],
-  "Public network": [
-    "Xarxa pública"
   ],
   "Question": [
     "Pregunta"
@@ -2421,9 +2418,6 @@ export default {
   "SUSE Customer Center (SCC)": [
     "Centre de clients de SUSE (SCC)"
   ],
-  "Secured network": [
-    "Xarxa amb seguretat"
-  ],
   "Security": [
     "Seguretat"
   ],
@@ -2453,6 +2447,9 @@ export default {
   ],
   "Select a mode and confirm your choice.": [
     "Seleccioneu un mode i confirmeu-ne la tria."
+  ],
+  "Select a network device": [
+    "Seleccioneu un dispositiu de xarxa"
   ],
   "Select a product": [
     "Seleccioneu un producte"
@@ -3028,9 +3025,6 @@ export default {
   "This product does not provide desktop environments.": [
     "Aquest producte no proporciona entorns d'escriptori."
   ],
-  "This space includes the base system and the selected software patterns, if any.": [
-    "Aquest espai inclou el sistema de base i els patrons de programari seleccionats, si n'hi ha."
-  ],
   "This uses existing logical volumes at the volume group": [
     "Això usa els volums lògics existents al grup de volums"
   ],
@@ -3042,9 +3036,6 @@ export default {
   ],
   "This volume group only occupies the space required by its logical volumes. To expand it to cover all available disk space, recreate the volume group.": [
     "Aquest grup de volums només ocupa l'espai requerit pels seus volums lògics. Per expandir-lo perquè ocupi tot l'espai de disc disponible, torneu a crear el grup de volums."
-  ],
-  "This will affect only the installer interface, not the product to be installed. You can adjust the product’s localization later in the Localization settings page.": [
-    "Això afectarà només la interfície de l'instal·lador, no el producte que s'ha d'instal·lar. Podeu ajustar la localització del producte més endavant a la pàgina de configuració de la localització."
   ],
   "This will be injected to the command to create the file system (%s).": [
     "Això s'injectarà a l'ordre per crear el sistema de fitxers (%s)."
@@ -3082,6 +3073,9 @@ export default {
   "Unable to modify the settings": [
     "No es pot modificar la configuració"
   ],
+  "Unavailable": [
+    "No disponible"
+  ],
   "Unexpected error": [
     "Error inesperat"
   ],
@@ -3090,6 +3084,9 @@ export default {
   ],
   "Unknown error": [
     "Error desconegut"
+  ],
+  "Unmanaged": [
+    "No gestionat"
   ],
   "Unsaved changes": [
     "Canvis no desats"
@@ -3108,6 +3105,9 @@ export default {
   ],
   "Update available disks and activate crypt devices": [
     "Actualitza els discs disponibles i activa els dispositius d'encriptació"
+  ],
+  "Use %s": [
+    "Usa %s"
   ],
   "Use LVM volume group %s": [
     "Usa el grup de volums d'LVM %s"
@@ -3353,9 +3353,6 @@ export default {
   "Waiting for proposal": [
     "Esperant la proposta"
   ],
-  "Weak signal": [
-    "Senyal dèbil"
-  ],
   "When ready, click on the [install] button at the end of the page.": [
     "Quan estigueu a punt, feu clic al botó [Instal·la] al final de la pàgina."
   ],
@@ -3378,7 +3375,7 @@ export default {
     "Podeu procedir a la instal·lació amb la configuració actual o potser voleu descartar-la i començar des de zero amb una de simple."
   ],
   "You can reboot the machine to log in to the new system.": [
-    "Podeu reiniciar la màquina per iniciar la sessió al sistema nou."
+    "Podeu reiniciar la màquina per iniciar sessió al sistema nou."
   ],
   "You can safely close this window.": [
     "Podeu tancar aquesta finestra amb seguretat."

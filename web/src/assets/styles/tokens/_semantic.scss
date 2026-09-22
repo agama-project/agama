@@ -27,6 +27,8 @@
 //   --agm-t--border--color                        borders
 //   --agm-t--disabled--background--color          disabled control background
 //   --agm-t--tooltip--background--color (+ --color) tooltip background and text
+//   --agm-t--terminal--background--color (+ --agm-t--terminal--color)
+//                                                 terminal surface and its text
 //   --agm-t--focus--color                         keyboard focus ring (see base/_reset)
 //   --agm-t--focus--separator--color              hairline between the ring and a
 //                                                 button fill (keeps the ring
@@ -220,6 +222,15 @@
   );
   --pf-t--global--text-decoration--color--default: currentcolor;
   --pf-t--global--text-decoration--color--hover: currentcolor;
+
+  // The terminal surface. Theme-independent on purpose: a console reads as a
+  // console in any theme, and the colors below are the ones the shell and its
+  // programs assume when they paint their own output. They are roles rather
+  // than literals because two places need them and must not drift apart: the
+  // panel around the terminal, and the terminal itself, which is drawn by
+  // xterm.js from JavaScript (see hooks/use-terminal-session).
+  --agm-t--terminal--background--color: #1e1e1e;
+  --agm-t--terminal--color: #d4d4d4;
 }
 
 // Light theme (excluding high contrast). Defaults are the Agama light values;

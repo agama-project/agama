@@ -1,4 +1,35 @@
 -------------------------------------------------------------------
+Fri Sep 18 07:32:00 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Show the name of the package being installed in one piece and stop
+  the progress text from moving as packages go by (bsc#1279489).
+
+-------------------------------------------------------------------
+Fri Sep 18 07:31:00 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Fix formatting of the storage commit errors
+  (gh#agama-project/agama#3912).
+
+-------------------------------------------------------------------
+Fri Sep 18 07:30:00 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Remove empty space due to a byte order mark which kills
+  PatternFly's base reset (bsc#1280220).
+
+-------------------------------------------------------------------
+Tue Sep 15 09:38:41 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Add a form field for selecting several values from a searchable
+  list of known options, with optional support for custom entries
+  (gh#agama-project/agama#3927).
+
+-------------------------------------------------------------------
+Thu Sep 10 13:10:57 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add a terminal panel to the web UI, giving access to a real shell
+  on the system being installed (gh#agama-project/agama#3868).
+
+-------------------------------------------------------------------
 Thu Sep  3 08:13:38 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Offer applying the installer language and keyboard to the product

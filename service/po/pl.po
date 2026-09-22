@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-26 11:36+0000\n"
+"POT-Creation-Date: 2026-09-18 08:12+0000\n"
 "PO-Revision-Date: 2026-07-30 00:12+0000\n"
 "Last-Translator: Jakub Wroński <kubawronski161@gmail.com>\n"
 "Language-Team: Polish <https://l10n.opensuse.org/projects/agama/agama-"
@@ -44,39 +44,42 @@ msgid "Performing iSCSI discovery"
 msgstr "Wykrywanie iSCSI"
 
 #. Implementation for the API method #Install.
-#: service/lib/agama/dbus/storage/manager.rb:192
+#.
+#. @raise [RuntimeError] If there is an unexpected error or the user decides to abort, see
+#. bsc#1280006.
+#: service/lib/agama/dbus/storage/manager.rb:195
 msgid "Preparing bootloader proposal"
 msgstr "Przygotowywanie propozycji dla programu rozruchowego"
 
-#: service/lib/agama/dbus/storage/manager.rb:195
+#: service/lib/agama/dbus/storage/manager.rb:198
 msgid "Preparing the storage devices"
 msgstr "Przygotowywanie urządzeń pamięci masowej"
 
-#: service/lib/agama/dbus/storage/manager.rb:198
+#: service/lib/agama/dbus/storage/manager.rb:202
 msgid "Writing bootloader sysconfig"
 msgstr "Zapisywanie konfiguracji programu rozruchowego w sysconfig"
 
 #. Implementation for the API method #Finish.
-#: service/lib/agama/dbus/storage/manager.rb:206
+#: service/lib/agama/dbus/storage/manager.rb:210
 msgid "Finishing installation"
 msgstr "Kończenie instalacji"
 
 #. Implementation for the API method #Umount.
-#: service/lib/agama/dbus/storage/manager.rb:213
+#: service/lib/agama/dbus/storage/manager.rb:217
 msgid "Unmounting devices"
 msgstr "Odmontowywanie urządzeń"
 
 #. after loading config try to apply it, so proper packages can be requested
 #. TODO: generate also new issue from configuration
-#: service/lib/agama/dbus/storage/manager.rb:252
+#: service/lib/agama/dbus/storage/manager.rb:256
 msgid "Activating storage devices"
 msgstr "Aktywowanie urządzeń pamięci masowej"
 
-#: service/lib/agama/dbus/storage/manager.rb:255
+#: service/lib/agama/dbus/storage/manager.rb:259
 msgid "Probing storage devices"
 msgstr "Wykrywanie urządzeń pamięci masowej"
 
-#: service/lib/agama/dbus/storage/manager.rb:258
+#: service/lib/agama/dbus/storage/manager.rb:262
 msgid "Applying storage configuration"
 msgstr "Zastosowywanie konfiguracji pamięci masowej"
 

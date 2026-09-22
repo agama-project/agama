@@ -1,4 +1,21 @@
 -------------------------------------------------------------------
+Fri Sep 18 08:43:24 UTC 2026 - Santiago Zarate <santiago.zarate@suse.com>
+
+- Set default bootloader for MicroOS to systemd-boot (bsc#1277929)
+
+-------------------------------------------------------------------
+Wed Sep 16 11:50:51 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Add experimental support for 32 bit architectures which are in
+  TW ports (bsc#1266309)
+
+-------------------------------------------------------------------
+Thu Sep 10 18:49:38 UTC 2026 - Lubos Kocman <lubos.kocman@suse.com>
+
+- Use license.txt for English in license.opensuse
+  (gh#agama-project/agama#3915)
+
+-------------------------------------------------------------------
 Mon Sep  7 09:43:01 UTC 2026 - Lubos Kocman <lubos.kocman@suse.com>
 
 - Add openSUSE license files (gh#agama-project/agama#3877).

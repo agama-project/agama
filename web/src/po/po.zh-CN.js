@@ -720,9 +720,6 @@ export default {
   "Configured as %s.": [
     "已配置为 %s。"
   ],
-  "Configured for installation only": [
-    "仅为安装配置"
-  ],
   "Configured with %d connection": [
     "已配置 %d 个连接"
   ],
@@ -765,8 +762,8 @@ export default {
   "Connected devices tabs": [
     "已连接设备选项卡"
   ],
-  "Connecting to %s": [
-    "正在连接到 %s"
+  "Connecting": [
+    "正在连接"
   ],
   "Connection failed": [
     "连接失败"
@@ -981,6 +978,9 @@ export default {
   "Disconnected by the system": [
     "系统已断开连接"
   ],
+  "Disconnecting": [
+    "正在断开连接"
+  ],
   "Disconnection failed": [
     "断开连接操作失败"
   ],
@@ -1152,9 +1152,6 @@ export default {
   "ExFAT": [
     "ExFAT"
   ],
-  "Excellent signal": [
-    "信号极佳"
-  ],
   "Expand if possible": [
     "尽可能扩展"
   ],
@@ -1187,6 +1184,9 @@ export default {
   ],
   "FAT": [
     "FAT"
+  ],
+  "Failed": [
+    "失败"
   ],
   "Failed to calculate a storage layout": [
     "无法计算存储布局"
@@ -1293,9 +1293,6 @@ export default {
   "Go to storage page": [
     "前往存储页面"
   ],
-  "Good signal": [
-    "信号良好"
-  ],
   "Graphical desktop environments for the system.": [
     "系统的图形桌面环境。"
   ],
@@ -1342,9 +1339,6 @@ export default {
     "我已阅读并接受 %s 的[许可]"
   ],
   "IP Addresses": [
-    "IP 地址"
-  ],
-  "IP addresses": [
     "IP 地址"
   ],
   "IPs": [
@@ -1454,9 +1448,6 @@ export default {
   ],
   "Installation settings in JSON format": [
     "JSON 格式安装设置"
-  ],
-  "Installation will take %s.": [
-    "安装将会占用 %s。"
   ],
   "Installed system may not have network connections": [
     "安装好的系统可能没有网络连接"
@@ -2049,6 +2040,9 @@ export default {
   "Open terminal": [
     "打开终端"
   ],
+  "Opens a dialog": [
+    ""
+  ],
   "Options for partition %s": [
     "分区 %s 的选项"
   ],
@@ -2213,9 +2207,6 @@ export default {
   ],
   "Public key provided for both": [
     "已为两个帐户提供公钥"
-  ],
-  "Public network": [
-    "公共网络"
   ],
   "Question": [
     "问题"
@@ -2393,9 +2384,6 @@ export default {
   ],
   "SUSE Customer Center (SCC)": [
     "SUSE Customer Center (SCC)"
-  ],
-  "Secured network": [
-    "加密网络"
   ],
   "Security": [
     "安全性"
@@ -2988,9 +2976,6 @@ export default {
   "This product does not provide desktop environments.": [
     "该产品未提供桌面环境。"
   ],
-  "This space includes the base system and the selected software patterns, if any.": [
-    "此空间包含基础系统以及所选软件集（如有）。"
-  ],
   "This uses existing logical volumes at the volume group": [
     "此设置会使用卷组中的现有逻辑卷"
   ],
@@ -3002,9 +2987,6 @@ export default {
   ],
   "This volume group only occupies the space required by its logical volumes. To expand it to cover all available disk space, recreate the volume group.": [
     "该卷组仅占用逻辑卷所需空间。如需扩展至占用所有可用磁盘空间，请重新创建卷组。"
-  ],
-  "This will affect only the installer interface, not the product to be installed. You can adjust the product’s localization later in the Localization settings page.": [
-    "此操作只会影响安装程序界面，不会影响要安装的产品。您稍后可以在 \"本地化设置\" 页面调整产品的本地化设置。"
   ],
   "This will be injected to the command to create the file system (%s).": [
     "该值将作为参数添加到创建文件系统的命令 (%s) 中。"
@@ -3050,6 +3032,9 @@ export default {
   ],
   "Unknown error": [
     "未知错误"
+  ],
+  "Unmanaged": [
+    ""
   ],
   "Unsaved changes": [
     "未保存的更改"
@@ -3311,9 +3296,6 @@ export default {
   ],
   "Waiting for proposal": [
     "正在等待提案"
-  ],
-  "Weak signal": [
-    "信号微弱"
   ],
   "When ready, click on the [install] button at the end of the page.": [
     "准备就绪后，请单击页面底部的[安装]按钮。"

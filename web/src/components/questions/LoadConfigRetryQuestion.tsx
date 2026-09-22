@@ -21,16 +21,9 @@
  */
 
 import React, { useState } from "react";
-import {
-  CodeBlock,
-  Content,
-  ExpandableSection,
-  FormGroup,
-  Stack,
-  TextInput,
-} from "@patternfly/react-core";
-import { NestedContent } from "~/components/core";
+import { Content, FormGroup, Stack, TextInput } from "@patternfly/react-core";
 import Text from "~/components/core/Text";
+import ExpandableTechnicalSection from "~/components/questions/ExpandableTechnicalSection";
 import QuestionDialog from "~/components/questions/QuestionDialog";
 import { _ } from "~/i18n";
 import type { AnswerCallback, Question } from "~/model/question";
@@ -80,24 +73,7 @@ export default function RetryLoadConfigQuestion({
             {_("Make sure the location is correct and the configuration is valid.")}
           </Text>
         </Content>
-        {error && (
-          <ExpandableSection
-            toggleTextExpanded={
-              /* TRANSLATORS: Clickable text to hide technical details from popup window */
-              _("Hide technical details")
-            }
-            toggleTextCollapsed={
-              /* TRANSLATORS: Clickable text to show technical details at popup window */
-              _("Show technical details")
-            }
-          >
-            <NestedContent>
-              <CodeBlock>
-                <pre>{error}</pre>
-              </CodeBlock>
-            </NestedContent>
-          </ExpandableSection>
-        )}
+        <ExpandableTechnicalSection text={error} />
       </Stack>
     </QuestionDialog>
   );

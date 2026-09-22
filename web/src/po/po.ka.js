@@ -519,6 +519,9 @@ export default {
   "Bridge ports": [
     "ხიდის პორტები"
   ],
+  "Browse with details...": [
+    "ძებნა დტალებითs..."
+  ],
   "Btrfs": [
     "Btrfs"
   ],
@@ -740,9 +743,6 @@ export default {
   "Configured as %s.": [
     "მორგებულია, როგორც %s."
   ],
-  "Configured for installation only": [
-    "მორგებულია მხოლოდ დასაყენებლად"
-  ],
   "Configured with %d connection": [
     "მორგებულია %d კავშირი",
     "მორგებულია %d კავშირი"
@@ -786,8 +786,8 @@ export default {
   "Connected devices tabs": [
     "დაკავშირებული მოწყობილობის ჩანართები"
   ],
-  "Connecting to %s": [
-    "%s-სთან მიერთება"
+  "Connecting": [
+    "დაკავშირება"
   ],
   "Connection failed": [
     "კავშირი ჩავარდა"
@@ -1002,6 +1002,9 @@ export default {
   "Disconnected by the system": [
     "გათიშული სისტემის მიერ"
   ],
+  "Disconnecting": [
+    "გათიშვა"
+  ],
   "Disconnection failed": [
     "გათიშვა ჩავარდა"
   ],
@@ -1173,9 +1176,6 @@ export default {
   "ExFAT": [
     "ExFAT"
   ],
-  "Excellent signal": [
-    "ძალიან კარგი სიგნალი"
-  ],
   "Expand if possible": [
     "გაფართოება, თუ შესაძლებელია"
   ],
@@ -1210,6 +1210,9 @@ export default {
   ],
   "FAT": [
     "FAT"
+  ],
+  "Failed": [
+    "ჩავარდა"
   ],
   "Failed to calculate a storage layout": [
     "საცავის განლაგების გამოთვლა ჩავარდა"
@@ -1316,9 +1319,6 @@ export default {
   "Go to storage page": [
     "საცავის გვერდზე გადასვლა"
   ],
-  "Good signal": [
-    "კარგი სიგნალი"
-  ],
   "Graphical desktop environments for the system.": [
     "გრაფიკული სამუშაო გარემოები სისტემისთვის."
   ],
@@ -1366,9 +1366,6 @@ export default {
     "მე წავიკითხე და დავეთანხმე ლიცენზიას %s-სთვის"
   ],
   "IP Addresses": [
-    "IP მისამართები"
-  ],
-  "IP addresses": [
     "IP მისამართები"
   ],
   "IPs": [
@@ -1479,9 +1476,6 @@ export default {
   ],
   "Installation settings in JSON format": [
     "დაყენების პარამეტრები JSON ფორმატში"
-  ],
-  "Installation will take %s.": [
-    "დაყენებას დასჭირდება %s."
   ],
   "Installed system may not have network connections": [
     "დაყენებულ სისტემას შეიძლება, ქსელი არ ჰქონდეს"
@@ -1643,7 +1637,7 @@ export default {
     "ღია ფერთა სქემა"
   ],
   "Linux command-line with administrative privileges on the installer system.": [
-    ""
+    "Linux-ის ბრძანების სტრიქონი ადმინისტრატორის პრივილეგიებით დაყენების პროგრამის სიტემაში."
   ],
   "Listening and learning time (4-30 seconds).": [
     "მოსმენისა და სწავლის დრო (4-30 წმ)."
@@ -2061,6 +2055,9 @@ export default {
   "On boot": [
     "ჩატვირთვისას"
   ],
+  "Once a product is selected, its language and region settings may offer more options to choose from.": [
+    ""
+  ],
   "Only reused logical volumes and space not assigned to any logical volume will be used.": [
     "გამოყენებული იქნება, მხოლოდ, თავიდან გამოყენებული ლოგიკური ტომები და ადგილი, რომელიც ლოგიკურ ტომებზე მინიჭებული არაა."
   ],
@@ -2075,6 +2072,9 @@ export default {
   ],
   "Open terminal": [
     "ტერმინალის გახსნა"
+  ],
+  "Opens a dialog": [
+    "გახსნის დიალოგს"
   ],
   "Options for partition %s": [
     "პარამეტრები დანაყოფისთვის %s"
@@ -2240,9 +2240,6 @@ export default {
   ],
   "Public key provided for both": [
     "საჯარო გასაღები მოწოდებულია ორივესთვის"
-  ],
-  "Public network": [
-    "საჯარო ქსელი"
   ],
   "Question": [
     "კითხვა"
@@ -2421,9 +2418,6 @@ export default {
   "SUSE Customer Center (SCC)": [
     "SUSE Customer Center (SCC)"
   ],
-  "Secured network": [
-    "დაცული ქსელი"
-  ],
   "Security": [
     "უსაფრთხოება"
   ],
@@ -2453,6 +2447,9 @@ export default {
   ],
   "Select a mode and confirm your choice.": [
     "აირჩიეთ რეჟიმი და დაადასტურეთ თქვენი არჩევანი."
+  ],
+  "Select a network device": [
+    "აირჩიეთ ქსელური მოწყობილობა"
   ],
   "Select a product": [
     "აირჩიეთ პროდუქტი"
@@ -3028,9 +3025,6 @@ export default {
   "This product does not provide desktop environments.": [
     "ეს პროდუქტი სამუშაო გარემოებს არ მოგაწვდით."
   ],
-  "This space includes the base system and the selected software patterns, if any.": [
-    "ეს სივრცე შეიცავს საბაზისო სისტემას და არჩეულ პროგრამის ნიმუშებს, თუ არსებობს."
-  ],
   "This uses existing logical volumes at the volume group": [
     "ეს იყენებს არსებულ ლოგიკურ ტომებს ტომების ჯგუფში"
   ],
@@ -3041,9 +3035,6 @@ export default {
     "ეს იყენებს დისკზე არსებულ ფაილურ სისტემას"
   ],
   "This volume group only occupies the space required by its logical volumes. To expand it to cover all available disk space, recreate the volume group.": [
-    ""
-  ],
-  "This will affect only the installer interface, not the product to be installed. You can adjust the product’s localization later in the Localization settings page.": [
     ""
   ],
   "This will be injected to the command to create the file system (%s).": [
@@ -3082,6 +3073,9 @@ export default {
   "Unable to modify the settings": [
     "პარამეტრების შეცვლა შეუძლებელია"
   ],
+  "Unavailable": [
+    "ხელმიუწვდომელია"
+  ],
   "Unexpected error": [
     "მოულოდნელი შეცდომა"
   ],
@@ -3090,6 +3084,9 @@ export default {
   ],
   "Unknown error": [
     "უცნობი შეცდომა"
+  ],
+  "Unmanaged": [
+    "უმართავი"
   ],
   "Unsaved changes": [
     "შეუნახავი ცვლილებები"
@@ -3108,6 +3105,9 @@ export default {
   ],
   "Update available disks and activate crypt devices": [
     "ხელმისაწვდომი დისკების განახლება და კრიპტოგრაფიული მოწყობილობების გააქტიურება"
+  ],
+  "Use %s": [
+    "%s-ის გამოყენება"
   ],
   "Use LVM volume group %s": [
     "LVM-ის ტომების ჯგუფის %s გამოყენება"
@@ -3352,9 +3352,6 @@ export default {
   ],
   "Waiting for proposal": [
     "შეთავაზების მოლოდინი"
-  ],
-  "Weak signal": [
-    "სუსტი სიგნალი"
   ],
   "When ready, click on the [install] button at the end of the page.": [
     "როცა მზად იქნებით, გვერდის ბოლოში დააწკაპუნეთ ღილაკზე [დაყენება]."
