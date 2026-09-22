@@ -239,7 +239,7 @@ impl TaskManager {
             tracing::warn!("Failed to send TaskAdded event: {}", e);
         }
 
-        tracing::info!("New task added: {metadata:?}");
+        tracing::info!("Task '{}' added: {:?}", metadata.id, metadata);
 
         let state = Arc::clone(&self.state);
         let events = self.events.clone();
@@ -290,10 +290,7 @@ impl TaskManager {
 
             // Decide whether to run or cancel based on run_always and failed dependencies
             if !run_always && !failed_deps.is_empty() {
-                tracing::warn!(
-                    "Task '{}' cancelled due to failed dependency",
-                    metadata.name
-                );
+                tracing::warn!("Task '{}' cancelled due to failed dependency", metadata.id);
 
                 // Mark this task as failed without running it
                 let mut state_guard = state.write().await;
@@ -316,6 +313,8 @@ impl TaskManager {
                 tracing::warn!("Failed to send TaskStarted event: {}", e);
             }
 
+            tracing::info!("Task '{}' started", metadata.id);
+
             let result = work(Some(failed_deps)).await;
 
             // Mark as succeeded or failed
@@ -323,10 +322,11 @@ impl TaskManager {
 
             match result {
                 Ok(()) => {
+                    tracing::info!("Task '{}' finished", metadata.id);
                     state_guard.succeeded.insert(task_id);
                 }
                 Err(e) => {
-                    tracing::error!("Task '{}' failed: {}", metadata.name, e);
+                    tracing::error!("Task '{}' failed: {}", metadata.id, e);
                     state_guard.failed.insert(task_id);
                 }
             }
