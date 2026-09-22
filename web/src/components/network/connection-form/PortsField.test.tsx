@@ -240,6 +240,15 @@ describe("PortsField", () => {
     expect(dialog().queryByRole("row", { name: /^lo/ })).not.toBeInTheDocument();
   });
 
+  // Nothing offers it, but a name written by hand goes through no list at all.
+  it("refuses the loopback device once the form is submitted", async () => {
+    const { user } = installerRender(<TestForm />);
+    await user.type(screen.getByRole("combobox", { name: "Bond ports" }), "lo{Enter}");
+    await user.click(screen.getByRole("button", { name: "Submit" }));
+
+    await screen.findByText("The loopback device cannot be a port");
+  });
+
   it("does not offer the device of the bond being configured", async () => {
     const { user } = installerRender(<TestForm />);
     await openDialog(user);

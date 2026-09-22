@@ -36,8 +36,10 @@ import {
   formatLinkSpeed,
   generateConnectionName,
   ipPrefixFor,
+  isLoopback,
   securityFromFlags,
   connectionBindingMode,
+  CONNECTION_TYPE,
 } from "./network";
 
 describe("#isValidIp", () => {
@@ -187,6 +189,26 @@ describe("deviceLinkLabel", () => {
 
   it("returns nothing for a device reporting neither", () => {
     expect(deviceLinkLabel(device({}))).toBeUndefined();
+  });
+});
+
+describe("isLoopback", () => {
+  const device = (props: object): Device => ({ name: "enp1s0", ...props }) as Device;
+
+  it("tells the loopback by the type the system reports", () => {
+    expect(isLoopback(device({ name: "lo0", type: CONNECTION_TYPE.LOOPBACK }))).toBe(true);
+  });
+
+  // A field holding names, such as the ports of a bond, has nothing else to
+  // go on.
+  it("tells the loopback by its name", () => {
+    expect(isLoopback("lo")).toBe(true);
+    expect(isLoopback(device({ name: "lo" }))).toBe(true);
+  });
+
+  it("says no to anything else", () => {
+    expect(isLoopback("enp1s0")).toBe(false);
+    expect(isLoopback(device({ type: CONNECTION_TYPE.ETHERNET }))).toBe(false);
   });
 });
 

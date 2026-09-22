@@ -37,6 +37,8 @@ import {
   generateConnectionName,
   isValidNameserver,
   isValidDNSSearchDomain,
+  isLoopback,
+  LOOPBACK_IFACE,
 } from "~/utils/network";
 
 import BindingModeSelector from "./BindingModeSelector";
@@ -86,7 +88,7 @@ type FormValues = typeof defaultOptions.defaultValues;
  * machine, so binding a connection to it would produce a profile that cannot
  * reach anything.
  */
-const UNBINDABLE_DEVICES = ["lo"];
+const UNBINDABLE_DEVICES = [LOOPBACK_IFACE];
 
 function ConnectionFormContent({
   initialConnection,
@@ -96,7 +98,9 @@ function ConnectionFormContent({
   const navigate = useNavigate();
   const { mutateAsync: updateConnection } = useConnectionMutation();
   const isEditing = initialConnection !== null;
-  const bindableDevices = devices.filter((d) => !UNBINDABLE_DEVICES.includes(d.name));
+  // Asked of the device rather than of its name, so one the system reports as
+  // the loopback under another name is left out too.
+  const bindableDevices = devices.filter((d) => !isLoopback(d));
 
   // Generates and writes the auto-computed name when the binding changes, as
   // long as the user has not manually edited it. `isDirty` is used instead of

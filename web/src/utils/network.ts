@@ -164,6 +164,24 @@ const deviceLinkRank = (device: Device): number => {
 };
 
 /**
+ * Name the kernel gives the loopback device.
+ */
+const LOOPBACK_IFACE = "lo";
+
+/**
+ * Returns true if the given device is the machine's loopback interface.
+ *
+ * A string is taken for a device name, which is all a form field holding names
+ * ever has to go on. A `Device` is told by the type the system reports, and by
+ * its name as well, so a device the system did not type stays recognizable.
+ */
+const isLoopback = (device: Device | string): boolean => {
+  if (typeof device === "string") return device === LOOPBACK_IFACE;
+
+  return device.type === CONNECTION_TYPE.LOOPBACK || device.name === LOOPBACK_IFACE;
+};
+
+/**
  * Returns true if the given connection type is virtual.
  */
 const isVirtual = (type: ConnectionType): boolean =>
@@ -557,9 +575,11 @@ export {
   generateConnectionName,
   intToIPString,
   ipPrefixFor,
+  isLoopback,
   isVirtual,
   isValidIp,
   isValidIpPrefix,
+  LOOPBACK_IFACE,
   securityFromFlags,
   stringToIPInt,
 };

@@ -27,7 +27,7 @@ import DeviceSelectorModal from "./DeviceSelectorModal";
 import { defaultOptions } from "./fields";
 import { withForm } from "~/hooks/form";
 import { useConnections, useDevices } from "~/hooks/model/system/network";
-import { CONNECTION_TYPE, controllerOf } from "~/utils/network";
+import { controllerOf, isLoopback } from "~/utils/network";
 import { _ } from "~/i18n";
 
 import type { TranslatedString } from "~/i18n";
@@ -109,9 +109,7 @@ const PortsField = withForm({
               const ports = field.state.value;
               // The loopback is never a port of anything, and a controller is
               // not a port of itself.
-              const available = devices.filter(
-                (d) => d.type !== CONNECTION_TYPE.LOOPBACK && d.name !== controllerIface,
-              );
+              const available = devices.filter((d) => !isLoopback(d) && d.name !== controllerIface);
               // The controller being edited is not worth mentioning: the user
               // is looking at its own list of ports.
               const portOf = (device: Device) => {

@@ -41,6 +41,7 @@ import {
   isValidIPv6,
   isValidNameserver,
   isValidDNSSearchDomain,
+  isLoopback,
 } from "~/utils/network";
 import {
   requiredString,
@@ -80,11 +81,30 @@ const PRIMARY_BOND_OPTION_MODES: readonly BondMode[] = [
 ];
 
 /**
+ * The reason a port cannot be one, if there is one.
+ */
+const portError = (port: string, iface: string): TranslatedString | undefined => {
+  if (iface && port === iface) {
+    // TRANSLATORS: validation error for the ports field of a bond or a bridge,
+    // when it lists the device being configured. %s is its name, e.g. "bond0".
+    return sprintf(_("%s cannot be a port of itself"), iface);
+  }
+
+  if (isLoopback(port)) {
+    // TRANSLATORS: validation error for the ports field of a bond or a bridge,
+    // when it lists the loopback device.
+    return _("The loopback device cannot be a port");
+  }
+
+  return undefined;
+};
+
+/**
  * Validates the ports of a controller device, a bond or a bridge.
  *
- * The list of devices the ports field offers leaves the controller out, but a
- * port can also be a name written by hand, and a device cannot be a port of
- * itself.
+ * The list of devices the ports field offers leaves out the controller and the
+ * loopback, but a port can also be a name written by hand, which goes through
+ * no list at all.
  */
 const validatePorts = (
   ports: string[],
@@ -93,13 +113,7 @@ const validatePorts = (
 ): TranslatedString | undefined => {
   if (ports.length === 0) return emptyError;
 
-  if (iface && ports.includes(iface)) {
-    // TRANSLATORS: validation error for the ports field of a bond or a bridge,
-    // when it lists the device being configured. %s is its name, e.g. "bond0".
-    return sprintf(_("%s cannot be a port of itself"), iface);
-  }
-
-  return undefined;
+  return ports.map((port) => portError(port, iface)).find(Boolean);
 };
 
 /**
