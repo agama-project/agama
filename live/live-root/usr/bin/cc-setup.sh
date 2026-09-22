@@ -786,7 +786,7 @@ hash_password() {
 show_welcome() {
   ui_message "$PROGRAM_NAME" "\
 Welcome to the SUSE Linux Enterprise Server 16.0 installation for Common
-Criteria (CC) certified and FIPS hardened systems.
+Criteria (CC) and FIPS hardened systems.
 
 This tool asks for the credentials and the target disk, then it installs
 the system unattended.
@@ -1332,7 +1332,9 @@ storage_proposal() {
     return 0
   fi
 
-  printf 'WARNING: ALL DATA data on the target disk will be DESTROYED!!\n\n'
+  printf 'WARNING: This is the last step before the disk is modified.\n'
+  printf '         ALL DATA on the target disk will be DESTROYED'
+  printf '         when the installation is started!!\n\n'
   printf 'Storage actions planned by the installer:\n'
   printf '%s\n' "$STORAGE_ACTIONS_TEXT" | sed -e 's/^/  /'
 }
@@ -1443,7 +1445,7 @@ confirm_storage_proposal() {
       # exit code 1, the same as a plain Cancel button
       rc=0
       show_dialog --title "Storage Proposal" \
-        --ok-label "Install" --exit-label "Install" \
+        --ok-label "Install now" --exit-label "Install now" \
         --extra-button --extra-label "Configure again" \
         --help-button --help-label "Reboot" \
         --textbox "$file" 0 0 || rc=$?

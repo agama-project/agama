@@ -102,7 +102,7 @@ menuentry "Install $label" --class os --unrestricted {
   initrd /boot/ppc64le/initrd
 }
 
-menuentry "Install CC Certified $label" --class os --unrestricted {
+menuentry "Install CC Compliant $label" --class os --unrestricted {
   echo 'Loading kernel...'
   linux /boot/ppc64le/linux splash=silent plymouth.ignore-serial-consoles fips=1 inst.cc=1
   echo 'Loading initrd...'
