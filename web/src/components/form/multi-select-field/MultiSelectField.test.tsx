@@ -788,6 +788,23 @@ describe("MultiSelectField", () => {
       screen.getByText("Must not start with x");
     });
 
+    // A value the user wrote out is drawn outlined, which says the field cannot
+    // offer it again. Being wrong is the louder news, and it looks the same
+    // here as it does in a field where every value is drawn the same way.
+    it("draws a value in error like any other, whether or not the field offers it", () => {
+      installerRender(
+        <TestForm
+          defaultValues={["eth0", "xbad"]}
+          allowCustomEntries
+          validateOnChange={(value) => (value === "xbad" ? "Must not start with x" : undefined)}
+        />,
+      );
+
+      const marked = within(entries()).getByRole("option", { name: /invalid/ });
+      expect(marked).toHaveClass("pf-m-red", "pf-m-filled");
+      expect(marked).not.toHaveClass("pf-m-outline");
+    });
+
     it("stays quiet until the form is submitted when the caller asks for it", async () => {
       const { user } = installerRender(
         <TestForm
