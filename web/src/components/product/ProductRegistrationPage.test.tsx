@@ -29,6 +29,7 @@ import { RegistrationInfo, AddonInfo } from "~/model/system/software";
 import { Config } from "~/model/config";
 import { patchConfig } from "~/api";
 import { Issue } from "~/model/issue";
+import { Progress } from "~/model/status";
 import { cloneDeep } from "radashi";
 
 const tw: Product = {
@@ -64,6 +65,7 @@ let mockStaticHostname: string;
 let mockRegistrationInfo: RegistrationInfo | undefined;
 let mockConfig: Config;
 let mockIssues: Issue[] = [];
+let mockProgress: Progress | undefined;
 
 jest.mock("~/hooks/model/system/software", () => ({
   useSystem: () => ({ registration: mockRegistrationInfo }),
@@ -75,6 +77,10 @@ jest.mock("~/hooks/model/config", () => ({
 
 jest.mock("~/hooks/model/issue", () => ({
   useIssues: () => mockIssues,
+}));
+
+jest.mock("~/hooks/model/progress", () => ({
+  useProgress: (scope) => (mockProgress?.scope === scope ? mockProgress : undefined),
 }));
 
 jest.mock("~/api", () => ({
@@ -91,6 +97,7 @@ describe("ProductRegistrationPage", () => {
   beforeEach(() => {
     mockConfig = { product: { id: "sle", mode: "standard", registrationCode: "" } };
     mockIssues = [];
+    mockProgress = undefined;
     mockProductConfig(mockConfig.product);
     mockProduct(mockSelectedProduct);
   });
@@ -387,5 +394,49 @@ describe("ProductRegistrationPage", () => {
 
     // Hostname alert should not be shown after registration attempt
     expect(screen.queryByText("Hostname cannot be changed after registration")).toBeNull();
+  });
+
+  describe("when there is an active software progress", () => {
+    beforeEach(() => {
+      mockSelectedProduct = sle;
+      mockProduct(sle);
+      mockRegistrationInfo = undefined;
+      mockProgress = {
+        scope: "software",
+        step: "Calculating the software proposal",
+        steps: [
+          "Updating the list of repositories",
+          "Refreshing metadata from the repositories",
+          "Calculating the software proposal",
+        ],
+        index: 3,
+        size: 3,
+      };
+    });
+
+    it("shows the progress backdrop", () => {
+      installerRender(<ProductRegistrationPage />);
+      screen.getByText("Calculating the software proposal");
+    });
+  });
+
+  describe("when there is an active progress in another scope", () => {
+    beforeEach(() => {
+      mockSelectedProduct = sle;
+      mockProduct(sle);
+      mockRegistrationInfo = undefined;
+      mockProgress = {
+        scope: "storage",
+        step: "Preparing the storage proposal",
+        steps: ["Preparing the storage proposal"],
+        index: 1,
+        size: 1,
+      };
+    });
+
+    it("does not show the progress backdrop", () => {
+      installerRender(<ProductRegistrationPage />);
+      expect(screen.queryByText("Preparing the storage proposal")).toBeNull();
+    });
   });
 });
