@@ -831,14 +831,17 @@ ask_keyboard() {
   fi
 
   if $DIALOG_MODE; then
-    menu=(default "Keep $default_label")
+    local default_tag="default"
+    [[ -n $KEYBOARD_ORIGINAL ]] && default_tag="default($KEYBOARD_ORIGINAL)"
+
+    menu=("$default_tag" "")
     for line in "${maps[@]}"; do
-      menu+=("${line%%$'\t'*}" "${line#*$'\t'}")
+      menu+=("${line%%$'\t'*}" "")
     done
 
     answer=$(ui_menu --size "$(dialog_full_height)" 76 "Keyboard Layout" \
-      "Select the keyboard layout for the current and the installed system:" "${menu[@]}") || answer="default"
-    [[ $answer == "default" ]] && answer=""
+      "Select the keyboard layout for the current and the installed system:" "${menu[@]}") || answer="$default_tag"
+    [[ $answer == "$default_tag" ]] && answer=""
     KEYBOARD="$answer"
     return 0
   fi
@@ -1333,7 +1336,7 @@ storage_proposal() {
   fi
 
   printf 'WARNING: This is the last step before the disk is modified.\n'
-  printf '         ALL DATA on the target disk will be DESTROYED'
+  printf '         ALL DATA on the target disk will be DESTROYED\n'
   printf '         when the installation is started!!\n\n'
   printf 'Storage actions planned by the installer:\n'
   printf '%s\n' "$STORAGE_ACTIONS_TEXT" | sed -e 's/^/  /'
