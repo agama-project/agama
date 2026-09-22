@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Sep 22 14:54:01 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Block the registration page while software changes are in progress
+  (bsc#1277099, gh#agama-project/agama#3973).
+
+-------------------------------------------------------------------
 Tue Sep 22 07:00:00 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
 
 - Pick the ports of a bond or a bridge from a searchable list of
