@@ -259,7 +259,10 @@ fn extract_defs(
                     let mut def_val = val;
                     // Recursively clean internal structures inside definitions
                     extract_defs(&mut def_val, prefix, extracted_defs);
-                    extracted_defs.insert(format!("{}{}", capitalize(prefix), capitalize(&key)), def_val);
+                    extracted_defs.insert(
+                        format!("{}{}", capitalize(prefix), capitalize(&key)),
+                        def_val,
+                    );
                 }
             }
 
@@ -267,7 +270,11 @@ fn extract_defs(
             if let Some(Value::String(ref_str)) = map.get_mut("$ref") {
                 if ref_str.starts_with("#/$defs/") {
                     let def_name = ref_str.trim_start_matches("#/$defs/");
-                    *ref_str = format!("#/components/schemas/{}{}", capitalize(prefix), capitalize(def_name));
+                    *ref_str = format!(
+                        "#/components/schemas/{}{}",
+                        capitalize(prefix),
+                        capitalize(def_name)
+                    );
                 }
             }
 
