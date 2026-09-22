@@ -25,6 +25,7 @@ import { sift } from "radashi";
 import Text from "~/components/core/Text";
 import DeviceSelectorModal from "./DeviceSelectorModal";
 import { defaultOptions } from "./fields";
+import { portError } from "./validations";
 import { withForm } from "~/hooks/form";
 import { useConnections, useDevices } from "~/hooks/model/system/network";
 import { controllerOf, isLoopback } from "~/utils/network";
@@ -146,6 +147,14 @@ const PortsField = withForm({
                       // or a bridge, naming the two ways of filling it in.
                       _("Choose devices or enter their names.")
                     }
+                    // The list leaves the controller and the loopback out, but
+                    // a name written by hand does not go through it. The form
+                    // refuses the submit and this marks which of the ports it
+                    // was talking about, the way the DNS field marks the
+                    // address that broke it. Both ask `portError`, so the two
+                    // are worded the same, and both stay quiet until the form
+                    // is submitted, as validation does everywhere else.
+                    validateOnSubmit={(value) => portError(value, controllerIface)}
                     // Nothing to browse, nothing to lead to: a dialog opening
                     // on an empty table is worse than no way in at all.
                     footerEntry={

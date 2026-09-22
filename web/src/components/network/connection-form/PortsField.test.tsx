@@ -232,6 +232,30 @@ describe("PortsField", () => {
 
       await screen.findByText("bond0 cannot be a port of itself");
     });
+
+    it("marks the port the message is about", async () => {
+      const { user } = installerRender(<TestForm defaultValues={{ bondPorts: ["enp1s0"] }} />);
+      await addSelfAsPort(user);
+      await submit(user);
+
+      await within(entriesList()).findByRole("option", {
+        name: "bond0 is invalid: bond0 cannot be a port of itself",
+      });
+      expect(
+        within(entriesList()).queryByRole("option", { name: /enp1s0 is invalid/ }),
+      ).not.toBeInTheDocument();
+    });
+
+    // The form rule and the mark come from the same `portError`, so the two
+    // must not turn into the same sentence read twice under the field.
+    it("says so only once", async () => {
+      const { user } = installerRender(<TestForm />);
+      await addSelfAsPort(user);
+      await submit(user);
+
+      await screen.findByText("bond0 cannot be a port of itself");
+      expect(screen.getAllByText("bond0 cannot be a port of itself")).toHaveLength(1);
+    });
   });
 
   it("does not offer the loopback device", async () => {
@@ -247,6 +271,9 @@ describe("PortsField", () => {
     await user.click(screen.getByRole("button", { name: "Submit" }));
 
     await screen.findByText("The loopback device cannot be a port");
+    within(entriesList()).getByRole("option", {
+      name: "lo is invalid: The loopback device cannot be a port",
+    });
   });
 
   it("does not offer the device of the bond being configured", async () => {

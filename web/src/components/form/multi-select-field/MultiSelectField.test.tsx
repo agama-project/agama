@@ -802,6 +802,23 @@ describe("MultiSelectField", () => {
       await user.click(screen.getByRole("button", { name: "Submit" }));
       await within(entries()).findByRole("option", { name: /invalid/ });
     });
+
+    // The rule refusing the form and the mark on the value that broke it are
+    // often worded the same, and the field is what puts the two together.
+    it("says a message the field and a value share only once", async () => {
+      const { user } = installerRender(
+        <TestForm
+          defaultValues={["xbad"]}
+          allowCustomEntries
+          validateOnSubmit={validateOnChange}
+          fieldError="Must not start with x"
+        />,
+      );
+      await user.click(screen.getByRole("button", { name: "Submit" }));
+      await within(entries()).findByRole("option", { name: /invalid/ });
+
+      expect(screen.getAllByText("Must not start with x")).toHaveLength(1);
+    });
   });
 
   describe("the form value", () => {

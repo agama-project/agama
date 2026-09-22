@@ -27,6 +27,10 @@
  * form/validation-helpers.ts. The exported validate function is wired into the
  * form's onSubmitAsync validator, following the submit-only validation
  * convention.
+ *
+ * A single rule is exported on its own, `portError`, since the ports field
+ * marks the offending port with the very same sentence the form refuses it
+ * with.
  */
 
 import { shake } from "radashi";
@@ -82,8 +86,11 @@ const PRIMARY_BOND_OPTION_MODES: readonly BondMode[] = [
 
 /**
  * The reason a port cannot be one, if there is one.
+ *
+ * Shared with the ports field, which marks the offending port with the very
+ * same sentence, so the two never disagree on what is wrong with it.
  */
-const portError = (port: string, iface: string): TranslatedString | undefined => {
+export const portError = (port: string, iface: string): TranslatedString | undefined => {
   if (iface && port === iface) {
     // TRANSLATORS: validation error for the ports field of a bond or a bridge,
     // when it lists the device being configured. %s is its name, e.g. "bond0".
