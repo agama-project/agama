@@ -302,18 +302,18 @@ describe("PortsField", () => {
   });
 
   // A column that comes and goes with the data leaves the user wondering what
-  // they did to lose it, so it stays and the cells are the empty ones.
-  it("keeps the columns whose details no device reports", async () => {
-    mockDevices = [
-      mockLoopback,
-      mockBondDevice,
-      { ...mockDevice1, speed: undefined, carrier: undefined },
-    ];
+  // they did to lose it, so the set of them does not depend on what the
+  // devices happen to report.
+  it("mounts every column when picking ports", async () => {
     const { user } = installerRender(<TestForm />);
     await openDialog(user);
 
-    dialog().getByRole("columnheader", { name: "Link" });
-    expect(within(deviceRow("enp1s0")).queryByText(/Gb\/s|Mb\/s|No link/)).not.toBeInTheDocument();
+    const headers = dialog()
+      .getAllByRole("columnheader")
+      .map((header) => header.textContent);
+    expect(headers).toEqual(
+      expect.arrayContaining(["Device", "Type", "Link", "State", "Used by", "IP Addresses"]),
+    );
   });
 
   it("adds the picked devices to the list", async () => {
@@ -436,13 +436,5 @@ describe("PortsField", () => {
       await openDialog(user);
       expect(within(deviceRow("enp2s0")).queryByText("bond0")).not.toBeInTheDocument();
     });
-  });
-
-  // A column that comes and goes with the data leaves the user wondering what
-  // they did to lose it, so it is there whenever ports are being picked.
-  it("keeps the 'Used by' column even when no device is used by anything", async () => {
-    const { user } = installerRender(<TestForm />);
-    await openDialog(user);
-    dialog().getByRole("columnheader", { name: "Used by" });
   });
 });
