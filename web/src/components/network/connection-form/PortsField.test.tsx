@@ -256,6 +256,16 @@ describe("PortsField", () => {
       await screen.findByText("bond0 cannot be a port of itself");
       expect(screen.getAllByText("bond0 cannot be a port of itself")).toHaveLength(1);
     });
+
+    it("takes it out when the user asks for the marked ports to go", async () => {
+      const { user } = installerRender(<TestForm defaultValues={{ bondPorts: ["enp1s0"] }} />);
+      await addSelfAsPort(user);
+      await submit(user);
+      await user.click(await screen.findByRole("button", { name: /remove all invalid entries/i }));
+
+      expect(entry("bond0")).not.toBeInTheDocument();
+      expect(entry("enp1s0")).toBeInTheDocument();
+    });
   });
 
   it("does not offer the loopback device", async () => {

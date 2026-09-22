@@ -21,7 +21,7 @@
  */
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { debounce, sift, unique } from "radashi";
+import { debounce, fork, sift, unique } from "radashi";
 import {
   Button,
   FormGroup,
@@ -34,6 +34,7 @@ import {
   TextInputGroupUtilities,
 } from "@patternfly/react-core";
 import Icon from "~/components/layout/Icon";
+import Interpolate from "~/components/core/Interpolate";
 import Text from "~/components/core/Text";
 import Entries from "~/components/form/multi-select-field/Entries";
 import OptionList from "~/components/form/multi-select-field/OptionList";
@@ -56,6 +57,7 @@ import {
   contextualHint,
   filterOutcome,
   focusHintSentences,
+  invalidValuesRemoved,
   overflowState,
   sightedHint,
   valueAdded,
@@ -315,9 +317,10 @@ type MultiSelectFieldProps = FieldLabelOptions & {
  * per-value validators are about the shape of a single value.
  *
  * Both sighted and assistive technology users get the same feedback: an
- * invalid value carries its error in its accessible name, and everything that
- * happens is announced through the application-wide live region (see
- * {@link useAnnounce}).
+ * invalid value is drawn in red and carries its error in its accessible name,
+ * and everything that happens is announced through the application-wide live
+ * region (see {@link useAnnounce}). While any value is marked, the field also
+ * offers to take all of the marked ones out at once.
  *
  * Must be used inside a TanStack Form `AppField` context holding a `string[]`.
  *
@@ -607,6 +610,20 @@ export default function MultiSelectField({
     setText("");
     setIsShowingAll(false);
     say(allValuesRemoved());
+  };
+
+  /**
+   * Takes out every value that did not pass validation.
+   *
+   * A field can end up with several of them at once, from a paste or from a
+   * rule that only speaks up on submit, and taking them out one by one to try
+   * again is work the field can do itself.
+   */
+  const clearInvalid = () => {
+    const [valid, invalid] = fork(values, (value) => !errorFor(value));
+    field.handleChange(valid);
+    say(invalidValuesRemoved(invalid.length));
+    inputRef.current?.focus();
   };
 
   const keyboard = useKeyboard({
@@ -904,7 +921,26 @@ export default function MultiSelectField({
               {/* A rule refusing the whole field and the mark pointing at the
                   value that broke it are often worded the same, and hearing
                   the same sentence twice says nothing the first one did not. */}
-              {unique(sift([...fieldErrors, ...entryErrors])).join(". ")}
+              <span>{unique(sift([...fieldErrors, ...entryErrors])).join(". ")}</span>
+              {entryErrors.length > 0 && (
+                <>
+                  {". "}
+                  <Interpolate
+                    // TRANSLATORS: helper text for when some of the values a
+                    // field holds do not pass validation. Text inside square
+                    // brackets [] becomes a button, keep the brackets.
+                    sentence={_(
+                      "Select entries to edit or remove them. Or [remove all invalid entries.]",
+                    )}
+                  >
+                    {(text) => (
+                      <Button variant="link" isInline onClick={clearInvalid}>
+                        {text}
+                      </Button>
+                    )}
+                  </Interpolate>
+                </>
+              )}
             </HelperTextItem>
           )}
         </HelperText>

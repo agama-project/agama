@@ -819,6 +819,49 @@ describe("MultiSelectField", () => {
 
       expect(screen.getAllByText("Must not start with x")).toHaveLength(1);
     });
+
+    it("takes out every marked value at once when asked", async () => {
+      const onChange = jest.fn();
+      const { user } = installerRender(
+        <TestForm
+          defaultValues={["eth0", "xbad", "xworse"]}
+          allowCustomEntries
+          validateOnChange={validateOnChange}
+          onChange={onChange}
+        />,
+      );
+      await user.click(screen.getByRole("button", { name: /remove all invalid entries/i }));
+
+      expect(onChange).toHaveBeenLastCalledWith(["eth0"]);
+    });
+
+    it("offers to take them out only while some value is marked", () => {
+      installerRender(
+        <TestForm
+          defaultValues={["eth0"]}
+          allowCustomEntries
+          validateOnChange={validateOnChange}
+        />,
+      );
+
+      expect(screen.queryByText(/remove all invalid entries/i)).toBeNull();
+    });
+
+    // A rule refusing the whole field says nothing about which value to take
+    // out, so there is nothing to offer until the values are marked themselves.
+    it("says nothing about invalid values when only the field is in error", async () => {
+      const { user } = installerRender(
+        <TestForm
+          defaultValues={["eth0"]}
+          allowCustomEntries
+          fieldError="At least two values are required"
+        />,
+      );
+      await user.click(screen.getByRole("button", { name: "Submit" }));
+
+      await screen.findByText("At least two values are required");
+      expect(screen.queryByText(/remove all invalid entries/i)).toBeNull();
+    });
   });
 
   describe("the form value", () => {
