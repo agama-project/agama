@@ -280,6 +280,10 @@ describe("StorageSheet", () => {
             { sid: 41, name: "/dev/sda1", block: { size: 5e10, systems: ["Windows 11"] } },
           ],
         });
+        /* The plan still has it, which is what keeping a partition looks like:
+           a row reads what becomes of one from the plan rather than from the
+           actions, so one the plan holds on to has to be there. */
+        mockProposalDevices.mockReturnValue([{ sid: 41, name: "/dev/sda1" }]);
       });
 
       it("names what is there and what becomes of it", () => {
@@ -290,6 +294,26 @@ describe("StorageSheet", () => {
         /* The system found on it reads in its own column, beside what it is. */
         screen.getByText("Windows 11");
         screen.getByText("Kept");
+      });
+
+      /* Emptying a partition for the new system deletes the file system that
+         was on it, and the plan says so. The partition itself stays, so the
+         row that reads "delete" out of the plan reads it about the wrong
+         thing. */
+      it("does not call a partition deleted while the new system reuses it", () => {
+        mockConfig.mockReturnValue(
+          config({
+            drives: [{ name: "/dev/sda", partitions: [{ name: "/dev/sda1", mountPath: "/home" }] }],
+          }),
+        );
+        mockProposalDevices.mockReturnValue([
+          { sid: 41, name: "/dev/sda1", filesystem: { sid: 99, type: "btrfs" } },
+        ]);
+        mockActions.mockReturnValue([{ device: 41, text: "", delete: true }]);
+        renderAt("/storage?sheet=drives.0&sheetTab=current");
+
+        screen.getByText('To be formatted as "/home"');
+        expect(screen.queryByText("To be deleted")).not.toBeInTheDocument();
       });
 
       it("lists the free space too, so keeping everything has something to show", () => {

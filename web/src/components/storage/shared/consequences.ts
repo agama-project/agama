@@ -100,12 +100,17 @@ type Outcome = "deleted" | "formatted" | "shrunk" | "kept";
  *
  * Formatting is not an action of its own in the plan, so it is read as the
  * partition surviving with a file system it did not have before.
+ *
+ * Deletion is read as the partition being missing from the plan, which is what
+ * deleting one means. The actions are not asked: emptying a partition to reuse
+ * it deletes what was on it and says so, and a partition the new system mounts
+ * is not one the reader needs warning about.
  */
 function outcomeOf(manager: DevicesManager, part: System.Device): Outcome {
-  if (manager.deletedDevices().some((device) => device.sid === part.sid)) return "deleted";
-
   const staged = manager.stagingDevice(part.sid);
-  if (staged && manager.hasNewFilesystem(staged)) return "formatted";
+  if (!staged) return "deleted";
+
+  if (manager.hasNewFilesystem(staged)) return "formatted";
 
   if (manager.resizedDevices().some((device) => device.sid === part.sid)) return "shrunk";
 

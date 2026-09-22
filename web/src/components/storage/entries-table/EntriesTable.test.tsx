@@ -30,6 +30,7 @@ import EntriesTable from "~/components/storage/entries-table/EntriesTable";
 const mockConfig = jest.fn();
 const mockSystemDevice = jest.fn();
 const mockSystemDevices = jest.fn();
+const mockStagingDevices = jest.fn();
 const mockActions = jest.fn();
 
 /**
@@ -56,7 +57,7 @@ jest.mock("~/hooks/model/system/storage", () => ({
 
 jest.mock("~/hooks/model/proposal/storage", () => ({
   ...jest.requireActual("~/hooks/model/proposal/storage"),
-  useFlattenDevices: () => [],
+  useFlattenDevices: () => mockStagingDevices(),
   useActions: () => mockActions(),
 }));
 
@@ -131,6 +132,7 @@ describe("EntriesTable", () => {
   beforeEach(() => {
     mockSystemDevice.mockReturnValue(null);
     mockSystemDevices.mockReturnValue([]);
+    mockStagingDevices.mockReturnValue([]);
     mockActions.mockReturnValue([]);
   });
 
@@ -207,6 +209,7 @@ describe("what a row says the installer will do", () => {
   beforeEach(() => {
     mockSystemDevice.mockReturnValue(null);
     mockSystemDevices.mockReturnValue([]);
+    mockStagingDevices.mockReturnValue([]);
     mockActions.mockReturnValue([]);
   });
 
@@ -354,23 +357,30 @@ describe("what a row says the installer will do", () => {
 });
 
 describe("what a row says it costs", () => {
-  /** A disk carrying Windows, which the installation is about to remove. */
+  /** A disk carrying Windows, which the installation may or may not remove. */
   const windowsPartition = {
     sid: 41,
     name: "/dev/sda1",
     class: "partition",
     block: { systems: ["Windows 11"] },
+    filesystem: { sid: 42, type: "ntfs" },
   };
+
+  /** The same partition once the installation is done with it, where it stays. */
+  const kept = { ...windowsPartition };
 
   beforeEach(() => {
     mockConfig.mockReturnValue(config({ drives: [{ name: "/dev/sda" }] }));
     mockSystemDevice.mockReturnValue({ name: "/dev/sda", partitions: [windowsPartition] });
     mockSystemDevices.mockReturnValue([windowsPartition]);
+    /* Still there when the installation is done, which is the quiet case the
+       tests that cost something move away from. */
+    mockStagingDevices.mockReturnValue([kept]);
     mockActions.mockReturnValue([]);
   });
 
   it("names what the machine loses, rather than counting it", () => {
-    mockActions.mockReturnValue([{ device: 41, text: "", delete: true }]);
+    mockStagingDevices.mockReturnValue([]);
     installerRender(<EntriesTable />);
 
     expect(rowText("sda")).toContain("Windows 11 will be deleted");
@@ -384,7 +394,7 @@ describe("what a row says it costs", () => {
     mockSystemDevices.mockReturnValue([
       { sid: 41, name: "/dev/sda1", class: "partition", block: { systems: [] } },
     ]);
-    mockActions.mockReturnValue([{ device: 41, text: "", delete: true }]);
+    mockStagingDevices.mockReturnValue([]);
     installerRender(<EntriesTable />);
 
     expect(rowText("sda")).toContain("1 partition will be deleted");
@@ -395,6 +405,18 @@ describe("what a row says it costs", () => {
     installerRender(<EntriesTable />);
 
     expect(rowText("sda")).toContain("1 partition will shrink");
+    expect(rowText("sda")).not.toContain("deleted");
+  });
+
+  /* Emptying a partition to reuse it deletes the file system that was on it,
+     and the plan says so. The partition itself stays, so the row has to read
+     the plan rather than the word "delete" in it. */
+  it("does not call a partition deleted while the installation keeps it", () => {
+    mockStagingDevices.mockReturnValue([{ ...kept, filesystem: { sid: 99, type: "btrfs" } }]);
+    mockActions.mockReturnValue([{ device: 41, text: "", delete: true }]);
+    installerRender(<EntriesTable />);
+
+    expect(rowText("sda")).toContain("Windows 11 will be formatted");
     expect(rowText("sda")).not.toContain("deleted");
   });
 
@@ -409,6 +431,7 @@ describe("the way into an entry", () => {
   beforeEach(() => {
     mockSystemDevice.mockReturnValue(null);
     mockSystemDevices.mockReturnValue([]);
+    mockStagingDevices.mockReturnValue([]);
     mockActions.mockReturnValue([]);
     mockConfig.mockReturnValue(
       config({
@@ -501,6 +524,7 @@ describe("what a row offers", () => {
   beforeEach(() => {
     mockSystemDevice.mockReturnValue(null);
     mockSystemDevices.mockReturnValue([]);
+    mockStagingDevices.mockReturnValue([]);
     mockActions.mockReturnValue([]);
   });
 
@@ -559,6 +583,7 @@ describe("when an act cannot be carried out", () => {
   beforeEach(() => {
     mockSystemDevice.mockReturnValue(null);
     mockSystemDevices.mockReturnValue([]);
+    mockStagingDevices.mockReturnValue([]);
     mockActions.mockReturnValue([]);
   });
 
