@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Sep 22 16:17:26 UTC 2026 - Michal Filka <mfilka@suse.com>
+
+- bsc#1271374
+  - added references to storage definitions into the OpenAPI schema
+
+-------------------------------------------------------------------
 Tue Sep 22 14:39:11 UTC 2026 - José Iván López González <jlopez@suse.com>
 
 - Use correct scope to detect active storage tasks
