@@ -136,7 +136,7 @@ impl UserFile {
         cmd2.args([
             &prefix.display().to_string(),
             "chown",
-            format!("{}:{}", &self.user, &self.group).as_str(),
+            format!("{}:{}", self.user, self.group).as_str(),
             target_path.to_str().unwrap(),
         ]);
         // so lets set user and group afterwards..it should not be security issue as original owner is root so it basically just reduce restriction

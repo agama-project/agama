@@ -1,0 +1,16 @@
+# Created by nm-initrd-generator
+[connection]
+id=enP32775p1s0
+uuid=af0194bd-a0bf-4ea6-acd2-a52641c1e274
+type=ethernet
+autoconnect-priority=-100
+autoconnect-retries=1
+controller=e2a7b4b8-8297-4185-8421-ed32cf47db1c
+interface-name=enP32775p1s0
+multi-connect=1
+port-type=bond
+
+[ethernet]
+
+[user]
+org.freedesktop.NetworkManager.origin=nm-initrd-generator

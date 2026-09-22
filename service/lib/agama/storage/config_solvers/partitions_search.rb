@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2025] SUSE LLC
+# Copyright (c) [2025-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -20,15 +20,13 @@
 # find current contact information at www.suse.com.
 
 require "agama/storage/config_solvers/devices_search"
-require "agama/storage/config_solvers/search_matchers"
+require "agama/storage/config_solvers/search_matchers/partition"
 
 module Agama
   module Storage
     module ConfigSolvers
       # Solver for the search of the partition configs.
       class PartitionsSearch < DevicesSearch
-        include SearchMatchers
-
         # Solves the search of the partition configs.
         #
         # @note The config object is modified.
@@ -43,28 +41,9 @@ module Agama
 
       private
 
-        # @see DevicesSearch#match_condition?
-        # @param partition_config [Configs::Partition]
-        # @param partition [Y2Storage::Partition]
-        #
-        # @return [Boolean]
-        def match_condition?(partition_config, partition)
-          match_name?(partition_config, partition) &&
-            match_size?(partition_config, partition) &&
-            match_number?(partition_config, partition)
-        end
-
-        # Whether the number of the given partition matches the search condition.
-        #
-        # @param partition_config [Configs::Partition]
-        # @param partition [Y2Storage::Partition]
-        #
-        # @return [Boolean]
-        def match_number?(partition_config, partition)
-          search = partition_config.search
-          return true unless search&.partition_number
-
-          partition.number == search.partition_number
+        # @see DevicesSearch#matcher
+        def matcher
+          @matcher ||= SearchMatchers::Partition.new
         end
       end
     end

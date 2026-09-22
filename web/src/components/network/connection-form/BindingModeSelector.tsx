@@ -68,9 +68,7 @@ const BindingModeSelector = withForm({
             label={_("Device binding")}
             options={BINDING_MODE_OPTIONS.map(({ value, label, description }) => ({
               value,
-              // eslint-disable-next-line agama-i18n/string-literals
               label: _(label),
-              // eslint-disable-next-line agama-i18n/string-literals
               description: _(description),
             }))}
           />

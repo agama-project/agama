@@ -86,7 +86,7 @@ const LogicalVolumeSourceFields = withForm({
               text={sprintf(
                 // TRANSLATORS: %s is a volume group name with its size (eg. "system (30 GiB)")
                 _("New logical volume. There are no available existing logical volumes on %s."),
-                deviceLabel(volumeGroup, true),
+                deviceLabel(volumeGroup, { truncate: true }),
               )}
             />
           )}
@@ -101,13 +101,13 @@ const LogicalVolumeSourceFields = withForm({
         description: sprintf(
           // TRANSLATORS: %s is a volume group name with its size (eg. "system (30 GiB)")
           _("Create a new logical volume on %s"),
-          deviceLabel(volumeGroup, true),
+          deviceLabel(volumeGroup, { truncate: true }),
         ),
       },
       { divider: true },
       ...availableLogicalVolumes.map((lv) => {
         const fsLabel = lv.filesystem?.label;
-        const label = [deviceLabel(lv, true), fsLabel].filter(Boolean).join(" - ");
+        const label = [deviceLabel(lv, { truncate: true }), fsLabel].filter(Boolean).join(" - ");
         // TRANSLATORS: %s is a description like "Ext4 logical volume"
         const description = sprintf(_("Use current %s"), lv.description);
         return {

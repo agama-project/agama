@@ -28,6 +28,8 @@ require "agama/storage/iscsi/adapter"
 require "yast"
 require "y2storage/inhibitors"
 
+Yast.import "Package"
+
 module Agama
   module DBus
     # D-Bus service (org.opensuse.Agama.Storage1)
@@ -52,6 +54,7 @@ module Agama
 
       # Starts storage service.
       def start
+        configure_yast_modules
         # Inhibits various storage subsystem (udisk, systemd mounts, raid auto-assembly) that
         # interfere with the operation of yast-storage-ng and libstorage-ng.
         Y2Storage::Inhibitors.new.inhibit
@@ -84,6 +87,13 @@ module Agama
 
       MULTIPATH_CONFIG = "/etc/multipath.conf"
       private_constant :MULTIPATH_CONFIG
+
+      # Configures mocked YaST modules, see agama/y2dir/modules.
+      def configure_yast_modules
+        # Sets the manager to allow checking the package requirements of the product, see
+        # agama/y2dir/modules/Package.rb.
+        Yast::Package.storage = manager
+      end
 
       # Checks if all requirement for multipath probing is correct and if not then log it.
       def check_multipath

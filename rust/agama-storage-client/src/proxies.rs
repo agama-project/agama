@@ -24,8 +24,8 @@ pub use storage1::Storage1Proxy;
 mod bootloader;
 pub use bootloader::BootloaderProxy;
 
-mod iscsi;
-pub use iscsi::{ISCSIProxy, ProgressChanged, ProgressFinished, SystemChanged};
+pub mod iscsi;
+pub use iscsi::ISCSIProxy;
 
 pub mod dasd;
 pub use dasd::DASDProxy;

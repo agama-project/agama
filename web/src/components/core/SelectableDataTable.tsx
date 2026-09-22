@@ -207,7 +207,7 @@ export type SelectableDataTableProps<T = any> = {
    * Used as the `aria-label` for the row action menu's trigger to improve
    * accessibility.
    */
-  itemActionsLabel?: (d: T) => string | string;
+  itemActionsLabel?: ((d: T) => TranslatedString) | TranslatedString;
 
   /**
    * Custom component to use for rendering the actions cell. When not provided,
@@ -216,7 +216,7 @@ export type SelectableDataTableProps<T = any> = {
    * The component will receive the actions for the row and the resolved
    * accessible label from `itemActionsLabel`.
    */
-  itemActionsComponent?: React.ComponentType<{ items: IAction[]; label: string }>;
+  itemActionsComponent?: React.ComponentType<{ items: IAction[]; label: TranslatedString }>;
 
   /**
    * Array of currently selected items.

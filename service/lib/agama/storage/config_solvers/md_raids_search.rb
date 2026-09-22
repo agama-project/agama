@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2025] SUSE LLC
+# Copyright (c) [2025-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -20,7 +20,7 @@
 # find current contact information at www.suse.com.
 
 require "agama/storage/config_solvers/devices_search"
-require "agama/storage/config_solvers/search_matchers"
+require "agama/storage/config_solvers/search_matchers/md_raid"
 require "agama/storage/config_solvers/with_partitions_search"
 
 module Agama
@@ -28,7 +28,6 @@ module Agama
     module ConfigSolvers
       # Solver for the search of the MD RAID configs.
       class MdRaidsSearch < DevicesSearch
-        include SearchMatchers
         include WithPartitionsSearch
 
         # @param storage_system [Storage::System]
@@ -54,13 +53,9 @@ module Agama
         # @return [Storage::System]
         attr_reader :storage_system
 
-        # @see DevicesSearch#match_condition?
-        # @param md_raid_config [Configs::MdRaid]
-        # @param md_raid [Y2Storage::Md]
-        #
-        # @return [Boolean]
-        def match_condition?(md_raid_config, md_raid)
-          match_name?(md_raid_config, md_raid) && match_size?(md_raid_config, md_raid)
+        # @see DevicesSearch#matcher
+        def matcher
+          @matcher ||= SearchMatchers::MdRaid.new
         end
       end
     end

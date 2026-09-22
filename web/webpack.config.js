@@ -13,6 +13,7 @@ const TsconfigPathsPlugin = require("tsconfig-paths-webpack-plugin");
 const ReactRefreshWebpackPlugin = require("@pmmmwh/react-refresh-webpack-plugin");
 const ReactRefreshTypeScript = require("react-refresh-typescript");
 const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
+const MonacoWebpackPlugin = require("monaco-editor-webpack-plugin");
 const webpack = require("webpack");
 
 /* A standard nodejs and webpack pattern */
@@ -60,6 +61,10 @@ const plugins = [
   // run the TypeScript type checks in a parallel process (report the problems to the dev server in
   // the development mode)
   new ForkTsCheckerWebpackPlugin({ devServer: development }),
+  new MonacoWebpackPlugin({
+    // include only support for the JSON format in the Monaco editor
+    languages: ["json"],
+  }),
 ].filter(Boolean);
 
 if (eslint) {
@@ -189,8 +194,8 @@ module.exports = {
               sourceMap: true,
               url: {
                 // Only follow the Agama fonts links to be processed by the next rule and place
-                // them in dist/fonts
-                filter: (url) => url.includes("./fonts/"),
+                // them in dist/fonts, the codicon font is added by the Monaco editor
+                filter: (url) => url.includes("./fonts/") || url.includes("codicon.ttf"),
               },
             },
           },
@@ -201,6 +206,12 @@ module.exports = {
               sassOptions: {
                 includePaths: ["node_modules"],
                 outputStyle: production ? "compressed" : undefined,
+                // Never emit a @charset or a byte-order mark. Compressed output
+                // marks a non-ASCII stylesheet with a BOM, and the extracted
+                // stylesheets are concatenated into a single file, so that BOM
+                // would land mid-file, where it is part of the next selector
+                // rather than whitespace and silently kills that rule.
+                charset: false,
                 silenceDeprecations: ["global-builtin", "if-function"],
               },
             },

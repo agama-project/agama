@@ -32,7 +32,7 @@ pub async fn run(mut ws_client: WebSocketClient, pretty: bool) -> anyhow::Result
 
         match conversion {
             Ok(event_json) => println!("{}", event_json),
-            Err(_) => eprintln!("Could not serialize {:?}", &event),
+            Err(_) => eprintln!("Could not serialize {:?}", event),
         }
     }
 }

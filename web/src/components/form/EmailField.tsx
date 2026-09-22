@@ -29,9 +29,12 @@ import {
   TextInput,
 } from "@patternfly/react-core";
 import Text from "~/components/core/Text";
+import { useFieldLabel } from "~/hooks/use-field-label";
 import { useFieldContext } from "~/hooks/form-contexts";
 
-type EmailFieldProps = {
+import type { FieldLabelOptions } from "~/hooks/use-field-label";
+
+type EmailFieldProps = FieldLabelOptions & {
   label: React.ReactNode;
   helperText?: React.ReactNode;
   size?: number;
@@ -42,13 +45,26 @@ type EmailFieldProps = {
  * Must be used inside a `form.AppField` render prop.
  *
  * @see useFieldContext for field component conventions.
+ * @see useFieldLabel for adjusting the accessible name (`labelPrefixedBy`, etc.).
  */
-export default function EmailField({ label, helperText, size }: EmailFieldProps) {
+export default function EmailField({
+  label,
+  helperText,
+  size,
+  "aria-label": ariaLabel,
+  "aria-labelledby": ariaLabelledBy,
+  labelPrefixedBy,
+}: EmailFieldProps) {
   const field = useFieldContext<string>();
+  const { labelId, labelProps } = useFieldLabel(field.name, {
+    "aria-label": ariaLabel,
+    "aria-labelledby": ariaLabelledBy,
+    labelPrefixedBy,
+  });
   const error = field.state.meta.errors[0];
 
   return (
-    <FormGroup fieldId={field.name} label={label}>
+    <FormGroup fieldId={field.name} label={<span id={labelId}>{label}</span>}>
       <TextInput
         id={field.name}
         name={field.name}
@@ -57,6 +73,7 @@ export default function EmailField({ label, helperText, size }: EmailFieldProps)
         value={field.state.value}
         validated={error ? "error" : "default"}
         onChange={(_, value) => field.handleChange(value)}
+        {...labelProps}
       />
       {(error || helperText) && (
         <FormHelperText>

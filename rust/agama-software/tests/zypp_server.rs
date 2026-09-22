@@ -97,7 +97,7 @@ async fn test_start_zypp_server() {
         value: None,
     };
     let rule = AnswerRule {
-        class: Some("software.import_gpg".to_string()),
+        class: Some("importGpg".to_string()),
         text: None,
         data: None,
         answer,
@@ -148,7 +148,7 @@ async fn test_start_zypp_server() {
         1,
         "There are unexpected issues size {issues:#?}"
     );
-    assert_eq!(issues.software[0].class, "missing_product");
+    assert_eq!(issues.software[0].class, "missingProduct");
 
     let questions = question_handler
         .call(question::message::Get)

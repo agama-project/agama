@@ -48,8 +48,10 @@ import { filterPatterns, groupPatterns, isPatternSelected, sortGroupNames } from
 import { SOFTWARE } from "~/routes/paths";
 import { N_, _, n_ } from "~/i18n";
 import { defaultOptions } from "./fields";
+import { PROPOSAL_QUERY_KEY, EXTENDED_CONFIG_QUERY_KEY } from "~/hooks/model/proposal";
 
 import type { Pattern } from "~/model/system/software";
+import type { MarkedString } from "~/i18n";
 
 /**
  * Controls which patterns the selection page shows.
@@ -104,7 +106,7 @@ const resolvePatternAction = (
 };
 
 /** Values use `N_()` for extraction. Translate with `_()` at render time. */
-const PAGE_TITLE: Record<Scope, string> = {
+const PAGE_TITLE: Record<Scope, MarkedString> = {
   // TRANSLATORS: page title when selecting all software patterns
   all: N_("Patterns selection"),
   // TRANSLATORS: page title when selecting desktop environments
@@ -351,11 +353,13 @@ function SoftwarePatternsSelection({ scope = "all" }: { scope?: Scope }) {
         { label: _("Software"), path: SOFTWARE.root },
         {
           // TRANSLATORS: breadcrumb label for the pattern/desktop selection page
-          // eslint-disable-next-line agama-i18n/string-literals
           label: _(PAGE_TITLE[scope]),
         },
       ]}
-      progress={{ scope: "software" }}
+      progress={{
+        scope: "software",
+        awaitQueriesRefetch: [PROPOSAL_QUERY_KEY, EXTENDED_CONFIG_QUERY_KEY],
+      }}
     >
       <Page.Content>
         <form.AppForm>
@@ -404,12 +408,21 @@ function SoftwarePatternsSelection({ scope = "all" }: { scope?: Scope }) {
             >
               {({ values: formValues, fieldMeta }) => (
                 <Stack hasGutter>
-                  {sortGroupNames(allGroups).map((groupName) => {
+                  {sortGroupNames(allGroups).map((groupName, index) => {
                     const groupAll = allGroups[groupName];
                     const groupVisible = visibleByCategory[groupName] || [];
+                    // Ties the category heading to its group of checkboxes so a
+                    // screen reader announces the category when entering them.
+                    const headingId = `software-category-${index}`;
 
                     return (
-                      <Stack key={groupName} hasGutter>
+                      <Stack
+                        key={groupName}
+                        hasGutter
+                        component="section"
+                        role="group"
+                        aria-labelledby={headingId}
+                      >
                         <div
                           className="agm-sticky-category-header"
                           style={{ top: `${filterHeight}px` }}
@@ -418,7 +431,9 @@ function SoftwarePatternsSelection({ scope = "all" }: { scope?: Scope }) {
                             spaceItems={{ default: "spaceItemsSm" }}
                             alignItems={{ default: "alignItemsBaseline" }}
                           >
-                            <Title headingLevel="h3">{groupName}</Title>
+                            <Title headingLevel="h3" id={headingId}>
+                              {groupName}
+                            </Title>
                             <CategoryCounter
                               patterns={groupAll}
                               matchCount={groupVisible.length}
@@ -430,14 +445,20 @@ function SoftwarePatternsSelection({ scope = "all" }: { scope?: Scope }) {
                         {groupVisible.length > 0 && (
                           <NestedContent>
                             <Stack hasGutter>
-                              {groupVisible.map((pattern) => {
+                              {groupVisible.map((pattern, patternIndex) => {
                                 const isAutoSelected = selection[pattern.name] === SelectedBy.AUTO;
                                 const isDirty = fieldMeta[pattern.name]?.isDirty ?? false;
+                                // The DOM id and React key must stay unique even if the
+                                // backend lists the same pattern name under more than one
+                                // category. The form field stays keyed by the pattern name
+                                // (the backend identity), so such duplicates reflect the
+                                // same selection instead of producing clashing ids.
+                                const checkboxId = `${headingId}-pattern-${patternIndex}`;
 
                                 return (
                                   <PatternCheckbox
-                                    key={pattern.name}
-                                    id={pattern.name}
+                                    key={checkboxId}
+                                    id={checkboxId}
                                     label={pattern.summary}
                                     description={pattern.description}
                                     isChecked={!!formValues[pattern.name]}

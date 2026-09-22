@@ -90,7 +90,7 @@ module Agama
         config.supporting_partitions.any? do |device_config|
           !device_config.found_device &&
             !device_config.search&.skip_device? &&
-            !device_config.search&.name
+            !device_config.search&.condition_name
         end
       end
 

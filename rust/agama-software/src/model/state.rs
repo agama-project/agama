@@ -26,8 +26,9 @@ use std::collections::HashMap;
 use std::fmt;
 
 use agama_utils::{
-    api::software::{
-        Config, PatternsConfig, ProductConfig, RepositoryConfig, SoftwareConfig, SystemInfo,
+    api::{
+        self,
+        software::{Config, PatternsConfig, ProductConfig, RepositoryConfig, SoftwareConfig},
     },
     kernel_cmdline::KernelCmdline,
     products::{ProductSpec, UserPatternSpec},
@@ -77,6 +78,11 @@ impl SoftwareState {
     }
 }
 
+/// Alias prefix reserved for the installation repositories created by Agama corresponding to the
+/// product definition (see [`SoftwareStateBuilder::build_repo`]). They are named `agama-0`,
+/// `agama-1`, etc. and must not be copied to the target system.
+pub(crate) const AGAMA_REPO_PREFIX: &str = "agama-";
+
 /// Builder to create a [SoftwareState] struct from different sources.
 ///
 /// At this point it uses the following sources:
@@ -90,12 +96,12 @@ pub struct SoftwareStateBuilder<'a> {
     product: &'a ProductSpec,
     /// Configuration.
     config: Option<&'a Config>,
-    /// Information from the underlying system.
-    system: Option<&'a SystemInfo>,
     /// Agama's software selection.
     selection: Option<&'a SoftwareSelection>,
     /// Kernel command-line options.
     kernel_cmdline: KernelCmdline,
+    /// List of predefined repositories.
+    predefined_repositories: Vec<api::software::Repository>,
 }
 
 impl<'a> SoftwareStateBuilder<'a> {
@@ -104,9 +110,9 @@ impl<'a> SoftwareStateBuilder<'a> {
         Self {
             product,
             config: None,
-            system: None,
             selection: None,
             kernel_cmdline: KernelCmdline::default(),
+            predefined_repositories: vec![],
         }
     }
 
@@ -115,14 +121,6 @@ impl<'a> SoftwareStateBuilder<'a> {
     /// The configuration may contain user-selected patterns and packages, extra repositories, etc.
     pub fn with_config(mut self, config: &'a Config) -> Self {
         self.config = Some(config);
-        self
-    }
-
-    /// Adds the information of the underlying system.
-    ///
-    /// The system may contain repositories, e.g. the off-line medium repository, DUD, etc.
-    pub fn with_system(mut self, system: &'a SystemInfo) -> Self {
-        self.system = Some(system);
         self
     }
 
@@ -140,13 +138,17 @@ impl<'a> SoftwareStateBuilder<'a> {
         self
     }
 
+    pub fn with_predefined_repositories(
+        mut self,
+        predefined_repositories: Vec<api::software::Repository>,
+    ) -> Self {
+        self.predefined_repositories = predefined_repositories;
+        self
+    }
+
     /// Builds the [SoftwareState] combining all the sources.
     pub fn build(self) -> SoftwareState {
         let mut state = self.to_software_state();
-
-        if let Some(system) = self.system {
-            self.add_system_config(&mut state, system);
-        }
 
         if let Some(config) = self.config {
             self.add_user_config(&mut state, config);
@@ -157,42 +159,6 @@ impl<'a> SoftwareStateBuilder<'a> {
         }
 
         state
-    }
-
-    /// Adds the elements from the underlying system.
-    ///
-    /// It searches for repositories in the underlying system. The idea is to
-    /// use the repositories for off-line installation or Driver Update Disks.
-    fn add_system_config(&self, state: &mut SoftwareState, system: &SystemInfo) {
-        let repositories = system
-            .repositories
-            .iter()
-            .filter(|r| r.predefined)
-            .map(Repository::from);
-        state.repositories.extend(repositories);
-
-        // hardcode here kernel as it is not in basic dependencies due to
-        // containers, but for agama usage, it does not make sense to skip kernel
-        // If needs arise, we can always add more smarter kernel selection later.
-        state.resolvables.add_or_replace(
-            "kernel-default",
-            ResolvableType::Package,
-            ResolvableSelection::AutoSelected {
-                skip_if_missing: false,
-            },
-        );
-
-        // FIPS enabled, so add fips pattern
-        if self.kernel_cmdline.get_last("fips") == Some("1".to_string()) {
-            tracing::info!("fips detected, adding fips pattern");
-            state.resolvables.add_or_replace(
-                "fips",
-                ResolvableType::Pattern,
-                ResolvableSelection::AutoSelected {
-                    skip_if_missing: false,
-                },
-            );
-        }
     }
 
     /// Adds the elements from the user configuration.
@@ -267,49 +233,38 @@ impl<'a> SoftwareStateBuilder<'a> {
                 PatternsConfig::PatternsList(list) => {
                     // reset list of product preselected patterns
                     state.resolvables.reset_user_patterns();
-                    for name in list.iter() {
-                        state.resolvables.add_or_replace(
-                            name,
-                            ResolvableType::Pattern,
-                            ResolvableSelection::Selected,
-                        )
-                    }
+                    state.resolvables.extend_resolvables(
+                        list,
+                        ResolvableType::Pattern,
+                        ResolvableSelection::Selected,
+                    );
                 }
                 PatternsConfig::PatternsMap(map) => {
-                    let mut list: Vec<(&str, ResolvableSelection)> = vec![];
-
                     if let Some(add) = &map.add {
-                        list.extend(
-                            add.iter()
-                                .map(|n| (n.as_str(), ResolvableSelection::Selected)),
+                        state.resolvables.extend_resolvables(
+                            add,
+                            ResolvableType::Pattern,
+                            ResolvableSelection::Selected,
                         );
                     }
 
                     if let Some(remove) = &map.remove {
-                        list.extend(
-                            remove
-                                .iter()
-                                .map(|n| (n.as_str(), ResolvableSelection::Removed)),
+                        state.resolvables.extend_resolvables(
+                            remove,
+                            ResolvableType::Pattern,
+                            ResolvableSelection::Removed,
                         );
-                    }
-
-                    for (name, selection) in list.into_iter() {
-                        state
-                            .resolvables
-                            .add_or_replace(name, ResolvableType::Pattern, selection);
                     }
                 }
             }
         }
 
         if let Some(packages) = &config.packages {
-            for name in packages.iter() {
-                state.resolvables.add_or_replace(
-                    name,
-                    ResolvableType::Package,
-                    ResolvableSelection::Selected,
-                )
-            }
+            state.resolvables.extend_resolvables(
+                packages,
+                ResolvableType::Package,
+                ResolvableSelection::Selected,
+            );
         }
 
         if let Some(only_required) = config.only_required {
@@ -323,68 +278,78 @@ impl<'a> SoftwareStateBuilder<'a> {
             state.resolvables.add_or_replace_resolvable(
                 &resolvable,
                 ResolvableSelection::AutoSelected {
-                    skip_if_missing: false,
+                    skip_if_missing: resolvable.optional,
                 },
             );
         }
     }
 
-    fn to_software_state(&self) -> SoftwareState {
+    fn build_repo(i: usize, url: String) -> Repository {
+        let alias = format!("{AGAMA_REPO_PREFIX}{i}");
+        Repository {
+            name: alias.clone(),
+            alias,
+            url,
+            enabled: true,
+            priority: None,
+        }
+    }
+
+    /// Whether a predefined repository for the local (off-line) installation media is present.
+    fn has_local_install_media(&self) -> bool {
+        self.predefined_repositories
+            .iter()
+            .any(|repo| repo.alias == crate::service::INSTALLATION_REPO_ALIAS)
+    }
+
+    fn build_repositories(&self) -> Vec<Repository> {
         let software = &self.product.software;
         let kernel_repos = self.kernel_cmdline.get_last("inst.install_url");
-        let repositories = if let Some(kernel_repos) = kernel_repos {
+        let mut repositories: Vec<_> = if let Some(kernel_repos) = kernel_repos {
             kernel_repos
                 .split(",")
                 .enumerate()
-                .map(|(i, url)| {
-                    let alias = format!("agama-{}", i);
-                    Repository {
-                        name: alias.clone(),
-                        alias,
-                        url: url.to_string(),
-                        enabled: true,
-                        priority: None,
-                    }
-                })
+                .map(|(i, url)| Self::build_repo(i, url.to_string()))
                 .collect()
+        } else if self.has_local_install_media() {
+            tracing::info!(
+                "Local installation media found; skipping the product's remote repositories"
+            );
+            vec![]
         } else {
             software
                 .repositories()
                 .into_iter()
                 .enumerate()
-                .map(|(i, r)| {
-                    let alias = format!("agama-{}", i);
-                    Repository {
-                        name: alias.clone(),
-                        alias,
-                        url: r.url.clone(),
-                        enabled: true,
-                        priority: None,
-                    }
-                })
+                .map(|(i, r)| Self::build_repo(i, r.url.clone()))
                 .collect()
         };
 
-        let mut resolvables = ResolvablesState::default();
-        for pattern in &software.mandatory_patterns {
-            resolvables.add_or_replace(
-                pattern,
-                ResolvableType::Pattern,
-                ResolvableSelection::AutoSelected {
-                    skip_if_missing: false,
-                },
-            );
+        // add all predefined repositories here
+        for repo in self.predefined_repositories.iter() {
+            repositories.push(Repository::from(repo));
         }
 
-        for pattern in &software.optional_patterns {
-            resolvables.add_or_replace(
-                pattern,
-                ResolvableType::Pattern,
-                ResolvableSelection::AutoSelected {
-                    skip_if_missing: true,
-                },
-            );
-        }
+        repositories
+    }
+
+    fn add_patterns(&self, resolvables: &mut ResolvablesState) {
+        let software = &self.product.software;
+        resolvables.extend_resolvables(
+            &software.mandatory_patterns,
+            ResolvableType::Pattern,
+            ResolvableSelection::AutoSelected {
+                skip_if_missing: false,
+            },
+        );
+
+        resolvables.extend_resolvables(
+            &software.optional_patterns,
+            ResolvableType::Pattern,
+            ResolvableSelection::AutoSelected {
+                skip_if_missing: true,
+            },
+        );
 
         for pattern in &software.user_patterns {
             if let UserPatternSpec::Object(user_pattern) = pattern {
@@ -398,33 +363,66 @@ impl<'a> SoftwareStateBuilder<'a> {
             }
         }
 
-        for package in &software.mandatory_packages {
+        // FIPS enabled, so add fips pattern
+        if self.kernel_cmdline.get_last("fips") == Some("1".to_string()) {
+            tracing::info!("fips detected, adding fips pattern");
             resolvables.add_or_replace(
-                package,
-                ResolvableType::Package,
+                "fips",
+                ResolvableType::Pattern,
                 ResolvableSelection::AutoSelected {
                     skip_if_missing: false,
                 },
             );
         }
+    }
 
-        for package in &software.optional_packages {
-            resolvables.add_or_replace(
-                package,
-                ResolvableType::Package,
-                ResolvableSelection::AutoSelected {
-                    skip_if_missing: true,
-                },
-            );
-        }
+    fn add_packages(&self, resolvables: &mut ResolvablesState) {
+        let software = &self.product.software;
+        resolvables.extend_resolvables(
+            &software.mandatory_packages,
+            ResolvableType::Package,
+            ResolvableSelection::AutoSelected {
+                skip_if_missing: false,
+            },
+        );
 
+        resolvables.extend_resolvables(
+            &software.optional_packages,
+            ResolvableType::Package,
+            ResolvableSelection::AutoSelected {
+                skip_if_missing: true,
+            },
+        );
+
+        // hardcode here kernel as it is not in basic dependencies due to
+        // containers, but for agama usage, it does not make sense to skip kernel
+        // If needs arise, we can always add more smarter kernel selection later.
+        resolvables.add_or_replace(
+            software.kernel(),
+            ResolvableType::Package,
+            ResolvableSelection::AutoSelected {
+                skip_if_missing: false,
+            },
+        );
+    }
+
+    fn build_resolvables(&self) -> ResolvablesState {
+        let mut resolvables = ResolvablesState::default();
+        self.add_patterns(&mut resolvables);
+        self.add_packages(&mut resolvables);
+        resolvables
+    }
+
+    fn to_software_state(&self) -> SoftwareState {
         SoftwareState {
-            product: software
+            product: self
+                .product
+                .software
                 .base_product
                 .clone()
                 .expect("Expected a base product to be defined"),
-            repositories,
-            resolvables,
+            repositories: self.build_repositories(),
+            resolvables: self.build_resolvables(),
             registration: None,
             options: Default::default(),
             allow_registration: self.product.registration,
@@ -438,14 +436,14 @@ impl SoftwareState {
     pub fn build_from(
         product: &ProductSpec,
         config: &Config,
-        system: &SystemInfo,
         selection: &SoftwareSelection,
+        predefined_repositories: Vec<api::software::Repository>,
     ) -> Self {
         SoftwareStateBuilder::for_product(product)
             .with_config(config)
-            .with_system(system)
             .with_selection(selection)
             .with_kernel_cmdline(KernelCmdline::parse().unwrap_or_default())
+            .with_predefined_repositories(predefined_repositories)
             .build()
     }
 }
@@ -527,6 +525,21 @@ impl ResolvablesState {
         selection: ResolvableSelection,
     ) {
         self.add_or_replace(&resolvable.name, resolvable.r#type, selection);
+    }
+
+    /// Add or replace the state for multiple resolvables with the given type and selection.
+    pub fn extend_resolvables<I, S>(
+        &mut self,
+        iter: I,
+        r#type: ResolvableType,
+        selection: ResolvableSelection,
+    ) where
+        I: IntoIterator<Item = S>,
+        S: AsRef<str>,
+    {
+        for name in iter {
+            self.add_or_replace(name.as_ref(), r#type, selection);
+        }
     }
 
     /// Reset the list of user selected patterns. It is useful if product preselects some and
@@ -654,7 +667,7 @@ mod tests {
     use agama_utils::{
         api::software::{
             AddonConfig, Config, PatternsConfig, PatternsMap, ProductConfig, Repository,
-            RepositoryConfig, SoftwareConfig, SystemInfo,
+            RepositoryConfig, SoftwareConfig,
         },
         kernel_cmdline::KernelCmdline,
         products::{ProductSpec, ProductTemplate},
@@ -730,6 +743,13 @@ mod tests {
                 (
                     "enhanced_base".to_string(),
                     ResolvableType::Pattern,
+                    ResolvableSelection::AutoSelected {
+                        skip_if_missing: false
+                    }
+                ),
+                (
+                    "kernel-default".to_string(),
+                    ResolvableType::Package,
                     ResolvableSelection::AutoSelected {
                         skip_if_missing: false
                     }
@@ -995,22 +1015,11 @@ mod tests {
             predefined: true,
         };
 
-        let another_repo = Repository {
-            alias: "another".to_string(),
-            name: "another".to_string(),
-            url: "https://example.lan/SLES/".to_string(),
-            enabled: false,
-            predefined: false,
-        };
-
-        let system = SystemInfo {
-            repositories: vec![base_repo, another_repo],
-            ..Default::default()
-        };
+        let repos = vec![base_repo];
 
         let state = SoftwareStateBuilder::for_product(&product)
             .with_config(&config)
-            .with_system(&system)
+            .with_predefined_repositories(repos)
             .build();
 
         let aliases: Vec<_> = state.repositories.iter().map(|r| r.alias.clone()).collect();
@@ -1022,6 +1031,89 @@ mod tests {
             "user-repo-0".to_string(),
         ];
         assert_eq!(expected_aliases, aliases);
+    }
+
+    #[test]
+    fn test_skips_product_repositories_when_installation_media_present() {
+        let product = build_product_spec("tumbleweed", None);
+        let config = Config::default();
+
+        let install_repo = Repository {
+            alias: crate::service::INSTALLATION_REPO_ALIAS.to_string(),
+            name: crate::service::INSTALLATION_REPO_ALIAS.to_string(),
+            url: "hd:/install".to_string(),
+            enabled: true,
+            predefined: true,
+        };
+
+        let state = SoftwareStateBuilder::for_product(&product)
+            .with_config(&config)
+            .with_predefined_repositories(vec![install_repo])
+            .build();
+
+        let aliases: Vec<_> = state.repositories.iter().map(|r| r.alias.clone()).collect();
+        assert_eq!(
+            aliases,
+            vec![crate::service::INSTALLATION_REPO_ALIAS.to_string()]
+        );
+    }
+
+    #[test]
+    fn test_keeps_product_repositories_without_installation_media() {
+        let product = build_product_spec("tumbleweed", None);
+        let config = Config::default();
+
+        let dud_repo = Repository {
+            alias: "AgamaDriverUpdate".to_string(),
+            name: "AgamaDriverUpdate".to_string(),
+            url: "hd:/dud".to_string(),
+            enabled: true,
+            predefined: true,
+        };
+
+        let state = SoftwareStateBuilder::for_product(&product)
+            .with_config(&config)
+            .with_predefined_repositories(vec![dud_repo])
+            .build();
+
+        let aliases: Vec<_> = state.repositories.iter().map(|r| r.alias.clone()).collect();
+        assert_eq!(
+            aliases,
+            vec![
+                "agama-0".to_string(),
+                "agama-1".to_string(),
+                "agama-2".to_string(),
+                "AgamaDriverUpdate".to_string(),
+            ]
+        );
+    }
+
+    #[test]
+    fn test_keeps_kernel_cmdline_repositories_with_installation_media_present() {
+        let product = build_product_spec("tumbleweed", None);
+        let kernel_cmdline = KernelCmdline::parse_str("inst.install_url=http://example.com/repo1");
+
+        let install_repo = Repository {
+            alias: crate::service::INSTALLATION_REPO_ALIAS.to_string(),
+            name: crate::service::INSTALLATION_REPO_ALIAS.to_string(),
+            url: "hd:/install".to_string(),
+            enabled: true,
+            predefined: true,
+        };
+
+        let state = SoftwareStateBuilder::for_product(&product)
+            .with_kernel_cmdline(kernel_cmdline)
+            .with_predefined_repositories(vec![install_repo])
+            .build();
+
+        let aliases: Vec<_> = state.repositories.iter().map(|r| r.alias.clone()).collect();
+        assert_eq!(
+            aliases,
+            vec![
+                "agama-0".to_string(),
+                crate::service::INSTALLATION_REPO_ALIAS.to_string(),
+            ]
+        );
     }
 
     #[test]
@@ -1050,6 +1142,13 @@ mod tests {
                     }
                 ),
                 (
+                    "kernel-default".to_string(),
+                    ResolvableType::Package,
+                    ResolvableSelection::AutoSelected {
+                        skip_if_missing: false
+                    }
+                ),
+                (
                     "openSUSE-repos-Tumbleweed".to_string(),
                     ResolvableType::Package,
                     ResolvableSelection::AutoSelected {
@@ -1068,13 +1167,10 @@ mod tests {
     }
 
     #[test]
-    fn test_system_adds_kernel() {
+    fn test_system_adds_default_kernel() {
         let product = build_product_spec("tumbleweed", None);
-        let system = SystemInfo::default();
 
-        let state = SoftwareStateBuilder::for_product(&product)
-            .with_system(&system)
-            .build();
+        let state = SoftwareStateBuilder::for_product(&product).build();
 
         let kernel = state
             .resolvables
@@ -1088,6 +1184,31 @@ mod tests {
             kernel,
             Some((
                 "kernel-default".to_string(),
+                ResolvableType::Package,
+                ResolvableSelection::AutoSelected {
+                    skip_if_missing: false
+                }
+            ))
+        );
+    }
+
+    #[test]
+    fn test_system_adds_custom_kernel() {
+        let mut product = build_product_spec("tumbleweed", None);
+        product.software.kernel = Some("kernel-rt".to_string());
+
+        let state = SoftwareStateBuilder::for_product(&product).build();
+
+        let kernel = state
+            .resolvables
+            .to_vec()
+            .into_iter()
+            .find(|(name, r#type, _)| name == "kernel-rt" && *r#type == ResolvableType::Package);
+
+        assert_eq!(
+            kernel,
+            Some((
+                "kernel-rt".to_string(),
                 ResolvableType::Package,
                 ResolvableSelection::AutoSelected {
                     skip_if_missing: false

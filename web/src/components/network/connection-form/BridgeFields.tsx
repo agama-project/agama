@@ -123,9 +123,7 @@ const BridgeFields = withForm({
               }
               options={stpOptions().map(({ value, label, description }) => ({
                 value,
-                // eslint-disable-next-line agama-i18n/string-literals
                 label: _(label),
-                // eslint-disable-next-line agama-i18n/string-literals
                 description: _(description),
               }))}
             />

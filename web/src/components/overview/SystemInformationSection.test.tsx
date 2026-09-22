@@ -30,6 +30,17 @@ jest.mock("~/components/network/FormattedIpsList", () => ({
   default: () => <span>192.168.1.1</span>,
 }));
 
+const mockUseIpAddressesFn = jest.fn();
+
+jest.mock("~/hooks/model/system/network", () => ({
+  ...jest.requireActual("~/hooks/model/system/network"),
+  useIpAddresses: () => mockUseIpAddressesFn(),
+}));
+
+beforeEach(() => {
+  mockUseIpAddressesFn.mockReturnValue(["192.168.1.1"]);
+});
+
 describe("SystemInformationSection", () => {
   describe("when hardware data is available", () => {
     beforeEach(() => {
@@ -90,6 +101,31 @@ describe("SystemInformationSection", () => {
       installerRender(<SystemInformationSection />);
       screen.getByText("ThinkPad X1 Carbon");
       expect(screen.getAllByText("Unknown")).toHaveLength(2);
+    });
+  });
+
+  describe("when the system has IP addresses", () => {
+    beforeEach(() => {
+      mockSystem({ hardware: {} });
+      mockUseIpAddressesFn.mockReturnValue(["192.168.1.1"]);
+    });
+
+    it("renders the IPs field", () => {
+      installerRender(<SystemInformationSection />);
+      screen.getByText("IPs");
+      screen.getByText("192.168.1.1");
+    });
+  });
+
+  describe("when the system has no IP address", () => {
+    beforeEach(() => {
+      mockSystem({ hardware: {} });
+      mockUseIpAddressesFn.mockReturnValue([]);
+    });
+
+    it("does not render the IPs field", () => {
+      installerRender(<SystemInformationSection />);
+      expect(screen.queryByText("IPs")).toBeNull();
     });
   });
 });

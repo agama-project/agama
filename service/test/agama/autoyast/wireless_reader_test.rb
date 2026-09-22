@@ -31,8 +31,8 @@ Yast.import "Profile"
 describe Agama::AutoYaST::WirelessReader do
   let(:profile) do
     {
-      "wireless_auth_mode" => auth_mode,
-      "wireless_mode"      => mode,
+      "wireless_auth_mode" => auth_mode.short_name,
+      "wireless_mode"      => mode.short_name,
       "wireless_essid"     => "DUMMY_NETWORK"
     }
   end

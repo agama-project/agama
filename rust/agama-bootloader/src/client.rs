@@ -50,12 +50,16 @@ pub trait BootloaderClient {
     /// Retrieves the bootloader resolvables.
     async fn get_resolvables(&self) -> ClientResult<Vec<Resolvable>>;
     /// Sets the bootloader configuration.
-    async fn set_config(&self, config: &Config) -> ClientResult<BoxFuture<Result<(), Error>>>;
+    async fn set_config(&mut self, config: &Config) -> ClientResult<BoxFuture<Result<(), Error>>>;
     /// Sets the extra kernel args for given scope.
     ///
     /// * `id`: identifier of the kernel argument so it can be later changed.
     /// * `value`: plaintext value that will be appended to kernel commandline.
-    async fn set_kernel_arg(&mut self, id: String, value: String);
+    async fn set_kernel_arg(
+        &mut self,
+        id: String,
+        value: String,
+    ) -> ClientResult<BoxFuture<Result<(), Error>>>;
 }
 
 // full config used on dbus which beside public config passes
@@ -74,15 +78,29 @@ pub type ClientResult<T> = Result<T, Error>;
 #[derive(Clone)]
 pub struct Client {
     storage_client: Handler<storage_client::Service>,
-    kernel_args: HashMap<String, String>,
+    // full config, so we can replace only modified part
+    full_config: FullConfig,
 }
 
 impl Client {
     pub async fn new(storage_client: Handler<storage_client::Service>) -> ClientResult<Client> {
         Ok(Self {
             storage_client,
-            kernel_args: HashMap::new(),
+            full_config: FullConfig::default(),
         })
+    }
+
+    async fn send_config(&self) -> ClientResult<BoxFuture<Result<(), Error>>> {
+        let full_config = self.full_config.clone();
+        tracing::info!("sending bootloader config {:?}", full_config);
+        // ignore return value as currently it does not fail and who knows what future brings
+        // but it should not be part of result and instead transformed to Issue
+        let value = serde_json::to_value(&full_config)?;
+        let rx = self
+            .storage_client
+            .call(message::bootloader::SetConfig::new(value))
+            .await?;
+        Ok(Box::pin(async move { rx.await.map_err(Error::from) }))
     }
 }
 
@@ -109,23 +127,17 @@ impl BootloaderClient for Client {
             .await?)
     }
 
-    async fn set_config(&self, config: &Config) -> ClientResult<BoxFuture<Result<(), Error>>> {
-        let full_config = FullConfig {
-            config: config.clone(),
-            kernel_args: self.kernel_args.clone(),
-        };
-        tracing::info!("sending bootloader config {:?}", full_config);
-        // ignore return value as currently it does not fail and who knows what future brings
-        // but it should not be part of result and instead transformed to Issue
-        let value = serde_json::to_value(&full_config)?;
-        let rx = self
-            .storage_client
-            .call(message::bootloader::SetConfig::new(value))
-            .await?;
-        Ok(Box::pin(async move { rx.await.map_err(Error::from) }))
+    async fn set_config(&mut self, config: &Config) -> ClientResult<BoxFuture<Result<(), Error>>> {
+        self.full_config.config = config.clone();
+        self.send_config().await
     }
 
-    async fn set_kernel_arg(&mut self, id: String, value: String) {
-        self.kernel_args.insert(id, value);
+    async fn set_kernel_arg(
+        &mut self,
+        id: String,
+        value: String,
+    ) -> ClientResult<BoxFuture<Result<(), Error>>> {
+        self.full_config.kernel_args.insert(id, value);
+        self.send_config().await
     }
 }

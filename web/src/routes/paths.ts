@@ -22,9 +22,6 @@
 
 const L10N = {
   root: "/l10n",
-  localeSelection: "/l10n/locale/select",
-  keymapSelection: "/l10n/keymap/select",
-  timezoneSelection: "/l10n/timezone/select",
 };
 
 const NETWORK = {
@@ -52,7 +49,6 @@ const REGISTRATION = {
 const ROOT = {
   root: "/",
   login: "/login",
-  overview: "/overview",
   installation: "/installation",
   installationProgress: "/installation/progress",
   installationFinished: "/installation/finished",

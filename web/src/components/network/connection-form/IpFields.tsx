@@ -107,9 +107,7 @@ const IpFields = withForm({
               label={label}
               options={modeOptions().map(({ value, label, description }) => ({
                 value,
-                // eslint-disable-next-line agama-i18n/string-literals
                 label: _(label),
-                // eslint-disable-next-line agama-i18n/string-literals
                 description: _(description),
               }))}
             />
@@ -124,7 +122,6 @@ const IpFields = withForm({
                   {(field) => (
                     <field.ArrayField
                       label={addressesLabel}
-                      inputAriaLabel={addressesLabel}
                       skipDuplicates
                       normalize={ensureIPPrefix}
                       helperText={

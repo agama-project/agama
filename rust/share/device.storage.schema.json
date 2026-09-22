@@ -40,7 +40,6 @@
       "properties": {
         "start": { "type": "integer" },
         "size": { "type": "integer" },
-        "active": { "type": "boolean" },
         "encrypted": { "type": "boolean" },
         "udevIds": {
           "type": "array",
@@ -80,7 +79,7 @@
         "transport": { "type": "string" },
         "bus": { "type": "string" },
         "busId": { "type": "string" },
-        "driver": {
+        "drivers": {
           "type": "array",
           "items": { "type": "string" }
         },
@@ -96,7 +95,7 @@
       "additionalProperties": false,
       "properties": {
         "sdCard": { "type": "boolean" },
-        "dellBoss": { "type": "boolean" }
+        "boss": { "type": "boolean" }
       }
     },
     "filesystem": {
@@ -197,8 +196,55 @@
       "additionalProperties": false,
       "required": ["efi"],
       "properties": {
-        "efi": { "type": "boolean" }
+        "efi": { "type": "boolean" },
+        "id": { "$ref": "#/$defs/partitionId" }
       }
+    },
+    "partitionId": {
+      "title": "Partition id",
+      "enum": [
+        "dos12",
+        "dos16",
+        "ntfs",
+        "dos32",
+        "extended",
+        "diag",
+        "prep",
+        "swap",
+        "linux",
+        "irst",
+        "lvm",
+        "raid",
+        "xbootldr",
+        "esp",
+        "bios_boot",
+        "windows_basic_data",
+        "microsoft_reserved",
+        "linux_home",
+        "linux_server_data",
+        "linux_root_arm",
+        "linux_root_aarch64",
+        "linux_root_ppc32",
+        "linux_root_ppc64be",
+        "linux_root_ppc64le",
+        "linux_root_riscv32",
+        "linux_root_riscv64",
+        "linux_root_s390",
+        "linux_root_s390x",
+        "linux_root_x86",
+        "linux_root_x86_64",
+        "linux_usr_arm",
+        "linux_usr_aarch64",
+        "linux_usr_ppc32",
+        "linux_usr_ppc64be",
+        "linux_usr_ppc64le",
+        "linux_usr_riscv32",
+        "linux_usr_riscv64",
+        "linux_usr_s390",
+        "linux_usr_s390x",
+        "linux_usr_x86",
+        "linux_usr_x86_64"
+      ]
     },
     "volumeGroup": {
       "type": "object",

@@ -63,17 +63,10 @@ impl Starter {
     /// from each proxy to cache the current values.
     pub async fn start(self) -> Result<Handler<Service>, Error> {
         let storage_proxy = proxies::Storage1Proxy::new(&self.dbus).await?;
-        storage_proxy.config().await?;
-
         let bootloader_proxy = proxies::BootloaderProxy::new(&self.dbus).await?;
-        bootloader_proxy.config().await?;
-
         let iscsi_proxy = proxies::ISCSIProxy::new(&self.dbus).await?;
-        iscsi_proxy.config().await?;
-
         let dasd_proxy = if Arch::is_s390() {
             let proxy = proxies::DASDProxy::new(&self.dbus).await?;
-            proxy.config().await?;
             Some(proxy)
         } else {
             None
@@ -81,7 +74,6 @@ impl Starter {
 
         let zfcp_proxy = if Arch::is_s390() {
             let proxy = proxies::ZFCPProxy::new(&self.dbus).await?;
-            proxy.config().await?;
             Some(proxy)
         } else {
             None
@@ -94,6 +86,7 @@ impl Starter {
             dasd_proxy,
             zfcp_proxy,
         };
+
         let handler = actor::spawn(service);
         Ok(handler)
     }
@@ -108,21 +101,35 @@ pub struct Service {
 }
 
 impl Service {
-    /// Runs the probe action in a separate task.
+    /// Runs the activate action in a separate task.
     ///
-    /// There are chances to block the service if a probing is requested. For example, if the D-Bus
-    /// service is waiting for a question and the probe action is called, then this service task
-    /// keeps blocked until the question is answered. This typically happens when setting a config
-    /// and a monitor (e.g., iSCSI monitor) requests a storage probe.
+    /// There are chances to block the service if activate is requested and the D-Bus service starts
+    /// waiting for a question. In that case, any other call to this service will produce a
+    /// deadlock.
     ///
     /// It is important to avoid blocking the service task, otherwise no info can be retrieved from
     /// D-Bus, even though the info is cached by the proxy.
+    async fn activate(&mut self) -> Result<(), Error> {
+        let proxy = self.storage_proxy.clone();
+
+        tokio::spawn(async move {
+            let result = proxy.activate().await;
+            if let Err(error) = &result {
+                tracing::error!("Failed to activate storage: {error}");
+            }
+        });
+
+        Ok(())
+    }
+
+    /// Runs the probe action in a separate task.
     ///
-    /// Theoretically, this same problem could happen by calling to activate or setting the locale,
-    /// but the UI does not allow those options if there are questions.
+    /// There are chances to block the service if probe is requested and the D-Bus service starts
+    /// waiting for a question. In that case, any other call to this service will produce a
+    /// deadlock.
     ///
-    /// TODO: Decide how to behave when there are questions and a new change is requested to D-Bus
-    /// (exit with error, call D-Bus without waiting, ...).
+    /// It is important to avoid blocking the service task, otherwise no info can be retrieved from
+    /// D-Bus, even though the info is cached by the proxy.
     async fn probe(&mut self) -> Result<(), Error> {
         let proxy = self.storage_proxy.clone();
 
@@ -137,15 +144,39 @@ impl Service {
     }
 }
 
+#[async_trait]
 impl Actor for Service {
     type Error = Error;
+
+    // Calls the D-Bus proxies in order to initialize and cache their data.
+    async fn init(&mut self) {
+        if let Err(error) = self.storage_proxy.config().await {
+            tracing::error!("Failed to initialize storage D-Bus proxy: {error}");
+        }
+        if let Err(error) = self.bootloader_proxy.config().await {
+            tracing::error!("Failed to initialize bootloader D-Bus proxy: {error}");
+        }
+        if let Err(error) = self.iscsi_proxy.config().await {
+            tracing::error!("Failed to initialize iSCSI D-Bus proxy: {error}");
+        }
+        if let Some(zfcp_proxy) = &self.zfcp_proxy {
+            if let Err(error) = zfcp_proxy.config().await {
+                tracing::error!("Failed to initialize zFCP D-Bus proxy: {error}");
+            }
+        }
+        if let Some(dasd_proxy) = &self.dasd_proxy {
+            if let Err(error) = dasd_proxy.config().await {
+                tracing::error!("Failed to initialize DASD D-Bus proxy: {error}");
+            }
+        }
+    }
 }
 
 #[async_trait]
 impl MessageHandler<message::CallAction> for Service {
     async fn handle(&mut self, message: message::CallAction) -> Result<(), Error> {
         match message.action.as_str() {
-            "Activate" => self.storage_proxy.activate().await?,
+            "Activate" => self.activate().await?,
             "Probe" => self.probe().await?,
             "Install" => self.storage_proxy.install().await?,
             "Finish" => self.storage_proxy.finish().await?,
@@ -344,7 +375,7 @@ impl MessageHandler<message::iscsi::GetSystem> for Service {
         &mut self,
         _message: message::iscsi::GetSystem,
     ) -> Result<Option<serde_json::Value>, Error> {
-        let raw_json = self.iscsi_proxy.iscsi_system().await?;
+        let raw_json = self.iscsi_proxy.system().await?;
         Ok(try_from_string(&raw_json)?)
     }
 }
@@ -397,7 +428,7 @@ impl MessageHandler<message::dasd::GetSystem> for Service {
         _message: message::dasd::GetSystem,
     ) -> Result<Option<serde_json::Value>, Error> {
         if let Some(proxy) = &self.dasd_proxy {
-            let raw_json = proxy.dasd_system().await?;
+            let raw_json = proxy.system().await?;
             Ok(try_from_string(&raw_json)?)
         } else {
             Ok(None)

@@ -153,10 +153,10 @@ describe("ConnectionDetails", () => {
     });
   });
 
-  describe("Binding settings section", () => {
+  describe("Binding information in Settings", () => {
     it("renders information about the binding mode (all)", () => {
       installerRender(<ConnectionDetails connection={new Connection("Network #1")} />);
-      const section = screen.getByRole("region", { name: "Binding" });
+      const section = screen.getByRole("region", { name: "Settings" });
       within(section).getByText("Connection is available to all devices.");
     });
 
@@ -166,7 +166,7 @@ describe("ConnectionDetails", () => {
           connection={new Connection("Network #1", { macAddress: "AA:11:22:33:44:FF" })}
         />,
       );
-      const section = screen.getByRole("region", { name: "Binding" });
+      const section = screen.getByRole("region", { name: "Settings" });
       within(section).getByText("Connection is bound to MAC address AA:11:22:33:44:FF.");
     });
 
@@ -174,15 +174,8 @@ describe("ConnectionDetails", () => {
       installerRender(
         <ConnectionDetails connection={new Connection("Network #1", { iface: "enp1s0" })} />,
       );
-      const section = screen.getByRole("region", { name: "Binding" });
+      const section = screen.getByRole("region", { name: "Settings" });
       within(section).getByText("Connection is bound to device enp1s0.");
-    });
-
-    it("renders a link to for editing binding settings", () => {
-      installerRender(<ConnectionDetails connection={mockConnection} />);
-      const section = screen.getByRole("region", { name: "Binding" });
-      const editLink = within(section).getByRole("link", { name: "Edit binding settings" });
-      expect(editLink).toHaveAttribute("href", "/network/connections/Network%20%231/binding/edit");
     });
   });
 

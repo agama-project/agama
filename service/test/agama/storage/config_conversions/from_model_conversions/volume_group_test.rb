@@ -123,13 +123,17 @@ describe Agama::Storage::ConfigConversions::FromModelConversions::VolumeGroup do
 
       let(:drive) do
         Agama::Storage::Configs::Drive.new.tap do |drive|
-          drive.search = Agama::Storage::Configs::Search.new.tap { |s| s.name = "/dev/vda" }
+          drive.search = Agama::Storage::Configs::Search.new.tap do |s|
+            s.condition = Agama::Storage::Configs::SearchConditions::Name.new("/dev/vda")
+          end
         end
       end
 
       let(:md_raid) do
         Agama::Storage::Configs::MdRaid.new.tap do |md_raid|
-          md_raid.search = Agama::Storage::Configs::Search.new.tap { |s| s.name = "/dev/md0" }
+          md_raid.search = Agama::Storage::Configs::Search.new.tap do |s|
+            s.condition = Agama::Storage::Configs::SearchConditions::Name.new("/dev/md0")
+          end
         end
       end
 

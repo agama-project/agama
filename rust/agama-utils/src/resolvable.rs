@@ -28,6 +28,8 @@ pub struct Resolvable {
     pub name: String,
     #[serde(rename = "type")]
     pub r#type: ResolvableType,
+    #[serde(default)]
+    pub optional: bool,
 }
 
 impl Resolvable {
@@ -35,6 +37,7 @@ impl Resolvable {
         Self {
             name: name.to_string(),
             r#type,
+            optional: false,
         }
     }
 

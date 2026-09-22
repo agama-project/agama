@@ -20,15 +20,13 @@
 # find current contact information at www.suse.com.
 
 require "agama/storage/config_solvers/devices_search"
-require "agama/storage/config_solvers/search_matchers"
+require "agama/storage/config_solvers/search_matchers/logical_volume"
 
 module Agama
   module Storage
     module ConfigSolvers
       # Solver for the search of the logical volume configs.
       class LogicalVolumesSearch < DevicesSearch
-        include SearchMatchers
-
         # Solves the search of the logical volume configs.
         #
         # @note The config object is modified.
@@ -43,13 +41,9 @@ module Agama
 
       private
 
-        # @see DevicesSearch#match_condition?
-        # @param lv_config [Configs::LogicalVolume]
-        # @param lvm_lv [Y2Storage::LvmLv]
-        #
-        # @return [Boolean]
-        def match_condition?(lv_config, lvm_lv)
-          match_name?(lv_config, lvm_lv) && match_size?(lv_config, lvm_lv)
+        # @see DevicesSearch#matcher
+        def matcher
+          @matcher ||= SearchMatchers::LogicalVolume.new
         end
 
         # @see DevicesSearch#solve_with_device

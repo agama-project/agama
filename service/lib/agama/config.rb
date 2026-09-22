@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022-2023] SUSE LLC
+# Copyright (c) [2022-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -66,6 +66,20 @@ module Agama
     # @return [Boolean]
     def lvm?
       data.dig("storage", "lvm") || false
+    end
+
+    # Mandatory packages required by the product.
+    #
+    # @return [Array<String>]
+    def mandatory_packages
+      data.dig("software", "mandatory_packages") || []
+    end
+
+    # Optional packages required by the product.
+    #
+    # @return [Array<String>]
+    def optional_packages
+      data.dig("software", "optional_packages") || []
     end
 
   private

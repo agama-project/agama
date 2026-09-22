@@ -33,6 +33,9 @@ import {
 import { CONNECTION_TYPE } from "~/utils/network";
 import ConnectionForm from "./Form";
 
+// Mock scrollTo which is not available in jsdom
+Element.prototype.scrollTo = jest.fn();
+
 const mockDevice1 = {
   name: "enp1s0",
   macAddress: "00:11:22:33:44:55",
@@ -749,6 +752,9 @@ describe("ConnectionForm", () => {
     });
   });
 
+  // These check the integration only: invalid input blocks the submit and shows
+  // the matching error in the UI. One representative case per connection type is
+  // kept here; the exhaustive per-rule coverage lives in validations.test.ts.
   describe("validation", () => {
     describe("IP Settings", () => {
       it("shows an error when IPv4 addresses are invalid", async () => {
@@ -764,19 +770,6 @@ describe("ConnectionForm", () => {
     });
 
     describe("Bond", () => {
-      it("shows an error when no device name is defined", async () => {
-        const { user } = installerRender(<ConnectionForm />);
-
-        await user.click(screen.getByLabelText("Type"));
-        await user.click(screen.getByText("Bond"));
-        await user.type(await screen.findByLabelText("Name"), "test-bond");
-
-        await user.click(screen.getByRole("button", { name: "Accept" }));
-
-        await screen.findByText("Device name is required");
-        expect(mockMutateAsync).not.toHaveBeenCalled();
-      });
-
       it("shows an error when no bond ports are selected", async () => {
         const { user } = installerRender(<ConnectionForm />);
 
@@ -790,71 +783,9 @@ describe("ConnectionForm", () => {
         await screen.findByText("At least one bond port is required");
         expect(mockMutateAsync).not.toHaveBeenCalled();
       });
-
-      it("shows an error when 'primary' option is used with an invalid bond mode", async () => {
-        const { user } = installerRender(<ConnectionForm />);
-
-        await user.click(screen.getByLabelText("Type"));
-        await user.click(screen.getByText("Bond"));
-        await user.type(await screen.findByLabelText("Name"), "test-bond");
-        await user.type(await screen.findByLabelText("Device name"), "bond0");
-
-        // Default mode is balance-rr, which does not support 'primary'
-        await user.type(screen.getByLabelText("Bond options"), "primary=enp1s0{enter}");
-        await user.type(screen.getByRole("textbox", { name: "Bond ports" }), "enp1s0{enter}");
-
-        await user.click(screen.getByRole("button", { name: "Accept" }));
-
-        await screen.findByText(
-          "The 'primary' option is only valid for 'active-backup', 'balance-tlb', and 'balance-alb' modes",
-        );
-        expect(mockMutateAsync).not.toHaveBeenCalled();
-      });
-
-      it("allows 'primary' option with active-backup mode", async () => {
-        const { user } = installerRender(<ConnectionForm />);
-
-        await user.click(screen.getByLabelText("Type"));
-        await user.click(screen.getByText("Bond"));
-        await user.type(await screen.findByLabelText("Name"), "test-bond");
-        await user.type(await screen.findByLabelText("Device name"), "bond0");
-
-        await user.click(screen.getByLabelText("Bond mode"));
-        await user.click(screen.getByRole("option", { name: /active-backup/ }));
-
-        await user.type(screen.getByLabelText("Bond options"), "primary=enp1s0{enter}");
-        await user.type(screen.getByRole("textbox", { name: "Bond ports" }), "enp1s0{enter}");
-
-        await user.click(screen.getByRole("button", { name: "Accept" }));
-
-        await waitFor(() => {
-          expect(
-            screen.queryByText(
-              "The 'primary' option is only valid for 'active-backup', 'balance-tlb', and 'balance-alb' modes",
-            ),
-          ).not.toBeInTheDocument();
-          expect(mockMutateAsync).toHaveBeenCalled();
-        });
-      });
     });
 
     describe("Bridge", () => {
-      it("shows an error when no device name is defined", async () => {
-        const { user } = installerRender(<ConnectionForm />);
-
-        await user.click(screen.getByLabelText("Type"));
-        await user.click(screen.getByRole("option", { name: "Bridge" }));
-        await user.type(await screen.findByLabelText("Name"), "test-bridge");
-
-        const ifaceInput = await screen.findByLabelText("Device name");
-        await user.clear(ifaceInput);
-
-        await user.click(screen.getByRole("button", { name: "Accept" }));
-
-        await screen.findByText("Device name is required");
-        expect(mockMutateAsync).not.toHaveBeenCalled();
-      });
-
       it("shows an error when no bridge ports are selected", async () => {
         const { user } = installerRender(<ConnectionForm />);
 
@@ -868,98 +799,9 @@ describe("ConnectionForm", () => {
         await screen.findByText("At least one bridge port is required");
         expect(mockMutateAsync).not.toHaveBeenCalled();
       });
-
-      it("shows errors when bridge STP settings are out of range", async () => {
-        const { user } = installerRender(<ConnectionForm />);
-
-        await user.click(screen.getByLabelText("Type"));
-        await user.click(screen.getByRole("option", { name: "Bridge" }));
-        await user.type(await screen.findByLabelText("Name"), "test-bridge");
-        await user.type(await screen.findByLabelText("Device name"), "br0");
-        await user.type(screen.getByLabelText("Bridge ports"), "enp1s0{enter}");
-
-        // Enable STP to see the fields
-        const stpSelector = screen.getByLabelText("Spanning Tree Protocol (STP)");
-        await user.click(stpSelector);
-        await user.click(screen.getByRole("option", { name: /^Custom/ }));
-
-        const priorityInput = screen.getByLabelText(/Priority/);
-        await user.clear(priorityInput);
-        await user.type(priorityInput, "70000");
-
-        const delayInput = screen.getByLabelText(/Forward delay/);
-        await user.clear(delayInput);
-        await user.type(delayInput, "2");
-
-        const helloInput = screen.getByLabelText(/Hello time/);
-        await user.clear(helloInput);
-        await user.type(helloInput, "11");
-
-        const maxAgeInput = screen.getByLabelText(/Max message age/);
-        await user.clear(maxAgeInput);
-        await user.type(maxAgeInput, "5");
-
-        await user.click(screen.getByRole("button", { name: "Accept" }));
-
-        await screen.findByText("Priority must be between 0 and 61440");
-        await screen.findByText("Forward delay must be between 4 and 30 seconds");
-        await screen.findByText("Hello time must be between 1 and 10 seconds");
-        await screen.findByText("Max message age must be between 6 and 40 seconds");
-        expect(mockMutateAsync).not.toHaveBeenCalled();
-      });
-
-      it("allows empty STP settings when STP is enabled", async () => {
-        const { user } = installerRender(<ConnectionForm />);
-
-        await user.click(screen.getByLabelText("Type"));
-        await user.click(screen.getByRole("option", { name: "Bridge" }));
-        await user.type(await screen.findByLabelText("Name"), "test-bridge");
-        await user.type(await screen.findByLabelText("Device name"), "br0");
-        await user.type(screen.getByLabelText("Bridge ports"), "enp1s0{enter}");
-
-        // Enable STP
-        const stpSelector = screen.getByLabelText("Spanning Tree Protocol (STP)");
-        await user.click(stpSelector);
-        await user.click(screen.getByRole("option", { name: /^Custom/ }));
-
-        // Clear all STP fields
-        await user.clear(screen.getByLabelText(/Priority/));
-        await user.clear(screen.getByLabelText(/Forward delay/));
-        await user.clear(screen.getByLabelText(/Hello time/));
-        await user.clear(screen.getByLabelText(/Max message age/));
-
-        await user.click(screen.getByRole("button", { name: "Accept" }));
-
-        await waitFor(() => {
-          expect(mockMutateAsync).toHaveBeenCalledWith(
-            expect.objectContaining({
-              bridge: expect.objectContaining({
-                stp: true,
-                priority: undefined,
-                forwardDelay: undefined,
-                helloTime: undefined,
-                maxAge: undefined,
-              }),
-            }),
-          );
-        });
-      });
     });
 
     describe("VLAN", () => {
-      it("shows an error when no device name is defined", async () => {
-        const { user } = installerRender(<ConnectionForm />);
-
-        await user.click(screen.getByLabelText("Type"));
-        await user.click(screen.getByText("VLAN"));
-        await user.type(await screen.findByLabelText("Name"), "test-vlan");
-
-        await user.click(screen.getByRole("button", { name: "Accept" }));
-
-        await screen.findByText("Device name is required");
-        expect(mockMutateAsync).not.toHaveBeenCalled();
-      });
-
       it("shows an error when no VLAN ID is defined", async () => {
         const { user } = installerRender(<ConnectionForm />);
 

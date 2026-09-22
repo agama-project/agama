@@ -33,6 +33,8 @@ import {
   GridItem,
   Split,
 } from "@patternfly/react-core";
+import { SYSTEM_QUERY_KEY } from "~/hooks/model/system";
+import { CONFIG_QUERY_KEY } from "~/hooks/model/config";
 import Link from "~/components/core/Link";
 import Page from "~/components/core/Page";
 import Text from "~/components/core/Text";
@@ -172,7 +174,7 @@ export default function ZFCPPage(): React.ReactNode {
   return (
     <Page
       breadcrumbs={[{ label: _("Storage"), path: STORAGE.root }, { label: _("zFCP") }]}
-      progress={{ scope: "zfcp" }}
+      progress={{ scope: "zfcp", awaitQueriesRefetch: [SYSTEM_QUERY_KEY, CONFIG_QUERY_KEY] }}
     >
       <Page.Content>
         <IssuesAlert issues={issues} />

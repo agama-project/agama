@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2025] SUSE LLC
+# Copyright (c) [2025-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -20,6 +20,7 @@
 # find current contact information at www.suse.com.
 
 require "agama/storage/devicegraph_conversions/to_json_conversions/section"
+require "y2storage/partition_id"
 
 module Agama
   module Storage
@@ -36,7 +37,10 @@ module Agama
 
           # @see Section#conversions
           def conversions
-            { efi: partition_efi }
+            {
+              efi: partition_efi,
+              id:  partition_id
+            }
           end
 
           # Whether it is a (valid) EFI System partition
@@ -44,6 +48,15 @@ module Agama
           # @return [Boolean]
           def partition_efi
             storage_device.efi_system?
+          end
+
+          # Partition Id
+          #
+          # @return [String, nil] nil if the id is unknown
+          def partition_id
+            return if storage_device.id == Y2Storage::PartitionId::UNKNOWN
+
+            storage_device.id.to_s
           end
         end
       end

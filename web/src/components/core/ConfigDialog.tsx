@@ -20,44 +20,35 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useEffect, useState } from "react";
-import { Content, Flex, Spinner } from "@patternfly/react-core";
-import { CodeEditor, Language } from "@patternfly/react-code-editor";
+import React, { Suspense } from "react";
+import { Bullseye, Content, Flex, Spinner } from "@patternfly/react-core";
 import Popup from "~/components/core/Popup";
-import { useAppearance } from "~/context/appearance";
-import { ROOT } from "~/routes/paths";
-import { isoTimestamp } from "~/utils";
 import { _ } from "~/i18n";
 
 type ConfigDialogProps = {
   onClose: () => void;
 };
 
+// load the component and its dependencies dynamically when needed, do not
+// include it in the default index.js file, the Monaco editor is huge
+const ConfigEditor = React.lazy(
+  () =>
+    import(
+      /* webpackChunkName: "config-editor" */
+      "~/components/core/ConfigEditor"
+    ),
+);
+
 /**
  * Dialog showing the current installation configuration in JSON format, with
  * options to copy or download the content.
  */
 export default function ConfigDialog({ onClose }: ConfigDialogProps) {
-  const { isDark } = useAppearance();
-  const [config, setConfig] = useState<string | undefined>(undefined);
-  // CodeEditor appends the extension based on the language, so it must be omitted here.
-  const [downloadFileName, setDownloadFileName] = useState("agama-config");
-
-  useEffect(() => {
-    const loadConfig = async () => {
-      try {
-        const response = await fetch(ROOT.config);
-        const text = await response.text();
-        setConfig(JSON.stringify(JSON.parse(text), null, 2));
-        setDownloadFileName(`agama-config-${isoTimestamp()}`);
-      } catch (error) {
-        console.error("Failed to load config:", error);
-        setConfig("");
-      }
-    };
-
-    loadConfig();
-  }, []);
+  const fallback = (
+    <Bullseye>
+      <Spinner />
+    </Bullseye>
+  );
 
   return (
     <Popup
@@ -73,38 +64,9 @@ export default function ConfigDialog({ onClose }: ConfigDialogProps) {
             "Use this to reproduce this installation later using the installer command-line interface or the unattended mode.",
           )}
         </Content>
-        <CodeEditor
-          isDarkTheme={isDark}
-          isReadOnly
-          isCopyEnabled
-          isDownloadEnabled
-          copyButtonAriaLabel={_("Copy to the clipboard")}
-          copyButtonToolTipText={_("Copy to the clipboard")}
-          copyButtonSuccessTooltipText={_("Configuration added to clipboard")}
-          downloadButtonAriaLabel={_("Download configuration")}
-          downloadButtonToolTipText={_("Download configuration")}
-          downloadFileName={downloadFileName}
-          code={config}
-          emptyState={<Spinner />}
-          language={Language.json}
-          height="360px"
-          // PatternFly merges this into its own monaco options, so settings it
-          // derives from props (like readOnly from isReadOnly) are preserved.
-          // Based on https://microsoft.github.io/monaco-editor/playground.html?source=v0.55.1#example-customizing-the-appearence-scrollbars
-          options={{
-            contextmenu: false,
-            scrollBeyondLastLine: false,
-            hideCursorInOverviewRuler: true,
-            // TRANSLATORS: error message displayed in the JSON editor when trying to change the read-only text
-            readOnlyMessage: { value: _("The configuration is read-only.") },
-          }}
-          // Runs in addition to PatternFly's own mount logic (e.g. Shift+Tab
-          // focus handling). Disables the command palette, based on
-          // https://microsoft.github.io/monaco-editor/playground.html?source=v0.55.1#example-interacting-with-the-editor-listening-to-key-events
-          onEditorDidMount={(editor, monaco) => {
-            editor.addCommand(monaco.KeyCode.F1, () => null);
-          }}
-        />
+        <Suspense fallback={fallback}>
+          <ConfigEditor />
+        </Suspense>
       </Flex>
 
       <Popup.Actions>

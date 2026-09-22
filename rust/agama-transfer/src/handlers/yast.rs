@@ -38,7 +38,7 @@ impl HdHandler {
             return Err(Error::MissingDevice(url));
         };
         let device_name = device_name.strip_prefix("/dev/").unwrap_or(&device_name);
-        let device_url = format!("device://{}{}", &device_name, url.path());
+        let device_url = format!("device://{}{}", device_name, url.path());
         let device_url =
             Url::parse(&device_url).map_err(|e| Error::ParseError(device_url.to_string(), e))?;
 

@@ -24,12 +24,14 @@ import React from "react";
 import { screen, within } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import { useSystem } from "~/hooks/model/system/l10n";
-import { useProposal } from "~/hooks/model/proposal/l10n";
+import { useExtendedL10n } from "~/hooks/model/config/l10n";
 import { Keymap, Locale, Timezone } from "~/model/system/l10n";
+import type { Issue } from "~/model/issue";
 import L10nPage from "./L10nPage";
 
 let mockSystemData: ReturnType<typeof useSystem>;
-let mockProposedData: ReturnType<typeof useProposal>;
+let mockConfigData: ReturnType<typeof useExtendedL10n>;
+let mockIssues: Issue[];
 
 const locales: Locale[] = [
   { id: "en_US.UTF-8", language: "English", territory: "United States" },
@@ -55,9 +57,14 @@ jest.mock("~/hooks/model/system/l10n", () => ({
   useSystem: () => mockSystemData,
 }));
 
-jest.mock("~/hooks/model/proposal/l10n", () => ({
-  ...jest.requireActual("~/hooks/model/proposal/l10n"),
-  useProposal: () => mockProposedData,
+jest.mock("~/hooks/model/config/l10n", () => ({
+  ...jest.requireActual("~/hooks/model/config/l10n"),
+  useExtendedL10n: () => mockConfigData,
+}));
+
+jest.mock("~/hooks/model/issue", () => ({
+  ...jest.requireActual("~/hooks/model/issue"),
+  useIssues: () => mockIssues,
 }));
 
 beforeEach(() => {
@@ -67,14 +74,16 @@ beforeEach(() => {
     timezones,
   };
 
-  mockProposedData = {
+  mockConfigData = {
     locale: "en_US.UTF-8",
     keymap: "us",
     timezone: "Europe/Berlin",
   };
+
+  mockIssues = [];
 });
 
-it("renders an clarification about settings", () => {
+it("renders a clarification about settings", () => {
   installerRender(<L10nPage />);
   screen.getByText(/These are the settings for the product to install/);
   const clarification = screen.getByText(
@@ -85,62 +94,52 @@ it("renders an clarification about settings", () => {
   within(clarification).getByText("InstallerL10nOptions Mock");
 });
 
-it("renders a section for configuring the language", () => {
+it("renders the language, keyboard and time zone selectors", () => {
   installerRender(<L10nPage />);
-  const region = screen.getByRole("region", { name: "Language" });
-  within(region).getByText("English - United States");
-  within(region).getByText("Change");
+  screen.getByRole("combobox", { name: "Language" });
+  screen.getByRole("combobox", { name: "Keyboard" });
+  screen.getByRole("combobox", { name: "Time zone" });
 });
 
-describe("if the language selected is wrong", () => {
+describe("when the backend reports localization issues", () => {
   beforeEach(() => {
-    mockProposedData.locale = "us_US.UTF-8";
+    mockIssues = [
+      {
+        scope: "l10n",
+        class: "unknown_timezone",
+        description: "Timezone 'Europe/ndorra' is unknown",
+      },
+    ];
   });
 
-  it("renders a button for selecting a language", () => {
+  it("tells the user what is not recognized", () => {
     installerRender(<L10nPage />);
-    const region = screen.getByRole("region", { name: "Language" });
-    within(region).getByText("Wrong selection");
-    within(region).getByText("Select");
+    screen.getByText("Timezone 'Europe/ndorra' is unknown");
   });
 });
 
-it("renders a section for configuring the keyboard", () => {
-  installerRender(<L10nPage />);
-  const region = screen.getByRole("region", { name: "Keyboard" });
-  within(region).getByText("English");
-  within(region).getByText("Change");
-});
-
-describe("if the keyboard selected is wrong", () => {
+describe("when a configured id is not recognized", () => {
   beforeEach(() => {
-    mockProposedData.keymap = "ess";
+    mockConfigData = { locale: "es_ES.UTF-8", keymap: "us", timezone: "Europe/ndorra" };
   });
 
-  it("renders a button for selecting a keyboard", () => {
+  it("keeps the recognized settings selected", () => {
     installerRender(<L10nPage />);
-    const region = screen.getByRole("region", { name: "Keyboard" });
-    within(region).getByText("Wrong selection");
-    within(region).getByText("Select");
+    screen.getByRole("combobox", { name: "Language" });
+    expect(screen.getByRole("combobox", { name: "Language" })).toHaveValue("Spanish (Spain)");
+    expect(screen.getByRole("combobox", { name: "Keyboard" })).toHaveValue("English");
   });
 });
 
-it("renders a section for configuring the time zone", () => {
-  installerRender(<L10nPage />);
-  const region = screen.getByRole("region", { name: "Time zone" });
-  within(region).getByText("Europe - Berlin");
-  within(region).getByText("Change");
-});
-
-describe("if the time zone selected is wrong", () => {
+describe("when the system reports no localization data yet", () => {
   beforeEach(() => {
-    mockProposedData.timezone = "Europee/Beeerlin";
+    mockSystemData = null;
   });
 
-  it("renders a button for selecting a time zone", () => {
+  it("renders the selectors with no options to choose from", () => {
     installerRender(<L10nPage />);
-    const region = screen.getByRole("region", { name: "Time zone" });
-    within(region).getByText("Wrong selection");
-    within(region).getByText("Select");
+    expect(screen.getByRole("combobox", { name: "Language" })).toHaveValue("");
+    expect(screen.getByRole("combobox", { name: "Keyboard" })).toHaveValue("");
+    expect(screen.getByRole("combobox", { name: "Time zone" })).toHaveValue("");
   });
 });

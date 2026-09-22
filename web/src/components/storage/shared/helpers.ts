@@ -36,8 +36,7 @@ import type { Storage as System } from "~/model/system";
 import type { ConfigModel } from "~/model/storage/config-model";
 
 export type FilesystemOption =
-  | { value: string; label: React.ReactNode; description?: React.ReactNode }
-  | { divider: true };
+  { value: string; label: React.ReactNode; description?: React.ReactNode } | { divider: true };
 
 /**
  * Builds the filesystem dropdown options for a storage form.

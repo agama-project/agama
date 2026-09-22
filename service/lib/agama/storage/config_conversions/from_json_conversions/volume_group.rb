@@ -22,6 +22,7 @@
 require "agama/storage/config_conversions/from_json_conversions/base"
 require "agama/storage/config_conversions/from_json_conversions/encryption"
 require "agama/storage/config_conversions/from_json_conversions/logical_volume"
+require "agama/storage/config_conversions/from_json_conversions/volume_group_search"
 require "agama/storage/config_conversions/from_json_conversions/with_search"
 require "agama/storage/configs/volume_group"
 require "y2storage/disk_size"
@@ -52,6 +53,12 @@ module Agama
           # @return [Configs::VolumeGroup]
           def default_config
             Configs::VolumeGroup.new
+          end
+
+          # @see WithSearch
+          # @return [Class]
+          def search_converter_class
+            FromJSONConversions::VolumeGroupSearch
           end
 
           # @see Base#conversions

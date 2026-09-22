@@ -139,7 +139,7 @@ describe Agama::Storage::ConfigConversions::FromModelConversions::Config do
         it "does not add more drives" do
           config = subject.convert
           expect(config.drives.size).to eq(1)
-          expect(config.drives.first.search.name).to eq("/dev/vda")
+          expect(config.drives.first.search.condition_name).to eq("/dev/vda")
         end
 
         it "sets an alias to the drive config" do
@@ -179,7 +179,7 @@ describe Agama::Storage::ConfigConversions::FromModelConversions::Config do
           config = subject.convert
           expect(config.drives.size).to eq(2)
 
-          drive = config.drives.find { |d| d.search.name == "/dev/vda" }
+          drive = config.drives.find { |d| d.search.condition_name == "/dev/vda" }
           expect(drive.alias).to_not be_nil
           expect(drive.partitions).to be_empty
         end
@@ -187,7 +187,7 @@ describe Agama::Storage::ConfigConversions::FromModelConversions::Config do
         it "sets #boot to the expected value" do
           config = subject.convert
           boot = config.boot
-          drive = config.drives.find { |d| d.search.name == "/dev/vda" }
+          drive = config.drives.find { |d| d.search.condition_name == "/dev/vda" }
           expect(boot.configure?).to eq(true)
           expect(boot.device.default?).to eq(false)
           expect(boot.device.device_alias).to eq(drive.alias)
@@ -214,7 +214,7 @@ describe Agama::Storage::ConfigConversions::FromModelConversions::Config do
         it "does not add more MD RAIDs" do
           config = subject.convert
           expect(config.md_raids.size).to eq(1)
-          expect(config.md_raids.first.search.name).to eq("/dev/md0")
+          expect(config.md_raids.first.search.condition_name).to eq("/dev/md0")
         end
 
         it "sets an alias to the MD RAID config" do
@@ -256,7 +256,7 @@ describe Agama::Storage::ConfigConversions::FromModelConversions::Config do
           config = subject.convert
           expect(config.md_raids.size).to eq(2)
 
-          md = config.md_raids.find { |d| d.search.name == "/dev/md0" }
+          md = config.md_raids.find { |d| d.search.condition_name == "/dev/md0" }
           expect(md.alias).to_not be_nil
           expect(md.partitions).to be_empty
         end
@@ -264,7 +264,7 @@ describe Agama::Storage::ConfigConversions::FromModelConversions::Config do
         it "sets #boot to the expected value" do
           config = subject.convert
           boot = config.boot
-          md = config.md_raids.find { |d| d.search.name == "/dev/md0" }
+          md = config.md_raids.find { |d| d.search.condition_name == "/dev/md0" }
           expect(boot.configure?).to eq(true)
           expect(boot.device.default?).to eq(false)
           expect(boot.device.device_alias).to eq(md.alias)
@@ -296,9 +296,9 @@ describe Agama::Storage::ConfigConversions::FromModelConversions::Config do
           expect(config.drives).to all(be_a(Agama::Storage::Configs::Drive))
 
           drive1, drive2 = config.drives
-          expect(drive1.search.name).to eq("/dev/vda")
+          expect(drive1.search.condition_name).to eq("/dev/vda")
           expect(drive1.partitions).to eq([])
-          expect(drive2.search.name).to eq("/dev/vdb")
+          expect(drive2.search.condition_name).to eq("/dev/vdb")
           expect(drive2.partitions).to eq([])
         end
       end
@@ -328,9 +328,9 @@ describe Agama::Storage::ConfigConversions::FromModelConversions::Config do
           expect(config.md_raids).to all(be_a(Agama::Storage::Configs::MdRaid))
 
           md_raid1, md_raid2 = config.md_raids
-          expect(md_raid1.search.name).to eq("/dev/md0")
+          expect(md_raid1.search.condition_name).to eq("/dev/md0")
           expect(md_raid1.partitions).to eq([])
-          expect(md_raid2.search.name).to eq("/dev/md1")
+          expect(md_raid2.search.condition_name).to eq("/dev/md1")
           expect(md_raid2.partitions).to eq([])
         end
       end
@@ -360,9 +360,9 @@ describe Agama::Storage::ConfigConversions::FromModelConversions::Config do
           expect(config.volume_groups).to all(be_a(Agama::Storage::Configs::VolumeGroup))
 
           vg1, vg2 = config.volume_groups
-          expect(vg1.search.name).to eq("/dev/vg0")
+          expect(vg1.search.condition_name).to eq("/dev/vg0")
           expect(vg1.logical_volumes).to eq([])
-          expect(vg2.search.name).to eq("/dev/vg1")
+          expect(vg2.search.condition_name).to eq("/dev/vg1")
           expect(vg2.logical_volumes).to eq([])
         end
       end

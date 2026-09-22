@@ -39,7 +39,7 @@ module Agama
           {
             "channel" => device["controller_id"],
             "wwpn"    => device["wwpn"],
-            "lun"     => device["lun"]
+            "lun"     => device["fcp_lun"]
           }
         end
 

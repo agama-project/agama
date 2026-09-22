@@ -1,4 +1,54 @@
 -------------------------------------------------------------------
+Thu Sep 17 13:23:17 UTC 2026 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Remove beta tag from the SLES and SLES for SAP product names
+  (gh#agama-project/agama#3836).
+
+-------------------------------------------------------------------
+Mon Sep  7 09:17:50 UTC 2026 - Lubos Kocman <lubos.kocman@suse.com>
+
+- Add Immutable and Standard modes to Leap 16.1 (gh#agama-project/agama#3877).
+
+- Add NetworkManager-config-server to avoid probe DHCP over
+  all ethernet devices and ignore carrier. To be in sync with SLES
+  (bsc#1241224, bsc#1224868).
+
+- Add openSUSE License (gh#agama-project/agama#3877).
+
+-------------------------------------------------------------------
+Mon Sep  7 09:13:23 UTC 2026 - Lubos Kocman <lubos.kocman@suse.com>
+
+- Drop Leap Micro 6.2 completely
+  it never really worked in the past (gh#agama-project/agama#3877).
+
+-------------------------------------------------------------------
+Tue Sep  1 15:51:09 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 24
+
+-------------------------------------------------------------------
+Tue Aug 18 06:28:54 UTC 2026 - Dominique Leuenberger <dimstar@opensuse.org>
+
+- Microos/Kalpa: No longer reference deprecated microos_hardware
+  pattern (boo#1275469).
+
+-------------------------------------------------------------------
+Fri Jul 24 07:03:30 UTC 2026 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Added generic storage volumes to the immutables modes, as
+  required by the web UI to work properly (bsc#1272461).
+
+-------------------------------------------------------------------
+Mon Jul 20 11:12:35 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 23
+
+-------------------------------------------------------------------
+Mon Jul 20 10:33:25 UTC 2026 - Dominique Leuenberger <dimstar@opensuse.org>
+
+- Allow selecting Cockpit pattern in Tumbleweed (bsc#1269939).
+
+-------------------------------------------------------------------
 Mon Jun 15 15:45:30 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 22

@@ -6,4 +6,4 @@ edition.workspace = true
 [dependencies]
 
 [build-dependencies]
-bindgen = { version= "0.72.1", features = ["runtime"] }
+bindgen = { workspace = true }

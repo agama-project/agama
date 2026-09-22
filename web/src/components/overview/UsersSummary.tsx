@@ -23,6 +23,7 @@
 import React from "react";
 import { isEmpty } from "radashi";
 import { useProgressTracking } from "~/hooks/use-progress-tracking";
+import { CONFIG_QUERY_KEY } from "~/hooks/model/config";
 import { useConfig } from "~/hooks/model/config";
 import { useIssues } from "~/hooks/model/issue";
 import Summary from "~/components/core/Summary";
@@ -143,7 +144,7 @@ const Description = () => {
 };
 
 export default function UsersSummary() {
-  const { loading } = useProgressTracking("users");
+  const { loading } = useProgressTracking("users", [CONFIG_QUERY_KEY]);
   const hasIssues = !!useIssues("users").length;
 
   return (

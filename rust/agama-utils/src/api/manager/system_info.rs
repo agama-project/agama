@@ -18,7 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::api::{l10n::Translations, manager::License};
+use super::License;
 use schemars::JsonSchema;
 use serde::Serialize;
 
@@ -28,7 +28,7 @@ use serde::Serialize;
 pub struct SystemInfo {
     /// List of known products.
     pub products: Vec<Product>,
-    /// List of known licenses
+    /// List of available licenses (in the current system language).
     pub licenses: Vec<License>,
     /// Hardware information
     pub hardware: HardwareInfo,
@@ -42,21 +42,19 @@ pub struct Product {
     pub id: String,
     /// Product name (e.g., "openSUSE Tumbleweed")
     pub name: String,
-    /// Product description
+    /// Product description (translated to the current UI language)
     pub description: String,
     /// Product icon (e.g., "default.svg")
     pub icon: String,
     /// Registration requirement
     pub registration: bool,
-    /// License ID
-    pub license: Option<String>,
+    /// License IDs (a product may require accepting more than one).
+    #[serde(default)]
+    pub licenses: Vec<String>,
     /// Desktop selection mode
     #[serde(skip_serializing_if = "Option::is_none")]
     pub desktop_selection: Option<DesktopSelection>,
-    /// Translations
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub translations: Option<Translations>,
-    /// Product modes
+    /// Product modes (names and descriptions are translated to the current UI language)
     #[serde(default)]
     pub modes: Vec<ProductMode>,
 }

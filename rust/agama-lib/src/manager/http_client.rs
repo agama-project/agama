@@ -45,16 +45,10 @@ impl ManagerHTTPClient {
 
     /// Starts a "probing".
     pub async fn probe(&self) -> Result<(), ManagerHTTPClientError> {
-        // BaseHTTPClient did not anticipate POST without request body
-        // so we pass () which is rendered as `null`
-        Ok(self.client.post_void("/manager/probe_sync", &()).await?)
-    }
-
-    /// Starts a "reprobing".
-    pub async fn reprobe(&self) -> Result<(), ManagerHTTPClientError> {
-        // BaseHTTPClient did not anticipate POST without request body
-        // so we pass () which is rendered as `null`
-        Ok(self.client.post_void("/manager/reprobe_sync", &()).await?)
+        self.client
+            .post_void("/action", &api::Action::Probe { only: None })
+            .await?;
+        Ok(())
     }
 
     /// Starts the installation.
@@ -120,7 +114,7 @@ impl ManagerHTTPClient {
     /// Asks backend for lists of log files and commands used for creating logs archive returned by
     /// store (/logs/store) backed HTTP API command
     pub async fn list(&self) -> Result<LogsLists, ManagerHTTPClientError> {
-        Ok(self.client.get("/manager/logs/list").await?)
+        Ok(self.client.get("/private/list_logs").await?)
     }
 
     /// Returns the installer status.

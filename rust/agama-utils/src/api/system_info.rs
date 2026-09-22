@@ -18,7 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::api::{hostname, l10n, manager, network, proxy, s390, software};
+use crate::api::{hostname, l10n, manager, network, s390, software};
 use schemars::JsonSchema;
 use serde::Serialize;
 use serde_json::Value;
@@ -31,7 +31,6 @@ pub struct SystemInfo {
     #[serde(flatten)]
     pub manager: manager::SystemInfo,
     pub hostname: hostname::SystemInfo,
-    pub proxy: Option<proxy::Config>,
     pub l10n: l10n::SystemInfo,
     pub software: software::SystemInfo,
     pub storage: Option<Value>,

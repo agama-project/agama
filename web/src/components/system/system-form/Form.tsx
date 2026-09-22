@@ -70,14 +70,12 @@ function buildNtpConfig(
   if (!anyFieldChanged(fieldMeta, ...fieldsToCheck)) return undefined;
   if (formValues.ntpMode !== NTP_MODE.CUSTOM) return { sources: [] };
   return {
-    sources: formValues.ntpServers.map(
-      (address): Ntp.Source => ({
-        type: "pool",
-        address,
-        iburst: true,
-        offline: false,
-      }),
-    ),
+    sources: formValues.ntpServers.map((address): Ntp.Source => ({
+      type: "pool",
+      address,
+      iburst: true,
+      offline: false,
+    })),
   };
 }
 

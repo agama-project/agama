@@ -24,11 +24,9 @@ import React from "react";
 import { ProductRegistrationPage } from "~/components/product";
 import { Route } from "~/types/routes";
 import { REGISTRATION as PATHS } from "~/routes/paths";
-import { N_ } from "~/i18n";
 
 const routes = (): Route => ({
   path: PATHS.root,
-  handle: { name: N_("Registration"), icon: "app_registration", needsRegistrableProduct: true },
   children: [
     {
       index: true,

@@ -1,9 +1,10 @@
 id: SLES_SAP
-name: SUSE Linux Enterprise Server for SAP applications 16.1 Beta
+name: SUSE Linux Enterprise Server for SAP applications 16.1
 archs: x86_64,ppc
 registration: true
 version: "16.1"
-license: "license.final"
+licenses:
+  - "license.final"
 # ------------------------------------------------------------------------------
 # WARNING: When changing the product description delete the translations located
 # at the at translations/description key below to avoid using obsolete
@@ -26,9 +27,10 @@ translations:
       dlouhodobou udržitelnost projektu SAP, nabízí nepřerušený chod podniku a
       minimalizuje provozní rizika a náklady.
     de: Das führende Betriebssytem für eine sichere und zuverlässige SAP-Platform.
-      Abgestimmt auf SAP-Bereitstellungen, ist SUSE Linux Enterprise Server for
-      SAP applications zukunftssicher, bietet unterbrechungsfreien
-      Geschäftsbetrieb und minimiert betriebliche Risiken und Kosten.
+      SUSE Linux Enterprise Server für SAP-Anwendungen ist auf
+      SAP-Bereitstellungen abgestimmt, macht SAP-Projekte zukunftssicher, bietet
+      einen unterbrechungsfreien Geschäftsbetrieb und minimiert betriebliche
+      Risiken und Kosten.
     el: Το κορυφαίο ΛΣ για μια ασφαλή και αξιόπιστη πλατφόρμα SAP. Εγκεκριμένο για
       υλοποιήσεις SAP, το SUSE Linux Enterprise Server για εφαρμογές SAP
       θωρακίζει μελλοντικά το έργο SAP, προσφέρει αδιάλειπτη επιχειρηματική
@@ -60,6 +62,15 @@ translations:
     ja: 安全で信頼性のある SAP プラットフォームを構築するためのリーディング OS です。 SAP 承認も取得済みの SUSE Linux
       Enterprise Server for SAP applications では、 SAP
       プロジェクトに将来性をもたらすほか、途切れることのないビジネス環境を提供し、運用で発生しうるリスクやコストを最小限に抑えます。
+    lo: ລະບົບປະຕິບັດການຊັ້ນນຳສຳລັບແພລັດຟອມ SAP ທີ່ປອດໄພ ແລະ ເຊື່ອຖືໄດ້.
+      ໄດ້ຮັບການຮັບຮອງ ສຳລັບການນຳໃຊ້ SAP, SUSE Linux Enterprise Server
+      ສຳລັບແອັບພລິເຄຊັນ SAP ຊ່ວຍຮອງຮັບ ອະນາຄົດຂອງໂຄງການ SAP,
+      ຊ່ວຍໃຫ້ທຸລະກິດດຳເນີນໄປໄດ້ຢ່າງບໍ່ຂາດສາຍ, ແລະ ຫຼຸດຜ່ອນຄວາມສ່ຽງ
+      ລວມທັງຕົ້ນທຶນໃນການດຳເນີນງານ.
+    pl: Wiodący system operacyjny dla bezpiecznej i niezawodnej platformy SAP. „SUSE
+      Linux Enterprise Server for SAP Applications”, zatwierdzony do wdrożeń
+      SAP, zapewnia długoterminową stabilność projektu SAP, ciągłość działania
+      przedsiębiorstwa oraz minimalizuje ryzyko operacyjne i koszty.
     pt_BR: O principal sistema operacional para uma plataforma SAP segura e
       confiável. Endossado para implantações SAP, o SUSE Linux Enterprise Server
       for SAP Applications prepara o projeto SAP para o futuro, oferece
@@ -100,12 +111,17 @@ translations:
         ja: 標準
         ka: სტანდარტული
         kab: Tizeɣt
+        lo: ມາດຕະຖານ
         nb_NO: Standard
-        ru: Стандартный
+        pl: Standardowy
+        pt_BR: Padrão
+        ru: Стандартная
         sk: Štandardný
         sv: Standard
         tr: Standart
         uk: Стандартний
+        zh_CN: 标准
+        zh_TW: 標準
       description:
         bg: Стандартна система
         ca: Sistema estàndard
@@ -120,11 +136,16 @@ translations:
         ja: 標準システム
         ka: სტანდარტული სისტემა
         kab: Anagraw n tizeɣt
+        lo: ລະບົບມາດຕະຖານ
+        pl: Standardowy system
+        pt_BR: Sistema padrão
         ru: Стандартная система
         sk: Štandardný systém
         sv: Standard system
         tr: Standart sistem
         uk: Стандартна система
+        zh_CN: 标准系统
+        zh_TW: 標準系統
     immutable:
       name:
         bg: Неизменен
@@ -139,12 +160,17 @@ translations:
         it: Immutabile
         ja: 不変型
         ka: უცვლადი
+        lo: ປ່ຽນແປງບໍ່ໄດ້ (Immutable)
         nb_NO: Immutable
+        pl: Niezmienny
+        pt_BR: Imutável
         ru: Неизменяемый
         sk: Nemenný
         sv: Oföränderlig
         tr: Değiştirilemez
         uk: Незмінний
+        zh_CN: 不可变
+        zh_TW: 不可變
       description:
         bg: Неизменима система със атомични обновления
         ca: Sistema immutable amb actualitzacions atòmiques
@@ -158,12 +184,17 @@ translations:
         it: Sistema immutabile con aggiornamenti atomici
         ja: 不可分な更新機能を持つ不変型システム
         ka: უცვლელი სისტემა ატომური განახლებებით
+        lo: ລະບົບທີ່ປ່ຽນແປງບໍ່ໄດ້ ພ້ອມກັບການອັບເດດແບບ atomic
         nb_NO: Et uforanderlig system med atomiske oppdateringer
+        pl: Niezmienny system z atomowymi aktualizacjami
+        pt_BR: Sistema imutável com atualizações atômicas
         ru: Неизменяемая система с атомарными обновлениями
         sk: Nemenný systém s atomickými aktualizáciami
         sv: Oföränderligt system med atomiska uppdateringar
         tr: Atomik güncellemelerle değiştirilemez sistem
         uk: Незмінна система з атомарними оновленнями
+        zh_CN: 具备原子更新特性的不可变系统
+        zh_TW: 具有原子更新特性的不可變系統
 desktop_selection: optional
 software:
   installation_repositories: []
@@ -382,3 +413,17 @@ modes:
             required: false
             filesystems:
               - btrfs
+        - filesystem: xfs
+          size:
+            auto: false
+            min: 512 MiB
+          outline:
+            required: false
+            filesystems:
+              - btrfs
+              - ext2
+              - ext3
+              - ext4
+              - xfs
+              - vfat
+              - swap

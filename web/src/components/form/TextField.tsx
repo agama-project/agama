@@ -29,11 +29,13 @@ import {
   TextInput,
 } from "@patternfly/react-core";
 import Text from "~/components/core/Text";
+import { useFieldLabel } from "~/hooks/use-field-label";
 import { useFieldContext } from "~/hooks/form-contexts";
 
 import type { TextInputProps } from "@patternfly/react-core";
+import type { FieldLabelOptions } from "~/hooks/use-field-label";
 
-type TextFieldProps = {
+type TextFieldProps = FieldLabelOptions & {
   label: React.ReactNode;
   helperText?: React.ReactNode;
   type?: TextInputProps["type"];
@@ -45,13 +47,27 @@ type TextFieldProps = {
  * Must be used inside a `form.AppField` render prop.
  *
  * @see useFieldContext for field component conventions.
+ * @see useFieldLabel for adjusting the accessible name (`labelPrefixedBy`, etc.).
  */
-export default function TextField({ label, helperText, type, size }: TextFieldProps) {
+export default function TextField({
+  label,
+  helperText,
+  type,
+  size,
+  "aria-label": ariaLabel,
+  "aria-labelledby": ariaLabelledBy,
+  labelPrefixedBy,
+}: TextFieldProps) {
   const field = useFieldContext<string>();
+  const { labelId, labelProps } = useFieldLabel(field.name, {
+    "aria-label": ariaLabel,
+    "aria-labelledby": ariaLabelledBy,
+    labelPrefixedBy,
+  });
   const error = field.state.meta.errors[0];
 
   return (
-    <FormGroup fieldId={field.name} label={label}>
+    <FormGroup fieldId={field.name} label={<span id={labelId}>{label}</span>}>
       <TextInput
         id={field.name}
         name={field.name}
@@ -61,6 +77,7 @@ export default function TextField({ label, helperText, type, size }: TextFieldPr
         validated={error ? "error" : "default"}
         onChange={(_, value) => field.handleChange(value)}
         onBlur={() => field.handleBlur()}
+        {...labelProps}
       />
       {(error || helperText) && (
         <FormHelperText>

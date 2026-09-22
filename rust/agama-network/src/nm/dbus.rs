@@ -348,8 +348,11 @@ fn is_bridge_port(conn: &NestedHash) -> bool {
 /// It also removes empty files from the "connection" object like the "interface-name", "master",
 /// "slave-type", "port-type" keys.
 ///
-/// Finally, it removes removes the "addresses" and "dns" keys from the "ipv4" and "ipv6" objects,
-/// which are replaced with "address-data".
+/// It removes the "addresses" and "dns" keys from the "ipv4" and "ipv6" objects, which are replaced
+/// with "address-data".
+///
+/// Finally, it empties any "ipv4" or "ipv6" section whose method is "disabled", keeping only the
+/// "method" attribute (see [cleanup_disabled_ip_config]).
 ///
 /// * `conn`: connection represented as a NestedHash.
 pub fn cleanup_dbus_connection(conn: &mut NestedHash) {
@@ -390,6 +393,7 @@ pub fn cleanup_dbus_connection(conn: &mut NestedHash) {
         if ipv4.get("address-data").is_some_and(is_empty_value) {
             ipv4.remove("gateway");
         }
+        cleanup_disabled_ip_config(ipv4);
     }
 
     if let Some(ipv6) = conn.get_mut("ipv6") {
@@ -398,6 +402,37 @@ pub fn cleanup_dbus_connection(conn: &mut NestedHash) {
         if ipv6.get("address-data").is_some_and(is_empty_value) {
             ipv6.remove("gateway");
         }
+        cleanup_disabled_ip_config(ipv6);
+    }
+
+    if let Some(vlan) = conn.get_mut("vlan") {
+        if !vlan.contains_key("flags") {
+            // Default to VLAN_FLAG_REORDER_HDR if flags are not specified (bsc#1271222)
+            vlan.insert(
+                "flags",
+                VlanFlag::to_bitmask(&[VlanFlag::ReorderHeaders]).into(),
+            );
+        }
+    }
+}
+
+/// Empties the IP configuration when its method is "disabled".
+///
+/// When the IPv4 or IPv6 method is disabled, any other attribute (e.g. "address-data",
+/// "dns-search", "gateway", ...) is meaningless and could even be contradictory. As this runs
+/// after merging the current configuration with the given one, it drops any such value that could
+/// have been kept from the original connection, leaving only the "method" attribute.
+///
+/// * `ip`: IPv4 or IPv6 section of a connection.
+fn cleanup_disabled_ip_config(ip: &mut HashMap<&str, zbus::zvariant::Value>) {
+    // Both Ipv4Method::Disabled and Ipv6Method::Disabled serialize to "disabled".
+    let is_disabled = ip
+        .get("method")
+        .and_then(|method| TryInto::<&str>::try_into(method).ok())
+        .is_some_and(|method| method == "disabled");
+
+    if is_disabled {
+        ip.retain(|key, _| *key == "method");
     }
 }
 
@@ -442,21 +477,17 @@ fn ip_config_to_ipv4_dbus<'a>(
         ip_config.link_local4
     };
 
+    let method4 = ip_config.method4.unwrap_or(Ipv4Method::Auto);
+
     let mut ipv4_dbus = HashMap::from([
         ("address-data", address_data),
         ("dns-data", dns_data),
-        ("dns-search", ip_config.dns_searchlist.clone().into()),
         ("ignore-auto-dns", ip_config.ignore_auto_dns.into()),
-        (
-            "method",
-            ip_config
-                .method4
-                .unwrap_or(Ipv4Method::Auto)
-                .to_string()
-                .into(),
-        ),
+        ("method", method4.to_string().into()),
         ("link-local", (link_local as i32).into()),
     ]);
+
+    ipv4_dbus.insert("dns-search", ip_config.dns_searchlist.clone().into());
 
     if !ip_config.routes4.is_empty() {
         ipv4_dbus.insert(
@@ -558,20 +589,16 @@ fn ip_config_to_ipv6_dbus<'a>(
         .collect::<Vec<_>>()
         .into();
 
+    let method6 = ip_config.method6.unwrap_or(Ipv6Method::Auto);
+
     let mut ipv6_dbus = HashMap::from([
         ("address-data", address_data),
         ("dns-data", dns_data),
-        ("dns-search", ip_config.dns_searchlist.clone().into()),
         ("ignore-auto-dns", ip_config.ignore_auto_dns.into()),
-        (
-            "method",
-            ip_config
-                .method6
-                .unwrap_or(Ipv6Method::Auto)
-                .to_string()
-                .into(),
-        ),
+        ("method", method6.to_string().into()),
     ]);
+
+    ipv6_dbus.insert("dns-search", ip_config.dns_searchlist.clone().into());
 
     if !ip_config.routes6.is_empty() {
         ipv6_dbus.insert(
@@ -1440,11 +1467,15 @@ fn bond_config_from_dbus(conn: &OwnedNestedHash) -> Result<Option<BondConfig>, N
 }
 
 fn vlan_config_to_dbus(cfg: &VlanConfig) -> NestedHash<'_> {
-    let vlan: HashMap<&str, zvariant::Value> = HashMap::from([
+    let mut vlan: HashMap<&str, zvariant::Value> = HashMap::from([
         ("id", cfg.id.into()),
         ("parent", cfg.parent.clone().into()),
         ("protocol", cfg.protocol.to_string().into()),
     ]);
+
+    if let Some(flags) = &cfg.flags {
+        vlan.insert("flags", VlanFlag::to_bitmask(flags).into());
+    }
 
     NestedHash::from([("vlan", vlan)])
 }
@@ -1459,10 +1490,15 @@ fn vlan_config_from_dbus(conn: &OwnedNestedHash) -> Result<Option<VlanConfig>, N
         _ => Default::default(),
     };
 
+    let flags = get_property::<u32>(vlan, "flags")
+        .ok()
+        .map(VlanFlag::from_bitmask);
+
     Ok(Some(VlanConfig {
         id: get_property(vlan, "id")?,
         parent: get_property(vlan, "parent")?,
         protocol,
+        flags,
     }))
 }
 
@@ -1635,14 +1671,14 @@ fn is_empty_value(value: &zvariant::Value) -> bool {
 #[cfg(test)]
 mod test {
     use super::{
-        connection_from_dbus, connection_to_dbus, merge_dbus_connections, NestedHash,
-        OwnedNestedHash,
+        connection_from_dbus, connection_to_dbus, merge_dbus_connections, vlan_config_to_dbus,
+        NestedHash, OwnedNestedHash,
     };
     use crate::{
         model::*,
         nm::{
             dbus::{
-                BOND_KEY, BRIDGE_KEY, ETHERNET_KEY, INFINIBAND_KEY, WIRELESS_KEY,
+                BOND_KEY, BRIDGE_KEY, ETHERNET_KEY, INFINIBAND_KEY, VLAN_KEY, WIRELESS_KEY,
                 WIRELESS_SECURITY_KEY,
             },
             error::NmError,
@@ -1903,6 +1939,104 @@ mod test {
         if let ConnectionConfig::Bond(config) = connection.config {
             assert_eq!(config.mode, BondMode::ActiveBackup);
         }
+
+        Ok(())
+    }
+
+    #[test]
+    fn test_connection_from_dbus_vlan() -> anyhow::Result<()> {
+        let uuid = Uuid::new_v4().to_string();
+        let connection_section = HashMap::from([hi("id", "eth0.100")?, hi("uuid", uuid)?]);
+
+        // Scenario 1: DBus has flags
+        let vlan_section_with_flags = HashMap::from([
+            hi("id", 100_u32)?,
+            hi("parent", "eth0")?,
+            hi("protocol", "802.1Q")?,
+            hi(
+                "flags",
+                VlanFlag::to_bitmask(&[VlanFlag::ReorderHeaders, VlanFlag::LooseBinding]),
+            )?,
+        ]);
+        let dbus_conn = HashMap::from([
+            ("connection".to_string(), connection_section.clone()),
+            (VLAN_KEY.to_string(), vlan_section_with_flags),
+        ]);
+        let connection = connection_from_dbus(dbus_conn).unwrap();
+        if let ConnectionConfig::Vlan(config) = connection.config {
+            assert_eq!(config.id, 100_u32);
+            assert_eq!(config.parent, "eth0");
+            assert_eq!(config.protocol, VlanProtocol::IEEE802_1Q);
+            assert_eq!(
+                config.flags,
+                Some(vec![VlanFlag::ReorderHeaders, VlanFlag::LooseBinding])
+            );
+        } else {
+            panic!("Wrong connection type");
+        }
+
+        // Scenario 2: D-Bus does not have flags
+        let vlan_section_no_flags = HashMap::from([
+            hi("id", 100_u32)?,
+            hi("parent", "eth0")?,
+            hi("protocol", "802.1Q")?,
+        ]);
+        let dbus_conn_no_flags = HashMap::from([
+            ("connection".to_string(), connection_section),
+            (VLAN_KEY.to_string(), vlan_section_no_flags),
+        ]);
+        let connection_no_flags = connection_from_dbus(dbus_conn_no_flags).unwrap();
+        if let ConnectionConfig::Vlan(config) = connection_no_flags.config {
+            assert_eq!(config.flags, None);
+        } else {
+            panic!("Wrong connection type");
+        }
+
+        Ok(())
+    }
+
+    #[test]
+    fn test_dbus_from_vlan_connection() -> anyhow::Result<()> {
+        // Scenario 1: VlanConfig with flags specified -> should write flags to D-Bus
+        let vlan_config = VlanConfig {
+            id: 100,
+            parent: "eth0".to_string(),
+            protocol: VlanProtocol::IEEE802_1Q,
+            flags: Some(vec![VlanFlag::ReorderHeaders, VlanFlag::LooseBinding]),
+        };
+        let nested = vlan_config_to_dbus(&vlan_config);
+        let vlan_section = nested.get("vlan").unwrap();
+        assert_eq!(vlan_section.get("id"), Some(&Value::from(100_u32)));
+        assert_eq!(vlan_section.get("parent"), Some(&Value::from("eth0")));
+        assert_eq!(vlan_section.get("protocol"), Some(&Value::from("802.1Q")));
+        assert_eq!(
+            vlan_section.get("flags"),
+            Some(&Value::from(VlanFlag::to_bitmask(&[
+                VlanFlag::ReorderHeaders,
+                VlanFlag::LooseBinding
+            ])))
+        );
+
+        // Scenario 2: VlanConfig with no flags (flags: None) -> vlan_config_to_dbus should omit flags
+        let vlan_config_no_flags = VlanConfig {
+            id: 100,
+            parent: "eth0".to_string(),
+            protocol: VlanProtocol::IEEE802_1Q,
+            flags: None,
+        };
+        let mut nested_no_flags = vlan_config_to_dbus(&vlan_config_no_flags);
+        let vlan_section_no_flags = nested_no_flags.get("vlan").unwrap();
+        assert_eq!(vlan_section_no_flags.get("flags"), None);
+
+        // Scenario 3: cleanup_dbus_connection should default omitted flags to 1
+        super::cleanup_dbus_connection(&mut nested_no_flags);
+        let vlan_section_cleaned = nested_no_flags.get("vlan").unwrap();
+        assert_eq!(
+            vlan_section_cleaned.get("flags"),
+            Some(&Value::from(VlanFlag::to_bitmask(&[
+                VlanFlag::ReorderHeaders
+            ])))
+        );
 
         Ok(())
     }
@@ -2770,6 +2904,78 @@ mod test {
             Value::new(false)
         );
         assert_eq!(*ipv6_dbus.get("never-default").unwrap(), Value::new(true));
+
+        Ok(())
+    }
+
+    #[test]
+    fn test_ip_config_emptied_when_disabled() -> anyhow::Result<()> {
+        // The original connection carries values that would be contradictory once the method is
+        // disabled (dns-search, address-data, gateway, ...).
+        let mut original = OwnedNestedHash::new();
+        let ipv4 = HashMap::from([
+            hi("method", "manual")?,
+            hi("gateway", "192.168.1.1")?,
+            hi("address-data", vec!["192.168.1.10"])?,
+            hi("dns-search", vec!["example.com"])?,
+        ]);
+        let ipv6 = HashMap::from([
+            hi("method", "manual")?,
+            hi("gateway", "::ffff:c0a8:101")?,
+            hi("address-data", vec!["::ffff:c0a8:102"])?,
+            hi("dns-search", vec!["example.com"])?,
+        ]);
+        original.insert("ipv4".to_string(), ipv4);
+        original.insert("ipv6".to_string(), ipv6);
+
+        // The given connection disables both IPv4 and IPv6.
+        let mut conn = Connection::new("eth0".to_string(), DeviceType::Ethernet);
+        conn.ip_config.method4 = Some(Ipv4Method::Disabled);
+        conn.ip_config.method6 = Some(Ipv6Method::Disabled);
+        conn.ip_config.dns_searchlist = vec!["example.com".to_string()];
+        let updated = connection_to_dbus(&conn, None, semver::Version::new(1, 44, 0));
+
+        let merged = merge_dbus_connections(&original, &updated)?;
+
+        // Once disabled, only the "method" attribute is kept.
+        let ipv4 = merged.get("ipv4").unwrap();
+        assert_eq!(
+            *ipv4.get("method").unwrap(),
+            Value::new("disabled".to_string())
+        );
+        assert_eq!(ipv4.len(), 1);
+
+        let ipv6 = merged.get("ipv6").unwrap();
+        assert_eq!(
+            *ipv6.get("method").unwrap(),
+            Value::new("disabled".to_string())
+        );
+        assert_eq!(ipv6.len(), 1);
+
+        Ok(())
+    }
+
+    #[test]
+    fn test_ip_config_kept_when_not_disabled() -> anyhow::Result<()> {
+        // A non-disabled method must keep its configuration, including dns-search.
+        let mut conn = Connection::new("eth0".to_string(), DeviceType::Ethernet);
+        conn.ip_config.method4 = Some(Ipv4Method::Auto);
+        conn.ip_config.method6 = Some(Ipv6Method::Auto);
+        conn.ip_config.dns_searchlist = vec!["example.com".to_string()];
+        let mut dbus = connection_to_dbus(&conn, None, semver::Version::new(1, 44, 0));
+        super::cleanup_dbus_connection(&mut dbus);
+
+        for section in ["ipv4", "ipv6"] {
+            let ip = dbus.get(section).unwrap();
+            let dns_search: Array = ip
+                .get("dns-search")
+                .unwrap()
+                .downcast_ref::<Value>()
+                .unwrap()
+                .try_into()
+                .unwrap();
+            assert_eq!(dns_search.len(), 1);
+        }
 
         Ok(())
     }

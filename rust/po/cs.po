@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-12 15:05+0000\n"
+"POT-Creation-Date: 2026-08-31 11:33+0000\n"
 "PO-Revision-Date: 2026-03-25 18:04+0000\n"
 "Last-Translator: Ondřej  Sedlák <sedlak.o@tutanota.com>\n"
 "Language-Team: Czech <https://l10n.opensuse.org/projects/agama/agama-rust-"
@@ -19,26 +19,39 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
 "X-Generator: Weblate 5.16.2\n"
 
-#: agama-autoinstall/src/auto_loader.rs:115
+#: agama-autoinstall/src/auto_loader.rs:142
 msgid ""
 "Configuration cannot be applied because it is invalid or could not be "
 "reached."
 msgstr ""
 
-#: agama-autoinstall/src/questions.rs:44
+#: agama-autoinstall/src/questions.rs:47
 #, fuzzy
 msgid "Reload configuration"
 msgstr "Načítám konfiguraci"
 
-#: agama-autoinstall/src/questions.rs:45
+#: agama-autoinstall/src/questions.rs:48
 msgid "Skip and configure manually"
 msgstr ""
 
-#: agama-autoinstall/src/scripts.rs:134
+#: agama-autoinstall/src/questions.rs:77 agama-cli/src/config.rs:371
+msgid "Found unsupported elements in the AutoYaST profile:"
+msgstr ""
+
+#: agama-autoinstall/src/questions.rs:92
+#: agama-software/src/callbacks/install.rs:81
+msgid "Continue"
+msgstr "Pokračovat"
+
+#: agama-autoinstall/src/questions.rs:93
+msgid "Abort"
+msgstr ""
+
+#. TRANSLATORS: {0} is a URL
+#: agama-autoinstall/src/scripts.rs:135
 #, fuzzy
 msgid ""
-"It was not possible to load the script from {0}. Do you want to try again?\n"
-"                "
+"It was not possible to load the script from {0}. Do you want to try again?"
 msgstr "Nepodařilo se načíst skript %s. Chcete to zkusit znovu?"
 
 #. TRANSLATORS: CLI help for: agama auth
@@ -108,16 +121,16 @@ msgid ""
 "In Agama's jargon, the term 'probing' refers to the process of 'analyzing' "
 "the system. This includes reading software repositories, analyzing storage "
 "devices, and more. The 'probe' command initiates this analysis process and "
-"returns immediately. TODO: do we really need a \"probe\" action?"
+"returns immediately."
 msgstr ""
 
 #. TRANSLATORS: CLI help for: agama install
-#: agama-cli/src/commands.rs:54
+#: agama-cli/src/commands.rs:53
 msgid "Start the system installation"
 msgstr ""
 
 #. TRANSLATORS: CLI help for: agama install (details)
-#: agama-cli/src/commands.rs:56
+#: agama-cli/src/commands.rs:55
 msgid ""
 "This command starts the installation process.  Beware it is a destructive "
 "operation because it will set up the storage devices, install the packages, "
@@ -128,12 +141,12 @@ msgid ""
 msgstr ""
 
 #. TRANSLATORS: CLI help for: agama download
-#: agama-cli/src/commands.rs:79
+#: agama-cli/src/commands.rs:78
 msgid "Download file from a given (AutoYaST) URL"
 msgstr ""
 
 #. TRANSLATORS: CLI help for: agama download (details)
-#: agama-cli/src/commands.rs:81
+#: agama-cli/src/commands.rs:80
 msgid ""
 "The purpose of this command is to download files using AutoYaST supported "
 "schemas (e.g. device://). It can be used to download additional scripts, "
@@ -143,25 +156,25 @@ msgid ""
 msgstr ""
 
 #. TRANSLATORS: CLI help for: agama download <URL>
-#: agama-cli/src/commands.rs:95
+#: agama-cli/src/commands.rs:94
 msgid ""
 "URL reference pointing to file for download. If a relative URL is provided, "
 "it will be resolved against the current working directory"
 msgstr ""
 
 #. TRANSLATORS: CLI help for: agama download <DESTINATION>
-#: agama-cli/src/commands.rs:105
+#: agama-cli/src/commands.rs:104
 msgid "File name"
 msgstr ""
 
 #. TRANSLATORS: CLI help for: agama finish
-#: agama-cli/src/commands.rs:112
+#: agama-cli/src/commands.rs:111
 #, fuzzy
 msgid "Finish the installation"
 msgstr "Vyhodnocuje se návrh softwaru"
 
 #. TRANSLATORS: CLI help for: agama finish <METHOD>
-#: agama-cli/src/commands.rs:118
+#: agama-cli/src/commands.rs:117
 msgid ""
 "What to do after finishing the installation. Possible values:\n"
 "\n"
@@ -176,29 +189,29 @@ msgid ""
 msgstr ""
 
 #. TRANSLATORS: CLI help for: agama monitor
-#: agama-cli/src/commands.rs:136
+#: agama-cli/src/commands.rs:135
 msgid "Continuously monitors the Agama service until it finishes"
 msgstr ""
 
 #. TRANSLATORS: CLI help for: agama status
-#: agama-cli/src/commands.rs:143
+#: agama-cli/src/commands.rs:142
 msgid ""
 "Prints the current state of the installation (e.g., waiting, blocked, "
 "running, or finished)"
 msgstr ""
 
 #. TRANSLATORS: CLI help for: agama status --format <FORMAT>
-#: agama-cli/src/commands.rs:151
+#: agama-cli/src/commands.rs:150
 msgid "Specify in which format status will be shown"
 msgstr ""
 
 #. TRANSLATORS: CLI help for: agama events
-#: agama-cli/src/commands.rs:158
+#: agama-cli/src/commands.rs:157
 msgid "Display Agama events"
 msgstr ""
 
 #. TRANSLATORS: CLI help for: agama events --pretty
-#: agama-cli/src/commands.rs:165
+#: agama-cli/src/commands.rs:164
 msgid "Display the events in a more human-readable way"
 msgstr ""
 
@@ -320,7 +333,7 @@ msgstr ""
 msgid "It is not a valid JSON file"
 msgstr ""
 
-#: agama-cli/src/config.rs:412
+#: agama-cli/src/config.rs:434
 msgid "Ignoring the changes because the editor was closed with an error code."
 msgstr ""
 
@@ -489,7 +502,7 @@ msgstr "Instalovat software"
 msgid "You can reboot the machine to log in to the new system."
 msgstr ""
 
-#: agama-cli/src/monitor/ui/content.rs:68 agama-cli/src/status.rs:76
+#: agama-cli/src/monitor/ui/content.rs:68
 #, fuzzy
 msgid "Installation failed."
 msgstr "Instalovat software"
@@ -506,17 +519,19 @@ msgstr ""
 msgid "No product has been selected yet."
 msgstr ""
 
-#: agama-cli/src/monitor/ui/content.rs:172
-msgid "Following issues needs to be addressed in the configuration:"
+#: agama-cli/src/monitor/ui/content.rs:172 agama-cli/src/status.rs:88
+msgid "Fix invalid settings before starting the installation:"
 msgstr ""
 
-#: agama-cli/src/monitor/ui/content.rs:193
-msgid "Ready for installation."
-msgstr ""
+#: agama-cli/src/monitor/ui/content.rs:193 agama-cli/src/status.rs:81
+#, fuzzy
+msgid "Ready to start the installation."
+msgstr "Vyhodnocuje se návrh softwaru"
 
 #: agama-cli/src/monitor/ui/content.rs:194
-msgid "Waiting to start installation..."
-msgstr ""
+#, fuzzy
+msgid "Starting the installation."
+msgstr "Vyhodnocuje se návrh softwaru"
 
 #: agama-cli/src/monitor/ui/content.rs:210
 msgid "Step"
@@ -526,13 +541,9 @@ msgstr ""
 msgid "of"
 msgstr ""
 
-#: agama-cli/src/monitor/ui/issues.rs:64
-msgid "Waiting for these to be resolved."
-msgstr ""
-
 #. TRANSLATORS: additional data that question passed to user beside main question message
 #: agama-cli/src/monitor/ui/question.rs:307
-msgid "Additional data"
+msgid "Technical details"
 msgstr ""
 
 #. TRANSLATORS: CLI hint how to scroll through additional data
@@ -663,44 +674,29 @@ msgid "Path to a file containing the answers in JSON format"
 msgstr ""
 
 #: agama-cli/src/status.rs:77
-#, fuzzy
-msgid "Installation finished successfully."
-msgstr "Instalovat software"
-
-#: agama-cli/src/status.rs:78
-msgid "Installation is ready to start."
+msgid ""
+"The installation failed. Use the \"agama logs store\" command to get the "
+"logs to troubleshoot or share with support."
 msgstr ""
-
-#: agama-cli/src/status.rs:79
-#, fuzzy
-msgid "Installation is in progress."
-msgstr "Instalovat software"
 
 #: agama-cli/src/status.rs:80
 #, fuzzy
-msgid "Installation is being proposed."
+msgid "The installation finished successfully."
 msgstr "Instalovat software"
 
-#: agama-cli/src/status.rs:81
-msgid ""
-"There are unanswered questions. Use `agama monitor` command or the web user "
-"interface to answer them."
-msgstr ""
-
 #: agama-cli/src/status.rs:82
-msgid "There are issues in configuration that are blocking the installation."
+#, fuzzy
+msgid "The installation is in progress."
+msgstr "Instalovat software"
+
+#: agama-cli/src/status.rs:83
+msgid "The installer is preparing an installation proposal."
 msgstr ""
 
-#: agama-cli/src/status.rs:118 agama-utils/src/api/problem_details.rs:192
-msgid "Details:"
-msgstr ""
-
-#: agama-cli/src/status.rs:120
-msgid "Open questions:"
-msgstr ""
-
-#: agama-cli/src/status.rs:126
-msgid "Blocking issues:"
+#: agama-cli/src/status.rs:85
+msgid ""
+"There are unanswered questions. Use the \"agama monitor\" command or the web "
+"user interface to answer them:"
 msgstr ""
 
 #. TRANSLATORS: %s is replaced by the script name.
@@ -713,115 +709,120 @@ msgstr "Nepodařilo se načíst skript %s. Chcete to zkusit znovu?"
 msgid "Failed to write the file %s. Do you want to try again?"
 msgstr "Nepodařilo se zapsat do souboru %s. Chcete to zkusit znovu?"
 
-#: agama-manager/src/actions.rs:77
+#: agama-manager/src/actions.rs:78
 msgid "Prepare the system"
 msgstr "Nachystat systém"
 
-#: agama-manager/src/actions.rs:78
+#: agama-manager/src/actions.rs:79
 msgid "Install software"
 msgstr "Instalovat software"
 
-#: agama-manager/src/actions.rs:79
+#: agama-manager/src/actions.rs:80
 msgid "Configure the system"
 msgstr "Nakonfigurovat systém"
 
-#: agama-manager/src/actions.rs:93
+#: agama-manager/src/actions.rs:94
 #, fuzzy
 msgid "Preparing storage"
 msgstr "Připravuje se návrh úložiště"
 
-#: agama-manager/src/actions.rs:111
+#: agama-manager/src/actions.rs:112
 #, fuzzy
 msgid "Running post-partitioning scripts"
 msgstr "Spouští se uživatelské předinstalační skripty"
 
-#: agama-manager/src/actions.rs:136
+#: agama-manager/src/actions.rs:137
 #, fuzzy
 msgid "Installing software"
 msgstr "Instalovat software"
 
-#: agama-manager/src/actions.rs:173
+#: agama-manager/src/actions.rs:174
 #, fuzzy
 msgid "Configuring the system"
 msgstr "Nakonfigurovat systém"
 
-#: agama-manager/src/actions.rs:240
+#: agama-manager/src/actions.rs:242
 msgid "Finishing installation"
 msgstr ""
 
-#: agama-manager/src/actions.rs:296
-msgid "Storing security settings"
-msgstr "Ukládají se bezpečnostní nastavení"
-
-#: agama-manager/src/actions.rs:306
+#: agama-manager/src/actions.rs:271
 #, fuzzy
-msgid "Configuring remote access"
-msgstr "Konfigurují se zařízení DASD"
+msgid "Finalize installation"
+msgstr "Vyhodnocuje se návrh softwaru"
 
-#: agama-manager/src/actions.rs:316
-msgid "Setting up the hostname"
-msgstr "Nastavuje se jméno hostitele"
+#: agama-manager/src/actions.rs:346
+msgid "Storing questions settings"
+msgstr "Ukládá se nastavení otázek"
 
-#: agama-manager/src/actions.rs:326
-msgid "Setting up the network proxy"
-msgstr "Nastavuje se síťová proxy"
-
-#: agama-manager/src/actions.rs:337
-#, fuzzy
-msgid "Setting up NTP"
-msgstr "Nastavuje konfigurace sítě"
-
-#: agama-manager/src/actions.rs:348
+#: agama-manager/src/actions.rs:357
 #, fuzzy
 msgid "Importing user files and scripts"
 msgstr "Importují se uživatelské soubory"
 
-#: agama-manager/src/actions.rs:361
+#: agama-manager/src/actions.rs:371
 msgid "Running user pre-installation scripts"
 msgstr "Spouští se uživatelské předinstalační skripty"
 
-#: agama-manager/src/actions.rs:376
-msgid "Storing questions settings"
-msgstr "Ukládá se nastavení otázek"
-
 #: agama-manager/src/actions.rs:386
+msgid "Storing security settings"
+msgstr "Ukládají se bezpečnostní nastavení"
+
+#: agama-manager/src/actions.rs:396
+#, fuzzy
+msgid "Configuring remote access"
+msgstr "Konfigurují se zařízení DASD"
+
+#: agama-manager/src/actions.rs:406
+msgid "Setting up the hostname"
+msgstr "Nastavuje se jméno hostitele"
+
+#: agama-manager/src/actions.rs:416
+msgid "Setting up the network proxy"
+msgstr "Nastavuje se síťová proxy"
+
+#: agama-manager/src/actions.rs:427
+#, fuzzy
+msgid "Setting up NTP"
+msgstr "Nastavuje konfigurace sítě"
+
+#: agama-manager/src/actions.rs:437
 msgid "Storing localization settings"
 msgstr "Ukládá se nastavení lokalizace"
 
-#: agama-manager/src/actions.rs:396
+#: agama-manager/src/actions.rs:447
 msgid "Storing users settings"
 msgstr "Ukládají se uživatelská nastavení"
 
-#: agama-manager/src/actions.rs:502
+#: agama-manager/src/actions.rs:557
 msgid "Configuring iSCSI devices"
 msgstr "Konfigurují se zařízení iSCSI"
 
-#: agama-manager/src/actions.rs:526
+#: agama-manager/src/actions.rs:581
 #, fuzzy
 msgid "Configuring zFCP devices"
 msgstr "Konfigurují se zařízení iSCSI"
 
-#: agama-manager/src/actions.rs:550
+#: agama-manager/src/actions.rs:606
 msgid "Configuring DASD devices"
 msgstr "Konfigurují se zařízení DASD"
 
-#: agama-manager/src/actions.rs:574
+#: agama-manager/src/actions.rs:631
 msgid "Setting up the network"
 msgstr "Nastavuje konfigurace sítě"
 
-#: agama-manager/src/actions.rs:603
+#: agama-manager/src/actions.rs:661
 msgid "Preparing the storage proposal"
 msgstr "Připravuje se návrh úložiště"
 
-#: agama-manager/src/actions.rs:636
+#: agama-manager/src/actions.rs:690
 msgid "Storing bootloader settings"
 msgstr "Ukládá se nastavení zavaděče"
 
-#: agama-manager/src/actions.rs:669
+#: agama-manager/src/actions.rs:723
 msgid "Preparing the software proposal"
 msgstr "Připravuje se návrh softwaru"
 
-#: agama-manager/src/actions.rs:702
+#: agama-manager/src/actions.rs:753
 #, fuzzy
 msgid "Configuring SELinux"
 msgstr "Konfigurují se zařízení DASD"
@@ -851,34 +852,42 @@ msgstr ""
 "Zkouší se naimportovat certifikát podepsaný sebou samým. Důvěřujete "
 "certifikátu a chcete zaregistrovat produkt?"
 
-#: agama-server/src/profile/web.rs:82
+#: agama-server/src/profile/web.rs:85
 #, fuzzy
 msgid "Profile validation failed"
 msgstr "Instalovat software"
 
-#: agama-server/src/profile/web.rs:85
+#: agama-server/src/profile/web.rs:88
 #, fuzzy
 msgid "Could not retrieve profile"
 msgstr "Nepodařilo se načíst repozitáře"
 
-#: agama-server/src/profile/web.rs:88
+#: agama-server/src/profile/web.rs:91
 msgid "Invalid profile encoding"
 msgstr ""
 
-#: agama-server/src/profile/web.rs:91
+#: agama-server/src/profile/web.rs:94
 msgid "Invalid profile request"
 msgstr ""
 
-#: agama-server/src/profile/web.rs:94
+#: agama-server/src/profile/web.rs:97
 msgid "AutoYaST conversion failed"
 msgstr ""
 
-#: agama-software/src/callbacks/commit_download.rs:48
+#: agama-server/src/server/web.rs:86
+msgid "Missing Language Tag"
+msgstr ""
+
+#: agama-server/src/server/web.rs:89
+msgid "Profile error"
+msgstr ""
+
+#: agama-software/src/callbacks/commit_download.rs:47
 #: agama-software/src/callbacks/install.rs:56
 msgid "Ignore"
 msgstr "Ignorovat"
 
-#: agama-software/src/callbacks/commit_download.rs:48
+#: agama-software/src/callbacks/commit_download.rs:47
 #: agama-software/src/callbacks/install.rs:56
 #: agama-software/src/callbacks/install.rs:81
 msgid "Retry"
@@ -887,10 +896,6 @@ msgstr "Opakovat"
 #: agama-software/src/callbacks/install.rs:78
 msgid "There was a problem running a package script."
 msgstr "Vyskytla se chyba při běhu skriptu balíku."
-
-#: agama-software/src/callbacks/install.rs:81
-msgid "Continue"
-msgstr "Pokračovat"
 
 #. TRANSLATORS: substituting: key ID, (key name), fingerprint
 #: agama-software/src/callbacks/security.rs:104
@@ -904,45 +909,45 @@ msgstr ""
 msgid "Skip"
 msgstr "Přeskočit"
 
-#: agama-software/src/service.rs:287
+#: agama-software/src/service.rs:296
 msgid ""
 "Due to an internal error, it was not possible to create a software proposal."
 msgstr "Kvůli vnitřní chybě nebylo možné vytvořit návrh softwaru."
 
-#: agama-software/src/zypp_server.rs:293
+#: agama-software/src/zypp_server.rs:300
 msgid "Starting packages installation"
 msgstr ""
 
-#: agama-software/src/zypp_server.rs:306
+#: agama-software/src/zypp_server.rs:313
 msgid "Packages download and installation failed. Would you like to retry?"
 msgstr ""
 
-#: agama-software/src/zypp_server.rs:361
+#: agama-software/src/zypp_server.rs:367
 msgid "Updating the list of repositories"
 msgstr "Aktualizuji seznam repozitářů"
 
-#: agama-software/src/zypp_server.rs:362
+#: agama-software/src/zypp_server.rs:368
 msgid "Refreshing metadata from the repositories"
 msgstr "Obnovuji metadata repozitářů"
 
-#: agama-software/src/zypp_server.rs:363
+#: agama-software/src/zypp_server.rs:369
 msgid "Calculating the software proposal"
 msgstr "Vyhodnocuje se návrh softwaru"
 
-#: agama-software/src/zypp_server.rs:366
+#: agama-software/src/zypp_server.rs:372
 msgid "Registering the system"
 msgstr "Systém se registruje"
 
 #. TRANSLATORS: %s is the alias of the repository.
-#: agama-software/src/zypp_server.rs:439
+#: agama-software/src/zypp_server.rs:445
 msgid "Could not remove the repository %s"
 msgstr "Nepodařilo se odebrat repozitář %s"
 
-#: agama-software/src/zypp_server.rs:460
+#: agama-software/src/zypp_server.rs:465
 msgid "Could not read the repositories"
 msgstr "Nepodařilo se načíst repozitáře"
 
-#: agama-software/src/zypp_server.rs:497
+#: agama-software/src/zypp_server.rs:501
 msgid ""
 "Failed to find the product in the repositories. You might need to register "
 "the system."
@@ -950,21 +955,21 @@ msgstr ""
 "Nepodařilo se najít produkt v repozitářích. Možná je nutné systém "
 "zaregistrovat."
 
-#: agama-software/src/zypp_server.rs:500
+#: agama-software/src/zypp_server.rs:504
 msgid "Failed to find the product in the repositories."
 msgstr "Nepodařilo se najít produkt v repozitářích."
 
-#: agama-software/src/zypp_server.rs:563
+#: agama-software/src/zypp_server.rs:567
 msgid "There are conflicts in the software selection"
 msgstr "Při výběru softwaru došlo ke konfliktům"
 
 #. TRANSLATORS: the first %s is the kind of resolvable (e.g., "package")
 #. and the second %s is the name of the resolvable.
-#: agama-software/src/zypp_server.rs:592
+#: agama-software/src/zypp_server.rs:594
 msgid "Could not select %s '%s' for installation"
 msgstr "Nepodařilo se vybrat %s '%s' k instalaci"
 
-#: agama-software/src/zypp_server.rs:1010
+#: agama-software/src/zypp_server.rs:1006
 msgid "Failed to register the system"
 msgstr "Registrace systému selhala"
 
@@ -1004,25 +1009,33 @@ msgstr ""
 msgid "Error:"
 msgstr ""
 
-#: agama-utils/src/api/question.rs:293 agama-utils/src/question/start.rs:48
+#: agama-utils/src/api/problem_details.rs:192
+msgid "Details:"
+msgstr ""
+
+#: agama-utils/src/api/question.rs:342 agama-utils/src/question/start.rs:48
 msgid "No"
 msgstr "Ne"
 
-#: agama-utils/src/api/question.rs:293 agama-utils/src/question/start.rs:48
+#: agama-utils/src/api/question.rs:342 agama-utils/src/question/start.rs:48
 msgid "Yes"
 msgstr "Ano"
 
-#: agama-utils/src/resolvable.rs:62
+#: agama-utils/src/resolvable.rs:65
 msgid "package"
 msgstr "balíček"
 
-#: agama-utils/src/resolvable.rs:63
+#: agama-utils/src/resolvable.rs:66
 msgid "pattern"
 msgstr "vzor"
 
-#: agama-utils/src/resolvable.rs:64
+#: agama-utils/src/resolvable.rs:67
 msgid "product"
 msgstr "produkt"
+
+#, fuzzy
+#~ msgid "Installation is being proposed."
+#~ msgstr "Instalovat software"
 
 #~ msgid "The product must be registered"
 #~ msgstr "Produkt musí být zaregistrovaný"

@@ -57,7 +57,7 @@ describe Agama::AutoYaST::NetworkReader do
         expect(network["network"].keys).to include("connections")
         network["network"]["connections"].each do |conn|
           expect(conn).to include(
-            "nameservers" => ["1.1.1.1"], "dns_searchlist" => ["example.lan"]
+            "nameservers" => ["1.1.1.1"], "dnsSearchList" => ["example.lan"]
           )
         end
       end

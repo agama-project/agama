@@ -55,7 +55,7 @@ rm -f %{buildroot}%{_datadir}/agama/products.d/tumbleweed.yaml
 rm -f %{buildroot}%{_datadir}/agama/products.d/slowroll.yaml
 %endif
 
-# Keep TW-based distros on TW (drop Kalpa + Leap + Leap Micro)
+# Keep TW-based distros on TW (drop Kalpa + Leap)
 %if 0%{?is_opensuse} && 0%{?suse_version} > 1610
 rm -f %{buildroot}%{_datadir}/agama/products.d/leap*.yaml
 %endif
@@ -79,7 +79,6 @@ Definition of openSUSE products (Tumbleweed, Leap, MicroOS and Slowroll) for the
 %endif
 %if !0%{?is_opensuse} || 0%{?suse_version} <= 1610
 %{_datadir}/agama/products.d/leap_161.yaml
-%{_datadir}/agama/products.d/leap_micro_62.yaml
 %endif
 
 %package sle

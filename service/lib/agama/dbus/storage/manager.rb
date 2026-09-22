@@ -89,8 +89,6 @@ module Agama
           dbus_method(
             :SolveConfigModel, "in serialized_model:s, out result:s"
           ) { |m| solve_config_model(m) }
-          dbus_signal(:SystemChanged, "serialized_system:s")
-          dbus_signal(:ProposalChanged, "serialized_proposal:s")
           dbus_signal(:ProgressChanged, "serialized_progress:s")
           dbus_signal(:ProgressFinished)
         end
@@ -190,16 +188,20 @@ module Agama
         end
 
         # Implementation for the API method #Install.
+        #
+        # @raise [RuntimeError] If there is an unexpected error or the user decides to abort, see
+        #   bsc#1280006.
         def install
           start_progress(3, _("Preparing bootloader proposal"))
           manager.configure_bootloader
 
           next_progress_step(_("Preparing the storage devices"))
-          manager.install
+          success = manager.install
+          raise "There was an error preparing the storage devices" unless success
 
           next_progress_step(_("Writing bootloader sysconfig"))
           manager.install_bootloader
-
+        ensure
           finish_progress
         end
 
@@ -334,17 +336,14 @@ module Agama
         # Updates the system info if needed.
         def update_serialized_system
           serialized_system = serialize_system
-          # return if self.serialized_system == serialized_system
 
           # This assignment emits a D-Bus PropertiesChanged.
           self.serialized_system = serialized_system
-          self.SystemChanged(serialized_system)
         end
 
         # Updates the config info if needed.
         def update_serialized_config
           serialized_config = serialize_config
-          # return if self.serialized_config == serialized_config
 
           # This assignment emits a D-Bus PropertiesChanged.
           self.serialized_config = serialized_config
@@ -353,7 +352,6 @@ module Agama
         # Updates the config model info if needed.
         def update_serialized_config_model
           serialized_config_model = serialize_config_model
-          # return if self.serialized_config_model == serialized_config_model
 
           # This assignment emits a D-Bus PropertiesChanged.
           self.serialized_config_model = serialized_config_model
@@ -362,17 +360,14 @@ module Agama
         # Updates the proposal info if needed.
         def update_serialized_proposal
           serialized_proposal = serialize_proposal
-          # return if self.serialized_proposal == serialized_proposal
 
           # This assignment emits a D-Bus PropertiesChanged.
           self.serialized_proposal = serialized_proposal
-          self.ProposalChanged(serialized_proposal)
         end
 
         # Updates the issues info if needed.
         def update_serialized_issues
           serialized_issues = serialize_issues
-          # return if self.serialized_issues == serialized_issues
 
           # This assignment emits a D-Bus PropertiesChanged.
           self.serialized_issues = serialized_issues
@@ -381,7 +376,6 @@ module Agama
         # Updates the resolvables info if needed.
         def update_serialized_resolvables
           serialized_resolvables = serialize_storage_resolvables
-          # return if self.serialized_resolvables == serialized_resolvables
 
           # This assignment emits a D-Bus PropertiesChanged.
           self.serialized_resolvables = serialized_resolvables
@@ -475,7 +469,7 @@ module Agama
         #
         # @return [String]
         def serialize_storage_resolvables
-          serialize_resolvables(packages: manager.packages)
+          serialize_resolvables(manager.packages)
         end
 
         # Generates the serialized JSON of the bootloader system.
@@ -501,7 +495,7 @@ module Agama
         #
         # @return [String]
         def serialize_bootloader_resolvables
-          serialize_resolvables(packages: manager.bootloader_packages)
+          serialize_resolvables(manager.bootloader_packages)
         end
 
         # Representation of the null JSON.

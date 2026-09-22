@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2025] SUSE LLC
+ * Copyright (c) [2022-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -28,6 +28,7 @@ import PackageErrorQuestion from "~/components/questions/PackageErrorQuestion";
 import UnsupportedAutoYaST from "~/components/questions/UnsupportedAutoYaST";
 import RegistrationCertificateQuestion from "~/components/questions/RegistrationCertificateQuestion";
 import LoadConfigRetryQuestion from "~/components/questions/LoadConfigRetryQuestion";
+import StorageCommitErrorQuestion from "~/components/questions/StorageCommitErrorQuestion";
 import { useQuestions, useQuestionsChanges } from "~/hooks/model/question";
 import { patchQuestion } from "~/api";
 import { FieldType } from "~/model/question";
@@ -57,27 +58,32 @@ export default function Questions(): React.ReactNode {
 
   // show specialized popup for luks activation question
   // more can follow as it will be needed
-  if (questionClass === "storage.luks_activation") {
+  if (questionClass === "luksActivation") {
     QuestionComponent = LuksActivationQuestion;
   }
 
-  if (questionClass === "autoyast.unsupported") {
+  if (questionClass === "autoyastUnsupported") {
     QuestionComponent = UnsupportedAutoYaST;
   }
 
   // special popup for package errors (libzypp callbacks)
-  if (questionClass.startsWith("software.package_error.")) {
+  if (questionClass === "packageInstallError" || questionClass === "packageProvideError") {
     QuestionComponent = PackageErrorQuestion;
   }
 
   // special popup for self signed registration certificate
-  if (questionClass === "registration.certificate") {
+  if (questionClass === "selfSignedRegCert") {
     QuestionComponent = RegistrationCertificateQuestion;
   }
 
   // special popup for self signed registration certificate
-  if (questionClass === "load.retry") {
+  if (questionClass === "loadConfigError") {
     QuestionComponent = LoadConfigRetryQuestion;
+  }
+
+  // special popup for storage commit errors
+  if (questionClass === "storageCommitError") {
+    QuestionComponent = StorageCommitErrorQuestion;
   }
 
   return <QuestionComponent question={currentQuestion} answerCallback={answerQuestion} />;

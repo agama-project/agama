@@ -371,7 +371,7 @@ impl RegistrationBuilder {
         // https://github.com/agama-project/agama/blob/master/service/lib/agama/registration.rb#L294
         let version = self.version.split(".").next().unwrap_or("1");
         let arch = Arch::current().expect("Failed to determine the architecture");
-        let target_distro = format!("{}-{}-{}", &self.product, version, arch);
+        let target_distro = format!("{}-{}-{}", self.product, version, arch);
         tracing::debug!("Announcing system {target_distro}");
         let creds = handle_registration_error(
             || suseconnect_agama::announce_system(params.clone(), &target_distro),

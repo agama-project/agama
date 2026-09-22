@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2024] SUSE LLC
+ * Copyright (c) [2022-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -40,16 +40,15 @@ const vda: Storage.Device = {
   drive: {
     vendor: "Micron",
     model: "Micron 1100 SATA",
-    driver: ["ahci", "mmcblk"],
+    drivers: ["ahci", "mmcblk"],
     bus: "IDE",
     transport: "usb",
     info: {
-      dellBoss: false,
+      boss: false,
       sdCard: true,
     },
   },
   block: {
-    active: true,
     start: 10,
     size: 1024,
     shrinking: { supported: false },
@@ -63,7 +62,6 @@ const vda: Storage.Device = {
       class: "partition",
       name: "/dev/vda1",
       block: {
-        active: true,
         start: 123,
         size: 512,
         shrinking: { supported: true },
@@ -85,7 +83,6 @@ const lv: Storage.Device = {
   class: "logicalVolume",
   name: "/dev/vg0/lv1",
   block: {
-    active: true,
     size: 512,
     start: 0,
     encrypted: false,

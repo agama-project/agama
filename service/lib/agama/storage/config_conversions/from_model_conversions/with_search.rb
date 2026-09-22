@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -20,6 +20,7 @@
 # find current contact information at www.suse.com.
 
 require "agama/storage/configs/search"
+require "agama/storage/configs/search_conditions"
 
 module Agama
   module Storage
@@ -32,7 +33,9 @@ module Agama
             name = model_json[:name]
             return unless name
 
-            Configs::Search.new.tap { |c| c.name = name }
+            Configs::Search.new.tap do |c|
+              c.condition = Configs::SearchConditions::Name.new(name)
+            end
           end
         end
       end

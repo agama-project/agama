@@ -21,7 +21,7 @@
 use std::str::FromStr;
 
 use crate::{
-    api::{iscsi, l10n},
+    api::{iscsi, l10n, Scope},
     kernel_cmdline::KernelCmdline,
 };
 use schemars::JsonSchema;
@@ -34,11 +34,11 @@ pub enum Action {
     DiscoverISCSI(iscsi::DiscoverConfig),
     #[serde(rename = "activateStorage")]
     ActivateStorage,
-    #[serde(rename = "probeStorage")]
-    ProbeStorage,
-    /// Performs a DASD probing on demand.
-    #[serde(rename = "probeDASD")]
-    ProbeDASD,
+    /// Probes hardware and refreshes services (storage, DASD, software, etc).
+    ///
+    /// If `only` is not given, it probes everything.
+    #[serde(rename = "probe")]
+    Probe { only: Option<Vec<Scope>> },
     #[serde(rename = "configureL10n")]
     ConfigureL10n(l10n::SystemConfig),
     #[serde(rename = "install")]

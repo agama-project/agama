@@ -45,12 +45,12 @@ describe("PatternSelectionUnavailable", () => {
     screen.getByText("Software selection is not available");
   });
 
-  describe("when there is a missing_registration issue", () => {
+  describe("when there is a missingRegistration issue", () => {
     it("shows the issue description", () => {
       mockUseIssues.mockReturnValue([
         {
           scope: "software",
-          class: "missing_registration",
+          class: "missingRegistration",
           description: "Product registration is required",
         },
       ]);
@@ -64,7 +64,7 @@ describe("PatternSelectionUnavailable", () => {
       mockUseIssues.mockReturnValue([
         {
           scope: "software",
-          class: "missing_registration",
+          class: "missingRegistration",
           description: "Product registration is required",
         },
       ]);
@@ -76,12 +76,12 @@ describe("PatternSelectionUnavailable", () => {
     });
   });
 
-  describe("when there is a missing_product issue", () => {
+  describe("when there is a missingProduct issue", () => {
     it("shows the issue description", () => {
       mockUseIssues.mockReturnValue([
         {
           scope: "software",
-          class: "missing_product",
+          class: "missingProduct",
           description: "Base product is not available",
         },
       ]);
@@ -95,7 +95,7 @@ describe("PatternSelectionUnavailable", () => {
       mockUseIssues.mockReturnValue([
         {
           scope: "software",
-          class: "missing_product",
+          class: "missingProduct",
           description: "Base product is not available",
         },
       ]);
@@ -109,7 +109,7 @@ describe("PatternSelectionUnavailable", () => {
       mockUseIssues.mockReturnValue([
         {
           scope: "software",
-          class: "missing_product",
+          class: "missingProduct",
           description: "Base product is not available",
         },
       ]);

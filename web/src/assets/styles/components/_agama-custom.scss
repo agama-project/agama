@@ -3,6 +3,7 @@
 // App-specific component and layout styles that are not direct PatternFly
 // overrides (see _patternfly-overrides.scss for those).
 
+// Overview settings grid: single column, widening to two columns on lg.
 .installation-settings-summary {
   display: grid;
   gap: 0.5em;
@@ -14,10 +15,7 @@
   }
 }
 
-#productSelectionForm img {
-  max-inline-size: 100px;
-}
-
+// Sticky category header inside the scrollable patterns list.
 .agm-sticky-category-header {
   position: sticky;
   background: var(--pf-t--global--background--color--primary--default);
@@ -27,81 +25,108 @@
   border-bottom: var(--pf-t--global--border--width--regular) solid rgb(0 0 0 / 10%);
 }
 
-#productSelectionForm {
-  input[type="radio"] {
-    align-self: center;
-    inline-size: 1.2em;
-    block-size: 1.2em;
-  }
+// Every step inside a product option is the same size: from the product name
+// to its details, and between the details themselves. The radio grid gap sets
+// that step, and the details follow its lead.
+#productSelectionForm .pf-v6-c-radio .pf-v6-l-stack.pf-m-gutter {
+  --pf-v6-l-stack--m-gutter--Gap: var(--pf-v6-c-radio--GridGap);
+}
 
-  .pf-v6-c-card {
-    img {
-      max-inline-size: 80px;
-    }
-
-    label {
-      cursor: pointer;
-    }
-  }
-
-  .pf-v6-c-radio {
-    row-gap: 0;
-  }
+// The submit button names the product being selected, and product names get
+// long. Cap the label at a comfortable reading width and spread it evenly over
+// the lines it needs, rather than letting it stretch or shred the button.
+#productSelectionForm button[type="submit"] {
+  max-inline-size: 40ch;
+  text-wrap: balance;
 }
 
 // Material Symbol icons (rendered by the Icon component) ship without a fill,
 // so they default to black and turn nearly invisible on the dark theme. Make
-// them inherit the surrounding text color so they adapt to the active theme.
+// them inherit the surrounding text color (currentcolor) so they adapt to the
+// active theme.
 svg[data-icon-name] {
   fill: currentcolor;
+}
+
+// Outside high contrast, content icons follow the --agm-t--icon--color role when
+// a product sets it. High contrast is left to PatternFly (the role is ignored
+// there), per the appearance contract.
+:root:where(:not(.pf-v6-theme-high-contrast)) svg[data-icon-name] {
+  color: var(--agm-t--icon--color, currentcolor);
 }
 
 // Named icon sizes for the Icon `size` prop. The size is driven by font-size
 // (icons are 1em) and reads a customizable role token, so a product can resize
 // them without touching markup.
+//
+// An icon with no size of its own takes the same step as body text, which is
+// what it inherited before: unset, the role below resolves to 1em, so the icon
+// still follows the text around it.
+.agm-icon-inline {
+  font-size: var(--agm-t--icon--size--200, 1em);
+}
+
 .agm-icon-xs {
-  font-size: var(--agm-t--icon--size--xs);
+  font-size: var(--agm-t--icon--size--100, var(--pf-t--global--font--size--100));
 }
 
 .agm-icon-sm {
-  font-size: var(--agm-t--icon--size--sm);
+  font-size: var(--agm-t--icon--size--200, var(--pf-t--global--font--size--200));
 }
 
 .agm-icon-md {
-  font-size: var(--agm-t--icon--size--md);
+  font-size: var(--agm-t--icon--size--300, var(--pf-t--global--font--size--300));
 }
 
 .agm-icon-lg {
-  font-size: var(--agm-t--icon--size--lg);
+  font-size: var(--agm-t--icon--size--400, var(--pf-t--global--font--size--400));
 }
 
 .agm-icon-xl {
-  font-size: var(--agm-t--icon--size--xl);
+  font-size: var(--agm-t--icon--size--500, var(--pf-t--global--font--size--500));
 }
 
 .agm-icon-2xl {
-  font-size: var(--agm-t--icon--size--2xl);
+  font-size: var(--agm-t--icon--size--600, var(--pf-t--global--font--size--600));
 }
 
 .agm-icon-3xl {
-  font-size: var(--agm-t--icon--size--3xl);
+  font-size: var(--agm-t--icon--size--700, var(--pf-t--global--font--size--700));
 }
 
 .agm-icon-4xl {
-  font-size: var(--agm-t--icon--size--4xl);
+  font-size: var(--agm-t--icon--size--800, var(--pf-t--global--font--size--800));
 }
 
+// Overview summary: the icon gets a column of its own, and the text under the
+// title starts where the title does. The indent then follows the icon size
+// instead of being a fixed spacer, so a product resizing the icons keeps the
+// block aligned.
+.agm-summary {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: var(--pf-t--global--spacer--xs);
+  align-items: center;
+}
+
+.agm-summary__body {
+  grid-column: 2;
+}
+
+// Inline kebab ("three dots") action icon, sized to sit with adjacent text.
 .agm-three-dots-icon {
   font-size: 1.1rem;
   vertical-align: text-top;
 }
 
+// Hide a button's default (leading) icon.
 .no-default-icon {
   .pf-v6-c-button__icon {
     display: none;
   }
 }
 
+// Wrap inline text in the locale's quotation marks.
 span.in-quotes {
   &::before {
     content: open-quote;
@@ -112,15 +137,46 @@ span.in-quotes {
   }
 }
 
+// The text column has to be allowed to shrink below the width of its longest
+// line, or a long trail pushes the header wider than the page.
+.agm-header-heading > *:last-child {
+  min-width: 0;
+}
+
+nav.agm-breadcrumb {
+  // The trail carries the page title, so it takes the room it can get instead
+  // of a fixed step: it grows on a wide header and gives way on a narrow one,
+  // which is where a long trail starts wrapping onto a second line.
+  //
+  // Measured against the viewport rather than against the masthead: from the xl
+  // breakpoint on, PatternFly lays the masthead out as a subgrid of the page,
+  // and an element carrying size containment cannot be a subgrid, so making the
+  // masthead a container drops it back to a single column and stacks the
+  // heading above the toolbar. The masthead spans the page anyway, so the two
+  // measures only differ by its own padding.
+  font-size: clamp(
+    var(--pf-t--global--font--size--200),
+    1.6vw,
+    var(--pf-t--global--font--size--400)
+  );
+}
+
 nav.agm-breadcrumb h1 {
   // Allow heading in breadcrumb use fontSize from its parent
   font-size: inherit;
 }
 
-// FIXME: make it more generic, if possible, or even without CSS but not
-// rendering such a label if "storage instructions" are more than one
-.storage-structure:has(> li:nth-child(2)) span.action-text {
-  display: none;
+// The leading items read a step above the rest of the trail, relative to its
+// fluid size rather than against a fixed one.
+nav.agm-breadcrumb .agm-breadcrumb-editorial {
+  font-size: 1.15em;
+}
+
+// The trail is one sentence, but only its last item is a heading: the previous
+// ones are links. Without this they render in the body family, which shows as
+// soon as a product pairs two different families.
+nav.agm-breadcrumb > ol > li > a {
+  font-family: var(--pf-t--global--font--family--heading);
 }
 
 .agm-split-info-layout-container {
@@ -161,6 +217,15 @@ nav.agm-breadcrumb h1 {
     justify-self: start;
     text-align: start;
   }
+}
+
+// Opt-in for content that must keep its size while it changes, so it does not
+// move the rest of the screen around (see the stretchFirstRowEnd prop). It is
+// aligned to the start, having no box of its own to be centered in. It comes
+// after the rules above on purpose, to win over the one it shares weight with.
+.agm-split-info-layout--stretch-first-row-end > .pf-v6-l-grid__item[style*="Order-on-md: 4"] {
+  justify-self: stretch;
+  text-align: start;
 }
 
 // Terminal panel docked below the application as a resizable split. The panel
@@ -264,4 +329,21 @@ nav.agm-breadcrumb h1 {
   color: #d4d4d4;
   white-space: pre;
   overflow: auto;
+}
+
+// PatternFly's Truncate puts the start of the text and its final characters
+// side by side. Given more room than the text needs, it pushes them to
+// opposite ends, so a shortened name reads as a broken one. Packed together,
+// it stays one name.
+.pf-v6-c-truncate {
+  justify-content: start;
+}
+
+// What is being installed right now, under the current step. The name changes
+// several times a second and the line it sits on takes the room the screen
+// gives it, so nothing moves as one package follows another and a name too
+// long for the line is shortened instead of spilling out. The maximum keeps
+// it short enough to stay comfortable to read on a wide screen.
+.agm-progress-detail {
+  max-inline-size: 80ch;
 }

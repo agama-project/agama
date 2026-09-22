@@ -102,7 +102,9 @@ describe Agama::Storage::ConfigConversions::FromModelConversions::Boot do
 
             let(:drive) do
               Agama::Storage::Configs::Drive.new.tap do |drive|
-                drive.search = Agama::Storage::Configs::Search.new.tap { |s| s.name = name }
+                drive.search = Agama::Storage::Configs::Search.new.tap do |s|
+                  s.condition = Agama::Storage::Configs::SearchConditions::Name.new(name)
+                end
               end
             end
 

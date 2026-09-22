@@ -24,6 +24,9 @@ export default {
   "%1$s (%2$s)": [
     "%1$s (%2$s)"
   ],
+  "%1$s (default file system for %2$s)": [
+    "%1$s (типова файлова система для %2$s)"
+  ],
   "%1$s - %2$s": [
     "%1$s - %2$s"
   ],
@@ -107,6 +110,9 @@ export default {
     "знайдено %d шаблон",
     "знайдено %d шаблони",
     "знайдено %d шаблонів"
+  ],
+  "%s (default file system for generic mount points)": [
+    "%s (файлова система за замовчуванням для загальних точок монтування)"
   ],
   "%s (keep data)": [
     "%s (зберегти дані)"
@@ -258,6 +264,9 @@ export default {
   "Actions": [
     "Дії"
   ],
+  "Actions for %s": [
+    "Дії для %s"
+  ],
   "Actions for %s at portal %s": [
     "Дії для %s на порталі %s"
   ],
@@ -320,6 +329,9 @@ export default {
   "Additional CHAP authentication performed by the initiator": [
     "Додаткова аутентифікація CHAP, що виконується ініціатором"
   ],
+  "Additional format arguments": [
+    "Додаткові аргументи формату"
+  ],
   "Additional patterns": [
     "Додаткові шаблони"
   ],
@@ -353,11 +365,17 @@ export default {
   "All network connections managed through this interface are currently set to be used only during installation and will not be copied to the installed system": [
     "Усі мережеві з'єднання, керовані через цей інтерфейс, наразі налаштовані на використання лише під час інсталяції і не будуть скопійовані до інстальованої системи"
   ],
+  "All the available space in the chosen disks will be used to create physical volumes.": [
+    "Весь вільний простір на вибраних дисках буде використано для створення фізичних томів."
+  ],
   "All the available zFCP controllers are already activated.": [
     "Усі наявні контролери zFCP вже активовано."
   ],
   "Allow growing": [
     "Дозволити зростання"
+  ],
+  "Allow shrinking": [
+    "Дозволити стиснення"
   ],
   "Already using all available devices": [
     "Вже використані всі наявні пристрої"
@@ -375,6 +393,9 @@ export default {
     "Для %s будуть використані наявні розділи",
     "Для %s будуть використані наявні розділи"
   ],
+  "Any existing data on %s will be destroyed when installation begins.": [
+    "Усі наявні дані на %s будуть видалені після початку встановлення."
+  ],
   "Any existing logical volume will be removed and all data in the volume group will be lost.": [
     "Усі наявні логічні томи будуть видалені, а всі дані в групі томів будуть втрачені."
   ],
@@ -386,6 +407,9 @@ export default {
   ],
   "Appearance": [
     "Вигляд"
+  ],
+  "As required by the logical volumes": [
+    "Відповідно до вимог логічних томів"
   ],
   "At least one DNS search domain is required": [
     "Потрібен принаймні один домен для пошуку DNS"
@@ -462,6 +486,9 @@ export default {
   "Based on the amount of RAM in the system, a %1$s with a size between %2$s and %3$s will be planned for %4$s": [
     "Виходячи з обсягу оперативної пам'яті в системі, для %4$s буде заплановано розділ %1$s розміром від %2$s до %3$s"
   ],
+  "Based on the mount point": [
+    "Залежно від точки монтування"
+  ],
   "Bcachefs": [
     "Bcachefs"
   ],
@@ -476,9 +503,6 @@ export default {
   ],
   "Binding": [
     "Прив'язка"
-  ],
-  "BitLocker": [
-    "BitLocker"
   ],
   "Bond": [
     "Прив'язати"
@@ -525,11 +549,44 @@ export default {
   "CPU": [
     "Процесор"
   ],
+  "Can be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %s.": [
+    "Може динамічно регулюватися залежно від обсягу оперативної пам’яті в системі та наявності окремої файлової системи для %s."
+  ],
+  "Can be dynamically adjusted based on the amount of RAM in the system and the presence of separate file systems for %s.": [
+    "Може динамічно регулюватися залежно від обсягу оперативної пам’яті в системі та наявності окремих файлових систем для %s."
+  ],
+  "Can be dynamically adjusted based on the amount of RAM in the system and the usage of Btrfs snapshots.": [
+    "Може динамічно регулюватися залежно від обсягу оперативної пам’яті в системі та використання знімків Btrfs."
+  ],
+  "Can be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of a separate file system for %s.": [
+    "Може динамічно регулюватися з урахуванням обсягу оперативної пам’яті в системі, використання знімків Btrfs та наявності окремої файлової системи для %s."
+  ],
+  "Can be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of separate file systems for %s.": [
+    "Може динамічно регулюватися з урахуванням обсягу оперативної пам’яті в системі, використання знімків Btrfs та наявності окремих файлових систем для %s."
+  ],
+  "Can be dynamically adjusted based on the presence of a separate file system for %s.": [
+    "Може динамічно налаштовуватися залежно від наявності окремої файлової системи для %s."
+  ],
+  "Can be dynamically adjusted based on the presence of separate file systems for %s.": [
+    "Може динамічно налаштовуватися залежно від наявності окремих файлових систем для %s."
+  ],
+  "Can be dynamically adjusted based on the usage of Btrfs snapshots and the presence of a separate file system for %s.": [
+    "Може динамічно регулюватися залежно від використання знімків Btrfs та наявності окремої файлової системи для %s."
+  ],
+  "Can be dynamically adjusted based on the usage of Btrfs snapshots and the presence of separate file systems for %s.": [
+    "Може динамічно регулюватися залежно від використання знімків Btrfs та наявності окремих файлових систем для %s."
+  ],
+  "Can be dynamically adjusted based on the usage of Btrfs snapshots.": [
+    "Може динамічно регулюватися залежно від використання знімків Btrfs."
+  ],
   "Cancel": [
     "Скасувати"
   ],
   "Cancel connection": [
     "Скасувати з'єднання"
+  ],
+  "Cannot apply configuration": [
+    "Неможливо застосувати конфігурацію"
   ],
   "Cannot be changed in remote installation": [
     "Неможливо змінити під час віддаленого встановлення"
@@ -652,8 +709,14 @@ export default {
   "Clear input": [
     "Очистити ввід"
   ],
+  "Clear terminal": [
+    "Очистити термінал"
+  ],
   "Close": [
     "Закрити"
+  ],
+  "Close terminal": [
+    "Закрити термінал"
   ],
   "Color scheme": [
     "Колірна гама"
@@ -789,14 +852,20 @@ export default {
   "Create LVM volume group on %s": [
     "Створити групу томів LVM на %s"
   ],
+  "Create a new logical volume on %s": [
+    "Створити новий логічний том на %s"
+  ],
+  "Create a new partition on %s": [
+    "Створити новий розділ на %s"
+  ],
   "Create another LVM volume group on %s": [
     "Створити ще одну групу томів LVM на %s"
   ],
   "Curated sets of packages for common use cases and features to extend the system.": [
     "Підібрані набори пакетів для типових випадків використання та функцій для розширення можливостей системи."
   ],
-  "Current %1$s at %2$s": [
-    "Поточна %1$s на %2$s"
+  "Current": [
+    "Поточне"
   ],
   "Current %s": [
     "Поточна %s"
@@ -858,6 +927,9 @@ export default {
   "Deactivating": [
     "Деактивуємо"
   ],
+  "Decrease font size": [
+    "Зменшити розмір шрифту"
+  ],
   "Default": [
     "Типово"
   ],
@@ -878,6 +950,9 @@ export default {
   ],
   "Define an administrator user": [
     "Створити обліковий запис адміністратора"
+  ],
+  "Define more file system settings": [
+    "Задати додаткові параметри файлової системи"
   ],
   "Delete": [
     "Вилучити"
@@ -915,6 +990,9 @@ export default {
   "Device binding": [
     "Прив'язка пристрою"
   ],
+  "Device could not be configured": [
+    "Не вдалося налаштувати пристрій"
+  ],
   "Device details": [
     "Відомості про пристрій"
   ],
@@ -924,8 +1002,14 @@ export default {
   "Device name is required": [
     "Ім'я пристрою вводити обов'язково"
   ],
+  "Device not found": [
+    "Пристрій не знайдено"
+  ],
   "Disabled": [
     "Вимкнено"
+  ],
+  "Discard changes": [
+    "Скасувати зміни"
   ],
   "Discard the maximum size and continue with simplified configuration": [
     "Відмовтеся від максимального розміру і продовжте роботу зі спрощеною конфігурацією"
@@ -966,6 +1050,12 @@ export default {
   "Do not deactivate": [
     "Не деактивувати"
   ],
+  "Do not format %s and keep data": [
+    "Не форматувати %s і зберегти дані"
+  ],
+  "Do not modify": [
+    "Не змінювати"
+  ],
   "Do not register": [
     "Не реєструвати"
   ],
@@ -986,6 +1076,9 @@ export default {
   ],
   "E.g., %s": [
     "Наприклад,%s"
+  ],
+  "E.g., %s, %s, %s": [
+    "Наприклад,%s, %s, %s"
   ],
   "E.g., 192.168.1.1": [
     "Наприклад, 192.168.1.1"
@@ -1019,9 +1112,6 @@ export default {
   ],
   "Edit": [
     "Редагувати"
-  ],
-  "Edit binding settings": [
-    "Змінити налаштування прив'язки"
   ],
   "Edit connection": [
     "Редагувати з'єднання"
@@ -1098,6 +1188,9 @@ export default {
   "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate entries, Escape to exit": [
     "Натисніть Enter або Tab, щоб додати, Backspace або Delete, щоб видалити, клавіші зі стрілками для переходу між записами, Escape для виходу"
   ],
+  "Ethernet": [
+    "Ethernet"
+  ],
   "ExFAT": [
     "ExFAT"
   ],
@@ -1171,6 +1264,9 @@ export default {
   "Find space in %s": [
     "Знайти місце в %s"
   ],
+  "Fix invalid settings before starting the installation.": [
+    "Виправте неправильні налаштування перед початком встановлення."
+  ],
   "Fix the errors below and try again": [
     "Виправте наведені нижче помилки та спробуйте ще раз"
   ],
@@ -1225,9 +1321,6 @@ export default {
   "Gateway": [
     "Шлюз"
   ],
-  "GiB": [
-    "ГіБ"
-  ],
   "Go to [installation] summary.": [
     "Перейти до підсумків [встановлення]."
   ],
@@ -1265,6 +1358,12 @@ export default {
     "Приховати %d дію підтому",
     "Приховати %d дії підтому",
     "Приховати %d дій підтому"
+  ],
+  "Hide technical details": [
+    "Приховати технічні деталі"
+  ],
+  "Hide terminal": [
+    "Приховати термінал"
   ],
   "High": [
     "Високий"
@@ -1352,6 +1451,9 @@ export default {
     "Містить %1$d додаткових шаблона. Потрібно %2$s",
     "Містить %1$d додаткових шаблонів. Потрібно %2$s"
   ],
+  "Increase font size": [
+    "Збільшити розмір шрифту"
+  ],
   "Initiator": [
     "Ініціатор"
   ],
@@ -1375,6 +1477,9 @@ export default {
   ],
   "Install now with potential data loss": [
     "Встановити зараз із можливою втратою даних"
+  ],
+  "Installation": [
+    "Встановлення"
   ],
   "Installation complete": [
     "Встановлення завершено"
@@ -1439,6 +1544,9 @@ export default {
   "Invalid [zFCP] settings": [
     "Неправильні налаштування [zFCP]"
   ],
+  "Invalid device location": [
+    "Неправильне розташування пристрою"
+  ],
   "Invalid format (e.g. 20 GiB)": [
     "Неправильний формат (наприклад, 20 ГіБ)"
   ],
@@ -1447,6 +1555,9 @@ export default {
   ],
   "Invalid label format": [
     "Неправильний формат мітки"
+  ],
+  "Invalid partition location": [
+    "Неправильне розташування розділу"
   ],
   "Invalid settings": [
     "Неправильні налаштування"
@@ -1499,14 +1610,14 @@ export default {
   "Keep %s": [
     "Зберігати %s"
   ],
+  "Keep editing": [
+    "Продовжуйте редагувати"
+  ],
   "Keyboard": [
     "Клавіатура"
   ],
   "Keyboard layout": [
     "Розкладка клавіатури"
-  ],
-  "KiB": [
-    "КіБ"
   ],
   "LUN": [
     "LUN"
@@ -1517,11 +1628,17 @@ export default {
   "LVM": [
     "LVM"
   ],
+  "LVM physical volumes will be added as partitions on the chosen disks.": [
+    "Фізичні томи LVM будуть додані як розділи на вибраних дисках."
+  ],
   "Label": [
     "Ярлик"
   ],
   "Language": [
     "Мова"
+  ],
+  "Language and Keyboard": [
+    "Мова і розкладка"
   ],
   "Language and keyboard": [
     "Мова і клавіатура"
@@ -1531,6 +1648,9 @@ export default {
   ],
   "Let the installer propose a sensible size": [
     "Дозволити інсталятору запропонувати розумний розмір"
+  ],
+  "Let the installer set the size": [
+    "Дозволити інсталятору встановити розмір"
   ],
   "Level": [
     "Рівень"
@@ -1547,6 +1667,9 @@ export default {
   "Light color scheme": [
     "Світла колірна гама"
   ],
+  "Linux command-line with administrative privileges on the installer system.": [
+    "Командний рядок Linux із правами адміністратора в системі інсталятора."
+  ],
   "Listening and learning time (4-30 seconds).": [
     "Час для прослуховування та вивчення (4–30 секунд)."
   ],
@@ -1555,6 +1678,9 @@ export default {
   ],
   "Loading data...": [
     "Завантаження даних..."
+  ],
+  "Loading the installation repositories...": [
+    "Завантаження інсталяційних репозиторіїв..."
   ],
   "Localization": [
     "Локалізація"
@@ -1576,6 +1702,12 @@ export default {
   ],
   "Log in using a trusted SSH public key": [
     "Увійти за допомогою перевіреного відкритого ключа SSH"
+  ],
+  "Logical volume": [
+    "Логічний том"
+  ],
+  "Logical volume could not be configured": [
+    "Не вдалося налаштувати логічний том"
   ],
   "Logical volumes": [
     "Логічні томи"
@@ -1601,11 +1733,17 @@ export default {
   "Login form": [
     "Форма входу"
   ],
+  "Loopback": [
+    "Зациклення"
+  ],
   "MAC address": [
     "MAC адреса"
   ],
   "Make sure that the passsword is correct and try again.": [
     "Переконайтеся, що Ви ввели правильний пароль і спробуйте знову."
+  ],
+  "Make sure the location is correct and the configuration is valid.": [
+    "Переконайтеся, що місце розташування вказано правильно, а конфігурація є дійсною."
   ],
   "Manage DASD devices": [
     "Керування DASD-пристроями"
@@ -1628,20 +1766,29 @@ export default {
   "Maximum": [
     "Максимум"
   ],
+  "Maximum is required": [
+    "Максимум вводити обов'язково"
+  ],
   "Members": [
     "Учасники"
   ],
   "Memory": [
     "Пам'ять"
   ],
-  "MiB": [
-    "МіБ"
-  ],
   "Min channel": [
     "Мін. канал"
   ],
+  "Minimize terminal": [
+    "Згорнути термінал"
+  ],
   "Minimum": [
     "Мінімум"
+  ],
+  "Minimum is required": [
+    "Мінімум вводити обов'язково"
+  ],
+  "Minimum: %1$s (%2$s)": [
+    "Мінімум: %1$s (%2$s)"
   ],
   "Missing": [
     "Відсутня"
@@ -1658,11 +1805,11 @@ export default {
   "More": [
     "Ще"
   ],
-  "More actions": [
-    "Більше дій"
-  ],
   "More devices": [
     "Інші пристрої"
+  ],
+  "More options": [
+    "Більше налаштувань"
   ],
   "More storage options": [
     "Більше варіантів зберігання"
@@ -1689,8 +1836,14 @@ export default {
   "Mount disk %s": [
     "Монтувати диск %s"
   ],
+  "Mount options": [
+    "Параметри монтування"
+  ],
   "Mount point": [
     "Точка монтування"
+  ],
+  "Mount point is required": [
+    "Потрібна точка монтування"
   ],
   "Move mount points": [
     "Перемістити точки монтування"
@@ -1700,6 +1853,12 @@ export default {
   ],
   "Multipath": [
     "Багатошляхове"
+  ],
+  "Must be larger than minimum size": [
+    "Повинно бути більшим за мінімальний розмір"
+  ],
+  "Must be smaller than maximum size": [
+    "Повинен бути меншим за максимальний розмір"
   ],
   "NFS": [
     "NFS"
@@ -1739,6 +1898,15 @@ export default {
   ],
   "New connection": [
     "Нове з'єднання"
+  ],
+  "New logical volume": [
+    "Новий логічний том"
+  ],
+  "New logical volume. There are no available existing logical volumes on %s.": [
+    "Новий логічний том. На %s немає жодних доступних існуючих логічних томів."
+  ],
+  "New partition": [
+    "Новий розділ"
   ],
   "New partition. There are no available existing partitions on %s.": [
     "Новий розділ. На %s немає жодних існуючих розділів."
@@ -1932,6 +2100,9 @@ export default {
   "Only reused partitions will be used.": [
     "Буде використано лише повторно використовувані розділи."
   ],
+  "Open terminal": [
+    "Відкрити термінал"
+  ],
   "Options for partition %s": [
     "Параметри розділу %s"
   ],
@@ -1940,6 +2111,9 @@ export default {
   ],
   "Parent device": [
     "Базовий пристрій"
+  ],
+  "Partition": [
+    "Розділ"
   ],
   "Partition %s": [
     "Розділ %s"
@@ -2028,11 +2202,14 @@ export default {
   "Performs auto LUN scan": [
     "Виконує автоматичне сканування LUN"
   ],
+  "Physical extent size": [
+    "Фізичний розмір"
+  ],
   "Physical volumes": [
     "Фізичні томи"
   ],
-  "PiB": [
-    "ПіБ"
+  "Physical volumes may be created on some of the chosen disks based on the logical volumes total size.": [
+    "На деяких із вибраних дисків можуть бути створені фізичні томи відповідно до загального розміру логічних томів."
   ],
   "Port": [
     "Порт"
@@ -2102,6 +2279,9 @@ export default {
   ],
   "Range": [
     "Діапазон"
+  ],
+  "Range: %1$s - %2$s (%3$s)": [
+    "Діапазон: %1$s - %2$s (%3$s)"
   ],
   "Read less": [
     "Скоротити текст"
@@ -2196,8 +2376,14 @@ export default {
   "Reset to the default configuration": [
     "Скинути до типової конфігурації"
   ],
+  "Resize terminal": [
+    "Змінити розмір терміналу"
+  ],
   "Resource not found or lost": [
     "Ресурс не знайдено або втрачено"
+  ],
+  "Restore terminal": [
+    "Відновити термінал"
   ],
   "Result": [
     "Результат"
@@ -2262,9 +2448,6 @@ export default {
   "SUSE Customer Center (SCC)": [
     "Центр обслуговування клієнтів SUSE (SCC)"
   ],
-  "Search": [
-    "Пошук"
-  ],
   "Secured network": [
     "Захищена мережа"
   ],
@@ -2288,6 +2471,9 @@ export default {
   ],
   "Select a disk": [
     "Оберіть диск"
+  ],
+  "Select a filesystem type": [
+    "Виберіть тип файлової системи"
   ],
   "Select a mode": [
     "Оберіть режим"
@@ -2416,6 +2602,9 @@ export default {
     "Показати %d дії підтому",
     "Показати %d дій підтому"
   ],
+  "Show configuration": [
+    "Показати конфігурацію"
+  ],
   "Show information about %s": [
     "Показати інформацію про %s"
   ],
@@ -2425,8 +2614,11 @@ export default {
   "Show more": [
     "Показати більше"
   ],
-  "Show technical details (English only)": [
-    "Показати технічні деталі (лише англійською мовою)"
+  "Show technical details": [
+    "Показати технічні деталі"
+  ],
+  "Show terminal": [
+    "Показати термінал"
   ],
   "Shrink existing logical volumes": [
     "Зменшення наявних логічних томів"
@@ -2530,6 +2722,14 @@ export default {
   "Status filter toggle": [
     "Вкл./вимк. фільтр статусу"
   ],
+  "Status: %s task active": [
+    "Стан: активне %s завдання",
+    "Стан: активні %s завдання",
+    "Стан: активні %s завдань"
+  ],
+  "Status: Idle": [
+    "Стан: У режимі очікування"
+  ],
   "Step %1$d of %2$d": [
     "Крок %1$d з %2$d"
   ],
@@ -2585,6 +2785,9 @@ export default {
   "Temporary name that may change after reboot or network changes": [
     "Тимчасове ім'я, яке може змінитися після перезавантаження або змін у мережі"
   ],
+  "Terminal": [
+    "Термінал"
+  ],
   "The 'primary' option is only valid for %s modes": [
     "Параметр «primary» діє лише для режимів %s"
   ],
@@ -2593,6 +2796,9 @@ export default {
   ],
   "The [language and region] settings for the product may offer more options to choose from.": [
     "У налаштуваннях [мови та регіону] для цього продукту може бути доступно більше варіантів на вибір."
+  ],
+  "The configuration is read-only.": [
+    "Ця конфігурація доступна лише для читання."
   ],
   "The configuration must be adapted to address the following issue:": [
     "Конфігурація повинна бути адаптована для вирішення такої проблеми:",
@@ -2613,6 +2819,9 @@ export default {
   ],
   "The connection will be used only during installation and not available in the installed system.": [
     "Це з'єднання буде використовуватися тільки під час встановлення і не буде доступним у встановленій системі."
+  ],
+  "The current configuration will be discarded to apply the default settings of the new product.": [
+    "Поточна конфігурація буде скасована, щоб застосувати стандартні налаштування нового продукту."
   ],
   "The current configuration will result in an attempt to create a %1$s of %2$s.": [
     "Поточна конфігурація призведе до спроби утворення розділу %1$s розміром %2$s."
@@ -2645,6 +2854,9 @@ export default {
   ],
   "The device cannot be shrunk:": [
     "Пристрій не може бути зменшений:"
+  ],
+  "The device does not exist or is no longer available.": [
+    "Цей пристрій не існує або більше не доступний."
   ],
   "The device will be formatted": [
     "Пристрій буде відформатований"
@@ -2726,9 +2938,6 @@ export default {
   "The modal selector offers a simplified interface designed for quick and straightforward use, without overwhelming the user.": [
     "Модальний селектор пропонує спрощений інтерфейс, розроблений для швидкого і прямого використання, не перевантажуючи користувача."
   ],
-  "The needed LVM physical volumes will be added as partitions on the chosen disks, based on the sizes of the logical volumes. If you select more than one disk, the physical volumes may be distributed along several disks.": [
-    "Необхідні фізичні томи LVM будуть додані як розділи на обраних дисках, виходячи з розмірів логічних томів. Якщо Ви виберете кілька дисків, фізичні томи можуть бути розподілені по кількох дисках."
-  ],
   "The password is weak": [
     "Слабкий пароль"
   ],
@@ -2792,6 +3001,9 @@ export default {
   "The system will boot to a command-line interface.": [
     "Система завантажиться в режим командного рядка."
   ],
+  "The terminal requires a larger screen size": [
+    "Для цього терміналу потрібен екран більшого розміру"
+  ],
   "The whole device will be used for %s": [
     "Весь пристрій буде використано для %s"
   ],
@@ -2807,6 +3019,9 @@ export default {
   "There are not zFCP controllers pending of activation.": [
     "Наразі немає контролерів zFCP, які очікують на активацію."
   ],
+  "There are unsaved changes. If you leave now, your changes will be lost.": [
+    "Є незбережені зміни. Якщо ви вийдете зараз, ваші зміни будуть втрачені."
+  ],
   "There is %d destructive action planned": [
     "Запланована %d руйнівна дія",
     "Заплановано %d руйнівні дії",
@@ -2819,6 +3034,12 @@ export default {
   ],
   "There is a deactivated zFCP controller.": [
     "Є вимкнений контролер zFCP."
+  ],
+  "These are the settings for the product to install. The installer language and keyboard layout can be adjusted using the [language and keyboard] option at the top bar.": [
+    "Це параметри, які потрібно налаштувати перед встановленням продукту. Мову інсталятора та розкладку клавіатури можна змінити за допомогою опції [мова та розкладка] у верхній панелі."
+  ],
+  "These are the settings for the product to install. The installer language can be adjusted using the [language] option at the top bar.": [
+    "Це параметри, які потрібно встановити для цього продукту. Мову інсталятора можна змінити за допомогою опції [мова] у верхній панелі."
   ],
   "This action will destroy any data stored on the device.": [
     "Ця дія знищить усі дані, що зберігаються на цьому пристрої."
@@ -2868,9 +3089,6 @@ export default {
   "This will be injected to the command to create the file system (%s).": [
     "Це буде додано до команди для створення файлової системи (%s)."
   ],
-  "TiB": [
-    "ТіБ"
-  ],
   "Time Synchronization Servers": [
     "Сервери сихронізації часу"
   ],
@@ -2880,11 +3098,17 @@ export default {
   "Tmpfs": [
     "Tmpfs"
   ],
+  "To change that name, visit [system] section settings before registering.": [
+    "Щоб змінити це ім’я, перед реєстрацією перейдіть до налаштувань розділу [system]."
+  ],
   "To ensure the new system is able to boot, the installer may need to create or configure some partitions in the appropriate disk.": [
     "Щоб забезпечити можливість завантаження нової системи, програмі встановлення може знадобитися створити або налаштувати деякі розділи на відповідному диску."
   ],
   "Transient": [
     "Перехідний"
+  ],
+  "Try again": [
+    "Спробуйте ще раз"
   ],
   "Try to activate again": [
     "Спробуйте активувати ще раз"
@@ -2906,6 +3130,9 @@ export default {
   ],
   "Unknown error": [
     "Невідома помилка"
+  ],
+  "Unsaved changes": [
+    "Незбережені зміни"
   ],
   "Unselect or activate them and try it again.": [
     "Скасуйте вибір або активуйте їх, а потім спробуйте знову."
@@ -2964,8 +3191,14 @@ export default {
   "Use actions below to set up your devices or click %s to start from scratch with the default configuration.": [
     "Виконайте наведені нижче дії, щоб налаштувати ваші пристрої, або натисніть %s, щоб почати з нуля з типовою конфігурацією."
   ],
+  "Use all available space": [
+    "Використати весь доступний простір"
+  ],
   "Use available space": [
     "Використати вільний простір"
+  ],
+  "Use current %s": [
+    "Використовувати поточний %s"
   ],
   "Use custom DNS search domains": [
     "Використовувати власні домени пошуку DNS"
@@ -3116,6 +3349,12 @@ export default {
   "Value": [
     "Значення"
   ],
+  "Value is required": [
+    "Потрібно ввести значення"
+  ],
+  "Value: %1$s (%2$s)": [
+    "Значення: %1$s (%2$s)"
+  ],
   "View license": [
     "Переглянути ліцензію"
   ],
@@ -3161,14 +3400,14 @@ export default {
   "When ready, click on the [install] button at the end of the page.": [
     "Коли все буде готово, натисніть кнопку [Встановити] внизу сторінки."
   ],
+  "Wi-Fi": [
+    "Wi-Fi"
+  ],
   "Wi-Fi connection form": [
     "Форма з'єднання Wi-Fi"
   ],
   "Will be supported in a future version.": [
     "Буде підтримуватися у наступній версії."
-  ],
-  "Wrong selection": [
-    "Неправильний вибір"
   ],
   "XFS": [
     "XFS"
@@ -3194,14 +3433,8 @@ export default {
   "You must fix these issues": [
     "Ви повинні усунути ці проблеми"
   ],
-  "You need to fix any invalid settings before proceeding with the installation.": [
-    "Перед продовженням інсталяції необхідно виправити всі недійсні налаштування."
-  ],
   "You will connect to a public network without encryption. Your data may not be secure.": [
     "Ви підключитеся до публічної мережі без шифрування. Дані, передані через неї можуть бути незахищеними."
-  ],
-  "ZFCP": [
-    "ZFCP"
   ],
   "[CAPS LOCK] is on": [
     "[CAPS LOCK] увімкнений"
@@ -3214,6 +3447,9 @@ export default {
   ],
   "auto selected": [
     "автоматичний вибір"
+  ],
+  "default size for %s": [
+    "типовий розмір для %s"
   ],
   "iBFT": [
     "iBFT"
@@ -3232,6 +3468,9 @@ export default {
   ],
   "reset to defaults": [
     "скинути до типових налаштувань"
+  ],
+  "size for %s with the current settings": [
+    "розмір для %s з поточними налаштуваннями"
   ],
   "zFCP": [
     "zFCP"

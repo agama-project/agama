@@ -5,19 +5,19 @@ rust-version.workspace = true
 edition.workspace = true
 
 [dependencies]
-thiserror = "2.0.16"
-agama-utils = { path = "../agama-utils" }
-agama-access = { path = "../agama-access" }
-tracing = "0.1.41"
-gettext-rs = { version = "0.7.2", features = ["gettext-system"] }
-tokio = { version = "1.47.1", features = ["macros", "rt-multi-thread", "sync"] }
-async-trait = "0.1.89"
-serde = { version = "1.0.228", features = ["derive"] }
-schemars = "1.2.1"
+agama-access = { workspace = true }
+agama-utils = { workspace = true }
+async-trait = { workspace = true }
+gettext-rs = { workspace = true }
+schemars = { workspace = true }
+serde = { workspace = true }
+thiserror = { workspace = true }
+tokio = { workspace = true }
+tracing = { workspace = true }
 
 [dev-dependencies]
-test-context = "0.4.1"
-tokio-test = "0.4.4"
+test-context = { workspace = true }
+tokio-test = { workspace = true }
 
 [lints.rust]
 unexpected_cfgs = { level = "warn", check-cfg = ['cfg(ci)'] }

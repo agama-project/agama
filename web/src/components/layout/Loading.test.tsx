@@ -33,7 +33,7 @@ describe("Loading", () => {
   });
 
   it("uses provided aria-label", async () => {
-    plainRender(<Loading aria-label="Loading something" />);
+    plainRender(<Loading aria-label={_("Loading something")} />);
     const icon = await screen.findByLabelText("Loading something");
     expect(icon).toHaveRole("progressbar");
   });

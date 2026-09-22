@@ -34,7 +34,7 @@ import {
 import LabelText from "~/components/form/LabelText";
 import { isEmpty } from "radashi";
 import { sprintf } from "sprintf-js";
-import { useProduct } from "~/hooks/model/config/product";
+import { useExtendedProduct } from "~/hooks/model/config/product";
 import { useIssues } from "~/hooks/model/issue";
 import { putConfig } from "~/api";
 import { useConfig } from "~/hooks/model/config";
@@ -51,9 +51,12 @@ export default function ProductRegistrationForm() {
   const loadingHintId = useId();
   const [loading, setLoading] = useState(false);
   const config = useConfig();
-  const product = useProduct();
+  // Use the extended product configuration so the form defaults to the
+  // effective registration URL, even when it comes from the
+  // `inst.register_url` boot argument instead of the user-set configuration.
+  const product = useExtendedProduct();
   const issues = useIssues("product");
-  const registrationIssue = issues.find((i) => i.class === "system_registration_failed");
+  const registrationIssue = issues.find((i) => i.class === "systemRegistrationFailed");
 
   // Track system query which refetches after putConfig completes (success or failure).
   // On success: parent sees new registration data and unmounts this component.

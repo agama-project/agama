@@ -25,7 +25,7 @@ module Agama
   module Storage
     module ConfigConversions
       module ToModelConversions
-        # Drive conversion to model according to the JSON schema.
+        # Filesystem conversion to model according to the JSON schema.
         class Filesystem < Base
           # @param config [Configs::Filesystem]
           # @param volumes [VolumeTemplatesBuilder]

@@ -24,14 +24,9 @@ import React from "react";
 import UsersPage from "~/components/users/UsersPage";
 import { Route } from "~/types/routes";
 import { USER as PATHS } from "~/routes/paths";
-import { N_ } from "~/i18n";
 
 const routes = (): Route => ({
   path: PATHS.root,
-  handle: {
-    name: N_("Authentication"),
-    icon: "manage_accounts",
-  },
   children: [{ index: true, element: <UsersPage /> }],
 });
 

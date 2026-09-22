@@ -644,7 +644,7 @@ impl Zypp {
         for i in enabled_repos {
             cont = progress(
                 percent.floor() as i64,
-                format!("Refreshing repository {}", &i.alias).to_string(),
+                format!("Refreshing repository {}", i.alias).to_string(),
             );
             if !cont {
                 return abort_err;
@@ -659,7 +659,7 @@ impl Zypp {
             percent += percent_step;
             cont = progress(
                 percent.floor() as i64,
-                format!("Creating repository cache for {}", &i.alias).to_string(),
+                format!("Creating repository cache for {}", i.alias).to_string(),
             );
             if !cont {
                 return abort_err;
@@ -669,7 +669,7 @@ impl Zypp {
             percent += percent_step;
             cont = progress(
                 percent.floor() as i64,
-                format!("Loading repository cache for {}", &i.alias).to_string(),
+                format!("Loading repository cache for {}", i.alias).to_string(),
             );
             if !cont {
                 return abort_err;

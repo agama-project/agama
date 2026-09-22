@@ -49,7 +49,7 @@ describe Agama::Storage::ConfigConversions::FromModelConversions::Drive do
       it "sets #search to the expected value" do
         config = subject.convert
         expect(config.search).to be_a(Agama::Storage::Configs::Search)
-        expect(config.search.name).to be_nil
+        expect(config.search.condition_name).to be_nil
         expect(config.search.if_not_found).to eq(:error)
       end
     end

@@ -149,20 +149,20 @@ const DeviceActionSelector = ({
       <FlexItem>
         <ToggleGroup isCompact>
           <ToggleGroupItem
-            text="Do not modify"
+            text={_("Do not modify")}
             buttonId="not-modify"
             isSelected={adjustedAction === "keep"}
             onChange={() => changeAction("keep")}
           />
           <ToggleGroupItem
-            text="Allow shrink"
+            text={_("Allow shrinking")}
             buttonId="resize"
             isDisabled={isResizeDisabled}
             isSelected={adjustedAction === "resizeIfNeeded"}
             onChange={() => changeAction("resizeIfNeeded")}
           />
           <ToggleGroupItem
-            text="Delete"
+            text={_("Delete")}
             buttonId="delete"
             isDisabled={isDeleteDisabled}
             isSelected={adjustedAction === "delete"}

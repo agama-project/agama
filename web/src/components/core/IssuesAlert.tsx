@@ -27,9 +27,19 @@ import { _ } from "~/i18n";
 
 import type { Issue } from "~/model/issue";
 
-export default function IssuesAlert({ issues }: { issues: Issue[] }) {
+export type IssuesAlertProps = {
+  /** Issues to report. Nothing is rendered when the list is empty. */
+  issues: Issue[];
+  /**
+   * Optional buttons or links offering a way to deal with the issues, rendered
+   * below the description.
+   */
+  actions?: React.ReactNode;
+};
+
+export default function IssuesAlert({ issues, actions }: IssuesAlertProps) {
   if (isEmpty(issues)) return;
-  const props: Partial<AlertProps> = { isInline: true, variant: "warning" };
+  const props: Partial<AlertProps> = { isInline: true, variant: "warning", actionLinks: actions };
 
   if (issues.length === 1) {
     return <Alert {...props} title={issues[0].description} />;

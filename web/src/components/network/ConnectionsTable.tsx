@@ -383,7 +383,15 @@ export default function ConnectionsTable() {
             },
           ].filter(Boolean);
         }}
-        itemActionsLabel={(c: Connection) => `Actions for ${c.id}`}
+        itemActionsLabel={(c: Connection) =>
+          sprintf(
+            // TRANSLATORS: accessible label for the connection actions toggle
+            // button. %s is replaced by connection id, e.g. "Actions for
+            // Ethernet 2"
+            _("Actions for %s"),
+            c.id,
+          )
+        }
         emptyState={
           <EmptyState
             headingLevel="h2"

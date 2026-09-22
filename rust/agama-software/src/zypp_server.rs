@@ -22,7 +22,7 @@ use agama_security as security;
 use agama_utils::{
     actor::Handler,
     api::{
-        self, l10n,
+        l10n,
         question::QuestionSpec,
         software::{Pattern, SelectedBy, SoftwareProposal, SystemInfo},
         Issue, Progress, Scope,
@@ -46,14 +46,21 @@ use crate::{
     model::{
         packages::ResolvableTypeExt,
         registration::RegistrationError,
-        state::{self, SoftwareState},
+        state::{self, SoftwareState, AGAMA_REPO_PREFIX},
         WriteIssues,
     },
+    service::DUD_REPO_ALIAS,
     state::{Addon, RegistrationState, RepoKey, ResolvableSelection, ResolvablesState},
     Registration, ResolvableType,
 };
 
 const GPG_KEYS: &str = "/usr/lib/rpm/gnupg/keys/gpg-*";
+
+/// Whether the repository with the given alias is an installer-only repository
+/// that must not end up in the target system.
+fn is_installation_repo(alias: &str) -> bool {
+    alias.starts_with(AGAMA_REPO_PREFIX) || alias == DUD_REPO_ALIAS
+}
 
 #[derive(thiserror::Error, Debug)]
 pub enum ZyppDispatchError {
@@ -304,8 +311,7 @@ impl ZyppServer {
 
             let text =
                 gettext("Packages download and installation failed. Would you like to retry?");
-            let question_spec =
-                QuestionSpec::new(&text, "software.installation_retry").with_yes_no_actions();
+            let question_spec = QuestionSpec::new(&text, "retryInstallation").with_yes_no_actions();
             // TODO: it would be nice if we can in backend split between auto selected option and focused option
             // TODO: if needed we would need to extend C API to get more details about failure
             let answer = ask_software_question(&question, question_spec);
@@ -422,9 +428,9 @@ impl ZyppServer {
 
             if let Err(error) = result {
                 let message = format!("Could not add the repository {}", repo.alias);
-                issues.software.push(
-                    Issue::new("software.add_repo", &message).with_details(&error.to_string()),
-                );
+                issues
+                    .software
+                    .push(Issue::new("addRepo", &message).with_details(&error.to_string()));
             }
         }
 
@@ -439,29 +445,27 @@ impl ZyppServer {
                 let message = gettext("Could not remove the repository %s")
                     .as_str()
                     .replace("%s", &repo.alias);
-                issues.software.push(
-                    Issue::new("software.remove_repo", &message).with_details(&error.to_string()),
-                );
+                issues
+                    .software
+                    .push(Issue::new("removeRepo", &message).with_details(&error.to_string()));
             }
         }
 
         // all repos are added or removed as needed
         progress.cast(progress::message::Next::new(Scope::Software))?;
-        if !to_add.is_empty() || !to_remove.is_empty() {
-            let result = zypp.load_source(
-                |percent, alias| {
-                    tracing::info!("Refreshing repositories: {} ({}%)", alias, percent);
-                    true
-                },
-                security,
-            );
+        let result = zypp.load_source(
+            |percent, alias| {
+                tracing::info!("Refreshing repositories: {} ({}%)", alias, percent);
+                true
+            },
+            security,
+        );
 
-            if let Err(error) = result {
-                let message = gettext("Could not read the repositories");
-                issues.software.push(
-                    Issue::new("software.load_source", &message).with_details(&error.to_string()),
-                );
-            }
+        if let Err(error) = result {
+            let message = gettext("Could not read the repositories");
+            issues
+                .software
+                .push(Issue::new("loadSource", &message).with_details(&error.to_string()));
         }
 
         // repositories refresh finished
@@ -495,10 +499,10 @@ impl ZyppServer {
 
             let issue = if state.allow_registration && !self.is_registered() {
                 let message = gettext("Failed to find the product in the repositories. You might need to register the system.");
-                Issue::new("missing_registration", &message).with_details(&error.to_string())
+                Issue::new("missingRegistration", &message).with_details(&error.to_string())
             } else {
                 let message = gettext("Failed to find the product in the repositories.");
-                Issue::new("missing_product", &message).with_details(&error.to_string())
+                Issue::new("missingProduct", &message).with_details(&error.to_string())
             };
 
             issues.software.push(issue);
@@ -561,9 +565,7 @@ impl ZyppServer {
 
         if let Ok(false) = zypp.run_solver(self.only_required, self.save_solver_testcase) {
             let message = gettext("There are conflicts in the software selection");
-            issues
-                .software
-                .push(Issue::new("software.conflict", &message));
+            issues.software.push(Issue::new("conflict", &message));
         }
 
         Self::send_issues_and_finish(issues, tx, progress)
@@ -594,8 +596,7 @@ impl ZyppServer {
                     .replacen("%s", &r#type.to_string(), 1)
                     .replace("%s", name);
                 issues.push(
-                    Issue::new("software.select_resolvable", &message)
-                        .with_details(&error.to_string()),
+                    Issue::new("selectResolvable", &message).with_details(&error.to_string()),
                 );
             }
         }
@@ -617,8 +618,8 @@ impl ZyppServer {
         zypp: &zypp_agama::Zypp,
         tx: oneshot::Sender<ZyppServerResult<()>>,
     ) -> Result<(), ZyppDispatchError> {
-        if let Err(error) = self.remove_dud_repo(zypp) {
-            tracing::warn!("Failed to remove the DUD repository: {error}");
+        if let Err(error) = self.remove_installation_only_repos(zypp) {
+            tracing::warn!("Failed to remove the installation repositories: {error}");
             tx.send(Err(error))
                 .map_err(|_| ZyppDispatchError::ResponseChannelClosed)?;
             return Ok(());
@@ -682,12 +683,32 @@ impl ZyppServer {
         Ok(())
     }
 
-    fn remove_dud_repo(&self, zypp: &zypp_agama::Zypp) -> ZyppServerResult<()> {
-        const DUD_NAME: &str = "AgamaDriverUpdate";
+    /// Removes the installer-only repositories (see [`is_installation_repo`]) so
+    /// their `.repo` files and cached metadata are not copied to the target
+    /// system by `copy_files`.
+    ///
+    /// This covers the installation repositories aliased `agama-0`, `agama-1`,
+    /// etc. (see `build_repo` in `model::state`) as well as the Driver Update
+    /// Disk repository. The exception is local repositories, as they are only disabled
+    /// so it can be easily readd later for offline scenarios (bsc#1277466)
+    fn remove_installation_only_repos(&self, zypp: &zypp_agama::Zypp) -> ZyppServerResult<()> {
         let repos = zypp.list_repositories()?;
-        let repo = repos.iter().find(|r| r.alias.as_str() == DUD_NAME);
-        if let Some(repo) = repo {
-            zypp.remove_repository(&repo.alias, |_, _| true)?;
+        let installation_repos = repos.iter().filter(|r| is_installation_repo(&r.alias));
+        for repo in installation_repos {
+            // local repositories are disabled later, so do not remove them
+            // invalid url is considered as remote and should be removed
+            if repo.is_local().unwrap_or(false) {
+                continue;
+            }
+            tracing::info!("Removing the installation repository {}", repo.alias);
+            // Log the error and keep going: failing to remove one repository
+            // should not prevent removing the rest.
+            if let Err(error) = zypp.remove_repository(&repo.alias, |_, _| true) {
+                tracing::warn!(
+                    "Failed to remove the installation repository {}: {error}",
+                    repo.alias
+                );
+            }
         }
         Ok(())
     }
@@ -740,7 +761,6 @@ impl ZyppServer {
         zypp: &zypp_agama::Zypp,
     ) -> Result<(), ZyppDispatchError> {
         let patterns = self.patterns(&product, zypp)?;
-        let repositories = self.repositories(zypp)?;
         // let registration = self.registration.as_ref().map(|r| r.to_registration_info());
         let registration = match &self.registration {
             RegistrationStatus::Registered(registration) => {
@@ -751,7 +771,6 @@ impl ZyppServer {
 
         let system_info = SystemInfo {
             patterns,
-            repositories,
             registration,
         };
 
@@ -792,7 +811,7 @@ impl ZyppServer {
                 );
                 return false;
             };
-            if repository.alias.starts_with("agama-") {
+            if repository.alias.starts_with(AGAMA_REPO_PREFIX) {
                 return false;
             }
 
@@ -830,7 +849,6 @@ impl ZyppServer {
                     name: p.name,
                     category: p.category,
                     description: p.description,
-                    icon: p.icon,
                     summary: p.summary,
                     order: p.order,
                     preselected,
@@ -839,24 +857,6 @@ impl ZyppServer {
             })
             .collect();
         Ok(patterns)
-    }
-
-    fn repositories(&self, zypp: &zypp_agama::Zypp) -> ZyppResult<Vec<api::software::Repository>> {
-        let result = zypp
-            .list_repositories()?
-            .into_iter()
-            .map(|r| api::software::Repository {
-                alias: r.alias.clone(),
-                name: r.alias,
-                url: r.url,
-                enabled: r.enabled,
-                // At this point, there is no way to determine if the repository is
-                // predefined or not. It will be adjusted in the Model::repositories
-                // function.
-                predefined: false,
-            })
-            .collect();
-        Ok(result)
     }
 
     fn initialize_target_dir(&self) -> Result<zypp_agama::Zypp, ZyppDispatchError> {
@@ -1008,7 +1008,7 @@ impl ZyppServer {
             Err(error) => {
                 issues.product.push(
                     Issue::new(
-                        "system_registration_failed",
+                        "systemRegistrationFailed",
                         &gettext("Failed to register the system"),
                     )
                     .with_details(&error.to_string()),
@@ -1037,7 +1037,7 @@ impl ZyppServer {
             }
             if let Err(error) = registration.register_addon(zypp, security, addon) {
                 let message = format!("Failed to register the add-on {}", addon.id);
-                let issue_id = format!("addon_registration_failed[{}]", &addon.id);
+                let issue_id = format!("addonRegistrationFailed[{}]", addon.id);
                 let issue = Issue::new(&issue_id, &message).with_details(&error.to_string());
                 issues.product.push(issue);
             }
@@ -1073,5 +1073,108 @@ impl ZyppServer {
         }
 
         None
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::is_installation_repo;
+
+    #[test]
+    fn test_is_installation_repo() {
+        // Aliases generated by the installer (see `build_repo`).
+        assert!(is_installation_repo("agama-0"));
+        assert!(is_installation_repo("agama-1"));
+        assert!(is_installation_repo("agama-42"));
+        // Any alias using the reserved prefix is considered installer-only.
+        assert!(is_installation_repo("agama-extra"));
+        // The Driver Update Disk repository is installer-only too.
+        assert!(is_installation_repo("AgamaDriverUpdate"));
+
+        // Repositories not managed by the installer are left untouched.
+        assert!(!is_installation_repo("signed_repo"));
+        assert!(!is_installation_repo("repo-agama-0"));
+        assert!(!is_installation_repo(""));
+    }
+
+    // this test combines two tests as libzypp does not allow parallel tests, so I embed two into one
+    #[test]
+    fn test_remove_installation_only_repos_and_disable_local() {
+        let temp_dir = tempfile::tempdir().unwrap();
+        let root_dir = temp_dir.path().to_str().unwrap();
+
+        // Init a RPM database to prevent init_target from failing
+        let _ = std::process::Command::new("rpmdb")
+            .args(["--root", root_dir, "--initdb"])
+            .status();
+
+        let repos_dir = temp_dir.path().join("etc/zypp/repos.d");
+        std::fs::create_dir_all(&repos_dir).unwrap();
+
+        std::fs::write(
+            repos_dir.join("agama-1.repo"),
+            "[agama-1]\nenabled=1\nbaseurl=dir:/tmp\n",
+        )
+        .unwrap();
+        std::fs::write(
+            repos_dir.join("agama-2.repo"),
+            "[agama-2]\nenabled=1\nbaseurl=http://example.com\n",
+        )
+        .unwrap();
+        std::fs::write(
+            repos_dir.join("agama-3.repo"),
+            "[agama-3]\nenabled=1\nbaseurl=test://invalid_url\n",
+        )
+        .unwrap();
+        std::fs::write(
+            repos_dir.join("other-repo.repo"),
+            "[other-repo]\nenabled=1\nbaseurl=http://example.com/other\n",
+        )
+        .unwrap();
+
+        let zypp = zypp_agama::Zypp::init_target(root_dir, |_, _, _| {}).unwrap();
+
+        let server = super::ZyppServer {
+            receiver: tokio::sync::mpsc::unbounded_channel().1,
+            root_dir: temp_dir.path().to_path_buf().try_into().unwrap(),
+            install_dir: temp_dir.path().to_path_buf().try_into().unwrap(),
+            registration: Default::default(),
+            trusted_keys: vec![],
+            unsigned_repos: vec![],
+            only_required: false,
+            save_solver_testcase: false,
+        };
+
+        server.remove_installation_only_repos(&zypp).unwrap();
+
+        let remaining_repos = zypp.list_repositories().unwrap();
+        let remaining_aliases: Vec<_> = remaining_repos.into_iter().map(|r| r.alias).collect();
+
+        // agama-local should be kept because it is local
+        assert!(remaining_aliases.contains(&"agama-1".to_string()));
+        // agama-remote should be removed because it is remote and installation-only
+        assert!(!remaining_aliases.contains(&"agama-2".to_string()));
+        // agama-invalid should be removed because it is invalid (treated as remote) and installation-only
+        assert!(!remaining_aliases.contains(&"agama-3".to_string()));
+        // other-repo should be kept because it is not an installation-only repository
+        assert!(remaining_aliases.contains(&"other-repo".to_string()));
+
+        server.disable_local_repos(&zypp).unwrap();
+        let remaining_repos = zypp.list_repositories().unwrap();
+        let disabled_repos: Vec<_> = remaining_repos
+            .iter()
+            .filter(|r| !r.enabled)
+            .map(|r| r.alias.clone())
+            .collect();
+        assert!(disabled_repos.len() == 1);
+        assert!(disabled_repos.contains(&"agama-1".to_string()));
+
+        let enabled_repos: Vec<_> = remaining_repos
+            .into_iter()
+            .filter(|r| r.enabled)
+            .map(|r| r.alias)
+            .collect();
+        assert!(enabled_repos.len() == 1);
+        assert!(enabled_repos.contains(&"other-repo".to_string()));
     }
 }

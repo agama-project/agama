@@ -1,4 +1,4 @@
-// Copyright (c) [2025] SUSE LLC
+// Copyright (c) [2025-2026] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -119,6 +119,7 @@ pub enum Error {
 /// Marks its implementors as potential actors.
 ///
 /// It enables those structs to handle actors messages.
+#[async_trait]
 pub trait Actor: 'static + Send {
     /// Actor error type. It should implement the conversion from the
     /// [ActorError] type, which represents communication-level problems.
@@ -128,6 +129,9 @@ pub trait Actor: 'static + Send {
     fn name() -> &'static str {
         std::any::type_name::<Self>()
     }
+
+    /// Initializes the actor.
+    async fn init(&mut self) {}
 }
 
 /// Marker trait to indicate that a its implementor is a potential message.
@@ -263,6 +267,7 @@ pub fn spawn<A: Actor>(mut actor: A) -> Handler<A> {
     let handler = Handler::<A> { sender: tx };
 
     tokio::spawn(async move {
+        actor.init().await;
         while let Some(mut msg) = rx.recv().await {
             msg.handle(&mut actor).await;
         }

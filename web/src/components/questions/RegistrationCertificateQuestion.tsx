@@ -34,10 +34,12 @@ import {
 import { Popup } from "~/components/core";
 import QuestionActions from "~/components/questions/QuestionActions";
 import { _ } from "~/i18n";
+
+import type { TranslatedString } from "~/i18n";
 import type { AnswerCallback, Question } from "~/model/question";
 
 type QuestionDataProps = {
-  label: string;
+  label: TranslatedString;
   value?: string;
 };
 

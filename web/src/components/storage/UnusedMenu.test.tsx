@@ -62,7 +62,7 @@ describe("UnusedMenu", () => {
 
     const expectedPath = generateEncodedPath(PATHS.addPartition, {
       collection: "drives",
-      index: 0,
+      index: "0",
     });
     expect(mockNavigateFn).toHaveBeenCalledWith(expectedPath);
   });
@@ -78,7 +78,7 @@ describe("UnusedMenu", () => {
 
     const expectedPath = generateEncodedPath(PATHS.formatDevice, {
       collection: "drives",
-      index: 0,
+      index: "0",
     });
     expect(mockNavigateFn).toHaveBeenCalledWith(expectedPath);
   });
@@ -94,7 +94,7 @@ describe("UnusedMenu", () => {
 
     const expectedPath = generateEncodedPath(PATHS.formatDevice, {
       collection: "mdRaids",
-      index: 1,
+      index: "1",
     });
     expect(mockNavigateFn).toHaveBeenCalledWith(expectedPath);
   });

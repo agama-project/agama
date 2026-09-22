@@ -10,8 +10,8 @@ After=network-online.target
 # after the console is initialized
 After=systemd-vconsole-setup.service
 # before running the pre-pivot dracut hooks (before the driver update),
-# before the self-update and before displaying the Plymouth splash screen
-Before=dracut-pre-pivot.service live-self-update.service plymouth-start.service
+# before the self-update
+Before=dracut-pre-pivot.service live-self-update.service
 
 ConditionKernelCommandLine=live.net_config_tui=1
 
@@ -22,6 +22,12 @@ Type=oneshot
 ExecStartPre=dmesg --console-off
 # disable the systemd status messages on the console
 ExecStartPre=kill -SIGRTMIN+21 1
+# hide the plymouth splash screen
+# NOTE: It should be enough to hide the splash with "plymouth hide-splash" and
+# then show it back with "plymouth show-splash". But unfortunately the nmtui
+# tool then for some reason does not work properly and does not react on
+# pressing the [Enter] key. As a workaround stop the plymouth splash completely.
+ExecStartPre=-plymouth quit
 
 ExecStart=initrd-network-setup.sh
 

@@ -47,7 +47,7 @@ module Agama
       #
       # @param config [Config]
       def solve(config)
-        ConfigSolvers::Encryption.new(product_config).solve(config)
+        ConfigSolvers::Encryption.new(bootloader_config).solve(config)
         ConfigSolvers::Filesystem.new(product_config, bootloader_config).solve(config)
         ConfigSolvers::DrivesSearch.new(storage_system).solve(config)
         ConfigSolvers::MdRaidsSearch.new(storage_system).solve(config)

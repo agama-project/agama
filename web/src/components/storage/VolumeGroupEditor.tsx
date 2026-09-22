@@ -81,7 +81,7 @@ const DeleteVgOption = ({ vg }: { vg: ConfigModel.VolumeGroup }) => {
 
   if (lvs.length) {
     if (convert) {
-      const diskName = baseName(targetDevices[0].name, true);
+      const diskName = baseName(targetDevices[0].name, { truncate: true });
       description = sprintf(
         n_(
           // TRANSLATORS: %1$s is a list of formatted mount points like '"/", "/var" and "swap"' (or a
@@ -124,7 +124,7 @@ const EditVgOption = ({ index }: { index: number }) => {
       itemId="edit-volume-group"
       description={_("Modify settings and physical volumes")}
       role="menuitem"
-      onClick={() => navigate(generateEncodedPath(PATHS.volumeGroup.edit, { id: index }))}
+      onClick={() => navigate(generateEncodedPath(PATHS.volumeGroup.edit, { id: String(index) }))}
     >
       {_("Edit volume group")}
     </MenuButton.Item>
@@ -205,7 +205,7 @@ const VgHeader = ({ deviceConfig, device }: VgHeaderProps) => {
   let title: string;
 
   if (device) {
-    title = sprintf(_("Use LVM volume group %s"), deviceLabel(device, true));
+    title = sprintf(_("Use LVM volume group %s"), deviceLabel(device, { truncate: true }));
   } else {
     title = deviceConfig.logicalVolumes.length
       ? _("Create LVM volume group %s")
@@ -286,7 +286,7 @@ const AddLvButton = ({ index }: { index: number }) => {
   const navigate = useNavigate();
   const volumeGroupConfig = useVolumeGroup(index);
 
-  const newLvPath = generateEncodedPath(PATHS.volumeGroup.logicalVolume.add, { id: index });
+  const newLvPath = generateEncodedPath(PATHS.volumeGroup.logicalVolume.add, { id: String(index) });
 
   return (
     <Button variant="plain" key="add-logical-volume" onClick={() => navigate(newLvPath)}>

@@ -1,4 +1,4 @@
-// Copyright (c) [2025] SUSE LLC
+// Copyright (c) [2025-2026] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -45,7 +45,7 @@ impl AsyncTestContext for Context {
     async fn setup() -> Context {
         let share_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../test/share");
         std::env::set_var("AGAMA_SHARE_DIR", share_dir.display().to_string());
-        let schema_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../agama-lib/share");
+        let schema_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../share");
         std::env::set_var("AGAMA_SCHEMA_DIR", schema_dir.display().to_string());
 
         let (events_tx, events_rx) = channel(100);

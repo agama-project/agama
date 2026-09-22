@@ -57,6 +57,8 @@ const renderDownloadFeedback = (successTimeout?: number) => {
     >
       {({ download }) => <TestTrigger download={download} />}
     </DownloadFeedback>,
+    // Keep userEvent working under fake timers (see beforeEach).
+    { userEventOptions: { advanceTimers: jest.advanceTimersByTime } },
   );
 
   return { user };
@@ -65,6 +67,13 @@ const renderDownloadFeedback = (successTimeout?: number) => {
 describe("DownloadFeedback", () => {
   beforeEach(() => {
     mockDownload.mockReset();
+    // Drive the success alert auto-dismiss timer deterministically instead of
+    // racing real wall-clock timeouts. The module-level Date mock is preserved.
+    jest.useFakeTimers({ doNotFake: ["Date"] });
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
   });
 
   it("renders the trigger children", () => {
@@ -118,9 +127,7 @@ describe("DownloadFeedback", () => {
     const { user } = renderDownloadFeedback(10);
 
     await user.click(screen.getByRole("button", { name: "Download" }));
-    await waitFor(() =>
-      screen.getByRole("heading", { name: "Success alert: Installation logs download" }),
-    );
+    await screen.findByRole("heading", { name: "Success alert: Installation logs download" });
 
     await waitFor(() =>
       expect(
@@ -177,14 +184,12 @@ describe("DownloadFeedback", () => {
     const { user } = renderDownloadFeedback(10);
 
     await user.click(screen.getByRole("button", { name: "Download" }));
-    await waitFor(() =>
-      screen.getByRole("heading", { name: "Success alert: Installation logs download" }),
-    );
+    await screen.findByRole("heading", { name: "Success alert: Installation logs download" });
 
     await user.click(screen.getByRole("button", { name: /close/i }));
 
-    // Wait longer than the timeout to confirm it does not reappear
-    await new Promise((resolve) => setTimeout(resolve, 20));
+    // Advance past the timeout to confirm the alert does not reappear.
+    jest.advanceTimersByTime(20);
     expect(
       screen.queryByRole("heading", { name: "Success alert: Installation logs download" }),
     ).toBeNull();

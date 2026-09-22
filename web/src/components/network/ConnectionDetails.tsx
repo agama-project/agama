@@ -22,7 +22,6 @@
 
 import React, { useState } from "react";
 import {
-  Content,
   DescriptionList,
   DescriptionListDescription,
   DescriptionListGroup,
@@ -65,26 +64,6 @@ const bindingModeFor = (connection: Connection) => {
       // TRANSLATORS: %s will be replaced by MAC addrss, like 7C:D7:11:28:F5:40
       return sprintf(_("Connection is bound to MAC address %s."), connection.macAddress);
   }
-};
-
-const BindingSettings = ({ connection }: { connection: Connection }) => {
-  return (
-    <Page.Section
-      title={_("Binding")}
-      pfCardProps={{ isPlain: false, isFullHeight: false }}
-      actions={
-        <Link
-          to={generatePath(NETWORK.connection.editBinding, {
-            id: connection.id,
-          })}
-        >
-          {_("Edit binding settings")}
-        </Link>
-      }
-    >
-      <Content>{bindingModeFor(connection)}</Content>
-    </Page.Section>
-  );
 };
 
 const NetworkDetails = ({ connection }: { connection: Connection }) => {
@@ -376,6 +355,10 @@ const SettingsCard = ({ connection }: { connection: Connection }) => {
       <Stack hasGutter>
         <DescriptionList isHorizontal>
           <DescriptionListGroup>
+            <DescriptionListTerm>{_("Binding")}</DescriptionListTerm>
+            <DescriptionListDescription>{bindingModeFor(connection)}</DescriptionListDescription>
+          </DescriptionListGroup>
+          <DescriptionListGroup>
             <DescriptionListTerm>{_("Mode")}</DescriptionListTerm>
             <DescriptionListDescription>
               <Flex direction={{ default: "column" }}>
@@ -453,17 +436,10 @@ export default function ConnectionDetails({ connection }: { connection: Connecti
       </GridItem>
       <GridItem md={6} order={{ default: "1", md: "2" }}>
         <Stack hasGutter>
-          {connection.wireless ? (
-            <NetworkDetails connection={connection} />
-          ) : connection.bond ? (
-            <BondDetails connection={connection} />
-          ) : connection.bridge ? (
-            <BridgeDetails connection={connection} />
-          ) : connection.vlan ? (
-            <VlanDetails connection={connection} />
-          ) : (
-            <BindingSettings connection={connection} />
-          )}
+          {connection.wireless && <NetworkDetails connection={connection} />}
+          {connection.bond && <BondDetails connection={connection} />}
+          {connection.bridge && <BridgeDetails connection={connection} />}
+          {connection.vlan && <VlanDetails connection={connection} />}
           <DevicesDetails connection={connection} />
         </Stack>
       </GridItem>

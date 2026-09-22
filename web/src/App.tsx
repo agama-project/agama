@@ -21,7 +21,7 @@
  */
 
 import React, { useEffect } from "react";
-import { Outlet, useLocation } from "react-router";
+import { Navigate, Outlet, useLocation } from "react-router";
 import { useStatusChanges, useStatus } from "~/hooks/model/status";
 import { useSystemChanges } from "~/hooks/model/system";
 import { useProposal, useProposalChanges } from "~/hooks/model/proposal";
@@ -33,6 +33,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { InstallationFinished, InstallationProgress } from "./components/core";
 import InstallationFailed from "./components/core/InstallationFailed";
 import TerminalDock from "~/components/core/TerminalDock";
+import { PRODUCT } from "./routes/paths";
 
 /**
  * Content guard and flow control component.
@@ -64,6 +65,10 @@ const Content = () => {
     product,
     location: location.pathname,
   });
+
+  if (!product && location.pathname !== PRODUCT.root) {
+    return <Navigate to={PRODUCT.root} />;
+  }
 
   if (status?.stage === "failed") {
     return <InstallationFailed />;

@@ -23,18 +23,38 @@ module Agama
   module Storage
     module ZFCP
       # zFCP device.
+      #
+      # [ Mainframe Linux ]
+      #          │
+      #          ▼ (Channel: e.g., 0.0.1700)
+      # ┌─────────────────┐
+      # │ zFCP Host Port  │
+      # └─────────────────┘
+      #          │
+      #          ▼ (WWPN: e.g., 0x5005076303030123)
+      # ┌─────────────────┐
+      # │ Storage Array   │
+      # └─────────────────┘
+      #          │
+      #          ▼ (LUN: e.g., 0x4010400000000000)
+      # ┌─────────────────┐
+      # │  Disk Volume    │ ──► Presented to Linux as /dev/sda
+      # └─────────────────┘
       class Device
-        # zFCP controller channel id
+        # The Channel represents the physical and virtual I/O hardware interface on the mainframe
+        # (e.g., "0.0.1700").
         #
         # @return [String]
         attr_reader :channel
 
-        # zFCP WWPN
+        # The WWPN is a unique 64-bit address (represented as a 16-character hexadecimal string)
+        # assigned to a Fibre Channel port (e.g., "0x5005076303030123").
         #
         # @return [String]
         attr_reader :wwpn
 
-        # zFCP LUN
+        # The LUN is an 18-character hexadecimal identifier that represents an individual logical
+        # disk volume carved out on the storage array (e.g., "0x4010400000000000").
         #
         # @return [String]
         attr_reader :lun

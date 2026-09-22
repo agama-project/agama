@@ -28,4 +28,11 @@ if (!window.matchMedia) {
     }) as unknown as MediaQueryList;
 }
 
+// jsdom does not implement scrollIntoView, and components that keep an active
+// option or section in view call it. A no-op keeps them from throwing; tests
+// that need to assert the calls can still install their own spy.
+if (!window.HTMLElement.prototype.scrollIntoView) {
+  window.HTMLElement.prototype.scrollIntoView = () => {};
+}
+
 jest.mock("~/context/installerL10n");

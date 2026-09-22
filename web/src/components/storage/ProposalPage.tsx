@@ -55,7 +55,8 @@ import { useAvailableDevices } from "~/hooks/model/system/storage";
 import { useIssues } from "~/hooks/model/issue";
 import { useReset } from "~/hooks/model/config/storage";
 import { useProposal } from "~/hooks/model/proposal/storage";
-import { STORAGE_MODEL_KEY, useConfigModel } from "~/hooks/model/storage/config-model";
+import { STORAGE_MODEL_QUERY_KEY, useConfigModel } from "~/hooks/model/storage/config-model";
+import { PROPOSAL_QUERY_KEY } from "~/hooks/model/proposal";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { _, n_ } from "~/i18n";
 import { useLocation } from "react-router";
@@ -276,6 +277,7 @@ function ProposalPageContent(): React.ReactNode {
     "configMissingPaths",
     "configOverusedPvTarget",
     "configMisusedMdMember",
+    "configMisusedPv",
     "proposal",
   ];
   const configIssues = issues.filter((i) => i.class !== "proposal");
@@ -322,7 +324,10 @@ export default function ProposalPage(): React.ReactNode {
     <Page
       breadcrumbs={[{ label: _("Storage") }]}
       additionalContent={<ConnectedDevicesMenu />}
-      progress={{ scope: "storage", ensureRefetched: STORAGE_MODEL_KEY }}
+      progress={{
+        scope: "storage",
+        awaitQueriesRefetch: [PROPOSAL_QUERY_KEY, STORAGE_MODEL_QUERY_KEY],
+      }}
     >
       <Page.Content>
         <IssuesAlert issues={zfcpIssues} />

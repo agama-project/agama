@@ -29,6 +29,8 @@ import DASDFormatProgress from "~/components/storage/dasd/DASDFormatProgress";
 import { useSystem } from "~/hooks/model/system/dasd";
 import { STORAGE } from "~/routes/paths";
 import { _ } from "~/i18n";
+import { SYSTEM_QUERY_KEY } from "~/hooks/model/system";
+import { CONFIG_QUERY_KEY } from "~/hooks/model/config";
 
 /**
  * Renders a PatternFly `EmptyState` block used when no DASD devices are detected
@@ -70,6 +72,7 @@ export default function DASDPage() {
       breadcrumbs={[{ label: _("Storage"), path: STORAGE.root }, { label: _("DASD") }]}
       progress={{
         scope: "dasd",
+        awaitQueriesRefetch: [SYSTEM_QUERY_KEY, CONFIG_QUERY_KEY],
         extraContent: <DASDFormatProgress />,
       }}
     >

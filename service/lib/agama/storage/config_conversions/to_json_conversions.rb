@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024-2025] SUSE LLC
+# Copyright (c) [2024-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -19,19 +19,18 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "agama/storage/config_conversions/from_json_conversions/base"
-require "agama/storage/config_conversions/from_json_conversions/boot"
-require "agama/storage/config_conversions/from_json_conversions/config"
-require "agama/storage/config_conversions/from_json_conversions/drive"
-require "agama/storage/config_conversions/from_json_conversions/encryption"
-require "agama/storage/config_conversions/from_json_conversions/encryption_properties"
-require "agama/storage/config_conversions/from_json_conversions/filesystem"
-require "agama/storage/config_conversions/from_json_conversions/logical_volume"
-require "agama/storage/config_conversions/from_json_conversions/md_raid"
-require "agama/storage/config_conversions/from_json_conversions/partition"
-require "agama/storage/config_conversions/from_json_conversions/search"
-require "agama/storage/config_conversions/from_json_conversions/size"
-require "agama/storage/config_conversions/from_json_conversions/volume_group"
+require "agama/storage/config_conversions/to_json_conversions/base"
+require "agama/storage/config_conversions/to_json_conversions/boot"
+require "agama/storage/config_conversions/to_json_conversions/config"
+require "agama/storage/config_conversions/to_json_conversions/drive"
+require "agama/storage/config_conversions/to_json_conversions/encryption"
+require "agama/storage/config_conversions/to_json_conversions/encryption_properties"
+require "agama/storage/config_conversions/to_json_conversions/filesystem"
+require "agama/storage/config_conversions/to_json_conversions/logical_volume"
+require "agama/storage/config_conversions/to_json_conversions/md_raid"
+require "agama/storage/config_conversions/to_json_conversions/partition"
+require "agama/storage/config_conversions/to_json_conversions/size"
+require "agama/storage/config_conversions/to_json_conversions/volume_group"
 
 module Agama
   module Storage

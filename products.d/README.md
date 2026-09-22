@@ -2,6 +2,17 @@
 
 This directory contains product definitions for the Agama installer.
 
+## Notes
+
+### *os-prober* Package
+
+In SLE 16.1, if the *os-prober* package is added to the product configuration as either a mandatory
+or optional package, then *yast-bootloader* will configure it to detected other operating systems
+installed on the machine and add them to the boot menu.
+
+This solution has a drawback: the package *os-prober* might be installed even if not needed, for
+example for *grub2-bls*. A better solution will be implemented for SLE 16.2.
+
 ## Contribution
 
 For updating the translations use the [Agama Weblate

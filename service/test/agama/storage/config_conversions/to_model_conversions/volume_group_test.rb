@@ -64,7 +64,8 @@ describe Agama::Storage::ConfigConversions::ToModelConversions::VolumeGroup do
   let(:logical_volumes) { nil }
 
   describe "#convert" do
-    include_examples "device name", ->(c) { c.volume_groups.first }
+    include_examples "device name", ->(c) { c.volume_groups.first },
+      { size: { greater: "1 GiB" } }
 
     include_examples "space policy", ->(c) { c.volume_groups.first }
 

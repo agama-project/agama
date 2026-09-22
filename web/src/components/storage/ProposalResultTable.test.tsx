@@ -34,7 +34,6 @@ const systemDevices: System.Device[] = [
     description: "Disk",
     class: "drive",
     block: {
-      active: true,
       encrypted: false,
       start: 0,
       size: 32212254720,
@@ -59,7 +58,6 @@ const systemDevices: System.Device[] = [
         name: "/dev/vdc1",
         class: "partition",
         block: {
-          active: true,
           encrypted: false,
           start: 2048,
           size: 5368709120,
@@ -75,7 +73,6 @@ const systemDevices: System.Device[] = [
         name: "/dev/vdc2",
         class: "partition",
         block: {
-          active: true,
           encrypted: false,
           start: 10487808,
           size: 5368709120,
@@ -92,7 +89,6 @@ const systemDevices: System.Device[] = [
         description: "XFS Partition",
         class: "partition",
         block: {
-          active: true,
           encrypted: false,
           start: 20973568,
           size: 1073741824,
@@ -113,7 +109,6 @@ const systemDevices: System.Device[] = [
         description: "Linux",
         class: "partition",
         block: {
-          active: true,
           encrypted: false,
           start: 23070720,
           size: 2147483648,
@@ -135,7 +130,6 @@ const proposalDevices: Proposal.Device[] = [
     description: "Disk",
     class: "drive",
     block: {
-      active: true,
       encrypted: false,
       start: 0,
       size: 32212254720,
@@ -165,7 +159,6 @@ const proposalDevices: Proposal.Device[] = [
         description: "Linux RAID",
         class: "partition",
         block: {
-          active: true,
           encrypted: false,
           start: 10487808,
           size: 5368709120,
@@ -182,7 +175,6 @@ const proposalDevices: Proposal.Device[] = [
         description: "Linux",
         class: "partition",
         block: {
-          active: true,
           encrypted: false,
           start: 23070720,
           size: 1608515584,
@@ -199,7 +191,6 @@ const proposalDevices: Proposal.Device[] = [
         description: "BIOS Boot Partition",
         class: "partition",
         block: {
-          active: true,
           encrypted: false,
           start: 2048,
           size: 8388608,
@@ -216,7 +207,6 @@ const proposalDevices: Proposal.Device[] = [
         description: "Swap Partition",
         class: "partition",
         block: {
-          active: true,
           encrypted: false,
           start: 18432,
           size: 1610612736,
@@ -238,7 +228,6 @@ const proposalDevices: Proposal.Device[] = [
         description: "Btrfs Partition",
         class: "partition",
         block: {
-          active: true,
           encrypted: false,
           start: 26212352,
           size: 18791513600,

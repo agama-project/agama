@@ -7,9 +7,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-12 15:05+0000\n"
-"PO-Revision-Date: 2026-06-03 23:12+0000\n"
-"Last-Translator: yakup <mtopac2027@gmail.com>\n"
+"POT-Creation-Date: 2026-08-31 11:33+0000\n"
+"PO-Revision-Date: 2026-08-25 15:33+0000\n"
+"Last-Translator: Efe Mert <efemert1@proton.me>\n"
 "Language-Team: Turkish <https://l10n.opensuse.org/projects/agama/agama-rust-"
 "master/tr/>\n"
 "Language: tr\n"
@@ -17,28 +17,40 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 2026.6.1\n"
+"X-Generator: Weblate 2026.8.1\n"
 
-#: agama-autoinstall/src/auto_loader.rs:115
+#: agama-autoinstall/src/auto_loader.rs:142
 msgid ""
 "Configuration cannot be applied because it is invalid or could not be "
 "reached."
 msgstr ""
 
-#: agama-autoinstall/src/questions.rs:44
-#, fuzzy
+#: agama-autoinstall/src/questions.rs:47
 msgid "Reload configuration"
-msgstr "Ağ yapılandırması yazılıyor"
+msgstr "Yapılandırmayı yeniden yükle"
 
-#: agama-autoinstall/src/questions.rs:45
+#: agama-autoinstall/src/questions.rs:48
 msgid "Skip and configure manually"
+msgstr "Atla ve manuel olarak yapılandır"
+
+#: agama-autoinstall/src/questions.rs:77 agama-cli/src/config.rs:371
+msgid "Found unsupported elements in the AutoYaST profile:"
 msgstr ""
 
-#: agama-autoinstall/src/scripts.rs:134
+#: agama-autoinstall/src/questions.rs:92
+#: agama-software/src/callbacks/install.rs:81
+msgid "Continue"
+msgstr "Devam et"
+
+#: agama-autoinstall/src/questions.rs:93
+msgid "Abort"
+msgstr ""
+
+#. TRANSLATORS: {0} is a URL
+#: agama-autoinstall/src/scripts.rs:135
 #, fuzzy
 msgid ""
-"It was not possible to load the script from {0}. Do you want to try again?\n"
-"                "
+"It was not possible to load the script from {0}. Do you want to try again?"
 msgstr ""
 "%s komut dosyasını alma işlemi başarısız oldu. Tekrar denemek ister misiniz?"
 
@@ -90,7 +102,7 @@ msgstr ""
 
 #: agama-cli/src/auth.rs:141
 msgid "Please enter the root password:"
-msgstr ""
+msgstr "Lütfen kök şifresini giriniz:"
 
 #. TRANSLATORS: {0} is a host name
 #: agama-cli/src/auth.rs:179
@@ -99,9 +111,8 @@ msgstr ""
 
 #. TRANSLATORS: CLI help for: agama probe
 #: agama-cli/src/commands.rs:42
-#, fuzzy
 msgid "Analyze the system"
-msgstr "Sistemi hazırla"
+msgstr "Sistemi analiz et"
 
 #. TRANSLATORS: CLI help for: agama probe (details)
 #: agama-cli/src/commands.rs:44
@@ -109,17 +120,16 @@ msgid ""
 "In Agama's jargon, the term 'probing' refers to the process of 'analyzing' "
 "the system. This includes reading software repositories, analyzing storage "
 "devices, and more. The 'probe' command initiates this analysis process and "
-"returns immediately. TODO: do we really need a \"probe\" action?"
+"returns immediately."
 msgstr ""
 
 #. TRANSLATORS: CLI help for: agama install
-#: agama-cli/src/commands.rs:54
-#, fuzzy
+#: agama-cli/src/commands.rs:53
 msgid "Start the system installation"
-msgstr "Paket kurulumuna başlanıyor"
+msgstr "Sistem kurulumunu başlat"
 
 #. TRANSLATORS: CLI help for: agama install (details)
-#: agama-cli/src/commands.rs:56
+#: agama-cli/src/commands.rs:55
 msgid ""
 "This command starts the installation process.  Beware it is a destructive "
 "operation because it will set up the storage devices, install the packages, "
@@ -130,12 +140,12 @@ msgid ""
 msgstr ""
 
 #. TRANSLATORS: CLI help for: agama download
-#: agama-cli/src/commands.rs:79
+#: agama-cli/src/commands.rs:78
 msgid "Download file from a given (AutoYaST) URL"
 msgstr ""
 
 #. TRANSLATORS: CLI help for: agama download (details)
-#: agama-cli/src/commands.rs:81
+#: agama-cli/src/commands.rs:80
 msgid ""
 "The purpose of this command is to download files using AutoYaST supported "
 "schemas (e.g. device://). It can be used to download additional scripts, "
@@ -145,25 +155,24 @@ msgid ""
 msgstr ""
 
 #. TRANSLATORS: CLI help for: agama download <URL>
-#: agama-cli/src/commands.rs:95
+#: agama-cli/src/commands.rs:94
 msgid ""
 "URL reference pointing to file for download. If a relative URL is provided, "
 "it will be resolved against the current working directory"
 msgstr ""
 
 #. TRANSLATORS: CLI help for: agama download <DESTINATION>
-#: agama-cli/src/commands.rs:105
+#: agama-cli/src/commands.rs:104
 msgid "File name"
-msgstr ""
+msgstr "Dosya ismi"
 
 #. TRANSLATORS: CLI help for: agama finish
-#: agama-cli/src/commands.rs:112
-#, fuzzy
+#: agama-cli/src/commands.rs:111
 msgid "Finish the installation"
-msgstr "Kurulumun başlamasını bekliyor..."
+msgstr "Kurulumu bitir"
 
 #. TRANSLATORS: CLI help for: agama finish <METHOD>
-#: agama-cli/src/commands.rs:118
+#: agama-cli/src/commands.rs:117
 msgid ""
 "What to do after finishing the installation. Possible values:\n"
 "\n"
@@ -178,29 +187,29 @@ msgid ""
 msgstr ""
 
 #. TRANSLATORS: CLI help for: agama monitor
-#: agama-cli/src/commands.rs:136
+#: agama-cli/src/commands.rs:135
 msgid "Continuously monitors the Agama service until it finishes"
 msgstr ""
 
 #. TRANSLATORS: CLI help for: agama status
-#: agama-cli/src/commands.rs:143
+#: agama-cli/src/commands.rs:142
 msgid ""
 "Prints the current state of the installation (e.g., waiting, blocked, "
 "running, or finished)"
 msgstr ""
 
 #. TRANSLATORS: CLI help for: agama status --format <FORMAT>
-#: agama-cli/src/commands.rs:151
+#: agama-cli/src/commands.rs:150
 msgid "Specify in which format status will be shown"
 msgstr ""
 
 #. TRANSLATORS: CLI help for: agama events
-#: agama-cli/src/commands.rs:158
+#: agama-cli/src/commands.rs:157
 msgid "Display Agama events"
 msgstr ""
 
 #. TRANSLATORS: CLI help for: agama events --pretty
-#: agama-cli/src/commands.rs:165
+#: agama-cli/src/commands.rs:164
 msgid "Display the events in a more human-readable way"
 msgstr ""
 
@@ -224,7 +233,7 @@ msgstr ""
 #. TRANSLATORS: CLI help for: agama config load
 #: agama-cli/src/config.rs:64
 msgid "Read and load a profile"
-msgstr ""
+msgstr "Bir profili oku ve yükle"
 
 #. TRANSLATORS: CLI help for: agama config load <URL_OR_PATH>
 #. TRANSLATORS: CLI help for: agama config generate <URL_OR_PATH>
@@ -320,9 +329,9 @@ msgstr ""
 
 #: agama-cli/src/config.rs:217
 msgid "It is not a valid JSON file"
-msgstr ""
+msgstr "Bu geçerli bir JSON dosyası değil"
 
-#: agama-cli/src/config.rs:412
+#: agama-cli/src/config.rs:434
 msgid "Ignoring the changes because the editor was closed with an error code."
 msgstr ""
 
@@ -389,12 +398,12 @@ msgstr ""
 #. TRANSLATORS: CLI help for: agama logs list
 #: agama-cli/src/logs.rs:65
 msgid "List the logs to collect"
-msgstr ""
+msgstr "Toplanacak logları listele"
 
 #. TRANSLATORS: an installation "scope", used in the "agama monitor" command
 #: agama-cli/src/monitor/ui.rs:41
 msgid "Bootloader"
-msgstr ""
+msgstr "Ön yükleyici"
 
 #. TRANSLATORS: an installation "scope", used in the "agama monitor" command
 #: agama-cli/src/monitor/ui.rs:43
@@ -469,18 +478,17 @@ msgstr "Kullanıcılar"
 #. TRANSLATORS: an installation "scope", used in the "agama monitor" command
 #: agama-cli/src/monitor/ui.rs:71
 msgid "Proxy"
-msgstr ""
+msgstr "Proxy"
 
 #. TRANSLATORS: an installation "scope", used in the "agama monitor" command
 #: agama-cli/src/monitor/ui.rs:73
-#, fuzzy
 msgid "Questions"
-msgstr "Açık sorular:"
+msgstr "Sorular"
 
 #. TRANSLATORS: an installation "scope", used in the "agama monitor" command
 #: agama-cli/src/monitor/ui.rs:75
 msgid "Security"
-msgstr ""
+msgstr "Güvenlik"
 
 #: agama-cli/src/monitor/ui/content.rs:64
 msgid "Installation complete."
@@ -490,7 +498,7 @@ msgstr "Kurulum tamamlandı."
 msgid "You can reboot the machine to log in to the new system."
 msgstr "Yeni sisteme giriş yapmak için makineyi yeniden başlatabilirsiniz."
 
-#: agama-cli/src/monitor/ui/content.rs:68 agama-cli/src/status.rs:76
+#: agama-cli/src/monitor/ui/content.rs:68
 msgid "Installation failed."
 msgstr "Kurulum başarısız oldu."
 
@@ -506,17 +514,17 @@ msgstr "Gerekli eylem:"
 msgid "No product has been selected yet."
 msgstr "Henüz hiçbir ürün seçilmedi."
 
-#: agama-cli/src/monitor/ui/content.rs:172
-msgid "Following issues needs to be addressed in the configuration:"
-msgstr ""
+#: agama-cli/src/monitor/ui/content.rs:172 agama-cli/src/status.rs:88
+msgid "Fix invalid settings before starting the installation:"
+msgstr "Kuruluma başlamadan önce yanlış ayarları düzelt:"
 
-#: agama-cli/src/monitor/ui/content.rs:193
-msgid "Ready for installation."
-msgstr "Kuruluma hazır."
+#: agama-cli/src/monitor/ui/content.rs:193 agama-cli/src/status.rs:81
+msgid "Ready to start the installation."
+msgstr "Kuruluma başlamaya hazır."
 
 #: agama-cli/src/monitor/ui/content.rs:194
-msgid "Waiting to start installation..."
-msgstr "Kurulumun başlamasını bekliyor..."
+msgid "Starting the installation."
+msgstr "Kurulamaya başlanıyor"
 
 #: agama-cli/src/monitor/ui/content.rs:210
 msgid "Step"
@@ -526,14 +534,10 @@ msgstr "Adım"
 msgid "of"
 msgstr "de"
 
-#: agama-cli/src/monitor/ui/issues.rs:64
-msgid "Waiting for these to be resolved."
-msgstr "Bu sorunların çözülmesi bekleniyor."
-
 #. TRANSLATORS: additional data that question passed to user beside main question message
 #: agama-cli/src/monitor/ui/question.rs:307
-msgid "Additional data"
-msgstr ""
+msgid "Technical details"
+msgstr "Teknik detaylar"
 
 #. TRANSLATORS: CLI hint how to scroll through additional data
 #: agama-cli/src/monitor/ui/question.rs:317
@@ -542,16 +546,15 @@ msgstr ""
 
 #: agama-cli/src/monitor/ui/question.rs:371
 msgid "Password"
-msgstr ""
+msgstr "Parola"
 
 #: agama-cli/src/monitor/ui/question.rs:377
-#, fuzzy
 msgid "Location"
-msgstr "Yerelleştirme"
+msgstr "Konum"
 
 #: agama-cli/src/monitor/ui/question.rs:383
 msgid "Value"
-msgstr ""
+msgstr "Değer"
 
 #: agama-cli/src/monitor/ui/summary.rs:47
 msgid "Host: "
@@ -587,9 +590,8 @@ msgid "Idle"
 msgstr "Boşta"
 
 #: agama-cli/src/monitor/ui/summary.rs:79
-#, fuzzy
 msgid "Waiting for user"
-msgstr "Bu sorunların çözülmesi bekleniyor."
+msgstr "Kullanıcı bekleniyor"
 
 #: agama-cli/src/monitor/ui/summary.rs:102
 msgid "Installing"
@@ -645,7 +647,7 @@ msgstr ""
 #. TRANSLATORS: CLI help for: agama questions answers
 #: agama-cli/src/questions.rs:72
 msgid "Load predefined answers"
-msgstr ""
+msgstr "Önceden tanımlanmış soruları yükle"
 
 #. TRANSLATORS: CLI help for: agama questions answers (details)
 #: agama-cli/src/questions.rs:77
@@ -663,45 +665,31 @@ msgid "Path to a file containing the answers in JSON format"
 msgstr ""
 
 #: agama-cli/src/status.rs:77
-msgid "Installation finished successfully."
-msgstr "Kurulum başarıyla tamamlandı."
-
-#: agama-cli/src/status.rs:78
-msgid "Installation is ready to start."
-msgstr "Kurulum başlamaya hazır."
-
-#: agama-cli/src/status.rs:79
-msgid "Installation is in progress."
-msgstr "Kurulum çalışmaları devam ediyor."
+msgid ""
+"The installation failed. Use the \"agama logs store\" command to get the "
+"logs to troubleshoot or share with support."
+msgstr ""
 
 #: agama-cli/src/status.rs:80
-msgid "Installation is being proposed."
-msgstr "Kurulum planlanıyor."
+msgid "The installation finished successfully."
+msgstr "Kurulum başarıyla tamamlandı."
 
-#: agama-cli/src/status.rs:81
+#: agama-cli/src/status.rs:82
+msgid "The installation is in progress."
+msgstr "Kurulum devam ediyor."
+
+#: agama-cli/src/status.rs:83
+msgid "The installer is preparing an installation proposal."
+msgstr ""
+
+#: agama-cli/src/status.rs:85
 #, fuzzy
 msgid ""
-"There are unanswered questions. Use `agama monitor` command or the web user "
-"interface to answer them."
+"There are unanswered questions. Use the \"agama monitor\" command or the web "
+"user interface to answer them:"
 msgstr ""
 "Yanıtlanmamış sorular var. Lütfen bunları yanıtlamak için `agama questions` "
 "komutunu veya web arayüzünü kullanın."
-
-#: agama-cli/src/status.rs:82
-msgid "There are issues in configuration that are blocking the installation."
-msgstr ""
-
-#: agama-cli/src/status.rs:118 agama-utils/src/api/problem_details.rs:192
-msgid "Details:"
-msgstr "Detaylar:"
-
-#: agama-cli/src/status.rs:120
-msgid "Open questions:"
-msgstr "Açık sorular:"
-
-#: agama-cli/src/status.rs:126
-msgid "Blocking issues:"
-msgstr "Engelleyen sorunlar:"
 
 #. TRANSLATORS: %s is replaced by the script name.
 #: agama-files/src/service.rs:184
@@ -715,117 +703,116 @@ msgid "Failed to write the file %s. Do you want to try again?"
 msgstr ""
 "%s dosyasına yazma işlemi başarısız oldu. Tekrar denemek ister misiniz?"
 
-#: agama-manager/src/actions.rs:77
+#: agama-manager/src/actions.rs:78
 msgid "Prepare the system"
 msgstr "Sistemi hazırla"
 
-#: agama-manager/src/actions.rs:78
+#: agama-manager/src/actions.rs:79
 msgid "Install software"
 msgstr "Yazılım yükle"
 
-#: agama-manager/src/actions.rs:79
+#: agama-manager/src/actions.rs:80
 msgid "Configure the system"
 msgstr "Sistemi yapılandır"
 
-#: agama-manager/src/actions.rs:93
-#, fuzzy
+#: agama-manager/src/actions.rs:94
 msgid "Preparing storage"
-msgstr "Depolama teklifinin hazırlanması"
+msgstr "Depolama hazırlanıyor"
 
-#: agama-manager/src/actions.rs:111
+#: agama-manager/src/actions.rs:112
 #, fuzzy
 msgid "Running post-partitioning scripts"
 msgstr "Kullanıcı ön kurulum komut dosyalarını çalıştır"
 
-#: agama-manager/src/actions.rs:136
-#, fuzzy
+#: agama-manager/src/actions.rs:137
 msgid "Installing software"
-msgstr "Yazılım yükle"
+msgstr "Yazılım yükleniyor"
 
-#: agama-manager/src/actions.rs:173
-#, fuzzy
+#: agama-manager/src/actions.rs:174
 msgid "Configuring the system"
-msgstr "Sistemi yapılandır"
+msgstr "Sistem yapılandırılıyor"
 
-#: agama-manager/src/actions.rs:240
-#, fuzzy
+#: agama-manager/src/actions.rs:242
 msgid "Finishing installation"
-msgstr "Kurulumun başlamasını bekliyor..."
+msgstr "Kurulum bitiriliyor"
 
-#: agama-manager/src/actions.rs:296
-msgid "Storing security settings"
-msgstr "Güvenlik ayarlarını sakla"
+#: agama-manager/src/actions.rs:271
+msgid "Finalize installation"
+msgstr "Kurulum sonlandırılıyor"
 
-#: agama-manager/src/actions.rs:306
-msgid "Configuring remote access"
-msgstr "Uzaktan erişimi yapılandır"
+#: agama-manager/src/actions.rs:346
+msgid "Storing questions settings"
+msgstr "Soru ayarlarını sakla"
 
-#: agama-manager/src/actions.rs:316
-msgid "Setting up the hostname"
-msgstr "Sunucu adını ayarla"
-
-#: agama-manager/src/actions.rs:326
-msgid "Setting up the network proxy"
-msgstr "Ağ vekil sunucusu'nu kur"
-
-#: agama-manager/src/actions.rs:337
-msgid "Setting up NTP"
-msgstr "NTP'yi ayarla"
-
-#: agama-manager/src/actions.rs:348
+#: agama-manager/src/actions.rs:357
 #, fuzzy
 msgid "Importing user files and scripts"
 msgstr "Kullanıcı dosyalarını içe aktar"
 
-#: agama-manager/src/actions.rs:361
+#: agama-manager/src/actions.rs:371
 msgid "Running user pre-installation scripts"
 msgstr "Kullanıcı ön kurulum komut dosyalarını çalıştır"
 
-#: agama-manager/src/actions.rs:376
-msgid "Storing questions settings"
-msgstr "Soru ayarlarını sakla"
-
 #: agama-manager/src/actions.rs:386
+msgid "Storing security settings"
+msgstr "Güvenlik ayarlarını sakla"
+
+#: agama-manager/src/actions.rs:396
+msgid "Configuring remote access"
+msgstr "Uzaktan erişimi yapılandır"
+
+#: agama-manager/src/actions.rs:406
+msgid "Setting up the hostname"
+msgstr "Sunucu adını ayarla"
+
+#: agama-manager/src/actions.rs:416
+msgid "Setting up the network proxy"
+msgstr "Ağ vekil sunucusu'nu kur"
+
+#: agama-manager/src/actions.rs:427
+msgid "Setting up NTP"
+msgstr "NTP'yi ayarla"
+
+#: agama-manager/src/actions.rs:437
 msgid "Storing localization settings"
 msgstr "Yerelleştirme ayarlarını sakla"
 
-#: agama-manager/src/actions.rs:396
+#: agama-manager/src/actions.rs:447
 msgid "Storing users settings"
 msgstr "Kullanıcı ayarlarını sakla"
 
-#: agama-manager/src/actions.rs:502
+#: agama-manager/src/actions.rs:557
 msgid "Configuring iSCSI devices"
 msgstr "iSCSI aygıtlarını yapılandır"
 
-#: agama-manager/src/actions.rs:526
+#: agama-manager/src/actions.rs:581
 #, fuzzy
 msgid "Configuring zFCP devices"
 msgstr "iSCSI aygıtlarını yapılandır"
 
-#: agama-manager/src/actions.rs:550
+#: agama-manager/src/actions.rs:606
 msgid "Configuring DASD devices"
 msgstr "DASD cihazlarını yapılandır"
 
-#: agama-manager/src/actions.rs:574
+#: agama-manager/src/actions.rs:631
 msgid "Setting up the network"
 msgstr "Ağ kurulumu"
 
-#: agama-manager/src/actions.rs:603
+#: agama-manager/src/actions.rs:661
 msgid "Preparing the storage proposal"
 msgstr "Depolama teklifinin hazırlanması"
 
-#: agama-manager/src/actions.rs:636
+#: agama-manager/src/actions.rs:690
 msgid "Storing bootloader settings"
 msgstr "Önyükleyici ayarlarının saklanması"
 
-#: agama-manager/src/actions.rs:669
+#: agama-manager/src/actions.rs:723
 msgid "Preparing the software proposal"
 msgstr "Yazılım teklifinin hazırlanması"
 
-#: agama-manager/src/actions.rs:702
-#, fuzzy
+#: agama-manager/src/actions.rs:753
 msgid "Configuring SELinux"
-msgstr "Yapılandırılıyor"
+msgstr "SELinux yapılandırılıyor"
 
 #: agama-network/src/service.rs:511
 msgid "Writing network configuration"
@@ -852,34 +839,41 @@ msgstr ""
 "Kendi imzaladığınız bir sertifikayı içe aktarmaya çalışıyorsunuz. Buna "
 "güvenmek ve ürünü kaydetmek istiyor musunuz?"
 
-#: agama-server/src/profile/web.rs:82
-#, fuzzy
-msgid "Profile validation failed"
-msgstr "Kurulum başarısız oldu."
-
 #: agama-server/src/profile/web.rs:85
+msgid "Profile validation failed"
+msgstr "Profil doğrulama başarısız oldu"
+
+#: agama-server/src/profile/web.rs:88
 #, fuzzy
 msgid "Could not retrieve profile"
 msgstr "Depolar okunamadı"
 
-#: agama-server/src/profile/web.rs:88
+#: agama-server/src/profile/web.rs:91
 msgid "Invalid profile encoding"
 msgstr ""
 
-#: agama-server/src/profile/web.rs:91
-msgid "Invalid profile request"
-msgstr ""
-
 #: agama-server/src/profile/web.rs:94
+msgid "Invalid profile request"
+msgstr "Geçersiz profil isteği"
+
+#: agama-server/src/profile/web.rs:97
 msgid "AutoYaST conversion failed"
 msgstr ""
 
-#: agama-software/src/callbacks/commit_download.rs:48
+#: agama-server/src/server/web.rs:86
+msgid "Missing Language Tag"
+msgstr ""
+
+#: agama-server/src/server/web.rs:89
+msgid "Profile error"
+msgstr "Profil hatası"
+
+#: agama-software/src/callbacks/commit_download.rs:47
 #: agama-software/src/callbacks/install.rs:56
 msgid "Ignore"
 msgstr "Görmezden gel"
 
-#: agama-software/src/callbacks/commit_download.rs:48
+#: agama-software/src/callbacks/commit_download.rs:47
 #: agama-software/src/callbacks/install.rs:56
 #: agama-software/src/callbacks/install.rs:81
 msgid "Retry"
@@ -888,10 +882,6 @@ msgstr "Tekrar dene"
 #: agama-software/src/callbacks/install.rs:78
 msgid "There was a problem running a package script."
 msgstr "Paket komut dosyasını çalıştırırken bir sorun oluştu."
-
-#: agama-software/src/callbacks/install.rs:81
-msgid "Continue"
-msgstr "Devam et"
 
 #. TRANSLATORS: substituting: key ID, (key name), fingerprint
 #: agama-software/src/callbacks/security.rs:104
@@ -906,65 +896,65 @@ msgstr ""
 msgid "Skip"
 msgstr "Atla"
 
-#: agama-software/src/service.rs:287
+#: agama-software/src/service.rs:296
 msgid ""
 "Due to an internal error, it was not possible to create a software proposal."
 msgstr "Dahili bir hata nedeniyle yazılım teklifi oluşturulamadı."
 
-#: agama-software/src/zypp_server.rs:293
+#: agama-software/src/zypp_server.rs:300
 msgid "Starting packages installation"
 msgstr "Paket kurulumuna başlanıyor"
 
-#: agama-software/src/zypp_server.rs:306
+#: agama-software/src/zypp_server.rs:313
 msgid "Packages download and installation failed. Would you like to retry?"
 msgstr "Paket indirme ve yükleme başarısız oldu. Tekrar denemek ister misiniz?"
 
-#: agama-software/src/zypp_server.rs:361
+#: agama-software/src/zypp_server.rs:367
 msgid "Updating the list of repositories"
 msgstr "Depo listesi güncelleniyor"
 
-#: agama-software/src/zypp_server.rs:362
+#: agama-software/src/zypp_server.rs:368
 msgid "Refreshing metadata from the repositories"
 msgstr "Depolardan meta veriler yenileniyor"
 
-#: agama-software/src/zypp_server.rs:363
+#: agama-software/src/zypp_server.rs:369
 msgid "Calculating the software proposal"
 msgstr "Yazılım teklifi hesaplanıyor"
 
-#: agama-software/src/zypp_server.rs:366
+#: agama-software/src/zypp_server.rs:372
 msgid "Registering the system"
 msgstr "Sistem kayıt ediliyor"
 
 #. TRANSLATORS: %s is the alias of the repository.
-#: agama-software/src/zypp_server.rs:439
+#: agama-software/src/zypp_server.rs:445
 msgid "Could not remove the repository %s"
 msgstr "%s deposu kaldırılamadı"
 
-#: agama-software/src/zypp_server.rs:460
+#: agama-software/src/zypp_server.rs:465
 msgid "Could not read the repositories"
 msgstr "Depolar okunamadı"
 
-#: agama-software/src/zypp_server.rs:497
+#: agama-software/src/zypp_server.rs:501
 msgid ""
 "Failed to find the product in the repositories. You might need to register "
 "the system."
 msgstr "Ürün, depolarda bulunamadı. Sistemi kaydetmeniz gerekebilir."
 
-#: agama-software/src/zypp_server.rs:500
+#: agama-software/src/zypp_server.rs:504
 msgid "Failed to find the product in the repositories."
 msgstr "Ürün, depolarda bulunamadı."
 
-#: agama-software/src/zypp_server.rs:563
+#: agama-software/src/zypp_server.rs:567
 msgid "There are conflicts in the software selection"
 msgstr "Yazılım seçiminde çakışmalar var"
 
 #. TRANSLATORS: the first %s is the kind of resolvable (e.g., "package")
 #. and the second %s is the name of the resolvable.
-#: agama-software/src/zypp_server.rs:592
+#: agama-software/src/zypp_server.rs:594
 msgid "Could not select %s '%s' for installation"
 msgstr "Kurulum için %s '%s' olarak seçilemedi"
 
-#: agama-software/src/zypp_server.rs:1010
+#: agama-software/src/zypp_server.rs:1006
 msgid "Failed to register the system"
 msgstr "Sistem kaydı başarısız oldu"
 
@@ -980,9 +970,8 @@ msgid "First user information is incomplete"
 msgstr "İlk kullanıcı bilgileri eksik"
 
 #: agama-utils/src/api/problem_details.rs:113
-#, fuzzy
 msgid "Schema validation failed"
-msgstr "Kurulum başarısız oldu."
+msgstr "Şema doğrulama başarısız"
 
 #: agama-utils/src/api/problem_details.rs:115
 msgid "The provided configuration does not match the required schema"
@@ -990,7 +979,7 @@ msgstr ""
 
 #: agama-utils/src/api/problem_details.rs:124
 msgid "Invalid JSON"
-msgstr ""
+msgstr "Geçersiz JSON"
 
 #: agama-utils/src/api/problem_details.rs:132
 msgid "Internal server error"
@@ -998,31 +987,50 @@ msgstr ""
 
 #: agama-utils/src/api/problem_details.rs:140
 msgid "Unauthorized"
-msgstr ""
+msgstr "Yetkisiz"
 
 #: agama-utils/src/api/problem_details.rs:189
 msgid "Error:"
-msgstr ""
+msgstr "Hata:"
 
-#: agama-utils/src/api/question.rs:293 agama-utils/src/question/start.rs:48
+#: agama-utils/src/api/problem_details.rs:192
+msgid "Details:"
+msgstr "Detaylar:"
+
+#: agama-utils/src/api/question.rs:342 agama-utils/src/question/start.rs:48
 msgid "No"
 msgstr "Hayır"
 
-#: agama-utils/src/api/question.rs:293 agama-utils/src/question/start.rs:48
+#: agama-utils/src/api/question.rs:342 agama-utils/src/question/start.rs:48
 msgid "Yes"
 msgstr "Evet"
 
-#: agama-utils/src/resolvable.rs:62
+#: agama-utils/src/resolvable.rs:65
 msgid "package"
 msgstr "paket"
 
-#: agama-utils/src/resolvable.rs:63
+#: agama-utils/src/resolvable.rs:66
 msgid "pattern"
 msgstr "desen"
 
-#: agama-utils/src/resolvable.rs:64
+#: agama-utils/src/resolvable.rs:67
 msgid "product"
 msgstr "ürün"
+
+#~ msgid "Waiting for these to be resolved."
+#~ msgstr "Bu sorunların çözülmesi bekleniyor."
+
+#~ msgid "Installation is ready to start."
+#~ msgstr "Kurulum başlamaya hazır."
+
+#~ msgid "Installation is being proposed."
+#~ msgstr "Kurulum planlanıyor."
+
+#~ msgid "Open questions:"
+#~ msgstr "Açık sorular:"
+
+#~ msgid "Blocking issues:"
+#~ msgstr "Engelleyen sorunlar:"
 
 #~ msgid "There are pending questions:"
 #~ msgstr "Henüz yanıtlanmamış sorular var:"
@@ -1040,3 +1048,23 @@ msgstr "ürün"
 #~ msgstr ""
 #~ "Kurulum programı kurulum önerisini hesaplayamadı. Kurulumu engelleyen "
 #~ "sorunlar var."
+
+#~ msgid "Ready for installation."
+#~ msgstr "Kuruluma hazır."
+
+#~ msgid "Waiting to start installation..."
+#~ msgstr "Kurulumun başlamasını bekliyor..."
+
+#~ msgid "Installation finished successfully."
+#~ msgstr "Kurulum başarıyla tamamlandı."
+
+#~ msgid "Installation is in progress."
+#~ msgstr "Kurulum çalışmaları devam ediyor."
+
+#, fuzzy
+#~ msgid ""
+#~ "There are unanswered questions. Use `agama monitor` command or the web "
+#~ "user interface to answer them."
+#~ msgstr ""
+#~ "Yanıtlanmamış sorular var. Lütfen bunları yanıtlamak için `agama "
+#~ "questions` komutunu veya web arayüzünü kullanın."

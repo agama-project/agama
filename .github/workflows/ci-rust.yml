@@ -57,7 +57,7 @@ jobs:
     steps:
 
     - name: Git Checkout
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
 
     - name: Rust toolchain
       run: |
@@ -73,14 +73,14 @@ jobs:
     runs-on: ubuntu-latest
 
     container:
-      image: registry.opensuse.org/opensuse/tumbleweed:latest
+      image: registry.opensuse.org/opensuse/leap:16.0
       options: --security-opt seccomp=unconfined
 
     steps:
 
     - name: Configure and refresh repositories
       # disable unused repositories to have faster refresh
-      run: zypper modifyrepo -d repo-non-oss repo-openh264 repo-update && ( zypper ref || zypper ref || zypper ref )
+      run: zypper modifyrepo -d openSUSE:repo-openh264 && ( zypper ref || zypper ref || zypper ref )
 
     - name: Install required packages
       run: zypper --non-interactive install --allow-downgrade
@@ -100,7 +100,7 @@ jobs:
       run:  git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
     - name: Git Checkout
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
 
     - name: Install Rust toolchains
       run: rustup toolchain install stable
@@ -133,7 +133,7 @@ jobs:
     runs-on: ubuntu-latest
 
     container:
-      image: registry.opensuse.org/opensuse/tumbleweed:latest
+      image: registry.opensuse.org/opensuse/leap:16.0
       options: --security-opt seccomp=unconfined
 
     env:
@@ -142,8 +142,12 @@ jobs:
     steps:
 
     - name: Configure and refresh repositories
-      # disable unused repositories to have faster refresh
-      run: zypper modifyrepo -d repo-non-oss repo-openh264 repo-update && ( zypper ref || zypper ref || zypper ref )
+      # disable unused repositories to have faster refresh, add the Agama repo for
+      # the python3-openapi_spec_validator which is not available in Leap 16.1 repos
+      run: |
+        zypper ar -f https://download.opensuse.org/repositories/systemsmanagement:/Agama:/Maintenance:/SLE-16.1/standard/ Agama-16.1
+        zypper modifyrepo -d openSUSE:repo-openh264
+        zypper --gpg-auto-import-keys ref
 
     - name: Install required packages
       run: zypper --non-interactive install --allow-downgrade
@@ -171,7 +175,7 @@ jobs:
       run:  git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
     - name: Git Checkout
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
 
     - name: Install Rust toolchains
       run: rustup toolchain install stable
@@ -215,7 +219,8 @@ jobs:
       # flags, to avoid reusing the previous builds it always starts from scratch.
       # The --skip-clean skips the cleanup and allows using the cached results.
       # See https://github.com/xd009642/tarpaulin/discussions/772
-      run: cargo tarpaulin --workspace --all-targets --doc --engine llvm --out xml --target-dir target-coverage --skip-clean -- --nocapture
+      # Explicitly omit examples and benches as it depends on opensuse infrastructure and can fail due to network issues
+      run: cargo tarpaulin --workspace --lib --bins --tests --doc --engine llvm --out xml --target-dir target-coverage --skip-clean -- --nocapture
       working-directory: ./rust
       env:
         # use the "stable" tool chain (installed by default) instead of the "nightly" default in tarpaulin
@@ -252,13 +257,17 @@ jobs:
     runs-on: ubuntu-latest
 
     container:
-      image: registry.opensuse.org/opensuse/tumbleweed:latest
+      image: registry.opensuse.org/opensuse/leap:16.0
 
     steps:
 
     - name: Configure and refresh repositories
-      # disable unused repositories to have faster refresh
-      run: zypper modifyrepo -d repo-non-oss repo-openh264 repo-update && ( zypper ref || zypper ref || zypper ref )
+      # disable unused repositories to have faster refresh, add the Agama repo for
+      # the python3-openapi_spec_validator which is not available in Leap 16.1 repos
+      run: |
+        zypper ar -f https://download.opensuse.org/repositories/systemsmanagement:/Agama:/Maintenance:/SLE-16.1/standard/ Agama-16.1
+        zypper modifyrepo -d openSUSE:repo-openh264
+        zypper --gpg-auto-import-keys ref
 
     - name: Install required packages
       run: zypper --non-interactive install --allow-downgrade
@@ -277,7 +286,7 @@ jobs:
         rustup
 
     - name: Git Checkout
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
 
     - name: Install Rust toolchains
       run: rustup toolchain install stable

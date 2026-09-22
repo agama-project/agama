@@ -63,7 +63,8 @@ describe Agama::Storage::ConfigConversions::ToModelConversions::MdRaid do
     include_examples "with ptable_type"
     include_examples "with partitions"
 
-    include_examples "device name"
+    include_examples "device name", nil,
+      { partitions: { any: { filesystem: { type: "ext4" } } } }
     include_examples "space policy"
   end
 end

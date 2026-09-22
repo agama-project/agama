@@ -29,9 +29,12 @@ import {
   TextInput,
 } from "@patternfly/react-core";
 import Text from "~/components/core/Text";
+import { useFieldLabel } from "~/hooks/use-field-label";
 import { useFieldContext } from "~/hooks/form-contexts";
 
-type NumberFieldProps = {
+import type { FieldLabelOptions } from "~/hooks/use-field-label";
+
+type NumberFieldProps = FieldLabelOptions & {
   label: React.ReactNode;
   helperText?: React.ReactNode;
   min?: number;
@@ -43,13 +46,27 @@ type NumberFieldProps = {
  * Must be used inside a `form.AppField` render prop.
  *
  * @see useFieldContext for field component conventions.
+ * @see useFieldLabel for adjusting the accessible name (`labelPrefixedBy`, etc.).
  */
-export default function NumberField({ label, helperText, min, max }: NumberFieldProps) {
+export default function NumberField({
+  label,
+  helperText,
+  min,
+  max,
+  "aria-label": ariaLabel,
+  "aria-labelledby": ariaLabelledBy,
+  labelPrefixedBy,
+}: NumberFieldProps) {
   const field = useFieldContext<number | "">();
+  const { labelId, labelProps } = useFieldLabel(field.name, {
+    "aria-label": ariaLabel,
+    "aria-labelledby": ariaLabelledBy,
+    labelPrefixedBy,
+  });
   const error = field.state.meta.errors[0];
 
   return (
-    <FormGroup fieldId={field.name} label={label}>
+    <FormGroup fieldId={field.name} label={<span id={labelId}>{label}</span>}>
       <TextInput
         id={field.name}
         name={field.name}
@@ -59,6 +76,7 @@ export default function NumberField({ label, helperText, min, max }: NumberField
         max={max}
         validated={error ? "error" : "default"}
         onChange={(_, value) => field.handleChange(value === "" ? undefined : Number(value))}
+        {...labelProps}
       />
       {(error || helperText) && (
         <FormHelperText>

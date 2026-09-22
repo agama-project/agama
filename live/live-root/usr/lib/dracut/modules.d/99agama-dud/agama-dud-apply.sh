@@ -163,7 +163,7 @@ unpack_rpm() {
   mkdir -p "$dest"
   pushd "$dest" || exit 1
   "$NEWROOT/usr/bin/chroot" "$NEWROOT" /usr/bin/rpm2cpio "${source##"$NEWROOT"}" |
-    cpio --extract --make-directories --preserve-modification-time
+    cpio --extract --make-directories --preserve-modification-time --unconditional
   popd || exit 1
 }
 
@@ -184,6 +184,8 @@ install_update() {
 }
 
 # Sets the alternative links
+#
+# It identifies whether it should use alts or update-alternatives.
 set_alternative() {
   dud_instsys=$1
   name=$2
@@ -191,12 +193,20 @@ set_alternative() {
   priority=150000
 
   executables=("$dud_instsys/usr/bin/${name}.ruby"*-*)
-  executable=${executables[0]}
+  executable="${executables[0]##"$dud_instsys"}"
+
   if [ -n "$executable" ]; then
-    "$NEWROOT/usr/bin/chroot" "$NEWROOT" /usr/sbin/update-alternatives \
-      --install "/usr/bin/$name" "$name" "${executable##"$dud_instsys"}" "$priority"
-    "$NEWROOT/usr/bin/chroot" "$NEWROOT" /usr/sbin/update-alternatives \
-      --set "$name" "${executable##"$dud_instsys"}"
+    alts=$("$NEWROOT/usr/bin/chroot" "$NEWROOT" /usr/bin/alts -l "$executable")
+    if [ -n "$alts" ]; then
+      echo "Setting alternative ${executable} using alts"
+      "$NEWROOT/usr/bin/chroot" "$NEWROOT" "/usr/bin/alts" -n "$name" "$executable"
+    else
+      "$NEWROOT/usr/bin/chroot" "$NEWROOT" /usr/sbin/update-alternatives \
+        --install "/usr/bin/$name" "$name" "$executable" "$priority"
+      "$NEWROOT/usr/bin/chroot" "$NEWROOT" /usr/sbin/update-alternatives \
+        --set "$name" "$executable"
+    fi
+
   fi
 }
 

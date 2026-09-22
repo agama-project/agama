@@ -76,6 +76,11 @@ Requires:       agama-yast
 Requires:       agama-common
 # required for importing SSL certificates
 Requires:       ca-certificates
+%ifarch s390x
+# s390 specific frame title that is read from readvalues from s390-tools
+# needed also for tests, so build require it
+Requires:       qclib
+%endif
 
 %description
 Agama is a service-based Linux installer. It is composed of an HTTP-based API,

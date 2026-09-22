@@ -35,7 +35,7 @@ RSpec.describe Agama::DBus::Storage::DASD do
     allow(manager).to receive(:on_format_finish)
     allow(manager).to receive(:probe)
     allow(manager).to receive(:devices).and_return([])
-    allow(manager).to receive(:config_json).and_return(nil.to_json)
+    allow(manager).to receive(:config_json).and_return(nil)
     allow(manager).to receive(:probed?).and_return(true)
   end
 
@@ -47,9 +47,8 @@ RSpec.describe Agama::DBus::Storage::DASD do
     end
 
     it "probes for devices" do
-      expect(subject).to receive(:ProgressChanged).ordered
+      expect(subject).to receive(:ProgressChanged).with(kind_of(String)).ordered
       expect(manager).to receive(:probe).ordered
-      expect(subject).to receive(:SystemChanged).ordered
       expect(subject).to receive(:ProgressFinished).ordered
       subject.probe
     end
@@ -161,10 +160,9 @@ RSpec.describe Agama::DBus::Storage::DASD do
       end
 
       it "performs the configuration" do
-        expect(subject).to receive(:SystemChanged)
-        expect(subject).to receive(:ProgressChanged)
-        expect(subject).to receive(:ProgressFinished)
+        expect(subject).to receive(:ProgressChanged).with(kind_of(String))
         expect(manager).to receive(:configure).with(config_json)
+        expect(subject).to receive(:ProgressFinished)
 
         subject.configure(serialized_config)
       end

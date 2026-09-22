@@ -93,9 +93,11 @@ const HostnameFields = withForm({
   ...defaultOptions,
   render: function Render({ form }) {
     const { software } = useSystem();
+    const legendId = React.useId();
 
     return (
       <Fieldset
+        legendId={legendId}
         legend={
           // TRANSLATORS: fieldset legend for hostname configuration
           _("Hostname")
@@ -107,6 +109,7 @@ const HostnameFields = withForm({
               <field.DropdownField
                 // TRANSLATORS: label for hostname mode selector
                 label={_("Mode")}
+                labelPrefixedBy={legendId}
                 options={[
                   {
                     value: HOSTNAME_MODE.TRANSIENT,

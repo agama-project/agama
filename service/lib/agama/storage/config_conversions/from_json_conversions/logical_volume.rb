@@ -20,6 +20,7 @@
 # find current contact information at www.suse.com.
 
 require "agama/storage/config_conversions/from_json_conversions/base"
+require "agama/storage/config_conversions/from_json_conversions/logical_volume_search"
 require "agama/storage/config_conversions/from_json_conversions/with_encryption"
 require "agama/storage/config_conversions/from_json_conversions/with_filesystem"
 require "agama/storage/config_conversions/from_json_conversions/with_size"
@@ -54,6 +55,12 @@ module Agama
           # @return [Configs::LogicalVolume]
           def default_config
             Configs::LogicalVolume.new
+          end
+
+          # @see WithSearch
+          # @return [Class]
+          def search_converter_class
+            FromJSONConversions::LogicalVolumeSearch
           end
 
           alias_method :logical_volume_json, :config_json

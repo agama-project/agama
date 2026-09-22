@@ -185,21 +185,21 @@ impl Service {
         let mut issues = vec![];
         if !self.model.locales_db().exists(&config.locale) {
             issues.push(Issue::new(
-                "unknown_locale",
+                "unknownLocale",
                 &format!("Locale '{}' is unknown", config.locale),
             ));
         }
 
         if !self.model.keymaps_db().exists(&config.keymap) {
             issues.push(Issue::new(
-                "unknown_keymap",
+                "unknownKeymap",
                 &format!("Keymap '{}' is unknown", config.keymap),
             ));
         }
 
         if !self.model.timezones_db().exists(&config.timezone) {
             issues.push(Issue::new(
-                "unknown_timezone",
+                "unknownTimezone",
                 &format!("Timezone '{}' is unknown", config.timezone),
             ));
         }

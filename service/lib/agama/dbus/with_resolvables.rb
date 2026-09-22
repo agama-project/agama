@@ -27,26 +27,24 @@ module Agama
     module WithResolvables
       # Generates the serialized JSON of the given resolvables.
       #
-      # @param patterns [Array<String>]
-      # @param packages [Array<String>]
+      # @param packages [Array<Y2Storage::Feature::Package>]
       #
       # @return [String]
-      def serialize_resolvables(patterns: [], packages: [])
-        patterns_json = patterns.map { |p| resolvable_json(p, type: "pattern") }
-        packages_json = packages.map { |p| resolvable_json(p, type: "package") }
-        JSON.pretty_generate(patterns_json + packages_json)
+      def serialize_resolvables(packages)
+        packages_json = packages.map { |p| package_json(p) }
+        JSON.pretty_generate(packages_json)
       end
 
-      # JSON representation of the given resolvable.
+      # JSON representation of the given package.
       #
-      # @param name [String]
-      # @param type ["pattern", "package"]
+      # @param package [Y2Storage::Feature::Package]
       #
       # @return [Hash]
-      def resolvable_json(name, type: "package")
+      def package_json(package)
         {
-          name: name,
-          type: type
+          name:     package.name,
+          type:     "package",
+          optional: package.optional?
         }
       end
     end

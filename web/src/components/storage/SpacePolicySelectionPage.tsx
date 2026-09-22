@@ -75,12 +75,10 @@ export default function SpacePolicySelectionPage() {
   const [actions, setActions] = useState(
     children
       .filter((d) => toDevice(d) && volumeDeviceAction(toDevice(d)))
-      .map(
-        (d: System.Device): SpacePolicyAction => ({
-          deviceName: toDevice(d).name,
-          value: volumeDeviceAction(toDevice(d)),
-        }),
-      ),
+      .map((d: System.Device): SpacePolicyAction => ({
+        deviceName: toDevice(d).name,
+        value: volumeDeviceAction(toDevice(d)),
+      })),
   );
 
   const deviceAction = (device: System.Device | System.UnusedSlot) => {

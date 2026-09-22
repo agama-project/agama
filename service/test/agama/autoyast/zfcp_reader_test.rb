@@ -50,7 +50,7 @@ describe Agama::AutoYaST::ZFCPReader do
           {
             "controller_id" => "0.0.fa00",
             "wwpn"          => "0x500507630300c562",
-            "lun"           => "0x4010403300000000"
+            "fcp_lun"       => "0x4010403300000000"
           }
         ]
       end

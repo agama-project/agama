@@ -80,6 +80,9 @@ build: $(DESTDIR)
 check:
 	for i in ./test/*_test.*; do $${i} || exit 1; done
 
+validate:
+	kiwi-ng image info --description src
+
 # Shellcheck reports lots of warnings, run it in the error-only mode first. If that succeeds run it
 # in full mode with warnings but ignore the failures (some are false positives).
 # TODO: Fix/disable the warnings and run it in more strict mode.

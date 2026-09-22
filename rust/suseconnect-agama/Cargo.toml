@@ -9,13 +9,13 @@ name = "suseconnect_agama"
 path = "src/lib.rs"
 
 [dependencies]
-serde = { version = "1.0.228", features = ["derive"] }
-serde_json = "1.0.140"
+serde = { workspace = true }
+serde_json = { workspace = true }
 suseconnect-agama-sys = { path="./suseconnect-agama-sys" }
-thiserror = "2.0.16"
-tracing = "0.1.41"
-url = { version = "2.5.4", features = ["serde"] }
+thiserror = { workspace = true }
+tracing = { workspace = true }
+url = { workspace = true }
 
 [dev-dependencies]
-tempfile = "3.20.0"
-tracing-subscriber = "0.3.20"
+tempfile = { workspace = true }
+tracing-subscriber = { workspace = true }

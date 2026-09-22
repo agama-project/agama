@@ -13,11 +13,12 @@ repository](https://github.com/openSUSE/agama/tree/master/live) repository.
 To build the ISO locally run the
 
 ```shell
-osc build -M <build_flavor> images
+osc build -M $BUILD_FLAVOR $REPO
 ```
 
-command. See the [_multibuild](_multibuild) file for the list of configured
-build flavors. To build for example the openSUSE flavor run this command:
+command. See the [`_multibuild`](_multibuild) file for the list of configured
+build flavors. See `osc repos` for the correct repo names.
+To build for example the openSUSE flavor run this command:
 
 ```shell
 osc build -M openSUSE images

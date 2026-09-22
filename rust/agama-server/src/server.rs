@@ -21,4 +21,4 @@
 pub mod web;
 pub use web::{server_service, server_with_state};
 
-mod config_schema;
+pub(crate) mod config_schema;

@@ -39,7 +39,6 @@ import storageRoutes from "~/routes/storage";
 import softwareRoutes from "~/routes/software";
 import usersRoutes from "~/routes/users";
 import { SYSTEM, USER, ROOT as PATHS } from "./routes/paths";
-import { N_ } from "~/i18n";
 
 // Redirects for legacy routes that have been consolidated or renamed. These
 // help prevent 404s for bookmarked URLs or external links after route
@@ -51,6 +50,10 @@ import { N_ } from "~/i18n";
 // compatibility measure and should be retained for some time to allow
 // bookmarked URLs and external links to naturally transition.
 const legacyRedirects = () => [
+  {
+    path: "/overview",
+    element: <Navigate to={PATHS.root} replace />,
+  },
   {
     path: "/hostname",
     element: <Navigate to={SYSTEM.root} replace />,
@@ -71,13 +74,8 @@ const legacyRedirects = () => [
 
 const rootRoutes = () => [
   {
-    path: "/overview",
-    element: <OverviewPage />,
-  },
-  {
     path: SYSTEM.root,
     element: <SystemPage />,
-    handle: { name: N_("System"), icon: "server" },
   },
   registrationRoutes(),
   l10nRoutes(),
@@ -140,4 +138,4 @@ const router = () =>
     },
   ]);
 
-export { router, rootRoutes, PATHS };
+export { router, PATHS };

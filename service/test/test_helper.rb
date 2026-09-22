@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022] SUSE LLC
+# Copyright (c) [2022-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -18,6 +18,10 @@
 #
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
+
+# Mock some YaST modules like Package.
+agama_y2dir = File.expand_path("../lib/agama/y2dir", __dir__)
+ENV["Y2DIR"] = [ENV.fetch("Y2DIR", nil), agama_y2dir].compact.join(":")
 
 require "yast"
 require "yast/rspec"

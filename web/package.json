@@ -23,7 +23,7 @@
     "node": ">=18"
   },
   "devDependencies": {
-    "@agama-project/eslint-plugin-agama-i18n": "^1.3.0",
+    "@agama-project/eslint-plugin-agama-i18n": "^1.4.0",
     "@babel/core": "^7.29.0",
     "@babel/eslint-parser": "^7.28.6",
     "@babel/preset-env": "^7.29.0",
@@ -69,6 +69,7 @@
     "jest-environment-jsdom": "^30.2.0",
     "jest-transform-stub": "^2.0.0",
     "mini-css-extract-plugin": "^2.10.0",
+    "monaco-editor-webpack-plugin": "^7.1.1",
     "neostandard": "^0.13.0",
     "prettier": "^3.8.1",
     "react-refresh": "^0.18.0",
@@ -103,12 +104,16 @@
     "axios": "^1.13.6",
     "fast-sort": "^3.4.1",
     "ipaddr.js": "^2.3.0",
+    "monaco-editor": "^0.55.1",
     "radashi": "^12.7.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-router": "7.13.1",
+    "react-router": "7.15.1",
     "sprintf-js": "^1.1.3",
     "stacktracey": "^2.1.8",
     "xbytes": "^1.9.1"
+  },
+  "overrides": {
+    "brace-expansion": "^5.0.9"
   }
 }

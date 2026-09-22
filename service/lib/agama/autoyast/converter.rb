@@ -49,7 +49,10 @@ module Agama
       # Converts the given AutoYaST profile to an Agama profile.
       #
       # @return [Hash]
+      # rubocop:disable Metrics/AbcSize
       def to_agama(profile)
+        return {} if profile.empty?
+
         [
           BootloaderReader.new(profile).read,
           DASDReader.new(profile).read,
@@ -69,6 +72,7 @@ module Agama
           ZFCPReader.new(profile).read
         ].inject(:merge)
       end
+      # rubocop:enable Metrics/AbcSize
     end
   end
 end

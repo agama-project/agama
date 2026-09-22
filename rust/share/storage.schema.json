@@ -428,8 +428,52 @@
     "driveSearchCondition": {
       "anyOf": [
         { "$ref": "#/$defs/searchConditionName" },
-        { "$ref": "#/$defs/searchConditionSize" }
+        { "$ref": "#/$defs/searchConditionSize" },
+        { "$ref": "#/$defs/searchConditionDriver" },
+        { "$ref": "#/$defs/searchConditionBoss" },
+        { "$ref": "#/$defs/searchConditionFilesystem" },
+        { "$ref": "#/$defs/searchConditionPartitions" },
+        { "$ref": "#/$defs/driveSearchConditionAnd" },
+        { "$ref": "#/$defs/driveSearchConditionOr" },
+        { "$ref": "#/$defs/driveSearchConditionNot" }
       ]
+    },
+    "driveSearchConditionAnd": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["and"],
+      "properties": {
+        "and": {
+          "description": "Matches when all the nested conditions match.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/driveSearchCondition" },
+          "minItems": 2
+        }
+      }
+    },
+    "driveSearchConditionOr": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["or"],
+      "properties": {
+        "or": {
+          "description": "Matches when any of the nested conditions matches.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/driveSearchCondition" },
+          "minItems": 2
+        }
+      }
+    },
+    "driveSearchConditionNot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["not"],
+      "properties": {
+        "not": {
+          "description": "Matches when the nested condition does not match.",
+          "$ref": "#/$defs/driveSearchCondition"
+        }
+      }
     },
     "driveSearchSort": {
       "anyOf": [
@@ -479,8 +523,50 @@
     "mdRaidSearchCondition": {
       "anyOf": [
         { "$ref": "#/$defs/searchConditionName" },
-        { "$ref": "#/$defs/searchConditionSize" }
+        { "$ref": "#/$defs/searchConditionSize" },
+        { "$ref": "#/$defs/searchConditionFilesystem" },
+        { "$ref": "#/$defs/searchConditionPartitions" },
+        { "$ref": "#/$defs/mdRaidSearchConditionAnd" },
+        { "$ref": "#/$defs/mdRaidSearchConditionOr" },
+        { "$ref": "#/$defs/mdRaidSearchConditionNot" }
       ]
+    },
+    "mdRaidSearchConditionAnd": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["and"],
+      "properties": {
+        "and": {
+          "description": "Matches when all the nested conditions match.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/mdRaidSearchCondition" },
+          "minItems": 2
+        }
+      }
+    },
+    "mdRaidSearchConditionOr": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["or"],
+      "properties": {
+        "or": {
+          "description": "Matches when any of the nested conditions matches.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/mdRaidSearchCondition" },
+          "minItems": 2
+        }
+      }
+    },
+    "mdRaidSearchConditionNot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["not"],
+      "properties": {
+        "not": {
+          "description": "Matches when the nested condition does not match.",
+          "$ref": "#/$defs/mdRaidSearchCondition"
+        }
+      }
     },
     "mdRaidSearchSort": {
       "anyOf": [
@@ -530,8 +616,48 @@
     "volumeGroupSearchCondition": {
       "anyOf": [
         { "$ref": "#/$defs/searchConditionName" },
-        { "$ref": "#/$defs/searchConditionSize" }
+        { "$ref": "#/$defs/searchConditionSize" },
+        { "$ref": "#/$defs/volumeGroupSearchConditionAnd" },
+        { "$ref": "#/$defs/volumeGroupSearchConditionOr" },
+        { "$ref": "#/$defs/volumeGroupSearchConditionNot" }
       ]
+    },
+    "volumeGroupSearchConditionAnd": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["and"],
+      "properties": {
+        "and": {
+          "description": "Matches when all the nested conditions match.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/volumeGroupSearchCondition" },
+          "minItems": 2
+        }
+      }
+    },
+    "volumeGroupSearchConditionOr": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["or"],
+      "properties": {
+        "or": {
+          "description": "Matches when any of the nested conditions matches.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/volumeGroupSearchCondition" },
+          "minItems": 2
+        }
+      }
+    },
+    "volumeGroupSearchConditionNot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["not"],
+      "properties": {
+        "not": {
+          "description": "Matches when the nested condition does not match.",
+          "$ref": "#/$defs/volumeGroupSearchCondition"
+        }
+      }
     },
     "volumeGroupSearchSort": {
       "anyOf": [
@@ -599,8 +725,50 @@
       "anyOf": [
         { "$ref": "#/$defs/searchConditionName" },
         { "$ref": "#/$defs/searchConditionSize" },
-        { "$ref": "#/$defs/searchConditionPartitionNumber" }
+        { "$ref": "#/$defs/searchConditionPartitionNumber" },
+        { "$ref": "#/$defs/searchConditionPartitionId" },
+        { "$ref": "#/$defs/searchConditionFilesystem" },
+        { "$ref": "#/$defs/partitionSearchConditionAnd" },
+        { "$ref": "#/$defs/partitionSearchConditionOr" },
+        { "$ref": "#/$defs/partitionSearchConditionNot" }
       ]
+    },
+    "partitionSearchConditionAnd": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["and"],
+      "properties": {
+        "and": {
+          "description": "Matches when all the nested conditions match.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/partitionSearchCondition" },
+          "minItems": 2
+        }
+      }
+    },
+    "partitionSearchConditionOr": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["or"],
+      "properties": {
+        "or": {
+          "description": "Matches when any of the nested conditions matches.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/partitionSearchCondition" },
+          "minItems": 2
+        }
+      }
+    },
+    "partitionSearchConditionNot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["not"],
+      "properties": {
+        "not": {
+          "description": "Matches when the nested condition does not match.",
+          "$ref": "#/$defs/partitionSearchCondition"
+        }
+      }
     },
     "logicalVolumeSearch": {
       "anyOf": [
@@ -639,8 +807,49 @@
     "logicalVolumeSearchCondition": {
       "anyOf": [
         { "$ref": "#/$defs/searchConditionName" },
-        { "$ref": "#/$defs/searchConditionSize" }
+        { "$ref": "#/$defs/searchConditionSize" },
+        { "$ref": "#/$defs/searchConditionFilesystem" },
+        { "$ref": "#/$defs/logicalVolumeSearchConditionAnd" },
+        { "$ref": "#/$defs/logicalVolumeSearchConditionOr" },
+        { "$ref": "#/$defs/logicalVolumeSearchConditionNot" }
       ]
+    },
+    "logicalVolumeSearchConditionAnd": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["and"],
+      "properties": {
+        "and": {
+          "description": "Matches when all the nested conditions match.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/logicalVolumeSearchCondition" },
+          "minItems": 2
+        }
+      }
+    },
+    "logicalVolumeSearchConditionOr": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["or"],
+      "properties": {
+        "or": {
+          "description": "Matches when any of the nested conditions matches.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/logicalVolumeSearchCondition" },
+          "minItems": 2
+        }
+      }
+    },
+    "logicalVolumeSearchConditionNot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["not"],
+      "properties": {
+        "not": {
+          "description": "Matches when the nested condition does not match.",
+          "$ref": "#/$defs/logicalVolumeSearchCondition"
+        }
+      }
     },
     "searchConditionName": {
       "type": "object",
@@ -689,6 +898,29 @@
         "less": { "$ref": "#/$defs/sizeValue" }
       }
     },
+    "searchConditionDriver": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["driver"],
+      "properties": {
+        "driver": {
+          "description": "Matches devices handled by the given kernel driver, as reported by hwinfo. A device can be handled by several drivers; the condition matches if any of them is the given one. Do not confuse with driver_modules, which values usually use underscore (virtio-pci vs virtio_pci) and subfix (ahci vs ahci_mod).",
+          "type": "string",
+          "examples": ["ahci", "sd"]
+        }
+      }
+    },
+    "searchConditionBoss": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["boss"],
+      "properties": {
+        "boss": {
+          "description": "Whether the device is a BOSS (Boot Optimized Storage Solution) device, a technology introduced by Dell. Use false to match any other device.",
+          "type": "boolean"
+        }
+      }
+    },
     "searchConditionPartitionNumber": {
       "type": "object",
       "additionalProperties": false,
@@ -696,6 +928,235 @@
       "properties": {
         "number": {
           "description": "Partition number (e.g., 1 for vda1).",
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "searchConditionPartitionId": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id"],
+      "properties": {
+        "id": { "$ref": "#/$defs/partitionIdAny" }
+      }
+    },
+    "partitionIdAny": {
+      "title": "Partition id",
+      "description": "Any partition id managed by libstorage-ng. Some ids are only valid for a given partition table type.",
+      "enum": [
+        "dos12",
+        "dos16",
+        "ntfs",
+        "dos32",
+        "extended",
+        "diag",
+        "prep",
+        "swap",
+        "linux",
+        "irst",
+        "lvm",
+        "raid",
+        "xbootldr",
+        "esp",
+        "bios_boot",
+        "windows_basic_data",
+        "microsoft_reserved",
+        "linux_home",
+        "linux_server_data",
+        "linux_root_arm",
+        "linux_root_aarch64",
+        "linux_root_ppc32",
+        "linux_root_ppc64be",
+        "linux_root_ppc64le",
+        "linux_root_riscv32",
+        "linux_root_riscv64",
+        "linux_root_s390",
+        "linux_root_s390x",
+        "linux_root_x86",
+        "linux_root_x86_64",
+        "linux_usr_arm",
+        "linux_usr_aarch64",
+        "linux_usr_ppc32",
+        "linux_usr_ppc64be",
+        "linux_usr_ppc64le",
+        "linux_usr_riscv32",
+        "linux_usr_riscv64",
+        "linux_usr_s390",
+        "linux_usr_s390x",
+        "linux_usr_x86",
+        "linux_usr_x86_64"
+      ]
+    },
+    "searchConditionFilesystem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["filesystem"],
+      "properties": {
+        "filesystem": {
+          "anyOf": [
+            { "$ref": "#/$defs/searchFilesystemPresence" },
+            { "$ref": "#/$defs/filesystemCondition" }
+          ]
+        }
+      }
+    },
+    "searchFilesystemPresence": {
+      "description": "Shortcut to match by filesystem presence: \"any\" matches formatted devices, \"none\" matches unformatted ones.",
+      "enum": ["any", "none"]
+    },
+    "filesystemCondition": {
+      "description": "Matches formatted devices whose file system satisfies the condition.",
+      "anyOf": [
+        { "$ref": "#/$defs/filesystemConditionType" },
+        { "$ref": "#/$defs/filesystemConditionLabel" },
+        { "$ref": "#/$defs/filesystemConditionAnd" },
+        { "$ref": "#/$defs/filesystemConditionOr" },
+        { "$ref": "#/$defs/filesystemConditionNot" }
+      ]
+    },
+    "filesystemConditionType": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type"],
+      "properties": {
+        "type": { "$ref": "#/$defs/filesystemTypeAny" }
+      }
+    },
+    "filesystemConditionLabel": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["label"],
+      "properties": {
+        "label": {
+          "description": "File system label.",
+          "type": "string"
+        }
+      }
+    },
+    "filesystemConditionAnd": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["and"],
+      "properties": {
+        "and": {
+          "description": "Matches when all the nested conditions match.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/filesystemCondition" },
+          "minItems": 2
+        }
+      }
+    },
+    "filesystemConditionOr": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["or"],
+      "properties": {
+        "or": {
+          "description": "Matches when any of the nested conditions matches.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/filesystemCondition" },
+          "minItems": 2
+        }
+      }
+    },
+    "filesystemConditionNot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["not"],
+      "properties": {
+        "not": {
+          "description": "Matches when the nested condition does not match.",
+          "$ref": "#/$defs/filesystemCondition"
+        }
+      }
+    },
+    "searchConditionPartitions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["partitions"],
+      "properties": {
+        "partitions": {
+          "anyOf": [
+            { "$ref": "#/$defs/searchPartitionsPresence" },
+            { "$ref": "#/$defs/partitionsQuantifier" }
+          ]
+        }
+      }
+    },
+    "searchPartitionsPresence": {
+      "description": "Shortcut to match by partitions presence: \"any\" matches devices with at least one partition, \"none\" matches devices with no partitions.",
+      "enum": ["any", "none"]
+    },
+    "partitionsQuantifier": {
+      "description": "Matches devices whose partitions satisfy the quantifier.",
+      "anyOf": [
+        { "$ref": "#/$defs/partitionsQuantifierAny" },
+        { "$ref": "#/$defs/partitionsQuantifierNone" },
+        { "$ref": "#/$defs/partitionsQuantifierAll" },
+        { "$ref": "#/$defs/partitionsQuantifierCount" }
+      ]
+    },
+    "partitionsQuantifierAny": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["any"],
+      "properties": {
+        "any": {
+          "description": "Matches when at least one partition satisfies the condition.",
+          "$ref": "#/$defs/partitionSearchCondition"
+        }
+      }
+    },
+    "partitionsQuantifierNone": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["none"],
+      "properties": {
+        "none": {
+          "description": "Matches when no partition satisfies the condition.",
+          "$ref": "#/$defs/partitionSearchCondition"
+        }
+      }
+    },
+    "partitionsQuantifierAll": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["all"],
+      "properties": {
+        "all": {
+          "description": "Matches when there is at least one partition and all partitions satisfy the condition.",
+          "$ref": "#/$defs/partitionSearchCondition"
+        }
+      }
+    },
+    "partitionsQuantifierCount": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["count"],
+      "properties": {
+        "count": { "$ref": "#/$defs/partitionsCount" }
+      }
+    },
+    "partitionsCount": {
+      "type": "object",
+      "additionalProperties": false,
+      "anyOf": [
+        { "required": ["min"] },
+        { "required": ["max"] }
+      ],
+      "properties": {
+        "condition": {
+          "description": "Optional condition; omit to count all partitions.",
+          "$ref": "#/$defs/partitionSearchCondition"
+        },
+        "min": {
+          "description": "Minimum number of matching partitions (must be >= 1).",
+          "type": "integer",
+          "minimum": 1
+        },
+        "max": {
+          "description": "Maximum number of matching partitions (must be >= 1).",
           "type": "integer",
           "minimum": 1
         }
@@ -746,7 +1207,7 @@
       ]
     },
     "logicalVolumeSearchSortCriterionShort": {
-      "enum": ["name", "size", "number"]
+      "enum": ["name", "size"]
     },
     "logicalVolumeSearchSortCriterionFull": {
       "type": "object",

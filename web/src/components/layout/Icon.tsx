@@ -164,6 +164,8 @@ const icons = {
  * `--agm-t--icon--size--*` token (see styles/components). A product can resize
  * icons consistently without touching the call sites.
  */
+const INLINE_SIZE_CLASS = "agm-icon-inline";
+
 const SIZE_CLASSES = {
   xs: "agm-icon-xs",
   sm: "agm-icon-sm",
@@ -178,7 +180,12 @@ const SIZE_CLASSES = {
 export type IconProps = React.SVGAttributes<SVGElement> & {
   /** Name of the desired icon */
   name: keyof typeof icons;
-  /** Named size for the icon. */
+  /**
+   * Named size for the icon.
+   *
+   * Left out, the icon takes the size of the text around it, which is what an
+   * icon sitting inline with a label wants.
+   */
   size?: keyof typeof SIZE_CLASSES;
   /** Vertical alignment of the icon */
   verticalAlign?: "baseline" | "middle" | "text-top" | "text-bottom" | "sub" | "super";
@@ -234,7 +241,9 @@ export default function Icon({
     ...(align && { verticalAlign: align }),
     ...style,
   };
-  const classes = [size && SIZE_CLASSES[size], className].filter(Boolean).join(" ") || undefined;
+  const classes =
+    [size ? SIZE_CLASSES[size] : INLINE_SIZE_CLASS, className].filter(Boolean).join(" ") ||
+    undefined;
 
   return (
     <IconComponent
