@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-09 11:53+0000\n"
+"POT-Creation-Date: 2026-09-18 08:11+0000\n"
 "PO-Revision-Date: 2026-03-25 18:04+0000\n"
 "Last-Translator: Ondřej  Sedlák <sedlak.o@tutanota.com>\n"
 "Language-Team: Czech <https://l10n.opensuse.org/projects/agama/agama-rust-"
@@ -797,32 +797,32 @@ msgstr "Ukládají se uživatelská nastavení"
 msgid "Configuring iSCSI devices"
 msgstr "Konfigurují se zařízení iSCSI"
 
-#: agama-manager/src/actions.rs:581
+#: agama-manager/src/actions.rs:582
 #, fuzzy
 msgid "Configuring zFCP devices"
 msgstr "Konfigurují se zařízení iSCSI"
 
-#: agama-manager/src/actions.rs:606
+#: agama-manager/src/actions.rs:608
 msgid "Configuring DASD devices"
 msgstr "Konfigurují se zařízení DASD"
 
-#: agama-manager/src/actions.rs:631
+#: agama-manager/src/actions.rs:634
 msgid "Setting up the network"
 msgstr "Nastavuje konfigurace sítě"
 
-#: agama-manager/src/actions.rs:661
+#: agama-manager/src/actions.rs:664
 msgid "Preparing the storage proposal"
 msgstr "Připravuje se návrh úložiště"
 
-#: agama-manager/src/actions.rs:690
+#: agama-manager/src/actions.rs:694
 msgid "Storing bootloader settings"
 msgstr "Ukládá se nastavení zavaděče"
 
-#: agama-manager/src/actions.rs:723
+#: agama-manager/src/actions.rs:728
 msgid "Preparing the software proposal"
 msgstr "Připravuje se návrh softwaru"
 
-#: agama-manager/src/actions.rs:753
+#: agama-manager/src/actions.rs:758
 #, fuzzy
 msgid "Configuring SELinux"
 msgstr "Konfigurují se zařízení DASD"

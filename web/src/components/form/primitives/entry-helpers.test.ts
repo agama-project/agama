@@ -20,7 +20,11 @@
  * find current contact information at www.suse.com.
  */
 
-import { parsePasteEntries, pasteAnnouncement } from "~/components/form/primitives/entry-helpers";
+import {
+  clearInvalid,
+  parsePasteEntries,
+  pasteAnnouncement,
+} from "~/components/form/primitives/entry-helpers";
 
 // parsePasteEntries is tested directly because the fields using it hold their
 // draft in an <input type="text"> (despite managing multiple values in state). Text inputs strip
@@ -136,5 +140,27 @@ describe("pasteAnnouncement", () => {
     expect(pasteAnnouncement(0, 1, unavailable(2))).toBe(
       "0 entries added, 2 not available, 1 duplicates skipped.",
     );
+  });
+});
+
+describe("clearInvalid", () => {
+  const errorFor = (entry: string) => (entry.startsWith("bad") ? "not a good one" : undefined);
+
+  it("keeps the entries that pass validation, in the order they were in", () => {
+    expect(clearInvalid(["one", "bad1", "two", "bad2"], errorFor).kept).toEqual(["one", "two"]);
+  });
+
+  it("says how many were taken out", () => {
+    expect(clearInvalid(["one", "bad1", "bad2"], errorFor).announcement).toBe(
+      "2 invalid entries removed.",
+    );
+  });
+
+  // The button offering it is only there while something is marked, but a
+  // field asking anyway gets an answer rather than a surprise.
+  it("keeps everything and says so when nothing is marked", () => {
+    const { kept, announcement } = clearInvalid(["one", "two"], errorFor);
+    expect(kept).toEqual(["one", "two"]);
+    expect(announcement).toBe("0 invalid entries removed.");
   });
 });

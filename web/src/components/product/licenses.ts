@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2026] SUSE LLC
+ * Copyright (c) [2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,36 +20,27 @@
  * find current contact information at www.suse.com.
  */
 
-/**
- * Field definitions for the product selection form: types and defaults.
- */
+import { isEmpty } from "radashi";
 
-import { formOptions } from "@tanstack/react-form";
-
-import type { License, Product, Mode } from "~/model/system";
-
-/** Types */
-
-export type FormFields = {
-  selectedProduct?: Product;
-  selectedMode?: Mode;
-  acceptedLicenses: License["id"][];
-};
-
-/** Default values */
+import type { License, Product } from "~/model/system";
 
 /**
- * Default values for all ProductSelectionForm fields.
+ * Returns the licenses the user must accept to install the given product.
+ *
+ * Names come from the licenses known by the system. A license the system does
+ * not know, or reports without a name, is named after the product.
  */
-const defaultValues: FormFields = {
-  selectedProduct: undefined,
-  selectedMode: undefined,
-  acceptedLicenses: [],
-};
+export const productLicenses = (
+  product: Product | undefined,
+  licenses: License[] = [],
+): License[] =>
+  (product?.licenses || []).map((id) => {
+    const name = licenses.find((l) => l.id === id)?.name;
+    return { id, name: name || product.name };
+  });
 
 /**
- * Shared form options for ProductSelectionForm.
+ * Whether the system knows the given license by name.
  */
-export const defaultOptions = formOptions({
-  defaultValues,
-});
+export const hasKnownName = (license: License, licenses: License[] = []): boolean =>
+  licenses.some((l) => l.id === license.id && !isEmpty(l.name));
