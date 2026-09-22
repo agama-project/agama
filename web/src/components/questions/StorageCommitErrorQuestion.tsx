@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2025-2026] SUSE LLC
+ * Copyright (c) [2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,61 +20,35 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useState } from "react";
-import { Content, FormGroup, Stack, TextInput } from "@patternfly/react-core";
-import Text from "~/components/core/Text";
+import React from "react";
+import { Content } from "@patternfly/react-core";
 import ExpandableTechnicalSection from "~/components/questions/ExpandableTechnicalSection";
 import QuestionDialog from "~/components/questions/QuestionDialog";
 import { _ } from "~/i18n";
 import type { AnswerCallback, Question } from "~/model/question";
 
 /**
- * Component for rendering generic questions
+ * Component for rendering storage commit error questions
  *
  * @param question - the question to be answered
  * @param answerCallback - the callback to be triggered on answer
  */
-export default function RetryLoadConfigQuestion({
+export default function StorageCommitErrorQuestion({
   question,
   answerCallback,
 }: {
   question: Question;
   answerCallback: AnswerCallback;
 }): React.ReactNode {
-  const [url, setUrl] = useState(question.data?.originalValue || "");
-
-  const error = question.data?.error;
-
   return (
     <QuestionDialog
       question={question}
       answerCallback={answerCallback}
-      value={url}
-      hasForm
+      aria-label={_("Question")}
       variant="medium"
-      title={_("Cannot apply configuration")}
     >
-      <Stack hasGutter>
-        <Content isEditorial>{question.text}</Content>
-        <QuestionDialog.Form isWidthLimited={false}>
-          {/* TRANSLATORS: field label for location of configuration file */}
-          <FormGroup label={_("Location")} fieldId="location">
-            <TextInput
-              id="location"
-              size={1000}
-              value={url}
-              onChange={(_event, value) => setUrl(value)}
-            />
-          </FormGroup>
-        </QuestionDialog.Form>
-        <Content>
-          <Text isBold>
-            {/* TRANSLATORS: help text in popup to clarify what user should do */}
-            {_("Make sure the location is correct and the configuration is valid.")}
-          </Text>
-        </Content>
-        <ExpandableTechnicalSection text={error} />
-      </Stack>
+      <Content component="p">{question.text}</Content>
+      <ExpandableTechnicalSection text={question.data?.details} />
     </QuestionDialog>
   );
 }

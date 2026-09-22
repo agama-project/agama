@@ -39,7 +39,6 @@ use agama_utils::{
     products::{self, ProductSpec},
     progress, question,
 };
-use async_trait::async_trait;
 use merge::Merge;
 use network::NetworkSystemClient;
 use serde_json::Value;
@@ -652,7 +651,6 @@ impl Actor for Service {
     type Error = Error;
 }
 
-#[async_trait]
 impl MessageHandler<progress::message::GetStatus> for Service {
     /// It returns the status of the installation.
     async fn handle(&mut self, message: progress::message::GetStatus) -> Result<Status, Error> {
@@ -665,7 +663,6 @@ impl MessageHandler<progress::message::GetStatus> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::GetSystem> for Service {
     /// It returns the information of the underlying system.
     async fn handle(&mut self, _message: message::GetSystem) -> Result<SystemInfo, Error> {
@@ -712,7 +709,6 @@ impl MessageHandler<message::GetSystem> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::GetExtendedConfig> for Service {
     /// Gets the current configuration.
     ///
@@ -771,7 +767,6 @@ impl MessageHandler<message::GetExtendedConfig> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::GetConfig> for Service {
     /// Gets the current configuration set by the user.
     ///
@@ -781,7 +776,6 @@ impl MessageHandler<message::GetConfig> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::SetConfig> for Service {
     /// Sets the user configuration with the given values.
     async fn handle(&mut self, message: message::SetConfig) -> Result<(), Error> {
@@ -790,7 +784,6 @@ impl MessageHandler<message::SetConfig> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::UpdateConfig> for Service {
     /// Patches the config.
     async fn handle(&mut self, message: message::UpdateConfig) -> Result<(), Error> {
@@ -799,7 +792,6 @@ impl MessageHandler<message::UpdateConfig> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::GetProposal> for Service {
     /// It returns the current proposal, if any.
     async fn handle(&mut self, _message: message::GetProposal) -> Result<Option<Proposal>, Error> {
@@ -829,7 +821,6 @@ impl MessageHandler<message::GetProposal> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::GetIssues> for Service {
     /// It returns the current proposal, if any.
     async fn handle(&mut self, _message: message::GetIssues) -> Result<IssueMap, Error> {
@@ -837,7 +828,6 @@ impl MessageHandler<message::GetIssues> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::GetLicense> for Service {
     async fn handle(
         &mut self,
@@ -847,7 +837,6 @@ impl MessageHandler<message::GetLicense> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::RunAction> for Service {
     /// It runs the given action.
     async fn handle(&mut self, message: message::RunAction) -> Result<(), Error> {
@@ -909,7 +898,6 @@ impl MessageHandler<message::RunAction> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::GetStorageModel> for Service {
     /// It returns the storage model.
     async fn handle(&mut self, _message: message::GetStorageModel) -> Result<Option<Value>, Error> {
@@ -917,7 +905,6 @@ impl MessageHandler<message::GetStorageModel> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::SetStorageModel> for Service {
     /// Sets the storage model.
     async fn handle(&mut self, message: message::SetStorageModel) -> Result<(), Error> {
@@ -934,7 +921,6 @@ impl MessageHandler<message::SetStorageModel> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::SolveStorageModel> for Service {
     /// It solves the storage model.
     async fn handle(
@@ -950,7 +936,6 @@ impl MessageHandler<message::SolveStorageModel> for Service {
 }
 
 // FIXME: write a macro to forward a message.
-#[async_trait]
 impl MessageHandler<software::message::SetResolvables> for Service {
     /// It sets the software resolvables.
     async fn handle(&mut self, message: software::message::SetResolvables) -> Result<(), Error> {
@@ -960,7 +945,6 @@ impl MessageHandler<software::message::SetResolvables> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<users::message::CheckPassword> for Service {
     async fn handle(
         &mut self,
