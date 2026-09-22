@@ -83,7 +83,7 @@ export type DeviceSelectorModalProps = {
  * outgrow the column it sits in, which used to cut it off mid-prefix. Breaking
  * within an address is left as the last resort it should be.
  */
-const deviceAddresses = (device: Device): React.ReactNode => (
+const deviceAddresses = (device: Device) => (
   <Text textStyle="textBreakWord">
     {formatList((device.addresses || []).map((address) => formatIp(address)))}
   </Text>
@@ -113,7 +113,7 @@ export default function DeviceSelectorModal({
   portOf,
   onConfirm,
   onCancel,
-}: DeviceSelectorModalProps): React.ReactNode {
+}: DeviceSelectorModalProps) {
   const confirmHintId = useId();
   const isMultiple = selectionMode === "multiple";
   // No column sorts the table at first, so the rows arrive in the same order as
