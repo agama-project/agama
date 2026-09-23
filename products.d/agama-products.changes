@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Sep 23 08:18:32 UTC 2026 - Michal Filka <mfilka@suse.com>
+
+- Switched to SLES (resp SLES for SAP) 16.2 Alpha
+  (gh#agama-project/agama#3975).
+
+-------------------------------------------------------------------
 Thu Sep 17 13:23:17 UTC 2026 - Ancor Gonzalez Sosa <ancor@suse.com>
 
 - Remove beta tag from the SLES and SLES for SAP product names
