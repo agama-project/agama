@@ -1,4 +1,29 @@
 -------------------------------------------------------------------
+Tue Sep 22 14:54:01 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Block the registration page while software changes are in progress
+  (bsc#1277099, gh#agama-project/agama#3973).
+
+-------------------------------------------------------------------
+Tue Sep 22 07:00:00 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Pick the ports of a bond or a bridge from a searchable list of
+  the devices found in the system, or from a dialog showing their
+  details, instead of typing their names by hand
+  (gh#agama-project/agama#3883, related to bsc#1279417).
+
+-------------------------------------------------------------------
+Fri Sep 18 14:30:33 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Ask to accept each license of a product requiring several
+  (jsc#PED-16988, gh#agama-project/agama#3960).
+
+-------------------------------------------------------------------
+Fri Sep 18 14:14:23 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Fix progress tracking (related to bsc#1280751).
+
+-------------------------------------------------------------------
 Fri Sep 18 07:32:00 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Show the name of the package being installed in one piece and stop

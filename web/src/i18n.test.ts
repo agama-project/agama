@@ -22,7 +22,7 @@
 
 /* eslint-disable agama-i18n/string-literals */
 
-import { _, n_, N_, Nn_ } from "~/i18n";
+import { _, n_, N_, Nn_, formatNumber } from "~/i18n";
 import agama from "~/agama";
 
 // mock the gettext functions
@@ -60,6 +60,29 @@ describe("i18n", () => {
 
       // test the object identity
       expect(Object.is(val, text)).toBe(true);
+    });
+  });
+
+  describe("formatNumber", () => {
+    const language = agama.language;
+
+    afterEach(() => {
+      agama.language = language;
+    });
+
+    it("writes the number the way the current language does", () => {
+      agama.language = "de";
+      expect(formatNumber(2.5)).toBe("2,5");
+
+      agama.language = "en";
+      expect(formatNumber(2.5)).toBe("2.5");
+    });
+
+    it("falls back to the plain number when the language is not a valid tag", () => {
+      jest.spyOn(console, "warn").mockImplementation();
+      agama.language = "not a language";
+
+      expect(formatNumber(2.5)).toBe("2.5");
     });
   });
 
