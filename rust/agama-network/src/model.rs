@@ -1493,6 +1493,125 @@ mod tests {
         );
     }
 
+    /// Removes the given connection through the HTTP API, the way a client does it.
+    fn remove(state: &mut NetworkState, id: &str) {
+        state
+            .update_state(Config {
+                connections: Some(NetworkConnectionsCollection(vec![NetworkConnection {
+                    id: id.to_string(),
+                    status: Some(Status::Removed),
+                    ..Default::default()
+                }])),
+                ..Default::default()
+            })
+            .unwrap();
+    }
+
+    #[test]
+    fn test_removing_a_controller_removes_its_ports() {
+        let mut state = stacked_state();
+        remove(&mut state, "bond0");
+
+        for id in ["bond0", "eth0", "eth1"] {
+            assert!(
+                state.get_connection(id).unwrap().is_removed(),
+                "{id} was left behind by the removal of its controller"
+            );
+        }
+    }
+
+    #[test]
+    fn test_removing_a_controller_removes_the_whole_stack_below_it() {
+        let mut state = stacked_state();
+        // br0 is two levels above the NICs: br0 -> bond0 -> eth0 + eth1.
+        remove(&mut state, "br0");
+
+        for id in ["br0", "bond0", "eth0", "eth1"] {
+            assert!(
+                state.get_connection(id).unwrap().is_removed(),
+                "{id} survived the removal of the stack it belongs to"
+            );
+        }
+    }
+
+    /// A VLAN refers to its parent by name, so it is not a port and the removal does not reach it.
+    /// See `PortResolver::warn_on_dangling_vlans`.
+    #[test]
+    fn test_removing_a_controller_does_not_remove_the_vlans_on_top_of_it() {
+        let mut state = stacked_state();
+        remove(&mut state, "br0");
+
+        assert!(!state.get_connection("br0.100").unwrap().is_removed());
+    }
+
+    #[test]
+    fn test_removing_a_port_leaves_its_controller_alone() {
+        let mut state = stacked_state();
+        remove(&mut state, "eth0");
+
+        assert!(state.get_connection("eth0").unwrap().is_removed());
+        for id in ["eth1", "bond0", "br0"] {
+            assert!(
+                !state.get_connection(id).unwrap().is_removed(),
+                "removing a port took {id} with it"
+            );
+        }
+    }
+
+    #[test]
+    fn test_removing_a_controller_reports_it_without_its_ports() {
+        let mut state = stacked_state();
+        remove(&mut state, "br0");
+
+        // Everything is on its way out, so nothing is reported as a port or as a controller.
+        let reported = exposed(&state);
+        assert!(find(&reported, "br0").bridge.unwrap().ports.is_empty());
+        assert_eq!(find(&reported, "eth0").controller, None);
+    }
+
+    /// What the web UI sends when the delete button is pressed: the whole connection, ports
+    /// included, with the status flipped.
+    #[test]
+    fn test_removing_a_controller_along_with_its_ports_list() {
+        let mut state = stacked_state();
+        let mut bond0 = find(&exposed(&state), "bond0");
+        bond0.status = Some(Status::Removed);
+
+        state
+            .update_state(Config {
+                connections: Some(NetworkConnectionsCollection(vec![bond0])),
+                ..Default::default()
+            })
+            .unwrap();
+
+        for id in ["bond0", "eth0", "eth1"] {
+            assert!(state.get_connection(id).unwrap().is_removed(), "{id}");
+        }
+    }
+
+    /// The cascade walks the controller links, so a state that somehow ended up with a loop must
+    /// not keep it spinning. The loop is reported afterwards, but only if the walk returns.
+    #[test]
+    fn test_a_loop_of_controllers_does_not_hang_the_removal() {
+        let mut first = Connection::new("first".to_string(), DeviceType::Bridge);
+        let mut second = Connection::new("second".to_string(), DeviceType::Bridge);
+        first.controller = Some(second.uuid);
+        second.controller = Some(first.uuid);
+
+        let mut state = NetworkState::default();
+        state.add_connection(first).unwrap();
+        state.add_connection(second).unwrap();
+
+        let error = state
+            .connection_collection_from(&NetworkConnectionsCollection(vec![NetworkConnection {
+                id: "second".to_string(),
+                status: Some(Status::Removed),
+                ..Default::default()
+            }]))
+            .unwrap_err();
+        assert!(matches!(error, NetworkStateError::ControllerCycle(_)));
+    }
+
     #[test]
     fn test_removing_a_connection_that_is_still_listed_as_a_port_is_rejected() {
         let state = NetworkState::default();

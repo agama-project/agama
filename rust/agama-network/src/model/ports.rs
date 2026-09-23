@@ -31,7 +31,7 @@ use std::collections::{HashMap, HashSet};
 use agama_utils::api::network::{DeviceType, NetworkConnection, NetworkConnectionsCollection};
 use uuid::Uuid;
 
-use super::{Connection, ConnectionCollection};
+use super::{Connection, ConnectionCollection, ConnectionConfig};
 use crate::error::NetworkStateError;
 
 /// Turns a collection of API connections into internal connections with their relationships set.
@@ -65,6 +65,7 @@ impl<'a> PortResolver<'a> {
         let mut conns = self.merge_incoming(incoming)?;
         let claims = self.resolve_claims(incoming, &mut conns)?;
         self.link(incoming, &mut conns, &claims);
+        self.cascade_removals(&mut conns);
         self.check_cycles(&conns)?;
 
         Ok(ConnectionCollection(conns))
@@ -245,6 +246,94 @@ impl<'a> PortResolver<'a> {
                 continue;
             };
             warn_on_controller_mismatch(api_conn, conn, controller_name(conns, conn.controller));
+        }
+    }
+
+    /// Marks the ports of the connections that are being removed, all the way down.
+    ///
+    /// A port does not outlive its controller. It is a connection with its IP settings disabled
+    /// and, in the case of a bond or a bridge, a device that only exists because something asked
+    /// for it. Leaving it behind would mean writing a connection that points at a controller that
+    /// is being deleted in the very same operation.
+    ///
+    /// The ports do not have to be part of the payload: removing a whole stack is a single entry,
+    /// and everything below it is pulled in from the connections that already exist.
+    fn cascade_removals(&self, conns: &mut Vec<Connection>) {
+        let mut removed: HashSet<Uuid> = conns
+            .iter()
+            .filter(|c| c.is_removed())
+            .map(|c| c.uuid)
+            .collect();
+
+        if removed.is_empty() {
+            return;
+        }
+
+        // One pass per level of the stack. A pass that neither pulls a connection in nor removes
+        // one is the last, so a loop of controllers cannot keep this spinning.
+        loop {
+            let present: HashSet<Uuid> = conns.iter().map(|c| c.uuid).collect();
+            let pulled: Vec<Connection> = self
+                .known
+                .iter()
+                .filter(|c| !present.contains(&c.uuid))
+                .filter(|c| c.controller.is_some_and(|uuid| removed.contains(&uuid)))
+                .cloned()
+                .collect();
+
+            let mut changed = !pulled.is_empty();
+            conns.extend(pulled);
+
+            for conn in conns.iter_mut() {
+                if conn.is_removed() || !conn.controller.is_some_and(|u| removed.contains(&u)) {
+                    continue;
+                }
+
+                tracing::info!("Removing '{}' along with its controller", conn.id);
+                conn.remove();
+                removed.insert(conn.uuid);
+                changed = true;
+            }
+
+            if !changed {
+                break;
+            }
+        }
+
+        self.warn_on_dangling_vlans(conns);
+    }
+
+    /// Warns about the VLANs that a removal leaves without a parent.
+    ///
+    /// A VLAN names its parent by interface name instead of joining it as a port, so it is not
+    /// part of the tree that [`Self::cascade_removals`] walks. Whether it should be is not
+    /// obvious: a VLAN over a bridge or a bond goes down with it, because the parent device
+    /// disappears along with its connection, but a VLAN over a physical NIC keeps working after
+    /// the profile of that NIC is deleted. Until that is settled, at least say it out loud.
+    fn warn_on_dangling_vlans(&self, conns: &[Connection]) {
+        let present: HashSet<Uuid> = conns.iter().map(|c| c.uuid).collect();
+        let all = || {
+            conns
+                .iter()
+                .chain(self.known.iter().filter(|c| !present.contains(&c.uuid)))
+        };
+
+        for conn in all().filter(|c| c.is_removed()) {
+            let parent = ConnectionCollection::reference_name(conn);
+
+            for vlan in all().filter(|c| !c.is_removed()) {
+                let ConnectionConfig::Vlan(config) = &vlan.config else {
+                    continue;
+                };
+
+                if config.parent == parent {
+                    tracing::warn!(
+                        "The VLAN '{}' is left without its parent '{}', which is being removed",
+                        vlan.id,
+                        parent
+                    );
+                }
+            }
         }
     }
 
