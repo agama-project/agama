@@ -1,8 +1,7 @@
-id: SLES_SAP
-name: SUSE Linux Enterprise Server for SAP applications 16.1
-archs: x86_64,ppc
+id: SLES
+name: SUSE Linux Enterprise Server 16.2 Alpha
 registration: true
-version: "16.1"
+version: "16.2"
 licenses:
   - "license.final"
 # ------------------------------------------------------------------------------
@@ -10,91 +9,113 @@ licenses:
 # at the at translations/description key below to avoid using obsolete
 # translations!!
 # ------------------------------------------------------------------------------
-description: "The leading OS for a secure and reliable SAP platform. Endorsed
-  for SAP deployments, SUSE Linux Enterprise Server for SAP applications
-  futureproofs the SAP project, offers uninterrupted business, and minimizes
-  operational risks and costs."
+description: "An open, reliable, compliant, and future-proof Linux Server choice
+  that ensures the enterprise's business continuity. It is the secure and
+  adaptable OS for long-term supported, innovation-ready infrastructure running
+  business-critical workloads on-premises, in the cloud, and at the edge."
 icon: SUSE.svg
 # Do not manually change any translations! See README.md for more details.
 translations:
   description:
-    ca: El sistema operatiu líder per a una plataforma SAP segura i fiable. Avalat
-      per a implementacions SAP, SUSE Linux Enterprise Server per a aplicacions
-      SAP prepara el projecte SAP per al futur, ofereix negocis sense
-      interrupcions i minimitza els riscos i costos operatius.
-    cs: Přední distribuce pro bezpečnou a spolehlivou platformu SAP. Určený pro
-      nasazení SAP, SUSE Linux Enterprise Server for SAP applications zajišťuje
-      dlouhodobou udržitelnost projektu SAP, nabízí nepřerušený chod podniku a
-      minimalizuje provozní rizika a náklady.
-    de: Das führende Betriebssytem für eine sichere und zuverlässige SAP-Platform.
-      SUSE Linux Enterprise Server für SAP-Anwendungen ist auf
-      SAP-Bereitstellungen abgestimmt, macht SAP-Projekte zukunftssicher, bietet
-      einen unterbrechungsfreien Geschäftsbetrieb und minimiert betriebliche
-      Risiken und Kosten.
-    el: Το κορυφαίο ΛΣ για μια ασφαλή και αξιόπιστη πλατφόρμα SAP. Εγκεκριμένο για
-      υλοποιήσεις SAP, το SUSE Linux Enterprise Server για εφαρμογές SAP
-      θωρακίζει μελλοντικά το έργο SAP, προσφέρει αδιάλειπτη επιχειρηματική
-      δραστηριότητα και ελαχιστοποιεί τους λειτουργικούς κινδύνους και το
-      κόστος.
-    es: El sistema operativo líder para una plataforma SAP segura y fiable. SUSE
-      Linux Enterprise Server for SAP applications está recomendado para
-      implantaciones SAP, ya que prepara el proyecto SAP para el futuro, ofrece
-      un funcionamiento ininterrumpido y minimiza los riesgos y costes
-      operativos.
-    fi: Johtava tietoturvallisen ja luotettavan SAP-alustan käyttöjärjestelmä. SUSE
-      Linux Enterprise Server for SAP applications on hyväksytty
-      SAP-käyttöönottoihin, joka varmistaa SAP-projektin tulevaisuuden tarjoten
-      keskeytymätöntä liiketoimintaa ja minimoi operatiiviset riskit sekä
-      kustannukset.
-    fr: Le système d’exploitation leader pour une plateforme SAP sécurisée et
-      fiable. Approuvé pour les déploiements SAP, SUSE Linux Enterprise Server
-      for SAP assure la pérennité du projet SAP, offre une continuité des
-      activités et réduit les risques opérationnels et les coûts.
-    id: Sistem operasi terdepan untuk platform SAP yang aman dan andal. Didukung
-      secara resmi untuk penerapan SAP, SUSE Linux Enterprise Server for SAP
-      Applications memberikan jaminan masa depan bagi proyek SAP, memastikan
-      kelancaran bisnis tanpa gangguan, serta meminimalkan risiko operasional
-      dan biaya.
-    it: Il sistema operativo leader per una piattaforma SAP sicura e affidabile.
-      Approvato per le implementazioni SAP, SUSE Linux Enterprise Server per
-      applicazioni SAP rende il progetto SAP a prova di futuro, garantisce la
-      continuità operativa e riduce al minimo i rischi e i costi operativi.
-    ja: 安全で信頼性のある SAP プラットフォームを構築するためのリーディング OS です。 SAP 承認も取得済みの SUSE Linux
-      Enterprise Server for SAP applications では、 SAP
-      プロジェクトに将来性をもたらすほか、途切れることのないビジネス環境を提供し、運用で発生しうるリスクやコストを最小限に抑えます。
-    lo: ລະບົບປະຕິບັດການຊັ້ນນຳສຳລັບແພລັດຟອມ SAP ທີ່ປອດໄພ ແລະ ເຊື່ອຖືໄດ້.
-      ໄດ້ຮັບການຮັບຮອງ ສຳລັບການນຳໃຊ້ SAP, SUSE Linux Enterprise Server
-      ສຳລັບແອັບພລິເຄຊັນ SAP ຊ່ວຍຮອງຮັບ ອະນາຄົດຂອງໂຄງການ SAP,
-      ຊ່ວຍໃຫ້ທຸລະກິດດຳເນີນໄປໄດ້ຢ່າງບໍ່ຂາດສາຍ, ແລະ ຫຼຸດຜ່ອນຄວາມສ່ຽງ
-      ລວມທັງຕົ້ນທຶນໃນການດຳເນີນງານ.
-    pl: Wiodący system operacyjny dla bezpiecznej i niezawodnej platformy SAP. „SUSE
-      Linux Enterprise Server for SAP Applications”, zatwierdzony do wdrożeń
-      SAP, zapewnia długoterminową stabilność projektu SAP, ciągłość działania
-      przedsiębiorstwa oraz minimalizuje ryzyko operacyjne i koszty.
-    pt_BR: O principal sistema operacional para uma plataforma SAP segura e
-      confiável. Endossado para implantações SAP, o SUSE Linux Enterprise Server
-      for SAP Applications prepara o projeto SAP para o futuro, oferece
-      continuidade nos negócios e minimiza riscos e custos operacionais.
-    ru: "Ведущая ОС для безопасной и надёжной работы SAP: сертифицирована для SAP,
-      обеспечивает стабильность, снижает риски и издержки."
-    sk: Popredný OS pre bezpečnú a spoľahlivú platformu SAP. Schválený pre nasadenie
-      SAP, SUSE Linux Enterprise Server pre aplikácie SAP zabezpečuje budúcnosť
-      projektu SAP, poskytuje nepretržitý chod podniku a minimalizuje
-      prevádzkové riziká a náklady.
-    sv: Det ledande operativsystemet för en säker och pålitlig SAP-plattform.
-      Godkänd för SAP utrullningar, SUSE Linux Enterprise Server för
-      SAP-applikationer framtidssäkrar SAP-projektet, erbjuder oavbrutna affärer
-      och minimerar operativa risker och kostnader.
-    tr: Güvenli ve sağlam bir SAP platformu için önde gelen işletim sistemi. SAP
-      dağıtımları için onaylanan SUSE Linux Enterprise Server for SAP,
-      uygulamaları SAP projesini geleceğe hazır hale getirir, kesintisiz işleyiş
-      sağlar ve operasyonel riskleri ve maliyetleri en aza indirir.
-    uk: "Провідна ОС для безпечної та надійної роботи SAP: сертифікована для SAP,
-      забезпечує стабільність, знижує ризики та витрати."
-    zh_CN: 作为SAP平台安全可靠的优选操作系统， SUSE Linux Enterprise Server for SAP
-      Applications经SAP部署认可，能够为SAP项目提供未来保障，确保业务持续运行，同时最大限度降低运营风险和成本。
-    zh_TW: 為安全可靠的 SAP 平台所打造的領先作業系統。SUSE Linux Enterprise Server for SAP Applications
-      獲 SAP 推薦部署，能為您的 SAP 專案奠定成功基石，確保業務營運不中斷，並將營運風險與成本降至最低。
+    ca: Una opció de servidor de Linux oberta, fiable, compatible i a prova del
+      futur que garanteix la continuïtat del negoci de l'empresa. És el sistema
+      operatiu segur i adaptable per a una infraestructura amb suport a llarg
+      termini i preparada per a la innovació que executa càrregues de treball
+      crítiques per a l'empresa a les instal·lacions, al núvol i a l'última.
+    cs: Otevřená, spolehlivá, kompatibilní a perspektivní volba linuxového serveru,
+      která zajišťuje kontinuitu podnikání podniku. Je to bezpečný a
+      přizpůsobivý operační systém pro dlouhodobě podporovanou infrastrukturu
+      připravenou na inovace, na které běží kritické podnikové úlohy v lokálním
+      prostředí, v cloudu i na okraji sítě.
+    de: Ein offener, zuverlässiger, kompatibler und zukunftssicherer Linux-Server,
+      der die Geschäftskontinuität des Unternehmens gewährleistet. Es ist das
+      sichere und anpassungsfähige Betriebssystem für eine langfristig
+      unterstützte, innovationsbereite Infrastruktur, auf der geschäftskritische
+      Arbeitslasten vor Ort, in der Cloud und am Netzwerkrand ausgeführt werden.
+    el: Μια ανοιχτή, αξιόπιστη, συμβατή και έτοιμη για το μέλλον επιλογή Linux
+      Server που διασφαλίζει την επιχειρηματική συνέχεια. Είναι το ασφαλές και
+      προσαρμόσιμο ΛΣ για υποδομές με μακροχρόνια υποστήριξη και ετοιμότητα για
+      καινοτομία, που εκτελεί κρίσιμα επιχειρηματικά φορτία εργασίας τοπικά,στο
+      cloud και στο edge.
+    es: Una opción de servidor Linux abierta, confiable, compatible y preparada para
+      el futuro que garantiza la continuidad del negocio de la empresa. Es el
+      sistema operativo seguro y adaptable para una infraestructura lista para
+      la innovación y con soporte a largo plazo que ejecuta cargas de trabajo
+      críticas para el negocio en las instalaciones, en la nube y en el borde.
+    fi: Avoin, luotettava, määräysten mukainen ja tulevaisuutta varten valmis
+      Linux-palvelin, joka varmistaa yrityksen liiketoiminnan jatkuvuuden. Se on
+      tietoturvallinen, mukautuva, pitkään tuettu uudistamista tukeva
+      infrastuktuurikäyttöjärjestelmä, jolla voidaan suorittaa
+      liiketoimintakriittisiä työkuormia omissa tiloissa, pilvessä tai verkon
+      reunalaitteissa.
+    fr: Choix de serveur Linux ouvert, fiable, conforme et à l'épreuve du temps qui
+      garantit la continuité des activités de l'entreprise. C'est le système
+      d'exploitation sûr et adaptable pour une infrastructure prise en charge
+      sur le long terme et prête pour l'innovation, qui exécute des charges de
+      travail critiques sur site, dans le cloud et à la périphérie.
+    he: הפצת שרתי לינוקס פתוחה, יציבה, עומדת בתקינה ועמידה לאורך זמן אשר מספקת
+      המשכיות של עסקי התאגיד או המיזם. היא בטוחה וניתנת להתאמה, נכונה לחידושים
+      ומהווה תשתית למשימות עסקיות קריטיות במתחם העבודה, בענן, ובקצוות.
+    id: Pilihan Server Linux yang terbuka, andal, sesuai standar, dan siap
+      menghadapi masa depan, yang memastikan kelangsungan bisnis perusahaan.
+      Sistem operasi ini aman dan fleksibel untuk infrastruktur yang didukung
+      jangka panjang, siap berinovasi, dan dapat menjalankan beban kerja penting
+      bisnis, baik di lokasi (on-premises), cloud, maupun edge.
+    it: Una scelta per server Linux aperta, affidabile, conforme e a prova di futuro
+      che garantisce la continuità aziendale dell'impresa. È il sistema
+      operativo sicuro e adattabile per infrastrutture supportate a lungo
+      termine e pronte per l'innovazione, che eseguono carichi di lavoro critici
+      per il business in locale, nel cloud e a livello di edge.
+    ja: オープンで信頼性が高く、各種の標準にも準拠し、将来性とビジネスの継続性を支援する Linux
+      サーバです。長期のサポートが提供されていることから、安全性と順応性に優れ、オンプレミスからクラウド、エッジ環境に至るまで、様々な場所で重要なビジネス処理をこなすことのできる革新性の高いインフラストラクチャです。
+    lo: ທາງເລືອກ Linux Server ທີ່ເປີດກວ້າງ, ເຊື່ອຖືໄດ້, ສອດຄ່ອງກັບມາດຕະຖານ ແລະ
+      ຮອງຮັບອະນາຄົດ ເພື່ອຮັບປະກັນຄວາມຕໍ່ເນື່ອງຂອງທຸລະກິດໃນລະດັບວິສາຫະກິດ.
+      ເປັນລະບົບປະຕິບັດການທີ່ປອດໄພ ແລະ ປັບຕົວໄດ້
+      ເໝາະສຳລັບໂຄງລ່າງພື້ນຖານທີ່ຮອງຮັບໄລຍະຍາວ ແລະ ພ້ອມສຳລັບນະວັດຕະກຳ
+      ເພື່ອລັນວຽກງານທີ່ສຳຄັນຂອງທຸລະກິດ ທັງໃນສະຖານທີ່, ໃນຄລາວ ແລະ ຢູ່ປາຍເຄືອຂ່າຍ
+      (edge).
+    nl: Een open, betrouwbare, compliant en toekomstbestendige Linux Server keuze
+      die ervoor zorgt voor continuïteit in de enterprise business. Het is een
+      veilig en aanpasbaar besturingssysteem met langdurige ondersteuning,
+      innovatie-klaar infrastructuur om bedrijfs-kritische werklasten op locatie
+      te draaien, in de cloud en op de edge.
+    pl: Otwarte, niezawodne, zgodne i gotowe na przyszłość rozwiązanie serwerowe
+      Linux zapewniające ciągłość działania przedsiębiorstwa. Jest to bezpieczny
+      i elastyczny system operacyjny objęty długoterminowym wsparciem,
+      przeznaczony dla infrastruktury gotowej na innowacje i obsługującej
+      krytyczne obciążenia biznesowe zarówno lokalnie, w chmurze, jak i na
+      brzegu sieci.
+    pt_BR: Uma escolha de servidor Linux aberta, confiável, compatível e à prova do
+      futuro que garante a continuidade dos negócios da empresa. É o SO seguro e
+      adaptável para infraestrutura com suporte de longo prazo e pronta para
+      inovação, executando cargas de trabalho críticas para os negócios no
+      local, na nuvem e na borda.
+    ru: Открытая, надёжная и перспективная серверная ОС Linux для обеспечения
+      непрерывности бизнеса. Безопасна, гибка и подходит для критически важных
+      нагрузок — на локальных серверах, в облаке и на периферии.
+    sk: Otvorený, spoľahlivý, konformný a do budúcnosti orientovaný linuxový server,
+      ktorý zaručuje podnikovú obchodnú plynulosť. Ide o bezpečný a prispôsobivý
+      OS pre dlhodobo podporovanú infraštruktúru pripravenú na inovácie, ktorá
+      spracováva kritické podnikové úlohy na mieste, v cloude aj na okraji
+      siete.
+    sv: Ett öppet, pålitligt, kompatibelt och framtidssäkert Linux-serverval som
+      säkerställer företagets affärskontinuitet. Det är det säkra och
+      anpassningsbara operativsystemet för långsiktigt stödd, innovationsfärdig
+      infrastruktur som kör affärskritiska arbetsbelastningar på plats, i molnet
+      och vid kanten.
+    tr: İşletmenin iş sürekliliğini garanti eden açık, güvenilir, uyumlu ve geleceğe
+      dönük bir Linux Sunucu seçeneği. Uzun vadeli desteklenen, inovasyona hazır
+      altyapı için güvenli ve uyarlanabilir işletim sistemidir. Şirket içinde,
+      bulutta ve uçta iş açısından kritik iş yüklerini çalıştırır.
+    uk: Відкритий, надійний, сумісний і перспективний вибір Linux для сервера, що
+      забезпечує неперервність бізнесу підприємства. Це безпечна й адаптована ОС
+      для довгострокової підтримуваної, готової до інновацій інфраструктури, що
+      виконує критично важливі для бізнесу робочі навантаження в приміщеннях, у
+      хмарі та Edge.
+    zh_CN: 开放、可靠、合规且面向未来的 Linux
+      服务器系统，旨在确保企业业务持续运作。作为安全和可适应的操作系统，它适用于本地、云端或边缘计算平台的关键业务工作负载，运行在需要长期支持、容许创新的基础设施之上。
+    zh_TW: 一個開放、可靠、符合標準且具未來適應性的 Linux
+      伺服器系統，能確保企業業務的持續運作。它是一個安全且具備適應力的作業系統，適用於受到長期支援、具備創新彈性並用於在內部、雲端與邊緣環境中執行關鍵業務工作負載的基礎架構。
   mode:
     standard:
       name:
@@ -199,17 +220,19 @@ desktop_selection: optional
 software:
   installation_repositories: []
   installation_labels:
-    - label: S4SAP160-x86_64
+    - label: SLES160-x86_64
       archs: x86_64
-    - label: S4SAP160-ppc64
+    - label: SLES160-arch64
+      archs: aarch64
+    - label: SLES160-s390x
+      archs: s390
+    - label: SLES160-ppc64
       archs: ppc
 
   mandatory_patterns:
-    - base
     - bootloader
   optional_patterns: [] # no optional pattern shared
   user_patterns:
-    # First all patterns from file sles_160.yaml
     - cockpit
     - fips
     - name: selinux
@@ -239,7 +262,7 @@ software:
     - NetworkManager-config-server
     - sudo-policy-wheel-auth-self # explicit wheel group policy to conform new auth model
   optional_packages: []
-  base_product: SLES_SAP
+  base_product: SLES
 
 modes:
   - id: standard
@@ -254,20 +277,10 @@ modes:
     software:
       mandatory_patterns:
         - enhanced_base
-        - sles_sap_base_sap_server
       mandatory_packages:
-        - SLES_SAP-release
+        - SLES-release
       user_patterns:
-        - sles_sap_DB
-        - sles_sap_HADB
-        - sles_sap_APP
-        - sles_sap_HAAPP
-        - sles_sap_trento_server
-        - sles_sap_trento_agent
-        - sles_sap_automation
-        - sles_sap_monitoring
-        - sles_sap_gui
-        - sles_sap_addons
+        - sles_sap_minimal_sap
 
     storage:
       space_policy: delete
@@ -357,7 +370,7 @@ modes:
       mandatory_patterns:
         - immutable_base
       mandatory_packages:
-        - SLES_SAP_immutable-release
+        - SLES_immutable-release
       user_patterns:
         - name: enhanced_base
           selected: true
