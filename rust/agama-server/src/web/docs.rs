@@ -127,25 +127,25 @@ pub async fn build() -> OpenApi {
     let schemas_to_import = vec![
         // (file path, schema name, schema parent)
         // Config schemas
-        ("share/dasd.schema.json", "Dasd", "Config"),
-        ("share/iscsi.schema.json", "Iscsi", "Config"),
-        ("share/storage.model.schema.json", "StorageModel", "Config"),
-        ("share/storage.schema.json", "Storage", "Config"),
-        ("share/zfcp.schema.json", "Zfcp", "Config"),
+        ("share/dasd.schema.json", "dasd", "Config"),
+        ("share/iscsi.schema.json", "iscsi", "Config"),
+        ("share/storage.model.schema.json", "storageModel", "Config"),
+        ("share/storage.schema.json", "storage", "Config"),
+        ("share/zfcp.schema.json", "zfcp", "Config"),
         // Proposal schemas
-        ("share/proposal.storage.schema.json", "Storage", "Proposal"),
+        ("share/proposal.storage.schema.json", "storage", "Proposal"),
         // System info schemas
         (
             "share/system.bootloader.schema.json",
             "Bootloader",
             "SystemInfo",
         ),
-        ("share/system.dasd.schema.json", "Dasd", "SystemInfo"),
-        ("share/system.iscsi.schema.json", "Iscsi", "SystemInfo"),
-        ("share/system.storage.schema.json", "Storage", "SystemInfo"),
-        ("share/system.zfcp.schema.json", "Zfcp", "SystemInfo"),
+        ("share/system.dasd.schema.json", "dasd", "SystemInfo"),
+        ("share/system.iscsi.schema.json", "iscsi", "SystemInfo"),
+        ("share/system.storage.schema.json", "storage", "SystemInfo"),
+        ("share/system.zfcp.schema.json", "zfcp", "SystemInfo"),
         // Other
-        ("share/device.storage.schema.json", "Storage", "Device"),
+        ("share/device.storage.schema.json", "storage", "Device"),
     ];
 
     if let Some(components) = &mut api.components {
@@ -199,7 +199,7 @@ pub async fn build() -> OpenApi {
             .pointer_mut(format!("/components/schemas/{}/properties/{}", group, name).as_str())
         {
             *schema = serde_json::json!({
-                "$ref": (format!("#/components/schemas/{}{}", name, group))
+                "$ref": (format!("#/components/schemas/{}{}", capitalize(name), group))
             });
         }
     }
@@ -259,7 +259,10 @@ fn extract_defs(
                     let mut def_val = val;
                     // Recursively clean internal structures inside definitions
                     extract_defs(&mut def_val, prefix, extracted_defs);
-                    extracted_defs.insert(format!("{}{}", prefix, capitalize(&key)), def_val);
+                    extracted_defs.insert(
+                        format!("{}{}", capitalize(prefix), capitalize(&key)),
+                        def_val,
+                    );
                 }
             }
 
@@ -267,7 +270,11 @@ fn extract_defs(
             if let Some(Value::String(ref_str)) = map.get_mut("$ref") {
                 if ref_str.starts_with("#/$defs/") {
                     let def_name = ref_str.trim_start_matches("#/$defs/");
-                    *ref_str = format!("#/components/schemas/{}{}", prefix, capitalize(def_name));
+                    *ref_str = format!(
+                        "#/components/schemas/{}{}",
+                        capitalize(prefix),
+                        capitalize(def_name)
+                    );
                 }
             }
 
@@ -352,7 +359,7 @@ fn import_schema(
 
     // insert provided schema
     schemas.insert(
-        format!("{}{}", name, capitalize(parent)),
+        format!("{}{}", capitalize(name), capitalize(parent)),
         source_schema_json,
     );
 
