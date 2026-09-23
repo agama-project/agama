@@ -110,16 +110,26 @@ software:
     - enhanced_base
   optional_patterns: []
   user_patterns:
-    - basic-desktop
-    - name: gnome
+    - name: basic_desktop
+      desktop: true
+    - name: xfce_wayland
       desktop: true
     - name: kde
       desktop: true
-    - yast2_basis
-    - yast2_desktop
-    - yast2_server
+    - name: gnome
+      desktop: true
+    - name: lxqt_wayland
+      desktop: true
+    - name: openSUSEway
+      desktop: true
+    - name: hyprland
+      desktop: true
+    - cockpit
     - multimedia
     - office
+    - name: selinux
+      selected: true
+    - apparmor
   mandatory_packages:
     - NetworkManager
     - openSUSE-repos-Slowroll
