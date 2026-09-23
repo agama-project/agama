@@ -8,10 +8,8 @@
  * skeleton, so a reader who learned the page with one disk recognises it with
  * eight.
  *
- * What it looks like now, what was decided and why, and what is still open:
- * `agama-notes/web/storage-main-page-iteration-2.md`. The rounds before it are
- * in `storage-main-page-iteration-1.md` and the plan that started this one.
- * Read the iteration note first: this file is the drawing, that is the argument.
+ * How to run it and what each round of its history changed:
+ * `STORAGE_POC_PLAYGROUND.md`, next to this file.
  *
  * Nothing is mocked. It reads the real config model, the real system and the
  * real proposal, writes through the real endpoint, and navigates to the real
