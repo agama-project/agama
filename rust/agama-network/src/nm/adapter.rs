@@ -183,8 +183,9 @@ impl Adapter for NetworkManagerAdapter<'_> {
                 .controller
                 .and_then(|uuid| network.get_connection_by_uuid(uuid));
 
-            /* Consider the connection as removed, whenever the controller connection
-            was removed */
+            /* Consider the connection as removed, whenever the controller connection was removed.
+            The model already marks the whole stack when a controller goes away, so this only
+            catches a state that was not built by the port resolver. */
             let is_removed = conn.is_removed() || ctrl.is_some_and(|c| c.is_removed());
 
             if let Some(old_conn) = old_state.get_connection_by_uuid(conn.uuid) {
