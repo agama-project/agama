@@ -30,12 +30,8 @@ import InstallationFinished from "~/components/core/InstallationFinished";
 import InstallationProgress from "~/components/core/InstallationProgress";
 import LoginPage from "~/components/core/LoginPage";
 import OverviewPage from "~/components/overview/OverviewPage";
-// PLAYGROUND storage-plan - DO NOT COMMIT
+// PLAYGROUND storage-poc-playground - never merge
 import StoragePlanPlayground from "~/components/storage/StoragePlanPlayground";
-// PLAYGROUND storage-primary-detail-card - DO NOT COMMIT
-import StoragePrimaryDetailCardPlayground from "~/components/storage/StoragePrimaryDetailCardPlayground";
-// SCRATCH - DO NOT COMMIT: temporary route for the device picker playground.
-import DeviceDetailsPlayground from "~/components/network/connection-form/DeviceDetailsPlayground";
 import SystemPage from "~/components/system/SystemPage";
 import l10nRoutes from "~/routes/l10n";
 import networkRoutes from "~/routes/network";
@@ -103,20 +99,10 @@ const protectedRoutes = () => [
             index: true,
             element: <OverviewPage />,
           },
-          // PLAYGROUND storage-plan - DO NOT COMMIT
+          // PLAYGROUND storage-poc-playground - never merge
           {
-            path: "/storage-plan-playground",
+            path: "/storage-poc-playground",
             element: <StoragePlanPlayground />,
-          },
-          // PLAYGROUND storage-primary-detail-card - DO NOT COMMIT
-          {
-            path: "/storage-primary-detail-card-playground",
-            element: <StoragePrimaryDetailCardPlayground />,
-          },
-          // SCRATCH - DO NOT COMMIT
-          {
-            path: "/device-picker-playground",
-            element: <DeviceDetailsPlayground />,
           },
           ...rootRoutes(),
         ],

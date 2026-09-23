@@ -25,13 +25,7 @@ Either way, the app needs a running backend to load and log in.
 cd web && npm install && npm run server
 ```
 
-| Route | What it is |
-| --- | --- |
-| `#/storage-plan-playground` | The main one: the storage page redesigned as a plan |
-| `#/storage-primary-detail-card-playground` | An earlier primary/detail layout, in a card |
-| `#/device-picker-playground` | Unrelated scratch for the network device picker |
-
-In the browser console:
+Then open `#/storage-poc-playground`. In the browser console:
 
 - `storagePlan.help()` lists every switch. They are also in the **Variants**
   panel at the bottom right of the page.
@@ -56,10 +50,7 @@ reach. The other switches are settled.
 - `StoragePlanPlayground.tsx`: the page, the device sheet, the variants.
 - `StoragePlanScenarios.ts`: the mocks, meaning the made-up machines and the
   solver stand-in.
-- `StoragePrimaryDetailPlayground.tsx`, `StoragePrimaryDetailCardPlayground.tsx`:
-  the earlier primary/detail exploration.
-- `network/connection-form/DeviceDetailsPlayground.tsx`: the network scratch.
-- The temporary routes in `router.tsx`.
+- The temporary route in `router.tsx`.
 
 ## What the commit history did
 

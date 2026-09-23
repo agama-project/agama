@@ -13,7 +13,7 @@
  *
  * Nothing is mocked. It reads the real config model, the real system and the
  * real proposal, writes through the real endpoint, and navigates to the real
- * forms, so it needs a running backend. Reach it at `#/storage-plan-playground`
+ * forms, so it needs a running backend. Reach it at `#/storage-poc-playground`
  * while the temporary route in `router.tsx` is in place.
  *
  * Because the machine it runs on has the disks it has, and the states worth
@@ -39,7 +39,8 @@
  * other arrangement without resizing anything, and `page`, which falls back to
  * the device list this replaced.
  *
- * NOT meant to be committed, and neither is the route that reaches it.
+ * Lives on the `storage-poc-playground` branch only. NOT meant to be merged,
+ * and neither is the route that reaches it.
  */
 
 import React, { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
