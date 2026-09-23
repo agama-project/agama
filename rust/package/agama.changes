@@ -15,6 +15,9 @@ Mon Sep 28 12:00:00 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
   deleting their connections, and reject the port lists that cannot
   be applied (ambiguous names, a port claimed by two controllers,
   loops of controllers).
+- Remove the whole stack below a controller when the controller is
+  removed, no matter how deep it is, and report it as such before
+  the changes are applied.
 
 -------------------------------------------------------------------
 Mon Sep 28 09:10:11 UTC 2026 - José Iván López González <jlopez@suse.com>
