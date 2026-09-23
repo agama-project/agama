@@ -648,7 +648,7 @@ impl Service {
         let status = self.progress.call(progress::message::GetStatus).await?;
         let is_installing = status.stage == Stage::Installing;
         let has_progress = status.progresses.iter().any(|p| p.scope == Scope::Storage);
-        let has_tasks = status.tasks.iter().any(|p| p.scope == Scope::Software);
+        let has_tasks = status.tasks.iter().any(|p| p.scope == Scope::Storage);
         let is_busy = is_installing && (has_progress || has_tasks);
         Ok(!is_busy)
     }

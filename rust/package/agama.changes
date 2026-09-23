@@ -1,4 +1,16 @@
 -------------------------------------------------------------------
+Tue Sep 22 14:39:11 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Use correct scope to detect active storage tasks
+  (gh#agama-project/agama#3972).
+
+-------------------------------------------------------------------
+Tue Sep 22 13:50:57 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Avoid starting a task if there is already a previous task for the
+  same scope (bsc#1280257).
+
+-------------------------------------------------------------------
 Mon Sep 21 15:32:00 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Allow defining multiple licenses per product (jsc#PED-16988,
