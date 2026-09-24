@@ -4,10 +4,11 @@
 #
 # Interactively collects the credentials and the settings needed for a Common
 # Criteria (CC) / FIPS hardened SLES installation, builds an Agama JSON profile
-# from agama-template.json and drives the installation via the Agama CLI and
-# its local REST API.
+# from agama-template.json and drives the installation via the Agama CLI and its
+# local REST API.
 #
-# See SPECIFICATION.md for the requirements this script implements.
+# See doc/CC-INSTALLER-SPECIFICATION.md in Git sources for the requirements this
+# script implements.
 #
 # Usage: cc-install.sh [--plain|--dialog] [--template FILE] [--dry-run] [--help]
 
