@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Sep 24 13:43:15 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Added a new CC compliant text mode installer (jsc#PED-16702)
+
+-------------------------------------------------------------------
 Fri Sep 18 10:46:12 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
 
 - The remote access to the Agama web server can be disabled with
