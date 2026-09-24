@@ -36,8 +36,6 @@ readonly AGAMA_TOKEN_FILE="/run/agama/token"
 readonly API_URL="http://localhost/api/manager/installer"
 # the storage actions of the current proposal, each object has a "text" attribute
 readonly STORAGE_ACTIONS_URL="http://localhost/api/storage/devices/actions"
-# the available keyboard layouts, objects with "id" and "description" keys
-readonly KEYMAPS_URL="http://localhost/api/l10n/keymaps"
 
 # Installation phase reported by the Agama API when everything is installed.
 readonly FINISH_PHASE=3
@@ -96,9 +94,6 @@ FULL_NAME=""
 USER_PASSWORD=""
 USER_PASSWORD_HASH=""
 LUKS_PASSWORD=""
-KEYBOARD=""            # keyboard layout id, empty keeps the default
-KEYBOARD_ORIGINAL=""   # layout active in the installer before the first change
-KEYBOARD_APPLIED=false # has any layout been applied in the installer?
 NTP_SERVER=""
 NTP_FROM_DRACUT=false
 REGISTRATION_CODE=""
@@ -709,16 +704,6 @@ api_get() {
   curl -sS --max-time 15 -K "$API_CONF" "$1" 2> /dev/null
 }
 
-# The keyboard layouts offered by the installer, one "<id><TAB><description>"
-# line each. Prints nothing when the list cannot be read.
-keymaps() {
-  local response
-  response=$(api_get "$KEYMAPS_URL") || return 1
-  [[ -n $response ]] || return 1
-  printf '%s' "$response" |
-    jq -e -r '.[] | "\(.id)\t\(.description)"' 2> /dev/null
-}
-
 # ---------------------------------------------------------------------------
 # Validation helpers
 # ---------------------------------------------------------------------------
@@ -813,200 +798,6 @@ the system unattended.
 WARNING: All data on the installed disk will be destroyed. Nothing is
 written to the disk before you confirm the summary at the end of
 the configuration."
-}
-
-# Display all the layouts in a pager, the list has hundreds of entries.
-show_keymaps_list() {
-  local file="$SECURE_DIR/keymaps.txt" line
-
-  for line in "$@"; do
-    printf '%-20s %s\n' "${line%%$'\t'*}" "${line#*$'\t'}"
-  done > "$file"
-
-  page_file "$file"
-  rm -f -- "$file"
-}
-
-# Ask for the keyboard layout of the installed system. An empty answer (or an
-# unreadable list) keeps the default, nothing is then put into the profile.
-#
-# The list has almost 400 entries: the dialog interface shows it in a menu, the
-# line interface asks for the id and displays the list in a pager on request.
-ask_keyboard() {
-  local -a maps=() menu=()
-  local line answer default_label
-
-  mapfile -t maps < <(keymaps) || true
-  if ((${#maps[@]} == 0)); then
-    # the installer did not provide the list, keep the default
-    KEYBOARD=""
-    return 0
-  fi
-
-  if [[ -n $KEYBOARD_ORIGINAL ]]; then
-    default_label="the default (\"$KEYBOARD_ORIGINAL\") keyboard layout"
-  else
-    default_label="the default keyboard layout"
-  fi
-
-  if $DIALOG_MODE; then
-    local default_tag="default"
-    [[ -n $KEYBOARD_ORIGINAL ]] && default_tag="default($KEYBOARD_ORIGINAL)"
-
-    menu=("$default_tag" "")
-    for line in "${maps[@]}"; do
-      menu+=("${line%%$'\t'*}" "")
-    done
-
-    answer=$(ui_menu --size "$(dialog_full_height)" 76 "Keyboard Layout" \
-      "Select the keyboard layout for the current and the installed system:" "${menu[@]}") || answer="$default_tag"
-    [[ $answer == "$default_tag" ]] && answer=""
-    KEYBOARD="$answer"
-    return 0
-  fi
-
-  while true; do
-    # no default value: an empty answer always means the product default, not
-    # the layout selected in a previous round
-    answer=$(ui_input "Keyboard Layout" "Enter the keyboard layout id for the \
-current and the installed system. Enter \"list\" to display all the available \
-layouts, leave empty to keep $default_label:") || answer=""
-
-    if [[ -z $answer ]]; then
-      KEYBOARD=""
-      return 0
-    fi
-
-    if [[ $answer == "list" ]]; then
-      show_keymaps_list "${maps[@]}"
-      continue
-    fi
-
-    for line in "${maps[@]}"; do
-      if [[ ${line%%$'\t'*} == "$answer" ]]; then
-        KEYBOARD="$answer"
-        return 0
-      fi
-    done
-
-    ui_error "Unknown keyboard layout \"$answer\". Enter \"list\" to display \
-the available layouts."
-  done
-}
-
-# The installer API reports the keymap with an optional variant in parenthesis
-# ("cz(qwerty)"), localectl expects the variant separated with a dash
-# ("cz-qwerty"). Ids without a variant ("cz") are used as they are.
-localectl_keymap() {
-  local keymap=$1
-
-  if [[ $keymap =~ ^([^()]+)\((.+)\)$ ]]; then
-    printf '%s-%s' "${BASH_REMATCH[1]}" "${BASH_REMATCH[2]}"
-  else
-    printf '%s' "$keymap"
-  fi
-}
-
-# The keyboard layout active in the installer (empty when it cannot be read).
-current_keymap() {
-  command -v localectl > /dev/null 2>&1 || return 0
-  localectl status 2> /dev/null |
-    sed -n 's/^[[:space:]]*VC Keymap:[[:space:]]*//p' | head -n1
-}
-
-# Apply the selected layout to the running installer as well, so that the
-# passwords are typed with the same keyboard as the installed system will use.
-# A failure is not fatal, the layout stays configured for the installed system.
-apply_keyboard() {
-  local error target=""
-
-  # --dry-run must not change anything on the running system
-  $DRY_RUN && return 0
-
-  if [[ -n $KEYBOARD ]]; then
-    target=$KEYBOARD
-  elif $KEYBOARD_APPLIED && [[ -n $KEYBOARD_ORIGINAL ]]; then
-    # the user went back to the default after trying a layout, the installer
-    # must not keep the tried one
-    target=$KEYBOARD_ORIGINAL
-  fi
-  [[ -n $target ]] || return 0
-
-  if ! command -v localectl > /dev/null 2>&1; then
-    ui_error "The keyboard layout cannot be applied in the installer, \
-\"localectl\" is not available. It is configured for the installed system \
-only, so the passwords have to be typed with the current layout."
-    return 0
-  fi
-
-  if localectl set-keymap "$(localectl_keymap "$target")" \
-    > /dev/null 2> "$SECURE_DIR/localectl.err"; then
-    KEYBOARD_APPLIED=true
-    return 0
-  fi
-
-  error=$(tail -n 3 "$SECURE_DIR/localectl.err" 2> /dev/null)
-  ui_error "Applying the keyboard layout \"$target\" in the installer failed:
-
-$error
-
-It is configured for the installed system only, so the passwords have to be \
-typed with the current layout."
-}
-
-# Let the user try the keyboard after the layout was applied: what is typed is
-# displayed, so it is visible whether the layout is the expected one. The text
-# itself is not used for anything.
-# Returns 0 when the layout is accepted, 1 to select a different one.
-verify_keyboard() {
-  local rc=0 answer height width=$DIALOG_INPUT_WIDTH
-  local text="The keyboard layout \"$KEYBOARD\" is active now.
-
-Here you can type few characters to test the keyboard layout.\
-The entered text is not used for anything and is completely ignored.
-
-Select \"Continue\" to keep this layout or \"Back\" to select a different one."
-
-  if $DIALOG_MODE; then
-    height=$(dialog_text_height "$text" "$width" "$DIALOG_INPUT_MARGIN")
-    run_dialog --title "Keyboard Test" \
-      --ok-label "Continue" --cancel-label "Back" \
-      --inputbox "$text" "$height" "$width" > /dev/null || rc=$?
-    # only "Continue" accepts the layout, "Back" and ESC select again
-    ((rc == 0)) && return 0
-    return 1
-  fi
-
-  printf '\n=== Keyboard Test ===\n' >&2
-  print_wrapped "$text"
-  printf 'Type a few characters and press Enter: ' >&2
-  read -r answer || answer=""
-  printf 'The installer received: %s\n' "$answer" >&2
-
-  while true; do
-    printf '[c = continue / b = back to the layout selection] ' >&2
-    read -r answer || return 0
-    case "${answer,,}" in
-      c | continue) return 0 ;;
-      b | back) return 1 ;;
-    esac
-  done
-}
-
-# Ask for the keyboard layout, apply it and let the user check it. The
-# selection is repeated until the layout is accepted.
-configure_keyboard() {
-  KEYBOARD_ORIGINAL=$(current_keymap)
-
-  while true; do
-    ask_keyboard
-    apply_keyboard
-
-    # the default was kept, there is nothing to check
-    [[ -n $KEYBOARD ]] || return 0
-
-    verify_keyboard && return 0
-  done
 }
 
 # Confirm the reboot after the license was rejected. "Back" is the default,
@@ -1382,7 +1173,6 @@ build_summary() {
 Registration server:  $RMT_URL"
 
   cat << EOF
-Keyboard layout:      ${KEYBOARD:-[default]}
 Root password:        $(secret_state "$ROOT_PASSWORD")
 First user login:     $USER_NAME
 First user full name: $FULL_NAME
@@ -1546,7 +1336,6 @@ build_profile() {
     --rawfile ntp_content "$ntp_content" \
     --arg ntp_destination "$NTP_DESTINATION" \
     --arg ntp_permissions "$NTP_PERMISSIONS" \
-    --arg keyboard "$KEYBOARD" \
     --arg user_name "$USER_NAME" \
     --arg full_name "$FULL_NAME" \
     --arg disk "$TARGET_DISK" \
@@ -1560,9 +1349,6 @@ build_profile() {
     | .user.fullName = $full_name
     | .user.hashedPassword = true
     | .user.password = $user_password
-
-    # the keyboard layout, an empty value keeps the default of the product
-    | if $keyboard != "" then .localization.keyboard = $keyboard else . end
 
     | if $registration_code != "" then .product.registrationCode = $registration_code else . end
     | if $registration_code != "" and $registration_email != ""
@@ -1870,7 +1656,6 @@ main() {
   detect_registration_requirement
 
   show_welcome
-  configure_keyboard
   show_license
 
   local action="" profile=""
