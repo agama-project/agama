@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Sep 23 09:30:35 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Fix support for AutoYaST classes adding the missing dependency on
+  xsltproc (bsc#1282368).
+
+-------------------------------------------------------------------
 Mon Sep 21 14:16:54 UTC 2026 - Ancor Gonzalez Sosa <ancor@suse.com>
 
 - Do not crash if libstorage-ng raises an exception while trying
