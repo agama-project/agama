@@ -79,11 +79,11 @@ readonly NTP_SERVER_REGEX='^[A-Za-z0-9]([A-Za-z0-9._:-]*[A-Za-z0-9])?$'
 # Global state
 # ---------------------------------------------------------------------------
 
-DIALOG_MODE=true       # text user interface (dialog) or plain line interface
-DRY_RUN=false          # build the profile, but do not touch the system
-TEMPLATE=""            # the input JSON template
-SECURE_DIR=""          # tmpfs directory for the secrets handed over to jq
-MONITOR_PID=""         # PID of the "agama monitor" process
+DIALOG_MODE=true # text user interface (dialog) or plain line interface
+DRY_RUN=false    # build the profile, but do not touch the system
+TEMPLATE=""      # the input JSON template
+SECURE_DIR=""    # tmpfs directory for the secrets handed over to jq
+MONITOR_PID=""   # PID of the "agama monitor" process
 INSTALLATION_STARTED=false
 declare -a SCRIPT_ARGS=()
 
@@ -104,7 +104,7 @@ NTP_FROM_DRACUT=false
 REGISTRATION_CODE=""
 REGISTRATION_EMAIL=""
 REGISTRATION_REQUIRED=false
-RMT_URL=""             # RMT server from the "inst.register_url" boot option
+RMT_URL="" # RMT server from the "inst.register_url" boot option
 TARGET_DISK=""
 TARGET_DISK_LABEL=""
 API_CONF=""             # curl configuration file with the API token
@@ -117,7 +117,7 @@ UI_WIDTH=0              # ui_* functions, zero means the dialog default
 # ---------------------------------------------------------------------------
 
 usage() {
-  cat <<EOF
+  cat << EOF
 Usage: ${0##*/} [OPTIONS]
 
   --dialog          force the dialog based text user interface
@@ -140,13 +140,33 @@ parse_arguments() {
   local ui_forced=false
   while (($# > 0)); do
     case "$1" in
-      --dialog) DIALOG_MODE=true; ui_forced=true ;;
-      --plain|--text) DIALOG_MODE=false; ui_forced=true ;;
-      --template) [[ $# -ge 2 ]] || { usage >&2; exit 2; }; TEMPLATE="$2"; shift ;;
+      --dialog)
+        DIALOG_MODE=true
+        ui_forced=true
+        ;;
+      --plain | --text)
+        DIALOG_MODE=false
+        ui_forced=true
+        ;;
+      --template)
+        [[ $# -ge 2 ]] || {
+          usage >&2
+          exit 2
+        }
+        TEMPLATE="$2"
+        shift
+        ;;
       --template=*) TEMPLATE="${1#*=}" ;;
       --dry-run) DRY_RUN=true ;;
-      --help|-h) usage; exit 0 ;;
-      *) printf 'Unknown option: %s\n\n' "$1" >&2; usage >&2; exit 2 ;;
+      --help | -h)
+        usage
+        exit 0
+        ;;
+      *)
+        printf 'Unknown option: %s\n\n' "$1" >&2
+        usage >&2
+        exit 2
+        ;;
     esac
     shift
   done
@@ -168,7 +188,7 @@ parse_arguments() {
 detect_ui_mode() {
   DIALOG_MODE=false
 
-  command -v dialog >/dev/null 2>&1 || return 0
+  command -v dialog > /dev/null 2>&1 || return 0
   [[ -t 2 ]] || return 0
   dumb_terminal && return 0
 
@@ -178,8 +198,8 @@ detect_ui_mode() {
 # Keep the secrets out of swap, core dumps and of other users' reach.
 harden_environment() {
   umask 077
-  ulimit -c 0 2>/dev/null || true
-  set +o history 2>/dev/null || true
+  ulimit -c 0 2> /dev/null || true
+  set +o history 2> /dev/null || true
   export LC_ALL="C.UTF-8"
   # Only the English locale is used during the setup, a different keyboard
   # layout would change the (not echoed) passwords.
@@ -192,7 +212,7 @@ cleanup() {
   terminal_echo on
   # securely overwrite all temporary files before deleting them
   if [[ -n $SECURE_DIR && -d $SECURE_DIR ]]; then
-    find "$SECURE_DIR" -type f -exec shred --remove --zero {} + 2>/dev/null || true
+    find "$SECURE_DIR" -type f -exec shred --remove --zero {} + 2> /dev/null || true
     rm -rf -- "$SECURE_DIR"
   fi
   ROOT_PASSWORD="" USER_PASSWORD="" LUKS_PASSWORD=""
@@ -248,12 +268,12 @@ show_dialog() {
 dialog_full_height() {
   local rows="" size
 
-  if size=$(stty size </dev/tty 2>/dev/null); then
+  if size=$(stty size < /dev/tty 2> /dev/null); then
     rows=${size%% *}
   fi
   # terminfo as a fallback
-  if [[ ! $rows =~ ^[0-9]+$ ]] && command -v tput >/dev/null 2>&1; then
-    rows=$(tput lines 2>/dev/null) || rows=""
+  if [[ ! $rows =~ ^[0-9]+$ ]] && command -v tput > /dev/null 2>&1; then
+    rows=$(tput lines 2> /dev/null) || rows=""
   fi
 
   if [[ $rows =~ ^[0-9]+$ ]] && ((rows >= MIN_TERMINAL_HEIGHT)); then
@@ -274,7 +294,7 @@ terminal_echo() {
     *) return 0 ;;
   esac
 
-  (stty "$mode" </dev/tty) >/dev/null 2>&1 || true
+  (stty "$mode" < /dev/tty) > /dev/null 2>&1 || true
 }
 
 # A terminal which cannot display the dialogs and which the monitor cannot
@@ -298,8 +318,8 @@ clear_terminal() {
 page_file() {
   local file=$1
 
-  if command -v less >/dev/null 2>&1 && (: </dev/tty) 2>/dev/null; then
-    less -- "$file" </dev/tty >&2 || true
+  if command -v less > /dev/null 2>&1 && (: < /dev/tty) 2> /dev/null; then
+    less -- "$file" < /dev/tty >&2 || true
   else
     cat -- "$file" >&2
   fi
@@ -318,11 +338,11 @@ print_wrapped() {
 dialog_full_width() {
   local cols="" size
 
-  if size=$(stty size </dev/tty 2>/dev/null); then
+  if size=$(stty size < /dev/tty 2> /dev/null); then
     cols=${size##* }
   fi
-  if [[ ! $cols =~ ^[0-9]+$ ]] && command -v tput >/dev/null 2>&1; then
-    cols=$(tput cols 2>/dev/null) || cols=""
+  if [[ ! $cols =~ ^[0-9]+$ ]] && command -v tput > /dev/null 2>&1; then
+    cols=$(tput cols 2> /dev/null) || cols=""
   fi
 
   if [[ $cols =~ ^[0-9]+$ ]] && ((cols >= MIN_TERMINAL_WIDTH)); then
@@ -417,8 +437,8 @@ ui_yesno() {
     printf '[y/n] ' >&2
     read -r answer || return 1
     case "${answer,,}" in
-      y|yes) return 0 ;;
-      n|no) return 1 ;;
+      y | yes) return 0 ;;
+      n | no) return 1 ;;
     esac
   done
 }
@@ -588,8 +608,8 @@ No reboot is done because the tool runs with --dry-run."
     exit 0
   fi
 
-  if command -v agama >/dev/null 2>&1 && $INSTALLATION_STARTED; then
-    agama finish >/dev/null 2>&1 || systemctl reboot || reboot
+  if command -v agama > /dev/null 2>&1 && $INSTALLATION_STARTED; then
+    agama finish > /dev/null 2>&1 || systemctl reboot || reboot
   else
     systemctl reboot || reboot
   fi
@@ -604,9 +624,9 @@ check_prerequisites() {
   local -a missing=()
   local tool
   for tool in jq openssl curl lsblk agama cracklib-check; do
-    command -v "$tool" >/dev/null 2>&1 || missing+=("$tool")
+    command -v "$tool" > /dev/null 2>&1 || missing+=("$tool")
   done
-  $DIALOG_MODE && ! command -v dialog >/dev/null 2>&1 && missing+=("dialog")
+  $DIALOG_MODE && ! command -v dialog > /dev/null 2>&1 && missing+=("dialog")
 
   if ((${#missing[@]} > 0)); then
     printf 'Required tools are missing: %s\n' "${missing[*]}" >&2
@@ -618,7 +638,7 @@ check_prerequisites() {
     printf 'Install it to %s or pass it with --template.\n' "$SYSTEM_TEMPLATE" >&2
     exit 1
   fi
-  if ! jq -e . "$TEMPLATE" >/dev/null 2>&1; then
+  if ! jq -e . "$TEMPLATE" > /dev/null 2>&1; then
     printf 'The JSON template is not valid JSON: %s\n' "$TEMPLATE" >&2
     exit 1
   fi
@@ -626,8 +646,8 @@ check_prerequisites() {
 
 # Extract default values from the JSON template (if present)
 read_template_defaults() {
-  USER_NAME=$(jq -e -r '.user.userName // empty' "$TEMPLATE" 2>/dev/null) || USER_NAME=""
-  FULL_NAME=$(jq -e -r '.user.fullName // empty' "$TEMPLATE" 2>/dev/null) || FULL_NAME=""
+  USER_NAME=$(jq -e -r '.user.userName // empty' "$TEMPLATE" 2> /dev/null) || USER_NAME=""
+  FULL_NAME=$(jq -e -r '.user.fullName // empty' "$TEMPLATE" 2> /dev/null) || FULL_NAME=""
 }
 
 # An RMT server configured on the boot command line
@@ -639,7 +659,7 @@ detect_rmt_url() {
 
   RMT_URL=""
   [[ -r $CMDLINE_FILE ]] || return 0
-  read -ra options -d '' <"$CMDLINE_FILE" || true
+  read -ra options -d '' < "$CMDLINE_FILE" || true
   ((${#options[@]} > 0)) || return 0
 
   for option in "${options[@]}"; do
@@ -663,7 +683,6 @@ detect_registration_requirement() {
   fi
 }
 
-
 # ---------------------------------------------------------------------------
 # Agama REST API
 # ---------------------------------------------------------------------------
@@ -676,18 +695,18 @@ prepare_api_auth() {
   [[ -z $API_CONF ]] || return 0
 
   [[ -r $AGAMA_TOKEN_FILE ]] || return 1
-  token=$(<"$AGAMA_TOKEN_FILE")
+  token=$(< "$AGAMA_TOKEN_FILE")
   token="${token//[$'\r\n']/}"
   [[ -n $token ]] || return 1
 
-  printf 'header = "Authorization: Bearer %s"\n' "$token" >"$SECURE_DIR/curl.conf"
+  printf 'header = "Authorization: Bearer %s"\n' "$token" > "$SECURE_DIR/curl.conf"
   API_CONF="$SECURE_DIR/curl.conf"
 }
 
 # api_get URL -> the response body on stdout
 api_get() {
   prepare_api_auth || return 1
-  curl -sS --max-time 15 -K "$API_CONF" "$1" 2>/dev/null
+  curl -sS --max-time 15 -K "$API_CONF" "$1" 2> /dev/null
 }
 
 # The keyboard layouts offered by the installer, one "<id><TAB><description>"
@@ -697,7 +716,7 @@ keymaps() {
   response=$(api_get "$KEYMAPS_URL") || return 1
   [[ -n $response ]] || return 1
   printf '%s' "$response" |
-    jq -e -r '.[] | "\(.id)\t\(.description)"' 2>/dev/null
+    jq -e -r '.[] | "\(.id)\t\(.description)"' 2> /dev/null
 }
 
 # ---------------------------------------------------------------------------
@@ -720,7 +739,7 @@ validate_password() {
 
   # cracklib-check echoes "<password>: <result>", strip the password prefix so
   # it cannot leak into the terminal or into a log.
-  result=$(printf '%s\n' "$password" | cracklib-check 2>/dev/null) || {
+  result=$(printf '%s\n' "$password" | cracklib-check 2> /dev/null) || {
     printf 'Cannot check the password strength (cracklib-check failed).'
     return 1
   }
@@ -774,7 +793,7 @@ validate_ntp_server() {
 # hash_password PASSWORD -> SHA-512 crypt hash on stdout
 hash_password() {
   local password=$1 hash
-  hash=$(printf '%s' "$password" | openssl passwd -6 -stdin 2>/dev/null) || return 1
+  hash=$(printf '%s' "$password" | openssl passwd -6 -stdin 2> /dev/null) || return 1
   [[ $hash == \$6\$* ]] || return 1
   printf '%s' "$hash"
 }
@@ -802,7 +821,7 @@ show_keymaps_list() {
 
   for line in "$@"; do
     printf '%-20s %s\n' "${line%%$'\t'*}" "${line#*$'\t'}"
-  done >"$file"
+  done > "$file"
 
   page_file "$file"
   rm -f -- "$file"
@@ -890,8 +909,8 @@ localectl_keymap() {
 
 # The keyboard layout active in the installer (empty when it cannot be read).
 current_keymap() {
-  command -v localectl >/dev/null 2>&1 || return 0
-  localectl status 2>/dev/null |
+  command -v localectl > /dev/null 2>&1 || return 0
+  localectl status 2> /dev/null |
     sed -n 's/^[[:space:]]*VC Keymap:[[:space:]]*//p' | head -n1
 }
 
@@ -913,7 +932,7 @@ apply_keyboard() {
   fi
   [[ -n $target ]] || return 0
 
-  if ! command -v localectl >/dev/null 2>&1; then
+  if ! command -v localectl > /dev/null 2>&1; then
     ui_error "The keyboard layout cannot be applied in the installer, \
 \"localectl\" is not available. It is configured for the installed system \
 only, so the passwords have to be typed with the current layout."
@@ -921,12 +940,12 @@ only, so the passwords have to be typed with the current layout."
   fi
 
   if localectl set-keymap "$(localectl_keymap "$target")" \
-      >/dev/null 2>"$SECURE_DIR/localectl.err"; then
+    > /dev/null 2> "$SECURE_DIR/localectl.err"; then
     KEYBOARD_APPLIED=true
     return 0
   fi
 
-  error=$(tail -n 3 "$SECURE_DIR/localectl.err" 2>/dev/null)
+  error=$(tail -n 3 "$SECURE_DIR/localectl.err" 2> /dev/null)
   ui_error "Applying the keyboard layout \"$target\" in the installer failed:
 
 $error
@@ -952,7 +971,7 @@ Select \"Continue\" to keep this layout or \"Back\" to select a different one."
     height=$(dialog_text_height "$text" "$width" "$DIALOG_INPUT_MARGIN")
     run_dialog --title "Keyboard Test" \
       --ok-label "Continue" --cancel-label "Back" \
-      --inputbox "$text" "$height" "$width" >/dev/null || rc=$?
+      --inputbox "$text" "$height" "$width" > /dev/null || rc=$?
     # only "Continue" accepts the layout, "Back" and ESC select again
     ((rc == 0)) && return 0
     return 1
@@ -1018,8 +1037,8 @@ confirm_reboot() {
     printf '[b = back / r = reboot the system] ' >&2
     read -r answer || return 0
     case "${answer,,}" in
-      r|reboot) return 0 ;;
-      b|back) return 1 ;;
+      r | reboot) return 0 ;;
+      b | back) return 1 ;;
     esac
   done
 }
@@ -1052,8 +1071,8 @@ The installation medium seems to be incomplete."
 
       case $rc in
         0) return 0 ;;                                # "Accept license"
-        3) confirm_license_reject && break || true ;;  # "Reject, reboot system"
-        *) ;;                                          # ESC: display it again
+        3) confirm_license_reject && break || true ;; # "Reject, reboot system"
+        *) ;;                                         # ESC: display it again
       esac
       continue
     fi
@@ -1064,8 +1083,8 @@ The installation medium seems to be incomplete."
     printf '[y = accept license / n = reject, reboot system / b = show it again] ' >&2
     read -r answer || answer="n"
     case "${answer,,}" in
-      y|yes) return 0 ;;
-      n|no) confirm_license_reject && break || true ;;
+      y | yes) return 0 ;;
+      n | no) confirm_license_reject && break || true ;;
     esac
   done
 
@@ -1243,13 +1262,13 @@ ask_target_disk() {
     [[ $type == "disk" ]] || continue
     [[ $readonly_flag == "1" ]] && continue
     case "$name" in
-      zram*|loop*|sr*|ram*) continue ;;
+      zram* | loop* | sr* | ram*) continue ;;
     esac
     # lsblk escapes the spaces in the raw output, undo it for the display
     model="${model//\\x20/ }"
     # a mounted partition usually means the installation medium
     note=""
-    if lsblk -rno MOUNTPOINTS -- "/dev/$name" 2>/dev/null | grep -q '[^[:space:]]'; then
+    if lsblk -rno MOUNTPOINTS -- "/dev/$name" 2> /dev/null | grep -q '[^[:space:]]'; then
       note=" (mounted - installation medium?)"
     fi
     disks+=("/dev/$name" "${size:-?} ${model:-unknown}${note}")
@@ -1307,7 +1326,7 @@ storage_actions() {
   local response
   response=$(api_get "$STORAGE_ACTIONS_URL") || return 1
   [[ -n $response ]] || return 1
-  printf '%s' "$response" | jq -e -r '.[].text' 2>/dev/null
+  printf '%s' "$response" | jq -e -r '.[].text' 2> /dev/null
 }
 
 # Read the storage actions which Agama planned for the loaded profile. Without
@@ -1362,7 +1381,7 @@ build_summary() {
   [[ -z $RMT_URL ]] || registration_server="
 Registration server:  $RMT_URL"
 
-  cat <<EOF
+  cat << EOF
 Keyboard layout:      ${KEYBOARD:-[default]}
 Root password:        $(secret_state "$ROOT_PASSWORD")
 First user login:     $USER_NAME
@@ -1386,7 +1405,7 @@ EOF
 confirm_summary() {
   local file="$SECURE_DIR/summary.txt" action rc
 
-  build_summary >"$file"
+  build_summary > "$file"
 
   while true; do
     if $DIALOG_MODE; then
@@ -1404,7 +1423,7 @@ confirm_summary() {
         0) action="continue" ;;
         3) action="back" ;;
         1 | 2) action="reboot" ;;
-        *) continue ;;  # ESC or an error: display the summary again
+        *) continue ;; # ESC or an error: display the summary again
       esac
     else
       # the line interface cannot show buttons, ask after the text
@@ -1439,7 +1458,7 @@ Do you really want to reboot without installing the system?" || continue
 confirm_storage_proposal() {
   local file="$SECURE_DIR/proposal.txt" action rc
 
-  storage_proposal >"$file"
+  storage_proposal > "$file"
 
   while true; do
     if $DIALOG_MODE; then
@@ -1457,7 +1476,7 @@ confirm_storage_proposal() {
         0) action="install" ;;
         3) action="back" ;;
         1 | 2) action="reboot" ;;
-        *) continue ;;  # ESC or an error: display the proposal again
+        *) continue ;; # ESC or an error: display the proposal again
       esac
     else
       # the line interface cannot show buttons, ask after the text
@@ -1493,7 +1512,7 @@ Do you really want to reboot without installing the system?" || continue
 # no file is added to the profile.
 ntp_config_content() {
   if $NTP_FROM_DRACUT; then
-    cat -- "$DRACUT_NTP_FILE" 2>/dev/null || true
+    cat -- "$DRACUT_NTP_FILE" 2> /dev/null || true
   elif [[ -n $NTP_SERVER ]]; then
     printf 'server %s iburst\n' "$NTP_SERVER"
   fi
@@ -1504,7 +1523,7 @@ ntp_config_content() {
 # via --arg or the environment to keep them out of /proc.
 write_secret() {
   local file="$SECURE_DIR/$1"
-  printf '%s' "$2" >"$file"
+  printf '%s' "$2" > "$file"
   printf '%s' "$file"
 }
 
@@ -1518,7 +1537,7 @@ build_profile() {
 
   # the NTP configuration is written as a file, not by a script
   ntp_content="$SECURE_DIR/ntp-content"
-  ntp_config_content >"$ntp_content"
+  ntp_config_content > "$ntp_content"
 
   jq -e \
     --rawfile root_password "$root_hash" \
@@ -1589,7 +1608,7 @@ start_monitor() {
   # displayed (dialog draws its interface there as well). Its standard input is
   # /dev/null: the terminal is needed for the questions of the tool and the
   # monitor does not read anything.
-  agama monitor >&2 2>&1 </dev/null &
+  agama monitor >&2 2>&1 < /dev/null &
   MONITOR_PID=$!
 }
 
@@ -1610,20 +1629,20 @@ poll_installation() {
     if response=$(api_get "$API_URL"); then
       failures=0
       if printf '%s' "$response" |
-          jq -e "(.phase == $FINISH_PHASE) and (.isBusy == false)" >/dev/null 2>&1; then
-        printf 'finished' >"$status_file"
+        jq -e "(.phase == $FINISH_PHASE) and (.isBusy == false)" > /dev/null 2>&1; then
+        printf 'finished' > "$status_file"
         return 0
       fi
     else
       failures=$((failures + 1))
       if ((failures > MAX_API_FAILURES)); then
-        printf 'api_failed' >"$status_file"
+        printf 'api_failed' > "$status_file"
         return 0
       fi
     fi
 
     if ((elapsed > deadline)); then
-      printf 'timeout' >"$status_file"
+      printf 'timeout' > "$status_file"
       return 0
     fi
 
@@ -1633,8 +1652,8 @@ poll_installation() {
 
 stop_monitor() {
   [[ -n $MONITOR_PID ]] || return 0
-  kill -TERM "$MONITOR_PID" 2>/dev/null || true
-  wait "$MONITOR_PID" 2>/dev/null || true
+  kill -TERM "$MONITOR_PID" 2> /dev/null || true
+  wait "$MONITOR_PID" 2> /dev/null || true
   MONITOR_PID=""
 }
 
@@ -1647,30 +1666,30 @@ load_profile() {
 
   $DRY_RUN && return 0
 
-  : >"$status_file"
+  : > "$status_file"
 
   # Loading the profile takes a while, Agama also computes the storage
   # proposal from it. A progress box stays on the screen as long as the pipe
   # is open (an infobox would disappear as soon as dialog exited).
   {
-		echo "Loading the user provided data."
-    if printf '%s' "$profile" | agama config load >/dev/null 2>"$SECURE_DIR/agama.err"; then
-      printf '0' >"$status_file"
+    echo "Loading the user provided data."
+    if printf '%s' "$profile" | agama config load > /dev/null 2> "$SECURE_DIR/agama.err"; then
+      printf '0' > "$status_file"
     else
-      printf '1' >"$status_file"
+      printf '1' > "$status_file"
     fi
   } | if $DIALOG_MODE; then
-        show_dialog --title "Initializing" \
-          --progressbox "Initializing the installer, please wait..." 6 "$DIALOG_INPUT_WIDTH"
-      else
-        cat >&2
-      fi
+    show_dialog --title "Initializing" \
+      --progressbox "Initializing the installer, please wait..." 6 "$DIALOG_INPUT_WIDTH"
+  else
+    cat >&2
+  fi
 
-  rc=$(<"$status_file")
+  rc=$(< "$status_file")
   if [[ $rc != "0" ]]; then
     fatal "Loading the installation profile failed:
 
-$(tail -n 5 "$SECURE_DIR/agama.err" 2>/dev/null)"
+$(tail -n 5 "$SECURE_DIR/agama.err" 2> /dev/null)"
   fi
 }
 
@@ -1689,10 +1708,10 @@ Agama was not contacted and no changes were made to the system (--dry-run)."
   # returns immediately)
   start_monitor
 
-  if ! agama install >/dev/null 2>"$SECURE_DIR/agama.err"; then
+  if ! agama install > /dev/null 2> "$SECURE_DIR/agama.err"; then
     fatal "Starting the installation failed:
 
-$(tail -n 5 "$SECURE_DIR/agama.err" 2>/dev/null)"
+$(tail -n 5 "$SECURE_DIR/agama.err" 2> /dev/null)"
   fi
 
   return 0
@@ -1725,7 +1744,7 @@ Do you want to keep waiting?"
   printf '\n=== Installation Takes Long ===\n%s\n[Enter = keep waiting, "n" = abort] ' "$text" >&2
   read -r -t "$WAIT_QUESTION_TIMEOUT" answer || answer=""
   case "${answer,,}" in
-    n|no|abort) return 1 ;;
+    n | no | abort) return 1 ;;
   esac
   return 0
 }
@@ -1746,10 +1765,10 @@ wait_for_installation() {
   deadline=$MAX_INSTALL_SECONDS
 
   while true; do
-    : >"$status_file"
+    : > "$status_file"
     poll_installation "$start" "$deadline" "$status_file"
 
-    status=$(<"$status_file")
+    status=$(< "$status_file")
     elapsed=$((SECONDS - start))
     terminal_echo on
 
@@ -1817,8 +1836,8 @@ Reboot now?" 0 0 || rc=$?
       printf 'Reboot the system now? [y = reboot / n = do not reboot] ' >&2
       read -r answer || answer="n"
       case "${answer,,}" in
-        y|yes) break ;;
-        n|no)
+        y | yes) break ;;
+        n | no)
           printf '\nReboot the system manually to start the installed system.\n' >&2
           return 0
           ;;
@@ -1826,7 +1845,7 @@ Reboot now?" 0 0 || rc=$?
     done
   fi
 
-  if ! agama finish >/dev/null 2>&1; then
+  if ! agama finish > /dev/null 2>&1; then
     ui_error "Installer reboot failed, rebooting the system directly."
     systemctl reboot || reboot
   fi
@@ -1889,7 +1908,7 @@ Do you want to start over?"; then
 
   if ! start_installation; then
     profile=""
-    exit 0   # dry run
+    exit 0 # dry run
   fi
   profile=""
 

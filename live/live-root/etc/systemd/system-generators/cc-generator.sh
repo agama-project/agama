@@ -17,8 +17,8 @@ cmdline="${CC_CMDLINE:-$(cat /proc/cmdline)}" # CC_CMDLINE allows testing
 enabled=0
 for arg in $cmdline; do
   case "$arg" in
-  inst.cc=1) enabled=1 ;;
-  inst.cc=*) enabled=0 ;; # last occurrence wins, like the kernel
+    inst.cc=1) enabled=1 ;;
+    inst.cc=*) enabled=0 ;; # last occurrence wins, like the kernel
   esac
 done
 
