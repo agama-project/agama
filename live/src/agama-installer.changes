@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Sep 24 14:03:15 UTC 2026 - Michal Filka <mfilka@suse.com>
+
+- bsc#1282603
+  - switched from 16.1 to 16.2 in kiwi build config 
+
+-------------------------------------------------------------------
 Fri Sep 18 08:43:24 UTC 2026 - Santiago Zarate <santiago.zarate@suse.com>
 
 - Set default bootloader for MicroOS to systemd-boot (bsc#1277929)
