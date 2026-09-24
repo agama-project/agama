@@ -1,4 +1,17 @@
 -------------------------------------------------------------------
+Wed Sep 23 17:43:07 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Keep the focus in the field the user moved to after using a
+  selector, so typed text is not lost (bsc#1282513,
+  gh#agama-project/agama#3982).
+
+-------------------------------------------------------------------
+Tue Sep 22 14:54:01 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Block the registration page while software changes are in progress
+  (bsc#1277099, gh#agama-project/agama#3973).
+
+-------------------------------------------------------------------
 Fri Sep 18 14:30:33 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Ask to accept each license of a product requiring several

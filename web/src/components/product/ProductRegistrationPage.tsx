@@ -42,6 +42,7 @@ import RegistrationExtension from "~/components/product/RegistrationExtension";
 import ProductRegistrationForm from "~/components/product/registration-form/Form";
 import { useProposal } from "~/hooks/model/proposal";
 import { useSystem } from "~/hooks/model/system/software";
+import { SYSTEM_QUERY_KEY } from "~/hooks/model/system";
 import { useProductInfo } from "~/hooks/model/config/product";
 import { useIssues } from "~/hooks/model/issue";
 import { useConfig } from "~/hooks/model/config";
@@ -222,7 +223,10 @@ export default function ProductRegistrationPage() {
   const showHostnameAlert = !registration && !registrationIssue;
 
   return (
-    <Page breadcrumbs={[{ label: _("Registration") }]}>
+    <Page
+      breadcrumbs={[{ label: _("Registration") }]}
+      progress={{ scope: "software", awaitQueriesRefetch: [SYSTEM_QUERY_KEY] }}
+    >
       <Page.Content>
         {showHostnameAlert && <HostnameAlert />}
         {!registration && <IssuesAlert issues={nonRegistrationIssues} />}
