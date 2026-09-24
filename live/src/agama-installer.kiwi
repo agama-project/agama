@@ -12,11 +12,11 @@
     <profiles>
         <!-- use at most 16 characters for the profile name, it is used in the ISO Volume ID -->
         <!-- which is limited to max. 32 characters -->
-        <profile name="Leap_16.1" description="openSUSE Leap image" import="true" />
+        <profile name="Leap_16.2" description="openSUSE Leap image" import="true" />
         <profile name="openSUSE" description="openSUSE multiproduct image" import="true" />
         <!-- TODO: add SPx in the future -->
-        <profile name="SUSE_SLE_16.1" description="SLE-based image" import="true" />
-        <profile name="SUSE_SLE_NV_16.1" description="SLE-based image for NVIDIA" import="true" />
+        <profile name="SUSE_SLE_16.2" description="SLE-based image" import="true" />
+        <profile name="SUSE_SLE_NV_16.2" description="SLE-based image for NVIDIA" import="true" />
     </profiles>
     <preferences>
         <version>24.0.0</version>
@@ -31,32 +31,32 @@
     ignored as the fix_bootconfig script automatically checks which theme is
     present, but keep the option here otherwise a text mode boot menu is
     displayed -->
-    <preferences profiles="openSUSE,Leap_16.1">
+    <preferences profiles="openSUSE,Leap_16.2">
         <bootloader-theme>openSUSE</bootloader-theme>
     </preferences>
-    <preferences profiles="SUSE_SLE_16.1,SUSE_SLE_NV_16.1">
+    <preferences profiles="SUSE_SLE_16.2,SUSE_SLE_NV_16.2">
         <bootloader-theme>SLE</bootloader-theme>
     </preferences>
     <!-- the ISO Volume ID is set by the fix_bootconfig script -->
-    <preferences arch="ppc64le" profiles="openSUSE,SUSE_SLE_16.1,Leap_16.1">
+    <preferences arch="ppc64le" profiles="openSUSE,SUSE_SLE_16.2,Leap_16.2">
         <type image="iso" flags="dmsquash"  firmware="ofw" mediacheck="true" publisher="SUSE LLC" editbootconfig="fix_bootconfig">
             <bootloader name="grub2" console="serial" timeout="10"/>
         </type>
     </preferences>
     <!-- SLES for NVIDIA is aarch64 only, but to simplify the kiwi config share the definition
     with the x86_64 products -->
-    <preferences arch="aarch64,x86_64" profiles="openSUSE,SUSE_SLE_16.1,SUSE_SLE_NV_16.1,Leap_16.1">
+    <preferences arch="aarch64,x86_64" profiles="openSUSE,SUSE_SLE_16.2,SUSE_SLE_NV_16.2,Leap_16.2">
         <type image="iso" flags="dmsquash" firmware="uefi" mediacheck="true" publisher="SUSE LLC" editbootconfig="fix_bootconfig">
             <bootloader name="grub2" timeout="10"/>
         </type>
     </preferences>
     <!-- experimental support for 32-bit and armv architectures, i686 is needed for kiwi in OBS as sometimes it builds on newer definition -->
-    <preferences arch="i586,i686,armv6hl,armv7hl,armv6l,armv7l" profiles="openSUSE,SUSE_SLE_16.1,SUSE_SLE_NV_16.1,Leap_16.1">
+    <preferences arch="i586,i686,armv6hl,armv7hl,armv6l,armv7l" profiles="openSUSE,SUSE_SLE_16.2,SUSE_SLE_NV_16.2,Leap_16.2">
         <type image="iso" flags="dmsquash" mediacheck="true" publisher="SUSE LLC" editbootconfig="fix_bootconfig">
             <bootloader name="grub2" timeout="10"/>
         </type>
     </preferences>
-    <preferences arch="s390x" profiles="openSUSE,SUSE_SLE_16.1,Leap_16.1">
+    <preferences arch="s390x" profiles="openSUSE,SUSE_SLE_16.2,Leap_16.2">
         <type image="iso" flags="dmsquash" mediacheck="true" publisher="SUSE LLC" editbootconfig="fix_bootconfig">
             <bootloader name="custom" />
         </type>
@@ -146,20 +146,20 @@
     </packages>
 
     <!-- the kernel packages -->
-    <packages type="image" profiles="openSUSE,SUSE_SLE_16.1,Leap_16.1">
+    <packages type="image" profiles="openSUSE,SUSE_SLE_16.2,Leap_16.2">
         <package name="kernel-default"/>
     </packages>
-    <packages type="image" profiles="SUSE_SLE_NV_16.1">
+    <packages type="image" profiles="SUSE_SLE_NV_16.2">
         <package name="kernel-nvidia"/>
         <package name="kernel-firmware-nvidia"/>
     </packages>
-    <packages type="image" profiles="Leap_16.1">
+    <packages type="image" profiles="Leap_16.2">
         <package name="kernel-default-extra"/>
         <package name="kernel-default-optional"/>
     </packages>
 
     <!-- packages for local installation (desktop, browser, etc.) -->
-    <packages type="image" profiles="Leap_16.1,openSUSE,SUSE_SLE_16.1,SUSE_SLE_NV_16.1">
+    <packages type="image" profiles="Leap_16.2,openSUSE,SUSE_SLE_16.2,SUSE_SLE_NV_16.2">
         <package name="bluez-firmware" arch="aarch64,x86_64,ppc64le,s390x"/>
         <!-- for openQA to run their puppeteer tests, just injecting a *.js file -->
         <package name="nodejs(engine)" arch="aarch64,x86_64,ppc64le,s390x"/>
@@ -175,7 +175,7 @@
     </packages>
 
     <!-- common packages for openSUSE Tumbleweed and Leap distributions -->
-    <packages type="image" profiles="Leap_16.1,openSUSE">
+    <packages type="image" profiles="Leap_16.2,openSUSE">
         <package name="agama-products-opensuse"/>
         <package name="grub2-branding-openSUSE" arch="aarch64,x86_64"/>
         <package name="MozillaFirefox-branding-openSUSE" arch="aarch64,x86_64,ppc64le,s390x"/>
@@ -185,7 +185,7 @@
         <package name="plymouth-branding-openSUSE" arch="aarch64,x86_64,ppc64le" />
     </packages>
     <!-- additional packages for the Leap distributions -->
-    <packages type="image" profiles="Leap_16.1">
+    <packages type="image" profiles="Leap_16.2">
         <package name="openSUSE-repos-Leap"/>
     </packages>
     <!-- additional packages for the openSUSE Tumbleweed distribution -->
@@ -193,18 +193,18 @@
         <package name="openSUSE-repos-Tumbleweed"/>
     </packages>
     <!-- common packages for all SLE distributions -->
-    <packages type="image" profiles="SUSE_SLE_16.1,SUSE_SLE_NV_16.1">
+    <packages type="image" profiles="SUSE_SLE_16.2,SUSE_SLE_NV_16.2">
         <package name="grub2-branding-SLE" arch="aarch64,x86_64"/>
         <package name="patterns-base-base"/>
         <package name="suse-build-key"/>
         <package name="MozillaFirefox-branding-SLE" arch="aarch64,x86_64,ppc64le,s390x"/>
     </packages>
     <!-- SLES specific packages -->
-    <packages type="image" profiles="SUSE_SLE_16.1">
+    <packages type="image" profiles="SUSE_SLE_16.2">
         <package name="agama-products-sle"/>
     </packages>
     <!-- SLES for NVIDIA specific packages -->
-    <packages type="image" profiles="SUSE_SLE_NV_16.1">
+    <packages type="image" profiles="SUSE_SLE_NV_16.2">
         <package name="agama-sles-nvidia-product"/>
         <package name="agama-sles-nvidia-branding"/>
     </packages>
@@ -215,17 +215,17 @@
         <package name="ca-certificates"/>
         <package name="ca-certificates-mozilla"/>
     </packages>
-    <packages type="bootstrap" profiles="Leap_16.1">
+    <packages type="bootstrap" profiles="Leap_16.2">
         <package name="Leap-release"/>
     </packages>
     <packages type="bootstrap" profiles="openSUSE">
         <package name="openSUSE-release"/>
         <package name="openSUSE-release-ftp"/>
     </packages>
-    <packages type="bootstrap" profiles="SUSE_SLE_16.1">
+    <packages type="bootstrap" profiles="SUSE_SLE_16.2">
         <package name="SLES-release"/>
     </packages>
-    <packages type="bootstrap" profiles="SUSE_SLE_NV_16.1">
+    <packages type="bootstrap" profiles="SUSE_SLE_NV_16.2">
         <package name="SLES_NVIDIA-release"/>
     </packages>
 </image>
