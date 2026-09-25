@@ -457,6 +457,33 @@ impl NetworkConnection {
         }
     }
 
+    /// Whether the connection gives any IP setting.
+    ///
+    /// A port of a bond or a bridge cannot have them: its controller holds the IP configuration.
+    /// `ignoreAutoDns: false` does not count, as it is the default and it is always reported.
+    pub fn has_ip_settings(&self) -> bool {
+        self.method4.is_some()
+            || self.method6.is_some()
+            || self.gateway4.is_some()
+            || self.gateway6.is_some()
+            || !self.addresses.is_empty()
+            || !self.nameservers.is_empty()
+            || !self.dns_searchlist.is_empty()
+            || self.ignore_auto_dns == Some(true)
+    }
+
+    /// Drops the IP settings of the connection, e.g. to report it as a port.
+    pub fn clear_ip_settings(&mut self) {
+        self.method4 = None;
+        self.method6 = None;
+        self.gateway4 = None;
+        self.gateway6 = None;
+        self.addresses.clear();
+        self.nameservers.clear();
+        self.dns_searchlist.clear();
+        self.ignore_auto_dns = None;
+    }
+
     /// Returns the ports declared by the connection, if it declares any.
     ///
     /// An empty list is not the same as no list at all: a connection with a `bond` or a `bridge`

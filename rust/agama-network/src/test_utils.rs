@@ -24,7 +24,7 @@ use agama_utils::{
     actor::Handler,
     api::{
         event,
-        network::{BondMode, DeviceType, Ipv4Method, Ipv6Method, MacAddress},
+        network::{BondMode, DeviceType, Ipv4Method, MacAddress},
     },
     progress,
 };
@@ -80,13 +80,9 @@ pub fn stacked_connections() -> Vec<Connection> {
     eth0.custom_mac_address =
         MacAddress::MacAddress(MacAddr6::from_str("12:34:56:78:9a:bc").unwrap());
     eth0.firewall_zone = Some("public".to_string());
-    eth0.ip_config.method4 = Some(Ipv4Method::Disabled);
-    eth0.ip_config.method6 = Some(Ipv6Method::Disabled);
 
     let mut eth1 = Connection::new("eth1".to_string(), DeviceType::Ethernet);
     eth1.interface = Some("eth1".to_string());
-    eth1.ip_config.method4 = Some(Ipv4Method::Disabled);
-    eth1.ip_config.method6 = Some(Ipv6Method::Disabled);
 
     let mut bond0 = Connection::new("bond0".to_string(), DeviceType::Bond);
     bond0.interface = Some("bond0".to_string());
@@ -94,8 +90,6 @@ pub fn stacked_connections() -> Vec<Connection> {
         mode: BondMode::LACP,
         options: BondOptions::try_from("miimon=100 lacp_rate=fast").unwrap(),
     });
-    bond0.ip_config.method4 = Some(Ipv4Method::Disabled);
-    bond0.ip_config.method6 = Some(Ipv6Method::Disabled);
 
     let mut br0 = Connection::new("br0".to_string(), DeviceType::Bridge);
     br0.interface = Some("br0".to_string());

@@ -28,7 +28,8 @@
 use std::collections::{HashMap, HashSet};
 
 use agama_utils::api::network::{
-    DeviceType, NetworkConnection, NetworkConnectionsCollection, PortEntry,
+    DeviceType, IpConfig, Ipv4Method, Ipv6Method, NetworkConnection, NetworkConnectionsCollection,
+    PortEntry, Status,
 };
 use uuid::Uuid;
 
@@ -300,9 +301,20 @@ impl<'a> PortResolver<'a> {
 
     /// Writes the resolved relationships to the connections.
     ///
-    /// A connection that no controller claims is detached, but only when the payload does declare
-    /// the ports of its current controller. Otherwise a partial update, which does not have to
-    /// mention every connection, would tear the existing stack apart.
+    /// The position in the document decides the controller of every connection it mentions:
+    ///
+    /// * A port, nested or given by name, is attached to the controller that lists it. A port has
+    ///   no IP configuration of its own, as its controller holds it, so it is cleared. That is also
+    ///   what NetworkManager does with the IP settings of a port.
+    /// * A connection at the top level is not a port. If it was one, it is moved out of its
+    ///   controller, and its IP methods default to `auto`: a NIC taken out of a bond should not be
+    ///   left without an address.
+    ///
+    /// A port that is dropped from the `ports` list of its controller, and that the document does
+    /// not mention anywhere else, is removed. Detaching it would leave behind a profile without IP
+    /// settings, which can still grab the NIC without giving it an address. This only
+    /// applies to the controllers whose `ports` list is part of the payload, so a partial update
+    /// that does not mention a controller leaves its ports alone.
     fn link(&self, nodes: &[Node], conns: &mut Vec<Connection>, claims: &Claims) {
         let declared: HashSet<Uuid> = nodes
             .iter()
@@ -311,45 +323,72 @@ impl<'a> PortResolver<'a> {
             .map(|(index, _)| conns[index].uuid)
             .collect();
 
-        // Bring in the connections that are currently attached to one of the controllers but are
-        // not listed anymore, so that they can be detached below.
         let present: HashSet<Uuid> = conns.iter().map(|c| c.uuid).collect();
-        let dropped: Vec<Connection> = self
+        let dropped = self
             .known
             .iter()
             .filter(|c| c.controller.is_some_and(|u| declared.contains(&u)))
             .filter(|c| !present.contains(&c.uuid))
-            .cloned()
-            .collect();
+            .map(|c| {
+                tracing::info!("Removing '{}', which is not listed as a port anymore", c.id);
+                let mut conn = c.clone();
+                conn.remove();
+                conn
+            })
+            .collect::<Vec<_>>();
         conns.extend(dropped);
 
-        for conn in conns.iter_mut() {
+        for (index, conn) in conns.iter_mut().enumerate() {
+            let node = nodes.get(index);
+
             if let Some((controller, _)) = claims.get(&conn.uuid) {
+                // Ports that are not part of the payload only change when they join a controller.
+                if node.is_some() || conn.controller != Some(*controller) {
+                    conn.ip_config = IpConfig::default();
+                }
                 conn.controller = Some(*controller);
-            } else if conn.controller.is_some_and(|c| declared.contains(&c)) {
-                tracing::info!("Detaching '{}' from its controller", conn.id);
+            } else if node.is_some_and(|n| n.parent.is_none()) && conn.controller.is_some() {
+                tracing::info!("Moving '{}' out of its controller", conn.id);
                 conn.controller = None;
+                if !conn.is_removed() {
+                    default_ip_methods(
+                        conn,
+                        node.map(|n| n.conn),
+                        Ipv4Method::Auto,
+                        Ipv6Method::Auto,
+                    );
+                }
             }
         }
     }
 
-    /// Checks that the `port` settings of each connection match the kind of its controller.
+    /// Checks that the settings given to each port fit it.
     ///
-    /// The settings are flat, so a bridge port priority given to a port of a bond would be
-    /// silently dropped otherwise.
+    /// * A port cannot have IP settings, as its controller holds the IP configuration.
+    /// * The `port` settings must match the kind of its controller. They are flat, so a bridge port
+    ///   priority given to a port of a bond would be silently dropped otherwise.
     fn check_port_settings(
         &self,
         nodes: &[Node],
         conns: &[Connection],
     ) -> Result<(), NetworkStateError> {
         for (node, conn) in nodes.iter().zip(conns) {
-            let Some(settings) = &node.conn.port else {
-                continue;
-            };
             let Some(uuid) = conn.controller else {
                 continue;
             };
             let Some(controller) = conns.iter().chain(self.known).find(|c| c.uuid == uuid) else {
+                continue;
+            };
+
+            // A port on its way out does not get any setting anyway.
+            if node.conn.status != Some(Status::Removed) && node.conn.has_ip_settings() {
+                return Err(NetworkStateError::PortIpSettings(
+                    node.id.clone(),
+                    controller.id.clone(),
+                ));
+            }
+
+            let Some(settings) = &node.conn.port else {
                 continue;
             };
 
@@ -370,7 +409,7 @@ impl<'a> PortResolver<'a> {
 
     /// Marks the ports of the connections that are being removed, all the way down.
     ///
-    /// A port does not outlive its controller. It is a connection with its IP settings disabled
+    /// A port does not outlive its controller. It is a connection without IP settings
     /// and, in the case of a bond or a bridge, a device that only exists because something asked
     /// for it. Leaving it behind would mean writing a connection that points at a controller that
     /// is being deleted in the very same operation.
@@ -479,6 +518,26 @@ impl<'a> PortResolver<'a> {
         }
 
         Ok(())
+    }
+}
+
+/// Sets the IP methods that the incoming connection does not set.
+///
+/// * `conn`: connection to update.
+/// * `api_conn`: incoming connection, if it is part of the payload. When it is not, both methods
+///   are set.
+/// * `method4`, `method6`: methods to use.
+fn default_ip_methods(
+    conn: &mut Connection,
+    api_conn: Option<&NetworkConnection>,
+    method4: Ipv4Method,
+    method6: Ipv6Method,
+) {
+    if api_conn.is_none_or(|c| c.method4.is_none()) {
+        conn.ip_config.method4 = Some(method4);
+    }
+    if api_conn.is_none_or(|c| c.method6.is_none()) {
+        conn.ip_config.method6 = Some(method6);
     }
 }
 

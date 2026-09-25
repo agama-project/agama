@@ -104,8 +104,11 @@ pub fn connection_to_dbus<'a>(
         connection_dbus.insert("zone", zone.into());
     }
 
-    result.insert("ipv4", ip_config_to_ipv4_dbus(&conn.ip_config, &nm_version));
-    result.insert("ipv6", ip_config_to_ipv6_dbus(&conn.ip_config, &nm_version));
+    // A port has no IP configuration of its own, and NetworkManager drops it anyway.
+    if controller.is_none() {
+        result.insert("ipv4", ip_config_to_ipv4_dbus(&conn.ip_config, &nm_version));
+        result.insert("ipv6", ip_config_to_ipv6_dbus(&conn.ip_config, &nm_version));
+    }
     result.insert("match", match_config_to_dbus(&conn.match_config));
 
     if conn.is_ethernet() {
@@ -2821,6 +2824,25 @@ mod test {
             .downcast_ref()
             .unwrap();
         assert_eq!(master, bond_con.id);
+    }
+
+    #[test]
+    fn test_dbus_from_a_port_has_no_ip_configuration() {
+        let mut controller = build_base_connection();
+        controller.config = ConnectionConfig::Bond(BondConfig::default());
+        let port = build_base_connection();
+
+        let port_dbus = connection_to_dbus(
+            &port,
+            Some(&controller),
+            semver::Version::parse("1.50.0").unwrap(),
+        );
+        assert!(!port_dbus.contains_key("ipv4"));
+        assert!(!port_dbus.contains_key("ipv6"));
+
+        let conn_dbus = connection_to_dbus(&port, None, semver::Version::parse("1.50.0").unwrap());
+        assert!(conn_dbus.contains_key("ipv4"));
+        assert!(conn_dbus.contains_key("ipv6"));
     }
 
     #[test]
