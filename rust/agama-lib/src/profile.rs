@@ -287,3 +287,108 @@ impl ProfileEvaluator {
         Ok(())
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use serde_json::json;
+
+    /// Uses the schema from the source tree. `ProfileValidator::default_schema` would fall back
+    /// to the installed one, as the path it builds is relative to the workspace.
+    fn validator() -> ProfileValidator {
+        ProfileValidator::new(share_dir().join("profile.schema.json")).unwrap()
+    }
+
+    fn share_dir() -> PathBuf {
+        Path::new(env!("CARGO_MANIFEST_DIR")).join("../share")
+    }
+
+    fn validate(profile: serde_json::Value) -> ValidationOutcome {
+        validator().validate_str(&profile.to_string()).unwrap()
+    }
+
+    fn connections(connections: serde_json::Value) -> serde_json::Value {
+        json!({ "network": { "connections": connections } })
+    }
+
+    #[test]
+    fn test_network_examples_are_valid() {
+        let validator = validator();
+        let dir = share_dir().join("examples/network");
+        for example in ["bond.json", "bridge.json", "stacked.json"] {
+            let outcome = validator.validate_file(&dir.join(example)).unwrap();
+            assert!(
+                matches!(outcome, ValidationOutcome::Valid),
+                "{example}: {outcome:?}"
+            );
+        }
+    }
+
+    #[test]
+    fn test_nested_ports_do_not_need_an_id() {
+        let profile = connections(json!([{
+            "id": "bond0",
+            "bond": { "ports": [{ "interface": "eth0" }, "eth1"] }
+        }]));
+        assert!(matches!(validate(profile), ValidationOutcome::Valid));
+    }
+
+    #[test]
+    fn test_top_level_connections_need_an_id() {
+        let profile = connections(json!([{ "interface": "eth0" }]));
+        assert!(matches!(validate(profile), ValidationOutcome::NotValid(_)));
+    }
+
+    #[test]
+    fn test_bridge_port_settings_are_rejected_on_a_bond_port() {
+        let profile = connections(json!([{
+            "id": "bond0",
+            "bond": { "ports": [{ "interface": "eth0", "port": { "priority": 32 } }] }
+        }]));
+        assert!(matches!(validate(profile), ValidationOutcome::NotValid(_)));
+
+        let profile = connections(json!([{
+            "id": "br0",
+            "bridge": { "ports": [{ "interface": "eth0", "port": { "priority": 32 } }] }
+        }]));
+        assert!(matches!(validate(profile), ValidationOutcome::Valid));
+    }
+
+    #[test]
+    fn test_nested_ports_are_validated_as_connections() {
+        let profile = connections(json!([{
+            "id": "br0",
+            "bridge": { "ports": [{ "id": "bond0", "bond": { "ports": [{ "mtu": "big" }] } }] }
+        }]));
+        assert!(matches!(validate(profile), ValidationOutcome::NotValid(_)));
+    }
+
+    #[test]
+    fn test_nested_ports_do_not_accept_ip_settings() {
+        for setting in [
+            json!({ "method4": "disabled" }),
+            json!({ "method6": "disabled" }),
+            json!({ "addresses": ["192.168.1.2/24"] }),
+            json!({ "gateway4": "192.168.1.1" }),
+            json!({ "nameservers": ["192.168.1.1"] }),
+            json!({ "dnsSearchList": ["example.lan"] }),
+            json!({ "ignoreAutoDns": false }),
+        ] {
+            let mut port = json!({ "interface": "eth0" });
+            port.as_object_mut()
+                .unwrap()
+                .extend(setting.as_object().unwrap().clone());
+            let profile = connections(json!([{ "id": "bond0", "bond": { "ports": [port] } }]));
+            assert!(
+                matches!(validate(profile), ValidationOutcome::NotValid(_)),
+                "{setting}"
+            );
+        }
+    }
+
+    #[test]
+    fn test_controller_is_not_accepted_anymore() {
+        let profile = connections(json!([{ "id": "eth0", "controller": "bond0" }]));
+        assert!(matches!(validate(profile), ValidationOutcome::NotValid(_)));
+    }
+}
