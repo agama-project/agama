@@ -298,6 +298,8 @@ terminal_echo() {
 ibm3270_terminal() {
   local device consoles
 
+  [[ ${TERM-} == ibm327* ]] && return 0
+
   device=$(readlink -f /proc/self/fd/2 2> /dev/null) || device=""
   case "$device" in
     /dev/3270/*) return 0 ;;
@@ -315,7 +317,7 @@ ibm3270_terminal() {
 # control either: the escape sequences would be printed as garbage there.
 dumb_terminal() {
   case "${TERM-}" in
-    "" | dumb | unknown | ibm327*) return 0 ;;
+    "" | dumb | unknown) return 0 ;;
   esac
   ibm3270_terminal
 }
@@ -329,10 +331,11 @@ clear_terminal() {
 
 # Display a file in a pager. "less" must read the keyboard from the terminal:
 # with the standard input it would consume the answers to the next questions.
+# A 3270 terminal scrolls the output itself, "less" is not needed.
 page_file() {
   local file=$1
 
-  if command -v less > /dev/null 2>&1 && (: < /dev/tty) 2> /dev/null; then
+  if ! ibm3270_terminal && command -v less > /dev/null 2>&1 && (: < /dev/tty) 2> /dev/null; then
     less -- "$file" < /dev/tty >&2 || true
   else
     cat -- "$file" >&2
