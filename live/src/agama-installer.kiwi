@@ -76,6 +76,8 @@
         <package name="grub2-powerpc-ieee1275" arch="ppc64le"/>
         <package name="syslinux" arch="x86_64"/>
         <package name="openssh"/>
+        <!-- used by the CC installer for hashing the passwords -->
+        <package name="openssl-3"/>
         <package name="iproute2"/>
         <package name="less"/>
         <package name="bash-completion"/>

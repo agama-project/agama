@@ -1,4 +1,15 @@
 -------------------------------------------------------------------
+Fri Sep 18 11:05:51 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Added support for the "inst.listen_on" boot parameter
+  - The "inst.remote=0" option disables remote access
+    (needed for CC compliant installation jsc#PED-16702)
+  - It is possible to specify IP address (both IPv4 and IPv6)
+    or network interface, accepts comma separated list
+  - agama-web-server --address2 option removed, --address can now be repeated
+  (jsc#AGM-153)
+
+-------------------------------------------------------------------
 Fri Jul 17 08:24:39 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
 
 - Clear the IP configuration (dns-search, addresses, gateway, ...)
