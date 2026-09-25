@@ -127,8 +127,12 @@ const router = () =>
       element: <LoginPage />,
     },
     {
-      path: PATHS.installationExit,
-      element: <InstallationExit />,
+      path: PATHS.installationReboot,
+      element: <InstallationExit action="reboot" />,
+    },
+    {
+      path: PATHS.installationShutdown,
+      element: <InstallationExit action="shutdown" />,
     },
     {
       path: PATHS.root,
