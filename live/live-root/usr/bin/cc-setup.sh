@@ -293,13 +293,31 @@ terminal_echo() {
   (stty "$mode" < /dev/tty) > /dev/null 2>&1 || true
 }
 
+# Check whether the terminal is an IBM 3270, either a real device or one
+# emulated by x3270. If the terminal is /dev/console evaluate which one it is.
+ibm3270_terminal() {
+  local device consoles
+
+  device=$(readlink -f /proc/self/fd/2 2> /dev/null) || device=""
+  case "$device" in
+    /dev/3270/*) return 0 ;;
+    /dev/console) ;;
+    *) return 1 ;;
+  esac
+
+  # the last entry is the device connected to /dev/console
+  read -r -a consoles < /sys/class/tty/console/active 2> /dev/null || return 1
+  ((${#consoles[@]} > 0)) || return 1
+  [[ ${consoles[-1]} == tty3270* ]]
+}
+
 # A terminal which cannot display the dialogs and which the monitor cannot
 # control either: the escape sequences would be printed as garbage there.
 dumb_terminal() {
   case "${TERM-}" in
-    "" | dumb | unknown) return 0 ;;
+    "" | dumb | unknown | ibm327*) return 0 ;;
   esac
-  return 1
+  ibm3270_terminal
 }
 
 # Clear the screen, the output of the previous dialog must not stay on it while
