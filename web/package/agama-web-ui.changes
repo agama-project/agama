@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Sep 28 12:00:00 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Allow disabling the IPv4 or the IPv6 configuration of a
+  connection, and keep it disabled when editing a connection that
+  already has it.
+
+-------------------------------------------------------------------
 Wed Oct  7 11:50:47 UTC 2026 - Martin Vidner <mvidner@suse.com>
 
 - web dependencies: move those not needed for run time or building
