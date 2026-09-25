@@ -26,11 +26,11 @@ import Page from "~/components/layout/Page";
 import SideBySideLayout from "~/components/layout/SideBySideLayout";
 import { _ } from "~/i18n";
 
-type InstallationExitProps = {
+type TeardownDialogProps = {
   action: "reboot" | "shutdown";
 };
 
-export default function InstallationExit({ action }: InstallationExitProps) {
+export default function TeardownDialog({ action }: TeardownDialogProps) {
   const title =
     action === "reboot" ? _("The system is rebooting") : _("The system is shutting down");
 
