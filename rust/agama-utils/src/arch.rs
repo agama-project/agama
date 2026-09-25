@@ -28,6 +28,7 @@ pub enum Arch {
     ARMV7HL,
     I586,
     PPC64LE,
+    RISCV64,
     S390X,
     X86_64,
 }
@@ -51,6 +52,7 @@ impl Arch {
                 Ok(Arch::ARMV7HL)
             }
             "powerpc64" => Ok(Arch::PPC64LE),
+            "riscv64" => Ok(Arch::RISCV64),
             "s390x" => Ok(Arch::S390X),
             "x86" => Ok(Arch::I586),
             "x86_64" => Ok(Arch::X86_64),
@@ -66,6 +68,7 @@ impl Arch {
             Arch::ARMV7HL => "armv7hl".to_string(),
             Arch::I586 => "i586".to_string(),
             Arch::PPC64LE => "ppc".to_string(),
+            Arch::RISCV64 => "riscv64".to_string(),
             Arch::S390X => "s390".to_string(),
             Arch::X86_64 => "x86_64".to_string(),
         }
@@ -92,6 +95,7 @@ mod tests {
         assert_eq!("armv7hl".try_into(), Ok(Arch::ARMV7HL));
         assert_eq!("i586".try_into(), Ok(Arch::I586));
         assert_eq!("ppc64le".try_into(), Ok(Arch::PPC64LE));
+        assert_eq!("riscv64".try_into(), Ok(Arch::RISCV64));
         assert_eq!("s390x".try_into(), Ok(Arch::S390X));
         assert_eq!("x86_64".try_into(), Ok(Arch::X86_64));
     }
@@ -103,6 +107,7 @@ mod tests {
         assert_eq!(Arch::ARMV7HL.to_string(), "armv7hl".to_string());
         assert_eq!(Arch::I586.to_string(), "i586".to_string());
         assert_eq!(Arch::PPC64LE.to_string(), "ppc64le".to_string());
+        assert_eq!(Arch::RISCV64.to_string(), "riscv64".to_string());
         assert_eq!(Arch::S390X.to_string(), "s390x".to_string());
         assert_eq!(Arch::X86_64.to_string(), "x86_64".to_string());
     }
@@ -114,6 +119,7 @@ mod tests {
         assert_eq!(Arch::ARMV7HL.to_yast_id(), "armv7hl".to_string());
         assert_eq!(Arch::I586.to_yast_id(), "i586".to_string());
         assert_eq!(Arch::PPC64LE.to_yast_id(), "ppc".to_string());
+        assert_eq!(Arch::RISCV64.to_yast_id(), "riscv64".to_string());
         assert_eq!(Arch::S390X.to_yast_id(), "s390".to_string());
         assert_eq!(Arch::X86_64.to_yast_id(), "x86_64".to_string());
     }
@@ -134,6 +140,12 @@ mod tests {
     #[test]
     fn test_current_arch_powerpc64() {
         assert_eq!(Arch::current().unwrap(), Arch::PPC64LE);
+    }
+
+    #[cfg(target_arch = "riscv64")]
+    #[test]
+    fn test_current_arch_riscv64() {
+        assert_eq!(Arch::current().unwrap(), Arch::RISCV64);
     }
 
     #[cfg(target_arch = "s390x")]
