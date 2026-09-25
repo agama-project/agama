@@ -160,6 +160,69 @@ describe("buildPayload", () => {
     it("does not build a bond config for non-bond types", () => {
       expect(buildPayload(formValues()).bond).toBeUndefined();
     });
+
+    it("keeps the ports the bond already had, with their settings", () => {
+      const initial = apiConnection("bond0", {
+        interface: "bond0",
+        bond: {
+          mode: BondMode.ACTIVE_BACKUP,
+          options: "",
+          ports: [
+            apiConnection("Wired 1", { interface: "enp1s0", mtu: 9000 }).toApi(),
+            apiConnection("Wired 2", { interface: "enp2s0" }).toApi(),
+          ],
+        },
+      });
+      const result = buildPayload(
+        formValues({
+          type: CONNECTION_TYPE.BOND,
+          bondIface: "bond0",
+          bondPorts: ["enp1s0", "enp3s0"],
+        }),
+        initial,
+      );
+
+      const [kept, added] = result.bond.ports;
+      expect(kept).toBeInstanceOf(Connection);
+      expect(kept).toEqual(expect.objectContaining({ id: "Wired 1", mtu: 9000 }));
+      // A port just picked is left for the backend to resolve.
+      expect(added).toBe("enp3s0");
+    });
+  });
+
+  describe("Port settings", () => {
+    it("keeps the settings the connection has as a port", () => {
+      const initial = apiConnection("bond0", { port: { priority: 32, pathCost: 100 } });
+      const result = buildPayload(formValues({ name: "bond0" }), initial);
+      expect(result.port).toEqual({ priority: 32, pathCost: 100 });
+    });
+
+    it("has no port settings for a new connection", () => {
+      expect(buildPayload(formValues()).port).toBeUndefined();
+    });
+
+    it("has no IP settings for a port", () => {
+      const result = buildPayload(
+        formValues({
+          ipv4Mode: FormIpMode.MANUAL,
+          addresses4: ["192.168.1.10/24"],
+          gateway4: "192.168.1.1",
+          customDns: true,
+          nameservers: ["8.8.8.8"],
+          customDnsSearch: true,
+          dnsSearchList: ["example.com"],
+        }),
+        null,
+        true,
+      );
+      const api = result.toApi();
+      expect(api).not.toHaveProperty("method4");
+      expect(api).not.toHaveProperty("method6");
+      expect(api).not.toHaveProperty("gateway4");
+      expect(api.addresses).toEqual([]);
+      expect(api.nameservers).toEqual([]);
+      expect(api.dnsSearchList).toEqual([]);
+    });
   });
 
   describe("Bridge", () => {
@@ -285,6 +348,23 @@ describe("toFormValues", () => {
     it("leaves custom DNS off when there are no nameservers", () => {
       const result = toFormValues(apiConnection("eth0"));
       expect(result.customDns).toBe(false);
+    });
+  });
+
+  describe("ports", () => {
+    it("names the nested ports after their interface, or their id when they have none", () => {
+      const result = toFormValues(
+        apiConnection("br0", {
+          bridge: {
+            ports: [
+              apiConnection("Wired 1", { interface: "enp1s0" }).toApi(),
+              apiConnection("Wired 2").toApi(),
+              "enp3s0",
+            ],
+          },
+        }),
+      );
+      expect(result.bridgePorts).toEqual(["enp1s0", "Wired 2", "enp3s0"]);
     });
   });
 

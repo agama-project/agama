@@ -21,7 +21,7 @@
  */
 
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { Connection, NetworkProposal, GeneralState } from "~/types/network";
+import { Connection, NetworkProposal, GeneralState, flattenConnections } from "~/types/network";
 import { Network, Proposal } from "~/model/proposal";
 import { proposalQuery } from "~/hooks/model/proposal";
 
@@ -36,8 +36,11 @@ const useState = (): GeneralState => {
   return data;
 };
 
+/**
+ * Every connection, including the ports nested in bonds and bridges.
+ */
 const selectConnections = (data: Network.Proposal): Connection[] =>
-  data.connections.map((c) => Connection.fromApi(c));
+  flattenConnections(data.connections.map((c) => Connection.fromApi(c)));
 
 const useProposal = (): NetworkProposal => {
   const { data } = useSuspenseQuery({
