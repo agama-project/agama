@@ -1294,48 +1294,233 @@ mod tests {
         ));
     }
 
-    /// The same check applies to a port that is updated on its own, outside of its controller.
+    /// The same check applies to a top-level connection that a bond claims by name.
     #[test]
-    fn test_bridge_port_settings_on_an_existing_bond_port_are_rejected() {
-        let state = stacked_state();
-        let mut eth0 = find(&exposed(&state), "eth0");
-        eth0.port = Some(PortSettings {
-            path_cost: Some(10),
-            ..Default::default()
-        });
+    fn test_bridge_port_settings_on_a_port_given_by_name_are_rejected() {
+        let state = NetworkState::default();
+        let collection = NetworkConnectionsCollection(vec![
+            NetworkConnection {
+                id: "eth0".to_string(),
+                interface: Some("eth0".to_string()),
+                port: Some(PortSettings {
+                    path_cost: Some(10),
+                    ..Default::default()
+                }),
+                ..Default::default()
+            },
+            NetworkConnection {
+                id: "bond0".to_string(),
+                bond: Some(BondSettings {
+                    ports: vec![name("eth0")],
+                    ..Default::default()
+                }),
+                ..Default::default()
+            },
+        ]);
 
-        let error = state
-            .connection_collection_from(&NetworkConnectionsCollection(vec![eth0]))
-            .unwrap_err();
+        let error = state.connection_collection_from(&collection).unwrap_err();
         assert!(matches!(error, NetworkStateError::InvalidPortSettings(..)));
     }
 
-    #[test]
-    fn test_dropping_a_port_detaches_it_instead_of_removing_it() {
-        let mut state = stacked_state();
-        let mut connections = exposed(&state);
-
-        let bond0 = find_mut(&mut connections.0, "bond0").unwrap();
-        bond0
+    /// Drops the given port from the ports of bond0 in the reported configuration.
+    fn drop_port(connections: &mut NetworkConnectionsCollection, id: &str) {
+        find_mut(&mut connections.0, "bond0")
+            .unwrap()
             .ports_mut()
             .unwrap()
-            .retain(|p| !matches!(p, PortEntry::Connection(c) if c.id == "eth1"));
+            .retain(|p| !matches!(p, PortEntry::Connection(c) if c.id == id));
+    }
 
+    /// Applies the given connections to the state.
+    fn apply(state: &mut NetworkState, connections: NetworkConnectionsCollection) {
         state
             .update_state(Config {
                 connections: Some(connections),
                 ..Default::default()
             })
             .unwrap();
+    }
 
-        let bond0_uuid = state.get_connection("bond0").unwrap().uuid;
-        let eth1 = state.get_connection("eth1").expect("eth1 was removed");
-        assert_eq!(eth1.controller, None);
-        assert!(!eth1.is_removed());
+    #[test]
+    fn test_dropping_a_port_removes_it() {
+        let mut state = stacked_state();
+        let mut connections = exposed(&state);
+        drop_port(&mut connections, "eth1");
+        apply(&mut state, connections);
+
+        assert!(state.get_connection("eth1").unwrap().is_removed());
         assert_eq!(
             state.get_connection("eth0").unwrap().controller,
-            Some(bond0_uuid)
+            Some(state.get_connection("bond0").unwrap().uuid)
         );
+    }
+
+    #[test]
+    fn test_dropping_a_controller_removes_the_stack_below_it() {
+        let mut state = stacked_state();
+        let mut connections = exposed(&state);
+        find_mut(&mut connections.0, "br0")
+            .unwrap()
+            .ports_mut()
+            .unwrap()
+            .clear();
+        apply(&mut state, connections);
+
+        for id in ["bond0", "eth0", "eth1"] {
+            assert!(state.get_connection(id).unwrap().is_removed(), "{id}");
+        }
+        assert!(!state.get_connection("br0").unwrap().is_removed());
+    }
+
+    #[test]
+    fn test_a_dropped_port_given_at_the_top_level_is_moved_out() {
+        let mut state = stacked_state();
+        let uuid = state.get_connection("eth0").unwrap().uuid;
+
+        let mut connections = exposed(&state);
+        let eth0 = find(&connections, "eth0");
+        drop_port(&mut connections, "eth0");
+        connections.0.push(eth0);
+        apply(&mut state, connections);
+
+        let eth0 = state.get_connection("eth0").unwrap();
+        assert!(!eth0.is_removed());
+        assert_eq!(eth0.controller, None);
+        assert_eq!(eth0.uuid, uuid);
+        assert_eq!(eth0.mtu, 9000);
+        // The firewall zone is not part of the HTTP API, so it must not be lost on the way.
+        assert_eq!(eth0.firewall_zone.as_deref(), Some("public"));
+        // A port has no IP settings, which is not what a stand-alone NIC wants.
+        assert_eq!(eth0.ip_config.method4, Some(Ipv4Method::Auto));
+        assert_eq!(eth0.ip_config.method6, Some(Ipv6Method::Auto));
+    }
+
+    #[test]
+    fn test_a_port_moved_out_keeps_the_ip_settings_it_is_given() {
+        let mut state = stacked_state();
+        let mut eth0 = find(&exposed(&state), "eth0");
+        eth0.method4 = Some(Ipv4Method::Manual);
+        eth0.addresses = vec!["192.168.2.10/24".parse().unwrap()];
+        // Sent on its own: the position in the document decides, even if bond0 is not there.
+        apply(&mut state, NetworkConnectionsCollection(vec![eth0]));
+
+        let eth0 = state.get_connection("eth0").unwrap();
+        assert_eq!(eth0.controller, None);
+        assert_eq!(eth0.ip_config.method4, Some(Ipv4Method::Manual));
+        assert_eq!(eth0.ip_config.method6, Some(Ipv6Method::Auto));
+    }
+
+    #[test]
+    fn test_a_port_can_be_moved_to_another_controller() {
+        let mut state = stacked_state();
+        let mut bond1 = Connection::new("bond1".to_string(), DeviceType::Bond);
+        bond1.interface = Some("bond1".to_string());
+        state.add_connection(bond1).unwrap();
+        let uuid = state.get_connection("eth1").unwrap().uuid;
+
+        let mut connections = exposed(&state);
+        let eth1 = find(&connections, "eth1");
+        drop_port(&mut connections, "eth1");
+        find_mut(&mut connections.0, "bond1")
+            .unwrap()
+            .ports_mut()
+            .unwrap()
+            .push(nested(eth1));
+        apply(&mut state, connections);
+
+        let eth1 = state.get_connection("eth1").unwrap();
+        assert!(!eth1.is_removed());
+        assert_eq!(eth1.uuid, uuid);
+        assert_eq!(
+            eth1.controller,
+            Some(state.get_connection("bond1").unwrap().uuid)
+        );
+    }
+
+    #[test]
+    fn test_ports_have_no_ip_settings() {
+        let state = NetworkState::default();
+        let bond0 = NetworkConnection {
+            id: "bond0".to_string(),
+            bond: Some(BondSettings {
+                ports: vec![
+                    name("eth0"),
+                    nested(NetworkConnection {
+                        interface: Some("eth1".to_string()),
+                        ..Default::default()
+                    }),
+                ],
+                ..Default::default()
+            }),
+            ..Default::default()
+        };
+        let collection = state
+            .connection_collection_from(&NetworkConnectionsCollection(vec![bond0]))
+            .unwrap();
+
+        for id in ["eth0", "eth1"] {
+            let conn = collection.0.iter().find(|c| c.id == id).unwrap();
+            assert_eq!(conn.ip_config, IpConfig::default(), "{id}");
+        }
+    }
+
+    #[test]
+    fn test_a_port_cannot_have_ip_settings() {
+        let state = NetworkState::default();
+        let bond0 = NetworkConnection {
+            id: "bond0".to_string(),
+            bond: Some(BondSettings {
+                ports: vec![nested(NetworkConnection {
+                    interface: Some("eth0".to_string()),
+                    method4: Some(Ipv4Method::Disabled),
+                    ..Default::default()
+                })],
+                ..Default::default()
+            }),
+            ..Default::default()
+        };
+
+        let error = state
+            .connection_collection_from(&NetworkConnectionsCollection(vec![bond0]))
+            .unwrap_err();
+        assert!(matches!(error, NetworkStateError::PortIpSettings(..)));
+    }
+
+    #[test]
+    fn test_ports_are_reported_without_ip_settings() {
+        let mut state = stacked_state();
+        state.get_connection_mut("eth0").unwrap().ip_config.method4 = Some(Ipv4Method::Auto);
+
+        let eth0 = find(&exposed(&state), "eth0");
+        assert!(!eth0.has_ip_settings());
+        assert_eq!(eth0.ignore_auto_dns, None);
+    }
+
+    /// An existing connection that joins a controller by name becomes a port as well.
+    #[test]
+    fn test_a_connection_joining_a_controller_by_name_loses_its_ip_settings() {
+        let mut state = NetworkState::default();
+        let mut eth0 = Connection::new("eth0".to_string(), DeviceType::Ethernet);
+        eth0.interface = Some("eth0".to_string());
+        eth0.ip_config.method4 = Some(Ipv4Method::Manual);
+        eth0.ip_config.addresses = vec!["192.168.2.10/24".parse().unwrap()];
+        eth0.ip_config.ignore_auto_dns = true;
+        state.add_connection(eth0).unwrap();
+
+        let bond0 = NetworkConnection {
+            id: "bond0".to_string(),
+            bond: Some(BondSettings {
+                ports: vec![name("eth0")],
+                ..Default::default()
+            }),
+            ..Default::default()
+        };
+        let collection = state
+            .connection_collection_from(&NetworkConnectionsCollection(vec![bond0]))
+            .unwrap();
+
+        let eth0 = collection.0.iter().find(|c| c.id == "eth0").unwrap();
+        assert_eq!(eth0.ip_config, IpConfig::default());
     }
 
     #[test]
@@ -1656,12 +1841,9 @@ mod tests {
     /// eth0 + eth1  ->  bond0  ->  br0  ->  br0.100 (VLAN)
     /// ```
     const STACKED_PROFILE: &str = r#"[
-      { "id": "eth0", "interface": "eth0",
-        "method4": "disabled", "method6": "disabled", "mtu": 9000 },
-      { "id": "eth1", "interface": "eth1",
-        "method4": "disabled", "method6": "disabled" },
+      { "id": "eth0", "interface": "eth0", "mtu": 9000 },
+      { "id": "eth1", "interface": "eth1" },
       { "id": "bond0", "interface": "bond0",
-        "method4": "disabled", "method6": "disabled",
         "bond": { "mode": "802.3ad", "options": "miimon=100 lacp_rate=fast",
                   "ports": ["eth0", "eth1"] } },
       { "id": "br0", "interface": "br0", "method4": "manual",
@@ -1678,10 +1860,9 @@ mod tests {
         "addresses": ["192.168.1.100/24"],
         "bridge": { "stp": true, "forwardDelay": 4, "maxAge": 20, "ports": [
           { "id": "bond0", "interface": "bond0",
-            "method4": "disabled", "method6": "disabled",
             "bond": { "mode": "802.3ad", "options": "miimon=100 lacp_rate=fast", "ports": [
-              { "interface": "eth0", "method4": "disabled", "method6": "disabled", "mtu": 9000 },
-              { "interface": "eth1", "method4": "disabled", "method6": "disabled" }
+              { "interface": "eth0", "mtu": 9000 },
+              { "interface": "eth1" }
             ] } }
         ] } },
       { "id": "br0.100", "interface": "br0.100", "method4": "manual",
@@ -1887,7 +2068,7 @@ mod tests {
     }
 
     /// The cascade walks the controller links, so a state that somehow ended up with a loop must
-    /// not keep it spinning. The loop is reported afterwards, but only if the walk returns.
+    /// not keep it spinning.
     #[test]
     fn test_a_loop_of_controllers_does_not_hang_the_removal() {
         let mut first = Connection::new("first".to_string(), DeviceType::Bridge);
@@ -1899,14 +2080,16 @@ mod tests {
         state.add_connection(first).unwrap();
         state.add_connection(second).unwrap();
 
-        let error = state
+        let collection = state
             .connection_collection_from(&NetworkConnectionsCollection(vec![NetworkConnection {
                 id: "second".to_string(),
                 status: Some(Status::Removed),
                 ..Default::default()
             }]))
-            .unwrap_err();
-        assert!(matches!(error, NetworkStateError::ControllerCycle(_)));
+            .unwrap();
+
+        // Given at the top level, "second" is moved out of "first", which breaks the loop.
+        assert!(collection.0.iter().all(|c| c.is_removed()));
     }
 
     /// Same as above, when reporting the state: the members of a loop are not reachable from any
@@ -3015,7 +3198,9 @@ impl ConnectionCollection {
             if placed.contains(&member.uuid) {
                 continue;
             }
-            let port = self.to_api_tree(member, with_state, placed)?;
+            let mut port = self.to_api_tree(member, with_state, placed)?;
+            // Its controller holds the IP configuration.
+            port.clear_ip_settings();
             ports.push(PortEntry::Connection(Box::new(port)));
         }
 
