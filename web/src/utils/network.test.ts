@@ -185,6 +185,24 @@ describe("controllerOf", () => {
     ).toBe("bond0");
   });
 
+  it("returns the controller the device's connection is nested in", () => {
+    const port = new Connection("Ethernet 1", { iface: "enp1s0" });
+    const bond = new Connection("Bond 1", {
+      iface: "bond0",
+      bond: { mode: BondMode.ACTIVE_BACKUP, options: "", ports: [port] },
+    });
+    expect(controllerOf(device(), [bond, port])).toBe("bond0");
+  });
+
+  it("finds a nested port that does not name the device", () => {
+    const port = new Connection("Ethernet 1", { macAddress: "00:11:22:33:44:55" });
+    const bond = new Connection("Bond 1", {
+      iface: "bond0",
+      bond: { mode: BondMode.ACTIVE_BACKUP, options: "", ports: [port] },
+    });
+    expect(controllerOf(device({ connection: "Ethernet 1" }), [bond, port])).toBe("bond0");
+  });
+
   it("returns undefined when no controller lists the device", () => {
     expect(controllerOf(device({ name: "enp9s0" }), [bondWithPorts(["enp1s0"])])).toBeUndefined();
   });

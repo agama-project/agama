@@ -36,6 +36,8 @@ import {
   IPAddress,
   Route,
   SecurityProtocols,
+  portName,
+  portsOf,
 } from "~/types/network";
 import { _, N_, formatNumber } from "~/i18n";
 import type { MarkedString, TranslatedString } from "~/i18n";
@@ -451,10 +453,13 @@ const connectionForDevice = (device: Device, connections: Connection[]): Connect
  * Returns the bond or bridge the given device is already a port of, if any.
  *
  * Membership lives in the controller's own `ports` list, so it is found by
- * going through the controllers instead of asking the port about it. A port is
- * listed there by its interface name or, lacking one, by its connection id,
- * and both are worth looking for, including those of a connection that reached
- * the device without naming it.
+ * going through the controllers instead of asking the port about it. The
+ * connections are expected to be flattened (see `flattenConnections`), so the
+ * controllers nested in others are gone through too. A port is usually the
+ * connection itself, but it can also be a name still to be resolved: its
+ * interface name or, lacking one, its connection id. Both are worth looking
+ * for, including those of a connection that reached the device without naming
+ * it.
  *
  * The answer is the controller's interface name, falling back to its
  * connection id, which is how a controller is named everywhere else.
@@ -463,7 +468,9 @@ const controllerOf = (device: Device, connections: Connection[]): string | undef
   const port = connectionForDevice(device, connections);
   const names = sift([device.name, port?.iface, port?.id]);
   const controller = connections.find((c) =>
-    (c.bond?.ports ?? c.bridge?.ports)?.some((p) => names.includes(p)),
+    portsOf(c).some((p) =>
+      typeof p === "string" ? names.includes(p) : p.id === port?.id || names.includes(portName(p)),
+    ),
   );
 
   return controller && (controller.iface || controller.id);

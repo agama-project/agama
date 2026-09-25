@@ -35,6 +35,7 @@ import {
   ConnectionState,
   IPAddress,
   ConnectionMethod,
+  flattenConnections,
 } from "~/types/network";
 import { useInstallerClient } from "~/hooks/use-installer-client";
 import React, { useCallback } from "react";
@@ -54,12 +55,16 @@ function useSystem(): NetworkSystem {
 }
 
 /**
- * Returns the network connections.
+ * Returns the network connections, including the ports nested in bonds and
+ * bridges.
+ *
+ * Use `useSystem().connections` for the top-level ones only, with their ports
+ * nested in them.
  */
 const useConnections = (): Connection[] => {
   const { connections } = useSystem();
 
-  return connections;
+  return flattenConnections(connections);
 };
 
 /**
@@ -86,7 +91,8 @@ const useState = (): GeneralState => {
 const useWifiNetworks = () => {
   const knownSsids: string[] = [];
 
-  const { devices, connections, accessPoints, state } = useSystem();
+  const { devices, accessPoints, state } = useSystem();
+  const connections = useConnections();
 
   if (!state.wirelessEnabled) return [];
 
