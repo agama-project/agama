@@ -1390,7 +1390,8 @@ build_profile() {
         if .encryption.luks2 then .encryption.luks2.password = $luks_password else . end
       )
 
-    # the NTP server: a file in the installed system
+    # the NTP server: a file in the installed system, the empty pool package
+    # then avoids using the default SUSE pool servers
     | if $ntp_content != "" then
         .files = ((.files // []) + [{
           destination: $ntp_destination,
@@ -1399,7 +1400,10 @@ build_profile() {
           user: "root",
           group: "root"
         }])
-      else . end
+        | .software.packages = ((.software.packages // []) + ["chrony-pool-empty"])
+      else
+        .software.packages = ((.software.packages // []) + ["chrony-pool-suse"])
+      end
     ' "$TEMPLATE"
 }
 
