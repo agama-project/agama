@@ -29,8 +29,10 @@ import {
   intToIPString,
   stringToIPInt,
   formatIp,
+  connectionForDevice,
   connectionForName,
   controllerOf,
+  deviceUsedBy,
   deviceLinkLabel,
   deviceLinkRank,
   formatLinkSpeed,
@@ -118,7 +120,36 @@ describe("connectionForName", () => {
   });
 });
 
+describe("connectionForDevice", () => {
+  const device = (props: object = {}): Device => ({ name: "enp1s0", ...props }) as Device;
+
+  it("returns the connection naming the device", () => {
+    const byIface = new Connection("Ethernet 1", { iface: "enp1s0" });
+    expect(connectionForDevice(device(), [byIface])).toBe(byIface);
+  });
+
+  it("returns the connection the device reports running, when none names it", () => {
+    const unbound = new Connection("Ethernet 1");
+    expect(connectionForDevice(device({ connection: "Ethernet 1" }), [unbound])).toBe(unbound);
+  });
+
+  it("prefers the connection naming the device over the one it reports", () => {
+    const byIface = new Connection("Ethernet 1", { iface: "enp1s0" });
+    const unbound = new Connection("Ethernet 2");
+    expect(connectionForDevice(device({ connection: "Ethernet 2" }), [unbound, byIface])).toBe(
+      byIface,
+    );
+  });
+
+  it("returns undefined when no connection reaches the device", () => {
+    expect(connectionForDevice(device(), [new Connection("Ethernet 2", { iface: "enp2s0" })])).toBe(
+      undefined,
+    );
+  });
+});
+
 describe("controllerOf", () => {
+  const device = (props: object = {}): Device => ({ name: "enp1s0", ...props }) as Device;
   const bondWithPorts = (ports: string[], options = {}) =>
     new Connection("Bond 1", {
       iface: "bond0",
@@ -127,32 +158,66 @@ describe("controllerOf", () => {
     });
 
   it("returns the bond listing the device among its ports", () => {
-    expect(controllerOf("enp1s0", [bondWithPorts(["enp1s0"])])).toBe("bond0");
+    expect(controllerOf(device(), [bondWithPorts(["enp1s0"])])).toBe("bond0");
   });
 
   it("returns the bridge listing the device among its ports", () => {
     const bridge = new Connection("Bridge 1", { iface: "br0", bridge: { ports: ["enp1s0"] } });
-    expect(controllerOf("enp1s0", [bridge])).toBe("br0");
+    expect(controllerOf(device(), [bridge])).toBe("br0");
   });
 
   it("names the controller after its connection id when it has no interface", () => {
     const bond = new Connection("Bond 1", {
       bond: { mode: BondMode.ACTIVE_BACKUP, options: "", ports: ["enp1s0"] },
     });
-    expect(controllerOf("enp1s0", [bond])).toBe("Bond 1");
+    expect(controllerOf(device(), [bond])).toBe("Bond 1");
   });
 
   it("finds the device listed by the id of the connection bound to it", () => {
     const port = new Connection("Ethernet 1", { iface: "enp1s0" });
-    expect(controllerOf("enp1s0", [bondWithPorts(["Ethernet 1"]), port])).toBe("bond0");
+    expect(controllerOf(device(), [bondWithPorts(["Ethernet 1"]), port])).toBe("bond0");
+  });
+
+  it("finds the device listed by the id of a connection that does not name it", () => {
+    const port = new Connection("Ethernet 1");
+    expect(
+      controllerOf(device({ connection: "Ethernet 1" }), [bondWithPorts(["Ethernet 1"]), port]),
+    ).toBe("bond0");
   });
 
   it("returns undefined when no controller lists the device", () => {
-    expect(controllerOf("enp9s0", [bondWithPorts(["enp1s0"])])).toBeUndefined();
+    expect(controllerOf(device({ name: "enp9s0" }), [bondWithPorts(["enp1s0"])])).toBeUndefined();
   });
 
   it("returns undefined when there is no controller at all", () => {
-    expect(controllerOf("enp1s0", [])).toBeUndefined();
+    expect(controllerOf(device(), [])).toBeUndefined();
+  });
+});
+
+describe("deviceUsedBy", () => {
+  const device = (props: object = {}): Device => ({ name: "enp1s0", ...props }) as Device;
+
+  it("returns the controller the device is a port of", () => {
+    const port = new Connection("Ethernet 1", { iface: "enp1s0" });
+    const bond = new Connection("Bond 1", {
+      iface: "bond0",
+      bond: { mode: BondMode.ACTIVE_BACKUP, options: "", ports: ["enp1s0"] },
+    });
+    expect(deviceUsedBy(device(), [bond, port])).toBe("bond0");
+  });
+
+  it("falls back to the connection running on the device", () => {
+    const conn = new Connection("Ethernet 1", { iface: "enp1s0" });
+    expect(deviceUsedBy(device(), [conn])).toBe("Ethernet 1");
+  });
+
+  it("names the connection the device reports, even when it does not name the device", () => {
+    const conn = new Connection("Ethernet 1");
+    expect(deviceUsedBy(device({ connection: "Ethernet 1" }), [conn])).toBe("Ethernet 1");
+  });
+
+  it("returns undefined when nothing uses the device", () => {
+    expect(deviceUsedBy(device(), [])).toBeUndefined();
   });
 });
 

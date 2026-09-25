@@ -437,4 +437,38 @@ describe("PortsField", () => {
       expect(within(deviceRow("enp2s0")).queryByText("bond0")).not.toBeInTheDocument();
     });
   });
+
+  // A device is spoken for as soon as a connection runs on it, and taking it as
+  // a port takes it away from whatever holds it. That is worth saying even when
+  // no controller is involved.
+  describe("when a device is already running a connection of its own", () => {
+    it("names the connection bound to the device", async () => {
+      mockConnections = [new Connection("Wired 1", { iface: "enp2s0" })];
+      const { user } = installerRender(<TestForm />);
+      await openDialog(user);
+      within(deviceRow("enp2s0")).getByText("Wired 1");
+    });
+
+    // A connection bound by hardware address, or bound to nothing at all,
+    // names no device: only the device knows which one it landed on.
+    it("names a connection that reached the device without naming it", async () => {
+      mockDevices = [mockDevice1, { ...mockDevice2, connection: "Wired 1" }];
+      mockConnections = [new Connection("Wired 1", { macAddress: "AA:BB:CC:DD:EE:FF" })];
+      const { user } = installerRender(<TestForm />);
+      await openDialog(user);
+      within(deviceRow("enp2s0")).getByText("Wired 1");
+    });
+
+    it("prefers naming the controller that uses the device", async () => {
+      mockDevices = [mockDevice1, { ...mockDevice2, connection: "Wired 1" }, mockBondDevice];
+      mockConnections = [
+        new Connection("Wired 1", { macAddress: "AA:BB:CC:DD:EE:FF" }),
+        bond("bond1", ["Wired 1"]),
+      ];
+      const { user } = installerRender(<TestForm />);
+      await openDialog(user);
+      within(deviceRow("enp2s0")).getByText("bond1");
+      expect(within(deviceRow("enp2s0")).queryByText("Wired 1")).not.toBeInTheDocument();
+    });
+  });
 });
