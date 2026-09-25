@@ -1085,7 +1085,13 @@ ask_target_disk() {
   done < <(lsblk -drno NAME,TYPE,SIZE,RO,MODEL | tr ' ' '\037')
 
   if ((${#disks[@]} == 0)); then
-    fatal "No usable disk was found in this system."
+    if [[ $(uname -m) == s390* ]]; then
+      fatal "No usable disk was found in this system.
+
+You have to activate disks manually via PARM file at boot or using SSH."
+    else
+      fatal "No usable disk was found in this system."
+    fi
   fi
 
   if ((${#disks[@]} == 2)); then
