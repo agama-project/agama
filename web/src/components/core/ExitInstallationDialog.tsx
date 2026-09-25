@@ -21,8 +21,7 @@
  */
 
 import React from "react";
-import { Content, Flex, Stack } from "@patternfly/react-core";
-import Icon from "~/components/layout/Icon";
+import { Content, Stack } from "@patternfly/react-core";
 import Popup from "~/components/core/Popup";
 import { useNavigate } from "react-router";
 import { ROOT } from "~/routes/paths";
@@ -76,15 +75,11 @@ your disks, and your current installation setup will be canceled.",
       onClose={onClose}
       actions={
         <>
-          <Popup.SecondaryAction onClick={reboot}>
-            <Flex gap={{ default: "gapXs" }} alignItems={{ default: "alignItemsCenter" }}>
-              <Icon name="restart_alt" /> {_("Reboot")}
-            </Flex>
+          <Popup.SecondaryAction onClick={reboot} icon="restart_alt">
+            {_("Reboot")}
           </Popup.SecondaryAction>
-          <Popup.SecondaryAction onClick={shutdown}>
-            <Flex gap={{ default: "gapXs" }} alignItems={{ default: "alignItemsCenter" }}>
-              <Icon name="power_settings_circle" /> {_("Shut down")}
-            </Flex>
+          <Popup.SecondaryAction onClick={shutdown} icon="power_settings_circle">
+            {_("Shut down")}
           </Popup.SecondaryAction>
         </>
       }
