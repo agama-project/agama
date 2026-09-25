@@ -59,6 +59,8 @@ import {
   ConnectionStatus,
   ConnectionType,
   Device,
+  flattenConnections,
+  portConnections,
 } from "~/types/network";
 import { NETWORK } from "~/routes/paths";
 import useSortedByParam from "~/hooks/use-sorted-by-param";
@@ -111,10 +113,35 @@ const bindingHint = (connection: Connection) => {
   return null;
 };
 
-const createColumns = (devices: Device[]) => [
+/**
+ * Returns how deep each connection is nested in bonds and bridges, keyed by
+ * connection id. A top-level connection is at depth 0.
+ */
+const nestingDepths = (connections: Connection[], depth = 0): Map<string, number> =>
+  new Map(
+    connections.flatMap((c) => [
+      [c.id, depth] as const,
+      ...nestingDepths(portConnections(c), depth + 1),
+    ]),
+  );
+
+/**
+ * Returns the ports of the given connection, and the ports of those, as one
+ * list. The table goes only one level deep, so a whole stack is shown as the
+ * children of its top-level connection, indented by how deep each one is.
+ */
+const stackOf = (connection: Connection): Connection[] =>
+  flattenConnections(portConnections(connection));
+
+const createColumns = (devices: Device[], depths: Map<string, number>) => [
   {
     name: _("Name"),
-    value: (c: Connection) => c.id,
+    value: (c: Connection) => {
+      const depth = depths.get(c.id) ?? 0;
+      if (depth === 0) return c.id;
+
+      return <span style={{ paddingInlineStart: `${depth - 1}rem` }}>{c.id}</span>;
+    },
     sortingKey: (c: Connection) => c.id,
     sortingId: "name",
   },
@@ -166,20 +193,25 @@ const createColumns = (devices: Device[]) => [
 
 export default function ConnectionsTable() {
   const devices = useDevices();
-  const { state: systemState, connections = [] } = useSystem();
+  // The top-level connections, with the ports of bonds and bridges nested in
+  // them, and every connection as a single list.
+  const { state: systemState, connections: roots = [] } = useSystem();
+  const connections = flattenConnections(roots);
   const { mutateAsync: mutateConnection } = useConnectionMutation();
   const navigate = useNavigate();
-
-  const columns = createColumns(devices);
-  const [sortedBy, updateSorting] = useSortedByParam(columns, {
-    param: SORT,
-    defaultValue: { index: 0, direction: "asc" },
-  });
 
   const { filters, setFilter, resetFilters, hasActiveFilters } = useFilterParams({
     name: textFilter(),
     type: choiceFilter(Object.values(CONNECTION_TYPE)),
     state: choiceFilter(Object.values(ConnectionState)),
+  });
+
+  // Filtered rows are not nested, so they are not indented either.
+  const depths = hasActiveFilters ? new Map() : nestingDepths(roots);
+  const columns = createColumns(devices, depths);
+  const [sortedBy, updateSorting] = useSortedByParam(columns, {
+    param: SORT,
+    defaultValue: { index: 0, direction: "asc" },
   });
 
   const onFilterChange = (filter: keyof ConnectionsFilters, value: string) =>
@@ -209,12 +241,16 @@ export default function ConnectionsTable() {
     mutateConnection(toDelete);
   };
 
+  // While filtering, every matching connection gets a row of its own, so a port
+  // is not hidden in a collapsed stack. Otherwise, the ports are shown under
+  // the top-level connection of their stack.
   const filteredConnections = filterConnections(connections, filters);
   const sortedConnections = sortCollection(
-    filteredConnections,
+    hasActiveFilters ? filteredConnections : roots,
     sortedBy.direction,
     columns[sortedBy.index].sortingKey,
   );
+  const itemChildren = hasActiveFilters ? () => [] : stackOf;
 
   const countText = hasActiveFilters
     ? sprintf(
@@ -299,6 +335,8 @@ export default function ConnectionsTable() {
         columns={columns}
         items={sortedConnections}
         itemIdKey="id"
+        itemChildren={itemChildren}
+        initialExpandedKeys={roots.filter((c) => !isEmpty(stackOf(c))).map((c) => c.id)}
         selectionMode="none"
         variant="compact"
         sortedBy={sortedBy}

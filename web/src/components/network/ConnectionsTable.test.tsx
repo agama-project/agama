@@ -24,7 +24,7 @@ import React from "react";
 import { screen, within } from "@testing-library/react";
 import { installerRender, mockNavigateFn, mockRoutes } from "~/test-utils";
 import ConnectionsTable from "~/components/network/ConnectionsTable";
-import { Connection, ConnectionState, ConnectionStatus } from "~/types/network";
+import { BondMode, Connection, ConnectionState, ConnectionStatus } from "~/types/network";
 
 const mockMutateAsync = jest.fn();
 const mockConnections = [
@@ -49,6 +49,25 @@ const mockConnections = [
   }),
 ];
 
+// The top-level connections the system reports, with the ports of bonds and
+// bridges nested in them.
+let mockRoots = mockConnections;
+
+const stackedConnections = [
+  new Connection("Bond 1", {
+    iface: "bond0",
+    state: ConnectionState.ACTIVATED,
+    bond: {
+      mode: BondMode.ACTIVE_BACKUP,
+      options: "",
+      ports: [
+        new Connection("Port 1", { iface: "eth1", state: ConnectionState.ACTIVATED }),
+        new Connection("Port 2", { iface: "eth2", state: ConnectionState.DEACTIVATED }),
+      ],
+    },
+  }),
+];
+
 const mockDevices = [
   { name: "eth0", connection: "Wired connection 0", addresses: [] },
   { name: "wlan0", connection: "Wifi1", addresses: [] },
@@ -63,7 +82,7 @@ jest.mock("~/hooks/model/system/network", () => ({
   useConnections: () => mockConnections,
   useDevices: () => mockDevices,
   useSystem: () => ({
-    connections: mockConnections,
+    connections: mockRoots,
     devices: mockDevices,
     state: { wirelessEnabled: true },
   }),
@@ -188,5 +207,44 @@ describe("ConnectionsTable", () => {
         status: "removed",
       }),
     );
+  });
+
+  describe("when there are bonds or bridges", () => {
+    beforeEach(() => {
+      mockRoots = stackedConnections;
+    });
+
+    afterEach(() => {
+      mockRoots = mockConnections;
+    });
+
+    it("renders their ports under them", () => {
+      installerRender(<ConnectionsTable />);
+      const names = screen.getAllByRole("row").map((r) => r.textContent);
+      expect(names.findIndex((n) => n.includes("Bond 1"))).toBeLessThan(
+        names.findIndex((n) => n.includes("Port 1")),
+      );
+      screen.getByText("Port 2");
+      screen.getByText("3 connections available");
+    });
+
+    it("offers the actions for the ports too", async () => {
+      const { user } = installerRender(<ConnectionsTable />);
+      await user.click(screen.getByRole("button", { name: /actions for Port 1/i }));
+      await user.click(screen.getByText("Delete"));
+      expect(mockMutateAsync).toHaveBeenCalledWith(
+        expect.objectContaining({ id: "Port 1", status: "removed" }),
+      );
+    });
+
+    it("lists a matching port on its own while filtering", () => {
+      mockRoutes("/network?state=deactivated");
+      installerRender(<ConnectionsTable />);
+
+      screen.getByText("Port 2");
+      expect(screen.queryByText("Bond 1")).toBeNull();
+      expect(screen.queryByText("Port 1")).toBeNull();
+      screen.getByText("1 of 3 connections match filters");
+    });
   });
 });

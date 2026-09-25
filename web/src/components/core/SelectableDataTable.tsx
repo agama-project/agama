@@ -533,6 +533,37 @@ export default function SelectableDataTable({
   };
 
   /**
+   * Render method for building the actions cell of an item or an item child,
+   * if there are actions for it.
+   *
+   * @param item - The item the actions are for
+   */
+  const renderActions = (item: object) => {
+    const actions = itemActions?.(item);
+    if (isEmpty(actions)) return;
+
+    const label = isFunction(itemActionsLabel) ? itemActionsLabel(item) : itemActionsLabel;
+    const ItemActionsComponent = itemActionsComponent;
+
+    return (
+      <Td isActionCell>
+        {ItemActionsComponent ? (
+          <ItemActionsComponent items={actions} label={label} />
+        ) : (
+          <ActionsColumn
+            items={actions}
+            actionsToggle={({ toggleRef, onToggle }) => (
+              <MenuToggle ref={toggleRef} onClick={onToggle} variant="plain" aria-label={label}>
+                <Icon name="more_horiz" />
+              </MenuToggle>
+            )}
+          />
+        )}
+      </Td>
+    );
+  };
+
+  /**
    * Render method for building the markup for an item child
    *
    * @param item - The child to be rendered
@@ -558,6 +589,7 @@ export default function SelectableDataTable({
             <ExpandableRowContent>{c.value(item)}</ExpandableRowContent>
           </Td>
         ))}
+        {renderActions(item)}
       </Tr>
     );
   };
@@ -578,8 +610,6 @@ export default function SelectableDataTable({
       isExpanded: isItemExpanded(itemKey),
       onToggle: () => toggleExpanded(itemKey),
     };
-    const actions = itemActions?.(item);
-
     const selectProps = {
       rowIndex,
       onSelect: () => updateSelection(item),
@@ -593,9 +623,6 @@ export default function SelectableDataTable({
       return children.map((item) => renderItemChild(item, isItemExpanded(itemKey), sharedData));
     };
 
-    const label = isFunction(itemActionsLabel) ? itemActionsLabel(item) : itemActionsLabel;
-    const ItemActionsComponent = itemActionsComponent;
-
     // TODO: Add label to Tbody?
     return (
       <Tbody key={rowIndex} isExpanded={isItemExpanded(itemKey)}>
@@ -607,27 +634,7 @@ export default function SelectableDataTable({
               {c.value(item)}
             </Td>
           ))}
-          {!isEmpty(actions) && (
-            <Td isActionCell>
-              {ItemActionsComponent ? (
-                <ItemActionsComponent items={actions} label={label} />
-              ) : (
-                <ActionsColumn
-                  items={actions}
-                  actionsToggle={({ toggleRef, onToggle }) => (
-                    <MenuToggle
-                      ref={toggleRef}
-                      onClick={onToggle}
-                      variant="plain"
-                      aria-label={label}
-                    >
-                      <Icon name="more_horiz" />
-                    </MenuToggle>
-                  )}
-                />
-              )}
-            </Td>
-          )}
+          {renderActions(item)}
         </Tr>
         {renderChildren()}
       </Tbody>
