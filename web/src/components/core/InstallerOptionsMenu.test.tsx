@@ -33,6 +33,17 @@ jest.mock("~/components/core/ChangeProductOption", () => () => (
 // Monaco editor used in <ConfigEditor> is too heavy to render in tests
 jest.mock("~/components/core/ConfigEditor", () => () => <div>ConfigEditor Mock</div>);
 
+// Mock ExitInstallationDialog
+jest.mock("~/components/core/ExitInstallationDialog", () => {
+  return function ExitInstallationDialog({ onClose }) {
+    return (
+      <div role="dialog">
+        <button onClick={onClose}>Close Exit Dialog</button>
+      </div>
+    );
+  };
+});
+
 describe("InstallerOptionsMenu", () => {
   describe("toggle button", () => {
     it("renders a toggle with 'More options' aria-label", () => {
@@ -140,6 +151,64 @@ describe("InstallerOptionsMenu", () => {
       // behavior" above); reopen it to check the entry's new label.
       await user.click(screen.getByRole("button", { name: /More options/i }));
       screen.getByRole("menuitem", { name: /Close terminal/i });
+    });
+
+    it("renders the 'Exit installation' option", async () => {
+      const { user } = installerRender(<InstallerOptionsMenu />);
+      await user.click(screen.getByRole("button", { name: /More options/i }));
+      screen.getByRole("menuitem", { name: /Exit installation/i });
+    });
+
+    it("does not render the 'Exit installation' option during installation", async () => {
+      mockRoutes(ROOT.installationProgress);
+      const { user } = installerRender(<InstallerOptionsMenu />);
+      await user.click(screen.getByRole("button", { name: /More options/i }));
+      expect(
+        screen.queryByRole("menuitem", { name: /Exit installation/i }),
+      ).not.toBeInTheDocument();
+    });
+
+    it("does not render the 'Exit installation' option after installation finished", async () => {
+      mockRoutes(ROOT.installationFinished);
+      const { user } = installerRender(<InstallerOptionsMenu />);
+      await user.click(screen.getByRole("button", { name: /More options/i }));
+      expect(
+        screen.queryByRole("menuitem", { name: /Exit installation/i }),
+      ).not.toBeInTheDocument();
+    });
+
+    it("does not render the 'Exit installation' option on reboot page", async () => {
+      mockRoutes(ROOT.installationReboot);
+      const { user } = installerRender(<InstallerOptionsMenu />);
+      await user.click(screen.getByRole("button", { name: /More options/i }));
+      expect(
+        screen.queryByRole("menuitem", { name: /Exit installation/i }),
+      ).not.toBeInTheDocument();
+    });
+
+    it("does not render the 'Exit installation' option on shutdown page", async () => {
+      mockRoutes(ROOT.installationShutdown);
+      const { user } = installerRender(<InstallerOptionsMenu />);
+      await user.click(screen.getByRole("button", { name: /More options/i }));
+      expect(
+        screen.queryByRole("menuitem", { name: /Exit installation/i }),
+      ).not.toBeInTheDocument();
+    });
+
+    it("opens the exit installation dialog when clicking the option", async () => {
+      const { user } = installerRender(<InstallerOptionsMenu />);
+      await user.click(screen.getByRole("button", { name: /More options/i }));
+      await user.click(screen.getByRole("menuitem", { name: /Exit installation/i }));
+      screen.getByRole("dialog");
+    });
+
+    it("closes the exit installation dialog when onClose is called", async () => {
+      const { user } = installerRender(<InstallerOptionsMenu />);
+      await user.click(screen.getByRole("button", { name: /More options/i }));
+      await user.click(screen.getByRole("menuitem", { name: /Exit installation/i }));
+      const dialog = screen.getByRole("dialog");
+      await user.click(screen.getByRole("button", { name: "Close Exit Dialog" }));
+      expect(dialog).not.toBeInTheDocument();
     });
   });
 });

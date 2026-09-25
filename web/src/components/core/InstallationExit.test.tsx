@@ -26,18 +26,37 @@ import { plainRender } from "~/test-utils";
 import InstallationExit from "./InstallationExit";
 
 describe("InstallationExit", () => {
-  it("makes users aware system is rebooting", () => {
-    plainRender(<InstallationExit />);
-    screen.getByRole("heading", { name: "The system is rebooting", level: 1 });
+  describe("when rebooting", () => {
+    it("makes users aware system is rebooting", () => {
+      plainRender(<InstallationExit action="reboot" />);
+      screen.getByRole("heading", { name: "The system is rebooting", level: 1 });
+    });
+
+    it("makes users aware installer is no longer useful", () => {
+      plainRender(<InstallationExit action="reboot" />);
+      screen.getByText("The installer interface is no longer available.");
+    });
+
+    it("invites users to close the installer", () => {
+      plainRender(<InstallationExit action="reboot" />);
+      screen.getByText("You can safely close this window.");
+    });
   });
 
-  it("makes users aware installer is no longer useful", () => {
-    plainRender(<InstallationExit />);
-    screen.getByText("The installer interface is no longer available.");
-  });
+  describe("when shutting down", () => {
+    it("makes users aware system is shutting down", () => {
+      plainRender(<InstallationExit action="shutdown" />);
+      screen.getByRole("heading", { name: "The system is shutting down", level: 1 });
+    });
 
-  it("invites users to close the installer", () => {
-    plainRender(<InstallationExit />);
-    screen.getByText("You can safely close this window.");
+    it("makes users aware installer is no longer useful", () => {
+      plainRender(<InstallationExit action="shutdown" />);
+      screen.getByText("The installer interface is no longer available.");
+    });
+
+    it("invites users to close the installer", () => {
+      plainRender(<InstallationExit action="shutdown" />);
+      screen.getByText("You can safely close this window.");
+    });
   });
 });
