@@ -92,6 +92,8 @@ import MoreTime from "@icons/more_time.svg?component";
 import TaskAlt from "@icons/task_alt.svg?component";
 import HourglassDisabled from "@icons/hourglass_disabled.svg?component";
 import Pending from "@icons/pending.svg?component";
+import PowerSettingsNew from "@icons/power_settings_new.svg?component";
+import PowerSettingsCircle from "@icons/power_settings_circle.svg?component";
 
 const icons = {
   add: Add,
@@ -161,6 +163,8 @@ const icons = {
   task_alt: TaskAlt,
   hourglass_disabled: HourglassDisabled,
   pending: Pending,
+  power_settings_new: PowerSettingsNew,
+  power_settings_circle: PowerSettingsCircle,
 };
 
 /**

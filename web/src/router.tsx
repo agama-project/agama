@@ -25,7 +25,7 @@ import { createHashRouter, Navigate, Outlet } from "react-router";
 import App from "~/App";
 import Protected from "~/Protected";
 import ErrorPage from "~/components/core/ErrorPage";
-import InstallationExit from "~/components/core/InstallationExit";
+import TeardownDialog from "~/components/core/TeardownDialog";
 import InstallationFinished from "~/components/core/InstallationFinished";
 import InstallationProgress from "~/components/core/InstallationProgress";
 import LoginPage from "~/components/core/LoginPage";
@@ -127,8 +127,12 @@ const router = () =>
       element: <LoginPage />,
     },
     {
-      path: PATHS.installationExit,
-      element: <InstallationExit />,
+      path: PATHS.installationReboot,
+      element: <TeardownDialog action="reboot" />,
+    },
+    {
+      path: PATHS.installationShutdown,
+      element: <TeardownDialog action="shutdown" />,
     },
     {
       path: PATHS.root,

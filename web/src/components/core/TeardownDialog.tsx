@@ -26,13 +26,22 @@ import Page from "~/components/layout/Page";
 import SideBySideLayout from "~/components/layout/SideBySideLayout";
 import { _ } from "~/i18n";
 
-export default function InstallationExit() {
+type TeardownDialogProps = {
+  action: "reboot" | "shutdown";
+};
+
+export default function TeardownDialog({ action }: TeardownDialogProps) {
+  const title =
+    action === "reboot" ? _("The system is rebooting") : _("The system is shutting down");
+
+  const icon = action === "reboot" ? "restart_alt" : "power_settings_circle";
+
   return (
     <Page variant="minimal">
       <Page.Content>
         <SideBySideLayout
-          icon="restart_alt"
-          title={_("The system is rebooting")}
+          icon={icon}
+          title={title}
           description={
             <HelperText>
               <HelperTextItem>

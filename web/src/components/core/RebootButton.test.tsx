@@ -25,11 +25,11 @@ import { screen } from "@testing-library/react";
 import { mockNavigateFn, plainRender } from "~/test-utils";
 import RebootButton from "./RebootButton";
 
-const mockFinishInstallation = jest.fn();
+const mockRebootAction = jest.fn();
 
 jest.mock("~/api", () => ({
   ...jest.requireActual("~/api"),
-  finishInstallation: () => mockFinishInstallation(),
+  rebootAction: () => mockRebootAction(),
 }));
 
 describe("RebootButton", () => {
@@ -42,18 +42,18 @@ describe("RebootButton", () => {
     screen.getByRole("button", { name: "Reboot" });
   });
 
-  it("calls finishInstallation when clicked", async () => {
+  it("calls rebootAction when clicked", async () => {
     const { user } = plainRender(<RebootButton />);
     const button = screen.getByRole("button", { name: "Reboot" });
     await user.click(button);
-    expect(mockFinishInstallation).toHaveBeenCalled();
+    expect(mockRebootAction).toHaveBeenCalled();
   });
 
-  it("navigates to installation exit route when clicked", async () => {
+  it("navigates to installation reboot route when clicked", async () => {
     const { user } = plainRender(<RebootButton />);
     const button = screen.getByRole("button", { name: "Reboot" });
     await user.click(button);
-    expect(mockNavigateFn).toHaveBeenCalledWith("/installation/exit", { replace: true });
+    expect(mockNavigateFn).toHaveBeenCalledWith("/installation/reboot", { replace: true });
   });
 
   it("accepts custom props", () => {

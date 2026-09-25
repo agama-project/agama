@@ -950,9 +950,7 @@ impl MessageHandler<message::RunAction> for Service {
                 tracing::info!("Installation tasks spawned");
             }
             Action::Finish(method) => {
-                checks::check_stage(&self.progress, Stage::Finished).await?;
-                let action = FinishAction::new(method);
-                action.run();
+                FinishAction::new(method).run();
             }
         }
         Ok(())

@@ -22,8 +22,6 @@
 
 import React, { createContext, useContext, useId } from "react";
 import {
-  Button,
-  ButtonProps,
   Modal,
   ModalBody,
   ModalFooter,
@@ -34,9 +32,10 @@ import {
 import { Loading } from "~/components/layout";
 import { AnnouncerTarget } from "~/context/announcer";
 import { _, TranslatedString } from "~/i18n";
+import IconButton, { IconButtonProps } from "~/components/core/IconButton";
 
 /** Props for an action, which always picks its own PF/Button variant */
-type ActionProps = React.PropsWithChildren<Omit<ButtonProps, "variant">>;
+type ActionProps = React.PropsWithChildren<Omit<IconButtonProps, "variant">>;
 /** Props for an action that can also be rendered as a link */
 type SecondaryActionProps = ActionProps & {
   /** Whether to render the action as a link instead of an outlined button */
@@ -90,18 +89,17 @@ export type PopupProps = TitledPopupProps | LabeledPopupProps;
  *   <PrimaryAction onClick={doSomething}>Let's go</PrimaryAction>
  *
  * @example <caption>With an icon</caption>
- *   <PrimaryAction onClick={upload}>
- *     <UploadIcon />
- *     <Text>Upload</Text>
+ *   <PrimaryAction onClick={upload} icon="download">
+ *     Upload
  *   </PrimaryAction>
  *
  * @example <caption>Submitting a form rendered in the dialog body</caption>
  *   <PrimaryAction type="submit" form="user-settings">Accept</PrimaryAction>
  */
 const PrimaryAction = ({ children, ...actionProps }: ActionProps) => (
-  <Button {...actionProps} variant="primary">
+  <IconButton {...actionProps} variant="primary">
     {children}
-  </Button>
+  </IconButton>
 );
 
 /**
@@ -126,15 +124,14 @@ const Confirm = ({ children = _("Confirm"), ...actionProps }: ActionProps) => (
  *   <SecondaryAction onClick={cancel}>Cancel</SecondaryAction>
  *
  * @example <caption>With an icon</caption>
- *   <SecondaryAction onClick={dismiss}>
- *     <DismissIcon />
- *     <Text>Dismiss</Text>
+ *   <SecondaryAction onClick={dismiss} icon="close">
+ *     Dismiss
  *   </SecondaryAction>
  */
 const SecondaryAction = ({ children, asLink, ...actionProps }: SecondaryActionProps) => (
-  <Button {...actionProps} variant={asLink ? "link" : "secondary"}>
+  <IconButton {...actionProps} variant={asLink ? "link" : "secondary"}>
     {children}
-  </Button>
+  </IconButton>
 );
 
 /** Lets the closing action reuse the dialog's own `onClose` */
@@ -193,15 +190,14 @@ const Cancel = ({ children = _("Cancel"), ...actionProps }: SecondaryActionProps
  *   <AncillaryAction onClick={turnUserSettingsOff}>Do not set this</AncillaryAction>
  *
  * @example <caption>With an icon</caption>
- *   <AncillaryAction onClick={turnUserSettingsOff}>
- *     <RemoveIcon />
- *     <Text>Do not set</Text>
+ *   <AncillaryAction onClick={turnUserSettingsOff} icon="delete">
+ *     Do not set
  *   </AncillaryAction>
  */
 const AncillaryAction = ({ children, ...actionsProps }: ActionProps) => (
-  <Button {...actionsProps} variant="link">
+  <IconButton {...actionsProps} variant="link">
     {children}
-  </Button>
+  </IconButton>
 );
 
 /**
@@ -214,9 +210,9 @@ const AncillaryAction = ({ children, ...actionsProps }: ActionProps) => (
  *   <DangerousAction onClick={format}>Format</DangerousAction>
  */
 const DangerousAction = ({ children, ...actionProps }: ActionProps) => (
-  <Button {...actionProps} variant="danger">
+  <IconButton {...actionProps} variant="danger">
     {children}
-  </Button>
+  </IconButton>
 );
 
 /**

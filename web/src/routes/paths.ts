@@ -52,7 +52,8 @@ const ROOT = {
   installation: "/installation",
   installationProgress: "/installation/progress",
   installationFinished: "/installation/finished",
-  installationExit: "/installation/exit",
+  installationReboot: "/installation/reboot",
+  installationShutdown: "/installation/shutdown",
   logs: "/api/private/download_logs",
   config: "/api/config",
 };
