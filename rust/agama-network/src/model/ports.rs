@@ -20,26 +20,48 @@
 
 //! Resolution of the controller/port relationships declared in the HTTP API.
 //!
-//! Over the API, a controller declares its members through a list of names (`bond.ports` or
-//! `bridge.ports`) instead of through UUIDs, which are an implementation detail. This module
-//! turns such a list into the `controller` links of the internal model, and rejects the
-//! configurations that cannot be represented (unknown or ambiguous names, ports claimed by two
-//! controllers, loops, etc.).
+//! Over the API, the ports of a controller are nested in its `ports` list (`bond.ports` or
+//! `bridge.ports`), either as connections or by name. This module turns that tree into the
+//! `controller` links of the internal model, and rejects the configurations that cannot be
+//! represented (unknown or ambiguous names, ports claimed by two controllers, loops, etc.).
 
 use std::collections::{HashMap, HashSet};
 
-use agama_utils::api::network::{DeviceType, NetworkConnection, NetworkConnectionsCollection};
+use agama_utils::api::network::{
+    DeviceType, NetworkConnection, NetworkConnectionsCollection, PortEntry,
+};
 use uuid::Uuid;
 
 use super::{Connection, ConnectionCollection, ConnectionConfig};
 use crate::error::NetworkStateError;
 
+/// A connection of the incoming document, wherever it sits in the tree.
+struct Node<'a> {
+    conn: &'a NetworkConnection,
+    /// ID of the connection. For a nested port that does not give one, it is derived from its
+    /// interface (see [`PortResolver::port_id`]).
+    id: String,
+    /// Index of the node of its controller, for a port nested in its controller.
+    parent: Option<usize>,
+}
+
+/// A port that the incoming document refers to by name.
+struct NamedPort<'a> {
+    name: &'a str,
+    /// Index of the node of the controller that lists it.
+    parent: usize,
+}
+
+/// Port UUID -> (controller UUID, controller ID). The ID is only kept for error messages.
+type Claims = HashMap<Uuid, (Uuid, String)>;
+
 /// Turns a collection of API connections into internal connections with their relationships set.
 ///
 /// The resolver needs to know about the connections that already exist, for two reasons:
 ///
-/// * A `ports` list may name a connection that the payload does not include. In that case the
-///   existing connection is pulled into the resulting collection instead of being duplicated.
+/// * A port given by name may refer to a connection that the payload does not include. In that
+///   case the existing connection is pulled into the resulting collection instead of being
+///   duplicated.
 /// * Updating a connection must not drop the settings that the HTTP API does not model, so the
 ///   incoming settings are merged onto the existing connection when there is one.
 pub struct PortResolver<'a> {
@@ -54,95 +76,170 @@ impl<'a> PortResolver<'a> {
 
     /// Builds the internal connections for the given API collection.
     ///
-    /// The result contains one entry per incoming connection, plus any connection that a `ports`
-    /// list refers to and the payload does not include.
+    /// The result contains one entry per incoming connection, nested ports included, plus any
+    /// connection that a port name refers to and the payload does not include.
     ///
     /// * `incoming`: connections as they arrive from the HTTP API.
     pub fn resolve(
         &self,
         incoming: &NetworkConnectionsCollection,
     ) -> Result<ConnectionCollection, NetworkStateError> {
-        let mut conns = self.merge_incoming(incoming)?;
-        let claims = self.resolve_claims(incoming, &mut conns)?;
-        self.link(incoming, &mut conns, &claims);
+        let (nodes, named) = self.walk(incoming)?;
+        let mut conns = self.merge_incoming(&nodes)?;
+        let claims = self.resolve_claims(&nodes, &named, &mut conns)?;
+        self.link(&nodes, &mut conns, &claims);
+        self.check_port_settings(&nodes, &conns)?;
         self.cascade_removals(&mut conns);
         self.check_cycles(&conns)?;
 
         Ok(ConnectionCollection(conns))
     }
 
-    /// Builds one internal connection per incoming connection.
+    /// Flattens the incoming tree, parents before their ports.
+    ///
+    /// It returns the connections and, separately, the ports given by name, which cannot be told
+    /// apart from a new connection until they are resolved.
+    fn walk<'b>(
+        &self,
+        incoming: &'b NetworkConnectionsCollection,
+    ) -> Result<(Vec<Node<'b>>, Vec<NamedPort<'b>>), NetworkStateError> {
+        let mut nodes = vec![];
+        let mut named = vec![];
+
+        for conn in &incoming.0 {
+            self.visit(conn, None, &mut nodes, &mut named)?;
+        }
+
+        let mut seen = HashSet::new();
+        if let Some(node) = nodes.iter().find(|n| !seen.insert(n.id.as_str())) {
+            return Err(NetworkStateError::DuplicatedConnection(node.id.clone()));
+        }
+
+        Ok((nodes, named))
+    }
+
+    /// Adds the connection and its ports, recursively, to the given lists.
+    fn visit<'b>(
+        &self,
+        conn: &'b NetworkConnection,
+        parent: Option<usize>,
+        nodes: &mut Vec<Node<'b>>,
+        named: &mut Vec<NamedPort<'b>>,
+    ) -> Result<(), NetworkStateError> {
+        let id = match parent {
+            Some(parent) if conn.id.is_empty() => self.port_id(conn, &nodes[parent].id)?,
+            _ => conn.id.clone(),
+        };
+
+        let index = nodes.len();
+        nodes.push(Node { conn, id, parent });
+
+        for port in conn.ports().into_iter().flatten() {
+            match port {
+                PortEntry::Name(name) => named.push(NamedPort {
+                    name,
+                    parent: index,
+                }),
+                PortEntry::Connection(port) => self.visit(port, Some(index), nodes, named)?,
+            }
+        }
+
+        Ok(())
+    }
+
+    /// Returns the ID of a nested port that does not give one.
+    ///
+    /// Like a port given by name, it refers to the existing connection bound to its interface,
+    /// if any. Otherwise, the interface name becomes the ID of the new connection.
+    ///
+    /// * `conn`: nested port.
+    /// * `controller_id`: ID of its controller, for error reporting.
+    fn port_id(
+        &self,
+        conn: &NetworkConnection,
+        controller_id: &str,
+    ) -> Result<String, NetworkStateError> {
+        let Some(interface) = conn.interface.as_deref().filter(|i| !i.is_empty()) else {
+            return Err(NetworkStateError::MissingPortId(controller_id.to_string()));
+        };
+
+        let existing = find_by_name(self.known.iter(), interface)?
+            .and_then(|uuid| self.known.iter().find(|c| c.uuid == uuid));
+
+        Ok(existing
+            .map(|c| c.id.clone())
+            .unwrap_or_else(|| interface.to_string()))
+    }
+
+    /// Builds one internal connection per node, in the same order.
     ///
     /// When the connection is already known, the incoming settings are applied on top of it so
     /// that its UUID and the settings that the HTTP API does not model are preserved.
-    fn merge_incoming(
-        &self,
-        incoming: &NetworkConnectionsCollection,
-    ) -> Result<Vec<Connection>, NetworkStateError> {
-        let mut conns = Vec::with_capacity(incoming.0.len());
+    fn merge_incoming(&self, nodes: &[Node]) -> Result<Vec<Connection>, NetworkStateError> {
+        let mut conns = Vec::with_capacity(nodes.len());
 
-        for api_conn in &incoming.0 {
-            let mut conn = match self.known.iter().find(|c| c.id == api_conn.id) {
+        for node in nodes {
+            let mut conn = match self.known.iter().find(|c| c.id == node.id) {
                 Some(known) => known.clone(),
-                None => Connection::new(api_conn.id.clone(), api_conn.device_type()),
+                None => Connection::new(node.id.clone(), node.conn.device_type()),
             };
-            conn.apply_settings(api_conn)?;
+            conn.apply_settings(node.conn)?;
             conns.push(conn);
         }
 
         Ok(conns)
     }
 
-    /// Resolves the `ports` lists into a port UUID -> controller map.
+    /// Resolves the controller of every port in the document.
     ///
-    /// Connections that are named by a `ports` list but are missing from `conns` are appended to
-    /// it, either taken from the known connections or created from scratch.
+    /// A nested port is claimed by the controller it sits in, and those claims cannot conflict:
+    /// every node has a single parent and the IDs are unique. The ports given by name are the ones
+    /// that can end up claimed twice.
+    ///
+    /// Connections that are named as ports but are missing from `conns` are appended to it,
+    /// either taken from the known connections or created from scratch.
     fn resolve_claims(
         &self,
-        incoming: &NetworkConnectionsCollection,
+        nodes: &[Node],
+        named: &[NamedPort],
         conns: &mut Vec<Connection>,
-    ) -> Result<HashMap<Uuid, Uuid>, NetworkStateError> {
-        // port UUID -> (controller UUID, controller ID), the ID is only kept for error messages.
-        let mut claims: HashMap<Uuid, (Uuid, String)> = HashMap::new();
+    ) -> Result<Claims, NetworkStateError> {
+        let mut claims = Claims::new();
 
-        for api_conn in &incoming.0 {
-            let Some(ports) = ports_of(api_conn) else {
-                continue;
-            };
-
-            // Safe to unwrap: merge_incoming pushed one connection per incoming connection and
-            // the HTTP API guarantees that the IDs are unique.
-            let controller_uuid = conns.iter().find(|c| c.id == api_conn.id).unwrap().uuid;
-
-            for name in ports {
-                let port_uuid = self.resolve_port(name, &api_conn.id, conns)?;
-
-                if port_uuid == controller_uuid {
-                    return Err(NetworkStateError::SelfReferencedPort(api_conn.id.clone()));
-                }
-
-                if let Some((other_uuid, other_id)) = claims.get(&port_uuid) {
-                    if *other_uuid != controller_uuid {
-                        return Err(NetworkStateError::PortAlreadyClaimed(
-                            name.clone(),
-                            other_id.clone(),
-                            api_conn.id.clone(),
-                        ));
-                    }
-                }
-
-                claims.insert(port_uuid, (controller_uuid, api_conn.id.clone()));
+        for (index, node) in nodes.iter().enumerate() {
+            if let Some(parent) = node.parent {
+                claims.insert(
+                    conns[index].uuid,
+                    (conns[parent].uuid, nodes[parent].id.clone()),
+                );
             }
         }
 
-        Ok(claims.into_iter().map(|(k, (v, _))| (k, v)).collect())
+        for port in named {
+            let controller_uuid = conns[port.parent].uuid;
+            let controller_id = &nodes[port.parent].id;
+            let port_uuid = self.resolve_port(port.name, controller_id, conns)?;
+
+            if let Some((other_uuid, other_id)) = claims.get(&port_uuid) {
+                if *other_uuid != controller_uuid {
+                    return Err(NetworkStateError::PortAlreadyClaimed(
+                        port.name.to_string(),
+                        other_id.clone(),
+                        controller_id.clone(),
+                    ));
+                }
+            }
+
+            claims.insert(port_uuid, (controller_uuid, controller_id.clone()));
+        }
+
+        Ok(claims)
     }
 
     /// Finds the connection a port name refers to, adding it to `conns` when needed.
     ///
     /// The name is matched against the interface name first and against the connection ID
-    /// afterwards. This is the same order used to build the `ports` lists, so a name always
-    /// resolves back to the connection it was generated from.
+    /// afterwards.
     ///
     /// * `name`: name to resolve.
     /// * `controller_id`: ID of the controller that lists the port, for error reporting.
@@ -206,18 +303,12 @@ impl<'a> PortResolver<'a> {
     /// A connection that no controller claims is detached, but only when the payload does declare
     /// the ports of its current controller. Otherwise a partial update, which does not have to
     /// mention every connection, would tear the existing stack apart.
-    fn link(
-        &self,
-        incoming: &NetworkConnectionsCollection,
-        conns: &mut Vec<Connection>,
-        claims: &HashMap<Uuid, Uuid>,
-    ) {
-        let declared: HashSet<Uuid> = incoming
-            .0
+    fn link(&self, nodes: &[Node], conns: &mut Vec<Connection>, claims: &Claims) {
+        let declared: HashSet<Uuid> = nodes
             .iter()
-            .filter(|c| ports_of(c).is_some())
-            .filter_map(|c| conns.iter().find(|k| k.id == c.id))
-            .map(|c| c.uuid)
+            .enumerate()
+            .filter(|(_, node)| node.conn.ports().is_some())
+            .map(|(index, _)| conns[index].uuid)
             .collect();
 
         // Bring in the connections that are currently attached to one of the controllers but are
@@ -233,20 +324,48 @@ impl<'a> PortResolver<'a> {
         conns.extend(dropped);
 
         for conn in conns.iter_mut() {
-            if let Some(controller) = claims.get(&conn.uuid) {
+            if let Some((controller, _)) = claims.get(&conn.uuid) {
                 conn.controller = Some(*controller);
             } else if conn.controller.is_some_and(|c| declared.contains(&c)) {
                 tracing::info!("Detaching '{}' from its controller", conn.id);
                 conn.controller = None;
             }
         }
+    }
 
-        for api_conn in &incoming.0 {
-            let Some(conn) = conns.iter().find(|c| c.id == api_conn.id) else {
+    /// Checks that the `port` settings of each connection match the kind of its controller.
+    ///
+    /// The settings are flat, so a bridge port priority given to a port of a bond would be
+    /// silently dropped otherwise.
+    fn check_port_settings(
+        &self,
+        nodes: &[Node],
+        conns: &[Connection],
+    ) -> Result<(), NetworkStateError> {
+        for (node, conn) in nodes.iter().zip(conns) {
+            let Some(settings) = &node.conn.port else {
                 continue;
             };
-            warn_on_controller_mismatch(api_conn, conn, controller_name(conns, conn.controller));
+            let Some(uuid) = conn.controller else {
+                continue;
+            };
+            let Some(controller) = conns.iter().chain(self.known).find(|c| c.uuid == uuid) else {
+                continue;
+            };
+
+            let fits = match controller.config {
+                ConnectionConfig::Bridge(_) => true,
+                _ => !settings.has_bridge_settings(),
+            };
+            if !fits {
+                return Err(NetworkStateError::InvalidPortSettings(
+                    node.id.clone(),
+                    controller.id.clone(),
+                ));
+            }
         }
+
+        Ok(())
     }
 
     /// Marks the ports of the connections that are being removed, all the way down.
@@ -363,21 +482,10 @@ impl<'a> PortResolver<'a> {
     }
 }
 
-/// Returns the ports declared by an API connection, if it declares any.
-///
-/// An empty list is not the same as no list at all: a connection with a `bond` or a `bridge`
-/// section declares its ports, even when there is none.
-fn ports_of(conn: &NetworkConnection) -> Option<&Vec<String>> {
-    conn.bond
-        .as_ref()
-        .map(|b| &b.ports)
-        .or_else(|| conn.bridge.as_ref().map(|b| &b.ports))
-}
-
 /// Finds the connection referred to by the given name.
 ///
-/// The interface name takes precedence over the connection ID, matching the way the names are
-/// generated. Connections that are about to be removed are ignored, as they are on their way out.
+/// The interface name takes precedence over the connection ID. Connections that are about to be
+/// removed are ignored, as they are on their way out.
 fn find_by_name<'a>(
     mut conns: impl Iterator<Item = &'a Connection> + Clone,
     name: &str,
@@ -396,40 +504,4 @@ fn find_by_name<'a>(
     let by_id = conns.find(|c| !c.is_removed() && c.id == name);
 
     Ok(by_id.map(|c| c.uuid))
-}
-
-/// Returns the name used to refer to the connection with the given UUID.
-fn controller_name(conns: &[Connection], uuid: Option<Uuid>) -> Option<String> {
-    let uuid = uuid?;
-    conns
-        .iter()
-        .find(|c| c.uuid == uuid)
-        .map(|c| ConnectionCollection::reference_name(c).to_string())
-}
-
-/// Logs a warning when the `controller` field disagrees with the resolved relationship.
-///
-/// The `ports` lists are the only way to change the membership, so the field is ignored. Clients
-/// read the whole configuration, change a piece of it and write it back, and they would trip over
-/// a stale `controller` all the time if it were an error.
-fn warn_on_controller_mismatch(
-    api_conn: &NetworkConnection,
-    conn: &Connection,
-    resolved: Option<String>,
-) {
-    let Some(declared) = api_conn.controller.as_deref() else {
-        return;
-    };
-
-    if resolved.as_deref() != Some(declared) {
-        tracing::warn!(
-            "Ignoring the controller '{}' declared by '{}': the ports lists put it under {}. \
-             Change the controller's ports to move the connection.",
-            declared,
-            conn.id,
-            resolved
-                .map(|c| format!("'{c}'"))
-                .unwrap_or_else(|| "no controller".to_string())
-        );
-    }
 }
