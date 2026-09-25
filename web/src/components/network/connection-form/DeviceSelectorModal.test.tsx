@@ -214,7 +214,7 @@ describe("DeviceSelectorModal", () => {
     });
 
     it("tells which devices are already used, when asked to", () => {
-      renderMultiple({ portOf: (device) => (device.name === "enp1s0" ? "bond0" : undefined) });
+      renderMultiple({ usedBy: (device) => (device.name === "enp1s0" ? "bond0" : undefined) });
       within(rowFor("enp1s0")).getByText("bond0");
     });
 
