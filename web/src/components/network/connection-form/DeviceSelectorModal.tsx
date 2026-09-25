@@ -64,12 +64,14 @@ export type DeviceSelectorModalProps = {
    */
   selectionMode?: "single" | "multiple";
   /**
-   * Returns the controller a device is already a port of, if any.
+   * Returns what is already using a device, if anything: the bond or the
+   * bridge it is a port of, or failing that the connection running on it.
    *
    * When given, a "Used by" column is added. Devices already in use are still
-   * offered: moving a port from one controller to another is legitimate.
+   * offered: moving a port from one controller to another is legitimate, and
+   * so is taking over a device that a plain connection holds.
    */
-  portOf?: (device: Device) => string | undefined;
+  usedBy?: (device: Device) => string | undefined;
   /** Called with the picked devices when the user confirms. */
   onConfirm: (devices: Device[]) => void;
   /** Called when the user dismisses the dialog. */
@@ -110,7 +112,7 @@ export default function DeviceSelectorModal({
   devices,
   selected,
   selectionMode = "single",
-  portOf,
+  usedBy,
   onConfirm,
   onCancel,
 }: DeviceSelectorModalProps) {
@@ -169,13 +171,14 @@ export default function DeviceSelectorModal({
       value: (device: Device) => deviceStateLabel(device.state),
       sortingKey: "state",
     },
-    ...(portOf
+    ...(usedBy
       ? [
           {
-            // TRANSLATORS: table column telling which bond or bridge already
-            // uses a network device as one of its ports.
+            // TRANSLATORS: table column naming what already uses a network
+            // device: the bond or bridge it is a port of, or the connection
+            // running on it.
             name: _("Used by"),
-            value: (device: Device) => portOf(device),
+            value: (device: Device) => usedBy(device),
           },
         ]
       : []),
