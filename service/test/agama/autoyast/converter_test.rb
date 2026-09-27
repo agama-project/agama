@@ -158,7 +158,7 @@ describe Agama::AutoYaST::Converter do
         result = subject.to_agama(profile)
 
         schema = File.expand_path(
-          "../../../../rust/agama-lib/share/profile.schema.json",
+          "../../../../rust/share/openapi.json",
           __dir__
         )
 

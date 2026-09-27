@@ -301,7 +301,7 @@ pub struct NetworkConnection {
     pub gateway6: Option<IpAddr>,
     /// List of assigned IP addresses
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
-    #[schemars(with = "schemas::IpInetSchema")]
+    #[schemars(with = "Vec<schemas::IpInetSchema>")]
     pub addresses: Vec<IpInet>,
     /// List of DNS server IP addresses
     #[serde(skip_serializing_if = "Vec::is_empty", default)]

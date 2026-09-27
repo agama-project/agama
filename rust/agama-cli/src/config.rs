@@ -113,7 +113,7 @@ fn build_config_validate_cmd() -> Command {
         &gettext(
             // TRANSLATORS: CLI help for: agama config validate (details)
             "\
-        Schema is available at /usr/share/agama/schema/profile.schema.json \
+        Schema is available at /usr/share/agama/openapi/latest/openapi.json \
         Note: validation is always done as part of all other \"agama config\" commands.",
         ),
     );

@@ -58,6 +58,7 @@ pub struct AddonConfig {
 #[skip_serializing_none]
 #[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq, Merge, JsonSchema)]
 #[serde(rename_all = "camelCase")]
+#[schemars(deny_unknown_fields)]
 #[merge(strategy = merge::option::overwrite_none)]
 pub struct ProductConfig {
     /// ID of the product to install (e.g., "ALP", "Tumbleweed", etc.)

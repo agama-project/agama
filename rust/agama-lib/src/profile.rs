@@ -35,7 +35,7 @@ use url::Url;
 pub mod http_client;
 pub use http_client::ProfileHTTPClient;
 
-pub const DEFAULT_SCHEMA_DIR: &str = "/usr/share/agama/schema";
+pub const DEFAULT_OPENAPI_PATH: &str = "/usr/share/agama/openapi/latest/openapi.json";
 pub const DEFAULT_JSONNET_DIR: &str = "/usr/share/agama/jsonnet";
 
 #[derive(thiserror::Error, Debug)]
@@ -140,7 +140,7 @@ pub enum ValidationOutcome {
 /// let mut path = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
 ///
 /// path.pop();
-/// path.push("share/profile.schema.json");
+/// path.push("out/openapi.json");
 ///
 /// let validator = ProfileValidator::new(&path)
 ///   .expect("the default validator");
@@ -167,14 +167,26 @@ pub struct ProfileValidator {
 
 impl ProfileValidator {
     pub fn default_schema() -> Result<Self, ProfileError> {
-        // profile.schema.json moved to from /rust/agama-lib/share to /rust/share/
-        let source_file_dir = Path::new(file!()).parent().unwrap_or(Path::new(""));
-        let relative_path = source_file_dir.join("../../share/profile.schema.json");
-        let path = if relative_path.exists() {
-            relative_path
+        let manifest_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+        let dev_share = manifest_dir.join("../share/openapi.json");
+        let dev_out = manifest_dir.join("../out/openapi.json");
+        let path = if let Ok(path) = env::var("AGAMA_OPENAPI_PATH") {
+            PathBuf::from(path)
+        } else if let Ok(schema_dir) = env::var("AGAMA_SCHEMA_DIR") {
+            let in_schema = PathBuf::from(&schema_dir).join("openapi.json");
+            if in_schema.exists() {
+                in_schema
+            } else if dev_share.exists() {
+                dev_share
+            } else {
+                dev_out
+            }
+        } else if dev_share.exists() {
+            dev_share
+        } else if dev_out.exists() {
+            dev_out
         } else {
-            let schema_dir = env::var("AGAMA_SCHEMA_DIR").unwrap_or(DEFAULT_SCHEMA_DIR.to_string());
-            PathBuf::from(schema_dir).join("profile.schema.json")
+            PathBuf::from(DEFAULT_OPENAPI_PATH)
         };
         info!("Validation with path {:?}", path);
         Self::new(path)
@@ -191,9 +203,34 @@ impl ProfileValidator {
         // paths, see https://stackoverflow.com/questions/70807993/are-there-recommended-ways-to-structure-multiple-json-schemas.
         let path = fs::canonicalize(schema_path)?;
         let id = format!("file://{}", path.to_string_lossy());
-        schema
-            .as_object_mut()
-            .and_then(|s| s.insert("$id".to_string(), serde_json::json!(id)));
+
+        // Extract `Config` as root: jsonschema-rs does not crawl into local $ref indirections
+        // during initial registry population, failing to pre-fetch external schemas like dasd.
+        // See: https://github.com/Stranger6667/jsonschema-rs/issues/671
+        if let Some(config) = schema.pointer("/components/schemas/Config").cloned() {
+            let components = schema.get("components").cloned();
+            schema = config;
+            if let Some(map) = schema.as_object_mut() {
+                map.insert("$id".to_string(), serde_json::json!(id));
+                if !map.contains_key("$schema") {
+                    map.insert(
+                        "$schema".to_string(),
+                        serde_json::json!("https://json-schema.org/draft/2019-09/schema"),
+                    );
+                }
+                if let Some(comp) = components {
+                    map.insert("components".to_string(), comp);
+                }
+            }
+        } else if let Some(map) = schema.as_object_mut() {
+            map.insert("$id".to_string(), serde_json::json!(id));
+            if !map.contains_key("$schema") {
+                map.insert(
+                    "$schema".to_string(),
+                    serde_json::json!("https://json-schema.org/draft/2019-09/schema"),
+                );
+            }
+        }
 
         let validator = jsonschema::validator_for(&schema).expect("A valid schema");
         Ok(Self { validator })

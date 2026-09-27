@@ -105,6 +105,7 @@ Release:        0
 Summary:        Common files for Agama server and CLI.
 License:        GPL-2.0-only
 Url:            https://github.com/agama-project/agama
+Requires:       agama-openapi
 
 %description -n agama-common
 Files that are needed by the Agama server and the command-line interface, like
@@ -261,14 +262,6 @@ echo $PATH
 %files -n agama-common
 %dir %{_datadir}/agama/jsonnet
 %{_datadir}/agama/jsonnet/agama.libsonnet
-%dir %{_datadir}/agama/schema
-%{_datadir}/agama/schema/dasd.schema.json
-%{_datadir}/agama/schema/iscsi.schema.json
-%{_datadir}/agama/schema/profile.schema.json
-%{_datadir}/agama/schema/software.schema.json
-%{_datadir}/agama/schema/storage.schema.json
-%{_datadir}/agama/schema/storage.model.schema.json
-%{_datadir}/agama/schema/zfcp.schema.json
 
 %files -n agama-autoinstall
 %{_bindir}/agama-autoinstall
@@ -291,8 +284,11 @@ echo $PATH
 
 %files -n agama-openapi
 %dir %{_datadir}/agama
-%{_datadir}/agama/openapi.json
-%{_datadir}/agama/openapi.yaml
+%dir %{_datadir}/agama/openapi
+%dir %{_datadir}/agama/openapi/latest
+%{_datadir}/agama/openapi/latest/openapi.json
+%{_datadir}/agama/openapi/latest/openapi.yaml
+%{_datadir}/agama/openapi/latest/*.schema.json
 
 %files -n agama-scripts
 %{_unitdir}/agama-scripts.service

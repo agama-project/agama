@@ -3,7 +3,7 @@ use std::{env, path::PathBuf};
 use agama_utils::runtime::run_async;
 
 mod tasks {
-    use std::{fs::File, io::Write};
+    use std::{fs::File, io::Write, path::PathBuf};
 
     use agama_cli::build_cli;
 
@@ -84,6 +84,25 @@ mod tasks {
             "Generated OpenAPI specification (YAML) at {}.",
             yaml_path.display()
         );
+
+        // Copy openapi.json to share/openapi.json for test suites and dev environments
+        let share_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../share");
+        if share_dir.exists() {
+            let share_openapi = share_dir.join("openapi.json");
+            _ = std::fs::copy(&json_path, share_openapi);
+
+            if let Ok(entries) = std::fs::read_dir(&share_dir) {
+                for entry in entries.flatten() {
+                    let path = entry.path();
+                    if path.is_file() && path.extension().is_some_and(|ext| ext == "json") {
+                        if let Some(file_name) = path.file_name() {
+                            let dest = out_dir.join(file_name);
+                            _ = std::fs::copy(&path, dest);
+                        }
+                    }
+                }
+            }
+        }
 
         Ok(())
     }
