@@ -23,52 +23,42 @@ readonly BACKTITLE="SUSE Linux Enterprise Server 16.0 - FIPS / Common Criteria i
 
 readonly LICENSE_FILE="/usr/share/agama/eula/license.final/license.txt"
 readonly DRACUT_NTP_FILE="/run/chrony/dracut.sources.d/dracut.sources"
-# the NTP configuration of the installed system, written via the "files"
-# section of the profile
+# Target system NTP config, written via profile "files" section
 readonly NTP_DESTINATION="/etc/chrony.d/50-cc-install.conf"
 readonly NTP_PERMISSIONS="0644"
-# the packages on the installation medium; when it is missing the packages must
-# be downloaded from the registration server and the registration is mandatory
+# Installation medium packages; if missing, registration/download is mandatory
 readonly LOCAL_REPO_DIR="/run/initramfs/live/install"
 readonly CMDLINE_FILE="/run/agama/cmdline.d/agama.conf"
-# the RMT server URL is passed to Agama on the boot command line
+# RMT server URL passed via boot command line
 readonly RMT_URL_OPTION="inst.register_url"
 readonly AGAMA_TOKEN_FILE="/run/agama/token"
 readonly API_URL="http://localhost/api/manager/installer"
-# the storage actions of the current proposal, each object has a "text" attribute
+# Storage actions of the current proposal
 readonly STORAGE_ACTIONS_URL="http://localhost/api/storage/devices/actions"
 
-# Installation phase reported by the Agama API when everything is installed.
+# API phase when installation completes.
 readonly FINISH_PHASE=3
-readonly POLL_INTERVAL=10          # seconds between two API polls
-readonly MAX_API_FAILURES=30       # consecutive API errors tolerated
-readonly MAX_INSTALL_SECONDS=14400 # ask whether to keep waiting after 4 hours
-readonly WAIT_QUESTION_TIMEOUT=300 # unanswered "keep waiting?" means "yes"
+readonly POLL_INTERVAL=10          # Seconds between API polls
+readonly MAX_API_FAILURES=30       # Max consecutive API errors
+readonly MAX_INSTALL_SECONDS=14400 # Prompt to wait after 4h
+readonly WAIT_QUESTION_TIMEOUT=300 # Unanswered prompt defaults to "yes"
 
-# The license text box should use the whole terminal, these lines are left for
-# the frame, the title and the button. The dialog default (auto size) is used
-# when the terminal is smaller than the minimum or its size is unknown.
+# Terminal lines reserved for license dialog UI elements.
 readonly DIALOG_HEIGHT_MARGIN=5
 readonly MIN_TERMINAL_HEIGHT=10
 
-# A dialog with an input field (inputbox, passwordbox) needs 7 lines around the
-# message: the frame, the input field with its own frame, the separator and the
-# buttons. DIALOG_TEXT_MARGIN is the frame and the padding around the message,
-# DIALOG_INPUT_WIDTH the default width of such a dialog.
+# Dialog UI margins and default widths.
 readonly DIALOG_INPUT_MARGIN=7
-# a menu needs this many lines around the list of the items
+# Menu UI margin
 readonly DIALOG_MENU_MARGIN=8
 readonly DIALOG_TEXT_MARGIN=4
 readonly DIALOG_INPUT_WIDTH=70
 readonly MIN_TERMINAL_WIDTH=40
-# the messages are written as one long line per paragraph and wrapped to this
-# width by the line interface (dialog wraps them itself)
+# Line wrap width for plain text messages
 readonly LINE_TEXT_WIDTH=76
 
 # --- Validation policy -----------------------------------------------------
-# TODO(security team): the final validation rules are still to be defined,
-# everything in this block is a placeholder.  The password strength itself is
-# delegated to cracklib-check.
+# TODO(security team): Final rules pending. Password strength uses cracklib-check.
 readonly MIN_PASSWORD_LENGTH=8
 readonly MAX_PASSWORD_LENGTH=128
 readonly USER_NAME_REGEX='^[a-z_][a-z0-9_-]{0,31}$'
@@ -78,16 +68,15 @@ readonly NTP_SERVER_REGEX='^[A-Za-z0-9]([A-Za-z0-9._:-]*[A-Za-z0-9])?$'
 # Global state
 # ---------------------------------------------------------------------------
 
-DIALOG_MODE=true # text user interface (dialog) or plain line interface
-DRY_RUN=false    # build the profile, but do not touch the system
-TEMPLATE=""      # the input JSON template
-SECURE_DIR=""    # tmpfs directory for the secrets handed over to jq
-MONITOR_PID=""   # PID of the "agama monitor" process
+DIALOG_MODE=true # UI mode: dialog (true) or plain text (false)
+DRY_RUN=false    # Build profile without applying changes
+TEMPLATE=""      # Input JSON template
+SECURE_DIR=""    # Tmpfs dir for jq secrets
+MONITOR_PID=""   # PID of "agama monitor" process
 INSTALLATION_STARTED=false
 declare -a SCRIPT_ARGS=()
 
-# Collected answers.  Passwords are kept in memory only, they are never
-# written to a log, never echoed and never passed on a command line.
+# In-memory only state for passwords and user answers.
 ROOT_PASSWORD=""
 ROOT_PASSWORD_HASH=""
 USER_NAME=""
@@ -170,17 +159,7 @@ parse_arguments() {
   $ui_forced || detect_ui_mode
 }
 
-# Decide whether the dialog interface can be used. The line interface is the
-# fallback for the cases where dialog cannot work: it is not installed, there
-# is no terminal at all or the terminal cannot display anything.
-#
-# The dialogs are drawn on the standard error (see show_dialog), so that has to
-# be a terminal, and dialog needs a usable TERM. The service which starts the
-# tool during the boot connects all three standard streams to the console
-# (StandardInput/StandardOutput/StandardError=tty in cc-setup.service).
-#
-# A serial console is not a reason for the line interface, dialog works over a
-# serial line as well; the line interface is chosen with --plain.
+# Fallback to plain line interface if dialog is missing or terminal is unusable.
 detect_ui_mode() {
   DIALOG_MODE=false
 
@@ -191,14 +170,13 @@ detect_ui_mode() {
   DIALOG_MODE=true
 }
 
-# Keep the secrets out of swap, core dumps and of other users' reach.
+# Prevent secrets leakage.
 harden_environment() {
   umask 077
   ulimit -c 0 2> /dev/null || true
   set +o history 2> /dev/null || true
   export LC_ALL="C.UTF-8"
-  # Only the English locale is used during the setup, a different keyboard
-  # layout would change the (not echoed) passwords.
+  # Force English locale to avoid password keyboard layout issues.
   unset LANG LANGUAGE
 }
 
@@ -206,7 +184,7 @@ cleanup() {
   local rc=$?
   stop_monitor
   terminal_echo on
-  # securely overwrite all temporary files before deleting them
+  # Securely wipe temp files.
   if [[ -n $SECURE_DIR && -d $SECURE_DIR ]]; then
     find "$SECURE_DIR" -type f -exec shred --remove --zero {} + 2> /dev/null || true
     rm -rf -- "$SECURE_DIR"
@@ -226,14 +204,11 @@ on_error() {
 
 make_secure_dir() {
   local base
-  # During installation everything runs from RAM disk, but if this script is called
-  # in development then /tmp might be actually on a disk so rather prefer /dev/shm or /run
+  # Prefer RAM-backed temp dirs over /tmp to avoid disk writes.
   for base in /dev/shm /run /tmp; do
     [[ -d $base && -w $base ]] || continue
     SECURE_DIR=$(mktemp -d "$base/agama-cc.XXXXXXXX") || continue
-    # bash implements here-documents and here-strings with a temporary file
-    # (up to bash 5.0), keep those files in the directory which is shredded on
-    # exit instead of /tmp - a here-document may contain a password hash
+    # Redirect bash temp files to shredable dir to prevent leak of here-docs.
     export TMPDIR="$SECURE_DIR"
     return 0
   done
@@ -245,22 +220,12 @@ make_secure_dir() {
 # User interface abstraction (dialog / plain line mode)
 # ---------------------------------------------------------------------------
 
-# Display a dialog which has no result on stdout (a message, a text box, a
-# progress box or a yes/no question).
-#
-# "dialog" draws its user interface on stdout and returns the result on stderr
-# (that is what run_dialog swaps below). These helpers are also called inside
-# command substitutions, where stdout is a pipe: the dialog would be invisible
-# and its drawing would be captured into the value of the calling function.
-# Therefore the user interface is always drawn on stderr, which stays connected
-# to the terminal.
+# Show dialog on stderr (keeps UI visible within command substitutions).
 show_dialog() {
   dialog --backtitle "$BACKTITLE" "$@" >&2
 }
 
-# The height for a dialog which should use the whole terminal: the terminal
-# height minus DIALOG_HEIGHT_MARGIN. Prints 0 (the dialog default, auto size)
-# when the terminal is too small or its size cannot be determined.
+# Full terminal height calculation (returns 0 for auto size).
 dialog_full_height() {
   local rows="" size
 
@@ -279,9 +244,7 @@ dialog_full_height() {
   fi
 }
 
-# Switch the terminal echo off/on. The progress box does not read the
-# keyboard, so keys pressed during the installation would be echoed onto the
-# screen and mess it up.
+# Toggle terminal echo to prevent stray keystrokes during progress display.
 terminal_echo() {
   local mode
   case "$1" in
@@ -293,8 +256,7 @@ terminal_echo() {
   (stty "$mode" < /dev/tty) > /dev/null 2>&1 || true
 }
 
-# Check whether the terminal is an IBM 3270, either a real device or one
-# emulated by x3270. If the terminal is /dev/console evaluate which one it is.
+# Detect IBM 3270 terminals.
 ibm3270_terminal() {
   local device consoles
 
@@ -313,8 +275,7 @@ ibm3270_terminal() {
   [[ ${consoles[-1]} == tty3270* ]]
 }
 
-# A terminal which cannot display the dialogs and which the monitor cannot
-# control either: the escape sequences would be printed as garbage there.
+# Detect dumb terminals.
 dumb_terminal() {
   case "${TERM-}" in
     "" | dumb | unknown) return 0 ;;
@@ -322,16 +283,13 @@ dumb_terminal() {
   ibm3270_terminal
 }
 
-# Clear the screen, the output of the previous dialog must not stay on it while
-# the installation progress is displayed.
+# Clear screen for progress monitor.
 clear_terminal() {
   dumb_terminal && return 0
   clear
 }
 
-# Display a file in a pager. "less" must read the keyboard from the terminal:
-# with the standard input it would consume the answers to the next questions.
-# A 3270 terminal scrolls the output itself, "less" is not needed.
+# Page text file (uses tty to avoid consuming stdin).
 page_file() {
   local file=$1
 
@@ -342,16 +300,12 @@ page_file() {
   fi
 }
 
-# Print a message on the terminal, wrapped at word boundaries. The messages
-# contain one long line per paragraph, dialog wraps them to the dialog width
-# and the line interface has to do the same.
+# Print word-wrapped message.
 print_wrapped() {
   printf '%s\n' "$1" | fold -s -w "$LINE_TEXT_WIDTH" >&2
 }
 
-# The width for a dialog which should use the whole terminal, for example the
-# progress box with the log of the installation. Prints 0 (the dialog default)
-# when the terminal is too narrow or its width cannot be determined.
+# Full terminal width calculation (returns 0 for auto size).
 dialog_full_width() {
   local cols="" size
 
@@ -370,11 +324,7 @@ dialog_full_width() {
 }
 
 # dialog_text_height TEXT WIDTH MARGIN
-# The height of a dialog: the message lines (as they are wrapped into the given
-# width) plus MARGIN for the frame and whatever the dialog draws around the
-# message (an input field, buttons). Dialog computes the size itself when the
-# height is zero, but for a message with more than one line it does not reserve
-# enough space and the message overflows below the buttons.
+# Calculate text dialog height (workaround for dialog height auto-size issues).
 dialog_text_height() {
   local text=$1 width=$2 margin=$3 lines
 
@@ -382,8 +332,7 @@ dialog_text_height() {
   printf '%d' "$((lines + margin))"
 }
 
-# Run dialog and return its result on stdout, the dialog UI itself goes to the
-# terminal via stderr.
+# Execute dialog: UI on stderr, result on stdout.
 run_dialog() {
   local out rc=0
   out=$(dialog --backtitle "$BACKTITLE" "$@" 3>&1 1>&2 2>&3) || rc=$?
@@ -391,18 +340,8 @@ run_dialog() {
   return "$rc"
 }
 
-# Every ui_* function accepts an optional "--size HEIGHT WIDTH" prefix, for
-# example:
-#
-#   ui_message --size 20 70 "Title" "text"
-#
-# Zero (the default) lets dialog compute the size from the content. The size is
-# only used by the dialog interface, the line interface ignores it. The option
-# is a prefix because ui_menu takes a variable number of arguments.
-#
-# Sets UI_HEIGHT and UI_WIDTH, returns 0 when the prefix was present and the
-# caller has to shift it away.
-#   Usage:  if ui_size "$@"; then shift 3; fi
+# Parse optional "--size HEIGHT WIDTH" prefix for ui_* functions.
+# Sets UI_HEIGHT/UI_WIDTH. Returns 0 if found (caller must shift).
 ui_size() {
   UI_HEIGHT=0
   UI_WIDTH=0
@@ -475,7 +414,7 @@ ui_text_file() {
 }
 
 # ui_input [--size HEIGHT WIDTH] TITLE PROMPT [DEFAULT]
-# -> value on stdout, rc 1 when cancelled
+# Outputs value, returns 1 if cancelled.
 ui_input() {
   if ui_size "$@"; then shift 3; fi
   local title=$1 prompt=$2 default=${3-} height=$UI_HEIGHT width=$UI_WIDTH value rc=0
@@ -503,7 +442,7 @@ ui_input() {
 }
 
 # ui_password [--size HEIGHT WIDTH] TITLE PROMPT
-# -> password on stdout, never echoed
+# Outputs password (no echo).
 ui_password() {
   if ui_size "$@"; then shift 3; fi
   local title=$1 prompt=$2 height=$UI_HEIGHT width=$UI_WIDTH value rc=0
@@ -527,10 +466,8 @@ ui_password() {
 }
 
 # ui_menu [--size HEIGHT WIDTH] [--default TAG] TITLE TEXT TAG1 DESC1 [TAG2 DESC2 ...]
-# -> selected tag on stdout
-# "--default TAG" preselects that entry (a no-op if TAG is not among the
-# items), useful to keep a previously selected value highlighted when the
-# same question is asked again.
+# Outputs selected tag.
+# "--default TAG" preselects an entry.
 ui_menu() {
   if ui_size "$@"; then shift 3; fi
   local default_tag=""
@@ -589,8 +526,7 @@ ui_menu() {
 # Error handling
 # ---------------------------------------------------------------------------
 
-# Report a non-recoverable error and let the user reboot, restart the
-# configuration (only before the installation was started) or drop to a shell.
+# Unrecoverable error handling.
 fatal() {
   local message=$1
   trap - ERR
@@ -667,9 +603,7 @@ read_template_defaults() {
   FULL_NAME=$(jq -e -r '.user.fullName // empty' "$TEMPLATE" 2> /dev/null) || FULL_NAME=""
 }
 
-# An RMT server configured on the boot command line
-# ("inst.register_url=<URL>") registers the system without a registration
-# code, Agama reads the option itself.
+# Detect RMT server URL from cmdline to bypass registration code.
 detect_rmt_url() {
   local -a options=()
   local option
@@ -686,9 +620,7 @@ detect_rmt_url() {
   done
 }
 
-# Without the local package repository on the installation medium the packages
-# can only come from the SCC or from an RMT server, so the system must be
-# registered.
+# Determine if registration is mandatory (missing local repo).
 detect_registration_requirement() {
   detect_rmt_url
 
@@ -704,8 +636,7 @@ detect_registration_requirement() {
 # Agama REST API
 # ---------------------------------------------------------------------------
 
-# Write the API token into a curl configuration file, the token must never
-# appear on a command line where any user could read it from /proc.
+# Save API token to curl config to prevent /proc leakage.
 prepare_api_auth() {
   local token
 
@@ -731,7 +662,7 @@ api_get() {
 # ---------------------------------------------------------------------------
 
 # validate_password PASSWORD -> prints the reason on stdout when invalid
-# TODO(security team): the rules below are placeholders.
+# TODO(security team): Placeholder rules.
 validate_password() {
   local password=$1 result
 
@@ -744,8 +675,7 @@ validate_password() {
     return 1
   fi
 
-  # cracklib-check echoes "<password>: <result>", strip the password prefix so
-  # it cannot leak into the terminal or into a log.
+  # Strip password from cracklib-check output to prevent leaks.
   result=$(printf '%s\n' "$password" | cracklib-check 2> /dev/null) || {
     printf 'Cannot check the password strength (cracklib-check failed).'
     return 1
@@ -822,13 +752,8 @@ written to the disk before you confirm the summary at the end of
 the configuration."
 }
 
-# Confirm the reboot after the license was rejected. "Back" is the default,
-# a reboot must not happen by an accidental key press.
-# Returns 0 when the reboot is confirmed, 1 to go back to the license.
 # confirm_reboot TITLE TEXT
-# Confirm a reboot. "Back" is the default button, the machine must not be
-# rebooted by an accidental key press.
-# Returns 0 when the reboot was confirmed, 1 to go back.
+# Confirm reboot. Returns 0 on confirm, 1 to go back.
 confirm_reboot() {
   local title=$1 text=$2 rc=0 answer
 
@@ -871,11 +796,7 @@ The installation medium seems to be incomplete."
   local rc answer
   while true; do
     if $DIALOG_MODE; then
-      # The buttons are part of the license text box itself, no extra
-      # confirmation dialog is needed. --ok-label is the one which counts:
-      # with --extra-button the text box uses the OK button set and ignores
-      # --exit-label (dialog 1.3), both are passed to stay independent of the
-      # dialog version.
+      # Setup buttons in license dialog.
       rc=0
       show_dialog --title "License Agreement" \
         --ok-label "Accept license" --exit-label "Accept license" \
@@ -909,9 +830,7 @@ The installation medium seems to be incomplete."
 # ---------------------------------------------------------------------------
 
 # ask_password TITLE PROMPT [CURRENT] -> validated password on stdout
-# The password is asked twice, it is never displayed. CURRENT is the password
-# entered in a previous round of the configuration: when it is not empty an
-# empty answer keeps it, so the user does not have to type it again.
+# Prompt for and confirm password. Supports default CURRENT value.
 ask_password() {
   local title=$1 prompt=$2 current=${3-} password confirmation reason
 
@@ -1069,8 +988,7 @@ ask_target_disk() {
   local -a disks=()
   local name size model type readonly_flag note
 
-  # the fields are separated by \037 ("Unit Separator") character so normal
-  # whitespace can be included in the fields
+  # Parse lsblk, handling spaces via  delimiter.
   while IFS=$'\037' read -r name type size readonly_flag model; do
     [[ $type == "disk" ]] || continue
     [[ $readonly_flag == "1" ]] && continue
@@ -1117,8 +1035,7 @@ You have to activate disks manually via PARM file at boot or using SSH."
   done
 }
 
-# Ask all the questions. Returns 1 when the user cancelled a dialog, the
-# previously entered values are kept as the defaults.
+# Collect user inputs. Returns 1 on cancellation.
 collect_input() {
   ask_target_disk || return 1
   ask_root_password || return 1
@@ -1137,10 +1054,7 @@ secret_state() {
   [[ -n $1 ]] && printf '[configured]' || printf '[empty]'
 }
 
-# The planned partitioning, derived from the JSON template.
-# The actions Agama is going to perform on the storage devices, as computed
-# for the loaded profile. Each object of the returned JSON list describes one
-# action in its "text" attribute.
+# Fetch planned storage actions from Agama API.
 storage_actions() {
   local response
   response=$(api_get "$STORAGE_ACTIONS_URL") || return 1
@@ -1148,10 +1062,7 @@ storage_actions() {
   printf '%s' "$response" | jq -e -r '.[].text' 2> /dev/null
 }
 
-# Read the storage actions which Agama planned for the loaded profile. Without
-# them the user cannot see what would be destroyed, so a failure is fatal.
-# This must not run inside a command substitution, "fatal" would only end the
-# subshell there.
+# Populate STORAGE_ACTIONS_TEXT.
 fetch_storage_actions() {
   STORAGE_ACTIONS_TEXT=""
   # in the --dry-run mode the profile is not loaded, there is no proposal
@@ -1216,10 +1127,7 @@ Nothing will be written to the disk yet.
 EOF
 }
 
-# The configuration summary. The text box carries the decision buttons
-# itself: "Load configuration" (the default), "Configure again" and "Reboot".
-# Rebooting has to be confirmed.
-# Prints the chosen action: continue | back | reboot
+# Display summary and prompt action: continue | back | reboot.
 confirm_summary() {
   local file="$SECURE_DIR/summary.txt" action rc
 
@@ -1227,9 +1135,7 @@ confirm_summary() {
 
   while true; do
     if $DIALOG_MODE; then
-      # the third button is the help button; dialog only returns exit code 2
-      # for it when triggered via F1, selecting it normally (Tab/Enter) gives
-      # exit code 1, the same as a plain Cancel button
+      # Handle dialog button mapping quirks.
       rc=0
       show_dialog --title "Configuration Summary" \
         --ok-label "Load configuration" --exit-label "Load configuration" \
@@ -1267,12 +1173,7 @@ Do you really want to reboot without installing the system?" || continue
   done
 }
 
-# The storage proposal Agama computed for the loaded profile, displayed in its
-# own dialog after the configuration summary was confirmed.
-# The storage proposal with the decision buttons in the text box itself:
-# "Install" (the default), "Configure again" and "Reboot". Rebooting has to be
-# confirmed.
-# Prints the chosen action: install | back | reboot
+# Display storage proposal and prompt action: install | back | reboot.
 confirm_storage_proposal() {
   local file="$SECURE_DIR/proposal.txt" action rc
 
@@ -1280,9 +1181,7 @@ confirm_storage_proposal() {
 
   while true; do
     if $DIALOG_MODE; then
-      # the third button is the help button; dialog only returns exit code 2
-      # for it when triggered via F1, selecting it normally (Tab/Enter) gives
-      # exit code 1, the same as a plain Cancel button
+      # Handle dialog button mapping quirks.
       rc=0
       show_dialog --title "Storage Proposal" \
         --ok-label "Install now" --exit-label "Install now" \
@@ -1324,10 +1223,7 @@ Do you really want to reboot without installing the system?" || continue
 # Profile generation
 # ---------------------------------------------------------------------------
 
-# The content of the chrony configuration file for the installed system: the
-# sources configured by the dracut module on the boot command line, or the
-# server entered by the user. Prints nothing when there is no NTP server, then
-# no file is added to the profile.
+# Generate NTP config content. Empty output drops NTP config.
 ntp_config_content() {
   if $NTP_FROM_DRACUT; then
     cat -- "$DRACUT_NTP_FILE" 2> /dev/null || true
@@ -1336,9 +1232,7 @@ ntp_config_content() {
   fi
 }
 
-# Write a secret into the tmpfs directory without a trailing newline so that
-# jq --rawfile reads the exact value.  Secrets are passed this way instead of
-# via --arg or the environment to keep them out of /proc.
+# Save secret to file without newline (prevents /proc leak in jq).
 write_secret() {
   local file="$SECURE_DIR/$1"
   printf '%s' "$2" > "$file"
@@ -1390,8 +1284,7 @@ build_profile() {
         if .encryption.luks2 then .encryption.luks2.password = $luks_password else . end
       )
 
-    # the NTP server: a file in the installed system, the empty pool package
-    # then avoids using the default SUSE pool servers
+    # Disable SUSE pool servers if custom NTP file is provided.
     | if $ntp_content != "" then
         .files = ((.files // []) + [{
           destination: $ntp_destination,
@@ -1411,32 +1304,18 @@ build_profile() {
 # Installation
 # ---------------------------------------------------------------------------
 
-# "agama monitor" displays the installation progress itself. It runs directly
-# in the terminal without any wrapping: redirecting its output into a file or a
-# pipe does not work (it redraws a single progress line and such output is
-# never flushed), and a detached process has no terminal to draw on.
-#
-# The screen therefore belongs to the monitor, the this script does not display
-# anything while the installation is running.
+# Start "agama monitor" to display installation progress directly on tty.
 start_monitor() {
   clear_terminal
   printf 'Installing the system, please wait...\n' >&2
 
-  # The monitor writes to the standard error, that is the stream which is
-  # displayed (dialog draws its interface there as well). Its standard input is
-  # /dev/null: the terminal is needed for the questions of the tool and the
-  # monitor does not read anything.
+  # Agama monitor uses stderr. Stdin is ignored.
   agama monitor >&2 2>&1 < /dev/null &
   MONITOR_PID=$!
 }
 
-# Poll the Agama API until something happens. Nothing is displayed, the
-# progress is displayed by "agama monitor" on the terminal
-#
-#   poll_installation START DEADLINE STATUS_FILE
-#     START       value of $SECONDS when the installation was started
-#     DEADLINE    seconds after which the user is asked whether to keep waiting
-#     STATUS_FILE gets "finished", "api_failed" or "timeout"
+# Poll API until event. Monitors via tty.
+# Args: START DEADLINE STATUS_FILE
 poll_installation() {
   local start=$1 deadline=$2 status_file=$3
   local response failures=0 elapsed
@@ -1475,9 +1354,7 @@ stop_monitor() {
   MONITOR_PID=""
 }
 
-# Load the profile into Agama. Agama computes the storage proposal from it, so
-# this must happen before the summary is displayed. Nothing is written to the
-# disk yet, that starts with "agama install".
+# Load profile to compute storage proposal (no disk changes yet).
 load_profile() {
   local profile=$1 rc
   local status_file="$SECURE_DIR/load.status"
@@ -1486,9 +1363,7 @@ load_profile() {
 
   : > "$status_file"
 
-  # Loading the profile takes a while, Agama also computes the storage
-  # proposal from it. A progress box stays on the screen as long as the pipe
-  # is open (an infobox would disappear as soon as dialog exited).
+  # Display progress during profile loading.
   {
     echo "Loading the user provided data."
     if printf '%s' "$profile" | agama config load > /dev/null 2> "$SECURE_DIR/agama.err"; then
@@ -1521,9 +1396,7 @@ Agama was not contacted and no changes were made to the system (--dry-run)."
 
   INSTALLATION_STARTED=true
 
-  # the monitor is started first so that the progress is on the screen from
-  # the very beginning ("agama install" only triggers the installation and
-  # returns immediately)
+  # Start monitor before installer to catch all progress.
   start_monitor
 
   if ! agama install > /dev/null 2> "$SECURE_DIR/agama.err"; then
@@ -1535,11 +1408,7 @@ $(tail -n 5 "$SECURE_DIR/agama.err" 2> /dev/null)"
   return 0
 }
 
-# A long running installation is not necessarily a failure, it can just be a
-# slow network or a slow disk.  Let the user decide whether to keep waiting;
-# an unanswered question keeps the installation running so that an unattended
-# installation is never aborted by accident.
-# Returns 0 to keep waiting, 1 when the user wants to abort.
+# Prompt user on timeout. Defaults to waiting (unattended safety).
 ask_continue_waiting() {
   local elapsed=$1 rc=0 answer=""
   local text="The installation is still running after $((elapsed / 3600))h $(((elapsed % 3600) / 60))m.
@@ -1575,8 +1444,7 @@ wait_for_installation() {
   prepare_api_auth ||
     fatal "The Agama API token in $AGAMA_TOKEN_FILE is missing or empty."
 
-  # the monitor does not read the keyboard, pressed keys would be echoed over
-  # its output
+  # Disable terminal echo to avoid garbled monitor output.
   terminal_echo off
 
   start=$SECONDS
@@ -1621,9 +1489,7 @@ aborted on user request. The target disk contains an incomplete system."
   done
 }
 
-# The reboot after the installation is always confirmed explicitly, there is
-# no timeout: the medium may have to be removed first, so the machine must not
-# reboot on its own.
+# Require explicit reboot confirmation.
 finish_installation() {
   stop_monitor
   clear_terminal
