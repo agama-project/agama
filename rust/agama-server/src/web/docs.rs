@@ -163,7 +163,9 @@ pub async fn build() -> OpenApi {
         ("zfcp", "zfcp.schema.json"),
         ("iscsi", "iscsi.schema.json"),
     ] {
-        if let Some(schema) = api_json.pointer_mut(format!("/components/schemas/Config/properties/{}", prop).as_str()) {
+        if let Some(schema) =
+            api_json.pointer_mut(format!("/components/schemas/Config/properties/{}", prop).as_str())
+        {
             *schema = serde_json::json!({
                 "anyOf": [
                     { "$ref": file },
@@ -222,11 +224,36 @@ pub async fn build() -> OpenApi {
             }
         }
     };
-    inject_alias(&mut api_json, "/components/schemas/hostname.Config/properties", "hostname", "transient");
-    inject_alias(&mut api_json, "/components/schemas/l10n.Config/properties", "locale", "language");
-    inject_alias(&mut api_json, "/components/schemas/l10n.Config/properties", "keymap", "keyboard");
-    inject_alias(&mut api_json, "/components/schemas/FirstUserConfig/properties", "sshPublicKeys", "sshPublicKey");
-    inject_alias(&mut api_json, "/components/schemas/RootUserConfig/properties", "sshPublicKeys", "sshPublicKey");
+    inject_alias(
+        &mut api_json,
+        "/components/schemas/hostname.Config/properties",
+        "hostname",
+        "transient",
+    );
+    inject_alias(
+        &mut api_json,
+        "/components/schemas/l10n.Config/properties",
+        "locale",
+        "language",
+    );
+    inject_alias(
+        &mut api_json,
+        "/components/schemas/l10n.Config/properties",
+        "keymap",
+        "keyboard",
+    );
+    inject_alias(
+        &mut api_json,
+        "/components/schemas/FirstUserConfig/properties",
+        "sshPublicKeys",
+        "sshPublicKey",
+    );
+    inject_alias(
+        &mut api_json,
+        "/components/schemas/RootUserConfig/properties",
+        "sshPublicKeys",
+        "sshPublicKey",
+    );
 
     // Proposal references
     if let Some(schema) = api_json.pointer_mut("/components/schemas/Proposal/properties/storage") {
@@ -246,7 +273,9 @@ pub async fn build() -> OpenApi {
         ("storage", "system.storage.schema.json"),
         ("zfcp", "system.zfcp.schema.json"),
     ] {
-        if let Some(schema) = api_json.pointer_mut(format!("/components/schemas/SystemInfo/properties/{}", prop).as_str()) {
+        if let Some(schema) = api_json
+            .pointer_mut(format!("/components/schemas/SystemInfo/properties/{}", prop).as_str())
+        {
             *schema = serde_json::json!({
                 "anyOf": [
                     { "$ref": file },
