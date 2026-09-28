@@ -4,6 +4,7 @@
 
 set -euo pipefail
 
+# Print usage.
 show_help() {
   echo "Usage: $(basename "$0") [options] <branch_name>"
   echo
@@ -16,6 +17,7 @@ show_help() {
   echo "  -h, --help     Show this help message and exit."
 }
 
+# Exit if any required CLI tool is missing in $PATH.
 check_dependencies() {
   local dependencies=("curl" "gh" "git" "jq" "osc")
   local missing=()
@@ -32,6 +34,7 @@ check_dependencies() {
   fi
 }
 
+# Exit if $WEBLATE_API_KEY is not set.
 check_weblate_token() {
   if [ -z "${WEBLATE_API_KEY:-}" ]; then
     echo "ERROR: WEBLATE_API_KEY environment variable is not set." >&2
@@ -41,6 +44,7 @@ check_weblate_token() {
   fi
 }
 
+# Exit if the IBS API (api.suse.de) is not reachable, requires the SUSE VPN.
 check_ibs_reachability() {
   echo "Checking connectivity to http://api.suse.de..."
   if ! curl -s --connect-timeout 5 -I "http://api.suse.de" &> /dev/null; then
@@ -51,6 +55,8 @@ check_ibs_reachability() {
   echo "Successfully connected to IBS API"
 }
 
+# Map the branch to its OBS project in the OBS_PROJECTS GitHub variable
+# and trigger the OBS submit workflows on that branch.
 configure_github_autosubmission() {
   local branch_name="$1"
 
@@ -82,6 +88,7 @@ configure_github_autosubmission() {
   done
 }
 
+# Create the branch from origin/master and push it.
 create_git_branch() {
   local branch_name="$1"
 
@@ -90,6 +97,35 @@ create_git_branch() {
   git fetch
   git checkout -b "$branch_name" origin/master
   git push -u origin "$branch_name"
+}
+
+# Protect the branch on GitHub: PR with 1 approval required, no bypass, no force push.
+configure_branch_protection() {
+  local branch_name="$1"
+
+  # require a pull request with at least one approval, do not allow bypassing
+  # the rules (not even by admins), do not allow force pushes and deleting the branch
+  # https://docs.github.com/en/rest/branches/branch-protection#update-branch-protection
+  echo "Configuring branch protection for $branch_name..."
+  cat << EOF | gh api --method PUT "repos/agama-project/agama/branches/$branch_name/protection" --input - > /dev/null
+{
+  "required_status_checks": null,
+  "enforce_admins": true,
+  "required_pull_request_reviews": {
+    "required_approving_review_count": 1,
+    "dismiss_stale_reviews": false,
+    "require_code_owner_reviews": false,
+    "bypass_pull_request_allowances": {
+      "users": [],
+      "teams": [],
+      "apps": []
+    }
+  },
+  "restrictions": null,
+  "allow_force_pushes": false,
+  "allow_deletions": false
+}
+EOF
 }
 
 readonly AGAMA_PACKAGES=(
@@ -112,6 +148,8 @@ readonly OBS_MAINTAINERS='  <person userid="IGonzalezSosa" role="maintainer"/>
   <person userid="mvidner" role="maintainer"/>
   <person userid="teclator" role="maintainer"/>'
 
+# Create the systemsmanagement:Agama:Maintenance:<branch> OBS project built against
+# SLES <version>, copy the packages from systemsmanagement:Agama:Devel and add agama-installer-SLES.
 create_obs_project() {
   local branch_name="$1"
   local version="$2"
@@ -188,6 +226,7 @@ EOF
     osc meta pkg -F - "systemsmanagement:Agama:Maintenance:$branch_name" agama-installer
 }
 
+# Create the Devel:YaST:Agama:Maintenance:<branch> IBS project with packages linked to the OBS project.
 create_ibs_project() {
   local branch_name="$1"
   local version="$2"
@@ -249,7 +288,8 @@ EOF
     osc -A https://api.suse.de meta pkg -F - "Devel:YaST:Agama:Maintenance:$branch_name" agama-installer
 }
 
-# adapt the translation GitHub Actions
+# Clone the SLE-16 Weblate merge workflows for the branch and open a PR against master.
+# Note: switches the working copy to a new branch (local changes are stashed).
 adapt_translation_workflows() {
   local branch_name="$1"
   local version="$2"
@@ -298,6 +338,7 @@ adapt_translation_workflows() {
     --body "Automatically create pull requests for the $branch_name translations"
 }
 
+# Create the branch in agama-project/agama-weblate from its master.
 create_weblate_branch() {
   local branch_name="$1"
 
@@ -309,6 +350,7 @@ create_weblate_branch() {
     -f sha="$source_sha" > /dev/null
 }
 
+# Create the Weblate components for the branch, settings are copied from the *-sle-16-1 components.
 create_weblate_components() {
   local branch_name="$1"
 
@@ -421,6 +463,7 @@ if [ -z "$BRANCH_NAME" ]; then
   exit 1
 fi
 
+# check that the Weblate token is defined
 check_weblate_token
 
 # verify that all required commands are available before proceeding
@@ -433,22 +476,26 @@ check_ibs_reachability
 VERSION="${BRANCH_NAME##*-}"
 echo "Creating maintenance branch \"$BRANCH_NAME\" for version $VERSION..."
 
+# create the actual branch in Git
 create_git_branch "$BRANCH_NAME"
 
+# create maintenance project in OBS
 create_obs_project "$BRANCH_NAME" "$VERSION"
 
+# create maintenance project in IBS
 create_ibs_project "$BRANCH_NAME" "$VERSION"
 
+# configure autosubmission to OBS
 configure_github_autosubmission "$BRANCH_NAME"
 
+# add Weblate CI jobs
 adapt_translation_workflows "$BRANCH_NAME" "$VERSION"
 
-# branch the agama-weblate repository as well using the gh tool
+# protect the new branch
+configure_branch_protection "$BRANCH_NAME"
+
+# branch the agama-weblate repository
 create_weblate_branch "$BRANCH_NAME"
 
 # create new translation components in Weblate
 create_weblate_components "$BRANCH_NAME"
-
-echo
-echo "NOTES:"
-echo " - Manually copy the .github/workflows/weblate-merge-rust-po.yml and adapt it for the $BRANCH_NAME branch, update this script to do that automatically next time."
