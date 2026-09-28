@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Sep 28 12:00:00 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Allow disabling the IPv4 or the IPv6 configuration of a
+  connection, and keep it disabled when editing a connection that
+  already has it.
+
+-------------------------------------------------------------------
 Fri Sep 25 13:49:06 UTC 2026 - José Iván López González <jlopez@suse.com>
 
 - Add menu option for exiting the installation
