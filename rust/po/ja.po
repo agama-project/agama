@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-18 08:11+0000\n"
+"POT-Creation-Date: 2026-09-22 12:12+0000\n"
 "PO-Revision-Date: 2026-08-27 05:55+0000\n"
 "Last-Translator: Yasuhiko Kamata <belphegor@belbel.or.jp>\n"
 "Language-Team: Japanese <https://l10n.opensuse.org/projects/agama/agama-rust-"
@@ -799,12 +799,12 @@ msgstr ""
 "フェイスを利用して回答してください:"
 
 #. TRANSLATORS: %s is replaced by the script name.
-#: agama-files/src/service.rs:184
+#: agama-files/src/service.rs:183
 msgid "Failed to retrieve the script %s. Do you want to try again?"
 msgstr "スクリプト %s の取得に失敗しました。再試行しますか？"
 
 #. TRANSLATORS: %s is replaced by the script name.
-#: agama-files/src/service.rs:208
+#: agama-files/src/service.rs:207
 msgid "Failed to write the file %s. Do you want to try again?"
 msgstr "ファイル %s の書き込みに失敗しました。再試行しますか？"
 
@@ -924,16 +924,16 @@ msgstr "ネットワーク設定を書き込んでいます"
 msgid "Syncing the network service state"
 msgstr "ネットワークサービスの状態を同期しています"
 
-#: agama-security/src/service.rs:226
+#: agama-security/src/service.rs:225
 msgid "Reject"
 msgstr "拒否する"
 
-#: agama-security/src/service.rs:226
+#: agama-security/src/service.rs:225
 #: agama-software/src/callbacks/security.rs:111
 msgid "Trust"
 msgstr "信頼する"
 
-#: agama-security/src/service.rs:227
+#: agama-security/src/service.rs:226
 msgid ""
 "Trying to import a self-signed certificate. Do you want to trust it and "
 "register the product?"
@@ -960,10 +960,6 @@ msgstr "プロファイルリクエストが正しくありません"
 #: agama-server/src/profile/web.rs:106
 msgid "AutoYaST conversion failed"
 msgstr "AudoYaST からの変換に失敗しました"
-
-#: agama-server/src/server/web.rs:86
-msgid "Missing Language Tag"
-msgstr "言語タグがありません"
 
 #: agama-software/src/callbacks/commit_download.rs:47
 #: agama-software/src/callbacks/install.rs:56
@@ -992,7 +988,7 @@ msgstr ""
 msgid "Skip"
 msgstr "飛ばす"
 
-#: agama-software/src/service.rs:296
+#: agama-software/src/service.rs:295
 msgid ""
 "Due to an internal error, it was not possible to create a software proposal."
 msgstr "内部エラーにより、ソフトウエアの提案内容を作成できませんでした。"
@@ -1055,13 +1051,13 @@ msgstr "%s '%s' をインストール用に選択できませんでした"
 msgid "Failed to register the system"
 msgstr "システムの登録に失敗しました"
 
-#: agama-users/src/service.rs:178
+#: agama-users/src/service.rs:177
 msgid ""
 "Defining a user, setting the root password or a SSH public key is required"
 msgstr ""
 "ユーザの設定、 root パスワードの設定、 SSH 公開鍵の設定のいずれかが必要です"
 
-#: agama-users/src/service.rs:191
+#: agama-users/src/service.rs:190
 msgid "First user information is incomplete"
 msgstr "最初のユーザ情報が不十分です"
 
@@ -1112,6 +1108,9 @@ msgstr "パターン"
 #: agama-utils/src/resolvable.rs:67
 msgid "product"
 msgstr "製品"
+
+#~ msgid "Missing Language Tag"
+#~ msgstr "言語タグがありません"
 
 #~ msgid "Profile error"
 #~ msgstr "プロファイルエラー"

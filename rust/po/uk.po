@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-18 08:11+0000\n"
+"POT-Creation-Date: 2026-09-22 12:12+0000\n"
 "PO-Revision-Date: 2026-08-28 21:13+0000\n"
 "Last-Translator: Eugene Krater <lachend@gmail.com>\n"
 "Language-Team: Ukrainian <https://l10n.opensuse.org/projects/agama/agama-"
@@ -805,12 +805,12 @@ msgstr ""
 "командою «agama monitor» або веб-інтерфейсом користувача:"
 
 #. TRANSLATORS: %s is replaced by the script name.
-#: agama-files/src/service.rs:184
+#: agama-files/src/service.rs:183
 msgid "Failed to retrieve the script %s. Do you want to try again?"
 msgstr "Не вдалося завантажити скрипт %s. Чи хочете спробувати ще раз?"
 
 #. TRANSLATORS: %s is replaced by the script name.
-#: agama-files/src/service.rs:208
+#: agama-files/src/service.rs:207
 msgid "Failed to write the file %s. Do you want to try again?"
 msgstr "Не вдалося записати файл %s. Спробувати ще раз?"
 
@@ -930,16 +930,16 @@ msgstr "Запис конфігурації мережі"
 msgid "Syncing the network service state"
 msgstr "Синхронізація стану мережевої служби"
 
-#: agama-security/src/service.rs:226
+#: agama-security/src/service.rs:225
 msgid "Reject"
 msgstr "Відхилити"
 
-#: agama-security/src/service.rs:226
+#: agama-security/src/service.rs:225
 #: agama-software/src/callbacks/security.rs:111
 msgid "Trust"
 msgstr "Довіряти"
 
-#: agama-security/src/service.rs:227
+#: agama-security/src/service.rs:226
 msgid ""
 "Trying to import a self-signed certificate. Do you want to trust it and "
 "register the product?"
@@ -967,10 +967,6 @@ msgstr "Неправильний запит на профіль"
 msgid "AutoYaST conversion failed"
 msgstr "Помилка перетворення AutoYaST"
 
-#: agama-server/src/server/web.rs:86
-msgid "Missing Language Tag"
-msgstr "Відсутній мовний тег"
-
 #: agama-software/src/callbacks/commit_download.rs:47
 #: agama-software/src/callbacks/install.rs:56
 msgid "Ignore"
@@ -997,7 +993,7 @@ msgstr "Ключ {0} ({1}) з відбитком {2} невідомий. Дов�
 msgid "Skip"
 msgstr "Пропустити"
 
-#: agama-software/src/service.rs:296
+#: agama-software/src/service.rs:295
 msgid ""
 "Due to an internal error, it was not possible to create a software proposal."
 msgstr ""
@@ -1063,13 +1059,13 @@ msgstr "Не вдалося вибрати %s «%s» для встановлен
 msgid "Failed to register the system"
 msgstr "Не вдалося зареєструвати систему"
 
-#: agama-users/src/service.rs:178
+#: agama-users/src/service.rs:177
 msgid ""
 "Defining a user, setting the root password or a SSH public key is required"
 msgstr ""
 "Необхідно вказати користувача, встановити пароль root або відкритий ключ SSH"
 
-#: agama-users/src/service.rs:191
+#: agama-users/src/service.rs:190
 msgid "First user information is incomplete"
 msgstr "Інформація про першого користувача є неповною"
 
@@ -1120,6 +1116,9 @@ msgstr "шаблон"
 #: agama-utils/src/resolvable.rs:67
 msgid "product"
 msgstr "продукт"
+
+#~ msgid "Missing Language Tag"
+#~ msgstr "Відсутній мовний тег"
 
 #~ msgid "Profile error"
 #~ msgstr "Помилка профілю"

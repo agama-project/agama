@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-18 08:11+0000\n"
+"POT-Creation-Date: 2026-09-22 12:12+0000\n"
 "PO-Revision-Date: 2026-09-06 09:13+0000\n"
 "Last-Translator: Ettore Atalan <atalanttore@googlemail.com>\n"
 "Language-Team: German <https://l10n.opensuse.org/projects/agama/agama-rust-"
@@ -823,14 +823,14 @@ msgstr ""
 "oder die Weboberfläche, um diese zu beantworten:"
 
 #. TRANSLATORS: %s is replaced by the script name.
-#: agama-files/src/service.rs:184
+#: agama-files/src/service.rs:183
 msgid "Failed to retrieve the script %s. Do you want to try again?"
 msgstr ""
 "Das Abrufen des Skripts %s ist fehlgeschlagen. Möchten Sie es erneut "
 "versuchen?"
 
 #. TRANSLATORS: %s is replaced by the script name.
-#: agama-files/src/service.rs:208
+#: agama-files/src/service.rs:207
 msgid "Failed to write the file %s. Do you want to try again?"
 msgstr ""
 "Das Schreiben der Datei %s ist fehlgeschlagen. Möchten Sie es erneut "
@@ -952,16 +952,16 @@ msgstr "Netzwerkkonfiguration schreiben"
 msgid "Syncing the network service state"
 msgstr "Netzwerkdienststatus synchronisieren"
 
-#: agama-security/src/service.rs:226
+#: agama-security/src/service.rs:225
 msgid "Reject"
 msgstr "Ablehnen"
 
-#: agama-security/src/service.rs:226
+#: agama-security/src/service.rs:225
 #: agama-software/src/callbacks/security.rs:111
 msgid "Trust"
 msgstr "Vertrauen"
 
-#: agama-security/src/service.rs:227
+#: agama-security/src/service.rs:226
 msgid ""
 "Trying to import a self-signed certificate. Do you want to trust it and "
 "register the product?"
@@ -988,10 +988,6 @@ msgstr "Ungültige Profilanfrage"
 #: agama-server/src/profile/web.rs:106
 msgid "AutoYaST conversion failed"
 msgstr "Fehler bei der AutoYaST-Konvertierung"
-
-#: agama-server/src/server/web.rs:86
-msgid "Missing Language Tag"
-msgstr "Sprach-Tag fehlt"
 
 #: agama-software/src/callbacks/commit_download.rs:47
 #: agama-software/src/callbacks/install.rs:56
@@ -1021,7 +1017,7 @@ msgstr ""
 msgid "Skip"
 msgstr "Überspringen"
 
-#: agama-software/src/service.rs:296
+#: agama-software/src/service.rs:295
 msgid ""
 "Due to an internal error, it was not possible to create a software proposal."
 msgstr ""
@@ -1088,14 +1084,14 @@ msgstr "%s ‚%s‘ konnte nicht für die Installation ausgewählt werden"
 msgid "Failed to register the system"
 msgstr "Das System konnte nicht registriert werden"
 
-#: agama-users/src/service.rs:178
+#: agama-users/src/service.rs:177
 msgid ""
 "Defining a user, setting the root password or a SSH public key is required"
 msgstr ""
 "Die Definition eines Benutzers, das Festlegen des Root-Passworts oder eines "
 "öffentlichen SSH-Schlüssels ist erforderlich"
 
-#: agama-users/src/service.rs:191
+#: agama-users/src/service.rs:190
 msgid "First user information is incomplete"
 msgstr "Die Informationen zum ersten Benutzer sind unvollständig"
 
@@ -1148,6 +1144,9 @@ msgstr "Muster"
 #: agama-utils/src/resolvable.rs:67
 msgid "product"
 msgstr "Produkt"
+
+#~ msgid "Missing Language Tag"
+#~ msgstr "Sprach-Tag fehlt"
 
 #~ msgid "Profile error"
 #~ msgstr "Profilfehler"
