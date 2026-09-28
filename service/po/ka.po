@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-18 08:12+0000\n"
+"POT-Creation-Date: 2026-09-22 12:13+0000\n"
 "PO-Revision-Date: 2026-05-16 04:12+0000\n"
 "Last-Translator: Temuri Doghonadze <temuri.doghonadze@gmail.com>\n"
 "Language-Team: Georgian <https://l10n.opensuse.org/projects/agama/agama-"
@@ -402,7 +402,7 @@ msgstr ""
 #. Text of the reason preventing to shrink because there is no content.
 #.
 #. @return [String, nil] nil if there is content or there is any other reasons.
-#: service/lib/agama/storage/device_shrinking.rb:151
+#: service/lib/agama/storage/device_shrinking.rb:157
 msgid ""
 "Neither a file system nor a storage system was detected on the device. In "
 "case the device does contain a file system or a storage system that is not "
@@ -412,7 +412,7 @@ msgstr ""
 #. Text of the reason preventing to shrink because there is no valid minimum size.
 #.
 #. @return [String, nil] nil if there is a minimum size or there is any other reasons.
-#: service/lib/agama/storage/device_shrinking.rb:162
+#: service/lib/agama/storage/device_shrinking.rb:168
 msgid "Shrinking is not supported by this device"
 msgstr "ამ მოწყობილობაზე დაპატარავება მხარდაჭერილი არაა"
 
