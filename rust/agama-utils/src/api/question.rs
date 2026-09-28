@@ -378,6 +378,13 @@ pub enum QuestionField {
     Password,
     /// A selector field.
     Select { options: Vec<SelectionOption> },
+    /// Fallback for field types this client doesn't know about yet.
+    ///
+    /// Keeps older clients from failing to deserialize a question when a newer server sends a
+    /// field type that didn't exist when this client was built. See
+    /// API-COMPATIBILITY-POLICY.md.
+    #[serde(other)]
+    Unknown,
 }
 
 /// Selector option.

@@ -55,6 +55,10 @@ impl ProblemDetailsExt for ProblemDetails {
             ProblemDetails::InternalError { .. } => StatusCode::INTERNAL_SERVER_ERROR,
             ProblemDetails::Unauthorized { .. } => StatusCode::UNAUTHORIZED,
             ProblemDetails::Generic { .. } => StatusCode::INTERNAL_SERVER_ERROR,
+            ProblemDetails::BadRequest { .. } => StatusCode::BAD_REQUEST,
+            // The server never constructs this variant itself - it exists purely as a
+            // deserialization fallback for older clients (see API-COMPATIBILITY-POLICY.md).
+            ProblemDetails::Unknown => StatusCode::INTERNAL_SERVER_ERROR,
         }
     }
 
