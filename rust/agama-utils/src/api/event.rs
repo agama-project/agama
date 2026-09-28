@@ -86,6 +86,13 @@ pub enum Event {
         task: Task,
         remaining: usize,
     },
+    /// Fallback for event types this client doesn't know about yet.
+    ///
+    /// Keeps older clients from failing to deserialize the WebSocket stream when a newer server
+    /// sends an event variant that didn't exist when this client was built. See
+    /// API-COMPATIBILITY-POLICY.md.
+    #[serde(other)]
+    Unknown,
 }
 
 pub type Sender = broadcast::Sender<Event>;

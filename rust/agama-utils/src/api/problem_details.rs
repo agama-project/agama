@@ -111,6 +111,15 @@ pub enum ProblemDetails {
         rename_all = "camelCase"
     )]
     BadRequest { title: String, detail: String },
+
+    /// Fallback for problem types this client doesn't know about yet.
+    ///
+    /// Keeps older clients from failing to deserialize an error response when a newer server
+    /// reports a problem type that didn't exist when this client was built. `#[serde(other)]`
+    /// only allows a unit variant, so the original `title`/`detail` are not preserved here - the
+    /// client falls back to a generic message instead. See API-COMPATIBILITY-POLICY.md.
+    #[serde(other)]
+    Unknown,
 }
 
 impl ProblemDetails {
@@ -190,6 +199,13 @@ impl Display for ProblemDetails {
             ProblemDetails::InvalidJson { title, detail } => {
                 write_problem(f, title, detail.as_deref(), None)?
             }
+
+            ProblemDetails::Unknown => write_problem(
+                f,
+                &gettext("An error occurred that this client version doesn't recognize"),
+                None,
+                None,
+            )?,
         }
 
         Ok(())
