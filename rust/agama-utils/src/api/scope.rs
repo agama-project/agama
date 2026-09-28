@@ -67,4 +67,11 @@ pub enum Scope {
     #[serde(rename = "zfcp")]
     ZFCP,
     Users,
+    /// Fallback for scopes this client doesn't know about yet.
+    ///
+    /// Keeps older clients from failing to deserialize data when a newer server reports a scope
+    /// that didn't exist when this client was built. See API-COMPATIBILITY-POLICY.md.
+    #[strum(serialize = "unknown")]
+    #[serde(other)]
+    Unknown,
 }
