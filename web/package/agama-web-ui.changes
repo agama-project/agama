@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Sep 25 13:49:06 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Add menu option for exiting the installation
+ (gh#agama-project/agama#3911).
+
+-------------------------------------------------------------------
 Tue Sep 22 14:54:01 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Block the registration page while software changes are in progress

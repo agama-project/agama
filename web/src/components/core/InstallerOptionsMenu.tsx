@@ -35,6 +35,7 @@ import Icon, { IconProps } from "~/components/layout/Icon";
 import VisualTooltip from "~/components/core/VisualTooltip";
 import ChangeProductOption from "~/components/core/ChangeProductOption";
 import ConfigDialog from "~/components/core/ConfigDialog";
+import ExitInstallationDialog from "~/components/core/ExitInstallationDialog";
 import DownloadLogsFeedback from "~/components/core/DownloadLogsFeedback";
 import { PRODUCT, ROOT } from "~/routes/paths";
 import { useTerminal } from "~/context/terminal";
@@ -65,21 +66,31 @@ const ItemContent = ({ icon, text }: { icon: IconProps["name"]; text: string }) 
  */
 export default function InstallerOptionsMenu({ hideLabel = false }: InstallerOptionsMenuProps) {
   const location = useLocation();
-  // Changing the product or mode makes no sense on the product selection page
-  // itself nor during/after the installation.
-  const showChangeProductOption = ![
-    PRODUCT.changeProduct,
+
+  const installationPaths = [
     ROOT.installation,
     ROOT.installationProgress,
     ROOT.installationFinished,
-    ROOT.installationExit,
-  ].includes(location.pathname);
+    ROOT.installationReboot,
+    ROOT.installationShutdown,
+  ];
+
+  // Changing the product or mode makes no sense on the product selection page
+  // itself nor during/after the installation.
+  const showChangeProductOption = ![PRODUCT.changeProduct, ...installationPaths].includes(
+    location.pathname,
+  );
+
+  // Exiting the installation makes no sense during/after the installation.
+  const showExitInstallationOption = !installationPaths.includes(location.pathname);
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isConfigOpen, setIsConfigOpen] = useState(false);
+  const [isExitInstallationOpen, setIsExitInstallationOpen] = useState(false);
   const { isOpen: isTerminalOpen, toggle: toggleTerminal } = useTerminal();
   const toggle = () => setIsMenuOpen(!isMenuOpen);
   const toggleConfig = () => setIsConfigOpen(!isConfigOpen);
+  const toggleExitInstallation = () => setIsExitInstallationOpen(!isExitInstallationOpen);
   // TRANSLATORS: label for the button that opens the menu with additional
   // actions (show settings, download logs, change product...)
   const toggleLabel = _("More options");
@@ -145,18 +156,20 @@ export default function InstallerOptionsMenu({ hideLabel = false }: InstallerOpt
                         _("Open terminal")
                   }
                 />
+                <Divider component="li" />
               </DropdownItem>
-              {showChangeProductOption && (
-                <>
-                  <Divider component="li" />
-                  <ChangeProductOption component="dropdownitem" showIcon />
-                </>
+              {showChangeProductOption && <ChangeProductOption component="dropdownitem" showIcon />}
+              {showExitInstallationOption && (
+                <DropdownItem key="exit-installation" onClick={toggleExitInstallation}>
+                  <ItemContent icon="power_settings_new" text={_("Exit installation")} />
+                </DropdownItem>
               )}
             </DropdownList>
           </Dropdown>
         )}
       </DownloadLogsFeedback>
       {isConfigOpen && <ConfigDialog onClose={toggleConfig} />}
+      {isExitInstallationOpen && <ExitInstallationDialog onClose={toggleExitInstallation} />}
     </>
   );
 }
