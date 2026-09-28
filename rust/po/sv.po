@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-18 08:11+0000\n"
+"POT-Creation-Date: 2026-09-22 12:12+0000\n"
 "PO-Revision-Date: 2026-08-30 15:13+0000\n"
 "Last-Translator: Luna  Jernberg <bittin@opensuse.org>\n"
 "Language-Team: Swedish <https://l10n.opensuse.org/projects/agama/agama-rust-"
@@ -801,12 +801,12 @@ msgstr ""
 "webbgränssnittet för att besvara dem:"
 
 #. TRANSLATORS: %s is replaced by the script name.
-#: agama-files/src/service.rs:184
+#: agama-files/src/service.rs:183
 msgid "Failed to retrieve the script %s. Do you want to try again?"
 msgstr "Misslyckades med att hämta skriptet %s. Vill du försöka igen?"
 
 #. TRANSLATORS: %s is replaced by the script name.
-#: agama-files/src/service.rs:208
+#: agama-files/src/service.rs:207
 msgid "Failed to write the file %s. Do you want to try again?"
 msgstr "Misslyckades med att skriva filen %s. Vill du försöka igen?"
 
@@ -926,16 +926,16 @@ msgstr "Skriver nätverkskonfiguration"
 msgid "Syncing the network service state"
 msgstr "Synkronisera nätverkstjänstens status"
 
-#: agama-security/src/service.rs:226
+#: agama-security/src/service.rs:225
 msgid "Reject"
 msgstr "Avslå"
 
-#: agama-security/src/service.rs:226
+#: agama-security/src/service.rs:225
 #: agama-software/src/callbacks/security.rs:111
 msgid "Trust"
 msgstr "Lita på"
 
-#: agama-security/src/service.rs:227
+#: agama-security/src/service.rs:226
 msgid ""
 "Trying to import a self-signed certificate. Do you want to trust it and "
 "register the product?"
@@ -962,10 +962,6 @@ msgstr "Ogiltig profilförfrågan"
 #: agama-server/src/profile/web.rs:106
 msgid "AutoYaST conversion failed"
 msgstr "AutoYaST konvertering misslyckades"
-
-#: agama-server/src/server/web.rs:86
-msgid "Missing Language Tag"
-msgstr "Saknar språk tagg"
 
 #: agama-software/src/callbacks/commit_download.rs:47
 #: agama-software/src/callbacks/install.rs:56
@@ -995,7 +991,7 @@ msgstr ""
 msgid "Skip"
 msgstr "Hoppa över"
 
-#: agama-software/src/service.rs:296
+#: agama-software/src/service.rs:295
 msgid ""
 "Due to an internal error, it was not possible to create a software proposal."
 msgstr ""
@@ -1060,14 +1056,14 @@ msgstr "Kunde inte välja %s '%s' för installation"
 msgid "Failed to register the system"
 msgstr "Misslyckades att registrera systemet"
 
-#: agama-users/src/service.rs:178
+#: agama-users/src/service.rs:177
 msgid ""
 "Defining a user, setting the root password or a SSH public key is required"
 msgstr ""
 "Det krävs att man definierar en användare, ställer in root-lösenordet eller "
 "anger en offentlig SSH-nyckel"
 
-#: agama-users/src/service.rs:191
+#: agama-users/src/service.rs:190
 msgid "First user information is incomplete"
 msgstr "Informationen om den första användaren är ofullständig"
 
@@ -1118,6 +1114,9 @@ msgstr "mönster"
 #: agama-utils/src/resolvable.rs:67
 msgid "product"
 msgstr "produkt"
+
+#~ msgid "Missing Language Tag"
+#~ msgstr "Saknar språk tagg"
 
 #~ msgid "Profile error"
 #~ msgstr "Profil fel"
