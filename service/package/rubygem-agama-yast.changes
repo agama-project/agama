@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Sep 28 12:00:00 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Do not give IP or DNS settings to the interfaces that AutoYaST
+  lists as ports of a bond or a bridge, as their controller holds
+  the IP configuration.
+
+-------------------------------------------------------------------
 Wed Sep 23 09:30:35 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Fix support for AutoYaST classes adding the missing dependency on
