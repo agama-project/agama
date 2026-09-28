@@ -323,7 +323,6 @@ create_weblate_components() {
 
   for item in "${components[@]}"; do
     local type="${item%%:*}"
-    local label="${item#*:}"
 
     # Weblate component slugs must be lowercase and contain only valid characters (no dots)
     local branch_slug="${branch_name,,}"
