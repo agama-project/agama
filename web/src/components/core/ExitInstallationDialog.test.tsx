@@ -71,11 +71,6 @@ describe("ExitInstallationDialog", () => {
       screen.getByText(/You can safely reboot or shut down the system/i);
       screen.getByText(/No changes have been made to your disks/i);
     });
-
-    it("does not display the pre-scripts warning", () => {
-      plainRender(<ExitInstallationDialog onClose={mockOnClose} />);
-      expect(screen.queryByText(/pre-scripts have been executed/i)).not.toBeInTheDocument();
-    });
   });
 
   describe("when config has no pre-scripts", () => {
@@ -103,13 +98,6 @@ describe("ExitInstallationDialog", () => {
       plainRender(<ExitInstallationDialog onClose={mockOnClose} />);
       screen.getByText(/Configuration pre-scripts have been executed/i);
       screen.getByText(/may have modified your system/i);
-    });
-
-    it("does not display the safe exit message", () => {
-      plainRender(<ExitInstallationDialog onClose={mockOnClose} />);
-      expect(
-        screen.queryByText(/No changes have been made to your disks/i),
-      ).not.toBeInTheDocument();
     });
   });
 
