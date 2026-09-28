@@ -50,9 +50,15 @@ export default {
   "%1$s will still contain the LVM group '%2$s' and any partition needed to boot": [
     "%1$s encara contindrà el grup d'LVM %2$s i qualsevol partició necessària per a arrencar"
   ],
+  "%1$s+%2$s+%3$s to move focus out": [
+    "%1$s+%2$s+%3$s per moure el focus fora"
+  ],
   "%1$s, %2$s and [%3$d more]": [
     "%1$s, %2$s i [%3$d més]",
     "%1$s, %2$s i [%3$d més]"
+  ],
+  "%d Mb/s": [
+    "%d Mb/s"
   ],
   "%d NTP server": [
     "%d servidor NTP",
@@ -80,6 +86,12 @@ export default {
   "%d entries added, %d invalid.": [
     "S'han afegit %d entrades, però %d no són vàlides."
   ],
+  "%d entries added, %d not available, %d duplicates skipped.": [
+    "Hi ha %d entrades afegides, %d de no disponibles i %d duplicacions omeses."
+  ],
+  "%d entries added, %d not available.": [
+    "S'han afegit %d entrades, però %d no estan disponibles."
+  ],
   "%d entries added.": [
     "S'han afegit %d entrades."
   ],
@@ -93,6 +105,12 @@ export default {
   "%d mode available": [
     "%d mode disponible",
     "%d modes disponibles"
+  ],
+  "%d more": [
+    "%d més"
+  ],
+  "%d options available.": [
+    "%d opcions disponibles."
   ],
   "%d other mode available": [
     "%d altre mode disponible",
@@ -110,6 +128,12 @@ export default {
   ],
   "%s - %s": [
     "%s - %s"
+  ],
+  "%s Gb/s": [
+    "%s Gb/s"
+  ],
+  "%s added but is invalid: %s. Select it to edit.": [
+    "S'ha afegit el valor %s però no és vàlid: %s. Seleccioneu-lo per editar-lo."
   ],
   "%s added but is invalid: %s. Select to edit.": [
     "%s afegida però no és vàlida: %s. Seleccioneu per editar."
@@ -129,6 +153,9 @@ export default {
   "%s at portal %s does not exist or cannot be reached.": [
     "%s al portal %s no existeix o no s'hi pot contactar."
   ],
+  "%s cannot be a port of itself": [
+    "%s no pot ser un port de si mateix"
+  ],
   "%s disk": [
     "Disc %s"
   ],
@@ -141,8 +168,14 @@ export default {
   "%s honors the browser and system preferences": [
     "L'opció «%s» respecta les preferències del navegador i del sistema."
   ],
+  "%s is already selected.": [
+    "%s ja s'ha seleccionat."
+  ],
   "%s is invalid: %s": [
     "%s no és vàlida: %s"
+  ],
+  "%s is not available.": [
+    "%s no està disponible."
   ],
   "%s logo": [
     "Logotip per a %s"
@@ -150,8 +183,14 @@ export default {
   "%s moved to input for editing.": [
     "%s s'ha mogut a l'entrada per editar."
   ],
+  "%s moved to the text box for editing.": [
+    "%s s'ha mogut al quadre de text per a l'edició."
+  ],
   "%s removed.": [
     "%s suprimida."
+  ],
+  "%s shown in the list of options.": [
+    "El valor %s es mostra a la llista d'opcions."
   ],
   "%s task active": [
     "%s tasca activa",
@@ -242,6 +281,9 @@ export default {
   ],
   "Accept": [
     "Accepta-ho"
+  ],
+  "Accepted licenses": [
+    "Llicències acceptades"
   ],
   "Action": [
     "Acció"
@@ -355,6 +397,9 @@ export default {
   "All the available zFCP controllers are already activated.": [
     "Tots els controladors de zFCP disponibles ja estan activats."
   ],
+  "All values removed.": [
+    "S'han suprimit tots els valors."
+  ],
   "Allow growing": [
     "Permet-ne l'eixamplament"
   ],
@@ -452,9 +497,6 @@ export default {
   ],
   "Automatic contrast": [
     "Contrast automàtic"
-  ],
-  "Available devices: %s": [
-    "Dispositius disponibles: %s"
   ],
   "Back": [
     "Ves enrere"
@@ -677,6 +719,9 @@ export default {
   "Choose a volume group to define logical volumes": [
     "Trieu un grup de volums per definir-ne els volums lògics"
   ],
+  "Choose devices or enter their names.": [
+    "Seleccioneu els dispositius o introduïu-ne els noms."
+  ],
   "Choose whether to enable the root account.": [
     "Trieu si voleu habilitar el compte d'arrel."
   ],
@@ -685,6 +730,9 @@ export default {
   ],
   "Chosen by name": [
     "Triat pel nom"
+  ],
+  "Clear all": [
+    "Neteja-ho tot"
   ],
   "Clear all filters": [
     "Esborra tots els filtres"
@@ -839,6 +887,9 @@ export default {
   ],
   "Create another LVM volume group on %s": [
     "Crea un altre grup de volums d'LVM a %s"
+  ],
+  "Ctrl": [
+    "Ctrl"
   ],
   "Curated sets of packages for common use cases and features to extend the system.": [
     "Conjunts de paquets seleccionats per a casos d'ús comuns i funcions per ampliar el sistema."
@@ -1044,6 +1095,15 @@ export default {
   "Do not use": [
     "No l'usis"
   ],
+  "Down arrow for options, Enter to add": [
+    "Fletxa avall per a les opcions, Retorn per afegir-ne"
+  ],
+  "Down arrow for options, Enter to add, Delete to remove, arrow keys to navigate": [
+    "Fletxa avall per a opcions, Retorn per afegir-ne, Supr per suprimir-ne, i les tecles de fletxa per navegar"
+  ],
+  "Down arrow opens the list of options.": [
+    "La fletxa avall obre la llista d'opcions."
+  ],
   "Download configuration": [
     "Baixa la configuració"
   ],
@@ -1169,6 +1229,24 @@ export default {
   ],
   "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate entries, Escape to exit": [
     "Retorn o Tabulador per afegir, Retrocés o Supr per suprimir, tecles de fletxa per navegar per les entrades, Esc per sortir-ne"
+  ],
+  "Enter removes every value, Left arrow goes back to the text box.": [
+    "La tecla Retorn esborra tots els valors, la fletxa esquerra torna al quadre de text."
+  ],
+  "Enter selects or deselects an option, Escape closes the list.": [
+    "Retorn selecciona o desselecciona una opció, Esc tanca la llista."
+  ],
+  "Enter shows a chosen value in the list or takes a written one back to the text box, Delete removes it, arrow keys move between values.": [
+    "La tecla Retorn mostra el valor seleccionat de la llista o torna el valor escrit al quadre de text, la tecla Supr el suprimeix i les tecles de fletxa permeten desplaçar-se entre els valors."
+  ],
+  "Enter shows a value in the list, Delete removes it, arrow keys move between values.": [
+    "La tecla Retorn mostra un valor de la llista, Supr el suprimeix i les tecles de fletxa permeten moure's entre els valors."
+  ],
+  "Enter shows or hides the remaining values.": [
+    "La tecla Retorn mostra o amaga els valors restants."
+  ],
+  "Enter takes a value back to the text box, Delete removes it, arrow keys move between values.": [
+    "La tecla Retorn torna un valor al quadre de text, Supr el suprimeix i les tecles de fletxa permeten moure's entre els valors."
   ],
   "Ethernet": [
     "Xarxa amb fil"
@@ -1338,9 +1416,6 @@ export default {
   "Hide technical details": [
     "Amaga'n els detalls tècnics"
   ],
-  "Hide terminal": [
-    "Amaga el terminal"
-  ],
   "High": [
     "Alt"
   ],
@@ -1361,6 +1436,9 @@ export default {
   ],
   "Hostnames, IP addresses, or fully qualified domain names (FQDNs). E.g., pool.ntp.org": [
     "Noms d'amfitrió, adreces IP o noms de domini completament qualificats (FQDN). P. ex., pool.ntp.org"
+  ],
+  "I have read and accept the %s": [
+    "Ho he llegit i ho accepto: %s"
   ],
   "I have read and accept the [license] for %s": [
     "He llegit i accepto la [llicència] de %s"
@@ -1615,6 +1693,9 @@ export default {
   "Language and region": [
     "Llengua i regió"
   ],
+  "Left arrow reaches the %d values already added.": [
+    "La fletxa esquerra arriba als %d valors ja afegits."
+  ],
   "Let the installer propose a sensible size": [
     "Permet que l'instal·lador proposi una mida raonable"
   ],
@@ -1635,6 +1716,12 @@ export default {
   ],
   "Light color scheme": [
     "Esquema de colors clars"
+  ],
+  "Link": [
+    "Enllaç"
+  ],
+  "Link up": [
+    "Enllaçat"
   ],
   "Linux command-line with administrative privileges on the installer system.": [
     "Línia d'ordres de Linux amb privilegis d'administrador al sistema d'instal·lació"
@@ -1703,7 +1790,7 @@ export default {
     "Forma d'entrada"
   ],
   "Loopback": [
-    "Loopback"
+    "Bucle"
   ],
   "MAC address": [
     "Adreça MAC"
@@ -1773,6 +1860,9 @@ export default {
   ],
   "More": [
     "Més"
+  ],
+  "More actions": [
+    "Més accions"
   ],
   "More devices": [
     "Més dispositius"
@@ -1958,6 +2048,15 @@ export default {
   ],
   "No information available yet": [
     "Encara no hi ha informació disponible"
+  ],
+  "No link": [
+    "Sense enllaç"
+  ],
+  "No options match": [
+    "No hi ha opcions que coincideixin."
+  ],
+  "No options match.": [
+    "No hi ha cap opció que coincideixi."
   ],
   "No partitions will be automatically configured for booting.": [
     "No es configurarà cap partició per a l'arrencada automàticament."
@@ -2476,6 +2575,12 @@ export default {
   "Select at least one disk.": [
     "Seleccioneu almenys un disc."
   ],
+  "Select bond ports": [
+    "Seleccioneu els ports de vinculació"
+  ],
+  "Select bridge ports": [
+    "Seleccioneu els ports del pont"
+  ],
   "Select device": [
     "Seleccioneu un dispositiu"
   ],
@@ -2499,6 +2604,9 @@ export default {
   ],
   "Select the controllers to activate": [
     "Seleccioneu els controladors per activar"
+  ],
+  "Select the parent device": [
+    "Seleccioneu el dispositiu mare"
   ],
   "Select the zFCP controllers to activate:": [
     "Seleccioneu els controladors de zFCP que voleu activar:"
@@ -2563,6 +2671,9 @@ export default {
   "Several partitions will be deleted": [
     "Se suprimiran diverses particions"
   ],
+  "Shift": [
+    "Maj."
+  ],
   "Show": [
     "Mostra"
   ],
@@ -2582,11 +2693,17 @@ export default {
   "Show more": [
     "Mostra'n més"
   ],
+  "Show options": [
+    "Mostra les opcions"
+  ],
   "Show technical details": [
     "Mostra'n els detalls tècnics"
   ],
-  "Show terminal": [
-    "Mostra el terminal"
+  "Showing %d of %d values.": [
+    "Es mostren %d de %d valors."
+  ],
+  "Showing all %d values.": [
+    "Es mostren tots els %d valors."
   ],
   "Shrink existing logical volumes": [
     "Encongeix els volums lògics existents"
@@ -2605,6 +2722,9 @@ export default {
   ],
   "Skip to content": [
     "Omet i ves al contingut"
+  ],
+  "Skip to terminal": [
+    "Omet i ves al terminal"
   ],
   "Software": [
     "Programari"
@@ -2894,6 +3014,9 @@ export default {
     "El volum lògic també se suprimirà.",
     "Els volums lògics també se suprimiran."
   ],
+  "The loopback device cannot be a port": [
+    "El dispositiu de bucle no pot ser un port."
+  ],
   "The modal selector offers a simplified interface designed for quick and straightforward use, without overwhelming the user.": [
     "El selector modal ofereix una interfície simplificada dissenyada per a un ús ràpid i senzill, sense sobrecarregar l'usuari."
   ],
@@ -3070,6 +3193,12 @@ export default {
   "Type": [
     "Tipus"
   ],
+  "Type to filter the options, or to write a value of your own.": [
+    "Escriviu per filtrar les opcions o per introduir-hi un valor propi."
+  ],
+  "Type to filter the options.": [
+    "Escriviu per filtrar les opcions."
+  ],
   "Unable to modify the settings": [
     "No es pot modificar la configuració"
   ],
@@ -3106,7 +3235,7 @@ export default {
   "Update available disks and activate crypt devices": [
     "Actualitza els discs disponibles i activa els dispositius d'encriptació"
   ],
-  "Use %s": [
+  "Use \"%s\"": [
     "Usa %s"
   ],
   "Use LVM volume group %s": [
@@ -3243,6 +3372,9 @@ export default {
   ],
   "Use this to reproduce this installation later using the installer command-line interface or the unattended mode.": [
     "Useu això per reproduir aquesta instal·lació més tard mitjançant la interfície de línia d'ordres de l'instal·lador o el mode sense supervisió."
+  ],
+  "Used by": [
+    "Usat per"
   ],
   "User name": [
     "Nom d'usuari"

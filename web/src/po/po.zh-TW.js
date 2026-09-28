@@ -48,8 +48,14 @@ export default {
   "%1$s will still contain the LVM group '%2$s' and any partition needed to boot": [
     "%1$s 仍將包含 LVM 群組 '%2$s' 和開機所需的任何分割區"
   ],
+  "%1$s+%2$s+%3$s to move focus out": [
+    ""
+  ],
   "%1$s, %2$s and [%3$d more]": [
     "%1$s、%2$s 和[其他 %3$d 個]"
+  ],
+  "%d Mb/s": [
+    ""
   ],
   "%d NTP server": [
     "%d 部 NTP 伺服器"
@@ -102,6 +108,9 @@ export default {
   "%s - %s": [
     "%s - %s"
   ],
+  "%s Gb/s": [
+    ""
+  ],
   "%s added but is invalid: %s. Select to edit.": [
     "已新增 %s，但內容無效：%s。請選中以編輯。"
   ],
@@ -119,6 +128,9 @@ export default {
   ],
   "%s at portal %s does not exist or cannot be reached.": [
     "%s (入口 %s) 不存在或無法存取。"
+  ],
+  "%s cannot be a port of itself": [
+    ""
   ],
   "%s disk": [
     "%s 磁碟"
@@ -143,6 +155,9 @@ export default {
   ],
   "%s removed.": [
     "已移除 %s。"
+  ],
+  "%s shown in the list of options.": [
+    ""
   ],
   "%s task active": [
     "%s 個任務正在執行"
@@ -434,9 +449,6 @@ export default {
   ],
   "Automatic contrast": [
     "自動對比"
-  ],
-  "Available devices: %s": [
-    "可用裝置：%s"
   ],
   "Back": [
     "後退"
@@ -813,6 +825,9 @@ export default {
   "Create another LVM volume group on %s": [
     "在 %s 上建立另一個 LVM 磁碟區群組"
   ],
+  "Ctrl": [
+    ""
+  ],
   "Curated sets of packages for common use cases and features to extend the system.": [
     "適用於常見用途和功能的成套套件，用於擴充系統功能。"
   ],
@@ -1014,6 +1029,9 @@ export default {
   "Do not use": [
     "不使用"
   ],
+  "Down arrow for options, Enter to add": [
+    ""
+  ],
   "Download configuration": [
     "下載組態"
   ],
@@ -1139,6 +1157,21 @@ export default {
   ],
   "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate entries, Escape to exit": [
     "按 Enter 或 Tab 鍵可新增項目，按 Backspace 或 Delete 鍵可移除項目，按方向鍵可導覽項目，按 Escape 鍵可結束"
+  ],
+  "Enter removes every value, Left arrow goes back to the text box.": [
+    ""
+  ],
+  "Enter selects or deselects an option, Escape closes the list.": [
+    ""
+  ],
+  "Enter shows a chosen value in the list or takes a written one back to the text box, Delete removes it, arrow keys move between values.": [
+    ""
+  ],
+  "Enter shows a value in the list, Delete removes it, arrow keys move between values.": [
+    ""
+  ],
+  "Enter shows or hides the remaining values.": [
+    ""
   ],
   "Ethernet": [
     "乙太網路"
@@ -1304,9 +1337,6 @@ export default {
   ],
   "Hide technical details": [
     "隱藏技術詳細資料"
-  ],
-  "Hide terminal": [
-    "隱藏終端機"
   ],
   "High": [
     "高"
@@ -1581,6 +1611,9 @@ export default {
   "Language and region": [
     "語言和區域"
   ],
+  "Left arrow reaches the %d values already added.": [
+    ""
+  ],
   "Let the installer propose a sensible size": [
     "讓安裝程式建議適當的大小"
   ],
@@ -1601,6 +1634,12 @@ export default {
   ],
   "Light color scheme": [
     "淺色色彩配置"
+  ],
+  "Link": [
+    ""
+  ],
+  "Link up": [
+    ""
   ],
   "Linux command-line with administrative privileges on the installer system.": [
     "安裝程式系統中具有管理員權限的 Linux 指令列。"
@@ -1739,6 +1778,9 @@ export default {
   ],
   "More": [
     "更多"
+  ],
+  "More actions": [
+    "更多動作"
   ],
   "More devices": [
     "更多裝置"
@@ -1922,6 +1964,9 @@ export default {
   ],
   "No information available yet": [
     "暫無可用資訊"
+  ],
+  "No link": [
+    ""
   ],
   "No partitions will be automatically configured for booting.": [
     "將不自動設定任何開機分割區。"
@@ -2520,6 +2565,9 @@ export default {
   "Several partitions will be deleted": [
     "將刪除多個分割區"
   ],
+  "Shift": [
+    ""
+  ],
   "Show": [
     "顯示"
   ],
@@ -2541,8 +2589,11 @@ export default {
   "Show technical details": [
     "顯示技術詳細資料"
   ],
-  "Show terminal": [
-    "顯示終端機"
+  "Showing %d of %d values.": [
+    ""
+  ],
+  "Showing all %d values.": [
+    ""
   ],
   "Shrink existing logical volumes": [
     "縮小現有邏輯磁碟區"
@@ -3015,6 +3066,12 @@ export default {
   "Type": [
     "類型"
   ],
+  "Type to filter the options, or to write a value of your own.": [
+    ""
+  ],
+  "Type to filter the options.": [
+    ""
+  ],
   "Unable to modify the settings": [
     "無法修改設定"
   ],
@@ -3182,6 +3239,9 @@ export default {
   ],
   "Use this to reproduce this installation later using the installer command-line interface or the unattended mode.": [
     "您可以使用安裝程式指令列介面或無人值守模式，透過該設定重現此安裝過程。"
+  ],
+  "Used by": [
+    ""
   ],
   "User name": [
     "使用者名稱"
