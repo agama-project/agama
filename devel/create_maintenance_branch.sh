@@ -313,9 +313,10 @@ create_weblate_components() {
   local branch_name="$1"
 
   local components=(
+    "web:Agama Web"
     "products:Agama Products"
     "service:Agama Service"
-    "web:Agama Web"
+    "rust:Agama Rust"
   )
 
   echo "Creating Weblate components for $branch_name..."
@@ -329,57 +330,62 @@ create_weblate_components() {
     branch_slug="${branch_slug//./-}"
     local target_slug="agama-$type-$branch_slug"
 
-    # The source component slug must be strictly lowercase
-    local from_comp="agama/agama-$type-sle-16"
-
-    echo "Creating Weblate component for $branch_name based on agama-$type-sle-16..."
+    # the existing SLE-16.1 component is used as a template for the new component
+    local source_url="https://l10n.opensuse.org/api/components/agama/agama-$type-sle-16-1/"
     local create_url="https://l10n.opensuse.org/api/projects/agama/components/"
 
-    # https://docs.weblate.org/en/latest/api.html#post--api-projects-(string-project)-components-
-    local payload
-    payload=$(jq -n --arg fc "$from_comp" --arg name "agama-$type-$branch_name" --arg slug "$target_slug" \
-      '{ from_component: $fc, name: $name, slug: $slug }')
+    echo "Creating Weblate component \"$target_slug\" for branch $branch_name..."
 
-    curl -f -X POST \
+    # fetch the template component configuration, keep only the relevant writable attributes
+    # and change the name, slug and branch
+    # https://docs.weblate.org/en/latest/api.html#get--api-components-(string-project)-(string-component)-
+    local payload
+    payload=$(curl -s -f -H "Authorization: Token $WEBLATE_API_KEY" "$source_url" |
+      jq --arg name "agama-$type-$branch_name" --arg slug "$target_slug" --arg branch "$branch_name" \
+        --arg web_slug "agama-web-$branch_slug" '
+        (.linked_component != null) as $linked
+        | {
+          name: $name,
+          slug: $slug,
+          vcs,
+          repo,
+          push,
+          branch: $branch,
+          filemask,
+          template,
+          new_base,
+          file_format,
+          repoweb,
+          new_lang,
+          language_regex,
+          merge_style,
+          push_on_commit,
+          commit_pending_age,
+          auto_lock_error,
+          allow_translation_propagation,
+          hide_glossary_matches,
+          contribute_project_tm,
+          enable_suggestions,
+          manage_units,
+          priority
+        }
+        # the linked components share the Git repository with the new web component,
+        # the push URL and the branch are inherited from it
+        | if $linked then .repo = "weblate://agama/\($web_slug)" | del(.push, .branch) else . end
+      ')
+
+    # https://docs.weblate.org/en/latest/api.html#post--api-projects-(string-project)-components-
+    local response
+    if ! response=$(echo "$payload" | curl -s --fail-with-body -X POST \
       -H "Authorization: Token $WEBLATE_API_KEY" \
       -H "Content-Type: application/json" \
-      -d "$payload" \
-      "$create_url"
+      -d @- \
+      "$create_url"); then
+      echo "ERROR: Cannot create Weblate component $target_slug: $response" >&2
+      exit 1
+    fi
 
-    # # FIXME: for some reason this does not work, the PUT request returns Error 400 :-/
-    # # fix this later, so far the new components need to be edited in the web UI
-    #
-    # local update_url="https://l10n.opensuse.org/api/components/agama/$target_slug/"
-    #
-    # # Fetch component configuration, change the branch name and update it back
-    # # https://docs.weblate.org/en/latest/api.html#get--api-components-(string-project)-(string-component)-
-    # # keep only the requested attributes
-    # # https://docs.weblate.org/en/latest/api.html#put--api-components-(string-project)-(string-component)-
-    # curl -s -f -H "Authorization: Token $WEBLATE_API_KEY" "$update_url" |
-    #   jq --arg branch "$branch_name" '
-    #     .branch = $branch |
-    #     {
-    #       branch,
-    #       file_format,
-    #       file_format_params,
-    #       filemask,
-    #       name,
-    #       slug,
-    #       repo,
-    #       template,
-    #       new_base,
-    #       vcs,
-    #       vcs_params,
-    #       hide_glossary_matches,
-    #       contribute_project_tm
-    #     } | with_entries(select(.value != null))' |
-    #   curl -s -f -X PUT \
-    #     -H "Authorization: Token $WEBLATE_API_KEY" \
-    #     -H "Content-Type: application/json" \
-    #     -d @- \
-    #     "$update_url"
-    #
-    # echo "Weblate component $target_slug successfully created!"
+    echo "Weblate component $target_slug successfully created!"
   done
 }
 
