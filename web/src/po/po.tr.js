@@ -38,9 +38,15 @@ export default {
   "%1$s will still contain the LVM group '%2$s' and any partition needed to boot": [
     "%1$s hala '%2$s' LVM grubunu ve önyükleme için gereken herhangi bir bölümü içerecektir"
   ],
+  "%1$s+%2$s+%3$s to move focus out": [
+    ""
+  ],
   "%1$s, %2$s and [%3$d more]": [
     "%1$s, %2$s ve [%3$d daha fazla]",
     "%1$s, %2$s ve [%3$d daha fazla]"
+  ],
+  "%d Mb/s": [
+    ""
   ],
   "%d connections available": [
     "%d bağlantı mevcut"
@@ -72,6 +78,9 @@ export default {
   "%s - %s": [
     "%s - %s"
   ],
+  "%s Gb/s": [
+    ""
+  ],
   "%s added but is invalid: %s. Select to edit.": [
     "%s eklendi ancak geçersiz: %s. Düzenlemek için seçin."
   ],
@@ -86,6 +95,9 @@ export default {
   ],
   "%s and %s": [
     "%s ve %s"
+  ],
+  "%s cannot be a port of itself": [
+    ""
   ],
   "%s disk": [
     "disk %s"
@@ -110,6 +122,9 @@ export default {
   ],
   "%s removed.": [
     "%s kaldırıldı."
+  ],
+  "%s shown in the list of options.": [
+    ""
   ],
   "%s task active": [
     "%s görevi aktif",
@@ -328,9 +343,6 @@ export default {
   ],
   "Automatic contrast": [
     "Otomatik kontrast"
-  ],
-  "Available devices: %s": [
-    "Mevcut cihazlar: %s"
   ],
   "Back": [
     "Geri"
@@ -612,6 +624,9 @@ export default {
   "Create another LVM volume group on %s": [
     "%s üzerinde başka bir LVM disk grubu oluştur"
   ],
+  "Ctrl": [
+    ""
+  ],
   "Curated sets of packages for common use cases and features to extend the system.": [
     ""
   ],
@@ -774,6 +789,9 @@ export default {
   "Do not use": [
     "Kullanma"
   ],
+  "Down arrow for options, Enter to add": [
+    ""
+  ],
   "Download configuration": [
     "Yapılandırma dosyasını indir"
   ],
@@ -890,6 +908,21 @@ export default {
   ],
   "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate entries, Escape to exit": [
     "Eklemek için Enter veya Tab tuşlarını, silmek için Backspace veya Delete tuşlarını, girişler arasında gezinmek için ok tuşlarını, çıkmak için Escape tuşunu kullanın"
+  ],
+  "Enter removes every value, Left arrow goes back to the text box.": [
+    ""
+  ],
+  "Enter selects or deselects an option, Escape closes the list.": [
+    ""
+  ],
+  "Enter shows a chosen value in the list or takes a written one back to the text box, Delete removes it, arrow keys move between values.": [
+    ""
+  ],
+  "Enter shows a value in the list, Delete removes it, arrow keys move between values.": [
+    ""
+  ],
+  "Enter shows or hides the remaining values.": [
+    ""
   ],
   "Ethernet": [
     "Ethernet"
@@ -1037,9 +1070,6 @@ export default {
   "Hide %d subvolume action": [
     "%d alt birim eylemini gizle",
     "%d alt birim eylemlerini gizle"
-  ],
-  "Hide terminal": [
-    "Terminali gizle"
   ],
   "High": [
     "Yüksek"
@@ -1264,6 +1294,9 @@ export default {
   "Language and keyboard": [
     "Dil ve klavye"
   ],
+  "Left arrow reaches the %d values already added.": [
+    ""
+  ],
   "Let the installer propose a sensible size": [
     "Kurulumcunun makul bir boyut önermesine izin verin"
   ],
@@ -1278,6 +1311,12 @@ export default {
   ],
   "Light color scheme": [
     "Açık renk şeması"
+  ],
+  "Link": [
+    ""
+  ],
+  "Link up": [
+    ""
   ],
   "Linux command-line with administrative privileges on the installer system.": [
     ""
@@ -1389,6 +1428,9 @@ export default {
   ],
   "More": [
     "Daha fazla"
+  ],
+  "More actions": [
+    "Daha çok eylem"
   ],
   "More devices": [
     "Daha çok aygıt"
@@ -1529,6 +1571,9 @@ export default {
   ],
   "No devices match filters": [
     "Filtrelere uyan cihaz bulunamadı"
+  ],
+  "No link": [
+    ""
   ],
   "No partitions will be automatically configured for booting. Use with caution.": [
     "Önyükleme için hiçbir bölüm kendiliğinden yapılandırılmayacak. Dikkatli kullanın."
@@ -1971,6 +2016,9 @@ export default {
   "Several partitions will be deleted": [
     "Birkaç bölüm silinecek"
   ],
+  "Shift": [
+    ""
+  ],
   "Show": [
     "Göster"
   ],
@@ -1990,8 +2038,11 @@ export default {
   "Show more": [
     "Daha çok göster"
   ],
-  "Show terminal": [
-    "Terminali göster"
+  "Showing %d of %d values.": [
+    ""
+  ],
+  "Showing all %d values.": [
+    ""
   ],
   "Shrink existing partitions": [
     "Mevcut bölümleri küçült"
@@ -2382,6 +2433,12 @@ export default {
   "Type": [
     "Tip"
   ],
+  "Type to filter the options, or to write a value of your own.": [
+    ""
+  ],
+  "Type to filter the options.": [
+    ""
+  ],
   "Unable to modify the settings": [
     "Ayarlar değiştirilemiyor"
   ],
@@ -2537,6 +2594,9 @@ export default {
   ],
   "Use this to reproduce this installation later using the installer command-line interface or the unattended mode.": [
     "Bu dosyayı kullanarak daha sonra yükleyici komut satırı arayüzünü veya otomatik modu kullanarak bu kurulumu tekrarlayabilirsiniz."
+  ],
+  "Used by": [
+    ""
   ],
   "User name": [
     "Kullanıcı adı"

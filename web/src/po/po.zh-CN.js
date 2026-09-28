@@ -48,8 +48,14 @@ export default {
   "%1$s will still contain the LVM group '%2$s' and any partition needed to boot": [
     "%1$s 仍将包含 LVM 组 '%2$s' 和引导所需的任何分区"
   ],
+  "%1$s+%2$s+%3$s to move focus out": [
+    ""
+  ],
   "%1$s, %2$s and [%3$d more]": [
     "%1$s、%2$s 和[其他 %3$d 个]"
+  ],
+  "%d Mb/s": [
+    ""
   ],
   "%d NTP server": [
     "%d 台 NTP 服务器"
@@ -102,6 +108,9 @@ export default {
   "%s - %s": [
     "%s - %s"
   ],
+  "%s Gb/s": [
+    ""
+  ],
   "%s added but is invalid: %s. Select to edit.": [
     "已添加 %s，但内容无效：%s。请选中以编辑。"
   ],
@@ -119,6 +128,9 @@ export default {
   ],
   "%s at portal %s does not exist or cannot be reached.": [
     "%s（门户 %s 上）不存在或无法访问。"
+  ],
+  "%s cannot be a port of itself": [
+    ""
   ],
   "%s disk": [
     "%s 磁盘"
@@ -143,6 +155,9 @@ export default {
   ],
   "%s removed.": [
     "已去除 %s。"
+  ],
+  "%s shown in the list of options.": [
+    ""
   ],
   "%s task active": [
     "%s 个任务正在运行"
@@ -434,9 +449,6 @@ export default {
   ],
   "Automatic contrast": [
     "自动对比度"
-  ],
-  "Available devices: %s": [
-    "可用设备：%s"
   ],
   "Back": [
     "返回"
@@ -816,6 +828,9 @@ export default {
   "Create another LVM volume group on %s": [
     "在 %s 上创建另一个 LVM 卷组"
   ],
+  "Ctrl": [
+    ""
+  ],
   "Curated sets of packages for common use cases and features to extend the system.": [
     "面向通用场景和功能的成套软件包，用于扩展系统功能。"
   ],
@@ -1020,6 +1035,9 @@ export default {
   "Do not use": [
     "不使用"
   ],
+  "Down arrow for options, Enter to add": [
+    ""
+  ],
   "Download configuration": [
     "下载配置"
   ],
@@ -1145,6 +1163,21 @@ export default {
   ],
   "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate entries, Escape to exit": [
     "按 Enter 或 Tab 键可添加条目，按 Backspace 或 Delete 键可去除条目，按方向键可切换条目，按 Escape 键可退出"
+  ],
+  "Enter removes every value, Left arrow goes back to the text box.": [
+    ""
+  ],
+  "Enter selects or deselects an option, Escape closes the list.": [
+    ""
+  ],
+  "Enter shows a chosen value in the list or takes a written one back to the text box, Delete removes it, arrow keys move between values.": [
+    ""
+  ],
+  "Enter shows a value in the list, Delete removes it, arrow keys move between values.": [
+    ""
+  ],
+  "Enter shows or hides the remaining values.": [
+    ""
   ],
   "Ethernet": [
     "以太网"
@@ -1310,9 +1343,6 @@ export default {
   ],
   "Hide technical details": [
     "隐藏技术详细信息"
-  ],
-  "Hide terminal": [
-    "隐藏终端"
   ],
   "High": [
     "高"
@@ -1587,6 +1617,9 @@ export default {
   "Language and region": [
     "语言和区域"
   ],
+  "Left arrow reaches the %d values already added.": [
+    ""
+  ],
   "Let the installer propose a sensible size": [
     "让安装程序建议适当的大小"
   ],
@@ -1607,6 +1640,12 @@ export default {
   ],
   "Light color scheme": [
     "浅色配色方案"
+  ],
+  "Link": [
+    ""
+  ],
+  "Link up": [
+    ""
   ],
   "Linux command-line with administrative privileges on the installer system.": [
     "安装程序系统内具备管理员权限的 Linux 命令行。"
@@ -1745,6 +1784,9 @@ export default {
   ],
   "More": [
     "更多"
+  ],
+  "More actions": [
+    "更多操作"
   ],
   "More devices": [
     "更多设备"
@@ -1928,6 +1970,9 @@ export default {
   ],
   "No information available yet": [
     "暂无可用信息"
+  ],
+  "No link": [
+    ""
   ],
   "No partitions will be automatically configured for booting.": [
     "将不自动配置任何用于引导的分区。"
@@ -2526,6 +2571,9 @@ export default {
   "Several partitions will be deleted": [
     "将删除多个分区"
   ],
+  "Shift": [
+    ""
+  ],
   "Show": [
     "显示"
   ],
@@ -2547,8 +2595,11 @@ export default {
   "Show technical details": [
     "显示技术详细信息"
   ],
-  "Show terminal": [
-    "显示终端"
+  "Showing %d of %d values.": [
+    ""
+  ],
+  "Showing all %d values.": [
+    ""
   ],
   "Shrink existing logical volumes": [
     "缩小现有逻辑卷"
@@ -3021,6 +3072,12 @@ export default {
   "Type": [
     "类型"
   ],
+  "Type to filter the options, or to write a value of your own.": [
+    ""
+  ],
+  "Type to filter the options.": [
+    ""
+  ],
   "Unable to modify the settings": [
     "无法修改设置"
   ],
@@ -3188,6 +3245,9 @@ export default {
   ],
   "Use this to reproduce this installation later using the installer command-line interface or the unattended mode.": [
     "您可使用安装程序命令行界面或无人值守模式，通过该配置复现此次安装流程。"
+  ],
+  "Used by": [
+    ""
   ],
   "User name": [
     "用户名"

@@ -50,9 +50,15 @@ export default {
   "%1$s will still contain the LVM group '%2$s' and any partition needed to boot": [
     "%1$s wird weiterhin die LVM-Gruppe ‚%2$s‘ und alle zum Booten benötigten Partitionen enthalten"
   ],
+  "%1$s+%2$s+%3$s to move focus out": [
+    "%1$s+%2$s+%3$s, um den Fokus zu verlagern"
+  ],
   "%1$s, %2$s and [%3$d more]": [
     "%1$s, %2$s und [%3$d weiteres]",
     "%1$s, %2$s und [%3$d weitere]"
+  ],
+  "%d Mb/s": [
+    "%d Mb/s"
   ],
   "%d NTP server": [
     "%d NTP-Server",
@@ -80,6 +86,12 @@ export default {
   "%d entries added, %d invalid.": [
     "%d Einträge hinzugefügt, %d ungültig."
   ],
+  "%d entries added, %d not available, %d duplicates skipped.": [
+    "%d Einträge hinzugefügt, %d nicht verfügbar, %d Duplikate übersprungen."
+  ],
+  "%d entries added, %d not available.": [
+    "%d Einträge hinzugefügt, %d nicht verfügbar."
+  ],
   "%d entries added.": [
     "%d Einträge hinzugefügt."
   ],
@@ -93,6 +105,12 @@ export default {
   "%d mode available": [
     "%d Modus verfügbar",
     "%d Modi verfügbar"
+  ],
+  "%d more": [
+    "%d weitere"
+  ],
+  "%d options available.": [
+    "%d Optionen verfügbar."
   ],
   "%d other mode available": [
     "%d weiterer Modus verfügbar",
@@ -110,6 +128,12 @@ export default {
   ],
   "%s - %s": [
     "%s - %s"
+  ],
+  "%s Gb/s": [
+    "%s Gb/s"
+  ],
+  "%s added but is invalid: %s. Select it to edit.": [
+    "%s hinzugefügt, ist jedoch ungültig: %s. Zum Bearbeiten auswählen."
   ],
   "%s added but is invalid: %s. Select to edit.": [
     "%s hinzugefügt, ist jedoch ungültig: %s. Zum Bearbeiten auswählen."
@@ -129,6 +153,9 @@ export default {
   "%s at portal %s does not exist or cannot be reached.": [
     "%s auf dem Portal %s existiert nicht oder kann nicht erreicht werden."
   ],
+  "%s cannot be a port of itself": [
+    "%s kann kein Port seiner selbst sein"
+  ],
   "%s disk": [
     "Festplatte %s"
   ],
@@ -141,8 +168,14 @@ export default {
   "%s honors the browser and system preferences": [
     "%s berücksichtigt die Einstellungen des Browsers und des Systems"
   ],
+  "%s is already selected.": [
+    "%s ist bereits ausgewählt."
+  ],
   "%s is invalid: %s": [
     "%s ist ungültig: %s"
+  ],
+  "%s is not available.": [
+    "%s ist nicht verfügbar."
   ],
   "%s logo": [
     "%s-Logo"
@@ -150,8 +183,14 @@ export default {
   "%s moved to input for editing.": [
     "%s wurde zur Bearbeitung in das Eingabefeld verschoben."
   ],
+  "%s moved to the text box for editing.": [
+    "%s wurde zur Bearbeitung in das Textfeld verschoben."
+  ],
   "%s removed.": [
     "%s entfernt."
+  ],
+  "%s shown in the list of options.": [
+    "%s wird in der Liste der Optionen angezeigt."
   ],
   "%s task active": [
     "%s Aufgabe aktiv",
@@ -242,6 +281,9 @@ export default {
   ],
   "Accept": [
     "Annehmen"
+  ],
+  "Accepted licenses": [
+    "Angenommene Lizenzen"
   ],
   "Action": [
     "Aktion"
@@ -355,6 +397,9 @@ export default {
   "All the available zFCP controllers are already activated.": [
     "Alle verfügbaren zFCP-Controller sind bereits aktiviert."
   ],
+  "All values removed.": [
+    "Alle Werte entfernt."
+  ],
   "Allow growing": [
     "Wachstum erlauben"
   ],
@@ -452,9 +497,6 @@ export default {
   ],
   "Automatic contrast": [
     "Automatischer Kontrast"
-  ],
-  "Available devices: %s": [
-    "Verfügbare Geräte: %s"
   ],
   "Back": [
     "Zurück"
@@ -677,6 +719,9 @@ export default {
   "Choose a volume group to define logical volumes": [
     "Wählen Sie eine Volume-Gruppe aus, um logische Volumes zu definieren"
   ],
+  "Choose devices or enter their names.": [
+    "Geräte auswählen oder deren Namen eingeben."
+  ],
   "Choose whether to enable the root account.": [
     "Auswählen, ob das root-Konto aktiviert werden soll."
   ],
@@ -685,6 +730,9 @@ export default {
   ],
   "Chosen by name": [
     "Nach Namen ausgewählt"
+  ],
+  "Clear all": [
+    "Alles leeren"
   ],
   "Clear all filters": [
     "Alle Filter löschen"
@@ -839,6 +887,9 @@ export default {
   ],
   "Create another LVM volume group on %s": [
     "Weitere LVM-Volume-Gruppe auf %s erstellen"
+  ],
+  "Ctrl": [
+    "Strg"
   ],
   "Curated sets of packages for common use cases and features to extend the system.": [
     "Sorgfältig zusammengestellte Paketsammlungen für gängige Anwendungsfälle und Funktionen zur Erweiterung des Systems."
@@ -1044,6 +1095,15 @@ export default {
   "Do not use": [
     "Nicht verwenden"
   ],
+  "Down arrow for options, Enter to add": [
+    "Pfeil nach unten für Optionen, Eingabetaste zum Hinzufügen"
+  ],
+  "Down arrow for options, Enter to add, Delete to remove, arrow keys to navigate": [
+    "Pfeil nach unten für Optionen, Eingabetaste zum Hinzufügen, Entf-Taste zum Entfernen, Pfeiltasten zum Navigieren"
+  ],
+  "Down arrow opens the list of options.": [
+    "Mit dem Pfeil nach unten wird die Liste der Optionen geöffnet."
+  ],
   "Download configuration": [
     "Konfiguration herunterladen"
   ],
@@ -1169,6 +1229,21 @@ export default {
   ],
   "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate entries, Escape to exit": [
     "Eingabe oder Tab zum Hinzufügen, Rücktaste oder Entf zum Löschen, Pfeiltasten zum Navigieren zwischen den Einträgen, Esc zum Beenden"
+  ],
+  "Enter removes every value, Left arrow goes back to the text box.": [
+    "Mit der Eingabetaste werden alle Werte gelöscht, mit dem Pfeil nach links gelangt man zum Textfeld zurück."
+  ],
+  "Enter selects or deselects an option, Escape closes the list.": [
+    "Mit der Eingabetaste wird eine Option ausgewählt oder abgewählt, mit der Escape-Taste wird die Liste geschlossen."
+  ],
+  "Enter shows a chosen value in the list or takes a written one back to the text box, Delete removes it, arrow keys move between values.": [
+    "Mit der Eingabetaste wird ein ausgewählter Wert aus der Liste übernommen oder ein eingegebener Wert in das Textfeld übernommen, mit der Entf-Taste wird er gelöscht, mit den Pfeiltasten kann man zwischen den Werten wechseln."
+  ],
+  "Enter shows a value in the list, Delete removes it, arrow keys move between values.": [
+    ""
+  ],
+  "Enter shows or hides the remaining values.": [
+    "Mit der Eingabetaste werden die verbleibenden Werte ein- oder ausgeblendet."
   ],
   "Ethernet": [
     "Ethernet"
@@ -1338,9 +1413,6 @@ export default {
   "Hide technical details": [
     "Technische Details ausblenden"
   ],
-  "Hide terminal": [
-    "Terminal ausblenden"
-  ],
   "High": [
     "Hoch"
   ],
@@ -1361,6 +1433,9 @@ export default {
   ],
   "Hostnames, IP addresses, or fully qualified domain names (FQDNs). E.g., pool.ntp.org": [
     "Hostnamen, IP-Adressen oder vollqualifizierte Domänennamen (FQDNs). Z. B. pool.ntp.org"
+  ],
+  "I have read and accept the %s": [
+    "Ich habe %s gelesen und nehme es an"
   ],
   "I have read and accept the [license] for %s": [
     "Ich habe die [Lizenz] für %s gelesen und akzeptiere sie"
@@ -1615,6 +1690,9 @@ export default {
   "Language and region": [
     "Sprache und Region"
   ],
+  "Left arrow reaches the %d values already added.": [
+    "Mit dem Pfeil nach links gelangt man zu den bereits hinzugefügten %d Werten."
+  ],
   "Let the installer propose a sensible size": [
     "Eine vernünftige Größe durch das Installationsprogramm vorschlagen lassen"
   ],
@@ -1635,6 +1713,12 @@ export default {
   ],
   "Light color scheme": [
     "Helles Farbschema"
+  ],
+  "Link": [
+    "Link"
+  ],
+  "Link up": [
+    ""
   ],
   "Linux command-line with administrative privileges on the installer system.": [
     "Linux-Befehlszeile mit Administratorrechten auf dem Installationssystem."
@@ -1773,6 +1857,9 @@ export default {
   ],
   "More": [
     "Mehr"
+  ],
+  "More actions": [
+    "Weitere Aktionen"
   ],
   "More devices": [
     "Weitere Geräte"
@@ -1958,6 +2045,15 @@ export default {
   ],
   "No information available yet": [
     "Noch keine Informationen verfügbar"
+  ],
+  "No link": [
+    "Kein Link"
+  ],
+  "No options match": [
+    "Keine Optionen passen"
+  ],
+  "No options match.": [
+    "Keine Optionen passen."
   ],
   "No partitions will be automatically configured for booting.": [
     "Es werden keine Partitionen automatisch für das Booten konfiguriert."
@@ -2500,6 +2596,9 @@ export default {
   "Select the controllers to activate": [
     "Wählen Sie die zu aktivierenden Controller aus"
   ],
+  "Select the parent device": [
+    "Übergeordnetes Gerät auswählen"
+  ],
   "Select the zFCP controllers to activate:": [
     "Wählen Sie die zu aktivierenden zFCP-Controller aus:"
   ],
@@ -2563,6 +2662,9 @@ export default {
   "Several partitions will be deleted": [
     "Mehrere Partitionen werden gelöscht"
   ],
+  "Shift": [
+    "Umschalt"
+  ],
   "Show": [
     "Anzeigen"
   ],
@@ -2582,11 +2684,17 @@ export default {
   "Show more": [
     "Mehr anzeigen"
   ],
+  "Show options": [
+    "Optionen anzeigen"
+  ],
   "Show technical details": [
     "Technische Details anzeigen"
   ],
-  "Show terminal": [
-    "Terminal anzeigen"
+  "Showing %d of %d values.": [
+    "%d von %d Werten werden angezeigt."
+  ],
+  "Showing all %d values.": [
+    "Alle %d Werte werden angezeigt."
   ],
   "Shrink existing logical volumes": [
     "Vorhandene logische Volumes verkleinern"
@@ -2605,6 +2713,9 @@ export default {
   ],
   "Skip to content": [
     "Zum Inhalt springen"
+  ],
+  "Skip to terminal": [
+    "Zum Terminal springen"
   ],
   "Software": [
     "Software"
@@ -3070,6 +3181,12 @@ export default {
   "Type": [
     "Art"
   ],
+  "Type to filter the options, or to write a value of your own.": [
+    "Tippen, um die Optionen zu filtern oder einen eigenen Wert schreiben."
+  ],
+  "Type to filter the options.": [
+    "Tippen, um die Optionen zu filtern."
+  ],
   "Unable to modify the settings": [
     "Einstellungen können nicht geändert werden"
   ],
@@ -3106,8 +3223,8 @@ export default {
   "Update available disks and activate crypt devices": [
     "Verfügbare Festplatten aktualisieren und Kryptogeräte aktivieren"
   ],
-  "Use %s": [
-    "%s verwenden"
+  "Use \"%s\"": [
+    "„%s“ verwenden"
   ],
   "Use LVM volume group %s": [
     "LVM-Volume-Gruppe %s verwenden"
@@ -3243,6 +3360,9 @@ export default {
   ],
   "Use this to reproduce this installation later using the installer command-line interface or the unattended mode.": [
     "Verwenden Sie dies, um diese Installation später über die Befehlszeilenschnittstelle des Installationsprogramms oder im unbeaufsichtigten Modus zu wiederholen."
+  ],
+  "Used by": [
+    "Verwendet von"
   ],
   "User name": [
     "Benutzername"

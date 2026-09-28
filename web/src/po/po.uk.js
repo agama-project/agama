@@ -52,10 +52,16 @@ export default {
   "%1$s will still contain the LVM group '%2$s' and any partition needed to boot": [
     "%1$s, як і раніше, міститиме групу LVM '%2$s' і будь-який розділ, необхідний для завантаження"
   ],
+  "%1$s+%2$s+%3$s to move focus out": [
+    ""
+  ],
   "%1$s, %2$s and [%3$d more]": [
     "%1$s, %2$s та [ще %3$d]",
     "%1$s, %2$s та [ще %3$d]",
     "%1$s, %2$s та [ще %3$d]"
+  ],
+  "%d Mb/s": [
+    ""
   ],
   "%d NTP server": [
     "%d NTP сервер",
@@ -120,6 +126,9 @@ export default {
   "%s - %s": [
     "%s - %s"
   ],
+  "%s Gb/s": [
+    ""
+  ],
   "%s added but is invalid: %s. Select to edit.": [
     "Додано %s, але неправильних: %s. Виберіть, щоб редагувати."
   ],
@@ -137,6 +146,9 @@ export default {
   ],
   "%s at portal %s does not exist or cannot be reached.": [
     "%s на порталі %s не існує або недоступний."
+  ],
+  "%s cannot be a port of itself": [
+    ""
   ],
   "%s disk": [
     "Диск %s"
@@ -161,6 +173,9 @@ export default {
   ],
   "%s removed.": [
     "%s вилучено."
+  ],
+  "%s shown in the list of options.": [
+    ""
   ],
   "%s task active": [
     "%s завдання активне",
@@ -470,9 +485,6 @@ export default {
   ],
   "Automatic contrast": [
     "Автоматичний контраст"
-  ],
-  "Available devices: %s": [
-    "Доступні пристрої: %s"
   ],
   "Back": [
     "Назад"
@@ -861,6 +873,9 @@ export default {
   "Create another LVM volume group on %s": [
     "Створити ще одну групу томів LVM на %s"
   ],
+  "Ctrl": [
+    ""
+  ],
   "Curated sets of packages for common use cases and features to extend the system.": [
     "Підібрані набори пакетів для типових випадків використання та функцій для розширення можливостей системи."
   ],
@@ -1065,6 +1080,9 @@ export default {
   "Do not use": [
     "Не використовувати"
   ],
+  "Down arrow for options, Enter to add": [
+    ""
+  ],
   "Download configuration": [
     "Завантажити конфігурацію"
   ],
@@ -1190,6 +1208,21 @@ export default {
   ],
   "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate entries, Escape to exit": [
     "Натисніть Enter або Tab, щоб додати, Backspace або Delete, щоб видалити, клавіші зі стрілками для переходу між записами, Escape для виходу"
+  ],
+  "Enter removes every value, Left arrow goes back to the text box.": [
+    ""
+  ],
+  "Enter selects or deselects an option, Escape closes the list.": [
+    ""
+  ],
+  "Enter shows a chosen value in the list or takes a written one back to the text box, Delete removes it, arrow keys move between values.": [
+    ""
+  ],
+  "Enter shows a value in the list, Delete removes it, arrow keys move between values.": [
+    ""
+  ],
+  "Enter shows or hides the remaining values.": [
+    ""
   ],
   "Ethernet": [
     "Ethernet"
@@ -1361,9 +1394,6 @@ export default {
   ],
   "Hide technical details": [
     "Приховати технічні деталі"
-  ],
-  "Hide terminal": [
-    "Приховати термінал"
   ],
   "High": [
     "Високий"
@@ -1640,6 +1670,9 @@ export default {
   "Language and region": [
     "Мова і регіон"
   ],
+  "Left arrow reaches the %d values already added.": [
+    ""
+  ],
   "Let the installer propose a sensible size": [
     "Дозволити інсталятору запропонувати розумний розмір"
   ],
@@ -1660,6 +1693,12 @@ export default {
   ],
   "Light color scheme": [
     "Світла колірна гама"
+  ],
+  "Link": [
+    ""
+  ],
+  "Link up": [
+    ""
   ],
   "Linux command-line with administrative privileges on the installer system.": [
     "Командний рядок Linux із правами адміністратора в системі інсталятора."
@@ -1798,6 +1837,9 @@ export default {
   ],
   "More": [
     "Ще"
+  ],
+  "More actions": [
+    "Більше дій"
   ],
   "More devices": [
     "Інші пристрої"
@@ -1985,6 +2027,9 @@ export default {
   ],
   "No information available yet": [
     "Інформація ще не доступна"
+  ],
+  "No link": [
+    ""
   ],
   "No partitions will be automatically configured for booting.": [
     "Для завантаження автоматично не буде налаштовано жодних розділів."
@@ -2591,6 +2636,9 @@ export default {
   "Several partitions will be deleted": [
     "Кілька розділів буде видалено"
   ],
+  "Shift": [
+    ""
+  ],
   "Show": [
     "Показати"
   ],
@@ -2614,8 +2662,11 @@ export default {
   "Show technical details": [
     "Показати технічні деталі"
   ],
-  "Show terminal": [
-    "Показати термінал"
+  "Showing %d of %d values.": [
+    ""
+  ],
+  "Showing all %d values.": [
+    ""
   ],
   "Shrink existing logical volumes": [
     "Зменшення наявних логічних томів"
@@ -3110,6 +3161,12 @@ export default {
   "Type": [
     "Тип"
   ],
+  "Type to filter the options, or to write a value of your own.": [
+    ""
+  ],
+  "Type to filter the options.": [
+    ""
+  ],
   "Unable to modify the settings": [
     "Не вдається змінити налаштування"
   ],
@@ -3145,9 +3202,6 @@ export default {
   ],
   "Update available disks and activate crypt devices": [
     "Оновлення доступних дисків і активація криптопристроїв"
-  ],
-  "Use %s": [
-    "Використати %s"
   ],
   "Use LVM volume group %s": [
     "Використати групу томів LVM %s"
@@ -3283,6 +3337,9 @@ export default {
   ],
   "Use this to reproduce this installation later using the installer command-line interface or the unattended mode.": [
     "Використовуйте це, щоб згодом відтворити цю інсталяцію за допомогою командного рядка інсталятора або в режимі автоматичної інсталяції."
+  ],
+  "Used by": [
+    ""
   ],
   "User name": [
     "Ім'я користувача"
