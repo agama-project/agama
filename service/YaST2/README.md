@@ -1,9 +1,9 @@
 # Vendored YaST/AutoYaST code
 
 This directory contains a **permanent fork** of a small set of Ruby classes originally
-provided by the `autoyast2` (`autoyast2-installation`) and `yast2-installation` YaST
-packages. Agama no longer depends on those RPMs; the classes it still needs from them
-have been copied here instead.
+provided by the `autoyast2` (`autoyast2-installation`), `yast2-installation` and
+`yast2-network` YaST packages. Agama no longer depends on those RPMs; the classes it
+still needs from them have been copied here instead.
 
 There is **no process to keep this code in sync with upstream YaST releases**. If a bug
 is found here, or a new AutoYaST feature is needed, fix/extend the code directly in this
@@ -59,8 +59,22 @@ against the original code if needed:
 | `lib/installation/unmounter.rb` | `yast2-installation` (`installation/src/lib/installation/unmounter.rb`) | Unmounts the target system at the end of the installation |
 | `lib/installation/clients/umount_finish.rb` | `yast2-installation` (`installation/src/lib/installation/clients/umount_finish.rb`) | Wraps `Installation::Unmounter` plus some extra target cleanup |
 | `lib/installation/cio_ignore.rb` | `yast2-installation` (`installation/src/lib/installation/cio_ignore.rb`) | s390 `cio_ignore`/`rd.zdev` kernel parameter handling. The UI-only `Installation::CIOIgnoreProposal` class was dropped, Agama does not use the interactive AutoYaST/YaST UI |
+| `lib/y2network/autoinst_profile/networking_section.rb` | `yast2-network` (`network/src/lib/y2network/autoinst_profile/networking_section.rb`) | Parses the `<networking>` AutoYaST section |
+| `lib/y2network/autoinst_profile/{dns,interfaces,interface,alias}_section.rb` | `yast2-network` | Sub-sections of `<networking>`: DNS, interfaces and per-interface attributes (including bonding/bridge/VLAN/wireless, consumed by Agama's own `bond_reader.rb`/`bridge_reader.rb`/`vlan_reader.rb`/`wireless_reader.rb`) |
+| `lib/y2network/autoinst_profile/{routing,route}_section.rb`, `{udev_rules,udev_rule}_section.rb`, `{s390_devices,s390_device}_section.rb` | `yast2-network` | Not read by any of Agama's readers today, but load-bearing: `NetworkingSection.new_from_hashes` unconditionally instantiates them when the corresponding profile keys (`routing`, `net-udev`, `s390-devices`) are present |
+| `lib/y2network/boot_protocol.rb`, `ip_address.rb`, `startmode.rb`, `startmodes.rb`, `startmodes/{auto,hotplug,ifplugd,manual,nfsroot,off}.rb`, `wireless_auth_mode.rb`, `wireless_mode.rb` | `yast2-network` | Value/enum classes used while reading interface attributes. Unlike everything above, this whole closure has **no** `Yast.import` calls at all - plain `require` only |
 
-`Installation::FinishClient` (the common base class for finish steps) and
+`Installation::FinishClient` (the common base class for finish steps),
 `Y2Storage::Clients::Finish` / `Y2IscsiClient::FinishClient` (the storage/iSCSI finish
-steps) are **not** vendored here: they are provided by the `yast2`, `yast2-storage-ng` and
+steps), and `installation/autoinst_profile/{section_with_attributes,element_path}.rb`
+(required by every `y2network/autoinst_profile/*_section.rb` file above) are **not**
+vendored here: they are provided by the `yast2`, `yast2-storage-ng` and
 `yast2-iscsi-client` packages, which remain real runtime dependencies of Agama.
+
+**`yast2-users` is not vendored at all.** `Y2Users::User` unconditionally requires a chain
+that ends in `Yast.import "UsersSimple"`, a Perl module that only exists inside
+`yast2-users` itself, so merely loading the class would hard-crash without that package
+installed - for functionality (password/account validation) Agama never uses. Given Agama
+only reads a handful of plain fields from the raw profile hash (root/first regular user's
+name, password, and SSH keys), `service/lib/agama/autoyast/users_profile_reader.rb` reads
+the `<users>` section directly instead, with no YaST dependency at all.

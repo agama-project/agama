@@ -151,7 +151,7 @@ mechanism is the whole point of that step.
 | `yast2-installation` | `Installation::Unmounter`, `Installation::Clients::UmountFinishClient`, `Installation::CIOIgnore`/`CIOIgnoreFinish`, `Yast::Transfer::FileFromUrl` | `service/YaST2/lib/installation/*.rb`, `service/YaST2/lib/transfer/file_from_url.rb` |
 | `yast2-services-manager` | `Yast::ServicesManagerTargetClass::BaseTargets` (only this nested module is used, by `AutoinstConfig`; the rest of the class - reading/writing the systemd default target - is unused dead code, kept only because `Yast.import` needs the whole file to load) | `service/YaST2/modules/ServicesManagerTarget.rb` |
 | `yast2-network` (Phase 2) | `Y2Network::AutoinstProfile::NetworkingSection` + all its sub-sections (interfaces/interface/alias, routing/route, udev-rules/udev-rule, s390-devices/s390-device - the latter three are unused by Agama's readers but load-bearing since `new_from_hashes` unconditionally instantiates them), `Y2Network::BootProtocol`, `Y2Network::IPAddress`, `Y2Network::Startmode` (+ the `startmodes/*` family), `Y2Network::WirelessAuthMode`, `Y2Network::WirelessMode` - 23 files, ~2420 lines, no `Yast.import` calls (100% plain `require`), no non-Ruby assets | `service/YaST2/lib/y2network/**/*.rb` |
-| `yast2-users` (Phase 2) | **Not vendored.** `Y2Users::User` unconditionally requires `user_validator.rb` -> `validation_config.rb`, which does `Yast.import "UsersSimple"` eagerly at class-load time - `UsersSimple` is a **Perl module that only exists inside `yast2-users` itself**, so a straight vendor would need to surgically fork `User` to strip that chain (plus `password_validator.rb`/cracklib-dependent code) across a ~2900-line/23-file `Config`/`Collection`/`User`/`Group`/`Password` object graph, to serve a usage surface of exactly 5 fields on root + the first regular user. Replaced instead by a small Agama-owned parser reading `profile.fetch_as_array("users")` directly - see the Phase 2 task breakdown. | `service/lib/agama/autoyast/users_reader.rb` (new, native Agama code, not vendored) |
+| `yast2-users` (Phase 2) | **Not vendored.** `Y2Users::User` unconditionally requires `user_validator.rb` -> `validation_config.rb`, which does `Yast.import "UsersSimple"` eagerly at class-load time - `UsersSimple` is a **Perl module that only exists inside `yast2-users` itself**, so a straight vendor would need to surgically fork `User` to strip that chain (plus `password_validator.rb`/cracklib-dependent code) across a ~2900-line/23-file `Config`/`Collection`/`User`/`Group`/`Password` object graph, to serve a usage surface of exactly 5 fields on root + the first regular user. Replaced instead by a small Agama-owned parser reading `profile.fetch_as_array("users")` directly - see the Phase 2 task breakdown. | `service/lib/agama/autoyast/users_profile_reader.rb` (new, native Agama code, not vendored) |
 
 Each vendoring task starts with a **dependency-closure audit**: trace every `require`/`Yast.import`
 in the target class, and either (a) vendor the transitive piece too, (b) confirm it resolves to
@@ -472,23 +472,27 @@ into two different strategies per package:
    `service/YaST2/lib/`.
 
 3. **Design and implement a narrow, Agama-owned user/root profile parser.**
-   New file, e.g. `service/lib/agama/autoyast/users_reader.rb` (or fold directly into
-   `root_reader.rb`/`user_reader.rb` if a shared helper feels like overkill - both currently
-   duplicate an near-identical `config` memoization method, so factoring a small shared piece that
-   returns "the list of user hashes from the profile" is probably worth it). It must replicate,
-   working directly off `profile.fetch_as_array("users")` (confirmed exact shape from existing test
+   New file `service/lib/agama/autoyast/users_profile_reader.rb`, defining
+   `Agama::AutoYaST::UsersProfileReader` - both `root_reader.rb`/`user_reader.rb` used to duplicate
+   an near-identical `config` memoization method, so this factors out the shared piece that returns
+   "the list of user hashes from the profile" as `#root`/`#regular_user`. It replicates, working
+   directly off `profile.fetch_as_array("users")` (confirmed exact shape from existing test
    fixtures: array of hashes with `username`, `fullname`, `user_password`, `encrypted`,
    `authorized_keys` keys - this is already the raw `Yast::ProfileHash` structure, no
    `Y2Users::AutoinstProfile::UserSection` wrapper needed):
    - Root selection: the entry where `username == "root"`.
-   - First-regular-user selection: skip the root entry; among the rest, decide how to replicate
-     `Y2Users::User#system?` (`name == "nobody"`, or an explicit `system` profile attribute, or -
-     the part *not* worth replicating - a real uid-vs-`/etc/login.defs` `SYS_UID_MAX` check, which
-     is a live-filesystem-read side effect during "pure" parsing in the original class; recommend
-     just checking `name == "nobody"` plus an explicit `"system" => true` attribute if present, and
-     documenting the simplification).
-   - Field extraction: `username`/`userName`, `fullname`/`fullName` (first whitespace-separated
-     word only, matching today's `gecos.first`), `user_password` value, `encrypted` boolean flag,
+   - First-regular-user selection: skip the root entry and any entry named `"nobody"`. This
+     replicates `Y2Users::User#system?` as it actually behaves for AutoYaST-sourced users:
+     `Y2Users::AutoinstProfile::UserSection` has no `system` attribute at all, and
+     `Autoinst::Reader#read_users` never calls `User#system=`, so `system?` only ever returns
+     `true` via `SYSTEM_NAMES.include?(name)` (just `"nobody"`) or, when the profile sets an
+     explicit `uid`, a live `/etc/login.defs` `SYS_UID_MAX` comparison - the latter is a
+     filesystem-read side effect during "pure" parsing that is deliberately not replicated (not
+     covered by any existing test either).
+   - Field extraction: `username`/`userName`, `fullname`/`fullName` (the whole string verbatim -
+     confirmed by reading yast2-users' own `Autoinst::Reader#read_users`, which does
+     `res.gecos = [user_section.fullname]`, so today's `gecos.first` is just the unmodified
+     `fullname` value, not a word-split), `user_password` value, `encrypted` boolean flag,
      `authorized_keys` array.
    - Keep the existing behavior of returning `{}` when no root/no regular user is found, and of
      omitting `password`/`hashedPassword`/`sshPublicKeys` keys when absent (see current

@@ -62,11 +62,9 @@ $SUDO $ZYPPER install \
   yast2-country \
   yast2-hardware-detection \
   yast2-iscsi-client \
-  yast2-network \
   yast2-proxy \
   yast2-schema \
   yast2-storage-ng \
-  yast2-users \
   bcache-tools \
   btrfsprogs \
   cryptsetup \

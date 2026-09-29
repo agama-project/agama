@@ -12,15 +12,16 @@
     Requires:       dbus-1-common
     Requires:       dbus-1-daemon
     # YaST dependencies
-    # NOTE: autoyast2-installation and yast2-installation are no longer required, most of
-    # the code Agama needed from them has been vendored into YaST2/, see YaST2/README.md
+    # NOTE: autoyast2-installation, yast2-installation and yast2-network are no longer required,
+    # most of the code Agama needed from them has been vendored into YaST2/, see
+    # YaST2/README.md. yast2-users was never required for parsing purposes and is not needed
+    # either, see service/lib/agama/autoyast/users_profile_reader.rb.
     # ArchFilter
     Requires:       yast2 >= 4.5.20
     Requires:       yast2-bootloader >= 5.0.30
     Requires:       yast2-country
     Requires:       yast2-hardware-detection
     Requires:       yast2-iscsi-client >= 5.0.11
-    Requires:       yast2-network
     Requires:       yast2-proxy
     Requires:       yast2-storage-ng >= 5.0.49
     %ifarch s390 s390x
