@@ -264,6 +264,20 @@ Agama's own code never touches it.
 - Document at the top of `service/YaST2` (e.g. a `README.md` there) that it is a permanent fork of
   specific YaST/AutoYaST classes, so future contributors don't assume it auto-updates from YaST
   releases.
+- **Pitfall found during implementation:** `ENV["Y2DIR"]` must be set *before* `require "yast"` is
+  executed anywhere in the process. The Y2DIR search path list is read from the environment once
+  and cached in a C++ static (`Y2PathSearch::initializePaths()` in yast2-core's `pathsearch.cc`,
+  only calls `getPaths()` if the cached `paths` vector is still empty), and that caching is
+  triggered as a side effect of loading the `yast` gem/its native extension. Setting `Y2DIR` after
+  `require "yast"` is silently ignored - `Yast.import` then fails with
+  `component cannot import namespace 'X'` for every vendored `modules/*.rb` class. This was
+  reproduced by moving `require "yast"` back before the `ENV["Y2DIR"]` assignment in
+  `bin/agama-autoyast` and running the real executable (not just the RSpec suite, which never
+  exercises this script and uses its own, correctly-ordered `Y2DIR` setup in `test_helper.rb`).
+  Both `agamactl` (unmodified) and `test_helper.rb` already had the correct order; only
+  `bin/agama-autoyast` needed fixing. **Takeaway:** whenever `Y2DIR` is set in an entry point,
+  always place it before the first (even indirect) `require "yast"`, and validate by running the
+  actual entry point/executable, not just specs that `require` the underlying classes directly.
 
 ## Phase 1 task breakdown
 
