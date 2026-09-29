@@ -171,4 +171,4 @@ WEBLATE_API_KEY="your_weblate_api_key" ./create_maintenance_branch.sh <branch_na
 6. **Weblate Repository Branch**: Creates the corresponding maintenance branch in the
    `agama-project/agama-weblate` repository using the GitHub API.
 7. **Weblate Components**: Automatically creates new translation components (`products`, `service`,
-   and `web`) on Weblate based on the configurations of the existing `sle-16` components.
+   `rust` and `web`) on Weblate based on the configurations of the existing `sle-16-1` components.
