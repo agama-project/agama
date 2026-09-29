@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
+import { isCancelledError, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { shake } from "radashi";
 import { getConfig, getExtendedConfig, putConfig } from "~/api";
 import type { Config } from "~/model/config";
@@ -137,7 +137,15 @@ function useUpdateConfig(): UpdateConfigFn {
   return async (patch: Partial<Config>) => {
     // Resolved at call time (submit), not render time.
     // Returns cached data if within staleTime, refetches if stale.
-    const freshConfig = await queryClient.fetchQuery(configQuery);
+    // fetchQuery joins a fetch already in flight, and a refetch started meanwhile
+    // (e.g. on a ProposalChanged event) cancels that one; wait for the newer fetch
+    // instead of failing the submit.
+    const fetchFreshConfig = (): Promise<Config | null> =>
+      queryClient.fetchQuery(configQuery).catch((error) => {
+        if (isCancelledError(error)) return fetchFreshConfig();
+        throw error;
+      });
+    const freshConfig = await fetchFreshConfig();
 
     return putConfig(shake({ ...freshConfig, ...patch }));
   };

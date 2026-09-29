@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Sep 29 16:45:27 UTC 2026 - Martin Pluskal <martin@pluskal.org>
+
+- Do not fail saving a form with "CancelledError" when the
+  configuration is refetched while the save waits for it
+  (bsc#1283098).
+
+-------------------------------------------------------------------
 Fri Sep 25 13:49:06 UTC 2026 - José Iván López González <jlopez@suse.com>
 
 - Add menu option for exiting the installation
