@@ -490,10 +490,15 @@ ui_password() {
     printf '%s' "$value"
     return 0
   fi
+  # disable echo before displaying the prompt, "read -s" is too late for the
+  # 3270 driver to hide the input field
+  terminal_echo off
   printf '\n' >&2
   print_wrapped "$prompt"
   printf '> ' >&2
-  IFS= read -rs value || return 1
+  IFS= read -rs value || rc=$?
+  terminal_echo on
+  ((rc == 0)) || return 1
   printf '\n' >&2
   printf '%s' "$value"
 }
