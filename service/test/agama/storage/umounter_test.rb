@@ -24,6 +24,7 @@ require_relative "storage_helpers"
 require "agama/helpers"
 require "agama/config"
 require "agama/storage/umounter"
+require "installation/clients/umount_finish"
 require "yaml"
 
 describe Agama::Storage::Umounter do
@@ -91,7 +92,8 @@ describe Agama::Storage::Umounter do
     subject { described_class.new(logger) }
 
     it "unmounts the storage devices" do
-      expect(Yast::WFM).to receive(:CallFunction).with("umount_finish", ["Write"])
+      expect_any_instance_of(Installation::Clients::UmountFinishClient)
+        .to receive(:write)
       subject.run
     end
   end

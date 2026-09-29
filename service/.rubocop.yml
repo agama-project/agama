@@ -8,6 +8,7 @@ AllCops:
   Exclude:
     - vendor/**/*
     - lib/agama/y2dir/**/*
+    - YaST2/**/*
     - agama-yast.gemspec
     - package/*.spec
 

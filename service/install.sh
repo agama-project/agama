@@ -29,3 +29,7 @@ install6 -D -t "${DESTDIR}${unitdir}" "${SRCDIR}"/share/agama.service
 install6 -D -t "${DESTDIR}${unitdir}" "${SRCDIR}"/share/agama-dbus-monitor.service
 
 install6 -D -t "${DESTDIR}${datadir}"/agama/conf.d/ "${SRCDIR}"/conf.d/*.yaml
+
+# Vendored from yast-autoyast2, see YaST2/README.md. Installed at the same path the
+# vendored AutoInstallRules.rb (Yast.import "AutoinstConfig" et al.) expects.
+install6 -D "${SRCDIR}"/YaST2/xslt/merge.xslt "${DESTDIR}${datadir}"/autoinstall/xslt/merge.xslt
