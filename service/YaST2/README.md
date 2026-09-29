@@ -5,9 +5,6 @@ provided by the `autoyast2` (`autoyast2-installation`) and `yast2-installation` 
 packages. Agama no longer depends on those RPMs; the classes it still needs from them
 have been copied here instead.
 
-See `spec/0002-drop-yast/` at the root of the repository for the rationale and the full
-removal plan.
-
 There is **no process to keep this code in sync with upstream YaST releases**. If a bug
 is found here, or a new AutoYaST feature is needed, fix/extend the code directly in this
 directory; do not expect it to be updated automatically from `yast-autoyast2` or
@@ -66,5 +63,4 @@ against the original code if needed:
 `Installation::FinishClient` (the common base class for finish steps) and
 `Y2Storage::Clients::Finish` / `Y2IscsiClient::FinishClient` (the storage/iSCSI finish
 steps) are **not** vendored here: they are provided by the `yast2`, `yast2-storage-ng` and
-`yast2-iscsi-client` packages, which remain real runtime dependencies of Agama (see
-`spec/0002-drop-yast/plan.md`).
+`yast2-iscsi-client` packages, which remain real runtime dependencies of Agama.

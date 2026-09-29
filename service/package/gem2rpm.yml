@@ -13,8 +13,7 @@
     Requires:       dbus-1-daemon
     # YaST dependencies
     # NOTE: autoyast2-installation and yast2-installation are no longer required, most of
-    # the code Agama needed from them has been vendored into YaST2/, see
-    # spec/0002-drop-yast/plan.md and YaST2/README.md
+    # the code Agama needed from them has been vendored into YaST2/, see YaST2/README.md
     # ArchFilter
     Requires:       yast2 >= 4.5.20
     Requires:       yast2-bootloader >= 5.0.30
