@@ -24,16 +24,15 @@ import React from "react";
 import { sprintf } from "sprintf-js";
 import EntryRow from "~/components/storage/entries-table/EntryRow";
 import DriveMenu from "~/components/storage/entries-table/DriveMenu";
-import { consequencesOf } from "~/components/storage/shared/consequences";
+import * as driveUtils from "~/components/storage/utils/drive";
 import { NAMES_PER_LINE } from "~/components/storage/shared/naming";
-import { useDevicesManager } from "~/components/storage/shared/use-devices-manager";
 import { baseName, deviceSize } from "~/components/storage/utils";
 import { typeDescription } from "~/components/storage/utils/device";
 import { useConfigModel } from "~/hooks/model/storage/config-model";
 import { useDevice } from "~/hooks/model/system/storage";
 import configModel from "~/model/storage/config-model";
 import { _, n_, formatList, TranslatedString } from "~/i18n";
-import type { Partitionable } from "~/model/storage/config-model";
+import type { ConfigModel, Partitionable } from "~/model/storage/config-model";
 import type { SheetEntry } from "~/components/storage/shared/use-sheet";
 
 /**
@@ -167,7 +166,6 @@ export type DriveRowProps = {
 export default function DriveRow({ name, subject }: DriveRowProps): React.ReactNode {
   const config = useConfigModel();
   const device = useDevice(name);
-  const manager = useDevicesManager();
 
   const entry = configModel.partitionable.findByName(config, name);
   const description = [
@@ -188,6 +186,8 @@ export default function DriveRow({ name, subject }: DriveRowProps): React.ReactN
       )
     : ([] as TranslatedString[]);
 
+  const space = driveUtils.contentActionsSummary(entry as ConfigModel.Drive);
+
   return (
     <EntryRow
       name={baseName(name)}
@@ -195,7 +195,7 @@ export default function DriveRow({ name, subject }: DriveRowProps): React.ReactN
       // TRANSLATORS: marks the device the machine will start from.
       marks={boots ? [_("Boot device")] : []}
       purpose={purpose}
-      consequences={consequencesOf(manager, device?.partitions || [])}
+      consequences={[{ kind: "shrinks", text: space as TranslatedString }]}
       menu={entry && <DriveMenu entry={entry} device={device} subject={subject} />}
       subject={subject}
     />
