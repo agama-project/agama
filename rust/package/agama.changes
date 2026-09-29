@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Sep 29 14:34:27 UTC 2026 - Martin Vidner <mvidner@suse.com>
+
+- update runtime dependencies to:
+  - tracing-subscriber 0.3.20 (now 0.3.22), CVE-2025-58160 (bsc#1249014)
+
+-------------------------------------------------------------------
 Fri Jul 17 08:24:39 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
 
 - Clear the IP configuration (dns-search, addresses, gateway, ...)
