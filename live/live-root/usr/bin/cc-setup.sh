@@ -256,23 +256,42 @@ terminal_echo() {
   (stty "$mode" < /dev/tty) > /dev/null 2>&1 || true
 }
 
-# Detect IBM 3270 terminals.
-ibm3270_terminal() {
+# Print the terminal device used for the UI, /dev/console is resolved to the
+# real device (e.g. "/dev/ttyS0").
+terminal_device() {
   local device consoles
 
+  device=$(readlink -f /proc/self/fd/2 2> /dev/null) || return 1
+  if [[ $device == /dev/console ]]; then
+    # the last entry is the device connected to /dev/console
+    read -r -a consoles < /sys/class/tty/console/active 2> /dev/null || return 1
+    ((${#consoles[@]} > 0)) || return 1
+    device="/dev/${consoles[-1]}"
+  fi
+  printf '%s' "$device"
+}
+
+# Detect IBM 3270 terminals.
+ibm3270_terminal() {
   [[ ${TERM-} == ibm327* ]] && return 0
 
-  device=$(readlink -f /proc/self/fd/2 2> /dev/null) || device=""
-  case "$device" in
-    /dev/3270/*) return 0 ;;
-    /dev/console) ;;
-    *) return 1 ;;
+  case "$(terminal_device)" in
+    /dev/3270/* | /dev/tty3270*) return 0 ;;
   esac
+  return 1
+}
 
-  # the last entry is the device connected to /dev/console
-  read -r -a consoles < /sys/class/tty/console/active 2> /dev/null || return 1
-  ((${#consoles[@]} > 0)) || return 1
-  [[ ${consoles[-1]} == tty3270* ]]
+# Detect s390 line mode consoles (z/VM 3215 or SCLP line mode console, both are
+# named "ttyS"). They cannot move the cursor and send the input only after
+# pressing Enter as a whole line, raw mode and single key presses are not
+# possible.
+line_mode_terminal() {
+  [[ $(uname -m) == s390* ]] || return 1
+
+  case "$(terminal_device)" in
+    /dev/ttyS[0-9]* | /dev/sclp_line[0-9]*) return 0 ;;
+  esac
+  return 1
 }
 
 # Detect dumb terminals.
@@ -280,7 +299,18 @@ dumb_terminal() {
   case "${TERM-}" in
     "" | dumb | unknown) return 0 ;;
   esac
-  ibm3270_terminal
+  ibm3270_terminal || line_mode_terminal
+}
+
+# Discard the pending terminal input, e.g. the Enter left over after pressing
+# "q" in less on a line buffered terminal. Otherwise the next "read" would get
+# an empty answer without waiting for the user.
+flush_terminal_input() {
+  # "read -t 0" only checks whether a complete line is available, it never
+  # blocks
+  while read -r -t 0 < /dev/tty 2> /dev/null; do
+    read -r _ < /dev/tty 2> /dev/null || break
+  done
 }
 
 # Clear screen for progress monitor.
@@ -293,8 +323,11 @@ clear_terminal() {
 page_file() {
   local file=$1
 
-  if ! ibm3270_terminal && command -v less > /dev/null 2>&1 && (: < /dev/tty) 2> /dev/null; then
+  # dumb terminals cannot run a full screen pager, on the z/VM console the
+  # hypervisor pages the output itself ("MORE..." status)
+  if ! dumb_terminal && command -v less > /dev/null 2>&1 && (: < /dev/tty) 2> /dev/null; then
     less -- "$file" < /dev/tty >&2 || true
+    flush_terminal_input
   else
     cat -- "$file" >&2
   fi
