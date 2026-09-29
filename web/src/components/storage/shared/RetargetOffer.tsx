@@ -79,9 +79,10 @@ export default function RetargetOffer({
         >
           <Flex alignItems={{ default: "alignItemsCenter" }} gap={{ default: "gapSm" }}>
             <Icon name="change_circle" />{" "}
-            {/* TRANSLATORS: offered under the summary of an installation on one
-                device: put it somewhere else instead. */}
-            {_("Use another device")}
+            {
+              // FIXME: hacky way of choosing the string
+              variant === "primary" ? _("Change installation device") : _("Move to other device")
+            }
           </Flex>
         </Button>
         {cannotMove && (

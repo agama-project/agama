@@ -285,11 +285,12 @@ function PartitionRow({
             the row carries its decision, and what the installer makes of it
             reads under the control that set it. */}
         {decides && <div>{decides}</div>}
-        {report.kind === "destroys" ? (
-          <span className={DESTROYS_CLASS}>{report.text}</span>
-        ) : (
-          report.text
-        )}
+        {!decides &&
+          (report.kind === "destroys" ? (
+            <span className={DESTROYS_CLASS}>{report.text}</span>
+          ) : (
+            report.text
+          ))}
       </Td>
       <Td isActionCell>{menu}</Td>
     </Tr>
@@ -338,7 +339,7 @@ export default function CurrentContentSection({
           so the decision is offered there too. */}
       {rows.some((row) => !isFreeSpace(row)) && (
         <StackItem>
-          <SpaceDecision collection={subject.collection} index={subject.index} />
+          <SpaceDecision collection={subject.collection} index={subject.index} isAssertive />
         </StackItem>
       )}
       <StackItem>

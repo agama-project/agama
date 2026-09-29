@@ -93,7 +93,7 @@ function useSheet(): {
   /** What the sheet is showing, or nothing where it is shut. */
   subject: SheetSubject | null;
   /** Where a control that opens the sheet on something should point. */
-  addressOf: (subject: SheetSubject) => To;
+  addressOf: (subject: SheetSubject, tab?: string) => To;
   /**
    * Opens it, for a control that cannot carry an address. A menu item is one:
    * it is a menu item wherever it appears, so it acts rather than links, and
@@ -106,12 +106,14 @@ function useSheet(): {
   const [params, setParams] = useSearchParams();
   const subject = fromParam(params.get(SHEET));
 
-  const addressOf = (subject: SheetSubject): To => {
+  const addressOf = (subject: SheetSubject, tab?: string): To => {
     const next = new URLSearchParams(params);
     next.set(SHEET, toParam(subject));
-    /* Opening a different thing starts it on its own first tab rather than on
-       whichever tab the last thing was left on. */
-    next.delete(SHEET_TAB);
+    if (tab) {
+      next.set(SHEET_TAB, tab);
+    } else {
+      next.delete(SHEET_TAB);
+    }
     return { search: `?${next}` };
   };
 

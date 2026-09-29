@@ -58,7 +58,8 @@ export default function UsedByStatement({ entry }: UsedByStatementProps): React.
       icon="network_node"
       // TRANSLATORS: names the entries of the installation that are built on
       // this device.
-      heading={_("Used by")}
+      // FIXME: this needs much better i18n support and a better grammar.
+      heading={_("Partitions needed as physical volumes for")}
     >
       <RelatedNames items={users} />
     </Statement>

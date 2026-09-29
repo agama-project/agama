@@ -43,6 +43,9 @@ export type SingleDevice = {
  * A lone volume group does not count, although it is a single entry. It is
  * defined rather than found, and a summary of it is a plan about disks it does
  * not name.
+ *
+ * FIXME: when reusing an existing LVM or MdRaid, if boot is configured to do
+ * nothing, then it is also a single device.
  */
 function useSingleDevice(): SingleDevice | null {
   const config = useConfigModel();

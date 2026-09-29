@@ -42,8 +42,8 @@ import { _ } from "~/i18n";
 export default function ResultSheet(): React.ReactNode {
   const actions = useActions();
   const manager = useDevicesManager();
-  const [tab, setTab] = useSheetTab("actions");
-  const { containerProps, tabProps } = useTablistKeyboard(["actions", "layout"], tab, setTab);
+  const [tab, setTab] = useSheetTab("layout");
+  const { containerProps, tabProps } = useTablistKeyboard(["layout", "actions"], tab, setTab);
 
   return (
     <div {...containerProps}>
@@ -54,6 +54,13 @@ export default function ResultSheet(): React.ReactNode {
         // will make and the layout they leave behind.
         aria-label={_("What will happen")}
       >
+        <Tab
+          eventKey="layout"
+          {...tabProps("layout")}
+          title={<TabTitleText>{_("Final layout")}</TabTitleText>}
+        >
+          <ProposalResultTable devicesManager={manager} />
+        </Tab>
         {/* The same word the page's own line uses, since that line is what opens
             this. Two vocabularies for one fact is worse than either. */}
         <Tab
@@ -62,13 +69,6 @@ export default function ResultSheet(): React.ReactNode {
           title={<TabTitleText>{_("Actions")}</TabTitleText>}
         >
           <ProposalActions actions={actions} />
-        </Tab>
-        <Tab
-          eventKey="layout"
-          {...tabProps("layout")}
-          title={<TabTitleText>{_("Final layout")}</TabTitleText>}
-        >
-          <ProposalResultTable devicesManager={manager} />
         </Tab>
       </Tabs>
     </div>

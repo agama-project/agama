@@ -69,7 +69,7 @@ export default function DriveMenu({ entry, device, subject }: DriveMenuProps): R
   const config = useConfigModel();
   const deleteDrive = useDeleteDrive();
   const deleteMdRaid = useDeleteMdRaid();
-  const { cannotMove, note, open, selector } = useRetarget(entry, device);
+  const { cannotMove, open, selector } = useRetarget(entry, device);
   const { openSheet } = useSheet();
 
   const name = baseName(entry.name);
@@ -77,6 +77,7 @@ export default function DriveMenu({ entry, device, subject }: DriveMenuProps): R
   // installation. %s is a device name, such as "sda".
   const label = sprintf(_("Actions for %s"), name);
   const location = configModel.partitionable.findLocation(config, entry.name);
+  const note = _("TODO: I would consider to remove this from here");
 
   const items = [
     /* First, because it is what clicking the row does. A menu whose first item

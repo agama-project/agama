@@ -139,7 +139,7 @@ function purposeOf(
   /* Nothing else to hang it on, so it is a line of its own. */
   if (boots && !groups.length) {
     // TRANSLATORS: what a disk is for: the machine starts from it.
-    lines.push(_("Start the new system"));
+    lines.push(_("Boot the new system"));
   }
 
   return lines;

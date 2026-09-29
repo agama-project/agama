@@ -21,12 +21,19 @@
  */
 
 import React from "react";
-import { ToggleGroup, ToggleGroupItem, Tooltip } from "@patternfly/react-core";
+import {
+  HelperText,
+  HelperTextItem,
+  ToggleGroup,
+  ToggleGroupItem,
+  Tooltip,
+} from "@patternfly/react-core";
 import { useSheet } from "~/components/storage/shared/use-sheet";
 import { useSpacePolicy } from "~/components/storage/shared/space-policy";
 import { useDevice as useDeviceConfig } from "~/hooks/model/storage/config-model";
 import { _, TranslatedString } from "~/i18n";
-import type { ConfigModel, DeviceCollection } from "~/model/storage/config-model";
+import configModel from "~/model/storage/config-model";
+import type { ConfigModel, DeviceCollection, Partitionable } from "~/model/storage/config-model";
 
 const POLICIES: ConfigModel.SpacePolicy[] = ["delete", "resize", "keep", "custom"];
 
@@ -36,23 +43,18 @@ const POLICIES: ConfigModel.SpacePolicy[] = ["delete", "resize", "keep", "custom
  * In a table the reader is acting and the imperative is right. Here they are
  * reading a summary, and four buttons in the imperative look like four things
  * about to happen.
+ *
+ * FIXME: This should work also for logical volumes
  */
-function label(policy: ConfigModel.SpacePolicy): TranslatedString {
+function label(policy: ConfigModel.SpacePolicy, isAssertive: boolean): TranslatedString {
   switch (policy) {
     case "delete":
-      // TRANSLATORS: how the plan treats what is already on the disk: all of it goes.
-      return _("Deleting everything");
+      return isAssertive ? _("Delete disk content") : _("Deleting disk content");
     case "resize":
-      // TRANSLATORS: how the plan treats what is already on the disk: it is made
-      // smaller only where the installer runs short of room.
-      return _("Shrinking if needed");
+      return isAssertive ? _("Shrink existing partitions") : _("Shrinking existing partitions");
     case "keep":
-      // TRANSLATORS: how the plan treats what is already on the disk: none of it
-      // is touched.
-      return _("Keeping everything");
+      return isAssertive ? _("Keep partitions") : _("Keeping partitions");
     case "custom":
-      // TRANSLATORS: how the plan treats what is already on the disk: the reader
-      // decides partition by partition.
       return _("Custom");
   }
 }
@@ -61,11 +63,11 @@ function label(policy: ConfigModel.SpacePolicy): TranslatedString {
 function meaning(policy: ConfigModel.SpacePolicy): TranslatedString {
   switch (policy) {
     case "delete":
-      return _("Every existing partition is removed and its data lost.");
+      return _("Every existing partition will be removed and its data lost.");
     case "resize":
-      return _("Existing partitions are made smaller where the installer runs short of room.");
+      return _("The size of some existing partitions may be reduced.");
     case "keep":
-      return _("Only free space and partitions you reuse are used.");
+      return _("Only the currently available space and partitions explicitly reused will be used.");
     case "custom":
       return _("Decide what happens to each partition, one by one.");
   }
@@ -74,6 +76,8 @@ function meaning(policy: ConfigModel.SpacePolicy): TranslatedString {
 type SpaceOptionProps = {
   policy: ConfigModel.SpacePolicy;
   isSelected: boolean;
+  isDisabled: boolean;
+  isAssertive: boolean;
   onChoose: (policy: ConfigModel.SpacePolicy) => void;
 };
 
@@ -82,15 +86,16 @@ type SpaceOptionProps = {
  * A wrapper lands between the group and its buttons and breaks the segmented
  * look, and props given to a toggle item reach that wrapper, not the button.
  */
-function SpaceOption({ policy, isSelected, onChoose }: SpaceOptionProps) {
+function SpaceOption({ policy, isSelected, isDisabled, isAssertive, onChoose }: SpaceOptionProps) {
   const buttonId = React.useId();
 
   return (
     <>
       <ToggleGroupItem
-        text={label(policy)}
+        text={label(policy, isAssertive)}
         buttonId={buttonId}
         isSelected={isSelected}
+        isDisabled={isDisabled}
         onChange={() => onChoose(policy)}
       />
       <Tooltip content={meaning(policy)} triggerRef={() => document.getElementById(buttonId)} />
@@ -101,6 +106,7 @@ function SpaceOption({ policy, isSelected, onChoose }: SpaceOptionProps) {
 export type SpaceDecisionProps = {
   collection: DeviceCollection;
   index: number;
+  isAssertive?: boolean;
 };
 
 /**
@@ -122,7 +128,7 @@ export type SpaceDecisionProps = {
  * decided how to decide, not what to decide, which is why it has to be
  * remembered rather than read back. {@link useSpacePolicy} does that.
  */
-export default function SpaceDecision({ collection, index }: SpaceDecisionProps) {
+export default function SpaceDecision({ collection, index, isAssertive }: SpaceDecisionProps) {
   const { openSheet } = useSheet();
   const deviceConfig = useDeviceConfig(collection, index);
   const { policy: current, choose: answer } = useSpacePolicy(
@@ -141,6 +147,10 @@ export default function SpaceDecision({ collection, index }: SpaceDecisionProps)
     if (policy === "custom") openSheet({ collection, index }, "current");
   };
 
+  const reused = configModel.partitionable.isReusingPartitions(
+    deviceConfig as Partitionable.Device,
+  );
+
   return (
     <div className="agm-space-decision">
       {/* The group carries the name, since four buttons saying what each does
@@ -156,10 +166,19 @@ export default function SpaceDecision({ collection, index }: SpaceDecisionProps)
             key={policy}
             policy={policy}
             isSelected={policy === current}
+            isDisabled={reused && ["delete", "resize"].includes(policy)}
+            isAssertive={isAssertive}
             onChoose={choose}
           />
         ))}
       </ToggleGroup>
+      {reused && (
+        <HelperText>
+          <HelperTextItem>
+            {_("Some options are not available because some partitions will be reused.")}
+          </HelperTextItem>
+        </HelperText>
+      )}
     </div>
   );
 }

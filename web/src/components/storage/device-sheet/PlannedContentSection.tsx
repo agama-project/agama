@@ -39,7 +39,6 @@ import Text from "~/components/core/Text";
 import Icon from "~/components/layout/Icon";
 import MenuButton, { MenuButtonItem } from "~/components/core/MenuButton";
 import RowMenuToggle from "~/components/storage/entries-table/RowMenuToggle";
-import RelatedNames from "~/components/storage/shared/RelatedNames";
 import RetargetOffer from "~/components/storage/shared/RetargetOffer";
 import { usersOf } from "~/components/storage/shared/users";
 import {
@@ -48,6 +47,7 @@ import {
   partitionIdLabel,
   sizeDescription,
 } from "~/components/storage/utils";
+import Statement from "~/components/storage/device-sheet/Statement";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { generateEncodedPath } from "~/utils";
 import configModel from "~/model/storage/config-model";
@@ -155,6 +155,7 @@ export default function PlannedContentSection({
   /* A device formatted as a whole has nowhere to put a partition, so the view
      drops the table and the offer with it. */
   const whole = isVolumeGroup ? undefined : device.filesystem;
+  const isBoot = configModel.boot.hasDevice(config, entry.config.name);
 
   const addPath = isVolumeGroup
     ? generateEncodedPath(PATHS.volumeGroup.logicalVolume.add, { id: group.vgName })
@@ -197,202 +198,248 @@ export default function PlannedContentSection({
     </Link>
   );
 
+  /*
+   * whole => directly formatted
+   * planned => partitions
+   * users => LVM including this at targetDevice
+   * isBoot => used for booting
+   *
+   *
+   * if whole
+   *   Info about it
+   * else
+   *   if users || isBoot
+   *     if planned
+   *       Additionally, the following partitions
+   *     else
+   *       You can create additional [button]
+   *   else
+   *     if planned
+   *       Following partitions
+   *     else
+   *       EmptyState can whole or partition
+   *     end
+   *   end
+   * end
+   *
+   *
+   *
+   * if whole
+   *   Info about it
+   * else
+   *   if !planned
+   *     if users || isBoot
+   *       You can create additional [button]
+   *     else
+   *       EmptyState can whole or partition
+   *     end
+   *   else
+   *     if users || isBoot
+   *       Additionally, the following partitions
+   *     else
+   *       Following partitions
+   *     end
+   *   end
+   * end
+   */
+
   return (
-    <Stack hasGutter>
+    <>
       {whole && (
-        <StackItem>
-          <Text textStyle="textColorSubtle">
-            {device.mountPath
-              ? sprintf(
-                  // TRANSLATORS: said of a device the installation formats as a
-                  // whole. %1$s is a file system type such as "Btrfs", %2$s is
-                  // where the new system mounts it, such as "/home".
-                  _("This device is formatted as %1$s and mounted at %2$s."),
-                  filesystemType(whole) || _("its default file system"),
-                  formattedPath(device.mountPath),
-                )
-              : sprintf(
-                  // TRANSLATORS: said of a device the installation formats as a
-                  // whole without mounting it. %s is a file system type.
-                  _("This device is formatted as %s and is not mounted."),
-                  filesystemType(whole) || _("its default file system"),
-                )}
-          </Text>
-        </StackItem>
-      )}
-      {!whole && planned.length === 0 && (
-        <StackItem>
-          <EmptyState
-            headingLevel="h3"
-            variant="sm"
-            titleText={
-              users.length
-                ? // TRANSLATORS: said of a device the installation puts nothing
-                  // of its own on because something else is built on it.
-                  _("No partitions are planned here")
-                : // TRANSLATORS: said of a device of the installation that has
-                  // nothing planned on it yet.
-                  _("Nothing planned for this device yet")
-            }
-          >
-            <EmptyStateBody>
-              {users.length ? (
-                <>
-                  {/* TRANSLATORS: followed by the names of the entries the whole
-                      device is given to. */}
-                  {_("The whole device goes to")} <RelatedNames items={users} />
-                </>
-              ) : (
-                // TRANSLATORS: what a reader can do about a device with nothing
-                // planned on it.
-                _("Add a volume, or reuse one of the partitions already on it.")
+        <Text textStyle="textColorSubtle">
+          {device.mountPath
+            ? sprintf(
+                // TRANSLATORS: said of a device the installation formats as a
+                // whole. %1$s is a file system type such as "Btrfs", %2$s is
+                // where the new system mounts it, such as "/home".
+                _("This device is formatted as %1$s and mounted at %2$s."),
+                filesystemType(whole) || _("its default file system"),
+                formattedPath(device.mountPath),
+              )
+            : sprintf(
+                // TRANSLATORS: said of a device the installation formats as a
+                // whole without mounting it. %s is a file system type.
+                _("This device is formatted as %s and is not mounted."),
+                filesystemType(whole) || _("its default file system"),
               )}
-            </EmptyStateBody>
-            <EmptyStateFooter>
-              <EmptyStateActions>{add("primary")}</EmptyStateActions>
-            </EmptyStateFooter>
-          </EmptyState>
-        </StackItem>
+        </Text>
+      )}
+      {!whole && !planned.length && (users.length || isBoot) && (
+        <Statement icon="list_alt" heading={_("No additional partitions defined")}>
+          <Stack hasGutter>
+            <StackItem>
+              {_(
+                "You can define additional partitions or reuse any of the partitions already on the disk.",
+              )}
+            </StackItem>
+            <StackItem>{add("secondary")}</StackItem>
+          </Stack>
+        </Statement>
+      )}
+      {!whole && !planned.length && !users.length && !isBoot && (
+        <EmptyState
+          headingLevel="h3"
+          variant="sm"
+          titleText={_("This EmptyState should offer both formatting and partitioning")}
+        >
+          <EmptyStateBody>
+            {_("Format, add a partition or reuse one of the partitions already in the disk.")}
+          </EmptyStateBody>
+          <EmptyStateFooter>
+            <EmptyStateActions>{add("primary")}</EmptyStateActions>
+          </EmptyStateFooter>
+        </EmptyState>
       )}
       {!whole && planned.length > 0 && (
-        <>
-          <StackItem>
-            <Table
-              role="table"
-              gridBreakPoint=""
-              variant="compact"
-              // TRANSLATORS: names the list of what the installation will put on
-              // one of its entries.
-              aria-label={_("Planned content")}
-            >
-              {/* Read rather than hidden from sight: a column of sizes and a
-                  column of file systems are told apart by what they are called,
-                  and a reader who has to work that out from the values is being
-                  asked to do the heading's job.
+        <Statement
+          icon="list_alt"
+          heading={
+            isVolumeGroup
+              ? _("Logical volumes from the following list")
+              : _("Partitions from the following list")
+          }
+        >
+          <Stack hasGutter>
+            <StackItem>
+              <Table
+                // Horrible hack for demo purposes
+                style={{ width: "125%" }}
+                role="table"
+                gridBreakPoint=""
+                variant="compact"
+                // TRANSLATORS: names the list of what the installation will put on
+                // one of its entries.
+                aria-label={_("Planned content")}
+              >
+                {/* Read rather than hidden from sight: a column of sizes and a
+                    column of file systems are told apart by what they are called,
+                    and a reader who has to work that out from the values is being
+                    asked to do the heading's job.
 
-                  Each heading kept whole. PatternFly cuts one down to whatever
-                  its column came out as, which shortens the one thing on the
-                  row whose whole job is to be read. */}
-              <Thead>
-                <Tr>
-                  <Th modifier="nowrap">{_("Mount point")}</Th>
-                  <Th modifier="nowrap">{_("File system")}</Th>
-                  <Th className={alignmentStyles.textAlignEnd} modifier="nowrap">
-                    {_("Size")}
-                  </Th>
-                  <Th>
-                    {/* The column of menus has nothing to head: a heading over
-                        it names a column the reader can already see the point
-                        of, and takes the width the sizes beside it need. */}
-                    <Text srOnly>{_("Options")}</Text>
-                  </Th>
-                </Tr>
-              </Thead>
-              <Tbody>
-                {planned.map((part) => {
-                  /* A partition already there brings its own file system and
-                     size, so they are read from the machine rather than from a
-                     request the installer never has to satisfy. */
-                  const source = part.name
-                    ? entry.device?.partitions?.find((p) => p.name === part.name)
-                    : undefined;
-                  const keepsData = Boolean(part.name) && part.filesystem?.reuse === true;
+                    Each heading kept whole. PatternFly cuts one down to whatever
+                    its column came out as, which shortens the one thing on the
+                    row whose whole job is to be read. */}
+                <Thead>
+                  <Tr>
+                    <Th modifier="nowrap">{_("Mount point")}</Th>
+                    <Th modifier="nowrap">{_("File system")}</Th>
+                    <Th className={alignmentStyles.textAlignEnd} modifier="nowrap">
+                      {_("Size")}
+                    </Th>
+                    <Th>
+                      {/* The column of menus has nothing to head: a heading over
+                          it names a column the reader can already see the point
+                          of, and takes the width the sizes beside it need. */}
+                      <Text srOnly>{_("Options")}</Text>
+                    </Th>
+                  </Tr>
+                </Thead>
+                <Tbody>
+                  {planned.map((part) => {
+                    /* A partition already there brings its own file system and
+                       size, so they are read from the machine rather than from a
+                       request the installer never has to satisfy. */
+                    const source = part.name
+                      ? entry.device?.partitions?.find((p) => p.name === part.name)
+                      : undefined;
+                    const keepsData = Boolean(part.name) && part.filesystem?.reuse === true;
 
-                  return (
-                    <Tr key={label(part)}>
-                      <Th scope="row">{label(part)}</Th>
-                      <Td>
-                        {(keepsData
-                          ? source?.filesystem?.type
-                          : part.filesystem && filesystemType(part.filesystem)) ||
-                          // TRANSLATORS: said where the installer has not been
-                          // told which file system to use.
-                          _("default")}
-                      </Td>
-                      {/* On the same edge as every other size, so a column of
-                          them is compared by looking down rather than by
-                          reading each one. */}
-                      <Td className={alignmentStyles.textAlignEnd}>
-                        {part.size
-                          ? sizeDescription(part.size)
-                          : // TRANSLATORS: said where the size of something the
-                            // installer creates is left to it.
-                            _("decided by the installer")}
-                      </Td>
-                      <Td isActionCell>
-                        {/* Both acts name the thing by where it is mounted, so
-                            one asked for by id alone has neither until the form
-                            and the model calls learn to take an id. */}
-                        {part.mountPath && (
-                          <MenuButton
-                            menuProps={{
-                              "aria-label": sprintf(
-                                // TRANSLATORS: names the menu of things that can
-                                // be done to one thing the installation creates.
-                                // %s is where the new system mounts it.
-                                _("Actions for %s"),
-                                label(part),
-                              ),
-                              popperProps: { position: "end" },
-                            }}
-                            customToggle={
-                              <RowMenuToggle label={sprintf(_("Actions for %s"), label(part))} />
-                            }
-                            items={[
-                              <MenuButtonItem key="edit" to={editPath(part)} keepQuery>
-                                {_("Edit")}
-                              </MenuButtonItem>,
-                              <MenuButtonItem
-                                key="delete"
-                                /* Dropping the plan for a partition that is
-                                   already there removes the plan, not the
-                                   partition, so it is not offered as a danger
-                                   and is not called a deletion. */
-                                isDanger={!source}
-                                onClick={() => remove(part.mountPath)}
-                              >
-                                {source
-                                  ? // TRANSLATORS: offered on a partition the
-                                    // installation takes over: leave it where
-                                    // it is and stop giving it to the new
-                                    // system.
-                                    _("Stop reusing")
-                                  : // TRANSLATORS: offered on something the
-                                    // installation would create: take it out of
-                                    // the plan.
-                                    _("Delete")}
-                              </MenuButtonItem>,
-                            ]}
-                          />
-                        )}
-                      </Td>
-                    </Tr>
-                  );
-                })}
-              </Tbody>
-            </Table>
-          </StackItem>
-          <StackItem>
-            {/* After the table rather than in the header: these are what the
-                reader does about the device rather than about any one row, and
-                neither is urgent enough to sit beside its name.
+                    return (
+                      <Tr key={label(part)}>
+                        <Th scope="row">{label(part)}</Th>
+                        <Td>
+                          {(keepsData
+                            ? source?.filesystem?.type
+                            : part.filesystem && filesystemType(part.filesystem)) ||
+                            // TRANSLATORS: said where the installer has not been
+                            // told which file system to use.
+                            _("default")}
+                        </Td>
+                        {/* On the same edge as every other size, so a column of
+                            them is compared by looking down rather than by
+                            reading each one. */}
+                        <Td className={alignmentStyles.textAlignEnd}>
+                          {part.size
+                            ? sizeDescription(part.size)
+                            : // TRANSLATORS: said where the size of something the
+                              // installer creates is left to it.
+                              _("decided by the installer")}
+                        </Td>
+                        <Td isActionCell>
+                          {/* Both acts name the thing by where it is mounted, so
+                              one asked for by id alone has neither until the form
+                              and the model calls learn to take an id. */}
+                          {part.mountPath && (
+                            <MenuButton
+                              menuProps={{
+                                "aria-label": sprintf(
+                                  // TRANSLATORS: names the menu of things that can
+                                  // be done to one thing the installation creates.
+                                  // %s is where the new system mounts it.
+                                  _("Actions for %s"),
+                                  label(part),
+                                ),
+                                popperProps: { position: "end" },
+                              }}
+                              customToggle={
+                                <RowMenuToggle label={sprintf(_("Actions for %s"), label(part))} />
+                              }
+                              items={[
+                                <MenuButtonItem key="edit" to={editPath(part)} keepQuery>
+                                  {_("Edit")}
+                                </MenuButtonItem>,
+                                <MenuButtonItem
+                                  key="delete"
+                                  /* Dropping the plan for a partition that is
+                                     already there removes the plan, not the
+                                     partition, so it is not offered as a danger
+                                     and is not called a deletion. */
+                                  isDanger={!source}
+                                  onClick={() => remove(part.mountPath)}
+                                >
+                                  {source
+                                    ? // TRANSLATORS: offered on a partition the
+                                      // installation takes over: leave it where
+                                      // it is and stop giving it to the new
+                                      // system.
+                                      _("Stop reusing")
+                                    : // TRANSLATORS: offered on something the
+                                      // installation would create: take it out of
+                                      // the plan.
+                                      _("Delete")}
+                                </MenuButtonItem>,
+                              ]}
+                            />
+                          )}
+                        </Td>
+                      </Tr>
+                    );
+                  })}
+                </Tbody>
+              </Table>
+            </StackItem>
+            <StackItem>
+              {/* After the table rather than in the header: these are what the
+                  reader does about the device rather than about any one row, and
+                  neither is urgent enough to sit beside its name.
 
-                Beside a table that already lists what is planned, adding is one
-                option among several rather than the point of the view. And
-                moving the plan is offered only here, where there is something
-                to move: under a view that has just said nothing is planned, it
-                would promise the move of nothing. */}
-            <Flex gap={{ default: "gapSm" }} flexWrap={{ default: "wrap" }}>
-              <FlexItem>{add("secondary")}</FlexItem>
-              {!isVolumeGroup && (
-                <FlexItem>
-                  <RetargetOffer entry={device} device={entry.device} variant="secondary" />
-                </FlexItem>
-              )}
-            </Flex>
-          </StackItem>
-        </>
+                  Beside a table that already lists what is planned, adding is one
+                  option among several rather than the point of the view. And
+                  moving the plan is offered only here, where there is something
+                  to move: under a view that has just said nothing is planned, it
+                  would promise the move of nothing. */}
+              <Flex gap={{ default: "gapSm" }} flexWrap={{ default: "wrap" }}>
+                <FlexItem>{add("secondary")}</FlexItem>
+                {!isVolumeGroup && (
+                  <FlexItem>
+                    <RetargetOffer entry={device} device={entry.device} variant="secondary" />
+                  </FlexItem>
+                )}
+              </Flex>
+            </StackItem>
+          </Stack>
+        </Statement>
       )}
-    </Stack>
+    </>
   );
 }

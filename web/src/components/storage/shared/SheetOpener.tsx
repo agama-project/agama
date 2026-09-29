@@ -28,6 +28,7 @@ import type { SheetSubject } from "~/components/storage/shared/use-sheet";
 export type SheetOpenerProps = {
   /** What the sheet shows once this is followed. */
   subject: SheetSubject;
+  tab?: string;
   /** What the control says, which has to name where it goes on its own. */
   children: React.ReactNode;
 };
@@ -47,12 +48,12 @@ export type SheetOpenerProps = {
  * @example
  * <SheetOpener subject="result">{_("View all 5 needed actions")}</SheetOpener>
  */
-export default function SheetOpener({ subject, children }: SheetOpenerProps): React.ReactNode {
+export default function SheetOpener({ subject, tab, children }: SheetOpenerProps): React.ReactNode {
   const { addressOf } = useSheet();
 
   return (
     <Link
-      to={addressOf(subject)}
+      to={addressOf(subject, tab)}
       replace
       variant="link"
       isInline

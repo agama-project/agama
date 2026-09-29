@@ -40,6 +40,12 @@ export type Related = { name: string; subject?: SheetEntry };
  * hold is decided in the panel of whatever it is a member of. Saying which,
  * and offering the way there, is what stops a reader hunting through the list
  * for the other end of a relationship they have just been told about.
+ *
+ * FIXME: this seems to mix two things that have very little to do. On the one hand, an LVM VG is a
+ * user of a disk if the VG is configured to automatically create partitions on that disk to serve
+ * as PVs. On the other hand, there is a detection about RAIDs and its underlying devices that have
+ * a different meaning (is certainly not about generating partitions in that disk).
+ * For now, let's use this only for the first goal (relationship between disks and LVM).
  */
 function usersOf(
   config: ConfigModel.Config | null,

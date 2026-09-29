@@ -116,8 +116,6 @@ export default function DeviceDetail({ entry, subject }: DeviceDetailProps): Rea
   const toPlanned = go("planned", _("Planned content"));
   // TRANSLATORS: names a view of a device, as a link inside a sentence.
   const toCurrent = go("current", _("Current content"));
-  // TRANSLATORS: names a view of a device, as a link inside a sentence.
-  const toResult = go("result", _("Final layout"));
 
   /* Whole sentences per kind of entry: an article and a noun agree in most
      languages, and a slot taking either "disk" or "volume group" would leave a
@@ -125,19 +123,20 @@ export default function DeviceDetail({ entry, subject }: DeviceDetailProps): Rea
   const isRaid = subject.collection === "mdRaids";
   const resultLead = () => {
     // TRANSLATORS: opens the view showing the shape an LVM volume group is left in.
-    if (entry.isVolumeGroup) return _("How this volume group looks once the installer is done.");
+    if (entry.isVolumeGroup) return _("Content of the volume group after the installation.");
     // TRANSLATORS: opens the view showing the shape a software RAID is left in.
-    if (isRaid) return _("How this RAID device looks once the installer is done.");
+    if (isRaid) return _("Content of the RAID after the installation.");
     // TRANSLATORS: opens the view showing the shape a disk is left in.
-    return _("How this disk looks once the installer is done.");
+    return _("Content of the disk after the installation.");
   };
   const plannedLead = () => {
     // TRANSLATORS: opens the view showing what an LVM volume group will hold.
-    if (entry.isVolumeGroup) return _("What this volume group will hold for the new system.");
+    if (entry.isVolumeGroup)
+      return _("Pieces of the new system that will be placed in this volume group.");
     // TRANSLATORS: opens the view showing what a software RAID will hold.
-    if (isRaid) return _("What this RAID device will hold for the new system.");
+    if (isRaid) return _("Pieces of the new system that will be placed in this RAID.");
     // TRANSLATORS: opens the view showing what a disk will hold.
-    return _("What this disk will hold for the new system.");
+    return _("Pieces of the new system that will be placed in this disk.");
   };
 
   return (
@@ -166,7 +165,9 @@ export default function DeviceDetail({ entry, subject }: DeviceDetailProps): Rea
               hasCurrent
                 ? // TRANSLATORS: says where the final layout of a device changes.
                   // %1$s and %2$s are the names of two other views, shown as links.
-                  _("It follows from the %1$s and %2$s tabs, which is where it changes.")
+                  _(
+                    "Use the %1$s tab to customize what will be written or reused and the %2$s to decide how to make space for that.",
+                  )
                 : // TRANSLATORS: says where the final layout of a device changes.
                   // %s is the name of another view, shown as a link.
                   _("It follows from the %s tab, which is where it changes.")
@@ -187,25 +188,13 @@ export default function DeviceDetail({ entry, subject }: DeviceDetailProps): Rea
             </>,
           )}
         >
-          <TabNote
-            lead={plannedLead()}
-            where={
-              hasCurrent
-                ? // TRANSLATORS: says where room is made for what a device will
-                  // hold. %s is the name of another view, shown as a link.
-                  _(
-                    "Making room for it may mean deleting or shrinking what is there today, decided in the %s tab.",
-                  )
-                : undefined
-            }
-            links={hasCurrent ? [toCurrent] : []}
-          >
+          <TabNote lead={plannedLead()}>
             {/* What is true of the device itself, said with the note rather
                 than above the table: they are all prose about the device, and
                 the table below is the view's content. Each decides for itself
                 whether it has anything to say. */}
-            <UsedByStatement entry={entry} />
             <BootStatement entry={entry} />
+            <UsedByStatement entry={entry} />
           </TabNote>
           <PlannedContentSection entry={entry} subject={subject} />
         </Tab>
@@ -258,13 +247,9 @@ export default function DeviceDetail({ entry, subject }: DeviceDetailProps): Rea
           >
             <TabNote
               // TRANSLATORS: opens the view listing what is on a device today.
-              lead={_("What to do with the existing partitions")}
-              // TRANSLATORS: says what this view is for and where its result is
-              // shown. %s is the name of another view, shown as a link.
-              where={_(
-                "Choose how the installer should use the existing partitions. The %s tab shows the resulting disk layout.",
+              lead={_(
+                "What to do with the existing partitions to make space for the planned content",
               )}
-              links={[toResult]}
             />
             <CurrentContentSection entry={entry} subject={subject} />
           </Tab>

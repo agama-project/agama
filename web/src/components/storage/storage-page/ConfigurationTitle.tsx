@@ -89,11 +89,11 @@ export default function ConfigurationTitle(): React.ReactNode {
           ? // TRANSLATORS: the whole storage configuration in one line, where it
             // is one disk that also starts the machine. %s is a disk name and
             // its size, such as "vdd (20 GiB)".
-            _("Use disk %s as installation and boot device")
+            _("Use disk %s to install and boot")
           : // TRANSLATORS: the whole storage configuration in one line, where it
             // is one disk. %s is a disk name and its size, such as
             // "vdd (20 GiB)".
-            _("Use disk %s as installation device");
+            _("Use disk %s to install");
       }
 
       return boots

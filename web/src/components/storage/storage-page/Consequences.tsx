@@ -24,7 +24,7 @@ import React from "react";
 import { unique } from "radashi";
 import { sprintf } from "sprintf-js";
 import Text from "~/components/core/Text";
-import { NAMES_PER_LINE } from "~/components/storage/shared/naming";
+import { Stack, StackItem } from "@patternfly/react-core";
 import SheetOpener from "~/components/storage/shared/SheetOpener";
 import { useDevicesManager } from "~/components/storage/shared/use-devices-manager";
 import { useActions } from "~/hooks/model/proposal/storage";
@@ -35,78 +35,28 @@ import { _, n_, formatList, TranslatedString } from "~/i18n";
  * subject built somewhere else. A translator needs the finished sentence to
  * choose a verb form, and in several languages the subject changes case after
  * it, which no amount of joining can produce.
+ *
+ * FIXME: this usually says "Deleting X partitions" even if the deleted stuff are not partitions
  */
 function deletion(systems: string[], partitions: number): TranslatedString | null {
-  if (systems.length > NAMES_PER_LINE) {
-    const others = systems.length - 1;
-    return sprintf(
-      // TRANSLATORS: What the installation destroys, where more systems are
-      // affected than the sentence names. %1$s is the name of an operating
-      // system found on the disks, like "Windows 11"; %2$d is how many other
-      // systems go with it.
-      n_("Deleting %1$s and %2$d other system.", "Deleting %1$s and %2$d other systems.", others),
-      systems[0],
-      others,
-    );
-  }
+  if (!systems.length && !partitions) return null;
 
-  if (systems.length) {
+  if (!systems.length) {
     return sprintf(
-      // TRANSLATORS: What the installation destroys. %s is one or two names of
-      // operating systems found on the disks, like "Windows 11" or
-      // "Windows 11 and openSUSE Leap 15.2".
-      _("Deleting %s."),
-      formatList(systems),
-    );
-  }
-
-  if (partitions) {
-    return sprintf(
-      // TRANSLATORS: What the installation destroys, where it recognizes no
-      // operating system on it. %d is how many partitions go.
-      n_("Deleting %d partition.", "Deleting %d partitions.", partitions),
+      n_("Includes %d destructive actions", "Includes %d destructive actions", partitions),
       partitions,
     );
   }
 
-  return null;
-}
-
-/** The same four cases as {@link deletion}, for what is made smaller instead. */
-function shrinking(systems: string[], partitions: number): TranslatedString | null {
-  if (systems.length > NAMES_PER_LINE) {
-    const others = systems.length - 1;
-    return sprintf(
-      // TRANSLATORS: What the installation makes room in, where more systems
-      // are affected than the sentence names. %1$s is the name of an operating
-      // system found on the disks, like "Windows 11"; %2$d is how many other
-      // systems shrink with it.
-      n_("Shrinking %1$s and %2$d other system.", "Shrinking %1$s and %2$d other systems.", others),
-      systems[0],
-      others,
-    );
-  }
-
-  if (systems.length) {
-    return sprintf(
-      // TRANSLATORS: What the installation makes room in. %s is one or two
-      // names of operating systems found on the disks, like "Windows 11" or
-      // "Windows 11 and openSUSE Leap 15.2".
-      _("Shrinking %s."),
-      formatList(systems),
-    );
-  }
-
-  if (partitions) {
-    return sprintf(
-      // TRANSLATORS: What the installation makes room in, where it recognizes
-      // no operating system on it. %d is how many partitions shrink.
-      n_("Shrinking %d partition.", "Shrinking %d partitions.", partitions),
+  return sprintf(
+    n_(
+      "Includes %1$d destructive actions affecting %2$s.",
+      "Includes %1$d destructive actions affecting %2$s.",
       partitions,
-    );
-  }
-
-  return null;
+    ),
+    partitions,
+    formatList(systems),
+  );
 }
 
 /**
@@ -149,22 +99,23 @@ export default function Consequences(): React.ReactNode {
   if (!counted.length) return null;
 
   const deleted = deletion(unique(manager.deletedSystems()), manager.deletedDevices().length);
-  /* A shrink loses no data: a partition survives, smaller. Coloring it would
-     put it beside deletion, which is a different kind of news. */
-  const shrunk = shrinking(unique(manager.resizedSystems()), manager.resizedDevices().length);
 
   return (
-    <>
+    <Stack>
+      <StackItem>
+        <SheetOpener subject="result" tab="actions">
+          {sprintf(
+            // FIXME: this is not translatable. Shortcut taken for early demo
+            n_("%d action", "%d actions", counted.length),
+            counted.length,
+          )}
+        </SheetOpener>
+        {_(" will be performed during installation to set up the ")}
+        <SheetOpener subject="result" tab="layout">
+          {_("final storage layout")}
+        </SheetOpener>
+      </StackItem>
       {deleted && <Text textStyle="textColorStatusDanger">{deleted}</Text>}
-      {!deleted && shrunk && <Text>{shrunk}</Text>}{" "}
-      <SheetOpener subject="result">
-        {sprintf(
-          // TRANSLATORS: the way into the list of everything the installer will
-          // do. %d is how many of those there are.
-          n_("View all %d needed action", "View all %d needed actions", counted.length),
-          counted.length,
-        )}
-      </SheetOpener>
-    </>
+    </Stack>
   );
 }

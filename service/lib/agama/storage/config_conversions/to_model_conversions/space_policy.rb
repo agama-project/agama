@@ -58,12 +58,12 @@ module Agama
 
           # @return [Boolean]
           def delete_all_volumes?
-            volumes.any? { |v| delete_all?(v) }
+            volumes.any? { |v| delete_all?(v) } && !reused_volume?
           end
 
           # @return [Boolean]
           def shrink_all_volumes?
-            volumes.any? { |v| shrink_all?(v) }
+            volumes.any? { |v| shrink_all?(v) } && !reused_volume?
           end
 
           # @return [Boolean]
@@ -78,6 +78,13 @@ module Agama
             volumes
               .select(&:found_device)
               .any? { |v| !v.size.default? }
+          end
+
+          # @return [Boolean]
+          def reused_volume?
+            volumes
+              .select(&:found_device)
+              .any? { |v| v.size.default? && !v.delete && !v.delete_if_needed? }
           end
 
           # @param volume [Configs::Partition, Configs::LogicalVolume]
