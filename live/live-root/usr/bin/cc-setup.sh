@@ -326,6 +326,11 @@ page_file() {
   # dumb terminals cannot run a full screen pager, on the z/VM console the
   # hypervisor pages the output itself ("MORE..." status)
   if ! dumb_terminal && command -v less > /dev/null 2>&1 && (: < /dev/tty) 2> /dev/null; then
+    printf '\nThe text will be displayed in the "less" pager:\n' >&2
+    printf '  Space/PageDown - next page, b/PageUp - previous page,\n' >&2
+    printf '  arrows - scroll, /TEXT - search, q - quit (continue)\n' >&2
+    printf 'Press Enter to display the text... ' >&2
+    read -r _ < /dev/tty || true
     less -- "$file" < /dev/tty >&2 || true
     flush_terminal_input
   else
