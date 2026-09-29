@@ -2,7 +2,7 @@
 Tue Sep 29 14:34:27 UTC 2026 - Martin Vidner <mvidner@suse.com>
 
 - update runtime dependencies to:
-  - tracing-subscriber 0.3.20 (now 0.3.22), CVE-2025-58160 (bsc#1249014)
+  - tracing-subscriber 0.3.20, CVE-2025-58160 (bsc#1249014)
   - bytes 1.12.1, CVE-2026-25541 (bsc#1274203)
   - serde_with 3.21.0, GHSA-7gcf-g7xr-8hxj (bsc#1271854)
 
