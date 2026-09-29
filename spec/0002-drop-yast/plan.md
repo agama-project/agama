@@ -204,26 +204,76 @@ See the detailed task breakdown below.
 
 See the detailed task breakdown below.
 
-### Phase 3 - Drop now-dead transitive RPM requires
+### Phase 3 - Drop now-dead transitive RPM requires, and final documentation/packaging cleanup
 
-Re-run Phase 0 verification against `yast2-country`, `yast2-hardware-detection`, `yast2-proxy` (no
-direct code references found in `service/lib` today). Remove from `gem2rpm.yml`/kiwi file where
-proven safe. Expect `yast2-hardware-detection` to remain unavoidable (required by the base `yast2`
-package itself, which stays for `Y2Storage`/`Bootloader`), but `yast2-country` and `yast2-proxy`
-should be droppable once Phases 1-2 remove their pullers (`autoyast2`, `yast2-installation`,
-`yast2-network`).
+**Status: implemented** (branch `drop-yast-phase3`). Phase 4 ("Documentation & packaging cleanup")
+was folded into this same phase/branch since, once the dead requires are confirmed and dropped,
+there was nothing substantial left to do separately.
 
-### Phase 4 - Documentation & packaging cleanup
+Verified directly against the real RPM database (same package versions as the containers used to
+validate Phases 1-2) instead of a full image build - `rpm -q --requires`/`--recommends` for every
+package Agama still keeps (`yast2`, `yast2-storage-ng`, `yast2-bootloader`, `yast2-packager`
+(transitive), `yast2-iscsi-client`, `yast2-schema`) confirmed:
 
-- Final expected dependency set: `yast2`, `yast2-storage-ng`, `yast2-bootloader`,
-  `yast2-iscsi-client`, (`yast2-s390`/`yast2-reipl`/`yast2-cio` on s390), plus the vendored code
-  under `service/YaST2` (part of the existing `agama-yast` gem, no new package).
-- Update `gem2rpm.yml`, `service/agama-yast.spec.in`, `setup-services.sh`,
-  `live/src/agama-installer.kiwi`.
-- Update spec.md/plan.md to describe the final architecture: storage/bootloader/DASD/zFCP/iSCSI as
-  the sole remaining, actively co-maintained YaST dependency; everything else forked permanently
-  into `service/YaST2` with no upstream-sync process.
-- Report the installer-medium package-count/size delta as the success metric.
+- `yast2-hardware-detection` is a hard `Requires` of the base `yast2` package itself - unavoidable
+  as long as `yast2` stays (which it must, for `Y2Storage`/`Bootloader`).
+- `yast2-country` and `yast2-proxy` are **not required, recommended, or suggested** by anything in
+  the kept dependency graph, and have no direct code reference anywhere in `service/lib` or
+  `service/YaST2` (`git grep` confirmed). Safe to drop.
+- `yast2-country-data` (a distinct, data-only package - locale/timezone tables) stays as an
+  accepted residual, pulled in transitively via `yast2-packager`. This is not the same package as
+  the full `yast2-country` Ruby module Agama never used.
+- `yast2-schema` stays: it provides `/usr/share/YaST2/schema/autoyast/rng/*.rng`, needed at
+  runtime by the vendored `xml_checks.rb`/`xml_validator.rb` (confirmed the hard way during Phase
+  1/2 container validation - `bin/agama-autoyast` failed with `Errno::ENOENT` on that path until
+  `yast2-schema` was installed).
+
+Final expected dependency set: `yast2`, `yast2-storage-ng`, `yast2-bootloader`,
+`yast2-hardware-detection`, `yast2-iscsi-client`, `yast2-schema`, (`yast2-s390`/`yast2-reipl`/
+`yast2-cio` on s390), plus the vendored code under `service/YaST2` (part of the existing
+`agama-yast` gem, no new package) and the native `service/lib/agama/autoyast/
+users_profile_reader.rb`.
+
+#### Footprint metric
+
+Building and measuring an actual installer ISO/image was out of scope for this environment (no
+OBS/kiwi build pipeline available); instead, approximated the win by computing the full transitive
+closure of `yast2-*`/`autoyast2*`/`libstorage-ng*`-prefixed packages pulled in by the `Requires`
+chain, before Phase 1 and after Phase 3, using the real RPM database:
+
+- **Before** (31 packages): `autoyast2-installation`, `libstorage-ng1`, `libstorage-ng-ruby`,
+  `yast2`, `yast2-bootloader`, `yast2-core`, `yast2-country`, `yast2-country-data`,
+  `yast2-hardware-detection`, `yast2-installation`, `yast2-iscsi-client`, `yast2-ldap`,
+  `yast2-logs`, `yast2-network`, `yast2-ntp-client`, `yast2-packager`, `yast2-pam`,
+  `yast2-perl-bindings`, `yast2-pkg-bindings`, `yast2-proxy`, `yast2-ruby-bindings`,
+  `yast2-security`, `yast2-services-manager`, `yast2-slp`, `yast2-storage-ng`, `yast2-transfer`,
+  `yast2-trans-stats`, `yast2-update`, `yast2-users`, `yast2-xml`, `yast2-ycp-ui-bindings`.
+- **After** (17 packages): `libstorage-ng1`, `libstorage-ng-ruby`, `yast2`, `yast2-bootloader`,
+  `yast2-core`, `yast2-country-data`, `yast2-hardware-detection`, `yast2-iscsi-client`,
+  `yast2-logs`, `yast2-packager`, `yast2-perl-bindings`, `yast2-pkg-bindings`,
+  `yast2-ruby-bindings`, `yast2-schema`, `yast2-storage-ng`, `yast2-transfer`,
+  `yast2-ycp-ui-bindings`.
+- **Result: 31 -> 17 packages, 14 removed (~45% reduction)** in the YaST-specific dependency
+  closure. `yast2-xml` was an unexpected extra win - it was pulled in transitively by
+  `yast2-network` (now vendored), and nothing else in the kept graph needs it.
+
+This is a lower-bound approximation: it only counts `yast2-*`/`autoyast2*`/`libstorage-ng*`-named
+packages, not their own further non-YaST-prefixed dependencies (e.g. `ruby-solv`, `libyui_pkg`,
+`perl-X500-DN`) that would also disappear, nor actual installed-size-on-disk. A real
+package-count/size delta on the actual built installer image (via OBS/kiwi) is recommended as a
+follow-up once these branches merge, but was not feasible to produce accurately in this
+environment.
+
+#### Final architecture
+
+Storage/bootloader/DASD/zFCP/iSCSI (`Y2Storage`, `yast2-bootloader`, `yast2-s390`,
+`yast2-iscsi-client`) remain the sole actively co-maintained YaST dependency, per the original scope
+decision. Everything else that used to come from `autoyast2(-installation)`, `yast2-installation`
+and `yast2-network` has been forked permanently into `service/YaST2` (see its `README.md` for the
+full file-by-file inventory and provenance) with no process to keep it in sync with upstream YaST
+releases. `yast2-users` was not vendored at all - replaced by the native
+`Agama::AutoYaST::UsersProfileReader`. `yast2-country`, `yast2-proxy`, `autoyast2-installation`,
+`yast2-installation` and `yast2-network` are no longer runtime dependencies of `agama-yast`.
 
 ## Priority / risk table
 
@@ -232,8 +282,7 @@ should be droppable once Phases 1-2 remove their pullers (`autoyast2`, `yast2-in
 | 0 (tooling) | S | Low | Prerequisite for trusting every later removal |
 | 1 (vendor autoyast2 + installation glue) | L | Low (no drift concern) | Removes `autoyast2`(-installation) + `yast2-installation` and their multi-package transitive chain (country, packager, services-manager, ntp-client, slp, update, security, users, proxy) |
 | 2 (vendor network parsing, reimplement users parsing) | M | Low for network (no drift concern, no `Yast.import`); Low-Medium for users (new custom code, needs test coverage for root/user selection edge cases) | Removes `yast2-network`, `yast2-users` |
-| 3 (drop dead requires) | S | Low | Final trim (`yast2-country`, `yast2-proxy`) |
-| 4 (docs/packaging) | S | Low | Closes the loop, locks in the metric |
+| 3 (drop dead requires + final docs/packaging) | S | Low | Final trim (`yast2-country`, `yast2-proxy`); closes the loop, locks in the metric |
 
 Note: `yast2-packager` will likely remain on the media regardless, since `yast2-storage-ng`/
 `yast2-bootloader` (kept) require it directly - accepted residual, not something to vendor since
@@ -528,3 +577,49 @@ into two different strategies per package:
      bugs (`Y2DIR` ordering, `MERGE_XSLT_PATH`) that only surfaced by running real executables/methods
      directly. For Phase 2, that likely means: actually run `bin/agama-autoyast` against a profile
      exercising bonding/bridge/VLAN/wireless and a `<users>` section end-to-end, not just unit specs.
+
+## Phase 3 task breakdown
+
+**Status: implemented** (branch `drop-yast-phase3`, based on `drop-yast-phase2`). Folds in what was
+originally planned as a separate "Phase 4", since there was nothing substantial left to do once the
+dead requires were confirmed and dropped.
+
+1. **Verify `yast2-country`/`yast2-proxy` are truly dead weight.**
+   Instead of building a full installer image (Phase 0's originally suggested approach, not
+   feasible in this environment), queried the real RPM database directly for every package Agama
+   still keeps after Phases 1-2 (`yast2`, `yast2-storage-ng`, `yast2-bootloader`, `yast2-packager`,
+   `yast2-iscsi-client`, `yast2-schema`):
+   - `rpm -q --requires <pkg>` for each - confirmed none of them require `yast2-country` or
+     `yast2-proxy`.
+   - `rpm -q --recommends <pkg>` for each - confirmed no `Recommends`/`Supplements` would pull
+     them back in via a default (non-`--no-recommends`) `zypper install` either.
+   - `git grep` across `service/lib` and `service/YaST2` - confirmed no direct code reference to
+     `Y2Country`/`Yast::Proxy` anywhere.
+   - Confirmed `yast2-hardware-detection` is a hard `Requires` of the base `yast2` package itself
+     (`rpm -q --requires yast2`), so it stays regardless.
+
+2. **Drop the RPM dependencies.**
+   - Remove `Requires: yast2-country` and `Requires: yast2-proxy` from
+     `service/package/gem2rpm.yml`, updating the explanatory comment.
+   - Remove `yast2-country \` and `yast2-proxy \` from `setup-services.sh`.
+   - No changes needed in `live/src/agama-installer.kiwi` or `.github/workflows/ci-service.yml` -
+     neither ever listed these two packages explicitly.
+
+3. **Measure the footprint reduction.**
+   Computed the before/after transitive closure of `yast2-*`/`autoyast2*`/`libstorage-ng*`-prefixed
+   packages using the real RPM database (see "Footprint metric" above): 31 -> 17 packages.
+
+4. **Update documentation.**
+   - `spec/0002-drop-yast/plan.md`: this file - mark Phases 3 (and the folded-in Phase 4) as
+     implemented, record the footprint metric, describe the final architecture.
+   - `service/YaST2/README.md`: no changes needed - it already accurately describes the vendored
+     code independent of the `yast2-country`/`yast2-proxy` removal, which never involved vendoring
+     anything.
+
+5. **Validation.**
+   - Full RSpec suite in a container without `yast2-country`, `yast2-proxy`, `yast2-network`,
+     `yast2-users`, `autoyast2(-installation)`, and `yast2-installation` installed (the full
+     accumulated set from all three phases).
+   - Real `bin/agama-autoyast` end-to-end run in the same container against a representative
+     profile, to catch anything a green RSpec suite alone might miss (per the Phase 1/2
+     postmortems).
