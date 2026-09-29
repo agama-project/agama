@@ -30,10 +30,12 @@ against the original code if needed:
   resolved through `Y2DIR`.
 - `xslt/` - static, non-Ruby support files (currently just the third-party `merge.xslt`
   stylesheet used to merge `<rules>`/`<classes>` profiles). These are not loaded through
-  `Y2DIR`/`require_paths` at all: `bin/../YaST2/xslt/merge.xslt` is installed by
-  `install.sh` at the same absolute path (`/usr/share/autoinstall/xslt/merge.xslt`) the
-  vendored `AutoInstallRules.rb` hardcodes, since that's how the original
-  `autoyast2-installation` package shipped it too.
+  `Y2DIR`/`require_paths` at all: `AutoInstallRules.rb` resolves the path to `merge.xslt`
+  relative to its own location (`File.expand_path("../../xslt/merge.xslt", __dir__)`), which
+  works the same way whether running from a git checkout, in tests, or from an installed
+  gem, since the `modules/`/`xslt/` sibling layout is preserved either way. There is no
+  `install.sh`/RPM step involved for this file beyond it being part of `spec.files` in
+  `agama-yast.gemspec`.
 
 ## Vendored classes
 
@@ -45,9 +47,10 @@ against the original code if needed:
 | `modules/ProfileLocation.rb` | `autoyast2-installation` (`autoinstallation/src/modules/ProfileLocation.rb`) | Fetches the profile from its configured location (URL, rules/classes, etc.) |
 | `modules/AutoInstallRules.rb` | `autoyast2-installation` (`autoinstallation/src/modules/AutoInstallRules.rb`) | `<rules>`/`<classes>` matching engine. Requires `xslt/merge.xslt` (see below) |
 | `modules/AutoinstFunctions.rb` | `autoyast2-installation` (`autoinstallation/src/modules/AutoinstFunctions.rb`) | Base-product detection, used by `Profile#check_version` during profile import |
+| `modules/ServicesManagerTarget.rb` | `yast2-services-manager` (`services-manager/src/modules/services_manager_target.rb`) | Only `ServicesManagerTargetClass::BaseTargets` (a target-name/translation lookup table) is used, by `AutoinstConfig`; the rest of the class (reading/writing the systemd default target) is unused dead code, kept only because `Yast.import "ServicesManagerTarget"` needs the whole file to load successfully |
 | `include/autoinstall/xml.rb` | `autoyast2-installation` (`autoinstallation/src/include/autoinstall/xml.rb`) | XML doc-type setup (`profileSetup`/`classSetup`) used while parsing the profile; loaded via `Yast.include self, "autoinstall/xml.rb"` from `AutoinstConfig.rb` |
 | `include/autoinstall/io.rb` | `autoyast2-installation` (`autoinstallation/src/include/autoinstall/io.rb`) | `Get`/`GetURL` helpers on top of `lib/transfer/file_from_url.rb`; loaded via `Yast.include self, "autoinstall/io.rb"` from `AutoinstConfig.rb` |
-| `xslt/merge.xslt` | `autoyast2-installation` (`autoinstallation/xslt/merge.xslt`, third-party LGPL stylesheet by Oliver Becker) | Merges two profile XML documents; invoked by `AutoInstallRules.rb` via `xsltproc`. Installed at `/usr/share/autoinstall/xslt/merge.xslt` by `install.sh`, not loaded as Ruby code |
+| `xslt/merge.xslt` | `autoyast2-installation` (`autoinstallation/xslt/merge.xslt`, third-party LGPL stylesheet by Oliver Becker) | Merges two profile XML documents; invoked by `AutoInstallRules.rb` via `xsltproc`, resolved relative to `AutoInstallRules.rb`'s own location. Not loaded as Ruby code |
 | `lib/autoinstall/script.rb` | `autoyast2-installation` (`autoinstallation/src/lib/autoinstall/script.rb`) | `Y2Autoinstallation::Script` and subclasses (`PreScript`, `PostScript`, etc.) |
 | `lib/autoinstall/script_runner.rb` | `autoyast2-installation` (`autoinstallation/src/lib/autoinstall/script_runner.rb`) | Runs `ExecutedScript` instances |
 | `lib/autoinstall/xml_checks.rb` | `autoyast2-installation` (`autoinstallation/src/lib/autoinstall/xml_checks.rb`) | Validates the profile XML against the AutoYaST schema |

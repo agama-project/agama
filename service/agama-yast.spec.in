@@ -86,9 +86,5 @@ sh "%{SOURCE2}" "%{SOURCE1}"
 %{_datadir}/agama/conf.d
 %dir /usr/share/YaST2
 /usr/share/YaST2/locale
-# Vendored from yast-autoyast2, see service/YaST2/README.md
-%dir %{_datadir}/autoinstall
-%dir %{_datadir}/autoinstall/xslt
-%{_datadir}/autoinstall/xslt/merge.xslt
 
 %changelog

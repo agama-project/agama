@@ -883,7 +883,11 @@ module Yast
 
     MERGE_CMD = "/usr/bin/xsltproc".freeze
     MERGE_DEFAULTS = "--novalid --maxdepth 10000 --param replace \"'false'\"".freeze
-    MERGE_XSLT_PATH = "/usr/share/autoinstall/xslt/merge.xslt".freeze
+    # Resolved relative to this file (service/YaST2/modules/AutoInstallRules.rb) instead of
+    # a hardcoded OS path, so it works both from a git checkout/bundler context and from an
+    # installed gem, without depending on install.sh having copied it anywhere. See
+    # service/YaST2/README.md.
+    MERGE_XSLT_PATH = File.expand_path("../xslt/merge.xslt", __dir__).freeze
 
     # Merges the given profiles
     #

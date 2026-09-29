@@ -147,7 +147,7 @@ mechanism is the whole point of that step.
 | `autoyast2` (base + `-installation`) | `Yast::AutoinstConfig`, `Yast::AutoinstScripts`, `Yast::Profile`/`Yast::ProfileHash`, `Yast::ProfileLocation`, `Yast::AutoInstallRules`, `Yast::AutoinstFunctions` | `service/YaST2/modules/*.rb` |
 | `autoyast2` (base + `-installation`) | `Y2Autoinstall::ScriptRunner`, `Y2Autoinstallation::PreScript`/`Script`, `Y2Autoinstallation::XmlChecks`, `Y2Autoinstallation::XmlValidator`, `Y2Autoinstallation::Y2ERB`, `Y2Autoinstallation::Entries::Registry`/`Description` | `service/YaST2/lib/autoinstall/**/*.rb` |
 | `autoyast2` (base + `-installation`) | `Yast::AutoinstallXmlInclude`, `Yast::AutoinstallIoInclude` (legacy `Yast.include` files) | `service/YaST2/include/autoinstall/*.rb` |
-| `autoyast2` (base + `-installation`, third-party LGPL stylesheet) | `merge.xslt` (static XSLT, not Ruby; used by `AutoInstallRules` via `xsltproc`) | `service/YaST2/xslt/merge.xslt`, installed to `/usr/share/autoinstall/xslt/merge.xslt` by `install.sh` |
+| `autoyast2` (base + `-installation`, third-party LGPL stylesheet) | `merge.xslt` (static XSLT, not Ruby; used by `AutoInstallRules` via `xsltproc`) | `service/YaST2/xslt/merge.xslt`, resolved by `AutoInstallRules.rb` relative to its own `__dir__` (no `install.sh`/RPM step needed) |
 | `yast2-installation` | `Installation::Unmounter`, `Installation::Clients::UmountFinishClient`, `Installation::CIOIgnore`/`CIOIgnoreFinish`, `Yast::Transfer::FileFromUrl` | `service/YaST2/lib/installation/*.rb`, `service/YaST2/lib/transfer/file_from_url.rb` |
 | `yast2-services-manager` | `Yast::ServicesManagerTargetClass::BaseTargets` (only this nested module is used, by `AutoinstConfig`; the rest of the class - reading/writing the systemd default target - is unused dead code, kept only because `Yast.import` needs the whole file to load) | `service/YaST2/modules/ServicesManagerTarget.rb` |
 | `yast2-network` (Phase 2) | `Y2Network::AutoinstProfile::NetworkingSection` + nested interface sections (bonding/bridge/vlan), `Y2Network::BootProtocol`, `Y2Network::IPAddress`, `Y2Network::Startmode`, `Y2Network::WirelessAuthMode`, `Y2Network::WirelessMode` | `service/YaST2/lib/y2network/**/*.rb` |
@@ -278,6 +278,17 @@ Agama's own code never touches it.
   `bin/agama-autoyast` needed fixing. **Takeaway:** whenever `Y2DIR` is set in an entry point,
   always place it before the first (even indirect) `require "yast"`, and validate by running the
   actual entry point/executable, not just specs that `require` the underlying classes directly.
+- **Second pitfall found during implementation:** the initial vendoring of `merge.xslt` hardcoded
+  `MERGE_XSLT_PATH` to the same absolute OS path the original `autoyast2-installation` package used
+  (`/usr/share/autoinstall/xslt/merge.xslt`), and relied on `install.sh` to copy the vendored file
+  there. This only works when the full RPM has actually been installed (`install.sh` is only run
+  from the RPM's `%install` step) - it silently doesn't exist in a plain git checkout/bundler
+  context, which is exactly how the RSpec suite (and most manual testing) runs. Fixed by resolving
+  `MERGE_XSLT_PATH` relative to `AutoInstallRules.rb`'s own `__dir__` instead, removing the
+  `install.sh`/RPM `%files` entries entirely. **Takeaway:** any vendored *non-Ruby* asset referenced
+  by an absolute path must be re-pointed to resolve relative to the vendored file's own location,
+  the same way Ruby code resolves via `Y2DIR`/`require_paths` - do not keep an upstream's hardcoded
+  absolute path.
 
 ## Phase 1 task breakdown
 
