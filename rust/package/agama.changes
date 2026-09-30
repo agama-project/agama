@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Sep 30 12:41:05 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- properly copy SSL certificates to target system (bsc#1283318)
+
+-------------------------------------------------------------------
 Tue Sep 22 14:39:11 UTC 2026 - José Iván López González <jlopez@suse.com>
 
 - Use correct scope to detect active storage tasks
