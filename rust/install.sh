@@ -43,16 +43,9 @@ install -D -t "${DESTDIR}${bindir}" "${SRCDIR}/share/agama-zypp-journal"
 
 install6 -D -p "${SRCDIR}"/share/agama.pam "${DESTDIR}${pamvendordir}"/agama
 
-# install OpenAPI specification and schemas to openapi/latest
-install6 -D -t "${DESTDIR}${datadir}"/agama/openapi/latest "${SRCDIR}"/out/openapi.*
-install6 -D -t "${DESTDIR}${datadir}"/agama/openapi/latest "${SRCDIR}"/share/dasd.schema.json
-install6 -D -t "${DESTDIR}${datadir}"/agama/openapi/latest "${SRCDIR}"/share/iscsi.schema.json
-install6 -D -t "${DESTDIR}${datadir}"/agama/openapi/latest "${SRCDIR}"/share/storage.schema.json
-install6 -D -t "${DESTDIR}${datadir}"/agama/openapi/latest "${SRCDIR}"/share/zfcp.schema.json
-install6 -D -t "${DESTDIR}${datadir}"/agama/openapi/latest "${SRCDIR}"/share/device.storage.schema.json
-install6 -D -t "${DESTDIR}${datadir}"/agama/openapi/latest "${SRCDIR}"/share/proposal.storage.schema.json
-install6 -D -t "${DESTDIR}${datadir}"/agama/openapi/latest "${SRCDIR}"/share/storage.model.schema.json
-install6 -D -t "${DESTDIR}${datadir}"/agama/openapi/latest "${SRCDIR}"/share/system.*.schema.json
+# install OpenAPI specification and standalone schemas to openapi/latest
+install6 -D -t "${DESTDIR}${datadir}"/agama/openapi/latest "${SRCDIR}"/out/openapi.* "${SRCDIR}"/out/openapi_full.*
+install6 -D -t "${DESTDIR}${datadir}"/agama/openapi/latest/schemas "${SRCDIR}"/out/schemas/*.schema.json
 install6 -D -t "${DESTDIR}${datadir}"/agama/jsonnet "${SRCDIR}"/share/agama.libsonnet
 
 install -D -t "${DESTDIR}${libexecdir}" "${SRCDIR}"/share/agama-scripts.sh

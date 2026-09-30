@@ -38,6 +38,7 @@ struct Context {
 
 impl AsyncTestContext for Context {
     async fn setup() -> Context {
+        common::ensure_test_schemas().await;
         let share_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../test/share");
         std::env::set_var("AGAMA_SHARE_DIR", share_dir.display().to_string());
         let schema_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../share");

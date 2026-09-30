@@ -42,6 +42,7 @@ pub enum Error {
 #[skip_serializing_none]
 #[derive(Clone, Debug, Default, Deserialize, Serialize, Merge, JsonSchema)]
 #[serde(rename_all = "camelCase")]
+#[schemars(deny_unknown_fields)]
 #[merge(strategy = merge::option::recurse)]
 pub struct Config {
     pub bootloader: Option<bootloader::Config>,

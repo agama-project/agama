@@ -12,17 +12,17 @@ on:
       # this file as well
       - .github/workflows/ci-profile-schema.yml
       # any change in the schema definitions
-      - rust/share/*.schema.json
+      - rust/schemas/*.schema.json
 
   pull_request:
     paths:
       # NOTE: GitHub Actions do not allow using YAML references, the same path
-      # list is used above for the push event. Keep both lists in sync!!
+      # list is used below for the push event. Keep both lists in sync!!
 
       # this file as well
       - .github/workflows/ci-profile-schema.yml
       # any change in the schema definitions
-      - rust/share/*.schema.json
+      - rust/schemas/*.schema.json
 
   # allow running manually
   workflow_dispatch:
@@ -38,19 +38,19 @@ jobs:
       with:
         # checkout only the directory with the schema
         sparse-checkout: |
-          rust/share
+          rust/schemas
 
     - name: Install Node
       uses: actions/setup-node@v6
       with:
         node-version: 22
         cache: npm
-        cache-dependency-path: rust/share
+        cache-dependency-path: rust/schemas
 
     - name: Install Node Packages
       run: npm ci
-      working-directory: rust/share
+      working-directory: rust/schemas
 
     - name: Validate the schema
       run: npm run validate
-      working-directory: rust/share
+      working-directory: rust/schemas

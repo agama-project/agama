@@ -158,9 +158,14 @@ describe Agama::AutoYaST::Converter do
         result = subject.to_agama(profile)
 
         schema = File.expand_path(
-          "../../../../rust/share/openapi.json",
+          "../../../../rust/out/schemas/config.schema.json",
           __dir__
         )
+
+        if !File.exist?(schema)
+          pending "can run only if config.schema.json is generated (run `cargo xtask openapi` first)"
+          break
+        end
 
         result_path = Tempfile.new("agama-test.json")
         result_path.write(JSON.pretty_generate(result))
