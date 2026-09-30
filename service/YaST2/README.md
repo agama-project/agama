@@ -74,5 +74,7 @@ in `Yast.import "UsersSimple"`, a Perl module that only exists inside `yast2-use
 merely loading the class would hard-crash without that package installed - for functionality
 (password/account validation) Agama never uses. Given Agama only reads a handful of plain fields
 from the raw profile hash (root/first regular user's name, password, and SSH keys),
-`service/lib/agama/autoyast/users_profile_reader.rb` reads the `<users>` section directly instead,
-with no YaST dependency at all.
+`service/lib/agama/autoyast/users_profile_reader.rb` reads the `<users>` section directly instead.
+The one piece of behavior it does replicate from `Y2Users::User#system?` - treating a user with a
+low enough explicit uid as a "system" user - reuses `Yast::ShadowConfig`, which lives in the base
+`yast2` package (not `yast2-users`), so it adds no dependency either.
