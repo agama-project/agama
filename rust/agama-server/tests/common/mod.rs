@@ -87,7 +87,9 @@ pub async fn ensure_test_schemas() {
                 );
                 map.insert(
                     "$id".to_string(),
-                    serde_json::json!("file:///usr/share/agama/openapi/latest/schemas/config.schema.json"),
+                    serde_json::json!(
+                        "file:///usr/share/agama/openapi/latest/schemas/config.schema.json"
+                    ),
                 );
                 if let Some(components) = json_value.get("components") {
                     map.insert("components".to_string(), components.clone());
@@ -96,7 +98,11 @@ pub async fn ensure_test_schemas() {
             let config_path = schemas_dir.join("config.schema.json");
             if let Ok(mut f) = std::fs::File::create(config_path) {
                 use std::io::Write;
-                _ = f.write_all(serde_json::to_string_pretty(&schema_obj).unwrap().as_bytes());
+                _ = f.write_all(
+                    serde_json::to_string_pretty(&schema_obj)
+                        .unwrap()
+                        .as_bytes(),
+                );
             }
         }
     }

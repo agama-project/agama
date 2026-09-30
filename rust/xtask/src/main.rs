@@ -3,11 +3,7 @@ use std::{env, path::PathBuf};
 use agama_utils::runtime::run_async;
 
 mod tasks {
-    use std::{
-        fs::File,
-        io::Write,
-        path::Path,
-    };
+    use std::{fs::File, io::Write, path::Path};
 
     use agama_cli::build_cli;
 
@@ -92,9 +88,24 @@ mod tasks {
         let schemas_dir = out_dir.join("schemas");
         std::fs::create_dir_all(&schemas_dir)?;
 
-        extract_schema(&mut json_value, &schemas_dir, "Config", "config.schema.json")?;
-        extract_schema(&mut json_value, &schemas_dir, "Proposal", "proposal.schema.json")?;
-        extract_schema(&mut json_value, &schemas_dir, "SystemInfo", "system.schema.json")?;
+        extract_schema(
+            &mut json_value,
+            &schemas_dir,
+            "Config",
+            "config.schema.json",
+        )?;
+        extract_schema(
+            &mut json_value,
+            &schemas_dir,
+            "Proposal",
+            "proposal.schema.json",
+        )?;
+        extract_schema(
+            &mut json_value,
+            &schemas_dir,
+            "SystemInfo",
+            "system.schema.json",
+        )?;
 
         let json = serde_json::to_string_pretty(&json_value).map_err(std::io::Error::other)?;
         let json_path = out_dir.join("openapi.json");
@@ -132,7 +143,10 @@ mod tasks {
             .ok_or_else(|| {
                 std::io::Error::new(
                     std::io::ErrorKind::NotFound,
-                    format!("Component {} not found in OpenAPI specification", component_name),
+                    format!(
+                        "Component {} not found in OpenAPI specification",
+                        component_name
+                    ),
                 )
             })?;
 
@@ -156,7 +170,11 @@ mod tasks {
 
         let schema_path = schemas_dir.join(file_name);
         let mut f = File::create(&schema_path)?;
-        f.write_all(serde_json::to_string_pretty(&schema_obj).map_err(std::io::Error::other)?.as_bytes())?;
+        f.write_all(
+            serde_json::to_string_pretty(&schema_obj)
+                .map_err(std::io::Error::other)?
+                .as_bytes(),
+        )?;
 
         let target = api_val
             .pointer_mut(&format!("/components/schemas/{}", component_name))

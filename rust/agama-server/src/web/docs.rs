@@ -167,11 +167,7 @@ pub async fn build() -> OpenApi {
         // Proposal schemas
         ("proposal.storage.schema.json", "Storage", "Proposal"),
         // System info schemas
-        (
-            "system.bootloader.schema.json",
-            "Bootloader",
-            "SystemInfo",
-        ),
+        ("system.bootloader.schema.json", "Bootloader", "SystemInfo"),
         ("system.dasd.schema.json", "Dasd", "SystemInfo"),
         ("system.iscsi.schema.json", "Iscsi", "SystemInfo"),
         ("system.storage.schema.json", "Storage", "SystemInfo"),
@@ -191,9 +187,8 @@ pub async fn build() -> OpenApi {
                 file, full_path, e
             )
         });
-        let mut schema_value: Value = serde_json::from_str(&content).unwrap_or_else(|e| {
-            panic!("Fatal error: failed to parse schema {}: {}", file, e)
-        });
+        let mut schema_value: Value = serde_json::from_str(&content)
+            .unwrap_or_else(|e| panic!("Fatal error: failed to parse schema {}: {}", file, e));
 
         let prefix = format!("{}{}", name, capitalize(group));
         extract_defs(&mut schema_value, &prefix, &mut extracted_defs);
@@ -524,7 +519,8 @@ fn rewrite_storage_refs(value: &mut serde_json::Value) {
                     *ref_str = "#/components/schemas/StorageDevice".to_string();
                 } else if ref_str.starts_with("device.storage.schema.json#/$defs/") {
                     let def_name = ref_str.trim_start_matches("device.storage.schema.json#/$defs/");
-                    *ref_str = format!("#/components/schemas/StorageDevice{}", capitalize(def_name));
+                    *ref_str =
+                        format!("#/components/schemas/StorageDevice{}", capitalize(def_name));
                 }
             }
 
