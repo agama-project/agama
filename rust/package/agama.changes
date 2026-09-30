@@ -1,5 +1,5 @@
 -------------------------------------------------------------------
-Fri Sep 18 11:05:51 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+Wed Sep 30 11:06:59 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
 
 - Added support for the "inst.listen_on" boot parameter
   - The "inst.remote=0" option disables remote access
@@ -8,6 +8,14 @@ Fri Sep 18 11:05:51 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
     or network interface, accepts comma separated list
   - agama-web-server --address2 option removed, --address can now be repeated
   (jsc#AGM-153)
+
+-------------------------------------------------------------------
+Tue Sep 29 14:34:27 UTC 2026 - Martin Vidner <mvidner@suse.com>
+
+- update runtime dependencies to:
+  - tracing-subscriber 0.3.20, CVE-2025-58160 (bsc#1249014)
+  - bytes 1.12.1, CVE-2026-25541 (bsc#1274203)
+  - serde_with 3.21.0, GHSA-7gcf-g7xr-8hxj (bsc#1271854)
 
 -------------------------------------------------------------------
 Fri Jul 17 08:24:39 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
