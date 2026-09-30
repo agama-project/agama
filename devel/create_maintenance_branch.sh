@@ -4,6 +4,12 @@
 
 set -euo pipefail
 
+# Template defaults for copying workflows and components
+readonly TPL_WORKFLOW_SUFFIX="sle16"
+readonly TPL_BRANCH_NAME="SLE-16"
+readonly TPL_LEAP_VERSION="16.0"
+readonly TPL_WEBLATE_COMP="sle-16-1"
+
 # Print usage.
 show_help() {
   echo "Usage: $(basename "$0") [options] <branch_name>"
@@ -12,9 +18,17 @@ show_help() {
   echo
   echo "Arguments:"
   echo "  <branch_name>  The name of the maintenance branch to create (mandatory)."
+  echo "                 Must contain a hyphen before the version (e.g. SLE-16.1)."
   echo
   echo "Options:"
   echo "  -h, --help     Show this help message and exit."
+}
+
+check_clean_working_tree() {
+  if ! git diff-index --quiet HEAD --; then
+    echo "ERROR: Working tree is not clean. Please commit or stash your changes first." >&2
+    exit 1
+  fi
 }
 
 # Exit if any required CLI tool is missing in $PATH.
@@ -70,7 +84,7 @@ configure_github_autosubmission() {
   fi
 
   local projects
-  projects=$(gh -R "$repo_slug" variable get OBS_PROJECTS 2> /dev/null)
+  projects=$(gh -R "$repo_slug" variable get OBS_PROJECTS 2> /dev/null || echo "")
 
   if [ -z "$projects" ]; then
     # fallback to empty JSON if not defined yet
@@ -81,7 +95,7 @@ configure_github_autosubmission() {
   echo "$projects" | jq ". += { \"$branch_name\" : \"systemsmanagement:Agama:Maintenance:$branch_name\" } " | gh -R "$repo_slug" variable set OBS_PROJECTS
 
   # trigger the workflows to submit all packages
-  workflows=(obs-staging-live.yml obs-staging-products.yml obs-staging-rust.yml obs-staging-service.yml obs-staging-web.yml)
+  local workflows=(obs-staging-live.yml obs-staging-products.yml obs-staging-rust.yml obs-staging-service.yml obs-staging-web.yml)
   for workflow in "${workflows[@]}"; do
     echo "Starting GitHub Action $workflow..."
     gh -R "$repo_slug" workflow run "$workflow" --ref "$branch_name"
@@ -92,11 +106,18 @@ configure_github_autosubmission() {
 create_git_branch() {
   local branch_name="$1"
 
-  echo "Creating Git branch $branch_name locally and pushing to remote..."
-  # make sure the master branch is up to date
-  git fetch
-  git checkout -b "$branch_name" origin/master
-  git push -u origin "$branch_name"
+  if git ls-remote --exit-code --heads origin "$branch_name" >/dev/null; then
+    echo "Branch $branch_name already exists on remote origin. Skipping branch creation."
+    git fetch
+    git checkout "$branch_name"
+    git branch --set-upstream-to="origin/$branch_name" "$branch_name"
+  else
+    echo "Creating Git branch $branch_name locally and pushing to remote..."
+    # make sure the master branch is up to date
+    git fetch
+    git checkout -b "$branch_name" origin/master
+    git push -u origin "$branch_name"
+  fi
 }
 
 # Protect the branch on GitHub: PR with 1 approval required, no bypass, no force push.
@@ -107,7 +128,7 @@ configure_branch_protection() {
   # the rules (not even by admins), do not allow force pushes and deleting the branch
   # https://docs.github.com/en/rest/branches/branch-protection#update-branch-protection
   echo "Configuring branch protection for $branch_name..."
-  cat << EOF | gh api --method PUT "repos/agama-project/agama/branches/$branch_name/protection" --input - > /dev/null
+  gh api --method PUT "repos/agama-project/agama/branches/$branch_name/protection" --input - > /dev/null << EOF
 {
   "required_status_checks": null,
   "enforce_admins": true,
@@ -156,7 +177,7 @@ create_obs_project() {
 
   # create a new OBS project
   echo "Creating OBS project systemsmanagement:Agama:Maintenance:$branch_name..."
-  cat << EOF | osc meta prj "systemsmanagement:Agama:Maintenance:$branch_name" -F -
+  osc meta prj "systemsmanagement:Agama:Maintenance:$branch_name" -F - << EOF
 <project name="systemsmanagement:Agama:Maintenance:$branch_name">
   <title>Agama - maintenance project for $branch_name Git branch</title>
   <description>This project contains the maintenance packages from agama-project/agama GitHub repository from the $branch_name branch.</description>
@@ -186,7 +207,7 @@ EOF
   echo "Maintenance project systemsmanagement:Agama:Maintenance:$branch_name successfully created!"
 
   # configure the "images" build target to build kiwi images instead of RPMs
-  cat << EOF | osc meta prjconf "systemsmanagement:Agama:Maintenance:$branch_name" -F -
+  osc meta prjconf "systemsmanagement:Agama:Maintenance:$branch_name" -F - << EOF
 %if "%_repository" == "images"
 Type: kiwi
 Repotype: staticlinks
@@ -205,20 +226,34 @@ EOF
 
   # initialize the project by copying the current packages from systemsmanagement:Agama:Devel
   for package in "${AGAMA_PACKAGES[@]}"; do
-    echo "Copying package $package from systemsmanagement:Agama:Devel to systemsmanagement:Agama:Maintenance:$branch_name..."
-    osc copypac systemsmanagement:Agama:Devel "$package" "systemsmanagement:Agama:Maintenance:$branch_name"
+    if osc meta pkg "systemsmanagement:Agama:Maintenance:$branch_name" "$package" &>/dev/null; then
+      echo "Package $package already exists in systemsmanagement:Agama:Maintenance:$branch_name, skipping copy."
+    else
+      echo "Copying package $package from systemsmanagement:Agama:Devel to systemsmanagement:Agama:Maintenance:$branch_name..."
+      osc copypac systemsmanagement:Agama:Devel "$package" "systemsmanagement:Agama:Maintenance:$branch_name"
+    fi
   done
 
   # create agama-installer-SLES -> agama-installer link
-  osc linkpac "systemsmanagement:Agama:Maintenance:$branch_name" agama-installer "systemsmanagement:Agama:Maintenance:$branch_name" agama-installer-SLES
+  if ! osc meta pkg "systemsmanagement:Agama:Maintenance:$branch_name" agama-installer-SLES &>/dev/null; then
+    osc linkpac "systemsmanagement:Agama:Maintenance:$branch_name" agama-installer "systemsmanagement:Agama:Maintenance:$branch_name" agama-installer-SLES
+  fi
 
   # change the agama-installer-SLES to build the SLES image instead of openSUSE
-  osc co "systemsmanagement:Agama:Maintenance:$branch_name" agama-installer-SLES
+  local tmp_dir
+  tmp_dir=$(mktemp -d)
   (
+    cd "$tmp_dir"
+    osc co "systemsmanagement:Agama:Maintenance:$branch_name" agama-installer-SLES
     cd "systemsmanagement:Agama:Maintenance:$branch_name/agama-installer-SLES"
-    sed -i "s/openSUSE/SUSE_SLE_$version/" _multibuild
-    osc commit -m "Build the SUSE_SLE_$version profile"
+    if [ -f _multibuild ]; then
+      sed -i "s/openSUSE/SUSE_SLE_$version/" _multibuild
+      if ! git diff --quiet _multibuild 2>/dev/null || [ -n "$(git status --porcelain 2>/dev/null)" ]; then
+         osc commit -m "Build the SUSE_SLE_$version profile" || true
+      fi
+    fi
   )
+  rm -rf "$tmp_dir"
 
   # disable building the openSUSE image
   osc meta pkg "systemsmanagement:Agama:Maintenance:$branch_name" agama-installer |
@@ -232,7 +267,7 @@ create_ibs_project() {
   local version="$2"
 
   echo "Creating IBS project Devel:YaST:Agama:Maintenance:$branch_name..."
-  cat << EOF | osc -A https://api.suse.de meta prj "Devel:YaST:Agama:Maintenance:$branch_name" -F -
+  osc -A https://api.suse.de meta prj "Devel:YaST:Agama:Maintenance:$branch_name" -F - << EOF
 <project name="Devel:YaST:Agama:Maintenance:$branch_name">
   <title>Agama - maintenance project for $branch_name Git branch</title>
   <description>This project contains the maintenance packages from agama-project/agama GitHub repository from the $branch_name branch.</description>
@@ -259,7 +294,7 @@ $OBS_MAINTAINERS
 EOF
 
   # configure the "images" build target to build kiwi images instead of RPMs
-  cat << EOF | osc -A https://api.suse.de meta prjconf "Devel:YaST:Agama:Maintenance:$branch_name" -F -
+  osc -A https://api.suse.de meta prjconf "Devel:YaST:Agama:Maintenance:$branch_name" -F - << EOF
 %if "%_repository" == "images"
 Type: kiwi
 Repotype: staticlinks
@@ -275,12 +310,18 @@ EOF
 
   # link the IBS package to the OBS
   for package in "${AGAMA_PACKAGES[@]}"; do
-    echo "Linking package $package from openSUSE.org:systemsmanagement:Agama:Maintenance:$branch_name to Devel:YaST:Agama:Maintenance:$branch_name..."
-    osc -A https://api.suse.de linkpac "openSUSE.org:systemsmanagement:Agama:Maintenance:$branch_name" "$package" "Devel:YaST:Agama:Maintenance:$branch_name"
+    if osc -A https://api.suse.de meta pkg "Devel:YaST:Agama:Maintenance:$branch_name" "$package" &>/dev/null; then
+      echo "Package $package already linked in Devel:YaST:Agama:Maintenance:$branch_name, skipping."
+    else
+      echo "Linking package $package from openSUSE.org:systemsmanagement:Agama:Maintenance:$branch_name to Devel:YaST:Agama:Maintenance:$branch_name..."
+      osc -A https://api.suse.de linkpac "openSUSE.org:systemsmanagement:Agama:Maintenance:$branch_name" "$package" "Devel:YaST:Agama:Maintenance:$branch_name"
+    fi
   done
 
   # link also agama-installer-SLES
-  osc -A https://api.suse.de linkpac "openSUSE.org:systemsmanagement:Agama:Maintenance:$branch_name" agama-installer-SLES "Devel:YaST:Agama:Maintenance:$branch_name"
+  if ! osc -A https://api.suse.de meta pkg "Devel:YaST:Agama:Maintenance:$branch_name" agama-installer-SLES &>/dev/null; then
+    osc -A https://api.suse.de linkpac "openSUSE.org:systemsmanagement:Agama:Maintenance:$branch_name" agama-installer-SLES "Devel:YaST:Agama:Maintenance:$branch_name"
+  fi
 
   # disable building the openSUSE image
   osc -A https://api.suse.de meta pkg "Devel:YaST:Agama:Maintenance:$branch_name" agama-installer |
@@ -288,8 +329,7 @@ EOF
     osc -A https://api.suse.de meta pkg -F - "Devel:YaST:Agama:Maintenance:$branch_name" agama-installer
 }
 
-# Clone the SLE-16 Weblate merge workflows for the branch and open a PR against master.
-# Note: switches the working copy to a new branch (local changes are stashed).
+# Clone the Weblate merge workflows for the branch and open a PR against master.
 adapt_translation_workflows() {
   local branch_name="$1"
   local version="$2"
@@ -300,57 +340,70 @@ adapt_translation_workflows() {
 
   # create a new branch
   local pr_branch="translation-workflows-$file_suffix"
-  git stash save
+  
+  local original_branch
+  original_branch=$(git rev-parse --abbrev-ref HEAD)
+
   git checkout -b "$pr_branch" origin/master
 
   # copy files
   local repo_root
   repo_root=$(git rev-parse --show-toplevel)
-  cp "$repo_root/.github/workflows/weblate-merge-po-sle16.yml" "$repo_root/.github/workflows/weblate-merge-po-$file_suffix.yml"
-  cp "$repo_root/.github/workflows/weblate-merge-products-po-sle16.yml" "$repo_root/.github/workflows/weblate-merge-products-po-$file_suffix.yml"
-  cp "$repo_root/.github/workflows/weblate-merge-service-po-sle16.yml" "$repo_root/.github/workflows/weblate-merge-service-po-$file_suffix.yml"
-  # TODO: handle the Rust translations by the script after the initial 16.1 version is created manually
-  # cp "$repo_root/.github/workflows/weblate-merge-rust-po.yml" "$repo_root/.github/workflows/weblate-merge-rust-po-$file_suffix.yml"
+  cp "$repo_root/.github/workflows/weblate-merge-po-$TPL_WORKFLOW_SUFFIX.yml" "$repo_root/.github/workflows/weblate-merge-po-$file_suffix.yml"
+  cp "$repo_root/.github/workflows/weblate-merge-products-po-$TPL_WORKFLOW_SUFFIX.yml" "$repo_root/.github/workflows/weblate-merge-products-po-$file_suffix.yml"
+  cp "$repo_root/.github/workflows/weblate-merge-service-po-$TPL_WORKFLOW_SUFFIX.yml" "$repo_root/.github/workflows/weblate-merge-service-po-$file_suffix.yml"
 
   # change the branch name
-  sed -i "s/SLE-16/$branch_name/g" "$repo_root/.github/workflows/weblate-merge-po-$file_suffix.yml"
-  sed -i "s/SLE-16/$branch_name/g" "$repo_root/.github/workflows/weblate-merge-products-po-$file_suffix.yml"
-  sed -i "s/SLE-16/$branch_name/g" "$repo_root/.github/workflows/weblate-merge-service-po-$file_suffix.yml"
-  sed -i "s/sle16/$file_suffix/g" "$repo_root/.github/workflows/weblate-merge-po-$file_suffix.yml"
-  sed -i "s/sle16/$file_suffix/g" "$repo_root/.github/workflows/weblate-merge-products-po-$file_suffix.yml"
-  sed -i "s/sle16/$file_suffix/g" "$repo_root/.github/workflows/weblate-merge-service-po-$file_suffix.yml"
+  sed -i "s/$TPL_BRANCH_NAME/$branch_name/g" "$repo_root/.github/workflows/weblate-merge-po-$file_suffix.yml"
+  sed -i "s/$TPL_BRANCH_NAME/$branch_name/g" "$repo_root/.github/workflows/weblate-merge-products-po-$file_suffix.yml"
+  sed -i "s/$TPL_BRANCH_NAME/$branch_name/g" "$repo_root/.github/workflows/weblate-merge-service-po-$file_suffix.yml"
+  sed -i "s/$TPL_WORKFLOW_SUFFIX/$file_suffix/g" "$repo_root/.github/workflows/weblate-merge-po-$file_suffix.yml"
+  sed -i "s/$TPL_WORKFLOW_SUFFIX/$file_suffix/g" "$repo_root/.github/workflows/weblate-merge-products-po-$file_suffix.yml"
+  sed -i "s/$TPL_WORKFLOW_SUFFIX/$file_suffix/g" "$repo_root/.github/workflows/weblate-merge-service-po-$file_suffix.yml"
 
   # change the used container
-  sed -i "s@registry.opensuse.org/opensuse/leap:16.0@registry.opensuse.org/opensuse/leap:$version@" "$repo_root/.github/workflows/weblate-merge-po-$file_suffix.yml"
-  sed -i "s@registry.opensuse.org/opensuse/leap:16.0@registry.opensuse.org/opensuse/leap:$version@" "$repo_root/.github/workflows/weblate-merge-products-po-$file_suffix.yml"
-  sed -i "s@registry.opensuse.org/opensuse/leap:16.0@registry.opensuse.org/opensuse/leap:$version@" "$repo_root/.github/workflows/weblate-merge-service-po-$file_suffix.yml"
+  sed -i "s@registry.opensuse.org/opensuse/leap:$TPL_LEAP_VERSION@registry.opensuse.org/opensuse/leap:$version@" "$repo_root/.github/workflows/weblate-merge-po-$file_suffix.yml"
+  sed -i "s@registry.opensuse.org/opensuse/leap:$TPL_LEAP_VERSION@registry.opensuse.org/opensuse/leap:$version@" "$repo_root/.github/workflows/weblate-merge-products-po-$file_suffix.yml"
+  sed -i "s@registry.opensuse.org/opensuse/leap:$TPL_LEAP_VERSION@registry.opensuse.org/opensuse/leap:$version@" "$repo_root/.github/workflows/weblate-merge-service-po-$file_suffix.yml"
 
   # commit and push the new files
   git add "$repo_root/.github/workflows/weblate-merge-po-$file_suffix.yml"
   git add "$repo_root/.github/workflows/weblate-merge-products-po-$file_suffix.yml"
   git add "$repo_root/.github/workflows/weblate-merge-service-po-$file_suffix.yml"
-  git commit -m "Added translation workflow files for the $branch_name branch"
-  git push -u origin "$pr_branch"
+  
+  if ! git diff --cached --quiet; then
+    git commit -m "Added translation workflow files for the $branch_name branch"
+    git push -u origin "$pr_branch"
 
-  # create a pull request
-  gh pr create -B master -H "$pr_branch" \
-    --title "Translation workflow files for the $branch_name branch" \
-    --body "Automatically create pull requests for the $branch_name translations"
+    # create a pull request
+    gh pr create -B master -H "$pr_branch" \
+      --title "Translation workflow files for the $branch_name branch" \
+      --body "Automatically create pull requests for the $branch_name translations"
+  else
+    echo "Translation workflow files already exist for $branch_name. Skipping PR creation."
+  fi
+
+  # return to the original branch
+  git checkout "$original_branch"
 }
 
 # Create the branch in agama-project/agama-weblate from its master.
 create_weblate_branch() {
   local branch_name="$1"
 
-  echo "Creating branch $branch_name in agama-project/agama-weblate..."
-  local source_sha
-  source_sha=$(gh api "repos/agama-project/agama-weblate/git/ref/heads/master" --jq '.object.sha')
-  gh api --method POST "repos/agama-project/agama-weblate/git/refs" \
-    -f ref="refs/heads/$branch_name" \
-    -f sha="$source_sha" > /dev/null
+  if gh api "repos/agama-project/agama-weblate/git/ref/heads/$branch_name" --silent 2>/dev/null; then
+    echo "Branch $branch_name already exists in agama-weblate. Skipping creation."
+  else
+    echo "Creating branch $branch_name in agama-project/agama-weblate..."
+    local source_sha
+    source_sha=$(gh api "repos/agama-project/agama-weblate/git/ref/heads/master" --jq '.object.sha')
+    gh api --method POST "repos/agama-project/agama-weblate/git/refs" \
+      -f ref="refs/heads/$branch_name" \
+      -f sha="$source_sha" > /dev/null
+  fi
 }
 
-# Create the Weblate components for the branch, settings are copied from the *-sle-16-1 components.
+# Create the Weblate components for the branch, settings are copied from the templates.
 create_weblate_components() {
   local branch_name="$1"
 
@@ -371,8 +424,14 @@ create_weblate_components() {
     branch_slug="${branch_slug//./-}"
     local target_slug="agama-$type-$branch_slug"
 
-    # the existing SLE-16.1 component is used as a template for the new component
-    local source_url="https://l10n.opensuse.org/api/components/agama/agama-$type-sle-16-1/"
+    # check if it exists
+    if curl -s -f -H "Authorization: Token $WEBLATE_API_KEY" "https://l10n.opensuse.org/api/components/agama/$target_slug/" > /dev/null; then
+      echo "Weblate component $target_slug already exists. Skipping."
+      continue
+    fi
+
+    # the existing template component is used as a template for the new component
+    local source_url="https://l10n.opensuse.org/api/components/agama/agama-$type-$TPL_WEBLATE_COMP/"
     local create_url="https://l10n.opensuse.org/api/projects/agama/components/"
 
     echo "Creating Weblate component \"$target_slug\" for branch $branch_name..."
@@ -462,6 +521,15 @@ if [ -z "$BRANCH_NAME" ]; then
   show_help >&2
   exit 1
 fi
+
+# validate branch formatting (must contain a hyphen and a version string)
+if [[ ! "$BRANCH_NAME" =~ -[0-9]+(\.[0-9]+)?$ ]]; then
+  echo "ERROR: Branch name must contain a hyphen before the version (e.g., SLE-16.1)." >&2
+  exit 1
+fi
+
+# check working tree status
+check_clean_working_tree
 
 # check that the Weblate token is defined
 check_weblate_token
