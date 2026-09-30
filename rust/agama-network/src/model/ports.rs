@@ -33,7 +33,7 @@ use agama_utils::api::network::{
 };
 use uuid::Uuid;
 
-use super::{Connection, ConnectionCollection, ConnectionConfig};
+use super::{Connection, ConnectionCollection, ConnectionConfig, PortConfig};
 use crate::error::NetworkStateError;
 
 /// A connection of the incoming document, wherever it sits in the tree.
@@ -338,6 +338,14 @@ impl<'a> PortResolver<'a> {
             .collect::<Vec<_>>();
         conns.extend(dropped);
 
+        let present: HashSet<Uuid> = conns.iter().map(|c| c.uuid).collect();
+        let bridges: HashSet<Uuid> = conns
+            .iter()
+            .chain(self.known.iter().filter(|c| !present.contains(&c.uuid)))
+            .filter(|c| matches!(c.config, ConnectionConfig::Bridge(_)))
+            .map(|c| c.uuid)
+            .collect();
+
         for (index, conn) in conns.iter_mut().enumerate() {
             let node = nodes.get(index);
 
@@ -346,10 +354,16 @@ impl<'a> PortResolver<'a> {
                 if node.is_some() || conn.controller != Some(*controller) {
                     conn.ip_config = IpConfig::default();
                 }
+                // The bridge port settings of a port that joins a bond would not be accepted
+                // back, so they go away with the bridge.
+                if !bridges.contains(controller) {
+                    conn.port_config = PortConfig::None;
+                }
                 conn.controller = Some(*controller);
             } else if node.is_some_and(|n| n.parent.is_none()) && conn.controller.is_some() {
                 tracing::info!("Moving '{}' out of its controller", conn.id);
                 conn.controller = None;
+                conn.port_config = PortConfig::None;
                 if !conn.is_removed() {
                     default_ip_methods(
                         conn,
