@@ -72,7 +72,6 @@ jobs:
       run: |
         RUBY_VERSION=$(ruby -e "puts RbConfig::CONFIG['ruby_version']")
         zypper --non-interactive install \
-        autoyast2-installation \
         yast2 \
         yast2-bootloader \
         yast2-devtools \

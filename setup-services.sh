@@ -57,12 +57,10 @@ $SUDO $ZYPPER install \
   gettext-runtime \
   glibc-locale \
   suseconnect-ruby-bindings \
-  autoyast2-installation \
   yast2 \
   yast2-bootloader \
   yast2-country \
   yast2-hardware-detection \
-  yast2-installation \
   yast2-iscsi-client \
   yast2-network \
   yast2-proxy \

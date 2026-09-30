@@ -103,10 +103,6 @@ module Agama
 
         # @return [Logger]
         attr_reader :logger
-
-        def wfm_write(function)
-          Yast::WFM.CallFunction(function, ["Write"])
-        end
       end
 
       # Step to copy files from the inst-sys to the target system
@@ -168,7 +164,7 @@ module Agama
 
         def cio_ignore_finish
           require "installation/cio_ignore"
-          wfm_write("cio_ignore_finish")
+          Installation::CIOIgnoreFinish.new.run("Write")
         end
       end
 
@@ -179,7 +175,10 @@ module Agama
         end
 
         def run
-          wfm_write("storage_finish")
+          require "y2storage/clients/finish"
+          # #write is protected in Y2Storage::Clients::Finish, called directly here
+          # instead of going through the generic Yast::WFM client dispatch.
+          Y2Storage::Clients::Finish.new.send(:write)
         end
       end
 
@@ -190,7 +189,8 @@ module Agama
         end
 
         def run
-          wfm_write("iscsi-client_finish")
+          require "y2iscsi_client/finish_client"
+          Y2IscsiClient::FinishClient.new.write
         end
       end
 
