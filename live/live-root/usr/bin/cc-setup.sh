@@ -35,6 +35,7 @@ readonly AGAMA_TOKEN_FILE="/run/agama/token"
 readonly API_URL="http://localhost/api/manager/installer"
 # Storage actions of the current proposal
 readonly STORAGE_ACTIONS_URL="http://localhost/api/storage/devices/actions"
+readonly SYSTEM_TEMPLATE="../share/cc-setup/agama-template.json"
 
 # API phase when installation completes.
 readonly FINISH_PHASE=3
@@ -108,7 +109,7 @@ Usage: ${0##*/} [OPTIONS]
   --dialog          force the dialog based text user interface
   --plain           force the simple line interface (serial console)
   --template FILE   Agama JSON profile template (default:
-                    ../share/cc-setup/agama-template.json)
+                    $SYSTEM_TEMPLATE)
   --dry-run         only build the profile, do not modify the system
   --help            show this help
 
@@ -120,7 +121,7 @@ EOF
 parse_arguments() {
   local script_dir
   script_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
-  TEMPLATE="$script_dir/../share/cc-setup/agama-template.json"
+  TEMPLATE="$script_dir/$SYSTEM_TEMPLATE"
 
   local ui_forced=false
   while (($# > 0)); do
