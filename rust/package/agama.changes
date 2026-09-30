@@ -1,24 +1,13 @@
 -------------------------------------------------------------------
 Mon Sep 28 12:00:00 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
 
-- Expose the connections that are ports of a bond or a bridge over
-  the HTTP API, nested in the "ports" list of their controller, so
-  stacked setups like eth0+eth1 -> bond0 -> br0 -> br0.100 can be
-  read and modified. A port can still be given by name.
-- Report the bridge port settings of a port through the new "port"
-  key.
-- Stop dropping the settings that the HTTP API does not model
-  (firewall zone, port settings, custom MAC address, bridge
-  "maxAge") when a connection is updated.
-- Delete the ports that are dropped from a controller, unless they
-  are moved somewhere else in the same document, and reject the
-  port lists that cannot be applied (ambiguous names, a port given
-  twice, loops of controllers).
-- Remove the whole stack below a controller when the controller is
-  removed, no matter how deep it is, and report it as such before
-  the changes are applied.
-- Do not allow IP settings on a port, as its controller holds the IP
-  configuration, and do not write them to NetworkManager.
+- Nest the ports of bonds and bridges in the "ports" list of their
+  controller, so stacked setups (e.g., eth0 + eth1 -> bond0 -> br0)
+  can be read and modified (gh#agama-project/agama#3995).
+- Remove the ports along with their controller and do not allow IP
+  settings on a port.
+- Keep the settings that the API does not model when a connection
+  is updated.
 
 -------------------------------------------------------------------
 Mon Sep 28 09:10:11 UTC 2026 - José Iván López González <jlopez@suse.com>
