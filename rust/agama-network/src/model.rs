@@ -1248,8 +1248,11 @@ mod tests {
     #[test]
     fn test_omitting_the_port_settings_leaves_them_alone() {
         let state = stacked_state();
-        let mut update = find(&exposed(&state), "bond0");
-        update.port = None;
+        let mut bond0 = find(&exposed(&state), "bond0");
+        bond0.port = None;
+        // bond0 stays nested in br0, otherwise it would be moved out of it.
+        let mut update = find(&exposed(&state), "br0");
+        update.bridge.as_mut().unwrap().ports = vec![nested(bond0)];
 
         let collection = state
             .connection_collection_from(&NetworkConnectionsCollection(vec![update]))
