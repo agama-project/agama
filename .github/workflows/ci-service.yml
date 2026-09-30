@@ -76,9 +76,7 @@ jobs:
         yast2-bootloader \
         yast2-devtools \
         yast2-iscsi-client \
-        yast2-network \
         yast2-storage-ng \
-        yast2-users \
         gettext-tools \
         "rubygem(ruby:$RUBY_VERSION:yast-rake)" \
         "rubygem(ruby:$RUBY_VERSION:gettext)" \

@@ -18,7 +18,6 @@
     Requires:       yast2-country
     Requires:       yast2-hardware-detection
     Requires:       yast2-iscsi-client >= 5.0.11
-    Requires:       yast2-network
     Requires:       yast2-proxy
     Requires:       yast2-storage-ng >= 5.0.49
     %ifarch s390 s390x
