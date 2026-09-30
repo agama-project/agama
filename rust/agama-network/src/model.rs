@@ -2306,7 +2306,11 @@ impl Connection {
         self.ip_config.gateway4 = conn.gateway4;
         self.ip_config.gateway6 = conn.gateway6;
         self.interface = conn.interface.clone();
-        self.mtu = conn.mtu;
+
+        // An MTU of 0 means that it is not given, e.g. a port referred to by its interface only.
+        if conn.mtu != 0 {
+            self.mtu = conn.mtu;
+        }
 
         if let Some(match_settings) = &conn.match_settings {
             self.match_config = MatchConfig {
