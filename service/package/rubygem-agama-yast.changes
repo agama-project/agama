@@ -1,4 +1,16 @@
 -------------------------------------------------------------------
+Wed Sep 30 12:48:23 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Drop unnecessary YaST RPM dependencies from the AutoYaST support
+  code:
+  - Vendor the needed autoyast2/yast2-installation code
+    (gh#agama-project/agama#4001).
+  - Vendor the needed yast2-network code and reimplement the
+    yast2-users profile parsing (gh#agama-project/agama#4003).
+  - Drop the unused yast2-country/yast2-proxy dependencies
+    (gh#agama-project/agama#4004).
+
+-------------------------------------------------------------------
 Wed Sep 23 09:30:35 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Fix support for AutoYaST classes adding the missing dependency on
