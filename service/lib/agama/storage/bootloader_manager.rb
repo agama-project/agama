@@ -26,7 +26,6 @@ require "bootloader/bootloader_factory"
 require "yast"
 
 Yast.import "BootStorage"
-Yast.import "Mode"
 
 module Agama
   module Storage
@@ -83,15 +82,9 @@ module Agama
       #
       # It writes the bootloader configuration to the system.
       #
-      # This replicates the relevant logic from yast2-bootloader's inst_bootloader client
-      # (bootloader/src/clients/inst_bootloader.rb) without going through the generic
-      # Yast::WFM client dispatch, since that client is no longer installed (it belongs to
-      # the yast2-bootloader package, but Agama does not depend on the client-search
-      # machinery from yast2-installation anymore).
+      # This replicates the relevant logic from yast2-bootloader's inst_bootloader client.
       def install
         bl_current = ::Bootloader::BootloaderFactory.current
-        return if Yast::Mode.update && !(bl_current.read? || bl_current.proposed?)
-
         bl_current.write_sysconfig(prewrite: true)
       end
 

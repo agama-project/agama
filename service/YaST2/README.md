@@ -5,34 +5,32 @@ provided by the `autoyast2` (`autoyast2-installation`), `yast2-installation` and
 `yast2-network` YaST packages. Agama no longer depends on those RPMs; the classes it
 still needs from them have been copied here instead.
 
-There is **no process to keep this code in sync with upstream YaST releases**. If a bug
-is found here, or a new AutoYaST feature is needed, fix/extend the code directly in this
-directory; do not expect it to be updated automatically from `yast-autoyast2` or
-`yast-installation`.
+There is **no process to keep this code in sync with upstream YaST releases**. If a bug is found
+here, or a new AutoYaST feature is needed, fix/extend the code directly in this directory; do not
+expect it to be updated automatically from `yast-autoyast2` or `yast-installation`.
 
 ## Layout
 
-This mirrors the relevant parts of the upstream source trees so it stays easy to compare
-against the original code if needed:
+This mirrors the relevant parts of the upstream source trees so it stays easy to compare against the
+original code if needed:
 
 - `modules/` - classes that are loaded through `Yast.import "X"` (the classic YaST module
-  mechanism). This directory is added to `ENV["Y2DIR"]` by `bin/agama-autoyast` (the same
-  mechanism already used by `service/lib/agama/y2dir` to override `Yast::Package` and
+  mechanism). This directory is added to `ENV["Y2DIR"]` by `bin/agama-autoyast` (the same mechanism
+  already used by `service/lib/agama/y2dir` to override `Yast::Package` and
   `Yast::PackagesProposal`), so `Yast.import "AutoinstConfig"` and friends resolve here
   automatically without any changes to the code that uses them.
 - `lib/` - classes loaded through plain `require`. This directory is added to the gem's
-  `require_paths` (see `agama-yast.gemspec`), so `require "installation/unmounter"` and
-  similar calls resolve here automatically.
-- `include/` - legacy YCP-era `Yast.include self, "..."` files. Like `modules/`, these are
-  resolved through `Y2DIR`.
-- `xslt/` - static, non-Ruby support files (currently just the third-party `merge.xslt`
-  stylesheet used to merge `<rules>`/`<classes>` profiles). These are not loaded through
-  `Y2DIR`/`require_paths` at all: `AutoInstallRules.rb` resolves the path to `merge.xslt`
-  relative to its own location (`File.expand_path("../../xslt/merge.xslt", __dir__)`), which
-  works the same way whether running from a git checkout, in tests, or from an installed
-  gem, since the `modules/`/`xslt/` sibling layout is preserved either way. There is no
-  `install.sh`/RPM step involved for this file beyond it being part of `spec.files` in
-  `agama-yast.gemspec`.
+  `require_paths` (see `agama-yast.gemspec`), so `require "installation/unmounter"` and similar
+  calls resolve here automatically.
+- `include/` - legacy YCP-era `Yast.include self, "..."` files. Like `modules/`, these are resolved
+  through `Y2DIR`.
+- `xslt/` - static, non-Ruby support files (currently just the third-party `merge.xslt` stylesheet
+  used to merge `<rules>`/`<classes>` profiles). These are not loaded through
+  `Y2DIR`/`require_paths` at all: `AutoInstallRules.rb` resolves the path to `merge.xslt` relative
+  to its own location (`File.expand_path("../../xslt/merge.xslt", __dir__)`), which works the same
+  way whether running from a git checkout, in tests, or from an installed gem, since the
+  `modules/`/`xslt/` sibling layout is preserved either way. There is no `install.sh`/RPM step
+  involved for this file beyond it being part of `spec.files` in `agama-yast.gemspec`.
 
 ## Vendored classes
 

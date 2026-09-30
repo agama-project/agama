@@ -240,43 +240,9 @@ describe Agama::Storage::BootloaderManager do
   end
 
   describe "#install" do
-    before do
-      allow(Yast::Mode).to receive(:update).and_return(update)
-      allow(bootloader_obj).to receive(:read?).and_return(read)
-      allow(bootloader_obj).to receive(:proposed?).and_return(proposed)
-      allow(bootloader_obj).to receive(:write_sysconfig)
-    end
-
-    let(:update) { false }
-    let(:read) { false }
-    let(:proposed) { false }
-
     it "writes the sysconfig file for the current bootloader" do
-      prewrite = nil
-      allow(bootloader_obj).to receive(:write_sysconfig) { |*args| prewrite = args.first }
+      expect(bootloader_obj).to receive(:write_sysconfig).with({ prewrite: true })
       agama_bootloader.install
-      expect(prewrite).to eq(prewrite: true)
-    end
-
-    context "when running an update and the bootloader was not read nor proposed" do
-      let(:update) { true }
-
-      it "does not write the sysconfig file" do
-        expect(bootloader_obj).to_not receive(:write_sysconfig)
-        agama_bootloader.install
-      end
-    end
-
-    context "when running an update but the bootloader was already read" do
-      let(:update) { true }
-      let(:read) { true }
-
-      it "writes the sysconfig file" do
-        prewrite = nil
-        allow(bootloader_obj).to receive(:write_sysconfig) { |*args| prewrite = args.first }
-        agama_bootloader.install
-        expect(prewrite).to eq(prewrite: true)
-      end
     end
   end
 
