@@ -31,6 +31,11 @@ describe Agama::AutoYaST::UsersProfileReader do
   let(:root) { { "username" => "root", "user_password" => "123456", "encrypted" => false } }
   let(:user) { { "username" => "suse", "fullname" => "SUSE", "user_password" => "nots3cr3t" } }
   let(:nobody) { { "username" => "nobody" } }
+  let(:sys_uid_max) { 499 }
+
+  before do
+    allow(Yast::ShadowConfig).to receive(:fetch).with(:sys_uid_max).and_return(sys_uid_max)
+  end
 
   describe "#root" do
     context "when there is no 'users' section" do
@@ -97,6 +102,43 @@ describe Agama::AutoYaST::UsersProfileReader do
 
       it "returns the first one" do
         expect(subject.regular_user).to eq(user)
+      end
+    end
+
+    context "when the only non-root user has an explicit uid below SYS_UID_MAX" do
+      let(:service_account) { { "username" => "srvaccount", "uid" => "111" } }
+      let(:profile) { { "users" => [root, service_account] } }
+
+      it "returns nil" do
+        expect(subject.regular_user).to be_nil
+      end
+    end
+
+    context "when the only non-root user has an explicit uid equal to SYS_UID_MAX" do
+      let(:service_account) { { "username" => "srvaccount", "uid" => sys_uid_max.to_s } }
+      let(:profile) { { "users" => [root, service_account] } }
+
+      it "returns nil" do
+        expect(subject.regular_user).to be_nil
+      end
+    end
+
+    context "when the only non-root user has an explicit uid above SYS_UID_MAX" do
+      let(:regular_account) { { "username" => "srvaccount", "uid" => (sys_uid_max + 1).to_s } }
+      let(:profile) { { "users" => [root, regular_account] } }
+
+      it "returns its profile hash" do
+        expect(subject.regular_user).to eq(regular_account)
+      end
+    end
+
+    context "when SYS_UID_MAX cannot be determined (e.g. missing login.defs)" do
+      let(:sys_uid_max) { nil }
+      let(:service_account) { { "username" => "srvaccount", "uid" => "111" } }
+      let(:profile) { { "users" => [root, service_account] } }
+
+      it "does not filter out users based on their uid" do
+        expect(subject.regular_user).to eq(service_account)
       end
     end
   end

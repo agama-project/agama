@@ -12,14 +12,6 @@
     Requires:       dbus-1-common
     Requires:       dbus-1-daemon
     # YaST dependencies
-    # NOTE: autoyast2-installation, yast2-installation and yast2-network are no longer required,
-    # most of the code Agama needed from them has been vendored into YaST2/, see
-    # YaST2/README.md. yast2-users was never required for parsing purposes and is not needed
-    # either, see service/lib/agama/autoyast/users_profile_reader.rb. yast2-country and
-    # yast2-proxy were never referenced by any Agama code and are not required by any of the
-    # dependencies below either (confirmed via `rpm -q --requires`/`--recommends`), so they are
-    # dropped too. yast2-hardware-detection stays: it is a hard Requires of the base yast2
-    # package itself.
     # ArchFilter
     Requires:       yast2 >= 4.5.20
     Requires:       yast2-bootloader >= 5.0.30
