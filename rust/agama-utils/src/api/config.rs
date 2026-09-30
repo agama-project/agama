@@ -95,3 +95,34 @@ impl Config {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::path::PathBuf;
+
+    #[test]
+    fn test_deserialize_config_full() {
+        let manifest_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+        let full_example = manifest_dir.join("../share/examples/config_full.json");
+        let contents = std::fs::read_to_string(&full_example).expect("read config_full.json");
+        let base_uri = Uri::try_from("file:///".to_string()).unwrap();
+        let config = Config::from_json(&contents, &base_uri).expect("deserialize Config");
+
+        assert!(config.bootloader.is_some());
+        assert!(config.hostname.is_some());
+        assert!(config.l10n.is_some());
+        assert!(config.proxy.is_some());
+        assert!(config.security.is_some());
+        assert!(config.software.is_some());
+        assert!(config.network.is_some());
+        assert!(config.ntp.is_some());
+        assert!(config.questions.is_some());
+        assert!(config.access.is_some());
+        assert!(config.storage.is_some());
+        assert!(config.iscsi.is_some());
+        assert!(config.files.is_some());
+        assert!(config.users.is_some());
+        assert!(config.s390.is_some());
+    }
+}

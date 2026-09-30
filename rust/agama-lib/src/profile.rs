@@ -286,3 +286,29 @@ impl ProfileEvaluator {
         Ok(())
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_validate_config_full() {
+        let manifest_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+        let schema_path = manifest_dir.join("../out/schemas/config.schema.json");
+        if !schema_path.exists() {
+            return;
+        }
+
+        let validator = ProfileValidator::new(&schema_path).expect("valid schema");
+        let full_example = manifest_dir.join("../share/examples/config_full.json");
+        let result = validator
+            .validate_file(&full_example)
+            .expect("validation result");
+        match result {
+            ValidationOutcome::Valid => {}
+            ValidationOutcome::NotValid(errors) => {
+                panic!("Comprehensive config failed validation:\n{:#?}", errors);
+            }
+        }
+    }
+}

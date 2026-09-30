@@ -1,0 +1,347 @@
+{
+  "$schema": "file:///usr/share/agama/openapi/latest/schemas/config.schema.json",
+  "bootloader": {
+    "stopOnBootMenu": true,
+    "timeout": 10,
+    "extraKernelParams": "quiet splash console=ttyS0",
+    "updateNvram": true
+  },
+  "hostname": {
+    "static": "agama-full.example.com",
+    "hostname": "agama-full"
+  },
+  "l10n": {
+    "locale": "en_US.UTF-8",
+    "keymap": "us",
+    "timezone": "Europe/Berlin"
+  },
+  "proxy": {
+    "enabled": true,
+    "http": "http://proxy.example.com:8080",
+    "https": "http://proxy.example.com:8080",
+    "ftp": "http://proxy.example.com:8080",
+    "gopher": "http://proxy.example.com:8080",
+    "socks": "socks://proxy.example.com:1080",
+    "socks5": "socks5://proxy.example.com:1080",
+    "noProxy": "localhost,127.0.0.1,.example.com",
+    "user": "proxyuser",
+    "password": "proxypassword"
+  },
+  "security": {
+    "sslCertificates": [
+      {
+        "fingerprint": "11:22:33:44:55:66:77:88:99:AA:BB:CC:DD:EE:FF:00:11:22:33:44:55:66:77:88:99:AA:BB:CC:DD:EE:FF:00",
+        "algorithm": "SHA256"
+      }
+    ]
+  },
+  "product": {
+    "id": "Tumbleweed",
+    "mode": "offline",
+    "registrationCode": "REG12345",
+    "registrationEmail": "admin@example.com",
+    "registrationUrl": "https://scc.suse.com",
+    "addons": [
+      {
+        "id": "sle-module-basesystem",
+        "version": "16.0",
+        "registrationCode": "ADDON12345"
+      }
+    ]
+  },
+  "software": {
+    "patterns": [
+      "base",
+      "enhanced_base",
+      "gnome"
+    ],
+    "packages": [
+      "vim",
+      "curl",
+      "git"
+    ],
+    "onlyRequired": false,
+    "extraRepositories": [
+      {
+        "alias": "custom-repo",
+        "name": "Custom Repository",
+        "url": "https://download.opensuse.org/repositories/custom",
+        "priority": 99,
+        "enabled": true,
+        "allowUnsigned": false,
+        "gpgFingerprints": [
+          "A1B2C3D4E5F60718293A4B5C6D7E8F9012345678"
+        ]
+      }
+    ]
+  },
+  "network": {
+    "connections": [
+      {
+        "id": "eth0",
+        "interface": "eth0",
+        "method4": "manual",
+        "method6": "auto",
+        "addresses": [
+          "192.168.1.100/24"
+        ],
+        "gateway4": "192.168.1.1",
+        "nameservers": [
+          "1.1.1.1",
+          "8.8.8.8"
+        ],
+        "dnsSearchlist": [
+          "example.com"
+        ],
+        "mtu": 1500
+      },
+      {
+        "id": "bond0",
+        "interface": "bond0",
+        "bond": {
+          "mode": "802.3ad",
+          "options": "miimon=100",
+          "ports": [
+            "eth1",
+            "eth2"
+          ]
+        }
+      },
+      {
+        "id": "br0",
+        "interface": "br0",
+        "bridge": {
+          "ports": [
+            "eth3"
+          ],
+          "stp": true
+        }
+      },
+      {
+        "id": "vlan10",
+        "interface": "vlan10",
+        "vlan": {
+          "id": 10,
+          "parent": "eth0"
+        }
+      },
+      {
+        "id": "wifi0",
+        "interface": "wlan0",
+        "wireless": {
+          "ssid": "MySecureNetwork",
+          "mode": "infrastructure",
+          "security": "wpa-psk",
+          "password": "secretpassword"
+        }
+      }
+    ],
+    "state": {
+      "networkingEnabled": true,
+      "wirelessEnabled": true,
+      "copyNetwork": true
+    }
+  },
+  "ntp": {
+    "sources": [
+      {
+        "type": "pool",
+        "address": "0.opensuse.pool.ntp.org",
+        "iburst": true,
+        "offline": false
+      },
+      {
+        "type": "server",
+        "address": "time.example.com",
+        "iburst": true,
+        "offline": false
+      },
+      {
+        "type": "peer",
+        "address": "peer.example.com",
+        "iburst": false,
+        "offline": false
+      }
+    ]
+  },
+  "questions": {
+    "policy": "auto",
+    "answers": [
+      {
+        "class": "autoyastPassword",
+        "text": "Root password",
+        "data": {
+          "user": "root"
+        },
+        "action": "continue",
+        "value": "supersecret"
+      }
+    ]
+  },
+  "access": {
+    "ssh": "enabled",
+    "webConsole": "enabled"
+  },
+  "storage": {
+    "boot": {
+      "configure": true,
+      "device": "vda"
+    },
+    "drives": [
+      {
+        "search": "/dev/vda",
+        "alias": "vda",
+        "ptableType": "gpt",
+        "partitions": [
+          {
+            "alias": "pv1",
+            "id": "lvm",
+            "size": "20 GiB"
+          },
+          {
+            "id": "linux",
+            "size": "10 GiB",
+            "encryption": {
+              "luks1": {
+                "password": "notsecret"
+              }
+            },
+            "filesystem": {
+              "type": {
+                "btrfs": {
+                  "snapshots": true
+                }
+              },
+              "path": "/",
+              "mountBy": "uuid",
+              "mountOptions": [
+                "ro"
+              ]
+            }
+          },
+          {
+            "encryption": {
+              "luks2": {
+                "password": "notsecret",
+                "label": "home"
+              }
+            },
+            "filesystem": {
+              "type": "xfs",
+              "path": "/home"
+            }
+          }
+        ]
+      }
+    ],
+    "volumeGroups": [
+      {
+        "name": "system",
+        "physicalVolumes": [
+          "pv1"
+        ],
+        "extentSize": "8 MiB",
+        "logicalVolumes": [
+          {
+            "name": "data",
+            "size": "10 GiB",
+            "filesystem": {
+              "type": "xfs",
+              "path": "/data"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "iscsi": {
+    "initiator": "iqn.2026-09.org.opensuse:agama-test",
+    "targets": [
+      {
+        "address": "192.168.1.50",
+        "port": 3260,
+        "name": "iqn.2026-09.com.example:storage.target1",
+        "interface": "default",
+        "startup": "onboot",
+        "authByTarget": {
+          "username": "targetuser",
+          "password": "targetpassword"
+        },
+        "authByInitiator": {
+          "username": "initiatoruser",
+          "password": "initiatorpassword"
+        }
+      }
+    ]
+  },
+  "files": [
+    {
+      "destination": "/etc/custom-banner",
+      "content": "Managed by Agama\n",
+      "permissions": "0644",
+      "user": "root",
+      "group": "root"
+    }
+  ],
+  "scripts": {
+    "pre": [
+      {
+        "name": "pre-setup.sh",
+        "content": "#!/bin/bash\necho Pre-install\n"
+      }
+    ],
+    "postPartitioning": [
+      {
+        "name": "post-partition.sh",
+        "content": "#!/bin/bash\necho Post-partitioning\n"
+      }
+    ],
+    "post": [
+      {
+        "name": "post-install.sh",
+        "content": "#!/bin/bash\necho Post-install\n",
+        "chroot": true
+      }
+    ],
+    "init": [
+      {
+        "name": "init-setup.sh",
+        "content": "#!/bin/bash\necho Init\n"
+      }
+    ]
+  },
+  "user": {
+    "userName": "testuser",
+    "fullName": "Test User",
+    "password": "plainpassword",
+    "sshPublicKeys": [
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIExampleUserPublicKey user@example.com"
+    ]
+  },
+  "root": {
+    "password": "$6$saltsalt$hashedpasswordexamplehashvaluegoeshere",
+    "hashedPassword": true,
+    "sshPublicKeys": [
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIExampleRootPublicKey root@example.com"
+    ]
+  },
+  "dasd": {
+    "devices": [
+      {
+        "channel": "0.0.0100",
+        "format": true,
+        "state": "active",
+        "diag": false
+      }
+    ]
+  },
+  "zfcp": {
+    "devices": [
+      {
+        "channel": "0.0.1700",
+        "wwpn": "0x5005076303004712",
+        "lun": "0x4010403300000000"
+      }
+    ]
+  }
+}
