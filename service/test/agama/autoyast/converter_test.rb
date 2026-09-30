@@ -163,7 +163,7 @@ describe Agama::AutoYaST::Converter do
         )
 
         if !File.exist?(schema)
-          pending "can run only if config.schema.json is generated (run `cargo xtask openapi` first)"
+          pending "missing config.schema.json (run `cargo xtask openapi` first)"
           break
         end
 
