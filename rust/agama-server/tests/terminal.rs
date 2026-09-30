@@ -128,11 +128,16 @@ fn strip_ansi_escapes(text: &str) -> String {
         }
 
         match chars.peek() {
-            // OSC sequences (e.g., setting the window title): ESC ] ... BEL
+            // OSC sequences (e.g., setting the window title, shell integration):
+            // terminated by either BEL (\x07) or ST (ESC \)
             Some(']') => {
                 chars.next();
-                for c in chars.by_ref() {
+                while let Some(c) = chars.next() {
                     if c == '\u{7}' {
+                        break;
+                    }
+                    if c == '\u{1b}' && chars.peek() == Some(&'\\') {
+                        chars.next();
                         break;
                     }
                 }
