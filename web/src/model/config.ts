@@ -46,6 +46,7 @@ type Config = {
   software?: Software.Config;
   user?: User.Config;
   root?: Root.Config;
+  scripts?: object;
 };
 
 export type {

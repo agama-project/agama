@@ -50,9 +50,15 @@ export default {
   "%1$s will still contain the LVM group '%2$s' and any partition needed to boot": [
     "%1$s contiendra toujours le groupe LVM '%2$s' et toute partition nécessaire au démarrage"
   ],
+  "%1$s+%2$s+%3$s to move focus out": [
+    ""
+  ],
   "%1$s, %2$s and [%3$d more]": [
     "%1$s, %2$s et [%3$d en plus]",
     "%1$s, %2$s et [%3$d en plus]"
+  ],
+  "%d Mb/s": [
+    ""
   ],
   "%d NTP server": [
     "%d serveur NTP",
@@ -111,6 +117,9 @@ export default {
   "%s - %s": [
     "%s - %s"
   ],
+  "%s Gb/s": [
+    ""
+  ],
   "%s added but is invalid: %s. Select to edit.": [
     "%s ajoutée mais n’est pas valide : %s. Sélectionnez pour modifier."
   ],
@@ -128,6 +137,9 @@ export default {
   ],
   "%s at portal %s does not exist or cannot be reached.": [
     "%s sur le portail %s n’existe pas ou ne peut pas être atteint."
+  ],
+  "%s cannot be a port of itself": [
+    ""
   ],
   "%s disk": [
     "Disque %s"
@@ -152,6 +164,9 @@ export default {
   ],
   "%s removed.": [
     "%s retirée."
+  ],
+  "%s shown in the list of options.": [
+    ""
   ],
   "%s task active": [
     "%s tâche active",
@@ -452,9 +467,6 @@ export default {
   ],
   "Automatic contrast": [
     "Contraste automatique"
-  ],
-  "Available devices: %s": [
-    "Périphériques disponibles : %s"
   ],
   "Back": [
     "Retour"
@@ -837,6 +849,9 @@ export default {
   "Create another LVM volume group on %s": [
     "Créer un autre groupe de volumes LVM sur %s"
   ],
+  "Ctrl": [
+    ""
+  ],
   "Curated sets of packages for common use cases and features to extend the system.": [
     "Ensembles de paquets sélectionnés pour les cas d'utilisation courants et des fonctionnalités permettant d'étendre le système."
   ],
@@ -1041,6 +1056,9 @@ export default {
   "Do not use": [
     "Ne pas utiliser"
   ],
+  "Down arrow for options, Enter to add": [
+    ""
+  ],
   "Download configuration": [
     "Télécharger la configuration"
   ],
@@ -1166,6 +1184,21 @@ export default {
   ],
   "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate entries, Escape to exit": [
     "Entrée ou Tab pour ajouter, Retour arrière ou Supprimer pour retirer, touches fléchées pour parcourir les entrées, Échap pour quitter"
+  ],
+  "Enter removes every value, Left arrow goes back to the text box.": [
+    ""
+  ],
+  "Enter selects or deselects an option, Escape closes the list.": [
+    ""
+  ],
+  "Enter shows a chosen value in the list or takes a written one back to the text box, Delete removes it, arrow keys move between values.": [
+    ""
+  ],
+  "Enter shows a value in the list, Delete removes it, arrow keys move between values.": [
+    ""
+  ],
+  "Enter shows or hides the remaining values.": [
+    ""
   ],
   "Ethernet": [
     "Ethernet"
@@ -1334,9 +1367,6 @@ export default {
   ],
   "Hide technical details": [
     "Masquer les détails techniques"
-  ],
-  "Hide terminal": [
-    "Masquer le terminal"
   ],
   "High": [
     "Élevé"
@@ -1612,6 +1642,9 @@ export default {
   "Language and region": [
     "Langue et région"
   ],
+  "Left arrow reaches the %d values already added.": [
+    ""
+  ],
   "Let the installer propose a sensible size": [
     "Laisser le programme d'installation proposer une taille adaptée"
   ],
@@ -1632,6 +1665,12 @@ export default {
   ],
   "Light color scheme": [
     "Modèles de couleurs clair"
+  ],
+  "Link": [
+    ""
+  ],
+  "Link up": [
+    ""
   ],
   "Linux command-line with administrative privileges on the installer system.": [
     "Ligne de commande Linux avec privilèges d'administrateur sur le système du programme d'installation."
@@ -1770,6 +1809,9 @@ export default {
   ],
   "More": [
     "Davantage"
+  ],
+  "More actions": [
+    "Autres actions"
   ],
   "More devices": [
     "Autres périphériques"
@@ -1955,6 +1997,9 @@ export default {
   ],
   "No information available yet": [
     "Encore aucune information disponible"
+  ],
+  "No link": [
+    ""
   ],
   "No partitions will be automatically configured for booting.": [
     "Aucune partition ne sera automatiquement configurée pour le démarrage."
@@ -2554,6 +2599,9 @@ export default {
   "Several partitions will be deleted": [
     "Plusieurs partitions seront supprimées"
   ],
+  "Shift": [
+    ""
+  ],
   "Show": [
     "Afficher"
   ],
@@ -2576,8 +2624,11 @@ export default {
   "Show technical details": [
     "Afficher les détails techniques"
   ],
-  "Show terminal": [
-    "Afficher le terminal"
+  "Showing %d of %d values.": [
+    ""
+  ],
+  "Showing all %d values.": [
+    ""
   ],
   "Shrink existing logical volumes": [
     "Réduire volumes logiques existants"
@@ -3061,6 +3112,12 @@ export default {
   "Type": [
     "Type"
   ],
+  "Type to filter the options, or to write a value of your own.": [
+    ""
+  ],
+  "Type to filter the options.": [
+    ""
+  ],
   "Unable to modify the settings": [
     "Impossible de modifier les paramètres"
   ],
@@ -3228,6 +3285,9 @@ export default {
   ],
   "Use this to reproduce this installation later using the installer command-line interface or the unattended mode.": [
     "Utilisez ceci pour reproduire cette installation ultérieurement à l'aide de l'interface de ligne de commande du programme d'installation ou du mode sans surveillance."
+  ],
+  "Used by": [
+    ""
   ],
   "User name": [
     "Nom d'utilisateur"

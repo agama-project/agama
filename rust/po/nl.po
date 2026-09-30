@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-18 08:11+0000\n"
+"POT-Creation-Date: 2026-09-22 12:12+0000\n"
 "PO-Revision-Date: 2026-05-31 13:12+0000\n"
 "Last-Translator: Feike Donia <feikedonia@proton.me>\n"
 "Language-Team: Dutch <https://l10n.opensuse.org/projects/agama/agama-rust-"
@@ -703,12 +703,12 @@ msgstr ""
 "de webinterface om ze te beantwoorden."
 
 #. TRANSLATORS: %s is replaced by the script name.
-#: agama-files/src/service.rs:184
+#: agama-files/src/service.rs:183
 msgid "Failed to retrieve the script %s. Do you want to try again?"
 msgstr "Kon het script %s niet ophalen. Wilt u het opnieuw proberen?"
 
 #. TRANSLATORS: %s is replaced by the script name.
-#: agama-files/src/service.rs:208
+#: agama-files/src/service.rs:207
 msgid "Failed to write the file %s. Do you want to try again?"
 msgstr "Kon het bestand %s niet bewerken. Wilt u het opnieuw proberen?"
 
@@ -838,16 +838,16 @@ msgstr "Netwerkconfiguratie opslaan"
 msgid "Syncing the network service state"
 msgstr "Status van de netwerkdienst synchroniseren"
 
-#: agama-security/src/service.rs:226
+#: agama-security/src/service.rs:225
 msgid "Reject"
 msgstr "Afwijzen"
 
-#: agama-security/src/service.rs:226
+#: agama-security/src/service.rs:225
 #: agama-software/src/callbacks/security.rs:111
 msgid "Trust"
 msgstr "Vertrouwen"
 
-#: agama-security/src/service.rs:227
+#: agama-security/src/service.rs:226
 msgid ""
 "Trying to import a self-signed certificate. Do you want to trust it and "
 "register the product?"
@@ -875,10 +875,6 @@ msgstr ""
 
 #: agama-server/src/profile/web.rs:106
 msgid "AutoYaST conversion failed"
-msgstr ""
-
-#: agama-server/src/server/web.rs:86
-msgid "Missing Language Tag"
 msgstr ""
 
 #: agama-software/src/callbacks/commit_download.rs:47
@@ -909,7 +905,7 @@ msgstr ""
 msgid "Skip"
 msgstr "Overslaan"
 
-#: agama-software/src/service.rs:296
+#: agama-software/src/service.rs:295
 msgid ""
 "Due to an internal error, it was not possible to create a software proposal."
 msgstr "Kon geen softwarevoorstel doen door een interne fout."
@@ -975,14 +971,14 @@ msgstr "Kon het %s ‘%s’ niet selecteren voor installatie"
 msgid "Failed to register the system"
 msgstr "Kon het systeem niet registreren"
 
-#: agama-users/src/service.rs:178
+#: agama-users/src/service.rs:177
 msgid ""
 "Defining a user, setting the root password or a SSH public key is required"
 msgstr ""
 "Het aanmaken van een gebruiker, het instellen van een root password of een "
 "publieke SSH sleutel is vereist"
 
-#: agama-users/src/service.rs:191
+#: agama-users/src/service.rs:190
 msgid "First user information is incomplete"
 msgstr "De informatie over de eerste gebruiker is onvolledig"
 

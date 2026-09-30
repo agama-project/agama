@@ -48,8 +48,14 @@ export default {
   "%1$s will still contain the LVM group '%2$s' and any partition needed to boot": [
     "%1$s masih akan berisi grup LVM ‘%2$s’ dan partisi apa pun yang diperlukan untuk booting"
   ],
+  "%1$s+%2$s+%3$s to move focus out": [
+    ""
+  ],
   "%1$s, %2$s and [%3$d more]": [
     "%1$s, %2$s dan [%3$d lainnya]"
+  ],
+  "%d Mb/s": [
+    ""
   ],
   "%d NTP server": [
     "%d server NTP"
@@ -102,6 +108,9 @@ export default {
   "%s - %s": [
     "%s - %s"
   ],
+  "%s Gb/s": [
+    ""
+  ],
   "%s added but is invalid: %s. Select to edit.": [
     "%s ditambahkan tetapi tidak valid: %s. Pilih untuk mengedit."
   ],
@@ -119,6 +128,9 @@ export default {
   ],
   "%s at portal %s does not exist or cannot be reached.": [
     "%s pada portal %s tidak ada atau tidak dapat dijangkau."
+  ],
+  "%s cannot be a port of itself": [
+    ""
   ],
   "%s disk": [
     "%s diska"
@@ -143,6 +155,9 @@ export default {
   ],
   "%s removed.": [
     "%s dihapus."
+  ],
+  "%s shown in the list of options.": [
+    ""
   ],
   "%s task active": [
     "%s tugas aktif"
@@ -428,9 +443,6 @@ export default {
   ],
   "Automatic contrast": [
     "Kontras otomatis"
-  ],
-  "Available devices: %s": [
-    "Perangkat yang tersedia: %s"
   ],
   "Back": [
     "Kembali"
@@ -810,6 +822,9 @@ export default {
   "Create another LVM volume group on %s": [
     "Buat grup volume LVM lain di %s"
   ],
+  "Ctrl": [
+    ""
+  ],
   "Curated sets of packages for common use cases and features to extend the system.": [
     "Kumpulan paket yang dikurasi untuk kasus penggunaan umum dan fitur untuk memperluas sistem."
   ],
@@ -1011,6 +1026,9 @@ export default {
   "Do not use": [
     "Jangan gunakan"
   ],
+  "Down arrow for options, Enter to add": [
+    ""
+  ],
   "Download configuration": [
     "Unduh konfigurasi"
   ],
@@ -1136,6 +1154,21 @@ export default {
   ],
   "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate entries, Escape to exit": [
     "Masukkan atau tekan Tab untuk menambah, Backspace atau Delete untuk menghapus, tombol panah untuk menavigasi entri, Escape untuk keluar"
+  ],
+  "Enter removes every value, Left arrow goes back to the text box.": [
+    ""
+  ],
+  "Enter selects or deselects an option, Escape closes the list.": [
+    ""
+  ],
+  "Enter shows a chosen value in the list or takes a written one back to the text box, Delete removes it, arrow keys move between values.": [
+    ""
+  ],
+  "Enter shows a value in the list, Delete removes it, arrow keys move between values.": [
+    ""
+  ],
+  "Enter shows or hides the remaining values.": [
+    ""
   ],
   "Ethernet": [
     "Ethernet"
@@ -1301,9 +1334,6 @@ export default {
   ],
   "Hide technical details": [
     "Sembunyikan detail teknis"
-  ],
-  "Hide terminal": [
-    "Sembunyikan terminal"
   ],
   "High": [
     "Tinggi"
@@ -1578,6 +1608,9 @@ export default {
   "Language and region": [
     "Bahasa dan wilayah"
   ],
+  "Left arrow reaches the %d values already added.": [
+    ""
+  ],
   "Let the installer propose a sensible size": [
     "Biarkan penginstal mengusulkan ukuran yang masuk akal"
   ],
@@ -1598,6 +1631,12 @@ export default {
   ],
   "Light color scheme": [
     "Skema warna terang"
+  ],
+  "Link": [
+    ""
+  ],
+  "Link up": [
+    ""
   ],
   "Linux command-line with administrative privileges on the installer system.": [
     "Command-line Linux dengan hak administratif pada sistem installer."
@@ -1736,6 +1775,9 @@ export default {
   ],
   "More": [
     "Lainnya"
+  ],
+  "More actions": [
+    "Tindakan lainnya"
   ],
   "More devices": [
     "Lebih banyak perangkat"
@@ -1919,6 +1961,9 @@ export default {
   ],
   "No information available yet": [
     "Belum ada informasi yang tersedia"
+  ],
+  "No link": [
+    ""
   ],
   "No partitions will be automatically configured for booting.": [
     "Partisi tidak akan dikonfigurasi secara otomatis untuk booting."
@@ -2517,6 +2562,9 @@ export default {
   "Several partitions will be deleted": [
     "Beberapa partisi akan dihapus"
   ],
+  "Shift": [
+    ""
+  ],
   "Show": [
     "Tampilkan"
   ],
@@ -2538,8 +2586,11 @@ export default {
   "Show technical details": [
     "Tampilkan detail teknis"
   ],
-  "Show terminal": [
-    "Tampilkan terminal"
+  "Showing %d of %d values.": [
+    ""
+  ],
+  "Showing all %d values.": [
+    ""
   ],
   "Shrink existing logical volumes": [
     "Perkecil volume logis yang sudah ada"
@@ -3012,6 +3063,12 @@ export default {
   "Type": [
     "Jenis"
   ],
+  "Type to filter the options, or to write a value of your own.": [
+    ""
+  ],
+  "Type to filter the options.": [
+    ""
+  ],
   "Unable to modify the settings": [
     "Tidak dapat mengubah pengaturan"
   ],
@@ -3179,6 +3236,9 @@ export default {
   ],
   "Use this to reproduce this installation later using the installer command-line interface or the unattended mode.": [
     "Gunakan ini untuk mereproduksi instalasi ini nanti menggunakan antarmuka baris perintah penginstal atau mode tanpa pengawasan."
+  ],
+  "Used by": [
+    ""
   ],
   "User name": [
     "Nama pengguna"

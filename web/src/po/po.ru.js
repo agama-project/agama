@@ -52,10 +52,16 @@ export default {
   "%1$s will still contain the LVM group '%2$s' and any partition needed to boot": [
     "Диск %1$s по-прежнему будет содержать группу LVM „%2$s“ и все разделы, необходимые для загрузки"
   ],
+  "%1$s+%2$s+%3$s to move focus out": [
+    ""
+  ],
   "%1$s, %2$s and [%3$d more]": [
     "%1$s, %2$s и [ещё %3$d]",
     "%1$s, %2$s и [ещё %3$d]",
     "%1$s, %2$s и [ещё %3$d]"
+  ],
+  "%d Mb/s": [
+    ""
   ],
   "%d NTP server": [
     "%d NTP-сервер",
@@ -120,6 +126,9 @@ export default {
   "%s - %s": [
     "%s - %s"
   ],
+  "%s Gb/s": [
+    ""
+  ],
   "%s added but is invalid: %s. Select to edit.": [
     "%s добавлен, но недействителен: %s. Выберите для редактирования."
   ],
@@ -137,6 +146,9 @@ export default {
   ],
   "%s at portal %s does not exist or cannot be reached.": [
     "%s на портале %s не существует или недоступен."
+  ],
+  "%s cannot be a port of itself": [
+    ""
   ],
   "%s disk": [
     "Диск %s"
@@ -161,6 +173,9 @@ export default {
   ],
   "%s removed.": [
     "%s удалён."
+  ],
+  "%s shown in the list of options.": [
+    ""
   ],
   "%s task active": [
     "%s задача активна",
@@ -470,9 +485,6 @@ export default {
   ],
   "Automatic contrast": [
     "Автоматическая контрастность"
-  ],
-  "Available devices: %s": [
-    "Доступные устройства: %s"
   ],
   "Back": [
     "Назад"
@@ -858,6 +870,9 @@ export default {
   "Create another LVM volume group on %s": [
     "Создать еще одну группу томов LVM на %s"
   ],
+  "Ctrl": [
+    ""
+  ],
   "Curated sets of packages for common use cases and features to extend the system.": [
     "Подобранные наборы пакетов для распространённых сценариев использования и расширения системы."
   ],
@@ -1062,6 +1077,9 @@ export default {
   "Do not use": [
     "Не использовать"
   ],
+  "Down arrow for options, Enter to add": [
+    ""
+  ],
   "Download configuration": [
     "Загрузить конфигурацию"
   ],
@@ -1187,6 +1205,21 @@ export default {
   ],
   "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate entries, Escape to exit": [
     "Enter или Tab для добавления, Backspace или Delete для удаления, стрелки для навигации по записям, Escape для выхода"
+  ],
+  "Enter removes every value, Left arrow goes back to the text box.": [
+    ""
+  ],
+  "Enter selects or deselects an option, Escape closes the list.": [
+    ""
+  ],
+  "Enter shows a chosen value in the list or takes a written one back to the text box, Delete removes it, arrow keys move between values.": [
+    ""
+  ],
+  "Enter shows a value in the list, Delete removes it, arrow keys move between values.": [
+    ""
+  ],
+  "Enter shows or hides the remaining values.": [
+    ""
   ],
   "Ethernet": [
     "Ethernet"
@@ -1358,9 +1391,6 @@ export default {
   ],
   "Hide technical details": [
     "Скрыть технические подробности"
-  ],
-  "Hide terminal": [
-    "Скрыть терминал"
   ],
   "High": [
     "Высокая"
@@ -1637,6 +1667,9 @@ export default {
   "Language and region": [
     "Язык и регион"
   ],
+  "Left arrow reaches the %d values already added.": [
+    ""
+  ],
   "Let the installer propose a sensible size": [
     "Программа установки предложит разумный размер"
   ],
@@ -1657,6 +1690,12 @@ export default {
   ],
   "Light color scheme": [
     "Светлая цветовая схема"
+  ],
+  "Link": [
+    ""
+  ],
+  "Link up": [
+    ""
   ],
   "Linux command-line with administrative privileges on the installer system.": [
     "Командная строка Linux с правами администратора в системе установщика."
@@ -1795,6 +1834,9 @@ export default {
   ],
   "More": [
     "Ещё"
+  ],
+  "More actions": [
+    "Доп. действия"
   ],
   "More devices": [
     "Другие устройства"
@@ -1982,6 +2024,9 @@ export default {
   ],
   "No information available yet": [
     "Информация пока недоступна"
+  ],
+  "No link": [
+    ""
   ],
   "No partitions will be automatically configured for booting.": [
     "Ни один раздел не будет автоматически настроен для загрузки."
@@ -2582,6 +2627,9 @@ export default {
   "Several partitions will be deleted": [
     "Несколько разделов будут удалены"
   ],
+  "Shift": [
+    ""
+  ],
   "Show": [
     "Показать"
   ],
@@ -2605,8 +2653,11 @@ export default {
   "Show technical details": [
     "Показать технические подробности"
   ],
-  "Show terminal": [
-    "Показать терминал"
+  "Showing %d of %d values.": [
+    ""
+  ],
+  "Showing all %d values.": [
+    ""
   ],
   "Shrink existing logical volumes": [
     "Уменьшить существующие логические тома"
@@ -3101,6 +3152,12 @@ export default {
   "Type": [
     "Тип"
   ],
+  "Type to filter the options, or to write a value of your own.": [
+    ""
+  ],
+  "Type to filter the options.": [
+    ""
+  ],
   "Unable to modify the settings": [
     "Невозможно изменить настройки"
   ],
@@ -3268,6 +3325,9 @@ export default {
   ],
   "Use this to reproduce this installation later using the installer command-line interface or the unattended mode.": [
     "Используйте это для повторения этой установки позже с помощью интерфейса командной строки установщика или автоматического режима."
+  ],
+  "Used by": [
+    ""
   ],
   "User name": [
     "Имя пользователя"

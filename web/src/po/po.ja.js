@@ -48,8 +48,14 @@ export default {
   "%1$s will still contain the LVM group '%2$s' and any partition needed to boot": [
     "%1$s には起動に必要な設定済み LVM グループ '%2$s' とパーティションが含まれています"
   ],
+  "%1$s+%2$s+%3$s to move focus out": [
+    "フォーカスを外すには %1$s+%2$s+%3$s を押してください"
+  ],
   "%1$s, %2$s and [%3$d more]": [
     "%1$s, %2$s [さらに %3$d 個のアドレスがあります]"
+  ],
+  "%d Mb/s": [
+    "%d Mb/s"
   ],
   "%d NTP server": [
     "%d 個の NTP サーバ"
@@ -75,6 +81,12 @@ export default {
   "%d entries added, %d invalid.": [
     "%d 個の項目を追加しました。 %d 個の項目は正しくありませんでした。"
   ],
+  "%d entries added, %d not available, %d duplicates skipped.": [
+    "%d 個の項目を追加しました。 %d 個の項目は利用できませんでした。 %d 個の重複項目を読み飛ばしました。"
+  ],
+  "%d entries added, %d not available.": [
+    "%d 個の項目を追加しました。 %d 個の項目は利用できません。"
+  ],
   "%d entries added.": [
     "%d 個の項目を追加しました。"
   ],
@@ -86,6 +98,12 @@ export default {
   ],
   "%d mode available": [
     "%d 個のモードが利用可能です"
+  ],
+  "%d more": [
+    "さらに %d 個の項目があります"
+  ],
+  "%d options available.": [
+    "%d 個のオプションが利用可能です。"
   ],
   "%d other mode available": [
     "%d 個の他のモードが利用可能です"
@@ -101,6 +119,12 @@ export default {
   ],
   "%s - %s": [
     "%s - %s"
+  ],
+  "%s Gb/s": [
+    "%s Gb/s"
+  ],
+  "%s added but is invalid: %s. Select it to edit.": [
+    "%s を追加しましたが、正しくありません: %s 。編集するには選択してください。"
   ],
   "%s added but is invalid: %s. Select to edit.": [
     "%s を追加しましたが、正しくありません: %s 。編集するには選択してください。"
@@ -120,6 +144,9 @@ export default {
   "%s at portal %s does not exist or cannot be reached.": [
     "%s (ポータル %s 内) は存在していないか、相手に届きません。"
   ],
+  "%s cannot be a port of itself": [
+    "%s を自分自身のポートとして設定することはできません"
+  ],
   "%s disk": [
     "%s ディスク"
   ],
@@ -132,8 +159,14 @@ export default {
   "%s honors the browser and system preferences": [
     "%s を指定すると、ブラウザとシステムの設定に従うようになります"
   ],
+  "%s is already selected.": [
+    "%s は既に選択済みです。"
+  ],
   "%s is invalid: %s": [
     "%s が正しくありません: %s"
+  ],
+  "%s is not available.": [
+    "%s は利用できません。"
   ],
   "%s logo": [
     "%s ロゴ"
@@ -141,8 +174,14 @@ export default {
   "%s moved to input for editing.": [
     "%s を編集のため入力欄に移動しました。"
   ],
+  "%s moved to the text box for editing.": [
+    "%s を編集のためテキストボックスに移動しました。"
+  ],
   "%s removed.": [
     "%s を削除しました。"
+  ],
+  "%s shown in the list of options.": [
+    "%s はオプションの一覧内に表示されています。"
   ],
   "%s task active": [
     "%s 個の処理が動作中です"
@@ -227,6 +266,9 @@ export default {
   ],
   "Accept": [
     "受け入れる"
+  ],
+  "Accepted licenses": [
+    "受け入れ済みライセンス"
   ],
   "Action": [
     "処理"
@@ -339,6 +381,9 @@ export default {
   "All the available zFCP controllers are already activated.": [
     "利用可能な全ての zFCP コントローラが有効化済みです。"
   ],
+  "All values removed.": [
+    "すべての値を削除しました。"
+  ],
   "Allow growing": [
     "サイズ拡大を許可する"
   ],
@@ -434,9 +479,6 @@ export default {
   ],
   "Automatic contrast": [
     "自動コントラスト"
-  ],
-  "Available devices: %s": [
-    "利用可能なデバイス: %s"
   ],
   "Back": [
     "戻る"
@@ -657,6 +699,9 @@ export default {
   "Choose a volume group to define logical volumes": [
     "論理ボリュームを設定するボリュームグループを選択してください"
   ],
+  "Choose devices or enter their names.": [
+    "デバイスを選択するかデバイス名を入力してください。"
+  ],
   "Choose whether to enable the root account.": [
     "root アカウントを有効化するかどうかを洗濯してください。"
   ],
@@ -665,6 +710,9 @@ export default {
   ],
   "Chosen by name": [
     "名前で選択"
+  ],
+  "Clear all": [
+    "すべて消去"
   ],
   "Clear all filters": [
     "全てのフィルタを消去"
@@ -819,11 +867,14 @@ export default {
   "Create another LVM volume group on %s": [
     "%s 内に他の LVM ボリュームグループを作成"
   ],
+  "Ctrl": [
+    "Ctrl"
+  ],
   "Curated sets of packages for common use cases and features to extend the system.": [
     "一般的な用途のほか、システムの機能拡張のために厳選したパッケージセットです。"
   ],
   "Current": [
-    "現在"
+    "維持する"
   ],
   "Current %s": [
     "現在の %s"
@@ -1023,6 +1074,15 @@ export default {
   "Do not use": [
     "使用しない"
   ],
+  "Down arrow for options, Enter to add": [
+    "下矢印キーでオプション, Enter キーで追加することができます"
+  ],
+  "Down arrow for options, Enter to add, Delete to remove, arrow keys to navigate": [
+    "下矢印キーでオプション, Enter キーで追加, Delete キーで削除, 矢印キーで移動することができます"
+  ],
+  "Down arrow opens the list of options.": [
+    "下矢印キーを押すとオプション一覧を開くことができます。"
+  ],
   "Download configuration": [
     "設定のダウンロード"
   ],
@@ -1148,6 +1208,24 @@ export default {
   ],
   "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate entries, Escape to exit": [
     "Enter キーまたは Tab キーで追加、 Backspace キーまたは Delete キーで削除、矢印キーで項目間の移動、 Escape キーで終了します"
+  ],
+  "Enter removes every value, Left arrow goes back to the text box.": [
+    "Enter キーでそれぞれの値を削除, 左矢印キーでテキストボックスに戻ることができます。"
+  ],
+  "Enter selects or deselects an option, Escape closes the list.": [
+    "Enter キーでオプションの選択または選択解除を、 Escape キーで一覧を閉じることができます。"
+  ],
+  "Enter shows a chosen value in the list or takes a written one back to the text box, Delete removes it, arrow keys move between values.": [
+    "Enter キーを押すと一覧内で選択された値を表示するか、書き込まれた内容をテキストボックスに戻すことができます。また、 Delete キーで削除を、矢印キーで値の間を移動することができます。"
+  ],
+  "Enter shows a value in the list, Delete removes it, arrow keys move between values.": [
+    "Enter キーを押すと一覧内の値を表示、 Delete キーで削除、矢印キーで値の間を移動することができます。"
+  ],
+  "Enter shows or hides the remaining values.": [
+    "Enter キーで残りの値を表示もしくは非表示にすることができます。"
+  ],
+  "Enter takes a value back to the text box, Delete removes it, arrow keys move between values.": [
+    "Enter キーを押すと値をテキストボックスに戻すことができます。 Delete キーで削除を、矢印キーで値の間を移動することができます。"
   ],
   "Ethernet": [
     "イーサネット"
@@ -1314,9 +1392,6 @@ export default {
   "Hide technical details": [
     "技術詳細を隠す"
   ],
-  "Hide terminal": [
-    "端末を隠す"
-  ],
   "High": [
     "高"
   ],
@@ -1337,6 +1412,9 @@ export default {
   ],
   "Hostnames, IP addresses, or fully qualified domain names (FQDNs). E.g., pool.ntp.org": [
     "ホスト名／IP アドレス／完全修飾ドメイン名 (FQDN) のいずれかを入力します。例: pool.ntp.org"
+  ],
+  "I have read and accept the %s": [
+    "%s を受け入れます"
   ],
   "I have read and accept the [license] for %s": [
     "%s に対する [ライセンス] を受け入れます"
@@ -1590,6 +1668,9 @@ export default {
   "Language and region": [
     "言語と地域"
   ],
+  "Left arrow reaches the %d values already added.": [
+    "左矢印キーを押すと追加済みの %d 個の値にアクセスできます。"
+  ],
   "Let the installer propose a sensible size": [
     "インストーラに適切なサイズを提案させる"
   ],
@@ -1610,6 +1691,12 @@ export default {
   ],
   "Light color scheme": [
     "明るい色を使用するスキーム"
+  ],
+  "Link": [
+    "リンク"
+  ],
+  "Link up": [
+    "リンクアップ"
   ],
   "Linux command-line with administrative privileges on the installer system.": [
     "インストーラシステム内で動作し、管理者権限のある Linux コマンドラインです。"
@@ -1748,6 +1835,9 @@ export default {
   ],
   "More": [
     "詳細"
+  ],
+  "More actions": [
+    "その他の処理"
   ],
   "More devices": [
     "その他のデバイス"
@@ -1931,6 +2021,15 @@ export default {
   ],
   "No information available yet": [
     "まだ情報はありません"
+  ],
+  "No link": [
+    "リンク無し"
+  ],
+  "No options match": [
+    "該当するオプションがありません"
+  ],
+  "No options match.": [
+    "該当するオプションはありません。"
   ],
   "No partitions will be automatically configured for booting.": [
     "起動用のパーティションを自動設定しません。"
@@ -2448,6 +2547,12 @@ export default {
   "Select at least one disk.": [
     "少なくとも 1 つのディスクを選択してください。"
   ],
+  "Select bond ports": [
+    "ボンディングポートの選択"
+  ],
+  "Select bridge ports": [
+    "ブリッジポートの選択"
+  ],
   "Select device": [
     "デバイスの選択"
   ],
@@ -2471,6 +2576,9 @@ export default {
   ],
   "Select the controllers to activate": [
     "有効化するコントローラを選択してください"
+  ],
+  "Select the parent device": [
+    "親デバイスの選択"
   ],
   "Select the zFCP controllers to activate:": [
     "有効化する zFCP コントローラを選択してください:"
@@ -2535,6 +2643,9 @@ export default {
   "Several partitions will be deleted": [
     "いくつかのパーティションを削除する"
   ],
+  "Shift": [
+    "Shift"
+  ],
   "Show": [
     "表示"
   ],
@@ -2553,11 +2664,17 @@ export default {
   "Show more": [
     "表示を増やす"
   ],
+  "Show options": [
+    "オプションの表示"
+  ],
   "Show technical details": [
     "技術詳細を表示する"
   ],
-  "Show terminal": [
-    "端末を表示"
+  "Showing %d of %d values.": [
+    "%d/%d 個の値を表示しています。"
+  ],
+  "Showing all %d values.": [
+    "%d 個すべての値を表示しています。"
   ],
   "Shrink existing logical volumes": [
     "既存の論理ボリュームを縮小する"
@@ -2576,6 +2693,9 @@ export default {
   ],
   "Skip to content": [
     "コンテンツに移動"
+  ],
+  "Skip to terminal": [
+    "端末に移動"
   ],
   "Software": [
     "ソフトウエア"
@@ -2856,6 +2976,9 @@ export default {
   "The logical volume will also be deleted": [
     "論理ボリュームについても削除します"
   ],
+  "The loopback device cannot be a port": [
+    "ループバックデバイスをポートとして指定することはできません"
+  ],
   "The modal selector offers a simplified interface designed for quick and straightforward use, without overwhelming the user.": [
     "このモーダル型の選択ページは、迅速で分かりやすく、かつユーザを混乱させることのないシンプルなインターフェイスを提供します。"
   ],
@@ -3030,6 +3153,12 @@ export default {
   "Type": [
     "種類"
   ],
+  "Type to filter the options, or to write a value of your own.": [
+    "入力するとオプションを絞り込むことができます。独自のオプションを設定する場合は、値をそのまま入力してください。"
+  ],
+  "Type to filter the options.": [
+    "入力するとオプションを絞り込むことができます。"
+  ],
   "Unable to modify the settings": [
     "設定を変更できませんでした"
   ],
@@ -3066,8 +3195,8 @@ export default {
   "Update available disks and activate crypt devices": [
     "利用可能なディスクの更新と暗号化デバイスの有効化"
   ],
-  "Use %s": [
-    "%s を使用します"
+  "Use \"%s\"": [
+    "\"%s\" を使用します"
   ],
   "Use LVM volume group %s": [
     "LVM ボリュームグループ %s の使用"
@@ -3203,6 +3332,9 @@ export default {
   ],
   "Use this to reproduce this installation later using the installer command-line interface or the unattended mode.": [
     "インストーラのコマンドラインや無人モードを利用して、今回と同じインストールを再度実施することができるようになります。"
+  ],
+  "Used by": [
+    "使用済み"
   ],
   "User name": [
     "ユーザ名"

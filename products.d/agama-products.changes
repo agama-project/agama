@@ -1,4 +1,14 @@
 -------------------------------------------------------------------
+Mon Sep 28 08:50:52 UTC 2026 - Andreas Schwab <schwab@suse.de>
+
+- Add support for riscv64 (gh#agama-project/agama#3867)
+
+-------------------------------------------------------------------
+Mon Sep 28 06:46:36 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add the missing definition for Leap 16.2 (related to bsc#1282094).
+
+-------------------------------------------------------------------
 Wed Sep 23 13:45:32 UTC 2026 - Jason Swaan <duyfken@users.noreply.github.com>
 
 - Match Slowroll user_patterns with Tumbleweed

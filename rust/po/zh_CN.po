@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-18 08:11+0000\n"
+"POT-Creation-Date: 2026-09-22 12:12+0000\n"
 "PO-Revision-Date: 2026-07-27 04:12+0000\n"
 "Last-Translator: Grace Yu <grace.yu@excel-gits.com>\n"
 "Language-Team: Chinese (China) <https://l10n.opensuse.org/projects/agama/"
@@ -765,12 +765,12 @@ msgstr ""
 "存在未答复的问询。请执行 \"agama monitor\" 命令或打开网页用户界面进行答复："
 
 #. TRANSLATORS: %s is replaced by the script name.
-#: agama-files/src/service.rs:184
+#: agama-files/src/service.rs:183
 msgid "Failed to retrieve the script %s. Do you want to try again?"
 msgstr "检索脚本 %s 失败。是否要重试？"
 
 #. TRANSLATORS: %s is replaced by the script name.
-#: agama-files/src/service.rs:208
+#: agama-files/src/service.rs:207
 msgid "Failed to write the file %s. Do you want to try again?"
 msgstr "写入文件 %s 失败。是否要重试？"
 
@@ -890,16 +890,16 @@ msgstr "正在写入网络配置"
 msgid "Syncing the network service state"
 msgstr "正在同步网络服务状态"
 
-#: agama-security/src/service.rs:226
+#: agama-security/src/service.rs:225
 msgid "Reject"
 msgstr "拒绝"
 
-#: agama-security/src/service.rs:226
+#: agama-security/src/service.rs:225
 #: agama-software/src/callbacks/security.rs:111
 msgid "Trust"
 msgstr "信任"
 
-#: agama-security/src/service.rs:227
+#: agama-security/src/service.rs:226
 msgid ""
 "Trying to import a self-signed certificate. Do you want to trust it and "
 "register the product?"
@@ -924,10 +924,6 @@ msgstr "配置文件请求无效"
 #: agama-server/src/profile/web.rs:106
 msgid "AutoYaST conversion failed"
 msgstr "AutoYaST 转换失败"
-
-#: agama-server/src/server/web.rs:86
-msgid "Missing Language Tag"
-msgstr "缺失语言标签"
 
 #: agama-software/src/callbacks/commit_download.rs:47
 #: agama-software/src/callbacks/install.rs:56
@@ -955,7 +951,7 @@ msgstr "指纹为 {2} 的密钥 {0} ({1}) 未知。是否信任该密钥？"
 msgid "Skip"
 msgstr "跳过"
 
-#: agama-software/src/service.rs:296
+#: agama-software/src/service.rs:295
 msgid ""
 "Due to an internal error, it was not possible to create a software proposal."
 msgstr "由于出现内部错误，无法创建软件提案。"
@@ -1017,12 +1013,12 @@ msgstr "无法选择 %s '%s' 进行安装"
 msgid "Failed to register the system"
 msgstr "系统注册失败"
 
-#: agama-users/src/service.rs:178
+#: agama-users/src/service.rs:177
 msgid ""
 "Defining a user, setting the root password or a SSH public key is required"
 msgstr "必须定义一个用户、设置 root 口令或配置 SSH 公钥"
 
-#: agama-users/src/service.rs:191
+#: agama-users/src/service.rs:190
 msgid "First user information is incomplete"
 msgstr "首个用户信息不完整"
 
@@ -1073,6 +1069,9 @@ msgstr "软件集"
 #: agama-utils/src/resolvable.rs:67
 msgid "product"
 msgstr "产品"
+
+#~ msgid "Missing Language Tag"
+#~ msgstr "缺失语言标签"
 
 #~ msgid "Profile error"
 #~ msgstr "配置文件错误"

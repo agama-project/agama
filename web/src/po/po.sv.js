@@ -50,9 +50,15 @@ export default {
   "%1$s will still contain the LVM group '%2$s' and any partition needed to boot": [
     "%1$s kommer fortfarande att innehålla LVM-gruppen '%2$s' och eventuell partition som behövs för att starta systemet"
   ],
+  "%1$s+%2$s+%3$s to move focus out": [
+    "%1$s+%2$s+%3$s för att flytta fokus utåt"
+  ],
   "%1$s, %2$s and [%3$d more]": [
     "%1$s, %2$s och [%3$d mer]",
     "%1$s, %2$s och [%3$d mera]"
+  ],
+  "%d Mb/s": [
+    "%d Mb/s"
   ],
   "%d NTP server": [
     "%d NTP server",
@@ -80,6 +86,12 @@ export default {
   "%d entries added, %d invalid.": [
     "%d poster tillagda, %d ogiltiga."
   ],
+  "%d entries added, %d not available, %d duplicates skipped.": [
+    "%d poster tillagda, %d inte tillgängliga, %d dubbletter hoppade över."
+  ],
+  "%d entries added, %d not available.": [
+    "%d poster tillagda, %d inte tillgängliga."
+  ],
   "%d entries added.": [
     "%d poster tillagda."
   ],
@@ -93,6 +105,12 @@ export default {
   "%d mode available": [
     "%d läge tillgängligt",
     "%d lägen tillgängliga"
+  ],
+  "%d more": [
+    "%d mer"
+  ],
+  "%d options available.": [
+    "%d alternativ tillgängliga"
   ],
   "%d other mode available": [
     "%d annat läge tillgängligt",
@@ -110,6 +128,12 @@ export default {
   ],
   "%s - %s": [
     "%s - %s"
+  ],
+  "%s Gb/s": [
+    "%s Gb/s"
+  ],
+  "%s added but is invalid: %s. Select it to edit.": [
+    "%s tillagd men är ogiltig: %s. Välj det för att redigera."
   ],
   "%s added but is invalid: %s. Select to edit.": [
     "%s tillagd men är ogiltig: %s Välj för att redigera."
@@ -129,6 +153,9 @@ export default {
   "%s at portal %s does not exist or cannot be reached.": [
     "%s vid portal %s existerar inte eller kan inte nås."
   ],
+  "%s cannot be a port of itself": [
+    "%s kan inte vara en port till sig själv"
+  ],
   "%s disk": [
     "%s disk"
   ],
@@ -141,8 +168,14 @@ export default {
   "%s honors the browser and system preferences": [
     "%s respekterar webbläsar och systeminställningarna"
   ],
+  "%s is already selected.": [
+    "%s är redan valt."
+  ],
   "%s is invalid: %s": [
     "%s är ogiltig: %s"
+  ],
+  "%s is not available.": [
+    "%s är inte tillgängligt."
   ],
   "%s logo": [
     "%s logotyp"
@@ -150,8 +183,14 @@ export default {
   "%s moved to input for editing.": [
     "%s flyttad till inmatning för redigering."
   ],
+  "%s moved to the text box for editing.": [
+    "%s flyttad till textrutan för redigering."
+  ],
   "%s removed.": [
     "%s borttagen."
+  ],
+  "%s shown in the list of options.": [
+    "%s visas i listan över alternativ."
   ],
   "%s task active": [
     "%s uppgift aktiv",
@@ -242,6 +281,9 @@ export default {
   ],
   "Accept": [
     "Acceptera"
+  ],
+  "Accepted licenses": [
+    "Accepterade licenser"
   ],
   "Action": [
     "Åtgärd"
@@ -355,6 +397,9 @@ export default {
   "All the available zFCP controllers are already activated.": [
     "Alla tillgängliga zFCP-styrenheter är redan aktiverade."
   ],
+  "All values removed.": [
+    "Alla värden har tagits bort."
+  ],
   "Allow growing": [
     "Tillåt växande"
   ],
@@ -452,9 +497,6 @@ export default {
   ],
   "Automatic contrast": [
     "Automatisk kontrast"
-  ],
-  "Available devices: %s": [
-    "Tillgängliga enheter: %s"
   ],
   "Back": [
     "Bakåt"
@@ -677,6 +719,9 @@ export default {
   "Choose a volume group to define logical volumes": [
     "Välj en volymgrupp för att definera dess logiska volymer"
   ],
+  "Choose devices or enter their names.": [
+    "Välj enheter eller ange deras namn."
+  ],
   "Choose whether to enable the root account.": [
     "Välj huruvida du vill aktivera root-kontot."
   ],
@@ -685,6 +730,9 @@ export default {
   ],
   "Chosen by name": [
     "Vald efter namn"
+  ],
+  "Clear all": [
+    "Rensa allt"
   ],
   "Clear all filters": [
     "Rensa alla filter"
@@ -839,6 +887,9 @@ export default {
   ],
   "Create another LVM volume group on %s": [
     "Skapa LVM volymgrupp på %s"
+  ],
+  "Ctrl": [
+    "Ctrl"
   ],
   "Curated sets of packages for common use cases and features to extend the system.": [
     "Utvalda uppsättningar av paket för vanliga användningsområden och funktioner för att utöka systemet."
@@ -1044,6 +1095,15 @@ export default {
   "Do not use": [
     "Använd inte"
   ],
+  "Down arrow for options, Enter to add": [
+    "Nedåtpil för alternativ, Enter för att lägga till"
+  ],
+  "Down arrow for options, Enter to add, Delete to remove, arrow keys to navigate": [
+    "Nedåtpil för alternativ, Enter för att lägga till, Delete för att ta bort, piltangenter för att navigera"
+  ],
+  "Down arrow opens the list of options.": [
+    "Nedåtpil  öppnar listan med alternativ."
+  ],
   "Download configuration": [
     "Ladda ner konfiguration"
   ],
@@ -1169,6 +1229,24 @@ export default {
   ],
   "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate entries, Escape to exit": [
     "Enter eller Tabb för att lägga till, Backspace eller Delete för att ta bort, piltangenter för att navigera i poster, Escape för att avsluta"
+  ],
+  "Enter removes every value, Left arrow goes back to the text box.": [
+    "Enter tar bort alla värden, vänsterpil går tillbaka till textrutan."
+  ],
+  "Enter selects or deselects an option, Escape closes the list.": [
+    "Enter väljer eller avmarkerar ett alternativ, Escape stänger listan."
+  ],
+  "Enter shows a chosen value in the list or takes a written one back to the text box, Delete removes it, arrow keys move between values.": [
+    "Enter visar ett valt värde i listan eller för tillbaka ett inskrivet värde till textrutan, Delete tar bort det och piltangenterna flyttar markören mellan värdena."
+  ],
+  "Enter shows a value in the list, Delete removes it, arrow keys move between values.": [
+    "Enter visar ett värde i listan, Delete tar bort det och piltangenterna flyttar markören mellan värdena."
+  ],
+  "Enter shows or hides the remaining values.": [
+    "Enter visar eller döljer de återstående värdena."
+  ],
+  "Enter takes a value back to the text box, Delete removes it, arrow keys move between values.": [
+    "Enter för tillbaka ett värde till textrutan, Delete tar bort det och piltangenterna flyttar markören mellan värdena."
   ],
   "Ethernet": [
     "Ethernet"
@@ -1338,9 +1416,6 @@ export default {
   "Hide technical details": [
     "Dölj tekniska detaljer"
   ],
-  "Hide terminal": [
-    "Dölj terminal"
-  ],
   "High": [
     "Hög"
   ],
@@ -1361,6 +1436,9 @@ export default {
   ],
   "Hostnames, IP addresses, or fully qualified domain names (FQDNs). E.g., pool.ntp.org": [
     "Värdnamn, IP-adresser eller fullständigt kvalificerade domännamn (FQDN). T.ex. pool.ntp.org"
+  ],
+  "I have read and accept the %s": [
+    "Jag har läst och accepterar %s"
   ],
   "I have read and accept the [license] for %s": [
     "Jag har läst och accepterar [licensen] för %s"
@@ -1615,6 +1693,9 @@ export default {
   "Language and region": [
     "Språk och region"
   ],
+  "Left arrow reaches the %d values already added.": [
+    "Vänsterpil når de värden (%d) som redan har lagts till."
+  ],
   "Let the installer propose a sensible size": [
     "Låt installationsprogrammet föreslå en vettig storlek"
   ],
@@ -1635,6 +1716,12 @@ export default {
   ],
   "Light color scheme": [
     "Ljust färgschema"
+  ],
+  "Link": [
+    "Länk"
+  ],
+  "Link up": [
+    "Länk uppe"
   ],
   "Linux command-line with administrative privileges on the installer system.": [
     "Linux-kommandorad med administratörsbehörigheter på installationssystemet."
@@ -1773,6 +1860,9 @@ export default {
   ],
   "More": [
     "Mer"
+  ],
+  "More actions": [
+    "Mer åtgärder"
   ],
   "More devices": [
     "Mer enheter"
@@ -1958,6 +2048,15 @@ export default {
   ],
   "No information available yet": [
     "Ingen information tillgänglig ännu"
+  ],
+  "No link": [
+    "Ingen länk"
+  ],
+  "No options match": [
+    "Inga alternativ matchar"
+  ],
+  "No options match.": [
+    "Inga alternativ matchar."
   ],
   "No partitions will be automatically configured for booting.": [
     "Inga partitioner kommer att konfigureras automatiskt för uppstart."
@@ -2476,6 +2575,12 @@ export default {
   "Select at least one disk.": [
     "Välj åtminstone en disk."
   ],
+  "Select bond ports": [
+    "Välj bond portar"
+  ],
+  "Select bridge ports": [
+    "Välj brygg portar"
+  ],
   "Select device": [
     "Välj enhet"
   ],
@@ -2499,6 +2604,9 @@ export default {
   ],
   "Select the controllers to activate": [
     "Välj en styrenhet för att fortsätta"
+  ],
+  "Select the parent device": [
+    "Välj huvudenhet"
   ],
   "Select the zFCP controllers to activate:": [
     "Välj de zFCP-styrenheter som ska aktiveras:"
@@ -2563,6 +2671,9 @@ export default {
   "Several partitions will be deleted": [
     "Flera partitioner kommer att tas bort"
   ],
+  "Shift": [
+    "Shift"
+  ],
   "Show": [
     "Visa"
   ],
@@ -2582,11 +2693,17 @@ export default {
   "Show more": [
     "Visa mer"
   ],
+  "Show options": [
+    "Visa alternativ"
+  ],
   "Show technical details": [
     "Visa tekniska detaljer"
   ],
-  "Show terminal": [
-    "Visa terminal"
+  "Showing %d of %d values.": [
+    "Visar %d av %d värden."
+  ],
+  "Showing all %d values.": [
+    "Visar alla %d värden."
   ],
   "Shrink existing logical volumes": [
     "Krymp existerande logiska volymer"
@@ -2605,6 +2722,9 @@ export default {
   ],
   "Skip to content": [
     "Hoppa till innehåll"
+  ],
+  "Skip to terminal": [
+    "Hoppa till terminal"
   ],
   "Software": [
     "Programvara"
@@ -2894,6 +3014,9 @@ export default {
     "Den logiska volymen kommer också att raderas",
     "Det logiska volymerna kommer också att raderas"
   ],
+  "The loopback device cannot be a port": [
+    "Loopback enhet kan inte vara en port"
+  ],
   "The modal selector offers a simplified interface designed for quick and straightforward use, without overwhelming the user.": [
     "Modalväljaren erbjuder ett förenklat gränssnitt utformat för snabb och enkel användning, utan att överväldiga användaren."
   ],
@@ -3070,6 +3193,12 @@ export default {
   "Type": [
     "Typ"
   ],
+  "Type to filter the options, or to write a value of your own.": [
+    "Skriv för att filtrera alternativen eller för att ange ett eget värde."
+  ],
+  "Type to filter the options.": [
+    "Skriv för att filtrera alternativen."
+  ],
   "Unable to modify the settings": [
     "Det går inte att ändra inställningarna"
   ],
@@ -3106,8 +3235,8 @@ export default {
   "Update available disks and activate crypt devices": [
     "Uppdatera tillgängliga diskar och aktivera krypteringsenheter"
   ],
-  "Use %s": [
-    "Använd %s"
+  "Use \"%s\"": [
+    "Använd\" %s\""
   ],
   "Use LVM volume group %s": [
     "Använd LVM volymgrupp %s"
@@ -3243,6 +3372,9 @@ export default {
   ],
   "Use this to reproduce this installation later using the installer command-line interface or the unattended mode.": [
     "Använd detta för att reproducera installationen senare med hjälp av installationsprogrammets kommandoradsgränssnitt eller i obevakat läge."
+  ],
+  "Used by": [
+    "Används av"
   ],
   "User name": [
     "Användarnamn"

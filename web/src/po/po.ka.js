@@ -50,9 +50,15 @@ export default {
   "%1$s will still contain the LVM group '%2$s' and any partition needed to boot": [
     "%1$s, მხოლოდ, შეიცავს LVM ჯგუფს '%2$s' და ყველა დანაყოფს, რომელიც ჩატვირთვისთვისაა საჭირო"
   ],
+  "%1$s+%2$s+%3$s to move focus out": [
+    "%1$s+%2$s+%3$s ფოკუსის გასატანად"
+  ],
   "%1$s, %2$s and [%3$d more]": [
     "%1$s, %2$s და [კიდევ %3$d]",
     "%1$s, %2$s და [კიდევ %3$d]"
+  ],
+  "%d Mb/s": [
+    "%d მბ/წმ"
   ],
   "%d NTP server": [
     "%d NTP სერვერი",
@@ -80,6 +86,12 @@ export default {
   "%d entries added, %d invalid.": [
     "%d ჩანაწერი დამატებულია. %d არასწორია."
   ],
+  "%d entries added, %d not available, %d duplicates skipped.": [
+    "%d ჩანაწერი დაემატა, %d ხელმისაწვდომი არაა, %d გამეორებული გამოტოვებულია."
+  ],
+  "%d entries added, %d not available.": [
+    "%d ჩანაწერი დამატებულია. %d ხელმისაწვდომი არაა."
+  ],
   "%d entries added.": [
     "%d ჩანაწერი დამატებულია."
   ],
@@ -93,6 +105,12 @@ export default {
   "%d mode available": [
     "ხელმისაწვდომია %d რეჟიმი",
     "ხელმისაწვდომია %d რეჟიმი"
+  ],
+  "%d more": [
+    "კიდევ %d"
+  ],
+  "%d options available.": [
+    "ხელმისაწვდომია %d პარამეტრი."
   ],
   "%d other mode available": [
     "ხელმისაწვდომია კიდევ %d რეჟიმი",
@@ -110,6 +128,12 @@ export default {
   ],
   "%s - %s": [
     "%s - %s"
+  ],
+  "%s Gb/s": [
+    "%s გბ/წმ"
+  ],
+  "%s added but is invalid: %s. Select it to edit.": [
+    "%s დაემატა, მაგრამ არასწორია: %s. აირჩიეთ ჩასასწორებლად."
   ],
   "%s added but is invalid: %s. Select to edit.": [
     "%s დაემატა, მაგრამ არასწორია: %s. აირჩიეთ ჩასასწორებლად."
@@ -129,6 +153,9 @@ export default {
   "%s at portal %s does not exist or cannot be reached.": [
     "%s პორტალზე %s არსებობს, ან ხელმიუწვდომელია."
   ],
+  "%s cannot be a port of itself": [
+    "%s თავისი თავის პორტი ვერ იქნება"
+  ],
   "%s disk": [
     "%s დისკი"
   ],
@@ -141,8 +168,14 @@ export default {
   "%s honors the browser and system preferences": [
     "%s ითვალისწინებს ბრაუზერის და სისტემის პარამეტრებს"
   ],
+  "%s is already selected.": [
+    "%s უკვე არჩეულია."
+  ],
   "%s is invalid: %s": [
     "%s არასწორია: %s"
+  ],
+  "%s is not available.": [
+    "%s ხელმისაწვდომი არაა."
   ],
   "%s logo": [
     "%s-ის ლოგო"
@@ -150,8 +183,14 @@ export default {
   "%s moved to input for editing.": [
     "%s გადატანილია შეყვანაზე ჩასასწორებლად."
   ],
+  "%s moved to the text box for editing.": [
+    "%s გადატანილია ჩასასწორებლად."
+  ],
   "%s removed.": [
     "%s წაშლილია."
+  ],
+  "%s shown in the list of options.": [
+    "%s პარამეტრების სიაშია."
   ],
   "%s task active": [
     "აქტიურია %s ამოცანა",
@@ -242,6 +281,9 @@ export default {
   ],
   "Accept": [
     "დასტური"
+  ],
+  "Accepted licenses": [
+    "მიღებული ლიცენზიები"
   ],
   "Action": [
     "ქმედება"
@@ -355,6 +397,9 @@ export default {
   "All the available zFCP controllers are already activated.": [
     "ყველა ხელმისაწვდომი zFCP კონტროლერი უკვე გააქტიურებულია."
   ],
+  "All values removed.": [
+    "ყველა მნიშვნელობა წაშლილია."
+  ],
   "Allow growing": [
     "გაზრდის დაშვება"
   ],
@@ -452,9 +497,6 @@ export default {
   ],
   "Automatic contrast": [
     "ავტომატური კონტრასტი"
-  ],
-  "Available devices: %s": [
-    "ხელმისაწვდომი მოწყობილობები: %s"
   ],
   "Back": [
     "უკან"
@@ -677,6 +719,9 @@ export default {
   "Choose a volume group to define logical volumes": [
     "აირჩიეთ ტომების ჯგუფი ლოგიკური ტომების აღსაწერად"
   ],
+  "Choose devices or enter their names.": [
+    "აირჩიეთ მოწყობილობები, ან შეიყვანეთ მათ სახელები."
+  ],
   "Choose whether to enable the root account.": [
     "აირჩიეთ, იქნება ჩართული root-ის ანგარიში, თუ არა."
   ],
@@ -685,6 +730,9 @@ export default {
   ],
   "Chosen by name": [
     "არჩეულია სახელით"
+  ],
+  "Clear all": [
+    "ყველას გასუფთავება"
   ],
   "Clear all filters": [
     "ყველა ფილტრის გასუფთავება"
@@ -839,6 +887,9 @@ export default {
   ],
   "Create another LVM volume group on %s": [
     "კიდევ ერთი LVM ტომების ჯგუფის შექმნა %s-ზე"
+  ],
+  "Ctrl": [
+    "Ctrl"
   ],
   "Curated sets of packages for common use cases and features to extend the system.": [
     ""
@@ -1044,6 +1095,15 @@ export default {
   "Do not use": [
     "არ გამოიყენო"
   ],
+  "Down arrow for options, Enter to add": [
+    "ღილაკი ქვემოთ - პარამეტრებისთვის. Enter - დასამატებლად"
+  ],
+  "Down arrow for options, Enter to add, Delete to remove, arrow keys to navigate": [
+    ""
+  ],
+  "Down arrow opens the list of options.": [
+    "ისარი ქვემოთ დაგეგმილ ქმედებებს ჩამოშლის."
+  ],
   "Download configuration": [
     "კონფიგურაციის გადმოწერა"
   ],
@@ -1168,6 +1228,24 @@ export default {
     ""
   ],
   "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate entries, Escape to exit": [
+    ""
+  ],
+  "Enter removes every value, Left arrow goes back to the text box.": [
+    ""
+  ],
+  "Enter selects or deselects an option, Escape closes the list.": [
+    ""
+  ],
+  "Enter shows a chosen value in the list or takes a written one back to the text box, Delete removes it, arrow keys move between values.": [
+    ""
+  ],
+  "Enter shows a value in the list, Delete removes it, arrow keys move between values.": [
+    ""
+  ],
+  "Enter shows or hides the remaining values.": [
+    "ღილაკი Enter აჩვენებს, ან დამალავს დანარჩენ მნიშვნელობებს."
+  ],
+  "Enter takes a value back to the text box, Delete removes it, arrow keys move between values.": [
     ""
   ],
   "Ethernet": [
@@ -1338,9 +1416,6 @@ export default {
   "Hide technical details": [
     "ტექნიკური დეტალების დამალვა"
   ],
-  "Hide terminal": [
-    "ტერმინალის დამალვა"
-  ],
   "High": [
     "მაღალი"
   ],
@@ -1361,6 +1436,9 @@ export default {
   ],
   "Hostnames, IP addresses, or fully qualified domain names (FQDNs). E.g., pool.ntp.org": [
     "ჰოსტის სახელები, IP მისამართები, ან სრულად შედგენილი დომენის სახელები (FQDN). მაგ: pool.ntp.org"
+  ],
+  "I have read and accept the %s": [
+    "მე წავიკითხე და დავეთანხმე %s-ს"
   ],
   "I have read and accept the [license] for %s": [
     "მე წავიკითხე და დავეთანხმე ლიცენზიას %s-სთვის"
@@ -1615,6 +1693,9 @@ export default {
   "Language and region": [
     "ენა და რეგიონი"
   ],
+  "Left arrow reaches the %d values already added.": [
+    ""
+  ],
   "Let the installer propose a sensible size": [
     "დაყენების პროგრამისთვის ზომის შეთავაზების უფლების დართვა"
   ],
@@ -1635,6 +1716,12 @@ export default {
   ],
   "Light color scheme": [
     "ღია ფერთა სქემა"
+  ],
+  "Link": [
+    "ბმული"
+  ],
+  "Link up": [
+    "კავშირი დამყარებულია"
   ],
   "Linux command-line with administrative privileges on the installer system.": [
     "Linux-ის ბრძანების სტრიქონი ადმინისტრატორის პრივილეგიებით დაყენების პროგრამის სიტემაში."
@@ -1773,6 +1860,9 @@ export default {
   ],
   "More": [
     "მეტი"
+  ],
+  "More actions": [
+    "მეტი ქმედება"
   ],
   "More devices": [
     "მეტი მოწყობილობა"
@@ -1958,6 +2048,15 @@ export default {
   ],
   "No information available yet": [
     "ჯერ ინფორმაცია ხელმისაწვდომი არაა"
+  ],
+  "No link": [
+    "კავშირი დამყარებული არაა"
+  ],
+  "No options match": [
+    "პარამეტრები არ ემთხვევა"
+  ],
+  "No options match.": [
+    "პარამეტრები არ ემთხვევა."
   ],
   "No partitions will be automatically configured for booting.": [
     "ჩასატვირთად დანაყოფების ავტომატური მორგება არ მოხდება."
@@ -2476,6 +2575,12 @@ export default {
   "Select at least one disk.": [
     "აირჩიეთ, სულ ცოტა, ერთი დისკი."
   ],
+  "Select bond ports": [
+    "აირჩიეთ დასაწყვილებელი პორტები"
+  ],
+  "Select bridge ports": [
+    "აირჩიეთ ხიდის პორტები"
+  ],
   "Select device": [
     "აირჩიეთ მოწყობილობა"
   ],
@@ -2499,6 +2604,9 @@ export default {
   ],
   "Select the controllers to activate": [
     "აირჩიეთ გასააქტიურებელი კონტროლერები"
+  ],
+  "Select the parent device": [
+    "აირჩიეთ მშობელი მოწყობილობა"
   ],
   "Select the zFCP controllers to activate:": [
     "აირჩიეთ გასააქტიურებელი zFCP კონტრილერები:"
@@ -2563,6 +2671,9 @@ export default {
   "Several partitions will be deleted": [
     "წაიშლება რამდენიმე დანაყოფი"
   ],
+  "Shift": [
+    "Shift"
+  ],
   "Show": [
     "ჩვენება"
   ],
@@ -2582,11 +2693,17 @@ export default {
   "Show more": [
     "მეტის ჩვენება"
   ],
+  "Show options": [
+    "პარამეტრების ჩვენება"
+  ],
   "Show technical details": [
     "ტექნიკური დეტალების ჩვენება"
   ],
-  "Show terminal": [
-    "ტერმინალის ჩვენება"
+  "Showing %d of %d values.": [
+    "ნაჩვენებია %d მნიშვნელობა %d-დან."
+  ],
+  "Showing all %d values.": [
+    "ნაჩვენებია ყველა %d მნიშვნელობა."
   ],
   "Shrink existing logical volumes": [
     "არსებული ლოგიკური ტომების დაპატარავება"
@@ -2605,6 +2722,9 @@ export default {
   ],
   "Skip to content": [
     "შემცველობაზე გადასვლა"
+  ],
+  "Skip to terminal": [
+    "ტერმინალზე გადასვლა"
   ],
   "Software": [
     "პროგრამები"
@@ -2894,6 +3014,9 @@ export default {
     "ასევე წაიშლება ლოგიკური ტომი",
     "ასევე წაიშლება ლოგიკური ტომები"
   ],
+  "The loopback device cannot be a port": [
+    "მარყუჟი მოწყობილობა (lo) პორტი ვერ იქნება"
+  ],
   "The modal selector offers a simplified interface designed for quick and straightforward use, without overwhelming the user.": [
     ""
   ],
@@ -3070,6 +3193,12 @@ export default {
   "Type": [
     "ტიპი"
   ],
+  "Type to filter the options, or to write a value of your own.": [
+    ""
+  ],
+  "Type to filter the options.": [
+    "აკრიფეთ პარამეტრების გასაფილტრად."
+  ],
   "Unable to modify the settings": [
     "პარამეტრების შეცვლა შეუძლებელია"
   ],
@@ -3106,8 +3235,8 @@ export default {
   "Update available disks and activate crypt devices": [
     "ხელმისაწვდომი დისკების განახლება და კრიპტოგრაფიული მოწყობილობების გააქტიურება"
   ],
-  "Use %s": [
-    "%s-ის გამოყენება"
+  "Use \"%s\"": [
+    "\"%s\"-ის გამოყენება"
   ],
   "Use LVM volume group %s": [
     "LVM-ის ტომების ჯგუფის %s გამოყენება"
@@ -3243,6 +3372,9 @@ export default {
   ],
   "Use this to reproduce this installation later using the installer command-line interface or the unattended mode.": [
     ""
+  ],
+  "Used by": [
+    "იყენებს"
   ],
   "User name": [
     "მომხმარებლის სახელი"
