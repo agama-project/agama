@@ -49,6 +49,7 @@ pub struct InstallAction {
     pub proxy: Handler<proxy::Service>,
     pub ntp: Handler<ntp::Service>,
     pub access: Handler<agama_access::Service>,
+    pub security: Handler<security::Service>,
     pub software: Handler<software::Service>,
     pub storage: Handler<storage::Service>,
     pub files: Handler<files::Service>,
@@ -163,6 +164,7 @@ impl InstallAction {
             let ntp = self.ntp.clone();
             let hostname = self.hostname.clone();
             let users = self.users.clone();
+            let security = self.security.clone();
             let storage = self.storage.clone();
             let access = self.access.clone();
             let progress = self.progress.clone();
@@ -193,6 +195,10 @@ impl InstallAction {
                     network.install().await.map_err(TaskError::from_error)?;
                     proxy
                         .call(proxy::message::Finish)
+                        .await
+                        .map_err(TaskError::from_error)?;
+                    security
+                        .call(security::message::Finish)
                         .await
                         .map_err(TaskError::from_error)?;
                     ntp.call(ntp::message::Finish)
