@@ -41,7 +41,7 @@ Example of running from different machine:
   # backend machine
   # using ip of machine instead of localhost is important to be network accessible
   # second address is needed for SSL which is mandatory for remote access
-  agama-web-server serve --address :::80 --address2 :::443
+  agama-web-server serve --address :::80 --address :::443
 
   # frontend machine
   # ESLINT=0 is useful to ignore linter problems during development

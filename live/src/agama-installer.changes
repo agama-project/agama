@@ -1,4 +1,15 @@
 -------------------------------------------------------------------
+Thu Sep 24 13:43:15 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Added a new CC compliant text mode installer (jsc#PED-16702)
+
+-------------------------------------------------------------------
+Fri Sep 18 10:46:12 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- The remote access to the Agama web server can be disabled with
+  the "inst.remote=0" boot option (jsc#AGM-153)
+
+-------------------------------------------------------------------
 Fri Jun  5 13:42:42 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
 
 - Added "plymouth.ignore-serial-consoles" boot option on ppc64le
