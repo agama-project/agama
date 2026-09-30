@@ -646,7 +646,7 @@ impl Service {
     ///
     /// All these action calls will be improved for 16.2, making this method unnecessary.
     async fn is_storage_available(&self) -> Result<bool, Error> {
-        let status = self.progress.call(progress::message::GetStatus).await?;
+        let status = self.status().await?;
         let is_installing = status.stage == Stage::Installing;
         let has_progress = status.progresses.iter().any(|p| p.scope == Scope::Storage);
         let has_tasks = status.tasks.iter().any(|p| p.scope == Scope::Storage);
@@ -656,9 +656,9 @@ impl Service {
 
     /// Determines whether the software service is available.
     ///
-    /// Consider the service as available if there is no pending progress.
+    /// Consider the service as available if there is no pending progress or task.
     async fn is_software_available(&self) -> Result<bool, Error> {
-        let status = self.progress.call(progress::message::GetStatus).await?;
+        let status = self.status().await?;
         if status.stage == Stage::Installing {
             return Ok(false);
         }
@@ -666,6 +666,18 @@ impl Service {
         let is_busy = status.progresses.iter().any(|p| p.scope == Scope::Software)
             || status.tasks.iter().any(|p| p.scope == Scope::Software);
         Ok(!is_busy)
+    }
+
+    /// Returns the installation status, including the pending tasks.
+    ///
+    /// The progress service does not know about the tasks, so its status alone
+    /// never reports them.
+    async fn status(&self) -> Result<Status, Error> {
+        let pending_tasks = self.task_manager.get_all_metadata().await;
+        // TODO: drop status from progress service. The stage should be kept by the manager.
+        let mut status = self.progress.call(progress::message::GetStatus).await?;
+        status.tasks = pending_tasks.into_iter().map(|m| m.into()).collect();
+        Ok(status)
     }
 
     /// Returns the product configuration.
@@ -695,13 +707,8 @@ impl Actor for Service {
 #[async_trait]
 impl MessageHandler<progress::message::GetStatus> for Service {
     /// It returns the status of the installation.
-    async fn handle(&mut self, message: progress::message::GetStatus) -> Result<Status, Error> {
-        let pending_tasks = self.task_manager.get_all_metadata().await;
-        // TODO: drop status from progress service. The stage should be kept by the manager.
-        let mut status = self.progress.call(message).await?;
-        status.tasks = pending_tasks.into_iter().map(|m| m.into()).collect();
-
-        Ok(status)
+    async fn handle(&mut self, _message: progress::message::GetStatus) -> Result<Status, Error> {
+        self.status().await
     }
 }
 

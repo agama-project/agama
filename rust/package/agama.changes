@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Tue Sep 29 16:45:27 UTC 2026 - Martin Pluskal <martin@pluskal.org>
+
+- Do not query the software service while a software task is
+  pending: it cannot answer until the software proposal is ready,
+  and the waiting request held every other API request back
+  (bsc#1283098). Pending storage tasks now count too while
+  installing.
+
+-------------------------------------------------------------------
 Tue Sep 22 16:17:26 UTC 2026 - Michal Filka <mfilka@suse.com>
 
 - bsc#1271374
