@@ -564,6 +564,9 @@ export default {
   "DNS": [
     "DNS"
   ],
+  "DNS data list": [
+    "DNS-Datenliste"
+  ],
   "Deactivate": [
     "Deaktivieren"
   ],
