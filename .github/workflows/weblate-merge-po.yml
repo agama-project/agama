@@ -44,16 +44,12 @@ jobs:
         include:
           # per-branch settings
           - branch: master
-            # empty means the default branch
-            ref: ""
             image: registry.opensuse.org/opensuse/tumbleweed:latest
             disable_repos: repo-non-oss repo-openh264 repo-update
           - branch: SLE-16
-            ref: SLE-16
             image: registry.opensuse.org/opensuse/leap:16.0
             disable_repos: openSUSE:repo-openh264
           - branch: SLE-16.1
-            ref: SLE-16.1
             # FIXME: the 16.1 container is not published yet, switch to 16.1 when it is released
             image: registry.opensuse.org/opensuse/leap:16.0
             disable_repos: openSUSE:repo-openh264
@@ -105,14 +101,14 @@ jobs:
         uses: actions/checkout@v7
         with:
           path: agama
-          ref: ${{ matrix.ref }}
+          ref: ${{ matrix.branch }}
 
       - name: Checkout Agama-weblate sources
         uses: actions/checkout@v7
         with:
           path: agama-weblate
           repository: ${{ github.repository_owner }}/agama-weblate
-          ref: ${{ matrix.ref }}
+          ref: ${{ matrix.branch }}
 
       - name: Validate the PO files
         working-directory: ./agama-weblate
