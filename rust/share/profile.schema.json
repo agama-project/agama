@@ -1002,7 +1002,7 @@
             },
             "ports": {
               "title": "The connections to be bonded",
-              "description": "Giving this list replaces the ports of the bond: a current port that is not listed is removed, unless it is given somewhere else in the document.",
+              "description": "Giving this list replaces the ports of the bond: a current port that is not listed is removed, unless it is given somewhere else in the document. Omitting the list leaves the current ports alone.",
               "type": "array",
               "items": {
                 "anyOf": [
@@ -1061,7 +1061,7 @@
             },
             "ports": {
               "title": "The connections to be part of the bridge",
-              "description": "Giving this list replaces the ports of the bridge: a current port that is not listed is removed, unless it is given somewhere else in the document.",
+              "description": "Giving this list replaces the ports of the bridge: a current port that is not listed is removed, unless it is given somewhere else in the document. Omitting the list leaves the current ports alone.",
               "type": "array",
               "items": {
                 "anyOf": [

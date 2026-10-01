@@ -140,8 +140,9 @@ pub struct BondSettings {
     pub mode: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub options: Option<String>,
-    #[serde(skip_serializing_if = "Vec::is_empty", default)]
-    pub ports: Vec<PortEntry>,
+    /// Ports of the controller. When it is omitted, the current ports are left alone.
+    #[serde(skip_serializing_if = "Option::is_none", default)]
+    pub ports: Option<Vec<PortEntry>>,
 }
 
 impl Default for BondSettings {
@@ -149,7 +150,7 @@ impl Default for BondSettings {
         Self {
             mode: "balance-rr".to_string(),
             options: None,
-            ports: vec![],
+            ports: None,
         }
     }
 }
@@ -167,8 +168,9 @@ pub struct BridgeSettings {
     pub hello_time: Option<u32>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub max_age: Option<u32>,
-    #[serde(skip_serializing_if = "Vec::is_empty", default)]
-    pub ports: Vec<PortEntry>,
+    /// Ports of the controller. When it is omitted, the current ports are left alone.
+    #[serde(skip_serializing_if = "Option::is_none", default)]
+    pub ports: Option<Vec<PortEntry>>,
 }
 
 /// Entry of a controller's `ports` list.
@@ -486,21 +488,31 @@ impl NetworkConnection {
 
     /// Returns the ports declared by the connection, if it declares any.
     ///
-    /// An empty list is not the same as no list at all: a connection with a `bond` or a `bridge`
-    /// section declares its ports, even when there is none.
-    pub fn ports(&self) -> Option<&Vec<PortEntry>> {
-        self.bond
-            .as_ref()
-            .map(|b| &b.ports)
-            .or_else(|| self.bridge.as_ref().map(|b| &b.ports))
+    /// An empty list is not the same as no list at all: an empty list means that the controller
+    /// has no ports, while no list means that its ports are not part of the payload.
+    pub fn ports(&self) -> Option<&[PortEntry]> {
+        match (&self.bond, &self.bridge) {
+            (Some(bond), _) => bond.ports.as_deref(),
+            (None, Some(bridge)) => bridge.ports.as_deref(),
+            (None, None) => None,
+        }
     }
 
     /// Mutable version of [`Self::ports`].
     pub fn ports_mut(&mut self) -> Option<&mut Vec<PortEntry>> {
         match (&mut self.bond, &mut self.bridge) {
-            (Some(bond), _) => Some(&mut bond.ports),
-            (None, Some(bridge)) => Some(&mut bridge.ports),
+            (Some(bond), _) => bond.ports.as_mut(),
+            (None, Some(bridge)) => bridge.ports.as_mut(),
             (None, None) => None,
+        }
+    }
+
+    /// Sets the ports of the connection, if it is a bond or a bridge.
+    pub fn set_ports(&mut self, ports: Option<Vec<PortEntry>>) {
+        match (&mut self.bond, &mut self.bridge) {
+            (Some(bond), _) => bond.ports = ports,
+            (None, Some(bridge)) => bridge.ports = ports,
+            (None, None) => {}
         }
     }
 
@@ -617,6 +629,17 @@ mod tests {
         let serialized = serde_json::to_value(&conn).unwrap();
         assert_eq!(serialized["bridge"]["ports"][0], "eth0");
         assert_eq!(serialized["bridge"]["ports"][1]["interface"], "bond0");
+    }
+
+    #[test]
+    fn test_omitted_ports_are_not_an_empty_list() {
+        let json = r#"{ "id": "br0", "bridge": { "stp": false } }"#;
+        let conn: NetworkConnection = serde_json::from_str(json).unwrap();
+        assert_eq!(conn.ports(), None);
+
+        let json = r#"{ "id": "br0", "bridge": { "stp": false, "ports": [] } }"#;
+        let conn: NetworkConnection = serde_json::from_str(json).unwrap();
+        assert_eq!(conn.ports(), Some([].as_slice()));
     }
 
     #[test]
