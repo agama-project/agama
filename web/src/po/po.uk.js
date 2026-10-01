@@ -742,6 +742,9 @@ export default {
   "Configuration from the network plus static addresses and gateway": [
     "Налаштування через мережу, а також статичні адреси та шлюз"
   ],
+  "Configuration pre-scripts have been executed and may have modified your system. You can reboot or shut down, but any changes made by these scripts will not be undone.": [
+    ""
+  ],
   "Configuration read from the iSCSI Boot Firmware Table (iBFT). Initiator cannot be changed.": [
     "Конфігурація зчитана з таблиці iSCSI Boot Firmware Table (iBFT). Ініціатор не може бути змінений."
   ],
@@ -2674,6 +2677,9 @@ export default {
   "Shrink existing partitions": [
     "Зменшення наявних розділів"
   ],
+  "Shut down": [
+    ""
+  ],
   "Signal strength": [
     "Потужність сигналу"
   ],
@@ -3477,6 +3483,9 @@ export default {
   ],
   "You can safely close this window.": [
     "Ви можете сміливо закривати це вікно."
+  ],
+  "You can safely reboot or shut down the system. No changes have been made to your disks, and your current installation setup will be canceled.": [
+    ""
   ],
   "You may want to discard the current settings and start from scratch with a simple configuration.": [
     "Можливо, Ви захочете відкинути поточні налаштування і почати з чистого аркуша з простою конфігурацією."
