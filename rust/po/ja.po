@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-22 12:12+0000\n"
+"POT-Creation-Date: 2026-10-01 14:04+0000\n"
 "PO-Revision-Date: 2026-08-27 05:55+0000\n"
 "Last-Translator: Yasuhiko Kamata <belphegor@belbel.or.jp>\n"
 "Language-Team: Japanese <https://l10n.opensuse.org/projects/agama/agama-rust-"
@@ -324,9 +324,11 @@ msgstr "JSON スキーマを利用してプロファイルを検証します"
 
 #. TRANSLATORS: CLI help for: agama config validate (details)
 #: agama-cli/src/config.rs:115
+#, fuzzy
 msgid ""
-"Schema is available at /usr/share/agama/schema/profile.schema.json Note: "
-"validation is always done as part of all other \"agama config\" commands."
+"Schema is available at /usr/share/agama/openapi/nightly/schemas/"
+"config.schema.json Note: validation is always done as part of all other "
+"\"agama config\" commands."
 msgstr ""
 "スキーマは /usr/share/agama/schema/profile.schema.json に存在しています。注"
 "意: 検証処理は \"agama config\" の全てのサブコマンドで実行されます。"
@@ -808,111 +810,111 @@ msgstr "スクリプト %s の取得に失敗しました。再試行します�
 msgid "Failed to write the file %s. Do you want to try again?"
 msgstr "ファイル %s の書き込みに失敗しました。再試行しますか？"
 
-#: agama-manager/src/actions.rs:78
+#: agama-manager/src/actions.rs:79
 msgid "Prepare the system"
 msgstr "システムの準備"
 
-#: agama-manager/src/actions.rs:79
+#: agama-manager/src/actions.rs:80
 msgid "Install software"
 msgstr "ソフトウエアのインストール"
 
-#: agama-manager/src/actions.rs:80
+#: agama-manager/src/actions.rs:81
 msgid "Configure the system"
 msgstr "システムの設定"
 
-#: agama-manager/src/actions.rs:94
+#: agama-manager/src/actions.rs:95
 msgid "Preparing storage"
 msgstr "ストレージを準備しています"
 
-#: agama-manager/src/actions.rs:112
+#: agama-manager/src/actions.rs:113
 msgid "Running post-partitioning scripts"
 msgstr "パーティション設定後スクリプトを実行しています"
 
-#: agama-manager/src/actions.rs:137
+#: agama-manager/src/actions.rs:138
 msgid "Installing software"
 msgstr "ソフトウエアをインストールしています"
 
-#: agama-manager/src/actions.rs:174
+#: agama-manager/src/actions.rs:176
 msgid "Configuring the system"
 msgstr "システムを設定しています"
 
-#: agama-manager/src/actions.rs:242
+#: agama-manager/src/actions.rs:248
 msgid "Finishing installation"
 msgstr "インストールを完了しています"
 
-#: agama-manager/src/actions.rs:271
+#: agama-manager/src/actions.rs:277
 msgid "Finalize installation"
 msgstr "インストールの完了"
 
-#: agama-manager/src/actions.rs:346
+#: agama-manager/src/actions.rs:352
 msgid "Storing questions settings"
 msgstr "問題点設定を保存しています"
 
-#: agama-manager/src/actions.rs:357
+#: agama-manager/src/actions.rs:363
 msgid "Importing user files and scripts"
 msgstr "ユーザファイルとスクリプトを取り込んでいます"
 
-#: agama-manager/src/actions.rs:371
+#: agama-manager/src/actions.rs:377
 msgid "Running user pre-installation scripts"
 msgstr "ユーザ指定のインストール前スクリプトを実行しています"
 
-#: agama-manager/src/actions.rs:386
+#: agama-manager/src/actions.rs:392
 msgid "Storing security settings"
 msgstr "セキュリティ設定を保存しています"
 
-#: agama-manager/src/actions.rs:396
+#: agama-manager/src/actions.rs:402
 msgid "Configuring remote access"
 msgstr "リモートアクセスを設定しています"
 
-#: agama-manager/src/actions.rs:406
+#: agama-manager/src/actions.rs:412
 msgid "Setting up the hostname"
 msgstr "ホスト名を設定しています"
 
-#: agama-manager/src/actions.rs:416
+#: agama-manager/src/actions.rs:422
 msgid "Setting up the network proxy"
 msgstr "ネットワークプロキシを設定しています"
 
-#: agama-manager/src/actions.rs:427
+#: agama-manager/src/actions.rs:433
 msgid "Setting up NTP"
 msgstr "NTP を設定しています"
 
-#: agama-manager/src/actions.rs:437
+#: agama-manager/src/actions.rs:443
 msgid "Storing localization settings"
 msgstr "言語設定を保存しています"
 
-#: agama-manager/src/actions.rs:447
+#: agama-manager/src/actions.rs:453
 msgid "Storing users settings"
 msgstr "ユーザ設定を保存しています"
 
-#: agama-manager/src/actions.rs:557
+#: agama-manager/src/actions.rs:563
 msgid "Configuring iSCSI devices"
 msgstr "iSCSI デバイスを設定しています"
 
-#: agama-manager/src/actions.rs:582
+#: agama-manager/src/actions.rs:588
 msgid "Configuring zFCP devices"
 msgstr "zFCP デバイスを設定しています"
 
-#: agama-manager/src/actions.rs:608
+#: agama-manager/src/actions.rs:614
 msgid "Configuring DASD devices"
 msgstr "DASD デバイスを設定しています"
 
-#: agama-manager/src/actions.rs:634
+#: agama-manager/src/actions.rs:640
 msgid "Setting up the network"
 msgstr "ネットワークを設定しています"
 
-#: agama-manager/src/actions.rs:664
+#: agama-manager/src/actions.rs:670
 msgid "Preparing the storage proposal"
 msgstr "ストレージの提案内容を準備しています"
 
-#: agama-manager/src/actions.rs:694
+#: agama-manager/src/actions.rs:700
 msgid "Storing bootloader settings"
 msgstr "ブートローダ設定を保存しています"
 
-#: agama-manager/src/actions.rs:728
+#: agama-manager/src/actions.rs:734
 msgid "Preparing the software proposal"
 msgstr "ソフトウエアの提案内容を準備しています"
 
-#: agama-manager/src/actions.rs:758
+#: agama-manager/src/actions.rs:764
 msgid "Configuring SELinux"
 msgstr "SELinux を設定しています"
 
@@ -924,16 +926,16 @@ msgstr "ネットワーク設定を書き込んでいます"
 msgid "Syncing the network service state"
 msgstr "ネットワークサービスの状態を同期しています"
 
-#: agama-security/src/service.rs:225
+#: agama-security/src/service.rs:227
 msgid "Reject"
 msgstr "拒否する"
 
-#: agama-security/src/service.rs:225
+#: agama-security/src/service.rs:227
 #: agama-software/src/callbacks/security.rs:111
 msgid "Trust"
 msgstr "信頼する"
 
-#: agama-security/src/service.rs:226
+#: agama-security/src/service.rs:228
 msgid ""
 "Trying to import a self-signed certificate. Do you want to trust it and "
 "register the product?"
@@ -1089,11 +1091,11 @@ msgstr "エラー:"
 msgid "Details:"
 msgstr "詳細:"
 
-#: agama-utils/src/api/question.rs:342 agama-utils/src/question/start.rs:48
+#: agama-utils/src/api/question.rs:346 agama-utils/src/question/start.rs:48
 msgid "No"
 msgstr "いいえ"
 
-#: agama-utils/src/api/question.rs:342 agama-utils/src/question/start.rs:48
+#: agama-utils/src/api/question.rs:346 agama-utils/src/question/start.rs:48
 msgid "Yes"
 msgstr "はい"
 
