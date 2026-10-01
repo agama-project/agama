@@ -1,4 +1,16 @@
 -------------------------------------------------------------------
+Thu Oct  1 11:53:11 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Unify OpenAPI specification and manual JSON schemas:
+  - Generate standalone profile, proposal, and system schemas from
+    OpenAPI components using `cargo xtask openapi`.
+  - Replace manually maintained profile.schema.json and
+    software.schema.json with schemas generated from Rust sources.
+  - Install OpenAPI specifications and standalone schemas under
+    `/usr/share/agama/openapi/nightly/`.
+  - Port descriptions, titles, and examples from legacy schemas.
+
+-------------------------------------------------------------------
 Tue Sep 29 16:45:27 UTC 2026 - Martin Pluskal <martin@pluskal.org>
 
 - Do not query the software service while a software task is
