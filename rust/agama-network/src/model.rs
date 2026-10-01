@@ -1252,7 +1252,7 @@ mod tests {
         bond0.port = None;
         // bond0 stays nested in br0, otherwise it would be moved out of it.
         let mut update = find(&exposed(&state), "br0");
-        update.bridge.as_mut().unwrap().ports = vec![nested(bond0)];
+        update.bridge.as_mut().unwrap().ports = Some(vec![nested(bond0)]);
 
         let collection = state
             .connection_collection_from(&NetworkConnectionsCollection(vec![update]))
@@ -1274,14 +1274,14 @@ mod tests {
         let bond0 = NetworkConnection {
             id: "bond0".to_string(),
             bond: Some(BondSettings {
-                ports: vec![nested(NetworkConnection {
+                ports: Some(vec![nested(NetworkConnection {
                     interface: Some("eth0".to_string()),
                     port: Some(PortSettings {
                         priority: Some(50),
                         ..Default::default()
                     }),
                     ..Default::default()
-                })],
+                })]),
                 ..Default::default()
             }),
             ..Default::default()
@@ -1314,7 +1314,7 @@ mod tests {
             NetworkConnection {
                 id: "bond0".to_string(),
                 bond: Some(BondSettings {
-                    ports: vec![name("eth0")],
+                    ports: Some(vec![name("eth0")]),
                     ..Default::default()
                 }),
                 ..Default::default()
@@ -1376,6 +1376,23 @@ mod tests {
     }
 
     #[test]
+    fn test_omitting_the_ports_of_a_controller_keeps_them() {
+        let mut state = stacked_state();
+        let mut br0 = find(&exposed(&state), "br0");
+        br0.set_ports(None);
+        br0.bridge.as_mut().unwrap().stp = Some(false);
+        apply(&mut state, NetworkConnectionsCollection(vec![br0]));
+
+        for id in ["bond0", "eth0", "eth1"] {
+            assert!(!state.get_connection(id).unwrap().is_removed(), "{id}");
+        }
+        assert_eq!(
+            state.get_connection("bond0").unwrap().controller,
+            Some(state.get_connection("br0").unwrap().uuid)
+        );
+    }
+
+    #[test]
     fn test_a_dropped_port_given_at_the_top_level_is_moved_out() {
         let mut state = stacked_state();
         let uuid = state.get_connection("eth0").unwrap().uuid;
@@ -1426,9 +1443,7 @@ mod tests {
         drop_port(&mut connections, "eth1");
         find_mut(&mut connections.0, "bond1")
             .unwrap()
-            .ports_mut()
-            .unwrap()
-            .push(nested(eth1));
+            .set_ports(Some(vec![nested(eth1)]));
         apply(&mut state, connections);
 
         let eth1 = state.get_connection("eth1").unwrap();
@@ -1446,13 +1461,13 @@ mod tests {
         let bond0 = NetworkConnection {
             id: "bond0".to_string(),
             bond: Some(BondSettings {
-                ports: vec![
+                ports: Some(vec![
                     name("eth0"),
                     nested(NetworkConnection {
                         interface: Some("eth1".to_string()),
                         ..Default::default()
                     }),
-                ],
+                ]),
                 ..Default::default()
             }),
             ..Default::default()
@@ -1473,11 +1488,11 @@ mod tests {
         let bond0 = NetworkConnection {
             id: "bond0".to_string(),
             bond: Some(BondSettings {
-                ports: vec![nested(NetworkConnection {
+                ports: Some(vec![nested(NetworkConnection {
                     interface: Some("eth0".to_string()),
                     method4: Some(Ipv4Method::Disabled),
                     ..Default::default()
-                })],
+                })]),
                 ..Default::default()
             }),
             ..Default::default()
@@ -1513,7 +1528,7 @@ mod tests {
         let bond0 = NetworkConnection {
             id: "bond0".to_string(),
             bond: Some(BondSettings {
-                ports: vec![name("eth0")],
+                ports: Some(vec![name("eth0")]),
                 ..Default::default()
             }),
             ..Default::default()
@@ -1560,7 +1575,7 @@ mod tests {
     fn test_a_port_given_by_name_is_taken_from_the_state() {
         let state = stacked_state();
         let mut bond0 = find(&exposed(&state), "bond0");
-        bond0.bond.as_mut().unwrap().ports = vec![name("eth0"), name("eth1")];
+        bond0.bond.as_mut().unwrap().ports = Some(vec![name("eth0"), name("eth1")]);
 
         let collection = state
             .connection_collection_from(&NetworkConnectionsCollection(vec![bond0]))
@@ -1582,7 +1597,7 @@ mod tests {
         let bond0 = NetworkConnection {
             id: "bond0".to_string(),
             bond: Some(BondSettings {
-                ports: vec![name("eth0")],
+                ports: Some(vec![name("eth0")]),
                 ..Default::default()
             }),
             ..Default::default()
@@ -1606,11 +1621,11 @@ mod tests {
         let bond0 = NetworkConnection {
             id: "bond0".to_string(),
             bond: Some(BondSettings {
-                ports: vec![nested(NetworkConnection {
+                ports: Some(vec![nested(NetworkConnection {
                     interface: Some("eth0".to_string()),
                     mtu: 9000,
                     ..Default::default()
-                })],
+                })]),
                 ..Default::default()
             }),
             ..Default::default()
@@ -1638,10 +1653,10 @@ mod tests {
         let bond0 = NetworkConnection {
             id: "bond0".to_string(),
             bond: Some(BondSettings {
-                ports: vec![nested(NetworkConnection {
+                ports: Some(vec![nested(NetworkConnection {
                     interface: Some("eth0".to_string()),
                     ..Default::default()
-                })],
+                })]),
                 ..Default::default()
             }),
             ..Default::default()
@@ -1662,10 +1677,10 @@ mod tests {
         let bond0 = NetworkConnection {
             id: "bond0".to_string(),
             bond: Some(BondSettings {
-                ports: vec![nested(NetworkConnection {
+                ports: Some(vec![nested(NetworkConnection {
                     mtu: 9000,
                     ..Default::default()
-                })],
+                })]),
                 ..Default::default()
             }),
             ..Default::default()
@@ -1690,7 +1705,7 @@ mod tests {
             NetworkConnection {
                 id: "bond0".to_string(),
                 bond: Some(BondSettings {
-                    ports: vec![nested(eth0)],
+                    ports: Some(vec![nested(eth0)]),
                     ..Default::default()
                 }),
                 ..Default::default()
@@ -1718,7 +1733,7 @@ mod tests {
             NetworkConnection {
                 id: "bond0".to_string(),
                 bond: Some(BondSettings {
-                    ports: vec![name("eth0")],
+                    ports: Some(vec![name("eth0")]),
                     ..Default::default()
                 }),
                 ..Default::default()
@@ -1741,7 +1756,7 @@ mod tests {
             NetworkConnection {
                 id: "bond0".to_string(),
                 bond: Some(BondSettings {
-                    ports: vec![name("eth0")],
+                    ports: Some(vec![name("eth0")]),
                     ..Default::default()
                 }),
                 ..Default::default()
@@ -1749,7 +1764,7 @@ mod tests {
             NetworkConnection {
                 id: "br0".to_string(),
                 bridge: Some(BridgeSettings {
-                    ports: vec![name("eth0")],
+                    ports: Some(vec![name("eth0")]),
                     ..Default::default()
                 }),
                 ..Default::default()
@@ -1767,11 +1782,11 @@ mod tests {
             NetworkConnection {
                 id: "bond0".to_string(),
                 bond: Some(BondSettings {
-                    ports: vec![nested(NetworkConnection {
+                    ports: Some(vec![nested(NetworkConnection {
                         id: "eth0".to_string(),
                         interface: Some("eth0".to_string()),
                         ..Default::default()
-                    })],
+                    })]),
                     ..Default::default()
                 }),
                 ..Default::default()
@@ -1779,7 +1794,7 @@ mod tests {
             NetworkConnection {
                 id: "br0".to_string(),
                 bridge: Some(BridgeSettings {
-                    ports: vec![name("eth0")],
+                    ports: Some(vec![name("eth0")]),
                     ..Default::default()
                 }),
                 ..Default::default()
@@ -1801,7 +1816,7 @@ mod tests {
             id: "bond0".to_string(),
             interface: Some("bond0".to_string()),
             bond: Some(BondSettings {
-                ports: vec![name("bond0")],
+                ports: Some(vec![name("bond0")]),
                 ..Default::default()
             }),
             ..Default::default()
@@ -1819,15 +1834,15 @@ mod tests {
             id: "br0".to_string(),
             interface: Some("br0".to_string()),
             bridge: Some(BridgeSettings {
-                ports: vec![nested(NetworkConnection {
+                ports: Some(vec![nested(NetworkConnection {
                     id: "bond0".to_string(),
                     interface: Some("bond0".to_string()),
                     bond: Some(BondSettings {
-                        ports: vec![name("br0")],
+                        ports: Some(vec![name("br0")]),
                         ..Default::default()
                     }),
                     ..Default::default()
-                })],
+                })]),
                 ..Default::default()
             }),
             ..Default::default()
@@ -2043,7 +2058,7 @@ mod tests {
 
         // Everything is on its way out, so nothing is nested anymore.
         let reported = exposed(&state);
-        assert!(find(&reported, "br0").bridge.unwrap().ports.is_empty());
+        assert!(find(&reported, "br0").bridge.unwrap().ports.is_none());
         assert_eq!(
             root_ids(&reported),
             ["bond0", "br0", "br0.100", "eth0", "eth1"]
@@ -2124,7 +2139,7 @@ mod tests {
             NetworkConnection {
                 id: "bond0".to_string(),
                 bond: Some(BondSettings {
-                    ports: vec![name("eth0")],
+                    ports: Some(vec![name("eth0")]),
                     ..Default::default()
                 }),
                 ..Default::default()
@@ -3189,9 +3204,9 @@ impl ConnectionCollection {
             api_conn.state = Some(conn.state);
         }
 
-        let Some(ports) = api_conn.ports_mut() else {
+        if api_conn.bond.is_none() && api_conn.bridge.is_none() {
             return Ok(api_conn);
-        };
+        }
 
         let members: Vec<&Connection> = self
             .iter()
@@ -3201,6 +3216,7 @@ impl ConnectionCollection {
             })
             .collect();
 
+        let mut ports = vec![];
         for member in members {
             if placed.contains(&member.uuid) {
                 continue;
@@ -3211,6 +3227,9 @@ impl ConnectionCollection {
             ports.push(PortEntry::Connection(Box::new(port)));
         }
 
+        if !ports.is_empty() {
+            api_conn.set_ports(Some(ports));
+        }
         Ok(api_conn)
     }
 
@@ -3382,7 +3401,7 @@ impl TryFrom<BridgeConfig> for BridgeSettings {
             hello_time: bridge.hello_time,
             max_age: bridge.max_age,
             // Filled in by ConnectionCollection::to_api, which can see the other connections.
-            ports: vec![],
+            ports: None,
         })
     }
 }
