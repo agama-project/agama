@@ -1,0 +1,43 @@
+name: "CI - Actionlint"
+
+permissions:
+  contents: read
+
+on:
+  push:
+    paths:
+      # NOTE: GitHub Actions do not allow using YAML references, the same path
+      # list is used below for the pull request event. Keep both lists in sync!!
+
+      # all workflow definitions
+      - .github/workflows/*.yml
+      - .github/workflows/*.yaml
+      # all custom action definitions
+      - .github/actions/**/action.yml
+      - .github/actions/**/action.yaml
+
+  pull_request:
+    paths:
+      # NOTE: GitHub Actions do not allow using YAML references, the same path
+      # list is used above for the push event. Keep both lists in sync!!
+
+      # all workflow definitions
+      - .github/workflows/*.yml
+      - .github/workflows/*.yaml
+      # all custom action definitions
+      - .github/actions/**/action.yml
+      - .github/actions/**/action.yaml
+
+  # allow running manually
+  workflow_dispatch:
+
+jobs:
+  actionlint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v7
+
+      - name: Run actionlint
+        uses: raven-actions/actionlint@v2
