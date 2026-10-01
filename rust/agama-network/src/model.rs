@@ -1693,6 +1693,20 @@ mod tests {
     }
 
     #[test]
+    fn test_a_connection_at_the_top_level_requires_an_id() {
+        let state = NetworkState::default();
+        let eth0 = NetworkConnection {
+            interface: Some("eth0".to_string()),
+            ..Default::default()
+        };
+
+        let error = state
+            .connection_collection_from(&NetworkConnectionsCollection(vec![eth0]))
+            .unwrap_err();
+        assert!(matches!(error, NetworkStateError::MissingConnectionId));
+    }
+
+    #[test]
     fn test_a_connection_given_twice_is_rejected() {
         let state = NetworkState::default();
         let eth0 = NetworkConnection {

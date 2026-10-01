@@ -74,6 +74,8 @@ pub enum NetworkStateError {
     ControllerCycle(String),
     #[error("The connection '{0}' appears more than once")]
     DuplicatedConnection(String),
+    #[error("A connection has no ID")]
+    MissingConnectionId,
     #[error("A port of '{0}' has neither an ID nor an interface name")]
     MissingPortId(String),
     #[error("The port '{0}' has settings that do not apply to a port of '{1}'")]
