@@ -161,12 +161,14 @@ impl State {
     ///
     /// * `directory`: directory to copy the certificates.
     pub fn copy_certificates(&self, directory: &Path) -> Result<(), Error> {
+        tracing::info!("Copying certificates to {directory:?}");
         let workdir = self.workdir.strip_prefix("/").unwrap_or(&self.workdir);
         let target_directory = directory.join(workdir);
         for name in &self.imported {
             let filename = format!("{name}.pem");
             let source = self.workdir.join(&filename);
             let destination = target_directory.join(&filename);
+            tracing::info!("Copying {source:?} to {destination:?}");
 
             if let Err(error) = std::fs::copy(source, destination) {
                 tracing::warn!("Failed to write the certificate to {filename}: {error}",);

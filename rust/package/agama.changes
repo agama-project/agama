@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Oct  1 11:55:11 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- properly copy SSL certificates to target system (bsc#1283318)
+
+-------------------------------------------------------------------
 Thu Oct  1 11:53:11 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
 
 - Unify OpenAPI specification and manual JSON schemas:
