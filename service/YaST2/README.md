@@ -13,10 +13,35 @@ expect it to be updated automatically from `yast-autoyast2` or `yast-installatio
 
 Being the sole maintainer of this code means Agama also owns its test coverage. `service/test/YaST2/`
 mirrors this directory's layout and contains tests ported from the original upstream test suites
-(`autoyast2-installation`'s and `yast2-installation`'s `test/` directories), adapted to run against
-the vendored copies here instead of an installed RPM. Fixtures they need live under
-`service/test/fixtures/yast2/`. As with the production code, there is no process to pull in new
+(`autoyast2-installation`'s, `yast2-installation`'s and `yast2-network`'s `test/` directories),
+adapted to run against the vendored copies here instead of an installed RPM. Fixtures they need live
+under `service/test/fixtures/yast2/`. As with the production code, there is no process to pull in new
 upstream test examples automatically - extend these tests directly when the vendored code changes.
+
+A handful of `y2network` value classes (`startmode.rb`, `startmodes.rb` and its six concrete
+subclasses, `wireless_mode.rb`) have no upstream test at all (only interactive-UI widget tests
+exist for them) - their tests under `service/test/YaST2/lib/y2network/` were written from scratch
+instead of ported.
+
+### Known limitations (found while writing tests, not fixed)
+
+- `InterfaceSection#init_from_config` and `S390DeviceSection#init_from_config`
+  (`.new_from_network` code path) unconditionally reference `Y2Network::ConnectionConfig`, which is
+  not vendored. Calling `.new_from_network` on these two classes therefore always raises
+  `NameError`. This is not a problem in practice: `.new_from_network` builds a profile section
+  *from* a live network config (used by AutoYaST profile cloning), the opposite direction of what
+  Agama does (`.new_from_hashes`, building Agama's config *from* a profile) - grep confirms nothing
+  under `service/lib/` ever calls `.new_from_network` on these classes. Worth knowing if that ever
+  changes.
+- `Startmodes::Ifplugd#==` is overridden to compare `name`+`priority`, but the inherited `#eql?`/
+  `#hash` (from `Yast2::Equatable`) only consider `name`. Two instances with different `priority`
+  are therefore `!=` but `#eql?` and share the same `#hash`, which breaks the usual Ruby `==`/`hash`
+  contract (could cause incorrect de-duplication in a `Hash`/`Set`). Also, `Ifplugd#==` raises
+  `NoMethodError` instead of returning `false` when compared against `nil` or anything without a
+  `.name` method. Both are pre-existing upstream bugs (confirmed identical in current
+  `yast2-network` master), not something introduced by vendoring.
+- `WirelessMode::AD_HOC`'s human-readable string is "Add-hoc" (extra "d"), presumably meant to be
+  "Ad-hoc". Cosmetic, pre-existing upstream, not fixed.
 
 ## Layout
 
