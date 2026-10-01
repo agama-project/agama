@@ -128,8 +128,10 @@ impl<'a> PortResolver<'a> {
         named: &mut Vec<NamedPort<'b>>,
     ) -> Result<(), NetworkStateError> {
         let id = match parent {
-            Some(parent) if conn.id.is_empty() => self.port_id(conn, &nodes[parent].id)?,
-            _ => conn.id.clone(),
+            _ if !conn.id.is_empty() => conn.id.clone(),
+            Some(parent) => self.port_id(conn, &nodes[parent].id)?,
+            // Only the ports can do without an ID.
+            None => return Err(NetworkStateError::MissingConnectionId),
         };
 
         let index = nodes.len();
