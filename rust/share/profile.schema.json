@@ -119,32 +119,34 @@
     "proxy": {
       "title": "Proxy settings",
       "type": "object",
+      "additionalProperties": false,
       "properties": {
         "enabled": {
           "title": "Whether the proxy is enabled or not.",
           "type": "boolean"
         },
-        "httpProxy": {
+        "http": {
           "description": "URL to be used for the HTTP proxy.",
           "type": "string",
           "examples": ["http://proxy.provider.de:3128/"]
         },
-        "httpsProxy": {
+        "https": {
           "description": "URL to be used for the HTTPS proxy.",
           "type": "string"
         },
-        "ftpProxy": {
+        "ftp": {
+          "description": "URL to be used for the FTP proxy.",
           "type": "string"
         },
-        "gopherProxy": {
+        "gopher": {
           "description": "URL to be used for the Gopher proxy.",
           "type": "string"
         },
-        "socksProxy": {
+        "socks": {
           "description": "URL to be used for the SOCKS proxy.",
           "type": "string"
         },
-        "socks5Server": {
+        "socks5": {
           "description": "SOCKS5 server address",
           "type": "string",
           "examples": ["office-proxy.example.com:8881"]

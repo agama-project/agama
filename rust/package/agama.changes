@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Thu Oct  1 11:20:14 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Fix the proxy section of the profile JSON schema to use the
+  same property names as the proxy config (http, https, ftp,
+  gopher, socks, socks5) and reject unknown properties instead of
+  silently ignoring them (gh#agama-project/agama#3999, related to
+  gh#agama-project/agama#3069).
+
+-------------------------------------------------------------------
 Tue Sep 29 16:45:27 UTC 2026 - Martin Pluskal <martin@pluskal.org>
 
 - Do not query the software service while a software task is
