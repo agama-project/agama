@@ -6,6 +6,7 @@
 [![CI - Service](https://github.com/openSUSE/agama/actions/workflows/ci-service.yml/badge.svg)](https://github.com/openSUSE/agama/actions/workflows/ci-service.yml)
 [![CI - Web](https://github.com/openSUSE/agama/actions/workflows/ci-web.yml/badge.svg)](https://github.com/openSUSE/agama/actions/workflows/ci-web.yml)
 [![CI - Rubocop](https://github.com/openSUSE/agama/actions/workflows/ci-rubocop.yml/badge.svg)](https://github.com/openSUSE/agama/actions/workflows/ci-rubocop.yml)
+[![CI - Actionlint](https://github.com/openSUSE/agama/actions/workflows/ci-actionlint.yml/badge.svg)](https://github.com/openSUSE/agama/actions/workflows/ci-actionlint.yml)
 [![CI - Documentation Check](https://github.com/openSUSE/agama/actions/workflows/ci-doc-check.yml/badge.svg)](https://github.com/openSUSE/agama/actions/workflows/ci-doc-check.yml)
 [![CI - Integration Tests](https://github.com/openSUSE/agama/actions/workflows/ci-integration-tests.yml/badge.svg)](https://github.com/openSUSE/agama/actions/workflows/ci-integration-tests.yml)
 [![Coverage Status](https://coveralls.io/repos/github/openSUSE/agama/badge.svg?branch=master)](https://coveralls.io/github/openSUSE/agama?branch=master)
