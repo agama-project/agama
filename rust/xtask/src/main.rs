@@ -159,7 +159,7 @@ mod tasks {
             map.insert(
                 "$id".to_string(),
                 serde_json::json!(format!(
-                    "file:///usr/share/agama/openapi/latest/schemas/{}",
+                    "file:///usr/share/agama/openapi/nightly/schemas/{}",
                     file_name
                 )),
             );

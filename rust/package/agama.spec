@@ -285,13 +285,13 @@ echo $PATH
 %files -n agama-openapi
 %dir %{_datadir}/agama
 %dir %{_datadir}/agama/openapi
-%dir %{_datadir}/agama/openapi/latest
-%dir %{_datadir}/agama/openapi/latest/schemas
-%{_datadir}/agama/openapi/latest/openapi.json
-%{_datadir}/agama/openapi/latest/openapi.yaml
-%{_datadir}/agama/openapi/latest/openapi_full.json
-%{_datadir}/agama/openapi/latest/openapi_full.yaml
-%{_datadir}/agama/openapi/latest/schemas/*.schema.json
+%dir %{_datadir}/agama/openapi/nightly
+%dir %{_datadir}/agama/openapi/nightly/schemas
+%{_datadir}/agama/openapi/nightly/openapi.json
+%{_datadir}/agama/openapi/nightly/openapi.yaml
+%{_datadir}/agama/openapi/nightly/openapi_full.json
+%{_datadir}/agama/openapi/nightly/openapi_full.yaml
+%{_datadir}/agama/openapi/nightly/schemas/*.schema.json
 
 %files -n agama-scripts
 %{_unitdir}/agama-scripts.service

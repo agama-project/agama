@@ -35,7 +35,7 @@ use url::Url;
 pub mod http_client;
 pub use http_client::ProfileHTTPClient;
 
-pub const DEFAULT_SCHEMA_DIR: &str = "/usr/share/agama/openapi/latest/schemas";
+pub const DEFAULT_SCHEMA_DIR: &str = "/usr/share/agama/openapi/nightly/schemas";
 pub const DEFAULT_JSONNET_DIR: &str = "/usr/share/agama/jsonnet";
 
 #[derive(thiserror::Error, Debug)]

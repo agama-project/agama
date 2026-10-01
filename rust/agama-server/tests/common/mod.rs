@@ -88,7 +88,7 @@ pub async fn ensure_test_schemas() {
                 map.insert(
                     "$id".to_string(),
                     serde_json::json!(
-                        "file:///usr/share/agama/openapi/latest/schemas/config.schema.json"
+                        "file:///usr/share/agama/openapi/nightly/schemas/config.schema.json"
                     ),
                 );
                 if let Some(components) = json_value.get("components") {

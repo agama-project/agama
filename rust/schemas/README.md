@@ -43,7 +43,7 @@ The build pipeline unifies Rust-derived schemas with these partial schemas:
    - Replaces the extracted components in `out/openapi.json` and `out/openapi.yaml` with `$ref: "schemas/<file>"`.
 
 4. **Validation Target (`ProfileValidator`)**:
-   - Profile validation targets `config.schema.json` directly (via `/usr/share/agama/openapi/latest/schemas/config.schema.json` in production, or `out/schemas/config.schema.json` in development).
+   - Profile validation targets `config.schema.json` directly (via `/usr/share/agama/openapi/nightly/schemas/config.schema.json` in production, or `out/schemas/config.schema.json` in development).
 
 ## Validation
 
