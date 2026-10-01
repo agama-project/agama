@@ -33,9 +33,6 @@ module Yast
       Yast.import "Mode"
       Yast.import "Installation"
       Yast.import "URL"
-      # NOTE: "SLP" (yast2-slp) is intentionally not imported here anymore. It is no
-      # longer packaged in current openSUSE/SLE, and only #find_slp_autoyast (unused by
-      # Agama, which always fetches the profile from an explicit URL) needs it.
       Yast.import "Stage"
       Yast.import "Label"
       Yast.import "Report"
@@ -220,101 +217,6 @@ module Yast
       nil
     end
 
-    # Searches for 'autoyast' via SLP and returns the full URL of
-    # the profile. If more providers are found, user is asked to
-    # select one.
-    #
-    # FIXME: This function has been intentionally left (almost) intact
-    # and needs refactoring
-    #
-    # @return [String] profile location or 'nil' if nothing is found
-    def find_slp_autoyast
-      profile_location = nil
-
-      slpData = SLP.FindSrvs("autoyast", "")
-
-      # SLP data returned by SLP server contain the service ID, colon
-      # and then the URL of that service
-      url_starts_at = "service.autoyast:".size
-
-      # More providers to choose from
-      if Ops.greater_than(Builtins.size(slpData), 1)
-        dummy = []
-        comment2url = {}
-        Builtins.foreach(slpData) do |m|
-          attrList = SLP.FindAttrs(Ops.get_string(m, "srvurl", ""))
-
-          url = Builtins.substring(Ops.get_string(m, "srvurl", ""), url_starts_at)
-          if Ops.greater_than(Builtins.size(attrList), 0)
-            # FIXME: that's really lazy coding here but I allow only one attribute currently anyway
-            #        so it's lazy but okay. No reason to be too strict here with the checks
-            #        As soon as more than one attr is possible, I need to iterate over the attr list
-            #
-            comment = Ops.get(attrList, 0, "")
-            # The line above needs to be fixed when we have more attributes
-
-            # comment will look like this: "(description=BLA BLA)"
-            startComment = Builtins.findfirstof(comment, "=")
-            endComment = Builtins.findlastof(comment, ")")
-
-            comment = if !startComment.nil? && !endComment.nil? &&
-                Ops.greater_than(
-                  Ops.subtract(Ops.subtract(endComment, startComment), 1),
-                  0
-                )
-              Builtins.substring(
-                comment,
-                Ops.add(startComment, 1),
-                Ops.subtract(Ops.subtract(endComment, startComment), 1)
-              )
-            else
-              ""
-            end
-
-            if Ops.less_than(Builtins.size(comment), 1)
-              comment = Builtins.sformat(
-                "bad description in SLP for %1",
-                url
-              )
-            end
-
-            dummy = Builtins.add(dummy, Item(comment, false))
-            Ops.set(comment2url, comment, url)
-          else
-            dummy = Builtins.add(dummy, Item(url, false))
-            Ops.set(comment2url, url, url)
-          end
-        end
-
-        dlg = Left(ComboBox(Id(:choose), _("Choose Profile"), dummy))
-
-        UI.OpenDialog(VBox(dlg, PushButton(Id(:ok), Label.OKButton)))
-        UI.UserInput
-
-        profile_location = Ops.get(
-          comment2url,
-          Convert.to_string(UI.QueryWidget(Id(:choose), :Value)),
-          ""
-        )
-
-        UI.CloseDialog
-
-      # just one provider
-      elsif Builtins.size(slpData) == 1
-        profile_location = Builtins.substring(
-          Ops.get_string(slpData, [0, "srvurl"], ""),
-          17
-        )
-
-      # Nothing returned by SLP query
-      else
-        log.error "slp query for 'autoyast' failed"
-        Report.Error(_("No 'autoyast' provider has been found via SLP."))
-      end
-
-      profile_location
-    end
-
     # Updates or extends the profile location according to defaults
     # @param profile_location [String] AutoYast profile location as defined on commandline
     # @return [String] updated profile location
@@ -332,8 +234,6 @@ module Yast
       # bsc#987858: autoyast=usb checks for the default profile
       elsif profile_location == "usb"
         "usb:///#{DEFAULT_PROFILE_NAME}"
-      elsif profile_location == "slp"
-        find_slp_autoyast
       else
         profile_location
       end
