@@ -33,3 +33,9 @@ Metrics/AbcSize:
 Metrics/ClassLength:
   Max: 300
 
+# tests under test/yast2/modules mirror the CamelCase filenames of the vendored YaST module
+# classes they test (service/YaST2/modules/*.rb), to stay easy to compare against upstream
+Naming/FileName:
+  Exclude:
+    - test/yast2/modules/*.rb
+

@@ -9,6 +9,15 @@ There is **no process to keep this code in sync with upstream YaST releases**. I
 here, or a new AutoYaST feature is needed, fix/extend the code directly in this directory; do not
 expect it to be updated automatically from `yast-autoyast2` or `yast-installation`.
 
+## Tests
+
+Being the sole maintainer of this code means Agama also owns its test coverage. `service/test/yast2/`
+mirrors this directory's layout and contains tests ported from the original upstream test suites
+(`autoyast2-installation`'s and `yast2-installation`'s `test/` directories), adapted to run against
+the vendored copies here instead of an installed RPM. Fixtures they need live under
+`service/test/fixtures/yast2/`. As with the production code, there is no process to pull in new
+upstream test examples automatically - extend these tests directly when the vendored code changes.
+
 ## Layout
 
 This mirrors the relevant parts of the upstream source trees so it stays easy to compare against the
