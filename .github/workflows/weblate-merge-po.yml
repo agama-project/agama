@@ -35,7 +35,7 @@ jobs:
       # a failure in one component or branch must not block the others
       fail-fast: false
       matrix:
-        branch: [master, SLE-16, SLE-16.1]
+        branch: [master, SLE-16, SLE-16.1, SLE-16.2]
         component: [web, products, service, rust]
         exclude:
           # the Rust code is not present in the SLE-16 branch
@@ -52,6 +52,9 @@ jobs:
           - branch: SLE-16.1
             # FIXME: the 16.1 container is not published yet, switch to 16.1 when it is released
             image: registry.opensuse.org/opensuse/leap:16.0
+            disable_repos: openSUSE:repo-openh264
+          - branch: SLE-16.2
+            image: registry.opensuse.org/opensuse/leap:16.2
             disable_repos: openSUSE:repo-openh264
 
           # per-component settings
