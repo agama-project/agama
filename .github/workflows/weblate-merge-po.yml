@@ -56,9 +56,9 @@ jobs:
 
           # per-component settings
           - component: web
-            packages: nodejs npm git gettext-tools python3 python3-langtable
+            packages: git gettext-tools nodejs-default npm-default python3 python3-langtable
           - component: products
-            packages: git gettext-tools npm-default
+            packages: git gettext-tools nodejs-default npm-default
           - component: service
             packages: git gettext-tools
           - component: rust
