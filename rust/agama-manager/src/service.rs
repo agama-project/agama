@@ -944,6 +944,7 @@ impl MessageHandler<message::RunAction> for Service {
                     proxy: self.proxy.clone(),
                     ntp: self.ntp.clone(),
                     access: self.access.clone(),
+                    security: self.security.clone(),
                     software: self.software.clone(),
                     storage: self.storage.clone(),
                     files: self.files.clone(),
