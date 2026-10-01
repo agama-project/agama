@@ -136,7 +136,7 @@ module Installation
     # @return [Mount,nil] parsed mount
     #
     def parse_mount(line)
-      line.strip!
+      line = line.strip
       return nil if line.empty? || line.start_with?("#")
 
       (device, mount_path, fs_type, mount_opt) = line.split

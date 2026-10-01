@@ -154,7 +154,7 @@ module Y2Autoinstallation
       return if location.empty?
 
       log.info "Resolving location #{location.inspect}"
-      location.strip!
+      @location = location.strip
       return unless location.start_with?("relurl://")
 
       path = location[9..-1] # 9 is relurl:// size
