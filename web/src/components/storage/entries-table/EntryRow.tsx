@@ -33,9 +33,9 @@ import type { TranslatedString } from "~/i18n";
 
 export type EntryRowProps = {
   /** What the entry is called, as the page names things: `sda`, `system`. */
-  name: string;
+  name: React.ReactNode;
   /** What it is, beside the name: how big, what kind, how it is partitioned. */
-  description?: string;
+  description?: string[];
   /** What it is for, in the words the panel marks it with. */
   marks?: string[];
   /** What the installer will do here, one statement per line. */
@@ -77,7 +77,7 @@ export type EntryRowProps = {
  */
 export default function EntryRow({
   name,
-  description,
+  description = [],
   marks = [],
   purpose,
   actions,
@@ -93,24 +93,31 @@ export default function EntryRow({
        lands. */
     <Tr className="agm-entries-table__row" onClick={() => openSheet(subject)}>
       <Th scope="row" dataLabel={columnName("entry")}>
-        {/* The name is the way in, which is the act a row teaches: what a
-            reader does with a row is open it. There is no button under it
-            saying so, since a button would teach a second gesture for one
-            destination whatever it was called. */}
-        <SheetOpener subject={subject}>
-          <Text isBold>{name}</Text>
-        </SheetOpener>
-        {description && <span className="agm-entries-table__facts"> {description}</span>}
-        {/* The same words the panel puts beside the same name, so the row a
-            reader opened and the panel that opens carry one vocabulary. */}
-        {marks.map((mark) => (
-          <React.Fragment key={mark}>
-            {" "}
-            <Label isCompact className={textStyles.fontSizeXs}>
-              {mark}
-            </Label>
-          </React.Fragment>
-        ))}
+        <Stack>
+          <StackItem>
+            {/* The name is the way in, which is the act a row teaches: what a
+                reader does with a row is open it. There is no button under it
+                saying so, since a button would teach a second gesture for one
+                destination whatever it was called. */}
+            <SheetOpener subject={subject}>
+              <Text isBold>{name}</Text>
+            </SheetOpener>
+            {description[0] && <span className="agm-entries-table__facts"> {description[0]}</span>}
+            {/* The same words the panel puts beside the same name, so the row a
+                reader opened and the panel that opens carry one vocabulary. */}
+            {marks.map((mark) => (
+              <React.Fragment key={mark}>
+                {" "}
+                <Label isCompact className={textStyles.fontSizeXs}>
+                  {mark}
+                </Label>
+              </React.Fragment>
+            ))}
+          </StackItem>
+          <StackItem className={textStyles.fontSizeXs}>
+            {description[1] && description[1]}
+          </StackItem>
+        </Stack>
       </Th>
       <Td dataLabel={columnName("actions")}>
         <Stack>

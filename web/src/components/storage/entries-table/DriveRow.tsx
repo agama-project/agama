@@ -26,10 +26,12 @@ import EntryRow from "~/components/storage/entries-table/EntryRow";
 import DriveMenu from "~/components/storage/entries-table/DriveMenu";
 import * as driveUtils from "~/components/storage/utils/drive";
 import { NAMES_PER_LINE } from "~/components/storage/shared/naming";
-import { baseName, deviceSize, formattedPath } from "~/components/storage/utils";
+import { deviceSize, formattedPath } from "~/components/storage/utils";
 import { typeDescription } from "~/components/storage/utils/device";
 import { useConfigModel } from "~/hooks/model/storage/config-model";
 import { useDevice } from "~/hooks/model/system/storage";
+import TruncatedDeviceName from "~/components/storage/TruncatedDeviceName";
+import DeviceContent from "~/components/storage/DeviceContent";
 import configModel from "~/model/storage/config-model";
 import { _, n_, formatList, TranslatedString } from "~/i18n";
 import type { ConfigModel, Partitionable } from "~/model/storage/config-model";
@@ -102,6 +104,13 @@ export type DriveRowProps = {
   subject: SheetEntry;
 };
 
+const driveDescription = (device) => {
+  const model = device.drive?.model;
+  if (model && model.length) return model;
+
+  return typeDescription(device);
+};
+
 /**
  * A disk or a software RAID, as a row of the list.
  *
@@ -119,13 +128,13 @@ export default function DriveRow({ name, subject }: DriveRowProps): React.ReactN
   const device = useDevice(name);
 
   const entry = configModel.partitionable.findByName(config, name);
-  const description = [
-    device?.block?.size && deviceSize(device.block.size),
-    device && typeDescription(device),
-    device?.partitionTable?.type?.toUpperCase(),
-  ]
-    .filter(Boolean)
-    .join("  ·  ");
+  const description = [];
+  description.push(
+    [device?.block?.size && deviceSize(device.block.size), device && driveDescription(device)]
+      .filter(Boolean)
+      .join("  ·  "),
+  );
+  description.push(<DeviceContent device={device} />);
 
   const groups = entry ? configModel.partitionable.filterVolumeGroups(config, entry) : [];
   const boots = configModel.boot.hasDevice(config, name);
@@ -141,7 +150,7 @@ export default function DriveRow({ name, subject }: DriveRowProps): React.ReactN
 
   return (
     <EntryRow
-      name={baseName(name)}
+      name={<TruncatedDeviceName device={device} maxLength={13} />}
       description={description}
       purpose={purpose}
       actions={space}
