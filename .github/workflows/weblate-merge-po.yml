@@ -128,7 +128,10 @@ jobs:
 
       - name: Validate the PO files
         working-directory: ./agama-weblate
-        run: ls ${COMPONENT}/*.po | xargs -n1 msgfmt --check-format -o /dev/null
+        run: |
+          for po in "${COMPONENT}"/*.po; do
+            msgfmt --check-format -o /dev/null "$po"
+          done
 
       - name: Install NPM packages (web)
         if: matrix.component == 'web'
@@ -162,19 +165,19 @@ jobs:
         env:
           NODE_PATH: ./agama/.github/workflows/product_translations
         run: |
-          ${NODE_PATH}/merge_po agama-weblate/products agama/products.d
+          "${NODE_PATH}/merge_po" agama-weblate/products agama/products.d
 
       - name: Update PO files
         if: matrix.component == 'service' || matrix.component == 'rust'
         working-directory: ./agama
         run: |
           # delete the current translations
-          find ${COMPONENT}/po -name '*.po' -exec git rm '{}' ';'
+          find "${COMPONENT}/po" -name '*.po' -exec git rm '{}' ';'
 
           # copy the new ones
-          mkdir -p ${COMPONENT}/po
-          cp -a ../agama-weblate/${COMPONENT}/*.po ${COMPONENT}/po
-          git add ${COMPONENT}/po/*.po
+          mkdir -p "${COMPONENT}/po"
+          cp -a ../agama-weblate/"${COMPONENT}"/*.po "${COMPONENT}/po"
+          git add "${COMPONENT}"/po/*.po
 
       # any changes detected?
       - name: Check changes
@@ -191,7 +194,7 @@ jobs:
             *)
               # ignore the timestamp changes in the PO files
               git diff --staged --ignore-matching-lines="POT-Creation-Date:" \
-                --ignore-matching-lines="PO-Revision-Date:" ${COMPONENT}/po > tr.diff
+                --ignore-matching-lines="PO-Revision-Date:" "${COMPONENT}/po" > tr.diff
               ;;
           esac
 
@@ -199,10 +202,10 @@ jobs:
             echo "Translations updated"
             # this is an Output Parameter
             # https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#setting-an-output-parameter
-            echo "updated=true" >> $GITHUB_OUTPUT
+            echo "updated=true" >> "$GITHUB_OUTPUT"
           else
             echo "Translations not changed"
-            echo "updated=false" >> $GITHUB_OUTPUT
+            echo "updated=false" >> "$GITHUB_OUTPUT"
           fi
 
           rm tr.diff
@@ -213,7 +216,7 @@ jobs:
         working-directory: ./agama
         run: |
           git checkout -b "${PR_BRANCH}"
-          git commit -a -m "${{ matrix.commit_message }}"$'\n\n'"Agama-weblate commit: `git -C ../agama-weblate rev-parse HEAD`"
+          git commit -a -m "${{ matrix.commit_message }}"$'\n\n'"Agama-weblate commit: $(git -C ../agama-weblate rev-parse HEAD)"
           git push origin "${PR_BRANCH}"
 
       - name: Create pull request

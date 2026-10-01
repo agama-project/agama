@@ -44,4 +44,4 @@ jobs:
           devel
 
     - name: Run the tests
-      run: 	find devel -type f -exec grep -l -E "^#! *(/usr/|)/bin/(ba|)sh" \{\} \; | xargs -I% bash -c "echo 'Checking %...' && shellcheck %"
+      run: find devel -type f -exec grep -l -Z -E "^#! *(/usr/|)/bin/(ba|)sh" {} + | xargs -0 -I% bash -c "echo 'Checking %...' && shellcheck %"
