@@ -1348,7 +1348,7 @@ export default {
     "Contrast alt"
   ],
   "Hostname": [
-    "Nom d'amfitrió"
+    "Nom de l'amfitrió"
   ],
   "Hostname [will remain unchanged] across reboots and network changes.": [
     "El nom de l'amfitrió [es mantindrà sense canvis] després de reiniciar i canviar de xarxa."
@@ -1709,7 +1709,7 @@ export default {
     "Forma d'entrada"
   ],
   "Loopback": [
-    "Loopback"
+    "Bucle"
   ],
   "MAC address": [
     "Adreça MAC"
@@ -3378,7 +3378,7 @@ export default {
     "Podeu procedir a la instal·lació amb la configuració actual o potser voleu descartar-la i començar des de zero amb una de simple."
   ],
   "You can reboot the machine to log in to the new system.": [
-    "Podeu reiniciar la màquina per iniciar la sessió al sistema nou."
+    "Podeu reiniciar la màquina per iniciar sessió al sistema nou."
   ],
   "You can safely close this window.": [
     "Podeu tancar aquesta finestra amb seguretat."
