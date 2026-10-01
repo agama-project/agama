@@ -24,6 +24,9 @@ require_relative "storage_helpers"
 require "agama/helpers"
 require "agama/config"
 require "agama/storage/finisher"
+require "installation/cio_ignore"
+require "y2storage/clients/finish"
+require "y2iscsi_client/finish_client"
 require "yaml"
 
 describe Agama::Storage::Finisher do
@@ -120,7 +123,7 @@ describe Agama::Storage::Finisher do
 
       describe "#run" do
         it "runs the cio_ignore_finish client" do
-          expect(subject).to receive(:wfm_write).with("cio_ignore_finish")
+          expect_any_instance_of(Installation::CIOIgnoreFinish).to receive(:run).with("Write")
           subject.run
         end
       end
@@ -129,7 +132,7 @@ describe Agama::Storage::Finisher do
     context "when not running on s390x" do
       describe "#run" do
         it "does not run the cio_ignore_finish client" do
-          expect(subject).to_not receive(:wfm_write).with("cio_ignore_finish")
+          expect_any_instance_of(Installation::CIOIgnoreFinish).to_not receive(:run)
           subject.run
         end
       end
@@ -137,6 +140,24 @@ describe Agama::Storage::Finisher do
 
     it "runs the Bootloader Finish Client" do
       expect_any_instance_of(::Bootloader::FinishClient).to receive(:write)
+      subject.run
+    end
+  end
+
+  describe described_class::StorageStep do
+    subject { described_class.new(logger) }
+
+    it "runs the storage finish client" do
+      expect_any_instance_of(Y2Storage::Clients::Finish).to receive(:write)
+      subject.run
+    end
+  end
+
+  describe described_class::IscsiStep do
+    subject { described_class.new(logger) }
+
+    it "runs the iSCSI finish client" do
+      expect_any_instance_of(Y2IscsiClient::FinishClient).to receive(:write)
       subject.run
     end
   end

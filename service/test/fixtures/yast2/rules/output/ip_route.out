@@ -1,0 +1,4 @@
+default via 10.13.32.1 dev eth0  proto dhcp
+10.13.32.0/24 dev eth0  proto kernel  scope link  src 10.13.32.195  metric 600
+10.163.0.1 dev tun0  proto kernel  scope link  src 10.163.0.6 
+10.163.2.0/28 dev eth1  proto kernel  scope link  src 10.163.2.1 

@@ -34,6 +34,8 @@ require "agama/storage/volume"
 require "agama/dbus"
 require "y2storage/issue"
 require "y2storage/luks"
+require "y2storage/clients/finish"
+require "y2iscsi_client/finish_client"
 require "yast2/fs_snapshot"
 require "yaml"
 
@@ -294,7 +296,6 @@ describe Agama::Storage::Manager do
   describe "#install" do
     before do
       allow(Yast::WFM).to receive(:CallFunction).with("inst_prepdisk", [])
-      allow(Yast::WFM).to receive(:CallFunction).with("inst_bootloader", [])
       allow(Y2Storage::Clients::InstPrepdisk).to receive(:new).and_return(client)
     end
 
@@ -394,8 +395,8 @@ describe Agama::Storage::Manager do
        "unlink resolv.conf" do
       expect(copy_files).to receive(:run)
       expect(bootloader_finish).to receive(:write)
-      expect(Yast::WFM).to receive(:CallFunction).with("storage_finish", ["Write"])
-      expect(Yast::WFM).to receive(:CallFunction).with("iscsi-client_finish", ["Write"])
+      expect_any_instance_of(Y2Storage::Clients::Finish).to receive(:write)
+      expect_any_instance_of(Y2IscsiClient::FinishClient).to receive(:write)
       expect(Yast2::FsSnapshot).to receive(:configure_snapper)
       storage.finish
     end

@@ -72,14 +72,11 @@ jobs:
       run: |
         RUBY_VERSION=$(ruby -e "puts RbConfig::CONFIG['ruby_version']")
         zypper --non-interactive install \
-        autoyast2-installation \
         yast2 \
         yast2-bootloader \
         yast2-devtools \
         yast2-iscsi-client \
-        yast2-network \
         yast2-storage-ng \
-        yast2-users \
         gettext-tools \
         "rubygem(ruby:$RUBY_VERSION:yast-rake)" \
         "rubygem(ruby:$RUBY_VERSION:gettext)" \
