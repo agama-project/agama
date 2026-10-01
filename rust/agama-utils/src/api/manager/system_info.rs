@@ -38,7 +38,7 @@ pub struct SystemInfo {
 #[derive(Clone, Default, Debug, Serialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct Product {
-    /// Product ID (eg., "ALP", "Tumbleweed", etc.)
+    /// Product ID (eg., "SLES", "Tumbleweed", etc.)
     pub id: String,
     /// Product name (e.g., "openSUSE Tumbleweed")
     pub name: String,

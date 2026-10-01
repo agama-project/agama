@@ -64,7 +64,7 @@ pub struct AddonConfig {
 #[schemars(deny_unknown_fields, title = "Product to install")]
 #[merge(strategy = merge::option::overwrite_none)]
 pub struct ProductConfig {
-    /// ID of the product to install (e.g., "ALP", "Tumbleweed", etc.).
+    /// ID of the product to install (e.g., "SLES", "Tumbleweed", etc.).
     #[schemars(
         example = &"Tumbleweed",
         example = &"MicroOS",
