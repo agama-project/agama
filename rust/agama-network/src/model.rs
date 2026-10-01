@@ -1707,6 +1707,25 @@ mod tests {
     }
 
     #[test]
+    fn test_a_port_given_by_id_keeps_its_interface() {
+        let mut state = stacked_state();
+        let mut bond0 = find(&exposed(&state), "bond0");
+        bond0.set_ports(Some(vec![
+            nested(NetworkConnection {
+                id: "eth0".to_string(),
+                mtu: 9000,
+                ..Default::default()
+            }),
+            name("eth1"),
+        ]));
+        apply(&mut state, NetworkConnectionsCollection(vec![bond0]));
+
+        let eth0 = state.get_connection("eth0").unwrap();
+        assert_eq!(eth0.mtu, 9000);
+        assert_eq!(eth0.interface.as_deref(), Some("eth0"));
+    }
+
+    #[test]
     fn test_a_connection_given_twice_is_rejected() {
         let state = NetworkState::default();
         let eth0 = NetworkConnection {
@@ -2334,7 +2353,10 @@ impl Connection {
         self.ip_config.dns_searchlist = conn.dns_searchlist.clone();
         self.ip_config.gateway4 = conn.gateway4;
         self.ip_config.gateway6 = conn.gateway6;
-        self.interface = conn.interface.clone();
+        // Like the MTU, a port referred to by its ID only does not give its interface.
+        if conn.interface.is_some() {
+            self.interface = conn.interface.clone();
+        }
 
         // An MTU of 0 means that it is not given, e.g. a port referred to by its interface only.
         if conn.mtu != 0 {
