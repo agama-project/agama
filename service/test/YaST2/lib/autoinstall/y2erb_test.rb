@@ -155,9 +155,7 @@ def hardware_mock_data
                                  "link"    => [{ "state"=>true }],
                                  "phwaddr" => [{ "addr"=>"50:3e:aa:d7:45:9f" }],
                                  "wlan"    =>
-                                              [{ "auth_modes"  => [
-                                                   "open", "wpa-psk", "wpa-eap"
-                                                 ],
+                                              [{ "auth_modes"  => ["open", "wpa-psk", "wpa-eap"],
                                                  "bitrates"    => [
                                                    "1", "2", "5.5", "11"
                                                  ],
