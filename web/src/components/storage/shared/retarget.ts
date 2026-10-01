@@ -20,9 +20,8 @@
  * find current contact information at www.suse.com.
  */
 
-import { sprintf } from "sprintf-js";
 import configModel from "~/model/storage/config-model";
-import { _, n_, TranslatedString } from "~/i18n";
+import { _, TranslatedString } from "~/i18n";
 import type { ConfigModel, Partitionable } from "~/model/storage/config-model";
 
 /**
@@ -61,36 +60,6 @@ function whyItCannotMove(
      it. Where it also holds mount paths those can travel, so the act is offered
      and what is stuck here is not the whole of it. */
   if (configModel.partitionable.usedMountPaths(device).length) return null;
-
-  const groups = configModel.partitionable.filterVolumeGroups(config, device);
-
-  if (groups.length === 1) {
-    return sprintf(
-      // TRANSLATORS: why the installation cannot be moved to a different
-      // device. %s is the name of an LVM volume group, such as "system".
-      _("The LVM volume group '%s' is built on this device."),
-      groups[0].vgName,
-    );
-  }
-
-  if (groups.length > 1) {
-    return sprintf(
-      // TRANSLATORS: why the installation cannot be moved to a different
-      // device. %d is how many LVM volume groups are built on it.
-      n_(
-        "%d LVM volume group is built on this device.",
-        "%d LVM volume groups are built on this device.",
-        groups.length,
-      ),
-      groups.length,
-    );
-  }
-
-  if (configModel.boot.hasExplicitDevice(config, device.name)) {
-    // TRANSLATORS: why the installation cannot be moved to a different device,
-    // and where to change the decision that holds it here.
-    return _("It was chosen for booting. Change that in Boot options first.");
-  }
 
   return null;
 }

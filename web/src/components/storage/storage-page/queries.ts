@@ -24,6 +24,7 @@ import { isEmpty } from "radashi";
 import { useConfigModel } from "~/hooks/model/storage/config-model";
 import { useProposal } from "~/hooks/model/proposal/storage";
 import { useDevice } from "~/hooks/model/system/storage";
+import configModel from "~/model/storage/config-model";
 import type { Partitionable } from "~/model/storage/config-model";
 
 /** A device, and where it is written, which is what changing it needs. */
@@ -50,11 +51,12 @@ export type SingleDevice = {
 function useSingleDevice(): SingleDevice | null {
   const config = useConfigModel();
   if (!config) return null;
-  if (!isEmpty(config.volumeGroups || [])) return null;
 
   const drives = config.drives || [];
   const mdRaids = config.mdRaids || [];
   if (drives.length + mdRaids.length !== 1) return null;
+
+  if (!configModel.boot.isFollowingRoot(config)) return null;
 
   if (drives.length === 1) return { device: drives[0], collection: "drives", index: 0 };
   return { device: mdRaids[0], collection: "mdRaids", index: 0 };
