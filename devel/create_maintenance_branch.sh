@@ -4,10 +4,7 @@
 
 set -euo pipefail
 
-# Template defaults for copying workflows and components
-readonly TPL_WORKFLOW_SUFFIX="sle16"
-readonly TPL_BRANCH_NAME="SLE-16"
-readonly TPL_LEAP_VERSION="16.0"
+# Template defaults for copying components
 readonly TPL_WEBLATE_COMP="sle-16-1"
 
 # Print usage.
@@ -329,7 +326,7 @@ EOF
     osc -A https://api.suse.de meta pkg -F - "Devel:YaST:Agama:Maintenance:$branch_name" agama-installer
 }
 
-# Clone the Weblate merge workflows for the branch and open a PR against master.
+# Add the branch to the Weblate merge workflow and open a PR against master.
 adapt_translation_workflows() {
   local branch_name="$1"
   local version="$2"
@@ -340,47 +337,39 @@ adapt_translation_workflows() {
 
   # create a new branch
   local pr_branch="translation-workflows-$file_suffix"
-  
   local original_branch
   original_branch=$(git rev-parse --abbrev-ref HEAD)
 
   git checkout -b "$pr_branch" origin/master
 
-  # copy files
   local repo_root
   repo_root=$(git rev-parse --show-toplevel)
-  cp "$repo_root/.github/workflows/weblate-merge-po-$TPL_WORKFLOW_SUFFIX.yml" "$repo_root/.github/workflows/weblate-merge-po-$file_suffix.yml"
-  cp "$repo_root/.github/workflows/weblate-merge-products-po-$TPL_WORKFLOW_SUFFIX.yml" "$repo_root/.github/workflows/weblate-merge-products-po-$file_suffix.yml"
-  cp "$repo_root/.github/workflows/weblate-merge-service-po-$TPL_WORKFLOW_SUFFIX.yml" "$repo_root/.github/workflows/weblate-merge-service-po-$file_suffix.yml"
+  local workflow="$repo_root/.github/workflows/weblate-merge-po.yml"
 
-  # change the branch name
-  sed -i "s/$TPL_BRANCH_NAME/$branch_name/g" "$repo_root/.github/workflows/weblate-merge-po-$file_suffix.yml"
-  sed -i "s/$TPL_BRANCH_NAME/$branch_name/g" "$repo_root/.github/workflows/weblate-merge-products-po-$file_suffix.yml"
-  sed -i "s/$TPL_BRANCH_NAME/$branch_name/g" "$repo_root/.github/workflows/weblate-merge-service-po-$file_suffix.yml"
-  sed -i "s/$TPL_WORKFLOW_SUFFIX/$file_suffix/g" "$repo_root/.github/workflows/weblate-merge-po-$file_suffix.yml"
-  sed -i "s/$TPL_WORKFLOW_SUFFIX/$file_suffix/g" "$repo_root/.github/workflows/weblate-merge-products-po-$file_suffix.yml"
-  sed -i "s/$TPL_WORKFLOW_SUFFIX/$file_suffix/g" "$repo_root/.github/workflows/weblate-merge-service-po-$file_suffix.yml"
+  if grep -q -E "^ *- branch: $branch_name\$" "$workflow"; then
+    echo "The $branch_name branch is already present in the Weblate merge workflow."
+  else
+    # add the branch to the build matrix
+    sed -i -E "s/^( *branch: \[.*)\]/\1, $branch_name]/" "$workflow"
 
-  # change the used container
-  sed -i "s@registry.opensuse.org/opensuse/leap:$TPL_LEAP_VERSION@registry.opensuse.org/opensuse/leap:$version@" "$repo_root/.github/workflows/weblate-merge-po-$file_suffix.yml"
-  sed -i "s@registry.opensuse.org/opensuse/leap:$TPL_LEAP_VERSION@registry.opensuse.org/opensuse/leap:$version@" "$repo_root/.github/workflows/weblate-merge-products-po-$file_suffix.yml"
-  sed -i "s@registry.opensuse.org/opensuse/leap:$TPL_LEAP_VERSION@registry.opensuse.org/opensuse/leap:$version@" "$repo_root/.github/workflows/weblate-merge-service-po-$file_suffix.yml"
+    # add the branch specific settings (container image, repositories) at the end
+    # of the per-branch settings, the new entry is placed before the blank line
+    # preceding the per-component settings
+    sed -i -z -E "s/\n\n( *# per-component settings)/\n          - branch: $branch_name\n            image: registry.opensuse.org\/opensuse\/leap:$version\n            disable_repos: openSUSE:repo-openh264\n\n\1/" "$workflow"
 
-  # commit and push the new files
-  git add "$repo_root/.github/workflows/weblate-merge-po-$file_suffix.yml"
-  git add "$repo_root/.github/workflows/weblate-merge-products-po-$file_suffix.yml"
-  git add "$repo_root/.github/workflows/weblate-merge-service-po-$file_suffix.yml"
-  
+    git add "$workflow"
+  fi
+
   if ! git diff --cached --quiet; then
-    git commit -m "Added translation workflow files for the $branch_name branch"
+    git commit -m "Added translation workflow settings for the $branch_name branch"
     git push -u origin "$pr_branch"
 
     # create a pull request
     gh pr create -B master -H "$pr_branch" \
-      --title "Translation workflow files for the $branch_name branch" \
+      --title "Translation workflow settings for the $branch_name branch" \
       --body "Automatically create pull requests for the $branch_name translations"
   else
-    echo "Translation workflow files already exist for $branch_name. Skipping PR creation."
+    echo "Translation workflow settings already exist for $branch_name. Skipping PR creation."
   fi
 
   # return to the original branch
