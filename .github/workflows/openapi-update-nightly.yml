@@ -1,0 +1,111 @@
+name: Update OpenAPI Nightly
+
+permissions:
+  contents: write
+
+on:
+  push:
+    branches:
+      - master
+
+    paths:
+      # Run only if files that can affect OpenAPI specs or schemas are modified
+      - rust/**
+      - products.d/**
+      - .github/workflows/openapi-update-nightly.yml
+
+  workflow_dispatch:
+
+jobs:
+  update-nightly:
+    # Do not run in forks
+    if: ${{ !github.event.repository.fork }}
+
+    runs-on: ubuntu-latest
+
+    container:
+      image: registry.opensuse.org/opensuse/tumbleweed:latest
+
+    steps:
+      - name: Configure and refresh repositories
+        # Disable unused repositories for faster refresh
+        run: zypper modifyrepo -d repo-non-oss repo-openh264 repo-update && zypper ref
+
+      - name: Install required packages
+        run: zypper --non-interactive install --allow-downgrade
+          clang-devel
+          dbus-1-daemon
+          gcc-c++
+          git
+          glibc-locale
+          golang-github-google-jsonnet
+          jq
+          libopenssl-3-devel
+          libsuseconnect
+          libzypp-devel
+          make
+          openssl-3
+          pam-devel
+          python-langtable-data
+          python3-openapi_spec_validator
+          rustup
+          timezone
+          util-linux-systemd
+          xkeyboard-config
+
+      - name: Configure git safe directory
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
+      - name: Checkout Agama sources
+        uses: actions/checkout@v7
+        with:
+          path: agama
+
+      - name: Checkout Agama-OpenAPI sources
+        uses: actions/checkout@v7
+        with:
+          path: agama-openapi
+          repository: ${{ github.repository_owner }}/agama-openapi
+          token: ${{ secrets.GH_TOKEN }}
+
+      - name: Configure Git user and email
+        run: |
+          git config --global user.name "Agama CI"
+          git config --global user.email "yast-devel@opensuse.org"
+
+      - name: Install Rust toolchain
+        run: rustup toolchain install stable
+
+      - name: Generate OpenAPI specification and schemas
+        run: cargo xtask openapi
+        working-directory: agama/rust
+
+      - name: Validate OpenAPI specification
+        run: |
+          openapi-spec-validator out/openapi.json
+          openapi-spec-validator out/openapi_full.json
+        working-directory: agama/rust
+
+      - name: Copy OpenAPI specs and schemas to nightly
+        run: |
+          mkdir -p agama-openapi/nightly/schemas
+          cp -v agama/rust/out/openapi.json agama/rust/out/openapi.yaml agama/rust/out/openapi_full.json agama/rust/out/openapi_full.yaml agama-openapi/nightly/
+          cp -v agama/rust/out/schemas/*.schema.json agama-openapi/nightly/schemas/
+
+      - name: Check for changes
+        id: check_changes
+        run: |
+          if [ -n "$(git -C agama-openapi status --porcelain nightly)" ]; then
+            echo "changes=true" >> $GITHUB_OUTPUT
+          else
+            echo "changes=false" >> $GITHUB_OUTPUT
+            echo "No changes in nightly OpenAPI specification."
+          fi
+
+      - name: Push updated nightly OpenAPI to repository
+        if: steps.check_changes.outputs.changes == 'true'
+        run: |
+          cd agama-openapi
+          git add nightly
+          git commit -m "Update nightly OpenAPI specifications and schemas"$'\n\n'"Agama commit: ${{ github.sha }}"
+          git push
