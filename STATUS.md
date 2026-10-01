@@ -15,7 +15,6 @@
 
 [![Weblate Update POT](https://github.com/openSUSE/agama/actions/workflows/weblate-update-pot.yml/badge.svg)](https://github.com/openSUSE/agama/actions/workflows/weblate-update-pot.yml)
 [![Weblate Merge PO](https://github.com/openSUSE/agama/actions/workflows/weblate-merge-po.yml/badge.svg)](https://github.com/openSUSE/agama/actions/workflows/weblate-merge-po.yml)
-[![Weblate Merge Product PO](https://github.com/openSUSE/agama/actions/workflows/weblate-merge-products-po.yml/badge.svg)](https://github.com/openSUSE/agama/actions/workflows/weblate-merge-products-po.yml)
 [![Translation Status](https://l10n.opensuse.org/widgets/agama/-/agama-web/svg-badge.svg)](https://l10n.opensuse.org/engage/agama/)
 
 ## Packages
