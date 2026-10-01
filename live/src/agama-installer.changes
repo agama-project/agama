@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Oct  1 08:44:34 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Use kernel-nvidia64kb package (bsc#1282794)
+
+-------------------------------------------------------------------
 Thu Sep 10 18:49:38 UTC 2026 - Lubos Kocman <lubos.kocman@suse.com>
 
 - Use license.txt for English in license.opensuse
