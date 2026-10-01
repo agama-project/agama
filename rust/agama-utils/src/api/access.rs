@@ -34,16 +34,18 @@ pub enum AccessValue {
     Default,
 }
 
-/// Remote Access configuration
+/// Remote Access configuration.
+///
+/// Allows to explicitly specify how machine has to be accessed after installation.
 #[derive(Clone, Debug, Default, Serialize, Deserialize, Merge, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 #[schemars(rename = "access.Config")]
 pub struct Config {
-    /// Remote access to SSH
+    /// Allows to specify if ssh access has to be enabled after installation or keep product defaults.
     #[serde(skip_serializing_if = "Option::is_none")]
     #[merge(strategy = merge::option::overwrite_none)]
     pub ssh: Option<AccessValue>,
-    /// Remote access to Web Console
+    /// Allows to specify if web console access has to be enabled after installation or keep product defaults.
     #[serde(skip_serializing_if = "Option::is_none")]
     #[merge(strategy = merge::option::overwrite_none)]
     pub web_console: Option<AccessValue>,

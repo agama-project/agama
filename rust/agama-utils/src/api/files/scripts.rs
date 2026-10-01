@@ -73,6 +73,7 @@ pub enum ScriptsGroup {
 
 #[derive(Clone, Debug, Serialize, Deserialize, JsonSchema, PartialEq)]
 pub struct BaseScript {
+    /// Script name, to be used as file name.
     pub name: String,
     #[serde(flatten)]
     pub source: FileSource,

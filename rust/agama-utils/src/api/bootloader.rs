@@ -27,7 +27,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Debug, Serialize, Deserialize, Default, Merge, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 #[merge(strategy = merge::option::overwrite_none)]
-#[schemars(rename = "bootloader.Config")]
+#[schemars(rename = "bootloader.Config", title = "Bootloader settings")]
 pub struct Config {
     /// Whether bootloader should stop on boot menu.
     #[serde(skip_serializing_if = "Option::is_none")]

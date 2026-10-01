@@ -291,12 +291,14 @@ pub struct NetworkConnection {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub method4: Option<Ipv4Method>,
     /// Gateway IP address for the IPv4 connection
+    #[schemars(example = &"192.168.122.1")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub gateway4: Option<IpAddr>,
     /// IPv6 method used for the network connection
     #[serde(skip_serializing_if = "Option::is_none")]
     pub method6: Option<Ipv6Method>,
     /// Gateway IP address for the IPv6 connection
+    #[schemars(example = &"::ffff:c0a8:7a01")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub gateway6: Option<IpAddr>,
     /// List of assigned IP addresses

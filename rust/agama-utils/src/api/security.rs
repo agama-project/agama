@@ -25,12 +25,12 @@ use merge::Merge;
 use schemars::JsonSchema;
 use serde::{Deserialize, Deserializer, Serialize};
 
-/// Security settings for installation
-#[derive(Clone, Debug, Default, Serialize, Deserialize, Merge, JsonSchema)]
+/// Security settings
+#[derive(Clone, Debug, Default, Merge, Serialize, Deserialize, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[schemars(rename = "security.Config")]
+#[schemars(rename = "security.Config", title = "Security settings")]
 pub struct Config {
-    /// List of user selected patterns to install.
+    /// List of SSL certificates to add to the system.
     #[serde(skip_serializing_if = "Option::is_none")]
     // when we add support for remote URL here it should be vector of SSL
     // certificates which will include flatten fingerprint
@@ -51,6 +51,7 @@ pub enum SSLFingerprintAlgorithm {
 pub struct SSLFingerprint {
     /// The string value for SSL certificate fingerprint.
     /// Example value is "F6:7A:ED:BB:BC:94:CF:55:9D:B3:BA:74:7A:87:05:EF:67:4E:C2:DB"
+    #[schemars(example = &"A8:DE:08:B1:57:52:FE:70:DF:D5:31:EA:E3:53:BB:39:EE:01:FF:B9")]
     #[serde(deserialize_with = "serialize_fingerprint")]
     fingerprint: String,
     /// Algorithm used to compute SSL certificate fingerprint.

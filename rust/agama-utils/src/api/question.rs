@@ -36,11 +36,13 @@ pub enum Error {
 /// Questions configuration.
 #[derive(Clone, Debug, Default, Serialize, Deserialize, Merge, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[schemars(rename = "questions.Config")]
+#[schemars(rename = "questions.Config", title = "How to handle Agama questions")]
 pub struct Config {
+    /// Policy to answer questions: "auto" to automatically answer questions or "user" to ask the user.
     #[serde(skip_serializing_if = "Option::is_none")]
     #[merge(strategy = merge::option::overwrite_none)]
     pub policy: Option<Policy>,
+    /// List of answers to automatically use for matching questions.
     #[serde(skip_serializing_if = "Option::is_none")]
     #[merge(strategy = merge::option::overwrite_none)]
     pub answers: Option<Vec<AnswerRule>>,
@@ -60,8 +62,10 @@ pub enum Policy {
 /// If the rule matches with the question ([class](Self::class),
 /// [text](Self::text) or [data](Self::data), it applies the specified `answer`).
 #[derive(Clone, Serialize, Deserialize, Debug, JsonSchema, PartialEq)]
+#[schemars(title = "Automatic answer to questions")]
 pub struct AnswerRule {
     /// Question class (see [QuestionSpec::class]).
+    #[schemars(example = &"multipathActivation")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub class: Option<String>,
     /// Question text (see [QuestionSpec::text]).
@@ -422,10 +426,12 @@ impl Action {
 /// It includes the action and, optionally, and additional value which depends
 /// on the question field.
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, JsonSchema)]
-#[schemars(rename = "questions.Answer")]
+#[schemars(rename = "questions.Answer", title = "Predefined question action")]
 pub struct Answer {
+    /// Action to use for answering the question.
     #[serde(alias = "answer")]
     pub action: String,
+    /// Value to use for the question (e.g. password or string input, depending on the question type).
     #[serde(alias = "password", skip_serializing_if = "Option::is_none")]
     pub value: Option<String>,
 }

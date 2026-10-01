@@ -39,31 +39,47 @@ pub enum Error {
     JSON(#[from] serde_json::Error),
 }
 
+/// Profile definition for automated installation.
 #[skip_serializing_none]
 #[derive(Clone, Debug, Default, Deserialize, Serialize, Merge, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[schemars(deny_unknown_fields)]
+#[schemars(deny_unknown_fields, title = "Profile")]
 #[merge(strategy = merge::option::recurse)]
 pub struct Config {
+    /// Bootloader configuration.
     pub bootloader: Option<bootloader::Config>,
+    /// Hostname configuration.
     pub hostname: Option<hostname::Config>,
+    /// Localization configuration (keyboard, language, timezone).
     #[serde(alias = "localization")]
     pub l10n: Option<l10n::Config>,
+    /// Network proxy configuration.
     pub proxy: Option<proxy::Config>,
+    /// Security configuration (e.g. SSL certificate fingerprints).
     pub security: Option<security::Config>,
+    /// Software and product configuration.
     #[serde(flatten)]
     pub software: Option<software::Config>,
+    /// Network configuration (interfaces, connections, state).
     pub network: Option<network::Config>,
+    /// NTP time synchronization configuration.
     pub ntp: Option<ntp::Config>,
+    /// Automated question answering rules and policy.
     pub questions: Option<question::Config>,
+    /// Remote access configuration (SSH, Web Console).
     pub access: Option<access::Config>,
+    /// Storage configuration (drives, partitions, LVM, encryption).
     #[serde(flatten)]
     pub storage: Option<storage::Config>,
+    /// iSCSI initiator and target configuration.
     pub iscsi: Option<iscsi::Config>,
+    /// User-defined files and scripts.
     #[serde(flatten)]
     pub files: Option<files::Config>,
+    /// User and root accounts configuration.
     #[serde(flatten)]
     pub users: Option<users::Config>,
+    /// s390 architecture configuration (DASD and zFCP devices).
     #[serde(flatten)]
     pub s390: Option<s390::Config>,
 }

@@ -235,6 +235,8 @@ pub async fn build() -> OpenApi {
                     "localization".to_string(),
                     serde_json::json!({
                         "deprecated": true,
+                        "title": "Localization settings (old schema)",
+                        "description": "Deprecated: use l10n instead.",
                         "$ref": "#/components/schemas/l10n.Config"
                     }),
                 );
@@ -244,6 +246,8 @@ pub async fn build() -> OpenApi {
                 map.insert(
                     "$schema".to_string(),
                     serde_json::json!({
+                        "title": "URL of the JSON validation schema",
+                        "description": "The schema location is ignored by the installer, it always uses the built-in schema, but it can be useful for automatic validation and code completion in some editors.",
                         "type": "string"
                     }),
                 );

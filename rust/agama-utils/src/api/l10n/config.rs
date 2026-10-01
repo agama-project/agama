@@ -25,21 +25,24 @@ use serde::{Deserialize, Serialize};
 /// Localization config.
 #[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq, Merge, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[schemars(rename = "l10n.Config")]
+#[schemars(rename = "l10n.Config", title = "Localization settings")]
 pub struct Config {
     /// Locale (e.g., "en_US.UTF-8").
+    #[schemars(example = &"en_US.UTF-8", example = &"en_US")]
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(alias = "language")]
     #[merge(strategy = merge::option::overwrite_none)]
     pub locale: Option<String>,
 
     /// Keymap (e.g., "us", "cz(qwerty)", etc.).
+    #[schemars(example = &"us", example = &"en", example = &"es")]
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(alias = "keyboard")]
     #[merge(strategy = merge::option::overwrite_none)]
     pub keymap: Option<String>,
 
     /// Timezone (e.g., "Europe/Berlin").
+    #[schemars(example = &"Europe/Berlin")]
     #[serde(skip_serializing_if = "Option::is_none")]
     #[merge(strategy = merge::option::overwrite_none)]
     pub timezone: Option<String>,

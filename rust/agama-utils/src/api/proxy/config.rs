@@ -25,29 +25,39 @@ use serde::{Deserialize, Serialize};
 /// Proxy config.
 #[derive(Clone, Debug, Default, Merge, Serialize, Deserialize, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[schemars(rename = "proxy.Config")]
+#[schemars(rename = "proxy.Config", title = "Proxy settings")]
 pub struct Config {
+    /// Whether proxy is enabled.
     #[serde(skip_serializing_if = "Option::is_none")]
     #[merge(strategy = merge::option::overwrite_none)]
     pub enabled: Option<bool>,
+    /// URL to be used for the HTTP proxy.
+    #[schemars(example = &"http://proxy.provider.de:3128/")]
     #[serde(skip_serializing_if = "Option::is_none")]
     #[merge(strategy = merge::option::overwrite_none)]
     pub http: Option<String>,
+    /// URL to be used for the HTTPS proxy.
     #[serde(skip_serializing_if = "Option::is_none")]
     #[merge(strategy = merge::option::overwrite_none)]
     pub https: Option<String>,
+    /// URL to be used for the FTP proxy.
     #[serde(skip_serializing_if = "Option::is_none")]
     #[merge(strategy = merge::option::overwrite_none)]
     pub ftp: Option<String>,
+    /// URL to be used for the Gopher proxy.
     #[serde(skip_serializing_if = "Option::is_none")]
     #[merge(strategy = merge::option::overwrite_none)]
     pub gopher: Option<String>,
+    /// URL to be used for the SOCKS proxy.
     #[serde(skip_serializing_if = "Option::is_none")]
     #[merge(strategy = merge::option::overwrite_none)]
     pub socks: Option<String>,
+    /// SOCKS5 server address.
+    #[schemars(example = &"office-proxy.example.com:8881")]
     #[serde(skip_serializing_if = "Option::is_none")]
     #[merge(strategy = merge::option::overwrite_none)]
     pub socks5: Option<String>,
+    /// Comma-separated list of domains/hosts to bypass proxy for.
     #[serde(skip_serializing_if = "Option::is_none")]
     #[merge(strategy = merge::option::overwrite_none)]
     pub no_proxy: Option<String>,
