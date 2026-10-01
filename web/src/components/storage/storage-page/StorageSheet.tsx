@@ -33,6 +33,8 @@ import { useSheet, SHEET_ID } from "~/components/storage/shared/use-sheet";
 import { useMediaQuery } from "~/hooks/use-media-query";
 import { EmptyState, EmptyStateBody } from "@patternfly/react-core";
 import { _ } from "~/i18n";
+import { useConfigModel } from "~/hooks/model/storage/config-model";
+import configModel from "~/model/storage/config-model";
 import type { ConfigModel, Partitionable } from "~/model/storage/config-model";
 import type { Entry } from "~/components/storage/device-sheet/entry";
 
@@ -96,6 +98,15 @@ export default function StorageSheet({ page }: StorageSheetProps): React.ReactNo
   const isResult = subject === "result";
   const isOpen = isResult || entry !== null;
 
+  // FIXME: very ugly shortcircuit
+  const config = useConfigModel();
+  const deviceConfig = entry?.device;
+  const isUsed =
+    deviceConfig &&
+    !entry.isVolumeGroup &&
+    (configModel.partitionable.isUsed(config, deviceConfig.name) ||
+      configModel.boot.hasDevice(config, deviceConfig.name));
+
   return (
     <Sheet
       id={SHEET_ID}
@@ -148,7 +159,23 @@ export default function StorageSheet({ page }: StorageSheetProps): React.ReactNo
       }
     >
       {isResult && <ResultSheet />}
-      {entry && selection && <DeviceDetail entry={entry} subject={selection} />}
+      {
+        // FIXME: part of the ugly shorcircuit mentioned above
+      }
+      {entry && !isUsed && !entry.isVolumeGroup && selection && (
+        <EmptyState
+          headingLevel="h3"
+          variant="sm"
+          titleText={_("This EmptyState should offer both formatting and partitioning")}
+        >
+          <EmptyStateBody>
+            {_("Format, add a partition or reuse one of the partitions already in the disk.")}
+          </EmptyStateBody>
+        </EmptyState>
+      )}
+      {entry && (isUsed || entry.isVolumeGroup) && selection && (
+        <DeviceDetail entry={entry} subject={selection} />
+      )}
     </Sheet>
   );
 }

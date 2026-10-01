@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import { _, n_, formatList } from "~/i18n";
+import { _, n_, formatList, TranslatedString } from "~/i18n";
 import { baseName, formattedPath } from "~/components/storage/utils";
 import { useConfigModel } from "~/hooks/model/storage/config-model";
 import configModel from "~/model/storage/config-model";
@@ -90,29 +90,26 @@ const SummaryForSpacePolicy = (drive: ConfigModel.Drive): string | undefined => 
  * FIXME: the case with two sentences looks a bit weird. But trying to summarize everything in one
  * sentence was too hard.
  */
-const contentActionsSummary = (drive: ConfigModel.Drive): string => {
+const contentActionsSummary = (drive: ConfigModel.Drive): TranslatedString[] => {
   const policyLabel = SummaryForSpacePolicy(drive);
 
-  if (policyLabel) return policyLabel;
+  if (policyLabel) return [policyLabel as TranslatedString];
 
   const partitions = drive.partitions.filter((p) => p.name);
   const deleteText = deleteTextFor(partitions);
   const resizeText = resizeTextFor(partitions);
 
   if (deleteText && resizeText) {
-    // TRANSLATORS: this simply concatenates the two sentences that describe what is going to happen
-    // with partitions. The first %s corresponds to deleted partitions and the second one to resized
-    // ones.
-    return sprintf(_("%s - %s"), deleteText, resizeText);
+    return [deleteText as TranslatedString, resizeText as TranslatedString];
   }
 
-  if (deleteText) return deleteText;
-  if (resizeText) return resizeText;
+  if (deleteText) return [deleteText as TranslatedString];
+  if (resizeText) return [resizeText as TranslatedString];
 
   // This scenario is unlikely, as the backend is expected to enforce the "keep"
   // space policy when all partitions in a custom policy are set to "keep".
   // However, to be safe, we return the same summary as the "keep" policy.
-  return _("Current partitions will be kept");
+  return [_("Current partitions will be kept")];
 };
 
 const ContentActionsDescription = (
@@ -153,55 +150,45 @@ const ContentActionsDescription = (
   }
 };
 
-const contentDescription = (drive: ConfigModel.Drive): string => {
+const contentDescription = (drive: ConfigModel.Drive): TranslatedString[] => {
   const newPartitions = drive.partitions.filter((p) => !p.name);
   const reusedPartitions = drive.partitions.filter((p) => p.name && p.mountPath);
+  const lines: TranslatedString[] = [];
 
   if (drive.filesystem) {
     if (drive.mountPath) {
-      return sprintf(_("The whole device will be used for %s"), formattedPath(drive.mountPath));
+      lines.push(sprintf(_("Use the whole device %s"), formattedPath(drive.mountPath)));
     }
 
     // I don't think this can happen, maybe when loading a configuration not created with the UI
-    return _("A file system will be used for the whole device");
+    lines.push(_("Use the whole device for a file system"));
   }
 
-  if (newPartitions.length === 0) {
-    if (reusedPartitions.length === 0) {
-      return _("No additional partitions will be created");
-    }
-
-    const mountPaths = reusedPartitions.map((p) => formattedPath(p.mountPath));
-    return sprintf(
-      // TRANSLATORS: %s is a list of formatted mount points like '"/", "/var" and "swap"' (or a
-      // single mount point in the singular case).
-      n_(
-        "An existing partition will be used for %s",
-        "Existing partitions will be used for %s",
-        mountPaths.length,
-      ),
-      formatList(mountPaths),
-    );
-  }
-
-  if (reusedPartitions.length === 0) {
+  if (newPartitions.length) {
     const mountPaths = newPartitions.map((p) => formattedPath(p.mountPath));
-    return sprintf(
-      // TRANSLATORS: %s is a list of formatted mount points like '"/", "/var" and "swap"' (or a
-      // single mount point in the singular case).
-      n_(
-        "A new partition will be created for %s",
-        "New partitions will be created for %s",
-        mountPaths.length,
+    lines.push(
+      sprintf(
+        // TRANSLATORS: %s is a list of formatted mount points like '"/", "/var" and "swap"' (or a
+        // single mount point in the singular case).
+        n_("Create a partition for %s", "Create new partitions for %s", mountPaths.length),
+        formatList(mountPaths),
       ),
-      formatList(mountPaths),
     );
   }
 
-  const mountPaths = newPartitions.concat(reusedPartitions).map((p) => formattedPath(p.mountPath));
-  // TRANSLATORS: %s is a list of formatted mount points like '"/", "/var" and "swap"' (or a
-  // single mount point in the singular case).
-  return sprintf(_("Partitions will be used and created for %s"), formatList(mountPaths));
+  if (reusedPartitions.length) {
+    const mountPaths = reusedPartitions.map((p) => formattedPath(p.mountPath));
+    lines.push(
+      sprintf(
+        // TRANSLATORS: %s is a list of formatted mount points like '"/", "/var" and "swap"' (or a
+        // single mount point in the singular case).
+        n_("Use an existing partition for %s", "Use existing partitions for %s", mountPaths.length),
+        formatList(mountPaths),
+      ),
+    );
+  }
+
+  return lines;
 };
 
 export {

@@ -87,7 +87,8 @@ function useRetarget(entry: Partitionable.Device, device: Storage.Device | null)
   const targets = available.filter((candidate) => !taken.includes(candidate.name));
 
   return {
-    cannotMove: whyItCannotMove(config, entry),
+    // FIXME: Hack to disable de button without displaying the string
+    cannotMove: whyItCannotMove(config, entry) ? _("") : null,
     note: plansContent
       ? sprintf(
           // TRANSLATORS: what happens to the plan when the reader picks a

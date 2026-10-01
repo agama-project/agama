@@ -23,8 +23,8 @@
 import React from "react";
 import { Tab, Tabs, TabTitleIcon, TabTitleText } from "@patternfly/react-core";
 import Icon, { IconProps } from "~/components/layout/Icon";
-import FinalLayoutSection from "~/components/storage/device-sheet/FinalLayoutSection";
 import PlannedContentSection from "~/components/storage/device-sheet/PlannedContentSection";
+import PartitionsStatement from "~/components/storage/device-sheet/PartitionsStatement";
 import CurrentContentSection, {
   hasCurrentContent,
 } from "~/components/storage/device-sheet/CurrentContentSection";
@@ -70,7 +70,6 @@ export type DeviceDetailProps = {
  * the view holds. The marks are there to tell them apart at a glance.
  */
 const VIEW_ICONS: Record<string, IconProps["name"]> = {
-  result: "schema",
   planned: "pending_actions",
   properties: "device_hub",
   current: "hard_drive",
@@ -88,7 +87,8 @@ function title(view: string, name: React.ReactNode) {
 }
 
 export default function DeviceDetail({ entry, subject }: DeviceDetailProps): React.ReactNode {
-  const [tab, setTab] = useSheetTab("result");
+  const [tab, setTab] = useSheetTab("planned");
+
   /* Only an entry that is defined rather than found has properties: a volume
      group, or a RAID made of other disks. A disk is the hardware. */
   const hasProperties = entry.isVolumeGroup || subject.collection === "mdRaids";
@@ -98,7 +98,6 @@ export default function DeviceDetail({ entry, subject }: DeviceDetailProps): Rea
      finds it out. */
   const hasCurrent = hasCurrentContent(entry);
   const views = [
-    "result",
     "planned",
     ...(hasProperties ? ["properties"] : []),
     ...(hasCurrent ? ["current"] : []),
@@ -107,7 +106,7 @@ export default function DeviceDetail({ entry, subject }: DeviceDetailProps): Rea
      every entry, and a reader moving from a disk with partitions to one without
      keeps the view they were reading. That opens on the first rather than on a
      strip with nothing selected. */
-  const view = views.includes(tab) ? tab : "result";
+  const view = views.includes(tab) ? tab : "planned";
   const { containerProps, tabProps } = useTablistKeyboard(views, view, setTab);
 
   /* The views as the notes name them, and the way to each. */
@@ -121,22 +120,15 @@ export default function DeviceDetail({ entry, subject }: DeviceDetailProps): Rea
      languages, and a slot taking either "disk" or "volume group" would leave a
      translator unable to make them. */
   const isRaid = subject.collection === "mdRaids";
-  const resultLead = () => {
-    // TRANSLATORS: opens the view showing the shape an LVM volume group is left in.
-    if (entry.isVolumeGroup) return _("Content of the volume group after the installation.");
-    // TRANSLATORS: opens the view showing the shape a software RAID is left in.
-    if (isRaid) return _("Content of the RAID after the installation.");
-    // TRANSLATORS: opens the view showing the shape a disk is left in.
-    return _("Content of the disk after the installation.");
-  };
   const plannedLead = () => {
-    // TRANSLATORS: opens the view showing what an LVM volume group will hold.
+    // FIXME: For disks with existing partitions or VGs with existing LVs, we should say "created or
+    // reused" and for the rest only "created".
     if (entry.isVolumeGroup)
-      return _("Pieces of the new system that will be placed in this volume group.");
+      return _("Pieces of the new system that will be created in this volume group.");
     // TRANSLATORS: opens the view showing what a software RAID will hold.
-    if (isRaid) return _("Pieces of the new system that will be placed in this RAID.");
+    if (isRaid) return _("Pieces of the new system that will be created or reused in this RAID.");
     // TRANSLATORS: opens the view showing what a disk will hold.
-    return _("Pieces of the new system that will be placed in this disk.");
+    return _("Pieces of the new system that will be created or reused in this disk.");
   };
 
   return (
@@ -148,55 +140,31 @@ export default function DeviceDetail({ entry, subject }: DeviceDetailProps): Rea
         aria-label={_("Views of this device")}
       >
         <Tab
-          eventKey="result"
-          {...tabProps("result")}
-          title={title(
-            "result",
-            <>
-              {/* TRANSLATORS: names the view of a device showing the shape it is
-                  left in once the installation has run. */}
-              {_("Final layout")}
-            </>,
-          )}
-        >
-          <TabNote
-            lead={resultLead()}
-            where={
-              hasCurrent
-                ? // TRANSLATORS: says where the final layout of a device changes.
-                  // %1$s and %2$s are the names of two other views, shown as links.
-                  _(
-                    "Use the %1$s tab to customize what will be written or reused and the %2$s to decide how to make space for that.",
-                  )
-                : // TRANSLATORS: says where the final layout of a device changes.
-                  // %s is the name of another view, shown as a link.
-                  _("It follows from the %s tab, which is where it changes.")
-            }
-            links={hasCurrent ? [toPlanned, toCurrent] : [toPlanned]}
-          />
-          <FinalLayoutSection entry={entry} />
-        </Tab>
-        <Tab
           eventKey="planned"
           {...tabProps("planned")}
           title={title(
             "planned",
-            <>
-              {/* TRANSLATORS: names the view of a device showing what the
-                  installation will put on it. */}
-              {_("Planned content")}
-            </>,
+            <>{entry.isVolumeGroup ? _("Planned volumes") : _("Planned partitions")}</>,
           )}
         >
-          <TabNote lead={plannedLead()}>
-            {/* What is true of the device itself, said with the note rather
-                than above the table: they are all prose about the device, and
-                the table below is the view's content. Each decides for itself
-                whether it has anything to say. */}
-            <BootStatement entry={entry} />
-            <UsedByStatement entry={entry} />
-          </TabNote>
-          <PlannedContentSection entry={entry} subject={subject} />
+          <TabNote
+            lead={plannedLead()}
+            where={
+              // FIXME: This is greatly simpified since I don't think hasCurrent is the right check
+              hasCurrent
+                ? // TRANSLATORS: says where the final layout of a device changes.
+                  // %1$s and %2$s are the names of two other views, shown as links.
+                  _("Use the %s tab to decide how to make space for that.")
+                : // FIXME: we should differentiate whether there is something else than
+                  // partitions in the disk
+                  _("")
+            }
+            links={hasCurrent ? [toCurrent] : []}
+          />
+          <BootStatement entry={entry} />
+          <UsedByStatement entry={entry} />
+          {entry.isVolumeGroup && <PlannedContentSection entry={entry} subject={subject} />}
+          {!entry.isVolumeGroup && <PartitionsStatement entry={entry} subject={subject} />}
         </Tab>
         {/* Only where the entry is defined rather than found. A disk is the
             hardware, so there is nothing that defines it to show. */}
@@ -246,9 +214,9 @@ export default function DeviceDetail({ entry, subject }: DeviceDetailProps): Rea
             )}
           >
             <TabNote
-              // TRANSLATORS: opens the view listing what is on a device today.
+              // FIXME: we need the LVM alternative here
               lead={_(
-                "What to do with the existing partitions to make space for the planned content",
+                "What to do with the existing partitions to make space for the planned ones.",
               )}
             />
             <CurrentContentSection entry={entry} subject={subject} />

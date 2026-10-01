@@ -22,9 +22,7 @@
 
 import React from "react";
 import { Table, Tbody, Th, Thead, Tr } from "@patternfly/react-table";
-import { Flex, FlexItem } from "@patternfly/react-core";
 import a11yStyles from "@patternfly/react-styles/css/utilities/Accessibility/accessibility";
-import ConfigureDeviceMenu from "~/components/storage/ConfigureDeviceMenu";
 import { columnName } from "~/components/storage/entries-table/columns";
 import DriveRow from "~/components/storage/entries-table/DriveRow";
 import VolumeGroupRow from "~/components/storage/entries-table/VolumeGroupRow";
@@ -58,7 +56,7 @@ function categoryTitle(category: Category): TranslatedString {
     case "drives":
       // TRANSLATORS: heads the disks in the list of what the installation is
       // made of.
-      return _("Disks");
+      return _("Used disks");
   }
 }
 
@@ -142,8 +140,8 @@ export default function EntriesTable(): React.ReactNode {
         <Thead className={a11yStyles.screenReader}>
           <Tr>
             <Th>{columnName("entry")}</Th>
-            <Th>{columnName("content")}</Th>
             <Th>{columnName("actions")}</Th>
+            <Th>{columnName("content")}</Th>
             <Th>{columnName("options")}</Th>
           </Tr>
         </Thead>
@@ -172,19 +170,6 @@ export default function EntriesTable(): React.ReactNode {
           </Tbody>
         ))}
       </Table>
-      {/* At the end of what it appends to, and at its start edge: adding a
-          device extends this list, and an offer centred above it reads as
-          something the summary is saying rather than as the list's own. */}
-      <Flex className="agm-entries-table__add">
-        <FlexItem>
-          <ConfigureDeviceMenu
-            // TRANSLATORS: offered at the foot of the list of what the
-            // installation is made of: bring more disks into it.
-            label={_("Add more devices")}
-            popperProps={{ position: "left" }}
-          />
-        </FlexItem>
-      </Flex>
     </div>
   );
 }

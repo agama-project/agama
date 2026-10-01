@@ -23,7 +23,6 @@
 import React from "react";
 import Interpolate from "~/components/core/Interpolate";
 import DeviceName from "~/components/storage/shared/DeviceName";
-import SheetOpener from "~/components/storage/shared/SheetOpener";
 import { NAMES_PER_LINE } from "~/components/storage/shared/naming";
 import { baseName } from "~/components/storage/utils";
 import { useConfigModel } from "~/hooks/model/storage/config-model";
@@ -76,9 +75,7 @@ export default function ConfigurationTitle(): React.ReactNode {
     onlyHost && (
       /* The lone host is whichever of the two collections holds one, so where it
          is written follows from that rather than from searching for it. */
-      <SheetOpener subject={{ collection: onDisk ? "drives" : "mdRaids", index: 0 }}>
-        <DeviceName name={baseName(onlyHost.name)} size={systemDevice?.block?.size} />
-      </SheetOpener>
+      <DeviceName name={baseName(onlyHost.name)} size={systemDevice?.block?.size} />
     );
 
   if (onlyHost && groups.length === 0) {

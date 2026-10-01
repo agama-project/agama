@@ -24,30 +24,59 @@ import React from "react";
 import { sprintf } from "sprintf-js";
 import EntryRow from "~/components/storage/entries-table/EntryRow";
 import VolumeGroupMenu from "~/components/storage/entries-table/VolumeGroupMenu";
-import { consequencesOf } from "~/components/storage/shared/consequences";
-import { useDevicesManager } from "~/components/storage/shared/use-devices-manager";
 import { NAMES_PER_LINE } from "~/components/storage/shared/naming";
-import { baseName } from "~/components/storage/utils";
-import { useDevice } from "~/hooks/model/system/storage";
+import { baseName, formattedPath } from "~/components/storage/utils";
+import { isEmpty } from "radashi";
+import configModel from "~/model/storage/config-model";
 import { _, n_, formatList, TranslatedString } from "~/i18n";
 import type { ConfigModel } from "~/model/storage/config-model";
 import type { SheetEntry } from "~/components/storage/shared/use-sheet";
 
+const contentLines = (volumeGroup: ConfigModel.VolumeGroup): TranslatedString[] => {
+  const newLogicalVolumes = volumeGroup.logicalVolumes.filter(configModel.volume.isNew);
+  const reusedLogicalVolumes = volumeGroup.logicalVolumes.filter(configModel.volume.isReused);
+  const lines: TranslatedString[] = [];
+
+  if (isEmpty(newLogicalVolumes) && isEmpty(reusedLogicalVolumes)) {
+    lines.push(_("No logical volumes defined"));
+  }
+
+  if (!isEmpty(newLogicalVolumes)) {
+    const mountPaths = newLogicalVolumes.map((p) => formattedPath(p.mountPath));
+    lines.push(
+      sprintf(
+        // TRANSLATORS: %s is a list of formatted mount points like '"/", "/var" and "swap"' (or a
+        // single mount point in the singular case).
+        n_("Create a logical volume for %s", "Create logical volumes for %s", mountPaths.length),
+        formatList(mountPaths),
+      ),
+    );
+  }
+
+  if (!isEmpty(reusedLogicalVolumes)) {
+    const mountPaths = reusedLogicalVolumes.map((p) => formattedPath(p.mountPath));
+    lines.push(
+      sprintf(
+        // TRANSLATORS: %s is a list of formatted mount points like '"/", "/var" and "swap"' (or a
+        // single mount point in the singular case).
+        n_(
+          "Use existing logical volume for %s",
+          "Use existing logical volumes for %s",
+          mountPaths.length,
+        ),
+        formatList(mountPaths),
+      ),
+    );
+  }
+
+  return lines;
+};
+
 /**
- * What a volume group is, from both ends.
- *
- * Where it sits comes first, which is what its row used to lack: a group named
- * without its disks is a row about something floating, and a reader scanning
- * two rows should learn the group lives on the disk from whichever they meet
- * first.
- *
- * What it will hold is a count rather than a list. Six logical volumes named
- * after long mount paths turn a row into four lines of text, which is what the
- * group's own panel is for.
+ * TODO: contemplate case of reused
  */
-function purposeOf(group: ConfigModel.VolumeGroup): TranslatedString[] {
+function actionsFor(group: ConfigModel.VolumeGroup): TranslatedString[] {
   const hosts = group.targetDevices || [];
-  const volumes = (group.logicalVolumes || []).length;
   const lines: TranslatedString[] = [];
 
   /* One sentence whatever the limit is, with the names punctuated by the
@@ -55,6 +84,8 @@ function purposeOf(group: ConfigModel.VolumeGroup): TranslatedString[] {
      instead, the sentence and the limit have to agree on a number, and nothing
      makes them: a limit raised past what the sentence has room for drops the
      rest of the names without a mark. */
+  // FIXME: We need to contemplate the case of reused VG. Then the sentence should
+  // not be here.
   if (hosts.length && hosts.length <= NAMES_PER_LINE) {
     lines.push(
       sprintf(
@@ -78,19 +109,8 @@ function purposeOf(group: ConfigModel.VolumeGroup): TranslatedString[] {
       ),
     );
   } else {
-    // TRANSLATORS: said of an LVM volume group with no disk chosen for it yet.
+    // FIXME: A new LVM volume group with no disk chosen? Not really possible in the model
     lines.push(_("Create LVM volume group"));
-  }
-
-  if (volumes) {
-    lines.push(
-      sprintf(
-        // TRANSLATORS: what an LVM volume group will hold. %d is how many
-        // logical volumes the new system gets from it.
-        n_("Define %d logical volume", "Define %d logical volumes", volumes),
-        volumes,
-      ),
-    );
   }
 
   return lines;
@@ -115,14 +135,11 @@ export type VolumeGroupRowProps = {
  * other entry: what the installer does to what it holds.
  */
 export default function VolumeGroupRow({ group, subject }: VolumeGroupRowProps): React.ReactNode {
-  const device = useDevice(group.name || "");
-  const manager = useDevicesManager();
-
   return (
     <EntryRow
       name={group.vgName}
-      purpose={purposeOf(group)}
-      consequences={consequencesOf(manager, device?.logicalVolumes || [])}
+      purpose={contentLines(group)}
+      actions={actionsFor(group)}
       menu={<VolumeGroupMenu group={group} subject={subject} />}
       subject={subject}
     />

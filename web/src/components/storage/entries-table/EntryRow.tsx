@@ -22,29 +22,14 @@
 
 import React from "react";
 import { Td, Th, Tr } from "@patternfly/react-table";
-import { Flex, FlexItem, Label, Stack, StackItem } from "@patternfly/react-core";
+import { Label, Stack, StackItem } from "@patternfly/react-core";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
-import Icon from "~/components/layout/Icon";
 import Text from "~/components/core/Text";
 import SheetOpener from "~/components/storage/shared/SheetOpener";
 import { useSheet } from "~/components/storage/shared/use-sheet";
 import { columnName } from "~/components/storage/entries-table/columns";
-import type { Consequence } from "~/components/storage/shared/consequences";
 import type { SheetEntry } from "~/components/storage/shared/use-sheet";
 import type { TranslatedString } from "~/i18n";
-
-/** Marks whose meaning travels with their direction, turned to say it. */
-const CONSEQUENCE_CLASS: Record<Consequence["kind"], string> = {
-  destroys: "agm-entries-table__cost--destroys",
-  shrinks: "agm-entries-table__cost--shrinks",
-};
-
-const CONSEQUENCE_ICON: Record<Consequence["kind"], React.ComponentProps<typeof Icon>["name"]> = {
-  destroys: "error_fill",
-  /* What happens to the thing itself: it is squeezed into less room, which is
-     what the mark shows. Folding is what a list does, not a partition. */
-  shrinks: "compress",
-};
 
 export type EntryRowProps = {
   /** What the entry is called, as the page names things: `sda`, `system`. */
@@ -55,8 +40,8 @@ export type EntryRowProps = {
   marks?: string[];
   /** What the installer will do here, one statement per line. */
   purpose: TranslatedString[];
-  /** What that costs whatever is here already. */
-  consequences: Consequence[];
+  /** What is going to be done to create this or make space. */
+  actions: TranslatedString[];
   /** The menu of what can be done to this entry. */
   menu: React.ReactNode;
   /** Where this entry is written, which is how the sheet is opened on it. */
@@ -85,7 +70,7 @@ export type EntryRowProps = {
  *   name="sda"
  *   description="60 GiB · Disk · GPT"
  *   purpose={[_("Host LVM and boot")]}
- *   consequences={[{ kind: "destroys", text: "Windows 11 will be deleted" }]}
+ *   actions={[_("Windows 11 will be deleted")]}
  *   menu={<DriveMenu entry={entry} device={device} />}
  *   subject={{ collection: "drives", index: 0 }}
  * />
@@ -95,7 +80,7 @@ export default function EntryRow({
   description,
   marks = [],
   purpose,
-  consequences,
+  actions,
   menu,
   subject,
 }: EntryRowProps): React.ReactNode {
@@ -127,31 +112,17 @@ export default function EntryRow({
           </React.Fragment>
         ))}
       </Th>
-      <Td dataLabel={columnName("content")}>
+      <Td dataLabel={columnName("actions")}>
         <Stack>
-          {purpose.map((line) => (
+          {actions.map((line) => (
             <StackItem key={line}>{line}</StackItem>
           ))}
         </Stack>
       </Td>
-      <Td dataLabel={columnName("actions")}>
+      <Td dataLabel={columnName("content")}>
         <Stack>
-          {consequences.map(({ kind, text }) => (
-            <StackItem key={text}>
-              {/* The mark carries the color and the words carry the meaning, so
-                  nothing here is lost on a reader who sees neither. */}
-              <Flex
-                gap={{ default: "gapXs" }}
-                alignItems={{ default: "alignItemsFlexStart" }}
-                flexWrap={{ default: "nowrap" }}
-                className={CONSEQUENCE_CLASS[kind]}
-              >
-                <FlexItem>
-                  <Icon name={CONSEQUENCE_ICON[kind]} size="xs" />
-                </FlexItem>
-                <FlexItem>{text}</FlexItem>
-              </Flex>
-            </StackItem>
+          {purpose.map((line) => (
+            <StackItem key={line}>{line}</StackItem>
           ))}
         </Stack>
       </Td>

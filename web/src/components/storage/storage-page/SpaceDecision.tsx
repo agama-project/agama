@@ -21,13 +21,7 @@
  */
 
 import React from "react";
-import {
-  HelperText,
-  HelperTextItem,
-  ToggleGroup,
-  ToggleGroupItem,
-  Tooltip,
-} from "@patternfly/react-core";
+import { ToggleGroup, ToggleGroupItem, Tooltip } from "@patternfly/react-core";
 import { useSheet } from "~/components/storage/shared/use-sheet";
 import { useSpacePolicy } from "~/components/storage/shared/space-policy";
 import { useDevice as useDeviceConfig } from "~/hooks/model/storage/config-model";
@@ -172,13 +166,6 @@ export default function SpaceDecision({ collection, index, isAssertive }: SpaceD
           />
         ))}
       </ToggleGroup>
-      {reused && (
-        <HelperText>
-          <HelperTextItem>
-            {_("Some options are not available because some partitions will be reused.")}
-          </HelperTextItem>
-        </HelperText>
-      )}
     </div>
   );
 }

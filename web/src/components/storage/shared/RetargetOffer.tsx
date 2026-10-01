@@ -81,7 +81,7 @@ export default function RetargetOffer({
             <Icon name="change_circle" />{" "}
             {
               // FIXME: hacky way of choosing the string
-              variant === "primary" ? _("Change installation device") : _("Move to other device")
+              variant === "primary" ? _("Change installation disk") : _("Move to other device")
             }
           </Flex>
         </Button>

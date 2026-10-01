@@ -27,7 +27,7 @@ import Text from "~/components/core/Text";
 
 export type SummaryLayoutProps = {
   /** The sentence the page opens with, and whatever in it is a control. */
-  title: React.ReactNode;
+  title?: React.ReactNode;
   /** A decision offered where its consequence is read. */
   control?: React.ReactNode;
   /** What the plan costs, and the way into the whole picture. */
@@ -86,7 +86,6 @@ export default function SummaryLayout({
 }: SummaryLayoutProps) {
   const alignItems = { default: isNarrow ? "alignItemsStretch" : "alignItemsCenter" } as const;
   const className = [
-    "agm-summary-layout",
     isNarrow && "agm-summary-layout--narrow",
     isTight && "agm-summary-layout--tight",
   ]
@@ -114,15 +113,17 @@ export default function SummaryLayout({
           alignItems={alignItems}
           gap={{ default: control || notice ? "gapMd" : "gapXs" }}
         >
-          <FlexItem className="agm-summary-layout__measure">
-            <Title
-              headingLevel="h2"
-              size={isNarrow ? "lg" : "xl"}
-              className="agm-summary-layout__title"
-            >
-              {title}
-            </Title>
-          </FlexItem>
+          {title && (
+            <FlexItem className="agm-summary-layout__measure">
+              <Title
+                headingLevel="h2"
+                size={isNarrow ? "lg" : "xl"}
+                className="agm-summary-layout__title"
+              >
+                {title}
+              </Title>
+            </FlexItem>
+          )}
           {/* Above the consequence it changes, so the reader sees what it did. */}
           {control && <FlexItem>{control}</FlexItem>}
           {/* Set to the start rather than centred with everything around it:

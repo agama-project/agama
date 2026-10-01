@@ -26,7 +26,7 @@ import EntryRow from "~/components/storage/entries-table/EntryRow";
 import DriveMenu from "~/components/storage/entries-table/DriveMenu";
 import * as driveUtils from "~/components/storage/utils/drive";
 import { NAMES_PER_LINE } from "~/components/storage/shared/naming";
-import { baseName, deviceSize } from "~/components/storage/utils";
+import { baseName, deviceSize, formattedPath } from "~/components/storage/utils";
 import { typeDescription } from "~/components/storage/utils/device";
 import { useConfigModel } from "~/hooks/model/storage/config-model";
 import { useDevice } from "~/hooks/model/system/storage";
@@ -53,41 +53,7 @@ function purposeOf(
   groups: string[],
   boots: boolean,
 ): TranslatedString[] {
-  const lines: TranslatedString[] = [];
-  const partitions = device.partitions || [];
-  /* A partition asked for by id and nothing else, a BIOS boot or a PReP
-     partition, is planned content too: it takes room and was asked for. */
-  const created = partitions.filter(
-    (partition) => configModel.volume.isNew(partition) && (partition.mountPath || partition.id),
-  ).length;
-  const reused = partitions.filter(configModel.volume.isReused).length;
-
-  if (device.filesystem) {
-    lines.push(
-      device.mountPath
-        ? sprintf(
-            // TRANSLATORS: what the installer will do with a whole disk. %s is
-            // where the new system will mount it, such as "/home".
-            _("Format for %s"),
-            device.mountPath,
-          )
-        : // TRANSLATORS: what the installer will do with a whole disk that the
-          // new system does not mount anywhere.
-          _("Format as a whole"),
-    );
-  }
-
-  if (created) {
-    // TRANSLATORS: what the installer will do here. %d is how many partitions
-    // it will create.
-    lines.push(sprintf(n_("Create %d partition", "Create %d partitions", created), created));
-  }
-
-  if (reused) {
-    // TRANSLATORS: what the installer will do here. %d is how many partitions
-    // already on the disk the new system will take over as they are.
-    lines.push(sprintf(n_("Reuse %d partition", "Reuse %d partitions", reused), reused));
-  }
+  const lines: TranslatedString[] = driveUtils.contentDescription(device);
 
   /* Named rather than counted while there is room, which is the other end of
      what a group's own row says. A reader arriving at the disk used to learn
@@ -99,46 +65,31 @@ function purposeOf(
      makes them: a limit raised past what the sentence has room for drops the
      rest of the names without a mark. */
   if (groups.length && groups.length <= NAMES_PER_LINE) {
-    lines.push(
+    lines.unshift(
       sprintf(
-        boots
-          ? // TRANSLATORS: what a disk is for: it holds one or more LVM volume
-            // groups and the machine starts from it. %s is their names, such as
-            // "system" or "system and data".
-            n_(
-              "Host LVM volume group %s and boot",
-              "Host LVM volume groups %s and boot",
-              groups.length,
-            )
-          : // TRANSLATORS: what a disk is for: it holds one or more LVM volume
-            // groups. %s is their names, such as "system" or "system and data".
-            n_("Host LVM volume group %s", "Host LVM volume groups %s", groups.length),
-        formatList(groups),
+        // TRANSLATORS: what a disk is for: it holds one or more LVM volume
+        // groups. %s is their names, such as "system" or "system and data".
+        _("Create LVM physical volumes for %s"),
+        formatList(groups.map((g) => formattedPath(g))),
       ),
     );
   } else if (groups.length > NAMES_PER_LINE) {
-    lines.push(
+    lines.unshift(
       sprintf(
-        boots
-          ? // TRANSLATORS: what a disk is for. %d is how many LVM volume groups
-            // it holds, and the machine also starts from it.
-            n_(
-              "Host %d LVM volume group and boot",
-              "Host %d LVM volume groups and boot",
-              groups.length,
-            )
-          : // TRANSLATORS: what a disk is for. %d is how many LVM volume groups
-            // it holds.
-            n_("Host %d LVM volume group", "Host %d LVM volume groups", groups.length),
+        n_(
+          "Create LVM physical volumes for %d volume group",
+          "Create LVM physical volumes for %d volume groups",
+          groups.length,
+        ),
         groups.length,
       ),
     );
   }
 
   /* Nothing else to hang it on, so it is a line of its own. */
-  if (boots && !groups.length) {
+  if (boots) {
     // TRANSLATORS: what a disk is for: the machine starts from it.
-    lines.push(_("Boot the new system"));
+    lines.push(_("Configure partitions to boot"));
   }
 
   return lines;
@@ -192,10 +143,8 @@ export default function DriveRow({ name, subject }: DriveRowProps): React.ReactN
     <EntryRow
       name={baseName(name)}
       description={description}
-      // TRANSLATORS: marks the device the machine will start from.
-      marks={boots ? [_("Boot device")] : []}
       purpose={purpose}
-      consequences={[{ kind: "shrinks", text: space as TranslatedString }]}
+      actions={space}
       menu={entry && <DriveMenu entry={entry} device={device} subject={subject} />}
       subject={subject}
     />

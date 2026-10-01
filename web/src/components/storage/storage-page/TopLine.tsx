@@ -143,7 +143,7 @@ export default function TopLine(): React.ReactNode {
         <Text textStyle={["fontSizeSm", "textColorSubtle"]}>
           {/* TRANSLATORS: says what the storage page is for, on its own line
               above what the page reports. */}
-          {_("Choose devices to use and how to structure them")}
+          {_("Configure which storage devices will be used to install and how")}
         </Text>
       </FlexItem>
       <FlexItem>
