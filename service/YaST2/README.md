@@ -11,7 +11,7 @@ expect it to be updated automatically from `yast-autoyast2` or `yast-installatio
 
 ## Tests
 
-Being the sole maintainer of this code means Agama also owns its test coverage. `service/test/yast2/`
+Being the sole maintainer of this code means Agama also owns its test coverage. `service/test/YaST2/`
 mirrors this directory's layout and contains tests ported from the original upstream test suites
 (`autoyast2-installation`'s and `yast2-installation`'s `test/` directories), adapted to run against
 the vendored copies here instead of an installed RPM. Fixtures they need live under
