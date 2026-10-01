@@ -23,11 +23,14 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
+/// Storage configuration.
 #[derive(Clone, Debug, Default, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct Config {
+    /// Storage configuration.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub storage: Option<Value>,
+    /// Accepts all options of the AutoYaST partitioning section (i.e., XML to JSON).
     #[serde(skip_serializing_if = "Option::is_none")]
     pub legacy_autoyast_storage: Option<Value>,
 }

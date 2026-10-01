@@ -35,7 +35,7 @@ use url::Url;
 pub mod http_client;
 pub use http_client::ProfileHTTPClient;
 
-pub const DEFAULT_SCHEMA_DIR: &str = "/usr/share/agama/schema";
+pub const DEFAULT_SCHEMA_DIR: &str = "/usr/share/agama/openapi/nightly/schemas";
 pub const DEFAULT_JSONNET_DIR: &str = "/usr/share/agama/jsonnet";
 
 #[derive(thiserror::Error, Debug)]
@@ -140,7 +140,7 @@ pub enum ValidationOutcome {
 /// let mut path = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
 ///
 /// path.pop();
-/// path.push("share/profile.schema.json");
+/// path.push("out/schemas/config.schema.json");
 ///
 /// let validator = ProfileValidator::new(&path)
 ///   .expect("the default validator");
@@ -167,14 +167,13 @@ pub struct ProfileValidator {
 
 impl ProfileValidator {
     pub fn default_schema() -> Result<Self, ProfileError> {
-        // profile.schema.json moved to from /rust/agama-lib/share to /rust/share/
-        let source_file_dir = Path::new(file!()).parent().unwrap_or(Path::new(""));
-        let relative_path = source_file_dir.join("../../share/profile.schema.json");
-        let path = if relative_path.exists() {
-            relative_path
+        let manifest_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+        let dev_path = manifest_dir.join("../out/schemas/config.schema.json");
+        let path = if dev_path.exists() {
+            dev_path
         } else {
             let schema_dir = env::var("AGAMA_SCHEMA_DIR").unwrap_or(DEFAULT_SCHEMA_DIR.to_string());
-            PathBuf::from(schema_dir).join("profile.schema.json")
+            PathBuf::from(schema_dir).join("config.schema.json")
         };
         info!("Validation with path {:?}", path);
         Self::new(path)
@@ -285,5 +284,31 @@ impl ProfileEvaluator {
         file.write_all(&result.stdout)?;
         file.write_all(b"\n}")?;
         Ok(())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_validate_config_full() {
+        let manifest_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+        let schema_path = manifest_dir.join("../out/schemas/config.schema.json");
+        if !schema_path.exists() {
+            return;
+        }
+
+        let validator = ProfileValidator::new(&schema_path).expect("valid schema");
+        let full_example = manifest_dir.join("../share/examples/config_full.json");
+        let result = validator
+            .validate_file(&full_example)
+            .expect("validation result");
+        match result {
+            ValidationOutcome::Valid => {}
+            ValidationOutcome::NotValid(errors) => {
+                panic!("Comprehensive config failed validation:\n{:#?}", errors);
+            }
+        }
     }
 }

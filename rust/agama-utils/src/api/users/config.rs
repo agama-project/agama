@@ -72,8 +72,10 @@ impl Config {
 /// Holds the settings for the first user.
 #[derive(Clone, Debug, Default, Merge, Serialize, Deserialize, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
+#[schemars(title = "First user settings")]
 pub struct FirstUserConfig {
     /// First user's full name
+    #[schemars(example = &"Jane Doe")]
     #[merge(strategy = merge::option::overwrite_none)]
     pub full_name: Option<String>,
     /// First user password
@@ -82,6 +84,7 @@ pub struct FirstUserConfig {
     #[merge(strategy = merge::option::overwrite_none)]
     pub password: Option<UserPassword>,
     /// First user's username
+    #[schemars(example = &"jane.doe")]
     #[merge(strategy = merge::option::overwrite_none)]
     pub user_name: Option<String>,
     #[merge(strategy = merge::option::overwrite_none)]
@@ -110,6 +113,7 @@ impl FirstUserConfig {
 #[serde(rename_all = "camelCase")]
 pub struct UserPassword {
     /// User password
+    #[schemars(example = &"nots3cr3t")]
     #[merge(strategy = overwrite_if_not_empty)]
     pub password: String,
     /// Whether the password is hashed or is plain text
@@ -159,6 +163,7 @@ impl StringOrList {
 /// Holds the settings for the root user.
 #[derive(Clone, Debug, Default, Merge, Serialize, Deserialize, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
+#[schemars(title = "Root authentication settings")]
 pub struct RootUserConfig {
     /// Root user password
     #[merge(strategy = merge::option::overwrite_none)]

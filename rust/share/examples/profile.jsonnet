@@ -1,7 +1,7 @@
 // This is a Jsonnet file. Please, check https://jsonnet.org/ for more
 // information about the language.
 // For the schema, see
-// https://github.com/openSUSE/agama/blob/master/rust/share/profile.schema.json
+// https://github.com/openSUSE/agama/blob/master/rust/schemas/
 
 // The "hw.libsonnet" file contains hardware information from the "lshw" tool.
 // Agama generates this file at runtime by running (with root privileges):

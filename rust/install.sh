@@ -43,13 +43,9 @@ install -D -t "${DESTDIR}${bindir}" "${SRCDIR}/share/agama-zypp-journal"
 
 install6 -D -p "${SRCDIR}"/share/agama.pam "${DESTDIR}${pamvendordir}"/agama
 
-install6 -D -t "${DESTDIR}${datadir}"/agama/schema "${SRCDIR}"/share/dasd.schema.json
-install6 -D -t "${DESTDIR}${datadir}"/agama/schema "${SRCDIR}"/share/iscsi.schema.json
-install6 -D -t "${DESTDIR}${datadir}"/agama/schema "${SRCDIR}"/share/profile.schema.json
-install6 -D -t "${DESTDIR}${datadir}"/agama/schema "${SRCDIR}"/share/software.schema.json
-install6 -D -t "${DESTDIR}${datadir}"/agama/schema "${SRCDIR}"/share/storage.schema.json
-install6 -D -t "${DESTDIR}${datadir}"/agama/schema "${SRCDIR}"/share/zfcp.schema.json
-install6 -D -t "${DESTDIR}${datadir}"/agama/schema "${SRCDIR}"/share/storage.model.schema.json
+# install OpenAPI specification and standalone schemas to openapi/nightly
+install6 -D -t "${DESTDIR}${datadir}"/agama/openapi/nightly "${SRCDIR}"/out/openapi.* "${SRCDIR}"/out/openapi_full.*
+install6 -D -t "${DESTDIR}${datadir}"/agama/openapi/nightly/schemas "${SRCDIR}"/out/schemas/*.schema.json
 install6 -D -t "${DESTDIR}${datadir}"/agama/jsonnet "${SRCDIR}"/share/agama.libsonnet
 
 install -D -t "${DESTDIR}${libexecdir}" "${SRCDIR}"/share/agama-scripts.sh
@@ -69,9 +65,6 @@ install6 -D -t "${DESTDIR}${mandir}"/man1 "${SRCDIR}"/out/man/*
 install6 -D "${SRCDIR}"/out/shell/"${NAME}".bash "${DESTDIR}${datadir}/bash-completion/completions/${NAME}"
 install6 -D -t "${DESTDIR}${datadir}"/zsh/site-functions "${SRCDIR}"/out/shell/_"${NAME}"
 install6 -D -t "${DESTDIR}${datadir}"/fish/vendor_completions.d "${SRCDIR}"/out/shell/"${NAME}".fish
-
-# install OpenAPI specification
-install6 -D -t "${DESTDIR}${datadir}"/agama "${SRCDIR}"/out/openapi.*
 
 # install translations
 make -C "${SRCDIR}/po" install DESTDIR="${DESTDIR}" datadir="${datadir}"

@@ -26,8 +26,9 @@ use std::str::FromStr;
 /// NTP configuration.
 #[derive(Clone, Debug, Default, Merge, Serialize, Deserialize, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[schemars(rename = "ntp.Config")]
+#[schemars(rename = "ntp.Config", title = "NTP configuration")]
 pub struct Config {
+    /// NTP sources.
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
     #[merge(strategy = merge::option::overwrite_none)]
@@ -43,12 +44,18 @@ impl Config {
 /// NTP source configuration.
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
+#[schemars(title = "NTP source")]
 pub struct Source {
+    /// Type of NTP source: pool (pool of servers), server (single server), or peer (symmetric association).
     #[serde(rename = "type")]
     pub source_type: SourceType,
+    /// NTP server or pool address.
+    #[schemars(example = &"0.opensuse.pool.ntp.org", example = &"ntp.example.com")]
     pub address: String,
+    /// Send a burst of packets for faster initial synchronization.
     #[serde(default)]
     pub iburst: bool,
+    /// Start with the source marked as offline (can be activated later).
     #[serde(default)]
     pub offline: bool,
 }

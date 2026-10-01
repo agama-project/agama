@@ -46,20 +46,21 @@ pub enum Error {
 /// Represents individual settings for single file deployment
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
+#[schemars(title = "User-defined file to deploy")]
 pub struct UserFile {
     /// File content or URL.
     #[serde(flatten)]
     pub source: FileSource,
-    /// Permissions for file
+    /// Permissions for file on installed system (e.g., "0644").
     #[serde(default = "UserFile::default_permissions")]
     pub permissions: String, // TODO: better type?
-    /// User owning the file
+    /// User owning the file on installed system. The user has to already exist.
     #[serde(default = "UserFile::default_user")]
     pub user: String,
-    /// Group owning the file
+    /// Group owning the file on installed system. The group has to already exist.
     #[serde(default = "UserFile::default_group")]
     pub group: String,
-    /// destination for file like "/etc/config.d/my.conf"
+    /// Destination path where file should be deployed (e.g., "/etc/config.d/my.conf").
     pub destination: String,
 }
 

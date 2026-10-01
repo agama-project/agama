@@ -9,7 +9,7 @@ Thank you for your cooperation! :+1:
 
 For reporting security related issues use the *Security* component in the SUSE
 Bugzilla, just follow [this link](
-https://bugzilla.suse.com/enter_bug.cgi?format=guided&product=alp&component=Security).
+https://bugzilla.suse.com/enter_bug.cgi?format=guided&product=SLES&component=Security).
 
 :warning: *Please DO NOT use any publicly visible places like mailing lists
 or GitHub issues for reporting or discussing any security related issues!*
@@ -22,7 +22,7 @@ the Agama developers.
 
 A similar rule applies to sending or proposing security related fixes: report a
 [security bug](
-https://bugzilla.suse.com/enter_bug.cgi?format=guided&product=alp&component=Security)
+https://bugzilla.suse.com/enter_bug.cgi?format=guided&product=SLES&component=Security)
 in Bugzilla and attach the proposed patch there.
 
 :warning: *Please DO NOT open pull requests with security fixes at GitHub!
