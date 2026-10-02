@@ -96,8 +96,8 @@ process CWD.
 
 ## Deliberate deviations from upstream (not just trims)
 
-Two vendored files were edited beyond the usual "cut UI-only code" trimming already described per
-package above - both documented with a "DEVIATION FROM UPSTREAM" comment at the point of the change:
+A few vendored files were edited beyond the usual "cut UI-only code" trimming already described per
+package above - each documented with a "DEVIATION FROM UPSTREAM" comment at the point of the change:
 
 - **`modules/Bootloader.rb`**: the `Export`/`Import` public methods and the private
   `import_bootloader` helper were removed, along with the `bootloader/autoyast_converter` and
@@ -116,6 +116,14 @@ package above - both documented with a "DEVIATION FROM UPSTREAM" comment at the 
   (`Yast::Execute.on_target("chreipl", "node", "/boot/zipl") if Yast::Arch.s390`) and the dead
   branching was removed. This is what finally allows dropping the `yast2-reipl` RPM `Requires:` -
   see `service/package/gem2rpm.yml`.
+- **`test/YaST2/lib/bootloader/sections_test.rb`** (test-only): `#handles localized grub.cfg` now
+  reads its fixture with an explicit `encoding: "UTF-8"` instead of upstream's plain `File.read`.
+  Ruby's `Encoding.default_external` is fixed at interpreter startup from the actual shell locale;
+  `test_helper.rb`'s `ENV["LC_ALL"] = "en_US.UTF-8"` runs *after* that and has no effect on it. On
+  a CI container that starts Ruby without a UTF-8 locale already set, this genuinely-UTF-8 fixture
+  (it contains Cyrillic text) would be misread as US-ASCII, raising `ArgumentError: invalid byte
+  sequence in US-ASCII` down the line in `CFA::Grub2::GrubCfg#load`. Reproduced exactly with
+  `LC_ALL=C LANG=C bundle exec rspec ...` locally; confirmed fixed with the explicit encoding.
 
 ## Layout
 
