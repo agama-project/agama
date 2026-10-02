@@ -71,7 +71,13 @@ describe Bootloader::Sections do
 
     it "handles localized grub.cfg" do
       data_path = File.expand_path("data/grub.cfg", __dir__)
-      file = CFA::MemoryFile.new(File.read(data_path))
+      # DEVIATION FROM UPSTREAM: explicit UTF-8 encoding. Upstream just does File.read(data_path),
+      # relying on the process's default external encoding already being UTF-8. That default is
+      # fixed at Ruby interpreter startup from the actual shell locale - ENV["LC_ALL"] set from
+      # within test_helper.rb (after boot) has no effect on it - so on a CI container that starts
+      # Ruby without a UTF-8 locale, this fixture (genuinely UTF-8 encoded, with Cyrillic text)
+      # would be misread as US-ASCII and raise "invalid byte sequence in US-ASCII" down the line.
+      file = CFA::MemoryFile.new(File.read(data_path, encoding: "UTF-8"))
       grub_cfg = CFA::Grub2::GrubCfg.new(file_handler: file)
       grub_cfg.load
 
