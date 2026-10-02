@@ -26,13 +26,6 @@ require "agama/storage/zfcp/controller"
 require "agama/storage/zfcp/device"
 require "agama/issue"
 
-# yast2-s390 is not available for all architectures. Defining Y2S390::ZFCP constant here in order to
-# make possible to mock that class independently on the architecture. Note that Y2S390 classes are
-# not required at all in tests, see test_helper file.
-module Y2S390
-  ZFCP = Class.new
-end
-
 describe Agama::Storage::ZFCP::Manager do
   subject { described_class.new(logger: logger) }
 

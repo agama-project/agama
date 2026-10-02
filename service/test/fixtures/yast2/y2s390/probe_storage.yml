@@ -1,0 +1,121 @@
+---
+- bus: CCW
+  bus_hwcfg: ccw
+  class_id: 1
+  detail:
+    cu_model: 3
+    dev_model: 3
+    lcss: 0
+  device: zFCP controller
+  device_id: 268081
+  drivers:
+  - active: true
+    modprobe: true
+    modules:
+    - - zfcp
+      - ''
+  model: IBM zFCP controller
+  old_unique_key: _AAN.6czr7zOIMz1
+  resource:
+    io:
+    - active: true
+      length: 3
+      mode: rw
+      start: 63488
+  sub_class_id: 0
+  sub_device_id: 268082
+  sysfs_bus_id: 0.0.f800
+  sysfs_id: "/devices/css0/0.0.000b/0.0.f800"
+  unique_key: LfOP.AbUgA7O1gK4
+  vendor: IBM
+  vendor_id: 286721
+- bus: CCW
+  bus_hwcfg: ccw
+  class_id: 1
+  detail:
+    cu_model: 3
+    dev_model: 3
+    lcss: 0
+  device: zFCP controller
+  device_id: 268081
+  drivers:
+  - active: true
+    modprobe: true
+    modules:
+    - - zfcp
+      - ''
+  model: IBM zFCP controller
+  old_unique_key: _AAN.6czr7zOIMz1
+  resource:
+    io:
+    - active: true
+      length: 3
+      mode: rw
+      start: 63744
+  sub_class_id: 0
+  sub_device_id: 268082
+  sysfs_bus_id: 0.0.f900
+  sysfs_id: "/devices/css0/0.0.000c/0.0.f900"
+  unique_key: D_tE.AbUgA7O1gK4
+  vendor: IBM
+  vendor_id: 286721
+- bus: CCW
+  bus_hwcfg: ccw
+  class_id: 1
+  detail:
+    cu_model: 3
+    dev_model: 3
+    lcss: 0
+  device: zFCP controller
+  device_id: 268081
+  drivers:
+  - active: true
+    modprobe: true
+    modules:
+    - - zfcp
+      - ''
+  model: IBM zFCP controller
+  old_unique_key: _AAN.6czr7zOIMz1
+  resource:
+    io:
+    - active: true
+      length: 3
+      mode: rw
+      start: 64000
+  sub_class_id: 0
+  sub_device_id: 268082
+  sysfs_bus_id: 0.0.fa00
+  sysfs_id: "/devices/css0/0.0.000d/0.0.fa00"
+  unique_key: J+9e.AbUgA7O1gK4
+  vendor: IBM
+  vendor_id: 286721
+- bus: CCW
+  bus_hwcfg: ccw
+  class_id: 1
+  detail:
+    cu_model: 3
+    dev_model: 3
+    lcss: 0
+  device: zFCP controller
+  device_id: 268081
+  drivers:
+  - active: true
+    modprobe: true
+    modules:
+    - - zfcp
+      - ''
+  model: IBM zFCP controller
+  old_unique_key: _AAN.6czr7zOIMz1
+  resource:
+    io:
+    - active: false
+      length: 3
+      mode: rw
+      start: 64512
+  sub_class_id: 0
+  sub_device_id: 268082
+  sysfs_bus_id: 0.0.fc00
+  sysfs_id: "/devices/css0/0.0.000e/0.0.fc00"
+  unique_key: 1f8J.AbUgA7O1gK4
+  vendor: IBM
+  vendor_id: 286721
