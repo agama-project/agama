@@ -44,7 +44,15 @@ describe Y2Storage::Planned::CanBeEncrypted do
   describe "#final_device!" do
     let(:planned) { EncryptableDevice.new(method, password) }
     # TODO: test also #encrypted? => true
-    let(:plain_device) { instance_double("Y2Storage::BlkDevice", encrypted?: false) }
+    # DEVIATION FROM UPSTREAM: plain double instead of instance_double. rspec-mocks 3.11.x
+    # (pinned project-wide) has a bug on Ruby 3.0+ where a verifying double's #with(hash)
+    # argument matcher reports "unexpected arguments" even when the actual and expected hash
+    # values are the exact same object, whenever the mocked method (Y2Storage::BlkDevice#encrypt)
+    # has a **rest-style keyword parameter. Reproduces identically with plain String-valued
+    # hashes too (so it's unrelated to EncryptionMethod's own #==/#eql?) - confirmed on both this
+    # sandbox and the project's actual CI, both running Ruby 4.0. A plain double isn't subject to
+    # the verifying-double argument-signature-checking code path that triggers the bug.
+    let(:plain_device) { double("Y2Storage::BlkDevice", encrypted?: false) }
 
     before { allow(plain_device).to receive(:remove_descendants) }
 

@@ -147,18 +147,6 @@ not a regression introduced by vendoring.
   (`#initialize` assigns it to `@reason` instead of `@option`). Pre-existing upstream bug, confirmed
   identical in current `yast2-bootloader` master; not fixed since nothing in Agama's closure calls
   `#option` (only `#message`, via `Bootloader.rb`'s `Read` rescue clause).
-- Two `y2storage/planned/can_be_encrypted_test.rb` examples
-  ("if volume has an encryption method"/"...password" `#final_device!` specs) fail in this sandbox
-  with `instance_double` reporting "received :encrypt with unexpected arguments" even though the
-  expected and actual argument hashes are the exact same object (same `object_id` in the failure
-  output). This reproduces with a plain `String`-valued hash too and is unrelated to
-  `EncryptionMethod`'s own `#==`/`#eql?` (verified directly): it only happens when the mocked method
-  has a `**rest`-style keyword parameter (`Y2Storage::BlkDevice#encrypt`'s `**method_args`) *and*
-  the double is a verifying one (`instance_double`); a plain `double` with the identical call does
-  not fail. This is a known `rspec-mocks` 3.11.x / Ruby 3.0+ keyword-argument-separation
-  incompatibility, unrelated to this vendoring change - this sandbox runs a very new Ruby (4.0.7)
-  against the project's pinned, much older `rspec-mocks` (3.11.2). Left as-is (faithful port); not
-  expected to reproduce against the Ruby version Agama's actual CI uses.
 - `rubocop` crashes with `uninitialized constant ...AlignmentCorrector::StringIO` while
   inspecting any file that triggers `Layout/AccessModifierIndentation`'s autocorrector, on this
   sandbox's Ruby 4.0 (`StringIO` is no longer part of the default-loaded standard library there,
@@ -199,6 +187,14 @@ package above - each documented with a "DEVIATION FROM UPSTREAM" comment at the 
   below), and none of the four ported specs that call `#devicegraph_stub`
   (`encryption_method_test.rb`, `encryption_processes/{luks,pervasive,systemd_fde}_test.rb`) rely on
   that partitioner-specific device-graph cache.
+- **`test/YaST2/lib/y2storage/y2storage/planned/can_be_encrypted_test.rb`** (test-only): `plain_device`
+  uses a plain `double` instead of `instance_double`. `rspec-mocks` 3.11.x (pinned project-wide) has
+  a real bug, reproducible on both this sandbox and the project's actual CI (both run Ruby 4.0): a
+  *verifying* double's `#with(hash)` argument matcher reports "unexpected arguments" even when the
+  actual and expected hash values are the exact same object, whenever the mocked method
+  (`Y2Storage::BlkDevice#encrypt`) has a `**rest`-style keyword parameter. Confirmed unrelated to
+  `EncryptionMethod`'s own `#==`/`#eql?` (reproduces identically with plain `String` values too). A
+  plain (non-verifying) `double` isn't subject to the code path that triggers the bug.
 - **`modules/InstURL.rb`**: dropped the unused `Yast.import "CheckMedia"` call from `#main`. Nothing
   in `#installInf2Url` (the only method actually called anywhere in Agama's closure) or any other
   method defined in the class references `CheckMedia`, and vendoring that separate module (which has
