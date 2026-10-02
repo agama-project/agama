@@ -181,6 +181,14 @@ package above - each documented with a "DEVIATION FROM UPSTREAM" comment at the 
   (`Yast::Execute.on_target("chreipl", "node", "/boot/zipl") if Yast::Arch.s390`) and the dead
   branching was removed. This is what finally allows dropping the `yast2-reipl` RPM `Requires:` -
   see `service/package/gem2rpm.yml`.
+- **`test/YaST2/lib/bootloader/sections_test.rb`** (test-only): `#handles localized grub.cfg` now
+  reads its fixture with an explicit `encoding: "UTF-8"` instead of upstream's plain `File.read`.
+  Ruby's `Encoding.default_external` is fixed at interpreter startup from the actual shell locale;
+  `test_helper.rb`'s `ENV["LC_ALL"] = "en_US.UTF-8"` runs *after* that and has no effect on it. On
+  a CI container that starts Ruby without a UTF-8 locale already set, this genuinely-UTF-8 fixture
+  (it contains Cyrillic text) would be misread as US-ASCII, raising `ArgumentError: invalid byte
+  sequence in US-ASCII` down the line in `CFA::Grub2::GrubCfg#load`. Reproduced exactly with
+  `LC_ALL=C LANG=C bundle exec rspec ...` locally; confirmed fixed with the explicit encoding.
 - **`test/YaST2/lib/y2storage/support/storage_helpers.rb`** (test-only): dropped the
   `require "y2partitioner/device_graphs"` and the `Y2Partitioner::DeviceGraphs.create_instance` call
   inside `#devicegraph_stub`. `y2partitioner` is never vendored (confirmed unused by Agama - see
