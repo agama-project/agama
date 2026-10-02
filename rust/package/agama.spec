@@ -105,7 +105,7 @@ Release:        0
 Summary:        Common files for Agama server and CLI.
 License:        GPL-2.0-only
 Url:            https://github.com/agama-project/agama
-Requires:       agama-openapi
+Requires:       agama-openapi-nightly
 
 %description -n agama-common
 Files that are needed by the Agama server and the command-line interface, like
@@ -155,14 +155,6 @@ BuildArch:      noarch
 
 %description -n agama-cli-zsh-completion
 Zsh command-line completion support for %{name}-cli.
-
-%package -n agama-openapi
-Summary:        Agama's OpenAPI Specification
-
-%description -n agama-openapi
-The OpenAPI Specification (OAS) allows describing an HTTP API in an standard and
-language-agnostic way. This package contains the specification for Agama's HTTP
-API.
 
 %package -n agama-scripts
 Summary:        Agama support for running user-defined scripts
@@ -281,17 +273,6 @@ echo $PATH
 %files -n agama-cli-zsh-completion
 %dir %{_datadir}/zsh
 %{_datadir}/zsh/*
-
-%files -n agama-openapi
-%dir %{_datadir}/agama
-%dir %{_datadir}/agama/openapi
-%dir %{_datadir}/agama/openapi/nightly
-%dir %{_datadir}/agama/openapi/nightly/schemas
-%{_datadir}/agama/openapi/nightly/openapi.json
-%{_datadir}/agama/openapi/nightly/openapi.yaml
-%{_datadir}/agama/openapi/nightly/openapi_full.json
-%{_datadir}/agama/openapi/nightly/openapi_full.yaml
-%{_datadir}/agama/openapi/nightly/schemas/*.schema.json
 
 %files -n agama-scripts
 %{_unitdir}/agama-scripts.service
