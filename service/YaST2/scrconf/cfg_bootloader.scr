@@ -1,0 +1,17 @@
+/**
+ * File:
+ *   cfg_bootloader.scr
+ * Summary:
+ *   SCR Agent for reading/writing /etc/sysconfig/bootloader
+ *   using the sysconfig-agent
+ * 
+ * $Id$
+ *
+ * Read/Sets the values defined in <tt>/etc/sysconfig/bootloader</tt>
+ * in an easy manner.
+ */
+.sysconfig.bootloader
+
+`ag_ini(
+  `SysConfigFile("/etc/sysconfig/bootloader")
+)

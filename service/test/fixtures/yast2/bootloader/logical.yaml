@@ -1,0 +1,33 @@
+---
+- disk:
+    name: /dev/sda
+    size: 8 GiB
+    partition_table:  ms-dos
+    partitions:
+
+    - partition:
+        size:         1002 MiB
+        name:         /dev/sda1
+        id:           swap
+        file_system:  swap
+        mount_point:  swap
+        uuid:         ec8e9948-ca5f-4b18-a863-ac999365e4a9
+
+    - partition:
+        size:         unlimited
+        name:         /dev/sda2
+        type:         extended
+
+    - partition:
+        size:         2 GiB
+        name:         /dev/sda5
+        type:         logical
+        file_system:  btrfs
+        mount_point:  /
+
+    - partition:
+        size:         unlimited
+        name:         /dev/sda6
+        type:         logical
+        file_system:  btrfs
+        mount_point:  /home

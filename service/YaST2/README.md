@@ -1,25 +1,24 @@
 # Vendored YaST/AutoYaST code
 
 This directory contains a **permanent fork** of a small set of Ruby classes originally provided by
-the `autoyast2` (`autoyast2-installation`), `yast2-installation`, `yast2-network`, `yast2-s390` and
-`yast2-iscsi-client` YaST packages. Agama no longer depends on those RPMs; the classes it still needs
-from them have been copied here instead.
+the `autoyast2` (`autoyast2-installation`), `yast2-installation`, `yast2-network`, `yast2-s390`,
+`yast2-iscsi-client` and `yast2-bootloader` YaST packages. Agama no longer depends on those RPMs; the
+classes it still needs from them have been copied here instead.
 
 There is **no process to keep this code in sync with upstream YaST releases**. If a bug is found
-here, or a new AutoYaST/DASD/zFCP/iSCSI feature is needed, fix/extend the code directly in this
-directory; do not expect it to be updated automatically from `yast-autoyast2`, `yast-installation`,
-`yast-network`, `yast-s390` or `yast-iscsi-client`.
+here, or a new AutoYaST/DASD/zFCP/iSCSI/bootloader feature is needed, fix/extend the code directly in
+this directory; do not expect it to be updated automatically from `yast-autoyast2`,
+`yast-installation`, `yast-network`, `yast-s390`, `yast-iscsi-client` or `yast-bootloader`.
 
 ## Tests
 
 Being the sole maintainer of this code means Agama also owns its test coverage. `service/test/YaST2/`
 mirrors this directory's layout and contains tests ported from the original upstream test suites
-(`autoyast2-installation`'s, `yast2-installation`'s, `yast2-network`'s, `yast2-s390`'s and
-`yast2-iscsi-client`'s `test/` directories), adapted to run against the vendored copies here instead
-of an installed RPM. Fixtures they need live under `service/test/fixtures/yast2/`. As with the
-production code, there is no process to pull in new upstream test examples automatically - extend
-these tests directly when the vendored
-code changes.
+(`autoyast2-installation`'s, `yast2-installation`'s, `yast2-network`'s, `yast2-s390`'s,
+`yast2-iscsi-client`'s and `yast2-bootloader`'s `test/` directories), adapted to run against the
+vendored copies here instead of an installed RPM. Fixtures they need live under
+`service/test/fixtures/yast2/`. As with the production code, there is no process to pull in new
+upstream test examples automatically - extend these tests directly when the vendored code changes.
 
 A handful of `y2network` value classes (`startmode.rb`, `startmodes.rb` and its six concrete
 subclasses, `wireless_mode.rb`) have no upstream test at all (only interactive-UI widget tests
@@ -35,6 +34,30 @@ fixture, `let(:auth) { Y2IscsiClient::Authentication.new }`, inside `IscsiClient
 `#discover` tests - never a focused unit test of `Authentication`'s own API). Both
 `service/test/YaST2/lib/y2iscsi_client/config_test.rb` and `.../authentication_test.rb` were written
 from scratch.
+
+`yast2-bootloader`'s `exceptions.rb`, `cpu_mitigations.rb` and `stage1_proposal.rb` have no upstream
+test at all - `service/test/YaST2/lib/bootloader/{exceptions,cpu_mitigations,stage1_proposal}_test.rb`
+were written from scratch. `UnsupportedOption#option` is confirmed broken upstream (identical bug in
+current master): `#initialize` assigns the given value to `@reason` instead of `@option`, so the
+`attr_reader :option` always returns `nil`. Not fixed here (see "Known limitations" below), just
+documented by the corresponding test.
+
+Upstream `yast2-bootloader` tests apply a devicegraph fixture (`trivial.yaml`), `UdevMapping`
+stubbing and system-call mocking to literally every example via a top-level `RSpec.configure` block
+in its own `test/test_helper.rb`. That global-hook approach isn't appropriate for a shared Agama test
+suite (it would affect unrelated specs too), so it's replicated here as an explicit, opt-in
+`RSpec.shared_context "yast2-bootloader test setup"` (see
+`service/test/YaST2/lib/bootloader/support/shared_setup.rb`), included only by the ported bootloader
+specs via `include_context`. It reuses Agama's own `Agama::RSpec::StorageHelpers#mock_storage_probing`
+(`service/test/agama/storage/storage_helpers.rb`) under the hood instead of reimplementing devicegraph
+loading from scratch.
+
+A handful of `grub2bls`/`systemdboot` write tests and a couple of `language`/`sections` tests read and
+write real files under a small fixture tree colocated with the specs themselves
+(`service/test/YaST2/lib/bootloader/data/`), mirroring upstream's own `test/data/` layout exactly
+(`destdir`/file paths are computed relative to `__dir__` in the original tests, left unchanged) -
+unlike every other fixture in this project, these do **not** live under
+`service/test/fixtures/yast2/`, specifically to keep that one upstream mechanism working unmodified.
 
 Upstream `yast2-s390` tests mock hardware-probing data via two environment variables
 (`S390_MOCKING=1`, which points at a hardcoded `test/data/*.yml`/`.txt` path relative to the
@@ -66,6 +89,41 @@ process CWD.
   `yast2-network` master), not something introduced by vendoring.
 - `WirelessMode::AD_HOC`'s human-readable string is "Add-hoc" (extra "d"), presumably meant to be
   "Ad-hoc". Cosmetic, pre-existing upstream, not fixed.
+- `Bootloader::UnsupportedOption#option` always returns `nil` instead of the value passed to `.new`
+  (`#initialize` assigns it to `@reason` instead of `@option`). Pre-existing upstream bug, confirmed
+  identical in current `yast2-bootloader` master; not fixed since nothing in Agama's closure calls
+  `#option` (only `#message`, via `Bootloader.rb`'s `Read` rescue clause).
+
+## Deliberate deviations from upstream (not just trims)
+
+A few vendored files were edited beyond the usual "cut UI-only code" trimming already described per
+package above - each documented with a "DEVIATION FROM UPSTREAM" comment at the point of the change:
+
+- **`modules/Bootloader.rb`**: the `Export`/`Import` public methods and the private
+  `import_bootloader` helper were removed, along with the `bootloader/autoyast_converter` and
+  `bootloader/autoinst_profile/bootloader_section` requires they alone needed (~700 lines across 5
+  files that exist solely to support the interactive AutoYaST bootloader-import workflow). Agama
+  never calls `Export`/`Import`: its own AutoYaST bootloader-section reader
+  (`service/lib/agama/autoyast/bootloader_reader.rb`) reads the raw profile hash directly and never
+  touches this module. None of the methods Agama *does* need (`kernel_param`, `modify_kernel_params`,
+  `ReadOrProposeIfNeeded`, `Read`, `Write`, `Propose`, `Reset`, ...) call into the removed code.
+- **`lib/bootloader/finish_client.rb`**: `#set_boot_msg` upstream dynamically dispatches to a
+  `"reipl_bootloader_finish"` YaST client (shipped by the separate `yast2-reipl` package, not
+  vendored) via `Yast::WFM.call` on s390, to run `chreipl node /boot/zipl` (setting the re-IPL device
+  for the next boot) and optionally customize the shutdown message. That client always returned
+  `"different" => false` in practice, making the message-customization branch dead code even
+  upstream. The `chreipl` call is now inlined directly
+  (`Yast::Execute.on_target("chreipl", "node", "/boot/zipl") if Yast::Arch.s390`) and the dead
+  branching was removed. This is what finally allows dropping the `yast2-reipl` RPM `Requires:` -
+  see `service/package/gem2rpm.yml`.
+- **`test/YaST2/lib/bootloader/sections_test.rb`** (test-only): `#handles localized grub.cfg` now
+  reads its fixture with an explicit `encoding: "UTF-8"` instead of upstream's plain `File.read`.
+  Ruby's `Encoding.default_external` is fixed at interpreter startup from the actual shell locale;
+  `test_helper.rb`'s `ENV["LC_ALL"] = "en_US.UTF-8"` runs *after* that and has no effect on it. On
+  a CI container that starts Ruby without a UTF-8 locale already set, this genuinely-UTF-8 fixture
+  (it contains Cyrillic text) would be misread as US-ASCII, raising `ArgumentError: invalid byte
+  sequence in US-ASCII` down the line in `CFA::Grub2::GrubCfg#load`. Reproduced exactly with
+  `LC_ALL=C LANG=C bundle exec rspec ...` locally; confirmed fixed with the explicit encoding.
 
 ## Layout
 
@@ -91,14 +149,32 @@ original code if needed:
   involved for this file beyond it being part of `spec.files` in `agama-yast.gemspec`.
 - `scrconf/` - SCR agent registration files (`.scr`), the non-Ruby counterpart of `modules/`/
   `include/`. Like them, resolved through `Y2DIR`: YaST's SCR implementation scans a `scrconf/`
-  subdirectory of every `Y2DIR` entry for agent definitions. Currently just `iscsid.scr`, which
-  registers the `.etc.iscsid`/`.etc.iscsid.all` path `Y2IscsiClient::Config` reads/writes
-  `/etc/iscsi/iscsid.conf` through (a generic `ag_ini` agent, not iscsi-specific code, but the
-  `.scr` registration file itself is only shipped by `yast2-iscsi-client`). **This kind of
-  non-Ruby, SCR-level asset is easy to miss when auditing a package's `require`/`Yast.import`
-  graph** - it was initially missed here too, surfacing as a silent `nil` from `Yast::SCR.Read`
-  once `yast2-iscsi-client` was fully uninstalled (not just made a non-declared dependency).
-  Check for `src/scrconf/*.scr` files in the upstream package whenever vendoring a new one.
+  subdirectory of every `Y2DIR` entry for agent definitions. `iscsid.scr` registers the
+  `.etc.iscsid`/`.etc.iscsid.all` path `Y2IscsiClient::Config` reads/writes `/etc/iscsi/iscsid.conf`
+  through; `cfg_bootloader.scr` registers `.sysconfig.bootloader`, read/written by
+  `Bootloader::Sysconfig` (and transitively by `BootloaderFactory.current`, called constantly).
+  Both are generic `ag_ini` agents, not package-specific code - but the `.scr` registration file
+  itself is only shipped by the corresponding package. **This kind of non-Ruby, SCR-level asset is
+  easy to miss when auditing a package's `require`/`Yast.import` graph** - the `iscsid.scr` one was
+  initially missed, surfacing as a silent `nil` from `Yast::SCR.Read` once `yast2-iscsi-client` was
+  fully uninstalled (not just made a non-declared dependency). Check for `src/scrconf/*.scr` files
+  in the upstream package whenever vendoring a new one.
+
+### Lesson from the yast2-bootloader phase: classic modules can hide in surprising places
+
+While vendoring `yast2-bootloader`, `Yast::BootArch` (`modules/BootArch.rb`) was initially missed
+entirely: it's a real, load-bearing dependency (`Yast::BootArch.DefaultKernelParams` is called by
+`grub2base.rb`, `grub2bls.rb` and `systemdboot.rb`) that one might reasonably assume lives in the
+base `yast2` package - after all, `BootStorage`/`Bootloader` are *also* classic
+`Yast.import`-based modules bundled inside `yast2-bootloader` rather than a separate package, so
+there's no a priori reason to expect any particular classic module name to live in any particular
+package. It was caught by cross-checking `rpm -ql yast2-bootloader`'s full file list against the
+`require`/`Yast.import` graph used to derive the vendoring closure, **after** the closure had
+already been vendored and tested - not before. **For future phases, run that `rpm -ql`
+cross-check as a verification step before considering a package's vendoring done**, not only the
+forward `require`/`Yast.import` trace from Agama's own entry points - the forward trace is
+necessarily incomplete if even one transitive `Yast.import` target is missed along the way (in this
+case, nothing upstream *tells* you which package a classic module lives in; you have to check).
 
 ## Vendored classes
 
@@ -143,6 +219,39 @@ original code if needed:
 | `lib/y2iscsi_client/timeout_process.rb`                                                                                                                                                    | `yast2-iscsi-client` (`src/lib/y2iscsi_client/timeout_process.rb`)                                          | `Y2IscsiClient::TimeoutProcess`, runs a command under `timeout(1)`; only used transitively, via `IscsiClientLib`'s own internal `require`                                                                                                                                                                         |
 | `lib/y2iscsi_client/finish_client.rb`                                                                                                                                                      | `yast2-iscsi-client` (`src/lib/y2iscsi_client/finish_client.rb`)                                            | `Y2IscsiClient::FinishClient`, copies the iSCSI configuration to the target system and enables the needed services/sockets at the end of installation                                                                                                                                                            |
 | `scrconf/iscsid.scr`                                                                                                                                                                       | `yast2-iscsi-client` (`src/scrconf/iscsid.scr`)                                                             | Registers the `.etc.iscsid`/`.etc.iscsid.all` SCR path that `Y2IscsiClient::Config` reads/writes `/etc/iscsi/iscsid.conf` through (generic `ag_ini` agent config, not Ruby code)                                                                                                                                 |
+| `modules/Bootloader.rb`                                                                                                                                                                    | `yast2-bootloader` (`src/modules/Bootloader.rb`)                                                            | `Yast::Bootloader` facade (`kernel_param`/`modify_kernel_params`/`Read`/`Write`/`Propose`/...). See "Deliberate deviations from upstream" below: `Export`/`Import` removed                                                                                                                                       |
+| `modules/BootStorage.rb`                                                                                                                                                                   | `yast2-bootloader` (`src/modules/BootStorage.rb`)                                                           | `Yast::BootStorage`, storage-query layer (boot/root filesystem, disks, swap, encryption...) used by every grub2-family backend                                                                                                                                                                                   |
+| `modules/BootArch.rb`                                                                                                                                                                      | `yast2-bootloader` (`src/modules/BootArch.rb`)                                                              | `Yast::BootArch`, computes the default kernel command line (`DefaultKernelParams`) per architecture; used by `grub2base.rb`/`grub2bls.rb`/`systemdboot.rb`. Initially missed when auditing the `require`/`Yast.import` graph - see note below                                                                   |
+| `lib/bootloader/exceptions.rb`                                                                                                                                                             | `yast2-bootloader` (`src/lib/bootloader/exceptions.rb`)                                                     | `Bootloader::{UnsupportedBootloader,BrokenConfiguration,BrokenByPathDeviceName,UnsupportedOption,InvalidSerialConsoleArguments,NoRoot}`                                                                                                                                                                           |
+| `lib/bootloader/sysconfig.rb`                                                                                                                                                              | `yast2-bootloader` (`src/lib/bootloader/sysconfig.rb`)                                                      | `Bootloader::Sysconfig`, reads/writes `/etc/sysconfig/bootloader` via the vendored `scrconf/cfg_bootloader.scr` agent                                                                                                                                                                                             |
+| `lib/bootloader/udev_mapping.rb`                                                                                                                                                           | `yast2-bootloader` (`src/lib/bootloader/udev_mapping.rb`)                                                   | `Bootloader::UdevMapping`, maps device names to/from their udev by-* names                                                                                                                                                                                                                                        |
+| `lib/bootloader/device_path.rb`                                                                                                                                                            | `yast2-bootloader` (`src/lib/bootloader/device_path.rb`)                                                    | Small device-path helper used by `UdevMapping`                                                                                                                                                                                                                                                                    |
+| `lib/bootloader/bootloader_base.rb`                                                                                                                                                        | `yast2-bootloader` (`src/lib/bootloader/bootloader_base.rb`)                                                | `Bootloader::BootloaderBase`, common base class for all concrete backends                                                                                                                                                                                                                                         |
+| `lib/bootloader/none_bootloader.rb`                                                                                                                                                        | `yast2-bootloader` (`src/lib/bootloader/none_bootloader.rb`)                                                | `Bootloader::NoneBootloader`, the "do not manage any bootloader" backend                                                                                                                                                                                                                                          |
+| `lib/bootloader/cpu_mitigations.rb`                                                                                                                                                        | `yast2-bootloader` (`src/lib/bootloader/cpu_mitigations.rb`)                                                | `Bootloader::CpuMitigations`, the `mitigations=` kernel parameter value object                                                                                                                                                                                                                                    |
+| `lib/bootloader/bls.rb`, `bls_sections.rb`                                                                                                                                                 | `yast2-bootloader`                                                                                           | `Bootloader::Bls`, sd-boot/BLS (Boot Loader Specification) menu entry handling shared by `Grub2Bls` and `SystemdBoot`                                                                                                                                                                                             |
+| `lib/bootloader/serial_console.rb`                                                                                                                                                         | `yast2-bootloader` (`src/lib/bootloader/serial_console.rb`)                                                 | Parses/builds the GRUB serial console kernel parameter                                                                                                                                                                                                                                                            |
+| `lib/bootloader/language.rb`                                                                                                                                                               | `yast2-bootloader` (`src/lib/bootloader/language.rb`)                                                       | Reads the GRUB menu language from `grub.cfg`                                                                                                                                                                                                                                                                      |
+| `lib/bootloader/os_prober.rb`                                                                                                                                                              | `yast2-bootloader` (`src/lib/bootloader/os_prober.rb`)                                                      | Enables/disables GRUB's `os-prober` integration                                                                                                                                                                                                                                                                   |
+| `lib/bootloader/sections.rb`                                                                                                                                                               | `yast2-bootloader` (`src/lib/bootloader/sections.rb`)                                                       | Reads/writes the default boot menu entry from `grub.cfg`                                                                                                                                                                                                                                                          |
+| `lib/bootloader/grub2pwd.rb`                                                                                                                                                               | `yast2-bootloader` (`src/lib/bootloader/grub2pwd.rb`)                                                       | GRUB password protection (`set_authentication`)                                                                                                                                                                                                                                                                   |
+| `lib/bootloader/boot_record_backup.rb`                                                                                                                                                     | `yast2-bootloader` (`src/lib/bootloader/boot_record_backup.rb`)                                             | Backs up/restores the MBR/boot record before/after writing it                                                                                                                                                                                                                                                     |
+| `lib/bootloader/grub2base.rb`                                                                                                                                                              | `yast2-bootloader` (`src/lib/bootloader/grub2base.rb`)                                                      | `Bootloader::Grub2Base`, shared base for all grub2-family backends (config merging via CFA, serial console, os-prober, GRUB password); the single largest file in this closure                                                                                                                                  |
+| `lib/bootloader/grub_install.rb`                                                                                                                                                           | `yast2-bootloader` (`src/lib/bootloader/grub_install.rb`)                                                   | Runs `grub2-install`                                                                                                                                                                                                                                                                                              |
+| `lib/bootloader/pmbr.rb`                                                                                                                                                                   | `yast2-bootloader` (`src/lib/bootloader/pmbr.rb`)                                                           | Sets the protective-MBR flag on GPT disks via `parted`                                                                                                                                                                                                                                                            |
+| `lib/bootloader/mbr_update.rb`                                                                                                                                                             | `yast2-bootloader` (`src/lib/bootloader/mbr_update.rb`)                                                     | Updates the MBR code on the relevant disks                                                                                                                                                                                                                                                                        |
+| `lib/bootloader/device_map.rb`                                                                                                                                                             | `yast2-bootloader` (`src/lib/bootloader/device_map.rb`)                                                     | BIOS device-map proposal/handling (`device.map` file)                                                                                                                                                                                                                                                             |
+| `lib/bootloader/stage1_proposal.rb`                                                                                                                                                        | `yast2-bootloader` (`src/lib/bootloader/stage1_proposal.rb`)                                                | Architecture-specific stage1 (boot device) proposal logic (x86_64/i386, s390, ppc64)                                                                                                                                                                                                                              |
+| `lib/bootloader/stage1.rb`                                                                                                                                                                 | `yast2-bootloader` (`src/lib/bootloader/stage1.rb`)                                                         | `Bootloader::Stage1`, the stage1 (boot device) configuration model used by the grub2 backends                                                                                                                                                                                                                     |
+| `lib/bootloader/systeminfo.rb`                                                                                                                                                             | `yast2-bootloader` (`src/lib/bootloader/systeminfo.rb`)                                                     | Hardware/firmware queries (EFI, secure boot, NVRAM support...) shared by several backends                                                                                                                                                                                                                         |
+| `lib/bootloader/grub2.rb`                                                                                                                                                                  | `yast2-bootloader` (`src/lib/bootloader/grub2.rb`)                                                          | `Bootloader::Grub2`, the legacy BIOS/CSM GRUB2 backend                                                                                                                                                                                                                                                             |
+| `lib/bootloader/grub2efi.rb`                                                                                                                                                               | `yast2-bootloader` (`src/lib/bootloader/grub2efi.rb`)                                                       | `Bootloader::Grub2EFI`, the UEFI GRUB2 backend                                                                                                                                                                                                                                                                     |
+| `lib/bootloader/grub2bls.rb`                                                                                                                                                               | `yast2-bootloader` (`src/lib/bootloader/grub2bls.rb`)                                                       | `Bootloader::Grub2Bls`, the UEFI GRUB2 + BLS (Boot Loader Specification) backend                                                                                                                                                                                                                                  |
+| `lib/bootloader/systemdboot.rb`                                                                                                                                                            | `yast2-bootloader` (`src/lib/bootloader/systemdboot.rb`)                                                    | `Bootloader::SystemdBoot`, the systemd-boot backend                                                                                                                                                                                                                                                               |
+| `lib/bootloader/bootloader_factory.rb`                                                                                                                                                     | `yast2-bootloader` (`src/lib/bootloader/bootloader_factory.rb`)                                             | `Bootloader::BootloaderFactory`, instantiates/caches the right backend by name and exposes `.current`/`.system`/`.proposed`                                                                                                                                                                                       |
+| `lib/bootloader/kexec.rb`                                                                                                                                                                  | `yast2-bootloader` (`src/lib/bootloader/kexec.rb`)                                                          | `Bootloader::Kexec`, prepares the kexec environment to skip a reboot between installation stages                                                                                                                                                                                                                 |
+| `lib/bootloader/finish_client.rb`                                                                                                                                                          | `yast2-bootloader` (`src/lib/bootloader/finish_client.rb`)                                                  | `Bootloader::FinishClient`, writes the final bootloader configuration to the target system. See "Deliberate deviations from upstream" below: the s390 reIPL dispatch was inlined                                                                                                                                 |
+| `scrconf/cfg_bootloader.scr`                                                                                                                                                               | `yast2-bootloader` (`src/scrconf/cfg_bootloader.scr`)                                                       | Registers the `.sysconfig.bootloader` SCR path that `Bootloader::Sysconfig` (and transitively `BootloaderFactory.system`, called by `BootloaderFactory.current`) reads/writes through (generic `ag_ini` agent config, not Ruby code)                                                                            |
 
 `Installation::FinishClient` (the common base class for finish steps) and
 `installation/autoinst_profile/{section_with_attributes,element_path}.rb` (required by every
@@ -150,6 +259,9 @@ original code if needed:
 the base `yast2` package, which remains a real runtime dependency of Agama.
 `Y2Storage::Clients::Finish` (the storage finish step) is likewise not vendored yet - it's still
 provided by `yast2-storage-ng`, which remains a real runtime dependency of Agama for now.
+`cfa`/`cfa_grub2` (used extensively by the bootloader backends for config-file editing) are not
+YaST packages - they're already-declared direct gem dependencies in `agama-yast.gemspec`, unaffected
+by this vendoring.
 
 **`yast2-s390`'s UI/classic-module layer is not vendored.** `dasds_writer.rb`, `dasd_actions/*.rb`,
 `presenters/dasd_summary.rb`, the `dialogs/`/`include/` tree and the classic `modules/
@@ -161,6 +273,12 @@ DASD/zFCP configuration directly through the lower-level classes vendored above 
 **`yast2-iscsi-client`'s UI layer is not vendored.** `modules/IscsiClient.rb` (capital-only, the
 interactive YaST wizard/sequencer client that wraps `IscsiClientLib` for the UI workflow) is a
 separate, distinct module from `IscsiClientLib` and is never referenced anywhere in Agama's code.
+
+**`yast2-bootloader`'s UI/dialog/widget layer is not vendored**: `*_widgets.rb`, `*_dialog*.rb`,
+`main_dialog.rb`, `read_dialog.rb`, `write_dialog.rb`, `config_dialog.rb`, `proposal_client.rb`,
+`auto_client.rb` and their `autoyast_converter.rb`/`autoinst_profile/*.rb` AutoYaST-import
+counterparts (see "Deliberate deviations from upstream" above) are all interactive-UI-only or only
+reachable from the removed `Export`/`Import` methods.
 
 **`yast2-users` is not vendored at all.** `Y2Users::User` unconditionally requires a chain that ends
 in `Yast.import "UsersSimple"`, a Perl module that only exists inside `yast2-users` itself, so
