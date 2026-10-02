@@ -22,6 +22,8 @@
 require_relative "../../../test_helper"
 require "y2iscsi_client/config"
 require "y2iscsi_client/authentication"
+require "tmpdir"
+require "fileutils"
 
 # NOTE: this class has no upstream test at all (not even an incidental reference), so this spec
 # was written from scratch while vendoring, based on reading the real source and its only caller,
@@ -208,6 +210,64 @@ describe Y2IscsiClient::Config do
         config.set_isns("192.168.1.1", "")
 
         expect(config.entries).to be_empty
+      end
+    end
+  end
+
+  # All the tests above stub Yast::SCR directly, so they never actually exercise the real
+  # ".etc.iscsid"/".etc.iscsid.all" SCR path - that path is registered by the vendored
+  # service/YaST2/scrconf/iscsid.scr, a non-Ruby asset easy to miss when enumerating a package's
+  # require/Yast.import graph alone. A first version of this vendoring omitted that file, which
+  # worked fine in a git checkout (the real yast2-iscsi-client RPM registered the path anyway) but
+  # silently returned nil from Yast::SCR.Read once that RPM was fully uninstalled. These tests
+  # exercise the real SCR agent (via a chroot, see Yast::RSpec::SCR) to catch that class of
+  # regression; do not replace them with mocked-SCR equivalents.
+  describe "end-to-end with the real SCR agent (no Yast::SCR mocking)" do
+    # NOTE: change_scr_root raises if called while another chroot is still open, so each describe
+    # below opens/closes its own chroot independently instead of sharing one top-level `around`.
+
+    describe "#read" do
+      around do |example|
+        change_scr_root(File.join(FIXTURES_PATH, "yast2", "y2iscsi_client", "chroot1"), &example)
+      end
+
+      it "parses the real /etc/iscsi/iscsid.conf through the vendored SCR agent" do
+        config.read
+
+        values = config.entries.each_with_object({}) { |e, h| h[e["name"]] = e["value"] }
+        expect(values["node.startup"]).to eq("manual")
+        expect(values["discovery.sendtargets.auth.authmethod"]).to eq("CHAP")
+        expect(values["discovery.sendtargets.auth.username"]).to eq("noone")
+      end
+    end
+
+    describe "#save" do
+      around do |example|
+        Dir.mktmpdir do |dir|
+          FileUtils.mkdir_p(File.join(dir, "etc", "iscsi"))
+          FileUtils.touch(File.join(dir, "etc", "iscsi", "iscsid.conf"))
+          change_scr_root(dir, &example)
+        end
+      end
+
+      it "writes entries that can be read back through the real SCR agent" do
+        # Like IscsiClientLib#getConfig/#setConfig, #read first to get the full structure the
+        # underlying ag_ini agent expects. Entries are set through the real public API
+        # (#set_isns, which internally builds properly-shaped entry maps via #create_map) rather
+        # than a bare `entries = [{"name" => ..., "value" => ...}]` assignment: the real ag_ini
+        # agent silently ignores entries missing the "kind"/"type"/"comment" keys that
+        # #create_map always fills in, so a bare hash would pass with mocked Yast::SCR but
+        # silently write nothing for real.
+        config.read
+        config.set_isns("192.168.1.1", "3205")
+
+        config.save
+
+        reader = described_class.new
+        reader.read
+        values = reader.entries.each_with_object({}) { |e, h| h[e["name"]] = e["value"] }
+        expect(values["isns.address"]).to eq("192.168.1.1")
+        expect(values["isns.port"]).to eq("3205")
       end
     end
   end

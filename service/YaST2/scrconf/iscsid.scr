@@ -1,0 +1,54 @@
+/*
+ *   Read(.ietd.Compression)
+ *   (["yes"])
+ *
+ *   Write(.ietd.Compression, "no")
+ *   (true)
+ *
+ * Fore more information about possible keys and values
+ * consult with the slp_config man pages `man slp_config`.
+ *
+ * Vendored from yast2-iscsi-client's src/scrconf/iscsid.scr (see
+ * service/YaST2/README.md). This registers the ".etc.iscsid"/".etc.iscsid.all"
+ * SCR path used by Y2IscsiClient::Config, resolved the same way as the other
+ * modules/include files under this directory: Y2DIR also scans a sibling
+ * "scrconf/" subdirectory for agent registration files.
+ */
+
+.etc.iscsid
+
+`ag_ini(
+    `IniAgent( "/etc/iscsi/iscsid.conf",
+        $[
+        "options" : [ "global_values", "comments_last", "line_can_continue", "join_multiline", "repeat_names" ],
+        "comments": [
+            "^[ \t]*$", // empty line
+            "^[ \t]+[;#].*$", // comment char is not first char
+            "^[#][ \t]*$", // only comment chars
+            "^[#][ \t]*\\[[^]]*$", // comment chars followed by '[' without matching ']'
+            "^[#][^ \t[]", // comment char followed by non-blank nor '['
+            "^[#][ \t]+[^[a-z \t].*$", // comment chars followed by non a-z char nor '[' nor blank
+            "^[#][ \t]+[a-z ]*[a-z][ \t]*$", // comment chars followed by a-z or blank chars
+            "^[#][ \t]+[a-z ]*[a-z][ \t]*[^a-z \t=].*$", // like above, but followed by non a-z nor blank nor '=' chars
+        ],
+        "sections" : [
+            $[
+                "begin" : [ "^[ \t]*\\[[ \t]*(.*[^ \t])[ \t]*\\][ \t]*", "[%s]" ],
+            ], $[
+                // this is a special type for commenting out the values
+                "begin" : [ "^[#;][ \t]*\\[[ \t]*(.*[^ \t])[ \t]*\\][ \t]*", "# [%s]" ],
+            ]
+        ],
+
+        // we need to exclude ; because of the second matching rule
+        "params" : [
+                // Options with one value ('yes' / 'no')
+//                $[ "match" : [ "^[#;][ \t]*([^ \t]+)[ \t]+([^ \t]+)[ \t]+$", "%s %s" ]],
+                $[ "match" : [ "^[#;][ \t]*([^ \t\=]+)[ \t\=]?(.+)[ \t]*$", "; %s %s" ]],
+                // Options with more possible values
+                $[ "match" : [ "^[ \t]*([^ \t\=]+)[ \t\=]+[ ]*(.+)[ \t]*$", "%s = %s" ]],
+        ],
+       ]
+    )
+)
+
