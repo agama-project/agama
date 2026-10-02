@@ -370,8 +370,10 @@ mod tests {
             json!({ "method6": "disabled" }),
             json!({ "addresses": ["192.168.1.2/24"] }),
             json!({ "gateway4": "192.168.1.1" }),
+            json!({ "gateway6": "::1" }),
             json!({ "nameservers": ["192.168.1.1"] }),
             json!({ "dnsSearchList": ["example.lan"] }),
+            json!({ "dnsSearchlist": ["example.lan"] }),
             json!({ "ignoreAutoDns": false }),
         ] {
             let mut port = json!({ "interface": "eth0" });

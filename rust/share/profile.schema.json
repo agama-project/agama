@@ -1276,6 +1276,9 @@
                 "required": ["dnsSearchList"]
               },
               {
+                "required": ["dnsSearchlist"]
+              },
+              {
                 "required": ["ignoreAutoDns"]
               }
             ]
