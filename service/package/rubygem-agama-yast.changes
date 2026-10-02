@@ -5,7 +5,7 @@ Fri Oct  2 14:31:42 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
   vendoring the needed yast2-storage-ng code, declaring its
   libstorage-ng-ruby, yast2-pkg-bindings and yast2-packager
   dependencies explicitly instead of relying on them being pulled
-  in transitively (gh#agama-project/agama#TBD).
+  in transitively (gh#agama-project/agama#4034).
 
 -------------------------------------------------------------------
 Fri Oct  2 12:16:56 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
