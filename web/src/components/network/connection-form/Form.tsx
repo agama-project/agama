@@ -54,7 +54,7 @@ import { _ } from "~/i18n";
 
 import type { BreadcrumbProps } from "~/components/core/Breadcrumbs";
 import type { ConnectionFormContentQuery } from "./queries";
-import { ConnectionType } from "~/types/network";
+import { ConnectionType, withoutIpSettings } from "~/types/network";
 
 type FormValues = typeof defaultOptions.defaultValues;
 
@@ -84,6 +84,7 @@ type FormValues = typeof defaultOptions.defaultValues;
  */
 function ConnectionFormContent({
   initialConnection,
+  isPort,
   devices,
   systemConnections,
 }: ConnectionFormContentQuery) {
@@ -123,7 +124,7 @@ function ConnectionFormContent({
     scrollOnSuccess: false,
     onSubmit: async (values) => {
       try {
-        await updateConnection(buildPayload(values));
+        await updateConnection(buildPayload(values, initialConnection, isPort));
         navigate(-1);
         return { patched: true as const };
       } catch (e) {
@@ -136,7 +137,10 @@ function ConnectionFormContent({
     ...mergeFormDefaults(defaultOptions, {
       iface: bindableDevices[0]?.name ?? "",
       ifaceMac: bindableDevices[0]?.macAddress ?? "",
-      ...toFormValues(initialConnection),
+      // Nothing hidden may hold a value the validations would complain about.
+      ...toFormValues(
+        isPort && initialConnection ? withoutIpSettings(initialConnection) : initialConnection,
+      ),
     }),
     validators: {
       onSubmitAsync: async (ctx) => {
@@ -265,81 +269,86 @@ function ConnectionFormContent({
           }
         </form.Subscribe>
 
-        <IpFields form={form} protocol="ipv4" />
+        {/* A port has no IP settings: its controller holds the IP configuration. */}
+        {!isPort && (
+          <>
+            <IpFields form={form} protocol="ipv4" />
 
-        <IpFields form={form} protocol="ipv6" />
+            <IpFields form={form} protocol="ipv6" />
 
-        <form.AppField name="customDns">
-          {(field) => (
-            <field.CheckboxField
-              label={
-                // TRANSLATORS: checkbox label for custom DNS server configuration.
-                _("Use custom DNS servers")
+            <form.AppField name="customDns">
+              {(field) => (
+                <field.CheckboxField
+                  label={
+                    // TRANSLATORS: checkbox label for custom DNS server configuration.
+                    _("Use custom DNS servers")
+                  }
+                />
+              )}
+            </form.AppField>
+            <form.Subscribe selector={(s) => s.values.customDns}>
+              {(customDns) =>
+                customDns && (
+                  <NestedContent margin="mxLg">
+                    <form.AppField name="nameservers">
+                      {(field) => (
+                        <field.ArrayField
+                          // TRANSLATORS: label for the DNS servers field.
+                          label={_("DNS servers")}
+                          skipDuplicates
+                          helperText={
+                            // TRANSLATORS: helper text for DNS servers field explaining the format.
+                            _("E.g., 8.8.8.8 or 2001:4860:4860::8888")
+                          }
+                          validateOnSubmit={(v) =>
+                            // TRANSLATORS: validation error for an invalid DNS server address entry.
+                            isValidNameserver(v) ? undefined : _("Invalid DNS server address")
+                          }
+                        />
+                      )}
+                    </form.AppField>
+                  </NestedContent>
+                )
               }
-            />
-          )}
-        </form.AppField>
-        <form.Subscribe selector={(s) => s.values.customDns}>
-          {(customDns) =>
-            customDns && (
-              <NestedContent margin="mxLg">
-                <form.AppField name="nameservers">
-                  {(field) => (
-                    <field.ArrayField
-                      // TRANSLATORS: label for the DNS servers field.
-                      label={_("DNS servers")}
-                      skipDuplicates
-                      helperText={
-                        // TRANSLATORS: helper text for DNS servers field explaining the format.
-                        _("E.g., 8.8.8.8 or 2001:4860:4860::8888")
-                      }
-                      validateOnSubmit={(v) =>
-                        // TRANSLATORS: validation error for an invalid DNS server address entry.
-                        isValidNameserver(v) ? undefined : _("Invalid DNS server address")
-                      }
-                    />
-                  )}
-                </form.AppField>
-              </NestedContent>
-            )
-          }
-        </form.Subscribe>
+            </form.Subscribe>
 
-        <form.AppField name="customDnsSearch">
-          {(field) => (
-            <field.CheckboxField
-              label={
-                // TRANSLATORS: checkbox label for custom DNS search domain configuration.
-                _("Use custom DNS search domains")
+            <form.AppField name="customDnsSearch">
+              {(field) => (
+                <field.CheckboxField
+                  label={
+                    // TRANSLATORS: checkbox label for custom DNS search domain configuration.
+                    _("Use custom DNS search domains")
+                  }
+                />
+              )}
+            </form.AppField>
+            <form.Subscribe selector={(s) => s.values.customDnsSearch}>
+              {(customDnsSearch) =>
+                customDnsSearch && (
+                  <NestedContent margin="mxLg">
+                    <form.AppField name="dnsSearchList">
+                      {(field) => (
+                        <field.ArrayField
+                          // TRANSLATORS: label for the DNS search domains field.
+                          label={_("DNS search domains")}
+                          skipDuplicates
+                          helperText={
+                            // TRANSLATORS: helper text for DNS search domains field explaining the format.
+                            _("E.g., example.com")
+                          }
+                          validateOnSubmit={(v) =>
+                            // TRANSLATORS: validation error for an invalid DNS search domain entry.
+                            isValidDNSSearchDomain(v) ? undefined : _("Invalid DNS search domain")
+                          }
+                        />
+                      )}
+                    </form.AppField>
+                  </NestedContent>
+                )
               }
-            />
-          )}
-        </form.AppField>
-        <form.Subscribe selector={(s) => s.values.customDnsSearch}>
-          {(customDnsSearch) =>
-            customDnsSearch && (
-              <NestedContent margin="mxLg">
-                <form.AppField name="dnsSearchList">
-                  {(field) => (
-                    <field.ArrayField
-                      // TRANSLATORS: label for the DNS search domains field.
-                      label={_("DNS search domains")}
-                      skipDuplicates
-                      helperText={
-                        // TRANSLATORS: helper text for DNS search domains field explaining the format.
-                        _("E.g., example.com")
-                      }
-                      validateOnSubmit={(v) =>
-                        // TRANSLATORS: validation error for an invalid DNS search domain entry.
-                        isValidDNSSearchDomain(v) ? undefined : _("Invalid DNS search domain")
-                      }
-                    />
-                  )}
-                </form.AppField>
-              </NestedContent>
-            )
-          }
-        </form.Subscribe>
+            </form.Subscribe>
+          </>
+        )}
 
         <ActionGroup>
           <form.SubmitButton />

@@ -577,6 +577,69 @@ describe("ConnectionForm", () => {
     });
   });
 
+  describe("when editing a port of a bond or a bridge", () => {
+    beforeEach(() => {
+      mockParams({ id: "eth0" });
+      mockUseSystem.mockReturnValue({
+        connections: [
+          buildConnection("bond0", {
+            interface: "bond0",
+            bond: { mode: "active-backup", options: "", ports: [buildConnection("eth0")] },
+          }),
+        ],
+      });
+    });
+
+    afterEach(() => {
+      mockUseConfig.mockReturnValue({ connections: [] });
+    });
+
+    it("does not show the IP and DNS settings", () => {
+      installerRender(<ConnectionForm />);
+      expect(screen.queryByText("IPv4 Settings")).not.toBeInTheDocument();
+      expect(screen.queryByText("IPv6 Settings")).not.toBeInTheDocument();
+      expect(screen.queryByText("Use custom DNS servers")).not.toBeInTheDocument();
+      expect(screen.queryByText("Use custom DNS search domains")).not.toBeInTheDocument();
+    });
+
+    it("submits the port without IP settings, even the ones the config had", async () => {
+      mockUseConfig.mockReturnValue({
+        connections: [
+          buildConnection("bond0", {
+            interface: "bond0",
+            bond: {
+              mode: "active-backup",
+              options: "",
+              ports: [buildConnection("eth0", { method4: "manual", nameservers: ["8.8.8.8"] })],
+            },
+          }),
+        ],
+      });
+      const { user } = installerRender(<ConnectionForm />);
+      await user.click(screen.getByRole("button", { name: "Accept" }));
+      await waitFor(() => expect(mockMutateAsync).toHaveBeenCalled());
+
+      const payload = mockMutateAsync.mock.calls[0][0];
+      expect(payload.id).toBe("eth0");
+      expect(payload.toApi()).not.toHaveProperty("method4");
+      expect(payload.nameservers).toEqual([]);
+    });
+
+    it("shows the IP settings when the config moved it out of its controller", () => {
+      mockUseConfig.mockReturnValue({
+        connections: [
+          buildConnection("bond0", {
+            interface: "bond0",
+            bond: { mode: "active-backup", options: "", ports: [] },
+          }),
+          buildConnection("eth0"),
+        ],
+      });
+      installerRender(<ConnectionForm />);
+      screen.getByText("IPv4 Settings");
+    });
+  });
+
   describe("when merging config and system connections for editing", () => {
     beforeEach(() => {
       mockParams({ id: "eth0" });

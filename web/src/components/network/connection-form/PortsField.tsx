@@ -28,7 +28,7 @@ import { defaultOptions } from "./fields";
 import { portError } from "./validations";
 import { withForm } from "~/hooks/form";
 import { useConnections, useDevices } from "~/hooks/model/system/network";
-import { controllerOf, isLoopback } from "~/utils/network";
+import { deviceUsedBy, isLoopback } from "~/utils/network";
 import { _ } from "~/i18n";
 
 import type { TranslatedString } from "~/i18n";
@@ -113,9 +113,9 @@ const PortsField = withForm({
               const available = devices.filter((d) => !isLoopback(d) && d.name !== controllerIface);
               // The controller being edited is not worth mentioning: the user
               // is looking at its own list of ports.
-              const portOf = (device: Device) => {
-                const controller = controllerOf(device.name, connections);
-                return controller === controllerIface ? undefined : controller;
+              const usedBy = (device: Device) => {
+                const user = deviceUsedBy(device, connections);
+                return user === controllerIface ? undefined : user;
               };
 
               const options = available.map((device) => ({
@@ -178,13 +178,14 @@ const PortsField = withForm({
                       devices={available}
                       selected={available.filter((d) => ports.includes(d.name))}
                       selectionMode="multiple"
-                      // Devices already used elsewhere are still offered, since
-                      // moving a port from one controller to another is
-                      // legitimate; the column only says so. It is asked for
+                      // Devices already in use are still offered, since moving
+                      // a port from one controller to another is legitimate,
+                      // and so is taking over a device a plain connection
+                      // holds; the column only says so. It is asked for
                       // whenever ports are picked, even when no device is used
                       // by anything: a column coming and going with the data
                       // leaves the user wondering what they did to lose it.
-                      portOf={portOf}
+                      usedBy={usedBy}
                       // Only the devices found are offered, so a port naming
                       // none of them, written out by hand or waiting for a card
                       // to show up, is kept: the dialog never asked about it.

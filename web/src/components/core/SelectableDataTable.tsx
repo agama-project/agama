@@ -36,6 +36,7 @@ import {
   TdProps,
   IAction,
   ActionsColumn,
+  TreeRowWrapper,
 } from "@patternfly/react-table";
 import { isEmpty, isFunction } from "radashi";
 import Icon from "~/components/layout/Icon";
@@ -171,6 +172,13 @@ export type SelectableDataTableProps<T = any> = {
    * items).
    */
   itemChildren?: (item: T) => T[];
+
+  /**
+   * Whether to render the items as a tree, like {@link TreeTable} does: the
+   * children are nested at any depth, indented under their parent, and are
+   * toggled from the first column. Selection is not supported in this mode.
+   */
+  isTree?: boolean;
 
   /**
    * A function to determine if a given item is selectable.
@@ -336,6 +344,7 @@ type SharedData = {
     | "itemActions"
     | "itemActionsLabel"
     | "itemActionsComponent"
+    | "isTree"
   >
 >;
 
@@ -383,8 +392,15 @@ const TableHeader = ({
   columns: SelectableDataTableColumn[];
   sharedData: SharedData;
 }) => {
-  const { allowMultiple, allowSelectAll, isAllSelected, showSelectAll, selectAll, itemActions } =
-    sharedData;
+  const {
+    allowMultiple,
+    allowSelectAll,
+    isAllSelected,
+    showSelectAll,
+    selectAll,
+    itemActions,
+    isTree,
+  } = sharedData;
 
   const selectAllProps =
     allowMultiple && allowSelectAll && showSelectAll
@@ -398,8 +414,8 @@ const TableHeader = ({
   return (
     <Thead noWrap>
       <Tr>
-        <Th aria-label={_("Row expansion")} />
-        <Th select={selectAllProps} aria-label={_("Row selection")} />
+        {!isTree && <Th aria-label={_("Row expansion")} />}
+        {!isTree && <Th select={selectAllProps} aria-label={_("Row selection")} />}
         {columns?.map((c, i) => {
           const sortProp =
             sharedData.sortedBy && c.sortingKey ? buildSorting(i, c, sharedData) : undefined;
@@ -469,7 +485,7 @@ const sanitizeSelection = (
  * Such comparison can be overridden by providing a custom `itemEqualityFn`
  * prop, for example, to perform deep comparison or other alternative logic.
  *
- * @note It only accepts one nesting level.
+ * @note It only accepts one nesting level, unless `isTree` is given.
  */
 export default function SelectableDataTable({
   columns = [],
@@ -477,6 +493,7 @@ export default function SelectableDataTable({
   items = [],
   itemIdKey = "id",
   itemChildren = () => [],
+  isTree = false,
   itemSelectable = () => true,
   itemClassNames = () => "",
   itemEqualityFn = (a, b) => {
@@ -533,6 +550,37 @@ export default function SelectableDataTable({
   };
 
   /**
+   * Render method for building the actions cell of an item or an item child,
+   * if there are actions for it.
+   *
+   * @param item - The item the actions are for
+   */
+  const renderActions = (item: object) => {
+    const actions = itemActions?.(item);
+    if (isEmpty(actions)) return;
+
+    const label = isFunction(itemActionsLabel) ? itemActionsLabel(item) : itemActionsLabel;
+    const ItemActionsComponent = itemActionsComponent;
+
+    return (
+      <Td isActionCell>
+        {ItemActionsComponent ? (
+          <ItemActionsComponent items={actions} label={label} />
+        ) : (
+          <ActionsColumn
+            items={actions}
+            actionsToggle={({ toggleRef, onToggle }) => (
+              <MenuToggle ref={toggleRef} onClick={onToggle} variant="plain" aria-label={label}>
+                <Icon name="more_horiz" />
+              </MenuToggle>
+            )}
+          />
+        )}
+      </Td>
+    );
+  };
+
+  /**
    * Render method for building the markup for an item child
    *
    * @param item - The child to be rendered
@@ -558,6 +606,7 @@ export default function SelectableDataTable({
             <ExpandableRowContent>{c.value(item)}</ExpandableRowContent>
           </Td>
         ))}
+        {renderActions(item)}
       </Tr>
     );
   };
@@ -578,8 +627,6 @@ export default function SelectableDataTable({
       isExpanded: isItemExpanded(itemKey),
       onToggle: () => toggleExpanded(itemKey),
     };
-    const actions = itemActions?.(item);
-
     const selectProps = {
       rowIndex,
       onSelect: () => updateSelection(item),
@@ -593,9 +640,6 @@ export default function SelectableDataTable({
       return children.map((item) => renderItemChild(item, isItemExpanded(itemKey), sharedData));
     };
 
-    const label = isFunction(itemActionsLabel) ? itemActionsLabel(item) : itemActionsLabel;
-    const ItemActionsComponent = itemActionsComponent;
-
     // TODO: Add label to Tbody?
     return (
       <Tbody key={rowIndex} isExpanded={isItemExpanded(itemKey)}>
@@ -607,30 +651,66 @@ export default function SelectableDataTable({
               {c.value(item)}
             </Td>
           ))}
-          {!isEmpty(actions) && (
-            <Td isActionCell>
-              {ItemActionsComponent ? (
-                <ItemActionsComponent items={actions} label={label} />
-              ) : (
-                <ActionsColumn
-                  items={actions}
-                  actionsToggle={({ toggleRef, onToggle }) => (
-                    <MenuToggle
-                      ref={toggleRef}
-                      onClick={onToggle}
-                      variant="plain"
-                      aria-label={label}
-                    >
-                      <Icon name="more_horiz" />
-                    </MenuToggle>
-                  )}
-                />
-              )}
-            </Td>
-          )}
+          {renderActions(item)}
         </Tr>
         {renderChildren()}
       </Tbody>
+    );
+  };
+
+  /**
+   * Render method for building the markup for an item and, recursively, its
+   * children as rows of a tree
+   *
+   * @param item - The item to be rendered
+   * @param level - How deep the item is in the tree, starting at 1
+   * @param position - The position of the item among its siblings, starting at 1
+   * @param isHidden - Whether the item is under a collapsed one
+   * @param sharedData - An object holding shared data
+   */
+  const renderTreeItem = (
+    item: object,
+    level: number,
+    position: number,
+    isHidden: boolean,
+    sharedData: SharedData,
+  ) => {
+    const itemKey = item[itemIdKey];
+    const rowIndex = sharedData.rowIndex++;
+    const children = itemChildren(item) || [];
+    const isExpanded = isItemExpanded(itemKey);
+    const treeRow = {
+      onCollapse: () => toggleExpanded(itemKey),
+      rowIndex,
+      props: {
+        isExpanded,
+        isHidden,
+        "aria-level": level,
+        "aria-posinset": position,
+        "aria-setsize": children.length,
+      },
+    };
+
+    return (
+      <React.Fragment key={itemKey ?? rowIndex}>
+        <TreeRowWrapper row={{ props: treeRow.props }} className={itemClassNames(item)}>
+          {columns?.map((c, index) => (
+            <Td
+              key={index}
+              dataLabel={c.name}
+              className={c.classNames}
+              treeRow={index === 0 ? treeRow : undefined}
+              {...c.pfTdProps}
+            >
+              {c.value(item)}
+            </Td>
+          ))}
+          {renderActions(item)}
+        </TreeRowWrapper>
+        {children.map((child, index) =>
+          renderTreeItem(child, level + 1, index + 1, isHidden || !isExpanded, sharedData),
+        )}
+      </React.Fragment>
     );
   };
 
@@ -644,6 +724,7 @@ export default function SelectableDataTable({
     itemActions,
     itemActionsLabel,
     itemActionsComponent,
+    isTree,
     // FIXME: drop showSelectAll once items is part of SharedData
     showSelectAll: allowSelectAll && items.length > 0,
     isAllSelected: items.length > 0 && items.length === itemsSelected.length,
@@ -653,6 +734,17 @@ export default function SelectableDataTable({
 
   if (isEmpty(items) && emptyState) {
     return emptyState;
+  }
+
+  if (isTree) {
+    return (
+      <Table data-type="agama/expandable-selector" {...tableProps} isTreeTable>
+        <TableHeader columns={columns} sharedData={sharedData} />
+        <Tbody>
+          {items?.map((item, index) => renderTreeItem(item, 1, index + 1, false, sharedData))}
+        </Tbody>
+      </Table>
+    );
   }
 
   return (
