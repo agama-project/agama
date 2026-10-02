@@ -154,13 +154,13 @@ describe("NetworkConfig", () => {
 
     it("moves a port given by name from another controller, keeping its port settings", () => {
       const eth1 = ethernet("eth1", { port: { priority: 10 }, method4: ConnectionMethod.MANUAL });
-      const config = new NetworkConfig([bond("bond0", [ethernet("eth0")]), bond("bond1", [eth1])]);
-      config.addOrUpdateConnection(bond("bond0", [ethernet("eth0"), "eth1"]));
+      const config = new NetworkConfig([bridge("br0", [ethernet("eth0")]), bridge("br1", [eth1])]);
+      config.addOrUpdateConnection(bridge("br0", [ethernet("eth0"), "eth1"]));
 
-      const [bond0, bond1] = config.connections;
-      expect(portIds(bond0)).toEqual(["eth0", "eth1"]);
-      expect(portIds(bond1)).toEqual([]);
-      const moved = portsOf(bond0)[1] as Connection;
+      const [br0, br1] = config.connections;
+      expect(portIds(br0)).toEqual(["eth0", "eth1"]);
+      expect(portIds(br1)).toEqual([]);
+      const moved = portsOf(br0)[1] as Connection;
       expect(moved.port).toEqual({ priority: 10 });
       expect(moved.method4).toBeUndefined();
     });
@@ -231,6 +231,16 @@ describe("NetworkConfig", () => {
       const nested = portsOf(bond0)[0] as Connection;
       expect(nested.status).toBe(ConnectionStatus.UP);
       expect(nested.toApi()).not.toHaveProperty("method4");
+    });
+
+    it("drops the bridge port settings of a port moved to a bond", () => {
+      const eth0 = ethernet("eth0", { port: { priority: 32 } });
+      const config = new NetworkConfig([bridge("br0", [eth0]), bond("bond0", [])]);
+      config.addOrUpdateConnection(bond("bond0", ["eth0"]));
+
+      const nested = portsOf(config.connections[1])[0] as Connection;
+      expect(nested.id).toBe("eth0");
+      expect(nested.port).toBeUndefined();
     });
 
     it("finds a port given by the id of a connection not bound to an interface", () => {

@@ -624,7 +624,9 @@ const replaceConnection = (
  * The ports of a bond or a bridge are nested in it, so a port listed by name
  * that is already somewhere else in the connections is taken from there, with
  * its settings, instead of being left in two places at once. It loses any IP
- * setting on the way, as a port has none. A removed one is brought back, too.
+ * setting on the way, as a port has none, and its port settings when it joins
+ * a bond, as only the ports of a bridge have any. A removed one is brought
+ * back, too.
  *
  * Removing a port drops it from its controller, together with anything nested
  * in it, which is how the backend tells that a port is gone. Leaving it there
@@ -651,10 +653,16 @@ const placeConnection = (connections: Connection[], connection: Connection): Con
       const removed = taken.status === ConnectionStatus.DELETE;
       const wasPort = all.some((c) => portConnections(c).some((p) => p.id === taken.id));
       result = withoutConnection(result, taken.id);
-      if (wasPort && !removed) return withoutIpSettings(taken);
-
       const { id, ...options } = taken;
-      return withoutIpSettings(new Connection(id, { ...options, status: ConnectionStatus.UP }));
+      return withoutIpSettings(
+        new Connection(id, {
+          ...options,
+          ...(wasPort && !removed ? {} : { status: ConnectionStatus.UP }),
+          // Only the ports of a bridge have port settings, and the backend
+          // rejects a port of a bond that keeps the ones it had in a bridge.
+          port: connection.bridge ? taken.port : undefined,
+        }),
+      );
     });
     connection = withPorts(connection, ports);
   }
