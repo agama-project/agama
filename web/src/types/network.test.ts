@@ -248,6 +248,16 @@ describe("NetworkConfig", () => {
       expect(portsOf(config.connections[0])).toEqual(["eth9"]);
     });
 
+    it("drops a removed port from its controller, with whatever is nested in it", () => {
+      const config = new NetworkConfig([
+        bond("bond0", [ethernet("eth0"), bond("bond1", [ethernet("eth1")])]),
+      ]);
+      config.addOrUpdateConnection(ethernet("bond1", { status: ConnectionStatus.DELETE }));
+
+      expect(config.connections.map((c) => c.id)).toEqual(["bond0"]);
+      expect(portIds(config.connections[0])).toEqual(["eth0"]);
+    });
+
     it("keeps connections with DELETE status in the array", () => {
       const config = new NetworkConfig([new Connection("eth0", { status: ConnectionStatus.UP })]);
 
