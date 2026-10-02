@@ -2,7 +2,7 @@
 Fri Oct  2 12:16:56 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Drop the yast2-bootloader and yast2-reipl dependencies pulled in
-  by agama-yast (gh#agama-project/agama#TBD).
+  by agama-yast (gh#agama-project/agama#4033).
 
 -------------------------------------------------------------------
 Fri Oct  2 10:51:04 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
