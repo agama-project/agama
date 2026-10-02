@@ -238,7 +238,11 @@ impl Adapter for NetworkManagerAdapter<'_> {
                                 &conn.id,
                                 &active_path
                             );
-                            active_paths.push(active_path);
+                            // Only wait for top-level connections / controllers that hold IP settings.
+                            // Ports must not delay apply return (e.g. unplugged backup bond slaves).
+                            if conn.controller.is_none() {
+                                active_paths.push(active_path);
+                            }
                         }
                         Err(e) => {
                             tracing::error!("Failed to activate connection {}: {}", &conn.id, e);
