@@ -1,0 +1,52 @@
+Key                          : secure_xtskey1                                        
+-------------------------------------------------------------------------------------
+        Description          : 
+        Secure key size      : 128 bytes
+        Clear key size       : 512 bits
+        XTS type key         : Yes
+        Volumes              : /dev/dasdb1:cr-dasdb1
+                               /dev/dasda2:cr_7
+        APQNs                : (none)
+        Key file name        : /etc/zkey/repository/secure_xtskey1.skey
+        Sector size          : 4096 bytes
+        Volume type          : LUKS2
+        Verification pattern : 876b32220444cdf4e90f8da385703f54
+                               1f408c0c1e3bf149b98f1f3ec70313ee
+        Created              : 2019-09-06 04:54:36
+        Changed              : 2019-09-16 13:13:46
+        Re-enciphered        : (never) 
+
+Key                          : secure_xtskey2                                        
+-------------------------------------------------------------------------------------
+        Description          : 
+        Secure key size      : 128 bytes
+        Clear key size       : 512 bits
+        XTS type key         : Yes
+        Volumes              : /dev/dasdc1:cr_7
+        APQNs                : (none)
+        Key file name        : /etc/zkey/repository/secure_xtskey2.skey
+        Sector size          : 4096 bytes
+        Volume type          : LUKS2
+        Verification pattern : 66af33e3d568cb6be88c1d08e0bf7999
+                               14d9a7d7727418e2b84cba93e49bf047
+        Created              : 2019-09-16 13:11:13
+        Changed              : (never)
+        Re-enciphered        : (never) 
+
+Key                          : secure_xtskey3                                        
+-------------------------------------------------------------------------------------
+        Description          : 
+        Secure key size      : 128 bytes
+        Clear key size       : 512 bits
+        XTS type key         : Yes
+        Volumes              : (none)
+        APQNs                : (none)
+        Key file name        : /etc/zkey/repository/secure_xtskey3.skey
+        Sector size          : 4096 bytes
+        Volume type          : LUKS2
+        Verification pattern : 8368630907a910a0988b7f83aa60b407
+                               3adced5fccef9b8c596706cfd292b7ec
+        Created              : 2019-09-17 04:44:57
+        Changed              : (never)
+        Re-enciphered        : (never) 
+

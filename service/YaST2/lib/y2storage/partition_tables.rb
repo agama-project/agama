@@ -1,0 +1,6 @@
+require "y2storage/partition_tables/type"
+require "y2storage/partition_tables/msdos"
+require "y2storage/partition_tables/gpt"
+require "y2storage/partition_tables/dasd"
+require "y2storage/partition_tables/implicit_pt"
+require "y2storage/partition_tables/partition_slot"

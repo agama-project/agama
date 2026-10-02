@@ -23,7 +23,24 @@
     # service/YaST2/lib/y2iscsi_client and service/YaST2/modules (see service/YaST2/README.md);
     # the RPM is no longer needed. open-iscsi (below) still provides the iscsiadm/iscsiuio
     # binaries IscsiClientLib shells out to.
-    Requires:       yast2-storage-ng >= 5.0.49
+    # yast2-storage-ng's Ruby code (Y2Storage::*) is vendored into service/YaST2/lib/y2storage
+    # (see service/YaST2/README.md); the RPM itself is no longer needed. Two of its own
+    # dependencies are native (non-Ruby) bindings that cannot be vendored and are now declared
+    # directly instead of relying on them being pulled in transitively. A third one,
+    # yast2-packager, is NOT declared here despite Y2Storage::DiskAnalyzer needing
+    # Y2Packager::Repository: yast2-packager and yast2-storage-ng have a circular RPM
+    # Requires: on each other, so declaring yast2-packager would silently pull
+    # yast2-storage-ng straight back in. Y2Packager::Repository (and its one real dependency,
+    # Y2Packager::ZyppUrl) is vendored into service/YaST2/lib/y2packager instead - see
+    # service/YaST2/README.md.
+    Requires:       libstorage-ng-ruby
+    Requires:       yast2-pkg-bindings
+    # yast2-transfer provides the classic Yast::FTP/HTTP/TFTP modules that the already-vendored
+    # lib/transfer/file_from_url.rb (service/YaST2/README.md, AutoYaST phase) unconditionally
+    # imports. Like yast2-pkg-bindings above, this was previously only a transitive dependency
+    # (pulled in by yast2-packager.spec's own Requires: yast2-transfer) - found the same way as
+    # the yast2-packager gaps: by validating with yast2-storage-ng actually uninstalled.
+    Requires:       yast2-transfer
     # s390-only yast2-* dependencies previously required here (all now dropped):
     # yast2-s390's Ruby code (Y2S390::Dasd/DasdsCollection/DasdsReader/FormatProcess/ZFCP) is
     # vendored into service/YaST2/lib/y2s390 (see service/YaST2/README.md). yast2-cio was confirmed

@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Oct  2 14:31:42 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Drop the yast2-storage-ng dependency pulled in by agama-yast,
+  replaced by explicit libstorage-ng-ruby, yast2-pkg-bindings and
+  yast2-packager dependencies (gh#agama-project/agama#4034).
+
+-------------------------------------------------------------------
 Fri Oct  2 12:16:56 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Drop the yast2-bootloader and yast2-reipl dependencies pulled in

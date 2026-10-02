@@ -1,0 +1,117 @@
+<?xml version="1.0"?>
+<productDefines xmlns="http://www.suse.com/1.0/yast2ns" xmlns:config="http://www.suse.com/1.0/configns">
+  <!--
+    Based on suma_multidisc_role from SUSE Manager Server. See
+    https://github.com/yast/skelcd-control-suse-manager-server/pull/15
+  -->
+  <partitioning>
+    <proposal>
+      <lvm config:type="boolean">true</lvm>
+      <encrypt config:type="boolean">false</encrypt>
+      <windows_delete_mode>all</windows_delete_mode>
+      <linux_delete_mode>all</linux_delete_mode>
+      <other_delete_mode>all</other_delete_mode>
+      <lvm_vg_strategy>use_available</lvm_vg_strategy>
+      <separate_vgs config:type="boolean">true</separate_vgs>
+      <multidisk_first config:type="boolean">true</multidisk_first>
+      <delete_resize_configurable config:type="boolean">false</delete_resize_configurable>
+      <allocate_volume_mode config:type="symbol">device</allocate_volume_mode>
+    </proposal>
+    <volumes config:type="list">
+      <volume>
+        <mount_point>/</mount_point>
+        <fs_type>btrfs</fs_type>
+        <desired_size>100GiB</desired_size>
+        <min_size>6GiB</min_size>
+        <max_size>100GiB</max_size>
+        <snapshots config:type="boolean">true</snapshots>
+        <snapshots_configurable config:type="boolean">false</snapshots_configurable>
+        <btrfs_default_subvolume>@</btrfs_default_subvolume>
+        <subvolumes config:type="list">
+          <!-- simplified list of subvolumes, just to shorten the xml -->
+          <subvolume>
+            <path>home</path>
+          </subvolume>
+          <subvolume>
+            <path>opt</path>
+          </subvolume>
+        </subvolumes>
+      </volume>
+      <volume>
+        <mount_point>swap</mount_point>
+        <fs_type>swap</fs_type>
+        <desired_size>2GiB</desired_size>
+        <min_size>2GiB</min_size>
+        <max_size>2GiB</max_size>
+      </volume>
+      <volume>
+        <mount_point>/var/spacewalk</mount_point>
+        <fs_type>xfs</fs_type>
+        <separate_vg_name>spacewalk</separate_vg_name>
+        <proposed_configurable config:type="boolean">true</proposed_configurable>
+        <proposed config:type="boolean">true</proposed>
+        <desired_size config:type="disksize">300 GiB</desired_size>
+        <min_size config:type="disksize">100 GiB</min_size>
+        <max_size config:type="disksize">unlimited</max_size>
+        <max_size_lvm config:type="disksize">300 GiB</max_size_lvm>
+        <weight config:type="integer">40</weight>
+        <disable_order config:type="integer">4</disable_order>
+        <fallback_for_desired_size>/</fallback_for_desired_size>
+        <fallback_for_max_size>/</fallback_for_max_size>
+        <fallback_for_max_size_lvm>/</fallback_for_max_size_lvm>
+        <fallback_for_weight>/</fallback_for_weight>
+      </volume>
+      <volume>
+        <mount_point>/var/lib/pgsql</mount_point>
+        <fs_type>xfs</fs_type>
+        <separate_vg_name>pgsql</separate_vg_name>
+        <proposed_configurable config:type="boolean">true</proposed_configurable>
+        <proposed config:type="boolean">true</proposed>
+        <desired_size config:type="disksize">60 GiB</desired_size>
+        <min_size config:type="disksize">50 GiB</min_size>
+        <max_size config:type="disksize">unlimited</max_size>
+        <max_size_lvm config:type="disksize">60 GiB</max_size_lvm>
+        <weight config:type="integer">40</weight>
+        <disable_order config:type="integer">3</disable_order>
+        <fallback_for_desired_size>/</fallback_for_desired_size>
+        <fallback_for_max_size>/</fallback_for_max_size>
+        <fallback_for_max_size_lvm>/</fallback_for_max_size_lvm>
+        <fallback_for_weight>/</fallback_for_weight>
+      </volume>
+      <volume>
+        <mount_point>/var/cache</mount_point>
+        <fs_type>xfs</fs_type>
+        <separate_vg_name>system_cache</separate_vg_name>
+        <proposed_configurable config:type="boolean">true</proposed_configurable>
+        <proposed config:type="boolean">true</proposed>
+        <desired_size config:type="disksize">10 GiB</desired_size>
+        <min_size config:type="disksize">4 GiB</min_size>
+        <max_size config:type="disksize">unlimited</max_size>
+        <max_size_lvm config:type="disksize">10 GiB</max_size_lvm>
+        <weight config:type="integer">20</weight>
+        <disable_order config:type="integer">1</disable_order>
+        <fallback_for_desired_size>/</fallback_for_desired_size>
+        <fallback_for_max_size>/</fallback_for_max_size>
+        <fallback_for_max_size_lvm>/</fallback_for_max_size_lvm>
+        <fallback_for_weight>/</fallback_for_weight>
+      </volume>
+      <volume>
+        <mount_point>/srv</mount_point>
+        <fs_type>xfs</fs_type>
+        <separate_vg_name>srv</separate_vg_name>
+        <proposed_configurable config:type="boolean">true</proposed_configurable>
+        <proposed config:type="boolean">true</proposed>
+        <desired_size config:type="disksize">300 GiB</desired_size>
+        <min_size config:type="disksize">200 GiB</min_size>
+        <max_size config:type="disksize">unlimited</max_size>
+        <max_size_lvm config:type="disksize">300 GiB</max_size_lvm>
+        <weight config:type="integer">40</weight>
+        <disable_order config:type="integer">2</disable_order>
+        <fallback_for_desired_size>/</fallback_for_desired_size>
+        <fallback_for_max_size>/</fallback_for_max_size>
+        <fallback_for_max_size_lvm>/</fallback_for_max_size_lvm>
+        <fallback_for_weight>/</fallback_for_weight>
+      </volume>
+    </volumes>
+  </partitioning>
+</productDefines>

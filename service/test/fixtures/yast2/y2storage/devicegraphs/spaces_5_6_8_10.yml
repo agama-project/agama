@@ -1,0 +1,51 @@
+---
+- disk:
+    name: /dev/sda
+    size: 400 GiB
+    partition_table:  ms-dos
+    partitions:
+
+    - partition:
+        size:         95 GiB
+        name:         /dev/sda1
+        id:           0x7
+        file_system:  ntfs
+        label:        data1
+
+    - free:
+        size:         5 GiB
+
+    - partition:
+        size:         unlimited
+        name:         /dev/sda2
+        type:         extended
+
+    - free:
+        size:         6 GiB
+
+    - partition:
+        size:         94 GiB
+        name:         /dev/sda5
+        type:         logical
+        file_system:  ntfs
+        label:        data2
+
+    - free:
+        size:         8 GiB
+
+    - partition:
+        size:         92 GiB
+        name:         /dev/sda6
+        type:         logical
+        file_system:  ntfs
+        label:        data3
+
+    - free:
+        size:         10 GiB
+
+    - partition:
+        size:         unlimited
+        name:         /dev/sda7
+        type:         logical
+        file_system:  ntfs
+        label:        data4

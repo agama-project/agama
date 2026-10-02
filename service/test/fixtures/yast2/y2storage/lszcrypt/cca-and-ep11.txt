@@ -1,0 +1,7 @@
+CARD.DOMAIN TYPE  MODE        STATUS  REQUESTS
+----------------------------------------------
+01          CEX5C CCA-Coproc  online         1
+01.0001     CEX5C CCA-Coproc  online         1
+01.0002     CEX5C CCA-Coproc  offline        0
+02          CEX7C EP11-Coproc online         6
+02.0001     CEX7C EP11-Coproc online         4

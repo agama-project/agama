@@ -1,0 +1,37 @@
+---
+- disk:
+    name: /dev/sda
+    size: 500 GiB
+    partition_table: ms-dos
+    partitions:
+
+    - partition:
+        size: 10 GiB
+        name: /dev/sda1
+        type: primary
+
+    - partition:
+        size: 10 GiB
+        name: /dev/sda2
+        type: primary
+
+- md:
+    name: "/dev/md0"
+    chunk_size: 16 KiB
+    partition_table: ms-dos
+    partitions:
+
+    - partition:
+        size: 1 GiB
+        name: /dev/md0p1
+        type: primary
+
+    md_devices:
+    - md_device:
+        blk_device: /dev/sda1
+    - md_device:
+        blk_device: /dev/sda2
+
+- disk:
+    name: /dev/sdb
+    size: 500 GiB

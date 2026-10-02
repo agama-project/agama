@@ -1,0 +1,11 @@
+---
+- disk:
+    name: /dev/sda
+    size: 2 TiB
+    partition_table:  gpt
+    partitions:
+
+    - partition:
+        size:         1 TiB
+        name:         /dev/sda1
+        file_system:  btrfs

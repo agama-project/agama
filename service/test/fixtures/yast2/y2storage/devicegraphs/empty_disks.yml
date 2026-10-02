@@ -1,0 +1,20 @@
+---
+- disk:
+    name: /dev/sda
+    size: 1 TiB
+    partition_table:  ms-dos
+    partitions:
+
+    - partition:
+        size:         1 GiB
+        name:         /dev/sda1
+
+- disk:
+    name: /dev/sdb
+    size: 400 GiB
+    partition_table:  gpt
+
+- disk:
+    name: /dev/sdc
+    size: 400 GiB
+    partition_table:  ms-dos

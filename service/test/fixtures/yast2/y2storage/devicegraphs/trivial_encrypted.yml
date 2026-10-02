@@ -1,0 +1,15 @@
+---
+- disk:
+    name: /dev/sda
+    size: 200 GiB
+    partition_table:  gpt
+    partitions:
+
+    - partition:
+        size:         unlimited
+        name:         /dev/sda1
+        file_system:  ext4
+        mount_point:  /
+        encryption:
+          name: /dev/mapper/cr_sda1
+
