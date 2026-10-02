@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Oct  2 10:51:04 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Drop the unnecessary yast2-iscsi-client RPM dependency by
+  vendoring the needed yast2-iscsi-client code
+  (gh#agama-project/agama#4032).
+
+-------------------------------------------------------------------
 Fri Oct  2 09:17:47 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Drop the unnecessary yast2-s390 and yast2-cio RPM dependencies by

@@ -40,6 +40,16 @@ describe Yast::AutoinstFunctions do
     Yast::Profile.Import({})
   end
 
+  # Yast::Mode and Yast::Stage are real classic YaST singletons, not test doubles - mutating them
+  # via SetMode/Set (above) leaks into whichever spec file happens to run next in the same process
+  # unless explicitly restored. This was found while vendoring yast2-iscsi-client: it broke
+  # IscsiClientLib's #getServiceStatus tests whenever this file ran first, since that method
+  # branches on Yast::Stage.initial.
+  after do
+    Yast::Mode.SetMode("normal")
+    Yast::Stage.Set("normal")
+  end
+
   describe "#second_stage_required?" do
     context "when not in the initial stage" do
       let(:stage) { "continue" }
