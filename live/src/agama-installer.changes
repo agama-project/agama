@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Oct  2 09:17:47 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Drop the yast2-s390 and yast2-cio dependencies pulled in by
+  agama-yast on s390x (gh#agama-project/agama#TBD).
+
+-------------------------------------------------------------------
 Wed Sep 30 12:48:23 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Reduce the installer image footprint by dropping unnecessary

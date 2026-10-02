@@ -94,11 +94,12 @@ if [ $(uname -m) == "x86_64" ]; then
 fi
 
 # Install s390 packages
+# yast2-s390 and yast2-cio are no longer needed: yast2-s390's Ruby code is vendored into
+# service/YaST2/lib/y2s390, and yast2-cio was confirmed unused. yast2-reipl is still required for
+# now (see service/package/gem2rpm.yml).
 if [ $(uname -m) == "s390x" ]; then
   $SUDO $ZYPPER install \
-    yast2-s390 \
-    yast2-reipl \
-    yast2-cio
+    yast2-reipl
 fi
 
 # Rubygem dependencies

@@ -1,27 +1,43 @@
 # Vendored YaST/AutoYaST code
 
 This directory contains a **permanent fork** of a small set of Ruby classes originally provided by
-the `autoyast2` (`autoyast2-installation`), `yast2-installation` and `yast2-network` YaST packages.
-Agama no longer depends on those RPMs; the classes it still needs from them have been copied here
-instead.
+the `autoyast2` (`autoyast2-installation`), `yast2-installation`, `yast2-network` and `yast2-s390`
+YaST packages. Agama no longer depends on those RPMs; the classes it still needs from them have been
+copied here instead.
 
 There is **no process to keep this code in sync with upstream YaST releases**. If a bug is found
-here, or a new AutoYaST feature is needed, fix/extend the code directly in this directory; do not
-expect it to be updated automatically from `yast-autoyast2` or `yast-installation`.
+here, or a new AutoYaST/DASD/zFCP feature is needed, fix/extend the code directly in this directory;
+do not expect it to be updated automatically from `yast-autoyast2`, `yast-installation`,
+`yast-network` or `yast-s390`.
 
 ## Tests
 
 Being the sole maintainer of this code means Agama also owns its test coverage. `service/test/YaST2/`
 mirrors this directory's layout and contains tests ported from the original upstream test suites
-(`autoyast2-installation`'s, `yast2-installation`'s and `yast2-network`'s `test/` directories),
-adapted to run against the vendored copies here instead of an installed RPM. Fixtures they need live
-under `service/test/fixtures/yast2/`. As with the production code, there is no process to pull in new
-upstream test examples automatically - extend these tests directly when the vendored code changes.
+(`autoyast2-installation`'s, `yast2-installation`'s, `yast2-network`'s and `yast2-s390`'s `test/`
+directories), adapted to run against the vendored copies here instead of an installed RPM. Fixtures
+they need live under `service/test/fixtures/yast2/`. As with the production code, there is no process
+to pull in new upstream test examples automatically - extend these tests directly when the vendored
+code changes.
 
 A handful of `y2network` value classes (`startmode.rb`, `startmodes.rb` and its six concrete
 subclasses, `wireless_mode.rb`) have no upstream test at all (only interactive-UI widget tests
 exist for them) - their tests under `service/test/YaST2/lib/y2network/` were written from scratch
 instead of ported.
+
+`y2s390/hwinfo_reader.rb` likewise has no upstream test at all (not even an interactive-UI one) -
+its test under `service/test/YaST2/lib/y2s390/hwinfo_reader_test.rb` was written from scratch.
+
+Upstream `yast2-s390` tests mock hardware-probing data via two environment variables
+(`S390_MOCKING=1`, which points at a hardcoded `test/data/*.yml`/`.txt` path relative to the
+process's current working directory, or `YAST2_S390_LSDASD`/`YAST2_S390_PROBE_DISK`, which point at
+an arbitrary file). The production code (`dasds_reader.rb`, `hwinfo_reader.rb`) was vendored
+unchanged, including this mechanism - but the **ported tests** deliberately avoid relying on the
+CWD-relative `S390_MOCKING` path (fragile given Agama's different working-directory/test-layout
+conventions) and instead stub the relevant methods directly (`Y2S390::HwinfoReader.instance`'s
+`for_device`/`disks`, `DasdsReader#dasd_entries`) using fixtures loaded through the standard
+`FIXTURES_PATH` convention. This exercises the same production code paths without depending on
+process CWD.
 
 ### Known limitations (found while writing tests, not fixed)
 
@@ -95,6 +111,14 @@ original code if needed:
 | `lib/y2network/autoinst_profile/{dns,interfaces,interface,alias}_section.rb`                                                                                                               | `yast2-network`                                                                                             | Sub-sections of `<networking>`: DNS, interfaces and per-interface attributes (including bonding/bridge/VLAN/wireless, consumed by Agama's own `bond_reader.rb`/`bridge_reader.rb`/`vlan_reader.rb`/`wireless_reader.rb`)                                                                                        |
 | `lib/y2network/autoinst_profile/{routing,route}_section.rb`, `{udev_rules,udev_rule}_section.rb`, `{s390_devices,s390_device}_section.rb`                                                  | `yast2-network`                                                                                             | Not read by any of Agama's readers today, but load-bearing: `NetworkingSection.new_from_hashes` unconditionally instantiates them when the corresponding profile keys (`routing`, `net-udev`, `s390-devices`) are present                                                                                       |
 | `lib/y2network/boot_protocol.rb`, `ip_address.rb`, `startmode.rb`, `startmodes.rb`, `startmodes/{auto,hotplug,ifplugd,manual,nfsroot,off}.rb`, `wireless_auth_mode.rb`, `wireless_mode.rb` | `yast2-network`                                                                                             | Value/enum classes used while reading interface attributes. Unlike everything above, this whole closure has **no** `Yast.import` calls at all - plain `require` only                                                                                                                                            |
+| `lib/y2s390.rb`                                                                                                                                                                            | `yast2-s390` (`src/lib/y2s390.rb`)                                                                           | Aggregator requiring `dasd.rb`, `dasds_reader.rb`, `dasds_collection.rb`, `hwinfo_reader.rb`, in that order (`dasd.rb` relies on `hwinfo_reader.rb` having already been loaded, same as upstream)                                                                                                                |
+| `lib/y2s390/dasd.rb`                                                                                                                                                                       | `yast2-s390` (`src/lib/y2s390/dasd.rb`)                                                                     | `Y2S390::Dasd`, a single DASD device (status, type, partition info, hwinfo-derived access type)                                                                                                                                                                                                                  |
+| `lib/y2s390/dasds_reader.rb`                                                                                                                                                               | `yast2-s390` (`src/lib/y2s390/dasds_reader.rb`)                                                             | `Y2S390::DasdsReader`, parses `lsdasd`/`dasdview` output into `Y2S390::Dasd` instances                                                                                                                                                                                                                            |
+| `lib/y2s390/dasds_collection.rb`                                                                                                                                                           | `yast2-s390` (`src/lib/y2s390/dasds_collection.rb`)                                                         | `Y2S390::DasdsCollection`, filtering helpers (`active`, `offline`, `unformatted`, `to_format`) on top of `BaseCollection`                                                                                                                                                                                         |
+| `lib/y2s390/base_collection.rb`                                                                                                                                                            | `yast2-s390` (`src/lib/y2s390/base_collection.rb`)                                                          | `Y2S390::BaseCollection`, generic add/delete/by\_id collection base class                                                                                                                                                                                                                                         |
+| `lib/y2s390/hwinfo_reader.rb`                                                                                                                                                              | `yast2-s390` (`src/lib/y2s390/hwinfo_reader.rb`)                                                            | `Y2S390::HwinfoReader`, a singleton caching `.probe.disk` hardware-probing data, looked up by sysfs bus ID                                                                                                                                                                                                        |
+| `lib/y2s390/format_process.rb`                                                                                                                                                             | `yast2-s390` (`src/lib/y2s390/format_process.rb`)                                                           | `Y2S390::FormatProcess`/`FormatStatus`, drives and tracks the async `dasdfmt` process used to format DASD volumes                                                                                                                                                                                                 |
+| `lib/y2s390/zfcp.rb`                                                                                                                                                                       | `yast2-s390` (`src/lib/y2s390/zfcp.rb`)                                                                     | `Y2S390::ZFCP`, probes zFCP controllers/disks and activates/deactivates them via `zfcp_host_configure`/`zfcp_disk_configure`/`zfcp_san_disc`                                                                                                                                                                      |
 
 `Installation::FinishClient` (the common base class for finish steps), `Y2Storage::Clients::Finish`
 / `Y2IscsiClient::FinishClient` (the storage/iSCSI finish steps), and
@@ -102,6 +126,13 @@ original code if needed:
 `y2network/autoinst_profile/*_section.rb` file above) are **not** vendored here: they are provided
 by the `yast2`, `yast2-storage-ng` and `yast2-iscsi-client` packages, which remain real runtime
 dependencies of Agama.
+
+**`yast2-s390`'s UI/classic-module layer is not vendored.** `dasds_writer.rb`, `dasd_actions/*.rb`,
+`presenters/dasd_summary.rb`, the `dialogs/`/`include/` tree and the classic `modules/
+DASDController.rb`/`modules/ZFCPController.rb` modules are all interactive-UI-only or only reachable
+from them - Agama's own `service/lib/agama/storage/dasd/`, `service/lib/agama/storage/zfcp/` drive
+DASD/zFCP configuration directly through the lower-level classes vendored above (`Dasd`,
+`DasdsCollection`, `DasdsReader`, `FormatProcess`, `ZFCP`), not through `DasdsWriter`/`DasdActions`.
 
 **`yast2-users` is not vendored at all.** `Y2Users::User` unconditionally requires a chain that ends
 in `Yast.import "UsersSimple"`, a Perl module that only exists inside `yast2-users` itself, so

@@ -1,0 +1,21 @@
+reading volume label ..: VOL1
+reading vtoc ..........: ok
+
+
+Disk /dev/dasda:
+  cylinders ............: 30048
+  tracks per cylinder ..: 15
+  blocks per track .....: 12
+  bytes per block ......: 4096
+  volume label .........: VOL1
+  volume serial ........: 0X0160
+  max partitions .......: 3
+
+ ------------------------------- tracks -------------------------------
+               Device      start      end   length   Id  System
+                               2       63       62       unused
+          /dev/dasda1         64     6463     6400    1  Linux native
+          /dev/dasda2       6464   414271   407808    2  Linux native
+          /dev/dasda3     414272   450687    36416    3  Linux native
+                          450688   450719       32       unused
+exiting...

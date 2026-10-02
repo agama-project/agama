@@ -28,33 +28,6 @@ require "agama/storage/dasd/enable_operation"
 require "agama/storage/dasd/disable_operation"
 require "agama/storage/dasd/format_operation"
 require "agama/storage/dasd/diag_operation"
-require "forwardable"
-
-# Define some very basic (almost empty) Y2S390 classes to support the tests,
-# since yast2-s390 is not available in all architectures so we cannot depend
-# on the real definitions of these classes to run the tests.
-module Y2S390
-  class DasdsReader; end # rubocop:disable Lint/EmptyClass
-  class FormatProcess; end # rubocop:disable Lint/EmptyClass
-
-  class DasdsCollection
-    extend Forwardable
-
-    def_delegators :@elements, :each, :each_with_index, :select, :find, :reject, :map,
-      :any?, :size, :empty?, :first
-
-    # Constructor
-    #
-    # @param elements [Array<Objects>]
-    def initialize(elements = [])
-      @elements = elements
-    end
-
-    def all
-      @elements.dup
-    end
-  end
-end
 
 describe Agama::Storage::DASD::Manager do
   subject { described_class.new(logger: logger) }
