@@ -798,4 +798,48 @@ describe("SelectableDataTable", () => {
       within(table).getByRole("row", { name: /dev\/sda 1024/ });
     });
   });
+
+  describe("tree mode", () => {
+    const treeColumns: SelectableDataTableColumn[] = [
+      { name: _("Name"), value: (item: any) => item.name },
+    ];
+    const tree = { name: "br0", ports: [{ name: "bond0", ports: [{ name: "eth0" }] }] };
+
+    it("nests the children at any depth, with no expansion or selection column", () => {
+      plainRender(
+        <SelectableDataTable
+          columns={treeColumns}
+          items={[tree]}
+          itemIdKey="name"
+          itemChildren={(item: any) => item.ports || []}
+          initialExpandedKeys={["br0", "bond0"]}
+          selectionMode="none"
+          isTree
+        />,
+      );
+
+      expect(screen.getByRole("row", { name: /eth0/ })).toHaveAttribute("aria-level", "3");
+      expect(screen.queryByRole("columnheader", { name: "Row expansion" })).toBeNull();
+      expect(screen.queryByRole("columnheader", { name: "Row selection" })).toBeNull();
+    });
+
+    it("hides the children of a collapsed item", async () => {
+      const { user } = plainRender(
+        <SelectableDataTable
+          columns={treeColumns}
+          items={[tree]}
+          itemIdKey="name"
+          itemChildren={(item: any) => item.ports || []}
+          initialExpandedKeys={["br0", "bond0"]}
+          selectionMode="none"
+          isTree
+        />,
+      );
+
+      const br0 = screen.getByRole("row", { name: /br0/ });
+      await user.click(within(br0).getByRole("button", { name: /Collapse/ }));
+      expect(screen.queryByRole("row", { name: /bond0/ })).toBeNull();
+      expect(screen.queryByRole("row", { name: /eth0/ })).toBeNull();
+    });
+  });
 });
