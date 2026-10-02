@@ -14,23 +14,23 @@
     # YaST dependencies
     # ArchFilter
     Requires:       yast2 >= 4.5.20
-    Requires:       yast2-bootloader >= 5.0.30
     Requires:       yast2-hardware-detection
+    # yast2-bootloader's Ruby code (Bootloader::*, Yast::Bootloader, Yast::BootStorage) is vendored
+    # into service/YaST2/lib/bootloader and service/YaST2/modules (see service/YaST2/README.md);
+    # the RPM is no longer needed. grub2/sdbootutil and friends (below) still provide the actual
+    # bootloader binaries the vendored code shells out to.
     # yast2-iscsi-client's Ruby code (Yast::IscsiClientLib, Y2IscsiClient::*) is vendored into
     # service/YaST2/lib/y2iscsi_client and service/YaST2/modules (see service/YaST2/README.md);
     # the RPM is no longer needed. open-iscsi (below) still provides the iscsiadm/iscsiuio
     # binaries IscsiClientLib shells out to.
     Requires:       yast2-storage-ng >= 5.0.49
-    %ifarch s390 s390x
+    # s390-only yast2-* dependencies previously required here (all now dropped):
     # yast2-s390's Ruby code (Y2S390::Dasd/DasdsCollection/DasdsReader/FormatProcess/ZFCP) is
-    # vendored into service/YaST2/lib/y2s390 (see service/YaST2/README.md); the RPM is no longer
-    # needed. yast2-cio was confirmed unused (its only content is an interactive channel-blacklist
-    # dialog Agama never runs) and dropped outright.
-    # yast2-reipl stays for now: Bootloader::FinishClient (from yast2-bootloader, not yet vendored)
-    # dynamically dispatches to its "reipl_bootloader_finish" client on every s390 install; it can
-    # only be dropped once that dispatch is replaced when yast2-bootloader itself is vendored.
-    Requires:       yast2-reipl
-    %endif
+    # vendored into service/YaST2/lib/y2s390 (see service/YaST2/README.md). yast2-cio was confirmed
+    # unused (its only content is an interactive channel-blacklist dialog Agama never runs) and
+    # dropped outright. yast2-reipl's only real effect (Bootloader::FinishClient's s390
+    # "reipl_bootloader_finish" WFM dispatch, i.e. running `chreipl node /boot/zipl`) is now
+    # inlined directly into the vendored FinishClient (see service/YaST2/README.md).
     # Storage dependencies
     Requires:       bcache-tools
     Requires:       btrfsprogs

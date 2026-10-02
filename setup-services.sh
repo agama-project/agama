@@ -58,7 +58,6 @@ $SUDO $ZYPPER install \
   glibc-locale \
   suseconnect-ruby-bindings \
   yast2 \
-  yast2-bootloader \
   yast2-hardware-detection \
   yast2-schema \
   yast2-storage-ng \
@@ -92,14 +91,10 @@ if [ $(uname -m) == "x86_64" ]; then
     fde-tools
 fi
 
-# Install s390 packages
-# yast2-s390 and yast2-cio are no longer needed: yast2-s390's Ruby code is vendored into
-# service/YaST2/lib/y2s390, and yast2-cio was confirmed unused. yast2-reipl is still required for
-# now (see service/package/gem2rpm.yml).
-if [ $(uname -m) == "s390x" ]; then
-  $SUDO $ZYPPER install \
-    yast2-reipl
-fi
+# No s390-specific YaST packages are needed anymore: yast2-s390's Ruby code is vendored into
+# service/YaST2/lib/y2s390, yast2-cio was confirmed unused, and yast2-reipl's only real effect
+# (the s390 "chreipl node /boot/zipl" call) is now inlined directly into the vendored
+# Bootloader::FinishClient (see service/package/gem2rpm.yml and service/YaST2/README.md).
 
 # Rubygem dependencies
 (

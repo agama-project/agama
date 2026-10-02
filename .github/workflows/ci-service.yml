@@ -73,7 +73,6 @@ jobs:
         RUBY_VERSION=$(ruby -e "puts RbConfig::CONFIG['ruby_version']")
         zypper --non-interactive install \
         yast2 \
-        yast2-bootloader \
         yast2-devtools \
         yast2-storage-ng \
         gettext-tools \
