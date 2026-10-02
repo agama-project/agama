@@ -518,6 +518,7 @@
               { "required": ["addresses"] },
               { "required": ["nameservers"] },
               { "required": ["dnsSearchList"] },
+              { "required": ["dnsSearchlist"] },
               { "required": ["ignoreAutoDns"] }
             ]
           }
