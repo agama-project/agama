@@ -1,23 +1,24 @@
 # Vendored YaST/AutoYaST code
 
 This directory contains a **permanent fork** of a small set of Ruby classes originally provided by
-the `autoyast2` (`autoyast2-installation`), `yast2-installation`, `yast2-network` and `yast2-s390`
-YaST packages. Agama no longer depends on those RPMs; the classes it still needs from them have been
-copied here instead.
+the `autoyast2` (`autoyast2-installation`), `yast2-installation`, `yast2-network`, `yast2-s390` and
+`yast2-iscsi-client` YaST packages. Agama no longer depends on those RPMs; the classes it still needs
+from them have been copied here instead.
 
 There is **no process to keep this code in sync with upstream YaST releases**. If a bug is found
-here, or a new AutoYaST/DASD/zFCP feature is needed, fix/extend the code directly in this directory;
-do not expect it to be updated automatically from `yast-autoyast2`, `yast-installation`,
-`yast-network` or `yast-s390`.
+here, or a new AutoYaST/DASD/zFCP/iSCSI feature is needed, fix/extend the code directly in this
+directory; do not expect it to be updated automatically from `yast-autoyast2`, `yast-installation`,
+`yast-network`, `yast-s390` or `yast-iscsi-client`.
 
 ## Tests
 
 Being the sole maintainer of this code means Agama also owns its test coverage. `service/test/YaST2/`
 mirrors this directory's layout and contains tests ported from the original upstream test suites
-(`autoyast2-installation`'s, `yast2-installation`'s, `yast2-network`'s and `yast2-s390`'s `test/`
-directories), adapted to run against the vendored copies here instead of an installed RPM. Fixtures
-they need live under `service/test/fixtures/yast2/`. As with the production code, there is no process
-to pull in new upstream test examples automatically - extend these tests directly when the vendored
+(`autoyast2-installation`'s, `yast2-installation`'s, `yast2-network`'s, `yast2-s390`'s and
+`yast2-iscsi-client`'s `test/` directories), adapted to run against the vendored copies here instead
+of an installed RPM. Fixtures they need live under `service/test/fixtures/yast2/`. As with the
+production code, there is no process to pull in new upstream test examples automatically - extend
+these tests directly when the vendored
 code changes.
 
 A handful of `y2network` value classes (`startmode.rb`, `startmodes.rb` and its six concrete
@@ -27,6 +28,13 @@ instead of ported.
 
 `y2s390/hwinfo_reader.rb` likewise has no upstream test at all (not even an interactive-UI one) -
 its test under `service/test/YaST2/lib/y2s390/hwinfo_reader_test.rb` was written from scratch.
+
+`y2iscsi_client/config.rb` has **no** upstream test coverage of any kind (not even an incidental
+reference), and `y2iscsi_client/authentication.rb` has only an incidental one (used as a plain
+fixture, `let(:auth) { Y2IscsiClient::Authentication.new }`, inside `IscsiClientLib`'s own
+`#discover` tests - never a focused unit test of `Authentication`'s own API). Both
+`service/test/YaST2/lib/y2iscsi_client/config_test.rb` and `.../authentication_test.rb` were written
+from scratch.
 
 Upstream `yast2-s390` tests mock hardware-probing data via two environment variables
 (`S390_MOCKING=1`, which points at a hardcoded `test/data/*.yml`/`.txt` path relative to the
@@ -119,13 +127,18 @@ original code if needed:
 | `lib/y2s390/hwinfo_reader.rb`                                                                                                                                                              | `yast2-s390` (`src/lib/y2s390/hwinfo_reader.rb`)                                                            | `Y2S390::HwinfoReader`, a singleton caching `.probe.disk` hardware-probing data, looked up by sysfs bus ID                                                                                                                                                                                                        |
 | `lib/y2s390/format_process.rb`                                                                                                                                                             | `yast2-s390` (`src/lib/y2s390/format_process.rb`)                                                           | `Y2S390::FormatProcess`/`FormatStatus`, drives and tracks the async `dasdfmt` process used to format DASD volumes                                                                                                                                                                                                 |
 | `lib/y2s390/zfcp.rb`                                                                                                                                                                       | `yast2-s390` (`src/lib/y2s390/zfcp.rb`)                                                                     | `Y2S390::ZFCP`, probes zFCP controllers/disks and activates/deactivates them via `zfcp_host_configure`/`zfcp_disk_configure`/`zfcp_san_disc`                                                                                                                                                                      |
+| `modules/IscsiClientLib.rb`                                                                                                                                                                | `yast2-iscsi-client` (`src/modules/IscsiClientLib.rb`)                                                      | `Yast::IscsiClientLib`, the main iSCSI discovery/login/session-management module (wraps `iscsiadm`/`iscsiuio`)                                                                                                                                                                                                    |
+| `lib/y2iscsi_client/authentication.rb`                                                                                                                                                     | `yast2-iscsi-client` (`src/lib/y2iscsi_client/authentication.rb`)                                           | `Y2IscsiClient::Authentication`, CHAP discovery/login authentication data                                                                                                                                                                                                                                         |
+| `lib/y2iscsi_client/config.rb`                                                                                                                                                             | `yast2-iscsi-client` (`src/lib/y2iscsi_client/config.rb`)                                                   | `Y2IscsiClient::Config`, reads/writes `/etc/iscsi/iscsid.conf`; only used transitively, via `IscsiClientLib`'s own internal `require`                                                                                                                                                                             |
+| `lib/y2iscsi_client/timeout_process.rb`                                                                                                                                                    | `yast2-iscsi-client` (`src/lib/y2iscsi_client/timeout_process.rb`)                                          | `Y2IscsiClient::TimeoutProcess`, runs a command under `timeout(1)`; only used transitively, via `IscsiClientLib`'s own internal `require`                                                                                                                                                                         |
+| `lib/y2iscsi_client/finish_client.rb`                                                                                                                                                      | `yast2-iscsi-client` (`src/lib/y2iscsi_client/finish_client.rb`)                                            | `Y2IscsiClient::FinishClient`, copies the iSCSI configuration to the target system and enables the needed services/sockets at the end of installation                                                                                                                                                            |
 
-`Installation::FinishClient` (the common base class for finish steps), `Y2Storage::Clients::Finish`
-/ `Y2IscsiClient::FinishClient` (the storage/iSCSI finish steps), and
+`Installation::FinishClient` (the common base class for finish steps) and
 `installation/autoinst_profile/{section_with_attributes,element_path}.rb` (required by every
-`y2network/autoinst_profile/*_section.rb` file above) are **not** vendored here: they are provided
-by the `yast2`, `yast2-storage-ng` and `yast2-iscsi-client` packages, which remain real runtime
-dependencies of Agama.
+`y2network/autoinst_profile/*_section.rb` file above) are **not** vendored here: they are provided by
+the base `yast2` package, which remains a real runtime dependency of Agama.
+`Y2Storage::Clients::Finish` (the storage finish step) is likewise not vendored yet - it's still
+provided by `yast2-storage-ng`, which remains a real runtime dependency of Agama for now.
 
 **`yast2-s390`'s UI/classic-module layer is not vendored.** `dasds_writer.rb`, `dasd_actions/*.rb`,
 `presenters/dasd_summary.rb`, the `dialogs/`/`include/` tree and the classic `modules/
@@ -133,6 +146,10 @@ DASDController.rb`/`modules/ZFCPController.rb` modules are all interactive-UI-on
 from them - Agama's own `service/lib/agama/storage/dasd/`, `service/lib/agama/storage/zfcp/` drive
 DASD/zFCP configuration directly through the lower-level classes vendored above (`Dasd`,
 `DasdsCollection`, `DasdsReader`, `FormatProcess`, `ZFCP`), not through `DasdsWriter`/`DasdActions`.
+
+**`yast2-iscsi-client`'s UI layer is not vendored.** `modules/IscsiClient.rb` (capital-only, the
+interactive YaST wizard/sequencer client that wraps `IscsiClientLib` for the UI workflow) is a
+separate, distinct module from `IscsiClientLib` and is never referenced anywhere in Agama's code.
 
 **`yast2-users` is not vendored at all.** `Y2Users::User` unconditionally requires a chain that ends
 in `Yast.import "UsersSimple"`, a Perl module that only exists inside `yast2-users` itself, so
