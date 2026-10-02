@@ -59,7 +59,6 @@ $SUDO $ZYPPER install \
   suseconnect-ruby-bindings \
   yast2 \
   yast2-hardware-detection \
-  yast2-packager \
   yast2-schema \
   bcache-tools \
   btrfsprogs \

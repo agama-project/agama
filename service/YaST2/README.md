@@ -2,16 +2,15 @@
 
 This directory contains a **permanent fork** of a small set of Ruby classes originally provided by
 the `autoyast2` (`autoyast2-installation`), `yast2-installation`, `yast2-network`, `yast2-s390`,
-`yast2-iscsi-client`, `yast2-bootloader` and `yast2-storage-ng` YaST packages. Agama no longer
-depends on those RPMs; the classes it still needs from them have been copied here instead.
-(`yast2-packager` is a related, but different, case: Agama still depends on that RPM - see
-"Not vendored, kept as real runtime dependencies" below for why it couldn't be dropped the same way.)
+`yast2-iscsi-client`, `yast2-bootloader`, `yast2-storage-ng` and `yast2-packager` YaST packages.
+Agama no longer depends on any of those RPMs; the classes it still needs from them have been
+copied here instead.
 
 There is **no process to keep this code in sync with upstream YaST releases**. If a bug is found
 here, or a new AutoYaST/DASD/zFCP/iSCSI/bootloader/storage feature is needed, fix/extend the code
 directly in this directory; do not expect it to be updated automatically from `yast-autoyast2`,
-`yast-installation`, `yast-network`, `yast-s390`, `yast-iscsi-client`, `yast-bootloader` or
-`yast-storage-ng`.
+`yast-installation`, `yast-network`, `yast-s390`, `yast-iscsi-client`, `yast-bootloader`,
+`yast-storage-ng` or `yast-packager`.
 
 ## Tests
 
@@ -37,6 +36,17 @@ fixture, `let(:auth) { Y2IscsiClient::Authentication.new }`, inside `IscsiClient
 `#discover` tests - never a focused unit test of `Authentication`'s own API). Both
 `service/test/YaST2/lib/y2iscsi_client/config_test.rb` and `.../authentication_test.rb` were written
 from scratch.
+
+`modules/InstURL.rb` has no upstream test at all -
+`service/test/YaST2/modules/InstURL_test.rb` was written from scratch, covering `#installInf2Url`
+(the only method actually called anywhere in Agama's closure). `lib/y2packager/repository.rb` and
+`zypp_url.rb` do have upstream coverage (`yast2`'s own `test/repository_test.rb`/
+`test/y2packager/zypp_url_test.rb`), ported into
+`service/test/YaST2/lib/y2packager/{repository,zypp_url}_test.rb`; `repository_test.rb`'s
+`#products` describe block (and the `product_factory.rb` helper it alone used) were dropped along
+with the production method. `modules/AutoinstFunctions_test.rb`'s `#selected_product` describe
+block was likewise dropped along with the trimmed production methods (see "Deliberate deviations
+from upstream" below for both).
 
 `yast2-bootloader`'s `exceptions.rb`, `cpu_mitigations.rb` and `stage1_proposal.rb` have no upstream
 test at all - `service/test/YaST2/lib/bootloader/{exceptions,cpu_mitigations,stage1_proposal}_test.rb`
@@ -178,6 +188,29 @@ package above - each documented with a "DEVIATION FROM UPSTREAM" comment at the 
   below), and none of the four ported specs that call `#devicegraph_stub`
   (`encryption_method_test.rb`, `encryption_processes/{luks,pervasive,systemd_fde}_test.rb`) rely on
   that partitioner-specific device-graph cache.
+- **`modules/InstURL.rb`**: dropped the unused `Yast.import "CheckMedia"` call from `#main`. Nothing
+  in `#installInf2Url` (the only method actually called anywhere in Agama's closure) or any other
+  method defined in the class references `CheckMedia`, and vendoring that separate module (which has
+  its own further dependencies) just to satisfy an unused import would be unnecessary bloat.
+- **`lib/y2packager/repository.rb`**: dropped `#products`/`#addons`, along with the
+  `require "y2packager/product"`/`require "y2packager/resolvable"` they alone needed.
+  `Y2Storage::DiskAnalyzer` - the only caller anywhere in Agama's closure - only ever calls
+  `.all`/`#local?`/`#url`. `#products`/`#addons` pull in `Y2Packager::Product`, which transitively
+  needs the yast2-packager-only `Yast::InstURL` chain (via its license-fetching mixin) - avoided
+  entirely by cutting the two methods nothing calls.
+- **`modules/AutoinstFunctions.rb`** (from an earlier phase): dropped `#selected_product`,
+  `#available_base_products`, `#reset_product`, the `PRODUCT_MAPPING` constant, and the private
+  `#identify_product`/`#identify_product_by_*`/`#base_product_name` helpers they alone needed,
+  along with the `require "y2packager/product"`/`"y2packager/product_reader"`/
+  `"y2packager/product_spec"`/`"y2packager/medium_type"` lines. This is AutoYaST's own
+  base-product auto-detection logic (matching patterns/packages/an explicit product name from the
+  profile against products available on the install media) - confirmed unused anywhere in Agama's
+  closure (only `#second_stage_required?`/`#check_second_stage_environment` are ever called, via
+  `Profile.rb`). Agama has its own, independent AutoYaST product detection
+  (`service/lib/agama/autoyast/product_reader.rb`), which reads the raw profile hash directly
+  instead. `y2packager/product_spec.rb`/`medium_type.rb` are genuinely `yast2-packager`-only
+  (confirmed via `rpm -qf`), and `yast2-packager` can never be a runtime dependency of Agama at
+  all - see "`yast2-packager`: a circular RPM dependency" below.
 
 ## Layout
 
@@ -244,8 +277,11 @@ case, nothing upstream *tells* you which package a classic module lives in; you 
 | `modules/Profile.rb`                                                                                                                                                                       | `autoyast2-installation` (`autoinstallation/src/modules/Profile.rb`)                                        | `Yast::Profile` and `Yast::ProfileHash`, the in-memory profile representation                                                                                                                                                                                                                                   |
 | `modules/ProfileLocation.rb`                                                                                                                                                               | `autoyast2-installation` (`autoinstallation/src/modules/ProfileLocation.rb`)                                | Fetches the profile from its configured location (URL, rules/classes, etc.)                                                                                                                                                                                                                                     |
 | `modules/AutoInstallRules.rb`                                                                                                                                                              | `autoyast2-installation` (`autoinstallation/src/modules/AutoInstallRules.rb`)                               | `<rules>`/`<classes>` matching engine. Requires `xslt/merge.xslt` (see below)                                                                                                                                                                                                                                   |
-| `modules/AutoinstFunctions.rb`                                                                                                                                                             | `autoyast2-installation` (`autoinstallation/src/modules/AutoinstFunctions.rb`)                              | Base-product detection, used by `Profile#check_version` during profile import                                                                                                                                                                                                                                   |
+| `modules/AutoinstFunctions.rb`                                                                                                                                                             | `autoyast2-installation` (`autoinstallation/src/modules/AutoinstFunctions.rb`)                              | `#second_stage_required?`/`#check_second_stage_environment`, used by `Profile.rb` to decide whether a second installation stage needs to run. The base-product auto-detection methods were trimmed - see "Deliberate deviations from upstream" below                                                            |
 | `modules/ServicesManagerTarget.rb`                                                                                                                                                         | `yast2-services-manager` (`services-manager/src/modules/services_manager_target.rb`)                        | Only `ServicesManagerTargetClass::BaseTargets` (a target-name/translation lookup table) is used, by `AutoinstConfig`; the rest of the class (reading/writing the systemd default target) is unused dead code, kept only because `Yast.import "ServicesManagerTarget"` needs the whole file to load successfully |
+| `modules/InstURL.rb`                                                                                                                                                                       | `yast2-packager` (`library/packages/src/modules/InstURL.rb`)                                                | `Yast::InstURL`, converts `/etc/install.inf` data to a repository URL. Needed by `AutoinstFunctions.rb#main`, `lib/transfer/file_from_url.rb` and `modules/ProfileLocation.rb`. Only `#installInf2Url` is ever called - see "Deliberate deviations from upstream" below                                          |
+| `lib/y2packager/repository.rb`                                                                                                                                                             | currently base `yast2` (`library/packages/src/lib/y2packager/repository.rb`); historically `yast2-packager` | `Y2Packager::Repository`, used by `Y2Storage::DiskAnalyzer#candidate_devices` to exclude the disk backing the installation repository from the candidate list. `#products`/`#addons` were trimmed - see "Deliberate deviations from upstream" below                                                              |
+| `lib/y2packager/zypp_url.rb`                                                                                                                                                               | currently base `yast2` (`library/packages/src/lib/y2packager/zypp_url.rb`); historically `yast2-packager`   | `Y2Packager::ZyppUrl`, a `URI` wrapper used by `Repository#local?`/`#url`                                                                                                                                                                                                                                         |
 | `include/autoinstall/xml.rb`                                                                                                                                                               | `autoyast2-installation` (`autoinstallation/src/include/autoinstall/xml.rb`)                                | XML doc-type setup (`profileSetup`/`classSetup`) used while parsing the profile; loaded via `Yast.include self, "autoinstall/xml.rb"` from `AutoinstConfig.rb`                                                                                                                                                  |
 | `include/autoinstall/io.rb`                                                                                                                                                                | `autoyast2-installation` (`autoinstallation/src/include/autoinstall/io.rb`)                                 | `Get`/`GetURL` helpers on top of `lib/transfer/file_from_url.rb`; loaded via `Yast.include self, "autoinstall/io.rb"` from `AutoinstConfig.rb`                                                                                                                                                                  |
 | `xslt/merge.xslt`                                                                                                                                                                          | `autoyast2-installation` (`autoinstallation/xslt/merge.xslt`, third-party LGPL stylesheet by Oliver Becker) | Merges two profile XML documents; invoked by `AutoInstallRules.rb` via `xsltproc`, resolved relative to `AutoInstallRules.rb`'s own location. Not loaded as Ruby code                                                                                                                                           |
@@ -360,35 +396,60 @@ themselves.
 respectively. A third one, `scrconf/etc_mtab.scr`, is upstream-flagged dead code (a `FIXME: Remove
 this SCR agent...` comment) with zero references anywhere in the closure - not vendored.
 
-**Not vendored, kept as real runtime dependencies**: `require "storage"` loads `libstorage-ng-ruby`'s
-compiled SWIG extension (the actual libstorage-ng C++ library bindings - there is no Ruby source to
-vendor), and `Y2Storage::Callbacks::Probe` unconditionally calls
+**Not vendored, kept as real native (non-Ruby) runtime dependencies**: `require "storage"` loads
+`libstorage-ng-ruby`'s compiled SWIG extension (the actual libstorage-ng C++ library bindings -
+there is no Ruby source to vendor), and `Y2Storage::Callbacks::Probe` unconditionally calls
 `Yast::Pkg.SourceReleaseAll`/`Yast::Pkg.SourceStartCache` (from `yast2-pkg-bindings`, also a native
-SWIG extension) on every `StorageManager#probe`. `Y2Storage::DiskAnalyzer#candidate_devices` calls
-`Y2Packager::Repository.all` (from `yast2-packager`; the class itself happens to be shipped by the
-base `yast2` package too, confirmed via `rpm -qf`, but it needs the *rest* of `yast2-packager` to
-actually be installed and functional, not just loadable - see below). All three were previously only
-*transitive* dependencies (pulled in by `yast2-storage-ng`'s own RPM spec, which declares
-`Requires: yast2-packager >= 3.3.7` alongside the two native bindings); now that the RPM itself is
-dropped, all three are declared as explicit `Requires:` in `service/package/gem2rpm.yml` instead.
+SWIG extension) on every `StorageManager#probe`. Both were previously only *transitive*
+dependencies (pulled in by `yast2-storage-ng`'s own RPM spec); now that the RPM itself is dropped,
+both are declared as explicit `Requires:` in `service/package/gem2rpm.yml` instead.
 
-**`yast2-packager` turns out to also already be a latent, undeclared dependency of the AutoYaST code
-vendored in an earlier phase**: `AutoinstFunctions.rb`'s `Y2Packager::ProductSpec.base_products`
-call needs `y2packager/product_spec.rb`/`y2packager/medium_type.rb` (genuinely not shipped by the
-base `yast2` package, confirmed via `rpm -qf` turning up nothing), and
-`lib/transfer/file_from_url.rb`/`modules/ProfileLocation.rb`'s `Yast::InstURL` usage needs
-`modules/InstURL.rb` (also `yast2-packager`-only). Both gaps existed from the moment that AutoYaST
-code was first vendored, silently masked by `yast2-storage-ng` happening to also be installed (and
-therefore pulling in `yast2-packager` as *its* transitive dependency) the whole time - only surfacing
-once `yast2-storage-ng` was actually uninstalled as part of validating *this* phase. Given the full
-scope of what's actually needed (`y2packager/` is ~5300 lines across the package, not one small
-class), vendoring was not a reasonable option here, unlike the small `InstURL`-only need would have
-suggested in isolation - `yast2-packager` is declared as a normal explicit dependency instead, same
-as the two native bindings. **Lesson for future phases: always re-run the *whole* test suite, not
-just the newly-vendored package's own tests, against the real-uninstalled system** - a dependency
-gap in a previously-vendored, seemingly unrelated package can be masked by the very RPM a later
-phase removes, and the only way to catch it is exercising code paths outside the new phase's own
-scope too.
+### `yast2-packager`: a circular RPM dependency, and why it's never declared
+
+`yast2-storage-ng.spec` also declares `Requires: yast2-packager >= 3.3.7` (needed by
+`Y2Storage::DiskAnalyzer#candidate_devices`'s `Y2Packager::Repository.all` call). The obvious fix -
+declare `Requires: yast2-packager` explicitly, same as the two native bindings above - **does not
+work**: `yast2-packager.spec` itself declares `Requires: yast2-storage-ng >= 4.0.141`. The two
+packages have a genuine circular `Requires:` on each other (confirmed via both `.spec` files and
+`rpm -q --requires` on a live system), so declaring `yast2-packager` would silently pull
+`yast2-storage-ng` straight back in via zypper's dependency resolution - defeating the entire point
+of this phase. **Lesson for future phases: before declaring a `Requires:` to replace a transitive
+dependency, check the replacement's *own* spec file for a reverse dependency back onto the package
+being dropped.**
+
+Investigating further (tracing the real file-ownership with `rpm -qf`, and the real call graphs)
+found that almost none of what Agama's closure actually touches is `yast2-packager`-specific
+Ruby code after all - most of the `y2packager/` namespace has moved into the base `yast2` package
+over time, confirmed via `rpm -qf` turning up `yast2`, not `yast2-packager`, for `repository.rb`,
+`product.rb`, `resolvable.rb`, `license.rb` and the rest of the license-fetching chain. Only two
+things are genuinely `yast2-packager`-only:
+
+- `modules/InstURL.rb` (`Yast::InstURL`) - needed directly by `AutoinstFunctions.rb`'s `#main`
+  (always `Yast.import`ed) and by the already-vendored `lib/transfer/file_from_url.rb`/
+  `modules/ProfileLocation.rb`. Vendored here with the same unused-`CheckMedia`-import trim as
+  before (see "Deliberate deviations from upstream" below).
+- `y2packager/product_spec.rb`/`medium_type.rb` - needed only by `AutoinstFunctions.rb`'s
+  `#selected_product`/`#available_base_products` base-product auto-detection logic, which turned
+  out to be **confirmed dead code from Agama's perspective** (see below) - so these were never
+  vendored at all, the methods that needed them were removed instead.
+
+`lib/y2packager/repository.rb` (`Y2Packager::Repository`) and `zypp_url.rb` (`Y2Packager::ZyppUrl`)
+*are* vendored here too, even though they currently happen to live in base `yast2` already -
+relying on exactly where a given class is packaged upstream, across YaST releases, is fragile, and
+this is a permanent fork anyway. `#products`/`#addons` (and the `Y2Packager::Product`/`Resolvable`
+chain they alone needed, which is what pulls in the license-fetching/`InstURL` machinery) were
+trimmed, since `DiskAnalyzer` only ever calls `.all`/`#local?`/`#url` - see "Deliberate deviations
+from upstream" below.
+
+Both of these gaps (`InstURL`, and the trimmed `AutoinstFunctions.rb` methods) existed from the
+moment the AutoYaST code was first vendored in an earlier phase, silently masked by
+`yast2-storage-ng` happening to also be installed (and therefore pulling in `yast2-packager`
+transitively) this whole time - only surfacing once `yast2-storage-ng` was actually uninstalled as
+part of validating *this* phase. **Lesson for future phases: always re-run the *whole* test suite,
+not just the newly-vendored package's own tests, against the real-uninstalled system** - a
+dependency gap in a previously-vendored, seemingly unrelated package can be masked by the very RPM
+a later phase removes, and the only way to catch it is exercising code paths outside the new
+phase's own scope too.
 
 `y2partitioner` (the interactive partitioner UI, a separate top-level package from `y2storage`
 despite living in the same source repository) is **not vendored at all**: confirmed zero references

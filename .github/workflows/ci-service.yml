@@ -75,7 +75,6 @@ jobs:
         yast2 \
         yast2-devtools \
         libstorage-ng-ruby \
-        yast2-packager \
         yast2-pkg-bindings \
         gettext-tools \
         "rubygem(ruby:$RUBY_VERSION:yast-rake)" \
