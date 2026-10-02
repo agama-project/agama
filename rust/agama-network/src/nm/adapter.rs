@@ -339,7 +339,7 @@ fn add_ordered_connections<'b>(
         if let Some(controller) = network.get_connection_by_uuid(uuid) {
             add_ordered_connections(controller, network, conns, visited);
         } else {
-            tracing::error!("Could not found the controller {}", &uuid);
+            tracing::error!("Could not find the controller {}", &uuid);
         }
     }
 

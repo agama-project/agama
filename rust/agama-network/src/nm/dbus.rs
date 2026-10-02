@@ -363,7 +363,7 @@ fn is_bridge_port(conn: &NestedHash) -> bool {
 ///
 /// If the connections is not a "bridge-port" anymore  it removes the "bridge-port" key.
 ///
-/// It also removes empty files from the "connection" object like the "interface-name", "master",
+/// It also removes empty fields from the "connection" object like the "interface-name", "master",
 /// "slave-type", "port-type" keys.
 ///
 /// It removes the "addresses" and "dns" keys from the "ipv4" and "ipv6" objects, which are replaced
@@ -2555,7 +2555,7 @@ mod test {
             hi("type", ETHERNET_KEY)?,
             hi("interface-name", "eth0")?,
             hi("port-type", "bond")?,
-            hi("controller", "bond0")?,
+            hi("master", "bond0")?,
         ]);
         original.insert("connection".to_string(), connection);
 
