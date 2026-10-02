@@ -1,4 +1,15 @@
 -------------------------------------------------------------------
+Mon Sep 28 12:00:00 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Nest the ports of bonds and bridges in the "ports" list of their
+  controller, so stacked setups (e.g., eth0 + eth1 -> bond0 -> br0)
+  can be read and modified (gh#agama-project/agama#3995).
+- Remove the ports along with their controller and do not allow IP
+  settings on a port.
+- Keep the settings that the API does not model when a connection
+  is updated.
+
+-------------------------------------------------------------------
 Mon Sep 28 09:10:11 UTC 2026 - José Iván López González <jlopez@suse.com>
 
 - Allow finishing installation independently on the current stage
