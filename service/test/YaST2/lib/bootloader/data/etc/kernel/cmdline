@@ -1,0 +1,1 @@
+root=/dev/sda3 splash=silent quiet security=apparmor mitigations=off
