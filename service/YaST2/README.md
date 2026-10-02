@@ -89,6 +89,16 @@ original code if needed:
   way whether running from a git checkout, in tests, or from an installed gem, since the
   `modules/`/`xslt/` sibling layout is preserved either way. There is no `install.sh`/RPM step
   involved for this file beyond it being part of `spec.files` in `agama-yast.gemspec`.
+- `scrconf/` - SCR agent registration files (`.scr`), the non-Ruby counterpart of `modules/`/
+  `include/`. Like them, resolved through `Y2DIR`: YaST's SCR implementation scans a `scrconf/`
+  subdirectory of every `Y2DIR` entry for agent definitions. Currently just `iscsid.scr`, which
+  registers the `.etc.iscsid`/`.etc.iscsid.all` path `Y2IscsiClient::Config` reads/writes
+  `/etc/iscsi/iscsid.conf` through (a generic `ag_ini` agent, not iscsi-specific code, but the
+  `.scr` registration file itself is only shipped by `yast2-iscsi-client`). **This kind of
+  non-Ruby, SCR-level asset is easy to miss when auditing a package's `require`/`Yast.import`
+  graph** - it was initially missed here too, surfacing as a silent `nil` from `Yast::SCR.Read`
+  once `yast2-iscsi-client` was fully uninstalled (not just made a non-declared dependency).
+  Check for `src/scrconf/*.scr` files in the upstream package whenever vendoring a new one.
 
 ## Vendored classes
 
@@ -132,6 +142,7 @@ original code if needed:
 | `lib/y2iscsi_client/config.rb`                                                                                                                                                             | `yast2-iscsi-client` (`src/lib/y2iscsi_client/config.rb`)                                                   | `Y2IscsiClient::Config`, reads/writes `/etc/iscsi/iscsid.conf`; only used transitively, via `IscsiClientLib`'s own internal `require`                                                                                                                                                                             |
 | `lib/y2iscsi_client/timeout_process.rb`                                                                                                                                                    | `yast2-iscsi-client` (`src/lib/y2iscsi_client/timeout_process.rb`)                                          | `Y2IscsiClient::TimeoutProcess`, runs a command under `timeout(1)`; only used transitively, via `IscsiClientLib`'s own internal `require`                                                                                                                                                                         |
 | `lib/y2iscsi_client/finish_client.rb`                                                                                                                                                      | `yast2-iscsi-client` (`src/lib/y2iscsi_client/finish_client.rb`)                                            | `Y2IscsiClient::FinishClient`, copies the iSCSI configuration to the target system and enables the needed services/sockets at the end of installation                                                                                                                                                            |
+| `scrconf/iscsid.scr`                                                                                                                                                                       | `yast2-iscsi-client` (`src/scrconf/iscsid.scr`)                                                             | Registers the `.etc.iscsid`/`.etc.iscsid.all` SCR path that `Y2IscsiClient::Config` reads/writes `/etc/iscsi/iscsid.conf` through (generic `ag_ini` agent config, not Ruby code)                                                                                                                                 |
 
 `Installation::FinishClient` (the common base class for finish steps) and
 `installation/autoinst_profile/{section_with_attributes,element_path}.rb` (required by every
