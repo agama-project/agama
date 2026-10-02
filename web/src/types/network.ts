@@ -625,9 +625,20 @@ const replaceConnection = (
  * that is already somewhere else in the connections is taken from there, with
  * its settings, instead of being left in two places at once. It loses any IP
  * setting on the way, as a port has none. A removed one is brought back, too.
+ *
+ * Removing a port drops it from its controller, together with anything nested
+ * in it, which is how the backend tells that a port is gone. Leaving it there
+ * would keep it in the ports of the controller.
  */
 const placeConnection = (connections: Connection[], connection: Connection): Connection[] => {
   let result = connections;
+
+  if (connection.status === ConnectionStatus.DELETE) {
+    const nested = flattenConnections(connections).some((c) =>
+      portConnections(c).some((p) => p.id === connection.id),
+    );
+    if (nested) return withoutConnection(connections, connection.id);
+  }
 
   if (connection.bond || connection.bridge) {
     const all = flattenConnections(connections).filter((c) => c.id !== connection.id);

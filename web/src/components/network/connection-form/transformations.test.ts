@@ -366,6 +366,20 @@ describe("toFormValues", () => {
       );
       expect(result.bridgePorts).toEqual(["enp1s0", "Wired 2", "enp3s0"]);
     });
+
+    it("leaves the removed ports out", () => {
+      const result = toFormValues(
+        apiConnection("bond0", {
+          bond: {
+            ports: [
+              apiConnection("eth0", { interface: "eth0" }).toApi(),
+              apiConnection("eth1", { interface: "eth1", status: ConnectionStatus.DELETE }).toApi(),
+            ],
+          },
+        }),
+      );
+      expect(result.bondPorts).toEqual(["eth0"]);
+    });
   });
 
   describe("bridge STP inference", () => {

@@ -69,6 +69,7 @@ import {
   Bridge,
   Connection,
   ConnectionMethod,
+  ConnectionStatus,
   Port,
   VlanProtocol,
   portName,
@@ -130,6 +131,15 @@ function inferBridgeStp(bridge: Bridge | undefined): BridgeStpModeType {
 }
 
 /**
+ * Returns the names of the given ports, but the removed ones.
+ */
+function portNames(ports: Port[] = []): string[] {
+  return ports
+    .filter((p) => typeof p === "string" || p.status !== ConnectionStatus.DELETE)
+    .map(portName);
+}
+
+/**
  * Maps an existing {@link Connection} to initial form values for editing.
  *
  * Returns an empty object when creating a new connection (connection is null),
@@ -173,14 +183,14 @@ export function toFormValues(connection: Connection | null): Partial<FormValues>
     bondIface: connection.iface,
     bondMode: connection.bond?.mode ?? BondMode.BALANCE_ROUND_ROBIN,
     bondOptions: connection.bond?.options ? connection.bond.options.split(" ") : [],
-    bondPorts: connection.bond?.ports.map(portName) ?? [],
+    bondPorts: portNames(connection.bond?.ports),
     bridgeIface: connection.iface,
     bridgeStp: inferBridgeStp(connection.bridge),
     bridgePriority: connection.bridge?.priority,
     bridgeForwardDelay: connection.bridge?.forwardDelay,
     bridgeHelloTime: connection.bridge?.helloTime,
     bridgeMaxAge: connection.bridge?.maxAge,
-    bridgePorts: connection.bridge?.ports.map(portName) ?? [],
+    bridgePorts: portNames(connection.bridge?.ports),
     vlanIface: connection.iface,
     vlanId: connection.vlan?.id,
     vlanParent: connection.vlan?.parent ?? "",
