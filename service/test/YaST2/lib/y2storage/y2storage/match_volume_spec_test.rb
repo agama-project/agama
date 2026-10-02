@@ -40,7 +40,7 @@ describe Y2Storage::MatchVolumeSpec do
       @size = size
     end
 
-    private
+  private
 
     def volume_match_values
       {

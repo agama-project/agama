@@ -159,6 +159,17 @@ not a regression introduced by vendoring.
   incompatibility, unrelated to this vendoring change - this sandbox runs a very new Ruby (4.0.7)
   against the project's pinned, much older `rspec-mocks` (3.11.2). Left as-is (faithful port); not
   expected to reproduce against the Ruby version Agama's actual CI uses.
+- `rubocop` crashes with `uninitialized constant ...AlignmentCorrector::StringIO` while
+  inspecting any file that triggers `Layout/AccessModifierIndentation`'s autocorrector, on this
+  sandbox's Ruby 4.0 (`StringIO` is no longer part of the default-loaded standard library there,
+  and `rubocop` 1.24.1 - the project's pinned version - doesn't `require "stringio"` itself).
+  **This silently swallowed a real offense**: `test/YaST2/lib/y2storage/y2storage/
+  match_volume_spec_test.rb`'s misindented `private` only surfaced once run on the project's
+  actual CI (Ruby 3.2), where the cop doesn't crash. Workaround for this sandbox:
+  `RUBYOPT="-rstringio" bundle exec rubocop ...` - loading `stringio` ahead of time avoids the
+  crash entirely, so if `rubocop` appears to crash but otherwise pass (834+ files, 0 offenses) on
+  a Ruby 4.0-based sandbox, re-run it with that `RUBYOPT` to get a trustworthy result instead of a
+  false negative.
 
 ## Deliberate deviations from upstream (not just trims)
 
