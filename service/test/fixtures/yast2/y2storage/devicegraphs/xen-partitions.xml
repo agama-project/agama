@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<Devicegraph>
+  <Devices>
+    <StrayBlkDevice>
+      <sid>42</sid>
+      <name>/dev/xvda2</name>
+      <sysfs-name>xvda2</sysfs-name>
+      <sysfs-path>/devices/vbd-51728/block/xvda2</sysfs-path>
+      <region>
+        <length>62914560</length>
+        <block-size>512</block-size>
+      </region>
+      <range>16</range>
+    </StrayBlkDevice>
+    <StrayBlkDevice>
+      <sid>43</sid>
+      <name>/dev/xvda1</name>
+      <sysfs-name>xvda1</sysfs-name>
+      <sysfs-path>/devices/vbd-51745/block/xvda1</sysfs-path>
+      <region>
+        <length>125829120</length>
+        <block-size>512</block-size>
+      </region>
+    </StrayBlkDevice>
+    <Xfs>
+      <sid>51</sid>
+      <uuid>7608bc33-8dfd-4ae0-8f38-e5923deb9631</uuid>
+    </Xfs>
+  </Devices>
+  <Holders>
+    <FilesystemUser>
+      <source-sid>42</source-sid>
+      <target-sid>51</target-sid>
+    </FilesystemUser>
+  </Holders>
+</Devicegraph>

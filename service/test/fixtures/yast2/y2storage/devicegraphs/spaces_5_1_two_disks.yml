@@ -1,0 +1,26 @@
+---
+- disk:
+    name: /dev/sda
+    size: 100 GiB
+    partition_table:  ms-dos
+    partitions:
+
+    - partition:
+        size:         95 GiB
+        name:         /dev/sda1
+        id:           0x7
+        file_system:  ntfs
+        label:        data1
+
+- disk:
+    name: /dev/sdb
+    size: 100 GiB
+    partition_table:  ms-dos
+    partitions:
+
+    - partition:
+        size:         99 GiB
+        name:         /dev/sdb1
+        id:           0x7
+        file_system:  ntfs
+        label:        data2

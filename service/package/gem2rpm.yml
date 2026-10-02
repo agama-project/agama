@@ -23,7 +23,19 @@
     # service/YaST2/lib/y2iscsi_client and service/YaST2/modules (see service/YaST2/README.md);
     # the RPM is no longer needed. open-iscsi (below) still provides the iscsiadm/iscsiuio
     # binaries IscsiClientLib shells out to.
-    Requires:       yast2-storage-ng >= 5.0.49
+    # yast2-storage-ng's Ruby code (Y2Storage::*) is vendored into service/YaST2/lib/y2storage
+    # (see service/YaST2/README.md); the RPM itself is no longer needed. Three of its own
+    # dependencies cannot be vendored (two are native, non-Ruby bindings; yast2-packager is real
+    # Ruby code, but Y2Storage::DiskAnalyzer#candidate_devices needs its actual, functional
+    # Y2Packager::Repository class, not just something that loads) and are now declared directly
+    # instead of relying on them being pulled in transitively. yast2-packager was also already a
+    # latent, undeclared dependency of the AutoYaST code vendored in an earlier phase
+    # (AutoinstFunctions.rb's Y2Packager::ProductSpec.base_products call, lib/transfer/
+    # file_from_url.rb's and modules/ProfileLocation.rb's Yast::InstURL usage) - see
+    # service/YaST2/README.md.
+    Requires:       libstorage-ng-ruby
+    Requires:       yast2-packager >= 3.3.7
+    Requires:       yast2-pkg-bindings
     # s390-only yast2-* dependencies previously required here (all now dropped):
     # yast2-s390's Ruby code (Y2S390::Dasd/DasdsCollection/DasdsReader/FormatProcess/ZFCP) is
     # vendored into service/YaST2/lib/y2s390 (see service/YaST2/README.md). yast2-cio was confirmed

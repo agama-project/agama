@@ -2,21 +2,24 @@
 
 This directory contains a **permanent fork** of a small set of Ruby classes originally provided by
 the `autoyast2` (`autoyast2-installation`), `yast2-installation`, `yast2-network`, `yast2-s390`,
-`yast2-iscsi-client` and `yast2-bootloader` YaST packages. Agama no longer depends on those RPMs; the
-classes it still needs from them have been copied here instead.
+`yast2-iscsi-client`, `yast2-bootloader` and `yast2-storage-ng` YaST packages. Agama no longer
+depends on those RPMs; the classes it still needs from them have been copied here instead.
+(`yast2-packager` is a related, but different, case: Agama still depends on that RPM - see
+"Not vendored, kept as real runtime dependencies" below for why it couldn't be dropped the same way.)
 
 There is **no process to keep this code in sync with upstream YaST releases**. If a bug is found
-here, or a new AutoYaST/DASD/zFCP/iSCSI/bootloader feature is needed, fix/extend the code directly in
-this directory; do not expect it to be updated automatically from `yast-autoyast2`,
-`yast-installation`, `yast-network`, `yast-s390`, `yast-iscsi-client` or `yast-bootloader`.
+here, or a new AutoYaST/DASD/zFCP/iSCSI/bootloader/storage feature is needed, fix/extend the code
+directly in this directory; do not expect it to be updated automatically from `yast-autoyast2`,
+`yast-installation`, `yast-network`, `yast-s390`, `yast-iscsi-client`, `yast-bootloader` or
+`yast-storage-ng`.
 
 ## Tests
 
 Being the sole maintainer of this code means Agama also owns its test coverage. `service/test/YaST2/`
 mirrors this directory's layout and contains tests ported from the original upstream test suites
 (`autoyast2-installation`'s, `yast2-installation`'s, `yast2-network`'s, `yast2-s390`'s,
-`yast2-iscsi-client`'s and `yast2-bootloader`'s `test/` directories), adapted to run against the
-vendored copies here instead of an installed RPM. Fixtures they need live under
+`yast2-iscsi-client`'s, `yast2-bootloader`'s and `yast2-storage-ng`'s `test/` directories), adapted
+to run against the vendored copies here instead of an installed RPM. Fixtures they need live under
 `service/test/fixtures/yast2/`. As with the production code, there is no process to pull in new
 upstream test examples automatically - extend these tests directly when the vendored code changes.
 
@@ -70,6 +73,47 @@ conventions) and instead stub the relevant methods directly (`Y2S390::HwinfoRead
 `FIXTURES_PATH` convention. This exercises the same production code paths without depending on
 process CWD.
 
+Upstream `yast2-storage-ng` tests apply the same kind of global setup (a stubbed
+`Y2Packager::Repository`, `Yast::Arch`/`Y2Storage::Arch` mocking driven by a `let(:architecture)`
+convention, a default `HWInfoReader` double, the Bcache-unsupported-architecture check disabled by
+default, and a `ProductFeatures` reset) via a top-level `RSpec.configure` block in its own
+`test/spec_helper.rb`. As with `yast2-bootloader`, this is replicated as an explicit, opt-in
+`RSpec.shared_context "yast2-storage-ng test setup"` (see
+`service/test/YaST2/lib/y2storage/support/shared_setup.rb`), included only by the ported
+`y2storage` specs. Upstream's own `test/support/storage_helpers.rb` (`Yast::RSpec::StorageHelpers`,
+the module providing `fake_scenario`/`devicegraph_stub`/`planned_*`/`fstab_entry`/... helpers used
+pervasively across the suite) is vendored into
+`service/test/YaST2/lib/y2storage/support/storage_helpers.rb` with one deviation (see "Deliberate
+deviations from upstream" below): `#devicegraph_stub` no longer touches `Y2Partitioner::DeviceGraphs`,
+since `y2partitioner` is never vendored. The handful of other upstream `test/support/*.rb` shared
+examples/contexts actually used by the ported specs (`proposal_context`, `proposal_examples`,
+`boot_requirements_context`, `candidate_devices_context`, `devices_planner_context`,
+`autoinst_profile_sections_examples`, `autoinst_devices_planner_{bcache,btrfs,conflicts}`,
+`widgets_context`) are vendored alongside it unchanged. Upstream's `test/data/` fixture tree (device
+graphs in YAML/XML, AutoYaST control files, `lszcrypt`/`mkvps`/`zkey` command-output samples) is
+copied wholesale into `service/test/fixtures/yast2/y2storage/`, following the project's usual
+fixture convention instead of upstream's `test/data/` location (`DATA_PATH` is redefined in
+`shared_setup.rb` accordingly; everything else in `storage_helpers.rb` that builds on `DATA_PATH` is
+unchanged).
+
+Only the **207 ported production files that have a dedicated 1:1 upstream test file** were ported;
+**106 of the 313 vendored `y2storage` files have no upstream test coverage at all** and no new tests
+were written for them (see "Known limitations" below for the exact rationale) - most are pure
+`require`-only aggregator files (e.g. `planned.rb`, `proposal.rb`, `callbacks.rb`,
+`boot_requirements_strategies.rb`, `space_actions.rb`, `filesystems.rb`,
+`phys_vol_strategies.rb`/`lvm_space_strategies.rb`/`space_maker_actions.rb`/`space_maker_prospects.rb`),
+simple enum-wrapper value classes (`align_policy.rb`, `align_type.rb`, `bcache_type.rb`,
+`bootloader_type.rb`, `dasd_type.rb`, `dasd_format.rb`, `data_transport.rb`, `lv_type.rb`,
+`partition_type.rb`, `storage_enum_wrapper.rb`), abstract base classes exercised only indirectly
+through their concrete subclasses' own tests (`proposal/base.rb`, `partition_tables/base.rb`,
+`encryption_method/base.rb`, `encryption_processes/base.rb`, the various `*_strategies/base.rb` and
+`space_maker_{actions,prospects}/base.rb` files, `planned/mixins.rb`/`can_be_mounted.rb`/`can_be_pv.rb`),
+and a smaller set of genuinely untested upstream logic (e.g. all five concrete
+`boot_requirements_strategies/*.rb` backends, the `proposal/lvm_space_strategies/*.rb` and
+`proposal/space_maker_{actions,prospects}/*.rb` concrete classes, `proposal/autoinst_drive_planner.rb`,
+`callbacks/issues_callback.rb`/`user_probe.rb`). This mirrors upstream's own coverage exactly - it is
+not a regression introduced by vendoring.
+
 ### Known limitations (found while writing tests, not fixed)
 
 - `InterfaceSection#init_from_config` and `S390DeviceSection#init_from_config`
@@ -93,11 +137,23 @@ process CWD.
   (`#initialize` assigns it to `@reason` instead of `@option`). Pre-existing upstream bug, confirmed
   identical in current `yast2-bootloader` master; not fixed since nothing in Agama's closure calls
   `#option` (only `#message`, via `Bootloader.rb`'s `Read` rescue clause).
+- Two `y2storage/planned/can_be_encrypted_test.rb` examples
+  ("if volume has an encryption method"/"...password" `#final_device!` specs) fail in this sandbox
+  with `instance_double` reporting "received :encrypt with unexpected arguments" even though the
+  expected and actual argument hashes are the exact same object (same `object_id` in the failure
+  output). This reproduces with a plain `String`-valued hash too and is unrelated to
+  `EncryptionMethod`'s own `#==`/`#eql?` (verified directly): it only happens when the mocked method
+  has a `**rest`-style keyword parameter (`Y2Storage::BlkDevice#encrypt`'s `**method_args`) *and*
+  the double is a verifying one (`instance_double`); a plain `double` with the identical call does
+  not fail. This is a known `rspec-mocks` 3.11.x / Ruby 3.0+ keyword-argument-separation
+  incompatibility, unrelated to this vendoring change - this sandbox runs a very new Ruby (4.0.7)
+  against the project's pinned, much older `rspec-mocks` (3.11.2). Left as-is (faithful port); not
+  expected to reproduce against the Ruby version Agama's actual CI uses.
 
 ## Deliberate deviations from upstream (not just trims)
 
-Two vendored files were edited beyond the usual "cut UI-only code" trimming already described per
-package above - both documented with a "DEVIATION FROM UPSTREAM" comment at the point of the change:
+A few vendored files were edited beyond the usual "cut UI-only code" trimming already described per
+package above - each documented with a "DEVIATION FROM UPSTREAM" comment at the point of the change:
 
 - **`modules/Bootloader.rb`**: the `Export`/`Import` public methods and the private
   `import_bootloader` helper were removed, along with the `bootloader/autoyast_converter` and
@@ -116,6 +172,12 @@ package above - both documented with a "DEVIATION FROM UPSTREAM" comment at the 
   (`Yast::Execute.on_target("chreipl", "node", "/boot/zipl") if Yast::Arch.s390`) and the dead
   branching was removed. This is what finally allows dropping the `yast2-reipl` RPM `Requires:` -
   see `service/package/gem2rpm.yml`.
+- **`test/YaST2/lib/y2storage/support/storage_helpers.rb`** (test-only): dropped the
+  `require "y2partitioner/device_graphs"` and the `Y2Partitioner::DeviceGraphs.create_instance` call
+  inside `#devicegraph_stub`. `y2partitioner` is never vendored (confirmed unused by Agama - see
+  below), and none of the four ported specs that call `#devicegraph_stub`
+  (`encryption_method_test.rb`, `encryption_processes/{luks,pervasive,systemd_fde}_test.rb`) rely on
+  that partitioner-specific device-graph cache.
 
 ## Layout
 
@@ -144,13 +206,18 @@ original code if needed:
   subdirectory of every `Y2DIR` entry for agent definitions. `iscsid.scr` registers the
   `.etc.iscsid`/`.etc.iscsid.all` path `Y2IscsiClient::Config` reads/writes `/etc/iscsi/iscsid.conf`
   through; `cfg_bootloader.scr` registers `.sysconfig.bootloader`, read/written by
-  `Bootloader::Sysconfig` (and transitively by `BootloaderFactory.current`, called constantly).
-  Both are generic `ag_ini` agents, not package-specific code - but the `.scr` registration file
+  `Bootloader::Sysconfig` (and transitively by `BootloaderFactory.current`, called constantly);
+  `sysconfig_storage.scr` registers `.sysconfig.storage`, read/written by `Y2Storage::SysconfigStorage`
+  (used by `StorageManager`); `sysconfig_fde-tools.scr` registers `.sysconfig.fde-tools`, read/written
+  by `Y2Storage::EncryptionProcesses::FdeToolsConfig` (used by the TPM-FDE encryption method).
+  All four are generic `ag_ini` agents, not package-specific code - but the `.scr` registration file
   itself is only shipped by the corresponding package. **This kind of non-Ruby, SCR-level asset is
   easy to miss when auditing a package's `require`/`Yast.import` graph** - the `iscsid.scr` one was
   initially missed, surfacing as a silent `nil` from `Yast::SCR.Read` once `yast2-iscsi-client` was
   fully uninstalled (not just made a non-declared dependency). Check for `src/scrconf/*.scr` files
-  in the upstream package whenever vendoring a new one.
+  in the upstream package whenever vendoring a new one. (`yast2-storage-ng` ships a third `.scr` file,
+  `etc_mtab.scr` - upstream itself flags it as dead code in a `FIXME: Remove this SCR agent...`
+  comment, and nothing in `y2storage`'s own closure references it; it was not vendored.)
 
 ### Lesson from the yast2-bootloader phase: classic modules can hide in surprising places
 
@@ -245,12 +312,97 @@ case, nothing upstream *tells* you which package a classic module lives in; you 
 | `lib/bootloader/finish_client.rb`                                                                                                                                                          | `yast2-bootloader` (`src/lib/bootloader/finish_client.rb`)                                                  | `Bootloader::FinishClient`, writes the final bootloader configuration to the target system. See "Deliberate deviations from upstream" below: the s390 reIPL dispatch was inlined                                                                                                                                 |
 | `scrconf/cfg_bootloader.scr`                                                                                                                                                               | `yast2-bootloader` (`src/scrconf/cfg_bootloader.scr`)                                                       | Registers the `.sysconfig.bootloader` SCR path that `Bootloader::Sysconfig` (and transitively `BootloaderFactory.system`, called by `BootloaderFactory.current`) reads/writes through (generic `ag_ini` agent config, not Ruby code)                                                                            |
 
+### yast2-storage-ng (313 files - summarized by directory, not per-file)
+
+Unlike every other package above, `yast2-storage-ng`'s closure is too large (313 production files,
+~54K lines) to usefully document one row per file. It's summarized here by directory instead; see
+`service/YaST2/lib/y2storage/` itself (it mirrors upstream's `src/lib/y2storage/` layout exactly) for
+the full file list.
+
+| Directory                             | Files | Purpose                                                                                                                                                                                      |
+| -------------------------------------- | ----: | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `y2storage/` (top level)              |   123 | The devicegraph object model (`Devicegraph`, `Device`, `BlkDevice`, `Disk`, `Partition`, `LvmVg`/`Pv`/`Lv`, `Md*`, `Bcache*`, `Luks`, `Encryption`, `MountPoint`, `Btrfs*`...), `StorageManager`, `DiskAnalyzer`, `BootRequirementsChecker`, `SetupChecker`, `DumpManager`, `ProposalSettings`, `Configuration`, `Fstab`/`Crypttab`, `YamlWriter`, `Issue`/`IssuesReporter`, and the `y2storage.rb` umbrella itself |
+| `y2storage/proposal/`                 |    45 | The guided storage proposal engine: `GuidedProposal`, `SpaceMaker`, `DevicesPlanner`, `DevicesCreator`, creators/planners for each device type, `PartitionsDistributionCalculator`           |
+| `y2storage/planned/`                  |    24 | `Planned::*` value objects (the proposal's "what to create" intermediate representation, before actual libstorage-ng devices exist)                                                          |
+| `y2storage/autoinst_issues/`          |    22 | `AutoinstIssues::*`, structured warnings/errors collected while building an AutoYaST storage proposal                                                                                         |
+| `y2storage/encryption_processes/`     |    12 | `EncryptionProcesses::*`, the actual encrypt/open/commit mechanics per method (LUKS1/2, TPM-FDE, pervasive/secure-key, systemd-FDE...)                                                        |
+| `y2storage/encryption_method/`        |    11 | `EncryptionMethod::*`, the user-facing encryption method catalog (delegates the mechanics to `encryption_processes/`)                                                                         |
+| `y2storage/boot_requirements_strategies/` |    10 | Per-architecture/bootloader boot partition requirement rules, used by `BootRequirementsChecker`                                                                                          |
+| `y2storage/filesystems/`              |    10 | `Filesystems::*` (Btrfs/Ext*/XFS/swap/NFS/Tmpfs... types and the shared `BlkFilesystem`/`Base` classes)                                                                                       |
+| `y2storage/autoinst_profile/`         |     9 | `AutoinstProfile::*Section`, the typed `<partitioning>` AutoYaST profile schema (read **and** written by `AutoinstProposal`, the written side also used by Agama's own storage-to-profile export) |
+| `y2storage/callbacks/`                |     8 | `Callbacks::*`, libstorage-ng's probe/commit callback interface (`Callbacks::Probe` calls `Yast::Pkg` - see below)                                                                            |
+| `y2storage/partition_tables/`         |     7 | `PartitionTables::*` (MSDOS/GPT/DASD partition table flavors)                                                                                                                                 |
+| `y2storage/proposal/space_maker_actions/` |     7 | Strategies `SpaceMaker` uses to free up space (delete/shrink/wipe), selected via `proposal/space_maker_prospects/`                                                                       |
+| `y2storage/proposal/space_maker_prospects/` |   6 | Candidate actions (delete/resize/wipe a given partition or disk) that `space_maker_actions/` chooses from                                                                               |
+| `y2storage/inhibitors/`               |     3 | `Inhibitors::*`, stops `mdadm`/systemd-udev/udisks2 from auto-assembling RAIDs/mounting devices while Agama is probing/installing (used directly by `Agama::DBus::Storage::Manager`)         |
+| `y2storage/proposal/lvm_space_strategies/` |   3 | How `SpaceMaker` frees space specifically within an existing LVM volume group                                                                                                            |
+| `y2storage/proposal/phys_vol_strategies/` |   3 | How the proposal decides which disks become LVM physical volumes                                                                                                                           |
+| `y2storage/space_actions/`            |     3 | `SpaceActions::*`, the planned-vs-executed action pair (`Delete`/`Resize`) used while building an action summary                                                                              |
+| `y2storage/clients/`                  |     2 | `Clients::Finish` (called by `Agama::Storage::Finisher`) and `Clients::InstPrepdisk` (called by `Agama::Storage::Manager#install`) - the only two files **not** reached by `require "y2storage"`, loaded on demand instead |
+| `y2storage/dialogs/` + `dialogs/callbacks/` |   3 | `Dialogs::Issues`/`IssuesDetails` (non-interactive-safe: just build a `CWM`-free summary used by `IssuesReporter`) and `Dialogs::Callbacks::ActivateLuks` (the default libstorage-ng LUKS-activation callback) - **not** the full interactive `Dialogs::GuidedSetup::*`/`Dialogs::Proposal` wizard tree, which is never reached |
+| `y2storage/refinements/`              |     1 | `Refinements::SizeCasts` (`42.GiB` style numeric literals), used pervasively in both production code and specs                                                                                |
+| `y2storage/widgets/`                  |     1 | `Widgets::Issues`, a `CWM::CustomWidget` used by `Dialogs::IssuesDetails` above (built but never necessarily shown on an actual screen in Agama's non-interactive flow)                       |
+
+Plus 9 files reached only through a **direct, narrow `require`** from Agama's own code or from one
+of the files above - never pulled in by the `require "y2storage"` umbrella itself, and easy to miss
+by only tracing that umbrella's own `require` graph: `y2storage/inhibitors.rb` + its 3
+`inhibitors/*.rb` files (`Agama::DBus::Storage::Manager` calls `Y2Storage::Inhibitors.new.inhibit`
+directly), `y2storage/device_description.rb` and `y2storage/filesystem_label.rb` (both called
+directly from `service/lib/agama/storage/devicegraph_conversions/to_json_conversions/`),
+`y2storage/used_filesystems.rb` (needed transitively by `clients/finish.rb`, which itself `require`s
+it explicitly rather than depending on the umbrella), and `y2storage/clients/{finish,inst_prepdisk}.rb`
+themselves.
+
+`scrconf/sysconfig_storage.scr` and `scrconf/sysconfig_fde-tools.scr` are vendored into
+`service/YaST2/scrconf/`, registering `.sysconfig.storage` (read/written by
+`Y2Storage::SysconfigStorage`, used by `StorageManager`) and `.sysconfig.fde-tools` (read/written by
+`Y2Storage::EncryptionProcesses::FdeToolsConfig`, used by the TPM-FDE encryption method)
+respectively. A third one, `scrconf/etc_mtab.scr`, is upstream-flagged dead code (a `FIXME: Remove
+this SCR agent...` comment) with zero references anywhere in the closure - not vendored.
+
+**Not vendored, kept as real runtime dependencies**: `require "storage"` loads `libstorage-ng-ruby`'s
+compiled SWIG extension (the actual libstorage-ng C++ library bindings - there is no Ruby source to
+vendor), and `Y2Storage::Callbacks::Probe` unconditionally calls
+`Yast::Pkg.SourceReleaseAll`/`Yast::Pkg.SourceStartCache` (from `yast2-pkg-bindings`, also a native
+SWIG extension) on every `StorageManager#probe`. `Y2Storage::DiskAnalyzer#candidate_devices` calls
+`Y2Packager::Repository.all` (from `yast2-packager`; the class itself happens to be shipped by the
+base `yast2` package too, confirmed via `rpm -qf`, but it needs the *rest* of `yast2-packager` to
+actually be installed and functional, not just loadable - see below). All three were previously only
+*transitive* dependencies (pulled in by `yast2-storage-ng`'s own RPM spec, which declares
+`Requires: yast2-packager >= 3.3.7` alongside the two native bindings); now that the RPM itself is
+dropped, all three are declared as explicit `Requires:` in `service/package/gem2rpm.yml` instead.
+
+**`yast2-packager` turns out to also already be a latent, undeclared dependency of the AutoYaST code
+vendored in an earlier phase**: `AutoinstFunctions.rb`'s `Y2Packager::ProductSpec.base_products`
+call needs `y2packager/product_spec.rb`/`y2packager/medium_type.rb` (genuinely not shipped by the
+base `yast2` package, confirmed via `rpm -qf` turning up nothing), and
+`lib/transfer/file_from_url.rb`/`modules/ProfileLocation.rb`'s `Yast::InstURL` usage needs
+`modules/InstURL.rb` (also `yast2-packager`-only). Both gaps existed from the moment that AutoYaST
+code was first vendored, silently masked by `yast2-storage-ng` happening to also be installed (and
+therefore pulling in `yast2-packager` as *its* transitive dependency) the whole time - only surfacing
+once `yast2-storage-ng` was actually uninstalled as part of validating *this* phase. Given the full
+scope of what's actually needed (`y2packager/` is ~5300 lines across the package, not one small
+class), vendoring was not a reasonable option here, unlike the small `InstURL`-only need would have
+suggested in isolation - `yast2-packager` is declared as a normal explicit dependency instead, same
+as the two native bindings. **Lesson for future phases: always re-run the *whole* test suite, not
+just the newly-vendored package's own tests, against the real-uninstalled system** - a dependency
+gap in a previously-vendored, seemingly unrelated package can be masked by the very RPM a later
+phase removes, and the only way to catch it is exercising code paths outside the new phase's own
+scope too.
+
+`y2partitioner` (the interactive partitioner UI, a separate top-level package from `y2storage`
+despite living in the same source repository) is **not vendored at all**: confirmed zero references
+to any `Y2Partitioner::*` constant anywhere in Agama's closure, and it's never reached by
+`require "y2storage"` either (`y2partitioner.rb`/`y2partitioner/` is a sibling of, not nested under,
+`y2storage/` in upstream's `lib/` tree). The interactive `y2storage/dialogs/guided_setup/*` wizard
+tree (17 files) and `y2storage/dialogs/proposal.rb` are likewise never reached and were not vendored;
+neither was the latter's `y2storage/setup_errors_presenter.rb` helper (only reached from that
+unvendored dialog and from `clients/inst_disk_proposal.rb`, also unvendored).
+
 `Installation::FinishClient` (the common base class for finish steps) and
 `installation/autoinst_profile/{section_with_attributes,element_path}.rb` (required by every
 `y2network/autoinst_profile/*_section.rb` file above) are **not** vendored here: they are provided by
 the base `yast2` package, which remains a real runtime dependency of Agama.
-`Y2Storage::Clients::Finish` (the storage finish step) is likewise not vendored yet - it's still
-provided by `yast2-storage-ng`, which remains a real runtime dependency of Agama for now.
 `cfa`/`cfa_grub2` (used extensively by the bootloader backends for config-file editing) are not
 YaST packages - they're already-declared direct gem dependencies in `agama-yast.gemspec`, unaffected
 by this vendoring.

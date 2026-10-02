@@ -1,0 +1,30 @@
+---
+- disk:
+    name: /dev/sda
+    size: 500 GiB
+    partition_table: ms-dos
+    partitions:
+
+    - partition:
+        size: 10 GiB
+        name: /dev/sda1
+        type: primary
+
+    - partition:
+        size: 10 GiB
+        name: /dev/sda2
+        type: primary
+
+- md:
+    name: "/dev/md0"
+    chunk_size: 16 KiB
+    md_uuid: "111-222-333"
+    metadata: "1.0"
+    file_system:  ext4
+    label:        data
+    mount_point: /data
+    md_devices:
+    - md_device:
+        blk_device: /dev/sda1
+    - md_device:
+        blk_device: /dev/sda2

@@ -1,0 +1,70 @@
+---
+- disk:
+    name: /dev/sda
+    size: 1 TiB
+    partition_table:  ms-dos
+    partitions:
+
+    - partition:
+        size:         1016829 MiB (0.97 TiB)
+        name:         /dev/sda1
+        id:           0x7
+        file_system:  ntfs
+        label:        windows
+    - partition:
+        size:         10 GiB
+        name:         /dev/sda2
+        id:           linux
+        file_system:  xfs
+        mount_point:  /
+    - partition:
+        size:         15 GiB
+        name:         /dev/sda3
+        id:           linux
+        file_system:  xfs
+        mount_point:  /home
+    - partition:
+        name:         /dev/sda4
+        type:         extended
+        id:           extended
+    - partition:
+        size:         5 GiB
+        name:         /dev/sda5
+        type:         logical
+        id:           linux
+        file_system:  xfs
+        mount_point:  /srv
+    - partition:
+        name:         /dev/sda6
+        id:           swap
+        type:         logical
+        file_system:  swap
+        mount_point:  swap
+
+- disk:
+    name: /dev/sdb
+    size: 400 GiB
+    partition_table:  gpt
+    partitions:
+
+    - partition:
+        name:         /dev/sdb1
+        size:         409596 MiB (400.00 GiB)
+        id:           windows_basic_data
+        file_system:  ntfs
+        label:        windows
+    - partition:
+        name:         /dev/sdb2
+        id:           bios_boot
+
+- disk:
+    name: /dev/sdc
+    size: 400 GiB
+    partition_table:  ms-dos
+    partitions:
+
+    - partition:
+        name:         /dev/sdc1
+        id:           0x7
+        file_system:  ntfs
+        label:        windows

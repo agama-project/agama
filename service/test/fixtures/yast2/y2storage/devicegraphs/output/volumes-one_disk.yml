@@ -1,0 +1,50 @@
+---
+- disk:
+    name: /dev/sda
+    size: 1 TiB
+    partition_table:  ms-dos
+    partitions:
+    - partition:
+        size:         1 GiB
+        name:         /dev/sda1
+
+- disk:
+    name: /dev/sdb
+    size: 400 GiB
+    partition_table: gpt
+    partitions:
+
+    - partition:
+        size: 8 MiB
+        name: /dev/sdb1
+        id: bios_boot
+
+    - partition:
+        size: 30 GiB
+        name: /dev/sdb2
+        file_system: xfs
+        mount_point: /
+
+    - partition:
+        size: 366582 MiB
+        name: /dev/sdb3
+        file_system: xfs
+        mount_point: /var/spacewalk
+
+    - partition:
+        size: 2 GiB
+        name: /dev/sdb4
+        id: swap
+        file_system: swap
+        mount_point: swap
+
+    - partition:
+        size: unlimited
+        name: /dev/sdb5
+        file_system: xfs
+        mount_point: /srv
+
+- disk:
+    name: /dev/sdc
+    size: 400 GiB
+    partition_table:  ms-dos

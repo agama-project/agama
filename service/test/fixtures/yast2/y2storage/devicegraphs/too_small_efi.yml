@@ -1,0 +1,21 @@
+---
+- disk:
+    name: /dev/sda
+    size: 1 TiB
+    partition_table:  gpt
+    partitions:
+
+    - partition:
+        size:         1 MiB
+        name:         /dev/sda1
+        file_system:  vfat
+        id:           esp
+
+    - partition:
+        size:         900 GiB
+        name:         /dev/sda2
+        file_system:  ext4
+        label:        root
+        mount_point:  "/"
+
+

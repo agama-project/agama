@@ -1,0 +1,32 @@
+---
+- disk:
+    name: "/dev/sda"
+    size: 50 GiB
+    partition_table: gpt
+    partitions:
+    - partition:
+        size: 8 MiB
+        name: "/dev/sda1"
+        type: primary
+        id: prep
+    - partition:
+        size: 43009 MiB (42.00 GiB)
+        name: "/dev/sda2"
+        type: primary
+        id: lvm
+- lvm_vg:
+    vg_name: system
+    lvm_lvs:
+    - lvm_lv:
+        lv_name: root
+        size: 40 GiB
+        file_system: btrfs
+        mount_point: "/"
+    - lvm_lv:
+        lv_name: swap
+        size: 2 GiB
+        file_system: swap
+        mount_point: swap
+    lvm_pvs:
+    - lvm_pv:
+        blk_device: "/dev/sda2"

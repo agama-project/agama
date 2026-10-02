@@ -1,0 +1,20 @@
+---
+- disk:
+    name: /dev/sda
+    size: 1 TiB
+    file_system:  ext4
+    label:        root
+    mount_point:  "/"
+
+- disk:
+    name: /dev/sdb
+    size: 1 GiB
+    partition_table:  msdos
+    partitions:
+
+    - partition:
+        size:         500 MiB
+        name:         /dev/sdb1
+        file_system:  ext4
+        label:        boot
+        mount_point:  "/boot"

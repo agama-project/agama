@@ -59,8 +59,8 @@ $SUDO $ZYPPER install \
   suseconnect-ruby-bindings \
   yast2 \
   yast2-hardware-detection \
+  yast2-packager \
   yast2-schema \
-  yast2-storage-ng \
   bcache-tools \
   btrfsprogs \
   cryptsetup \
@@ -71,6 +71,7 @@ $SUDO $ZYPPER install \
   fcoe-utils \
   jfsutils \
   libstorage-ng-lang \
+  libstorage-ng-ruby \
   lvm2 \
   mdadm \
   multipath-tools \
@@ -83,7 +84,8 @@ $SUDO $ZYPPER install \
   quota \
   snapper \
   udftools \
-  xfsprogs || exit 1
+  xfsprogs \
+  yast2-pkg-bindings || exit 1
 
 # Install x86_64 packages
 if [ $(uname -m) == "x86_64" ]; then

@@ -1,0 +1,111 @@
+---
+- disk:
+    name: "/dev/sda"
+    size: 20 GiB
+    block_size: 0.5 KiB
+    io_size: 0 B
+    min_grain: 1 MiB
+    align_ofs: 0 B
+    partition_table: gpt
+    partitions:
+    - free:
+        size: 1 MiB
+        start: 0 B
+    - partition:
+        size: 300 MiB
+        start: 1 MiB
+        name: "/dev/sda1"
+        type: primary
+        id: raid
+    - partition:
+        size: 20663279.5 KiB (19.71 GiB)
+        start: 301 MiB
+        name: "/dev/sda2"
+        type: primary
+        id: linux
+        file_system: btrfs
+        mount_point: "/"
+        btrfs:
+          subvolumes:
+          - subvolume:
+              path: var/lib/libvirt/images
+              nocow: true
+          - subvolume:
+              path: var/lib/machines
+          - subvolume:
+              path: var/lib/mailman
+          - subvolume:
+              path: var/lib/mariadb
+              nocow: true
+          - subvolume:
+              path: var/lib/mysql
+              nocow: true
+          - subvolume:
+              path: var/lib/named
+          - subvolume:
+              path: boot/grub2/i386-pc
+          - subvolume:
+              path: boot/grub2/x86_64-efi
+          - subvolume:
+              path: home
+          - subvolume:
+              path: opt
+          - subvolume:
+              path: srv
+          - subvolume:
+              path: tmp
+          - subvolume:
+              path: usr/local
+          - subvolume:
+              path: var/cache
+          - subvolume:
+              path: var/crash
+          - subvolume:
+              path: var/lib/pgsql
+              nocow: true
+          - subvolume:
+              path: var/log
+          - subvolume:
+              path: var/opt
+          - subvolume:
+              path: var/spool
+          - subvolume:
+              path: var/tmp
+    - free:
+        size: 16.5 KiB
+        start: 20971503.5 KiB (20.00 GiB)
+- disk:
+    name: "/dev/sdb"
+    size: 20 GiB
+    block_size: 0.5 KiB
+    io_size: 0 B
+    min_grain: 1 MiB
+    align_ofs: 0 B
+    partition_table: gpt
+    partitions:
+    - free:
+        size: 1 MiB
+        start: 0 B
+    - partition:
+        size: 300 MiB
+        start: 1 MiB
+        name: "/dev/sdb1"
+        type: primary
+        id: raid
+    - free:
+        size: 20179 MiB (19.71 GiB)
+        start: 301 MiB
+- md:
+    name: "/dev/md/efi"
+    md_level: raid1
+    md_parity: default
+    chunk_size: 4 KiB
+    file_system: vfat
+    mount_point: "/boot/efi"
+    fstab_options:
+    - iocharset=utf8
+    md_devices:
+    - md_device:
+        blk_device: "/dev/sda1"
+    - md_device:
+        blk_device: "/dev/sdb1"

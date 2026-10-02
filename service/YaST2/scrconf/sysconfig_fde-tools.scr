@@ -1,0 +1,18 @@
+/**
+ * File:
+ *   sysconfig_fde-tools.scr
+ * Summary:
+ *   SCR Agent for reading/writing /etc/sysconfig/fde-tools
+ * Access:
+ *   read/write
+ *
+ * $Id$
+ *
+ * Read/Sets the values defined in <tt>/etc/sysconfig/fde-tools</tt>
+ * in an easy manner.
+ */
+.sysconfig.fde-tools
+
+`ag_ini(
+  `SysConfigFile("/etc/sysconfig/fde-tools")
+)

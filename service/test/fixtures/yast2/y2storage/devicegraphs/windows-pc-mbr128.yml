@@ -1,0 +1,22 @@
+---
+- disk:
+    name: /dev/sda
+    size: 800 GiB
+    partition_table:  ms-dos
+    mbr_gap: 128 KiB
+    partitions:
+
+    - partition:
+        size:         780 GiB
+        start:        128 KiB
+        name:         /dev/sda1
+        id:           0x7
+        file_system:  ntfs
+        label:        windows
+
+    - partition:
+        size:         unlimited
+        name:         /dev/sda2
+        id:           0xb
+        file_system:  vfat
+        label:        recovery

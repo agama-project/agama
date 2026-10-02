@@ -74,7 +74,9 @@ jobs:
         zypper --non-interactive install \
         yast2 \
         yast2-devtools \
-        yast2-storage-ng \
+        libstorage-ng-ruby \
+        yast2-packager \
+        yast2-pkg-bindings \
         gettext-tools \
         "rubygem(ruby:$RUBY_VERSION:yast-rake)" \
         "rubygem(ruby:$RUBY_VERSION:gettext)" \

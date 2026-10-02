@@ -1,0 +1,44 @@
+---
+- disk:
+    name: /dev/sda
+    size: 1 TiB
+    partition_table:  ms-dos
+    partitions:
+
+    - partition:
+        size:         4 GiB
+        name:         /dev/sda1
+        id:           swap
+        file_system:  swap
+        label:        swap
+
+    - partition:
+        size:         60 GiB
+        name:         /dev/sda2
+        file_system:  btrfs
+        label:        suse_root
+
+    - partition:
+        size:         60 GiB
+        name:         /dev/sda3
+        file_system:  ext4
+        label:        ubuntu_root
+
+    - partition:
+        size:         unlimited
+        name:         /dev/sda4
+        type:         extended
+
+    - partition:
+        size:         300 GiB
+        name:         /dev/sda5
+        type:         logical
+        file_system:  xfs
+        label:        shared_home
+
+    - partition:
+        size:         unlimited
+        name:         /dev/sda6
+        type:         logical
+        file_system:  xfs
+        label:        data
