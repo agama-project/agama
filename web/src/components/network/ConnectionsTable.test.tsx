@@ -228,6 +228,14 @@ describe("ConnectionsTable", () => {
       screen.getByText("3 connections available");
     });
 
+    it("nests their ports one level deeper", () => {
+      installerRender(<ConnectionsTable />);
+      const bond = screen.getByRole("row", { name: /Bond 1/ });
+      const port = screen.getByRole("row", { name: /Port 1/ });
+      expect(bond).toHaveAttribute("aria-level", "1");
+      expect(port).toHaveAttribute("aria-level", "2");
+    });
+
     it("offers the actions for the ports too", async () => {
       const { user } = installerRender(<ConnectionsTable />);
       await user.click(screen.getByRole("button", { name: /actions for Port 1/i }));
