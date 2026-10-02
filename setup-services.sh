@@ -60,6 +60,7 @@ $SUDO $ZYPPER install \
   yast2 \
   yast2-hardware-detection \
   yast2-schema \
+  yast2-transfer \
   bcache-tools \
   btrfsprogs \
   cryptsetup \

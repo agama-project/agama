@@ -441,15 +441,36 @@ chain they alone needed, which is what pulls in the license-fetching/`InstURL` m
 trimmed, since `DiskAnalyzer` only ever calls `.all`/`#local?`/`#url` - see "Deliberate deviations
 from upstream" below.
 
-Both of these gaps (`InstURL`, and the trimmed `AutoinstFunctions.rb` methods) existed from the
-moment the AutoYaST code was first vendored in an earlier phase, silently masked by
-`yast2-storage-ng` happening to also be installed (and therefore pulling in `yast2-packager`
-transitively) this whole time - only surfacing once `yast2-storage-ng` was actually uninstalled as
-part of validating *this* phase. **Lesson for future phases: always re-run the *whole* test suite,
-not just the newly-vendored package's own tests, against the real-uninstalled system** - a
-dependency gap in a previously-vendored, seemingly unrelated package can be masked by the very RPM
-a later phase removes, and the only way to catch it is exercising code paths outside the new
-phase's own scope too.
+`yast2-packager.spec` also declares `Requires: yast2-transfer` (no circular dependency there -
+`yast2-transfer` doesn't require either package back). The already-vendored
+`lib/transfer/file_from_url.rb` unconditionally does `Yast.import "FTP"`/`"HTTP"`/`"TFTP"`, all
+three genuinely `yast2-transfer`-only (confirmed via `rpm -qf`) - this one wasn't worth vendoring
+(FTP/TFTP clients are a lot more than the "one unused import" situations above), so
+`Requires: yast2-transfer` is declared explicitly instead, same as the two native bindings.
+
+All three of these gaps (`InstURL`, the trimmed `AutoinstFunctions.rb` methods, and
+`yast2-transfer`) existed from the moment the AutoYaST code was first vendored in an earlier phase,
+silently masked by `yast2-storage-ng` happening to also be installed (and therefore pulling in
+`yast2-packager`, which pulls in `yast2-transfer`, transitively) this whole time - only surfacing
+once `yast2-storage-ng` was actually uninstalled as part of validating *this* phase.
+`yast2-transfer` specifically was only caught via **the project's actual CI** (a fresh container
+built strictly from `gem2rpm.yml`'s `Requires:` list) rather than local testing, since the
+sandbox used for this phase's development happened to still have `yast2-transfer` installed as a
+leftover from unrelated packages even after `yast2-storage-ng`/`yast2-packager` were removed.
+**Lessons for future phases:**
+- **Always re-run the *whole* test suite, not just the newly-vendored package's own tests, against
+  the real-uninstalled system** - a dependency gap in a previously-vendored, seemingly unrelated
+  package can be masked by the very RPM a later phase removes, and the only way to catch it is
+  exercising code paths outside the new phase's own scope too.
+- **A local "real-uninstall" test can still miss gaps that only show up in a truly clean
+  environment** (no incidentally-still-installed packages left over from something else) - check
+  the actual CI run (a fresh container) too, not just a local `zypper remove`, before considering
+  the dependency cleanup complete.
+- When dropping a transitive dependency, it's worth cross-checking *every* `Requires:` in the
+  dropped package's own `.spec` file against what Agama's closure actually needs, not just the one
+  or two that happen to crash first - `yast2-packager.spec` alone accounted for three separate,
+  unrelated gaps here (`yast2-pkg-bindings` from the original `yast2-storage-ng` phase work,
+  `InstURL`, and `yast2-transfer`).
 
 `y2partitioner` (the interactive partitioner UI, a separate top-level package from `y2storage`
 despite living in the same source repository) is **not vendored at all**: confirmed zero references
