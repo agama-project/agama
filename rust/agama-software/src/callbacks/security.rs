@@ -32,6 +32,14 @@ impl Security {
     }
 }
 
+fn wrong_checksum_message(file: &str, expected: &str, actual: &str) -> String {
+    format!(
+        "The checksum of the file {file} is \"{actual}\" but the expected checksum is \
+          \"{expected}\". The file has changed by accident or by an attacker since the \
+          creator signed it. Use it anyway?"
+    )
+}
+
 impl security::Callback for Security {
     fn unsigned_file(&self, file: String, repository_alias: String) -> bool {
         tracing::info!(
@@ -248,12 +256,7 @@ impl security::Callback for Security {
             expected,
             actual
         );
-        let text = format!(
-            "The expected checksum of file %{file} is \"%{actual}\" but it was expected to be \
-              \"%{expected}\". The file has changed by accident or by an attacker since the \
-              creater signed it. Use it anyway?"
-        );
-
+        let text = wrong_checksum_message(&file, &expected, &actual);
         let question = QuestionSpec::new(&text, "unknownDigest").with_yes_no_actions();
         let result = ask_software_question(&self.questions, question);
         let Ok(answer) = result else {
@@ -262,5 +265,20 @@ impl security::Callback for Security {
         };
 
         answer.action == "Yes"
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_wrong_checksum_message() {
+        let text = wrong_checksum_message("zypp.rpm", "expected-sum", "actual-sum");
+        assert!(text.contains("zypp.rpm"));
+        assert!(text.contains("\"actual-sum\" but the expected checksum is \"expected-sum\""));
+        // the message used to be a transliteration of the Ruby one, keeping the
+        // gettext placeholders that `format!` does not substitute
+        assert!(!text.contains("%{"));
     }
 }
