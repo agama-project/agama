@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Sun Oct  4 16:25:30 UTC 2026 - Martin Pluskal <martin@pluskal.org>
+
+- Report the checksums correctly when asking the user to accept a file
+  with a wrong digest. The question mixed up the expected and the
+  found checksum and kept the Ruby gettext placeholders, so neither
+  checksum nor the file name was shown at all
+  (gh#agama-project/agama#2703).
+
+-------------------------------------------------------------------
 Thu Oct  1 11:55:11 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
 
 - properly copy SSL certificates to target system (bsc#1283318)
