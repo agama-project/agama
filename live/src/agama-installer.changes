@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Oct  5 14:34:04 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Improved self-update cleanup to disable the added self-update
+  repositories also when the self-update fails or crashes.
+  (bsc#1254163)
+
+-------------------------------------------------------------------
 Wed Sep 30 12:48:23 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Reduce the installer image footprint by dropping unnecessary
