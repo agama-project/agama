@@ -1587,7 +1587,7 @@ export default {
     "SSID"
   ],
   "SUSE Customer Center (SCC)": [
-    "SUSE Customer Center (SCC)"
+    "SUSE-ის კლიენტების მომსახურების ცენტრი (SCC)"
   ],
   "Search": [
     "ძებნა"
