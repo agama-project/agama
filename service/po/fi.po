@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-22 12:13+0000\n"
+"POT-Creation-Date: 2026-10-01 15:29+0000\n"
 "PO-Revision-Date: 2026-03-11 08:04+0000\n"
 "Last-Translator: Timo Jyrinki <tjyrinki@suse.com>\n"
 "Language-Team: Finnish <https://l10n.opensuse.org/projects/agama/agama-"
@@ -436,22 +436,22 @@ msgid "Shrinking is not supported by this device"
 msgstr "Tämä laite ei tue koon pienentämistä"
 
 #. Copy /etc/nvme/host* to keep NVMe working after installation, bsc#1238038
-#: service/lib/agama/storage/finisher.rb:126
+#: service/lib/agama/storage/finisher.rb:122
 msgid "Copying important installation files to the target system"
 msgstr "Kopioidaan tärkeitä asennustiedostoja kohdejärjestelmään"
 
 #. Step to write the bootloader configuration
-#: service/lib/agama/storage/finisher.rb:161
+#: service/lib/agama/storage/finisher.rb:157
 msgid "Installing bootloader"
 msgstr "Asennetaan käynnistyslatainta"
 
 #. Step to finish the Y2Storage configuration
-#: service/lib/agama/storage/finisher.rb:178
+#: service/lib/agama/storage/finisher.rb:174
 msgid "Adjusting storage configuration"
 msgstr "Tallennustilan asetusten muuttaminen"
 
 #. Step to finish the iSCSI configuration
-#: service/lib/agama/storage/finisher.rb:189
+#: service/lib/agama/storage/finisher.rb:188
 msgid "Adjusting iSCSI configuration"
 msgstr "Määritetään iSCSI-asetuksia"
 
@@ -484,12 +484,12 @@ msgid "A problem occurred while calculating the storage setup"
 msgstr "Tallennustila-asetusten laskemisessa tapahtui ongelma"
 
 #. Step to copy the installation logs
-#: service/lib/agama/storage/umounter.rb:112
+#: service/lib/agama/storage/umounter.rb:108
 msgid "Copying logs"
 msgstr "Kopioidaan lokeja"
 
 #. Step to unmount the target file-systems
-#: service/lib/agama/storage/umounter.rb:153
+#: service/lib/agama/storage/umounter.rb:149
 msgid "Unmounting storage devices"
 msgstr "Irrotetaan tallennuslaitteita"
 
