@@ -127,12 +127,14 @@ cleanup_chroot() {
   echo "$result" > "$RESULT_FILE"
 
   if [ -n "$NEWROOT" ]; then
+    local dir
     rm -f "$NEWROOT"/etc/resolv.conf
-    # do not fail if not mounted
-    findmnt "$NEWROOT"/run > /dev/null && umount "$NEWROOT"/run
-    findmnt "$NEWROOT"/sys > /dev/null && umount "$NEWROOT"/sys
-    findmnt "$NEWROOT"/proc > /dev/null && umount "$NEWROOT"/proc
-    findmnt "$NEWROOT"/dev > /dev/null && umount "$NEWROOT"/dev
+    for dir in run sys proc dev; do
+      # do not fail if not mounted, do not abort the cleanup if unmounting fails
+      if findmnt "$NEWROOT/$dir" > /dev/null; then
+        umount "$NEWROOT/$dir" || warning "Unmounting $NEWROOT/$dir failed"
+      fi
+    done
   fi
 
   # return the original exit value
@@ -202,7 +204,8 @@ query_reg_server() {
 add_update_repos() {
   milestone "Adding self update repositories..."
   # add the self-update repositories
-  while read -r update_url; do
+  # also process the last line if it is missing the trailing newline
+  while read -r update_url || [ -n "$update_url" ]; do
     if [ -n "$update_url" ]; then
       local repo
       repo="self-update-$index"
@@ -228,7 +231,8 @@ add_update_repos() {
         zypper_options+=("--no-gpgcheck")
       fi
 
-      run_command zypper addrepo "${zypper_options[@]}" -f "$update_url" "$repo"
+      # do not let zypper read (and swallow) the rest of the repository list
+      run_command zypper addrepo "${zypper_options[@]}" -f "$update_url" "$repo" < /dev/null
       self_update_repos+=("$repo")
       ((++index))
     fi
@@ -240,6 +244,9 @@ add_update_repos() {
 # contain a hardcoded version (the fallback URL should work with SLES-16.0,
 # SLES-16.1, SLES-16.2...)
 read_fallback_repos() {
+  # the variables might not be loaded yet (no registration server defined)
+  read_os_release
+
   # Substituting $arch pattern with the architecture of the current system.
   # Substituting these variables with the /etc/os-release content:
   #   $os_release_name       => NAME
@@ -296,8 +303,14 @@ install_updates() {
     zypper_options="--gpg-auto-import-keys"
   fi
 
+  # refuse to continue without a self-update repository
+  if [ ${#self_update_repos[@]} -eq 0 ]; then
+    milestone "No self-update repository found, skipping self-update"
+    exit 0
+  fi
+
   milestone "Loading repositories..."
-  run_command zypper $zypper_options refresh "${self_update_repos[@]}"
+  run_command zypper --non-interactive $zypper_options refresh "${self_update_repos[@]}"
 
   # build the list of repository options passed to zypper
   repo_options=()
