@@ -187,6 +187,9 @@ export default {
   "Allow growing": [
     "Büyümeye izin ver"
   ],
+  "Allow shrinking": [
+    "Küçülmeye izin ver"
+  ],
   "Alongside defining the first user, authentication methods for the root user can be configured.": [
     "İlk kullanıcıyı tanımlamanın yanı sıra, root kullanıcı için kimlik doğrulama yöntemleri de yapılandırılabilir."
   ],
@@ -254,6 +257,9 @@ export default {
   ],
   "Automatic LUN scan is [enabled]. Activating a controller which is       running in NPIV mode will automatically configures all its LUNs.": [
     "Otomatik LUN taraması [etkin]. Bir denetleyiciyi etkinleştirme       NPIV modunda çalıştırıldığında tüm LUN'lar otomatik olarak yapılandırılır."
+  ],
+  "Available file systems": [
+    "Kullanılabilir dosya sistemleri"
   ],
   "Available products": [
     "Mevcut ürünler"
@@ -558,6 +564,9 @@ export default {
   "DNS": [
     "DNS"
   ],
+  "DNS data list": [
+    "DNS veri listesi"
+  ],
   "Deactivate": [
     "Devre dışı bırak"
   ],
@@ -665,6 +674,9 @@ export default {
   ],
   "Do not format %s and keep the data": [
     "%s'yi biçimlendirmeyin ve verileri saklayın"
+  ],
+  "Do not modify": [
+    "Değiştirmeyin"
   ],
   "Do not use": [
     "Kullanma"
@@ -2367,7 +2379,7 @@ export default {
     "çevrimdışı"
   ],
   "partition": [
-    "bölüm"
+    "bölümleme"
   ],
   "read_only": [
     "salt_okunur"
