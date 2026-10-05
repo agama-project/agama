@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-22 12:12+0000\n"
-"PO-Revision-Date: 2026-08-28 21:13+0000\n"
+"POT-Creation-Date: 2026-10-01 14:04+0000\n"
+"PO-Revision-Date: 2026-10-03 20:13+0000\n"
 "Last-Translator: Eugene Krater <lachend@gmail.com>\n"
 "Language-Team: Ukrainian <https://l10n.opensuse.org/projects/agama/agama-"
 "rust-master/uk/>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 2026.8.1\n"
+"X-Generator: Weblate 2026.10\n"
 
 #: agama-autoinstall/src/auto_loader.rs:142
 msgid ""
@@ -326,12 +326,13 @@ msgstr "Перевірка профілю за допомогою JSON Schema"
 #. TRANSLATORS: CLI help for: agama config validate (details)
 #: agama-cli/src/config.rs:115
 msgid ""
-"Schema is available at /usr/share/agama/schema/profile.schema.json Note: "
-"validation is always done as part of all other \"agama config\" commands."
+"Schema is available at /usr/share/agama/openapi/nightly/schemas/"
+"config.schema.json Note: validation is always done as part of all other "
+"\"agama config\" commands."
 msgstr ""
-"Схема доступна за адресою /usr/share/agama/schema/profile.schema.json. "
-"Примітка: перевірка завжди виконується в рамках виконання всіх інших команд "
-"«agama config»."
+"Схема доступна за адресою /usr/share/agama/openapi/nightly/schemas/"
+"config.schema.json Примітка: перевірка завжди виконується в рамках виконання "
+"всіх інших команд «agama config»."
 
 #. TRANSLATORS: CLI help for: agama config validate <URL_OR_PATH>
 #: agama-cli/src/config.rs:129
@@ -814,111 +815,111 @@ msgstr "Не вдалося завантажити скрипт %s. Чи хоч�
 msgid "Failed to write the file %s. Do you want to try again?"
 msgstr "Не вдалося записати файл %s. Спробувати ще раз?"
 
-#: agama-manager/src/actions.rs:78
+#: agama-manager/src/actions.rs:79
 msgid "Prepare the system"
 msgstr "Підготуйте систему"
 
-#: agama-manager/src/actions.rs:79
+#: agama-manager/src/actions.rs:80
 msgid "Install software"
 msgstr "Встановити програмне забезпечення"
 
-#: agama-manager/src/actions.rs:80
+#: agama-manager/src/actions.rs:81
 msgid "Configure the system"
 msgstr "Налаштуйте систему"
 
-#: agama-manager/src/actions.rs:94
+#: agama-manager/src/actions.rs:95
 msgid "Preparing storage"
 msgstr "Підготовка місця для зберігання"
 
-#: agama-manager/src/actions.rs:112
+#: agama-manager/src/actions.rs:113
 msgid "Running post-partitioning scripts"
 msgstr "Виконання скриптів після створення розділів"
 
-#: agama-manager/src/actions.rs:137
+#: agama-manager/src/actions.rs:138
 msgid "Installing software"
 msgstr "Встановлення програмного забезпечення"
 
-#: agama-manager/src/actions.rs:174
+#: agama-manager/src/actions.rs:176
 msgid "Configuring the system"
 msgstr "Налаштування системи"
 
-#: agama-manager/src/actions.rs:242
+#: agama-manager/src/actions.rs:248
 msgid "Finishing installation"
 msgstr "Завершення встановлення"
 
-#: agama-manager/src/actions.rs:271
+#: agama-manager/src/actions.rs:277
 msgid "Finalize installation"
 msgstr "Закінчити встановлення"
 
-#: agama-manager/src/actions.rs:346
+#: agama-manager/src/actions.rs:352
 msgid "Storing questions settings"
 msgstr "Збереження налаштувань запитань"
 
-#: agama-manager/src/actions.rs:357
+#: agama-manager/src/actions.rs:363
 msgid "Importing user files and scripts"
 msgstr "Імпорт файлів користувача та скриптів"
 
-#: agama-manager/src/actions.rs:371
+#: agama-manager/src/actions.rs:377
 msgid "Running user pre-installation scripts"
 msgstr "Виконання користувацьких скриптів перед інсталяцією"
 
-#: agama-manager/src/actions.rs:386
+#: agama-manager/src/actions.rs:392
 msgid "Storing security settings"
 msgstr "Збереження налаштувань безпеки"
 
-#: agama-manager/src/actions.rs:396
+#: agama-manager/src/actions.rs:402
 msgid "Configuring remote access"
 msgstr "Налаштування віддаленого доступу"
 
-#: agama-manager/src/actions.rs:406
+#: agama-manager/src/actions.rs:412
 msgid "Setting up the hostname"
 msgstr "Налаштування імені хоста"
 
-#: agama-manager/src/actions.rs:416
+#: agama-manager/src/actions.rs:422
 msgid "Setting up the network proxy"
 msgstr "Налаштування мережевого проксі-сервера"
 
-#: agama-manager/src/actions.rs:427
+#: agama-manager/src/actions.rs:433
 msgid "Setting up NTP"
 msgstr "Налаштування NTP"
 
-#: agama-manager/src/actions.rs:437
+#: agama-manager/src/actions.rs:443
 msgid "Storing localization settings"
 msgstr "Збереження налаштувань локалізації"
 
-#: agama-manager/src/actions.rs:447
+#: agama-manager/src/actions.rs:453
 msgid "Storing users settings"
 msgstr "Збереження налаштувань користувачів"
 
-#: agama-manager/src/actions.rs:557
+#: agama-manager/src/actions.rs:563
 msgid "Configuring iSCSI devices"
 msgstr "Налаштування пристроїв iSCSI"
 
-#: agama-manager/src/actions.rs:582
+#: agama-manager/src/actions.rs:588
 msgid "Configuring zFCP devices"
 msgstr "Налаштування пристроїв zFCP"
 
-#: agama-manager/src/actions.rs:608
+#: agama-manager/src/actions.rs:614
 msgid "Configuring DASD devices"
 msgstr "Налаштування пристроїв DASD"
 
-#: agama-manager/src/actions.rs:634
+#: agama-manager/src/actions.rs:640
 msgid "Setting up the network"
 msgstr "Налаштування мережі"
 
-#: agama-manager/src/actions.rs:664
+#: agama-manager/src/actions.rs:670
 msgid "Preparing the storage proposal"
 msgstr "Підготовка пропозиції щодо сховища"
 
-#: agama-manager/src/actions.rs:694
+#: agama-manager/src/actions.rs:700
 msgid "Storing bootloader settings"
 msgstr "Збереження налаштувань завантажувача"
 
-#: agama-manager/src/actions.rs:728
+#: agama-manager/src/actions.rs:734
 msgid "Preparing the software proposal"
 msgstr "Підготовка пропозиції щодо програмного забезпечення"
 
-#: agama-manager/src/actions.rs:758
+#: agama-manager/src/actions.rs:764
 msgid "Configuring SELinux"
 msgstr "Налаштування SELinux"
 
@@ -930,16 +931,16 @@ msgstr "Запис конфігурації мережі"
 msgid "Syncing the network service state"
 msgstr "Синхронізація стану мережевої служби"
 
-#: agama-security/src/service.rs:225
+#: agama-security/src/service.rs:227
 msgid "Reject"
 msgstr "Відхилити"
 
-#: agama-security/src/service.rs:225
+#: agama-security/src/service.rs:227
 #: agama-software/src/callbacks/security.rs:111
 msgid "Trust"
 msgstr "Довіряти"
 
-#: agama-security/src/service.rs:226
+#: agama-security/src/service.rs:228
 msgid ""
 "Trying to import a self-signed certificate. Do you want to trust it and "
 "register the product?"
@@ -1097,11 +1098,11 @@ msgstr "Помилка:"
 msgid "Details:"
 msgstr "Подробиці:"
 
-#: agama-utils/src/api/question.rs:342 agama-utils/src/question/start.rs:48
+#: agama-utils/src/api/question.rs:346 agama-utils/src/question/start.rs:48
 msgid "No"
 msgstr "Ні"
 
-#: agama-utils/src/api/question.rs:342 agama-utils/src/question/start.rs:48
+#: agama-utils/src/api/question.rs:346 agama-utils/src/question/start.rs:48
 msgid "Yes"
 msgstr "Так"
 
