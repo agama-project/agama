@@ -160,13 +160,9 @@ mod tasks {
         use std::collections::{BTreeSet, VecDeque};
 
         let mut needed = BTreeSet::new();
-        let mut initial_refs = BTreeSet::new();
-        collect_schema_refs(root_schema, &mut initial_refs);
+        collect_schema_refs(root_schema, &mut needed);
 
-        let mut queue: VecDeque<String> = initial_refs.into_iter().collect();
-        for item in &queue {
-            needed.insert(item.clone());
-        }
+        let mut queue: VecDeque<String> = needed.iter().cloned().collect();
 
         while let Some(current) = queue.pop_front() {
             if let Some(child_val) = all_schemas.get(&current) {
@@ -202,6 +198,8 @@ mod tasks {
         component_name: &str,
         file_name: &str,
     ) -> std::io::Result<()> {
+        // NOTE: it is safe to modify api_val in schemas as Config, System neither Proposal reference each other.
+        // so only its compontents
         let component = api_val
             .pointer_mut(&format!("/components/schemas/{}", component_name))
             .map(|v| v.take())

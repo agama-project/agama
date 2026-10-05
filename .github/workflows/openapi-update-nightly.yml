@@ -54,7 +54,7 @@ jobs:
           xkeyboard-config
 
       - name: Configure git safe directory
-        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+        run: git config --global --add safe.directory "*"
 
       - name: Checkout Agama sources
         uses: actions/checkout@v7
@@ -88,6 +88,7 @@ jobs:
 
       - name: Copy OpenAPI specs and schemas to nightly
         run: |
+          rm -rfv agama-openapi/nightly/schemas
           mkdir -p agama-openapi/nightly/schemas
           cp -v agama/rust/out/openapi.json agama/rust/out/openapi.yaml agama/rust/out/openapi_full.json agama/rust/out/openapi_full.yaml agama-openapi/nightly/
           cp -v agama/rust/out/schemas/*.schema.json agama-openapi/nightly/schemas/
@@ -108,4 +109,4 @@ jobs:
           cd agama-openapi
           git add nightly
           git commit -m "Update nightly OpenAPI specifications and schemas"$'\n\n'"Agama commit: ${{ github.sha }}"
-          git push
+          git push origin HEAD:main
