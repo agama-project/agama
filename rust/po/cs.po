@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-22 12:12+0000\n"
+"POT-Creation-Date: 2026-10-01 14:04+0000\n"
 "PO-Revision-Date: 2026-03-25 18:04+0000\n"
 "Last-Translator: Ondřej  Sedlák <sedlak.o@tutanota.com>\n"
 "Language-Team: Czech <https://l10n.opensuse.org/projects/agama/agama-rust-"
@@ -270,8 +270,9 @@ msgstr ""
 #. TRANSLATORS: CLI help for: agama config validate (details)
 #: agama-cli/src/config.rs:115
 msgid ""
-"Schema is available at /usr/share/agama/schema/profile.schema.json Note: "
-"validation is always done as part of all other \"agama config\" commands."
+"Schema is available at /usr/share/agama/openapi/nightly/schemas/"
+"config.schema.json Note: validation is always done as part of all other "
+"\"agama config\" commands."
 msgstr ""
 
 #. TRANSLATORS: CLI help for: agama config validate <URL_OR_PATH>
@@ -709,120 +710,120 @@ msgstr "Nepodařilo se načíst skript %s. Chcete to zkusit znovu?"
 msgid "Failed to write the file %s. Do you want to try again?"
 msgstr "Nepodařilo se zapsat do souboru %s. Chcete to zkusit znovu?"
 
-#: agama-manager/src/actions.rs:78
+#: agama-manager/src/actions.rs:79
 msgid "Prepare the system"
 msgstr "Nachystat systém"
 
-#: agama-manager/src/actions.rs:79
+#: agama-manager/src/actions.rs:80
 msgid "Install software"
 msgstr "Instalovat software"
 
-#: agama-manager/src/actions.rs:80
+#: agama-manager/src/actions.rs:81
 msgid "Configure the system"
 msgstr "Nakonfigurovat systém"
 
-#: agama-manager/src/actions.rs:94
+#: agama-manager/src/actions.rs:95
 #, fuzzy
 msgid "Preparing storage"
 msgstr "Připravuje se návrh úložiště"
 
-#: agama-manager/src/actions.rs:112
+#: agama-manager/src/actions.rs:113
 #, fuzzy
 msgid "Running post-partitioning scripts"
 msgstr "Spouští se uživatelské předinstalační skripty"
 
-#: agama-manager/src/actions.rs:137
+#: agama-manager/src/actions.rs:138
 #, fuzzy
 msgid "Installing software"
 msgstr "Instalovat software"
 
-#: agama-manager/src/actions.rs:174
+#: agama-manager/src/actions.rs:176
 #, fuzzy
 msgid "Configuring the system"
 msgstr "Nakonfigurovat systém"
 
-#: agama-manager/src/actions.rs:242
+#: agama-manager/src/actions.rs:248
 msgid "Finishing installation"
 msgstr ""
 
-#: agama-manager/src/actions.rs:271
+#: agama-manager/src/actions.rs:277
 #, fuzzy
 msgid "Finalize installation"
 msgstr "Vyhodnocuje se návrh softwaru"
 
-#: agama-manager/src/actions.rs:346
+#: agama-manager/src/actions.rs:352
 msgid "Storing questions settings"
 msgstr "Ukládá se nastavení otázek"
 
-#: agama-manager/src/actions.rs:357
+#: agama-manager/src/actions.rs:363
 #, fuzzy
 msgid "Importing user files and scripts"
 msgstr "Importují se uživatelské soubory"
 
-#: agama-manager/src/actions.rs:371
+#: agama-manager/src/actions.rs:377
 msgid "Running user pre-installation scripts"
 msgstr "Spouští se uživatelské předinstalační skripty"
 
-#: agama-manager/src/actions.rs:386
+#: agama-manager/src/actions.rs:392
 msgid "Storing security settings"
 msgstr "Ukládají se bezpečnostní nastavení"
 
-#: agama-manager/src/actions.rs:396
+#: agama-manager/src/actions.rs:402
 #, fuzzy
 msgid "Configuring remote access"
 msgstr "Konfigurují se zařízení DASD"
 
-#: agama-manager/src/actions.rs:406
+#: agama-manager/src/actions.rs:412
 msgid "Setting up the hostname"
 msgstr "Nastavuje se jméno hostitele"
 
-#: agama-manager/src/actions.rs:416
+#: agama-manager/src/actions.rs:422
 msgid "Setting up the network proxy"
 msgstr "Nastavuje se síťová proxy"
 
-#: agama-manager/src/actions.rs:427
+#: agama-manager/src/actions.rs:433
 #, fuzzy
 msgid "Setting up NTP"
 msgstr "Nastavuje konfigurace sítě"
 
-#: agama-manager/src/actions.rs:437
+#: agama-manager/src/actions.rs:443
 msgid "Storing localization settings"
 msgstr "Ukládá se nastavení lokalizace"
 
-#: agama-manager/src/actions.rs:447
+#: agama-manager/src/actions.rs:453
 msgid "Storing users settings"
 msgstr "Ukládají se uživatelská nastavení"
 
-#: agama-manager/src/actions.rs:557
+#: agama-manager/src/actions.rs:563
 msgid "Configuring iSCSI devices"
 msgstr "Konfigurují se zařízení iSCSI"
 
-#: agama-manager/src/actions.rs:582
+#: agama-manager/src/actions.rs:588
 #, fuzzy
 msgid "Configuring zFCP devices"
 msgstr "Konfigurují se zařízení iSCSI"
 
-#: agama-manager/src/actions.rs:608
+#: agama-manager/src/actions.rs:614
 msgid "Configuring DASD devices"
 msgstr "Konfigurují se zařízení DASD"
 
-#: agama-manager/src/actions.rs:634
+#: agama-manager/src/actions.rs:640
 msgid "Setting up the network"
 msgstr "Nastavuje konfigurace sítě"
 
-#: agama-manager/src/actions.rs:664
+#: agama-manager/src/actions.rs:670
 msgid "Preparing the storage proposal"
 msgstr "Připravuje se návrh úložiště"
 
-#: agama-manager/src/actions.rs:694
+#: agama-manager/src/actions.rs:700
 msgid "Storing bootloader settings"
 msgstr "Ukládá se nastavení zavaděče"
 
-#: agama-manager/src/actions.rs:728
+#: agama-manager/src/actions.rs:734
 msgid "Preparing the software proposal"
 msgstr "Připravuje se návrh softwaru"
 
-#: agama-manager/src/actions.rs:758
+#: agama-manager/src/actions.rs:764
 #, fuzzy
 msgid "Configuring SELinux"
 msgstr "Konfigurují se zařízení DASD"
@@ -835,16 +836,16 @@ msgstr "Zapisuji síťové nastavení"
 msgid "Syncing the network service state"
 msgstr "Synchronizace stavu síťové služby"
 
-#: agama-security/src/service.rs:225
+#: agama-security/src/service.rs:227
 msgid "Reject"
 msgstr "Odmítnout"
 
-#: agama-security/src/service.rs:225
+#: agama-security/src/service.rs:227
 #: agama-software/src/callbacks/security.rs:111
 msgid "Trust"
 msgstr "Důvěřovat"
 
-#: agama-security/src/service.rs:226
+#: agama-security/src/service.rs:228
 msgid ""
 "Trying to import a self-signed certificate. Do you want to trust it and "
 "register the product?"
@@ -1005,11 +1006,11 @@ msgstr ""
 msgid "Details:"
 msgstr ""
 
-#: agama-utils/src/api/question.rs:342 agama-utils/src/question/start.rs:48
+#: agama-utils/src/api/question.rs:346 agama-utils/src/question/start.rs:48
 msgid "No"
 msgstr "Ne"
 
-#: agama-utils/src/api/question.rs:342 agama-utils/src/question/start.rs:48
+#: agama-utils/src/api/question.rs:346 agama-utils/src/question/start.rs:48
 msgid "Yes"
 msgstr "Ano"
 
