@@ -53,7 +53,7 @@ export default {
     "%1$s, як і раніше, міститиме групу LVM '%2$s' і будь-який розділ, необхідний для завантаження"
   ],
   "%1$s+%2$s+%3$s to move focus out": [
-    ""
+    "%1$s+%2$s+%3$s, щоб перемістити фокус"
   ],
   "%1$s, %2$s and [%3$d more]": [
     "%1$s, %2$s та [ще %3$d]",
@@ -106,6 +106,9 @@ export default {
     "Доступний %d режим",
     "Доступно %d режими",
     "Доступно %d режимів"
+  ],
+  "%d more": [
+    "ще %d"
   ],
   "%d other mode available": [
     "Доступно %d інший режим",
@@ -718,6 +721,9 @@ export default {
   "Chosen by name": [
     "Вибрано за назвою"
   ],
+  "Clear all": [
+    "Очистити все"
+  ],
   "Clear all filters": [
     "Очистити всі фільтри"
   ],
@@ -741,6 +747,9 @@ export default {
   ],
   "Configuration from the network plus static addresses and gateway": [
     "Налаштування через мережу, а також статичні адреси та шлюз"
+  ],
+  "Configuration pre-scripts have been executed and may have modified your system. You can reboot or shut down, but any changes made by these scripts will not be undone.": [
+    "Скрипти попередньої конфігурації вже виконано, і вони, можливо, внесли зміни до вашої системи. Ви можете перезавантажити систему або вимкнути її, але зміни, внесені цими скриптами, не будуть скасовані."
   ],
   "Configuration read from the iSCSI Boot Firmware Table (iBFT). Initiator cannot be changed.": [
     "Конфігурація зчитана з таблиці iSCSI Boot Firmware Table (iBFT). Ініціатор не може бути змінений."
@@ -874,7 +883,7 @@ export default {
     "Створити ще одну групу томів LVM на %s"
   ],
   "Ctrl": [
-    ""
+    "Ctrl"
   ],
   "Curated sets of packages for common use cases and features to extend the system.": [
     "Підібрані набори пакетів для типових випадків використання та функцій для розширення можливостей системи."
@@ -1083,6 +1092,9 @@ export default {
   "Down arrow for options, Enter to add": [
     ""
   ],
+  "Down arrow opens the list of options.": [
+    "Стрілка вниз відкриває список варіантів."
+  ],
   "Download configuration": [
     "Завантажити конфігурацію"
   ],
@@ -1229,6 +1241,9 @@ export default {
   ],
   "ExFAT": [
     "ExFAT"
+  ],
+  "Exit installation": [
+    "Вихід з програми встановлення"
   ],
   "Expand if possible": [
     "Розгорнути, якщо можливо"
@@ -1671,7 +1686,7 @@ export default {
     "Мова і регіон"
   ],
   "Left arrow reaches the %d values already added.": [
-    ""
+    "Стрілка вліво переходить до %d значень, які вже додано."
   ],
   "Let the installer propose a sensible size": [
     "Дозволити інсталятору запропонувати розумний розмір"
@@ -2637,7 +2652,7 @@ export default {
     "Кілька розділів буде видалено"
   ],
   "Shift": [
-    ""
+    "Shift"
   ],
   "Show": [
     "Показати"
@@ -2659,6 +2674,9 @@ export default {
   "Show more": [
     "Показати більше"
   ],
+  "Show options": [
+    "Показати параметри"
+  ],
   "Show technical details": [
     "Показати технічні деталі"
   ],
@@ -2674,6 +2692,9 @@ export default {
   "Shrink existing partitions": [
     "Зменшення наявних розділів"
   ],
+  "Shut down": [
+    "Вимкнути"
+  ],
   "Signal strength": [
     "Потужність сигналу"
   ],
@@ -2685,6 +2706,9 @@ export default {
   ],
   "Skip to content": [
     "Перейти до вмісту"
+  ],
+  "Skip to terminal": [
+    "Перейти до терміналу"
   ],
   "Software": [
     "Програми"
@@ -3046,6 +3070,9 @@ export default {
   "The system is rebooting": [
     "Система перезапускається"
   ],
+  "The system is shutting down": [
+    "Система вимикається"
+  ],
   "The system will boot to a command-line interface.": [
     "Система завантажиться в режим командного рядка."
   ],
@@ -3165,7 +3192,7 @@ export default {
     ""
   ],
   "Type to filter the options.": [
-    ""
+    "Введіть текст, щоб відфільтрувати варіанти."
   ],
   "Unable to modify the settings": [
     "Не вдається змінити налаштування"
@@ -3477,6 +3504,9 @@ export default {
   ],
   "You can safely close this window.": [
     "Ви можете сміливо закривати це вікно."
+  ],
+  "You can safely reboot or shut down the system. No changes have been made to your disks, and your current installation setup will be canceled.": [
+    "Ви можете сміливо перезавантажити або вимкнути систему. На ваших дисках не було внесено жодних змін, а поточна процедура встановлення буде скасована."
   ],
   "You may want to discard the current settings and start from scratch with a simple configuration.": [
     "Можливо, Ви захочете відкинути поточні налаштування і почати з чистого аркуша з простою конфігурацією."
