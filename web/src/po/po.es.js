@@ -758,6 +758,9 @@ export default {
   "Configuration from the network plus static addresses and gateway": [
     "Configuración desde la red además direcciones estáticas y puerta de enlace"
   ],
+  "Configuration pre-scripts have been executed and may have modified your system. You can reboot or shut down, but any changes made by these scripts will not be undone.": [
+    ""
+  ],
   "Configuration read from the iSCSI Boot Firmware Table (iBFT). Initiator cannot be changed.": [
     "Configuración leída de la tabla de firmware de arranque iSCSI (iBFT). El iniciador no se puede cambiar."
   ],
@@ -2711,6 +2714,9 @@ export default {
   "Shrink existing partitions": [
     "Reducir las particiones existentes"
   ],
+  "Shut down": [
+    ""
+  ],
   "Signal strength": [
     "Intensidad de la señal"
   ],
@@ -3511,6 +3517,9 @@ export default {
   ],
   "You can safely close this window.": [
     "Puedes cerrar esta ventana sin problemas."
+  ],
+  "You can safely reboot or shut down the system. No changes have been made to your disks, and your current installation setup will be canceled.": [
+    ""
   ],
   "You may want to discard the current settings and start from scratch with a simple configuration.": [
     "Quizá quiera descartar los ajustes actuales y empezar desde cero con una configuración sencilla."
