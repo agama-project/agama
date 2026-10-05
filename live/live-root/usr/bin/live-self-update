@@ -15,6 +15,8 @@ RESPONSE_FILE="$RUN_DIR/server_response"
 REG_REPO_FILE="$RUN_DIR/reg_repos"
 OSR="/etc/os-release"
 ARCH=$(uname -m)
+# backup of the original resolv.conf (relative to the root directory)
+RESOLV_BACKUP="/etc/resolv.conf.self-update-orig"
 
 # the added self-update repositories
 self_update_repos=()
@@ -93,7 +95,16 @@ prepare_chroot() {
     mount -o bind /sys "$NEWROOT"/sys
     mount -o bind /proc "$NEWROOT"/proc
     mount -o bind /dev "$NEWROOT"/dev
-    [ -f /run/NetworkManager/resolv.conf ] && cp /run/NetworkManager/resolv.conf "$NEWROOT"/etc/resolv.conf
+    if [ -f /run/NetworkManager/resolv.conf ]; then
+      # keep the original file (or symlink), it is restored in cleanup_chroot()
+      if [ -e "$NEWROOT$RESOLV_BACKUP" ] || [ -L "$NEWROOT$RESOLV_BACKUP" ]; then
+        rm -f "$NEWROOT$RESOLV_BACKUP"
+      fi
+      if [ -e "$NEWROOT"/etc/resolv.conf ] || [ -L "$NEWROOT"/etc/resolv.conf ]; then
+        mv "$NEWROOT"/etc/resolv.conf "$NEWROOT$RESOLV_BACKUP"
+      fi
+      cp /run/NetworkManager/resolv.conf "$NEWROOT"/etc/resolv.conf
+    fi
   fi
   # remove any existing self-update repositories, probably left-overs from the previous run
   rm -f "$NEWROOT"/etc/zypp/repos.d/self-update-*.repo
@@ -128,7 +139,12 @@ cleanup_chroot() {
 
   if [ -n "$NEWROOT" ]; then
     local dir
-    rm -f "$NEWROOT"/etc/resolv.conf
+    # restore the original resolv.conf if it was replaced
+    if [ -e "$NEWROOT$RESOLV_BACKUP" ] || [ -L "$NEWROOT$RESOLV_BACKUP" ]; then
+      rm -f "$NEWROOT"/etc/resolv.conf
+      mv "$NEWROOT$RESOLV_BACKUP" "$NEWROOT"/etc/resolv.conf || \
+        warning "Restoring resolv.conf failed"
+    fi
     for dir in run sys proc dev; do
       # do not fail if not mounted, do not abort the cleanup if unmounting fails
       if findmnt "$NEWROOT/$dir" > /dev/null; then
@@ -167,12 +183,15 @@ query_reg_server() {
     read_os_release
 
     local query
-    query="$server/connect/repositories/installer?identifier=$NAME&version=$VERSION_ID&arch=$ARCH"
-    info "Running query $query...."
+    query="$server/connect/repositories/installer"
+    info "Running query $query (identifier=$NAME, version=$VERSION_ID, arch=$ARCH)...."
 
+    # the query parameters are URL-encoded by curl (the values may contain spaces)
     local curl_options
     curl_options=(--silent --globoff --location --retry 3 --retry-connrefused \
-      --connect-timeout 20 --max-time 10 --fail --show-error --output "$RESPONSE_FILE")
+      --connect-timeout 20 --max-time 30 --fail --show-error --output "$RESPONSE_FILE" \
+      --get --data-urlencode "identifier=$NAME" --data-urlencode "version=$VERSION_ID" \
+      --data-urlencode "arch=$ARCH")
 
     if grep -q "\binst.self_update_ssl=0\b" /run/agama/cmdline.d/agama.conf; then
       warning "Disabling SSL check for $server"
@@ -255,10 +274,17 @@ read_fallback_repos() {
   #   $os_release_version_id => VERSION_ID
   # IMPORTANT NOTE: the "VERSION_ID" replacement must happen *before*
   # the "VERSION" replacement because it partially matches that string!
-  sed -e "s/\$os_release_name/$NAME/g" -e "s/\$os_release_id/$ID/g" \
-    -e "s/\$os_release_version_id/$VERSION_ID/g" \
-    -e "s/\$os_release_version/$VERSION/g" \
-    -e "s/\$arch/$ARCH/g" "$CONFIG_FALLBACK_FILE" > "$FALLBACK_REPOS_FILE"
+  sed -e "s/\$os_release_name/$(sed_escape "$NAME")/g" \
+    -e "s/\$os_release_id/$(sed_escape "$ID")/g" \
+    -e "s/\$os_release_version_id/$(sed_escape "$VERSION_ID")/g" \
+    -e "s/\$os_release_version/$(sed_escape "$VERSION")/g" \
+    -e "s/\$arch/$(sed_escape "$ARCH")/g" "$CONFIG_FALLBACK_FILE" > "$FALLBACK_REPOS_FILE"
+}
+
+# escape the characters which are special in the sed replacement part
+# $1 - the string to escape
+sed_escape() {
+  printf '%s' "$1" | sed -e 's/[\/&]/\\&/g'
 }
 
 # Applies all the updates
