@@ -19,13 +19,6 @@
     Requires:       yast2-iscsi-client >= 5.0.11
     Requires:       yast2-storage-ng >= 5.0.49
     %ifarch s390 s390x
-    # yast2-s390's Ruby code (Y2S390::Dasd/DasdsCollection/DasdsReader/FormatProcess/ZFCP) is
-    # vendored into service/YaST2/lib/y2s390 (see service/YaST2/README.md); the RPM is no longer
-    # needed. yast2-cio was confirmed unused (its only content is an interactive channel-blacklist
-    # dialog Agama never runs) and dropped outright.
-    # yast2-reipl stays for now: Bootloader::FinishClient (from yast2-bootloader, not yet vendored)
-    # dynamically dispatches to its "reipl_bootloader_finish" client on every s390 install; it can
-    # only be dropped once that dispatch is replaced when yast2-bootloader itself is vendored.
     Requires:       yast2-reipl
     %endif
     # Storage dependencies
