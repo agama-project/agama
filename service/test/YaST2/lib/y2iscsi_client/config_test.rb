@@ -25,9 +25,6 @@ require "y2iscsi_client/authentication"
 require "tmpdir"
 require "fileutils"
 
-# NOTE: this class has no upstream test at all (not even an incidental reference), so this spec
-# was written from scratch while vendoring, based on reading the real source and its only caller,
-# IscsiClientLib#getConfig/#saveConfig/#discover (see service/YaST2/README.md).
 describe Y2IscsiClient::Config do
   subject(:config) { described_class.new }
 
@@ -82,13 +79,17 @@ describe Y2IscsiClient::Config do
       config.entries = entries
       writes = []
 
-      allow(Yast::SCR).to receive(:Write) { |path, data| writes << [path, data] }
+      expect(Yast::SCR).to receive(:Write) do |path, data|
+        expect(path).to eq(etc_iscsid_all)
+        expect(data).to eq({ "value" => entries })
+      end
+
+      expect(Yast::SCR).to receive(:Write) do |path, data|
+        expect(path).to eq(etc_iscsid)
+        expect(data).to be_nil
+      end
 
       config.save
-
-      expect(writes.size).to eq(2)
-      expect(writes[0]).to eq([etc_iscsid_all, { "value" => entries }])
-      expect(writes[1]).to eq([etc_iscsid, nil])
     end
   end
 
@@ -214,14 +215,6 @@ describe Y2IscsiClient::Config do
     end
   end
 
-  # All the tests above stub Yast::SCR directly, so they never actually exercise the real
-  # ".etc.iscsid"/".etc.iscsid.all" SCR path - that path is registered by the vendored
-  # service/YaST2/scrconf/iscsid.scr, a non-Ruby asset easy to miss when enumerating a package's
-  # require/Yast.import graph alone. A first version of this vendoring omitted that file, which
-  # worked fine in a git checkout (the real yast2-iscsi-client RPM registered the path anyway) but
-  # silently returned nil from Yast::SCR.Read once that RPM was fully uninstalled. These tests
-  # exercise the real SCR agent (via a chroot, see Yast::RSpec::SCR) to catch that class of
-  # regression; do not replace them with mocked-SCR equivalents.
   describe "end-to-end with the real SCR agent (no Yast::SCR mocking)" do
     # NOTE: change_scr_root raises if called while another chroot is still open, so each describe
     # below opens/closes its own chroot independently instead of sharing one top-level `around`.
