@@ -20,6 +20,10 @@
     # Needed by service/YaST2/modules/Popup.rb (Yast.import "UI") - previously only a transitive
     # dependency pulled in by the now-dropped `yast2` RPM's own Requires:
     Requires:       yast2-ycp-ui-bindings
+    # Needed by service/YaST2/{modules/ShadowConfig.rb,lib/cfa/{login_defs,shadow_config}.rb} (the
+    # "login_defs.lns" Augeas lens) - previously only a transitive dependency pulled in by the
+    # now-dropped `yast2` RPM's own Requires:
+    Requires:       augeas-lenses
     # Storage dependencies
     Requires:       bcache-tools
     Requires:       btrfsprogs

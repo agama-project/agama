@@ -57,6 +57,7 @@ $SUDO $ZYPPER install \
   gettext-runtime \
   glibc-locale \
   suseconnect-ruby-bindings \
+  augeas-lenses \
   yast2-hardware-detection \
   yast2-schema \
   yast2-transfer \
