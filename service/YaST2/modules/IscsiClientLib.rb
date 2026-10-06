@@ -216,65 +216,6 @@ module Yast
       end
     end
 
-    def socketStop(socket)
-      if socket
-        socket.stop
-      else
-        log.error "socket not available"
-        false
-      end
-    end
-
-    def socketEnabled?(socket)
-      if socket
-        socket.enabled?
-      else
-        log.error "socket not available"
-        false
-      end
-    end
-
-    def socketDisabled?(socket)
-      if socket
-        socket.disabled?
-      else
-        log.error "socket not available"
-        false
-      end
-    end
-
-    def socketEnable(socket)
-      if socket
-        socket.enable
-      else
-        log.error "socket not available"
-        false
-      end
-    end
-
-    def socketDisable(socket)
-      if socket
-        socket.disable
-      else
-        log.error "socket not available"
-        false
-      end
-    end
-
-    def GetOffloadCard
-      @offload_card
-    end
-
-    def selected_iface
-      @iface || "default"
-    end
-
-    def iface=(iface)
-      return if @iface == iface
-      log.info "Changing the iface from #{iface} to #{@iface}"
-      @iface = iface
-    end
-
     # Create and return complete iscsciadm command by adding the string
     # argument as options. If allowed, write the command to y2log file.
     #
@@ -354,46 +295,6 @@ module Yast
       @ibft
     end
 
-    # get accessor for service status
-    #
-    # NOTE: this is reliable only if {#getServiceStatus} has been called before (since that's
-    # the only way to initialize @iscsid_socket and @iscsiuio_socket). Not sure if that method
-    # interdependency is intentional (looks dangerous).
-    def GetStartService
-      status_d = socketEnabled?(@iscsid_socket)
-      status_uio = socketEnabled?(@iscsiuio_socket)
-      status = Service.Enabled("iscsi")
-      log.info "Start at boot enabled for iscsid.socket: #{status_d}, iscsi: #{status}, iscsiuio.socket: #{status_uio}"
-      log.info "Is iscsiuio relevant? #{iscsiuio_relevant?}"
-      return status_d && status && !(iscsiuio_relevant? && !status_uio)
-    end
-
-    # set accessor for service status
-    #
-    # NOTE: this can handle the iscsid and iscsiuio sockets only if {#getServiceStatus} has been
-    # called before. Not sure if that method interdependency is intentional (looks dangerous).
-    def SetStartService(status)
-      msg =
-        if iscsiuio_relevant?
-          "Set start at boot for iscsid.socket, iscsiuio.socket and iscsi.service to #{status}"
-        else
-          "Set start at boot for iscsid.socket and iscsi.service to #{status}"
-        end
-      log.info msg
-
-      if status == true
-        Service.Enable("iscsi")
-        socketEnable(@iscsid_socket)
-        socketEnable(@iscsiuio_socket) if iscsiuio_relevant?
-      else
-        Service.Disable("iscsi")
-        socketDisable(@iscsid_socket)
-        socketDisable(@iscsiuio_socket) if iscsiuio_relevant?
-      end
-
-      nil
-    end
-
     # Current configuration
     #
     # returns an array with all the entries of the configuration, each entry
@@ -437,45 +338,6 @@ module Yast
       Builtins.y2milestone("Store temporary config")
       @config.save
       nil
-    end
-
-    def getNode
-      cmdline = GetAdmCmd("-S -m node -I #{current_iface} -T #{current_target} -p #{current_portal}")
-      cmd = SCR.Execute(path(".target.bash_output"), cmdline)
-      return {} if Ops.get_integer(cmd, "exit", 0) != 0
-      auth = {}
-      Builtins.foreach(
-        Builtins.splitstring(Ops.get_string(cmd, "stdout", ""), "\n")
-      ) do |row|
-        key = Ops.get(Builtins.splitstring(row, " = "), 0, "")
-        val = Ops.get(Builtins.splitstring(row, " = "), 3, "")
-        val = "" if val == "<empty>"
-        case key
-        when "node.session.auth.authmethod"
-          Ops.set(auth, "authmethod", val)
-        when "node.session.auth.username"
-          Ops.set(auth, "username", val)
-        when "node.session.auth.password"
-          Ops.set(auth, "password", val)
-        when "node.session.auth.username_in"
-          Ops.set(auth, "username_in", val)
-        when "node.session.auth.password_in"
-          Ops.set(auth, "password_in", val)
-        end
-      end
-      deep_copy(auth)
-    end
-
-    # @see #save_auth_config
-    #
-    # Offered for backwards compatibility
-    def saveConfig(user_in, pass_in, user_out, pass_out)
-      values = {
-        "username_in" => user_in, "password_in" => pass_in,
-        "username" => user_out, "password" => pass_out
-      }
-      auth = Y2IscsiClient::Authentication.new_from_legacy(values)
-      save_auth_config(auth)
     end
 
     # Temporary change config for discovery authentication
@@ -544,10 +406,6 @@ module Yast
       true
     rescue Cheetah::ExecutionFailed
       false
-    end
-
-    def setISNSConfig(address, port)
-      @config.set_isns(address, port)
     end
 
     # Called for data (output) of commands:
@@ -1170,111 +1028,6 @@ module Yast
       ret
     end
 
-    # Stops immediately all iscsi-related services and sockets if those services are disabled and
-    # there are no running sessions.
-    #
-    # NOTE: this only works in the installed system, it does nothing during installation.
-    #
-    # NOTE: this is reliable only if {#getServiceStatus} has been called before (since that's
-    # the only way to initialize @iscsid_socket and @iscsiuio_socket). Not sure if that method
-    # interdependency is intentional (looks dangerous).
-    #
-    # FIXME: The name gives a totally wrong impression on the method functionality. This method
-    # is only useful to stop services, it never starts/enables/disables any service.
-    #
-    # @return [Boolean] true in all cases, which looks suspicious
-    def setServiceStatus
-      ret = true
-      # only makes sense in installed system
-      if !Stage.initial
-        # if disabled and no connected targets - stop it
-        # otherwise keep it running
-        if !GetStartService()
-          readSessions
-          if Builtins.size(@sessions) == 0
-            log.info "No active sessions - stopping iscsi service and iscsid/iscsiuio service and socket"
-            # stop iscsid.socket and iscsid.service
-            socketStop(@iscsid_socket)
-            Service.Stop("iscsid")
-            # stop iscsiuio.socket and iscsiuio.service
-            socketStop(@iscsiuio_socket)
-            Service.Stop("iscsiuio")
-            # stop iscsi.service
-            Service.Stop("iscsi")
-          end
-        end
-      end
-      log.info "Status service for iscsid: #{ret}"
-      ret
-    end
-
-    def autoyastPrepare
-      @initiatorname = Ops.get_string(@ay_settings, "initiatorname", "")
-      if Ops.greater_than(Builtins.size(@initiatorname), 0)
-        file = "/etc/iscsi/initiatorname.iscsi"
-        SCR.Write(
-          path(".target.string"),
-          [file, 384],
-          Builtins.sformat("InitiatorName=%1\n", @initiatorname)
-        )
-      else
-        checkInitiatorName
-      end
-      # start daemon before
-      start_services_initial
-
-      nil
-    end
-
-    def autoyastWrite
-      # do discovery first
-      portals = []
-      ifaces = []
-      ifacepar = ""
-      @ay_settings.fetch("targets", []).each do |target|
-        iface = target.fetch("iface", "default")
-        next if ifaces.include?(iface) # already added
-
-        ifacepar << " " unless ifacepar.empty?
-        ifacepar << "-I " << iface.shellescape
-        ifaces << iface
-      end
-
-      # rubocop:disable Style/CombinableLoops
-      @ay_settings.fetch("targets", []).each do |target|
-        next if portals.include? target["portal"]
-        SCR.Execute(
-          path(".target.bash"),
-          GetAdmCmd(%(-m discovery #{ifacepar} -t st -p #{target["portal"].shellescape}))
-        )
-        portals << target["portal"]
-        log.info "login into target #{target}"
-        loginIntoTarget(target)
-        @currentRecord = [target["portal"], target["target"], target["iface"]]
-        setStartupStatus(target.fetch("startup", "manual"))
-      end
-      # rubocop:enable Style/CombinableLoops
-      true
-    end
-
-    def Overview
-      overview = _("Configuration summary...")
-      unless (@ay_settings || {}).empty?
-        overview = ""
-        initiatorname = @ay_settings.fetch("initiatorname", "")
-        targets = @ay_settings.fetch("targets", [])
-        unless initiatorname.empty?
-          overview << "<p><b>Initiatorname: </b>#{initiatorname}</p>"
-        end
-        unless targets.empty?
-          targets.each do |t|
-            overview << "<p>#{t["portal"]}, #{t["target"]}, #{t["iface"]}, #{t["startup"]}</p>"
-          end
-        end
-      end
-      overview
-    end
-
     def InitIface
       ret = "default"
       retcode = SCR.Execute(path(".target.bash_output"), GetAdmCmd("-m node -P 1"))
@@ -1336,27 +1089,6 @@ module Yast
       nil
     end
 
-    def default_item
-      Item(Id(@offload[0][0]), @offload[0][1], @iface == @offload[0][0])
-    end
-
-    def all_item
-      Item(Id(@offload[1][0]), @offload[1][1], @iface == @offload[1][0])
-    end
-
-    def iface_items
-      if @iface_file.nil?
-        InitIfaceFile()
-        InitIface()
-      end
-
-      items = [default_item]
-      items << all_item if @iface_file.any?
-
-      @iface_file.each { |n, e| items << Item(Id(n), iface_label(e), @iface == n) }
-      items
-    end
-
     # Modules to use for all the cards detected in the system and that support hardware
     # offloading, no matter whether those cards are indeed configured
     #
@@ -1370,15 +1102,6 @@ module Yast
       @offload_valid.each { |i, _| modules.concat(@offload[i][3]) }
       log.info "GetOffloadModules #{modules}"
       modules.uniq
-    end
-
-    def LoadOffloadModules
-      mods = GetOffloadModules()
-      mods.each do |s|
-        log.info "Loading module #{s}"
-        ModuleLoading.Load(s, "", "", "", false, true)
-      end
-      mods
     end
 
     # It returns a list of iscsi ifaces corresponding to the current offload card selection, "default" will return
@@ -1611,10 +1334,6 @@ module Yast
       log.info "IP Address for #{dev_name}: #{ipaddr}"
 
       ipaddr
-    end
-
-    def iface_label(data)
-      [data[:name], data[:ip]].compact.join(" - ")
     end
 
     def card_label(card, type_label)

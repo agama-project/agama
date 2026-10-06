@@ -217,21 +217,11 @@ module Yast
       raise XMLDeserializationError, e.message
     end
 
-    # The error string from the XML parser.
-    # It should be used when the agent did not return content.
-    # A reset happens before a new XML parsing starts.
-    # @return nil
-    # @deprecated Exception is used instead
-    def XMLError
-      nil
-    end
-
     publish function: :xmlCreateDoc, type: "void (symbol, map)"
     publish function: :YCPToXMLFile, type: "boolean (symbol, map, string)"
     publish function: :YCPToXMLString, type: "string (symbol, map)"
     publish function: :XMLToYCPFile, type: "map <string, any> (string)"
     publish function: :XMLToYCPString, type: "map <string, any> (string)"
-    publish function: :XMLError, type: "string ()"
 
   private
 

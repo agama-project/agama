@@ -53,47 +53,6 @@ module Yast
     # for module loading.
     # @see #ModuleLoading::Load
 
-    def prepareVendorDeviceInfo(controller)
-      controller = deep_copy(controller)
-      # build up vendor/device information
-
-      # if vendor not given, try sub_vendor
-
-      controller_vendor = Ops.get_string(
-        controller,
-        "vendor",
-        Ops.get_string(controller, "sub_vendor", "")
-      )
-      if controller_vendor != ""
-        controller_sub_vendor = Ops.get_string(controller, "sub_vendor", "")
-        if controller_sub_vendor != ""
-          controller_vendor = Ops.add(
-            Ops.add(Ops.add(controller_vendor, "\n("), controller_sub_vendor),
-            ")"
-          )
-        end
-      end
-
-      # if device not given, try sub_device
-
-      controller_device = Ops.get_string(
-        controller,
-        "device",
-        Ops.get_string(controller, "sub_device", "")
-      )
-      if controller_device != ""
-        controller_sub_device = Ops.get_string(controller, "sub_device", "")
-        if controller_sub_device != ""
-          controller_device = Ops.add(
-            Ops.add(Ops.add(controller_device, "\n("), controller_sub_device),
-            ")"
-          )
-        end
-      end
-
-      [controller_vendor, controller_device]
-    end
-
     # Is the module marked as broken in install.inf? (BrokenModules)
     # #97655
     # @param [String] mod module
@@ -274,7 +233,6 @@ module Yast
       load_success ? :ok : :fail
     end
 
-    publish function: :prepareVendorDeviceInfo, type: "list (map)"
     publish function: :Load, type: "symbol (string, string, string, string, boolean, boolean)"
   end
 

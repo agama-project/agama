@@ -45,15 +45,6 @@ module Yast
       @bit_weight_row = [128, 64, 32, 16, 8, 4, 2, 1]
     end
 
-    # Describe a valid IPv4 address
-    # @return [String] describtion a valid IPv4 address
-    def Valid4
-      # Translators: dot: "."
-      _(
-        "A valid IPv4 address consists of four integers\nin the range 0-255 separated by dots."
-      )
-    end
-
     # Check syntax of IPv4 address
     # @param [String] ip IPv4 address
     # @return true if correct
@@ -61,17 +52,6 @@ module Yast
       IPAddr.new(ip).ipv4?
     rescue StandardError
       false
-    end
-
-    # Describe a valid IPv6 address
-    # @return [String] describtion a valid IPv4 address
-    def Valid6
-      # Translators: colon: ":"
-      _(
-        "A valid IPv6 address consists of up to eight\n" \
-        "hexadecimal numbers in the range 0 - FFFF separated by colons.\n" \
-        "It can contain up to one double colon."
-      )
     end
 
     # Check syntax of IPv6 address
@@ -83,53 +63,11 @@ module Yast
       false
     end
 
-    # If param contains IPv6 in one of its various forms, extracts it.
-    #
-    # if ip is closed in [ ] or contain % then it can be special case of IPv6 syntax,
-    # so extract ipv6 (see description later) and continue with check.
-    #
-    # IPv6 syntax:
-    # - pure ipv6 blob (e.g. f008::1)
-    # - ipv6 blob with link local suffix (e.g. f008::1%eth0)
-    # - dtto in square brackets (e.g. [f008::1%eth0] )
-    #
-    # @param [String] ip    a buffer with address
-    # @return      IPv6 part of ip param, unchanged ip param otherwise
-    def UndecorateIPv6(ip)
-      if Builtins.regexpmatch(ip, "^\\[.*\\]") ||
-          Builtins.regexpmatch(ip, "^[^][%]+(%[^][%]+){0,1}$")
-        ip = Builtins.regexpsub(
-          ip,
-          "^\\[?([^][%]+)(%[^][%]+){0,1}(\\]|$)",
-          "\\1"
-        )
-      end
-
-      ip
-    end
-
     # Check syntax of IP address
     # @param [String] ip IP address
     # @return true if correct
     def Check(ip)
       Check4(ip) || Check6(ip)
-    end
-
-    # Returns string of valid network definition.
-    # Both IPv4 and IPv6.
-    #
-    # @return [String] describing the valid network.
-    def ValidNetwork
-      # TRANSLATORS: description of the valid network definition
-      _(
-        "A valid network definition can contain the IP,\n" \
-        "IP/Netmask, IP/Netmask_Bits, or 0/0 for all networks.\n" \
-        "\n" \
-        "Examples:\n" \
-        "IP: 192.168.0.1 or 2001:db8:0::1\n" \
-        "IP/Netmask: 192.168.0.0/255.255.255.0 or 2001:db8:0::1/56\n" \
-        "IP/Netmask_Bits: 192.168.0.0/24 or 192.168.0.1/32 or 2001:db8:0::1/ffff::0\n"
-      )
     end
 
     # Convert IPv4 address from string to integer
@@ -158,30 +96,6 @@ module Yast
       return nil unless int
 
       format("%08X", int)
-    end
-
-    # Compute IPv4 network address from ip4 address and network mask.
-    # @param [String] ip IPv4 address
-    # @param [String] mask netmask
-    # @return computed subnet
-    def ComputeNetwork(ip, mask)
-      i = ToInteger(ip)
-      m = ToInteger(mask)
-      ToString(Ops.bitwise_and(Ops.bitwise_and(i, m), 4_294_967_295))
-    end
-
-    # Compute IPv4 broadcast address from ip4 address and network mask.
-    #
-    # The broadcast address is the highest address of network address range.
-    # @param [String] ip IPv4 address
-    # @param [String] mask netmask
-    # @return computed broadcast
-    def ComputeBroadcast(ip, mask)
-      i = ToInteger(ip)
-      m = ToInteger(mask)
-      ToString(
-        Ops.bitwise_and(Ops.bitwise_or(i, Ops.bitwise_not(m)), 4_294_967_295)
-      )
     end
 
     # Converts IPv4 into its 32 bit binary representation.
@@ -217,103 +131,20 @@ module Yast
       ToString(bits.to_i(2))
     end
 
-    # Checks if given IPv4 address is reserved by any related RFC.
-    #
-    # RFCs covered by this method are #1700, #1918, #2544, #3068, #5735, #5737,
-    # 5771, #6333 and #6598
-    #
-    # @param[String] ip IPv4 address
-    # @return[true,false] if address is reserved
-    #
-    # @raise [RuntimeError] if ip address is invalid
-    def reserved4(ip)
-      raise "Invalid IP address passed '#{ip}'" unless Check4(ip)
-
-      # RFC#1700
-      return true if ip.start_with?("0.")
-
-      # RFC#6598
-      return true if private_carrier_grade_nat?(ip)
-
-      # RFC#5735
-      return true if ip.start_with?("127.")
-      return true if ip.start_with?("169.254")
-
-      # RFC#1918
-      return true if private_network?(ip)
-
-      # RFC#6333
-      return true if ds_lite_address?(ip)
-
-      # RFC#5737
-      return true if ip.start_with?("192.0.2.")
-      return true if ip.start_with?("198.51.100.")
-      return true if ip.start_with?("203.0.113.")
-
-      # RFC#3068
-      return true if ip.start_with?("192.88.99.")
-
-      # RFC#2544
-      return true if ip.start_with?("192.18.")
-      return true if ip.start_with?("192.19.")
-
-      # all from 224. is covered by RFC#5771 and RFC#5735
-      return true if (224..255).cover?(ip.split(".").first.to_i)
-
-      false
-    end
-
     publish variable: :ValidChars, type: "string"
     publish variable: :ValidChars4, type: "string"
     publish variable: :ValidChars6, type: "string"
-    publish function: :Valid4, type: "string ()"
     publish function: :Check4, type: "boolean (string)"
-    publish function: :Valid6, type: "string ()"
     publish function: :Check6, type: "boolean (string)"
-    publish function: :UndecorateIPv6, type: "string (string)"
     publish function: :Check, type: "boolean (string)"
-    publish function: :ValidNetwork, type: "string ()"
     publish function: :ToInteger, type: "integer (string)"
     publish function: :ToString, type: "string (integer)"
     publish function: :ToHex, type: "string (string)"
-    publish function: :ComputeNetwork, type: "string (string, string)"
-    publish function: :ComputeBroadcast, type: "string (string, string)"
     publish function: :IPv4ToBits, type: "string (string)"
     publish function: :BitsToIPv4, type: "string (string)"
     publish function: :CheckNetwork4, type: "boolean (string)"
     publish function: :CheckNetwork6, type: "boolean (string)"
     publish function: :CheckNetwork, type: "boolean (string)"
-    publish function: :reserved4, type: "boolean (string)"
-
-  private
-
-    def private_carrier_grade_nat?(ip)
-      return false unless ip.start_with?("100.")
-
-      second_part = ip.split(".")[1].to_i
-      (64..127).cover?(second_part)
-    end
-
-    def private_network?(ip)
-      # 10.0.0.0/8
-      return true if ip.start_with?("10.")
-
-      # 192.168.0.0/8
-      return true if ip.start_with?("192.168.")
-
-      # 172.16.0.0/12
-      return false unless ip.start_with?("172.")
-
-      second_part = ip.split(".")[1].to_i
-      (16..31).cover?(second_part)
-    end
-
-    def ds_lite_address?(ip)
-      return false unless ip.start_with?("192.0.0.")
-
-      fourth_part = ip.split(".")[3].to_i
-      (0..7).cover?(fourth_part)
-    end
   end
 
   IP = IPClass.new

@@ -367,69 +367,6 @@ module Yast
       false
     end
 
-    # Save sections of current profile to separate files
-    #
-    # @param [String] dir - directory to store section xml files in
-    # @return [Hash<String,String>] returns map with section name and respective file where
-    #   it is serialized
-    def SaveSingleSections(dir)
-      Prepare()
-      Builtins.y2milestone("Saving data (%1) to XML single files", @current)
-      sectionFiles = {}
-      Builtins.foreach(@current) do |sectionName, section|
-        sectionFileName = Ops.add(
-          Ops.add(Ops.add(dir, "/"), sectionName),
-          ".xml"
-        )
-        tmpProfile = { sectionName => section }
-        begin
-          XML.YCPToXMLFile(:profile, tmpProfile, sectionFileName)
-          Builtins.y2milestone(
-            "Wrote section %1 to file %2",
-            sectionName,
-            sectionFileName
-          )
-          sectionFiles = Builtins.add(
-            sectionFiles,
-            sectionName,
-            sectionFileName
-          )
-        rescue XMLSerializationError => e
-          log.error "Could not write section #{sectionName} to file #{sectionFileName}:" \
-                    "#{e.inspect}"
-        end
-      end
-      deep_copy(sectionFiles)
-    end
-
-    # Save the current data into a file to be read after a reboot.
-    # @param parsedControlFile [Hash] Data from control file
-    # @return  true on success
-    # @see #Restore()
-    def SaveProfileStructure(parsedControlFile)
-      Builtins.y2milestone("Saving control file in YCP format")
-      SCR.Write(path(".target.ycp"), parsedControlFile, @current)
-    end
-
-    # Read YCP data as the control file
-    # @param parsedControlFile [String] path of the ycp file
-    # @return [Boolean] false when the file is empty or missing; true otherwise
-    def ReadProfileStructure(parsedControlFile)
-      contents = Convert.convert(
-        SCR.Read(path(".target.ycp"), [parsedControlFile, {}]),
-        from: "any",
-        to:   "map <string, any>"
-      )
-      if contents == {}
-        @current = Yast::ProfileHash.new(contents)
-        return false
-      else
-        Import(contents)
-      end
-
-      true
-    end
-
     # General compatibility issues
     # @param current [Hash] current profile
     # @return [Hash] converted profile
@@ -678,9 +615,6 @@ module Yast
     publish function: :Prepare, type: "void ()"
     publish function: :Reset, type: "void ()"
     publish function: :Save, type: "boolean (string)"
-    publish function: :SaveSingleSections, type: "map <string, string> (string)"
-    publish function: :SaveProfileStructure, type: "boolean (string)"
-    publish function: :ReadProfileStructure, type: "boolean (string)"
     publish function: :ReadXML, type: "boolean (string)"
     publish function: :setElementByList, type: "map <string, any> (list, any, map <string, any>)"
     publish function: :checkProfile, type: "void ()"

@@ -208,40 +208,6 @@ module Yast
       nil
     end
 
-    def Translate(key)
-      if Builtins.regexpmatch(key, "_\\(\"(.*)\"\\)") == true
-        ke = Builtins.regexpsub(key, "_\\(\"(.*)\"\\)", "\\1")
-        key = Builtins.eval(ke)
-        Builtins.y2milestone("%1 -> %2", ke, key)
-      end
-      key
-    end
-
-    def CreateList(entry)
-      entry = deep_copy(entry)
-      keys = Map.Keys(entry)
-      keys = Builtins.sort(keys) do |x, y|
-        Ops.less_than(
-          Ops.get_string(entry, [x, "SortKey"], ""),
-          Ops.get_string(entry, [y, "SortKey"], "")
-        )
-      end
-
-      keys = Builtins.filter(keys) do |key|
-        Ops.get_string(entry, [key, "Hidden"], "false") != "true"
-      end
-
-      Builtins.y2debug("keys=%1", keys)
-
-      Builtins.maplist(keys) do |name|
-        Item(Id(name), Translate(Ops.get_string(entry, [name, "Name"], "???")))
-      end
-    end
-
-    def GroupList
-      CreateList(@Groups)
-    end
-
     def ModuleList(group)
       mods = Ops.get_list(@Groups, [group, "modules"], [])
       l = []
@@ -273,42 +239,6 @@ module Yast
 
       # y2debug too costly: y2debug("%1", m);
       deep_copy(l)
-    end
-
-    def MakeAutostartMap(exec, args)
-      args = deep_copy(args)
-      {
-        "Encoding"         => "UTF-8",
-        "Name"             => exec,
-        "Exec"             => exec,
-        "X-SuSE-Autostart" => Ops.add(
-          Ops.add(exec, " "),
-          Builtins.mergestring(args, " ")
-        ),
-        "Hidden"           => "true",
-        "Icon"             => exec,
-        "Type"             => "Application"
-      }
-    end
-
-    # Runs a program by writing a special desktop file.
-    # Works with KDE and GNOME.
-    # Useful for kinternet, see bug 37864#c17
-    # @param [String] exec program to exec (basename)
-    def RunViaDesktop(exec, args)
-      args = deep_copy(args)
-      content = "[KDE Desktop Entry]\n"
-      Builtins.foreach(MakeAutostartMap(exec, args)) do |key, value|
-        content = Ops.add(content, Builtins.sformat("%1=%2\n", key, value))
-      end
-      dir = "/var/lib/Desktop"
-      SCR.Write(
-        path(".target.string"),
-        Builtins.sformat("%1/yast2-run-%2.desktop", dir, exec),
-        content
-      )
-
-      nil
     end
 
     # Parses the a .desktop file it gets as a parameter without trying to use
@@ -399,10 +329,7 @@ module Yast
     publish variable: :Groups, type: "map <string, map>"
     publish variable: :AgentPath, type: "path"
     publish function: :Read, type: "void (list <string>)"
-    publish function: :Translate, type: "string (string)"
-    publish function: :GroupList, type: "list <term> ()"
     publish function: :ModuleList, type: "list <term> (string)"
-    publish function: :RunViaDesktop, type: "void (string, list <string>)"
     publish function: :ParseSingleDesktopFile, type: "map <string, string> (string)"
 
   private

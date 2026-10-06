@@ -140,116 +140,6 @@ module Yast
       @current_step
     end
 
-    # Set Client Prefix
-    def setClientPrefix(prefix)
-      @_client_prefix = prefix
-      nil
-    end
-
-    # Enable given disabled module
-    # @return current list of disabled modules
-    def EnableModule(modname)
-      @DisabledModules = Builtins.filter(@DisabledModules) do |mod|
-        mod != modname
-      end
-
-      deep_copy(@DisabledModules)
-    end
-
-    # Disable given module in installation workflow
-    # @return current list of disabled modules
-    def DisableModule(modname)
-      if modname.nil? || modname == ""
-        Builtins.y2error("Module to disable is '%1'", modname)
-      else
-        @DisabledModules = Convert.convert(
-          Builtins.union(@DisabledModules, [modname]),
-          from: "list",
-          to:   "list <string>"
-        )
-      end
-
-      deep_copy(@DisabledModules)
-    end
-
-    # Returns list of modules disabled in workflow
-    #
-    # @return [Array<String>] DisabledModules
-    def GetDisabledModules
-      deep_copy(@DisabledModules)
-    end
-
-    # Enable given disabled proposal
-    # @return current list of disabled proposals
-    def EnableProposal(enable_proposal)
-      @DisabledProposals = Builtins.filter(@DisabledProposals) do |one_proposal|
-        one_proposal != enable_proposal
-      end
-
-      deep_copy(@DisabledProposals)
-    end
-
-    # Disable given proposal in installation workflow
-    # @return current list of disabled proposals
-    def DisableProposal(disable_proposal)
-      if disable_proposal.nil? || disable_proposal == ""
-        Builtins.y2error("Module to disable is '%1'", disable_proposal)
-      else
-        @DisabledProposals = Convert.convert(
-          Builtins.union(@DisabledProposals, [disable_proposal]),
-          from: "list",
-          to:   "list <string>"
-        )
-      end
-
-      deep_copy(@DisabledProposals)
-    end
-
-    # Returns list of proposals disabled in workflow
-    #
-    # @return [Array<String>] DisabledProposals
-    def GetDisabledProposals
-      deep_copy(@DisabledProposals)
-    end
-
-    def EnableSubProposal(unique_id, enable_subproposal)
-      if Builtins.haskey(@DisabledSubProposals, unique_id)
-        Ops.set(
-          @DisabledSubProposals,
-          unique_id,
-          Builtins.filter(Ops.get(@DisabledSubProposals, unique_id, [])) do |one_subproposal|
-            one_subproposal != enable_subproposal
-          end
-        )
-      end
-      deep_copy(@DisabledSubProposals)
-    end
-
-    def DisableSubProposal(unique_id, disable_subproposal)
-      if Builtins.haskey(@DisabledSubProposals, unique_id)
-        Ops.set(
-          @DisabledSubProposals,
-          unique_id,
-          Convert.convert(
-            Builtins.union(
-              Ops.get(@DisabledSubProposals, unique_id, []),
-              [disable_subproposal]
-            ),
-            from: "list",
-            to:   "list <string>"
-          )
-        )
-      else
-        Ops.set(@DisabledSubProposals, unique_id, [disable_subproposal])
-      end
-
-      deep_copy(@DisabledSubProposals)
-    end
-
-    def GetDisabledSubProposals
-      deep_copy(@DisabledSubProposals)
-    end
-
     # Check if a module is disabled
     # @param map module map
     # @return [Boolean]
@@ -555,14 +445,6 @@ module Yast
       nil
     end
 
-    # Get Workflow
-    # @param [String] stage Stage
-    # @param [String] mode Mode
-    # @return [Hash] Workflow map
-    def getCompleteWorkflow(stage, mode)
-      FindMatchingWorkflow(stage, mode)
-    end
-
     # Get modules of current Workflow
     # @param [String] stage
     # @param [String] mode
@@ -602,37 +484,6 @@ module Yast
       deep_copy(modules)
     end
 
-    # Returns whether is is required to run YaST in the defined
-    # stage and mode
-    #
-    # @param [String] stage
-    # @param [String] mode
-    # @return [Boolean] if needed
-    def RunRequired(stage, mode)
-      modules = getModules(stage, mode, :enabled)
-
-      if modules.nil?
-        Builtins.y2error("Undefined %1/%2", stage, mode)
-        return nil
-      end
-
-      modules = Builtins.filter(modules) do |one_module|
-        name = one_module["name"]
-        proposal = one_module["proposal"]
-
-        next true if name && !name.empty?
-        next true if proposal && !proposal.empty?
-
-        # the rest
-        false
-      end
-
-      # for debugging purposes
-      Builtins.y2milestone("Enabled: (%1) %2", Builtins.size(modules), modules)
-
-      Ops.greater_than(Builtins.size(modules), 0)
-    end
-
     # Get Workflow Label
     # @param [String] stage
     # @param [String] mode
@@ -651,108 +502,6 @@ module Yast
       end
 
       Builtins.dgettext(wz_td, label)
-    end
-
-    def DisableAllModulesAndProposals(mode, stage)
-      this_workflow = { "mode" => mode, "stage" => stage }
-
-      if Builtins.contains(@already_disabled_workflows, this_workflow)
-        Builtins.y2milestone("Workflow %1 already disabled", this_workflow)
-        return
-      end
-
-      # stores modules and proposals disabled before
-      # this 'general' disabling
-      @localDisabledProposals = deep_copy(@DisabledProposals)
-      @localDisabledModules = deep_copy(@DisabledModules)
-
-      Builtins.y2milestone(
-        "localDisabledProposals: %1",
-        @localDisabledProposals
-      )
-      Builtins.y2milestone("localDisabledModules: %1", @localDisabledModules)
-
-      Builtins.foreach(getModules(stage, mode, :all)) do |m|
-        if !Ops.get_string(m, "proposal").nil? &&
-            Ops.get_string(m, "proposal", "") != ""
-          Builtins.y2milestone("Disabling proposal: %1", m)
-          @DisabledProposals = Convert.convert(
-            Builtins.union(
-              @DisabledProposals,
-              [Ops.get_string(m, "proposal", "")]
-            ),
-            from: "list",
-            to:   "list <string>"
-          )
-        elsif !Ops.get_string(m, "name").nil? &&
-            Ops.get_string(m, "name", "") != ""
-          Builtins.y2milestone("Disabling module: %1", m)
-          @DisabledModules = Convert.convert(
-            Builtins.union(@DisabledModules, [Ops.get_string(m, "name", "")]),
-            from: "list",
-            to:   "list <string>"
-          )
-        end
-      end
-
-      @already_disabled_workflows = Convert.convert(
-        Builtins.union(@already_disabled_workflows, [this_workflow]),
-        from: "list",
-        to:   "list <map>"
-      )
-
-      nil
-    end
-
-    def UnDisableAllModulesAndProposals(mode, stage)
-      this_workflow = { "mode" => mode, "stage" => stage }
-
-      # Such mode/stage not disabled
-      if !Builtins.contains(@already_disabled_workflows, this_workflow)
-        Builtins.y2milestone(
-          "Not yet disabled, not un-disabling: %1",
-          this_workflow
-        )
-        return
-      end
-
-      Builtins.y2milestone("Un-Disabling workflow %1", this_workflow)
-      @already_disabled_workflows = Builtins.filter(@already_disabled_workflows) do |one_workflow|
-        one_workflow != this_workflow
-      end
-
-      # NOTE: This might be done by a simple reverting with 'X = localX'
-      #       but some of these modules don't need to be in a defined mode and stage
-
-      Builtins.foreach(getModules(stage, mode, :all)) do |m|
-        # A proposal
-        # Enable it only if it was enabled before
-        if !Ops.get_string(m, "proposal").nil? &&
-            Ops.get_string(m, "proposal", "") != "" &&
-            !Builtins.contains(
-              @localDisabledProposals,
-              Ops.get_string(m, "proposal", "")
-            )
-          Builtins.y2milestone("Enabling proposal: %1", m)
-          @DisabledProposals = Builtins.filter(@DisabledProposals) do |one_proposal|
-            Ops.get_string(m, "proposal", "") != one_proposal
-          end
-          # A module
-          # Enable it only if it was enabled before
-        elsif !Ops.get_string(m, "name").nil? &&
-            Ops.get_string(m, "name", "") != "" &&
-            !Builtins.contains(
-              @localDisabledModules,
-              Ops.get_string(m, "name", "")
-            )
-          Builtins.y2milestone("Enabling module: %1", m)
-          @DisabledModules = Builtins.filter(@DisabledModules) do |one_module|
-            Ops.get_string(m, "name", "") != one_module
-          end
-        end
-      end
-
-      nil
     end
 
     # Add Wizard Steps
@@ -927,215 +676,6 @@ module Yast
       end
 
       nil
-    end
-
-    def getMatchingProposal(stage, mode, proptype)
-      Builtins.y2milestone(
-        "Stage: %1 Mode: %2, Type: %3",
-        stage,
-        mode,
-        proptype
-      )
-
-      # First we search for proposals for current stage if there are
-      # any.
-      props = Builtins.filter(@proposals) do |p|
-        Check(Ops.get_string(p, "stage", ""), stage)
-      end
-      Builtins.y2debug("1. proposals: %1", props)
-
-      # Then we check for mode: installation or update
-      props = Builtins.filter(props) do |p|
-        Check(Ops.get_string(p, "mode", ""), mode)
-      end
-
-      Builtins.y2debug("2. proposals: %1", props)
-
-      # Now we check for architecture
-      Builtins.y2debug(
-        "Architecture: %1, Proposals: %2",
-        Arch.architecture,
-        props
-      )
-
-      arch_proposals = Builtins.filter(props) do |p|
-        Ops.get_string(p, "name", "") == proptype &&
-          Builtins.issubstring(
-            Ops.get_string(p, "archs", "dummy"),
-            Arch.arch_short
-          )
-      end
-
-      Builtins.y2debug("3. arch proposals: %1", arch_proposals)
-
-      props = Builtins.filter(props) do |p|
-        Ops.get_string(p, "archs", "") == "" ||
-          Ops.get_string(p, "archs", "") == "all"
-      end
-
-      Builtins.y2debug("4. other proposals: %1", props)
-      # If architecture specific proposals are available, we continue with those
-      # and check for proposal type, else we continue with pre arch proposal
-      # list
-      if Ops.greater_than(Builtins.size(arch_proposals), 0)
-        props = Builtins.filter(arch_proposals) do |p|
-          Ops.get_string(p, "name", "") == proptype
-        end
-        Builtins.y2debug("5. arch proposals: %1", props)
-      else
-        props = Builtins.filter(props) do |p|
-          Ops.get_string(p, "name", "") == proptype
-        end
-        Builtins.y2debug("5. other proposals: %1", props)
-      end
-
-      if Ops.greater_than(Builtins.size(props), 1)
-        Builtins.y2error(
-          "Something Wrong happened, more than one proposal after filter:\n                %1",
-          props
-        )
-      end
-
-      # old style proposal
-      Builtins.y2milestone(
-        "Proposal modules: %1",
-        Ops.get(props, [0, "proposal_modules"])
-      )
-      deep_copy(props)
-    end
-
-    # Get modules of current Workflow
-    # @param [String] stage
-    # @param [String] mode
-    # @param [String] proptype eg. "initial", "service", network"...
-    # @return [Array<Array(String,Integer)>] modules,
-    #   pairs of ("foo_proposal", presentation_order)
-    def getProposals(stage, mode, proptype)
-      props = getMatchingProposal(stage, mode, proptype)
-      unique_id = Ops.get_string(props, [0, "unique_id"], "")
-      disabled_subprops = GetDisabledSubProposals()
-
-      final_proposals = []
-      Builtins.foreach(Ops.get_list(props, [0, "proposal_modules"], [])) do |p|
-        proposal_name = ""
-        order_value = 50
-        if Ops.is_string?(p)
-          proposal_name = Convert.to_string(p)
-        else
-          pm = Convert.convert(p, from: "any", to: "map <string, string>")
-          proposal_name = Ops.get(pm, "name", "")
-          proposal_order = Ops.get(pm, "presentation_order", "50")
-
-          order_value = Builtins.tointeger(proposal_order)
-          if order_value.nil?
-            Builtins.y2error(
-              "Unable to use '%1' as proposal order, using %2 instead",
-              proposal_order,
-              50
-            )
-            order_value = 50
-          end
-        end
-        is_disabled = Builtins.haskey(disabled_subprops, unique_id) &&
-          Builtins.contains(
-            Ops.get(disabled_subprops, unique_id, []),
-            proposal_name
-          )
-        # All proposal file names end with _proposal
-        if is_disabled
-          Builtins.y2milestone(
-            "Proposal module %1 found among disabled subproposals",
-            proposal_name
-          )
-        else
-          final_proposals = if Builtins.issubstring(proposal_name, "_proposal")
-            Builtins.add(
-              final_proposals,
-              [proposal_name, order_value]
-            )
-          else
-            Builtins.add(
-              final_proposals,
-              [Ops.add(proposal_name, "_proposal"), order_value]
-            )
-          end
-        end
-      end
-
-      Builtins.y2debug("final proposals: %1", final_proposals)
-      deep_copy(final_proposals)
-    end
-
-    # Return text domain
-    def getProposalTextDomain
-      current_proposal_textdomain = Ops.get_string(
-        @productControl,
-        "textdomain",
-        "control"
-      )
-
-      Builtins.y2debug(
-        "Using textdomain '%1' for proposals",
-        current_proposal_textdomain
-      )
-      current_proposal_textdomain
-    end
-
-    # @param [String] stage
-    # @param [String] mode
-    # @param [String] proptype eg. "initial", "service", network"...
-    # @return [Hash] one "proposal" element of control.rnc
-    #   where /label is not translated yet but //proposal_tab/label are.
-    def getProposalProperties(stage, mode, proptype)
-      got_proposals = getMatchingProposal(stage, mode, proptype)
-      proposal = Ops.get(got_proposals, 0, {})
-
-      if Builtins.haskey(proposal, "proposal_tabs")
-        text_domain = Ops.get_string(@productControl, "textdomain", "control")
-        Ops.set(
-          proposal,
-          "proposal_tabs",
-          Builtins.maplist(Ops.get_list(proposal, "proposal_tabs", [])) do |tab|
-            domain = Ops.get_string(tab, "textdomain", text_domain)
-            Ops.set(
-              tab,
-              "label",
-              Builtins.dgettext(domain, Ops.get_string(tab, "label", ""))
-            )
-            deep_copy(tab)
-          end
-        )
-      end
-
-      deep_copy(proposal)
-    end
-
-    def GetTranslatedText(key)
-      controlfile_texts = ProductFeatures.GetSection("texts")
-
-      if !Builtins.haskey(controlfile_texts, key)
-        Builtins.y2error("No such text %1", key)
-        return ""
-      end
-
-      text = Ops.get_map(controlfile_texts, key, {})
-
-      label = Ops.get(text, "label", "")
-
-      # an empty string doesn't need to be translated
-      return "" if label == ""
-
-      domain = Ops.get(
-        text,
-        "textdomain",
-        Ops.get_string(@productControl, "textdomain", "control")
-      )
-      if domain == ""
-        Builtins.y2warning("The text domain for label %1 not set", key)
-        return label
-      end
-
-      Builtins.dgettext(domain, label)
     end
 
     # Initialize Product Control
@@ -1486,31 +1026,6 @@ module Yast
 
     # Functions to access restart information
 
-    # List steps which were skipped since last restart of YaST
-    # @return a list of maps describing the steps
-    def SkippedSteps
-      modules = getModules(Stage.stage, Mode.mode, :enabled)
-      return nil if @first_step.nil?
-      return nil if Ops.greater_or_equal(@first_step, Builtins.size(modules))
-
-      index = 0
-      ret = []
-      while Ops.less_than(index, @first_step)
-        ret = Builtins.add(ret, Ops.get(modules, index, {}))
-        index = Ops.add(index, 1)
-      end
-      deep_copy(ret)
-    end
-
-    # Return step which restarted YaST (or rebooted the system)
-    # @return a map describing the step
-    def RestartingStep
-      return nil if @restarting_step.nil?
-
-      modules = getModules(Stage.stage, Mode.mode, :enabled)
-      Ops.get(modules, @restarting_step, {})
-    end
-
     # ProductControl Constructor
     # @return [void]
     def ProductControl
@@ -1531,14 +1046,6 @@ module Yast
       )
 
       @_additional_workflow_params = deep_copy(params)
-
-      nil
-    end
-
-    # Resets all additional params for selecting the workflow
-    # @see #SetAdditionalWorkflowParams()
-    def ResetAdditionalWorkflowParams
-      @_additional_workflow_params = {}
 
       nil
     end
@@ -1576,16 +1083,6 @@ module Yast
     publish variable: :first_step, type: "integer"
     publish variable: :restarting_step, type: "integer"
     publish function: :CurrentStep, type: "integer ()"
-    publish function: :setClientPrefix, type: "void (string)"
-    publish function: :EnableModule, type: "list <string> (string)"
-    publish function: :DisableModule, type: "list <string> (string)"
-    publish function: :GetDisabledModules, type: "list <string> ()"
-    publish function: :EnableProposal, type: "list <string> (string)"
-    publish function: :DisableProposal, type: "list <string> (string)"
-    publish function: :GetDisabledProposals, type: "list <string> ()"
-    publish function: :EnableSubProposal, type: "map <string, list <string>> (string, string)"
-    publish function: :DisableSubProposal, type: "map <string, list <string>> (string, string)"
-    publish function: :GetDisabledSubProposals, type: "map <string, list <string>> ()"
     publish function: :checkDisabled, type: "boolean (map)"
     publish function: :checkHeading, type: "boolean (map)"
     publish function: :ReadControlFile, type: "boolean (string)"
@@ -1593,27 +1090,16 @@ module Yast
     publish function: :getClientTerm, type: "term (map, map, any)"
     publish function: :getModeDefaults, type: "map (string, string)"
     publish function: :RequiredFiles, type: "list <string> (string, string)"
-    publish function: :getCompleteWorkflow, type: "map (string, string)"
     publish function: :getModules, type: "list <map> (string, string, symbol)"
-    publish function: :RunRequired, type: "boolean (string, string)"
     publish function: :getWorkflowLabel, type: "string (string, string, string)"
-    publish function: :DisableAllModulesAndProposals, type: "void (string, string)"
-    publish function: :UnDisableAllModulesAndProposals, type: "void (string, string)"
     publish function: :AddWizardSteps, type: "void (list <map>)"
     publish function: :UpdateWizardSteps, type: "void (list <map>)"
     publish function: :RetranslateWizardSteps, type: "void ()"
-    publish function: :getProposals, type: "list <list> (string, string, string)"
-    publish function: :getProposalTextDomain, type: "string ()"
-    publish function: :getProposalProperties, type: "map (string, string, string)"
-    publish function: :GetTranslatedText, type: "string (string)"
     publish function: :Init, type: "boolean ()"
     publish function: :RunFrom, type: "symbol (integer, boolean)"
     publish function: :Run, type: "symbol ()"
-    publish function: :SkippedSteps, type: "list <map> ()"
-    publish function: :RestartingStep, type: "map ()"
     publish function: :ProductControl, type: "void ()"
     publish function: :SetAdditionalWorkflowParams, type: "void (map <string, any>)"
-    publish function: :ResetAdditionalWorkflowParams, type: "void ()"
     publish function: :add_system_roles, type: "void (list <map>)"
   end
 

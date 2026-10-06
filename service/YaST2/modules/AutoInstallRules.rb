@@ -815,12 +815,6 @@ module Yast
       nil
     end
 
-    # Return list of file to merge (Order matters)
-    # @return [Array] list of files
-    def Files
-      deep_copy(@tomerge)
-    end
-
     # Retrieves the rules files to merge
     #
     # @return [Boolean] true if the files were retrieved; false otherwise
@@ -1155,7 +1149,6 @@ module Yast
     publish function: :getHostname, type: "string ()"
     publish function: :ProbeRules, type: "void ()"
     publish function: :Read, type: "void ()"
-    publish function: :Files, type: "list <string> ()"
     publish function: :GetRules, type: "boolean ()"
     publish function: :Merge, type: "boolean (string)"
     publish function: :Process, type: "boolean (string)"

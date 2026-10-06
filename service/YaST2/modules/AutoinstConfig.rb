@@ -205,17 +205,6 @@ module Yast
       AutoinstConfig()
     end
 
-    def getProposalList
-      deep_copy(@Proposals)
-    end
-
-    def setProposalList(l)
-      l = deep_copy(l)
-      @Proposals = deep_copy(l)
-
-      nil
-    end
-
     # Updates or extends the profile location according to defaults
     # @param profile_location [String] AutoYast profile location as defined on commandline
     # @return [String] updated profile location
@@ -353,21 +342,6 @@ module Yast
       nil
     end
 
-    # escape a string so it can be passed to a shell
-    # @return escaped string string
-    def ShellEscape(s)
-      i = 0
-      res = ""
-
-      while Ops.less_than(i, Builtins.size(s))
-        c = Builtins.substring(s, i, 1)
-        c = Ops.add("\\", c) if c == "\"" || c == "$" || c == "\\" || c == "`"
-        res = Ops.add(res, c)
-        i = Ops.add(i, 1)
-      end
-      res
-    end
-
     # Constructor
     # @return [void]
     def AutoinstConfig
@@ -400,41 +374,6 @@ module Yast
       #     local_rules_file = (string)WFM::Args(1);
       # }
       nil
-    end
-
-    def MainHelp
-      _(
-        "<h3>AutoYaST Configuration Management System</h3>\n" \
-        "<p>Almost all resources of the control file can be\n" \
-        "configured using the configuration management system.</p>\n"
-      ) +
-        _(
-          "<p>Most of the modules used to create the configuration are identical " \
-          "to those available\n" \
-          "through the YaST Control Center. Instead of configuring this system, the data\n" \
-          "entered is collected and exported to the control file that can be used to\n" \
-          "install another system using AutoYaST.\n" \
-          "</p>\n"
-        ) +
-        _(
-          "<p>In addition to the existing and familiar modules,\n" \
-          "new interfaces were created for special and complex configurations, including\n" \
-          "partitioning, general options, and software.</p>\n"
-        )
-    end
-
-    # Profile path during installation
-    #
-    # @return [String] Path
-    def profile_path
-      File.join(profile_dir, DEFAULT_PROFILE_NAME)
-    end
-
-    # Profile backup path during installation
-    #
-    # @return [String] Path
-    def profile_backup_path
-      File.join(profile_dir, "pre-autoinst.xml")
     end
 
     publish variable: :runModule, type: "string"
@@ -484,14 +423,10 @@ module Yast
     publish variable: :ProfileInRootPart, type: "boolean"
     publish variable: :remoteProfile, type: "boolean"
     publish variable: :Proposals, type: "list <string>"
-    publish function: :getProposalList, type: "list <string> ()"
-    publish function: :setProposalList, type: "void (list <string>)"
     publish function: :ParseCmdLine, type: "boolean (string)"
     publish function: :SetProtocolMessage, type: "void ()"
     publish function: :Save, type: "void ()"
-    publish function: :ShellEscape, type: "string (string)"
     publish function: :AutoinstConfig, type: "void ()"
-    publish function: :MainHelp, type: "string ()"
     publish function: :check_second_stage_environment, type: "string ()"
 
   private

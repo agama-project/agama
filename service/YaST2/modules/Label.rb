@@ -98,22 +98,10 @@ module Yast
       _("Abo&rt Installation")
     end
 
-    # Ignore Button
-    def IgnoreButton
-      # Button label
-      _("&Ignore")
-    end
-
     # Next Button
     def NextButton
       # Button label
       _("&Next")
-    end
-
-    # New Button
-    def NewButton
-      # Button label
-      _("Ne&w")
     end
 
     # Delete Button
@@ -152,48 +140,6 @@ module Yast
       _("Retr&y")
     end
 
-    # Replace Button
-    def ReplaceButton
-      # Button label
-      _("&Replace")
-    end
-
-    # Up Button
-    def UpButton
-      # Button label
-      _("&Up")
-    end
-
-    # Down Button
-    def DownButton
-      # Button label
-      _("Do&wn")
-    end
-
-    # Select Button
-    def SelectButton
-      # Button label
-      _("Sele&ct")
-    end
-
-    # Remove Button
-    def RemoveButton
-      # Button label
-      _("Remo&ve")
-    end
-
-    # Modify Button
-    def ModifyButton
-      # Button label
-      _("&Modify")
-    end
-
-    # Refresh Button
-    def RefreshButton
-      # Button label
-      _("&Refresh")
-    end
-
     # Help Button
     def HelpButton
       # Button label
@@ -210,12 +156,6 @@ module Yast
     def DontInstallButton
       # Button label
       _("&Do Not Install")
-    end
-
-    # Download Button
-    def DownloadButton
-      # Button label
-      _("&Download")
     end
 
     # Save Button
@@ -236,24 +176,6 @@ module Yast
       _("C&lose")
     end
 
-    # Browse Button
-    def BrowseButton
-      # Button label
-      _("Bro&wse...")
-    end
-
-    # Create Button
-    def CreateButton
-      # Button label
-      _("Crea&te")
-    end
-
-    # Skip Button
-    def SkipButton
-      # Button label
-      _("&Skip")
-    end
-
     # Warning Message
     def WarningMsg
       # this string is usually used as headline of a popup
@@ -264,12 +186,6 @@ module Yast
     def ErrorMsg
       # this string is usually used as headline of a popup
       _("Error")
-    end
-
-    # Please wait Message
-    def PleaseWaitMsg
-      # this string is usually used as headline of a popup
-      _("Please wait...")
     end
 
     # Default function key map
@@ -311,12 +227,6 @@ module Yast
 
     # TextEntry
 
-    # File Name TextEntry
-    def FileName
-      # TextEntry Label
-      _("&Filename")
-    end
-
     # Password TextEntry
     def Password
       # TextEntry Label
@@ -335,12 +245,6 @@ module Yast
       _("&Port")
     end
 
-    # Host Name TextEntry
-    def HostName
-      # TextEntry Label
-      _("&Hostname")
-    end
-
     # Options TextEntry
     def Options
       # TextEntry Label
@@ -357,40 +261,25 @@ module Yast
     publish function: :OKButton, type: "string ()"
     publish function: :AbortButton, type: "string ()"
     publish function: :AbortInstallationButton, type: "string ()"
-    publish function: :IgnoreButton, type: "string ()"
     publish function: :NextButton, type: "string ()"
-    publish function: :NewButton, type: "string ()"
     publish function: :DeleteButton, type: "string ()"
     publish function: :BackButton, type: "string ()"
     publish function: :AcceptButton, type: "string ()"
     publish function: :DoNotAcceptButton, type: "string ()"
     publish function: :QuitButton, type: "string ()"
     publish function: :RetryButton, type: "string ()"
-    publish function: :ReplaceButton, type: "string ()"
-    publish function: :UpButton, type: "string ()"
-    publish function: :DownButton, type: "string ()"
-    publish function: :SelectButton, type: "string ()"
-    publish function: :RemoveButton, type: "string ()"
-    publish function: :RefreshButton, type: "string ()"
     publish function: :HelpButton, type: "string ()"
     publish function: :InstallButton, type: "string ()"
     publish function: :DontInstallButton, type: "string ()"
-    publish function: :DownloadButton, type: "string ()"
     publish function: :SaveButton, type: "string ()"
     publish function: :StopButton, type: "string ()"
     publish function: :CloseButton, type: "string ()"
-    publish function: :BrowseButton, type: "string ()"
-    publish function: :CreateButton, type: "string ()"
-    publish function: :SkipButton, type: "string ()"
     publish function: :WarningMsg, type: "string ()"
     publish function: :ErrorMsg, type: "string ()"
-    publish function: :PleaseWaitMsg, type: "string ()"
     publish function: :DefaultFunctionKeyMap, type: "map <string, integer> ()"
-    publish function: :FileName, type: "string ()"
     publish function: :Password, type: "string ()"
     publish function: :ConfirmPassword, type: "string ()"
     publish function: :Port, type: "string ()"
-    publish function: :HostName, type: "string ()"
     publish function: :Options, type: "string ()"
   end
 

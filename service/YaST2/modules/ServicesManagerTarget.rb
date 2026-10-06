@@ -142,11 +142,6 @@ module Yast
       end
     end
 
-    def inspect
-      "#<#{self} @my_textdomain='#{@my_textdomain}', @default_target='#{default_target}', " +
-      "@targets=#{targets.keys} >"
-    end
-
     def save
       if !modified?
         log.info('Default target has not been changed.')
@@ -171,20 +166,6 @@ module Yast
     end
 
     alias_method :modified, :modified?
-
-    # Summary of changes regarding the default target
-    #
-    # @return [String]
-    def changes_summary
-      return "" unless modified?
-
-      target = @targets[default_target][:description]
-
-      format(
-        _("Default target will be changed to '%{target}'<br /><br />"),
-        target: target
-      )
-    end
 
   private
 

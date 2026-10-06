@@ -339,116 +339,13 @@ module Yast
       nil
     end
 
-    # Set a custom kernel.
-    # @param custom_kernels a list of kernel packages
-    def SetPackages(custom_kernels)
-      custom_kernels = deep_copy(custom_kernels)
-      # probe to avoid later probing
-      ProbeKernel() if !@kernel_probed
-      @kernel_packages = deep_copy(custom_kernels)
-
-      nil
-    end
-
     # functinos related to kernel packages
-
-    # Het the name of kernel binary under /boot
-    # @return [String] the name of the kernel binary
-    def GetBinary
-      ProbeKernel() if !@kernel_probed
-      @binary
-    end
 
     # Get the list of kernel packages
     # @return a list of kernel packages
     def GetPackages
       ProbeKernel() if !@kernel_probed
       deep_copy(@kernel_packages)
-    end
-
-    # Compute kernel package
-    # @return [String] selected kernel
-    def ComputePackage
-      packages = GetPackages()
-      the_kernel = Ops.get(packages, 0, "")
-      Builtins.y2milestone("Selecting '%1' as kernel package", the_kernel)
-
-      # Check for provided kernel packages in installed system
-      if Mode.normal || Mode.repair
-        while the_kernel != "" && !Pkg.PkgInstalled(the_kernel)
-          the_kernel = Ops.get(@fallbacks, the_kernel, "")
-          Builtins.y2milestone("Not provided, falling back to '%1'", the_kernel)
-        end
-      else
-        while the_kernel != "" && !Pkg.PkgAvailable(the_kernel)
-          the_kernel = Ops.get(@fallbacks, the_kernel, "")
-          Builtins.y2milestone(
-            "Not available, falling back to '%1'",
-            the_kernel
-          )
-        end
-      end
-
-      if the_kernel == ""
-        Builtins.y2warning(
-          "%1 not available, using kernel-default",
-          @kernel_packages
-        )
-
-        @final_kernel = "kernel-default"
-      else
-        @final_kernel = the_kernel
-      end
-      @final_kernel
-    end
-
-    def GetFinalKernel
-      ComputePackage() if @final_kernel == ""
-      @final_kernel
-    end
-
-    # Compute kernel package for the specified base kernel package
-    # @param [String] base string the base kernel package name (eg. kernel-default)
-    # @param [Boolean] check_avail boolean if true, additional packages are checked for
-    #  for being available on the medias before adding to the list
-    # @return a list of all kernel packages (including the base package) that
-    #  are to be installed together with the base package
-    def ComputePackagesForBase(base, _check_avail)
-      # NOTE: kernel-*-nongpl packages have been dropped, use base only
-      ret = [base]
-
-      Builtins.y2milestone("Packages for base %1: %2", base, ret)
-      deep_copy(ret)
-    end
-
-    # Compute kernel packages
-    # @return [Array] of selected kernel packages
-    def ComputePackages
-      kernel = ComputePackage()
-
-      ret = ComputePackagesForBase(kernel, true)
-
-      if Ops.greater_than(Builtins.size(@kernel_packages), 1)
-        # get the extra packages
-        extra_pkgs = Builtins.remove(@kernel_packages, 0)
-
-        # add available extra packages
-        Builtins.foreach(extra_pkgs) do |pkg|
-          if Pkg.IsAvailable(pkg)
-            ret = Builtins.add(ret, pkg)
-            Builtins.y2milestone("Added extra kernel package: %1", pkg)
-          else
-            Builtins.y2warning(
-              "Extra kernel package '%1' is not available",
-              pkg
-            )
-          end
-        end
-      end
-
-      Builtins.y2milestone("Computed kernel packages: %1", ret)
-
-      deep_copy(ret)
     end
 
     # functions related to kernel's modules loaded on boot
@@ -535,13 +432,6 @@ module Yast
 
     # kernel was reinstalled stuff
 
-    #  Set inform_about_kernel_change.
-    def SetInformAboutKernelChange(value)
-      @inform_about_kernel_change = value
-
-      nil
-    end
-
     #  Get inform_about_kernel_change.
     def GetInformAboutKernelChange
       @inform_about_kernel_change
@@ -569,14 +459,7 @@ module Yast
     publish function: :GetVgaType, type: "string ()"
     publish function: :GetCmdLine, type: "string ()"
     publish function: :ProbeKernel, type: "void ()"
-    publish function: :SetPackages, type: "void (list <string>)"
-    publish function: :GetBinary, type: "string ()"
     publish function: :GetPackages, type: "list <string> ()"
-    publish function: :ComputePackage, type: "string ()"
-    publish function: :GetFinalKernel, type: "string ()"
-    publish function: :ComputePackagesForBase, type: "list <string> (string, boolean)"
-    publish function: :ComputePackages, type: "list <string> ()"
-    publish function: :SetInformAboutKernelChange, type: "void (boolean)"
     publish function: :GetInformAboutKernelChange, type: "boolean ()"
     publish function: :InformAboutKernelChange, type: "boolean ()"
 

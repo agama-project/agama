@@ -35,14 +35,6 @@ module Yast
       textdomain "base"
     end
 
-    # Resets the configuration
-    #
-    # It forces to read the configuration again discarding
-    # the changes.
-    def reset
-      @config = nil
-    end
-
     # Returns an attribute from login.defs configuration
     #
     # @example Getting the encryption method
@@ -72,15 +64,8 @@ module Yast
       config.public_send("#{normalized_attr}=", value)
     end
 
-    # Writes the login.defs configuration
-    def write
-      config.save
-    end
-
     publish function: :fetch, type: "any (string)"
     publish function: :set, type: "void (string, string)"
-    publish function: :write, type: "void ()"
-    publish function: :reset, type: "void ()"
 
   private
 

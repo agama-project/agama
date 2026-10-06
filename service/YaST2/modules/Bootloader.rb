@@ -212,17 +212,6 @@ module Yast
       true
     end
 
-    # return default section label
-    # @return [String] default section label
-    def getDefaultSection
-      ReadOrProposeIfNeeded()
-
-      bootloader = Bootloader::BootloaderFactory.current
-      return "" unless bootloader.respond_to?(:sections)
-
-      bootloader.sections.default
-    end
-
     FLAVOR_KERNEL_LINE_MAP = {
       :common    => "append",
       :xen_guest => "xen_append",
@@ -362,12 +351,6 @@ module Yast
       end
 
       changed
-    end
-
-    # Get currently used bootloader, detect if not set yet
-    # @return [String] botloader type
-    def getLoaderType
-      ::Bootloader::BootloaderFactory.current.name
     end
 
     # Check whether settings were read or proposed, if not, decide

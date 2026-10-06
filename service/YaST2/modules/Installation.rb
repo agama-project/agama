@@ -248,20 +248,6 @@ module Yast
       "cd"
     end
 
-    def restart!
-      ::FileUtils.touch(@restart_file)
-      ::FileUtils.touch(@restarting_file)
-      :restart_yast
-    end
-
-    def restarting?
-      ::File.exist?(@restarting_file)
-    end
-
-    def finish_restarting!
-      ::FileUtils.remove_file(@restarting_file, true) if restarting?
-    end
-
     # no resources/packages for X11
     def text_fallback
       Initialize() if @_text_fallback.nil?

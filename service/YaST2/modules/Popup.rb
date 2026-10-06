@@ -357,70 +357,6 @@ module Yast
       ret == :yes
     end
 
-    # Timed question popup with two buttons and time display
-    #
-    # @param [String] headline    headline or Popup::NoHeadline()
-    # @param [String] message    message string
-    # @param [String] yes_button_message  label on affirmative buttons (on left side)
-    # @param [String] no_button_message  label on negating button (on right side)
-    # @param [Symbol] focus      `focus_yes (first button) or `focus_no (second button)
-    # @param [Fixnum] timeout_seconds  timeout, if 0, normal behaviour
-    # @return [Boolean]              True if Yes, False if no
-    # @see #AnyQuestion
-    def TimedAnyQuestion(headline, message, yes_button_message, no_button_message, focus, timeout_seconds)
-      button_box = AnyQuestionButtonBox(
-        yes_button_message,
-        no_button_message,
-        focus
-      )
-      timed = ReplacePoint(
-        Id(:replace_buttons),
-        VBox(
-          HCenter(Label(Id(:remaining_time), Ops.add("", timeout_seconds))),
-          ButtonBox(
-            # FIXME: BNC #422612, Use `opt(`noSanityCheck) later
-            PushButton(Id(:timed_stop), Opt(:cancelButton), Label.StopButton),
-            PushButton(
-              Id(:timed_ok),
-              Opt(:default, :key_F10, :okButton),
-              Label.OKButton
-            )
-          ),
-          VSpacing(0.2)
-        )
-      )
-
-      success = UI.OpenDialog(
-        Opt(:decorated),
-        popupLayoutInternal(headline, message, timed)
-      )
-
-      while Ops.greater_than(timeout_seconds, 0)
-        which_input = UI.TimeoutUserInput(1000)
-
-        break if which_input == :timed_ok
-
-        if which_input == :timed_stop
-          UI.ReplaceWidget(Id(:replace_buttons), button_box)
-          which_input = UI.UserInput while which_input == :timed_stop
-          break
-        end
-        timeout_seconds = Ops.subtract(timeout_seconds, 1)
-
-        next unless success
-
-        UI.ChangeWidget(
-          Id(:remaining_time),
-          :Value,
-          Ops.add("", timeout_seconds)
-        )
-      end
-
-      UI.CloseDialog if success == true
-
-      which_input == :yes
-    end
-
     # Timed error question popup with two buttons and time display
     #
     # @param [String] headline    headline or Popup::NoHeadline()
@@ -600,59 +536,6 @@ module Yast
       end
 
       nil
-    end
-
-    # Show a question that might need scrolling.
-    #
-    # @param [String] headline short headline
-    # @param [String] richtext  text input as a rich text
-    # @param [Fixnum] hdim  initial horizontal dimension of the popup
-    # @param [Fixnum] vdim  initial vertical dimension of the popup
-    # @param [String] yes_button_message message on the left/true button
-    # @param [String] no_button_message message on the right/false button
-    # @param [Symbol] focus `focus_yes, `focus_no, `focus_none
-    # @return left button pressed?
-    def AnyQuestionRichText(headline, richtext, hdim, vdim, yes_button_message, no_button_message, focus)
-      yes_button = PushButton(
-        Id(:ok),
-        if focus == :focus_yes
-          Opt(:default, :key_F10, :okButton)
-        else
-          Opt(:key_F10, :okButton)
-        end,
-        yes_button_message
-      )
-
-      no_button = PushButton(
-        Id(:cancel),
-        (focus == :focus_no) ? Opt(:default, :key_F9) : Opt(:key_F9),
-        no_button_message
-      )
-
-      d = HBox(
-        VSpacing(vdim),
-        VBox(
-          HSpacing(hdim),
-          if Ops.greater_than(Builtins.size(headline), 0)
-            Left(Heading(headline))
-          else
-            Empty()
-          end,
-          VSpacing(0.2),
-          RichText(richtext),
-          ButtonBox(yes_button, no_button)
-        )
-      )
-
-      success = UI.OpenDialog(Opt(:decorated), d)
-      ui = nil
-
-      if success == true
-        ui = UI.UserInput
-        UI.CloseDialog
-      end
-
-      ui == :ok
     end
 
     # Confirmation for "Abort" button during installation.
@@ -926,38 +809,6 @@ module Yast
       nil
     end
 
-    # Generic message popup - internal
-    #
-    # Show a message with optional headline above and
-    # wait until user clicked "OK".
-    #
-    # @param [String] headline  optional headline or Popup::NoHeadline()
-    # @param [String] message  the message (maybe multi-line) to display.
-    def anyRichMessageInternal(headline, message, width, height)
-      button_box = ButtonBox(
-        PushButton(Id(:ok_msg), Opt(:default, :key_F10), Label.OKButton)
-      )
-
-      success = UI.OpenDialog(
-        Opt(:decorated),
-        popupLayoutInternalRich(
-          headline,
-          message,
-          button_box,
-          width,
-          height
-        )
-      )
-
-      if success == true
-        UI.SetFocus(Id(:ok_msg))
-        UI.UserInput
-        UI.CloseDialog
-      end
-
-      nil
-    end
-
     # Generic message popup
     #
     # Show a message with optional headline above and
@@ -1055,36 +906,6 @@ module Yast
       nil
     end
 
-    # Show a long message and wait until user clicked "OK".
-    #
-    # @param [String] message message string (may contain rich text tags)
-    def LongMessage(message)
-      anyMessageInternalRich(
-        NoHeadline(),
-        message,
-        @default_width,
-        @default_height
-      )
-
-      nil
-    end
-
-    # Show a long message and wait until user clicked "OK". Size of the popup window is adjustable.
-    #
-    # @param [String] message message string (may contain rich text tags)
-    # @param [Fixnum] width width of the popup window
-    # @param [Fixnum] height height of the popup window
-    def LongMessageGeometry(message, width, height)
-      anyMessageInternalRich(
-        NoHeadline(),
-        message,
-        width,
-        height
-      )
-
-      nil
-    end
-
     # Show a message and wait until user clicked "OK" or time is out
     #
     # @param [String] message message string
@@ -1094,40 +915,6 @@ module Yast
         NoHeadline(),
         message,
         timeout_seconds
-      )
-
-      nil
-    end
-
-    # Show a long message and wait until user clicked "OK" or time is out.
-    #
-    # @param [String] message message string (may contain rich text tags)
-    # @param [Fixnum] timeout_seconds time out in seconds
-    def TimedLongMessage(message, timeout_seconds)
-      anyTimedRichMessageInternal(
-        NoHeadline(),
-        message,
-        timeout_seconds,
-        @default_width,
-        @default_height
-      )
-
-      nil
-    end
-
-    # Show a long message and wait until user clicked "OK" or time is out. Size of the popup window is adjustable.
-    #
-    # @param [String] message message string (may contain rich text tags)
-    # @param [Fixnum] timeout_seconds time out in seconds
-    # @param [Fixnum] width width of the popup window
-    # @param [Fixnum] height height of the popup window
-    def TimedLongMessageGeometry(message, timeout_seconds, width, height)
-      anyTimedRichMessageInternal(
-        NoHeadline(),
-        message,
-        timeout_seconds,
-        width,
-        height
       )
 
       nil
@@ -1164,90 +951,6 @@ module Yast
     # @see #AnyMessage
     def Warning(message)
       anyMessageInternal(Label.WarningMsg, message)
-
-      nil
-    end
-
-    # Show a long warning and wait until user clicked "OK".
-    #
-    # @param [String] message message string (may contain rich text tags)
-    def LongWarning(message)
-      anyMessageInternalRich(
-        Label.WarningMsg,
-        message,
-        @default_width,
-        @default_height
-      )
-
-      nil
-    end
-
-    # Show a long warning and wait until user clicked "OK". Size of the popup window is adjustable
-    #
-    # @param [String] message message string (may contain rich text tags)
-    # @param [Fixnum] width width of the popup window
-    # @param [Fixnum] height height of the popup window
-    def LongWarningGeometry(message, width, height)
-      anyMessageInternalRich(
-        Label.WarningMsg,
-        message,
-        width,
-        height
-      )
-
-      nil
-    end
-
-    # Show a warning message and wait specified amount of time or until user clicked "OK".
-    #
-    # ![screenshots/TimedWarningPopup.png](../../screenshots/TimedWarningPopup.png)
-    #
-    # @param [String] message warning message string
-    # @param [Fixnum] timeout_seconds time out in seconds
-    #
-    # @return [void]
-    #
-    # @see #Warning
-    def TimedWarning(message, timeout_seconds)
-      anyTimedMessageInternal(
-        Label.WarningMsg,
-        message,
-        timeout_seconds
-      )
-
-      nil
-    end
-
-    # Show a long warning message and wait until user clicked "OK" or time is out.
-    #
-    # @param [String] message message string (may contain rich text tags)
-    # @param [Fixnum] timeout_seconds time out in seconds
-    def TimedLongWarning(message, timeout_seconds)
-      anyTimedRichMessageInternal(
-        Label.WarningMsg,
-        message,
-        timeout_seconds,
-        @default_width,
-        @default_height
-      )
-
-      nil
-    end
-
-    # Show a long warning and wait until user clicked "OK" or time is out. Size of the popup window is adjustable.
-    #
-    # @param [String] message message string (may contain rich text tags)
-    # @param [Fixnum] timeout_seconds time out in seconds
-    # @param [Fixnum] width width of the popup window
-    # @param [Fixnum] height height of the popup window
-    def TimedLongWarningGeometry(message, timeout_seconds, width, height)
-      anyTimedRichMessageInternal(
-        Label.WarningMsg,
-        message,
-        timeout_seconds,
-        width,
-        height
-      )
 
       nil
     end
@@ -1311,22 +1014,6 @@ module Yast
       nil
     end
 
-    # Show a long error message and wait until user clicked "OK". Size of the popup window is adjustable.
-    #
-    # @param [String] message message string (may contain rich text tags)
-    # @param [Fixnum] width width of the popup window
-    # @param [Fixnum] height height of the popup window
-    def LongErrorGeometry(message, width, height)
-      anyMessageInternalRich(
-        Label.ErrorMsg,
-        message,
-        width,
-        height
-      )
-
-      nil
-    end
-
     # Show an error message and wait specified amount of time or until user clicked "OK".
     #
     # ![screenshots/TimedErrorPopup.png](../../screenshots/TimedErrorPopup.png)
@@ -1342,40 +1029,6 @@ module Yast
         Label.ErrorMsg,
         message,
         timeout_seconds
-      )
-
-      nil
-    end
-
-    # Show a long error message and wait until user clicked "OK" or time is out.
-    #
-    # @param [String] message message string (may contain rich text tags)
-    # @param [Fixnum] timeout_seconds time out in seconds
-    def TimedLongError(message, timeout_seconds)
-      anyTimedRichMessageInternal(
-        Label.ErrorMsg,
-        message,
-        timeout_seconds,
-        @default_width,
-        @default_height
-      )
-
-      nil
-    end
-
-    # Show a long error message and wait until user clicked "OK" or time is out. Size of the popup window is adjustable.
-    #
-    # @param [String] message message string (may contain rich text tags)
-    # @param [Fixnum] timeout_seconds time out in seconds
-    # @param [Fixnum] width width of the popup window
-    # @param [Fixnum] height height of the popup window
-    def TimedLongErrorGeometry(message, timeout_seconds, width, height)
-      anyTimedRichMessageInternal(
-        Label.ErrorMsg,
-        message,
-        timeout_seconds,
-        width,
-        height
       )
 
       nil
@@ -1428,36 +1081,6 @@ module Yast
       nil
     end
 
-    # Show a long notify message and wait until user clicked "OK". Size of the popup window is adjustable.
-    #
-    # @param [String] message message string (may contain rich text tags)
-    # @param [Fixnum] width width of the popup window
-    # @param [Fixnum] height height of the popup window
-    def LongNotifyGeometry(message, width, height)
-      anyMessageInternalRich(
-        NoHeadline(),
-        message,
-        width,
-        height
-      )
-
-      nil
-    end
-
-    # Show a long notify message and wait until user clicked "OK" or the time is out.
-    #
-    # @param [String] message message string (may contain rich text tags)
-    # @param [Fixnum] timeout_seconds time out in seconds
-    def TimedNotify(message, timeout_seconds)
-      anyTimedMessageInternal(
-        NoHeadline(),
-        message,
-        timeout_seconds
-      )
-
-      nil
-    end
-
     # Show a long error message and wait until user clicked "OK" or time is out.
     #
     # @param [String] message message string (may contain rich text tags)
@@ -1469,40 +1092,6 @@ module Yast
         timeout_seconds,
         @default_width,
         @default_height
-      )
-
-      nil
-    end
-
-    # Show a long notify message and wait until user clicked "OK" or time is out. Size of the popup window is adjustable.
-    #
-    # @param [String] message message string (may contain rich text tags)
-    # @param [Fixnum] timeout_seconds time out in seconds
-    # @param [Fixnum] width width of the popup window
-    # @param [Fixnum] height height of the popup window
-    def TimedLongNotifyGeometry(message, timeout_seconds, width, height)
-      anyTimedRichMessageInternal(
-        NoHeadline(),
-        message,
-        timeout_seconds,
-        width,
-        height
-      )
-
-      nil
-    end
-
-    # Show a notify message with Details button and wait until user clicked "OK".
-    #
-    # @param [String] message  error message string
-    # @param [String] details  detailed information string
-    #
-    # @see #Message
-    def NotifyDetails(message, details)
-      anyMessageDetailsInternal(
-        NoHeadline(),
-        message,
-        details
       )
 
       nil
@@ -1738,75 +1327,7 @@ module Yast
       nil
     end
 
-    def AnyTimedRichMessage(headline, message, timeout)
-      anyTimedRichMessageInternal(
-        headline,
-        message,
-        timeout,
-        @default_width,
-        @default_height
-      )
-
-      nil
-    end
-
     # it is misaligned because there used to be UI() around it
-
-    # Show the contents of an entire file in a popup.
-    #
-    # @param [String] headline  headline text
-    # @param [String] text  text to show
-    # @param [Fixnum] timeout  text to show
-    #
-    # @example Popup::ShowText ("Boot Messages", "kernel panic", 10);
-    def ShowTextTimed(headline, text, timeout)
-      heading = if Builtins.size(headline) == 0
-        VSpacing(0.2)
-      else
-        Heading(headline)
-      end
-
-      success = UI.OpenDialog(
-        Opt(:decorated),
-        VBox(
-          HSpacing(70), # force width
-          heading,
-          VWeight(
-            1,
-            HBox(
-              VSpacing(18), # force height
-              HSpacing(0.7),
-              RichText(Id(:text), Opt(:plainText), text),
-              HSpacing(0.7)
-            )
-          ),
-          VSpacing(0.3),
-          Label(Id(:label), Builtins.sformat("%1", timeout)),
-          VSpacing(0.2),
-          ButtonBox(
-            PushButton(
-              Id(:ok_msg),
-              Opt(:default, :key_F10, :okButton),
-              Label.OKButton
-            )
-          ),
-          VSpacing(0.3)
-        )
-      )
-
-      button = nil
-
-      while Ops.greater_than(timeout, 0) && button != :ok_msg
-        button = Convert.to_symbol(UI.TimeoutUserInput(1000))
-        timeout = Ops.subtract(timeout, 1)
-
-        UI.ChangeWidget(Id(:label), :Value, Builtins.sformat("%1", timeout))
-      end
-
-      UI.CloseDialog if success == true
-
-      nil
-    end
 
     # Show the contents of an entire file in a popup.
     #
@@ -1872,53 +1393,33 @@ module Yast
     publish function: :NoHeadline, type: "string ()"
     publish function: :AnyQuestion, type: "boolean (string, string, string, string, symbol)"
     publish function: :ErrorAnyQuestion, type: "boolean (string, string, string, string, symbol)"
-    publish function: :TimedAnyQuestion, type: "boolean (string, string, string, string, symbol, integer)"
     publish function: :TimedErrorAnyQuestion, type: "boolean (string, string, string, string, symbol, integer)"
     publish function: :ContinueCancelHeadline, type: "boolean (string, string)"
     publish function: :ContinueCancel, type: "boolean (string)"
     publish function: :YesNoHeadline, type: "boolean (string, string)"
     publish function: :YesNo, type: "boolean (string)"
     publish function: :LongText, type: "void (string, term, integer, integer)"
-    publish function: :AnyQuestionRichText, type: "boolean (string, string, integer, integer, string, string, symbol)"
     publish function: :ConfirmAbort, type: "boolean (symbol)"
     publish function: :ReallyAbort, type: "boolean (boolean)"
     publish function: :AnyMessage, type: "void (string, string)"
     publish function: :ClearFeedback, type: "void ()"
     publish function: :ShowFeedback, type: "void (string, string)"
     publish function: :Message, type: "void (string)"
-    publish function: :LongMessage, type: "void (string)"
-    publish function: :LongMessageGeometry, type: "void (string, integer, integer)"
     publish function: :TimedMessage, type: "void (string, integer)"
-    publish function: :TimedLongMessage, type: "void (string, integer)"
-    publish function: :TimedLongMessageGeometry, type: "void (string, integer, integer, integer)"
     publish function: :MessageDetails, type: "void (string, string)"
     publish function: :Warning, type: "void (string)"
-    publish function: :LongWarning, type: "void (string)"
-    publish function: :LongWarningGeometry, type: "void (string, integer, integer)"
-    publish function: :TimedWarning, type: "void (string, integer)"
-    publish function: :TimedLongWarning, type: "void (string, integer)"
-    publish function: :TimedLongWarningGeometry, type: "void (string, integer, integer, integer)"
     publish function: :WarningDetails, type: "void (string, string)"
     publish function: :Error, type: "void (string)"
     publish function: :LongError, type: "void (string)"
-    publish function: :LongErrorGeometry, type: "void (string, integer, integer)"
     publish function: :TimedError, type: "void (string, integer)"
-    publish function: :TimedLongError, type: "void (string, integer)"
-    publish function: :TimedLongErrorGeometry, type: "void (string, integer, integer, integer)"
     publish function: :ErrorDetails, type: "void (string, string)"
     publish function: :Notify, type: "void (string)"
     publish function: :LongNotify, type: "void (string)"
-    publish function: :LongNotifyGeometry, type: "void (string, integer, integer)"
-    publish function: :TimedNotify, type: "void (string, integer)"
     publish function: :TimedLongNotify, type: "void (string, integer)"
-    publish function: :TimedLongNotifyGeometry, type: "void (string, integer, integer, integer)"
-    publish function: :NotifyDetails, type: "void (string, string)"
     publish function: :TimedOKCancel, type: "boolean (string, integer)"
     publish function: :AnyQuestion3, type: "symbol (string, string, string, string, string, symbol)"
     publish function: :ModuleError, type: "symbol (string)"
     publish function: :AnyTimedMessage, type: "void (string, string, integer)"
-    publish function: :AnyTimedRichMessage, type: "void (string, string, integer)"
-    publish function: :ShowTextTimed, type: "void (string, string, integer)"
     publish function: :ShowText, type: "void (string, string)"
     publish function: :ShowFile, type: "void (string, string)"
   end

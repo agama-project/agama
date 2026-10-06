@@ -428,25 +428,8 @@ module Yast
       ret
     end
 
-    def DownloadAndIntegrateExtension(extension)
-      LoadExtension(extension, "")
-    end
-
-    def DesintegrateExtension(_extension)
-      Builtins.y2warning("Function is empty, see BNC #376870")
-      true
-    end
-
-    def DisintegrateAllExtensions
-      Builtins.y2warning("Function is empty, see BNC #376870")
-      true
-    end
-
     publish function: :LoadExtension, type: "boolean (string, string)"
     publish function: :UnLoadExtension, type: "boolean (string, string)"
-    publish function: :DownloadAndIntegrateExtension, type: "boolean (string)"
-    publish function: :DesintegrateExtension, type: "boolean (string)"
-    publish function: :DisintegrateAllExtensions, type: "boolean ()"
   end
 
   InstExtensionImage = InstExtensionImageClass.new
