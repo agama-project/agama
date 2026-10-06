@@ -358,6 +358,32 @@ the previous "pure vendor" commit without needing inline markers:
   `UnLoadExtension`, which is why `InstExtensionImage.rb`'s dead code was left in place (just
   patched per above) rather than removed outright; a `Yast.import "InstExtensionImage"` elsewhere
   would still need it to load successfully.
+- **The whole `Y2Issues::Presenter`/`Reporter` → `Y2Storage::IssuesReporter` →
+  `Y2Storage::Dialogs::Issues`/`IssuesDetails`/`Widgets::Issues` chain, plus
+  `Y2Storage::Callbacks::YastProbe` and `UI::TextHelpers`, was vendored but then removed
+  entirely**: this is the classic interactive popup-based issue-reporting UI, and none of it is
+  ever reachable from Agama in practice. `Y2Storage::Callbacks::Commit`/`Callbacks::Probe` only
+  construct a `YastProbe`/use `IssuesReporter` as a *default fallback* when no explicit callbacks
+  are passed to `StorageManager#commit`/`#probe!` - but Agama always passes its own explicit
+  callbacks (`Agama::Storage::Callbacks::Commit`, built independently on top of
+  `::Storage::CommitCallbacks` directly rather than reusing the vendored `Y2Storage::Callbacks::
+  Commit`; and `Y2Storage::Callbacks::UserProbe`, a separate, simpler, non-interactive class that
+  never used `IssuesReporter` to begin with). Confirmed via `rpm`/closure-style grep that nothing
+  in `service/lib` ever references `IssuesReporter`, `Y2Issues::Reporter`, `Y2Storage::Callbacks::
+  Commit`, or `Y2Storage::Callbacks::YastProbe` directly.
+  - `Y2Storage::Callbacks::Commit` itself **is** kept (it is a real default fallback used by
+    `StorageManager#commit`'s own test suite and public API), but trimmed: `#error` no longer pulls
+    in `IssuesReporter`/`Y2Issues::List`/`Issue` for an interactive popup - it just logs the error
+    (still force-encoding to UTF-8, preserving the bsc#1096758 fix) and returns `false` (abort),
+    a safe non-interactive default.
+  - `Y2Storage::Callbacks::YastProbe` is **not** kept: `StorageManager#manage_probing_issues` and
+    `Callbacks::Probe#initialize`'s `user_callbacks ||= YastProbe.new` fallbacks now default to
+    `Callbacks::UserProbe` instead (already vendored, already the class Agama itself always passes
+    explicitly) - a trivial substitution, since `YastProbe < UserProbe` only existed to add
+    interactive popups on top of `UserProbe`'s silent always-true/false defaults.
+  - `Y2Issues.report` (the `y2issues.rb` umbrella's own top-level helper, `Reporter.new(issues)
+    .report(...)`) had no caller anywhere either and was removed along with the `require
+    "y2issues/reporter"`/`"y2issues/presenter"` lines.
 
 ## Layout
 
@@ -503,7 +529,7 @@ the full file list.
 
 | Directory                             | Files | Purpose                                                                                                                                                                                      |
 | -------------------------------------- | ----: | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `y2storage/` (top level)              |   123 | The devicegraph object model (`Devicegraph`, `Device`, `BlkDevice`, `Disk`, `Partition`, `LvmVg`/`Pv`/`Lv`, `Md*`, `Bcache*`, `Luks`, `Encryption`, `MountPoint`, `Btrfs*`...), `StorageManager`, `DiskAnalyzer`, `BootRequirementsChecker`, `SetupChecker`, `DumpManager`, `ProposalSettings`, `Configuration`, `Fstab`/`Crypttab`, `YamlWriter`, `Issue`/`IssuesReporter`, and the `y2storage.rb` umbrella itself |
+| `y2storage/` (top level)              |   123 | The devicegraph object model (`Devicegraph`, `Device`, `BlkDevice`, `Disk`, `Partition`, `LvmVg`/`Pv`/`Lv`, `Md*`, `Bcache*`, `Luks`, `Encryption`, `MountPoint`, `Btrfs*`...), `StorageManager`, `DiskAnalyzer`, `BootRequirementsChecker`, `SetupChecker`, `DumpManager`, `ProposalSettings`, `Configuration`, `Fstab`/`Crypttab`, `YamlWriter`, `Issue`, and the `y2storage.rb` umbrella itself |
 | `y2storage/proposal/`                 |    45 | The guided storage proposal engine: `GuidedProposal`, `SpaceMaker`, `DevicesPlanner`, `DevicesCreator`, creators/planners for each device type, `PartitionsDistributionCalculator`           |
 | `y2storage/planned/`                  |    24 | `Planned::*` value objects (the proposal's "what to create" intermediate representation, before actual libstorage-ng devices exist)                                                          |
 | `y2storage/autoinst_issues/`          |    22 | `AutoinstIssues::*`, structured warnings/errors collected while building an AutoYaST storage proposal                                                                                         |
@@ -521,9 +547,8 @@ the full file list.
 | `y2storage/proposal/phys_vol_strategies/` |   3 | How the proposal decides which disks become LVM physical volumes                                                                                                                           |
 | `y2storage/space_actions/`            |     3 | `SpaceActions::*`, the planned-vs-executed action pair (`Delete`/`Resize`) used while building an action summary                                                                              |
 | `y2storage/clients/`                  |     2 | `Clients::Finish` (called by `Agama::Storage::Finisher`) and `Clients::InstPrepdisk` (called by `Agama::Storage::Manager#install`) - the only two files **not** reached by `require "y2storage"`, loaded on demand instead |
-| `y2storage/dialogs/` + `dialogs/callbacks/` |   3 | `Dialogs::Issues`/`IssuesDetails` (non-interactive-safe: just build a `CWM`-free summary used by `IssuesReporter`) and `Dialogs::Callbacks::ActivateLuks` (the default libstorage-ng LUKS-activation callback) - **not** the full interactive `Dialogs::GuidedSetup::*`/`Dialogs::Proposal` wizard tree, which is never reached |
+| `y2storage/dialogs/callbacks/`        |     1 | `Dialogs::Callbacks::ActivateLuks` (the default libstorage-ng LUKS-activation callback) - **not** the full interactive `Dialogs::GuidedSetup::*`/`Dialogs::Proposal` wizard tree, which is never reached. `Dialogs::Issues`/`IssuesDetails` and `Widgets::Issues` were vendored here too but later dropped entirely - see "Deliberate deviations from upstream" below |
 | `y2storage/refinements/`              |     1 | `Refinements::SizeCasts` (`42.GiB` style numeric literals), used pervasively in both production code and specs                                                                                |
-| `y2storage/widgets/`                  |     1 | `Widgets::Issues`, a `CWM::CustomWidget` used by `Dialogs::IssuesDetails` above (built but never necessarily shown on an actual screen in Agama's non-interactive flow)                       |
 
 Plus 9 files reached only through a **direct, narrow `require`** from Agama's own code or from one
 of the files above - never pulled in by the `require "y2storage"` umbrella itself, and easy to miss
@@ -689,8 +714,8 @@ deviations from upstream" above) and are not vendored, leaving 79.
 | `library/desktop`, `library/gpg`, `library/xml`, `library/packages` classic modules | `HTML`, `Desktop`, `GPG`, `XML` |
 | `lib/yast2/*` | `execute.rb`, `popup.rb`, `equatable.rb`, `rel_url.rb`, `secret_attributes.rb`, `target_file.rb`, `system_time.rb`, `systemctl.rb`, `{control_,}log_dir_rotator.rb`, `fs_snapshot.rb`, `refinements/string_manipulations.rb`, `systemd/{service,socket,socket_finder,target,unit,unit_installation_properties,unit_prop_map,unit_properties}.rb` |
 | `lib/cfa/*` | `login_defs.rb`, `multi_file_config.rb`, `shadow_config.rb` |
-| `lib/y2issues*` | `y2issues.rb` + `y2issues/{invalid_value,issue,list,location,presenter,reporter}.rb` |
-| `lib/ui/*` | `dialog.rb`, `event_dispatcher.rb`, `password_dialog.rb`, `text_helpers.rb` |
+| `lib/y2issues*` | `y2issues.rb` + `y2issues/{invalid_value,issue,list,location}.rb` |
+| `lib/ui/*` | `dialog.rb`, `event_dispatcher.rb`, `password_dialog.rb` |
 | `lib/installation/*` | `finish_client.rb`, `installation_info.rb`, `autoinst_issues/{issue,list}.rb`, `autoinst_profile/{element_path,section_with_attributes}.rb` (previously documented as "provided by base yast2, kept as a real dependency" in earlier phases - now vendored here since that dependency itself is gone) |
 | `scrconf/` | `cfg_features.scr` (`.product.features`, used by `ProductFeatures`), `cfg_kernel.scr` (`.sysconfig.kernel`), `proc_cpuinfo.scr`, `proc_modules.scr`, `cfg_yast2.scr` (`.sysconfig.yast2`, used by `fs_snapshot.rb`), `etc_login_defs.scr`, `yast2_desktop.scr` (`.yast2.desktop`, used by `Desktop.rb`), `yast2_groups.scr` (`.yast2.groups`) |
 
