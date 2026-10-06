@@ -1,9 +1,5 @@
 # frozen_string_literal: true
 
-# Vendored from yast2-bootloader's src/lib/bootloader/finish_client.rb.
-# This is a permanent fork (see service/YaST2/README.md): the `yast2-bootloader` RPM
-# is no longer a runtime dependency of Agama.
-#
 # DEVIATION FROM UPSTREAM: #set_boot_msg below has been modified. Upstream dynamically
 # dispatches to a "reipl_bootloader_finish" YaST client (shipped by the separate
 # `yast2-reipl` package) via Yast::WFM.call on s390. That client's only real effect is

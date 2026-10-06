@@ -14,12 +14,6 @@
 # Authors:
 #      Jozef Uhliarik <juhliarik@suse.cz>
 #
-#
-#
-#
-# Vendored from yast2-bootloader's src/modules/BootStorage.rb.
-# This is a permanent fork (see service/YaST2/README.md): the `yast2-bootloader` RPM
-# is no longer a runtime dependency of Agama.
 
 require "yast"
 require "storage"

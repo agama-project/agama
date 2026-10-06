@@ -1,9 +1,5 @@
 # frozen_string_literal: true
 
-# Vendored from yast2-bootloader's src/lib/bootloader/language.rb.
-# This is a permanent fork (see service/YaST2/README.md): the `yast2-bootloader` RPM
-# is no longer a runtime dependency of Agama.
-
 require "cfa/base_model"
 require "cfa/augeas_parser"
 
