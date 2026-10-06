@@ -241,13 +241,6 @@ describe Y2IscsiClient::Config do
       end
 
       it "writes entries that can be read back through the real SCR agent" do
-        # Like IscsiClientLib#getConfig/#setConfig, #read first to get the full structure the
-        # underlying ag_ini agent expects. Entries are set through the real public API
-        # (#set_isns, which internally builds properly-shaped entry maps via #create_map) rather
-        # than a bare `entries = [{"name" => ..., "value" => ...}]` assignment: the real ag_ini
-        # agent silently ignores entries missing the "kind"/"type"/"comment" keys that
-        # #create_map always fills in, so a bare hash would pass with mocked Yast::SCR but
-        # silently write nothing for real.
         config.read
         config.set_isns("192.168.1.1", "3205")
 
