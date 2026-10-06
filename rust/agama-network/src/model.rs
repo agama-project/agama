@@ -988,7 +988,7 @@ mod tests {
             if conn.id == id {
                 return Some(conn);
             }
-            let Some(ports) = conn.ports_mut() else {
+            let Some(ports) = conn.port_connections_mut() else {
                 continue;
             };
             for port in ports.iter_mut() {
@@ -1008,8 +1008,8 @@ mod tests {
             .into_iter()
             .flatten()
             .map(|p| match p {
-                PortEntry::Name(name) => name.clone(),
-                PortEntry::Connection(conn) => conn.id.clone(),
+                PortRef::Name(name) => name.to_string(),
+                PortRef::Connection(conn) => conn.id.clone(),
             })
             .collect()
     }
@@ -1123,7 +1123,7 @@ mod tests {
         let original = crate::test_utils::stacked_connections();
         let exposed: NetworkConnectionsCollection =
             ConnectionCollection(original.clone()).try_into().unwrap();
-        let restored: ConnectionCollection = exposed.try_into().unwrap();
+        let restored: ConnectionCollection = writable(exposed).try_into().unwrap();
 
         assert_eq!(
             restored.0.len(),
@@ -1173,7 +1173,7 @@ mod tests {
         let original = crate::test_utils::stacked_connections();
         let exposed: NetworkConnectionsCollection =
             ConnectionCollection(original.clone()).try_into().unwrap();
-        let restored: ConnectionCollection = exposed.try_into().unwrap();
+        let restored: ConnectionCollection = writable(exposed).try_into().unwrap();
 
         let eth0 = restored.0.iter().find(|c| c.id == "eth0").unwrap();
         let original_eth0 = original.iter().find(|c| c.id == "eth0").unwrap();
@@ -1193,11 +1193,39 @@ mod tests {
         state
     }
 
-    /// Builds the API representation of the whole state, as a client would read it.
+    /// Builds the API representation of the whole state, as a client would read it and send it
+    /// back (see [`writable`]).
     fn exposed(state: &NetworkState) -> NetworkConnectionsCollection {
-        ConnectionCollection(state.connections.clone())
-            .try_into()
-            .unwrap()
+        writable(
+            ConnectionCollection(state.connections.clone())
+                .try_into()
+                .unwrap(),
+        )
+    }
+
+    /// Drops the `ports` lists that the reported controllers carry next to `portConnections`, as
+    /// a client has to do before sending them back.
+    fn writable(mut collection: NetworkConnectionsCollection) -> NetworkConnectionsCollection {
+        fn drop_port_names(conn: &mut NetworkConnection) {
+            if let Some(bond) = conn.bond.as_mut().filter(|b| b.port_connections.is_some()) {
+                bond.ports = None;
+            }
+            if let Some(bridge) = conn
+                .bridge
+                .as_mut()
+                .filter(|b| b.port_connections.is_some())
+            {
+                bridge.ports = None;
+            }
+            for port in conn.port_connections_mut().into_iter().flatten() {
+                if let PortEntry::Connection(port) = port {
+                    drop_port_names(port);
+                }
+            }
+        }
+
+        collection.0.iter_mut().for_each(drop_port_names);
+        collection
     }
 
     #[test]
@@ -1234,7 +1262,7 @@ mod tests {
         // A connection that is not a bridge port has nothing to report.
         assert_eq!(find(&exposed, "eth0").port, None);
 
-        let restored: ConnectionCollection = exposed.try_into().unwrap();
+        let restored: ConnectionCollection = writable(exposed).try_into().unwrap();
         let bond0 = restored.0.iter().find(|c| c.id == "bond0").unwrap();
         assert_eq!(
             bond0.port_config,
@@ -1252,7 +1280,7 @@ mod tests {
         bond0.port = None;
         // bond0 stays nested in br0, otherwise it would be moved out of it.
         let mut update = find(&exposed(&state), "br0");
-        update.bridge.as_mut().unwrap().ports = Some(vec![nested(bond0)]);
+        update.bridge.as_mut().unwrap().port_connections = Some(vec![nested(bond0)]);
 
         let collection = state
             .connection_collection_from(&NetworkConnectionsCollection(vec![update]))
@@ -1274,7 +1302,7 @@ mod tests {
         let bond0 = NetworkConnection {
             id: "bond0".to_string(),
             bond: Some(BondSettings {
-                ports: Some(vec![nested(NetworkConnection {
+                port_connections: Some(vec![nested(NetworkConnection {
                     interface: Some("eth0".to_string()),
                     port: Some(PortSettings {
                         priority: Some(50),
@@ -1314,7 +1342,7 @@ mod tests {
             NetworkConnection {
                 id: "bond0".to_string(),
                 bond: Some(BondSettings {
-                    ports: Some(vec![name("eth0")]),
+                    port_connections: Some(vec![name("eth0")]),
                     ..Default::default()
                 }),
                 ..Default::default()
@@ -1329,7 +1357,7 @@ mod tests {
     fn drop_port(connections: &mut NetworkConnectionsCollection, id: &str) {
         find_mut(&mut connections.0, "bond0")
             .unwrap()
-            .ports_mut()
+            .port_connections_mut()
             .unwrap()
             .retain(|p| !matches!(p, PortEntry::Connection(c) if c.id == id));
     }
@@ -1358,13 +1386,108 @@ mod tests {
         );
     }
 
+    /// Replaces the ports of the given controller with a `ports` list, as the clients that
+    /// predate `portConnections` do.
+    fn set_port_names(connections: &mut NetworkConnectionsCollection, id: &str, names: &[&str]) {
+        let conn = find_mut(&mut connections.0, id).unwrap();
+        conn.set_port_connections(None);
+        conn.bond.as_mut().unwrap().ports = Some(names.iter().map(|n| n.to_string()).collect());
+    }
+
+    #[test]
+    fn test_dropping_a_port_from_the_list_of_names_removes_it() {
+        let mut state = stacked_state();
+        let mut connections = exposed(&state);
+        set_port_names(&mut connections, "bond0", &["eth0"]);
+        apply(&mut state, connections);
+
+        assert!(state.get_connection("eth1").unwrap().is_removed());
+        assert_eq!(
+            state.get_connection("eth0").unwrap().controller,
+            Some(state.get_connection("bond0").unwrap().uuid)
+        );
+    }
+
+    #[test]
+    fn test_a_port_dropped_from_the_list_of_names_can_be_moved_out() {
+        let mut state = stacked_state();
+        let uuid = state.get_connection("eth1").unwrap().uuid;
+
+        let mut connections = exposed(&state);
+        let eth1 = find(&connections, "eth1");
+        set_port_names(&mut connections, "bond0", &["eth0"]);
+        connections.0.push(eth1);
+        apply(&mut state, connections);
+
+        let eth1 = state.get_connection("eth1").unwrap();
+        assert!(!eth1.is_removed());
+        assert_eq!(eth1.controller, None);
+        assert_eq!(eth1.uuid, uuid);
+        assert_eq!(eth1.ip_config.method4, Some(Ipv4Method::Auto));
+    }
+
+    #[test]
+    fn test_a_port_given_by_name_can_be_moved_to_another_controller() {
+        let mut state = stacked_state();
+        let mut bond1 = Connection::new("bond1".to_string(), DeviceType::Bond);
+        bond1.interface = Some("bond1".to_string());
+        state.add_connection(bond1).unwrap();
+        let uuid = state.get_connection("eth1").unwrap().uuid;
+
+        let mut connections = exposed(&state);
+        set_port_names(&mut connections, "bond0", &["eth0"]);
+        set_port_names(&mut connections, "bond1", &["eth1"]);
+        apply(&mut state, connections);
+
+        let eth1 = state.get_connection("eth1").unwrap();
+        assert!(!eth1.is_removed());
+        assert_eq!(eth1.uuid, uuid);
+        assert_eq!(
+            eth1.controller,
+            Some(state.get_connection("bond1").unwrap().uuid)
+        );
+    }
+
+    #[test]
+    fn test_giving_both_lists_of_ports_is_rejected() {
+        let state = stacked_state();
+        let reported: NetworkConnectionsCollection =
+            ConnectionCollection(state.connections.clone())
+                .try_into()
+                .unwrap();
+
+        // The reported configuration carries both lists, so it cannot be sent back as it is.
+        let error = state.connection_collection_from(&reported).unwrap_err();
+        assert!(matches!(error, NetworkStateError::ConflictingPorts(id) if id == "br0"));
+    }
+
+    #[test]
+    fn test_the_reported_controllers_list_their_ports_by_name_too() {
+        let state = stacked_state();
+        let reported: NetworkConnectionsCollection =
+            ConnectionCollection(state.connections.clone())
+                .try_into()
+                .unwrap();
+
+        let br0 = find(&reported, "br0");
+        let bridge = br0.bridge.as_ref().unwrap();
+        assert_eq!(bridge.ports, Some(vec!["bond0".to_string()]));
+        assert_eq!(bridge.port_connections.as_ref().unwrap().len(), 1);
+
+        let bond0 = find(&reported, "bond0");
+        assert_eq!(
+            bond0.bond.as_ref().unwrap().ports,
+            Some(vec!["eth0".to_string(), "eth1".to_string()])
+        );
+    }
+
     #[test]
     fn test_dropping_a_controller_removes_the_stack_below_it() {
         let mut state = stacked_state();
         let mut connections = exposed(&state);
         find_mut(&mut connections.0, "br0")
             .unwrap()
-            .ports_mut()
+            .port_connections_mut()
             .unwrap()
             .clear();
         apply(&mut state, connections);
@@ -1379,7 +1502,7 @@ mod tests {
     fn test_omitting_the_ports_of_a_controller_keeps_them() {
         let mut state = stacked_state();
         let mut br0 = find(&exposed(&state), "br0");
-        br0.set_ports(None);
+        br0.set_port_connections(None);
         br0.bridge.as_mut().unwrap().stp = Some(false);
         apply(&mut state, NetworkConnectionsCollection(vec![br0]));
 
@@ -1443,7 +1566,7 @@ mod tests {
         drop_port(&mut connections, "eth1");
         find_mut(&mut connections.0, "bond1")
             .unwrap()
-            .set_ports(Some(vec![nested(eth1)]));
+            .set_port_connections(Some(vec![nested(eth1)]));
         apply(&mut state, connections);
 
         let eth1 = state.get_connection("eth1").unwrap();
@@ -1461,7 +1584,7 @@ mod tests {
         let bond0 = NetworkConnection {
             id: "bond0".to_string(),
             bond: Some(BondSettings {
-                ports: Some(vec![
+                port_connections: Some(vec![
                     name("eth0"),
                     nested(NetworkConnection {
                         interface: Some("eth1".to_string()),
@@ -1488,7 +1611,7 @@ mod tests {
         let bond0 = NetworkConnection {
             id: "bond0".to_string(),
             bond: Some(BondSettings {
-                ports: Some(vec![nested(NetworkConnection {
+                port_connections: Some(vec![nested(NetworkConnection {
                     interface: Some("eth0".to_string()),
                     method4: Some(Ipv4Method::Disabled),
                     ..Default::default()
@@ -1519,7 +1642,7 @@ mod tests {
         let bond0 = NetworkConnection {
             id: "bond0".to_string(),
             bond: Some(BondSettings {
-                ports: Some(vec![name("eth0")]),
+                ports: Some(vec!["eth0".to_string()]),
                 ..Default::default()
             }),
             ..Default::default()
@@ -1559,7 +1682,7 @@ mod tests {
         let bond0 = NetworkConnection {
             id: "bond0".to_string(),
             bond: Some(BondSettings {
-                ports: Some(vec![name("eth0")]),
+                port_connections: Some(vec![name("eth0")]),
                 ..Default::default()
             }),
             ..Default::default()
@@ -1606,7 +1729,7 @@ mod tests {
     fn test_a_port_given_by_name_is_taken_from_the_state() {
         let state = stacked_state();
         let mut bond0 = find(&exposed(&state), "bond0");
-        bond0.bond.as_mut().unwrap().ports = Some(vec![name("eth0"), name("eth1")]);
+        bond0.bond.as_mut().unwrap().port_connections = Some(vec![name("eth0"), name("eth1")]);
 
         let collection = state
             .connection_collection_from(&NetworkConnectionsCollection(vec![bond0]))
@@ -1628,7 +1751,7 @@ mod tests {
         let bond0 = NetworkConnection {
             id: "bond0".to_string(),
             bond: Some(BondSettings {
-                ports: Some(vec![name("eth0")]),
+                port_connections: Some(vec![name("eth0")]),
                 ..Default::default()
             }),
             ..Default::default()
@@ -1652,7 +1775,7 @@ mod tests {
         let bond0 = NetworkConnection {
             id: "bond0".to_string(),
             bond: Some(BondSettings {
-                ports: Some(vec![nested(NetworkConnection {
+                port_connections: Some(vec![nested(NetworkConnection {
                     interface: Some("eth0".to_string()),
                     mtu: 9000,
                     ..Default::default()
@@ -1684,7 +1807,7 @@ mod tests {
         let bond0 = NetworkConnection {
             id: "bond0".to_string(),
             bond: Some(BondSettings {
-                ports: Some(vec![nested(NetworkConnection {
+                port_connections: Some(vec![nested(NetworkConnection {
                     interface: Some("eth0".to_string()),
                     ..Default::default()
                 })]),
@@ -1708,7 +1831,7 @@ mod tests {
         let bond0 = NetworkConnection {
             id: "bond0".to_string(),
             bond: Some(BondSettings {
-                ports: Some(vec![nested(NetworkConnection {
+                port_connections: Some(vec![nested(NetworkConnection {
                     mtu: 9000,
                     ..Default::default()
                 })]),
@@ -1741,7 +1864,7 @@ mod tests {
     fn test_a_port_given_by_id_keeps_its_interface() {
         let mut state = stacked_state();
         let mut bond0 = find(&exposed(&state), "bond0");
-        bond0.set_ports(Some(vec![
+        bond0.set_port_connections(Some(vec![
             nested(NetworkConnection {
                 id: "eth0".to_string(),
                 mtu: 9000,
@@ -1769,7 +1892,7 @@ mod tests {
             NetworkConnection {
                 id: "bond0".to_string(),
                 bond: Some(BondSettings {
-                    ports: Some(vec![nested(eth0)]),
+                    port_connections: Some(vec![nested(eth0)]),
                     ..Default::default()
                 }),
                 ..Default::default()
@@ -1797,7 +1920,7 @@ mod tests {
             NetworkConnection {
                 id: "bond0".to_string(),
                 bond: Some(BondSettings {
-                    ports: Some(vec![name("eth0")]),
+                    port_connections: Some(vec![name("eth0")]),
                     ..Default::default()
                 }),
                 ..Default::default()
@@ -1820,7 +1943,7 @@ mod tests {
             NetworkConnection {
                 id: "bond0".to_string(),
                 bond: Some(BondSettings {
-                    ports: Some(vec![name("eth0")]),
+                    port_connections: Some(vec![name("eth0")]),
                     ..Default::default()
                 }),
                 ..Default::default()
@@ -1828,7 +1951,7 @@ mod tests {
             NetworkConnection {
                 id: "br0".to_string(),
                 bridge: Some(BridgeSettings {
-                    ports: Some(vec![name("eth0")]),
+                    port_connections: Some(vec![name("eth0")]),
                     ..Default::default()
                 }),
                 ..Default::default()
@@ -1846,7 +1969,7 @@ mod tests {
             NetworkConnection {
                 id: "bond0".to_string(),
                 bond: Some(BondSettings {
-                    ports: Some(vec![nested(NetworkConnection {
+                    port_connections: Some(vec![nested(NetworkConnection {
                         id: "eth0".to_string(),
                         interface: Some("eth0".to_string()),
                         ..Default::default()
@@ -1858,7 +1981,7 @@ mod tests {
             NetworkConnection {
                 id: "br0".to_string(),
                 bridge: Some(BridgeSettings {
-                    ports: Some(vec![name("eth0")]),
+                    port_connections: Some(vec![name("eth0")]),
                     ..Default::default()
                 }),
                 ..Default::default()
@@ -1880,7 +2003,7 @@ mod tests {
             id: "bond0".to_string(),
             interface: Some("bond0".to_string()),
             bond: Some(BondSettings {
-                ports: Some(vec![name("bond0")]),
+                port_connections: Some(vec![name("bond0")]),
                 ..Default::default()
             }),
             ..Default::default()
@@ -1898,11 +2021,11 @@ mod tests {
             id: "br0".to_string(),
             interface: Some("br0".to_string()),
             bridge: Some(BridgeSettings {
-                ports: Some(vec![nested(NetworkConnection {
+                port_connections: Some(vec![nested(NetworkConnection {
                     id: "bond0".to_string(),
                     interface: Some("bond0".to_string()),
                     bond: Some(BondSettings {
-                        ports: Some(vec![name("br0")]),
+                        port_connections: Some(vec![name("br0")]),
                         ..Default::default()
                     }),
                     ..Default::default()
@@ -1940,9 +2063,9 @@ mod tests {
     const NESTED_PROFILE: &str = r#"[
       { "id": "br0", "interface": "br0", "method4": "manual",
         "addresses": ["192.168.1.100/24"],
-        "bridge": { "stp": true, "forwardDelay": 4, "maxAge": 20, "ports": [
+        "bridge": { "stp": true, "forwardDelay": 4, "maxAge": 20, "portConnections": [
           { "id": "bond0", "interface": "bond0",
-            "bond": { "mode": "802.3ad", "options": "miimon=100 lacp_rate=fast", "ports": [
+            "bond": { "mode": "802.3ad", "options": "miimon=100 lacp_rate=fast", "portConnections": [
               { "interface": "eth0", "mtu": 9000 },
               { "interface": "eth1" }
             ] } }
@@ -2203,7 +2326,7 @@ mod tests {
             NetworkConnection {
                 id: "bond0".to_string(),
                 bond: Some(BondSettings {
-                    ports: Some(vec![name("eth0")]),
+                    port_connections: Some(vec![name("eth0")]),
                     ..Default::default()
                 }),
                 ..Default::default()
@@ -3469,6 +3592,7 @@ impl TryFrom<BridgeConfig> for BridgeSettings {
             max_age: bridge.max_age,
             // Filled in by ConnectionCollection::to_api, which can see the other connections.
             ports: None,
+            port_connections: None,
         })
     }
 }
