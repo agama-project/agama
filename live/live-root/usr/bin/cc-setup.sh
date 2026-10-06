@@ -32,15 +32,13 @@ readonly CMDLINE_FILE="/run/agama/cmdline.d/agama.conf"
 # RMT server URL passed via boot command line
 readonly RMT_URL_OPTION="inst.register_url"
 readonly AGAMA_TOKEN_FILE="/run/agama/token"
-readonly API_URL="http://localhost/api/manager/installer"
 # Storage actions of the current proposal
 readonly STORAGE_ACTIONS_URL="http://localhost/api/storage/devices/actions"
+# Questions (errors) raised by Agama during the installation
+readonly QUESTIONS_URL="http://localhost/api/questions"
 readonly SYSTEM_TEMPLATE="../share/cc-setup/agama-template.json"
 
-# API phase when installation completes.
-readonly FINISH_PHASE=3
-readonly POLL_INTERVAL=10          # Seconds between API polls
-readonly MAX_API_FAILURES=30       # Max consecutive API errors
+readonly POLL_INTERVAL=10          # Seconds between checking the questions
 readonly MAX_INSTALL_SECONDS=14400 # Prompt to wait after 4h
 readonly WAIT_QUESTION_TIMEOUT=300 # Unanswered prompt defaults to "yes"
 
@@ -73,7 +71,8 @@ DIALOG_MODE=true # UI mode: dialog (true) or plain text (false)
 DRY_RUN=false    # Build profile without applying changes
 TEMPLATE=""      # Input JSON template
 SECURE_DIR=""    # Tmpfs dir for jq secrets
-MONITOR_PID=""   # PID of "agama monitor" process
+INSTALL_PID=""   # PID of "agama install" process (it also displays the progress)
+INSTALL_RC=0     # exit status of the finished "agama install" process
 INSTALLATION_STARTED=false
 declare -a SCRIPT_ARGS=()
 
@@ -183,7 +182,7 @@ harden_environment() {
 
 cleanup() {
   local rc=$?
-  stop_monitor
+  stop_progress
   terminal_echo on
   # Securely wipe temp files.
   if [[ -n $SECURE_DIR && -d $SECURE_DIR ]]; then
@@ -314,7 +313,7 @@ flush_terminal_input() {
   done
 }
 
-# Clear screen for progress monitor.
+# Clear screen for the progress display.
 clear_terminal() {
   dumb_terminal && return 0
   clear
@@ -574,8 +573,8 @@ ui_menu() {
 fatal() {
   local message=$1
   trap - ERR
-  stop_monitor
-  # the monitor may have been drawing on the screen
+  stop_progress
+  # the progress display may have been drawing on the screen
   clear_terminal
   ui_error "$message"
 
@@ -699,6 +698,13 @@ prepare_api_auth() {
 api_get() {
   prepare_api_auth || return 1
   curl -sS --max-time 15 -K "$API_CONF" "$1" 2> /dev/null
+}
+
+# api_put URL JSON -> send the JSON body, fails if the request is not successful
+api_put() {
+  prepare_api_auth || return 1
+  curl -sS --fail --max-time 15 -K "$API_CONF" -X PUT \
+    -H "Content-Type: application/json" --data "$2" "$1" > /dev/null 2>&1
 }
 
 # ---------------------------------------------------------------------------
@@ -848,9 +854,9 @@ The installation medium seems to be incomplete."
         --textbox "$LICENSE_FILE" "$(dialog_full_height)" 80 || rc=$?
 
       case $rc in
-        0) return 0 ;;                                # "Accept license"
-        3) confirm_license_reject && break || true ;; # "Reject, reboot system"
-        *) ;;                                         # ESC: display it again
+        0) return 0 ;;                                  # "Accept license"
+        3) if confirm_license_reject; then break; fi ;; # "Reject, reboot system"
+        *) ;;                                           # ESC: display it again
       esac
       continue
     fi
@@ -862,7 +868,7 @@ The installation medium seems to be incomplete."
     read -r answer || answer="n"
     case "${answer,,}" in
       y | yes) return 0 ;;
-      n | no) confirm_license_reject && break || true ;;
+      n | no) if confirm_license_reject; then break; fi ;;
     esac
   done
 
@@ -1103,10 +1109,12 @@ storage_actions() {
   local response
   response=$(api_get "$STORAGE_ACTIONS_URL") || return 1
   [[ -n $response ]] || return 1
-  printf '%s' "$response" | jq -e -r '.[].text' 2> /dev/null
+  # an empty list is a valid result (no output), invalid JSON is an error
+  printf '%s' "$response" | jq -r '.[].text' 2> /dev/null
 }
 
-# Populate STORAGE_ACTIONS_TEXT.
+# Populate STORAGE_ACTIONS_TEXT. Returns 1 if there are no storage actions,
+# the user can then change the configuration.
 fetch_storage_actions() {
   STORAGE_ACTIONS_TEXT=""
   # in the --dry-run mode the profile is not loaded, there is no proposal
@@ -1117,6 +1125,14 @@ fetch_storage_actions() {
 
 Without them it cannot be displayed which devices would be modified, so the
 installation does not continue."
+
+  if [[ -z $STORAGE_ACTIONS_TEXT ]]; then
+    ask_configure_again_or_reboot "No Storage Actions" \
+      "The installer did not propose any storage actions for $TARGET_DISK.
+
+The selected disk probably cannot be used, for example it is too small."
+    return 1
+  fi
 }
 
 storage_proposal() {
@@ -1348,57 +1364,90 @@ build_profile() {
 # Installation
 # ---------------------------------------------------------------------------
 
-# Start "agama monitor" to display installation progress directly on tty.
-start_monitor() {
-  clear_terminal
-  printf 'Installing the system, please wait...\n' >&2
-
-  # Agama monitor uses stderr. Stdin is ignored.
-  agama monitor >&2 2>&1 < /dev/null &
-  MONITOR_PID=$!
-}
-
-# Poll API until event. Monitors via tty.
+# Wait until "agama install" exits, meanwhile check if any question appears
 # Args: START DEADLINE STATUS_FILE
 poll_installation() {
   local start=$1 deadline=$2 status_file=$3
-  local response failures=0 elapsed
+  local ticks=0
 
   while true; do
-    elapsed=$((SECONDS - start))
-
-    if response=$(api_get "$API_URL"); then
-      failures=0
-      if printf '%s' "$response" |
-        jq -e "(.phase == $FINISH_PHASE) and (.isBusy == false)" > /dev/null 2>&1; then
+    if ! kill -0 "$INSTALL_PID" 2> /dev/null; then
+      INSTALL_RC=0
+      wait "$INSTALL_PID" || INSTALL_RC=$?
+      INSTALL_PID=""
+      if ((INSTALL_RC == 0)); then
         printf 'finished' > "$status_file"
-        return 0
+      else
+        printf 'install_failed' > "$status_file"
       fi
-    else
-      failures=$((failures + 1))
-      if ((failures > MAX_API_FAILURES)); then
-        printf 'api_failed' > "$status_file"
-        return 0
-      fi
+      return 0
     fi
 
-    if ((elapsed > deadline)); then
+    # an unanswered question blocks the installation
+    if ((ticks % POLL_INTERVAL == 0)) && pending_question > /dev/null; then
+      printf 'question' > "$status_file"
+      return 0
+    fi
+
+    if ((SECONDS - start > deadline)); then
       printf 'timeout' > "$status_file"
       return 0
     fi
 
-    sleep "$POLL_INTERVAL"
+    ticks=$((ticks + 1))
+    sleep 1
   done
 }
 
-stop_monitor() {
-  [[ -n $MONITOR_PID ]] || return 0
-  kill -TERM "$MONITOR_PID" 2> /dev/null || true
-  wait "$MONITOR_PID" 2> /dev/null || true
-  MONITOR_PID=""
+# Freeze "agama install" so it cannot accidentally draw over a dialog.
+pause_progress() {
+  [[ -n $INSTALL_PID ]] || return 0
+  kill -STOP "$INSTALL_PID" 2> /dev/null || true
 }
 
-# Load profile to compute storage proposal (no disk changes yet).
+resume_progress() {
+  [[ -n $INSTALL_PID ]] || return 0
+  kill -CONT "$INSTALL_PID" 2> /dev/null || true
+}
+
+# Stop the progress display. It only stops the "agama install" client,
+# the installation itself is running in the Agama service.
+stop_progress() {
+  [[ -n $INSTALL_PID ]] || return 0
+  kill -TERM "$INSTALL_PID" 2> /dev/null || true
+  # a stopped process handles the signal only after resuming
+  kill -CONT "$INSTALL_PID" 2> /dev/null || true
+  wait "$INSTALL_PID" 2> /dev/null || true
+  INSTALL_PID=""
+}
+
+# Show an error and ask whether to configure again or to reboot. Returns after
+# the user chose to configure again, the reboot is done directly (after a
+# confirmation). ask_configure_again_or_reboot TITLE TEXT
+ask_configure_again_or_reboot() {
+  local title=$1 text=$2 action
+
+  while true; do
+    action=$(ui_menu "$title" "$text
+
+How do you want to continue?" \
+      back "Configure again (the entered values will be offered again)" \
+      reboot "Reboot without modifying the system") || action="back"
+
+    if [[ $action == "reboot" ]]; then
+      confirm_reboot "Reboot" "Nothing has been written to the disk, the system \
+is not modified.
+
+Do you really want to reboot without installing the system?" && do_reboot
+      continue
+    fi
+    return 0
+  done
+}
+
+# Load profile to compute storage proposal. Returns 1 if Agama rejects the
+# profile (e.g. a wrong registration code), the user can fix the input or
+# reboot.
 load_profile() {
   local profile=$1 rc
   local status_file="$SECURE_DIR/load.status"
@@ -1424,10 +1473,20 @@ load_profile() {
 
   rc=$(< "$status_file")
   if [[ $rc != "0" ]]; then
-    fatal "Loading the installation profile failed:
+    ask_configure_again_or_reboot "Loading the Configuration Failed" \
+      "Loading the installation profile failed:
 
-$(tail -n 5 "$SECURE_DIR/agama.err" 2> /dev/null)"
+$(tail -n 5 "$SECURE_DIR/agama.err" 2> /dev/null)
+
+Please check the entered values (e.g. the registration code)."
+    return 1
   fi
+}
+
+# Clear the screen before displaying the progress.
+show_progress_header() {
+  clear_terminal
+  printf 'Installing the system, please wait...\n' >&2
 }
 
 # Start the installation of the already loaded profile.
@@ -1440,14 +1499,13 @@ Agama was not contacted and no changes were made to the system (--dry-run)."
 
   INSTALLATION_STARTED=true
 
-  # Start monitor before installer to catch all progress.
-  start_monitor
+  show_progress_header
 
-  if ! agama install > /dev/null 2> "$SECURE_DIR/agama.err"; then
-    fatal "Starting the installation failed:
-
-$(tail -n 5 "$SECURE_DIR/agama.err" 2> /dev/null)"
-  fi
+  # "agama install" displays the progress directly on terminal and waits
+  # until the installation finishes, run it in the background to be able to
+  # handle the questions raised by Agama meanwhile.
+  agama install >&2 2>&1 < /dev/null &
+  INSTALL_PID=$!
 
   return 0
 }
@@ -1480,6 +1538,107 @@ Do you want to keep waiting?"
   return 0
 }
 
+# Print the first unanswered question.
+pending_question() {
+  local response
+  response=$(api_get "$QUESTIONS_URL") || return 1
+  printf '%s' "$response" | jq -e -c \
+    '[.[] | select((.generic.options // []) | length > 0)] | first' 2> /dev/null
+}
+
+# Remove the secrets from the URLs in a text (the query part and the credentials).
+# redact_urls TEXT
+redact_urls() {
+  printf '%s\n' "$1" | sed -E \
+    -e "s,(https?://)[^/@[:space:]'\"]*@,\\1,g" \
+    -e "s,(https?://[^?[:space:]'\"]*)\\?[^[:space:]'\"]*,\\1,g"
+}
+
+# choose_answer TEXT DEFAULT ANSWER... -> the index of the selected answer
+# The answers are displayed as buttons, a menu list is used only if there are
+# more answers than the buttons supported by dialog (or if dialog is not used).
+choose_answer() {
+  local text=$1 default=$2 index rc
+  shift 2
+  local -a answers=("$@")
+  local count=${#answers[@]}
+
+  # the default answer
+  local default_index=""
+  for index in "${!answers[@]}"; do
+    [[ ${answers[index]} == "$default" ]] && default_index=$index
+  done
+
+  if $DIALOG_MODE && ((count >= 1 && count <= 4)); then
+    # the buttons in the display order and their exit codes
+    local -a buttons exit_codes
+    local -a dialog_args=(--title "Installation Problem")
+    case $count in
+      1) buttons=(ok) exit_codes=(0) ;;
+      2) buttons=(yes no) exit_codes=(0 1) ;;
+      3) buttons=(yes extra no) exit_codes=(0 3 1) ;;
+      4) buttons=(yes extra no help) exit_codes=(0 3 1 2) ;;
+    esac
+
+    for index in "${!answers[@]}"; do
+      # dialog uses the "ok"/"cancel" labels instead of "yes"/"no" when the
+      # extra or help button is displayed, set both of them
+      case ${buttons[index]} in
+        yes) dialog_args+=(--yes-label "${answers[index]}" --ok-label "${answers[index]}") ;;
+        no) dialog_args+=(--no-label "${answers[index]}" --cancel-label "${answers[index]}") ;;
+        ok) dialog_args+=(--ok-label "${answers[index]}") ;;
+        extra) dialog_args+=(--extra-button --extra-label "${answers[index]}") ;;
+        help) dialog_args+=(--help-button --help-label "${answers[index]}") ;;
+      esac
+    done
+    [[ -n $default_index ]] && dialog_args+=(--default-button "${buttons[default_index]}")
+    if ((count == 1)); then
+      dialog_args+=(--msgbox "$text" 0 0)
+    else
+      dialog_args+=(--yesno "$text" 0 0)
+    fi
+
+    while true; do
+      rc=0
+      show_dialog "${dialog_args[@]}" || rc=$?
+      for index in "${!answers[@]}"; do
+        if ((rc == exit_codes[index])); then
+          printf '%s' "$index"
+          return 0
+        fi
+      done
+      # ESC or an error, ask again, the question cannot be skipped
+    done
+  fi
+
+  local -a menu=() menu_args=()
+  for index in "${!answers[@]}"; do
+    menu+=("$index" "${answers[index]}")
+  done
+  [[ -n $default_index ]] && menu_args=(--default "$default_index")
+  ui_menu "${menu_args[@]}" "Installation Problem" "$text" "${menu[@]}"
+}
+
+# Display the pending question and send the answer selected by the user.
+answer_questions() {
+  local question id text default selected answer
+  local -a options=()
+
+  question=$(pending_question) || return 0
+
+  id=$(printf '%s' "$question" | jq -r '.generic.id')
+  text=$(redact_urls "$(printf '%s' "$question" | jq -r '.generic.text')")
+  default=$(printf '%s' "$question" | jq -r '.generic.defaultOption // ""')
+  mapfile -t options < <(printf '%s' "$question" | jq -r '.generic.options[]')
+
+  selected=$(choose_answer "$text" "$default" "${options[@]}") || return 0
+  answer=${options[selected]}
+
+  api_put "$QUESTIONS_URL/$id/answer" \
+    "$(jq -n -c --arg answer "$answer" '{generic: {answer: $answer}}')" ||
+    ui_error "Sending the answer to the installer failed."
+}
+
 # Poll the Agama REST API until the installation is finished.
 wait_for_installation() {
   local start deadline status elapsed
@@ -1488,7 +1647,7 @@ wait_for_installation() {
   prepare_api_auth ||
     fatal "The Agama API token in $AGAMA_TOKEN_FILE is missing or empty."
 
-  # Disable terminal echo to avoid garbled monitor output.
+  # Disable terminal echo to avoid garbled progress output.
   terminal_echo off
 
   start=$SECONDS
@@ -1506,18 +1665,27 @@ wait_for_installation() {
       finished)
         return 0
         ;;
-      api_failed)
-        # the monitor would draw over the dialog
-        stop_monitor
+      question)
+        # the progress display would draw over the dialog
+        pause_progress
         clear_terminal
-        fatal "The Agama API at $API_URL is not responding, the installation status is unknown."
+        answer_questions
+        show_progress_header
+        resume_progress
+        terminal_echo off
+        ;;
+      install_failed)
+        stop_progress
+        clear_terminal
+        fatal "The installation failed (exit status: $INSTALL_RC)."
         ;;
       timeout)
-        stop_monitor
+        pause_progress
         clear_terminal
         if ask_continue_waiting "$elapsed"; then
           deadline=$((deadline + MAX_INSTALL_SECONDS))
-          start_monitor
+          show_progress_header
+          resume_progress
           terminal_echo off
         else
           fatal "The installation did not finish within $((elapsed / 3600)) hours and was
@@ -1525,7 +1693,7 @@ aborted on user request. The target disk contains an incomplete system."
         fi
         ;;
       *)
-        stop_monitor
+        stop_progress
         clear_terminal
         fatal "Monitoring the installation failed unexpectedly."
         ;;
@@ -1535,7 +1703,7 @@ aborted on user request. The target disk contains an incomplete system."
 
 # Require explicit reboot confirmation.
 finish_installation() {
-  stop_monitor
+  stop_progress
   clear_terminal
 
   local text="The installation finished successfully.
@@ -1622,8 +1790,16 @@ Do you want to start over?"; then
 
     # hand the profile over to Agama, it computes the storage proposal from it;
     # this still does not touch the disk
-    load_profile "$profile"
-    fetch_storage_actions
+    if ! load_profile "$profile"; then
+      # let the user to correct the input, the previous values are reused
+      profile=""
+      action="back"
+      continue
+    fi
+    if ! fetch_storage_actions; then
+      action="back"
+      continue
+    fi
 
     # second gate: what Agama is really going to do with the disks
     action=$(confirm_storage_proposal) || action="back"
