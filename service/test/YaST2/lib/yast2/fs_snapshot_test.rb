@@ -586,53 +586,15 @@ cleanup: :number)
   end
 
   describe ".create_snapshot?" do
-    before do
-      Yast.import "Linuxrc"
-    end
-
-    context "when single value is defined on Linuxrc commandline" do
-      it "returns whether given snapshot type is allowed" do
-        allow(Yast::Linuxrc).to receive(:value_for).with(/snapshot/).and_return("around")
-        expect(described_class.create_snapshot?(:around)).to eq(false)
-        expect(described_class.create_snapshot?(:single)).to eq(true)
-
-        allow(Yast::Linuxrc).to receive(:value_for).with(/snapshot/).and_return("single")
-        expect(described_class.create_snapshot?(:around)).to eq(true)
-        expect(described_class.create_snapshot?(:single)).to eq(false)
-
-        allow(Yast::Linuxrc).to receive(:value_for).with(/snapshot/).and_return("all")
-        expect(described_class.create_snapshot?(:around)).to eq(false)
-        expect(described_class.create_snapshot?(:single)).to eq(false)
-      end
-    end
-
-    context "when more values are defined on Linuxrc commandline" do
-      it "returns whether given snapshot type is not within disabled snapshots types" do
-        allow(Yast::Linuxrc).to receive(:value_for).with(/snapshot/).and_return("single,around")
-        expect(described_class.create_snapshot?(:around)).to eq(false)
-        expect(described_class.create_snapshot?(:single)).to eq(false)
-
-        allow(Yast::Linuxrc).to receive(:value_for).with(/snapshot/).and_return("all,around")
-        expect(described_class.create_snapshot?(:around)).to eq(false)
-        expect(described_class.create_snapshot?(:single)).to eq(false)
-      end
-    end
-
-    context "when no value is defined on Linuxrc commandline" do
-      it "returns that any snapshots are allowed" do
-        allow(Yast::Linuxrc).to receive(:value_for).with(/snapshot/).and_return(nil)
-        expect(described_class.create_snapshot?(:around)).to eq(true)
-        expect(described_class.create_snapshot?(:single)).to eq(true)
-
-        allow(Yast::Linuxrc).to receive(:value_for).with(/snapshot/).and_return("")
+    context "when called with a supported snapshot type" do
+      it "returns true" do
         expect(described_class.create_snapshot?(:around)).to eq(true)
         expect(described_class.create_snapshot?(:single)).to eq(true)
       end
     end
 
-    context "when called with unsupported parameter value" do
-      it "throws an ArgumentError exception" do
-        allow(Yast::Linuxrc).to receive(:value_for).with(/snapshot/).and_return("all")
+    context "when called with an unsupported snapshot type" do
+      it "raises an ArgumentError exception" do
         expect { described_class.create_snapshot?(:some) }.to raise_error(ArgumentError, /:some/)
       end
     end
