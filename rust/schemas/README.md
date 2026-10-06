@@ -33,7 +33,7 @@ The build pipeline unifies Rust-derived schemas with these partial schemas:
    - Injects compatibility aliases (`#[serde(alias)]`) and deprecations into component properties.
 
 2. **Full Resolution (`cargo xtask openapi`)**:
-   - Emits `out/openapi_full.json` and `out/openapi_full.yaml`: monolithic, self-contained specifications without external schema references.
+   - Emits `out/openapi-full.json` and `out/openapi-full.yaml`: monolithic, self-contained specifications without external schema references.
 
 3. **Schema Extraction (`cargo xtask openapi`)**:
    - Extracts standalone root schemas into `out/schemas/`:
