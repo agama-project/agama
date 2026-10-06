@@ -24,31 +24,15 @@
 # * A set of classes to represent the issues ({Y2Issues::Issue},
 #   {Y2Issues::InvalidValue}).
 # * A class to collect errors ({Y2Issues::List}).
-# * A presenter to help when presenting the issues to the user ({Y2Issues::Presenter}).
 #
 # @example Registering an error
 #   list = Y2Issues::List.new
 #   list << Y2Issues::Issue.new("Could not read network configuration", severity: :error)
 module Y2Issues
-  # Reports the errors to the user
-  #
-  # This is a helper method that offers an stable API on top of {Reporter}. Depending on
-  # Yast::Report settings, it may show a pop-up with the found issues and log them.
-  #
-  # @param issues [List] Issues list
-  # @param warn [Symbol] what to do if the list of issues only contains warnings
-  # @param error [Symbol] what to do if the list of issues contains some error
-  # @return [Boolean] whether the process may continue, false means YaST is expected to abort
-  # @see Y2Issues::Reporter
-  def self.report(issues, warn: :ask, error: :abort)
-    Reporter.new(issues).report(warn: warn, error: error)
-  end
 end
 
 require "y2issues/list"
-require "y2issues/presenter"
 require "y2issues/location"
-require "y2issues/reporter"
 
 # Issues types
 require "y2issues/issue"
