@@ -109,10 +109,7 @@ describe Y2IscsiClient::Config do
         ]
 
         config.set_discovery_auth(auth)
-
-        expect(entry("discovery.sendtargets.auth.authmethod")).to be_nil
-        expect(entry("discovery.sendtargets.auth.username")).to be_nil
-        expect(entry("discovery.sendtargets.auth.password")).to be_nil
+        expect(config.entries).to be_empty
       end
     end
 
