@@ -292,13 +292,23 @@ the previous "pure vendor" commit without needing inline markers:
   (`RunRequired`, called by `AutoinstFunctions.rb`, is a pure query method that never touches `Run`)
   - same "mostly dead, keep the rest of the file as-is" shape as `BootArch`/`ServicesManagerTarget`,
   just with the one confirmed-dead `Hooks` dependency trimmed since dropping it was essentially free.
-  `Hooks.rb` is not vendored.
+  `Hooks.rb` is not vendored. For the same reason, also dropped the `Yast.import "Wizard"` call and
+  the `Wizard.{RetranslateButtons,SetFocusToNextButton,RestoreNextButton,RestoreAbortButton,
+  RestoreBackButton}` calls inside `retranslateWizardDialog`/`RunFrom`/`Run` - all unreachable from
+  `RunRequired`, the only method actually called from Agama's closure. This was the last real caller
+  of `Yast::Wizard` anywhere in the closure (`y2storage/inst_dialog_mixin.rb`'s `Wizard.OpenNextBackDialog`/
+  `CloseDialog` calls were the other one, but `InstDialogMixin` itself is never included into any
+  class - see below), which let `modules/Wizard.rb` be dropped entirely.
 - **`modules/IP.rb`**: dropped the `Yast.import "Netmask"` call and the
   `CheckNetworkShared`/`CheckNetwork4`/`CheckNetwork6`/`CheckNetwork` methods (the only ones that
   reference `Netmask`). The only real caller anywhere in Agama's closure
   (`AutoInstallRules#getHostid`, via `IP.ToHex`) never reaches any of them - confirmed no other
   caller exists. `Netmask.rb` and `Address.rb` (whose only other importer, `TypeRepository`, is
   already gone per the `CommandLine` trim above) are not vendored.
+- **`lib/y2storage/inst_dialog_mixin.rb` was vendored but then removed again**: `InstDialogMixin` is
+  never included into any class anywhere in the vendored codebase - its `without_title_on_left`
+  helper (meant for the expert partitioner dialogs) has no actual caller. Dropped the
+  `require "y2storage/inst_dialog_mixin"` line from `lib/y2storage.rb` and the file itself.
 
 ## Layout
 
@@ -626,7 +636,7 @@ deviations from upstream" above) and are not vendored, leaving 79.
 | `library/types` classic modules | `URL`, `URLRecode`, `Hostname`, `IP`, `Map`, `RichText`, `String` |
 | `library/control` classic modules | `Installation`, `InstExtensionImage`, `ProductFeatures`, `ProductControl` |
 | `library/system`/`library/systemd` classic modules | `Kernel`, `ModuleLoading`, `Initrd`, `Service`, `Systemd` |
-| `library/wizard`, `library/desktop`, `library/gpg`, `library/xml`, `library/packages` classic modules | `Wizard`, `HTML`, `Desktop`, `GPG`, `XML` |
+| `library/desktop`, `library/gpg`, `library/xml`, `library/packages` classic modules | `HTML`, `Desktop`, `GPG`, `XML` |
 | `lib/yast2/*` | `execute.rb`, `popup.rb`, `equatable.rb`, `rel_url.rb`, `secret_attributes.rb`, `target_file.rb`, `system_time.rb`, `systemctl.rb`, `{control_,}log_dir_rotator.rb`, `fs_snapshot.rb`, `refinements/string_manipulations.rb`, `systemd/{service,socket,socket_finder,target,unit,unit_installation_properties,unit_prop_map,unit_properties}.rb` |
 | `lib/cfa/*` | `login_defs.rb`, `multi_file_config.rb`, `shadow_config.rb` |
 | `lib/y2issues*` | `y2issues.rb` + `y2issues/{invalid_value,issue,list,location,presenter,reporter}.rb` |
@@ -706,10 +716,6 @@ what's *not* vendored as a consequence, with the single root that was keeping ea
   per-occurrence with an explicit unary `+` (e.g. `+"error"`, `+""`) on the specific literals that
   flow into code performing in-place mutation - see `test/YaST2/lib/yast2/systemd/support/stubs.rb`,
   `test/YaST2/modules/Service_test.rb`, `test/YaST2/lib/yast2/secret_attributes_test.rb`.
-- **`modules/Wizard.rb`'s `.OpenWithLayout` is not ported** (test-only skip, not a production trim):
-  it takes a `::UI::Wizards::Layout`, a `cwm` widget class that is never vendored and confirmed
-  unreachable anywhere in Agama's closure (`Wizard.rb`'s own reference to it in that one method is
-  the only one that exists).
 - **`lib/ui/password_dialog.rb` has no upstream test at all** (not even an interactive-UI one,
   confirmed) - left untested, matching upstream's own coverage.
 - **`modules/SlideShow.rb` was vendored but then removed again**: its only caller anywhere in

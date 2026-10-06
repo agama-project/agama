@@ -50,7 +50,6 @@ module Yast
       Yast.import "Stage"
       Yast.import "Directory"
       Yast.import "Label"
-      Yast.import "Wizard"
       Yast.import "Report"
       Yast.import "Popup"
       Yast.import "FileUtils"
@@ -1181,8 +1180,6 @@ module Yast
 
       # Activate language changes on static part of wizard dialog
       RetranslateWizardSteps()
-      Wizard.RetranslateButtons
-      Wizard.SetFocusToNextButton
       nil
     end
 
@@ -1190,8 +1187,6 @@ module Yast
       former_result = :next
       final_result = nil
       @current_step = from # current module
-
-      Wizard.SetFocusToNextButton
 
       Builtins.y2debug(
         "Starting Workflow with  \"%1\" \"%2\"",
@@ -1337,11 +1332,6 @@ module Yast
             Builtins.y2milestone("Evaluating %1 as it was `next", result)
             result = :next
           end
-
-          # Clients can break the installation/workflow
-          Wizard.RestoreNextButton
-          Wizard.RestoreAbortButton
-          Wizard.RestoreBackButton
 
           # Remove file if step was run and returned (without a crash);
           if Ops.less_than(@current_step, Ops.subtract(Builtins.size(modules), 1)) &&
