@@ -679,15 +679,15 @@ what's *not* vendored as a consequence, with the single root that was keeping ea
 ### Known limitations / sandbox findings (found while vendoring and testing, not fixed)
 
 - **`modules/String_test.rb`'s `.FormatSize returns size formatted with proper bytes units`
-  example can fail in some environments**: `Builtins::Float.tolstring` (the native `yast2-ruby-
-  bindings` builtin backing `String.FormatSize`/`FormatSizeWithPrecision`) renders its
-  thousands-separator according to the process's locale, which - like the already-documented
-  `Encoding.default_external` issue - is fixed at Ruby interpreter startup from the actual shell
-  locale and is **not** affected by `ENV["LC_ALL"]`/`ENV["LANG"]` set from within `test_helper.rb`,
-  nor even by setting `LC_ALL=C` as a prefix to the `bundle exec rspec` invocation itself (reproduced
-  on this sandbox, whose default locale is `es_ES.UTF-8`: expected `"1024.091 TiB"`, got
-  `"1,024.091 TiB"`). Matches upstream's own test expectation (`en_US`-style formatting); needs
-  checking against the project's actual CI container to confirm it has a compatible default locale.
+  example can fail depending on the environment's default locale**: `Builtins::Float.tolstring`
+  (the native `yast2-ruby-bindings` builtin backing `String.FormatSize`/`FormatSizeWithPrecision`)
+  renders its thousands-separator according to the process's *current* `LC_NUMERIC`, re-read on
+  every call - unlike the already-documented `Encoding.default_external` issue, this one **is**
+  affected by `ENV` changes made after Ruby has started. The catch is POSIX locale precedence: a
+  non-empty `LC_ALL` overrides every individual `LC_*` category, so `test_helper.rb`'s original
+  `ENV["LC_ALL"] = "en_US.UTF-8"` silently defeated any attempt to force plain numeric formatting
+  via `LC_NUMERIC`. Fixed by using `ENV["LANG"]` instead of `ENV["LC_ALL"]` for the
+  language/encoding choice, plus an explicit `ENV["LC_NUMERIC"] = "C"`, in `test_helper.rb`.
 - **The project's own `# frozen_string_literal: true` convention can surface genuine frozen-string
   bugs when porting upstream specs that rely on in-place string mutation.** Found twice while
   porting tests for this phase: `Yast2::Systemd::Unit#run_command!` (`error.clear`) and
