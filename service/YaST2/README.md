@@ -708,7 +708,7 @@ deviations from upstream" above) and are not vendored, leaving 79.
 | Subsystem | Files |
 |---|---|
 | `library/general` classic modules | `Arch`, `Mode`, `Stage`, `Report`, `Popup`, `FileUtils`, `Directory`, `Label`, `OSRelease`, `Summary`, `Icon`, `Misc`, `Encoding`, `ShadowConfig` |
-| `library/types` classic modules | `URL`, `URLRecode`, `Hostname`, `IP`, `Map`, `RichText`, `String` |
+| `library/types` classic modules | `URL`, `URLRecode`, `Hostname`, `IP`, `Map`, `String` |
 | `library/control` classic modules | `Installation`, `InstExtensionImage`, `ProductFeatures`, `ProductControl` |
 | `library/system`/`library/systemd` classic modules | `Kernel`, `ModuleLoading`, `Initrd`, `Service`, `Systemd` |
 | `library/desktop`, `library/gpg`, `library/xml`, `library/packages` classic modules | `HTML`, `Desktop`, `GPG`, `XML` |
@@ -798,13 +798,18 @@ what's *not* vendored as a consequence, with the single root that was keeping ea
   is a no-op in Agama's flow - `MoveToStage` only does anything for a stage previously registered
   via `SlideShow.Setup`, which Agama never calls (it doesn't use the classic YaST slide-show
   installation dialog at all). Dropped both the file and the no-op call.
+- **`modules/RichText.rb` became unreachable as a side effect of dropping `Y2Issues::Presenter`**
+  (see above): `Y2Issues::Presenter#to_plain` (`Yast::RichText.Rich2Plain(to_html)`) was its only
+  caller anywhere in the closure. Every other `RichText(...)` reference in the codebase (`Popup.rb`,
+  `Initrd.rb`, `yast2/popup.rb`, `autoinstall/script_runner.rb`...) is the unrelated UI widget
+  constructor function, not a call to this classic module. Dropped the file; no test existed for it.
 
 ### Files with no upstream test coverage (left untested, matching upstream)
 
 Consistent with the project's established policy (port only existing upstream tests, write new ones
 only for modified/deviated files or genuinely-untested-but-nontrivial logic): `Stage`, `Label`,
 `OSRelease`, `Summary`, `HTML`, `ShadowConfig`, `Encoding`, `ModuleLoading`, `Misc`, `Map`,
-`RichText`, `Icon`, `Systemd`, `Initrd`, `ProductControl`, `FileUtils` (3 real call
+`Icon`, `Systemd`, `Initrd`, `ProductControl`, `FileUtils` (3 real call
 sites across the whole closure - `Exists`/`IsLink` - the rest of its ~20-method API, including the
 `Popup`-driven `CheckAndCreatePath`, is dead weight within an otherwise-real file, same
 "mostly-dead" pattern as `BootArch`/`ServicesManagerTarget`/`ProductControl`), `lib/cfa/
