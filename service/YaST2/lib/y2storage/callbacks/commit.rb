@@ -19,13 +19,16 @@
 
 require "yast"
 require "storage"
-require "y2issues/list"
-require "y2storage/issue"
-require "y2storage/issues_reporter"
 
 module Y2Storage
   module Callbacks
     # Class to implement callbacks used during libstorage-ng commit
+    #
+    # This is only used as a fallback default when StorageManager#commit is called without
+    # explicit callbacks - Agama always provides its own (Agama::Storage::Callbacks::Commit),
+    # which reports errors through its D-Bus questions mechanism instead. #error below is
+    # therefore never actually reached by Agama; it only exists to give this default fallback
+    # safe (non-interactive) behavior instead of silently crashing or hanging.
     class Commit < Storage::CommitCallbacks
       include Yast::Logger
 
@@ -43,37 +46,25 @@ module Y2Storage
         widget&.add_action(message)
       end
 
-      # Callback for libstorage-ng to report an error to the user.
+      # Callback for libstorage-ng to report an error.
       #
-      # In addition to displaying the error, it offers the user the possibility
-      # to ignore it and continue.
-      #
-      # @note If the user rejects to continue, the method will return false
-      # which implies libstorage-ng will raise the corresponding exception for
-      # the error.
+      # There is no interactive UI to ask the user in this default fallback, so the error is
+      # just logged and the commit is aborted (telling libstorage-ng not to ignore the error).
       #
       # See Storage::Callbacks#error in libstorage-ng
       #
       # @param message [String] error title coming from libstorage-ng
       #   (in the ASCII-8BIT encoding! see https://sourceforge.net/p/swig/feature-requests/89/)
       # @param what [String] details coming from libstorage-ng (in the ASCII-8BIT encoding!)
-      # @return [Boolean] true will make libstorage-ng ignore the error, false
-      #   will result in a libstorage-ng exception
+      # @return [Boolean] always false, libstorage-ng will raise the corresponding exception
       def error(message, what)
         # force the UTF-8 encoding to avoid Encoding::CompatibilityError exception (bsc#1096758)
         message.force_encoding("UTF-8")
         what.force_encoding("UTF-8")
 
-        log.info "libstorage-ng reported an error, asking the user whether to continue"
-        log.info "Error details. Message: #{message}. What: #{what}."
+        log.error "libstorage-ng reported an error. Message: #{message}. What: #{what}."
 
-        issues = Y2Issues::List.new([Issue.new(message, details: what)])
-        reporter = IssuesReporter.new(issues)
-
-        result = reporter.report(focus: :no)
-
-        log.info "User answer: #{result}"
-        result
+        false
       end
 
       private
