@@ -120,23 +120,9 @@ describe Bootloader::BootloaderBase do
       end
     end
 
-    context "kexec_reboot flag is not set" do
+    context "not a live installation" do
       before do
-        allow(Yast::Linuxrc).to receive(:InstallInf)
-          .with("kexec_reboot")
-          .and_return("0")
-      end
-
-      it "returns list with dracut" do
-        expect(subject.packages).to eq(["dracut"])
-      end
-    end
-
-    context "kexec_reboot flag is set" do
-      before do
-        allow(Yast::Linuxrc).to receive(:InstallInf)
-          .with("kexec_reboot")
-          .and_return("1")
+        allow(Yast::Mode).to receive(:live_installation).and_return(false)
       end
 
       it "returns list containing kexec-tools package" do
