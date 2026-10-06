@@ -44,9 +44,7 @@ from scratch.
 `test/y2packager/zypp_url_test.rb`), ported into
 `service/test/YaST2/lib/y2packager/{repository,zypp_url}_test.rb`; `repository_test.rb`'s
 `#products` describe block (and the `product_factory.rb` helper it alone used) were dropped along
-with the production method. `modules/AutoinstFunctions_test.rb`'s `#selected_product` describe
-block was likewise dropped along with the trimmed production methods (see "Deliberate deviations
-from upstream" below for both).
+with the production method (see "Deliberate deviations from upstream" below).
 
 `yast2-bootloader`'s `exceptions.rb`, `cpu_mitigations.rb` and `stage1_proposal.rb` have no upstream
 test at all - `service/test/YaST2/lib/bootloader/{exceptions,cpu_mitigations,stage1_proposal}_test.rb`
@@ -256,19 +254,6 @@ the previous "pure vendor" commit without needing inline markers:
   `.all`/`#local?`/`#url`. `#products`/`#addons` pull in `Y2Packager::Product`, which transitively
   needs the yast2-packager-only `Yast::InstURL` chain (via its license-fetching mixin) - avoided
   entirely by cutting the two methods nothing calls.
-- **`modules/AutoinstFunctions.rb`** (from an earlier phase): dropped `#selected_product`,
-  `#available_base_products`, `#reset_product`, the `PRODUCT_MAPPING` constant, and the private
-  `#identify_product`/`#identify_product_by_*`/`#base_product_name` helpers they alone needed,
-  along with the `require "y2packager/product"`/`"y2packager/product_reader"`/
-  `"y2packager/product_spec"`/`"y2packager/medium_type"` lines. This is AutoYaST's own
-  base-product auto-detection logic (matching patterns/packages/an explicit product name from the
-  profile against products available on the install media) - confirmed unused anywhere in Agama's
-  closure (only `#second_stage_required?`/`#check_second_stage_environment` are ever called, via
-  `Profile.rb`). Agama has its own, independent AutoYaST product detection
-  (`service/lib/agama/autoyast/product_reader.rb`), which reads the raw profile hash directly
-  instead. `y2packager/product_spec.rb`/`medium_type.rb` are genuinely `yast2-packager`-only
-  (confirmed via `rpm -qf`), and `yast2-packager` can never be a runtime dependency of Agama at
-  all - see "`yast2-packager`: a circular RPM dependency" below.
 - **`lib/bootloader/grub2base.rb`, `modules/AutoInstallRules.rb`** (both from earlier phases):
   dropped the `Yast.import "Product"` call. Neither file (nor anything else reachable from Agama)
   ever calls a `Yast::Product` method, and `Product#main` has no side effects beyond its own
@@ -286,19 +271,37 @@ the previous "pure vendor" commit without needing inline markers:
   only caller of it. `Mode.commandline` is never set anywhere in Agama (it only becomes true when
   running the actual `yast2` command-line tool, which Agama never does) - `CommandLine.rb` (and the
   `Integer`/`TypeRepository` imports only it needed) is not vendored.
-- **`modules/ProductControl.rb`**: dropped the `Yast.import "Hooks"` call and the three `Hooks.run`
-  calls inside the classic linear installation-workflow runner (`Run`'s `WFM.CallFunction`-per-step
-  loop). That whole loop is itself unreachable from the only real caller into this file
-  (`RunRequired`, called by `AutoinstFunctions.rb`, is a pure query method that never touches `Run`)
-  - same "mostly dead, keep the rest of the file as-is" shape as `BootArch`/`ServicesManagerTarget`,
-  just with the one confirmed-dead `Hooks` dependency trimmed since dropping it was essentially free.
-  `Hooks.rb` is not vendored. For the same reason, also dropped the `Yast.import "Wizard"` call and
-  the `Wizard.{RetranslateButtons,SetFocusToNextButton,RestoreNextButton,RestoreAbortButton,
-  RestoreBackButton}` calls inside `retranslateWizardDialog`/`RunFrom`/`Run` - all unreachable from
-  `RunRequired`, the only method actually called from Agama's closure. This was the last real caller
-  of `Yast::Wizard` anywhere in the closure (`y2storage/inst_dialog_mixin.rb`'s `Wizard.OpenNextBackDialog`/
-  `CloseDialog` calls were the other one, but `InstDialogMixin` itself is never included into any
-  class - see below), which let `modules/Wizard.rb` be dropped entirely.
+- **`modules/ProductControl.rb`**: nothing in Agama's closure calls any of this module's own
+  methods at all - it is vendored purely for the side effect of `Yast.import "ProductControl"`
+  triggering `#main`'s `ProductControl()` → `Init()` call, which parses `/etc/YaST/control.xml`
+  (see the comment above `Yast.import "ProductControl"` in `lib/y2storage/setup_checker.rb`; other
+  vendored code then reads that already-parsed data via `ProductFeatures`). `RunRequired` used to
+  be reachable through `AutoinstFunctions.second_stage_required?`, but that module has since been
+  dropped entirely (see below) - confirmed no other caller exists. Dropped the `Yast.import "Hooks"`
+  call and the three `Hooks.run` calls, and the `Yast.import "Wizard"` call and the
+  `Wizard.{RetranslateButtons,SetFocusToNextButton,RestoreNextButton,RestoreAbortButton,
+  RestoreBackButton}` calls, all inside the classic linear installation-workflow runner
+  (`Run`'s `WFM.CallFunction`-per-step loop, plus `RunFrom`/`retranslateWizardDialog`) - same
+  "mostly dead, keep the rest of the file as-is" shape as `BootArch`/`ServicesManagerTarget`, just
+  with these confirmed-dead dependencies trimmed since dropping them was essentially free.
+  `Hooks.rb` is not vendored. This was the last real caller of `Yast::Wizard` anywhere in the
+  closure (`y2storage/inst_dialog_mixin.rb`'s `Wizard.OpenNextBackDialog`/`CloseDialog` calls were
+  the other one, but `InstDialogMixin` itself is never included into any class - see below), which
+  let `modules/Wizard.rb` be dropped entirely.
+- **`modules/Profile.rb`**: dropped the `Yast.import "AutoinstFunctions"` call, the
+  `AutoinstFunctions.second_stage_required?` check in `softwareCompat` (and the `mode`/
+  `second_stage_enabled` locals that only fed it), and the now-unreachable `add_autoyast_packages`/
+  `needed_second_stage_packages` methods and `AUTOYAST_CLIENTS` constant they alone needed (adding
+  `autoyast2`/`autoyast2-installation` to the profile's package list when a classic YaST "second
+  stage" re-run is needed). `second_stage_required?` always returns `false` in Agama's actual
+  runtime: it short-circuits to `ProductControl.RunRequired("continue", Mode.mode)` (Agama never
+  sets `Mode.autoinst`/`Mode.autoupgrade` - `lib/agama/dbus/service_runner.rb` always calls
+  `Mode.SetMode("installation")`), and no product's `control.xml` defines a `<stage>continue</stage>`
+  workflow for `<mode>installation</mode>` (only `autoinstallation`/`autoupgrade`, by design - this
+  "continue" stage only exists for the classic second-stage installer, which Agama doesn't use) -
+  confirmed against the real `/etc/YaST2/control.xml` shipped by openSUSE Tumbleweed. This was the
+  only real caller of `Yast::AutoinstFunctions` anywhere in the closure, letting
+  `modules/AutoinstFunctions.rb` be dropped entirely.
 - **`modules/IP.rb`**: dropped the `Yast.import "Netmask"` call and the
   `CheckNetworkShared`/`CheckNetwork4`/`CheckNetwork6`/`CheckNetwork` methods (the only ones that
   reference `Netmask`). The only real caller anywhere in Agama's closure
@@ -375,9 +378,8 @@ case, nothing upstream *tells* you which package a classic module lives in; you 
 | `modules/Profile.rb`                                                                                                                                                                       | `autoyast2-installation` (`autoinstallation/src/modules/Profile.rb`)                                        | `Yast::Profile` and `Yast::ProfileHash`, the in-memory profile representation                                                                                                                                                                                                                                   |
 | `modules/ProfileLocation.rb`                                                                                                                                                               | `autoyast2-installation` (`autoinstallation/src/modules/ProfileLocation.rb`)                                | Fetches the profile from its configured location (URL, rules/classes, etc.)                                                                                                                                                                                                                                     |
 | `modules/AutoInstallRules.rb`                                                                                                                                                              | `autoyast2-installation` (`autoinstallation/src/modules/AutoInstallRules.rb`)                               | `<rules>`/`<classes>` matching engine. Requires `xslt/merge.xslt` (see below)                                                                                                                                                                                                                                   |
-| `modules/AutoinstFunctions.rb`                                                                                                                                                             | `autoyast2-installation` (`autoinstallation/src/modules/AutoinstFunctions.rb`)                              | `#second_stage_required?`/`#check_second_stage_environment`, used by `Profile.rb` to decide whether a second installation stage needs to run. The base-product auto-detection methods were trimmed - see "Deliberate deviations from upstream" below                                                            |
 | `modules/ServicesManagerTarget.rb`                                                                                                                                                         | `yast2-services-manager` (`services-manager/src/modules/services_manager_target.rb`)                        | Only `ServicesManagerTargetClass::BaseTargets` (a target-name/translation lookup table) is used, by `AutoinstConfig`; the rest of the class (reading/writing the systemd default target) is unused dead code, kept only because `Yast.import "ServicesManagerTarget"` needs the whole file to load successfully |
-| `modules/InstURL.rb`                                                                                                                                                                       | `yast2-packager` (`library/packages/src/modules/InstURL.rb`)                                                | `Yast::InstURL`, converts `/etc/install.inf` data to a repository URL. Needed by `AutoinstFunctions.rb#main`, `lib/transfer/file_from_url.rb` and `modules/ProfileLocation.rb`. Only `#installInf2Url` is ever called - see "Deliberate deviations from upstream" below                                          |
+| `modules/InstURL.rb`                                                                                                                                                                       | `yast2-packager` (`library/packages/src/modules/InstURL.rb`)                                                | `Yast::InstURL`, converts `/etc/install.inf` data to a repository URL. Needed by `lib/transfer/file_from_url.rb` and `modules/ProfileLocation.rb`. Only `#installInf2Url` is ever called - see "Deliberate deviations from upstream" below                                          |
 | `lib/y2packager/repository.rb`                                                                                                                                                             | currently base `yast2` (`library/packages/src/lib/y2packager/repository.rb`); historically `yast2-packager` | `Y2Packager::Repository`, used by `Y2Storage::DiskAnalyzer#candidate_devices` to exclude the disk backing the installation repository from the candidate list. `#products`/`#addons` were trimmed - see "Deliberate deviations from upstream" below                                                              |
 | `lib/y2packager/zypp_url.rb`                                                                                                                                                               | currently base `yast2` (`library/packages/src/lib/y2packager/zypp_url.rb`); historically `yast2-packager`   | `Y2Packager::ZyppUrl`, a `URI` wrapper used by `Repository#local?`/`#url`                                                                                                                                                                                                                                         |
 | `include/autoinstall/xml.rb`                                                                                                                                                               | `autoyast2-installation` (`autoinstallation/src/include/autoinstall/xml.rb`)                                | XML doc-type setup (`profileSetup`/`classSetup`) used while parsing the profile; loaded via `Yast.include self, "autoinstall/xml.rb"` from `AutoinstConfig.rb`                                                                                                                                                  |
@@ -522,10 +524,12 @@ over time, confirmed via `rpm -qf` turning up `yast2`, not `yast2-packager`, for
 `product.rb`, `resolvable.rb`, `license.rb` and the rest of the license-fetching chain. Only two
 things are genuinely `yast2-packager`-only:
 
-- `modules/InstURL.rb` (`Yast::InstURL`) - needed directly by `AutoinstFunctions.rb`'s `#main`
-  (always `Yast.import`ed) and by the already-vendored `lib/transfer/file_from_url.rb`/
+- `modules/InstURL.rb` (`Yast::InstURL`) - at the time, needed directly by `AutoinstFunctions.rb`'s
+  `#main` (always `Yast.import`ed) and by the already-vendored `lib/transfer/file_from_url.rb`/
   `modules/ProfileLocation.rb`. Vendored here with the same unused-`CheckMedia`-import trim as
-  before (see "Deliberate deviations from upstream" below).
+  before (see "Deliberate deviations from upstream" below). `AutoinstFunctions.rb` itself was
+  dropped entirely in a later phase (see "Deliberate deviations from upstream" above), but
+  `InstURL.rb` remains needed for the other two callers.
 - `y2packager/product_spec.rb`/`medium_type.rb` - needed only by `AutoinstFunctions.rb`'s
   `#selected_product`/`#available_base_products` base-product auto-detection logic, which turned
   out to be **confirmed dead code from Agama's perspective** (see below) - so these were never

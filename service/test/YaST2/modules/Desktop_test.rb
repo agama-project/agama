@@ -30,7 +30,7 @@ describe Yast::Desktop do
   # Yast::Desktop is a global singleton, and Yast::Desktop.AgentPath is a published (mutable)
   # attribute that lib/autoinstall/entries/registry.rb permanently changes away from the default
   # ".yast2.desktop" path whenever Y2Autoinstallation::Entries::Registry#read runs (triggered
-  # transitively from several other specs, e.g. AutoinstFunctions_test.rb). Reset both the
+  # transitively from several other specs, e.g. profile_test.rb). Reset both the
   # Registry singleton itself and the AgentPath it mutates, so this spec doesn't depend on
   # anything about what ran before it.
   before do
