@@ -623,13 +623,27 @@ deviations from upstream" above) and are not vendored, leaving 79.
 | `lib/y2issues*` | `y2issues.rb` + `y2issues/{invalid_value,issue,list,location,presenter,reporter}.rb` |
 | `lib/ui/*` | `dialog.rb`, `event_dispatcher.rb`, `password_dialog.rb`, `text_helpers.rb` |
 | `lib/installation/*` | `finish_client.rb`, `installation_info.rb`, `autoinst_issues/{issue,list}.rb`, `autoinst_profile/{element_path,section_with_attributes}.rb` (previously documented as "provided by base yast2, kept as a real dependency" in earlier phases - now vendored here since that dependency itself is gone) |
-| `scrconf/` | `cfg_features.scr` (`.product.features`, used by `ProductFeatures`), `cfg_kernel.scr` (`.sysconfig.kernel`), `proc_cpuinfo.scr`, `proc_modules.scr`, `cfg_yast2.scr` (`.sysconfig.yast2`, used by `fs_snapshot.rb`), `etc_login_defs.scr` |
+| `scrconf/` | `cfg_features.scr` (`.product.features`, used by `ProductFeatures`), `cfg_kernel.scr` (`.sysconfig.kernel`), `proc_cpuinfo.scr`, `proc_modules.scr`, `cfg_yast2.scr` (`.sysconfig.yast2`, used by `fs_snapshot.rb`), `etc_login_defs.scr`, `yast2_desktop.scr` (`.yast2.desktop`, used by `Desktop.rb`), `yast2_groups.scr` (`.yast2.groups`) |
 
 `lib/ui/delayed_progress_popup.rb` was initially suspected to be part of this closure too (it showed
 up in one `$LOADED_FEATURES` trace) but a direct, exhaustive search found no requirer anywhere in
 Agama's own code or any already-vendored file - its only real upstream requirer is
 `lib/packages/file_conflict_callbacks.rb`, itself only reachable through the dead `Product` chain.
 Treated as a trace artifact and not vendored; re-verify if this area changes.
+
+**`yast2_desktop.scr`/`yast2_groups.scr` were initially missed** in the `.scr` audit done during
+planning (only 6 of the 8 needed files were found) - the gap was masked locally because the real
+`yast2` RPM happens to still be installed in the dev sandbox used for this phase, so
+`Desktop.rb`'s `SCR.Dir`/`SCR.Read(path(".yast2.desktop..."))` calls were silently falling back to
+the *system*'s own `/usr/share/YaST2/scrconf/yast2_desktop.scr` (always on the Y2DIR search path
+regardless of Agama's own `ENV["Y2DIR"]` prepend) instead of failing. Only surfaced once validated
+on the project's actual CI, where `yast2` is genuinely not installed - `Desktop_test.rb`'s
+`#Modules`/`.ModuleList` examples returned empty results instead of the expected fixture data, with
+no error raised (classic YaST SCR behaviour: reading an unregistered path returns `nil`/empty rather
+than raising). Same category of gap as `iscsid.scr` (Phase 2) and `InstURL`/`yast2-transfer`
+(Phase 4) - **a reminder that this project's own "validate against a real system with the RPM
+actually uninstalled" step (and checking the actual CI, not just a local sandbox) catches real,
+otherwise-invisible gaps every single phase so far.**
 
 `lib/y2packager/repository.rb`/`zypp_url.rb` (vendored in the `yast2-storage-ng` phase, currently
 living in base `yast2` upstream) are unaffected by this phase and needed no changes.

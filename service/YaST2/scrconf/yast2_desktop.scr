@@ -1,0 +1,40 @@
+/**
+ * File:	yast2_desktop.scr
+ * Summary:	Agent for reading/writing yast2 .desktop files
+ * Author:	Michal Svec <msvec@suse.cz>
+ * Access:	read / write
+ *
+ * Example:
+ *   Dir(.yast2.desktop)
+ *   (["lan", "modem", "isdn", ...])
+ **
+ *   Read(.yast2.desktop.lan)
+ *   ("3")
+ *
+ * $Id$
+ */
+.yast2.desktop
+
+`ag_ini(
+    `IniAgent( [ "/usr/share/applications/YaST2/*.desktop" ],
+	$[
+	    "options"	: [ ],
+	    "comments"	: [ "^[ \t]*[;#].*", ";.*", "\\{[^}]*\\}", "^[ \t]*$" ],
+	    "sections"	: [
+		$[ "begin" : [
+		    "^[ \t]*\\[[ \t]*(.*[^ \t])[ \t]*\\][ \t]*",
+		    "[%s]",
+		]],
+	    ],
+	    "params" : [
+		$[ "match" : [
+		    "^[ \t]*([^=]*[^ \t=])[ \t]*=[ \t]*(.*[^ \t]|)[ \t]*$" ,
+		    "%s=%s",
+		]],
+	    ],
+//	    "rewrite" : [
+//		[ "/usr/share/applications/YaST2/(.*)\.desktop", "/usr/share/applications/YaST2/%s.desktop" ],
+//	    ],
+	]
+    )
+)
