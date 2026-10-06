@@ -60,7 +60,6 @@ $SUDO $ZYPPER install \
   yast2 \
   yast2-bootloader \
   yast2-hardware-detection \
-  yast2-iscsi-client \
   yast2-schema \
   yast2-storage-ng \
   bcache-tools \

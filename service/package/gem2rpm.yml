@@ -16,7 +16,6 @@
     Requires:       yast2 >= 4.5.20
     Requires:       yast2-bootloader >= 5.0.30
     Requires:       yast2-hardware-detection
-    Requires:       yast2-iscsi-client >= 5.0.11
     Requires:       yast2-storage-ng >= 5.0.49
     %ifarch s390 s390x
     Requires:       yast2-reipl
