@@ -15,6 +15,11 @@ RESPONSE_FILE="$RUN_DIR/server_response"
 REG_REPO_FILE="$RUN_DIR/reg_repos"
 OSR="/etc/os-release"
 ARCH=$(uname -m)
+# backup of the original resolv.conf (relative to the root directory)
+RESOLV_BACKUP="/etc/resolv.conf.self-update-orig"
+
+# the added self-update repositories
+self_update_repos=()
 
 # do the cleanup at the end, trap ensures it runs even if something fails
 trap cleanup_chroot EXIT
@@ -90,16 +95,38 @@ prepare_chroot() {
     mount -o bind /sys "$NEWROOT"/sys
     mount -o bind /proc "$NEWROOT"/proc
     mount -o bind /dev "$NEWROOT"/dev
-    [ -f /run/NetworkManager/resolv.conf ] && cp /run/NetworkManager/resolv.conf "$NEWROOT"/etc/resolv.conf
+    if [ -f /run/NetworkManager/resolv.conf ]; then
+      # keep the original file (or symlink), it is restored in cleanup_chroot()
+      if [ -e "$NEWROOT$RESOLV_BACKUP" ] || [ -L "$NEWROOT$RESOLV_BACKUP" ]; then
+        rm -f "$NEWROOT$RESOLV_BACKUP"
+      fi
+      if [ -e "$NEWROOT"/etc/resolv.conf ] || [ -L "$NEWROOT"/etc/resolv.conf ]; then
+        mv "$NEWROOT"/etc/resolv.conf "$NEWROOT$RESOLV_BACKUP"
+      fi
+      cp /run/NetworkManager/resolv.conf "$NEWROOT"/etc/resolv.conf
+    fi
   fi
   # remove any existing self-update repositories, probably left-overs from the previous run
   rm -f "$NEWROOT"/etc/zypp/repos.d/self-update-*.repo
 }
 
+# Disable the self update repositories (keep them for debugging purposes)
+disable_update_repos() {
+  local repo
+
+  for repo in "${self_update_repos[@]}"; do
+    # do not abort the cleanup when disabling fails ("set -e" is active)
+    run_command zypper modifyrepo --disable "$repo" || \
+      warning "Disabling repository $repo failed"
+  done
+}
+
 # Revert the changes done by prepare_chroot() and restore the system to the
-# original state, called from bash "trap" handler
+# original state, disable the added self-update repos, called from bash "trap" handler
 cleanup_chroot() {
   local result="$?"
+
+  disable_update_repos
 
   if [ "$result" != "0" ]; then
     error "Error: Self update failed! (exit status: $result)"
@@ -111,12 +138,19 @@ cleanup_chroot() {
   echo "$result" > "$RESULT_FILE"
 
   if [ -n "$NEWROOT" ]; then
-    rm -f "$NEWROOT"/etc/resolv.conf
-    # do not fail if not mounted
-    findmnt "$NEWROOT"/run > /dev/null && umount "$NEWROOT"/run
-    findmnt "$NEWROOT"/sys > /dev/null && umount "$NEWROOT"/sys
-    findmnt "$NEWROOT"/proc > /dev/null && umount "$NEWROOT"/proc
-    findmnt "$NEWROOT"/dev > /dev/null && umount "$NEWROOT"/dev
+    local dir
+    # restore the original resolv.conf if it was replaced
+    if [ -e "$NEWROOT$RESOLV_BACKUP" ] || [ -L "$NEWROOT$RESOLV_BACKUP" ]; then
+      rm -f "$NEWROOT"/etc/resolv.conf
+      mv "$NEWROOT$RESOLV_BACKUP" "$NEWROOT"/etc/resolv.conf || \
+        warning "Restoring resolv.conf failed"
+    fi
+    for dir in run sys proc dev; do
+      # do not fail if not mounted, do not abort the cleanup if unmounting fails
+      if findmnt "$NEWROOT/$dir" > /dev/null; then
+        umount "$NEWROOT/$dir" || warning "Unmounting $NEWROOT/$dir failed"
+      fi
+    done
   fi
 
   # return the original exit value
@@ -149,12 +183,15 @@ query_reg_server() {
     read_os_release
 
     local query
-    query="$server/connect/repositories/installer?identifier=$NAME&version=$VERSION_ID&arch=$ARCH"
-    info "Running query $query...."
+    query="$server/connect/repositories/installer"
+    info "Running query $query (identifier=$NAME, version=$VERSION_ID, arch=$ARCH)...."
 
+    # the query parameters are URL-encoded by curl (the values may contain spaces)
     local curl_options
     curl_options=(--silent --globoff --location --retry 3 --retry-connrefused \
-      --connect-timeout 20 --max-time 10 --fail --show-error --output "$RESPONSE_FILE")
+      --connect-timeout 20 --max-time 30 --fail --show-error --output "$RESPONSE_FILE" \
+      --get --data-urlencode "identifier=$NAME" --data-urlencode "version=$VERSION_ID" \
+      --data-urlencode "arch=$ARCH")
 
     if grep -q "\binst.self_update_ssl=0\b" /run/agama/cmdline.d/agama.conf; then
       warning "Disabling SSL check for $server"
@@ -186,7 +223,8 @@ query_reg_server() {
 add_update_repos() {
   milestone "Adding self update repositories..."
   # add the self-update repositories
-  while read -r update_url; do
+  # also process the last line if it is missing the trailing newline
+  while read -r update_url || [ -n "$update_url" ]; do
     if [ -n "$update_url" ]; then
       local repo
       repo="self-update-$index"
@@ -212,7 +250,8 @@ add_update_repos() {
         zypper_options+=("--no-gpgcheck")
       fi
 
-      run_command zypper addrepo "${zypper_options[@]}" -f "$update_url" "$repo"
+      # do not let zypper read (and swallow) the rest of the repository list
+      run_command zypper addrepo "${zypper_options[@]}" -f "$update_url" "$repo" < /dev/null
       self_update_repos+=("$repo")
       ((++index))
     fi
@@ -224,6 +263,9 @@ add_update_repos() {
 # contain a hardcoded version (the fallback URL should work with SLES-16.0,
 # SLES-16.1, SLES-16.2...)
 read_fallback_repos() {
+  # the variables might not be loaded yet (no registration server defined)
+  read_os_release
+
   # Substituting $arch pattern with the architecture of the current system.
   # Substituting these variables with the /etc/os-release content:
   #   $os_release_name       => NAME
@@ -232,10 +274,17 @@ read_fallback_repos() {
   #   $os_release_version_id => VERSION_ID
   # IMPORTANT NOTE: the "VERSION_ID" replacement must happen *before*
   # the "VERSION" replacement because it partially matches that string!
-  sed -e "s/\$os_release_name/$NAME/g" -e "s/\$os_release_id/$ID/g" \
-    -e "s/\$os_release_version_id/$VERSION_ID/g" \
-    -e "s/\$os_release_version/$VERSION/g" \
-    -e "s/\$arch/$ARCH/g" "$CONFIG_FALLBACK_FILE" > "$FALLBACK_REPOS_FILE"
+  sed -e "s/\$os_release_name/$(sed_escape "$NAME")/g" \
+    -e "s/\$os_release_id/$(sed_escape "$ID")/g" \
+    -e "s/\$os_release_version_id/$(sed_escape "$VERSION_ID")/g" \
+    -e "s/\$os_release_version/$(sed_escape "$VERSION")/g" \
+    -e "s/\$arch/$(sed_escape "$ARCH")/g" "$CONFIG_FALLBACK_FILE" > "$FALLBACK_REPOS_FILE"
+}
+
+# escape the characters which are special in the sed replacement part
+# $1 - the string to escape
+sed_escape() {
+  printf '%s' "$1" | sed -e 's/[\/&]/\\&/g'
 }
 
 # Applies all the updates
@@ -243,7 +292,6 @@ read_fallback_repos() {
 # Reads the URL of the updates from $AGAMA_DUD_INFO and process each one.
 install_updates() {
   index=0
-  self_update_repos=()
 
   if [ -f "$REPO_FILE" ]; then
     prepare_chroot
@@ -281,8 +329,14 @@ install_updates() {
     zypper_options="--gpg-auto-import-keys"
   fi
 
+  # refuse to continue without a self-update repository
+  if [ ${#self_update_repos[@]} -eq 0 ]; then
+    milestone "No self-update repository found, skipping self-update"
+    exit 0
+  fi
+
   milestone "Loading repositories..."
-  run_command zypper $zypper_options refresh "${self_update_repos[@]}"
+  run_command zypper --non-interactive $zypper_options refresh "${self_update_repos[@]}"
 
   # build the list of repository options passed to zypper
   repo_options=()
@@ -299,10 +353,7 @@ install_updates() {
   # delete the repository caches, not needed anymore, saves space in RAM disk
   run_command zypper clean --all
 
-  # disable the self update repositories (keep them for debugging purposes)
-  for repo in "${self_update_repos[@]}"; do
-    run_command zypper modifyrepo --disable "$repo"
-  done
+  # the self update repositories are disabled in the cleanup handler
 }
 
 # add a query parameter to URL
