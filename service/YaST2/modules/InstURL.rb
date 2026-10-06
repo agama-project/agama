@@ -20,7 +20,6 @@ module Yast
 
     def main
       textdomain "packager"
-      Yast.import "Linuxrc"
       Yast.import "URL"
 
       @installInf2Url = nil
@@ -61,7 +60,9 @@ module Yast
       devlist = deep_copy(ready) if Builtins.size(ready).nonzero?
 
       # add the Linuxrc medium to the beginning
-      repo_url = Linuxrc.InstallInf("RepoURL")
+      # /etc/install.inf (written by linuxrc) does not exist in Agama at all (no classic
+      # linuxrc boot stage), so this is always nil here
+      repo_url = nil
 
       repo_url = "" if repo_url.nil?
 
@@ -110,11 +111,11 @@ module Yast
     end
 
     # check if SSL certificate check is enabled (default) or explicitely disabled by user
+    #
+    # This used to read the "ssl_verify" option from /etc/install.inf (written by linuxrc), which
+    # does not exist in Agama at all (no classic linuxrc boot stage) - so this is always enabled.
     def SSLVerificationEnabled
-      ssl_verify = Linuxrc.InstallInf("ssl_verify")
-      Builtins.y2milestone("Option ssl_verify: %1", ssl_verify)
-
-      ssl_verify != "no"
+      true
     end
 
     def RewriteCDUrl(url)
@@ -148,7 +149,10 @@ module Yast
     def installInf2Url(extra_dir = "")
       return @installInf2Url unless @installInf2Url.nil?
 
-      @installInf2Url = Linuxrc.InstallInf("ZyppRepoURL")
+      # This used to read the "ZyppRepoURL" option from /etc/install.inf (written by linuxrc),
+      # which does not exist in Agama at all (no classic linuxrc boot stage) - so this is always
+      # nil here, and the fallback repository branch below is always taken.
+      @installInf2Url = nil
 
       if @installInf2Url.to_s.empty?
         # If possible, use the fallback repository containing only products information
