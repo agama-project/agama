@@ -388,6 +388,18 @@ mod tests {
         }
     }
 
+    /// Before the ports were nested, the profiles gave them at the top level and disabled their IP
+    /// methods. The backend ignores those settings, so the profile is still valid.
+    #[test]
+    fn test_ports_given_at_the_top_level_can_have_ip_settings() {
+        let profile = connections(json!([
+            { "id": "eth0", "interface": "eth0", "method4": "disabled", "method6": "disabled" },
+            { "id": "eth1", "interface": "eth1", "method4": "disabled", "method6": "disabled" },
+            { "id": "bond0", "bond": { "mode": "active-backup", "ports": ["eth0", "eth1"] } }
+        ]));
+        assert!(matches!(validate(profile), ValidationOutcome::Valid));
+    }
+
     #[test]
     fn test_controller_is_not_accepted_anymore() {
         let profile = connections(json!([{ "id": "eth0", "controller": "bond0" }]));

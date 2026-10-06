@@ -380,7 +380,8 @@ impl<'a> PortResolver<'a> {
 
     /// Checks that the settings given to each port fit it.
     ///
-    /// * A port cannot have IP settings, as its controller holds the IP configuration.
+    /// * A port cannot have IP settings, as its controller holds the IP configuration. A top-level
+    ///   connection that a controller lists by name is the exception: its IP settings are ignored.
     /// * The `port` settings must match the kind of its controller. They are flat, so a bridge port
     ///   priority given to a port of a bond would be silently dropped otherwise.
     fn check_port_settings(
@@ -398,10 +399,21 @@ impl<'a> PortResolver<'a> {
 
             // A port on its way out does not get any setting anyway.
             if node.conn.status != Some(Status::Removed) && node.conn.has_ip_settings() {
-                return Err(NetworkStateError::PortIpSettings(
-                    node.id.clone(),
-                    controller.id.clone(),
-                ));
+                // A top-level connection listed by name in a controller is the flat style that
+                // profiles used before the ports were nested. They often disabled the IP methods
+                // of the ports, so their IP settings are ignored instead of rejected (they are
+                // cleared when linking it).
+                if node.parent.is_some() {
+                    return Err(NetworkStateError::PortIpSettings(
+                        node.id.clone(),
+                        controller.id.clone(),
+                    ));
+                }
+                tracing::warn!(
+                    "The IP settings of '{}' are ignored because it is a port of '{}'",
+                    node.id,
+                    controller.id
+                );
             }
 
             let Some(settings) = &node.conn.port else {
