@@ -16,10 +16,6 @@
 #      Olaf Dabrunz <od@suse.de>
 #
 # $Id$
-#
-# Vendored from yast2-bootloader's src/modules/BootArch.rb.
-# This is a permanent fork (see service/YaST2/README.md): the `yast2-bootloader` RPM
-# is no longer a runtime dependency of Agama.
 
 require "yast"
 

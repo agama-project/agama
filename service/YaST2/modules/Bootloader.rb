@@ -15,10 +15,6 @@
 #
 # $Id$
 #
-# Vendored from yast2-bootloader's src/modules/Bootloader.rb.
-# This is a permanent fork (see service/YaST2/README.md): the `yast2-bootloader` RPM
-# is no longer a runtime dependency of Agama.
-#
 # DEVIATION FROM UPSTREAM: the #Export/#Import public methods and the private
 # #import_bootloader helper have been removed, along with the `bootloader/autoyast_converter`
 # and `bootloader/autoinst_profile/bootloader_section` requires they alone needed. Those two

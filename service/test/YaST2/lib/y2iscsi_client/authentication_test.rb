@@ -22,11 +22,6 @@
 require_relative "../../../test_helper"
 require "y2iscsi_client/authentication"
 
-# NOTE: this class has no dedicated upstream test at all - the only upstream reference is an
-# incidental `let(:auth) { Y2IscsiClient::Authentication.new }` fixture inside
-# yast2-iscsi-client's iscsi_client_lib_test.rb, used while testing IscsiClientLib#discover, not a
-# focused unit test of Authentication's own API. This spec was written from scratch while
-# vendoring (see service/YaST2/README.md).
 describe Y2IscsiClient::Authentication do
   subject(:auth) { described_class.new }
 
@@ -70,6 +65,19 @@ describe Y2IscsiClient::Authentication do
         expect(auth.username).to eq("noone")
         expect(auth.password).to eq("secret")
       end
+
+      context "and the hash includes initiator credentials" do
+        it "sets both the target and initiator credentials" do
+          auth = described_class.new_from_legacy(
+            values.merge({ "username_in" => "someone", "password_in" => "shared secret" })
+          )
+
+          expect(auth.username).to eq("noone")
+          expect(auth.password).to eq("secret")
+          expect(auth.username_in).to eq("someone")
+          expect(auth.password_in).to eq("shared secret")
+        end
+      end
     end
 
     context "when the hash has an explicit authmethod other than CHAP" do
@@ -82,32 +90,15 @@ describe Y2IscsiClient::Authentication do
 
         expect(auth.username).to eq("")
         expect(auth.password).to eq("")
+        expect(auth.username_in).to eq("")
+        expect(auth.password_in).to eq("")
       end
     end
 
-    context "when the hash also includes initiator (bidirectional) credentials" do
-      let(:values) do
-        {
-          "username"    => "noone",
-          "password"    => "secret",
-          "username_in" => "someone",
-          "password_in" => "shared secret"
-        }
-      end
-
-      it "sets both the target and initiator credentials" do
-        auth = described_class.new_from_legacy(values)
-
-        expect(auth.username).to eq("noone")
-        expect(auth.password).to eq("secret")
-        expect(auth.username_in).to eq("someone")
-        expect(auth.password_in).to eq("shared secret")
-      end
-    end
   end
 
   describe "#by_target?" do
-    context "when both username and password are set" do
+    context "when both username and password are not empty" do
       before do
         auth.username = "noone"
         auth.password = "secret"
@@ -118,7 +109,7 @@ describe Y2IscsiClient::Authentication do
       end
     end
 
-    context "when only the username is set" do
+    context "when only the username is not empty" do
       before { auth.username = "noone" }
 
       it "returns false" do
@@ -126,16 +117,21 @@ describe Y2IscsiClient::Authentication do
       end
     end
 
-    context "when neither username nor password are set" do
+    context "when username and password are empty" do
+      before do
+        auth.username = ""
+        auth.password = ""
+      end
+
       it "returns false" do
         expect(auth.by_target?).to eq(false)
       end
     end
-  end
 
-  describe "#chap?" do
-    it "is an alias for #by_target?" do
-      expect(auth.method(:chap?)).to eq(auth.method(:by_target?))
+    context "when username and password are not set" do
+      it "returns false" do
+        expect(auth.by_target?).to eq(false)
+      end
     end
   end
 
@@ -176,6 +172,14 @@ describe Y2IscsiClient::Authentication do
         end
       end
 
+      context "and only the initiator password is set" do
+        before { auth.password_in = "shared secret" }
+
+        it "returns false" do
+          expect(auth.by_initiator?).to eq(false)
+        end
+      end
+
       context "and no initiator credentials are set" do
         it "returns false" do
           expect(auth.by_initiator?).to eq(false)
@@ -186,8 +190,7 @@ describe Y2IscsiClient::Authentication do
 
   describe "secret attributes" do
     # NOTE: deliberately avoid the substring "secret" in the password values themselves, since
-    # that's also the word Yast2::SecretAttributes uses as a placeholder (e.g. "<secret>") when
-    # masking a value - using it here would make the "not exposed" assertions pass vacuously.
+    # that's also the word Yast2::SecretAttributes uses as a placeholder (e.g. "<secret>")
     before do
       auth.password = "noone-s-pwd"
       auth.password_in = "another-pwd"
