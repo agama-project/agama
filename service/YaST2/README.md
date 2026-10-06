@@ -72,6 +72,17 @@ write real files under a small fixture tree colocated with the specs themselves
 unlike every other fixture in this project, these do **not** live under
 `service/test/fixtures/yast2/`, specifically to keep that one upstream mechanism working unmodified.
 
+`test/bootloader_base_test.rb` and `test/grub_install_test.rb` were initially missed when the
+`yast2-bootloader` test suite was ported, despite both `bootloader_base.rb` and `grub_install.rb`
+being vendored and actively used - every other vendored file got 1:1 upstream test coverage except
+these two. Caught afterwards by cross-checking the full list of upstream test files against the
+vendored production files, and ported into `service/test/YaST2/lib/bootloader/{bootloader_base,
+grub_install}_test.rb` unchanged (verbatim content, only the usual `require_relative`/
+`include_context "yast2-bootloader test setup"` boilerplate and rubocop line-wrapping applied).
+**Lesson for future phases: cross-check the upstream test suite's file list too, not just the
+production code's - a 1:1 file-count match is not a byproduct of tracing `require`/`Yast.import`
+alone.**
+
 Upstream `yast2-s390` tests mock hardware-probing data via two environment variables
 (`S390_MOCKING=1`, which points at a hardcoded `test/data/*.yml`/`.txt` path relative to the
 process's current working directory, or `YAST2_S390_LSDASD`/`YAST2_S390_PROBE_DISK`, which point at

@@ -93,11 +93,6 @@ if [ $(uname -m) == "x86_64" ]; then
     fde-tools
 fi
 
-# No s390-specific YaST packages are needed anymore: yast2-s390's Ruby code is vendored into
-# service/YaST2/lib/y2s390, yast2-cio was confirmed unused, and yast2-reipl's only real effect
-# (the s390 "chreipl node /boot/zipl" call) is now inlined directly into the vendored
-# Bootloader::FinishClient (see service/package/gem2rpm.yml and service/YaST2/README.md).
-
 # Rubygem dependencies
 (
   cd $MYDIR/service
