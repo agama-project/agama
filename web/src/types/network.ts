@@ -299,10 +299,29 @@ type APIRoute = {
  */
 type APIPort = string | APIConnection;
 
+/**
+ * The ports of a bond or a bridge as the API carries them.
+ *
+ * `portConnections` holds the ports themselves. `ports` predates it and only
+ * holds their names. Agama reports both, but accepts only one of them.
+ */
+type APIPorts = {
+  ports?: string[];
+  portConnections?: APIPort[];
+};
+
+/**
+ * Returns the settings of a bond or a bridge without its lists of ports.
+ */
+const withoutPortLists = <T extends APIPorts>(settings: T): Omit<T, keyof APIPorts> => {
+  const { ports, portConnections, ...rest } = settings;
+  return rest;
+};
+
 type APIConnection = {
   id: string;
-  bond?: Omit<Bond, "ports"> & { ports: APIPort[] };
-  bridge?: Omit<Bridge, "ports"> & { ports: APIPort[] };
+  bond?: Omit<Bond, "ports"> & APIPorts;
+  bridge?: Omit<Bridge, "ports"> & APIPorts;
   vlan?: Vlan;
   port?: PortSettings;
   interface?: string;
@@ -445,12 +464,17 @@ class Connection {
     }
   }
 
-  private static portsFromApi(ports: APIPort[] = []): Port[] {
-    return ports.map((p) => (typeof p === "string" ? p : Connection.fromApi(p)));
+  /**
+   * The configuration gives back what was sent, so a profile may come with
+   * either list.
+   */
+  private static portsFromApi({ ports, portConnections }: APIPorts): Port[] {
+    const entries: APIPort[] = portConnections ?? ports ?? [];
+    return entries.map((p) => (typeof p === "string" ? p : Connection.fromApi(p)));
   }
 
-  private static portsToApi(ports: Port[] = []): APIPort[] {
-    return ports.map((p) => (typeof p === "string" ? p : p.toApi()));
+  private static portsToApi(ports: Port[] = []): APIPorts {
+    return { portConnections: ports.map((p) => (typeof p === "string" ? p : p.toApi())) };
   }
 
   static fromApi(connection: APIConnection) {
@@ -460,8 +484,8 @@ class Connection {
     const addresses = connection.addresses?.map(buildAddress) || [];
     const conn = new Connection(id, {
       ...options,
-      bond: bond && { ...bond, ports: Connection.portsFromApi(bond.ports) },
-      bridge: bridge && { ...bridge, ports: Connection.portsFromApi(bridge.ports) },
+      bond: bond && { ...withoutPortLists(bond), ports: Connection.portsFromApi(bond) },
+      bridge: bridge && { ...withoutPortLists(bridge), ports: Connection.portsFromApi(bridge) },
       // FIXME: try a better approach for methods/gateway and/or typecasting
       method4: options.method4 as ConnectionMethod,
       method6: options.method6 as ConnectionMethod,
@@ -493,8 +517,14 @@ class Connection {
       addresses: addresses?.map(formatIp) || [],
     };
 
-    if (bond) result.bond = { ...bond, ports: Connection.portsToApi(bond.ports) };
-    if (bridge) result.bridge = { ...bridge, ports: Connection.portsToApi(bridge.ports) };
+    if (bond) {
+      const { ports, ...settings } = bond;
+      result.bond = { ...settings, ...Connection.portsToApi(ports) };
+    }
+    if (bridge) {
+      const { ports, ...settings } = bridge;
+      result.bridge = { ...settings, ...Connection.portsToApi(ports) };
+    }
 
     if (result.gateway4 === "") delete result.gateway4;
     if (result.gateway6 === "") delete result.gateway6;
