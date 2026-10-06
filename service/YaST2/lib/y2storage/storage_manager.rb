@@ -518,7 +518,7 @@ module Y2Storage
 
       continue = true
       if !StorageEnv.instance.ignore_probe_errors? && probing_issues.any?
-        callbacks ||= Callbacks::YastProbe.new
+        callbacks ||= Callbacks::UserProbe.new
         continue = callbacks.report_issues(raw_probed.probing_issues)
       end
 

@@ -132,19 +132,32 @@ describe Y2Storage::Callbacks::Probe do
       context "if features is not 0" do
         let(:features) { Storage::UF_BTRFS }
 
-        it "displays a pop-up with the list of packages to install" do
-          expect(Yast2::Popup).to receive(:show) do |message, options|
-            expect(message).to include "btrfsprogs, e2fsprogs"
-            expect(options[:buttons].keys).to contain_exactly(:ignore, :install)
-            :ignore
-          end
+        # The default user_callbacks (UserProbe) is non-interactive and always declines to
+        # install missing packages - there is no classic YaST pop-up involved.
+        it "does not try to install the missing packages" do
+          expect(Y2Storage::PackageHandler).to_not receive(:new)
 
           subject.missing_command(msg, what, cmd, features)
         end
 
-        context "if the user clicks on :install" do
+        it "returns true" do
+          expect(subject.missing_command(msg, what, cmd, features)).to eq true
+        end
+
+        it "does not set #again? to true" do
+          subject.begin
+          subject.missing_command(msg, what, cmd, features)
+          expect(subject.again?).to eq false
+        end
+
+        context "if the user callbacks allow installing the missing packages" do
+          subject(:callbacks) { described_class.new(user_callbacks: user_callbacks) }
+
+          let(:user_callbacks) do
+            instance_double(Y2Storage::Callbacks::UserProbe, install_packages?: true)
+          end
+
           before do
-            allow(Yast2::Popup).to receive(:show).and_return :install
             allow(Y2Storage::PackageHandler).to receive(:new).and_return pkg_handler
           end
 
@@ -170,8 +183,12 @@ describe Y2Storage::Callbacks::Probe do
           end
         end
 
-        context "if the user clicks on :ignore" do
-          before { allow(Yast2::Popup).to receive(:show).and_return :ignore }
+        context "if the user callbacks decline to install the missing packages" do
+          subject(:callbacks) { described_class.new(user_callbacks: user_callbacks) }
+
+          let(:user_callbacks) do
+            instance_double(Y2Storage::Callbacks::UserProbe, install_packages?: false)
+          end
 
           it "returns true" do
             expect(subject.missing_command(msg, what, cmd, features)).to eq true
