@@ -37,8 +37,6 @@ module Yast
     def main
       textdomain "base"
 
-      Yast.import "Netmask"
-
       @ValidChars = "0123456789abcdefABCDEF.:"
       @ValidChars4 = "0123456789."
       @ValidChars6 = "0123456789abcdefABCDEF:"
@@ -217,97 +215,6 @@ module Yast
       return nil unless /\A[01]{32}\z/ =~ bits
 
       ToString(bits.to_i(2))
-    end
-
-    def CheckNetworkShared(network)
-      return false if network.nil? || network == ""
-
-      # all networks
-      (network == "0/0") ? true : nil
-    end
-
-    # Checks the given IPv4 network entry.
-    #
-    # @see CheckNetwork for details.
-    # @see CheckNetwork6 for IPv6 version of the same function.
-    #
-    # @example
-    #   CheckNetwork("192.168.0.0/255.255.255.0") -> true
-    #   CheckNetwork("192.168.1.22") -> true
-    #   CheckNetwork("172.55.0.0/33") -> false
-    def CheckNetwork4(network)
-      generic_check = CheckNetworkShared(network)
-      return generic_check unless generic_check.nil?
-
-      # 192.168.0.0/20, 0.8.55/158
-      if network =~ Regexp.new("^[" + @ValidChars4 + "]+/[0-9]+$")
-        net_parts = network.split("/")
-        return Check4(net_parts[0]) &&
-            Netmask.CheckPrefix4(net_parts[1])
-      # 192.168.0.0/255.255.255.0, 0.8.55/10.258.12
-      elsif network =~ Regexp.new("^[" + @ValidChars4 + "]+/[" + @ValidChars4 + "]+$")
-        net_parts = network.split("/")
-        return Check4(net_parts[0]) &&
-            Netmask.Check4(net_parts[1])
-      # 192.168.0.1, 0.8.55.999
-      elsif Check4(network)
-        return true
-      end
-
-      false
-    end
-
-    # Checks the given IPv6 network entry.
-    #
-    # @see CheckNetwork for details.
-    # @see CheckNetwork4 for IPv4 version of the same function.
-    #
-    # @example
-    #   CheckNetwork("2001:db8:0::1/64") -> true
-    #   CheckNetwork("2001:db8:0::1") -> true
-    #   CheckNetwork("::1/257") -> false
-    def CheckNetwork6(network)
-      generic_check = CheckNetworkShared(network)
-      return generic_check unless generic_check.nil?
-
-      # 2001:db8:0::1/64
-      if network =~ Regexp.new("^[" + @ValidChars6 + "]+/[" + Netmask.ValidChars6 + "]*$")
-        net_parts = network.split("/")
-        return Check6(net_parts[0]) &&
-            Netmask.Check6(net_parts[1])
-      # 2001:db8:0::1/ffff:ffff::0
-      elsif network =~ Regexp.new("^[" + @ValidChars6 + "]+/[" + @ValidChars6 + "]+$")
-        net_parts = network.split("/")
-        return Check6(net_parts[0]) &&
-            Check6(net_parts[1])
-      # 2001:db8:0::1
-      elsif Check6(network)
-        return true
-      end
-
-      false
-    end
-
-    # Checks the given network entry which can be defined in several formats:
-    #   - Single IPv4 or IPv6, e.g., 192.168.0.1 or 2001:db8:0::1
-    #   - IP/Netmask, e.g., 192.168.0.0/255.255.255.0 or 2001:db8:0::1/ffff:ffff::0
-    #   - IP/CIDR, e.g., 192.168.0.0/20 or 2001:db8:0::1/56
-    #
-    # @example
-    #  CheckNetwork("192.168.0.1") -> true
-    #  CheckNetwork("192.168.0.0/20") -> true
-    #  CheckNetwork("192.168.0.0/255.255.255.0") -> true
-    #  CheckNetwork("0/0") -> true
-    #  CheckNetwork("::1/128") -> true
-    #  CheckNetwork("2001:db8:0::1") -> true
-    #  CheckNetwork("2001:db8:0::1/64") -> true
-    #  CheckNetwork("2001:db8:0::1/ffff:ffff::0") -> true
-    #  CheckNetwork("2001:db8:0::xyz") -> false
-    #  CheckNetwork("::1/257") -> false
-    #  CheckNetwork("172.55.0.0/33") -> false
-    #  CheckNetwork("172.55.0.0/125.85.5.5") -> false
-    def CheckNetwork(network)
-      CheckNetwork4(network) || CheckNetwork6(network)
     end
 
     # Checks if given IPv4 address is reserved by any related RFC.

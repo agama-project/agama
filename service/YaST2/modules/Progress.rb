@@ -90,7 +90,6 @@ module Yast
 
       textdomain "base"
 
-      Yast.import "CommandLine"
       Yast.import "Wizard"
       Yast.import "Mode"
       Yast.import "Directory"
@@ -680,14 +679,6 @@ module Yast
       # do not update the UI in a nested progress
       return if Ops.greater_than(StackSize(), 0)
 
-      if Mode.commandline
-        if Ops.less_than(@current_stage, @stages) &&
-            Ops.less_than(@current_stage, Builtins.size(@titles))
-          CommandLine.PrintVerbose(Ops.get_string(@titles, @current_stage, ""))
-        end
-        return
-      end
-
       if Ops.greater_than(@current_stage, 0)
         UI.ChangeWidget(
           MarkId(Ops.subtract(@current_stage, 1)),
@@ -736,7 +727,7 @@ module Yast
         return
       end
 
-      if !Mode.commandline && Ops.greater_or_equal(@current_stage, 0)
+      if Ops.greater_or_equal(@current_stage, 0)
         UI.ChangeWidget(
           MarkId(@current_stage),
           :Value,
@@ -748,14 +739,7 @@ module Yast
       s = ""
       s = Ops.get_string(@titles, @current_stage, "") if Ops.less_than(@current_stage, Builtins.size(@titles))
       s = title if nil != title
-      if Ops.less_than(@current_stage, Builtins.size(@titles))
-        if Mode.commandline
-          CommandLine.PrintVerbose(s)
-          return
-        else
-          SetProgressBarTitle(s)
-        end
-      end
+      SetProgressBarTitle(s) if Ops.less_than(@current_stage, Builtins.size(@titles))
       UI.ChangeWidget(MarkId(@current_stage), :Value, Mark(:current)) if Ops.less_than(@current_stage, @stages)
 
       nil

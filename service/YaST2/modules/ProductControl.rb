@@ -55,7 +55,6 @@ module Yast
       Yast.import "Popup"
       Yast.import "FileUtils"
       Yast.import "Installation"
-      Yast.import "Hooks"
 
       # The complete parsed control file
       @productControl = {}
@@ -1301,16 +1300,9 @@ module Yast
 
           # Check if client exist before continuing
           if WFM.ClientExists(client_name)
-            Hooks.run("before_#{step_name}")
-
             result = WFM.CallFunction(client_name, args)
 
-            # This code will be triggered before the red pop window appears on the user's screen
-            Hooks.run("installation_failure") if result == false
-
             result = Convert.to_symbol(result)
-
-            Hooks.run("after_#{step_name}")
           else
             # Client not found. Ask the user if want to continue (related to bsc#1180954)
             log.error("Client '#{client_name}' not found")
@@ -1445,7 +1437,6 @@ module Yast
         when :abort
           # handling when user aborts the workflow (FATE #300422, bnc #406401, bnc #247552)
           final_result = result
-          Hooks.run("installation_aborted")
 
           break
         when :again

@@ -115,7 +115,6 @@ module Yast
       Yast.import "Wizard"
       Yast.import "Mode"
       Yast.import "Popup"
-      Yast.import "Slides"
 
       @language = "en"
       @widgets_created = false
