@@ -16,10 +16,6 @@
     Requires:       yast2 >= 4.5.20
     Requires:       yast2-bootloader >= 5.0.30
     Requires:       yast2-hardware-detection
-    # yast2-iscsi-client's Ruby code (Yast::IscsiClientLib, Y2IscsiClient::*) is vendored into
-    # service/YaST2/lib/y2iscsi_client and service/YaST2/modules (see service/YaST2/README.md);
-    # the RPM is no longer needed. open-iscsi (below) still provides the iscsiadm/iscsiuio
-    # binaries IscsiClientLib shells out to.
     Requires:       yast2-storage-ng >= 5.0.49
     %ifarch s390 s390x
     Requires:       yast2-reipl
