@@ -27,17 +27,22 @@ describe Yast::ProductFeatures do
   subject { Yast::ProductFeatures }
 
   # Yast::ProductFeatures is a global singleton, and #Import (used extensively throughout this
-  # file) really replaces its whole internal state (not a test double). Reset it to a pristine,
-  # uninitialized state once this file's examples are all done (same convention and "after
-  # the whole context" granularity as
-  # test/YaST2/lib/y2storage/support/shared_setup.rb) so this spec doesn't leak into whatever
-  # *other file's* test runs next (e.g. a test relying on a "preferred_bootloader" feature
-  # previously set by some other, unrelated spec). Deliberately *not* reset between this file's
-  # own examples: the "#GetFeature ... reads the value from the running system" examples rely on
+  # file) really replaces its whole internal state (not a test double). Save it before this
+  # file's examples start and restore it (not just reset to nil - some other, unrelated spec
+  # earlier in the same process, e.g. YaST2/lib/y2storage/y2storage/proposal_settings_test.rb,
+  # may have left a real "preferred_bootloader" feature behind that a *later* spec, e.g.
+  # test/agama/storage/autoyast_proposal_test.rb, implicitly depends on) once they are all done.
+  # Deliberately done at the "whole context" granularity (before/after(:context), same convention
+  # as test/YaST2/lib/y2storage/support/shared_setup.rb), not between this file's own individual
+  # examples: the "#GetFeature ... reads the value from the running system" examples rely on
   # @features already being populated by the "in normal stage" example that runs right before
   # them (both read the same fixture file), same as upstream's own test relies on.
+  before(:context) do
+    @original_product_features = Yast::ProductFeatures.Export
+  end
+
   after(:context) do
-    Yast::ProductFeatures.instance_variable_set(:@features, nil)
+    Yast::ProductFeatures.Import(@original_product_features)
   end
 
   before do
