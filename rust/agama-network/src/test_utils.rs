@@ -30,7 +30,7 @@ use agama_utils::{
 };
 use async_trait::async_trait;
 use macaddr::MacAddr6;
-use std::str::FromStr;
+use std::{str::FromStr, sync::Mutex};
 
 use crate::{
     adapter::Watcher,
@@ -43,17 +43,24 @@ use crate::{
 
 /// Network adapter for tests.
 ///
-/// At this point, the adapter returns the default network state and does not write
-/// any change. Additionally, it does not have an associated watcher.
-pub struct TestAdapter;
+/// It starts with the default network state and keeps whatever is written to it, without the
+/// removed connections, as NetworkManager would. Additionally, it does not have an associated
+/// watcher.
+#[derive(Default)]
+pub struct TestAdapter {
+    state: Mutex<NetworkState>,
+}
 
 #[async_trait]
 impl Adapter for TestAdapter {
     async fn read(&self, _config: StateConfig) -> Result<NetworkState, NetworkAdapterError> {
-        Ok(NetworkState::default())
+        Ok(self.state.lock().unwrap().clone())
     }
 
-    async fn write(&self, _network: &NetworkState) -> Result<(), NetworkAdapterError> {
+    async fn write(&self, network: &NetworkState) -> Result<(), NetworkAdapterError> {
+        let mut state = network.clone();
+        state.connections.retain(|c| !c.is_removed());
+        *self.state.lock().unwrap() = state;
         Ok(())
     }
 
@@ -129,7 +136,7 @@ pub async fn start_service(
     events: event::Sender,
     progress: Handler<progress::Service>,
 ) -> NetworkSystemClient {
-    let adapter = TestAdapter;
+    let adapter = TestAdapter::default();
 
     Starter::new(events, progress)
         .with_adapter(adapter)
