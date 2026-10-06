@@ -157,13 +157,18 @@ describe Agama::Storage::Proposal do
           end
         end
 
-        # TODO: Actually this also depends on the value of "preferred_bootloader" at
-        # Yast::ProductFeatures, but let's assume all distributions has the same value
-        # than Tumbleweed currently uses.
         context "in an EFI system with systemd-boot as the product's default EFI bootloader" do
           before do
             config.data["boot"] ||= {}
             config.data["boot"]["default_efi_bootloader"] = "systemd-boot"
+
+            # Y2Storage::ProposalSettings#load_bootloader also relies on this feature (in
+            # addition to the config data set above) to decide whether to use the BLS-compliant
+            # (systemd-boot-like) EFI partition size. Set explicitly instead of depending on
+            # whatever some other, unrelated spec elsewhere in the suite happens to leave behind.
+            Yast::ProductFeatures.Import(
+              "globals" => { "preferred_bootloader" => "systemd-boot" }
+            )
           end
 
           it "proposes the expected EFI partition" do
