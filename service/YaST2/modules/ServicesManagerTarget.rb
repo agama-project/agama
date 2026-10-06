@@ -135,8 +135,7 @@ module Yast
     def import profile
       if profile.target.nil? || profile.target.empty?
         # setting default_target due the defined environment
-        self.default_target = (Installation.x11_setup_needed &&
-          Arch.x11_setup_needed &&
+        self.default_target = (Arch.x11_setup_needed &&
           Pkg.IsSelected("xdm")) ? BaseTargets::GRAPHICAL : BaseTargets::MULTIUSER
       else
         self.default_target = profile.target

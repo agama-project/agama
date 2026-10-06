@@ -43,7 +43,6 @@ module Yast
 
     def main
       Yast.import "Stage"
-      Yast.import "Linuxrc"
       Yast.import "Directory"
 
       # current scr handle
@@ -245,9 +244,8 @@ module Yast
     end
 
     # how we were booted (the type of the installation medium)
-    # /etc/install.inf: InstMode
     def boot
-      Linuxrc.InstallInf("InstMode") || "cd"
+      "cd"
     end
 
     def restart!
@@ -262,17 +260,6 @@ module Yast
 
     def finish_restarting!
       ::FileUtils.remove_file(@restarting_file, true) if restarting?
-    end
-
-    # run X11 configuration after inital boot
-    # this is false in case of:
-    # installation via serial console
-    # installation via ssh
-    # installation via vnc
-    #
-    # Also see Arch::x11_setup_needed ().
-    def x11_setup_needed
-      !(Linuxrc.serial_console || Linuxrc.vnc || Linuxrc.usessh)
     end
 
     # no resources/packages for X11
@@ -333,7 +320,6 @@ module Yast
     publish variable: :image_only, type: "boolean"
     publish function: :Installation, type: "void ()"
     publish function: :boot, type: "string ()"
-    publish function: :x11_setup_needed, type: "boolean ()"
     publish function: :text_fallback, type: "boolean ()"
     publish function: :no_x11, type: "boolean ()"
     publish function: :sourcedir, type: "string ()"

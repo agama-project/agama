@@ -516,7 +516,6 @@ module Yast
     # installation on S390
     #
     # @return true when the X11 configuration is needed after inital boot
-    # @see #Installation::x11_setup_needed
     def x11_setup_needed
       # disable X11 setup after initial boot
       return false if board_iseries || s390
