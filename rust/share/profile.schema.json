@@ -714,7 +714,9 @@
         "bond": {
           "type": "object",
           "title": "Bonding configuration",
+          "description": "The ports are given either in 'ports' or in 'portConnections', not in both.",
           "additionalProperties": false,
+          "not": { "required": ["ports", "portConnections"] },
           "properties": {
             "mode": {
               "type": "string",
@@ -732,8 +734,14 @@
               "type": "string"
             },
             "ports": {
+              "title": "Names of the connections to be bonded",
+              "description": "Same as 'portConnections', with the ports given only by name. It predates 'portConnections' and cannot be given along with it.",
+              "type": "array",
+              "items": { "$ref": "#/$defs/portName" }
+            },
+            "portConnections": {
               "title": "The connections to be bonded",
-              "description": "Giving this list replaces the ports of the bond: a current port that is not listed is removed, unless it is given somewhere else in the document. Omitting the list leaves the current ports alone.",
+              "description": "Giving this list replaces the ports of the bond: a current port that is not listed is removed, unless it is given somewhere else in the document. Omitting both this list and 'ports' leaves the current ports alone.",
               "type": "array",
               "items": {
                 "anyOf": [
@@ -760,7 +768,9 @@
         "bridge": {
           "type": "object",
           "title": "Bridge configuration",
+          "description": "The ports are given either in 'ports' or in 'portConnections', not in both.",
           "additionalProperties": false,
+          "not": { "required": ["ports", "portConnections"] },
           "properties": {
             "stp": {
               "title": "whether the Spanning Tree Protocol is enabled or not",
@@ -787,8 +797,14 @@
               "minimum": 0
             },
             "ports": {
+              "title": "Names of the connections to be part of the bridge",
+              "description": "Same as 'portConnections', with the ports given only by name. It predates 'portConnections' and cannot be given along with it.",
+              "type": "array",
+              "items": { "$ref": "#/$defs/portName" }
+            },
+            "portConnections": {
               "title": "The connections to be part of the bridge",
-              "description": "Giving this list replaces the ports of the bridge: a current port that is not listed is removed, unless it is given somewhere else in the document. Omitting the list leaves the current ports alone.",
+              "description": "Giving this list replaces the ports of the bridge: a current port that is not listed is removed, unless it is given somewhere else in the document. Omitting both this list and 'ports' leaves the current ports alone.",
               "type": "array",
               "items": {
                 "anyOf": [{ "$ref": "#/$defs/portName" }, { "$ref": "#/$defs/portConnection" }]

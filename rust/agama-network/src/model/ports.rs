@@ -20,8 +20,9 @@
 
 //! Resolution of the controller/port relationships declared in the HTTP API.
 //!
-//! Over the API, the ports of a controller are nested in its `ports` list (`bond.ports` or
-//! `bridge.ports`), either as connections or by name. This module turns that tree into the
+//! Over the API, the ports of a controller are nested in its `portConnections` list
+//! (`bond.portConnections` or `bridge.portConnections`), either as connections or by name, or
+//! given by name in its `ports` list, which predates the nesting. This module turns that tree into the
 //! `controller` links of the internal model, and rejects the configurations that cannot be
 //! represented (unknown or ambiguous names, ports claimed by two controllers, loops, etc.).
 
@@ -29,7 +30,7 @@ use std::collections::{HashMap, HashSet};
 
 use agama_utils::api::network::{
     DeviceType, IpConfig, Ipv4Method, Ipv6Method, NetworkConnection, NetworkConnectionsCollection,
-    PortEntry, Status,
+    PortRef, Status,
 };
 use uuid::Uuid;
 
@@ -134,16 +135,20 @@ impl<'a> PortResolver<'a> {
             None => return Err(NetworkStateError::MissingConnectionId),
         };
 
+        if conn.has_conflicting_ports() {
+            return Err(NetworkStateError::ConflictingPorts(id));
+        }
+
         let index = nodes.len();
         nodes.push(Node { conn, id, parent });
 
         for port in conn.ports().into_iter().flatten() {
             match port {
-                PortEntry::Name(name) => named.push(NamedPort {
+                PortRef::Name(name) => named.push(NamedPort {
                     name,
                     parent: index,
                 }),
-                PortEntry::Connection(port) => self.visit(port, Some(index), nodes, named)?,
+                PortRef::Connection(port) => self.visit(port, Some(index), nodes, named)?,
             }
         }
 
@@ -312,10 +317,10 @@ impl<'a> PortResolver<'a> {
     ///   controller, and its IP methods default to `auto`: a NIC taken out of a bond should not be
     ///   left without an address.
     ///
-    /// A port that is dropped from the `ports` list of its controller, and that the document does
+    /// A port that is dropped from the list of ports of its controller, and that the document does
     /// not mention anywhere else, is removed. Detaching it would leave behind a profile without IP
     /// settings, which can still grab the NIC without giving it an address. This only
-    /// applies to the controllers whose `ports` list is part of the payload, so a partial update
+    /// applies to the controllers whose list of ports is part of the payload, so a partial update
     /// that does not mention a controller leaves its ports alone.
     fn link(&self, nodes: &[Node], conns: &mut Vec<Connection>, claims: &Claims) {
         let declared: HashSet<Uuid> = nodes

@@ -34,7 +34,7 @@ use std::net::IpAddr;
 /// Collection of connections.
 ///
 /// It only holds the root connections: the ports of a bond or a bridge are nested inside the
-/// `ports` list of their controller. Use [`Self::flatten`] to go through all of them.
+/// `portConnections` list of their controller. Use [`Self::flatten`] to go through all of them.
 #[derive(Clone, Debug, Default, Serialize, Deserialize, JsonSchema, PartialEq)]
 pub struct NetworkConnectionsCollection(pub Vec<NetworkConnection>);
 
@@ -136,13 +136,21 @@ pub struct WirelessSettings {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, JsonSchema, PartialEq)]
+#[serde(rename_all = "camelCase")]
 pub struct BondSettings {
     pub mode: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub options: Option<String>,
-    /// Ports of the controller. When it is omitted, the current ports are left alone.
+    /// Interface names or IDs of the ports of the controller.
+    ///
+    /// It is the list that predates `portConnections`. A controller gives one or the other, never
+    /// both, and they are reported together.
     #[serde(skip_serializing_if = "Option::is_none", default)]
-    pub ports: Option<Vec<PortEntry>>,
+    pub ports: Option<Vec<String>>,
+    /// Ports of the controller. When neither this list nor `ports` is given, the current ports
+    /// are left alone.
+    #[serde(skip_serializing_if = "Option::is_none", default)]
+    pub port_connections: Option<Vec<PortEntry>>,
 }
 
 impl Default for BondSettings {
@@ -151,6 +159,7 @@ impl Default for BondSettings {
             mode: "balance-rr".to_string(),
             options: None,
             ports: None,
+            port_connections: None,
         }
     }
 }
@@ -168,12 +177,19 @@ pub struct BridgeSettings {
     pub hello_time: Option<u32>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub max_age: Option<u32>,
-    /// Ports of the controller. When it is omitted, the current ports are left alone.
+    /// Interface names or IDs of the ports of the controller.
+    ///
+    /// It is the list that predates `portConnections`. A controller gives one or the other, never
+    /// both, and they are reported together.
     #[serde(skip_serializing_if = "Option::is_none", default)]
-    pub ports: Option<Vec<PortEntry>>,
+    pub ports: Option<Vec<String>>,
+    /// Ports of the controller. When neither this list nor `ports` is given, the current ports
+    /// are left alone.
+    #[serde(skip_serializing_if = "Option::is_none", default)]
+    pub port_connections: Option<Vec<PortEntry>>,
 }
 
-/// Entry of a controller's `ports` list.
+/// Entry of a controller's `portConnections` list.
 #[derive(Clone, Debug, Serialize, JsonSchema, PartialEq)]
 #[serde(untagged)]
 pub enum PortEntry {
@@ -195,6 +211,34 @@ impl<'de> Deserialize<'de> for PortEntry {
             value => serde_json::from_value(value)
                 .map(|conn| Self::Connection(Box::new(conn)))
                 .map_err(D::Error::custom),
+        }
+    }
+}
+
+/// A port of a controller, whichever of its lists gives it (see [`NetworkConnection::ports`]).
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub enum PortRef<'a> {
+    /// Interface name or ID of a connection.
+    Name(&'a str),
+    /// The port connection itself.
+    Connection(&'a NetworkConnection),
+}
+
+impl PortRef<'_> {
+    /// Returns the name the port is known by: its interface name or, when it has none, its ID.
+    pub fn name(&self) -> &str {
+        match self {
+            Self::Name(name) => name,
+            Self::Connection(conn) => conn.interface.as_deref().unwrap_or(&conn.id),
+        }
+    }
+}
+
+impl<'a> From<&'a PortEntry> for PortRef<'a> {
+    fn from(entry: &'a PortEntry) -> Self {
+        match entry {
+            PortEntry::Name(name) => Self::Name(name),
+            PortEntry::Connection(conn) => Self::Connection(conn),
         }
     }
 }
@@ -492,31 +536,74 @@ impl NetworkConnection {
 
     /// Returns the ports declared by the connection, if it declares any.
     ///
-    /// An empty list is not the same as no list at all: an empty list means that the controller
-    /// has no ports, while no list means that its ports are not part of the payload.
-    pub fn ports(&self) -> Option<&[PortEntry]> {
-        match (&self.bond, &self.bridge) {
-            (Some(bond), _) => bond.ports.as_deref(),
-            (None, Some(bridge)) => bridge.ports.as_deref(),
+    /// They come from `portConnections` or, when it is not given, from `ports`. An empty list is
+    /// not the same as no list at all: an empty list means that the controller has no ports, while
+    /// no list means that its ports are not part of the payload.
+    pub fn ports(&self) -> Option<Vec<PortRef<'_>>> {
+        let (names, entries) = self.port_lists()?;
+        if let Some(entries) = entries {
+            return Some(entries.iter().map(PortRef::from).collect());
+        }
+        names.map(|names| names.iter().map(|n| PortRef::Name(n)).collect())
+    }
+
+    /// Whether the connection gives both `ports` and `portConnections`, which is not allowed.
+    pub fn has_conflicting_ports(&self) -> bool {
+        matches!(self.port_lists(), Some((Some(_), Some(_))))
+    }
+
+    /// Returns the `portConnections` list, if it is given.
+    pub fn port_connections_mut(&mut self) -> Option<&mut Vec<PortEntry>> {
+        match (&mut self.bond, &mut self.bridge) {
+            (Some(bond), _) => bond.port_connections.as_mut(),
+            (None, Some(bridge)) => bridge.port_connections.as_mut(),
             (None, None) => None,
         }
     }
 
-    /// Mutable version of [`Self::ports`].
-    pub fn ports_mut(&mut self) -> Option<&mut Vec<PortEntry>> {
+    /// Sets the `portConnections` list, if the connection is a bond or a bridge.
+    ///
+    /// The `ports` list is left alone.
+    pub fn set_port_connections(&mut self, ports: Option<Vec<PortEntry>>) {
         match (&mut self.bond, &mut self.bridge) {
-            (Some(bond), _) => bond.ports.as_mut(),
-            (None, Some(bridge)) => bridge.ports.as_mut(),
-            (None, None) => None,
-        }
-    }
-
-    /// Sets the ports of the connection, if it is a bond or a bridge.
-    pub fn set_ports(&mut self, ports: Option<Vec<PortEntry>>) {
-        match (&mut self.bond, &mut self.bridge) {
-            (Some(bond), _) => bond.ports = ports,
-            (None, Some(bridge)) => bridge.ports = ports,
+            (Some(bond), _) => bond.port_connections = ports,
+            (None, Some(bridge)) => bridge.port_connections = ports,
             (None, None) => {}
+        }
+    }
+
+    /// Sets both lists of ports, as the connection is reported, if it is a bond or a bridge.
+    ///
+    /// The `ports` list gets the interface name (or the ID, when there is none) of every port.
+    pub fn set_ports(&mut self, ports: Option<Vec<PortEntry>>) {
+        let names = ports.as_ref().map(|ports| {
+            ports
+                .iter()
+                .map(|port| PortRef::from(port).name().to_string())
+                .collect()
+        });
+        match (&mut self.bond, &mut self.bridge) {
+            (Some(bond), _) => {
+                bond.ports = names;
+                bond.port_connections = ports;
+            }
+            (None, Some(bridge)) => {
+                bridge.ports = names;
+                bridge.port_connections = ports;
+            }
+            (None, None) => {}
+        }
+    }
+
+    /// Returns the `ports` and `portConnections` lists, if it is a bond or a bridge.
+    #[allow(clippy::type_complexity)]
+    fn port_lists(&self) -> Option<(Option<&[String]>, Option<&[PortEntry]>)> {
+        match (&self.bond, &self.bridge) {
+            (Some(bond), _) => Some((bond.ports.as_deref(), bond.port_connections.as_deref())),
+            (None, Some(bridge)) => {
+                Some((bridge.ports.as_deref(), bridge.port_connections.as_deref()))
+            }
+            (None, None) => None,
         }
     }
 
@@ -524,7 +611,7 @@ impl NetworkConnection {
     fn collect_into<'a>(&'a self, all: &mut Vec<&'a NetworkConnection>) {
         all.push(self);
         for port in self.ports().into_iter().flatten() {
-            if let PortEntry::Connection(conn) = port {
+            if let PortRef::Connection(conn) = port {
                 conn.collect_into(all);
             }
         }
@@ -626,16 +713,16 @@ mod tests {
     }
 
     #[test]
-    fn test_ports_can_be_given_by_name_or_nested() {
+    fn test_port_connections_can_be_given_by_name_or_nested() {
         let json = r#"{
             "id": "br0",
             "bridge": {
-                "ports": [
+                "portConnections": [
                     "eth0",
                     {
                         "interface": "bond0",
                         "port": { "priority": 32 },
-                        "bond": { "mode": "802.3ad", "ports": ["eth1", { "interface": "eth2" }] }
+                        "bond": { "mode": "802.3ad", "ports": ["eth1", "eth2"] }
                     }
                 ]
             }
@@ -643,13 +730,17 @@ mod tests {
         let conn: NetworkConnection = serde_json::from_str(json).unwrap();
 
         let ports = conn.ports().unwrap();
-        assert_eq!(ports[0], PortEntry::Name("eth0".to_string()));
-        let PortEntry::Connection(bond0) = &ports[1] else {
+        assert_eq!(ports[0], PortRef::Name("eth0"));
+        let PortRef::Connection(bond0) = ports[1] else {
             panic!("bond0 is not nested");
         };
         // The ID is filled in when resolving the ports.
         assert_eq!(bond0.id, "");
         assert_eq!(bond0.port.as_ref().unwrap().priority, Some(32));
+        assert_eq!(
+            bond0.ports().unwrap(),
+            [PortRef::Name("eth1"), PortRef::Name("eth2")]
+        );
 
         let collection = NetworkConnectionsCollection(vec![conn.clone()]);
         let interfaces: Vec<_> = collection
@@ -657,12 +748,74 @@ mod tests {
             .iter()
             .map(|c| c.interface.as_deref().unwrap_or(&c.id))
             .collect();
-        // Ports given by name are not connections, so eth0 and eth1 are left out.
-        assert_eq!(interfaces, ["br0", "bond0", "eth2"]);
+        // Ports given by name are not connections, so eth0, eth1 and eth2 are left out.
+        assert_eq!(interfaces, ["br0", "bond0"]);
 
+        // What the client sent is kept as it is.
         let serialized = serde_json::to_value(&conn).unwrap();
-        assert_eq!(serialized["bridge"]["ports"][0], "eth0");
-        assert_eq!(serialized["bridge"]["ports"][1]["interface"], "bond0");
+        assert_eq!(serialized["bridge"]["portConnections"][0], "eth0");
+        assert_eq!(
+            serialized["bridge"]["portConnections"][1]["interface"],
+            "bond0"
+        );
+        assert!(serialized["bridge"].get("ports").is_none());
+        assert_eq!(
+            serialized["bridge"]["portConnections"][1]["bond"]["ports"],
+            serde_json::json!(["eth1", "eth2"])
+        );
+    }
+
+    #[test]
+    fn test_ports_only_take_names() {
+        let json = r#"{ "id": "bond0", "bond": { "mode": "802.3ad", "ports": [{ "interface": "eth0" }] } }"#;
+        assert!(serde_json::from_str::<NetworkConnection>(json).is_err());
+    }
+
+    #[test]
+    fn test_giving_both_lists_of_ports_is_a_conflict() {
+        let json = r#"{
+            "id": "bond0",
+            "bond": { "mode": "802.3ad", "ports": ["eth0"], "portConnections": ["eth0"] }
+        }"#;
+        let conn: NetworkConnection = serde_json::from_str(json).unwrap();
+        assert!(conn.has_conflicting_ports());
+
+        let json = r#"{ "id": "bond0", "bond": { "mode": "802.3ad", "ports": ["eth0"] } }"#;
+        let conn: NetworkConnection = serde_json::from_str(json).unwrap();
+        assert!(!conn.has_conflicting_ports());
+    }
+
+    #[test]
+    fn test_set_ports_reports_both_lists() {
+        let mut bond0 = NetworkConnection {
+            id: "bond0".to_string(),
+            bond: Some(BondSettings::default()),
+            ..Default::default()
+        };
+        let eth0 = NetworkConnection {
+            id: "Wired connection 1".to_string(),
+            interface: Some("eth0".to_string()),
+            ..Default::default()
+        };
+        let eth1 = NetworkConnection {
+            id: "eth1".to_string(),
+            ..Default::default()
+        };
+        bond0.set_ports(Some(vec![
+            PortEntry::Connection(Box::new(eth0)),
+            PortEntry::Connection(Box::new(eth1)),
+        ]));
+
+        let serialized = serde_json::to_value(&bond0).unwrap();
+        assert_eq!(
+            serialized["bond"]["ports"],
+            serde_json::json!(["eth0", "eth1"])
+        );
+        assert_eq!(
+            serialized["bond"]["portConnections"][0]["id"],
+            "Wired connection 1"
+        );
+        assert_eq!(serialized["bond"]["portConnections"][1]["id"], "eth1");
     }
 
     #[test]
@@ -673,13 +826,16 @@ mod tests {
 
         let json = r#"{ "id": "br0", "bridge": { "stp": false, "ports": [] } }"#;
         let conn: NetworkConnection = serde_json::from_str(json).unwrap();
-        assert_eq!(conn.ports(), Some([].as_slice()));
+        assert_eq!(conn.ports(), Some(vec![]));
+
+        let json = r#"{ "id": "br0", "bridge": { "stp": false, "portConnections": [] } }"#;
+        let conn: NetworkConnection = serde_json::from_str(json).unwrap();
+        assert_eq!(conn.ports(), Some(vec![]));
     }
 
     #[test]
     fn test_an_invalid_nested_port_reports_the_actual_problem() {
-        let json =
-            r#"{ "id": "bond0", "bond": { "mode": "802.3ad", "ports": [{ "mtu": "big" }] } }"#;
+        let json = r#"{ "id": "bond0", "bond": { "mode": "802.3ad", "portConnections": [{ "mtu": "big" }] } }"#;
         let error = serde_json::from_str::<NetworkConnection>(json)
             .unwrap_err()
             .to_string();

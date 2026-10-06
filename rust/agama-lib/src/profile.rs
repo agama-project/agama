@@ -328,7 +328,7 @@ mod tests {
     fn test_nested_ports_do_not_need_an_id() {
         let profile = connections(json!([{
             "id": "bond0",
-            "bond": { "ports": [{ "interface": "eth0" }, "eth1"] }
+            "bond": { "portConnections": [{ "interface": "eth0" }, "eth1"] }
         }]));
         assert!(matches!(validate(profile), ValidationOutcome::Valid));
     }
@@ -343,13 +343,13 @@ mod tests {
     fn test_bridge_port_settings_are_rejected_on_a_bond_port() {
         let profile = connections(json!([{
             "id": "bond0",
-            "bond": { "ports": [{ "interface": "eth0", "port": { "priority": 32 } }] }
+            "bond": { "portConnections": [{ "interface": "eth0", "port": { "priority": 32 } }] }
         }]));
         assert!(matches!(validate(profile), ValidationOutcome::NotValid(_)));
 
         let profile = connections(json!([{
             "id": "br0",
-            "bridge": { "ports": [{ "interface": "eth0", "port": { "priority": 32 } }] }
+            "bridge": { "portConnections": [{ "interface": "eth0", "port": { "priority": 32 } }] }
         }]));
         assert!(matches!(validate(profile), ValidationOutcome::Valid));
     }
@@ -358,7 +358,7 @@ mod tests {
     fn test_nested_ports_are_validated_as_connections() {
         let profile = connections(json!([{
             "id": "br0",
-            "bridge": { "ports": [{ "id": "bond0", "bond": { "ports": [{ "mtu": "big" }] } }] }
+            "bridge": { "portConnections": [{ "id": "bond0", "bond": { "portConnections": [{ "mtu": "big" }] } }] }
         }]));
         assert!(matches!(validate(profile), ValidationOutcome::NotValid(_)));
     }
@@ -380,10 +380,34 @@ mod tests {
             port.as_object_mut()
                 .unwrap()
                 .extend(setting.as_object().unwrap().clone());
-            let profile = connections(json!([{ "id": "bond0", "bond": { "ports": [port] } }]));
+            let profile =
+                connections(json!([{ "id": "bond0", "bond": { "portConnections": [port] } }]));
             assert!(
                 matches!(validate(profile), ValidationOutcome::NotValid(_)),
                 "{setting}"
+            );
+        }
+    }
+
+    #[test]
+    fn test_ports_only_take_names() {
+        let profile = connections(json!([{
+            "id": "bond0",
+            "bond": { "ports": [{ "interface": "eth0" }] }
+        }]));
+        assert!(matches!(validate(profile), ValidationOutcome::NotValid(_)));
+    }
+
+    #[test]
+    fn test_ports_and_port_connections_cannot_be_given_together() {
+        for controller in ["bond", "bridge"] {
+            let profile = connections(json!([{
+                "id": "ctl0",
+                controller: { "ports": ["eth0"], "portConnections": ["eth0"] }
+            }]));
+            assert!(
+                matches!(validate(profile), ValidationOutcome::NotValid(_)),
+                "{controller}"
             );
         }
     }

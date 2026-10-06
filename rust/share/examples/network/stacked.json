@@ -8,7 +8,7 @@
         "addresses": ["192.168.1.100/24"],
         "bridge": {
           "stp": true,
-          "ports": [
+          "portConnections": [
             {
               "id": "bond0",
               "interface": "bond0",
@@ -16,7 +16,7 @@
               "bond": {
                 "mode": "802.3ad",
                 "options": "miimon=100 lacp_rate=fast",
-                "ports": [{ "interface": "eth0", "mtu": 9000 }, "eth1"]
+                "portConnections": [{ "interface": "eth0", "mtu": 9000 }, "eth1"]
               }
             }
           ]
