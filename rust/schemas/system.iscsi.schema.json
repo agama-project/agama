@@ -26,7 +26,7 @@
     "target": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["name", "address", "port", "interface", "ibtf", "startup", "connected", "locked"],
+      "required": ["name", "address", "port", "interface", "ibft", "startup", "connected", "locked"],
       "properties": {
         "name": { "type": "string" },
         "address": { "type": "string" },
