@@ -1,0 +1,47 @@
+/**
+ * File:
+ *   proc_modules.scr
+ * Summary:
+ *   SCR Agent for reading /proc/modules
+ * Access:
+ *   read-only
+ * Authors:
+ *   Unknown <yast2-hacker@suse.de>
+ * See:
+ *   anyagent
+ *   libscr
+ * Example:
+ *   Read(.proc.modules)
+ *   ($["aic7xxx":$["size":129600, "used":"3"], 
+ *      "autofs4":$["size":9344, "used":"4"], 
+ *      "de4x5":$["size":40320, "used":"1"], 
+ *      ...
+ *   ])
+ * 
+ * $Id$
+ *
+ * Returns a <b>map</b>i. Keys are the module names, values are maps. 
+ * Keys of those maps are: "size", "used"
+ */
+.proc.modules
+
+`ag_anyagent(
+  `Description (
+  (`File("/proc/modules")),	// real file name
+  "#\n",			// Comment
+  true,				// read-only
+  (`Tuple (
+      `Name(`String("^ \t")),
+      `Whitespace (),
+      `Value (
+	`Tuple (
+	  `size (`Number()),
+	  `Whitespace(),
+	  `used (`String("^ \n")),
+	  `Optional (`String ("^\n"))
+	)
+      ),
+      `Continue ("\n")
+    ) )
+  )
+)
