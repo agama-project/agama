@@ -72,7 +72,8 @@ describe("Connection", () => {
         status: ConnectionStatus.UP,
         persistent: true,
         bridge: {
-          ports: [
+          ports: ["bond0"],
+          portConnections: [
             {
               id: "bond0",
               interface: "bond0",
@@ -82,7 +83,7 @@ describe("Connection", () => {
               bond: {
                 mode: BondMode.LACP,
                 options: "",
-                ports: [
+                portConnections: [
                   { id: "eth0", interface: "eth0", status: ConnectionStatus.UP, persistent: true },
                   "eth1",
                 ],
@@ -97,6 +98,18 @@ describe("Connection", () => {
       expect(bond0.port).toEqual({ priority: 32 });
       expect(portsOf(bond0)[0]).toBeInstanceOf(Connection);
       expect(portsOf(bond0)[1]).toBe("eth1");
+      expect(conn.bridge).not.toHaveProperty("portConnections");
+    });
+
+    it("takes the ports given only by name", () => {
+      const conn = Connection.fromApi({
+        id: "bond0",
+        status: ConnectionStatus.UP,
+        persistent: true,
+        bond: { mode: BondMode.LACP, options: "", ports: ["eth0", "eth1"] },
+      });
+
+      expect(portsOf(conn)).toEqual(["eth0", "eth1"]);
     });
   });
 
@@ -106,9 +119,11 @@ describe("Connection", () => {
       const api = bond("bond0", [eth0, "eth1"], { state: ConnectionState.ACTIVATED }).toApi();
 
       expect(api.state).toBeUndefined();
-      expect(api.bond.ports).toEqual([expect.objectContaining({ id: "eth0" }), "eth1"]);
-      expect(api.bond.ports[0]).toEqual(expect.objectContaining({ interface: "eth0" }));
-      expect(api.bond.ports[0]).not.toHaveProperty("state");
+      expect(api.bond.portConnections).toEqual([expect.objectContaining({ id: "eth0" }), "eth1"]);
+      expect(api.bond.portConnections[0]).toEqual(expect.objectContaining({ interface: "eth0" }));
+      expect(api.bond.portConnections[0]).not.toHaveProperty("state");
+      // Agama does not accept both lists.
+      expect(api.bond).not.toHaveProperty("ports");
     });
   });
 });
