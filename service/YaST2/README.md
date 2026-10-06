@@ -312,6 +312,52 @@ the previous "pure vendor" commit without needing inline markers:
   never included into any class anywhere in the vendored codebase - its `without_title_on_left`
   helper (meant for the expert partitioner dialogs) has no actual caller. Dropped the
   `require "y2storage/inst_dialog_mixin"` line from `lib/y2storage.rb` and the file itself.
+- **`modules/Linuxrc.rb` was vendored but then removed entirely**: Agama's live image does not
+  contain linuxrc at all (see `doc/deployment_guide_s390.md`), so `/etc/install.inf` (the file
+  linuxrc writes with boot parameters) never exists, and every `Yast::Linuxrc.InstallInf`/
+  `#value_for` call anywhere in the closure always returns `nil`. Simplified each real call site to
+  its deterministic result instead of leaving a dependency on a module whose data source can never
+  exist in Agama:
+  - `lib/bootloader/bootloader_base.rb#include_kexec_tools_package?`: `InstallInf("kexec_reboot")
+    != "0"` is always `true`, so the package is now included unconditionally unless
+    `Mode.live_installation`.
+  - `lib/bootloader/finish_client.rb#write`: `InstallInf("kexec_reboot") == "1"` is always `false`,
+    so the fate#303395 kexec-preparation branch (and the `::Bootloader::Kexec` class it alone used,
+    along with its `bootloader/kexec.rb` file and test) was dropped entirely; only the `dracut`
+    call remains.
+  - `lib/y2storage/arch.rb#initialize`: the `/etc/install.inf::EFI` override on `#efiboot?` always
+    no-ops (`InstallInf("EFI").nil?` is always `true`), so the whole override block was removed -
+    `Storage::Arch`'s own native EFI detection is used as-is.
+  - `lib/yast2/fs_snapshot.rb#create_snapshot?`: `value_for(DISABLE_SNAPSHOTS)` is always `nil`, so
+    this always returned `true` for any supported `snapshot_type` - simplified to just validate the
+    argument and return `true`.
+  - `modules/BootArch.rb#propose_cpu_mitigations`: the `value_for("mitigations")` early-return
+    never fired (always `nil`), so it was dropped - the product-feature-based mitigations logic
+    below it runs unconditionally now, matching its actual real-world behavior.
+  - `modules/Installation.rb#boot`: `InstallInf("InstMode") || "cd"` always evaluated to `"cd"` -
+    simplified to return that literal. Its `#x11_setup_needed` (`!(Linuxrc.serial_console ||
+    Linuxrc.vnc || Linuxrc.usessh)`, always `true`) had no reachable caller at all (its only
+    caller, `ServicesManagerTarget#import`, is itself unreachable - see below) and was removed
+    entirely, inlining the always-`true` result at that one call site instead.
+  - `modules/InstURL.rb#installInf2Url` (the one method actually called anywhere in Agama's
+    closure - see above): `InstallInf("ZyppRepoURL")` is always `nil`, so this always takes the
+    "no URL specified" fallback-repository branch - documented in place rather than restructured,
+    to keep the already-small diff against upstream minimal. `#SSLVerificationEnabled` (also
+    called from here) simplifies to always `true` the same way. `#GetDevicesOption` (confirmed
+    dead, see its own vendoring note above) also had its `InstallInf("RepoURL")` call replaced
+    with a literal `nil` so it does not reference a deleted module if ever reached.
+  - `modules/InstExtensionImage.rb#LazyInit`: both `InstallInf` calls (`RepoURL`/`InstsysURL`)
+    replaced with literal `nil` - this whole class is itself unreachable from Agama already (see
+    `Y2Storage::EncryptPasswordChecker` below), so this is purely about not leaving a dangling
+    reference to a deleted module.
+  - `modules/AutoInstallRules.rb`, `modules/Kernel.rb`: dropped the `Yast.import "Linuxrc"` call -
+    neither file ever calls a `Yast::Linuxrc` method at all.
+- **`Y2Storage::EncryptPasswordChecker` (`lib/y2storage/encrypt_password_checker.rb`) is
+  unreachable from Agama** (confirmed no caller anywhere in `service/lib` or `service/YaST2/lib`) -
+  noted here because it was the only real caller of `InstExtensionImage.LoadExtension`/
+  `UnLoadExtension`, which is why `InstExtensionImage.rb`'s dead code was left in place (just
+  patched per above) rather than removed outright; a `Yast.import "InstExtensionImage"` elsewhere
+  would still need it to load successfully.
 
 ## Layout
 
@@ -636,7 +682,7 @@ deviations from upstream" above) and are not vendored, leaving 79.
 
 | Subsystem | Files |
 |---|---|
-| `library/general` classic modules | `Arch`, `Mode`, `Stage`, `Report`, `Popup`, `FileUtils`, `Directory`, `Label`, `Linuxrc`, `OSRelease`, `Summary`, `Icon`, `Misc`, `Encoding`, `ShadowConfig` |
+| `library/general` classic modules | `Arch`, `Mode`, `Stage`, `Report`, `Popup`, `FileUtils`, `Directory`, `Label`, `OSRelease`, `Summary`, `Icon`, `Misc`, `Encoding`, `ShadowConfig` |
 | `library/types` classic modules | `URL`, `URLRecode`, `Hostname`, `IP`, `Map`, `RichText`, `String` |
 | `library/control` classic modules | `Installation`, `InstExtensionImage`, `ProductFeatures`, `ProductControl` |
 | `library/system`/`library/systemd` classic modules | `Kernel`, `ModuleLoading`, `Initrd`, `Service`, `Systemd` |
