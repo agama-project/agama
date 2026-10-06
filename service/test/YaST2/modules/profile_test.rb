@@ -44,10 +44,6 @@ describe Yast::Profile do
     Yast::Profile.current["software"][items] || []
   end
 
-  def packages_list
-    items_list("packages")
-  end
-
   def patterns_list
     items_list("patterns")
   end
@@ -61,78 +57,6 @@ describe Yast::Profile do
   describe "#softwareCompat" do
     before do
       Yast::Profile.current = profile
-      allow(Yast::AutoinstFunctions).to receive(:second_stage_required?)
-        .and_return(second_stage_required)
-    end
-
-    let(:second_stage_required) { true }
-
-    context "when autoyast2-installation is not selected to be installed" do
-      let(:profile) { Yast::ProfileHash.new("software" => { "packages" => [] }) }
-
-      context "and second stage is required" do
-        it "adds 'autoyast2-installation' to the packages list" do
-          Yast::Profile.softwareCompat
-          expect(packages_list).to include("autoyast2-installation")
-        end
-      end
-
-      context "and second stage is not required" do
-        let(:second_stage_required) { false }
-
-        it "does not add 'autoyast2-installation' to the packages list" do
-          Yast::Profile.softwareCompat
-          expect(packages_list).to_not eq(["autoyast2-installation"])
-        end
-      end
-
-      context "and second stage is disabled on the profile itself" do
-        let(:profile) do
-          Yast::ProfileHash.new(
-            "general"  => { "mode" => { "second_stage" => false } },
-            "software" => { "packages" => [] }
-          )
-        end
-
-        it "does not add 'autoyast2-installation' to the packages list" do
-          Yast::Profile.softwareCompat
-          expect(packages_list).to_not include(["autoyast2-installation"])
-        end
-      end
-    end
-
-    context "when some section handled by a client included in the autoyast2 package is present" do
-      let(:profile) { Yast::ProfileHash.new("scripts" => []) }
-
-      context "and second stage is required" do
-        it "adds 'autoyast2' to the packages list" do
-          Yast::Profile.softwareCompat
-          expect(packages_list).to include("autoyast2")
-        end
-      end
-
-      context "and second stage is not required" do
-        let(:second_stage_required) { false }
-
-        it "does not add 'autoyast2' to the packages list" do
-          Yast::Profile.softwareCompat
-          expect(packages_list).to_not include("autoyast2")
-        end
-      end
-
-      context "and second stage is disabled on the profile itself" do
-        let(:profile) do
-          Yast::ProfileHash.new(
-            "general" => { "mode" => { "second_stage" => false } },
-            "files"   => []
-          )
-        end
-
-        it "does not add 'autoyast2' to the packages list" do
-          Yast::Profile.softwareCompat
-          expect(packages_list).to_not include(["autoyast2-installation"])
-        end
-      end
     end
 
     context "when the software patterns section is empty" do

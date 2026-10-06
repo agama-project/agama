@@ -87,26 +87,11 @@ module Yast
   class ProfileClass < Module
     include Yast::Logger
 
-    # Sections that are handled by AutoYaST clients included in autoyast2 package.
-    AUTOYAST_CLIENTS = [
-      "files",
-      "general",
-      # FIXME: Partitioning should probably not be here. There is no
-      # partitioning_auto client. Moreover, it looks pointless to enforce the
-      # installation of autoyast2 only because the <partitioning> section
-      # is in the profile. It will happen on 1st stage anyways.
-      "partitioning",
-      "report",
-      "scripts",
-      "software"
-    ].freeze
-
     def main
       Yast.import "UI"
       textdomain "autoinst"
 
       Yast.import "AutoinstConfig"
-      Yast.import "AutoinstFunctions"
       Yast.import "Directory"
       Yast.import "GPG"
       Yast.import "Label"
@@ -140,15 +125,6 @@ module Yast
 
     def softwareCompat
       @current["software"] = @current.fetch_as_hash("software")
-
-      # We need to check if second stage was disabled in the profile itself
-      # because AutoinstConfig is not initialized at this point
-      # and InstFuntions#second_stage_required? depends on that module
-      # to check if 2nd stage is required (chicken-and-egg problem).
-      mode = @current.fetch_as_hash("general").fetch_as_hash("mode")
-      second_stage_enabled = mode.key?("second_stage") ? mode["second_stage"] : true
-
-      add_autoyast_packages if AutoinstFunctions.second_stage_required? && second_stage_enabled
 
       # workaround for missing "REQUIRES" in content file to stay backward compatible
       # FIXME: needs a more sophisticated or compatibility breaking solution after SLES11
@@ -693,18 +669,6 @@ module Yast
       @current.delete_if { |k, _v| keys_to_delete.include?(k) }
     end
 
-    # Returns a list of packages which have to be installed
-    # in order to run a second stage at all.
-    #
-    # @return [Array<String>] package list
-    def needed_second_stage_packages
-      ret = ["autoyast2-installation"]
-
-      # without autoyast2, <files ...> does not work
-      ret << "autoyast2" if !(@current.keys & AUTOYAST_CLIENTS).empty?
-      ret
-    end
-
     # @!attribute current
     #   @return [Hash<String, Object>] current working profile
     publish variable: :current, type: "map <string, any>"
@@ -720,7 +684,6 @@ module Yast
     publish function: :ReadXML, type: "boolean (string)"
     publish function: :setElementByList, type: "map <string, any> (list, any, map <string, any>)"
     publish function: :checkProfile, type: "void ()"
-    publish function: :needed_second_stage_packages, type: "list <string> ()"
 
   private
 
@@ -733,12 +696,6 @@ module Yast
       "filename" => "zzz_halt",
       "source"   => "shutdown -h now"
     }.freeze
-
-    def add_autoyast_packages
-      @current["software"]["packages"] = @current["software"].fetch_as_array("packages")
-      @current["software"]["packages"] << needed_second_stage_packages
-      @current["software"]["packages"].flatten!.uniq!
-    end
 
   protected
 
