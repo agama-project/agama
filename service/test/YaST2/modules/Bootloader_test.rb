@@ -1,9 +1,5 @@
 # frozen_string_literal: true
 
-# Vendored from yast2-bootloader's test/bootloader_test.rb.
-# This is a permanent fork (see service/YaST2/README.md): the `yast2-bootloader` RPM
-# is no longer a runtime dependency of Agama.
-#
 # NOTE: upstream's ".Import" describe block is dropped here (it only tested
 # Yast::Bootloader.Import, which this vendored copy does not implement - see the DEVIATION
 # FROM UPSTREAM note in service/YaST2/modules/Bootloader.rb and service/YaST2/README.md).

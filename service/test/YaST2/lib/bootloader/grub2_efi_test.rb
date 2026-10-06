@@ -1,9 +1,5 @@
 # frozen_string_literal: true
 
-# Vendored from yast2-bootloader's test/grub2_efi_test.rb.
-# This is a permanent fork (see service/YaST2/README.md): the `yast2-bootloader` RPM
-# is no longer a runtime dependency of Agama.
-
 require_relative "../../../test_helper"
 require_relative "support/shared_setup"
 
