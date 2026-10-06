@@ -118,20 +118,20 @@ describe Y2IscsiClient::Authentication do
     end
 
     context "when username and password are empty" do
-       before do
-         auth.username = ""
-         auth.password = ""
-       end
+      before do
+        auth.username = ""
+        auth.password = ""
+      end
 
-       it "returns false" do
-         expect(auth.by_target?).to eq(false)
-       end
+      it "returns false" do
+        expect(auth.by_target?).to eq(false)
+      end
     end
 
     context "when username and password are not set" do
-       it "returns false" do
-         expect(auth.by_target?).to eq(false)
-       end
+      it "returns false" do
+        expect(auth.by_target?).to eq(false)
+      end
     end
   end
 
