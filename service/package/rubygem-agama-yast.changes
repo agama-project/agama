@@ -3,9 +3,12 @@ Fri Oct  2 14:31:42 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Drop the unnecessary yast2-storage-ng RPM dependency by
   vendoring the needed yast2-storage-ng code, declaring its
-  libstorage-ng-ruby, yast2-pkg-bindings and yast2-packager
-  dependencies explicitly instead of relying on them being pulled
-  in transitively (gh#agama-project/agama#4034).
+  libstorage-ng-ruby and yast2-pkg-bindings dependencies explicitly
+  instead of relying on them being pulled in transitively. Also
+  vendor the few yast2-packager classes still needed, since
+  yast2-packager itself cannot be declared as a dependency (it has
+  a circular Requires: back on yast2-storage-ng)
+  (gh#agama-project/agama#4034).
 
 -------------------------------------------------------------------
 Fri Oct  2 12:16:56 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
