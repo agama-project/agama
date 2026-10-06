@@ -1504,6 +1504,37 @@ mod tests {
         assert!(matches!(error, NetworkStateError::PortIpSettings(..)));
     }
 
+    /// Before the ports were nested, the profiles gave them at the top level and listed them by
+    /// name, usually disabling their IP methods. Those IP settings are ignored.
+    #[test]
+    fn test_the_ip_settings_of_a_port_given_at_the_top_level_are_ignored() {
+        let state = NetworkState::default();
+        let eth0 = NetworkConnection {
+            id: "eth0".to_string(),
+            interface: Some("eth0".to_string()),
+            method4: Some(Ipv4Method::Disabled),
+            method6: Some(Ipv6Method::Disabled),
+            ..Default::default()
+        };
+        let bond0 = NetworkConnection {
+            id: "bond0".to_string(),
+            bond: Some(BondSettings {
+                ports: Some(vec![name("eth0")]),
+                ..Default::default()
+            }),
+            ..Default::default()
+        };
+
+        let collection = state
+            .connection_collection_from(&NetworkConnectionsCollection(vec![eth0, bond0]))
+            .unwrap();
+
+        let bond0 = collection.0.iter().find(|c| c.id == "bond0").unwrap();
+        let eth0 = collection.0.iter().find(|c| c.id == "eth0").unwrap();
+        assert_eq!(eth0.controller, Some(bond0.uuid));
+        assert_eq!(eth0.ip_config, IpConfig::default());
+    }
+
     #[test]
     fn test_ports_are_reported_without_ip_settings() {
         let mut state = stacked_state();
