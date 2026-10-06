@@ -958,6 +958,58 @@ const PasswordFields = withForm({
 });
 ```
 
+**When the same component serves several fields of the same form**, the field
+name can still be a prop: `withForm` already knows the vocabulary, so type the
+prop as a subset of `keyof FormFields` and TanStack Form accepts it wherever a
+literal name would go.
+
+```tsx
+type PortsFieldProps = {
+  /** Form field holding the names of the ports. */
+  name: Extract<keyof FormFields, `${string}Ports`>;
+  /** Form field holding the name of the controller the ports belong to. */
+  controllerField: Extract<keyof FormFields, `${string}Iface`>;
+  label: TranslatedString;
+  title: TranslatedString;
+};
+
+const PortsField = withForm({
+  ...defaultOptions,
+  // Only carries the prop types: every caller passes them all.
+  props: {} as PortsFieldProps,
+  render: function Render({ form, name, controllerField, label, dialogTitle }) {
+    return (
+      <form.Subscribe selector={(s) => s.values[controllerField]}>
+        {(controllerIface) => <form.AppField name={name}>{/* ... */}</form.AppField>}
+      </form.Subscribe>
+    );
+  },
+});
+
+// Callers say what the field is about
+<PortsField form={form} name="bondPorts" controllerField="bondIface"
+            label={_("Bond ports")} dialogTitle={_("Select bond ports")} />
+<PortsField form={form} name="bridgePorts" controllerField="bridgeIface"
+            label={_("Bridge ports")} dialogTitle={_("Select bridge ports")} />
+```
+
+The template literal keeps the prop honest: `name="bondMode"` does not compile.
+Widen it to `keyof FormFields` only when the component really does work with any
+field of the right value type.
+
+Prefer this over a discriminator like `kind: "bond" | "bridge"` that the
+component switches on to pick names and labels. The discriminator makes the
+component know every caller, so a third one means editing it; passing the names
+and labels means it knows none, and the strings sit next to the fields they
+describe. `PortsField` was written the first way and changed to the second in
+review.
+
+**`props: {} as XProps` vs a literal default:** `withForm` renders
+`{ ...props, ...innerProps }`, so the declared `props` object is only a source
+of types unless it supplies a default. Use `{} as XProps` when every caller
+passes everything, and a literal (`{ isEditing: false } as BondFieldsProps`)
+when a prop has a genuine default. Both are in use today.
+
 #### Mistake 6: Not calling `field.handleBlur()` in field components
 
 ```typescript
@@ -1705,6 +1757,18 @@ is, because `components/core/` uses it too.
 
 - Components that group related form fields: `BondFields.tsx`, `IpFields.tsx`
 - Use `*Fields` suffix, not `*Settings` (more accurate naming)
+
+**Single fields**: `*Field.tsx`
+
+- A form-local component rendering one field, however much machinery it needs
+  around it: `PortsField.tsx`
+- Singular or plural says how many fields the component owns, so the name
+  answers on its own whether it can be dropped anywhere a field goes
+- Same rule as the shared field components in `components/form/`
+  (`TextField.tsx`, `ArrayField.tsx`); a form-local one lives in the form
+  directory only because nothing else needs it yet
+- Do not name it after the widget it happens to use (`PortsSelector`,
+  `PortsPicker`): the widget is an implementation detail and changes
 
 ### The fields.ts Module
 

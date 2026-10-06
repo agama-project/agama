@@ -1,4 +1,79 @@
 -------------------------------------------------------------------
+Thu Oct  1 11:55:11 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- properly copy SSL certificates to target system (bsc#1283318)
+
+-------------------------------------------------------------------
+Thu Oct  1 11:53:11 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Unify OpenAPI specification and manual JSON schemas:
+  - Generate standalone profile, proposal, and system schemas from
+    OpenAPI components using `cargo xtask openapi`.
+  - Replace manually maintained profile.schema.json and
+    software.schema.json with schemas generated from Rust sources.
+  - Install OpenAPI specifications and standalone schemas under
+    `/usr/share/agama/openapi/nightly/`.
+  - Port descriptions, titles, and examples from legacy schemas.
+
+-------------------------------------------------------------------
+Tue Sep 29 16:45:27 UTC 2026 - Martin Pluskal <martin@pluskal.org>
+
+- Do not query the software service while a software task is
+  pending: it cannot answer until the software proposal is ready,
+  and the waiting request held every other API request back
+  (bsc#1283098). Pending storage tasks now count too while
+  installing.
+
+-------------------------------------------------------------------
+Mon Sep 28 09:10:11 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Allow finishing installation independently on the current stage
+  (needed for gh#agama-project/agama#3911).
+
+-------------------------------------------------------------------
+Mon Sep 28 08:50:52 UTC 2026 - Andreas Schwab <schwab@suse.de>
+
+- Add support for riscv64 (gh#agama-project/agama#3867)
+
+-------------------------------------------------------------------
+Tue Sep 22 14:39:11 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Use correct scope to detect active storage tasks
+  (gh#agama-project/agama#3972).
+
+-------------------------------------------------------------------
+Tue Sep 22 13:50:57 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Avoid starting a task if there is already a previous task for the
+  same scope (bsc#1280257).
+
+-------------------------------------------------------------------
+Mon Sep 21 15:32:00 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Allow defining multiple licenses per product (jsc#PED-16988,
+  gh#agama-project/agama#3953).
+
+-------------------------------------------------------------------
+Mon Sep 21 15:31:00 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Recognize the ports whose connection refers to its controller by
+  UUID instead of by interface name, so the bonds and bridges
+  created by dracut are not broken when Agama writes the connections
+  back (gh#agama-project/agama#3562).
+
+-------------------------------------------------------------------
+Mon Sep 21 15:30:00 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Avoid blocking storage service (bsc#1280751).
+
+-------------------------------------------------------------------
+Mon Sep 21 07:11:10 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Drop the dependency on async_trait (gh#agama-project/agama#3950)
+  because it is not needed by our use case. This change reduces the
+  build time.
+
+-------------------------------------------------------------------
 Fri Sep 18 07:30:00 UTC 2026 - José Iván López González <jlopez@suse.com>
 
 - Cancel actions if setting storage, DASD, zFCP, iSCSI or bootloader

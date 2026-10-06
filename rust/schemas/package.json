@@ -1,0 +1,8 @@
+{
+  "scripts": {
+    "validate": "ajv compile --spec=draft2019 --verbose --all-errors -s storage.schema.json -s iscsi.schema.json -s dasd.schema.json -s zfcp.schema.json -s storage.model.schema.json"
+  },
+  "dependencies": {
+    "ajv-cli": "^5.0.0"
+  }
+}

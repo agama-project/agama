@@ -23,19 +23,28 @@
 import React, { useState } from "react";
 import { Button, ButtonProps } from "@patternfly/react-core";
 import LicenseDialog from "~/components/product/LicenseDialog";
-import { Product } from "~/model/system";
+
+import type { License } from "~/model/system";
 
 /**
  * Props for LicenseButton component
  */
 export type LicenseButtonProps = Omit<ButtonProps, "onClick"> & {
-  product: Product;
+  /** The license to display */
+  license: License;
+  /** The dialog title, the license name by default */
+  dialogTitle?: string;
 };
 
 /**
  * Button that opens a license dialog when clicked.
  */
-export default function LicenseButton({ product, children, ...props }: LicenseButtonProps) {
+export default function LicenseButton({
+  license,
+  dialogTitle,
+  children,
+  ...props
+}: LicenseButtonProps) {
   const [showEula, setShowEula] = useState(false);
 
   const open = () => setShowEula(true);
@@ -46,7 +55,7 @@ export default function LicenseButton({ product, children, ...props }: LicenseBu
       <Button {...props} onClick={open}>
         {children}
       </Button>
-      {showEula && <LicenseDialog product={product} onClose={close} />}
+      {showEula && <LicenseDialog license={license} title={dialogTitle} onClose={close} />}
     </>
   );
 }

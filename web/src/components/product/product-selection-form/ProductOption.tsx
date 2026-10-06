@@ -97,9 +97,9 @@ export default function ProductOption({
             }
             body={
               <Stack hasGutter id={detailsId}>
-                {(product.license || !isEmpty(availableModes)) && (
+                {(!isEmpty(product.licenses) || !isEmpty(availableModes)) && (
                   <Split hasGutter>
-                    {product.license && (
+                    {!isEmpty(product.licenses) && (
                       <Label variant="outline" isCompact>
                         {_("License acceptance required")}
                       </Label>

@@ -8,6 +8,7 @@ AllCops:
   Exclude:
     - vendor/**/*
     - lib/agama/y2dir/**/*
+    - YaST2/**/*
     - agama-yast.gemspec
     - package/*.spec
 
@@ -31,4 +32,10 @@ Metrics/AbcSize:
 
 Metrics/ClassLength:
   Max: 300
+
+# tests under test/YaST2/modules mirror the CamelCase filenames of the vendored YaST module
+# classes they test (service/YaST2/modules/*.rb), to stay easy to compare against upstream
+Naming/FileName:
+  Exclude:
+    - test/YaST2/modules/*.rb
 

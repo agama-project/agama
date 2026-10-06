@@ -7,9 +7,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-09 11:53+0000\n"
-"PO-Revision-Date: 2026-07-27 11:08+0000\n"
-"Last-Translator: Antonio Simón <antonio@trans-mission.com>\n"
+"POT-Creation-Date: 2026-09-22 12:12+0000\n"
+"PO-Revision-Date: 2026-09-22 14:51+0000\n"
+"Last-Translator: Victor hck <victorhck@opensuse.org>\n"
 "Language-Team: Spanish <https://l10n.opensuse.org/projects/agama/agama-rust-"
 "master/es/>\n"
 "Language: es\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 2026.7.1\n"
+"X-Generator: Weblate 2026.9.1\n"
 
 #: agama-autoinstall/src/auto_loader.rs:142
 msgid ""
@@ -37,7 +37,7 @@ msgstr "Saltar y configurar manualmente"
 
 #: agama-autoinstall/src/questions.rs:77 agama-cli/src/config.rs:371
 msgid "Found unsupported elements in the AutoYaST profile:"
-msgstr ""
+msgstr "Elementos no admitidos encontrados en el perfil de AutoYaST:"
 
 #: agama-autoinstall/src/questions.rs:92
 #: agama-software/src/callbacks/install.rs:81
@@ -46,7 +46,7 @@ msgstr "Continuar"
 
 #: agama-autoinstall/src/questions.rs:93
 msgid "Abort"
-msgstr ""
+msgstr "Cancelar"
 
 #. TRANSLATORS: {0} is a URL
 #: agama-autoinstall/src/scripts.rs:135
@@ -806,12 +806,12 @@ msgstr ""
 "del usuario web para responderlas:"
 
 #. TRANSLATORS: %s is replaced by the script name.
-#: agama-files/src/service.rs:184
+#: agama-files/src/service.rs:183
 msgid "Failed to retrieve the script %s. Do you want to try again?"
 msgstr "Error al recuperar el guion %s. ¿Desea intentarlo de nuevo?"
 
 #. TRANSLATORS: %s is replaced by the script name.
-#: agama-files/src/service.rs:208
+#: agama-files/src/service.rs:207
 msgid "Failed to write the file %s. Do you want to try again?"
 msgstr "Error al escribir el archivo %s. ¿Desea intentarlo de nuevo?"
 
@@ -895,31 +895,31 @@ msgstr "Almacenando los ajustes de los usuarios"
 msgid "Configuring iSCSI devices"
 msgstr "Configurando dispositivos iSCSI"
 
-#: agama-manager/src/actions.rs:581
+#: agama-manager/src/actions.rs:582
 msgid "Configuring zFCP devices"
 msgstr "Configurando dispositivos zFCP"
 
-#: agama-manager/src/actions.rs:606
+#: agama-manager/src/actions.rs:608
 msgid "Configuring DASD devices"
 msgstr "Configurando dispositivos DASD"
 
-#: agama-manager/src/actions.rs:631
+#: agama-manager/src/actions.rs:634
 msgid "Setting up the network"
 msgstr "Configurando la red"
 
-#: agama-manager/src/actions.rs:661
+#: agama-manager/src/actions.rs:664
 msgid "Preparing the storage proposal"
 msgstr "Preparando la propuesta de almacenamiento"
 
-#: agama-manager/src/actions.rs:690
+#: agama-manager/src/actions.rs:694
 msgid "Storing bootloader settings"
 msgstr "Almacenando los ajustes del cargador de arranque"
 
-#: agama-manager/src/actions.rs:723
+#: agama-manager/src/actions.rs:728
 msgid "Preparing the software proposal"
 msgstr "Preparando la propuesta de software"
 
-#: agama-manager/src/actions.rs:753
+#: agama-manager/src/actions.rs:758
 msgid "Configuring SELinux"
 msgstr "Configurando SELinux"
 
@@ -931,16 +931,16 @@ msgstr "Escribiendo la configuración de la red"
 msgid "Syncing the network service state"
 msgstr "Sincronizando el estado del servicio de red"
 
-#: agama-security/src/service.rs:226
+#: agama-security/src/service.rs:225
 msgid "Reject"
 msgstr "Rechazar"
 
-#: agama-security/src/service.rs:226
+#: agama-security/src/service.rs:225
 #: agama-software/src/callbacks/security.rs:111
 msgid "Trust"
 msgstr "Confiar"
 
-#: agama-security/src/service.rs:227
+#: agama-security/src/service.rs:226
 msgid ""
 "Trying to import a self-signed certificate. Do you want to trust it and "
 "register the product?"
@@ -967,10 +967,6 @@ msgstr "Petición de perfil no válida"
 #: agama-server/src/profile/web.rs:106
 msgid "AutoYaST conversion failed"
 msgstr "Error de conversión de AutoYaST"
-
-#: agama-server/src/server/web.rs:86
-msgid "Missing Language Tag"
-msgstr "Falta la etiqueta de idioma"
 
 #: agama-software/src/callbacks/commit_download.rs:47
 #: agama-software/src/callbacks/install.rs:56
@@ -1000,7 +996,7 @@ msgstr ""
 msgid "Skip"
 msgstr "Saltar"
 
-#: agama-software/src/service.rs:296
+#: agama-software/src/service.rs:295
 msgid ""
 "Due to an internal error, it was not possible to create a software proposal."
 msgstr ""
@@ -1067,14 +1063,14 @@ msgstr "No se ha podido seleccionar el %s \"%s\" para la instalación"
 msgid "Failed to register the system"
 msgstr "Error al registrar el sistema"
 
-#: agama-users/src/service.rs:178
+#: agama-users/src/service.rs:177
 msgid ""
 "Defining a user, setting the root password or a SSH public key is required"
 msgstr ""
 "Es necesario definir un usuario, configurar la contraseña raíz o una clave "
 "pública SSH"
 
-#: agama-users/src/service.rs:191
+#: agama-users/src/service.rs:190
 msgid "First user information is incomplete"
 msgstr "La información del primer usuario no está completa"
 
@@ -1125,6 +1121,9 @@ msgstr "patrón"
 #: agama-utils/src/resolvable.rs:67
 msgid "product"
 msgstr "producto"
+
+#~ msgid "Missing Language Tag"
+#~ msgstr "Falta la etiqueta de idioma"
 
 #~ msgid "Profile error"
 #~ msgstr "Error del perfil"

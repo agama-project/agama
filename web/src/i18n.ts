@@ -162,4 +162,27 @@ const Nn_ = (str1: string, strN: string, n: number): MarkedString =>
 const formatList = <T extends string | TranslatedString>(list: T[], options: object = {}): T =>
   agama.formatList(list, options) as T;
 
-export { _, n_, N_, Nn_, formatList };
+/**
+ * Wrapper around Intl.NumberFormat to write a number the way the language
+ * currently selected for the Agama UI writes it.
+ *
+ * The decimal separator is the reason this exists: a browser running in
+ * English while the installer runs in German would otherwise put a point where
+ * every other number on the screen has a comma.
+ *
+ * @param value number to write out
+ * @param options passed to the Intl.NumberFormat constructor
+ * @return the number as the current language writes it
+ */
+const formatNumber = (value: number, options: Intl.NumberFormatOptions = {}): string => {
+  try {
+    return new Intl.NumberFormat(agama.language, options).format(value);
+  } catch (e) {
+    // Same fallback as formatList: a language the runtime does not know is no
+    // reason to show nothing.
+    console.warn(`Using fallback number formatting for language "${agama.language}", details:`, e);
+    return value.toString();
+  }
+};
+
+export { _, n_, N_, Nn_, formatList, formatNumber };

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2025] SUSE LLC
+ * Copyright (c) [2025-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -101,9 +101,11 @@ export function useProgressTracking(scope?: Scope, queryKeys: readonly string[] 
   const progress = useProgress(scope);
   const status = useStatus();
   const [loading, setLoading] = useState(false);
+  const [tracking, setTracking] = useState(false);
+  const [trackingRequested, setTrackingRequested] = useState(false);
 
   const { startTracking } = useTrackQueriesRefetch(queryKeys, () => {
-    setLoading(false);
+    setTracking(false);
   });
 
   // Filter tasks by scope
@@ -117,14 +119,21 @@ export function useProgressTracking(scope?: Scope, queryKeys: readonly string[] 
   const allFinished = progressesFinished && tasksFinished;
 
   useEffect(() => {
-    if (allFinished && loading) {
+    if (!allFinished && !trackingRequested) {
+      setTrackingRequested(true);
+      setTracking(true);
       startTracking();
     }
-  }, [allFinished, startTracking, loading]);
+  }, [allFinished, setTrackingRequested, startTracking, trackingRequested]);
+
+  if (allFinished && !tracking && loading) {
+    setTrackingRequested(false);
+    setLoading(false);
+  }
 
   // Enter the loading state as soon as an operation is detected. Setting state
   // during render (instead of in an effect) avoids a flash of non-loading UI.
-  if (!allFinished && !loading) {
+  if (!loading && (!allFinished || tracking)) {
     setLoading(true);
   }
 

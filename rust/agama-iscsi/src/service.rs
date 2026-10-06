@@ -29,7 +29,6 @@ use agama_utils::{
     api::{event, iscsi::Config},
     progress, BoxFuture,
 };
-use async_trait::async_trait;
 use serde_json::Value;
 
 #[derive(thiserror::Error, Debug)]
@@ -108,7 +107,6 @@ impl Actor for Service {
     type Error = Error;
 }
 
-#[async_trait]
 impl MessageHandler<message::Discover> for Service {
     async fn handle(&mut self, message: message::Discover) -> Result<DiscoverResult, Error> {
         let result = self.client.discover(message.config).await?;
@@ -116,7 +114,6 @@ impl MessageHandler<message::Discover> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::GetSystem> for Service {
     async fn handle(&mut self, _message: message::GetSystem) -> Result<Option<Value>, Error> {
         let system = self.client.get_system().await?;
@@ -124,7 +121,6 @@ impl MessageHandler<message::GetSystem> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::GetConfig> for Service {
     async fn handle(&mut self, _message: message::GetConfig) -> Result<Option<Config>, Error> {
         let config = self.client.get_config().await?;
@@ -132,7 +128,6 @@ impl MessageHandler<message::GetConfig> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::SetConfig> for Service {
     async fn handle(
         &mut self,
@@ -143,7 +138,6 @@ impl MessageHandler<message::SetConfig> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::SetLocale> for Service {
     async fn handle(&mut self, _message: message::SetLocale) -> Result<(), Error> {
         Ok(())

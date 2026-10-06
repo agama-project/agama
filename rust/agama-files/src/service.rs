@@ -38,7 +38,6 @@ use agama_utils::{
     question::{self, ask_question, AskError},
     Resolvable,
 };
-use async_trait::async_trait;
 use gettextrs::gettext;
 use strum::IntoEnumIterator;
 use tokio::sync::Mutex;
@@ -228,7 +227,6 @@ impl Actor for Service {
     type Error = Error;
 }
 
-#[async_trait]
 impl MessageHandler<message::SetConfig> for Service {
     async fn handle(&mut self, message: message::SetConfig) -> Result<(), Error> {
         let config = message.config.unwrap_or_default();
@@ -248,7 +246,6 @@ impl MessageHandler<message::SetConfig> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::RunScripts> for Service {
     async fn handle(&mut self, message: message::RunScripts) -> Result<bool, Error> {
         let scripts = self.scripts.lock().await;
@@ -257,7 +254,7 @@ impl MessageHandler<message::RunScripts> for Service {
 
         if to_run.is_empty() {
             tracing::info!("No scripts to run in group {}", message.group.to_string());
-            return Ok(false);
+            Ok(false)
         } else {
             tracing::info!(
                 "{} scripts to run in group {}",
@@ -279,7 +276,6 @@ impl MessageHandler<message::RunScripts> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::Finish> for Service {
     async fn handle(&mut self, _message: message::Finish) -> Result<(), Error> {
         for file in &self.files {
@@ -295,14 +291,12 @@ impl MessageHandler<message::Finish> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::SetLocale> for Service {
     async fn handle(&mut self, _message: message::SetLocale) -> Result<(), Error> {
         Ok(())
     }
 }
 
-#[async_trait]
 impl MessageHandler<GetResolvables> for Service {
     async fn handle(&mut self, _message: GetResolvables) -> Result<Vec<Resolvable>, Error> {
         let scripts = self.scripts.lock().await;

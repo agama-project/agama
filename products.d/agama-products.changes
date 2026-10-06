@@ -1,4 +1,33 @@
 -------------------------------------------------------------------
+Mon Sep 28 08:50:52 UTC 2026 - Andreas Schwab <schwab@suse.de>
+
+- Add support for riscv64 (gh#agama-project/agama#3867)
+
+-------------------------------------------------------------------
+Mon Sep 28 06:46:36 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add the missing definition for Leap 16.2 (related to bsc#1282094).
+
+-------------------------------------------------------------------
+Wed Sep 23 13:45:32 UTC 2026 - Jason Swaan <duyfken@users.noreply.github.com>
+
+- Match Slowroll user_patterns with Tumbleweed
+    (gh#agama-project/agama#3969).
+
+-------------------------------------------------------------------
+Wed Sep 23 08:18:32 UTC 2026 - Michal Filka <mfilka@suse.com>
+
+- bsc#1282094
+  - Switched to SLES (resp SLES for SAP) 16.2 Alpha
+    (gh#agama-project/agama#3975).
+
+-------------------------------------------------------------------
+Thu Sep 17 13:23:17 UTC 2026 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Remove beta tag from the SLES and SLES for SAP product names
+  (gh#agama-project/agama#3836).
+
+-------------------------------------------------------------------
 Mon Sep  7 09:17:50 UTC 2026 - Lubos Kocman <lubos.kocman@suse.com>
 
 - Add Immutable and Standard modes to Leap 16.1 (gh#agama-project/agama#3877).
@@ -81,7 +110,7 @@ Mon Apr 13 15:33:52 UTC 2026 - Martin Vidner <mvidner@suse.com>
 Mon Apr 13 14:47:11 UTC 2026 - Stefan Hundhammer <shundhammer@suse.com>
 
 - Moved sudo-policy-wheel-auth-self from mandatory patterns to
-  mandatory packages for TW MicroOS (bsc#1261991) 
+  mandatory packages for TW MicroOS (bsc#1261991)
 
 -------------------------------------------------------------------
 Fri Apr  2 13:11:03 UTC 2026 - Jiri Srain <jsrain@suse.com>
@@ -113,7 +142,7 @@ Wed Feb 25 16:04:52 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 Wed Feb 25 10:36:54 UTC 2026 - Michal Filka <mfilka@suse.com>
 
 - bsc#1258416
-  - made sudo-policy-wheel-auth-self for MicroOS 
+  - made sudo-policy-wheel-auth-self for MicroOS
   - missed in original implementation of jsc#PM-2128
 
 -------------------------------------------------------------------
@@ -236,7 +265,7 @@ Wed Aug  6 12:44:13 UTC 2025 - Lubos Kocman <lubos.kocman@suse.com>
 
 - Drop Beta from Leap 16.0.
   We've agreed to not use RC and simply go with Leap 16.0
-  just like on boot menu. 
+  just like on boot menu.
 
 -------------------------------------------------------------------
 Thu Jul 31 07:44:04 UTC 2025 - Josef Reidinger <jreidinger@suse.com>

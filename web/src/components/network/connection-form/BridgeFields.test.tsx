@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import { screen } from "@testing-library/react";
+import { screen, within } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import { useAppForm } from "~/hooks/form";
 import { defaultOptions, BridgeStpMode } from "./fields";
@@ -45,6 +45,7 @@ const mockDevice2 = {
 
 jest.mock("~/hooks/model/system/network", () => ({
   useDevices: () => [mockDevice1, mockDevice2],
+  useConnections: () => [],
 }));
 
 function TestForm({
@@ -76,8 +77,7 @@ describe("BridgeFields", () => {
     installerRender(<TestForm />);
 
     await screen.findByText("Bridge ports");
-    screen.getByRole("textbox", { name: "Bridge ports" });
-    screen.getByText(/Available devices: enp1s0 and enp2s0/);
+    screen.getByRole("combobox", { name: "Bridge ports" });
     const stpSelector = await screen.findByLabelText("Spanning Tree Protocol (STP)");
     expect(stpSelector).toHaveTextContent("Default");
   });
@@ -85,12 +85,15 @@ describe("BridgeFields", () => {
   it("displays bridge ports", async () => {
     const { user } = installerRender(<TestForm />);
 
-    const input = await screen.findByRole("textbox", { name: "Bridge ports" });
+    const input = await screen.findByRole("combobox", { name: "Bridge ports" });
     await user.type(input, "enp1s0{enter}");
     await user.type(input, "enp2s0{enter}");
 
-    expect(await screen.findByText("enp1s0")).toBeInTheDocument();
-    expect(await screen.findByText("enp2s0")).toBeInTheDocument();
+    // Looked up among the committed values: the list of devices the field
+    // offers is still open behind them, naming the same devices.
+    const entries = within(screen.getByRole("listbox", { name: "Bridge ports entries" }));
+    entries.getByRole("option", { name: "enp1s0" });
+    entries.getByRole("option", { name: "enp2s0" });
   });
 
   it("allows defining the device name for a new bridge connection", async () => {

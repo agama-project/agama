@@ -7,7 +7,6 @@ edition.workspace = true
 [dependencies]
 agama-utils = { workspace = true }
 anyhow = { workspace = true }
-async-trait = { workspace = true }
 strum = { workspace = true }
 thiserror = { workspace = true }
 tracing = { workspace = true }

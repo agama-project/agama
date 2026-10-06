@@ -19,7 +19,7 @@
 // find current contact information at www.suse.com.
 
 //! NetworkManager client.
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::fs::{self, OpenOptions};
 use std::path::Path;
 
@@ -207,6 +207,7 @@ impl<'a> NetworkManagerClient<'a> {
     pub async fn connections(&self) -> Result<Vec<Connection>, NmError> {
         let mut controlled_by: HashMap<Uuid, String> = HashMap::new();
         let mut uuids_map: HashMap<String, Uuid> = HashMap::new();
+        let mut known_uuids: HashSet<Uuid> = HashSet::new();
 
         let proxy = SettingsProxy::new(&self.connection).await?;
         let paths = proxy.list_connections().await?;
@@ -243,6 +244,7 @@ impl<'a> NetworkManagerClient<'a> {
                     if let Some(iname) = &connection.interface {
                         uuids_map.insert(iname.to_string(), connection.uuid);
                     }
+                    known_uuids.insert(connection.uuid);
                     if self.settings_active_connection(path).await?.is_none() {
                         connection.set_down()
                     }
@@ -255,11 +257,20 @@ impl<'a> NetworkManagerClient<'a> {
         }
 
         for conn in connections.iter_mut() {
-            if let Some(controller) = controlled_by.get(&conn.uuid) {
-                if let Some(iface) = uuids_map.get(controller) {
-                    conn.controller = Some(iface.to_owned());
-                }
+            let Some(controller) = controlled_by.get(&conn.uuid) else {
+                continue;
             };
+
+            match resolve_controller(controller, &uuids_map, &known_uuids) {
+                Some(uuid) => conn.controller = Some(uuid),
+                None => tracing::warn!(
+                    "Could not find the controller '{}' of the connection {} ({}), \
+                     so it is not reported as a port",
+                    controller,
+                    conn.id,
+                    conn.uuid
+                ),
+            }
         }
 
         Ok(connections)
@@ -523,5 +534,94 @@ impl<'a> NetworkManagerClient<'a> {
             }
         }
         Ok(())
+    }
+}
+
+/// Finds the connection a port refers to through the NetworkManager "master" property.
+///
+/// NetworkManager accepts two ways of pointing at the controller: the interface name of its
+/// device or the UUID of its connection. Agama writes the interface name, but connections set up
+/// by other tools may use the UUID. That is the case of the bonds and bridges created by dracut,
+/// whose ports would otherwise look like plain Ethernet connections and get their controller
+/// dropped when Agama writes them back (gh#agama-project/agama#3562).
+///
+/// The controller type plays no role here, so this covers any kind of controller (bond, bridge,
+/// OVS, etc.).
+///
+/// * `controller`: value of the "master" property.
+/// * `uuids_map`: interface name -> connection UUID.
+/// * `known_uuids`: UUIDs of the connections that were read.
+fn resolve_controller(
+    controller: &str,
+    uuids_map: &HashMap<String, Uuid>,
+    known_uuids: &HashSet<Uuid>,
+) -> Option<Uuid> {
+    if let Some(uuid) = uuids_map.get(controller) {
+        return Some(*uuid);
+    }
+
+    // Only accept a UUID that belongs to a connection that exists, as a dangling reference would
+    // make the model point at a controller that cannot be found later on.
+    Uuid::parse_str(controller)
+        .ok()
+        .filter(|uuid| known_uuids.contains(uuid))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn fixture() -> (HashMap<String, Uuid>, HashSet<Uuid>, Uuid) {
+        let br0 = Uuid::new_v4();
+        let uuids_map = HashMap::from([("br0".to_string(), br0)]);
+        let known_uuids = HashSet::from([br0, Uuid::new_v4()]);
+        (uuids_map, known_uuids, br0)
+    }
+
+    #[test]
+    fn test_resolve_controller_by_interface_name() {
+        let (uuids_map, known_uuids, br0) = fixture();
+
+        assert_eq!(
+            resolve_controller("br0", &uuids_map, &known_uuids),
+            Some(br0)
+        );
+    }
+
+    #[test]
+    fn test_resolve_controller_by_uuid() {
+        let (uuids_map, known_uuids, br0) = fixture();
+
+        // A bond or a bridge created by dracut refers to its controller by UUID.
+        assert_eq!(
+            resolve_controller(&br0.to_string(), &uuids_map, &known_uuids),
+            Some(br0)
+        );
+    }
+
+    #[test]
+    fn test_resolve_controller_prefers_the_interface_name() {
+        let (mut uuids_map, mut known_uuids, br0) = fixture();
+
+        // An interface named after some other connection's UUID must not shadow it.
+        let other = Uuid::new_v4();
+        uuids_map.insert(br0.to_string(), other);
+        known_uuids.insert(other);
+
+        assert_eq!(
+            resolve_controller(&br0.to_string(), &uuids_map, &known_uuids),
+            Some(other)
+        );
+    }
+
+    #[test]
+    fn test_resolve_unknown_controller() {
+        let (uuids_map, known_uuids, _) = fixture();
+
+        assert_eq!(resolve_controller("br1", &uuids_map, &known_uuids), None);
+        assert_eq!(
+            resolve_controller(&Uuid::new_v4().to_string(), &uuids_map, &known_uuids),
+            None
+        );
     }
 }

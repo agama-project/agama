@@ -31,7 +31,7 @@
 
 *Look for relevant sections and adjust:*
 - The `*.changes` files. For ALL affected packages.
-- The description parts of the [JSON schema][profile.schema.json]
+- The description parts of the OpenAPI specification (`cargo xtask openapi`)
 - Is the CLI affected? See [cli.md][] for a complete overview,
   change the `///` comments (rust doc)
   and update the .md with `cargo xtask markdown`
@@ -39,5 +39,4 @@
 - Run: `git ls-files '*.md'`
 
 [cli.md]: https://github.com/agama-project/agama-project.github.io/blob/main/docs/user/reference/cli.md
-[profile.schema.json]: https://github.com/agama-project/agama/blob/master/rust/agama-lib/share/profile.schema.json
 [gh.io]: https://github.com/agama-project/agama-project.github.io/

@@ -40,7 +40,6 @@ use agama_utils::{
     products::ProductSpec,
     progress, question,
 };
-use async_trait::async_trait;
 use gettextrs::gettext;
 use std::{path::PathBuf, process::Command, sync::Arc};
 use tokio::sync::{broadcast, Mutex, MutexGuard, RwLock};
@@ -395,7 +394,6 @@ impl Actor for Service {
     type Error = Error;
 }
 
-#[async_trait]
 impl MessageHandler<message::GetSystem> for Service {
     async fn handle(&mut self, _message: message::GetSystem) -> Result<SystemInfo, Error> {
         let state = self.state.read().await;
@@ -403,7 +401,6 @@ impl MessageHandler<message::GetSystem> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::GetConfig> for Service {
     async fn handle(&mut self, _message: message::GetConfig) -> Result<Config, Error> {
         let state = self.state.read().await;
@@ -411,7 +408,6 @@ impl MessageHandler<message::GetConfig> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::SetConfig<Config>> for Service {
     async fn handle(&mut self, message: message::SetConfig<Config>) -> Result<(), Error> {
         self.product = Some(message.product.clone());
@@ -433,7 +429,6 @@ impl MessageHandler<message::SetConfig<Config>> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::GetProposal> for Service {
     async fn handle(&mut self, _message: message::GetProposal) -> Result<Option<Proposal>, Error> {
         let state = self.state.read().await;
@@ -441,14 +436,12 @@ impl MessageHandler<message::GetProposal> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::Probe> for Service {
     async fn handle(&mut self, _message: message::Probe) -> Result<(), Error> {
         self.apply_config().await
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::Install> for Service {
     async fn handle(&mut self, _message: message::Install) -> Result<(), Error> {
         if !self.model.lock().await.install().await? {
@@ -458,7 +451,6 @@ impl MessageHandler<message::Install> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::Finish> for Service {
     async fn handle(&mut self, _message: message::Finish) -> Result<(), Error> {
         self.model.lock().await.finish().await?;
@@ -466,7 +458,6 @@ impl MessageHandler<message::Finish> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::SetResolvables> for Service {
     async fn handle(&mut self, message: message::SetResolvables) -> Result<(), Error> {
         self.selection.set(&message.id, message.resolvables);
@@ -475,7 +466,6 @@ impl MessageHandler<message::SetResolvables> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::SetLocale> for Service {
     async fn handle(&mut self, _message: message::SetLocale) -> Result<(), Error> {
         self.update_proposal().await?;
@@ -483,7 +473,6 @@ impl MessageHandler<message::SetLocale> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::IsPatternSelected> for Service {
     async fn handle(&mut self, message: message::IsPatternSelected) -> Result<bool, Error> {
         let state = self.state.read().await;

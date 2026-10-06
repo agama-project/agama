@@ -31,7 +31,6 @@ use agama_utils::{
     },
     issue, progress, BoxFuture,
 };
-use async_trait::async_trait;
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
@@ -154,7 +153,6 @@ impl Actor for Service {
     type Error = Error;
 }
 
-#[async_trait]
 impl MessageHandler<message::ProbeDASD> for Service {
     async fn handle(&mut self, _message: message::ProbeDASD) -> Result<(), Error> {
         self.dasd.probe().await?;
@@ -162,7 +160,6 @@ impl MessageHandler<message::ProbeDASD> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::ProbeZFCP> for Service {
     async fn handle(&mut self, _message: message::ProbeZFCP) -> Result<(), Error> {
         self.zfcp.probe().await?;
@@ -170,7 +167,6 @@ impl MessageHandler<message::ProbeZFCP> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::GetSystem> for Service {
     async fn handle(&mut self, _message: message::GetSystem) -> Result<SystemInfo, Error> {
         let dasd = self.dasd.get_system().await?;
@@ -179,7 +175,6 @@ impl MessageHandler<message::GetSystem> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::GetConfig> for Service {
     async fn handle(&mut self, _message: message::GetConfig) -> Result<Config, Error> {
         let dasd = self.dasd.get_config().await?;
@@ -188,7 +183,6 @@ impl MessageHandler<message::GetConfig> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::SetZFCPConfig> for Service {
     async fn handle(
         &mut self,
@@ -199,7 +193,6 @@ impl MessageHandler<message::SetZFCPConfig> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::SetDASDConfig> for Service {
     async fn handle(
         &mut self,
@@ -210,7 +203,6 @@ impl MessageHandler<message::SetDASDConfig> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::SetLocale> for Service {
     async fn handle(&mut self, _message: message::SetLocale) -> Result<(), Error> {
         self.zfcp.probe().await?;

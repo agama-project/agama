@@ -20,10 +20,7 @@
 
 use agama_utils::{
     actor::Message,
-    api::{
-        manager::{LanguageTag, LicenseContent},
-        Action, Config, IssueMap, Proposal, SystemInfo,
-    },
+    api::{manager::LicenseContent, Action, Config, IssueMap, Proposal, SystemInfo},
 };
 use serde_json::Value;
 
@@ -102,7 +99,6 @@ impl Message for GetIssues {
 
 pub struct GetLicense {
     pub id: String,
-    pub lang: LanguageTag,
 }
 
 impl Message for GetLicense {
@@ -110,8 +106,8 @@ impl Message for GetLicense {
 }
 
 impl GetLicense {
-    pub fn new(id: String, lang: LanguageTag) -> Self {
-        Self { id, lang }
+    pub fn new(id: String) -> Self {
+        Self { id }
     }
 }
 

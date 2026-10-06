@@ -11,7 +11,7 @@ Latest **iso** images can be downloaded from:
 https://download.opensuse.org/repositories/YaST:/Head:/Agama/images/iso/
 
 ```bash
-wget https://download.opensuse.org/repositories/YaST:/Head:/Agama/images/iso/agama-live.s390x-ALP.iso
+wget https://download.opensuse.org/repositories/YaST:/Head:/Agama/images/iso/agama-live.s390x-SLES.iso
 ```
 
 ## Prepare the ISO to be served by your FTP server
@@ -20,9 +20,9 @@ Currently there is an already fixed issue in kiwi which makes the initrd root-re
 
 ```bash
 # once the issue mentioned above is fixed mounting the iso should be enough
-# sudo mount -t iso9660 -o loop agama-live.s390x-ALP.iso /srv/ftp
+# sudo mount -t iso9660 -o loop agama-live.s390x-SLES.iso /srv/ftp
 
-sudo mv agama-live.s390x-ALP.iso /srv/ftp/agama.iso
+sudo mv agama-live.s390x-SLES.iso /srv/ftp/agama.iso
 sudo cd /srv/ftp/
 sudo isoinfo -R -X -i agama.iso
 sudo chmod a+u boot s390x/initrd 
@@ -120,7 +120,7 @@ rd.zdev=qeth,0.0.0800:0.0.0801:0.0.0802,layer2=1,portno=0
 root=live:http://example.org/agama.iso
 ```
 
-Below you will find the screenshots of an z/VM installation selecting the ALP Micro product and doing the activation and format of the DASD device with Agama:
+Below you will find the screenshots of an z/VM installation selecting the SLES product and doing the activation and format of the DASD device with Agama:
 
 |||
 |-|-|

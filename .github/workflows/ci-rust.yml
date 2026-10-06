@@ -233,7 +233,11 @@ jobs:
       run: |
         # create the /etc/agama.d/locales file with list of locales
         mkdir -p /etc/agama.d
-        ls -1 -d /usr/lib/locale/*.utf8 | sed -e "s#/usr/lib/locale/##" -e "s#utf8#UTF-8#" >/etc/agama.d/locales
+        printf "%s\n" /usr/lib/locale/*.utf8 | sed -e "s#/usr/lib/locale/##" -e "s#utf8#UTF-8#" >/etc/agama.d/locales
+
+    - name: Generate the OpenAPI specification and schemas
+      run: cargo xtask openapi
+      working-directory: ./rust
 
     - name: Installed packages
       run: rpm -qa

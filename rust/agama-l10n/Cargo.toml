@@ -8,7 +8,6 @@ edition.workspace = true
 agama-locale-data = { workspace = true }
 agama-utils = { workspace = true }
 anyhow = { workspace = true }
-async-trait = { workspace = true }
 gettext-rs = { workspace = true }
 regex = { workspace = true }
 thiserror = { workspace = true }

@@ -119,6 +119,8 @@ module Agama
         min_size = device.resize_info.min_size
 
         min_size > 0 && min_size != device.size
+      rescue ::Storage::Exception
+        false
       end
 
       # Whether there is some reason preventing to shrink the device.
@@ -133,6 +135,8 @@ module Agama
       # @return [Array<Symbol>]
       def shrinking_reasons
         device.resize_info.reasons.select { |r| SHRINKING_REASONS.include?(r) }
+      rescue ::Storage::Exception
+        []
       end
 
       # Reasons preventing both to shrink and to grow.
@@ -140,6 +144,8 @@ module Agama
       # @return [Array<Symbol>]
       def resize_reasons
         device.resize_info.reasons.select { |r| RESIZE_REASONS.include?(r) }
+      rescue ::Storage::Exception
+        []
       end
 
       # Text of the reason preventing to shrink because there is no content.

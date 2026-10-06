@@ -29,7 +29,6 @@ use agama_utils::{
     message::GetResolvables,
     Resolvable,
 };
-use async_trait::async_trait;
 use merge::Merge;
 
 #[derive(thiserror::Error, Debug)]
@@ -90,7 +89,6 @@ impl Actor for Service {
     type Error = Error;
 }
 
-#[async_trait]
 impl MessageHandler<message::GetConfig> for Service {
     async fn handle(
         &mut self,
@@ -104,7 +102,6 @@ impl MessageHandler<message::GetConfig> for Service {
 ///
 /// If no configuration is given, it considers the default configuration that was read
 /// when starting the service (e.g., includes the sources coming from dracut).
-#[async_trait]
 impl MessageHandler<message::SetConfig<api::ntp::Config>> for Service {
     async fn handle(&mut self, message: message::SetConfig<api::ntp::Config>) -> Result<(), Error> {
         let new_config = match message.config {
@@ -137,7 +134,6 @@ impl MessageHandler<message::SetConfig<api::ntp::Config>> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::Finish> for Service {
     async fn handle(&mut self, _message: message::Finish) -> Result<(), Error> {
         if !self.config.is_empty() {
@@ -149,14 +145,12 @@ impl MessageHandler<message::Finish> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::SetLocale> for Service {
     async fn handle(&mut self, _message: message::SetLocale) -> Result<(), Error> {
         Ok(())
     }
 }
 
-#[async_trait]
 impl MessageHandler<GetResolvables> for Service {
     async fn handle(&mut self, _message: GetResolvables) -> Result<Vec<Resolvable>, Error> {
         let resolvables = if self.config.is_empty() {

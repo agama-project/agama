@@ -38,9 +38,9 @@ pub enum FileSourceError {
 #[serde(untagged)]
 /// Text or URL Reference of a config file or a script
 pub enum FileSource {
-    /// File content.
+    /// File or script content, starting with a shebang for scripts.
     Text { content: String },
-    /// URI or relative reference to get the script from.
+    /// Absolute or relative URL to fetch the file or script from.
     Remote {
         #[schemars(with = "String")]
         url: UriRef<String>,

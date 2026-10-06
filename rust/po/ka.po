@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-09 11:53+0000\n"
+"POT-Creation-Date: 2026-09-22 12:12+0000\n"
 "PO-Revision-Date: 2026-09-08 02:13+0000\n"
 "Last-Translator: Temuri Doghonadze <temuri.doghonadze@gmail.com>\n"
 "Language-Team: Georgian <https://l10n.opensuse.org/projects/agama/agama-rust-"
@@ -690,12 +690,12 @@ msgstr ""
 "ბრძანება 'agama monitor':"
 
 #. TRANSLATORS: %s is replaced by the script name.
-#: agama-files/src/service.rs:184
+#: agama-files/src/service.rs:183
 msgid "Failed to retrieve the script %s. Do you want to try again?"
 msgstr "სკრიპტის %s მიღება ჩავარდა. გნებავთ, თავიდან ვცადო?"
 
 #. TRANSLATORS: %s is replaced by the script name.
-#: agama-files/src/service.rs:208
+#: agama-files/src/service.rs:207
 msgid "Failed to write the file %s. Do you want to try again?"
 msgstr "ფაილის %s ჩაწერა ჩავარდა. გნებავთ, თავიდან ვცადო?"
 
@@ -779,31 +779,31 @@ msgstr "მომხმარებლის პარამეტრები�
 msgid "Configuring iSCSI devices"
 msgstr "iSCSI მოწყობილობების დამახსოვრება"
 
-#: agama-manager/src/actions.rs:581
+#: agama-manager/src/actions.rs:582
 msgid "Configuring zFCP devices"
 msgstr "iSCSI მოწყობილობების მორგება"
 
-#: agama-manager/src/actions.rs:606
+#: agama-manager/src/actions.rs:608
 msgid "Configuring DASD devices"
 msgstr "DASD მოწყობილობების მორგება"
 
-#: agama-manager/src/actions.rs:631
+#: agama-manager/src/actions.rs:634
 msgid "Setting up the network"
 msgstr "ქსელის მორგება"
 
-#: agama-manager/src/actions.rs:661
+#: agama-manager/src/actions.rs:664
 msgid "Preparing the storage proposal"
 msgstr "საცავის შეთავაზების მომზადება"
 
-#: agama-manager/src/actions.rs:690
+#: agama-manager/src/actions.rs:694
 msgid "Storing bootloader settings"
 msgstr "ჩამტვირთავის პარამეტრების დამახსოვრება"
 
-#: agama-manager/src/actions.rs:723
+#: agama-manager/src/actions.rs:728
 msgid "Preparing the software proposal"
 msgstr "პროგრამების შეთავაზების მომზადება"
 
-#: agama-manager/src/actions.rs:753
+#: agama-manager/src/actions.rs:758
 msgid "Configuring SELinux"
 msgstr "SELinux-ის მორგება"
 
@@ -815,16 +815,16 @@ msgstr "ქსელის კონფიგურაციის ჩაწე�
 msgid "Syncing the network service state"
 msgstr "ქსელის სერვისის მდგომარეობის სინქრონიზაცია"
 
-#: agama-security/src/service.rs:226
+#: agama-security/src/service.rs:225
 msgid "Reject"
 msgstr "უარყოფა"
 
-#: agama-security/src/service.rs:226
+#: agama-security/src/service.rs:225
 #: agama-software/src/callbacks/security.rs:111
 msgid "Trust"
 msgstr "ნდობა"
 
-#: agama-security/src/service.rs:227
+#: agama-security/src/service.rs:226
 msgid ""
 "Trying to import a self-signed certificate. Do you want to trust it and "
 "register the product?"
@@ -852,10 +852,6 @@ msgstr "არასწორი პროფილის მოთხოვნ�
 msgid "AutoYaST conversion failed"
 msgstr "AutoYaST-ის გადაყვანა ჩავარდა"
 
-#: agama-server/src/server/web.rs:86
-msgid "Missing Language Tag"
-msgstr "აკლია ენის ჭდე"
-
 #: agama-software/src/callbacks/commit_download.rs:47
 #: agama-software/src/callbacks/install.rs:56
 msgid "Ignore"
@@ -882,7 +878,7 @@ msgstr "გასაღები {0} ({1}) ანაბეჭდით {2} უ�
 msgid "Skip"
 msgstr "გამოტოვება"
 
-#: agama-software/src/service.rs:296
+#: agama-software/src/service.rs:295
 msgid ""
 "Due to an internal error, it was not possible to create a software proposal."
 msgstr "შიდა შეცდომის გამო პროგრამების შეთავაზების შექმნა შეუძლებელია."
@@ -946,13 +942,13 @@ msgstr "დაყენებისთვის %s-ის '%s' არჩევ�
 msgid "Failed to register the system"
 msgstr "სისტემის რეგისტრაცია ჩავარდა"
 
-#: agama-users/src/service.rs:178
+#: agama-users/src/service.rs:177
 msgid ""
 "Defining a user, setting the root password or a SSH public key is required"
 msgstr ""
 "მომხმარებლის აღწერა, root პაროლის დაყენება და SSH საჯარო გასაღები აუცილებელია"
 
-#: agama-users/src/service.rs:191
+#: agama-users/src/service.rs:190
 msgid "First user information is incomplete"
 msgstr "პირველი მომხმარებლის ინფორმაცია დაუსრულებელია"
 
@@ -1003,6 +999,9 @@ msgstr "ნიმუში"
 #: agama-utils/src/resolvable.rs:67
 msgid "product"
 msgstr "პროდუქტი"
+
+#~ msgid "Missing Language Tag"
+#~ msgstr "აკლია ენის ჭდე"
 
 #~ msgid "Profile error"
 #~ msgstr "პროფილის შეცდომა"

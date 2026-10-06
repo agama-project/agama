@@ -174,7 +174,7 @@ describe("DeviceSelector", () => {
       const dialog = screen.getByRole("dialog", { name: "Select a network device" });
       const row = within(dialog).getByRole("row", { name: /enp2s0/ });
       await user.click(within(row).getByRole("radio"));
-      await user.click(within(dialog).getByRole("button", { name: "Use enp2s0" }));
+      await user.click(within(dialog).getByRole("button", { name: "Accept" }));
       expect(screen.getByLabelText("Device name")).toHaveTextContent("enp2s0");
       expect(screen.getByLabelText("Device MAC address")).toHaveTextContent("AA:BB:CC:DD:EE:FF");
     });

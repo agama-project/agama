@@ -228,6 +228,11 @@ class Device {
   macAddress: string;
   state: DeviceState;
   connection?: string;
+  speed?: number;
+  carrier?: boolean;
+  driver?: string;
+  busPath?: string;
+  mtu?: number;
 
   static fromApi(device: APIDevice) {
     const { ipConfig, stateReason, ...newDevice } = device;
@@ -268,6 +273,15 @@ type APIDevice = {
   connection?: string;
   ipConfig?: IPConfig;
   stateReason: string;
+  /** Link speed in Mb/s, only reported by wired devices with the link up. */
+  speed?: number;
+  /** Whether the device has a link, i.e. a cable plugged in. */
+  carrier?: boolean;
+  /** Kernel driver in use, e.g. "e1000e". */
+  driver?: string;
+  /** Physical location of the device, e.g. "pci-0000:c5:00.3". */
+  busPath?: string;
+  mtu?: number;
 };
 
 type APIRoute = {

@@ -31,7 +31,6 @@ use agama_utils::{
     message::GetResolvables,
     progress, BoxFuture, Resolvable,
 };
-use async_trait::async_trait;
 use serde_json::Value;
 
 #[derive(thiserror::Error, Debug)]
@@ -128,7 +127,6 @@ impl Actor for Service {
     type Error = Error;
 }
 
-#[async_trait]
 impl MessageHandler<message::Activate> for Service {
     async fn handle(&mut self, _message: message::Activate) -> Result<(), Error> {
         self.client.activate().await?;
@@ -136,7 +134,6 @@ impl MessageHandler<message::Activate> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::Probe> for Service {
     async fn handle(&mut self, _message: message::Probe) -> Result<(), Error> {
         self.client.probe().await?;
@@ -144,7 +141,6 @@ impl MessageHandler<message::Probe> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::Install> for Service {
     async fn handle(&mut self, _message: message::Install) -> Result<(), Error> {
         self.client.install().await?;
@@ -152,7 +148,6 @@ impl MessageHandler<message::Install> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::Finish> for Service {
     async fn handle(&mut self, _message: message::Finish) -> Result<(), Error> {
         self.client.finish().await?;
@@ -160,7 +155,6 @@ impl MessageHandler<message::Finish> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::Umount> for Service {
     async fn handle(&mut self, _message: message::Umount) -> Result<(), Error> {
         self.client.umount().await?;
@@ -168,28 +162,24 @@ impl MessageHandler<message::Umount> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::GetSystem> for Service {
     async fn handle(&mut self, _message: message::GetSystem) -> Result<Option<Value>, Error> {
         self.client.get_system().await.map_err(|e| e.into())
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::GetConfig> for Service {
     async fn handle(&mut self, _message: message::GetConfig) -> Result<Option<Config>, Error> {
         self.client.get_config().await.map_err(|e| e.into())
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::GetConfigModel> for Service {
     async fn handle(&mut self, _message: message::GetConfigModel) -> Result<Option<Value>, Error> {
         self.client.get_config_model().await.map_err(|e| e.into())
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::GetConfigFromModel> for Service {
     async fn handle(
         &mut self,
@@ -202,21 +192,18 @@ impl MessageHandler<message::GetConfigFromModel> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::GetProposal> for Service {
     async fn handle(&mut self, _message: message::GetProposal) -> Result<Option<Value>, Error> {
         self.client.get_proposal().await.map_err(|e| e.into())
     }
 }
 
-#[async_trait]
 impl MessageHandler<GetResolvables> for Service {
     async fn handle(&mut self, _message: GetResolvables) -> Result<Vec<Resolvable>, Error> {
         self.client.get_resolvables().await.map_err(|e| e.into())
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::SetConfig> for Service {
     async fn handle(
         &mut self,
@@ -230,7 +217,6 @@ impl MessageHandler<message::SetConfig> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::SolveConfigModel> for Service {
     async fn handle(&mut self, message: message::SolveConfigModel) -> Result<Option<Value>, Error> {
         self.client
@@ -240,7 +226,6 @@ impl MessageHandler<message::SolveConfigModel> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::SetLocale> for Service {
     async fn handle(&mut self, message: message::SetLocale) -> Result<(), Error> {
         self.client.set_locale(message.locale).await?;

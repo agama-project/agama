@@ -124,6 +124,18 @@ describe Agama::Storage::DeviceShrinking do
 
         include_examples "supported checks"
       end
+
+      context "but libstorage-ng fails to check it" do
+        let(:device_name) { "/dev/sda1" }
+
+        before do
+          allow(device).to receive(:resize_info).and_raise ::Storage::Exception
+        end
+
+        it "returns false" do
+          expect(subject.supported?).to eq(false)
+        end
+      end
     end
   end
 
@@ -132,6 +144,18 @@ describe Agama::Storage::DeviceShrinking do
 
     context "if shrinking is not supported" do
       let(:device_name) { "/dev/md0p1" }
+
+      it "returns nil" do
+        expect(subject.min_size).to be_nil
+      end
+    end
+
+    context "if libstorage-ng fails to check the device" do
+      let(:device_name) { "/dev/sda1" }
+
+      before do
+        allow(device).to receive(:resize_info).and_raise ::Storage::Exception
+      end
 
       it "returns nil" do
         expect(subject.min_size).to be_nil
@@ -164,6 +188,20 @@ describe Agama::Storage::DeviceShrinking do
       it "returns the list of reasons" do
         expect(subject.unsupported_reasons).to contain_exactly(
           /a file system nor a storage system was detected/
+        )
+      end
+    end
+
+    context "if libstorage-ng fails to check the device" do
+      let(:device_name) { "/dev/sda1" }
+
+      before do
+        allow(device).to receive(:resize_info).and_raise ::Storage::Exception
+      end
+
+      it "returns a list with one generic reason" do
+        expect(subject.unsupported_reasons).to contain_exactly(
+          /not supported by this device/
         )
       end
     end

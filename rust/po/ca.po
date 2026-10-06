@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-09 11:53+0000\n"
+"POT-Creation-Date: 2026-09-22 12:12+0000\n"
 "PO-Revision-Date: 2026-09-04 14:14+0000\n"
 "Last-Translator: David Medina <medipas@gmail.com>\n"
 "Language-Team: Catalan <https://l10n.opensuse.org/projects/agama/agama-rust-"
@@ -805,12 +805,12 @@ msgstr ""
 "interfície web d'usuari per respondre-les:"
 
 #. TRANSLATORS: %s is replaced by the script name.
-#: agama-files/src/service.rs:184
+#: agama-files/src/service.rs:183
 msgid "Failed to retrieve the script %s. Do you want to try again?"
 msgstr "No s'ha pogut recuperar l'script %s. Voleu tornar-ho a provar?"
 
 #. TRANSLATORS: %s is replaced by the script name.
-#: agama-files/src/service.rs:208
+#: agama-files/src/service.rs:207
 msgid "Failed to write the file %s. Do you want to try again?"
 msgstr "No s'ha pogut escriure el fitxer %s. Voleu tornar-ho a intentar?"
 
@@ -894,31 +894,31 @@ msgstr "Desament de la configuració dels usuaris"
 msgid "Configuring iSCSI devices"
 msgstr "Configuració de dispositius iSCSI"
 
-#: agama-manager/src/actions.rs:581
+#: agama-manager/src/actions.rs:582
 msgid "Configuring zFCP devices"
 msgstr "Configuració de dispositius zFCP"
 
-#: agama-manager/src/actions.rs:606
+#: agama-manager/src/actions.rs:608
 msgid "Configuring DASD devices"
 msgstr "Configuració de dispositius DASD"
 
-#: agama-manager/src/actions.rs:631
+#: agama-manager/src/actions.rs:634
 msgid "Setting up the network"
 msgstr "Configuració de la xarxa"
 
-#: agama-manager/src/actions.rs:661
+#: agama-manager/src/actions.rs:664
 msgid "Preparing the storage proposal"
 msgstr "Preparació de la proposta d'emmagatzematge"
 
-#: agama-manager/src/actions.rs:690
+#: agama-manager/src/actions.rs:694
 msgid "Storing bootloader settings"
 msgstr "Desament de la configuració del carregador d'arrencada"
 
-#: agama-manager/src/actions.rs:723
+#: agama-manager/src/actions.rs:728
 msgid "Preparing the software proposal"
 msgstr "Preparació de la proposta de programari"
 
-#: agama-manager/src/actions.rs:753
+#: agama-manager/src/actions.rs:758
 msgid "Configuring SELinux"
 msgstr "Configuració de SELinux"
 
@@ -930,16 +930,16 @@ msgstr "Escriptura de la configuració de la xarxa"
 msgid "Syncing the network service state"
 msgstr "Sincronització de l'estat del servei de xarxa"
 
-#: agama-security/src/service.rs:226
+#: agama-security/src/service.rs:225
 msgid "Reject"
 msgstr "Rebutja"
 
-#: agama-security/src/service.rs:226
+#: agama-security/src/service.rs:225
 #: agama-software/src/callbacks/security.rs:111
 msgid "Trust"
 msgstr "Confia-hi"
 
-#: agama-security/src/service.rs:227
+#: agama-security/src/service.rs:226
 msgid ""
 "Trying to import a self-signed certificate. Do you want to trust it and "
 "register the product?"
@@ -966,10 +966,6 @@ msgstr "Sol·licitud de perfil no vàlida"
 #: agama-server/src/profile/web.rs:106
 msgid "AutoYaST conversion failed"
 msgstr "La conversió d'AutoYaST ha fallat"
-
-#: agama-server/src/server/web.rs:86
-msgid "Missing Language Tag"
-msgstr "Etiqueta de llengua absent"
 
 #: agama-software/src/callbacks/commit_download.rs:47
 #: agama-software/src/callbacks/install.rs:56
@@ -999,7 +995,7 @@ msgstr ""
 msgid "Skip"
 msgstr "Omet"
 
-#: agama-software/src/service.rs:296
+#: agama-software/src/service.rs:295
 msgid ""
 "Due to an internal error, it was not possible to create a software proposal."
 msgstr ""
@@ -1067,14 +1063,14 @@ msgstr "No s'ha pogut seleccionar l'element %s %s per a la instal·lació"
 msgid "Failed to register the system"
 msgstr "No s'ha pogut registrar el sistema"
 
-#: agama-users/src/service.rs:178
+#: agama-users/src/service.rs:177
 msgid ""
 "Defining a user, setting the root password or a SSH public key is required"
 msgstr ""
 "Cal definir un usuari i establir la contrasenya d'arrel o una clau pública "
 "SSH"
 
-#: agama-users/src/service.rs:191
+#: agama-users/src/service.rs:190
 msgid "First user information is incomplete"
 msgstr "La informació del primer usuari està incompleta"
 
@@ -1125,3 +1121,6 @@ msgstr "patró"
 #: agama-utils/src/resolvable.rs:67
 msgid "product"
 msgstr "producte"
+
+#~ msgid "Missing Language Tag"
+#~ msgstr "Etiqueta de llengua absent"

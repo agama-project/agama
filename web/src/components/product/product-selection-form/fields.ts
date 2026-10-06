@@ -26,14 +26,14 @@
 
 import { formOptions } from "@tanstack/react-form";
 
-import type { Product, Mode } from "~/model/system";
+import type { License, Product, Mode } from "~/model/system";
 
 /** Types */
 
 export type FormFields = {
   selectedProduct?: Product;
   selectedMode?: Mode;
-  eulaAccepted: boolean;
+  acceptedLicenses: License["id"][];
 };
 
 /** Default values */
@@ -44,7 +44,7 @@ export type FormFields = {
 const defaultValues: FormFields = {
   selectedProduct: undefined,
   selectedMode: undefined,
-  eulaAccepted: false,
+  acceptedLicenses: [],
 };
 
 /**

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-09 11:53+0000\n"
+"POT-Creation-Date: 2026-09-22 12:12+0000\n"
 "PO-Revision-Date: 2026-08-25 15:33+0000\n"
 "Last-Translator: Efe Mert <efemert1@proton.me>\n"
 "Language-Team: Turkish <https://l10n.opensuse.org/projects/agama/agama-rust-"
@@ -692,13 +692,13 @@ msgstr ""
 "komutunu veya web arayüzünü kullanın."
 
 #. TRANSLATORS: %s is replaced by the script name.
-#: agama-files/src/service.rs:184
+#: agama-files/src/service.rs:183
 msgid "Failed to retrieve the script %s. Do you want to try again?"
 msgstr ""
 "%s komut dosyasını alma işlemi başarısız oldu. Tekrar denemek ister misiniz?"
 
 #. TRANSLATORS: %s is replaced by the script name.
-#: agama-files/src/service.rs:208
+#: agama-files/src/service.rs:207
 msgid "Failed to write the file %s. Do you want to try again?"
 msgstr ""
 "%s dosyasına yazma işlemi başarısız oldu. Tekrar denemek ister misiniz?"
@@ -785,32 +785,32 @@ msgstr "Kullanıcı ayarlarını sakla"
 msgid "Configuring iSCSI devices"
 msgstr "iSCSI aygıtlarını yapılandır"
 
-#: agama-manager/src/actions.rs:581
+#: agama-manager/src/actions.rs:582
 #, fuzzy
 msgid "Configuring zFCP devices"
 msgstr "iSCSI aygıtlarını yapılandır"
 
-#: agama-manager/src/actions.rs:606
+#: agama-manager/src/actions.rs:608
 msgid "Configuring DASD devices"
 msgstr "DASD cihazlarını yapılandır"
 
-#: agama-manager/src/actions.rs:631
+#: agama-manager/src/actions.rs:634
 msgid "Setting up the network"
 msgstr "Ağ kurulumu"
 
-#: agama-manager/src/actions.rs:661
+#: agama-manager/src/actions.rs:664
 msgid "Preparing the storage proposal"
 msgstr "Depolama teklifinin hazırlanması"
 
-#: agama-manager/src/actions.rs:690
+#: agama-manager/src/actions.rs:694
 msgid "Storing bootloader settings"
 msgstr "Önyükleyici ayarlarının saklanması"
 
-#: agama-manager/src/actions.rs:723
+#: agama-manager/src/actions.rs:728
 msgid "Preparing the software proposal"
 msgstr "Yazılım teklifinin hazırlanması"
 
-#: agama-manager/src/actions.rs:753
+#: agama-manager/src/actions.rs:758
 msgid "Configuring SELinux"
 msgstr "SELinux yapılandırılıyor"
 
@@ -822,16 +822,16 @@ msgstr "Ağ yapılandırması yazılıyor"
 msgid "Syncing the network service state"
 msgstr "Ağ hizmeti durumunun senkronize edilmesi"
 
-#: agama-security/src/service.rs:226
+#: agama-security/src/service.rs:225
 msgid "Reject"
 msgstr "Reddet"
 
-#: agama-security/src/service.rs:226
+#: agama-security/src/service.rs:225
 #: agama-software/src/callbacks/security.rs:111
 msgid "Trust"
 msgstr "Güven"
 
-#: agama-security/src/service.rs:227
+#: agama-security/src/service.rs:226
 msgid ""
 "Trying to import a self-signed certificate. Do you want to trust it and "
 "register the product?"
@@ -858,10 +858,6 @@ msgstr "Geçersiz profil isteği"
 
 #: agama-server/src/profile/web.rs:106
 msgid "AutoYaST conversion failed"
-msgstr ""
-
-#: agama-server/src/server/web.rs:86
-msgid "Missing Language Tag"
 msgstr ""
 
 #: agama-software/src/callbacks/commit_download.rs:47
@@ -892,7 +888,7 @@ msgstr ""
 msgid "Skip"
 msgstr "Atla"
 
-#: agama-software/src/service.rs:296
+#: agama-software/src/service.rs:295
 msgid ""
 "Due to an internal error, it was not possible to create a software proposal."
 msgstr "Dahili bir hata nedeniyle yazılım teklifi oluşturulamadı."
@@ -954,14 +950,14 @@ msgstr "Kurulum için %s '%s' olarak seçilemedi"
 msgid "Failed to register the system"
 msgstr "Sistem kaydı başarısız oldu"
 
-#: agama-users/src/service.rs:178
+#: agama-users/src/service.rs:177
 msgid ""
 "Defining a user, setting the root password or a SSH public key is required"
 msgstr ""
 "Bir kullanıcı tanımlamak, root şifresini veya SSH ortak anahtarını ayarlamak "
 "gerekir"
 
-#: agama-users/src/service.rs:191
+#: agama-users/src/service.rs:190
 msgid "First user information is incomplete"
 msgstr "İlk kullanıcı bilgileri eksik"
 

@@ -236,6 +236,18 @@ describe("validate", () => {
       expect(result?.fields?.bondPorts).toBe("At least one bond port is required");
     });
 
+    it("rejects a port naming the bond itself", () => {
+      const result = validate(bondFields({ bondPorts: ["enp1s0", "bond0"] }));
+      expect(result?.fields?.bondPorts).toBe("bond0 cannot be a port of itself");
+    });
+
+    // The list never offers it, but a name written by hand goes through no
+    // list at all.
+    it("rejects a port naming the loopback device", () => {
+      const result = validate(bondFields({ bondPorts: ["enp1s0", "lo"] }));
+      expect(result?.fields?.bondPorts).toBe("The loopback device cannot be a port");
+    });
+
     it("rejects the 'primary' option in a mode that does not support it", () => {
       const result = validate(
         bondFields({ bondMode: BondMode.BALANCE_ROUND_ROBIN, bondOptions: ["primary=enp1s0"] }),
@@ -266,6 +278,16 @@ describe("validate", () => {
     it("requires at least one port", () => {
       const result = validate(bridgeFields({ bridgePorts: [] }));
       expect(result?.fields?.bridgePorts).toBe("At least one bridge port is required");
+    });
+
+    it("rejects a port naming the bridge itself", () => {
+      const result = validate(bridgeFields({ bridgePorts: ["enp1s0", "br0"] }));
+      expect(result?.fields?.bridgePorts).toBe("br0 cannot be a port of itself");
+    });
+
+    it("rejects a port naming the loopback device", () => {
+      const result = validate(bridgeFields({ bridgePorts: ["enp1s0", "lo"] }));
+      expect(result?.fields?.bridgePorts).toBe("The loopback device cannot be a port");
     });
 
     describe("STP settings", () => {

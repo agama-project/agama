@@ -31,6 +31,8 @@ import {
   Flex,
   Grid,
   GridItem,
+  List,
+  ListItem,
   Stack,
   Title,
 } from "@patternfly/react-core";
@@ -40,13 +42,15 @@ import Page from "~/components/layout/Page";
 import ProductLogo from "~/components/product/ProductLogo";
 import LicenseButton from "~/components/product/LicenseButton";
 import ProductForm from "~/components/product/product-selection-form/Form";
+import { productLicenses } from "~/components/product/licenses";
 import { patchConfig, putConfig } from "~/api";
 import { useProduct, useProductInfo } from "~/hooks/model/config/product";
 import { useSystem } from "~/hooks/model/system";
 import { useSystem as useSystemSoftware } from "~/hooks/model/system/software";
 import { ROOT } from "~/routes/paths";
-import { Mode, Product } from "~/model/system";
 import { n_, _ } from "~/i18n";
+
+import type { License, Mode, Product } from "~/model/system";
 
 /**
  * Props for CurrentProductInfo component
@@ -56,6 +60,8 @@ type CurrentProductInfoProps = {
   product?: Product;
   /** The selected mode */
   modeId?: string;
+  /** Licenses known by the system */
+  licenses?: License[];
 };
 
 /**
@@ -71,10 +77,12 @@ type ProductSelectionContextProps = {
 /**
  * Card displaying information about the currently selected product.
  *
- * Shows product name, description, and a link to view the license if applicable.
+ * Shows product name, description, and links to view the licenses if applicable.
  */
-const CurrentProductInfo = ({ product, modeId }: CurrentProductInfoProps) => {
+const CurrentProductInfo = ({ product, modeId, licenses }: CurrentProductInfoProps) => {
   if (!product) return;
+
+  const currentLicenses = productLicenses(product, licenses);
 
   let mode: Mode;
   if (modeId) {
@@ -102,10 +110,35 @@ const CurrentProductInfo = ({ product, modeId }: CurrentProductInfoProps) => {
             </>
           )}
 
-          {product.license && (
-            <LicenseButton product={product} variant="secondary" isInline>
+          {currentLicenses.length === 1 && (
+            <LicenseButton
+              license={currentLicenses[0]}
+              dialogTitle={product.name}
+              variant="secondary"
+              isInline
+            >
               {_("View license")}
             </LicenseButton>
+          )}
+          {currentLicenses.length > 1 && (
+            <>
+              <Title headingLevel="h3">
+                {
+                  // TRANSLATORS: title of the list of licenses accepted for
+                  // the selected product
+                  _("Accepted licenses")
+                }
+              </Title>
+              <List>
+                {currentLicenses.map((license) => (
+                  <ListItem key={license.id}>
+                    <LicenseButton license={license} variant="link" isInline>
+                      {license.name}
+                    </LicenseButton>
+                  </ListItem>
+                ))}
+              </List>
+            </>
           )}
         </Stack>
       </CardBody>
@@ -182,7 +215,7 @@ const ProductSelectionIntro = ({ products, currentProduct }: ProductSelectionCon
 const ProductSelectionContent = () => {
   const navigate = useNavigate();
   const product = useProduct();
-  const { products } = useSystem();
+  const { products, licenses } = useSystem();
   const currentProduct = useProductInfo();
   const [submittedSelection, setSubmmitedSelection] = useState<Product>();
   const [isSubmitted, setIsSubmmited] = useState(false);
@@ -238,6 +271,7 @@ const ProductSelectionContent = () => {
           <GridItem sm={12} md={8} order={{ default: "1", md: "0" }}>
             <ProductForm
               products={products}
+              licenses={licenses}
               currentProduct={currentProduct}
               currentModeId={product?.mode}
               isSubmitted={isWaiting}
@@ -245,7 +279,13 @@ const ProductSelectionContent = () => {
             />
           </GridItem>
           <GridItem sm={12} md={4} order={{ default: "0", md: "1" }}>
-            {!isWaiting && <CurrentProductInfo product={currentProduct} modeId={product?.mode} />}
+            {!isWaiting && (
+              <CurrentProductInfo
+                product={currentProduct}
+                modeId={product?.mode}
+                licenses={licenses}
+              />
+            )}
           </GridItem>
         </Grid>
       </Page.Content>

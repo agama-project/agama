@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-09 11:53+0000\n"
+"POT-Creation-Date: 2026-09-22 12:12+0000\n"
 "PO-Revision-Date: 2026-03-11 07:04+0000\n"
 "Last-Translator: Timo Jyrinki <tjyrinki@suse.com>\n"
 "Language-Team: Finnish <https://l10n.opensuse.org/projects/agama/agama-rust-"
@@ -699,12 +699,12 @@ msgid ""
 msgstr ""
 
 #. TRANSLATORS: %s is replaced by the script name.
-#: agama-files/src/service.rs:184
+#: agama-files/src/service.rs:183
 msgid "Failed to retrieve the script %s. Do you want to try again?"
 msgstr ""
 
 #. TRANSLATORS: %s is replaced by the script name.
-#: agama-files/src/service.rs:208
+#: agama-files/src/service.rs:207
 msgid "Failed to write the file %s. Do you want to try again?"
 msgstr ""
 
@@ -796,32 +796,32 @@ msgstr "Tallennetaan käyttäjien asetuksia"
 msgid "Configuring iSCSI devices"
 msgstr "Tehdään iSCSI-laitteiden asetuksia"
 
-#: agama-manager/src/actions.rs:581
+#: agama-manager/src/actions.rs:582
 #, fuzzy
 msgid "Configuring zFCP devices"
 msgstr "Tehdään iSCSI-laitteiden asetuksia"
 
-#: agama-manager/src/actions.rs:606
+#: agama-manager/src/actions.rs:608
 msgid "Configuring DASD devices"
 msgstr "Tehdään DASD-laitteiden asetuksia"
 
-#: agama-manager/src/actions.rs:631
+#: agama-manager/src/actions.rs:634
 msgid "Setting up the network"
 msgstr "Tehdään verkkoasetuksia"
 
-#: agama-manager/src/actions.rs:661
+#: agama-manager/src/actions.rs:664
 msgid "Preparing the storage proposal"
 msgstr "Valmistellaan tallennustilaehdotusta"
 
-#: agama-manager/src/actions.rs:690
+#: agama-manager/src/actions.rs:694
 msgid "Storing bootloader settings"
 msgstr "Tallennetaan käynnistyslataimen asetuksia"
 
-#: agama-manager/src/actions.rs:723
+#: agama-manager/src/actions.rs:728
 msgid "Preparing the software proposal"
 msgstr "Valmistellaan ohjelmistoehdotusta"
 
-#: agama-manager/src/actions.rs:753
+#: agama-manager/src/actions.rs:758
 #, fuzzy
 msgid "Configuring SELinux"
 msgstr "Tehdään DASD-laitteiden asetuksia"
@@ -835,16 +835,16 @@ msgstr "Kirjoitetaan asetuksia"
 msgid "Syncing the network service state"
 msgstr ""
 
-#: agama-security/src/service.rs:226
+#: agama-security/src/service.rs:225
 msgid "Reject"
 msgstr "Hylkää"
 
-#: agama-security/src/service.rs:226
+#: agama-security/src/service.rs:225
 #: agama-software/src/callbacks/security.rs:111
 msgid "Trust"
 msgstr "Luota"
 
-#: agama-security/src/service.rs:227
+#: agama-security/src/service.rs:226
 msgid ""
 "Trying to import a self-signed certificate. Do you want to trust it and "
 "register the product?"
@@ -872,10 +872,6 @@ msgstr ""
 
 #: agama-server/src/profile/web.rs:106
 msgid "AutoYaST conversion failed"
-msgstr ""
-
-#: agama-server/src/server/web.rs:86
-msgid "Missing Language Tag"
 msgstr ""
 
 #: agama-software/src/callbacks/commit_download.rs:47
@@ -906,7 +902,7 @@ msgstr ""
 msgid "Skip"
 msgstr "Ohita tämä kohta"
 
-#: agama-software/src/service.rs:296
+#: agama-software/src/service.rs:295
 msgid ""
 "Due to an internal error, it was not possible to create a software proposal."
 msgstr "Ohjelmistoehdotusta ei voi luoda sisäisen virheen takia."
@@ -970,13 +966,13 @@ msgstr "Asennukseen ei voi valita: %s ”%s”"
 msgid "Failed to register the system"
 msgstr "Järjestelmä rekisteröinti ei onnistu"
 
-#: agama-users/src/service.rs:178
+#: agama-users/src/service.rs:177
 msgid ""
 "Defining a user, setting the root password or a SSH public key is required"
 msgstr ""
 "Määritetään käyttäjää, pääkäyttäjän salasana tai julkinen SSH-avain vaaditaan"
 
-#: agama-users/src/service.rs:191
+#: agama-users/src/service.rs:190
 msgid "First user information is incomplete"
 msgstr "Ensimmäisen käyttäjän tiedot eivät ole riittävät"
 

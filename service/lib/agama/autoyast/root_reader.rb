@@ -19,8 +19,7 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "y2users/config"
-require "y2users/autoinst/reader"
+require "agama/autoyast/users_profile_reader"
 
 module Agama
   module AutoYaST
@@ -35,15 +34,15 @@ module Agama
       #
       # @return [Hash] Agama "root" section
       def read
-        root_user = config.users.find { |u| u.name == "root" }
+        root_user = users_reader.root
         return {} unless root_user
 
         hsh = {}
-        password = root_user.password
+        password = root_user["user_password"]
 
         if password
-          hsh["password"] = password.value.to_s
-          hsh["hashedPassword"] = true if password.value.encrypted?
+          hsh["password"] = password.to_s
+          hsh["hashedPassword"] = true if root_user["encrypted"]
         end
 
         hsh = hsh.merge(setup_ssh(root_user))
@@ -57,19 +56,16 @@ module Agama
 
       attr_reader :profile
 
-      # @return [Y2Users::Config] Users configuration
-      def config
-        return @config if @config
-
-        reader = Y2Users::Autoinst::Reader.new(profile)
-        result = reader.read
-        @config = result.config
+      # @return [UsersProfileReader]
+      def users_reader
+        @users_reader ||= UsersProfileReader.new(profile)
       end
 
       def setup_ssh(root_user)
         hsh = {}
+        keys = root_user["authorized_keys"] || []
 
-        hsh["sshPublicKeys"] = root_user.authorized_keys unless root_user.authorized_keys.empty?
+        hsh["sshPublicKeys"] = keys unless keys.empty?
 
         hsh
       end

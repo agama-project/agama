@@ -31,7 +31,6 @@ use agama_utils::{
     },
     issue,
 };
-use async_trait::async_trait;
 use tokio::sync::broadcast;
 
 #[derive(thiserror::Error, Debug)]
@@ -172,14 +171,12 @@ impl Actor for Service {
     type Error = Error;
 }
 
-#[async_trait]
 impl MessageHandler<message::GetSystem> for Service {
     async fn handle(&mut self, _message: message::GetSystem) -> Result<SystemInfo, Error> {
         Ok(self.config.clone())
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::GetConfig> for Service {
     async fn handle(
         &mut self,
@@ -192,7 +189,6 @@ impl MessageHandler<message::GetConfig> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::SetConfig<api::hostname::Config>> for Service {
     async fn handle(
         &mut self,
@@ -233,14 +229,12 @@ impl MessageHandler<message::SetConfig<api::hostname::Config>> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::GetProposal> for Service {
     async fn handle(&mut self, _message: message::GetProposal) -> Result<Option<Proposal>, Error> {
         Ok(self.get_proposal())
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::UpdateHostname> for Service {
     async fn handle(&mut self, message: message::UpdateHostname) -> Result<(), Error> {
         let current_name = self.config.hostname.clone();
@@ -254,7 +248,6 @@ impl MessageHandler<message::UpdateHostname> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::UpdateStaticHostname> for Service {
     async fn handle(&mut self, message: message::UpdateStaticHostname) -> Result<(), Error> {
         // If static hostname is set the transient is basically the same
@@ -268,14 +261,12 @@ impl MessageHandler<message::UpdateStaticHostname> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::Install> for Service {
     async fn handle(&mut self, _message: message::Install) -> Result<(), Error> {
         self.model.install()
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::SetLocale> for Service {
     async fn handle(&mut self, _message: message::SetLocale) -> Result<(), Error> {
         Ok(())

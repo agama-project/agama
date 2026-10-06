@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import { isEmpty } from "radashi";
+import { isEmpty, toggle } from "radashi";
 import { sprintf } from "sprintf-js";
 import {
   Flex,
@@ -37,9 +37,11 @@ import ProductOption from "./ProductOption";
 import EulaCheckbox from "./EulaCheckbox";
 import Text from "~/components/core/Text";
 import { defaultOptions } from "./fields";
+import { hasKnownName, productLicenses } from "~/components/product/licenses";
 import { useAppForm } from "~/hooks/form";
-import { Mode, Product } from "~/model/system";
 import { n_, _ } from "~/i18n";
+
+import type { License, Mode, Product } from "~/model/system";
 
 /**
  * Props for ProductFormSubmitLabel component
@@ -196,6 +198,8 @@ const ProductFormLabel = ({ products, currentProduct }: ProductFormLabelProps) =
  */
 export type ProductFormProps = {
   products: Product[];
+  /** Licenses known by the system */
+  licenses?: License[];
   currentProduct?: Product;
   currentModeId?: Mode["id"];
   onSubmit: (product: Product, mode: string) => void;
@@ -210,6 +214,7 @@ export type ProductFormProps = {
  */
 export default function ProductForm({
   products,
+  licenses,
   currentProduct,
   currentModeId,
   isSubmitted,
@@ -223,9 +228,13 @@ export default function ProductForm({
   // Selecting a product resets the pending mode and license acceptance, since
   // both are meaningful only for the product they belong to.
   const selectProduct = (product: Product) => {
-    form.setFieldValue("eulaAccepted", false);
+    form.setFieldValue("acceptedLicenses", []);
     form.setFieldValue("selectedMode", undefined);
     form.setFieldValue("selectedProduct", product);
+  };
+
+  const toggleLicenseAcceptance = (id: License["id"]) => {
+    form.setFieldValue("acceptedLicenses", (ids) => toggle(ids, id));
   };
 
   return (
@@ -240,8 +249,10 @@ export default function ProductForm({
         inert={isSubmitted ? "" : undefined}
       >
         <form.Subscribe selector={(s) => s.values}>
-          {({ selectedProduct, selectedMode, eulaAccepted }) => {
-            const mountEulaCheckbox = selectedProduct && !isEmpty(selectedProduct.license);
+          {({ selectedProduct, selectedMode, acceptedLicenses }) => {
+            const selectedLicenses = productLicenses(selectedProduct, licenses);
+            const mountEulaCheckbox = !isEmpty(selectedLicenses);
+            const eulaAccepted = selectedLicenses.every((l) => acceptedLicenses.includes(l.id));
             const isSelectionDisabled =
               !selectedProduct ||
               isSubmitted ||
@@ -277,11 +288,20 @@ export default function ProductForm({
                 <Stack hasGutter>
                   {mountEulaCheckbox && (
                     <StackItem>
-                      <EulaCheckbox
-                        product={selectedProduct}
-                        isChecked={eulaAccepted}
-                        onChange={(accepted) => form.setFieldValue("eulaAccepted", accepted)}
-                      />
+                      <Stack hasGutter>
+                        {selectedLicenses.map((license) => (
+                          <EulaCheckbox
+                            key={license.id}
+                            license={license}
+                            product={selectedProduct}
+                            namesLicense={
+                              selectedLicenses.length > 1 && hasKnownName(license, licenses)
+                            }
+                            isChecked={acceptedLicenses.includes(license.id)}
+                            onChange={() => toggleLicenseAcceptance(license.id)}
+                          />
+                        ))}
+                      </Stack>
                     </StackItem>
                   )}
                   <StackItem>
