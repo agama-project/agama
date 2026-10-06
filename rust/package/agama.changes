@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Oct  6 15:51:28 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Fix storage model schema: request password attribute instead of
+  non-existent method attribute (gh#agama-project/agama#4038).
+
+-------------------------------------------------------------------
 Thu Oct  1 11:20:14 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
 
 - Fix the proxy section of the profile JSON schema to use the
