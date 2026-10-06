@@ -83,14 +83,14 @@ jobs:
       - name: Validate OpenAPI specification
         run: |
           openapi-spec-validator out/openapi.json
-          openapi-spec-validator out/openapi_full.json
+          openapi-spec-validator out/openapi-full.json
         working-directory: agama/rust
 
       - name: Copy OpenAPI specs and schemas to nightly
         run: |
           rm -rfv agama-openapi/nightly/schemas
           mkdir -p agama-openapi/nightly/schemas
-          cp -v agama/rust/out/openapi.json agama/rust/out/openapi.yaml agama/rust/out/openapi_full.json agama/rust/out/openapi_full.yaml agama-openapi/nightly/
+          cp -v agama/rust/out/openapi.json agama/rust/out/openapi.yaml agama/rust/out/openapi-full.json agama/rust/out/openapi-full.yaml agama-openapi/nightly/
           cp -v agama/rust/out/schemas/*.schema.json agama-openapi/nightly/schemas/
 
       - name: Check for changes

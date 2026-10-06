@@ -66,9 +66,9 @@ mod tasks {
         // Generate JSON format (includes post-processing for aide serialization quirks)
         let mut json_value = docs::build_json().await.map_err(std::io::Error::other)?;
 
-        // Generate fully resolved openapi_full.json and openapi_full.yaml (monolithic, without external schema references)
+        // Generate fully resolved openapi-full.json and openapi-full.yaml (monolithic, without external schema references)
         let full_json = serde_json::to_string_pretty(&json_value).map_err(std::io::Error::other)?;
-        let full_json_path = out_dir.join("openapi_full.json");
+        let full_json_path = out_dir.join("openapi-full.json");
         let mut full_json_file = File::create(&full_json_path)?;
         full_json_file.write_all(full_json.as_bytes())?;
         println!(
@@ -77,7 +77,7 @@ mod tasks {
         );
 
         let full_yaml = serde_yaml::to_string(&json_value).map_err(std::io::Error::other)?;
-        let full_yaml_path = out_dir.join("openapi_full.yaml");
+        let full_yaml_path = out_dir.join("openapi-full.yaml");
         let mut full_yaml_file = File::create(&full_yaml_path)?;
         full_yaml_file.write_all(full_yaml.as_bytes())?;
         println!(
