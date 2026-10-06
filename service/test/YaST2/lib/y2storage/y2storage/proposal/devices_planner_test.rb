@@ -464,10 +464,6 @@ describe Y2Storage::Proposal::DevicesPlanner do
           end
 
           context "when it is using adjust_by_ram" do
-            before do
-              allow(Yast::Linuxrc).to receive(:InstallInf)
-            end
-
             let(:adjust_by_ram) { true }
 
             let(:desired_size) { 1.GiB }
