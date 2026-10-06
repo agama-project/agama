@@ -29,7 +29,7 @@ import RebootButton from "~/components/core/RebootButton";
 import SplitButton from "~/components/core/SplitButton";
 import DownloadLogsFeedback from "~/components/core/DownloadLogsFeedback";
 import SideBySideLayout from "~/components/layout/SideBySideLayout";
-import { useTerminal } from "~/context/terminal";
+import { focusTargetFor, useTerminal } from "~/context/terminal";
 import { _ } from "~/i18n";
 
 /**
@@ -88,7 +88,9 @@ export default function InstallationFailed() {
                     <ActionContent icon="download" text={_("Download logs")} />
                   }
                 >
-                  <SplitButton.Item onClick={toggleTerminal}>
+                  <SplitButton.Item
+                    onClick={(event) => toggleTerminal({ focusTarget: focusTargetFor(event) })}
+                  >
                     <ActionContent icon="terminal" text={terminalLabel} />
                   </SplitButton.Item>
                 </SplitButton>

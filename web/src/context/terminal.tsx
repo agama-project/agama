@@ -21,12 +21,14 @@
  */
 
 import React, { useCallback, useMemo, useState } from "react";
+import { isKeyboardActivation } from "~/utils";
 
 /**
- * Id given to the terminal input, the target of the links that jump into the
- * terminal. Shared so that the links and their target cannot drift apart.
+ * Id given to the focus stop in front of the shell, the target of the links
+ * that jump to the terminal. Shared so that the links and their target cannot
+ * drift apart.
  */
-export const TERMINAL_INPUT_ID = "terminal-input";
+export const TERMINAL_STOP_ID = "terminal-stop";
 
 /**
  * Id given to the text explaining how to leave the terminal with the keyboard.
@@ -34,6 +36,21 @@ export const TERMINAL_INPUT_ID = "terminal-input";
  * anyone landing on the terminal, not only read by those who can see it.
  */
 export const TERMINAL_HINT_ID = "terminal-keyboard-hint";
+
+/**
+ * Where the keyboard focus goes when the terminal panel opens: straight into
+ * the shell, ready to type, or onto the focus stop in front of it.
+ */
+type TerminalFocusTarget = "shell" | "stop";
+
+/** How the panel is asked to open. */
+type OpenOptions = {
+  /**
+   * Where to leave the focus, `"shell"` by default. `focusTargetFor` picks it
+   * from the event that opened the panel.
+   */
+  focusTarget?: TerminalFocusTarget;
+};
 
 type TerminalContextValue = {
   /**
@@ -44,11 +61,16 @@ type TerminalContextValue = {
    */
   isOpen: boolean;
   /** Opens the panel, creating a new session. */
-  open: () => void;
+  open: (options?: OpenOptions) => void;
   /** Closes the panel, ending the session. */
   close: () => void;
   /** Toggles between open and closed. */
-  toggle: () => void;
+  toggle: (options?: OpenOptions) => void;
+  /**
+   * Where the focus was asked to land when the panel was last opened. Only
+   * meaningful while it is open; closing it goes back to the default.
+   */
+  openFocusTarget: TerminalFocusTarget;
   /** Whether the terminal panel is collapsed to its header bar. */
   isMinimized: boolean;
   /** Collapses the terminal panel to its header bar, keeping the session. */
@@ -63,6 +85,20 @@ type TerminalContextValue = {
   /** Sets the preferred height of the terminal panel in pixels. */
   setHeight: (height: number) => void;
 };
+
+/**
+ * Where to leave the focus when the terminal is opened by `event`.
+ *
+ * A pointer goes straight into the shell: clicking a terminal open is asking
+ * to type in it, and a pointer can always click its way out again. The
+ * keyboard stops in front of the shell instead, where the way in and the way
+ * back out are spelled out before anything is typed.
+ *
+ * Shared by every opener so that they cannot disagree on it.
+ */
+function focusTargetFor(event: { detail: number }): TerminalFocusTarget {
+  return isKeyboardActivation(event) ? "stop" : "shell";
+}
 
 const TerminalContext = React.createContext<TerminalContextValue | undefined>(undefined);
 
@@ -89,20 +125,24 @@ function TerminalProvider({ children }: React.PropsWithChildren) {
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
   const [height, setHeight] = useState<number | undefined>(undefined);
+  const [openFocusTarget, setOpenFocusTarget] = useState<TerminalFocusTarget>("shell");
 
   // Opening always starts expanded, so it never reopens as a collapsed bar
   // after having previously been minimized.
-  const open = useCallback(() => {
+  const open = useCallback(({ focusTarget = "shell" }: OpenOptions = {}) => {
     setIsOpen(true);
     setIsMinimized(false);
+    setOpenFocusTarget(focusTarget);
   }, []);
   const close = useCallback(() => {
     setIsOpen(false);
     setIsMinimized(false);
+    setOpenFocusTarget("shell");
   }, []);
-  const toggle = useCallback(() => {
+  const toggle = useCallback(({ focusTarget = "shell" }: OpenOptions = {}) => {
     setIsOpen((wasOpen) => !wasOpen);
     setIsMinimized(false);
+    setOpenFocusTarget(focusTarget);
   }, []);
   const minimize = useCallback(() => setIsMinimized(true), []);
   const restore = useCallback(() => setIsMinimized(false), []);
@@ -113,16 +153,17 @@ function TerminalProvider({ children }: React.PropsWithChildren) {
       open,
       close,
       toggle,
+      openFocusTarget,
       isMinimized,
       minimize,
       restore,
       height,
       setHeight,
     }),
-    [isOpen, open, close, toggle, isMinimized, minimize, restore, height],
+    [isOpen, open, close, toggle, openFocusTarget, isMinimized, minimize, restore, height],
   );
 
   return <TerminalContext.Provider value={value}>{children}</TerminalContext.Provider>;
 }
 
-export { TerminalProvider, useTerminal };
+export { TerminalProvider, useTerminal, focusTargetFor };

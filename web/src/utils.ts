@@ -774,6 +774,18 @@ const translateEntries = (
 const isoTimestamp = (): string => new Date().toISOString().replace(/[:.]/g, "-");
 
 /**
+ * Whether a click came from the keyboard rather than from a pointer.
+ *
+ * Pressing Enter or Space on a button fires a click just like a mouse or a
+ * finger does, and nothing in the event says which it was. The one thing that
+ * tells them apart is `detail`, the click count: a real pointer always reports
+ * at least one, while a click synthesized from a key press reports none.
+ *
+ * It is a hint, not a fact: treat a `false` as "assume a pointer".
+ */
+const isKeyboardActivation = (event: { detail: number }): boolean => event.detail === 0;
+
+/**
  * Fetches a resource and triggers a browser file download.
  *
  * The download is performed via `fetch` so the caller can `await` completion,
@@ -820,5 +832,6 @@ export {
   extendCollection,
   translateEntries,
   isoTimestamp,
+  isKeyboardActivation,
   download,
 };

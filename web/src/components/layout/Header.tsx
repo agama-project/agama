@@ -37,7 +37,7 @@ import Breadcrumbs from "~/components/core/Breadcrumbs";
 import Text from "~/components/core/Text";
 import ProductLogo from "~/components/product/ProductLogo";
 import { SkipTo } from "~/components/core";
-import { TERMINAL_INPUT_ID, useTerminal } from "~/context/terminal";
+import { TERMINAL_STOP_ID, useTerminal } from "~/context/terminal";
 import { useProductInfo } from "~/hooks/model/config/product";
 import { ROOT } from "~/routes/paths";
 import { _ } from "~/i18n";
@@ -185,9 +185,9 @@ export default function Header({
           // The terminal sits at the very end of the page, after everything
           // else, so reaching it with the keyboard takes a long walk. A
           // collapsed panel is expanded on the way, so the link always lands
-          // on a terminal ready to type in.
-          // TRANSLATORS: link that moves the focus into the terminal itself
-          <SkipTo contentId={TERMINAL_INPUT_ID} onSkip={restoreTerminal} icon="terminal">
+          // on a terminal that can be stepped into.
+          // TRANSLATORS: link that moves the focus to the terminal
+          <SkipTo contentId={TERMINAL_STOP_ID} onSkip={restoreTerminal} icon="terminal">
             {_("Skip to terminal")}
           </SkipTo>
         )}

@@ -19,11 +19,19 @@
 
 import React from "react";
 import { act, renderHook } from "@testing-library/react";
-import { TerminalProvider, useTerminal } from "~/context/terminal";
+import { focusTargetFor, TerminalProvider, useTerminal } from "~/context/terminal";
 
 const wrapper = ({ children }: React.PropsWithChildren) => (
   <TerminalProvider>{children}</TerminalProvider>
 );
+
+describe("focusTargetFor", () => {
+  it("sends a pointer straight into the shell, and the keyboard to the stop", () => {
+    // A click synthesized from a key press reports no clicks at all.
+    expect(focusTargetFor({ detail: 1 })).toBe("shell");
+    expect(focusTargetFor({ detail: 0 })).toBe("stop");
+  });
+});
 
 describe("useTerminal", () => {
   it("starts closed and expanded", () => {
@@ -70,6 +78,21 @@ describe("useTerminal", () => {
 
     expect(result.current.isOpen).toBe(true);
     expect(result.current.isMinimized).toBe(false);
+  });
+
+  it("remembers where the caller asked to leave the focus, until closed", () => {
+    const { result } = renderHook(() => useTerminal(), { wrapper });
+
+    expect(result.current.openFocusTarget).toBe("shell");
+
+    act(() => result.current.open({ focusTarget: "stop" }));
+    expect(result.current.openFocusTarget).toBe("stop");
+
+    act(() => result.current.close());
+    expect(result.current.openFocusTarget).toBe("shell");
+
+    act(() => result.current.toggle({ focusTarget: "stop" }));
+    expect(result.current.openFocusTarget).toBe("stop");
   });
 
   it("throws when used outside its provider", () => {

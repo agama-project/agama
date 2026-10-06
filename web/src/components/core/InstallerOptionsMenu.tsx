@@ -38,7 +38,7 @@ import ConfigDialog from "~/components/core/ConfigDialog";
 import ExitInstallationDialog from "~/components/core/ExitInstallationDialog";
 import DownloadLogsFeedback from "~/components/core/DownloadLogsFeedback";
 import { PRODUCT, ROOT } from "~/routes/paths";
-import { useTerminal } from "~/context/terminal";
+import { focusTargetFor, useTerminal } from "~/context/terminal";
 import { _ } from "~/i18n";
 
 /**
@@ -145,7 +145,10 @@ export default function InstallerOptionsMenu({ hideLabel = false }: InstallerOpt
                 {/* TRANSLATORS: menu entry to download the installer logs as an archive */}
                 <ItemContent icon="archive" text={_("Download logs")} />
               </DropdownItem>
-              <DropdownItem key="toggle-terminal" onClick={toggleTerminal}>
+              <DropdownItem
+                key="toggle-terminal"
+                onClick={(event) => toggleTerminal({ focusTarget: focusTargetFor(event) })}
+              >
                 <ItemContent
                   icon="terminal"
                   text={

@@ -193,17 +193,46 @@ describe("useTerminalSession", () => {
     expect(lastTerminal()?.focus).toHaveBeenCalled();
   });
 
-  it("names the terminal input and focuses it once attached", () => {
+  it("describes the terminal input and focuses it once attached", () => {
     const { rerender } = renderHook(({ container }) => useTerminalSession(container), {
       initialProps: { container: null as HTMLElement | null },
     });
 
     rerender({ container: document.createElement("div") });
 
-    expect(lastTerminal()?.textarea).toHaveAttribute("id", "terminal-input");
     // So that the way out of the terminal is announced on arrival.
     expect(lastTerminal()?.textarea).toHaveAttribute("aria-describedby", "terminal-keyboard-hint");
     expect(lastTerminal()?.focus).toHaveBeenCalled();
+  });
+
+  it("keeps the shell out of the tab order, reachable only on purpose", () => {
+    // Otherwise Tab would land in a shell that swallows every key, with no
+    // warning; the caller offers a focus stop in front of it instead (see
+    // TerminalPane).
+    const { result, rerender } = renderHook(({ container }) => useTerminalSession(container), {
+      initialProps: { container: null as HTMLElement | null },
+    });
+
+    rerender({ container: document.createElement("div") });
+    expect(lastTerminal()?.textarea?.tabIndex).toBe(-1);
+
+    act(() => result.current.focus());
+
+    expect(lastTerminal()?.focus).toHaveBeenCalled();
+  });
+
+  it("does not enter the shell on its own when the caller asked not to", () => {
+    const { rerender } = renderHook(
+      ({ container }) => useTerminalSession(container, { autoFocus: false }),
+      { initialProps: { container: null as HTMLElement | null } },
+    );
+
+    rerender({ container: document.createElement("div") });
+
+    // The terminal is there and ready, the focus is just left where the
+    // caller wants it (on the focus stop, see TerminalPane).
+    expect(lastTerminal()?.open).toHaveBeenCalled();
+    expect(lastTerminal()?.focus).not.toHaveBeenCalled();
   });
 
   it("forwards typed data to the socket as a binary frame", () => {

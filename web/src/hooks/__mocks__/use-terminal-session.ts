@@ -26,4 +26,5 @@
 export const useTerminalSession = jest.fn(() => ({
   setFontSize: jest.fn(),
   clear: jest.fn(),
+  focus: jest.fn(),
 }));
