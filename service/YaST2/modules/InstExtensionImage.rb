@@ -39,7 +39,6 @@ module Yast
     def main
       textdomain "base"
 
-      Yast.import "Linuxrc"
       Yast.import "URL"
       Yast.import "String"
       Yast.import "Directory"
@@ -280,10 +279,11 @@ module Yast
       Builtins.y2milestone("Initializing...")
       @initialized = true
 
-      # base repo URL
-      repo_url = Linuxrc.InstallInf("RepoURL")
-      # inst-sys URL
-      inst_sys_url = Linuxrc.InstallInf("InstsysURL")
+      # base repo URL and inst-sys URL: both were read from /etc/install.inf (written by
+      # linuxrc), which does not exist in Agama at all (no classic linuxrc boot stage) - so
+      # these are always nil here, same as IsURLRelative/MergeURLs below already handle
+      repo_url = nil
+      inst_sys_url = nil
 
       # non-relative inst-sys, repo is not taken into account
       repo_url = "" if !IsURLRelative(inst_sys_url)
