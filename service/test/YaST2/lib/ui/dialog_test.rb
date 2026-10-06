@@ -21,7 +21,6 @@
 
 require_relative "../../../test_helper"
 
-
 require "ui/dialog"
 
 class TestDialog < UI::Dialog

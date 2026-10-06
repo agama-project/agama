@@ -21,7 +21,6 @@
 
 require_relative "../../test_helper"
 
-
 require "yast"
 
 describe "Hostname#CurrentFQ" do

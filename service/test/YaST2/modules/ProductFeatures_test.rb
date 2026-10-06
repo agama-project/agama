@@ -21,7 +21,6 @@
 
 require_relative "../../test_helper"
 
-
 Yast.import "ProductFeatures"
 
 describe Yast::ProductFeatures do
@@ -95,7 +94,8 @@ describe Yast::ProductFeatures do
 
       it "uses the fallback for missing values" do
         expect(subject.GetBooleanFeatureWithFallback("globals", "enable_missing", true)).to be true
-        expect(subject.GetBooleanFeatureWithFallback("globals", "enable_missing", false)).to be false
+        expect(subject.GetBooleanFeatureWithFallback("globals", "enable_missing",
+          false)).to be false
       end
     end
   end

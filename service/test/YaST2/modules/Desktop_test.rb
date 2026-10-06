@@ -83,7 +83,8 @@ describe Yast::Desktop do
       end
 
       it "returns only whitelisted modules" do
-        expect(Yast::Desktop.ModuleList("Software")).to eq [Yast::Term.new(:item, Yast::Term.new(:id, "sw-single"), "Software Management")]
+        expect(Yast::Desktop.ModuleList("Software")).to eq [Yast::Term.new(:item,
+          Yast::Term.new(:id, "sw-single"), "Software Management")]
       end
     end
 

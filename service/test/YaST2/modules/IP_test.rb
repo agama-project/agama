@@ -21,7 +21,6 @@
 
 require_relative "../../test_helper"
 
-
 Yast.import "IP"
 
 describe Yast::IP do

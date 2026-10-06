@@ -40,14 +40,17 @@ describe Yast2::ControlLogDirRotator do
 
     describe "#prepare" do
       it "deletes, rotates and creates the directories" do
-        expect(Dir).to receive(:entries).with("/var/log/YaST2").and_return(["control", "control-01", "control-02", "control-03"])
+        expect(Dir).to receive(:entries).with("/var/log/YaST2")
+          .and_return(["control", "control-01", "control-02", "control-03"])
 
         expect(File).to receive(:exist?).with("/var/log/YaST2/control-03").and_return(true)
         expect(FileUtils).to receive(:remove_dir).with("/var/log/YaST2/control-03")
 
         expect(File).to receive(:exist?).with("/var/log/YaST2").and_return(true)
-        expect(File).to receive(:rename).with("/var/log/YaST2/control-02", "/var/log/YaST2/control-03")
-        expect(File).to receive(:rename).with("/var/log/YaST2/control-01", "/var/log/YaST2/control-02")
+        expect(File).to receive(:rename).with("/var/log/YaST2/control-02",
+          "/var/log/YaST2/control-03")
+        expect(File).to receive(:rename).with("/var/log/YaST2/control-01",
+          "/var/log/YaST2/control-02")
         expect(File).to receive(:rename).with("/var/log/YaST2/control", "/var/log/YaST2/control-01")
 
         expect(FileUtils).to receive(:mkdir_p).with("/var/log/YaST2/control")

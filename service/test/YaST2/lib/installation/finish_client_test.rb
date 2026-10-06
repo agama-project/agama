@@ -21,7 +21,6 @@
 
 require_relative "../../../test_helper"
 
-
 require "installation/finish_client"
 
 class TestFinish < ::Installation::FinishClient

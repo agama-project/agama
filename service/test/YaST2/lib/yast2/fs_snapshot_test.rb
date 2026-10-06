@@ -155,12 +155,14 @@ describe Yast2::FsSnapshot do
         end
 
         it "executes the fourth step of Snapper's installation helper" do
-          expect(Yast::Execute).to receive(:on_target).with(/snapper\/installation-helper/, "--step", "4")
+          expect(Yast::Execute).to receive(:on_target).with(/snapper\/installation-helper/,
+            "--step", "4")
           described_class.configure_snapper
         end
 
         it "sets Snapper config" do
-          expect(Yast::Execute).to receive(:on_target).with(/snapper$/, "--no-dbus", "set-config", any_args)
+          expect(Yast::Execute).to receive(:on_target).with(/snapper$/, "--no-dbus", "set-config",
+            any_args)
           described_class.configure_snapper
         end
 
@@ -179,13 +181,14 @@ describe Yast2::FsSnapshot do
 
   describe ".create_single" do
     CREATE_SINGLE_SNAPSHOT = "/usr/bin/snapper --no-dbus "\
-                             "--root=/ create --type single --description some-description".freeze
-    OPTION_CLEANUP_NUMBER = " --cleanup number".freeze
-    OPTION_IMPORTANT = " --userdata \"important=yes\"".freeze
+                             "--root=/ create --type single --description some-description"
+    OPTION_CLEANUP_NUMBER = " --cleanup number"
+    OPTION_IMPORTANT = " --userdata \"important=yes\""
 
     before do
       allow(Yast2::FsSnapshot).to receive(:configured?).and_return(configured)
-      allow(Yast2::FsSnapshot).to receive(:create_snapshot?).with(:single).and_return(create_snapshot)
+      allow(Yast2::FsSnapshot).to receive(:create_snapshot?).with(:single)
+        .and_return(create_snapshot)
       allow(Yast2::FsSnapshot).to receive(:all).and_return([dummy_snapshot])
     end
 
@@ -244,7 +247,8 @@ describe Yast2::FsSnapshot do
         let(:snapshot_command) { CREATE_SINGLE_SNAPSHOT + OPTION_IMPORTANT + OPTION_CLEANUP_NUMBER }
 
         it "creates a snapshot with that strategy that is marked as important" do
-          snapshot = described_class.create_single("some-description", cleanup: :number, important: true)
+          snapshot = described_class.create_single("some-description", cleanup: :number,
+important: true)
           expect(snapshot).to be(dummy_snapshot)
         end
       end
@@ -272,11 +276,12 @@ describe Yast2::FsSnapshot do
 
   describe ".create_pre" do
     CREATE_PRE_SNAPSHOT = "/usr/bin/snapper --no-dbus "\
-                          "--root=/ create --type pre --description some-description".freeze
+                          "--root=/ create --type pre --description some-description"
 
     before do
       allow(Yast2::FsSnapshot).to receive(:configured?).and_return(configured)
-      allow(Yast2::FsSnapshot).to receive(:create_snapshot?).with(:around).and_return(create_snapshot)
+      allow(Yast2::FsSnapshot).to receive(:create_snapshot?).with(:around)
+        .and_return(create_snapshot)
       allow(Yast2::FsSnapshot).to receive(:all).and_return([dummy_snapshot])
     end
 
@@ -335,7 +340,8 @@ describe Yast2::FsSnapshot do
         let(:snapshot_command) { CREATE_PRE_SNAPSHOT + OPTION_IMPORTANT + OPTION_CLEANUP_NUMBER }
 
         it "creates a pre snapshot with that strategy that is marked as important" do
-          snapshot = described_class.create_pre("some-description", important: true, cleanup: :number)
+          snapshot = described_class.create_pre("some-description", important: true,
+cleanup: :number)
           expect(snapshot).to be(dummy_snapshot)
         end
       end
@@ -364,11 +370,12 @@ describe Yast2::FsSnapshot do
   describe ".create_post" do
     CREATE_POST_SNAPSHOT = "/usr/bin/snapper --no-dbus "\
                            "--root=/ create --type post --description some-description "\
-                           "--pre-num 1".freeze
+                           "--pre-num 1"
 
     before do
       allow(Yast2::FsSnapshot).to receive(:configured?).and_return(configured)
-      allow(Yast2::FsSnapshot).to receive(:create_snapshot?).with(:around).and_return(create_snapshot)
+      allow(Yast2::FsSnapshot).to receive(:create_snapshot?).with(:around)
+        .and_return(create_snapshot)
     end
 
     context "when snapper is configured" do

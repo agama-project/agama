@@ -22,8 +22,7 @@
 require_relative "../../../../test_helper"
 require_relative "support/stubs"
 
-
-module Yast2
+module Yast2 # rubocop:disable Metrics/ModuleLength
   describe Systemd::Unit do
     include SystemdSocketStubs
     include SystemdServiceStubs
@@ -116,7 +115,8 @@ module Yast2
     end
 
     describe ".new" do
-      it "creates a new Systemd::Unit instance with unit name and type parsed from first parameter" do
+      it "creates a new Systemd::Unit instance with unit name and type parsed " \
+         "from first parameter" do
         instance = nil
         expect { instance = Systemd::Unit.new("random.socket") }.not_to raise_error
         expect(instance.unit_name).to eq("random")
@@ -125,7 +125,9 @@ module Yast2
 
       it "correctly parses a name with many dots" do
         instance = nil
-        expect { instance = Systemd::Unit.new("dbus-org.freedesktop.hostname1.service") }.not_to raise_error
+        expect do
+          instance = Systemd::Unit.new("dbus-org.freedesktop.hostname1.service")
+        end.not_to raise_error
         expect(instance.unit_name).to eq("dbus-org.freedesktop.hostname1")
         expect(instance.unit_type).to eq("service")
       end

@@ -21,7 +21,6 @@
 
 require_relative "../../../test_helper"
 
-
 require "ui/event_dispatcher"
 
 class DispatcherTestDialog

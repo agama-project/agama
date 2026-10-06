@@ -21,7 +21,6 @@
 
 require_relative "../../../test_helper"
 
-
 require "ui/text_helpers"
 
 class TestTextHelpers
@@ -169,7 +168,9 @@ describe ::UI::TextHelpers do
   end
 
   describe "#plain_text" do
-    let(:text) { "<p>YaST:</p><p>a <b>powerful</b> installation and <em>configuration</em> tool.</p>" }
+    let(:text) do
+      "<p>YaST:</p><p>a <b>powerful</b> installation and <em>configuration</em> tool.</p>"
+    end
 
     context "when neither tags: nor replacements: are given" do
       it "replaces tags with default replacements" do

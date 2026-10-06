@@ -22,8 +22,7 @@
 require_relative "../../../../test_helper"
 require_relative "support/stubs"
 
-
-module Yast2
+module Yast2 # rubocop:disable Metrics/ModuleLength
   describe Systemd::Service do
     include SystemdServiceStubs
 
@@ -178,7 +177,8 @@ module Yast2
       it "starts a service with a specialized inst-sys helper if available" do
         allow(File).to receive(:exist?).with("/bin/service_start").and_return(true)
         service = Systemd::Service.find("sshd")
-        allow(Yast::SCR).to receive(:Execute).and_return("stderr" => "", "stdout" => "", "exit" => 0)
+        allow(Yast::SCR).to receive(:Execute).and_return("stderr" => "", "stdout" => "",
+          "exit" => 0)
         expect(service).not_to receive(:command) # Systemd::Unit#command
         expect(service.start).to eq(true)
       end
@@ -189,7 +189,8 @@ module Yast2
         allow_any_instance_of(Systemd::Service).to receive(:sleep).and_return(1)
         allow(File).to receive(:exist?).with("/bin/service_start").and_return(true)
         service = Systemd::Service.find("sshd")
-        allow(Yast::SCR).to receive(:Execute).and_return("stderr" => "", "stdout" => "", "exit" => 0)
+        allow(Yast::SCR).to receive(:Execute).and_return("stderr" => "", "stdout" => "",
+          "exit" => 0)
         expect(service).to receive(:stop).ordered.and_call_original
         expect(service).to receive(:start).ordered.and_call_original
         expect(service).not_to receive(:command) # Systemd::Unit#command
@@ -201,7 +202,8 @@ module Yast2
       it "stops a service with a specialized inst-sys helper" do
         allow(File).to receive(:exist?).with("/bin/service_start").and_return(true)
         service = Systemd::Service.find("sshd")
-        allow(Yast::SCR).to receive(:Execute).and_return("stderr" => "", "stdout" => "", "exit" => 0)
+        allow(Yast::SCR).to receive(:Execute).and_return("stderr" => "", "stdout" => "",
+          "exit" => 0)
         expect(service).not_to receive(:command) # Systemd::Unit#command
         expect(service.stop).to eq(true)
       end

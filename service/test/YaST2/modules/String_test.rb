@@ -21,7 +21,6 @@
 
 require_relative "../../test_helper"
 
-
 Yast.import "String"
 
 describe Yast::String do
@@ -91,7 +90,8 @@ describe Yast::String do
       expect(subject.FormatSizeWithPrecision(nil, nil, nil)).to eq ""
     end
 
-    it "returns bytes in proper unit with passed precision forcing trailing zeroes if omit_zeroes not passed" do
+    it "returns bytes in proper unit with passed precision forcing trailing zeroes " \
+       "if omit_zeroes not passed" do
       expect(subject.FormatSizeWithPrecision(1025 << 30, 2, false)).to eq "1.00 TiB"
       expect(subject.FormatSizeWithPrecision(1025 << 30, 3, false)).to eq "1.001 TiB"
     end
@@ -261,8 +261,10 @@ describe Yast::String do
     end
 
     it "allows to specify if additional whitespaces should be removed" do
-      expect(subject.ParseOptions(" 1 ,  2", "remove_whitespace" => true, "separator" => ",")).to eq ["1", "2"]
-      expect(subject.ParseOptions(" 1 ,  2", "remove_whitespace" => false, "separator" => ",")).to eq [" 1 ", "  2"]
+      expect(subject.ParseOptions(" 1 ,  2", "remove_whitespace" => true,
+"separator" => ",")).to eq ["1", "2"]
+      expect(subject.ParseOptions(" 1 ,  2", "remove_whitespace" => false,
+"separator" => ",")).to eq [" 1 ", "  2"]
     end
 
     it "allows to specify if backslash should be interpreted" do
@@ -423,8 +425,10 @@ describe Yast::String do
 
   describe ".FormatRateMessage" do
     it "returns text with %1 replaced by formated rate for average and current download " do
-      expect(subject.FormatRateMessage("Downloading %1", 1 << 20, 1 << 10)).to eq "Downloading 1 KiB/s (on average 1.00 MiB/s)"
-      expect(subject.FormatRateMessage("Downloading %1", 1025 << 20, 1025 << 30)).to eq "Downloading 1.001 TiB/s (on average 1.001 GiB/s)"
+      expect(subject.FormatRateMessage("Downloading %1", 1 << 20,
+        1 << 10)).to eq "Downloading 1 KiB/s (on average 1.00 MiB/s)"
+      expect(subject.FormatRateMessage("Downloading %1", 1025 << 20,
+        1025 << 30)).to eq "Downloading 1.001 TiB/s (on average 1.001 GiB/s)"
     end
 
     it "returns text with %1 replaced by format current rate string if avg_rate is zero" do
@@ -516,7 +520,8 @@ describe Yast::String do
                        "    a1        a2 \n" \
                        "    bb10      bb2"
 
-      expect(subject.TextTable(["h1", "h2"], [["a1", "a2"], ["bb10", "bb2"]], "horizontal_padding" => 6)).to eq(
+      expect(subject.TextTable(["h1", "h2"], [["a1", "a2"], ["bb10", "bb2"]],
+        "horizontal_padding" => 6)).to eq(
         expected_table
       )
     end
@@ -527,7 +532,8 @@ describe Yast::String do
                        "      a1    a2 \n" \
                        "      bb10  bb2"
 
-      expect(subject.TextTable(["h1", "h2"], [["a1", "a2"], ["bb10", "bb2"]], "table_left_padding" => 6)).to eq(
+      expect(subject.TextTable(["h1", "h2"], [["a1", "a2"], ["bb10", "bb2"]],
+        "table_left_padding" => 6)).to eq(
         expected_table
       )
     end

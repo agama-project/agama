@@ -53,7 +53,8 @@ describe Yast::Kernel do
 
     describe "when modules.d directory is missing" do
       it "returns empty list of modules for modules.d directory" do
-        expect(Yast::FileUtils).to receive(:Exists).with(Yast::KernelClass::MODULES_DIR).and_return(false)
+        expect(Yast::FileUtils).to receive(:Exists)
+          .with(Yast::KernelClass::MODULES_DIR).and_return(false)
         expect(Yast::Kernel.modules_to_load).to eq(Yast::KernelClass::MODULES_CONF_FILE => [])
       end
     end
@@ -65,7 +66,8 @@ describe Yast::Kernel do
       allow(Yast::Arch).to receive(:is_uml).and_return(false)
       allow(Yast::Arch).to receive(:is_xen).and_return(false)
       expect(Yast::SCR).to receive(:Read).with(path(".probe.is_xen")).and_return(false)
-      expect(Yast::SCR).to receive(:Read).with(path(".proc.cpuinfo.value.\"0\".\"flags\"")).and_return(nil)
+      expect(Yast::SCR).to receive(:Read)
+        .with(path(".proc.cpuinfo.value.\"0\".\"flags\"")).and_return(nil)
       expect(Yast::SCR).to receive(:Read).with(path(".probe.memory")).and_return(10)
       expect(Yast::Kernel.GetPackages).to eq(["kernel-default"])
     end
@@ -73,7 +75,8 @@ describe Yast::Kernel do
 
   describe "#module_to_be_loaded?" do
     it "tests whether module is loaded on boot" do
-      ["module-a", "module-b", "user-module-1", "user-module-2", "user-module-3", "user-module-4"].each do |kernel_module|
+      ["module-a", "module-b", "user-module-1", "user-module-2", "user-module-3",
+       "user-module-4"].each do |kernel_module|
         expect(Yast::Kernel.module_to_be_loaded?(kernel_module)).to eq(true)
       end
 
@@ -95,7 +98,9 @@ describe Yast::Kernel do
       new_module = "new-kernel-module"
       Yast::Kernel.AddModuleToLoad new_module
       Yast::Kernel.AddModuleToLoad new_module
-      expect(Yast::Kernel.modules_to_load.values.flatten.select { |m| m == new_module }.size).to eq(1)
+      expect(Yast::Kernel.modules_to_load.values.flatten.select do |m|
+               m == new_module
+             end.size).to eq(1)
     end
   end
 
@@ -136,7 +141,8 @@ describe Yast::Kernel do
           Yast::Kernel.reset_modules_to_load
 
           # Tests on the default data
-          ["module-a", "module-b", "user-module-1", "user-module-2", "user-module-3", "user-module-4"].each do |kernel_module|
+          ["module-a", "module-b", "user-module-1", "user-module-2", "user-module-3",
+           "user-module-4"].each do |kernel_module|
             expect(Yast::Kernel.module_to_be_loaded?(kernel_module)).to eq(true)
           end
 
@@ -151,7 +157,8 @@ describe Yast::Kernel do
 
           # Tests on the stored modified data
           Yast::Kernel.reset_modules_to_load
-          ["module-a", "module-b", "user-module-1", "user-module-3", "user-module-4", new_module].each do |kernel_module|
+          ["module-a", "module-b", "user-module-1", "user-module-3", "user-module-4",
+           new_module].each do |kernel_module|
             expect(Yast::Kernel.module_to_be_loaded?(kernel_module)).to eq(true)
           end
 

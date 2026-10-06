@@ -149,7 +149,8 @@ describe "Yast::XML" do
       end
 
       it "raises XMLSerializationError when key is not string" do
-        input = { "test" => { "a" => "b", "lest" => :lest, 1 => 2, nil => "t", :symbol => "symbol" } }
+        input = { "test" => { "a" => "b", "lest" => :lest, 1 => 2, nil => "t",
+:symbol => "symbol" } }
 
         expect { subject.YCPToXMLString("test", input) }.to raise_error(Yast::XMLSerializationError)
       end
@@ -230,7 +231,8 @@ describe "Yast::XML" do
       input = { "test" => :abc, "lest" => 15 }
       expected = "<?xml version=\"1.0\"?>\n" \
                  "<!DOCTYPE test SYSTEM \"just_testing.dtd\">\n" \
-                 "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
+                 "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" " \
+                 "xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
                  "  <lest t=\"integer\">15</lest>\n" \
                  "  <test t=\"symbol\">abc</test>\n" \
                  "</test>\n"
@@ -242,7 +244,8 @@ describe "Yast::XML" do
   describe ".XMLToYCPString" do
     context "regarding 'config:type' and 't' attributes:" do
       it "recognizes the 't' attribute" do
-        input = "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
+        input = "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" " \
+                "xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
                 "  <foo t=\"symbol\">sym</foo>\n" \
                 "</test>\n"
         expected = { "foo" => :sym }
@@ -250,7 +253,8 @@ describe "Yast::XML" do
       end
 
       it "recognizes the 'type' attribute (unnamespaced)" do
-        input = "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
+        input = "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" " \
+                "xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
                 "  <foo type=\"symbol\">sym</foo>\n" \
                 "</test>\n"
         expected = { "foo" => :sym }
@@ -258,7 +262,8 @@ describe "Yast::XML" do
       end
 
       it "recognizes the 'config:type' attribute" do
-        input = "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
+        input = "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" " \
+                "xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
                 "  <foo config:type=\"symbol\">sym</foo>\n" \
                 "</test>\n"
         expected = { "foo" => :sym }
@@ -266,7 +271,8 @@ describe "Yast::XML" do
       end
 
       it "recognizes the 'config:type' attribute even with a different prefix" do
-        input = "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:c=\"http://www.suse.com/1.0/configns\">\n" \
+        input = "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" " \
+                "xmlns:c=\"http://www.suse.com/1.0/configns\">\n" \
                 "  <foo c:type=\"symbol\">sym</foo>\n" \
                 "</test>\n"
         expected = { "foo" => :sym }
@@ -274,25 +280,33 @@ describe "Yast::XML" do
       end
 
       it "in case of conflict it raises" do
-        input = "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
+        input = "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" " \
+                "xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
                 "  <foo t=\"string\" type=\"symbol\">str</foo>\n" \
                 "  <bar t=\"string\" config:type=\"symbol\">str</bar>\n" \
                 "</test>\n"
-        expect { subject.XMLToYCPString(input) }.to raise_error(Yast::XMLDeserializationError, /both 't' and 'type'/)
+        expect do
+          subject.XMLToYCPString(input)
+        end.to raise_error(Yast::XMLDeserializationError,
+          /both 't' and 'type'/)
       end
 
       it "in raises when the type is invalid" do
         input = "<test xmlns=\"http://www.suse.com/1.0/yast2ns\">\n" \
                 "  <foo t=\"typewriter\">old</foo>\n" \
                 "</test>\n"
-        expect { subject.XMLToYCPString(input) }.to raise_error(Yast::XMLDeserializationError, /invalid type "typewriter"/)
+        expect do
+          subject.XMLToYCPString(input)
+        end.to raise_error(Yast::XMLDeserializationError,
+          /invalid type "typewriter"/)
       end
     end
 
     it "returns string for xml element with type=\"string\"" do
       input = "<?xml version=\"1.0\"?>\n" \
               "<!DOCTYPE test SYSTEM \"whatever.dtd\">\n" \
-              "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
+              "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" " \
+              "xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
               "  <test config:type=\"string\">5</test>\n" \
               "  <lest config:type=\"string\"> \n" \
               "    -5 \n" \
@@ -306,7 +320,8 @@ describe "Yast::XML" do
     # backward compatibility
     it "returns string for xml element with type=\"disksize\"" do
       input = "<?xml version=\"1.0\"?>\n" \
-              "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
+              "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" " \
+              "xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
               "  <test config:type=\"disksize\">5</test>\n" \
               "  <lest config:type=\"disksize\"> \n" \
               "    -5 \n" \
@@ -319,7 +334,8 @@ describe "Yast::XML" do
 
     it "returns string for xml element without type and with text" do
       input = "<?xml version=\"1.0\"?>\n" \
-              "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
+              "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" " \
+              "xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
               "  <test>5</test>\n" \
               "  <lest>\n" \
               "    -5 \n" \
@@ -332,7 +348,8 @@ describe "Yast::XML" do
 
     it "strips spaces at the end of strings" do
       input = "<?xml version=\"1.0\"?>\n" \
-              "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
+              "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" " \
+              "xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
               "  <test>foo </test>\n" \
               "  <lest>bar\n" \
               "  </lest>\n" \
@@ -344,7 +361,8 @@ describe "Yast::XML" do
 
     it "preserves spaces at the end of CDATA elements" do
       input = "<?xml version=\"1.0\"?>\n" \
-              "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
+              "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" " \
+              "xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
               "  <test><![CDATA[foo ]]></test>\n" \
               "  <lest><![CDATA[bar\n]]></lest>\n" \
               "</test>\n"
@@ -355,7 +373,8 @@ describe "Yast::XML" do
 
     it "strips spaces at the start of strings" do
       input = "<?xml version=\"1.0\"?>\n" \
-              "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
+              "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" " \
+              "xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
               "  <test> foo</test>\n" \
               "  <lest>\nbar" \
               "  </lest>\n" \
@@ -367,7 +386,8 @@ describe "Yast::XML" do
 
     it "preserves spaces at the start of CDATA elements" do
       input = "<?xml version=\"1.0\"?>\n" \
-              "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
+              "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" " \
+              "xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
               "  <test><![CDATA[ foo]]></test>\n" \
               "  <lest><![CDATA[\nbar]]></lest>\n" \
               "</test>\n"
@@ -378,7 +398,8 @@ describe "Yast::XML" do
 
     it "returns integer for xml element with type=\"integer\"" do
       input = "<?xml version=\"1.0\"?>\n" \
-              "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
+              "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" " \
+              "xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
               "  <test config:type=\"integer\">5</test>\n" \
               "  <lest config:type=\"integer\">-5</lest>\n" \
               "</test>\n"
@@ -389,18 +410,23 @@ describe "Yast::XML" do
 
     it "raises XMLDeserializationError (with line info) for invalid integers" do
       input = "<?xml version=\"1.0\"?>\n" \
-              "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
+              "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" " \
+              "xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
               "  <test config:type=\"integer\">5</test>\n" \
               "  <lest config:type=\"integer\">-5</lest>\n" \
               "  <invalid config:type=\"integer\">invalid</invalid>\n" \
               "</test>\n"
 
-      expect { subject.XMLToYCPString(input) }.to raise_error(Yast::XMLDeserializationError, /at line 5: cannot be parsed as an integer/)
+      expect do
+        subject.XMLToYCPString(input)
+      end.to raise_error(Yast::XMLDeserializationError,
+        /at line 5: cannot be parsed as an integer/)
     end
 
     it "returns symbol for xml element with type=\"symbol\"" do
       input = "<?xml version=\"1.0\"?>\n" \
-              "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
+              "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" " \
+              "xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
               "  <test config:type=\"symbol\">5</test>\n" \
               "  <lest config:type=\"symbol\">test</lest>\n" \
               "</test>\n"
@@ -411,7 +437,8 @@ describe "Yast::XML" do
 
     it "returns boolean for xml element with type=\"boolean\"" do
       input = "<?xml version=\"1.0\"?>\n" \
-              "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
+              "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" " \
+              "xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
               "  <test config:type=\"boolean\">true</test>\n" \
               "  <lest config:type=\"boolean\">false</lest>\n" \
               "</test>\n"
@@ -422,7 +449,8 @@ describe "Yast::XML" do
 
     it "raises XMLDeserializationError xml element with type=\"boolean\" and unknown value" do
       input = "<?xml version=\"1.0\"?>\n" \
-              "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
+              "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" " \
+              "xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
               "  <test config:type=\"boolean\">true</test>\n" \
               "  <lest config:type=\"boolean\">invalid</lest>\n" \
               "</test>\n"
@@ -432,7 +460,8 @@ describe "Yast::XML" do
 
     it "returns array for xml element with type=\"list\"" do
       input = "<?xml version=\"1.0\"?>\n" \
-              "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
+              "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" " \
+              "xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
               "  <test config:type=\"list\">\n" \
               "    <lest config:type=\"boolean\">false</lest>\n" \
               "    <int config:type=\"integer\">5</int>\n" \
@@ -445,7 +474,8 @@ describe "Yast::XML" do
 
     it "works also on nested arrays" do
       input = "<?xml version=\"1.0\"?>\n" \
-              "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
+              "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" " \
+              "xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
               "  <test config:type=\"list\">\n" \
               "    <lest config:type=\"list\">\n" \
               "      <a config:type=\"boolean\">false</a>\n" \
@@ -461,7 +491,8 @@ describe "Yast::XML" do
 
     it "returns hash for xml element that contain only sub elements" do
       input = "<?xml version=\"1.0\"?>\n" \
-              "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
+              "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" " \
+              "xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
               "  <test>\n" \
               "    <lest config:type=\"boolean\">false</lest>\n" \
               "    <int config:type=\"integer\">5</int>\n" \
@@ -474,7 +505,8 @@ describe "Yast::XML" do
 
     it "raise Yast::XMLDeserializationError for xml element that contain sub elements and value" do
       input = "<?xml version=\"1.0\"?>\n" \
-              "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
+              "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" " \
+              "xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
               "  <test>\n" \
               "    <lest config:type=\"boolean\">false</lest>\n" \
               "    <int config:type=\"integer\">5</int>\n" \
@@ -482,13 +514,17 @@ describe "Yast::XML" do
               "  </test>\n" \
               "</test>\n"
 
-      expect { subject.XMLToYCPString(input) }.to raise_error(Yast::XMLDeserializationError, /both text.*and elements/)
+      expect do
+        subject.XMLToYCPString(input)
+      end.to raise_error(Yast::XMLDeserializationError,
+        /both text.*and elements/)
     end
 
     context "element with empty value" do
       it "return empty string if no type is specified" do
         input = "<?xml version=\"1.0\"?>\n" \
-                "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
+                "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" " \
+                "xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
                 "  <test></test>\n" \
                 "</test>\n"
 
@@ -498,7 +534,8 @@ describe "Yast::XML" do
 
       it "returns empty string with type string" do
         input = "<?xml version=\"1.0\"?>\n" \
-                "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
+                "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" " \
+                "xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
                 "  <test type=\"string\" />\n" \
                 "</test>\n"
         expected = { "test" => "" }
@@ -508,7 +545,8 @@ describe "Yast::XML" do
 
       it "returns empty hash with type map" do
         input = "<?xml version=\"1.0\"?>\n" \
-                "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
+                "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" " \
+                "xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
                 "  <test type=\"map\" />\n" \
                 "</test>\n"
         expected = { "test" => {} }
@@ -518,7 +556,8 @@ describe "Yast::XML" do
 
       it "returns empty array with type list" do
         input = "<?xml version=\"1.0\"?>\n" \
-                "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
+                "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" " \
+                "xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
                 "  <test type=\"list\" />\n" \
                 "</test>\n"
         expected = { "test" => [] }
@@ -528,7 +567,8 @@ describe "Yast::XML" do
 
       it "raises XMLDeserializationError with type symbol" do
         input = "<?xml version=\"1.0\"?>\n" \
-                "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
+                "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" " \
+                "xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
                 "  <lest type=\"symbol\"></lest>\n" \
                 "</test>\n"
 
@@ -537,7 +577,8 @@ describe "Yast::XML" do
 
       it "raises XMLDeserializationError with type integer" do
         input = "<?xml version=\"1.0\"?>\n" \
-                "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
+                "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" " \
+                "xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
                 "  <lest type=\"integer\"></lest>\n" \
                 "</test>\n"
 
@@ -546,7 +587,8 @@ describe "Yast::XML" do
 
       it "raises XMLDeserializationError with type boolean" do
         input = "<?xml version=\"1.0\"?>\n" \
-                "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
+                "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" " \
+                "xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
                 "  <lest type=\"boolean\"></lest>\n" \
                 "</test>\n"
 
@@ -555,7 +597,8 @@ describe "Yast::XML" do
 
       it "workaround with empty cdata still works" do
         input = "<?xml version=\"1.0\"?>\n" \
-                "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
+                "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" " \
+                "xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
                 "  <lest><![CDATA[]]></lest>\n" \
                 "</test>\n"
         expected = { "lest" => "" }
@@ -567,7 +610,8 @@ describe "Yast::XML" do
     # for cdata see global before
     it "returns cdata section as string" do
       input = "<?xml version=\"1.0\"?>\n" \
-              "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
+              "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" " \
+              "xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
               "  <cdata1>false</cdata1>\n" \
               "</test>\n"
       expected = { "cdata1" => "false" }
@@ -577,11 +621,14 @@ describe "Yast::XML" do
 
     it "raises XMLDeserializationError if xml is malformed" do
       input = "<?xml version=\"1.0\"?>\n" \
-              "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
+              "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" " \
+              "xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
               "  <okoze>blabla</ovoze>\n" \
               "</test>\n"
 
-      expect { subject.XMLToYCPString(input) }.to raise_error(Yast::XMLDeserializationError, /mismatch/)
+      expect do
+        subject.XMLToYCPString(input)
+      end.to raise_error(Yast::XMLDeserializationError, /mismatch/)
     end
 
     it "raises XMLDeserializationError if xml is empty" do
@@ -591,7 +638,8 @@ describe "Yast::XML" do
 
     it "ignores xml comments" do
       input = "<?xml version=\"1.0\"?>\n" \
-              "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
+              "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" " \
+              "xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
               "  <!-- we need empty list -->\n" \
               "  <test type=\"list\" />\n" \
               "</test>\n"

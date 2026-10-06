@@ -22,8 +22,7 @@
 require_relative "../../../../test_helper"
 require_relative "support/stubs"
 
-
-module Yast2
+module Yast2 # rubocop:disable Metrics/ModuleLength
   describe Systemd::Target do
     include SystemdTargetStubs
 
@@ -121,7 +120,8 @@ module Yast2
 
       context "when target properties cannot be found out (e.g. in chroot)" do
         it "it returns true if the target unit object has been set as default target" do
-          expect(Systemctl).to receive(:execute).with("set-default --force multi-user-in-installation.target")
+          expect(Systemctl).to receive(:execute)
+            .with("set-default --force multi-user-in-installation.target")
             .and_return(OpenStruct.new("exit" => 0, "stdout" => "", "stderr" => ""))
           stub_targets(target: "multi-user-in-installation")
           target = Systemd::Target.find("multi-user-in-installation")

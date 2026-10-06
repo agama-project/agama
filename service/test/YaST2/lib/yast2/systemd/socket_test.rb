@@ -22,7 +22,6 @@
 require_relative "../../../../test_helper"
 require_relative "support/stubs"
 
-
 module Yast2
   describe Systemd::Socket do
     include SystemdSocketStubs

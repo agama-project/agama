@@ -21,7 +21,6 @@
 
 require_relative "../../test_helper"
 
-
 Yast.import "Wizard"
 
 describe Yast::Wizard do

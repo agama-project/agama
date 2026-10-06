@@ -54,7 +54,7 @@ module SystemctlStubs
       OpenStruct.new(
         stdout: "success",
         stderr: (success ? +"" : +"failure"),
-        exit:   (success ? 0  : 1)
+        exit:   (success ? 0 : 1)
       )
     )
   end
@@ -144,7 +144,7 @@ module SystemdUnitStubs
         OpenStruct.new(
           stdout: +"",
           stderr: (success ? +"" : +"failure"),
-          exit:   (success ? 0  : 1)
+          exit:   (success ? 0 : 1)
         )
       )
   end

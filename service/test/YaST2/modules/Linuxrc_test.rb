@@ -21,7 +21,6 @@
 
 require_relative "../../test_helper"
 
-
 Yast.import "Linuxrc"
 
 DEFAULT_INSTALL_INF = {
@@ -295,7 +294,10 @@ describe Yast::Linuxrc do
         allow(Yast::SCR).to receive(:Write)
 
         unknown_service = "uNkNown-ser_vice"
-        expect { subject.disable_remote(["SSH", unknown_service]) }.to raise_error(ArgumentError, /Cannot disable #{unknown_service}/)
+        expect do
+          subject.disable_remote(["SSH",
+                                  unknown_service])
+        end.to raise_error(ArgumentError, /Cannot disable #{unknown_service}/)
       end
     end
   end

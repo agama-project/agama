@@ -22,7 +22,7 @@
 require_relative "../../test_helper"
 require_relative "../lib/yast2/systemd/support/stubs"
 
-module Yast
+module Yast # rubocop:disable Metrics/ModuleLength
   import "Service"
 
   describe Service do

@@ -21,7 +21,6 @@
 
 require_relative "../../test_helper"
 
-
 Yast.import "URLRecode"
 
 describe Yast::URLRecode do
