@@ -24,6 +24,15 @@ require_relative "../../../test_helper"
 require "yast2/fs_snapshot"
 
 describe Yast2::FsSnapshot do
+  # Yast::Installation is a global singleton, and #destdir= really mutates its state (not just a
+  # test double) - restore it so this spec doesn't leak "/mnt" into whatever test runs next.
+  around do |example|
+    Yast.import "Installation"
+    original_destdir = Yast::Installation.destdir
+    example.run
+    Yast::Installation.destdir = original_destdir
+  end
+
   def logger
     described_class.log
   end

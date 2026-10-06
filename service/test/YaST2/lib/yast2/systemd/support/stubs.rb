@@ -24,6 +24,12 @@
 # (included only by the specs that need it), not a global RSpec.configure hook.
 
 require "ostruct"
+require "yast2/systemd/unit"
+require "yast2/systemd/unit_properties"
+require "yast2/systemd/service"
+require "yast2/systemd/socket"
+require "yast2/systemd/socket_finder"
+require "yast2/systemd/target"
 
 SYSTEMD_DATA_PATH = File.join(FIXTURES_PATH, "yast2", "systemd")
 

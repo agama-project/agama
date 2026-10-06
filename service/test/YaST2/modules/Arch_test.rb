@@ -21,7 +21,7 @@
 
 require_relative "../../test_helper"
 
-GENERAL_DATA_PATH = File.join(FIXTURES_PATH, "yast2", "general")
+GENERAL_DATA_PATH = File.join(FIXTURES_PATH, "yast2", "general") unless defined?(GENERAL_DATA_PATH)
 
 Yast.import "Arch"
 

@@ -26,7 +26,7 @@ require "pp"
 
 describe Yast2::SecretAttributes do
   # Dummy test clase
-  class ClassWithPassword
+  class Yast2ClassWithPassword
     include Yast2::SecretAttributes
 
     attr_accessor :name
@@ -35,7 +35,7 @@ describe Yast2::SecretAttributes do
   end
 
   # Another dummy test clase
-  class ClassWithData
+  class Yast2ClassWithData
     include Yast2::SecretAttributes
 
     attr_accessor :name
@@ -51,9 +51,9 @@ describe Yast2::SecretAttributes do
     end
   end
 
-  let(:with_password) { ClassWithPassword.new }
-  let(:with_password2) { ClassWithPassword.new }
-  let(:with_data) { ClassWithData.new }
+  let(:with_password) { Yast2ClassWithPassword.new }
+  let(:with_password2) { Yast2ClassWithPassword.new }
+  let(:with_data) { Yast2ClassWithData.new }
   let(:ultimate_hash) { { ultimate_question: 42 } }
 
   describe ".secret_attr" do
