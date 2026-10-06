@@ -97,9 +97,9 @@ jobs:
         id: check_changes
         run: |
           if [ -n "$(git -C agama-openapi status --porcelain nightly)" ]; then
-            echo "changes=true" >> $GITHUB_OUTPUT
+            echo "changes=true" >> "$GITHUB_OUTPUT"
           else
-            echo "changes=false" >> $GITHUB_OUTPUT
+            echo "changes=false" >> "$GITHUB_OUTPUT"
             echo "No changes in nightly OpenAPI specification."
           fi
 
