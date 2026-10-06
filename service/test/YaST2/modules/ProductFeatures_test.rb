@@ -26,6 +26,20 @@ Yast.import "ProductFeatures"
 describe Yast::ProductFeatures do
   subject { Yast::ProductFeatures }
 
+  # Yast::ProductFeatures is a global singleton, and #Import (used extensively throughout this
+  # file) really replaces its whole internal state (not a test double). Reset it to a pristine,
+  # uninitialized state once this file's examples are all done (same convention and "after
+  # the whole context" granularity as
+  # test/YaST2/lib/y2storage/support/shared_setup.rb) so this spec doesn't leak into whatever
+  # *other file's* test runs next (e.g. a test relying on a "preferred_bootloader" feature
+  # previously set by some other, unrelated spec). Deliberately *not* reset between this file's
+  # own examples: the "#GetFeature ... reads the value from the running system" examples rely on
+  # @features already being populated by the "in normal stage" example that runs right before
+  # them (both read the same fixture file), same as upstream's own test relies on.
+  after(:context) do
+    Yast::ProductFeatures.instance_variable_set(:@features, nil)
+  end
+
   before do
     allow(Yast::SCR).to receive(:Dir).and_return([])
   end
