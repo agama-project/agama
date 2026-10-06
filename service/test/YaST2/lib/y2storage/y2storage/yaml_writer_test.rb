@@ -22,6 +22,7 @@
 
 require_relative "../../../../test_helper"
 require_relative "../support/shared_setup"
+
 describe Y2Storage::YamlWriter do
   include_context "yast2-storage-ng test setup"
 
