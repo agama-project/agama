@@ -81,8 +81,11 @@ module Agama
       # Installs bootloader.
       #
       # It writes the bootloader configuration to the system.
+      #
+      # This replicates the relevant logic from yast2-bootloader's inst_bootloader client.
       def install
-        Yast::WFM.CallFunction("inst_bootloader", [])
+        bl_current = ::Bootloader::BootloaderFactory.current
+        bl_current.write_sysconfig(prewrite: true)
       end
 
       # Required packages.

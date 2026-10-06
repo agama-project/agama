@@ -19,16 +19,20 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-# Mock some YaST modules like Package.
-agama_y2dir = File.expand_path("../lib/agama/y2dir", __dir__)
-ENV["Y2DIR"] = [ENV.fetch("Y2DIR", nil), agama_y2dir].compact.join(":")
+ENV["Y2DIR"] = [
+  ENV.fetch("Y2DIR", nil),
+  File.expand_path("../lib/agama/y2dir", __dir__),
+  File.expand_path("../YaST2", __dir__)
+].compact.join(":")
 
 require "yast"
 require "yast/rspec"
 
 SRC_PATH = File.expand_path("../lib", __dir__)
 FIXTURES_PATH = File.expand_path("fixtures", __dir__)
+YAST2_LIB_PATH = File.expand_path("../YaST2/lib", __dir__)
 $LOAD_PATH.unshift(SRC_PATH)
+$LOAD_PATH.unshift(YAST2_LIB_PATH)
 
 require "agama/product_reader" # to globally mock reading real products
 

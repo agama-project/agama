@@ -6,6 +6,7 @@
 [![CI - Service](https://github.com/openSUSE/agama/actions/workflows/ci-service.yml/badge.svg)](https://github.com/openSUSE/agama/actions/workflows/ci-service.yml)
 [![CI - Web](https://github.com/openSUSE/agama/actions/workflows/ci-web.yml/badge.svg)](https://github.com/openSUSE/agama/actions/workflows/ci-web.yml)
 [![CI - Rubocop](https://github.com/openSUSE/agama/actions/workflows/ci-rubocop.yml/badge.svg)](https://github.com/openSUSE/agama/actions/workflows/ci-rubocop.yml)
+[![CI - Actionlint](https://github.com/openSUSE/agama/actions/workflows/ci-actionlint.yml/badge.svg)](https://github.com/openSUSE/agama/actions/workflows/ci-actionlint.yml)
 [![CI - Documentation Check](https://github.com/openSUSE/agama/actions/workflows/ci-doc-check.yml/badge.svg)](https://github.com/openSUSE/agama/actions/workflows/ci-doc-check.yml)
 [![CI - Integration Tests](https://github.com/openSUSE/agama/actions/workflows/ci-integration-tests.yml/badge.svg)](https://github.com/openSUSE/agama/actions/workflows/ci-integration-tests.yml)
 [![Coverage Status](https://coveralls.io/repos/github/openSUSE/agama/badge.svg?branch=master)](https://coveralls.io/github/openSUSE/agama?branch=master)
@@ -15,7 +16,6 @@
 
 [![Weblate Update POT](https://github.com/openSUSE/agama/actions/workflows/weblate-update-pot.yml/badge.svg)](https://github.com/openSUSE/agama/actions/workflows/weblate-update-pot.yml)
 [![Weblate Merge PO](https://github.com/openSUSE/agama/actions/workflows/weblate-merge-po.yml/badge.svg)](https://github.com/openSUSE/agama/actions/workflows/weblate-merge-po.yml)
-[![Weblate Merge Product PO](https://github.com/openSUSE/agama/actions/workflows/weblate-merge-products-po.yml/badge.svg)](https://github.com/openSUSE/agama/actions/workflows/weblate-merge-products-po.yml)
 [![Translation Status](https://l10n.opensuse.org/widgets/agama/-/agama-web/svg-badge.svg)](https://l10n.opensuse.org/engage/agama/)
 
 ## Packages

@@ -105,10 +105,6 @@ fi
 systemctl disable snapper-cleanup.timer
 systemctl disable snapper-timeline.timer
 
-# disable unused services
-systemctl disable YaST2-Firstboot.service
-systemctl disable YaST2-Second-Stage.service
-
 # Prevent premature activation of LVM (bsc#1246133)
 systemctl mask lvm2-monitor.service
 sed -i 's:# event_activation = 1:event_activation = 0:' /etc/lvm/lvm.conf

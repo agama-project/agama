@@ -101,10 +101,10 @@ jobs:
 
           if [ -s pot.diff ]; then
             echo "POT file updated"
-            echo "pot_updated=true" >> $GITHUB_OUTPUT
+            echo "pot_updated=true" >> "$GITHUB_OUTPUT"
           else
             echo "POT file unchanged"
-            echo "pot_updated=false" >> $GITHUB_OUTPUT
+            echo "pot_updated=false" >> "$GITHUB_OUTPUT"
             # reset any possible changes so they are not accidentally committed later
             git -C agama-weblate reset --hard
           fi
@@ -135,6 +135,7 @@ jobs:
       - name: (products) Generate POT file
         run: |
           cd agama/products.d
+          # shellcheck disable=SC2035
           ../.github/workflows/product_translations/products_pot *.yaml > products.pot
           msgfmt --statistics products.pot
 
@@ -154,10 +155,10 @@ jobs:
 
           if [ -s pot.diff ]; then
             echo "POT file updated"
-            echo "pot_updated=true" >> $GITHUB_OUTPUT
+            echo "pot_updated=true" >> "$GITHUB_OUTPUT"
           else
             echo "POT file unchanged"
-            echo "pot_updated=false" >> $GITHUB_OUTPUT
+            echo "pot_updated=false" >> "$GITHUB_OUTPUT"
             git -C agama-weblate reset --hard
           fi
 
@@ -201,10 +202,10 @@ jobs:
 
           if [ -s pot.diff ]; then
             echo "POT file updated"
-            echo "pot_updated=true" >> $GITHUB_OUTPUT
+            echo "pot_updated=true" >> "$GITHUB_OUTPUT"
           else
             echo "POT file unchanged"
-            echo "pot_updated=false" >> $GITHUB_OUTPUT
+            echo "pot_updated=false" >> "$GITHUB_OUTPUT"
             # reset any possible changes so they are not accidentally committed later
             git -C agama-weblate reset --hard
           fi
@@ -249,10 +250,10 @@ jobs:
 
           if [ -s pot.diff ]; then
             echo "POT file updated"
-            echo "pot_updated=true" >> $GITHUB_OUTPUT
+            echo "pot_updated=true" >> "$GITHUB_OUTPUT"
           else
             echo "POT file unchanged"
-            echo "pot_updated=false" >> $GITHUB_OUTPUT
+            echo "pot_updated=false" >> "$GITHUB_OUTPUT"
             # reset any possible changes so they are not accidentally committed later
             git -C agama-weblate reset --hard
           fi

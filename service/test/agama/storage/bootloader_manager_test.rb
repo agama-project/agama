@@ -239,6 +239,13 @@ describe Agama::Storage::BootloaderManager do
     end
   end
 
+  describe "#install" do
+    it "writes the sysconfig file for the current bootloader" do
+      expect(bootloader_obj).to receive(:write_sysconfig).with({ prewrite: true })
+      agama_bootloader.install
+    end
+  end
+
   describe "#packages" do
     let(:bootloader_packages) { ["grub2", "grub2-x86_64-efi"] }
 

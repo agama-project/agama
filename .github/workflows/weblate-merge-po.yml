@@ -1,5 +1,9 @@
 name: Weblate Merge PO
 
+# Note: GitHub runs scheduled jobs only from the default branch ("master"),
+# although some jobs are intended for the SLE-* branches they must be defined
+# in the "master".
+
 permissions:
   # it merges the updated translations and creates a pull request with the changes
   contents: write
@@ -7,14 +11,16 @@ permissions:
 
 on:
   schedule:
-    # run every Monday at 2:42AM UTC
-    - cron: "42 2 * * Mon"
+    # run every Monday at 2:35AM UTC
+    - cron: "35 2 * * Mon"
 
   # allow running manually
   workflow_dispatch:
 
 jobs:
   merge-po:
+    name: ${{ matrix.component }} (${{ matrix.branch }})
+
     # allow pushing and creating pull requests
     permissions:
       contents: write
@@ -25,22 +31,66 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    strategy:
+      # a failure in one component or branch must not block the others
+      fail-fast: false
+      matrix:
+        branch: [master, SLE-16, SLE-16.1]
+        component: [web, products, service, rust]
+        exclude:
+          # the Rust code is not present in the SLE-16 branch
+          - branch: SLE-16
+            component: rust
+        include:
+          # per-branch settings
+          - branch: master
+            image: registry.opensuse.org/opensuse/tumbleweed:latest
+            disable_repos: repo-non-oss repo-openh264 repo-update
+          - branch: SLE-16
+            image: registry.opensuse.org/opensuse/leap:16.0
+            disable_repos: openSUSE:repo-openh264
+          - branch: SLE-16.1
+            # FIXME: the 16.1 container is not published yet, switch to 16.1 when it is released
+            image: registry.opensuse.org/opensuse/leap:16.0
+            disable_repos: openSUSE:repo-openh264
+
+          # per-component settings
+          - component: web
+            packages: git gettext-tools nodejs-default npm-default python3 python3-langtable
+          - component: products
+            packages: git gettext-tools nodejs-default npm-default
+          - component: service
+            packages: git gettext-tools
+          - component: rust
+            packages: git gettext-tools
+
     container:
-      image: registry.opensuse.org/opensuse/tumbleweed:latest
+      image: ${{ matrix.image }}
       volumes:
         # bind mount the GitHub CLI tool from the Ubuntu host,
-        # it is a statically linked binary so it should work also in TumbleWeed
+        # it is a statically linked binary so it should work also in the openSUSE containers
         - /usr/bin/gh:/usr/bin/gh
 
+    env:
+      COMPONENT: ${{ matrix.component }}
+      BRANCH: ${{ matrix.branch }}
+
     steps:
+      - name: Set the pull request branch name
+        run: |
+          # use an unique branch to avoid possible conflicts with already existing branches,
+          # convert the base branch name to lower case and remove the dashes
+          branch="${BRANCH,,}"
+          echo "PR_BRANCH=po_merge_${COMPONENT}_${branch//-/}_${GITHUB_RUN_ID}" >> "$GITHUB_ENV"
+
       - name: Configure and refresh repositories
         run: |
           # disable unused repositories to have a faster refresh
-          zypper modifyrepo -d repo-non-oss repo-openh264 repo-update && \
+          zypper modifyrepo -d ${{ matrix.disable_repos }} && \
             zypper --non-interactive ref
 
       - name: Install tools
-        run: zypper --non-interactive install --no-recommends nodejs npm git gettext-tools python3-langtable
+        run: zypper --non-interactive install --no-recommends ${{ matrix.packages }}
 
       - name: Configure Git
         run: |
@@ -51,22 +101,29 @@ jobs:
         uses: actions/checkout@v7
         with:
           path: agama
+          ref: ${{ matrix.branch }}
 
       - name: Checkout Agama-weblate sources
         uses: actions/checkout@v7
         with:
           path: agama-weblate
           repository: ${{ github.repository_owner }}/agama-weblate
-
-      - name: Install NPM packages
-        working-directory: ./agama/web/share/po
-        run: npm ci
+          ref: ${{ matrix.branch }}
 
       - name: Validate the PO files
         working-directory: ./agama-weblate
-        run:  ls web/*.po | xargs -n1 msgfmt --check-format -o /dev/null
+        run: |
+          for po in "${COMPONENT}"/*.po; do
+            msgfmt --check-format -o /dev/null "$po"
+          done
+
+      - name: Install NPM packages (web)
+        if: matrix.component == 'web'
+        working-directory: ./agama/web/share/po
+        run: npm ci
 
       - name: Update JS translations
+        if: matrix.component == 'web'
         working-directory: ./agama
         run: |
           mkdir -p web/src/po
@@ -82,43 +139,78 @@ jobs:
           # stage the changes
           git add web/src/po/*.js web/src/languages.json
 
+      - name: Install NPM packages (products)
+        if: matrix.component == 'products'
+        working-directory: ./agama/.github/workflows/product_translations
+        run: npm ci
+
+      - name: Update product files with translations
+        if: matrix.component == 'products'
+        env:
+          NODE_PATH: ./agama/.github/workflows/product_translations
+        run: |
+          "${NODE_PATH}/merge_po" agama-weblate/products agama/products.d
+
+      - name: Update PO files
+        if: matrix.component == 'service' || matrix.component == 'rust'
+        working-directory: ./agama
+        run: |
+          # delete the current translations
+          find "${COMPONENT}/po" -name '*.po' -exec git rm '{}' ';'
+
+          # copy the new ones
+          mkdir -p "${COMPONENT}/po"
+          cp -a ../agama-weblate/"${COMPONENT}"/*.po "${COMPONENT}/po"
+          git add "${COMPONENT}"/po/*.po
+
       # any changes detected?
       - name: Check changes
         id: check_changes
         working-directory: ./agama
         run: |
-          git diff --staged web | tee tr.diff
+          case "${COMPONENT}" in
+            web)
+              git diff --staged web > tr.diff
+              ;;
+            products)
+              git diff products.d > tr.diff
+              ;;
+            *)
+              # ignore the timestamp changes in the PO files
+              git diff --staged --ignore-matching-lines="POT-Creation-Date:" \
+                --ignore-matching-lines="PO-Revision-Date:" "${COMPONENT}/po" > tr.diff
+              ;;
+          esac
 
           if [ -s tr.diff ]; then
             echo "Translations updated"
             # this is an Output Parameter
             # https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#setting-an-output-parameter
-            echo "updated=true" >> $GITHUB_OUTPUT
+            echo "updated=true" >> "$GITHUB_OUTPUT"
           else
             echo "Translations not changed"
-            echo "updated=false" >> $GITHUB_OUTPUT
+            echo "updated=false" >> "$GITHUB_OUTPUT"
           fi
 
           rm tr.diff
 
-      - name: Push updated PO files
-        # run only when a PO file has been updated
+      - name: Push updated files
+        # run only when a file has been updated
         if: steps.check_changes.outputs.updated == 'true'
         working-directory: ./agama
         run: |
-          # use an unique branch to avoid possible conflicts with already existing branches
-          git checkout -b "po_merge_${GITHUB_RUN_ID}"
-          git commit -a -m "Update web translation files"$'\n\n'"Agama-weblate commit: `git -C ../agama-weblate rev-parse HEAD`"
-          git push origin "po_merge_${GITHUB_RUN_ID}"
+          git checkout -b "${PR_BRANCH}"
+          git commit -a -m "Update ${{ matrix.component }} translation files"$'\n\n'"Agama-weblate commit: $(git -C ../agama-weblate rev-parse HEAD)"
+          git push origin "${PR_BRANCH}"
 
       - name: Create pull request
-        # run only when a PO file has been updated
+        # run only when a file has been updated
         if: steps.check_changes.outputs.updated == 'true'
         working-directory: ./agama
         run: |
-          gh pr create -B master -H "po_merge_${GITHUB_RUN_ID}" \
+          gh pr create -B "${{ matrix.branch }}" -H "${PR_BRANCH}" \
             --label translations --label bot \
-            --title "Update web translation files" \
-            --body "Updating the web translation files from the agama-weblate repository"
+            --title "Update ${{ matrix.component }} translation files (${{ matrix.branch }})" \
+            --body "Updating the ${{ matrix.component }} translation files from the agama-weblate repository"
         env:
           GH_TOKEN: ${{ github.token }}

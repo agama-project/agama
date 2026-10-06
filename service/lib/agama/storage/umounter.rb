@@ -98,10 +98,6 @@ module Agama
 
         # @return [Logger]
         attr_reader :logger
-
-        def wfm_write(function)
-          Yast::WFM.CallFunction(function, ["Write"])
-        end
       end
 
       # Step to copy the installation logs
@@ -154,7 +150,10 @@ module Agama
         end
 
         def run
-          wfm_write("umount_finish")
+          require "installation/clients/umount_finish"
+          # #write is protected in Installation::Clients::UmountFinishClient, called
+          # directly here instead of going through the generic Yast::WFM client dispatch.
+          Installation::Clients::UmountFinishClient.new.send(:write)
         end
       end
     end
