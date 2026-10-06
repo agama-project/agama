@@ -2,15 +2,15 @@
 
 This directory contains a **permanent fork** of a small set of Ruby classes originally provided by
 the `autoyast2` (`autoyast2-installation`), `yast2-installation`, `yast2-network`, `yast2-s390`,
-`yast2-iscsi-client`, `yast2-bootloader`, `yast2-storage-ng` and `yast2-packager` YaST packages.
-Agama no longer depends on any of those RPMs; the classes it still needs from them have been
-copied here instead.
+`yast2-iscsi-client`, `yast2-bootloader`, `yast2-storage-ng`, `yast2-packager` and base `yast2`
+YaST packages. Agama no longer depends on any of those RPMs; the classes it still needs from them
+have been copied here instead.
 
 There is **no process to keep this code in sync with upstream YaST releases**. If a bug is found
-here, or a new AutoYaST/DASD/zFCP/iSCSI/bootloader/storage feature is needed, fix/extend the code
-directly in this directory; do not expect it to be updated automatically from `yast-autoyast2`,
-`yast-installation`, `yast-network`, `yast-s390`, `yast-iscsi-client`, `yast-bootloader`,
-`yast-storage-ng` or `yast-packager`.
+here, or a new AutoYaST/DASD/zFCP/iSCSI/bootloader/storage/general-YaST feature is needed,
+fix/extend the code directly in this directory; do not expect it to be updated automatically from
+`yast-autoyast2`, `yast-installation`, `yast-network`, `yast-s390`, `yast-iscsi-client`,
+`yast-bootloader`, `yast-storage-ng`, `yast-packager` or `yast-yast2`.
 
 ## Tests
 
@@ -173,7 +173,11 @@ not a regression introduced by vendoring.
 ## Deliberate deviations from upstream (not just trims)
 
 A few vendored files were edited beyond the usual "cut UI-only code" trimming already described per
-package above - each documented with a "DEVIATION FROM UPSTREAM" comment at the point of the change:
+package above. Entries from the AutoYaST/bootloader/iscsi/storage phases are documented inline with
+a "DEVIATION FROM UPSTREAM" comment at the point of the change; entries from the base `yast2` phase
+are documented here and in the commit history instead (see "Base yast2" below) - moving/vendoring
+and trimming were kept as separate commits there, so the trims are easy to review as a diff against
+the previous "pure vendor" commit without needing inline markers:
 
 - **`modules/Bootloader.rb`**: the `Export`/`Import` public methods and the private
   `import_bootloader` helper were removed, along with the `bootloader/autoyast_converter` and
@@ -254,6 +258,38 @@ package above - each documented with a "DEVIATION FROM UPSTREAM" comment at the 
   instead. `y2packager/product_spec.rb`/`medium_type.rb` are genuinely `yast2-packager`-only
   (confirmed via `rpm -qf`), and `yast2-packager` can never be a runtime dependency of Agama at
   all - see "`yast2-packager`: a circular RPM dependency" below.
+- **`lib/bootloader/grub2base.rb`, `modules/AutoInstallRules.rb`** (both from earlier phases):
+  dropped the `Yast.import "Product"` call. Neither file (nor anything else reachable from Agama)
+  ever calls a `Yast::Product` method, and `Product#main` has no side effects beyond its own
+  (otherwise-unneeded) imports. This is what allows `Product.rb` - and everything only reachable
+  through it (`PackageLock`, `PackageSystem`, `PackageCallbacks`, `PackageKit`,
+  `SignatureCheckCallbacks`, `SignatureCheckDialogs`, `Message`, `DontShowAgain`, their
+  `lib/packages/*.rb` helpers, and the entire `y2packager` license/release-notes/product-reader
+  chain below) - to not be vendored at all. See "Base yast2" below for the full reachability trace.
+- **`modules/AutoinstConfig.rb`** (from an earlier phase): dropped the `require "y2packager/product"`
+  line. `Y2Packager::Product` is never referenced anywhere else in this file; this was the *other*
+  (and last) root keeping the whole `y2packager` license/release-notes/product-reader/resolvable/
+  package chain artificially alive.
+- **`modules/SlideShow.rb`**: dropped the `Yast.import "Slides"` call. Nothing in this file ever
+  calls a `Yast::Slides` method despite importing it - `Slides.rb` is not vendored.
+- **`modules/Progress.rb`, `modules/Report.rb`**: dropped the `Yast.import "CommandLine"` call and
+  the `if Mode.commandline ... CommandLine.Print/PrintVerbose ... else ...` branches that were their
+  only callers of it. `Mode.commandline` is never set anywhere in Agama (it only becomes true when
+  running the actual `yast2` command-line tool, which Agama never does) - `CommandLine.rb` (and the
+  `Integer`/`TypeRepository` imports only it needed) is not vendored.
+- **`modules/ProductControl.rb`**: dropped the `Yast.import "Hooks"` call and the three `Hooks.run`
+  calls inside the classic linear installation-workflow runner (`Run`'s `WFM.CallFunction`-per-step
+  loop). That whole loop is itself unreachable from the only real caller into this file
+  (`RunRequired`, called by `AutoinstFunctions.rb`, is a pure query method that never touches `Run`)
+  - same "mostly dead, keep the rest of the file as-is" shape as `BootArch`/`ServicesManagerTarget`,
+  just with the one confirmed-dead `Hooks` dependency trimmed since dropping it was essentially free.
+  `Hooks.rb` is not vendored.
+- **`modules/IP.rb`**: dropped the `Yast.import "Netmask"` call and the
+  `CheckNetworkShared`/`CheckNetwork4`/`CheckNetwork6`/`CheckNetwork` methods (the only ones that
+  reference `Netmask`). The only real caller anywhere in Agama's closure
+  (`AutoInstallRules#getHostid`, via `IP.ToHex`) never reaches any of them - confirmed no other
+  caller exists. `Netmask.rb` and `Address.rb` (whose only other importer, `TypeRepository`, is
+  already gone per the `CommandLine` trim above) are not vendored.
 
 ## Layout
 
@@ -556,5 +592,112 @@ merely loading the class would hard-crash without that package installed - for f
 from the raw profile hash (root/first regular user's name, password, and SSH keys),
 `service/lib/agama/autoyast/users_profile_reader.rb` reads the `<users>` section directly instead.
 The one piece of behavior it does replicate from `Y2Users::User#system?` - treating a user with a
-low enough explicit uid as a "system" user - reuses `Yast::ShadowConfig`, which lives in the base
-`yast2` package (not `yast2-users`), so it adds no dependency either.
+low enough explicit uid as a "system" user - reuses `Yast::ShadowConfig`, vendored below as part of
+base `yast2`.
+
+## Base yast2
+
+Base `yast2` is the common library every other YaST package (and Agama's own already-vendored code)
+builds on: classic modules like `Arch`/`Mode`/`Stage`/`Report`/`Popup`/`FileUtils`/`URL`/`Service`/
+`ProductFeatures`, plus `lib/yast2/*`, `lib/cfa/*`, `lib/y2issues/*`, `lib/ui/*` and
+`lib/installation/*` support classes. Unlike every earlier phase, this one touches code that
+*everything else* depends on - dropping it is what finally lets Agama drop the `yast2` RPM
+`Requires:` entirely (see `service/package/gem2rpm.yml`).
+
+Derived via the same `$LOADED_FEATURES` closure technique as every earlier phase (see git history
+of this file for the methodology), cross-checked against `rpm -qf` for ownership. The initial
+closure was 127 files; 48 of them turned out to be unreachable dead weight (see "Deliberate
+deviations from upstream" above) and are not vendored, leaving 79.
+
+### Vendored (by subsystem)
+
+| Subsystem | Files |
+|---|---|
+| `library/general` classic modules | `Arch`, `Mode`, `Stage`, `Report`, `Popup`, `FileUtils`, `Directory`, `Label`, `Linuxrc`, `OSRelease`, `Summary`, `Icon`, `Misc`, `Encoding`, `ShadowConfig` |
+| `library/types` classic modules | `URL`, `URLRecode`, `Hostname`, `IP`, `Map`, `RichText`, `String` |
+| `library/control` classic modules | `Installation`, `InstExtensionImage`, `ProductFeatures`, `ProductControl` |
+| `library/system`/`library/systemd` classic modules | `Kernel`, `ModuleLoading`, `Initrd`, `Service`, `Systemd` |
+| `library/wizard`, `library/desktop`, `library/gpg`, `library/xml`, `library/packages` classic modules | `Wizard`, `Progress`, `HTML`, `Desktop`, `GPG`, `XML`, `SlideShow` |
+| `lib/yast2/*` | `execute.rb`, `popup.rb`, `equatable.rb`, `rel_url.rb`, `secret_attributes.rb`, `target_file.rb`, `system_time.rb`, `systemctl.rb`, `{control_,}log_dir_rotator.rb`, `fs_snapshot.rb`, `refinements/string_manipulations.rb`, `systemd/{service,socket,socket_finder,target,unit,unit_installation_properties,unit_prop_map,unit_properties}.rb` |
+| `lib/cfa/*` | `login_defs.rb`, `multi_file_config.rb`, `shadow_config.rb` |
+| `lib/y2issues*` | `y2issues.rb` + `y2issues/{invalid_value,issue,list,location,presenter,reporter}.rb` |
+| `lib/ui/*` | `dialog.rb`, `event_dispatcher.rb`, `password_dialog.rb`, `text_helpers.rb` |
+| `lib/installation/*` | `finish_client.rb`, `installation_info.rb`, `autoinst_issues/{issue,list}.rb`, `autoinst_profile/{element_path,section_with_attributes}.rb` (previously documented as "provided by base yast2, kept as a real dependency" in earlier phases - now vendored here since that dependency itself is gone) |
+| `scrconf/` | `cfg_features.scr` (`.product.features`, used by `ProductFeatures`), `cfg_kernel.scr` (`.sysconfig.kernel`), `proc_cpuinfo.scr`, `proc_modules.scr`, `cfg_yast2.scr` (`.sysconfig.yast2`, used by `fs_snapshot.rb`), `etc_login_defs.scr` |
+
+`lib/ui/delayed_progress_popup.rb` was initially suspected to be part of this closure too (it showed
+up in one `$LOADED_FEATURES` trace) but a direct, exhaustive search found no requirer anywhere in
+Agama's own code or any already-vendored file - its only real upstream requirer is
+`lib/packages/file_conflict_callbacks.rb`, itself only reachable through the dead `Product` chain.
+Treated as a trace artifact and not vendored; re-verify if this area changes.
+
+`lib/y2packager/repository.rb`/`zypp_url.rb` (vendored in the `yast2-storage-ng` phase, currently
+living in base `yast2` upstream) are unaffected by this phase and needed no changes.
+
+### Not vendored: the dead-code chains
+
+See "Deliberate deviations from upstream" above for the exact import lines removed. Summary of
+what's *not* vendored as a consequence, with the single root that was keeping each one alive:
+
+- **Rooted in `Product.rb`'s two dead importers** (`grub2base.rb`, `AutoInstallRules.rb`):
+  `Product`, `PackageLock`, `PackageSystem`, `PackageCallbacks`, `PackageKit`,
+  `SignatureCheckCallbacks`, `SignatureCheckDialogs`, `Message`, `DontShowAgain`,
+  `lib/packages/{dummy_callbacks,file_conflict_callbacks}.rb`, `include/packages/common.rb`.
+- **Rooted in `AutoinstConfig.rb`'s dead `require "y2packager/product"`** (the only other entry
+  point into the same cluster): the entire `y2packager` license/release-notes/product-reader chain -
+  `product.rb`, `product_reader.rb`, `product_sorter.rb`, `resolvable.rb`, `product_license.rb`,
+  `product_license_mixin.rb`, `license.rb`, `licenses_fetchers{,/*}.rb` (5), `licenses_handlers{,/*}.rb`
+  (4), `release_notes.rb`, `release_notes_content_prefs.rb`, `release_notes_fetchers/*.rb` (3),
+  `release_notes_reader.rb`, `release_notes_store.rb`, `package.rb`, `exceptions.rb`, and
+  `lib/packages/{package_downloader,package_extractor}.rb`. Confirmed via an exhaustive search that
+  nothing in Agama's own code or any already-vendored file references any of
+  `Y2Packager::{Product,License,ReleaseNotes*,Resolvable,Package,Exceptions}` directly - only
+  `Y2Packager::Repository`/`ZyppUrl` (vendored separately, see above) are genuinely needed.
+- **Rooted in `SlideShow.rb`'s dead `Slides` import**: `Slides.rb`.
+- **Rooted in `Progress.rb`/`Report.rb`'s `Mode.commandline`-gated `CommandLine` calls**:
+  `CommandLine.rb`, `Integer.rb`, `TypeRepository.rb`.
+- **Rooted in `ProductControl.rb`'s dead `Hooks` import**: `Hooks.rb`.
+- **Rooted in `IP.rb`'s unreachable `CheckNetwork*` methods**: `Netmask.rb`, `Address.rb` (its only
+  other importer, `TypeRepository`, is already gone above).
+
+`ui/delayed_progress_popup.rb` is also not vendored - see the note above.
+
+### Known limitations / sandbox findings (found while vendoring and testing, not fixed)
+
+- **`modules/String_test.rb`'s `.FormatSize returns size formatted with proper bytes units`
+  example can fail in some environments**: `Builtins::Float.tolstring` (the native `yast2-ruby-
+  bindings` builtin backing `String.FormatSize`/`FormatSizeWithPrecision`) renders its
+  thousands-separator according to the process's locale, which - like the already-documented
+  `Encoding.default_external` issue - is fixed at Ruby interpreter startup from the actual shell
+  locale and is **not** affected by `ENV["LC_ALL"]`/`ENV["LANG"]` set from within `test_helper.rb`,
+  nor even by setting `LC_ALL=C` as a prefix to the `bundle exec rspec` invocation itself (reproduced
+  on this sandbox, whose default locale is `es_ES.UTF-8`: expected `"1024.091 TiB"`, got
+  `"1,024.091 TiB"`). Matches upstream's own test expectation (`en_US`-style formatting); needs
+  checking against the project's actual CI container to confirm it has a compatible default locale.
+- **The project's own `# frozen_string_literal: true` convention can surface genuine frozen-string
+  bugs when porting upstream specs that rely on in-place string mutation.** Found twice while
+  porting tests for this phase: `Yast2::Systemd::Unit#run_command!` (`error.clear`) and
+  `Yast::Service#failure` (`error.prepend`/`error <<`) both mutate strings handed to them by the
+  test's own stubs; `Yast2::SecretAttributes`'s test double relied on `String#concat`/`dup` sharing
+  the same mutable string. None of this is a sandbox quirk - it reproduces on any Ruby version,
+  since `# frozen_string_literal: true` freezes the literal regardless of environment. Fixed
+  per-occurrence with an explicit unary `+` (e.g. `+"error"`, `+""`) on the specific literals that
+  flow into code performing in-place mutation - see `test/YaST2/lib/yast2/systemd/support/stubs.rb`,
+  `test/YaST2/modules/Service_test.rb`, `test/YaST2/lib/yast2/secret_attributes_test.rb`.
+- **`modules/Wizard.rb`'s `.OpenWithLayout` is not ported** (test-only skip, not a production trim):
+  it takes a `::UI::Wizards::Layout`, a `cwm` widget class that is never vendored and confirmed
+  unreachable anywhere in Agama's closure (`Wizard.rb`'s own reference to it in that one method is
+  the only one that exists).
+- **`lib/ui/password_dialog.rb` has no upstream test at all** (not even an interactive-UI one,
+  confirmed) - left untested, matching upstream's own coverage.
+
+### Files with no upstream test coverage (left untested, matching upstream)
+
+Consistent with the project's established policy (port only existing upstream tests, write new ones
+only for modified/deviated files or genuinely-untested-but-nontrivial logic): `Stage`, `Label`,
+`OSRelease`, `Summary`, `HTML`, `ShadowConfig`, `Encoding`, `ModuleLoading`, `Misc`, `Map`,
+`RichText`, `Icon`, `Systemd`, `Initrd`, `ProductControl`, `SlideShow`, `FileUtils` (3 real call
+sites across the whole closure - `Exists`/`IsLink` - the rest of its ~20-method API, including the
+`Popup`-driven `CheckAndCreatePath`, is dead weight within an otherwise-real file, same
+"mostly-dead" pattern as `BootArch`/`ServicesManagerTarget`/`ProductControl`), `lib/cfa/
+multi_file_config.rb` (confirmed no upstream test exists), `lib/ui/password_dialog.rb` (see above).
