@@ -22,6 +22,7 @@
 
 require_relative "../../../../../test_helper"
 require_relative "../../support/shared_setup"
+
 require "y2storage/proposal/autoinst_nfs_planner"
 require "installation/autoinst_issues/list"
 require "y2storage/autoinst_profile/drive_section"

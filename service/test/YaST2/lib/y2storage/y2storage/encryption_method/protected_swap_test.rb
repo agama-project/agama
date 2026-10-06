@@ -21,6 +21,7 @@
 
 require_relative "../../../../../test_helper"
 require_relative "../../support/shared_setup"
+
 require "y2storage"
 
 describe Y2Storage::EncryptionMethod::ProtectedSwap do
@@ -81,8 +82,7 @@ describe Y2Storage::EncryptionMethod::ProtectedSwap do
       end
     end
 
-    context "when the given encryption device contains 'swap' option and uses the proper " \
-            "key file" do
+    context "when the given encryption device contains 'swap' option and uses the proper key file" do
       let(:crypt_options) { ["a", "SWAP"] }
 
       let(:key_file) { protected_key_file }

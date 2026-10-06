@@ -1,7 +1,6 @@
 #!/usr/bin/env rspec
 # frozen_string_literal: true
 
-#
 # Copyright (c) [2020] SUSE LLC
 #
 # All Rights Reserved.
@@ -23,6 +22,7 @@
 
 require_relative "../../../../../test_helper"
 require_relative "../../support/shared_setup"
+
 require_relative "../../support/autoinst_devices_planner_btrfs"
 require "y2storage/proposal/autoinst_tmpfs_planner"
 require "y2storage/autoinst_issues"

@@ -22,6 +22,7 @@
 
 require_relative "../../../../test_helper"
 require_relative "../support/shared_setup"
+
 require "y2storage"
 require "pp"
 require "y2storage/equal_by_instance_variables"

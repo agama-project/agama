@@ -22,6 +22,7 @@
 
 require_relative "../../../../../test_helper"
 require_relative "../../support/shared_setup"
+
 require "y2storage"
 
 describe Y2Storage::PartitionTables::Msdos do
@@ -49,8 +50,7 @@ describe Y2Storage::PartitionTables::Msdos do
     end
 
     it "ms-dos can NOT have a WINDOWS_BASIC_DATA partition" do
-      expect(subject.partition_id_supported?(Y2Storage::PartitionId::WINDOWS_BASIC_DATA))
-        .to eq false
+      expect(subject.partition_id_supported?(Y2Storage::PartitionId::WINDOWS_BASIC_DATA)).to eq false
     end
 
     it "ms-dos can have a DOS32 partition" do

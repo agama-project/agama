@@ -22,14 +22,13 @@
 
 require_relative "../../../../test_helper"
 require_relative "../support/shared_setup"
+
 require "y2storage/issue"
 
 describe Y2Storage::Issue do
   include_context "yast2-storage-ng test setup"
 
-  subject do
-    described_class.new(message, description: description, details: details, device: device)
-  end
+  subject { described_class.new(message, description: description, details: details, device: device) }
 
   let(:message) { "Issue 1" }
 

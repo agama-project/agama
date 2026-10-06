@@ -22,6 +22,7 @@
 
 require_relative "../../../../test_helper"
 require_relative "../support/shared_setup"
+
 require "y2storage"
 
 describe Y2Storage::BtrfsSubvolume do
@@ -45,11 +46,7 @@ describe Y2Storage::BtrfsSubvolume do
 
   let(:dev_name) { "/dev/sda2" }
 
-  subject(:subvolume) do
-    blk_device.filesystem.btrfs_subvolumes.find do |s|
-      s.path == subvolume_path
-    end
-  end
+  subject(:subvolume) { blk_device.filesystem.btrfs_subvolumes.find { |s| s.path == subvolume_path } }
 
   let(:subvolume_path) { "@/home" }
 
@@ -179,8 +176,8 @@ describe Y2Storage::BtrfsSubvolume do
         before do
           blk_device.filesystem.mount_path = "/"
 
-          # Note that this subvolume is not considered a subvolume for working with snapshots
-          # because it is not under the subvolume prefix (does not start by @).
+          # Note that this subvolume is not considered a subvolume for working with snapshots because
+          # it is not under the subvolume prefix (does not start by @).
           blk_device.filesystem.create_btrfs_subvolume(".snapshots", true)
         end
 

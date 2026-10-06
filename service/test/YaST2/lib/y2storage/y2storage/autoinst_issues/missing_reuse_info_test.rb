@@ -22,6 +22,7 @@
 
 require_relative "../../../../../test_helper"
 require_relative "../../support/shared_setup"
+
 require "y2storage/autoinst_issues/missing_reuse_info"
 require "y2storage/autoinst_profile/partition_section"
 

@@ -22,6 +22,7 @@
 
 require_relative "../../../../test_helper"
 require_relative "../support/shared_setup"
+
 require "y2storage"
 
 describe Y2Storage::Devicegraph do
@@ -236,10 +237,8 @@ describe Y2Storage::Devicegraph do
     before do
       fake_scenario("complex-lvm-encrypt")
       fake_devicegraph.find_by_name("/dev/sda1").filesystem.create_mount_point("/mnt/windows")
-      fake_devicegraph.find_by_name("/dev/mapper/cr_sda4").filesystem
-        .create_mount_point("/mnt/data")
-      fake_devicegraph.find_by_name("/dev/mapper/cr_vg1_lv2").filesystem
-        .create_mount_point("/mnt/abc")
+      fake_devicegraph.find_by_name("/dev/mapper/cr_sda4").filesystem.create_mount_point("/mnt/data")
+      fake_devicegraph.find_by_name("/dev/mapper/cr_vg1_lv2").filesystem.create_mount_point("/mnt/abc")
     end
 
     subject(:list) { fake_devicegraph.mount_points }
@@ -588,8 +587,7 @@ describe Y2Storage::Devicegraph do
 
     context "if there is BlkDevice containing a filesystem with a matching UUID" do
       it "returns that device" do
-        blk_device =
-          devicegraph.find_by_any_name("/dev/disk/by-uuid/abcdefgh-ijkl-mnop-qrst-uvwxyzzz")
+        blk_device = devicegraph.find_by_any_name("/dev/disk/by-uuid/abcdefgh-ijkl-mnop-qrst-uvwxyzzz")
 
         expect(blk_device).to_not be_nil
         expect(blk_device.name).to eq "/dev/mapper/cr_vg1_lv2"

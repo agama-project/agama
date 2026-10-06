@@ -22,6 +22,7 @@
 
 require_relative "../../../../../test_helper"
 require_relative "../../support/shared_setup"
+
 require "yast"
 require "y2storage/encryption_processes/fde_tools_config"
 

@@ -22,6 +22,7 @@
 
 require_relative "../../../../test_helper"
 require_relative "../support/shared_setup"
+
 # load whole namespace, to check all classes
 require "y2storage"
 
@@ -47,11 +48,9 @@ describe Y2Storage::StorageClassWrapper do
         end
 
         it message do
-          expect(wrapper.instance_variable_get(:@downcast_class_names))
-            .to match_array(downcast_values),
-              "Y2Storage::#{wrapper} specifies " \
-              "#{wrapper.instance_variable_get(:@downcast_class_names)} " \
-              " but direct children are #{direct_children}."
+          expect(wrapper.instance_variable_get(:@downcast_class_names)).to match_array(downcast_values),
+            "Y2Storage::#{wrapper} specifies #{wrapper.instance_variable_get(:@downcast_class_names)} " \
+            " but direct children are #{direct_children}."
         end
       end
     end

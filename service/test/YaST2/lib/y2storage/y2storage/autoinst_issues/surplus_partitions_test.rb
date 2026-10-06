@@ -22,6 +22,7 @@
 
 require_relative "../../../../../test_helper"
 require_relative "../../support/shared_setup"
+
 require "y2storage/autoinst_issues/surplus_partitions"
 
 describe Y2Storage::AutoinstIssues::SurplusPartitions do

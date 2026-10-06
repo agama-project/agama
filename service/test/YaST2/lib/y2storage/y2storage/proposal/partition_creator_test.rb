@@ -22,6 +22,7 @@
 
 require_relative "../../../../../test_helper"
 require_relative "../../support/shared_setup"
+
 require "storage"
 require "y2storage"
 
@@ -266,8 +267,7 @@ describe Y2Storage::Proposal::PartitionCreator do
         it "creates logical partitions for the remaining partitions" do
           result = creator.create_partitions(distribution)
           logical = partitions(result.devicegraph, :logical)
-          expect(logical).to contain_exactly an_object_having_attributes(name: "/dev/sda5",
-            size: 1.GiB)
+          expect(logical).to contain_exactly an_object_having_attributes(name: "/dev/sda5", size: 1.GiB)
         end
       end
     end

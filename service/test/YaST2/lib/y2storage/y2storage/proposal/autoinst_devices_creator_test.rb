@@ -22,6 +22,7 @@
 
 require_relative "../../../../../test_helper"
 require_relative "../../support/shared_setup"
+
 require "y2storage/proposal/autoinst_devices_creator"
 require "y2storage/planned"
 
@@ -420,8 +421,7 @@ describe Y2Storage::Proposal::AutoinstDevicesCreator do
 
         let(:root) do
           planned_partition(
-            disk: "/dev/bcache0", mount_point: "/", min_size: 250.GiB,
-            filesystem_type: filesystem_type
+            disk: "/dev/bcache0", mount_point: "/", min_size: 250.GiB, filesystem_type: filesystem_type
           )
         end
 
@@ -442,9 +442,7 @@ describe Y2Storage::Proposal::AutoinstDevicesCreator do
     describe "using multi-device Btrfs" do
       let(:partition1) { planned_partition(reuse_name: "/dev/sda2", btrfs_name: "root_fs") }
 
-      let(:partition2) do
-        planned_partition(disk: "/dev/sdb", btrfs_name: "root_fs", min_size: 2.GiB)
-      end
+      let(:partition2) { planned_partition(disk: "/dev/sdb", btrfs_name: "root_fs", min_size: 2.GiB) }
 
       let(:btrfs) do
         planned_btrfs(
@@ -574,8 +572,7 @@ describe Y2Storage::Proposal::AutoinstDevicesCreator do
 
       let(:new_part) do
         planned_partition(
-          mount_point: "/data", filesystem_type: filesystem_type, min_size: 240.GiB,
-          max_size: 240.GiB
+          mount_point: "/data", filesystem_type: filesystem_type, min_size: 240.GiB, max_size: 240.GiB
         )
       end
 

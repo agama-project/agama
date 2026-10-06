@@ -22,6 +22,7 @@
 
 require_relative "../../../../test_helper"
 require_relative "../support/shared_setup"
+
 require "y2storage"
 
 describe Y2Storage::VolumeSpecification do
@@ -455,9 +456,8 @@ describe Y2Storage::VolumeSpecification do
         it "sets the indicated list of subvolumes" do
           expect(subject.subvolumes).to include(
             an_object_having_attributes(path: "home", copy_on_write: true, archs: nil),
-            an_object_having_attributes(path: "var", copy_on_write: false,
-              archs: ["i386", "x86_64"]),
-            an_object_having_attributes(path: "opt", copy_on_write: true, archs: nil)
+            an_object_having_attributes(path: "var", copy_on_write: false, archs: ["i386", "x86_64"]),
+            an_object_having_attributes(path: "opt", copy_on_write: true,  archs: nil)
           )
         end
       end

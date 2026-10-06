@@ -113,9 +113,7 @@ RSpec.shared_examples "handles conflicts" do
     end
 
     context "only 'bcache_caching_for' is present" do
-      let(:missing_attrs) do
-        ["mount", "raid_name", "lvm_group", "btrfs_name", "bcache_backing_for"]
-      end
+      let(:missing_attrs) { ["mount", "raid_name", "lvm_group", "btrfs_name", "bcache_backing_for"] }
 
       it "prefers the bcache_caching_for" do
         disk = planner.planned_devices(drive).first

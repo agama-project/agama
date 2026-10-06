@@ -22,6 +22,7 @@
 
 require_relative "../../../../test_helper"
 require_relative "../support/shared_setup"
+
 require "y2storage"
 
 describe Y2Storage::FilesystemReader do
@@ -307,8 +308,7 @@ describe Y2Storage::FilesystemReader do
           let(:exists_fstab) { true }
 
           before do
-            allow(File).to receive(:readlines).with("/mnt/etc/fstab").and_return(["fstab ",
-                                                                                  "content"])
+            allow(File).to receive(:readlines).with("/mnt/etc/fstab").and_return(["fstab ", "content"])
           end
 
           it "returns the fstab content" do

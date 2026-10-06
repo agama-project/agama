@@ -420,8 +420,7 @@ describe Y2Storage::YamlWriter do
       end
     end
 
-    context "when the devicegraph contains a filesystem directly on a disk without a " \
-            "partition table" do
+    context "when the devicegraph contains a filesystem directly on a disk without a partition table" do
       before do
         disk = Y2Storage::Disk.create(staging, "/dev/sda")
         disk.size = 256 * Storage.GiB

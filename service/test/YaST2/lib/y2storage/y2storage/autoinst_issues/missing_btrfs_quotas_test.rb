@@ -21,6 +21,7 @@
 
 require_relative "../../../../../test_helper"
 require_relative "../../support/shared_setup"
+
 require "y2storage/autoinst_issues/missing_btrfs_quotas"
 require "y2storage/autoinst_profile/partition_section"
 

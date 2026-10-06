@@ -22,6 +22,7 @@
 
 require_relative "../../../../test_helper"
 require_relative "../support/shared_setup"
+
 require "storage"
 require "y2storage"
 
@@ -51,8 +52,7 @@ describe Y2Storage::AutoinstProposal do
   describe "#propose" do
     using Y2Storage::Refinements::SizeCasts
 
-    ROOT_PART = { "filesystem" => :ext4, "mount" => "/", "size" => "25%",
-"label" => "new_root" }.freeze
+    ROOT_PART = { "filesystem" => :ext4, "mount" => "/", "size" => "25%", "label" => "new_root" }.freeze
 
     let(:scenario) { "windows-linux-free-pc" }
 
@@ -132,8 +132,7 @@ describe Y2Storage::AutoinstProposal do
         context "when disabling snapshots" do
           let(:partitioning) do
             [{
-              "device" => "/dev/sda", "use" => "all", "partitions" => [root],
-              "enable_snapshots" => false
+              "device" => "/dev/sda", "use" => "all", "partitions" => [root], "enable_snapshots" => false
             }]
           end
 
@@ -558,13 +557,9 @@ describe Y2Storage::AutoinstProposal do
       end
 
       context "when the device should be initialized" do
-        let(:partitioning) do
-          [{ "device" => "/dev/sda", "partitions" => [root], "initialize" => true }]
-        end
+        let(:partitioning) { [{ "device" => "/dev/sda", "partitions" => [root], "initialize" => true }] }
         let(:boot_checker) { double("Y2Storage::BootRequirementsChecker", needed_partitions: []) }
-        before do
-          allow(Y2Storage::BootRequirementsChecker).to receive(:new).and_return boot_checker
-        end
+        before { allow(Y2Storage::BootRequirementsChecker).to receive(:new).and_return boot_checker }
 
         it "removes the old partitions" do
           proposal.propose
@@ -921,8 +916,8 @@ describe Y2Storage::AutoinstProposal do
       context "when snapshots are enabled in the AutoYaST profile" do
         let(:enable_snapshots) { true }
 
-        # Note that the required size for snapshots was set to 100 GiB and the size of the
-        # target disk (/dev/sdb) is 500 GiB.
+        # Note that the required size for snapshots was set to 100 GiB and the size of the target disk
+        # (/dev/sdb) is 500 GiB.
 
         context "and there is enough space for snapshots" do
           let(:min_root_size) { "100GiB" }
@@ -1439,8 +1434,7 @@ describe Y2Storage::AutoinstProposal do
           { "device" => "/dev/sda", "use" => "all", "partitions" => [raid_spec] },
           { "device" => "/dev/sdb", "use" => "all", "partitions" => [raid_spec] },
           { "device" => "/dev/md", "partitions" => [md_spec] },
-          { "device" => "/dev/#{vg_name}", "partitions" => [root_spec, home_spec],
-"type" => :CT_LVM }
+          { "device" => "/dev/#{vg_name}", "partitions" => [root_spec, home_spec], "type" => :CT_LVM }
         ]
       end
 

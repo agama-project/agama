@@ -33,9 +33,7 @@ RSpec.shared_context "boot requirements" do
 
   let(:storage_arch) { instance_double("::Storage::Arch") }
   let(:devicegraph) { double("Y2Storage::Devicegraph") }
-  let(:dev_sda) do
-    double("Y2Storage::Disk", name: "/dev/sda", partition_table: boot_partition_table)
-  end
+  let(:dev_sda) { double("Y2Storage::Disk", name: "/dev/sda", partition_table: boot_partition_table) }
   let(:dev_sdb) { double("Y2Storage::Disk", name: "/dev/sdb") }
 
   let(:boot_disk) { dev_sda }

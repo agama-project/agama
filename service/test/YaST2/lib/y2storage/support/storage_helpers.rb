@@ -19,10 +19,6 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-# Vendored from yast2-storage-ng's test/support/storage_helpers.rb.
-# This is a permanent fork (see service/YaST2/README.md): the `yast2-storage-ng` RPM
-# is no longer a runtime dependency of Agama.
-#
 # DEVIATION FROM UPSTREAM: dropped the "require y2partitioner/device_graphs" and the
 # Y2Partitioner::DeviceGraphs.create_instance call inside #devicegraph_stub. The
 # y2partitioner tree is never vendored (confirmed unused by Agama), and none of the
@@ -63,6 +59,7 @@ module Yast
         end
       end
 
+      # Used when testing the partitioner
       def devicegraph_stub(name)
         # Backwards compatibility, #fake_scenario assumes Yaml by default, but
         # #devicegraph_stub always expects the full file name
@@ -198,8 +195,7 @@ module Yast
       def create_next_partition(disk)
         disk.ensure_partition_table
         slot = disk.partition_table.unused_partition_slots.first
-        disk.partition_table.create_partition(slot.name, slot.region,
-          Y2Storage::PartitionType::PRIMARY)
+        disk.partition_table.create_partition(slot.name, slot.region, Y2Storage::PartitionType::PRIMARY)
       end
 
       def space_dist(vols_by_space)
@@ -271,8 +267,7 @@ module Yast
       # Double for a APQN (used in pervasive encryption)
       def apqn_mock(name, master_key, ep11: false)
         instance_double(
-          Y2Storage::EncryptionProcesses::Apqn, name: name, master_key_pattern: master_key,
-          ep11?: ep11
+          Y2Storage::EncryptionProcesses::Apqn, name: name, master_key_pattern: master_key, ep11?: ep11
         )
       end
     end

@@ -22,6 +22,7 @@
 
 require_relative "../../../../../test_helper"
 require_relative "../../support/shared_setup"
+
 require "y2storage/proposal/autoinst_drives_map"
 
 describe Y2Storage::Proposal::AutoinstDrivesMap do
@@ -125,8 +126,7 @@ describe Y2Storage::Proposal::AutoinstDrivesMap do
 
         it "selects the disks in the order given by Partitionable#compare_by_name" do
           expect(drives_map.each_pair.map { |name, drive| [name, drive.use] }).to contain_exactly(
-            ["/dev/dasda",
-             "all"], ["/dev/dasdb", [1]], ["/dev/nvme0n1", [1, 2]], ["/dev/sda", "free"]
+            ["/dev/dasda", "all"], ["/dev/dasdb", [1]], ["/dev/nvme0n1", [1, 2]], ["/dev/sda", "free"]
           )
         end
       end
@@ -194,8 +194,7 @@ describe Y2Storage::Proposal::AutoinstDrivesMap do
     context "when some device is on a skip list" do
       let(:partitioning_array) do
         [
-          { "use"       => "all",
-            "skip_list" => [{ "skip_key" => "device", "skip_value" => "/dev/sda" }] }
+          { "use" => "all", "skip_list" => [{ "skip_key" => "device", "skip_value" => "/dev/sda" }] }
         ]
       end
 

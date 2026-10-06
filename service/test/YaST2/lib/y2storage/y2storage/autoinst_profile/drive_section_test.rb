@@ -22,6 +22,7 @@
 
 require_relative "../../../../../test_helper"
 require_relative "../../support/shared_setup"
+
 require_relative "#{TEST_PATH}/support/autoinst_profile_sections_examples"
 require "y2storage"
 
@@ -488,9 +489,7 @@ describe Y2Storage::AutoinstProfile::DriveSection do
 
           context "and snapshots are enabled" do
             it "initializes enable_snapshots setting to true" do
-              expect(
-                described_class.new_from_storage(device("md/md0")).enable_snapshots
-              ).to eq(true)
+              expect(described_class.new_from_storage(device("md/md0")).enable_snapshots).to eq(true)
             end
           end
 
@@ -502,9 +501,7 @@ describe Y2Storage::AutoinstProfile::DriveSection do
             end
 
             it "initializes enable_snapshots setting to false" do
-              expect(
-                described_class.new_from_storage(device("md/md0")).enable_snapshots
-              ).to eq(false)
+              expect(described_class.new_from_storage(device("md/md0")).enable_snapshots).to eq(false)
             end
           end
         end
@@ -587,9 +584,7 @@ describe Y2Storage::AutoinstProfile::DriveSection do
           end
 
           it "initializes enable_snapshots setting to false" do
-            expect(
-              described_class.new_from_storage(device("bcache0")).enable_snapshots
-            ).to eq(false)
+            expect(described_class.new_from_storage(device("bcache0")).enable_snapshots).to eq(false)
           end
         end
       end
@@ -611,9 +606,7 @@ describe Y2Storage::AutoinstProfile::DriveSection do
           end
 
           it "initializes enable_snapshots setting" do
-            expect(
-              described_class.new_from_storage(device("bcache0")).enable_snapshots
-            ).to eq(false)
+            expect(described_class.new_from_storage(device("bcache0")).enable_snapshots).to eq(false)
           end
         end
       end

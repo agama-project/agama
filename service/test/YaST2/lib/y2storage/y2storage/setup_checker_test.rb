@@ -22,6 +22,7 @@
 
 require_relative "../../../../test_helper"
 require_relative "../support/shared_setup"
+
 require "y2storage"
 require "y2storage/setup_checker"
 
@@ -250,8 +251,7 @@ describe Y2Storage::SetupChecker do
     end
 
     it "does not include errors for missing optional product volumes" do
-      expect(subject.warnings)
-        .to_not include(an_object_having_attributes(missing_volume: home_volume))
+      expect(subject.warnings).to_not include(an_object_having_attributes(missing_volume: home_volume))
     end
 
     it "includes an error for each missing mandatory product volume" do
@@ -265,8 +265,7 @@ describe Y2Storage::SetupChecker do
       end
 
       it "does not include an error for that volume" do
-        expect(subject.warnings)
-          .to_not include(an_object_having_attributes(missing_volume: root_volume))
+        expect(subject.warnings).to_not include(an_object_having_attributes(missing_volume: root_volume))
       end
     end
 
@@ -479,8 +478,7 @@ describe Y2Storage::SetupChecker do
 
     context "when y2security cannot be required" do
       before do
-        allow(subject).to receive(:require).with("y2security/security_policies")
-          .and_raise(LoadError)
+        allow(subject).to receive(:require).with("y2security/security_policies").and_raise(LoadError)
       end
 
       it "returns an empty list" do

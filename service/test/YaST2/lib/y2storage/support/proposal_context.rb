@@ -29,16 +29,15 @@ RSpec.shared_context "proposal" do
 
     allow(Y2Storage::DiskAnalyzer).to receive(:new).and_return disk_analyzer
 
-    # NOTE: Original method Y2Storage::Filesystems::Base#windows_system? tries to mount the
-    # filesystem to check if it contains a Windows system. This behaviour is mocked here to avoid
-    # the mounting action. For unit tests using this context file, a filesystem is considered to
-    # contain a Windows system when it is labeled as "windows".
+    # NOTE: Original method Y2Storage::Filesystems::Base#windows_system? tries to mount the filesystem to
+    # check if it contains a Windows system. This behaviour is mocked here to avoid the mounting action.
+    # For unit tests using this context file, a filesystem is considered to contain a Windows system when
+    # it is labeled as "windows".
     allow_any_instance_of(Y2Storage::Filesystems::Base).to receive(:windows_system?) do |fs|
       /windows/.match?(fs.label.downcase)
     end
 
-    allow_any_instance_of(Y2Storage::Partition).to receive(:detect_resize_info)
-      .and_return(resize_info)
+    allow_any_instance_of(Y2Storage::Partition).to receive(:detect_resize_info).and_return(resize_info)
 
     allow(Yast::Arch).to receive(:x86_64).and_return(architecture == :x86)
     allow(Yast::Arch).to receive(:i386).and_return(architecture == :i386)

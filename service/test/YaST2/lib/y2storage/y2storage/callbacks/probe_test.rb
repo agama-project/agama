@@ -22,6 +22,7 @@
 
 require_relative "../../../../../test_helper"
 require_relative "../../support/shared_setup"
+
 require_relative "issues_callback_examples"
 require "y2storage/callbacks/probe"
 

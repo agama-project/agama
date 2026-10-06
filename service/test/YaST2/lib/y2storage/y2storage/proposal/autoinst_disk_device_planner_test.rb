@@ -22,6 +22,7 @@
 
 require_relative "../../../../../test_helper"
 require_relative "../../support/shared_setup"
+
 require_relative "../../support/autoinst_devices_planner_btrfs"
 require_relative "../../support/autoinst_devices_planner_bcache"
 require_relative "../../support/autoinst_devices_planner_conflicts"

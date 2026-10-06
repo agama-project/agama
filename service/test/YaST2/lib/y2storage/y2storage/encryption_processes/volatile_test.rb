@@ -22,6 +22,7 @@
 
 require_relative "../../../../../test_helper"
 require_relative "../../support/shared_setup"
+
 require "y2storage/encryption_processes/volatile"
 
 describe Y2Storage::EncryptionProcesses::Volatile do

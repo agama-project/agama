@@ -22,6 +22,7 @@
 
 require_relative "../../../../test_helper"
 require_relative "../support/shared_setup"
+
 require "y2storage"
 
 describe Y2Storage::MatchVolumeSpec do
@@ -67,9 +68,7 @@ describe Y2Storage::MatchVolumeSpec do
 
     let(:volume_mount_point) { "swap" }
     let(:volume_partition_id) { Y2Storage::PartitionId::SWAP }
-    let(:volume_fs_types) do
-      [Y2Storage::Filesystems::Type::SWAP, Y2Storage::Filesystems::Type::VFAT]
-    end
+    let(:volume_fs_types) { [Y2Storage::Filesystems::Type::SWAP, Y2Storage::Filesystems::Type::VFAT] }
     let(:volume_min_size) { Y2Storage::DiskSize.GiB(1) }
     let(:volume_max_size_limit) { Y2Storage::DiskSize.GiB(10) }
 

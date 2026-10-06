@@ -22,6 +22,7 @@
 
 require_relative "../../../../../test_helper"
 require_relative "../../support/shared_setup"
+
 require "y2storage"
 
 describe Y2Storage::Filesystems::BlkFilesystem do
@@ -263,8 +264,7 @@ describe Y2Storage::Filesystems::BlkFilesystem do
         it "returns the udev name corresponding to the current mount_by" do
           subject.uuid = "12345678-90ab-cdef-1234-567890abcdef"
           subject.mount_point.mount_by = Y2Storage::Filesystems::MountByType::UUID
-          expect(subject.preferred_name)
-            .to eq "/dev/disk/by-uuid/12345678-90ab-cdef-1234-567890abcdef"
+          expect(subject.preferred_name).to eq "/dev/disk/by-uuid/12345678-90ab-cdef-1234-567890abcdef"
 
           subject.mount_point.mount_by = Y2Storage::Filesystems::MountByType::LABEL
           expect(subject.preferred_name).to eq "/dev/disk/by-label/suse_root"
@@ -287,8 +287,7 @@ describe Y2Storage::Filesystems::BlkFilesystem do
         # According to the mock, the first call to #best_for returns LABEL...
         expect(subject.preferred_name).to eq "/dev/disk/by-label/suse_root"
         # ...and the second call returns UUID
-        expect(subject.preferred_name)
-          .to eq "/dev/disk/by-uuid/12345678-90ab-cdef-1234-567890abcdef"
+        expect(subject.preferred_name).to eq "/dev/disk/by-uuid/12345678-90ab-cdef-1234-567890abcdef"
       end
     end
   end

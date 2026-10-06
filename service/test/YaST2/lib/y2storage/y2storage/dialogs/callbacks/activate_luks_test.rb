@@ -22,6 +22,7 @@
 
 require_relative "../../../../../../test_helper"
 require_relative "../../../support/shared_setup"
+
 require "y2storage/dialogs/callbacks/activate_luks"
 
 describe Y2Storage::Dialogs::Callbacks::ActivateLuks do
@@ -34,15 +35,12 @@ describe Y2Storage::Dialogs::Callbacks::ActivateLuks do
     allow(Yast::UI).to receive(:CloseDialog).and_return(true)
     allow(Yast::UI).to receive(:UserInput).and_return(action)
     allow(Yast::UI).to receive(:QueryWidget).with(Id(:password), :Value).and_return(password)
-    allow(Yast::UI).to receive(:QueryWidget).with(Id(:skip_decrypt),
-      :Value).and_return(skip_decrypt)
+    allow(Yast::UI).to receive(:QueryWidget).with(Id(:skip_decrypt), :Value).and_return(skip_decrypt)
   end
 
   subject { described_class.new(info, attempts, always_skip: always_skip) }
 
-  let(:info) do
-    instance_double(Y2Storage::Callbacks::Activate::InfoPresenter, to_text: "/dev/sda1")
-  end
+  let(:info) { instance_double(Y2Storage::Callbacks::Activate::InfoPresenter, to_text: "/dev/sda1") }
 
   let(:attempts) { 1 }
   let(:always_skip) { false }

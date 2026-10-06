@@ -22,6 +22,7 @@
 
 require_relative "../../../../../test_helper"
 require_relative "../../support/shared_setup"
+
 require "y2storage/autoinst_issues/unsupported_drive_section"
 require "y2storage/autoinst_profile/drive_section"
 

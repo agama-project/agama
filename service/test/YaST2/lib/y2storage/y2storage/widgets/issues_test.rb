@@ -22,6 +22,7 @@
 
 require_relative "../../../../../test_helper"
 require_relative "../../support/shared_setup"
+
 require_relative "#{TEST_PATH}/support/widgets_context"
 
 require "y2storage/widgets/issues"

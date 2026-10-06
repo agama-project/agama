@@ -22,6 +22,7 @@
 
 require_relative "../../../../test_helper"
 require_relative "../support/shared_setup"
+
 require "y2storage"
 
 describe Y2Storage::Disk do
@@ -254,8 +255,7 @@ describe Y2Storage::Disk do
     end
 
     it "returns nil when searching for an invalid device name" do
-      expect(described_class.find_by_name_or_partition(fake_devicegraph,
-        "where art thou?")).to be_nil
+      expect(described_class.find_by_name_or_partition(fake_devicegraph, "where art thou?")).to be_nil
     end
   end
 
@@ -505,8 +505,7 @@ describe Y2Storage::Disk do
         it "returns an array with the ESP vfat partitions" do
           expect(disk.efi_partitions).to be_a(Array)
           expect(disk.efi_partitions).to all(be_a(Y2Storage::Partition))
-          expect(disk.efi_partitions)
-            .to contain_exactly(an_object_having_attributes(name: "/dev/sdd1"))
+          expect(disk.efi_partitions).to contain_exactly(an_object_having_attributes(name: "/dev/sdd1"))
         end
       end
     end
@@ -538,8 +537,7 @@ describe Y2Storage::Disk do
         it "returns an array with the swap partitions" do
           expect(disk.swap_partitions).to be_a(Array)
           expect(disk.swap_partitions).to all(be_a(Y2Storage::Partition))
-          expect(disk.swap_partitions)
-            .to contain_exactly(an_object_having_attributes(name: "/dev/sdb1"))
+          expect(disk.swap_partitions).to contain_exactly(an_object_having_attributes(name: "/dev/sdb1"))
         end
       end
     end

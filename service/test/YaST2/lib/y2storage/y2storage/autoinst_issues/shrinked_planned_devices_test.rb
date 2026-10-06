@@ -22,6 +22,7 @@
 
 require_relative "../../../../../test_helper"
 require_relative "../../support/shared_setup"
+
 require "y2storage/autoinst_issues/shrinked_planned_devices"
 
 describe Y2Storage::AutoinstIssues::ShrinkedPlannedDevices do

@@ -22,6 +22,7 @@
 
 require_relative "../../../../../test_helper"
 require_relative "../../support/shared_setup"
+
 require "y2storage"
 
 Yast.import "Encoding"
@@ -177,8 +178,7 @@ describe Y2Storage::Filesystems::Type do
       it "vfat has the correct fstab options for a non-utf8 cs_CZ locale" do
         Yast::Encoding.SetUtf8Lang(false)
         Yast::Encoding.SetEncLang("cs_CZ")
-        expect(described_class::VFAT.default_fstab_options).to eq ["iocharset=iso8859-2",
-                                                                   "codepage=852"]
+        expect(described_class::VFAT.default_fstab_options).to eq ["iocharset=iso8859-2", "codepage=852"]
       end
 
       it "vfat has the correct fstab options for a non-utf8 de_DE locale" do
@@ -209,8 +209,7 @@ describe Y2Storage::Filesystems::Type do
           Yast::Encoding.SetUtf8Lang(true)
           Yast::Encoding.SetEncLang("de_DE")
           expect(described_class::VFAT.default_fstab_options("/boot")).to eq ["utf8", "dmask=0077"]
-          expect(described_class::VFAT.default_fstab_options("/boot/efi")).to eq ["utf8",
-                                                                                  "dmask=0077"]
+          expect(described_class::VFAT.default_fstab_options("/boot/efi")).to eq ["utf8", "dmask=0077"]
           expect(described_class::VFAT.default_fstab_options("/boot/whatever")).to eq ["utf8",
                                                                                        "dmask=0077"]
         end

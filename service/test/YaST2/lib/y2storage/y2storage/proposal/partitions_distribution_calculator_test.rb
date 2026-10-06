@@ -22,6 +22,7 @@
 
 require_relative "../../../../../test_helper"
 require_relative "../../support/shared_setup"
+
 require "storage"
 require "y2storage"
 
@@ -379,15 +380,9 @@ describe Y2Storage::Proposal::PartitionsDistributionCalculator do
       context "if there are free spaces that belong to a reused partition" do
         let(:scenario) { "several-dasds" }
 
-        let(:vol1) do
-          planned_vol(mount_point: "/1", type: :ext4, min: 1.GiB, max: 1.GiB, weight: 1)
-        end
-        let(:vol2) do
-          planned_vol(mount_point: "/2", type: :ext4, min: 1.GiB, max: 1.GiB, weight: 1)
-        end
-        let(:vol3) do
-          planned_vol(mount_point: "/3", type: :ext4, min: 1.GiB, max: 1.GiB, weight: 1)
-        end
+        let(:vol1) { planned_vol(mount_point: "/1", type: :ext4, min: 1.GiB, max: 1.GiB, weight: 1) }
+        let(:vol2) { planned_vol(mount_point: "/2", type: :ext4, min: 1.GiB, max: 1.GiB, weight: 1) }
+        let(:vol3) { planned_vol(mount_point: "/3", type: :ext4, min: 1.GiB, max: 1.GiB, weight: 1) }
         let(:volumes) { [vol1, vol2, vol3] }
 
         it "only assigns one partition to the free space of a reused partition" do
@@ -433,8 +428,7 @@ describe Y2Storage::Proposal::PartitionsDistributionCalculator do
       end
 
       let(:vol3) do
-        planned_vol(mount_point: "/3", type: :ext4, min: 3.GiB - 1.MiB, max: 3.GiB,
-          disk: "/dev/sda")
+        planned_vol(mount_point: "/3", type: :ext4, min: 3.GiB - 1.MiB, max: 3.GiB, disk: "/dev/sda")
       end
 
       context "if a proper distribution is possible" do
@@ -772,10 +766,8 @@ describe Y2Storage::Proposal::PartitionsDistributionCalculator do
         ptable.create_partition("/dev/sda1", Y2Storage::Region.create(640, 52427776, block_size),
           Y2Storage::PartitionType::PRIMARY)
         # One partition with misaligned start
-        ptable.create_partition(
-          "/dev/sda2", Y2Storage::Region.create(52428416, 52429184, block_size),
-          Y2Storage::PartitionType::PRIMARY
-        )
+        ptable.create_partition("/dev/sda2", Y2Storage::Region.create(52428416, 52429184, block_size),
+          Y2Storage::PartitionType::PRIMARY)
       end
 
       def end_aligned?(end_block)

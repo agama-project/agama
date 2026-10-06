@@ -22,6 +22,7 @@
 
 require_relative "../../../../test_helper"
 require_relative "../support/shared_setup"
+
 require "y2storage"
 
 describe Y2Storage::BcacheCset do
@@ -34,9 +35,7 @@ describe Y2Storage::BcacheCset do
   let(:scenario) { "bcache1.xml" }
   let(:bcache_name) { "/dev/bcache0" }
 
-  subject(:bcache_cset) do
-    Y2Storage::Bcache.find_by_name(fake_devicegraph, bcache_name).bcache_cset
-  end
+  subject(:bcache_cset) { Y2Storage::Bcache.find_by_name(fake_devicegraph, bcache_name).bcache_cset }
 
   describe "#blk_devices" do
     it "returns list of BlkDevices" do

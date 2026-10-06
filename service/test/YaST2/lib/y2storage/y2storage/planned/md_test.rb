@@ -1,5 +1,4 @@
 #!/usr/bin/env rspec
-#
 # frozen_string_literal: true
 
 # Copyright (c) [2017] SUSE LLC
@@ -23,6 +22,7 @@
 
 require_relative "../../../../../test_helper"
 require_relative "../../support/shared_setup"
+
 require "y2storage/planned"
 
 describe Y2Storage::Planned::Md do
@@ -65,8 +65,7 @@ describe Y2Storage::Planned::Md do
 
       context "if #devices_order contains devices that are not in the list" do
         before do
-          planned_md.devices_order = ["/dev/sdb2", "/dev/sda1", "/dev/sda3", "/dev/sda2",
-                                      "/dev/sdb1"]
+          planned_md.devices_order = ["/dev/sdb2", "/dev/sda1", "/dev/sda3", "/dev/sda2", "/dev/sdb1"]
         end
 
         it "adds the devices in the specified order" do

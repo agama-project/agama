@@ -1,5 +1,4 @@
 #!/usr/bin/env rspec
-#
 # frozen_string_literal: true
 
 # Copyright (c) [2018] SUSE LLC

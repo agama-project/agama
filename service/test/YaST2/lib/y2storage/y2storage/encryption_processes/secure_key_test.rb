@@ -22,6 +22,7 @@
 
 require_relative "../../../../../test_helper"
 require_relative "../../support/shared_setup"
+
 require "y2storage"
 
 describe Y2Storage::EncryptionProcesses::SecureKey do
@@ -85,8 +86,8 @@ describe Y2Storage::EncryptionProcesses::SecureKey do
 
       it "ensures uniq name by adding a suffix number" do
         expect(Yast::Execute).to receive(execute_method).with(
-          "/usr/bin/zkey", "generate", "-V", "--name", "YaST_cr_dasdc1_1", "--xts", "--keybits",
-          "256", "--volume-type", "LUKS2"
+          "/usr/bin/zkey", "generate", "-V", "--name", "YaST_cr_dasdc1_1", "--xts", "--keybits", "256",
+          "--volume-type", "LUKS2"
         )
 
         described_class.send(testing_method, name)
@@ -162,15 +163,13 @@ describe Y2Storage::EncryptionProcesses::SecureKey do
       end
 
       it "returns a secure key" do
-        expect(described_class.generate!("YaST_cr"))
-          .to be_a(Y2Storage::EncryptionProcesses::SecureKey)
+        expect(described_class.generate!("YaST_cr")).to be_a(Y2Storage::EncryptionProcesses::SecureKey)
       end
     end
 
     context "when the key cannot be generated" do
       before do
-        allow(Yast::Execute).to receive(:locally!).with(/zkey/, "generate",
-          any_args).and_raise(an_error)
+        allow(Yast::Execute).to receive(:locally!).with(/zkey/, "generate", any_args).and_raise(an_error)
       end
 
       let(:an_error) { RuntimeError }
@@ -240,8 +239,7 @@ describe Y2Storage::EncryptionProcesses::SecureKey do
     subject { described_class.new("cr_YaST") }
 
     it "runs zkey remove" do
-      expect(Yast::Execute).to receive(:locally!).with(/zkey/, "remove", "--force", "--name",
-        "cr_YaST")
+      expect(Yast::Execute).to receive(:locally!).with(/zkey/, "remove", "--force", "--name", "cr_YaST")
 
       subject.remove
     end

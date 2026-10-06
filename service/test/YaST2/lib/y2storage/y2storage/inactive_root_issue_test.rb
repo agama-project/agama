@@ -22,6 +22,7 @@
 
 require_relative "../../../../test_helper"
 require_relative "../support/shared_setup"
+
 require "y2storage/inactive_root_issue"
 
 describe Y2Storage::InactiveRootIssue do

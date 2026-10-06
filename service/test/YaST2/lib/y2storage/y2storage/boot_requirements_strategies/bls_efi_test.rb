@@ -21,6 +21,7 @@
 
 require_relative "../../../../../test_helper"
 require_relative "../../support/shared_setup"
+
 require_relative "#{TEST_PATH}/support/boot_requirements_context"
 require "y2storage"
 
@@ -145,8 +146,7 @@ describe Y2Storage::BootRequirementsStrategies::BlsEfi do
       end
     end
 
-    context "when an ESP partition at /efi and a XBOOTLDR partition at /boot are already " \
-            "configured" do
+    context "when an ESP partition at /efi and a XBOOTLDR partition at /boot are already configured" do
       let(:planned) do
         [
           planned_partition(mount_point: "/efi", partition_id: esp_id),

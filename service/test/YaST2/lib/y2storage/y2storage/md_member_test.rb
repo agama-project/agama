@@ -22,6 +22,7 @@
 
 require_relative "../../../../test_helper"
 require_relative "../support/shared_setup"
+
 require "y2storage"
 
 describe Y2Storage::MdMember do
@@ -45,8 +46,7 @@ describe Y2Storage::MdMember do
     end
 
     it "includes all BIOS MD RAIDs" do
-      expect(described_class.all(devicegraph).map(&:name)).to contain_exactly("/dev/md0",
-        "/dev/md/1")
+      expect(described_class.all(devicegraph).map(&:name)).to contain_exactly("/dev/md0", "/dev/md/1")
     end
   end
 

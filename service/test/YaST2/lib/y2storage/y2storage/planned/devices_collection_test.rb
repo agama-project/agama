@@ -22,6 +22,7 @@
 
 require_relative "../../../../../test_helper"
 require_relative "../../support/shared_setup"
+
 require "y2storage/planned"
 
 describe Y2Storage::Planned::DevicesCollection do
@@ -84,8 +85,7 @@ describe Y2Storage::Planned::DevicesCollection do
 
   describe "#partitions" do
     it "returns planned partitions" do
-      expect(collection.partitions).to eq([partition, disk_partition, md_partition,
-                                           bcache_partition])
+      expect(collection.partitions).to eq([partition, disk_partition, md_partition, bcache_partition])
     end
   end
 

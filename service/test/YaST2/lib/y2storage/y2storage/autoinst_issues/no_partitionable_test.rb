@@ -22,6 +22,7 @@
 
 require_relative "../../../../../test_helper"
 require_relative "../../support/shared_setup"
+
 require "y2storage/autoinst_issues/no_partitionable"
 
 describe Y2Storage::AutoinstIssues::NoPartitionable do

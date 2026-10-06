@@ -22,6 +22,7 @@
 
 require_relative "../../../../test_helper"
 require_relative "../support/shared_setup"
+
 require "storage"
 require "y2storage"
 require_relative "#{TEST_PATH}/support/proposal_examples"
@@ -387,8 +388,7 @@ describe Y2Storage::GuidedProposal do
       end
 
       it "does not enforce any particular UUID or label for additional swaps if uuidgen failed" do
-        allow(Yast::Execute).to receive(:locally!).and_raise Cheetah::ExecutionFailed.new("", "",
-          "", "")
+        allow(Yast::Execute).to receive(:locally!).and_raise Cheetah::ExecutionFailed.new("", "", "", "")
         proposal.propose
         expect(sda(6)).to have_attributes(
           filesystem_mountpoint: "swap", filesystem_uuid: "", filesystem_label: ""
@@ -600,8 +600,7 @@ describe Y2Storage::GuidedProposal do
             "mount_point" => "/", "fs_type" => "xfs", "weight" => 60,
             "desired_size" => "20GiB", "max_size" => "40GiB"
           },
-          { "mount_point" => "/home", "fs_type" => "xfs", "weight" => 40,
-"desired_size" => "10GiB" },
+          { "mount_point" => "/home", "fs_type" => "xfs", "weight" => 40, "desired_size" => "10GiB" },
           # This should reuse the existing logical swap
           { "mount_point" => "swap", "fs_type" => "swap", "desired_size" => "3GiB" }
         ]

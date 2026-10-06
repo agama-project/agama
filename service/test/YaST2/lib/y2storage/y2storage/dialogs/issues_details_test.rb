@@ -22,6 +22,7 @@
 
 require_relative "../../../../../test_helper"
 require_relative "../../support/shared_setup"
+
 require "y2storage/dialogs/issues_details"
 
 describe Y2Storage::Dialogs::IssuesDetails do

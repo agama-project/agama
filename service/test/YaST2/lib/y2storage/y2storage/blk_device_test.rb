@@ -22,6 +22,7 @@
 
 require_relative "../../../../test_helper"
 require_relative "../support/shared_setup"
+
 require "y2storage"
 
 describe Y2Storage::BlkDevice do
@@ -234,8 +235,7 @@ describe Y2Storage::BlkDevice do
 
     # Regression test for bsc#1170216: this used to crash because LvmPv#blk_device
     # is never expected to return nil.
-    context "if the PV is associated to this and to other block devices (multipath not " \
-            "activated)" do
+    context "if the PV is associated to this and to other block devices (multipath not activated)" do
       let(:scenario) { "inactive_multipath.xml" }
       let(:device_name) { "/dev/sda" }
 
@@ -903,8 +903,7 @@ describe Y2Storage::BlkDevice do
   end
 
   describe "#component_of" do
-    context "for a device not used in an LVM or in a RAID or in multipath or in a Btrfs " \
-            "multidevice" do
+    context "for a device not used in an LVM or in a RAID or in multipath or in a Btrfs multidevice" do
       let(:scenario) { "mixed_disks" }
       let(:device_name) { "/dev/sda1" }
 

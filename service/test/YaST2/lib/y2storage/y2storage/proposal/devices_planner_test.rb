@@ -22,6 +22,7 @@
 
 require_relative "../../../../../test_helper"
 require_relative "../../support/shared_setup"
+
 require_relative "#{TEST_PATH}/support/devices_planner_context"
 
 require "storage"
@@ -135,8 +136,7 @@ describe Y2Storage::Proposal::DevicesPlanner do
           let(:proposed) { false }
 
           it "does not plan a device for the <volume> entry" do
-            expect(planned_devices)
-              .to_not include(an_object_having_attributes(mount_point: mount_point))
+            expect(planned_devices).to_not include(an_object_having_attributes(mount_point: mount_point))
           end
         end
 
@@ -144,8 +144,7 @@ describe Y2Storage::Proposal::DevicesPlanner do
           let(:proposed) { true }
 
           it "plans a device for the <volume> entry" do
-            expect(planned_devices)
-              .to include(an_object_having_attributes(mount_point: mount_point))
+            expect(planned_devices).to include(an_object_having_attributes(mount_point: mount_point))
           end
 
           context "and the <volume> entry contains empty <mount_options>" do
@@ -512,8 +511,7 @@ describe Y2Storage::Proposal::DevicesPlanner do
 
             let(:subvolumes) { [] }
 
-            it "sets default_subvolume according to the btrfs_default_subvolume in <volume> " \
-               "entry" do
+            it "sets default_subvolume according to the btrfs_default_subvolume in <volume> entry" do
               expect(planned_device.default_subvolume).to eq(btrfs_default_subvolume)
             end
 
@@ -653,9 +651,7 @@ describe Y2Storage::Proposal::DevicesPlanner do
               allow(disk).to receive(:swap_partitions).and_return(swap_partitions)
             end
 
-            let(:disk) do
-              instance_double("Y2Storage::Disk", name: "/dev/sda", partitions: partitions)
-            end
+            let(:disk) { instance_double("Y2Storage::Disk", name: "/dev/sda", partitions: partitions) }
 
             let(:planned_swap) { planned_devices.select { |d| d.mount_point == "swap" } }
 
@@ -728,8 +724,7 @@ describe Y2Storage::Proposal::DevicesPlanner do
               let(:lvm) { false }
 
               it "plans a brand new swap volume and no swap reusing" do
-                expect(planned_swap)
-                  .to contain_exactly(an_object_having_attributes(reuse_name: nil))
+                expect(planned_swap).to contain_exactly(an_object_having_attributes(reuse_name: nil))
               end
             end
 
@@ -738,8 +733,7 @@ describe Y2Storage::Proposal::DevicesPlanner do
               let(:lvm) { false }
 
               it "plans a brand new swap volume and no swap reusing" do
-                expect(planned_swap)
-                  .to contain_exactly(an_object_having_attributes(reuse_name: nil))
+                expect(planned_swap).to contain_exactly(an_object_having_attributes(reuse_name: nil))
               end
             end
           end

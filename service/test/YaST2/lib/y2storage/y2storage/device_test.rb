@@ -22,6 +22,7 @@
 
 require_relative "../../../../test_helper"
 require_relative "../support/shared_setup"
+
 require "y2storage"
 
 describe Y2Storage::Device do
@@ -38,9 +39,7 @@ describe Y2Storage::Device do
   let(:issues_reporter) { instance_double(Y2Storage::IssuesReporter, report: true) }
 
   describe "#ancestors" do
-    subject(:device) do
-      Y2Storage::LvmLv.find_by_name(fake_devicegraph, "/dev/vg0/lv1").blk_filesystem
-    end
+    subject(:device) { Y2Storage::LvmLv.find_by_name(fake_devicegraph, "/dev/vg0/lv1").blk_filesystem }
 
     it "does not include the device itself" do
       expect(device.ancestors.map(&:sid)).to_not include device.sid

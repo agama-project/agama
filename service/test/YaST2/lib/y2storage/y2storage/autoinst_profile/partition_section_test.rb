@@ -22,6 +22,7 @@
 
 require_relative "../../../../../test_helper"
 require_relative "../../support/shared_setup"
+
 require_relative "#{TEST_PATH}/support/autoinst_profile_sections_examples"
 require "y2storage"
 
@@ -525,8 +526,7 @@ describe Y2Storage::AutoinstProfile::PartitionSection do
         end
 
         it "ignores subvolumes for snapshots" do
-          expect(section.subvolumes)
-            .to_not include(an_object_having_attributes(path: "@/.snapshots"))
+          expect(section.subvolumes).to_not include(an_object_having_attributes(path: "@/.snapshots"))
         end
 
         context "and the subvolumes prefix is empty" do
@@ -537,8 +537,7 @@ describe Y2Storage::AutoinstProfile::PartitionSection do
           end
 
           it "ignores subvolumes for snapshots" do
-            expect(section.subvolumes)
-              .to_not include(an_object_having_attributes(path: ".snapshots"))
+            expect(section.subvolumes).to_not include(an_object_having_attributes(path: ".snapshots"))
           end
         end
       end
@@ -638,8 +637,7 @@ describe Y2Storage::AutoinstProfile::PartitionSection do
     context "if the device is not formatted" do
       before { allow_any_instance_of(Y2Storage::Partition).to receive(:filesystem).and_return nil }
 
-      it "initializes #filesystem, #label, #mount, #mountby, #fstab_options and #mkfs_options to " \
-         "nil" do
+      it "initializes #filesystem, #label, #mount, #mountby, #fstab_options and #mkfs_options to nil" do
         expect(section_for("sdc3").filesystem).to be_nil
         expect(section_for("sdc3").label).to be_nil
         expect(section_for("sdc3").mount).to be_nil
@@ -882,8 +880,7 @@ describe Y2Storage::AutoinstProfile::PartitionSection do
     let(:hash) { { "filesystem" => :ntfs, "label" => "", "partition_id" => 7 } }
 
     it "returns a PartitionSection object" do
-      expect(described_class.new_from_hashes(hash))
-        .to be_a Y2Storage::AutoinstProfile::PartitionSection
+      expect(described_class.new_from_hashes(hash)).to be_a Y2Storage::AutoinstProfile::PartitionSection
     end
 
     it "initializes scalars like #filesystem or #partition_id to their values in the array" do

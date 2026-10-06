@@ -22,6 +22,7 @@
 
 require_relative "../../../../../test_helper"
 require_relative "../../support/shared_setup"
+
 require "y2storage/callbacks/commit"
 
 describe Y2Storage::Callbacks::Commit do
@@ -63,6 +64,7 @@ describe Y2Storage::Callbacks::Commit do
         reporter
       end
 
+      # unary +"..." to get mutable copies: #error calls #force_encoding on both arguments
       subject.error(
         (+"testing UTF-8 message: 🍺").force_encoding("ASCII-8BIT"),
         (+"details: 🍻").force_encoding("ASCII-8BIT")

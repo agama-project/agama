@@ -22,6 +22,7 @@
 
 require_relative "../../../../test_helper"
 require_relative "../support/shared_setup"
+
 require "y2storage/probed_devicegraph_checker"
 
 describe Y2Storage::ProbedDevicegraphChecker do
@@ -70,8 +71,8 @@ describe Y2Storage::ProbedDevicegraphChecker do
           .to receive(:unsupported_bcache?).and_call_original
       end
 
-      # NOTE: the devicegraph is only loaded but not probed, see {#devicegraph_from}. If the
-      # devicegraph is probed, then the test would fail because a Bcache error is reported.
+      # NOTE: the devicegraph is only loaded but not probed, see {#devicegraph_from}. If the devicegraph
+      # is probed, then the test would fail because a Bcache error is reported.
       let(:devicegraph) { devicegraph_from("bcache2.xml") }
 
       context "on an architecture that supports bcache (x86_64)" do

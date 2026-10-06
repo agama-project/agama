@@ -22,6 +22,7 @@
 
 require_relative "../../../../../test_helper"
 require_relative "../../support/shared_setup"
+
 require "y2storage"
 
 RSpec.shared_examples "planned root or disk in devicegraph" do
@@ -857,9 +858,7 @@ describe Y2Storage::BootRequirementsStrategies::Analyzer do
     end
 
     context "if '/boot' is a planned partition to be encrypted with LUKS1" do
-      let(:planned_boot) do
-        planned_partition(mount_point: "/boot", encryption_password: "12345678")
-      end
+      let(:planned_boot) { planned_partition(mount_point: "/boot", encryption_password: "12345678") }
 
       it "returns type luks1" do
         expect(analyzer.boot_encryption_type).to eq Y2Storage::EncryptionType::LUKS1
@@ -908,8 +907,7 @@ describe Y2Storage::BootRequirementsStrategies::Analyzer do
       let(:planned_devs) { [] }
       let(:scenario) { "output/empty_hard_disk_gpt_50GiB-enc" }
       before do
-        fake_devicegraph.find_by_name("/dev/sda2").encryption.type =
-          Y2Storage::EncryptionType::LUKS2
+        fake_devicegraph.find_by_name("/dev/sda2").encryption.type = Y2Storage::EncryptionType::LUKS2
       end
 
       it "returns type luks2" do

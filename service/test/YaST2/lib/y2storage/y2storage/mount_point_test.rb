@@ -22,6 +22,7 @@
 
 require_relative "../../../../test_helper"
 require_relative "../support/shared_setup"
+
 require "y2storage"
 
 describe Y2Storage::MountPoint do
@@ -343,8 +344,7 @@ describe Y2Storage::MountPoint do
         context "and the filesystem has no label" do
           it "returns all the existing types except LABEL" do
             types = Y2Storage::Filesystems::MountByType.all.reject { |t| t.is?(:label) }
-            expect(mount_point.suitable_mount_bys(encryption: encryption))
-              .to contain_exactly(*types)
+            expect(mount_point.suitable_mount_bys(encryption: encryption)).to contain_exactly(*types)
           end
         end
       end
@@ -624,8 +624,7 @@ describe Y2Storage::MountPoint do
       end
     end
 
-    context "for a filesystem directly on a local disk (i.e. BlkDevice#in_network? returns " \
-            "false)" do
+    context "for a filesystem directly on a local disk (i.e. BlkDevice#in_network? returns false)" do
       let(:scenario) { "empty_hard_disk_50GiB" }
       let(:dev_name) { "/dev/sda" }
       let(:mountable) { blk_device.create_filesystem(Y2Storage::Filesystems::Type::XFS) }
@@ -649,8 +648,7 @@ describe Y2Storage::MountPoint do
       include_examples "remove netdev"
     end
 
-    context "for a filesystem directly on a network disk (i.e. BlkDevice#in_network? returns " \
-            "true)" do
+    context "for a filesystem directly on a network disk (i.e. BlkDevice#in_network? returns true)" do
       let(:scenario) { "empty_hard_disk_50GiB" }
       let(:dev_name) { "/dev/sda" }
       let(:mountable) { blk_device.create_filesystem(Y2Storage::Filesystems::Type::XFS) }

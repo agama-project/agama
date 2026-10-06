@@ -1,5 +1,4 @@
 #!/usr/bin/env rspec
-#
 # frozen_string_literal: true
 
 # Copyright (c) [2018] SUSE LLC
@@ -23,6 +22,7 @@
 
 require_relative "../../../../../test_helper"
 require_relative "../../support/shared_setup"
+
 require "y2storage/planned"
 
 describe Y2Storage::Planned::Nfs do

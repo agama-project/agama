@@ -22,6 +22,7 @@
 
 require_relative "../../../../../test_helper"
 require_relative "../../support/shared_setup"
+
 require "y2storage"
 
 # For a complete pervasive encryption test, see test/y2storage/pervasive_encryption_test.rb
@@ -93,9 +94,7 @@ describe Y2Storage::EncryptionProcesses::Pervasive do
 
     let(:secure_key) { nil }
 
-    let(:apqn) do
-      instance_double(Y2Storage::EncryptionProcesses::Apqn, name: "01.0001", ep11?: false)
-    end
+    let(:apqn) { instance_double(Y2Storage::EncryptionProcesses::Apqn, name: "01.0001", ep11?: false) }
 
     let(:generated_key) do
       instance_double(Y2Storage::EncryptionProcesses::SecureKey,

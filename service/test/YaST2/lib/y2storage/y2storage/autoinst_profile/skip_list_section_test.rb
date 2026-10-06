@@ -22,6 +22,7 @@
 
 require_relative "../../../../../test_helper"
 require_relative "../../support/shared_setup"
+
 require_relative "#{TEST_PATH}/support/autoinst_profile_sections_examples"
 require "y2storage"
 
@@ -32,12 +33,8 @@ describe Y2Storage::AutoinstProfile::SkipListSection do
 
   include_examples "autoinst section"
 
-  let(:rule1) do
-    instance_double(Y2Storage::AutoinstProfile::SkipRule, matches?: true, valid?: true)
-  end
-  let(:rule2) do
-    instance_double(Y2Storage::AutoinstProfile::SkipRule, matches?: true, valid?: true)
-  end
+  let(:rule1) { instance_double(Y2Storage::AutoinstProfile::SkipRule, matches?: true, valid?: true) }
+  let(:rule2) { instance_double(Y2Storage::AutoinstProfile::SkipRule, matches?: true, valid?: true) }
   let(:disk) { instance_double(Y2Storage::Disk) }
 
   describe ".from_profile" do

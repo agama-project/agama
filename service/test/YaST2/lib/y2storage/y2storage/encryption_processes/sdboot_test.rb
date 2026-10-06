@@ -21,6 +21,7 @@
 
 require_relative "../../../../../test_helper"
 require_relative "../../support/shared_setup"
+
 require "y2storage"
 require "cheetah"
 
@@ -160,8 +161,7 @@ describe Y2Storage::EncryptionProcesses::Sdboot do
       before do
         allow(Yast::Execute).to receive(:on_target!)
           .with("/usr/bin/sdbootutil", any_args)
-          .and_raise(Cheetah::ExecutionFailed.new(["/usr/bin/sdbootutil"], 1, "",
-            "enrollment error"))
+          .and_raise(Cheetah::ExecutionFailed.new(["/usr/bin/sdbootutil"], 1, "", "enrollment error"))
         allow(subject).to receive(:log).and_return(logger)
       end
 

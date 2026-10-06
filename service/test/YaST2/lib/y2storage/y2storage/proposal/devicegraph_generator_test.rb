@@ -22,6 +22,7 @@
 
 require_relative "../../../../../test_helper"
 require_relative "../../support/shared_setup"
+
 require "y2storage"
 
 # These tests were originally for SpaceMaker but were moved here when some responsibilities
@@ -116,8 +117,7 @@ describe Y2Storage::Proposal::DevicegraphGenerator do
       let(:scenario) { "lvm-two-vgs" }
       let(:windows_partitions) { [partition_double("/dev/sda1")] }
       let(:resize_info) do
-        instance_double("Y2Storage::ResizeInfo", resize_ok?: true, min_size: 10.GiB,
-max_size: 800.GiB)
+        instance_double("Y2Storage::ResizeInfo", resize_ok?: true, min_size: 10.GiB, max_size: 800.GiB)
       end
 
       let(:lvm_helper) { Y2Storage::Proposal::LvmHelper.new([], settings) }

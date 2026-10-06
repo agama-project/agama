@@ -22,6 +22,7 @@
 
 require_relative "../../../../../test_helper"
 require_relative "../../support/shared_setup"
+
 require "y2storage/autoinst_issues/multiple_bcache_members"
 
 describe Y2Storage::AutoinstIssues::MultipleBcacheMembers do

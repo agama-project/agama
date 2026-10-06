@@ -22,6 +22,7 @@
 
 require_relative "../../../../test_helper"
 require_relative "../support/shared_setup"
+
 require "y2storage/issues_reporter"
 
 describe Y2Storage::IssuesReporter do
@@ -96,8 +97,7 @@ describe Y2Storage::IssuesReporter do
 
     context "when there is only an issue" do
       let(:issues) do
-        Y2Issues::List.new([Y2Storage::Issue.new("Issue 1", description: description,
-details: details)])
+        Y2Issues::List.new([Y2Storage::Issue.new("Issue 1", description: description, details: details)])
       end
 
       let(:details) { nil }
@@ -137,10 +137,9 @@ details: details)])
           let(:details) do
             "command '/usr/sbin/parted --script '/dev/sda' mklabel gpt' failed:\n\n\n" \
               "stderr:\n"\
-              "Error: Partition(s) 1 on /dev/sda have been written, but we have been unable to " \
-              "inform the kernel of the change, probably because it/they are in use.  As a " \
-              "result, the old partition(s) will remain in use.  You should reboot now before " \
-              "making further changes." \
+              "Error: Partition(s) 1 on /dev/sda have been written, but we have been unable to inform " \
+              "the kernel of the change, probably because it/they are in use.  As a result, the old " \
+              "partition(s) will remain in use.  You should reboot now before making further changes." \
               "\n\n" \
               "exit code:\n" \
               "1"
@@ -228,8 +227,7 @@ details: details)])
         end
 
         it "shows the question" do
-          expect(Y2Storage::Dialogs::Issues).to receive(:show).with(/despite the issues\?/,
-            anything)
+          expect(Y2Storage::Dialogs::Issues).to receive(:show).with(/despite the issues\?/, anything)
 
           subject.report(message: "issues message")
         end
@@ -243,8 +241,7 @@ details: details)])
         end
 
         it "shows the question" do
-          expect(Y2Storage::Dialogs::Issues).to receive(:show).with(/despite the issues\?/,
-            anything)
+          expect(Y2Storage::Dialogs::Issues).to receive(:show).with(/despite the issues\?/, anything)
 
           subject.report(message: "issues message")
         end

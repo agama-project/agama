@@ -22,6 +22,7 @@
 
 require_relative "../../../../../test_helper"
 require_relative "../../support/shared_setup"
+
 require "y2storage"
 
 describe Y2Storage::EncryptionProcesses::Apqn do
@@ -34,8 +35,7 @@ describe Y2Storage::EncryptionProcesses::Apqn do
   before do
     Y2Storage::StorageManager.create_test_instance
 
-    allow(Yast::Execute).to receive(:locally!).with(/lszcrypt/,
-      anything).and_return(lszcrypt_output)
+    allow(Yast::Execute).to receive(:locally!).with(/lszcrypt/, anything).and_return(lszcrypt_output)
     allow(File).to receive(:read).and_call_original
     allow(File).to receive(:read).with(/^\/sys\/bus\/ap\/devices\/card/).and_return ""
   end

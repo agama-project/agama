@@ -22,6 +22,7 @@
 
 require_relative "../../../../../test_helper"
 require_relative "../../support/shared_setup"
+
 require "y2storage/proposal/autoinst_devices_planner"
 require "y2storage/volume_specification"
 require "installation/autoinst_issues/list"
@@ -103,8 +104,7 @@ describe Y2Storage::Proposal::AutoinstDevicesPlanner do
     context "using NFS with the new format" do
       let(:partitioning_array) do
         [{
-          "device" => "192.168.56.1:/root_fs", "type" => :CT_NFS,
-          "partitions" => [{ "mount" => "/" }]
+          "device" => "192.168.56.1:/root_fs", "type" => :CT_NFS, "partitions" => [{ "mount" => "/" }]
         }]
       end
 

@@ -22,6 +22,7 @@
 
 require_relative "../../../../../test_helper"
 require_relative "../../support/shared_setup"
+
 require_relative "issues_callback_examples"
 require "y2storage/callbacks/activate"
 
@@ -38,8 +39,8 @@ describe Y2Storage::Callbacks::Activate do
     include_examples "#error"
 
     context "with an error produced by a duplicated PV" do
-      # unary +(...) to get a mutable copy: #error calls #force_encoding on it
       let(:what) do
+        # unary +(...) to get a mutable copy: #error calls #force_encoding on it
         +<<~FAILED_CMD
           What: command '/sbin/vgchange --activate y' failed:
           stdout:
@@ -118,8 +119,7 @@ describe Y2Storage::Callbacks::Activate do
     end
 
     let(:info) do
-      instance_double(Storage::LuksInfo, device_name: device_name, uuid: uuid, label: label,
-size: size)
+      instance_double(Storage::LuksInfo, device_name: device_name, uuid: uuid, label: label, size: size)
     end
 
     let(:device_name) { "/dev/sda1" }

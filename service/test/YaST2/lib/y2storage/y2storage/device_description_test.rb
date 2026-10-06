@@ -22,6 +22,7 @@
 
 require_relative "../../../../test_helper"
 require_relative "../support/shared_setup"
+
 require "y2storage/device_description"
 
 RSpec.shared_examples "Encrypted device" do

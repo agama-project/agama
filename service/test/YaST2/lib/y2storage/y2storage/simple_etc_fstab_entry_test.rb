@@ -22,6 +22,7 @@
 
 require_relative "../../../../test_helper"
 require_relative "../support/shared_setup"
+
 require "y2storage/simple_etc_fstab_entry"
 
 describe Y2Storage::SimpleEtcFstabEntry do

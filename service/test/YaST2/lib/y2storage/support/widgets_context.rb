@@ -21,7 +21,8 @@
 # find current contact information at www.suse.com.
 
 require_relative "../../../../test_helper"
-require_relative "shared_setup"
+require_relative "../support/shared_setup"
+
 Yast.import "UI"
 
 RSpec.shared_context "widgets" do

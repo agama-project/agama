@@ -20,6 +20,7 @@
 # find current contact information at www.suse.com.
 require_relative "../../../../../test_helper"
 require_relative "../../support/shared_setup"
+
 require "y2storage/autoinst_issues"
 
 describe Y2Storage::AutoinstIssues::NoComponents do

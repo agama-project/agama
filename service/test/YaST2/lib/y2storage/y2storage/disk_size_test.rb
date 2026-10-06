@@ -22,6 +22,7 @@
 
 require_relative "../../../../test_helper"
 require_relative "../support/shared_setup"
+
 require "y2storage/disk_size"
 
 describe Y2Storage::DiskSize do
@@ -528,8 +529,7 @@ describe Y2Storage::DiskSize do
     end
 
     it "should accept #to_human_string output" do
-      expect(described_class.parse(described_class.GiB(42).to_human_string).to_i)
-        .to eq(42 * (1024**3))
+      expect(described_class.parse(described_class.GiB(42).to_human_string).to_i).to eq(42 * (1024**3))
       expect(described_class.parse(described_class.new(43).to_human_string).to_i).to eq(43)
       expect(described_class.parse(described_class.zero.to_human_string).to_i).to eq(0)
       expect(described_class.parse(described_class.unlimited.to_human_string).to_i).to eq(-1)

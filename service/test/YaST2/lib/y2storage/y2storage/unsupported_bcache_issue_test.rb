@@ -22,6 +22,7 @@
 
 require_relative "../../../../test_helper"
 require_relative "../support/shared_setup"
+
 require "y2storage/unsupported_bcache_issue"
 
 describe Y2Storage::UnsupportedBcacheIssue do
