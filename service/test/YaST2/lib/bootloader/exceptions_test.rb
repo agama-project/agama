@@ -64,12 +64,6 @@ end
 describe Bootloader::UnsupportedOption do
   subject { described_class.new("some_option") }
 
-  # NOTE: pre-existing upstream bug, confirmed identical in current yast2-bootloader master, not
-  # fixed here (see service/YaST2/README.md "Known limitations"): #initialize assigns the given
-  # option to @reason instead of @option, so the public #option reader (translated from
-  # `attr_reader :option`) always returns nil instead of the value passed to .new. Nothing in
-  # Agama's closure ever calls #option (only #message, via the rescue clause in Bootloader.rb),
-  # so this has no practical effect, but is documented here rather than silently "fixed".
   it "does NOT expose the given option due to a pre-existing upstream bug " \
      "(#option is always nil)" do
     expect(subject.option).to be_nil
