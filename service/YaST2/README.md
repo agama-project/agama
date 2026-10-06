@@ -270,8 +270,6 @@ the previous "pure vendor" commit without needing inline markers:
   line. `Y2Packager::Product` is never referenced anywhere else in this file; this was the *other*
   (and last) root keeping the whole `y2packager` license/release-notes/product-reader/resolvable/
   package chain artificially alive.
-- **`modules/SlideShow.rb`**: dropped the `Yast.import "Slides"` call. Nothing in this file ever
-  calls a `Yast::Slides` method despite importing it - `Slides.rb` is not vendored.
 - **`modules/Progress.rb`, `modules/Report.rb`**: dropped the `Yast.import "CommandLine"` call and
   the `if Mode.commandline ... CommandLine.Print/PrintVerbose ... else ...` branches that were their
   only callers of it. `Mode.commandline` is never set anywhere in Agama (it only becomes true when
@@ -617,7 +615,7 @@ deviations from upstream" above) and are not vendored, leaving 79.
 | `library/types` classic modules | `URL`, `URLRecode`, `Hostname`, `IP`, `Map`, `RichText`, `String` |
 | `library/control` classic modules | `Installation`, `InstExtensionImage`, `ProductFeatures`, `ProductControl` |
 | `library/system`/`library/systemd` classic modules | `Kernel`, `ModuleLoading`, `Initrd`, `Service`, `Systemd` |
-| `library/wizard`, `library/desktop`, `library/gpg`, `library/xml`, `library/packages` classic modules | `Wizard`, `Progress`, `HTML`, `Desktop`, `GPG`, `XML`, `SlideShow` |
+| `library/wizard`, `library/desktop`, `library/gpg`, `library/xml`, `library/packages` classic modules | `Wizard`, `Progress`, `HTML`, `Desktop`, `GPG`, `XML` |
 | `lib/yast2/*` | `execute.rb`, `popup.rb`, `equatable.rb`, `rel_url.rb`, `secret_attributes.rb`, `target_file.rb`, `system_time.rb`, `systemctl.rb`, `{control_,}log_dir_rotator.rb`, `fs_snapshot.rb`, `refinements/string_manipulations.rb`, `systemd/{service,socket,socket_finder,target,unit,unit_installation_properties,unit_prop_map,unit_properties}.rb` |
 | `lib/cfa/*` | `login_defs.rb`, `multi_file_config.rb`, `shadow_config.rb` |
 | `lib/y2issues*` | `y2issues.rb` + `y2issues/{invalid_value,issue,list,location,presenter,reporter}.rb` |
@@ -667,7 +665,6 @@ what's *not* vendored as a consequence, with the single root that was keeping ea
   nothing in Agama's own code or any already-vendored file references any of
   `Y2Packager::{Product,License,ReleaseNotes*,Resolvable,Package,Exceptions}` directly - only
   `Y2Packager::Repository`/`ZyppUrl` (vendored separately, see above) are genuinely needed.
-- **Rooted in `SlideShow.rb`'s dead `Slides` import**: `Slides.rb`.
 - **Rooted in `Progress.rb`/`Report.rb`'s `Mode.commandline`-gated `CommandLine` calls**:
   `CommandLine.rb`, `Integer.rb`, `TypeRepository.rb`.
 - **Rooted in `ProductControl.rb`'s dead `Hooks` import**: `Hooks.rb`.
@@ -704,13 +701,18 @@ what's *not* vendored as a consequence, with the single root that was keeping ea
   the only one that exists).
 - **`lib/ui/password_dialog.rb` has no upstream test at all** (not even an interactive-UI one,
   confirmed) - left untested, matching upstream's own coverage.
+- **`modules/SlideShow.rb` was vendored but then removed again**: its only caller anywhere in
+  Agama's closure was `clients/inst_prepdisk.rb`'s `SlideShow.MoveToStage("disk")`, and that call
+  is a no-op in Agama's flow - `MoveToStage` only does anything for a stage previously registered
+  via `SlideShow.Setup`, which Agama never calls (it doesn't use the classic YaST slide-show
+  installation dialog at all). Dropped both the file and the no-op call.
 
 ### Files with no upstream test coverage (left untested, matching upstream)
 
 Consistent with the project's established policy (port only existing upstream tests, write new ones
 only for modified/deviated files or genuinely-untested-but-nontrivial logic): `Stage`, `Label`,
 `OSRelease`, `Summary`, `HTML`, `ShadowConfig`, `Encoding`, `ModuleLoading`, `Misc`, `Map`,
-`RichText`, `Icon`, `Systemd`, `Initrd`, `ProductControl`, `SlideShow`, `FileUtils` (3 real call
+`RichText`, `Icon`, `Systemd`, `Initrd`, `ProductControl`, `FileUtils` (3 real call
 sites across the whole closure - `Exists`/`IsLink` - the rest of its ~20-method API, including the
 `Popup`-driven `CheckAndCreatePath`, is dead weight within an otherwise-real file, same
 "mostly-dead" pattern as `BootArch`/`ServicesManagerTarget`/`ProductControl`), `lib/cfa/
