@@ -37,7 +37,6 @@ Yast.import "Initrd"
 Yast.import "Installation"
 Yast.import "Mode"
 Yast.import "Package"
-Yast.import "Progress"
 Yast.import "Report"
 Yast.import "Stage"
 Yast.import "UI"
@@ -82,35 +81,8 @@ module Yast
     # @return [Boolean] true on success
     def Read
       log.info "Reading configuration"
-      # run Progress bar
-      stages = [
-        # progress stage, text in dialog (short, infinitiv)
-        _("Check boot loader"),
-        # progress stage, text in dialog (short, infinitiv)
-        _("Load boot loader settings")
-      ]
-      titles = [
-        # progress step, text in dialog (short)
-        _("Checking boot loader..."),
-        # progress step, text in dialog (short)
-        _("Reading partitioning..."),
-        # progress step, text in dialog (short)
-        _("Loading boot loader settings...")
-      ]
-      # dialog header
-      Progress.New(
-        _("Initializing Boot Loader Configuration"),
-        " ",
-        3,
-        stages,
-        titles,
-        ""
-      )
 
-      Progress.NextStage
       return false if testAbort
-
-      Progress.NextStage
       return false if testAbort
 
       begin
@@ -159,8 +131,6 @@ module Yast
 
         return false
       end
-
-      Progress.Finish
 
       true
     end
@@ -220,44 +190,19 @@ module Yast
 
       log.info "Writing bootloader configuration"
 
-      stages = [
-        _("Prepare system"),
-        _("Create initrd"),
-        _("Save boot loader configuration")
-      ]
-      titles = [
-        _("Preparing system..."),
-        _("Creating initrd..."),
-        _("Saving boot loader configuration...")
-      ]
-
-      if Mode.normal
-        Progress.New(_("Saving Boot Loader Configuration"), " ", stages.size, stages, titles, "")
-        Progress.NextStage
-      else
-        Progress.Title(titles[0])
-      end
-
       # Prepare system
-      progress_state = Progress.set(false)
       if !::Bootloader::BootloaderFactory.current.prepare
         log.error("System could not be prepared successfully, required packages were not installed")
         Yast2::Popup.show(_("Cannot continue without install required packages"))
         return false
       end
-      Progress.set(progress_state)
 
       transactional = Package.IsTransactionalSystem
 
       # Create initrd
-      Progress.NextStage
-      Progress.Title(titles[1]) unless Mode.normal
-
       write_initrd || log.error("Error occurred while creating initrd") if !transactional
 
       # Save boot loader configuration
-      Progress.NextStage
-      Progress.Title(titles[2]) unless Mode.normal
       ::Bootloader::BootloaderFactory.current.write(etc_only: transactional)
       if transactional
         # all writing to target is done in specific transactional command
@@ -434,7 +379,6 @@ module Yast
       if Mode.config || (Stage.initial && !Mode.update)
         Propose()
       else
-        progress_orig = Progress.set(false)
         if Stage.initial && Mode.update
           # SCR has been currently set to inst-sys. So we have
           # set the SCR to installed system in order to read
@@ -452,7 +396,6 @@ module Yast
           WFM.SCRSetDefault(old_SCR)
           WFM.SCRClose(new_SCR)
         end
-        Progress.set(progress_orig)
       end
     end
 

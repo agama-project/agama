@@ -187,6 +187,17 @@ the previous "pure vendor" commit without needing inline markers:
   (`service/lib/agama/autoyast/bootloader_reader.rb`) reads the raw profile hash directly and never
   touches this module. None of the methods Agama *does* need (`kernel_param`, `modify_kernel_params`,
   `ReadOrProposeIfNeeded`, `Read`, `Write`, `Propose`, `Reset`, ...) call into the removed code.
+  Also dropped the `Yast.import "Progress"` call and every `Progress.*` call in `Read`/`Write`/
+  `ReadOrProposeIfNeeded` (and the now-unused stage/title arrays that only fed them): `Bootloader.rb`
+  is Agama's only caller of `Progress` anywhere in its closure, reached exclusively through
+  `kernel_param`/`modify_kernel_params` (from `lib/installation/cio_ignore.rb`, the only production
+  code that touches `Yast::Bootloader` at all), both of which always go through
+  `ReadOrProposeIfNeeded`. That method either calls `Propose` (no `Progress` calls at all) or wraps
+  `Read` in `Progress.set(false)` before calling it - making every `Progress.New`/`NextStage`/
+  `Finish`/`Title` call inside `Read` (which bail out immediately once `@visible` is false) a
+  guaranteed no-op on every path reachable from Agama. `Write`/`Update` are never called by Agama at
+  all. This let `modules/Progress.rb` itself be dropped entirely - nothing else in the closure uses
+  it.
 - **`lib/bootloader/finish_client.rb`**: `#set_boot_msg` upstream dynamically dispatches to a
   `"reipl_bootloader_finish"` YaST client (shipped by the separate `yast2-reipl` package, not
   vendored) via `Yast::WFM.call` on s390, to run `chreipl node /boot/zipl` (setting the re-IPL device
@@ -270,9 +281,9 @@ the previous "pure vendor" commit without needing inline markers:
   line. `Y2Packager::Product` is never referenced anywhere else in this file; this was the *other*
   (and last) root keeping the whole `y2packager` license/release-notes/product-reader/resolvable/
   package chain artificially alive.
-- **`modules/Progress.rb`, `modules/Report.rb`**: dropped the `Yast.import "CommandLine"` call and
-  the `if Mode.commandline ... CommandLine.Print/PrintVerbose ... else ...` branches that were their
-  only callers of it. `Mode.commandline` is never set anywhere in Agama (it only becomes true when
+- **`modules/Report.rb`**: dropped the `Yast.import "CommandLine"` call and the
+  `if Mode.commandline ... CommandLine.Print/PrintVerbose ... else ...` branches that were its
+  only caller of it. `Mode.commandline` is never set anywhere in Agama (it only becomes true when
   running the actual `yast2` command-line tool, which Agama never does) - `CommandLine.rb` (and the
   `Integer`/`TypeRepository` imports only it needed) is not vendored.
 - **`modules/ProductControl.rb`**: dropped the `Yast.import "Hooks"` call and the three `Hooks.run`
@@ -615,7 +626,7 @@ deviations from upstream" above) and are not vendored, leaving 79.
 | `library/types` classic modules | `URL`, `URLRecode`, `Hostname`, `IP`, `Map`, `RichText`, `String` |
 | `library/control` classic modules | `Installation`, `InstExtensionImage`, `ProductFeatures`, `ProductControl` |
 | `library/system`/`library/systemd` classic modules | `Kernel`, `ModuleLoading`, `Initrd`, `Service`, `Systemd` |
-| `library/wizard`, `library/desktop`, `library/gpg`, `library/xml`, `library/packages` classic modules | `Wizard`, `Progress`, `HTML`, `Desktop`, `GPG`, `XML` |
+| `library/wizard`, `library/desktop`, `library/gpg`, `library/xml`, `library/packages` classic modules | `Wizard`, `HTML`, `Desktop`, `GPG`, `XML` |
 | `lib/yast2/*` | `execute.rb`, `popup.rb`, `equatable.rb`, `rel_url.rb`, `secret_attributes.rb`, `target_file.rb`, `system_time.rb`, `systemctl.rb`, `{control_,}log_dir_rotator.rb`, `fs_snapshot.rb`, `refinements/string_manipulations.rb`, `systemd/{service,socket,socket_finder,target,unit,unit_installation_properties,unit_prop_map,unit_properties}.rb` |
 | `lib/cfa/*` | `login_defs.rb`, `multi_file_config.rb`, `shadow_config.rb` |
 | `lib/y2issues*` | `y2issues.rb` + `y2issues/{invalid_value,issue,list,location,presenter,reporter}.rb` |
@@ -665,7 +676,7 @@ what's *not* vendored as a consequence, with the single root that was keeping ea
   nothing in Agama's own code or any already-vendored file references any of
   `Y2Packager::{Product,License,ReleaseNotes*,Resolvable,Package,Exceptions}` directly - only
   `Y2Packager::Repository`/`ZyppUrl` (vendored separately, see above) are genuinely needed.
-- **Rooted in `Progress.rb`/`Report.rb`'s `Mode.commandline`-gated `CommandLine` calls**:
+- **Rooted in `Report.rb`'s `Mode.commandline`-gated `CommandLine` calls**:
   `CommandLine.rb`, `Integer.rb`, `TypeRepository.rb`.
 - **Rooted in `ProductControl.rb`'s dead `Hooks` import**: `Hooks.rb`.
 - **Rooted in `IP.rb`'s unreachable `CheckNetwork*` methods**: `Netmask.rb`, `Address.rb` (its only
