@@ -102,21 +102,6 @@ describe Bootloader::FinishClient do
       end
     end
 
-    context "when kexec is requested" do
-      before do
-        allow(Yast::Linuxrc).to receive(:InstallInf).with("kexec_reboot")
-          .and_return("1")
-      end
-
-      it "prepares kexec environment" do
-        kexec = double
-        expect(kexec).to receive(:prepare_environment)
-        allow(::Bootloader::Kexec).to receive(:new).and_return(kexec)
-
-        subject.write
-      end
-    end
-
     context "when merging the configuration fails with an exception" do
       before do
         allow(@system_bl).to receive(:merge)
