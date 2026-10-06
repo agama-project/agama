@@ -28,7 +28,6 @@ module Yast
       Yast.import "XML"
       Yast.import "Kernel"
       Yast.import "Mode"
-      Yast.import "Linuxrc"
       Yast.import "Profile"
       Yast.import "Label"
       Yast.import "Report"

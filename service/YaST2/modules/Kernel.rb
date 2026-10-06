@@ -52,7 +52,6 @@ module Yast
 
       Yast.import "Arch"
       Yast.import "Mode"
-      Yast.import "Linuxrc"
       Yast.import "PackagesProposal"
       Yast.import "Popup"
       Yast.import "Stage"
