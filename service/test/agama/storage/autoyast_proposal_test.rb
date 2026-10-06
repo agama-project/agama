@@ -162,13 +162,12 @@ describe Agama::Storage::Proposal do
             config.data["boot"] ||= {}
             config.data["boot"]["default_efi_bootloader"] = "systemd-boot"
 
-            # Y2Storage::ProposalSettings#load_bootloader also relies on this feature (in
-            # addition to the config data set above) to decide whether to use the BLS-compliant
-            # (systemd-boot-like) EFI partition size. Set explicitly instead of depending on
-            # whatever some other, unrelated spec elsewhere in the suite happens to leave behind.
-            Yast::ProductFeatures.Import(
-              "globals" => { "preferred_bootloader" => "systemd-boot" }
-            )
+            # Agama::Storage::BootloaderConfigSolver#bls_compliant_system? also needs
+            # Yast::Arch.x86_64 (real hardware/kernel detection via Yast::Arch, a *different*
+            # object than the already-mocked Y2Storage::Arch double above) to be true before it
+            # will honor "default_efi_bootloader" above at all. Stub it explicitly instead of
+            # relying on real detection, which can behave inconsistently inside a container.
+            allow(Yast::Arch).to receive(:x86_64).and_return(true)
           end
 
           it "proposes the expected EFI partition" do
