@@ -200,12 +200,29 @@ package above - each documented with a "DEVIATION FROM UPSTREAM" comment at the 
   (it contains Cyrillic text) would be misread as US-ASCII, raising `ArgumentError: invalid byte
   sequence in US-ASCII` down the line in `CFA::Grub2::GrubCfg#load`. Reproduced exactly with
   `LC_ALL=C LANG=C bundle exec rspec ...` locally; confirmed fixed with the explicit encoding.
-- **`test/YaST2/lib/y2storage/support/storage_helpers.rb`** (test-only): dropped the
-  `require "y2partitioner/device_graphs"` and the `Y2Partitioner::DeviceGraphs.create_instance` call
-  inside `#devicegraph_stub`. `y2partitioner` is never vendored (confirmed unused by Agama - see
-  below), and none of the four ported specs that call `#devicegraph_stub`
-  (`encryption_method_test.rb`, `encryption_processes/{luks,pervasive,systemd_fde}_test.rb`) rely on
-  that partitioner-specific device-graph cache.
+- **`test/YaST2/lib/y2storage/support/storage_helpers.rb`** (test-only):
+  - Dropped the `require "y2partitioner/device_graphs"` and the
+    `Y2Partitioner::DeviceGraphs.create_instance` call inside `#devicegraph_stub`. `y2partitioner`
+    is never vendored (confirmed unused by Agama - see below). The specs that call
+    `#devicegraph_stub` itself (`encryption_method_test.rb`) don't need that partitioner-specific
+    cache; the three specs that referenced `Y2Partitioner::DeviceGraphs.instance.current` directly
+    in their own setup (`encryption_processes/{luks,pervasive,systemd_fde}_test.rb`'s
+    `let(:devicegraph)`) were updated to use `Y2Storage::StorageManager.instance.staging` instead -
+    the same devicegraph, without going through the unvendored partitioner cache.
+  - Added a `#dup_strings` helper, used by `#fstab_entry`/`#crypttab_entry` to `.dup` any `String`
+    argument (including one level deep inside an `Array`) before building the mocked
+    `Storage::SimpleEtcFstabEntry`/`SimpleEtcCrypttabEntry`. Every test file in this project has
+    `# frozen_string_literal: true`, so string literals passed as fixture values here are frozen by
+    default; some production code (e.g. `StorageClassWrapper.object_for`) calls `#force_encoding`
+    on them (an in-place mutation), which raises `FrozenError` unless the test hands over a mutable
+    copy instead of the frozen literal.
+- **Frozen-string-literal/mutation fixes** (test-only, same root cause as the `#dup_strings` helper
+  above - several vendored `Y2Storage` classes call `#force_encoding` on strings handed to them,
+  which fails with `FrozenError` against this project's `# frozen_string_literal: true` test
+  files): `secret_attributes_test.rb` and `callbacks/{activate,check,commit,probe}_test.rb` /
+  `callbacks/issues_callback_examples.rb` use the unary `+"..."` idiom (or wrap a heredoc as
+  `+<<~...`) to pass a mutable copy of each literal string into the mocked/real call, instead of
+  upstream's plain literals.
 - **`test/YaST2/lib/y2storage/y2storage/planned/can_be_encrypted_test.rb`** (test-only): `plain_device`
   uses a plain `double` instead of `instance_double`. `rspec-mocks` 3.11.x (pinned project-wide) has
   a real bug, reproducible on both this sandbox and the project's actual CI (both run Ruby 4.0): a
