@@ -13,11 +13,13 @@
     Requires:       dbus-1-daemon
     # YaST dependencies
     # ArchFilter
-    Requires:       yast2 >= 4.5.20
     Requires:       yast2-hardware-detection
     Requires:       libstorage-ng-ruby
     Requires:       yast2-pkg-bindings
     Requires:       yast2-transfer
+    # Needed by service/YaST2/modules/Popup.rb (Yast.import "UI") - previously only a transitive
+    # dependency pulled in by the now-dropped `yast2` RPM's own Requires:
+    Requires:       yast2-ycp-ui-bindings
     # Storage dependencies
     Requires:       bcache-tools
     Requires:       btrfsprogs
