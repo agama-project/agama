@@ -22,7 +22,7 @@
 # File:  modules/GPG.ycp
 # Package:  yast2
 # Summary:  A wrapper for gpg binary
-# Authors:  Ladislav Slezák <lslezak@suse.cz>
+# Authors:  Ladislav Slezak <lslezak@suse.cz>
 #
 # $Id$
 #
