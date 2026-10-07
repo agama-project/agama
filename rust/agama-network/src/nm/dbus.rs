@@ -847,7 +847,7 @@ fn bridge_port_config_from_dbus(
 
     Ok(Some(BridgePortConfig {
         priority: get_optional_property(bridge_port, "priority")?,
-        path_cost: get_optional_property(bridge_port, "path_cost")?,
+        path_cost: get_optional_property(bridge_port, "path-cost")?,
     }))
 }
 
@@ -1696,8 +1696,8 @@ mod test {
         model::*,
         nm::{
             dbus::{
-                BOND_KEY, BRIDGE_KEY, ETHERNET_KEY, INFINIBAND_KEY, VLAN_KEY, WIRELESS_KEY,
-                WIRELESS_SECURITY_KEY,
+                BOND_KEY, BRIDGE_KEY, BRIDGE_PORT_KEY, ETHERNET_KEY, INFINIBAND_KEY, VLAN_KEY,
+                WIRELESS_KEY, WIRELESS_SECURITY_KEY,
             },
             error::NmError,
         },
@@ -2080,6 +2080,31 @@ mod test {
             assert_eq!(config.stp, Some(true));
             assert_eq!(config.forward_delay, Some(5_u32));
         }
+
+        Ok(())
+    }
+
+    #[test]
+    fn test_connection_from_dbus_bridge_port() -> anyhow::Result<()> {
+        let uuid = Uuid::new_v4().to_string();
+        let connection_section = HashMap::from([hi("id", "eth0")?, hi("uuid", uuid)?]);
+        let bridge_port_section =
+            HashMap::from([hi("priority", 16_u32)?, hi("path-cost", 50_u32)?]);
+
+        let dbus_conn = HashMap::from([
+            ("connection".to_string(), connection_section),
+            (ETHERNET_KEY.to_string(), build_ethernet_section_from_dbus()),
+            (BRIDGE_PORT_KEY.to_string(), bridge_port_section),
+        ]);
+
+        let connection = connection_from_dbus(dbus_conn)?;
+        assert_eq!(
+            connection.port_config,
+            PortConfig::Bridge(BridgePortConfig {
+                priority: Some(16),
+                path_cost: Some(50),
+            })
+        );
 
         Ok(())
     }

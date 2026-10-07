@@ -17,6 +17,8 @@ Mon Sep 28 12:00:00 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
   omits its list of ports.
 - Keep the settings that the API does not model when a connection
   is updated.
+- Read the path cost of a bridge port back from NetworkManager,
+  which was always lost.
 
 -------------------------------------------------------------------
 Mon Sep 28 09:10:11 UTC 2026 - José Iván López González <jlopez@suse.com>
