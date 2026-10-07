@@ -72,8 +72,9 @@ jobs:
       run: |
         RUBY_VERSION=$(ruby -e "puts RbConfig::CONFIG['ruby_version']")
         zypper --non-interactive install \
-        yast2 \
         yast2-devtools \
+        yast2-ycp-ui-bindings \
+        augeas-lenses \
         libstorage-ng-ruby \
         yast2-pkg-bindings \
         yast2-transfer \

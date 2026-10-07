@@ -57,10 +57,11 @@ $SUDO $ZYPPER install \
   gettext-runtime \
   glibc-locale \
   suseconnect-ruby-bindings \
-  yast2 \
+  augeas-lenses \
   yast2-hardware-detection \
   yast2-schema \
   yast2-transfer \
+  yast2-ycp-ui-bindings \
   bcache-tools \
   btrfsprogs \
   cryptsetup \
@@ -92,6 +93,15 @@ if [ $(uname -m) == "x86_64" ]; then
   $SUDO $ZYPPER install \
     fde-tools
 fi
+
+# No s390-specific YaST packages are needed anymore: yast2-s390's Ruby code is vendored into
+# service/YaST2/lib/y2s390, yast2-cio was confirmed unused, and yast2-reipl's only real effect
+# (the s390 "chreipl node /boot/zipl" call) is now inlined directly into the vendored
+# Bootloader::FinishClient (see service/package/gem2rpm.yml and service/YaST2/README.md).
+
+# The base `yast2` package itself is no longer needed either: its real-use closure is now vendored
+# into service/YaST2 (see service/YaST2/README.md). `yast2-ycp-ui-bindings` above replaces it as
+# an explicit dependency (previously only pulled in transitively via yast2.spec's own Requires:).
 
 # Rubygem dependencies
 (
