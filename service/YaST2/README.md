@@ -616,7 +616,7 @@ its other public methods are kept because the upstream spec exercises them. `Pop
 `ProductFeatures` (+ `cfg_features.scr`), `ProductControl` (kept on purpose: `Init()` parses
 `/etc/YaST2/control.xml` into `ProductFeatures` at runtime, which feeds `boot_timeout` and
 `disable_os_prober`; its `Wizard` and `Hooks` imports are dropped), `Kernel`
-(+ `cfg_kernel.scr`, `proc_modules.scr`), `Initrd`, `ModuleLoading`, `GPG`, `XML`, `Desktop`
+(+ `cfg_kernel.scr`, `proc_modules.scr`, `proc_meminfo.scr`), `Initrd`, `ModuleLoading`, `GPG`, `XML`, `Desktop`
 (+ `yast2_desktop.scr`, `yast2_groups.scr`), `ShadowConfig` + `lib/cfa/{multi_file_config,login_defs,
 shadow_config}.rb` (+ `etc_login_defs.scr`, needs `augeas-lenses`), `lib/yast2/{log_dir_rotator,
 control_log_dir_rotator,fs_snapshot}.rb` (+ `cfg_yast2.scr`), `proc_cpuinfo.scr`.
