@@ -211,23 +211,9 @@ module Yast
       true
     end
 
-    def VgaModes
-      all_modes = Convert.convert(
-        SCR.Read(path(".probe.framebuffer")),
-        from: "any",
-        to:   "list <map>"
-      )
-      if all_modes.nil? || Builtins.size(all_modes) == 0
-        Builtins.y2warning("Probing VGA modes failed, using fallback list")
-        all_modes = deep_copy(@known_modes)
-      end
-      deep_copy(all_modes)
-    end
-
     publish variable: :changed, type: "boolean"
     publish function: :Read, type: "boolean ()"
     publish function: :Write, type: "boolean ()"
-    publish function: :VgaModes, type: "list <map> ()"
 
   private
 
