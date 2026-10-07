@@ -22,7 +22,7 @@
 # File:  modules/Systemd.ycp
 # Package:  yast2
 # Summary:  systemd configuration
-# Authors:  Ladislav Slezák <lslezak@suse.cz>
+# Authors:  Ladislav Slezak <lslezak@suse.cz>
 #
 # $Id$
 #
