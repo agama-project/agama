@@ -1,6 +1,6 @@
-#!/usr/bin/env rspec
+# frozen_string_literal: true
 
-# Copyright (c) [2015-2019] SUSE LLC
+# Copyright (c) [2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -19,10 +19,20 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require_relative "test_helper"
+require_relative "../../../test_helper"
+
 require "yast2/fs_snapshot"
 
 describe Yast2::FsSnapshot do
+  # Yast::Installation is a global singleton, and #destdir= really mutates its state (not just a
+  # test double) - restore it so this spec doesn't leak "/mnt" into whatever test runs next.
+  around do |example|
+    Yast.import "Installation"
+    original_destdir = Yast::Installation.destdir
+    example.run
+    Yast::Installation.destdir = original_destdir
+  end
+
   def logger
     described_class.log
   end
@@ -145,12 +155,14 @@ describe Yast2::FsSnapshot do
         end
 
         it "executes the fourth step of Snapper's installation helper" do
-          expect(Yast::Execute).to receive(:on_target).with(/snapper\/installation-helper/, "--step", "4")
+          expect(Yast::Execute).to receive(:on_target).with(/snapper\/installation-helper/,
+            "--step", "4")
           described_class.configure_snapper
         end
 
         it "sets Snapper config" do
-          expect(Yast::Execute).to receive(:on_target).with(/snapper$/, "--no-dbus", "set-config", any_args)
+          expect(Yast::Execute).to receive(:on_target).with(/snapper$/, "--no-dbus", "set-config",
+            any_args)
           described_class.configure_snapper
         end
 
@@ -169,13 +181,14 @@ describe Yast2::FsSnapshot do
 
   describe ".create_single" do
     CREATE_SINGLE_SNAPSHOT = "/usr/bin/snapper --no-dbus "\
-                             "--root=/ create --type single --description some-description".freeze
-    OPTION_CLEANUP_NUMBER = " --cleanup number".freeze
-    OPTION_IMPORTANT = " --userdata \"important=yes\"".freeze
+                             "--root=/ create --type single --description some-description"
+    OPTION_CLEANUP_NUMBER = " --cleanup number"
+    OPTION_IMPORTANT = " --userdata \"important=yes\""
 
     before do
       allow(Yast2::FsSnapshot).to receive(:configured?).and_return(configured)
-      allow(Yast2::FsSnapshot).to receive(:create_snapshot?).with(:single).and_return(create_snapshot)
+      allow(Yast2::FsSnapshot).to receive(:create_snapshot?).with(:single)
+        .and_return(create_snapshot)
       allow(Yast2::FsSnapshot).to receive(:all).and_return([dummy_snapshot])
     end
 
@@ -234,7 +247,8 @@ describe Yast2::FsSnapshot do
         let(:snapshot_command) { CREATE_SINGLE_SNAPSHOT + OPTION_IMPORTANT + OPTION_CLEANUP_NUMBER }
 
         it "creates a snapshot with that strategy that is marked as important" do
-          snapshot = described_class.create_single("some-description", cleanup: :number, important: true)
+          snapshot = described_class.create_single("some-description", cleanup: :number,
+important: true)
           expect(snapshot).to be(dummy_snapshot)
         end
       end
@@ -262,11 +276,12 @@ describe Yast2::FsSnapshot do
 
   describe ".create_pre" do
     CREATE_PRE_SNAPSHOT = "/usr/bin/snapper --no-dbus "\
-                          "--root=/ create --type pre --description some-description".freeze
+                          "--root=/ create --type pre --description some-description"
 
     before do
       allow(Yast2::FsSnapshot).to receive(:configured?).and_return(configured)
-      allow(Yast2::FsSnapshot).to receive(:create_snapshot?).with(:around).and_return(create_snapshot)
+      allow(Yast2::FsSnapshot).to receive(:create_snapshot?).with(:around)
+        .and_return(create_snapshot)
       allow(Yast2::FsSnapshot).to receive(:all).and_return([dummy_snapshot])
     end
 
@@ -325,7 +340,8 @@ describe Yast2::FsSnapshot do
         let(:snapshot_command) { CREATE_PRE_SNAPSHOT + OPTION_IMPORTANT + OPTION_CLEANUP_NUMBER }
 
         it "creates a pre snapshot with that strategy that is marked as important" do
-          snapshot = described_class.create_pre("some-description", important: true, cleanup: :number)
+          snapshot = described_class.create_pre("some-description", important: true,
+cleanup: :number)
           expect(snapshot).to be(dummy_snapshot)
         end
       end
@@ -354,11 +370,12 @@ describe Yast2::FsSnapshot do
   describe ".create_post" do
     CREATE_POST_SNAPSHOT = "/usr/bin/snapper --no-dbus "\
                            "--root=/ create --type post --description some-description "\
-                           "--pre-num 1".freeze
+                           "--pre-num 1"
 
     before do
       allow(Yast2::FsSnapshot).to receive(:configured?).and_return(configured)
-      allow(Yast2::FsSnapshot).to receive(:create_snapshot?).with(:around).and_return(create_snapshot)
+      allow(Yast2::FsSnapshot).to receive(:create_snapshot?).with(:around)
+        .and_return(create_snapshot)
     end
 
     context "when snapper is configured" do
@@ -447,7 +464,7 @@ describe Yast2::FsSnapshot do
 
       context "given some snapshots exist" do
         let(:output) { File.read(output_path) }
-        let(:output_path) { File.expand_path("fixtures/snapper-list.txt", __dir__) }
+        let(:output_path) { File.join(FIXTURES_PATH, "yast2", "system", "snapper-list.txt") }
 
         it "should return the snapshots and log about how many were found" do
           expect(logger).to receive(:info).with(/Retrieving snapshots list/)
@@ -459,7 +476,7 @@ describe Yast2::FsSnapshot do
 
       context "given no snapshots exist" do
         let(:output) { File.read(output_path) }
-        let(:output_path) { File.expand_path("fixtures/empty-snapper-list.txt", __dir__) }
+        let(:output_path) { File.join(FIXTURES_PATH, "yast2", "system", "empty-snapper-list.txt") }
 
         it "should return an empty array" do
           expect(described_class.all).to eq([])
@@ -498,7 +515,7 @@ describe Yast2::FsSnapshot do
     context "when snapper is configured" do
       let(:configured) { true }
       let(:output) { File.read(output_path) }
-      let(:output_path) { File.expand_path("fixtures/snapper-list.txt", __dir__) }
+      let(:output_path) { File.join(FIXTURES_PATH, "yast2", "system", "snapper-list.txt") }
 
       let(:command) { format(Yast2::FsSnapshot::LIST_SNAPSHOTS_CMD, root: "/") }
 
@@ -540,7 +557,7 @@ describe Yast2::FsSnapshot do
 
   describe "#previous" do
     let(:output) { File.read(output_path) }
-    let(:output_path) { File.expand_path("fixtures/snapper-list.txt", __dir__) }
+    let(:output_path) { File.join(FIXTURES_PATH, "yast2", "system", "snapper-list.txt") }
 
     let(:command) { format(Yast2::FsSnapshot::LIST_SNAPSHOTS_CMD, root: "/") }
 
@@ -569,53 +586,15 @@ describe Yast2::FsSnapshot do
   end
 
   describe ".create_snapshot?" do
-    before do
-      Yast.import "Linuxrc"
-    end
-
-    context "when single value is defined on Linuxrc commandline" do
-      it "returns whether given snapshot type is allowed" do
-        allow(Yast::Linuxrc).to receive(:value_for).with(/snapshot/).and_return("around")
-        expect(described_class.create_snapshot?(:around)).to eq(false)
-        expect(described_class.create_snapshot?(:single)).to eq(true)
-
-        allow(Yast::Linuxrc).to receive(:value_for).with(/snapshot/).and_return("single")
-        expect(described_class.create_snapshot?(:around)).to eq(true)
-        expect(described_class.create_snapshot?(:single)).to eq(false)
-
-        allow(Yast::Linuxrc).to receive(:value_for).with(/snapshot/).and_return("all")
-        expect(described_class.create_snapshot?(:around)).to eq(false)
-        expect(described_class.create_snapshot?(:single)).to eq(false)
-      end
-    end
-
-    context "when more values are defined on Linuxrc commandline" do
-      it "returns whether given snapshot type is not within disabled snapshots types" do
-        allow(Yast::Linuxrc).to receive(:value_for).with(/snapshot/).and_return("single,around")
-        expect(described_class.create_snapshot?(:around)).to eq(false)
-        expect(described_class.create_snapshot?(:single)).to eq(false)
-
-        allow(Yast::Linuxrc).to receive(:value_for).with(/snapshot/).and_return("all,around")
-        expect(described_class.create_snapshot?(:around)).to eq(false)
-        expect(described_class.create_snapshot?(:single)).to eq(false)
-      end
-    end
-
-    context "when no value is defined on Linuxrc commandline" do
-      it "returns that any snapshots are allowed" do
-        allow(Yast::Linuxrc).to receive(:value_for).with(/snapshot/).and_return(nil)
-        expect(described_class.create_snapshot?(:around)).to eq(true)
-        expect(described_class.create_snapshot?(:single)).to eq(true)
-
-        allow(Yast::Linuxrc).to receive(:value_for).with(/snapshot/).and_return("")
+    context "when called with a supported snapshot type" do
+      it "returns true" do
         expect(described_class.create_snapshot?(:around)).to eq(true)
         expect(described_class.create_snapshot?(:single)).to eq(true)
       end
     end
 
-    context "when called with unsupported parameter value" do
-      it "throws an ArgumentError exception" do
-        allow(Yast::Linuxrc).to receive(:value_for).with(/snapshot/).and_return("all")
+    context "when called with an unsupported snapshot type" do
+      it "raises an ArgumentError exception" do
         expect { described_class.create_snapshot?(:some) }.to raise_error(ArgumentError, /:some/)
       end
     end
