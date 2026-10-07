@@ -1,24 +1,13 @@
 -------------------------------------------------------------------
 Mon Sep 28 12:00:00 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
 
-- Nest the ports of bonds and bridges in the new "portConnections"
-  list of their controller, so stacked setups (e.g., eth0 + eth1 ->
-  bond0 -> br0) can be read and modified
-  (gh#agama-project/agama#3995). A port without settings can still
-  be given just by its interface name.
-- Keep the "ports" list of names working as before. A controller
-  gives either "ports" or "portConnections", not both. The system,
-  extended config and proposal report both of them.
-- Remove the ports along with their controller, as well as a port
-  dropped from the list of its controller that is not given anywhere
-  else, and do not allow IP settings on a nested port. The IP
-  settings of a port given at the top level are ignored.
-- Leave the ports of a controller alone when the configuration
-  omits its list of ports.
-- Keep the settings that the API does not model when a connection
-  is updated.
-- Read the path cost of a bridge port back from NetworkManager,
-  which was always lost.
+- Allow nesting the ports of bonds and bridges in a new
+  "portConnections" list, so stacked setups can be read and
+  modified. The "ports" list of names keeps working
+  (gh#agama-project/agama#3995).
+- Keep the settings not modelled by the API when updating a
+  connection.
+- Fix reading the path cost of bridge ports from NetworkManager.
 
 -------------------------------------------------------------------
 Mon Sep 28 09:10:11 UTC 2026 - José Iván López González <jlopez@suse.com>
