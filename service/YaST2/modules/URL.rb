@@ -618,23 +618,6 @@ module Yast
       subd.nil? ? url : subd
     end
 
-    # Hide password token in parsed URL (by URL::Parse()) - the password is replaced by 'PASSWORD' string.
-    # Similar to HidePassword() but uses a parsed URL as the input.
-    # @param [Hash] tokens input
-    # @return [Hash] map with replaced password
-    def HidePasswordToken(tokens)
-      tokens = deep_copy(tokens)
-      ret = deep_copy(tokens)
-
-      # hide the password if it's there
-      if Builtins.haskey(ret, "pass") &&
-          Ops.greater_than(Builtins.size(Ops.get_string(ret, "pass", "")), 0)
-        Ops.set(ret, "pass", "PASSWORD")
-      end
-
-      deep_copy(ret)
-    end
-
     publish variable: :ValidChars, type: "string"
     publish variable: :transform_map_passwd, type: "map <string, string>"
     publish variable: :transform_map_filename, type: "map <string, string>"
@@ -648,7 +631,6 @@ module Yast
     publish function: :Build, type: "string (map)"
     publish function: :FormatURL, type: "string (map, integer)"
     publish function: :HidePassword, type: "string (string)"
-    publish function: :HidePasswordToken, type: "map (map)"
 
   private
 
