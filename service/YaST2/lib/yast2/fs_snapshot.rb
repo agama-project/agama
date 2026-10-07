@@ -68,7 +68,6 @@ module Yast2
   class FsSnapshot
     include Yast::Logger
 
-    Yast.import "Linuxrc"
     Yast.import "Mode"
 
     FIND_CONFIG_CMD =
@@ -174,29 +173,16 @@ module Yast2
       attr_writer :configure_on_install
 
       # Returns whether creating the given snapshot type is allowed
-      # Information is taken from Linuxrc (DISABLE_SNAPSHOTS)
-      #   * "all" - all snapshot types are temporarily disabled
-      #   * "around" - before and after calling YaST
-      #   * "single" - single snapshot at a given point
       #
       # @param [Symbol] one of :around (for :post and :pre snapshots) or :single
       # @return [Boolean] if snapshot should be created
       def create_snapshot?(snapshot_type)
-        disable_snapshots = Yast::Linuxrc.value_for(Yast::LinuxrcClass::DISABLE_SNAPSHOTS)
-
-        # Feature is not defined on Linuxrc commandline
-        return true if disable_snapshots.nil? || disable_snapshots.empty?
-
-        disable_snapshots = disable_snapshots.downcase.tr("-_.", "").split(",")
-
-        if [:around, :single].include?(snapshot_type)
-          return false if disable_snapshots.include?("all")
-
-          !disable_snapshots.include?(snapshot_type.to_s)
-        else
+        unless [:around, :single].include?(snapshot_type)
           raise ArgumentError, "Unsupported snapshot type #{snapshot_type.inspect}, " \
                                "supported are :around and :single"
         end
+
+        true
       end
 
       # Creates a new 'single' snapshot unless disabled by user
