@@ -1,0 +1,13 @@
+---
+"errors":
+  log: true
+  show: true
+  timeout: 10
+"warnings":
+  log: true
+  show: true
+  timeout: 20
+"yesno_messages":
+  log: true
+  show: true
+  timeout: 40

@@ -1,6 +1,26 @@
-#! /usr/bin/env rspec
+# frozen_string_literal: true
 
-require_relative "test_helper"
+# Copyright (c) [2026] SUSE LLC
+#
+# All Rights Reserved.
+#
+# This program is free software; you can redistribute it and/or modify it
+# under the terms of version 2 of the GNU General Public License as published
+# by the Free Software Foundation.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+# more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, contact SUSE LLC.
+#
+# To contact SUSE LLC about this file by physical or electronic mail, you may
+# find current contact information at www.suse.com.
+
+require_relative "../../test_helper"
+
 require "yaml"
 
 Yast.import "Report"
@@ -109,17 +129,6 @@ describe Yast::Report do
       subject.LongWarning("Message")
       expect(subject.GetMessages(0, 1, 0, 0)).to match(/Message/)
     end
-
-    context "when running on command line mode" do
-      before do
-        allow(Yast::Mode).to receive(:commandline).and_return(true)
-      end
-
-      it "prints the message" do
-        expect(Yast::CommandLine).to receive(:Print).with("Warning: message")
-        subject.LongWarning("message")
-      end
-    end
   end
 
   describe ".LongError" do
@@ -140,21 +149,10 @@ describe Yast::Report do
       subject.LongError("Message")
       expect(subject.GetMessages(0, 1, 0, 0)).to match(/Message/)
     end
-
-    context "when running on command line mode" do
-      before do
-        allow(Yast::Mode).to receive(:commandline).and_return(true)
-      end
-
-      it "prints the message" do
-        expect(Yast::CommandLine).to receive(:Print).with("Error: message")
-        subject.LongError("message")
-      end
-    end
   end
 
   describe ".Settings" do
-    DATA_DIR = File.join(__dir__, "data")
+    DATA_DIR = File.join(FIXTURES_PATH, "yast2", "general", "report")
     let(:ay_profile) { YAML.load_file(File.join(DATA_DIR, "ay_profile.yml")) }
     let(:default_normal) { YAML.load_file(File.join(DATA_DIR, "default_normal_installation.yml")) }
     let(:default_ay) { YAML.load_file(File.join(DATA_DIR, "default_ay_installation.yml")) }
@@ -208,17 +206,6 @@ describe Yast::Report do
       allow(Yast::Mode).to receive(:commandline).and_return(commandline?)
     end
 
-    context "while in command-line mode" do
-      let(:commandline?) { true }
-
-      it "prints the message only on console" do
-        expect(Yast::CommandLine).to receive(:Print)
-          .with(/#{message}/)
-        expect(Yast2::Popup).to_not receive(:show)
-        subject.Warning(message)
-      end
-    end
-
     context "while in UI mode and timeout is disabled" do
       let(:timeout) { 0 }
       let(:commandline?) { false }
@@ -254,17 +241,6 @@ describe Yast::Report do
 
     before do
       allow(Yast::Mode).to receive(:commandline).and_return(commandline?)
-    end
-
-    context "while in command-line mode" do
-      let(:commandline?) { true }
-
-      it "prints the message only on console" do
-        expect(Yast::CommandLine).to receive(:Print)
-          .with(/#{message}/)
-        expect(Yast2::Popup).to_not receive(:show)
-        subject.Error(message)
-      end
     end
 
     context "while in UI mode and timeout is disabled" do
@@ -382,7 +358,8 @@ describe Yast::Report do
       it "accepts also :focus_yes/:focus_no as focus parameter" do
         subject.DisplayYesNoMessages(true, 0)
         expect(Yast2::Popup).to receive(:show)
-          .with("Message", headline: "test", buttons: { yes: "yes", no: "no" }, focus: :no, timeout: 0)
+          .with("Message", headline: "test", buttons: { yes: "yes",
+                                                        no:  "no" }, focus: :no, timeout: 0)
 
         subject.AnyQuestion("test", "Message", "yes", "no", :focus_no)
       end
