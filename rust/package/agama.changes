@@ -11,9 +11,8 @@ Thu Oct  1 11:53:11 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
     OpenAPI components using `cargo xtask openapi`.
   - Replace manually maintained profile.schema.json and
     software.schema.json with schemas generated from Rust sources.
-  - Move packaging of OpenAPI specifications and schemas to standalone
-    agama-openapi package, and require agama-openapi-nightly in
-    agama-common.
+  - Package nightly OpenAPI specifications and standalone schemas as
+    subpackage agama-openapi-nightly.
   - Port descriptions, titles, and examples from legacy schemas.
 
 -------------------------------------------------------------------
