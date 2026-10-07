@@ -49,74 +49,6 @@ module Yast
       Ops.add(Ops.add("<p>", text), "</p>")
     end
 
-    # Make a HTML heading from a text
-    #
-    # i.e. embed a text into [h3]...[/h3]
-    #
-    # Note: There is only one heading level here since we don't have any more
-    # fonts anyway.
-    #
-    # @param [String] text plain text or HTML fragment
-    # @return HTML code
-    #
-    def Heading(text)
-      Ops.add(Ops.add("<h3>", text), "</h3>")
-    end
-
-    # Make a HTML link
-    #
-    # For example  [a href="..."]...[/a]
-    #
-    # You still need to embed that into a paragraph or heading etc.!
-    #
-    # @param [String] text (translated) text the user will see
-    # @param [String] link_id internal ID of that link returned by UserInput()
-    # @return HTML code
-    #
-    def Link(text, link_id)
-      Builtins.sformat("<a href=\"%1\">%2</a>", link_id, text)
-    end
-
-    # Start a HTML (unsorted) list
-    #
-    # For example [ul]
-    #
-    # You might consider using HTML::list() instead which takes a list of
-    # items and does all the rest by itself.
-    #
-    # @return HTML code
-    #
-    def ListStart
-      "<ul>"
-    end
-
-    # End a HTML (unsorted) list
-    #
-    # For example [/ul]
-    #
-    # You might consider using HTML::list() instead which takes a list of
-    # items and does all the rest by itself.
-    #
-    # @return HTML code
-    #
-    def ListEnd
-      "</ul>"
-    end
-
-    # Make a HTML list item
-    #
-    # For example  embed a text into [li][p]...[/p][/li]
-    #
-    # You might consider using HTML::list() instead which takes a list of
-    # items and does all the rest by itself.
-    #
-    # @param [String] text plain text or HTML fragment
-    # @return HTML code
-    #
-    def ListItem(text)
-      Ops.add(Ops.add("<li><p>", text), "</p></li>")
-    end
-
     # Make a HTML (unsorted) list from a list of strings
     #
     #
@@ -135,32 +67,6 @@ module Yast
 
       Builtins.foreach(items) do |item|
         html = Ops.add(Ops.add(Ops.add(html, "<li>"), item), "</li>")
-      end
-
-      Ops.add(html, "</ul>")
-    end
-
-    # Make a HTML (unsorted) colored list from a list of strings
-    #
-    # [ul]
-    #     [li][font color="..."]...[/font][/li]
-    #     [li][font color="..."]...[/font][/li]
-    #     ...
-    # [/ul]
-    #
-    # @param [Array<String>] items list of strings for items
-    # @param [String] color item color
-    # @return HTML code
-    #
-    def ColoredList(items, color)
-      items = deep_copy(items)
-      html = "<ul>"
-
-      Builtins.foreach(items) do |item|
-        html = Ops.add(
-          html,
-          Builtins.sformat("<li><font color=\"%1\">%2</font></li>", color, item)
-        )
       end
 
       Ops.add(html, "</ul>")
@@ -193,41 +99,10 @@ module Yast
       Ops.add(Ops.add("<b>", text), "</b>")
     end
 
-    # Make a forced HTML line break
-    #
-    # @return HTML code
-    #
-    def Newline
-      "<br>"
-    end
-
-    # Make a number of forced HTML line breaks
-    #
-    # @param [Fixnum] count how many of them
-    # @return HTML code
-    #
-    def Newlines(count)
-      html = ""
-
-      while Ops.greater_than(count, 0)
-        html = Ops.add(html, "<br>")
-        count = Ops.subtract(count, 1)
-      end
-      html
-    end
-
     publish function: :Para, type: "string (string)"
-    publish function: :Heading, type: "string (string)"
-    publish function: :Link, type: "string (string, string)"
-    publish function: :ListStart, type: "string ()"
-    publish function: :ListEnd, type: "string ()"
-    publish function: :ListItem, type: "string (string)"
     publish function: :List, type: "string (list <string>)"
-    publish function: :ColoredList, type: "string (list <string>, string)"
     publish function: :Colorize, type: "string (string, string)"
     publish function: :Bold, type: "string (string)"
-    publish function: :Newline, type: "string ()"
-    publish function: :Newlines, type: "string (integer)"
   end
 
   HTML = HTMLClass.new
