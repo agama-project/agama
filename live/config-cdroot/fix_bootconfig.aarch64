@@ -99,7 +99,7 @@ menuentry "Failsafe -- Install $label" --class os --unrestricted {
     echo Loading initrd...
     initrd (\$root)/boot/aarch64/loader/initrd
 }
-menuentry "Check Installation Medium" --class os --unrestricted {
+menuentry "Check Medium & Install" --class os --unrestricted {
     set gfxpayload=keep
     echo Loading kernel...
     linux (\$root)/boot/aarch64/loader/linux mediacheck=1 plymouth.enable=0 \${isoboot}

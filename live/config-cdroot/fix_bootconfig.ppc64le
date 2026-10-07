@@ -42,7 +42,7 @@ menuentry "Install $label" --class os --unrestricted {
   initrd /boot/ppc64le/loader/initrd
 }
 
-menuentry "Check Installation Medium" --class os --unrestricted {
+menuentry "Check Medium & Install" --class os --unrestricted {
   echo 'Loading kernel...'
   linux /boot/ppc64le/loader/linux mediacheck=1 plymouth.enable=0
   echo 'Loading initrd...'
