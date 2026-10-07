@@ -251,27 +251,6 @@ module Yast
       Ops.is_string?(value) && Builtins.tolower(Convert.to_string(value)) == "yes"
     end
 
-    # Get value of a boolean feature with a fallback value.
-    #
-    # @note This is a stable API function
-    # @param [String] section string section of the feature
-    # @param [String] feature feature name
-    # @param [Boolean] fallback
-    #
-    # @return [Boolean] the feature value or fallback if not specified
-    def GetBooleanFeatureWithFallback(section, feature, fallback)
-      value = GetFeature(section, feature)
-      return fallback if value.nil?
-      return value if Ops.is_boolean?(value)
-
-      if value.respond_to?(:downcase)
-        return true  if ["yes", "true"].include?(value.downcase)
-        return false if ["no", "false"].include?(value.downcase)
-      end
-
-      fallback
-    end
-
     # Get value of a feature
     # @note This is a stable API function
     # @param [String] section string section of the feature
@@ -304,30 +283,8 @@ module Yast
     # @note This is a stable API function
     # @param [String] section string section of the feature
     # @param features string feature name
-    # @param [String] value string the feature value
-    def SetStringFeature(section, feature, value)
-      SetFeature(section, feature, value)
-
-      nil
-    end
-
-    # Set value of a feature
-    # @note This is a stable API function
-    # @param [String] section string section of the feature
-    # @param features string feature name
     # @param [Boolean] value boolean the feature value
     def SetBooleanFeature(section, feature, value)
-      SetFeature(section, feature, value)
-
-      nil
-    end
-
-    # Set value of a feature
-    # @note This is a stable API function
-    # @param [String] section string section of the feature
-    # @param features string feature name
-    # @param [Fixnum] value integer the feature value
-    def SetIntegerFeature(section, feature, value)
       SetFeature(section, feature, value)
 
       nil
@@ -390,12 +347,9 @@ module Yast
     publish function: :InitIfNeeded, type: "void ()"
     publish function: :GetFeature, type: "any (string, string)"
     publish function: :GetBooleanFeature, type: "boolean (string, string)"
-    publish function: :GetBooleanFeatureWithFallback, type: "boolean (string, string, boolean)"
     publish function: :GetIntegerFeature, type: "integer (string, string)"
     publish function: :SetFeature, type: "void (string, string, any)"
-    publish function: :SetStringFeature, type: "void (string, string, string)"
     publish function: :SetBooleanFeature, type: "void (string, string, boolean)"
-    publish function: :SetIntegerFeature, type: "void (string, string, integer)"
     publish function: :Export, type: "map <string, map <string, any>> ()"
     publish function: :Import, type: "void (map <string, map <string, any>>)"
   end

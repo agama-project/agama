@@ -50,7 +50,6 @@ describe Yast::ProductFeatures do
   end
 
   context "With simple features" do
-
     let(:simple_features) do
       {
         "globals" => {
@@ -89,32 +88,6 @@ describe Yast::ProductFeatures do
 
       it "falls back to 'false' for missing values" do
         expect(subject.GetBooleanFeature("globals", "enable_missing")).to be false
-      end
-    end
-
-    describe ".GetBooleanFeatureWithFallback" do
-      it "gets simple boolean values" do
-        expect(subject.GetBooleanFeatureWithFallback("globals", "enable_true",  false)).to be true
-        expect(subject.GetBooleanFeatureWithFallback("globals", "enable_false", true)).to be false
-      end
-
-      it "understands 'yes' and 'no'" do
-        expect(subject.GetBooleanFeatureWithFallback("globals", "enable_yes", false)).to be true
-        expect(subject.GetBooleanFeatureWithFallback("globals", "enable_no",  true)).to be false
-      end
-
-      it "uses the fallback for arbitrary texts" do
-        expect(subject.GetBooleanFeatureWithFallback("globals", "enable_xy", true)).to be true
-      end
-
-      it "uses the fallback for empty strings" do
-        expect(subject.GetBooleanFeatureWithFallback("globals", "enable_empty", true)).to be true
-      end
-
-      it "uses the fallback for missing values" do
-        expect(subject.GetBooleanFeatureWithFallback("globals", "enable_missing", true)).to be true
-        expect(subject.GetBooleanFeatureWithFallback("globals", "enable_missing",
-          false)).to be false
       end
     end
   end
