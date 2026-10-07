@@ -133,13 +133,6 @@ module Yast
       Image("warning", {})
     end
 
-    # Returns UI term `Image() widget with an error-icon.
-    #
-    # @return [Yast::Term] error-icon
-    def Error
-      Image("error", {})
-    end
-
     # Returns UI term `Image() widget with an info-icon.
     #
     # @return [Yast::Term] info icon
@@ -150,7 +143,6 @@ module Yast
     publish function: :Image, type: "term (string, map <string, any>)"
     publish function: :Simple, type: "term (string)"
     publish function: :Warning, type: "term ()"
-    publish function: :Error, type: "term ()"
     publish function: :Info, type: "term ()"
   end
 
