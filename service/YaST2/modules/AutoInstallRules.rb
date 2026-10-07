@@ -34,7 +34,6 @@ module Yast
       Yast.import "Popup"
       Yast.import "URL"
       Yast.import "IP"
-      Yast.import "Product"
       Yast.import "Hostname"
       Yast.import "OSRelease"
 
