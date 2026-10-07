@@ -1,8 +1,28 @@
-#!/usr/bin/env rspec
+# frozen_string_literal: true
 
-require_relative "test_helper"
+# Copyright (c) [2026] SUSE LLC
+#
+# All Rights Reserved.
+#
+# This program is free software; you can redistribute it and/or modify it
+# under the terms of version 2 of the GNU General Public License as published
+# by the Free Software Foundation.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+# more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, contact SUSE LLC.
+#
+# To contact SUSE LLC about this file by physical or electronic mail, you may
+# find current contact information at www.suse.com.
 
-module Yast
+require_relative "../../test_helper"
+require_relative "../lib/yast2/systemd/support/stubs"
+
+module Yast # rubocop:disable Metrics/ModuleLength
   import "Service"
 
   describe Service do
@@ -81,7 +101,7 @@ module Yast
 
       it "returns false if a service has not been enabled" do
         stub_service_with(:enable, false)
-        stub_service_with(:error, "error")
+        stub_service_with(:error, +"error")
         expect(Service.Enable("sshd")).to eq(false)
         expect(Service.Error).not_to be_empty
       end
@@ -100,7 +120,7 @@ module Yast
 
       it "returns false if a service has not been disabled" do
         stub_service_with(:disable, false)
-        stub_service_with(:error, "error")
+        stub_service_with(:error, +"error")
         expect(Service.Disable("sshd")).to eq(false)
         expect(Service.Error).not_to be_empty
       end
@@ -119,7 +139,7 @@ module Yast
 
       it "returns false if a service has not been started" do
         stub_service_with(:start, false)
-        stub_service_with(:error, "error")
+        stub_service_with(:error, +"error")
         expect(Service.Start("sshd")).to eq(false)
         expect(Service.Error).not_to be_empty
       end
@@ -138,7 +158,7 @@ module Yast
 
       it "returns false if a service has not been restarted" do
         stub_service_with(:restart, false)
-        stub_service_with(:error, "error")
+        stub_service_with(:error, +"error")
         expect(Service.Restart("sshd")).to eq(false)
         expect(Service.Error).not_to be_empty
       end
@@ -157,7 +177,7 @@ module Yast
 
       it "returns false if a service has not been reloaded" do
         stub_service_with(:reload, false)
-        stub_service_with(:error, "error")
+        stub_service_with(:error, +"error")
         expect(Service.Reload("sshd")).to eq(false)
         expect(Service.Error).not_to be_empty
       end
@@ -176,7 +196,7 @@ module Yast
 
       it "returns false if a service has not been stopped" do
         stub_service_with(:stop, false)
-        stub_service_with(:error, "error")
+        stub_service_with(:error, +"error")
         expect(Service.Stop("sshd")).to eq(false)
         expect(Service.Error).not_to be_empty
       end
