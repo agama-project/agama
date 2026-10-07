@@ -57,9 +57,6 @@ readonly MIN_TERMINAL_WIDTH=40
 readonly LINE_TEXT_WIDTH=76
 
 # --- Validation policy -----------------------------------------------------
-# TODO(security team): Final rules pending. Password strength uses cracklib-check.
-readonly MIN_PASSWORD_LENGTH=8
-readonly MAX_PASSWORD_LENGTH=128
 readonly USER_NAME_REGEX='^[a-z_][a-z0-9_-]{0,31}$'
 readonly NTP_SERVER_REGEX='^[A-Za-z0-9]([A-Za-z0-9._:-]*[A-Za-z0-9])?$'
 
@@ -619,7 +616,7 @@ No reboot is done because the tool runs with --dry-run."
 check_prerequisites() {
   local -a missing=()
   local tool
-  for tool in jq openssl curl lsblk agama cracklib-check; do
+  for tool in jq openssl curl lsblk agama cc-password-check; do
     command -v "$tool" > /dev/null 2>&1 || missing+=("$tool")
   done
   $DIALOG_MODE && ! command -v dialog > /dev/null 2>&1 && missing+=("dialog")
@@ -711,31 +708,26 @@ api_put() {
 # Validation helpers
 # ---------------------------------------------------------------------------
 
-# validate_password PASSWORD -> prints the reason on stdout when invalid
-# TODO(security team): Placeholder rules.
+# validate_password TYPE PASSWORD -> prints the reason on stdout when invalid
+# The password rules are implemented by the cc-password-check tool maintained
+# by the security team, TYPE is the password type, "user" or "disk".
 validate_password() {
-  local password=$1 result
+  local type=$1 password=$2 reason rc=0
 
-  if ((${#password} < MIN_PASSWORD_LENGTH)); then
-    printf 'The password must have at least %d characters.' "$MIN_PASSWORD_LENGTH"
-    return 1
-  fi
-  if ((${#password} > MAX_PASSWORD_LENGTH)); then
-    printf 'The password must not be longer than %d characters.' "$MAX_PASSWORD_LENGTH"
-    return 1
-  fi
+  reason=$(printf '%s' "$password" | cc-password-check --type "$type" 2> /dev/null) || rc=$?
 
-  # Strip password from cracklib-check output to prevent leaks.
-  result=$(printf '%s\n' "$password" | cracklib-check 2> /dev/null) || {
-    printf 'Cannot check the password strength (cracklib-check failed).'
-    return 1
-  }
-  result=${result#"$password": }
-  if [[ $result != "OK" ]]; then
-    printf 'The password is not strong enough: %s' "$result"
-    return 1
-  fi
-  return 0
+  case $rc in
+    0) return 0 ;;
+    1)
+      # the output contains the failed rules (one per line)
+      printf '%s' "$reason"
+      return 1
+      ;;
+    *)
+      printf 'Cannot check the password (password check failed with exit status %d).' "$rc"
+      return 1
+      ;;
+  esac
 }
 
 validate_user_name() {
@@ -879,10 +871,11 @@ The installation medium seems to be incomplete."
 # Workflow: interactive input
 # ---------------------------------------------------------------------------
 
-# ask_password TITLE PROMPT [CURRENT] -> validated password on stdout
+# ask_password TYPE TITLE PROMPT [CURRENT] -> validated password on stdout
 # Prompt for and confirm password. Supports default CURRENT value.
+# TYPE is the password type for validate_password ("user" or "disk").
 ask_password() {
-  local title=$1 prompt=$2 current=${3-} password confirmation reason
+  local type=$1 title=$2 prompt=$3 current=${4-} password confirmation reason
 
   if [[ -n $current ]]; then
     prompt="$prompt
@@ -899,8 +892,10 @@ ask_password() {
       return 0
     fi
 
-    if ! reason=$(validate_password "$password"); then
-      ui_error --size 10 60 "$reason"
+    if ! reason=$(validate_password "$type" "$password"); then
+      ui_error "The entered password is not valid:
+
+$reason"
       continue
     fi
     confirmation=$(ui_password "$title" \
@@ -929,7 +924,7 @@ ask_validated() {
 }
 
 ask_root_password() {
-  ROOT_PASSWORD=$(ask_password "Root Password" \
+  ROOT_PASSWORD=$(ask_password user "Root Password" \
     "Enter the password for the administrator
 (root) account:" "$ROOT_PASSWORD") || return 1
   ROOT_PASSWORD_HASH=$(hash_password "$ROOT_PASSWORD") ||
@@ -941,14 +936,14 @@ ask_user_account() {
     "$USER_NAME" validate_user_name) || return 1
   FULL_NAME=$(ask_validated "First User" "Enter the full name of the first user:" \
     "$FULL_NAME" validate_full_name) || return 1
-  USER_PASSWORD=$(ask_password "First User Password" \
+  USER_PASSWORD=$(ask_password user "First User Password" \
     "Enter the password for the user \"$USER_NAME\":" "$USER_PASSWORD") || return 1
   USER_PASSWORD_HASH=$(hash_password "$USER_PASSWORD") ||
     fatal "Cannot hash the user password, \"openssl passwd -6\" failed."
 }
 
 ask_luks_password() {
-  LUKS_PASSWORD=$(ask_password "Disk Encryption" \
+  LUKS_PASSWORD=$(ask_password disk "Disk Encryption" \
     "Enter the LUKS2 passphrase for the encrypted system volume.
 
 This passphrase must be entered at every boot, it cannot

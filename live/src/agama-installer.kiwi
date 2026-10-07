@@ -78,6 +78,8 @@
         <package name="openssh"/>
         <!-- used by the CC installer for hashing the passwords -->
         <package name="openssl-3"/>
+        <!-- used by the CC installer for checking password quality -->
+        <package name="certification-sles-eal4-password-check"/>
         <package name="iproute2"/>
         <package name="less"/>
         <package name="bash-completion"/>
