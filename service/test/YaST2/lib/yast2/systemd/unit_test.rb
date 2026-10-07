@@ -1,8 +1,28 @@
-#!/usr/bin/env rspec
+# frozen_string_literal: true
 
-require_relative "../test_helper"
+# Copyright (c) [2026] SUSE LLC
+#
+# All Rights Reserved.
+#
+# This program is free software; you can redistribute it and/or modify it
+# under the terms of version 2 of the GNU General Public License as published
+# by the Free Software Foundation.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+# more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, contact SUSE LLC.
+#
+# To contact SUSE LLC about this file by physical or electronic mail, you may
+# find current contact information at www.suse.com.
 
-module Yast2
+require_relative "../../../../test_helper"
+require_relative "support/stubs"
+
+module Yast2 # rubocop:disable Metrics/ModuleLength
   describe Systemd::Unit do
     include SystemdSocketStubs
     include SystemdServiceStubs
@@ -95,7 +115,8 @@ module Yast2
     end
 
     describe ".new" do
-      it "creates a new Systemd::Unit instance with unit name and type parsed from first parameter" do
+      it "creates a new Systemd::Unit instance with unit name and type parsed " \
+         "from first parameter" do
         instance = nil
         expect { instance = Systemd::Unit.new("random.socket") }.not_to raise_error
         expect(instance.unit_name).to eq("random")
@@ -104,7 +125,9 @@ module Yast2
 
       it "correctly parses a name with many dots" do
         instance = nil
-        expect { instance = Systemd::Unit.new("dbus-org.freedesktop.hostname1.service") }.not_to raise_error
+        expect do
+          instance = Systemd::Unit.new("dbus-org.freedesktop.hostname1.service")
+        end.not_to raise_error
         expect(instance.unit_name).to eq("dbus-org.freedesktop.hostname1")
         expect(instance.unit_type).to eq("service")
       end
