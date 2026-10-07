@@ -116,14 +116,6 @@ module Yast
       Ops.add(Ops.add(Ops.add(summary, "<p>"), line), "</p>")
     end
 
-    # Add a newline to an existing summary.
-    #
-    # @param [String] summary  previous RichText (HTML) summary to add to
-    # @return [String]  the new summary
-    def AddNewLine(summary)
-      Ops.add(summary, "<br>")
-    end
-
     # Start a list within a summary.
     #
     # @param [String] summary  previous RichText (HTML) summary to add to
@@ -150,30 +142,14 @@ module Yast
       Ops.add(Ops.add(Ops.add(summary, "\n<li>"), item), "</li>")
     end
 
-    # Add a simple section to an existing summary,
-    # consisting of a header and one single item.
-    #
-    # @param [String] summary  previous RichText (HTML) summary to add to
-    # @param [String] header  section header (plain text, no HTML)
-    # @param [String] item  section item   (plain text, no HTML)
-    # @return [String]  the new summary including the new line
-    def AddSimpleSection(summary, header, item)
-      summary = AddHeader(summary, header)
-      summary = OpenList(summary)
-      summary = AddListItem(summary, item)
-      CloseList(summary)
-    end
-
     publish function: :NotConfigured, type: "string ()"
     publish function: :DevicesList, type: "string (list <string>)"
     publish function: :Device, type: "string (string, string)"
     publish function: :AddHeader, type: "string (string, string)"
     publish function: :AddLine, type: "string (string, string)"
-    publish function: :AddNewLine, type: "string (string)"
     publish function: :OpenList, type: "string (string)"
     publish function: :CloseList, type: "string (string)"
     publish function: :AddListItem, type: "string (string, string)"
-    publish function: :AddSimpleSection, type: "string (string, string, string)"
   end
 
   Summary = SummaryClass.new
