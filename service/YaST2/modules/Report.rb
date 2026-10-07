@@ -47,7 +47,6 @@ module Yast
 
       Yast.import "Mode"
       Yast.import "Summary"
-      Yast.import "CommandLine"
 
       # stored messages
       @errors = []
@@ -444,12 +443,8 @@ module Yast
       Builtins.y2milestone(1, "%1", message_string) if @log_messages
 
       if @display_messages
-        if Mode.commandline
-          CommandLine.Print(message_string)
-        else
-          timeout = (@timeout_messages.to_s.to_i > 0) ? @timeout_messages : 0
-          Yast2::Popup.show(message_string, timeout: timeout)
-        end
+        timeout = (@timeout_messages.to_s.to_i > 0) ? @timeout_messages : 0
+        Yast2::Popup.show(message_string, timeout: timeout)
       end
 
       @messages = Builtins.add(@messages, message_string)
@@ -466,12 +461,8 @@ module Yast
       Builtins.y2milestone(1, "%1", message_string) if @log_messages
 
       if @display_messages
-        if Mode.commandline
-          CommandLine.Print(message_string)
-        else
-          timeout = (@timeout_messages.to_s.to_i > 0) ? @timeout_messages : 0
-          Yast2::Popup.show(message_string, richtext: true, timeout: timeout)
-        end
+        timeout = (@timeout_messages.to_s.to_i > 0) ? @timeout_messages : 0
+        Yast2::Popup.show(message_string, richtext: true, timeout: timeout)
       end
 
       @messages = Builtins.add(@messages, message_string)
@@ -487,16 +478,10 @@ module Yast
       Builtins.y2milestone(1, "%1", message_string) if @log_errors
 
       if @display_errors
-        if Mode.commandline
-          CommandLine.Print(headline_string)
-          CommandLine.Print("\n\n")
-          CommandLine.Print(message_string)
-        else
-          timeout = (@timeout_errors.to_s.to_i > 0) ? @timeout_errors : 0
-          # this works even for big file due to show feature that switch to richtextbox
-          # if text is too long, but do not interpret richtext tags.
-          Yast2::Popup.show(message_string, headline: headline_string, timeout: timeout)
-        end
+        timeout = (@timeout_errors.to_s.to_i > 0) ? @timeout_errors : 0
+        # this works even for big file due to show feature that switch to richtextbox
+        # if text is too long, but do not interpret richtext tags.
+        Yast2::Popup.show(message_string, headline: headline_string, timeout: timeout)
       end
 
       @messages = Builtins.add(@messages, message_string)
@@ -511,12 +496,8 @@ module Yast
       Builtins.y2warning(1, "%1", warning_string) if @log_warnings
 
       if @display_warnings
-        if Mode.commandline
-          CommandLine.Print "Warning: #{warning_string}"
-        else
-          timeout = (@timeout_warnings.to_s.to_i > 0) ? @timeout_warnings : 0
-          Yast2::Popup.show(warning_string, headline: :warning, timeout: timeout)
-        end
+        timeout = (@timeout_warnings.to_s.to_i > 0) ? @timeout_warnings : 0
+        Yast2::Popup.show(warning_string, headline: :warning, timeout: timeout)
       end
 
       @warnings = Builtins.add(@warnings, warning_string)
@@ -533,12 +514,8 @@ module Yast
       Builtins.y2warning(1, "%1", warning_string) if @log_warnings
 
       if @display_warnings
-        if Mode.commandline
-          CommandLine.Print("Warning: #{warning_string}")
-        else
-          timeout = (@timeout_warnings.to_s.to_i > 0) ? @timeout_warnings : 0
-          Yast2::Popup.show(warning_string, headline: :warning, richtext: true, timeout: timeout)
-        end
+        timeout = (@timeout_warnings.to_s.to_i > 0) ? @timeout_warnings : 0
+        Yast2::Popup.show(warning_string, headline: :warning, richtext: true, timeout: timeout)
       end
 
       @warnings = Builtins.add(@warnings, warning_string)
@@ -555,12 +532,8 @@ module Yast
       Builtins.y2error(1, "%1", error_string) if @log_errors
 
       if @display_errors
-        if Mode.commandline
-          CommandLine.Print "Error: #{error_string}"
-        else
-          timeout = (@timeout_errors.to_s.to_i > 0) ? @timeout_errors : 0
-          Yast2::Popup.show(error_string, headline: :error, timeout: timeout)
-        end
+        timeout = (@timeout_errors.to_s.to_i > 0) ? @timeout_errors : 0
+        Yast2::Popup.show(error_string, headline: :error, timeout: timeout)
       end
 
       @errors = Builtins.add(@errors, error_string)
@@ -577,12 +550,8 @@ module Yast
       Builtins.y2error(1, "%1", error_string) if @log_errors
 
       if @display_errors
-        if Mode.commandline
-          CommandLine.Print "Error: #{error_string}"
-        else
-          timeout = (@timeout_errors.to_s.to_i > 0) ? @timeout_errors : 0
-          Yast2::Popup.show(error_string, headline: :error, richtext: true, timeout: timeout)
-        end
+        timeout = (@timeout_errors.to_s.to_i > 0) ? @timeout_errors : 0
+        Yast2::Popup.show(error_string, headline: :error, richtext: true, timeout: timeout)
       end
 
       @errors = Builtins.add(@errors, error_string)
