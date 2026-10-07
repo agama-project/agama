@@ -277,31 +277,6 @@ module Yast
       @_board_compatible
     end
 
-    # true for all PPC "MacRISC" boards
-    def board_mac
-      ppc &&
-        (board_compatible == "MacRISC" || board_compatible == "MacRISC2" ||
-          board_compatible == "MacRISC3" ||
-          board_compatible == "MacRISC4")
-    end
-
-    # true for all "NewWorld" PowerMacs
-    def board_mac_new
-      # board_mac calls board_compatible which initializes _checkgeneration
-      board_mac && @_checkgeneration == "NewWorld"
-    end
-
-    # true for all "OldWorld" powermacs
-    def board_mac_old
-      # board_mac calls board_compatible which initializes _checkgeneration
-      board_mac && @_checkgeneration == "OldWorld"
-    end
-
-    # true for all "CHRP" ppc boards
-    def board_chrp
-      ppc && board_compatible == "CHRP"
-    end
-
     # true for all baremetal Power8 systems
     # https://github.com/open-power/docs
     def board_powernv
@@ -311,21 +286,6 @@ module Yast
     # true for all "iSeries" ppc boards
     def board_iseries
       ppc && board_compatible == "iSeries"
-    end
-
-    # true for all "PReP" ppc boards
-    def board_prep
-      ppc && board_compatible == "PReP"
-    end
-
-    # true for all "Pegasos" and "Efika" ppc boards
-    def board_pegasos
-      ppc && board_compatible == "Pegasos"
-    end
-
-    # true for all "Windows/Intel" compliant boards (x86 based)
-    def board_wintel
-      board_compatible == "wintel"
     end
 
     # ************************************************************
@@ -516,7 +476,6 @@ module Yast
     # installation on S390
     #
     # @return true when the X11 configuration is needed after inital boot
-    # @see #Installation::x11_setup_needed
     def x11_setup_needed
       # disable X11 setup after initial boot
       return false if board_iseries || s390
@@ -544,13 +503,6 @@ module Yast
     }.freeze
     private_constant :RPM_ARCH
 
-    # Returns the architecture expected by SCC
-    #
-    # @return [String] Architecture
-    def rpm_arch
-      RPM_ARCH[architecture] || architecture
-    end
-
     publish function: :architecture, type: "string ()"
     publish function: :i386, type: "boolean ()"
     publish function: :sparc32, type: "boolean ()"
@@ -568,14 +520,7 @@ module Yast
     publish function: :aarch64, type: "boolean ()"
     publish function: :riscv64, type: "boolean ()"
     publish function: :arch_short, type: "string ()"
-    publish function: :board_mac, type: "boolean ()"
-    publish function: :board_mac_new, type: "boolean ()"
-    publish function: :board_mac_old, type: "boolean ()"
-    publish function: :board_chrp, type: "boolean ()"
     publish function: :board_iseries, type: "boolean ()"
-    publish function: :board_prep, type: "boolean ()"
-    publish function: :board_pegasos, type: "boolean ()"
-    publish function: :board_wintel, type: "boolean ()"
     publish function: :has_pcmcia, type: "boolean ()"
     publish function: :is_laptop, type: "boolean ()"
     publish function: :is_uml, type: "boolean ()"
