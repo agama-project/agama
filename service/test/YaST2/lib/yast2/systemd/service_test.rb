@@ -1,8 +1,28 @@
-#!/usr/bin/env rspec
+# frozen_string_literal: true
 
-require_relative "../test_helper"
+# Copyright (c) [2026] SUSE LLC
+#
+# All Rights Reserved.
+#
+# This program is free software; you can redistribute it and/or modify it
+# under the terms of version 2 of the GNU General Public License as published
+# by the Free Software Foundation.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+# more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, contact SUSE LLC.
+#
+# To contact SUSE LLC about this file by physical or electronic mail, you may
+# find current contact information at www.suse.com.
 
-module Yast2
+require_relative "../../../../test_helper"
+require_relative "support/stubs"
+
+module Yast2 # rubocop:disable Metrics/ModuleLength
   describe Systemd::Service do
     include SystemdServiceStubs
 
@@ -157,7 +177,8 @@ module Yast2
       it "starts a service with a specialized inst-sys helper if available" do
         allow(File).to receive(:exist?).with("/bin/service_start").and_return(true)
         service = Systemd::Service.find("sshd")
-        allow(Yast::SCR).to receive(:Execute).and_return("stderr" => "", "stdout" => "", "exit" => 0)
+        allow(Yast::SCR).to receive(:Execute).and_return("stderr" => "", "stdout" => "",
+          "exit" => 0)
         expect(service).not_to receive(:command) # Systemd::Unit#command
         expect(service.start).to eq(true)
       end
@@ -168,7 +189,8 @@ module Yast2
         allow_any_instance_of(Systemd::Service).to receive(:sleep).and_return(1)
         allow(File).to receive(:exist?).with("/bin/service_start").and_return(true)
         service = Systemd::Service.find("sshd")
-        allow(Yast::SCR).to receive(:Execute).and_return("stderr" => "", "stdout" => "", "exit" => 0)
+        allow(Yast::SCR).to receive(:Execute).and_return("stderr" => "", "stdout" => "",
+          "exit" => 0)
         expect(service).to receive(:stop).ordered.and_call_original
         expect(service).to receive(:start).ordered.and_call_original
         expect(service).not_to receive(:command) # Systemd::Unit#command
@@ -180,7 +202,8 @@ module Yast2
       it "stops a service with a specialized inst-sys helper" do
         allow(File).to receive(:exist?).with("/bin/service_start").and_return(true)
         service = Systemd::Service.find("sshd")
-        allow(Yast::SCR).to receive(:Execute).and_return("stderr" => "", "stdout" => "", "exit" => 0)
+        allow(Yast::SCR).to receive(:Execute).and_return("stderr" => "", "stdout" => "",
+          "exit" => 0)
         expect(service).not_to receive(:command) # Systemd::Unit#command
         expect(service.stop).to eq(true)
       end
