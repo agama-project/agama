@@ -1,0 +1,27 @@
+[Desktop Entry]
+Type=Application
+Categories=Settings;System;Qt;X-SuSE-YaST;X-SuSE-YaST-Software;
+
+X-KDE-ModuleType=Library
+X-KDE-HasReadOnlyMode=true
+X-SuSE-YaST-Call=add-on
+
+X-SuSE-YaST-Group=Software
+X-SuSE-YaST-Argument=
+X-SuSE-YaST-RootOnly=true
+X-SuSE-YaST-AutoInst=configure
+X-SuSE-YaST-Geometry=
+X-SuSE-YaST-SortKey=
+X-SuSE-YaST-AutoInstResource=
+X-SuSE-YaST-AutoInstPath=install
+X-SuSE-YaST-AutoInstSchema=add-on.rnc
+X-SuSE-YaST-AutoInstClonable=true
+X-SuSE-YaST-Keywords=update,packages,repositories,software
+
+Icon=yast-addon
+Exec=xdg-su -c "/sbin/yast2 add-on"
+
+Name=YaST Add-On Products
+GenericName=Add-On Products
+Comment=Install or remove add-on products
+StartupNotify=true

@@ -1,0 +1,26 @@
+[Desktop Entry]
+Type=Application
+Categories=Settings;System;Qt;X-SuSE-YaST;X-SuSE-YaST-System;
+
+X-KDE-ModuleType=Library
+X-KDE-HasReadOnlyMode=true
+X-SuSE-YaST-Call=services-manager
+
+X-SuSE-YaST-Group=System
+X-SuSE-YaST-Argument=
+X-SuSE-YaST-RootOnly=true
+X-SuSE-YaST-AutoInst=all
+X-SuSE-YaST-Geometry=
+X-SuSE-YaST-SortKey=
+X-SuSE-YaST-AutoInstClonable=true
+X-SuSE-YaST-AutoInstSchema=services-manager.rnc
+X-SuSE-YaST-AutoInstResourceAliases=runlevel
+X-SuSE-YaST-Keywords=systemd,system,background
+
+Icon=yast-services-manager
+Exec=xdg-su -c "/sbin/yast2 services-manager"
+
+Name=YaST Services Manager
+GenericName=Configure running services and the default target
+StartupNotify=true
+

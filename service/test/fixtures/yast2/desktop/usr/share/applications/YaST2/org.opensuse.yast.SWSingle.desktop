@@ -1,0 +1,27 @@
+[Desktop Entry]
+X-SuSE-DocTeamID=ycc_org.opensuse.yast.SWSingle
+Type=Application
+Categories=Settings;System;Qt;X-SuSE-YaST;X-SuSE-YaST-Software;
+
+X-KDE-ModuleType=Library
+X-KDE-HasReadOnlyMode=true
+X-SuSE-YaST-Call=sw_single
+
+X-SuSE-YaST-Group=Software
+X-SuSE-YaST-Argument=
+X-SuSE-YaST-RootOnly=true
+X-SuSE-YaST-WSL=true
+X-SuSE-YaST-AutoInst=
+X-SuSE-YaST-Geometry=
+X-SuSE-YaST-SortKey=20
+X-SuSE-YaST-AutoInstResource=
+X-SuSE-YaST-Keywords=software,packages,rpm,repositories,installation,deletion
+
+Icon=yast-sw_single
+Exec=xdg-su -c "/sbin/yast2 sw_single"
+
+Name=YaST Software Management
+GenericName=Software Management
+Comment=Install or remove software packages and manage software repositories
+StartupNotify=true
+

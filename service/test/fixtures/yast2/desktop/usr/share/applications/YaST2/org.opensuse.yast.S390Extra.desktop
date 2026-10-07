@@ -1,0 +1,27 @@
+[Desktop Entry]
+Type=Application
+Categories=Settings;System;Qt;X-SuSE-YaST;X-SuSE-YaST-Software;
+
+X-KDE-ModuleType=Library
+X-KDE-HasReadOnlyMode=true
+X-SuSE-YaST-Call=s390-extra
+
+X-SuSE-YaST-Group=Software
+X-SuSE-YaST-Argument=
+X-SuSE-YaST-RootOnly=true
+X-SuSE-YaST-AutoInst=configure
+X-SuSE-YaST-Geometry=
+X-SuSE-YaST-SortKey=
+X-SuSE-YaST-AutoInstResource=
+X-SuSE-YaST-AutoInstPath=install
+X-SuSE-YaST-AutoInstSchema=s390-extra.rnc
+X-SuSE-YaST-AutoInstClonable=true
+X-SuSE-YaST-Keywords=update,packages,repositories,software
+
+Icon=yast-addon
+Exec=xdg-su -c "/sbin/yast2 s390-extra"
+
+Name=YaST S390 Extra
+GenericName=S390 Extra
+Comment=Fictitious S390 module
+StartupNotify=true
