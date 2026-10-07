@@ -1,5 +1,6 @@
-#!/usr/bin/env rspec
-# Copyright (c) [2021] SUSE LLC
+# frozen_string_literal: true
+
+# Copyright (c) [2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -18,7 +19,8 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require_relative "../test_helper"
+require_relative "../../../test_helper"
+
 require "y2issues"
 
 describe Y2Issues::List do
