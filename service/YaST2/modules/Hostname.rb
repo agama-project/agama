@@ -47,32 +47,6 @@ module Yast
       @DefaultDomain = ""
     end
 
-    # describe a valid domain name
-    # @return description
-    def ValidDomain
-      # Translators: dot: ".", hyphen: "-"
-      _(
-        "A valid domain name consists of components separated by dots.\n" \
-        "Each component contains letters, digits, and hyphens. A hyphen may not\n" \
-        "start or end a component and the last component may not begin with a digit."
-      )
-    end
-
-    # describe a valid host name
-    # @return description
-    def ValidHost
-      # Translators: hyphen: "-"
-      _(
-        "A valid host name consists of letters, digits, and hyphens.\nA host name may not begin or end with a hyphen.\n"
-      )
-    end
-
-    # describe a valid FQ host name
-    # @return describe a valid FQ host name
-    def ValidFQ
-      ValidDomain()
-    end
-
     # Check syntax of hostname entry
     # (that is a domain name component, unqualified, without dots)
     # @see rfc1123, rfc2396 and obsoleted rfc1034
@@ -139,16 +113,6 @@ module Yast
       [hn, dn]
     end
 
-    # Merge short hostname and domain to full-qualified host name
-    # @param [String] hostname short host name
-    # @param [String] domain domain name
-    # @return FQ hostname
-    def MergeFQ(hostname, domain)
-      return hostname if domain == "" || domain.nil?
-
-      Ops.add(Ops.add(hostname, "."), domain)
-    end
-
     # Retrieve currently set fully qualified hostname
     # (uses hostname --fqdn)
     # @return FQ hostname
@@ -168,26 +132,6 @@ module Yast
 
       Builtins.y2milestone("Current FQDN: %1", fqhostname)
       fqhostname
-    end
-
-    # Retrieve currently set (short) hostname
-    # @return hostname
-    def CurrentHostname
-      hostname = ""
-      fqhostname = CurrentFQ()
-
-      # current FQDN is IP address - it happens, esp. in inst-sys :)
-      # so let's not cut it into pieces (#415109)
-      if IP.Check(fqhostname)
-        hostname = fqhostname
-      else
-        data = SplitFQ(fqhostname)
-
-        hostname = Ops.get(data, 0, "") if data != []
-
-        Builtins.y2debug("Current hostname: %1", hostname)
-      end
-      hostname
     end
 
     # Retrieve currently set domain name
@@ -212,16 +156,11 @@ module Yast
     publish variable: :ValidCharsDomain, type: "string"
     publish variable: :ValidCharsFQ, type: "string"
     publish variable: :DefaultDomain, type: "string"
-    publish function: :ValidDomain, type: "string ()"
-    publish function: :ValidHost, type: "string ()"
-    publish function: :ValidFQ, type: "string ()"
     publish function: :Check, type: "boolean (string)"
     publish function: :CheckDomain, type: "boolean (string)"
     publish function: :CheckFQ, type: "boolean (string)"
     publish function: :SplitFQ, type: "list <string> (string)"
-    publish function: :MergeFQ, type: "string (string, string)"
     publish function: :CurrentFQ, type: "string ()"
-    publish function: :CurrentHostname, type: "string ()"
     publish function: :CurrentDomain, type: "string ()"
   end
 
