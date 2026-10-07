@@ -200,6 +200,7 @@ pub struct IpConfig {
     pub dhcp4_settings: Option<Dhcp4Settings>,
     pub dhcp6_settings: Option<Dhcp6Settings>,
     pub ip6_privacy: Option<i32>,
+    pub ip6_addr_gen_mode: Option<Ip6AddrGenMode>,
     pub dns_priority4: Option<i32>,
     pub dns_priority6: Option<i32>,
     pub ignore_auto_routes4: Option<bool>,
@@ -379,6 +380,13 @@ impl fmt::Display for DhcpIaid {
         };
         write!(f, "{}", output)
     }
+}
+
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, JsonSchema)]
+#[serde(rename_all = "camelCase")]
+pub enum Ip6AddrGenMode {
+    Eui64,
+    StablePrivacy,
 }
 
 #[derive(Debug, PartialEq, Clone, Deserialize, Serialize, JsonSchema)]
