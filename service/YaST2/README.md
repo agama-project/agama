@@ -558,3 +558,37 @@ from the raw profile hash (root/first regular user's name, password, and SSH key
 The one piece of behavior it does replicate from `Y2Users::User#system?` - treating a user with a
 low enough explicit uid as a "system" user - reuses `Yast::ShadowConfig`, which lives in the base
 `yast2` package (not `yast2-users`), so it adds no dependency either.
+
+## Base yast2
+
+Base `yast2` (5.0.21) is vendored unit by unit. Every unit is a pair of commits: a *copy* commit
+(`Vendor X from yast2`, byte-identical to upstream, verifiable with `diff` against
+`yast-yast2/library/<pkg>/src/...`) and one or more *adaptation* commits (test header/helper
+changes, then removal of methods nothing in Agama calls). The `yast2` RPM `Requires:` is dropped
+only in the last commit of the series.
+
+Where upstream tests exist they are ported to `test/YaST2/{modules,lib/...}`; fixtures live under
+`test/fixtures/yast2`. Tests for removed methods are removed together with the methods.
+
+### Infrastructure (`lib/yast2`)
+
+`equatable.rb`, `execute.rb`, `refinements/string_manipulations.rb`, `secret_attributes.rb`,
+`rel_url.rb`, `system_time.rb`, `target_file.rb`. Only deviation: a non-ASCII bullet in a comment of
+`string_manipulations.rb` was replaced by `*` (`rake pot` fails on non-ASCII bytes). No upstream test
+exists for `target_file.rb` and `string_manipulations.rb`.
+
+### Classic modules
+
+`Mode`, `Stage`, `Arch`, `Directory`, `Encoding`, `Label`, `Summary`, `HTML`, `String`, `Map`,
+`URLRecode`, `IP`, `FileUtils`, `Misc`, `Icon`, `OSRelease`, `Hostname`, `URL`.
+
+Methods that nothing in Agama calls were removed (see each "Drop unused methods from X" commit for
+the list), e.g. all `Arch.board_*`/`rpm_arch`, `IP.Check*`/`Valid4`/`Valid6`/`reserved4` (and with
+them the `Netmask` import), most of `String` (formatting/table/padding helpers; `Quote`,
+`FormatSize*`, `CutBlanks`, `Repeat`, `CutRegexMatch`, `FirstChunk`, `Replace` and `FormatFilename`
+remain). The upstream test examples for the removed methods were removed too.
+
+`test_helper.rb` sets `ENV["LANG"]` and `ENV["LC_NUMERIC"]="C"` instead of `ENV["LC_ALL"]`:
+`Builtins::Float.tolstring` formats according to the *current* numeric locale and a non-empty
+`LC_ALL` would override `LC_NUMERIC`.
+`URL_test.rb` disables `Layout/LineLength` for the whole file (aligned upstream data tables).
