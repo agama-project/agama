@@ -35,109 +35,12 @@ module Yast
       URL.HidePassword(url)
     end
 
-    # Get device options for CD/DVD
-    # @return [String] device options (devices=/dev/cdrom)
-    def GetDevicesOption
-      options = ""
-      devicelist = Convert.convert(
-        SCR.Read(path(".probe.cdrom")),
-        from: "any",
-        to:   "list <map>"
-      )
-      devlist = Builtins.maplist(devicelist) do |d|
-        Ops.get_string(d, "dev_name", "")
-      end
-
-      ready = []
-      Builtins.foreach(devicelist) do |d|
-        dname = Ops.get_string(d, "dev_name", "")
-        if Ops.get_boolean(d, "notready", true) == false && !dname.nil? &&
-            dname != ""
-          ready = Builtins.add(ready, dname)
-        end
-      end
-
-      devlist = deep_copy(ready) if Builtins.size(ready).nonzero?
-
-      # add the Linuxrc medium to the beginning
-      # /etc/install.inf (written by linuxrc) does not exist in Agama at all (no classic
-      # linuxrc boot stage), so this is always nil here
-      repo_url = nil
-
-      repo_url = "" if repo_url.nil?
-
-      if Builtins.regexpmatch(Builtins.tolower(repo_url), "^cd:") ||
-          Builtins.regexpmatch(Builtins.tolower(repo_url), "^dvd:")
-        Builtins.y2milestone(
-          "Found CD/DVD device in Linuxrc RepoURL: %1",
-          repo_url
-        )
-        linuxrc_device = Builtins.regexpsub(repo_url, "device=(.*)$", "\\1")
-        if !linuxrc_device.nil? && linuxrc_device != ""
-          linuxrc_device = Ops.add("/dev/", linuxrc_device)
-          Builtins.y2milestone("Using Linuxrc device: %1", linuxrc_device)
-
-          # remove the device if it is already in the list
-          devlist = Builtins.filter(devlist) { |d| d != linuxrc_device }
-          # put the linuxrc device at the beginning
-          devlist = Builtins.prepend(devlist, linuxrc_device)
-
-          Builtins.y2milestone("Using CD/DVD device list: %1", devlist)
-        end
-      end
-
-      Builtins.foreach(devlist) do |d|
-        if d != ""
-          options = Ops.add(options, ",") if options != ""
-          options = Ops.add(options, d)
-        end
-      end
-      options = Ops.add("devices=", options) if options != ""
-      options
-    end
-
-    def GetURLOptions(url)
-      option_map = {}
-      pos = Builtins.findfirstof(url, "?")
-      if !pos.nil?
-        opts = Builtins.substring(url, pos, Builtins.size(url))
-        optpairs = Builtins.splitstring(opts, "?")
-        option_map = Builtins.listmap(optpairs) do |op|
-          tmp = Builtins.splitstring(op, "=")
-          { Ops.get(tmp, 0, "") => Ops.get(tmp, 1, "") }
-        end
-      end
-      deep_copy(option_map)
-    end
-
     # check if SSL certificate check is enabled (default) or explicitely disabled by user
     #
     # This used to read the "ssl_verify" option from /etc/install.inf (written by linuxrc), which
     # does not exist in Agama at all (no classic linuxrc boot stage) - so this is always enabled.
     def SSLVerificationEnabled
       true
-    end
-
-    def RewriteCDUrl(url)
-      tokens = URL.Parse(url)
-      new_url = ""
-      if Ops.get_string(tokens, "scheme", "") == "cd" ||
-          Ops.get_string(tokens, "scheme", "") == "dvd"
-        Builtins.y2milestone("Old options: %1", GetURLOptions(url))
-        pos = Builtins.findfirstof(url, "?")
-        if !pos.nil?
-          new_options = GetDevicesOption()
-          new_url = Builtins.substring(url, 0, pos)
-          new_url = if Ops.greater_than(Builtins.size(new_options), 0)
-            Ops.add(Ops.add(new_url, "?"), GetDevicesOption())
-          else
-            url
-          end
-        end
-      else
-        new_url = url
-      end
-      new_url
     end
 
     # Convert install.inf to a URL useable by the package manager
@@ -223,7 +126,6 @@ module Yast
     end
 
     publish function: :HidePassword, type: "string (string)"
-    publish function: :RewriteCDUrl, type: "string (string)"
     publish function: :installInf2Url, type: "string (string)"
   end
 
