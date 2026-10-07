@@ -1,5 +1,6 @@
-#!/usr/bin/env rspec
-# Copyright (c) [2017] SUSE LLC
+# frozen_string_literal: true
+
+# Copyright (c) [2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -18,13 +19,14 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require_relative "../test_helper"
+require_relative "../../../test_helper"
+
 require "yast2/secret_attributes"
 require "pp"
 
 describe Yast2::SecretAttributes do
   # Dummy test clase
-  class ClassWithPassword
+  class Yast2ClassWithPassword
     include Yast2::SecretAttributes
 
     attr_accessor :name
@@ -33,7 +35,7 @@ describe Yast2::SecretAttributes do
   end
 
   # Another dummy test clase
-  class ClassWithData
+  class Yast2ClassWithData
     include Yast2::SecretAttributes
 
     attr_accessor :name
@@ -44,14 +46,14 @@ describe Yast2::SecretAttributes do
   # Hypothetical custom formatter that uses instrospection to directly query the
   # internal state of the object, ignoring the uniform access principle.
   def custom_formatter(object)
-    object.instance_variables.each_with_object("") do |var, result|
+    object.instance_variables.each_with_object(+"") do |var, result|
       result << "@#{var}: #{object.instance_variable_get(var)};\n"
     end
   end
 
-  let(:with_password) { ClassWithPassword.new }
-  let(:with_password2) { ClassWithPassword.new }
-  let(:with_data) { ClassWithData.new }
+  let(:with_password) { Yast2ClassWithPassword.new }
+  let(:with_password2) { Yast2ClassWithPassword.new }
+  let(:with_data) { Yast2ClassWithData.new }
   let(:ultimate_hash) { { ultimate_question: 42 } }
 
   describe ".secret_attr" do
@@ -118,8 +120,8 @@ describe Yast2::SecretAttributes do
       expect(duplicate.password).to eq "yyy"
       expect(with_password.password).to eq "xxx"
 
-      with_password2.name = "data2"
-      with_password2.password = "xx2"
+      with_password2.name = +"data2"
+      with_password2.password = +"xx2"
       duplicate2 = with_password2.dup
       duplicate2.name.concat("X")
       duplicate2.password.concat("X")
