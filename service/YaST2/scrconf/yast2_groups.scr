@@ -1,0 +1,40 @@
+/**
+ * File:	yast2_groups.scr
+ * Summary:	Agent for reading yast2 groups .desktop files
+ * Author:	Michal Svec <msvec@suse.cz>
+ * Access:	read only
+ *
+ * Example:
+ *   Dir(.yast2.groups)
+ *   (["lan", "modem", "isdn", ...])
+ **
+ *   Read(.yast2.groups.misc)
+ *   ("3")
+ *
+ * $Id$
+ */
+.yast2.groups
+
+`ag_ini(
+    `IniAgent( [ "/usr/share/applications/YaST2/groups/*.desktop" ],
+	$[
+	    "options"	: [ ],
+	    "comments"	: [ "^[ \t]*[;#].*", ";.*", "\\{[^}]*\\}", "^[ \t]*$" ],
+	    "sections"	: [
+		$[ "begin" : [
+		    "^[ \t]*\\[[ \t]*(.*[^ \t])[ \t]*\\][ \t]*",
+		    "[%s]",
+		]],
+	    ],
+	    "params" : [
+		$[ "match" : [
+		    "^[ \t]*([^=]*[^ \t=])[ \t]*=[ \t]*(.*[^ \t]|)[ \t]*$" ,
+		    "%s=%s",
+		]],
+	    ],
+//	    "rewrite" : [
+//		[ "/usr/share/applications/YaST2/(.*)\.desktop", "/usr/share/applications/YaST2/%s.desktop" ],
+//	    ],
+	]
+    )
+)
