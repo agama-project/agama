@@ -592,3 +592,62 @@ remain). The upstream test examples for the removed methods were removed too.
 `Builtins::Float.tolstring` formats according to the *current* numeric locale and a non-empty
 `LC_ALL` would override `LC_NUMERIC`.
 `URL_test.rb` disables `Layout/LineLength` for the whole file (aligned upstream data tables).
+
+### Services/systemd
+
+`lib/yast2/systemctl.rb`, `lib/yast2/systemd/{unit_prop_map,unit_properties,unit_installation_properties,
+unit,socket_finder,socket,service,target}.rb` and the classic `Systemd` and `Service` modules (the
+already vendored `ServicesManagerTarget` includes `BaseTargets` and uses `Yast2::Systemd::Target`).
+Upstream specs get their stubs from `library/systemd/test/test_helper.rb`; here they live in the
+opt-in `test/YaST2/lib/yast2/systemd/support/stubs.rb` with the property dumps under
+`test/fixtures/yast2/systemd`. The non-ASCII `Slezak` in `Systemd.rb`/`GPG.rb` author comments was
+transliterated (`rake pot`).
+
+### UI-ish modules that are really reachable
+
+`lib/yast2/popup.rb`, `Popup`, `Report`, `lib/ui/{event_dispatcher,dialog,password_dialog}.rb`.
+They need `yast2-ycp-ui-bindings` (`Yast.import "UI"`), declared explicitly in `gem2rpm.yml`.
+`Report` loses its `CommandLine` import and the `Mode.commandline` branches (never true in Agama);
+its other public methods are kept because the upstream spec exercises them. `Popup` loses the
+`Long*`/`TimedLong*` message helpers.
+
+### Control/product data
+
+`ProductFeatures` (+ `cfg_features.scr`), `ProductControl` (kept on purpose: `Init()` parses
+`/etc/YaST2/control.xml` into `ProductFeatures` at runtime, which feeds `boot_timeout` and
+`disable_os_prober`; its `Wizard` and `Hooks` imports are dropped), `Kernel`
+(+ `cfg_kernel.scr`, `proc_modules.scr`), `Initrd`, `ModuleLoading`, `GPG`, `XML`, `Desktop`
+(+ `yast2_desktop.scr`, `yast2_groups.scr`), `ShadowConfig` + `lib/cfa/{multi_file_config,login_defs,
+shadow_config}.rb` (+ `etc_login_defs.scr`, needs `augeas-lenses`), `lib/yast2/{log_dir_rotator,
+control_log_dir_rotator,fs_snapshot}.rb` (+ `cfg_yast2.scr`), `proc_cpuinfo.scr`.
+`lib/y2issues*`, `lib/installation/{finish_client,installation_info}.rb`,
+`lib/installation/autoinst_issues/{issue,list}.rb`, `lib/installation/autoinst_profile/
+{element_path,section_with_attributes}.rb`.
+
+### Dead units removed or not vendored
+
+Verified dead in Agama (a service using the storage/bootloader/autoinstallation machinery, never the
+classic UI workflow); each removal is its own commit:
+
+- `Linuxrc` (no linuxrc in the image, `/etc/install.inf` never exists): callers collapse to their
+  constant result (`Installation.boot`, `FsSnapshot.create_snapshot?`, `BootArch.
+  propose_cpu_mitigations`, `Y2Storage::Arch` EFI override, kexec detection in the bootloader, so
+  `Bootloader::Kexec` is gone too, `InstExtensionImage`, `InstURL`).
+- `SlideShow`, `Progress`, `Wizard`, `InstDialogMixin`, `AutoinstFunctions` (only
+  `Profile#softwareCompat`, always false here), `RichText`, `Y2Issues::Presenter/Reporter`,
+  `Y2Storage::IssuesReporter`, `Dialogs::Issues*`, `Widgets::Issues`, `Callbacks::YastProbe`
+  (replaced by `UserProbe` as default).
+- Unused `Product` / `y2packager/product` imports (they would drag in the whole products/packages
+  tree).
+
+### Findings while porting
+
+- Several method trims that looked dead had upstream specs exercising them (`Report` public API,
+  `ShadowConfig#reset/write`, most of `AutoinstScripts`, `IscsiClientLib`, `Profile`,
+  `AutoInstallRules`, `AutoinstConfig`). Those methods were kept: only removals that keep the
+  module's own spec green (removing the spec examples that cover the removed methods when the whole
+  upstream describe block is about them) are done.
+- Full-suite results must be taken from a complete run (about 6 minutes): partial/timed-out runs
+  print a misleading smaller example count.
+- The sandbox has the real `yast2` RPM installed, so a missing vendored file can be hidden;
+  CI (clean container from `gem2rpm.yml`) is the ground truth.
