@@ -100,7 +100,7 @@ module Yast2
         #       @ordered = false
         #       nil
         #     when "<li>"
-        #       marker = @ordered ? "#{@index += 1}." : "•"
+        #       marker = @ordered ? "#{@index += 1}." : "*"
         #       "\n  #{marker} "
         #     end
         #   end
