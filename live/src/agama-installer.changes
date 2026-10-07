@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Tue Oct  6 13:06:45 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Improve error handling in the CC installer, allow changing the
+  configuration when registration or storage proposal fails,
+  allow retrying failed package download/installation 
+  (related to jsc#PED-16702)
+
+-------------------------------------------------------------------
 Thu Sep 24 13:43:15 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
 
 - Added a new CC compliant text mode installer (jsc#PED-16702)
