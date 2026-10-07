@@ -109,18 +109,6 @@ module Yast
       Ops.get_boolean(info, "isblock", defaultv)
     end
 
-    # Function which determines if the requested file/directory is a fifo
-    # or link to a fifo.
-    #
-    # @return  true if it is a fifo, nil if doesn't exist
-    # @param  string file name
-    def IsFifo(target)
-      info = Convert.to_map(SCR.Read(path(".target.stat"), target))
-      defaultv = (info != {}) ? false : nil
-
-      Ops.get_boolean(info, "isfifo", defaultv)
-    end
-
     # Function which determines if the requested file/directory is a link.
     #
     # @return  true if it is a link, nil if doesn't exist
@@ -130,30 +118,6 @@ module Yast
       defaultv = (info != {}) ? false : nil
 
       Ops.get_boolean(info, "islink", defaultv)
-    end
-
-    # Function which determines if the requested file/directory is a socket
-    # or link to a socket.
-    #
-    # @return  true if it is a socket, nil if doesn't exist
-    # @param  string file name
-    def IsSocket(target)
-      info = Convert.to_map(SCR.Read(path(".target.stat"), target))
-      defaultv = (info != {}) ? false : nil
-
-      Ops.get_boolean(info, "issock", defaultv)
-    end
-
-    # Function which determines if the requested file/directory is
-    # a character device or link to a character device.
-    #
-    # @return  true if it is a charcater device, nil if doesn't exist
-    # @param  string file name
-    def IsCharacterDevice(target)
-      info = Convert.to_map(SCR.Read(path(".target.stat"), target))
-      defaultv = (info != {}) ? false : nil
-
-      Ops.get_boolean(info, "ischr", defaultv)
     end
 
     # Function returns the real type of requested file/directory.
@@ -181,31 +145,6 @@ module Yast
         "fifo"
       elsif Ops.get_boolean(info, "issock", false) == true
         "socket"
-      elsif Ops.get_boolean(info, "ischr", false) == true
-        "chr_device"
-      end
-    end
-
-    # Function returns the type of requested file/directory.
-    # If the file is a link to any object, the object's type is returned.
-    #
-    # @return  [String] fle type (directory|regular|block|fifo|link|socket|chr_device), nil if doesn't exist
-    # @param  string file name
-    def GetFileType(target)
-      info = Convert.to_map(SCR.Read(path(".target.stat"), target))
-
-      if Ops.get_boolean(info, "isdir", false) == true
-        "directory"
-      elsif Ops.get_boolean(info, "isreg", false) == true
-        "regular"
-      elsif Ops.get_boolean(info, "isblock", false) == true
-        "block"
-      elsif Ops.get_boolean(info, "isfifo", false) == true
-        "fifo"
-      elsif Ops.get_boolean(info, "issock", false) == true
-        "socket"
-      elsif Ops.get_boolean(info, "islink", false) == true
-        "link"
       elsif Ops.get_boolean(info, "ischr", false) == true
         "chr_device"
       end
@@ -249,87 +188,6 @@ module Yast
       info = Convert.to_map(SCR.Read(path(".target.stat"), target))
 
       Ops.get_integer(info, "gid")
-    end
-
-    # Checks whether the path (directory) exists and return a boolean
-    # value whether everything is OK or user accepted the behavior as
-    # despite some errors. If the directory doesn't exist, it offers
-    # to create it (and eventually creates it).
-    #
-    # @param [String] pathvalue (directory)
-    # @return [Boolean] whether everything was OK or whether user decided to ignore eventual errors
-    #
-    # @note This is an unstable API function and may change in the future
-    def CheckAndCreatePath(pathvalue)
-      check_path = pathvalue
-
-      # remove the final slash
-      # but never the last one "/"
-      # bugzilla #203363
-      check_path = Builtins.regexpsub(check_path, "^(.*)/$", "\\1") if Builtins.regexpmatch(check_path, "/$") && check_path != "/"
-      Builtins.y2milestone("Checking existency of %1 path", check_path)
-
-      # Directory (path) already exists
-      if Exists(check_path)
-        Builtins.y2milestone("Path %1 exists", check_path)
-        # Directory (path) is a type 'directory'
-        return true if IsDirectory(check_path)
-
-        # Directory (path) is not a valid 'directory'
-        Builtins.y2warning("Path %1 is not a directory", check_path)
-        # Continue despite the error?
-        Popup.ContinueCancel(
-          Builtins.sformat(
-            # TRANSLATORS: popup question (with continue / cancel buttons)
-            # %1 is the filesystem path
-            _(
-              "Although the path %1 exists, it is not a directory.\nContinue or cancel the operation?"
-            ),
-            pathvalue
-          )
-        )
-      # Directory (path) doesn't exist, trying to create it if wanted
-      else
-        Builtins.y2milestone("Path %1 does not exist", check_path)
-        if Popup.YesNo(
-          Builtins.sformat(
-            # TRANSLATORS: question popup (with yes / no buttons). A user entered non-existent path
-            # for a share, %1 is entered path
-            _("The path %1 does not exist.\nCreate it now?"),
-            pathvalue
-          )
-        )
-          # Directory creation successful
-          if Convert.to_boolean(SCR.Execute(path(".target.mkdir"), check_path))
-            Builtins.y2milestone(
-              "Directory %1 successfully created",
-              check_path
-            )
-            true
-            # Failed to create the directory
-          else
-            Builtins.y2warning("Failed to create directory %1", check_path)
-            # Continue despite the error?
-            Popup.ContinueCancel(
-              Builtins.sformat(
-                # TRANSLATORS: popup question (with continue / cancel buttons)
-                # %1 is the name (path) of the directory
-                _(
-                  "Failed to create the directory %1.\nContinue or cancel the current operation?"
-                ),
-                pathvalue
-              )
-            )
-          end
-          # User doesn't want to create the directory
-        else
-          Builtins.y2warning(
-            "User doesn't want to create the directory %1",
-            check_path
-          )
-          true
-        end
-      end
     end
 
     # Function return the MD5 sum of the file.
@@ -493,40 +351,20 @@ module Yast
       MkTempInternal(template, usergroup, modes, true)
     end
 
-    # Removes files and dirs created in all previous calls to MkTemp[File|Directory]
-    #
-    def CleanupTemp
-      Builtins.foreach(@tmpfiles) do |one_file|
-        Builtins.y2milestone("Removing %1", one_file)
-        SCR.Execute(
-          path(".target.bash"),
-          Builtins.sformat("/bin/rm -rf %1", one_file.shellescape)
-        )
-      end
-
-      nil
-    end
-
     publish function: :Exists, type: "boolean (string)"
     publish function: :IsDirectory, type: "boolean (string)"
     publish function: :IsFile, type: "boolean (string)"
     publish function: :IsBlock, type: "boolean (string)"
-    publish function: :IsFifo, type: "boolean (string)"
     publish function: :IsLink, type: "boolean (string)"
-    publish function: :IsSocket, type: "boolean (string)"
-    publish function: :IsCharacterDevice, type: "boolean (string)"
     publish function: :GetFileRealType, type: "string (string)"
-    publish function: :GetFileType, type: "string (string)"
     publish function: :GetSize, type: "integer (string)"
     publish function: :GetOwnerUserID, type: "integer (string)"
     publish function: :GetOwnerGroupID, type: "integer (string)"
-    publish function: :CheckAndCreatePath, type: "boolean (string)"
     publish function: :MD5sum, type: "string (string)"
     publish function: :Chown, type: "boolean (string, string, boolean)"
     publish function: :Chmod, type: "boolean (string, string, boolean)"
     publish function: :MkTempFile, type: "string (string, string, string)"
     publish function: :MkTempDirectory, type: "string (string, string, string)"
-    publish function: :CleanupTemp, type: "void ()"
   end
 
   FileUtils = FileUtilsClass.new
