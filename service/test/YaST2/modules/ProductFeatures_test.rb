@@ -1,11 +1,49 @@
-#! /usr/bin/env rspec
+# frozen_string_literal: true
 
-require_relative "test_helper"
+# Copyright (c) [2026] SUSE LLC
+#
+# All Rights Reserved.
+#
+# This program is free software; you can redistribute it and/or modify it
+# under the terms of version 2 of the GNU General Public License as published
+# by the Free Software Foundation.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+# more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, contact SUSE LLC.
+#
+# To contact SUSE LLC about this file by physical or electronic mail, you may
+# find current contact information at www.suse.com.
+
+require_relative "../../test_helper"
 
 Yast.import "ProductFeatures"
 
 describe Yast::ProductFeatures do
   subject { Yast::ProductFeatures }
+
+  # Yast::ProductFeatures is a global singleton, and #Import (used extensively throughout this
+  # file) really replaces its whole internal state (not a test double). Save it before this
+  # file's examples start and restore it (not just reset to nil - some other, unrelated spec
+  # earlier in the same process, e.g. YaST2/lib/y2storage/y2storage/proposal_settings_test.rb,
+  # may have left a real "preferred_bootloader" feature behind that a *later* spec, e.g.
+  # test/agama/storage/autoyast_proposal_test.rb, implicitly depends on) once they are all done.
+  # Deliberately done at the "whole context" granularity (before/after(:context), same convention
+  # as test/YaST2/lib/y2storage/support/shared_setup.rb), not between this file's own individual
+  # examples: the "#GetFeature ... reads the value from the running system" examples rely on
+  # @features already being populated by the "in normal stage" example that runs right before
+  # them (both read the same fixture file), same as upstream's own test relies on.
+  before(:context) do
+    @original_product_features = Yast::ProductFeatures.Export
+  end
+
+  after(:context) do
+    Yast::ProductFeatures.Import(@original_product_features)
+  end
 
   before do
     allow(Yast::SCR).to receive(:Dir).and_return([])
@@ -75,7 +113,8 @@ describe Yast::ProductFeatures do
 
       it "uses the fallback for missing values" do
         expect(subject.GetBooleanFeatureWithFallback("globals", "enable_missing", true)).to be true
-        expect(subject.GetBooleanFeatureWithFallback("globals", "enable_missing", false)).to be false
+        expect(subject.GetBooleanFeatureWithFallback("globals", "enable_missing",
+          false)).to be false
       end
     end
   end
@@ -164,7 +203,7 @@ describe Yast::ProductFeatures do
   end
 
   describe "#GetFeature" do
-    let(:scr_root_dir) { File.join(File.dirname(__FILE__), "data") }
+    let(:scr_root_dir) { File.join(FIXTURES_PATH, "yast2", "control") }
     let(:normal_stage) { false }
     let(:firstboot_stage) { false }
 
