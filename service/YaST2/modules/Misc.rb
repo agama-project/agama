@@ -50,31 +50,10 @@ module Yast
     # files must reside below /usr/lib/YaST2
     # files must have ycp syntax
 
-    def ReadAlternateFile(first, second)
-      result = SCR.Read(path(".target.yast2"), [first, nil])
-      result = SCR.Read(path(".target.yast2"), second) if result.nil?
-      deep_copy(result)
-    end
-
     # @param [Hash] hardware_entry  map  map of .probe entry
     # @return  [String]  vendor and device name
     #
     # common function to extract 'name' of hardware
-
-    def hardware_name(hardware_entry)
-      hardware_entry = deep_copy(hardware_entry)
-      sub_vendor = Ops.get_string(hardware_entry, "sub_vendor", "")
-      sub_device = Ops.get_string(hardware_entry, "sub_device", "")
-
-      return Ops.add(Ops.add(sub_vendor, "\n"), sub_device) if sub_vendor != "" && sub_device != ""
-
-      vendor = Ops.get_string(hardware_entry, "vendor", "")
-
-      Ops.add(
-        Ops.add(vendor, (vendor != "") ? "\n" : ""),
-        Ops.get_string(hardware_entry, "device", "")
-      )
-    end
 
     # @param [Hash] lmap  map  map of language codes and translations
     #        e.g. $[ "default" : "Defaultstring", "de" : "German....", ...]
@@ -84,15 +63,6 @@ module Yast
     #
     # Define a macro that looks up a localized string in a language map
     # of the form $[ "default" : "Defaultstring", "de" : "German....", ...]
-
-    def translate(lmap, lang)
-      lmap = deep_copy(lmap)
-      t = Ops.get_string(lmap, lang, "")
-      t = Ops.get_string(lmap, Builtins.substring(lang, 0, 2), "") if Builtins.size(t) == 0 && Ops.greater_than(Builtins.size(lang), 2)
-      t = Ops.get_string(lmap, "default", "") if Builtins.size(t) == 0
-
-      t
-    end
 
     # SysconfigWrite()
     # @param [Yast::Path] level  path behind .sysconfig for all values
@@ -211,9 +181,6 @@ module Yast
     end
 
     publish variable: :boot_msg, type: "string"
-    publish function: :ReadAlternateFile, type: "any (string, string)"
-    publish function: :hardware_name, type: "string (map)"
-    publish function: :translate, type: "string (map, string)"
     publish function: :SysconfigWrite, type: "boolean (path, list <list>)"
     publish function: :SplitOptions, type: "map (string, map)"
     publish function: :SysconfigRead, type: "string (path, string)"
