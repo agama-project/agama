@@ -357,25 +357,19 @@ module Yast
       "source"   => "shutdown -h now"
     }.freeze
 
+    ALIAS_MAP = {
+      "runlevel" => "services-manager"
+    }.freeze
+
   protected
 
     # Merge resource aliases in the profile
     #
-    # When a resource is aliased, the configuration with the aliased name will
-    # be renamed to the new name. For example, if we have a
-    # services-manager.desktop file containing
-    # X-SuSE-YaST-AutoInstResourceAliases=runlevel, if a "runlevel" key is found
-    # in the profile, it will be renamed to "services-manager".
-    #
-    # The rename won't take place if a "services-manager" resource already exists.
-    #
-    # @see merge_aliases_map
+    # In YaST, the renames were defined in the `X-SuSE-YaST-AutoInstResourceAliases` entries of the
+    # `.desktop` files. When this code was vendored, the only known alias was "runlevel" for
+    # "services-manager".
     def merge_resource_aliases!
-      reg = Y2Autoinstallation::Entries::Registry.instance
-      alias_map = reg.descriptions.each_with_object({}) do |d, r|
-        d.aliases.each { |a| r[a] = d.resource_name || d.name }
-      end
-      alias_map.each do |alias_name, resource_name|
+      ALIAS_MAP.each do |alias_name, resource_name|
         aliased_config = current.delete(alias_name)
         next if aliased_config.nil? || current.key?(resource_name)
 

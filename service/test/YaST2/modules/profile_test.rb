@@ -178,36 +178,26 @@ describe Yast::Profile do
       Yast::Profile.Import(profile)
     end
 
-    context "when the profile contains an aliased resource" do
-      let(:custom_module) do
-        CUSTOM_MODULE.merge(
-          "X-SuSE-YaST-AutoInstResourceAliases" => "old_custom"
-        )
-      end
-
-      before do
-        allow(Yast::Desktop).to receive(:Modules)
-          .and_return("custom" => custom_module)
-        reset_singleton(Y2Autoinstallation::Entries::Registry)
-      end
-
+    context "when the profile contains an aliased resource 'runlevel'" do
       context "and configuration for the resource is missing" do
-        let(:profile) { { "old_custom" => { "dummy" => true } } }
+        let(:profile) { { "runlevel" => { "dummy" => true } } }
 
         it "reuses the aliased configuration" do
           Yast::Profile.Import(profile)
           expect(Yast::Profile.current.keys).to_not include("old_custom")
-          expect(Yast::Profile.current["custom"]).to eq("dummy" => true)
+          expect(Yast::Profile.current["services-manager"]).to eq("dummy" => true)
         end
       end
 
       context "and configuration for the resource is present" do
-        let(:profile) { { "old_custom" => { "dummy" => true }, "custom" => { "dummy" => false } } }
+        let(:profile) do
+          { "runlevel" => { "dummy" => true }, "services-manager" => { "dummy" => false } }
+        end
 
         it "removes the aliased configuration" do
           Yast::Profile.Import(profile)
-          expect(Yast::Profile.current.keys).to_not include("old_custom")
-          expect(Yast::Profile.current["custom"]).to eq("dummy" => false)
+          expect(Yast::Profile.current.keys).to_not include("runlevel")
+          expect(Yast::Profile.current["services-manager"]).to eq("dummy" => false)
         end
       end
 
@@ -216,37 +206,8 @@ describe Yast::Profile do
 
         it "does not set any configuration for the resource" do
           Yast::Profile.Import(profile)
-          expect(Yast::Profile.current.keys).to_not include("old_custom")
-          expect(Yast::Profile.current.keys).to_not include("custom")
-        end
-      end
-
-      context "and the resource has also an alternate name" do
-        let(:profile) { { "old_custom" => { "dummy" => true } } }
-        let(:custom_module) do
-          CUSTOM_MODULE.merge(
-            "X-SuSE-YaST-AutoInstResource"        => "new_custom",
-            "X-SuSE-YaST-AutoInstResourceAliases" => "old_custom"
-          )
-        end
-
-        it "uses the alternate name" do
-          Yast::Profile.Import(profile)
-          expect(Yast::Profile.current["new_custom"]).to eq("dummy" => true)
-        end
-      end
-
-      context "and more than one aliased name is used" do
-        let(:profile) { { "other_alias" => { "dummy" => true } } }
-        let(:custom_module) do
-          CUSTOM_MODULE.merge(
-            "X-SuSE-YaST-AutoInstResourceAliases" => "other_alias,old_custom"
-          )
-        end
-
-        it "takes into account all aliases" do
-          Yast::Profile.Import(profile)
-          expect(Yast::Profile.current["custom"]).to eq("dummy" => true)
+          expect(Yast::Profile.current.keys).to_not include("runlevel")
+          expect(Yast::Profile.current.keys).to_not include("services-manager")
         end
       end
     end
