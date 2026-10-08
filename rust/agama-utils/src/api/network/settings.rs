@@ -143,9 +143,11 @@ pub struct BondSettings {
     pub options: Option<String>,
     /// Interface names or IDs of the ports of the controller.
     ///
-    /// It is the list that predates `portConnections`. A controller gives one or the other, never
-    /// both, and they are reported together.
+    /// DEPRECATED: replaced by `portConnections`, which also takes names. It keeps working, and it
+    /// is still reported for the clients that read it. A controller gives one or the other, never
+    /// both.
     #[serde(skip_serializing_if = "Option::is_none", default)]
+    #[schemars(extend("deprecated" = true))]
     pub ports: Option<Vec<String>>,
     /// Ports of the controller. When neither this list nor `ports` is given, the current ports
     /// are left alone.
@@ -179,9 +181,11 @@ pub struct BridgeSettings {
     pub max_age: Option<u32>,
     /// Interface names or IDs of the ports of the controller.
     ///
-    /// It is the list that predates `portConnections`. A controller gives one or the other, never
-    /// both, and they are reported together.
+    /// DEPRECATED: replaced by `portConnections`, which also takes names. It keeps working, and it
+    /// is still reported for the clients that read it. A controller gives one or the other, never
+    /// both.
     #[serde(skip_serializing_if = "Option::is_none", default)]
+    #[schemars(extend("deprecated" = true))]
     pub ports: Option<Vec<String>>,
     /// Ports of the controller. When neither this list nor `ports` is given, the current ports
     /// are left alone.

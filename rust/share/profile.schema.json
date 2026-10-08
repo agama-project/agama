@@ -1004,9 +1004,10 @@
             },
             "ports": {
               "title": "Names of the connections to be bonded",
-              "description": "Same as 'portConnections', with the ports given only by name. It predates 'portConnections' and cannot be given along with it.",
+              "description": "Same as 'portConnections', with the ports given only by name. It cannot be given along with 'portConnections'. DEPRECATED: replaced by 'portConnections'",
               "type": "array",
-              "items": { "$ref": "#/$defs/portName" }
+              "items": { "$ref": "#/$defs/portName" },
+              "deprecated": true
             },
             "portConnections": {
               "title": "The connections to be bonded",
@@ -1071,9 +1072,10 @@
             },
             "ports": {
               "title": "Names of the connections to be part of the bridge",
-              "description": "Same as 'portConnections', with the ports given only by name. It predates 'portConnections' and cannot be given along with it.",
+              "description": "Same as 'portConnections', with the ports given only by name. It cannot be given along with 'portConnections'. DEPRECATED: replaced by 'portConnections'",
               "type": "array",
-              "items": { "$ref": "#/$defs/portName" }
+              "items": { "$ref": "#/$defs/portName" },
+              "deprecated": true
             },
             "portConnections": {
               "title": "The connections to be part of the bridge",
