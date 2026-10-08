@@ -1,5 +1,5 @@
 -------------------------------------------------------------------
-Mon Sep 28 12:00:00 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+Thu Oct  8 10:40:48 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
 
 - Allow disabling the IPv4 or the IPv6 configuration of a
   connection, and keep it disabled when editing a connection that
