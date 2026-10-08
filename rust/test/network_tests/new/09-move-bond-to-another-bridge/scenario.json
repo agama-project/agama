@@ -1,0 +1,70 @@
+{
+  "title": "Move a bond, with its ports, to another bridge",
+  "description": "Moving a controller moves everything below it. Nothing is deleted, and bond0 keeps its bridge port settings.",
+  "steps": [
+    {
+      "profile": "1-ha-stack.json",
+      "description": "The HA stack of new/04-ha-stack",
+      "expect": {
+        "connections": {
+          "eth0": {
+            "controller": "bond0",
+            "mtu": 9000
+          },
+          "eth1": {
+            "controller": "bond0"
+          },
+          "bond0": {
+            "controller": "br0",
+            "port": {
+              "priority": 24,
+              "pathCost": 200
+            }
+          },
+          "br0": {
+            "controller": null,
+            "method4": "manual",
+            "addresses": [
+              "192.168.1.100/24"
+            ]
+          },
+          "br0.100": {
+            "controller": null,
+            "method4": "manual",
+            "addresses": [
+              "10.100.0.10/24"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "profile": "2-move-bond0-to-br1.json",
+      "description": "br0 with portConnections: [], bond0 nested in a new br1",
+      "expect": {
+        "connections": {
+          "br0": {
+            "controller": null
+          },
+          "br1": {
+            "controller": null
+          },
+          "bond0": {
+            "controller": "br1",
+            "port": {
+              "priority": 24,
+              "pathCost": 200
+            }
+          },
+          "eth0": {
+            "controller": "bond0",
+            "mtu": 9000
+          },
+          "eth1": {
+            "controller": "bond0"
+          }
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "network": {
+    "connections": [
+      {
+        "id": "br0",
+        "interface": "br0",
+        "method4": "auto",
+        "bridge": {
+          "stp": true,
+          "portConnections": [
+            {
+              "interface": "eth0",
+              "port": {
+                "priority": 16,
+                "pathCost": 50
+              }
+            },
+            {
+              "id": "uplink",
+              "interface": "eth1",
+              "mtu": 9000
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

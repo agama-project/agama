@@ -1,0 +1,10 @@
+{
+  "network": {
+    "connections": [
+      {
+        "id": "br0",
+        "status": "removed"
+      }
+    ]
+  }
+}

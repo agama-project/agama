@@ -1,0 +1,19 @@
+{
+  "title": "A nested port with IP settings",
+  "description": "A port has no IP configuration of its own, its controller holds it.",
+  "steps": [
+    {
+      "profile": "1-port-with-ip.json",
+      "description": "eth0 nested with method4: auto",
+      "expect": {
+        "schema": "invalid",
+        "error": "PortIpSettings",
+        "connections": {
+          "bond0": {
+            "removed": true
+          }
+        }
+      }
+    }
+  ]
+}

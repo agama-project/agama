@@ -1,0 +1,45 @@
+{
+  "title": "Drop a port and define it at the top level",
+  "description": "A port left out of its controller but given at the top level in the same profile is moved out, keeping its settings (and its UUID).",
+  "steps": [
+    {
+      "profile": "1-bond.json",
+      "description": "Bond with eth0 and eth1 nested (MTU 9000)",
+      "expect": {
+        "connections": {
+          "bond0": {
+            "controller": null,
+            "method4": "auto"
+          },
+          "eth0": {
+            "controller": "bond0",
+            "mtu": 9000
+          },
+          "eth1": {
+            "controller": "bond0",
+            "mtu": 9000
+          }
+        }
+      }
+    },
+    {
+      "profile": "2-move-eth1-out.json",
+      "description": "Bond without eth1, eth1 at the top level with a static address",
+      "expect": {
+        "connections": {
+          "eth0": {
+            "controller": "bond0"
+          },
+          "eth1": {
+            "controller": null,
+            "mtu": 9000,
+            "method4": "manual",
+            "addresses": [
+              "192.168.2.10/24"
+            ]
+          }
+        }
+      }
+    }
+  ]
+}
