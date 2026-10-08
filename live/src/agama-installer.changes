@@ -1,4 +1,14 @@
 -------------------------------------------------------------------
+Thu Oct  8 13:33:18 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Use the new "cc-password-check" script for checking the password
+  strength, included in the "certification-sles-eal4-password-check"
+  package. (related to jsc#PED-16702)
+- Skip the CC configuration workflow when running unattended
+  autoinstallation to avoid running two installers in parallel
+  (also related to jsc#PED-16702)
+
+-------------------------------------------------------------------
 Tue Oct  6 13:06:45 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
 
 - Improve error handling in the CC installer, allow changing the
