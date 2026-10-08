@@ -23,21 +23,7 @@ require_relative "../../test_helper"
 
 Yast.import "Profile"
 
-# Resets a Singleton class so a fresh instance is built on the next #instance call.
-# Vendored here (rather than in the shared test_helper.rb) since it is only needed by
-# this file; the upstream autoyast2-installation test suite defines it globally.
-def reset_singleton(klass)
-  Singleton.__init__(klass)
-end
-
 describe Yast::Profile do
-  CUSTOM_MODULE = {
-    "Name"                       => "Custom module",
-    "X-SuSE-YaST-AutoInst"       => "configure",
-    "X-SuSE-YaST-Group"          => "System",
-    "X-SuSE-YaST-AutoInstClient" => "custom_auto"
-  }.freeze
-
   subject { Yast::Profile }
 
   def items_list(items)

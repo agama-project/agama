@@ -11,7 +11,6 @@
 require "yast"
 require "yast2/popup"
 
-require "autoinstall/entries/registry"
 require "ui/password_dialog"
 
 module Yast
