@@ -64,7 +64,18 @@ import type {
   BridgeStpMode as BridgeStpModeType,
   VlanProtocolMode as VlanProtocolModeType,
 } from "./fields";
-import { BondMode, Bridge, Connection, ConnectionMethod, VlanProtocol } from "~/types/network";
+import {
+  BondMode,
+  Bridge,
+  Connection,
+  ConnectionMethod,
+  ConnectionStatus,
+  Port,
+  VlanProtocol,
+  portName,
+  portsOf,
+  withoutIpSettings,
+} from "~/types/network";
 
 type FormValues = typeof defaultOptions.defaultValues;
 
@@ -120,6 +131,15 @@ function inferBridgeStp(bridge: Bridge | undefined): BridgeStpModeType {
 }
 
 /**
+ * Returns the names of the given ports, but the removed ones.
+ */
+function portNames(ports: Port[] = []): string[] {
+  return ports
+    .filter((p) => typeof p === "string" || p.status !== ConnectionStatus.DELETE)
+    .map(portName);
+}
+
+/**
  * Maps an existing {@link Connection} to initial form values for editing.
  *
  * Returns an empty object when creating a new connection (connection is null),
@@ -163,14 +183,14 @@ export function toFormValues(connection: Connection | null): Partial<FormValues>
     bondIface: connection.iface,
     bondMode: connection.bond?.mode ?? BondMode.BALANCE_ROUND_ROBIN,
     bondOptions: connection.bond?.options ? connection.bond.options.split(" ") : [],
-    bondPorts: connection.bond?.ports ?? [],
+    bondPorts: portNames(connection.bond?.ports),
     bridgeIface: connection.iface,
     bridgeStp: inferBridgeStp(connection.bridge),
     bridgePriority: connection.bridge?.priority,
     bridgeForwardDelay: connection.bridge?.forwardDelay,
     bridgeHelloTime: connection.bridge?.helloTime,
     bridgeMaxAge: connection.bridge?.maxAge,
-    bridgePorts: connection.bridge?.ports ?? [],
+    bridgePorts: portNames(connection.bridge?.ports),
     vlanIface: connection.iface,
     vlanId: connection.vlan?.id,
     vlanParent: connection.vlan?.parent ?? "",
@@ -179,12 +199,32 @@ export function toFormValues(connection: Connection | null): Partial<FormValues>
 }
 
 /**
+ * Turns the port names the form holds back into ports.
+ *
+ * A port the connection already had is kept as it was, settings and whatever
+ * is nested in it included: the form only deals with names. Any other name is
+ * left for the backend to resolve.
+ */
+function buildPorts(names: string[], initial: Connection | null): Port[] {
+  const current = initial ? portsOf(initial) : [];
+  return names.map((name) => current.find((p) => portName(p) === name) ?? name);
+}
+
+/**
  * Builds a {@link Connection} from the validated form values.
  *
  * Addresses in formValues already have prefixes (added by ArrayField's
  * normalize or when loading from backend), so no prefix addition is needed.
+ *
+ * The settings the connection has as a port of a bond or a bridge are not part
+ * of the form, so they are taken from the initial connection, if any. A port
+ * has no IP settings, as its controller holds the IP configuration.
  */
-export function buildPayload(formValues: FormValues): Connection {
+export function buildPayload(
+  formValues: FormValues,
+  initialConnection: Connection | null = null,
+  isPort = false,
+): Connection {
   const ipv4Addresses = ADDRESS_REQUIRED_MODES.includes(formValues.ipv4Mode)
     ? formValues.addresses4.map(buildAddress)
     : [];
@@ -198,7 +238,7 @@ export function buildPayload(formValues: FormValues): Connection {
   } else if (formValues.bindingMode === "iface") {
     iface = formValues.iface;
   }
-  return new Connection(formValues.name, {
+  const connection = new Connection(formValues.name, {
     iface,
     macAddress: formValues.bindingMode === "mac" ? formValues.ifaceMac : "",
     method4: MODE_TO_METHOD[formValues.ipv4Mode],
@@ -208,12 +248,13 @@ export function buildPayload(formValues: FormValues): Connection {
     addresses: [...ipv4Addresses, ...ipv6Addresses],
     nameservers: formValues.customDns ? formValues.nameservers : [],
     dnsSearchList: formValues.customDnsSearch ? formValues.dnsSearchList : [],
+    port: initialConnection?.port,
     bond:
       formValues.type === CONNECTION_TYPE.BOND
         ? {
             mode: formValues.bondMode,
             options: formValues.bondOptions.join(" "),
-            ports: formValues.bondPorts,
+            ports: buildPorts(formValues.bondPorts, initialConnection),
           }
         : undefined,
     bridge:
@@ -237,7 +278,7 @@ export function buildPayload(formValues: FormValues): Connection {
                 : undefined,
             maxAge:
               formValues.bridgeStp === BridgeStpMode.ENABLED ? formValues.bridgeMaxAge : undefined,
-            ports: formValues.bridgePorts,
+            ports: buildPorts(formValues.bridgePorts, initialConnection),
           }
         : undefined,
     vlan:
@@ -252,4 +293,6 @@ export function buildPayload(formValues: FormValues): Connection {
           }
         : undefined,
   });
+
+  return isPort ? withoutIpSettings(connection) : connection;
 }

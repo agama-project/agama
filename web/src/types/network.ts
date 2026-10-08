@@ -290,11 +290,40 @@ type APIRoute = {
   metric: number;
 };
 
+/**
+ * A port of a bond or a bridge as the API carries it.
+ *
+ * Agama reports every port as a connection nested in its controller. A name is
+ * accepted as well, and resolved by the backend the same way it resolves the
+ * ports of a profile: by interface name first, and by connection id then.
+ */
+type APIPort = string | APIConnection;
+
+/**
+ * The ports of a bond or a bridge as the API carries them.
+ *
+ * `portConnections` holds the ports themselves. `ports` predates it and only
+ * holds their names. Agama reports both, but accepts only one of them.
+ */
+type APIPorts = {
+  ports?: string[];
+  portConnections?: APIPort[];
+};
+
+/**
+ * Returns the settings of a bond or a bridge without its lists of ports.
+ */
+const withoutPortLists = <T extends APIPorts>(settings: T): Omit<T, keyof APIPorts> => {
+  const { ports, portConnections, ...rest } = settings;
+  return rest;
+};
+
 type APIConnection = {
   id: string;
-  bond?: Bond;
-  bridge?: Bridge;
+  bond?: Omit<Bond, "ports"> & APIPorts;
+  bridge?: Omit<Bridge, "ports"> & APIPorts;
   vlan?: Vlan;
+  port?: PortSettings;
   interface?: string;
   macAddress?: string;
   addresses?: string[];
@@ -334,19 +363,37 @@ class Wireless {
   }
 }
 
+/**
+ * A port of a bond or a bridge.
+ *
+ * The ports of an existing controller are connections of their own. A name
+ * stands for a port that is yet to be resolved by the backend, such as a
+ * device just picked in the UI.
+ */
+type Port = string | Connection;
+
 type Bond = {
   mode: BondMode;
   options: string;
-  ports: string[];
+  ports: Port[];
 };
 
 type Bridge = {
   forwardDelay?: number;
   priority?: number;
   maxAge?: number;
-  ports: string[];
+  ports: Port[];
   helloTime?: number;
   stp?: boolean;
+};
+
+/**
+ * Settings a connection has as a port of its controller. Only the ports of a
+ * bridge have any.
+ */
+type PortSettings = {
+  priority?: number;
+  pathCost?: number;
 };
 
 type Vlan = {
@@ -370,6 +417,7 @@ type ConnectionOptions = {
   bond?: Bond;
   bridge?: Bridge;
   vlan?: Vlan;
+  port?: PortSettings;
   status?: ConnectionStatus;
   state?: ConnectionState;
   persistent?: boolean;
@@ -402,6 +450,7 @@ class Connection {
   bond?: Bond;
   bridge?: Bridge;
   vlan?: Vlan;
+  port?: PortSettings;
   wireless?: Wireless;
   persistent: boolean;
 
@@ -415,13 +464,28 @@ class Connection {
     }
   }
 
+  /**
+   * The configuration gives back what was sent, so a profile may come with
+   * either list.
+   */
+  private static portsFromApi({ ports, portConnections }: APIPorts): Port[] {
+    const entries: APIPort[] = portConnections ?? ports ?? [];
+    return entries.map((p) => (typeof p === "string" ? p : Connection.fromApi(p)));
+  }
+
+  private static portsToApi(ports: Port[] = []): APIPorts {
+    return { portConnections: ports.map((p) => (typeof p === "string" ? p : p.toApi())) };
+  }
+
   static fromApi(connection: APIConnection) {
-    const { id, interface: iface, ...options } = connection;
+    const { id, interface: iface, bond, bridge, ...options } = connection;
     const nameservers = connection.nameservers || [];
     const dnsSearchList = connection.dnsSearchList || [];
     const addresses = connection.addresses?.map(buildAddress) || [];
     const conn = new Connection(id, {
       ...options,
+      bond: bond && { ...withoutPortLists(bond), ports: Connection.portsFromApi(bond) },
+      bridge: bridge && { ...withoutPortLists(bridge), ports: Connection.portsFromApi(bridge) },
       // FIXME: try a better approach for methods/gateway and/or typecasting
       method4: options.method4 as ConnectionMethod,
       method6: options.method6 as ConnectionMethod,
@@ -446,12 +510,21 @@ class Connection {
   }
 
   toApi() {
-    const { iface, addresses, state, ...newConnection } = this;
+    const { iface, addresses, state, bond, bridge, ...newConnection } = this;
     const result: APIConnection = {
       ...newConnection,
       interface: iface,
       addresses: addresses?.map(formatIp) || [],
     };
+
+    if (bond) {
+      const { ports, ...settings } = bond;
+      result.bond = { ...settings, ...Connection.portsToApi(ports) };
+    }
+    if (bridge) {
+      const { ports, ...settings } = bridge;
+      result.bridge = { ...settings, ...Connection.portsToApi(ports) };
+    }
 
     if (result.gateway4 === "") delete result.gateway4;
     if (result.gateway6 === "") delete result.gateway6;
@@ -461,6 +534,171 @@ class Connection {
     return result;
   }
 }
+
+/**
+ * Returns the ports of the given connection, or an empty list when it is not a
+ * bond or a bridge.
+ */
+const portsOf = (connection: Connection): Port[] =>
+  connection.bond?.ports ?? connection.bridge?.ports ?? [];
+
+/**
+ * Returns the ports of the given connection that are connections of their own.
+ */
+const portConnections = (connection: Connection): Connection[] =>
+  portsOf(connection).filter((p): p is Connection => typeof p !== "string");
+
+/**
+ * Returns the name a port goes by: its interface name or, for a connection not
+ * bound to any, its id. It is the naming the backend resolves ports by.
+ */
+const portName = (port: Port): string => (typeof port === "string" ? port : port.iface || port.id);
+
+/**
+ * Returns every connection in the given ones, ports included, each controller
+ * before its ports.
+ *
+ * Agama reports the ports of a bond or a bridge nested in it. Looking a
+ * connection up by id, or by the device it runs on, needs them all at hand.
+ */
+const flattenConnections = (connections: Connection[]): Connection[] =>
+  connections.flatMap((c) => [c, ...flattenConnections(portConnections(c))]);
+
+/**
+ * Whether the given connection is a port of any of the given connections,
+ * nested in it or listed by name.
+ */
+const isPort = (connections: Connection[], connection: Connection): boolean =>
+  flattenConnections(connections).some((c) =>
+    portsOf(c).some((p) =>
+      typeof p === "string" ? p === portName(connection) : p.id === connection.id,
+    ),
+  );
+
+/**
+ * Returns a copy of the given connection without IP settings.
+ *
+ * A port of a bond or a bridge has none: its controller holds the IP
+ * configuration, and the backend rejects a port that has any.
+ */
+const withoutIpSettings = (connection: Connection): Connection => {
+  const { id, ...options } = connection;
+  const conn = new Connection(id, {
+    ...options,
+    addresses: [],
+    nameservers: [],
+    dnsSearchList: [],
+    gateway4: "",
+    gateway6: "",
+  });
+  conn.method4 = undefined;
+  conn.method6 = undefined;
+  return conn;
+};
+
+/**
+ * Returns a copy of the given connection with other ports.
+ */
+const withPorts = (connection: Connection, ports: Port[]): Connection => {
+  const { id, ...options } = connection;
+  const kind = connection.bond ? "bond" : "bridge";
+  return new Connection(id, { ...options, [kind]: { ...connection[kind], ports } });
+};
+
+/**
+ * Returns the given connections without the one with the given id, wherever it
+ * is nested.
+ */
+const withoutConnection = (connections: Connection[], id: string): Connection[] =>
+  connections
+    .filter((c) => c.id !== id)
+    .map((c) => {
+      if (!portConnections(c).length) return c;
+
+      const ports = portsOf(c)
+        .filter((p) => typeof p === "string" || p.id !== id)
+        .map((p) => (typeof p === "string" ? p : withoutConnection([p], id)[0]));
+      return withPorts(c, ports);
+    });
+
+/**
+ * Returns the given connections with the one with the same id as the given
+ * connection replaced by it, wherever it is nested, or `undefined` when there
+ * is none. A port replaced that way does not keep any IP setting.
+ */
+const replaceConnection = (
+  connections: Connection[],
+  connection: Connection,
+): Connection[] | undefined => {
+  let found = false;
+  const replace = (conns: Connection[], nested: boolean): Connection[] =>
+    conns.map((c) => {
+      if (c.id === connection.id) {
+        found = true;
+        return nested ? withoutIpSettings(connection) : connection;
+      }
+      if (!portConnections(c).length) return c;
+
+      const ports = portsOf(c).map((p) => (typeof p === "string" ? p : replace([p], true)[0]));
+      return withPorts(c, ports);
+    });
+
+  const result = replace(connections, false);
+  return found ? result : undefined;
+};
+
+/**
+ * Adds the given connection to the given ones, or replaces the one with the
+ * same id wherever it is nested.
+ *
+ * The ports of a bond or a bridge are nested in it, so a port listed by name
+ * that is already somewhere else in the connections is taken from there, with
+ * its settings, instead of being left in two places at once. It loses any IP
+ * setting on the way, as a port has none, and its port settings when it joins
+ * a bond, as only the ports of a bridge have any. A removed one is brought
+ * back, too.
+ *
+ * Removing a port drops it from its controller, together with anything nested
+ * in it, which is how the backend tells that a port is gone. Leaving it there
+ * would keep it in the ports of the controller.
+ */
+const placeConnection = (connections: Connection[], connection: Connection): Connection[] => {
+  let result = connections;
+
+  if (connection.status === ConnectionStatus.DELETE) {
+    const nested = flattenConnections(connections).some((c) =>
+      portConnections(c).some((p) => p.id === connection.id),
+    );
+    if (nested) return withoutConnection(connections, connection.id);
+  }
+
+  if (connection.bond || connection.bridge) {
+    const all = flattenConnections(connections).filter((c) => c.id !== connection.id);
+    const ports = portsOf(connection).map((port) => {
+      if (typeof port !== "string") return port;
+
+      const taken = all.find((c) => c.iface === port) ?? all.find((c) => c.id === port);
+      if (!taken) return port;
+
+      const removed = taken.status === ConnectionStatus.DELETE;
+      const wasPort = all.some((c) => portConnections(c).some((p) => p.id === taken.id));
+      result = withoutConnection(result, taken.id);
+      const { id, ...options } = taken;
+      return withoutIpSettings(
+        new Connection(id, {
+          ...options,
+          ...(wasPort && !removed ? {} : { status: ConnectionStatus.UP }),
+          // Only the ports of a bridge have port settings, and the backend
+          // rejects a port of a bond that keeps the ones it had in a bridge.
+          port: connection.bridge ? taken.port : undefined,
+        }),
+      );
+    });
+    connection = withPorts(connection, ports);
+  }
+
+  return replaceConnection(result, connection) ?? [...result, connection];
+};
 
 enum WifiNetworkStatus {
   NOT_CONFIGURED = "not_configured",
@@ -535,13 +773,7 @@ class NetworkConfig {
   }
 
   addOrUpdateConnection(connection: Connection) {
-    const index = (this.connections || []).findIndex((c) => c.id === connection.id);
-
-    if (index !== -1) {
-      this.connections![index] = connection;
-    } else {
-      this.connections = [...(this.connections || []), connection];
-    }
+    this.connections = placeConnection(this.connections || [], connection);
   }
 
   toApi(): APIConfig {
@@ -573,13 +805,7 @@ class NetworkProposal {
   }
 
   addOrUpdateConnection(connection: Connection) {
-    const index = (this.connections || []).findIndex((c) => c.id === connection.id);
-
-    if (index !== -1) {
-      this.connections[index] = connection;
-    } else {
-      this.connections = [...(this.connections || []), connection];
-    }
+    this.connections = placeConnection(this.connections || [], connection);
   }
 
   toApi(): APIProposal {
@@ -630,6 +856,12 @@ export {
   NetworkState,
   NetworkSystem,
   SecurityProtocols,
+  flattenConnections,
+  isPort,
+  portConnections,
+  portName,
+  portsOf,
+  withoutIpSettings,
   VlanProtocol,
   VlanFlag,
   WifiNetworkStatus,
@@ -639,7 +871,10 @@ export {
 export type {
   APIAccessPoint,
   APIConnection,
+  APIPort,
   Bond,
+  Port,
+  PortSettings,
   Bridge,
   Vlan,
   ConnectionBindingMode,
