@@ -12,7 +12,7 @@
             {
               "id": "bond0",
               "interface": "bond0",
-              "port": { "priority": 32, "pathCost": 100 },
+              "port": { "priority": 24, "pathCost": 200 },
               "bond": {
                 "mode": "802.3ad",
                 "options": "miimon=100 lacp_rate=fast",
