@@ -35,6 +35,7 @@
     %ifarch x86_64 aarch64
     Requires:       fde-tools
     %endif
+    Requires:       hostname
     Requires:       jfsutils
     Requires:       libstorage-ng-lang
     Requires:       lvm2

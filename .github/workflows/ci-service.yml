@@ -75,6 +75,7 @@ jobs:
         yast2-devtools \
         yast2-ycp-ui-bindings \
         augeas-lenses \
+        hostname \
         libstorage-ng-ruby \
         yast2-pkg-bindings \
         yast2-transfer \

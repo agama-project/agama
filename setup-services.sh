@@ -58,6 +58,7 @@ $SUDO $ZYPPER install \
   glibc-locale \
   suseconnect-ruby-bindings \
   augeas-lenses \
+  hostname \
   yast2-hardware-detection \
   yast2-schema \
   yast2-transfer \
