@@ -259,9 +259,11 @@ echo $PATH
 %{_pam_vendordir}/agama
 %{_unitdir}/agama-web-server.service
 %{_unitdir}/agama-proxy-setup.service
+%dir %{_datadir}/agama
 %dir %{_datadir}/agama/eula
 
 %files -n agama-common
+%dir %{_datadir}/agama
 %dir %{_datadir}/agama/jsonnet
 %{_datadir}/agama/jsonnet/agama.libsonnet
 
