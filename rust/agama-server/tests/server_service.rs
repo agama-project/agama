@@ -354,12 +354,12 @@ async fn test_the_ports_are_reported_by_name_and_as_connections(
 
 #[test_context(Context)]
 #[test]
-async fn test_giving_both_lists_of_ports_is_rejected(
+async fn test_port_connections_take_precedence_over_ports(
     ctx: &mut Context,
 ) -> Result<(), Box<dyn Error>> {
     let json = BOND_WITH_PORT_NAMES.replace(
         r#""ports": ["eth0", "eth1"]"#,
-        r#""ports": ["eth0", "eth1"], "portConnections": ["eth0", "eth1"]"#,
+        r#""ports": ["eth0", "eth1"], "portConnections": ["eth0"]"#,
     );
     let request = Request::builder()
         .uri("/config")
@@ -367,7 +367,13 @@ async fn test_giving_both_lists_of_ports_is_rejected(
         .method(Method::PUT)
         .body(json)?;
     let response = ctx.client.send_request(request).await;
-    assert_eq!(response.status(), StatusCode::BAD_REQUEST);
+    assert_eq!(response.status(), StatusCode::OK);
+
+    wait_for_task(&mut ctx.events, "network_config").await;
+
+    let config = get_json(&ctx.client, "/extended_config").await?;
+    let bond = &config["network"]["connections"][0]["bond"];
+    assert_eq!(bond["ports"], serde_json::json!(["eth0"]));
 
     Ok(())
 }

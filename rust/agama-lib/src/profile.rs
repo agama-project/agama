@@ -399,14 +399,14 @@ mod tests {
     }
 
     #[test]
-    fn test_ports_and_port_connections_cannot_be_given_together() {
+    fn test_ports_and_port_connections_can_be_given_together() {
         for controller in ["bond", "bridge"] {
             let profile = connections(json!([{
                 "id": "ctl0",
                 controller: { "ports": ["eth0"], "portConnections": ["eth0"] }
             }]));
             assert!(
-                matches!(validate(profile), ValidationOutcome::NotValid(_)),
+                matches!(validate(profile), ValidationOutcome::Valid),
                 "{controller}"
             );
         }

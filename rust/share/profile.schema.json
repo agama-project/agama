@@ -983,9 +983,8 @@
         "bond": {
           "type": "object",
           "title": "Bonding configuration",
-          "description": "The ports are given either in 'ports' or in 'portConnections', not in both.",
+          "description": "The ports are given in 'portConnections' or, in the deprecated form, in 'ports'. When both are given, 'ports' is ignored.",
           "additionalProperties": false,
-          "not": { "required": ["ports", "portConnections"] },
           "properties": {
             "mode": {
               "type": "string",
@@ -1004,7 +1003,7 @@
             },
             "ports": {
               "title": "Names of the connections to be bonded",
-              "description": "Same as 'portConnections', with the ports given only by name. It cannot be given along with 'portConnections'. DEPRECATED: replaced by 'portConnections'",
+              "description": "Same as 'portConnections', with the ports given only by name. It is ignored when 'portConnections' is given. DEPRECATED: replaced by 'portConnections'",
               "type": "array",
               "items": { "$ref": "#/$defs/portName" },
               "deprecated": true
@@ -1042,9 +1041,8 @@
         "bridge": {
           "type": "object",
           "title": "Bridge configuration",
-          "description": "The ports are given either in 'ports' or in 'portConnections', not in both.",
+          "description": "The ports are given in 'portConnections' or, in the deprecated form, in 'ports'. When both are given, 'ports' is ignored.",
           "additionalProperties": false,
-          "not": { "required": ["ports", "portConnections"] },
           "properties": {
             "stp": {
               "title": "whether the Spanning Tree Protocol is enabled or not",
@@ -1072,7 +1070,7 @@
             },
             "ports": {
               "title": "Names of the connections to be part of the bridge",
-              "description": "Same as 'portConnections', with the ports given only by name. It cannot be given along with 'portConnections'. DEPRECATED: replaced by 'portConnections'",
+              "description": "Same as 'portConnections', with the ports given only by name. It is ignored when 'portConnections' is given. DEPRECATED: replaced by 'portConnections'",
               "type": "array",
               "items": { "$ref": "#/$defs/portName" },
               "deprecated": true

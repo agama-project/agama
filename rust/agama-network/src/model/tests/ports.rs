@@ -289,16 +289,41 @@ fn test_a_port_given_by_name_can_be_moved_to_another_controller() {
     );
 }
 
+/// The reported configuration carries both lists of ports, so it can be sent back as it is.
 #[test]
-fn test_giving_both_lists_of_ports_is_rejected() {
-    let state = stacked_state();
+fn test_the_reported_configuration_can_be_sent_back_with_both_lists() {
+    let mut state = stacked_state();
     let reported: NetworkConnectionsCollection = ConnectionCollection(state.connections.clone())
         .try_into()
         .unwrap();
+    assert!(find(&reported, "bond0").bond.unwrap().ports.is_some());
 
-    // The reported configuration carries both lists, so it cannot be sent back as it is.
-    let error = state.connection_collection_from(&reported).unwrap_err();
-    assert!(matches!(error, NetworkStateError::ConflictingPorts(id) if id == "br0"));
+    apply(&mut state, reported);
+
+    let br0 = state.get_connection("br0").unwrap().uuid;
+    let bond0 = state.get_connection("bond0").unwrap().uuid;
+    assert_eq!(state.get_connection("bond0").unwrap().controller, Some(br0));
+    for id in ["eth0", "eth1"] {
+        assert_eq!(
+            state.get_connection(id).unwrap().controller,
+            Some(bond0),
+            "{id}"
+        );
+    }
+}
+
+/// When both lists are given and do not match, `portConnections` decides and `ports` is ignored.
+#[test]
+fn test_port_connections_take_precedence_over_ports() {
+    let mut state = stacked_state();
+    let mut connections = exposed(&state);
+    let bond0 = find_mut(&mut connections.0, "bond0").unwrap();
+    bond0.bond.as_mut().unwrap().ports = Some(vec!["eth0".to_string(), "eth1".to_string()]);
+    bond0.set_port_connections(Some(vec![name("eth0")]));
+    apply(&mut state, connections);
+
+    assert!(state.get_connection("eth1").unwrap().is_removed());
+    assert!(!state.get_connection("eth0").unwrap().is_removed());
 }
 
 #[test]

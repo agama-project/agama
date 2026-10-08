@@ -117,7 +117,7 @@ fn test_stacked_connections_survive_a_round_trip() {
     let original = crate::test_utils::stacked_connections();
     let exposed: NetworkConnectionsCollection =
         ConnectionCollection(original.clone()).try_into().unwrap();
-    let restored: ConnectionCollection = writable(exposed).try_into().unwrap();
+    let restored: ConnectionCollection = exposed.try_into().unwrap();
 
     assert_eq!(
         restored.0.len(),
@@ -167,7 +167,7 @@ fn test_port_settings_survive_a_round_trip() {
     let original = crate::test_utils::stacked_connections();
     let exposed: NetworkConnectionsCollection =
         ConnectionCollection(original.clone()).try_into().unwrap();
-    let restored: ConnectionCollection = writable(exposed).try_into().unwrap();
+    let restored: ConnectionCollection = exposed.try_into().unwrap();
 
     let eth0 = restored.0.iter().find(|c| c.id == "eth0").unwrap();
     let original_eth0 = original.iter().find(|c| c.id == "eth0").unwrap();
@@ -194,7 +194,7 @@ fn test_bridge_port_settings_are_exposed_and_survive_a_round_trip() {
     // A connection that is not a bridge port has nothing to report.
     assert_eq!(find(&exposed, "eth0").port, None);
 
-    let restored: ConnectionCollection = writable(exposed).try_into().unwrap();
+    let restored: ConnectionCollection = exposed.try_into().unwrap();
     let bond0 = restored.0.iter().find(|c| c.id == "bond0").unwrap();
     assert_eq!(
         bond0.port_config,

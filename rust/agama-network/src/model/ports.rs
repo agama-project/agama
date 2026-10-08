@@ -22,7 +22,8 @@
 //!
 //! Over the API, the ports of a controller are nested in its `portConnections` list
 //! (`bond.portConnections` or `bridge.portConnections`), either as connections or by name, or
-//! given by name in its `ports` list, which predates the nesting. This module turns that tree into the
+//! given by name in its `ports` list, which predates the nesting and is ignored when both are
+//! given. This module turns that tree into the
 //! `controller` links of the internal model, and rejects the configurations that cannot be
 //! represented (unknown or ambiguous names, ports claimed by two controllers, loops, etc.).
 
@@ -135,8 +136,11 @@ impl<'a> PortResolver<'a> {
             None => return Err(NetworkStateError::MissingConnectionId),
         };
 
-        if conn.has_conflicting_ports() {
-            return Err(NetworkStateError::ConflictingPorts(id));
+        if conn.has_ignored_port_names() {
+            tracing::warn!(
+                "'{}' gives both 'ports' and 'portConnections', and they do not match: 'ports' is ignored",
+                id
+            );
         }
 
         let index = nodes.len();

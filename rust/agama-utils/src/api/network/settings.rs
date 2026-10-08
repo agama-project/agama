@@ -144,8 +144,8 @@ pub struct BondSettings {
     /// Interface names or IDs of the ports of the controller.
     ///
     /// DEPRECATED: replaced by `portConnections`, which also takes names. It keeps working, and it
-    /// is still reported for the clients that read it. A controller gives one or the other, never
-    /// both.
+    /// is still reported for the clients that read it. When both lists are given,
+    /// `portConnections` is used and this one is ignored.
     #[serde(skip_serializing_if = "Option::is_none", default)]
     #[schemars(extend("deprecated" = true))]
     pub ports: Option<Vec<String>>,
@@ -182,8 +182,8 @@ pub struct BridgeSettings {
     /// Interface names or IDs of the ports of the controller.
     ///
     /// DEPRECATED: replaced by `portConnections`, which also takes names. It keeps working, and it
-    /// is still reported for the clients that read it. A controller gives one or the other, never
-    /// both.
+    /// is still reported for the clients that read it. When both lists are given,
+    /// `portConnections` is used and this one is ignored.
     #[serde(skip_serializing_if = "Option::is_none", default)]
     #[schemars(extend("deprecated" = true))]
     pub ports: Option<Vec<String>>,
@@ -228,9 +228,9 @@ pub enum PortRef<'a> {
     Connection(&'a NetworkConnection),
 }
 
-impl PortRef<'_> {
+impl<'a> PortRef<'a> {
     /// Returns the name the port is known by: its interface name or, when it has none, its ID.
-    pub fn name(&self) -> &str {
+    pub fn name(&self) -> &'a str {
         match self {
             Self::Name(name) => name,
             Self::Connection(conn) => conn.interface.as_deref().unwrap_or(&conn.id),
@@ -538,8 +538,8 @@ impl NetworkConnection {
 
     /// Returns the ports declared by the connection, if it declares any.
     ///
-    /// They come from `portConnections` or, when it is not given, from `ports`. An empty list is
-    /// not the same as no list at all: an empty list means that the controller has no ports, while
+    /// They come from `portConnections` or, when it is not given, from `ports`, which is ignored
+    /// when both are given. An empty list is not the same as no list at all: an empty list means that the controller has no ports, while
     /// no list means that its ports are not part of the payload.
     pub fn ports(&self) -> Option<Vec<PortRef<'_>>> {
         let (names, entries) = self.port_lists()?;
@@ -549,9 +549,17 @@ impl NetworkConnection {
         names.map(|names| names.iter().map(|n| PortRef::Name(n)).collect())
     }
 
-    /// Whether the connection gives both `ports` and `portConnections`, which is not allowed.
-    pub fn has_conflicting_ports(&self) -> bool {
-        matches!(self.port_lists(), Some((Some(_), Some(_))))
+    /// Whether the connection gives both `ports` and `portConnections` and they do not name the
+    /// same ports, regardless of the order. `ports` is ignored in that case.
+    pub fn has_ignored_port_names(&self) -> bool {
+        let Some((Some(names), Some(entries))) = self.port_lists() else {
+            return false;
+        };
+        let mut names: Vec<&str> = names.iter().map(String::as_str).collect();
+        let mut given: Vec<&str> = entries.iter().map(|e| PortRef::from(e).name()).collect();
+        names.sort_unstable();
+        given.sort_unstable();
+        names != given
     }
 
     /// Returns the `portConnections` list, if it is given.
@@ -744,17 +752,29 @@ mod tests {
     }
 
     #[test]
-    fn test_giving_both_lists_of_ports_is_a_conflict() {
+    fn test_port_connections_take_precedence_over_ports() {
         let json = r#"{
             "id": "bond0",
-            "bond": { "mode": "802.3ad", "ports": ["eth0"], "portConnections": ["eth0"] }
+            "bond": { "mode": "802.3ad", "ports": ["eth0"], "portConnections": ["eth1", "eth0"] }
         }"#;
         let conn: NetworkConnection = serde_json::from_str(json).unwrap();
-        assert!(conn.has_conflicting_ports());
+        assert_eq!(
+            conn.ports().unwrap(),
+            [PortRef::Name("eth1"), PortRef::Name("eth0")]
+        );
+        assert!(conn.has_ignored_port_names());
+
+        // The same ports in another order, as a client may send them back.
+        let json = r#"{
+            "id": "bond0",
+            "bond": { "mode": "802.3ad", "ports": ["eth0", "eth1"], "portConnections": ["eth1", "eth0"] }
+        }"#;
+        let conn: NetworkConnection = serde_json::from_str(json).unwrap();
+        assert!(!conn.has_ignored_port_names());
 
         let json = r#"{ "id": "bond0", "bond": { "mode": "802.3ad", "ports": ["eth0"] } }"#;
         let conn: NetworkConnection = serde_json::from_str(json).unwrap();
-        assert!(!conn.has_conflicting_ports());
+        assert!(!conn.has_ignored_port_names());
     }
 
     #[test]

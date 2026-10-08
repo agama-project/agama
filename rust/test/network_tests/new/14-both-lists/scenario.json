@@ -1,15 +1,20 @@
 {
   "title": "Both ports and portConnections",
-  "description": "A controller gives one list or the other, never both.",
+  "description": "portConnections decides and ports, which is deprecated, is ignored. As the lists do not match, the network service logs a warning.",
   "steps": [
     {
       "profile": "1-both-lists.json",
-      "description": "Bond with ports and portConnections",
+      "description": "Bond with ports: [eth0, eth1] and portConnections: [eth0]",
       "expect": {
-        "schema": "invalid",
-        "error": "ConflictingPorts",
         "connections": {
           "bond0": {
+            "controller": null,
+            "method4": "auto"
+          },
+          "eth0": {
+            "controller": "bond0"
+          },
+          "eth1": {
             "removed": true
           }
         }

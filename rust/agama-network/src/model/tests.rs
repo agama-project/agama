@@ -98,38 +98,11 @@ fn stacked_state() -> NetworkState {
 }
 
 /// Builds the API representation of the whole state, as a client would read it and send it
-/// back (see [`writable`]).
+/// back.
 fn exposed(state: &NetworkState) -> NetworkConnectionsCollection {
-    writable(
-        ConnectionCollection(state.connections.clone())
-            .try_into()
-            .unwrap(),
-    )
-}
-
-/// Drops the `ports` lists that the reported controllers carry next to `portConnections`, as
-/// a client has to do before sending them back.
-fn writable(mut collection: NetworkConnectionsCollection) -> NetworkConnectionsCollection {
-    fn drop_port_names(conn: &mut NetworkConnection) {
-        if let Some(bond) = conn.bond.as_mut().filter(|b| b.port_connections.is_some()) {
-            bond.ports = None;
-        }
-        if let Some(bridge) = conn
-            .bridge
-            .as_mut()
-            .filter(|b| b.port_connections.is_some())
-        {
-            bridge.ports = None;
-        }
-        for port in conn.port_connections_mut().into_iter().flatten() {
-            if let PortEntry::Connection(port) = port {
-                drop_port_names(port);
-            }
-        }
-    }
-
-    collection.0.iter_mut().for_each(drop_port_names);
-    collection
+    ConnectionCollection(state.connections.clone())
+        .try_into()
+        .unwrap()
 }
 
 /// Removes the given connection through the HTTP API, the way a client does it.
