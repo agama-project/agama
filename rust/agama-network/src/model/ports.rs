@@ -199,11 +199,11 @@ impl<'a> PortResolver<'a> {
         nodes: &mut Vec<Node<'b>>,
         named: &mut Vec<NamedPort<'b>>,
     ) -> Result<(), NetworkStateError> {
-        let conn = NetworkConnection::from(port);
-        let id = match &port.id {
-            Some(id) if !id.is_empty() => id.clone(),
-            _ => self.port_id(&conn, &nodes[parent].id)?,
+        let id = match port.id.as_deref().filter(|id| !id.is_empty()) {
+            Some(id) => id.to_string(),
+            None => self.port_id(port.interface.as_deref(), &nodes[parent].id)?,
         };
+        let conn = port.to_connection(id.clone());
 
         self.visit(
             Cow::Owned(conn),
@@ -222,14 +222,14 @@ impl<'a> PortResolver<'a> {
     /// Like a port given by name, it refers to the existing connection bound to its interface,
     /// if any. Otherwise, the interface name becomes the ID of the new connection.
     ///
-    /// * `conn`: nested port.
+    /// * `interface`: interface name of the nested port, if it gives one.
     /// * `controller_id`: ID of its controller, for error reporting.
     fn port_id(
         &self,
-        conn: &NetworkConnection,
+        interface: Option<&str>,
         controller_id: &str,
     ) -> Result<String, NetworkStateError> {
-        let Some(interface) = conn.interface.as_deref().filter(|i| !i.is_empty()) else {
+        let Some(interface) = interface.filter(|i| !i.is_empty()) else {
             return Err(NetworkStateError::MissingPortId(controller_id.to_string()));
         };
 

@@ -42,8 +42,8 @@ impl NetworkConnectionsCollection {
     /// Returns every connection in the collection, ports included, parents before their ports.
     ///
     /// The ports are returned as the connections they stand for (see
-    /// [`NetworkConnection::from`]). Ports given by name are left out, as they are not connections
-    /// yet.
+    /// [`PortConnection::to_connection`]), named after their interface when they have no ID. Ports
+    /// given by name are left out, as they are not connections yet.
     pub fn flatten(&self) -> Vec<NetworkConnection> {
         let mut all = vec![];
         for conn in &self.0 {
@@ -551,14 +551,17 @@ pub struct PortConnection {
     pub state: Option<ConnectionState>,
 }
 
-impl From<&PortConnection> for NetworkConnection {
-    /// Returns the connection a port stands for.
+impl PortConnection {
+    /// Returns the connection the port stands for, with the given ID.
     ///
     /// It has no IP settings, as its controller holds them, and no port settings, which only make
-    /// sense next to its controller. A port without an ID gets an empty one.
-    fn from(port: &PortConnection) -> Self {
+    /// sense next to its controller. The ID is given because a port can omit it, and which one it
+    /// gets depends on the connections that already exist.
+    ///
+    /// * `id`: ID of the connection.
+    pub fn to_connection(&self, id: String) -> NetworkConnection {
         let PortConnection {
-            id,
+            id: _,
             vlan,
             wireless,
             interface,
@@ -574,10 +577,10 @@ impl From<&PortConnection> for NetworkConnection {
             autoconnect,
             persistent,
             state,
-        } = port.clone();
+        } = self.clone();
 
-        Self {
-            id: id.unwrap_or_default(),
+        NetworkConnection {
+            id,
             vlan,
             wireless,
             interface,
@@ -822,7 +825,8 @@ fn port_lists<'a>(
 fn collect_ports(conn: &impl PortLists, all: &mut Vec<NetworkConnection>) {
     for port in conn.ports().into_iter().flatten() {
         if let PortRef::Connection(port) = port {
-            all.push(NetworkConnection::from(port));
+            let id = port.id.clone().or_else(|| port.interface.clone());
+            all.push(port.to_connection(id.unwrap_or_default()));
             collect_ports(port, all);
         }
     }
@@ -1053,13 +1057,12 @@ mod tests {
             }),
             ..Default::default()
         };
-        let conn = NetworkConnection::from(&port);
-        assert_eq!(conn.id, "");
+        let conn = port.to_connection("eth0".to_string());
+        assert_eq!(conn.id, "eth0");
         assert_eq!(conn.mtu, 9000);
         assert!(!conn.has_ip_settings());
 
         let mut conn = conn;
-        conn.id = "eth0".to_string();
         conn.method4 = Some(Ipv4Method::Auto);
         let port = PortConnection::from(conn);
         assert_eq!(port.id.as_deref(), Some("eth0"));
