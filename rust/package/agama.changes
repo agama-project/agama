@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Thu Oct  8 06:22:28 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Move back packaging agama-openapi-nightly into agama.srpm as
+  it is fast moving target, so it make sense to live together with
+  code from which it is generated. agama-openapi will be from
+  separated repo for stable releases.
+
+-------------------------------------------------------------------
 Thu Oct  1 11:55:11 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
 
 - properly copy SSL certificates to target system (bsc#1283318)
