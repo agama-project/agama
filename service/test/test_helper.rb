@@ -21,7 +21,6 @@
 
 ENV["Y2DIR"] = [
   ENV.fetch("Y2DIR", nil),
-  File.expand_path("../lib/agama/y2dir", __dir__),
   File.expand_path("../YaST2", __dir__)
 ].compact.join(":")
 

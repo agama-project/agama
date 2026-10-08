@@ -261,10 +261,9 @@ This mirrors the relevant parts of the upstream source trees so it stays easy to
 original code if needed:
 
 - `modules/` - classes that are loaded through `Yast.import "X"` (the classic YaST module
-  mechanism). This directory is added to `ENV["Y2DIR"]` by `bin/agama-autoyast` (the same mechanism
-  already used by `service/lib/agama/y2dir` to override `Yast::Package` and
-  `Yast::PackagesProposal`), so `Yast.import "AutoinstConfig"` and friends resolve here
-  automatically without any changes to the code that uses them.
+  mechanism). This directory is added to `ENV["Y2DIR"]` by `bin/agama-autoyast`, so `Yast.import
+  "AutoinstConfig"` and friends resolve here automatically without any changes to the code that uses
+  them.
 - `lib/` - classes loaded through plain `require`. This directory is added to the gem's
   `require_paths` (see `agama-yast.gemspec`), so `require "installation/unmounter"` and similar
   calls resolve here automatically.
