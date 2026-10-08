@@ -750,10 +750,6 @@ impl Connection {
             };
         }
 
-        if let Some(port_settings) = &conn.port {
-            self.port_config = port_settings.clone().into();
-        }
-
         Ok(())
     }
 
@@ -867,9 +863,6 @@ impl TryFrom<Connection> for NetworkConnection {
             kernel: conn.match_config.kernel.clone(),
         });
 
-        let port_settings = PortSettings::from(&conn.port_config);
-        let port = (!port_settings.is_empty()).then_some(port_settings);
-
         let mut connection = NetworkConnection {
             id,
             status,
@@ -889,7 +882,6 @@ impl TryFrom<Connection> for NetworkConnection {
             autoconnect,
             persistent,
             match_settings,
-            port,
             ..Default::default()
         };
 
@@ -1635,9 +1627,10 @@ impl ConnectionCollection {
             if placed.contains(&member.uuid) {
                 continue;
             }
-            let mut port = self.to_api_tree(member, with_state, placed)?;
-            // Its controller holds the IP configuration.
-            port.clear_ip_settings();
+            // Its controller holds the IP configuration, so the port has none.
+            let mut port = PortConnection::from(self.to_api_tree(member, with_state, placed)?);
+            let settings = PortSettings::from(&member.port_config);
+            port.port = (!settings.is_empty()).then_some(settings);
             ports.push(PortEntry::Connection(Box::new(port)));
         }
 

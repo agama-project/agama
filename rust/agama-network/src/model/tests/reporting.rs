@@ -28,7 +28,8 @@ fn test_stacked_connections_are_all_exposed() {
     let collection = ConnectionCollection(crate::test_utils::stacked_connections());
     let exposed: NetworkConnectionsCollection = collection.try_into().unwrap();
 
-    let mut ids: Vec<&str> = exposed.flatten().iter().map(|c| c.id.as_str()).collect();
+    let all = exposed.flatten();
+    let mut ids: Vec<&str> = all.iter().map(|c| c.id.as_str()).collect();
     ids.sort_unstable();
     assert_eq!(ids, ["bond0", "br0", "br0.100", "eth0", "eth1"]);
 }
@@ -183,7 +184,7 @@ fn test_bridge_port_settings_are_exposed_and_survive_a_round_trip() {
     let state = stacked_state();
     let exposed = exposed(&state);
 
-    let bond0 = find(&exposed, "bond0");
+    let bond0 = find_port(&exposed, "bond0");
     assert_eq!(
         bond0.port,
         Some(PortSettings {
@@ -192,7 +193,7 @@ fn test_bridge_port_settings_are_exposed_and_survive_a_round_trip() {
         })
     );
     // A connection that is not a bridge port has nothing to report.
-    assert_eq!(find(&exposed, "eth0").port, None);
+    assert_eq!(find_port(&exposed, "eth0").port, None);
 
     let restored: ConnectionCollection = exposed.try_into().unwrap();
     let bond0 = restored.0.iter().find(|c| c.id == "bond0").unwrap();

@@ -21,8 +21,8 @@
 //! Runs the network scenarios in `rust/test/network_tests` against the network model.
 //!
 //! Each step of a scenario is checked against the profile schema, applied to the network state
-//! as `agama config load` would do it, and the resulting proposal is compared with the
-//! expectations of the step. See the README of that directory.
+//! as `agama config load` would do it (unless the schema rejects it), and the resulting proposal
+//! is compared with the expectations of the step. See the README of that directory.
 //!
 //! To see the report, run it with `--nocapture`. Set `NETWORK_SCENARIO` to run only the
 //! scenarios whose path contains the given text:
@@ -61,9 +61,11 @@ struct Step {
 
 #[derive(Deserialize)]
 struct Expectation {
-    /// "invalid" when the schema must reject the profile.
+    /// "invalid" when the schema must reject the profile. Then it is not applied, as on a live
+    /// system.
     schema: Option<String>,
-    /// Error the network service must reject the profile with.
+    /// Error the network service must reject the profile with, for a profile that the schema
+    /// accepts.
     error: Option<String>,
     /// Connection ID -> expected values. `controller` and `removed` are special, any other key is
     /// compared with the field of the reported connection (`null` meaning "not set").
@@ -231,6 +233,12 @@ fn run_step(
             schema_invalid,
             format!("schema: the profile is not valid ({})", problems.join("; ")),
         ),
+    }
+
+    // agama config load stops there, so the profile does not reach the network service.
+    if schema_invalid {
+        check_connections(report, context, state, &expect.connections);
+        return;
     }
 
     let profile: Value = serde_json::from_str(&fs::read_to_string(&path).unwrap()).unwrap();

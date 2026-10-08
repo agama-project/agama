@@ -27,11 +27,14 @@
 //! `controller` links of the internal model, and rejects the configurations that cannot be
 //! represented (unknown or ambiguous names, ports claimed by two controllers, loops, etc.).
 
-use std::collections::{HashMap, HashSet};
+use std::{
+    borrow::Cow,
+    collections::{HashMap, HashSet},
+};
 
 use agama_utils::api::network::{
     DeviceType, IpConfig, Ipv4Method, Ipv6Method, NetworkConnection, NetworkConnectionsCollection,
-    PortRef, Status,
+    PortConnection, PortLists, PortRef, PortSettings, Status,
 };
 use uuid::Uuid;
 
@@ -40,7 +43,10 @@ use crate::error::NetworkStateError;
 
 /// A connection of the incoming document, wherever it sits in the tree.
 struct Node<'a> {
-    conn: &'a NetworkConnection,
+    /// The connection itself or, for a nested port, the connection it stands for.
+    conn: Cow<'a, NetworkConnection>,
+    /// Settings the connection has as a port, for a nested port that gives them.
+    port: Option<&'a PortSettings>,
     /// ID of the connection. For a nested port that does not give one, it is derived from its
     /// interface (see [`PortResolver::port_id`]).
     id: String,
@@ -110,7 +116,20 @@ impl<'a> PortResolver<'a> {
         let mut named = vec![];
 
         for conn in &incoming.0 {
-            self.visit(conn, None, &mut nodes, &mut named)?;
+            if conn.id.is_empty() {
+                // Only the ports can do without an ID.
+                return Err(NetworkStateError::MissingConnectionId);
+            }
+            self.visit(
+                Cow::Borrowed(conn),
+                None,
+                conn.id.clone(),
+                None,
+                conn.has_ignored_port_names(),
+                conn.ports(),
+                &mut nodes,
+                &mut named,
+            )?;
         }
 
         let mut seen = HashSet::new();
@@ -121,22 +140,27 @@ impl<'a> PortResolver<'a> {
         Ok((nodes, named))
     }
 
-    /// Adds the connection and its ports, recursively, to the given lists.
+    /// Adds a connection and its ports, recursively, to the given lists.
+    ///
+    /// * `conn`: connection, or the connection that a nested port stands for.
+    /// * `port`: settings it has as a port, for a nested port that gives them.
+    /// * `id`: its ID, already resolved.
+    /// * `parent`: index of the node of its controller, for a nested port.
+    /// * `ignored_port_names`: whether it gives both lists of ports, so that `ports` is ignored.
+    /// * `ports`: its ports, if it is a controller.
+    #[allow(clippy::too_many_arguments)]
     fn visit<'b>(
         &self,
-        conn: &'b NetworkConnection,
+        conn: Cow<'b, NetworkConnection>,
+        port: Option<&'b PortSettings>,
+        id: String,
         parent: Option<usize>,
+        ignored_port_names: bool,
+        ports: Option<Vec<PortRef<'b>>>,
         nodes: &mut Vec<Node<'b>>,
         named: &mut Vec<NamedPort<'b>>,
     ) -> Result<(), NetworkStateError> {
-        let id = match parent {
-            _ if !conn.id.is_empty() => conn.id.clone(),
-            Some(parent) => self.port_id(conn, &nodes[parent].id)?,
-            // Only the ports can do without an ID.
-            None => return Err(NetworkStateError::MissingConnectionId),
-        };
-
-        if conn.has_ignored_port_names() {
+        if ignored_port_names {
             tracing::warn!(
                 "'{}' gives both 'ports' and 'portConnections', and they do not match: 'ports' is ignored",
                 id
@@ -144,19 +168,53 @@ impl<'a> PortResolver<'a> {
         }
 
         let index = nodes.len();
-        nodes.push(Node { conn, id, parent });
+        nodes.push(Node {
+            conn,
+            port,
+            id,
+            parent,
+        });
 
-        for port in conn.ports().into_iter().flatten() {
-            match port {
+        for entry in ports.into_iter().flatten() {
+            match entry {
                 PortRef::Name(name) => named.push(NamedPort {
                     name,
                     parent: index,
                 }),
-                PortRef::Connection(port) => self.visit(port, Some(index), nodes, named)?,
+                PortRef::Connection(port) => self.visit_port(port, index, nodes, named)?,
             }
         }
 
         Ok(())
+    }
+
+    /// Adds a nested port and its own ports, recursively, to the given lists.
+    ///
+    /// * `port`: nested port.
+    /// * `parent`: index of the node of its controller.
+    fn visit_port<'b>(
+        &self,
+        port: &'b PortConnection,
+        parent: usize,
+        nodes: &mut Vec<Node<'b>>,
+        named: &mut Vec<NamedPort<'b>>,
+    ) -> Result<(), NetworkStateError> {
+        let conn = NetworkConnection::from(port);
+        let id = match &port.id {
+            Some(id) if !id.is_empty() => id.clone(),
+            _ => self.port_id(&conn, &nodes[parent].id)?,
+        };
+
+        self.visit(
+            Cow::Owned(conn),
+            port.port.as_ref(),
+            id,
+            Some(parent),
+            port.has_ignored_port_names(),
+            port.ports(),
+            nodes,
+            named,
+        )
     }
 
     /// Returns the ID of a nested port that does not give one.
@@ -195,7 +253,11 @@ impl<'a> PortResolver<'a> {
                 Some(known) => known.clone(),
                 None => Connection::new(node.id.clone(), node.conn.device_type()),
             };
-            conn.apply_settings(node.conn)?;
+            conn.apply_settings(&node.conn)?;
+            // Omitting them leaves the current ones alone, like any other optional section.
+            if let Some(port) = node.port {
+                conn.port_config = port.clone().into();
+            }
             conns.push(conn);
         }
 
@@ -378,7 +440,7 @@ impl<'a> PortResolver<'a> {
                 if !conn.is_removed() {
                     default_ip_methods(
                         conn,
-                        node.map(|n| n.conn),
+                        node.map(|n| n.conn.as_ref()),
                         Ipv4Method::Auto,
                         Ipv6Method::Auto,
                     );
@@ -402,14 +464,6 @@ impl<'a> PortResolver<'a> {
         conns: &[Connection],
     ) -> Result<(), NetworkStateError> {
         for (node, conn) in nodes.iter().zip(conns) {
-            let has_port_settings = node.conn.port.as_ref().is_some_and(|p| !p.is_empty());
-            if node.parent.is_none()
-                && has_port_settings
-                && node.conn.status != Some(Status::Removed)
-            {
-                return Err(NetworkStateError::TopLevelPortSettings(node.id.clone()));
-            }
-
             let Some(uuid) = conn.controller else {
                 continue;
             };
@@ -417,18 +471,12 @@ impl<'a> PortResolver<'a> {
                 continue;
             };
 
-            // A port on its way out does not get any setting anyway.
+            // A nested port cannot have IP settings at all. A top-level connection listed by name in
+            // a controller is the flat style that profiles used before the ports were nested. They
+            // often disabled the IP methods of the ports, so their IP settings are ignored instead
+            // of rejected (they are cleared when linking it). A port on its way out does not get
+            // any setting anyway.
             if node.conn.status != Some(Status::Removed) && node.conn.has_ip_settings() {
-                // A top-level connection listed by name in a controller is the flat style that
-                // profiles used before the ports were nested. They often disabled the IP methods
-                // of the ports, so their IP settings are ignored instead of rejected (they are
-                // cleared when linking it).
-                if node.parent.is_some() {
-                    return Err(NetworkStateError::PortIpSettings(
-                        node.id.clone(),
-                        controller.id.clone(),
-                    ));
-                }
                 tracing::warn!(
                     "The IP settings of '{}' are ignored because it is a port of '{}'",
                     node.id,
@@ -436,7 +484,7 @@ impl<'a> PortResolver<'a> {
                 );
             }
 
-            let Some(settings) = &node.conn.port else {
+            let Some(settings) = node.port else {
                 continue;
             };
 

@@ -7,7 +7,6 @@
       "description": "eth0 nested in a bond with port: { priority: 16 }",
       "expect": {
         "schema": "invalid",
-        "error": "InvalidPortSettings",
         "connections": {
           "bond0": {
             "removed": true

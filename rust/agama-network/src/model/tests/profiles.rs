@@ -96,10 +96,9 @@ fn test_a_nested_profile_gives_the_same_result_as_ports_given_by_name() {
     // The order of the bond options is not stable, so compare them parsed.
     let normalized = |state: NetworkState| {
         let mut reported = exposed(&state);
-        let bond = find_mut(&mut reported.0, "bond0")
-            .unwrap()
-            .bond
-            .as_mut()
+        let bond = controller_mut(&mut reported, "bond0")
+            .controller_settings_mut()
+            .0
             .unwrap();
         let options = BondOptions::try_from(bond.options.take().unwrap().as_str()).unwrap();
         (reported, options)
@@ -135,7 +134,7 @@ fn test_editing_a_stacked_profile_keeps_the_settings_of_the_ports() {
 
     // What the web UI does: read the whole config, change one connection and write it back.
     let mut reported = exposed(&state);
-    let br0 = find_mut(&mut reported.0, "br0").unwrap();
+    let br0 = reported.0.iter_mut().find(|c| c.id == "br0").unwrap();
     br0.addresses = vec!["192.168.1.200/24".parse().unwrap()];
 
     state

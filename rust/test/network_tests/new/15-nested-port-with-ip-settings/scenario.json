@@ -7,7 +7,6 @@
       "description": "eth0 nested with method4: auto",
       "expect": {
         "schema": "invalid",
-        "error": "PortIpSettings",
         "connections": {
           "bond0": {
             "removed": true

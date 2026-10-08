@@ -71,7 +71,7 @@ A scenario is a directory with the profiles of its steps (`1-*.json`, `2-*.json`
 
 - `connections`: the connections to check after the step, by ID. `controller` is the ID of the controller the connection is nested in (`null` at the top level), and `removed: true` means that the connection is not there. Any other key is compared with the field of the reported connection, `null` meaning that it is not set. Only the given keys are checked.
 - `schema: "invalid"`: the schema must reject the profile.
-- `error`: the network service must reject the profile with the given error (`NetworkStateError` variant). It is also checked when the schema rejects the profile, as if the schema was skipped.
+- `error`: the network service must reject the profile with the given error (`NetworkStateError` variant). It only applies to a profile that the schema accepts: a profile that the schema rejects is not applied, as `agama config load` stops there.
 
 The scenarios cannot check UUIDs, as the API does not report them. The unit tests of `agama-network` check that a moved port keeps its UUID.
 

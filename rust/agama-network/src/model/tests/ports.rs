@@ -44,7 +44,7 @@ fn test_updating_a_connection_keeps_its_uuid_and_unmodelled_settings() {
 #[test]
 fn test_omitting_the_port_settings_leaves_them_alone() {
     let state = stacked_state();
-    let mut bond0 = find(&exposed(&state), "bond0");
+    let mut bond0 = find_port(&exposed(&state), "bond0");
     bond0.port = None;
     // bond0 stays nested in br0, otherwise it would be moved out of it.
     let mut update = find(&exposed(&state), "br0");
@@ -70,7 +70,7 @@ fn test_bridge_port_settings_on_a_bond_port_are_rejected() {
     let bond0 = NetworkConnection {
         id: "bond0".to_string(),
         bond: Some(BondSettings {
-            port_connections: Some(vec![nested(NetworkConnection {
+            port_connections: Some(vec![nested(PortConnection {
                 interface: Some("eth0".to_string()),
                 port: Some(PortSettings {
                     priority: Some(50),
@@ -93,58 +93,14 @@ fn test_bridge_port_settings_on_a_bond_port_are_rejected() {
     ));
 }
 
-/// Only a port nested in its controller can have port settings, so a connection at the top level
-/// cannot have them, whether it is a port or not.
+/// A reported port sent back on its own is at the top level, which cannot have port settings, so
+/// it is moved out of its controller and loses them.
 #[test]
-fn test_port_settings_at_the_top_level_are_rejected() {
-    let state = NetworkState::default();
-    let eth0 = NetworkConnection {
-        id: "eth0".to_string(),
-        interface: Some("eth0".to_string()),
-        port: Some(PortSettings {
-            priority: Some(16),
-            path_cost: Some(50),
-        }),
-        ..Default::default()
-    };
-    let br0 = NetworkConnection {
-        id: "br0".to_string(),
-        bridge: Some(BridgeSettings {
-            ports: Some(vec!["eth0".to_string()]),
-            ..Default::default()
-        }),
-        ..Default::default()
-    };
-
-    // Not a port at all.
-    let collection = NetworkConnectionsCollection(vec![eth0.clone()]);
-    let error = state.connection_collection_from(&collection).unwrap_err();
-    assert!(matches!(error, NetworkStateError::TopLevelPortSettings(id) if id == "eth0"));
-
-    // A port that a bridge lists by name, the format that predates the port settings.
-    let collection = NetworkConnectionsCollection(vec![eth0, br0]);
-    let error = state.connection_collection_from(&collection).unwrap_err();
-    assert!(matches!(error, NetworkStateError::TopLevelPortSettings(id) if id == "eth0"));
-}
-
-/// A reported port sent back on its own is at the top level, so it cannot keep its port settings.
-/// Without them, it is moved out of its controller.
-#[test]
-fn test_a_port_moved_out_cannot_keep_its_port_settings() {
+fn test_a_port_moved_out_loses_its_port_settings() {
     let mut state = stacked_state();
-    let mut bond0 = find(&exposed(&state), "bond0");
-    assert!(
-        bond0.port.is_some(),
-        "the fixture must report the port settings of bond0"
-    );
-
-    let error = state
-        .connection_collection_from(&NetworkConnectionsCollection(vec![bond0.clone()]))
-        .unwrap_err();
-    assert!(matches!(error, NetworkStateError::TopLevelPortSettings(id) if id == "bond0"));
-
-    bond0.port = None;
+    let bond0 = find(&exposed(&state), "bond0");
     apply(&mut state, NetworkConnectionsCollection(vec![bond0]));
+
     let bond0 = state.get_connection("bond0").unwrap();
     assert_eq!(bond0.controller, None);
     assert_eq!(bond0.port_config, PortConfig::None);
@@ -152,11 +108,10 @@ fn test_a_port_moved_out_cannot_keep_its_port_settings() {
 
 /// Drops the given port from the ports of bond0 in the reported configuration.
 fn drop_port(connections: &mut NetworkConnectionsCollection, id: &str) {
-    find_mut(&mut connections.0, "bond0")
-        .unwrap()
+    controller_mut(connections, "bond0")
         .port_connections_mut()
         .unwrap()
-        .retain(|p| !matches!(p, PortEntry::Connection(c) if c.id == id));
+        .retain(|p| !matches!(p, PortEntry::Connection(c) if c.id.as_deref() == Some(id)));
 }
 
 /// Applies the given connections to the state.
@@ -186,9 +141,10 @@ fn test_dropping_a_port_removes_it() {
 /// Replaces the ports of the given controller with a `ports` list, as the clients that
 /// predate `portConnections` do.
 fn set_port_names(connections: &mut NetworkConnectionsCollection, id: &str, names: &[&str]) {
-    let conn = find_mut(&mut connections.0, id).unwrap();
+    let conn = controller_mut(connections, id);
     conn.set_port_connections(None);
-    conn.bond.as_mut().unwrap().ports = Some(names.iter().map(|n| n.to_string()).collect());
+    let (bond, _) = conn.controller_settings_mut();
+    bond.unwrap().ports = Some(names.iter().map(|n| n.to_string()).collect());
 }
 
 #[test]
@@ -273,8 +229,9 @@ fn test_the_reported_configuration_can_be_sent_back_with_both_lists() {
 fn test_port_connections_take_precedence_over_ports() {
     let mut state = stacked_state();
     let mut connections = exposed(&state);
-    let bond0 = find_mut(&mut connections.0, "bond0").unwrap();
-    bond0.bond.as_mut().unwrap().ports = Some(vec!["eth0".to_string(), "eth1".to_string()]);
+    let bond0 = controller_mut(&mut connections, "bond0");
+    bond0.controller_settings_mut().0.unwrap().ports =
+        Some(vec!["eth0".to_string(), "eth1".to_string()]);
     bond0.set_port_connections(Some(vec![name("eth0")]));
     apply(&mut state, connections);
 
@@ -286,8 +243,7 @@ fn test_port_connections_take_precedence_over_ports() {
 fn test_dropping_a_controller_removes_the_stack_below_it() {
     let mut state = stacked_state();
     let mut connections = exposed(&state);
-    find_mut(&mut connections.0, "br0")
-        .unwrap()
+    controller_mut(&mut connections, "br0")
         .port_connections_mut()
         .unwrap()
         .clear();
@@ -363,11 +319,9 @@ fn test_a_port_can_be_moved_to_another_controller() {
     let uuid = state.get_connection("eth1").unwrap().uuid;
 
     let mut connections = exposed(&state);
-    let eth1 = find(&connections, "eth1");
+    let eth1 = find_port(&connections, "eth1");
     drop_port(&mut connections, "eth1");
-    find_mut(&mut connections.0, "bond1")
-        .unwrap()
-        .set_port_connections(Some(vec![nested(eth1)]));
+    controller_mut(&mut connections, "bond1").set_port_connections(Some(vec![nested(eth1)]));
     apply(&mut state, connections);
 
     let eth1 = state.get_connection("eth1").unwrap();
@@ -387,7 +341,7 @@ fn test_ports_have_no_ip_settings() {
         bond: Some(BondSettings {
             port_connections: Some(vec![
                 name("eth0"),
-                nested(NetworkConnection {
+                nested(PortConnection {
                     interface: Some("eth1".to_string()),
                     ..Default::default()
                 }),
@@ -404,28 +358,6 @@ fn test_ports_have_no_ip_settings() {
         let conn = collection.0.iter().find(|c| c.id == id).unwrap();
         assert_eq!(conn.ip_config, IpConfig::default(), "{id}");
     }
-}
-
-#[test]
-fn test_a_port_cannot_have_ip_settings() {
-    let state = NetworkState::default();
-    let bond0 = NetworkConnection {
-        id: "bond0".to_string(),
-        bond: Some(BondSettings {
-            port_connections: Some(vec![nested(NetworkConnection {
-                interface: Some("eth0".to_string()),
-                method4: Some(Ipv4Method::Disabled),
-                ..Default::default()
-            })]),
-            ..Default::default()
-        }),
-        ..Default::default()
-    };
-
-    let error = state
-        .connection_collection_from(&NetworkConnectionsCollection(vec![bond0]))
-        .unwrap_err();
-    assert!(matches!(error, NetworkStateError::PortIpSettings(..)));
 }
 
 /// Before the ports were nested, the profiles gave them at the top level and listed them by
@@ -520,8 +452,6 @@ fn test_updating_a_single_connection_keeps_the_rest_of_the_stack() {
 fn test_a_port_given_by_name_is_taken_from_the_state() {
     let state = stacked_state();
     let mut bond0 = find(&exposed(&state), "bond0");
-    // A connection at the top level cannot have port settings.
-    bond0.port = None;
     bond0.bond.as_mut().unwrap().port_connections = Some(vec![name("eth0"), name("eth1")]);
 
     let collection = state
@@ -568,7 +498,7 @@ fn test_a_nested_port_without_an_id_is_named_after_its_interface() {
     let bond0 = NetworkConnection {
         id: "bond0".to_string(),
         bond: Some(BondSettings {
-            port_connections: Some(vec![nested(NetworkConnection {
+            port_connections: Some(vec![nested(PortConnection {
                 interface: Some("eth0".to_string()),
                 mtu: 9000,
                 ..Default::default()
@@ -600,7 +530,7 @@ fn test_a_nested_port_without_an_id_updates_the_existing_connection() {
     let bond0 = NetworkConnection {
         id: "bond0".to_string(),
         bond: Some(BondSettings {
-            port_connections: Some(vec![nested(NetworkConnection {
+            port_connections: Some(vec![nested(PortConnection {
                 interface: Some("eth0".to_string()),
                 ..Default::default()
             })]),
@@ -624,7 +554,7 @@ fn test_a_nested_port_without_an_id_nor_an_interface_is_rejected() {
     let bond0 = NetworkConnection {
         id: "bond0".to_string(),
         bond: Some(BondSettings {
-            port_connections: Some(vec![nested(NetworkConnection {
+            port_connections: Some(vec![nested(PortConnection {
                 mtu: 9000,
                 ..Default::default()
             })]),
@@ -657,11 +587,9 @@ fn test_a_connection_at_the_top_level_requires_an_id() {
 fn test_a_port_given_by_id_keeps_its_interface() {
     let mut state = stacked_state();
     let mut bond0 = find(&exposed(&state), "bond0");
-    // A connection at the top level cannot have port settings.
-    bond0.port = None;
     bond0.set_port_connections(Some(vec![
-        nested(NetworkConnection {
-            id: "eth0".to_string(),
+        nested(PortConnection {
+            id: Some("eth0".to_string()),
             mtu: 9000,
             ..Default::default()
         }),
@@ -687,7 +615,7 @@ fn test_a_connection_given_twice_is_rejected() {
         NetworkConnection {
             id: "bond0".to_string(),
             bond: Some(BondSettings {
-                port_connections: Some(vec![nested(eth0)]),
+                port_connections: Some(vec![nested(PortConnection::from(eth0))]),
                 ..Default::default()
             }),
             ..Default::default()
@@ -764,8 +692,8 @@ fn test_naming_a_port_nested_in_another_controller_is_rejected() {
         NetworkConnection {
             id: "bond0".to_string(),
             bond: Some(BondSettings {
-                port_connections: Some(vec![nested(NetworkConnection {
-                    id: "eth0".to_string(),
+                port_connections: Some(vec![nested(PortConnection {
+                    id: Some("eth0".to_string()),
                     interface: Some("eth0".to_string()),
                     ..Default::default()
                 })]),
@@ -816,8 +744,8 @@ fn test_a_loop_of_controllers_is_rejected() {
         id: "br0".to_string(),
         interface: Some("br0".to_string()),
         bridge: Some(BridgeSettings {
-            port_connections: Some(vec![nested(NetworkConnection {
-                id: "bond0".to_string(),
+            port_connections: Some(vec![nested(PortConnection {
+                id: Some("bond0".to_string()),
                 interface: Some("bond0".to_string()),
                 bond: Some(BondSettings {
                     port_connections: Some(vec![name("br0")]),

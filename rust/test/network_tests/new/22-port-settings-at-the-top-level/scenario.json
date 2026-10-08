@@ -7,7 +7,6 @@
       "description": "eth0 at the top level, listed by no controller, with bridge port settings",
       "expect": {
         "schema": "invalid",
-        "error": "TopLevelPortSettings",
         "connections": {
           "eth0": {
             "removed": true
@@ -20,7 +19,6 @@
       "description": "The same eth0, listed by name in br0",
       "expect": {
         "schema": "invalid",
-        "error": "TopLevelPortSettings",
         "connections": {
           "eth0": {
             "removed": true
