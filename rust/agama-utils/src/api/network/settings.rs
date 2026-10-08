@@ -450,6 +450,8 @@ pub struct NetworkConnection {
     #[serde(rename = "match", skip_serializing_if = "Option::is_none")]
     pub match_settings: Option<MatchSettings>,
     /// Settings that this connection has because it is a port of a controller
+    ///
+    /// Only the ports of a bridge have them, and a connection that is not a port cannot have them.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub port: Option<PortSettings>,
     /// Bonding settings if part of a bond

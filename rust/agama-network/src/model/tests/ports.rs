@@ -121,6 +121,79 @@ fn test_bridge_port_settings_on_a_port_given_by_name_are_rejected() {
     assert!(matches!(error, NetworkStateError::InvalidPortSettings(..)));
 }
 
+/// A connection that no controller lists is not a port, so it cannot have port settings.
+#[test]
+fn test_port_settings_on_a_connection_that_is_not_a_port_are_rejected() {
+    let state = NetworkState::default();
+    let collection = NetworkConnectionsCollection(vec![NetworkConnection {
+        id: "eth0".to_string(),
+        interface: Some("eth0".to_string()),
+        port: Some(PortSettings {
+            priority: Some(16),
+            ..Default::default()
+        }),
+        ..Default::default()
+    }]);
+
+    let error = state.connection_collection_from(&collection).unwrap_err();
+    assert!(matches!(
+        error,
+        NetworkStateError::PortSettingsWithoutController(id) if id == "eth0"
+    ));
+}
+
+/// A reported port sent back on its own is moved out of its controller, which takes its port
+/// settings along, so they are not a reason to reject it.
+#[test]
+fn test_a_port_moved_out_with_its_port_settings_loses_them() {
+    let mut state = stacked_state();
+    let bond0 = find(&exposed(&state), "bond0");
+    assert!(
+        bond0.port.is_some(),
+        "the fixture must report the port settings of bond0"
+    );
+    apply(&mut state, NetworkConnectionsCollection(vec![bond0]));
+
+    let bond0 = state.get_connection("bond0").unwrap();
+    assert_eq!(bond0.controller, None);
+    assert_eq!(bond0.port_config, PortConfig::None);
+}
+
+/// A top-level connection that a bridge lists by name is a port, so it keeps its port settings.
+#[test]
+fn test_port_settings_on_a_port_given_by_name_are_kept() {
+    let state = NetworkState::default();
+    let collection = NetworkConnectionsCollection(vec![
+        NetworkConnection {
+            id: "eth0".to_string(),
+            interface: Some("eth0".to_string()),
+            port: Some(PortSettings {
+                priority: Some(16),
+                path_cost: Some(50),
+            }),
+            ..Default::default()
+        },
+        NetworkConnection {
+            id: "br0".to_string(),
+            bridge: Some(BridgeSettings {
+                ports: Some(vec!["eth0".to_string()]),
+                ..Default::default()
+            }),
+            ..Default::default()
+        },
+    ]);
+
+    let collection = state.connection_collection_from(&collection).unwrap();
+    let eth0 = collection.0.iter().find(|c| c.id == "eth0").unwrap();
+    assert_eq!(
+        eth0.port_config,
+        PortConfig::Bridge(BridgePortConfig {
+            priority: Some(16),
+            path_cost: Some(50),
+        })
+    );
+}
+
 /// Drops the given port from the ports of bond0 in the reported configuration.
 fn drop_port(connections: &mut NetworkConnectionsCollection, id: &str) {
     find_mut(&mut connections.0, "bond0")

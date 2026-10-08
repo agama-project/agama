@@ -1097,7 +1097,7 @@
         "port": {
           "type": "object",
           "title": "Settings this connection has as a port of a controller",
-          "description": "Which settings apply depends on the kind of controller. Only the ports of a bridge have settings.",
+          "description": "Which settings apply depends on the kind of controller. Only the ports of a bridge have settings, and a connection that is not a port cannot have them.",
           "additionalProperties": false,
           "properties": {
             "priority": {
