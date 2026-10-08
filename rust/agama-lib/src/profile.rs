@@ -311,6 +311,52 @@ mod tests {
         json!({ "network": { "connections": connections } })
     }
 
+    /// The network part of the profile schema is written by hand, so check that it describes the
+    /// same fields as the types the profile is read into.
+    #[test]
+    fn test_the_network_connections_in_the_schema_match_the_types() {
+        use agama_utils::api::network::{NetworkConnection, PortConnection};
+        use std::collections::BTreeSet;
+
+        fn generated<T: schemars::JsonSchema>() -> BTreeSet<String> {
+            let schema = serde_json::to_value(schemars::schema_for!(T)).unwrap();
+            schema["properties"]
+                .as_object()
+                .unwrap()
+                .keys()
+                .filter(|k| *k != "state") // read-only, reported but never given
+                .cloned()
+                .collect()
+        }
+
+        let schema: serde_json::Value = serde_json::from_str(
+            &std::fs::read_to_string(share_dir().join("profile.schema.json")).unwrap(),
+        )
+        .unwrap();
+        let defs = &schema["$defs"];
+        let all: BTreeSet<String> = defs["networkConnection"]["properties"]
+            .as_object()
+            .unwrap()
+            .keys()
+            .filter(|k| *k != "dnsSearchlist") // deprecated alias of dnsSearchList
+            .cloned()
+            .collect();
+        let ip_settings: BTreeSet<String> = defs["portConnection"]["allOf"][1]["not"]["anyOf"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|r| r["required"][0].as_str().unwrap().to_string())
+            .collect();
+
+        // A connection at the top level cannot have port settings.
+        let top_level: BTreeSet<String> = all.iter().filter(|k| *k != "port").cloned().collect();
+        assert_eq!(top_level, generated::<NetworkConnection>());
+
+        // A nested port cannot have IP settings.
+        let port: BTreeSet<String> = all.difference(&ip_settings).cloned().collect();
+        assert_eq!(port, generated::<PortConnection>());
+    }
+
     #[test]
     fn test_network_examples_are_valid() {
         let validator = validator();
