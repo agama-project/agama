@@ -3,8 +3,11 @@ Thu Oct  8 10:40:48 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
 
 - Allow nesting the ports of bonds and bridges in a new
   "portConnections" list, so stacked setups can be read and
-  modified. The "ports" list of names keeps working
-  (gh#agama-project/agama#3995).
+  modified (gh#agama-project/agama#3995).
+- Deprecate the "ports" list of names. It keeps working, but it is
+  ignored when "portConnections" is given.
+- Allow port settings only on the ports nested in their
+  controller, and no IP settings on them.
 - Keep the settings not modelled by the API when updating a
   connection.
 - Fix reading the path cost of bridge ports from NetworkManager.
