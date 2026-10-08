@@ -412,6 +412,26 @@ mod tests {
         }
     }
 
+    #[test]
+    fn test_only_nested_ports_can_have_port_settings() {
+        let port = json!({ "priority": 16, "pathCost": 50 });
+
+        let profile = connections(json!([{ "id": "eth0", "port": port }]));
+        assert!(matches!(validate(profile), ValidationOutcome::NotValid(_)));
+
+        let profile = connections(json!([
+            { "id": "eth0", "port": port },
+            { "id": "br0", "bridge": { "ports": ["eth0"] } }
+        ]));
+        assert!(matches!(validate(profile), ValidationOutcome::NotValid(_)));
+
+        let profile = connections(json!([{
+            "id": "br0",
+            "bridge": { "portConnections": [{ "interface": "eth0", "port": port }] }
+        }]));
+        assert!(matches!(validate(profile), ValidationOutcome::Valid));
+    }
+
     /// Before the ports were nested, the profiles gave them at the top level and disabled their IP
     /// methods. The backend ignores those settings, so the profile is still valid.
     #[test]

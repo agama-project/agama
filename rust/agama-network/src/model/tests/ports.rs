@@ -93,105 +93,61 @@ fn test_bridge_port_settings_on_a_bond_port_are_rejected() {
     ));
 }
 
-/// The same check applies to a top-level connection that a bond claims by name.
+/// Only a port nested in its controller can have port settings, so a connection at the top level
+/// cannot have them, whether it is a port or not.
 #[test]
-fn test_bridge_port_settings_on_a_port_given_by_name_are_rejected() {
+fn test_port_settings_at_the_top_level_are_rejected() {
     let state = NetworkState::default();
-    let collection = NetworkConnectionsCollection(vec![
-        NetworkConnection {
-            id: "eth0".to_string(),
-            interface: Some("eth0".to_string()),
-            port: Some(PortSettings {
-                path_cost: Some(10),
-                ..Default::default()
-            }),
-            ..Default::default()
-        },
-        NetworkConnection {
-            id: "bond0".to_string(),
-            bond: Some(BondSettings {
-                port_connections: Some(vec![name("eth0")]),
-                ..Default::default()
-            }),
-            ..Default::default()
-        },
-    ]);
-
-    let error = state.connection_collection_from(&collection).unwrap_err();
-    assert!(matches!(error, NetworkStateError::InvalidPortSettings(..)));
-}
-
-/// A connection that no controller lists is not a port, so it cannot have port settings.
-#[test]
-fn test_port_settings_on_a_connection_that_is_not_a_port_are_rejected() {
-    let state = NetworkState::default();
-    let collection = NetworkConnectionsCollection(vec![NetworkConnection {
+    let eth0 = NetworkConnection {
         id: "eth0".to_string(),
         interface: Some("eth0".to_string()),
         port: Some(PortSettings {
             priority: Some(16),
+            path_cost: Some(50),
+        }),
+        ..Default::default()
+    };
+    let br0 = NetworkConnection {
+        id: "br0".to_string(),
+        bridge: Some(BridgeSettings {
+            ports: Some(vec!["eth0".to_string()]),
             ..Default::default()
         }),
         ..Default::default()
-    }]);
+    };
 
+    // Not a port at all.
+    let collection = NetworkConnectionsCollection(vec![eth0.clone()]);
     let error = state.connection_collection_from(&collection).unwrap_err();
-    assert!(matches!(
-        error,
-        NetworkStateError::PortSettingsWithoutController(id) if id == "eth0"
-    ));
+    assert!(matches!(error, NetworkStateError::TopLevelPortSettings(id) if id == "eth0"));
+
+    // A port that a bridge lists by name, the format that predates the port settings.
+    let collection = NetworkConnectionsCollection(vec![eth0, br0]);
+    let error = state.connection_collection_from(&collection).unwrap_err();
+    assert!(matches!(error, NetworkStateError::TopLevelPortSettings(id) if id == "eth0"));
 }
 
-/// A reported port sent back on its own is moved out of its controller, which takes its port
-/// settings along, so they are not a reason to reject it.
+/// A reported port sent back on its own is at the top level, so it cannot keep its port settings.
+/// Without them, it is moved out of its controller.
 #[test]
-fn test_a_port_moved_out_with_its_port_settings_loses_them() {
+fn test_a_port_moved_out_cannot_keep_its_port_settings() {
     let mut state = stacked_state();
-    let bond0 = find(&exposed(&state), "bond0");
+    let mut bond0 = find(&exposed(&state), "bond0");
     assert!(
         bond0.port.is_some(),
         "the fixture must report the port settings of bond0"
     );
-    apply(&mut state, NetworkConnectionsCollection(vec![bond0]));
 
+    let error = state
+        .connection_collection_from(&NetworkConnectionsCollection(vec![bond0.clone()]))
+        .unwrap_err();
+    assert!(matches!(error, NetworkStateError::TopLevelPortSettings(id) if id == "bond0"));
+
+    bond0.port = None;
+    apply(&mut state, NetworkConnectionsCollection(vec![bond0]));
     let bond0 = state.get_connection("bond0").unwrap();
     assert_eq!(bond0.controller, None);
     assert_eq!(bond0.port_config, PortConfig::None);
-}
-
-/// A top-level connection that a bridge lists by name is a port, so it keeps its port settings.
-#[test]
-fn test_port_settings_on_a_port_given_by_name_are_kept() {
-    let state = NetworkState::default();
-    let collection = NetworkConnectionsCollection(vec![
-        NetworkConnection {
-            id: "eth0".to_string(),
-            interface: Some("eth0".to_string()),
-            port: Some(PortSettings {
-                priority: Some(16),
-                path_cost: Some(50),
-            }),
-            ..Default::default()
-        },
-        NetworkConnection {
-            id: "br0".to_string(),
-            bridge: Some(BridgeSettings {
-                ports: Some(vec!["eth0".to_string()]),
-                ..Default::default()
-            }),
-            ..Default::default()
-        },
-    ]);
-
-    let collection = state.connection_collection_from(&collection).unwrap();
-    let eth0 = collection.0.iter().find(|c| c.id == "eth0").unwrap();
-    assert_eq!(
-        eth0.port_config,
-        PortConfig::Bridge(BridgePortConfig {
-            priority: Some(16),
-            path_cost: Some(50),
-        })
-    );
 }
 
 /// Drops the given port from the ports of bond0 in the reported configuration.
@@ -564,6 +520,8 @@ fn test_updating_a_single_connection_keeps_the_rest_of_the_stack() {
 fn test_a_port_given_by_name_is_taken_from_the_state() {
     let state = stacked_state();
     let mut bond0 = find(&exposed(&state), "bond0");
+    // A connection at the top level cannot have port settings.
+    bond0.port = None;
     bond0.bond.as_mut().unwrap().port_connections = Some(vec![name("eth0"), name("eth1")]);
 
     let collection = state
@@ -699,6 +657,8 @@ fn test_a_connection_at_the_top_level_requires_an_id() {
 fn test_a_port_given_by_id_keeps_its_interface() {
     let mut state = stacked_state();
     let mut bond0 = find(&exposed(&state), "bond0");
+    // A connection at the top level cannot have port settings.
+    bond0.port = None;
     bond0.set_port_connections(Some(vec![
         nested(NetworkConnection {
             id: "eth0".to_string(),

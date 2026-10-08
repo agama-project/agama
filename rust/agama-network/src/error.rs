@@ -82,8 +82,8 @@ pub enum NetworkStateError {
     InvalidPortSettings(String, String),
     #[error("The port '{0}' of '{1}' cannot have IP settings")]
     PortIpSettings(String, String),
-    #[error("The connection '{0}' has port settings, but it is not a port of any controller")]
-    PortSettingsWithoutController(String),
+    #[error("The connection '{0}' has port settings, but only a port nested in its controller can have them")]
+    TopLevelPortSettings(String),
     #[error("Unexpected configuration")]
     UnexpectedConfiguration,
     #[error("Invalid Vlan protocol: '{0}'")]

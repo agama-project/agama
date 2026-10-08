@@ -393,27 +393,24 @@ impl<'a> PortResolver<'a> {
     ///   connection that a controller lists by name is the exception: its IP settings are ignored.
     /// * The `port` settings must match the kind of its controller. They are flat, so a bridge port
     ///   priority given to a port of a bond would be silently dropped otherwise.
-    /// * A connection that is not a port, and was not one before, cannot have `port` settings
-    ///   either: NetworkManager would drop them. A port moved out of its controller is different,
-    ///   as it loses them along with the controller (see [`Self::link`]), so that a reported port
-    ///   can be sent back on its own.
+    /// * Only a port nested in its controller can have `port` settings. A top-level connection is
+    ///   either not a port, or one that a controller lists by name, which is the format that
+    ///   predates the `port` settings.
     fn check_port_settings(
         &self,
         nodes: &[Node],
         conns: &[Connection],
     ) -> Result<(), NetworkStateError> {
         for (node, conn) in nodes.iter().zip(conns) {
+            let has_port_settings = node.conn.port.as_ref().is_some_and(|p| !p.is_empty());
+            if node.parent.is_none()
+                && has_port_settings
+                && node.conn.status != Some(Status::Removed)
+            {
+                return Err(NetworkStateError::TopLevelPortSettings(node.id.clone()));
+            }
+
             let Some(uuid) = conn.controller else {
-                let has_port_settings = node.conn.port.as_ref().is_some_and(|p| !p.is_empty());
-                let was_port = self
-                    .known
-                    .iter()
-                    .any(|c| c.uuid == conn.uuid && c.controller.is_some());
-                if has_port_settings && !was_port && node.conn.status != Some(Status::Removed) {
-                    return Err(NetworkStateError::PortSettingsWithoutController(
-                        node.id.clone(),
-                    ));
-                }
                 continue;
             };
             let Some(controller) = conns.iter().chain(self.known).find(|c| c.uuid == uuid) else {

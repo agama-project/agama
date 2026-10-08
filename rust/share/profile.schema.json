@@ -336,6 +336,10 @@
               },
               {
                 "required": ["id"]
+              },
+              {
+                "description": "Only a port nested in its controller can have port settings.",
+                "not": { "required": ["port"] }
               }
             ]
           }
@@ -1095,7 +1099,7 @@
         "port": {
           "type": "object",
           "title": "Settings this connection has as a port of a controller",
-          "description": "Which settings apply depends on the kind of controller. Only the ports of a bridge have settings, and a connection that is not a port cannot have them.",
+          "description": "Which settings apply depends on the kind of controller. Only the ports of a bridge have settings, and only a port nested in its controller can have them.",
           "additionalProperties": false,
           "properties": {
             "priority": {
