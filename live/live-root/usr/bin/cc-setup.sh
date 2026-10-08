@@ -722,6 +722,8 @@ api_put() {
 validate_password() {
   local type=$1 password=$2 reason rc=0
 
+  # See https://gitlab.suse.de/seccert/certification-sles-eal4-16.0/-/blob/main/cc-password-check/README.md?ref_type=heads
+  # or https://gitlab.suse.de/seccert/certification-sles-eal4-16.0/-/blob/main/cc-password-check/SPECIFICATION.md?ref_type=heads
   reason=$(printf '%s' "$password" | cc-password-check --type "$type" 2> /dev/null) || rc=$?
 
   case $rc in
