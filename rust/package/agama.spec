@@ -156,6 +156,16 @@ BuildArch:      noarch
 %description -n agama-cli-zsh-completion
 Zsh command-line completion support for %{name}-cli.
 
+%package -n agama-openapi-nightly
+Summary:        Nightly OpenAPI specification and JSON schemas for the Agama installer
+Group:          Development/Languages/Other
+BuildArch:      noarch
+
+%description -n agama-openapi-nightly
+The OpenAPI Specification (OAS) allows describing an HTTP API in a standard and
+language-agnostic way. This package contains the nightly specification and standalone
+JSON schemas for Agama's HTTP API.
+
 %package -n agama-scripts
 Summary:        Agama support for running user-defined scripts
 
@@ -275,6 +285,11 @@ echo $PATH
 %files -n agama-cli-zsh-completion
 %dir %{_datadir}/zsh
 %{_datadir}/zsh/*
+
+%files -n agama-openapi-nightly
+%dir %{_datadir}/agama
+%dir %{_datadir}/agama/openapi
+%{_datadir}/agama/openapi/nightly
 
 %files -n agama-scripts
 %{_unitdir}/agama-scripts.service
