@@ -663,6 +663,14 @@ detect_rmt_url() {
   done
 }
 
+# Only display the progress of the unattended installation. The installation
+# running in background reboots the system when it is finished so this call never returns.
+run_unattended() {
+  show_progress_header
+
+  exec agama monitor
+}
+
 # Determine if registration is mandatory (missing local repo).
 detect_registration_requirement() {
   detect_rmt_url
@@ -1756,6 +1764,13 @@ main() {
   parse_arguments "$@"
   harden_environment
   check_prerequisites
+
+  # Skip config workflow in unattended installation 
+  if grep -q "\binst.auto=" /run/agama/cmdline.d/agama.conf; then
+    # this call never returns
+    run_unattended
+  fi
+
   read_template_defaults
   make_secure_dir
 
