@@ -86,19 +86,29 @@
         }
       },
       "oneOf": [
-        { "required": ["stopOnBootMenu"] },
-        { "required": ["timeout"] },
+        {
+          "required": ["stopOnBootMenu"]
+        },
+        {
+          "required": ["timeout"]
+        },
         {
           "not": {
             "anyOf": [
-              { "required": ["stopOnBootMenu"] },
-              { "required": ["timeout"] }
+              {
+                "required": ["stopOnBootMenu"]
+              },
+              {
+                "required": ["timeout"]
+              }
             ]
           }
         }
       ]
     },
-    "dasd": { "$ref": "dasd.schema.json" },
+    "dasd": {
+      "$ref": "dasd.schema.json"
+    },
     "zfcp": {
       "$ref": "zfcp.schema.json"
     },
@@ -320,405 +330,18 @@
           "title": "Network connections to be defined",
           "type": "array",
           "items": {
-            "type": "object",
-            "additionalProperties": false,
-            "required": ["id"],
-            "properties": {
-              "id": {
-                "title": "Connection ID",
-                "type": "string"
+            "allOf": [
+              {
+                "$ref": "#/$defs/networkConnection"
               },
-              "interface": {
-                "title": "The name of the network interface bound to this connection",
-                "type": "string"
+              {
+                "required": ["id"]
               },
-              "customMacAddress": {
-                "title": "Custom MAC address to use",
-                "description": "Can also be 'preserve', 'permanent', 'random' or 'stable'.",
-                "type": "string"
-              },
-              "macAddress": {
-                "title": "The MAC address of the interface bound to this connection",
-                "type": "string"
-              },
-              "mtu": {
-                "description": "Connection MTU",
-                "type": "integer",
-                "minimum": 0
-              },
-              "method4": {
-                "title": "IPv4 configuration method",
-                "type": "string",
-                "enum": ["auto", "manual", "link-local", "disabled"]
-              },
-              "method6": {
-                "title": "IPv6 configuration method",
-                "type": "string",
-                "enum": [
-                  "auto",
-                  "manual",
-                  "dhcp",
-                  "link-local",
-                  "shared",
-                  "disabled"
-                ]
-              },
-              "gateway4": {
-                "title": "Connection gateway address",
-                "type": "string",
-                "examples": ["192.168.122.1"]
-              },
-              "gateway6": {
-                "title": "Connection gateway address",
-                "type": "string",
-                "examples": ["::ffff:c0a8:7a01"]
-              },
-              "addresses": {
-                "type": "array",
-                "items": {
-                  "title": "Connection addresses",
-                  "type": "string"
-                }
-              },
-              "nameservers": {
-                "type": "array",
-                "items": {
-                  "title": "Nameservers",
-                  "description": "IPv4 and/or IPv6 are allowed.",
-                  "type": "string"
-                }
-              },
-              "dnsSearchList": {
-                "type": "array",
-                "items": {
-                  "description": "DNS search domains",
-                  "type": "string"
-                }
-              },
-              "dnsSearchlist": {
-                "type": "array",
-                "items": {
-                  "description": "DNS search domains",
-                  "type": "string"
-                },
-                "deprecated": true
-              },
-              "ignoreAutoDns": {
-                "description": "Whether DNS options provided via DHCP are used or not",
-                "type": "boolean"
-              },
-              "status": {
-                "title": "Connection status",
-                "description": "The status of the connection",
-                "type": "string",
-                "enum": ["up", "down", "keep", "removed"]
-              },
-              "autoconnect": {
-                "title": "Auto-connected",
-                "description": "Whether the connection should be automatically connected",
-                "type": "boolean"
-              },
-              "persistent": {
-                "title": "Persistent",
-                "description": "Whether the connection should be written to disk permanently",
-                "type": "boolean"
-              },
-              "wireless": {
-                "type": "object",
-                "title": "Wireless configuration",
-                "additionalProperties": false,
-                "properties": {
-                  "password": {
-                    "title": "Password of the wireless network",
-                    "type": "string"
-                  },
-                  "security": {
-                    "title": "Security method/key management",
-                    "type": "string",
-                    "enum": [
-                      "none",
-                      "owe",
-                      "ieee8021x",
-                      "wpa-psk",
-                      "sae",
-                      "wpa-eap",
-                      "wpa-eap-suite-b-192"
-                    ]
-                  },
-                  "ssid": {
-                    "title": "SSID of the wireless network",
-                    "type": "string"
-                  },
-                  "mode": {
-                    "title": "Wireless network mode",
-                    "type": "string",
-                    "enum": ["infrastructure", "adhoc", "mesh", "ap"]
-                  },
-                  "hidden": {
-                    "title": "Indicates that the wireless network is not broadcasting its SSID",
-                    "type": "boolean"
-                  },
-                  "band": {
-                    "title": "Frequency band of the wireless network",
-                    "type": "string",
-                    "enum": ["a", "bg"]
-                  },
-                  "channel": {
-                    "title": "Wireless channel of the wireless network",
-                    "type": "integer",
-                    "minimum": 0
-                  },
-                  "bssid": {
-                    "title": "Only allow connection to this mac address",
-                    "type": "string"
-                  },
-                  "groupAlgorithms": {
-                    "type": "array",
-                    "items": {
-                      "title": "A list of group/broadcast encryption algorithms",
-                      "type": "string",
-                      "enum": ["wep40", "wep104", "tkip", "ccmp"]
-                    }
-                  },
-                  "pairwiseAlgorithms": {
-                    "type": "array",
-                    "items": {
-                      "title": "A list of pairwise encryption algorithms",
-                      "type": "string",
-                      "enum": ["tkip", "ccmp"]
-                    }
-                  },
-                  "wpaProtocolVersions": {
-                    "type": "array",
-                    "items": {
-                      "title": "A list of allowed WPA protocol versions",
-                      "type": "string",
-                      "enum": ["wpa", "rsn"]
-                    }
-                  },
-                  "pmf": {
-                    "title": "Indicates whether Protected Management Frames must be enabled for the connection",
-                    "type": "integer"
-                  }
-                }
-              },
-              "bond": {
-                "type": "object",
-                "title": "Bonding configuration",
-                "additionalProperties": false,
-                "properties": {
-                  "mode": {
-                    "type": "string",
-                    "enum": [
-                      "balance-rr",
-                      "active-backup",
-                      "balance-xor",
-                      "broadcast",
-                      "802.3ad",
-                      "balance-tlb",
-                      "balance-alb"
-                    ]
-                  },
-                  "options": {
-                    "type": "string"
-                  },
-                  "ports": {
-                    "type": "array",
-                    "items": {
-                      "title": "A list of the interfaces or connections to be bonded",
-                      "type": "string"
-                    }
-                  }
-                }
-              },
-              "bridge": {
-                "type": "object",
-                "title": "Bridge configuration",
-                "additionalProperties": false,
-                "properties": {
-                  "stp": {
-                    "title": "whether the Spanning Tree Protocol is enabled or not",
-                    "type": "boolean"
-                  },
-                  "forwardDelay": {
-                    "title": "Spanning Tree Protocol forward delay, in seconds",
-                    "type": "integer",
-                    "minimum": 0
-                  },
-                  "priority": {
-                    "title": "Spanning Tree Protocol priority (lower values are 'better')",
-                    "type": "integer",
-                    "minimum": 0
-                  },
-                  "maxAge": {
-                    "title": "Spanning Tree Protocol maximum message age, in seconds",
-                    "type": "integer",
-                    "minimum": 0
-                  },
-                  "helloTime": {
-                    "title": "Spanning Tree Protocol hello time, in seconds",
-                    "type": "integer",
-                    "minimum": 0
-                  },
-                  "ports": {
-                    "type": "array",
-                    "items": {
-                      "title": "A list of the interface(s) or connection(s) to be part of the bridge",
-                      "type": "string"
-                    }
-                  }
-                }
-              },
-              "match": {
-                "type": "object",
-                "title": "Match settings",
-                "description": "Identifies the network interface to apply the connection settings to",
-                "additionalProperties": false,
-                "properties": {
-                  "kernel": {
-                    "type": "array",
-                    "items": {
-                      "title": "A list of kernel command line arguments to match",
-                      "type": "string"
-                    }
-                  },
-                  "interface": {
-                    "type": "array",
-                    "items": {
-                      "title": "A list of interface names to match",
-                      "type": "string"
-                    }
-                  },
-                  "driver": {
-                    "type": "array",
-                    "items": {
-                      "title": "A list of driver names to match",
-                      "type": "string"
-                    }
-                  },
-                  "path": {
-                    "type": "array",
-                    "items": {
-                      "title": "A list of paths to match against the ID_PATH udev property of devices",
-                      "type": "string"
-                    }
-                  }
-                }
-              },
-              "ieee-8021x": {
-                "type": "object",
-                "title": "IEEE 802.1x (EAP) settings",
-                "properties": {
-                  "eap": {
-                    "type": "array",
-                    "items": {
-                      "title": "List of EAP methods used",
-                      "type": "string",
-                      "enum": [
-                        "leap",
-                        "md5",
-                        "tls",
-                        "peap",
-                        "ttls",
-                        "pwd",
-                        "fast"
-                      ]
-                    }
-                  },
-                  "phase2Auth": {
-                    "title": "Phase 2 inner auth method",
-                    "type": "string",
-                    "enum": [
-                      "pap",
-                      "chap",
-                      "mschap",
-                      "mschapv2",
-                      "gtc",
-                      "otp",
-                      "md5",
-                      "tls"
-                    ]
-                  },
-                  "identity": {
-                    "title": "Identity string, often for example the user's login name",
-                    "type": "string"
-                  },
-                  "password": {
-                    "title": "Password string used for EAP authentication",
-                    "type": "string"
-                  },
-                  "caCert": {
-                    "title": "Path to CA certificate",
-                    "type": "string"
-                  },
-                  "caCertPassword": {
-                    "title": "Password string for CA certificate if it is encrypted",
-                    "type": "string"
-                  },
-                  "clientCert": {
-                    "title": "Path to client certificate",
-                    "type": "string"
-                  },
-                  "clientCertPassword": {
-                    "title": "Password string for client certificate if it is encrypted",
-                    "type": "string"
-                  },
-                  "privateKey": {
-                    "title": "Path to private key",
-                    "type": "string"
-                  },
-                  "privateKeyPassword": {
-                    "title": "Password string for private key if it is encrypted",
-                    "type": "string"
-                  },
-                  "anonymousIdentity": {
-                    "title": "Anonymous identity string for EAP authentication methods",
-                    "type": "string"
-                  },
-                  "peapVersion": {
-                    "title": "Which PEAP version is used when PEAP is set as the EAP method in the 'eap' property",
-                    "type": "string",
-                    "enum": ["0", "1"]
-                  },
-                  "peapLabel": {
-                    "title": "Force the use of the new PEAP label during key derivation",
-                    "type": "boolean"
-                  }
-                }
-              },
-              "vlan": {
-                "type": "object",
-                "title": "VLAN configuration",
-                "additionalProperties": false,
-                "required": ["id", "parent"],
-                "properties": {
-                  "id": {
-                    "title": "VLAN Identifier",
-                    "type": "integer",
-                    "minimum": 0,
-                    "maximum": 4094
-                  },
-                  "parent": {
-                    "title": "Parent interface",
-                    "type": "string"
-                  },
-                  "protocol": {
-                    "title": "VLAN protocol for encapsulation",
-                    "type": "string",
-                    "default": "802.1Q",
-                    "enum": ["802.1Q", "802.1ad"]
-                  },
-                  "flags": {
-                    "title": "VLAN flags",
-                    "type": "array",
-                    "items": {
-                      "type": "string",
-                      "enum": ["reorder-headers", "gvrp", "loose-binding", "mvrp"]
-                    }
-                  }
-                }
+              {
+                "description": "Only a port nested in its controller can have port settings.",
+                "not": { "required": ["port"] }
               }
-            }
+            ]
           }
         }
       }
@@ -756,7 +379,9 @@
             },
             {
               "type": "array",
-              "items": { "type": "string" },
+              "items": {
+                "type": "string"
+              },
               "title": "List of SSH Keys"
             }
           ]
@@ -770,7 +395,9 @@
             },
             {
               "type": "array",
-              "items": { "type": "string" },
+              "items": {
+                "type": "string"
+              },
               "title": "List of SSH Keys"
             }
           ]
@@ -800,7 +427,9 @@
             },
             {
               "type": "array",
-              "items": { "type": "string" },
+              "items": {
+                "type": "string"
+              },
               "title": "List of SSH Keys"
             }
           ]
@@ -814,7 +443,9 @@
             },
             {
               "type": "array",
-              "items": { "type": "string" },
+              "items": {
+                "type": "string"
+              },
               "title": "List of SSH Keys"
             }
           ]
@@ -955,9 +586,15 @@
       },
       "required": ["name"],
       "oneOf": [
-        { "required": ["body"] },
-        { "required": ["url"] },
-        { "required": ["content"] }
+        {
+          "required": ["body"]
+        },
+        {
+          "required": ["url"]
+        },
+        {
+          "required": ["content"]
+        }
       ]
     },
     "postPartitioning": {
@@ -987,9 +624,15 @@
       },
       "required": ["name"],
       "oneOf": [
-        { "required": ["body"] },
-        { "required": ["url"] },
-        { "required": ["content"] }
+        {
+          "required": ["body"]
+        },
+        {
+          "required": ["url"]
+        },
+        {
+          "required": ["content"]
+        }
       ]
     },
     "postScript": {
@@ -1024,9 +667,15 @@
       },
       "required": ["name"],
       "oneOf": [
-        { "required": ["body"] },
-        { "required": ["url"] },
-        { "required": ["content"] }
+        {
+          "required": ["body"]
+        },
+        {
+          "required": ["url"]
+        },
+        {
+          "required": ["content"]
+        }
       ]
     },
     "initScript": {
@@ -1056,9 +705,15 @@
       },
       "required": ["name"],
       "oneOf": [
-        { "required": ["body"] },
-        { "required": ["url"] },
-        { "required": ["content"] }
+        {
+          "required": ["body"]
+        },
+        {
+          "required": ["url"]
+        },
+        {
+          "required": ["content"]
+        }
       ]
     },
     "file": {
@@ -1096,7 +751,14 @@
         }
       },
       "required": ["destination"],
-      "oneOf": [{ "required": ["url"] }, { "required": ["content"] }]
+      "oneOf": [
+        {
+          "required": ["url"]
+        },
+        {
+          "required": ["content"]
+        }
+      ]
     },
     "answer": {
       "title": "Automatic answer to questions",
@@ -1144,6 +806,505 @@
           "type": "string"
         }
       }
+    },
+    "networkConnection": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "title": "Connection ID",
+          "type": "string"
+        },
+        "interface": {
+          "title": "The name of the network interface bound to this connection",
+          "type": "string"
+        },
+        "customMacAddress": {
+          "title": "Custom MAC address to use",
+          "description": "Can also be 'preserve', 'permanent', 'random' or 'stable'.",
+          "type": "string"
+        },
+        "macAddress": {
+          "title": "The MAC address of the interface bound to this connection",
+          "type": "string"
+        },
+        "mtu": {
+          "description": "Connection MTU",
+          "type": "integer",
+          "minimum": 0
+        },
+        "method4": {
+          "title": "IPv4 configuration method",
+          "description": "Defaults to 'auto'. A port of a bond or a bridge does not accept it.",
+          "type": "string",
+          "enum": ["auto", "manual", "link-local", "disabled"]
+        },
+        "method6": {
+          "title": "IPv6 configuration method",
+          "description": "Defaults to 'auto'. A port of a bond or a bridge does not accept it.",
+          "type": "string",
+          "enum": ["auto", "manual", "dhcp", "link-local", "shared", "disabled"]
+        },
+        "gateway4": {
+          "title": "Connection gateway address",
+          "type": "string",
+          "examples": ["192.168.122.1"]
+        },
+        "gateway6": {
+          "title": "Connection gateway address",
+          "type": "string",
+          "examples": ["::ffff:c0a8:7a01"]
+        },
+        "addresses": {
+          "type": "array",
+          "items": {
+            "title": "Connection addresses",
+            "type": "string"
+          }
+        },
+        "nameservers": {
+          "type": "array",
+          "items": {
+            "title": "Nameservers",
+            "description": "IPv4 and/or IPv6 are allowed.",
+            "type": "string"
+          }
+        },
+        "dnsSearchList": {
+          "type": "array",
+          "items": {
+            "description": "DNS search domains",
+            "type": "string"
+          }
+        },
+        "dnsSearchlist": {
+          "type": "array",
+          "items": {
+            "description": "DNS search domains",
+            "type": "string"
+          },
+          "deprecated": true
+        },
+        "ignoreAutoDns": {
+          "description": "Whether DNS options provided via DHCP are used or not",
+          "type": "boolean"
+        },
+        "status": {
+          "title": "Connection status",
+          "description": "The status of the connection",
+          "type": "string",
+          "enum": ["up", "down", "keep", "removed"]
+        },
+        "autoconnect": {
+          "title": "Auto-connected",
+          "description": "Whether the connection should be automatically connected",
+          "type": "boolean"
+        },
+        "persistent": {
+          "title": "Persistent",
+          "description": "Whether the connection should be written to disk permanently",
+          "type": "boolean"
+        },
+        "wireless": {
+          "type": "object",
+          "title": "Wireless configuration",
+          "additionalProperties": false,
+          "properties": {
+            "password": {
+              "title": "Password of the wireless network",
+              "type": "string"
+            },
+            "security": {
+              "title": "Security method/key management",
+              "type": "string",
+              "enum": [
+                "none",
+                "owe",
+                "ieee8021x",
+                "wpa-psk",
+                "sae",
+                "wpa-eap",
+                "wpa-eap-suite-b-192"
+              ]
+            },
+            "ssid": {
+              "title": "SSID of the wireless network",
+              "type": "string"
+            },
+            "mode": {
+              "title": "Wireless network mode",
+              "type": "string",
+              "enum": ["infrastructure", "adhoc", "mesh", "ap"]
+            },
+            "hidden": {
+              "title": "Indicates that the wireless network is not broadcasting its SSID",
+              "type": "boolean"
+            },
+            "band": {
+              "title": "Frequency band of the wireless network",
+              "type": "string",
+              "enum": ["a", "bg"]
+            },
+            "channel": {
+              "title": "Wireless channel of the wireless network",
+              "type": "integer",
+              "minimum": 0
+            },
+            "bssid": {
+              "title": "Only allow connection to this mac address",
+              "type": "string"
+            },
+            "groupAlgorithms": {
+              "type": "array",
+              "items": {
+                "title": "A list of group/broadcast encryption algorithms",
+                "type": "string",
+                "enum": ["wep40", "wep104", "tkip", "ccmp"]
+              }
+            },
+            "pairwiseAlgorithms": {
+              "type": "array",
+              "items": {
+                "title": "A list of pairwise encryption algorithms",
+                "type": "string",
+                "enum": ["tkip", "ccmp"]
+              }
+            },
+            "wpaProtocolVersions": {
+              "type": "array",
+              "items": {
+                "title": "A list of allowed WPA protocol versions",
+                "type": "string",
+                "enum": ["wpa", "rsn"]
+              }
+            },
+            "pmf": {
+              "title": "Indicates whether Protected Management Frames must be enabled for the connection",
+              "type": "integer"
+            }
+          }
+        },
+        "bond": {
+          "type": "object",
+          "title": "Bonding configuration",
+          "description": "The ports are given in 'portConnections' or, in the deprecated form, in 'ports'. When both are given, 'ports' is ignored.",
+          "additionalProperties": false,
+          "properties": {
+            "mode": {
+              "type": "string",
+              "enum": [
+                "balance-rr",
+                "active-backup",
+                "balance-xor",
+                "broadcast",
+                "802.3ad",
+                "balance-tlb",
+                "balance-alb"
+              ]
+            },
+            "options": {
+              "type": "string"
+            },
+            "ports": {
+              "title": "Names of the connections to be bonded",
+              "description": "Same as 'portConnections', with the ports given only by name. It is ignored when 'portConnections' is given. DEPRECATED: replaced by 'portConnections'",
+              "type": "array",
+              "items": { "$ref": "#/$defs/portName" },
+              "deprecated": true
+            },
+            "portConnections": {
+              "title": "The connections to be bonded",
+              "description": "Giving this list replaces the ports of the bond: a current port that is not listed is removed, unless it is given somewhere else in the document. Omitting both this list and 'ports' leaves the current ports alone.",
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "$ref": "#/$defs/portName"
+                  },
+                  {
+                    "allOf": [
+                      {
+                        "$ref": "#/$defs/portConnection"
+                      },
+                      {
+                        "properties": {
+                          "port": {
+                            "title": "A port of a bond has no port settings",
+                            "type": "object",
+                            "additionalProperties": false
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "bridge": {
+          "type": "object",
+          "title": "Bridge configuration",
+          "description": "The ports are given in 'portConnections' or, in the deprecated form, in 'ports'. When both are given, 'ports' is ignored.",
+          "additionalProperties": false,
+          "properties": {
+            "stp": {
+              "title": "whether the Spanning Tree Protocol is enabled or not",
+              "type": "boolean"
+            },
+            "forwardDelay": {
+              "title": "Spanning Tree Protocol forward delay, in seconds",
+              "type": "integer",
+              "minimum": 0
+            },
+            "priority": {
+              "title": "Spanning Tree Protocol priority (lower values are 'better')",
+              "type": "integer",
+              "minimum": 0
+            },
+            "maxAge": {
+              "title": "Spanning Tree Protocol maximum message age, in seconds",
+              "type": "integer",
+              "minimum": 0
+            },
+            "helloTime": {
+              "title": "Spanning Tree Protocol hello time, in seconds",
+              "type": "integer",
+              "minimum": 0
+            },
+            "ports": {
+              "title": "Names of the connections to be part of the bridge",
+              "description": "Same as 'portConnections', with the ports given only by name. It is ignored when 'portConnections' is given. DEPRECATED: replaced by 'portConnections'",
+              "type": "array",
+              "items": { "$ref": "#/$defs/portName" },
+              "deprecated": true
+            },
+            "portConnections": {
+              "title": "The connections to be part of the bridge",
+              "description": "Giving this list replaces the ports of the bridge: a current port that is not listed is removed, unless it is given somewhere else in the document. Omitting both this list and 'ports' leaves the current ports alone.",
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "$ref": "#/$defs/portName"
+                  },
+                  {
+                    "$ref": "#/$defs/portConnection"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "port": {
+          "type": "object",
+          "title": "Settings this connection has as a port of a controller",
+          "description": "Which settings apply depends on the kind of controller. Only the ports of a bridge have settings, and only a port nested in its controller can have them.",
+          "additionalProperties": false,
+          "properties": {
+            "priority": {
+              "title": "Spanning Tree Protocol port priority (lower values are 'better'), for a port of a bridge",
+              "type": "integer",
+              "minimum": 0
+            },
+            "pathCost": {
+              "title": "Spanning Tree Protocol port cost, for a port of a bridge",
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        "match": {
+          "type": "object",
+          "title": "Match settings",
+          "description": "Identifies the network interface to apply the connection settings to",
+          "additionalProperties": false,
+          "properties": {
+            "kernel": {
+              "type": "array",
+              "items": {
+                "title": "A list of kernel command line arguments to match",
+                "type": "string"
+              }
+            },
+            "interface": {
+              "type": "array",
+              "items": {
+                "title": "A list of interface names to match",
+                "type": "string"
+              }
+            },
+            "driver": {
+              "type": "array",
+              "items": {
+                "title": "A list of driver names to match",
+                "type": "string"
+              }
+            },
+            "path": {
+              "type": "array",
+              "items": {
+                "title": "A list of paths to match against the ID_PATH udev property of devices",
+                "type": "string"
+              }
+            }
+          }
+        },
+        "ieee-8021x": {
+          "type": "object",
+          "title": "IEEE 802.1x (EAP) settings",
+          "properties": {
+            "eap": {
+              "type": "array",
+              "items": {
+                "title": "List of EAP methods used",
+                "type": "string",
+                "enum": ["leap", "md5", "tls", "peap", "ttls", "pwd", "fast"]
+              }
+            },
+            "phase2Auth": {
+              "title": "Phase 2 inner auth method",
+              "type": "string",
+              "enum": [
+                "pap",
+                "chap",
+                "mschap",
+                "mschapv2",
+                "gtc",
+                "otp",
+                "md5",
+                "tls"
+              ]
+            },
+            "identity": {
+              "title": "Identity string, often for example the user's login name",
+              "type": "string"
+            },
+            "password": {
+              "title": "Password string used for EAP authentication",
+              "type": "string"
+            },
+            "caCert": {
+              "title": "Path to CA certificate",
+              "type": "string"
+            },
+            "caCertPassword": {
+              "title": "Password string for CA certificate if it is encrypted",
+              "type": "string"
+            },
+            "clientCert": {
+              "title": "Path to client certificate",
+              "type": "string"
+            },
+            "clientCertPassword": {
+              "title": "Password string for client certificate if it is encrypted",
+              "type": "string"
+            },
+            "privateKey": {
+              "title": "Path to private key",
+              "type": "string"
+            },
+            "privateKeyPassword": {
+              "title": "Password string for private key if it is encrypted",
+              "type": "string"
+            },
+            "anonymousIdentity": {
+              "title": "Anonymous identity string for EAP authentication methods",
+              "type": "string"
+            },
+            "peapVersion": {
+              "title": "Which PEAP version is used when PEAP is set as the EAP method in the 'eap' property",
+              "type": "string",
+              "enum": ["0", "1"]
+            },
+            "peapLabel": {
+              "title": "Force the use of the new PEAP label during key derivation",
+              "type": "boolean"
+            }
+          }
+        },
+        "vlan": {
+          "type": "object",
+          "title": "VLAN configuration",
+          "additionalProperties": false,
+          "required": ["id", "parent"],
+          "properties": {
+            "id": {
+              "title": "VLAN Identifier",
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 4094
+            },
+            "parent": {
+              "title": "Parent interface",
+              "type": "string"
+            },
+            "protocol": {
+              "title": "VLAN protocol for encapsulation",
+              "type": "string",
+              "default": "802.1Q",
+              "enum": ["802.1Q", "802.1ad"]
+            },
+            "flags": {
+              "title": "VLAN flags",
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": ["reorder-headers", "gvrp", "loose-binding", "mvrp"]
+              }
+            }
+          }
+        }
+      },
+      "title": "Network connection",
+      "description": "The ID is required for top-level connections only. A port nested in a bond or a bridge that has no ID is identified by its interface name."
+    },
+    "portName": {
+      "title": "Port given by name",
+      "description": "The interface name of a connection or, for a connection that is not bound to an interface, its ID. A name that matches no connection creates an Ethernet one for that interface.",
+      "type": "string"
+    },
+    "portConnection": {
+      "title": "Port given as a connection",
+      "description": "A port has no IP configuration of its own, since its controller holds it, so it does not accept any IP setting.",
+      "allOf": [
+        {
+          "$ref": "#/$defs/networkConnection"
+        },
+        {
+          "not": {
+            "anyOf": [
+              {
+                "required": ["method4"]
+              },
+              {
+                "required": ["method6"]
+              },
+              {
+                "required": ["gateway4"]
+              },
+              {
+                "required": ["gateway6"]
+              },
+              {
+                "required": ["addresses"]
+              },
+              {
+                "required": ["nameservers"]
+              },
+              {
+                "required": ["dnsSearchList"]
+              },
+              {
+                "required": ["dnsSearchlist"]
+              },
+              {
+                "required": ["ignoreAutoDns"]
+              }
+            ]
+          }
+        }
+      ]
     }
   }
 }

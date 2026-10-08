@@ -1,0 +1,24 @@
+{
+  "network": {
+    "connections": [
+      {
+        "id": "bond0",
+        "interface": "bond0",
+        "bond": {
+          "mode": "active-backup",
+          "portConnections": [
+            {
+              "id": "br0",
+              "interface": "br0",
+              "bridge": {
+                "portConnections": [
+                  "bond0"
+                ]
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

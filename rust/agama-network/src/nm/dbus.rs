@@ -104,8 +104,11 @@ pub fn connection_to_dbus<'a>(
         connection_dbus.insert("zone", zone.into());
     }
 
-    result.insert("ipv4", ip_config_to_ipv4_dbus(&conn.ip_config, &nm_version));
-    result.insert("ipv6", ip_config_to_ipv6_dbus(&conn.ip_config, &nm_version));
+    // A port has no IP configuration of its own, and NetworkManager drops it anyway.
+    if controller.is_none() {
+        result.insert("ipv4", ip_config_to_ipv4_dbus(&conn.ip_config, &nm_version));
+        result.insert("ipv6", ip_config_to_ipv6_dbus(&conn.ip_config, &nm_version));
+    }
     result.insert("match", match_config_to_dbus(&conn.match_config));
 
     if conn.is_ethernet() {
@@ -286,7 +289,8 @@ pub fn connection_from_dbus(conn: OwnedNestedHash) -> Result<Connection, NmError
 
 /// Merges a NestedHash and an OwnedNestedHash connections.
 ///
-/// Only the top-level sections that are present in the `original` hash are considered for update.
+/// The sections of the `updated` hash are written on top of the `original` ones. The sections
+/// that only the `updated` hash contains are added as they are.
 ///
 /// * `original`: original hash coming from D-Bus.
 /// * `updated`: updated hash to write to D-Bus.
@@ -321,6 +325,20 @@ pub fn merge_dbus_connections<'a>(
         }
         merged.insert(key.as_str(), inner);
     }
+
+    // The sections that the original lacks, e.g. the IP configuration of a port that leaves its
+    // controller or the bridge port settings of a connection that joins a bridge.
+    for (key, upd_section) in updated {
+        if merged.contains_key(key) {
+            continue;
+        }
+
+        let mut inner = HashMap::with_capacity(upd_section.len());
+        for (inner_key, value) in upd_section {
+            inner.insert(*inner_key, value.try_clone()?);
+        }
+        merged.insert(key, inner);
+    }
     cleanup_dbus_connection(&mut merged);
     Ok(merged)
 }
@@ -345,7 +363,7 @@ fn is_bridge_port(conn: &NestedHash) -> bool {
 ///
 /// If the connections is not a "bridge-port" anymore  it removes the "bridge-port" key.
 ///
-/// It also removes empty files from the "connection" object like the "interface-name", "master",
+/// It also removes empty fields from the "connection" object like the "interface-name", "master",
 /// "slave-type", "port-type" keys.
 ///
 /// It removes the "addresses" and "dns" keys from the "ipv4" and "ipv6" objects, which are replaced
@@ -829,7 +847,7 @@ fn bridge_port_config_from_dbus(
 
     Ok(Some(BridgePortConfig {
         priority: get_optional_property(bridge_port, "priority")?,
-        path_cost: get_optional_property(bridge_port, "path_cost")?,
+        path_cost: get_optional_property(bridge_port, "path-cost")?,
     }))
 }
 
@@ -1678,8 +1696,8 @@ mod test {
         model::*,
         nm::{
             dbus::{
-                BOND_KEY, BRIDGE_KEY, ETHERNET_KEY, INFINIBAND_KEY, VLAN_KEY, WIRELESS_KEY,
-                WIRELESS_SECURITY_KEY,
+                BOND_KEY, BRIDGE_KEY, BRIDGE_PORT_KEY, ETHERNET_KEY, INFINIBAND_KEY, VLAN_KEY,
+                WIRELESS_KEY, WIRELESS_SECURITY_KEY,
             },
             error::NmError,
         },
@@ -2062,6 +2080,31 @@ mod test {
             assert_eq!(config.stp, Some(true));
             assert_eq!(config.forward_delay, Some(5_u32));
         }
+
+        Ok(())
+    }
+
+    #[test]
+    fn test_connection_from_dbus_bridge_port() -> anyhow::Result<()> {
+        let uuid = Uuid::new_v4().to_string();
+        let connection_section = HashMap::from([hi("id", "eth0")?, hi("uuid", uuid)?]);
+        let bridge_port_section =
+            HashMap::from([hi("priority", 16_u32)?, hi("path-cost", 50_u32)?]);
+
+        let dbus_conn = HashMap::from([
+            ("connection".to_string(), connection_section),
+            (ETHERNET_KEY.to_string(), build_ethernet_section_from_dbus()),
+            (BRIDGE_PORT_KEY.to_string(), bridge_port_section),
+        ]);
+
+        let connection = connection_from_dbus(dbus_conn)?;
+        assert_eq!(
+            connection.port_config,
+            PortConfig::Bridge(BridgePortConfig {
+                priority: Some(16),
+                path_cost: Some(50),
+            })
+        );
 
         Ok(())
     }
@@ -2528,6 +2571,65 @@ mod test {
         Ok(())
     }
 
+    #[test]
+    fn test_merge_adds_the_sections_missing_in_the_original() -> anyhow::Result<()> {
+        // NetworkManager drops the IP configuration of a port.
+        let mut original = OwnedNestedHash::new();
+        let connection = HashMap::from([
+            hi("id", "eth0")?,
+            hi("type", ETHERNET_KEY)?,
+            hi("interface-name", "eth0")?,
+            hi("port-type", "bond")?,
+            hi("master", "bond0")?,
+        ]);
+        original.insert("connection".to_string(), connection);
+
+        // The port leaves its controller with a static configuration.
+        let mut conn = Connection::new("eth0".to_string(), DeviceType::Ethernet);
+        conn.interface = Some("eth0".to_string());
+        conn.ip_config.method4 = Some(Ipv4Method::Manual);
+        conn.ip_config.addresses = vec!["192.168.1.10/24".parse().unwrap()];
+        let updated = connection_to_dbus(&conn, None, semver::Version::new(1, 50, 0));
+
+        let merged = merge_dbus_connections(&original, &updated)?;
+        let ipv4 = merged.get("ipv4").unwrap();
+        assert_eq!(
+            *ipv4.get("method").unwrap(),
+            Value::new("manual".to_string())
+        );
+        assert!(ipv4.contains_key("address-data"));
+        assert!(merged.contains_key("ipv6"));
+
+        Ok(())
+    }
+
+    #[test]
+    fn test_merge_adds_the_bridge_port_settings_of_a_new_port() -> anyhow::Result<()> {
+        let mut original = OwnedNestedHash::new();
+        let connection = HashMap::from([
+            hi("id", "eth0")?,
+            hi("type", ETHERNET_KEY)?,
+            hi("interface-name", "eth0")?,
+        ]);
+        original.insert("connection".to_string(), connection);
+
+        let mut bridge = Connection::new("br0".to_string(), DeviceType::Bridge);
+        bridge.config = ConnectionConfig::Bridge(Default::default());
+        let mut conn = Connection::new("eth0".to_string(), DeviceType::Ethernet);
+        conn.interface = Some("eth0".to_string());
+        conn.port_config = PortConfig::Bridge(BridgePortConfig {
+            priority: Some(10),
+            path_cost: None,
+        });
+        let updated = connection_to_dbus(&conn, Some(&bridge), semver::Version::new(1, 50, 0));
+
+        let merged = merge_dbus_connections(&original, &updated)?;
+        let bridge_port = merged.get("bridge-port").unwrap();
+        assert_eq!(*bridge_port.get("priority").unwrap(), Value::new(10_u32));
+
+        Ok(())
+    }
+
     fn build_ethernet_section_from_dbus() -> HashMap<String, OwnedValue> {
         HashMap::from([
             hi("auto-negotiate", true).unwrap(),
@@ -2821,6 +2923,25 @@ mod test {
             .downcast_ref()
             .unwrap();
         assert_eq!(master, bond_con.id);
+    }
+
+    #[test]
+    fn test_dbus_from_a_port_has_no_ip_configuration() {
+        let mut controller = build_base_connection();
+        controller.config = ConnectionConfig::Bond(BondConfig::default());
+        let port = build_base_connection();
+
+        let port_dbus = connection_to_dbus(
+            &port,
+            Some(&controller),
+            semver::Version::parse("1.50.0").unwrap(),
+        );
+        assert!(!port_dbus.contains_key("ipv4"));
+        assert!(!port_dbus.contains_key("ipv6"));
+
+        let conn_dbus = connection_to_dbus(&port, None, semver::Version::parse("1.50.0").unwrap());
+        assert!(conn_dbus.contains_key("ipv4"));
+        assert!(conn_dbus.contains_key("ipv6"));
     }
 
     #[test]

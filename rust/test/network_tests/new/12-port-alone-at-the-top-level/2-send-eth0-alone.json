@@ -1,0 +1,11 @@
+{
+  "network": {
+    "connections": [
+      {
+        "id": "eth0",
+        "interface": "eth0",
+        "mtu": 1500
+      }
+    ]
+  }
+}

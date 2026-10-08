@@ -287,3 +287,212 @@ impl ProfileEvaluator {
         Ok(())
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use serde_json::json;
+
+    /// Uses the schema from the source tree. `ProfileValidator::default_schema` would fall back
+    /// to the installed one, as the path it builds is relative to the workspace.
+    fn validator() -> ProfileValidator {
+        ProfileValidator::new(share_dir().join("profile.schema.json")).unwrap()
+    }
+
+    fn share_dir() -> PathBuf {
+        Path::new(env!("CARGO_MANIFEST_DIR")).join("../share")
+    }
+
+    fn validate(profile: serde_json::Value) -> ValidationOutcome {
+        validator().validate_str(&profile.to_string()).unwrap()
+    }
+
+    fn connections(connections: serde_json::Value) -> serde_json::Value {
+        json!({ "network": { "connections": connections } })
+    }
+
+    /// The network part of the profile schema is written by hand, so check that it describes the
+    /// same fields as the types the profile is read into.
+    #[test]
+    fn test_the_network_connections_in_the_schema_match_the_types() {
+        use agama_utils::api::network::{NetworkConnection, PortConnection};
+        use std::collections::BTreeSet;
+
+        fn generated<T: schemars::JsonSchema>() -> BTreeSet<String> {
+            let schema = serde_json::to_value(schemars::schema_for!(T)).unwrap();
+            schema["properties"]
+                .as_object()
+                .unwrap()
+                .keys()
+                .filter(|k| *k != "state") // read-only, reported but never given
+                .cloned()
+                .collect()
+        }
+
+        let schema: serde_json::Value = serde_json::from_str(
+            &std::fs::read_to_string(share_dir().join("profile.schema.json")).unwrap(),
+        )
+        .unwrap();
+        let defs = &schema["$defs"];
+        let all: BTreeSet<String> = defs["networkConnection"]["properties"]
+            .as_object()
+            .unwrap()
+            .keys()
+            .filter(|k| *k != "dnsSearchlist") // deprecated alias of dnsSearchList
+            .cloned()
+            .collect();
+        let ip_settings: BTreeSet<String> = defs["portConnection"]["allOf"][1]["not"]["anyOf"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|r| r["required"][0].as_str().unwrap().to_string())
+            .collect();
+
+        // A connection at the top level cannot have port settings.
+        let top_level: BTreeSet<String> = all.iter().filter(|k| *k != "port").cloned().collect();
+        assert_eq!(top_level, generated::<NetworkConnection>());
+
+        // A nested port cannot have IP settings.
+        let port: BTreeSet<String> = all.difference(&ip_settings).cloned().collect();
+        assert_eq!(port, generated::<PortConnection>());
+    }
+
+    #[test]
+    fn test_network_examples_are_valid() {
+        let validator = validator();
+        let dir = share_dir().join("examples/network");
+        for example in ["bond.json", "bridge.json", "stacked.json"] {
+            let outcome = validator.validate_file(&dir.join(example)).unwrap();
+            assert!(
+                matches!(outcome, ValidationOutcome::Valid),
+                "{example}: {outcome:?}"
+            );
+        }
+    }
+
+    #[test]
+    fn test_nested_ports_do_not_need_an_id() {
+        let profile = connections(json!([{
+            "id": "bond0",
+            "bond": { "portConnections": [{ "interface": "eth0" }, "eth1"] }
+        }]));
+        assert!(matches!(validate(profile), ValidationOutcome::Valid));
+    }
+
+    #[test]
+    fn test_top_level_connections_need_an_id() {
+        let profile = connections(json!([{ "interface": "eth0" }]));
+        assert!(matches!(validate(profile), ValidationOutcome::NotValid(_)));
+    }
+
+    #[test]
+    fn test_bridge_port_settings_are_rejected_on_a_bond_port() {
+        let profile = connections(json!([{
+            "id": "bond0",
+            "bond": { "portConnections": [{ "interface": "eth0", "port": { "priority": 32 } }] }
+        }]));
+        assert!(matches!(validate(profile), ValidationOutcome::NotValid(_)));
+
+        let profile = connections(json!([{
+            "id": "br0",
+            "bridge": { "portConnections": [{ "interface": "eth0", "port": { "priority": 32 } }] }
+        }]));
+        assert!(matches!(validate(profile), ValidationOutcome::Valid));
+    }
+
+    #[test]
+    fn test_nested_ports_are_validated_as_connections() {
+        let profile = connections(json!([{
+            "id": "br0",
+            "bridge": { "portConnections": [{ "id": "bond0", "bond": { "portConnections": [{ "mtu": "big" }] } }] }
+        }]));
+        assert!(matches!(validate(profile), ValidationOutcome::NotValid(_)));
+    }
+
+    #[test]
+    fn test_nested_ports_do_not_accept_ip_settings() {
+        for setting in [
+            json!({ "method4": "disabled" }),
+            json!({ "method6": "disabled" }),
+            json!({ "addresses": ["192.168.1.2/24"] }),
+            json!({ "gateway4": "192.168.1.1" }),
+            json!({ "gateway6": "::1" }),
+            json!({ "nameservers": ["192.168.1.1"] }),
+            json!({ "dnsSearchList": ["example.lan"] }),
+            json!({ "dnsSearchlist": ["example.lan"] }),
+            json!({ "ignoreAutoDns": false }),
+        ] {
+            let mut port = json!({ "interface": "eth0" });
+            port.as_object_mut()
+                .unwrap()
+                .extend(setting.as_object().unwrap().clone());
+            let profile =
+                connections(json!([{ "id": "bond0", "bond": { "portConnections": [port] } }]));
+            assert!(
+                matches!(validate(profile), ValidationOutcome::NotValid(_)),
+                "{setting}"
+            );
+        }
+    }
+
+    #[test]
+    fn test_ports_only_take_names() {
+        let profile = connections(json!([{
+            "id": "bond0",
+            "bond": { "ports": [{ "interface": "eth0" }] }
+        }]));
+        assert!(matches!(validate(profile), ValidationOutcome::NotValid(_)));
+    }
+
+    #[test]
+    fn test_ports_and_port_connections_can_be_given_together() {
+        for controller in ["bond", "bridge"] {
+            let profile = connections(json!([{
+                "id": "ctl0",
+                controller: { "ports": ["eth0"], "portConnections": ["eth0"] }
+            }]));
+            assert!(
+                matches!(validate(profile), ValidationOutcome::Valid),
+                "{controller}"
+            );
+        }
+    }
+
+    #[test]
+    fn test_only_nested_ports_can_have_port_settings() {
+        let port = json!({ "priority": 16, "pathCost": 50 });
+
+        let profile = connections(json!([{ "id": "eth0", "port": port }]));
+        assert!(matches!(validate(profile), ValidationOutcome::NotValid(_)));
+
+        let profile = connections(json!([
+            { "id": "eth0", "port": port },
+            { "id": "br0", "bridge": { "ports": ["eth0"] } }
+        ]));
+        assert!(matches!(validate(profile), ValidationOutcome::NotValid(_)));
+
+        let profile = connections(json!([{
+            "id": "br0",
+            "bridge": { "portConnections": [{ "interface": "eth0", "port": port }] }
+        }]));
+        assert!(matches!(validate(profile), ValidationOutcome::Valid));
+    }
+
+    /// Before the ports were nested, the profiles gave them at the top level and disabled their IP
+    /// methods. The backend ignores those settings, so the profile is still valid.
+    #[test]
+    fn test_ports_given_at_the_top_level_can_have_ip_settings() {
+        let profile = connections(json!([
+            { "id": "eth0", "interface": "eth0", "method4": "disabled", "method6": "disabled" },
+            { "id": "eth1", "interface": "eth1", "method4": "disabled", "method6": "disabled" },
+            { "id": "bond0", "bond": { "mode": "active-backup", "ports": ["eth0", "eth1"] } }
+        ]));
+        assert!(matches!(validate(profile), ValidationOutcome::Valid));
+    }
+
+    #[test]
+    fn test_controller_is_not_accepted_anymore() {
+        let profile = connections(json!([{ "id": "eth0", "controller": "bond0" }]));
+        assert!(matches!(validate(profile), ValidationOutcome::NotValid(_)));
+    }
+}

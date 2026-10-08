@@ -1,0 +1,33 @@
+{
+  "title": "Port settings at the top level",
+  "description": "Only a port nested in its controller can have port settings. A connection at the top level cannot have them, whether no controller lists it or a bridge lists it by name, the format that predates the port settings. Nothing is created.",
+  "steps": [
+    {
+      "profile": "1-not-a-port.json",
+      "description": "eth0 at the top level, listed by no controller, with bridge port settings",
+      "expect": {
+        "schema": "invalid",
+        "connections": {
+          "eth0": {
+            "removed": true
+          }
+        }
+      }
+    },
+    {
+      "profile": "2-port-given-by-name.json",
+      "description": "The same eth0, listed by name in br0",
+      "expect": {
+        "schema": "invalid",
+        "connections": {
+          "eth0": {
+            "removed": true
+          },
+          "br0": {
+            "removed": true
+          }
+        }
+      }
+    }
+  ]
+}

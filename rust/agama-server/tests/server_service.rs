@@ -104,13 +104,17 @@ async fn test_get_extended_config(ctx: &mut Context) -> Result<(), Box<dyn Error
 // NOTE: temporarily it waits for the "software_config" task to be completed.
 // In the future we plan to add an specific event.
 async fn wait_until_finished(events: &mut event::Receiver) {
-    const TASK_NAME: &str = "software_config";
+    wait_for_task(events, "software_config").await
+}
+
+// Waits until the task with the given name is finished.
+async fn wait_for_task(events: &mut event::Receiver, task_name: &str) {
     loop {
         match events.recv().await {
             Ok(Event::TaskFinished {
                 task: Task { name, .. },
                 ..
-            }) if name.as_str() == TASK_NAME => break,
+            }) if name.as_str() == task_name => break,
 
             Ok(_event) => {}
 
@@ -296,5 +300,80 @@ async fn test_patch_config_invalid_json(ctx: &mut Context) -> Result<(), Box<dyn
 
     let response = ctx.client.send_request(request).await;
     assert_eq!(response.status(), StatusCode::BAD_REQUEST);
+    Ok(())
+}
+
+const BOND_WITH_PORT_NAMES: &str = r#"
+    {
+      "product": { "id": "SLES", "mode": "standard" },
+      "network": {
+        "connections": [
+          { "id": "bond0", "interface": "bond0", "bond": { "mode": "active-backup", "ports": ["eth0", "eth1"] } }
+        ]
+      }
+    }
+"#;
+
+async fn get_json(client: &Client, uri: &str) -> Result<serde_json::Value, Box<dyn Error>> {
+    let request = Request::builder().uri(uri).body("".to_string())?;
+    let response = client.send_request(request).await;
+    assert_eq!(response.status(), StatusCode::OK, "GET {uri}");
+    let body = body_to_string(response.into_body()).await;
+    Ok(serde_json::from_str(&body)?)
+}
+
+#[test_context(Context)]
+#[test]
+async fn test_the_ports_are_reported_by_name_and_as_connections(
+    ctx: &mut Context,
+) -> Result<(), Box<dyn Error>> {
+    let request = Request::builder()
+        .uri("/config")
+        .header("Content-Type", "application/json")
+        .method(Method::PUT)
+        .body(BOND_WITH_PORT_NAMES.to_string())?;
+    let response = ctx.client.send_request(request).await;
+    assert_eq!(response.status(), StatusCode::OK);
+
+    wait_for_task(&mut ctx.events, "network_config").await;
+
+    let config = get_json(&ctx.client, "/extended_config").await?;
+    let bond = &config["network"]["connections"][0]["bond"];
+    assert_eq!(bond["ports"], serde_json::json!(["eth0", "eth1"]));
+    assert_eq!(bond["portConnections"][0]["id"], "eth0");
+    assert_eq!(bond["portConnections"][1]["id"], "eth1");
+
+    // The configuration is given back as it was sent.
+    let config = get_json(&ctx.client, "/config").await?;
+    let bond = &config["network"]["connections"][0]["bond"];
+    assert_eq!(bond["ports"], serde_json::json!(["eth0", "eth1"]));
+    assert!(bond.get("portConnections").is_none());
+
+    Ok(())
+}
+
+#[test_context(Context)]
+#[test]
+async fn test_port_connections_take_precedence_over_ports(
+    ctx: &mut Context,
+) -> Result<(), Box<dyn Error>> {
+    let json = BOND_WITH_PORT_NAMES.replace(
+        r#""ports": ["eth0", "eth1"]"#,
+        r#""ports": ["eth0", "eth1"], "portConnections": ["eth0"]"#,
+    );
+    let request = Request::builder()
+        .uri("/config")
+        .header("Content-Type", "application/json")
+        .method(Method::PUT)
+        .body(json)?;
+    let response = ctx.client.send_request(request).await;
+    assert_eq!(response.status(), StatusCode::OK);
+
+    wait_for_task(&mut ctx.events, "network_config").await;
+
+    let config = get_json(&ctx.client, "/extended_config").await?;
+    let bond = &config["network"]["connections"][0]["bond"];
+    assert_eq!(bond["ports"], serde_json::json!(["eth0"]));
+
     Ok(())
 }

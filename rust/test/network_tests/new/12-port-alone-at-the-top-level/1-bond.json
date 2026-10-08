@@ -1,0 +1,25 @@
+{
+  "network": {
+    "connections": [
+      {
+        "id": "bond0",
+        "interface": "bond0",
+        "method4": "auto",
+        "bond": {
+          "mode": "active-backup",
+          "options": "miimon=100",
+          "portConnections": [
+            {
+              "interface": "eth0",
+              "mtu": 9000
+            },
+            {
+              "interface": "eth1",
+              "mtu": 9000
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

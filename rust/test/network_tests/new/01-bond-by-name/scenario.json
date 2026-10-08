@@ -1,0 +1,24 @@
+{
+  "title": "Bond with ports given by name",
+  "description": "Same as old/01-bond, with portConnections.",
+  "steps": [
+    {
+      "profile": "1-bond.json",
+      "description": "Bond with portConnections: [eth0, eth1]",
+      "expect": {
+        "connections": {
+          "bond0": {
+            "controller": null,
+            "method4": "auto"
+          },
+          "eth0": {
+            "controller": "bond0"
+          },
+          "eth1": {
+            "controller": "bond0"
+          }
+        }
+      }
+    }
+  ]
+}

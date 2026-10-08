@@ -1,0 +1,42 @@
+{
+  "title": "Update a bridge without its list of ports",
+  "description": "A controller given without a list of ports keeps its ports. Note that an update replaces the IP methods of the connection: br0 loses its method4, since the profile does not give it.",
+  "steps": [
+    {
+      "profile": "1-bridge.json",
+      "description": "Bridge with ports: [eth0, eth1]",
+      "expect": {
+        "connections": {
+          "br0": {
+            "controller": null,
+            "method4": "auto"
+          },
+          "eth0": {
+            "controller": "br0"
+          },
+          "eth1": {
+            "controller": "br0"
+          }
+        }
+      }
+    },
+    {
+      "profile": "2-change-stp-only.json",
+      "description": "br0 with stp: false and no ports",
+      "expect": {
+        "connections": {
+          "br0": {
+            "controller": null,
+            "method4": null
+          },
+          "eth0": {
+            "controller": "br0"
+          },
+          "eth1": {
+            "controller": "br0"
+          }
+        }
+      }
+    }
+  ]
+}
