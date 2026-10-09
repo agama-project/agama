@@ -56,6 +56,6 @@
     BuildRequires:  kmod
 :testsuite_command: |-
   cd %{buildroot}%{gem_base}/gems/%{mod_full_name}
-  rspec --pattern '**/*_test.rb' test
+  rspec
 
 
