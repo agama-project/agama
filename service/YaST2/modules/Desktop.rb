@@ -32,7 +32,6 @@ module Yast
     def main
       textdomain "base"
       Yast.import "Arch"
-      Yast.import "Map"
       Yast.import "Directory"
 
       # YaST configuration modules
