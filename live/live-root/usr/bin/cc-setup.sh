@@ -1084,7 +1084,7 @@ ask_target_disk() {
       # a mounted partition usually means the installation medium
       note=" (mounted - installation medium?)"
     fi
-    disks+=("$dev" "[${size:-?}] ${model:-Unknown}${note}")
+    disks+=("$dev" "[${size:-? M}iB] ${model:-Unknown}${note}")
   done < <(lsblk -rno PATH,TYPE,SIZE,RO,MODEL | tr ' ' '\037')
 
   if ((${#disks[@]} == 0)); then
