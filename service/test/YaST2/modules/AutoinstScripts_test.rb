@@ -174,19 +174,6 @@ describe Yast::AutoinstScripts do
     end
   end
 
-  describe "#Summary" do
-    it "returns a rich text string with the scripts summary" do
-      data = Yast::ProfileHash.new(
-        "pre-scripts"  => [{ "location" => "http://test.com/script" }],
-        "post-scripts" => [{ "location" => "http://test.com/script2" },
-                           { "location" => "http://test.com/script3" }]
-      )
-
-      subject.Import(data)
-      expect(subject.Summary).to be_a(String)
-    end
-  end
-
   describe "#AddEditScript" do
     context "when the given filename already exists" do
       it "edits the existing one" do

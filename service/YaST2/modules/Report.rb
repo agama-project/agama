@@ -46,7 +46,6 @@ module Yast
       textdomain "base"
 
       Yast.import "Mode"
-      Yast.import "Summary"
 
       # stored messages
       @errors = []
@@ -95,117 +94,6 @@ module Yast
     # @return [Boolean]  settings were modified
     def GetModified
       @modified
-    end
-
-    # Summary of current settings
-    # @return Html formatted configuration summary
-    def Summary
-      summary = ""
-      # translators: summary header for messages generated through autoinstallation
-      summary = Summary.AddHeader(summary, _("Messages"))
-      summary = Summary.OpenList(summary)
-
-      # Report configuration - will be normal messages displayed?
-      # '%1' will be replaced by translated string "Yes" or "No"
-      summary = Summary.AddListItem(
-        summary,
-        Builtins.sformat(
-          _("Display Messages: %1"),
-          # translators: summary if the messages should be displayed
-          @display_messages ? _("Yes") : _("No")
-        )
-      )
-      # Report configuration - will have normal messages timeout?
-      # '%1' will be replaced by number of seconds
-      summary = Summary.AddListItem(
-        summary,
-        Builtins.sformat(_("Time-out Messages: %1"), @timeout_messages)
-      )
-      # Report configuration - will be normal messages logged to file?
-      # '%1' will be replaced by translated string "Yes" or "No"
-      summary = Summary.AddListItem(
-        summary,
-        Builtins.sformat(
-          _("Log Messages: %1"),
-          # translators: summary if the messages should be written to log file
-          @log_messages ? _("Yes") : _("No")
-        )
-      )
-      summary = Summary.CloseList(summary)
-      # translators: summary header for warnings generated through autoinstallation
-      summary = Summary.AddHeader(summary, _("Warnings"))
-      summary = Summary.OpenList(summary)
-      # Report configuration - will be warning messages displayed?
-      # '%1' will be replaced by translated string "Yes" or "No"
-      summary = Summary.AddListItem(
-        summary,
-        Builtins.sformat(
-          _("Display Warnings: %1"),
-          # translators: summary if the warnings should be displayed
-          @display_warnings ? _("Yes") : _("No")
-        )
-      )
-      # Report configuration - will have warning messages timeout?
-      # '%1' will be replaced by number of seconds
-      summary = Summary.AddListItem(
-        summary,
-        Builtins.sformat(_("Time-out Warnings: %1"), @timeout_warnings)
-      )
-      # Report configuration - will be warning messages logged to file?
-      # '%1' will be replaced by translated string "Yes" or "No"
-      summary = Summary.AddListItem(
-        summary,
-        Builtins.sformat(
-          _("Log Warnings: %1"),
-          # translators: summary if the warnings should be written to log file
-          @log_warnings ? _("Yes") : _("No")
-        )
-      )
-      summary = Summary.CloseList(summary)
-      # translators: summary header for errors generated through autoinstallation
-      summary = Summary.AddHeader(summary, _("Errors"))
-      summary = Summary.OpenList(summary)
-      # Report configuration - will be error messages displayed?
-      # '%1' will be replaced by translated string "Yes" or "No"
-      summary = Summary.AddListItem(
-        summary,
-        Builtins.sformat(
-          _("Display Errors: %1"),
-          # translators: summary if the errors should be displayed
-          @display_errors ? _("Yes") : _("No")
-        )
-      )
-      # Report configuration - will have error messages timeout?
-      # '%1' will be replaced by number of seconds
-      summary = Summary.AddListItem(
-        summary,
-        Builtins.sformat(_("Time-out Errors: %1"), @timeout_errors)
-      )
-      # Report configuration - will be error messages logged to file?
-      # '%1' will be replaced by translated string "Yes" or "No"
-      summary = Summary.AddListItem(
-        summary,
-        Builtins.sformat(
-          _("Log Errors: %1"),
-          # translators: summary if the errors should be written to log file
-          @log_errors ? _("Yes") : _("No")
-        )
-      )
-      Summary.CloseList(summary)
-      # summary = Summary::AddHeader(summary, _("Yes or No Messages (Critical Messages)"));
-      # summary = Summary::OpenList(summary);
-      # // Report configuration - will be error messages displayed?
-      # // '%1' will be replaced by translated string "Yes" or "No"
-      # summary = Summary::AddListItem(summary, sformat(_("Display Yes or No Messages: %1"), (display_yesno_messages) ?
-      #                 _("Yes") : _("No")));
-      # // Report configuration - will have error messages timeout?
-      # // '%1' will be replaced by number of seconds
-      # summary = Summary::AddListItem(summary, sformat(_("Time-out Yes or No Messages: %1"), timeout_yesno_messages));
-      # // Report configuration - will be error messages logged to file?
-      # // '%1' will be replaced by translated string "Yes" or "No"
-      # summary = Summary::AddListItem(summary, sformat(_("Log Yes or No Messages: %1"), (log_yesno_messages) ?
-      #                 _("Yes") : _("No")));
-      # summary = Summary::CloseList(summary);
     end
 
     # Get all the Report configuration from a map.
@@ -739,7 +627,6 @@ module Yast
     publish variable: :modified, type: "boolean"
     publish function: :SetModified, type: "void ()"
     publish function: :GetModified, type: "boolean ()"
-    publish function: :Summary, type: "string ()"
     publish function: :Import, type: "boolean (map)"
     publish function: :Export, type: "map ()"
     publish function: :ClearYesNoMessages, type: "void ()"
