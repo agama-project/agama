@@ -475,6 +475,10 @@ ui_input() {
     printf '> ' >&2
   fi
   IFS= read -r value || return 1
+  # the 3270 terminal can send the empty input field padded with blanks or
+  # with a carriage return, strip the surrounding whitespace
+  value="${value#"${value%%[![:space:]]*}"}"
+  value="${value%"${value##*[![:space:]]}"}"
   [[ -n $value ]] || value=$default
   printf '%s' "$value"
 }
