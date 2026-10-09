@@ -1,0 +1,47 @@
+---
+- disk:
+    name: /dev/sda
+    size: 500 GiB
+    file_system:  btrfs
+    mount_point: "/"
+    btrfs:
+        default_subvolume: "@"
+        subvolumes:
+        - subvolume:
+            path: "@/home"
+            nocow: false
+        - subvolume:
+            path: "@/srv"
+            nocow: false
+        - subvolume:
+            path: "@/tmp"
+            nocow: false
+        - subvolume:
+            path: "@/usr/local"
+            nocow: false
+        - subvolume:
+            path: "@/var/cache"
+            nocow: false
+        - subvolume:
+            path: "@/var/crash"
+            nocow: false
+        - subvolume:
+            path: "@/log"
+            nocow: false
+        - subvolume:
+            path: "@/opt"
+            nocow: false
+        - subvolume:
+            path: "@/var/lib/mariadb"
+            nocow: true
+        - subvolume:
+            path: "@/var/lib/mysql"
+            nocow: true
+        - subvolume:
+            path: "@/var/lib/pgsql"
+            nocow: true
+        - subvolume:
+            path: "@/.snapshots"
+        - subvolume:
+            path: "@/.snapshots/1/snapshot"
+

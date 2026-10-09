@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<productDefines xmlns="http://www.suse.com/1.0/yast2ns" xmlns:config="http://www.suse.com/1.0/configns">
+
+  <partitioning>
+    <volumes config:type="list">
+      <volume>
+        <mount_point>/</mount_point>
+        <fs_type>btrfs</fs_type>
+        <desired_size config:type="disksize">10 GiB</desired_size>
+        <weight config:type="integer">40</weight>
+
+        <snapshots config:type="boolean">true</snapshots>
+        <snapshots_configurable config:type="boolean">true</snapshots_configurable>
+        <btrfs_default_subvolume>@</btrfs_default_subvolume>
+      </volume>
+
+      <volume>
+        <mount_point>swap</mount_point>
+        <fs_type>swap</fs_type>
+        <desired_size config:type="disksize">2 GiB</desired_size>
+      </volume>
+
+      <volume>
+        <mount_point>/home</mount_point>
+        <fs_type>xfs</fs_type>
+        <proposed config:type="boolean">false</proposed>
+        <proposed_configurable config:type="boolean">true</proposed_configurable>
+
+        <desired_size config:type="disksize">10 GiB</desired_size>
+        <min_size config:type="disksize">3 GiB</min_size>
+        <weight config:type="integer">60.0</weight>
+      </volume>
+    </volumes>
+  </partitioning>
+</productDefines>

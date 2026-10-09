@@ -1,0 +1,8 @@
+inherit_from:
+  ../../../../.rubocop.yml
+
+# Upstream yast2-storage-ng's own line-length convention is 120, not this project's usual 100.
+# Keeping the vendored tests at upstream's original line length avoids a lot of unnecessary
+# rewrapping noise that would otherwise make them harder to compare against the real source.
+Layout/LineLength:
+  Max: 120

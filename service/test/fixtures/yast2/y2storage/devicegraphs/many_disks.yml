@@ -1,0 +1,163 @@
+---
+- disk:
+    name: "/dev/sda"
+    size: 100 GiB
+    partition_table: gpt
+    partitions:
+    - partition:
+        size: 4 MiB
+        name: "/dev/sda1"
+        id: prep
+    - partition:
+        size: 82.00 GiB
+        name: "/dev/sda2"
+        id: lvm
+- disk:
+    name: "/dev/sdb"
+    size: 100 GiB
+- disk:
+    name: "/dev/sdc"
+    size: 100 GiB
+- disk:
+    name: "/dev/sdd"
+    size: 100 GiB
+- disk:
+    name: "/dev/sde"
+    size: 100 GiB
+- disk:
+    name: "/dev/sdf"
+    size: 50 GiB
+- disk:
+    name: "/dev/sdg"
+    size: 50 GiB
+- disk:
+    name: "/dev/sdh"
+    size: 50 GiB
+- disk:
+    name: "/dev/sdi"
+    size: 50 GiB
+- disk:
+    name: "/dev/sdj"
+    size: 75 GiB
+- disk:
+    name: "/dev/sdk"
+    size: 100 GiB
+    partition_table: gpt
+    partitions:
+    - partition:
+        size: 4 MiB
+        name: "/dev/sdk1"
+        id: prep
+    - partition:
+        size: 82.00 GiB
+        name: "/dev/sdk2"
+        id: lvm
+- disk:
+    name: "/dev/sdl"
+    size: 100 GiB
+- disk:
+    name: "/dev/sdm"
+    size: 100 GiB
+- disk:
+    name: "/dev/sdn"
+    size: 100 GiB
+- disk:
+    name: "/dev/sdo"
+    size: 100 GiB
+- disk:
+    name: "/dev/sdp"
+    size: 50 GiB
+- disk:
+    name: "/dev/sdq"
+    size: 50 GiB
+- disk:
+    name: "/dev/sdr"
+    size: 50 GiB
+- disk:
+    name: "/dev/sds"
+    size: 50 GiB
+- disk:
+    name: "/dev/sdt"
+    size: 75 GiB
+- disk:
+    name: "/dev/sdu"
+    size: 100 GiB
+    partition_table: gpt
+    partitions:
+    - partition:
+        size: 4 MiB
+        name: "/dev/sdu1"
+        id: prep
+    - partition:
+        size: 82.00 GiB
+        start: 5 MiB
+        name: "/dev/sdu2"
+        id: lvm
+- disk:
+    name: "/dev/sdv"
+    size: 100 GiB
+- disk:
+    name: "/dev/sdw"
+    size: 100 GiB
+- disk:
+    name: "/dev/sdx"
+    size: 100 GiB
+- disk:
+    name: "/dev/sdy"
+    size: 100 GiB
+- disk:
+    name: "/dev/sdz"
+    size: 50 GiB
+- disk:
+    name: "/dev/sdaa"
+    size: 50 GiB
+- disk:
+    name: "/dev/sdab"
+    size: 50 GiB
+- disk:
+    name: "/dev/sdac"
+    size: 50 GiB
+- disk:
+    name: "/dev/sdad"
+    size: 75 GiB
+- disk:
+    name: "/dev/sdae"
+    size: 100 GiB
+    partition_table: gpt
+    partitions:
+    - partition:
+        size: 4 MiB
+        name: "/dev/sdae1"
+        id: prep
+    - partition:
+        size: 82.00 GiB
+        start: 5 MiB
+        name: "/dev/sdae2"
+        id: lvm
+- disk:
+    name: "/dev/sdaf"
+    size: 100 GiB
+- disk:
+    name: "/dev/sdag"
+    size: 100 GiB
+- disk:
+    name: "/dev/sdah"
+    size: 100 GiB
+- disk:
+    name: "/dev/sdai"
+    size: 100 GiB
+- disk:
+    name: "/dev/sdaj"
+    size: 50 GiB
+- disk:
+    name: "/dev/sdak"
+    size: 50 GiB
+- disk:
+    name: "/dev/sdal"
+    size: 50 GiB
+- disk:
+    name: "/dev/sdam"
+    size: 50 GiB
+- disk:
+    name: "/dev/sdan"
+    size: 75 GiB

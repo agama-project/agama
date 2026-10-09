@@ -1,0 +1,56 @@
+---
+- disk:
+    name: "/dev/sda"
+    size: 800 GiB
+    partition_table: msdos
+    partitions:
+
+    - partition:
+        size: 730 GiB
+        name: /dev/sda1
+        id: ntfs
+        file_system: ntfs
+        label: windows
+
+    - partition:
+        size: 50 GiB
+        name: /dev/sda2
+        id: lvm
+
+    - partition:
+        size: unlimited
+        name: /dev/sda3
+        id: lvm
+
+- lvm_vg:
+    vg_name: vg0
+    lvm_lvs:
+
+    - lvm_lv:
+        lv_name: root
+        size: 40 GiB
+        file_system: btrfs
+        mount_point: "/"
+
+    - lvm_lv:
+        lv_name: swap0
+        size: 2 GiB
+        file_system: swap
+        mount_point: swap
+
+    - lvm_lv:
+        lv_name: home
+        size: 26616 MiB
+        file_system: xfs
+        mount_point: "/home"
+
+    - lvm_lv:
+        lv_name: swap
+        size: 2 GiB
+        file_system: swap
+
+    lvm_pvs:
+    - lvm_pv:
+        blk_device: /dev/sda2
+    - lvm_pv:
+        blk_device: /dev/sda3

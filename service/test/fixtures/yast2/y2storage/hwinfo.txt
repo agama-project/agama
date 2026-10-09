@@ -1,0 +1,75 @@
+18: None 00.0: 10600 Disk
+  [Created at block.245]
+  Unique ID: tfcu.Fxp0d3BezAE
+  SysFS ID: /class/block/dm-1
+  Hardware Class: disk
+  Model: "Disk"
+  Device File: /dev/dm-1
+  Device Files: /dev/dm-1, /dev/disk/by-id/dm-name-system-swap, /dev/disk/by-id/dm-uuid-LVM-7V51pFwRZq09Fp9qlD6AvWE2mQnM9vZ8nHThoCTndRd0TO4uHslr7JL4xBwiWk34, /dev/disk/by-uuid/6e3713be-8adc-4e75-bd51-1826a74887e4, /dev/mapper/system-swap, /dev/system/swap
+  Device Number: block 254:1
+  Geometry (Logical): CHS 0/0/0
+  Size: 33554432 sectors a 512 bytes
+  Capacity: 16 GB (17179869184 bytes)
+  Config Status: cfg=no, avail=yes, need=no, active=unknown
+
+24: None 00.0: 10600 Disk
+  [Created at block.245]
+  Unique ID: QUMq.Fxp0d3BezAE
+  SysFS ID: /class/block/dm-0
+  Hardware Class: disk
+  Model: "Disk"
+  Device File: /dev/dm-0
+  Device Files: /dev/dm-0, /dev/disk/by-id/dm-name-cr_ata-WDC_WD10EZEX-75M2NA0_WD-WCC3F1ZSRS74-part3, /dev/disk/by-id/dm-uuid-CRYPT-LUKS1-6714b94570af4275ba8389da0a4dc45f-cr_ata-WDC_WD10EZEX-75M2NA0_WD-WCC3F1ZSRS74-part3, /dev/disk/by-id/lvm-pv-uuid-JYKlI2-8ojJ-b2y5-6gcZ-09L2-UeLx-w6IFcp, /dev/mapper/cr_ata-WDC_WD10EZEX-75M2NA0_WD-WCC3F1ZSRS74-part3
+  Device Number: block 254:0
+  Geometry (Logical): CHS 0/0/0
+  Size: 1845493760 sectors a 512 bytes
+  Capacity: 880 GB (944892805120 bytes)
+  Config Status: cfg=no, avail=yes, need=no, active=unknown
+
+26: IDE 00.0: 10600 Disk
+  [Created at block.245]
+  Unique ID: 3OOL.7kkY9irDFZ4
+  Parent ID: w7Y8.6_fWy0oJVK4
+  SysFS ID: /class/block/sda
+  SysFS BusID: 0:0:0:0
+  SysFS Device Link: /devices/pci0000:00/0000:00:1f.2/ata1/host0/target0:0:0/0:0:0:0
+  Hardware Class: disk
+  Model: "WDC WD10EZEX-75M"
+  Vendor: "WDC"
+  Device: "WD10EZEX-75M"
+  Revision: "1A01"
+  Serial ID: "WD-WCC3F1ZSRS74"
+  Driver: "ahci", "sd"
+  Driver Modules: "ahci"
+  Device File: /dev/sda
+  Device Files: /dev/sda, /dev/disk/by-id/ata-WDC_WD10EZEX-75M2NA0_WD-WCC3F1ZSRS74, /dev/disk/by-id/scsi-0ATA_WDC_WD10EZEX-75M_WD-WCC3F1ZSRS74, /dev/disk/by-id/scsi-1ATA_WDC_WD10EZEX-75M2NA0_WD-WCC3F1ZSRS74, /dev/disk/by-id/scsi-350014ee20b5816b3, /dev/disk/by-id/scsi-SATA_WDC_WD10EZEX-75M_WD-WCC3F1ZSRS74, /dev/disk/by-id/wwn-0x50014ee20b5816b3, /dev/disk/by-path/pci-0000:00:1f.2-ata-1, /dev/disk/by-path/pci-0000:00:1f.2-scsi-0:0:0:0
+  Device Number: block 8:0-8:15
+  Geometry (Logical): CHS 121601/255/63
+  Size: 1953525168 sectors a 512 bytes
+  Capacity: 931 GB (1000204886016 bytes)
+  I/O Ports: 0xe000-0xefff (rw)
+  Config Status: cfg=no, avail=yes, need=no, active=unknown
+  Attached to: #12 (RAID bus controller)
+
+28: SCSI 100.1: 10600 Disk
+  [Created at block.245]
+  Unique ID: uI_Q.As_GZyB3Rt2
+  SysFS ID: /class/block/sdb
+  SysFS BusID: 1:0:0:1
+  SysFS Device Link: /devices/platform/host1/session1/target1:0:0/1:0:0:1
+  Hardware Class: disk
+  Model: "QNAP iSCSI Storage"
+  Vendor: "QNAP"
+  Device: "iSCSI Storage"
+  Revision: "4.0"
+  Serial ID: "97d7f392-8b3a-4c65-9c6e-296b318d5dbc"
+  Driver: "sd"
+  Driver Modules: "sd_mod"
+  Device File: /dev/sdb (/dev/sg1)
+  Device Files: /dev/sdb, /dev/disk/by-id/scsi-1QNAP, /dev/disk/by-id/scsi-3600140597d7f392d8b3ad4c65d9c6ed2, /dev/disk/by-id/scsi-SQNAP_iSCSI_Storage_97d7f392-8b3a-4c65-9c6e-296b318d5dbc, /dev/disk/by-id/wwn-0x600140597d7f392d8b3ad4c65d9c6ed2, /dev/disk/by-path/ip-10.160.6.193:3260-iscsi-iqn.2004-04.com.qnap:ts-112:iscsi.sbd.dd5178-lun-1
+  Device Number: block 8:16-8:31 (char 21:1)
+  Geometry (Logical): CHS 1011/34/61
+  Size: 2097152 sectors a 512 bytes
+  Capacity: 1 GB (1073741824 bytes)
+  Config Status: cfg=new, avail=yes, need=no, active=unknown
+

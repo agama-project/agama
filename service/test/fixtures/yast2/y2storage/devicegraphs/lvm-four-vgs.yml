@@ -1,0 +1,50 @@
+---
+- disk:
+    name: /dev/sda
+    size: 50 GiB
+    partition_table:  ms-dos
+    partitions:
+
+    - partition:
+        size:         6 GiB
+        name:         /dev/sda1
+        id:           lvm
+
+    - partition:
+        size:         10 GiB
+        name:         /dev/sda2
+        id:           lvm
+
+    - partition:
+        size:         30 GiB
+        name:         /dev/sda3
+        id:           lvm
+
+    - partition:
+        size:         unlimited
+        name:         /dev/sda4
+        id:           lvm
+
+- lvm_vg:
+    vg_name: vg6
+    lvm_pvs:
+        - lvm_pv:
+            blk_device: /dev/sda1
+
+- lvm_vg:
+    vg_name: vg10
+    lvm_pvs:
+        - lvm_pv:
+            blk_device: /dev/sda2
+
+- lvm_vg:
+    vg_name: vg30
+    lvm_pvs:
+        - lvm_pv:
+            blk_device: /dev/sda3
+
+- lvm_vg:
+    vg_name: vg4
+    lvm_pvs:
+        - lvm_pv:
+            blk_device: /dev/sda4

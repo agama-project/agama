@@ -1,0 +1,36 @@
+---
+- disk:
+    name: /dev/sda
+    size: 800 GiB
+    partition_table:  gpt
+    partitions:
+
+    - partition:
+        size:         8 GiB
+        name:         /dev/sda1
+        id:           irst
+
+    - partition:
+        size:         360 GiB
+        name:         /dev/sda2
+        id:           windows_basic_data
+        file_system:  ntfs
+        label:        windows
+
+    - partition:
+        size:         260 GiB
+        name:         /dev/sda3
+        id:           windows_basic_data
+        file_system:  vfat
+        label:        other
+
+    - partition:
+        size:         1 GiB
+        name:         /dev/sda4
+        id:           swap
+        file_system:  swap
+
+    - partition:
+        size:         unlimited
+        name:         /dev/sda5
+        file_system:  ext4

@@ -1,0 +1,37 @@
+---
+- disk:
+    name: /dev/sda
+    size: 400 GiB
+    partition_table:  ms-dos
+    partitions:
+
+    - partition:
+        size:         unlimited
+        name:         /dev/sda1
+        type:         extended
+
+    - partition:
+        size:         50 GiB
+        name:         /dev/sda5
+        type:         logical
+        file_system:  ext4
+        label:        data1
+
+    - partition:
+        size:         50 GiB
+        name:         /dev/sda6
+        type:         logical
+        file_system:  ext4
+        label:        data2
+        encryption:
+          name: /dev/mapper/cr_sda6
+
+    - partition:
+        size:         50 GiB
+        name:         /dev/sda7
+        type:         logical
+
+    - partition:
+        size:         50 GiB
+        name:         /dev/sda8
+        type:         logical

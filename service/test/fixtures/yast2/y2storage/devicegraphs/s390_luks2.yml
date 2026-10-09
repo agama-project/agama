@@ -1,0 +1,117 @@
+# 2019-10-02 06:31:24 -0400
+---
+- dasd:
+    name: "/dev/dasda"
+    size: 1602720 KiB (1.53 GiB)
+    block_size: 4 KiB
+    io_size: 0 B
+    min_grain: 1 MiB
+    align_ofs: 0 B
+    type: eckd
+    format: cdl
+    partition_table: dasd
+    partitions:
+    - free:
+        size: 96 KiB
+        start: 0 B
+    - partition:
+        size: 1602624 KiB (1.53 GiB)
+        start: 96 KiB
+        name: "/dev/dasda1"
+        type: primary
+        id: linux
+- dasd:
+    name: "/dev/dasdb"
+    size: 1602720 KiB (1.53 GiB)
+    block_size: 4 KiB
+    io_size: 0 B
+    min_grain: 1 MiB
+    align_ofs: 0 B
+    type: eckd
+    format: cdl
+    partition_table: dasd
+    partitions:
+    - free:
+        size: 96 KiB
+        start: 0 B
+    - partition:
+        size: 1602624 KiB (1.53 GiB)
+        start: 96 KiB
+        name: "/dev/dasdb1"
+        type: primary
+        id: linux
+        encryption:
+          type: pervasive_luks2
+          name: "/dev/mapper/cr-auto-4"
+- dasd:
+    name: "/dev/dasdc"
+    size: 7042.5 MiB (6.88 GiB)
+    block_size: 4 KiB
+    io_size: 0 B
+    min_grain: 1 MiB
+    align_ofs: 0 B
+    type: eckd
+    format: cdl
+    partition_table: dasd
+    partitions:
+    - free:
+        size: 3 MiB
+        start: 0 B
+    - partition:
+        size: 300 MiB
+        start: 3 MiB
+        name: "/dev/dasdc1"
+        type: primary
+        id: linux
+        encryption:
+          type: pervasive_luks2
+          name: "/dev/mapper/cr-auto-3"
+    - partition:
+        size: 300 MiB
+        start: 303 MiB
+        name: "/dev/dasdc2"
+        type: primary
+        id: linux
+        file_system: ext2
+        mount_point: "/boot/zipl"
+        encryption:
+          type: pervasive_luks2
+          name: "/dev/mapper/cr_zipl"
+          password: "***"
+    - partition:
+        size: 6438 MiB (6.29 GiB)
+        start: 603 MiB (0.59 GiB)
+        name: "/dev/dasdc3"
+        type: primary
+        id: linux
+        file_system: btrfs
+        mount_point: "/"
+        btrfs:
+          default_subvolume: "@"
+          subvolumes:
+          - subvolume:
+              path: "@"
+          - subvolume:
+              path: "@/home"
+          - subvolume:
+              path: "@/root"
+          - subvolume:
+              path: "@/tmp"
+          - subvolume:
+              path: "@/boot/grub2/s390x-emu"
+          - subvolume:
+              path: "@/opt"
+          - subvolume:
+              path: "@/srv"
+          - subvolume:
+              path: "@/usr/local"
+          - subvolume:
+              path: "@/var"
+              nocow: true
+        encryption:
+          type: pervasive_luks2
+          name: "/dev/mapper/cr_ccw-0X0150-part3"
+          password: "***"
+    - free:
+        size: 1.5 MiB
+        start: 7041 MiB (6.88 GiB)

@@ -1,0 +1,25 @@
+---
+- disk:
+    name: "/dev/sda"
+    size: 50 GiB
+    partition_table: gpt
+    partitions:
+    - partition:
+        size: 8 MiB
+        name: "/dev/sda1"
+        type: primary
+        id: prep
+    - partition:
+        size: 40 GiB
+        name: "/dev/sda2"
+        type: primary
+        id: linux
+        file_system: btrfs
+        mount_point: "/"
+    - partition:
+        size: 2 GiB
+        name: "/dev/sda3"
+        type: primary
+        id: swap
+        file_system: swap
+        mount_point: swap

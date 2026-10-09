@@ -1,0 +1,61 @@
+<?xml version="1.0"?>
+<productDefines xmlns="http://www.suse.com/1.0/yast2ns" xmlns:config="http://www.suse.com/1.0/configns">
+
+  <partitioning>
+    <proposal>
+      <windows_delete_mode config:type="symbol">all</windows_delete_mode>
+      <linux_delete_mode config:type="symbol">all</linux_delete_mode>
+      <other_delete_mode config:type="symbol">ondemand</other_delete_mode>
+    </proposal>
+
+    <volumes config:type="list">
+      <volume>
+        <mount_point>/</mount_point>
+        <fs_type>xfs</fs_type>
+        <desired_size config:type="disksize">10 GiB</desired_size>
+        <min_size config:type="disksize">5 GiB</min_size>
+        <max_size config:type="disksize">30 GiB</max_size>
+        <weight config:type="integer">20</weight>
+
+        <snapshots config:type="boolean">false</snapshots>
+        <snapshots_configurable config:type="boolean">true</snapshots_configurable>
+        <snapshots_percentage config:type="integer">300</snapshots_percentage>
+
+        <!-- Disable snapshots for / if disabling /var/lib/libvirt is not enough
+             to fit in the disk -->
+        <disable_order config:type="integer">2</disable_order>
+      </volume>
+
+      <!-- The libvirt partition/lv -->
+      <volume>
+        <mount_point>/var/lib/libvirt</mount_point>
+        <fs_type>xfs</fs_type>
+        <fs_types>xfs,ext3,ext4</fs_types>
+
+        <proposed config:type="boolean">true</proposed>
+        <proposed_configurable config:type="boolean">true</proposed_configurable>
+        <!-- Disable it in first place if we don't fit in the disk -->
+        <disable_order config:type="integer">1</disable_order>
+
+        <desired_size config:type="disksize">15 GiB</desired_size>
+        <min_size config:type="disksize">5 GiB</min_size>
+        <max_size config:type="disksize">unlimited</max_size>
+        <weight config:type="integer">70</weight>
+        <!-- If this volume is disabled, we want "/" to become greedy (unlimited
+             max), since it will contain /var/lib/libvirt -->
+        <fallback_for_max_size>/</fallback_for_max_size>
+      </volume>
+
+       <!-- swap partition -->
+       <volume>
+         <mount_point>swap</mount_point>
+         <fs_type>swap</fs_type>
+
+         <desired_size config:type="disksize">1 GiB</desired_size>
+         <min_size config:type="disksize">512 MiB</min_size>
+         <max_size config:type="disksize">2 GiB</max_size>
+         <weight config:type="integer">10</weight>
+       </volume>
+     </volumes>
+   </partitioning>
+ </productDefines>

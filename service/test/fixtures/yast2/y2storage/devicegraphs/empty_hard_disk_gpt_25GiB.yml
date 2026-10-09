@@ -1,0 +1,5 @@
+---
+- disk:
+    name: /dev/sda
+    size: 25 GiB
+    partition_table: gpt

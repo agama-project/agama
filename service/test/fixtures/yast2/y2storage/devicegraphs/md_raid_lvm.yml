@@ -1,0 +1,60 @@
+# 2020-03-04 09:23:20 +0000
+---
+- disk:
+    name: "/dev/vda"
+    size: 10 GiB
+    partition_table: gpt
+    partitions:
+    - partition:
+        size: 8 MiB
+        name: "/dev/vda1"
+        type: primary
+        id: bios_boot
+    - partition:
+        size: 256 MiB
+        name: "/dev/vda2"
+        type: primary
+        id: linux
+        file_system: ext4
+        mount_point: "/boot"
+    - partition:
+        size: 9976 MiB
+        name: "/dev/vda3"
+        type: primary
+        id: lvm
+- disk:
+    name: "/dev/vdb"
+    size: 5 GiB
+- disk:
+    name: "/dev/vdc"
+    size: 5 GiB
+- disk:
+    name: "/dev/vdd"
+    size: 5 GiB
+- md:
+    name: "/dev/md0"
+    md_level: raid5
+    md_parity: default
+    encryption:
+      type: luks
+      name: "/dev/mapper/cr_md0"
+    md_devices:
+    - md_device:
+        blk_device: "/dev/vdb"
+    - md_device:
+        blk_device: "/dev/vdc"
+    - md_device:
+        blk_device: "/dev/vdd"
+- lvm_vg:
+    vg_name: vg0
+    lvm_lvs:
+    - lvm_lv:
+        lv_name: root
+        size: 20048 MiB
+        file_system: ext4
+        mount_point: "/"
+    lvm_pvs:
+    - lvm_pv:
+        blk_device: "/dev/mapper/cr_md0"
+    - lvm_pv:
+        blk_device: "/dev/vda3"

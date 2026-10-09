@@ -1,0 +1,447 @@
+---
+- dasd:
+    name: /dev/dasda
+    size: 50 GiB
+    type: eckd
+    format: cdl
+
+- disk:
+    name: /dev/sda
+    size: 50 GiB
+
+- disk:
+    name: /dev/sdb
+    size: 800 GiB
+    partition_table:  ms-dos
+    partitions:
+
+    - partition:
+        size:         780 GiB
+        name:         /dev/sdb1
+        id:           0x7
+        file_system:  ntfs
+        label:        windows
+
+    - partition:
+        size:         unlimited
+        name:         /dev/sdb2
+        id:           dos32
+        file_system:  vfat
+        label:        recovery
+
+- dasd:
+    name: /dev/dasdb
+    size: 10 GiB
+    type: eckd
+    format: cdl
+    partition_table:  dasd
+    partitions:
+
+    - partition:
+        size:         1 GiB
+        name:         /dev/dasdb1
+        id:           swap
+        file_system:  swap
+        label:        swap_dasdb
+
+    - partition:
+        size:         6 GiB
+        name:         /dev/dasdb2
+        file_system:  btrfs
+        label:        suse_root
+
+    - partition:
+        size:         unlimited
+        name:         /dev/dasdb3
+        file_system:  xfs
+
+- disk:
+    name: /dev/sdc
+    size: 500 GiB
+    partition_table:  gpt
+    partitions:
+
+    - partition:
+        size:         250 GiB
+        name:         /dev/sdc1
+        id:           windows_basic_data
+        file_system:  ntfs
+        label:        windows
+
+    - partition:
+        size:         2 GiB
+        name:         /dev/sdc2
+        id:           swap
+        file_system:  swap
+        label:        swap_sdc
+
+    - partition:
+        size:         20 GiB
+        name:         /dev/sdc3
+        file_system:  ext4
+        mount_point:  /
+        uuid:         root-uuid
+        label:        root
+        mount_by:     uuid
+        mkfs_options: -b 2048
+        fstab_options:
+          - ro
+          - acl
+
+- disk:
+    size: 800.00 GiB
+    name: "/dev/sdd"
+    partition_table: msdos
+    partitions:
+
+    - partition:
+        size: 745470 MiB
+        name: /dev/sdd1
+        id: 0x7
+        file_system: ntfs
+        label: windows
+
+    - partition:
+        size: 40.00 GiB
+        name: "/dev/sdd3"
+        type: primary
+        id: linux
+        file_system: btrfs
+        mount_point: "/"
+        btrfs:
+            default_subvolume: "@"
+            subvolumes:
+            - subvolume:
+                path: "@/home"
+                nocow: false
+            - subvolume:
+                path: "@/srv"
+                nocow: false
+            - subvolume:
+                path: "@/tmp"
+                nocow: false
+            - subvolume:
+                path: "@/usr/local"
+                nocow: false
+            - subvolume:
+                path: "@/var/cache"
+                nocow: false
+            - subvolume:
+                path: "@/var/crash"
+                nocow: false
+            - subvolume:
+                path: "@/log"
+                nocow: false
+            - subvolume:
+                path: "@/opt"
+                nocow: false
+            - subvolume:
+                path: "@/var/lib/mariadb"
+                nocow: true
+            - subvolume:
+                path: "@/var/lib/mysql"
+                nocow: true
+            - subvolume:
+                path: "@/var/lib/pgsql"
+                nocow: true
+            - subvolume:
+                path: "@/.snapshots"
+            - subvolume:
+                path: "@/.snapshots/1/snapshot"
+
+    - partition:
+        size: 12290 MiB
+        name: "/dev/sdd4"
+        type: extended
+        id: extended
+
+    - partition:
+        size: 2.00 GiB
+        name: "/dev/sdd5"
+        type: logical
+        id: swap
+        file_system: swap
+        label: swap_sdd
+
+    - partition:
+        size: 10 GiB
+        name: "/dev/sdd6"
+        type: logical
+        id: linux
+        file_system: xfs
+        mount_point: "/home"
+
+    - partition:
+        size: unlimited
+        name: "/dev/sdd2"
+        type: primary
+        id: dos32
+        file_system: vfat
+        label: recovery
+
+# With extended partitions between the Windows ones, to ensure extended is not
+# confused with a Linux
+# Listed in this file before /dev/sde, to challenge Y2Storage a bit
+- disk:
+    size: 800.00 GiB
+    name: "/dev/sdf"
+    partition_table: msdos
+    partitions:
+
+    - partition:
+        size: 745460 MiB
+        name: /dev/sdf1
+        id: ntfs
+        file_system: ntfs
+        label: windows
+
+    - partition:
+        size: unlimited
+        name: "/dev/sdf2"
+        type: extended
+        id: extended
+
+    - partition:
+        size: 30 GiB
+        name: "/dev/sdf5"
+        type: logical
+        id: ntfs
+        file_system: ntfs
+
+    - partition:
+        size: 2 GiB
+        name: "/dev/sdf6"
+        type: logical
+        id: swap
+        file_system: swap
+        label: swap_sdf
+
+    - partition:
+        size: 10 GiB
+        name: "/dev/sdf7"
+        type: logical
+        id: linux
+        file_system: xfs
+        encryption:
+          name: /dev/mapper/cr_sdf7
+
+    - partition:
+        size: 10 GiB
+        name: "/dev/sdf8"
+        type: logical
+
+    - partition:
+        size: 10 GiB
+        name: "/dev/sdf9"
+        type: logical
+
+    - partition:
+        size: 10 GiB
+        name: "/dev/sdf10"
+        type: logical
+
+    - partition:
+        size: 10 GiB
+        name: "/dev/sdf11"
+        type: logical
+
+# Like sdc but with MS-DOS partition table
+# Use sdaa to challenge us even if we don't have all the possible sd[a-z]
+- disk:
+    name: /dev/sdaa
+    size: 500 GiB
+    partition_table:  msdos
+    partitions:
+
+    - partition:
+        size:         250 GiB
+        name:         /dev/sdaa1
+        id:           ntfs
+        file_system:  ntfs
+        label:        windows
+
+    - partition:
+        size:         2 GiB
+        name:         /dev/sdaa2
+        id:           swap
+        file_system:  swap
+        label:        swap_sdaa
+
+    - partition:
+        size:         20 GiB
+        name:         /dev/sdaa3
+        file_system:  ext4
+        mount_point:  /
+        label:        root
+
+# Several special (from the PartitionSection point of view) partition ids
+- disk:
+    size: 800 GiB
+    name: "/dev/nvme0n1"
+    partition_table: msdos
+    partitions:
+
+    - partition:
+        size: 75 GiB
+        name: /dev/nvme0n1p1
+        id: dos32
+        file_system: vfat
+
+    - partition:
+        size: 40 GiB
+        name: /dev/nvme0n1p2
+        id: prep
+        file_system: vfat
+
+    - partition:
+        size: 2 GiB
+        name: /dev/nvme0n1p3
+        id: dos16
+        file_system: vfat
+
+    - partition:
+        size: unlimited
+        name: /dev/nvme0n1p4
+        file_system: ext4
+
+# Just to have some BIOS BOOT partition
+- disk:
+    name: /dev/sdh
+    size: 50 GiB
+    partition_table: gpt
+    partitions:
+
+    - partition:
+        size:         40 GiB
+        name:         /dev/sdh1
+        file_system:  btrfs
+        mount_point:  "/"
+
+    - partition:
+        size:         1 MiB
+        name:         /dev/sdh2
+        id:           bios_boot
+
+    - partition:
+        size:         2 GiB
+        name:         /dev/sdh3
+        id:           swap
+        file_system:  swap
+        label:        swap_sdh
+
+# Btrfs with default_subvolume set to ""
+- disk:
+    size: 40.00 GiB
+    name: "/dev/sdi"
+    partition_table: msdos
+    partitions:
+
+    - partition:
+        size: 40.00 GiB
+        name: "/dev/sdi1"
+        type: primary
+        id: linux
+        file_system: btrfs
+        mount_point: "/"
+        btrfs:
+            default_subvolume: ""
+            subvolumes:
+            - subvolume:
+                path: "home"
+                nocow: false
+            - subvolume:
+                path: "srv"
+                nocow: false
+            - subvolume:
+                path: "tmp"
+                nocow: false
+            - subvolume:
+                path: "usr/local"
+                nocow: false
+            - subvolume:
+                path: "var/cache"
+                nocow: false
+            - subvolume:
+                path: "var/crash"
+                nocow: false
+            - subvolume:
+                path: "log"
+                nocow: false
+            - subvolume:
+                path: "opt"
+                nocow: false
+            - subvolume:
+                path: "var/lib/mariadb"
+                nocow: true
+            - subvolume:
+                path: "var/lib/mysql"
+                nocow: true
+            - subvolume:
+                path: "var/lib/pgsql"
+                nocow: true
+            - subvolume:
+                path: ".snapshots"
+            - subvolume:
+                path: ".snapshots/1/snapshot"
+
+# LVM
+- disk:
+    size: 120.00 GiB
+    name: "/dev/sdj"
+    partition_table: msdos
+    partitions:
+
+    - partition:
+        size: 40.00 GiB
+        name: "/dev/sdj1"
+        type: primary
+        id: lvm
+    - partition:
+        size: 40.00 GiB
+        name: "/dev/sdj2"
+        type: primary
+        id: lvm
+    - partition:
+        size: 40.00 GiB
+        name: "/dev/sdj3"
+        type: primary
+        id: lvm
+
+- lvm_vg:
+    vg_name: vg0
+    extent_size: 4 MiB
+    lvm_pvs:
+      - lvm_pv:
+          blk_device: /dev/sdj1
+    lvm_lvs:
+      - lvm_lv:
+          size:         1 TiB
+          lv_name:      lv1
+          file_system:  btrfs
+          mount_point:  /
+          btrfs:
+              default_subvolume: ""
+              subvolumes:
+                - subvolume:
+                    path: ".snapshots"
+                - subvolume:
+                    path: ".snapshots/1/snapshot"
+
+- lvm_vg:
+    vg_name: vg1
+    lvm_pvs:
+      - lvm_pv:
+          blk_device: /dev/sdj2
+    lvm_lvs:
+      - lvm_lv:
+          size:         1 TiB
+          lv_name:      lv1
+          file_system:  btrfs
+          mount_point:  /
+    extent_size: 4 MiB
+
+- lvm_vg:
+    vg_name: empty_vg
+    lvm_pvs:
+      - lvm_pv:
+          blk_device: /dev/sdj3
