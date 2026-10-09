@@ -135,17 +135,11 @@ module Yast
     def import profile
       if profile.target.nil? || profile.target.empty?
         # setting default_target due the defined environment
-        self.default_target = (Installation.x11_setup_needed &&
-          Arch.x11_setup_needed &&
+        self.default_target = (Arch.x11_setup_needed &&
           Pkg.IsSelected("xdm")) ? BaseTargets::GRAPHICAL : BaseTargets::MULTIUSER
       else
         self.default_target = profile.target
       end
-    end
-
-    def inspect
-      "#<#{self} @my_textdomain='#{@my_textdomain}', @default_target='#{default_target}', " +
-      "@targets=#{targets.keys} >"
     end
 
     def save
@@ -172,20 +166,6 @@ module Yast
     end
 
     alias_method :modified, :modified?
-
-    # Summary of changes regarding the default target
-    #
-    # @return [String]
-    def changes_summary
-      return "" unless modified?
-
-      target = @targets[default_target][:description]
-
-      format(
-        _("Default target will be changed to '%{target}'<br /><br />"),
-        target: target
-      )
-    end
 
   private
 

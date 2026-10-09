@@ -35,26 +35,4 @@ describe Y2Storage::Arch do
       expect(subject.new).to be_a Y2Storage::Arch
     end
   end
-
-  describe "#efiboot?" do
-    context "if /etc/install.inf::EFI is set to 1" do
-      before do
-        allow(Yast::Linuxrc).to receive(:InstallInf).with("EFI").and_return("1")
-      end
-
-      it "returns true" do
-        expect(subject.new.efiboot?).to eq true
-      end
-    end
-
-    context "if /etc/install.inf::EFI is set to 0" do
-      before do
-        allow(Yast::Linuxrc).to receive(:InstallInf).with("EFI").and_return("0")
-      end
-
-      it "returns false" do
-        expect(subject.new.efiboot?).to eq false
-      end
-    end
-  end
 end

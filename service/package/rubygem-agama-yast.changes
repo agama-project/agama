@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Wed Oct  7 13:04:47 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Drop the unnecessary yast2 RPM dependency by vendoring the parts
+  of it that are really used, declaring yast2-ycp-ui-bindings and
+  augeas-lenses explicitly instead of relying on them being pulled
+  in transitively (gh#agama-project/agama#4063).
+
+-------------------------------------------------------------------
 Fri Oct  2 14:31:42 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Drop the unnecessary yast2-storage-ng RPM dependency by

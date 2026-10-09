@@ -13,14 +13,18 @@
     BuildRequires:  yast2-bootloader
     BuildRequires:  distribution-release
 
-    # ArchFilter
-    Requires:       yast2 >= 4.5.20
-    BuildRequires:  yast2 >= 4.5.20
     Requires:       yast2-hardware-detection
     Requires:       libstorage-ng-ruby
     BuildRequires:  libstorage-ng-ruby
     Requires:       yast2-pkg-bindings
     Requires:       yast2-transfer
+    # Needed by service/YaST2/modules/Popup.rb (Yast.import "UI") - previously only a transitive
+    # dependency pulled in by the now-dropped `yast2` RPM's own Requires:
+    Requires:       yast2-ycp-ui-bindings
+    # Needed by service/YaST2/{modules/ShadowConfig.rb,lib/cfa/{login_defs,shadow_config}.rb} (the
+    # "login_defs.lns" Augeas lens) - previously only a transitive dependency pulled in by the
+    # now-dropped `yast2` RPM's own Requires:
+    Requires:       augeas-lenses
     # Storage dependencies
     Requires:       bcache-tools
     Requires:       btrfsprogs
@@ -32,6 +36,7 @@
     %ifarch x86_64 aarch64
     Requires:       fde-tools
     %endif
+    Requires:       hostname
     Requires:       jfsutils
     Requires:       libstorage-ng-lang
     Requires:       lvm2

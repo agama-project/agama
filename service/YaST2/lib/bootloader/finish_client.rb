@@ -9,14 +9,12 @@
 # `yast2-reipl` RPM dependency, the chreipl call is inlined directly and the dead
 # finish_ret/ipl_msg branching has been removed. See service/YaST2/README.md.
 
-require "bootloader/kexec"
 require "bootloader/bootloader_factory"
 require "bootloader/exceptions"
 require "installation/finish_client"
 require "yast2/execute"
 
 Yast.import "Arch"
-Yast.import "Linuxrc"
 Yast.import "Misc"
 Yast.import "Mode"
 Yast.import "Report"
@@ -77,15 +75,6 @@ module Bootloader
       if !BootloaderFactory.current.is_a?(SystemdBoot)
         # Not for SystemdBoot bootloader because
         # kexec and dracut regeneration will be done by sdbootutil directly.
-
-        # fate #303395: Use kexec to avoid booting between first and second stage
-        # copy vmlinuz, initrd and flush kernel option into /var/lib/YaST2
-        if Yast::Linuxrc.InstallInf("kexec_reboot") == "1"
-          kexec = ::Bootloader::Kexec.new
-          kexec.prepare_environment
-        else
-          log.info "Installation started with kexec_reboot set 0"
-        end
 
         # call dracut to ensure initrd is properly set, it is especially needed
         # in live system install ( where it is just copyied ) and image based

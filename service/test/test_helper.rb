@@ -21,7 +21,6 @@
 
 ENV["Y2DIR"] = [
   ENV.fetch("Y2DIR", nil),
-  File.expand_path("../lib/agama/y2dir", __dir__),
   File.expand_path("../YaST2", __dir__)
 ].compact.join(":")
 
@@ -38,7 +37,20 @@ require "agama/product_reader" # to globally mock reading real products
 
 # make sure we run the tests in English locale
 # (some tests check the output which is marked for translation)
-ENV["LC_ALL"] = "en_US.UTF-8"
+#
+# Deliberately use LANG instead of LC_ALL here: POSIX locale precedence makes a non-empty LC_ALL
+# win over every individual LC_* category (including LC_NUMERIC below), so setting LC_ALL would
+# silently defeat the explicit "C" numeric formatting that some tests rely on.
+ENV["LANG"] = "en_US.UTF-8"
+
+# Builtins::Float.tolstring (the native yast2-ruby-bindings builtin backing
+# Yast::String.FormatSize/FormatSizeWithPrecision) renders its thousands-separator according to
+# the *current* process locale (unlike Encoding.default_external, which is fixed at Ruby
+# interpreter startup and unaffected by ENV changes - see service/YaST2/README.md). Force plain
+# "C" numeric formatting explicitly, so tests get deterministic output (e.g. "1024.091") instead
+# of depending on whatever LC_NUMERIC the environment happens to default to (which may include a
+# thousands separator, e.g. "1,024.091").
+ENV["LC_NUMERIC"] = "C"
 
 RSpec.configure do |c|
   c.before do

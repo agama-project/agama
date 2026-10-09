@@ -4,7 +4,6 @@ require "yast"
 require "bootloader/sysconfig"
 
 Yast.import "BootStorage"
-Yast.import "Linuxrc"
 Yast.import "Mode"
 Yast.import "Package"
 
@@ -106,9 +105,7 @@ module Bootloader
 
     # @return [Boolean] true when kexec-tools package should be included; false otherwise
     def include_kexec_tools_package?
-      return false if Yast::Mode.live_installation
-
-      Yast::Linuxrc.InstallInf("kexec_reboot") != "0"
+      !Yast::Mode.live_installation
     end
 
     # Writes the sysconfig readed in the initialization

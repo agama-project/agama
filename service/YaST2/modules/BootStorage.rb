@@ -65,10 +65,6 @@ module Yast
       Y2Storage::StorageManager.instance.staging
     end
 
-    def storage_read?
-      !@storage_revision.nil?
-    end
-
     # Returns if any of boot disks has gpt
     def gpt_boot_disk?
       boot_disks.any? { |d| d.gpt? }
@@ -88,13 +84,6 @@ module Yast
       log.info "Found these gpt boot disks: #{result.inspect}"
 
       result.map(&:name)
-    end
-
-    # FIXME: merge with BootSupportCheck
-    # Check if the bootloader can be installed at all with current configuration
-    # @return [Boolean] true if it can
-    def bootloader_installable?
-      true
     end
 
     # Sets properly boot, root and mbr disk.

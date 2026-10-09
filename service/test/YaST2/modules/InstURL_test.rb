@@ -21,6 +21,10 @@
 
 # InstURL.rb has no upstream test at all - written from scratch, covering #installInf2Url (the
 # only method actually called anywhere in Agama's closure, see service/YaST2/README.md).
+#
+# #installInf2Url used to read the "ZyppRepoURL"/"ssl_verify" options from /etc/install.inf
+# (written by linuxrc), which does not exist in Agama at all (no classic linuxrc boot stage) - so
+# it always takes the "ZyppRepoURL is not set" fallback branch now. See service/YaST2/README.md.
 
 require_relative "../../test_helper"
 require "uri"
@@ -37,87 +41,29 @@ describe Yast::InstURL do
   end
 
   describe "#installInf2Url" do
-    context "when ZyppRepoURL is set in install.inf" do
+    context "when the fallback repository does not exist" do
       before do
-        allow(Yast::Linuxrc).to receive(:InstallInf).with("ZyppRepoURL")
-          .and_return(+"http://example.com/repo")
-        allow(Yast::Linuxrc).to receive(:InstallInf).with("ssl_verify").and_return(nil)
+        allow(File).to receive(:exist?).with("/var/lib/fallback-repo").and_return(false)
       end
 
-      it "returns that URL" do
-        expect(subject.installInf2Url).to eq("http://example.com/repo")
+      it "returns an empty string" do
+        expect(subject.installInf2Url).to eq("")
+      end
+    end
+
+    context "when the fallback repository exists" do
+      before do
+        allow(File).to receive(:exist?).with("/var/lib/fallback-repo").and_return(true)
+      end
+
+      it "returns the fallback repository URL" do
+        expect(subject.installInf2Url).to eq("dir:///var/lib/fallback-repo")
       end
 
       it "caches the result for subsequent calls" do
         subject.installInf2Url
-        expect(Yast::Linuxrc).to_not receive(:InstallInf)
+        expect(File).to_not receive(:exist?)
         subject.installInf2Url
-      end
-
-      context "and an extra directory is given" do
-        it "appends it to the URL path" do
-          expect(subject.installInf2Url("extra")).to eq("http://example.com/repo/extra")
-        end
-      end
-
-      context "and the URL contains spaces" do
-        before do
-          allow(Yast::Linuxrc).to receive(:InstallInf).with("ZyppRepoURL")
-            .and_return(+"http://example.com/my repo")
-        end
-
-        it "escapes them" do
-          expect(subject.installInf2Url).to eq("http://example.com/my%20repo")
-        end
-      end
-
-      context "and the URL uses the https scheme" do
-        before do
-          allow(Yast::Linuxrc).to receive(:InstallInf).with("ZyppRepoURL")
-            .and_return(+"https://example.com/repo")
-        end
-
-        context "and ssl_verify is not disabled in install.inf" do
-          it "does not add the ssl_verify option" do
-            expect(subject.installInf2Url).to eq("https://example.com/repo")
-          end
-        end
-
-        context "and ssl_verify is set to 'no' in install.inf" do
-          before do
-            allow(Yast::Linuxrc).to receive(:InstallInf).with("ssl_verify").and_return("no")
-          end
-
-          it "adds the ssl_verify=no option" do
-            expect(subject.installInf2Url).to eq("https://example.com/repo?ssl_verify=no")
-          end
-        end
-      end
-    end
-
-    context "when ZyppRepoURL is not set in install.inf" do
-      before do
-        allow(Yast::Linuxrc).to receive(:InstallInf).with("ZyppRepoURL").and_return(nil)
-      end
-
-      context "and the fallback repository does not exist" do
-        before do
-          allow(File).to receive(:exist?).with("/var/lib/fallback-repo").and_return(false)
-        end
-
-        it "returns an empty string" do
-          expect(subject.installInf2Url).to eq("")
-        end
-      end
-
-      context "and the fallback repository exists" do
-        before do
-          allow(File).to receive(:exist?).with("/var/lib/fallback-repo").and_return(true)
-        end
-
-        it "returns the fallback repository URL" do
-          expect(subject.installInf2Url).to eq("dir:///var/lib/fallback-repo")
-        end
       end
     end
   end
