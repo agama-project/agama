@@ -44,7 +44,7 @@ install -D -t "${DESTDIR}${bindir}" "${SRCDIR}/share/agama-zypp-journal"
 install6 -D -p "${SRCDIR}"/share/agama.pam "${DESTDIR}${pamvendordir}"/agama
 
 # install OpenAPI specification and standalone schemas to openapi/nightly
-install6 -D -t "${DESTDIR}${datadir}"/agama/openapi/nightly "${SRCDIR}"/out/openapi.* "${SRCDIR}"/out/openapi_full.*
+install6 -D -t "${DESTDIR}${datadir}"/agama/openapi/nightly "${SRCDIR}"/out/openapi.* "${SRCDIR}"/out/openapi-full.*
 install6 -D -t "${DESTDIR}${datadir}"/agama/openapi/nightly/schemas "${SRCDIR}"/out/schemas/*.schema.json
 install6 -D -t "${DESTDIR}${datadir}"/agama/jsonnet "${SRCDIR}"/share/agama.libsonnet
 
