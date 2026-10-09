@@ -475,6 +475,10 @@ ui_input() {
     printf '> ' >&2
   fi
   IFS= read -r value || return 1
+  # the 3270 terminal can send the empty input field padded with blanks or
+  # with a carriage return, strip the surrounding whitespace
+  value="${value#"${value%%[![:space:]]*}"}"
+  value="${value%"${value##*[![:space:]]}"}"
   [[ -n $value ]] || value=$default
   printf '%s' "$value"
 }
@@ -661,6 +665,14 @@ detect_rmt_url() {
       "$RMT_URL_OPTION="?*) RMT_URL="${option#"$RMT_URL_OPTION"=}" ;;
     esac
   done
+}
+
+# Only display the progress of the unattended installation. The installation
+# running in background reboots the system when it is finished so this call never returns.
+run_unattended() {
+  show_progress_header
+
+  exec agama monitor
 }
 
 # Determine if registration is mandatory (missing local repo).
@@ -1035,25 +1047,45 @@ without a code."
 }
 
 ask_target_disk() {
+  # list of disks (for each disk it contains two items: device name and the model name)
   local -a disks=()
-  local name size model type readonly_flag note
+  # remember already processed device names (multipath devices are reported multiple times)
+  local -A seen=()
+  # data obtained for reach disk
+  local dev size model type readonly_flag note parent_model=""
 
-  # Parse lsblk, handling spaces via  delimiter.
-  while IFS=$'\037' read -r name type size readonly_flag model; do
-    [[ $type == "disk" ]] || continue
+  # Parse lsblk, handling spaces via vertical space delimiter.
+  while IFS=$'\037' read -r dev type size readonly_flag model; do
+    # lsblk lists the children after the parent, remember the model of the last
+    # disk so it can used for the multipath child
+    [[ $type == "disk" ]] && parent_model="$model"
+    # offer only disks or multipath devices
+    [[ $type == "disk" || $type == "mpath" ]] || continue
+    # skip read-only devices
     [[ $readonly_flag == "1" ]] && continue
-    case "$name" in
-      zram* | loop* | sr* | ram*) continue ;;
+    # skip zram, loop-back, DVDs, floppy disks and RAM disks
+    case "${dev##*/}" in
+      zram* | loop* | sr* | fd0 | ram*) continue ;;
     esac
-    # lsblk escapes the spaces in the raw output, undo it for the display
+    # a multipath device is listed once for each path, skip it if it was already processed
+    [[ -n ${seen[$dev]:-} ]] && continue
+    seen[$dev]=1
+
+    # skip the individual paths of a multipath device, only the multipath device itself is offered
+    if [[ $type == "disk" ]] && lsblk -rno TYPE -- "$dev" 2> /dev/null | grep -qx mpath; then
+      continue
+    fi
+    # a multipath device has no model, use the model from its parent device
+    [[ $type == "mpath" && -z $model ]] && model="$parent_model (multipath)"
+    # lsblk escapes the spaces in the raw output, undo it for the display,
     model="${model//\\x20/ }"
-    # a mounted partition usually means the installation medium
     note=""
-    if lsblk -rno MOUNTPOINTS -- "/dev/$name" 2> /dev/null | grep -q '[^[:space:]]'; then
+    if lsblk -rno MOUNTPOINTS -- "$dev" 2> /dev/null | grep -q '[^[:space:]]'; then
+      # a mounted partition usually means the installation medium
       note=" (mounted - installation medium?)"
     fi
-    disks+=("/dev/$name" "${size:-?} ${model:-unknown}${note}")
-  done < <(lsblk -drno NAME,TYPE,SIZE,RO,MODEL | tr ' ' '\037')
+    disks+=("$dev" "[${size:-? M}iB] ${model:-Unknown}${note}")
+  done < <(lsblk -rno PATH,TYPE,SIZE,RO,MODEL | tr ' ' '\037')
 
   if ((${#disks[@]} == 0)); then
     if [[ $(uname -m) == s390* ]]; then
@@ -1756,6 +1788,13 @@ main() {
   parse_arguments "$@"
   harden_environment
   check_prerequisites
+
+  # Skip config workflow in unattended installation 
+  if grep -q "\binst.auto=" /run/agama/cmdline.d/agama.conf; then
+    # this call never returns
+    run_unattended
+  fi
+
   read_template_defaults
   make_secure_dir
 

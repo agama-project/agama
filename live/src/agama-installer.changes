@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Fri Oct  9 14:18:49 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- CC installer improvements (related to jsc#PED-16702):
+  - Skip the CC configuration workflow when running unattended
+    autoinstallation to avoid running two installers in parallel
+  - Support multipath devices for installation
+  - Possible fix for s390x terminal handling
+
+-------------------------------------------------------------------
 Tue Oct  6 13:06:45 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
 
 - Improve error handling in the CC installer, allow changing the
