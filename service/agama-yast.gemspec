@@ -40,7 +40,7 @@ Gem::Specification.new do |spec|
   spec.homepage = "https://github.com/agama-project/agama"
   spec.license = "GPL-2.0-only"
   spec.files = Dir["lib/**/*.rb", "YaST2/**/*.rb", "YaST2/README.md", "YaST2/xslt/*.xslt",
-    "YaST2/scrconf/*.scr", "bin/*", "share/*", "conf.d/*", "install.sh"]
+    "YaST2/scrconf/*.scr", "test/**/*", ".rspec", "bin/*", "share/*", "conf.d/*", "install.sh"]
   spec.require_paths = ["lib", "YaST2/lib"]
   spec.executables = ["agamactl", "agama-autoyast"]
   spec.metadata = { "rubygems_mfa_required" => "true" }

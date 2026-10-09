@@ -1,20 +1,21 @@
 ---
 :sourceurl: "%{mod_full_name}.gem"
 :preamble: |-
-  %global rb_build_versions %{rb_default_ruby}
-  BuildRequires:  dbus-1-common
-  Requires:       dbus-1-common
-:main:
-  :preamble: |-
     # Override build.rpm, see also https://github.com/openSUSE/obs-build/blob/master/configs/
     %global rb_build_versions %{rb_default_ruby}
     BuildRequires:  dbus-1-common
     Requires:       dbus-1-common
     Requires:       dbus-1-daemon
     # YaST dependencies
-    # ArchFilter
+    BuildRequires:  %{rubygem rspec}
+    BuildRequires:  %{rubygem eventmachine}
+    BuildRequires:  yast2-ruby-bindings
+    BuildRequires:  yast2-bootloader
+    BuildRequires:  distribution-release
+
     Requires:       yast2-hardware-detection
     Requires:       libstorage-ng-ruby
+    BuildRequires:  libstorage-ng-ruby
     Requires:       yast2-pkg-bindings
     Requires:       yast2-transfer
     # Needed by service/YaST2/modules/Popup.rb (Yast.import "UI") - previously only a transitive
@@ -55,3 +56,11 @@
     Requires:       util-linux-systemd
     # AutoYaST compatibility
     Requires:       xsltproc
+    BuildRequires:  xsltproc
+    # lsmod
+    BuildRequires:  kmod
+:testsuite_command: |-
+  cd %{buildroot}%{gem_base}/gems/%{mod_full_name}
+  rspec
+
+
