@@ -54,6 +54,7 @@ pub struct MainServiceBuilder {
     config: ServiceConfig,
     events: event::Sender,
     api_router: ApiRouter<ServiceState>,
+    mcp_router: Option<ApiRouter<ServiceState>>,
     public_dir: PathBuf,
 }
 
@@ -72,6 +73,7 @@ impl MainServiceBuilder {
         Self {
             events,
             api_router,
+            mcp_router: None,
             config,
             public_dir: PathBuf::from(public_dir.as_ref()),
         }
@@ -100,6 +102,14 @@ impl MainServiceBuilder {
         }
     }
 
+    /// Mount an MCP service under `/mcp` (protected by authentication middleware).
+    ///
+    /// * `service`: MCP router to mount.
+    pub fn with_mcp_service(mut self, service: impl Into<ApiRouter<()>>) -> Self {
+        self.mcp_router = Some(service.into().with_state(()));
+        self
+    }
+
     /// Builds the service router.
     pub fn build(self) -> ApiRouter {
         let state = ServiceState {
@@ -120,10 +130,20 @@ impl MainServiceBuilder {
         tracing::info!("Serving static files from {}", self.public_dir.display());
         let serve = ServeDir::new(self.public_dir).precompressed_gzip();
 
-        ApiRouter::new()
+        let mut app = ApiRouter::new()
             .route("/login", get(login_from_query))
-            .nest("/api", api_router)
-            .fallback_service(serve)
+            .nest("/api", api_router);
+
+        if let Some(mcp) = self.mcp_router {
+            // /mcp is mounted at root outside /api, so auth_middleware must be applied directly here.
+            let mcp_authenticated = mcp.route_layer(middleware::from_fn_with_state(
+                state.clone(),
+                auth_middleware,
+            ));
+            app = app.nest("/mcp", mcp_authenticated);
+        }
+
+        app.fallback_service(serve)
             .route_layer(middleware::from_fn(version_header))
             .layer(
                 TraceLayer::new_for_http()

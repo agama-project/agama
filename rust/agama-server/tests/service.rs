@@ -106,3 +106,51 @@ async fn test_access_protected_route_failed() -> Result<(), Box<dyn Error>> {
     assert_eq!(response.status(), StatusCode::UNAUTHORIZED);
     Ok(())
 }
+
+#[test]
+async fn test_access_mcp_route_unauthorized() -> Result<(), Box<dyn Error>> {
+    let config = ServiceConfig::default();
+    let (events_tx, _) = channel(16);
+    let mcp_router = axum::Router::new().route("/", get(|| async { "mcp ok" }));
+    let web_service = MainServiceBuilder::new(events_tx, public_dir())
+        .with_mcp_service(mcp_router)
+        .with_config(config)
+        .build();
+
+    let request = Request::builder()
+        .uri("/mcp")
+        .method(Method::GET)
+        .body(Body::empty())
+        .unwrap();
+
+    let response = web_service.oneshot(request).await.unwrap();
+    assert_eq!(response.status(), StatusCode::UNAUTHORIZED);
+    Ok(())
+}
+
+#[test]
+async fn test_access_mcp_route_authorized() -> Result<(), Box<dyn Error>> {
+    let config = ServiceConfig {
+        jwt_secret: "secret123".to_string(),
+    };
+    let (events_tx, _) = channel(16);
+    let mcp_router = axum::Router::new().route("/", get(|| async { "mcp ok" }));
+    let web_service = MainServiceBuilder::new(events_tx, public_dir())
+        .with_mcp_service(mcp_router)
+        .with_config(config)
+        .build();
+
+    let token = AuthToken::generate("secret123")?;
+    let request = Request::builder()
+        .uri("/mcp")
+        .method(Method::GET)
+        .header("Authorization", format!("Bearer {}", token))
+        .body(Body::empty())
+        .unwrap();
+
+    let response = web_service.oneshot(request).await.unwrap();
+    assert_eq!(response.status(), StatusCode::OK);
+    let body = body_to_string(response.into_body()).await;
+    assert_eq!(body, "mcp ok");
+    Ok(())
+}

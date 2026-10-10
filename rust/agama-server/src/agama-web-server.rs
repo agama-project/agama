@@ -97,6 +97,10 @@ struct ServeArgs {
     // Directory containing the web UI code
     #[arg(long)]
     web_ui_dir: Option<PathBuf>,
+
+    /// MCP server mode ('full', 'readonly', 'disabled'). Defaults to kernel command-line (inst.mcp).
+    #[arg(long)]
+    mcp: Option<agama_mcp::McpMode>,
 }
 
 impl ServeArgs {
@@ -338,7 +342,7 @@ async fn serve_command(args: ServeArgs) -> anyhow::Result<()> {
         .web_ui_dir
         .clone()
         .unwrap_or_else(|| PathBuf::from(DEFAULT_WEB_UI_DIR));
-    let service = web::service(config, events_tx, dbus, web_ui_dir).await?;
+    let service = web::service_with_mcp(config, events_tx, dbus, web_ui_dir, args.mcp).await?;
     // TODO: Move elsewhere? Use a singleton? (It would be nice to use the same
     // generated self-signed certificate on both ports.)
     let ssl_acceptor = if let Ok(ssl_acceptor) = ssl_acceptor(&args.to_certificate()?) {
