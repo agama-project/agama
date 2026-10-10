@@ -184,11 +184,11 @@ else
     osc detachbranch "$PROJECT" "$pkg"
   done
 
-  # disable building on aarch64, ppc64le, i586 and s390x, usually not needed
+  # disable building on aarch64, armv6l, armv7l, i586, ppc64le, riscv64 and s390x, usually not needed
   if [ "$ALL_ARCHS" != true ]; then
-    echo "Disabling build on aarch64, i586, ppc64le and s390x"
+    echo "Disabling build on aarch64, armv6l, armv7l, i586, ppc64le, riscv64 and s390x"
     osc meta prj "$PROJECT" | \
-      sed "/<arch>aarch64<\/arch>/d;/<arch>i586<\/arch>/d;/<arch>ppc64le<\/arch>/d;/<arch>s390x<\/arch>/d;" | \
+      sed "/<arch>aarch64<\/arch>/d;/<arch>armv6l<\/arch>/d;/<arch>armv7l<\/arch>/d;/<arch>i586<\/arch>/d;/<arch>ppc64le<\/arch>/d;/<arch>riscv64<\/arch>/d;/<arch>s390x<\/arch>/d;" | \
       osc meta prj -F - "$PROJECT"
   fi
 

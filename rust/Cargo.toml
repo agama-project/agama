@@ -62,7 +62,7 @@ agama-transfer = { path = "agama-transfer" }
 agama-users = { path = "agama-users" }
 agama-utils = { path = "agama-utils" }
 anyhow = { version = "1.0.100" }
-async-trait = { version = "0.1.89" }
+async-trait = { version = "0.1.92" }
 axum = { version = "0.8.9" }
 bindgen = { version = "0.72.1", features = ["runtime"] }
 camino = { version = "1.2.1" }
