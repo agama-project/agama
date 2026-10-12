@@ -227,6 +227,7 @@ async fn test_get_proposal_while_computing() {
     let mut backend_inner = MockBackend::default();
     backend_inner.status.stage = Stage::Configuring;
     backend_inner.status.tasks = vec![agama_utils::api::status::Task {
+        id: 1,
         name: "storage_calc".to_string(),
         description: "Calculating storage proposal".to_string(),
         scope: Scope::Storage,
@@ -235,7 +236,7 @@ async fn test_get_proposal_while_computing() {
     let server = McpServer::with_backend(backend, McpMode::Full);
 
     let res = server.get_proposal().await.unwrap();
-    assert_eq!(res.is_error, None);
+    assert_eq!(res.is_error, Some(false));
     let text = &res.content[0].as_text().unwrap().text;
     assert!(text.contains("proposal_computing"));
     assert!(text.contains("storage_calc"));

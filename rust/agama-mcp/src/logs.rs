@@ -72,11 +72,8 @@ fn query_journal(args: &[&str]) -> String {
 pub fn get_logs(log_type: Option<&str>, lines: Option<usize>) -> String {
     let count = lines.unwrap_or(100).clamp(1, DEFAULT_MAX_LINES);
     let count_str = count.to_string();
-    let scope = log_type
-        .map(|s| s.trim())
-        .unwrap_or("installer")
-        .to_lowercase();
-    let args = journal_args(&scope, &count_str);
+    let scope = log_type.map(|s| s.trim()).unwrap_or("installer");
+    let args = journal_args(scope, &count_str);
 
     query_journal(&args)
 }
@@ -106,6 +103,10 @@ mod tests {
         assert_eq!(
             journal_args("sshd.service", "10"),
             vec!["-u", "sshd.service", "-n", "10", "--no-pager"]
+        );
+        assert_eq!(
+            journal_args("NetworkManager.service", "15"),
+            vec!["-u", "NetworkManager.service", "-n", "15", "--no-pager"]
         );
     }
 
