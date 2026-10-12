@@ -183,6 +183,9 @@ export default {
   "Allow growing": [
     "Izinkan pertumbuhan"
   ],
+  "Allow shrinking": [
+    "Izinkan pengecilan"
+  ],
   "Alongside defining the first user, authentication methods for the root user can be configured.": [
     "Selain mendefinisikan pengguna pertama, metode autentikasi untuk pengguna root dapat dikonfigurasi."
   ],
@@ -659,6 +662,9 @@ export default {
   ],
   "Do not format %s and keep the data": [
     "Jangan memformat %s dan pertahankan data"
+  ],
+  "Do not modify": [
+    "Jangan ubah"
   ],
   "Do not use": [
     "Jangan gunakan"

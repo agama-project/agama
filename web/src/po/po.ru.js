@@ -191,6 +191,9 @@ export default {
   "Allow growing": [
     "Разрешить рост"
   ],
+  "Allow shrinking": [
+    "Разрешить уменьшение"
+  ],
   "Alongside defining the first user, authentication methods for the root user can be configured.": [
     "Наряду с определением первого пользователя можно настроить методы аутентификации для root-пользователя."
   ],
@@ -260,6 +263,9 @@ export default {
   ],
   "Automatic LUN scan is [enabled]. Activating a controller which is       running in NPIV mode will automatically configures all its LUNs.": [
     "Автоматическое сканирование LUN [включено]. Активация контроллера, работающего в режиме NPIV, автоматически сконфигурирует все его LUNы."
+  ],
+  "Available file systems": [
+    "Доступные файловые системы"
   ],
   "Available products": [
     "Доступные продукты"
@@ -563,6 +569,9 @@ export default {
   ],
   "DNS": [
     "DNS"
+  ],
+  "DNS data list": [
+    "Список данных DNS"
   ],
   "Deactivate": [
     "Деактивировать"
@@ -895,7 +904,7 @@ export default {
     "Скрыть сведения"
   ],
   "Hostname": [
-    "Имя узла"
+    "Имя хоста"
   ],
   "Hostname could not be updated": [
     "Не удалось обновить имя узла"
@@ -1598,7 +1607,7 @@ export default {
     "Защищенная сеть"
   ],
   "Security": [
-    "Защита"
+    "Безопасность"
   ],
   "See more details": [
     "См. подробнее"
@@ -1744,7 +1753,7 @@ export default {
     "Перейти к предыдущему"
   ],
   "Software": [
-    "Программы"
+    "Программное обеспечение"
   ],
   "Software %s": [
     "Программное обеспечение %s"
