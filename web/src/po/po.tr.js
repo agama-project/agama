@@ -509,6 +509,9 @@ export default {
   "Configuration from the network plus static addresses and gateway": [
     "Ağdan gelen yapılandırma artı statik adresler ve ağ geçidi"
   ],
+  "Configuration pre-scripts have been executed and may have modified your system. You can reboot or shut down, but any changes made by these scripts will not be undone.": [
+    ""
+  ],
   "Configure": [
     "Yapılandır"
   ],
@@ -893,6 +896,9 @@ export default {
   ],
   "Encryption settings": [
     "Şifreleme ayarları"
+  ],
+  "Enter": [
+    ""
   ],
   "Enter a name": [
     "Bir isim girin"
@@ -1755,6 +1761,9 @@ export default {
   "Potential data loss affecting at least %s": [
     "En az %s oranında veri kaybı riski bulunmaktadır"
   ],
+  "Press %1$s or %2$s to type here, or %3$s to move on.": [
+    ""
+  ],
   "Priority": [
     "Öncelik"
   ],
@@ -2047,6 +2056,9 @@ export default {
   "Shrink existing partitions": [
     "Mevcut bölümleri küçült"
   ],
+  "Shut down": [
+    ""
+  ],
   "Signal strength": [
     "Sinyal gücü"
   ],
@@ -2094,6 +2106,9 @@ export default {
   ],
   "Something went wrong": [
     "Bir şeyler ters gitti"
+  ],
+  "Space": [
+    ""
   ],
   "Spanning Tree Protocol (STP)": [
     "Yayılma Ağacı Protokolü (STP)"
@@ -2154,6 +2169,9 @@ export default {
   ],
   "TPM sealing requires the new system to be booted directly.": [
     "TPM yalıtımıyla yeni sistemin doğrudan başlatılması gerekir."
+  ],
+  "Tab": [
+    ""
   ],
   "Take a moment to review the installation settings below and adjust them as needed.": [
     "Lütfen aşağıdaki kurulum ayarlarını gözden geçirin ve gerektiği gibi ayarlayın."
@@ -2361,6 +2379,9 @@ export default {
   ],
   "The whole device will be used for %s": [
     "Tüm cihaz %s için kullanılacak"
+  ],
+  "Then %1$s+%2$s+%3$s to move out.": [
+    ""
   ],
   "There are not disks available for the installation. You may need to configure some device.": [
     "Kurulum için kullanılabilir disk yok. Bazı aygıtları yapılandırmanız gerekebilir."
@@ -2699,6 +2720,9 @@ export default {
   ],
   "You can safely close this window.": [
     "Bu pencereyi güvenle kapatabilirsiniz."
+  ],
+  "You can safely reboot or shut down the system. No changes have been made to your disks, and your current installation setup will be canceled.": [
+    ""
   ],
   "You may want to discard the current settings and start from scratch with a simple configuration.": [
     "Mevcut ayarları atıp, basit bir yapılandırmayla sıfırdan başlamak isteyebilirsiniz."

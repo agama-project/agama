@@ -758,6 +758,9 @@ export default {
   "Configuration from the network plus static addresses and gateway": [
     "Configuració des de la xarxa més adreces estàtiques i passarel·la"
   ],
+  "Configuration pre-scripts have been executed and may have modified your system. You can reboot or shut down, but any changes made by these scripts will not be undone.": [
+    "S'han executat els scripts de preconfiguració i és possible que hagin modificat el sistema. Podeu reiniciar o apagar l'equip, però els canvis fets per aquests scripts no es desaran."
+  ],
   "Configuration read from the iSCSI Boot Firmware Table (iBFT). Initiator cannot be changed.": [
     "Configuració llegida de la taula del microprogramari d'arrencada d'iSCSI (iBFT). L'iniciador no es pot canviar."
   ],
@@ -1206,6 +1209,9 @@ export default {
   "Encryption settings": [
     "Configuració de l'encriptació"
   ],
+  "Enter": [
+    "Retorn"
+  ],
   "Enter a hostname value.": [
     "Introduïu un valor de nom d'amfitrió."
   ],
@@ -1253,6 +1259,9 @@ export default {
   ],
   "ExFAT": [
     "ExFAT"
+  ],
+  "Exit installation": [
+    "Surt de la instal·lació"
   ],
   "Expand if possible": [
     "Expandeix-la si és possible"
@@ -2295,6 +2304,9 @@ export default {
   "Potential data loss affecting at least %s": [
     "Pèrdua potencial de dades que afecta com a mínim els sistemes següents: %s"
   ],
+  "Press %1$s or %2$s to type here, or %3$s to move on.": [
+    "Premeu %1$s o %2$s per escriure aquí, o bé %3$s per continuar."
+  ],
   "Priority": [
     "Prioritat"
   ],
@@ -2711,6 +2723,9 @@ export default {
   "Shrink existing partitions": [
     "Encongeix les particions existents"
   ],
+  "Shut down": [
+    "Atura"
+  ],
   "Signal strength": [
     "Força del senyal"
   ],
@@ -2776,6 +2791,9 @@ export default {
   ],
   "Something went wrong": [
     "Alguna cosa ha anat malament."
+  ],
+  "Space": [
+    "Espai"
   ],
   "Spanning Tree Protocol (STP)": [
     "Protocol d'arbre d'expansió (STP)"
@@ -2857,6 +2875,9 @@ export default {
   ],
   "TPM sealing requires the new system to be booted directly.": [
     "El segellament TPM requereix que el sistema nou s'iniciï directament."
+  ],
+  "Tab": [
+    "Tabulador"
   ],
   "Take a moment to review the installation settings below and adjust them as needed.": [
     "Dediqueu un moment a revisar els paràmetres d'instal·lació següents i ajusteu-los segons calgui."
@@ -3080,6 +3101,9 @@ export default {
   "The system is rebooting": [
     "El sistema es reinicia"
   ],
+  "The system is shutting down": [
+    "El sistema s'atura"
+  ],
   "The system will boot to a command-line interface.": [
     "El sistema arrencarà des d'una interfície de línia d'ordres."
   ],
@@ -3088,6 +3112,9 @@ export default {
   ],
   "The whole device will be used for %s": [
     "S'usarà el dispositiu sencer per a %s"
+  ],
+  "Then %1$s+%2$s+%3$s to move out.": [
+    "Aleshores %1$s+%2$s+%3$s per sortir-ne."
   ],
   "There are %s deactivated zFCP controllers.": [
     "Hi ha %s controladors de zFCP desactivats."
@@ -3511,6 +3538,9 @@ export default {
   ],
   "You can safely close this window.": [
     "Podeu tancar aquesta finestra amb seguretat."
+  ],
+  "You can safely reboot or shut down the system. No changes have been made to your disks, and your current installation setup will be canceled.": [
+    "Podeu reiniciar o apagar el sistema amb total seguretat. No s'ha fet cap canvi als discos i es cancel·larà la configuració actual de la instal·lació."
   ],
   "You may want to discard the current settings and start from scratch with a simple configuration.": [
     "És possible que vulgueu descartar la configuració actual i començar des de zero amb una configuració simple."

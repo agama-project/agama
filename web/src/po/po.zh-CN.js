@@ -699,6 +699,9 @@ export default {
   "Configuration from the network plus static addresses and gateway": [
     "从网络自动获取配置，外加静态地址和网关"
   ],
+  "Configuration pre-scripts have been executed and may have modified your system. You can reboot or shut down, but any changes made by these scripts will not be undone.": [
+    ""
+  ],
   "Configuration read from the iSCSI Boot Firmware Table (iBFT). Initiator cannot be changed.": [
     "已从 iSCSI 引导固件表 (iBFT) 读取配置。发起端不可更改。"
   ],
@@ -1139,6 +1142,9 @@ export default {
   ],
   "Encryption settings": [
     "加密设置"
+  ],
+  "Enter": [
+    ""
   ],
   "Enter a hostname value.": [
     "请输入主机名。"
@@ -2208,6 +2214,9 @@ export default {
   "Potential data loss affecting at least %s": [
     "至少 %s 存在数据丢失风险"
   ],
+  "Press %1$s or %2$s to type here, or %3$s to move on.": [
+    ""
+  ],
   "Priority": [
     "优先级"
   ],
@@ -2607,6 +2616,9 @@ export default {
   "Shrink existing partitions": [
     "缩小现有分区"
   ],
+  "Shut down": [
+    ""
+  ],
   "Signal strength": [
     "信号强度"
   ],
@@ -2669,6 +2681,9 @@ export default {
   ],
   "Something went wrong": [
     "出了点问题"
+  ],
+  "Space": [
+    ""
   ],
   "Spanning Tree Protocol (STP)": [
     "生成树协议 (STP)"
@@ -2747,6 +2762,9 @@ export default {
   ],
   "TPM sealing requires the new system to be booted directly.": [
     "TPM 密封过程要求新系统直接启动。"
+  ],
+  "Tab": [
+    ""
   ],
   "Take a moment to review the installation settings below and adjust them as needed.": [
     "请花点时间查看下方安装设置，并根据需要加以调整。"
@@ -2969,6 +2987,9 @@ export default {
   ],
   "The whole device will be used for %s": [
     "整个设备将用于 %s"
+  ],
+  "Then %1$s+%2$s+%3$s to move out.": [
+    ""
   ],
   "There are %s deactivated zFCP controllers.": [
     "存在 %s 个停用的 zFCP 控制器。"
@@ -3383,6 +3404,9 @@ export default {
   ],
   "You can safely close this window.": [
     "您可安全关闭此窗口。"
+  ],
+  "You can safely reboot or shut down the system. No changes have been made to your disks, and your current installation setup will be canceled.": [
+    ""
   ],
   "You may want to discard the current settings and start from scratch with a simple configuration.": [
     "您可能需要舍弃当前设置，并采用简单的配置从头开始。"

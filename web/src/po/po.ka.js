@@ -758,6 +758,9 @@ export default {
   "Configuration from the network plus static addresses and gateway": [
     "კონფიგურაცია ქსელიდან, პლუს სტატიკური მისამართები და ნაგულისხმევი რაუტერი"
   ],
+  "Configuration pre-scripts have been executed and may have modified your system. You can reboot or shut down, but any changes made by these scripts will not be undone.": [
+    ""
+  ],
   "Configuration read from the iSCSI Boot Firmware Table (iBFT). Initiator cannot be changed.": [
     "iSCSI-დან ჩამტვირთავი მიკროკოდიდან (iBFT) წაკითხული კონფიგურაცია. ინიციატორის შეცვლა შეუძლებელია."
   ],
@@ -1206,6 +1209,9 @@ export default {
   "Encryption settings": [
     "დაშიფვრის პარამეტრები"
   ],
+  "Enter": [
+    ""
+  ],
   "Enter a hostname value.": [
     "შეიყვანეთ ჰოსტის სახელის მნიშვნელობა."
   ],
@@ -1253,6 +1259,9 @@ export default {
   ],
   "ExFAT": [
     "ExFAT"
+  ],
+  "Exit installation": [
+    "დაყენების პროგრამიდან გასვლა"
   ],
   "Expand if possible": [
     "გაფართოება, თუ შესაძლებელია"
@@ -2295,6 +2304,9 @@ export default {
   "Potential data loss affecting at least %s": [
     "პოტენციური მონაცემთა კარგვა, რომელიც, მინიმუმ, ეხება სისტემას %s"
   ],
+  "Press %1$s or %2$s to type here, or %3$s to move on.": [
+    ""
+  ],
   "Priority": [
     "პრიორიტეტი"
   ],
@@ -2515,7 +2527,7 @@ export default {
     "STP"
   ],
   "SUSE Customer Center (SCC)": [
-    "SUSE Customer Center (SCC)"
+    "SUSE-ის კლიენტების მომსახურების ცენტრი (SCC)"
   ],
   "Security": [
     "უსაფრთხოება"
@@ -2533,7 +2545,7 @@ export default {
     "გრაფიკული ინტერფეისის მისაღებად აირჩიეთ სამუშაო გარემო."
   ],
   "Select a device": [
-    "აირჩიეთ მოწყობილობა"
+    "მოწყობილობის არჩევა"
   ],
   "Select a disk": [
     "აირჩიეთ დისკი"
@@ -2711,6 +2723,9 @@ export default {
   "Shrink existing partitions": [
     "არსებული დანაყოფების დაპატარავება"
   ],
+  "Shut down": [
+    "გამორთვა"
+  ],
   "Signal strength": [
     "სიგნალის სიძლიერე"
   ],
@@ -2776,6 +2791,9 @@ export default {
   ],
   "Something went wrong": [
     "რაღაც არასწორია"
+  ],
+  "Space": [
+    ""
   ],
   "Spanning Tree Protocol (STP)": [
     "პროტოკოლი Spanning Tree (STP)"
@@ -2857,6 +2875,9 @@ export default {
   ],
   "TPM sealing requires the new system to be booted directly.": [
     "TPM-ის დაბეჭდვას ახალი სისტემის პირდაპირ ჩატვირთვა სჭირდება."
+  ],
+  "Tab": [
+    ""
   ],
   "Take a moment to review the installation settings below and adjust them as needed.": [
     ""
@@ -3080,6 +3101,9 @@ export default {
   "The system is rebooting": [
     "მიმდინარეობს სისტემის გადატვირთვა"
   ],
+  "The system is shutting down": [
+    "მიმდინარეობს სისტემის გამორთვა"
+  ],
   "The system will boot to a command-line interface.": [
     "სისტემა ბრძანების სტრიქონის ინტერფეისში ჩაიტვირთება."
   ],
@@ -3088,6 +3112,9 @@ export default {
   ],
   "The whole device will be used for %s": [
     "%s-სთვის გამოყენებული იქნება მთლიანი მოწყობილობა"
+  ],
+  "Then %1$s+%2$s+%3$s to move out.": [
+    "შემდეგ %1$s+%2$s+%3$s გარეთ გასატანად."
   ],
   "There are %s deactivated zFCP controllers.": [
     "არსებობს %s დეაქტივირებული zFCP კონტროლერები."
@@ -3511,6 +3538,9 @@ export default {
   ],
   "You can safely close this window.": [
     "ეს ფანჯარა შეგიძლიათ, უსაფრთხოდ დახუროთ."
+  ],
+  "You can safely reboot or shut down the system. No changes have been made to your disks, and your current installation setup will be canceled.": [
+    ""
   ],
   "You may want to discard the current settings and start from scratch with a simple configuration.": [
     ""

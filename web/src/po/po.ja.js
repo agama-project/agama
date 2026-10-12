@@ -738,6 +738,9 @@ export default {
   "Configuration from the network plus static addresses and gateway": [
     "ネットワーク側からの設定に加え、固定のアドレスとゲートウエイを設定します"
   ],
+  "Configuration pre-scripts have been executed and may have modified your system. You can reboot or shut down, but any changes made by these scripts will not be undone.": [
+    "事前スクリプトを動作させたため、システムに修正が行われている可能性があります。ここからシステムを再起動したりシャットダウンしたりすることができますが、事前スクリプトが修正した内容は元には戻りません。"
+  ],
   "Configuration read from the iSCSI Boot Firmware Table (iBFT). Initiator cannot be changed.": [
     "iSCSI Boot Firmware Table (iBFT) から読み込んだ設定です。イニシエータの設定は変更できません。"
   ],
@@ -1185,6 +1188,9 @@ export default {
   "Encryption settings": [
     "暗号化の設定"
   ],
+  "Enter": [
+    "Enter"
+  ],
   "Enter a hostname value.": [
     "ホスト名を入力してください。"
   ],
@@ -1232,6 +1238,9 @@ export default {
   ],
   "ExFAT": [
     "ExFAT"
+  ],
+  "Exit installation": [
+    "インストールの終了"
   ],
   "Expand if possible": [
     "可能であれば拡張する"
@@ -2268,6 +2277,9 @@ export default {
   "Potential data loss affecting at least %s": [
     "少なくとも %s に影響する潜在的なデータ削除が発生します"
   ],
+  "Press %1$s or %2$s to type here, or %3$s to move on.": [
+    "ここに入力したい場合は %1$s キーまたは %2$s キーを、他の箇所に移動する場合は %3$s をそれぞれ押してください。"
+  ],
   "Priority": [
     "優先度"
   ],
@@ -2682,6 +2694,9 @@ export default {
   "Shrink existing partitions": [
     "既存のパーティションを縮小する"
   ],
+  "Shut down": [
+    "シャットダウン"
+  ],
   "Signal strength": [
     "信号強度"
   ],
@@ -2747,6 +2762,9 @@ export default {
   ],
   "Something went wrong": [
     "何らかの問題が発生しました"
+  ],
+  "Space": [
+    "スペース"
   ],
   "Spanning Tree Protocol (STP)": [
     "スパニングツリープロトコル (STP)"
@@ -2825,6 +2843,9 @@ export default {
   ],
   "TPM sealing requires the new system to be booted directly.": [
     "TPM シーリングを使用するには、新しいシステムを直接起動する必要があります。"
+  ],
+  "Tab": [
+    "Tab"
   ],
   "Take a moment to review the installation settings below and adjust them as needed.": [
     "下記に示すインストール設定をご確認のうえ、必要であれば調整してください。"
@@ -3042,6 +3063,9 @@ export default {
   "The system is rebooting": [
     "システムを再起動しています"
   ],
+  "The system is shutting down": [
+    "システムを再起動しています"
+  ],
   "The system will boot to a command-line interface.": [
     "インストール後のシステムではコマンドラインインターフェイスを使用することになります。"
   ],
@@ -3050,6 +3074,9 @@ export default {
   ],
   "The whole device will be used for %s": [
     "デバイス全体を %s 向けに使用する"
+  ],
+  "Then %1$s+%2$s+%3$s to move out.": [
+    "他の箇所に移動するには %1$s+%2$s+%3$s を押してください。"
   ],
   "There are %s deactivated zFCP controllers.": [
     "%s 個の無効化された zFCP コントローラがあります。"
@@ -3470,6 +3497,9 @@ export default {
   ],
   "You can safely close this window.": [
     "このウインドウは閉じてかまいません。"
+  ],
+  "You can safely reboot or shut down the system. No changes have been made to your disks, and your current installation setup will be canceled.": [
+    "システムを再起動またはシャットダウンして問題有りません。ディスクには一切変更が行われていませんので、ここまでに設定したインストール設定は完全にキャンセルされることになります。"
   ],
   "You may want to discard the current settings and start from scratch with a simple configuration.": [
     "現在の設定を破棄してシンプルな設定からやり直すこともできます。"

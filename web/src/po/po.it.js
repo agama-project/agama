@@ -719,6 +719,9 @@ export default {
   "Configuration from the network plus static addresses and gateway": [
     "Configurazione dalla rete più gateway e indirizzi statici"
   ],
+  "Configuration pre-scripts have been executed and may have modified your system. You can reboot or shut down, but any changes made by these scripts will not be undone.": [
+    ""
+  ],
   "Configuration read from the iSCSI Boot Firmware Table (iBFT). Initiator cannot be changed.": [
     "Configurazione letta da iBFT (iSCSI Boot Firmware Table). Impossibile modificare l'iniziatore."
   ],
@@ -1157,6 +1160,9 @@ export default {
   ],
   "Encryption settings": [
     "Impostazioni di cifratura"
+  ],
+  "Enter": [
+    ""
   ],
   "Enter a hostname value.": [
     "Inserire un valore per il nome host."
@@ -2232,6 +2238,9 @@ export default {
   "Potential data loss affecting at least %s": [
     "Possibile perdita di dati da almeno %s"
   ],
+  "Press %1$s or %2$s to type here, or %3$s to move on.": [
+    ""
+  ],
   "Priority": [
     "Priorità"
   ],
@@ -2633,6 +2642,9 @@ export default {
   "Shrink existing partitions": [
     "Riduci partizioni esistenti"
   ],
+  "Shut down": [
+    ""
+  ],
   "Signal strength": [
     "Potenza del segnale"
   ],
@@ -2695,6 +2707,9 @@ export default {
   ],
   "Something went wrong": [
     "Qualcosa è andato storto"
+  ],
+  "Space": [
+    ""
   ],
   "Spanning Tree Protocol (STP)": [
     "STP (Spanning Tree Protocol)"
@@ -2776,6 +2791,9 @@ export default {
   ],
   "TPM sealing requires the new system to be booted directly.": [
     "Il nuovo sistema deve essere avviato direttamente per permettere la sigillatura TPM."
+  ],
+  "Tab": [
+    ""
   ],
   "Take a moment to review the installation settings below and adjust them as needed.": [
     "Esaminare le impostazioni di seguito e modificarle secondo necessità."
@@ -3004,6 +3022,9 @@ export default {
   ],
   "The whole device will be used for %s": [
     "L'intero dispositivo verrà utilizzato per %s"
+  ],
+  "Then %1$s+%2$s+%3$s to move out.": [
+    ""
   ],
   "There are %s deactivated zFCP controllers.": [
     "Esistono %s controller zFCP disattivati."
@@ -3421,6 +3442,9 @@ export default {
   ],
   "You can safely close this window.": [
     "Puoi chiudere con sicurezza questa finestra."
+  ],
+  "You can safely reboot or shut down the system. No changes have been made to your disks, and your current installation setup will be canceled.": [
+    ""
   ],
   "You may want to discard the current settings and start from scratch with a simple configuration.": [
     "Se lo si desidera, è possibile ignorare le impostazioni attuali e iniziare da zero con una configurazione semplice."

@@ -719,6 +719,9 @@ export default {
   "Configuration from the network plus static addresses and gateway": [
     "Configuration à partir du réseau, plus adresse statique et passerelle aussi"
   ],
+  "Configuration pre-scripts have been executed and may have modified your system. You can reboot or shut down, but any changes made by these scripts will not be undone.": [
+    ""
+  ],
   "Configuration read from the iSCSI Boot Firmware Table (iBFT). Initiator cannot be changed.": [
     "Configuration lue à partir de la table iSCSI Boot Firmware (iBFT). L’initiateur ne peut pas être modifié."
   ],
@@ -1160,6 +1163,9 @@ export default {
   ],
   "Encryption settings": [
     "Paramètres de chiffrement"
+  ],
+  "Enter": [
+    ""
   ],
   "Enter a hostname value.": [
     "Entrez une valeur de nom d'hôte."
@@ -2235,6 +2241,9 @@ export default {
   "Potential data loss affecting at least %s": [
     "Perte potentielle de données affectant au moins %s"
   ],
+  "Press %1$s or %2$s to type here, or %3$s to move on.": [
+    ""
+  ],
   "Priority": [
     "Priorité"
   ],
@@ -2636,6 +2645,9 @@ export default {
   "Shrink existing partitions": [
     "Réduire les partitions existantes"
   ],
+  "Shut down": [
+    ""
+  ],
   "Signal strength": [
     "Intensité du signal"
   ],
@@ -2698,6 +2710,9 @@ export default {
   ],
   "Something went wrong": [
     "Quelque chose n'a pas fonctionné"
+  ],
+  "Space": [
+    ""
   ],
   "Spanning Tree Protocol (STP)": [
     "Spanning Tree Protocol (STP)"
@@ -2779,6 +2794,9 @@ export default {
   ],
   "TPM sealing requires the new system to be booted directly.": [
     "Le cryptage via TPM impose que le nouveau système soit démarré directement."
+  ],
+  "Tab": [
+    ""
   ],
   "Take a moment to review the installation settings below and adjust them as needed.": [
     "Prenez un moment pour examiner les paramètres d’installation ci-dessous et les ajuster si nécessaire."
@@ -3007,6 +3025,9 @@ export default {
   ],
   "The whole device will be used for %s": [
     "Tout le périphérique sera utilisé pour %s"
+  ],
+  "Then %1$s+%2$s+%3$s to move out.": [
+    ""
   ],
   "There are %s deactivated zFCP controllers.": [
     "Il y a %s contrôleurs zFCP désactivés."
@@ -3424,6 +3445,9 @@ export default {
   ],
   "You can safely close this window.": [
     "Vous pouvez fermer cette fenêtre en toute sécurité."
+  ],
+  "You can safely reboot or shut down the system. No changes have been made to your disks, and your current installation setup will be canceled.": [
+    ""
   ],
   "You may want to discard the current settings and start from scratch with a simple configuration.": [
     "Il se peut que vous souhaitiez supprimer les paramètres actuels et repartir de zéro avec une configuration simple."

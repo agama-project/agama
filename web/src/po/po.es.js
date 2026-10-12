@@ -758,6 +758,9 @@ export default {
   "Configuration from the network plus static addresses and gateway": [
     "Configuración desde la red además direcciones estáticas y puerta de enlace"
   ],
+  "Configuration pre-scripts have been executed and may have modified your system. You can reboot or shut down, but any changes made by these scripts will not be undone.": [
+    ""
+  ],
   "Configuration read from the iSCSI Boot Firmware Table (iBFT). Initiator cannot be changed.": [
     "Configuración leída de la tabla de firmware de arranque iSCSI (iBFT). El iniciador no se puede cambiar."
   ],
@@ -1205,6 +1208,9 @@ export default {
   ],
   "Encryption settings": [
     "Ajustes de cifrado"
+  ],
+  "Enter": [
+    ""
   ],
   "Enter a hostname value.": [
     "Introduzca un valor para el nombre de host."
@@ -2295,6 +2301,9 @@ export default {
   "Potential data loss affecting at least %s": [
     "Posible pérdida de datos que afecta al menos a %s"
   ],
+  "Press %1$s or %2$s to type here, or %3$s to move on.": [
+    ""
+  ],
   "Priority": [
     "Prioridad"
   ],
@@ -2711,6 +2720,9 @@ export default {
   "Shrink existing partitions": [
     "Reducir las particiones existentes"
   ],
+  "Shut down": [
+    ""
+  ],
   "Signal strength": [
     "Intensidad de la señal"
   ],
@@ -2776,6 +2788,9 @@ export default {
   ],
   "Something went wrong": [
     "Algo ha fallado"
+  ],
+  "Space": [
+    ""
   ],
   "Spanning Tree Protocol (STP)": [
     "Protocolo de árbol de expansión (STP)"
@@ -2857,6 +2872,9 @@ export default {
   ],
   "TPM sealing requires the new system to be booted directly.": [
     "El sellado TPM requiere que el nuevo sistema se inicie directamente."
+  ],
+  "Tab": [
+    ""
   ],
   "Take a moment to review the installation settings below and adjust them as needed.": [
     "Tómate un momento para revisar la configuración de instalación a continuación y ajústala según sea necesario."
@@ -3511,6 +3529,9 @@ export default {
   ],
   "You can safely close this window.": [
     "Puedes cerrar esta ventana sin problemas."
+  ],
+  "You can safely reboot or shut down the system. No changes have been made to your disks, and your current installation setup will be canceled.": [
+    ""
   ],
   "You may want to discard the current settings and start from scratch with a simple configuration.": [
     "Quizá quiera descartar los ajustes actuales y empezar desde cero con una configuración sencilla."

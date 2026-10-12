@@ -110,7 +110,7 @@ export default {
     "%d mer"
   ],
   "%d options available.": [
-    "%d alternativ tillgängliga"
+    "%d alternativ tillgängliga."
   ],
   "%d other mode available": [
     "%d annat läge tillgängligt",
@@ -758,6 +758,9 @@ export default {
   "Configuration from the network plus static addresses and gateway": [
     "Konfiguration från nätverket plus statiska adresser och gateway"
   ],
+  "Configuration pre-scripts have been executed and may have modified your system. You can reboot or shut down, but any changes made by these scripts will not be undone.": [
+    "Förkonfigurationsskript har körts och kan ha ändrat ditt system. Du kan starta om eller stänga av datorn, men eventuella ändringar som gjorts av dessa skript kommer inte att återställas."
+  ],
   "Configuration read from the iSCSI Boot Firmware Table (iBFT). Initiator cannot be changed.": [
     "Konfiguration läst från iSCSI Boot Firmware Table (iBFT). Initieraren kan inte ändras."
   ],
@@ -1102,7 +1105,7 @@ export default {
     "Nedåtpil för alternativ, Enter för att lägga till, Delete för att ta bort, piltangenter för att navigera"
   ],
   "Down arrow opens the list of options.": [
-    "Nedåtpil  öppnar listan med alternativ."
+    "Nedåtpil öppnar listan med alternativ."
   ],
   "Download configuration": [
     "Ladda ner konfiguration"
@@ -1206,6 +1209,9 @@ export default {
   "Encryption settings": [
     "Krypteringsinställningar"
   ],
+  "Enter": [
+    "Enter"
+  ],
   "Enter a hostname value.": [
     "Ange ett värdnamn värde."
   ],
@@ -1253,6 +1259,9 @@ export default {
   ],
   "ExFAT": [
     "ExFAT"
+  ],
+  "Exit installation": [
+    "Avsluta installation"
   ],
   "Expand if possible": [
     "Expandera om möjligt"
@@ -2295,6 +2304,9 @@ export default {
   "Potential data loss affecting at least %s": [
     "Potentiell dataförlust som påverkar minst %s"
   ],
+  "Press %1$s or %2$s to type here, or %3$s to move on.": [
+    "Tryck på %1$s eller %2$s för att skriva här, eller %3$s för att gå vidare."
+  ],
   "Priority": [
     "Prioritet"
   ],
@@ -2711,6 +2723,9 @@ export default {
   "Shrink existing partitions": [
     "Krymp existerande partitioner"
   ],
+  "Shut down": [
+    "Stäng av"
+  ],
   "Signal strength": [
     "Signalstyrka"
   ],
@@ -2776,6 +2791,9 @@ export default {
   ],
   "Something went wrong": [
     "Något gick fel"
+  ],
+  "Space": [
+    "Mellanslag"
   ],
   "Spanning Tree Protocol (STP)": [
     "Spanning Tree-protokoll (STP)"
@@ -2857,6 +2875,9 @@ export default {
   ],
   "TPM sealing requires the new system to be booted directly.": [
     "TPM-försegling kräver att det nya systemet startas upp direkt."
+  ],
+  "Tab": [
+    "Tabb"
   ],
   "Take a moment to review the installation settings below and adjust them as needed.": [
     "Ta en stund för att granska installationsinställningarna nedan och justera dem efter behov."
@@ -3080,6 +3101,9 @@ export default {
   "The system is rebooting": [
     "Systemet startar om"
   ],
+  "The system is shutting down": [
+    "Systemet stängs av"
+  ],
   "The system will boot to a command-line interface.": [
     "Systemet kommer att starta till ett kommandoradsgränssnitt."
   ],
@@ -3088,6 +3112,9 @@ export default {
   ],
   "The whole device will be used for %s": [
     "Hela enheten kommer att användas för %s"
+  ],
+  "Then %1$s+%2$s+%3$s to move out.": [
+    "Sedan %1$s+%2$s+%3$s för att flytta ut."
   ],
   "There are %s deactivated zFCP controllers.": [
     "Det finns %s inaktiverade zFCP-styrenheter."
@@ -3511,6 +3538,9 @@ export default {
   ],
   "You can safely close this window.": [
     "Du kan säkert stänga det här fönstret."
+  ],
+  "You can safely reboot or shut down the system. No changes have been made to your disks, and your current installation setup will be canceled.": [
+    "Du kan säkert starta om eller stänga av systemet. Inga ändringar har gjorts på dina diskar, och din nuvarande installationskonfiguration kommer att avbrytas."
   ],
   "You may want to discard the current settings and start from scratch with a simple configuration.": [
     "Du kanske vill ignorera de nuvarande inställningarna och börja från början med en enkel konfiguration."

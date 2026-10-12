@@ -739,6 +739,9 @@ export default {
   "Configuration from the network plus static addresses and gateway": [
     "Конфигурация из сети плюс статические адреса и шлюз"
   ],
+  "Configuration pre-scripts have been executed and may have modified your system. You can reboot or shut down, but any changes made by these scripts will not be undone.": [
+    ""
+  ],
   "Configuration read from the iSCSI Boot Firmware Table (iBFT). Initiator cannot be changed.": [
     "Конфигурация, считываемая из таблицы прошивки iSCSI Boot Firmware Table (iBFT). Инициатор не может быть изменен."
   ],
@@ -1181,6 +1184,9 @@ export default {
   ],
   "Encryption settings": [
     "Настройки шифрования"
+  ],
+  "Enter": [
+    ""
   ],
   "Enter a hostname value.": [
     "Введите значение имени хоста."
@@ -2262,6 +2268,9 @@ export default {
   "Potential data loss affecting at least %s": [
     "Существует риск потери данных, затрагивающий %s"
   ],
+  "Press %1$s or %2$s to type here, or %3$s to move on.": [
+    ""
+  ],
   "Priority": [
     "Приоритет"
   ],
@@ -2665,6 +2674,9 @@ export default {
   "Shrink existing partitions": [
     "Уменьшение существующих разделов"
   ],
+  "Shut down": [
+    ""
+  ],
   "Signal strength": [
     "Уровень сигнала"
   ],
@@ -2727,6 +2739,9 @@ export default {
   ],
   "Something went wrong": [
     "Что-то пошло не так"
+  ],
+  "Space": [
+    ""
   ],
   "Spanning Tree Protocol (STP)": [
     "Протокол связующего дерева (STP)"
@@ -2811,6 +2826,9 @@ export default {
   ],
   "TPM sealing requires the new system to be booted directly.": [
     "Запечатывание TPM требует прямой загрузки новой системы."
+  ],
+  "Tab": [
+    ""
   ],
   "Take a moment to review the installation settings below and adjust them as needed.": [
     "Уделите немного времени, чтобы ознакомиться с параметрами установки ниже и при необходимости изменить их."
@@ -3045,6 +3063,9 @@ export default {
   ],
   "The whole device will be used for %s": [
     "Всё устройство будет использовано для %s"
+  ],
+  "Then %1$s+%2$s+%3$s to move out.": [
+    ""
   ],
   "There are %s deactivated zFCP controllers.": [
     "Есть %s деактивированных контроллеров zFCP."
@@ -3465,6 +3486,9 @@ export default {
   ],
   "You can safely close this window.": [
     "Это окно можно закрыть."
+  ],
+  "You can safely reboot or shut down the system. No changes have been made to your disks, and your current installation setup will be canceled.": [
+    ""
   ],
   "You may want to discard the current settings and start from scratch with a simple configuration.": [
     "Возможно, вы захотите отказаться от текущих настроек и начать с нуля, используя простую конфигурацию."

@@ -758,6 +758,9 @@ export default {
   "Configuration from the network plus static addresses and gateway": [
     "Konfiguration über das Netzwerk sowie statische Adressen und Gateway"
   ],
+  "Configuration pre-scripts have been executed and may have modified your system. You can reboot or shut down, but any changes made by these scripts will not be undone.": [
+    "Die Konfigurations-Präskripte wurden ausgeführt und haben möglicherweise Änderungen an Ihrem System vorgenommen. Sie können den Computer neu starten oder herunterfahren, jedoch werden die durch diese Skripte vorgenommenen Änderungen nicht rückgängig gemacht."
+  ],
   "Configuration read from the iSCSI Boot Firmware Table (iBFT). Initiator cannot be changed.": [
     "Konfiguration aus der iSCSI-Boot-Firmware-Tabelle (iBFT) gelesen. Initiator kann nicht geändert werden."
   ],
@@ -1206,6 +1209,9 @@ export default {
   "Encryption settings": [
     "Verschlüsselungseinstellungen"
   ],
+  "Enter": [
+    "Eingabetaste"
+  ],
   "Enter a hostname value.": [
     "Geben Sie einen Hostnamenwert ein."
   ],
@@ -1240,16 +1246,22 @@ export default {
     "Mit der Eingabetaste wird ein ausgewählter Wert aus der Liste übernommen oder ein eingegebener Wert in das Textfeld übernommen, mit der Entf-Taste wird er gelöscht, mit den Pfeiltasten kann man zwischen den Werten wechseln."
   ],
   "Enter shows a value in the list, Delete removes it, arrow keys move between values.": [
-    ""
+    "Mit der Eingabetaste wird ein Wert in der Liste ausgewählt, mit der Entf-Taste wird er entfernt, mit den Pfeiltasten kann man zwischen den Werten wechseln."
   ],
   "Enter shows or hides the remaining values.": [
     "Mit der Eingabetaste werden die verbleibenden Werte ein- oder ausgeblendet."
+  ],
+  "Enter takes a value back to the text box, Delete removes it, arrow keys move between values.": [
+    "Mit der Eingabetaste wird ein Wert in das Textfeld übernommen, mit der Entf-Taste wird er gelöscht, mit den Pfeiltasten kann man zwischen den Werten wechseln."
   ],
   "Ethernet": [
     "Ethernet"
   ],
   "ExFAT": [
     "ExFAT"
+  ],
+  "Exit installation": [
+    "Installation beenden"
   ],
   "Expand if possible": [
     "Wenn möglich erweitern"
@@ -2292,6 +2304,9 @@ export default {
   "Potential data loss affecting at least %s": [
     "Potenzieller Datenverlust, von dem mindestens %s betroffen sind"
   ],
+  "Press %1$s or %2$s to type here, or %3$s to move on.": [
+    "Drücken Sie %1$s oder %2$s, um hier zu tippen, oder %3$s, um weiterzumachen."
+  ],
   "Priority": [
     "Priorität"
   ],
@@ -2572,6 +2587,12 @@ export default {
   "Select at least one disk.": [
     "Wählen Sie mindestens eine Festplatte aus."
   ],
+  "Select bond ports": [
+    "Bündelungsports auswählen"
+  ],
+  "Select bridge ports": [
+    "Brückenports auswählen"
+  ],
   "Select device": [
     "Gerät auswählen"
   ],
@@ -2702,6 +2723,9 @@ export default {
   "Shrink existing partitions": [
     "Vorhandene Partitionen verkleinern"
   ],
+  "Shut down": [
+    "Herunterfahren"
+  ],
   "Signal strength": [
     "Signalstärke"
   ],
@@ -2767,6 +2791,9 @@ export default {
   ],
   "Something went wrong": [
     "Etwas ist schiefgelaufen"
+  ],
+  "Space": [
+    "Leertaste"
   ],
   "Spanning Tree Protocol (STP)": [
     "Spanning Tree Protocol (STP)"
@@ -2848,6 +2875,9 @@ export default {
   ],
   "TPM sealing requires the new system to be booted directly.": [
     "Bei der TPM-Versiegelung muss das neue System direkt gebootet werden."
+  ],
+  "Tab": [
+    "Tabulator"
   ],
   "Take a moment to review the installation settings below and adjust them as needed.": [
     "Nehmen Sie sich einen Moment Zeit, um die folgenden Installationseinstellungen zu überprüfen und gegebenenfalls anzupassen."
@@ -3005,6 +3035,9 @@ export default {
     "Das logische Volume wird ebenfalls gelöscht",
     "Die logischen Volumes werden ebenfalls gelöscht"
   ],
+  "The loopback device cannot be a port": [
+    "Das Schleifenschaltungsgerät darf kein Port sein"
+  ],
   "The modal selector offers a simplified interface designed for quick and straightforward use, without overwhelming the user.": [
     "Die modale Auswahl bietet eine vereinfachte Schnittstelle, die für eine schnelle und unkomplizierte Nutzung ausgelegt ist, ohne den Benutzer zu überfordern."
   ],
@@ -3068,6 +3101,9 @@ export default {
   "The system is rebooting": [
     "Das System wird neu gestartet"
   ],
+  "The system is shutting down": [
+    "Das System wird heruntergefahren"
+  ],
   "The system will boot to a command-line interface.": [
     "Das System startet mit einer Befehlszeilenschnittstelle."
   ],
@@ -3076,6 +3112,9 @@ export default {
   ],
   "The whole device will be used for %s": [
     "Das gesamte Gerät wird für %s verwendet"
+  ],
+  "Then %1$s+%2$s+%3$s to move out.": [
+    "Dann %1$s+%2$s+%3$s, um weiterzuziehen."
   ],
   "There are %s deactivated zFCP controllers.": [
     "Es gibt %s deaktivierte zFCP-Controller."
@@ -3499,6 +3538,9 @@ export default {
   ],
   "You can safely close this window.": [
     "Sie können dieses Fenster gefahrlos schließen."
+  ],
+  "You can safely reboot or shut down the system. No changes have been made to your disks, and your current installation setup will be canceled.": [
+    "Sie können das System bedenkenlos neu starten oder herunterfahren. Es wurden keine Änderungen an Ihren Festplatten vorgenommen, und Ihre aktuelle Installation wird abgebrochen."
   ],
   "You may want to discard the current settings and start from scratch with a simple configuration.": [
     "Möglicherweise möchten Sie die aktuellen Einstellungen verwerfen und mit einer einfachen Konfiguration neu beginnen."
