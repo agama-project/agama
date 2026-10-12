@@ -1054,7 +1054,7 @@ ask_target_disk() {
   # data obtained for reach disk
   local dev size model type readonly_flag note parent_model=""
 
-  # Parse lsblk, handling spaces via vertical space delimiter.
+  # Parse lsblk, handling spaces via "Unit Separator" delimiter.
   while IFS=$'\037' read -r dev type size readonly_flag model; do
     # lsblk lists the children after the parent, remember the model of the last
     # disk so it can used for the multipath child
