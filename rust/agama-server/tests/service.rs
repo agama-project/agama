@@ -111,7 +111,9 @@ async fn test_access_protected_route_failed() -> Result<(), Box<dyn Error>> {
 async fn test_access_mcp_route_unauthorized() -> Result<(), Box<dyn Error>> {
     let config = ServiceConfig::default();
     let (events_tx, _) = channel(16);
-    let mcp_router = axum::Router::new().route("/", get(|| async { "mcp ok" }));
+    // Use fallback_service without explicit routes to mirror agama-mcp's router structure
+    // and verify that MainServiceBuilder handles fallback-only MCP services without panicking.
+    let mcp_router = axum::Router::new().fallback_service(get(|| async { "mcp ok" }));
     let web_service = MainServiceBuilder::new(events_tx, public_dir())
         .with_mcp_service(mcp_router)
         .with_config(config)
@@ -134,7 +136,8 @@ async fn test_access_mcp_route_authorized() -> Result<(), Box<dyn Error>> {
         jwt_secret: "secret123".to_string(),
     };
     let (events_tx, _) = channel(16);
-    let mcp_router = axum::Router::new().route("/", get(|| async { "mcp ok" }));
+    // Use fallback_service without explicit routes to mirror agama-mcp's router structure
+    let mcp_router = axum::Router::new().fallback_service(get(|| async { "mcp ok" }));
     let web_service = MainServiceBuilder::new(events_tx, public_dir())
         .with_mcp_service(mcp_router)
         .with_config(config)

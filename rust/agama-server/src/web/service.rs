@@ -136,7 +136,7 @@ impl MainServiceBuilder {
 
         if let Some(mcp) = self.mcp_router {
             // /mcp is mounted at root outside /api, so auth_middleware must be applied directly here.
-            let mcp_authenticated = mcp.route_layer(middleware::from_fn_with_state(
+            let mcp_authenticated = mcp.layer(middleware::from_fn_with_state(
                 state.clone(),
                 auth_middleware,
             ));

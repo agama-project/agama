@@ -19,12 +19,16 @@
 // find current contact information at www.suse.com.
 
 //! Error types for the Agama MCP Server.
+//!
+//! MCP Error Handling Model:
+//! - **Tool-level errors (`tool_error`)**: Returned as `Ok(CallToolResult)` with `isError: true`, sending actionable feedback to the LLM's context window so it can self-correct.
+//! - **Protocol-level errors (`Error`)**: Converted into JSON-RPC `ErrorData` (`error: { code, message }`), aborting the call at transport level (used for permission denials and internal crashes).
 
 use agama_utils::question;
 use rmcp::handler::server::tool::IntoCallToolResult;
 use rmcp::model::{CallToolResponse, ErrorCode, ErrorData};
 
-/// Errors originating from backend installer operations.
+/// Internal backend errors from Agama actors, converted to `tool_error` so the AI sees why the action failed.
 #[derive(thiserror::Error, Debug)]
 pub enum BackendError {
     #[error("Manager error: {0}")]
@@ -37,12 +41,14 @@ pub enum BackendError {
     Other(String),
 }
 
-/// Protocol-level errors occurring during MCP tool dispatch.
+/// Protocol-level errors returning JSON-RPC `error: { code, message }` instead of tool output.
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
+    /// Read-only authorization failure (JSON-RPC 403 Forbidden).
     #[error("403 Forbidden: commit_install is disabled in read-only mode (inst.mcp=readonly). A human operator must approve and trigger installation via the Agama Web UI.")]
     ReadOnly,
 
+    /// Unrecoverable response serialization failure (JSON-RPC -32603 Internal Error).
     #[error("JSON serialization error: {0}")]
     Json(#[from] serde_json::Error),
 }
