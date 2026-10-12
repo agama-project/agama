@@ -104,7 +104,6 @@ export default function DriveMenu({ entry, device, subject }: DriveMenuProps): R
                 is read and changed. */}
             {_("Configure")}
           </MenuButtonItem>,
-          <Divider key="before-retarget" />,
         ]
       : []),
     <NewVgMenuOption key="volume-group" device={entry} />,

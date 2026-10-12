@@ -29,10 +29,12 @@ import RowMenuToggle from "~/components/storage/entries-table/RowMenuToggle";
 import SearchedVolumeGroupMenu from "~/components/storage/SearchedVolumeGroupMenu";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { generateEncodedPath } from "~/utils";
+import { baseName, formattedPath } from "~/components/storage/utils";
 import { useSheet } from "~/components/storage/shared/use-sheet";
-import { useDeleteVolumeGroup } from "~/hooks/model/storage/config-model";
+import { useConfigModel, useDeleteVolumeGroup } from "~/hooks/model/storage/config-model";
+import configModel from "~/model/storage/config-model";
 import { useDevice } from "~/hooks/model/system/storage";
-import { _ } from "~/i18n";
+import { _, n_, formatList } from "~/i18n";
 import type { ConfigModel } from "~/model/storage/config-model";
 import type { SheetEntry } from "~/components/storage/shared/use-sheet";
 
@@ -53,13 +55,18 @@ export type VolumeGroupMenuProps = {
  * defined, or stop defining it.
  */
 export default function VolumeGroupMenu({ group, subject }: VolumeGroupMenuProps): React.ReactNode {
+  const config = useConfigModel();
   const navigate = useNavigate();
   const deleteVolumeGroup = useDeleteVolumeGroup();
   const device = useDevice(group.name || "");
+  const lvs = group.logicalVolumes.map((lv) => formattedPath(lv.mountPath));
+  const targetDevices = configModel.volumeGroup.filterTargetDevices(config, group);
+  const convert = targetDevices.length === 1 && !!lvs.length;
   const { openSheet } = useSheet();
   // TRANSLATORS: names the menu of things that can be done to one LVM volume
   // group of the installation. %s is its name, such as "system".
   const label = sprintf(_("Actions for %s"), group.vgName);
+  let description: string;
 
   if (group.name) {
     return (
@@ -69,6 +76,29 @@ export default function VolumeGroupMenu({ group, subject }: VolumeGroupMenuProps
         toggle={<RowMenuToggle label={label} />}
       />
     );
+  }
+
+  if (lvs.length) {
+    if (convert) {
+      const diskName = baseName(targetDevices[0].name, { truncate: true });
+      description = sprintf(
+        n_(
+          // TRANSLATORS: %1$s is a list of formatted mount points like '"/", "/var" and "swap"' (or a
+          // single mount point in the singular case). %2$s is a disk name like sda.
+          "%1$s will be created as a partition at %2$s",
+          "%1$s will be created as partitions at %2$s",
+          lvs.length,
+        ),
+        formatList(lvs),
+        diskName,
+      );
+    } else {
+      description = n_(
+        "The logical volume will also be deleted",
+        "The logical volumes will also be deleted",
+        lvs.length,
+      );
+    }
   }
 
   return (
@@ -99,13 +129,12 @@ export default function VolumeGroupMenu({ group, subject }: VolumeGroupMenuProps
                     installation is read and changed. */}
                 {_("Configure")}
               </MenuButtonItem>,
-              <Divider key="before-edit" />,
             ]
           : []),
         <MenuButtonItem
           key="edit"
           onClick={() =>
-            navigate(generateEncodedPath(PATHS.volumeGroup.edit, { id: group.vgName }))
+            navigate(generateEncodedPath(PATHS.volumeGroup.edit, { id: String(subject.index) }))
           }
         >
           {/* TRANSLATORS: offered on an LVM volume group of the installation:
@@ -116,11 +145,10 @@ export default function VolumeGroupMenu({ group, subject }: VolumeGroupMenuProps
         <MenuButtonItem
           key="remove"
           isDanger
-          onClick={() => deleteVolumeGroup(group.vgName, false)}
+          description={description}
+          onClick={() => deleteVolumeGroup(group.vgName, convert)}
         >
-          {/* TRANSLATORS: offered on an LVM volume group of the installation:
-              take it out of the plan altogether. */}
-          {_("Do not use")}
+          {_("Delete volume group")}
         </MenuButtonItem>,
       ]}
     />
