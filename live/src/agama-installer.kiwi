@@ -76,8 +76,6 @@
         <package name="grub2-powerpc-ieee1275" arch="ppc64le"/>
         <package name="syslinux" arch="x86_64"/>
         <package name="openssh"/>
-        <!-- used by the CC installer for hashing the passwords -->
-        <package name="openssl-3"/>
         <package name="iproute2"/>
         <package name="less"/>
         <package name="bash-completion"/>
@@ -174,6 +172,10 @@
         <package name="grub2-branding-SLE" arch="aarch64,x86_64"/>
         <package name="patterns-base-base"/>
         <package name="suse-build-key"/>
+        <!-- used by the CC installer for hashing the passwords -->
+        <package name="openssl-3"/>
+        <!-- used by the CC installer for checking password quality -->
+        <package name="certification-sles-eal4-password-check"/>
     </packages>
     <packages type="image" profiles="SUSE_SLE_16">
         <package name="MozillaFirefox-branding-SLE"/>
