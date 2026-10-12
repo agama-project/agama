@@ -234,6 +234,9 @@ export default {
   "Actions": [
     "Tindakan"
   ],
+  "Actions for %s": [
+    "Tindakan untuk %s"
+  ],
   "Actions for %s at portal %s": [
     "Tindakan untuk %s pada portal %s"
   ],
@@ -338,6 +341,9 @@ export default {
   ],
   "Allow growing": [
     "Izinkan pertumbuhan"
+  ],
+  "Allow shrinking": [
+    "Izinkan pengecilan"
   ],
   "Already using all available devices": [
     "Sudah menggunakan semua perangkat yang tersedia"
@@ -1004,6 +1010,9 @@ export default {
   ],
   "Do not format %s and keep data": [
     "Jangan format %s dan pertahankan data"
+  ],
+  "Do not modify": [
+    "Jangan ubah"
   ],
   "Do not register": [
     "Jangan daftarkan"
