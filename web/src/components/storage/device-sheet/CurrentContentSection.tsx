@@ -487,8 +487,9 @@ export default function CurrentContentSection({
           so the decision is offered there too. */}
       {rows.some((row) => !isFreeSpace(row)) && (
         <SheetSection
-          // TRANSLATORS: heading over what happens to what is on a device today.
-          title={_("What to do with the previous content")}
+          // TRANSLATORS: heading over the partitions a device has today, and
+          // what will happen to them.
+          title={_("Existing partitions")}
           actions={
             <SpaceDecision
               collection={subject.collection}

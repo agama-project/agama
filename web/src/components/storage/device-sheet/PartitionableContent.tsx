@@ -98,7 +98,7 @@ export default function PartitionableContent({
     <SheetSection
       // TRANSLATORS: heading over the partitions the installer will create in
       // a disk.
-      title={_("New partitions to create in the disk")}
+      title={_("New partitions")}
     >
       {!!planned.length && !users.length && (
         <PlannedContentSection entry={entry} subject={subject} />
