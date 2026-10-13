@@ -54,7 +54,7 @@ describe("TopLine", () => {
   it("says what the page is for, naming no technology", () => {
     installerRender(<TopLine />);
 
-    screen.getByText("Choose devices to use and how to structure them");
+    screen.getByText("Configure which storage devices will be used to install and how");
   });
 
   describe("the two installation decisions", () => {
