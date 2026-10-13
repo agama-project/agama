@@ -31,7 +31,7 @@ export default function VolumeGroupContent({ entry, subject }: DeviceDetailProps
     <SheetSection
       // TRANSLATORS: heading over the logical volumes the installer will
       // create in a volume group.
-      title={_("New LVM logical volumes to create in the volume group")}
+      title={_("New logical volumes")}
     >
       <PlannedContentSection entry={entry} subject={subject} />
     </SheetSection>
