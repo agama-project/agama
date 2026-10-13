@@ -22,7 +22,7 @@
 
 import React from "react";
 import { screen } from "@testing-library/react";
-import { installerRender } from "~/test-utils";
+import { installerRender, mockNavigateFn } from "~/test-utils";
 import type { Storage as System } from "~/model/system";
 import type { Storage as Proposal } from "~/model/proposal";
 import Consequences from "~/components/storage/storage-page/Consequences";
@@ -58,9 +58,15 @@ const facts = (count: number) =>
     ? "As a result, 1 action will be performed during installation to set up the final storage layout."
     : `As a result, ${count} actions will be performed during installation to set up the final storage layout.`;
 
-/** What the line says beyond the facts sentence. */
+/** The way into the whole picture, which the line always offers. */
+const wayIn = () => screen.getByRole("link", { name: "See the final layout and actions" });
+
+/** What the line says beyond the facts sentence and the way in. */
 const statement = (count: number) =>
-  (document.body.textContent || "").replace(facts(count), "").trim();
+  (document.body.textContent || "")
+    .replace(facts(count), "")
+    .replace(wayIn().textContent || "", "")
+    .trim();
 
 const windows = "Windows 11";
 const leap = "openSUSE Leap 15.2";
@@ -82,7 +88,14 @@ describe("Consequences", () => {
       installerRender(<Consequences />);
 
       expect(document.body).toHaveTextContent(facts(1));
-      expect(screen.queryByRole("link")).toBeNull();
+    });
+
+    it("still offers one way into the whole picture, opening the result sheet", async () => {
+      const { user } = installerRender(<Consequences />);
+
+      expect(screen.getAllByRole("link")).toHaveLength(1);
+      await user.click(wayIn());
+      expect(mockNavigateFn).toHaveBeenCalledWith({ search: "?sheet=result" }, { replace: true });
     });
 
     it("puts the count and what it builds in bold", () => {

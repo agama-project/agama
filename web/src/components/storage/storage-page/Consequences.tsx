@@ -27,10 +27,11 @@ import Text from "~/components/core/Text";
 import Interpolate from "~/components/core/Interpolate";
 import { Stack, StackItem } from "@patternfly/react-core";
 import SmallWarning from "~/components/core/SmallWarning";
+import SheetOpener from "~/components/storage/shared/SheetOpener";
 import { useDevicesManager } from "~/components/storage/shared/use-devices-manager";
 import { useActions } from "~/hooks/model/proposal/storage";
 import { isLogicalVolume, isPartition } from "~/model/storage/device";
-import { n_, formatList, TranslatedString } from "~/i18n";
+import { _, n_, formatList, TranslatedString } from "~/i18n";
 import type { Storage as System } from "~/model/system";
 
 function deletion(systems: string[], partitions: number): TranslatedString | null {
@@ -178,6 +179,13 @@ function resize(systems: string[], devices: System.Device[]): TranslatedString |
  * sentence leading to the same panel read as two places. The bold carries no
  * color, so it never competes with the warning below it.
  *
+ * Below both, and never colored with them, the one way into the whole picture,
+ * named for where it goes. What the plan destroys and what it does step by step
+ * are two questions, and a reader has the first whether or not they ever have
+ * the second. A link that changes appearance with what the plan happens to do
+ * is a link they have to recognize twice, and its danger was never its own: it
+ * opens a panel.
+ *
  * "Needed" rather than "in total": the number follows from the plan the reader
  * chose, and saying so stops five actions reading as five things the installer
  * decided on its own.
@@ -218,6 +226,13 @@ export default function Consequences(): React.ReactNode {
       </StackItem>
       {deleted && <SmallWarning text={deleted} />}
       {!deleted && resized && <Text isBold>{resized}</Text>}
+      <StackItem>
+        <SheetOpener subject="result">
+          {/* TRANSLATORS: opens a panel showing how the disks will look after
+              installation and the list of steps taken to get there. */}
+          {_("See the final layout and actions")}
+        </SheetOpener>
+      </StackItem>
     </Stack>
   );
 }
