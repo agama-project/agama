@@ -21,7 +21,10 @@
  */
 
 import React from "react";
+import { sprintf } from "sprintf-js";
+import { List, ListItem } from "@patternfly/react-core";
 import { MenuButtonItem } from "~/components/core/MenuButton";
+import { deviceSize } from "~/components/storage/utils";
 import { useSetSpacePolicy } from "~/hooks/model/storage/config-model";
 import { _, TranslatedString } from "~/i18n";
 import type { ConfigModel, DeviceCollection } from "~/model/storage/config-model";
@@ -98,11 +101,101 @@ function meaning(decision: Decision): TranslatedString {
   }
 }
 
+/**
+ * How much shrinking one partition can free, as the machine reports it.
+ *
+ * Nothing where it cannot be shrunk, which is what tells the two cases apart.
+ */
+function recoverableBy(partition: System.Device): number | undefined {
+  const shrinking = partition.block?.shrinking;
+  if (shrinking?.supported !== true || !shrinking.minSize) return undefined;
+
+  return partition.block.size - shrinking.minSize;
+}
+
+/**
+ * How much shrinking a partition can free, said as a sentence.
+ *
+ * "Up to": it is how far the partition can go, not how far it will. What is
+ * actually done is told by the actions.
+ */
+function recoverableText(partition: System.Device): TranslatedString | undefined {
+  const recoverable = recoverableBy(partition);
+  if (recoverable === undefined) return undefined;
+
+  // TRANSLATORS: how much room making one partition smaller can give at most.
+  // %s is a size, such as "45 GiB".
+  return sprintf(_("Up to %s can be freed."), deviceSize(recoverable));
+}
+
+/**
+ * Why a partition cannot be shrunk, in the machine's own words.
+ *
+ * Every reason the machine gives, since any one of them is enough to stop it
+ * and a reader fixing one would otherwise meet the next only after trying. One
+ * reason reads as a sentence; several as a list, so each is read as one. None
+ * of it can be opened or closed: it sits in a table and a menu, where every
+ * control added is one more stop for a keyboard and one more thing to find.
+ *
+ * The reasons come translated and are shown as they come. Where the machine
+ * gives none, a sentence of our own says so rather than leaving the reader
+ * with no answer.
+ */
+function ShrinkRefusal({
+  partition,
+  lead,
+}: {
+  partition: System.Device;
+  /** What goes before the reasons, where something has to. */
+  lead?: TranslatedString;
+}): React.ReactNode {
+  const reasons = partition.block?.shrinking?.reasons || [];
+
+  if (reasons.length > 1) {
+    return (
+      <>
+        {lead}
+        <List isPlain>
+          {reasons.map((reason) => (
+            <ListItem key={reason}>{reason}</ListItem>
+          ))}
+        </List>
+      </>
+    );
+  }
+
+  // TRANSLATORS: why a partition cannot be allowed to shrink, where the
+  // machine says nothing more.
+  const reason = reasons[0] || _("This partition cannot be made smaller.");
+  return lead ? `${lead} ${reason}` : reason;
+}
+
 /** The decision a partition carries today, read from its configuration entry. */
 function decisionOf(entry?: ConfigModel.Partition | ConfigModel.LogicalVolume): Decision {
   if (entry?.delete) return "delete";
   if (entry?.resizeIfNeeded) return "resizeIfNeeded";
   return "keep";
+}
+
+/** What one option says about itself, on this partition. */
+function descriptionOf(
+  decision: Decision,
+  partition: System.Device,
+  refused: boolean,
+): React.ReactNode {
+  if (refused) return <ShrinkRefusal partition={partition} />;
+
+  const recoverable = decision === "resizeIfNeeded" && recoverableBy(partition);
+  if (recoverable) {
+    return sprintf(
+      // TRANSLATORS: explains allowing one partition to be made smaller, and
+      // how much room that can give at most. %s is a size, such as "45 GiB".
+      _("Resized only if space runs short. Up to %s can be freed."),
+      deviceSize(recoverable),
+    );
+  }
+
+  return meaning(decision);
 }
 
 export type PartitionSpaceItemsProps = {
@@ -140,6 +233,9 @@ export type PartitionSpaceItemsProps = {
  * decision on the device.
  *
  * An option that cannot apply stays offered and says why, reachable by keyboard.
+ * Shrinking always says something about this partition in particular: how much
+ * it can free, or why it cannot be shrunk. It is where a reader considering it
+ * decides, whatever the device's own rule is.
  */
 function usePartitionSpaceItems({
   partition,
@@ -177,12 +273,7 @@ function usePartitionSpaceItems({
         isSelected={decision === current}
         isDanger={decision === "delete"}
         isAriaDisabled={refused}
-        description={
-          refused
-            ? // TRANSLATORS: why a partition cannot be allowed to shrink.
-              _("This partition cannot be made smaller.")
-            : meaning(decision)
-        }
+        description={descriptionOf(decision, partition, refused)}
         onClick={refused ? undefined : () => choose(decision)}
       >
         {decisionLabel(decision)}
@@ -191,5 +282,12 @@ function usePartitionSpaceItems({
   });
 }
 
-export { decisionLabel, decisionOf, decisionUnder, usePartitionSpaceItems };
+export {
+  decisionLabel,
+  decisionOf,
+  decisionUnder,
+  recoverableText,
+  ShrinkRefusal,
+  usePartitionSpaceItems,
+};
 export type { Decision };

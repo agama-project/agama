@@ -31,7 +31,6 @@ import SheetSection from "~/components/storage/device-sheet/SheetSection";
 import SpaceDecision, { policyMeaning } from "~/components/storage/storage-page/SpaceDecision";
 import MenuButton, { MenuButtonItem } from "~/components/core/MenuButton";
 import RowMenuToggle from "~/components/storage/entries-table/RowMenuToggle";
-import ActionInfo from "~/components/storage/device-sheet/ActionInfo";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { generateEncodedPath } from "~/utils";
 import { useDeletePartition } from "~/hooks/model/storage/config-model";
@@ -39,6 +38,8 @@ import { useSpacePolicy } from "~/components/storage/shared/space-policy";
 import {
   decisionOf,
   decisionUnder,
+  recoverableText,
+  ShrinkRefusal,
   usePartitionSpaceItems,
 } from "~/components/storage/device-sheet/partition-space";
 import { outcomeOf } from "~/components/storage/shared/consequences";
@@ -343,18 +344,26 @@ function PartitionRow({
         )}
       </Th>
       <Td>
-        <Flex gap={{ default: "gapXs" }} alignItems={{ default: "alignItemsCenter" }}>
-          {status && (
-            <FlexItem className={status.destroys ? DESTROYS_CLASS : undefined}>
-              {status.text}
-            </FlexItem>
-          )}
-          {["resizeIfNeeded", "keep"].includes(decision) && (
-            <FlexItem>
-              <ActionInfo device={part} />
-            </FlexItem>
-          )}
-        </Flex>
+        {status && (
+          <span className={status.destroys ? DESTROYS_CLASS : undefined}>{status.text}</span>
+        )}
+        {/* Only where shrinking is allowed, which is where how far it can go
+            matters. A kept partition says nothing more; its menu does, where
+            shrinking it would be decided. */}
+        {decision === "resizeIfNeeded" && (!canShrink || recoverableText(part)) && (
+          <div className="agm-row-note">
+            {canShrink ? (
+              recoverableText(part)
+            ) : (
+              <ShrinkRefusal
+                partition={part}
+                // TRANSLATORS: opens the reasons a partition allowed to shrink
+                // cannot be. They follow it, as given by the system.
+                lead={_("Cannot be shrunk:")}
+              />
+            )}
+          </div>
+        )}
       </Td>
       <Td>
         <Flex gap={{ default: "gapXs" }} alignItems={{ default: "alignItemsCenter" }}>
