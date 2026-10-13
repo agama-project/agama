@@ -22,15 +22,14 @@
 
 import React from "react";
 import {
-  Stack,
   EmptyState,
   EmptyStateBody,
   EmptyStateActions,
   EmptyStateFooter,
 } from "@patternfly/react-core";
 import Link from "~/components/core/Link";
-import Text from "~/components/core/Text";
 import Icon from "~/components/layout/Icon";
+import SheetSection from "~/components/storage/device-sheet/SheetSection";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { generateEncodedPath } from "~/utils";
 import type { DeviceDetailProps } from "~/components/storage/device-sheet/DeviceDetail";
@@ -57,10 +56,9 @@ export default function PartitionableNoContent({
   const formatPath = generateEncodedPath(PATHS.formatDevice, params);
 
   return (
-    <Stack>
-      <Text isBold>{_("TODO")}</Text>
+    <SheetSection title={_("TODO")}>
       <EmptyState
-        headingLevel="h3"
+        headingLevel="h4"
         variant="sm"
         titleText={_("This EmptyState should offer both formatting and partitioning")}
       >
@@ -87,6 +85,6 @@ export default function PartitionableNoContent({
           </EmptyStateActions>
         </EmptyStateFooter>
       </EmptyState>
-    </Stack>
+    </SheetSection>
   );
 }

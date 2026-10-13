@@ -21,7 +21,6 @@
  */
 
 import React from "react";
-import { StackItem } from "@patternfly/react-core";
 import CurrentContentSection, {
   hasCurrentContent,
 } from "~/components/storage/device-sheet/CurrentContentSection";
@@ -39,12 +38,8 @@ export default function UsedPartitionableCurrent({
   const hasCurrent = hasCurrentContent(entry);
 
   if (hasCurrent) {
-    return (
-      <StackItem>
-        <CurrentContentSection entry={entry} subject={subject} />
-      </StackItem>
-    );
+    return <CurrentContentSection entry={entry} subject={subject} />;
   }
 
-  return <StackItem>{_("TODO: either nothing either directly formatted/used")}</StackItem>;
+  return <div>{_("TODO: either nothing either directly formatted/used")}</div>;
 }

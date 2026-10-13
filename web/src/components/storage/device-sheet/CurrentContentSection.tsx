@@ -22,11 +22,12 @@
 
 import React from "react";
 import { Table, Tbody, Td, Th, Thead, Tr } from "@patternfly/react-table";
-import { Button, Divider, Flex, FlexItem, Label, Stack, StackItem } from "@patternfly/react-core";
+import { Button, Divider, Flex, FlexItem, Label } from "@patternfly/react-core";
 import alignmentStyles from "@patternfly/react-styles/css/utilities/Alignment/alignment";
 import { sprintf } from "sprintf-js";
 import Text from "~/components/core/Text";
 import Icon from "~/components/layout/Icon";
+import SheetSection from "~/components/storage/device-sheet/SheetSection";
 import SpaceDecision, { policyMeaning } from "~/components/storage/storage-page/SpaceDecision";
 import MenuButton, { MenuButtonItem } from "~/components/core/MenuButton";
 import RowMenuToggle from "~/components/storage/entries-table/RowMenuToggle";
@@ -480,33 +481,24 @@ export default function CurrentContentSection({
   const tableId = React.useId();
 
   return (
-    <Stack>
+    <Flex direction={{ default: "column" }} gap={{ default: "gapSm" }}>
       {/* Only where there is something for the rule to be about. A group's
           logical volumes are governed the same way its disks' partitions are,
           so the decision is offered there too. */}
       {rows.some((row) => !isFreeSpace(row)) && (
-        <>
-          <StackItem>
-            <Flex>
-              <FlexItem>
-                <Text isBold>{_("What to do with the previous content")}</Text>
-              </FlexItem>
-              <FlexItem align={{ default: "alignRight" }}>
-                <SpaceDecision
-                  collection={subject.collection}
-                  index={subject.index}
-                  isAssertive
-                  onCustom={() => setExpanded(true)}
-                />
-              </FlexItem>
-            </Flex>
-          </StackItem>
-          <StackItem
-            style={{
-              marginBlockStart: "var(--pf-t--global--spacer--sm)",
-              paddingLeft: "var(--pf-t--global--spacer--md)",
-            }}
-          >
+        <SheetSection
+          // TRANSLATORS: heading over what happens to what is on a device today.
+          title={_("What to do with the previous content")}
+          actions={
+            <SpaceDecision
+              collection={subject.collection}
+              index={subject.index}
+              isAssertive
+              onCustom={() => setExpanded(true)}
+            />
+          }
+        >
+          <div>
             {isCustom ? (
               // TRANSLATORS: said under the "Custom" answer, where what happens to
               // each partition is decided one at a time in the list below.
@@ -530,96 +522,94 @@ export default function CurrentContentSection({
                 </Button>
               </>
             )}
-          </StackItem>
-        </>
+          </div>
+        </SheetSection>
       )}
-      <StackItem>
-        {/* Put away rather than taken down, so the link above has something to
+      {/* Put away rather than taken down, so the link above has something to
             name as the thing it opens, and so a plain element carries the
             attribute that hides it: the browser's own rule for it loses to any
             layout a class might set. */}
-        <div id={tableId} hidden={!isCustom && !expanded}>
-          <Table
-            role="table"
-            gridBreakPoint=""
-            variant="compact"
-            // TRANSLATORS: names the list of what is on a device already.
-            aria-label={_("Current content")}
-          >
-            {/* Read rather than hidden from sight: what a column holds is told
+      <div id={tableId} hidden={!isCustom && !expanded}>
+        <Table
+          role="table"
+          gridBreakPoint=""
+          variant="compact"
+          // TRANSLATORS: names the list of what is on a device already.
+          aria-label={_("Current content")}
+        >
+          {/* Read rather than hidden from sight: what a column holds is told
                 by what it is called, and a reader left to work that out from
                 the values is being asked to do the heading's job.
 
                 Each heading kept whole. PatternFly cuts one down to whatever
                 its column came out as, which shortens the one thing on the row
                 whose whole job is to be read. */}
-            <Thead>
-              <Tr>
-                <Th modifier="nowrap">{_("Partition")}</Th>
-                <Th modifier="nowrap">{_("Action")}</Th>
-                <Th modifier="nowrap">{_("Content")}</Th>
-                <Th className={alignmentStyles.textAlignEnd} modifier="nowrap">
-                  {_("Size")}
-                </Th>
-                <Th>
-                  {/* The column of menus has nothing to head: a heading over it
+          <Thead>
+            <Tr>
+              <Th modifier="nowrap">{_("Partition")}</Th>
+              <Th modifier="nowrap">{_("Action")}</Th>
+              <Th modifier="nowrap">{_("Content")}</Th>
+              <Th className={alignmentStyles.textAlignEnd} modifier="nowrap">
+                {_("Size")}
+              </Th>
+              <Th>
+                {/* The column of menus has nothing to head: a heading over it
                       names a column the reader can already see the point of. */}
-                  <Text srOnly>{_("Options")}</Text>
-                </Th>
-              </Tr>
-            </Thead>
-            <Tbody>
-              {rows.map((row, at) => {
-                if (isFreeSpace(row)) {
-                  return (
-                    <Tr key={`free-${at}`}>
-                      <Th scope="row">
-                        <Text textStyle="textColorSubtle">
-                          {/* TRANSLATORS: a row for room on a device that no
+                <Text srOnly>{_("Options")}</Text>
+              </Th>
+            </Tr>
+          </Thead>
+          <Tbody>
+            {rows.map((row, at) => {
+              if (isFreeSpace(row)) {
+                return (
+                  <Tr key={`free-${at}`}>
+                    <Th scope="row">
+                      <Text textStyle="textColorSubtle">
+                        {/* TRANSLATORS: a row for room on a device that no
                             partition takes. */}
-                          {_("Free space")}
-                        </Text>
-                      </Th>
-                      <Td>{_("use if needed")}</Td>
-                      <Td />
-                      <Td className={alignmentStyles.textAlignEnd}>{deviceSize(row.size)}</Td>
-                      <Td />
-                    </Tr>
-                  );
-                }
+                        {_("Free space")}
+                      </Text>
+                    </Th>
+                    <Td>{_("use if needed")}</Td>
+                    <Td />
+                    <Td className={alignmentStyles.textAlignEnd}>{deviceSize(row.size)}</Td>
+                    <Td />
+                  </Tr>
+                );
+              }
 
-                /* Worked out once and given to the row, which says it beside the
+              /* Worked out once and given to the row, which says it beside the
                  name, reads the rest of itself against it, and offers to have
                  it changed. */
-                const decision = decisionFor(
-                  rule,
-                  entries.find((e) => e.name === row.name),
-                );
+              const decision = decisionFor(
+                rule,
+                entries.find((e) => e.name === row.name),
+              );
 
-                return (
-                  <PartitionRow
-                    key={row.sid}
-                    part={row}
-                    manager={manager}
-                    entries={entries}
-                    decision={decision}
-                    menu={
-                      <PartitionMenu
-                        part={row}
-                        reusedAs={entries.find((e) => e.name === row.name)?.mountPath}
-                        governed={governed}
-                        entries={entries}
-                        collection={subject.collection}
-                        index={subject.index}
-                      />
-                    }
-                  />
-                );
-              })}
-            </Tbody>
-          </Table>
-        </div>
-      </StackItem>
-    </Stack>
+              return (
+                <PartitionRow
+                  key={row.sid}
+                  part={row}
+                  manager={manager}
+                  entries={entries}
+                  decision={decision}
+                  menu={
+                    <PartitionMenu
+                      part={row}
+                      reusedAs={entries.find((e) => e.name === row.name)?.mountPath}
+                      governed={governed}
+                      entries={entries}
+                      collection={subject.collection}
+                      index={subject.index}
+                    />
+                  }
+                />
+              );
+            })}
+          </Tbody>
+        </Table>
+      </div>
+    </Flex>
   );
 }

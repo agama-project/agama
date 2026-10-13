@@ -21,16 +21,11 @@
  */
 
 import React from "react";
-import { Stack } from "@patternfly/react-core";
-import Text from "~/components/core/Text";
+import SheetSection from "~/components/storage/device-sheet/SheetSection";
 import { _ } from "~/i18n";
 import type { DeviceDetailProps } from "~/components/storage/device-sheet/DeviceDetail";
 
 export default function VolumeGroupContent({ entry, subject }: DeviceDetailProps): React.ReactNode {
   console.log("e", entry, "s", subject);
-  return (
-    <Stack>
-      <Text isBold>{_("TODO: mounting or formatting a whole disk")}</Text>
-    </Stack>
-  );
+  return <SheetSection title={_("TODO: mounting or formatting a whole disk")} />;
 }

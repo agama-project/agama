@@ -21,9 +21,8 @@
  */
 
 import React from "react";
-import { Stack, StackItem } from "@patternfly/react-core";
 import Interpolate from "~/components/core/Interpolate";
-import Text from "~/components/core/Text";
+import SheetSection from "~/components/storage/device-sheet/SheetSection";
 import RelatedNames from "~/components/storage/shared/RelatedNames";
 import { baseName } from "~/components/storage/utils";
 import { useConfigModel } from "~/hooks/model/storage/config-model";
@@ -63,33 +62,26 @@ export default function VolumeGroupCurrent({ entry }: DeviceDetailProps): React.
 
   return (
     <>
-      {targets.length && (
-        <StackItem>
-          <Stack>
-            <StackItem>
-              {/* TRANSLATORS: heading over the disks a volume group will take its
-                  room from. */}
-              <Text isBold>{_("Physical volumes")}</Text>
-            </StackItem>
-            <StackItem
-              style={{
-                marginBlockStart: "var(--pf-t--global--spacer--sm)",
-                paddingLeft: "var(--pf-t--global--spacer--md)",
-              }}
+      {/* A count, not the list: a bare zero would be printed as text. */}
+      {targets.length > 0 && (
+        <SheetSection
+          // TRANSLATORS: heading over the disks a volume group will take its
+          // room from.
+          title={_("Physical volumes")}
+        >
+          <div>
+            <Interpolate
+              // TRANSLATORS: says where a volume group being defined will make
+              // room for itself. %s is a list of device names, such as "sda and
+              // sdb".
+              sentence={_("Any needed partition will be created at %s.")}
             >
-              <Interpolate
-                // TRANSLATORS: says where a volume group being defined will make
-                // room for itself. %s is a list of device names, such as "sda and
-                // sdb".
-                sentence={_("Any needed partition will be created at %s.")}
-              >
-                {() => <RelatedNames items={targets} />}
-              </Interpolate>
-            </StackItem>
-          </Stack>
-        </StackItem>
+              {() => <RelatedNames items={targets} />}
+            </Interpolate>
+          </div>
+        </SheetSection>
       )}
-      {volumeGroup.name && <StackItem>{_("TODO: Existing volume group")}</StackItem>}
+      {volumeGroup.name && <div>{_("TODO: Existing volume group")}</div>}
     </>
   );
 }
