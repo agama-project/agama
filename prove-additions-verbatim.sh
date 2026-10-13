@@ -55,7 +55,14 @@ for FILE_PATH in $ADDED_FILES; do
     FILE_NAME=$(basename "$FILE_PATH")
 
     # Find all files in the source repo that have this exact name (case-insensitive)
-    MATCHING_SRC_FILES=$(find "$SRC" -type f -iname "$FILE_NAME")
+    # To handle directory components that were flattened into filename prefixes in the source repo
+    # (e.g. `systemd/socket_finder_test.rb` -> `systemd_socket_finder_test.rb`),
+    # we replace underscores in the filename with wildcards.
+    # Additionally, some files like `ShadowConfig_test.rb` are mapped to `shadow_config_test.rb`,
+    # so we convert CamelCase to snake_case first.
+    SNAKE_CASE_NAME=$(echo "$FILE_NAME" | sed 's/\([a-z]\)\([A-Z]\)/\1_\2/g' | tr '[:upper:]' '[:lower:]')
+    SEARCH_PATTERN="*"$(echo "$SNAKE_CASE_NAME" | tr '_' '*')
+    MATCHING_SRC_FILES=$(find "$SRC" -type f -ipath "$SEARCH_PATTERN")
 
     if [ -z "$MATCHING_SRC_FILES" ]; then
         echo "❌ FAIL: '$FILE_PATH' was not found in the source repo by name ('$FILE_NAME')."
