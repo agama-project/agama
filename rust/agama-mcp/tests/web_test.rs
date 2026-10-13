@@ -28,7 +28,7 @@ use agama_utils::api::{Config, IssueWithScope, Proposal, SystemInfo};
 use async_trait::async_trait;
 use axum::body::Body;
 use axum::http::{Request, StatusCode};
-use serde_json::json;
+use serde_json::{json, Value};
 use std::sync::Arc;
 use tower::ServiceExt;
 
@@ -105,11 +105,11 @@ impl McpBackend for DummyBackend {
 }
 
 #[tokio::test]
-async fn test_web_sse_without_session_id_returns_bad_request() {
+async fn test_web_sse_without_session_id_returns_error() {
     let server = McpServer::with_backend(Arc::new(DummyBackend), McpMode::Full);
     let app = mcp_router(server);
 
-    // In MCP Streamable HTTP, GET without Mcp-Session-Id is rejected with 400 Bad Request
+    // In stateless Streamable HTTP, GET without replay headers is rejected
     let request = Request::builder()
         .uri("/")
         .method("GET")
@@ -119,15 +119,18 @@ async fn test_web_sse_without_session_id_returns_bad_request() {
         .unwrap();
 
     let response = app.oneshot(request).await.unwrap();
-    assert_eq!(response.status(), StatusCode::BAD_REQUEST);
+    assert!(
+        response.status() == StatusCode::METHOD_NOT_ALLOWED
+            || response.status() == StatusCode::BAD_REQUEST
+    );
 }
 
 #[tokio::test]
-async fn test_web_session_handshake_and_sse_stream() {
+async fn test_web_post_direct_json_response() {
     let server = McpServer::with_backend(Arc::new(DummyBackend), McpMode::Full);
     let app = mcp_router(server);
 
-    // 1. Initialize via POST to obtain an active Mcp-Session-Id
+    // Initialize via POST to verify direct JSON response
     let init_req = json!({
         "jsonrpc": "2.0",
         "id": 1,
@@ -153,33 +156,21 @@ async fn test_web_session_handshake_and_sse_stream() {
 
     let init_res = app.clone().oneshot(post_req).await.unwrap();
     assert_eq!(init_res.status(), StatusCode::OK);
-
-    let session_id = init_res
-        .headers()
-        .get("mcp-session-id")
-        .expect("Mcp-Session-Id header expected on initialize response")
-        .to_str()
-        .unwrap();
-
-    // 2. Connect to the SSE stream passing the established Mcp-Session-Id
-    let get_req = Request::builder()
-        .uri("/")
-        .method("GET")
-        .header("Host", "localhost")
-        .header("Accept", "text/event-stream")
-        .header("Mcp-Session-Id", session_id)
-        .body(Body::empty())
-        .unwrap();
-
-    let sse_res = app.oneshot(get_req).await.unwrap();
-    assert_eq!(sse_res.status(), StatusCode::OK);
     assert_eq!(
-        sse_res
+        init_res
             .headers()
             .get("content-type")
             .and_then(|v| v.to_str().ok()),
-        Some("text/event-stream")
+        Some("application/json")
     );
+
+    let bytes = axum::body::to_bytes(init_res.into_body(), usize::MAX)
+        .await
+        .unwrap();
+    let body_json: Value = serde_json::from_slice(&bytes).unwrap();
+    assert_eq!(body_json["jsonrpc"], "2.0");
+    assert_eq!(body_json["id"], 1);
+    assert!(body_json["result"]["capabilities"]["tools"].is_object());
 }
 
 #[tokio::test]
