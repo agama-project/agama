@@ -21,6 +21,7 @@
  */
 
 import React from "react";
+import { sprintf } from "sprintf-js";
 import { DescriptionList, Flex, FlexItem } from "@patternfly/react-core";
 import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
 import Link from "~/components/core/Link";
@@ -28,14 +29,16 @@ import MenuButton from "~/components/core/MenuButton";
 import SettingValue from "~/components/core/SettingValue";
 import Text from "~/components/core/Text";
 import Icon, { IconProps } from "~/components/layout/Icon";
+import SheetOpener from "~/components/storage/shared/SheetOpener";
 import { baseName } from "~/components/storage/utils";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { EXPANDED, SETTINGS_TAB, SHEET, SHEET_TAB } from "~/components/storage/ui-state-params";
 import configModel from "~/model/storage/config-model";
 import { useConfigModel } from "~/hooks/model/storage/config-model";
 import { useReset } from "~/hooks/model/config/storage";
+import { useActions } from "~/hooks/model/proposal/storage";
 import { useClearSearchParams } from "~/hooks/use-search-param-state";
-import { _, TranslatedString } from "~/i18n";
+import { _, n_, TranslatedString } from "~/i18n";
 import type { ConfigModel } from "~/model/storage/config-model";
 
 /**
@@ -103,7 +106,12 @@ function encryption(config: ConfigModel.Config): {
  * anything the summary names. Their marks say what their values say, so the
  * pair can be told apart before it is read.
  *
- * Both lead to pages of their own, and always will. Every form in the installer
+ * Beside them, once there is a plan, what it adds up to: the number of actions,
+ * as the way into the result. It is read like the other two, a value with a way
+ * in, and it sits where a reader looks first rather than inside the report
+ * below, which can then stay plain text.
+ *
+ * Both decisions lead to pages of their own, and always will. Every form in the installer
  * lives at a route of its own, and a form needs what a panel cannot give it:
  * somewhere to return to on cancel, an address that survives a reload, and a
  * guard when leaving with unsaved changes.
@@ -116,6 +124,9 @@ export default function TopLine(): React.ReactNode {
   const config = useConfigModel();
   const reset = useReset();
   const clearSearchParams = useClearSearchParams();
+  /* Subvolumes are how one file system is laid out inside itself, so counting
+     them tells a reader how the installer works rather than what it will do. */
+  const actionsCount = useActions().filter((action) => !action.subvol).length;
 
   if (!config) return null;
 
@@ -180,6 +191,24 @@ export default function TopLine(): React.ReactNode {
                   </Link>
                 }
               />
+              {actionsCount > 0 && (
+                <SettingValue
+                  icon="list_alt"
+                  // TRANSLATORS: names what the installation will do to the
+                  // disks, given as a number of actions next to it.
+                  term={_("Result")}
+                  value={
+                    <SheetOpener subject="result" tab="actions">
+                      {sprintf(
+                        // TRANSLATORS: %d is the number of steps the installer
+                        // will take on the disks. Opens the list of them.
+                        n_("%d action", "%d actions", actionsCount),
+                        actionsCount,
+                      )}
+                    </SheetOpener>
+                  }
+                />
+              )}
             </DescriptionList>
           </FlexItem>
           <FlexItem>

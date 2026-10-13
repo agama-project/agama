@@ -28,10 +28,16 @@ import TopLine from "~/components/storage/storage-page/TopLine";
 
 const mockConfig = jest.fn();
 const mockReset = jest.fn();
+const mockActions = jest.fn();
 
 jest.mock("~/hooks/model/storage/config-model", () => ({
   ...jest.requireActual("~/hooks/model/storage/config-model"),
   useConfigModel: () => mockConfig(),
+}));
+
+jest.mock("~/hooks/model/proposal/storage", () => ({
+  ...jest.requireActual("~/hooks/model/proposal/storage"),
+  useActions: () => mockActions(),
 }));
 
 jest.mock("~/hooks/model/config/storage", () => ({
@@ -49,6 +55,7 @@ const config = (values: Partial<ConfigModel.Config> = {}): ConfigModel.Config =>
 describe("TopLine", () => {
   beforeEach(() => {
     mockConfig.mockReturnValue(config());
+    mockActions.mockReturnValue([]);
   });
 
   it("says what the page is for, naming no technology", () => {
@@ -110,6 +117,37 @@ describe("TopLine", () => {
       expect(mockNavigateFn).toHaveBeenCalledWith(
         expect.objectContaining({ pathname: "/storage/boot-device/edit" }),
         expect.anything(),
+      );
+    });
+  });
+
+  describe("the result", () => {
+    it("is not offered while there is no plan to read", () => {
+      installerRender(<TopLine />);
+
+      expect(screen.queryByText("Result")).toBeNull();
+    });
+
+    it("counts the actions, leaving out subvolumes", () => {
+      mockActions.mockReturnValue([
+        { device: 1, text: "" },
+        { device: 2, text: "" },
+        { device: 3, text: "", subvol: true },
+      ]);
+      installerRender(<TopLine />);
+
+      screen.getByText("Result");
+      screen.getByRole("link", { name: "2 actions" });
+    });
+
+    it("opens the result sheet on its list of actions", async () => {
+      mockActions.mockReturnValue([{ device: 1, text: "" }]);
+      const { user } = installerRender(<TopLine />);
+      await user.click(screen.getByRole("link", { name: "1 action" }));
+
+      expect(mockNavigateFn).toHaveBeenCalledWith(
+        { search: "?sheet=result&sheetTab=actions" },
+        { replace: true },
       );
     });
   });
