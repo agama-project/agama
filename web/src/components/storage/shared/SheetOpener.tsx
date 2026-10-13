@@ -29,6 +29,11 @@ export type SheetOpenerProps = {
   /** What the sheet shows once this is followed. */
   subject: SheetSubject;
   tab?: string;
+  /**
+   * How it is drawn: inline as text by default, or as a button where it stands
+   * on a line of its own. It stays a link either way.
+   */
+  variant?: "link" | "secondary";
   /** What the control says, which has to name where it goes on its own. */
   children: React.ReactNode;
 };
@@ -41,22 +46,28 @@ export type SheetOpenerProps = {
  * anchor with an address a reader can copy, open in a second tab, or come back
  * to after a reload, and never a button that says it goes somewhere.
  *
- * It carries no chrome of its own. What opens the sheet sits inside a sentence
- * or a table row, and a button's box drawn around it would break the line it
- * is being read as part of.
+ * By default it carries no chrome of its own. What opens the sheet usually sits
+ * inside a sentence or a table row, and a button's box drawn around it would
+ * break the line it is being read as part of. Where it stands alone, it can be
+ * drawn as a button so it reads as the way forward, while staying a link.
  *
  * @example
  * <SheetOpener subject="result">{_("View all 5 needed actions")}</SheetOpener>
  */
-export default function SheetOpener({ subject, tab, children }: SheetOpenerProps): React.ReactNode {
+export default function SheetOpener({
+  subject,
+  tab,
+  variant = "link",
+  children,
+}: SheetOpenerProps): React.ReactNode {
   const { addressOf } = useSheet();
 
   return (
     <Link
       to={addressOf(subject, tab)}
       replace
-      variant="link"
-      isInline
+      variant={variant}
+      isInline={variant === "link"}
       aria-controls={SHEET_ID}
       /* So the list around it can walk its entries with the arrow keys without
          knowing how any of them is drawn. */
