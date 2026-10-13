@@ -63,21 +63,30 @@ for FILE_PATH in $ADDED_FILES; do
         continue
     fi
 
+    # Find the specific commit where this file was added
+    ADD_COMMIT=$(git log --diff-filter=A --format=%H --reverse "${REVISION1}..${REVISION2}" -- "$FILE_PATH" | head -n 1)
+
+    if [ -z "$ADD_COMMIT" ]; then
+        echo "❌ FAIL: Could not find addition commit for '$FILE_PATH'."
+        HAS_ERRORS=1
+        continue
+    fi
+
     MATCH_FOUND=0
 
     # Check each matching source file to see if its content is identical
     for SRC_FILE in $MATCHING_SRC_FILES; do
-        # We compare the content of the file exactly as it was at REVISION2
+        # We compare the content of the file exactly as it was when added
         # against the source file using 'cmp'.
-        if git show "${REVISION2}:${FILE_PATH}" | cmp -s - "$SRC_FILE"; then
+        if git show "${ADD_COMMIT}:${FILE_PATH}" | cmp -s - "$SRC_FILE"; then
             MATCH_FOUND=1
-            echo "✅ OK: '$FILE_PATH' matches verbatim with '$SRC_FILE'."
+            echo "✅ OK: '$FILE_PATH' (at ${ADD_COMMIT:0:7}) matches verbatim with '$SRC_FILE'."
             break
         fi
     done
 
     if [ "$MATCH_FOUND" -eq 0 ]; then
-        echo "❌ FAIL: '$FILE_PATH' does not match any source files named '$FILE_NAME' verbatim."
+        echo "❌ FAIL: '$FILE_PATH' (at ${ADD_COMMIT:0:7}) does not match any source files named '$FILE_NAME' verbatim."
         HAS_ERRORS=1
     fi
 done
