@@ -20,5 +20,4 @@ tokio = { workspace = true }
 tracing = { workspace = true }
 
 [dev-dependencies]
-test-context = { workspace = true }
 tower = { workspace = true }

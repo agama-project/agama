@@ -239,7 +239,6 @@ dependencies = [
  "schemars 1.2.1",
  "serde",
  "serde_json",
- "test-context",
  "thiserror 2.0.18",
  "tokio",
  "tower",
