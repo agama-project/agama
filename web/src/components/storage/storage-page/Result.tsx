@@ -46,7 +46,8 @@ import Consequences from "~/components/storage/storage-page/Consequences";
  * to shrink or delete what is there".
  *
  * Each case names the way out as well as the cause, and both ways out are
- * offered on the page: the decision above this line, and the offer under it.
+ * offered on the page: the decision right under this line, and the offers at
+ * the foot of the page.
  */
 export default function Result(): React.ReactNode {
   const model = useConfigModel();

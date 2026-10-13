@@ -26,6 +26,7 @@ import EntriesTable from "~/components/storage/entries-table/EntriesTable";
 import TopLine from "~/components/storage/storage-page/TopLine";
 import BottomLine from "~/components/storage/storage-page/BottomLine";
 import Result from "~/components/storage/storage-page/Result";
+import SingleDiskSpaceDecision from "~/components/storage/storage-page/SingleDiskSpaceDecision";
 import StorageSheet from "~/components/storage/storage-page/StorageSheet";
 import SummaryLayout from "~/components/storage/storage-page/SummaryLayout";
 import { useConfigModel } from "~/hooks/model/storage/config-model";
@@ -48,6 +49,8 @@ export default function StoragePageContent(): React.ReactNode {
     <Grid hasGutter>
       {model && <TopLine />}
       <SummaryLayout notice={<Result />} />
+      {/* Under the result it changes, so the reader sees what it did. */}
+      {model && <SingleDiskSpaceDecision />}
       {model && <EntriesTable />}
       {model && <BottomLine />}
     </Grid>
