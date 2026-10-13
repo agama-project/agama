@@ -81,8 +81,15 @@ describe("Consequences", () => {
     it("counts the actions as one sentence, with no control inside it", () => {
       installerRender(<Consequences />);
 
-      screen.getByText(facts(1));
+      expect(document.body).toHaveTextContent(facts(1));
       expect(screen.queryByRole("link")).toBeNull();
+    });
+
+    it("puts the count and what it builds in bold", () => {
+      installerRender(<Consequences />);
+
+      expect(screen.getByText("1 action").tagName).toBe("STRONG");
+      expect(screen.getByText("final storage layout").tagName).toBe("STRONG");
     });
 
     it("states nothing else, since nothing on the machine is lost", () => {

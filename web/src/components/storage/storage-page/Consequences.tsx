@@ -24,6 +24,7 @@ import React from "react";
 import { unique } from "radashi";
 import { sprintf } from "sprintf-js";
 import Text from "~/components/core/Text";
+import Interpolate from "~/components/core/Interpolate";
 import { Stack, StackItem } from "@patternfly/react-core";
 import SmallWarning from "~/components/core/SmallWarning";
 import { useDevicesManager } from "~/components/storage/shared/use-devices-manager";
@@ -171,9 +172,11 @@ function resize(systems: string[], devices: System.Device[]): TranslatedString |
  * rather than what the configuration asked for. Nothing is reported when there
  * is no proposal to read, which is what leaves room for the page to say why.
  *
- * Above it, a plain count of the actions. It holds no control: a sentence with
+ * Above it, a count of the actions, with the count and what it builds in bold
+ * so the sentence can be read at a glance. It holds no control: a sentence with
  * a link in the middle of it cannot be translated as one, and two links in one
- * sentence leading to the same panel read as two places.
+ * sentence leading to the same panel read as two places. The bold carries no
+ * color, so it never competes with the warning below it.
  *
  * "Needed" rather than "in total": the number follows from the plan the reader
  * chose, and saying so stops five actions reading as five things the installer
@@ -194,16 +197,24 @@ export default function Consequences(): React.ReactNode {
   return (
     <Stack>
       <StackItem>
-        {sprintf(
-          n_(
-            // TRANSLATORS: %d is the number of steps the installer will take on
-            // the disks to leave them as configured.
-            "As a result, %d action will be performed during installation to set up the final storage layout.",
-            "As a result, %d actions will be performed during installation to set up the final storage layout.",
+        <Interpolate
+          sentence={sprintf(
+            n_(
+              // TRANSLATORS: %d is the number of steps the installer will take
+              // on the disks to leave them as configured. Keep the square
+              // brackets: the text inside them is shown in bold.
+              "As a result, [%d action] will be performed during installation to set up the [final storage layout].",
+              "As a result, [%d actions] will be performed during installation to set up the [final storage layout].",
+              counted.length,
+            ),
             counted.length,
-          ),
-          counted.length,
-        )}
+          )}
+        >
+          {[
+            (text) => <Text component="strong">{text}</Text>,
+            (text) => <Text component="strong">{text}</Text>,
+          ]}
+        </Interpolate>
       </StackItem>
       {deleted && <SmallWarning text={deleted} />}
       {!deleted && resized && <Text isBold>{resized}</Text>}
