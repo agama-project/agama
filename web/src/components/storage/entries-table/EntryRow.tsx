@@ -21,11 +21,14 @@
  */
 
 import React from "react";
+import { Link } from "react-router";
 import { Td, Th, Tr } from "@patternfly/react-table";
 import { Label, Stack, StackItem } from "@patternfly/react-core";
+import { css } from "@patternfly/react-styles";
+import tableStyles from "@patternfly/react-styles/css/components/Table/table";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import Text from "~/components/core/Text";
-import { useSheet } from "~/components/storage/shared/use-sheet";
+import { useSheet, SHEET_ID } from "~/components/storage/shared/use-sheet";
 import { columnName } from "~/components/storage/entries-table/columns";
 import type { SheetEntry } from "~/components/storage/shared/use-sheet";
 import type { TranslatedString } from "~/i18n";
@@ -90,14 +93,23 @@ export default function EntryRow({
   menu,
   subject,
 }: EntryRowProps): React.ReactNode {
-  const { openSheet } = useSheet();
+  const { subject: open, addressOf } = useSheet();
+  const isOpen =
+    open !== null &&
+    open !== "result" &&
+    open.collection === subject.collection &&
+    open.index === subject.index;
 
   return (
-    /* A click anywhere on the row opens it. A convenience for a mouse with no
-       keyboard equivalent of its own, which is only acceptable because the name
-       inside it is a link that does the same thing and is where the keyboard
-       lands. */
-    <Tr className="agm-entries-table__row" onClick={() => openSheet(subject)}>
+    /* No handler of its own: the row opens because the name's link is
+       stretched over it, so mouse, keyboard and screen reader all meet the
+       same control. PatternFly's clickable look comes from its class rather
+       than from `isClickable`, which would also make the row itself a focus
+       stop with no role and handle keys meant for the menu. */
+    <Tr
+      className={css("agm-entries-table__row", tableStyles.modifiers.clickable)}
+      isRowSelected={isOpen}
+    >
       <Th scope="row" modifier="fitContent" dataLabel={columnName("entry")}>
         <Stack>
           <StackItem>
@@ -105,7 +117,21 @@ export default function EntryRow({
                 reader does with a row is open it. There is no button under it
                 saying so, since a button would teach a second gesture for one
                 destination whatever it was called. */}
-            <Text isBold>{name}</Text>
+            {/* A plain anchor rather than the page's Link: that one is a
+                PatternFly button, which is positioned and draws its border
+                with the same pseudo-element the stretch needs. */}
+            <Link
+              to={addressOf(subject)}
+              replace
+              aria-controls={SHEET_ID}
+              aria-current={isOpen || undefined}
+              className="agm-entries-table__opener"
+              /* So the list around it can walk its entries with the arrow keys
+                 without knowing how any of them is drawn. */
+              data-entry-name=""
+            >
+              <Text isBold>{name}</Text>
+            </Link>
             {size && <> · {size}</>}
             {/* The same words the panel puts beside the same name, so the row a
                 reader opened and the panel that opens carry one vocabulary. */}
@@ -135,9 +161,9 @@ export default function EntryRow({
           ))}
         </Stack>
       </Td>
-      {/* The menu is not the row: opening a menu on a row that opens on click
-          would open both. */}
-      <Td isActionCell onClick={(event) => event.stopPropagation()}>
+      {/* Above the stretched link, so a click on the menu is a click on the
+          menu and nothing else. */}
+      <Td isActionCell className="agm-entries-table__menu" data-entry-menu="">
         {menu}
       </Td>
     </Tr>

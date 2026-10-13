@@ -90,10 +90,26 @@ export default function EntriesTable(): React.ReactNode {
   const list = React.useRef<HTMLDivElement>(null);
 
   /* Arrow keys walk the entries, which is what a reader expects of a list they
-     are comparing rather than reading once. Every name stays a tab stop, since
+     are comparing rather than reading once. Every name and every menu stays a
+     tab stop, since
      this is a table to read and not a widget to operate: the arrows are a way
      of moving faster, not the only way of moving. */
   const onKeyDown = (event: React.KeyboardEvent) => {
+    /* Right and left move between an entry's name and its menu. Both stay tab
+       stops: this is a shortcut, not the only way to reach the menu. */
+    const row = (document.activeElement as HTMLElement | null)?.closest("tr");
+    if (row && (event.key === "ArrowRight" || event.key === "ArrowLeft")) {
+      const name = row.querySelector<HTMLElement>("[data-entry-name]");
+      const menu = row.querySelector<HTMLElement>("[data-entry-menu] button");
+      const target = event.key === "ArrowRight" ? menu : name;
+      const from = event.key === "ArrowRight" ? name : menu;
+      if (target && from === document.activeElement) {
+        event.preventDefault();
+        target.focus();
+      }
+      return;
+    }
+
     const names = [...(list.current?.querySelectorAll<HTMLElement>("[data-entry-name]") || [])];
     const at = names.indexOf(document.activeElement as HTMLElement);
     if (at === -1) return;
