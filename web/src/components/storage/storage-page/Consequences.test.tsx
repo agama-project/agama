@@ -52,14 +52,15 @@ const partition = (sid: number, systems: string[] = []): System.Device => ({
 const deleting = (sid: number): Proposal.Action => ({ device: sid, text: "", delete: true });
 const shrinking = (sid: number): Proposal.Action => ({ device: sid, text: "", resize: true });
 
-/** What the line states, with the way into the whole picture taken off it. */
-const statement = () => {
-  const wayIn = screen.queryByRole("link")?.textContent || "";
-  return (document.body.textContent || "").replace(wayIn, "").trim();
-};
+/** The facts sentence, which is there whenever the plan does anything. */
+const facts = (count: number) =>
+  count === 1
+    ? "As a result, 1 action will be performed during installation to set up the final storage layout."
+    : `As a result, ${count} actions will be performed during installation to set up the final storage layout.`;
 
-/** The way into the whole picture, which the line always offers. */
-const wayIn = () => screen.getByRole("link").textContent;
+/** What the line says beyond the facts sentence. */
+const statement = (count: number) =>
+  (document.body.textContent || "").replace(facts(count), "").trim();
 
 const windows = "Windows 11";
 const leap = "openSUSE Leap 15.2";
@@ -77,16 +78,17 @@ describe("Consequences", () => {
       mockActions.mockReturnValue([{ device: 1, text: "" }]);
     });
 
-    it("states nothing, since nothing on the machine is lost", () => {
+    it("counts the actions as one sentence, with no control inside it", () => {
       installerRender(<Consequences />);
 
-      expect(statement()).toBe("");
+      screen.getByText(facts(1));
+      expect(screen.queryByRole("link")).toBeNull();
     });
 
-    it("still offers the whole picture", () => {
+    it("states nothing else, since nothing on the machine is lost", () => {
       installerRender(<Consequences />);
 
-      expect(wayIn()).toBe("View all 1 needed action");
+      expect(statement(1)).toBe("");
     });
   });
 
@@ -94,7 +96,7 @@ describe("Consequences", () => {
     it("says nothing, leaving room for the page to say why", () => {
       installerRender(<Consequences />);
 
-      expect(statement()).toBe("");
+      expect(document.body.textContent).toBe("");
     });
   });
 
@@ -108,7 +110,9 @@ describe("Consequences", () => {
       it("names it", () => {
         installerRender(<Consequences />);
 
-        expect(statement()).toBe("Shrinking Windows 11.");
+        expect(statement(1)).toBe(
+          "Includes a non-destructive reduction of 1 partition affecting Windows 11.",
+        );
       });
     });
 
@@ -121,7 +125,7 @@ describe("Consequences", () => {
       it("counts what it cannot name", () => {
         installerRender(<Consequences />);
 
-        expect(statement()).toBe("Shrinking 2 partitions.");
+        expect(statement(2)).toBe("Includes a non-destructive reduction of 2 partitions.");
       });
     });
   });
@@ -136,7 +140,7 @@ describe("Consequences", () => {
       it("names it", () => {
         installerRender(<Consequences />);
 
-        expect(statement()).toBe("Deleting Windows 11.");
+        expect(statement(1)).toBe("Includes 1 destructive action affecting Windows 11.");
       });
     });
 
@@ -149,11 +153,13 @@ describe("Consequences", () => {
       it("names both", () => {
         installerRender(<Consequences />);
 
-        expect(statement()).toBe("Deleting Windows 11 and openSUSE Leap 15.2.");
+        expect(statement(2)).toBe(
+          "Includes 2 destructive actions affecting Windows 11 and openSUSE Leap 15.2.",
+        );
       });
     });
 
-    describe("and three or more systems go with it", () => {
+    describe("and three systems go with it", () => {
       beforeEach(() => {
         mockSystemDevices.mockReturnValue([
           partition(1, [windows]),
@@ -163,23 +169,12 @@ describe("Consequences", () => {
         mockActions.mockReturnValue([deleting(1), deleting(2), deleting(3)]);
       });
 
-      it("names one and counts the rest, so the reader still recognizes something", () => {
+      it("names them all", () => {
         installerRender(<Consequences />);
 
-        expect(statement()).toBe("Deleting Windows 11 and 2 other systems.");
-      });
-    });
-
-    describe("and the installer knows nothing about what is on it", () => {
-      beforeEach(() => {
-        mockSystemDevices.mockReturnValue([partition(1), partition(2)]);
-        mockActions.mockReturnValue([deleting(1), deleting(2)]);
-      });
-
-      it("counts what it cannot name", () => {
-        installerRender(<Consequences />);
-
-        expect(statement()).toBe("Deleting 2 partitions.");
+        expect(statement(3)).toBe(
+          "Includes 3 destructive actions affecting Windows 11, openSUSE Leap 15.2, and openSUSE Tumbleweed.",
+        );
       });
     });
 
@@ -192,7 +187,7 @@ describe("Consequences", () => {
       it("reports only the deletion, which is the worse of the two", () => {
         installerRender(<Consequences />);
 
-        expect(statement()).toBe("Deleting Windows 11.");
+        expect(statement(2)).toBe("Includes 1 destructive action affecting Windows 11.");
       });
     });
   });
@@ -206,7 +201,7 @@ describe("Consequences", () => {
     it("names it once", () => {
       installerRender(<Consequences />);
 
-      expect(statement()).toBe("Deleting Windows 11.");
+      expect(statement(2)).toBe("Includes 2 destructive actions affecting Windows 11.");
     });
   });
 });
