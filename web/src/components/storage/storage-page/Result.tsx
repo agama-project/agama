@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import { Alert } from "@patternfly/react-core";
+import { Flex, Title } from "@patternfly/react-core";
 import FixableConfigInfo from "~/components/storage/FixableConfigInfo";
 import ProposalFailedInfo from "~/components/storage/ProposalFailedInfo";
 import UnsupportedModelInfo from "~/components/storage/UnsupportedModelInfo";
@@ -72,14 +72,18 @@ export default function Result(): React.ReactNode {
 
   if (proposal) {
     return (
-      <Alert
-        isInline
-        variant="info"
-        component="h3"
-        title={_("Data in the disks will be modified according to the settings below")}
-      >
+      /* Plain text under a heading rather than an alert: an ordinary plan is
+         not a notice, and boxing it would give it the weight the failures
+         are kept for. The heading is what a screen reader jumps to. */
+      <Flex direction={{ default: "column" }} gap={{ default: "gapSm" }}>
+        <Title headingLevel="h2" size="lg">
+          {/* TRANSLATORS: heading over the short account of what the
+              installer will do to the disks, which follows from the settings
+              shown under it. */}
+          {_("Result of the configuration below")}
+        </Title>
         <Consequences />
-      </Alert>
+      </Flex>
     );
   }
 

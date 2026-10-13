@@ -24,12 +24,14 @@ import React from "react";
 import { unique } from "radashi";
 import { sprintf } from "sprintf-js";
 import Text from "~/components/core/Text";
-import Interpolate from "~/components/core/Interpolate";
 import { Stack, StackItem } from "@patternfly/react-core";
 import SmallWarning from "~/components/core/SmallWarning";
 import SheetOpener from "~/components/storage/shared/SheetOpener";
 import { useDevicesManager } from "~/components/storage/shared/use-devices-manager";
 import { useActions } from "~/hooks/model/proposal/storage";
+import { useConfigModel } from "~/hooks/model/storage/config-model";
+import { baseName } from "~/components/storage/utils";
+import { NAMES_PER_LINE } from "~/components/storage/shared/naming";
 import { isLogicalVolume, isPartition } from "~/model/storage/device";
 import { _, n_, formatList, TranslatedString } from "~/i18n";
 import type { Storage as System } from "~/model/system";
@@ -154,6 +156,65 @@ function resize(systems: string[], devices: System.Device[]): TranslatedString |
 }
 
 /**
+ * The disks the plan is about, named while there are few enough to name and
+ * counted after that, following the page's naming rule.
+ */
+function devicesPhrase(devices: string[]): string {
+  if (devices.length <= NAMES_PER_LINE) return formatList(devices);
+
+  // TRANSLATORS: stands for the devices the installation uses, where there are
+  // too many to name. %d is how many.
+  return sprintf(n_("%d device", "%d devices", devices.length), devices.length);
+}
+
+/**
+ * The opening sentence: what the plan builds, where, and what it takes.
+ *
+ * Where it comes from is left to the heading above it, so the sentence only
+ * gives facts. It opens with words rather than a number, which reads as a
+ * sentence instead of a figure, and carries no emphasis so the warning under
+ * it stays the only thing that stands out. The devices sit inside the subject
+ * rather than being it, so the verb never has to agree with a list of names.
+ */
+function summary(count: number, devices: string[]): TranslatedString {
+  if (!devices.length) {
+    return sprintf(
+      n_(
+        // TRANSLATORS: summary of what the installer will do to the disks.
+        // %d is the number of steps.
+        "Setting up the final storage layout will take %d action.",
+        "Setting up the final storage layout will take %d actions.",
+        count,
+      ),
+      count,
+    );
+  }
+
+  if (!count) {
+    return sprintf(
+      // TRANSLATORS: summary where the configuration asks for no change. %s is
+      // a list of device names, such as "sda and sdb", or a count of them,
+      // such as "5 devices".
+      _("Nothing will be changed on %s."),
+      devicesPhrase(devices),
+    );
+  }
+
+  return sprintf(
+    n_(
+      // TRANSLATORS: summary of what the installer will do to the disks. %1$s
+      // is a list of device names, such as "sda and sdb", or a count of them,
+      // such as "5 devices". %2$d is the number of steps.
+      "Setting up the final storage layout on %1$s will take %2$d action.",
+      "Setting up the final storage layout on %1$s will take %2$d actions.",
+      count,
+    ),
+    devicesPhrase(devices),
+    count,
+  );
+}
+
+/**
  * The worst thing the plan does to what is already on the machine, named.
  *
  * A reader wants to know whether any of the installation matters to them, and
@@ -173,11 +234,10 @@ function resize(systems: string[], devices: System.Device[]): TranslatedString |
  * rather than what the configuration asked for. Nothing is reported when there
  * is no proposal to read, which is what leaves room for the page to say why.
  *
- * Above it, a count of the actions, with the count and what it builds in bold
- * so the sentence can be read at a glance. It holds no control: a sentence with
- * a link in the middle of it cannot be translated as one, and two links in one
- * sentence leading to the same panel read as two places. The bold carries no
- * color, so it never competes with the warning below it.
+ * Above it, a plain sentence saying what the plan builds and what it takes.
+ * It holds no control: a sentence with a link in the middle of it cannot be
+ * translated as one, and two links in one sentence leading to the same panel
+ * read as two places.
  *
  * Below both, and never colored with them, the one way into the whole picture,
  * named for where it goes. What the plan destroys and what it does step by step
@@ -185,45 +245,26 @@ function resize(systems: string[], devices: System.Device[]): TranslatedString |
  * the second. A link that changes appearance with what the plan happens to do
  * is a link they have to recognize twice, and its danger was never its own: it
  * opens a panel.
- *
- * "Needed" rather than "in total": the number follows from the plan the reader
- * chose, and saying so stops five actions reading as five things the installer
- * decided on its own.
  */
 export default function Consequences(): React.ReactNode {
   const actions = useActions();
   const manager = useDevicesManager();
+  const config = useConfigModel();
 
   /* Subvolumes are how one file system is laid out inside itself, so counting
      them tells a reader how the installer works rather than what it will do. */
   const counted = actions.filter((action) => !action.subvol);
-  if (!counted.length) return null;
+  const devices = [...(config?.drives || []), ...(config?.mdRaids || [])].map((device) =>
+    baseName(device.name),
+  );
+  if (!counted.length && !devices.length) return null;
 
   const deleted = deletion(unique(manager.deletedSystems()), manager.deletedDevices().length);
   const resized = resize(unique(manager.resizedSystems()), manager.resizedDevices());
 
   return (
     <Stack>
-      <StackItem>
-        <Interpolate
-          sentence={sprintf(
-            n_(
-              // TRANSLATORS: %d is the number of steps the installer will take
-              // on the disks to leave them as configured. Keep the square
-              // brackets: the text inside them is shown in bold.
-              "As a result, [%d action] will be performed during installation to set up the [final storage layout].",
-              "As a result, [%d actions] will be performed during installation to set up the [final storage layout].",
-              counted.length,
-            ),
-            counted.length,
-          )}
-        >
-          {[
-            (text) => <Text component="strong">{text}</Text>,
-            (text) => <Text component="strong">{text}</Text>,
-          ]}
-        </Interpolate>
-      </StackItem>
+      <StackItem>{summary(counted.length, devices)}</StackItem>
       {deleted && <SmallWarning text={deleted} />}
       {!deleted && resized && <Text isBold>{resized}</Text>}
       <StackItem>
