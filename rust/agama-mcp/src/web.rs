@@ -29,12 +29,16 @@ use std::sync::Arc;
 
 /// Builds and returns the Axum router wrapping the `rmcp` StreamableHttpService.
 pub fn mcp_router(server: McpServer) -> Router {
+    tracing::info!("Initializing Agama MCP router with json_response=true, sse_retry=None (build: v2-direct-json)");
+
     // Disable host/origin filtering so Agama bare-metal nodes accept MCP requests across any network interface or IP.
     // Disable SSE retry priming events (with empty data frames) so JSON-parsing clients (like Gemini CLI) do not crash.
+    // Enable direct JSON responses for HTTP POST requests to avoid SSE streaming overhead and parser crashes on POST responses.
     let config = StreamableHttpServerConfig::default()
         .disable_allowed_hosts()
         .disable_allowed_origins()
-        .with_sse_retry(None);
+        .with_sse_retry(None)
+        .with_json_response(true);
     let session_manager = Arc::new(LocalSessionManager::default());
 
     let mcp_service = StreamableHttpService::new(
