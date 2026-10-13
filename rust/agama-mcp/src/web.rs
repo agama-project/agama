@@ -30,9 +30,11 @@ use std::sync::Arc;
 /// Builds and returns the Axum router wrapping the `rmcp` StreamableHttpService.
 pub fn mcp_router(server: McpServer) -> Router {
     // Disable host/origin filtering so Agama bare-metal nodes accept MCP requests across any network interface or IP.
+    // Disable SSE retry priming events (with empty data frames) so JSON-parsing clients (like Gemini CLI) do not crash.
     let config = StreamableHttpServerConfig::default()
         .disable_allowed_hosts()
-        .disable_allowed_origins();
+        .disable_allowed_origins()
+        .with_sse_retry(None);
     let session_manager = Arc::new(LocalSessionManager::default());
 
     let mcp_service = StreamableHttpService::new(

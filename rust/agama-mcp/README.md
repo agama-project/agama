@@ -43,10 +43,8 @@ the `Authorization` header:
   "mcpServers": {
     "agama-baremetal": {
       "url": "https://<agama-ip>/mcp",
-      "requestOptions": {
-        "headers": {
-          "Authorization": "Bearer <TOKEN>"
-        }
+      "headers": {
+        "Authorization": "Bearer <TOKEN>"
       }
     }
   }
