@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import { Stack, StackItem } from "@patternfly/react-core";
+import { Flex } from "@patternfly/react-core";
 import UsedPartitionableCurrent from "~/components/storage/device-sheet/UsedPartitionableCurrent";
 import UnusedPartitionableCurrent from "~/components/storage/device-sheet/UnusedPartitionableCurrent";
 import VolumeGroupCurrent from "~/components/storage/device-sheet/VolumeGroupCurrent";
@@ -51,7 +51,9 @@ export default function DeviceDetail({ entry, subject }: DeviceDetailProps): Rea
   const isMountedPartitionable = part && !!part.mountPath;
 
   return (
-    <Stack hasGutter>
+    /* Wider apart than anything inside a section, so the two read as parts
+       rather than as one run of lines. */
+    <Flex direction={{ default: "column" }} gap={{ default: "gapLg" }}>
       {!entry.isVolumeGroup && isUsedPartitionable && (
         <UsedPartitionableCurrent entry={entry} subject={subject} />
       )}
@@ -59,18 +61,16 @@ export default function DeviceDetail({ entry, subject }: DeviceDetailProps): Rea
         <UnusedPartitionableCurrent entry={entry} subject={subject} />
       )}
       {entry.isVolumeGroup && <VolumeGroupCurrent entry={entry} subject={subject} />}
-      <StackItem>
-        {!entry.isVolumeGroup && isMountedPartitionable && (
-          <PartitionableMountContent entry={entry} subject={subject} />
-        )}
-        {!entry.isVolumeGroup && !isMountedPartitionable && isUsedPartitionable && (
-          <PartitionableContent entry={entry} subject={subject} />
-        )}
-        {!entry.isVolumeGroup && !isMountedPartitionable && !isUsedPartitionable && (
-          <PartitionableNoContent entry={entry} subject={subject} />
-        )}
-        {entry.isVolumeGroup && <VolumeGroupContent entry={entry} subject={subject} />}
-      </StackItem>
-    </Stack>
+      {!entry.isVolumeGroup && isMountedPartitionable && (
+        <PartitionableMountContent entry={entry} subject={subject} />
+      )}
+      {!entry.isVolumeGroup && !isMountedPartitionable && isUsedPartitionable && (
+        <PartitionableContent entry={entry} subject={subject} />
+      )}
+      {!entry.isVolumeGroup && !isMountedPartitionable && !isUsedPartitionable && (
+        <PartitionableNoContent entry={entry} subject={subject} />
+      )}
+      {entry.isVolumeGroup && <VolumeGroupContent entry={entry} subject={subject} />}
+    </Flex>
   );
 }

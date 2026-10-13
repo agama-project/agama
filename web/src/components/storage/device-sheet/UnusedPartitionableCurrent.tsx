@@ -21,7 +21,6 @@
  */
 
 import React from "react";
-import { StackItem } from "@patternfly/react-core";
 import type { DeviceDetailProps } from "~/components/storage/device-sheet/DeviceDetail";
 import { _ } from "~/i18n";
 
@@ -30,5 +29,5 @@ export default function UnusedPartitionableCurrent({
   subject,
 }: DeviceDetailProps): React.ReactNode {
   console.log("unised", entry, subject);
-  return <StackItem>{_("TODO: unused partitionable")}</StackItem>;
+  return <div>{_("TODO: unused partitionable")}</div>;
 }
