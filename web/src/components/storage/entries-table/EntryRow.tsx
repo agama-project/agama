@@ -25,7 +25,6 @@ import { Td, Th, Tr } from "@patternfly/react-table";
 import { Label, Stack, StackItem } from "@patternfly/react-core";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import Text from "~/components/core/Text";
-import SheetOpener from "~/components/storage/shared/SheetOpener";
 import { useSheet } from "~/components/storage/shared/use-sheet";
 import { columnName } from "~/components/storage/entries-table/columns";
 import type { SheetEntry } from "~/components/storage/shared/use-sheet";
@@ -99,9 +98,7 @@ export default function EntryRow({
                 reader does with a row is open it. There is no button under it
                 saying so, since a button would teach a second gesture for one
                 destination whatever it was called. */}
-            <SheetOpener subject={subject}>
-              <Text isBold>{name}</Text>
-            </SheetOpener>
+            <Text isBold>{name}</Text>
             {description[0] && <span className="agm-entries-table__facts"> {description[0]}</span>}
             {/* The same words the panel puts beside the same name, so the row a
                 reader opened and the panel that opens carry one vocabulary. */}
