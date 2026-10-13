@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Oct  7 12:53:02 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Rename "Check Installation Medium" into "Check Medium & Install"
+  to make it more clear (bsc#1283085)
+
+-------------------------------------------------------------------
 Mon Oct  5 14:34:04 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
 
 - Improved self-update cleanup to disable the added self-update
