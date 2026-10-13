@@ -54,8 +54,8 @@ for FILE_PATH in $ADDED_FILES; do
     # Extract just the filename to search for it in the source repo
     FILE_NAME=$(basename "$FILE_PATH")
 
-    # Find all files in the source repo that have this exact name
-    MATCHING_SRC_FILES=$(find "$SRC" -type f -name "$FILE_NAME")
+    # Find all files in the source repo that have this exact name (case-insensitive)
+    MATCHING_SRC_FILES=$(find "$SRC" -type f -iname "$FILE_NAME")
 
     if [ -z "$MATCHING_SRC_FILES" ]; then
         echo "❌ FAIL: '$FILE_PATH' was not found in the source repo by name ('$FILE_NAME')."
