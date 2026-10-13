@@ -196,17 +196,31 @@ describe("EntriesTable", () => {
       });
     });
 
-    it("says how big a disk is and what kind it is, under its name", () => {
+    it("says how big a disk is and its model, under its name", () => {
+      installerRender(<EntriesTable />);
+
+      within(table()).getByRole("rowheader", {
+        name: /^sda\s*60 GiB\s+·\s+Samsung SSD 980 PRO 2TB$/,
+      });
+    });
+
+    it("says what kind of disk it is where the machine reports no model", () => {
+      mockSystemDevice.mockReturnValue({
+        name: "/dev/sda",
+        class: "drive",
+        drive: { type: "disk", info: {} },
+        block: { size: 64424509440 },
+        partitions: [],
+      });
       installerRender(<EntriesTable />);
 
       within(table()).getByRole("rowheader", { name: /^sda\s*60 GiB\s+·\s+Disk$/ });
     });
 
-    it("leaves the model and what is on the disk today to the sheet", () => {
+    it("leaves what is on the disk today to the sheet", () => {
       installerRender(<EntriesTable />);
       const cell = within(table()).getByRole("rowheader", { name: /^sda/ });
 
-      expect(cell).not.toHaveTextContent("Samsung");
       expect(cell).not.toHaveTextContent("Windows 11");
     });
   });
