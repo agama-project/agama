@@ -23,31 +23,17 @@
 import React from "react";
 import { Stack, Flex, FlexItem } from "@patternfly/react-core";
 import ConfigureDeviceMenu from "~/components/storage/ConfigureDeviceMenu";
-import SpaceDecision from "~/components/storage/storage-page/SpaceDecision";
 import ChangeInstallationDisk from "~/components/storage/storage-page/ChangeInstallationDisk";
-import { isEmpty } from "radashi";
 import { _ } from "~/i18n";
-import { useDevice } from "~/hooks/model/system/storage";
 import { useConfigModel } from "~/hooks/model/storage/config-model";
 import configModel from "~/model/storage/config-model";
 
 export default function BottomLinee(): React.ReactNode {
   const config = useConfigModel();
   const canChangeTarget = configModel.canChangeTargetDrive(config);
-  const device = useDevice(config.drives[0]?.name || "");
 
   return (
     <Stack hasGutter>
-      {canChangeTarget && !isEmpty(device?.partitions) && (
-        <Flex
-          gap={{ default: "gapSm" }}
-          alignItems={{ default: "alignItemsCenter" }}
-          justifyContent={{ default: "justifyContentCenter" }}
-          flexWrap={{ default: "wrap" }}
-        >
-          <SpaceDecision collection="drives" index={0} />
-        </Flex>
-      )}
       {canChangeTarget && (
         <Flex
           gap={{ default: "gapSm" }}
