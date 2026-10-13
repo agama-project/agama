@@ -25,10 +25,17 @@ import { screen } from "@testing-library/react";
 import { installerRender, mockNavigateFn } from "~/test-utils";
 import type { Storage as System } from "~/model/system";
 import type { Storage as Proposal } from "~/model/proposal";
+import type { ConfigModel } from "~/model/storage/config-model";
 import Consequences from "~/components/storage/storage-page/Consequences";
 
 const mockSystemDevices = jest.fn();
 const mockActions = jest.fn();
+const mockConfig = jest.fn();
+
+jest.mock("~/hooks/model/storage/config-model", () => ({
+  ...jest.requireActual("~/hooks/model/storage/config-model"),
+  useConfigModel: () => mockConfig(),
+}));
 
 jest.mock("~/hooks/model/system/storage", () => ({
   ...jest.requireActual("~/hooks/model/system/storage"),
@@ -55,8 +62,15 @@ const shrinking = (sid: number): Proposal.Action => ({ device: sid, text: "", re
 /** The facts sentence, which is there whenever the plan does anything. */
 const facts = (count: number) =>
   count === 1
-    ? "As a result, 1 action will be performed during installation to set up the final storage layout."
-    : `As a result, ${count} actions will be performed during installation to set up the final storage layout.`;
+    ? "Setting up the final storage layout will take 1 action."
+    : `Setting up the final storage layout will take ${count} actions.`;
+
+/** A configuration using the given disks. */
+const using = (...names: string[]): ConfigModel.Config => ({
+  drives: names.map((name) => ({ name: `/dev/${name}` })),
+  mdRaids: [],
+  volumeGroups: [],
+});
 
 /** The way into the whole picture, which the line always offers. */
 const wayIn = () => screen.getByRole("link", { name: "See the final layout and actions" });
@@ -76,6 +90,49 @@ describe("Consequences", () => {
   beforeEach(() => {
     mockSystemDevices.mockReturnValue([]);
     mockActions.mockReturnValue([]);
+    mockConfig.mockReturnValue(undefined);
+  });
+
+  describe("the opening sentence", () => {
+    beforeEach(() => {
+      mockActions.mockReturnValue([
+        { device: 1, text: "" },
+        { device: 2, text: "" },
+      ]);
+    });
+
+    it("names the disks the configuration uses, while they are few", () => {
+      mockConfig.mockReturnValue(using("sda", "sdb"));
+      installerRender(<Consequences />);
+
+      expect(document.body).toHaveTextContent(
+        "Setting up the final storage layout on sda and sdb will take 2 actions.",
+      );
+    });
+
+    it("counts them once there are too many to name", () => {
+      mockConfig.mockReturnValue(using("sda", "sdb", "sdc"));
+      installerRender(<Consequences />);
+
+      expect(document.body).toHaveTextContent(
+        "Setting up the final storage layout on 3 devices will take 2 actions.",
+      );
+    });
+
+    it("says nothing will change where the plan has no actions", () => {
+      mockConfig.mockReturnValue(using("sda"));
+      mockActions.mockReturnValue([]);
+      installerRender(<Consequences />);
+
+      expect(document.body).toHaveTextContent("Nothing will be changed on sda.");
+    });
+
+    it("puts nothing in bold, leaving emphasis to the warning", () => {
+      mockConfig.mockReturnValue(using("sda"));
+      installerRender(<Consequences />);
+
+      expect(document.querySelector("strong")).toBeNull();
+    });
   });
 
   describe("when nothing is deleted or made smaller", () => {
@@ -96,13 +153,6 @@ describe("Consequences", () => {
       expect(screen.getAllByRole("link")).toHaveLength(1);
       await user.click(wayIn());
       expect(mockNavigateFn).toHaveBeenCalledWith({ search: "?sheet=result" }, { replace: true });
-    });
-
-    it("puts the count and what it builds in bold", () => {
-      installerRender(<Consequences />);
-
-      expect(screen.getByText("1 action").tagName).toBe("STRONG");
-      expect(screen.getByText("final storage layout").tagName).toBe("STRONG");
     });
 
     it("states nothing else, since nothing on the machine is lost", () => {
