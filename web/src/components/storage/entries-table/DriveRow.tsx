@@ -96,6 +96,15 @@ function purposeOf(
   return lines;
 }
 
+/* The model names the disk the way its owner knows it, so it is preferred over
+   the generic kind wherever the machine reports one. */
+const driveDescription = (device) => {
+  const model = device.drive?.model;
+  if (model && model.length) return model;
+
+  return typeDescription(device);
+};
+
 export type DriveRowProps = {
   /** The device the configuration names, as the model spells it. */
   name: string;
@@ -110,12 +119,11 @@ export type DriveRowProps = {
  * Both read the machine, and a single row deciding what it is looking at would
  * call a different number of hooks depending on the answer.
  *
- * How big it is and what kind of thing it is are read in one short phrase under
- * the name, the same words the sheet's heading opens with. The vendor model is
- * left out: it is the longest part and the one a reader compares least, and it
- * was what made the first column wide. A configuration can name a device the
- * machine does not have, a profile written elsewhere or a disk since unplugged,
- * so every part of that phrase is left out where there is nothing to say.
+ * How big it is and what it is are read in one short phrase under the name: the
+ * vendor model where the machine reports one, and the kind of device where it
+ * does not. A configuration can name a device the machine does not have, a
+ * profile written elsewhere or a disk since unplugged, so every part of that
+ * phrase is left out where there is nothing to say.
  */
 export default function DriveRow({ name, subject }: DriveRowProps): React.ReactNode {
   const config = useConfigModel();
@@ -124,7 +132,7 @@ export default function DriveRow({ name, subject }: DriveRowProps): React.ReactN
   const entry = configModel.partitionable.findByName(config, name);
   const description = [
     device?.block?.size && deviceSize(device.block.size),
-    device && typeDescription(device),
+    device && driveDescription(device),
   ]
     .filter(Boolean)
     .join("  ·  ");
