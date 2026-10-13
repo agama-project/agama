@@ -25,6 +25,7 @@ import { unique } from "radashi";
 import { sprintf } from "sprintf-js";
 import Text from "~/components/core/Text";
 import { Stack, StackItem } from "@patternfly/react-core";
+import SmallWarning from "~/components/core/SmallWarning";
 import SheetOpener from "~/components/storage/shared/SheetOpener";
 import { useDevicesManager } from "~/components/storage/shared/use-devices-manager";
 import { useActions } from "~/hooks/model/proposal/storage";
@@ -210,11 +211,7 @@ export default function Consequences(): React.ReactNode {
         </SheetOpener>
         {_(".")}
       </StackItem>
-      {deleted && (
-        <Text isBold textStyle="textColorStatusDanger">
-          {deleted}
-        </Text>
-      )}
+      {deleted && <SmallWarning text={deleted} />}
       {!deleted && resized && <Text isBold>{resized}</Text>}
     </Stack>
   );
