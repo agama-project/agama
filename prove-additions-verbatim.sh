@@ -36,6 +36,58 @@ if [ ! -d $SRC ]; then
   cd - >/dev/null
 fi
 
-# This displays the complete diff.
-# Instead, I want just additions of whole files
-git log ${REVISION1}...${REVISION2} -p --reverse
+echo "Finding all files added between $REVISION1 and $REVISION2..."
+# We use git diff with --diff-filter=A to get only the added files.
+ADDED_FILES=$(git diff --diff-filter=A --name-only "$REVISION1" "$REVISION2")
+
+if [ -z "$ADDED_FILES" ]; then
+    echo "No files were added between $REVISION1 and $REVISION2."
+    exit 0
+fi
+
+# Track if we found any failures
+HAS_ERRORS=0
+
+echo "Checking if added files are verbatim copies of files in the source repo..."
+
+for FILE_PATH in $ADDED_FILES; do
+    # Extract just the filename to search for it in the source repo
+    FILE_NAME=$(basename "$FILE_PATH")
+
+    # Find all files in the source repo that have this exact name
+    MATCHING_SRC_FILES=$(find "$SRC" -type f -name "$FILE_NAME")
+
+    if [ -z "$MATCHING_SRC_FILES" ]; then
+        echo "❌ FAIL: '$FILE_PATH' was not found in the source repo by name ('$FILE_NAME')."
+        HAS_ERRORS=1
+        continue
+    fi
+
+    MATCH_FOUND=0
+
+    # Check each matching source file to see if its content is identical
+    for SRC_FILE in $MATCHING_SRC_FILES; do
+        # We compare the content of the file exactly as it was at REVISION2
+        # against the source file using 'cmp'.
+        if git show "${REVISION2}:${FILE_PATH}" | cmp -s - "$SRC_FILE"; then
+            MATCH_FOUND=1
+            echo "✅ OK: '$FILE_PATH' matches verbatim with '$SRC_FILE'."
+            break
+        fi
+    done
+
+    if [ "$MATCH_FOUND" -eq 0 ]; then
+        echo "❌ FAIL: '$FILE_PATH' does not match any source files named '$FILE_NAME' verbatim."
+        HAS_ERRORS=1
+    fi
+done
+
+if [ "$HAS_ERRORS" -eq 1 ]; then
+    echo ""
+    echo "Summary: Some added files are NOT verbatim copies."
+    exit 1
+else
+    echo ""
+    echo "Summary: All added files are verbatim copies!"
+    exit 0
+fi
