@@ -25,17 +25,10 @@ import { screen } from "@testing-library/react";
 import { installerRender, mockNavigateFn } from "~/test-utils";
 import type { Storage as System } from "~/model/system";
 import type { Storage as Proposal } from "~/model/proposal";
-import type { ConfigModel } from "~/model/storage/config-model";
 import Consequences from "~/components/storage/storage-page/Consequences";
 
 const mockSystemDevices = jest.fn();
 const mockActions = jest.fn();
-const mockConfig = jest.fn();
-
-jest.mock("~/hooks/model/storage/config-model", () => ({
-  ...jest.requireActual("~/hooks/model/storage/config-model"),
-  useConfigModel: () => mockConfig(),
-}));
 
 jest.mock("~/hooks/model/system/storage", () => ({
   ...jest.requireActual("~/hooks/model/system/storage"),
@@ -65,13 +58,6 @@ const facts = (count: number) =>
     ? "To set up the final storage layout, the installer will need 1 action."
     : `To set up the final storage layout, the installer will need ${count} actions.`;
 
-/** A configuration using the given disks. */
-const using = (...names: string[]): ConfigModel.Config => ({
-  drives: names.map((name) => ({ name: `/dev/${name}` })),
-  mdRaids: [],
-  volumeGroups: [],
-});
-
 /** The way into the whole picture, which the line always offers. */
 const wayIn = () => screen.getByRole("link", { name: "See the final layout and actions" });
 
@@ -90,50 +76,18 @@ describe("Consequences", () => {
   beforeEach(() => {
     mockSystemDevices.mockReturnValue([]);
     mockActions.mockReturnValue([]);
-    mockConfig.mockReturnValue(undefined);
   });
 
   describe("the opening sentence", () => {
-    beforeEach(() => {
+    it("names neither the disks nor anything but the count, in bold", () => {
       mockActions.mockReturnValue([
         { device: 1, text: "" },
         { device: 2, text: "" },
       ]);
-    });
-
-    it("names the disks the configuration uses, while they are few", () => {
-      mockConfig.mockReturnValue(using("sda", "sdb"));
       installerRender(<Consequences />);
 
-      expect(document.body).toHaveTextContent(
-        "To set up the final storage layout on sda and sdb, the installer will need 2 actions.",
-      );
-    });
-
-    it("sets the names as device names and the count in bold", () => {
-      mockConfig.mockReturnValue(using("sda", "sdb"));
-      installerRender(<Consequences />);
-
-      expect(screen.getByText("sda").tagName).toBe("CODE");
-      expect(screen.getByText("sdb").tagName).toBe("CODE");
+      expect(document.body).toHaveTextContent(facts(2));
       expect(screen.getByText("2 actions").tagName).toBe("STRONG");
-    });
-
-    it("counts them once there are too many to name", () => {
-      mockConfig.mockReturnValue(using("sda", "sdb", "sdc"));
-      installerRender(<Consequences />);
-
-      expect(document.body).toHaveTextContent(
-        "To set up the final storage layout on 3 devices, the installer will need 2 actions.",
-      );
-    });
-
-    it("says nothing will change where the plan has no actions", () => {
-      mockConfig.mockReturnValue(using("sda"));
-      mockActions.mockReturnValue([]);
-      installerRender(<Consequences />);
-
-      expect(document.body).toHaveTextContent("Nothing will be changed on sda.");
     });
   });
 
@@ -164,11 +118,14 @@ describe("Consequences", () => {
     });
   });
 
-  describe("when there is no proposal to read", () => {
-    it("says nothing, leaving room for the page to say why", () => {
+  describe("when the plan changes nothing", () => {
+    it("says so, and still offers the way into the whole picture", () => {
       installerRender(<Consequences />);
 
-      expect(document.body.textContent).toBe("");
+      expect(document.body).toHaveTextContent(
+        "The installer will not need to change anything on the disks.",
+      );
+      wayIn();
     });
   });
 
