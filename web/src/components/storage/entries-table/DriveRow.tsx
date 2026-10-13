@@ -119,23 +119,19 @@ export type DriveRowProps = {
  * Both read the machine, and a single row deciding what it is looking at would
  * call a different number of hooks depending on the answer.
  *
- * How big it is and what it is are read in one short phrase under the name: the
- * vendor model where the machine reports one, and the kind of device where it
- * does not. A configuration can name a device the machine does not have, a
- * profile written elsewhere or a disk since unplugged, so every part of that
- * phrase is left out where there is nothing to say.
+ * How big it is is read beside the name, and what it is under it: the vendor
+ * model where the machine reports one, and the kind of device where it does
+ * not. A configuration can name a device the machine does not have, a
+ * profile written elsewhere or a disk since unplugged, so both are left out
+ * where there is nothing to say.
  */
 export default function DriveRow({ name, subject }: DriveRowProps): React.ReactNode {
   const config = useConfigModel();
   const device = useDevice(name);
 
   const entry = configModel.partitionable.findByName(config, name);
-  const description = [
-    device?.block?.size && deviceSize(device.block.size),
-    device && driveDescription(device),
-  ]
-    .filter(Boolean)
-    .join("  ·  ");
+  const size = device?.block?.size ? deviceSize(device.block.size) : undefined;
+  const description = device && driveDescription(device);
 
   const groups = entry ? configModel.partitionable.filterVolumeGroups(config, entry) : [];
   const boots = configModel.boot.hasDevice(config, name);
@@ -152,6 +148,7 @@ export default function DriveRow({ name, subject }: DriveRowProps): React.ReactN
   return (
     <EntryRow
       name={<TruncatedDeviceName device={device} maxLength={13} />}
+      size={size}
       description={description}
       purpose={purpose}
       actions={space}
