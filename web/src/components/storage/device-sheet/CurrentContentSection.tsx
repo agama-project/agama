@@ -30,6 +30,7 @@ import Icon from "~/components/layout/Icon";
 import SpaceDecision, { policyMeaning } from "~/components/storage/storage-page/SpaceDecision";
 import MenuButton, { MenuButtonItem } from "~/components/core/MenuButton";
 import RowMenuToggle from "~/components/storage/entries-table/RowMenuToggle";
+import ActionInfo from "~/components/storage/device-sheet/ActionInfo";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { generateEncodedPath } from "~/utils";
 import { useDeletePartition } from "~/hooks/model/storage/config-model";
@@ -251,7 +252,7 @@ function statusFor(
     case "resizeIfNeeded":
       return canShrink
         ? { text: _("shrink if needed"), destroys: false }
-        : { text: _("keep (cannot shrink)"), destroys: false };
+        : { text: _("keep"), destroys: false };
     case "delete":
       // TRANSLATORS: what is to become of a partition already on the disk: it
       // is removed, and everything on it lost.
@@ -330,10 +331,6 @@ function PartitionRow({
 
   return (
     <Tr>
-      {/* The name, and then what is to become of it. One phrase rather than a
-          name here and a verdict in a column of its own: the verdict is about
-          this partition and nothing else, so the reader should not have to
-          cross the row to collect it, nor keep the name in mind on the way. */}
       <Th scope="row" modifier="nowrap">
         <Text>{baseName(part.name)}</Text>
         {part.block?.encrypted && (
@@ -345,9 +342,18 @@ function PartitionRow({
         )}
       </Th>
       <Td>
-        {status && (
-          <span className={status.destroys ? DESTROYS_CLASS : undefined}>{status.text}</span>
-        )}
+        <Flex gap={{ default: "gapXs" }} alignItems={{ default: "alignItemsCenter" }}>
+          {status && (
+            <FlexItem className={status.destroys ? DESTROYS_CLASS : undefined}>
+              {status.text}
+            </FlexItem>
+          )}
+          {["resizeIfNeeded", "keep"].includes(decision) && (
+            <FlexItem>
+              <ActionInfo device={part} />
+            </FlexItem>
+          )}
+        </Flex>
       </Td>
       <Td>
         <Flex gap={{ default: "gapXs" }} alignItems={{ default: "alignItemsCenter" }}>
