@@ -350,7 +350,7 @@ function PartitionRow({
             matters. A kept partition says nothing more; its menu does, where
             shrinking it would be decided. */}
         {decision === "resizeIfNeeded" && (!canShrink || recoverableText(part)) && (
-          <div className="agm-row-note">
+          <div className="agm-row-note agm-row-note--prose">
             {canShrink ? (
               recoverableText(part)
             ) : (

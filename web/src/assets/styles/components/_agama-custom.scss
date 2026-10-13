@@ -515,6 +515,13 @@ nav.agm-breadcrumb > ol > li > a {
   color: var(--pf-t--global--text--color--subtle);
 }
 
+// Except where the line is a sentence rather than a value, such as the reasons
+// the system gives for something it cannot do. Prose set in the face for values
+// reads as output to be parsed, and runs wider than it needs to.
+.agm-row-note--prose {
+  font-family: inherit;
+}
+
 // Things that are true about an entry, read above what it holds. Separated from
 // each other with a dashed rule and closed with a solid one: dashed separates
 // without dividing, which is what a run of statements needs, and the solid rule
