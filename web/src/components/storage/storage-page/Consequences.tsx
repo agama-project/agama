@@ -26,11 +26,10 @@ import { sprintf } from "sprintf-js";
 import Text from "~/components/core/Text";
 import { Stack, StackItem } from "@patternfly/react-core";
 import SmallWarning from "~/components/core/SmallWarning";
-import SheetOpener from "~/components/storage/shared/SheetOpener";
 import { useDevicesManager } from "~/components/storage/shared/use-devices-manager";
 import { useActions } from "~/hooks/model/proposal/storage";
 import { isLogicalVolume, isPartition } from "~/model/storage/device";
-import { _, n_, formatList, TranslatedString } from "~/i18n";
+import { n_, formatList, TranslatedString } from "~/i18n";
 import type { Storage as System } from "~/model/system";
 
 function deletion(systems: string[], partitions: number): TranslatedString | null {
@@ -172,11 +171,9 @@ function resize(systems: string[], devices: System.Device[]): TranslatedString |
  * rather than what the configuration asked for. Nothing is reported when there
  * is no proposal to read, which is what leaves room for the page to say why.
  *
- * Beside it, and never colored with it, the way into the whole picture. What
- * the plan destroys and what it does step by step are two questions, and a
- * reader has the first whether or not they ever have the second. A link that
- * changes appearance with what the plan happens to do is a link they have to
- * recognize twice, and its danger was never its own: it opens a list.
+ * Above it, a plain count of the actions. It holds no control: a sentence with
+ * a link in the middle of it cannot be translated as one, and two links in one
+ * sentence leading to the same panel read as two places.
  *
  * "Needed" rather than "in total": the number follows from the plan the reader
  * chose, and saying so stops five actions reading as five things the installer
@@ -197,19 +194,16 @@ export default function Consequences(): React.ReactNode {
   return (
     <Stack>
       <StackItem>
-        {_("As a result, ")}
-        <SheetOpener subject="result" tab="actions">
-          {sprintf(
-            // FIXME: this is not translatable. Shortcut taken for early demo
-            n_("%d action", "%d actions", counted.length),
+        {sprintf(
+          n_(
+            // TRANSLATORS: %d is the number of steps the installer will take on
+            // the disks to leave them as configured.
+            "As a result, %d action will be performed during installation to set up the final storage layout.",
+            "As a result, %d actions will be performed during installation to set up the final storage layout.",
             counted.length,
-          )}
-        </SheetOpener>
-        {_(" will be performed during installation to set up the ")}
-        <SheetOpener subject="result" tab="layout">
-          {_("final storage layout")}
-        </SheetOpener>
-        {_(".")}
+          ),
+          counted.length,
+        )}
       </StackItem>
       {deleted && <SmallWarning text={deleted} />}
       {!deleted && resized && <Text isBold>{resized}</Text>}
