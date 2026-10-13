@@ -196,11 +196,11 @@ describe("EntriesTable", () => {
       });
     });
 
-    it("says how big a disk is and its model, under its name", () => {
+    it("says how big a disk is beside its name, and its model under it", () => {
       installerRender(<EntriesTable />);
 
       within(table()).getByRole("rowheader", {
-        name: /^sda\s*60 GiB\s+·\s+Samsung SSD 980 PRO 2TB$/,
+        name: /^sda · 60 GiB\s*Samsung SSD 980 PRO 2TB$/,
       });
     });
 
@@ -214,7 +214,7 @@ describe("EntriesTable", () => {
       });
       installerRender(<EntriesTable />);
 
-      within(table()).getByRole("rowheader", { name: /^sda\s*60 GiB\s+·\s+Disk$/ });
+      within(table()).getByRole("rowheader", { name: /^sda · 60 GiB\s*Disk$/ });
     });
 
     it("leaves what is on the disk today to the sheet", () => {

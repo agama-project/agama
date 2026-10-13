@@ -33,7 +33,9 @@ import type { TranslatedString } from "~/i18n";
 export type EntryRowProps = {
   /** What the entry is called, as the page names things: `sda`, `system`. */
   name: React.ReactNode;
-  /** What it is, under the name: how big and what kind. */
+  /** How big it is, read on the name's own line. */
+  size?: string;
+  /** What it is, under the name: its model or its kind. */
   description?: string;
   /** What it is for, in the words the panel marks it with. */
   marks?: string[];
@@ -57,7 +59,9 @@ export type EntryRowProps = {
  * The name heads the row rather than sitting in a cell of it, so that a screen
  * reader reading any other cell says which entry it belongs to first. What the
  * entry is sits under the name, smaller, so the first column is only as wide as
- * a name and leaves the room to the two columns a reader compares. What is on
+ * a name and leaves the room to the two columns a reader compares. The size
+ * stays beside the name: it is short, and it is what a reader tells two disks
+ * of the same model apart by. What is on
  * the device today is not repeated here: whoever picked the device saw it while
  * choosing, and anyone else finds it in the sheet, which opens from the name.
  *
@@ -68,7 +72,8 @@ export type EntryRowProps = {
  * @example
  * <EntryRow
  *   name="sda"
- *   description="60 GiB · Disk"
+ *   size="60 GiB"
+ *   description="Samsung SSD 980 PRO 2TB"
  *   purpose={[_("Host LVM and boot")]}
  *   actions={[_("Windows 11 will be deleted")]}
  *   menu={<DriveMenu entry={entry} device={device} />}
@@ -77,6 +82,7 @@ export type EntryRowProps = {
  */
 export default function EntryRow({
   name,
+  size,
   description,
   marks = [],
   purpose,
@@ -100,6 +106,7 @@ export default function EntryRow({
                 saying so, since a button would teach a second gesture for one
                 destination whatever it was called. */}
             <Text isBold>{name}</Text>
+            {size && <> · {size}</>}
             {/* The same words the panel puts beside the same name, so the row a
                 reader opened and the panel that opens carry one vocabulary. */}
             {marks.map((mark) => (
