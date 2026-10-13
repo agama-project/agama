@@ -183,18 +183,32 @@ describe("EntriesTable", () => {
     ]);
   });
 
-  it("says how big a disk is and what it is, beside its name", () => {
-    mockConfig.mockReturnValue(config({ drives: [{ name: "/dev/sda" }] }));
-    mockSystemDevice.mockReturnValue({
-      name: "/dev/sda",
-      class: "drive",
-      drive: { type: "disk", info: {} },
-      block: { size: 64424509440 },
-      partitionTable: { type: "gpt" },
+  describe("the first column", () => {
+    beforeEach(() => {
+      mockConfig.mockReturnValue(config({ drives: [{ name: "/dev/sda", partitions: [] }] }));
+      mockSystemDevice.mockReturnValue({
+        name: "/dev/sda",
+        class: "drive",
+        drive: { type: "disk", model: "Samsung SSD 980 PRO 2TB", info: {} },
+        block: { size: 64424509440, systems: ["Windows 11"] },
+        partitionTable: { type: "gpt" },
+        partitions: [],
+      });
     });
-    installerRender(<EntriesTable />);
 
-    within(table()).getByRole("rowheader", { name: /sda\s+60 GiB\s+·\s+Disk\s+·\s+GPT/ });
+    it("says how big a disk is and what kind it is, under its name", () => {
+      installerRender(<EntriesTable />);
+
+      within(table()).getByRole("rowheader", { name: /^sda\s*60 GiB\s+·\s+Disk$/ });
+    });
+
+    it("leaves the model and what is on the disk today to the sheet", () => {
+      installerRender(<EntriesTable />);
+      const cell = within(table()).getByRole("rowheader", { name: /^sda/ });
+
+      expect(cell).not.toHaveTextContent("Samsung");
+      expect(cell).not.toHaveTextContent("Windows 11");
+    });
   });
 
   it("says nothing about a device the machine does not have", () => {

@@ -31,7 +31,6 @@ import { typeDescription } from "~/components/storage/utils/device";
 import { useConfigModel } from "~/hooks/model/storage/config-model";
 import { useDevice } from "~/hooks/model/system/storage";
 import TruncatedDeviceName from "~/components/storage/TruncatedDeviceName";
-import DeviceContent from "~/components/storage/DeviceContent";
 import configModel from "~/model/storage/config-model";
 import { _, n_, formatList, TranslatedString } from "~/i18n";
 import type { ConfigModel, Partitionable } from "~/model/storage/config-model";
@@ -104,13 +103,6 @@ export type DriveRowProps = {
   subject: SheetEntry;
 };
 
-const driveDescription = (device) => {
-  const model = device.drive?.model;
-  if (model && model.length) return model;
-
-  return typeDescription(device);
-};
-
 /**
  * A disk or a software RAID, as a row of the list.
  *
@@ -118,23 +110,24 @@ const driveDescription = (device) => {
  * Both read the machine, and a single row deciding what it is looking at would
  * call a different number of hooks depending on the answer.
  *
- * How big it is, what kind of thing it is and how it is partitioned are read in
- * one phrase beside the name. A configuration can name a device the machine
- * does not have, a profile written elsewhere or a disk since unplugged, so
- * every part of that phrase is left out where there is nothing to say.
+ * How big it is and what kind of thing it is are read in one short phrase under
+ * the name, the same words the sheet's heading opens with. The vendor model is
+ * left out: it is the longest part and the one a reader compares least, and it
+ * was what made the first column wide. A configuration can name a device the
+ * machine does not have, a profile written elsewhere or a disk since unplugged,
+ * so every part of that phrase is left out where there is nothing to say.
  */
 export default function DriveRow({ name, subject }: DriveRowProps): React.ReactNode {
   const config = useConfigModel();
   const device = useDevice(name);
 
   const entry = configModel.partitionable.findByName(config, name);
-  const description = [];
-  description.push(
-    [device?.block?.size && deviceSize(device.block.size), device && driveDescription(device)]
-      .filter(Boolean)
-      .join("  ·  "),
-  );
-  description.push(<DeviceContent device={device} />);
+  const description = [
+    device?.block?.size && deviceSize(device.block.size),
+    device && typeDescription(device),
+  ]
+    .filter(Boolean)
+    .join("  ·  ");
 
   const groups = entry ? configModel.partitionable.filterVolumeGroups(config, entry) : [];
   const boots = configModel.boot.hasDevice(config, name);

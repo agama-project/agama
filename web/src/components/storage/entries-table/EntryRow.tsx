@@ -33,8 +33,8 @@ import type { TranslatedString } from "~/i18n";
 export type EntryRowProps = {
   /** What the entry is called, as the page names things: `sda`, `system`. */
   name: React.ReactNode;
-  /** What it is, beside the name: how big, what kind, how it is partitioned. */
-  description?: string[];
+  /** What it is, under the name: how big and what kind. */
+  description?: string;
   /** What it is for, in the words the panel marks it with. */
   marks?: string[];
   /** What the installer will do here, one statement per line. */
@@ -56,9 +56,10 @@ export type EntryRowProps = {
  *
  * The name heads the row rather than sitting in a cell of it, so that a screen
  * reader reading any other cell says which entry it belongs to first. What the
- * entry is follows the name on the same line: a name on a line of its own
- * spends a whole line saying one word, and the facts beside it are read as
- * belonging to it rather than as a column of their own.
+ * entry is sits under the name, smaller, so the first column is only as wide as
+ * a name and leaves the room to the two columns a reader compares. What is on
+ * the device today is not repeated here: whoever picked the device saw it while
+ * choosing, and anyone else finds it in the sheet, which opens from the name.
  *
  * A row that costs nothing leaves the last column empty. It once said "Nothing
  * planned" there, borrowed from the column before it, which made a device that
@@ -67,7 +68,7 @@ export type EntryRowProps = {
  * @example
  * <EntryRow
  *   name="sda"
- *   description="60 GiB · Disk · GPT"
+ *   description="60 GiB · Disk"
  *   purpose={[_("Host LVM and boot")]}
  *   actions={[_("Windows 11 will be deleted")]}
  *   menu={<DriveMenu entry={entry} device={device} />}
@@ -76,7 +77,7 @@ export type EntryRowProps = {
  */
 export default function EntryRow({
   name,
-  description = [],
+  description,
   marks = [],
   purpose,
   actions,
@@ -91,7 +92,7 @@ export default function EntryRow({
        inside it is a link that does the same thing and is where the keyboard
        lands. */
     <Tr className="agm-entries-table__row" onClick={() => openSheet(subject)}>
-      <Th scope="row" dataLabel={columnName("entry")}>
+      <Th scope="row" modifier="fitContent" dataLabel={columnName("entry")}>
         <Stack>
           <StackItem>
             {/* The name is the way in, which is the act a row teaches: what a
@@ -99,7 +100,6 @@ export default function EntryRow({
                 saying so, since a button would teach a second gesture for one
                 destination whatever it was called. */}
             <Text isBold>{name}</Text>
-            {description[0] && <span className="agm-entries-table__facts"> {description[0]}</span>}
             {/* The same words the panel puts beside the same name, so the row a
                 reader opened and the panel that opens carry one vocabulary. */}
             {marks.map((mark) => (
@@ -111,9 +111,7 @@ export default function EntryRow({
               </React.Fragment>
             ))}
           </StackItem>
-          <StackItem className={textStyles.fontSizeXs}>
-            {description[1] && description[1]}
-          </StackItem>
+          {description && <StackItem className="agm-entries-table__facts">{description}</StackItem>}
         </Stack>
       </Th>
       <Td dataLabel={columnName("actions")}>
