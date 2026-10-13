@@ -62,8 +62,8 @@ const shrinking = (sid: number): Proposal.Action => ({ device: sid, text: "", re
 /** The facts sentence, which is there whenever the plan does anything. */
 const facts = (count: number) =>
   count === 1
-    ? "Setting up the final storage layout will take 1 action."
-    : `Setting up the final storage layout will take ${count} actions.`;
+    ? "To set up the final storage layout, the installer will need 1 action."
+    : `To set up the final storage layout, the installer will need ${count} actions.`;
 
 /** A configuration using the given disks. */
 const using = (...names: string[]): ConfigModel.Config => ({
@@ -106,8 +106,17 @@ describe("Consequences", () => {
       installerRender(<Consequences />);
 
       expect(document.body).toHaveTextContent(
-        "Setting up the final storage layout on sda and sdb will take 2 actions.",
+        "To set up the final storage layout on sda and sdb, the installer will need 2 actions.",
       );
+    });
+
+    it("sets the names as device names and the count in bold", () => {
+      mockConfig.mockReturnValue(using("sda", "sdb"));
+      installerRender(<Consequences />);
+
+      expect(screen.getByText("sda").tagName).toBe("CODE");
+      expect(screen.getByText("sdb").tagName).toBe("CODE");
+      expect(screen.getByText("2 actions").tagName).toBe("STRONG");
     });
 
     it("counts them once there are too many to name", () => {
@@ -115,7 +124,7 @@ describe("Consequences", () => {
       installerRender(<Consequences />);
 
       expect(document.body).toHaveTextContent(
-        "Setting up the final storage layout on 3 devices will take 2 actions.",
+        "To set up the final storage layout on 3 devices, the installer will need 2 actions.",
       );
     });
 
@@ -125,13 +134,6 @@ describe("Consequences", () => {
       installerRender(<Consequences />);
 
       expect(document.body).toHaveTextContent("Nothing will be changed on sda.");
-    });
-
-    it("puts nothing in bold, leaving emphasis to the warning", () => {
-      mockConfig.mockReturnValue(using("sda"));
-      installerRender(<Consequences />);
-
-      expect(document.querySelector("strong")).toBeNull();
     });
   });
 

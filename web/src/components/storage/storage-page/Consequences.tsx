@@ -24,6 +24,8 @@ import React from "react";
 import { unique } from "radashi";
 import { sprintf } from "sprintf-js";
 import Text from "~/components/core/Text";
+import Interpolate from "~/components/core/Interpolate";
+import DeviceName from "~/components/storage/shared/DeviceName";
 import { Stack, StackItem } from "@patternfly/react-core";
 import SmallWarning from "~/components/core/SmallWarning";
 import SheetOpener from "~/components/storage/shared/SheetOpener";
@@ -33,7 +35,7 @@ import { useConfigModel } from "~/hooks/model/storage/config-model";
 import { baseName } from "~/components/storage/utils";
 import { NAMES_PER_LINE } from "~/components/storage/shared/naming";
 import { isLogicalVolume, isPartition } from "~/model/storage/device";
-import { _, n_, formatList, TranslatedString } from "~/i18n";
+import { _, n_, formatList, formatListToParts, TranslatedString } from "~/i18n";
 import type { Storage as System } from "~/model/system";
 
 function deletion(systems: string[], partitions: number): TranslatedString | null {
@@ -157,60 +159,90 @@ function resize(systems: string[], devices: System.Device[]): TranslatedString |
 
 /**
  * The disks the plan is about, named while there are few enough to name and
- * counted after that, following the page's naming rule.
+ * counted after that, following the page's naming rule. Names are set as
+ * device names, so they read as values quoted inside the sentence.
  */
-function devicesPhrase(devices: string[]): string {
-  if (devices.length <= NAMES_PER_LINE) return formatList(devices);
+function DevicesPhrase({ devices }: { devices: string[] }): React.ReactNode {
+  if (devices.length <= NAMES_PER_LINE) {
+    return formatListToParts(devices).map((part, index) =>
+      part.type === "element" ? <DeviceName key={index} name={part.value} /> : part.value,
+    );
+  }
 
   // TRANSLATORS: stands for the devices the installation uses, where there are
   // too many to name. %d is how many.
   return sprintf(n_("%d device", "%d devices", devices.length), devices.length);
 }
 
+/** How many actions the plan takes, in bold so it can be read at a glance. */
+function ActionsCount({ count }: { count: number }): React.ReactNode {
+  return (
+    <Text component="strong">
+      {
+        // TRANSLATORS: how many steps the installer will take on the disks, as
+        // part of the summary sentence. %d is the number.
+        sprintf(n_("%d action", "%d actions", count), count)
+      }
+    </Text>
+  );
+}
+
 /**
  * The opening sentence: what the plan builds, where, and what it takes.
  *
- * Where it comes from is left to the heading above it, so the sentence only
- * gives facts. It opens with words rather than a number, which reads as a
- * sentence instead of a figure, and carries no emphasis so the warning under
- * it stays the only thing that stands out. The devices sit inside the subject
- * rather than being it, so the verb never has to agree with a list of names.
+ * Where the plan comes from is left to the heading above it, so the sentence
+ * only gives facts. It opens with what is being built rather than with a
+ * number, and its subject is the installer, so the verb never has to agree
+ * with a list of names or with a count. The count is bold and carries no
+ * color, so it stands out without competing with the warning under it.
+ *
+ * The count reads as what the reader's plan takes, not as what the installer
+ * decided on its own: the heading names the configuration as its source, and
+ * "will need" makes the actions the cost of the layout.
  */
-function summary(count: number, devices: string[]): TranslatedString {
+function Summary({ count, devices }: { count: number; devices: string[] }): React.ReactNode {
   if (!devices.length) {
-    return sprintf(
-      n_(
-        // TRANSLATORS: summary of what the installer will do to the disks.
-        // %d is the number of steps.
-        "Setting up the final storage layout will take %d action.",
-        "Setting up the final storage layout will take %d actions.",
-        count,
-      ),
-      count,
+    return (
+      <Interpolate
+        sentence={
+          // TRANSLATORS: summary of what the installer will do to the disks to
+          // leave them as configured on the page. %s is a number of steps,
+          // such as "12 actions".
+          _("To set up the final storage layout, the installer will need %s.")
+        }
+      >
+        {() => <ActionsCount count={count} />}
+      </Interpolate>
     );
   }
 
   if (!count) {
-    return sprintf(
-      // TRANSLATORS: summary where the configuration asks for no change. %s is
-      // a list of device names, such as "sda and sdb", or a count of them,
-      // such as "5 devices".
-      _("Nothing will be changed on %s."),
-      devicesPhrase(devices),
+    return (
+      <Interpolate
+        sentence={
+          // TRANSLATORS: summary where the configuration on the page asks for
+          // no change. %s is a list of device names, such as "sda and sdb", or
+          // a count of them, such as "5 devices".
+          _("Nothing will be changed on %s.")
+        }
+      >
+        {() => <DevicesPhrase devices={devices} />}
+      </Interpolate>
     );
   }
 
-  return sprintf(
-    n_(
-      // TRANSLATORS: summary of what the installer will do to the disks. %1$s
-      // is a list of device names, such as "sda and sdb", or a count of them,
-      // such as "5 devices". %2$d is the number of steps.
-      "Setting up the final storage layout on %1$s will take %2$d action.",
-      "Setting up the final storage layout on %1$s will take %2$d actions.",
-      count,
-    ),
-    devicesPhrase(devices),
-    count,
+  return (
+    <Interpolate
+      sentence={
+        // TRANSLATORS: summary of what the installer will do to the disks to
+        // leave them as configured on the page. %1$s is a list of device
+        // names, such as "sda and sdb", or a count of them, such as "5
+        // devices". %2$s is a number of steps, such as "12 actions".
+        _("To set up the final storage layout on %1$s, the installer will need %2$s.")
+      }
+    >
+      {[() => <DevicesPhrase devices={devices} />, () => <ActionsCount count={count} />]}
+    </Interpolate>
   );
 }
 
@@ -234,13 +266,14 @@ function summary(count: number, devices: string[]): TranslatedString {
  * rather than what the configuration asked for. Nothing is reported when there
  * is no proposal to read, which is what leaves room for the page to say why.
  *
- * Above it, a plain sentence saying what the plan builds and what it takes.
- * It holds no control: a sentence with a link in the middle of it cannot be
+ * Above it, a sentence saying what the plan builds and what it takes. It holds
+ * no control: a sentence with a link in the middle of it cannot be
  * translated as one, and two links in one sentence leading to the same panel
  * read as two places.
  *
  * Below both, and never colored with them, the one way into the whole picture,
- * named for where it goes. What the plan destroys and what it does step by step
+ * named for where it goes and drawn as a button, since it stands on its own
+ * line rather than inside a sentence. What the plan destroys and what it does step by step
  * are two questions, and a reader has the first whether or not they ever have
  * the second. A link that changes appearance with what the plan happens to do
  * is a link they have to recognize twice, and its danger was never its own: it
@@ -264,11 +297,13 @@ export default function Consequences(): React.ReactNode {
 
   return (
     <Stack>
-      <StackItem>{summary(counted.length, devices)}</StackItem>
+      <StackItem>
+        <Summary count={counted.length} devices={devices} />
+      </StackItem>
       {deleted && <SmallWarning text={deleted} />}
       {!deleted && resized && <Text isBold>{resized}</Text>}
       <StackItem>
-        <SheetOpener subject="result">
+        <SheetOpener subject="result" variant="secondary">
           {/* TRANSLATORS: opens a panel showing how the disks will look after
               installation and the list of steps taken to get there. */}
           {_("See the final layout and actions")}
