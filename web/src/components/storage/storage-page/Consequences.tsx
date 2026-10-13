@@ -25,17 +25,13 @@ import { unique } from "radashi";
 import { sprintf } from "sprintf-js";
 import Text from "~/components/core/Text";
 import Interpolate from "~/components/core/Interpolate";
-import DeviceName from "~/components/storage/shared/DeviceName";
 import { Stack, StackItem } from "@patternfly/react-core";
 import SmallWarning from "~/components/core/SmallWarning";
 import SheetOpener from "~/components/storage/shared/SheetOpener";
 import { useDevicesManager } from "~/components/storage/shared/use-devices-manager";
 import { useActions } from "~/hooks/model/proposal/storage";
-import { useConfigModel } from "~/hooks/model/storage/config-model";
-import { baseName } from "~/components/storage/utils";
-import { NAMES_PER_LINE } from "~/components/storage/shared/naming";
 import { isLogicalVolume, isPartition } from "~/model/storage/device";
-import { _, n_, formatList, formatListToParts, TranslatedString } from "~/i18n";
+import { _, n_, formatList, TranslatedString } from "~/i18n";
 import type { Storage as System } from "~/model/system";
 
 function deletion(systems: string[], partitions: number): TranslatedString | null {
@@ -157,23 +153,6 @@ function resize(systems: string[], devices: System.Device[]): TranslatedString |
       );
 }
 
-/**
- * The disks the plan is about, named while there are few enough to name and
- * counted after that, following the page's naming rule. Names are set as
- * device names, so they read as values quoted inside the sentence.
- */
-function DevicesPhrase({ devices }: { devices: string[] }): React.ReactNode {
-  if (devices.length <= NAMES_PER_LINE) {
-    return formatListToParts(devices).map((part, index) =>
-      part.type === "element" ? <DeviceName key={index} name={part.value} /> : part.value,
-    );
-  }
-
-  // TRANSLATORS: stands for the devices the installation uses, where there are
-  // too many to name. %d is how many.
-  return sprintf(n_("%d device", "%d devices", devices.length), devices.length);
-}
-
 /** How many actions the plan takes, in bold so it can be read at a glance. */
 function ActionsCount({ count }: { count: number }): React.ReactNode {
   return (
@@ -188,60 +167,39 @@ function ActionsCount({ count }: { count: number }): React.ReactNode {
 }
 
 /**
- * The opening sentence: what the plan builds, where, and what it takes.
+ * The opening sentence: what the plan builds and what it takes.
  *
  * Where the plan comes from is left to the heading above it, so the sentence
  * only gives facts. It opens with what is being built rather than with a
  * number, and its subject is the installer, so the verb never has to agree
- * with a list of names or with a count. The count is bold and carries no
+ * with the count.
+ *
+ * The disks are not named: the configuration right below names every one of
+ * them, and naming them here too would only make the sentence longer, and make
+ * it read differently depending on how many there are. The count is bold and carries no
  * color, so it stands out without competing with the warning under it.
  *
  * The count reads as what the reader's plan takes, not as what the installer
  * decided on its own: the heading names the configuration as its source, and
  * "will need" makes the actions the cost of the layout.
  */
-function Summary({ count, devices }: { count: number; devices: string[] }): React.ReactNode {
-  if (!devices.length) {
-    return (
-      <Interpolate
-        sentence={
-          // TRANSLATORS: summary of what the installer will do to the disks to
-          // leave them as configured on the page. %s is a number of steps,
-          // such as "12 actions".
-          _("To set up the final storage layout, the installer will need %s.")
-        }
-      >
-        {() => <ActionsCount count={count} />}
-      </Interpolate>
-    );
-  }
-
+function Summary({ count }: { count: number }): React.ReactNode {
   if (!count) {
-    return (
-      <Interpolate
-        sentence={
-          // TRANSLATORS: summary where the configuration on the page asks for
-          // no change. %s is a list of device names, such as "sda and sdb", or
-          // a count of them, such as "5 devices".
-          _("Nothing will be changed on %s.")
-        }
-      >
-        {() => <DevicesPhrase devices={devices} />}
-      </Interpolate>
-    );
+    // TRANSLATORS: summary where the configuration on the page asks for no
+    // change to the disks.
+    return _("The installer will not need to change anything on the disks.");
   }
 
   return (
     <Interpolate
       sentence={
         // TRANSLATORS: summary of what the installer will do to the disks to
-        // leave them as configured on the page. %1$s is a list of device
-        // names, such as "sda and sdb", or a count of them, such as "5
-        // devices". %2$s is a number of steps, such as "12 actions".
-        _("To set up the final storage layout on %1$s, the installer will need %2$s.")
+        // leave them as configured on the page. %s is a number of steps, such
+        // as "12 actions".
+        _("To set up the final storage layout, the installer will need %s.")
       }
     >
-      {[() => <DevicesPhrase devices={devices} />, () => <ActionsCount count={count} />]}
+      {() => <ActionsCount count={count} />}
     </Interpolate>
   );
 }
@@ -282,15 +240,10 @@ function Summary({ count, devices }: { count: number; devices: string[] }): Reac
 export default function Consequences(): React.ReactNode {
   const actions = useActions();
   const manager = useDevicesManager();
-  const config = useConfigModel();
 
   /* Subvolumes are how one file system is laid out inside itself, so counting
      them tells a reader how the installer works rather than what it will do. */
   const counted = actions.filter((action) => !action.subvol);
-  const devices = [...(config?.drives || []), ...(config?.mdRaids || [])].map((device) =>
-    baseName(device.name),
-  );
-  if (!counted.length && !devices.length) return null;
 
   const deleted = deletion(unique(manager.deletedSystems()), manager.deletedDevices().length);
   const resized = resize(unique(manager.resizedSystems()), manager.resizedDevices());
@@ -298,7 +251,7 @@ export default function Consequences(): React.ReactNode {
   return (
     <Stack>
       <StackItem>
-        <Summary count={counted.length} devices={devices} />
+        <Summary count={counted.length} />
       </StackItem>
       {deleted && <SmallWarning text={deleted} />}
       {!deleted && resized && <Text isBold>{resized}</Text>}
