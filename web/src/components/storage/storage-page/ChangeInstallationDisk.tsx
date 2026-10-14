@@ -52,7 +52,7 @@ export default function ChangeInstallationDisk(): React.ReactNode {
       {isOpen && (
         <DeviceSelectorModal
           title={_("Use another device")}
-          intro={_("TODO: no RAID or LVM tabs")}
+          tabs={["disks"]}
           selected={device}
           disks={candidate}
           onCancel={() => setIsOpen(false)}
