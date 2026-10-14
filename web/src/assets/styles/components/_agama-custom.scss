@@ -365,6 +365,18 @@ nav.agm-breadcrumb > ol > li > a {
   --pf-v6-c-table--m-compact__th--PaddingBlockStart: 0;
 }
 
+// Something on a device today that the installation removes: faded, and
+// struck through with a thin line in the color of the action that removes it.
+// A line of its own color reads as a mark on the text rather than part of the
+// letters, so the text stays readable. A visual cue only: the words next to it
+// say what happens.
+.agm-pending-removal {
+  color: var(--pf-t--global--text--color--subtle);
+  text-decoration: line-through;
+  text-decoration-color: var(--pf-t--global--text--color--status--danger--default);
+  text-decoration-thickness: 1px;
+}
+
 // The control showing what is on a device: its caret sits right against the
 // words, so the two read as one control. The icon's own padding is gap enough.
 .pf-v6-c-button.agm-sheet-disclosure {

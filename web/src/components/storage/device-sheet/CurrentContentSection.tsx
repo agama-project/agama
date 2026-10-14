@@ -197,6 +197,7 @@ function PartitionMenu({
    phrases says it a second time while taking the width the phrases need. The
    color is the entries table's, so the same news reads the same in both. */
 const DESTROYS_CLASS = "agm-entries-table__cost--destroys";
+const PENDING_REMOVAL_CLASS = "agm-pending-removal";
 
 /**
  * What is to become of one thing already on the device, and whether that costs
@@ -323,18 +324,13 @@ function PartitionRow({
     _("unrecognized");
   const status = statusFor(decision, reusedAs, formats, canShrink);
 
-  /* A rule through what the row describes, where the reader has allowed it to
-     go. The name, what is on it and how big it is are facts about a partition
-     that will not be there afterwards. Not through the status that says so:
-     crossing out "delete" says the opposite of what it means. */
+  /* A rule through what is on the partition today and how big it is, where
+     the reader has allowed it to go: there now, gone once installed. Only a
+     visual cue, styled to stay readable: not <s>, which would claim it is
+     already untrue, and the Action column says it in words. Not through the
+     status itself: crossing out "delete" says the opposite of what it means. */
   const struck = (content: React.ReactNode) =>
-    decision === "delete" ? (
-      <s>
-        <Text textStyle="textColorSubtle">{content}</Text>
-      </s>
-    ) : (
-      content
-    );
+    decision === "delete" ? <span className={PENDING_REMOVAL_CLASS}>{content}</span> : content;
 
   return (
     <Tr>
@@ -352,13 +348,10 @@ function PartitionRow({
         <Flex gap={{ default: "gapXs" }} alignItems={{ default: "alignItemsCenter" }}>
           <FlexItem>
             {formats ? (
-              /* Struck through and subdued rather than colored: the rule
-                 through it already says it goes, and a word in the page's
-                 danger color beside the one replacing it would make the loss
-                 louder than the thing the reader asked for. */
-              <s>
-                <Text textStyle="textColorSubtle">{currentContent}</Text>
-              </s>
+              /* Struck through rather than colored: what is there now gives
+                 way to what follows it, and a word in the danger color would
+                 make the loss louder than the thing the reader asked for. */
+              <span className={PENDING_REMOVAL_CLASS}>{currentContent}</span>
             ) : (
               struck(currentContent)
             )}
