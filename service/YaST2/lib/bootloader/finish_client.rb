@@ -19,7 +19,6 @@ Yast.import "Arch"
 Yast.import "Linuxrc"
 Yast.import "Misc"
 Yast.import "Mode"
-Yast.import "Report"
 
 module Bootloader
   # Finish client for bootloader configuration
@@ -66,9 +65,8 @@ module Bootloader
         system.merge(bl_current)
         system.write
       rescue BrokenConfiguration => e
-        # bug#1138930: although there should never be errors in this phase
-        # (unless udev is broken), aborting the installation is not nice
-        Yast::Report.LongMessage(e.message)
+        log.error "Broken bootloader configuration: #{e.message}"
+        raise
       end
 
       # and remember result of merge as current one
@@ -92,7 +90,11 @@ module Bootloader
         # installation where post install script is not executed
         # (bnc#979719,bnc#977656, bsc#1189374)
         # --regenerate-all is needed for generating initrd image for all kernels (bsc#1189915)
-        Yast::Execute.on_target("/usr/bin/dracut", "--force", "--regenerate-all")
+        begin
+          Yast::Execute.on_target!("/usr/bin/dracut", "--force", "--regenerate-all")
+        rescue Cheetah::ExecutionFailed => e
+          raise DracutError.new(e)
+        end
       end
 
       true
@@ -104,7 +106,13 @@ module Bootloader
       # Tell the firmware/hypervisor to re-IPL (reboot) from the /boot/zipl bootmap on the next
       # boot - matters for s390 guests (LPAR/z/VM) so the newly-installed system actually boots.
       # See the DEVIATION FROM UPSTREAM note at the top of this file.
-      Yast::Execute.on_target("chreipl", "node", "/boot/zipl") if Yast::Arch.s390
+      if Yast::Arch.s390
+        begin
+          Yast::Execute.on_target!("chreipl", "node", "/boot/zipl")
+        rescue Cheetah::ExecutionFailed => e
+          raise CommandError.new(_("Failed to configure reipl:"), e)
+        end
+      end
 
       # Final message after all packages from CD1 are installed
       # and we're ready to start (boot into) the installed system

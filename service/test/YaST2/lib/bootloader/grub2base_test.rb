@@ -116,10 +116,17 @@ describe Bootloader::Grub2Base do
     end
 
     it "calls grub2-mkconfig in non-transactional system" do
-      expect(Yast::Execute).to receive(:on_target).with(/grub2-mkconfig/, any_args)
+      expect(Yast::Execute).to receive(:on_target!).with(/grub2-mkconfig/, any_args)
       subject.write
-      expect(Yast::Execute).to_not receive(:on_target)
+      expect(Yast::Execute).to_not receive(:on_target!)
       subject.write(etc_only: true)
+    end
+
+    it "raises an error if grub2-mkconfig fails" do
+      allow(Yast::Execute).to receive(:on_target!).with(/grub2-mkconfig/, any_args)
+        .and_raise(Cheetah::ExecutionFailed.new([], nil, nil, "some error"))
+
+      expect { subject.write }.to raise_error(RuntimeError, /Generating GRUB2 configuration failed/)
     end
   end
 

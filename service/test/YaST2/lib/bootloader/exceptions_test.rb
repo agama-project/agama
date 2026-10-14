@@ -89,7 +89,80 @@ describe Bootloader::InvalidSerialConsoleArguments do
 end
 
 describe Bootloader::NoRoot do
-  it "is a RuntimeError" do
+  it "is a BootloaderError" do
+    expect(described_class.new).to be_a(Bootloader::BootloaderError)
+  end
+end
+
+describe Bootloader::BootloaderError do
+  it "inherits from RuntimeError" do
     expect(described_class.new).to be_a(RuntimeError)
+  end
+end
+
+describe Bootloader::CommandError do
+  let(:status) { double(exitstatus: 1) }
+  let(:cheetah) { Cheetah::ExecutionFailed.new(["/usr/bin/cmd", "--arg"], status, "stdout", "error output") }
+  subject { described_class.new("Command failed", cheetah) }
+
+  it "is a BootloaderError" do
+    expect(subject).to be_a(Bootloader::BootloaderError)
+  end
+
+  it "exposes description, command, stderr, and exit_code" do
+    expect(subject.description).to eq("Command failed")
+    expect(subject.command).to eq(["/usr/bin/cmd", "--arg"])
+    expect(subject.stderr).to eq("error output")
+    expect(subject.exit_code).to eq(1)
+  end
+
+  it "formats a readable message with command and stderr" do
+    expect(subject.message).to include("Command failed")
+    expect(subject.message).to include("[\"/usr/bin/cmd\", \"--arg\"]")
+    expect(subject.message).to include("error output")
+  end
+end
+
+describe Bootloader::GrubInstallError do
+  it "is a CommandError" do
+    status = double(exitstatus: 1)
+    cheetah = Cheetah::ExecutionFailed.new(["/usr/sbin/grub2-install"], status, "", "err")
+    err = described_class.new(cheetah)
+
+    expect(err).to be_a(Bootloader::CommandError)
+    expect(err.message).to include("Installing GRUB2 to device failed")
+  end
+end
+
+describe Bootloader::GrubConfigError do
+  it "is a CommandError" do
+    status = double(exitstatus: 1)
+    cheetah = Cheetah::ExecutionFailed.new(["/usr/sbin/grub2-mkconfig"], status, "", "err")
+    err = described_class.new(cheetah)
+
+    expect(err).to be_a(Bootloader::CommandError)
+    expect(err.message).to include("Generating GRUB2 configuration failed")
+  end
+end
+
+describe Bootloader::DracutError do
+  it "is a CommandError" do
+    status = double(exitstatus: 1)
+    cheetah = Cheetah::ExecutionFailed.new(["/usr/bin/dracut"], status, "", "err")
+    err = described_class.new(cheetah)
+
+    expect(err).to be_a(Bootloader::CommandError)
+    expect(err.message).to include("Regenerating initrd with dracut failed")
+  end
+end
+
+describe Bootloader::SdbootutilError do
+  it "is a CommandError" do
+    status = double(exitstatus: 1)
+    cheetah = Cheetah::ExecutionFailed.new(["/usr/bin/sdbootutil"], status, "", "err")
+    err = described_class.new("Action failed", cheetah)
+
+    expect(err).to be_a(Bootloader::CommandError)
+    expect(err.message).to include("Action failed")
   end
 end

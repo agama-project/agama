@@ -3,8 +3,63 @@
 require "yast"
 
 module Bootloader
+  # Base error class for all bootloader-related errors
+  class BootloaderError < RuntimeError
+  end
+
+  # Error raised when an external system binary executed for bootloader fails
+  class CommandError < BootloaderError
+    include Yast::I18n
+
+    attr_reader :description, :command, :stderr, :exit_code
+
+    # @param description [String] description of what failed
+    # @param exception [Cheetah::ExecutionFailed] the underlying execution failure
+    def initialize(description, exception)
+      textdomain "bootloader"
+      @description = description
+      @command = exception.commands
+      @stderr = exception.stderr
+      @exit_code = exception.status&.exitstatus
+
+      parts = [description]
+      parts << "Command `#{@command.inspect}`." if @command
+      parts << "Error output: #{@stderr}" if @stderr && !@stderr.empty?
+
+      super(parts.join("\n"))
+    end
+  end
+
+  # Specialized error for grub2-install failures
+  class GrubInstallError < CommandError
+    def initialize(exception)
+      super(_("Installing GRUB2 to device failed."), exception)
+    end
+  end
+
+  # Specialized error for grub2-mkconfig failures
+  class GrubConfigError < CommandError
+    def initialize(exception)
+      super(_("Generating GRUB2 configuration failed."), exception)
+    end
+  end
+
+  # Specialized error for dracut regeneration failures
+  class DracutError < CommandError
+    def initialize(exception)
+      super(_("Regenerating initrd with dracut failed."), exception)
+    end
+  end
+
+  # Specialized error for sdbootutil failures
+  class SdbootutilError < CommandError
+    def initialize(description, exception)
+      super(description, exception)
+    end
+  end
+
   # Represents error when during read it found bootloader name that is not supported.
-  class UnsupportedBootloader < RuntimeError
+  class UnsupportedBootloader < BootloaderError
     attr_reader :bootloader_name
 
     def initialize(bootloader_name)
@@ -15,7 +70,7 @@ module Bootloader
 
   # universal exception when unrecoverable error found during parsing configuration
   # holds in {#reason} translated message what exactly is broken.
-  class BrokenConfiguration < RuntimeError
+  class BrokenConfiguration < BootloaderError
     include Yast::I18n
     attr_reader :reason
 
@@ -31,7 +86,7 @@ module Bootloader
 
   # Specialized exception for invalid by-path device names
   # (bsc#1122008, bsc#1116305)
-  class BrokenByPathDeviceName < RuntimeError
+  class BrokenByPathDeviceName < BootloaderError
     include Yast::I18n
     attr_reader :dev_name
 
@@ -52,7 +107,7 @@ module Bootloader
 
   # Represent unsupported value in given option. Used mainly when value contain something that
   # bootloader does not understand yet.
-  class UnsupportedOption < RuntimeError
+  class UnsupportedOption < BootloaderError
     include Yast::I18n
     attr_reader :option
 
@@ -75,6 +130,6 @@ module Bootloader
     end
   end
 
-  class NoRoot < RuntimeError
+  class NoRoot < BootloaderError
   end
 end

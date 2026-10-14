@@ -95,7 +95,7 @@ describe Bootloader::Sections do
     it "writes default value" do
       subject.default = "linux"
 
-      expect(Yast::Execute).to receive(:on_target)
+      expect(Yast::Execute).to receive(:on_target!)
         .with("/usr/sbin/grub2-set-default", "linux")
 
       subject.write
@@ -104,10 +104,20 @@ describe Bootloader::Sections do
     it "converts default value to its path" do
       subject.default = "windows"
 
-      expect(Yast::Execute).to receive(:on_target)
+      expect(Yast::Execute).to receive(:on_target!)
         .with("/usr/sbin/grub2-set-default", "alien>windows")
 
       subject.write
+    end
+
+    it "raises a CommandError if grub2-set-default fails" do
+      subject.default = "linux"
+
+      allow(Yast::Execute).to receive(:on_target!)
+        .with("/usr/sbin/grub2-set-default", "linux")
+        .and_raise(Cheetah::ExecutionFailed.new([], nil, nil, "set-default error"))
+
+      expect { subject.write }.to raise_error(Bootloader::CommandError, /Failed to set default GRUB2 boot entry/)
     end
   end
 end

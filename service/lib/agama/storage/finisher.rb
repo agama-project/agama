@@ -25,8 +25,11 @@ require "yast2/execute"
 require "yast2/systemd/service"
 require "yast2/fs_snapshot"
 require "bootloader/finish_client"
+require "bootloader/exceptions"
 require "y2storage/storage_manager"
 require "agama/helpers"
+require "agama/question"
+require "agama/http/clients/questions"
 require "abstract_method"
 require "fileutils"
 
@@ -42,9 +45,11 @@ module Agama
       # Constructor
       # @param logger [Logger]
       # @param config [Config]
-      def initialize(logger, config)
+      # @param questions_client [Agama::HTTP::Clients::Questions, nil]
+      def initialize(logger, config, questions_client: nil)
         @logger = logger
         @config = config
+        @questions_client = questions_client || Agama::HTTP::Clients::Questions.new(logger)
       end
 
       # Execute the final storage actions.
@@ -64,11 +69,14 @@ module Agama
       # @return [Config]
       attr_reader :config
 
+      # @return [Agama::HTTP::Clients::Questions]
+      attr_reader :questions_client
+
       # All possible steps, that may or not need to be executed
       def possible_steps
         [
           CopyFilesStep.new(logger),
-          BootloaderStep.new(logger),
+          BootloaderStep.new(logger, questions_client),
           StorageStep.new(logger),
           IscsiStep.new(logger),
           SnapshotsStep.new(logger)
@@ -153,18 +161,85 @@ module Agama
 
       # Step to write the bootloader configuration
       class BootloaderStep < Step
+        # Constructor
+        #
+        # @param logger [Logger]
+        # @param questions_client [Agama::HTTP::Clients::Questions]
+        def initialize(logger, questions_client)
+          super(logger)
+          @questions_client = questions_client
+        end
+
         def label
           _("Installing bootloader")
         end
 
+        # Executes the bootloader installation.
+        #
+        # If the installation fails, it asks the user whether to retry,
+        # skip or abort the installation.
+        #
+        # @raise [StandardError] if the installation fails and the user chooses to abort.
         def run
-          cio_ignore_finish if Yast::Arch.s390
+          begin
+            cio_ignore_finish if Yast::Arch.s390
+            result = install_bootloader
+            raise _("Writing bootloader configuration failed.") if result == false
+          rescue ::Bootloader::BootloaderError, StandardError => e
+            logger.error "Bootloader installation failed: #{e.message}"
+            logger.error e.backtrace.join("\n") if e.backtrace
+
+            case ask_user(e.message)
+            when :retry
+              logger.info "Retrying bootloader installation"
+              retry
+            when :skip
+              logger.warn "Skipping bootloader installation as requested by the user"
+              return
+            when :abort
+              logger.error "Aborting installation as requested by the user"
+              raise
+            else
+              logger.error "Unknown action, aborting"
+              raise
+            end
+          end
+        end
+
+        # Installs the bootloader via the finish client.
+        def install_bootloader
           ::Bootloader::FinishClient.new.write
         end
 
         def cio_ignore_finish
           require "installation/cio_ignore"
           Installation::CIOIgnoreFinish.new.run("Write")
+        end
+
+      private
+
+        # @return [Agama::HTTP::Clients::Questions]
+        attr_reader :questions_client
+
+        # Asks the user whether to retry, skip, or abort the installation.
+        #
+        # @param details [String] Details of the problem
+        # @return [Symbol] Action chosen by the user (:retry, :skip, :abort)
+        def ask_user(details)
+          details = details.to_s.strip
+          details = _("Writing bootloader configuration failed.") if details.empty?
+
+          question = Question.new(
+            qclass:         "bootloaderInstallError",
+            text:           _("Bootloader installation failed. Do you want to retry, skip or abort the installation?"),
+            options:        [:retry, :skip, :abort],
+            default_option: :skip,
+            data:           { "details" => details }
+          )
+
+          answer = questions_client.ask(question)
+          logger.info "User answer for bootloader error: #{answer.action}"
+          answer.action
         end
       end
 
