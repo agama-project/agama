@@ -148,9 +148,7 @@ module Agama
       def content_reason_text
         return nil if content? || reasons?
 
-        _("Neither a file system nor a storage system was detected on the device. In case the " \
-          "device does contain a file system or a storage system that is not supported, resizing " \
-          "will most likely cause data loss.")
+        _("No content was detected on the device.")
       end
 
       # Text of the reason preventing to shrink because there is no valid minimum size.
@@ -159,7 +157,7 @@ module Agama
       def min_size_reason_text
         return nil if min_size? || reasons?
 
-        _("Shrinking is not supported by this device")
+        _("Shrinking is not supported by this device.")
       end
 
       # Text of the reasons proventing to shrink.
