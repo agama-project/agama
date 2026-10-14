@@ -30,9 +30,9 @@ pub enum McpMode {
     /// MCP server is disabled (default). Standard ISO installations remain secure.
     #[default]
     Disabled,
-    /// Read-only mode: allows inspecting system hardware, submitting trial configurations,
-    /// and checking proposals, status, and logs. `commit_install` is forbidden.
-    ReadOnly,
+    /// Configuration-only mode: allows inspecting system hardware, retrieving schemas,
+    /// injecting configurations, answering prompts, and checking proposals. `commit_install` is forbidden.
+    Config,
     /// Full mode: allows all operations including executing the installation via `commit_install`.
     Full,
 }
@@ -41,13 +41,13 @@ impl McpMode {
     /// Determines the MCP mode from the kernel command-line arguments.
     ///
     /// Parses the `inst.mcp` argument:
-    /// - `inst.mcp=full` (or `1`, `true`, `yes`) -> [`McpMode::Full`]
-    /// - `inst.mcp=readonly` (or `read-only`) -> [`McpMode::ReadOnly`]
-    /// - otherwise -> [`McpMode::Disabled`]
+    /// - `inst.mcp=full` -> [`McpMode::Full`]
+    /// - `inst.mcp=config` -> [`McpMode::Config`]
+    /// - `inst.mcp=disabled` (or omitted) -> [`McpMode::Disabled`]
     pub fn from_kernel_cmdline(cmdline: &KernelCmdline) -> Self {
         match cmdline.get_last("inst.mcp").as_deref() {
-            Some("full" | "1" | "true" | "yes") => Self::Full,
-            Some("readonly" | "read-only") => Self::ReadOnly,
+            Some("full") => Self::Full,
+            Some("config") => Self::Config,
             _ => Self::Disabled,
         }
     }
@@ -59,28 +59,50 @@ impl McpMode {
             .unwrap_or(Self::Disabled)
     }
 
-    /// Returns `true` if the MCP server is enabled (`ReadOnly` or `Full`).
+    /// Returns `true` if the MCP server is enabled (`Config` or `Full`).
     pub fn is_enabled(&self) -> bool {
         !matches!(self, Self::Disabled)
     }
 
-    /// Returns `true` if the MCP server is operating in read-only mode.
-    pub fn is_readonly(&self) -> bool {
-        matches!(self, Self::ReadOnly)
+    /// Returns `true` if the MCP server is operating in configuration-only mode.
+    pub fn is_config(&self) -> bool {
+        matches!(self, Self::Config)
+    }
+
+    /// Returns `true` if the mode allows triggering destructive installation.
+    pub fn allows_install(&self) -> bool {
+        matches!(self, Self::Full)
+    }
+
+    /// Extracts an optional pre-shared MCP token configured on the kernel command-line.
+    ///
+    /// Parses `inst.mcp.token`.
+    pub fn token_from_kernel_cmdline(cmdline: &KernelCmdline) -> Option<String> {
+        cmdline.get_last("inst.mcp.token")
+    }
+
+    /// Extracts an optional pre-shared MCP token from the active system kernel command-line.
+    pub fn token_from_cmdline() -> Option<String> {
+        KernelCmdline::parse()
+            .ok()
+            .and_then(|cmdline| Self::token_from_kernel_cmdline(&cmdline))
     }
 }
 
+/// Error returned when parsing an invalid MCP operating mode string.
+#[derive(thiserror::Error, Debug, PartialEq, Eq)]
+#[error("Unknown MCP mode: '{0}'. Expected 'full', 'config', or 'disabled'.")]
+pub struct ModeParseError(pub String);
+
 impl FromStr for McpMode {
-    type Err = String;
+    type Err = ModeParseError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s.to_lowercase().as_str() {
-            "full" | "1" | "true" | "yes" => Ok(Self::Full),
-            "readonly" | "read-only" => Ok(Self::ReadOnly),
-            "disabled" | "0" | "false" | "no" | "none" => Ok(Self::Disabled),
-            other => Err(format!(
-                "Unknown MCP mode: '{other}'. Expected 'full', 'readonly', or 'disabled'."
-            )),
+            "full" => Ok(Self::Full),
+            "config" => Ok(Self::Config),
+            "disabled" => Ok(Self::Disabled),
+            other => Err(ModeParseError(other.to_string())),
         }
     }
 }
@@ -89,7 +111,7 @@ impl fmt::Display for McpMode {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Self::Disabled => write!(f, "disabled"),
-            Self::ReadOnly => write!(f, "readonly"),
+            Self::Config => write!(f, "config"),
             Self::Full => write!(f, "full"),
         }
     }
@@ -104,39 +126,46 @@ mod tests {
         let full = KernelCmdline::parse_str("inst.mcp=full some_other_arg=1");
         assert_eq!(McpMode::from_kernel_cmdline(&full), McpMode::Full);
 
-        let readonly = KernelCmdline::parse_str("inst.mcp=readonly");
-        assert_eq!(McpMode::from_kernel_cmdline(&readonly), McpMode::ReadOnly);
+        let config = KernelCmdline::parse_str("inst.mcp=config");
+        assert_eq!(McpMode::from_kernel_cmdline(&config), McpMode::Config);
 
-        let readonly_hyphen = KernelCmdline::parse_str("inst.mcp=read-only");
-        assert_eq!(
-            McpMode::from_kernel_cmdline(&readonly_hyphen),
-            McpMode::ReadOnly
-        );
-
-        let disabled = KernelCmdline::parse_str("console=ttyS0");
+        let disabled = KernelCmdline::parse_str("inst.mcp=disabled");
         assert_eq!(McpMode::from_kernel_cmdline(&disabled), McpMode::Disabled);
+
+        let other = KernelCmdline::parse_str("console=ttyS0");
+        assert_eq!(McpMode::from_kernel_cmdline(&other), McpMode::Disabled);
 
         let empty = KernelCmdline::parse_str("");
         assert_eq!(McpMode::from_kernel_cmdline(&empty), McpMode::Disabled);
+
+        let token = KernelCmdline::parse_str("inst.mcp=config inst.mcp.token=secret123");
+        assert_eq!(
+            McpMode::token_from_kernel_cmdline(&token),
+            Some("secret123".to_string())
+        );
     }
 
     #[test]
     fn test_mcp_mode_from_str() {
         assert_eq!("full".parse::<McpMode>().unwrap(), McpMode::Full);
-        assert_eq!("readonly".parse::<McpMode>().unwrap(), McpMode::ReadOnly);
+        assert_eq!("config".parse::<McpMode>().unwrap(), McpMode::Config);
         assert_eq!("disabled".parse::<McpMode>().unwrap(), McpMode::Disabled);
         assert!("invalid".parse::<McpMode>().is_err());
+        assert!("readonly".parse::<McpMode>().is_err());
     }
 
     #[test]
     fn test_mcp_mode_helpers() {
         assert!(!McpMode::Disabled.is_enabled());
-        assert!(!McpMode::Disabled.is_readonly());
+        assert!(!McpMode::Disabled.is_config());
+        assert!(!McpMode::Disabled.allows_install());
 
-        assert!(McpMode::ReadOnly.is_enabled());
-        assert!(McpMode::ReadOnly.is_readonly());
+        assert!(McpMode::Config.is_enabled());
+        assert!(McpMode::Config.is_config());
+        assert!(!McpMode::Config.allows_install());
 
         assert!(McpMode::Full.is_enabled());
-        assert!(!McpMode::Full.is_readonly());
+        assert!(!McpMode::Full.is_config());
+        assert!(McpMode::Full.allows_install());
     }
 }

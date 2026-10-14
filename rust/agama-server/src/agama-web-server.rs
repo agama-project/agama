@@ -19,6 +19,8 @@
 // find current contact information at www.suse.com.
 
 use std::{
+    io::Write,
+    os::unix::fs::OpenOptionsExt,
     path::{Path, PathBuf},
     pin::Pin,
     process::{ExitCode, Termination},
@@ -50,6 +52,7 @@ use tower::Service;
 
 const DEFAULT_WEB_UI_DIR: &str = "/usr/share/agama/web_ui";
 const TOKEN_FILE: &str = "/run/agama/token";
+const MCP_TOKEN_FILE: &str = "/run/agama/mcp-token";
 const EVENTS_CAPACITY: usize = 256;
 
 #[derive(Subcommand, Debug)]
@@ -98,9 +101,13 @@ struct ServeArgs {
     #[arg(long)]
     web_ui_dir: Option<PathBuf>,
 
-    /// MCP server mode ('full', 'readonly', 'disabled'). Defaults to kernel command-line (inst.mcp).
+    /// MCP server mode ('full', 'config', 'disabled'). Defaults to kernel command-line (inst.mcp).
     #[arg(long)]
     mcp: Option<agama_mcp::McpMode>,
+
+    /// Dedicated MCP authentication token. Defaults to kernel command-line (inst.mcp.token) or a secure random token.
+    #[arg(long)]
+    mcp_token: Option<String>,
 }
 
 impl ServeArgs {
@@ -333,16 +340,35 @@ async fn serve_command(args: ServeArgs) -> anyhow::Result<()> {
     let (events_tx, events_rx) = channel(EVENTS_CAPACITY);
     monitor_events_channel(events_rx);
 
-    let config = web::ServiceConfig::load()?;
+    let mcp_mode = args.mcp.unwrap_or_else(agama_mcp::McpMode::from_cmdline);
+    let mut config = web::ServiceConfig::load()?;
 
     write_token(TOKEN_FILE, &config.jwt_secret).context("could not create the token file")?;
+
+    if mcp_mode.is_enabled() {
+        let mcp_token = args
+            .mcp_token
+            .clone()
+            .or_else(agama_mcp::McpMode::token_from_cmdline)
+            .or(config.mcp_token)
+            .unwrap_or_else(|| {
+                use rand::distr::{Alphanumeric, SampleString};
+                Alphanumeric.sample_string(&mut rand::rng(), 32)
+            });
+
+        write_mcp_token(MCP_TOKEN_FILE, &mcp_token)
+            .context("could not create the MCP token file")?;
+        tracing::info!("Dedicated Agama MCP token written to {}", MCP_TOKEN_FILE);
+        config.mcp_token = Some(mcp_token);
+    }
 
     let dbus = connection_to(&args.dbus_address).await?;
     let web_ui_dir = args
         .web_ui_dir
         .clone()
         .unwrap_or_else(|| PathBuf::from(DEFAULT_WEB_UI_DIR));
-    let service = web::service_with_mcp(config, events_tx, dbus, web_ui_dir, args.mcp).await?;
+    let service =
+        web::service_with_mcp(config, events_tx, dbus, web_ui_dir, Some(mcp_mode)).await?;
     // TODO: Move elsewhere? Use a singleton? (It would be nice to use the same
     // generated self-signed certificate on both ports.)
     let ssl_acceptor = if let Ok(ssl_acceptor) = ssl_acceptor(&args.to_certificate()?) {
@@ -383,6 +409,20 @@ async fn run_command(cli: Cli) -> anyhow::Result<()> {
 fn write_token(path: &str, secret: &str) -> anyhow::Result<()> {
     let token = AuthToken::generate(secret)?;
     Ok(token.write(path)?)
+}
+
+fn write_mcp_token(path: &str, token: &str) -> anyhow::Result<()> {
+    if let Some(parent) = std::path::Path::new(path).parent() {
+        std::fs::create_dir_all(parent)?;
+    }
+    let mut file = std::fs::OpenOptions::new()
+        .create(true)
+        .truncate(true)
+        .write(true)
+        .mode(0o400)
+        .open(path)?;
+    file.write_all(token.as_bytes())?;
+    Ok(())
 }
 
 // Keep the receiver running to avoid the channel being closed.

@@ -20,6 +20,7 @@
 
 //! Tool argument types and helper functions for the Agama MCP Server.
 
+use crate::error::{SchemaError, ValidationError};
 use agama_lib::profile::{ProfileValidator, ValidationOutcome};
 use agama_utils::api::status::Task;
 use agama_utils::api::{IssueWithScope, Proposal};
@@ -27,6 +28,7 @@ use rmcp::model::{CallToolResult, ContentBlock};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
+use std::path::PathBuf;
 
 /// Convenience constructor for a successful single-text tool response.
 pub fn tool_success(text: impl Into<String>) -> CallToolResult {
@@ -43,6 +45,13 @@ pub fn tool_error(text: impl Into<String>) -> CallToolResult {
 pub struct GetSystemArgs {
     /// Optional resource category to filter by (e.g. 'storage', 'network', 'hardware').
     pub resource: Option<String>,
+}
+
+/// Arguments for the `get_config_schema` tool.
+#[derive(Debug, Clone, Default, Deserialize, JsonSchema)]
+pub struct GetConfigSchemaArgs {
+    /// Optional section name to retrieve detailed schema for (e.g. 'storage', 'software', 'access', 'network', 'user', 'bootloader'). Omit to get root profile schema overview and available sections.
+    pub section: Option<String>,
 }
 
 /// Arguments for the `set_config` tool.
@@ -147,20 +156,129 @@ pub fn filter_system_resource(system_val: &Value, resource: &str) -> Value {
 }
 
 /// Validates configuration against Agama schema.
-pub fn validate_config_schema(raw_json: &Value) -> Result<(), Vec<String>> {
-    let json_str = match serde_json::to_string(raw_json) {
-        Ok(s) => s,
-        Err(e) => return Err(vec![format!("Invalid JSON syntax: {e}")]),
-    };
+pub fn validate_config_schema(raw_json: &Value) -> Result<(), ValidationError> {
+    let json_str = serde_json::to_string(raw_json)?;
 
     let validator = ProfileValidator::default_schema()
-        .map_err(|e| vec![format!("Agama profile schema is not available: {e}")])?;
+        .map_err(|e| ValidationError::SchemaUnavailable(e.to_string()))?;
 
     match validator.validate_str(&json_str) {
         Ok(ValidationOutcome::Valid) => Ok(()),
-        Ok(ValidationOutcome::NotValid(reasons)) => Err(reasons),
-        Err(e) => Err(vec![format!("Profile validation error: {e}")]),
+        Ok(ValidationOutcome::NotValid(reasons)) => Err(ValidationError::NotValid(reasons)),
+        Err(e) => Err(ValidationError::Validation(e.to_string())),
     }
+}
+
+/// Resolves the file path of the Agama JSON Schema.
+pub fn find_schema_path() -> PathBuf {
+    let manifest_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+    let dev_path = manifest_dir.join("../out/schemas/config.schema.json");
+    if dev_path.exists() {
+        dev_path
+    } else {
+        let schema_dir = std::env::var("AGAMA_SCHEMA_DIR")
+            .unwrap_or_else(|_| agama_lib::profile::DEFAULT_SCHEMA_DIR.to_string());
+        PathBuf::from(schema_dir).join("config.schema.json")
+    }
+}
+
+/// Loads and parses the raw JSON schema file.
+pub fn load_schema_json() -> Result<Value, SchemaError> {
+    let path = find_schema_path();
+    let contents = std::fs::read_to_string(&path)
+        .map_err(|source| SchemaError::Io { path: path.clone(), source })?;
+    serde_json::from_str(&contents)
+        .map_err(|source| SchemaError::Json { path, source })
+}
+
+/// Recursively collects referenced component definitions from the JSON schema.
+fn collect_referenced_components(
+    val: &Value,
+    components: &serde_json::Map<String, Value>,
+    collected: &mut serde_json::Map<String, Value>,
+) {
+    if let Some(r) = val.get("$ref").and_then(|v| v.as_str()) {
+        if let Some(name) = r.strip_prefix("#/components/schemas/") {
+            if let Some(def) = components.get(name) {
+                if collected.insert(name.to_string(), def.clone()).is_none() {
+                    collect_referenced_components(def, components, collected);
+                }
+            }
+        }
+    }
+    match val {
+        Value::Object(m) => m.values().for_each(|v| collect_referenced_components(v, components, collected)),
+        Value::Array(a) => a.iter().for_each(|v| collect_referenced_components(v, components, collected)),
+        _ => {}
+    }
+}
+
+/// Builds the high-level schema overview listing available configuration sections.
+fn schema_overview(props: &serde_json::Map<String, Value>) -> Value {
+    let mut available: Vec<_> = props.keys().cloned().collect();
+    available.sort_unstable();
+
+    let sections: serde_json::Map<String, Value> = props
+        .iter()
+        .map(|(k, v)| {
+            let desc = v.get("description").and_then(|d| d.as_str()).unwrap_or("");
+            (k.clone(), json!({ "description": desc }))
+        })
+        .collect();
+
+    json!({
+        "title": "Agama Installation Profile Schema",
+        "description": "Top-level overview of available configuration sections in the Agama profile.",
+        "available_sections": available,
+        "sections": sections,
+        "instructions": "Call get_config_schema with section: \"<name>\" (e.g. \"product\", \"storage\", \"access\") to inspect field constraints and allowed values.",
+        "example_minimal_profile": {
+            "product": {
+                "id": "Tumbleweed"
+            },
+            "root": {
+                "password": "nots3cr3t"
+            }
+        }
+    })
+}
+
+/// Returns the schema overview or detailed section schema from Agama's config schema.
+pub fn get_schema_for_section(schema_val: &Value, section: Option<&str>) -> Result<Value, SchemaError> {
+    let props = schema_val
+        .get("properties")
+        .and_then(|p| p.as_object())
+        .ok_or(SchemaError::MissingProperties)?;
+
+    let Some(sec) = section.map(|s| s.trim()).filter(|s| !s.is_empty()) else {
+        return Ok(schema_overview(props));
+    };
+
+    let matched_key = props.keys().find(|k| k.eq_ignore_ascii_case(sec)).ok_or_else(|| {
+        let mut available: Vec<_> = props.keys().cloned().collect();
+        available.sort_unstable();
+        SchemaError::SectionNotFound {
+            section: sec.to_string(),
+            available,
+        }
+    })?;
+
+    let prop_def = &props[matched_key];
+    let components = schema_val
+        .get("components")
+        .and_then(|c| c.get("schemas"))
+        .and_then(|s| s.as_object());
+
+    let mut related = serde_json::Map::new();
+    if let Some(comp_map) = components {
+        collect_referenced_components(prop_def, comp_map, &mut related);
+    }
+
+    Ok(json!({
+        "section": matched_key,
+        "definition": prop_def,
+        "related_definitions": related,
+    }))
 }
 
 #[cfg(test)]
@@ -187,5 +305,23 @@ mod tests {
 
         let unknown = filter_system_resource(&system_val, "unknown_item");
         assert!(unknown.get("error").is_some());
+    }
+
+    #[test]
+    fn test_get_schema_for_section_errors() {
+        let empty_schema = json!({});
+        assert!(matches!(
+            get_schema_for_section(&empty_schema, None),
+            Err(SchemaError::MissingProperties)
+        ));
+
+        let valid_schema = json!({
+            "properties": {
+                "product": { "type": "object" },
+                "storage": { "type": "object" }
+            }
+        });
+        let res = get_schema_for_section(&valid_schema, Some("invalid"));
+        assert!(matches!(res, Err(SchemaError::SectionNotFound { .. })));
     }
 }

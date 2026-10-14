@@ -20,9 +20,11 @@
 
 use super::http::{login, login_from_query, logout, session};
 use super::{config::ServiceConfig, state::ServiceState};
+use crate::web::error::ProblemDetailsExt;
 use agama_lib::auth::TokenClaims;
-use agama_utils::api::event;
+use agama_utils::api::{event, ProblemDetails};
 use aide::axum::ApiRouter;
+use axum::extract::State;
 use axum::http::HeaderValue;
 use axum::middleware::Next;
 use axum::{
@@ -31,6 +33,10 @@ use axum::{
     middleware,
     response::Response,
     routing::{get, post},
+};
+use axum_extra::{
+    headers::{self, authorization::Bearer},
+    TypedHeader,
 };
 use hyper::header::CACHE_CONTROL;
 use std::path::{Path, PathBuf};
@@ -135,10 +141,11 @@ impl MainServiceBuilder {
             .nest("/api", api_router);
 
         if let Some(mcp) = self.mcp_router {
-            // /mcp is mounted at root outside /api, so auth_middleware must be applied directly here.
+            // /mcp uses isolated mcp_auth_middleware to validate the dedicated MCP token,
+            // strictly isolating MCP credentials from the general /api routes.
             let mcp_authenticated = mcp.layer(middleware::from_fn_with_state(
                 state.clone(),
-                auth_middleware,
+                mcp_auth_middleware,
             ));
             app = app.nest("/mcp", mcp_authenticated);
         }
@@ -190,4 +197,35 @@ async fn version_header(req: Request, next: Next) -> Response {
     res.headers_mut()
         .insert("X-API-Version", HeaderValue::from_str("2").unwrap());
     res
+}
+
+/// Dedicated authentication middleware for the /mcp endpoint.
+///
+/// Validates the request against `ServiceConfig::mcp_token` in constant time using OpenSSL.
+/// Any token valid for /mcp is strictly rejected by the general /api routes.
+async fn mcp_auth_middleware(
+    State(state): State<ServiceState>,
+    auth_header: Option<TypedHeader<headers::Authorization<Bearer>>>,
+    request: Request,
+    next: Next,
+) -> Response {
+    let Some(TypedHeader(headers::Authorization(bearer))) = auth_header else {
+        return ProblemDetails::unauthorized("Bearer token required for MCP authentication")
+            .into_response();
+    };
+
+    let expected = match &state.config.mcp_token {
+        Some(t) if !t.is_empty() => t.as_bytes(),
+        _ => {
+            return ProblemDetails::unauthorized("MCP authentication is not configured")
+                .into_response();
+        }
+    };
+
+    let token_bytes = bearer.token().as_bytes();
+    if token_bytes.len() != expected.len() || !openssl::memcmp::eq(token_bytes, expected) {
+        return ProblemDetails::unauthorized("Invalid MCP authentication token").into_response();
+    }
+
+    next.run(request).await
 }

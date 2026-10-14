@@ -31,7 +31,7 @@ pub mod server;
 pub mod tools;
 pub mod web;
 
-pub use error::{BackendError, Error};
-pub use mode::McpMode;
+pub use error::{BackendError, Error, SchemaError, ValidationError};
+pub use mode::{McpMode, ModeParseError};
 pub use server::{McpBackend, McpServer};
 pub use web::mcp_router;

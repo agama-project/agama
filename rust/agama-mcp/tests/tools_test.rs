@@ -21,7 +21,9 @@
 use agama_mcp::error::BackendError;
 use agama_mcp::mode::McpMode;
 use agama_mcp::server::{McpBackend, McpServer};
-use agama_mcp::tools::{AnswerQuestionArgs, GetLogsArgs, GetSystemArgs, SetConfigArgs};
+use agama_mcp::tools::{
+    AnswerQuestionArgs, GetConfigSchemaArgs, GetLogsArgs, GetSystemArgs, SetConfigArgs,
+};
 use agama_utils::api::question::{
     Action as QuestionAction, Answer as QuestionAnswer, Question, QuestionField, QuestionSpec,
 };
@@ -159,18 +161,18 @@ impl McpBackend for MockBackend {
 }
 
 #[tokio::test]
-async fn test_commit_install_forbidden_in_readonly_mode() {
+async fn test_commit_install_forbidden_in_config_mode() {
     let backend = Arc::new(MockBackend::default());
-    let server = McpServer::with_backend(backend.clone(), McpMode::ReadOnly);
+    let server = McpServer::with_backend(backend.clone(), McpMode::Config);
 
     let err = server
         .commit_install()
         .await
-        .expect_err("Expected error in readonly mode");
-    assert!(matches!(err, agama_mcp::Error::ReadOnly));
+        .expect_err("Expected error in config mode");
+    assert!(matches!(err, agama_mcp::Error::Forbidden));
     let mcp_err: rmcp::model::ErrorData = err.into();
     assert_eq!(mcp_err.code, ErrorCode(403));
-    assert!(mcp_err.message.contains("read-only mode"));
+    assert!(mcp_err.message.contains("configuration-only mode"));
     assert!(!backend.install_committed.load(Ordering::SeqCst));
 }
 
@@ -275,15 +277,18 @@ async fn test_get_logs_tool() {
 
 fn ensure_test_schema() {
     let manifest_dir = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"));
-    let out_schemas = manifest_dir.join("../out/schemas");
-    let schema_file = out_schemas.join("config.schema.json");
+    let schema_file = manifest_dir.join("../out/schemas/config.schema.json");
     if !schema_file.exists() {
-        _ = std::fs::create_dir_all(&out_schemas);
-        let minimal_schema = serde_json::json!({
-            "$schema": "https://json-schema.org/draft/2019-09/schema",
-            "type": "object"
-        });
-        _ = std::fs::write(&schema_file, minimal_schema.to_string());
+        let root_dir = manifest_dir.join("..");
+        let _ = std::process::Command::new("cargo")
+            .args(["xtask", "openapi"])
+            .current_dir(&root_dir)
+            .status();
+        assert!(
+            schema_file.exists(),
+            "Agama OpenAPI schema not found at {}. Please run 'cargo xtask openapi'.",
+            schema_file.display()
+        );
     }
 }
 
@@ -295,13 +300,57 @@ async fn test_set_config_valid() {
 
     let res = server
         .set_config(Parameters(SetConfigArgs {
-            config: json!({"storage": {}}),
+            config: json!({
+                "product": { "id": "Tumbleweed" },
+                "root": { "password": "nots3cr3t" }
+            }),
         }))
         .await
         .unwrap();
 
     let text = &res.content[0].as_text().unwrap().text;
     assert!(text.contains("Configuration profile replaced"));
+}
+
+#[tokio::test]
+async fn test_set_config_schema_violation_reports_tool_error() {
+    ensure_test_schema();
+    let backend = Arc::new(MockBackend::default());
+    let server = McpServer::with_backend(backend, McpMode::Full);
+
+    // 1. Invalid value for a known schema enum (access.ssh can only be "enabled" or "default")
+    let res = server
+        .set_config(Parameters(SetConfigArgs {
+            config: json!({
+                "access": {
+                    "ssh": "invalid_value"
+                }
+            }),
+        }))
+        .await
+        .unwrap();
+
+    assert_eq!(res.is_error, Some(true));
+    let text = &res.content[0].as_text().unwrap().text;
+    assert!(text.contains("violates the Agama profile schema"));
+    assert!(text.contains("access"));
+
+    // 2. Unrecognized section at root (Profile schema specifies additionalProperties: false)
+    let res2 = server
+        .set_config(Parameters(SetConfigArgs {
+            config: json!({
+                "unknown_section": {
+                    "foo": "bar"
+                }
+            }),
+        }))
+        .await
+        .unwrap();
+
+    assert_eq!(res2.is_error, Some(true));
+    let text2 = &res2.content[0].as_text().unwrap().text;
+    assert!(text2.contains("violates the Agama profile schema"));
+    assert!(text2.contains("unknown_section"));
 }
 
 #[tokio::test]
@@ -366,4 +415,65 @@ async fn test_get_questions_and_answer() {
     let res2 = server.get_questions().await.unwrap();
     let text2 = &res2.content[0].as_text().unwrap().text;
     assert_eq!(text2.trim(), "[]");
+}
+
+#[tokio::test]
+async fn test_get_config_schema_overview() {
+    ensure_test_schema();
+    let backend = Arc::new(MockBackend::default());
+    let server = McpServer::with_backend(backend, McpMode::Full);
+
+    let res = server
+        .get_config_schema(Parameters(GetConfigSchemaArgs { section: None }))
+        .await
+        .unwrap();
+
+    assert_eq!(res.is_error, Some(false));
+    let text = &res.content[0].as_text().unwrap().text;
+    assert!(text.contains("Agama Installation Profile Schema"));
+    assert!(text.contains("available_sections"));
+    assert!(text.contains("storage"));
+    assert!(text.contains("product"));
+    assert!(text.contains("root"));
+    assert!(text.contains("example_minimal_profile"));
+    assert!(text.contains("Tumbleweed"));
+    assert!(text.contains("nots3cr3t"));
+}
+
+#[tokio::test]
+async fn test_get_config_schema_section_access() {
+    ensure_test_schema();
+    let backend = Arc::new(MockBackend::default());
+    let server = McpServer::with_backend(backend, McpMode::Full);
+
+    let res = server
+        .get_config_schema(Parameters(GetConfigSchemaArgs {
+            section: Some("access".to_string()),
+        }))
+        .await
+        .unwrap();
+
+    assert_eq!(res.is_error, Some(false));
+    let text = &res.content[0].as_text().unwrap().text;
+    assert!(text.contains("access"));
+    assert!(text.contains("ssh"));
+}
+
+#[tokio::test]
+async fn test_get_config_schema_unknown_section() {
+    ensure_test_schema();
+    let backend = Arc::new(MockBackend::default());
+    let server = McpServer::with_backend(backend, McpMode::Full);
+
+    let res = server
+        .get_config_schema(Parameters(GetConfigSchemaArgs {
+            section: Some("unknown_subsystem".to_string()),
+        }))
+        .await
+        .unwrap();
+
+    assert_eq!(res.is_error, Some(true));
+    let text = &res.content[0].as_text().unwrap().text;
+    assert!(text.contains("Section 'unknown_subsystem' not found"));
+    assert!(text.contains("Available sections"));
 }

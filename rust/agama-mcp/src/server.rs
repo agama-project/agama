@@ -24,7 +24,7 @@ use crate::error::{BackendError, Error};
 use crate::mode::McpMode;
 use crate::tools::{
     filter_system_resource, tool_error, tool_success, validate_config_schema, AnswerQuestionArgs,
-    GetLogsArgs, GetSystemArgs, ProposalOutcome, SetConfigArgs,
+    GetConfigSchemaArgs, GetLogsArgs, GetSystemArgs, ProposalOutcome, SetConfigArgs,
 };
 use agama_utils::actor::Handler;
 use agama_utils::api::question::{self, Question};
@@ -205,10 +205,33 @@ impl McpServer {
         Ok(tool_success(formatted))
     }
 
+    /// Returns the JSON Schema for the Agama installation profile, optionally filtered by section.
+    #[tool(
+        name = "get_config_schema",
+        description = "Retrieves the JSON Schema for the Agama installation profile. Call without arguments to view the list of available sections and overview. Provide a section name (e.g. 'storage', 'software', 'access', 'network', 'user', 'bootloader') to retrieve the detailed field-level constraints, types, and allowed enum values for that subsystem."
+    )]
+    pub async fn get_config_schema(
+        &self,
+        Parameters(args): Parameters<GetConfigSchemaArgs>,
+    ) -> Result<CallToolResult, Error> {
+        let schema_val = match crate::tools::load_schema_json() {
+            Ok(v) => v,
+            Err(e) => return Ok(tool_error(format!("Failed to load Agama schema: {e}"))),
+        };
+
+        match crate::tools::get_schema_for_section(&schema_val, args.section.as_deref()) {
+            Ok(res_val) => {
+                let formatted = serde_json::to_string_pretty(&res_val)?;
+                Ok(tool_success(formatted))
+            }
+            Err(e) => Ok(tool_error(e.to_string())),
+        }
+    }
+
     /// Pushes the AI-generated Agama profile (JSON) to the installer.
     #[tool(
         name = "set_config",
-        description = "Pushes the complete Agama configuration profile (JSON) to the installer. Performs a full replacement of the configuration state. Validates the configuration against Agama's schema."
+        description = "Pushes the complete Agama configuration profile (JSON) to the installer. Performs a full replacement of the configuration state. Top-level sections include: 'product', 'software', 'storage', 'user', 'root', 'network', 'bootloader', 'access', 'ntp', 'l10n', 'hostname', 'security', 'proxy'. Use the 'get_config_schema' tool to inspect valid keys, types, and constraints for any section."
     )]
     pub async fn set_config(
         &self,
@@ -229,12 +252,8 @@ impl McpServer {
             ));
         }
 
-        if let Err(reasons) = validate_config_schema(&profile_val) {
-            let msg = format!(
-                "The configuration violates the Agama profile schema:\n- {}",
-                reasons.join("\n- ")
-            );
-            return Ok(tool_error(msg));
+        if let Err(err) = validate_config_schema(&profile_val) {
+            return Ok(tool_error(err.to_string()));
         }
 
         let config: Config = match serde_json::from_value(profile_val) {
@@ -288,11 +307,11 @@ impl McpServer {
     /// Locks the state machine and triggers disk format and software deployment.
     #[tool(
         name = "commit_install",
-        description = "Locks the state machine and triggers the disk format and software deployment. Disabled in read-only mode (returns 403 Forbidden)."
+        description = "Locks the state machine and triggers the disk format and software deployment. Disabled in configuration mode (returns 403 Forbidden)."
     )]
     pub async fn commit_install(&self) -> Result<CallToolResult, Error> {
-        if self.mode.is_readonly() {
-            return Err(Error::ReadOnly);
+        if !self.mode.allows_install() {
+            return Err(Error::Forbidden);
         }
 
         if let Err(e) = self.backend.commit_install().await {
@@ -422,12 +441,67 @@ impl McpServer {
 #[tool_handler]
 impl ServerHandler for McpServer {
     fn get_info(&self) -> ServerConfig {
-        ServerConfig::new(ServerCapabilities::builder().enable_tools().build())
-            .with_server_info(Implementation::new("agama-mcp", env!("CARGO_PKG_VERSION")))
-            .with_instructions(
-                "Agama Baremetal Installer MCP Server. Enables AI agents to probe hardware \
-                 inventory, validate and inject configuration profiles, check installation \
-                 proposals, execute bare-metal installations, answer interactive prompts, and monitor progress.",
+        ServerConfig::new(
+            ServerCapabilities::builder()
+                .enable_tools()
+                .enable_resources()
+                .build(),
+        )
+        .with_server_info(Implementation::new("agama-mcp", env!("CARGO_PKG_VERSION")))
+        .with_instructions(
+            "Agama Baremetal Installer MCP Server. Enables AI agents to probe hardware \
+             inventory, inspect configuration schemas with 'get_config_schema', validate and inject configuration profiles \
+             with 'set_config', check installation proposals, execute bare-metal installations, answer interactive prompts, and monitor progress.",
+        )
+    }
+
+    async fn list_resources(
+        &self,
+        _request: Option<rmcp::model::PaginatedRequestParams>,
+        _context: rmcp::service::RequestContext<rmcp::RoleServer>,
+    ) -> Result<rmcp::model::ListResourcesResult, rmcp::model::ErrorData> {
+        Ok(rmcp::model::ListResourcesResult {
+            resources: vec![rmcp::model::Resource::new(
+                "agama://schema/config.json",
+                "Agama Installation Profile Schema",
             )
+            .with_description(
+                "Complete JSON Schema for the Agama unattended installation profile.",
+            )
+            .with_mime_type("application/schema+json")],
+            next_cursor: None,
+            meta: None,
+            cache_scope: None,
+            result_type: None,
+            ttl_ms: None,
+        })
+    }
+
+    async fn read_resource(
+        &self,
+        request: rmcp::model::ReadResourceRequestParams,
+        _context: rmcp::service::RequestContext<rmcp::RoleServer>,
+    ) -> Result<rmcp::model::ReadResourceResponse, rmcp::model::ErrorData> {
+        match request.uri.as_str() {
+            "agama://schema/config.json" => {
+                let schema_val = crate::tools::load_schema_json()
+                    .map_err(|e| rmcp::model::ErrorData::internal_error(e.to_string(), None))?;
+                let text = serde_json::to_string_pretty(&schema_val)
+                    .map_err(|e| rmcp::model::ErrorData::internal_error(e.to_string(), None))?;
+                let result = rmcp::model::ReadResourceResult::new(vec![
+                    rmcp::model::ResourceContents::TextResourceContents {
+                        uri: request.uri,
+                        mime_type: Some("application/schema+json".to_string()),
+                        text,
+                        meta: None,
+                    },
+                ]);
+                Ok(rmcp::model::ReadResourceResponse::Complete(result))
+            }
+            _ => Err(rmcp::model::ErrorData::resource_not_found(
+                format!("Resource not found: {}", request.uri),
+                None,
+            )),
+        }
     }
 }

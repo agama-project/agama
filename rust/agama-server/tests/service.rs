@@ -68,6 +68,7 @@ async fn protected() -> String {
 async fn access_protected_route(token: &str, jwt_secret: &str) -> Response {
     let config = ServiceConfig {
         jwt_secret: jwt_secret.to_string(),
+        mcp_token: None,
     };
     let (events_tx, _) = channel(16);
     let protected_service = ApiRouter::new().route("/", get(protected));
@@ -109,7 +110,10 @@ async fn test_access_protected_route_failed() -> Result<(), Box<dyn Error>> {
 
 #[test]
 async fn test_access_mcp_route_unauthorized() -> Result<(), Box<dyn Error>> {
-    let config = ServiceConfig::default();
+    let config = ServiceConfig {
+        jwt_secret: "secret123".to_string(),
+        mcp_token: Some("mcp-secret-token-xyz".to_string()),
+    };
     let (events_tx, _) = channel(16);
     // Use fallback_service without explicit routes to mirror agama-mcp's router structure
     // and verify that MainServiceBuilder handles fallback-only MCP services without panicking.
@@ -131,9 +135,10 @@ async fn test_access_mcp_route_unauthorized() -> Result<(), Box<dyn Error>> {
 }
 
 #[test]
-async fn test_access_mcp_route_authorized() -> Result<(), Box<dyn Error>> {
+async fn test_access_mcp_route_with_dedicated_mcp_token() -> Result<(), Box<dyn Error>> {
     let config = ServiceConfig {
         jwt_secret: "secret123".to_string(),
+        mcp_token: Some("mcp-secret-token-xyz".to_string()),
     };
     let (events_tx, _) = channel(16);
     // Use fallback_service without explicit routes to mirror agama-mcp's router structure
@@ -143,11 +148,10 @@ async fn test_access_mcp_route_authorized() -> Result<(), Box<dyn Error>> {
         .with_config(config)
         .build();
 
-    let token = AuthToken::generate("secret123")?;
     let request = Request::builder()
         .uri("/mcp")
         .method(Method::GET)
-        .header("Authorization", format!("Bearer {}", token))
+        .header("Authorization", "Bearer mcp-secret-token-xyz")
         .body(Body::empty())
         .unwrap();
 
@@ -155,5 +159,61 @@ async fn test_access_mcp_route_authorized() -> Result<(), Box<dyn Error>> {
     assert_eq!(response.status(), StatusCode::OK);
     let body = body_to_string(response.into_body()).await;
     assert_eq!(body, "mcp ok");
+    Ok(())
+}
+
+#[test]
+async fn test_mcp_token_cannot_access_general_api() -> Result<(), Box<dyn Error>> {
+    let config = ServiceConfig {
+        jwt_secret: "secret123".to_string(),
+        mcp_token: Some("mcp-secret-token-xyz".to_string()),
+    };
+    let (events_tx, _) = channel(16);
+    let protected_service = ApiRouter::new().route("/", get(protected));
+    let mcp_router = axum::Router::new().fallback_service(get(|| async { "mcp ok" }));
+    let web_service = MainServiceBuilder::new(events_tx, public_dir())
+        .add_service("/protected", protected_service)
+        .with_mcp_service(mcp_router)
+        .with_config(config)
+        .build();
+
+    // AI agent tries to use its MCP token to hit general /api endpoints via curl
+    let request = Request::builder()
+        .uri("/api/protected")
+        .method(Method::GET)
+        .header("Authorization", "Bearer mcp-secret-token-xyz")
+        .body(Body::empty())
+        .unwrap();
+
+    let response = web_service.oneshot(request).await.unwrap();
+    // Must be strictly rejected!
+    assert_eq!(response.status(), StatusCode::UNAUTHORIZED);
+    Ok(())
+}
+
+#[test]
+async fn test_api_token_cannot_access_mcp() -> Result<(), Box<dyn Error>> {
+    let config = ServiceConfig {
+        jwt_secret: "secret123".to_string(),
+        mcp_token: Some("mcp-secret-token-xyz".to_string()),
+    };
+    let (events_tx, _) = channel(16);
+    let mcp_router = axum::Router::new().fallback_service(get(|| async { "mcp ok" }));
+    let web_service = MainServiceBuilder::new(events_tx, public_dir())
+        .with_mcp_service(mcp_router)
+        .with_config(config)
+        .build();
+
+    let api_token = AuthToken::generate("secret123")?;
+    let request = Request::builder()
+        .uri("/mcp")
+        .method(Method::GET)
+        .header("Authorization", format!("Bearer {}", api_token))
+        .body(Body::empty())
+        .unwrap();
+
+    let response = web_service.oneshot(request).await.unwrap();
+    // Master/API token is rejected by /mcp!
+    assert_eq!(response.status(), StatusCode::UNAUTHORIZED);
     Ok(())
 }

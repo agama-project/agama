@@ -204,3 +204,37 @@ async fn test_web_post_endpoint() {
     let response = app.oneshot(request).await.unwrap();
     assert_eq!(response.status(), StatusCode::OK);
 }
+
+#[tokio::test]
+async fn test_web_resources_list_and_read() {
+    let server = McpServer::with_backend(Arc::new(DummyBackend), McpMode::Full);
+    let app = mcp_router(server);
+
+    // 1. List resources
+    let list_req = json!({
+        "jsonrpc": "2.0",
+        "id": 1,
+        "method": "resources/list",
+        "params": {}
+    });
+
+    let request = Request::builder()
+        .uri("/")
+        .method("POST")
+        .header("Host", "localhost")
+        .header("Content-Type", "application/json")
+        .header("Accept", "application/json, text/event-stream")
+        .body(Body::from(serde_json::to_vec(&list_req).unwrap()))
+        .unwrap();
+
+    let response = app.clone().oneshot(request).await.unwrap();
+    assert_eq!(response.status(), StatusCode::OK);
+    let bytes = axum::body::to_bytes(response.into_body(), usize::MAX)
+        .await
+        .unwrap();
+    let body_json: Value = serde_json::from_slice(&bytes).unwrap();
+    assert_eq!(body_json["jsonrpc"], "2.0");
+    let resources = body_json["result"]["resources"].as_array().unwrap();
+    assert_eq!(resources.len(), 1);
+    assert_eq!(resources[0]["uri"], "agama://schema/config.json");
+}

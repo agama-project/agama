@@ -27,6 +27,7 @@
 use agama_utils::question;
 use rmcp::handler::server::tool::IntoCallToolResult;
 use rmcp::model::{CallToolResponse, ErrorCode, ErrorData};
+use std::path::PathBuf;
 
 /// Internal backend errors from Agama actors, converted to `tool_error` so the AI sees why the action failed.
 #[derive(thiserror::Error, Debug)]
@@ -41,12 +42,55 @@ pub enum BackendError {
     Other(String),
 }
 
+/// Errors encountered when inspecting or loading the Agama JSON Schema.
+#[derive(thiserror::Error, Debug)]
+pub enum SchemaError {
+    #[error("Failed to read schema file at {path}: {source}")]
+    Io {
+        path: PathBuf,
+        #[source]
+        source: std::io::Error,
+    },
+
+    #[error("Failed to parse schema JSON from {path}: {source}")]
+    Json {
+        path: PathBuf,
+        #[source]
+        source: serde_json::Error,
+    },
+
+    #[error("Schema does not contain top-level 'properties'")]
+    MissingProperties,
+
+    #[error("Section '{section}' not found in Agama profile schema. Available sections: {available:?}")]
+    SectionNotFound {
+        section: String,
+        available: Vec<String>,
+    },
+}
+
+/// Errors encountered when validating an Agama installation profile.
+#[derive(thiserror::Error, Debug)]
+pub enum ValidationError {
+    #[error("Invalid JSON syntax: {0}")]
+    InvalidJson(#[from] serde_json::Error),
+
+    #[error("Agama profile schema is not available: {0}")]
+    SchemaUnavailable(String),
+
+    #[error("The configuration violates the Agama profile schema:\n- {}", .0.join("\n- "))]
+    NotValid(Vec<String>),
+
+    #[error("Profile validation error: {0}")]
+    Validation(String),
+}
+
 /// Protocol-level errors returning JSON-RPC `error: { code, message }` instead of tool output.
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
-    /// Read-only authorization failure (JSON-RPC 403 Forbidden).
-    #[error("403 Forbidden: commit_install is disabled in read-only mode (inst.mcp=readonly). A human operator must approve and trigger installation via the Agama Web UI.")]
-    ReadOnly,
+    /// Authorization failure: commit_install is disabled in configuration-only mode (JSON-RPC 403 Forbidden).
+    #[error("403 Forbidden: commit_install is disabled in configuration-only mode (inst.mcp=config). A human operator must approve and trigger installation via the Agama Web UI.")]
+    Forbidden,
 
     /// Unrecoverable response serialization failure (JSON-RPC -32603 Internal Error).
     #[error("JSON serialization error: {0}")]
@@ -56,7 +100,7 @@ pub enum Error {
 impl From<Error> for ErrorData {
     fn from(err: Error) -> Self {
         match err {
-            Error::ReadOnly => ErrorData::new(ErrorCode(403), err.to_string(), None),
+            Error::Forbidden => ErrorData::new(ErrorCode(403), err.to_string(), None),
             Error::Json(e) => ErrorData::internal_error(e.to_string(), None),
         }
     }
