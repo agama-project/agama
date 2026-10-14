@@ -133,6 +133,73 @@ describe("DeviceSelectorModal", () => {
     screen.getByText(/Use the tabs to browse/);
   });
 
+  describe("tabs", () => {
+    it("does not render the tabs left out", () => {
+      installerRender(
+        <DeviceSelectorModal
+          tabs={["disks", "volumeGroups"]}
+          disks={[sda]}
+          mdRaids={[md0]}
+          volumeGroups={[vg0]}
+          title="Select"
+          onCancel={onCancelMock}
+          onConfirm={onConfirmMock}
+        />,
+      );
+      screen.getByRole("tab", { name: "Disks" });
+      screen.getByRole("tab", { name: "LVM" });
+      expect(screen.queryByRole("tab", { name: "RAID" })).not.toBeInTheDocument();
+      screen.getByText("Use the tabs to browse the available devices.");
+    });
+
+    it("renders the only tab left as content, with no tab bar", () => {
+      installerRender(
+        <DeviceSelectorModal
+          tabs={["disks"]}
+          disks={[sda, sdb]}
+          mdRaids={[md0]}
+          title="Select"
+          onCancel={onCancelMock}
+          onConfirm={onConfirmMock}
+        />,
+      );
+      expect(screen.queryByRole("tablist")).not.toBeInTheDocument();
+      expect(screen.queryByText(/Use the tabs to browse/)).not.toBeInTheDocument();
+      screen.getByRole("row", { name: /sda/ });
+      expect(screen.queryByRole("row", { name: /md0/ })).not.toBeInTheDocument();
+    });
+
+    it("ignores an initial tab that is not rendered", () => {
+      installerRender(
+        <DeviceSelectorModal
+          tabs={["disks", "volumeGroups"]}
+          initialTab="mdRaids"
+          disks={[sda]}
+          mdRaids={[md0]}
+          volumeGroups={[vg0]}
+          title="Select"
+          onCancel={onCancelMock}
+          onConfirm={onConfirmMock}
+        />,
+      );
+      expect(screen.getByRole("tab", { name: "Disks" })).toHaveAttribute("aria-selected", "true");
+    });
+
+    it("selects the first device of the rendered tabs when none is given", () => {
+      installerRender(
+        <DeviceSelectorModal
+          tabs={["volumeGroups"]}
+          disks={[sda]}
+          volumeGroups={[vg0]}
+          title="Select"
+          onCancel={onCancelMock}
+          onConfirm={onConfirmMock}
+        />,
+      );
+      screen.getByRole("button", { name: /Add vg0/ });
+    });
+  });
+
   it("renders the intro content above the tabs", () => {
     installerRender(
       <DeviceSelectorModal
