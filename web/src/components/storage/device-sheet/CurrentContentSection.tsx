@@ -37,8 +37,6 @@ import { useSpacePolicy } from "~/components/storage/shared/space-policy";
 import {
   decisionOf,
   decisionUnder,
-  recoverableText,
-  shrinkReason,
   usePartitionSpaceItems,
 } from "~/components/storage/device-sheet/partition-space";
 import { outcomeOf } from "~/components/storage/shared/consequences";
@@ -148,12 +146,12 @@ function PartitionMenu({
             >
               {/* TRANSLATORS: offered on a partition the new system already
                   reuses: change how it is used. */}
-              {_("Edit the reused partition")}
+              {_("Modify how the partition is used")}
             </MenuButtonItem>,
             <MenuButtonItem key="stop" onClick={() => deletePartition(collection, index, reusedAs)}>
               {/* TRANSLATORS: offered on a partition the new system reuses: stop
                   using it, which leaves it to the device's space decision again. */}
-              {_("Stop reusing")}
+              {_("Stop using")}
             </MenuButtonItem>,
           ]
         : [
@@ -161,10 +159,11 @@ function PartitionMenu({
               key="reuse"
               to={generateEncodedPath(PATHS.reusePartition, { ...at, deviceName: part.name })}
               keepQuery
+              description={_("Used by the new system, keeping or deleting data.")}
             >
               {/* TRANSLATORS: offered on a partition already on a device: use it
                   for the new system. The ellipsis says a form follows. */}
-              {_("Reuse for the new system…")}
+              {_("Assign a mount point…")}
             </MenuButtonItem>,
           ];
 
@@ -238,28 +237,28 @@ function statusFor(
       ? // TRANSLATORS: what is to become of a partition already on the disk: it
         // is emptied and given to the new system. %s is where the new system
         // mounts it, such as "/home".
-        { text: sprintf(_("format for %s"), path), destroys: true }
+        { text: sprintf(_("Format for %s"), path), destroys: true }
       : // TRANSLATORS: what is to become of a partition already on the disk: the
         // new system takes it over as it is. %s is where the new system mounts
         // it, such as "/home".
-        { text: sprintf(_("mount at %s"), path), destroys: false };
+        { text: sprintf(_("Mount at %s"), path), destroys: false };
   }
 
   switch (decision) {
     case "keep":
       // TRANSLATORS: what is to become of a partition already on the disk:
       // nothing.
-      return { text: _("keep"), destroys: false };
+      return { text: _("Keep"), destroys: false };
     case "resizeIfNeeded":
       return canShrink
-        ? { text: _("shrink if needed"), destroys: false }
+        ? { text: _("Shrink if needed"), destroys: false }
         : // TRANSLATORS: what is to become of a partition already on the disk:
           // it was allowed to be made smaller, but that is not possible.
-          { text: _("cannot be shrunk"), destroys: false };
+          { text: _("Cannot be shrunk"), destroys: false };
     case "delete":
       // TRANSLATORS: what is to become of a partition already on the disk: it
       // is removed, and everything on it lost.
-      return { text: _("delete"), destroys: true };
+      return { text: _("Delete"), destroys: true };
     default:
       return undefined;
   }
@@ -318,10 +317,6 @@ function PartitionRow({
     // TRANSLATORS: said of a partition whose content is not recognized.
     _("unrecognized");
   const status = statusFor(decision, reusedAs, formats, canShrink);
-  /* How far it can go, or the first reason it cannot go at all. The status
-     already says it cannot be shrunk, so with no reason given there is nothing
-     to add. */
-  const note = canShrink ? recoverableText(part) : shrinkReason(part);
 
   /* A rule through what the row describes, where the reader has allowed it to
      go. The name, what is on it and how big it is are facts about a partition
@@ -351,12 +346,6 @@ function PartitionRow({
       <Td>
         {status && (
           <span className={status.destroys ? DESTROYS_CLASS : undefined}>{status.text}</span>
-        )}
-        {/* Only where shrinking is allowed, which is where how far it can go
-            matters. A kept partition says nothing more; its menu does, where
-            shrinking it would be decided. */}
-        {decision === "resizeIfNeeded" && note && (
-          <div className="agm-row-note agm-row-note--prose">{note}</div>
         )}
       </Td>
       <Td>
@@ -584,7 +573,7 @@ export default function CurrentContentSection({
                           {_("Free space")}
                         </Text>
                       </Th>
-                      <Td>{_("use if needed")}</Td>
+                      <Td>{_("Use if needed")}</Td>
                       <Td />
                       <Td className={alignmentStyles.textAlignEnd}>{deviceSize(row.size)}</Td>
                       <Td />

@@ -25,7 +25,6 @@ import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 import type { Storage as System } from "~/model/system";
 import {
-  recoverableText,
   shrinkReason,
   ShrinkRefusal,
 } from "~/components/storage/device-sheet/partition-space";
@@ -38,18 +37,6 @@ const partition = (shrinking: System.Device["block"]["shrinking"]): System.Devic
   name: "/dev/vda1",
   class: "partition",
   block: { start: 0, size: 80 * GiB, shrinking } as System.Device["block"],
-});
-
-describe("recoverableText", () => {
-  it("says how much shrinking can free at most", () => {
-    expect(recoverableText(partition({ supported: true, minSize: 35 * GiB }))).toBe(
-      "Up to 45 GiB can be freed.",
-    );
-  });
-
-  it("says nothing where the partition cannot be shrunk", () => {
-    expect(recoverableText(partition({ supported: false, reasons: [] }))).toBeUndefined();
-  });
 });
 
 describe("shrinkReason", () => {

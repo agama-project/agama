@@ -22,7 +22,6 @@
 
 import React from "react";
 import { sprintf } from "sprintf-js";
-import { List, ListItem } from "@patternfly/react-core";
 import { MenuButtonItem } from "~/components/core/MenuButton";
 import { deviceSize } from "~/components/storage/utils";
 import { useSetSpacePolicy } from "~/hooks/model/storage/config-model";
@@ -91,13 +90,10 @@ function meaning(decision: Decision): TranslatedString {
   switch (decision) {
     case "keep":
       // TRANSLATORS: explains keeping one partition.
-      return _("Left as it is.");
-    case "resizeIfNeeded":
-      // TRANSLATORS: explains allowing one partition to be made smaller.
-      return _("Resized only if space runs short.");
+      return _("All data is kept, not used by the new system.");
     case "delete":
       // TRANSLATORS: explains deleting one partition.
-      return _("Removed, and its data lost.");
+      return _("Data is lost, all space is freed for new partitions.");
   }
 }
 
@@ -111,21 +107,6 @@ function recoverableBy(partition: System.Device): number | undefined {
   if (shrinking?.supported !== true || !shrinking.minSize) return undefined;
 
   return partition.block.size - shrinking.minSize;
-}
-
-/**
- * How much shrinking a partition can free, said as a sentence.
- *
- * "Up to": it is how far the partition can go, not how far it will. What is
- * actually done is told by the actions.
- */
-function recoverableText(partition: System.Device): TranslatedString | undefined {
-  const recoverable = recoverableBy(partition);
-  if (recoverable === undefined) return undefined;
-
-  // TRANSLATORS: how much room making one partition smaller can give at most.
-  // %s is a size, such as "45 GiB".
-  return sprintf(_("Up to %s can be freed."), deviceSize(recoverable));
 }
 
 /**
@@ -154,16 +135,6 @@ function shrinkReason(partition: System.Device): string | undefined {
 function ShrinkRefusal({ partition }: { partition: System.Device }): React.ReactNode {
   const reasons = partition.block?.shrinking?.reasons || [];
 
-  if (reasons.length > 1) {
-    return (
-      <List isPlain>
-        {reasons.map((reason) => (
-          <ListItem key={reason}>{reason}</ListItem>
-        ))}
-      </List>
-    );
-  }
-
   // TRANSLATORS: why a partition cannot be allowed to shrink, where the
   // machine says nothing more.
   return reasons[0] || _("This partition cannot be made smaller.");
@@ -186,10 +157,10 @@ function descriptionOf(
 
   const recoverable = decision === "resizeIfNeeded" && recoverableBy(partition);
   if (recoverable) {
+    // TRANSLATORS: explains allowing one partition to be made smaller, and
+    // how much room that can give at most. %s is a size, such as "45 GiB".
     return sprintf(
-      // TRANSLATORS: explains allowing one partition to be made smaller, and
-      // how much room that can give at most. %s is a size, such as "45 GiB".
-      _("Resized only if space runs short. Up to %s can be freed."),
+      _("Data is kept, up to %s may be freed for new partitions."),
       deviceSize(recoverable),
     );
   }
@@ -285,7 +256,6 @@ export {
   decisionLabel,
   decisionOf,
   decisionUnder,
-  recoverableText,
   shrinkReason,
   ShrinkRefusal,
   usePartitionSpaceItems,
