@@ -251,7 +251,10 @@ export default function PlannedContentSection({
                           popperProps: { position: "end" },
                         }}
                         customToggle={
-                          <RowMenuToggle label={sprintf(_("Actions for %s"), label(part))} />
+                          <RowMenuToggle
+                            label={sprintf(_("Actions for %s"), label(part))}
+                            size="sm"
+                          />
                         }
                         items={[
                           <MenuButtonItem key="edit" to={editPath(part)} keepQuery>

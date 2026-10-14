@@ -186,7 +186,7 @@ function PartitionMenu({
   return (
     <MenuButton
       menuProps={{ "aria-label": menuLabel, popperProps: { position: "end" } }}
-      customToggle={<RowMenuToggle label={menuLabel} />}
+      customToggle={<RowMenuToggle label={menuLabel} size="sm" />}
       items={items}
     />
   );
