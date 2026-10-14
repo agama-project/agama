@@ -421,6 +421,11 @@ export type CurrentContentSectionProps = {
   entry: Entry;
   /** Where the entry is written, which is what the space decision acts on. */
   subject: SheetEntry;
+  /**
+   * Whether the table shades every other row, on top of the lines between
+   * rows. Off by default.
+   */
+  isStriped?: boolean;
 };
 
 /**
@@ -466,6 +471,7 @@ export type CurrentContentSectionProps = {
 export default function CurrentContentSection({
   entry,
   subject,
+  isStriped = false,
 }: CurrentContentSectionProps): React.ReactNode {
   const manager = useDevicesManager();
   const rows = rowsOf(entry);
@@ -586,6 +592,7 @@ export default function CurrentContentSection({
             role="table"
             gridBreakPoint=""
             variant="compact"
+            isStriped={isStriped}
             // TRANSLATORS: names the list of what is on a device already.
             aria-label={_("Current content")}
           >

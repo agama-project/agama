@@ -94,6 +94,11 @@ export type PlannedContentSectionProps = {
   entry: Entry;
   /** Where the entry is written, which is what the acts on its parts need. */
   subject: SheetEntry;
+  /**
+   * Whether the table shades every other row, on top of the lines between
+   * rows. Off by default.
+   */
+  isStriped?: boolean;
 };
 
 /**
@@ -116,6 +121,7 @@ export type PlannedContentSectionProps = {
 export default function PlannedContentSection({
   entry,
   subject,
+  isStriped = false,
 }: PlannedContentSectionProps): React.ReactNode {
   const deletePartition = useDeletePartition();
   const deleteLogicalVolume = useDeleteLogicalVolume();
@@ -176,6 +182,7 @@ export default function PlannedContentSection({
           role="table"
           gridBreakPoint=""
           variant="compact"
+          isStriped={isStriped}
           // TRANSLATORS: names the list of what the installation will put on
           // one of its entries.
           aria-label={_("Planned content")}
