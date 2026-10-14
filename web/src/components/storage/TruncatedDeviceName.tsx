@@ -22,15 +22,18 @@
 
 import React from "react";
 import VisualTooltip from "~/components/core/VisualTooltip";
-import { deviceBaseName } from "~/components/storage/utils";
+import { baseName } from "~/components/storage/utils";
 import a11yStyles from "@patternfly/react-styles/css/utilities/Accessibility/accessibility";
 
 import type { Storage } from "~/model/system";
 
 /** Props for {@link TruncatedDeviceName}. */
 type TruncatedDeviceNameProps = {
-  /** The device to render the name of. */
-  device: Storage.Device;
+  /**
+   * What to render the name of: a device, or anything else named like one,
+   * such as a volume group.
+   */
+  device: Pick<Storage.Device, "name">;
   /**
    * Maximum characters to show before truncating. Set it to match the width of
    * the container (e.g. a table column) so the name fits. Defaults to the shared
@@ -60,8 +63,8 @@ type TruncatedDeviceNameProps = {
  * Names that already fit render as plain text, with no tooltip.
  */
 export default function TruncatedDeviceName({ device, maxLength }: TruncatedDeviceNameProps) {
-  const name = deviceBaseName(device);
-  const truncatedName = deviceBaseName(device, { truncate: true, maxLength });
+  const name = baseName(device.name);
+  const truncatedName = baseName(device.name, { truncate: true, maxLength });
 
   if (truncatedName === name) return name;
 

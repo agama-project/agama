@@ -119,10 +119,12 @@ describe("StorageSheet", () => {
       screen.getByText(/60 GiB/);
     });
 
-    it("names where the system keeps it, which survives a rename", () => {
+    it("says what it is under its name, as its row does", () => {
       renderAt("/storage?sheet=drives.0");
 
-      screen.getByText("pci-0000:0a:00.0");
+      screen.getByRole("heading", { name: "sda · 60 GiB" });
+      screen.getByText("Disk");
+      expect(screen.queryByText("pci-0000:0a:00.0")).not.toBeInTheDocument();
     });
 
     it("offers the same acts its row offers", () => {
