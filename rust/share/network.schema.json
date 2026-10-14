@@ -571,7 +571,7 @@
       ],
       "type": "object"
     },
-    "NetworkConnectionsCollection": {
+    "NetworkConnections": {
       "description": "Collection of connections.\n\nIt only holds the root connections: the ports of a bond or a bridge are nested inside the\n`portConnections` list of their controller. Use [`Self::flatten`] to go through all of them.",
       "items": {
         "$ref": "#/$defs/NetworkConnection"
@@ -999,7 +999,7 @@
     "connections": {
       "anyOf": [
         {
-          "$ref": "#/$defs/NetworkConnectionsCollection"
+          "$ref": "#/$defs/NetworkConnections"
         },
         {
           "type": "null"

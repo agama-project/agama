@@ -36,6 +36,7 @@ use std::net::IpAddr;
 /// It only holds the root connections: the ports of a bond or a bridge are nested inside the
 /// `portConnections` list of their controller. Use [`Self::flatten`] to go through all of them.
 #[derive(Clone, Debug, Default, Serialize, Deserialize, JsonSchema, PartialEq)]
+#[schemars(rename = "NetworkConnections")]
 pub struct NetworkConnectionsCollection(pub Vec<NetworkConnection>);
 
 impl NetworkConnectionsCollection {
@@ -58,6 +59,7 @@ impl NetworkConnectionsCollection {
 ///
 /// Like [`NetworkConnectionsCollection`], it only holds the root connections.
 #[derive(Clone, Debug, Default, Serialize, Deserialize, JsonSchema, PartialEq)]
+#[schemars(rename = "NetworkConnectionsWithState")]
 pub struct NetworkConnectionsWithStateCollection(pub Vec<NetworkConnectionWithState>);
 
 /// Network settings for installation
