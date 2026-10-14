@@ -73,7 +73,9 @@ describe Bootloader::FinishClient do
       allow(Yast::Execute).to receive(:on_target!).with("/usr/bin/dracut", any_args)
         .and_raise(Cheetah::ExecutionFailed.new([], nil, nil, "dracut error"))
 
-      expect { subject.write }.to raise_error(RuntimeError, /Regenerating initrd with dracut failed/)
+      expect do
+        subject.write
+      end.to raise_error(RuntimeError, /Regenerating initrd with dracut failed/)
     end
 
     it "merges system configuration with selected one in installation and set it as current" do

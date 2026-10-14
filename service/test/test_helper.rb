@@ -34,7 +34,7 @@ class Logger
   alias_method :original_initialize, :initialize
 
   def initialize(logdev, *args, **kwargs)
-    logdev = "/dev/null" if [STDOUT, STDERR, $stdout, $stderr].include?(logdev)
+    logdev = "/dev/null" if [$stdout, $stderr, $stdout, $stderr].include?(logdev)
     original_initialize(logdev, *args, **kwargs)
   end
 end

@@ -117,7 +117,9 @@ describe Bootloader::Sections do
         .with("/usr/sbin/grub2-set-default", "linux")
         .and_raise(Cheetah::ExecutionFailed.new([], nil, nil, "set-default error"))
 
-      expect { subject.write }.to raise_error(Bootloader::CommandError, /Failed to set default GRUB2 boot entry/)
+      expect do
+        subject.write
+      end.to raise_error(Bootloader::CommandError, /Failed to set default GRUB2 boot entry/)
     end
   end
 end

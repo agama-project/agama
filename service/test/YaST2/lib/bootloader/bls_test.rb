@@ -28,7 +28,9 @@ describe Bootloader::Bls do
         .with("/usr/bin/sdbootutil", "install")
         .and_raise(Cheetah::ExecutionFailed.new([], nil, nil, "install error"))
 
-      expect { subject.install_bootloader }.to raise_error(RuntimeError, /Cannot install bootloader/)
+      expect do
+        subject.install_bootloader
+      end.to raise_error(RuntimeError, /Cannot install bootloader/)
     end
   end
 
@@ -62,7 +64,9 @@ describe Bootloader::Bls do
         .with("/usr/bin/sdbootutil", "get-timeout", stdout: :capture)
         .and_raise(Cheetah::ExecutionFailed.new([], nil, nil, "timeout read error"))
 
-      expect { subject.menu_timeout }.to raise_error(Bootloader::SdbootutilError, /Cannot read boot menu timeout/)
+      expect do
+        subject.menu_timeout
+      end.to raise_error(Bootloader::SdbootutilError, /Cannot read boot menu timeout/)
     end
   end
 
@@ -87,7 +91,9 @@ describe Bootloader::Bls do
         .with("/usr/bin/sdbootutil", "get-default", stdout: :capture)
         .and_raise(Cheetah::ExecutionFailed.new([], nil, nil, "default read error"))
 
-      expect { subject.default_menu }.to raise_error(Bootloader::SdbootutilError, /Cannot read default menu/)
+      expect do
+        subject.default_menu
+      end.to raise_error(Bootloader::SdbootutilError, /Cannot read default menu/)
     end
   end
 

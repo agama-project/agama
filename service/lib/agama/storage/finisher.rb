@@ -181,28 +181,17 @@ module Agama
         #
         # @raise [StandardError] if the installation fails and the user chooses to abort.
         def run
-          begin
-            cio_ignore_finish if Yast::Arch.s390
-            result = install_bootloader
-            raise _("Writing bootloader configuration failed.") if result == false
-          rescue ::Bootloader::BootloaderError, StandardError => e
-            logger.error "Bootloader installation failed: #{e.message}"
-            logger.error e.backtrace.join("\n") if e.backtrace
-
-            case ask_user(e.message)
-            when :retry
-              logger.info "Retrying bootloader installation"
-              retry
-            when :skip
-              logger.warn "Skipping bootloader installation as requested by the user"
-              return
-            when :abort
-              logger.error "Aborting installation as requested by the user"
-              raise
-            else
-              logger.error "Unknown action, aborting"
-              raise
-            end
+          cio_ignore_finish if Yast::Arch.s390
+          result = install_bootloader
+          raise _("Writing bootloader configuration failed.") if result == false
+        rescue ::Bootloader::BootloaderError, StandardError => e
+          case ask_user(e)
+          when :retry
+            retry
+          when :skip
+            nil
+          when :abort
+            raise
           end
         end
 
@@ -223,15 +212,20 @@ module Agama
 
         # Asks the user whether to retry, skip, or abort the installation.
         #
-        # @param details [String] Details of the problem
+        # @param exception [Exception] Exception with details of the problem
         # @return [Symbol] Action chosen by the user (:retry, :skip, :abort)
-        def ask_user(details)
-          details = details.to_s.strip
+        def ask_user(exception)
+          logger.error "Bootloader installation failed: #{exception}"
+          logger.error exception.backtrace.join("\n") if exception.backtrace
+
+          details = exception.message.to_s.strip
           details = _("Writing bootloader configuration failed.") if details.empty?
+          text = _("Bootloader installation failed. Do you want to retry, " \
+                   "skip or abort the installation?")
 
           question = Question.new(
             qclass:         "bootloaderInstallError",
-            text:           _("Bootloader installation failed. Do you want to retry, skip or abort the installation?"),
+            text:           text,
             options:        [:retry, :skip, :abort],
             default_option: :skip,
             data:           { "details" => details }

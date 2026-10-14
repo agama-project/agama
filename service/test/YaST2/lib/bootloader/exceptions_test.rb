@@ -102,7 +102,9 @@ end
 
 describe Bootloader::CommandError do
   let(:status) { double(exitstatus: 1) }
-  let(:cheetah) { Cheetah::ExecutionFailed.new(["/usr/bin/cmd", "--arg"], status, "stdout", "error output") }
+  let(:cheetah) do
+    Cheetah::ExecutionFailed.new(["/usr/bin/cmd", "--arg"], status, "stdout", "error output")
+  end
   subject { described_class.new("Command failed", cheetah) }
 
   it "is a BootloaderError" do
