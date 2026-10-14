@@ -108,7 +108,7 @@ export default function StorageSheet({ page }: StorageSheetProps): React.ReactNo
       description={
         isResult
           ? // TRANSLATORS: says what the panel holding the whole picture is for.
-            _("What the installer will do, and what the machine will look like")
+            _("Result of applying the current storage configuration to the system")
           : entry && entryDescription(entry)
       }
       /* The same acts the entry's row offers, so a reader meets one menu per

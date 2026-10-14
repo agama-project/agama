@@ -22,25 +22,10 @@
 
 import React from "react";
 import { sprintf } from "sprintf-js";
-import Text from "~/components/core/Text";
-import Interpolate from "~/components/core/Interpolate";
 import SheetOpener from "~/components/storage/shared/SheetOpener";
 import StorageAlert from "~/components/storage/shared/StorageAlert";
 import { useActions } from "~/hooks/model/proposal/storage";
 import { _, n_ } from "~/i18n";
-
-/** How many actions the plan takes, in bold so it can be read at a glance. */
-function ActionsCount({ count }: { count: number }) {
-  return (
-    <Text component="strong">
-      {
-        // TRANSLATORS: how many steps the installer will take on the disks, as
-        // part of the summary sentence. %d is the number.
-        sprintf(n_("%d action", "%d actions", count), count)
-      }
-    </Text>
-  );
-}
 
 /**
  * The sentence that sums up the result: what applying the configuration takes.
@@ -49,16 +34,13 @@ function ActionsCount({ count }: { count: number }) {
  * verb never has to agree with the count.
  */
 function Summary({ count }: { count: number }) {
-  return (
-    <Interpolate
-      sentence={
-        // TRANSLATORS: summary of how much work the storage configuration
-        // means for the disks. %s is a number of steps, such as "12 actions".
-        _("Applying the current configuration takes %s.")
-      }
-    >
-      {() => <ActionsCount count={count} />}
-    </Interpolate>
+  return sprintf(
+    n_(
+      "Applying the configuration below will take %d action during installation.",
+      "Applying the configuration below will take %d actions during installation.",
+      count,
+    ),
+    count,
   );
 }
 
@@ -86,7 +68,7 @@ export default function Consequences(): React.ReactNode {
           <SheetOpener subject="result" tab="layout">
             {/* TRANSLATORS: opens a panel showing how the disks will look after
                 installation. */}
-            {_("View final layout")}
+            {_("View resulting layout")}
           </SheetOpener>
           <SheetOpener subject="result" tab="actions">
             {/* TRANSLATORS: opens a panel listing the steps the installer will

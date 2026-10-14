@@ -482,7 +482,7 @@ export default function CurrentContentSection({
           <StackItem>
             <Flex>
               <FlexItem>
-                <Text isBold>{_("What to do with the previous content")}</Text>
+                <Text isBold>{_("Previous disk content")}</Text>
               </FlexItem>
               <FlexItem align={{ default: "alignRight" }}>
                 <SpaceDecision
