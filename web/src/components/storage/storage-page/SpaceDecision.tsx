@@ -26,8 +26,7 @@ import { useSheet } from "~/components/storage/shared/use-sheet";
 import { useSpacePolicy } from "~/components/storage/shared/space-policy";
 import { useDevice as useDeviceConfig } from "~/hooks/model/storage/config-model";
 import { _, TranslatedString } from "~/i18n";
-import configModel from "~/model/storage/config-model";
-import type { ConfigModel, DeviceCollection, Partitionable } from "~/model/storage/config-model";
+import type { ConfigModel, DeviceCollection } from "~/model/storage/config-model";
 
 const POLICIES: ConfigModel.SpacePolicy[] = ["delete", "resize", "keep", "custom"];
 
@@ -78,7 +77,6 @@ function meaning(policy: ConfigModel.SpacePolicy): TranslatedString {
 type SpaceOptionProps = {
   policy: ConfigModel.SpacePolicy;
   isSelected: boolean;
-  isDisabled: boolean;
   isAssertive: boolean;
   onChoose: (policy: ConfigModel.SpacePolicy) => void;
 };
@@ -88,7 +86,7 @@ type SpaceOptionProps = {
  * A wrapper lands between the group and its buttons and breaks the segmented
  * look, and props given to a toggle item reach that wrapper, not the button.
  */
-function SpaceOption({ policy, isSelected, isDisabled, isAssertive, onChoose }: SpaceOptionProps) {
+function SpaceOption({ policy, isSelected, isAssertive, onChoose }: SpaceOptionProps) {
   const buttonId = React.useId();
 
   return (
@@ -97,7 +95,6 @@ function SpaceOption({ policy, isSelected, isDisabled, isAssertive, onChoose }: 
         text={label(policy, isAssertive)}
         buttonId={buttonId}
         isSelected={isSelected}
-        isDisabled={isDisabled}
         onChange={() => onChoose(policy)}
       />
       <Tooltip content={meaning(policy)} triggerRef={() => document.getElementById(buttonId)} />
@@ -130,6 +127,10 @@ export type SpaceDecisionProps = {
  * view where those are given. It starts with everything kept: the reader has
  * decided how to decide, not what to decide, which is why it has to be
  * remembered rather than read back. {@link useSpacePolicy} does that.
+ *
+ * Every option stays available while a partition is reused. The answer only
+ * reaches what the new system does not take over: a reused partition stays
+ * reused whatever is chosen for the rest.
  */
 export default function SpaceDecision({
   collection,
@@ -159,10 +160,6 @@ export default function SpaceDecision({
     }
   };
 
-  const reused = configModel.partitionable.isReusingPartitions(
-    deviceConfig as Partitionable.Device,
-  );
-
   return (
     <div className="agm-space-decision">
       {/* The group carries the name, since four buttons saying what each does
@@ -178,7 +175,6 @@ export default function SpaceDecision({
             key={policy}
             policy={policy}
             isSelected={policy === current}
-            isDisabled={reused && policy !== "custom"}
             isAssertive={isAssertive}
             onChoose={choose}
           />
