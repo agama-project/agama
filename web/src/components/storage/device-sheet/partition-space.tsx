@@ -87,14 +87,18 @@ function decisionLabel(decision: Decision): TranslatedString {
   }
 }
 
-function meaning(decision: Decision): TranslatedString {
+function meaning(decision: Decision, partition: System.Device): TranslatedString {
   switch (decision) {
     case "keep":
       // TRANSLATORS: explains keeping one partition.
       return _("All data is kept, not used by the new system.");
     case "delete":
-      // TRANSLATORS: explains deleting one partition.
-      return _("Data is lost, all space is freed for new partitions.");
+      // TRANSLATORS: explains deleting one partition, and how much room that
+      // gives. %s is a size, such as "45 GiB".
+      return sprintf(
+        _("Data is lost, %s is freed for new partitions."),
+        deviceSize(partition.block?.size),
+      );
   }
 }
 
@@ -196,7 +200,7 @@ function descriptionOf(
     );
   }
 
-  return meaning(decision);
+  return meaning(decision, partition);
 }
 
 export type PartitionSpaceItemsProps = {
