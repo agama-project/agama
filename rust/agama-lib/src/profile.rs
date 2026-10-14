@@ -501,6 +501,12 @@ mod tests {
     }
 
     #[test]
+    fn test_connections_do_not_accept_the_state() {
+        let profile = connections(json!([{ "id": "eth0", "state": "activated" }]));
+        assert!(matches!(validate(profile), ValidationOutcome::NotValid(_)));
+    }
+
+    #[test]
     fn test_controller_is_not_accepted_anymore() {
         let profile = connections(json!([{ "id": "eth0", "controller": "bond0" }]));
         assert!(matches!(validate(profile), ValidationOutcome::NotValid(_)));

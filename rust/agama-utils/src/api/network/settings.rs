@@ -54,6 +54,12 @@ impl NetworkConnectionsCollection {
     }
 }
 
+/// Collection of connections with their current state, as the system reports them.
+///
+/// Like [`NetworkConnectionsCollection`], it only holds the root connections.
+#[derive(Clone, Debug, Default, Serialize, Deserialize, JsonSchema, PartialEq)]
+pub struct NetworkConnectionsWithStateCollection(pub Vec<NetworkConnectionWithState>);
+
 /// Network settings for installation
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -479,12 +485,18 @@ pub struct NetworkConnection {
     /// Specifies whether the connection should be persisted or not
     #[serde(skip_serializing_if = "Option::is_none")]
     pub persistent: Option<bool>,
+}
+
+/// A connection as the system reports it, with its current state.
+///
+/// The state is not part of the configuration, so only the system information reports it. The
+/// ports nested in a controller do not report it.
+#[derive(Clone, Debug, Serialize, Deserialize, JsonSchema, PartialEq)]
+pub struct NetworkConnectionWithState {
+    #[serde(flatten)]
+    pub connection: NetworkConnection,
     /// Current state of the connection
-    ///
-    /// Only reported as part of the system information. It is not part of the configuration, so
-    /// the profile schema rejects it.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub state: Option<ConnectionState>,
+    pub state: ConnectionState,
 }
 
 /// A port of a bond or a bridge, nested in its controller.
@@ -545,12 +557,6 @@ pub struct PortConnection {
     /// Specifies whether the connection should be persisted or not
     #[serde(skip_serializing_if = "Option::is_none")]
     pub persistent: Option<bool>,
-    /// Current state of the connection
-    ///
-    /// Only reported as part of the system information. It is not part of the configuration, so
-    /// the profile schema rejects it.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub state: Option<ConnectionState>,
 }
 
 impl PortConnection {
@@ -578,7 +584,6 @@ impl PortConnection {
             ieee_8021x,
             autoconnect,
             persistent,
-            state,
         } = self.clone();
 
         NetworkConnection {
@@ -596,7 +601,6 @@ impl PortConnection {
             ieee_8021x,
             autoconnect,
             persistent,
-            state,
             ..Default::default()
         }
     }
@@ -631,7 +635,6 @@ impl From<NetworkConnection> for PortConnection {
             ieee_8021x,
             autoconnect,
             persistent,
-            state,
         } = conn;
 
         Self {
@@ -650,7 +653,6 @@ impl From<NetworkConnection> for PortConnection {
             ieee_8021x,
             autoconnect,
             persistent,
-            state,
         }
     }
 }

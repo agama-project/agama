@@ -92,7 +92,7 @@ fn test_members_of_other_controllers_stay_at_the_top_level() {
 }
 
 #[test]
-fn test_the_system_info_reports_the_state_of_nested_ports() {
+fn test_the_system_info_reports_the_state_of_the_root_connections() {
     let mut state = stacked_state();
     for conn in state.connections.iter_mut() {
         conn.state = ConnectionState::Activated;
@@ -100,17 +100,23 @@ fn test_the_system_info_reports_the_state_of_nested_ports() {
 
     let info = SystemInfo::try_from(state).unwrap();
 
-    assert_eq!(root_ids(&info.connections), ["br0", "br0.100"]);
+    let roots: Vec<_> = info
+        .connections
+        .0
+        .iter()
+        .map(|c| (c.connection.id.as_str(), c.state))
+        .collect();
     assert_eq!(
-        find(&info.connections, "eth0").state,
-        Some(ConnectionState::Activated)
+        roots,
+        [
+            ("br0", ConnectionState::Activated),
+            ("br0.100", ConnectionState::Activated)
+        ]
     );
-}
 
-#[test]
-fn test_the_config_does_not_report_the_state() {
-    let exposed = exposed(&stacked_state());
-    assert!(exposed.flatten().iter().all(|c| c.state.is_none()));
+    // The nested ports are part of their controller, so they do not report it.
+    let json = serde_json::to_string(&info.connections).unwrap();
+    assert_eq!(json.matches("\"state\"").count(), roots.len());
 }
 
 #[test]
