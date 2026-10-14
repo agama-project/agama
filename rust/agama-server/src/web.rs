@@ -48,24 +48,6 @@ pub use config::ServiceConfig;
 pub use service::MainServiceBuilder;
 use std::path::Path;
 
-/// Returns a service that implements the web-based Agama API.
-///
-/// * `config`: service configuration.
-/// * `events`: channel to send the events through the WebSocket.
-/// * `dbus`: D-Bus connection.
-/// * `web_ui_dir`: public directory containing the web UI.
-pub async fn service<P>(
-    config: ServiceConfig,
-    events: event::Sender,
-    dbus: zbus::Connection,
-    web_ui_dir: P,
-) -> Result<ApiRouter, Error>
-where
-    P: AsRef<Path>,
-{
-    service_with_mcp(config, events, dbus, web_ui_dir, None).await
-}
-
 /// Returns a service that implements the web-based Agama API with optional MCP server mode.
 ///
 /// * `config`: service configuration.
@@ -73,7 +55,7 @@ where
 /// * `dbus`: D-Bus connection.
 /// * `web_ui_dir`: public directory containing the web UI.
 /// * `mcp_mode`: optional MCP mode override; if None, parsed from the kernel command-line.
-pub async fn service_with_mcp<P>(
+pub async fn service<P>(
     config: ServiceConfig,
     events: event::Sender,
     dbus: zbus::Connection,
