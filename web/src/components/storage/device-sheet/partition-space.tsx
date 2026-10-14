@@ -96,7 +96,7 @@ function meaning(decision: Decision, partition: System.Device): TranslatedString
       // TRANSLATORS: explains deleting one partition, and how much room that
       // gives. %s is a size, such as "45 GiB".
       return sprintf(
-        _("Data is lost, %s is freed for new partitions."),
+        _("Data is lost, %s are freed for new partitions."),
         deviceSize(partition.block?.size),
       );
   }
