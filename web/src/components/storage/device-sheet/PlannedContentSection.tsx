@@ -162,8 +162,10 @@ export default function PlannedContentSection({
   const addLabel = isVolumeGroup ? _("Add logical volume") : _("Add partition");
 
   const add = (variant: "primary" | "secondary") => (
-    <Link to={addPath} keepQuery variant={variant} icon={<Icon name="add" size="xs" />}>
-      {addLabel}
+    <Link to={addPath} keepQuery variant={variant} size="sm">
+      <Flex alignItems={{ default: "alignItemsCenter" }} gap={{ default: "gapSm" }}>
+        <Icon name="add_circle" /> {addLabel}
+      </Flex>
     </Link>
   );
 
@@ -295,7 +297,11 @@ export default function PlannedContentSection({
             moving the plan is offered only here, where there is something
             to move: under a view that has just said nothing is planned, it
             would promise the move of nothing. */}
-        <Flex gap={{ default: "gapSm" }} flexWrap={{ default: "wrap" }}>
+        <Flex
+          gap={{ default: "gapSm" }}
+          flexWrap={{ default: "wrap" }}
+          alignItems={{ default: "alignItemsCenter" }}
+        >
           <FlexItem>{add("secondary")}</FlexItem>
           {!isVolumeGroup && (
             <FlexItem>

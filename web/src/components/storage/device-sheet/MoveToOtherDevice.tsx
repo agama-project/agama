@@ -69,9 +69,9 @@ export default function MoveToOtherDevice({
 
   return (
     <>
-      <Button variant="secondary" onClick={open}>
+      <Button variant="secondary" size="sm" onClick={open}>
         <Flex alignItems={{ default: "alignItemsCenter" }} gap={{ default: "gapSm" }}>
-          <Icon name="change_circle" />{" "}
+          <Icon name="move_down" />{" "}
           {
             // TRANSLATORS: offered under the list of what a device will hold:
             // move all of it to a different device.

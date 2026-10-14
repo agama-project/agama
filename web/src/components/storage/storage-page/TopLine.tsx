@@ -29,6 +29,7 @@ import SettingValue from "~/components/core/SettingValue";
 import Text from "~/components/core/Text";
 import Icon, { IconProps } from "~/components/layout/Icon";
 import { baseName } from "~/components/storage/utils";
+import { bootIcon } from "~/components/storage/shared/boot";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { EXPANDED, SETTINGS_TAB, SHEET, SHEET_TAB } from "~/components/storage/ui-state-params";
 import configModel from "~/model/storage/config-model";
@@ -49,13 +50,13 @@ function boot(config: ConfigModel.Config): { value: TranslatedString; icon: Icon
   if (!config.boot?.configure) {
     // TRANSLATORS: what the installation will do about starting the machine:
     // nothing, because the reader has said so.
-    return { value: _("Not configured"), icon: "block" };
+    return { value: _("Not configured"), icon: bootIcon(config) };
   }
 
   if (configModel.boot.isDefault(config)) {
     // TRANSLATORS: what the installation will do about starting the machine:
     // work out which disk it needs by itself.
-    return { value: _("Automatic"), icon: "rotate_auto" };
+    return { value: _("Automatic"), icon: bootIcon(config) };
   }
 
   const device = configModel.boot.findDevice(config);
@@ -66,9 +67,7 @@ function boot(config: ConfigModel.Config): { value: TranslatedString; icon: Icon
       : // TRANSLATORS: said where the machine is set to start from a disk the
         // reader has yet to choose.
         _("No disk selected"),
-    /* The same turning arrow without the A: a decision of the same kind, taken
-       by hand rather than by the installer. */
-    icon: "settings_backup_restore",
+    icon: bootIcon(config),
   };
 }
 
@@ -119,7 +118,7 @@ export default function TopLine(): React.ReactNode {
 
   if (!config) return null;
 
-  const { value: bootValue, icon: bootIcon } = boot(config);
+  const { value: bootValue, icon: bootMark } = boot(config);
   const { value: encryptionValue, icon: encryptionIcon } = encryption(config);
 
   const onReset = () => {
@@ -159,7 +158,7 @@ export default function TopLine(): React.ReactNode {
                 placed apart rather than as one line. */}
             <DescriptionList isCompact isHorizontal isFluid className="agm-top-line__settings">
               <SettingValue
-                icon={bootIcon}
+                icon={bootMark}
                 // TRANSLATORS: names the setting saying where the machine will
                 // start from once it is installed.
                 term={_("Boot")}

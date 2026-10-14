@@ -23,7 +23,8 @@
 import React from "react";
 import Link from "~/components/core/Link";
 import Interpolate from "~/components/core/Interpolate";
-import Statement from "~/components/storage/device-sheet/Statement";
+import SheetItem from "~/components/storage/device-sheet/SheetItem";
+import { bootIcon } from "~/components/storage/shared/boot";
 import { STORAGE as PATHS } from "~/routes/paths";
 import configModel from "~/model/storage/config-model";
 import { useConfigModel } from "~/hooks/model/storage/config-model";
@@ -50,9 +51,15 @@ export default function BootStatement({ entry }: BootStatementProps): React.Reac
   if (!config || !name || !configModel.boot.hasDevice(config, name)) return null;
 
   return (
-    // Maybe the sentence below could provide access to a tooltip expanding the information
-    // "Some partitions may be used or created if needed to make the system able to boot."
-    <Statement icon={null} heading={_("Configure partitions needed for booting.")}>
+    <SheetItem
+      icon={bootIcon(config)}
+      // TRANSLATORS: names the setting for how the machine starts, in a
+      // device's panel.
+      name={_("Boot")}
+      // TRANSLATORS: follows "Boot" in a device's panel: the partitions the
+      // machine needs to start are set up on this device.
+      value={_("partitions configured here")}
+    >
       <Interpolate
         sentence={
           configModel.boot.isDefault(config)
@@ -66,6 +73,6 @@ export default function BootStatement({ entry }: BootStatementProps): React.Reac
           </Link>
         )}
       </Interpolate>
-    </Statement>
+    </SheetItem>
   );
 }

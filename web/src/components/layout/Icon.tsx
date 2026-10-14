@@ -51,6 +51,8 @@ import PendingActions from "@icons/pending_actions.svg?component";
 import Schema from "@icons/schema.svg?component";
 import RotateAuto from "@icons/rotate_auto.svg?component";
 import SettingsBackupRestore from "@icons/settings_backup_restore.svg?component";
+import MoveDown from "@icons/move_down.svg?component";
+import Stacks from "@icons/stacks.svg?component";
 import Compress from "@icons/compress.svg?component";
 import ChevronLeft from "@icons/chevron_left.svg?component";
 import ChevronRight from "@icons/chevron_right.svg?component";
@@ -125,6 +127,8 @@ const icons = {
   schema: Schema,
   rotate_auto: RotateAuto,
   settings_backup_restore: SettingsBackupRestore,
+  move_down: MoveDown,
+  stacks: Stacks,
   chevron_left: ChevronLeft,
   chevron_right: ChevronRight,
   clear_all: ClearAll,

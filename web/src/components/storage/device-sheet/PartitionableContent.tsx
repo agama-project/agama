@@ -21,9 +21,8 @@
  */
 
 import React from "react";
-import { List, ListItem, Flex, FlexItem } from "@patternfly/react-core";
+import { Divider, Flex, FlexItem } from "@patternfly/react-core";
 import Link from "~/components/core/Link";
-import Text from "~/components/core/Text";
 import Icon from "~/components/layout/Icon";
 import PlannedContentSection from "~/components/storage/device-sheet/PlannedContentSection";
 import UsedByStatement from "~/components/storage/device-sheet/UsedByStatement";
@@ -88,44 +87,31 @@ export default function PartitionableContent({
   });
 
   const add = (variant: "primary" | "secondary") => (
-    <Link to={addPath} keepQuery variant={variant} icon={<Icon name="add" size="xs" />}>
-      {_("Add Partition")}
+    <Link to={addPath} keepQuery variant={variant} size="sm">
+      <Flex alignItems={{ default: "alignItemsCenter" }} gap={{ default: "gapSm" }}>
+        <Icon name="add_circle" /> {_("Add Partition")}
+      </Flex>
     </Link>
   );
 
   return (
     <>
-      {(!!planned.length || !!users.length) && (
-        <div>
-          {!!planned.length && !users.length && (
-            <PlannedContentSection entry={entry} subject={subject} />
-          )}
-          {!!users.length && (
-            <List>
-              <UsedByStatement entry={entry} />
-              <ListItem>
-                {!!planned.length && (
-                  <>
-                    <Text>{_("Partitions from the following list")}</Text>
-                    <PlannedContentSection entry={entry} subject={subject} />
-                  </>
-                )}
-                {!planned.length && (
-                  <Flex>
-                    <FlexItem>
-                      {users.length || isBoot
-                        ? _("You can define additional partitions.")
-                        : _("You can define partitions.")}
-                    </FlexItem>
-                    <FlexItem>{add("secondary")}</FlexItem>
-                  </Flex>
-                )}
-              </ListItem>
-            </List>
-          )}
-        </div>
+      {!!planned.length && <PlannedContentSection entry={entry} subject={subject} />}
+      {!planned.length && !!users.length && (
+        <Flex direction={{ default: "column" }} gap={{ default: "gapSm" }}>
+          <FlexItem>
+            {users.length || isBoot
+              ? _("You can define additional partitions.")
+              : _("You can define partitions.")}
+          </FlexItem>
+          <FlexItem>{add("secondary")}</FlexItem>
+        </Flex>
       )}
+      {/* Between the list of what is created and the facts about the disk,
+          only where there are both. */}
+      {(!!planned.length || !!users.length) && (isBoot || !!users.length) && <Divider />}
       <BootStatement entry={entry} />
+      <UsedByStatement entry={entry} />
     </>
   );
 }
