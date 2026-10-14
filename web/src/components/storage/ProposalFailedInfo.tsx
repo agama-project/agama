@@ -21,7 +21,8 @@
  */
 
 import React from "react";
-import { Alert, Content } from "@patternfly/react-core";
+import { Content } from "@patternfly/react-core";
+import StorageAlert from "~/components/storage/shared/StorageAlert";
 import { useConfigModel } from "~/hooks/model/storage/config-model";
 import * as partitionUtils from "~/components/storage/utils/partition";
 import { _, formatList } from "~/i18n";
@@ -74,8 +75,8 @@ const Description = () => {
  */
 export default function ProposalFailedInfo() {
   return (
-    <Alert isInline variant="warning" title={_("Failed to calculate a storage layout")}>
+    <StorageAlert variant="warning" title={_("Failed to calculate a storage layout")}>
       <Description />
-    </Alert>
+    </StorageAlert>
   );
 }

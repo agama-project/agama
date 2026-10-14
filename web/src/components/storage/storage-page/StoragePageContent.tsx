@@ -21,13 +21,12 @@
  */
 
 import React from "react";
-import { Grid } from "@patternfly/react-core";
+import { Flex } from "@patternfly/react-core";
 import EntriesTable from "~/components/storage/entries-table/EntriesTable";
 import TopLine from "~/components/storage/storage-page/TopLine";
-import BottomLine from "~/components/storage/storage-page/BottomLine";
+import GlobalActions from "~/components/storage/storage-page/GlobalActions";
 import Result from "~/components/storage/storage-page/Result";
 import StorageSheet from "~/components/storage/storage-page/StorageSheet";
-import SummaryLayout from "~/components/storage/storage-page/SummaryLayout";
 import { useConfigModel } from "~/hooks/model/storage/config-model";
 
 /**
@@ -37,20 +36,35 @@ import { useConfigModel } from "~/hooks/model/storage/config-model";
  * anything else is arranged: no disk to install on, settings this interface
  * cannot read, and a configuration it knows nothing about.
  *
- * Everything else is the page, with the sheet the page opens over it. The sheet
- * wraps rather than sits beside, because two of its three placements are about
- * what the page does while it is open.
+ * Everything else is the page: what the configuration will do, then the
+ * devices it uses and the controls that apply to all of them.
+ *
+ * The sheet the page opens is laid over it. The sheet wraps rather than sits
+ * beside, because two of its three placements are about what the page does
+ * while it is open.
  */
 export default function StoragePageContent(): React.ReactNode {
   const model = useConfigModel();
 
   const body = (
-    <Grid hasGutter>
+    <Flex
+      direction={{ default: "column" }}
+      alignItems={{ default: "alignItemsStretch" }}
+      gap={{ default: "gapXl" }}
+    >
       {model && <TopLine />}
-      <SummaryLayout notice={<Result />} />
-      {model && <EntriesTable />}
-      {model && <BottomLine />}
-    </Grid>
+      <Result />
+      {model && (
+        <Flex
+          direction={{ default: "column" }}
+          alignItems={{ default: "alignItemsStretch" }}
+          gap={{ default: "gapMd" }}
+        >
+          <EntriesTable />
+          <GlobalActions />
+        </Flex>
+      )}
+    </Flex>
   );
 
   return <StorageSheet page={body} />;

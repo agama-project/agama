@@ -21,14 +21,13 @@
  */
 
 import React from "react";
-import { Alert } from "@patternfly/react-core";
+import { Stack } from "@patternfly/react-core";
 import FixableConfigInfo from "~/components/storage/FixableConfigInfo";
 import ProposalFailedInfo from "~/components/storage/ProposalFailedInfo";
 import UnsupportedModelInfo from "~/components/storage/UnsupportedModelInfo";
 import InvalidConfigMessage from "~/components/storage/storage-page/InvalidConfigMessage";
 import NoDevicesMessage from "~/components/storage/storage-page/NoDevicesMessage";
 import UnknownConfigMessage from "~/components/storage/storage-page/UnknownConfigMessage";
-import { _ } from "~/i18n";
 import { useAvailableDevices } from "~/hooks/model/system/storage";
 import { useIssues } from "~/hooks/model/issue";
 import { useProposal } from "~/hooks/model/proposal/storage";
@@ -36,17 +35,13 @@ import { useConfigModel } from "~/hooks/model/storage/config-model";
 import Consequences from "~/components/storage/storage-page/Consequences";
 
 /**
- * What the storage page says about the one device its configuration is about,
- * where the installer could not work out a layout for it.
+ * What the storage page reports about its configuration.
  *
- * The installer reports the failure and not its cause, so a page that only
- * passes that on leaves the reader with nothing to press. Naming the decision
- * that produced it turns the report into an instruction: not "no layout could
- * be calculated" but "everything on vdd is being kept, so allow the installer
- * to shrink or delete what is there".
- *
- * Each case names the way out as well as the cause, and both ways out are
- * offered on the page: the decision above this line, and the offer under it.
+ * Where a layout could be calculated, that is what the installer will do to
+ * the disks, as plain text: an ordinary plan is not a notice, so alerts are
+ * kept for the states that need the reader's attention. Those are the
+ * configuration being invalid, unknown or unsupported, there being no devices
+ * to install on, and the installer failing to find a layout.
  */
 export default function Result(): React.ReactNode {
   const model = useConfigModel();
@@ -69,25 +64,12 @@ export default function Result(): React.ReactNode {
   if (configIssues.length && !isModelEditable)
     return <InvalidConfigMessage issues={configIssues} />;
   if (!configIssues.length && !model && !proposal) return <UnknownConfigMessage />;
-
-  if (proposal) {
-    return (
-      <Alert
-        isInline
-        variant="info"
-        component="h3"
-        title={_("Data in the disks will be modified according to the settings below")}
-      >
-        <Consequences />
-      </Alert>
-    );
-  }
+  if (proposal) return <Consequences />;
 
   return (
-    <>
-      {!configIssues.length && !proposal && <ProposalFailedInfo />}
-      {!!configIssues.length && <FixableConfigInfo issues={configIssues} />}
+    <Stack hasGutter>
+      {configIssues.length ? <FixableConfigInfo issues={configIssues} /> : <ProposalFailedInfo />}
       {!model && <UnsupportedModelInfo />}
-    </>
+    </Stack>
   );
 }

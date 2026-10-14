@@ -22,191 +22,94 @@
 
 import React from "react";
 import { screen } from "@testing-library/react";
-import { installerRender } from "~/test-utils";
-import type { Storage as System } from "~/model/system";
+import { installerRender, mockNavigateFn } from "~/test-utils";
 import type { Storage as Proposal } from "~/model/proposal";
 import Consequences from "~/components/storage/storage-page/Consequences";
 
-const mockSystemDevices = jest.fn();
 const mockActions = jest.fn();
-
-jest.mock("~/hooks/model/system/storage", () => ({
-  ...jest.requireActual("~/hooks/model/system/storage"),
-  useFlattenDevices: () => mockSystemDevices(),
-}));
 
 jest.mock("~/hooks/model/proposal/storage", () => ({
   ...jest.requireActual("~/hooks/model/proposal/storage"),
-  useFlattenDevices: () => [],
   useActions: () => mockActions(),
 }));
 
-/** A partition the machine already has, with whatever was found on it. */
-const partition = (sid: number, systems: string[] = []): System.Device => ({
-  sid,
-  name: `/dev/vda${sid}`,
-  class: "partition",
-  block: { systems } as System.Device["block"],
+const action = (device: number, values: Partial<Proposal.Action> = {}): Proposal.Action => ({
+  device,
+  text: "",
+  ...values,
 });
 
-const deleting = (sid: number): Proposal.Action => ({ device: sid, text: "", delete: true });
-const shrinking = (sid: number): Proposal.Action => ({ device: sid, text: "", resize: true });
-
-/** What the line states, with the way into the whole picture taken off it. */
-const statement = () => {
-  const wayIn = screen.queryByRole("link")?.textContent || "";
-  return (document.body.textContent || "").replace(wayIn, "").trim();
-};
-
-/** The way into the whole picture, which the line always offers. */
-const wayIn = () => screen.getByRole("link").textContent;
-
-const windows = "Windows 11";
-const leap = "openSUSE Leap 15.2";
-const tumbleweed = "openSUSE Tumbleweed";
+/** The summary sentence, read as a whole. */
+const summary = () => screen.getByText(/Applying the current configuration/);
 
 describe("Consequences", () => {
   beforeEach(() => {
-    mockSystemDevices.mockReturnValue([]);
     mockActions.mockReturnValue([]);
   });
 
-  describe("when nothing is deleted or made smaller", () => {
-    beforeEach(() => {
-      mockSystemDevices.mockReturnValue([partition(1, [windows])]);
-      mockActions.mockReturnValue([{ device: 1, text: "" }]);
-    });
+  it("says how many actions applying the configuration takes", () => {
+    mockActions.mockReturnValue([action(1), action(2, { delete: true }), action(3)]);
+    installerRender(<Consequences />);
 
-    it("states nothing, since nothing on the machine is lost", () => {
-      installerRender(<Consequences />);
-
-      expect(statement()).toBe("");
-    });
-
-    it("still offers the whole picture", () => {
-      installerRender(<Consequences />);
-
-      expect(wayIn()).toBe("View all 1 needed action");
-    });
+    expect(summary()).toHaveTextContent("Applying the current configuration takes 3 actions.");
   });
 
-  describe("when there is no proposal to read", () => {
-    it("says nothing, leaving room for the page to say why", () => {
-      installerRender(<Consequences />);
+  it("puts the number of actions in bold", () => {
+    mockActions.mockReturnValue([action(1), action(2)]);
+    installerRender(<Consequences />);
 
-      expect(statement()).toBe("");
-    });
+    expect(screen.getByText("2 actions").tagName).toBe("STRONG");
   });
 
-  describe("when a partition is made smaller", () => {
-    describe("and the installer knows what is on it", () => {
-      beforeEach(() => {
-        mockSystemDevices.mockReturnValue([partition(1, [windows])]);
-        mockActions.mockReturnValue([shrinking(1)]);
-      });
+  it("uses the singular for a single action", () => {
+    mockActions.mockReturnValue([action(1)]);
+    installerRender(<Consequences />);
 
-      it("names it", () => {
-        installerRender(<Consequences />);
-
-        expect(statement()).toBe("Shrinking Windows 11.");
-      });
-    });
-
-    describe("and the installer knows nothing about it", () => {
-      beforeEach(() => {
-        mockSystemDevices.mockReturnValue([partition(1), partition(2)]);
-        mockActions.mockReturnValue([shrinking(1), shrinking(2)]);
-      });
-
-      it("counts what it cannot name", () => {
-        installerRender(<Consequences />);
-
-        expect(statement()).toBe("Shrinking 2 partitions.");
-      });
-    });
+    expect(summary()).toHaveTextContent("Applying the current configuration takes 1 action.");
   });
 
-  describe("when a partition is deleted", () => {
-    describe("and one system goes with it", () => {
-      beforeEach(() => {
-        mockSystemDevices.mockReturnValue([partition(1, [windows])]);
-        mockActions.mockReturnValue([deleting(1)]);
-      });
+  it("does not count subvolumes", () => {
+    mockActions.mockReturnValue([
+      action(1),
+      action(2, { subvol: true }),
+      action(3, { subvol: true }),
+    ]);
+    installerRender(<Consequences />);
 
-      it("names it", () => {
-        installerRender(<Consequences />);
-
-        expect(statement()).toBe("Deleting Windows 11.");
-      });
-    });
-
-    describe("and two systems go with it", () => {
-      beforeEach(() => {
-        mockSystemDevices.mockReturnValue([partition(1, [windows]), partition(2, [leap])]);
-        mockActions.mockReturnValue([deleting(1), deleting(2)]);
-      });
-
-      it("names both", () => {
-        installerRender(<Consequences />);
-
-        expect(statement()).toBe("Deleting Windows 11 and openSUSE Leap 15.2.");
-      });
-    });
-
-    describe("and three or more systems go with it", () => {
-      beforeEach(() => {
-        mockSystemDevices.mockReturnValue([
-          partition(1, [windows]),
-          partition(2, [leap]),
-          partition(3, [tumbleweed]),
-        ]);
-        mockActions.mockReturnValue([deleting(1), deleting(2), deleting(3)]);
-      });
-
-      it("names one and counts the rest, so the reader still recognizes something", () => {
-        installerRender(<Consequences />);
-
-        expect(statement()).toBe("Deleting Windows 11 and 2 other systems.");
-      });
-    });
-
-    describe("and the installer knows nothing about what is on it", () => {
-      beforeEach(() => {
-        mockSystemDevices.mockReturnValue([partition(1), partition(2)]);
-        mockActions.mockReturnValue([deleting(1), deleting(2)]);
-      });
-
-      it("counts what it cannot name", () => {
-        installerRender(<Consequences />);
-
-        expect(statement()).toBe("Deleting 2 partitions.");
-      });
-    });
-
-    describe("and something else is made smaller too", () => {
-      beforeEach(() => {
-        mockSystemDevices.mockReturnValue([partition(1, [windows]), partition(2, [leap])]);
-        mockActions.mockReturnValue([deleting(1), shrinking(2)]);
-      });
-
-      it("reports only the deletion, which is the worse of the two", () => {
-        installerRender(<Consequences />);
-
-        expect(statement()).toBe("Deleting Windows 11.");
-      });
-    });
+    expect(summary()).toHaveTextContent("Applying the current configuration takes 1 action.");
   });
 
-  describe("when the same system is found on several deleted partitions", () => {
-    beforeEach(() => {
-      mockSystemDevices.mockReturnValue([partition(1, [windows]), partition(2, [windows])]);
-      mockActions.mockReturnValue([deleting(1), deleting(2)]);
-    });
+  it("does not say what the actions destroy", () => {
+    mockActions.mockReturnValue([action(1, { delete: true }), action(2, { resize: true })]);
+    installerRender(<Consequences />);
 
-    it("names it once", () => {
-      installerRender(<Consequences />);
+    expect(screen.queryByText(/destructive|shrink/i)).toBeNull();
+  });
 
-      expect(statement()).toBe("Deleting Windows 11.");
-    });
+  it("offers the final layout and the actions, in the order of the result tabs", () => {
+    installerRender(<Consequences />);
+
+    const links = screen.getAllByRole("link").map((link) => link.textContent);
+    expect(links).toEqual(["View final layout", "Check actions"]);
+  });
+
+  it("opens the result on the final layout", async () => {
+    const { user } = installerRender(<Consequences />);
+    await user.click(screen.getByRole("link", { name: "View final layout" }));
+
+    expect(mockNavigateFn).toHaveBeenCalledWith(
+      { search: "?sheet=result&sheetTab=layout" },
+      { replace: true },
+    );
+  });
+
+  it("opens the result on the actions", async () => {
+    const { user } = installerRender(<Consequences />);
+    await user.click(screen.getByRole("link", { name: "Check actions" }));
+
+    expect(mockNavigateFn).toHaveBeenCalledWith(
+      { search: "?sheet=result&sheetTab=actions" },
+      { replace: true },
+    );
   });
 });
