@@ -23,7 +23,7 @@
 import React from "react";
 import { screen, within } from "@testing-library/react";
 import { useSearchParams } from "react-router";
-import { installerRender, mockNavigateFn } from "~/test-utils";
+import { installerRender } from "~/test-utils";
 import type { ConfigModel } from "~/model/storage/config-model";
 import EntriesTable from "~/components/storage/entries-table/EntriesTable";
 
@@ -457,65 +457,90 @@ describe("what a row says it costs", () => {
 
 describe("the way into an entry", () => {
   beforeEach(() => {
-    mockSystemDevice.mockReturnValue(null);
+    mockSystemDevice.mockImplementation((name: string) => ({
+      name,
+      class: "drive",
+      drive: { type: "disk", info: {} },
+      block: { size: 64424509440 },
+    }));
     mockSystemDevices.mockReturnValue([]);
     mockStagingDevices.mockReturnValue([]);
     mockActions.mockReturnValue([]);
     mockConfig.mockReturnValue(
       config({
-        drives: [{ name: "/dev/sda" }, { name: "/dev/sdb" }],
-        volumeGroups: [{ vgName: "system", targetDevices: ["/dev/sda"] }],
+        drives: [
+          { name: "/dev/sda", partitions: [] },
+          { name: "/dev/sdb", partitions: [] },
+        ],
+        volumeGroups: [{ vgName: "system", targetDevices: ["/dev/sda"], logicalVolumes: [] }],
       }),
     );
   });
 
+  const renderWithAddress = () =>
+    installerRender(
+      <>
+        <EntriesTable />
+        <Address />
+      </>,
+    );
+
   it("is the name itself, as a link a reader can copy", async () => {
-    const { user } = installerRender(<EntriesTable />);
+    const { user } = renderWithAddress();
     await user.click(screen.getByRole("link", { name: "sdb" }));
 
-    expect(mockNavigateFn).toHaveBeenCalledWith(
-      { search: "?sheet=drives.1" },
-      expect.objectContaining({ replace: true }),
-    );
+    expect(screen.getByRole("status").textContent).toBe("sheet=drives.1");
   });
 
   it("names the group where the group is what the row is about", async () => {
-    const { user } = installerRender(<EntriesTable />);
+    const { user } = renderWithAddress();
     await user.click(screen.getByRole("link", { name: "system" }));
 
-    expect(mockNavigateFn).toHaveBeenCalledWith(
-      { search: "?sheet=volumeGroups.0" },
-      expect.objectContaining({ replace: true }),
-    );
+    expect(screen.getByRole("status").textContent).toBe("sheet=volumeGroups.0");
   });
 
-  it("is the whole row to a mouse, since a row is what a reader clicks", async () => {
-    const { user } = installerRender(
-      <>
-        <EntriesTable />
-        <Address />
-      </>,
-    );
-    await user.click(screen.getByText(/Host LVM volume group/));
+  it("leaves the rest of the row to the name's link, with no handler of its own", async () => {
+    /* The whole row opens through the link stretched over it, which is drawn
+       by the stylesheet and so cannot be clicked here. What can be checked is
+       that nothing else listens: a row handler is what would need its own
+       keyboard model. */
+    const { user } = renderWithAddress();
+    const row = within(table()).getByRole("row", { name: /^sda/ });
+    await user.click(within(row).getAllByRole("cell")[0]);
 
-    expect(screen.getByRole("status").textContent).toBe("sheet=drives.0");
+    expect(screen.getByRole("status").textContent).toBe("");
   });
 
   it("leaves the row's menu to the menu, rather than opening both", async () => {
-    const { user } = installerRender(
-      <>
-        <EntriesTable />
-        <Address />
-      </>,
-    );
+    const { user } = renderWithAddress();
     await user.click(screen.getByRole("button", { name: "Actions for sda" }));
 
     expect(screen.getByRole("status").textContent).toBe("");
   });
 
+  it("marks the entry whose sheet is open", async () => {
+    const { user } = renderWithAddress();
+    await user.click(screen.getByRole("link", { name: "sdb" }));
+
+    expect(screen.getByRole("link", { name: "sdb" })).toHaveAttribute("aria-current", "true");
+    expect(screen.getByRole("link", { name: "sda" })).not.toHaveAttribute("aria-current");
+  });
+
+  it("keeps a tab stop for every name and every menu", async () => {
+    const { user } = installerRender(<EntriesTable />);
+    await user.tab();
+    expect(screen.getByRole("link", { name: "system" })).toHaveFocus();
+
+    await user.tab();
+    expect(screen.getByRole("button", { name: "Actions for system" })).toHaveFocus();
+
+    await user.tab();
+    expect(screen.getByRole("link", { name: "sda" })).toHaveFocus();
+  });
+
   it("walks the entries with the arrow keys, without taking their tab stops", async () => {
     const { user } = installerRender(<EntriesTable />);
-    await user.click(screen.getByRole("link", { name: "system" }));
+    screen.getByRole("link", { name: "system" }).focus();
     await user.keyboard("{ArrowDown}");
 
     expect(screen.getByRole("link", { name: "sda" })).toHaveFocus();
@@ -525,6 +550,17 @@ describe("the way into an entry", () => {
 
     await user.keyboard("{Home}");
     expect(screen.getByRole("link", { name: "system" })).toHaveFocus();
+  });
+
+  it("moves between an entry's name and its menu with the side arrows", async () => {
+    const { user } = installerRender(<EntriesTable />);
+    screen.getByRole("link", { name: "sda" }).focus();
+    await user.keyboard("{ArrowRight}");
+
+    expect(screen.getByRole("button", { name: "Actions for sda" })).toHaveFocus();
+
+    await user.keyboard("{ArrowLeft}");
+    expect(screen.getByRole("link", { name: "sda" })).toHaveFocus();
   });
 
   it("is also the menu's first offer, for a reader who never tries the name", async () => {

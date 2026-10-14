@@ -495,9 +495,37 @@ nav.agm-breadcrumb > ol > li > a {
   padding-inline-start: var(--pf-t--global--spacer--lg);
 }
 
-// The whole row opens the entry, and says so before it is pressed.
+// The whole row opens the entry: the name's link is stretched over it, so the
+// row has no handler of its own and every way in meets the same control. The
+// hover look and the pointer come from PatternFly's clickable row.
 .agm-entries-table__row {
-  cursor: pointer;
+  position: relative;
+}
+
+// Reads as the name, not as a link: the row is what says it can be opened.
+.agm-entries-table__opener {
+  color: inherit;
+  text-decoration: none;
+}
+
+.agm-entries-table__opener::after {
+  position: absolute;
+  inset: 0;
+  content: "";
+}
+
+// The row lights up while its link has keyboard focus, with PatternFly's own
+// hover color, so the focus reads on the row and not only on the name.
+.agm-entries-table__row:has(.agm-entries-table__opener:focus-visible) {
+  --pf-v6-c-table__tr--m-clickable--BackgroundColor: var(
+    --pf-v6-c-table__tr--m-clickable--hover--BackgroundColor
+  );
+}
+
+// The menu sits above the stretched link.
+.agm-entries-table__menu {
+  position: relative;
+  z-index: 1;
 }
 
 // A second line under a cell, saying what the installer does to what the cell
