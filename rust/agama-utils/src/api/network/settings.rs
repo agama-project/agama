@@ -481,7 +481,8 @@ pub struct NetworkConnection {
     pub persistent: Option<bool>,
     /// Current state of the connection
     ///
-    /// Only reported as part of the system information. It is ignored when given.
+    /// Only reported as part of the system information. It is not part of the configuration, so
+    /// the profile schema rejects it.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub state: Option<ConnectionState>,
 }
@@ -546,7 +547,8 @@ pub struct PortConnection {
     pub persistent: Option<bool>,
     /// Current state of the connection
     ///
-    /// Only reported as part of the system information. It is ignored when given.
+    /// Only reported as part of the system information. It is not part of the configuration, so
+    /// the profile schema rejects it.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub state: Option<ConnectionState>,
 }
