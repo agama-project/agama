@@ -23,9 +23,12 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
-import { _ } from "~/i18n";
 import type { Storage as System } from "~/model/system";
-import { recoverableText, ShrinkRefusal } from "~/components/storage/device-sheet/partition-space";
+import {
+  recoverableText,
+  shrinkReason,
+  ShrinkRefusal,
+} from "~/components/storage/device-sheet/partition-space";
 
 const GiB = 1024 ** 3;
 
@@ -49,16 +52,32 @@ describe("recoverableText", () => {
   });
 });
 
+describe("shrinkReason", () => {
+  it("gives only the first reason, however many there are", () => {
+    expect(
+      shrinkReason(
+        partition({
+          supported: false,
+          reasons: ["The file system is full.", "A password is required."],
+        }),
+      ),
+    ).toBe("The file system is full.");
+  });
+
+  it("gives nothing where the machine gives no reason", () => {
+    expect(shrinkReason(partition({ supported: false, reasons: [] }))).toBeUndefined();
+  });
+});
+
 describe("ShrinkRefusal", () => {
-  it("reads a single reason as one sentence after what leads it", () => {
+  it("reads a single reason as one sentence", () => {
     plainRender(
       <ShrinkRefusal
         partition={partition({ supported: false, reasons: ["The file system is full."] })}
-        lead={_("Cannot be shrunk:")}
       />,
     );
 
-    screen.getByText("Cannot be shrunk: The file system is full.");
+    screen.getByText("The file system is full.");
     expect(screen.queryByRole("list")).toBeNull();
   });
 
@@ -69,11 +88,9 @@ describe("ShrinkRefusal", () => {
           supported: false,
           reasons: ["The file system is full.", "A password is required."],
         })}
-        lead={_("Cannot be shrunk:")}
       />,
     );
 
-    screen.getByText("Cannot be shrunk:");
     expect(screen.getAllByRole("listitem").map((item) => item.textContent)).toEqual([
       "The file system is full.",
       "A password is required.",
