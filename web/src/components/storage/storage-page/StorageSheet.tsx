@@ -28,6 +28,7 @@ import DeviceDetail from "~/components/storage/device-sheet/DeviceDetail";
 import DriveMenu from "~/components/storage/entries-table/DriveMenu";
 import VolumeGroupMenu from "~/components/storage/entries-table/VolumeGroupMenu";
 import { useEntry } from "~/components/storage/device-sheet/entry";
+import { driveDescription } from "~/components/storage/utils/device";
 import { useSheet, SHEET_ID } from "~/components/storage/shared/use-sheet";
 import { useMediaQuery } from "~/hooks/use-media-query";
 import { EmptyState, EmptyStateBody } from "@patternfly/react-core";
@@ -55,17 +56,14 @@ function usePlacement(): SheetPlacement {
 }
 
 /**
- * Where the system keeps the entry, under the name it answers to.
+ * What the entry is, under its name, as its row says it under the name.
  *
- * For a disk that is the one identifier a reboot renaming sda to sdb does not
- * change, which is the reason to print it at all. For a volume group it is the
- * name the group answers to once it exists, worked out rather than read: a
- * group being defined is not on the machine yet, and the name it will take
- * follows from what it is called.
+ * A volume group has no hardware to describe, so its row says nothing there,
+ * and neither does the sheet.
  */
-function systemPath(entry: Entry): string | undefined {
-  if (entry.isVolumeGroup) return entry.device?.name || `/dev/${entry.name}`;
-  return entry.device?.block?.udevPaths?.[0];
+function entryDescription(entry: Entry): string | undefined {
+  if (entry.isVolumeGroup || !entry.device) return undefined;
+  return driveDescription(entry.device);
 }
 
 export type StorageSheetProps = {
@@ -111,7 +109,7 @@ export default function StorageSheet({ page }: StorageSheetProps): React.ReactNo
         isResult
           ? // TRANSLATORS: says what the panel holding the whole picture is for.
             _("What the installer will do, and what the machine will look like")
-          : entry && systemPath(entry)
+          : entry && entryDescription(entry)
       }
       /* The same acts the entry's row offers, so a reader meets one menu per
          entry wherever they open it from. */

@@ -131,4 +131,18 @@ const filesystemLabels = (device: System.Device): string[] => {
   return label ? [label] : [];
 };
 
-export { typeDescription, contentDescription, filesystemLabels };
+/**
+ * What a drive is, in a few words: its vendor model where the machine reports
+ * one, its kind of device otherwise.
+ *
+ * The model names the disk the way its owner knows it, so it is preferred over
+ * the generic kind.
+ */
+const driveDescription = (device: System.Device): string | undefined => {
+  const model = device.drive?.model;
+  if (model && model.length) return model;
+
+  return typeDescription(device);
+};
+
+export { typeDescription, contentDescription, driveDescription, filesystemLabels };

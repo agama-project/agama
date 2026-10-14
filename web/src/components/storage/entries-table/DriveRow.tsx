@@ -27,11 +27,10 @@ import DriveMenu from "~/components/storage/entries-table/DriveMenu";
 import * as driveUtils from "~/components/storage/utils/drive";
 import { NAMES_PER_LINE } from "~/components/storage/shared/naming";
 import { deviceSize, formattedPath } from "~/components/storage/utils";
-import { typeDescription } from "~/components/storage/utils/device";
+import { driveDescription } from "~/components/storage/utils/device";
 import { useConfigModel } from "~/hooks/model/storage/config-model";
 import { useDevice } from "~/hooks/model/system/storage";
 import TruncatedDeviceName from "~/components/storage/TruncatedDeviceName";
-import DeviceContent from "~/components/storage/DeviceContent";
 import configModel from "~/model/storage/config-model";
 import { _, n_, formatList, TranslatedString } from "~/i18n";
 import type { ConfigModel, Partitionable } from "~/model/storage/config-model";
@@ -104,13 +103,6 @@ export type DriveRowProps = {
   subject: SheetEntry;
 };
 
-const driveDescription = (device) => {
-  const model = device.drive?.model;
-  if (model && model.length) return model;
-
-  return typeDescription(device);
-};
-
 /**
  * A disk or a software RAID, as a row of the list.
  *
@@ -118,23 +110,19 @@ const driveDescription = (device) => {
  * Both read the machine, and a single row deciding what it is looking at would
  * call a different number of hooks depending on the answer.
  *
- * How big it is, what kind of thing it is and how it is partitioned are read in
- * one phrase beside the name. A configuration can name a device the machine
- * does not have, a profile written elsewhere or a disk since unplugged, so
- * every part of that phrase is left out where there is nothing to say.
+ * How big it is is read beside the name, and what it is under it: the vendor
+ * model where the machine reports one, and the kind of device where it does
+ * not. A configuration can name a device the machine does not have, a
+ * profile written elsewhere or a disk since unplugged, so both are left out
+ * where there is nothing to say.
  */
 export default function DriveRow({ name, subject }: DriveRowProps): React.ReactNode {
   const config = useConfigModel();
   const device = useDevice(name);
 
   const entry = configModel.partitionable.findByName(config, name);
-  const description = [];
-  description.push(
-    [device?.block?.size && deviceSize(device.block.size), device && driveDescription(device)]
-      .filter(Boolean)
-      .join("  ·  "),
-  );
-  description.push(<DeviceContent device={device} />);
+  const size = device?.block?.size ? deviceSize(device.block.size) : undefined;
+  const description = device && driveDescription(device);
 
   const groups = entry ? configModel.partitionable.filterVolumeGroups(config, entry) : [];
   const boots = configModel.boot.hasDevice(config, name);
@@ -150,7 +138,8 @@ export default function DriveRow({ name, subject }: DriveRowProps): React.ReactN
 
   return (
     <EntryRow
-      name={<TruncatedDeviceName device={device} maxLength={13} />}
+      name={<TruncatedDeviceName device={device || { name }} maxLength={13} />}
+      size={size}
       description={description}
       purpose={purpose}
       actions={space}

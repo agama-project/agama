@@ -445,8 +445,8 @@ nav.agm-breadcrumb > ol > li > a {
   padding-block-start: 0;
 }
 
-// What the entry is, read on the name's own line: a fact about the name rather
-// than a column of its own.
+// What the entry is, read under the name: a fact about the name rather than a
+// column of its own.
 .agm-entries-table__facts {
   font-size: var(--pf-t--global--font--size--body--sm);
   color: var(--pf-t--global--text--color--subtle);
