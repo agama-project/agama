@@ -91,6 +91,26 @@ describe("SpaceDecision", () => {
     });
   });
 
+  describe("when a partition is reused", () => {
+    beforeEach(() => {
+      mockDeviceConfig.mockReturnValue({
+        ...drive("custom"),
+        partitions: [{ name: "/dev/vdd1", mountPath: "/home" }],
+      });
+    });
+
+    it("still offers every answer, which reaches only what is not reused", async () => {
+      const { user } = installerRender(<SpaceDecision collection="drives" index={0} />);
+
+      within(options())
+        .getAllByRole("button")
+        .forEach((button) => expect(button).toBeEnabled());
+
+      await user.click(screen.getByRole("button", { name: "Deleting disk content" }));
+      expect(mockSetSpacePolicy).toHaveBeenCalledWith("drives", 0, { type: "delete" });
+    });
+  });
+
   describe("when custom is chosen", () => {
     it("writes it, and opens where the rest of the question is answered", async () => {
       const { user } = installerRender(
