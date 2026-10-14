@@ -129,45 +129,44 @@ function recoverableText(partition: System.Device): TranslatedString | undefined
 }
 
 /**
+ * The first reason the machine gives for not shrinking a partition, if any.
+ *
+ * One reason only, whatever the machine gives, for where there is room for a
+ * single line. The reasons come translated and are shown as they come.
+ */
+function shrinkReason(partition: System.Device): string | undefined {
+  return partition.block?.shrinking?.reasons?.[0];
+}
+
+/**
  * Why a partition cannot be shrunk, in the machine's own words.
  *
  * Every reason the machine gives, since any one of them is enough to stop it
  * and a reader fixing one would otherwise meet the next only after trying. One
  * reason reads as a sentence; several as a list, so each is read as one. None
- * of it can be opened or closed: it sits in a table and a menu, where every
- * control added is one more stop for a keyboard and one more thing to find.
+ * of it can be opened or closed: it sits in a menu, where every control added
+ * is one more stop for a keyboard and one more thing to find.
  *
  * The reasons come translated and are shown as they come. Where the machine
  * gives none, a sentence of our own says so rather than leaving the reader
  * with no answer.
  */
-function ShrinkRefusal({
-  partition,
-  lead,
-}: {
-  partition: System.Device;
-  /** What goes before the reasons, where something has to. */
-  lead?: TranslatedString;
-}): React.ReactNode {
+function ShrinkRefusal({ partition }: { partition: System.Device }): React.ReactNode {
   const reasons = partition.block?.shrinking?.reasons || [];
 
   if (reasons.length > 1) {
     return (
-      <>
-        {lead}
-        <List isPlain>
-          {reasons.map((reason) => (
-            <ListItem key={reason}>{reason}</ListItem>
-          ))}
-        </List>
-      </>
+      <List isPlain>
+        {reasons.map((reason) => (
+          <ListItem key={reason}>{reason}</ListItem>
+        ))}
+      </List>
     );
   }
 
   // TRANSLATORS: why a partition cannot be allowed to shrink, where the
   // machine says nothing more.
-  const reason = reasons[0] || _("This partition cannot be made smaller.");
-  return lead ? `${lead} ${reason}` : reason;
+  return reasons[0] || _("This partition cannot be made smaller.");
 }
 
 /** The decision a partition carries today, read from its configuration entry. */
@@ -287,6 +286,7 @@ export {
   decisionOf,
   decisionUnder,
   recoverableText,
+  shrinkReason,
   ShrinkRefusal,
   usePartitionSpaceItems,
 };

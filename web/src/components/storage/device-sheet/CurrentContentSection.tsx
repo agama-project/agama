@@ -38,7 +38,7 @@ import {
   decisionOf,
   decisionUnder,
   recoverableText,
-  ShrinkRefusal,
+  shrinkReason,
   usePartitionSpaceItems,
 } from "~/components/storage/device-sheet/partition-space";
 import { outcomeOf } from "~/components/storage/shared/consequences";
@@ -253,7 +253,9 @@ function statusFor(
     case "resizeIfNeeded":
       return canShrink
         ? { text: _("shrink if needed"), destroys: false }
-        : { text: _("keep"), destroys: false };
+        : // TRANSLATORS: what is to become of a partition already on the disk:
+          // it was allowed to be made smaller, but that is not possible.
+          { text: _("cannot be shrunk"), destroys: false };
     case "delete":
       // TRANSLATORS: what is to become of a partition already on the disk: it
       // is removed, and everything on it lost.
@@ -316,6 +318,10 @@ function PartitionRow({
     // TRANSLATORS: said of a partition whose content is not recognized.
     _("unrecognized");
   const status = statusFor(decision, reusedAs, formats, canShrink);
+  /* How far it can go, or the first reason it cannot go at all. The status
+     already says it cannot be shrunk, so with no reason given there is nothing
+     to add. */
+  const note = canShrink ? recoverableText(part) : shrinkReason(part);
 
   /* A rule through what the row describes, where the reader has allowed it to
      go. The name, what is on it and how big it is are facts about a partition
@@ -349,19 +355,8 @@ function PartitionRow({
         {/* Only where shrinking is allowed, which is where how far it can go
             matters. A kept partition says nothing more; its menu does, where
             shrinking it would be decided. */}
-        {decision === "resizeIfNeeded" && (!canShrink || recoverableText(part)) && (
-          <div className="agm-row-note agm-row-note--prose">
-            {canShrink ? (
-              recoverableText(part)
-            ) : (
-              <ShrinkRefusal
-                partition={part}
-                // TRANSLATORS: opens the reasons a partition allowed to shrink
-                // cannot be. They follow it, as given by the system.
-                lead={_("Cannot be shrunk:")}
-              />
-            )}
-          </div>
+        {decision === "resizeIfNeeded" && note && (
+          <div className="agm-row-note agm-row-note--prose">{note}</div>
         )}
       </Td>
       <Td>
