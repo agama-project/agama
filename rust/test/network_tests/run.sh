@@ -272,7 +272,7 @@ if [[ " ${scenarios[*]}" == *" $DIR/new/"* ]]; then
     >"$TMP/schema-check.json"
   if ! output=$(cli config validate - <"$TMP/schema-check.json" 2>&1); then
     echo "${RED}The Agama server rejects portConnections, so the scenarios of new/ would fail.${RESET_COLOR}" >&2
-    echo "Is its profile schema up to date? Copy rust/share/profile.schema.json to /usr/share/agama/schema/." >&2
+    echo "Is its profile schema up to date? Copy rust/share/profile.schema.json and rust/share/network.schema.json to /usr/share/agama/schema/." >&2
     echo "$output" >&2
     exit 2
   fi

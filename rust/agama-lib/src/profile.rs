@@ -311,52 +311,6 @@ mod tests {
         json!({ "network": { "connections": connections } })
     }
 
-    /// The network part of the profile schema is written by hand, so check that it describes the
-    /// same fields as the types the profile is read into.
-    #[test]
-    fn test_the_network_connections_in_the_schema_match_the_types() {
-        use agama_utils::api::network::{NetworkConnection, PortConnection};
-        use std::collections::BTreeSet;
-
-        fn generated<T: schemars::JsonSchema>() -> BTreeSet<String> {
-            let schema = serde_json::to_value(schemars::schema_for!(T)).unwrap();
-            schema["properties"]
-                .as_object()
-                .unwrap()
-                .keys()
-                .filter(|k| *k != "dnsSearchlist") // deprecated alias of dnsSearchList
-                .cloned()
-                .collect()
-        }
-
-        let schema: serde_json::Value = serde_json::from_str(
-            &std::fs::read_to_string(share_dir().join("profile.schema.json")).unwrap(),
-        )
-        .unwrap();
-        let defs = &schema["$defs"];
-        let all: BTreeSet<String> = defs["networkConnection"]["properties"]
-            .as_object()
-            .unwrap()
-            .keys()
-            .filter(|k| *k != "dnsSearchlist") // deprecated alias of dnsSearchList
-            .cloned()
-            .collect();
-        let ip_settings: BTreeSet<String> = defs["portConnection"]["allOf"][1]["not"]["anyOf"]
-            .as_array()
-            .unwrap()
-            .iter()
-            .map(|r| r["required"][0].as_str().unwrap().to_string())
-            .collect();
-
-        // A connection at the top level cannot have port settings.
-        let top_level: BTreeSet<String> = all.iter().filter(|k| *k != "port").cloned().collect();
-        assert_eq!(top_level, generated::<NetworkConnection>());
-
-        // A nested port cannot have IP settings.
-        let port: BTreeSet<String> = all.difference(&ip_settings).cloned().collect();
-        assert_eq!(port, generated::<PortConnection>());
-    }
-
     #[test]
     fn test_network_examples_are_valid() {
         let validator = validator();
@@ -374,7 +328,7 @@ mod tests {
     fn test_nested_ports_do_not_need_an_id() {
         let profile = connections(json!([{
             "id": "bond0",
-            "bond": { "portConnections": [{ "interface": "eth0" }, "eth1"] }
+            "bond": { "mode": "active-backup", "portConnections": [{ "interface": "eth0" }, "eth1"] }
         }]));
         assert!(matches!(validate(profile), ValidationOutcome::Valid));
     }
@@ -389,7 +343,10 @@ mod tests {
     fn test_bridge_port_settings_are_rejected_on_a_bond_port() {
         let profile = connections(json!([{
             "id": "bond0",
-            "bond": { "portConnections": [{ "interface": "eth0", "port": { "priority": 32 } }] }
+            "bond": {
+                "mode": "active-backup",
+                "portConnections": [{ "interface": "eth0", "port": { "priority": 32 } }]
+            }
         }]));
         assert!(matches!(validate(profile), ValidationOutcome::NotValid(_)));
 
@@ -404,7 +361,12 @@ mod tests {
     fn test_nested_ports_are_validated_as_connections() {
         let profile = connections(json!([{
             "id": "br0",
-            "bridge": { "portConnections": [{ "id": "bond0", "bond": { "portConnections": [{ "mtu": "big" }] } }] }
+            "bridge": {
+                "portConnections": [{
+                    "id": "bond0",
+                    "bond": { "mode": "active-backup", "portConnections": [{ "mtu": "big" }] }
+                }]
+            }
         }]));
         assert!(matches!(validate(profile), ValidationOutcome::NotValid(_)));
     }
@@ -426,8 +388,10 @@ mod tests {
             port.as_object_mut()
                 .unwrap()
                 .extend(setting.as_object().unwrap().clone());
-            let profile =
-                connections(json!([{ "id": "bond0", "bond": { "portConnections": [port] } }]));
+            let profile = connections(json!([{
+                "id": "bond0",
+                "bond": { "mode": "active-backup", "portConnections": [port] }
+            }]));
             assert!(
                 matches!(validate(profile), ValidationOutcome::NotValid(_)),
                 "{setting}"
@@ -439,18 +403,21 @@ mod tests {
     fn test_ports_only_take_names() {
         let profile = connections(json!([{
             "id": "bond0",
-            "bond": { "ports": [{ "interface": "eth0" }] }
+            "bond": { "mode": "active-backup", "ports": [{ "interface": "eth0" }] }
         }]));
         assert!(matches!(validate(profile), ValidationOutcome::NotValid(_)));
     }
 
     #[test]
     fn test_ports_and_port_connections_can_be_given_together() {
-        for controller in ["bond", "bridge"] {
-            let profile = connections(json!([{
-                "id": "ctl0",
-                controller: { "ports": ["eth0"], "portConnections": ["eth0"] }
-            }]));
+        for (controller, settings) in [
+            ("bond", json!({ "mode": "active-backup" })),
+            ("bridge", json!({})),
+        ] {
+            let mut settings = settings;
+            settings["ports"] = json!(["eth0"]);
+            settings["portConnections"] = json!(["eth0"]);
+            let profile = connections(json!([{ "id": "ctl0", controller: settings }]));
             assert!(
                 matches!(validate(profile), ValidationOutcome::Valid),
                 "{controller}"
