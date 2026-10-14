@@ -24,7 +24,7 @@ import React from "react";
 import { Flex } from "@patternfly/react-core";
 import EntriesTable from "~/components/storage/entries-table/EntriesTable";
 import TopLine from "~/components/storage/storage-page/TopLine";
-import BottomLine from "~/components/storage/storage-page/BottomLine";
+import GlobalActions from "~/components/storage/storage-page/GlobalActions";
 import Result from "~/components/storage/storage-page/Result";
 import StorageSheet from "~/components/storage/storage-page/StorageSheet";
 import { useConfigModel } from "~/hooks/model/storage/config-model";
@@ -61,7 +61,7 @@ export default function StoragePageContent(): React.ReactNode {
           gap={{ default: "gapMd" }}
         >
           <EntriesTable />
-          <BottomLine />
+          <GlobalActions />
         </Flex>
       )}
     </Flex>
