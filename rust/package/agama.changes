@@ -11,6 +11,9 @@ Thu Oct  8 10:40:48 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
 - Keep the settings not modelled by the API when updating a
   connection.
 - Fix reading the path cost of bridge ports from NetworkManager.
+- Accept "link-local" as the IP method, as documented, which also
+  fixes the AutoYaST "autoip" boot protocol. "linkLocal" is still
+  accepted.
 
 -------------------------------------------------------------------
 Tue Oct  6 15:51:28 UTC 2026 - José Iván López González <jlopez@suse.com>

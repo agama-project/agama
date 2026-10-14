@@ -863,6 +863,21 @@ mod tests {
     }
 
     #[test]
+    fn test_network_connection_link_local_method() {
+        // "linkLocal" was the name the API used, so it is still accepted.
+        for name in ["link-local", "linkLocal"] {
+            let json = format!(r#"{{ "id": "eth0", "method4": "{name}", "method6": "{name}" }}"#);
+            let conn: NetworkConnection = serde_json::from_str(&json).unwrap();
+            assert_eq!(conn.method4, Some(Ipv4Method::LinkLocal));
+            assert_eq!(conn.method6, Some(Ipv6Method::LinkLocal));
+
+            let serialized = serde_json::to_value(&conn).unwrap();
+            assert_eq!(serialized["method4"], "link-local");
+            assert_eq!(serialized["method6"], "link-local");
+        }
+    }
+
+    #[test]
     fn test_network_connection_match_settings_round_trip() {
         // Test round-trip: deserialize and serialize match settings
         let json = r#"{

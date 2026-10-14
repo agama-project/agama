@@ -491,6 +491,16 @@ mod tests {
     }
 
     #[test]
+    fn test_link_local_is_the_documented_ip_method() {
+        let profile = connections(json!([{
+            "id": "eth0",
+            "method4": "link-local",
+            "method6": "link-local"
+        }]));
+        assert!(matches!(validate(profile), ValidationOutcome::Valid));
+    }
+
+    #[test]
     fn test_controller_is_not_accepted_anymore() {
         let profile = connections(json!([{ "id": "eth0", "controller": "bond0" }]));
         assert!(matches!(validate(profile), ValidationOutcome::NotValid(_)));
