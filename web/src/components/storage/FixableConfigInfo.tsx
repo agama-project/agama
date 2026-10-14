@@ -21,7 +21,8 @@
  */
 
 import React from "react";
-import { Alert, List, ListItem } from "@patternfly/react-core";
+import { List, ListItem } from "@patternfly/react-core";
+import StorageAlert from "~/components/storage/shared/StorageAlert";
 import { n_ } from "~/i18n";
 import type { Issue } from "~/model/issue";
 
@@ -51,8 +52,8 @@ export default function FixableConfigInfo({ issues }: FixableConfigInfoProps) {
   );
 
   return (
-    <Alert isInline variant="warning" title={title}>
+    <StorageAlert variant="warning" title={title}>
       <Description issues={issues} />
-    </Alert>
+    </StorageAlert>
   );
 }
