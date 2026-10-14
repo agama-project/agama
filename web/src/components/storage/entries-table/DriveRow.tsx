@@ -27,7 +27,7 @@ import DriveMenu from "~/components/storage/entries-table/DriveMenu";
 import * as driveUtils from "~/components/storage/utils/drive";
 import { NAMES_PER_LINE } from "~/components/storage/shared/naming";
 import { deviceSize, formattedPath } from "~/components/storage/utils";
-import { typeDescription } from "~/components/storage/utils/device";
+import { driveDescription } from "~/components/storage/utils/device";
 import { useConfigModel } from "~/hooks/model/storage/config-model";
 import { useDevice } from "~/hooks/model/system/storage";
 import TruncatedDeviceName from "~/components/storage/TruncatedDeviceName";
@@ -96,15 +96,6 @@ function purposeOf(
   return lines;
 }
 
-/* The model names the disk the way its owner knows it, so it is preferred over
-   the generic kind wherever the machine reports one. */
-const driveDescription = (device) => {
-  const model = device.drive?.model;
-  if (model && model.length) return model;
-
-  return typeDescription(device);
-};
-
 export type DriveRowProps = {
   /** The device the configuration names, as the model spells it. */
   name: string;
@@ -147,7 +138,7 @@ export default function DriveRow({ name, subject }: DriveRowProps): React.ReactN
 
   return (
     <EntryRow
-      name={<TruncatedDeviceName device={device} maxLength={13} />}
+      name={<TruncatedDeviceName device={device || { name }} maxLength={13} />}
       size={size}
       description={description}
       purpose={purpose}

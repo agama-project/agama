@@ -24,6 +24,7 @@ import React from "react";
 import { sprintf } from "sprintf-js";
 import EntryRow from "~/components/storage/entries-table/EntryRow";
 import VolumeGroupMenu from "~/components/storage/entries-table/VolumeGroupMenu";
+import TruncatedDeviceName from "~/components/storage/TruncatedDeviceName";
 import { NAMES_PER_LINE } from "~/components/storage/shared/naming";
 import { baseName, formattedPath } from "~/components/storage/utils";
 import { isEmpty } from "radashi";
@@ -137,7 +138,7 @@ export type VolumeGroupRowProps = {
 export default function VolumeGroupRow({ group, subject }: VolumeGroupRowProps): React.ReactNode {
   return (
     <EntryRow
-      name={group.vgName}
+      name={<TruncatedDeviceName device={{ name: group.vgName }} maxLength={13} />}
       purpose={contentLines(group)}
       actions={actionsFor(group)}
       menu={<VolumeGroupMenu group={group} subject={subject} />}

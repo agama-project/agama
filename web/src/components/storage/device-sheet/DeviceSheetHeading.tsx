@@ -21,14 +21,9 @@
  */
 
 import React from "react";
-import { Label } from "@patternfly/react-core";
-import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import Text from "~/components/core/Text";
+import TruncatedDeviceName from "~/components/storage/TruncatedDeviceName";
 import { deviceSize } from "~/components/storage/utils";
-import { typeDescription } from "~/components/storage/utils/device";
-import configModel from "~/model/storage/config-model";
-import { useConfigModel } from "~/hooks/model/storage/config-model";
-import { _ } from "~/i18n";
 import type { Entry } from "~/components/storage/device-sheet/entry";
 
 export type DeviceSheetHeadingProps = {
@@ -36,56 +31,25 @@ export type DeviceSheetHeadingProps = {
 };
 
 /**
- * Which entry the sheet is about, said the way its row says it.
+ * Which entry the sheet is about, said exactly the way its row says it.
  *
- * The same name and the same facts the list carries, so the row a reader
- * clicked and the panel that opens are visibly the same thing. What the entry
- * is tied to points away from it rather than describing it, so that reads in
- * the body instead.
+ * The same name, shortened the same way, and the same size beside it, so the
+ * row a reader opened and the panel that opens are visibly the same thing. The
+ * sheet can cover the list, and then this is what keeps the entry at hand.
  *
- * A volume group has no hardware to describe, so it carries only what kind of
- * thing it is. Not its size: that follows from the disks under it, and a group
- * being defined has none yet, so a heading that gave it would say a different
- * number of things about the same group depending on when it was opened.
+ * A volume group carries only its name, as in its row: how big it is follows
+ * from the disks under it, and a group being defined has none yet.
  */
 export default function DeviceSheetHeading({ entry }: DeviceSheetHeadingProps): React.ReactNode {
-  const config = useConfigModel();
   const { device, name, isVolumeGroup } = entry;
-
-  const facts = isVolumeGroup
-    ? [
-        /* Said rather than read off the machine: a group being defined is not
-           there yet, and a heading that is only a name leaves the reader to
-           remember which list they opened it from. */
-        // TRANSLATORS: what kind of entry of the installation this is.
-        _("LVM volume group"),
-      ]
-    : [
-        device?.block?.size && deviceSize(device.block.size),
-        device && typeDescription(device),
-        device?.partitionTable?.type?.toUpperCase(),
-      ].filter(Boolean);
-
-  const boots = !isVolumeGroup && configModel.boot.hasDevice(config, entry.config.name);
+  const size = !isVolumeGroup && device?.block?.size ? deviceSize(device.block.size) : undefined;
 
   return (
     <>
-      <Text isBold>{name}</Text>
-      {facts.length > 0 && <span className="agm-sheet__facts"> {facts.join("  ·  ")}</span>}
-      {/* The same words the list marks it with, so one reader meets one
-          vocabulary whichever they arrive at first. */}
-      {boots && (
-        <>
-          {" "}
-          {/* Smaller than the name it stands beside. A mark set at the same
-              size as the heading reads as a second heading, and this one is a
-              note about the device rather than part of what it is called. */}
-          <Label isCompact className={textStyles.fontSizeXs}>
-            {/* TRANSLATORS: marks the device the machine will start from. */}
-            {_("Boot device")}
-          </Label>
-        </>
-      )}
+      <Text isBold>
+        <TruncatedDeviceName device={{ name }} maxLength={13} />
+      </Text>
+      {size && <> · {size}</>}
     </>
   );
 }

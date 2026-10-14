@@ -25,7 +25,7 @@ import SelectableDataTable from "~/components/core/SelectableDataTable";
 import DeviceContent from "~/components/storage/DeviceContent";
 import TruncatedDeviceName from "~/components/storage/TruncatedDeviceName";
 import { deviceSize } from "~/components/storage/utils";
-import { typeDescription } from "~/components/storage/utils/device";
+import { driveDescription } from "~/components/storage/utils/device";
 import { sortCollection } from "~/utils";
 import { _ } from "~/i18n";
 
@@ -47,13 +47,6 @@ type DrivesTableProps = {
 const size = (device: Storage.Device) => {
   const bytes = device.volumeGroup?.size || device.block?.size || 0;
   return deviceSize(bytes);
-};
-
-const description = (device: Storage.Device) => {
-  const model = device.drive?.model;
-  if (model && model.length) return model;
-
-  return typeDescription(device);
 };
 
 /**
@@ -80,7 +73,7 @@ export default function DrivesTable({
       sortingKey: (d: Storage.Device) => d.block.size,
       pfTdProps: { style: { width: "10ch" } },
     },
-    { name: _("Description"), value: description },
+    { name: _("Description"), value: driveDescription },
     { name: _("Current content"), value: (d: Storage.Device) => <DeviceContent device={d} /> },
   ];
 
