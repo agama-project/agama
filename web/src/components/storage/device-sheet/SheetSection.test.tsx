@@ -36,4 +36,15 @@ describe("SheetSection", () => {
     screen.getByRole("heading", { level: 3, name: "Current content" });
     screen.getByText("Nothing detected.");
   });
+
+  it("can show an icon before its title, out of what screen readers read", () => {
+    const { container } = plainRender(
+      <SheetSection icon="rotate_auto" title="Current content">
+        <p>Nothing detected.</p>
+      </SheetSection>,
+    );
+
+    screen.getByRole("heading", { level: 3, name: "Current content" });
+    expect(container.querySelector("svg")).toHaveAttribute("aria-hidden", "true");
+  });
 });

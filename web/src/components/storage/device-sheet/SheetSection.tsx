@@ -21,12 +21,16 @@
  */
 
 import React from "react";
-import { Flex, Title } from "@patternfly/react-core";
+import { Flex, FlexItem, Title } from "@patternfly/react-core";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
+import Icon from "~/components/layout/Icon";
+import type { IconProps } from "~/components/layout/Icon";
 
 export type SheetSectionProps = {
   /** What the section holds, such as "Current content". */
   title: React.ReactNode;
+  /** A mark shown before the title. Decorative: screen readers skip it. */
+  icon?: IconProps["name"];
   /** What the section shows, such as a table or a sentence. */
   children: React.ReactNode;
 };
@@ -42,9 +46,9 @@ export type SheetSectionProps = {
  *   <CurrentContentSection entry={entry} subject={subject} />
  * </SheetSection>
  */
-export default function SheetSection({ title, children }: SheetSectionProps) {
-  return (
-    <Flex direction={{ default: "column" }} gap={{ default: "gapMd" }} component="section">
+export default function SheetSection({ title, icon, children }: SheetSectionProps) {
+  const body = (
+    <Flex direction={{ default: "column" }} gap={{ default: "gapMd" }} flex={{ default: "flex_1" }}>
       <Title headingLevel="h3" size="md" className={textStyles.textColorBrand}>
         {title}
       </Title>
@@ -55,6 +59,24 @@ export default function SheetSection({ title, children }: SheetSectionProps) {
       >
         {children}
       </Flex>
+    </Flex>
+  );
+
+  if (!icon) return <section>{body}</section>;
+
+  /* The icon in a column of its own, so the content starts where the title
+     does and reads as held by the section. */
+  return (
+    <Flex
+      component="section"
+      gap={{ default: "gapSm" }}
+      flexWrap={{ default: "nowrap" }}
+      alignItems={{ default: "alignItemsBaseline" }}
+    >
+      <FlexItem>
+        <Icon name={icon} isMiddleAligned />
+      </FlexItem>
+      {body}
     </Flex>
   );
 }
