@@ -27,6 +27,17 @@ ENV["Y2DIR"] = [
 
 require "yast"
 require "yast/rspec"
+require "logger"
+
+# Redirect Logger output to /dev/null by default during tests to avoid noisy terminal output
+class Logger
+  alias_method :original_initialize, :initialize
+
+  def initialize(logdev, *args, **kwargs)
+    logdev = "/dev/null" if [STDOUT, STDERR, $stdout, $stderr].include?(logdev)
+    original_initialize(logdev, *args, **kwargs)
+  end
+end
 
 SRC_PATH = File.expand_path("../lib", __dir__)
 FIXTURES_PATH = File.expand_path("fixtures", __dir__)
