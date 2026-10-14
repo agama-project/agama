@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import { List, ListItem, Flex, FlexItem, Stack, StackItem } from "@patternfly/react-core";
+import { List, ListItem, Flex, FlexItem } from "@patternfly/react-core";
 import Link from "~/components/core/Link";
 import Text from "~/components/core/Text";
 import Icon from "~/components/layout/Icon";
@@ -94,39 +94,38 @@ export default function PartitionableContent({
   );
 
   return (
-    <Stack hasGutter>
-      <StackItem>
-        <Text isBold>{_("New partitions to create in the disk")}</Text>
-        {!!planned.length && !users.length && (
-          <PlannedContentSection entry={entry} subject={subject} />
-        )}
-        {!!users.length && (
-          <List>
-            <UsedByStatement entry={entry} />
-            <ListItem>
-              {!!planned.length && (
-                <>
-                  <Text>{_("Partitions from the following list")}</Text>
-                  <PlannedContentSection entry={entry} subject={subject} />
-                </>
-              )}
-              {!planned.length && (
-                <Flex>
-                  <FlexItem>
-                    {users.length || isBoot
-                      ? _("You can define additional partitions.")
-                      : _("You can define partitions.")}
-                  </FlexItem>
-                  <FlexItem>{add("secondary")}</FlexItem>
-                </Flex>
-              )}
-            </ListItem>
-          </List>
-        )}
-      </StackItem>
-      <StackItem>
-        <BootStatement entry={entry} />
-      </StackItem>
-    </Stack>
+    <>
+      {(!!planned.length || !!users.length) && (
+        <div>
+          {!!planned.length && !users.length && (
+            <PlannedContentSection entry={entry} subject={subject} />
+          )}
+          {!!users.length && (
+            <List>
+              <UsedByStatement entry={entry} />
+              <ListItem>
+                {!!planned.length && (
+                  <>
+                    <Text>{_("Partitions from the following list")}</Text>
+                    <PlannedContentSection entry={entry} subject={subject} />
+                  </>
+                )}
+                {!planned.length && (
+                  <Flex>
+                    <FlexItem>
+                      {users.length || isBoot
+                        ? _("You can define additional partitions.")
+                        : _("You can define partitions.")}
+                    </FlexItem>
+                    <FlexItem>{add("secondary")}</FlexItem>
+                  </Flex>
+                )}
+              </ListItem>
+            </List>
+          )}
+        </div>
+      )}
+      <BootStatement entry={entry} />
+    </>
   );
 }

@@ -21,17 +21,9 @@
  */
 
 import React from "react";
-import { Stack } from "@patternfly/react-core";
-import Text from "~/components/core/Text";
 import PlannedContentSection from "~/components/storage/device-sheet/PlannedContentSection";
-import { _ } from "~/i18n";
 import type { DeviceDetailProps } from "~/components/storage/device-sheet/DeviceDetail";
 
 export default function VolumeGroupContent({ entry, subject }: DeviceDetailProps): React.ReactNode {
-  return (
-    <Stack>
-      <Text isBold>{_("New LVM logical volumes to create in the volume group")}</Text>
-      <PlannedContentSection entry={entry} subject={subject} />
-    </Stack>
-  );
+  return <PlannedContentSection entry={entry} subject={subject} />;
 }

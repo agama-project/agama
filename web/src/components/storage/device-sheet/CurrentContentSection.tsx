@@ -22,7 +22,7 @@
 
 import React from "react";
 import { Table, Tbody, Td, Th, Thead, Tr } from "@patternfly/react-table";
-import { Button, Divider, Flex, FlexItem, Label, Stack, StackItem } from "@patternfly/react-core";
+import { Button, Divider, Flex, FlexItem, Label } from "@patternfly/react-core";
 import alignmentStyles from "@patternfly/react-styles/css/utilities/Alignment/alignment";
 import { sprintf } from "sprintf-js";
 import Text from "~/components/core/Text";
@@ -473,33 +473,21 @@ export default function CurrentContentSection({
   const tableId = React.useId();
 
   return (
-    <Stack>
+    <Flex direction={{ default: "column" }} gap={{ default: "gapSm" }}>
       {/* Only where there is something for the rule to be about. A group's
           logical volumes are governed the same way its disks' partitions are,
           so the decision is offered there too. */}
       {rows.some((row) => !isFreeSpace(row)) && (
         <>
-          <StackItem>
-            <Flex>
-              <FlexItem>
-                <Text isBold>{_("Previous disk content")}</Text>
-              </FlexItem>
-              <FlexItem align={{ default: "alignRight" }}>
-                <SpaceDecision
-                  collection={subject.collection}
-                  index={subject.index}
-                  isAssertive
-                  onCustom={() => setExpanded(true)}
-                />
-              </FlexItem>
-            </Flex>
-          </StackItem>
-          <StackItem
-            style={{
-              marginBlockStart: "var(--pf-t--global--spacer--sm)",
-              paddingLeft: "var(--pf-t--global--spacer--md)",
-            }}
-          >
+          <FlexItem>
+            <SpaceDecision
+              collection={subject.collection}
+              index={subject.index}
+              isAssertive
+              onCustom={() => setExpanded(true)}
+            />
+          </FlexItem>
+          <FlexItem>
             {isCustom ? (
               // TRANSLATORS: said under the "Custom" answer, where what happens to
               // each partition is decided one at a time in the list below.
@@ -523,10 +511,10 @@ export default function CurrentContentSection({
                 </Button>
               </>
             )}
-          </StackItem>
+          </FlexItem>
         </>
       )}
-      <StackItem>
+      <FlexItem>
         {/* Put away rather than taken down, so the link above has something to
             name as the thing it opens, and so a plain element carries the
             attribute that hides it: the browser's own rule for it loses to any
@@ -612,7 +600,7 @@ export default function CurrentContentSection({
             </Tbody>
           </Table>
         </div>
-      </StackItem>
-    </Stack>
+      </FlexItem>
+    </Flex>
   );
 }

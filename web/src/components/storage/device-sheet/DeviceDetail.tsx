@@ -21,7 +21,8 @@
  */
 
 import React from "react";
-import { Stack, StackItem } from "@patternfly/react-core";
+import { Flex } from "@patternfly/react-core";
+import SheetSection from "~/components/storage/device-sheet/SheetSection";
 import UsedPartitionableCurrent from "~/components/storage/device-sheet/UsedPartitionableCurrent";
 import UnusedPartitionableCurrent from "~/components/storage/device-sheet/UnusedPartitionableCurrent";
 import VolumeGroupCurrent from "~/components/storage/device-sheet/VolumeGroupCurrent";
@@ -31,7 +32,8 @@ import PartitionableMountContent from "~/components/storage/device-sheet/Partiti
 import VolumeGroupContent from "~/components/storage/device-sheet/VolumeGroupContent";
 import configModel from "~/model/storage/config-model";
 import { useConfigModel } from "~/hooks/model/storage/config-model";
-import type { Partitionable } from "~/model/storage/config-model";
+import { _ } from "~/i18n";
+import type { ConfigModel, Partitionable } from "~/model/storage/config-model";
 import type { Entry } from "~/components/storage/device-sheet/entry";
 import type { SheetEntry } from "~/components/storage/shared/use-sheet";
 
@@ -50,16 +52,34 @@ export default function DeviceDetail({ entry, subject }: DeviceDetailProps): Rea
   const isUsedPartitionable = part && configModel.partitionable.isUsed(config, part.name);
   const isMountedPartitionable = part && !!part.mountPath;
 
+  /* A volume group the system does not have yet has nothing on it today: what
+     it starts from is the disks it takes its room from. */
+  const isNewVolumeGroup = entry.isVolumeGroup && !(entry.config as ConfigModel.VolumeGroup).name;
+
   return (
-    <Stack hasGutter>
-      {!entry.isVolumeGroup && isUsedPartitionable && (
-        <UsedPartitionableCurrent entry={entry} subject={subject} />
-      )}
-      {!entry.isVolumeGroup && !isUsedPartitionable && (
-        <UnusedPartitionableCurrent entry={entry} subject={subject} />
-      )}
-      {entry.isVolumeGroup && <VolumeGroupCurrent entry={entry} subject={subject} />}
-      <StackItem>
+    <Flex direction={{ default: "column" }} gap={{ default: "gapLg" }}>
+      <SheetSection
+        title={
+          isNewVolumeGroup
+            ? // TRANSLATORS: heading of the part of a volume group's panel
+              // listing the disks it takes its room from.
+              _("Physical volumes")
+            : // TRANSLATORS: heading of the part of a device's panel saying
+              // what is on the device now, before installing.
+              _("Current content")
+        }
+      >
+        {!entry.isVolumeGroup && isUsedPartitionable && (
+          <UsedPartitionableCurrent entry={entry} subject={subject} />
+        )}
+        {!entry.isVolumeGroup && !isUsedPartitionable && (
+          <UnusedPartitionableCurrent entry={entry} subject={subject} />
+        )}
+        {entry.isVolumeGroup && <VolumeGroupCurrent entry={entry} subject={subject} />}
+      </SheetSection>
+      {/* TRANSLATORS: heading of the part of a device's panel saying what the
+          installation puts on the device. */}
+      <SheetSection title={_("New content")}>
         {!entry.isVolumeGroup && isMountedPartitionable && (
           <PartitionableMountContent entry={entry} subject={subject} />
         )}
@@ -70,7 +90,7 @@ export default function DeviceDetail({ entry, subject }: DeviceDetailProps): Rea
           <PartitionableNoContent entry={entry} subject={subject} />
         )}
         {entry.isVolumeGroup && <VolumeGroupContent entry={entry} subject={subject} />}
-      </StackItem>
-    </Stack>
+      </SheetSection>
+    </Flex>
   );
 }
