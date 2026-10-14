@@ -74,24 +74,37 @@ pub struct NetworkSettings {
 #[serde(rename_all = "camelCase")]
 #[merge(strategy = merge::option::overwrite_none)]
 pub struct StateSettings {
+    /// Network connectivity state
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[schemars(extend("readOnly" = true))]
     pub connectivity: Option<ConnectivityState>,
+    /// Whether the wireless should be enabled
     #[serde(skip_serializing_if = "Option::is_none")]
     pub wireless_enabled: Option<bool>,
+    /// Whether the network should be enabled
     #[serde(skip_serializing_if = "Option::is_none")]
     pub networking_enabled: Option<bool>,
+    /// Whether the network configuration should be copied to the target system
     #[serde(skip_serializing_if = "Option::is_none")]
     pub copy_network: Option<bool>,
 }
 
+/// Match settings
+///
+/// Identifies the network interface to apply the connection settings to.
 #[derive(Clone, Debug, Default, Serialize, Deserialize, JsonSchema, PartialEq)]
+#[schemars(deny_unknown_fields)]
 pub struct MatchSettings {
+    /// A list of driver names to match
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub driver: Vec<String>,
+    /// A list of paths to match against the ID_PATH udev property of devices
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub path: Vec<String>,
+    /// A list of kernel command line arguments to match
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub kernel: Vec<String>,
+    /// A list of interface names to match
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub interface: Vec<String>,
 }
@@ -108,18 +121,24 @@ impl MatchSettings {
 /// Wireless configuration
 #[derive(Clone, Debug, Default, Serialize, Deserialize, JsonSchema, PartialEq)]
 #[serde(rename_all = "camelCase")]
+#[schemars(deny_unknown_fields)]
 pub struct WirelessSettings {
     /// Password of the wireless network
     #[serde(skip_serializing_if = "Option::is_none")]
     pub password: Option<String>,
     /// Security method/key management
+    #[schemars(extend("enum" = [
+        "none", "owe", "ieee8021x", "wpa-psk", "sae", "wpa-eap", "wpa-eap-suite-b-192"
+    ]))]
     pub security: String,
     /// SSID of the wireless network
     pub ssid: String,
     /// Wireless network mode
+    #[schemars(extend("enum" = ["infrastructure", "adhoc", "mesh", "ap"]))]
     pub mode: String,
     /// Frequency band of the wireless network
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[schemars(extend("enum" = ["a", "bg"]))]
     pub band: Option<String>,
     /// Wireless channel of the wireless network
     #[serde(skip_serializing_if = "is_zero", default)]
@@ -132,22 +151,36 @@ pub struct WirelessSettings {
     pub hidden: bool,
     /// A list of group/broadcast encryption algorithms
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
+    #[schemars(extend("items" = { "type": "string", "enum": ["wep40", "wep104", "tkip", "ccmp"] }))]
     pub group_algorithms: Vec<String>,
     /// A list of pairwise encryption algorithms
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
+    #[schemars(extend("items" = { "type": "string", "enum": ["tkip", "ccmp"] }))]
     pub pairwise_algorithms: Vec<String>,
     /// A list of allowed WPA protocol versions
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
+    #[schemars(extend("items" = { "type": "string", "enum": ["wpa", "rsn"] }))]
     pub wpa_protocol_versions: Vec<String>,
     /// Indicates whether Protected Management Frames must be enabled for the connection
     #[serde(skip_serializing_if = "is_zero", default)]
     pub pmf: i32,
 }
 
+/// Bonding configuration
+///
+/// The ports are given in `portConnections` or, in the deprecated form, in `ports`. When both are
+/// given, `ports` is ignored.
 #[derive(Clone, Debug, Serialize, Deserialize, JsonSchema, PartialEq)]
 #[serde(rename_all = "camelCase")]
+#[schemars(deny_unknown_fields, transform = forbid_bond_port_settings)]
 pub struct BondSettings {
+    /// Bonding mode
+    #[schemars(extend("enum" = [
+        "balance-rr", "active-backup", "balance-xor", "broadcast", "802.3ad", "balance-tlb",
+        "balance-alb"
+    ]))]
     pub mode: String,
+    /// Bonding options, separated by spaces (e.g., "miimon=100 primary=eth0")
     #[serde(skip_serializing_if = "Option::is_none")]
     pub options: Option<String>,
     /// Interface names or IDs of the ports of the controller.
@@ -175,17 +208,27 @@ impl Default for BondSettings {
     }
 }
 
+/// Bridge configuration
+///
+/// The ports are given in `portConnections` or, in the deprecated form, in `ports`. When both are
+/// given, `ports` is ignored.
 #[derive(Clone, Debug, Serialize, Deserialize, JsonSchema, PartialEq, Default)]
 #[serde(rename_all = "camelCase")]
+#[schemars(deny_unknown_fields)]
 pub struct BridgeSettings {
+    /// Whether the Spanning Tree Protocol is enabled or not
     #[serde(skip_serializing_if = "Option::is_none")]
     pub stp: Option<bool>,
+    /// Spanning Tree Protocol priority (lower values are 'better')
     #[serde(skip_serializing_if = "Option::is_none")]
     pub priority: Option<u32>,
+    /// Spanning Tree Protocol forward delay, in seconds
     #[serde(skip_serializing_if = "Option::is_none")]
     pub forward_delay: Option<u32>,
+    /// Spanning Tree Protocol hello time, in seconds
     #[serde(skip_serializing_if = "Option::is_none")]
     pub hello_time: Option<u32>,
+    /// Spanning Tree Protocol maximum message age, in seconds
     #[serde(skip_serializing_if = "Option::is_none")]
     pub max_age: Option<u32>,
     /// Interface names or IDs of the ports of the controller.
@@ -266,6 +309,7 @@ impl<'a> From<&'a PortEntry> for PortRef<'a> {
 /// the bond or bridge it belongs to. Which settings apply depends on the kind of controller.
 #[derive(Clone, Debug, Default, Serialize, Deserialize, JsonSchema, PartialEq)]
 #[serde(rename_all = "camelCase")]
+#[schemars(deny_unknown_fields)]
 pub struct PortSettings {
     /// Port priority used by the Spanning Tree Protocol (bridge ports only)
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -348,12 +392,20 @@ impl VlanFlag {
     }
 }
 
+/// VLAN configuration
 #[derive(Clone, Debug, Serialize, Deserialize, JsonSchema, PartialEq)]
+#[schemars(deny_unknown_fields)]
 pub struct VlanSettings {
+    /// Parent interface
     pub parent: String,
+    /// VLAN identifier
+    #[schemars(range(max = 4094))]
     pub id: u32,
+    /// VLAN protocol for encapsulation
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[schemars(extend("enum" = ["802.1Q", "802.1ad"], "default" = "802.1Q"))]
     pub protocol: Option<String>,
+    /// VLAN flags
     #[serde(skip_serializing_if = "Option::is_none")]
     pub flags: Option<Vec<VlanFlag>>,
 }
@@ -364,9 +416,14 @@ pub struct VlanSettings {
 pub struct IEEE8021XSettings {
     /// List of EAP methods used
     #[serde(skip_serializing_if = "Vec::is_empty")]
+    #[schemars(extend("items" = {
+        "type": "string",
+        "enum": ["leap", "md5", "tls", "peap", "ttls", "pwd", "fast"]
+    }))]
     pub eap: Vec<String>,
     /// Phase 2 inner auth method
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[schemars(extend("enum" = ["pap", "chap", "mschap", "mschapv2", "gtc", "otp", "md5", "tls"]))]
     pub phase2_auth: Option<String>,
     /// Identity string, often for example the user's login name
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -397,6 +454,7 @@ pub struct IEEE8021XSettings {
     pub anonymous_identity: Option<String>,
     /// Which PEAP version is used when PEAP is set as the EAP method in the 'eap' property
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[schemars(extend("enum" = ["0", "1"]))]
     pub peap_version: Option<String>,
     /// Force the use of the new PEAP label during key derivation
     #[serde(skip_serializing_if = "std::ops::Not::not", default)]
@@ -411,26 +469,35 @@ pub struct NetworkDevice {
 }
 
 /// Represents the configuration details for a network connection
+///
+/// The ports of a bond or a bridge are nested in its controller, as [PortConnection]s.
 #[derive(Clone, Debug, Default, Serialize, Deserialize, JsonSchema, PartialEq)]
 #[serde(rename_all = "camelCase")]
+#[schemars(deny_unknown_fields, transform = add_dns_searchlist_alias)]
 pub struct NetworkConnection {
     /// Unique identifier for the network connection
     pub id: String,
     /// IPv4 method used for the network connection
+    ///
+    /// Defaults to 'auto'.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub method4: Option<Ipv4Method>,
     /// Gateway IP address for the IPv4 connection
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[schemars(extend("examples" = ["192.168.122.1"]))]
     pub gateway4: Option<IpAddr>,
     /// IPv6 method used for the network connection
+    ///
+    /// Defaults to 'auto'.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub method6: Option<Ipv6Method>,
     /// Gateway IP address for the IPv6 connection
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[schemars(extend("examples" = ["::ffff:c0a8:7a01"]))]
     pub gateway6: Option<IpAddr>,
     /// List of assigned IP addresses
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
-    #[schemars(with = "schemas::IpInetSchema")]
+    #[schemars(with = "Vec<schemas::IpInetSchema>")]
     pub addresses: Vec<IpInet>,
     /// List of DNS server IP addresses
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
@@ -465,6 +532,8 @@ pub struct NetworkConnection {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub bridge: Option<BridgeSettings>,
     /// Custom MAC address of the connection's interface
+    ///
+    /// Can also be 'preserve', 'permanent', 'random' or 'stable'.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub custom_mac_address: Option<String>,
     /// MAC address of the connection's interface
@@ -537,6 +606,8 @@ pub struct PortConnection {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub bridge: Option<BridgeSettings>,
     /// Custom MAC address of the connection's interface
+    ///
+    /// Can also be 'preserve', 'permanent', 'random' or 'stable'.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub custom_mac_address: Option<String>,
     /// MAC address of the connection's interface
@@ -654,6 +725,51 @@ impl From<NetworkConnection> for PortConnection {
             autoconnect,
             persistent,
         }
+    }
+}
+
+/// Forbids the port settings in the schema of the ports of a bond.
+///
+/// Only the ports of a bridge have port settings. The entries of the list are given as they are
+/// (see [PortEntry]), and a rule rejecting any port setting is added to them.
+fn forbid_bond_port_settings(schema: &mut schemars::Schema) {
+    let Some(list) = schema
+        .get_mut("properties")
+        .and_then(|p| p.get_mut("portConnections"))
+        .and_then(|p| p.as_object_mut())
+    else {
+        return;
+    };
+    if let Some(entry) = list.remove("items") {
+        let no_port_settings = serde_json::json!({
+            "description": "A port of a bond has no port settings",
+            "anyOf": [
+                { "type": "string" },
+                {
+                    "type": "object",
+                    "properties": { "port": { "type": "object", "maxProperties": 0 } }
+                }
+            ]
+        });
+        list.insert(
+            "items".to_string(),
+            serde_json::json!({ "allOf": [entry, no_port_settings] }),
+        );
+    }
+}
+
+/// Adds the deprecated `dnsSearchlist` alias to the schema of a connection.
+///
+/// schemars ignores the serde aliases, as JSON Schema has no such concept.
+fn add_dns_searchlist_alias(schema: &mut schemars::Schema) {
+    let Some(properties) = schema.get_mut("properties").and_then(|p| p.as_object_mut()) else {
+        return;
+    };
+    if let Some(mut alias) = properties.get("dnsSearchList").cloned() {
+        if let Some(alias) = alias.as_object_mut() {
+            alias.insert("deprecated".to_string(), serde_json::json!(true));
+        }
+        properties.insert("dnsSearchlist".to_string(), alias);
     }
 }
 

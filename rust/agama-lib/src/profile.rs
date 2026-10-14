@@ -324,7 +324,7 @@ mod tests {
                 .as_object()
                 .unwrap()
                 .keys()
-                .filter(|k| *k != "state") // read-only, reported but never given
+                .filter(|k| *k != "dnsSearchlist") // deprecated alias of dnsSearchList
                 .cloned()
                 .collect()
         }
