@@ -612,6 +612,16 @@ fn ip_config_to_ipv6_dbus<'a>(
         );
     }
 
+    if let Some(addr_gen_mode) = &ip_config.ip6_addr_gen_mode {
+        ipv6_dbus.insert(
+            "addr-gen-mode",
+            match addr_gen_mode {
+                Ip6AddrGenMode::Eui64 => 0.into(),
+                Ip6AddrGenMode::StablePrivacy => 1.into(),
+            },
+        );
+    }
+
     if let Some(gateway) = &ip_config.gateway6 {
         ipv6_dbus.insert("gateway", gateway.to_string().into());
     }
@@ -1194,6 +1204,14 @@ fn ip_config_from_dbus(conn: &OwnedNestedHash) -> Result<IpConfig, NmError> {
     if let Some(ipv6) = conn.get("ipv6") {
         if let Some(method) = get_optional_property(ipv6, "method")? {
             ip_config.method6 = Some(NmMethod(method).try_into()?);
+        }
+
+        if let Some(addr_gen_mode) = get_optional_property::<i32>(ipv6, "addr-gen-mode")? {
+            ip_config.ip6_addr_gen_mode = match addr_gen_mode {
+                0 => Some(Ip6AddrGenMode::Eui64),
+                1 => Some(Ip6AddrGenMode::StablePrivacy),
+                _ => None,
+            }
         }
 
         if let Some(address_data) = ipv6.get("address-data") {
@@ -2904,6 +2922,61 @@ mod test {
             Value::new(false)
         );
         assert_eq!(*ipv6_dbus.get("never-default").unwrap(), Value::new(true));
+
+        Ok(())
+    }
+
+    fn connection_with_addr_gen_mode(
+        addr_gen_mode: Option<i32>,
+    ) -> anyhow::Result<Result<Connection, NmError>> {
+        let uuid = Uuid::new_v4().to_string();
+        let connection_section = HashMap::from([hi("id", "eth0")?, hi("uuid", uuid)?]);
+
+        let mut ipv6_section = HashMap::from([hi("method", "auto")?]);
+        if let Some(addr_gen_mode) = addr_gen_mode {
+            let (key, value) = hi("addr-gen-mode", addr_gen_mode)?;
+            ipv6_section.insert(key, value);
+        }
+
+        let dbus_conn = HashMap::from([
+            ("connection".to_string(), connection_section),
+            ("ipv6".to_string(), ipv6_section),
+            (ETHERNET_KEY.to_string(), build_ethernet_section_from_dbus()),
+        ]);
+
+        Ok(connection_from_dbus(dbus_conn))
+    }
+
+    #[test]
+    fn test_connection_with_ip6_addr_gen_mode() -> anyhow::Result<()> {
+        for (value, mode) in [
+            (0, Ip6AddrGenMode::Eui64),
+            (1, Ip6AddrGenMode::StablePrivacy),
+        ] {
+            let connection = connection_with_addr_gen_mode(Some(value))?.unwrap();
+            assert_eq!(connection.ip_config.ip6_addr_gen_mode, Some(mode));
+
+            let nm_version = semver::Version::new(1, 44, 0);
+            let back_to_dbus = connection_to_dbus(&connection, None, nm_version);
+            let ipv6_dbus = back_to_dbus.get("ipv6").unwrap();
+            assert_eq!(*ipv6_dbus.get("addr-gen-mode").unwrap(), Value::new(value));
+        }
+
+        Ok(())
+    }
+
+    #[test]
+    fn test_connection_with_unknown_or_missing_ip6_addr_gen_mode() -> anyhow::Result<()> {
+        // default-or-eui64 (2), default (3) and an absent property are not mapped
+        for value in [Some(2), Some(3), None] {
+            let connection = connection_with_addr_gen_mode(value)?.unwrap();
+            assert_eq!(connection.ip_config.ip6_addr_gen_mode, None);
+
+            let nm_version = semver::Version::new(1, 44, 0);
+            let back_to_dbus = connection_to_dbus(&connection, None, nm_version);
+            let ipv6_dbus = back_to_dbus.get("ipv6").unwrap();
+            assert!(ipv6_dbus.get("addr-gen-mode").is_none());
+        }
 
         Ok(())
     }
