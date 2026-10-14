@@ -344,11 +344,6 @@ function PartitionRow({
         )}
       </Th>
       <Td>
-        {status && (
-          <span className={status.destroys ? DESTROYS_CLASS : undefined}>{status.text}</span>
-        )}
-      </Td>
-      <Td>
         <Flex gap={{ default: "gapXs" }} alignItems={{ default: "alignItemsCenter" }}>
           <FlexItem>
             {formats ? (
@@ -385,6 +380,11 @@ function PartitionRow({
           <div>{deviceSize(size)}</div>
         ) : (
           size !== undefined && struck(deviceSize(size))
+        )}
+      </Td>
+      <Td>
+        {status && (
+          <span className={status.destroys ? DESTROYS_CLASS : undefined}>{status.text}</span>
         )}
       </Td>
       <Td isActionCell>{menu}</Td>
@@ -549,11 +549,11 @@ export default function CurrentContentSection({
             <Thead>
               <Tr>
                 <Th modifier="nowrap">{_("Partition")}</Th>
-                <Th modifier="nowrap">{_("Action")}</Th>
                 <Th modifier="nowrap">{_("Content")}</Th>
                 <Th className={alignmentStyles.textAlignEnd} modifier="nowrap">
                   {_("Size")}
                 </Th>
+                <Th modifier="nowrap">{_("Action")}</Th>
                 <Th>
                   {/* The column of menus has nothing to head: a heading over it
                       names a column the reader can already see the point of. */}
@@ -573,9 +573,9 @@ export default function CurrentContentSection({
                           {_("Free space")}
                         </Text>
                       </Th>
-                      <Td>{_("Use if needed")}</Td>
                       <Td />
                       <Td className={alignmentStyles.textAlignEnd}>{deviceSize(row.size)}</Td>
+                      <Td>{_("Use if needed")}</Td>
                       <Td />
                     </Tr>
                   );
