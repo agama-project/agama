@@ -24,6 +24,7 @@ import React from "react";
 import { Tab, Tabs, TabTitleText } from "@patternfly/react-core";
 import ProposalActions from "~/components/storage/ProposalActions";
 import ProposalResultTable from "~/components/storage/ProposalResultTable";
+import ProposalHighlightedActions from "~/components/storage/ProposalHighlightedActions";
 import { useSheetTab } from "~/components/storage/shared/use-sheet";
 import { useTablistKeyboard } from "~/hooks/use-tablist-keyboard";
 import { useDevicesManager } from "~/components/storage/shared/use-devices-manager";
@@ -47,6 +48,7 @@ export default function ResultSheet(): React.ReactNode {
 
   return (
     <div {...containerProps}>
+      <ProposalHighlightedActions />
       <Tabs
         activeKey={tab}
         onSelect={(_event, key) => setTab(String(key))}
