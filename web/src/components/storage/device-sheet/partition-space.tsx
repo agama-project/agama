@@ -24,7 +24,8 @@ import React from "react";
 import { sprintf } from "sprintf-js";
 import { MenuButtonItem } from "~/components/core/MenuButton";
 import { deviceSize } from "~/components/storage/utils";
-import { useSetSpacePolicy } from "~/hooks/model/storage/config-model";
+import { useConfigModel, useSetSpacePolicy } from "~/hooks/model/storage/config-model";
+import configModel from "~/model/storage/config-model";
 import { _, TranslatedString } from "~/i18n";
 import type { ConfigModel, DeviceCollection } from "~/model/storage/config-model";
 import type { Storage as System } from "~/model/system";
@@ -98,6 +99,29 @@ function meaning(decision: Decision): TranslatedString {
 }
 
 /**
+ * Whether a partition is one the machine may start from: an EFI system
+ * partition or a BIOS boot one.
+ */
+function isBootPartition(partition: System.Device): boolean {
+  return partition.partition?.efi === true || partition.partition?.id === "bios_boot";
+}
+
+/**
+ * Whether the installer configures booting on the device at the given place,
+ * whether it chose that device itself or the reader did.
+ */
+function isBootDevice(
+  config: ConfigModel.Config | null,
+  collection: DeviceCollection,
+  index: number,
+): boolean {
+  if (!config || !configModel.partitionable.isCollectionName(collection)) return false;
+
+  const name = configModel.partitionable.find(config, collection, index)?.name;
+  return !!name && !!configModel.boot.hasDevice(config, name);
+}
+
+/**
  * How much shrinking one partition can free, as the machine reports it.
  *
  * Nothing where it cannot be shrunk, which is what tells the two cases apart.
@@ -152,8 +176,15 @@ function descriptionOf(
   decision: Decision,
   partition: System.Device,
   refused: boolean,
+  booting: boolean,
 ): React.ReactNode {
   if (refused) return <ShrinkRefusal partition={partition} />;
+
+  if (decision === "keep" && booting && isBootPartition(partition)) {
+    // TRANSLATORS: explains keeping one partition that the new system may
+    // need in order to start.
+    return _("May be used to boot the new system.");
+  }
 
   const recoverable = decision === "resizeIfNeeded" && recoverableBy(partition);
   if (recoverable) {
@@ -215,6 +246,8 @@ function usePartitionSpaceItems({
   index,
 }: PartitionSpaceItemsProps): React.ReactNode[] {
   const setSpacePolicy = useSetSpacePolicy();
+  const config = useConfigModel();
+  const booting = isBootDevice(config, collection, index);
 
   const entryFor = (device: System.Device) => entries.find((entry) => entry.name === device.name);
   const current = decisionOf(entryFor(partition));
@@ -243,7 +276,7 @@ function usePartitionSpaceItems({
         isSelected={decision === current}
         isDanger={decision === "delete"}
         isAriaDisabled={refused}
-        description={descriptionOf(decision, partition, refused)}
+        description={descriptionOf(decision, partition, refused, booting)}
         onClick={refused ? undefined : () => choose(decision)}
       >
         {decisionLabel(decision)}
