@@ -502,6 +502,12 @@ nav.agm-breadcrumb > ol > li > a {
   position: relative;
 }
 
+// PatternFly positions every cell, which would keep the stretched link inside
+// the first one. The row has to be the nearest positioned box.
+tr.agm-entries-table__row > :is(th, td):not(.agm-entries-table__menu) {
+  position: static;
+}
+
 // Reads as the name, not as a link: the row is what says it can be opened.
 .agm-entries-table__opener {
   color: inherit;
@@ -514,18 +520,32 @@ nav.agm-breadcrumb > ol > li > a {
   content: "";
 }
 
-// The row lights up while its link has keyboard focus, with PatternFly's own
-// hover color, so the focus reads on the row and not only on the name.
-.agm-entries-table__row:has(.agm-entries-table__opener:focus-visible) {
-  --pf-v6-c-table__tr--m-clickable--BackgroundColor: var(
-    --pf-v6-c-table__tr--m-clickable--hover--BackgroundColor
-  );
+// The focus ring goes around the row the link covers, not around the name.
+// Inset, like the buttons' ring, so the table edges cannot clip it. The
+// transparent outline is what forced colors mode shows instead.
+.agm-entries-table__opener:focus-visible {
+  outline: none;
 }
 
-// The menu sits above the stretched link.
+.agm-entries-table__opener:focus-visible::after {
+  outline: 2px solid transparent;
+  outline-offset: -2px;
+  box-shadow:
+    inset 0 0 0 3px var(--agm-t--focus--color, var(--agm-t--color--waterhole--50)),
+    inset 0 0 0 4px
+      var(
+        --agm-t--focus--separator--color,
+        var(--pf-t--global--background--color--primary--default)
+      );
+}
+
+// The menu cell sits above the stretched link, so a click anywhere in it,
+// not only on the menu, opens nothing: a dead zone against hitting the wrong
+// one of the row's two controls.
 .agm-entries-table__menu {
   position: relative;
   z-index: 1;
+  cursor: default;
 }
 
 // A second line under a cell, saying what the installer does to what the cell

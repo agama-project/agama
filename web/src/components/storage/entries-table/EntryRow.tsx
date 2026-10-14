@@ -68,6 +68,13 @@ export type EntryRowProps = {
  * the device today is not repeated here: whoever picked the device saw it while
  * choosing, and anyone else finds it in the sheet, which opens from the name.
  *
+ * Clicking anywhere in the row opens the entry, except in the menu cell, which
+ * opens nothing so that a click meant for the menu cannot open the sheet. This
+ * goes against the advice of not making a row clickable when it holds a second
+ * control (https://adrianroselli.com/2023/11/dont-turn-a-table-into-an-aria-grid-just-for-a-clickable-row.html);
+ * the dead menu cell is what makes it acceptable. The cost: text in the row
+ * cannot be selected with the mouse.
+ *
  * A row that costs nothing leaves the last column empty. It once said "Nothing
  * planned" there, borrowed from the column before it, which made a device that
  * destroys nothing look like a device nobody had configured.
@@ -157,8 +164,8 @@ export default function EntryRow({
           ))}
         </Stack>
       </Td>
-      {/* Above the stretched link, so a click on the menu is a click on the
-          menu and nothing else. */}
+      {/* Above the stretched link: a click anywhere in this cell opens
+          nothing but the menu. */}
       <Td isActionCell className="agm-entries-table__menu" data-entry-menu="">
         {menu}
       </Td>
