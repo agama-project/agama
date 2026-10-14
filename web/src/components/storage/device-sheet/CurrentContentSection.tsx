@@ -24,19 +24,23 @@ import React from "react";
 import { Table, Tbody, Td, Th, Thead, Tr } from "@patternfly/react-table";
 import { Button, Divider, Flex, FlexItem, Label } from "@patternfly/react-core";
 import alignmentStyles from "@patternfly/react-styles/css/utilities/Alignment/alignment";
+import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
 import { sprintf } from "sprintf-js";
 import Text from "~/components/core/Text";
 import Icon from "~/components/layout/Icon";
-import SpaceDecision, { policyMeaning } from "~/components/storage/storage-page/SpaceDecision";
+import SpaceDecision from "~/components/storage/storage-page/SpaceDecision";
+import contentSummary from "~/components/storage/device-sheet/content-summary";
 import MenuButton, { MenuButtonItem } from "~/components/core/MenuButton";
 import RowMenuToggle from "~/components/storage/entries-table/RowMenuToggle";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { generateEncodedPath } from "~/utils";
 import { useDeletePartition } from "~/hooks/model/storage/config-model";
 import { useSpacePolicy } from "~/components/storage/shared/space-policy";
+import { useAnnounce } from "~/context/announcer";
 import {
   decisionOf,
   decisionUnder,
+  recoverableBy,
   usePartitionSpaceItems,
 } from "~/components/storage/device-sheet/partition-space";
 import { outcomeOf } from "~/components/storage/shared/consequences";
@@ -45,6 +49,7 @@ import { baseName, deviceSize, formattedPath } from "~/components/storage/utils"
 import { _ } from "~/i18n";
 import type DevicesManager from "~/model/storage/devices-manager";
 import type { Decision } from "~/components/storage/device-sheet/partition-space";
+import type { ContentPart } from "~/components/storage/device-sheet/content-summary";
 import type { ConfigModel, DeviceCollection, Partitionable } from "~/model/storage/config-model";
 import type { Entry } from "~/components/storage/device-sheet/entry";
 import type { SheetEntry } from "~/components/storage/shared/use-sheet";
@@ -392,6 +397,26 @@ function PartitionRow({
   );
 }
 
+/** The name of the control showing or hiding the list of what is on a device. */
+function disclosureLabel(isVolumeGroup: boolean, expanded: boolean): string {
+  if (isVolumeGroup) {
+    return expanded
+      ? // TRANSLATORS: hides the list of logical volumes a volume group holds
+        // today.
+        _("Hide logical volumes")
+      : // TRANSLATORS: shows the list of logical volumes a volume group holds
+        // today, where what happens to each can be seen and changed.
+        _("Show logical volumes");
+  }
+
+  return expanded
+    ? // TRANSLATORS: hides the list of partitions a disk holds today.
+      _("Hide partitions")
+    : // TRANSLATORS: shows the list of partitions a disk holds today, where what
+      // happens to each can be seen and changed.
+      _("Show partitions");
+}
+
 export type CurrentContentSectionProps = {
   entry: Entry;
   /** Where the entry is written, which is what the space decision acts on. */
@@ -462,15 +487,45 @@ export default function CurrentContentSection({
       !isFreeSpace(row) && !entries.find((e) => e.name === row.name)?.mountPath,
   );
 
-  /* Under the fourth answer the list is the control, so it is simply there: a
-     reader who asked to decide part by part is asking for the parts, and a
-     link to reach them would be a door in front of the thing they asked for.
-     Under the other three the answer is the whole truth in one sentence, the
-     reader chose the same thing for every partition, and the list behind it is
-     there to be checked rather than read. So it starts away. */
+  /* Under the fourth answer the table is how parts are decided one by one, so
+     it is always shown and needs no summary. Under the other three it starts
+     closed, since the summary already says what happens to every part, and
+     it stays open once the reader has been under the fourth, so it does not
+     vanish when they switch back. */
   const isCustom = policy === "custom";
-  const [expanded, setExpanded] = React.useState(isCustom);
+  const [expanded, setExpanded] = React.useState(false);
   const tableId = React.useId();
+
+  const parts: ContentPart[] = rows
+    .filter((row): row is System.Device => !isFreeSpace(row))
+    .map((row) => {
+      const request = entries.find((e) => e.name === row.name);
+      const reusedAs = request?.mountPath;
+      return {
+        name: baseName(row.name),
+        systems: row.block?.systems || [],
+        reusedAs: reusedAs && formattedPath(reusedAs),
+        recoverable: recoverableBy(row),
+      };
+    });
+  const freeSpace = rows.filter(isFreeSpace).reduce((sum, slot) => sum + slot.size, 0);
+  const summary = contentSummary(
+    entry.isVolumeGroup ? "logicalVolumes" : "partitions",
+    policy,
+    parts,
+    freeSpace,
+  );
+  const summaryId = React.useId();
+
+  /* Said when the answer changes, so a screen reader user hears what their
+     choice did to the device and not only that the button is now pressed. */
+  const announce = useAnnounce();
+  const announcedPolicy = React.useRef(policy);
+  React.useEffect(() => {
+    if (announcedPolicy.current === policy) return;
+    announcedPolicy.current = policy;
+    if (summary) announce(summary);
+  }, [policy, summary, announce]);
 
   return (
     <Flex direction={{ default: "column" }} gap={{ default: "gapSm" }}>
@@ -487,39 +542,46 @@ export default function CurrentContentSection({
               onCustom={() => setExpanded(true)}
             />
           </FlexItem>
-          <FlexItem>
-            {isCustom ? (
-              // TRANSLATORS: said under the "Custom" answer, where what happens to
-              // each partition is decided one at a time in the list below.
-              _("Use the table below to decide what to do with each partition.")
-            ) : (
-              <>
-                {policyMeaning(policy)}{" "}
+          {/* The toggle starts its own line under the summary, so its caret sits
+              right above the table it opens. The summary says what the table
+              is about and is the toggle's description for whoever lands on it
+              without reading the line. */}
+          {!isCustom && (
+            <>
+              <FlexItem component="p">
+                <Text id={summaryId} isBold>
+                  {summary}
+                </Text>
+              </FlexItem>
+              <FlexItem>
                 <Button
                   variant="link"
                   isInline
+                  className="agm-sheet-disclosure"
+                  icon={
+                    <Icon
+                      name={expanded ? "keyboard_arrow_down" : "chevron_right"}
+                      verticalAlign="middle"
+                    />
+                  }
                   aria-expanded={expanded}
                   aria-controls={tableId}
+                  aria-describedby={summaryId}
                   onClick={() => setExpanded(!expanded)}
                 >
-                  {expanded
-                    ? // TRANSLATORS: puts away the list of what is on the device today.
-                      _("(hide details)")
-                    : // TRANSLATORS: shows the list of what is on the device today,
-                      // partition by partition.
-                      _("(more details)")}
+                  <Text isBold>{disclosureLabel(entry.isVolumeGroup, expanded)}</Text>
                 </Button>
-              </>
-            )}
-          </FlexItem>
+              </FlexItem>
+            </>
+          )}
         </>
       )}
-      <FlexItem>
-        {/* Put away rather than taken down, so the link above has something to
-            name as the thing it opens, and so a plain element carries the
-            attribute that hides it: the browser's own rule for it loses to any
-            layout a class might set. */}
-        <div id={tableId} hidden={!isCustom && !expanded}>
+      {/* A bit more room above the table than between the lines above it: a
+          table's header is not a line of text. Put away rather than taken
+          down, so the toggle has something to name as the thing it opens; the
+          wrapper carries the attribute, so a closed table takes no room. */}
+      <FlexItem hidden={!isCustom && !expanded} className={spacingStyles.mtSm}>
+        <div id={tableId}>
           <Table
             role="table"
             gridBreakPoint=""

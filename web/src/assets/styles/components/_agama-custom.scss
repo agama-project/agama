@@ -365,6 +365,18 @@ nav.agm-breadcrumb > ol > li > a {
   --pf-v6-c-table--m-compact__th--PaddingBlockStart: 0;
 }
 
+// The control showing what is on a device: its caret sits right against the
+// words, so the two read as one control. The icon's own padding is gap enough.
+.pf-v6-c-button.agm-sheet-disclosure {
+  --pf-v6-c-button--Gap: 0;
+}
+
+// The icon draws its caret inside a square with room on every side, so pull it
+// back by that room: the caret, not its box, lines up with the text above.
+.pf-v6-c-button.agm-sheet-disclosure .pf-v6-c-button__icon {
+  margin-inline-start: -0.25em;
+}
+
 // Where its content cannot have the room it wants, the content scrolls rather
 // than the panel growing to fit it.
 .agm-sheet__body {
