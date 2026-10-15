@@ -213,6 +213,8 @@ export type PartitionSpaceItemsProps = {
   /** Where the entry is written. */
   collection: DeviceCollection;
   index: number;
+  /** What the device's own rule allows every partition, where it has one. */
+  rule?: Decision;
 };
 
 /**
@@ -225,17 +227,14 @@ export type PartitionSpaceItemsProps = {
  * of its own gives a decision already written in the row's first column a
  * second place to be read.
  *
- * Offered only under the fourth space answer, which is the answer that says the
- * parts decide. Under the other three the decision belongs to the device, and
- * is made where the device is.
- *
  * It is a permission rather than an instruction: "Shrink if needed" is the
  * whole truth about a partition the installer did not have to shrink.
  *
  * Every partition's decision is written back with the one being changed,
  * because the configuration clears them all before applying the list it is
  * given. Sending only the partition that changed would quietly undo every other
- * decision on the device.
+ * decision on the device. Where the device gives every partition the same
+ * decision, that is the one each of the others carries on.
  *
  * An option that cannot apply stays offered and says why, reachable by keyboard.
  * Shrinking always says something about this partition in particular: how much
@@ -248,20 +247,22 @@ function usePartitionSpaceItems({
   entries,
   collection,
   index,
+  rule,
 }: PartitionSpaceItemsProps): React.ReactNode[] {
   const setSpacePolicy = useSetSpacePolicy();
   const config = useConfigModel();
   const booting = isBootDevice(config, collection, index);
 
   const entryFor = (device: System.Device) => entries.find((entry) => entry.name === device.name);
-  const current = decisionOf(entryFor(partition));
+  const decisionFor = (device: System.Device) => rule || decisionOf(entryFor(device));
+  const current = decisionFor(partition);
   const canShrink = partition.block?.shrinking?.supported === true;
 
   const choose = (decision: Decision) => {
     const actions = governed
       .map((device) => ({
         deviceName: device.name,
-        value: device.name === partition.name ? decision : decisionOf(entryFor(device)),
+        value: device.name === partition.name ? decision : decisionFor(device),
       }))
       .filter(
         (action): action is { deviceName: string; value: "delete" | "resizeIfNeeded" } =>

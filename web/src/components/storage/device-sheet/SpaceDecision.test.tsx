@@ -23,116 +23,62 @@
 import React from "react";
 import { screen, within } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
-import type { ConfigModel } from "~/model/storage/config-model";
 import SpaceDecision from "~/components/storage/device-sheet/SpaceDecision";
-import { SpacePolicyMemory } from "~/components/storage/shared/space-policy";
 
-const mockDeviceConfig = jest.fn();
 const mockSetSpacePolicy = jest.fn();
 
 jest.mock("~/hooks/model/storage/config-model", () => ({
   ...jest.requireActual("~/hooks/model/storage/config-model"),
-  useDevice: () => mockDeviceConfig(),
   useSetSpacePolicy: () => mockSetSpacePolicy,
 }));
 
-const drive = (spacePolicy?: ConfigModel.SpacePolicy): ConfigModel.Drive =>
-  ({ name: "/dev/vdd", spacePolicy }) as ConfigModel.Drive;
-
-const options = () => screen.getByRole("group", { name: "Allowed changes" });
+const options = () => screen.getByRole("group", { name: "Set all partitions to" });
 
 describe("SpaceDecision", () => {
-  beforeEach(() => {
-    mockDeviceConfig.mockReturnValue(drive("keep"));
-  });
-
-  it("offers the four answers at once, so the reader sees the whole decision", () => {
-    installerRender(<SpaceDecision collection="drives" index={0} />);
+  it("offers the three decisions in the words of the Action column", () => {
+    installerRender(<SpaceDecision collection="drives" index={0} current="keep" />);
 
     const names = within(options())
       .getAllByRole("button")
       .map((button) => button.textContent);
 
-    expect(names).toEqual([
-      "Delete disk content",
-      "Shrink existing partitions",
-      "Keep partitions",
-      "Custom",
-    ]);
+    expect(names).toEqual(["Delete", "Shrink if needed", "Keep"]);
   });
 
-  it("says what the plan is doing, which is the one that reads pressed", () => {
+  it("speaks of logical volumes in a volume group", () => {
+    installerRender(
+      <SpaceDecision collection="volumeGroups" index={0} isVolumeGroup current="keep" />,
+    );
+
+    screen.getByRole("group", { name: "Set all logical volumes to" });
+  });
+
+  it("reads pressed the decision every partition shares", () => {
+    installerRender(<SpaceDecision collection="drives" index={0} current="keep" />);
+
+    screen.getByRole("button", { name: "Keep", pressed: true });
+    screen.getByRole("button", { name: "Delete", pressed: false });
+  });
+
+  it("reads none pressed when the partitions are given different decisions", () => {
     installerRender(<SpaceDecision collection="drives" index={0} />);
 
-    expect(screen.getByRole("button", { name: "Keep partitions", pressed: true }));
-    expect(screen.getByRole("button", { name: "Delete disk content", pressed: false }));
+    expect(within(options()).queryAllByRole("button", { pressed: true })).toEqual([]);
   });
 
-  describe("when another answer is chosen", () => {
-    it("writes it to the configuration", async () => {
-      const { user } = installerRender(<SpaceDecision collection="drives" index={0} />);
-      await user.click(screen.getByRole("button", { name: "Shrink existing partitions" }));
+  it("gives every partition the decision chosen", async () => {
+    const { user } = installerRender(<SpaceDecision collection="drives" index={0} />);
+    await user.click(screen.getByRole("button", { name: "Shrink if needed" }));
 
-      expect(mockSetSpacePolicy).toHaveBeenCalledWith("drives", 0, { type: "resize" });
-    });
+    expect(mockSetSpacePolicy).toHaveBeenCalledWith("drives", 0, { type: "resize" });
   });
 
-  describe("when custom is chosen", () => {
-    it("writes it, and asks for where the rest of the question is answered", async () => {
-      const onCustom = jest.fn();
-      const { user } = installerRender(
-        <SpaceDecision collection="drives" index={0} onCustom={onCustom} />,
-      );
-      await user.click(screen.getByRole("button", { name: "Custom" }));
+  it("leaves the configuration alone when the decision already taken is pressed", async () => {
+    const { user } = installerRender(
+      <SpaceDecision collection="drives" index={0} current="delete" />,
+    );
+    await user.click(screen.getByRole("button", { name: "Delete" }));
 
-      /* Written, since nothing decides partition by partition until it is, and
-         with nothing decided yet, which leaves everything kept. */
-      expect(mockSetSpacePolicy).toHaveBeenCalledWith("drives", 0, { type: "custom" });
-      expect(onCustom).toHaveBeenCalled();
-    });
-  });
-
-  describe("when custom is chosen and the configuration reports keeping everything", () => {
-    it("stays on custom, which is an answer the configuration cannot hold", async () => {
-      const { user } = installerRender(
-        <SpacePolicyMemory>
-          <SpaceDecision collection="drives" index={0} />
-        </SpacePolicyMemory>,
-      );
-      await user.click(screen.getByRole("button", { name: "Custom" }));
-
-      /* The device still reads "keep", and will until something is decided
-         under it: custom with no exceptions is the same configuration, and the
-         service works the answer out from what it can see. Were the answer read
-         back rather than remembered, the control would spring back and the
-         per-partition controls it was asked for would never appear. */
-      screen.getByRole("button", { name: "Custom", pressed: true });
-      screen.getByRole("button", { name: "Keep partitions", pressed: false });
-    });
-  });
-
-  describe("when the answer already taken is pressed again", () => {
-    beforeEach(() => {
-      mockDeviceConfig.mockReturnValue(drive("custom"));
-    });
-
-    it("leaves the configuration alone, rather than clearing what was decided under it", async () => {
-      const { user } = installerRender(<SpaceDecision collection="drives" index={0} />);
-      await user.click(screen.getByRole("button", { name: "Custom" }));
-
-      expect(mockSetSpacePolicy).not.toHaveBeenCalled();
-    });
-  });
-
-  describe("when the device follows no rule yet", () => {
-    beforeEach(() => {
-      mockDeviceConfig.mockReturnValue(drive());
-    });
-
-    it("reads as keeping everything, which is what an unset rule does", () => {
-      installerRender(<SpaceDecision collection="drives" index={0} />);
-
-      expect(screen.getByRole("button", { name: "Keep partitions", pressed: true }));
-    });
+    expect(mockSetSpacePolicy).not.toHaveBeenCalled();
   });
 });

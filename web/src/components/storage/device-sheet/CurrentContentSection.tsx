@@ -26,6 +26,7 @@ import { Button, Divider, Flex, FlexItem, Label } from "@patternfly/react-core";
 import alignmentStyles from "@patternfly/react-styles/css/utilities/Alignment/alignment";
 import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
 import { sprintf } from "sprintf-js";
+import { unique } from "radashi";
 import Text from "~/components/core/Text";
 import Icon from "~/components/layout/Icon";
 import SpaceDecision from "~/components/storage/device-sheet/SpaceDecision";
@@ -35,7 +36,6 @@ import RowMenuToggle from "~/components/storage/entries-table/RowMenuToggle";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { generateEncodedPath } from "~/utils";
 import { useDeletePartition } from "~/hooks/model/storage/config-model";
-import { useSpacePolicy } from "~/components/storage/shared/space-policy";
 import { useAnnounce } from "~/context/announcer";
 import {
   decisionOf,
@@ -112,10 +112,13 @@ function PartitionMenu({
   collection,
   index,
   canDecide = true,
+  rule,
 }: {
   part: System.Device;
   /** Whether what happens to it can be decided here, or is fixed for it. */
   canDecide?: boolean;
+  /** What the device's own rule allows every partition, where it has one. */
+  rule?: Decision;
   /** Where the new system mounts it already, where it does. */
   reusedAs?: string;
   /** Every partition that decision governs, which it is written back with. */
@@ -138,6 +141,7 @@ function PartitionMenu({
     entries,
     collection,
     index,
+    rule,
   });
 
   /* Only off a device whose partitions the new system can take over. A group's
@@ -455,10 +459,10 @@ export type CurrentContentSectionProps = {
  * each row twice, once to find which partition and once to find what happens
  * to it, and left two of its five columns empty on most rows.
  *
- * Changing the verdict is in the row's menu, with everything else the row can
- * be told to do, and only under the fourth space answer, which is the answer
- * that says the parts decide. Under the other three the decision belongs to
- * the device and is made above the table.
+ * Changing what happens to one partition is in the row's menu, with everything
+ * else the row can be told to do. Giving every partition the same decision at
+ * once is offered above the table. When the partitions are given different
+ * decisions, none of the options there reads pressed.
  *
  * It is a permission rather than a plan: "shrink if needed" is the whole truth
  * about a partition the installer did not have to shrink.
@@ -468,12 +472,9 @@ export type CurrentContentSectionProps = {
  * is the thing the reader chose and the one part of the row still true
  * afterwards.
  *
- * A sentence comes before the list either way, saying what the answer amounts
- * to. Under the three answers taken for the whole device that sentence is the
- * answer, and the list behind it is there to be checked rather than read, so
- * it starts away behind a link. Under custom the sentence says what the list
- * is for, because under custom the list is the control and there is nothing to
- * put away.
+ * A sentence comes before the list, saying what the decisions amount to. The
+ * list behind it is there to be checked rather than read, so it starts away
+ * behind a link.
  *
  * Shown only where there is something to show, which whoever offers the view
  * settles with {@link hasCurrentContent}. The view never has to say that it has
@@ -487,13 +488,10 @@ export default function CurrentContentSection({
 }: CurrentContentSectionProps): React.ReactNode {
   const manager = useDevicesManager();
   const rows = rowsOf(entry);
-  /* Asked for rather than read off the entry: custom with nothing decided yet
-     is written down as keeping everything, so the entry cannot report it. */
-  const { policy } = useSpacePolicy(subject.collection, subject.index, entry.config.spacePolicy);
   /* What the device's own rule allows each of its partitions, where it has one
-     to give. Nothing under the fourth answer, which is the answer that says the
-     parts decide, and then each row carries the control that decides it. */
-  const rule = fixedDecision || decisionUnder(policy);
+     to give. Nothing when the partitions are given different decisions, and
+     then each carries its own. An unset rule keeps everything. */
+  const rule = fixedDecision || decisionUnder(entry.config.spacePolicy || "keep");
   const entries = entry.isVolumeGroup
     ? (entry.config as ConfigModel.VolumeGroup).logicalVolumes || []
     : (entry.config as Partitionable.Device).partitions || [];
@@ -505,12 +503,19 @@ export default function CurrentContentSection({
       !isFreeSpace(row) && !entries.find((e) => e.name === row.name)?.mountPath,
   );
 
-  /* Under the fourth answer the table is how parts are decided one by one, so
-     it is always shown and needs no summary. Under the other three it starts
-     closed, since the summary already says what happens to every part, and
-     it stays open once the reader has been under the fourth, so it does not
-     vanish when they switch back. */
-  const isCustom = !fixedDecision && policy === "custom";
+  /* The decision every governed partition shares, which is the one reading
+     pressed among the options giving them all the same. */
+  const decisions = unique(
+    governed.map((row) =>
+      decisionFor(
+        rule,
+        entries.find((e) => e.name === row.name),
+      ),
+    ),
+  );
+  const sharedDecision = decisions.length === 1 ? decisions[0] : undefined;
+
+  /* Closed at first, since the summary already says what happens to every part. */
   const [expanded, setExpanded] = React.useState(false);
   const tableId = React.useId();
 
@@ -531,15 +536,15 @@ export default function CurrentContentSection({
   const summary = contentSummary(entry.isVolumeGroup ? "logicalVolumes" : "partitions", parts);
   const summaryId = React.useId();
 
-  /* Said when the answer changes, so a screen reader user hears what their
-     choice did to the device and not only that the button is now pressed. */
+  /* Said when the decisions change, so a screen reader user hears what their
+     choice did to the device and not only that a button is now pressed. */
   const announce = useAnnounce();
-  const announcedPolicy = React.useRef(policy);
+  const announcedSummary = React.useRef(summary);
   React.useEffect(() => {
-    if (announcedPolicy.current === policy) return;
-    announcedPolicy.current = policy;
+    if (announcedSummary.current === summary) return;
+    announcedSummary.current = summary;
     if (summary) announce(summary);
-  }, [policy, summary, announce]);
+  }, [summary, announce]);
 
   return (
     <Flex direction={{ default: "column" }} gap={{ default: "gapSm" }}>
@@ -548,12 +553,13 @@ export default function CurrentContentSection({
           so the decision is offered there too. */}
       {rows.some((row) => !isFreeSpace(row)) && (
         <>
-          {!fixedDecision && (
+          {!fixedDecision && governed.length > 0 && (
             <FlexItem>
               <SpaceDecision
                 collection={subject.collection}
                 index={subject.index}
-                onCustom={() => setExpanded(true)}
+                isVolumeGroup={entry.isVolumeGroup}
+                current={sharedDecision}
               />
             </FlexItem>
           )}
@@ -561,44 +567,37 @@ export default function CurrentContentSection({
               right above the table it opens. The summary says what the table
               is about and is the toggle's description for whoever lands on it
               without reading the line. */}
-          {!isCustom && (
-            <>
-              <FlexItem component="p">
-                <Text id={summaryId} isBold>
-                  {summary}
-                </Text>
-              </FlexItem>
-              <FlexItem>
-                <Button
-                  variant="link"
-                  isInline
-                  className="agm-sheet-disclosure"
-                  icon={
-                    <Icon
-                      name={expanded ? "keyboard_arrow_down" : "chevron_right"}
-                      verticalAlign="middle"
-                    />
-                  }
-                  aria-expanded={expanded}
-                  aria-controls={tableId}
-                  aria-describedby={summaryId}
-                  onClick={() => setExpanded(!expanded)}
-                >
-                  <Text isBold>{disclosureLabel(entry.isVolumeGroup, expanded)}</Text>
-                </Button>
-              </FlexItem>
-            </>
-          )}
-          {isCustom && (
-            <Text isBold>{_("Use the table below to decide what to do with each partition")}</Text>
-          )}
+          <FlexItem component="p">
+            <Text id={summaryId} isBold>
+              {summary}
+            </Text>
+          </FlexItem>
+          <FlexItem>
+            <Button
+              variant="link"
+              isInline
+              className="agm-sheet-disclosure"
+              icon={
+                <Icon
+                  name={expanded ? "keyboard_arrow_down" : "chevron_right"}
+                  verticalAlign="middle"
+                />
+              }
+              aria-expanded={expanded}
+              aria-controls={tableId}
+              aria-describedby={summaryId}
+              onClick={() => setExpanded(!expanded)}
+            >
+              <Text isBold>{disclosureLabel(entry.isVolumeGroup, expanded)}</Text>
+            </Button>
+          </FlexItem>
         </>
       )}
       {/* A bit more room above the table than between the lines above it: a
           table's header is not a line of text. Put away rather than taken
           down, so the toggle has something to name as the thing it opens; the
           wrapper carries the attribute, so a closed table takes no room. */}
-      <FlexItem hidden={!isCustom && !expanded} className={spacingStyles.mtSm}>
+      <FlexItem hidden={!expanded} className={spacingStyles.mtSm}>
         <div id={tableId}>
           <Table
             role="table"
@@ -677,6 +676,7 @@ export default function CurrentContentSection({
                           collection={subject.collection}
                           index={subject.index}
                           canDecide={!fixedDecision}
+                          rule={rule}
                         />
                       )
                     }
