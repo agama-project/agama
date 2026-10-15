@@ -25,7 +25,7 @@
 //! progress monitoring, and log retrieval capabilities as standardized AI tools.
 
 pub mod error;
-pub mod logs;
+mod logs;
 pub mod mode;
 pub mod server;
 pub mod tools;

@@ -69,7 +69,7 @@ fn query_journal(args: &[&str]) -> String {
 /// - `"system"`: System-wide journal entries.
 /// - `"zypp"` (or `"software"`): Package management and libzypp entries from the installer.
 /// - Any other string is treated as a specific systemd unit name.
-pub fn get_logs(log_type: Option<&str>, lines: Option<usize>) -> String {
+pub(crate) fn get_logs(log_type: Option<&str>, lines: Option<usize>) -> String {
     let count = lines.unwrap_or(100).clamp(1, DEFAULT_MAX_LINES);
     let count_str = count.to_string();
     let scope = log_type.map(|s| s.trim()).unwrap_or("installer");

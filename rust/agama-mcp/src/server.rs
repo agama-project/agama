@@ -73,9 +73,9 @@ pub trait McpBackend: Send + Sync {
 }
 
 /// Production MCP backend connected to live Agama Manager and Questions actors.
-pub struct AgamaBackend {
-    pub manager: Handler<agama_manager::Service>,
-    pub questions: Handler<question_service::Service>,
+struct AgamaBackend {
+    manager: Handler<agama_manager::Service>,
+    questions: Handler<question_service::Service>,
 }
 
 #[async_trait]

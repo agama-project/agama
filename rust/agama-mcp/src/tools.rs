@@ -31,12 +31,12 @@ use serde_json::{json, Value};
 use std::path::PathBuf;
 
 /// Convenience constructor for a successful single-text tool response.
-pub fn tool_success(text: impl Into<String>) -> CallToolResult {
+pub(crate) fn tool_success(text: impl Into<String>) -> CallToolResult {
     CallToolResult::success(vec![ContentBlock::text(text.into())])
 }
 
 /// Convenience constructor for an error single-text tool response.
-pub fn tool_error(text: impl Into<String>) -> CallToolResult {
+pub(crate) fn tool_error(text: impl Into<String>) -> CallToolResult {
     CallToolResult::error(vec![ContentBlock::text(text.into())])
 }
 
@@ -84,7 +84,7 @@ pub struct AnswerQuestionArgs {
 /// Represents the possible outcomes of computing the installation proposal.
 #[derive(Debug, Clone, Serialize)]
 #[serde(tag = "status", rename_all = "snake_case")]
-pub enum ProposalOutcome {
+pub(crate) enum ProposalOutcome {
     ProposalComputing {
         message: &'static str,
         active_tasks: Vec<Task>,
@@ -103,14 +103,14 @@ pub enum ProposalOutcome {
 }
 
 impl ProposalOutcome {
-    pub fn computing(active_tasks: Vec<Task>) -> Self {
+    pub(crate) fn computing(active_tasks: Vec<Task>) -> Self {
         Self::ProposalComputing {
             message: "Proposal is currently being calculated by Agama solvers. Please wait a few seconds and query get_proposal again.",
             active_tasks,
         }
     }
 
-    pub fn from_results(proposal: Option<Proposal>, issues: Vec<IssueWithScope>) -> Self {
+    pub(crate) fn from_results(proposal: Option<Proposal>, issues: Vec<IssueWithScope>) -> Self {
         if !issues.is_empty() {
             Self::IssuesDetected {
                 message:
@@ -127,7 +127,7 @@ impl ProposalOutcome {
         }
     }
 
-    pub fn to_tool_result(&self) -> Result<CallToolResult, crate::error::Error> {
+    pub(crate) fn to_tool_result(&self) -> Result<CallToolResult, crate::error::Error> {
         let formatted = serde_json::to_string_pretty(self)?;
         match self {
             Self::IssuesDetected { .. } => Ok(tool_error(formatted)),
@@ -138,7 +138,7 @@ impl ProposalOutcome {
 
 /// Filters system inventory information by resource category.
 /// Dynamically matches against top-level keys in the serialized SystemInfo.
-pub fn filter_system_resource(system_val: &Value, resource: &str) -> Value {
+pub(crate) fn filter_system_resource(system_val: &Value, resource: &str) -> Value {
     if let Some(map) = system_val.as_object() {
         if let Some(val) = map.get(resource) {
             val.clone()
@@ -156,7 +156,7 @@ pub fn filter_system_resource(system_val: &Value, resource: &str) -> Value {
 }
 
 /// Validates configuration against Agama schema.
-pub fn validate_config_schema(raw_json: &Value) -> Result<(), ValidationError> {
+pub(crate) fn validate_config_schema(raw_json: &Value) -> Result<(), ValidationError> {
     let json_str = serde_json::to_string(raw_json)?;
 
     let validator = ProfileValidator::default_schema()
@@ -170,7 +170,7 @@ pub fn validate_config_schema(raw_json: &Value) -> Result<(), ValidationError> {
 }
 
 /// Resolves the file path of the Agama JSON Schema.
-pub fn find_schema_path() -> PathBuf {
+pub(crate) fn find_schema_path() -> PathBuf {
     let manifest_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
     let dev_path = manifest_dir.join("../out/schemas/config.schema.json");
     if dev_path.exists() {
@@ -183,7 +183,7 @@ pub fn find_schema_path() -> PathBuf {
 }
 
 /// Loads and parses the raw JSON schema file.
-pub fn load_schema_json() -> Result<Value, SchemaError> {
+pub(crate) fn load_schema_json() -> Result<Value, SchemaError> {
     let path = find_schema_path();
     let contents = std::fs::read_to_string(&path)
         .map_err(|source| SchemaError::Io { path: path.clone(), source })?;
@@ -244,7 +244,7 @@ fn schema_overview(props: &serde_json::Map<String, Value>) -> Value {
 }
 
 /// Returns the schema overview or detailed section schema from Agama's config schema.
-pub fn get_schema_for_section(schema_val: &Value, section: Option<&str>) -> Result<Value, SchemaError> {
+pub(crate) fn get_schema_for_section(schema_val: &Value, section: Option<&str>) -> Result<Value, SchemaError> {
     let props = schema_val
         .get("properties")
         .and_then(|p| p.as_object())
