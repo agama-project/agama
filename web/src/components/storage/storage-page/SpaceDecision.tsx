@@ -115,11 +115,6 @@ export type SpaceDecisionProps = {
 /**
  * What the installer may do with what is already on the device.
  *
- * The one decision the page makes itself. Everywhere else the summary reports
- * and the sheet does the work, but this one is read in the same breath as its
- * consequence: the sentence under it says what the plan costs, and this is what
- * changes that number.
- *
  * Four options rather than a menu. A menu hides three of the four and gives no
  * sense that a choice exists at all, while all four show the whole decision and
  * which part of it is taken. What each one means is a tooltip, so it can be
@@ -150,9 +145,7 @@ export default function SpaceDecision({
 
     /* Custom is answered like the others and then followed up: it says the
        decision is made part by part, so the reader is taken to where those are
-       made. That is the panel for the device, which shows what is on it today
-       along with everything else. The control is read from there as well as
-       from the page, where following up means staying put. */
+       made: the list of what is on the device today. */
     if (policy === "custom") {
       openSheet({ collection, index });
       if (onCustom) onCustom();

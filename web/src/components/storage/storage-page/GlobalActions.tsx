@@ -24,7 +24,6 @@ import React from "react";
 import { Stack, Flex, FlexItem } from "@patternfly/react-core";
 import ConfigureDeviceMenu from "~/components/storage/ConfigureDeviceMenu";
 import ChangeInstallationDisk from "~/components/storage/storage-page/ChangeInstallationDisk";
-import SingleDiskSpaceDecision from "~/components/storage/storage-page/SingleDiskSpaceDecision";
 import { _ } from "~/i18n";
 import { useConfigModel } from "~/hooks/model/storage/config-model";
 import configModel from "~/model/storage/config-model";
@@ -34,8 +33,7 @@ import configModel from "~/model/storage/config-model";
  * single entry of it.
  *
  * Adding more devices is always offered. Where the installation uses a single
- * disk that can be swapped, changing that disk is offered too, and so is
- * deciding what may happen to its current content.
+ * disk that can be swapped, changing that disk is offered too.
  */
 export default function GlobalActions() {
   const config = useConfigModel();
@@ -43,7 +41,6 @@ export default function GlobalActions() {
 
   return (
     <Stack hasGutter>
-      <SingleDiskSpaceDecision />
       {canChangeTarget && (
         <Flex
           gap={{ default: "gapSm" }}
