@@ -255,8 +255,12 @@ function usePartitionSpaceItems({
 
   const entryFor = (device: System.Device) => entries.find((entry) => entry.name === device.name);
   const decisionFor = (device: System.Device) => rule || decisionOf(entryFor(device));
-  const current = decisionFor(partition);
   const canShrink = partition.block?.shrinking?.supported === true;
+  /* What the menu marks as taken is what happens to the partition: shrinking
+     allowed where it cannot be shrunk keeps it, and an option offered as
+     impossible cannot also read as the one taken. */
+  let current = decisionFor(partition);
+  if (current === "resizeIfNeeded" && !canShrink) current = "keep";
 
   const choose = (decision: Decision) => {
     const actions = governed

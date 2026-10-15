@@ -279,8 +279,9 @@ function statusFor(
       return canShrink
         ? { text: _("Shrink if needed"), destroys: false }
         : // TRANSLATORS: what is to become of a partition already on the disk:
-          // it was allowed to be made smaller, but that is not possible.
-          { text: _("Cannot be shrunk"), destroys: false };
+          // it was allowed to be made smaller, but that is not possible, so it
+          // stays as it is.
+          { text: _("Keep (cannot be shrunk)"), destroys: false };
     case "delete":
       // TRANSLATORS: what is to become of a partition already on the disk: it
       // is removed, and everything on it lost.
