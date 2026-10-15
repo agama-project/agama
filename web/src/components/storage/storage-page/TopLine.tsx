@@ -21,10 +21,10 @@
  */
 
 import React from "react";
-import { DescriptionList, Flex, FlexItem } from "@patternfly/react-core";
+import { sprintf } from "sprintf-js";
+import { Flex, FlexItem } from "@patternfly/react-core";
 import Link from "~/components/core/Link";
 import MenuButton from "~/components/core/MenuButton";
-import SettingValue from "~/components/core/SettingValue";
 import Text from "~/components/core/Text";
 import Icon, { IconProps } from "~/components/layout/Icon";
 import { baseName } from "~/components/storage/utils";
@@ -49,23 +49,25 @@ function boot(config: ConfigModel.Config): { value: TranslatedString; icon: Icon
   if (!config.boot?.configure) {
     // TRANSLATORS: what the installation will do about starting the machine:
     // nothing, because the reader has said so.
-    return { value: _("Not configured"), icon: bootIcon(config) };
+    return { value: _("Boot not configured"), icon: bootIcon(config) };
   }
 
   if (configModel.boot.isDefault(config)) {
     // TRANSLATORS: what the installation will do about starting the machine:
     // work out which disk it needs by itself.
-    return { value: _("Automatic"), icon: bootIcon(config) };
+    return { value: _("Automatic boot"), icon: bootIcon(config) };
   }
 
   const device = configModel.boot.findDevice(config);
 
   return {
     value: device?.name
-      ? (baseName(device.name) as TranslatedString)
+      ? // TRANSLATORS: the disk the machine is set to start from, chosen by the
+        // reader. %s is its name, such as "sda".
+        sprintf(_("Boot from %s"), baseName(device.name))
       : // TRANSLATORS: said where the machine is set to start from a disk the
         // reader has yet to choose.
-        _("No disk selected"),
+        _("Boot disk not selected"),
     icon: bootIcon(config),
   };
 }
@@ -84,9 +86,9 @@ function encryption(config: ConfigModel.Config): {
     value: config.encryption.tpm
       ? // TRANSLATORS: how the installation is encrypted, where the machine's
         // security chip releases the key at start-up.
-        _("LUKS2 with TPM")
+        _("LUKS2 encryption with TPM")
       : // TRANSLATORS: how the installation is encrypted.
-        _("LUKS2"),
+        _("LUKS2 encryption"),
     icon: "lock",
   };
 }
@@ -114,9 +116,6 @@ export default function TopLine(): React.ReactNode {
   const config = useConfigModel();
   const reset = useReset();
   const clearSearchParams = useClearSearchParams();
-
-  const bootTermId = React.useId();
-  const encryptionTermId = React.useId();
 
   if (!config) return null;
 
@@ -160,46 +159,23 @@ export default function TopLine(): React.ReactNode {
                 which share out whatever width they are given: two settings and
                 a sentence spread across a whole strip read as three things
                 placed apart rather than as one line. */}
-            <DescriptionList isCompact isHorizontal isFluid className="agm-top-line__settings">
-              <SettingValue
-                icon={bootMark}
-                termId={bootTermId}
-                // TRANSLATORS: names the setting saying where the machine will
-                // start from once it is installed.
-                term={_("Boot")}
-                value={
-                  <Link
-                    to={PATHS.editBootDevice}
-                    keepQuery
-                    variant="link"
-                    isInline
-                    /* Says which setting it changes when read out of place, as
-                       in a screen reader's list of links. */
-                    aria-describedby={bootTermId}
-                  >
-                    {bootValue}
-                  </Link>
-                }
-              />
-              <SettingValue
-                icon={encryptionIcon}
-                termId={encryptionTermId}
-                // TRANSLATORS: names the setting saying what protects the data
-                // the installation writes.
-                term={_("Encryption")}
-                value={
-                  <Link
-                    to={PATHS.editEncryption}
-                    keepQuery
-                    variant="link"
-                    isInline
-                    aria-describedby={encryptionTermId}
-                  >
-                    {encryptionValue}
-                  </Link>
-                }
-              />
-            </DescriptionList>
+            {/* Each setting said as one phrase that is also the way to change
+                it, so it reads the same anywhere, including in a screen
+                reader's list of links. */}
+            <ul className="agm-top-line__settings">
+              <li>
+                <Icon name={bootMark} aria-hidden />
+                <Link to={PATHS.editBootDevice} keepQuery variant="link" isInline>
+                  {bootValue}
+                </Link>
+              </li>
+              <li>
+                <Icon name={encryptionIcon} aria-hidden />
+                <Link to={PATHS.editEncryption} keepQuery variant="link" isInline>
+                  {encryptionValue}
+                </Link>
+              </li>
+            </ul>
           </FlexItem>
           <FlexItem>
             <MenuButton

@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import { screen } from "@testing-library/react";
+import { screen, within } from "@testing-library/react";
 import { installerRender, mockNavigateFn } from "~/test-utils";
 import type { ConfigModel } from "~/model/storage/config-model";
 import TopLine from "~/components/storage/storage-page/TopLine";
@@ -58,21 +58,20 @@ describe("TopLine", () => {
   });
 
   describe("the two installation decisions", () => {
-    it("reads both as values, without opening anything to find them", () => {
+    it("lists both as links named by the whole setting", () => {
       installerRender(<TopLine />);
 
-      /* Queried by their words rather than by role and name: a `dt` takes no
-         accessible name from what is written in it, and a screen reader reads
-         the pair together as one entry of the list. */
-      screen.getByText("Boot");
-      screen.getByText("Encryption");
+      const list = screen.getByRole("list");
+      expect(within(list).getAllByRole("listitem")).toHaveLength(2);
+      within(list).getByRole("link", { name: "Boot not configured" });
+      within(list).getByRole("link", { name: "Not encrypted" });
     });
 
     it("says the installer will work out where to boot from, where it will", () => {
       mockConfig.mockReturnValue(config({ boot: { configure: true, device: { default: true } } }));
       installerRender(<TopLine />);
 
-      screen.getByRole("link", { name: "Automatic" });
+      screen.getByRole("link", { name: "Automatic boot" });
     });
 
     it("names the disk the reader chose instead", () => {
@@ -84,14 +83,14 @@ describe("TopLine", () => {
       );
       installerRender(<TopLine />);
 
-      screen.getByRole("link", { name: "sdb" });
+      screen.getByRole("link", { name: "Boot from sdb" });
     });
 
     it("says so where nothing will be set up for booting", () => {
       mockConfig.mockReturnValue(config({ boot: { configure: false } }));
       installerRender(<TopLine />);
 
-      screen.getByRole("link", { name: "Not configured" });
+      screen.getByRole("link", { name: "Boot not configured" });
     });
 
     it("tells an unencrypted installation from one with a key in the machine", () => {
@@ -100,23 +99,12 @@ describe("TopLine", () => {
 
       mockConfig.mockReturnValue(config({ encryption: { password: "secret", tpm: true } }));
       installerRender(<TopLine />);
-      screen.getByRole("link", { name: "LUKS2 with TPM" });
-    });
-
-    it("ties each link to its setting, so it keeps its meaning out of place", () => {
-      installerRender(<TopLine />);
-
-      expect(screen.getByRole("link", { name: "Not configured" })).toHaveAccessibleDescription(
-        "Boot",
-      );
-      expect(screen.getByRole("link", { name: "Not encrypted" })).toHaveAccessibleDescription(
-        "Encryption",
-      );
+      screen.getByRole("link", { name: "LUKS2 encryption with TPM" });
     });
 
     it("sends each to a page of its own, which is where every form lives", async () => {
       const { user } = installerRender(<TopLine />);
-      await user.click(screen.getByRole("link", { name: "Not configured" }));
+      await user.click(screen.getByRole("link", { name: "Boot not configured" }));
 
       expect(mockNavigateFn).toHaveBeenCalledWith(
         expect.objectContaining({ pathname: "/storage/boot-device/edit" }),

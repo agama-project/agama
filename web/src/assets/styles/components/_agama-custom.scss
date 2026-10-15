@@ -459,41 +459,30 @@ nav.agm-breadcrumb > ol > li > a {
   color: var(--pf-t--global--icon--color--status--warning--default);
 }
 
-// The page's own line: what the page is for, and the two decisions that belong
-// to the installation rather than to any one device.
-//
-// Its settings sit together as a row of pairs. PatternFly lays a description
-// list out in columns that share whatever width they are given, which spreads
-// two short values across a whole strip: the line then reads as three things
-// placed apart rather than as one line ending in its settings.
+// The two settings of the page's own line, side by side and no wider than
+// they need, each a mark and the phrase that changes it.
 .agm-top-line__settings {
   display: flex;
   flex-wrap: wrap;
   gap: var(--pf-t--global--spacer--md) var(--pf-t--global--spacer--lg);
-  width: auto;
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 
-// Each pair keeps its own term and value side by side and no wider.
-.agm-top-line__settings > * {
+// Each item on the baseline of its phrase, so the list lines up with the
+// sentence beside it: an icon on that baseline would give its own bottom edge
+// as the line instead.
+.agm-top-line__settings > li {
   display: flex;
   align-items: baseline;
-  gap: var(--pf-t--global--spacer--sm);
+  gap: var(--pf-t--global--spacer--xs);
 }
 
-// The mark beside each term at the size and color of the text it marks, close
-// to it, and centred on it: PatternFly draws it smaller, fainter, further
-// away, and stretched to the height of the line, which leaves it above the
-// word.
-.agm-top-line__settings .pf-v6-c-description-list__term {
-  --pf-v6-c-description-list__term-icon--Color: var(--pf-t--global--icon--color--regular);
-  --pf-v6-c-description-list__term-icon--MarginInlineEnd: var(--pf-t--global--spacer--xs);
-
-  align-items: center;
-}
-
-// Centred on the line, the mark still sits above words without descenders,
-// such as "Boot": nudged down to their visual middle.
-.agm-top-line__settings .pf-v6-c-description-list__term-icon {
+// The mark centred on its phrase on its own, then nudged down to the visual
+// middle of words without descenders, such as "Automatic boot".
+.agm-top-line__settings > li > svg {
+  align-self: center;
   translate: 0 0.1em;
 }
 
