@@ -325,6 +325,39 @@ nav.agm-breadcrumb > ol > li > a {
   min-height: 0;
 }
 
+// The sheet and whatever lies over the page reach the edges of the rounded box
+// holding the page, which clips them to its corners. The section's room around
+// the page moves inside the drawer, so the page itself stays where it was.
+// Except above the drawer where something comes before it in the section,
+// which keeps the room between the two.
+.agm-sheet-frame {
+  --agm-sheet-frame--inset-block-start: var(--pf-v6-c-page__main-section--PaddingBlockStart);
+  --agm-sheet-frame--inset-block-end: var(--pf-v6-c-page__main-section--PaddingBlockEnd);
+  --agm-sheet-frame--border-start: var(--pf-v6-c-page__main-container--BorderInlineStartWidth);
+  --agm-sheet-frame--border-end: var(--pf-v6-c-page__main-container--BorderInlineEndWidth);
+  --agm-sheet-frame--inset-inline-start: calc(
+    var(--pf-v6-c-page__main-section--PaddingInlineStart) - var(--agm-sheet-frame--border-start)
+  );
+  --agm-sheet-frame--inset-inline-end: calc(
+    var(--pf-v6-c-page__main-section--PaddingInlineEnd) - var(--agm-sheet-frame--border-end)
+  );
+
+  margin-block: calc(-1 * var(--agm-sheet-frame--inset-block-start))
+    calc(-1 * var(--agm-sheet-frame--inset-block-end));
+  margin-inline: calc(-1 * var(--agm-sheet-frame--inset-inline-start))
+    calc(-1 * var(--agm-sheet-frame--inset-inline-end));
+}
+
+.agm-sheet-frame:not(:first-child) {
+  --agm-sheet-frame--inset-block-start: 0px;
+}
+
+.agm-sheet-frame > .pf-v6-c-drawer__main > .pf-v6-c-drawer__content > .pf-v6-c-drawer__body {
+  padding-block: var(--agm-sheet-frame--inset-block-start) var(--agm-sheet-frame--inset-block-end);
+  padding-inline: var(--agm-sheet-frame--inset-inline-start)
+    var(--agm-sheet-frame--inset-inline-end);
+}
+
 // The drawer scrolls its panel as a whole, heading included. The scroll moves
 // one level in, to the sheet's body, so the heading stays while the rest moves.
 .agm-sheet-frame > .pf-v6-c-drawer__main > .pf-v6-c-drawer__panel {
