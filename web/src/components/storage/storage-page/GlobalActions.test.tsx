@@ -54,11 +54,11 @@ describe("GlobalActions", () => {
       mockConfig.mockReturnValue(config());
     });
 
-    it("offers changing that disk and adding more devices", () => {
+    it("offers adding more devices and, after it, changing that disk", () => {
       plainRender(<GlobalActions />);
 
-      screen.getByRole("button", { name: "Change installation disk" });
-      screen.getByRole("button", { name: "Add more devices" });
+      const names = screen.getAllByRole("button").map((button) => button.textContent);
+      expect(names).toEqual(["Add more devices", "Change installation disk"]);
     });
   });
 
