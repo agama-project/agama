@@ -21,13 +21,13 @@
  */
 
 import React from "react";
-import { sprintf } from "sprintf-js";
 import { Flex, FlexItem } from "@patternfly/react-core";
+import Interpolate from "~/components/core/Interpolate";
 import Link from "~/components/core/Link";
 import MenuButton from "~/components/core/MenuButton";
 import Text from "~/components/core/Text";
 import Icon, { IconProps } from "~/components/layout/Icon";
-import { baseName } from "~/components/storage/utils";
+import TruncatedDeviceName from "~/components/storage/TruncatedDeviceName";
 import { bootIcon } from "~/components/storage/shared/boot";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { EXPANDED, SETTINGS_TAB, SHEET, SHEET_TAB } from "~/components/storage/ui-state-params";
@@ -45,7 +45,7 @@ import type { ConfigModel } from "~/model/storage/config-model";
  * read: a decision the reader made by hand is not the automatic one, and a
  * machine set to start from nowhere is neither.
  */
-function boot(config: ConfigModel.Config): { value: TranslatedString; icon: IconProps["name"] } {
+function boot(config: ConfigModel.Config): { value: React.ReactNode; icon: IconProps["name"] } {
   if (!config.boot?.configure) {
     // TRANSLATORS: what the installation will do about starting the machine:
     // nothing, because the reader has said so.
@@ -61,13 +61,22 @@ function boot(config: ConfigModel.Config): { value: TranslatedString; icon: Icon
   const device = configModel.boot.findDevice(config);
 
   return {
-    value: device?.name
-      ? // TRANSLATORS: the disk the machine is set to start from, chosen by the
-        // reader. %s is its name, such as "sda".
-        sprintf(_("Boot from %s"), baseName(device.name))
-      : // TRANSLATORS: said where the machine is set to start from a disk the
-        // reader has yet to choose.
-        _("Boot disk not selected"),
+    value: device?.name ? (
+      /* Shortened where it is long, such as a multipath name, so it never
+           pushes the line wider than the page; the full name stays in a
+           tooltip and for screen readers. */
+      <Interpolate
+        // TRANSLATORS: the disk the machine is set to start from, chosen by
+        // the reader. %s is its name, such as "sda".
+        sentence={_("Boot from %s")}
+      >
+        {() => <TruncatedDeviceName device={device} />}
+      </Interpolate>
+    ) : (
+      // TRANSLATORS: said where the machine is set to start from a disk the
+      // reader has yet to choose.
+      _("Boot disk not selected")
+    ),
     icon: bootIcon(config),
   };
 }
