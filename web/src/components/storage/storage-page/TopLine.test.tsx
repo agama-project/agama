@@ -86,6 +86,19 @@ describe("TopLine", () => {
       screen.getByRole("link", { name: "Boot from sdb" });
     });
 
+    it("shortens a long disk name, keeping the whole of it for screen readers", () => {
+      const name = "/dev/mapper/36001405f3b9c4e8a5d7e6f1b2c3d4e5f";
+      mockConfig.mockReturnValue(
+        config({
+          drives: [{ name }],
+          boot: { configure: true, device: { default: false, name } },
+        }),
+      );
+      installerRender(<TopLine />);
+
+      screen.getByRole("link", { name: "Boot from 36001405f3b9c4e8a5d7e6f1b2c3d4e5f" });
+    });
+
     it("says so where nothing will be set up for booting", () => {
       mockConfig.mockReturnValue(config({ boot: { configure: false } }));
       installerRender(<TopLine />);
