@@ -351,6 +351,44 @@ nav.agm-breadcrumb > ol > li > a {
   color: var(--pf-t--global--text--color--subtle);
 }
 
+// A device sheet section's content sits one step in from its heading, and
+// its tables run edge to edge, so their columns line up with the text above
+// them instead of adding an indent of their own. Their header row drops its
+// top padding too, so a table starts as close to what precedes it as any other
+// content does.
+.agm-sheet-section__content {
+  padding-inline-start: var(--pf-t--global--spacer--sm);
+}
+
+.agm-sheet-section__content .pf-v6-c-table {
+  --pf-v6-c-table--cell--first-last-child--PaddingInline: 0;
+  --pf-v6-c-table--m-compact__th--PaddingBlockStart: 0;
+}
+
+// Something on a device today that the installation removes: faded, and
+// struck through with a thin line in the color of the action that removes it.
+// A line of its own color reads as a mark on the text rather than part of the
+// letters, so the text stays readable. A visual cue only: the words next to it
+// say what happens.
+.agm-pending-removal {
+  color: var(--pf-t--global--text--color--subtle);
+  text-decoration: line-through;
+  text-decoration-color: var(--pf-t--global--text--color--status--danger--default);
+  text-decoration-thickness: 1px;
+}
+
+// The control showing what is on a device: its caret sits right against the
+// words, so the two read as one control. The icon's own padding is gap enough.
+.pf-v6-c-button.agm-sheet-disclosure {
+  --pf-v6-c-button--Gap: 0;
+}
+
+// The icon draws its caret inside a square with room on every side, so pull it
+// back by that room: the caret, not its box, lines up with the text above.
+.pf-v6-c-button.agm-sheet-disclosure .pf-v6-c-button__icon {
+  margin-inline-start: -0.25em;
+}
+
 // Where its content cannot have the room it wants, the content scrolls rather
 // than the panel growing to fit it.
 .agm-sheet__body {

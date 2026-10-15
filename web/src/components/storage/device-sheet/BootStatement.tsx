@@ -23,7 +23,8 @@
 import React from "react";
 import Link from "~/components/core/Link";
 import Interpolate from "~/components/core/Interpolate";
-import Statement from "~/components/storage/device-sheet/Statement";
+import SheetItem from "~/components/storage/device-sheet/SheetItem";
+import { bootIcon } from "~/components/storage/shared/boot";
 import { STORAGE as PATHS } from "~/routes/paths";
 import configModel from "~/model/storage/config-model";
 import { useConfigModel } from "~/hooks/model/storage/config-model";
@@ -50,22 +51,30 @@ export default function BootStatement({ entry }: BootStatementProps): React.Reac
   if (!config || !name || !configModel.boot.hasDevice(config, name)) return null;
 
   return (
-    // Maybe the sentence below could provide access to a tooltip expanding the information
-    // "Some partitions may be used or created if needed to make the system able to boot."
-    <Statement icon={null} heading={_("Configure partitions needed for booting.")}>
-      <Interpolate
-        sentence={
-          configModel.boot.isDefault(config)
-            ? _("This disk was [automatically chosen] for booting.")
-            : _("This disk was [explicitly chosen] for booting.")
-        }
-      >
-        {(text) => (
-          <Link to={PATHS.editBootDevice} keepQuery variant="link" isInline>
-            {text}
-          </Link>
-        )}
-      </Interpolate>
-    </Statement>
+    <SheetItem
+      icon={bootIcon(config)}
+      value={
+        <Interpolate
+          sentence={
+            configModel.boot.isDefault(config)
+              ? // TRANSLATORS: said under the heading of the part of a disk's
+                // panel about booting. The text in square brackets is a link to
+                // the boot setting.
+                _("[Automatically chosen] for booting.")
+              : // TRANSLATORS: said under the heading of the part of a disk's
+                // panel about booting, where the boot disk was picked rather than
+                // worked out by the installer. The text in square brackets is a
+                // link to the boot setting.
+                _("[Explicitly chosen] for booting.")
+          }
+        >
+          {(text) => (
+            <Link to={PATHS.editBootDevice} keepQuery variant="link" isInline>
+              {text}
+            </Link>
+          )}
+        </Interpolate>
+      }
+    />
   );
 }

@@ -23,7 +23,6 @@
 import React from "react";
 import RelatedNames from "~/components/storage/shared/RelatedNames";
 import Interpolate from "~/components/core/Interpolate";
-import { ListItem } from "@patternfly/react-core";
 import { usersOf } from "~/components/storage/shared/users";
 import { useConfigModel } from "~/hooks/model/storage/config-model";
 import { useFlattenDevices as useSystemDevices } from "~/hooks/model/system/storage";
@@ -55,10 +54,12 @@ export default function UsedByStatement({ entry }: UsedByStatementProps): React.
   if (users.length === 0) return null;
 
   return (
-    <ListItem>
-      <Interpolate sentence={_("Partitions needed as physical volumes for %s.")}>
-        {() => <RelatedNames items={users} />}
-      </Interpolate>
-    </ListItem>
+    <Interpolate
+      // TRANSLATORS: says a disk gives room to one or more LVM volume groups. %s
+      // is their names, such as "system", each a link to its panel.
+      sentence={_("Partitions needed as physical volumes for %s.")}
+    >
+      {() => <RelatedNames items={users} />}
+    </Interpolate>
   );
 }

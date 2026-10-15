@@ -21,13 +21,11 @@
  */
 
 import React from "react";
-import { List, ListItem, Flex, FlexItem, Stack, StackItem } from "@patternfly/react-core";
+import { Flex, FlexItem, List, ListItem } from "@patternfly/react-core";
 import Link from "~/components/core/Link";
-import Text from "~/components/core/Text";
 import Icon from "~/components/layout/Icon";
 import PlannedContentSection from "~/components/storage/device-sheet/PlannedContentSection";
 import UsedByStatement from "~/components/storage/device-sheet/UsedByStatement";
-import BootStatement from "~/components/storage/device-sheet/BootStatement";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { generateEncodedPath } from "~/utils";
 import configModel from "~/model/storage/config-model";
@@ -88,45 +86,54 @@ export default function PartitionableContent({
   });
 
   const add = (variant: "primary" | "secondary") => (
-    <Link to={addPath} keepQuery variant={variant} icon={<Icon name="add" size="xs" />}>
-      {_("Add Partition")}
+    <Link to={addPath} keepQuery variant={variant} size="sm">
+      <Flex alignItems={{ default: "alignItemsCenter" }} gap={{ default: "gapSm" }}>
+        <Icon name="add_circle" /> {_("Add Partition")}
+      </Flex>
     </Link>
   );
 
+  /* What is listed below, or the way to start listing it. */
+  const listed = planned.length ? (
+    <PlannedContentSection entry={entry} subject={subject} />
+  ) : (
+    <Flex direction={{ default: "column" }} gap={{ default: "gapSm" }}>
+      <FlexItem>
+        {users.length || isBoot
+          ? // TRANSLATORS: offered on a disk that already gets some partitions,
+            // such as those a volume group needs.
+            _("You can define additional partitions.")
+          : // TRANSLATORS: offered on a disk that gets no partitions yet.
+            _("You can define partitions.")}
+      </FlexItem>
+      <FlexItem>{add("secondary")}</FlexItem>
+    </Flex>
+  );
+
+  /* Without a volume group to give room to, the list is all there is. */
+  if (!users.length) return planned.length ? listed : null;
+
+  /* Two kinds of partitions to create, said side by side: those a volume
+     group needs, first, and those listed. */
   return (
-    <Stack hasGutter>
-      <StackItem>
-        <Text isBold>{_("New partitions to create in the disk")}</Text>
-        {!!planned.length && !users.length && (
-          <PlannedContentSection entry={entry} subject={subject} />
+    <List>
+      <ListItem>
+        <UsedByStatement entry={entry} />
+      </ListItem>
+      <ListItem>
+        {planned.length ? (
+          <Flex direction={{ default: "column" }} gap={{ default: "gapSm" }}>
+            <FlexItem>
+              {/* TRANSLATORS: introduces the table of partitions the user asked
+                  to create on a disk, next to those a volume group needs. */}
+              {_("Partitions from the following list")}
+            </FlexItem>
+            <FlexItem>{listed}</FlexItem>
+          </Flex>
+        ) : (
+          listed
         )}
-        {!!users.length && (
-          <List>
-            <UsedByStatement entry={entry} />
-            <ListItem>
-              {!!planned.length && (
-                <>
-                  <Text>{_("Partitions from the following list")}</Text>
-                  <PlannedContentSection entry={entry} subject={subject} />
-                </>
-              )}
-              {!planned.length && (
-                <Flex>
-                  <FlexItem>
-                    {users.length || isBoot
-                      ? _("You can define additional partitions.")
-                      : _("You can define partitions.")}
-                  </FlexItem>
-                  <FlexItem>{add("secondary")}</FlexItem>
-                </Flex>
-              )}
-            </ListItem>
-          </List>
-        )}
-      </StackItem>
-      <StackItem>
-        <BootStatement entry={entry} />
-      </StackItem>
-    </Stack>
+      </ListItem>
+    </List>
   );
 }

@@ -293,6 +293,7 @@ export {
   decisionLabel,
   decisionOf,
   decisionUnder,
+  recoverableBy,
   shrinkReason,
   ShrinkRefusal,
   usePartitionSpaceItems,

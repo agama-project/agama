@@ -94,6 +94,11 @@ export type PlannedContentSectionProps = {
   entry: Entry;
   /** Where the entry is written, which is what the acts on its parts need. */
   subject: SheetEntry;
+  /**
+   * Whether the table shades every other row, on top of the lines between
+   * rows. Off by default.
+   */
+  isStriped?: boolean;
 };
 
 /**
@@ -116,6 +121,7 @@ export type PlannedContentSectionProps = {
 export default function PlannedContentSection({
   entry,
   subject,
+  isStriped = false,
 }: PlannedContentSectionProps): React.ReactNode {
   const deletePartition = useDeletePartition();
   const deleteLogicalVolume = useDeleteLogicalVolume();
@@ -162,8 +168,10 @@ export default function PlannedContentSection({
   const addLabel = isVolumeGroup ? _("Add logical volume") : _("Add partition");
 
   const add = (variant: "primary" | "secondary") => (
-    <Link to={addPath} keepQuery variant={variant} icon={<Icon name="add" size="xs" />}>
-      {addLabel}
+    <Link to={addPath} keepQuery variant={variant} size="sm">
+      <Flex alignItems={{ default: "alignItemsCenter" }} gap={{ default: "gapSm" }}>
+        <Icon name="add_circle" /> {addLabel}
+      </Flex>
     </Link>
   );
 
@@ -174,6 +182,7 @@ export default function PlannedContentSection({
           role="table"
           gridBreakPoint=""
           variant="compact"
+          isStriped={isStriped}
           // TRANSLATORS: names the list of what the installation will put on
           // one of its entries.
           aria-label={_("Planned content")}
@@ -249,7 +258,10 @@ export default function PlannedContentSection({
                           popperProps: { position: "end" },
                         }}
                         customToggle={
-                          <RowMenuToggle label={sprintf(_("Actions for %s"), label(part))} />
+                          <RowMenuToggle
+                            label={sprintf(_("Actions for %s"), label(part))}
+                            size="sm"
+                          />
                         }
                         items={[
                           <MenuButtonItem key="edit" to={editPath(part)} keepQuery>
@@ -295,7 +307,11 @@ export default function PlannedContentSection({
             moving the plan is offered only here, where there is something
             to move: under a view that has just said nothing is planned, it
             would promise the move of nothing. */}
-        <Flex gap={{ default: "gapSm" }} flexWrap={{ default: "wrap" }}>
+        <Flex
+          gap={{ default: "gapSm" }}
+          flexWrap={{ default: "wrap" }}
+          alignItems={{ default: "alignItemsCenter" }}
+        >
           <FlexItem>{add("secondary")}</FlexItem>
           {!isVolumeGroup && (
             <FlexItem>

@@ -21,6 +21,9 @@
  */
 
 import { baseName } from "~/components/storage/utils";
+import configModel from "~/model/storage/config-model";
+import type { IconProps } from "~/components/layout/Icon";
+import type { ConfigModel } from "~/model/storage/config-model";
 import type { Storage as Proposal } from "~/model/proposal";
 import type { Storage as System } from "~/model/system";
 
@@ -79,4 +82,18 @@ function bootPartitionsOf(
     }));
 }
 
-export { bootPartitionsOf };
+/**
+ * The icon for how the machine is set to boot, so every place that shows the
+ * boot setting marks it the same way.
+ *
+ * - Not configured: a blocked sign.
+ * - Chosen by the installer: a turning arrow with an A.
+ * - Chosen by hand: the same arrow without the A.
+ */
+function bootIcon(config: ConfigModel.Config): IconProps["name"] {
+  if (!config.boot?.configure) return "block";
+  if (configModel.boot.isDefault(config)) return "rotate_auto";
+  return "settings_backup_restore";
+}
+
+export { bootIcon, bootPartitionsOf };
