@@ -61,29 +61,71 @@ function categoryTitle(category: Category): TranslatedString {
 }
 
 /**
+ * One category of the configuration: a heading naming it, then a table of its
+ * entries.
+ *
+ * The heading names both the section and the table, so a reader moving by
+ * headings, by landmarks or by tables meets the same name, written once.
+ *
+ * A named section is a region landmark. With every category present, that is
+ * three landmarks inside the page. If that turns out to be noise when moving by
+ * landmarks, the section can drop its name and the table keep it.
+ */
+function CategorySection({
+  category,
+  children,
+}: {
+  category: Category;
+  children: React.ReactNode;
+}): React.ReactNode {
+  const headingId = React.useId();
+
+  return (
+    <section aria-labelledby={headingId} className="agm-entries-table__section">
+      <h2 id={headingId} className="agm-entries-table__category">
+        {categoryTitle(category)}
+      </h2>
+      <Table role="table" gridBreakPoint="" variant="compact" aria-labelledby={headingId}>
+        {/* Read out and not drawn. A strip of names sitting once at the top of
+            a list of eight devices labels columns that have scrolled away from
+            it, and every row already carries its own name. */}
+        <Thead className={a11yStyles.screenReader}>
+          <Tr>
+            <Th>{columnName("entry")}</Th>
+            <Th>{columnName("actions")}</Th>
+            <Th>{columnName("content")}</Th>
+            <Th>{columnName("options")}</Th>
+          </Tr>
+        </Thead>
+        <Tbody>{children}</Tbody>
+      </Table>
+    </section>
+  );
+}
+
+/**
  * What the configuration is made of, under the summary of what it does.
  *
- * A table rather than a run of blocks. Entries are read by comparing them, and
- * columns only line up when one element owns them, which is also what lets a
- * screen reader say which entry and which column every cell belongs to.
+ * A section per category, each a heading over a table of its entries. Entries
+ * are read by comparing them, and a table is what lets a screen reader say
+ * which entry and which column every cell belongs to.
  *
- * Each category is a body of its own, headed by a row naming it. That name is a
- * header cell scoped to the rowgroup rather than a heading above the table:
- * scoping is what ties the rows under it to the name for a reader who never
- * sees the arrangement, and a styled heading outside the table ties nothing to
- * anything.
+ * Each category has a table of its own rather than a body in a shared one, so
+ * its name can be a real heading, and controls acting on a whole category can
+ * sit beside that heading without being read out as part of every cell under
+ * it.
+ *
+ * Arrow keys walk the entries across every table, as one list.
  *
  * Two of PatternFly's defaults are turned off rather than accepted, and both
  * would be quiet failures:
  *
- * - It calls itself a grid, which announces an interactive widget with a
+ * - It calls a table a grid, which announces an interactive widget with a
  *   keyboard model of its own. This is something to read.
  * - It stacks each row into a block below a breakpoint, which leaves the rows
  *   and cells `display: grid`, and an element laid out that way loses the role
- *   its element gave it. Only the table and the bodies are told what they are
- *   in so many words, so the grouping this list is arranged around would go
- *   exactly where the window is tightest and the arrangement matters most.
- *   The table keeps its width instead and scrolls inside its own box.
+ *   its element gave it, exactly where the window is tightest. The tables keep
+ *   their width instead and scroll inside their own box.
  */
 export default function EntriesTable(): React.ReactNode {
   const config = useConfigModel();
@@ -143,49 +185,25 @@ export default function EntriesTable(): React.ReactNode {
 
   return (
     <div className="agm-entries-table" ref={list} onKeyDown={onKeyDown}>
-      <Table
-        role="table"
-        gridBreakPoint=""
-        variant="compact"
-        // TRANSLATORS: names the list of everything the installation is made of.
-        aria-label={_("Configured devices")}
-      >
-        {/* Read out and not drawn. A strip of names sitting once at the top of
-            a list of eight devices labels columns that have scrolled away from
-            it, and every row already carries its own name. */}
-        <Thead className={a11yStyles.screenReader}>
-          <Tr>
-            <Th>{columnName("entry")}</Th>
-            <Th>{columnName("actions")}</Th>
-            <Th>{columnName("content")}</Th>
-            <Th>{columnName("options")}</Th>
-          </Tr>
-        </Thead>
-        {groups.map(({ category, entries }) => (
-          <Tbody key={category}>
-            <Tr className="agm-entries-table__category">
-              <Th scope="rowgroup" colSpan={4}>
-                {categoryTitle(category)}
-              </Th>
-            </Tr>
-            {entries.map((entry, index) =>
-              category === "volumeGroups" ? (
-                <VolumeGroupRow
-                  key={entry.vgName}
-                  group={entry}
-                  subject={{ collection: category, index }}
-                />
-              ) : (
-                <DriveRow
-                  key={entry.name}
-                  name={entry.name}
-                  subject={{ collection: category, index }}
-                />
-              ),
-            )}
-          </Tbody>
-        ))}
-      </Table>
+      {groups.map(({ category, entries }) => (
+        <CategorySection key={category} category={category}>
+          {entries.map((entry, index) =>
+            category === "volumeGroups" ? (
+              <VolumeGroupRow
+                key={entry.vgName}
+                group={entry}
+                subject={{ collection: category, index }}
+              />
+            ) : (
+              <DriveRow
+                key={entry.name}
+                name={entry.name}
+                subject={{ collection: category, index }}
+              />
+            ),
+          )}
+        </CategorySection>
+      ))}
     </div>
   );
 }
