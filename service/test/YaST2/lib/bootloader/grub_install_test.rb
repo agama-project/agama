@@ -168,7 +168,7 @@ describe Bootloader::GrubInstall do
         end
 
         expect { subject.execute(devices: ["/dev/sda", "/dev/sdb", "/dev/sdc"]) }
-          .to raise_error(RuntimeError, /Installing GRUB2 to device failed/)
+          .to raise_error(Bootloader::GrubInstallError, /Installing GRUB2 failed/)
       end
 
       it "runs with target i386-pc on i386" do

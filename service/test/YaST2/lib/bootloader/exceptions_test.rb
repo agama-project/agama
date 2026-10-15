@@ -156,7 +156,7 @@ describe Bootloader::GrubInstallError do
   it_behaves_like "a command error"
 
   it "formats a readable message" do
-    expect(subject.message).to include("Installing GRUB2 to device failed")
+    expect(subject.message).to include("Installing GRUB2 failed")
   end
 end
 
