@@ -32,44 +32,45 @@ jest.mock("~/hooks/model/storage/config-model", () => ({
   useSetSpacePolicy: () => mockSetSpacePolicy,
 }));
 
-const options = () => screen.getByRole("group", { name: "Set all to" });
+/** Opens the menu and gives back its items. */
+const openMenu = async (user) => {
+  await user.click(screen.getByRole("button", { name: "Set all to" }));
+  return screen.getByRole("menu", { name: "Set all to" });
+};
 
 describe("SpaceDecision", () => {
-  it("offers the three decisions in the words of the Action column", () => {
-    installerRender(<SpaceDecision collection="drives" index={0} current="keep" />);
+  it("offers the three decisions in the words of the Action column, safest first", async () => {
+    const { user } = installerRender(<SpaceDecision collection="drives" index={0} />);
+    const menu = await openMenu(user);
 
-    const names = within(options())
-      .getAllByRole("button")
-      .map((button) => button.textContent);
+    const names = within(menu)
+      .getAllByRole("menuitem")
+      .map((item) => within(item).getByText(/^(Keep|Shrink if needed|Delete)$/).textContent);
 
-    expect(names).toEqual(["Delete", "Shrink if needed", "Keep"]);
+    expect(names).toEqual(["Keep", "Shrink if needed", "Delete"]);
   });
 
-  it("reads pressed the decision every partition shares", () => {
-    installerRender(<SpaceDecision collection="drives" index={0} current="keep" />);
+  it("says what each decision means in the menu", async () => {
+    const { user } = installerRender(<SpaceDecision collection="drives" index={0} />);
+    const menu = await openMenu(user);
 
-    screen.getByRole("button", { name: "Keep", pressed: true });
-    screen.getByRole("button", { name: "Delete", pressed: false });
-  });
-
-  it("reads none pressed when the partitions are given different decisions", () => {
-    installerRender(<SpaceDecision collection="drives" index={0} />);
-
-    expect(within(options()).queryAllByRole("button", { pressed: true })).toEqual([]);
+    within(menu).getByText("Their data is lost, and the space is freed for the new system.");
   });
 
   it("gives every partition the decision chosen", async () => {
     const { user } = installerRender(<SpaceDecision collection="drives" index={0} />);
-    await user.click(screen.getByRole("button", { name: "Shrink if needed" }));
+    const menu = await openMenu(user);
+    await user.click(within(menu).getByRole("menuitem", { name: /^Shrink if needed/ }));
 
     expect(mockSetSpacePolicy).toHaveBeenCalledWith("drives", 0, { type: "resize" });
   });
 
-  it("leaves the configuration alone when the decision already taken is pressed", async () => {
+  it("leaves the configuration alone when every partition already has it", async () => {
     const { user } = installerRender(
       <SpaceDecision collection="drives" index={0} current="delete" />,
     );
-    await user.click(screen.getByRole("button", { name: "Delete" }));
+    const menu = await openMenu(user);
+    await user.click(within(menu).getByRole("menuitem", { name: /^Delete/ }));
 
     expect(mockSetSpacePolicy).not.toHaveBeenCalled();
   });

@@ -296,12 +296,6 @@ nav.agm-breadcrumb > ol > li > a {
   white-space: nowrap;
 }
 
-// PatternFly lays a toggle group out on one line and lets it overflow. Two rows
-// of options are read; a row running off the page is not.
-.agm-space-decision .pf-v6-c-toggle-group {
-  flex-wrap: wrap;
-}
-
 // A page holding a sheet does not scroll: the page beside the sheet and the
 // sheet each scroll on their own. A page that scrolls as a whole opens the
 // sheet at whatever offset the page was left at, with its heading out of sight.

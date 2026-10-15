@@ -79,7 +79,7 @@ const entry = (
 
 const subject = { collection: "drives" as const, index: 0 };
 
-const options = () => screen.queryByRole("group", { name: "Set all to" });
+const options = () => screen.queryByRole("button", { name: "Set all to" });
 
 /** The sentence summing up the content, which opens the section. */
 const summary = () => screen.getByRole("paragraph");
@@ -112,7 +112,7 @@ describe("CurrentContentSection", () => {
     await user.click(toggle);
 
     screen.getByRole("table", { name: "Current content" });
-    screen.getByRole("group", { name: "Set all to" });
+    screen.getByRole("button", { name: "Set all to" });
     expect(screen.getByRole("button", { name: "Hide partitions" })).toHaveAttribute(
       "aria-expanded",
       "true",
@@ -131,12 +131,6 @@ describe("CurrentContentSection", () => {
     );
   });
 
-  it("reads pressed the decision every partition shares", async () => {
-    await renderShown(<CurrentContentSection entry={entry("delete")} subject={subject} />);
-
-    screen.getByRole("button", { name: "Delete", pressed: true });
-  });
-
   describe("when the partitions are given different decisions", () => {
     const mixed = entry("custom", [{ name: "/dev/vdd1", delete: true }]);
 
@@ -147,12 +141,6 @@ describe("CurrentContentSection", () => {
         "3 partitions: 1 will be deleted (including Windows 11) and 2 will be kept",
       );
       expect(screen.queryByRole("table")).toBeNull();
-    });
-
-    it("reads none of the options pressed", async () => {
-      await renderShown(<CurrentContentSection entry={mixed} subject={subject} />);
-
-      expect(within(options()).queryAllByRole("button", { pressed: true })).toEqual([]);
     });
   });
 
@@ -179,10 +167,12 @@ describe("CurrentContentSection", () => {
     });
 
     it("still offers giving the others the same decision", async () => {
-      await renderShown(<CurrentContentSection entry={reusing} subject={subject} />);
+      const { user } = await renderShown(
+        <CurrentContentSection entry={reusing} subject={subject} />,
+      );
+      await user.click(options());
 
-      screen.getByRole("button", { name: "Delete", pressed: true });
-      expect(screen.getByRole("button", { name: "Keep" })).toBeEnabled();
+      screen.getByRole("menuitem", { name: /^Keep/ });
     });
   });
 

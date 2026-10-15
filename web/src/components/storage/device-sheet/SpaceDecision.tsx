@@ -21,14 +21,14 @@
  */
 
 import React from "react";
-import { Flex, ToggleGroup, ToggleGroupItem, Tooltip } from "@patternfly/react-core";
-import Text from "~/components/core/Text";
+import MenuButton from "~/components/core/MenuButton";
 import { useSetSpacePolicy } from "~/hooks/model/storage/config-model";
 import { _, TranslatedString } from "~/i18n";
 import type { ConfigModel, DeviceCollection } from "~/model/storage/config-model";
 import type { Decision } from "~/components/storage/device-sheet/partition-space";
 
-const DECISIONS: Decision[] = ["delete", "resizeIfNeeded", "keep"];
+/** Safest first, so the one that loses data comes last. */
+const DECISIONS: Decision[] = ["keep", "resizeIfNeeded", "delete"];
 
 /** The device policy giving every part the same decision. */
 const POLICY: Record<Decision, ConfigModel.SpacePolicy> = {
@@ -41,68 +41,41 @@ const POLICY: Record<Decision, ConfigModel.SpacePolicy> = {
 function label(decision: Decision): TranslatedString {
   switch (decision) {
     case "delete":
-      // TRANSLATORS: option after "Set all to", applied to every listed
+      // TRANSLATORS: item of the "Set all to" menu, applied to every listed
       // partition or logical volume: remove them; data lost.
       return _("Delete");
     case "resizeIfNeeded":
-      // TRANSLATORS: option after "Set all to", applied to every listed
+      // TRANSLATORS: item of the "Set all to" menu, applied to every listed
       // partition or logical volume: allow making them smaller if room is
       // needed; data kept.
       return _("Shrink if needed");
     case "keep":
-      // TRANSLATORS: option after "Set all to", applied to every listed
+      // TRANSLATORS: item of the "Set all to" menu, applied to every listed
       // partition or logical volume: change nothing.
       return _("Keep");
   }
 }
 
 /**
- * Read before the option is taken, which is when it is worth knowing. What the
- * option ends up doing to the device is said by the summary above the table.
+ * Read under each item before it is taken, which is when it is worth knowing.
+ * What it ends up doing to the device is said by the summary above the table.
  */
 function meaning(decision: Decision): TranslatedString {
   switch (decision) {
     case "delete":
-      // TRANSLATORS: tooltip of the "Delete" option after "Set all to". "Their"
+      // TRANSLATORS: description of "Delete" in the "Set all to" menu. "Their"
       // means the listed partitions or logical volumes (must fit both nouns).
       return _("Their data is lost, and the space is freed for the new system.");
     case "resizeIfNeeded":
-      // TRANSLATORS: tooltip of the "Shrink if needed" option after "Set all
-      // to". "Their" means the listed partitions or logical volumes (must fit
+      // TRANSLATORS: description of "Shrink if needed" in the "Set all to"
+      // menu. "Their" means the listed partitions or logical volumes (must fit
       // both nouns).
       return _("Their data is kept, and some may be made smaller if room is needed.");
     case "keep":
-      // TRANSLATORS: tooltip of the "Keep" option after "Set all to". "Their"
+      // TRANSLATORS: description of "Keep" in the "Set all to" menu. "Their"
       // means the listed partitions or logical volumes (must fit both nouns).
       return _("Their data is kept, and only the free space is used.");
   }
-}
-
-type SpaceOptionProps = {
-  decision: Decision;
-  isSelected: boolean;
-  onChoose: (decision: Decision) => void;
-};
-
-/**
- * The tooltip is addressed to the button by id rather than wrapped around it.
- * A wrapper lands between the group and its buttons and breaks the segmented
- * look, and props given to a toggle item reach that wrapper, not the button.
- */
-function SpaceOption({ decision, isSelected, onChoose }: SpaceOptionProps) {
-  const buttonId = React.useId();
-
-  return (
-    <>
-      <ToggleGroupItem
-        text={label(decision)}
-        buttonId={buttonId}
-        isSelected={isSelected}
-        onChange={() => onChoose(decision)}
-      />
-      <Tooltip content={meaning(decision)} triggerRef={() => document.getElementById(buttonId)} />
-    </>
-  );
 }
 
 export type SpaceDecisionProps = {
@@ -114,44 +87,42 @@ export type SpaceDecisionProps = {
 
 /**
  * Gives every part of a device the new system does not use the same decision
- * at once: delete, shrink if needed, or keep.
+ * at once: keep, shrink if needed, or delete.
  *
- * A shortcut over deciding part by part, not a separate choice. When the parts
- * share a decision, that one reads pressed; when they do not, none does, and
- * pressing one gives it to all of them. Parts the new system uses keep what it
- * does with them.
+ * A menu of actions, like the menu on each row of the table, offering the same
+ * three decisions for all of them at once. Its items act when chosen and hold
+ * no state: what each part ends up with is read in the summary and the table.
+ * Parts the new system uses keep what it does with them.
  */
 export default function SpaceDecision({ collection, index, current }: SpaceDecisionProps) {
   const setSpacePolicy = useSetSpacePolicy();
-  const labelId = React.useId();
 
-  /* Pressing the decision already taken changes nothing, so nothing is written. */
+  /* Choosing the decision every part already has changes nothing, so nothing
+     is written. */
   const choose = (decision: Decision) => {
     if (decision !== current) setSpacePolicy(collection, index, { type: POLICY[decision] });
   };
 
+  // TRANSLATORS: opens a menu with "Keep", "Shrink if needed" and "Delete",
+  // which apply one action to every listed partition or logical volume.
+  const name = _("Set all to");
+
   return (
-    <Flex
-      className="agm-space-decision"
-      alignItems={{ default: "alignItemsCenter" }}
-      gap={{ default: "gapSm" }}
+    <MenuButton
+      menuProps={{ "aria-label": name, popperProps: { position: "end" } }}
+      toggleProps={{ variant: "secondary", size: "sm" }}
+      items={DECISIONS.map((decision) => (
+        <MenuButton.Item
+          key={decision}
+          isDanger={decision === "delete"}
+          description={meaning(decision)}
+          onClick={() => choose(decision)}
+        >
+          {label(decision)}
+        </MenuButton.Item>
+      ))}
     >
-      <Text id={labelId}>
-        {/* TRANSLATORS: label before the options "Delete", "Shrink if
-            needed" and "Keep", which apply one action to every listed
-            partition or logical volume. */}
-        {_("Set all to")}
-      </Text>
-      <ToggleGroup isCompact aria-labelledby={labelId}>
-        {DECISIONS.map((decision) => (
-          <SpaceOption
-            key={decision}
-            decision={decision}
-            isSelected={decision === current}
-            onChoose={choose}
-          />
-        ))}
-      </ToggleGroup>
-    </Flex>
+      {name}
+    </MenuButton>
   );
 }
