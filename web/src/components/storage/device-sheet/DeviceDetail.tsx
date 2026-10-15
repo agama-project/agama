@@ -118,7 +118,7 @@ export default function DeviceDetail({ entry, subject }: DeviceDetailProps): Rea
       {isBootDevice && (
         // TRANSLATORS: heading of the part of a disk's panel shown when the
         // machine starts from that disk.
-        <SheetSection title={_("Boot")}>
+        <SheetSection title={_("Boot device")}>
           <BootStatement entry={entry} />
         </SheetSection>
       )}

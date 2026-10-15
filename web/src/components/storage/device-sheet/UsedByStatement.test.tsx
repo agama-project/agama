@@ -57,15 +57,14 @@ describe("UsedByStatement", () => {
     mockConfig.mockReturnValue(config(["/dev/vdd"]));
     installerRender(<UsedByStatement entry={entry} />);
 
-    screen.getByText("LVM");
+    screen.getByText(/Partitions needed as physical volumes for/);
     screen.getByRole("link", { name: "system" });
-    screen.getByText("Partitions are created here as needed.");
   });
 
   it("says nothing when no volume group takes room from the disk", () => {
     mockConfig.mockReturnValue(config([]));
     installerRender(<UsedByStatement entry={entry} />);
 
-    expect(screen.queryByText("LVM")).toBeNull();
+    expect(screen.queryByText(/physical volumes/)).toBeNull();
   });
 });

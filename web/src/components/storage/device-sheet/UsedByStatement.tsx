@@ -23,7 +23,6 @@
 import React from "react";
 import RelatedNames from "~/components/storage/shared/RelatedNames";
 import Interpolate from "~/components/core/Interpolate";
-import SheetItem from "~/components/storage/device-sheet/SheetItem";
 import { usersOf } from "~/components/storage/shared/users";
 import { useConfigModel } from "~/hooks/model/storage/config-model";
 import { useFlattenDevices as useSystemDevices } from "~/hooks/model/system/storage";
@@ -55,23 +54,12 @@ export default function UsedByStatement({ entry }: UsedByStatementProps): React.
   if (users.length === 0) return null;
 
   return (
-    <SheetItem
-      icon="stacks"
-      // TRANSLATORS: names the volume management on a disk, in its panel.
-      name={_("LVM")}
-      value={
-        <Interpolate
-          // TRANSLATORS: follows "LVM" in a disk's panel. %s is the name of one
-          // or more volume groups, such as "system", each a link to its panel.
-          sentence={_("physical volumes for %s")}
-        >
-          {() => <RelatedNames items={users} />}
-        </Interpolate>
-      }
+    <Interpolate
+      // TRANSLATORS: says a disk gives room to one or more LVM volume groups. %s
+      // is their names, such as "system", each a link to its panel.
+      sentence={_("Partitions needed as physical volumes for %s.")}
     >
-      {/* TRANSLATORS: says how the room for a volume group is taken from a
-          disk. */}
-      {_("Partitions are created here as needed.")}
-    </SheetItem>
+      {() => <RelatedNames items={users} />}
+    </Interpolate>
   );
 }
