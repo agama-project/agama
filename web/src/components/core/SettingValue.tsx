@@ -46,6 +46,11 @@ export type SettingValueProps = {
    * settings without a box being drawn around each.
    */
   icon?: IconProps["name"];
+  /**
+   * An id for the term, so a control in the value can point at it, for
+   * example with `aria-describedby`, and keep its meaning out of context.
+   */
+  termId?: string;
 };
 
 /**
@@ -73,10 +78,16 @@ export type SettingValueProps = {
  *   />
  * </DescriptionList>
  */
-export default function SettingValue({ term, value, explanation, icon }: SettingValueProps) {
+export default function SettingValue({
+  term,
+  value,
+  explanation,
+  icon,
+  termId,
+}: SettingValueProps) {
   return (
     <DescriptionListGroup>
-      <DescriptionListTerm icon={icon && <Icon name={icon} aria-hidden />}>
+      <DescriptionListTerm id={termId} icon={icon && <Icon name={icon} aria-hidden />}>
         {term}
       </DescriptionListTerm>
       <DescriptionListDescription>

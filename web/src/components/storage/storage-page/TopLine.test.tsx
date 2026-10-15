@@ -103,6 +103,17 @@ describe("TopLine", () => {
       screen.getByRole("link", { name: "LUKS2 with TPM" });
     });
 
+    it("ties each link to its setting, so it keeps its meaning out of place", () => {
+      installerRender(<TopLine />);
+
+      expect(screen.getByRole("link", { name: "Not configured" })).toHaveAccessibleDescription(
+        "Boot",
+      );
+      expect(screen.getByRole("link", { name: "Not encrypted" })).toHaveAccessibleDescription(
+        "Encryption",
+      );
+    });
+
     it("sends each to a page of its own, which is where every form lives", async () => {
       const { user } = installerRender(<TopLine />);
       await user.click(screen.getByRole("link", { name: "Not configured" }));
