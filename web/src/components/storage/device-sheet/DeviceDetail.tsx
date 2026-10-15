@@ -85,9 +85,9 @@ export default function DeviceDetail({ entry, subject }: DeviceDetailProps): Rea
     // partitions the installation creates on it.
     newContentTitle = _("Partitions to create");
   } else {
-    // TRANSLATORS: heading of the part of a device's panel saying what the
-    // installation plans for it, where nothing is planned yet.
-    newContentTitle = _("Planned content");
+    // TRANSLATORS: heading of the part of a device's panel about how the
+    // installation uses the device, where it does not use it yet.
+    newContentTitle = _("Usage");
   }
 
   /* Booting is a concern of its own: the partitions it needs may be created
