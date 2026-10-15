@@ -103,7 +103,10 @@ fi
 
 # Prevent premature activation of LVM (bsc#1246133)
 systemctl mask lvm2-monitor.service
-sed -i 's:# event_activation = 1:event_activation = 0:' /etc/lvm/lvm.conf
+if [[ -f /etc/lvm/lvm.conf ]]; then
+  puts "disabling lvm event_activation"
+  sed -i 's:# event_activation = 1:event_activation = 0:' /etc/lvm/lvm.conf
+fi
 
 # Prevent premature assembly of MD RAIDs (bsc#1245159)
 touch /etc/udev/rules.d/64-md-raid-assembly.rules
