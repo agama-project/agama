@@ -57,6 +57,18 @@ export default function DeviceDetail({ entry, subject }: DeviceDetailProps): Rea
      it starts from is the disks it takes its room from. */
   const isNewVolumeGroup = entry.isVolumeGroup && !(entry.config as ConfigModel.VolumeGroup).name;
 
+  /* A file system the new system takes as it is changes nothing on the device:
+     what is there now is what will be there, so it is said once. */
+  if (isMountedPartitionable && part.filesystem?.reuse === true) {
+    return (
+      // TRANSLATORS: heading of a device's panel where the new system uses what
+      // is on the device as it is.
+      <SheetSection title={_("Content")}>
+        <PartitionableMountContent entry={entry} subject={subject} />
+      </SheetSection>
+    );
+  }
+
   /* Named after what it holds rather than after when, since not everything a
      device takes part in is new content. */
   let newContentTitle: string;
@@ -105,7 +117,7 @@ export default function DeviceDetail({ entry, subject }: DeviceDetailProps): Rea
       </SheetSection>
       <SheetSection title={newContentTitle}>
         {!entry.isVolumeGroup && isMountedPartitionable && (
-          <PartitionableMountContent entry={entry} subject={subject} />
+          <PartitionableMountContent entry={entry} subject={subject} showName={false} />
         )}
         {!entry.isVolumeGroup && !isMountedPartitionable && isUsedPartitionable && (
           <PartitionableContent entry={entry} subject={subject} />
