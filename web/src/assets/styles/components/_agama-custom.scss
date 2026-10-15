@@ -416,10 +416,10 @@ nav.agm-breadcrumb > ol > li > a {
   overflow-x: auto;
 }
 
-// Entries sit under the name of their category rather than beside it, so the
-// grouping reads without the name having to be repeated on every row.
-.agm-entries-table th[scope="row"] {
-  padding-inline-start: var(--pf-t--global--spacer--lg);
+// Inside the page box, so its first and last columns take the regular cell
+// padding rather than the wider one meant for a table against the page edge.
+.agm-entries-table .pf-v6-c-table {
+  --pf-v6-c-table--cell--first-last-child--PaddingInline: var(--pf-t--global--spacer--md);
 }
 
 // Set apart from the entries under it by weight and size rather than by a
@@ -484,13 +484,6 @@ nav.agm-breadcrumb > ol > li > a {
 .agm-top-line__settings > li > svg {
   align-self: center;
   translate: 0 0.1em;
-}
-
-// The add offer belongs next to what it adds to, so it keeps the list's own
-// indent rather than sitting against the edge of the page.
-.agm-entries-table__add {
-  padding-block-start: var(--pf-t--global--spacer--md);
-  padding-inline-start: var(--pf-t--global--spacer--lg);
 }
 
 // The whole row opens the entry: the name's link is stretched over it, so the
