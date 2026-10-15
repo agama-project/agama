@@ -35,8 +35,14 @@ import configModel from "~/model/storage/config-model";
 import { useConfigModel } from "~/hooks/model/storage/config-model";
 import { useReset } from "~/hooks/model/config/storage";
 import { useClearSearchParams } from "~/hooks/use-search-param-state";
-import { _, TranslatedString } from "~/i18n";
+import { _ } from "~/i18n";
 import type { ConfigModel } from "~/model/storage/config-model";
+
+/** The value a setting phrase carries, set apart from the words naming it. */
+const bold = (text: string) => <Text isBold>{text}</Text>;
+
+/** A setting phrase, with the part in square brackets as its value. */
+const phrase = (sentence: string) => <Interpolate sentence={sentence}>{bold}</Interpolate>;
 
 /**
  * Where the machine will start from, said as a value rather than as a setting.
@@ -48,14 +54,15 @@ import type { ConfigModel } from "~/model/storage/config-model";
 function boot(config: ConfigModel.Config): { value: React.ReactNode; icon: IconProps["name"] } {
   if (!config.boot?.configure) {
     // TRANSLATORS: the disk the machine will start from: none, because the
-    // reader has said nothing is to be set up for starting it.
-    return { value: _("Boot disk: not configured"), icon: bootIcon(config) };
+    // reader has said nothing is to be set up for starting it. The text in
+    // square brackets is shown in bold.
+    return { value: phrase(_("Boot disk: [not configured]")), icon: bootIcon(config) };
   }
 
   if (configModel.boot.isDefault(config)) {
     // TRANSLATORS: the disk the machine will start from: the installer works
-    // it out by itself.
-    return { value: _("Boot disk: auto"), icon: bootIcon(config) };
+    // it out by itself. The text in square brackets is shown in bold.
+    return { value: phrase(_("Boot disk: [auto]")), icon: bootIcon(config) };
   }
 
   const device = configModel.boot.findDevice(config);
@@ -70,12 +77,19 @@ function boot(config: ConfigModel.Config): { value: React.ReactNode; icon: IconP
         // the reader. %s is its name, such as "sda".
         sentence={_("Boot disk: %s")}
       >
-        {() => <TruncatedDeviceName device={device} />}
+        {() => (
+          <Text isBold>
+            <TruncatedDeviceName device={device} />
+          </Text>
+        )}
       </Interpolate>
     ) : (
-      // TRANSLATORS: said where the machine is set to start from a disk the
-      // reader has yet to choose.
-      _("Boot disk: not selected")
+      phrase(
+        // TRANSLATORS: said where the machine is set to start from a disk the
+        // reader has yet to choose. The text in square brackets is shown in
+        // bold.
+        _("Boot disk: [not selected]"),
+      )
     ),
     icon: bootIcon(config),
   };
@@ -83,21 +97,25 @@ function boot(config: ConfigModel.Config): { value: React.ReactNode; icon: IconP
 
 /** The same, for what protects the data the installation writes. */
 function encryption(config: ConfigModel.Config): {
-  value: TranslatedString;
+  value: React.ReactNode;
   icon: IconProps["name"];
 } {
   if (!config.encryption) {
     // TRANSLATORS: what protects the data the installation writes: nothing.
-    return { value: _("Not encrypted"), icon: "lock_open" };
+    return { value: phrase(_("Not encrypted")), icon: "lock_open" };
   }
 
   return {
-    value: config.encryption.tpm
-      ? // TRANSLATORS: how the installation is encrypted, where the machine's
-        // security chip releases the key at start-up.
-        _("LUKS2 encryption with TPM")
-      : // TRANSLATORS: how the installation is encrypted.
-        _("LUKS2 encryption"),
+    value: phrase(
+      config.encryption.tpm
+        ? // TRANSLATORS: how the installation is encrypted, where the machine's
+          // security chip releases the key at start-up. The text in square
+          // brackets is shown in bold.
+          _("[LUKS2] encryption with TPM")
+        : // TRANSLATORS: how the installation is encrypted. The text in square
+          // brackets is shown in bold.
+          _("[LUKS2] encryption"),
+    ),
     icon: "lock",
   };
 }
