@@ -104,7 +104,7 @@ export default function DeviceDetail({ entry, subject }: DeviceDetailProps): Rea
               _("Physical volumes")
             : // TRANSLATORS: heading of the part of a device's panel saying
               // what is on the device now, before installing.
-              _("Current disk partitions")
+              _("Current content")
         }
       >
         {!entry.isVolumeGroup && isUsedPartitionable && (
