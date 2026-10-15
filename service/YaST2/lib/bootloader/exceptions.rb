@@ -33,7 +33,7 @@ module Bootloader
   # Specialized error for grub2-install failures
   class GrubInstallError < CommandError
     def initialize(exception)
-      super(_("Installing GRUB2 to device failed."), exception)
+      super(_("Installing GRUB2 failed."), exception)
     end
   end
 

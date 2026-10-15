@@ -112,7 +112,7 @@ module Bootloader
     end
 
     def self.export_password(pwd, kind)
-      raise BootloaderError, _("Cannot pass empty password via the keyring.") if pwd.empty?
+      raise BootloaderError, _("Cannot pass an empty password via the keyring.") if pwd.empty?
 
       begin
         Yast::Execute.on_target!("keyctl", "padd", "user", kind, "@u",
