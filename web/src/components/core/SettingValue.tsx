@@ -76,7 +76,7 @@ export type SettingValueProps = {
 export default function SettingValue({ term, value, explanation, icon }: SettingValueProps) {
   return (
     <DescriptionListGroup>
-      <DescriptionListTerm icon={icon && <Icon name={icon} size="xs" aria-hidden />}>
+      <DescriptionListTerm icon={icon && <Icon name={icon} aria-hidden />}>
         {term}
       </DescriptionListTerm>
       <DescriptionListDescription>

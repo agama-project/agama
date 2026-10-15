@@ -129,8 +129,10 @@ export default function TopLine(): React.ReactNode {
   };
 
   return (
+    /* On one baseline, so the sentence and the settings read as one line
+       although they are set in different sizes. */
     <Flex
-      alignItems={{ default: "alignItemsCenter" }}
+      alignItems={{ default: "alignItemsBaseline" }}
       justifyContent={{ default: "justifyContentSpaceBetween" }}
       gap={{ default: "gapMd" }}
       /* Wrapping rather than pinned on one line. A strip this crowded runs out
