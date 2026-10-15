@@ -46,7 +46,8 @@ import {
 import { outcomeOf } from "~/components/storage/shared/consequences";
 import { useDevicesManager } from "~/components/storage/shared/use-devices-manager";
 import { baseName, deviceSize, formattedPath } from "~/components/storage/utils";
-import { _ } from "~/i18n";
+import { _, n_ } from "~/i18n";
+import type { TranslatedString } from "~/i18n";
 import type DevicesManager from "~/model/storage/devices-manager";
 import type { Decision } from "~/components/storage/device-sheet/partition-space";
 import type { ContentPart } from "~/components/storage/device-sheet/content-summary";
@@ -111,8 +112,11 @@ function PartitionMenu({
   entries,
   collection,
   index,
+  canDecide = true,
 }: {
   part: System.Device;
+  /** Whether what happens to it can be decided here, or is fixed for it. */
+  canDecide?: boolean;
   /** Where the new system mounts it already, where it does. */
   reusedAs?: string;
   /** Every partition that decision governs, which it is written back with. */
@@ -174,7 +178,7 @@ function PartitionMenu({
 
   /* The space decision first: it is what the row's first column says about
      itself, so the menu opens on the thing the reader just read. */
-  const decisions = reusedAs ? [] : spaceItems;
+  const decisions = reusedAs || !canDecide ? [] : spaceItems;
   const items = [
     ...decisions,
     ...(decisions.length && reuseItems.length ? [<Divider key="rule" component="li" />] : []),
@@ -390,6 +394,20 @@ function PartitionRow({
   );
 }
 
+/** What is on a device the installation does not use: all of it stays. */
+function keptAsTheyAre(isVolumeGroup: boolean, count: number): TranslatedString {
+  return sprintf(
+    isVolumeGroup
+      ? // TRANSLATORS: what happens to the logical volumes of a volume group the
+        // installation does not use. %d is how many.
+        n_("Keeps %d logical volume as it is", "Keeps %d logical volumes as they are", count)
+      : // TRANSLATORS: what happens to the partitions of a disk the installation
+        // does not use. %d is how many.
+        n_("Keeps %d partition as it is", "Keeps %d partitions as they are", count),
+    count,
+  );
+}
+
 /** The name of the control showing or hiding the list of what is on a device. */
 function disclosureLabel(isVolumeGroup: boolean, expanded: boolean): string {
   if (isVolumeGroup) {
@@ -419,6 +437,13 @@ export type CurrentContentSectionProps = {
    * rows. Off by default.
    */
   isStriped?: boolean;
+  /**
+   * What happens to every partition, where it does not depend on a space
+   * option: "keep" on a device the installation does not use, "delete" on one
+   * given whole to a file system. Leaves out the option and the decisions in
+   * the row menus.
+   */
+  fixedDecision?: Decision;
 };
 
 /**
@@ -465,6 +490,7 @@ export default function CurrentContentSection({
   entry,
   subject,
   isStriped = false,
+  fixedDecision,
 }: CurrentContentSectionProps): React.ReactNode {
   const manager = useDevicesManager();
   const rows = rowsOf(entry);
@@ -474,7 +500,7 @@ export default function CurrentContentSection({
   /* What the device's own rule allows each of its partitions, where it has one
      to give. Nothing under the fourth answer, which is the answer that says the
      parts decide, and then each row carries the control that decides it. */
-  const rule = decisionUnder(policy);
+  const rule = fixedDecision || decisionUnder(policy);
   const entries = entry.isVolumeGroup
     ? (entry.config as ConfigModel.VolumeGroup).logicalVolumes || []
     : (entry.config as Partitionable.Device).partitions || [];
@@ -491,7 +517,7 @@ export default function CurrentContentSection({
      closed, since the summary already says what happens to every part, and
      it stays open once the reader has been under the fourth, so it does not
      vanish when they switch back. */
-  const isCustom = policy === "custom";
+  const isCustom = !fixedDecision && policy === "custom";
   const [expanded, setExpanded] = React.useState(false);
   const tableId = React.useId();
 
@@ -508,12 +534,15 @@ export default function CurrentContentSection({
       };
     });
   const freeSpace = rows.filter(isFreeSpace).reduce((sum, slot) => sum + slot.size, 0);
-  const summary = contentSummary(
-    entry.isVolumeGroup ? "logicalVolumes" : "partitions",
-    policy,
-    parts,
-    freeSpace,
-  );
+  const summary =
+    fixedDecision === "keep"
+      ? keptAsTheyAre(entry.isVolumeGroup, parts.length)
+      : contentSummary(
+          entry.isVolumeGroup ? "logicalVolumes" : "partitions",
+          fixedDecision === "delete" ? "delete" : policy,
+          parts,
+          freeSpace,
+        );
   const summaryId = React.useId();
 
   /* Said when the answer changes, so a screen reader user hears what their
@@ -533,14 +562,16 @@ export default function CurrentContentSection({
           so the decision is offered there too. */}
       {rows.some((row) => !isFreeSpace(row)) && (
         <>
-          <FlexItem>
-            <SpaceDecision
-              collection={subject.collection}
-              index={subject.index}
-              isAssertive
-              onCustom={() => setExpanded(true)}
-            />
-          </FlexItem>
+          {!fixedDecision && (
+            <FlexItem>
+              <SpaceDecision
+                collection={subject.collection}
+                index={subject.index}
+                isAssertive
+                onCustom={() => setExpanded(true)}
+              />
+            </FlexItem>
+          )}
           {/* The toggle starts its own line under the summary, so its caret sits
               right above the table it opens. The summary says what the table
               is about and is the toggle's description for whoever lands on it
@@ -647,14 +678,19 @@ export default function CurrentContentSection({
                     entries={entries}
                     decision={decision}
                     menu={
-                      <PartitionMenu
-                        part={row}
-                        reusedAs={entries.find((e) => e.name === row.name)?.mountPath}
-                        governed={governed}
-                        entries={entries}
-                        collection={subject.collection}
-                        index={subject.index}
-                      />
+                      /* Nothing to offer on a partition that goes with the
+                         whole device. */
+                      fixedDecision !== "delete" && (
+                        <PartitionMenu
+                          part={row}
+                          reusedAs={entries.find((e) => e.name === row.name)?.mountPath}
+                          governed={governed}
+                          entries={entries}
+                          collection={subject.collection}
+                          index={subject.index}
+                          canDecide={!fixedDecision}
+                        />
+                      )
                     }
                   />
                 );

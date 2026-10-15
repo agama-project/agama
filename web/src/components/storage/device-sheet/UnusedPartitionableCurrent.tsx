@@ -38,9 +38,9 @@ import type { DeviceDetailProps } from "~/components/storage/device-sheet/Device
  * the whole device can be put to use as it is, so it is offered to mount.
  */
 export default function UnusedPartitionableCurrent({ entry, subject }: DeviceDetailProps) {
-  // FIXME: the partitions of an unused device should show kept, with only the
-  // option to reuse them.
-  if (hasCurrentContent(entry)) return <CurrentContentSection entry={entry} subject={subject} />;
+  /* Its partitions all stay, and any of them can be put to use. */
+  if (hasCurrentContent(entry))
+    return <CurrentContentSection entry={entry} subject={subject} fixedDecision="keep" />;
 
   const formatPath = generateEncodedPath(PATHS.formatDevice, {
     collection: subject.collection,
