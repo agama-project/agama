@@ -519,13 +519,28 @@ nav.agm-breadcrumb > ol > li > a {
   --pf-v6-c-table--cell--first-last-child--PaddingInline: var(--pf-t--global--spacer--md);
 }
 
-// Set apart from the entries under it by weight and size rather than by a
-// filled band. Indented like the first column, so it sits over the names it
-// heads.
-.agm-entries-table__category {
-  margin: 0;
+// Indented like the first column, so the heading sits over the names it heads.
+.agm-entries-table__header {
   padding-inline: var(--pf-t--global--spacer--md);
   padding-block-end: var(--pf-t--global--spacer--xs);
+}
+
+// A control beside a category heading acts on the whole category, and stays
+// quieter than the heading it sits beside. PatternFly's small button only trims
+// the padding, so the text is set smaller too, keeping the button tall enough
+// to hit comfortably.
+.agm-entries-table__header .pf-v6-c-button {
+  --pf-v6-c-button--FontSize: var(--pf-t--global--font--size--xs);
+  --pf-v6-c-button--PaddingBlockStart: var(--pf-t--global--spacer--xs);
+  --pf-v6-c-button--PaddingBlockEnd: var(--pf-t--global--spacer--xs);
+  --pf-v6-c-button--PaddingInlineStart: var(--pf-t--global--spacer--sm);
+  --pf-v6-c-button--PaddingInlineEnd: var(--pf-t--global--spacer--sm);
+}
+
+// Set apart from the entries under it by weight and size rather than by a
+// filled band.
+.agm-entries-table__category {
+  margin: 0;
   font-size: var(--pf-t--global--font--size--body--sm);
   font-weight: var(--pf-t--global--font--weight--body--bold);
   color: var(--pf-t--global--text--color--subtle);

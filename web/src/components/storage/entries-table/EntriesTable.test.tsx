@@ -46,6 +46,7 @@ jest.mock("~/hooks/model/storage/config-model", () => ({
   useDeleteDrive: () => jest.fn(),
   useDeleteMdRaid: () => jest.fn(),
   useDeleteVolumeGroup: () => jest.fn(),
+  useChangeTargetDrive: () => jest.fn(),
 }));
 
 jest.mock("~/hooks/model/system/storage", () => ({
@@ -53,6 +54,7 @@ jest.mock("~/hooks/model/system/storage", () => ({
   useDevice: (name: string) => mockSystemDevice(name),
   useFlattenDevices: () => mockSystemDevices(),
   useAvailableDevices: () => [],
+  useCandidateDrives: () => [],
 }));
 
 jest.mock("~/hooks/model/proposal/storage", () => ({
@@ -167,6 +169,39 @@ describe("EntriesTable", () => {
     });
     within(screen.getByRole("region", { name: "Used disks" })).getByRole("table", {
       name: "Used disks",
+    });
+  });
+
+  describe("when the installation uses a single disk", () => {
+    beforeEach(() => {
+      mockConfig.mockReturnValue(config({ drives: [{ name: "/dev/sda", partitions: [] }] }));
+    });
+
+    it("offers changing it beside the heading of the disks", () => {
+      installerRender(<EntriesTable />);
+
+      const disks = screen.getByRole("region", { name: "Used disks" });
+      const button = within(disks).getByRole("button", { name: "Change installation disk" });
+      expect(button).toHaveTextContent("Change…");
+    });
+  });
+
+  describe("when the installation uses more than one disk", () => {
+    beforeEach(() => {
+      mockConfig.mockReturnValue(
+        config({
+          drives: [
+            { name: "/dev/sda", partitions: [] },
+            { name: "/dev/sdb", partitions: [] },
+          ],
+        }),
+      );
+    });
+
+    it("does not offer changing the installation disk", () => {
+      installerRender(<EntriesTable />);
+
+      expect(screen.queryByRole("button", { name: "Change installation disk" })).toBeNull();
     });
   });
 

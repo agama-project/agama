@@ -21,8 +21,7 @@
  */
 
 import React from "react";
-import { Button, Flex } from "@patternfly/react-core";
-import Icon from "~/components/layout/Icon";
+import { Button } from "@patternfly/react-core";
 import DeviceSelectorModal from "~/components/storage/DeviceSelectorModal";
 import { _ } from "~/i18n";
 import { useConfigModel, useChangeTargetDrive } from "~/hooks/model/storage/config-model";
@@ -30,6 +29,14 @@ import { useCandidateDrives } from "~/hooks/model/system/storage";
 import { useDevice } from "~/hooks/model/system/storage";
 import type { Storage } from "~/model/system";
 
+/**
+ * Puts the whole installation on a different disk, for a configuration that
+ * uses a single one.
+ *
+ * Its visible text is short because it sits beside the heading of the disks it
+ * acts on. Its accessible name says the whole of it, for a reader who meets it
+ * away from that heading, such as in a list of the page's buttons.
+ */
 export default function ChangeInstallationDisk(): React.ReactNode {
   const config = useConfigModel();
   const device = useDevice(config.drives[0].name);
@@ -39,15 +46,19 @@ export default function ChangeInstallationDisk(): React.ReactNode {
 
   return (
     <>
-      <Button variant="plain" onClick={() => setIsOpen(true)}>
-        <Flex alignItems={{ default: "alignItemsCenter" }} gap={{ default: "gapSm" }}>
-          <Icon name="change_circle" />{" "}
-          {
-            // TRANSLATORS: offered at the foot of the list of what the
-            // installation is made of: put the whole of it on a different disk.
-            _("Change installation disk")
-          }
-        </Flex>
+      <Button
+        variant="tertiary"
+        size="sm"
+        // TRANSLATORS: names the control beside the heading of the disks the
+        // installation uses: put the whole installation on a different disk.
+        aria-label={_("Change installation disk")}
+        onClick={() => setIsOpen(true)}
+      >
+        {
+          // TRANSLATORS: visible text of the control beside the heading of the
+          // disks the installation uses, which opens a choice of another disk.
+          _("Change…")
+        }
       </Button>
       {isOpen && (
         <DeviceSelectorModal

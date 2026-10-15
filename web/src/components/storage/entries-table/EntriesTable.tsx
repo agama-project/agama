@@ -21,12 +21,15 @@
  */
 
 import React from "react";
+import { Flex } from "@patternfly/react-core";
 import { Table, Tbody, Th, Thead, Tr } from "@patternfly/react-table";
 import a11yStyles from "@patternfly/react-styles/css/utilities/Accessibility/accessibility";
 import { columnName } from "~/components/storage/entries-table/columns";
 import DriveRow from "~/components/storage/entries-table/DriveRow";
 import VolumeGroupRow from "~/components/storage/entries-table/VolumeGroupRow";
+import ChangeInstallationDisk from "~/components/storage/storage-page/ChangeInstallationDisk";
 import { useConfigModel } from "~/hooks/model/storage/config-model";
+import configModel from "~/model/storage/config-model";
 import { _, TranslatedString } from "~/i18n";
 
 /** Where an entry is written in the configuration, which is also what it is. */
@@ -73,18 +76,28 @@ function categoryTitle(category: Category): TranslatedString {
  */
 function CategorySection({
   category,
+  actions,
   children,
 }: {
   category: Category;
+  /** Controls acting on the category as a whole, shown beside its heading. */
+  actions?: React.ReactNode;
   children: React.ReactNode;
 }): React.ReactNode {
   const headingId = React.useId();
 
   return (
     <section aria-labelledby={headingId} className="agm-entries-table__section">
-      <h2 id={headingId} className="agm-entries-table__category">
-        {categoryTitle(category)}
-      </h2>
+      <Flex
+        className="agm-entries-table__header"
+        alignItems={{ default: "alignItemsCenter" }}
+        gap={{ default: "gapSm" }}
+      >
+        <h2 id={headingId} className="agm-entries-table__category">
+          {categoryTitle(category)}
+        </h2>
+        {actions}
+      </Flex>
       <Table role="table" gridBreakPoint="" variant="compact" aria-labelledby={headingId}>
         {/* Read out and not drawn. A strip of names sitting once at the top of
             a list of eight devices labels columns that have scrolled away from
@@ -183,10 +196,16 @@ export default function EntriesTable(): React.ReactNode {
 
   if (!groups.length) return null;
 
+  const canChangeTarget = configModel.canChangeTargetDrive(config);
+
   return (
     <div className="agm-entries-table" ref={list} onKeyDown={onKeyDown}>
       {groups.map(({ category, entries }) => (
-        <CategorySection key={category} category={category}>
+        <CategorySection
+          key={category}
+          category={category}
+          actions={category === "drives" && canChangeTarget && <ChangeInstallationDisk />}
+        >
           {entries.map((entry, index) =>
             category === "volumeGroups" ? (
               <VolumeGroupRow
