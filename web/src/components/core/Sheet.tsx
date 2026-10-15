@@ -199,9 +199,15 @@ export default function Sheet({
      so that opening the sheet does not slide the sentence the reader is reading
      out from under them. */
   const reserves = isBeside && placeholder !== undefined;
+  const isCovered = placement === "overlay" && isOpen;
 
   return (
-    <Drawer isExpanded={isOpen || reserves} isInline={isBeside} position="end">
+    <Drawer
+      isExpanded={isOpen || reserves}
+      isInline={isBeside}
+      position="end"
+      className={isCovered ? "agm-sheet-frame agm-sheet-frame--covered" : "agm-sheet-frame"}
+    >
       <DrawerContent
         panelContent={
           <DrawerPanelContent
@@ -221,7 +227,7 @@ export default function Sheet({
         <DrawerContentBody
           // @ts-expect-error: React 18 types have no `inert`, which the DOM
           // takes as an empty string.
-          inert={placement === "overlay" && isOpen ? "" : undefined}
+          inert={isCovered ? "" : undefined}
         >
           {page}
         </DrawerContentBody>
