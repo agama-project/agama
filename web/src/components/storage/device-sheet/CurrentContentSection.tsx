@@ -537,7 +537,6 @@ export default function CurrentContentSection({
             <SpaceDecision
               collection={subject.collection}
               index={subject.index}
-              isAssertive
               onCustom={() => setExpanded(true)}
             />
           </FlexItem>

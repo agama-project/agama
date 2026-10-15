@@ -54,9 +54,9 @@ describe("SpaceDecision", () => {
       .map((button) => button.textContent);
 
     expect(names).toEqual([
-      "Deleting everything",
-      "Shrinking if needed",
-      "Keeping everything",
+      "Delete disk content",
+      "Shrink existing partitions",
+      "Keep partitions",
       "Custom",
     ]);
   });
@@ -64,14 +64,14 @@ describe("SpaceDecision", () => {
   it("says what the plan is doing, which is the one that reads pressed", () => {
     installerRender(<SpaceDecision collection="drives" index={0} />);
 
-    expect(screen.getByRole("button", { name: "Keeping everything", pressed: true }));
-    expect(screen.getByRole("button", { name: "Deleting everything", pressed: false }));
+    expect(screen.getByRole("button", { name: "Keep partitions", pressed: true }));
+    expect(screen.getByRole("button", { name: "Delete disk content", pressed: false }));
   });
 
   describe("when another answer is chosen", () => {
     it("writes it to the configuration", async () => {
       const { user } = installerRender(<SpaceDecision collection="drives" index={0} />);
-      await user.click(screen.getByRole("button", { name: "Shrinking if needed" }));
+      await user.click(screen.getByRole("button", { name: "Shrink existing partitions" }));
 
       expect(mockSetSpacePolicy).toHaveBeenCalledWith("drives", 0, { type: "resize" });
     });
@@ -107,7 +107,7 @@ describe("SpaceDecision", () => {
          back rather than remembered, the control would spring back and the
          per-partition controls it was asked for would never appear. */
       screen.getByRole("button", { name: "Custom", pressed: true });
-      screen.getByRole("button", { name: "Keeping everything", pressed: false });
+      screen.getByRole("button", { name: "Keep partitions", pressed: false });
     });
   });
 
@@ -132,7 +132,7 @@ describe("SpaceDecision", () => {
     it("reads as keeping everything, which is what an unset rule does", () => {
       installerRender(<SpaceDecision collection="drives" index={0} />);
 
-      expect(screen.getByRole("button", { name: "Keeping everything", pressed: true }));
+      expect(screen.getByRole("button", { name: "Keep partitions", pressed: true }));
     });
   });
 });

@@ -31,22 +31,18 @@ import type { ConfigModel, DeviceCollection, Partitionable } from "~/model/stora
 const POLICIES: ConfigModel.SpacePolicy[] = ["delete", "resize", "keep", "custom"];
 
 /**
- * What the plan is doing, rather than what to do.
- *
- * In a table the reader is acting and the imperative is right. Here they are
- * reading a summary, and four buttons in the imperative look like four things
- * about to happen.
+ * What to do with what is already on the device.
  *
  * FIXME: This should work also for logical volumes
  */
-function label(policy: ConfigModel.SpacePolicy, isAssertive: boolean): TranslatedString {
+function label(policy: ConfigModel.SpacePolicy): TranslatedString {
   switch (policy) {
     case "delete":
-      return isAssertive ? _("Delete disk content") : _("Deleting disk content");
+      return _("Delete disk content");
     case "resize":
-      return isAssertive ? _("Shrink existing partitions") : _("Shrinking existing partitions");
+      return _("Shrink existing partitions");
     case "keep":
-      return isAssertive ? _("Keep partitions") : _("Keeping partitions");
+      return _("Keep partitions");
     case "custom":
       return _("Custom");
   }
@@ -78,7 +74,6 @@ type SpaceOptionProps = {
   policy: ConfigModel.SpacePolicy;
   isSelected: boolean;
   isDisabled: boolean;
-  isAssertive: boolean;
   onChoose: (policy: ConfigModel.SpacePolicy) => void;
 };
 
@@ -87,13 +82,13 @@ type SpaceOptionProps = {
  * A wrapper lands between the group and its buttons and breaks the segmented
  * look, and props given to a toggle item reach that wrapper, not the button.
  */
-function SpaceOption({ policy, isSelected, isDisabled, isAssertive, onChoose }: SpaceOptionProps) {
+function SpaceOption({ policy, isSelected, isDisabled, onChoose }: SpaceOptionProps) {
   const buttonId = React.useId();
 
   return (
     <>
       <ToggleGroupItem
-        text={label(policy, isAssertive)}
+        text={label(policy)}
         buttonId={buttonId}
         isSelected={isSelected}
         isDisabled={isDisabled}
@@ -107,7 +102,6 @@ function SpaceOption({ policy, isSelected, isDisabled, isAssertive, onChoose }: 
 export type SpaceDecisionProps = {
   collection: DeviceCollection;
   index: number;
-  isAssertive?: boolean;
   /** Called when custom is chosen, to show where each part is decided. */
   onCustom?: () => void;
 };
@@ -126,12 +120,7 @@ export type SpaceDecisionProps = {
  * decided how to decide, not what to decide, which is why it has to be
  * remembered rather than read back. {@link useSpacePolicy} does that.
  */
-export default function SpaceDecision({
-  collection,
-  index,
-  isAssertive,
-  onCustom,
-}: SpaceDecisionProps) {
+export default function SpaceDecision({ collection, index, onCustom }: SpaceDecisionProps) {
   const deviceConfig = useDeviceConfig(collection, index);
   const { policy: current, choose: answer } = useSpacePolicy(
     collection,
@@ -165,7 +154,6 @@ export default function SpaceDecision({
             policy={policy}
             isSelected={policy === current}
             isDisabled={reused && policy !== "custom"}
-            isAssertive={isAssertive}
             onChoose={choose}
           />
         ))}
