@@ -65,12 +65,12 @@ export default function Consequences(): React.ReactNode {
       title={<Summary count={counted.length} />}
       actions={
         <>
-          <SheetOpener subject="result" tab="layout">
+          <SheetOpener subject="result" tab="layout" variant="button">
             {/* TRANSLATORS: opens a panel showing how the disks will look after
                 installation. */}
             {_("View resulting layout")}
           </SheetOpener>
-          <SheetOpener subject="result" tab="actions">
+          <SheetOpener subject="result" tab="actions" variant="button">
             {/* TRANSLATORS: opens a panel listing the steps the installer will
                 take on the disks. */}
             {_("Check actions")}
