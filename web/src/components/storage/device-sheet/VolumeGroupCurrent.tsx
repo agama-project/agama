@@ -21,8 +21,10 @@
  */
 
 import React from "react";
-import { StackItem } from "@patternfly/react-core";
-import Interpolate from "~/components/core/Interpolate";
+import CurrentContentSection, {
+  hasCurrentContent,
+} from "~/components/storage/device-sheet/CurrentContentSection";
+import SheetItem from "~/components/storage/device-sheet/SheetItem";
 import RelatedNames from "~/components/storage/shared/RelatedNames";
 import { baseName } from "~/components/storage/utils";
 import { useConfigModel } from "~/hooks/model/storage/config-model";
@@ -49,9 +51,18 @@ import type { Related } from "~/components/storage/shared/users";
  * and how large, is settled by what is asked of it, and a number here would be
  * a promise this panel cannot keep.
  */
-export default function VolumeGroupCurrent({ entry }: DeviceDetailProps): React.ReactNode {
+export default function VolumeGroupCurrent({ entry, subject }: DeviceDetailProps) {
   const config = useConfigModel();
   const volumeGroup = entry.config as ConfigModel.VolumeGroup;
+
+  /* A group the system already has: what it holds today, read like a disk's
+     partitions, or a line saying it holds nothing. */
+  if (volumeGroup.name) {
+    if (hasCurrentContent(entry)) return <CurrentContentSection entry={entry} subject={subject} />;
+
+    // TRANSLATORS: said of an existing LVM volume group with nothing in it.
+    return <p>{_("No logical volumes detected.")}</p>;
+  }
 
   /* Each target is an entry of the plan in its own right, except where the
      group was pointed at a device the configuration says nothing else about. */
@@ -60,23 +71,18 @@ export default function VolumeGroupCurrent({ entry }: DeviceDetailProps): React.
     subject: configModel.partitionable.findLocation(config, name) || undefined,
   }));
 
+  if (!targets.length) return null;
+
   return (
-    <>
-      {/* The section is already headed "Physical volumes", so only the
-          sentence is left to say. */}
-      {!!targets.length && (
-        <StackItem>
-          <Interpolate
-            // TRANSLATORS: says where a volume group being defined will make
-            // room for itself. %s is a list of device names, such as "sda and
-            // sdb".
-            sentence={_("Any needed partition will be created at %s.")}
-          >
-            {() => <RelatedNames items={targets} />}
-          </Interpolate>
-        </StackItem>
-      )}
-      {volumeGroup.name && <StackItem>{_("TODO: Existing volume group")}</StackItem>}
-    </>
+    <SheetItem
+      icon="hard_drive"
+      // TRANSLATORS: names the disks a new LVM volume group takes its room from.
+      name={_("Disks")}
+      value={<RelatedNames items={targets} />}
+    >
+      {/* TRANSLATORS: says how a new LVM volume group takes its room from the
+          disks named above it. */}
+      {_("Partitions are created there as needed.")}
+    </SheetItem>
   );
 }
