@@ -24,7 +24,7 @@ import React from "react";
 import { screen, within } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import type { ConfigModel } from "~/model/storage/config-model";
-import SpaceDecision from "~/components/storage/storage-page/SpaceDecision";
+import SpaceDecision from "~/components/storage/device-sheet/SpaceDecision";
 import { SpacePolicyMemory } from "~/components/storage/shared/space-policy";
 
 const mockDeviceConfig = jest.fn();
