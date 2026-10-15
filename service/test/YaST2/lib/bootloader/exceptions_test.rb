@@ -25,8 +25,24 @@
 require_relative "../../../test_helper"
 require "bootloader/exceptions"
 
+RSpec.shared_examples "a bootloader error" do
+  it "is a BootloaderError" do
+    expect(subject).to be_a(Bootloader::BootloaderError)
+  end
+end
+
+RSpec.shared_examples "a command error" do
+  it_behaves_like "a bootloader error"
+
+  it "is a CommandError" do
+    expect(subject).to be_a(Bootloader::CommandError)
+  end
+end
+
 describe Bootloader::UnsupportedBootloader do
   subject { described_class.new("exotic") }
+
+  it_behaves_like "a bootloader error"
 
   it "exposes the given bootloader name" do
     expect(subject.bootloader_name).to eq("exotic")
@@ -40,6 +56,8 @@ end
 describe Bootloader::BrokenConfiguration do
   subject { described_class.new("something is wrong") }
 
+  it_behaves_like "a bootloader error"
+
   it "exposes the given reason" do
     expect(subject.reason).to eq("something is wrong")
   end
@@ -51,6 +69,8 @@ end
 
 describe Bootloader::BrokenByPathDeviceName do
   subject { described_class.new("/dev/disk/by-path/foo") }
+
+  it_behaves_like "a bootloader error"
 
   it "exposes the given device name" do
     expect(subject.dev_name).to eq("/dev/disk/by-path/foo")
@@ -64,6 +84,8 @@ end
 describe Bootloader::UnsupportedOption do
   subject { described_class.new("some_option") }
 
+  it_behaves_like "a bootloader error"
+
   it "does NOT expose the given option due to a pre-existing upstream bug " \
      "(#option is always nil)" do
     expect(subject.option).to be_nil
@@ -75,6 +97,8 @@ describe Bootloader::UnsupportedOption do
 end
 
 describe Bootloader::InvalidSerialConsoleArguments do
+  it_behaves_like "a bootloader error"
+
   it "uses a default message when none is given" do
     expect(described_class.new.message).to include("Invalid serial console arguments")
   end
@@ -89,12 +113,12 @@ describe Bootloader::InvalidSerialConsoleArguments do
 end
 
 describe Bootloader::NoRoot do
-  it "is a BootloaderError" do
-    expect(described_class.new).to be_a(Bootloader::BootloaderError)
-  end
+  it_behaves_like "a bootloader error"
 end
 
 describe Bootloader::BootloaderError do
+  it_behaves_like "a bootloader error"
+
   it "inherits from RuntimeError" do
     expect(described_class.new).to be_a(RuntimeError)
   end
@@ -107,9 +131,7 @@ describe Bootloader::CommandError do
   end
   subject { described_class.new("Command failed", cheetah) }
 
-  it "is a BootloaderError" do
-    expect(subject).to be_a(Bootloader::BootloaderError)
-  end
+  it_behaves_like "a command error"
 
   it "exposes description, command, stderr, and exit_code" do
     expect(subject.description).to eq("Command failed")
@@ -126,45 +148,53 @@ describe Bootloader::CommandError do
 end
 
 describe Bootloader::GrubInstallError do
-  it "is a CommandError" do
-    status = double(exitstatus: 1)
-    cheetah = Cheetah::ExecutionFailed.new(["/usr/sbin/grub2-install"], status, "", "err")
-    err = described_class.new(cheetah)
+  let(:cheetah) do
+    Cheetah::ExecutionFailed.new(["/usr/sbin/grub2-install"], double(exitstatus: 1), "", "err")
+  end
+  subject { described_class.new(cheetah) }
 
-    expect(err).to be_a(Bootloader::CommandError)
-    expect(err.message).to include("Installing GRUB2 to device failed")
+  it_behaves_like "a command error"
+
+  it "formats a readable message" do
+    expect(subject.message).to include("Installing GRUB2 to device failed")
   end
 end
 
 describe Bootloader::GrubConfigError do
-  it "is a CommandError" do
-    status = double(exitstatus: 1)
-    cheetah = Cheetah::ExecutionFailed.new(["/usr/sbin/grub2-mkconfig"], status, "", "err")
-    err = described_class.new(cheetah)
+  let(:cheetah) do
+    Cheetah::ExecutionFailed.new(["/usr/sbin/grub2-mkconfig"], double(exitstatus: 1), "", "err")
+  end
+  subject { described_class.new(cheetah) }
 
-    expect(err).to be_a(Bootloader::CommandError)
-    expect(err.message).to include("Generating GRUB2 configuration failed")
+  it_behaves_like "a command error"
+
+  it "formats a readable message" do
+    expect(subject.message).to include("Generating GRUB2 configuration failed")
   end
 end
 
 describe Bootloader::DracutError do
-  it "is a CommandError" do
-    status = double(exitstatus: 1)
-    cheetah = Cheetah::ExecutionFailed.new(["/usr/bin/dracut"], status, "", "err")
-    err = described_class.new(cheetah)
+  let(:cheetah) do
+    Cheetah::ExecutionFailed.new(["/usr/bin/dracut"], double(exitstatus: 1), "", "err")
+  end
+  subject { described_class.new(cheetah) }
 
-    expect(err).to be_a(Bootloader::CommandError)
-    expect(err.message).to include("Regenerating initrd with dracut failed")
+  it_behaves_like "a command error"
+
+  it "formats a readable message" do
+    expect(subject.message).to include("Regenerating initrd with dracut failed")
   end
 end
 
 describe Bootloader::SdbootutilError do
-  it "is a CommandError" do
-    status = double(exitstatus: 1)
-    cheetah = Cheetah::ExecutionFailed.new(["/usr/bin/sdbootutil"], status, "", "err")
-    err = described_class.new("Action failed", cheetah)
+  let(:cheetah) do
+    Cheetah::ExecutionFailed.new(["/usr/bin/sdbootutil"], double(exitstatus: 1), "", "err")
+  end
+  subject { described_class.new("Action failed", cheetah) }
 
-    expect(err).to be_a(Bootloader::CommandError)
-    expect(err.message).to include("Action failed")
+  it_behaves_like "a command error"
+
+  it "formats a readable message" do
+    expect(subject.message).to include("Action failed")
   end
 end
