@@ -819,7 +819,7 @@ export default {
     "Acaba"
   ],
   "Finished": [
-    "Acabada"
+    "Acabat"
   ],
   "First user": [
     "Usuari primer"
@@ -895,7 +895,7 @@ export default {
     "Amaga els detalls"
   ],
   "Hostname": [
-    "Nom d'amfitrió"
+    "Nom de l'amfitrió"
   ],
   "Hostname could not be updated": [
     "No s'ha pogut actualitzar el nom d'amfitrió"
@@ -1338,7 +1338,7 @@ export default {
     "Xarxa no protegida"
   ],
   "Not selected yet": [
-    "Encara no s'ha seleccionat."
+    "Encara no seleccionat"
   ],
   "Not supported (%s)": [
     "No compatible (%s)"

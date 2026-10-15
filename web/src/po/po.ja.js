@@ -1147,10 +1147,10 @@ export default {
     "設定と物理ボリュームの変更"
   ],
   "More actions": [
-    "さらなる処理"
+    "その他の処理"
   ],
   "More devices": [
-    "さらなるデバイス"
+    "その他のデバイス"
   ],
   "More keymap layout might be available for the selected product at [Localization] page": [
     "選択した製品に対するキーボードレイアウトの詳細な設定は、 [ローカライゼーション] のページにあります"
