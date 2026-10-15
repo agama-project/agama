@@ -55,9 +55,8 @@ describe("BootStatement", () => {
     );
     installerRender(<BootStatement entry={entry} />);
 
-    screen.getByText("Boot");
-    screen.getByText("partitions configured here");
-    screen.getByRole("link", { name: "automatically chosen" });
+    screen.getByRole("link", { name: "Automatically chosen" });
+    screen.getByText(/for booting/);
   });
 
   it("says when the disk was chosen by hand", () => {
@@ -66,13 +65,13 @@ describe("BootStatement", () => {
     );
     installerRender(<BootStatement entry={entry} />);
 
-    screen.getByRole("link", { name: "explicitly chosen" });
+    screen.getByRole("link", { name: "Explicitly chosen" });
   });
 
   it("says nothing when the disk does not boot the machine", () => {
     mockConfig.mockReturnValue(config({ configure: false }));
     installerRender(<BootStatement entry={entry} />);
 
-    expect(screen.queryByText("Boot")).toBeNull();
+    expect(screen.queryByText(/for booting/)).toBeNull();
   });
 });

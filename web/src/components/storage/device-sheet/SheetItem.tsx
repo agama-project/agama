@@ -29,8 +29,8 @@ import type { IconProps } from "~/components/layout/Icon";
 export type SheetItemProps = {
   /** A mark for the kind of thing the item is about. */
   icon: IconProps["name"];
-  /** What the item is about, such as "Boot". */
-  name: React.ReactNode;
+  /** What the item is about, such as "LVM". Left out where the value says it all. */
+  name?: React.ReactNode;
   /** A short value read right after the name, on the same line. */
   value?: React.ReactNode;
   /** Lines and controls under the name, each on its own line. */
@@ -67,8 +67,9 @@ export default function SheetItem({ icon, name, value, children }: SheetItemProp
         flex={{ default: "flex_1" }}
       >
         <FlexItem>
-          <Text isBold>{name}</Text>
-          {value && <> {value}</>}
+          {name && <Text isBold>{name}</Text>}
+          {name && value && " "}
+          {value}
         </FlexItem>
         {children && <FlexItem>{children}</FlexItem>}
       </Flex>

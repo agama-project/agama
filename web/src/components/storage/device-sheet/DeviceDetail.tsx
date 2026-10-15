@@ -23,6 +23,7 @@
 import React from "react";
 import { Flex } from "@patternfly/react-core";
 import SheetSection from "~/components/storage/device-sheet/SheetSection";
+import BootStatement from "~/components/storage/device-sheet/BootStatement";
 import UsedPartitionableCurrent from "~/components/storage/device-sheet/UsedPartitionableCurrent";
 import UnusedPartitionableCurrent from "~/components/storage/device-sheet/UnusedPartitionableCurrent";
 import VolumeGroupCurrent from "~/components/storage/device-sheet/VolumeGroupCurrent";
@@ -56,6 +57,31 @@ export default function DeviceDetail({ entry, subject }: DeviceDetailProps): Rea
      it starts from is the disks it takes its room from. */
   const isNewVolumeGroup = entry.isVolumeGroup && !(entry.config as ConfigModel.VolumeGroup).name;
 
+  /* Named after what it holds rather than after when, since not everything a
+     device takes part in is new content. */
+  let newContentTitle: string;
+  if (entry.isVolumeGroup) {
+    // TRANSLATORS: heading of the part of a volume group's panel listing the
+    // logical volumes the installation creates in it.
+    newContentTitle = _("Logical volumes to create");
+  } else if (isMountedPartitionable) {
+    // TRANSLATORS: heading of the part of a device's panel about a file system
+    // that takes the whole device.
+    newContentTitle = _("File system");
+  } else if (isUsedPartitionable) {
+    // TRANSLATORS: heading of the part of a device's panel listing the
+    // partitions the installation creates on it.
+    newContentTitle = _("Partitions to create");
+  } else {
+    // TRANSLATORS: heading of the part of a device's panel saying what the
+    // installation plans for it, where nothing is planned yet.
+    newContentTitle = _("Planned content");
+  }
+
+  /* Booting is a concern of its own: the partitions it needs may be created
+     or already there, so it is not part of what the device gets created. */
+  const isBootDevice = !!part && configModel.boot.hasDevice(config, part.name);
+
   return (
     <Flex direction={{ default: "column" }} gap={{ default: "gapLg" }}>
       <SheetSection
@@ -77,9 +103,7 @@ export default function DeviceDetail({ entry, subject }: DeviceDetailProps): Rea
         )}
         {entry.isVolumeGroup && <VolumeGroupCurrent entry={entry} subject={subject} />}
       </SheetSection>
-      {/* TRANSLATORS: heading of the part of a device's panel saying what the
-          installation puts on the device. */}
-      <SheetSection title={_("New content")}>
+      <SheetSection title={newContentTitle}>
         {!entry.isVolumeGroup && isMountedPartitionable && (
           <PartitionableMountContent entry={entry} subject={subject} />
         )}
@@ -91,6 +115,13 @@ export default function DeviceDetail({ entry, subject }: DeviceDetailProps): Rea
         )}
         {entry.isVolumeGroup && <VolumeGroupContent entry={entry} subject={subject} />}
       </SheetSection>
+      {isBootDevice && (
+        // TRANSLATORS: heading of the part of a disk's panel shown when the
+        // machine starts from that disk.
+        <SheetSection title={_("Boot")}>
+          <BootStatement entry={entry} />
+        </SheetSection>
+      )}
     </Flex>
   );
 }

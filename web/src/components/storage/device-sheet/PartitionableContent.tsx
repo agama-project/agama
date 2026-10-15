@@ -26,7 +26,6 @@ import Link from "~/components/core/Link";
 import Icon from "~/components/layout/Icon";
 import PlannedContentSection from "~/components/storage/device-sheet/PlannedContentSection";
 import UsedByStatement from "~/components/storage/device-sheet/UsedByStatement";
-import BootStatement from "~/components/storage/device-sheet/BootStatement";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { generateEncodedPath } from "~/utils";
 import configModel from "~/model/storage/config-model";
@@ -107,10 +106,9 @@ export default function PartitionableContent({
           <FlexItem>{add("secondary")}</FlexItem>
         </Flex>
       )}
-      {/* Between the list of what is created and the facts about the disk,
+      {/* Between the partitions listed and those created for a volume group,
           only where there are both. */}
-      {(!!planned.length || !!users.length) && (isBoot || !!users.length) && <Divider />}
-      <BootStatement entry={entry} />
+      {!!users.length && <Divider />}
       <UsedByStatement entry={entry} />
     </>
   );

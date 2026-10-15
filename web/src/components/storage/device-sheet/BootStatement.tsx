@@ -53,26 +53,28 @@ export default function BootStatement({ entry }: BootStatementProps): React.Reac
   return (
     <SheetItem
       icon={bootIcon(config)}
-      // TRANSLATORS: names the setting for how the machine starts, in a
-      // device's panel.
-      name={_("Boot")}
-      // TRANSLATORS: follows "Boot" in a device's panel: the partitions the
-      // machine needs to start are set up on this device.
-      value={_("partitions configured here")}
-    >
-      <Interpolate
-        sentence={
-          configModel.boot.isDefault(config)
-            ? _("This disk was [automatically chosen] for booting.")
-            : _("This disk was [explicitly chosen] for booting.")
-        }
-      >
-        {(text) => (
-          <Link to={PATHS.editBootDevice} keepQuery variant="link" isInline>
-            {text}
-          </Link>
-        )}
-      </Interpolate>
-    </SheetItem>
+      value={
+        <Interpolate
+          sentence={
+            configModel.boot.isDefault(config)
+              ? // TRANSLATORS: said under the heading of the part of a disk's
+                // panel about booting. The text in square brackets is a link to
+                // the boot setting.
+                _("[Automatically chosen] for booting.")
+              : // TRANSLATORS: said under the heading of the part of a disk's
+                // panel about booting, where the boot disk was picked rather than
+                // worked out by the installer. The text in square brackets is a
+                // link to the boot setting.
+                _("[Explicitly chosen] for booting.")
+          }
+        >
+          {(text) => (
+            <Link to={PATHS.editBootDevice} keepQuery variant="link" isInline>
+              {text}
+            </Link>
+          )}
+        </Interpolate>
+      }
+    />
   );
 }
