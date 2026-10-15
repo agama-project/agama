@@ -1,4 +1,19 @@
 -------------------------------------------------------------------
+Thu Oct 15 07:41:55 UTC 2026 - Martin Vidner <mvidner@suse.com>
+
+- web dependencies: move those not needed for run time or building
+  to optionalDependencies (bsc#1278985)
+- web dependencies: use knip in CI to detect unused dependencies
+  and files (jlopez)
+
+-------------------------------------------------------------------
+Thu Oct 15 07:40:55 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Keep the focus in the field the user moved to after using a
+  selector, so typed text is not lost (bsc#1282513,
+  gh#agama-project/agama#3982).
+
+-------------------------------------------------------------------
 Tue Oct  6 11:48:59 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Let keyboard users tab past the terminal panel, which now stops

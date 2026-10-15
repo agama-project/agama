@@ -1,4 +1,31 @@
 -------------------------------------------------------------------
+Thu Oct 15 07:36:10 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Do not run RPM scriptlets when updating the agama-scripts package
+  (bsc#1285032).
+
+-------------------------------------------------------------------
+Thu Oct 15 07:35:10 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Fix storage model schema: request password attribute instead of
+  non-existent method attribute (gh#agama-project/agama#4038).
+
+-------------------------------------------------------------------
+Thu Oct 15 07:34:10 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Fix the proxy section of the profile JSON schema to use the
+  same property names as the proxy config (http, https, ftp,
+  gopher, socks, socks5) and reject unknown properties instead of
+  silently ignoring them (gh#agama-project/agama#3999, related to
+  gh#agama-project/agama#3069).
+
+-------------------------------------------------------------------
+Thu Oct 15 07:34:10 UTC 2026 - Michal Filka <mfilka@suse.com>
+
+- bsc#1271374
+  - added references to storage definitions into the OpenAPI schema
+
+-------------------------------------------------------------------
 Thu Oct  8 06:22:28 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
 
 - Move back packaging agama-openapi-nightly into agama.srpm as
