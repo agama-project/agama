@@ -22,71 +22,71 @@
 
 import React from "react";
 import {
-  Stack,
   EmptyState,
-  EmptyStateBody,
   EmptyStateActions,
+  EmptyStateBody,
   EmptyStateFooter,
+  Flex,
 } from "@patternfly/react-core";
 import Link from "~/components/core/Link";
-import Text from "~/components/core/Text";
 import Icon from "~/components/layout/Icon";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { generateEncodedPath } from "~/utils";
-import type { DeviceDetailProps } from "~/components/storage/device-sheet/DeviceDetail";
 import { _ } from "~/i18n";
+import type { DeviceDetailProps } from "~/components/storage/device-sheet/DeviceDetail";
 
-export default function PartitionableNoContent({
-  entry,
-  subject,
-}: DeviceDetailProps): React.ReactNode {
-  console.log("e", entry, "s", subject);
-
+/**
+ * A device the installation does not use yet, as an empty state: it says so,
+ * and offers the two ways to start, partitioning it or giving it whole to one
+ * file system.
+ */
+export default function PartitionableNoContent({ subject }: DeviceDetailProps) {
   const params = {
     collection: subject.collection,
     index: String(subject.index),
   };
 
-  /* The same form the panel offers once there is something to list, reached
-     the same way: a device with nothing planned on it yet is the one place a
-     reader is most likely to want it, not a different act. */
-  const addPath = generateEncodedPath(PATHS.addPartition, params);
-
-  /* The other way to use a device, which is to give the whole of it to one
-     file system and no partition table at all. */
-  const formatPath = generateEncodedPath(PATHS.formatDevice, params);
-
   return (
-    <Stack>
-      <Text isBold>{_("TODO")}</Text>
-      <EmptyState
-        headingLevel="h3"
-        variant="sm"
-        titleText={_("This EmptyState should offer both formatting and partitioning")}
-      >
-        <EmptyStateBody>
-          {_("Format, add a partition or reuse one of the partitions already in the disk.")}
-        </EmptyStateBody>
-        <EmptyStateFooter>
-          <EmptyStateActions>
-            <Link to={addPath} keepQuery variant="secondary" icon={<Icon name="add" size="xs" />}>
-              {_("Add partition")}
-            </Link>
-            <Link
-              to={formatPath}
-              keepQuery
-              variant="secondary"
-              icon={<Icon name="hard_drive" size="xs" />}
-            >
+    <EmptyState
+      variant="sm"
+      headingLevel="h4"
+      // TRANSLATORS: said of a device the installation does not use yet.
+      titleText={_("Not used by the installation yet")}
+    >
+      <EmptyStateBody>
+        {/* TRANSLATORS: says how a device the installation does not use yet can
+            be put to use. */}
+        {_("Add partitions to it, or format it whole for a single file system.")}
+      </EmptyStateBody>
+      <EmptyStateFooter>
+        <EmptyStateActions>
+          <Link
+            to={generateEncodedPath(PATHS.addPartition, params)}
+            keepQuery
+            variant="secondary"
+            size="sm"
+          >
+            <Flex alignItems={{ default: "alignItemsCenter" }} gap={{ default: "gapSm" }}>
+              <Icon name="add_circle" /> {_("Add partition")}
+            </Flex>
+          </Link>
+          <Link
+            to={generateEncodedPath(PATHS.formatDevice, params)}
+            keepQuery
+            variant="secondary"
+            size="sm"
+          >
+            <Flex alignItems={{ default: "alignItemsCenter" }} gap={{ default: "gapSm" }}>
+              <Icon name="hard_drive" />{" "}
               {
                 // TRANSLATORS: offered on a device nothing is planned on yet:
                 // give the whole device to one file system, with no partitions.
                 _("Format device")
               }
-            </Link>
-          </EmptyStateActions>
-        </EmptyStateFooter>
-      </EmptyState>
-    </Stack>
+            </Flex>
+          </Link>
+        </EmptyStateActions>
+      </EmptyStateFooter>
+    </EmptyState>
   );
 }

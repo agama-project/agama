@@ -88,7 +88,7 @@ export default function PartitionableContent({
   const add = (variant: "primary" | "secondary") => (
     <Link to={addPath} keepQuery variant={variant} size="sm">
       <Flex alignItems={{ default: "alignItemsCenter" }} gap={{ default: "gapSm" }}>
-        <Icon name="add_circle" /> {_("Add Partition")}
+        <Icon name="add_circle" /> {_("Add partition")}
       </Flex>
     </Link>
   );

@@ -57,6 +57,18 @@ export default function DeviceDetail({ entry, subject }: DeviceDetailProps): Rea
      it starts from is the disks it takes its room from. */
   const isNewVolumeGroup = entry.isVolumeGroup && !(entry.config as ConfigModel.VolumeGroup).name;
 
+  /* A file system the new system takes as it is changes nothing on the device:
+     what is there now is what will be there, so it is said once. */
+  if (isMountedPartitionable && part.filesystem?.reuse === true) {
+    return (
+      // TRANSLATORS: heading of a device's panel where the new system uses what
+      // is on the device as it is.
+      <SheetSection title={_("Content")}>
+        <PartitionableMountContent entry={entry} subject={subject} />
+      </SheetSection>
+    );
+  }
+
   /* Named after what it holds rather than after when, since not everything a
      device takes part in is new content. */
   let newContentTitle: string;
@@ -73,9 +85,9 @@ export default function DeviceDetail({ entry, subject }: DeviceDetailProps): Rea
     // partitions the installation creates on it.
     newContentTitle = _("Partitions to create");
   } else {
-    // TRANSLATORS: heading of the part of a device's panel saying what the
-    // installation plans for it, where nothing is planned yet.
-    newContentTitle = _("Planned content");
+    // TRANSLATORS: heading of the part of a device's panel about how the
+    // installation uses the device, where it does not use it yet.
+    newContentTitle = _("Usage");
   }
 
   /* Booting is a concern of its own: the partitions it needs may be created
@@ -92,7 +104,7 @@ export default function DeviceDetail({ entry, subject }: DeviceDetailProps): Rea
               _("Physical volumes")
             : // TRANSLATORS: heading of the part of a device's panel saying
               // what is on the device now, before installing.
-              _("Current disk partitions")
+              _("Current content")
         }
       >
         {!entry.isVolumeGroup && isUsedPartitionable && (
@@ -105,7 +117,7 @@ export default function DeviceDetail({ entry, subject }: DeviceDetailProps): Rea
       </SheetSection>
       <SheetSection title={newContentTitle}>
         {!entry.isVolumeGroup && isMountedPartitionable && (
-          <PartitionableMountContent entry={entry} subject={subject} />
+          <PartitionableMountContent entry={entry} subject={subject} showName={false} />
         )}
         {!entry.isVolumeGroup && !isMountedPartitionable && isUsedPartitionable && (
           <PartitionableContent entry={entry} subject={subject} />

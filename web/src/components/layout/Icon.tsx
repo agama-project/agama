@@ -66,6 +66,7 @@ import EditSquare from "@icons/edit_square.svg?component";
 import Emergency from "@icons/emergency.svg?component";
 import Error from "@icons/error.svg?component";
 import ErrorFill from "@icons/error-fill.svg?component";
+import Dns from "@icons/dns.svg?component";
 import ExpandCircleDown from "@icons/expand_circle_down.svg?component";
 import FileJson from "@icons/file_json.svg?component";
 import Fingerprint from "@icons/fingerprint.svg?component";
@@ -147,6 +148,7 @@ const icons = {
   emergency: Emergency,
   error: Error,
   error_fill: ErrorFill,
+  dns: Dns,
   expand_circle_down: ExpandCircleDown,
   file_json: FileJson,
   fingerprint: Fingerprint,

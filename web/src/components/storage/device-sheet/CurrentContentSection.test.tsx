@@ -148,4 +148,29 @@ describe("CurrentContentSection", () => {
 
     expect(mockAnnounce).toHaveBeenCalledWith("Keeps 3 partitions, with no free space to use");
   });
+
+  describe("on a device the installation does not use", () => {
+    it("keeps every partition, with no space option to choose", () => {
+      installerRender(
+        <CurrentContentSection entry={entry("keep")} subject={subject} fixedDecision="keep" />,
+      );
+
+      screen.getByText("Keeps 3 partitions as they are");
+      expect(screen.queryByRole("group", { name: "Allowed changes" })).toBeNull();
+    });
+  });
+
+  describe("on a device given whole to a file system", () => {
+    it("deletes every partition, with nothing to decide about them", async () => {
+      const { user } = installerRender(
+        <CurrentContentSection entry={entry("keep")} subject={subject} fixedDecision="delete" />,
+      );
+
+      screen.getByText("Deletes 3 partitions and their data, including Windows 11");
+      expect(screen.queryByRole("group", { name: "Allowed changes" })).toBeNull();
+
+      await user.click(screen.getByRole("button", { name: "Show partitions" }));
+      expect(screen.queryByRole("button", { name: /^Actions for/ })).toBeNull();
+    });
+  });
 });
