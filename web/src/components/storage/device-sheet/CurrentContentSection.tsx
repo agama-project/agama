@@ -22,7 +22,16 @@
 
 import React from "react";
 import { Table, Tbody, Td, Th, Thead, Tr } from "@patternfly/react-table";
-import { Button, Divider, Flex, FlexItem, Label } from "@patternfly/react-core";
+import {
+  Button,
+  Divider,
+  Flex,
+  FlexItem,
+  Label,
+  Toolbar,
+  ToolbarContent,
+  ToolbarItem,
+} from "@patternfly/react-core";
 import alignmentStyles from "@patternfly/react-styles/css/utilities/Alignment/alignment";
 import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
 import { sprintf } from "sprintf-js";
@@ -30,7 +39,11 @@ import { unique } from "radashi";
 import Text from "~/components/core/Text";
 import Icon from "~/components/layout/Icon";
 import SpaceDecision from "~/components/storage/device-sheet/SpaceDecision";
-import contentSummary from "~/components/storage/device-sheet/content-summary";
+import contentSummary, {
+  summaryParts,
+  summarySentence,
+} from "~/components/storage/device-sheet/content-summary";
+import Interpolate from "~/components/core/Interpolate";
 import MenuButton, { MenuButtonItem } from "~/components/core/MenuButton";
 import RowMenuToggle from "~/components/storage/entries-table/RowMenuToggle";
 import { STORAGE as PATHS } from "~/routes/paths";
@@ -517,7 +530,7 @@ export default function CurrentContentSection({
 
   /* Closed at first, since the summary already says what happens to every part. */
   const [expanded, setExpanded] = React.useState(false);
-  const tableId = React.useId();
+  const contentId = React.useId();
 
   const parts: ContentPart[] = rows
     .filter((row): row is System.Device => !isFreeSpace(row))
@@ -533,7 +546,9 @@ export default function CurrentContentSection({
         decision: decisionFor(rule, request),
       };
     });
-  const summary = contentSummary(entry.isVolumeGroup ? "logicalVolumes" : "partitions", parts);
+  const kind = entry.isVolumeGroup ? "logicalVolumes" : "partitions";
+  const summary = contentSummary(kind, parts);
+  const halves = summaryParts(kind, parts);
   const summaryId = React.useId();
 
   /* Said when the decisions change, so a screen reader user hears what their
@@ -548,28 +563,22 @@ export default function CurrentContentSection({
 
   return (
     <Flex direction={{ default: "column" }} gap={{ default: "gapSm" }}>
-      {/* Only where there is something for the rule to be about. A group's
-          logical volumes are governed the same way its disks' partitions are,
-          so the decision is offered there too. */}
+      {/* Only where there is something to sum up. */}
       {rows.some((row) => !isFreeSpace(row)) && (
         <>
-          {!fixedDecision && governed.length > 0 && (
-            <FlexItem>
-              <SpaceDecision
-                collection={subject.collection}
-                index={subject.index}
-                isVolumeGroup={entry.isVolumeGroup}
-                current={sharedDecision}
-              />
-            </FlexItem>
-          )}
           {/* The toggle starts its own line under the summary, so its caret sits
-              right above the table it opens. The summary says what the table
-              is about and is the toggle's description for whoever lands on it
-              without reading the line. */}
+              right above what it opens. The summary says what that is about and
+              is the toggle's description for whoever lands on it without
+              reading the line. */}
           <FlexItem component="p">
-            <Text id={summaryId} isBold>
-              {summary}
+            {/* How much there is in bold, as the answer to the heading; the
+                rest says what becomes of it. */}
+            <Text id={summaryId}>
+              {halves && (
+                <Interpolate sentence={summarySentence()}>
+                  {[() => <Text isBold>{halves.amount}</Text>, () => halves.fates]}
+                </Interpolate>
+              )}
             </Text>
           </FlexItem>
           <FlexItem>
@@ -584,7 +593,7 @@ export default function CurrentContentSection({
                 />
               }
               aria-expanded={expanded}
-              aria-controls={tableId}
+              aria-controls={contentId}
               aria-describedby={summaryId}
               onClick={() => setExpanded(!expanded)}
             >
@@ -593,12 +602,35 @@ export default function CurrentContentSection({
           </FlexItem>
         </>
       )}
-      {/* A bit more room above the table than between the lines above it: a
-          table's header is not a line of text. Put away rather than taken
-          down, so the toggle has something to name as the thing it opens; the
-          wrapper carries the attribute, so a closed table takes no room. */}
+      {/* A bit more room above what the toggle opens than between the lines
+          above it: neither the options nor a table's header are lines of text.
+          Put away rather than taken down, so the toggle has something to name
+          as the thing it opens; the wrapper carries the attribute, so closed it
+          takes no room. */}
       <FlexItem hidden={!expanded} className={spacingStyles.mtSm}>
-        <div id={tableId}>
+        <Flex
+          id={contentId}
+          direction={{ default: "column" }}
+          gap={{ default: "gapSm" }}
+          className={spacingStyles.plMd}
+        >
+          {/* A toolbar right above the rows it sets, where actions on a whole
+              table go, so a change lands in view. A group's logical volumes
+              are governed the same way its disks' partitions are, so it is
+              offered there too. */}
+          {!fixedDecision && governed.length > 0 && (
+            <Toolbar hasNoPadding>
+              <ToolbarContent>
+                <ToolbarItem align={{ default: "alignEnd" }}>
+                  <SpaceDecision
+                    collection={subject.collection}
+                    index={subject.index}
+                    current={sharedDecision}
+                  />
+                </ToolbarItem>
+              </ToolbarContent>
+            </Toolbar>
+          )}
           <Table
             role="table"
             gridBreakPoint=""
@@ -685,7 +717,7 @@ export default function CurrentContentSection({
               })}
             </Tbody>
           </Table>
-        </div>
+        </Flex>
       </FlexItem>
     </Flex>
   );

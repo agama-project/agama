@@ -41,14 +41,17 @@ const POLICY: Record<Decision, ConfigModel.SpacePolicy> = {
 function label(decision: Decision): TranslatedString {
   switch (decision) {
     case "delete":
-      // TRANSLATORS: completes "Set all partitions to": remove them.
+      // TRANSLATORS: option after "Set all to", applied to every listed
+      // partition or logical volume: remove them; data lost.
       return _("Delete");
     case "resizeIfNeeded":
-      // TRANSLATORS: completes "Set all partitions to": allow making them
-      // smaller, should the installation run short of room.
+      // TRANSLATORS: option after "Set all to", applied to every listed
+      // partition or logical volume: allow making them smaller if room is
+      // needed; data kept.
       return _("Shrink if needed");
     case "keep":
-      // TRANSLATORS: completes "Set all partitions to": do nothing to them.
+      // TRANSLATORS: option after "Set all to", applied to every listed
+      // partition or logical volume: change nothing.
       return _("Keep");
   }
 }
@@ -60,16 +63,17 @@ function label(decision: Decision): TranslatedString {
 function meaning(decision: Decision): TranslatedString {
   switch (decision) {
     case "delete":
-      // TRANSLATORS: explains deleting every partition, or logical volume, the
-      // new system does not use.
+      // TRANSLATORS: tooltip of the "Delete" option after "Set all to". "Their"
+      // means the listed partitions or logical volumes (must fit both nouns).
       return _("Their data is lost, and the space is freed for the new system.");
     case "resizeIfNeeded":
-      // TRANSLATORS: explains allowing every partition, or logical volume, the
-      // new system does not use to be made smaller.
+      // TRANSLATORS: tooltip of the "Shrink if needed" option after "Set all
+      // to". "Their" means the listed partitions or logical volumes (must fit
+      // both nouns).
       return _("Their data is kept, and some may be made smaller if room is needed.");
     case "keep":
-      // TRANSLATORS: explains keeping every partition, or logical volume, the
-      // new system does not use.
+      // TRANSLATORS: tooltip of the "Keep" option after "Set all to". "Their"
+      // means the listed partitions or logical volumes (must fit both nouns).
       return _("Their data is kept, and only the free space is used.");
   }
 }
@@ -104,8 +108,6 @@ function SpaceOption({ decision, isSelected, onChoose }: SpaceOptionProps) {
 export type SpaceDecisionProps = {
   collection: DeviceCollection;
   index: number;
-  /** Whether the parts are logical volumes rather than partitions. */
-  isVolumeGroup?: boolean;
   /** The decision every part the new system does not use shares, if they share one. */
   current?: Decision;
 };
@@ -119,12 +121,7 @@ export type SpaceDecisionProps = {
  * pressing one gives it to all of them. Parts the new system uses keep what it
  * does with them.
  */
-export default function SpaceDecision({
-  collection,
-  index,
-  isVolumeGroup = false,
-  current,
-}: SpaceDecisionProps) {
+export default function SpaceDecision({ collection, index, current }: SpaceDecisionProps) {
   const setSpacePolicy = useSetSpacePolicy();
   const labelId = React.useId();
 
@@ -140,13 +137,10 @@ export default function SpaceDecision({
       gap={{ default: "gapSm" }}
     >
       <Text id={labelId}>
-        {isVolumeGroup
-          ? // TRANSLATORS: names the options next to it, which give every logical
-            // volume of a volume group the same action at once.
-            _("Set all logical volumes to")
-          : // TRANSLATORS: names the options next to it, which give every
-            // partition of a disk the same action at once.
-            _("Set all partitions to")}
+        {/* TRANSLATORS: label before the options "Delete", "Shrink if
+            needed" and "Keep", which apply one action to every listed
+            partition or logical volume. */}
+        {_("Set all to")}
       </Text>
       <ToggleGroup isCompact aria-labelledby={labelId}>
         {DECISIONS.map((decision) => (

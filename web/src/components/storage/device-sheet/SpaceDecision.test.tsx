@@ -32,7 +32,7 @@ jest.mock("~/hooks/model/storage/config-model", () => ({
   useSetSpacePolicy: () => mockSetSpacePolicy,
 }));
 
-const options = () => screen.getByRole("group", { name: "Set all partitions to" });
+const options = () => screen.getByRole("group", { name: "Set all to" });
 
 describe("SpaceDecision", () => {
   it("offers the three decisions in the words of the Action column", () => {
@@ -43,14 +43,6 @@ describe("SpaceDecision", () => {
       .map((button) => button.textContent);
 
     expect(names).toEqual(["Delete", "Shrink if needed", "Keep"]);
-  });
-
-  it("speaks of logical volumes in a volume group", () => {
-    installerRender(
-      <SpaceDecision collection="volumeGroups" index={0} isVolumeGroup current="keep" />,
-    );
-
-    screen.getByRole("group", { name: "Set all logical volumes to" });
   });
 
   it("reads pressed the decision every partition shares", () => {

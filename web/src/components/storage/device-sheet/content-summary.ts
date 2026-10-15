@@ -295,6 +295,56 @@ function said(outcome: Outcome, parts: ContentPart[], total: number): Translated
   }
 }
 
+/** The two halves of the summary: how much there is, and what becomes of it. */
+export type SummaryParts = {
+  /** How many parts there are, such as "3 partitions". */
+  amount: TranslatedString;
+  /** How many of them meet each fate, such as "1 will be deleted and 2 will be kept". */
+  fates: TranslatedString;
+};
+
+/** The sentence joining the two halves, with %1$s the amount and %2$s the fates. */
+export function summarySentence(): TranslatedString {
+  // TRANSLATORS: summary of what is on a disk or volume group. %1$s: how much,
+  // in bold, such as "3 partitions". %2$s: what happens to it, such as
+  // "1 will be deleted and 2 will be kept". Adapt the colon to your language.
+  return _("%1$s: %2$s");
+}
+
+/**
+ * The halves of the summary, for showing how much there is apart from the
+ * rest, such as in bold. Nothing when the device holds nothing.
+ */
+export function summaryParts(kind: ContentKind, parts: ContentPart[]): SummaryParts | undefined {
+  const total = parts.length;
+  if (!total) return undefined;
+
+  const fates = formatList(
+    sift(
+      OUTCOMES.map((outcome) =>
+        said(
+          outcome,
+          parts.filter((part) => outcomeOf(part) === outcome),
+          total,
+        ),
+      ),
+    ),
+  );
+
+  const amount = sprintf(
+    kind === "partitions"
+      ? // TRANSLATORS: how many partitions a disk holds, shown in bold before
+        // the colon of its summary.
+        n_("%d partition", "%d partitions", total)
+      : // TRANSLATORS: how many logical volumes a volume group holds, shown in
+        // bold before the colon of its summary.
+        n_("%d logical volume", "%d logical volumes", total),
+    total,
+  );
+
+  return { amount, fates };
+}
+
 /**
  * One sentence saying what is on a device and what happens to it: how many
  * parts there are, then how many of them meet each fate.
@@ -312,32 +362,8 @@ export default function contentSummary(
   kind: ContentKind,
   parts: ContentPart[],
 ): TranslatedString | undefined {
-  const total = parts.length;
-  if (!total) return undefined;
+  const halves = summaryParts(kind, parts);
+  if (!halves) return undefined;
 
-  const fates = formatList(
-    sift(
-      OUTCOMES.map((outcome) =>
-        said(
-          outcome,
-          parts.filter((part) => outcomeOf(part) === outcome),
-          total,
-        ),
-      ),
-    ),
-  );
-
-  return sprintf(
-    kind === "partitions"
-      ? // TRANSLATORS: what is on a disk and what happens to it. %1$d is how
-        // many partitions, %2$s a list such as "3 will be deleted, 1 may be
-        // shrunk, and 1 will be mounted at /home".
-        n_("%1$d partition: %2$s", "%1$d partitions: %2$s", total)
-      : // TRANSLATORS: what is in a volume group and what happens to it. %1$d
-        // is how many logical volumes, %2$s a list such as "3 will be deleted,
-        // and 1 will be kept".
-        n_("%1$d logical volume: %2$s", "%1$d logical volumes: %2$s", total),
-    total,
-    fates,
-  );
+  return sprintf(summarySentence(), halves.amount, halves.fates);
 }
