@@ -22,7 +22,6 @@
 
 import React from "react";
 import { screen, within } from "@testing-library/react";
-import { useSearchParams } from "react-router";
 import { installerRender } from "~/test-utils";
 import type { ConfigModel } from "~/model/storage/config-model";
 import SpaceDecision from "~/components/storage/storage-page/SpaceDecision";
@@ -41,19 +40,6 @@ const drive = (spacePolicy?: ConfigModel.SpacePolicy): ConfigModel.Drive =>
   ({ name: "/dev/vdd", spacePolicy }) as ConfigModel.Drive;
 
 const options = () => screen.getByRole("group", { name: "Allowed changes" });
-
-/**
- * The address, so a test can read what a control wrote to it.
- *
- * The setter behind these params is the router's own, not the navigate spy, so
- * what it does is visible in the address and nowhere else.
- */
-const Address = () => {
-  const [params] = useSearchParams();
-  return <output>{params.toString()}</output>;
-};
-
-const address = () => screen.getByRole("status").textContent;
 
 describe("SpaceDecision", () => {
   beforeEach(() => {
@@ -92,19 +78,17 @@ describe("SpaceDecision", () => {
   });
 
   describe("when custom is chosen", () => {
-    it("writes it, and opens where the rest of the question is answered", async () => {
+    it("writes it, and asks for where the rest of the question is answered", async () => {
+      const onCustom = jest.fn();
       const { user } = installerRender(
-        <>
-          <SpaceDecision collection="drives" index={0} />
-          <Address />
-        </>,
+        <SpaceDecision collection="drives" index={0} onCustom={onCustom} />,
       );
       await user.click(screen.getByRole("button", { name: "Custom" }));
 
       /* Written, since nothing decides partition by partition until it is, and
          with nothing decided yet, which leaves everything kept. */
       expect(mockSetSpacePolicy).toHaveBeenCalledWith("drives", 0, { type: "custom" });
-      expect(address()).toBe("sheet=drives.0&sheetTab=current");
+      expect(onCustom).toHaveBeenCalled();
     });
   });
 

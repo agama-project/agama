@@ -22,7 +22,6 @@
 
 import React from "react";
 import { ToggleGroup, ToggleGroupItem, Tooltip } from "@patternfly/react-core";
-import { useSheet } from "~/components/storage/shared/use-sheet";
 import { useSpacePolicy } from "~/components/storage/shared/space-policy";
 import { useDevice as useDeviceConfig } from "~/hooks/model/storage/config-model";
 import { _, TranslatedString } from "~/i18n";
@@ -109,6 +108,7 @@ export type SpaceDecisionProps = {
   collection: DeviceCollection;
   index: number;
   isAssertive?: boolean;
+  /** Called when custom is chosen, to show where each part is decided. */
   onCustom?: () => void;
 };
 
@@ -121,8 +121,8 @@ export type SpaceDecisionProps = {
  * read before it is chosen, and it reaches the button as its description.
  *
  * Custom asks for one thing more than the others. It is an answer like them,
- * but it says the answer is given part by part, so taking it also opens the
- * view where those are given. It starts with everything kept: the reader has
+ * but it says the answer is given part by part, so taking it also asks for
+ * where those are given to be shown. It starts with everything kept: the reader has
  * decided how to decide, not what to decide, which is why it has to be
  * remembered rather than read back. {@link useSpacePolicy} does that.
  */
@@ -132,7 +132,6 @@ export default function SpaceDecision({
   isAssertive,
   onCustom,
 }: SpaceDecisionProps) {
-  const { openSheet } = useSheet();
   const deviceConfig = useDeviceConfig(collection, index);
   const { policy: current, choose: answer } = useSpacePolicy(
     collection,
@@ -143,13 +142,7 @@ export default function SpaceDecision({
   const choose = (policy: ConfigModel.SpacePolicy) => {
     answer(policy);
 
-    /* Custom is answered like the others and then followed up: it says the
-       decision is made part by part, so the reader is taken to where those are
-       made: the list of what is on the device today. */
-    if (policy === "custom") {
-      openSheet({ collection, index });
-      if (onCustom) onCustom();
-    }
+    if (policy === "custom" && onCustom) onCustom();
   };
 
   const reused = configModel.partitionable.isReusingPartitions(
