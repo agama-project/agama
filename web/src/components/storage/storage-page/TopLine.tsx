@@ -21,14 +21,13 @@
  */
 
 import React from "react";
-import { DescriptionList, Flex, FlexItem } from "@patternfly/react-core";
-import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
+import { Flex, FlexItem } from "@patternfly/react-core";
+import Interpolate from "~/components/core/Interpolate";
 import Link from "~/components/core/Link";
 import MenuButton from "~/components/core/MenuButton";
-import SettingValue from "~/components/core/SettingValue";
 import Text from "~/components/core/Text";
 import Icon, { IconProps } from "~/components/layout/Icon";
-import { baseName } from "~/components/storage/utils";
+import TruncatedDeviceName from "~/components/storage/TruncatedDeviceName";
 import { bootIcon } from "~/components/storage/shared/boot";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { EXPANDED, SETTINGS_TAB, SHEET, SHEET_TAB } from "~/components/storage/ui-state-params";
@@ -36,8 +35,14 @@ import configModel from "~/model/storage/config-model";
 import { useConfigModel } from "~/hooks/model/storage/config-model";
 import { useReset } from "~/hooks/model/config/storage";
 import { useClearSearchParams } from "~/hooks/use-search-param-state";
-import { _, TranslatedString } from "~/i18n";
+import { _ } from "~/i18n";
 import type { ConfigModel } from "~/model/storage/config-model";
+
+/** The value a setting phrase carries, set apart from the words naming it. */
+const bold = (text: string) => <Text isBold>{text}</Text>;
+
+/** A setting phrase, with the part in square brackets as its value. */
+const phrase = (sentence: string) => <Interpolate sentence={sentence}>{bold}</Interpolate>;
 
 /**
  * Where the machine will start from, said as a value rather than as a setting.
@@ -46,48 +51,72 @@ import type { ConfigModel } from "~/model/storage/config-model";
  * read: a decision the reader made by hand is not the automatic one, and a
  * machine set to start from nowhere is neither.
  */
-function boot(config: ConfigModel.Config): { value: TranslatedString; icon: IconProps["name"] } {
+function boot(config: ConfigModel.Config): { value: React.ReactNode; icon: IconProps["name"] } {
   if (!config.boot?.configure) {
-    // TRANSLATORS: what the installation will do about starting the machine:
-    // nothing, because the reader has said so.
-    return { value: _("Not configured"), icon: bootIcon(config) };
+    // TRANSLATORS: the disk the machine will start from: none, because the
+    // reader has said nothing is to be set up for starting it. The text in
+    // square brackets is shown in bold.
+    return { value: phrase(_("Boot disk: [not configured]")), icon: bootIcon(config) };
   }
 
   if (configModel.boot.isDefault(config)) {
-    // TRANSLATORS: what the installation will do about starting the machine:
-    // work out which disk it needs by itself.
-    return { value: _("Automatic"), icon: bootIcon(config) };
+    // TRANSLATORS: the disk the machine will start from: the installer works
+    // it out by itself. The text in square brackets is shown in bold.
+    return { value: phrase(_("Boot disk: [auto]")), icon: bootIcon(config) };
   }
 
   const device = configModel.boot.findDevice(config);
 
   return {
-    value: device?.name
-      ? (baseName(device.name) as TranslatedString)
-      : // TRANSLATORS: said where the machine is set to start from a disk the
-        // reader has yet to choose.
-        _("No disk selected"),
+    value: device?.name ? (
+      /* Shortened where it is long, such as a multipath name, so it never
+           pushes the line wider than the page; the full name stays in a
+           tooltip and for screen readers. */
+      <Interpolate
+        // TRANSLATORS: the disk the machine is set to start from, chosen by
+        // the reader. %s is its name, such as "sda".
+        sentence={_("Boot disk: %s")}
+      >
+        {() => (
+          <Text isBold>
+            <TruncatedDeviceName device={device} />
+          </Text>
+        )}
+      </Interpolate>
+    ) : (
+      phrase(
+        // TRANSLATORS: said where the machine is set to start from a disk the
+        // reader has yet to choose. The text in square brackets is shown in
+        // bold.
+        _("Boot disk: [not selected]"),
+      )
+    ),
     icon: bootIcon(config),
   };
 }
 
 /** The same, for what protects the data the installation writes. */
 function encryption(config: ConfigModel.Config): {
-  value: TranslatedString;
+  value: React.ReactNode;
   icon: IconProps["name"];
 } {
   if (!config.encryption) {
     // TRANSLATORS: what protects the data the installation writes: nothing.
-    return { value: _("Not encrypted"), icon: "lock_open" };
+    // The text in square brackets is shown in bold.
+    return { value: phrase(_("Encryption: [none]")), icon: "lock_open" };
   }
 
   return {
-    value: config.encryption.tpm
-      ? // TRANSLATORS: how the installation is encrypted, where the machine's
-        // security chip releases the key at start-up.
-        _("LUKS2 with TPM")
-      : // TRANSLATORS: how the installation is encrypted.
-        _("LUKS2"),
+    value: phrase(
+      config.encryption.tpm
+        ? // TRANSLATORS: how the installation is encrypted, where the machine's
+          // security chip releases the key at start-up. The text in square
+          // brackets is shown in bold.
+          _("Encryption: [LUKS2 with TPM]")
+        : // TRANSLATORS: how the installation is encrypted. The text in square
+          // brackets is shown in bold.
+          _("Encryption: [LUKS2]"),
+    ),
     icon: "lock",
   };
 }
@@ -129,8 +158,10 @@ export default function TopLine(): React.ReactNode {
   };
 
   return (
+    /* On one baseline, so the sentence and the settings read as one line
+       although they are set in different sizes. */
     <Flex
-      alignItems={{ default: "alignItemsCenter" }}
+      alignItems={{ default: "alignItemsBaseline" }}
       justifyContent={{ default: "justifyContentSpaceBetween" }}
       gap={{ default: "gapMd" }}
       /* Wrapping rather than pinned on one line. A strip this crowded runs out
@@ -156,30 +187,23 @@ export default function TopLine(): React.ReactNode {
                 which share out whatever width they are given: two settings and
                 a sentence spread across a whole strip read as three things
                 placed apart rather than as one line. */}
-            <DescriptionList isCompact isHorizontal isFluid className="agm-top-line__settings">
-              <SettingValue
-                icon={bootMark}
-                // TRANSLATORS: names the setting saying where the machine will
-                // start from once it is installed.
-                term={_("Boot")}
-                value={
-                  <Link to={PATHS.editBootDevice} keepQuery variant="link" isInline>
-                    {bootValue}
-                  </Link>
-                }
-              />
-              <SettingValue
-                icon={encryptionIcon}
-                // TRANSLATORS: names the setting saying what protects the data
-                // the installation writes.
-                term={_("Encryption")}
-                value={
-                  <Link to={PATHS.editEncryption} keepQuery variant="link" isInline>
-                    {encryptionValue}
-                  </Link>
-                }
-              />
-            </DescriptionList>
+            {/* Each setting said as one phrase that is also the way to change
+                it, so it reads the same anywhere, including in a screen
+                reader's list of links. */}
+            <ul className="agm-top-line__settings">
+              <li>
+                <Icon name={bootMark} aria-hidden />
+                <Link to={PATHS.editBootDevice} keepQuery variant="link" isInline>
+                  {bootValue}
+                </Link>
+              </li>
+              <li>
+                <Icon name={encryptionIcon} aria-hidden />
+                <Link to={PATHS.editEncryption} keepQuery variant="link" isInline>
+                  {encryptionValue}
+                </Link>
+              </li>
+            </ul>
           </FlexItem>
           <FlexItem>
             <MenuButton
@@ -190,8 +214,10 @@ export default function TopLine(): React.ReactNode {
                 popperProps: { position: "end" },
               }}
               toggleProps={{
+                /* PatternFly's own padding kept, so the toggle is a target a
+                   finger or an unsteady hand can hit, not just its three
+                   dots. */
                 variant: "plain",
-                className: spacingStyles.p_0,
                 /* Three dots name nothing. Without this the toggle reaches a
                    screen reader as an unnamed button. */
                 "aria-label": _("Actions for this configuration"),

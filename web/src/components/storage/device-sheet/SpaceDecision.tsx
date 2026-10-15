@@ -22,7 +22,6 @@
 
 import React from "react";
 import { ToggleGroup, ToggleGroupItem, Tooltip } from "@patternfly/react-core";
-import { useSheet } from "~/components/storage/shared/use-sheet";
 import { useSpacePolicy } from "~/components/storage/shared/space-policy";
 import { useDevice as useDeviceConfig } from "~/hooks/model/storage/config-model";
 import { _, TranslatedString } from "~/i18n";
@@ -32,22 +31,18 @@ import type { ConfigModel, DeviceCollection, Partitionable } from "~/model/stora
 const POLICIES: ConfigModel.SpacePolicy[] = ["delete", "resize", "keep", "custom"];
 
 /**
- * What the plan is doing, rather than what to do.
- *
- * In a table the reader is acting and the imperative is right. Here they are
- * reading a summary, and four buttons in the imperative look like four things
- * about to happen.
+ * What to do with what is already on the device.
  *
  * FIXME: This should work also for logical volumes
  */
-function label(policy: ConfigModel.SpacePolicy, isAssertive: boolean): TranslatedString {
+function label(policy: ConfigModel.SpacePolicy): TranslatedString {
   switch (policy) {
     case "delete":
-      return isAssertive ? _("Delete disk content") : _("Deleting disk content");
+      return _("Delete disk content");
     case "resize":
-      return isAssertive ? _("Shrink existing partitions") : _("Shrinking existing partitions");
+      return _("Shrink existing partitions");
     case "keep":
-      return isAssertive ? _("Keep partitions") : _("Keeping partitions");
+      return _("Keep partitions");
     case "custom":
       return _("Custom");
   }
@@ -79,7 +74,6 @@ type SpaceOptionProps = {
   policy: ConfigModel.SpacePolicy;
   isSelected: boolean;
   isDisabled: boolean;
-  isAssertive: boolean;
   onChoose: (policy: ConfigModel.SpacePolicy) => void;
 };
 
@@ -88,13 +82,13 @@ type SpaceOptionProps = {
  * A wrapper lands between the group and its buttons and breaks the segmented
  * look, and props given to a toggle item reach that wrapper, not the button.
  */
-function SpaceOption({ policy, isSelected, isDisabled, isAssertive, onChoose }: SpaceOptionProps) {
+function SpaceOption({ policy, isSelected, isDisabled, onChoose }: SpaceOptionProps) {
   const buttonId = React.useId();
 
   return (
     <>
       <ToggleGroupItem
-        text={label(policy, isAssertive)}
+        text={label(policy)}
         buttonId={buttonId}
         isSelected={isSelected}
         isDisabled={isDisabled}
@@ -108,17 +102,12 @@ function SpaceOption({ policy, isSelected, isDisabled, isAssertive, onChoose }: 
 export type SpaceDecisionProps = {
   collection: DeviceCollection;
   index: number;
-  isAssertive?: boolean;
+  /** Called when custom is chosen, to show where each part is decided. */
   onCustom?: () => void;
 };
 
 /**
  * What the installer may do with what is already on the device.
- *
- * The one decision the page makes itself. Everywhere else the summary reports
- * and the sheet does the work, but this one is read in the same breath as its
- * consequence: the sentence under it says what the plan costs, and this is what
- * changes that number.
  *
  * Four options rather than a menu. A menu hides three of the four and gives no
  * sense that a choice exists at all, while all four show the whole decision and
@@ -126,18 +115,12 @@ export type SpaceDecisionProps = {
  * read before it is chosen, and it reaches the button as its description.
  *
  * Custom asks for one thing more than the others. It is an answer like them,
- * but it says the answer is given part by part, so taking it also opens the
- * view where those are given. It starts with everything kept: the reader has
+ * but it says the answer is given part by part, so taking it also asks for
+ * where those are given to be shown. It starts with everything kept: the reader has
  * decided how to decide, not what to decide, which is why it has to be
  * remembered rather than read back. {@link useSpacePolicy} does that.
  */
-export default function SpaceDecision({
-  collection,
-  index,
-  isAssertive,
-  onCustom,
-}: SpaceDecisionProps) {
-  const { openSheet } = useSheet();
+export default function SpaceDecision({ collection, index, onCustom }: SpaceDecisionProps) {
   const deviceConfig = useDeviceConfig(collection, index);
   const { policy: current, choose: answer } = useSpacePolicy(
     collection,
@@ -148,15 +131,7 @@ export default function SpaceDecision({
   const choose = (policy: ConfigModel.SpacePolicy) => {
     answer(policy);
 
-    /* Custom is answered like the others and then followed up: it says the
-       decision is made part by part, so the reader is taken to where those are
-       made. That is the panel for the device, which shows what is on it today
-       along with everything else. The control is read from there as well as
-       from the page, where following up means staying put. */
-    if (policy === "custom") {
-      openSheet({ collection, index });
-      if (onCustom) onCustom();
-    }
+    if (policy === "custom" && onCustom) onCustom();
   };
 
   const reused = configModel.partitionable.isReusingPartitions(
@@ -179,7 +154,6 @@ export default function SpaceDecision({
             policy={policy}
             isSelected={policy === current}
             isDisabled={reused && policy !== "custom"}
-            isAssertive={isAssertive}
             onChoose={choose}
           />
         ))}

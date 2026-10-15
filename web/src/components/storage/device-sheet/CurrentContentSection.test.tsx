@@ -61,7 +61,7 @@ jest.mock("~/hooks/model/storage/config-model", () => ({
 }));
 
 /* The decision itself is tested on its own. */
-jest.mock("~/components/storage/storage-page/SpaceDecision", () => () => (
+jest.mock("~/components/storage/device-sheet/SpaceDecision", () => () => (
   <div role="group" aria-label="Allowed changes" />
 ));
 

@@ -21,7 +21,8 @@
  */
 
 import React from "react";
-import { Flex } from "@patternfly/react-core";
+import { Divider, Stack } from "@patternfly/react-core";
+import Page from "~/components/layout/Page";
 import EntriesTable from "~/components/storage/entries-table/EntriesTable";
 import TopLine from "~/components/storage/storage-page/TopLine";
 import GlobalActions from "~/components/storage/storage-page/GlobalActions";
@@ -36,8 +37,10 @@ import { useConfigModel } from "~/hooks/model/storage/config-model";
  * anything else is arranged: no disk to install on, settings this interface
  * cannot read, and a configuration it knows nothing about.
  *
- * Everything else is the page: what the configuration will do, then the
- * devices it uses and the controls that apply to all of them.
+ * Everything else is the page, laid out as other pages are: what the
+ * configuration will do first, then the page description next to the settings
+ * that apply to the whole installation, and then a box holding the devices it
+ * uses and the controls that apply to all of them.
  *
  * The sheet the page opens is laid over it. The sheet wraps rather than sits
  * beside, because two of its three placements are about what the page does
@@ -47,24 +50,19 @@ export default function StoragePageContent(): React.ReactNode {
   const model = useConfigModel();
 
   const body = (
-    <Flex
-      direction={{ default: "column" }}
-      alignItems={{ default: "alignItemsStretch" }}
-      gap={{ default: "gapXl" }}
-    >
-      {model && <TopLine />}
+    <Stack hasGutter>
       <Result />
+      {model && <TopLine />}
       {model && (
-        <Flex
-          direction={{ default: "column" }}
-          alignItems={{ default: "alignItemsStretch" }}
-          gap={{ default: "gapMd" }}
-        >
-          <EntriesTable />
-          <GlobalActions />
-        </Flex>
+        <Page.Section>
+          <Stack hasGutter>
+            <EntriesTable />
+            <Divider />
+            <GlobalActions />
+          </Stack>
+        </Page.Section>
       )}
-    </Flex>
+    </Stack>
   );
 
   return <StorageSheet page={body} />;

@@ -21,10 +21,9 @@
  */
 
 import React from "react";
-import { Stack, Flex, FlexItem } from "@patternfly/react-core";
+import { Flex, FlexItem } from "@patternfly/react-core";
 import ConfigureDeviceMenu from "~/components/storage/ConfigureDeviceMenu";
 import ChangeInstallationDisk from "~/components/storage/storage-page/ChangeInstallationDisk";
-import SingleDiskSpaceDecision from "~/components/storage/storage-page/SingleDiskSpaceDecision";
 import { _ } from "~/i18n";
 import { useConfigModel } from "~/hooks/model/storage/config-model";
 import configModel from "~/model/storage/config-model";
@@ -33,45 +32,29 @@ import configModel from "~/model/storage/config-model";
  * Controls that act on the storage configuration as a whole, rather than on a
  * single entry of it.
  *
- * Adding more devices is always offered. Where the installation uses a single
- * disk that can be swapped, changing that disk is offered too, and so is
- * deciding what may happen to its current content.
+ * Adding more devices is always offered, first, so it stays in the same place.
+ * Where the installation uses a single disk that can be swapped, changing that
+ * disk is offered next to it.
  */
 export default function GlobalActions() {
   const config = useConfigModel();
   const canChangeTarget = configModel.canChangeTargetDrive(config);
 
   return (
-    <Stack hasGutter>
-      <SingleDiskSpaceDecision />
+    <Flex className="agm-entries-table__add">
+      <FlexItem>
+        <ConfigureDeviceMenu
+          // TRANSLATORS: offered at the foot of the list of what the
+          // installation is made of: bring more disks into it.
+          label={_("Add more devices")}
+          popperProps={{ position: "left" }}
+        />
+      </FlexItem>
       {canChangeTarget && (
-        <Flex
-          gap={{ default: "gapSm" }}
-          alignItems={{ default: "alignItemsCenter" }}
-          justifyContent={{ default: "justifyContentCenter" }}
-          flexWrap={{ default: "wrap" }}
-        >
+        <FlexItem>
           <ChangeInstallationDisk />
-          <ConfigureDeviceMenu
-            // TRANSLATORS: offered at the foot of the list of what the
-            // installation is made of: bring more disks into it.
-            label={_("Add more devices")}
-            popperProps={{ position: "right" }}
-          />
-        </Flex>
+        </FlexItem>
       )}
-      {!canChangeTarget && (
-        <Flex className="agm-entries-table__add">
-          <FlexItem>
-            <ConfigureDeviceMenu
-              // TRANSLATORS: offered at the foot of the list of what the
-              // installation is made of: bring more disks into it.
-              label={_("Add more devices")}
-              popperProps={{ position: "left" }}
-            />
-          </FlexItem>
-        </Flex>
-      )}
-    </Stack>
+    </Flex>
   );
 }

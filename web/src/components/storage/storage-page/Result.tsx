@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import { Stack } from "@patternfly/react-core";
+import { Flex } from "@patternfly/react-core";
 import FixableConfigInfo from "~/components/storage/FixableConfigInfo";
 import ProposalFailedInfo from "~/components/storage/ProposalFailedInfo";
 import UnsupportedModelInfo from "~/components/storage/UnsupportedModelInfo";
@@ -66,10 +66,13 @@ export default function Result(): React.ReactNode {
   if (!configIssues.length && !model && !proposal) return <UnknownConfigMessage />;
   if (proposal) return <Consequences />;
 
+  /* A flex column rather than a stack, which takes the whole height of what
+     holds it: inside a column of its own, that leaves a gap under the alerts
+     and squeezes whatever comes after them. */
   return (
-    <Stack hasGutter>
+    <Flex direction={{ default: "column" }} gap={{ default: "gapMd" }}>
       {configIssues.length ? <FixableConfigInfo issues={configIssues} /> : <ProposalFailedInfo />}
       {!model && <UnsupportedModelInfo />}
-    </Stack>
+    </Flex>
   );
 }
