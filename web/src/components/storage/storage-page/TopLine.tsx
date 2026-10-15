@@ -102,7 +102,8 @@ function encryption(config: ConfigModel.Config): {
 } {
   if (!config.encryption) {
     // TRANSLATORS: what protects the data the installation writes: nothing.
-    return { value: phrase(_("Not encrypted")), icon: "lock_open" };
+    // The text in square brackets is shown in bold.
+    return { value: phrase(_("Encryption: [none]")), icon: "lock_open" };
   }
 
   return {
@@ -111,10 +112,10 @@ function encryption(config: ConfigModel.Config): {
         ? // TRANSLATORS: how the installation is encrypted, where the machine's
           // security chip releases the key at start-up. The text in square
           // brackets is shown in bold.
-          _("[LUKS2] encryption with TPM")
+          _("Encryption: [LUKS2 with TPM]")
         : // TRANSLATORS: how the installation is encrypted. The text in square
           // brackets is shown in bold.
-          _("[LUKS2] encryption"),
+          _("Encryption: [LUKS2]"),
     ),
     icon: "lock",
   };

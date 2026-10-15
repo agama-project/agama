@@ -64,7 +64,7 @@ describe("TopLine", () => {
       const list = screen.getByRole("list");
       expect(within(list).getAllByRole("listitem")).toHaveLength(2);
       within(list).getByRole("link", { name: "Boot disk: not configured" });
-      within(list).getByRole("link", { name: "Not encrypted" });
+      within(list).getByRole("link", { name: "Encryption: none" });
     });
 
     it("says the installer will work out where to boot from, where it will", () => {
@@ -108,11 +108,11 @@ describe("TopLine", () => {
 
     it("tells an unencrypted installation from one with a key in the machine", () => {
       installerRender(<TopLine />);
-      screen.getByRole("link", { name: "Not encrypted" });
+      screen.getByRole("link", { name: "Encryption: none" });
 
       mockConfig.mockReturnValue(config({ encryption: { password: "secret", tpm: true } }));
       installerRender(<TopLine />);
-      screen.getByRole("link", { name: "LUKS2 encryption with TPM" });
+      screen.getByRole("link", { name: "Encryption: LUKS2 with TPM" });
     });
 
     it("sends each to a page of its own, which is where every form lives", async () => {
