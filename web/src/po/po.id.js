@@ -693,6 +693,9 @@ export default {
   "Configuration from the network plus static addresses and gateway": [
     "Konfigurasi dari jaringan ditambah alamat statis dan gateway"
   ],
+  "Configuration pre-scripts have been executed and may have modified your system. You can reboot or shut down, but any changes made by these scripts will not be undone.": [
+    ""
+  ],
   "Configuration read from the iSCSI Boot Firmware Table (iBFT). Initiator cannot be changed.": [
     "Konfigurasi dibaca dari iSCSI Boot Firmware Table (iBFT). Initiator tidak dapat diubah."
   ],
@@ -2598,6 +2601,9 @@ export default {
   "Shrink existing partitions": [
     "Perkecil partisi yang ada"
   ],
+  "Shut down": [
+    ""
+  ],
   "Signal strength": [
     "Kekuatan sinyal"
   ],
@@ -3374,6 +3380,9 @@ export default {
   ],
   "You can safely close this window.": [
     "Anda dapat menutup jendela ini dengan aman."
+  ],
+  "You can safely reboot or shut down the system. No changes have been made to your disks, and your current installation setup will be canceled.": [
+    ""
   ],
   "You may want to discard the current settings and start from scratch with a simple configuration.": [
     "Anda mungkin ingin menghapus pengaturan saat ini dan memulai dari awal dengan konfigurasi sederhana."

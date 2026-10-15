@@ -699,6 +699,9 @@ export default {
   "Configuration from the network plus static addresses and gateway": [
     "从网络自动获取配置，外加静态地址和网关"
   ],
+  "Configuration pre-scripts have been executed and may have modified your system. You can reboot or shut down, but any changes made by these scripts will not be undone.": [
+    ""
+  ],
   "Configuration read from the iSCSI Boot Firmware Table (iBFT). Initiator cannot be changed.": [
     "已从 iSCSI 引导固件表 (iBFT) 读取配置。发起端不可更改。"
   ],
@@ -2607,6 +2610,9 @@ export default {
   "Shrink existing partitions": [
     "缩小现有分区"
   ],
+  "Shut down": [
+    ""
+  ],
   "Signal strength": [
     "信号强度"
   ],
@@ -3383,6 +3389,9 @@ export default {
   ],
   "You can safely close this window.": [
     "您可安全关闭此窗口。"
+  ],
+  "You can safely reboot or shut down the system. No changes have been made to your disks, and your current installation setup will be canceled.": [
+    ""
   ],
   "You may want to discard the current settings and start from scratch with a simple configuration.": [
     "您可能需要舍弃当前设置，并采用简单的配置从头开始。"

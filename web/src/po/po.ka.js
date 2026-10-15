@@ -758,6 +758,9 @@ export default {
   "Configuration from the network plus static addresses and gateway": [
     "კონფიგურაცია ქსელიდან, პლუს სტატიკური მისამართები და ნაგულისხმევი რაუტერი"
   ],
+  "Configuration pre-scripts have been executed and may have modified your system. You can reboot or shut down, but any changes made by these scripts will not be undone.": [
+    ""
+  ],
   "Configuration read from the iSCSI Boot Firmware Table (iBFT). Initiator cannot be changed.": [
     "iSCSI-დან ჩამტვირთავი მიკროკოდიდან (iBFT) წაკითხული კონფიგურაცია. ინიციატორის შეცვლა შეუძლებელია."
   ],
@@ -1253,6 +1256,9 @@ export default {
   ],
   "ExFAT": [
     "ExFAT"
+  ],
+  "Exit installation": [
+    "დაყენების პროგრამიდან გასვლა"
   ],
   "Expand if possible": [
     "გაფართოება, თუ შესაძლებელია"
@@ -2515,7 +2521,7 @@ export default {
     "STP"
   ],
   "SUSE Customer Center (SCC)": [
-    "SUSE Customer Center (SCC)"
+    "SUSE-ის კლიენტების მომსახურების ცენტრი (SCC)"
   ],
   "Security": [
     "უსაფრთხოება"
@@ -2533,7 +2539,7 @@ export default {
     "გრაფიკული ინტერფეისის მისაღებად აირჩიეთ სამუშაო გარემო."
   ],
   "Select a device": [
-    "აირჩიეთ მოწყობილობა"
+    "მოწყობილობის არჩევა"
   ],
   "Select a disk": [
     "აირჩიეთ დისკი"
@@ -2710,6 +2716,9 @@ export default {
   ],
   "Shrink existing partitions": [
     "არსებული დანაყოფების დაპატარავება"
+  ],
+  "Shut down": [
+    "გამორთვა"
   ],
   "Signal strength": [
     "სიგნალის სიძლიერე"
@@ -3079,6 +3088,9 @@ export default {
   ],
   "The system is rebooting": [
     "მიმდინარეობს სისტემის გადატვირთვა"
+  ],
+  "The system is shutting down": [
+    "მიმდინარეობს სისტემის გამორთვა"
   ],
   "The system will boot to a command-line interface.": [
     "სისტემა ბრძანების სტრიქონის ინტერფეისში ჩაიტვირთება."
@@ -3511,6 +3523,9 @@ export default {
   ],
   "You can safely close this window.": [
     "ეს ფანჯარა შეგიძლიათ, უსაფრთხოდ დახუროთ."
+  ],
+  "You can safely reboot or shut down the system. No changes have been made to your disks, and your current installation setup will be canceled.": [
+    ""
   ],
   "You may want to discard the current settings and start from scratch with a simple configuration.": [
     ""

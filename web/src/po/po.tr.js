@@ -509,6 +509,9 @@ export default {
   "Configuration from the network plus static addresses and gateway": [
     "Ağdan gelen yapılandırma artı statik adresler ve ağ geçidi"
   ],
+  "Configuration pre-scripts have been executed and may have modified your system. You can reboot or shut down, but any changes made by these scripts will not be undone.": [
+    ""
+  ],
   "Configure": [
     "Yapılandır"
   ],
@@ -2047,6 +2050,9 @@ export default {
   "Shrink existing partitions": [
     "Mevcut bölümleri küçült"
   ],
+  "Shut down": [
+    ""
+  ],
   "Signal strength": [
     "Sinyal gücü"
   ],
@@ -2699,6 +2705,9 @@ export default {
   ],
   "You can safely close this window.": [
     "Bu pencereyi güvenle kapatabilirsiniz."
+  ],
+  "You can safely reboot or shut down the system. No changes have been made to your disks, and your current installation setup will be canceled.": [
+    ""
   ],
   "You may want to discard the current settings and start from scratch with a simple configuration.": [
     "Mevcut ayarları atıp, basit bir yapılandırmayla sıfırdan başlamak isteyebilirsiniz."
