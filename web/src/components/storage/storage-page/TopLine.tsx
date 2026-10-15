@@ -47,15 +47,15 @@ import type { ConfigModel } from "~/model/storage/config-model";
  */
 function boot(config: ConfigModel.Config): { value: React.ReactNode; icon: IconProps["name"] } {
   if (!config.boot?.configure) {
-    // TRANSLATORS: what the installation will do about starting the machine:
-    // nothing, because the reader has said so.
-    return { value: _("Boot not configured"), icon: bootIcon(config) };
+    // TRANSLATORS: the disk the machine will start from: none, because the
+    // reader has said nothing is to be set up for starting it.
+    return { value: _("Boot disk: not configured"), icon: bootIcon(config) };
   }
 
   if (configModel.boot.isDefault(config)) {
-    // TRANSLATORS: what the installation will do about starting the machine:
-    // work out which disk it needs by itself.
-    return { value: _("Automatic boot"), icon: bootIcon(config) };
+    // TRANSLATORS: the disk the machine will start from: the installer works
+    // it out by itself.
+    return { value: _("Boot disk: auto"), icon: bootIcon(config) };
   }
 
   const device = configModel.boot.findDevice(config);
@@ -68,14 +68,14 @@ function boot(config: ConfigModel.Config): { value: React.ReactNode; icon: IconP
       <Interpolate
         // TRANSLATORS: the disk the machine is set to start from, chosen by
         // the reader. %s is its name, such as "sda".
-        sentence={_("Boot from %s")}
+        sentence={_("Boot disk: %s")}
       >
         {() => <TruncatedDeviceName device={device} />}
       </Interpolate>
     ) : (
       // TRANSLATORS: said where the machine is set to start from a disk the
       // reader has yet to choose.
-      _("Boot disk not selected")
+      _("Boot disk: not selected")
     ),
     icon: bootIcon(config),
   };
