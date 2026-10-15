@@ -823,7 +823,7 @@ export default {
     "一般的な用途のほか、システムの機能拡張のために厳選したパッケージセットです。"
   ],
   "Current": [
-    "現在"
+    "維持する"
   ],
   "Current %s": [
     "現在の %s"
@@ -910,7 +910,7 @@ export default {
     "管理者ユーザを設定する"
   ],
   "Define more file system settings": [
-    "さらなるファイルシステム設定を指定する"
+    "ファイルシステムを詳細に設定する"
   ],
   "Delete": [
     "削除"
@@ -1756,13 +1756,13 @@ export default {
     "詳細"
   ],
   "More devices": [
-    "さらなるデバイス"
+    "その他のデバイス"
   ],
   "More options": [
-    "さらなるオプション"
+    "その他のオプション"
   ],
   "More storage options": [
-    "さらなるストレージオプション"
+    "その他のストレージオプション"
   ],
   "Moreover, the following partition will be created.": [
     "このほか、下記のパーティションを作成します。"

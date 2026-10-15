@@ -1724,7 +1724,7 @@ export default {
     "DASD-Geräte verwalten"
   ],
   "Manage available connections, connect to Wi-Fi, or add a new connection.": [
-    "Verfügbare Verbindungen verwalten, eine WLAN-Verbindung herstellen oder eine neue Verbindung hinzufügen."
+    "Verfügbare Verbindungen verwalten, mit einem WLAN-Netzwerk verbinden oder eine neue Verbindung hinzufügen."
   ],
   "Manual": [
     "Manuell"
@@ -1960,7 +1960,7 @@ export default {
     "Keine Festplatten gefunden"
   ],
   "No iSCSI Boot Firmware Table (iBFT) found. The initiator can be [configured manually.]": [
-    "Keine iSCSI-Boot-Firmware-Tabelle (iBFT) gefunden. Der Initiator kann [manuell konfiguriert werden]."
+    "Keine iSCSI-Boot-Firmware-Tabelle (iBFT) gefunden. Der Initiator kann [manuell konfiguriert werden.]"
   ],
   "No information available yet": [
     "Noch keine Informationen verfügbar"
