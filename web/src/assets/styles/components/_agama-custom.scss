@@ -510,7 +510,41 @@ nav.agm-breadcrumb > ol > li > a {
 // the table cannot have the width its columns need, it keeps that width and
 // this scrolls: anything else crushes the alignment the table exists for.
 .agm-entries-table {
+  --agm-entries-table--entry-width: 20%;
+  --agm-entries-table--actions-width: 30%;
+  --agm-entries-table--options-width: 3.5rem;
+
   overflow-x: auto;
+}
+
+// What the installer will put on an entry is the column with the most to say,
+// so it takes whatever the others leave, and more of it where the window has
+// it to give.
+@media (width >= 75rem) {
+  .agm-entries-table {
+    --agm-entries-table--entry-width: 18%;
+    --agm-entries-table--actions-width: 25%;
+  }
+}
+
+// Every category is a table of its own. Fixed layout takes the widths from the
+// columns rather than from what each table holds, so all of them line up. The
+// minimum width is where the tables stop narrowing and the box scrolls.
+.agm-entries-table .pf-v6-c-table {
+  table-layout: fixed;
+  min-width: 40rem;
+}
+
+.agm-entries-table__col--entry {
+  width: var(--agm-entries-table--entry-width);
+}
+
+.agm-entries-table__col--actions {
+  width: var(--agm-entries-table--actions-width);
+}
+
+.agm-entries-table__col--options {
+  width: var(--agm-entries-table--options-width);
 }
 
 // Inside the page box, so its first and last columns take the regular cell

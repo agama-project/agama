@@ -102,6 +102,14 @@ function CategorySection({
         {/* Read out and not drawn. A strip of names sitting once at the top of
             a list of eight devices labels columns that have scrolled away from
             it, and every row already carries its own name. */}
+        {/* The same widths in every category, so entries line up across the
+            tables as if they were one. */}
+        <colgroup>
+          <col className="agm-entries-table__col--entry" />
+          <col className="agm-entries-table__col--actions" />
+          <col />
+          <col className="agm-entries-table__col--options" />
+        </colgroup>
         <Thead className={a11yStyles.screenReader}>
           <Tr>
             <Th>{columnName("entry")}</Th>
@@ -126,7 +134,8 @@ function CategorySection({
  * Each category has a table of its own rather than a body in a shared one, so
  * its name can be a real heading, and controls acting on a whole category can
  * sit beside that heading without being read out as part of every cell under
- * it.
+ * it. The tables share their column widths, so entries still line up from one
+ * category to the next.
  *
  * Arrow keys walk the entries across every table, as one list.
  *
