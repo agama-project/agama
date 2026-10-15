@@ -372,6 +372,40 @@ nav.agm-breadcrumb > ol > li > a {
   min-height: 0;
 }
 
+// The page under a sheet laid over it is out of reach, and visibly so: being
+// out of the tab order and the accessibility tree says nothing to a reader who
+// is looking at it. Behind the same backdrop as the rest of the installer, it
+// reads as the page behind the thing they are in. Lighter than the backdrop
+// that blocks the whole page while the installer works, since this page is
+// still there to be glanced at.
+//
+// Laid over the drawer rather than the page, which scrolls: a layer inside it
+// would cover the first screen of it and scroll away with it. The drawer keeps
+// its sheet above its page, so the layer sits between the two.
+.agm-sheet-frame--covered > .pf-v6-c-drawer__main {
+  position: relative;
+}
+
+.agm-sheet-frame--covered > .pf-v6-c-drawer__main::after {
+  position: absolute;
+  z-index: var(--pf-v6-c-drawer__content--ZIndex);
+  inset: 0;
+  content: "";
+  backdrop-filter: blur(2px);
+  background-color: color-mix(
+    in srgb,
+    var(--pf-t--global--background--color--backdrop--default) 50%,
+    transparent
+  );
+  animation: agm-sheet-backdrop-in var(--pf-t--global--motion--duration--fade--default) ease-in-out;
+}
+
+@keyframes agm-sheet-backdrop-in {
+  from {
+    opacity: 0;
+  }
+}
+
 // A panel opened beside or over the page it belongs to. It fills the height it
 // is given and scrolls its own content, so the heading saying what the reader
 // is looking at stays put while the panel is read.
