@@ -25,8 +25,9 @@ import { StackItem } from "@patternfly/react-core";
 import CurrentContentSection, {
   hasCurrentContent,
 } from "~/components/storage/device-sheet/CurrentContentSection";
+import ExistingContent from "~/components/storage/device-sheet/ExistingContent";
 import type { DeviceDetailProps } from "~/components/storage/device-sheet/DeviceDetail";
-import { _ } from "~/i18n";
+import type { Partitionable } from "~/model/storage/config-model";
 
 export default function UsedPartitionableCurrent({
   entry,
@@ -46,5 +47,10 @@ export default function UsedPartitionableCurrent({
     );
   }
 
-  return <StackItem>{_("TODO: either nothing either directly formatted/used")}</StackItem>;
+  /* Whatever is on the device goes, unless the new system takes the file
+     system on it as it is. */
+  const config = entry.config as Partitionable.Device;
+  const reusesFilesystem = !!config.mountPath && config.filesystem?.reuse === true;
+
+  return <ExistingContent entry={entry} isDeleted={!reusesFilesystem} />;
 }

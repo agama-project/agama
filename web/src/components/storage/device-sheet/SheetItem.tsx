@@ -63,7 +63,7 @@ export default function SheetItem({ icon, name, value, children }: SheetItemProp
       </FlexItem>
       <Flex
         direction={{ default: "column" }}
-        gap={{ default: "gapXs" }}
+        gap={{ default: "gapSm" }}
         flex={{ default: "flex_1" }}
       >
         <FlexItem>

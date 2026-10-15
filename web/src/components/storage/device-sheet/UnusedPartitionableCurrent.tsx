@@ -21,14 +21,39 @@
  */
 
 import React from "react";
-import { StackItem } from "@patternfly/react-core";
-import type { DeviceDetailProps } from "~/components/storage/device-sheet/DeviceDetail";
+import Link from "~/components/core/Link";
+import CurrentContentSection, {
+  hasCurrentContent,
+} from "~/components/storage/device-sheet/CurrentContentSection";
+import ExistingContent from "~/components/storage/device-sheet/ExistingContent";
+import { STORAGE as PATHS } from "~/routes/paths";
+import { generateEncodedPath } from "~/utils";
 import { _ } from "~/i18n";
+import type { DeviceDetailProps } from "~/components/storage/device-sheet/DeviceDetail";
 
-export default function UnusedPartitionableCurrent({
-  entry,
-  subject,
-}: DeviceDetailProps): React.ReactNode {
-  console.log("unised", entry, subject);
-  return <StackItem>{_("TODO: unused partitionable")}</StackItem>;
+/**
+ * What a device holds today, where the installation does not use it yet.
+ *
+ * Nothing on it is touched, so what is found is said as kept. A file system on
+ * the whole device can be put to use as it is, so it is offered to mount.
+ */
+export default function UnusedPartitionableCurrent({ entry, subject }: DeviceDetailProps) {
+  // FIXME: the partitions of an unused device should show kept, with only the
+  // option to reuse them.
+  if (hasCurrentContent(entry)) return <CurrentContentSection entry={entry} subject={subject} />;
+
+  const formatPath = generateEncodedPath(PATHS.formatDevice, {
+    collection: subject.collection,
+    index: String(subject.index),
+  });
+
+  const mount = entry.device?.filesystem && (
+    <Link to={formatPath} keepQuery variant="link" isInline>
+      {/* TRANSLATORS: offered on a file system found on a whole device: use it
+          for the new system, choosing where to mount it. */}
+      {_("Mount…")}
+    </Link>
+  );
+
+  return <ExistingContent entry={entry} actions={mount} />;
 }
