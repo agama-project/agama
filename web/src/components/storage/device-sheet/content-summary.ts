@@ -21,11 +21,11 @@
  */
 
 import { sprintf } from "sprintf-js";
-import { unique } from "radashi";
+import { sift, unique } from "radashi";
 import { deviceSize } from "~/components/storage/utils";
 import { _, n_, formatList } from "~/i18n";
 import type { TranslatedString } from "~/i18n";
-import type { ConfigModel } from "~/model/storage/config-model";
+import type { Decision } from "~/components/storage/device-sheet/partition-space";
 
 /** Something on the device today, as far as the summary needs to know it. */
 export type ContentPart = {
@@ -33,240 +33,311 @@ export type ContentPart = {
   name: string;
   /** Operating systems found on it. */
   systems: string[];
-  /** Where the new system uses it, if it does. No space option reaches it then. */
+  /** Where the new system uses it, if it does. No space decision reaches it then. */
   reusedAs?: string;
+  /** Whether the new system formats it, losing its data, rather than mounting it as it is. */
+  formats?: boolean;
   /** How much shrinking it could free, if it can be shrunk. */
   recoverable?: number;
+  /** What is allowed to happen to it, where the new system does not use it. */
+  decision?: Decision;
 };
 
 export type ContentKind = "partitions" | "logicalVolumes";
 
-const isPartitions = (kind: ContentKind) => kind === "partitions";
+/**
+ * What becomes of a part. Shrinking allowed on a part that cannot be shrunk
+ * keeps it: the table says why, the summary only what happens.
+ */
+type Outcome = "delete" | "format" | "shrink" | "keep" | "mount";
 
-/** Parts the new system uses, named while there are few of them. */
-function spokenFor(parts: ContentPart[]): TranslatedString {
-  if (parts.length > 2) {
-    return sprintf(
-      // TRANSLATORS: ends a sentence such as "Deletes 1 partition and its
-      // data, except 4 reused": how many parts the new system uses as they
-      // are. %d is how many.
-      n_("%d reused", "%d reused", parts.length),
-      parts.length,
+/** In the order they are said: what loses data first. */
+const OUTCOMES: Outcome[] = ["delete", "format", "shrink", "keep", "mount"];
+
+/**
+ * Up to how many parts used by the new system are named by where they are
+ * mounted. Past that they are counted, and the table names them.
+ */
+const MAX_LISTED_MOUNT_POINTS = 2;
+
+function outcomeOf(part: ContentPart): Outcome {
+  if (part.reusedAs !== undefined) return part.formats ? "format" : "mount";
+  if (part.decision === "delete") return "delete";
+  if (part.decision === "resizeIfNeeded" && part.recoverable !== undefined) return "shrink";
+  return "keep";
+}
+
+/** One clause per way of saying how many: the only one, both, all, or some. */
+type Forms = {
+  it: TranslatedString;
+  both: TranslatedString;
+  all: TranslatedString;
+  some: TranslatedString;
+};
+
+/**
+ * The clause saying how many of the parts something happens to. The count
+ * fills %d where the clause has one, and the detail fills %s.
+ */
+function clause(count: number, total: number, forms: Forms, detail?: string): TranslatedString {
+  if (count < total) return sprintf(forms.some, count, detail);
+  if (total === 1) return sprintf(forms.it, detail);
+  if (total === 2) return sprintf(forms.both, detail);
+  return sprintf(forms.all, detail);
+}
+
+function deleted(count: number, total: number, parts: ContentPart[]): TranslatedString {
+  const systems = formatList(unique(parts.flatMap((part) => part.systems)));
+
+  if (systems) {
+    return clause(
+      count,
+      total,
+      {
+        // TRANSLATORS: follows "1 partition:" or "1 logical volume:" (must fit
+        // both nouns). Removed, data lost. %s: operating systems found, such as
+        // "Windows 11".
+        it: _("it will be deleted (including %s)"),
+        // TRANSLATORS: follows "2 partitions:" or "2 logical volumes:" (must
+        // fit both nouns). Removed, data lost. %s: operating systems found,
+        // such as "Windows 11".
+        both: _("both will be deleted (including %s)"),
+        // TRANSLATORS: follows "3 partitions:" or "3 logical volumes:", or more
+        // (must fit both nouns). Removed, data lost. %s: operating systems
+        // found, such as "Windows 11".
+        all: _("all will be deleted (including %s)"),
+        // TRANSLATORS: list item following "5 partitions:" or
+        // "5 logical volumes:" (must fit both nouns). Removed, data lost. %1$d:
+        // how many. %2$s: operating systems found, such as "Windows 11".
+        some: n_(
+          "%1$d will be deleted (including %2$s)",
+          "%1$d will be deleted (including %2$s)",
+          count,
+        ),
+      },
+      systems,
     );
   }
 
-  return formatList(
-    parts.map((part) =>
-      // TRANSLATORS: a partition the new system uses. %1$s is its name, such
-      // as "vdd4", %2$s where it is mounted, such as "/home".
-      sprintf(_("%1$s (for %2$s)"), part.name, part.reusedAs),
-    ),
+  return clause(count, total, {
+    // TRANSLATORS: follows "1 partition:" or "1 logical volume:" (must fit both
+    // nouns). Removed, data lost.
+    it: _("it will be deleted"),
+    // TRANSLATORS: follows "2 partitions:" or "2 logical volumes:" (must fit
+    // both nouns). Removed, data lost.
+    both: _("both will be deleted"),
+    // TRANSLATORS: follows "3 partitions:" or "3 logical volumes:", or more
+    // (must fit both nouns). Removed, data lost.
+    all: _("all will be deleted"),
+    // TRANSLATORS: list item following "5 partitions:" or "5 logical volumes:"
+    // (must fit both nouns). Removed, data lost. %d: how many.
+    some: n_("%d will be deleted", "%d will be deleted", count),
+  });
+}
+
+function shrunk(count: number, total: number, parts: ContentPart[]): TranslatedString {
+  const freed = deviceSize(parts.reduce((sum, part) => sum + (part.recoverable || 0), 0));
+
+  return clause(
+    count,
+    total,
+    {
+      // TRANSLATORS: follows "1 partition:" or "1 logical volume:" (must fit
+      // both nouns). May be made smaller if room is needed; data kept. %s: most
+      // space that can be freed, such as "30 GiB".
+      it: _("it may be shrunk (up to %s)"),
+      // TRANSLATORS: follows "2 partitions:" or "2 logical volumes:" (must fit
+      // both nouns). May be made smaller if room is needed; data kept. %s: most
+      // space that can be freed, such as "30 GiB".
+      both: _("both may be shrunk (up to %s)"),
+      // TRANSLATORS: follows "3 partitions:" or "3 logical volumes:", or more
+      // (must fit both nouns). May be made smaller if room is needed; data
+      // kept. %s: most space that can be freed, such as "30 GiB".
+      all: _("all may be shrunk (up to %s)"),
+      // TRANSLATORS: list item following "5 partitions:" or
+      // "5 logical volumes:" (must fit both nouns). May be made smaller if room
+      // is needed; data kept. %1$d: how many. %2$s: most space that can be
+      // freed, such as "30 GiB".
+      some: n_("%1$d may be shrunk (up to %2$s)", "%1$d may be shrunk (up to %2$s)", count),
+    },
+    freed,
   );
 }
 
-function deleting(
-  kind: ContentKind,
-  parts: ContentPart[],
-  reused: ContentPart[],
-): TranslatedString {
+function kept(count: number, total: number): TranslatedString {
+  return clause(count, total, {
+    // TRANSLATORS: follows "1 partition:" or "1 logical volume:" (must fit both
+    // nouns). Nothing changes.
+    it: _("it will be kept"),
+    // TRANSLATORS: follows "2 partitions:" or "2 logical volumes:" (must fit
+    // both nouns). Nothing changes.
+    both: _("both will be kept"),
+    // TRANSLATORS: follows "3 partitions:" or "3 logical volumes:", or more
+    // (must fit both nouns). Nothing changes.
+    all: _("all will be kept"),
+    // TRANSLATORS: list item following "5 partitions:" or "5 logical volumes:"
+    // (must fit both nouns). Nothing changes. %d: how many.
+    some: n_("%d will be kept", "%d will be kept", count),
+  });
+}
+
+/** The clause saying how many of the parts something happens to, past naming them. */
+function countedClause(count: number, total: number, forms: Omit<Forms, "it">): TranslatedString {
+  if (count < total) return sprintf(forms.some, count);
+  if (total === 2) return forms.both;
+  return forms.all;
+}
+
+/** Named by where they are mounted while there are few of them. */
+function formatted(count: number, total: number, parts: ContentPart[]): TranslatedString {
+  if (count > MAX_LISTED_MOUNT_POINTS) {
+    return countedClause(count, total, {
+      // TRANSLATORS: follows "2 partitions:" or "2 logical volumes:" (must fit
+      // both nouns). Given a new file system; data lost.
+      both: _("both will be formatted for the new system"),
+      // TRANSLATORS: follows "3 partitions:" or "3 logical volumes:", or more
+      // (must fit both nouns). Given a new file system; data lost.
+      all: _("all will be formatted for the new system"),
+      // TRANSLATORS: list item following "5 partitions:" or
+      // "5 logical volumes:" (must fit both nouns). Given a new file system;
+      // data lost. %d: how many.
+      some: n_(
+        "%d will be formatted for the new system",
+        "%d will be formatted for the new system",
+        count,
+      ),
+    });
+  }
+
+  return clause(
+    count,
+    total,
+    {
+      // TRANSLATORS: follows "1 partition:" or "1 logical volume:" (must fit
+      // both nouns). Given a new file system; data lost. %s: mount point, such
+      // as "/home".
+      it: _("it will be formatted for %s"),
+      // TRANSLATORS: follows "2 partitions:" or "2 logical volumes:" (must fit
+      // both nouns). Given a new file system; data lost. %s: mount points, such
+      // as "/ and /home".
+      both: _("both will be formatted, for %s"),
+      // TRANSLATORS: follows "3 partitions:" or "3 logical volumes:", or more
+      // (must fit both nouns). Given a new file system; data lost. %s: mount
+      // points, such as "/, /home, and /srv".
+      all: _("all will be formatted, for %s"),
+      // TRANSLATORS: list item following "5 partitions:" or
+      // "5 logical volumes:" (must fit both nouns). Given a new file system;
+      // data lost. %1$d: how many. %2$s: mount points, such as "/home".
+      some: n_("%1$d will be formatted for %2$s", "%1$d will be formatted, for %2$s", count),
+    },
+    formatList(parts.map((part) => part.reusedAs)),
+  );
+}
+
+/** Named by where they are mounted while there are few of them. */
+function mounted(count: number, total: number, parts: ContentPart[]): TranslatedString {
+  if (count > MAX_LISTED_MOUNT_POINTS) {
+    return countedClause(count, total, {
+      // TRANSLATORS: follows "2 partitions:" or "2 logical volumes:" (must fit
+      // both nouns). Used by the new system unchanged; data kept.
+      both: _("both will be mounted as they are"),
+      // TRANSLATORS: follows "3 partitions:" or "3 logical volumes:", or more
+      // (must fit both nouns). Used by the new system unchanged; data kept.
+      all: _("all will be mounted as they are"),
+      // TRANSLATORS: list item following "5 partitions:" or
+      // "5 logical volumes:" (must fit both nouns). Used by the new system
+      // unchanged; data kept. %d: how many.
+      some: n_("%d will be mounted as it is", "%d will be mounted as they are", count),
+    });
+  }
+
+  return clause(
+    count,
+    total,
+    {
+      // TRANSLATORS: follows "1 partition:" or "1 logical volume:" (must fit
+      // both nouns). Used by the new system unchanged; data kept. %s: mount
+      // point, such as "/home".
+      it: _("it will be mounted at %s"),
+      // TRANSLATORS: follows "2 partitions:" or "2 logical volumes:" (must fit
+      // both nouns). Used by the new system unchanged; data kept. %s: mount
+      // points, such as "/ and /home".
+      both: _("both will be mounted, at %s"),
+      // TRANSLATORS: follows "3 partitions:" or "3 logical volumes:", or more
+      // (must fit both nouns). Used by the new system unchanged; data kept. %s:
+      // mount points, such as "/, /home, and /srv".
+      all: _("all will be mounted, at %s"),
+      // TRANSLATORS: list item following "5 partitions:" or
+      // "5 logical volumes:" (must fit both nouns). Used by the new system
+      // unchanged; data kept. %1$d: how many. %2$s: mount points, such as
+      // "/home".
+      some: n_("%1$d will be mounted at %2$s", "%1$d will be mounted, at %2$s", count),
+    },
+    formatList(parts.map((part) => part.reusedAs)),
+  );
+}
+
+function said(outcome: Outcome, parts: ContentPart[], total: number): TranslatedString | undefined {
   const count = parts.length;
+  if (!count) return undefined;
 
-  /* One extra clause at most. A part the option does not reach is the
-     exception to it, so it wins over naming the systems lost. */
-  if (reused.length) {
-    return sprintf(
-      isPartitions(kind)
-        ? // TRANSLATORS: what deleting the content of a disk does. %1$d is how
-          // many partitions go, %2$s the ones the new system keeps, such as
-          // "vdd4 (for /home)" or "4 reused".
-          n_(
-            "Deletes %1$d partition and its data, except %2$s",
-            "Deletes %1$d partitions and their data, except %2$s",
-            count,
-          )
-        : // TRANSLATORS: what deleting the content of a volume group does. %1$d
-          // is how many logical volumes go, %2$s the ones the new system keeps.
-          n_(
-            "Deletes %1$d logical volume and its data, except %2$s",
-            "Deletes %1$d logical volumes and their data, except %2$s",
-            count,
-          ),
-      count,
-      spokenFor(reused),
-    );
+  switch (outcome) {
+    case "delete":
+      return deleted(count, total, parts);
+    case "shrink":
+      return shrunk(count, total, parts);
+    case "keep":
+      return kept(count, total);
+    case "format":
+      return formatted(count, total, parts);
+    case "mount":
+      return mounted(count, total, parts);
   }
-
-  const systems = unique(parts.flatMap((part) => part.systems));
-  if (systems.length) {
-    return sprintf(
-      isPartitions(kind)
-        ? // TRANSLATORS: what deleting the content of a disk does. %1$d is how
-          // many partitions go, %2$s the operating systems found on them.
-          n_(
-            "Deletes %1$d partition and its data, including %2$s",
-            "Deletes %1$d partitions and their data, including %2$s",
-            count,
-          )
-        : // TRANSLATORS: what deleting the content of a volume group does. %1$d
-          // is how many logical volumes go, %2$s the operating systems on them.
-          n_(
-            "Deletes %1$d logical volume and its data, including %2$s",
-            "Deletes %1$d logical volumes and their data, including %2$s",
-            count,
-          ),
-      count,
-      formatList(systems),
-    );
-  }
-
-  return sprintf(
-    isPartitions(kind)
-      ? // TRANSLATORS: what deleting the content of a disk does. %d is how many
-        // partitions go.
-        n_("Deletes %d partition and its data", "Deletes %d partitions and their data", count)
-      : // TRANSLATORS: what deleting the content of a volume group does. %d is
-        // how many logical volumes go.
-        n_(
-          "Deletes %d logical volume and its data",
-          "Deletes %d logical volumes and their data",
-          count,
-        ),
-    count,
-  );
-}
-
-function shrinking(kind: ContentKind, parts: ContentPart[]): TranslatedString {
-  const shrinkable = parts.filter((part) => part.recoverable !== undefined);
-
-  if (!shrinkable.length) {
-    return isPartitions(kind)
-      ? // TRANSLATORS: none of the partitions on a disk can be made smaller.
-        _("No partition can be shrunk")
-      : // TRANSLATORS: none of the logical volumes in a volume group can be
-        // made smaller.
-        _("No logical volume can be shrunk");
-  }
-
-  const freed = shrinkable.reduce((sum, part) => sum + part.recoverable, 0);
-
-  return sprintf(
-    isPartitions(kind)
-      ? // TRANSLATORS: what shrinking partitions on a disk does. %1$d is how many
-        // can be made smaller, %2$s the most space that can be freed, such as
-        // "30 GiB".
-        n_(
-          "May shrink %1$d partition, freeing up to %2$s",
-          "May shrink %1$d partitions, freeing up to %2$s",
-          shrinkable.length,
-        )
-      : // TRANSLATORS: what shrinking logical volumes does. %1$d is how many can
-        // be made smaller, %2$s the most space that can be freed.
-        n_(
-          "May shrink %1$d logical volume, freeing up to %2$s",
-          "May shrink %1$d logical volumes, freeing up to %2$s",
-          shrinkable.length,
-        ),
-    shrinkable.length,
-    deviceSize(freed),
-  );
-}
-
-function keeping(kind: ContentKind, count: number, freeSpace: number): TranslatedString {
-  if (!freeSpace) {
-    return sprintf(
-      isPartitions(kind)
-        ? // TRANSLATORS: what keeping the partitions of a full disk does. %d is
-          // how many.
-          n_(
-            "Keeps %d partition, with no free space to use",
-            "Keeps %d partitions, with no free space to use",
-            count,
-          )
-        : // TRANSLATORS: what keeping the logical volumes of a full volume group
-          // does. %d is how many.
-          n_(
-            "Keeps %d logical volume, with no free space to use",
-            "Keeps %d logical volumes, with no free space to use",
-            count,
-          ),
-      count,
-    );
-  }
-
-  return sprintf(
-    isPartitions(kind)
-      ? // TRANSLATORS: what keeping the partitions of a disk does. %1$d is how
-        // many, %2$s the free space the new system uses, such as "2 GiB".
-        n_(
-          "Keeps %1$d partition, using %2$s of free space",
-          "Keeps %1$d partitions, using %2$s of free space",
-          count,
-        )
-      : // TRANSLATORS: what keeping the logical volumes of a volume group does.
-        // %1$d is how many, %2$s the free space the new system uses.
-        n_(
-          "Keeps %1$d logical volume, using %2$s of free space",
-          "Keeps %1$d logical volumes, using %2$s of free space",
-          count,
-        ),
-    count,
-    deviceSize(freeSpace),
-  );
 }
 
 /**
- * One line saying what the chosen space option does to what is on a device,
- * built from what happens to each part rather than from the option alone.
+ * One sentence saying what is on a device and what happens to it: how many
+ * parts there are, then how many of them meet each fate.
  *
- * It starts with a verb, never a number, and holds one extra clause at most.
- * Nothing is said under the custom option, where the table is always shown.
- * Parts the new system uses are out of every option's reach, so they are left
- * out of the count and named as the exception.
+ * Each fate is a clause of its own, so translators get whole clauses rather
+ * than pieces of one. "It", "both" and "all" say when one fate covers every
+ * part.
  *
  * @example
- * contentSummary("partitions", "delete", parts, 0)
- * // "Deletes 3 partitions and their data, except vdd4 (for /home)"
+ * contentSummary("partitions", parts)
+ * // "5 partitions: 3 will be deleted, 1 may be shrunk (up to 30 GiB), and 1 will be mounted at /home"
+ * // "3 partitions: all will be kept"
  */
 export default function contentSummary(
   kind: ContentKind,
-  policy: ConfigModel.SpacePolicy,
   parts: ContentPart[],
-  freeSpace: number,
 ): TranslatedString | undefined {
-  /* Under the custom option the table is always shown, and its Action column
-     is the answer. */
-  if (!parts.length || policy === "custom") return undefined;
+  const total = parts.length;
+  if (!total) return undefined;
 
-  const reused = parts.filter((part) => part.reusedAs !== undefined);
-  const governed = parts.filter((part) => part.reusedAs === undefined);
+  const fates = formatList(
+    sift(
+      OUTCOMES.map((outcome) =>
+        said(
+          outcome,
+          parts.filter((part) => outcomeOf(part) === outcome),
+          total,
+        ),
+      ),
+    ),
+  );
 
-  if (!governed.length) {
-    return sprintf(
-      isPartitions(kind)
-        ? // TRANSLATORS: every partition on a disk is used by the new system, so
-          // no space option reaches any. %d is how many there are.
-          n_(
-            "Uses the partition for the new system",
-            "Uses all %d partitions for the new system",
-            reused.length,
-          )
-        : // TRANSLATORS: every logical volume is used by the new system. %d is
-          // how many there are.
-          n_(
-            "Uses the logical volume for the new system",
-            "Uses all %d logical volumes for the new system",
-            reused.length,
-          ),
-      reused.length,
-    );
-  }
-
-  switch (policy) {
-    case "delete":
-      return deleting(kind, governed, reused);
-    case "resize":
-      return shrinking(kind, governed);
-    case "keep":
-      return keeping(kind, governed.length, freeSpace);
-  }
+  return sprintf(
+    kind === "partitions"
+      ? // TRANSLATORS: what is on a disk and what happens to it. %1$d is how
+        // many partitions, %2$s a list such as "3 will be deleted, 1 may be
+        // shrunk, and 1 will be mounted at /home".
+        n_("%1$d partition: %2$s", "%1$d partitions: %2$s", total)
+      : // TRANSLATORS: what is in a volume group and what happens to it. %1$d
+        // is how many logical volumes, %2$s a list such as "3 will be deleted,
+        // and 1 will be kept".
+        n_("%1$d logical volume: %2$s", "%1$d logical volumes: %2$s", total),
+    total,
+    fates,
+  );
 }

@@ -46,8 +46,7 @@ import {
 import { outcomeOf } from "~/components/storage/shared/consequences";
 import { useDevicesManager } from "~/components/storage/shared/use-devices-manager";
 import { baseName, deviceSize, formattedPath } from "~/components/storage/utils";
-import { _, n_ } from "~/i18n";
-import type { TranslatedString } from "~/i18n";
+import { _ } from "~/i18n";
 import type DevicesManager from "~/model/storage/devices-manager";
 import type { Decision } from "~/components/storage/device-sheet/partition-space";
 import type { ContentPart } from "~/components/storage/device-sheet/content-summary";
@@ -289,6 +288,14 @@ function decisionFor(
   return rule || decisionOf(entry);
 }
 
+/**
+ * Whether the new system formats a partition it uses, losing what is on it,
+ * rather than mounting it as it is.
+ */
+function isFormatted(request?: ConfigModel.Partition | ConfigModel.LogicalVolume): boolean {
+  return request?.mountPath !== undefined && request.filesystem?.reuse !== true;
+}
+
 function PartitionRow({
   part,
   manager,
@@ -317,7 +324,7 @@ function PartitionRow({
      a request to format is a request to format whether or not the installer
      got as far as a plan that does it, and a reader who asked for one and is
      shown the other has no way to tell which they are looking at. */
-  const formats = reusedAs !== undefined && request?.filesystem?.reuse !== true;
+  const formats = isFormatted(request);
   /* What it is left holding. The request first, and the plan where the request
      left the choice to the installer, which it may. */
   const newFilesystem = formats ? request?.filesystem?.type || staged?.filesystem?.type : undefined;
@@ -391,20 +398,6 @@ function PartitionRow({
       </Td>
       <Td isActionCell>{menu}</Td>
     </Tr>
-  );
-}
-
-/** What is on a device the installation does not use: all of it stays. */
-function keptAsTheyAre(isVolumeGroup: boolean, count: number): TranslatedString {
-  return sprintf(
-    isVolumeGroup
-      ? // TRANSLATORS: what happens to the logical volumes of a volume group the
-        // installation does not use. %d is how many.
-        n_("Keeps %d logical volume as it is", "Keeps %d logical volumes as they are", count)
-      : // TRANSLATORS: what happens to the partitions of a disk the installation
-        // does not use. %d is how many.
-        n_("Keeps %d partition as it is", "Keeps %d partitions as they are", count),
-    count,
   );
 }
 
@@ -530,19 +523,12 @@ export default function CurrentContentSection({
         name: baseName(row.name),
         systems: row.block?.systems || [],
         reusedAs: reusedAs && formattedPath(reusedAs),
+        formats: isFormatted(request),
         recoverable: recoverableBy(row),
+        decision: decisionFor(rule, request),
       };
     });
-  const freeSpace = rows.filter(isFreeSpace).reduce((sum, slot) => sum + slot.size, 0);
-  const summary =
-    fixedDecision === "keep"
-      ? keptAsTheyAre(entry.isVolumeGroup, parts.length)
-      : contentSummary(
-          entry.isVolumeGroup ? "logicalVolumes" : "partitions",
-          fixedDecision === "delete" ? "delete" : policy,
-          parts,
-          freeSpace,
-        );
+  const summary = contentSummary(entry.isVolumeGroup ? "logicalVolumes" : "partitions", parts);
   const summaryId = React.useId();
 
   /* Said when the answer changes, so a screen reader user hears what their

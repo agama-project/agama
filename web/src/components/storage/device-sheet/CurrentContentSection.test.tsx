@@ -94,7 +94,7 @@ describe("CurrentContentSection", () => {
   it("sums up what the chosen option does to the partitions", () => {
     installerRender(<CurrentContentSection entry={entry("delete")} subject={subject} />);
 
-    screen.getByText("Deletes 3 partitions and their data, including Windows 11");
+    screen.getByText("3 partitions: all will be deleted (including Windows 11)");
   });
 
   it("keeps the partitions out of sight until asked for", async () => {
@@ -119,7 +119,7 @@ describe("CurrentContentSection", () => {
     installerRender(<CurrentContentSection entry={entry("delete")} subject={subject} />);
 
     expect(screen.getByRole("button", { name: "Show partitions" })).toHaveAccessibleDescription(
-      "Deletes 3 partitions and their data, including Windows 11",
+      "3 partitions: all will be deleted (including Windows 11)",
     );
   });
 
@@ -146,7 +146,7 @@ describe("CurrentContentSection", () => {
     mockPolicy.mockReturnValue("keep");
     rerender(<CurrentContentSection entry={entry("keep")} subject={subject} />);
 
-    expect(mockAnnounce).toHaveBeenCalledWith("Keeps 3 partitions, with no free space to use");
+    expect(mockAnnounce).toHaveBeenCalledWith("3 partitions: all will be kept");
   });
 
   describe("on a device the installation does not use", () => {
@@ -155,7 +155,7 @@ describe("CurrentContentSection", () => {
         <CurrentContentSection entry={entry("keep")} subject={subject} fixedDecision="keep" />,
       );
 
-      screen.getByText("Keeps 3 partitions as they are");
+      screen.getByText("3 partitions: all will be kept");
       expect(screen.queryByRole("group", { name: "Allowed changes" })).toBeNull();
     });
   });
@@ -166,7 +166,7 @@ describe("CurrentContentSection", () => {
         <CurrentContentSection entry={entry("keep")} subject={subject} fixedDecision="delete" />,
       );
 
-      screen.getByText("Deletes 3 partitions and their data, including Windows 11");
+      screen.getByText("3 partitions: all will be deleted (including Windows 11)");
       expect(screen.queryByRole("group", { name: "Allowed changes" })).toBeNull();
 
       await user.click(screen.getByRole("button", { name: "Show partitions" }));
