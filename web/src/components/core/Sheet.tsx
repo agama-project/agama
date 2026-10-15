@@ -201,7 +201,12 @@ export default function Sheet({
   const reserves = isBeside && placeholder !== undefined;
 
   return (
-    <Drawer isExpanded={isOpen || reserves} isInline={isBeside} position="end">
+    <Drawer
+      isExpanded={isOpen || reserves}
+      isInline={isBeside}
+      position="end"
+      className="agm-sheet-frame"
+    >
       <DrawerContent
         panelContent={
           <DrawerPanelContent

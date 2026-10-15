@@ -310,14 +310,44 @@ nav.agm-breadcrumb > ol > li > a {
   flex-wrap: wrap;
 }
 
-// A panel opened beside or over the page it belongs to. It takes the whole
-// height it is given and scrolls its own content, so the heading saying what
-// the reader is looking at stays put while the panel is read.
+// A page holding a sheet does not scroll: the page beside the sheet and the
+// sheet each scroll on their own. A page that scrolls as a whole opens the
+// sheet at whatever offset the page was left at, with its heading out of sight.
+//
+// PatternFly grows the main group and the section but keeps both from
+// shrinking, so they stay as tall as their content and the page scrolls. Both
+// properties have to go: a zero minimum does nothing to an item that does not
+// shrink.
+.pf-v6-c-page__main-group:has(> .pf-v6-c-page__main-section > .agm-sheet-frame),
+.pf-v6-c-page__main-section:has(> .agm-sheet-frame),
+.agm-sheet-frame {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+// The drawer scrolls its panel as a whole, heading included. The scroll moves
+// one level in, to the sheet's body, so the heading stays while the rest moves.
+.agm-sheet-frame > .pf-v6-c-drawer__main > .pf-v6-c-drawer__panel {
+  overflow: hidden;
+}
+
+// The one plain block PatternFly leaves between the panel and the sheet.
+.agm-sheet-frame > .pf-v6-c-drawer__main > .pf-v6-c-drawer__panel > .pf-v6-c-drawer__body {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+}
+
+// A panel opened beside or over the page it belongs to. It fills the height it
+// is given and scrolls its own content, so the heading saying what the reader
+// is looking at stays put while the panel is read.
 .agm-sheet {
   display: flex;
+  flex: 1 1 auto;
   flex-direction: column;
-  height: 100%;
   min-height: 0;
+  overflow: hidden;
   padding: var(--pf-t--global--spacer--lg) var(--pf-t--global--spacer--xl);
   background: var(--pf-t--global--background--color--primary--default);
 }
