@@ -480,6 +480,23 @@ nav.agm-breadcrumb > ol > li > a {
   gap: var(--pf-t--global--spacer--sm);
 }
 
+// The mark beside each term at the size and color of the text it marks, close
+// to it, and centred on it: PatternFly draws it smaller, fainter, further
+// away, and stretched to the height of the line, which leaves it above the
+// word.
+.agm-top-line__settings .pf-v6-c-description-list__term {
+  --pf-v6-c-description-list__term-icon--Color: var(--pf-t--global--icon--color--regular);
+  --pf-v6-c-description-list__term-icon--MarginInlineEnd: var(--pf-t--global--spacer--xs);
+
+  align-items: center;
+}
+
+// Centred on the line, the mark still sits above words without descenders,
+// such as "Boot": nudged down to their visual middle.
+.agm-top-line__settings .pf-v6-c-description-list__term-icon {
+  translate: 0 0.1em;
+}
+
 // The add offer belongs next to what it adds to, so it keeps the list's own
 // indent rather than sitting against the edge of the page.
 .agm-entries-table__add {

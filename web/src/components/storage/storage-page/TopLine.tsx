@@ -22,7 +22,6 @@
 
 import React from "react";
 import { DescriptionList, Flex, FlexItem } from "@patternfly/react-core";
-import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
 import Link from "~/components/core/Link";
 import MenuButton from "~/components/core/MenuButton";
 import SettingValue from "~/components/core/SettingValue";
@@ -116,6 +115,9 @@ export default function TopLine(): React.ReactNode {
   const reset = useReset();
   const clearSearchParams = useClearSearchParams();
 
+  const bootTermId = React.useId();
+  const encryptionTermId = React.useId();
+
   if (!config) return null;
 
   const { value: bootValue, icon: bootMark } = boot(config);
@@ -129,8 +131,10 @@ export default function TopLine(): React.ReactNode {
   };
 
   return (
+    /* On one baseline, so the sentence and the settings read as one line
+       although they are set in different sizes. */
     <Flex
-      alignItems={{ default: "alignItemsCenter" }}
+      alignItems={{ default: "alignItemsBaseline" }}
       justifyContent={{ default: "justifyContentSpaceBetween" }}
       gap={{ default: "gapMd" }}
       /* Wrapping rather than pinned on one line. A strip this crowded runs out
@@ -159,22 +163,38 @@ export default function TopLine(): React.ReactNode {
             <DescriptionList isCompact isHorizontal isFluid className="agm-top-line__settings">
               <SettingValue
                 icon={bootMark}
+                termId={bootTermId}
                 // TRANSLATORS: names the setting saying where the machine will
                 // start from once it is installed.
                 term={_("Boot")}
                 value={
-                  <Link to={PATHS.editBootDevice} keepQuery variant="link" isInline>
+                  <Link
+                    to={PATHS.editBootDevice}
+                    keepQuery
+                    variant="link"
+                    isInline
+                    /* Says which setting it changes when read out of place, as
+                       in a screen reader's list of links. */
+                    aria-describedby={bootTermId}
+                  >
                     {bootValue}
                   </Link>
                 }
               />
               <SettingValue
                 icon={encryptionIcon}
+                termId={encryptionTermId}
                 // TRANSLATORS: names the setting saying what protects the data
                 // the installation writes.
                 term={_("Encryption")}
                 value={
-                  <Link to={PATHS.editEncryption} keepQuery variant="link" isInline>
+                  <Link
+                    to={PATHS.editEncryption}
+                    keepQuery
+                    variant="link"
+                    isInline
+                    aria-describedby={encryptionTermId}
+                  >
                     {encryptionValue}
                   </Link>
                 }
@@ -190,8 +210,10 @@ export default function TopLine(): React.ReactNode {
                 popperProps: { position: "end" },
               }}
               toggleProps={{
+                /* PatternFly's own padding kept, so the toggle is a target a
+                   finger or an unsteady hand can hit, not just its three
+                   dots. */
                 variant: "plain",
-                className: spacingStyles.p_0,
                 /* Three dots name nothing. Without this the toggle reaches a
                    screen reader as an unnamed button. */
                 "aria-label": _("Actions for this configuration"),

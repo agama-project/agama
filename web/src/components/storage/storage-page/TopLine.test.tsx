@@ -54,7 +54,7 @@ describe("TopLine", () => {
   it("says what the page is for, naming no technology", () => {
     installerRender(<TopLine />);
 
-    screen.getByText("Choose devices to use and how to structure them");
+    screen.getByText("Configure which storage devices will be used to install and how");
   });
 
   describe("the two installation decisions", () => {
@@ -101,6 +101,17 @@ describe("TopLine", () => {
       mockConfig.mockReturnValue(config({ encryption: { password: "secret", tpm: true } }));
       installerRender(<TopLine />);
       screen.getByRole("link", { name: "LUKS2 with TPM" });
+    });
+
+    it("ties each link to its setting, so it keeps its meaning out of place", () => {
+      installerRender(<TopLine />);
+
+      expect(screen.getByRole("link", { name: "Not configured" })).toHaveAccessibleDescription(
+        "Boot",
+      );
+      expect(screen.getByRole("link", { name: "Not encrypted" })).toHaveAccessibleDescription(
+        "Encryption",
+      );
     });
 
     it("sends each to a page of its own, which is where every form lives", async () => {
