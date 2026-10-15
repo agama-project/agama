@@ -367,8 +367,7 @@ async fn serve_command(args: ServeArgs) -> anyhow::Result<()> {
         .web_ui_dir
         .clone()
         .unwrap_or_else(|| PathBuf::from(DEFAULT_WEB_UI_DIR));
-    let service =
-        web::service(config, events_tx, dbus, web_ui_dir, Some(mcp_mode)).await?;
+    let service = web::service(config, events_tx, dbus, web_ui_dir, Some(mcp_mode)).await?;
     // TODO: Move elsewhere? Use a singleton? (It would be nice to use the same
     // generated self-signed certificate on both ports.)
     let ssl_acceptor = if let Ok(ssl_acceptor) = ssl_acceptor(&args.to_certificate()?) {

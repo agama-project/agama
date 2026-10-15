@@ -465,9 +465,7 @@ impl ServerHandler for McpServer {
                 "agama://schema/config.json",
                 "Agama Installation Profile Schema",
             )
-            .with_description(
-                "Complete JSON Schema for the Agama unattended installation profile.",
-            )
+            .with_description("Complete JSON Schema for the Agama unattended installation profile.")
             .with_mime_type("application/schema+json")],
             next_cursor: None,
             meta: None,

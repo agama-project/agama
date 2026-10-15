@@ -185,10 +185,11 @@ pub(crate) fn find_schema_path() -> PathBuf {
 /// Loads and parses the raw JSON schema file.
 pub(crate) fn load_schema_json() -> Result<Value, SchemaError> {
     let path = find_schema_path();
-    let contents = std::fs::read_to_string(&path)
-        .map_err(|source| SchemaError::Io { path: path.clone(), source })?;
-    serde_json::from_str(&contents)
-        .map_err(|source| SchemaError::Json { path, source })
+    let contents = std::fs::read_to_string(&path).map_err(|source| SchemaError::Io {
+        path: path.clone(),
+        source,
+    })?;
+    serde_json::from_str(&contents).map_err(|source| SchemaError::Json { path, source })
 }
 
 /// Recursively collects referenced component definitions from the JSON schema.
@@ -207,8 +208,12 @@ fn collect_referenced_components(
         }
     }
     match val {
-        Value::Object(m) => m.values().for_each(|v| collect_referenced_components(v, components, collected)),
-        Value::Array(a) => a.iter().for_each(|v| collect_referenced_components(v, components, collected)),
+        Value::Object(m) => m
+            .values()
+            .for_each(|v| collect_referenced_components(v, components, collected)),
+        Value::Array(a) => a
+            .iter()
+            .for_each(|v| collect_referenced_components(v, components, collected)),
         _ => {}
     }
 }
@@ -244,7 +249,10 @@ fn schema_overview(props: &serde_json::Map<String, Value>) -> Value {
 }
 
 /// Returns the schema overview or detailed section schema from Agama's config schema.
-pub(crate) fn get_schema_for_section(schema_val: &Value, section: Option<&str>) -> Result<Value, SchemaError> {
+pub(crate) fn get_schema_for_section(
+    schema_val: &Value,
+    section: Option<&str>,
+) -> Result<Value, SchemaError> {
     let props = schema_val
         .get("properties")
         .and_then(|p| p.as_object())
@@ -254,14 +262,17 @@ pub(crate) fn get_schema_for_section(schema_val: &Value, section: Option<&str>) 
         return Ok(schema_overview(props));
     };
 
-    let matched_key = props.keys().find(|k| k.eq_ignore_ascii_case(sec)).ok_or_else(|| {
-        let mut available: Vec<_> = props.keys().cloned().collect();
-        available.sort_unstable();
-        SchemaError::SectionNotFound {
-            section: sec.to_string(),
-            available,
-        }
-    })?;
+    let matched_key = props
+        .keys()
+        .find(|k| k.eq_ignore_ascii_case(sec))
+        .ok_or_else(|| {
+            let mut available: Vec<_> = props.keys().cloned().collect();
+            available.sort_unstable();
+            SchemaError::SectionNotFound {
+                section: sec.to_string(),
+                available,
+            }
+        })?;
 
     let prop_def = &props[matched_key];
     let components = schema_val

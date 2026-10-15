@@ -62,7 +62,9 @@ pub enum SchemaError {
     #[error("Schema does not contain top-level 'properties'")]
     MissingProperties,
 
-    #[error("Section '{section}' not found in Agama profile schema. Available sections: {available:?}")]
+    #[error(
+        "Section '{section}' not found in Agama profile schema. Available sections: {available:?}"
+    )]
     SectionNotFound {
         section: String,
         available: Vec<String>,
