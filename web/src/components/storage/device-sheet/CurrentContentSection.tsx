@@ -573,6 +573,9 @@ export default function CurrentContentSection({
               </FlexItem>
             </>
           )}
+          {isCustom && (
+            <Text isBold>{_("Use the table below to decide what to do with each partition")}</Text>
+          )}
         </>
       )}
       {/* A bit more room above the table than between the lines above it: a

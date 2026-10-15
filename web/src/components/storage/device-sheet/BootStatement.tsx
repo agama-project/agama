@@ -60,12 +60,12 @@ export default function BootStatement({ entry }: BootStatementProps): React.Reac
               ? // TRANSLATORS: said under the heading of the part of a disk's
                 // panel about booting. The text in square brackets is a link to
                 // the boot setting.
-                _("[Automatically chosen] for booting.")
+                _("[Automatically chosen] for booting, any needed partition will be configured.")
               : // TRANSLATORS: said under the heading of the part of a disk's
                 // panel about booting, where the boot disk was picked rather than
                 // worked out by the installer. The text in square brackets is a
                 // link to the boot setting.
-                _("[Explicitly chosen] for booting.")
+                _("[Explicitly chosen] for booting, any needed partition will be configured.")
           }
         >
           {(text) => (
