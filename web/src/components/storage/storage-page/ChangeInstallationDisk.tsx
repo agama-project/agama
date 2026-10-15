@@ -39,12 +39,12 @@ export default function ChangeInstallationDisk(): React.ReactNode {
 
   return (
     <>
-      <Button variant="primary" onClick={() => setIsOpen(true)}>
+      <Button variant="plain" onClick={() => setIsOpen(true)}>
         <Flex alignItems={{ default: "alignItemsCenter" }} gap={{ default: "gapSm" }}>
           <Icon name="change_circle" />{" "}
           {
-            // TRANSLATORS: offered under the summary of the installation: put
-            // the whole of it on a different disk.
+            // TRANSLATORS: offered at the foot of the list of what the
+            // installation is made of: put the whole of it on a different disk.
             _("Change installation disk")
           }
         </Flex>

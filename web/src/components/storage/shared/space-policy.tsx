@@ -76,11 +76,9 @@ const AskedPolicies = React.createContext<{
 /**
  * Remembers which entries were told to decide one part at a time.
  *
- * Above every control that offers the decision rather than inside each one. The
- * page offers it on a one-device plan and the sheet offers it again on the
- * entry, and two memories of the same answer disagree the moment one of them is
- * used: choosing custom on the page would open a sheet that had never heard of
- * it.
+ * Above the control that offers the decision rather than inside it, so the
+ * answer outlives the device panel: closing and reopening the panel would
+ * otherwise read "keep" again.
  */
 export function SpacePolicyMemory({ children }: React.PropsWithChildren): React.ReactNode {
   const [asked, setAsked] = React.useState<Asked>({});

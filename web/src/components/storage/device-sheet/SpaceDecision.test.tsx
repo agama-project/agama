@@ -22,10 +22,9 @@
 
 import React from "react";
 import { screen, within } from "@testing-library/react";
-import { useSearchParams } from "react-router";
 import { installerRender } from "~/test-utils";
 import type { ConfigModel } from "~/model/storage/config-model";
-import SpaceDecision from "~/components/storage/storage-page/SpaceDecision";
+import SpaceDecision from "~/components/storage/device-sheet/SpaceDecision";
 import { SpacePolicyMemory } from "~/components/storage/shared/space-policy";
 
 const mockDeviceConfig = jest.fn();
@@ -42,19 +41,6 @@ const drive = (spacePolicy?: ConfigModel.SpacePolicy): ConfigModel.Drive =>
 
 const options = () => screen.getByRole("group", { name: "Allowed changes" });
 
-/**
- * The address, so a test can read what a control wrote to it.
- *
- * The setter behind these params is the router's own, not the navigate spy, so
- * what it does is visible in the address and nowhere else.
- */
-const Address = () => {
-  const [params] = useSearchParams();
-  return <output>{params.toString()}</output>;
-};
-
-const address = () => screen.getByRole("status").textContent;
-
 describe("SpaceDecision", () => {
   beforeEach(() => {
     mockDeviceConfig.mockReturnValue(drive("keep"));
@@ -68,9 +54,9 @@ describe("SpaceDecision", () => {
       .map((button) => button.textContent);
 
     expect(names).toEqual([
-      "Deleting everything",
-      "Shrinking if needed",
-      "Keeping everything",
+      "Delete disk content",
+      "Shrink existing partitions",
+      "Keep partitions",
       "Custom",
     ]);
   });
@@ -78,33 +64,31 @@ describe("SpaceDecision", () => {
   it("says what the plan is doing, which is the one that reads pressed", () => {
     installerRender(<SpaceDecision collection="drives" index={0} />);
 
-    expect(screen.getByRole("button", { name: "Keeping everything", pressed: true }));
-    expect(screen.getByRole("button", { name: "Deleting everything", pressed: false }));
+    expect(screen.getByRole("button", { name: "Keep partitions", pressed: true }));
+    expect(screen.getByRole("button", { name: "Delete disk content", pressed: false }));
   });
 
   describe("when another answer is chosen", () => {
     it("writes it to the configuration", async () => {
       const { user } = installerRender(<SpaceDecision collection="drives" index={0} />);
-      await user.click(screen.getByRole("button", { name: "Shrinking if needed" }));
+      await user.click(screen.getByRole("button", { name: "Shrink existing partitions" }));
 
       expect(mockSetSpacePolicy).toHaveBeenCalledWith("drives", 0, { type: "resize" });
     });
   });
 
   describe("when custom is chosen", () => {
-    it("writes it, and opens where the rest of the question is answered", async () => {
+    it("writes it, and asks for where the rest of the question is answered", async () => {
+      const onCustom = jest.fn();
       const { user } = installerRender(
-        <>
-          <SpaceDecision collection="drives" index={0} />
-          <Address />
-        </>,
+        <SpaceDecision collection="drives" index={0} onCustom={onCustom} />,
       );
       await user.click(screen.getByRole("button", { name: "Custom" }));
 
       /* Written, since nothing decides partition by partition until it is, and
          with nothing decided yet, which leaves everything kept. */
       expect(mockSetSpacePolicy).toHaveBeenCalledWith("drives", 0, { type: "custom" });
-      expect(address()).toBe("sheet=drives.0&sheetTab=current");
+      expect(onCustom).toHaveBeenCalled();
     });
   });
 
@@ -123,7 +107,7 @@ describe("SpaceDecision", () => {
          back rather than remembered, the control would spring back and the
          per-partition controls it was asked for would never appear. */
       screen.getByRole("button", { name: "Custom", pressed: true });
-      screen.getByRole("button", { name: "Keeping everything", pressed: false });
+      screen.getByRole("button", { name: "Keep partitions", pressed: false });
     });
   });
 
@@ -148,7 +132,7 @@ describe("SpaceDecision", () => {
     it("reads as keeping everything, which is what an unset rule does", () => {
       installerRender(<SpaceDecision collection="drives" index={0} />);
 
-      expect(screen.getByRole("button", { name: "Keeping everything", pressed: true }));
+      expect(screen.getByRole("button", { name: "Keep partitions", pressed: true }));
     });
   });
 });

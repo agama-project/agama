@@ -34,9 +34,6 @@ jest.mock("~/hooks/model/storage/config-model", () => ({
 }));
 
 /* Each control is tested on its own. What matters here is which ones are offered. */
-jest.mock("~/components/storage/storage-page/SingleDiskSpaceDecision", () => () => (
-  <div role="group" aria-label="Allowed changes" />
-));
 jest.mock("~/components/storage/storage-page/ChangeInstallationDisk", () => () => (
   <button>Change installation disk</button>
 ));
@@ -57,11 +54,11 @@ describe("GlobalActions", () => {
       mockConfig.mockReturnValue(config());
     });
 
-    it("offers changing that disk and adding more devices", () => {
+    it("offers adding more devices and, after it, changing that disk", () => {
       plainRender(<GlobalActions />);
 
-      screen.getByRole("button", { name: "Change installation disk" });
-      screen.getByRole("button", { name: "Add more devices" });
+      const names = screen.getAllByRole("button").map((button) => button.textContent);
+      expect(names).toEqual(["Add more devices", "Change installation disk"]);
     });
   });
 
@@ -76,12 +73,5 @@ describe("GlobalActions", () => {
       expect(screen.queryByRole("button", { name: "Change installation disk" })).toBeNull();
       screen.getByRole("button", { name: "Add more devices" });
     });
-  });
-
-  it("includes the space decision for a single disk, which decides by itself whether to show", () => {
-    mockConfig.mockReturnValue(config());
-    plainRender(<GlobalActions />);
-
-    screen.getByRole("group", { name: "Allowed changes" });
   });
 });

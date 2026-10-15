@@ -28,7 +28,7 @@ import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacin
 import { sprintf } from "sprintf-js";
 import Text from "~/components/core/Text";
 import Icon from "~/components/layout/Icon";
-import SpaceDecision from "~/components/storage/storage-page/SpaceDecision";
+import SpaceDecision from "~/components/storage/device-sheet/SpaceDecision";
 import contentSummary from "~/components/storage/device-sheet/content-summary";
 import MenuButton, { MenuButtonItem } from "~/components/core/MenuButton";
 import RowMenuToggle from "~/components/storage/entries-table/RowMenuToggle";
@@ -537,7 +537,6 @@ export default function CurrentContentSection({
             <SpaceDecision
               collection={subject.collection}
               index={subject.index}
-              isAssertive
               onCustom={() => setExpanded(true)}
             />
           </FlexItem>

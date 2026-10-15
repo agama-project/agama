@@ -63,15 +63,15 @@ describe("TopLine", () => {
 
       const list = screen.getByRole("list");
       expect(within(list).getAllByRole("listitem")).toHaveLength(2);
-      within(list).getByRole("link", { name: "Boot not configured" });
-      within(list).getByRole("link", { name: "Not encrypted" });
+      within(list).getByRole("link", { name: "Boot disk: not configured" });
+      within(list).getByRole("link", { name: "Encryption: none" });
     });
 
     it("says the installer will work out where to boot from, where it will", () => {
       mockConfig.mockReturnValue(config({ boot: { configure: true, device: { default: true } } }));
       installerRender(<TopLine />);
 
-      screen.getByRole("link", { name: "Automatic boot" });
+      screen.getByRole("link", { name: "Boot disk: auto" });
     });
 
     it("names the disk the reader chose instead", () => {
@@ -83,7 +83,7 @@ describe("TopLine", () => {
       );
       installerRender(<TopLine />);
 
-      screen.getByRole("link", { name: "Boot from sdb" });
+      screen.getByRole("link", { name: "Boot disk: sdb" });
     });
 
     it("shortens a long disk name, keeping the whole of it for screen readers", () => {
@@ -96,28 +96,28 @@ describe("TopLine", () => {
       );
       installerRender(<TopLine />);
 
-      screen.getByRole("link", { name: "Boot from 36001405f3b9c4e8a5d7e6f1b2c3d4e5f" });
+      screen.getByRole("link", { name: "Boot disk: 36001405f3b9c4e8a5d7e6f1b2c3d4e5f" });
     });
 
     it("says so where nothing will be set up for booting", () => {
       mockConfig.mockReturnValue(config({ boot: { configure: false } }));
       installerRender(<TopLine />);
 
-      screen.getByRole("link", { name: "Boot not configured" });
+      screen.getByRole("link", { name: "Boot disk: not configured" });
     });
 
     it("tells an unencrypted installation from one with a key in the machine", () => {
       installerRender(<TopLine />);
-      screen.getByRole("link", { name: "Not encrypted" });
+      screen.getByRole("link", { name: "Encryption: none" });
 
       mockConfig.mockReturnValue(config({ encryption: { password: "secret", tpm: true } }));
       installerRender(<TopLine />);
-      screen.getByRole("link", { name: "LUKS2 encryption with TPM" });
+      screen.getByRole("link", { name: "Encryption: LUKS2 with TPM" });
     });
 
     it("sends each to a page of its own, which is where every form lives", async () => {
       const { user } = installerRender(<TopLine />);
-      await user.click(screen.getByRole("link", { name: "Boot not configured" }));
+      await user.click(screen.getByRole("link", { name: "Boot disk: not configured" }));
 
       expect(mockNavigateFn).toHaveBeenCalledWith(
         expect.objectContaining({ pathname: "/storage/boot-device/edit" }),
