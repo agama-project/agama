@@ -3,6 +3,7 @@
 require_relative "../../../test_helper"
 require_relative "support/shared_setup"
 
+require "tmpdir"
 require "bootloader/bls"
 require "bootloader/systemdboot"
 
@@ -63,12 +64,19 @@ describe Bootloader::SystemdBoot do
   end
 
   describe "#write" do
+    let(:write_destdir) { Dir.mktmpdir }
+
     before do
+      FileUtils.mkdir_p(File.join(write_destdir, "etc", "kernel"))
       allow(subject).to receive(:secure_boot).and_return(false)
       allow(Yast::Stage).to receive(:initial).and_return(true)
-      allow(Yast::Installation).to receive(:destdir).and_return(destdir)
+      allow(Yast::Installation).to receive(:destdir).and_return(write_destdir)
       subject.kernel_params.replace(cmdline_content)
       subject.timeout = 10
+    end
+
+    after do
+      FileUtils.remove_entry(write_destdir)
     end
 
     it "installs the bootloader" do

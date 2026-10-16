@@ -2,6 +2,7 @@
 
 require "yast"
 require "yast2/execute"
+require "bootloader/exceptions"
 
 Yast.import "Stage"
 
@@ -9,6 +10,7 @@ module Bootloader
   # Represents available sections and handling of default boot entry
   class Sections
     include Yast::Logger
+    include Yast::I18n
 
     # @return [Array<String>] list of all available boot titles if initialized
     #   with grub_cfg otherwise it is empty array
@@ -45,7 +47,11 @@ module Bootloader
     def write
       return if default.empty?
 
-      Yast::Execute.on_target("/usr/sbin/grub2-set-default", title_to_path(default))
+      begin
+        Yast::Execute.on_target!("/usr/sbin/grub2-set-default", title_to_path(default))
+      rescue Cheetah::ExecutionFailed => e
+        raise CommandError.new(_("Failed to set default GRUB2 boot entry:"), e)
+      end
     end
 
   private

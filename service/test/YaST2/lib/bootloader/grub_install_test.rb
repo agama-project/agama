@@ -24,13 +24,8 @@ describe Bootloader::GrubInstall do
       params << extra if extra
       params << device if device
 
-      if device
-        expect(Yast::Execute).to receive(:on_target!)
-          .with(params)
-      else
-        expect(Yast::Execute).to receive(:on_target)
-          .with(params)
-      end
+      expect(Yast::Execute).to receive(:on_target!)
+        .with(params)
     end
 
     before do
@@ -43,7 +38,7 @@ describe Bootloader::GrubInstall do
       it "runs shim-install instead of grub2-install if secure_boot: true passed" do
         stub_arch("x86_64")
         stub_efivars
-        expect(Yast::Execute).to receive(:on_target)
+        expect(Yast::Execute).to receive(:on_target!)
           .with([/shim-install/, "--config-file=/boot/grub2/grub.cfg"])
 
         subject.execute(secure_boot: true)
@@ -165,16 +160,15 @@ describe Bootloader::GrubInstall do
           .to contain_exactly("/dev/sda", "/dev/sdc")
       end
 
-      it "opens a report if grub2-install failed for all devices" do
+      it "raises an exception if grub2-install failed for all devices" do
         stub_arch("x86_64")
 
         allow(Yast::Execute).to receive(:on_target!) do |_arg|
           raise Cheetah::ExecutionFailed.new([], nil, nil, nil)
         end
 
-        expect(Yast::Report).to receive(:Error)
-
-        subject.execute(devices: ["/dev/sda", "/dev/sdb", "/dev/sdc"])
+        expect { subject.execute(devices: ["/dev/sda", "/dev/sdb", "/dev/sdc"]) }
+          .to raise_error(Bootloader::GrubInstallError, /Installing GRUB2 failed/)
       end
 
       it "runs with target i386-pc on i386" do

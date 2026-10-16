@@ -5,9 +5,8 @@ require "yast"
 require "y2storage"
 require "bootloader/sysconfig"
 require "bootloader/cpu_mitigations"
+require "bootloader/exceptions"
 require "cfa/grub2/default"
-
-Yast.import "Report"
 
 module Bootloader
   # Represents bls compatile system calls which can be used
@@ -25,68 +24,31 @@ module Bootloader
     def self.create_menu_entries
       Yast::Execute.on_target!(SDBOOTUTIL, "add-all-kernels")
     rescue Cheetah::ExecutionFailed => e
-      Yast::Report.Error(
-        format(_(
-                 "Cannot create boot menu entry:\n" \
-                 "Command `%{command}`.\n" \
-                 "Error output: %{stderr}"
-               ), command: e.commands.inspect, stderr: e.stderr)
-      )
+      raise SdbootutilError.new(_("Cannot create boot menu entry:"), e)
     end
 
     def self.install_bootloader
       Yast::Execute.on_target!(SDBOOTUTIL, "install")
     rescue Cheetah::ExecutionFailed => e
-      Yast::Report.Error(
-      format(_(
-               "Cannot install bootloader:\n" \
-               "Command `%{command}`.\n" \
-               "Error output: %{stderr}"
-             ), command: e.commands.inspect, stderr: e.stderr)
-    )
+      raise SdbootutilError.new(_("Cannot install bootloader:"), e)
     end
 
     def self.update_bootloader
       Yast::Execute.on_target!(SDBOOTUTIL, "update-all-entries")
     rescue Cheetah::ExecutionFailed => e
-      Yast::Report.Error(
-      format(_(
-               "Cannot update bootloader:\n" \
-               "Command `%{command}`.\n" \
-               "Error output: %{stderr}"
-             ), command: e.commands.inspect, stderr: e.stderr)
-    )
+      raise SdbootutilError.new(_("Cannot update bootloader:"), e)
     end
 
     def self.write_menu_timeout(timeout)
       Yast::Execute.on_target!(SDBOOTUTIL, "set-timeout", "--", timeout)
     rescue Cheetah::ExecutionFailed => e
-      Yast::Report.Error(
-      format(_(
-               "Cannot write boot menu timeout:\n" \
-               "Command `%{command}`.\n" \
-               "Error output: %{stderr}"
-             ), command: e.commands.inspect, stderr: e.stderr)
-    )
+      raise SdbootutilError.new(_("Cannot write boot menu timeout:"), e)
     end
 
     def self.menu_timeout
-      begin
-        output = Yast::Execute.on_target!(SDBOOTUTIL, "get-timeout", stdout: :capture).to_i
-      rescue Cheetah::ExecutionFailed => e
-        error_message = format(_(
-                                 "Cannot read boot menu timeout:\n" \
-                                 "Command `%{command}`.\n" \
-                                 "Error output: %{stderr}"
-                               ), command: e.commands.inspect, stderr: e.stderr)
-        if Yast::Stage.initial && Yast::Mode.update
-          Yast::Report.Warning(error_message)
-        else
-          Yast::Report.Error(error_message)
-        end
-        output = -2 # -1 will be returned from sdbootutil for menu-force
-      end
-      output
+      Yast::Execute.on_target!(SDBOOTUTIL, "get-timeout", stdout: :capture).to_i
+    rescue Cheetah::ExecutionFailed => e
+      raise SdbootutilError.new(_("Cannot read boot menu timeout:"), e)
     end
 
     def self.write_default_menu(default)
@@ -95,33 +57,15 @@ module Bootloader
       begin
         Yast::Execute.on_target!(SDBOOTUTIL, "set-default", default)
       rescue Cheetah::ExecutionFailed => e
-        Yast::Report.Error(
-          format(_(
-                   "Cannot write default boot menu entry:\n" \
-                   "Command `%{command}`.\n" \
-                   "Error output: %{stderr}"
-                 ), command: e.commands.inspect, stderr: e.stderr)
-        )
+        raise SdbootutilError.new(_("Cannot write default boot menu entry:"), e)
       end
     end
 
     def self.default_menu
-      begin
-        output = Yast::Execute.on_target!(SDBOOTUTIL, "get-default", stdout: :capture)
-      rescue Cheetah::ExecutionFailed => e
-        error_message = format(_(
-                                 "Cannot read default menu:\n" \
-                                 "Command `%{command}`.\n" \
-                                 "Error output: %{stderr}"
-                               ), command: e.commands.inspect, stderr: e.stderr)
-        if Yast::Stage.initial && Yast::Mode.update
-          Yast::Report.Warning(error_message)
-        else
-          Yast::Report.Error(error_message)
-        end
-        output = ""
-      end
+      output = Yast::Execute.on_target!(SDBOOTUTIL, "get-default", stdout: :capture)
       output.strip
+    rescue Cheetah::ExecutionFailed => e
+      raise SdbootutilError.new(_("Cannot read default menu:"), e)
     end
 
     # Enable TPM2/FIDO2 if it is required
@@ -152,13 +96,7 @@ module Bootloader
             "enroll", "--method=#{d.authentication.value}",
             "--devices=#{d.blk_device.name}")
         rescue Cheetah::ExecutionFailed => e
-          Yast::Report.Error(
-            format(_(
-                     "Cannot enroll authentication:\n" \
-                     "Command `%{command}`.\n" \
-                     "Error output: %{stderr}"
-                   ), command: e.commands.inspect, stderr: e.stderr)
-          )
+          raise SdbootutilError.new(_("Cannot enroll authentication:"), e)
         end
       end
     end
@@ -169,34 +107,19 @@ module Bootloader
       begin
         Yast::Execute.on_target!("/bin/systemd-machine-id-setup")
       rescue Cheetah::ExecutionFailed => e
-        Yast::Report.Error(
-          format(_(
-                   "Cannot create machine-id:\n" \
-                   "Command `%{command}`.\n" \
-                   "Error output: %{stderr}"
-                 ), command: e.commands.inspect, stderr: e.stderr)
-        )
+        raise CommandError.new(_("Cannot create machine-id:"), e)
       end
     end
 
     def self.export_password(pwd, kind)
-      if pwd.empty?
-        Yast::Report.Error(_("Cannot pass empty password via the keyring."))
-        return
-      end
+      raise BootloaderError, _("Cannot pass an empty password via the keyring.") if pwd.empty?
 
       begin
         Yast::Execute.on_target!("keyctl", "padd", "user", kind, "@u",
           recorder: Yast::ReducedRecorder.new(skip: :stdin),
           stdin:    pwd)
       rescue Cheetah::ExecutionFailed => e
-        Yast::Report.Error(
-          format(_(
-                   "Cannot pass the password via the keyring:\n" \
-                   "Command `%{command}`.\n" \
-                   "Error output: %{stderr}"
-                 ), command: e.commands.inspect, stderr: e.stderr)
-        )
+        raise CommandError.new(_("Cannot pass the password via the keyring:"), e)
       end
     end
 

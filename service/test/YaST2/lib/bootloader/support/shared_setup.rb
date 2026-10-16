@@ -58,8 +58,11 @@ RSpec.shared_context "yast2-bootloader test setup" do
 
     # mock all system operations
     allow(Yast::Execute).to receive(:on_target)
+    allow(Yast::Execute).to receive(:on_target!)
     # mock getting default section
     allow(Yast::Execute).to receive(:on_target)
+      .with("/usr/bin/grub2-editenv", "list", anything).and_return("")
+    allow(Yast::Execute).to receive(:on_target!)
       .with("/usr/bin/grub2-editenv", "list", anything).and_return("")
   end
 end
