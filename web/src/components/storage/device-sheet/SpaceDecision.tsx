@@ -38,21 +38,16 @@ const POLICY: Record<Decision, ConfigModel.SpacePolicy> = {
 };
 
 /** The same words as the Action column, since this sets that column at once. */
-function label(decision: Decision): TranslatedString {
+function label(decision: Decision, someReused: boolean): TranslatedString {
   switch (decision) {
     case "delete":
-      // TRANSLATORS: item of the "Set all to" menu, applied to every listed
-      // partition or logical volume: remove them; data lost.
-      return _("Delete");
+      return someReused
+        ? _("Delete all partitions with no mount point")
+        : _("Delete all partitions");
     case "resizeIfNeeded":
-      // TRANSLATORS: item of the "Set all to" menu, applied to every listed
-      // partition or logical volume: allow making them smaller if room is
-      // needed; data kept.
-      return _("Shrink if needed");
+      return _("Shrink partitions if needed and possible");
     case "keep":
-      // TRANSLATORS: item of the "Set all to" menu, applied to every listed
-      // partition or logical volume: change nothing.
-      return _("Keep");
+      return _("Keep all partitions");
   }
 }
 
@@ -65,16 +60,16 @@ function meaning(decision: Decision): TranslatedString {
     case "delete":
       // TRANSLATORS: description of "Delete" in the "Set all to" menu. "Their"
       // means the listed partitions or logical volumes (must fit both nouns).
-      return _("Their data is lost, and the space is freed for the new system.");
+      return _("Their data is lost and their space is freed.");
     case "resizeIfNeeded":
       // TRANSLATORS: description of "Shrink if needed" in the "Set all to"
       // menu. "Their" means the listed partitions or logical volumes (must fit
       // both nouns).
-      return _("Their data is kept, and some may be made smaller if room is needed.");
+      return _("The size of some existing partitions may be reduced, keeping their data.");
     case "keep":
       // TRANSLATORS: description of "Keep" in the "Set all to" menu. "Their"
       // means the listed partitions or logical volumes (must fit both nouns).
-      return _("Their data is kept, and only the free space is used.");
+      return _("Only the currently available space will be used for new partitions.");
   }
 }
 
@@ -83,6 +78,8 @@ export type SpaceDecisionProps = {
   index: number;
   /** The decision every part the new system does not use shares, if they share one. */
   current?: Decision;
+  /** Whether any of the partitions or logical volumes have an assigned mount point */
+  someReused?: boolean;
 };
 
 /**
@@ -94,7 +91,12 @@ export type SpaceDecisionProps = {
  * no state: what each part ends up with is read in the summary and the table.
  * Parts the new system uses keep what it does with them.
  */
-export default function SpaceDecision({ collection, index, current }: SpaceDecisionProps) {
+export default function SpaceDecision({
+  collection,
+  index,
+  current,
+  someReused,
+}: SpaceDecisionProps) {
   const setSpacePolicy = useSetSpacePolicy();
 
   /* Choosing the decision every part already has changes nothing, so nothing
@@ -118,7 +120,7 @@ export default function SpaceDecision({ collection, index, current }: SpaceDecis
           description={meaning(decision)}
           onClick={() => choose(decision)}
         >
-          {label(decision)}
+          {label(decision, someReused)}
         </MenuButton.Item>
       ))}
     >

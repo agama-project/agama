@@ -519,6 +519,7 @@ export default function CurrentContentSection({
     ),
   );
   const sharedDecision = decisions.length === 1 ? decisions[0] : undefined;
+  const someReused = entries.some((e) => e.name && e.mountPath);
 
   /* Closed at first, since the summary already says what happens to every part. */
   const [expanded, setExpanded] = React.useState(false);
@@ -635,6 +636,7 @@ export default function CurrentContentSection({
                       collection={subject.collection}
                       index={subject.index}
                       current={sharedDecision}
+                      someReused={someReused}
                     />
                   )}
                 </Th>
