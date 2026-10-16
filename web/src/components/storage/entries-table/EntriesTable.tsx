@@ -29,6 +29,7 @@ import DriveRow from "~/components/storage/entries-table/DriveRow";
 import VolumeGroupRow from "~/components/storage/entries-table/VolumeGroupRow";
 import ChangeInstallationDisk from "~/components/storage/storage-page/ChangeInstallationDisk";
 import { useConfigModel } from "~/hooks/model/storage/config-model";
+import { useCandidateDrives } from "~/hooks/model/system/storage";
 import configModel from "~/model/storage/config-model";
 import { n_, TranslatedString } from "~/i18n";
 
@@ -153,6 +154,7 @@ function CategorySection({
  */
 export default function EntriesTable(): React.ReactNode {
   const config = useConfigModel();
+  const candidate = useCandidateDrives();
   const list = React.useRef<HTMLDivElement>(null);
 
   /* Arrow keys walk the entries, which is what a reader expects of a list they
@@ -207,7 +209,7 @@ export default function EntriesTable(): React.ReactNode {
 
   if (!groups.length) return null;
 
-  const canChangeTarget = configModel.canChangeTargetDrive(config);
+  const canChangeTarget = configModel.canChangeTargetDrive(config) && candidate.length > 1;
 
   return (
     <div className="agm-entries-table" ref={list} onKeyDown={onKeyDown}>
