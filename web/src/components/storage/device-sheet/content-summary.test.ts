@@ -22,6 +22,7 @@
 
 import contentSummary from "~/components/storage/device-sheet/content-summary";
 import type { ContentPart } from "~/components/storage/device-sheet/content-summary";
+import type { Decision } from "~/components/storage/device-sheet/partition-space";
 
 const GiB = 1024 ** 3;
 
@@ -31,96 +32,139 @@ const part = (name: string, values: Partial<ContentPart> = {}): ContentPart => (
   ...values,
 });
 
+/** Parts the new system does not use, all given the same decision. */
+const given = (decision: Decision, ...names: string[]) =>
+  names.map((name) => part(name, { decision }));
+
 describe("contentSummary", () => {
   it("says nothing when the device holds nothing", () => {
-    expect(contentSummary("partitions", "delete", [], 0)).toBeUndefined();
+    expect(contentSummary("partitions", [])).toBeUndefined();
   });
 
-  describe("when deleting", () => {
-    it("says how many go, with their data", () => {
-      expect(contentSummary("partitions", "delete", [part("vdd1"), part("vdd2")], 0)).toBe(
-        "Deletes 2 partitions and their data",
-      );
-    });
+  it("counts the parts, then how many meet each fate", () => {
+    const parts = [
+      ...given("delete", "vdd1", "vdd2", "vdd3"),
+      part("vdd4", { decision: "resizeIfNeeded", recoverable: 30 * GiB }),
+      part("vdd5", { reusedAs: "/home" }),
+    ];
 
-    it("names the systems found on what goes", () => {
-      const parts = [part("vdd1", { systems: ["Windows 11"] }), part("vdd2")];
-
-      expect(contentSummary("partitions", "delete", parts, 0)).toBe(
-        "Deletes 2 partitions and their data, including Windows 11",
-      );
-    });
-
-    it("names what the new system uses instead, as the exception", () => {
-      const parts = [
-        part("vdd1", { systems: ["Windows 11"] }),
-        part("vdd4", { reusedAs: "/home" }),
-      ];
-
-      expect(contentSummary("partitions", "delete", parts, 0)).toBe(
-        "Deletes 1 partition and its data, except vdd4 (for /home)",
-      );
-    });
-
-    it("counts what the new system uses past two", () => {
-      const parts = [
-        part("vdd1"),
-        part("vdd2", { reusedAs: "/home" }),
-        part("vdd3", { reusedAs: "/srv" }),
-        part("vdd4", { reusedAs: "/opt" }),
-      ];
-
-      expect(contentSummary("partitions", "delete", parts, 0)).toBe(
-        "Deletes 1 partition and its data, except 3 reused",
-      );
-    });
-  });
-
-  it("says so when the new system uses everything", () => {
-    const parts = [part("vdd1", { reusedAs: "/" }), part("vdd2", { reusedAs: "/home" })];
-
-    expect(contentSummary("partitions", "delete", parts, 0)).toBe(
-      "Uses all 2 partitions for the new system",
+    expect(contentSummary("partitions", parts)).toBe(
+      "5 partitions: 3 will be deleted, 1 may be shrunk (up to 30 GiB), and 1 will be mounted at /home",
     );
   });
 
-  describe("when shrinking", () => {
-    it("says how many may shrink and how much that frees", () => {
-      const parts = [part("vdd1", { recoverable: 30 * GiB }), part("vdd2")];
-
-      expect(contentSummary("partitions", "resize", parts, 0)).toBe(
-        "May shrink 1 partition, freeing up to 30 GiB",
+  describe("when one fate covers every part", () => {
+    it("says all of them meet it", () => {
+      expect(contentSummary("partitions", given("delete", "vdd1", "vdd2", "vdd3"))).toBe(
+        "3 partitions: all will be deleted",
       );
     });
 
-    it("says so when none can shrink", () => {
-      expect(contentSummary("partitions", "resize", [part("vdd1"), part("vdd2")], 0)).toBe(
-        "No partition can be shrunk",
-      );
-    });
-  });
-
-  describe("when keeping", () => {
-    it("says how much free space is used", () => {
-      expect(contentSummary("partitions", "keep", [part("vdd1")], 2 * GiB)).toBe(
-        "Keeps 1 partition, using 2 GiB of free space",
+    it("says both when there are two", () => {
+      expect(contentSummary("partitions", given("keep", "vdd1", "vdd2"))).toBe(
+        "2 partitions: both will be kept",
       );
     });
 
-    it("says when there is no free space to use", () => {
-      expect(contentSummary("partitions", "keep", [part("vdd1")], 0)).toBe(
-        "Keeps 1 partition, with no free space to use",
+    it("says it when there is one", () => {
+      expect(contentSummary("partitions", given("delete", "vdd1"))).toBe(
+        "1 partition: it will be deleted",
       );
     });
   });
 
-  it("says nothing under the custom option, where the table is the answer", () => {
-    expect(contentSummary("partitions", "custom", [part("vdd1")], 0)).toBeUndefined();
+  it("names the systems found on what is deleted", () => {
+    const parts = [part("vdd1", { decision: "delete", systems: ["Windows 11"] }), part("vdd2")];
+
+    expect(contentSummary("partitions", parts)).toBe(
+      "2 partitions: 1 will be deleted (including Windows 11) and 1 will be kept",
+    );
+  });
+
+  it("counts what is allowed to shrink but cannot as kept", () => {
+    const parts = [
+      part("vdd1", { decision: "resizeIfNeeded", recoverable: 10 * GiB }),
+      part("vdd2", { decision: "resizeIfNeeded", recoverable: 20 * GiB }),
+      part("vdd3", { decision: "resizeIfNeeded" }),
+    ];
+
+    expect(contentSummary("partitions", parts)).toBe(
+      "3 partitions: 2 may be shrunk (up to 30 GiB) and 1 will be kept",
+    );
+  });
+
+  it("says all are kept when nothing allowed to shrink can", () => {
+    expect(contentSummary("partitions", given("resizeIfNeeded", "vdd1", "vdd2", "vdd3"))).toBe(
+      "3 partitions: all will be kept",
+    );
+  });
+
+  it("reads parts with no decision as kept", () => {
+    expect(contentSummary("partitions", [part("vdd1")])).toBe("1 partition: it will be kept");
+  });
+
+  describe("when the new system uses some parts", () => {
+    const mounted = (name: string, path: string) => part(name, { reusedAs: path });
+    const formatted = (name: string, path: string) => part(name, { reusedAs: path, formats: true });
+
+    it("names where it mounts them as they are while there are few", () => {
+      const parts = [...given("delete", "vdd1"), mounted("vdd2", "/"), mounted("vdd3", "/home")];
+
+      expect(contentSummary("partitions", parts)).toBe(
+        "3 partitions: 1 will be deleted and 2 will be mounted, at / and /home",
+      );
+    });
+
+    it("says which of them are formatted, right after what is deleted", () => {
+      const parts = [
+        ...given("keep", "vdd1"),
+        mounted("vdd2", "/home"),
+        formatted("vdd3", "/"),
+        ...given("delete", "vdd4"),
+      ];
+
+      expect(contentSummary("partitions", parts)).toBe(
+        "4 partitions: 1 will be deleted, 1 will be formatted for /, 1 will be kept, and 1 will be mounted at /home",
+      );
+    });
+
+    it("counts them past two", () => {
+      const parts = [
+        ...given("delete", "vdd1"),
+        formatted("vdd2", "/"),
+        formatted("vdd3", "/home"),
+        formatted("vdd4", "/srv"),
+      ];
+
+      expect(contentSummary("partitions", parts)).toBe(
+        "4 partitions: 1 will be deleted and 3 will be formatted for the new system",
+      );
+    });
+
+    it("says all when it formats every part, past naming them", () => {
+      const parts = [formatted("vdd1", "/"), formatted("vdd2", "/home"), formatted("vdd3", "/srv")];
+
+      expect(contentSummary("partitions", parts)).toBe(
+        "3 partitions: all will be formatted for the new system",
+      );
+    });
+
+    it("says both when it mounts the only two", () => {
+      expect(contentSummary("partitions", [mounted("vdd1", "/"), mounted("vdd2", "/home")])).toBe(
+        "2 partitions: both will be mounted, at / and /home",
+      );
+    });
+
+    it("says it when it formats the only one", () => {
+      expect(contentSummary("partitions", [formatted("vdd1", "/")])).toBe(
+        "1 partition: it will be formatted for /",
+      );
+    });
   });
 
   it("speaks of logical volumes in a volume group", () => {
-    expect(contentSummary("logicalVolumes", "delete", [part("home")], 0)).toBe(
-      "Deletes 1 logical volume and its data",
+    expect(contentSummary("logicalVolumes", given("delete", "home", "swap"))).toBe(
+      "2 logical volumes: both will be deleted",
     );
   });
 });

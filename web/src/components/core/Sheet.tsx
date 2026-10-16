@@ -215,7 +215,7 @@ export default function Sheet({
                jump from three quarters to the whole width. Over the page the
                sheet is what the reader is in, so it takes most of the room;
                beside it both halves are being read, so they take half each. */
-            defaultSize={isBeside ? "50%" : "70%"}
+            defaultSize={isBeside ? "50%" : "75%"}
             className={`agm-sheet__panel agm-sheet__panel--${placement}`}
           >
             <DrawerPanelBody hasNoPadding>

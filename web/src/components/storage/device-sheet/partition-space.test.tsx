@@ -22,12 +22,21 @@
 
 import React from "react";
 import { screen } from "@testing-library/react";
-import { plainRender } from "~/test-utils";
+import { Menu, MenuContent, MenuList } from "@patternfly/react-core";
+import { installerRender, plainRender } from "~/test-utils";
 import type { Storage as System } from "~/model/system";
+import type { Decision } from "~/components/storage/device-sheet/partition-space";
 import {
   shrinkReason,
   ShrinkRefusal,
+  usePartitionSpaceItems,
 } from "~/components/storage/device-sheet/partition-space";
+
+jest.mock("~/hooks/model/storage/config-model", () => ({
+  ...jest.requireActual("~/hooks/model/storage/config-model"),
+  useConfigModel: () => null,
+  useSetSpacePolicy: () => jest.fn(),
+}));
 
 const GiB = 1024 ** 3;
 
@@ -98,5 +107,46 @@ describe("ShrinkRefusal", () => {
     plainRender(<ShrinkRefusal partition={partition({ supported: false, reasons: [] })} />);
 
     screen.getByText("This partition cannot be made smaller.");
+  });
+});
+
+describe("usePartitionSpaceItems", () => {
+  const shrinkable = { ...partition({ supported: true, minSize: 20 * GiB }), name: "/dev/vda2" };
+  const unshrinkable = partition({ supported: false });
+
+  function Items({ part, rule }: { part: System.Device; rule?: Decision }) {
+    const items = usePartitionSpaceItems({
+      partition: part,
+      governed: [unshrinkable, shrinkable],
+      entries: [],
+      collection: "drives",
+      index: 0,
+      rule,
+    });
+
+    return (
+      <Menu>
+        <MenuContent>
+          <MenuList>{items}</MenuList>
+        </MenuContent>
+      </Menu>
+    );
+  }
+
+  it("marks as taken the decision the device gives every partition", () => {
+    installerRender(<Items part={shrinkable} rule="resizeIfNeeded" />);
+
+    expect(screen.getByRole("menuitem", { name: /^Shrink if needed/ })).toHaveClass(
+      "pf-m-selected",
+    );
+  });
+
+  it("marks keeping as taken where shrinking is allowed but impossible", () => {
+    installerRender(<Items part={unshrinkable} rule="resizeIfNeeded" />);
+
+    expect(screen.getByRole("menuitem", { name: /^Keep/ })).toHaveClass("pf-m-selected");
+    expect(screen.getByRole("menuitem", { name: /^Shrink if needed/ })).not.toHaveClass(
+      "pf-m-selected",
+    );
   });
 });

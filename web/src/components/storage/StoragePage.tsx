@@ -25,7 +25,6 @@ import Page from "~/components/layout/Page";
 import IssuesAlert from "~/components/core/IssuesAlert";
 import ConnectedDevicesMenu from "~/components/storage/ConnectedDevicesMenu";
 import StoragePageContent from "~/components/storage/storage-page/StoragePageContent";
-import { SpacePolicyMemory } from "~/components/storage/shared/space-policy";
 import { useIssues } from "~/hooks/model/issue";
 import { STORAGE_MODEL_QUERY_KEY } from "~/hooks/model/storage/config-model";
 import { PROPOSAL_QUERY_KEY } from "~/hooks/model/proposal";
@@ -49,11 +48,7 @@ export default function StoragePage(): React.ReactNode {
     >
       <Page.Content>
         <IssuesAlert issues={zfcpIssues} />
-        {/* Here rather than around either control that offers the decision: the
-            page and the sheet both do, and they have to agree about it. */}
-        <SpacePolicyMemory>
-          <StoragePageContent />
-        </SpacePolicyMemory>
+        <StoragePageContent />
       </Page.Content>
     </Page>
   );

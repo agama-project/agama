@@ -21,60 +21,67 @@
  */
 
 import React from "react";
-import { ToggleGroup, ToggleGroupItem, Tooltip } from "@patternfly/react-core";
-import { useSpacePolicy } from "~/components/storage/shared/space-policy";
-import { useDevice as useDeviceConfig } from "~/hooks/model/storage/config-model";
+import { Flex, ToggleGroup, ToggleGroupItem, Tooltip } from "@patternfly/react-core";
+import Text from "~/components/core/Text";
+import { useSetSpacePolicy } from "~/hooks/model/storage/config-model";
 import { _, TranslatedString } from "~/i18n";
-import configModel from "~/model/storage/config-model";
-import type { ConfigModel, DeviceCollection, Partitionable } from "~/model/storage/config-model";
+import type { ConfigModel, DeviceCollection } from "~/model/storage/config-model";
+import type { Decision } from "~/components/storage/device-sheet/partition-space";
 
-const POLICIES: ConfigModel.SpacePolicy[] = ["delete", "resize", "keep", "custom"];
+const DECISIONS: Decision[] = ["delete", "resizeIfNeeded", "keep"];
 
-/**
- * What to do with what is already on the device.
- *
- * FIXME: This should work also for logical volumes
- */
-function label(policy: ConfigModel.SpacePolicy): TranslatedString {
-  switch (policy) {
+/** The device policy giving every part the same decision. */
+const POLICY: Record<Decision, ConfigModel.SpacePolicy> = {
+  delete: "delete",
+  resizeIfNeeded: "resize",
+  keep: "keep",
+};
+
+/** The same words as the Action column, since this sets that column at once. */
+function label(decision: Decision): TranslatedString {
+  switch (decision) {
     case "delete":
-      return _("Delete disk content");
-    case "resize":
-      return _("Shrink existing partitions");
+      // TRANSLATORS: option after "Set all to", applied to every listed
+      // partition or logical volume: remove them; data lost.
+      return _("Delete");
+    case "resizeIfNeeded":
+      // TRANSLATORS: option after "Set all to", applied to every listed
+      // partition or logical volume: allow making them smaller if room is
+      // needed; data kept.
+      return _("Shrink if needed");
     case "keep":
-      return _("Keep partitions");
-    case "custom":
-      return _("Custom");
+      // TRANSLATORS: option after "Set all to", applied to every listed
+      // partition or logical volume: change nothing.
+      return _("Keep");
   }
 }
 
 /**
- * Read before the option is taken, which is when it is worth knowing, and
- * again after, where the answer taken is all a reader wants.
- *
- * The device panel opens on this rather than on the list of what is on the
- * device. One sentence in both places: a summary worded one way here and
- * another way there would have a reader comparing the two to work out whether
- * they are the same decision.
+ * Read before the option is taken, which is when it is worth knowing. What the
+ * option ends up doing to the device is said by the summary above the table.
  */
-function meaning(policy: ConfigModel.SpacePolicy): TranslatedString {
-  switch (policy) {
+function meaning(decision: Decision): TranslatedString {
+  switch (decision) {
     case "delete":
-      return _("Every existing partition will be removed and its data lost.");
-    case "resize":
-      return _("The size of some existing partitions may be reduced.");
+      // TRANSLATORS: tooltip of the "Delete" option after "Set all to". "Their"
+      // means the listed partitions or logical volumes (must fit both nouns).
+      return _("Their data is lost, and the space is freed for the new system.");
+    case "resizeIfNeeded":
+      // TRANSLATORS: tooltip of the "Shrink if needed" option after "Set all
+      // to". "Their" means the listed partitions or logical volumes (must fit
+      // both nouns).
+      return _("Their data is kept, and some may be made smaller if room is needed.");
     case "keep":
-      return _("Only the currently available space will be used.");
-    case "custom":
-      return _("Decide what happens to each partition, one by one.");
+      // TRANSLATORS: tooltip of the "Keep" option after "Set all to". "Their"
+      // means the listed partitions or logical volumes (must fit both nouns).
+      return _("Their data is kept, and only the free space is used.");
   }
 }
 
 type SpaceOptionProps = {
-  policy: ConfigModel.SpacePolicy;
+  decision: Decision;
   isSelected: boolean;
-  isDisabled: boolean;
-  onChoose: (policy: ConfigModel.SpacePolicy) => void;
+  onChoose: (decision: Decision) => void;
 };
 
 /**
@@ -82,19 +89,18 @@ type SpaceOptionProps = {
  * A wrapper lands between the group and its buttons and breaks the segmented
  * look, and props given to a toggle item reach that wrapper, not the button.
  */
-function SpaceOption({ policy, isSelected, isDisabled, onChoose }: SpaceOptionProps) {
+function SpaceOption({ decision, isSelected, onChoose }: SpaceOptionProps) {
   const buttonId = React.useId();
 
   return (
     <>
       <ToggleGroupItem
-        text={label(policy)}
+        text={label(decision)}
         buttonId={buttonId}
         isSelected={isSelected}
-        isDisabled={isDisabled}
-        onChange={() => onChoose(policy)}
+        onChange={() => onChoose(decision)}
       />
-      <Tooltip content={meaning(policy)} triggerRef={() => document.getElementById(buttonId)} />
+      <Tooltip content={meaning(decision)} triggerRef={() => document.getElementById(buttonId)} />
     </>
   );
 }
@@ -102,64 +108,50 @@ function SpaceOption({ policy, isSelected, isDisabled, onChoose }: SpaceOptionPr
 export type SpaceDecisionProps = {
   collection: DeviceCollection;
   index: number;
-  /** Called when custom is chosen, to show where each part is decided. */
-  onCustom?: () => void;
+  /** The decision every part the new system does not use shares, if they share one. */
+  current?: Decision;
 };
 
 /**
- * What the installer may do with what is already on the device.
+ * Gives every part of a device the new system does not use the same decision
+ * at once: delete, shrink if needed, or keep.
  *
- * Four options rather than a menu. A menu hides three of the four and gives no
- * sense that a choice exists at all, while all four show the whole decision and
- * which part of it is taken. What each one means is a tooltip, so it can be
- * read before it is chosen, and it reaches the button as its description.
- *
- * Custom asks for one thing more than the others. It is an answer like them,
- * but it says the answer is given part by part, so taking it also asks for
- * where those are given to be shown. It starts with everything kept: the reader has
- * decided how to decide, not what to decide, which is why it has to be
- * remembered rather than read back. {@link useSpacePolicy} does that.
+ * A shortcut over deciding part by part, not a separate choice. When the parts
+ * share a decision, that one reads pressed; when they do not, none does, and
+ * pressing one gives it to all of them. Parts the new system uses keep what it
+ * does with them.
  */
-export default function SpaceDecision({ collection, index, onCustom }: SpaceDecisionProps) {
-  const deviceConfig = useDeviceConfig(collection, index);
-  const { policy: current, choose: answer } = useSpacePolicy(
-    collection,
-    index,
-    deviceConfig?.spacePolicy,
-  );
+export default function SpaceDecision({ collection, index, current }: SpaceDecisionProps) {
+  const setSpacePolicy = useSetSpacePolicy();
+  const labelId = React.useId();
 
-  const choose = (policy: ConfigModel.SpacePolicy) => {
-    answer(policy);
-
-    if (policy === "custom" && onCustom) onCustom();
+  /* Pressing the decision already taken changes nothing, so nothing is written. */
+  const choose = (decision: Decision) => {
+    if (decision !== current) setSpacePolicy(collection, index, { type: POLICY[decision] });
   };
 
-  const reused = configModel.partitionable.isReusingPartitions(
-    deviceConfig as Partitionable.Device,
-  );
-
   return (
-    <div className="agm-space-decision">
-      {/* The group carries the name, since four buttons saying what each does
-          still need saying what they are four of. */}
-      <ToggleGroup
-        isCompact
-        // TRANSLATORS: names the four options below it, which say what the
-        // installer is allowed to do with what is already on the disk.
-        aria-label={_("Allowed changes")}
-      >
-        {POLICIES.map((policy) => (
+    <Flex
+      className="agm-space-decision"
+      alignItems={{ default: "alignItemsCenter" }}
+      gap={{ default: "gapSm" }}
+    >
+      <Text id={labelId}>
+        {/* TRANSLATORS: label before the options "Delete", "Shrink if
+            needed" and "Keep", which apply one action to every listed
+            partition or logical volume. */}
+        {_("Set all to")}
+      </Text>
+      <ToggleGroup isCompact aria-labelledby={labelId}>
+        {DECISIONS.map((decision) => (
           <SpaceOption
-            key={policy}
-            policy={policy}
-            isSelected={policy === current}
-            isDisabled={reused && policy !== "custom"}
+            key={decision}
+            decision={decision}
+            isSelected={decision === current}
             onChoose={choose}
           />
         ))}
       </ToggleGroup>
-    </div>
+    </Flex>
   );
 }
-
-export { meaning as policyMeaning };
