@@ -3,7 +3,7 @@ use std::{env, path::PathBuf};
 use agama_utils::runtime::run_async;
 
 mod tasks {
-    use std::{fs::File, io::Write};
+    use std::{fs::File, io::Write, path::Path};
 
     use agama_cli::build_cli;
 
@@ -57,6 +57,23 @@ mod tasks {
         Ok(())
     }
 
+    /// Generate the JSON schema of the network section of the profile.
+    ///
+    /// Unlike the other tasks, it writes the schema to the source tree, next to the profile
+    /// schema that refers to it.
+    pub fn generate_network_schema() -> std::io::Result<()> {
+        let schema = agama_utils::api::network::schema::profile_schema();
+        let path = Path::new(env!("CARGO_MANIFEST_DIR")).join("../share/network.schema.json");
+        let mut json = serde_json::to_string_pretty(&schema)?;
+        json.push('\n');
+        File::create(&path)?.write_all(json.as_bytes())?;
+        println!(
+            "Generated the network schema at {}.",
+            path.canonicalize()?.display()
+        );
+        Ok(())
+    }
+
     /// Generate Agama's OpenAPI specification.
     pub async fn generate_openapi() -> std::io::Result<()> {
         use agama_server::web::docs;
@@ -104,6 +121,7 @@ fn print_help() {
     println!("  markdown       Generate Agama's CLI documentation in markdown format");
     println!("  manpages       Generate Agama's CLI man pages");
     println!("  openapi        Generate Agama's OpenAPI specification");
+    println!("  network-schema Generate the JSON schema of the network section of the profile");
     println!("  help           Print this help message");
 }
 
@@ -120,6 +138,7 @@ fn main() -> std::io::Result<()> {
             "markdown" => tasks::generate_markdown(),
             "manpages" => tasks::generate_manpages(),
             "openapi" => tasks::generate_openapi().await,
+            "network-schema" => tasks::generate_network_schema(),
             "help" | "-h" | "--help" => {
                 print_help();
                 Ok(())

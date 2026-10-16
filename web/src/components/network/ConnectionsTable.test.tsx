@@ -49,6 +49,11 @@ const mockConnections = [
   }),
 ];
 
+// The configured connections do not include the runtime state.
+const mockConfigConnections = mockConnections.map(
+  ({ id, state: _state, ...options }) => new Connection(id, options),
+);
+
 const mockDevices = [
   { name: "eth0", connection: "Wired connection 0", addresses: [] },
   { name: "wlan0", connection: "Wifi1", addresses: [] },
@@ -57,6 +62,7 @@ const mockDevices = [
 
 jest.mock("~/hooks/model/config/network", () => ({
   useConnectionMutation: () => ({ mutateAsync: mockMutateAsync }),
+  useExtendedConfig: () => ({ connections: mockConfigConnections }),
 }));
 
 jest.mock("~/hooks/model/system/network", () => ({
@@ -70,6 +76,10 @@ jest.mock("~/hooks/model/system/network", () => ({
 }));
 
 describe("ConnectionsTable", () => {
+  beforeEach(() => {
+    mockMutateAsync.mockClear();
+  });
+
   it("renders the connections in the table", () => {
     installerRender(<ConnectionsTable />);
     expect(screen.getByText("Wired connection 0")).toBeInTheDocument();
@@ -137,6 +147,14 @@ describe("ConnectionsTable", () => {
         status: "down",
       }),
     );
+  });
+
+  it("updates the configured connection, without the state reported by the system", async () => {
+    const { user } = installerRender(<ConnectionsTable />);
+    await user.click(screen.getByRole("button", { name: /actions for Wired connection 0/i }));
+    await user.click(screen.getByText("Disconnect"));
+    expect(mockMutateAsync).toHaveBeenCalledTimes(1);
+    expect(mockMutateAsync.mock.calls[0][0].state).toBeUndefined();
   });
 
   it("navigates to the connection details page when 'Details' is clicked for an ethernet connection", async () => {
