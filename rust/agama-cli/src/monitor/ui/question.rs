@@ -406,6 +406,7 @@ impl<'a> QuestionWidget<'a> {
                 }
                 lines.push(Line::from(""));
             }
+            QuestionField::Unknown => {}
         }
     }
 

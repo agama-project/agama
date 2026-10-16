@@ -49,6 +49,12 @@ pub enum Stage {
     Finished,
     /// Installation failed
     Failed,
+    /// Fallback for stages this client doesn't know about yet.
+    ///
+    /// Keeps older clients from failing to deserialize the status when a newer server reports a
+    /// stage that didn't exist when this client was built. See API-COMPATIBILITY-POLICY.md.
+    #[serde(other)]
+    Unknown,
 }
 
 impl Stage {

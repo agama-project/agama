@@ -103,6 +103,7 @@ impl Widget for Summary<'_> {
             Stage::Configuring => gettext("Configuring"),
             Stage::Finished => gettext("Finished"),
             Stage::Failed => gettext("Failed"),
+            Stage::Unknown => gettext("Unknown"),
         };
 
         let layout =

@@ -73,5 +73,7 @@ pub fn scope_to_string(scope: &Scope) -> String {
         Scope::Questions => gettext("Questions"),
         // TRANSLATORS: an installation "scope", used in the "agama monitor" command
         Scope::Security => gettext("Security"),
+        // TRANSLATORS: fallback for a scope not known to this client version
+        Scope::Unknown => gettext("Unknown"),
     }
 }
