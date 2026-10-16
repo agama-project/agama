@@ -30,7 +30,7 @@ import VolumeGroupRow from "~/components/storage/entries-table/VolumeGroupRow";
 import ChangeInstallationDisk from "~/components/storage/storage-page/ChangeInstallationDisk";
 import { useConfigModel } from "~/hooks/model/storage/config-model";
 import configModel from "~/model/storage/config-model";
-import { _, TranslatedString } from "~/i18n";
+import { n_, TranslatedString } from "~/i18n";
 
 /** Where an entry is written in the configuration, which is also what it is. */
 type Category = "volumeGroups" | "mdRaids" | "drives";
@@ -46,20 +46,20 @@ type Category = "volumeGroups" | "mdRaids" | "drives";
  */
 const CATEGORIES: Category[] = ["volumeGroups", "mdRaids", "drives"];
 
-function categoryTitle(category: Category): TranslatedString {
+function categoryTitle(category: Category, entries: object[]): TranslatedString {
   switch (category) {
     case "volumeGroups":
       // TRANSLATORS: heads the LVM volume groups in the list of what the
       // installation is made of.
-      return _("Volume groups");
+      return n_("Volume group", "Volume groups", entries.length);
     case "mdRaids":
       // TRANSLATORS: heads the software RAID devices in the list of what the
       // installation is made of.
-      return _("RAID devices");
+      return n_("RAID device", "RAID devices", entries.length);
     case "drives":
       // TRANSLATORS: heads the disks in the list of what the installation is
       // made of.
-      return _("Used disks");
+      return n_("Used disk", "Used disks", entries.length);
   }
 }
 
@@ -76,11 +76,13 @@ function categoryTitle(category: Category): TranslatedString {
  */
 function CategorySection({
   category,
+  entries,
   actions,
   children,
 }: {
   category: Category;
   /** Controls acting on the category as a whole, shown beside its heading. */
+  entries?: object[];
   actions?: React.ReactNode;
   children: React.ReactNode;
 }): React.ReactNode {
@@ -94,7 +96,7 @@ function CategorySection({
         gap={{ default: "gapSm" }}
       >
         <h2 id={headingId} className="agm-entries-table__category">
-          {categoryTitle(category)}
+          {categoryTitle(category, entries)}
         </h2>
         {actions}
       </Flex>
@@ -213,6 +215,7 @@ export default function EntriesTable(): React.ReactNode {
         <CategorySection
           key={category}
           category={category}
+          entries={entries}
           actions={category === "drives" && canChangeTarget && <ChangeInstallationDisk />}
         >
           {entries.map((entry, index) =>

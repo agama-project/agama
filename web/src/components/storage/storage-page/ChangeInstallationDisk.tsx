@@ -57,12 +57,12 @@ export default function ChangeInstallationDisk(): React.ReactNode {
         {
           // TRANSLATORS: visible text of the control beside the heading of the
           // disks the installation uses, which opens a choice of another disk.
-          _("Change…")
+          _("Change target disk…")
         }
       </Button>
       {isOpen && (
         <DeviceSelectorModal
-          title={_("Use another device")}
+          title={_("Select the disk to install the system")}
           tabs={["disks"]}
           selected={device}
           disks={candidate}
