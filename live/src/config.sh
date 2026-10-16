@@ -104,7 +104,7 @@ fi
 # Prevent premature activation of LVM (bsc#1246133)
 systemctl mask lvm2-monitor.service
 if [[ -f /etc/lvm/lvm.conf ]]; then
-  puts "disabling lvm event_activation"
+  echo "disabling lvm event_activation"
   sed -i 's:# event_activation = 1:event_activation = 0:' /etc/lvm/lvm.conf
 fi
 
