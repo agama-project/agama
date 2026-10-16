@@ -2860,6 +2860,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "libstorage-ng-agama"
+version = "0.1.0"
+dependencies = [
+ "libstorage-ng-agama-sys",
+]
+
+[[package]]
+name = "libstorage-ng-agama-sys"
+version = "0.1.0"
+dependencies = [
+ "bindgen 0.72.1",
+]
+
+[[package]]
 name = "libsystemd"
 version = "0.7.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
