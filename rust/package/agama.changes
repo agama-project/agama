@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Oct 16 09:00:00 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Add libstorage-ng-agama and libstorage-ng-agama-sys, Rust
+  bindings for libstorage-ng.
+
+-------------------------------------------------------------------
 Thu Oct 15 07:36:10 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Do not run RPM scriptlets when updating the agama-scripts package

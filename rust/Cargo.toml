@@ -23,6 +23,8 @@ members = [
     "agama-transfer",
     "agama-utils",
     "agama-users",
+    "libstorage-ng-agama",
+    "libstorage-ng-agama/libstorage-ng-agama-sys",
 #   suse connect members below are build only if agama-software require it to avoid build on 32-bit arch
 #   "suseconnect-agama",
 #   "suseconnect-agama/suseconnect-agama-sys",
@@ -59,6 +61,7 @@ agama-storage-client = { path = "agama-storage-client" }
 agama-transfer = { path = "agama-transfer" }
 agama-users = { path = "agama-users" }
 agama-utils = { path = "agama-utils" }
+libstorage-ng-agama = { path = "libstorage-ng-agama" }
 anyhow = { version = "1.0.100" }
 async-trait = { version = "0.1.92" }
 bindgen = { version = "0.72.1", features = ["runtime"] }

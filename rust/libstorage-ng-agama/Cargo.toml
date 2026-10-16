@@ -1,0 +1,8 @@
+[package]
+name = "libstorage-ng-agama"
+version = "0.1.0"
+edition.workspace = true
+
+[dependencies]
+libstorage-ng-agama-sys = { path = "./libstorage-ng-agama-sys" }
+thiserror = { workspace = true }
