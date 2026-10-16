@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Nov 11 08:44:35 UTC 2026 - Clemens Famulla-Conrad <cfamullaconrad@suse.com>
+
+- Support the IPv6 address generation mode (ipv6.addr-gen-mode)
+  in network connections (bsc#1279546)
+
+-------------------------------------------------------------------
 Mon Nov  9 13:40:53 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Install the chrony-pool-empty package when using a custom
