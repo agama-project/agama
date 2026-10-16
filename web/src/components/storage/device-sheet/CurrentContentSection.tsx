@@ -22,16 +22,7 @@
 
 import React from "react";
 import { Table, Tbody, Td, Th, Thead, Tr } from "@patternfly/react-table";
-import {
-  Button,
-  Divider,
-  Flex,
-  FlexItem,
-  Label,
-  Toolbar,
-  ToolbarContent,
-  ToolbarItem,
-} from "@patternfly/react-core";
+import { Button, Divider, Flex, FlexItem, Label } from "@patternfly/react-core";
 import alignmentStyles from "@patternfly/react-styles/css/utilities/Alignment/alignment";
 import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
 import { sprintf } from "sprintf-js";
@@ -615,23 +606,6 @@ export default function CurrentContentSection({
           gap={{ default: "gapSm" }}
           className={spacingStyles.plMd}
         >
-          {/* A toolbar right above the rows it sets, where actions on a whole
-              table go, so a change lands in view. A group's logical volumes
-              are governed the same way its disks' partitions are, so it is
-              offered there too. */}
-          {!fixedDecision && governed.length > 0 && (
-            <Toolbar hasNoPadding>
-              <ToolbarContent>
-                <ToolbarItem align={{ default: "alignEnd" }}>
-                  <SpaceDecision
-                    collection={subject.collection}
-                    index={subject.index}
-                    current={sharedDecision}
-                  />
-                </ToolbarItem>
-              </ToolbarContent>
-            </Toolbar>
-          )}
           <Table
             role="table"
             gridBreakPoint=""
@@ -655,10 +629,14 @@ export default function CurrentContentSection({
                   {_("Size")}
                 </Th>
                 <Th modifier="nowrap">{_("Action")}</Th>
-                <Th>
-                  {/* The column of menus has nothing to head: a heading over it
-                      names a column the reader can already see the point of. */}
-                  <Text srOnly>{_("Options")}</Text>
+                <Th modifier="nowrap">
+                  {!fixedDecision && governed.length > 0 && (
+                    <SpaceDecision
+                      collection={subject.collection}
+                      index={subject.index}
+                      current={sharedDecision}
+                    />
+                  )}
                 </Th>
               </Tr>
             </Thead>

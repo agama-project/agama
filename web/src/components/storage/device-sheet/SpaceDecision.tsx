@@ -105,7 +105,7 @@ export default function SpaceDecision({ collection, index, current }: SpaceDecis
 
   // TRANSLATORS: opens a menu with "Keep", "Shrink if needed" and "Delete",
   // which apply one action to every listed partition or logical volume.
-  const name = _("Set all to");
+  const name = _("Set all");
 
   return (
     <MenuButton
