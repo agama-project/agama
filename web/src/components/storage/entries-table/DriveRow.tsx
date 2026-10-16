@@ -143,7 +143,7 @@ export default function DriveRow({ name, subject }: DriveRowProps): React.ReactN
       description={description}
       purpose={purpose}
       actions={space}
-      menu={entry && <DriveMenu entry={entry} device={device} subject={subject} />}
+      menu={entry && <DriveMenu entry={entry} subject={subject} />}
       subject={subject}
     />
   );

@@ -26,14 +26,13 @@ import { useNavigate } from "react-router";
 import { sprintf } from "sprintf-js";
 import MenuButton, { MenuButtonItem } from "~/components/core/MenuButton";
 import RowMenuToggle from "~/components/storage/entries-table/RowMenuToggle";
-import SearchedVolumeGroupMenu from "~/components/storage/SearchedVolumeGroupMenu";
+import SearchedVolumeGroupMenu from "~/components/storage/entries-table/SearchedVolumeGroupMenu";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { generateEncodedPath } from "~/utils";
 import { baseName, formattedPath } from "~/components/storage/utils";
 import { useSheet } from "~/components/storage/shared/use-sheet";
 import { useConfigModel, useDeleteVolumeGroup } from "~/hooks/model/storage/config-model";
 import configModel from "~/model/storage/config-model";
-import { useDevice } from "~/hooks/model/system/storage";
 import { _, n_, formatList } from "~/i18n";
 import type { ConfigModel } from "~/model/storage/config-model";
 import type { SheetEntry } from "~/components/storage/shared/use-sheet";
@@ -58,7 +57,6 @@ export default function VolumeGroupMenu({ group, subject }: VolumeGroupMenuProps
   const config = useConfigModel();
   const navigate = useNavigate();
   const deleteVolumeGroup = useDeleteVolumeGroup();
-  const device = useDevice(group.name || "");
   const lvs = group.logicalVolumes.map((lv) => formattedPath(lv.mountPath));
   const targetDevices = configModel.volumeGroup.filterTargetDevices(config, group);
   const convert = targetDevices.length === 1 && !!lvs.length;
@@ -69,13 +67,7 @@ export default function VolumeGroupMenu({ group, subject }: VolumeGroupMenuProps
   let description: string;
 
   if (group.name) {
-    return (
-      <SearchedVolumeGroupMenu
-        deviceConfig={group}
-        device={device}
-        toggle={<RowMenuToggle label={label} />}
-      />
-    );
+    return <SearchedVolumeGroupMenu entry={group} subject={subject} />;
   }
 
   if (lvs.length) {
@@ -124,22 +116,24 @@ export default function VolumeGroupMenu({ group, subject }: VolumeGroupMenuProps
                   group.vgName,
                 )}
                 onClick={() => openSheet(subject)}
+                description={_("Configure how the volume group will be used")}
               >
                 {/* TRANSLATORS: opens the panel where one entry of the
                     installation is read and changed. */}
-                {_("Configure")}
+                {_("Details")}
               </MenuButtonItem>,
             ]
           : []),
         <MenuButtonItem
           key="edit"
+          description={_("Change how the volume group will be created")}
           onClick={() =>
             navigate(generateEncodedPath(PATHS.volumeGroup.edit, { id: String(subject.index) }))
           }
         >
           {/* TRANSLATORS: offered on an LVM volume group of the installation:
               change which disks it is built on and what it will hold. */}
-          {_("Edit the volume group")}
+          {_("Edit")}
         </MenuButtonItem>,
         <Divider key="before-remove" />,
         <MenuButtonItem

@@ -118,7 +118,7 @@ export default function StorageSheet({ page }: StorageSheetProps): React.ReactNo
         (entry.isVolumeGroup ? (
           <VolumeGroupMenu group={entry.config as ConfigModel.VolumeGroup} />
         ) : (
-          <DriveMenu entry={entry.config as Partitionable.Device} device={entry.device} />
+          <DriveMenu entry={entry.config as Partitionable.Device} />
         ))
       }
       page={page}

@@ -26,7 +26,6 @@ import { sprintf } from "sprintf-js";
 import MenuButton, { MenuButtonItem } from "~/components/core/MenuButton";
 import RowMenuToggle from "~/components/storage/entries-table/RowMenuToggle";
 import NewVgMenuOption from "~/components/storage/NewVgMenuOption";
-import { useRetarget } from "~/components/storage/shared/use-retarget";
 import { useSheet } from "~/components/storage/shared/use-sheet";
 import { baseName } from "~/components/storage/utils";
 import configModel from "~/model/storage/config-model";
@@ -38,13 +37,50 @@ import {
 import { _ } from "~/i18n";
 import type { Partitionable } from "~/model/storage/config-model";
 import type { SheetEntry } from "~/components/storage/shared/use-sheet";
-import type { Storage } from "~/model/system";
+
+type RemoveDeviceMenuItemProps = {
+  device: Partitionable.Device;
+  onClick: (device: Partitionable.Device) => void;
+};
+
+const RemoveDeviceMenuItem = ({ device, onClick }: RemoveDeviceMenuItemProps): React.ReactNode => {
+  const config = useConfigModel();
+
+  let description: string;
+  const isExplicitBoot = configModel.boot.hasExplicitDevice(config, device.name);
+  const hasPv = configModel.isTargetDevice(config, device.name);
+  const isDisabled = isExplicitBoot || hasPv;
+
+  if (isExplicitBoot) {
+    if (hasPv) {
+      description = _("The disk is used for LVM and boot");
+    } else {
+      description = _("The disk is used for booting");
+    }
+  } else {
+    if (hasPv) {
+      description = _("The disk is used for LVM");
+    } else {
+      description = _("Remove the configuration for this disk");
+    }
+  }
+
+  return (
+    <MenuButtonItem
+      key="delete"
+      isDanger
+      isDisabled={isDisabled}
+      description={description}
+      onClick={() => onClick(device)}
+    >
+      {_("Do not use")}
+    </MenuButtonItem>
+  );
+};
 
 export type DriveMenuProps = {
   /** The disk or RAID as the configuration describes it. */
   entry: Partitionable.Device;
-  /** The same device as the machine reports it, where the machine has it. */
-  device: Storage.Device | null;
   /** Where it is written. Given only where opening it is one of the offers. */
   subject?: SheetEntry;
 };
@@ -65,11 +101,10 @@ export type DriveMenuProps = {
  * keyboard: a control the browser disables is skipped, and the explanation
  * printed beside it is then never met by the reader it was written for.
  */
-export default function DriveMenu({ entry, device, subject }: DriveMenuProps): React.ReactNode {
+export default function DriveMenu({ entry, subject }: DriveMenuProps): React.ReactNode {
   const config = useConfigModel();
   const deleteDrive = useDeleteDrive();
   const deleteMdRaid = useDeleteMdRaid();
-  const { selector } = useRetarget(entry, device);
   const { openSheet } = useSheet();
 
   const name = baseName(entry.name);
@@ -98,44 +133,40 @@ export default function DriveMenu({ entry, device, subject }: DriveMenuProps): R
               _("Configure %s"),
               name,
             )}
+            description={_("Configure how the disk will be used")}
             onClick={() => openSheet(subject)}
           >
             {/* TRANSLATORS: opens the panel where one entry of the installation
                 is read and changed. */}
-            {_("Configure")}
+            {_("Details")}
           </MenuButtonItem>,
         ]
       : []),
     <NewVgMenuOption key="volume-group" device={entry} />,
   ];
 
+  // When no additional drives has been added, the "Do not use" button can be confusing so it is
+  // omitted for all drives.
   if (configModel.hasAdditionalDevices(config) && location) {
     items.push(
       <Divider key="before-remove" />,
-      <MenuButtonItem
+      <RemoveDeviceMenuItem
         key="remove"
-        isDanger
+        device={entry}
         onClick={() =>
           location.collection === "drives"
             ? deleteDrive(location.index)
             : deleteMdRaid(location.index)
         }
-      >
-        {/* TRANSLATORS: offered on a device of the installation: take it out of
-            the plan altogether. */}
-        {_("Do not use this device")}
-      </MenuButtonItem>,
+      />,
     );
   }
 
   return (
-    <>
-      <MenuButton
-        menuProps={{ "aria-label": label, popperProps: { position: "end" } }}
-        customToggle={<RowMenuToggle label={label} />}
-        items={items}
-      />
-      {selector}
-    </>
+    <MenuButton
+      menuProps={{ "aria-label": label, popperProps: { position: "end" } }}
+      customToggle={<RowMenuToggle label={label} />}
+      items={items}
+    />
   );
 }
