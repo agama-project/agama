@@ -1,10 +1,13 @@
 # API compatibility policy
 
 Agama's HTTP API and WebSocket events (`rust/agama-server`) are consumed by `agama-cli` and the web
-UI. Since the server does not maintain backward compatibility for old API versions, clients built
-against an older version must keep working against a newer server. We achieve this by making API
-changes **additive only**: we extend existing objects and messages instead of changing or removing
-what is already there.
+UI. The server retains backward compatibility: clients built against an older version keep working
+against a newer server. We achieve this by making API changes **additive only**: we extend existing
+objects and messages instead of changing or removing what is already there. The server does not
+carry adapters or multiple API dialects; compatibility comes from the additions policy alone.
+
+The opposite direction (a newer client talking to an older server) is covered by **graceful
+degradation** on the client side (see below). Both directions are supported.
 
 ## Scope
 
@@ -26,7 +29,8 @@ avoid adding new endpoints unless there is no reasonable additive alternative.
 **Allowed (additive) changes:**
 
 - Adding a new optional field to an existing struct.
-- Adding a new variant to an enum.
+- Adding a new variant to an enum, but only if clients that deserialize that enum tolerate unknown
+  variants (e.g. a `#[serde(other)]` fallback). Otherwise an old client fails on the new value.
 - Adding a new endpoint.
 
 **Not allowed without a major version bump (see below):**
@@ -80,10 +84,12 @@ classify what you're changing:
   event dispatch, interactive question answering), so the additive-only and graceful-degradation
   rules above are what protect it.
 - **Opaque to the client**: `Config` and similarly-shaped domain objects. For `agama config
-  show`/`load`/`edit`, the client reads/writes them as plain JSON without interpreting their
-  structure - it never needs to understand a new field to keep working. This is exactly why an old
-  client can push a config to a newer server with zero compatibility work. The one exception is
-  `agama config generate`, which does construct a typed `Config` for source-resolution logic.
+  show`/`load`/`edit`, the client must read/write them as plain JSON (`serde_json::Value`) without
+  interpreting their structure - it never needs to understand a new field to keep working. Going
+  through the typed `Config` would silently drop fields the client doesn't know about (and `edit`
+  would then erase them on the server). This is exactly why an old client can push a config to a
+  newer server with zero compatibility work. The one exception is `agama config generate`, which
+  does construct a typed `Config` for source-resolution logic.
 - **Local JSON Schema validation is the odd one out.** `agama config validate --local` validates
   against a JSON Schema bundled with the `agama-cli` package itself (version-pinned, not fetched
   from the server), and those schemas set `additionalProperties: false`. An old CLI's bundled schema
@@ -105,7 +111,8 @@ evolution.
 ## Reviewer checklist
 
 - No new/changed field breaks deserialization for a peer that doesn't know about it.
-- No enum variant was removed or renamed.
+- No enum variant was removed or renamed, and any added variant is tolerated by clients that
+  deserialize that enum.
 - No `deny_unknown_fields` was added.
 - New/changed WebSocket events still deserialize safely on a client that doesn't recognize them.
 - If a client feature depends on a new field, it degrades gracefully (no crash, no broken output)
