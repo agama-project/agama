@@ -47,7 +47,6 @@ import {
   recoverableBy,
   usePartitionSpaceItems,
 } from "~/components/storage/device-sheet/partition-space";
-import { outcomeOf } from "~/components/storage/shared/consequences";
 import { useDevicesManager } from "~/components/storage/shared/use-devices-manager";
 import { baseName, deviceSize, formattedPath } from "~/components/storage/utils";
 import { _ } from "~/i18n";
@@ -320,14 +319,12 @@ function PartitionRow({
   /** The row's menu, where there is anything to offer on this row. */
   menu?: React.ReactNode;
 }) {
-  const outcome = outcomeOf(manager, part);
   const request = entries.find((e) => e.name === part.name);
   const reusedAs = request?.mountPath;
   const systems = part.block?.systems || [];
   const size = part.block?.size;
   const staged = manager.stagingDevice(part.sid);
   const canShrink = part.block?.shrinking?.supported === true;
-  const shrunkTo = outcome === "shrunk" ? staged?.block?.size : undefined;
   /* Whether what is on the partition survives being taken over, read from the
      request rather than from the plan. The table is about what was asked for:
      a request to format is a request to format whether or not the installer
@@ -343,14 +340,16 @@ function PartitionRow({
     // TRANSLATORS: said of a partition whose content is not recognized.
     _("unrecognized");
   const status = statusFor(decision, reusedAs, formats, canShrink);
+  const keepsSize = decision !== "delete" && (!canShrink || decision !== "resizeIfNeeded");
 
   /* A rule through what is on the partition today and how big it is, where
      the reader has allowed it to go: there now, gone once installed. Only a
      visual cue, styled to stay readable: not <s>, which would claim it is
      already untrue, and the Action column says it in words. Not through the
      status itself: crossing out "delete" says the opposite of what it means. */
-  const struck = (content: React.ReactNode) =>
-    decision === "delete" ? <span className={PENDING_REMOVAL_CLASS}>{content}</span> : content;
+  const struck = (content: React.ReactNode) => (
+    <span className={PENDING_REMOVAL_CLASS}>{content}</span>
+  );
 
   return (
     <Tr>
@@ -372,8 +371,10 @@ function PartitionRow({
                  way to what follows it, and a word in the danger color would
                  make the loss louder than the thing the reader asked for. */
               <span className={PENDING_REMOVAL_CLASS}>{currentContent}</span>
-            ) : (
+            ) : decision === "delete" ? (
               struck(currentContent)
+            ) : (
+              currentContent
             )}
           </FlexItem>
           {/* Nothing where the request names no file system and the installer
@@ -394,11 +395,7 @@ function PartitionRow({
         </Flex>
       </Td>
       <Td className={alignmentStyles.textAlignEnd}>
-        {shrunkTo !== undefined ? (
-          <div>{deviceSize(size)}</div>
-        ) : (
-          size !== undefined && struck(deviceSize(size))
-        )}
+        {keepsSize ? <div>{deviceSize(size)}</div> : size !== undefined && struck(deviceSize(size))}
       </Td>
       <Td>
         {status && (
