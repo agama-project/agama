@@ -845,22 +845,6 @@ port_type! {
 }
 
 port_type! {
-    /// Port of a bond that is a bridge itself
-    BondBridgePort {
-        /// Bridge settings
-        bridge: BridgeSettings,
-    }
-}
-
-port_type! {
-    /// Port of a bond that is a VLAN
-    BondVlanPort {
-        /// VLAN settings
-        vlan: VlanSettings,
-    }
-}
-
-port_type! {
     /// Port of a bond that is a wireless connection
     BondWirelessPort {
         /// Wireless settings
@@ -880,15 +864,15 @@ pub enum BridgePort {
     /// It is a shorthand for `{ "interface": "<name>" }`: it refers to the connection with that
     /// interface name or ID, and a new Ethernet connection is created when there is none.
     Name(String),
-    Ethernet(BridgeEthernetPort),
-    Bond(BridgeBondPort),
-    Vlan(BridgeVlanPort),
+    Ethernet(Box<BridgeEthernetPort>),
+    Bond(Box<BridgeBondPort>),
+    Vlan(Box<BridgeVlanPort>),
 }
 
 /// Entry of the `portConnections` list of a bond.
 ///
-/// A port given as a connection is told apart by the section it has: `bridge`, `vlan`, `wireless`
-/// or none of them, for an Ethernet port.
+/// Only physical interfaces can be the ports of a bond. A port given as a connection is told apart
+/// by the section it has: `wireless` or none, for an Ethernet port.
 #[derive(Clone, Debug, JsonSchema)]
 #[serde(untagged)]
 pub enum BondPort {
@@ -897,10 +881,8 @@ pub enum BondPort {
     /// It is a shorthand for `{ "interface": "<name>" }`: it refers to the connection with that
     /// interface name or ID, and a new Ethernet connection is created when there is none.
     Name(String),
-    Ethernet(BondEthernetPort),
-    Bridge(BondBridgePort),
-    Vlan(BondVlanPort),
-    Wireless(BondWirelessPort),
+    Ethernet(Box<BondEthernetPort>),
+    Wireless(Box<BondWirelessPort>),
 }
 
 // The ports are read by hand because an untagged enum reports any problem in a nested port as
@@ -934,8 +916,6 @@ impl<'de> Deserialize<'de> for BondPort {
 
         match port_kind(&value).map_err(D::Error::custom)? {
             None => read_port(value).map(Self::Ethernet),
-            Some(PortKind::Bridge) => read_port(value).map(Self::Bridge),
-            Some(PortKind::Vlan) => read_port(value).map(Self::Vlan),
             Some(PortKind::Wireless) => read_port(value).map(Self::Wireless),
             Some(kind) => Err(D::Error::custom(format!(
                 "a port of a bond cannot be {kind}"
@@ -948,9 +928,9 @@ impl From<BridgePort> for PortEntry {
     fn from(port: BridgePort) -> Self {
         let conn = match port {
             BridgePort::Name(name) => return Self::Name(name),
-            BridgePort::Ethernet(port) => port.into(),
-            BridgePort::Bond(port) => port.into(),
-            BridgePort::Vlan(port) => port.into(),
+            BridgePort::Ethernet(port) => (*port).into(),
+            BridgePort::Bond(port) => (*port).into(),
+            BridgePort::Vlan(port) => (*port).into(),
         };
         Self::Connection(Box::new(conn))
     }
@@ -960,10 +940,8 @@ impl From<BondPort> for PortEntry {
     fn from(port: BondPort) -> Self {
         let conn = match port {
             BondPort::Name(name) => return Self::Name(name),
-            BondPort::Ethernet(port) => port.into(),
-            BondPort::Bridge(port) => port.into(),
-            BondPort::Vlan(port) => port.into(),
-            BondPort::Wireless(port) => port.into(),
+            BondPort::Ethernet(port) => (*port).into(),
+            BondPort::Wireless(port) => (*port).into(),
         };
         Self::Connection(Box::new(conn))
     }
@@ -1489,6 +1467,13 @@ mod tests {
         let json = r#"{ "id": "bond0", "bond": { "mode": "802.3ad", "portConnections": [{ "interface": "bond1", "bond": { "mode": "802.3ad" } }] } }"#;
         assert!(error(json).contains("a port of a bond cannot be a bond"));
 
+        // Only physical interfaces can be the ports of a bond.
+        let json = r#"{ "id": "bond0", "bond": { "mode": "802.3ad", "portConnections": [{ "interface": "br0", "bridge": {} }] } }"#;
+        assert!(error(json).contains("a port of a bond cannot be a bridge"));
+
+        let json = r#"{ "id": "bond0", "bond": { "mode": "802.3ad", "portConnections": [{ "interface": "eth0.100", "vlan": { "parent": "eth0", "id": 100 } }] } }"#;
+        assert!(error(json).contains("a port of a bond cannot be a VLAN"));
+
         let json = r#"{ "id": "br0", "bridge": { "portConnections": [{ "interface": "wlan0", "wireless": { "ssid": "agama", "security": "none", "mode": "infrastructure" } }] } }"#;
         assert!(error(json).contains("a port of a bridge cannot be a wireless connection"));
 
@@ -1499,26 +1484,38 @@ mod tests {
     #[test]
     fn test_a_nested_port_is_read_as_the_connection_it_stands_for() {
         let json = r#"{
-            "id": "bond0",
-            "bond": {
-                "mode": "active-backup",
+            "id": "br0",
+            "bridge": {
                 "portConnections": [
-                    { "interface": "eth0", "mtu": 9000 },
-                    { "interface": "wlan0", "wireless": { "ssid": "agama", "security": "none", "mode": "infrastructure" } },
+                    {
+                        "interface": "bond0",
+                        "port": { "priority": 32 },
+                        "bond": {
+                            "mode": "active-backup",
+                            "portConnections": [
+                                { "interface": "eth0", "mtu": 9000 },
+                                { "interface": "wlan0", "wireless": { "ssid": "agama", "security": "none", "mode": "infrastructure" } }
+                            ]
+                        }
+                    },
                     { "interface": "eth1.100", "vlan": { "parent": "eth1", "id": 100 } }
                 ]
             }
         }"#;
         let conn: NetworkConnection = serde_json::from_str(json).unwrap();
         let ports = conn.ports().unwrap();
-        let [PortRef::Connection(eth0), PortRef::Connection(wlan0), PortRef::Connection(vlan)] =
-            ports.as_slice()
-        else {
+        let [PortRef::Connection(bond0), PortRef::Connection(vlan)] = ports.as_slice() else {
+            panic!("unexpected ports: {ports:?}");
+        };
+        assert_eq!(bond0.port.as_ref().unwrap().priority, Some(32));
+        assert_eq!(vlan.vlan.as_ref().unwrap().id, 100);
+
+        let ports = bond0.ports().unwrap();
+        let [PortRef::Connection(eth0), PortRef::Connection(wlan0)] = ports.as_slice() else {
             panic!("unexpected ports: {ports:?}");
         };
         assert_eq!(eth0.mtu, 9000);
         assert_eq!(wlan0.wireless.as_ref().unwrap().ssid, "agama");
-        assert_eq!(vlan.vlan.as_ref().unwrap().id, 100);
 
         // Reported as it was given, so it can be sent back.
         let serialized = serde_json::to_value(&conn).unwrap();

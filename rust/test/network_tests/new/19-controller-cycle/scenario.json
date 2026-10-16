@@ -4,7 +4,7 @@
   "steps": [
     {
       "profile": "1-cycle.json",
-      "description": "br0 nested in bond0, listing bond0 by name",
+      "description": "bond0 nested in br0, listing br0 by name",
       "expect": {
         "error": "ControllerCycle",
         "connections": {

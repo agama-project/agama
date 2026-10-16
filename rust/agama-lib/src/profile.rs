@@ -396,9 +396,9 @@ mod tests {
                 "bond": { "mode": "active-backup", "portConnections": [port] }
             }]))
         };
+        // Only physical interfaces can be the ports of a bond.
         for port in [
-            json!({ "bridge": bridge }),
-            json!({ "vlan": vlan }),
+            json!({ "interface": "eth0" }),
             json!({ "wireless": wireless }),
         ] {
             assert!(
@@ -408,7 +408,8 @@ mod tests {
         }
         for port in [
             json!({ "bond": bond }),
-            json!({ "vlan": vlan, "wireless": wireless }),
+            json!({ "bridge": bridge }),
+            json!({ "vlan": vlan }),
         ] {
             assert!(
                 matches!(

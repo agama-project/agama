@@ -2,17 +2,17 @@
   "network": {
     "connections": [
       {
-        "id": "bond0",
-        "interface": "bond0",
-        "bond": {
-          "mode": "active-backup",
+        "id": "br0",
+        "interface": "br0",
+        "bridge": {
           "portConnections": [
             {
-              "id": "br0",
-              "interface": "br0",
-              "bridge": {
+              "id": "bond0",
+              "interface": "bond0",
+              "bond": {
+                "mode": "active-backup",
                 "portConnections": [
-                  "bond0"
+                  "br0"
                 ]
               }
             }
