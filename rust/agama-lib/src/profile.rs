@@ -340,9 +340,7 @@ mod tests {
     }
 
     #[test]
-    fn test_nested_ports_accept_port_settings() {
-        // Which settings apply depends on the kind of controller, which the network service
-        // checks (see the network scenario 16-bridge-port-settings-on-a-bond-port).
+    fn test_bridge_port_settings_are_rejected_on_a_bond_port() {
         let profile = connections(json!([{
             "id": "bond0",
             "bond": {
@@ -350,13 +348,76 @@ mod tests {
                 "portConnections": [{ "interface": "eth0", "port": { "priority": 32 } }]
             }
         }]));
-        assert!(matches!(validate(profile), ValidationOutcome::Valid));
+        assert!(matches!(validate(profile), ValidationOutcome::NotValid(_)));
 
         let profile = connections(json!([{
             "id": "br0",
             "bridge": { "portConnections": [{ "interface": "eth0", "port": { "priority": 32 } }] }
         }]));
         assert!(matches!(validate(profile), ValidationOutcome::Valid));
+    }
+
+    #[test]
+    fn test_nested_ports_only_take_the_kinds_their_controller_accepts() {
+        let vlan = json!({ "parent": "eth0", "id": 100 });
+        let wireless = json!({ "ssid": "agama", "security": "wpa-psk", "mode": "infrastructure" });
+        let bond = json!({ "mode": "active-backup" });
+        let bridge = json!({ "stp": false });
+
+        let bridge_port = |port: serde_json::Value| {
+            connections(json!([{ "id": "br0", "bridge": { "portConnections": [port] } }]))
+        };
+        for port in [json!({ "bond": bond }), json!({ "vlan": vlan })] {
+            assert!(
+                matches!(
+                    validate(bridge_port(port.clone())),
+                    ValidationOutcome::Valid
+                ),
+                "{port}"
+            );
+        }
+        for port in [
+            json!({ "bridge": bridge }),
+            json!({ "wireless": wireless }),
+            json!({ "bond": bond, "vlan": vlan }),
+        ] {
+            assert!(
+                matches!(
+                    validate(bridge_port(port.clone())),
+                    ValidationOutcome::NotValid(_)
+                ),
+                "{port}"
+            );
+        }
+
+        let bond_port = |port: serde_json::Value| {
+            connections(json!([{
+                "id": "bond0",
+                "bond": { "mode": "active-backup", "portConnections": [port] }
+            }]))
+        };
+        for port in [
+            json!({ "bridge": bridge }),
+            json!({ "vlan": vlan }),
+            json!({ "wireless": wireless }),
+        ] {
+            assert!(
+                matches!(validate(bond_port(port.clone())), ValidationOutcome::Valid),
+                "{port}"
+            );
+        }
+        for port in [
+            json!({ "bond": bond }),
+            json!({ "vlan": vlan, "wireless": wireless }),
+        ] {
+            assert!(
+                matches!(
+                    validate(bond_port(port.clone())),
+                    ValidationOutcome::NotValid(_)
+                ),
+                "{port}"
+            );
+        }
     }
 
     #[test]

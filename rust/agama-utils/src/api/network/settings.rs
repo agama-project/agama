@@ -27,7 +27,7 @@ use crate::openapi::schemas;
 use cidr::IpInet;
 use merge::Merge;
 use schemars::JsonSchema;
-use serde::{de::Error as _, Deserialize, Deserializer, Serialize};
+use serde::{de::DeserializeOwned, de::Error as _, Deserialize, Deserializer, Serialize};
 use std::default::Default;
 use std::net::IpAddr;
 
@@ -195,7 +195,12 @@ pub struct BondSettings {
     pub ports: Option<Vec<String>>,
     /// Ports of the controller. When neither this list nor `ports` is given, the current ports
     /// are left alone.
-    #[serde(skip_serializing_if = "Option::is_none", default)]
+    #[serde(
+        skip_serializing_if = "Option::is_none",
+        default,
+        deserialize_with = "deserialize_ports::<BondPort, _>"
+    )]
+    #[schemars(with = "Option<Vec<BondPort>>")]
     pub port_connections: Option<Vec<PortEntry>>,
 }
 
@@ -243,12 +248,21 @@ pub struct BridgeSettings {
     pub ports: Option<Vec<String>>,
     /// Ports of the controller. When neither this list nor `ports` is given, the current ports
     /// are left alone.
-    #[serde(skip_serializing_if = "Option::is_none", default)]
+    #[serde(
+        skip_serializing_if = "Option::is_none",
+        default,
+        deserialize_with = "deserialize_ports::<BridgePort, _>"
+    )]
+    #[schemars(with = "Option<Vec<BridgePort>>")]
     pub port_connections: Option<Vec<PortEntry>>,
 }
 
-/// Entry of a controller's `portConnections` list.
-#[derive(Clone, Debug, Serialize, JsonSchema, PartialEq)]
+/// Entry of a controller's `portConnections` list, whatever the kind of the controller.
+///
+/// The list is read as the ports of its kind of controller ([BondPort] or [BridgePort]), which only
+/// take the settings that apply to them, and then turned into these entries, so the ports of both
+/// kinds are handled the same way.
+#[derive(Clone, Debug, Serialize, PartialEq)]
 #[serde(untagged)]
 pub enum PortEntry {
     /// Interface name or ID of a connection.
@@ -258,19 +272,6 @@ pub enum PortEntry {
     Name(String),
     /// The port connection itself.
     Connection(Box<PortConnection>),
-}
-
-// Written by hand because an untagged enum reports any problem in a nested port as "data did
-// not match any variant", which does not help anybody fix a profile.
-impl<'de> Deserialize<'de> for PortEntry {
-    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
-        match serde_json::Value::deserialize(deserializer)? {
-            serde_json::Value::String(name) => Ok(Self::Name(name)),
-            value => serde_json::from_value(value)
-                .map(|conn| Self::Connection(Box::new(conn)))
-                .map_err(D::Error::custom),
-        }
-    }
 }
 
 /// A port of a controller, whichever of its lists gives it (see [`PortLists::ports`]).
@@ -305,30 +306,24 @@ impl<'a> From<&'a PortEntry> for PortRef<'a> {
     }
 }
 
-/// Settings a connection has because of its membership in a controller.
+/// Settings a connection has because of its membership in a bridge.
 ///
 /// Unlike the other sections, these do not describe the device itself but the role it plays in
-/// the bond or bridge it belongs to. Which settings apply depends on the kind of controller.
+/// the bridge it belongs to.
 #[derive(Clone, Debug, Default, Serialize, Deserialize, JsonSchema, PartialEq)]
-#[serde(rename_all = "camelCase")]
-#[schemars(deny_unknown_fields)]
-pub struct PortSettings {
-    /// Port priority used by the Spanning Tree Protocol (bridge ports only)
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct BridgePortSettings {
+    /// Port priority used by the Spanning Tree Protocol
     #[serde(skip_serializing_if = "Option::is_none")]
     pub priority: Option<u32>,
-    /// Port cost used by the Spanning Tree Protocol (bridge ports only)
+    /// Port cost used by the Spanning Tree Protocol
     #[serde(skip_serializing_if = "Option::is_none")]
     pub path_cost: Option<u32>,
 }
 
-impl PortSettings {
+impl BridgePortSettings {
     pub fn is_empty(&self) -> bool {
-        !self.has_bridge_settings()
-    }
-
-    /// Whether any of the settings that only make sense for a bridge port is set.
-    pub fn has_bridge_settings(&self) -> bool {
-        self.priority.is_some() || self.path_cost.is_some()
+        self.priority.is_none() && self.path_cost.is_none()
     }
 }
 
@@ -472,7 +467,8 @@ pub struct NetworkDevice {
 
 /// Represents the configuration details for a network connection
 ///
-/// The ports of a bond or a bridge are nested in its controller, as [PortConnection]s.
+/// The ports of a bond or a bridge are nested in its controller (see [BondPort] and
+/// [BridgePort]).
 #[derive(Clone, Debug, Default, Serialize, Deserialize, JsonSchema, PartialEq)]
 #[serde(rename_all = "camelCase")]
 #[schemars(deny_unknown_fields, transform = add_dns_searchlist_alias)]
@@ -570,13 +566,15 @@ pub struct NetworkConnectionWithState {
     pub state: ConnectionState,
 }
 
-/// A port of a bond or a bridge, nested in its controller.
+/// A port of a bond or a bridge, nested in its controller, whatever the kind of the controller.
 ///
 /// It is a connection without IP settings, as its controller holds the IP configuration, but with
-/// the settings it has as a port. Unknown fields are rejected, so that IP settings given to a port
-/// are not silently ignored.
-#[derive(Clone, Debug, Default, Serialize, Deserialize, JsonSchema, PartialEq)]
-#[serde(rename_all = "camelCase", deny_unknown_fields)]
+/// the settings it has as a port. It is not read as it is: the ports are read as the ones of their
+/// kind of controller ([BondPort] or [BridgePort]), which reject the settings that do not apply to
+/// them, IP settings included, and then turned into this type. It is reported as it is, which
+/// gives the same document for the kinds of ports that those types describe.
+#[derive(Clone, Debug, Default, Serialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
 pub struct PortConnection {
     /// Unique identifier for the network connection
     ///
@@ -596,11 +594,9 @@ pub struct PortConnection {
     /// Match settings for the network connection
     #[serde(rename = "match", skip_serializing_if = "Option::is_none")]
     pub match_settings: Option<MatchSettings>,
-    /// Settings that this connection has because it is a port of its controller
-    ///
-    /// Which ones apply depends on the kind of controller.
+    /// Settings that this connection has because it is a port of a bridge
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub port: Option<PortSettings>,
+    pub port: Option<BridgePortSettings>,
     /// Bonding settings, for a port that is a bond itself
     #[serde(skip_serializing_if = "Option::is_none")]
     pub bond: Option<BondSettings>,
@@ -728,6 +724,304 @@ impl From<NetworkConnection> for PortConnection {
             persistent,
         }
     }
+}
+
+/// Defines a kind of port of a kind of controller.
+///
+/// It is a connection without IP settings, as its controller holds the IP configuration, with the
+/// settings that every port has plus the given ones: the section that tells its kind (none for an
+/// Ethernet port) and, when its controller has them, its settings as a port. Unknown fields are
+/// rejected, so that a setting that does not apply to the port is not silently ignored.
+macro_rules! port_type {
+    (
+        $(#[$meta:meta])*
+        $name:ident {
+            $( $(#[$field_meta:meta])* $field:ident: $type:ty, )*
+        }
+    ) => {
+        $(#[$meta])*
+        #[derive(Clone, Debug, Deserialize, JsonSchema)]
+        #[serde(rename_all = "camelCase", deny_unknown_fields)]
+        pub struct $name {
+            /// Unique identifier for the network connection
+            ///
+            /// When it is omitted, the port refers to the connection bound to its interface, or
+            /// gets the interface name as its ID.
+            pub id: Option<String>,
+            /// Network interface associated with the connection
+            pub interface: Option<String>,
+            /// Match settings for the network connection
+            #[serde(rename = "match")]
+            pub match_settings: Option<MatchSettings>,
+            $( $(#[$field_meta])* pub $field: $type, )*
+            /// Custom MAC address of the connection's interface
+            ///
+            /// Can also be 'preserve', 'permanent', 'random' or 'stable'.
+            pub custom_mac_address: Option<String>,
+            /// MAC address of the connection's interface
+            pub mac_address: Option<String>,
+            /// Current status of the network connection
+            pub status: Option<Status>,
+            /// Maximum Transmission Unit (MTU) for the connection
+            #[serde(default)]
+            pub mtu: u32,
+            /// IEEE 802.1X settings
+            #[serde(rename = "ieee-8021x")]
+            pub ieee_8021x: Option<IEEE8021XSettings>,
+            /// Specifies if the connection should automatically connect
+            pub autoconnect: Option<bool>,
+            /// Specifies whether the connection should be persisted or not
+            pub persistent: Option<bool>,
+        }
+
+        impl From<$name> for PortConnection {
+            fn from(port: $name) -> Self {
+                let $name {
+                    id,
+                    interface,
+                    match_settings,
+                    $( $field, )*
+                    custom_mac_address,
+                    mac_address,
+                    status,
+                    mtu,
+                    ieee_8021x,
+                    autoconnect,
+                    persistent,
+                } = port;
+
+                Self {
+                    id,
+                    interface,
+                    match_settings,
+                    $( $field: $field.into(), )*
+                    custom_mac_address,
+                    mac_address,
+                    status,
+                    mtu,
+                    ieee_8021x,
+                    autoconnect,
+                    persistent,
+                    ..Default::default()
+                }
+            }
+        }
+    };
+}
+
+port_type! {
+    /// Port of a bridge that is an Ethernet connection, or any other kind of connection that has
+    /// no section of its own (e.g., InfiniBand)
+    BridgeEthernetPort {
+        /// Settings that this connection has because it is a port of a bridge
+        port: Option<BridgePortSettings>,
+    }
+}
+
+port_type! {
+    /// Port of a bridge that is a bond itself
+    BridgeBondPort {
+        /// Bonding settings
+        bond: BondSettings,
+        /// Settings that this connection has because it is a port of a bridge
+        port: Option<BridgePortSettings>,
+    }
+}
+
+port_type! {
+    /// Port of a bridge that is a VLAN
+    BridgeVlanPort {
+        /// VLAN settings
+        vlan: VlanSettings,
+        /// Settings that this connection has because it is a port of a bridge
+        port: Option<BridgePortSettings>,
+    }
+}
+
+port_type! {
+    /// Port of a bond that is an Ethernet connection, or any other kind of connection that has
+    /// no section of its own (e.g., InfiniBand)
+    BondEthernetPort {}
+}
+
+port_type! {
+    /// Port of a bond that is a bridge itself
+    BondBridgePort {
+        /// Bridge settings
+        bridge: BridgeSettings,
+    }
+}
+
+port_type! {
+    /// Port of a bond that is a VLAN
+    BondVlanPort {
+        /// VLAN settings
+        vlan: VlanSettings,
+    }
+}
+
+port_type! {
+    /// Port of a bond that is a wireless connection
+    BondWirelessPort {
+        /// Wireless settings
+        wireless: WirelessSettings,
+    }
+}
+
+/// Entry of the `portConnections` list of a bridge.
+///
+/// A port given as a connection is told apart by the section it has: `bond`, `vlan` or none of
+/// them, for an Ethernet port.
+#[derive(Clone, Debug, JsonSchema)]
+#[serde(untagged)]
+pub enum BridgePort {
+    /// Interface name or ID of a connection.
+    ///
+    /// It is a shorthand for `{ "interface": "<name>" }`: it refers to the connection with that
+    /// interface name or ID, and a new Ethernet connection is created when there is none.
+    Name(String),
+    Ethernet(BridgeEthernetPort),
+    Bond(BridgeBondPort),
+    Vlan(BridgeVlanPort),
+}
+
+/// Entry of the `portConnections` list of a bond.
+///
+/// A port given as a connection is told apart by the section it has: `bridge`, `vlan`, `wireless`
+/// or none of them, for an Ethernet port.
+#[derive(Clone, Debug, JsonSchema)]
+#[serde(untagged)]
+pub enum BondPort {
+    /// Interface name or ID of a connection.
+    ///
+    /// It is a shorthand for `{ "interface": "<name>" }`: it refers to the connection with that
+    /// interface name or ID, and a new Ethernet connection is created when there is none.
+    Name(String),
+    Ethernet(BondEthernetPort),
+    Bridge(BondBridgePort),
+    Vlan(BondVlanPort),
+    Wireless(BondWirelessPort),
+}
+
+// The ports are read by hand because an untagged enum reports any problem in a nested port as
+// "data did not match any variant", which does not help anybody fix a profile. Instead, the kind
+// of the port is told by its section, and the problems of the port are reported as they are.
+
+impl<'de> Deserialize<'de> for BridgePort {
+    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        let value = serde_json::Value::deserialize(deserializer)?;
+        if let serde_json::Value::String(name) = value {
+            return Ok(Self::Name(name));
+        }
+
+        match port_kind(&value).map_err(D::Error::custom)? {
+            None => read_port(value).map(Self::Ethernet),
+            Some(PortKind::Bond) => read_port(value).map(Self::Bond),
+            Some(PortKind::Vlan) => read_port(value).map(Self::Vlan),
+            Some(kind) => Err(D::Error::custom(format!(
+                "a port of a bridge cannot be {kind}"
+            ))),
+        }
+    }
+}
+
+impl<'de> Deserialize<'de> for BondPort {
+    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        let value = serde_json::Value::deserialize(deserializer)?;
+        if let serde_json::Value::String(name) = value {
+            return Ok(Self::Name(name));
+        }
+
+        match port_kind(&value).map_err(D::Error::custom)? {
+            None => read_port(value).map(Self::Ethernet),
+            Some(PortKind::Bridge) => read_port(value).map(Self::Bridge),
+            Some(PortKind::Vlan) => read_port(value).map(Self::Vlan),
+            Some(PortKind::Wireless) => read_port(value).map(Self::Wireless),
+            Some(kind) => Err(D::Error::custom(format!(
+                "a port of a bond cannot be {kind}"
+            ))),
+        }
+    }
+}
+
+impl From<BridgePort> for PortEntry {
+    fn from(port: BridgePort) -> Self {
+        let conn = match port {
+            BridgePort::Name(name) => return Self::Name(name),
+            BridgePort::Ethernet(port) => port.into(),
+            BridgePort::Bond(port) => port.into(),
+            BridgePort::Vlan(port) => port.into(),
+        };
+        Self::Connection(Box::new(conn))
+    }
+}
+
+impl From<BondPort> for PortEntry {
+    fn from(port: BondPort) -> Self {
+        let conn = match port {
+            BondPort::Name(name) => return Self::Name(name),
+            BondPort::Ethernet(port) => port.into(),
+            BondPort::Bridge(port) => port.into(),
+            BondPort::Vlan(port) => port.into(),
+            BondPort::Wireless(port) => port.into(),
+        };
+        Self::Connection(Box::new(conn))
+    }
+}
+
+/// Kind of a port given as a connection, told by the section it has.
+#[derive(Clone, Copy, Debug, PartialEq, strum::Display)]
+enum PortKind {
+    #[strum(to_string = "a bond")]
+    Bond,
+    #[strum(to_string = "a bridge")]
+    Bridge,
+    #[strum(to_string = "a VLAN")]
+    Vlan,
+    #[strum(to_string = "a wireless connection")]
+    Wireless,
+}
+
+/// Returns the kind of a port given as a connection, or `None` for an Ethernet port, which has no
+/// section of its own.
+fn port_kind(port: &serde_json::Value) -> Result<Option<PortKind>, String> {
+    let sections = [
+        ("bond", PortKind::Bond),
+        ("bridge", PortKind::Bridge),
+        ("vlan", PortKind::Vlan),
+        ("wireless", PortKind::Wireless),
+    ];
+    let given: Vec<_> = sections
+        .into_iter()
+        .filter(|(section, _)| port.get(section).is_some())
+        .collect();
+
+    match given.as_slice() {
+        [] => Ok(None),
+        [(_, kind)] => Ok(Some(*kind)),
+        _ => {
+            let names: Vec<_> = given.iter().map(|(s, _)| format!("`{s}`")).collect();
+            Err(format!(
+                "a port cannot have more than one of {}",
+                names.join(", ")
+            ))
+        }
+    }
+}
+
+/// Reads a port of a known kind, reporting its problems as they are.
+fn read_port<T: DeserializeOwned, E: serde::de::Error>(value: serde_json::Value) -> Result<T, E> {
+    serde_json::from_value(value).map_err(E::custom)
+}
+
+/// Reads a `portConnections` list as the ports of its kind of controller (`P`).
+fn deserialize_ports<'de, P, D>(deserializer: D) -> Result<Option<Vec<PortEntry>>, D::Error>
+where
+    P: DeserializeOwned + Into<PortEntry>,
+    D: Deserializer<'de>,
+{
+    let ports = Option::<Vec<P>>::deserialize(deserializer)?;
+    Ok(ports.map(|ports| ports.into_iter().map(Into::into).collect()))
 }
 
 /// Adds the deprecated `dnsSearchlist` alias to the schema of a connection.
@@ -1158,7 +1452,7 @@ mod tests {
         let port = PortConnection {
             interface: Some("eth0".to_string()),
             mtu: 9000,
-            port: Some(PortSettings {
+            port: Some(BridgePortSettings {
                 priority: Some(16),
                 ..Default::default()
             }),
@@ -1176,6 +1470,60 @@ mod tests {
         assert_eq!(port.mtu, 9000);
         // The port settings are not part of the connection.
         assert_eq!(port.port, None);
+    }
+
+    #[test]
+    fn test_nested_ports_only_take_the_settings_of_their_controller() {
+        let error = |json: &str| {
+            serde_json::from_str::<NetworkConnection>(json)
+                .unwrap_err()
+                .to_string()
+        };
+
+        let json = r#"{ "id": "bond0", "bond": { "mode": "802.3ad", "portConnections": [{ "interface": "eth0", "port": { "priority": 32 } }] } }"#;
+        assert!(error(json).contains("unknown field `port`"));
+
+        let json = r#"{ "id": "br0", "bridge": { "portConnections": [{ "interface": "br1", "bridge": {} }] } }"#;
+        assert!(error(json).contains("a port of a bridge cannot be a bridge"));
+
+        let json = r#"{ "id": "bond0", "bond": { "mode": "802.3ad", "portConnections": [{ "interface": "bond1", "bond": { "mode": "802.3ad" } }] } }"#;
+        assert!(error(json).contains("a port of a bond cannot be a bond"));
+
+        let json = r#"{ "id": "br0", "bridge": { "portConnections": [{ "interface": "wlan0", "wireless": { "ssid": "agama", "security": "none", "mode": "infrastructure" } }] } }"#;
+        assert!(error(json).contains("a port of a bridge cannot be a wireless connection"));
+
+        let json = r#"{ "id": "br0", "bridge": { "portConnections": [{ "interface": "bond0", "bond": { "mode": "802.3ad" }, "vlan": { "parent": "eth0", "id": 100 } }] } }"#;
+        assert!(error(json).contains("a port cannot have more than one of `bond`, `vlan`"));
+    }
+
+    #[test]
+    fn test_a_nested_port_is_read_as_the_connection_it_stands_for() {
+        let json = r#"{
+            "id": "bond0",
+            "bond": {
+                "mode": "active-backup",
+                "portConnections": [
+                    { "interface": "eth0", "mtu": 9000 },
+                    { "interface": "wlan0", "wireless": { "ssid": "agama", "security": "none", "mode": "infrastructure" } },
+                    { "interface": "eth1.100", "vlan": { "parent": "eth1", "id": 100 } }
+                ]
+            }
+        }"#;
+        let conn: NetworkConnection = serde_json::from_str(json).unwrap();
+        let ports = conn.ports().unwrap();
+        let [PortRef::Connection(eth0), PortRef::Connection(wlan0), PortRef::Connection(vlan)] =
+            ports.as_slice()
+        else {
+            panic!("unexpected ports: {ports:?}");
+        };
+        assert_eq!(eth0.mtu, 9000);
+        assert_eq!(wlan0.wireless.as_ref().unwrap().ssid, "agama");
+        assert_eq!(vlan.vlan.as_ref().unwrap().id, 100);
+
+        // Reported as it was given, so it can be sent back.
+        let serialized = serde_json::to_value(&conn).unwrap();
+        let read: NetworkConnection = serde_json::from_value(serialized).unwrap();
+        assert_eq!(read, conn);
     }
 
     #[test]

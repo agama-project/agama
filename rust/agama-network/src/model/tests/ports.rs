@@ -72,7 +72,7 @@ fn test_bridge_port_settings_on_a_bond_port_are_rejected() {
         bond: Some(BondSettings {
             port_connections: Some(vec![nested(PortConnection {
                 interface: Some("eth0".to_string()),
-                port: Some(PortSettings {
+                port: Some(BridgePortSettings {
                     priority: Some(50),
                     ..Default::default()
                 }),

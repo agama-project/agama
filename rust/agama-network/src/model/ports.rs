@@ -33,8 +33,8 @@ use std::{
 };
 
 use agama_utils::api::network::{
-    DeviceType, IpConfig, Ipv4Method, Ipv6Method, NetworkConnection, NetworkConnectionsCollection,
-    PortConnection, PortLists, PortRef, PortSettings, Status,
+    BridgePortSettings, DeviceType, IpConfig, Ipv4Method, Ipv6Method, NetworkConnection,
+    NetworkConnectionsCollection, PortConnection, PortLists, PortRef, Status,
 };
 use uuid::Uuid;
 
@@ -46,7 +46,7 @@ struct Node<'a> {
     /// The connection itself or, for a nested port, the connection it stands for.
     conn: Cow<'a, NetworkConnection>,
     /// Settings the connection has as a port, for a nested port that gives them.
-    port: Option<&'a PortSettings>,
+    port: Option<&'a BridgePortSettings>,
     /// ID of the connection. For a nested port that does not give one, it is derived from its
     /// interface (see [`PortResolver::port_id`]).
     id: String,
@@ -152,7 +152,7 @@ impl<'a> PortResolver<'a> {
     fn visit<'b>(
         &self,
         conn: Cow<'b, NetworkConnection>,
-        port: Option<&'b PortSettings>,
+        port: Option<&'b BridgePortSettings>,
         id: String,
         parent: Option<usize>,
         ignored_port_names: bool,
@@ -453,8 +453,9 @@ impl<'a> PortResolver<'a> {
     ///
     /// * A port cannot have IP settings, as its controller holds the IP configuration. A top-level
     ///   connection that a controller lists by name is the exception: its IP settings are ignored.
-    /// * The `port` settings must match the kind of its controller. They are flat, so a bridge port
-    ///   priority given to a port of a bond would be silently dropped otherwise.
+    /// * Only the ports of a bridge have `port` settings. The ports of a bond are read without
+    ///   them, so a bond port cannot bring them, but a bridge port priority given to a port of a
+    ///   bond would be silently dropped otherwise.
     /// * Only a port nested in its controller can have `port` settings. A top-level connection is
     ///   either not a port, or one that a controller lists by name, which is the format that
     ///   predates the `port` settings.
@@ -490,7 +491,7 @@ impl<'a> PortResolver<'a> {
 
             let fits = match controller.config {
                 ConnectionConfig::Bridge(_) => true,
-                _ => !settings.has_bridge_settings(),
+                _ => settings.is_empty(),
             };
             if !fits {
                 return Err(NetworkStateError::InvalidPortSettings(

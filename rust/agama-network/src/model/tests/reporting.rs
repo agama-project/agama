@@ -193,7 +193,7 @@ fn test_bridge_port_settings_are_exposed_and_survive_a_round_trip() {
     let bond0 = find_port(&exposed, "bond0");
     assert_eq!(
         bond0.port,
-        Some(PortSettings {
+        Some(BridgePortSettings {
             priority: Some(32),
             path_cost: Some(100),
         })

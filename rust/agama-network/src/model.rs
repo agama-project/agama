@@ -1651,7 +1651,7 @@ impl ConnectionCollection {
             }
             // Its controller holds the IP configuration, so the port has none.
             let mut port = PortConnection::from(self.to_api_tree(member, placed)?);
-            let settings = PortSettings::from(&member.port_config);
+            let settings = BridgePortSettings::from(&member.port_config);
             port.port = (!settings.is_empty()).then_some(settings);
             ports.push(PortEntry::Connection(Box::new(port)));
         }
@@ -1843,10 +1843,10 @@ pub struct BridgePortConfig {
     pub path_cost: Option<u32>,
 }
 
-impl From<PortSettings> for PortConfig {
-    fn from(settings: PortSettings) -> Self {
+impl From<BridgePortSettings> for PortConfig {
+    fn from(settings: BridgePortSettings) -> Self {
         // The resolver makes sure that bridge port settings only reach the ports of a bridge.
-        if settings.has_bridge_settings() {
+        if !settings.is_empty() {
             PortConfig::Bridge(BridgePortConfig {
                 priority: settings.priority,
                 path_cost: settings.path_cost,
@@ -1857,15 +1857,15 @@ impl From<PortSettings> for PortConfig {
     }
 }
 
-impl From<&PortConfig> for PortSettings {
+impl From<&PortConfig> for BridgePortSettings {
     fn from(config: &PortConfig) -> Self {
         match config {
-            PortConfig::Bridge(bridge) => PortSettings {
+            PortConfig::Bridge(bridge) => BridgePortSettings {
                 priority: bridge.priority,
                 path_cost: bridge.path_cost,
             },
             // Open vSwitch ports have no settings to expose yet.
-            PortConfig::OvsBridge(_) | PortConfig::None => PortSettings::default(),
+            PortConfig::OvsBridge(_) | PortConfig::None => BridgePortSettings::default(),
         }
     }
 }
