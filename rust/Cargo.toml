@@ -10,6 +10,7 @@ members = [
     "agama-lib",
     "agama-locale-data",
     "agama-manager",
+    "agama-mcp",
     "agama-proxy",
     "agama-network",
     "agama-ntp",
@@ -47,6 +48,7 @@ agama-l10n = { path = "agama-l10n" }
 agama-lib = { path = "agama-lib" }
 agama-locale-data = { path = "agama-locale-data" }
 agama-manager = { path = "agama-manager" }
+agama-mcp = { path = "agama-mcp" }
 agama-network = { path = "agama-network" }
 agama-ntp = { path = "agama-ntp" }
 agama-proxy = { path = "agama-proxy" }
@@ -61,6 +63,7 @@ agama-users = { path = "agama-users" }
 agama-utils = { path = "agama-utils" }
 anyhow = { version = "1.0.100" }
 async-trait = { version = "0.1.92" }
+axum = { version = "0.8.9" }
 bindgen = { version = "0.72.1", features = ["runtime"] }
 camino = { version = "1.2.1" }
 chrono = { version = "0.4.38", features = ["alloc", "clock", "now", "std"] }
@@ -90,6 +93,7 @@ thiserror = { version = "2.0.18" }
 tokio = { version = "1.52.1", features = ["full", "macros", "process", "rt-multi-thread", "sync", "time"] }
 tokio-stream = { version = "0.1.17" }
 tokio-test = { version = "0.4.4" }
+tower = { version = "0.5.2", features = ["util"] }
 tracing = { version = "0.1.44" }
 tracing-subscriber = { version = "0.3.22", features = ["env-filter"] }
 trait-variant = { version = "0.1.3" }
