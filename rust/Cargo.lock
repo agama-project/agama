@@ -2864,6 +2864,7 @@ name = "libstorage-ng-agama"
 version = "0.1.0"
 dependencies = [
  "libstorage-ng-agama-sys",
+ "thiserror 2.0.18",
 ]
 
 [[package]]

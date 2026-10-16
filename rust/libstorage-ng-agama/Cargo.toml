@@ -5,3 +5,4 @@ edition.workspace = true
 
 [dependencies]
 libstorage-ng-agama-sys = { path = "./libstorage-ng-agama-sys" }
+thiserror = { workspace = true }
