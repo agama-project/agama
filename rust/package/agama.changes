@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Oct 16 14:18:01 UTC 2026 - Clemens Famulla-Conrad <cfamullaconrad@suse.com>
+
+- Support the IPv6 address generation mode (ipv6.addr-gen-mode)                                                         │
+  in network connections (bsc#1279546)
+
+-------------------------------------------------------------------
 Thu Oct 15 07:36:10 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Do not run RPM scriptlets when updating the agama-scripts package
