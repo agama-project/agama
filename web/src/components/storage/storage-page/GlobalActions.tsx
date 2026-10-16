@@ -21,40 +21,23 @@
  */
 
 import React from "react";
-import { Flex, FlexItem } from "@patternfly/react-core";
+import { Flex } from "@patternfly/react-core";
 import ConfigureDeviceMenu from "~/components/storage/ConfigureDeviceMenu";
-import ChangeInstallationDisk from "~/components/storage/storage-page/ChangeInstallationDisk";
 import { _ } from "~/i18n";
-import { useConfigModel } from "~/hooks/model/storage/config-model";
-import configModel from "~/model/storage/config-model";
 
 /**
  * Controls that act on the storage configuration as a whole, rather than on a
- * single entry of it.
- *
- * Adding more devices is always offered, first, so it stays in the same place.
- * Where the installation uses a single disk that can be swapped, changing that
- * disk is offered next to it.
+ * single entry or category of it.
  */
 export default function GlobalActions() {
-  const config = useConfigModel();
-  const canChangeTarget = configModel.canChangeTargetDrive(config);
-
   return (
-    <Flex className="agm-entries-table__add">
-      <FlexItem>
-        <ConfigureDeviceMenu
-          // TRANSLATORS: offered at the foot of the list of what the
-          // installation is made of: bring more disks into it.
-          label={_("Add more devices")}
-          popperProps={{ position: "left" }}
-        />
-      </FlexItem>
-      {canChangeTarget && (
-        <FlexItem>
-          <ChangeInstallationDisk />
-        </FlexItem>
-      )}
+    <Flex>
+      <ConfigureDeviceMenu
+        // TRANSLATORS: offered at the foot of the list of what the
+        // installation is made of: bring more disks into it.
+        label={_("Add more devices")}
+        popperProps={{ position: "left" }}
+      />
     </Flex>
   );
 }

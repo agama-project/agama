@@ -23,55 +23,17 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
-import type { ConfigModel } from "~/model/storage/config-model";
 import GlobalActions from "~/components/storage/storage-page/GlobalActions";
 
-const mockConfig = jest.fn();
-
-jest.mock("~/hooks/model/storage/config-model", () => ({
-  ...jest.requireActual("~/hooks/model/storage/config-model"),
-  useConfigModel: () => mockConfig(),
-}));
-
-/* Each control is tested on its own. What matters here is which ones are offered. */
-jest.mock("~/components/storage/storage-page/ChangeInstallationDisk", () => () => (
-  <button>Change installation disk</button>
-));
 jest.mock("~/components/storage/ConfigureDeviceMenu", () => ({ label }: { label: string }) => (
   <button>{label}</button>
 ));
 
-const config = (values: Partial<ConfigModel.Config> = {}): ConfigModel.Config => ({
-  drives: [{ name: "/dev/vda" }],
-  mdRaids: [],
-  volumeGroups: [],
-  ...values,
-});
-
 describe("GlobalActions", () => {
-  describe("when the installation uses a single disk", () => {
-    beforeEach(() => {
-      mockConfig.mockReturnValue(config());
-    });
+  it("offers adding more devices, and nothing that acts on a single disk", () => {
+    plainRender(<GlobalActions />);
 
-    it("offers adding more devices and, after it, changing that disk", () => {
-      plainRender(<GlobalActions />);
-
-      const names = screen.getAllByRole("button").map((button) => button.textContent);
-      expect(names).toEqual(["Add more devices", "Change installation disk"]);
-    });
-  });
-
-  describe("when the installation uses more than one disk", () => {
-    beforeEach(() => {
-      mockConfig.mockReturnValue(config({ drives: [{ name: "/dev/vda" }, { name: "/dev/vdb" }] }));
-    });
-
-    it("offers only adding more devices", () => {
-      plainRender(<GlobalActions />);
-
-      expect(screen.queryByRole("button", { name: "Change installation disk" })).toBeNull();
-      screen.getByRole("button", { name: "Add more devices" });
-    });
+    const names = screen.getAllByRole("button").map((button) => button.textContent);
+    expect(names).toEqual(["Add more devices"]);
   });
 });

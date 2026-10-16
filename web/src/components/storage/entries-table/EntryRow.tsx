@@ -117,7 +117,7 @@ export default function EntryRow({
       className={css("agm-entries-table__row", tableStyles.modifiers.clickable)}
       isRowSelected={isOpen}
     >
-      <Th scope="row" modifier="fitContent" dataLabel={columnName("entry")}>
+      <Th scope="row" dataLabel={columnName("entry")}>
         <Stack>
           <StackItem>
             {/* A plain anchor rather than the page's Link: that one is a

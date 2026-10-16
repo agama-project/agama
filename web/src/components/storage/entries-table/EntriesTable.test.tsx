@@ -46,6 +46,7 @@ jest.mock("~/hooks/model/storage/config-model", () => ({
   useDeleteDrive: () => jest.fn(),
   useDeleteMdRaid: () => jest.fn(),
   useDeleteVolumeGroup: () => jest.fn(),
+  useChangeTargetDrive: () => jest.fn(),
 }));
 
 jest.mock("~/hooks/model/system/storage", () => ({
@@ -53,6 +54,7 @@ jest.mock("~/hooks/model/system/storage", () => ({
   useDevice: (name: string) => mockSystemDevice(name),
   useFlattenDevices: () => mockSystemDevices(),
   useAvailableDevices: () => [],
+  useCandidateDrives: () => [],
 }));
 
 jest.mock("~/hooks/model/proposal/storage", () => ({
@@ -96,13 +98,14 @@ const config = (values: Partial<ConfigModel.Config> = {}): ConfigModel.Config =>
 });
 
 /**
- * The list, as a reader who cannot see the arrangement meets it.
+ * The entries of one category, as a reader who cannot see the arrangement
+ * meets them: a table named by the heading over it.
  *
  * Asking for a table rather than for the element also guards the one prop that
  * would fail quietly: PatternFly calls its tables grids by default, and a grid
  * is an interactive widget rather than something to read.
  */
-const table = () => screen.getByRole("table", { name: "Configured devices" });
+const table = (name = "Used disks") => screen.getByRole("table", { name });
 
 /**
  * The address, so a test can read what a control wrote to it.
@@ -115,15 +118,18 @@ const Address = () => {
   return <output>{params.toString()}</output>;
 };
 
-/** Every name the list reads out, in the order it reads them. */
+/** Every category and entry name the list reads out, in the order it reads them. */
 const names = () =>
-  within(table())
-    .getAllByRole("rowheader")
-    .map((cell) => cell.textContent);
+  screen.getAllByRole("heading", { level: 2 }).flatMap((heading) => [
+    heading.textContent,
+    ...within(table(heading.textContent))
+      .getAllByRole("rowheader")
+      .map((cell) => cell.textContent),
+  ]);
 
 /** What the row says the installer will do, and what that costs. */
 const rowText = (name: string) =>
-  within(table())
+  screen
     .getAllByRole("row")
     .find((row) => within(row).queryByRole("rowheader")?.textContent?.startsWith(name))
     ?.textContent;
@@ -158,8 +164,45 @@ describe("EntriesTable", () => {
     );
     installerRender(<EntriesTable />);
 
-    within(table()).getByRole("rowheader", { name: "Volume groups" });
-    within(table()).getByRole("rowheader", { name: "Disks" });
+    within(screen.getByRole("region", { name: "Volume groups" })).getByRole("table", {
+      name: "Volume groups",
+    });
+    within(screen.getByRole("region", { name: "Used disks" })).getByRole("table", {
+      name: "Used disks",
+    });
+  });
+
+  describe("when the installation uses a single disk", () => {
+    beforeEach(() => {
+      mockConfig.mockReturnValue(config({ drives: [{ name: "/dev/sda", partitions: [] }] }));
+    });
+
+    it("offers changing it beside the heading of the disks", () => {
+      installerRender(<EntriesTable />);
+
+      const disks = screen.getByRole("region", { name: "Used disks" });
+      const button = within(disks).getByRole("button", { name: "Change installation disk" });
+      expect(button).toHaveTextContent("Change…");
+    });
+  });
+
+  describe("when the installation uses more than one disk", () => {
+    beforeEach(() => {
+      mockConfig.mockReturnValue(
+        config({
+          drives: [
+            { name: "/dev/sda", partitions: [] },
+            { name: "/dev/sdb", partitions: [] },
+          ],
+        }),
+      );
+    });
+
+    it("does not offer changing the installation disk", () => {
+      installerRender(<EntriesTable />);
+
+      expect(screen.queryByRole("button", { name: "Change installation disk" })).toBeNull();
+    });
   });
 
   it("reads from what is defined down to the hardware it is defined on", () => {
@@ -177,7 +220,7 @@ describe("EntriesTable", () => {
       "system",
       "RAID devices",
       "md0",
-      "Disks",
+      "Used disks",
       "sda",
       "sdb",
     ]);

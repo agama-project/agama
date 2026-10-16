@@ -510,7 +510,41 @@ nav.agm-breadcrumb > ol > li > a {
 // the table cannot have the width its columns need, it keeps that width and
 // this scrolls: anything else crushes the alignment the table exists for.
 .agm-entries-table {
+  --agm-entries-table--entry-width: 20%;
+  --agm-entries-table--actions-width: 30%;
+  --agm-entries-table--options-width: 3.5rem;
+
   overflow-x: auto;
+}
+
+// What the installer will put on an entry is the column with the most to say,
+// so it takes whatever the others leave, and more of it where the window has
+// it to give.
+@media (width >= 75rem) {
+  .agm-entries-table {
+    --agm-entries-table--entry-width: 18%;
+    --agm-entries-table--actions-width: 25%;
+  }
+}
+
+// Every category is a table of its own. Fixed layout takes the widths from the
+// columns rather than from what each table holds, so all of them line up. The
+// minimum width is where the tables stop narrowing and the box scrolls.
+.agm-entries-table .pf-v6-c-table {
+  table-layout: fixed;
+  min-width: 40rem;
+}
+
+.agm-entries-table__col--entry {
+  width: var(--agm-entries-table--entry-width);
+}
+
+.agm-entries-table__col--actions {
+  width: var(--agm-entries-table--actions-width);
+}
+
+.agm-entries-table__col--options {
+  width: var(--agm-entries-table--options-width);
 }
 
 // Inside the page box, so its first and last columns take the regular cell
@@ -519,10 +553,28 @@ nav.agm-breadcrumb > ol > li > a {
   --pf-v6-c-table--cell--first-last-child--PaddingInline: var(--pf-t--global--spacer--md);
 }
 
+// Indented like the first column, so the heading sits over the names it heads.
+.agm-entries-table__header {
+  padding-inline: var(--pf-t--global--spacer--md);
+  padding-block-end: var(--pf-t--global--spacer--xs);
+}
+
+// A control beside a category heading acts on the whole category, and stays
+// quieter than the heading it sits beside. PatternFly's small button only trims
+// the padding, so the text is set smaller too, keeping the button tall enough
+// to hit comfortably.
+.agm-entries-table__header .pf-v6-c-button {
+  --pf-v6-c-button--FontSize: var(--pf-t--global--font--size--xs);
+  --pf-v6-c-button--PaddingBlockStart: var(--pf-t--global--spacer--xs);
+  --pf-v6-c-button--PaddingBlockEnd: var(--pf-t--global--spacer--xs);
+  --pf-v6-c-button--PaddingInlineStart: var(--pf-t--global--spacer--sm);
+  --pf-v6-c-button--PaddingInlineEnd: var(--pf-t--global--spacer--sm);
+}
+
 // Set apart from the entries under it by weight and size rather than by a
-// filled band: it names a run of rows, it is not a row itself.
-.agm-entries-table__category th {
-  padding-block: var(--pf-t--global--spacer--lg) var(--pf-t--global--spacer--xs);
+// filled band.
+.agm-entries-table__category {
+  margin: 0;
   font-size: var(--pf-t--global--font--size--body--sm);
   font-weight: var(--pf-t--global--font--weight--body--bold);
   color: var(--pf-t--global--text--color--subtle);
@@ -530,8 +582,8 @@ nav.agm-breadcrumb > ol > li > a {
   letter-spacing: 0.04em;
 }
 
-.agm-entries-table tbody:first-of-type .agm-entries-table__category th {
-  padding-block-start: 0;
+.agm-entries-table__section + .agm-entries-table__section {
+  margin-block-start: var(--pf-t--global--spacer--lg);
 }
 
 // What the entry is, read under the name: a fact about the name rather than a
