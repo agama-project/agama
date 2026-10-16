@@ -42,6 +42,30 @@ struct StorageHandle *storage_new(bool read_only, enum ProbeMode mode,
 /// Releases the storage object (NULL is allowed).
 void storage_free(struct StorageHandle *handle);
 
+/// Probes the system, replacing the probed and staging devicegraphs.
+void storage_probe(struct StorageHandle *handle, struct Status *status);
+
+struct DiskInfo {
+  /// Kernel name, e.g., "/dev/sda".
+  char *name;
+  char *sysfs_path;
+  /// Size in bytes.
+  uint64_t size;
+};
+
+struct DiskList {
+  struct DiskInfo *disks;
+  size_t len;
+};
+
+/// Disks of the probed devicegraph. The list must be released with
+/// `storage_disk_list_free`. On error the list is empty (see `status`).
+struct DiskList storage_probed_disks(const struct StorageHandle *handle,
+                                     struct Status *status);
+
+/// Releases the list and all its strings.
+void storage_disk_list_free(struct DiskList *list);
+
 #ifdef __cplusplus
 }
 #endif

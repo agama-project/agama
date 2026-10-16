@@ -25,6 +25,37 @@ pub const ProbeMode_PROBE_STANDARD: ProbeMode = 0;
 #[doc = " Fake probing based on a mockup file (no root required)."]
 pub const ProbeMode_PROBE_READ_MOCKUP: ProbeMode = 1;
 pub type ProbeMode = ::std::os::raw::c_uint;
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct DiskInfo {
+    #[doc = " Kernel name, e.g., \"/dev/sda\"."]
+    pub name: *mut ::std::os::raw::c_char,
+    pub sysfs_path: *mut ::std::os::raw::c_char,
+    #[doc = " Size in bytes."]
+    pub size: u64,
+}
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of DiskInfo"][::std::mem::size_of::<DiskInfo>() - 24usize];
+    ["Alignment of DiskInfo"][::std::mem::align_of::<DiskInfo>() - 8usize];
+    ["Offset of field: DiskInfo::name"][::std::mem::offset_of!(DiskInfo, name) - 0usize];
+    ["Offset of field: DiskInfo::sysfs_path"]
+        [::std::mem::offset_of!(DiskInfo, sysfs_path) - 8usize];
+    ["Offset of field: DiskInfo::size"][::std::mem::offset_of!(DiskInfo, size) - 16usize];
+};
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct DiskList {
+    pub disks: *mut DiskInfo,
+    pub len: usize,
+}
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of DiskList"][::std::mem::size_of::<DiskList>() - 16usize];
+    ["Alignment of DiskList"][::std::mem::align_of::<DiskList>() - 8usize];
+    ["Offset of field: DiskList::disks"][::std::mem::offset_of!(DiskList, disks) - 0usize];
+    ["Offset of field: DiskList::len"][::std::mem::offset_of!(DiskList, len) - 8usize];
+};
 unsafe extern "C" {
     #[doc = " Releases the message of the status (if any)."]
     pub fn storage_status_free(status: *mut Status);
@@ -37,4 +68,10 @@ unsafe extern "C" {
     ) -> *mut StorageHandle;
     #[doc = " Releases the storage object (NULL is allowed)."]
     pub fn storage_free(handle: *mut StorageHandle);
+    #[doc = " Probes the system, replacing the probed and staging devicegraphs."]
+    pub fn storage_probe(handle: *mut StorageHandle, status: *mut Status);
+    #[doc = " Disks of the probed devicegraph. The list must be released with\n `storage_disk_list_free`. On error the list is empty (see `status`)."]
+    pub fn storage_probed_disks(handle: *const StorageHandle, status: *mut Status) -> DiskList;
+    #[doc = " Releases the list and all its strings."]
+    pub fn storage_disk_list_free(list: *mut DiskList);
 }
