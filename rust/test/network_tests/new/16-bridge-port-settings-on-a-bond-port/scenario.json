@@ -1,12 +1,12 @@
 {
   "title": "Bridge port settings on a bond port",
-  "description": "Only the ports of a bridge have port settings.",
+  "description": "The bridge port settings only apply to the ports of a bridge. Rejected by the network service. Nothing is created.",
   "steps": [
     {
       "profile": "1-bond-port-settings.json",
       "description": "eth0 nested in a bond with port: { priority: 16 }",
       "expect": {
-        "schema": "invalid",
+        "error": "InvalidPortSettings",
         "connections": {
           "bond0": {
             "removed": true

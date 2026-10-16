@@ -340,7 +340,9 @@ mod tests {
     }
 
     #[test]
-    fn test_bridge_port_settings_are_rejected_on_a_bond_port() {
+    fn test_nested_ports_accept_port_settings() {
+        // Which settings apply depends on the kind of controller, which the network service
+        // checks (see the network scenario 16-bridge-port-settings-on-a-bond-port).
         let profile = connections(json!([{
             "id": "bond0",
             "bond": {
@@ -348,7 +350,7 @@ mod tests {
                 "portConnections": [{ "interface": "eth0", "port": { "priority": 32 } }]
             }
         }]));
-        assert!(matches!(validate(profile), ValidationOutcome::NotValid(_)));
+        assert!(matches!(validate(profile), ValidationOutcome::Valid));
 
         let profile = connections(json!([{
             "id": "br0",

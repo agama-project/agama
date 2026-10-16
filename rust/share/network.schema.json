@@ -27,28 +27,7 @@
         "portConnections": {
           "description": "Ports of the controller. When neither this list nor `ports` is given, the current ports\nare left alone.",
           "items": {
-            "allOf": [
-              {
-                "$ref": "#/$defs/PortEntry"
-              },
-              {
-                "anyOf": [
-                  {
-                    "type": "string"
-                  },
-                  {
-                    "properties": {
-                      "port": {
-                        "maxProperties": 0,
-                        "type": "object"
-                      }
-                    },
-                    "type": "object"
-                  }
-                ],
-                "description": "A port of a bond has no port settings"
-              }
-            ]
+            "$ref": "#/$defs/PortEntry"
           },
           "type": [
             "array",
@@ -683,7 +662,7 @@
               "type": "null"
             }
           ],
-          "description": "Settings that this connection has because it is a port of its controller\n\nOnly the ports of a bridge have them."
+          "description": "Settings that this connection has because it is a port of its controller\n\nWhich ones apply depends on the kind of controller."
         },
         "status": {
           "anyOf": [

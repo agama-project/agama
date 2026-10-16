@@ -174,7 +174,7 @@ pub struct WirelessSettings {
 /// given, `ports` is ignored.
 #[derive(Clone, Debug, Serialize, Deserialize, JsonSchema, PartialEq)]
 #[serde(rename_all = "camelCase")]
-#[schemars(deny_unknown_fields, transform = forbid_bond_port_settings)]
+#[schemars(deny_unknown_fields)]
 pub struct BondSettings {
     /// Bonding mode
     #[schemars(extend("enum" = [
@@ -598,7 +598,7 @@ pub struct PortConnection {
     pub match_settings: Option<MatchSettings>,
     /// Settings that this connection has because it is a port of its controller
     ///
-    /// Only the ports of a bridge have them.
+    /// Which ones apply depends on the kind of controller.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub port: Option<PortSettings>,
     /// Bonding settings, for a port that is a bond itself
@@ -727,36 +727,6 @@ impl From<NetworkConnection> for PortConnection {
             autoconnect,
             persistent,
         }
-    }
-}
-
-/// Forbids the port settings in the schema of the ports of a bond.
-///
-/// Only the ports of a bridge have port settings. The entries of the list are given as they are
-/// (see [PortEntry]), and a rule rejecting any port setting is added to them.
-fn forbid_bond_port_settings(schema: &mut schemars::Schema) {
-    let Some(list) = schema
-        .get_mut("properties")
-        .and_then(|p| p.get_mut("portConnections"))
-        .and_then(|p| p.as_object_mut())
-    else {
-        return;
-    };
-    if let Some(entry) = list.remove("items") {
-        let no_port_settings = serde_json::json!({
-            "description": "A port of a bond has no port settings",
-            "anyOf": [
-                { "type": "string" },
-                {
-                    "type": "object",
-                    "properties": { "port": { "type": "object", "maxProperties": 0 } }
-                }
-            ]
-        });
-        list.insert(
-            "items".to_string(),
-            serde_json::json!({ "allOf": [entry, no_port_settings] }),
-        );
     }
 }
 
