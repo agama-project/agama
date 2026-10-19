@@ -26,5 +26,5 @@ zbus = { workspace = true }
 
 [dev-dependencies]
 agama-lib = { workspace = true }
-jsonschema = { version = "0.30.0", default-features = false }
+jsonschema = { workspace = true }
 serde_json = { workspace = true }

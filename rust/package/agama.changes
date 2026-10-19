@@ -11,10 +11,11 @@ Thu Oct  8 10:40:48 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
 - Accept in "portConnections" only the kinds of ports that each
   kind of controller takes, and the port settings only on the
   ports of a bridge.
-- Report the ports that their kind of controller does not take
-  (e.g., a VLAN in a bond) at the top level, listed by name in
-  their controller, so the reported configuration can be sent
-  back.
+- When the system has a port that "portConnections" does not
+  accept (e.g., a VLAN set up by hand as the port of a bond),
+  report it as a separate connection, listed by name in "ports"
+  and "portConnections", so the reported configuration can still
+  be loaded back.
 - Keep the settings not modelled by the API when updating a
   connection.
 - Fix reading the path cost of bridge ports from NetworkManager.

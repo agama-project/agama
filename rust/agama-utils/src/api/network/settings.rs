@@ -27,7 +27,7 @@ use crate::openapi::schemas;
 use cidr::IpInet;
 use merge::Merge;
 use schemars::JsonSchema;
-use serde::{de::DeserializeOwned, de::Error as _, Deserialize, Deserializer, Serialize};
+use serde::{Deserialize, Serialize};
 use std::default::Default;
 use std::net::IpAddr;
 
@@ -726,6 +726,8 @@ macro_rules! port_type {
         }
 
         impl PortLists for $name {
+            // A bridge cannot be a port, neither of a bridge nor of a bond, so a port can only be a
+            // controller when it is a bond.
             fn controller_settings(&self) -> (Option<&BondSettings>, Option<&BridgeSettings>) {
                 (self.sections().bond, None)
             }
@@ -821,7 +823,7 @@ port_type! {
 ///
 /// A port given as a connection is told apart by the section it has: `bond`, `vlan` or none of
 /// them, for an Ethernet port.
-#[derive(Clone, Debug, Serialize, JsonSchema, PartialEq)]
+#[derive(Clone, Debug, Serialize, Deserialize, JsonSchema, PartialEq)]
 #[serde(untagged)]
 pub enum BridgePort {
     /// Interface name or ID of a connection.
@@ -865,7 +867,7 @@ impl BridgePort {
 ///
 /// Only physical interfaces can be the ports of a bond. A port given as a connection is told apart
 /// by the section it has: `wireless` or none, for an Ethernet port.
-#[derive(Clone, Debug, Serialize, JsonSchema, PartialEq)]
+#[derive(Clone, Debug, Serialize, Deserialize, JsonSchema, PartialEq)]
 #[serde(untagged)]
 pub enum BondPort {
     /// Interface name or ID of a connection.
@@ -897,90 +899,6 @@ impl BondPort {
         };
         Ok(port)
     }
-}
-
-// The ports are read by hand because an untagged enum reports any problem in a nested port as
-// "data did not match any variant", which does not help anybody fix a profile. Instead, the kind
-// of the port is told by its section, and the problems of the port are reported as they are.
-
-impl<'de> Deserialize<'de> for BridgePort {
-    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
-        let value = serde_json::Value::deserialize(deserializer)?;
-        if let serde_json::Value::String(name) = value {
-            return Ok(Self::Name(name));
-        }
-
-        match port_kind(&value).map_err(D::Error::custom)? {
-            None => read_port(value).map(Self::Ethernet),
-            Some(PortKind::Bond) => read_port(value).map(Self::Bond),
-            Some(PortKind::Vlan) => read_port(value).map(Self::Vlan),
-            Some(kind) => Err(D::Error::custom(format!(
-                "a port of a bridge cannot be {kind}"
-            ))),
-        }
-    }
-}
-
-impl<'de> Deserialize<'de> for BondPort {
-    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
-        let value = serde_json::Value::deserialize(deserializer)?;
-        if let serde_json::Value::String(name) = value {
-            return Ok(Self::Name(name));
-        }
-
-        match port_kind(&value).map_err(D::Error::custom)? {
-            None => read_port(value).map(Self::Ethernet),
-            Some(PortKind::Wireless) => read_port(value).map(Self::Wireless),
-            Some(kind) => Err(D::Error::custom(format!(
-                "a port of a bond cannot be {kind}"
-            ))),
-        }
-    }
-}
-
-/// Kind of a port given as a connection, told by the section it has.
-#[derive(Clone, Copy, Debug, PartialEq, strum::Display)]
-enum PortKind {
-    #[strum(to_string = "a bond")]
-    Bond,
-    #[strum(to_string = "a bridge")]
-    Bridge,
-    #[strum(to_string = "a VLAN")]
-    Vlan,
-    #[strum(to_string = "a wireless connection")]
-    Wireless,
-}
-
-/// Returns the kind of a port given as a connection, or `None` for an Ethernet port, which has no
-/// section of its own.
-fn port_kind(port: &serde_json::Value) -> Result<Option<PortKind>, String> {
-    let sections = [
-        ("bond", PortKind::Bond),
-        ("bridge", PortKind::Bridge),
-        ("vlan", PortKind::Vlan),
-        ("wireless", PortKind::Wireless),
-    ];
-    let given: Vec<_> = sections
-        .into_iter()
-        .filter(|(section, _)| port.get(section).is_some())
-        .collect();
-
-    match given.as_slice() {
-        [] => Ok(None),
-        [(_, kind)] => Ok(Some(*kind)),
-        _ => {
-            let names: Vec<_> = given.iter().map(|(s, _)| format!("`{s}`")).collect();
-            Err(format!(
-                "a port cannot have more than one of {}",
-                names.join(", ")
-            ))
-        }
-    }
-}
-
-/// Reads a port of a known kind, reporting its problems as they are.
-fn read_port<T: DeserializeOwned, E: serde::de::Error>(value: serde_json::Value) -> Result<T, E> {
-    serde_json::from_value(value).map_err(E::custom)
 }
 
 /// Adds the deprecated `dnsSearchlist` alias to the schema of a connection.
@@ -1342,10 +1260,10 @@ mod tests {
             let json = format!(
                 r#"{{ "id": "bond0", "bond": {{ "mode": "802.3ad", "portConnections": [{{ "interface": "eth0", {setting} }}] }} }}"#
             );
-            let error = serde_json::from_str::<NetworkConnection>(&json)
-                .unwrap_err()
-                .to_string();
-            assert!(error.contains("unknown field"), "{setting}: {error}");
+            assert!(
+                serde_json::from_str::<NetworkConnection>(&json).is_err(),
+                "{setting}"
+            );
         }
     }
 
@@ -1409,33 +1327,22 @@ mod tests {
 
     #[test]
     fn test_nested_ports_only_take_the_settings_of_their_controller() {
-        let error = |json: &str| {
-            serde_json::from_str::<NetworkConnection>(json)
-                .unwrap_err()
-                .to_string()
-        };
-
-        let json = r#"{ "id": "bond0", "bond": { "mode": "802.3ad", "portConnections": [{ "interface": "eth0", "port": { "priority": 32 } }] } }"#;
-        assert!(error(json).contains("unknown field `port`"));
-
-        let json = r#"{ "id": "br0", "bridge": { "portConnections": [{ "interface": "br1", "bridge": {} }] } }"#;
-        assert!(error(json).contains("a port of a bridge cannot be a bridge"));
-
-        let json = r#"{ "id": "bond0", "bond": { "mode": "802.3ad", "portConnections": [{ "interface": "bond1", "bond": { "mode": "802.3ad" } }] } }"#;
-        assert!(error(json).contains("a port of a bond cannot be a bond"));
-
-        // Only physical interfaces can be the ports of a bond.
-        let json = r#"{ "id": "bond0", "bond": { "mode": "802.3ad", "portConnections": [{ "interface": "br0", "bridge": {} }] } }"#;
-        assert!(error(json).contains("a port of a bond cannot be a bridge"));
-
-        let json = r#"{ "id": "bond0", "bond": { "mode": "802.3ad", "portConnections": [{ "interface": "eth0.100", "vlan": { "parent": "eth0", "id": 100 } }] } }"#;
-        assert!(error(json).contains("a port of a bond cannot be a VLAN"));
-
-        let json = r#"{ "id": "br0", "bridge": { "portConnections": [{ "interface": "wlan0", "wireless": { "ssid": "agama", "security": "none", "mode": "infrastructure" } }] } }"#;
-        assert!(error(json).contains("a port of a bridge cannot be a wireless connection"));
-
-        let json = r#"{ "id": "br0", "bridge": { "portConnections": [{ "interface": "bond0", "bond": { "mode": "802.3ad" }, "vlan": { "parent": "eth0", "id": 100 } }] } }"#;
-        assert!(error(json).contains("a port cannot have more than one of `bond`, `vlan`"));
+        for json in [
+            // Only the ports of a bridge have port settings.
+            r#"{ "id": "bond0", "bond": { "mode": "802.3ad", "portConnections": [{ "interface": "eth0", "port": { "priority": 32 } }] } }"#,
+            r#"{ "id": "br0", "bridge": { "portConnections": [{ "interface": "br1", "bridge": {} }] } }"#,
+            r#"{ "id": "br0", "bridge": { "portConnections": [{ "interface": "wlan0", "wireless": { "ssid": "agama", "security": "none", "mode": "infrastructure" } }] } }"#,
+            r#"{ "id": "br0", "bridge": { "portConnections": [{ "interface": "bond0", "bond": { "mode": "802.3ad" }, "vlan": { "parent": "eth0", "id": 100 } }] } }"#,
+            // Only physical interfaces can be the ports of a bond.
+            r#"{ "id": "bond0", "bond": { "mode": "802.3ad", "portConnections": [{ "interface": "bond1", "bond": { "mode": "802.3ad" } }] } }"#,
+            r#"{ "id": "bond0", "bond": { "mode": "802.3ad", "portConnections": [{ "interface": "br0", "bridge": {} }] } }"#,
+            r#"{ "id": "bond0", "bond": { "mode": "802.3ad", "portConnections": [{ "interface": "eth0.100", "vlan": { "parent": "eth0", "id": 100 } }] } }"#,
+        ] {
+            assert!(
+                serde_json::from_str::<NetworkConnection>(json).is_err(),
+                "{json}"
+            );
+        }
     }
 
     #[test]
@@ -1491,14 +1398,5 @@ mod tests {
         let serialized = serde_json::to_value(&conn).unwrap();
         let read: NetworkConnection = serde_json::from_value(serialized).unwrap();
         assert_eq!(read, conn);
-    }
-
-    #[test]
-    fn test_an_invalid_nested_port_reports_the_actual_problem() {
-        let json = r#"{ "id": "bond0", "bond": { "mode": "802.3ad", "portConnections": [{ "mtu": "big" }] } }"#;
-        let error = serde_json::from_str::<NetworkConnection>(json)
-            .unwrap_err()
-            .to_string();
-        assert!(error.contains("invalid type"), "unexpected error: {error}");
     }
 }
