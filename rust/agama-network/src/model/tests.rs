@@ -34,7 +34,7 @@ use uuid::Uuid;
 /// Finds a connection by ID in an API collection, wherever it is nested.
 ///
 /// A nested port is returned as the connection it stands for, without its port settings (see
-/// [`find_port`]).
+/// [`bond_port`] and [`bridge_port`]).
 fn find(collection: &NetworkConnectionsCollection, id: &str) -> NetworkConnection {
     collection
         .flatten()
@@ -43,62 +43,81 @@ fn find(collection: &NetworkConnectionsCollection, id: &str) -> NetworkConnectio
         .unwrap_or_else(|| panic!("{id} is missing from the collection"))
 }
 
-/// Finds a nested port by ID in an API collection, as it is given in its controller.
-fn find_port(collection: &NetworkConnectionsCollection, id: &str) -> PortConnection {
-    fn search(conn: &impl PortLists, id: &str) -> Option<PortConnection> {
-        conn.ports()
-            .into_iter()
-            .flatten()
-            .find_map(|port| match port {
-                PortRef::Connection(port) if port.id.as_deref() == Some(id) => Some(port.clone()),
-                PortRef::Connection(port) => search(port, id),
-                PortRef::Name(_) => None,
+/// Returns the bond settings of the connection with the given ID, at the top level or nested in a
+/// bridge, to edit them.
+fn bond_mut<'a>(
+    collection: &'a mut NetworkConnectionsCollection,
+    id: &str,
+) -> &'a mut BondSettings {
+    collection
+        .0
+        .iter_mut()
+        .find_map(|conn| {
+            if conn.id == id {
+                return conn.bond.as_mut();
+            }
+            let ports = conn.bridge.as_mut()?.port_connections.as_mut()?;
+            ports.iter_mut().find_map(|port| match port {
+                BridgePort::Bond(port) if port.id.as_deref() == Some(id) => Some(&mut port.bond),
+                _ => None,
             })
-    }
+        })
+        .unwrap_or_else(|| panic!("{id} is not a bond"))
+}
+
+/// Returns the bridge settings of the connection with the given ID to edit them. A bridge cannot
+/// be nested, so it is at the top level.
+fn bridge_mut<'a>(
+    collection: &'a mut NetworkConnectionsCollection,
+    id: &str,
+) -> &'a mut BridgeSettings {
+    collection
+        .0
+        .iter_mut()
+        .find(|conn| conn.id == id)
+        .and_then(|conn| conn.bridge.as_mut())
+        .unwrap_or_else(|| panic!("{id} is not a bridge"))
+}
+
+/// Whether the given port is nested and has the given ID.
+fn is_nested_port<'a>(port: impl Into<PortRef<'a>>, id: &str) -> bool {
+    matches!(port.into(), PortRef::Connection(port) if port.id() == Some(id))
+}
+
+/// Finds a port of a bridge by ID in an API collection, as it is given in its controller.
+fn bridge_port(collection: &NetworkConnectionsCollection, id: &str) -> BridgePort {
+    collection
+        .0
+        .iter()
+        .filter_map(|conn| conn.bridge.as_ref()?.port_connections.as_ref())
+        .flatten()
+        .find(|port| is_nested_port(*port, id))
+        .cloned()
+        .unwrap_or_else(|| panic!("{id} is not nested in a bridge"))
+}
+
+/// Finds a port of a bond by ID in an API collection, as it is given in its controller.
+fn bond_port(collection: &NetworkConnectionsCollection, id: &str) -> BondPort {
+    let nested_bonds = |conn: &NetworkConnection| -> Vec<BondSettings> {
+        let ports = conn
+            .bridge
+            .iter()
+            .flat_map(|b| b.port_connections.iter().flatten());
+        ports
+            .filter_map(|port| match port {
+                BridgePort::Bond(port) => Some(port.bond.clone()),
+                _ => None,
+            })
+            .collect()
+    };
 
     collection
         .0
         .iter()
-        .find_map(|conn| search(conn, id))
-        .unwrap_or_else(|| panic!("{id} is not nested in the collection"))
-}
-
-/// Returns the connection with the given ID, at the top level or nested, to edit its ports.
-fn controller_mut<'a>(
-    collection: &'a mut NetworkConnectionsCollection,
-    id: &str,
-) -> &'a mut dyn PortLists {
-    fn search<'a>(conn: &'a mut dyn PortLists, id: &str) -> Option<&'a mut dyn PortLists> {
-        for port in conn.port_connections_mut()?.iter_mut() {
-            if let PortEntry::Connection(port) = port {
-                if port.id.as_deref() == Some(id) {
-                    return Some(port.as_mut());
-                }
-                if let Some(found) = search(port.as_mut(), id) {
-                    return Some(found);
-                }
-            }
-        }
-        None
-    }
-
-    let index = collection
-        .0
-        .iter()
-        .position(|c| c.id == id || find_nested(c, id));
-    let conn = &mut collection.0[index.unwrap_or_else(|| panic!("{id} is missing"))];
-    if conn.id == id {
-        return conn;
-    }
-    search(conn, id).unwrap()
-}
-
-/// Whether a port with the given ID is nested, at any depth, in the given connection.
-fn find_nested(conn: &impl PortLists, id: &str) -> bool {
-    conn.ports().into_iter().flatten().any(|port| match port {
-        PortRef::Connection(port) => port.id.as_deref() == Some(id) || find_nested(port, id),
-        PortRef::Name(_) => false,
-    })
+        .flat_map(|conn| conn.bond.clone().into_iter().chain(nested_bonds(conn)))
+        .flat_map(|bond| bond.port_connections.unwrap_or_default())
+        .find(|port| is_nested_port(port, id))
+        .unwrap_or_else(|| panic!("{id} is not nested in a bond"))
 }
 
 /// Returns the IDs (or names) of the ports listed by a connection.
@@ -108,7 +127,7 @@ fn port_ids(conn: &NetworkConnection) -> Vec<String> {
         .flatten()
         .map(|p| match p {
             PortRef::Name(name) => name.to_string(),
-            PortRef::Connection(conn) => conn.id.clone().unwrap_or_default(),
+            PortRef::Connection(port) => port.id().unwrap_or_default().to_string(),
         })
         .collect()
 }
@@ -120,12 +139,25 @@ fn root_ids(collection: &NetworkConnectionsCollection) -> Vec<&str> {
     ids
 }
 
-fn name(name: &str) -> PortEntry {
-    PortEntry::Name(name.to_string())
+/// A port given by name, for either kind of controller.
+trait Named {
+    fn named(name: &str) -> Self;
 }
 
-fn nested(port: PortConnection) -> PortEntry {
-    PortEntry::Connection(Box::new(port))
+impl Named for BondPort {
+    fn named(name: &str) -> Self {
+        Self::Name(name.to_string())
+    }
+}
+
+impl Named for BridgePort {
+    fn named(name: &str) -> Self {
+        Self::Name(name.to_string())
+    }
+}
+
+fn name<P: Named>(name: &str) -> P {
+    P::named(name)
 }
 
 /// Builds a state holding the stacked connections from the test fixture.

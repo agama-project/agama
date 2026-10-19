@@ -62,7 +62,6 @@
           "description": "Match settings for the network connection"
         },
         "mtu": {
-          "default": 0,
           "description": "Maximum Transmission Unit (MTU) for the connection",
           "format": "uint32",
           "minimum": 0,
@@ -217,7 +216,6 @@
           "description": "Match settings for the network connection"
         },
         "mtu": {
-          "default": 0,
           "description": "Maximum Transmission Unit (MTU) for the connection",
           "format": "uint32",
           "minimum": 0,
@@ -317,7 +315,6 @@
           "description": "Match settings for the network connection"
         },
         "mtu": {
-          "default": 0,
           "description": "Maximum Transmission Unit (MTU) for the connection",
           "format": "uint32",
           "minimum": 0,
@@ -420,7 +417,6 @@
           "description": "Match settings for the network connection"
         },
         "mtu": {
-          "default": 0,
           "description": "Maximum Transmission Unit (MTU) for the connection",
           "format": "uint32",
           "minimum": 0,
@@ -634,7 +630,6 @@
           "description": "Match settings for the network connection"
         },
         "mtu": {
-          "default": 0,
           "description": "Maximum Transmission Unit (MTU) for the connection",
           "format": "uint32",
           "minimum": 0,

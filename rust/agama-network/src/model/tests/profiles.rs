@@ -96,10 +96,7 @@ fn test_a_nested_profile_gives_the_same_result_as_ports_given_by_name() {
     // The order of the bond options is not stable, so compare them parsed.
     let normalized = |state: NetworkState| {
         let mut reported = exposed(&state);
-        let bond = controller_mut(&mut reported, "bond0")
-            .controller_settings_mut()
-            .0
-            .unwrap();
+        let bond = bond_mut(&mut reported, "bond0");
         let options = BondOptions::try_from(bond.options.take().unwrap().as_str()).unwrap();
         (reported, options)
     };

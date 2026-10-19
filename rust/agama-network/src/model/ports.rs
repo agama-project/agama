@@ -33,8 +33,8 @@ use std::{
 };
 
 use agama_utils::api::network::{
-    BridgePortSettings, DeviceType, IpConfig, Ipv4Method, Ipv6Method, NetworkConnection,
-    NetworkConnectionsCollection, PortConnection, PortLists, PortRef, Status,
+    BridgePortSettings, DeviceType, IpConfig, Ipv4Method, Ipv6Method, NestedPort,
+    NetworkConnection, NetworkConnectionsCollection, PortLists, PortRef, Status,
 };
 use uuid::Uuid;
 
@@ -97,7 +97,7 @@ impl<'a> PortResolver<'a> {
         let mut conns = self.merge_incoming(&nodes)?;
         let claims = self.resolve_claims(&nodes, &named, &mut conns)?;
         self.link(&nodes, &mut conns, &claims);
-        self.check_port_settings(&nodes, &conns)?;
+        self.warn_on_port_ip_settings(&nodes, &conns);
         self.cascade_removals(&mut conns);
         self.check_cycles(&conns)?;
 
@@ -194,20 +194,20 @@ impl<'a> PortResolver<'a> {
     /// * `parent`: index of the node of its controller.
     fn visit_port<'b>(
         &self,
-        port: &'b PortConnection,
+        port: &'b dyn NestedPort,
         parent: usize,
         nodes: &mut Vec<Node<'b>>,
         named: &mut Vec<NamedPort<'b>>,
     ) -> Result<(), NetworkStateError> {
-        let id = match port.id.as_deref().filter(|id| !id.is_empty()) {
+        let id = match port.id().filter(|id| !id.is_empty()) {
             Some(id) => id.to_string(),
-            None => self.port_id(port.interface.as_deref(), &nodes[parent].id)?,
+            None => self.port_id(port.interface(), &nodes[parent].id)?,
         };
         let conn = port.to_connection(id.clone());
 
         self.visit(
             Cow::Owned(conn),
-            port.port.as_ref(),
+            port.port_settings(),
             id,
             Some(parent),
             port.has_ignored_port_names(),
@@ -449,21 +449,12 @@ impl<'a> PortResolver<'a> {
         }
     }
 
-    /// Checks that the settings given to each port fit it.
+    /// Warns about the ports given with IP settings, which are ignored.
     ///
-    /// * A port cannot have IP settings, as its controller holds the IP configuration. A top-level
-    ///   connection that a controller lists by name is the exception: its IP settings are ignored.
-    /// * Only the ports of a bridge have `port` settings. The ports of a bond are read without
-    ///   them, so a bond port cannot bring them, but a bridge port priority given to a port of a
-    ///   bond would be silently dropped otherwise.
-    /// * Only a port nested in its controller can have `port` settings. A top-level connection is
-    ///   either not a port, or one that a controller lists by name, which is the format that
-    ///   predates the `port` settings.
-    fn check_port_settings(
-        &self,
-        nodes: &[Node],
-        conns: &[Connection],
-    ) -> Result<(), NetworkStateError> {
+    /// A nested port cannot have them, as it is read without them, but a top-level connection that
+    /// a controller lists by name can. Only the ports of a bridge can have `port` settings, which
+    /// the types of the ports of each kind of controller already enforce.
+    fn warn_on_port_ip_settings(&self, nodes: &[Node], conns: &[Connection]) {
         for (node, conn) in nodes.iter().zip(conns) {
             let Some(uuid) = conn.controller else {
                 continue;
@@ -484,24 +475,7 @@ impl<'a> PortResolver<'a> {
                     controller.id
                 );
             }
-
-            let Some(settings) = node.port else {
-                continue;
-            };
-
-            let fits = match controller.config {
-                ConnectionConfig::Bridge(_) => true,
-                _ => settings.is_empty(),
-            };
-            if !fits {
-                return Err(NetworkStateError::InvalidPortSettings(
-                    node.id.clone(),
-                    controller.id.clone(),
-                ));
-            }
         }
-
-        Ok(())
     }
 
     /// Marks the ports of the connections that are being removed, all the way down.

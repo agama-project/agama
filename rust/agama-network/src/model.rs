@@ -1604,7 +1604,8 @@ impl ConnectionCollection {
                 }
             }
 
-            roots.push((conn, self.to_api_tree(conn, &mut placed)?));
+            let root = self.to_api_tree(conn, &mut placed, &mut roots)?;
+            roots.push((conn, root));
         }
 
         // A loop of controllers is not reachable from any root. Report it anyway, starting at
@@ -1612,7 +1613,8 @@ impl ConnectionCollection {
         for conn in self.iter() {
             if !placed.contains(&conn.uuid) {
                 tracing::warn!("Connection {} belongs to a loop of controllers", conn.id);
-                roots.push((conn, self.to_api_tree(conn, &mut placed)?));
+                let root = self.to_api_tree(conn, &mut placed, &mut roots)?;
+                roots.push((conn, root));
             }
         }
 
@@ -1621,12 +1623,18 @@ impl ConnectionCollection {
 
     /// Converts a connection and, recursively, its ports to their HTTP API representation.
     ///
+    /// A port that its kind of controller does not take (e.g., a VLAN in a bond, set up outside of
+    /// Agama) cannot be nested in it. It is listed by ID instead, and pushed to `roots`, as a
+    /// connection at the top level that a controller lists by name is one of its ports.
+    ///
     /// * `conn`: connection to convert.
     /// * `placed`: connections converted so far, to not walk a loop of controllers forever.
-    fn to_api_tree(
-        &self,
+    /// * `roots`: root connections, each one with the connection it was converted from.
+    fn to_api_tree<'a>(
+        &'a self,
         conn: &Connection,
         placed: &mut HashSet<Uuid>,
+        roots: &mut Vec<(&'a Connection, NetworkConnection)>,
     ) -> Result<NetworkConnection, NetworkStateError> {
         placed.insert(conn.uuid);
 
@@ -1649,15 +1657,46 @@ impl ConnectionCollection {
             if placed.contains(&member.uuid) {
                 continue;
             }
-            // Its controller holds the IP configuration, so the port has none.
-            let mut port = PortConnection::from(self.to_api_tree(member, placed)?);
-            let settings = BridgePortSettings::from(&member.port_config);
-            port.port = (!settings.is_empty()).then_some(settings);
-            ports.push(PortEntry::Connection(Box::new(port)));
+            let port = self.to_api_tree(member, placed, roots)?;
+            ports.push((member, port));
         }
 
-        if !ports.is_empty() {
-            api_conn.set_ports(Some(ports));
+        if ports.is_empty() {
+            return Ok(api_conn);
+        }
+
+        // The ID is unique, while several connections can be bound to the same interface.
+        let mut not_nested = |member: &'a Connection, port: NetworkConnection, controller: &str| {
+            tracing::warn!(
+                "'{}' cannot be nested in '{}', so it is listed by name",
+                member.id,
+                controller
+            );
+            roots.push((member, port));
+            member.id.clone()
+        };
+
+        if let Some(bond) = api_conn.bond.as_mut() {
+            let ports = ports
+                .into_iter()
+                .map(|(member, port)| {
+                    BondPort::from_connection(port)
+                        .unwrap_or_else(|port| BondPort::Name(not_nested(member, *port, &conn.id)))
+                })
+                .collect();
+            bond.set_ports(ports);
+        } else if let Some(bridge) = api_conn.bridge.as_mut() {
+            let ports = ports
+                .into_iter()
+                .map(|(member, port)| {
+                    let settings = BridgePortSettings::from(&member.port_config);
+                    let settings = (!settings.is_empty()).then_some(settings);
+                    BridgePort::from_connection(port, settings).unwrap_or_else(|port| {
+                        BridgePort::Name(not_nested(member, *port, &conn.id))
+                    })
+                })
+                .collect();
+            bridge.set_ports(ports);
         }
         Ok(api_conn)
     }

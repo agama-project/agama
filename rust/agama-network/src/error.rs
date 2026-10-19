@@ -78,8 +78,6 @@ pub enum NetworkStateError {
     MissingConnectionId,
     #[error("A port of '{0}' has neither an ID nor an interface name")]
     MissingPortId(String),
-    #[error("The port '{0}' has settings that do not apply to a port of '{1}'")]
-    InvalidPortSettings(String, String),
     #[error("Unexpected configuration")]
     UnexpectedConfiguration,
     #[error("Invalid Vlan protocol: '{0}'")]

@@ -254,6 +254,7 @@ dependencies = [
  "cidr",
  "futures-util",
  "gettext-rs",
+ "jsonschema",
  "macaddr",
  "pin-project",
  "schemars 1.2.1",

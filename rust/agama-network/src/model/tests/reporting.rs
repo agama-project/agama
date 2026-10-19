@@ -190,7 +190,9 @@ fn test_bridge_port_settings_are_exposed_and_survive_a_round_trip() {
     let state = stacked_state();
     let exposed = exposed(&state);
 
-    let bond0 = find_port(&exposed, "bond0");
+    let BridgePort::Bond(bond0) = bridge_port(&exposed, "bond0") else {
+        panic!("bond0 is not a bond");
+    };
     assert_eq!(
         bond0.port,
         Some(BridgePortSettings {
@@ -198,8 +200,6 @@ fn test_bridge_port_settings_are_exposed_and_survive_a_round_trip() {
             path_cost: Some(100),
         })
     );
-    // A connection that is not a bridge port has nothing to report.
-    assert_eq!(find_port(&exposed, "eth0").port, None);
 
     let restored: ConnectionCollection = exposed.try_into().unwrap();
     let bond0 = restored.0.iter().find(|c| c.id == "bond0").unwrap();
@@ -239,4 +239,85 @@ fn test_ports_are_reported_without_ip_settings() {
     let eth0 = find(&exposed(&state), "eth0");
     assert!(!eth0.has_ip_settings());
     assert_eq!(eth0.ignore_auto_dns, None);
+}
+
+/// Builds a state with a VLAN as a port of a bond, which a bond does not take, as it can be set up
+/// outside of Agama.
+fn vlan_in_bond_state() -> NetworkState {
+    let mut state = NetworkState::default();
+    let mut bond0 = Connection::new("bond0".to_string(), DeviceType::Bond);
+    bond0.interface = Some("bond0".to_string());
+    let mut vlan = Connection::new("eth0.100".to_string(), DeviceType::Vlan);
+    vlan.interface = Some("eth0.100".to_string());
+    vlan.config = ConnectionConfig::Vlan(VlanConfig {
+        parent: "eth0".to_string(),
+        id: 100,
+        protocol: VlanProtocol::default(),
+        flags: None,
+    });
+    vlan.controller = Some(bond0.uuid);
+    state.add_connection(bond0).unwrap();
+    state.add_connection(vlan).unwrap();
+    state
+}
+
+/// A port that its kind of controller does not take cannot be nested in it, so it is reported at
+/// the top level and listed by name.
+#[test]
+fn test_a_port_that_cannot_be_nested_is_listed_by_name() {
+    let mut state = vlan_in_bond_state();
+    let reported = exposed(&state);
+    assert_eq!(root_ids(&reported), ["bond0", "eth0.100"]);
+    let bond = find(&reported, "bond0").bond.unwrap();
+    assert_eq!(bond.ports, Some(vec!["eth0.100".to_string()]));
+    assert_eq!(
+        bond.port_connections,
+        Some(vec![BondPort::Name("eth0.100".to_string())])
+    );
+
+    // It is a valid document, which keeps the VLAN in the bond when it is sent back.
+    let json = serde_json::to_string(&reported).unwrap();
+    let reported: NetworkConnectionsCollection = serde_json::from_str(&json).unwrap();
+    state
+        .update_state(Config {
+            connections: Some(reported),
+            ..Default::default()
+        })
+        .unwrap();
+    assert_eq!(
+        state.get_connection("eth0.100").unwrap().controller,
+        Some(state.get_connection("bond0").unwrap().uuid)
+    );
+}
+
+/// The reported configuration can be sent back as it is, so it must be valid input.
+#[test]
+fn test_the_reported_configuration_matches_the_profile_schema() {
+    let schema = agama_utils::api::network::schema::profile_schema();
+    let validator = jsonschema::validator_for(&schema).unwrap();
+
+    for state in [stacked_state(), vlan_in_bond_state()] {
+        let config = Config {
+            connections: Some(exposed(&state)),
+            ..Default::default()
+        };
+        let json = serde_json::to_value(&config).unwrap();
+        let errors: Vec<String> = validator
+            .iter_errors(&json)
+            .map(|e| e.to_string())
+            .collect();
+        assert!(errors.is_empty(), "{errors:#?}");
+    }
+
+    // Nesting the VLAN in the bond, as it was reported before, is not.
+    let nested = serde_json::json!({
+        "connections": [{
+            "id": "bond0",
+            "bond": {
+                "mode": "balance-rr",
+                "portConnections": [{ "id": "eth0.100", "vlan": { "parent": "eth0", "id": 100 } }]
+            }
+        }]
+    });
+    assert!(!validator.is_valid(&nested));
 }
