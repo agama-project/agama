@@ -232,26 +232,8 @@ export default {
   "802.1ad": [
     "802.1ad"
   ],
-  "A %1$s of %2$s will be created for %3$s if possible": [
-    "Si és possible, es crearà una %1$s de %2$s per a %3$s"
-  ],
-  "A %1$s of at least %2$s will be created for %3$s if possible": [
-    "Si és possible es crearà una %1$s de com a mínim %2$s per a %3$s"
-  ],
-  "A %1$s with a size between %2$s and %3$s will be created for %4$s if possible": [
-    "Si és possible, es crearà una %1$s amb una mida entre %2$s i %3$s per a %4$s"
-  ],
   "A file system will be used for the whole device": [
     "S'usarà un sistema de fitxers per al dispositiu sencer"
-  ],
-  "A generic minimum size of %1$s will be used for the new %2$s": [
-    "S'usarà una mida mínima genèrica de %1$s per a la %2$s nova"
-  ],
-  "A generic size of %1$s will be used for the new %2$s": [
-    "S'usarà una mida genèrica de %1$s per a la %2$s nova"
-  ],
-  "A generic size range between %1$s and %2$s will be used for the new %3$s": [
-    "S'usarà un interval de mida genèric entre %1$s i %2$s per a la %3$s nova"
   ],
   "A logical volume may be deleted": [
     "Es pot suprimir un volum lògic"
@@ -400,9 +382,6 @@ export default {
   "All values removed.": [
     "S'han suprimit tots els valors."
   ],
-  "Allow growing": [
-    "Permet-ne l'eixamplament"
-  ],
   "Allow shrinking": [
     "Permet-ne l'encongiment"
   ],
@@ -500,15 +479,6 @@ export default {
   ],
   "Back": [
     "Ves enrere"
-  ],
-  "Based on the amount of RAM in the system, a %1$s of %2$s will be planned for %3$s": [
-    "Segons la quantitat de memòria RAM del sistema, es planificarà una %1$s de %2$s per a %3$s"
-  ],
-  "Based on the amount of RAM in the system, a %1$s of at least %2$s will be planned for %3$s": [
-    "Segons la quantitat de memòria RAM del sistema, es planificarà una %1$s d'almenys %2$s per a %3$s"
-  ],
-  "Based on the amount of RAM in the system, a %1$s with a size between %2$s and %3$s will be planned for %4$s": [
-    "Segons la quantitat de memòria RAM del sistema, es planificarà una %1$s amb una mida d'entre %2$s i %3$s per a %4$s"
   ],
   "Based on the mount point": [
     "Es basa en el punt de muntatge"
@@ -758,6 +728,9 @@ export default {
   "Configuration from the network plus static addresses and gateway": [
     "Configuració des de la xarxa més adreces estàtiques i passarel·la"
   ],
+  "Configuration pre-scripts have been executed and may have modified your system. You can reboot or shut down, but any changes made by these scripts will not be undone.": [
+    "S'han executat els scripts de preconfiguració i és possible que hagin modificat el sistema. Podeu reiniciar o apagar l'equip, però els canvis fets per aquests scripts no es desaran."
+  ],
   "Configuration read from the iSCSI Boot Firmware Table (iBFT). Initiator cannot be changed.": [
     "Configuració llegida de la taula del microprogramari d'arrencada d'iSCSI (iBFT). L'iniciador no es pot canviar."
   ],
@@ -969,9 +942,6 @@ export default {
   "Default selection": [
     "Selecció per defecte"
   ],
-  "Define a custom size": [
-    "Definiu una mida personalitzada"
-  ],
   "Define a new LVM on the disk": [
     "Definiu un LVM nou al disc"
   ],
@@ -1040,9 +1010,6 @@ export default {
   ],
   "Discard changes": [
     "Descarta'n els canvis"
-  ],
-  "Discard the maximum size and continue with simplified configuration": [
-    "Descarta la mida màxima i continua la configuració simplificada"
   ],
   "Disconnect": [
     "Desconnecta"
@@ -1206,6 +1173,9 @@ export default {
   "Encryption settings": [
     "Configuració de l'encriptació"
   ],
+  "Enter": [
+    "Retorn"
+  ],
   "Enter a hostname value.": [
     "Introduïu un valor de nom d'amfitrió."
   ],
@@ -1253,6 +1223,9 @@ export default {
   ],
   "ExFAT": [
     "ExFAT"
+  ],
+  "Exit installation": [
+    "Surt de la instal·lació"
   ],
   "Expand if possible": [
     "Expandeix-la si és possible"
@@ -1695,9 +1668,6 @@ export default {
   ],
   "Left arrow reaches the %d values already added.": [
     "La fletxa esquerra arriba als %d valors ja afegits."
-  ],
-  "Let the installer propose a sensible size": [
-    "Permet que l'instal·lador proposi una mida raonable"
   ],
   "Let the installer set the size": [
     "Permeteu que l'instal·lador n'estableixi la mida"
@@ -2295,6 +2265,9 @@ export default {
   "Potential data loss affecting at least %s": [
     "Pèrdua potencial de dades que afecta com a mínim els sistemes següents: %s"
   ],
+  "Press %1$s or %2$s to type here, or %3$s to move on.": [
+    "Premeu %1$s o %2$s per escriure aquí, o bé %3$s per continuar."
+  ],
   "Priority": [
     "Prioritat"
   ],
@@ -2711,14 +2684,14 @@ export default {
   "Shrink existing partitions": [
     "Encongeix les particions existents"
   ],
+  "Shut down": [
+    "Atura"
+  ],
   "Signal strength": [
     "Força del senyal"
   ],
   "Size": [
     "Mida"
-  ],
-  "Size modes": [
-    "Modes de mida"
   ],
   "Skip to content": [
     "Omet i ves al contingut"
@@ -2776,6 +2749,9 @@ export default {
   ],
   "Something went wrong": [
     "Alguna cosa ha anat malament."
+  ],
+  "Space": [
+    "Espai"
   ],
   "Spanning Tree Protocol (STP)": [
     "Protocol d'arbre d'expansió (STP)"
@@ -2858,6 +2834,9 @@ export default {
   "TPM sealing requires the new system to be booted directly.": [
     "El segellament TPM requereix que el sistema nou s'iniciï directament."
   ],
+  "Tab": [
+    "Tabulador"
+  ],
   "Take a moment to review the installation settings below and adjust them as needed.": [
     "Dediqueu un moment a revisar els paràmetres d'instal·lació següents i ajusteu-los segons calgui."
   ],
@@ -2906,15 +2885,6 @@ export default {
   ],
   "The current configuration will be discarded to apply the default settings of the new product.": [
     "La configuració actual es descartarà per aplicar els paràmetres predeterminats del producte nou."
-  ],
-  "The current configuration will result in an attempt to create a %1$s of %2$s.": [
-    "La configuració actual tindrà com a resultat un intent de crear una %1$s de %2$s."
-  ],
-  "The current configuration will result in an attempt to create a %1$s of at least %2$s.": [
-    "La configuració actual tindrà com a resultat un intent de crear una %1$s d'almenys %2$s."
-  ],
-  "The current configuration will result in an attempt to create a %1$s with a size between %2$s and %3$s.": [
-    "La configuració actual tindrà com a resultat un intent de crear una %1$s amb una mida d'entre %2$s i %3$s."
   ],
   "The current file system will be mounted at %s": [
     "El sistema de fitxers actual es muntarà a %s"
@@ -2977,9 +2947,6 @@ export default {
   "The file %s contains a record of the installer activity so far, useful to diagnose installation issues.": [
     "El fitxer %s conté un registre de l'activitat de l'instal·lador fins ara, útil per diagnosticar problemes d'instal·lació."
   ],
-  "The final size can be bigger in order to fill the extra free space.": [
-    "La mida final pot ser més grossa per omplir l'espai lliure extra."
-  ],
   "The final step to configure the Trusted Platform Module (TPM) to automatically open encrypted devices will take place during the first boot of the new system. For that to work, the machine needs to boot directly to the new boot loader.": [
     "El pas final per configurar el Mòdul de plataforma de confiança (TPM) per obrir automàticament dispositius encriptats es farà durant la primera arrencada del nou sistema. Perquè això funcioni, la màquina ha d'arrencar directament amb el carregador d'arrencada nou."
   ],
@@ -3032,42 +2999,6 @@ export default {
   "The product was not found in the repositories so it is not possible to proceed with the installation.": [
     "No s'ha trobat el producte als repositoris, per la qual cosa no és possible continuar la instal·lació."
   ],
-  "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
-    "La mida de %1$s s'ajustarà dinàmicament segons la quantitat de RAM del sistema i de la presència d'un sistema de fitxers separat per a %2$s."
-  ],
-  "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of separate file systems for %2$s.": [
-    "La mida de %1$s s'ajustarà dinàmicament segons la quantitat de RAM del sistema i la presència de sistemes de fitxers separats per a %2$s."
-  ],
-  "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of a separate file system for %2$s.": [
-    "La mida de %1$s s'ajustarà dinàmicament segons la quantitat de RAM del sistema, l'ús de les instantànies de Btrfs i la presència d'un sistema de fitxers separat per a %2$s."
-  ],
-  "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of separate file systems for %2$s.": [
-    "La mida de %1$s s'ajustarà dinàmicament segons la quantitat de RAM del sistema, l'ús de les instantànies de Btrfs i la presència de sistemes de fitxers separats per a %2$s."
-  ],
-  "The size for %1$s will be dynamically adjusted based on the presence of a separate file system for %2$s.": [
-    "La mida de %1$s s'ajustarà dinàmicament segons la presència d'un sistema de fitxers separat per a %2$s."
-  ],
-  "The size for %1$s will be dynamically adjusted based on the presence of separate file systems for %2$s.": [
-    "La mida de %1$s s'ajustarà dinàmicament segons la presència de sistemes de fitxers separats per a %2$s."
-  ],
-  "The size for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of a separate file system for %2$s.": [
-    "La mida de %1$s s'ajustarà dinàmicament segons l'ús de les instantànies de Btrfs i la presència d'un sistema de fitxers separat per a %2$s."
-  ],
-  "The size for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of separate file systems for %2$s.": [
-    "La mida de %1$s s'ajustarà dinàmicament segons l'ús de les instantànies de Btrfs i la presència de sistemes de fitxers separats per a %2$s."
-  ],
-  "The size for %s will be dynamically adjusted based on the amount of RAM in the system and the usage of Btrfs snapshots.": [
-    "La mida de %s s'ajustarà dinàmicament segons la quantitat de RAM del sistema i l'ús de les instantànies de Btrfs."
-  ],
-  "The size for %s will be dynamically adjusted based on the usage of Btrfs snapshots.": [
-    "La mida de %s s'ajustarà dinàmicament segons l'ús de les instantànies de Btrfs."
-  ],
-  "The size is configured as a range between %s and %s, but this interface cannot handle ranges with a given max size.": [
-    "La mida està configurada com a interval entre %s i %s, però aquesta interfície no pot gestionar intervals amb una mida màxima determinada."
-  ],
-  "The size must be a number followed by a unit of the form GiB (power of 2) or GB (power of 10).": [
-    "La mida ha de ser un número seguit d'una unitat del tipus GiB (potència de 2) o GB (potència de 10)."
-  ],
   "The software selection could not be loaded.": [
     "No s'ha pogut carregar la selecció de programari."
   ],
@@ -3080,6 +3011,9 @@ export default {
   "The system is rebooting": [
     "El sistema es reinicia"
   ],
+  "The system is shutting down": [
+    "El sistema s'atura"
+  ],
   "The system will boot to a command-line interface.": [
     "El sistema arrencarà des d'una interfície de línia d'ordres."
   ],
@@ -3088,6 +3022,9 @@ export default {
   ],
   "The whole device will be used for %s": [
     "S'usarà el dispositiu sencer per a %s"
+  ],
+  "Then %1$s+%2$s+%3$s to move out.": [
+    "Aleshores %1$s+%2$s+%3$s per sortir-ne."
   ],
   "There are %s deactivated zFCP controllers.": [
     "Hi ha %s controladors de zFCP desactivats."
@@ -3512,6 +3449,9 @@ export default {
   "You can safely close this window.": [
     "Podeu tancar aquesta finestra amb seguretat."
   ],
+  "You can safely reboot or shut down the system. No changes have been made to your disks, and your current installation setup will be canceled.": [
+    "Podeu reiniciar o apagar el sistema amb total seguretat. No s'ha fet cap canvi als discos i es cancel·larà la configuració actual de la instal·lació."
+  ],
   "You may want to discard the current settings and start from scratch with a simple configuration.": [
     "És possible que vulgueu descartar la configuració actual i començar des de zero amb una configuració simple."
   ],
@@ -3526,9 +3466,6 @@ export default {
   ],
   "[CAPS LOCK] is on": [
     "[CAPS LOCK] activat"
-  ],
-  "approx. %s": [
-    "aprox. %s"
   ],
   "at least %s": [
     "almenys %s"
@@ -3547,12 +3484,6 @@ export default {
   ],
   "immutable Btrfs": [
     "Btrfs immutable"
-  ],
-  "logical volume": [
-    "volum lògic"
-  ],
-  "partition": [
-    "partició"
   ],
   "reset to defaults": [
     "restableix els valors predeterminats"

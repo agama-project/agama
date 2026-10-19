@@ -195,26 +195,8 @@ export default {
   "802.1ad": [
     "802.1ad"
   ],
-  "A %1$s of %2$s will be created for %3$s if possible": [
-    "將建立一個 %1$s (%2$s)，以用於 %3$s (如果可能)"
-  ],
-  "A %1$s of at least %2$s will be created for %3$s if possible": [
-    "將建立一個 %1$s (至少 %2$s)，以用於 %3$s (如果可能)"
-  ],
-  "A %1$s with a size between %2$s and %3$s will be created for %4$s if possible": [
-    "將建立一個 %1$s (大小介於 %2$s 至 %3$s 之間)，以用於 %4$s (如果可能)"
-  ],
   "A file system will be used for the whole device": [
     "一個檔案系統將用於整部裝置"
-  ],
-  "A generic minimum size of %1$s will be used for the new %2$s": [
-    "至少 %1$s 的通用大小將用於新 %2$s"
-  ],
-  "A generic size of %1$s will be used for the new %2$s": [
-    "%1$s 的通用大小將用於新 %2$s"
-  ],
-  "A generic size range between %1$s and %2$s will be used for the new %3$s": [
-    "介於 %1$s 至 %2$s 的通用大小將用於新 %3$s"
   ],
   "A logical volume may be deleted": [
     "可能會刪除一個邏輯磁碟區"
@@ -354,9 +336,6 @@ export default {
   "All the available zFCP controllers are already activated.": [
     "所有可用 zFCP 控制器均已啟用。"
   ],
-  "Allow growing": [
-    "允許增長"
-  ],
   "Allow shrinking": [
     "允許縮小"
   ],
@@ -452,15 +431,6 @@ export default {
   ],
   "Back": [
     "後退"
-  ],
-  "Based on the amount of RAM in the system, a %1$s of %2$s will be planned for %3$s": [
-    "將根據系統中的 RAM 容量規劃一個 %1$s (%2$s)，以用於 %3$s"
-  ],
-  "Based on the amount of RAM in the system, a %1$s of at least %2$s will be planned for %3$s": [
-    "將根據系統中的 RAM 容量規劃一個 %1$s (至少 %2$s)，以用於 %3$s"
-  ],
-  "Based on the amount of RAM in the system, a %1$s with a size between %2$s and %3$s will be planned for %4$s": [
-    "將根據系統中的 RAM 容量規劃一個 %1$s (大小介於 %2$s 至 %3$s 之間)，以用於 %4$s"
   ],
   "Based on the mount point": [
     "根據掛接點"
@@ -699,6 +669,9 @@ export default {
   "Configuration from the network plus static addresses and gateway": [
     "從網路取得組態，並加上靜態位址和閘道"
   ],
+  "Configuration pre-scripts have been executed and may have modified your system. You can reboot or shut down, but any changes made by these scripts will not be undone.": [
+    ""
+  ],
   "Configuration read from the iSCSI Boot Firmware Table (iBFT). Initiator cannot be changed.": [
     "已從 iSCSI 開機韌體表 (iBFT) 讀取組態。無法變更發起者。"
   ],
@@ -906,9 +879,6 @@ export default {
   "Default selection": [
     "預設選擇"
   ],
-  "Define a custom size": [
-    "指定自訂大小"
-  ],
   "Define a new LVM on the disk": [
     "在該磁碟上定義新 LVM"
   ],
@@ -977,9 +947,6 @@ export default {
   ],
   "Discard changes": [
     "丟棄變更"
-  ],
-  "Discard the maximum size and continue with simplified configuration": [
-    "請忽略大小上限，繼續使用簡化組態"
   ],
   "Disconnect": [
     "中斷連接"
@@ -1133,6 +1100,9 @@ export default {
   ],
   "Encryption settings": [
     "加密設定"
+  ],
+  "Enter": [
+    ""
   ],
   "Enter a hostname value.": [
     "請輸入主機名稱。"
@@ -1613,9 +1583,6 @@ export default {
   ],
   "Left arrow reaches the %d values already added.": [
     ""
-  ],
-  "Let the installer propose a sensible size": [
-    "讓安裝程式建議適當的大小"
   ],
   "Let the installer set the size": [
     "由安裝程式設定大小"
@@ -2202,6 +2169,9 @@ export default {
   "Potential data loss affecting at least %s": [
     "至少 %s 存在資料遺失風險"
   ],
+  "Press %1$s or %2$s to type here, or %3$s to move on.": [
+    ""
+  ],
   "Priority": [
     "優先程度"
   ],
@@ -2601,14 +2571,14 @@ export default {
   "Shrink existing partitions": [
     "縮小現有分割區"
   ],
+  "Shut down": [
+    ""
+  ],
   "Signal strength": [
     "訊號強度"
   ],
   "Size": [
     "大小"
-  ],
-  "Size modes": [
-    "大小模式"
   ],
   "Skip to content": [
     "跳到內容"
@@ -2663,6 +2633,9 @@ export default {
   ],
   "Something went wrong": [
     "出了點問題"
+  ],
+  "Space": [
+    ""
   ],
   "Spanning Tree Protocol (STP)": [
     "生成樹通訊協定 (STP)"
@@ -2742,6 +2715,9 @@ export default {
   "TPM sealing requires the new system to be booted directly.": [
     "TPM 封存需要直接將新系統開機才能進行。"
   ],
+  "Tab": [
+    ""
+  ],
   "Take a moment to review the installation settings below and adjust them as needed.": [
     "請花點時間檢查下方安裝設定，並根據需要予以調整。"
   ],
@@ -2789,15 +2765,6 @@ export default {
   ],
   "The current configuration will be discarded to apply the default settings of the new product.": [
     "將丟棄目前組態，以套用新產品的預設設定。"
-  ],
-  "The current configuration will result in an attempt to create a %1$s of %2$s.": [
-    "目前的組態將會導致嘗試建立一個 %1$s (%2$s)。"
-  ],
-  "The current configuration will result in an attempt to create a %1$s of at least %2$s.": [
-    "目前的組態將會導致嘗試建立一個 %1$s (至少 %2$s)。"
-  ],
-  "The current configuration will result in an attempt to create a %1$s with a size between %2$s and %3$s.": [
-    "目前的組態將會導致嘗試建立一個 %1$s (大小介於 %2$s 至 %3$s 之間)。"
   ],
   "The current file system will be mounted at %s": [
     "目前的檔案系統將掛接到 %s 上"
@@ -2859,9 +2826,6 @@ export default {
   "The file %s contains a record of the installer activity so far, useful to diagnose installation issues.": [
     "檔案 %s 記錄了安裝程式截至目前的全部活動，可用於診斷安裝問題。"
   ],
-  "The final size can be bigger in order to fill the extra free space.": [
-    "最終大小可增大，以便使用額外的可用空間。"
-  ],
   "The final step to configure the Trusted Platform Module (TPM) to automatically open encrypted devices will take place during the first boot of the new system. For that to work, the machine needs to boot directly to the new boot loader.": [
     "設定可信平台模組 (TPM) 以自動開啟加密裝置的最後步驟，將會在新系統首次開機時進行。為了讓此程序順利執行，機器必須直接從新的開機載入程式開機。"
   ],
@@ -2907,42 +2871,6 @@ export default {
   "The product was not found in the repositories so it is not possible to proceed with the installation.": [
     "在儲存庫中未找到該產品，無法繼續安裝。"
   ],
-  "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
-    "%1$s 的大小將會動態調整，考量因素包括系統中的 RAM 容量以及 %2$s 是否存在單獨的檔案系統。"
-  ],
-  "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of separate file systems for %2$s.": [
-    "%1$s 的大小將會動態調整，考量因素包括系統中的 RAM 容量以及 %2$s 是否存在單獨的檔案系統。"
-  ],
-  "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of a separate file system for %2$s.": [
-    "%1$s 的大小將會動態調整，考量因素包括系統中的 RAM 容量、Btrfs 快照的使用情況，以及 %2$s 是否存在單獨的檔案系統。"
-  ],
-  "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of separate file systems for %2$s.": [
-    "%1$s 的大小將會動態調整，考量因素包括系統中的 RAM 容量、Btrfs 快照的使用情況，以及 %2$s 是否存在單獨的檔案系統。"
-  ],
-  "The size for %1$s will be dynamically adjusted based on the presence of a separate file system for %2$s.": [
-    "%1$s 的大小將會根據 %2$s 是否存在單獨的檔案系統動態調整。"
-  ],
-  "The size for %1$s will be dynamically adjusted based on the presence of separate file systems for %2$s.": [
-    "%1$s 的大小將會根據 %2$s 是否存在單獨的檔案系統動態調整。"
-  ],
-  "The size for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of a separate file system for %2$s.": [
-    "%1$s 的大小將會動態調整，考量因素包括 Btrfs 快照的使用情況以及 %2$s 是否存在單獨的檔案系統。"
-  ],
-  "The size for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of separate file systems for %2$s.": [
-    "%1$s 的大小將會動態調整，考量因素包括 Btrfs 快照的使用情況以及 %2$s 是否存在單獨的檔案系統。"
-  ],
-  "The size for %s will be dynamically adjusted based on the amount of RAM in the system and the usage of Btrfs snapshots.": [
-    "%s 的大小將會動態調整，考量因素包括系統中的 RAM 容量以及 Btrfs 快照的使用情況。"
-  ],
-  "The size for %s will be dynamically adjusted based on the usage of Btrfs snapshots.": [
-    "%s 的大小將會根據 Btrfs 快照的使用情況動態調整。"
-  ],
-  "The size is configured as a range between %s and %s, but this interface cannot handle ranges with a given max size.": [
-    "為大小設定了介於 %s 至 %s 的範圍，但此介面無法處理給定大小上限的範圍。"
-  ],
-  "The size must be a number followed by a unit of the form GiB (power of 2) or GB (power of 10).": [
-    "大小必須為數字，且後跟 GiB (2 的次方) 或 GB (10 的次方) 形式的單位。"
-  ],
   "The software selection could not be loaded.": [
     "無法載入軟體選擇。"
   ],
@@ -2963,6 +2891,9 @@ export default {
   ],
   "The whole device will be used for %s": [
     "整部裝置將用於 %s"
+  ],
+  "Then %1$s+%2$s+%3$s to move out.": [
+    ""
   ],
   "There are %s deactivated zFCP controllers.": [
     "存在 %s 個停用的 zFCP 控制器。"
@@ -3378,6 +3309,9 @@ export default {
   "You can safely close this window.": [
     "您可安全關閉此視窗。"
   ],
+  "You can safely reboot or shut down the system. No changes have been made to your disks, and your current installation setup will be canceled.": [
+    ""
+  ],
   "You may want to discard the current settings and start from scratch with a simple configuration.": [
     "您可能需要捨棄目前設定，並採用簡單的組態從頭開始。"
   ],
@@ -3392,9 +3326,6 @@ export default {
   ],
   "[CAPS LOCK] is on": [
     "已開啟 [大寫鎖定]"
-  ],
-  "approx. %s": [
-    "大約為 %s"
   ],
   "at least %s": [
     "至少 %s"
@@ -3413,12 +3344,6 @@ export default {
   ],
   "immutable Btrfs": [
     "不可變 Btrfs"
-  ],
-  "logical volume": [
-    "邏輯磁碟區"
-  ],
-  "partition": [
-    "分割區"
   ],
   "reset to defaults": [
     "重設為預設值"
