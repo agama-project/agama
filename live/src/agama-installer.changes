@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Oct 19 11:38:02 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Do not try to enable the spice-vdagentd service because it is
+  already activated via socket (gh#agama-project/agama#4104).
+
+-------------------------------------------------------------------
 Thu Sep 10 18:49:38 UTC 2026 - Lubos Kocman <lubos.kocman@suse.com>
 
 - Use license.txt for English in license.opensuse
