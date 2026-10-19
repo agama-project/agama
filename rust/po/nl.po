@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-22 12:12+0000\n"
+"POT-Creation-Date: 2026-10-01 14:04+0000\n"
 "PO-Revision-Date: 2026-05-31 13:12+0000\n"
 "Last-Translator: Feike Donia <feikedonia@proton.me>\n"
 "Language-Team: Dutch <https://l10n.opensuse.org/projects/agama/agama-rust-"
@@ -271,8 +271,9 @@ msgstr ""
 #. TRANSLATORS: CLI help for: agama config validate (details)
 #: agama-cli/src/config.rs:115
 msgid ""
-"Schema is available at /usr/share/agama/schema/profile.schema.json Note: "
-"validation is always done as part of all other \"agama config\" commands."
+"Schema is available at /usr/share/agama/openapi/nightly/schemas/"
+"config.schema.json Note: validation is always done as part of all other "
+"\"agama config\" commands."
 msgstr ""
 
 #. TRANSLATORS: CLI help for: agama config validate <URL_OR_PATH>
@@ -712,120 +713,120 @@ msgstr "Kon het script %s niet ophalen. Wilt u het opnieuw proberen?"
 msgid "Failed to write the file %s. Do you want to try again?"
 msgstr "Kon het bestand %s niet bewerken. Wilt u het opnieuw proberen?"
 
-#: agama-manager/src/actions.rs:78
+#: agama-manager/src/actions.rs:79
 msgid "Prepare the system"
 msgstr "Het systeem voorbereiden"
 
-#: agama-manager/src/actions.rs:79
+#: agama-manager/src/actions.rs:80
 msgid "Install software"
 msgstr "Software installeren"
 
-#: agama-manager/src/actions.rs:80
+#: agama-manager/src/actions.rs:81
 msgid "Configure the system"
 msgstr "Het systeem configureren"
 
-#: agama-manager/src/actions.rs:94
+#: agama-manager/src/actions.rs:95
 #, fuzzy
 msgid "Preparing storage"
 msgstr "Het opslagvoorstel voorbereiden"
 
-#: agama-manager/src/actions.rs:112
+#: agama-manager/src/actions.rs:113
 #, fuzzy
 msgid "Running post-partitioning scripts"
 msgstr "Gebruikerspre-installatiescripts uitvoeren"
 
-#: agama-manager/src/actions.rs:137
+#: agama-manager/src/actions.rs:138
 #, fuzzy
 msgid "Installing software"
 msgstr "Software installeren"
 
-#: agama-manager/src/actions.rs:174
+#: agama-manager/src/actions.rs:176
 #, fuzzy
 msgid "Configuring the system"
 msgstr "Het systeem configureren"
 
-#: agama-manager/src/actions.rs:242
+#: agama-manager/src/actions.rs:248
 #, fuzzy
 msgid "Finishing installation"
 msgstr "Klaar om de installatie te starten…"
 
-#: agama-manager/src/actions.rs:271
+#: agama-manager/src/actions.rs:277
 #, fuzzy
 msgid "Finalize installation"
 msgstr "Klaar om de installatie te starten…"
 
-#: agama-manager/src/actions.rs:346
+#: agama-manager/src/actions.rs:352
 #, fuzzy
 msgid "Storing questions settings"
 msgstr "De antwoorden op de gestelde vragen uitwerken"
 
-#: agama-manager/src/actions.rs:357
+#: agama-manager/src/actions.rs:363
 #, fuzzy
 msgid "Importing user files and scripts"
 msgstr "Gebruikersbestanden importeren"
 
-#: agama-manager/src/actions.rs:371
+#: agama-manager/src/actions.rs:377
 msgid "Running user pre-installation scripts"
 msgstr "Gebruikerspre-installatiescripts uitvoeren"
 
-#: agama-manager/src/actions.rs:386
+#: agama-manager/src/actions.rs:392
 msgid "Storing security settings"
 msgstr "Beveiligingsinstellingen opslaan"
 
-#: agama-manager/src/actions.rs:396
+#: agama-manager/src/actions.rs:402
 msgid "Configuring remote access"
 msgstr "Toegang-op-afstand configureren"
 
-#: agama-manager/src/actions.rs:406
+#: agama-manager/src/actions.rs:412
 msgid "Setting up the hostname"
 msgstr "De hostnaam instellen"
 
-#: agama-manager/src/actions.rs:416
+#: agama-manager/src/actions.rs:422
 msgid "Setting up the network proxy"
 msgstr "De netwerk-proxy instellen"
 
-#: agama-manager/src/actions.rs:427
+#: agama-manager/src/actions.rs:433
 msgid "Setting up NTP"
 msgstr "NTP instellen"
 
-#: agama-manager/src/actions.rs:437
+#: agama-manager/src/actions.rs:443
 msgid "Storing localization settings"
 msgstr "Lokaliseringsinstellingen opslaan"
 
-#: agama-manager/src/actions.rs:447
+#: agama-manager/src/actions.rs:453
 msgid "Storing users settings"
 msgstr "Gebruikersinstellingen opslaan"
 
-#: agama-manager/src/actions.rs:557
+#: agama-manager/src/actions.rs:563
 msgid "Configuring iSCSI devices"
 msgstr "iSCSI-apparaten configureren"
 
-#: agama-manager/src/actions.rs:582
+#: agama-manager/src/actions.rs:588
 #, fuzzy
 msgid "Configuring zFCP devices"
 msgstr "iSCSI-apparaten configureren"
 
-#: agama-manager/src/actions.rs:608
+#: agama-manager/src/actions.rs:614
 msgid "Configuring DASD devices"
 msgstr "DASD-apparaten configureren"
 
-#: agama-manager/src/actions.rs:634
+#: agama-manager/src/actions.rs:640
 msgid "Setting up the network"
 msgstr "Het netwerk instellen"
 
-#: agama-manager/src/actions.rs:664
+#: agama-manager/src/actions.rs:670
 msgid "Preparing the storage proposal"
 msgstr "Het opslagvoorstel voorbereiden"
 
-#: agama-manager/src/actions.rs:694
+#: agama-manager/src/actions.rs:700
 msgid "Storing bootloader settings"
 msgstr "Bootloader-instellingen opslaan"
 
-#: agama-manager/src/actions.rs:728
+#: agama-manager/src/actions.rs:734
 msgid "Preparing the software proposal"
 msgstr "Het softwarevoorstel voorbereiden"
 
-#: agama-manager/src/actions.rs:758
+#: agama-manager/src/actions.rs:764
 #, fuzzy
 msgid "Configuring SELinux"
 msgstr "Configureren…"
@@ -838,16 +839,16 @@ msgstr "Netwerkconfiguratie opslaan"
 msgid "Syncing the network service state"
 msgstr "Status van de netwerkdienst synchroniseren"
 
-#: agama-security/src/service.rs:225
+#: agama-security/src/service.rs:227
 msgid "Reject"
 msgstr "Afwijzen"
 
-#: agama-security/src/service.rs:225
+#: agama-security/src/service.rs:227
 #: agama-software/src/callbacks/security.rs:111
 msgid "Trust"
 msgstr "Vertrouwen"
 
-#: agama-security/src/service.rs:226
+#: agama-security/src/service.rs:228
 msgid ""
 "Trying to import a self-signed certificate. Do you want to trust it and "
 "register the product?"
@@ -1011,11 +1012,11 @@ msgstr ""
 msgid "Details:"
 msgstr "Details:"
 
-#: agama-utils/src/api/question.rs:342 agama-utils/src/question/start.rs:48
+#: agama-utils/src/api/question.rs:346 agama-utils/src/question/start.rs:48
 msgid "No"
 msgstr "Nee"
 
-#: agama-utils/src/api/question.rs:342 agama-utils/src/question/start.rs:48
+#: agama-utils/src/api/question.rs:346 agama-utils/src/question/start.rs:48
 msgid "Yes"
 msgstr "Ja"
 
