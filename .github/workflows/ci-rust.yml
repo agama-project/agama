@@ -136,7 +136,9 @@ jobs:
         findutils
         gcc-c++
         git
+        libboost_headers-devel
         libopenssl-3-devel
+        libstorage-ng-devel
         libsuseconnect
         libzypp-devel
         make
@@ -202,7 +204,9 @@ jobs:
         glibc-locale
         golang-github-google-jsonnet
         jq
+        libboost_headers-devel
         libopenssl-3-devel
+        libstorage-ng-devel
         libsuseconnect
         libzypp-devel
         make
@@ -319,7 +323,9 @@ jobs:
         dbus-1-daemon
         gcc-c++
         git
+        libboost_headers-devel
         libopenssl-3-devel
+        libstorage-ng-devel
         libsuseconnect
         libzypp-devel
         make

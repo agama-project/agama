@@ -32,6 +32,10 @@ BuildRequires: gcc
 BuildRequires: gcc-c++
 BuildRequires: make
 BuildRequires: libzypp-devel
+# libstorage-ng-agama dependencies
+BuildRequires: libstorage-ng-devel >= 4.5.362
+BuildRequires: libboost_headers-devel
+BuildRequires: pkgconfig(libxml-2.0)
 %ifnarch %ix86 s390 armv6 armv7
 BuildRequires: libsuseconnect
 %endif
