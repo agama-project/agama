@@ -134,7 +134,7 @@ export default function DriveRow({ name, subject }: DriveRowProps): React.ReactN
       )
     : ([] as TranslatedString[]);
 
-  const space = driveUtils.contentActionsSummary(entry as ConfigModel.Drive);
+  const space = driveUtils.contentActionsSummary(entry as ConfigModel.Drive, device);
 
   return (
     <EntryRow
