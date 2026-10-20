@@ -170,7 +170,7 @@ boot:
   default_efi_bootloader: "systemd-boot"
 
 storage:
-  space_policy: delete
+  space_policy: resize
   volumes:
     - "/"
     - "swap"
