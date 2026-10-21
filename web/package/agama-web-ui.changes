@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Wed Oct 21 14:54:08 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Do not crash when unexpected square brackets are present in the
+  translation. Fixes crash in the first user configuration dialog
+  when using the French, Catalan or Brazilian Portuguese languages
+  (bsc#1286560)
+
+-------------------------------------------------------------------
 Tue Sep 22 14:54:01 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Block the registration page while software changes are in progress
