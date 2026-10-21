@@ -400,6 +400,15 @@ describe Agama::Storage::Manager do
       expect(Yast2::FsSnapshot).to receive(:configure_snapper)
       storage.finish
     end
+
+    it "passes questions_client to the Finisher" do
+      finisher = instance_double(Agama::Storage::Finisher, run: true)
+      expect(Agama::Storage::Finisher).to receive(:new)
+        .with(logger, anything, questions_client: questions_client)
+        .and_return(finisher)
+      expect(finisher).to receive(:run)
+      storage.finish
+    end
   end
 
   describe "#actions" do

@@ -27,6 +27,7 @@ describe Bootloader::FinishClient do
       allow(@system_bl).to receive(:write)
 
       allow(Yast::Execute).to receive(:on_target)
+      allow(Yast::Execute).to receive(:on_target!)
     end
 
     it "sets on non-s390 systems reboot message" do
@@ -46,7 +47,7 @@ describe Bootloader::FinishClient do
     it "calls chreipl on s390 systems and sets the reboot message" do
       allow(Yast::Arch).to receive(:architecture).and_return("s390_64")
 
-      expect(Yast::Execute).to receive(:on_target).with("chreipl", "node", "/boot/zipl")
+      expect(Yast::Execute).to receive(:on_target!).with("chreipl", "node", "/boot/zipl")
 
       Yast.import "Misc"
 
@@ -56,16 +57,25 @@ describe Bootloader::FinishClient do
     end
 
     it "does not call chreipl on non-s390 systems" do
-      expect(Yast::Execute).to_not receive(:on_target).with("chreipl", anything, anything)
+      expect(Yast::Execute).to_not receive(:on_target!).with("chreipl", anything, anything)
 
       subject.write
     end
 
     it "runs dracut" do
-      expect(Yast::Execute).to receive(:on_target).with("/usr/bin/dracut", "--force",
+      expect(Yast::Execute).to receive(:on_target!).with("/usr/bin/dracut", "--force",
         "--regenerate-all")
 
       subject.write
+    end
+
+    it "raises an error if dracut fails" do
+      allow(Yast::Execute).to receive(:on_target!).with("/usr/bin/dracut", any_args)
+        .and_raise(Cheetah::ExecutionFailed.new([], nil, nil, "dracut error"))
+
+      expect do
+        subject.write
+      end.to raise_error(RuntimeError, /Regenerating initrd with dracut failed/)
     end
 
     it "merges system configuration with selected one in installation and set it as current" do
@@ -106,18 +116,10 @@ describe Bootloader::FinishClient do
       before do
         allow(@system_bl).to receive(:merge)
           .and_raise(Bootloader::BrokenConfiguration, "Broken message")
-
-        allow(Yast::Report).to receive(:LongMessage)
       end
 
-      it "does not raise an exception" do
-        expect { subject.write }.to_not raise_error
-      end
-
-      it "displays the error to the user" do
-        expect(Yast::Report).to receive(:LongMessage)
-          .with(/Please use YaST2 bootloader to fix it.*Broken message/)
-        subject.write
+      it "raises the exception" do
+        expect { subject.write }.to raise_error(Bootloader::BrokenConfiguration, /Broken message/)
       end
     end
   end

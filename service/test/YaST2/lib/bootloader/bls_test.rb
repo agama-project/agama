@@ -22,6 +22,16 @@ describe Bootloader::Bls do
         .with("/usr/bin/sdbootutil", "install")
       subject.install_bootloader
     end
+
+    it "raises a descriptive error if sdbootutil install fails" do
+      allow(Yast::Execute).to receive(:on_target!)
+        .with("/usr/bin/sdbootutil", "install")
+        .and_raise(Cheetah::ExecutionFailed.new([], nil, nil, "install error"))
+
+      expect do
+        subject.install_bootloader
+      end.to raise_error(RuntimeError, /Cannot install bootloader/)
+    end
   end
 
   describe "#update_bootloader" do
@@ -48,6 +58,16 @@ describe Bootloader::Bls do
         .and_return(10)
       expect(subject.menu_timeout).to eq 10
     end
+
+    it "raises a descriptive error if sdbootutil get-timeout fails" do
+      allow(Yast::Execute).to receive(:on_target!)
+        .with("/usr/bin/sdbootutil", "get-timeout", stdout: :capture)
+        .and_raise(Cheetah::ExecutionFailed.new([], nil, nil, "timeout read error"))
+
+      expect do
+        subject.menu_timeout
+      end.to raise_error(Bootloader::SdbootutilError, /Cannot read boot menu timeout/)
+    end
   end
 
   describe "#write_default_menu" do
@@ -64,6 +84,16 @@ describe Bootloader::Bls do
         .with("/usr/bin/sdbootutil", "get-default", stdout: :capture)
         .and_return("openSUSE")
       expect(subject.default_menu).to eq "openSUSE"
+    end
+
+    it "raises a descriptive error if sdbootutil get-default fails" do
+      allow(Yast::Execute).to receive(:on_target!)
+        .with("/usr/bin/sdbootutil", "get-default", stdout: :capture)
+        .and_raise(Cheetah::ExecutionFailed.new([], nil, nil, "default read error"))
+
+      expect do
+        subject.default_menu
+      end.to raise_error(Bootloader::SdbootutilError, /Cannot read default menu/)
     end
   end
 

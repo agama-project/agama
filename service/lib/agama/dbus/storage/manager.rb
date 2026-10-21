@@ -206,9 +206,12 @@ module Agama
         end
 
         # Implementation for the API method #Finish.
+        #
+        # @raise [RuntimeError] If there is an unexpected error or the user decides to abort.
         def finish
           start_progress(1, _("Finishing installation"))
           manager.finish
+        ensure
           finish_progress
         end
 
