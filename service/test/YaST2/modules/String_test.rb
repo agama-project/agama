@@ -26,7 +26,7 @@ Yast.import "String"
 describe Yast::String do
   before do
     # ensure proper default locale
-    ENV["LANG"] = "C"
+    ENV["LC_ALL"] = "C"
   end
 
   describe ".Quote" do
@@ -207,8 +207,8 @@ describe Yast::String do
     end
 
     it "raises exception if target include source" do
-      expect { subject.Replace("abc", "ab", "abcde") }.to raise_exception
-      expect { subject.Replace("abc", "ab", "ab") }.to raise_exception
+      expect { subject.Replace("abc", "ab", "abcde") }.to raise_error(RuntimeError)
+      expect { subject.Replace("abc", "ab", "ab") }.to raise_error(RuntimeError)
     end
   end
 
