@@ -27,10 +27,11 @@ via the kernel command-line:
 3. `set_config(config)`: Injects an Agama profile, validating against the JSON schema. Replaces current configuration state.
 4. `get_proposal()`: Commands Agama to calculate the final installation plan. Returns `proposal_computing` if background solvers are running, plan diffs on completion, or issues if the configuration is impossible.
 5. `commit_install()`: Locks state machine and triggers disk format and software installation. Forbidden in configuration mode.
-6. `get_progress()`: Returns structured completion percentage, current stage, background tasks, and pending questions (`hasPendingQuestions`, `pendingQuestions`).
-7. `get_logs(log_type?, lines?)`: Retrieves scoped system logs directly from `journalctl` (defaulting to the last 100 lines, max 1000). Supported scopes: `installer` (default, queries `agama*` units), `system` (system-wide journal), `zypp` (package manager entries), or any specific systemd unit name.
-8. `get_questions()`: Retrieves interactive questions raised by installer services awaiting an answer (e.g. disk decryption, GPG key import, package retry).
-9. `answer_question(id, action, value?)`: Submits an answer to a pending question by ID to unblock installer progress.
+6. `get_progress()`: Returns structured installer state: stage, background tasks, and pending questions (`hasPendingQuestions`, `pendingQuestions`).
+7. `wait_progress(timeout_seconds?)`: Event-driven progress monitor. Suspends until background tasks finish, an interactive question requires an answer, installation completes or fails, or the timeout elapses (default 60s). Avoids repeated polling overhead.
+8. `get_logs(log_type?, lines?)`: Retrieves scoped system logs directly from `journalctl` (defaulting to the last 100 lines, max 1000). Supported scopes: `installer` (default, queries `agama*` units), `system` (system-wide journal), `zypp` (package manager entries), or any specific systemd unit name.
+9. `get_questions()`: Retrieves interactive questions raised by installer services awaiting an answer (e.g. disk decryption, GPG key import, package retry).
+10. `answer_question(id, action, value?)`: Submits an answer to a pending question by ID to unblock installer progress.
 
 ## Resources Provided
 

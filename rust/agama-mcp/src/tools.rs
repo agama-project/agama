@@ -22,7 +22,8 @@
 
 use crate::error::{SchemaError, ValidationError};
 use agama_lib::profile::{ProfileValidator, ValidationOutcome};
-use agama_utils::api::status::Task;
+use agama_utils::api::question::Question;
+use agama_utils::api::status::{Stage, Status, Task};
 use agama_utils::api::{IssueWithScope, Proposal};
 use rmcp::model::{CallToolResult, ContentBlock};
 use schemars::JsonSchema;
@@ -79,6 +80,58 @@ pub struct AnswerQuestionArgs {
     pub action: String,
     /// Optional value if the question expects input (e.g. password for disk decryption).
     pub value: Option<String>,
+}
+
+/// Arguments for the `wait_progress` tool.
+#[derive(Debug, Clone, Default, Deserialize, JsonSchema)]
+pub struct WaitProgressArgs {
+    /// Maximum seconds to wait for an installation event or state change before returning progress (default 60s, max 300s).
+    pub timeout_seconds: Option<u64>,
+}
+
+/// Formats a unified installation progress report with state-aware guidance for the AI.
+pub(crate) fn format_progress_report(
+    status: &Status,
+    pending_questions: Vec<Question>,
+    detail_message: Option<&str>,
+) -> Value {
+    let is_finished = status.stage == Stage::Finished;
+    let is_failed = status.stage == Stage::Failed;
+    let has_questions = !pending_questions.is_empty();
+
+    let (state_str, default_msg) = if is_finished {
+        ("finished", "Installation finished. System will reboot.")
+    } else if is_failed {
+        ("failed", "Installation failed. Check 'get_logs'.")
+    } else if has_questions {
+        ("question_pending", "Question pending. Call 'answer_question'.")
+    } else {
+        match status.stage {
+            Stage::Configuring if !status.tasks.is_empty() => (
+                "proposal_computing",
+                "Proposal calculation in progress. Call 'wait_progress' to wait.",
+            ),
+            Stage::Configuring => (
+                "configuring",
+                "Ready for review. Inspect proposal with 'get_proposal' or start installation with 'commit_install'.",
+            ),
+            _ => ("installing", "Installing. Call 'wait_progress' to continue monitoring."),
+        }
+    };
+
+    let msg = detail_message.unwrap_or(default_msg);
+
+    json!({
+        "status": state_str,
+        "stage": status.stage,
+        "isFinished": is_finished,
+        "isFailed": is_failed,
+        "tasks": status.tasks,
+        "progresses": status.progresses,
+        "hasPendingQuestions": has_questions,
+        "pendingQuestions": pending_questions,
+        "message": msg,
+    })
 }
 
 /// Represents the possible outcomes of computing the installation proposal.

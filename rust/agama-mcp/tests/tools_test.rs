@@ -23,7 +23,9 @@ use agama_mcp::mode::McpMode;
 use agama_mcp::server::{McpBackend, McpServer};
 use agama_mcp::tools::{
     AnswerQuestionArgs, GetConfigSchemaArgs, GetLogsArgs, GetSystemArgs, SetConfigArgs,
+    WaitProgressArgs,
 };
+use agama_utils::api::event::Event;
 use agama_utils::api::question::{
     Action as QuestionAction, Answer as QuestionAnswer, Question, QuestionField, QuestionSpec,
 };
@@ -36,15 +38,17 @@ use rmcp::model::ErrorCode;
 use serde_json::json;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, Mutex};
+use std::time::Duration;
 
 struct MockBackend {
     pub system_info: SystemInfo,
-    pub proposal: Option<Proposal>,
+    pub proposal: Mutex<Option<Proposal>>,
     pub issues: Vec<IssueWithScope>,
-    pub status: Status,
+    pub status: Mutex<Status>,
     pub install_committed: AtomicBool,
     pub questions: Mutex<Vec<Question>>,
     pub answered_questions: Mutex<Vec<(u32, String, Option<String>)>>,
+    pub events: Option<tokio::sync::broadcast::Sender<Event>>,
 }
 
 fn sample_system_info() -> SystemInfo {
@@ -98,12 +102,13 @@ impl Default for MockBackend {
     fn default() -> Self {
         Self {
             system_info: sample_system_info(),
-            proposal: Some(sample_proposal()),
+            proposal: Mutex::new(Some(sample_proposal())),
             issues: Vec::new(),
-            status: Default::default(),
+            status: Mutex::new(Default::default()),
             install_committed: AtomicBool::new(false),
             questions: Mutex::new(vec![sample_question()]),
             answered_questions: Mutex::new(Vec::new()),
+            events: None,
         }
     }
 }
@@ -119,7 +124,7 @@ impl McpBackend for MockBackend {
     }
 
     async fn get_proposal(&self) -> Result<Option<Proposal>, BackendError> {
-        Ok(self.proposal.clone())
+        Ok(self.proposal.lock().unwrap().clone())
     }
 
     async fn get_issues(&self) -> Result<Vec<IssueWithScope>, BackendError> {
@@ -132,7 +137,7 @@ impl McpBackend for MockBackend {
     }
 
     async fn get_progress(&self) -> Result<Status, BackendError> {
-        Ok(self.status.clone())
+        Ok(self.status.lock().unwrap().clone())
     }
 
     async fn get_questions(&self) -> Result<Vec<Question>, BackendError> {
@@ -157,6 +162,10 @@ impl McpBackend for MockBackend {
             .unwrap()
             .push((id, action, value));
         Ok(())
+    }
+
+    fn subscribe_events(&self) -> Option<agama_utils::api::event::Receiver> {
+        self.events.as_ref().map(|tx| tx.subscribe())
     }
 }
 
@@ -226,9 +235,9 @@ async fn test_get_proposal_with_issues() {
 
 #[tokio::test]
 async fn test_get_proposal_while_computing() {
-    let mut backend_inner = MockBackend::default();
-    backend_inner.status.stage = Stage::Configuring;
-    backend_inner.status.tasks = vec![agama_utils::api::status::Task {
+    let backend_inner = MockBackend::default();
+    backend_inner.status.lock().unwrap().stage = Stage::Configuring;
+    backend_inner.status.lock().unwrap().tasks = vec![agama_utils::api::status::Task {
         id: 1,
         name: "storage_calc".to_string(),
         description: "Calculating storage proposal".to_string(),
@@ -245,9 +254,62 @@ async fn test_get_proposal_while_computing() {
 }
 
 #[tokio::test]
+async fn test_lifecycle_between_set_config_and_get_proposal() {
+    ensure_test_schema();
+    let backend_inner = MockBackend::default();
+    // 1. Pre-configuration state: no product or proposal yet
+    *backend_inner.proposal.lock().unwrap() = None;
+    let backend = Arc::new(backend_inner);
+    let server = McpServer::with_backend(backend.clone(), McpMode::Full);
+
+    // AI queries proposal before setting config -> proposal_pending
+    let pending_res = server.get_proposal().await.unwrap();
+    assert_eq!(pending_res.is_error, Some(false));
+    let text = &pending_res.content[0].as_text().unwrap().text;
+    assert!(text.contains("proposal_pending"));
+    assert!(text.contains("Ensure a product is configured"));
+
+    // 2. AI sends valid config with product
+    let set_args = SetConfigArgs {
+        config: json!({
+            "product": { "id": "Tumbleweed" },
+            "root": { "password": "nots3cr3t" }
+        }),
+    };
+    let set_res = server.set_config(Parameters(set_args)).await.unwrap();
+    assert_eq!(set_res.is_error, Some(false));
+
+    // 3. Agama starts solver and probing tasks in background
+    backend.status.lock().unwrap().tasks = vec![agama_utils::api::status::Task {
+        id: 10,
+        name: "software_probe".to_string(),
+        description: "Resolving packages and patterns for Tumbleweed".to_string(),
+        scope: Scope::Software,
+    }];
+
+    // AI checks proposal while solvers are computing -> proposal_computing
+    let computing_res = server.get_proposal().await.unwrap();
+    assert_eq!(computing_res.is_error, Some(false));
+    let text = &computing_res.content[0].as_text().unwrap().text;
+    assert!(text.contains("proposal_computing"));
+    assert!(text.contains("software_probe"));
+    assert!(text.contains("Resolving packages and patterns"));
+
+    // 4. Background solvers finish: tasks clear, calculated proposal is ready
+    backend.status.lock().unwrap().tasks.clear();
+    *backend.proposal.lock().unwrap() = Some(sample_proposal());
+
+    // AI queries proposal now that calculation finished -> proposal_ready
+    let ready_res = server.get_proposal().await.unwrap();
+    assert_eq!(ready_res.is_error, Some(false));
+    let text = &ready_res.content[0].as_text().unwrap().text;
+    assert!(text.contains("proposal_ready"));
+}
+
+#[tokio::test]
 async fn test_get_progress_reporting_with_pending_questions() {
-    let mut backend_inner = MockBackend::default();
-    backend_inner.status.stage = Stage::Installing;
+    let backend_inner = MockBackend::default();
+    backend_inner.status.lock().unwrap().stage = Stage::Installing;
     let backend = Arc::new(backend_inner);
     let server = McpServer::with_backend(backend, McpMode::Full);
 
@@ -476,4 +538,213 @@ async fn test_get_config_schema_unknown_section() {
     let text = &res.content[0].as_text().unwrap().text;
     assert!(text.contains("Section 'unknown_subsystem' not found"));
     assert!(text.contains("Available sections"));
+}
+
+#[tokio::test]
+async fn test_wait_progress_returns_immediately_on_pending_question() {
+    let backend_inner = MockBackend::default();
+    backend_inner.status.lock().unwrap().stage = Stage::Installing;
+    let backend = Arc::new(backend_inner);
+    let server = McpServer::with_backend(backend, McpMode::Full);
+
+    // Question is pending -> should return immediately without waiting for timeout
+    let res = server
+        .wait_progress(Parameters(WaitProgressArgs {
+            timeout_seconds: Some(60),
+        }))
+        .await
+        .unwrap();
+
+    assert_eq!(res.is_error, Some(false));
+    let text = &res.content[0].as_text().unwrap().text;
+    assert!(text.contains("question_pending"));
+    assert!(text.contains("hasPendingQuestions\": true"));
+}
+
+#[tokio::test]
+async fn test_wait_progress_returns_immediately_on_finished() {
+    let backend_inner = MockBackend::default();
+    backend_inner.status.lock().unwrap().stage = Stage::Finished;
+    backend_inner.questions.lock().unwrap().clear();
+    let backend = Arc::new(backend_inner);
+    let server = McpServer::with_backend(backend, McpMode::Full);
+
+    let res = server
+        .wait_progress(Parameters(WaitProgressArgs {
+            timeout_seconds: Some(60),
+        }))
+        .await
+        .unwrap();
+
+    assert_eq!(res.is_error, Some(false));
+    let text = &res.content[0].as_text().unwrap().text;
+    assert!(text.contains("finished"));
+    assert!(text.contains("Installation finished"));
+}
+
+#[tokio::test]
+async fn test_wait_progress_wakes_up_on_question_event() {
+    let mut backend_inner = MockBackend::default();
+    backend_inner.status.lock().unwrap().stage = Stage::Installing;
+    backend_inner.questions.lock().unwrap().clear();
+
+    let (events_tx, _) = tokio::sync::broadcast::channel(16);
+    backend_inner.events = Some(events_tx.clone());
+
+    let backend = Arc::new(backend_inner);
+    let server = McpServer::with_backend(backend.clone(), McpMode::Full);
+
+    // Background task: inject question after 50ms and broadcast QuestionAdded event
+    let backend_clone = backend.clone();
+    let events_tx_clone = events_tx.clone();
+    tokio::spawn(async move {
+        tokio::time::sleep(Duration::from_millis(50)).await;
+        backend_clone.questions.lock().unwrap().push(sample_question());
+        let _ = events_tx_clone.send(Event::QuestionAdded { id: 1 });
+    });
+
+    let start = std::time::Instant::now();
+    let res = server
+        .wait_progress(Parameters(WaitProgressArgs {
+            timeout_seconds: Some(30),
+        }))
+        .await
+        .unwrap();
+
+    // Must return within ~1-2 seconds, not wait for the full 30s timeout
+    assert!(start.elapsed() < Duration::from_secs(5));
+    assert_eq!(res.is_error, Some(false));
+    let text = &res.content[0].as_text().unwrap().text;
+    assert!(text.contains("question_pending"));
+    assert!(text.contains("Question 1 pending"));
+}
+
+#[tokio::test]
+async fn test_wait_progress_returns_immediately_on_configuring() {
+    let backend_inner = MockBackend::default();
+    backend_inner.status.lock().unwrap().stage = Stage::Configuring;
+    backend_inner.questions.lock().unwrap().clear();
+
+    let backend = Arc::new(backend_inner);
+    let server = McpServer::with_backend(backend, McpMode::Full);
+
+    let res = server
+        .wait_progress(Parameters(WaitProgressArgs {
+            timeout_seconds: Some(60),
+        }))
+        .await
+        .unwrap();
+
+    assert_eq!(res.is_error, Some(false));
+    let text = &res.content[0].as_text().unwrap().text;
+    assert!(text.contains("configuring"));
+    assert!(text.contains("Ready for review"));
+    assert!(text.contains("get_proposal"));
+    assert!(text.contains("commit_install"));
+}
+
+#[tokio::test]
+async fn test_wait_progress_wakes_up_when_configuring_tasks_finish() {
+    let mut backend_inner = MockBackend::default();
+    backend_inner.status.lock().unwrap().stage = Stage::Configuring;
+    backend_inner.status.lock().unwrap().tasks = vec![agama_utils::api::status::Task {
+        id: 5,
+        name: "storage_calc".to_string(),
+        description: "Computing storage proposal".to_string(),
+        scope: Scope::Storage,
+    }];
+    backend_inner.questions.lock().unwrap().clear();
+
+    let (events_tx, _) = tokio::sync::broadcast::channel(16);
+    backend_inner.events = Some(events_tx.clone());
+
+    let backend = Arc::new(backend_inner);
+    let server = McpServer::with_backend(backend.clone(), McpMode::Full);
+
+    let backend_clone = backend.clone();
+    let events_tx_clone = events_tx.clone();
+    tokio::spawn(async move {
+        tokio::time::sleep(Duration::from_millis(50)).await;
+        // Solvers finish: clear tasks and emit TaskFinished with remaining: 0
+        let finished_task = backend_clone.status.lock().unwrap().tasks.remove(0);
+        let _ = events_tx_clone.send(Event::TaskFinished {
+            task: finished_task,
+            remaining: 0,
+        });
+    });
+
+    let start = std::time::Instant::now();
+    let res = server
+        .wait_progress(Parameters(WaitProgressArgs {
+            timeout_seconds: Some(30),
+        }))
+        .await
+        .unwrap();
+
+    assert!(start.elapsed() < Duration::from_secs(5));
+    assert_eq!(res.is_error, Some(false));
+    let text = &res.content[0].as_text().unwrap().text;
+    assert!(text.contains("configuring"));
+    assert!(text.contains("Ready for review"));
+    assert!(text.contains("get_proposal"));
+    assert!(text.contains("commit_install"));
+}
+
+#[tokio::test]
+async fn test_wait_progress_wakes_up_on_finished_event() {
+    let mut backend_inner = MockBackend::default();
+    backend_inner.status.lock().unwrap().stage = Stage::Installing;
+    backend_inner.questions.lock().unwrap().clear();
+
+    let (events_tx, _) = tokio::sync::broadcast::channel(16);
+    backend_inner.events = Some(events_tx.clone());
+
+    let backend = Arc::new(backend_inner);
+    let server = McpServer::with_backend(backend.clone(), McpMode::Full);
+
+    let backend_clone = backend.clone();
+    let events_tx_clone = events_tx.clone();
+    tokio::spawn(async move {
+        tokio::time::sleep(Duration::from_millis(50)).await;
+        backend_clone.status.lock().unwrap().stage = Stage::Finished;
+        let _ = events_tx_clone.send(Event::StageChanged {
+            stage: Stage::Finished,
+        });
+    });
+
+    let start = std::time::Instant::now();
+    let res = server
+        .wait_progress(Parameters(WaitProgressArgs {
+            timeout_seconds: Some(30),
+        }))
+        .await
+        .unwrap();
+
+    assert!(start.elapsed() < Duration::from_secs(5));
+    assert_eq!(res.is_error, Some(false));
+    let text = &res.content[0].as_text().unwrap().text;
+    assert!(text.contains("finished"));
+    assert!(text.contains("Installation finished"));
+}
+
+#[tokio::test]
+async fn test_wait_progress_short_timeout_returns_progress() {
+    let backend_inner = MockBackend::default();
+    backend_inner.status.lock().unwrap().stage = Stage::Installing;
+    backend_inner.questions.lock().unwrap().clear();
+
+    let backend = Arc::new(backend_inner);
+    let server = McpServer::with_backend(backend, McpMode::Full);
+
+    let res = server
+        .wait_progress(Parameters(WaitProgressArgs {
+            timeout_seconds: Some(1),
+        }))
+        .await
+        .unwrap();
+
+    assert_eq!(res.is_error, Some(false));
+    let text = &res.content[0].as_text().unwrap().text;
+    assert!(text.contains("installing"));
+    assert!(text.contains("Call 'wait_progress' to continue monitoring"));
 }

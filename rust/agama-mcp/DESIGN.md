@@ -47,7 +47,8 @@ Disabled by default. Activated via kernel command line:
 
 ### Phase 4: Execution & Observability
 * `commit_install()`: Starts disk partitioning and deployment. Forbidden in `config` mode (`403 Forbidden`).
-* `get_progress()`: Returns percentage, stage (`Configuring`, `Installing`, `Finished`, `Failed`), tasks, and pending questions.
+* `wait_progress(timeout_seconds?)`: Event-driven progress monitor (default 60s, max 300s). Subscribes to Agama's internal event bus, waking up on actionable events (background task completion, `question_pending`, `finished`, `failed`) or on timeout. Avoids polling overhead and returns interactive questions immediately.
+* `get_progress()`: One-shot state check returning stage (`Configuring`, `Installing`, `Finished`, `Failed`), active tasks, and pending questions.
 * `get_questions()`: Returns currently pending, unanswered interactive questions.
 * `answer_question(id, action, value?)`: Submits answer to unblock installer.
 * `get_logs(log_type?, lines?)`: Queries `journalctl` directly. Scopes: `installer` (`agama*`), `system`, `zypp`, or specific unit (e.g. `NetworkManager.service`). Default 100 lines (max 1000).
