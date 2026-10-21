@@ -276,7 +276,8 @@ impl McpServer {
         ))
     }
 
-    /// Commands Agama to compute the final installation plan based on the injected configuration and hardware reality.
+    /// Commands Agama to compute the final installation plan based on the injected configuration
+    /// and hardware reality.
     #[tool(
         name = "get_proposal",
         description = "Commands Agama to compute the final installation plan based on the injected configuration and hardware reality. Returns the diff/plan on success, proposal_computing if calculation is in progress, or issues if the configuration is invalid."
@@ -323,7 +324,8 @@ impl McpServer {
         ))
     }
 
-    /// Returns structured data regarding the current state, stage, percentage completion, active tasks, and any pending questions.
+    /// Returns structured data regarding the current state, stage, percentage completion,
+    /// active tasks, and any pending questions.
     #[tool(
         name = "get_progress",
         description = "Returns structured data regarding the current state, stage, percentage completion, active tasks, and any pending questions requiring an answer."

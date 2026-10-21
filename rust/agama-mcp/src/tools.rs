@@ -50,7 +50,9 @@ pub struct GetSystemArgs {
 /// Arguments for the `get_config_schema` tool.
 #[derive(Debug, Clone, Default, Deserialize, JsonSchema)]
 pub struct GetConfigSchemaArgs {
-    /// Optional section name to retrieve detailed schema for (e.g. 'storage', 'software', 'access', 'network', 'user', 'bootloader'). Omit to get root profile schema overview and available sections.
+    /// Optional section name to retrieve detailed schema for (e.g. 'storage', 'software', 'access',
+    /// 'network', 'user', 'bootloader'). Omit to get root profile schema overview and available
+    /// sections.
     pub section: Option<String>,
 }
 
@@ -64,7 +66,8 @@ pub struct SetConfigArgs {
 /// Arguments for the `get_logs` tool.
 #[derive(Debug, Clone, Default, Deserialize, JsonSchema)]
 pub struct GetLogsArgs {
-    /// Log scope: 'installer' for Agama traces (agama* units), 'system' for system-wide journalctl, 'zypp' for package manager logs, or a specific systemd unit name. Defaults to 'installer'.
+    /// Log scope: 'installer' for Agama traces (agama* units), 'system' for system-wide journalctl,
+    /// 'zypp' for package manager logs, or a specific systemd unit name. Defaults to 'installer'.
     pub log_type: Option<String>,
     /// Number of most recent log lines to retrieve (default: 100, max: 1000).
     pub lines: Option<usize>,

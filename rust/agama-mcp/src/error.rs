@@ -21,15 +21,19 @@
 //! Error types for the Agama MCP Server.
 //!
 //! MCP Error Handling Model:
-//! - **Tool-level errors (`tool_error`)**: Returned as `Ok(CallToolResult)` with `isError: true`, sending actionable feedback to the LLM's context window so it can self-correct.
-//! - **Protocol-level errors (`Error`)**: Converted into JSON-RPC `ErrorData` (`error: { code, message }`), aborting the call at transport level (used for permission denials and internal crashes).
+//! - **Tool-level errors (`tool_error`)**: Returned as `Ok(CallToolResult)` with `isError: true`,
+//!   sending actionable feedback to the LLM's context window so it can self-correct.
+//! - **Protocol-level errors (`Error`)**: Converted into JSON-RPC `ErrorData` 
+//!   (`error: { code, message }`), aborting the call at transport level
+//!   (used for permission denials and internal crashes).
 
 use agama_utils::question;
 use rmcp::handler::server::tool::IntoCallToolResult;
 use rmcp::model::{CallToolResponse, ErrorCode, ErrorData};
 use std::path::PathBuf;
 
-/// Internal backend errors from Agama actors, converted to `tool_error` so the AI sees why the action failed.
+/// Internal backend errors from Agama actors, converted to `tool_error` so the AI sees
+/// why the action failed.
 #[derive(thiserror::Error, Debug)]
 pub enum BackendError {
     #[error("Manager error: {0}")]
@@ -90,7 +94,8 @@ pub enum ValidationError {
 /// Protocol-level errors returning JSON-RPC `error: { code, message }` instead of tool output.
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
-    /// Authorization failure: commit_install is disabled in configuration-only mode (JSON-RPC 403 Forbidden).
+    /// Authorization failure: commit_install is disabled in configuration-only mode
+    /// (JSON-RPC 403 Forbidden).
     #[error("403 Forbidden: commit_install is disabled in configuration-only mode (inst.mcp=config). A human operator must approve and trigger installation via the Agama Web UI.")]
     Forbidden,
 
