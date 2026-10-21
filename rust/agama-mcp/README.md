@@ -18,6 +18,7 @@ via the kernel command-line:
 
 - `inst.mcp=full`: Enables full MCP access, including the ability to trigger installation (`commit_install`).
 - `inst.mcp=config`: Configuration-only mode. AI tools can inspect hardware, retrieve schemas, inject profiles, and check proposals, but `commit_install` is disabled (returning a `403 Forbidden` error), requiring approval and triggering of installation by a human operator in the Web UI.
+  (If you are looking for a `read-only` mode, this is it, with respect to the target system.)
 - `inst.mcp=disabled` (or omitted): MCP server is disabled.
 
 ## Tools Provided
