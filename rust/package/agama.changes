@@ -8,14 +8,9 @@ Thu Oct  8 10:40:48 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
   ignored when "portConnections" is given.
 - Allow port settings only on the ports nested in their
   controller, and no IP settings on them.
-- Accept in "portConnections" only the kinds of ports that each
-  kind of controller takes, and the port settings only on the
-  ports of a bridge.
-- When the system has a port that "portConnections" does not
-  accept (e.g., a VLAN set up by hand as the port of a bond),
-  report it as a separate connection, listed by name in "ports"
-  and "portConnections", so the reported configuration can still
-  be loaded back.
+- Accept any kind of connection in "portConnections", as
+  NetworkManager does, but the port settings only on the ports
+  of a bridge.
 - Keep the settings not modelled by the API when updating a
   connection.
 - Fix reading the path cost of bridge ports from NetworkManager.

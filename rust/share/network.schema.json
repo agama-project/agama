@@ -1,5 +1,195 @@
 {
   "$defs": {
+    "BondBondPort": {
+      "additionalProperties": false,
+      "description": "Port of a bond that is a bond itself",
+      "properties": {
+        "autoconnect": {
+          "description": "Specifies if the connection should automatically connect",
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "bond": {
+          "$ref": "#/$defs/BondSettings",
+          "description": "Bonding settings"
+        },
+        "customMacAddress": {
+          "description": "Custom MAC address of the connection's interface\n\nCan also be 'preserve', 'permanent', 'random' or 'stable'.",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "id": {
+          "description": "Unique identifier for the network connection\n\nWhen it is omitted, the port refers to the connection bound to its interface, or\ngets the interface name as its ID.",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "ieee-8021x": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/IEEE8021XSettings"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "IEEE 802.1X settings"
+        },
+        "interface": {
+          "description": "Network interface associated with the connection",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "macAddress": {
+          "description": "MAC address of the connection's interface",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "match": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/MatchSettings"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Match settings for the network connection"
+        },
+        "mtu": {
+          "description": "Maximum Transmission Unit (MTU) for the connection",
+          "format": "uint32",
+          "minimum": 0,
+          "type": "integer"
+        },
+        "persistent": {
+          "description": "Specifies whether the connection should be persisted or not",
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "status": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Status"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Current status of the network connection"
+        }
+      },
+      "required": [
+        "bond"
+      ],
+      "type": "object"
+    },
+    "BondBridgePort": {
+      "additionalProperties": false,
+      "description": "Port of a bond that is a bridge",
+      "properties": {
+        "autoconnect": {
+          "description": "Specifies if the connection should automatically connect",
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "bridge": {
+          "$ref": "#/$defs/BridgeSettings",
+          "description": "Bridge settings"
+        },
+        "customMacAddress": {
+          "description": "Custom MAC address of the connection's interface\n\nCan also be 'preserve', 'permanent', 'random' or 'stable'.",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "id": {
+          "description": "Unique identifier for the network connection\n\nWhen it is omitted, the port refers to the connection bound to its interface, or\ngets the interface name as its ID.",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "ieee-8021x": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/IEEE8021XSettings"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "IEEE 802.1X settings"
+        },
+        "interface": {
+          "description": "Network interface associated with the connection",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "macAddress": {
+          "description": "MAC address of the connection's interface",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "match": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/MatchSettings"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Match settings for the network connection"
+        },
+        "mtu": {
+          "description": "Maximum Transmission Unit (MTU) for the connection",
+          "format": "uint32",
+          "minimum": 0,
+          "type": "integer"
+        },
+        "persistent": {
+          "description": "Specifies whether the connection should be persisted or not",
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "status": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Status"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Current status of the network connection"
+        }
+      },
+      "required": [
+        "bridge"
+      ],
+      "type": "object"
+    },
     "BondEthernetPort": {
       "additionalProperties": false,
       "description": "Port of a bond that is an Ethernet connection, or any other kind of connection that has\nno section of its own (e.g., InfiniBand)",
@@ -98,10 +288,19 @@
           "$ref": "#/$defs/BondEthernetPort"
         },
         {
+          "$ref": "#/$defs/BondBondPort"
+        },
+        {
+          "$ref": "#/$defs/BondBridgePort"
+        },
+        {
+          "$ref": "#/$defs/BondVlanPort"
+        },
+        {
           "$ref": "#/$defs/BondWirelessPort"
         }
       ],
-      "description": "Entry of the `portConnections` list of a bond.\n\nOnly physical interfaces can be the ports of a bond. A port given as a connection is told apart\nby the section it has: `wireless` or none, for an Ethernet port."
+      "description": "Entry of the `portConnections` list of a bond.\n\nAny kind of connection can be a port, as NetworkManager does not restrict it. A port given as a\nconnection is told apart by the section it has: `bond`, `bridge`, `vlan`, `wireless` or none of\nthem, for an Ethernet port. Unlike the ports of a bridge, it has no port settings."
     },
     "BondSettings": {
       "additionalProperties": false,
@@ -151,6 +350,101 @@
       },
       "required": [
         "mode"
+      ],
+      "type": "object"
+    },
+    "BondVlanPort": {
+      "additionalProperties": false,
+      "description": "Port of a bond that is a VLAN",
+      "properties": {
+        "autoconnect": {
+          "description": "Specifies if the connection should automatically connect",
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "customMacAddress": {
+          "description": "Custom MAC address of the connection's interface\n\nCan also be 'preserve', 'permanent', 'random' or 'stable'.",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "id": {
+          "description": "Unique identifier for the network connection\n\nWhen it is omitted, the port refers to the connection bound to its interface, or\ngets the interface name as its ID.",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "ieee-8021x": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/IEEE8021XSettings"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "IEEE 802.1X settings"
+        },
+        "interface": {
+          "description": "Network interface associated with the connection",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "macAddress": {
+          "description": "MAC address of the connection's interface",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "match": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/MatchSettings"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Match settings for the network connection"
+        },
+        "mtu": {
+          "description": "Maximum Transmission Unit (MTU) for the connection",
+          "format": "uint32",
+          "minimum": 0,
+          "type": "integer"
+        },
+        "persistent": {
+          "description": "Specifies whether the connection should be persisted or not",
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "status": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Status"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Current status of the network connection"
+        },
+        "vlan": {
+          "$ref": "#/$defs/VlanSettings",
+          "description": "VLAN settings"
+        }
+      },
+      "required": [
+        "vlan"
       ],
       "type": "object"
     },
@@ -355,6 +649,112 @@
       ],
       "type": "object"
     },
+    "BridgeBridgePort": {
+      "additionalProperties": false,
+      "description": "Port of a bridge that is a bridge itself",
+      "properties": {
+        "autoconnect": {
+          "description": "Specifies if the connection should automatically connect",
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "bridge": {
+          "$ref": "#/$defs/BridgeSettings",
+          "description": "Bridge settings"
+        },
+        "customMacAddress": {
+          "description": "Custom MAC address of the connection's interface\n\nCan also be 'preserve', 'permanent', 'random' or 'stable'.",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "id": {
+          "description": "Unique identifier for the network connection\n\nWhen it is omitted, the port refers to the connection bound to its interface, or\ngets the interface name as its ID.",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "ieee-8021x": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/IEEE8021XSettings"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "IEEE 802.1X settings"
+        },
+        "interface": {
+          "description": "Network interface associated with the connection",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "macAddress": {
+          "description": "MAC address of the connection's interface",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "match": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/MatchSettings"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Match settings for the network connection"
+        },
+        "mtu": {
+          "description": "Maximum Transmission Unit (MTU) for the connection",
+          "format": "uint32",
+          "minimum": 0,
+          "type": "integer"
+        },
+        "persistent": {
+          "description": "Specifies whether the connection should be persisted or not",
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "port": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/BridgePortSettings"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Settings that this connection has because it is a port of a bridge"
+        },
+        "status": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Status"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Current status of the network connection"
+        }
+      },
+      "required": [
+        "bridge"
+      ],
+      "type": "object"
+    },
     "BridgeEthernetPort": {
       "additionalProperties": false,
       "description": "Port of a bridge that is an Ethernet connection, or any other kind of connection that has\nno section of its own (e.g., InfiniBand)",
@@ -467,10 +867,16 @@
           "$ref": "#/$defs/BridgeBondPort"
         },
         {
+          "$ref": "#/$defs/BridgeBridgePort"
+        },
+        {
           "$ref": "#/$defs/BridgeVlanPort"
+        },
+        {
+          "$ref": "#/$defs/BridgeWirelessPort"
         }
       ],
-      "description": "Entry of the `portConnections` list of a bridge.\n\nA port given as a connection is told apart by the section it has: `bond`, `vlan` or none of\nthem, for an Ethernet port."
+      "description": "Entry of the `portConnections` list of a bridge.\n\nAny kind of connection can be a port, as NetworkManager does not restrict it. A port given as a\nconnection is told apart by the section it has: `bond`, `bridge`, `vlan`, `wireless` or none of\nthem, for an Ethernet port."
     },
     "BridgePortSettings": {
       "additionalProperties": false,
@@ -671,6 +1077,112 @@
       },
       "required": [
         "vlan"
+      ],
+      "type": "object"
+    },
+    "BridgeWirelessPort": {
+      "additionalProperties": false,
+      "description": "Port of a bridge that is a wireless connection",
+      "properties": {
+        "autoconnect": {
+          "description": "Specifies if the connection should automatically connect",
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "customMacAddress": {
+          "description": "Custom MAC address of the connection's interface\n\nCan also be 'preserve', 'permanent', 'random' or 'stable'.",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "id": {
+          "description": "Unique identifier for the network connection\n\nWhen it is omitted, the port refers to the connection bound to its interface, or\ngets the interface name as its ID.",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "ieee-8021x": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/IEEE8021XSettings"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "IEEE 802.1X settings"
+        },
+        "interface": {
+          "description": "Network interface associated with the connection",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "macAddress": {
+          "description": "MAC address of the connection's interface",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "match": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/MatchSettings"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Match settings for the network connection"
+        },
+        "mtu": {
+          "description": "Maximum Transmission Unit (MTU) for the connection",
+          "format": "uint32",
+          "minimum": 0,
+          "type": "integer"
+        },
+        "persistent": {
+          "description": "Specifies whether the connection should be persisted or not",
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "port": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/BridgePortSettings"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Settings that this connection has because it is a port of a bridge"
+        },
+        "status": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Status"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Current status of the network connection"
+        },
+        "wireless": {
+          "$ref": "#/$defs/WirelessSettings",
+          "description": "Wireless settings"
+        }
+      },
+      "required": [
+        "wireless"
       ],
       "type": "object"
     },

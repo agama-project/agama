@@ -302,6 +302,9 @@ impl<'a> From<&'a BondPort> for PortRef<'a> {
         match port {
             BondPort::Name(name) => Self::Name(name),
             BondPort::Ethernet(port) => Self::Connection(port.as_ref()),
+            BondPort::Bond(port) => Self::Connection(port.as_ref()),
+            BondPort::Bridge(port) => Self::Connection(port.as_ref()),
+            BondPort::Vlan(port) => Self::Connection(port.as_ref()),
             BondPort::Wireless(port) => Self::Connection(port.as_ref()),
         }
     }
@@ -313,7 +316,9 @@ impl<'a> From<&'a BridgePort> for PortRef<'a> {
             BridgePort::Name(name) => Self::Name(name),
             BridgePort::Ethernet(port) => Self::Connection(port.as_ref()),
             BridgePort::Bond(port) => Self::Connection(port.as_ref()),
+            BridgePort::Bridge(port) => Self::Connection(port.as_ref()),
             BridgePort::Vlan(port) => Self::Connection(port.as_ref()),
+            BridgePort::Wireless(port) => Self::Connection(port.as_ref()),
         }
     }
 }
@@ -610,6 +615,7 @@ pub struct NetworkConnectionWithState {
 struct PortSections<'a> {
     port: Option<&'a BridgePortSettings>,
     bond: Option<&'a BondSettings>,
+    bridge: Option<&'a BridgeSettings>,
     vlan: Option<&'a VlanSettings>,
     wireless: Option<&'a WirelessSettings>,
 }
@@ -726,10 +732,9 @@ macro_rules! port_type {
         }
 
         impl PortLists for $name {
-            // A bridge cannot be a port, neither of a bridge nor of a bond, so a port can only be a
-            // controller when it is a bond.
             fn controller_settings(&self) -> (Option<&BondSettings>, Option<&BridgeSettings>) {
-                (self.sections().bond, None)
+                let sections = self.sections();
+                (sections.bond, sections.bridge)
             }
         }
 
@@ -755,6 +760,7 @@ macro_rules! port_type {
                     interface: self.interface.clone(),
                     match_settings: self.match_settings.clone(),
                     bond: sections.bond.cloned(),
+                    bridge: sections.bridge.cloned(),
                     custom_mac_address: self.custom_mac_address.clone(),
                     mac_address: self.mac_address.clone(),
                     status: self.status,
@@ -793,10 +799,34 @@ port_type! {
 }
 
 port_type! {
+    /// Port of a bridge that is a bridge itself
+    #[derive(Default)]
+    BridgeBridgePort {
+        /// Bridge settings
+        bridge: BridgeSettings,
+        /// Settings that this connection has because it is a port of a bridge
+        #[serde(skip_serializing_if = "Option::is_none")]
+        port: Option<BridgePortSettings>,
+    }
+}
+
+port_type! {
     /// Port of a bridge that is a VLAN
     BridgeVlanPort {
         /// VLAN settings
         vlan: VlanSettings,
+        /// Settings that this connection has because it is a port of a bridge
+        #[serde(skip_serializing_if = "Option::is_none")]
+        port: Option<BridgePortSettings>,
+    }
+}
+
+port_type! {
+    /// Port of a bridge that is a wireless connection
+    #[derive(Default)]
+    BridgeWirelessPort {
+        /// Wireless settings
+        wireless: WirelessSettings,
         /// Settings that this connection has because it is a port of a bridge
         #[serde(skip_serializing_if = "Option::is_none")]
         port: Option<BridgePortSettings>,
@@ -811,6 +841,32 @@ port_type! {
 }
 
 port_type! {
+    /// Port of a bond that is a bond itself
+    #[derive(Default)]
+    BondBondPort {
+        /// Bonding settings
+        bond: BondSettings,
+    }
+}
+
+port_type! {
+    /// Port of a bond that is a bridge
+    #[derive(Default)]
+    BondBridgePort {
+        /// Bridge settings
+        bridge: BridgeSettings,
+    }
+}
+
+port_type! {
+    /// Port of a bond that is a VLAN
+    BondVlanPort {
+        /// VLAN settings
+        vlan: VlanSettings,
+    }
+}
+
+port_type! {
     /// Port of a bond that is a wireless connection
     #[derive(Default)]
     BondWirelessPort {
@@ -821,7 +877,8 @@ port_type! {
 
 /// Entry of the `portConnections` list of a bridge.
 ///
-/// A port given as a connection is told apart by the section it has: `bond`, `vlan` or none of
+/// Any kind of connection can be a port, as NetworkManager does not restrict it. A port given as a
+/// connection is told apart by the section it has: `bond`, `bridge`, `vlan`, `wireless` or none of
 /// them, for an Ethernet port.
 #[derive(Clone, Debug, Serialize, Deserialize, JsonSchema, PartialEq)]
 #[serde(untagged)]
@@ -833,40 +890,42 @@ pub enum BridgePort {
     Name(String),
     Ethernet(Box<BridgeEthernetPort>),
     Bond(Box<BridgeBondPort>),
+    Bridge(Box<BridgeBridgePort>),
     Vlan(Box<BridgeVlanPort>),
+    Wireless(Box<BridgeWirelessPort>),
 }
 
 impl BridgePort {
     /// Reports a connection as a port of a bridge.
     ///
-    /// Its IP settings are dropped, as its controller holds them. The connection is given back
-    /// when it cannot be a port of a bridge.
+    /// Its IP settings are dropped, as its controller holds them.
     ///
     /// * `conn`: connection to report.
     /// * `port`: settings it has as a port of the bridge.
-    pub fn from_connection(
-        mut conn: NetworkConnection,
-        port: Option<BridgePortSettings>,
-    ) -> Result<Self, Box<NetworkConnection>> {
-        if conn.bridge.is_some() || conn.wireless.is_some() {
-            return Err(Box::new(conn));
-        }
-
-        let port = if let Some(bond) = conn.bond.take() {
+    pub fn from_connection(mut conn: NetworkConnection, port: Option<BridgePortSettings>) -> Self {
+        if let Some(bond) = conn.bond.take() {
             Self::Bond(Box::new(BridgeBondPort::from_connection(conn, bond, port)))
+        } else if let Some(bridge) = conn.bridge.take() {
+            Self::Bridge(Box::new(BridgeBridgePort::from_connection(
+                conn, bridge, port,
+            )))
         } else if let Some(vlan) = conn.vlan.take() {
             Self::Vlan(Box::new(BridgeVlanPort::from_connection(conn, vlan, port)))
+        } else if let Some(wireless) = conn.wireless.take() {
+            Self::Wireless(Box::new(BridgeWirelessPort::from_connection(
+                conn, wireless, port,
+            )))
         } else {
             Self::Ethernet(Box::new(BridgeEthernetPort::from_connection(conn, port)))
-        };
-        Ok(port)
+        }
     }
 }
 
 /// Entry of the `portConnections` list of a bond.
 ///
-/// Only physical interfaces can be the ports of a bond. A port given as a connection is told apart
-/// by the section it has: `wireless` or none, for an Ethernet port.
+/// Any kind of connection can be a port, as NetworkManager does not restrict it. A port given as a
+/// connection is told apart by the section it has: `bond`, `bridge`, `vlan`, `wireless` or none of
+/// them, for an Ethernet port. Unlike the ports of a bridge, it has no port settings.
 #[derive(Clone, Debug, Serialize, Deserialize, JsonSchema, PartialEq)]
 #[serde(untagged)]
 pub enum BondPort {
@@ -876,28 +935,30 @@ pub enum BondPort {
     /// interface name or ID, and a new Ethernet connection is created when there is none.
     Name(String),
     Ethernet(Box<BondEthernetPort>),
+    Bond(Box<BondBondPort>),
+    Bridge(Box<BondBridgePort>),
+    Vlan(Box<BondVlanPort>),
     Wireless(Box<BondWirelessPort>),
 }
 
 impl BondPort {
     /// Reports a connection as a port of a bond.
     ///
-    /// Its IP settings are dropped, as its controller holds them. The connection is given back
-    /// when it cannot be a port of a bond.
+    /// Its IP settings are dropped, as its controller holds them.
     ///
     /// * `conn`: connection to report.
-    pub fn from_connection(mut conn: NetworkConnection) -> Result<Self, Box<NetworkConnection>> {
-        if conn.bond.is_some() || conn.bridge.is_some() || conn.vlan.is_some() {
-            return Err(Box::new(conn));
+    pub fn from_connection(mut conn: NetworkConnection) -> Self {
+        if let Some(bond) = conn.bond.take() {
+            Self::Bond(Box::new(BondBondPort::from_connection(conn, bond)))
+        } else if let Some(bridge) = conn.bridge.take() {
+            Self::Bridge(Box::new(BondBridgePort::from_connection(conn, bridge)))
+        } else if let Some(vlan) = conn.vlan.take() {
+            Self::Vlan(Box::new(BondVlanPort::from_connection(conn, vlan)))
+        } else if let Some(wireless) = conn.wireless.take() {
+            Self::Wireless(Box::new(BondWirelessPort::from_connection(conn, wireless)))
+        } else {
+            Self::Ethernet(Box::new(BondEthernetPort::from_connection(conn)))
         }
-
-        let port = match conn.wireless.take() {
-            Some(wireless) => {
-                Self::Wireless(Box::new(BondWirelessPort::from_connection(conn, wireless)))
-            }
-            None => Self::Ethernet(Box::new(BondEthernetPort::from_connection(conn))),
-        };
-        Ok(port)
     }
 }
 
@@ -1285,7 +1346,7 @@ mod tests {
 
         let mut conn = conn;
         conn.method4 = Some(Ipv4Method::Auto);
-        let BridgePort::Ethernet(port) = BridgePort::from_connection(conn, None).unwrap() else {
+        let BridgePort::Ethernet(port) = BridgePort::from_connection(conn, None) else {
             panic!("eth0 is not reported as an Ethernet port");
         };
         assert_eq!(port.id.as_deref(), Some("eth0"));
@@ -1303,26 +1364,18 @@ mod tests {
             r#"{ "id": "wlan0", "wireless": { "ssid": "agama", "security": "none", "mode": "infrastructure" } }"#,
         );
 
-        assert!(matches!(
-            BridgePort::from_connection(bond0.clone(), None),
-            Ok(BridgePort::Bond(_))
-        ));
-        assert!(matches!(
-            BridgePort::from_connection(vlan.clone(), None),
-            Ok(BridgePort::Vlan(_))
-        ));
-        assert!(BridgePort::from_connection(br1.clone(), None).is_err());
-        assert!(BridgePort::from_connection(wlan0.clone(), None).is_err());
+        // NetworkManager does not restrict the kind of the ports, so any connection can be one.
+        let port = BridgePort::from_connection;
+        assert!(matches!(port(bond0.clone(), None), BridgePort::Bond(_)));
+        assert!(matches!(port(br1.clone(), None), BridgePort::Bridge(_)));
+        assert!(matches!(port(vlan.clone(), None), BridgePort::Vlan(_)));
+        assert!(matches!(port(wlan0.clone(), None), BridgePort::Wireless(_)));
 
-        assert!(matches!(
-            BondPort::from_connection(wlan0),
-            Ok(BondPort::Wireless(_))
-        ));
-        // Only physical interfaces can be the ports of a bond.
-        for conn in [bond0, br1, vlan] {
-            let id = conn.id.clone();
-            assert_eq!(BondPort::from_connection(conn).unwrap_err().id, id);
-        }
+        let port = BondPort::from_connection;
+        assert!(matches!(port(bond0), BondPort::Bond(_)));
+        assert!(matches!(port(br1), BondPort::Bridge(_)));
+        assert!(matches!(port(vlan), BondPort::Vlan(_)));
+        assert!(matches!(port(wlan0), BondPort::Wireless(_)));
     }
 
     #[test]
@@ -1330,13 +1383,9 @@ mod tests {
         for json in [
             // Only the ports of a bridge have port settings.
             r#"{ "id": "bond0", "bond": { "mode": "802.3ad", "portConnections": [{ "interface": "eth0", "port": { "priority": 32 } }] } }"#,
-            r#"{ "id": "br0", "bridge": { "portConnections": [{ "interface": "br1", "bridge": {} }] } }"#,
-            r#"{ "id": "br0", "bridge": { "portConnections": [{ "interface": "wlan0", "wireless": { "ssid": "agama", "security": "none", "mode": "infrastructure" } }] } }"#,
+            r#"{ "id": "bond0", "bond": { "mode": "802.3ad", "portConnections": [{ "interface": "eth0.100", "vlan": { "parent": "eth0", "id": 100 }, "port": { "priority": 32 } }] } }"#,
+            // A port is a single kind of connection.
             r#"{ "id": "br0", "bridge": { "portConnections": [{ "interface": "bond0", "bond": { "mode": "802.3ad" }, "vlan": { "parent": "eth0", "id": 100 } }] } }"#,
-            // Only physical interfaces can be the ports of a bond.
-            r#"{ "id": "bond0", "bond": { "mode": "802.3ad", "portConnections": [{ "interface": "bond1", "bond": { "mode": "802.3ad" } }] } }"#,
-            r#"{ "id": "bond0", "bond": { "mode": "802.3ad", "portConnections": [{ "interface": "br0", "bridge": {} }] } }"#,
-            r#"{ "id": "bond0", "bond": { "mode": "802.3ad", "portConnections": [{ "interface": "eth0.100", "vlan": { "parent": "eth0", "id": 100 } }] } }"#,
         ] {
             assert!(
                 serde_json::from_str::<NetworkConnection>(json).is_err(),

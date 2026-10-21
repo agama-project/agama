@@ -358,65 +358,41 @@ mod tests {
     }
 
     #[test]
-    fn test_nested_ports_only_take_the_kinds_their_controller_accepts() {
+    fn test_nested_ports_can_be_any_kind_of_connection() {
+        // NetworkManager does not restrict the kind of the ports, so neither does the schema.
         let vlan = json!({ "parent": "eth0", "id": 100 });
         let wireless = json!({ "ssid": "agama", "security": "wpa-psk", "mode": "infrastructure" });
         let bond = json!({ "mode": "active-backup" });
         let bridge = json!({ "stp": false });
 
-        let bridge_port = |port: serde_json::Value| {
-            connections(json!([{ "id": "br0", "bridge": { "portConnections": [port] } }]))
+        let port_of = |kind: &str, port: &serde_json::Value| {
+            let mut settings = if kind == "bond" {
+                bond.clone()
+            } else {
+                bridge.clone()
+            };
+            settings["portConnections"] = json!([port]);
+            validate(connections(json!([{ "id": "controller", kind: settings }])))
         };
-        for port in [json!({ "bond": bond }), json!({ "vlan": vlan })] {
-            assert!(
-                matches!(
-                    validate(bridge_port(port.clone())),
-                    ValidationOutcome::Valid
-                ),
-                "{port}"
-            );
-        }
-        for port in [
-            json!({ "bridge": bridge }),
-            json!({ "wireless": wireless }),
-            json!({ "bond": bond, "vlan": vlan }),
-        ] {
-            assert!(
-                matches!(
-                    validate(bridge_port(port.clone())),
-                    ValidationOutcome::NotValid(_)
-                ),
-                "{port}"
-            );
-        }
+        for kind in ["bond", "bridge"] {
+            for port in [
+                json!({ "interface": "eth0" }),
+                json!({ "bond": bond }),
+                json!({ "bridge": bridge }),
+                json!({ "vlan": vlan }),
+                json!({ "wireless": wireless }),
+            ] {
+                assert!(
+                    matches!(port_of(kind, &port), ValidationOutcome::Valid),
+                    "{port} in a {kind}"
+                );
+            }
 
-        let bond_port = |port: serde_json::Value| {
-            connections(json!([{
-                "id": "bond0",
-                "bond": { "mode": "active-backup", "portConnections": [port] }
-            }]))
-        };
-        // Only physical interfaces can be the ports of a bond.
-        for port in [
-            json!({ "interface": "eth0" }),
-            json!({ "wireless": wireless }),
-        ] {
+            // A port is a single kind of connection.
+            let port = json!({ "bond": bond, "vlan": vlan });
             assert!(
-                matches!(validate(bond_port(port.clone())), ValidationOutcome::Valid),
-                "{port}"
-            );
-        }
-        for port in [
-            json!({ "bond": bond }),
-            json!({ "bridge": bridge }),
-            json!({ "vlan": vlan }),
-        ] {
-            assert!(
-                matches!(
-                    validate(bond_port(port.clone())),
-                    ValidationOutcome::NotValid(_)
-                ),
-                "{port}"
+                matches!(port_of(kind, &port), ValidationOutcome::NotValid(_)),
+                "{port} in a {kind}"
             );
         }
     }

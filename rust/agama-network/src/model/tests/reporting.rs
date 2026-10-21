@@ -241,8 +241,7 @@ fn test_ports_are_reported_without_ip_settings() {
     assert_eq!(eth0.ignore_auto_dns, None);
 }
 
-/// Builds a state with a VLAN as a port of a bond, which a bond does not take, as it can be set up
-/// outside of Agama.
+/// Builds a state with a VLAN as a port of a bond.
 fn vlan_in_bond_state() -> NetworkState {
     let mut state = NetworkState::default();
     let mut bond0 = Connection::new("bond0".to_string(), DeviceType::Bond);
@@ -261,21 +260,22 @@ fn vlan_in_bond_state() -> NetworkState {
     state
 }
 
-/// A port that its kind of controller does not take cannot be nested in it, so it is reported at
-/// the top level and listed by name.
+/// NetworkManager does not restrict the kind of the ports, so any of them is nested in its
+/// controller.
 #[test]
-fn test_a_port_that_cannot_be_nested_is_listed_by_name() {
+fn test_any_kind_of_port_is_nested_in_its_controller() {
     let mut state = vlan_in_bond_state();
     let reported = exposed(&state);
-    assert_eq!(root_ids(&reported), ["bond0", "eth0.100"]);
+    assert_eq!(root_ids(&reported), ["bond0"]);
     let bond = find(&reported, "bond0").bond.unwrap();
     assert_eq!(bond.ports, Some(vec!["eth0.100".to_string()]));
-    assert_eq!(
-        bond.port_connections,
-        Some(vec![BondPort::Name("eth0.100".to_string())])
-    );
+    let ports = bond.port_connections.unwrap();
+    let [BondPort::Vlan(vlan)] = ports.as_slice() else {
+        panic!("eth0.100 is not nested as a VLAN");
+    };
+    assert_eq!(vlan.vlan.id, 100);
 
-    // It is a valid document, which keeps the VLAN in the bond when it is sent back.
+    // It keeps the VLAN in the bond when it is sent back.
     let json = serde_json::to_string(&reported).unwrap();
     let reported: NetworkConnectionsCollection = serde_json::from_str(&json).unwrap();
     state
@@ -308,16 +308,4 @@ fn test_the_reported_configuration_matches_the_profile_schema() {
             .collect();
         assert!(errors.is_empty(), "{errors:#?}");
     }
-
-    // Nesting the VLAN in the bond, as it was reported before, is not.
-    let nested = serde_json::json!({
-        "connections": [{
-            "id": "bond0",
-            "bond": {
-                "mode": "balance-rr",
-                "portConnections": [{ "id": "eth0.100", "vlan": { "parent": "eth0", "id": 100 } }]
-            }
-        }]
-    });
-    assert!(!validator.is_valid(&nested));
 }

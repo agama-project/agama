@@ -588,7 +588,7 @@ fn test_a_connection_given_twice_is_rejected() {
         NetworkConnection {
             id: "bond0".to_string(),
             bond: Some(BondSettings {
-                port_connections: Some(vec![BondPort::from_connection(eth0).unwrap()]),
+                port_connections: Some(vec![BondPort::from_connection(eth0)]),
                 ..Default::default()
             }),
             ..Default::default()
