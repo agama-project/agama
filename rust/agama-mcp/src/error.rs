@@ -23,7 +23,7 @@
 //! MCP Error Handling Model:
 //! - **Tool-level errors (`tool_error`)**: Returned as `Ok(CallToolResult)` with `isError: true`,
 //!   sending actionable feedback to the LLM's context window so it can self-correct.
-//! - **Protocol-level errors (`Error`)**: Converted into JSON-RPC `ErrorData` 
+//! - **Protocol-level errors (`Error`)**: Converted into JSON-RPC `ErrorData`
 //!   (`error: { code, message }`), aborting the call at transport level
 //!   (used for permission denials and internal crashes).
 
