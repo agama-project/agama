@@ -120,8 +120,12 @@ module Bootloader
       @password.write
       return if etc_only
 
-      Yast::Execute.on_target("/usr/sbin/grub2-mkconfig", "-o", "/boot/grub2/grub.cfg",
-        env: systemwide_locale)
+      begin
+        Yast::Execute.on_target!("/usr/sbin/grub2-mkconfig", "-o", "/boot/grub2/grub.cfg",
+          env: systemwide_locale)
+      rescue Cheetah::ExecutionFailed => e
+        raise GrubConfigError.new(e)
+      end
     end
 
     def propose

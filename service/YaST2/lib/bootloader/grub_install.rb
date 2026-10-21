@@ -3,9 +3,9 @@
 require "yast"
 require "yast2/execute"
 require "bootloader/systeminfo"
+require "bootloader/exceptions"
 
 Yast.import "Arch"
-Yast.import "Report"
 
 module Bootloader
   # Wraps grub install script for easier usage.
@@ -38,11 +38,15 @@ module Bootloader
       cmd = basic_cmd(secure_boot, update_nvram)
 
       if no_device_install?
-        Yast::Execute.on_target(cmd)
+        begin
+          Yast::Execute.on_target!(cmd)
 
-        if non_removable_efi?
-          cmd.delete("--removable")
-          Yast::Execute.on_target(cmd)
+          if non_removable_efi?
+            cmd.delete("--removable")
+            Yast::Execute.on_target!(cmd)
+          end
+        rescue Cheetah::ExecutionFailed => e
+          raise GrubInstallError.new(e)
         end
         []
       else
@@ -61,7 +65,7 @@ module Bootloader
         end
 
         # Failed to install to all devices
-        report_failure(last_failure) if res.size == devices.size
+        raise GrubInstallError.new(last_failure) if res.size == devices.size
 
         res
       end
@@ -70,16 +74,6 @@ module Bootloader
   private
 
     attr_reader :efi
-
-    def report_failure(exception)
-      Yast::Report.Error(
-        format(_(
-                 "Installing GRUB2 to device failed.\n" \
-                 "Command `%{command}`.\n" \
-                 "Error output: %{stderr}"
-               ), command: exception.commands.inspect, stderr: exception.stderr)
-      )
-    end
 
     # creates basic command for grub2 install without specifying any stage1
     # locations

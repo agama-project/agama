@@ -147,7 +147,7 @@ module Agama
 
       # Performs the final steps on the target file system(s).
       def finish
-        Finisher.new(logger, product_config).run
+        Finisher.new(logger, product_config, questions_client: questions_client).run
       end
 
       # Performs the final umount of system before reboot.
