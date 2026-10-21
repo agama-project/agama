@@ -100,7 +100,10 @@ pub(crate) fn format_progress_report(
     let has_questions = !pending_questions.is_empty();
 
     let (state_str, default_msg) = if is_finished {
-        ("finished", "Installation finished. System will reboot.")
+        (
+            "finished",
+            "Installation finished. Collect logs with 'get_logs' if needed, then call 'reboot' to restart.",
+        )
     } else if is_failed {
         ("failed", "Installation failed. Check 'get_logs'.")
     } else if has_questions {

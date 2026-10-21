@@ -32,6 +32,7 @@ via the kernel command-line:
 8. `get_logs(log_type?, lines?)`: Retrieves scoped system logs directly from `journalctl` (defaulting to the last 100 lines, max 1000). Supported scopes: `installer` (default, queries `agama*` units), `system` (system-wide journal), `zypp` (package manager entries), or any specific systemd unit name.
 9. `get_questions()`: Retrieves interactive questions raised by installer services awaiting an answer (e.g. disk decryption, GPG key import, package retry).
 10. `answer_question(id, action, value?)`: Submits an answer to a pending question by ID to unblock installer progress.
+11. `reboot()`: Reboots the machine into the installed system. Collect all required logs using `get_logs` in advance; the MCP server and installer session terminate immediately upon reboot. Forbidden in configuration mode.
 
 ## Resources Provided
 

@@ -51,6 +51,7 @@ Disabled by default. Activated via kernel command line:
 * `get_progress()`: One-shot state check returning stage (`Configuring`, `Installing`, `Finished`, `Failed`), active tasks, and pending questions.
 * `get_questions()`: Returns currently pending, unanswered interactive questions.
 * `answer_question(id, action, value?)`: Submits answer to unblock installer.
+* `reboot()`: Reboots the machine into the installed system. Forbidden in `config` mode (`403 Forbidden`). Collect logs in advance with `get_logs`; the installer environment and MCP session terminate upon reboot.
 * `get_logs(log_type?, lines?)`: Queries `journalctl` directly. Scopes: `installer` (`agama*`), `system`, `zypp`, or specific unit (e.g. `NetworkManager.service`). Default 100 lines (max 1000).
 
 ---

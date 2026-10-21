@@ -86,6 +86,10 @@ impl McpBackend for DummyBackend {
         Ok(())
     }
 
+    async fn reboot(&self) -> Result<(), BackendError> {
+        Ok(())
+    }
+
     async fn get_progress(&self) -> Result<Status, BackendError> {
         Ok(Default::default())
     }

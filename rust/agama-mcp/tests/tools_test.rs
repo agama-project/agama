@@ -46,6 +46,7 @@ struct MockBackend {
     pub issues: Vec<IssueWithScope>,
     pub status: Mutex<Status>,
     pub install_committed: AtomicBool,
+    pub reboot_called: AtomicBool,
     pub questions: Mutex<Vec<Question>>,
     pub answered_questions: Mutex<Vec<(u32, String, Option<String>)>>,
     pub events: Option<tokio::sync::broadcast::Sender<Event>>,
@@ -106,6 +107,7 @@ impl Default for MockBackend {
             issues: Vec::new(),
             status: Mutex::new(Default::default()),
             install_committed: AtomicBool::new(false),
+            reboot_called: AtomicBool::new(false),
             questions: Mutex::new(vec![sample_question()]),
             answered_questions: Mutex::new(Vec::new()),
             events: None,
@@ -132,7 +134,12 @@ impl McpBackend for MockBackend {
     }
 
     async fn commit_install(&self) -> Result<(), BackendError> {
-        self.install_committed.store(true, Ordering::SeqCst);
+        self.install_committed.store(true, Ordering::Release);
+        Ok(())
+    }
+
+    async fn reboot(&self) -> Result<(), BackendError> {
+        self.reboot_called.store(true, Ordering::Release);
         Ok(())
     }
 
@@ -182,7 +189,7 @@ async fn test_commit_install_forbidden_in_config_mode() {
     let mcp_err: rmcp::model::ErrorData = err.into();
     assert_eq!(mcp_err.code, ErrorCode(403));
     assert!(mcp_err.message.contains("configuration-only mode"));
-    assert!(!backend.install_committed.load(Ordering::SeqCst));
+    assert!(!backend.install_committed.load(Ordering::Acquire));
 }
 
 #[tokio::test]
@@ -194,9 +201,53 @@ async fn test_commit_install_allowed_in_full_mode() {
         .commit_install()
         .await
         .expect("Expected success in full mode");
-    assert!(backend.install_committed.load(Ordering::SeqCst));
+    assert!(backend.install_committed.load(Ordering::Acquire));
     let text = &res.content[0].as_text().unwrap().text;
     assert!(text.contains("Installation committed and started"));
+}
+
+#[tokio::test]
+async fn test_reboot_forbidden_in_config_mode() {
+    let backend = Arc::new(MockBackend::default());
+    let server = McpServer::with_backend(backend.clone(), McpMode::Config);
+
+    let err = server
+        .reboot()
+        .await
+        .expect_err("Expected error in config mode");
+    assert!(matches!(err, agama_mcp::Error::Forbidden));
+    let mcp_err: rmcp::model::ErrorData = err.into();
+    assert_eq!(mcp_err.code, ErrorCode(403));
+    assert!(!backend.reboot_called.load(Ordering::Acquire));
+}
+
+#[tokio::test]
+async fn test_reboot_blocked_during_installing() {
+    let backend_inner = MockBackend::default();
+    backend_inner.status.lock().unwrap().stage = Stage::Installing;
+    let backend = Arc::new(backend_inner);
+    let server = McpServer::with_backend(backend.clone(), McpMode::Full);
+
+    let res = server.reboot().await.unwrap();
+    assert_eq!(res.is_error, Some(true));
+    let text = &res.content[0].as_text().unwrap().text;
+    assert!(text.contains("Cannot reboot while installation is in progress"));
+    assert!(!backend.reboot_called.load(Ordering::Acquire));
+}
+
+#[tokio::test]
+async fn test_reboot_success_when_finished() {
+    let backend_inner = MockBackend::default();
+    backend_inner.status.lock().unwrap().stage = Stage::Finished;
+    let backend = Arc::new(backend_inner);
+    let server = McpServer::with_backend(backend.clone(), McpMode::Full);
+
+    let res = server.reboot().await.unwrap();
+    assert_eq!(res.is_error, Some(false));
+    let text = &res.content[0].as_text().unwrap().text;
+    assert!(text.contains("Reboot initiated"));
+    assert!(text.contains("terminating"));
+    assert!(backend.reboot_called.load(Ordering::Acquire));
 }
 
 #[tokio::test]

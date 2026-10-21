@@ -31,7 +31,9 @@ use agama_utils::actor::Handler;
 use agama_utils::api::event::{self, Event};
 use agama_utils::api::question::{self, Question};
 use agama_utils::api::status::Stage;
-use agama_utils::api::{status::Status, Action, Config, IssueWithScope, Proposal, SystemInfo};
+use agama_utils::api::{
+    status::Status, Action, Config, FinishMethod, IssueWithScope, Proposal, SystemInfo,
+};
 use agama_utils::progress;
 use agama_utils::question as question_service;
 use async_trait::async_trait;
@@ -73,6 +75,9 @@ pub trait McpBackend: Send + Sync {
         action: String,
         value: Option<String>,
     ) -> Result<(), BackendError>;
+
+    /// Triggers the system reboot action.
+    async fn reboot(&self) -> Result<(), BackendError>;
 
     /// Subscribes to the live event bus if supported by the backend.
     fn subscribe_events(&self) -> Option<event::Receiver> {
@@ -123,6 +128,15 @@ impl McpBackend for AgamaBackend {
         Ok(self
             .manager
             .call(agama_manager::message::RunAction::new(Action::Install))
+            .await?)
+    }
+
+    async fn reboot(&self) -> Result<(), BackendError> {
+        Ok(self
+            .manager
+            .call(agama_manager::message::RunAction::new(Action::Finish(
+                FinishMethod::Reboot,
+            )))
             .await?)
     }
 
@@ -348,6 +362,36 @@ impl McpServer {
 
         Ok(tool_success(
             "Installation committed and started. Monitor progress using the 'wait_progress' tool (recommended) or 'get_progress'.",
+        ))
+    }
+
+    /// Reboots the machine into the installed system. Collect logs with 'get_logs' beforehand; the MCP session terminates upon reboot.
+    #[tool(
+        name = "reboot",
+        description = "Reboots the machine into the installed system. Collect logs with 'get_logs' in advance; the MCP server and installer session terminate immediately upon reboot. Only available in 'full' mode."
+    )]
+    pub async fn reboot(&self) -> Result<CallToolResult, Error> {
+        if !self.mode.allows_install() {
+            return Err(Error::Forbidden);
+        }
+
+        let status = match self.backend.get_progress().await {
+            Ok(s) => s,
+            Err(e) => return Ok(tool_error(format!("Failed to retrieve status: {e}"))),
+        };
+
+        if status.stage == Stage::Installing {
+            return Ok(tool_error(
+                "Cannot reboot while installation is in progress. Wait for installation to finish or fail.",
+            ));
+        }
+
+        if let Err(e) = self.backend.reboot().await {
+            return Ok(tool_error(format!("Failed to trigger reboot: {e}")));
+        }
+
+        Ok(tool_success(
+            "Reboot initiated. The system is restarting into the installed OS. The MCP session is terminating.",
         ))
     }
 
