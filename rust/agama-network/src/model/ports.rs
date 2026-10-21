@@ -33,8 +33,8 @@ use std::{
 };
 
 use agama_utils::api::network::{
-    BridgePortSettings, DeviceType, IpConfig, Ipv4Method, Ipv6Method, NestedPort,
-    NetworkConnection, NetworkConnectionsCollection, PortLists, PortRef, Status,
+    DeviceType, IpConfig, Ipv4Method, Ipv6Method, NestedPort, NetworkConnection,
+    NetworkConnectionsCollection, PortLists, PortRef, PortSettings, Status,
 };
 use uuid::Uuid;
 
@@ -46,7 +46,7 @@ struct Node<'a> {
     /// The connection itself or, for a nested port, the connection it stands for.
     conn: Cow<'a, NetworkConnection>,
     /// Settings the connection has as a port, for a nested port that gives them.
-    port: Option<&'a BridgePortSettings>,
+    port: Option<PortSettings<'a>>,
     /// ID of the connection. For a nested port that does not give one, it is derived from its
     /// interface (see [`PortResolver::port_id`]).
     id: String,
@@ -152,7 +152,7 @@ impl<'a> PortResolver<'a> {
     fn visit<'b>(
         &self,
         conn: Cow<'b, NetworkConnection>,
-        port: Option<&'b BridgePortSettings>,
+        port: Option<PortSettings<'b>>,
         id: String,
         parent: Option<usize>,
         ignored_port_names: bool,
@@ -256,7 +256,7 @@ impl<'a> PortResolver<'a> {
             conn.apply_settings(&node.conn)?;
             // Omitting them leaves the current ones alone, like any other optional section.
             if let Some(port) = node.port {
-                conn.port_config = port.clone().into();
+                conn.port_config = port.into();
             }
             conns.push(conn);
         }
@@ -411,11 +411,23 @@ impl<'a> PortResolver<'a> {
             .collect::<Vec<_>>();
         conns.extend(dropped);
 
+        // The port settings of a port that joins another kind of controller would not be accepted
+        // back, so they go away with its previous controller.
         let present: HashSet<Uuid> = conns.iter().map(|c| c.uuid).collect();
-        let bridges: HashSet<Uuid> = conns
+        let controllers: HashMap<Uuid, &ConnectionConfig> = conns
             .iter()
             .chain(self.known.iter().filter(|c| !present.contains(&c.uuid)))
-            .filter(|c| matches!(c.config, ConnectionConfig::Bridge(_)))
+            .map(|c| (c.uuid, &c.config))
+            .collect();
+        let misfits: HashSet<Uuid> = conns
+            .iter()
+            .filter(|c| {
+                claims.get(&c.uuid).is_some_and(|(controller, _)| {
+                    controllers
+                        .get(controller)
+                        .is_none_or(|config| !c.port_config.fits(config))
+                })
+            })
             .map(|c| c.uuid)
             .collect();
 
@@ -427,9 +439,7 @@ impl<'a> PortResolver<'a> {
                 if node.is_some() || conn.controller != Some(*controller) {
                     conn.ip_config = IpConfig::default();
                 }
-                // The bridge port settings of a port that joins a bond would not be accepted
-                // back, so they go away with the bridge.
-                if !bridges.contains(controller) {
+                if misfits.contains(&conn.uuid) {
                     conn.port_config = PortConfig::None;
                 }
                 conn.controller = Some(*controller);

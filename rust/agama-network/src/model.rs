@@ -1634,7 +1634,7 @@ impl ConnectionCollection {
 
         let mut api_conn = NetworkConnection::try_from(conn.clone())?;
 
-        if api_conn.bond.is_none() && api_conn.bridge.is_none() {
+        if api_conn.controller_settings().is_none() {
             return Ok(api_conn);
         }
 
@@ -1860,16 +1860,31 @@ pub struct BridgePortConfig {
     pub path_cost: Option<u32>,
 }
 
-impl From<BridgePortSettings> for PortConfig {
-    fn from(settings: BridgePortSettings) -> Self {
-        // The resolver makes sure that bridge port settings only reach the ports of a bridge.
-        if !settings.is_empty() {
-            PortConfig::Bridge(BridgePortConfig {
-                priority: settings.priority,
-                path_cost: settings.path_cost,
-            })
-        } else {
-            PortConfig::None
+impl PortConfig {
+    /// Whether these are the settings of a port of the given kind of controller.
+    ///
+    /// * `controller`: configuration of the controller.
+    pub fn fits(&self, controller: &ConnectionConfig) -> bool {
+        match self {
+            PortConfig::None => true,
+            PortConfig::Bridge(_) => matches!(controller, ConnectionConfig::Bridge(_)),
+            PortConfig::OvsBridge(_) => matches!(controller, ConnectionConfig::OvsBridge(_)),
+        }
+    }
+}
+
+impl From<PortSettings<'_>> for PortConfig {
+    fn from(settings: PortSettings<'_>) -> Self {
+        // The types of the nested ports make sure that they only give the port settings of their
+        // kind of controller.
+        match settings {
+            PortSettings::Bridge(settings) if !settings.is_empty() => {
+                PortConfig::Bridge(BridgePortConfig {
+                    priority: settings.priority,
+                    path_cost: settings.path_cost,
+                })
+            }
+            PortSettings::Bridge(_) => PortConfig::None,
         }
     }
 }

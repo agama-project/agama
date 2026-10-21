@@ -194,7 +194,7 @@ fn test_bridge_port_settings_are_exposed_and_survive_a_round_trip() {
         panic!("bond0 is not a bond");
     };
     assert_eq!(
-        bond0.port,
+        bond0.bridge_port,
         Some(BridgePortSettings {
             priority: Some(32),
             path_cost: Some(100),

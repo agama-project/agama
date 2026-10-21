@@ -337,8 +337,8 @@ pub trait NestedPort: PortLists + std::fmt::Debug {
     /// Network interface associated with the connection, if the port gives it.
     fn interface(&self) -> Option<&str>;
 
-    /// Settings that the connection has because it is a port of a bridge, if it gives them.
-    fn port_settings(&self) -> Option<&BridgePortSettings>;
+    /// Settings that the connection has because it is a port of its controller, if it gives them.
+    fn port_settings(&self) -> Option<PortSettings<'_>>;
 
     /// Returns the connection the port stands for, with the given ID.
     ///
@@ -348,6 +348,14 @@ pub trait NestedPort: PortLists + std::fmt::Debug {
     ///
     /// * `id`: ID of the connection.
     fn to_connection(&self, id: String) -> NetworkConnection;
+}
+
+/// Settings that a nested port has as a port of its kind of controller.
+///
+/// Each kind of port only takes the settings of its kind of controller (see [`port_type`]).
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub enum PortSettings<'a> {
+    Bridge(&'a BridgePortSettings),
 }
 
 /// Settings a connection has because of its membership in a bridge.
@@ -613,7 +621,7 @@ pub struct NetworkConnectionWithState {
 /// Sections that only some kinds of ports have (see [`port_type`]).
 #[derive(Default)]
 struct PortSections<'a> {
-    port: Option<&'a BridgePortSettings>,
+    bridge_port: Option<&'a BridgePortSettings>,
     bond: Option<&'a BondSettings>,
     bridge: Option<&'a BridgeSettings>,
     vlan: Option<&'a VlanSettings>,
@@ -624,8 +632,9 @@ struct PortSections<'a> {
 ///
 /// It is a connection without IP settings, as its controller holds the IP configuration, with the
 /// settings that every port has plus the given ones: the section that tells its kind (none for an
-/// Ethernet port) and, when its controller has them, its settings as a port. Unknown fields are
-/// rejected, so that a setting that does not apply to the port is not silently ignored.
+/// Ethernet port) and, when its controller has them, its settings as a port, named after its
+/// controller (e.g., `bridge_port`) but given as `port`. Unknown fields are rejected, so that a
+/// setting that does not apply to the port is not silently ignored.
 ///
 /// The given fields must be named after a field of [`PortSections`].
 macro_rules! port_type {
@@ -732,9 +741,9 @@ macro_rules! port_type {
         }
 
         impl PortLists for $name {
-            fn controller_settings(&self) -> (Option<&BondSettings>, Option<&BridgeSettings>) {
+            fn controller_settings(&self) -> Option<ControllerSettings<'_>> {
                 let sections = self.sections();
-                (sections.bond, sections.bridge)
+                ControllerSettings::new(sections.bond, sections.bridge)
             }
         }
 
@@ -747,8 +756,8 @@ macro_rules! port_type {
                 self.interface.as_deref()
             }
 
-            fn port_settings(&self) -> Option<&BridgePortSettings> {
-                self.sections().port
+            fn port_settings(&self) -> Option<PortSettings<'_>> {
+                self.sections().bridge_port.map(PortSettings::Bridge)
             }
 
             fn to_connection(&self, id: String) -> NetworkConnection {
@@ -781,8 +790,8 @@ port_type! {
     #[derive(Default)]
     BridgeEthernetPort {
         /// Settings that this connection has because it is a port of a bridge
-        #[serde(skip_serializing_if = "Option::is_none")]
-        port: Option<BridgePortSettings>,
+        #[serde(rename = "port", skip_serializing_if = "Option::is_none")]
+        bridge_port: Option<BridgePortSettings>,
     }
 }
 
@@ -793,8 +802,8 @@ port_type! {
         /// Bonding settings
         bond: BondSettings,
         /// Settings that this connection has because it is a port of a bridge
-        #[serde(skip_serializing_if = "Option::is_none")]
-        port: Option<BridgePortSettings>,
+        #[serde(rename = "port", skip_serializing_if = "Option::is_none")]
+        bridge_port: Option<BridgePortSettings>,
     }
 }
 
@@ -805,8 +814,8 @@ port_type! {
         /// Bridge settings
         bridge: BridgeSettings,
         /// Settings that this connection has because it is a port of a bridge
-        #[serde(skip_serializing_if = "Option::is_none")]
-        port: Option<BridgePortSettings>,
+        #[serde(rename = "port", skip_serializing_if = "Option::is_none")]
+        bridge_port: Option<BridgePortSettings>,
     }
 }
 
@@ -816,8 +825,8 @@ port_type! {
         /// VLAN settings
         vlan: VlanSettings,
         /// Settings that this connection has because it is a port of a bridge
-        #[serde(skip_serializing_if = "Option::is_none")]
-        port: Option<BridgePortSettings>,
+        #[serde(rename = "port", skip_serializing_if = "Option::is_none")]
+        bridge_port: Option<BridgePortSettings>,
     }
 }
 
@@ -828,8 +837,8 @@ port_type! {
         /// Wireless settings
         wireless: WirelessSettings,
         /// Settings that this connection has because it is a port of a bridge
-        #[serde(skip_serializing_if = "Option::is_none")]
-        port: Option<BridgePortSettings>,
+        #[serde(rename = "port", skip_serializing_if = "Option::is_none")]
+        bridge_port: Option<BridgePortSettings>,
     }
 }
 
@@ -1026,11 +1035,44 @@ impl NetworkConnection {
     }
 }
 
-/// The lists of ports of a connection that can be a bond or a bridge, whether it is at the top level
+/// Settings of a connection that is a controller, which has ports.
+#[derive(Clone, Copy, Debug)]
+pub enum ControllerSettings<'a> {
+    Bond(&'a BondSettings),
+    Bridge(&'a BridgeSettings),
+}
+
+impl<'a> ControllerSettings<'a> {
+    /// Returns the settings of the controller from its sections, if it has any of them.
+    ///
+    /// A connection is a single kind of controller, so it does not have more than one of them.
+    fn new(bond: Option<&'a BondSettings>, bridge: Option<&'a BridgeSettings>) -> Option<Self> {
+        bond.map(Self::Bond).or(bridge.map(Self::Bridge))
+    }
+
+    /// Returns its `ports` and `portConnections` lists.
+    fn port_lists(self) -> (Option<&'a [String]>, Option<Vec<PortRef<'a>>>) {
+        fn refs<'a, P>(ports: &'a Option<Vec<P>>) -> Option<Vec<PortRef<'a>>>
+        where
+            PortRef<'a>: From<&'a P>,
+        {
+            ports
+                .as_ref()
+                .map(|ports| ports.iter().map(PortRef::from).collect())
+        }
+
+        match self {
+            Self::Bond(bond) => (bond.ports.as_deref(), refs(&bond.port_connections)),
+            Self::Bridge(bridge) => (bridge.ports.as_deref(), refs(&bridge.port_connections)),
+        }
+    }
+}
+
+/// The lists of ports of a connection that can be a controller, whether it is at the top level
 /// ([`NetworkConnection`]) or a port itself ([`NestedPort`]).
 pub trait PortLists {
-    /// Returns its bond and bridge settings, if it has them.
-    fn controller_settings(&self) -> (Option<&BondSettings>, Option<&BridgeSettings>);
+    /// Returns its settings as a controller, if it is one.
+    fn controller_settings(&self) -> Option<ControllerSettings<'_>>;
 
     /// Returns the ports declared by the connection, if it declares any.
     ///
@@ -1039,7 +1081,7 @@ pub trait PortLists {
     /// that the controller has no ports, while no list means that its ports are not part of the
     /// payload.
     fn ports(&self) -> Option<Vec<PortRef<'_>>> {
-        let (names, entries) = port_lists(self.controller_settings())?;
+        let (names, entries) = self.controller_settings()?.port_lists();
         if entries.is_some() {
             return entries;
         }
@@ -1049,7 +1091,10 @@ pub trait PortLists {
     /// Whether the connection gives both `ports` and `portConnections` and they do not name the
     /// same ports, regardless of the order. `ports` is ignored in that case.
     fn has_ignored_port_names(&self) -> bool {
-        let Some((Some(names), Some(entries))) = port_lists(self.controller_settings()) else {
+        let Some((Some(names), Some(entries))) = self
+            .controller_settings()
+            .map(ControllerSettings::port_lists)
+        else {
             return false;
         };
         let mut names: Vec<&str> = names.iter().map(String::as_str).collect();
@@ -1061,29 +1106,8 @@ pub trait PortLists {
 }
 
 impl PortLists for NetworkConnection {
-    fn controller_settings(&self) -> (Option<&BondSettings>, Option<&BridgeSettings>) {
-        (self.bond.as_ref(), self.bridge.as_ref())
-    }
-}
-
-/// Returns the `ports` and `portConnections` lists of a bond or a bridge, the bond first.
-#[allow(clippy::type_complexity)]
-fn port_lists<'a>(
-    settings: (Option<&'a BondSettings>, Option<&'a BridgeSettings>),
-) -> Option<(Option<&'a [String]>, Option<Vec<PortRef<'a>>>)> {
-    fn refs<'a, P>(ports: &'a Option<Vec<P>>) -> Option<Vec<PortRef<'a>>>
-    where
-        PortRef<'a>: From<&'a P>,
-    {
-        ports
-            .as_ref()
-            .map(|ports| ports.iter().map(PortRef::from).collect())
-    }
-
-    match settings {
-        (Some(bond), _) => Some((bond.ports.as_deref(), refs(&bond.port_connections))),
-        (None, Some(bridge)) => Some((bridge.ports.as_deref(), refs(&bridge.port_connections))),
-        (None, None) => None,
+    fn controller_settings(&self) -> Option<ControllerSettings<'_>> {
+        ControllerSettings::new(self.bond.as_ref(), self.bridge.as_ref())
     }
 }
 
@@ -1207,7 +1231,10 @@ mod tests {
         };
         // The ID is filled in when resolving the ports.
         assert_eq!(bond0.id(), None);
-        assert_eq!(bond0.port_settings().unwrap().priority, Some(32));
+        let Some(PortSettings::Bridge(settings)) = bond0.port_settings() else {
+            panic!("bond0 has no bridge port settings");
+        };
+        assert_eq!(settings.priority, Some(32));
         assert_eq!(names(bond0.ports()).unwrap(), ["eth1", "eth2"]);
 
         let collection = NetworkConnectionsCollection(vec![conn.clone()]);
@@ -1333,7 +1360,7 @@ mod tests {
         let port = BridgeEthernetPort {
             interface: Some("eth0".to_string()),
             mtu: 9000,
-            port: Some(BridgePortSettings {
+            bridge_port: Some(BridgePortSettings {
                 priority: Some(16),
                 ..Default::default()
             }),
@@ -1351,7 +1378,7 @@ mod tests {
         };
         assert_eq!(port.id.as_deref(), Some("eth0"));
         assert_eq!(port.mtu, 9000);
-        assert_eq!(port.port, None);
+        assert_eq!(port.bridge_port, None);
     }
 
     #[test]
@@ -1426,7 +1453,7 @@ mod tests {
         let [BridgePort::Bond(bond0), BridgePort::Vlan(vlan)] = ports.as_slice() else {
             panic!("unexpected ports: {ports:?}");
         };
-        assert_eq!(bond0.port.as_ref().unwrap().priority, Some(32));
+        assert_eq!(bond0.bridge_port.as_ref().unwrap().priority, Some(32));
         assert_eq!(vlan.vlan.id, 100);
 
         let ports = bond0.bond.port_connections.as_ref().unwrap();
