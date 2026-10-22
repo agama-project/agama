@@ -24,9 +24,15 @@
 //! * Emit relevant events via websocket.
 //! * Serve the code for the web user interface (not implemented yet).
 
-use crate::server::{server_service, web::Error};
+use crate::profile::profile_service;
+use crate::server::{
+    server_with_state,
+    web::{Error, ServerState},
+};
 use crate::terminal::terminal_service;
+use agama_mcp::McpMode;
 use agama_utils::api::event;
+use agama_utils::question;
 use aide::axum::ApiRouter;
 
 mod auth;
@@ -42,25 +48,43 @@ pub use config::ServiceConfig;
 pub use service::MainServiceBuilder;
 use std::path::Path;
 
-/// Returns a service that implements the web-based Agama API.
+/// Returns a service that implements the web-based Agama API with optional MCP server mode.
 ///
 /// * `config`: service configuration.
 /// * `events`: channel to send the events through the WebSocket.
 /// * `dbus`: D-Bus connection.
 /// * `web_ui_dir`: public directory containing the web UI.
+/// * `mcp_mode`: optional MCP mode override; if None, parsed from the kernel command-line.
 pub async fn service<P>(
     config: ServiceConfig,
     events: event::Sender,
     dbus: zbus::Connection,
     web_ui_dir: P,
+    mcp_mode: Option<McpMode>,
 ) -> Result<ApiRouter, Error>
 where
     P: AsRef<Path>,
 {
-    let router = MainServiceBuilder::new(events.clone(), web_ui_dir)
-        .add_service("/", server_service(events, dbus.clone()).await?)
+    let mode = mcp_mode.unwrap_or_else(McpMode::from_cmdline);
+    let questions = question::start(events.clone()).await?;
+    let manager = agama_manager::Service::starter(questions.clone(), events.clone(), dbus)
+        .start()
+        .await?;
+    let profile = profile_service().await;
+    let state = ServerState::new(manager.clone(), questions.clone());
+    let server = server_with_state(state, profile)?;
+
+    let mut builder = MainServiceBuilder::new(events.clone(), web_ui_dir)
+        .add_service("/", server)
         .add_service("/terminal", terminal_service())
-        .with_config(config)
-        .build();
-    Ok(router)
+        .with_config(config);
+
+    if mode.is_enabled() {
+        tracing::info!("Mounting Agama MCP server in {} mode at /mcp", mode);
+        let mcp_server = agama_mcp::McpServer::new(manager, questions, mode);
+        let mcp_router = agama_mcp::web::mcp_router(mcp_server);
+        builder = builder.with_mcp_service(mcp_router);
+    }
+
+    Ok(builder.build())
 }

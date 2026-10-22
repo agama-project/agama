@@ -41,6 +41,7 @@ pub async fn router(
 
     let config = ServiceConfig {
         jwt_secret: "dummy".to_string(),
+        mcp_token: None,
     };
     let manager = agama_manager::test_utils::start_service(events.clone(), dbus).await;
     let questions = question::start(events.clone())
