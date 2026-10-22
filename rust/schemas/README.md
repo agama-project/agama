@@ -31,7 +31,7 @@ The build pipeline unifies Rust-derived schemas with these partial schemas:
    - `docs::build()` applies post-processing schema transforms:
      - `DenyAdditionalProperties`: Sets `"additionalProperties": false` on all object schemas to reject unexpected keys.
      - `RemoveNullableAnyOf`: Unwraps nullable `Option<T>` constructs from `anyOf` and removes `"null"` from type arrays so validators produce clean error messages instead of `anyOf` failure errors.
-     - `SimplifyEnums`: Converts scalar constant `oneOf`/`anyOf` enums into standard `type` + `enum: [...]` arrays, preserving variant documentation as a formatted Markdown list in `description` and via the `x-enum-descriptions` vendor extension.
+     - `SimplifyEnums`: Converts scalar constant `oneOf`/`anyOf` enums into standard `type` + `enum: [...]` arrays, preserving variant documentation as a formatted Markdown list in `description` and via the `x-enum-descriptions` map vendor extension (`{ "value": "description" }`).
      - `DistributeFlattenedEnums`: Inlines outer struct properties into each `anyOf` variant for structs with flattened untagged enums (`UserFile`, `Script`). This avoids using `unevaluatedProperties: false` (from Draft 2019-09) to ensure 100% compatibility with OpenAPI 3.0 tools and client code generators that do not support `unevaluatedProperties`.
      - `LinkSubsystemSchemas`: Links manually defined subsystem schemas (Storage, Dasd, Zfcp, Iscsi) into `Config`, `Proposal`, and `SystemInfo`.
      - `InjectPropertyAliases`: Injects deprecated compatibility aliases (`#[serde(alias)]`) and editor keywords (`$schema`) into component properties.

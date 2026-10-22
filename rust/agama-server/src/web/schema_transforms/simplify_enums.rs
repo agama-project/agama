@@ -70,7 +70,7 @@ fn extract_scalar_const(val: &Value) -> Option<(Value, &'static str, Option<Stri
 ///
 /// If any variants have descriptions, they are preserved by:
 /// 1. Appending a Markdown list of the variants and their descriptions to the schema's `description`.
-/// 2. Adding an `x-enum-descriptions` vendor extension array for OpenAPI code generators.
+/// 2. Adding an `x-enum-descriptions` vendor extension map (`{ "variant": "description" }`).
 #[derive(Debug, Clone, Copy, Default)]
 pub(crate) struct SimplifyEnums;
 
@@ -105,20 +105,19 @@ impl Transform for SimplifyEnums {
 
                             if has_any_desc {
                                 let mut list_lines = Vec::new();
-                                let mut x_descriptions = Vec::new();
+                                let mut x_descriptions = serde_json::Map::new();
 
                                 for (val, _, desc) in &items {
-                                    let val_display = match val {
-                                        Value::String(s) => format!("`{}`", s),
+                                    let val_key = match val {
+                                        Value::String(s) => s.clone(),
                                         other => other.to_string(),
                                     };
 
                                     if let Some(d) = desc {
-                                        list_lines.push(format!("- {} - {}", val_display, d));
-                                        x_descriptions.push(Value::String(d.clone()));
+                                        list_lines.push(format!("- `{}` - {}", val_key, d));
+                                        x_descriptions.insert(val_key, Value::String(d.clone()));
                                     } else {
-                                        list_lines.push(format!("- {}", val_display));
-                                        x_descriptions.push(Value::String(String::new()));
+                                        list_lines.push(format!("- `{}`", val_key));
                                     }
                                 }
 
@@ -136,9 +135,14 @@ impl Transform for SimplifyEnums {
                                 };
 
                                 map.insert("description".to_string(), Value::String(new_desc));
+                                // Support both kebab-case and Redocly camelCase vendor extension conventions.
                                 map.insert(
                                     "x-enum-descriptions".to_string(),
-                                    Value::Array(x_descriptions),
+                                    Value::Object(x_descriptions.clone()),
+                                );
+                                map.insert(
+                                    "x-enumDescriptions".to_string(),
+                                    Value::Object(x_descriptions),
                                 );
                             }
 
@@ -191,15 +195,26 @@ mod tests {
         assert!(desc.contains("- `https` - Secure HTTP"));
         assert!(desc.contains("- `ftp` - File Transfer Protocol"));
 
-        // Verify that x-enum-descriptions extension is present
+        // Verify that x-enum-descriptions extension is present as a Map
         let x_desc = obj
             .get("x-enum-descriptions")
-            .and_then(|x| x.as_array())
+            .and_then(|x| x.as_object())
             .unwrap();
-        assert_eq!(x_desc.len(), 3);
-        assert_eq!(x_desc[0], "Hypertext Transfer Protocol");
-        assert_eq!(x_desc[1], "Secure HTTP");
-        assert_eq!(x_desc[2], "File Transfer Protocol");
+        assert_eq!(
+            x_desc.get("http"),
+            Some(&Value::String("Hypertext Transfer Protocol".to_string()))
+        );
+        assert_eq!(
+            x_desc.get("https"),
+            Some(&Value::String("Secure HTTP".to_string()))
+        );
+        assert_eq!(
+            x_desc.get("ftp"),
+            Some(&Value::String("File Transfer Protocol".to_string()))
+        );
+
+        // Verify that x-enumDescriptions is also present as a Map
+        assert!(obj.get("x-enumDescriptions").unwrap().is_object());
     }
 
     #[test]
