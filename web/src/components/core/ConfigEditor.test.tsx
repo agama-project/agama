@@ -38,10 +38,12 @@ jest.mock("@patternfly/react-code-editor", () => ({
     code,
     downloadFileName,
     emptyState,
+    onChange,
   }: {
     code?: string;
     downloadFileName: string;
     emptyState?: React.ReactNode;
+    onChange?: (value: string) => void;
   }) =>
     code === undefined ? (
       <>{emptyState}</>
@@ -49,6 +51,12 @@ jest.mock("@patternfly/react-code-editor", () => ({
       <div>
         <pre aria-label="Configuration code">{code}</pre>
         <div aria-label="Download filename">{downloadFileName}</div>
+        <button
+          onClick={() => onChange?.('{"software":{"product":"Updated"}}')}
+          aria-label="Update code"
+        >
+          Update
+        </button>
       </div>
     ),
   Language: { json: "json" },
@@ -130,5 +138,26 @@ describe("ConfigEditor", () => {
 
     // remove the console mock
     jest.spyOn(global.console, "error").mockRestore();
+  });
+
+  it("calls onChange when config is loaded and when edited", async () => {
+    const mockOnChange = jest.fn();
+    fetchSpy.mockResolvedValue({
+      ok: true,
+      text: () => Promise.resolve(JSON.stringify(mockConfig)),
+    } as Response);
+
+    const { user } = plainRender(<ConfigEditor onChange={mockOnChange} />);
+
+    await waitFor(() => {
+      expect(mockOnChange).toHaveBeenCalledWith(
+        JSON.stringify(mockConfig, null, 2),
+      );
+    });
+
+    await user.click(screen.getByRole("button", { name: "Update code" }));
+    expect(mockOnChange).toHaveBeenCalledWith(
+      '{"software":{"product":"Updated"}}',
+    );
   });
 });

@@ -120,9 +120,24 @@ impl MainServiceBuilder {
         tracing::info!("Serving static files from {}", self.public_dir.display());
         let serve = ServeDir::new(self.public_dir).precompressed_gzip();
 
+        let schema_dir = std::env::var("AGAMA_SCHEMA_DIR")
+            .map(std::path::PathBuf::from)
+            .unwrap_or_else(|_| {
+                let manifest_dir = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+                let dev_path = manifest_dir.join("../out/schemas");
+                if dev_path.exists() {
+                    dev_path
+                } else {
+                    std::path::PathBuf::from(agama_lib::profile::DEFAULT_SCHEMA_DIR)
+                }
+            });
+        tracing::info!("Serving schemas from {}", schema_dir.display());
+        let serve_schemas = ServeDir::new(schema_dir);
+
         ApiRouter::new()
             .route("/login", get(login_from_query))
             .nest("/api", api_router)
+            .nest_service("/schemas", serve_schemas)
             .fallback_service(serve)
             .route_layer(middleware::from_fn(version_header))
             .layer(

@@ -32,7 +32,33 @@ jest.mock("~/utils", () => ({
 }));
 
 // Monaco editor used in <ConfigEditor> is too heavy to render in tests
-jest.mock("~/components/core/ConfigEditor", () => () => <div>ConfigEditor Mock</div>);
+jest.mock(
+  "~/components/core/ConfigEditor",
+  () =>
+    ({ onChange }: { onChange?: (code: string) => void }) => (
+      <div>
+        <div>ConfigEditor Mock</div>
+        <button
+          onClick={() => onChange?.('{"software":{"product":"Agama"}}')}
+          aria-label="Set Valid Config"
+        >
+          Set Valid
+        </button>
+        <button
+          onClick={() => onChange?.("{invalid-json}")}
+          aria-label="Set Invalid Config"
+        >
+          Set Invalid
+        </button>
+      </div>
+    ),
+);
+
+const mockPutConfig = jest.fn();
+jest.mock("~/api", () => ({
+  ...jest.requireActual("~/api"),
+  putConfig: (config: unknown) => mockPutConfig(config),
+}));
 
 const mockOnClose = jest.fn();
 global.fetch = jest.fn();
@@ -45,6 +71,7 @@ const renderConfigDialog = () => {
 describe("ConfigDialog", () => {
   beforeEach(() => {
     mockOnClose.mockReset();
+    mockPutConfig.mockReset();
   });
 
   it("renders the dialog with the correct title", async () => {
@@ -59,5 +86,39 @@ describe("ConfigDialog", () => {
     const closeButtons = screen.getAllByRole("button", { name: "Close" });
     await user.click(closeButtons[1]);
     expect(mockOnClose).toHaveBeenCalled();
+  });
+
+  it("disables Apply button until config is loaded", async () => {
+    renderConfigDialog();
+    await screen.findByText("ConfigEditor Mock");
+    const applyButton = screen.getByRole("button", { name: "Apply" });
+    expect(applyButton).toBeDisabled();
+  });
+
+  it("applies valid config and closes dialog when Apply is clicked", async () => {
+    mockPutConfig.mockResolvedValue({});
+    const { user } = renderConfigDialog();
+    await screen.findByText("ConfigEditor Mock");
+
+    await user.click(screen.getByRole("button", { name: "Set Valid Config" }));
+
+    const applyButton = screen.getByRole("button", { name: "Apply" });
+    expect(applyButton).toBeEnabled();
+
+    await user.click(applyButton);
+    expect(mockPutConfig).toHaveBeenCalledWith({ software: { product: "Agama" } });
+    expect(mockOnClose).toHaveBeenCalled();
+  });
+
+  it("shows an error alert when invalid JSON is submitted", async () => {
+    const { user } = renderConfigDialog();
+    await screen.findByText("ConfigEditor Mock");
+
+    await user.click(screen.getByRole("button", { name: "Set Invalid Config" }));
+    await user.click(screen.getByRole("button", { name: "Apply" }));
+
+    expect(mockPutConfig).not.toHaveBeenCalled();
+    expect(mockOnClose).not.toHaveBeenCalled();
+    expect(screen.getByText("Invalid JSON syntax")).toBeInTheDocument();
   });
 });

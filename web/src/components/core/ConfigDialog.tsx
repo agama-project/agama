@@ -20,10 +20,11 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { Suspense } from "react";
-import { Bullseye, Content, Flex, Spinner } from "@patternfly/react-core";
+import React, { Suspense, useState } from "react";
+import { Alert, Bullseye, Content, Flex, Spinner } from "@patternfly/react-core";
 import Popup from "~/components/core/Popup";
 import { _ } from "~/i18n";
+import { putConfig } from "~/api";
 
 type ConfigDialogProps = {
   onClose: () => void;
@@ -41,14 +42,36 @@ const ConfigEditor = React.lazy(
 
 /**
  * Dialog showing the current installation configuration in JSON format, with
- * options to copy or download the content.
+ * options to copy, download, and edit the content.
  */
 export default function ConfigDialog({ onClose }: ConfigDialogProps) {
+  const [configCode, setConfigCode] = useState<string | undefined>(undefined);
+  const [error, setError] = useState<string | null>(null);
+  const [isApplying, setIsApplying] = useState(false);
+
   const fallback = (
     <Bullseye>
       <Spinner />
     </Bullseye>
   );
+
+  const handleApply = async () => {
+    if (configCode === undefined) return;
+    setError(null);
+    try {
+      const parsed = JSON.parse(configCode);
+      setIsApplying(true);
+      await putConfig(parsed);
+      onClose();
+    } catch (e: unknown) {
+      setIsApplying(false);
+      const msg =
+        e instanceof SyntaxError
+          ? _("Invalid JSON syntax")
+          : _("Failed to apply configuration");
+      setError(msg);
+    }
+  };
 
   return (
     <Popup
@@ -57,7 +80,20 @@ export default function ConfigDialog({ onClose }: ConfigDialogProps) {
       title={_("Installation settings in JSON format")}
       onClose={onClose}
       variant="medium"
-      actions={<Popup.Close />}
+      actions={
+        <>
+          <Popup.PrimaryAction
+            onClick={handleApply}
+            isLoading={isApplying}
+            isDisabled={configCode === undefined || isApplying}
+          >
+            {_("Apply")}
+          </Popup.PrimaryAction>
+          <Popup.SecondaryAction onClick={onClose}>
+            {_("Close")}
+          </Popup.SecondaryAction>
+        </>
+      }
     >
       <Flex direction={{ default: "column" }} gap={{ default: "gapSm" }}>
         <Content>
@@ -65,8 +101,9 @@ export default function ConfigDialog({ onClose }: ConfigDialogProps) {
             "Use this to reproduce this installation later using the installer command-line interface or the unattended mode.",
           )}
         </Content>
+        {error && <Alert variant="danger" isInline title={error} />}
         <Suspense fallback={fallback}>
-          <ConfigEditor />
+          <ConfigEditor onChange={setConfigCode} />
         </Suspense>
       </Flex>
     </Popup>
