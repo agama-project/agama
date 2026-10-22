@@ -101,10 +101,8 @@ impl Transform for RemoveNullableAnyOf {
                                 }
                             }
                             Value::Bool(true) => {}
-                            Value::Bool(false) => {
-                                if !map.contains_key("not") {
-                                    map.insert("not".to_string(), serde_json::json!({}));
-                                }
+                            Value::Bool(false) if !map.contains_key("not") => {
+                                map.insert("not".to_string(), serde_json::json!({}));
                             }
                             _ => {}
                         }
@@ -152,8 +150,14 @@ mod tests {
 
         // Before transform, the 'product' property has anyOf with null
         let obj_before = schema.as_object().unwrap();
-        let props_before = obj_before.get("properties").and_then(|p| p.as_object()).unwrap();
-        let product_before = props_before.get("product").and_then(|p| p.as_object()).unwrap();
+        let props_before = obj_before
+            .get("properties")
+            .and_then(|p| p.as_object())
+            .unwrap();
+        let product_before = props_before
+            .get("product")
+            .and_then(|p| p.as_object())
+            .unwrap();
         assert!(product_before.contains_key("anyOf"));
 
         let mut transform = RemoveNullableAnyOf;
@@ -161,8 +165,14 @@ mod tests {
 
         // After transform, 'anyOf' is eliminated and description is preserved
         let obj_after = schema.as_object().unwrap();
-        let props_after = obj_after.get("properties").and_then(|p| p.as_object()).unwrap();
-        let product_after = props_after.get("product").and_then(|p| p.as_object()).unwrap();
+        let props_after = obj_after
+            .get("properties")
+            .and_then(|p| p.as_object())
+            .unwrap();
+        let product_after = props_after
+            .get("product")
+            .and_then(|p| p.as_object())
+            .unwrap();
         assert!(!product_after.contains_key("anyOf"));
         assert!(product_after.contains_key("$ref"));
         assert_eq!(
@@ -201,13 +211,31 @@ mod tests {
         let obj = schema.as_object().unwrap();
         let props = obj.get("properties").and_then(|p| p.as_object()).unwrap();
 
-        let s_prop = props.get("optional_string").and_then(|p| p.as_object()).unwrap();
-        assert_eq!(s_prop.get("type"), Some(&Value::String("string".to_string())));
+        let s_prop = props
+            .get("optional_string")
+            .and_then(|p| p.as_object())
+            .unwrap();
+        assert_eq!(
+            s_prop.get("type"),
+            Some(&Value::String("string".to_string()))
+        );
 
-        let i_prop = props.get("optional_int").and_then(|p| p.as_object()).unwrap();
-        assert_eq!(i_prop.get("type"), Some(&Value::String("integer".to_string())));
+        let i_prop = props
+            .get("optional_int")
+            .and_then(|p| p.as_object())
+            .unwrap();
+        assert_eq!(
+            i_prop.get("type"),
+            Some(&Value::String("integer".to_string()))
+        );
 
-        let l_prop = props.get("optional_list").and_then(|p| p.as_object()).unwrap();
-        assert_eq!(l_prop.get("type"), Some(&Value::String("array".to_string())));
+        let l_prop = props
+            .get("optional_list")
+            .and_then(|p| p.as_object())
+            .unwrap();
+        assert_eq!(
+            l_prop.get("type"),
+            Some(&Value::String("array".to_string()))
+        );
     }
 }

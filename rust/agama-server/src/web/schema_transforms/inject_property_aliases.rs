@@ -113,10 +113,16 @@ mod tests {
         let props = obj.get("properties").and_then(|p| p.as_object()).unwrap();
 
         assert!(props.contains_key("transient"));
-        assert_eq!(props.get("transient").unwrap().get("deprecated"), Some(&Value::Bool(true)));
+        assert_eq!(
+            props.get("transient").unwrap().get("deprecated"),
+            Some(&Value::Bool(true))
+        );
 
         assert!(props.contains_key("language"));
-        assert_eq!(props.get("language").unwrap().get("deprecated"), Some(&Value::Bool(true)));
+        assert_eq!(
+            props.get("language").unwrap().get("deprecated"),
+            Some(&Value::Bool(true))
+        );
 
         assert!(props.contains_key("keyboard"));
         assert!(props.contains_key("sshPublicKey"));

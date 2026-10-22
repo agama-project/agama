@@ -59,7 +59,8 @@ use serde_json::Value;
 ///
 /// If `"additionalProperties": false` is placed on the outer object and its variants:
 /// 1. The outer object only recognizes `destination` and `permissions`, rejecting `"content"` as an unexpected property.
-/// 2. Variant 0 only recognizes `content`, rejecting `"destination"` and `"permissions"` as unexpected properties.
+/// 2. Variant 1 only recognizes `content`, rejecting `"destination"` and `"permissions"` as unexpected properties.
+///
 /// As a result, valid configurations become impossible to validate.
 ///
 /// # Solution

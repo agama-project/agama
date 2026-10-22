@@ -117,19 +117,27 @@ mod tests {
 
         assert_eq!(
             props.get("storage").unwrap().get("$ref"),
-            Some(&Value::String("#/components/schemas/StorageConfig".to_string()))
+            Some(&Value::String(
+                "#/components/schemas/StorageConfig".to_string()
+            ))
         );
         assert_eq!(
             props.get("dasd").unwrap().get("$ref"),
-            Some(&Value::String("#/components/schemas/DasdConfig".to_string()))
+            Some(&Value::String(
+                "#/components/schemas/DasdConfig".to_string()
+            ))
         );
         assert_eq!(
             props.get("zfcp").unwrap().get("$ref"),
-            Some(&Value::String("#/components/schemas/ZfcpConfig".to_string()))
+            Some(&Value::String(
+                "#/components/schemas/ZfcpConfig".to_string()
+            ))
         );
         assert_eq!(
             props.get("iscsi").unwrap().get("$ref"),
-            Some(&Value::String("#/components/schemas/IscsiConfig".to_string()))
+            Some(&Value::String(
+                "#/components/schemas/IscsiConfig".to_string()
+            ))
         );
     }
 }

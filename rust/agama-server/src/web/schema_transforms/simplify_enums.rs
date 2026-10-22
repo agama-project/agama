@@ -123,10 +123,14 @@ impl Transform for SimplifyEnums {
                                 }
 
                                 let formatted_list = list_lines.join("\n");
-                                let new_desc = match map.get("description").and_then(|d| d.as_str()) {
+                                let new_desc = match map.get("description").and_then(|d| d.as_str())
+                                {
                                     Some(existing) => {
                                         let trimmed = existing.trim_end();
-                                        format!("{}\n\nAvailable values:\n{}", trimmed, formatted_list)
+                                        format!(
+                                            "{}\n\nAvailable values:\n{}",
+                                            trimmed, formatted_list
+                                        )
                                     }
                                     None => format!("Available values:\n{}", formatted_list),
                                 };
@@ -188,7 +192,10 @@ mod tests {
         assert!(desc.contains("- `ftp` - File Transfer Protocol"));
 
         // Verify that x-enum-descriptions extension is present
-        let x_desc = obj.get("x-enum-descriptions").and_then(|x| x.as_array()).unwrap();
+        let x_desc = obj
+            .get("x-enum-descriptions")
+            .and_then(|x| x.as_array())
+            .unwrap();
         assert_eq!(x_desc.len(), 3);
         assert_eq!(x_desc[0], "Hypertext Transfer Protocol");
         assert_eq!(x_desc[1], "Secure HTTP");

@@ -36,7 +36,8 @@ impl Transform for RewriteStorageRefs {
                     *ref_str = "#/components/schemas/StorageDevice".to_string();
                 } else if ref_str.starts_with("device.storage.schema.json#/$defs/") {
                     let def_name = ref_str.trim_start_matches("device.storage.schema.json#/$defs/");
-                    *ref_str = format!("#/components/schemas/StorageDevice{}", capitalize(def_name));
+                    *ref_str =
+                        format!("#/components/schemas/StorageDevice{}", capitalize(def_name));
                 }
             }
         }
@@ -71,11 +72,15 @@ mod tests {
         let props = obj.get("properties").and_then(|p| p.as_object()).unwrap();
         assert_eq!(
             props.get("device").and_then(|d| d.get("$ref")),
-            Some(&Value::String("#/components/schemas/StorageDevice".to_string()))
+            Some(&Value::String(
+                "#/components/schemas/StorageDevice".to_string()
+            ))
         );
         assert_eq!(
             props.get("partition").and_then(|d| d.get("$ref")),
-            Some(&Value::String("#/components/schemas/StorageDevicePartition".to_string()))
+            Some(&Value::String(
+                "#/components/schemas/StorageDevicePartition".to_string()
+            ))
         );
     }
 }

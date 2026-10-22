@@ -43,7 +43,8 @@ impl Transform for DenyAdditionalProperties {
                 map.contains_key("properties") || map.contains_key("patternProperties")
             };
 
-            if is_object && !map.contains_key("additionalProperties") && !map.contains_key("anyOf") {
+            if is_object && !map.contains_key("additionalProperties") && !map.contains_key("anyOf")
+            {
                 map.insert("additionalProperties".to_string(), Value::Bool(false));
             }
         }
@@ -78,7 +79,11 @@ mod tests {
     #[test]
     fn test_deny_additional_properties_simple_object() {
         let mut schema = schemars::schema_for!(SimpleUser);
-        assert!(schema.as_object().unwrap().get("additionalProperties").is_none());
+        assert!(schema
+            .as_object()
+            .unwrap()
+            .get("additionalProperties")
+            .is_none());
 
         let mut transform = DenyAdditionalProperties;
         transform.transform(&mut schema);
@@ -121,7 +126,10 @@ mod tests {
         let props = obj.get("properties").and_then(|p| p.as_object()).unwrap();
         let data_prop = props.get("data").and_then(|d| d.as_object()).unwrap();
         // The data map should preserve its schema for additionalProperties, NOT set to false
-        assert_ne!(data_prop.get("additionalProperties"), Some(&Value::Bool(false)));
+        assert_ne!(
+            data_prop.get("additionalProperties"),
+            Some(&Value::Bool(false))
+        );
         assert!(data_prop.get("additionalProperties").is_some());
     }
 }
