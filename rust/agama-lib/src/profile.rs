@@ -311,4 +311,104 @@ mod tests {
             }
         }
     }
+
+    #[test]
+    fn test_validate_profile_tw_invalid() {
+        let manifest_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+        let schema_path = manifest_dir.join("../out/schemas/config.schema.json");
+        if !schema_path.exists() {
+            return;
+        }
+
+        let validator = ProfileValidator::new(&schema_path).expect("valid schema");
+        let invalid_example = manifest_dir.join("../share/examples/profile_tw_invalid.json");
+        let result = validator
+            .validate_file(&invalid_example)
+            .expect("validation result");
+        match result {
+            ValidationOutcome::Valid => {
+                panic!("Invalid profile should have failed validation");
+            }
+            ValidationOutcome::NotValid(errors) => {
+                assert!(!errors.is_empty());
+                for err in &errors {
+                    assert!(
+                        !err.contains("anyOf"),
+                        "Error should not mention 'anyOf', but got: {}",
+                        err
+                    );
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn test_validate_unknown_field_rejected() {
+        let manifest_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+        let schema_path = manifest_dir.join("../out/schemas/config.schema.json");
+        if !schema_path.exists() {
+            return;
+        }
+
+        let validator = ProfileValidator::new(&schema_path).expect("valid schema");
+        let json_with_unknown_field = r#"
+        {
+            "bootloader": {
+                "unknownKey": true
+            }
+        }
+        "#;
+        let result = validator
+            .validate_str(json_with_unknown_field)
+            .expect("validation result");
+        match result {
+            ValidationOutcome::Valid => {
+                panic!("Profile with unknown key should have failed validation");
+            }
+            ValidationOutcome::NotValid(errors) => {
+                assert!(!errors.is_empty());
+                assert!(
+                    errors.iter().any(|e| e.contains("unknownKey")),
+                    "Expected error mentioning unknownKey, got: {:#?}",
+                    errors
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn test_validate_invalid_enum_rejected_cleanly() {
+        let manifest_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+        let schema_path = manifest_dir.join("../out/schemas/config.schema.json");
+        if !schema_path.exists() {
+            return;
+        }
+
+        let validator = ProfileValidator::new(&schema_path).expect("valid schema");
+        let json_with_invalid_enum = r#"
+        {
+            "access": {
+                "ssh": "invalid_value"
+            }
+        }
+        "#;
+        let result = validator
+            .validate_str(json_with_invalid_enum)
+            .expect("validation result");
+        match result {
+            ValidationOutcome::Valid => {
+                panic!("Profile with invalid enum should have failed validation");
+            }
+            ValidationOutcome::NotValid(errors) => {
+                assert!(!errors.is_empty());
+                for err in &errors {
+                    assert!(
+                        !err.contains("oneOf") && !err.contains("anyOf"),
+                        "Error should not mention 'oneOf' or 'anyOf', but got: {}",
+                        err
+                    );
+                }
+            }
+        }
+    }
 }
