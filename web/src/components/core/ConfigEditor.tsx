@@ -23,8 +23,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Spinner } from "@patternfly/react-core";
 import { CodeEditor, Language } from "@patternfly/react-code-editor";
-// import only the base editor to save some space
-import * as monaco from "monaco-editor/esm/vs/editor/editor.api.js";
+import * as monaco from "monaco-editor";
 import { loader } from "@monaco-editor/react";
 import { useAppearance } from "~/context/appearance";
 import { ROOT } from "~/routes/paths";

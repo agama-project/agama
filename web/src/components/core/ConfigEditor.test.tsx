@@ -68,7 +68,7 @@ jest.mock("@monaco-editor/react", () => ({
   },
 }));
 
-jest.mock("monaco-editor/esm/vs/editor/editor.api.js", () => ({}));
+jest.mock("monaco-editor", () => ({}));
 
 const mockConfig = { software: { product: "Agama" } };
 

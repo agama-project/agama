@@ -134,6 +134,11 @@ module.exports = {
         target: agamaServer,
         secure: false,
       },
+      {
+        context: ["/schemas"],
+        target: agamaServer,
+        secure: false,
+      },
     ],
   },
   // source maps are configured using the SourceMapDevToolPlugin above

@@ -89,9 +89,13 @@ export default function ConfigDialog({ onClose }: ConfigDialogProps) {
           >
             {_("Apply")}
           </Popup.PrimaryAction>
+<<<<<<< HEAD
           <Popup.SecondaryAction onClick={onClose}>
             {_("Close")}
           </Popup.SecondaryAction>
+=======
+          <Popup.SecondaryAction onClick={onClose}>{_("Close")}</Popup.SecondaryAction>
+>>>>>>> d3e5f77b2 (POC: rw monaco editor)
         </>
       }
     >
