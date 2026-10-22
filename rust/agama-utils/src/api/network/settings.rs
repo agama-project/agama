@@ -621,20 +621,36 @@ pub struct NetworkConnectionWithState {
 /// Sections that only some kinds of ports have (see [`port_type`]).
 #[derive(Default)]
 struct PortSections<'a> {
-    bridge_port: Option<&'a BridgePortSettings>,
+    port: Option<PortSettings<'a>>,
     bond: Option<&'a BondSettings>,
     bridge: Option<&'a BridgeSettings>,
     vlan: Option<&'a VlanSettings>,
     wireless: Option<&'a WirelessSettings>,
 }
 
+/// Turns a section of a port into the one of its [`PortSections`].
+trait AsSection<'a, T> {
+    fn as_section(&'a self) -> T;
+}
+
+impl<'a, T> AsSection<'a, Option<&'a T>> for T {
+    fn as_section(&'a self) -> Option<&'a T> {
+        Some(self)
+    }
+}
+
+impl<'a> AsSection<'a, Option<PortSettings<'a>>> for Option<BridgePortSettings> {
+    fn as_section(&'a self) -> Option<PortSettings<'a>> {
+        self.as_ref().map(PortSettings::Bridge)
+    }
+}
+
 /// Defines a kind of port of a kind of controller.
 ///
 /// It is a connection without IP settings, as its controller holds the IP configuration, with the
 /// settings that every port has plus the given ones: the section that tells its kind (none for an
-/// Ethernet port) and, when its controller has them, its settings as a port, named after its
-/// controller (e.g., `bridge_port`) but given as `port`. Unknown fields are rejected, so that a
-/// setting that does not apply to the port is not silently ignored.
+/// Ethernet port) and, when its controller has them, its settings as a port (`port`). Unknown
+/// fields are rejected, so that a setting that does not apply to the port is not silently ignored.
 ///
 /// The given fields must be named after a field of [`PortSections`].
 macro_rules! port_type {
@@ -734,7 +750,7 @@ macro_rules! port_type {
 
             fn sections(&self) -> PortSections<'_> {
                 PortSections {
-                    $( $field: (&self.$field).into(), )*
+                    $( $field: self.$field.as_section(), )*
                     ..Default::default()
                 }
             }
@@ -757,7 +773,7 @@ macro_rules! port_type {
             }
 
             fn port_settings(&self) -> Option<PortSettings<'_>> {
-                self.sections().bridge_port.map(PortSettings::Bridge)
+                self.sections().port
             }
 
             fn to_connection(&self, id: String) -> NetworkConnection {
@@ -790,8 +806,8 @@ port_type! {
     #[derive(Default)]
     BridgeEthernetPort {
         /// Settings that this connection has because it is a port of a bridge
-        #[serde(rename = "port", skip_serializing_if = "Option::is_none")]
-        bridge_port: Option<BridgePortSettings>,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        port: Option<BridgePortSettings>,
     }
 }
 
@@ -802,8 +818,8 @@ port_type! {
         /// Bonding settings
         bond: BondSettings,
         /// Settings that this connection has because it is a port of a bridge
-        #[serde(rename = "port", skip_serializing_if = "Option::is_none")]
-        bridge_port: Option<BridgePortSettings>,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        port: Option<BridgePortSettings>,
     }
 }
 
@@ -814,8 +830,8 @@ port_type! {
         /// Bridge settings
         bridge: BridgeSettings,
         /// Settings that this connection has because it is a port of a bridge
-        #[serde(rename = "port", skip_serializing_if = "Option::is_none")]
-        bridge_port: Option<BridgePortSettings>,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        port: Option<BridgePortSettings>,
     }
 }
 
@@ -825,8 +841,8 @@ port_type! {
         /// VLAN settings
         vlan: VlanSettings,
         /// Settings that this connection has because it is a port of a bridge
-        #[serde(rename = "port", skip_serializing_if = "Option::is_none")]
-        bridge_port: Option<BridgePortSettings>,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        port: Option<BridgePortSettings>,
     }
 }
 
@@ -837,8 +853,8 @@ port_type! {
         /// Wireless settings
         wireless: WirelessSettings,
         /// Settings that this connection has because it is a port of a bridge
-        #[serde(rename = "port", skip_serializing_if = "Option::is_none")]
-        bridge_port: Option<BridgePortSettings>,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        port: Option<BridgePortSettings>,
     }
 }
 
@@ -1360,7 +1376,7 @@ mod tests {
         let port = BridgeEthernetPort {
             interface: Some("eth0".to_string()),
             mtu: 9000,
-            bridge_port: Some(BridgePortSettings {
+            port: Some(BridgePortSettings {
                 priority: Some(16),
                 ..Default::default()
             }),
@@ -1378,7 +1394,7 @@ mod tests {
         };
         assert_eq!(port.id.as_deref(), Some("eth0"));
         assert_eq!(port.mtu, 9000);
-        assert_eq!(port.bridge_port, None);
+        assert_eq!(port.port, None);
     }
 
     #[test]
@@ -1453,7 +1469,7 @@ mod tests {
         let [BridgePort::Bond(bond0), BridgePort::Vlan(vlan)] = ports.as_slice() else {
             panic!("unexpected ports: {ports:?}");
         };
-        assert_eq!(bond0.bridge_port.as_ref().unwrap().priority, Some(32));
+        assert_eq!(bond0.port.as_ref().unwrap().priority, Some(32));
         assert_eq!(vlan.vlan.id, 100);
 
         let ports = bond0.bond.port_connections.as_ref().unwrap();

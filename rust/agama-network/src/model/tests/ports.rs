@@ -47,7 +47,7 @@ fn test_omitting_the_port_settings_leaves_them_alone() {
     let BridgePort::Bond(mut bond0) = bridge_port(&exposed(&state), "bond0") else {
         panic!("bond0 is not a bond");
     };
-    bond0.bridge_port = None;
+    bond0.port = None;
     // bond0 stays nested in br0, otherwise it would be moved out of it.
     let mut update = find(&exposed(&state), "br0");
     update.bridge.as_mut().unwrap().port_connections = Some(vec![BridgePort::Bond(bond0)]);
