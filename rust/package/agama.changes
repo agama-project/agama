@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Oct 22 08:05:15 UTC 2026 - Josef Reidinger <jreidinger@suse.cz>
+
+- Fix syntax of zypp.conf.d that is generated if onlyRequired is 
+  set to true (bsc#1285975)
+
+-------------------------------------------------------------------
 Wed Sep 30 12:41:05 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
 
 - properly copy SSL certificates to target system (bsc#1283318)
