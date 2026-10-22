@@ -70,6 +70,8 @@
     Requires:       util-linux-systemd
     # AutoYaST compatibility
     Requires:       xsltproc
+    # Includes the "installation-helper" needed by libstorage-ng
+    Requires:       snapper
 :testsuite_command: |-
   cd %{buildroot}%{gem_base}/gems/%{mod_full_name}
   rspec
