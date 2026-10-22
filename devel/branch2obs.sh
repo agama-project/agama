@@ -174,7 +174,7 @@ if osc ls "$PROJECT" > /dev/null 2>&1; then
 else
   echo "Creating project $PROJECT..."
   # packages to branch
-  packages=(agama agama-installer agama-auto agama-products agama-web-ui rubygem-agama-yast)
+  packages=(agama agama-installer agama-products agama-web-ui rubygem-agama-yast)
   for pkg in "${packages[@]}"; do
     echo "Branching package $pkg"
     # branch the package
@@ -212,7 +212,7 @@ else
 
   echo "Set project description"
   url=$(gh repo view --json url --jq .url)
-  osc meta prj "$PROJECT" | 
+  osc meta prj "$PROJECT" |
     sed -e "s#<url>.*</url>#<url>$url/tree/$BRANCH</url>#" \
       -e "s#<title>.*</title>#<title>Agama from Git</title>#" \
       -e "s#<description>.*</description>#<description>This project contains the latest packages built from repository $repo_slug, branch \"$BRANCH\".</description>#" | \
