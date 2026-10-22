@@ -209,7 +209,7 @@ jobs:
         working-directory: ./agama
         run: |
           gh pr create -B "${{ matrix.branch }}" -H "${PR_BRANCH}" \
-            --label translations --label bot \
+            --label "area: l10n" --label bot \
             --title "Update ${{ matrix.component }} translation files (${{ matrix.branch }})" \
             --body "Updating the ${{ matrix.component }} translation files from the agama-weblate repository"
         env:
