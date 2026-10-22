@@ -194,7 +194,7 @@ jobs:
               git fetch --quiet origin "pull/${pr}/head"
               # compare the working tree with the PR, ignore the timestamp changes
               git diff --ignore-matching-lines="POT-Creation-Date:" \
-                --ignore-matching-lines="PO-Revision-Date:" FETCH_HEAD -- ${paths} > pr.diff
+                --ignore-matching-lines="PO-Revision-Date:" FETCH_HEAD -- "${paths}" > pr.diff
               if [ ! -s pr.diff ]; then
                 echo "Pull request already exists: ${url}"
                 duplicate=true
