@@ -101,6 +101,10 @@ else
   systemctl set-default graphical.target
 fi
 
+# disable snapshot cleanup
+systemctl disable snapper-cleanup.timer
+systemctl disable snapper-timeline.timer
+
 # Prevent premature activation of LVM (bsc#1246133)
 systemctl mask lvm2-monitor.service
 if [[ -f /etc/lvm/lvm.conf ]]; then
