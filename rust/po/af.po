@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-22 12:12+0000\n"
-"PO-Revision-Date: 2026-05-31 11:12+0000\n"
+"POT-Creation-Date: 2026-10-01 14:04+0000\n"
+"PO-Revision-Date: 2026-10-20 13:13+0000\n"
 "Last-Translator: Feike Donia <feikedonia@proton.me>\n"
 "Language-Team: Afrikaans <https://l10n.opensuse.org/projects/agama/agama-"
 "rust-master/af/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 2026.5\n"
+"X-Generator: Weblate 2026.10.1\n"
 
 #: agama-autoinstall/src/auto_loader.rs:142
 msgid ""
@@ -27,11 +27,11 @@ msgstr ""
 
 #: agama-autoinstall/src/questions.rs:47
 msgid "Reload configuration"
-msgstr ""
+msgstr "Herlaai instellings"
 
 #: agama-autoinstall/src/questions.rs:48
 msgid "Skip and configure manually"
-msgstr ""
+msgstr "Oorslaan en stel handmatig in"
 
 #: agama-autoinstall/src/questions.rs:77 agama-cli/src/config.rs:371
 msgid "Found unsupported elements in the AutoYaST profile:"
@@ -44,7 +44,7 @@ msgstr ""
 
 #: agama-autoinstall/src/questions.rs:93
 msgid "Abort"
-msgstr ""
+msgstr "Stop hierdie proses"
 
 #. TRANSLATORS: {0} is a URL
 #: agama-autoinstall/src/scripts.rs:135
@@ -266,8 +266,9 @@ msgstr ""
 #. TRANSLATORS: CLI help for: agama config validate (details)
 #: agama-cli/src/config.rs:115
 msgid ""
-"Schema is available at /usr/share/agama/schema/profile.schema.json Note: "
-"validation is always done as part of all other \"agama config\" commands."
+"Schema is available at /usr/share/agama/openapi/nightly/schemas/"
+"config.schema.json Note: validation is always done as part of all other "
+"\"agama config\" commands."
 msgstr ""
 
 #. TRANSLATORS: CLI help for: agama config validate <URL_OR_PATH>
@@ -406,7 +407,7 @@ msgstr ""
 #. TRANSLATORS: an installation "scope", used in the "agama monitor" command
 #: agama-cli/src/monitor/ui.rs:43
 msgid "Manager"
-msgstr ""
+msgstr "Beheerder"
 
 #. TRANSLATORS: an installation "scope", used in the "agama monitor" command
 #: agama-cli/src/monitor/ui.rs:45
@@ -481,12 +482,12 @@ msgstr ""
 #. TRANSLATORS: an installation "scope", used in the "agama monitor" command
 #: agama-cli/src/monitor/ui.rs:73
 msgid "Questions"
-msgstr ""
+msgstr "Vrae"
 
 #. TRANSLATORS: an installation "scope", used in the "agama monitor" command
 #: agama-cli/src/monitor/ui.rs:75
 msgid "Security"
-msgstr ""
+msgstr "Beveiliging"
 
 #: agama-cli/src/monitor/ui/content.rs:64
 msgid "Installation complete."
@@ -506,11 +507,11 @@ msgstr ""
 
 #: agama-cli/src/monitor/ui/content.rs:100
 msgid "Action needed:"
-msgstr ""
+msgstr "Aksie is vereis:"
 
 #: agama-cli/src/monitor/ui/content.rs:108
 msgid "No product has been selected yet."
-msgstr ""
+msgstr "Daar is nog geen produk geselekteer nie."
 
 #: agama-cli/src/monitor/ui/content.rs:172 agama-cli/src/status.rs:88
 msgid "Fix invalid settings before starting the installation:"
@@ -526,7 +527,7 @@ msgstr ""
 
 #: agama-cli/src/monitor/ui/content.rs:210
 msgid "Step"
-msgstr ""
+msgstr "Stap"
 
 #: agama-cli/src/monitor/ui/content.rs:212
 msgid "of"
@@ -535,7 +536,7 @@ msgstr "van"
 #. TRANSLATORS: additional data that question passed to user beside main question message
 #: agama-cli/src/monitor/ui/question.rs:307
 msgid "Technical details"
-msgstr ""
+msgstr "Tegniese details"
 
 #. TRANSLATORS: CLI hint how to scroll through additional data
 #: agama-cli/src/monitor/ui/question.rs:317
@@ -544,16 +545,15 @@ msgstr ""
 
 #: agama-cli/src/monitor/ui/question.rs:371
 msgid "Password"
-msgstr ""
+msgstr "Wagwoord"
 
 #: agama-cli/src/monitor/ui/question.rs:377
-#, fuzzy
 msgid "Location"
-msgstr "Lokalisering"
+msgstr "Lokasie"
 
 #: agama-cli/src/monitor/ui/question.rs:383
 msgid "Value"
-msgstr ""
+msgstr "Waarde"
 
 #: agama-cli/src/monitor/ui/summary.rs:47
 msgid "Host: "
@@ -561,19 +561,19 @@ msgstr "Bediener: "
 
 #: agama-cli/src/monitor/ui/summary.rs:48
 msgid "Model: "
-msgstr ""
+msgstr "Model: "
 
 #: agama-cli/src/monitor/ui/summary.rs:49
 msgid "Product: "
-msgstr ""
+msgstr "Produk: "
 
 #: agama-cli/src/monitor/ui/summary.rs:50
 msgid "Stage: "
-msgstr ""
+msgstr "Stap: "
 
 #: agama-cli/src/monitor/ui/summary.rs:51
 msgid "Status: "
-msgstr ""
+msgstr "Status: "
 
 #: agama-cli/src/monitor/ui/summary.rs:76
 msgid "Busy"
@@ -582,7 +582,7 @@ msgstr "Besig"
 #: agama-cli/src/monitor/ui/summary.rs:77
 #: agama-cli/src/monitor/ui/summary.rs:105
 msgid "Failed"
-msgstr ""
+msgstr "Misluk"
 
 #: agama-cli/src/monitor/ui/summary.rs:78
 msgid "Idle"
@@ -590,11 +590,11 @@ msgstr ""
 
 #: agama-cli/src/monitor/ui/summary.rs:79
 msgid "Waiting for user"
-msgstr ""
+msgstr "Wag op 'n gebruiker"
 
 #: agama-cli/src/monitor/ui/summary.rs:102
 msgid "Installing"
-msgstr ""
+msgstr "Installeer"
 
 #: agama-cli/src/monitor/ui/summary.rs:103
 msgid "Configuring"
@@ -697,114 +697,114 @@ msgstr ""
 msgid "Failed to write the file %s. Do you want to try again?"
 msgstr ""
 
-#: agama-manager/src/actions.rs:78
+#: agama-manager/src/actions.rs:79
 msgid "Prepare the system"
 msgstr "Stelsel word voorbereid"
 
-#: agama-manager/src/actions.rs:79
+#: agama-manager/src/actions.rs:80
 msgid "Install software"
 msgstr ""
 
-#: agama-manager/src/actions.rs:80
+#: agama-manager/src/actions.rs:81
 msgid "Configure the system"
 msgstr ""
 
-#: agama-manager/src/actions.rs:94
+#: agama-manager/src/actions.rs:95
 msgid "Preparing storage"
 msgstr ""
 
-#: agama-manager/src/actions.rs:112
+#: agama-manager/src/actions.rs:113
 #, fuzzy
 msgid "Running post-partitioning scripts"
 msgstr "Begin van gebruikersvoorinstallasieskripte"
 
-#: agama-manager/src/actions.rs:137
+#: agama-manager/src/actions.rs:138
 msgid "Installing software"
 msgstr ""
 
-#: agama-manager/src/actions.rs:174
+#: agama-manager/src/actions.rs:176
 #, fuzzy
 msgid "Configuring the system"
 msgstr "Stelsel word voorbereid"
 
-#: agama-manager/src/actions.rs:242
+#: agama-manager/src/actions.rs:248
 msgid "Finishing installation"
 msgstr ""
 
-#: agama-manager/src/actions.rs:271
+#: agama-manager/src/actions.rs:277
 msgid "Finalize installation"
 msgstr ""
 
-#: agama-manager/src/actions.rs:346
+#: agama-manager/src/actions.rs:352
 msgid "Storing questions settings"
 msgstr ""
 
-#: agama-manager/src/actions.rs:357
+#: agama-manager/src/actions.rs:363
 #, fuzzy
 msgid "Importing user files and scripts"
 msgstr "Begin van gebruikersvoorinstallasieskripte"
 
-#: agama-manager/src/actions.rs:371
+#: agama-manager/src/actions.rs:377
 msgid "Running user pre-installation scripts"
 msgstr "Begin van gebruikersvoorinstallasieskripte"
 
-#: agama-manager/src/actions.rs:386
+#: agama-manager/src/actions.rs:392
 msgid "Storing security settings"
 msgstr ""
 
-#: agama-manager/src/actions.rs:396
+#: agama-manager/src/actions.rs:402
 msgid "Configuring remote access"
 msgstr ""
 
-#: agama-manager/src/actions.rs:406
+#: agama-manager/src/actions.rs:412
 msgid "Setting up the hostname"
 msgstr ""
 
-#: agama-manager/src/actions.rs:416
+#: agama-manager/src/actions.rs:422
 msgid "Setting up the network proxy"
 msgstr ""
 
-#: agama-manager/src/actions.rs:427
+#: agama-manager/src/actions.rs:433
 msgid "Setting up NTP"
 msgstr ""
 
-#: agama-manager/src/actions.rs:437
+#: agama-manager/src/actions.rs:443
 msgid "Storing localization settings"
 msgstr ""
 
-#: agama-manager/src/actions.rs:447
+#: agama-manager/src/actions.rs:453
 msgid "Storing users settings"
 msgstr ""
 
-#: agama-manager/src/actions.rs:557
+#: agama-manager/src/actions.rs:563
 msgid "Configuring iSCSI devices"
 msgstr ""
 
-#: agama-manager/src/actions.rs:582
+#: agama-manager/src/actions.rs:588
 msgid "Configuring zFCP devices"
 msgstr ""
 
-#: agama-manager/src/actions.rs:608
+#: agama-manager/src/actions.rs:614
 msgid "Configuring DASD devices"
 msgstr ""
 
-#: agama-manager/src/actions.rs:634
+#: agama-manager/src/actions.rs:640
 msgid "Setting up the network"
 msgstr ""
 
-#: agama-manager/src/actions.rs:664
+#: agama-manager/src/actions.rs:670
 msgid "Preparing the storage proposal"
 msgstr ""
 
-#: agama-manager/src/actions.rs:694
+#: agama-manager/src/actions.rs:700
 msgid "Storing bootloader settings"
 msgstr ""
 
-#: agama-manager/src/actions.rs:728
+#: agama-manager/src/actions.rs:734
 msgid "Preparing the software proposal"
 msgstr ""
 
-#: agama-manager/src/actions.rs:758
+#: agama-manager/src/actions.rs:764
 msgid "Configuring SELinux"
 msgstr ""
 
@@ -816,16 +816,16 @@ msgstr ""
 msgid "Syncing the network service state"
 msgstr ""
 
-#: agama-security/src/service.rs:225
+#: agama-security/src/service.rs:227
 msgid "Reject"
 msgstr ""
 
-#: agama-security/src/service.rs:225
+#: agama-security/src/service.rs:227
 #: agama-software/src/callbacks/security.rs:111
 msgid "Trust"
 msgstr ""
 
-#: agama-security/src/service.rs:226
+#: agama-security/src/service.rs:228
 msgid ""
 "Trying to import a self-signed certificate. Do you want to trust it and "
 "register the product?"
@@ -854,13 +854,13 @@ msgstr ""
 #: agama-software/src/callbacks/commit_download.rs:47
 #: agama-software/src/callbacks/install.rs:56
 msgid "Ignore"
-msgstr ""
+msgstr "Ignoreer"
 
 #: agama-software/src/callbacks/commit_download.rs:47
 #: agama-software/src/callbacks/install.rs:56
 #: agama-software/src/callbacks/install.rs:81
 msgid "Retry"
-msgstr ""
+msgstr "Oordoen"
 
 #: agama-software/src/callbacks/install.rs:78
 msgid "There was a problem running a package script."
@@ -976,11 +976,11 @@ msgstr ""
 msgid "Details:"
 msgstr ""
 
-#: agama-utils/src/api/question.rs:342 agama-utils/src/question/start.rs:48
+#: agama-utils/src/api/question.rs:346 agama-utils/src/question/start.rs:48
 msgid "No"
 msgstr "Nee"
 
-#: agama-utils/src/api/question.rs:342 agama-utils/src/question/start.rs:48
+#: agama-utils/src/api/question.rs:346 agama-utils/src/question/start.rs:48
 msgid "Yes"
 msgstr "Ja"
 
