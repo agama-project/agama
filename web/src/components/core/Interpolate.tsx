@@ -21,6 +21,7 @@
  */
 
 import React from "react";
+import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 
 type RenderFunction = (text: string) => React.ReactNode;
 
@@ -101,7 +102,8 @@ export type InterpolateProps = {
  * </Interpolate>
  */
 export default function Interpolate({ sentence, children }: InterpolateProps) {
-  const renderers = Array.isArray(children) ? children : [children];
+  // copy the array, it might be extended with dummy renderers below
+  const renderers = Array.isArray(children) ? [...children] : [children];
 
   const printfRegex = /%[sdfi]/g;
   const markerRegex = /\[([^[\]]*)\]/g;
@@ -109,22 +111,38 @@ export default function Interpolate({ sentence, children }: InterpolateProps) {
   const hasPrintf = printfRegex.test(sentence);
   const hasMarkers = markerRegex.test(sentence);
 
+  let useMarkers = hasMarkers;
+
   if (hasPrintf && hasMarkers) {
-    throw new Error("Interpolate: cannot mix printf and [marker] placeholders.");
+    console.error("<Interpolate>: Cannot mix printf and [marker] placeholders in: ", sentence);
+
+    // try to guess which placeholder style to actually use: if the render functions accept an
+    // argument use the markers, otherwise use the printf style
+    useMarkers = renderers.every((render) => render.length > 0);
+    console.warn("Automatically using the", useMarkers ? "markers" : "printf", "style");
   }
 
-  const matches = hasPrintf
-    ? [...sentence.matchAll(/%[sdfi]/g)]
-    : [...sentence.matchAll(/\[([^[\]]*)\]/g)];
+  const matches = useMarkers
+    ? [...sentence.matchAll(/\[([^[\]]*)\]/g)]
+    : [...sentence.matchAll(/%[sdfi]/g)];
 
   if (matches.length === 0) {
     return <>{sentence}</>;
   }
 
-  if (matches.length !== renderers.length) {
-    throw new Error(
-      `Interpolate: found ${matches.length} placeholder(s) but received ${renderers.length} render function(s).`,
+  if (matches.length < renderers.length) {
+    console.warn(
+      `<Interpolate>: Specified more renderers (${renderers.length}) than the matches (${matches.length}) for text: ${sentence}`,
     );
+  } else if (matches.length > renderers.length) {
+    console.error(
+      `<Interpolate>: Found ${matches.length} placeholder(s) but received ${renderers.length} render function(s) for text: ${sentence}`,
+    );
+
+    // pad with dummy renderers so the missing content is visible in the UI
+    while (renderers.length < matches.length) {
+      renderers.push(() => <strong className={textStyles.textColorStatusDanger}>???</strong>);
+    }
   }
 
   const result: React.ReactNode[] = [];
@@ -139,7 +157,7 @@ export default function Interpolate({ sentence, children }: InterpolateProps) {
     result.push(sentence.slice(lastIndex, matchIndex));
 
     // Marker text for [text], empty string for printf
-    const content = hasMarkers ? (match[1] ?? "") : "";
+    const content = useMarkers ? (match[1] ?? "") : "";
 
     result.push(<React.Fragment key={index}>{renderers[index](content)}</React.Fragment>);
 

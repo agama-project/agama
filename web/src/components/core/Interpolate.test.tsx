@@ -108,12 +108,16 @@ describe("Interpolate", () => {
       expect(strongs[1]).toHaveTextContent("two");
     });
 
-    it("throws when placeholder count does not match render functions", () => {
-      expect(() =>
-        plainRender(
-          <Interpolate sentence="First %s and second %d">{() => <strong>X</strong>}</Interpolate>,
-        ),
-      ).toThrow("Interpolate: found 2 placeholder(s) but received 1 render function(s).");
+    it("logs an error and renders a bold ??? for missing render functions", () => {
+      const errorSpy = jest.spyOn(console, "error").mockImplementation();
+      const { container } = plainRender(
+        <Interpolate sentence="First %s and second %d">{() => <strong>X</strong>}</Interpolate>,
+      );
+
+      expect(errorSpy).toHaveBeenCalled();
+      expect(container.textContent).toBe("First X and second ???");
+      expect(container.querySelectorAll("strong")[1]).toHaveTextContent("???");
+      errorSpy.mockRestore();
     });
   });
 
@@ -190,14 +194,18 @@ describe("Interpolate", () => {
       expect(container.querySelector("em")).toHaveTextContent("root");
     });
 
-    it("throws when placeholder count does not match render functions", () => {
-      expect(() =>
-        plainRender(
-          <Interpolate sentence="[first] and [second]">
-            {(text) => <strong>{text}</strong>}
-          </Interpolate>,
-        ),
-      ).toThrow("Interpolate: found 2 placeholder(s) but received 1 render function(s).");
+    it("logs an error and renders a bold ??? for missing render functions", () => {
+      const errorSpy = jest.spyOn(console, "error").mockImplementation();
+      const { container } = plainRender(
+        <Interpolate sentence="[first] and [second]">
+          {(text) => <strong>{text}</strong>}
+        </Interpolate>,
+      );
+
+      expect(errorSpy).toHaveBeenCalled();
+      expect(container.textContent).toBe("first and ???");
+      expect(container.querySelectorAll("strong")[1]).toHaveTextContent("???");
+      errorSpy.mockRestore();
     });
 
     it("treats unmatched brackets as plain text", () => {
@@ -211,14 +219,45 @@ describe("Interpolate", () => {
   });
 
   describe("mixed placeholder styles", () => {
-    it("throws when mixing printf and marker placeholders", () => {
-      expect(() =>
-        plainRender(
-          <Interpolate sentence="Hello %s [world]">
-            {[() => <strong>A</strong>, () => <strong>B</strong>]}
-          </Interpolate>,
-        ),
-      ).toThrow("Interpolate: cannot mix printf and [marker] placeholders.");
+    let errorSpy: jest.SpyInstance;
+
+    beforeEach(() => {
+      errorSpy = jest.spyOn(console, "error").mockImplementation();
+    });
+
+    afterEach(() => {
+      errorSpy.mockRestore();
+    });
+
+    it("logs an error and uses the markers when the render function accepts an argument", () => {
+      const { container } = plainRender(
+        <Interpolate sentence="Hello %s [world]">{(text) => <strong>{text}</strong>}</Interpolate>,
+      );
+
+      expect(errorSpy).toHaveBeenCalled();
+      expect(container.textContent).toBe("Hello %s world");
+      expect(container.querySelector("strong")).toHaveTextContent("world");
+    });
+
+    it("logs an error and uses printf style when the render function takes no argument", () => {
+      const { container } = plainRender(
+        <Interpolate sentence="Hello [%s]">{() => <strong>world</strong>}</Interpolate>,
+      );
+
+      expect(errorSpy).toHaveBeenCalled();
+      expect(container.textContent).toBe("Hello [world]");
+    });
+
+    it("ignores extra render functions", () => {
+      const warnSpy = jest.spyOn(console, "warn").mockImplementation();
+      const { container } = plainRender(
+        <Interpolate sentence="Hello %s [world]">
+          {[() => <strong>A</strong>, () => <strong>B</strong>]}
+        </Interpolate>,
+      );
+
+      expect(container.textContent).toBe("Hello A [world]");
+      warnSpy.mockRestore();
     });
   });
 
