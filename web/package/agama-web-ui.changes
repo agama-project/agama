@@ -5,6 +5,7 @@ Wed Oct 21 14:54:08 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
   translation. Fixes crash in the first user configuration dialog
   when using the French, Catalan or Brazilian Portuguese languages
   (bsc#1286560)
+- Fixed the translations which caused the crash above
 
 -------------------------------------------------------------------
 Tue Sep 22 14:54:01 UTC 2026 - David Diaz <dgonzalez@suse.com>
