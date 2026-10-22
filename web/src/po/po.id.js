@@ -183,6 +183,9 @@ export default {
   "Allow growing": [
     "Izinkan pertumbuhan"
   ],
+  "Allow shrinking": [
+    "Izinkan pengecilan"
+  ],
   "Alongside defining the first user, authentication methods for the root user can be configured.": [
     "Selain mendefinisikan pengguna pertama, metode autentikasi untuk pengguna root dapat dikonfigurasi."
   ],
@@ -248,6 +251,9 @@ export default {
   ],
   "Automatic LUN scan is [enabled]. Activating a controller which is       running in NPIV mode will automatically configures all its LUNs.": [
     "Pemindaian LUN otomatis [diaktifkan]. Mengaktifkan pengontrol yang berjalan dalam mode NPIV akan secara otomatis mengonfigurasi semua LUN."
+  ],
+  "Available file systems": [
+    "Sistem file yang tersedia"
   ],
   "Available products": [
     "Produk yang tersedia"
@@ -552,6 +558,9 @@ export default {
   "DNS": [
     "DNS"
   ],
+  "DNS data list": [
+    "Daftar data DNS"
+  ],
   "Deactivate": [
     "Nonaktifkan"
   ],
@@ -659,6 +668,9 @@ export default {
   ],
   "Do not format %s and keep the data": [
     "Jangan memformat %s dan pertahankan data"
+  ],
+  "Do not modify": [
+    "Jangan ubah"
   ],
   "Do not use": [
     "Jangan gunakan"
