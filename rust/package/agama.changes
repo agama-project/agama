@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Oct 22 09:42:52 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Version 25
+
+-------------------------------------------------------------------
 Thu Oct 15 07:36:10 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Do not run RPM scriptlets when updating the agama-scripts package
