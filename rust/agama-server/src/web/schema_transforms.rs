@@ -456,6 +456,169 @@ impl Transform for SimplifyEnums {
     }
 }
 
+/// Capitalizes the first character of a string.
+pub fn capitalize(str: &str) -> String {
+    let mut chars = str.chars();
+    match chars.next() {
+        None => String::new(),
+        Some(first) => first.to_uppercase().collect::<String>() + chars.as_str(),
+    }
+}
+
+/// A schemars [`Transform`] that rewrites external file references to `device.storage.schema.json`
+/// into global OpenAPI component paths `#/components/schemas/StorageDevice...`.
+#[derive(Debug, Clone, Copy, Default)]
+pub struct RewriteStorageRefs;
+
+impl Transform for RewriteStorageRefs {
+    fn transform(&mut self, schema: &mut Schema) {
+        if let Some(map) = schema.as_object_mut() {
+            if let Some(Value::String(ref_str)) = map.get_mut("$ref") {
+                if ref_str == "device.storage.schema.json" {
+                    *ref_str = "#/components/schemas/StorageDevice".to_string();
+                } else if ref_str.starts_with("device.storage.schema.json#/$defs/") {
+                    let def_name = ref_str.trim_start_matches("device.storage.schema.json#/$defs/");
+                    *ref_str = format!("#/components/schemas/StorageDevice{}", capitalize(def_name));
+                }
+            }
+        }
+
+        transform_subschemas(self, schema);
+    }
+}
+
+/// A schemars [`Transform`] that injects deprecated compatibility aliases into schemas
+/// for properties with `#[serde(alias)]` attributes, as well as the editor `$schema` keyword.
+#[derive(Debug, Clone, Copy, Default)]
+pub struct InjectPropertyAliases;
+
+impl Transform for InjectPropertyAliases {
+    fn transform(&mut self, schema: &mut Schema) {
+        if let Some(map) = schema.as_object_mut() {
+            if let Some(Value::Object(props)) = map.get_mut("properties") {
+                let alias_pairs = [
+                    ("hostname", "transient"),
+                    ("locale", "language"),
+                    ("keymap", "keyboard"),
+                    ("sshPublicKeys", "sshPublicKey"),
+                    ("dnsSearchList", "dnsSearchlist"),
+                ];
+
+                for (orig, alias) in alias_pairs {
+                    if let Some(orig_val) = props.get(orig).cloned() {
+                        if !props.contains_key(alias) {
+                            let mut alias_val = orig_val;
+                            if let Some(a_map) = alias_val.as_object_mut() {
+                                a_map.insert("deprecated".to_string(), Value::Bool(true));
+                            }
+                            props.insert(alias.to_string(), alias_val);
+                        }
+                    }
+                }
+
+                // Inject localization alias if l10n is present
+                if props.contains_key("l10n") && !props.contains_key("localization") {
+                    props.insert(
+                        "localization".to_string(),
+                        serde_json::json!({
+                            "deprecated": true,
+                            "title": "Localization settings (old schema)",
+                            "description": "Deprecated: use l10n instead.",
+                            "$ref": "#/components/schemas/l10n.Config"
+                        }),
+                    );
+                }
+
+                // Inject $schema keyword on root Config
+                if props.contains_key("product")
+                    && props.contains_key("software")
+                    && !props.contains_key("$schema")
+                {
+                    props.insert(
+                        "$schema".to_string(),
+                        serde_json::json!({
+                            "title": "URL of the JSON validation schema",
+                            "description": "The schema location is ignored by the installer, it always uses the built-in schema, but it can be useful for automatic validation and code completion in some editors.",
+                            "type": "string"
+                        }),
+                    );
+                }
+            }
+        }
+
+        transform_subschemas(self, schema);
+    }
+}
+
+/// A schemars [`Transform`] that links manually defined external schemas
+/// (Storage, Dasd, Zfcp, Iscsi) into the Config, Proposal, and SystemInfo schemas.
+#[derive(Debug, Clone, Copy, Default)]
+pub struct LinkSubsystemSchemas;
+
+impl Transform for LinkSubsystemSchemas {
+    fn transform(&mut self, schema: &mut Schema) {
+        if let Some(map) = schema.as_object_mut() {
+            let title = map.get("title").and_then(|t| t.as_str());
+            let is_profile = title == Some("Profile");
+            let is_proposal = title == Some("Proposal");
+            let is_system_info = title == Some("SystemInfo");
+
+            if let Some(Value::Object(props)) = map.get_mut("properties") {
+                // Config schema links
+                if is_profile
+                    || (props.contains_key("product")
+                        && props.contains_key("software")
+                        && props.contains_key("storage"))
+                {
+                    for (prop, schema_name) in [
+                        ("storage", "StorageConfig"),
+                        ("dasd", "DasdConfig"),
+                        ("zfcp", "ZfcpConfig"),
+                        ("iscsi", "IscsiConfig"),
+                    ] {
+                        if let Some(p) = props.get_mut(prop) {
+                            *p = serde_json::json!({
+                                "$ref": format!("#/components/schemas/{}", schema_name)
+                            });
+                        }
+                    }
+                } else if is_proposal
+                    || (!props.contains_key("product")
+                        && props.contains_key("storage")
+                        && props.contains_key("software"))
+                {
+                    if let Some(p) = props.get_mut("storage") {
+                        *p = serde_json::json!({
+                            "$ref": "#/components/schemas/StorageProposal"
+                        });
+                    }
+                } else if is_system_info
+                    || (!props.contains_key("product")
+                        && props.contains_key("bootloader")
+                        && props.contains_key("storage")
+                        && props.contains_key("dasd"))
+                {
+                    for (prop, schema_name) in [
+                        ("bootloader", "BootloaderSystemInfo"),
+                        ("dasd", "DasdSystemInfo"),
+                        ("iscsi", "IscsiSystemInfo"),
+                        ("storage", "StorageSystemInfo"),
+                        ("zfcp", "ZfcpSystemInfo"),
+                    ] {
+                        if let Some(p) = props.get_mut(prop) {
+                            *p = serde_json::json!({
+                                "$ref": format!("#/components/schemas/{}", schema_name)
+                            });
+                        }
+                    }
+                }
+            }
+        }
+
+        transform_subschemas(self, schema);
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -707,5 +870,109 @@ mod tests {
         assert_eq!(enum_arr[0], 1);
         assert_eq!(enum_arr[1], 2);
         assert_eq!(enum_arr[2], 3);
+    }
+
+    #[test]
+    fn test_rewrite_storage_refs() {
+        let mut schema: Schema = serde_json::from_value(serde_json::json!({
+            "type": "object",
+            "properties": {
+                "device": {
+                    "$ref": "device.storage.schema.json"
+                },
+                "partition": {
+                    "$ref": "device.storage.schema.json#/$defs/partition"
+                }
+            }
+        }))
+        .unwrap();
+
+        let mut transform = RewriteStorageRefs;
+        transform.transform(&mut schema);
+
+        let obj = schema.as_object().unwrap();
+        let props = obj.get("properties").and_then(|p| p.as_object()).unwrap();
+        assert_eq!(
+            props.get("device").and_then(|d| d.get("$ref")),
+            Some(&Value::String("#/components/schemas/StorageDevice".to_string()))
+        );
+        assert_eq!(
+            props.get("partition").and_then(|d| d.get("$ref")),
+            Some(&Value::String("#/components/schemas/StorageDevicePartition".to_string()))
+        );
+    }
+
+    #[test]
+    fn test_inject_property_aliases() {
+        let mut schema: Schema = serde_json::from_value(serde_json::json!({
+            "type": "object",
+            "properties": {
+                "hostname": { "type": "string" },
+                "locale": { "type": "string" },
+                "keymap": { "type": "string" },
+                "sshPublicKeys": { "type": "array" },
+                "dnsSearchList": { "type": "array" },
+                "l10n": { "$ref": "#/components/schemas/l10n.Config" },
+                "product": {},
+                "software": {}
+            }
+        }))
+        .unwrap();
+
+        let mut transform = InjectPropertyAliases;
+        transform.transform(&mut schema);
+
+        let obj = schema.as_object().unwrap();
+        let props = obj.get("properties").and_then(|p| p.as_object()).unwrap();
+
+        assert!(props.contains_key("transient"));
+        assert_eq!(props.get("transient").unwrap().get("deprecated"), Some(&Value::Bool(true)));
+
+        assert!(props.contains_key("language"));
+        assert_eq!(props.get("language").unwrap().get("deprecated"), Some(&Value::Bool(true)));
+
+        assert!(props.contains_key("keyboard"));
+        assert!(props.contains_key("sshPublicKey"));
+        assert!(props.contains_key("dnsSearchlist"));
+        assert!(props.contains_key("localization"));
+        assert!(props.contains_key("$schema"));
+    }
+
+    #[test]
+    fn test_link_subsystem_schemas() {
+        let mut schema: Schema = serde_json::from_value(serde_json::json!({
+            "title": "Profile",
+            "type": "object",
+            "properties": {
+                "storage": {},
+                "dasd": {},
+                "zfcp": {},
+                "iscsi": {}
+            }
+        }))
+        .unwrap();
+
+        let mut transform = LinkSubsystemSchemas;
+        transform.transform(&mut schema);
+
+        let obj = schema.as_object().unwrap();
+        let props = obj.get("properties").and_then(|p| p.as_object()).unwrap();
+
+        assert_eq!(
+            props.get("storage").unwrap().get("$ref"),
+            Some(&Value::String("#/components/schemas/StorageConfig".to_string()))
+        );
+        assert_eq!(
+            props.get("dasd").unwrap().get("$ref"),
+            Some(&Value::String("#/components/schemas/DasdConfig".to_string()))
+        );
+        assert_eq!(
+            props.get("zfcp").unwrap().get("$ref"),
+            Some(&Value::String("#/components/schemas/ZfcpConfig".to_string()))
+        );
+        assert_eq!(
+            props.get("iscsi").unwrap().get("$ref"),
+            Some(&Value::String("#/components/schemas/IscsiConfig".to_string()))
+        );
     }
 }
