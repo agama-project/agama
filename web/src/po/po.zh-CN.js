@@ -195,26 +195,8 @@ export default {
   "802.1ad": [
     "802.1ad"
   ],
-  "A %1$s of %2$s will be created for %3$s if possible": [
-    "将创建一个 %1$s (%2$s)，以用于 %3$s（如果可能）"
-  ],
-  "A %1$s of at least %2$s will be created for %3$s if possible": [
-    "将创建一个 %1$s（至少 %2$s），以用于 %3$s（如果可能）"
-  ],
-  "A %1$s with a size between %2$s and %3$s will be created for %4$s if possible": [
-    "将创建一个 %1$s（大小介于 %2$s 至 %3$s 之间），以用于 %4$s（如果可能）"
-  ],
   "A file system will be used for the whole device": [
     "一个文件系统将用于整个设备"
-  ],
-  "A generic minimum size of %1$s will be used for the new %2$s": [
-    "至少 %1$s 的通用大小将用于新 %2$s"
-  ],
-  "A generic size of %1$s will be used for the new %2$s": [
-    "%1$s 的通用大小将用于新 %2$s"
-  ],
-  "A generic size range between %1$s and %2$s will be used for the new %3$s": [
-    "介于 %1$s 至 %2$s 的通用大小将用于新 %3$s"
   ],
   "A logical volume may be deleted": [
     "可能会删除一个逻辑卷"
@@ -354,9 +336,6 @@ export default {
   "All the available zFCP controllers are already activated.": [
     "所有可用 zFCP 控制器均已激活。"
   ],
-  "Allow growing": [
-    "允许增长"
-  ],
   "Allow shrinking": [
     "允许缩小"
   ],
@@ -452,15 +431,6 @@ export default {
   ],
   "Back": [
     "返回"
-  ],
-  "Based on the amount of RAM in the system, a %1$s of %2$s will be planned for %3$s": [
-    "将根据系统中的 RAM 容量规划一个 %1$s (%2$s)，以用于 %3$s"
-  ],
-  "Based on the amount of RAM in the system, a %1$s of at least %2$s will be planned for %3$s": [
-    "将根据系统中的 RAM 容量规划一个 %1$s（至少 %2$s），以用于 %3$s"
-  ],
-  "Based on the amount of RAM in the system, a %1$s with a size between %2$s and %3$s will be planned for %4$s": [
-    "将根据系统中的 RAM 容量规划一个 %1$s（大小介于 %2$s 至 %3$s 之间），以用于 %4$s"
   ],
   "Based on the mount point": [
     "根据挂载点"
@@ -699,6 +669,9 @@ export default {
   "Configuration from the network plus static addresses and gateway": [
     "从网络自动获取配置，外加静态地址和网关"
   ],
+  "Configuration pre-scripts have been executed and may have modified your system. You can reboot or shut down, but any changes made by these scripts will not be undone.": [
+    ""
+  ],
   "Configuration read from the iSCSI Boot Firmware Table (iBFT). Initiator cannot be changed.": [
     "已从 iSCSI 引导固件表 (iBFT) 读取配置。发起端不可更改。"
   ],
@@ -909,9 +882,6 @@ export default {
   "Default selection": [
     "默认选择"
   ],
-  "Define a custom size": [
-    "指定自定义大小"
-  ],
   "Define a new LVM on the disk": [
     "在该磁盘上定义新 LVM"
   ],
@@ -980,9 +950,6 @@ export default {
   ],
   "Discard changes": [
     "放弃更改"
-  ],
-  "Discard the maximum size and continue with simplified configuration": [
-    "请忽略大小上限，继续使用简化配置"
   ],
   "Disconnect": [
     "断开连接"
@@ -1139,6 +1106,9 @@ export default {
   ],
   "Encryption settings": [
     "加密设置"
+  ],
+  "Enter": [
+    ""
   ],
   "Enter a hostname value.": [
     "请输入主机名。"
@@ -1619,9 +1589,6 @@ export default {
   ],
   "Left arrow reaches the %d values already added.": [
     ""
-  ],
-  "Let the installer propose a sensible size": [
-    "让安装程序建议适当的大小"
   ],
   "Let the installer set the size": [
     "由安装程序设置大小"
@@ -2208,6 +2175,9 @@ export default {
   "Potential data loss affecting at least %s": [
     "至少 %s 存在数据丢失风险"
   ],
+  "Press %1$s or %2$s to type here, or %3$s to move on.": [
+    ""
+  ],
   "Priority": [
     "优先级"
   ],
@@ -2607,14 +2577,14 @@ export default {
   "Shrink existing partitions": [
     "缩小现有分区"
   ],
+  "Shut down": [
+    ""
+  ],
   "Signal strength": [
     "信号强度"
   ],
   "Size": [
     "大小"
-  ],
-  "Size modes": [
-    "大小模式"
   ],
   "Skip to content": [
     "跳到内容"
@@ -2669,6 +2639,9 @@ export default {
   ],
   "Something went wrong": [
     "出了点问题"
+  ],
+  "Space": [
+    ""
   ],
   "Spanning Tree Protocol (STP)": [
     "生成树协议 (STP)"
@@ -2748,6 +2721,9 @@ export default {
   "TPM sealing requires the new system to be booted directly.": [
     "TPM 密封过程要求新系统直接启动。"
   ],
+  "Tab": [
+    ""
+  ],
   "Take a moment to review the installation settings below and adjust them as needed.": [
     "请花点时间查看下方安装设置，并根据需要加以调整。"
   ],
@@ -2795,15 +2771,6 @@ export default {
   ],
   "The current configuration will be discarded to apply the default settings of the new product.": [
     "将丢弃当前配置并应用新产品的默认设置。"
-  ],
-  "The current configuration will result in an attempt to create a %1$s of %2$s.": [
-    "当前配置将会导致尝试创建一个 %1$s (%2$s)。"
-  ],
-  "The current configuration will result in an attempt to create a %1$s of at least %2$s.": [
-    "当前配置将会导致尝试创建一个 %1$s（至少 %2$s）。"
-  ],
-  "The current configuration will result in an attempt to create a %1$s with a size between %2$s and %3$s.": [
-    "当前配置将会导致尝试创建一个 %1$s（大小介于 %2$s 至 %3$s 之间）。"
   ],
   "The current file system will be mounted at %s": [
     "当前文件系统将挂载到 %s 上"
@@ -2865,9 +2832,6 @@ export default {
   "The file %s contains a record of the installer activity so far, useful to diagnose installation issues.": [
     "文件 %s 记录了安装程序截至当前的全部活动，可用于诊断安装问题。"
   ],
-  "The final size can be bigger in order to fill the extra free space.": [
-    "最终大小可增大，以便使用额外的可用空间。"
-  ],
   "The final step to configure the Trusted Platform Module (TPM) to automatically open encrypted devices will take place during the first boot of the new system. For that to work, the machine needs to boot directly to the new boot loader.": [
     "配置可信平台模块 (TPM) 以自动开启加密设备的最后一步将在新系统首次启动时进行。为此，本机需要直接启动到新的引导加载程序。"
   ],
@@ -2913,42 +2877,6 @@ export default {
   "The product was not found in the repositories so it is not possible to proceed with the installation.": [
     "在储存库中未找到该产品，无法继续安装。"
   ],
-  "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
-    "%1$s 的大小将会动态调整，考量因素包括系统中的 RAM 容量以及 %2$s 是否存在单独的文件系统。"
-  ],
-  "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of separate file systems for %2$s.": [
-    "%1$s 的大小将会动态调整，考量因素包括系统中的 RAM 容量以及 %2$s 是否存在单独的文件系统。"
-  ],
-  "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of a separate file system for %2$s.": [
-    "%1$s 的大小将会动态调整，考量因素包括系统中的 RAM 容量、Btrfs 快照的使用情况，以及 %2$s 是否存在单独的文件系统。"
-  ],
-  "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of separate file systems for %2$s.": [
-    "%1$s 的大小将会动态调整，考量因素包括系统中的 RAM 容量、Btrfs 快照的使用情况，以及 %2$s 是否存在单独的文件系统。"
-  ],
-  "The size for %1$s will be dynamically adjusted based on the presence of a separate file system for %2$s.": [
-    "%1$s 的大小将会根据 %2$s 是否存在单独的文件系统动态调整。"
-  ],
-  "The size for %1$s will be dynamically adjusted based on the presence of separate file systems for %2$s.": [
-    "%1$s 的大小将会根据 %2$s 是否存在单独的文件系统动态调整。"
-  ],
-  "The size for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of a separate file system for %2$s.": [
-    "%1$s 的大小将会动态调整，考量因素包括 Btrfs 快照的使用情况以及 %2$s 是否存在单独的文件系统。"
-  ],
-  "The size for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of separate file systems for %2$s.": [
-    "%1$s 的大小将会动态调整，考量因素包括 Btrfs 快照的使用情况以及 %2$s 是否存在单独的文件系统。"
-  ],
-  "The size for %s will be dynamically adjusted based on the amount of RAM in the system and the usage of Btrfs snapshots.": [
-    "%s 的大小将会动态调整，考量因素包括系统中的 RAM 容量以及 Btrfs 快照的使用情况。"
-  ],
-  "The size for %s will be dynamically adjusted based on the usage of Btrfs snapshots.": [
-    "%s 的大小将会根据 Btrfs 快照的使用情况动态调整。"
-  ],
-  "The size is configured as a range between %s and %s, but this interface cannot handle ranges with a given max size.": [
-    "为大小配置了介于 %s 到 %s 的范围，但此界面无法处理给定大小上限的范围。"
-  ],
-  "The size must be a number followed by a unit of the form GiB (power of 2) or GB (power of 10).": [
-    "大小必须为数字，附带 GiB（2 的幂次）或 GB（10 的幂次）形式的单位。"
-  ],
   "The software selection could not be loaded.": [
     "无法加载软件选择配置。"
   ],
@@ -2969,6 +2897,9 @@ export default {
   ],
   "The whole device will be used for %s": [
     "整个设备将用于 %s"
+  ],
+  "Then %1$s+%2$s+%3$s to move out.": [
+    ""
   ],
   "There are %s deactivated zFCP controllers.": [
     "存在 %s 个停用的 zFCP 控制器。"
@@ -3384,6 +3315,9 @@ export default {
   "You can safely close this window.": [
     "您可安全关闭此窗口。"
   ],
+  "You can safely reboot or shut down the system. No changes have been made to your disks, and your current installation setup will be canceled.": [
+    ""
+  ],
   "You may want to discard the current settings and start from scratch with a simple configuration.": [
     "您可能需要舍弃当前设置，并采用简单的配置从头开始。"
   ],
@@ -3398,9 +3332,6 @@ export default {
   ],
   "[CAPS LOCK] is on": [
     "大写锁定已开启"
-  ],
-  "approx. %s": [
-    "大约为 %s"
   ],
   "at least %s": [
     "至少 %s"
@@ -3419,12 +3350,6 @@ export default {
   ],
   "immutable Btrfs": [
     "不可变 Btrfs"
-  ],
-  "logical volume": [
-    "逻辑卷"
-  ],
-  "partition": [
-    "分区"
   ],
   "reset to defaults": [
     "重置为默认值"
