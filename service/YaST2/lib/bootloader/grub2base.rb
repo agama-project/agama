@@ -23,7 +23,6 @@ Yast.import "HTML"
 Yast.import "Initrd"
 Yast.import "Mode"
 Yast.import "Pkg"
-Yast.import "Product"
 Yast.import "ProductFeatures"
 Yast.import "Stage"
 

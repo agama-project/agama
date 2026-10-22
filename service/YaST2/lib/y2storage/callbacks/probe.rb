@@ -19,6 +19,7 @@
 
 require "yast"
 require "y2storage/callbacks/issues_callback"
+require "y2storage/callbacks/user_probe"
 require "y2storage/storage_features_list"
 require "y2storage/package_handler"
 
@@ -40,7 +41,7 @@ module Y2Storage
         textdomain "storage"
 
         super()
-        @user_callbacks = user_callbacks || YastProbe.new
+        @user_callbacks = user_callbacks || UserProbe.new
       end
 
       # Callback for libstorage-ng to show a message to the user.

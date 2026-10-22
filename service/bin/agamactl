@@ -22,15 +22,11 @@
 
 $LOAD_PATH.unshift File.expand_path("../lib", __dir__)
 
-# Mock some YaST modules like Package.
-agama_y2dir = File.expand_path("../lib/agama/y2dir", __dir__)
-# Make the vendored YaST/AutoYaST classic modules (service/YaST2/modules) discoverable
-# through Yast.import, the same way agama_y2dir (above) is used to override Yast::Package.
-# See service/YaST2/README.md for details. Must happen before "yast" is required (directly
-# or transitively) - the Y2DIR search path is read and cached in C++ the first time it's
-# needed; setting it afterwards is silently ignored.
+# Make the vendored YaST/AutoYaST classic modules (service/YaST2/modules) discoverable through
+# Yast.import. Must happen before "yast" is required (directly or transitively); setting it
+# afterwards is silently ignored.
 agama_yast2_dir = File.expand_path("../YaST2", __dir__)
-ENV["Y2DIR"] = [ENV.fetch("Y2DIR", nil), agama_y2dir, agama_yast2_dir].compact.join(":")
+ENV["Y2DIR"] = [ENV.fetch("Y2DIR", nil), agama_yast2_dir].compact.join(":")
 
 # Set the PATH to a known value
 ENV["PATH"] = "/sbin:/usr/sbin:/usr/bin:/bin"

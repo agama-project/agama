@@ -47,61 +47,23 @@ describe Y2Storage::Callbacks::Commit do
   end
 
   describe "#error" do
-    before do
-      allow(Y2Storage::IssuesReporter).to receive(:new).and_return(reporter)
-    end
-
-    let(:reporter) { instance_double(Y2Storage::IssuesReporter, report: accept) }
-
-    let(:accept) { true }
-
     # SWIG returns ASCII-8BIT encoded strings even if they contain UTF-8 characters
     # see https://sourceforge.net/p/swig/feature-requests/89/
     it "handles ASCII-8BIT encoded messages with UTF-8 characters" do
-      expect(Y2Storage::IssuesReporter).to receive(:new) do |issues|
-        expect(issues.to_a.first.message).to include "🍺"
-        expect(issues.to_a.first.details).to include "🍻"
-        reporter
-      end
-
-      # unary +"..." to get mutable copies: #error calls #force_encoding on both arguments
-      subject.error(
+      result = subject.error(
         (+"testing UTF-8 message: 🍺").force_encoding("ASCII-8BIT"),
         (+"details: 🍻").force_encoding("ASCII-8BIT")
       )
+
+      expect(result).to eq(false)
     end
 
-    it "reports the error" do
-      expect(Y2Storage::IssuesReporter).to receive(:new) do |issues|
-        expect(issues.to_a.size).to eq(1)
-        expect(issues.to_a.first.message).to eq("the message")
-        expect(issues.to_a.first.details).to eq("the what")
-        reporter
-      end
+    it "logs the error and returns false" do
+      expect(subject.log).to receive(:error).with(/the message.*the what/)
 
-      expect(reporter).to receive(:report)
+      result = subject.error(+"the message", +"the what")
 
-      subject.error(+"the message", +"the what")
-    end
-
-    context "if the user accepts to continue" do
-      let(:accept) { true }
-
-      it "returns true" do
-        result = subject.error(+"the message", +"the what")
-
-        expect(result).to eq(true)
-      end
-    end
-
-    context "if the user does not accept to continue" do
-      let(:accept) { false }
-
-      it "returns false" do
-        result = subject.error(+"the message", +"the what")
-
-        expect(result).to eq(false)
-      end
+      expect(result).to eq(false)
     end
   end
 end

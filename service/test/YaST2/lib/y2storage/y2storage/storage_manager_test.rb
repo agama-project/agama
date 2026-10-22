@@ -747,7 +747,7 @@ describe Y2Storage::StorageManager do
       context "and there are issues during probing" do
         before do
           allow(manager.storage).to receive(:probed).and_return st_probed
-          allow_any_instance_of(Y2Storage::Callbacks::YastProbe)
+          allow_any_instance_of(Y2Storage::Callbacks::UserProbe)
             .to receive(:report_issues).and_return(continue)
         end
 
@@ -755,7 +755,7 @@ describe Y2Storage::StorageManager do
         let(:continue) { true }
 
         it "reports the probing issues" do
-          expect_any_instance_of(Y2Storage::Callbacks::YastProbe).to receive(:report_issues)
+          expect_any_instance_of(Y2Storage::Callbacks::UserProbe).to receive(:report_issues)
 
           manager.probe
         end
@@ -894,7 +894,7 @@ describe Y2Storage::StorageManager do
     context "and there are issues during probing" do
       before do
         allow(manager.storage).to receive(:probed).and_return st_probed
-        allow_any_instance_of(Y2Storage::Callbacks::YastProbe)
+        allow_any_instance_of(Y2Storage::Callbacks::UserProbe)
           .to receive(:report_issues).and_return(continue)
       end
 
@@ -921,7 +921,7 @@ describe Y2Storage::StorageManager do
       end
 
       it "reports the probing issues" do
-        expect_any_instance_of(Y2Storage::Callbacks::YastProbe).to receive(:report_issues)
+        expect_any_instance_of(Y2Storage::Callbacks::UserProbe).to receive(:report_issues)
 
         manager.probe!
       end

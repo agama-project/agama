@@ -30,7 +30,6 @@ module Yast
 
       Yast.import "Arch"
       Yast.import "Kernel"
-      Yast.import "Linuxrc"
       Yast.import "ProductFeatures"
       Yast.import "Stage"
     end
@@ -89,10 +88,6 @@ module Yast
     end
 
     def propose_cpu_mitigations
-      linuxrc_value = Yast::Linuxrc.value_for("mitigations")
-      log.info "linuxrc mitigations #{linuxrc_value.inspect}"
-      return "" unless linuxrc_value.nil? # linuxrc already has mitigations
-
       product_value = ProductFeatures.GetStringFeature("globals", "cpu_mitigations")
       log.info "cpu mitigations in product: #{product_value.inspect}"
 

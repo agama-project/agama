@@ -20,7 +20,6 @@
 require "yast"
 require "y2storage"
 
-Yast.import "SlideShow"
 Yast.import "Installation"
 Yast.import "FileUtils"
 Yast.import "Mode"
@@ -50,7 +49,6 @@ module Y2Storage
         return :auto if Mode.update
 
         log.info("BEGIN of inst_prepdisk")
-        Yast::SlideShow.MoveToStage("disk")
         if commit
           log.info("END of inst_prepdisk")
           :next

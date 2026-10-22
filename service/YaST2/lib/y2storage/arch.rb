@@ -32,19 +32,11 @@ module Y2Storage
     # Wraps the Storage::Arch object passed to it or creates a new
     # Storage::Arch object and wraps that.
     #
-    # This also adjusts {#efiboot?} according to the `/etc/install.inf::EFI` setting.
-    #
     # @param storage_arch [Storage::Arch] Storage::Arch object to wrap.
     #
     # @return [Y2Storage::Arch]
     def initialize(storage_arch = Storage::Arch.new)
       super(storage_arch)
-
-      Yast.import "Linuxrc"
-
-      return if Yast::Linuxrc.InstallInf("EFI").nil?
-
-      storage_arch.efiboot = Yast::Linuxrc.InstallInf("EFI") == "1"
     end
 
     # @!method x86?

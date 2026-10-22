@@ -31,12 +31,10 @@ describe Y2Storage::Device do
   using Y2Storage::Refinements::SizeCasts
 
   before do
-    allow(Y2Storage::IssuesReporter).to receive(:new).and_return(issues_reporter)
     fake_scenario(scenario)
   end
 
   let(:scenario) { "complex-lvm-encrypt" }
-  let(:issues_reporter) { instance_double(Y2Storage::IssuesReporter, report: true) }
 
   describe "#ancestors" do
     subject(:device) { Y2Storage::LvmLv.find_by_name(fake_devicegraph, "/dev/vg0/lv1").blk_filesystem }
