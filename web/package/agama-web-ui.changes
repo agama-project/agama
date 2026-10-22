@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Oct 22 09:43:42 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Version 25
+
+-------------------------------------------------------------------
 Thu Oct 15 07:41:55 UTC 2026 - Martin Vidner <mvidner@suse.com>
 
 - web dependencies: move those not needed for run time or building
