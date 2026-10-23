@@ -47,7 +47,11 @@ impl Transform for RewriteStorageRefs {
         if ref_str == STORAGE_DEVICE_FILE {
             *ref_str = STORAGE_DEVICE_COMPONENT_PREFIX.to_string();
         } else if let Some(def_name) = ref_str.strip_prefix(STORAGE_DEVICE_DEFS_PREFIX) {
-            *ref_str = format!("{}{}", STORAGE_DEVICE_COMPONENT_PREFIX, capitalize(def_name));
+            *ref_str = format!(
+                "{}{}",
+                STORAGE_DEVICE_COMPONENT_PREFIX,
+                capitalize(def_name)
+            );
         }
     }
 }

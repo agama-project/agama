@@ -155,7 +155,9 @@ impl DistributeFlattenedEnums {
 
         if let Some(v_props_map) = v_props.as_object_mut() {
             for (key, val) in outer_props {
-                v_props_map.entry(key.clone()).or_insert_with(|| val.clone());
+                v_props_map
+                    .entry(key.clone())
+                    .or_insert_with(|| val.clone());
             }
         }
     }
