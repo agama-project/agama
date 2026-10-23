@@ -11,10 +11,13 @@ if podman exec --workdir /checkout/service agama_ruby_tests rake test:unit; then
   fi
   echo "Tests passed"
 else
+  set +x
   echo "Tests failed"
   echo "To get into container use:"
   echo "  podman attach agama_ruby_tests"
   echo "  cd /checkout"
+  echo "To detach the container without removing it:"
+  echo "  Ctrl-P Ctrl-Q"
   echo "To remove container use:"
   echo "  podman rm agama_ruby_tests"
 fi
