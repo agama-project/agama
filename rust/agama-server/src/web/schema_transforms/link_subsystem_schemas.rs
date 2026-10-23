@@ -22,6 +22,21 @@ use schemars::transform::{transform_subschemas, Transform};
 use schemars::Schema;
 use serde_json::Value;
 
+const CONFIG_SUBSYSTEMS: &[(&str, &str)] = &[
+    ("storage", "StorageConfig"),
+    ("dasd", "DasdConfig"),
+    ("zfcp", "ZfcpConfig"),
+    ("iscsi", "IscsiConfig"),
+];
+
+const SYSTEM_INFO_SUBSYSTEMS: &[(&str, &str)] = &[
+    ("bootloader", "BootloaderSystemInfo"),
+    ("dasd", "DasdSystemInfo"),
+    ("iscsi", "IscsiSystemInfo"),
+    ("storage", "StorageSystemInfo"),
+    ("zfcp", "ZfcpSystemInfo"),
+];
+
 /// A schemars [`Transform`] that links manually defined external schemas
 /// (Storage, Dasd, Zfcp, Iscsi) into the Config, Proposal, and SystemInfo schemas.
 #[derive(Debug, Clone, Copy, Default)]
@@ -42,12 +57,7 @@ impl Transform for LinkSubsystemSchemas {
                         && props.contains_key("software")
                         && props.contains_key("storage"))
                 {
-                    for (prop, schema_name) in [
-                        ("storage", "StorageConfig"),
-                        ("dasd", "DasdConfig"),
-                        ("zfcp", "ZfcpConfig"),
-                        ("iscsi", "IscsiConfig"),
-                    ] {
+                    for &(prop, schema_name) in CONFIG_SUBSYSTEMS {
                         if let Some(p) = props.get_mut(prop) {
                             *p = serde_json::json!({
                                 "$ref": format!("#/components/schemas/{}", schema_name)
@@ -70,13 +80,7 @@ impl Transform for LinkSubsystemSchemas {
                         && props.contains_key("storage")
                         && props.contains_key("dasd"))
                 {
-                    for (prop, schema_name) in [
-                        ("bootloader", "BootloaderSystemInfo"),
-                        ("dasd", "DasdSystemInfo"),
-                        ("iscsi", "IscsiSystemInfo"),
-                        ("storage", "StorageSystemInfo"),
-                        ("zfcp", "ZfcpSystemInfo"),
-                    ] {
+                    for &(prop, schema_name) in SYSTEM_INFO_SUBSYSTEMS {
                         if let Some(p) = props.get_mut(prop) {
                             *p = serde_json::json!({
                                 "$ref": format!("#/components/schemas/{}", schema_name)

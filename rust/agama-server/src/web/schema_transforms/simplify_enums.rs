@@ -56,6 +56,8 @@ fn extract_scalar_const(val: &Value) -> Option<(Value, &'static str, Option<Stri
     None
 }
 
+const ENUM_KEYWORDS: &[&str] = &["oneOf", "anyOf"];
+
 /// A schemars [`Transform`] that converts `oneOf` or `anyOf` containing only scalar constants
 /// (strings, integers, booleans) into a standard `"type": "<type>"` with an `"enum": [...]` array.
 ///
@@ -79,7 +81,7 @@ impl Transform for SimplifyEnums {
         transform_subschemas(self, schema);
 
         if let Some(map) = schema.as_object_mut() {
-            for key in ["oneOf", "anyOf"] {
+            for &key in ENUM_KEYWORDS {
                 if let Some(Value::Array(arr)) = map.get(key) {
                     if !arr.is_empty() {
                         let extracted: Option<Vec<(Value, &'static str, Option<String>)>> =

@@ -23,6 +23,10 @@ use schemars::transform::{transform_subschemas, Transform};
 use schemars::Schema;
 use serde_json::Value;
 
+const STORAGE_DEVICE_FILE: &str = "device.storage.schema.json";
+const STORAGE_DEVICE_DEFS_PREFIX: &str = "device.storage.schema.json#/$defs/";
+const STORAGE_DEVICE_COMPONENT_PREFIX: &str = "#/components/schemas/StorageDevice";
+
 /// A schemars [`Transform`] that rewrites external file references to `device.storage.schema.json`
 /// into global OpenAPI component paths `#/components/schemas/StorageDevice...`.
 #[derive(Debug, Clone, Copy, Default)]
@@ -32,12 +36,10 @@ impl Transform for RewriteStorageRefs {
     fn transform(&mut self, schema: &mut Schema) {
         if let Some(map) = schema.as_object_mut() {
             if let Some(Value::String(ref_str)) = map.get_mut("$ref") {
-                if ref_str == "device.storage.schema.json" {
-                    *ref_str = "#/components/schemas/StorageDevice".to_string();
-                } else if ref_str.starts_with("device.storage.schema.json#/$defs/") {
-                    let def_name = ref_str.trim_start_matches("device.storage.schema.json#/$defs/");
-                    *ref_str =
-                        format!("#/components/schemas/StorageDevice{}", capitalize(def_name));
+                if ref_str == STORAGE_DEVICE_FILE {
+                    *ref_str = STORAGE_DEVICE_COMPONENT_PREFIX.to_string();
+                } else if let Some(def_name) = ref_str.strip_prefix(STORAGE_DEVICE_DEFS_PREFIX) {
+                    *ref_str = format!("{}{}", STORAGE_DEVICE_COMPONENT_PREFIX, capitalize(def_name));
                 }
             }
         }

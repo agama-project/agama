@@ -161,7 +161,7 @@ pub async fn build() -> OpenApi {
     let mut api_json = serde_json::to_value(&api).unwrap();
 
     // Link manual schemas into components/schemas
-    let schemas_to_import = [
+    const SCHEMAS_TO_IMPORT: &[(&str, &str, &str)] = &[
         // (file name, schema name, schema parent)
         // Config schemas
         ("dasd.schema.json", "Dasd", "Config"),
@@ -184,7 +184,7 @@ pub async fn build() -> OpenApi {
     let mut extracted_defs = serde_json::Map::new();
     let schemas_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../schemas");
 
-    for (file, name, group) in schemas_to_import {
+    for &(file, name, group) in SCHEMAS_TO_IMPORT {
         let full_path = schemas_dir.join(file);
         let content = std::fs::read_to_string(&full_path).unwrap_or_else(|e| {
             panic!(

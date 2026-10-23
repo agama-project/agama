@@ -22,6 +22,14 @@ use schemars::transform::{transform_subschemas, Transform};
 use schemars::Schema;
 use serde_json::Value;
 
+const ALIAS_PAIRS: &[(&str, &str)] = &[
+    ("hostname", "transient"),
+    ("locale", "language"),
+    ("keymap", "keyboard"),
+    ("sshPublicKeys", "sshPublicKey"),
+    ("dnsSearchList", "dnsSearchlist"),
+];
+
 /// A schemars [`Transform`] that injects deprecated compatibility aliases into schemas
 /// for properties with `#[serde(alias)]` attributes, as well as the editor `$schema` keyword.
 #[derive(Debug, Clone, Copy, Default)]
@@ -31,15 +39,7 @@ impl Transform for InjectPropertyAliases {
     fn transform(&mut self, schema: &mut Schema) {
         if let Some(map) = schema.as_object_mut() {
             if let Some(Value::Object(props)) = map.get_mut("properties") {
-                let alias_pairs = [
-                    ("hostname", "transient"),
-                    ("locale", "language"),
-                    ("keymap", "keyboard"),
-                    ("sshPublicKeys", "sshPublicKey"),
-                    ("dnsSearchList", "dnsSearchlist"),
-                ];
-
-                for (orig, alias) in alias_pairs {
+                for &(orig, alias) in ALIAS_PAIRS {
                     if let Some(orig_val) = props.get(orig).cloned() {
                         if !props.contains_key(alias) {
                             let mut alias_val = orig_val;
