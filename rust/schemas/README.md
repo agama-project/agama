@@ -28,9 +28,16 @@ The build pipeline unifies Rust-derived schemas with these partial schemas:
 
 1. **Schema Import & Extraction (`agama-server::web::docs::build`)**:
    - Rust configuration structs implement `schemars::JsonSchema`.
+   - `docs::build()` applies post-processing schema transforms:
+     - `DenyAdditionalProperties`: Sets `"additionalProperties": false` on all object schemas to reject unexpected keys.
+     - `RemoveNullableAnyOf`: Unwraps nullable `Option<T>` constructs from `anyOf` and removes `"null"` from type arrays so validators produce clean error messages instead of `anyOf` failure errors.
+     - `SimplifyEnums`: Converts scalar constant `oneOf`/`anyOf` enums into standard `type` + `enum: [...]` arrays, preserving variant documentation as a formatted Markdown list in `description` and via the `x-enum-descriptions` map vendor extension (`{ "value": "description" }`).
+     - `DistributeFlattenedEnums`: Inlines outer struct properties into each `anyOf` variant for structs with flattened untagged enums (`UserFile`, `Script`). This avoids using `unevaluatedProperties: false` (from Draft 2019-09) to ensure 100% compatibility with OpenAPI 3.0 tools and client code generators that do not support `unevaluatedProperties`.
+     - `LinkSubsystemSchemas`: Links manually defined subsystem schemas (Storage, Dasd, Zfcp, Iscsi) into `Config`, `Proposal`, and `SystemInfo`.
+     - `InjectPropertyAliases`: Injects deprecated compatibility aliases (`#[serde(alias)]`) and editor keywords (`$schema`) into component properties.
+     - `RewriteStorageRefs`: Rewrites external file references to `device.storage.schema.json` into OpenAPI component references `#/components/schemas/StorageDevice...`.
    - `docs::build()` reads the partial schemas in this directory, extracts their `$defs` with unique prefixed names to prevent collisions (e.g. `DasdConfigDevice` vs `DasdSystemInfoDevice`), and imports them as schema components under `/components/schemas/`.
    - References like `device.storage.schema.json` are rewritten to `#/components/schemas/StorageDevice`.
-   - Injects compatibility aliases (`#[serde(alias)]`) and deprecations into component properties.
 
 2. **Full Resolution (`cargo xtask openapi`)**:
    - Emits `out/openapi-full.json` and `out/openapi-full.yaml`: monolithic, self-contained specifications without external schema references.
