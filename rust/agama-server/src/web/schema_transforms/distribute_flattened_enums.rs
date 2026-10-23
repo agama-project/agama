@@ -109,51 +109,57 @@ impl Transform for DistributeFlattenedEnums {
     fn transform(&mut self, schema: &mut Schema) {
         transform_subschemas(self, schema);
 
-        if let Some(map) = schema.as_object_mut() {
-            if map.contains_key("properties") && map.contains_key("anyOf") {
-                let outer_props = map.remove("properties").and_then(|p| match p {
-                    Value::Object(o) => Some(o),
-                    _ => None,
-                });
-                let outer_req = map.remove("required").and_then(|r| match r {
-                    Value::Array(a) => Some(a),
-                    _ => None,
-                });
+        let Some(map) = schema.as_object_mut() else {
+            return;
+        };
 
-                if let Some(outer_props) = outer_props {
-                    if let Some(Value::Array(variants)) = map.get_mut("anyOf") {
-                        for variant in variants.iter_mut() {
-                            if let Some(v_map) = variant.as_object_mut() {
-                                let v_props = v_map
-                                    .entry("properties".to_string())
-                                    .or_insert_with(|| Value::Object(serde_json::Map::new()));
-                                if let Some(v_props_map) = v_props.as_object_mut() {
-                                    for (k, v) in &outer_props {
-                                        v_props_map.entry(k.clone()).or_insert_with(|| v.clone());
-                                    }
-                                }
+        if !map.contains_key("properties") || !map.contains_key("anyOf") {
+            return;
+        }
 
-                                if let Some(ref outer_req) = outer_req {
-                                    let v_req = v_map
-                                        .entry("required".to_string())
-                                        .or_insert_with(|| Value::Array(Vec::new()));
-                                    if let Some(v_req_arr) = v_req.as_array_mut() {
-                                        for r in outer_req {
-                                            if !v_req_arr.contains(r) {
-                                                v_req_arr.push(r.clone());
-                                            }
-                                        }
-                                    }
-                                }
+        let Some(Value::Object(outer_props)) = map.remove("properties") else {
+            return;
+        };
 
-                                v_map
-                                    .entry("type".to_string())
-                                    .or_insert_with(|| Value::String("object".to_string()));
-                            }
+        let outer_req = map.remove("required").and_then(|r| match r {
+            Value::Array(a) => Some(a),
+            _ => None,
+        });
+
+        let Some(Value::Array(variants)) = map.get_mut("anyOf") else {
+            return;
+        };
+
+        for variant in variants.iter_mut() {
+            let Some(v_map) = variant.as_object_mut() else {
+                continue;
+            };
+
+            let v_props = v_map
+                .entry("properties".to_string())
+                .or_insert_with(|| Value::Object(serde_json::Map::new()));
+            if let Some(v_props_map) = v_props.as_object_mut() {
+                for (k, v) in &outer_props {
+                    v_props_map.entry(k.clone()).or_insert_with(|| v.clone());
+                }
+            }
+
+            if let Some(ref outer_req) = outer_req {
+                let v_req = v_map
+                    .entry("required".to_string())
+                    .or_insert_with(|| Value::Array(Vec::new()));
+                if let Some(v_req_arr) = v_req.as_array_mut() {
+                    for r in outer_req {
+                        if !v_req_arr.contains(r) {
+                            v_req_arr.push(r.clone());
                         }
                     }
                 }
             }
+
+            v_map
+                .entry("type".to_string())
+                .or_insert_with(|| Value::String("object".to_string()));
         }
     }
 }

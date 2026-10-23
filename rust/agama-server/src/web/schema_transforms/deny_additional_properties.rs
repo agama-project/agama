@@ -32,24 +32,25 @@ pub(crate) struct DenyAdditionalProperties;
 
 impl Transform for DenyAdditionalProperties {
     fn transform(&mut self, schema: &mut Schema) {
-        if let Some(map) = schema.as_object_mut() {
-            let is_object = if let Some(type_val) = map.get("type") {
-                match type_val {
-                    Value::String(s) => s == "object",
-                    Value::Array(arr) => arr.iter().any(|v| v.as_str() == Some("object")),
-                    _ => false,
-                }
-            } else {
-                map.contains_key("properties") || map.contains_key("patternProperties")
-            };
-
-            if is_object && !map.contains_key("additionalProperties") && !map.contains_key("anyOf")
-            {
-                map.insert("additionalProperties".to_string(), Value::Bool(false));
-            }
-        }
-
         transform_subschemas(self, schema);
+
+        let Some(map) = schema.as_object_mut() else {
+            return;
+        };
+
+        let is_object = if let Some(type_val) = map.get("type") {
+            match type_val {
+                Value::String(s) => s == "object",
+                Value::Array(arr) => arr.iter().any(|v| v.as_str() == Some("object")),
+                _ => false,
+            }
+        } else {
+            map.contains_key("properties") || map.contains_key("patternProperties")
+        };
+
+        if is_object && !map.contains_key("additionalProperties") && !map.contains_key("anyOf") {
+            map.insert("additionalProperties".to_string(), Value::Bool(false));
+        }
     }
 }
 

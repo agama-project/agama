@@ -198,42 +198,45 @@ pub async fn build() -> OpenApi {
         let prefix = format!("{}{}", name, capitalize(group));
         extract_defs(&mut schema_value, &prefix, &mut extracted_defs);
 
-        if let Some(components_schemas) = api_json.pointer_mut("/components/schemas") {
-            if let Some(schemas_map) = components_schemas.as_object_mut() {
-                schemas_map.insert(prefix, schema_value);
-            }
+        if let Some(schemas_map) = api_json
+            .pointer_mut("/components/schemas")
+            .and_then(|cs| cs.as_object_mut())
+        {
+            schemas_map.insert(prefix, schema_value);
         }
     }
 
-    if let Some(components_schemas) = api_json.pointer_mut("/components/schemas") {
-        if let Some(schemas_map) = components_schemas.as_object_mut() {
-            for (def_name, def_value) in extracted_defs {
-                schemas_map.insert(def_name, def_value);
-            }
+    if let Some(schemas_map) = api_json
+        .pointer_mut("/components/schemas")
+        .and_then(|cs| cs.as_object_mut())
+    {
+        for (def_name, def_value) in extracted_defs {
+            schemas_map.insert(def_name, def_value);
         }
     }
 
     // Apply schema transforms to all components in the OpenAPI specification
-    if let Some(components_schemas) = api_json.pointer_mut("/components/schemas") {
-        if let Some(schemas_map) = components_schemas.as_object_mut() {
-            let mut remove_nullable = RemoveNullableAnyOf;
-            let mut simplify_enums = SimplifyEnums;
-            let mut distribute_flattened_enums = DistributeFlattenedEnums;
-            let mut link_subsystems = LinkSubsystemSchemas;
-            let mut inject_aliases = InjectPropertyAliases;
-            let mut deny_additional = DenyAdditionalProperties;
-            let mut rewrite_storage = RewriteStorageRefs;
+    if let Some(schemas_map) = api_json
+        .pointer_mut("/components/schemas")
+        .and_then(|cs| cs.as_object_mut())
+    {
+        let mut remove_nullable = RemoveNullableAnyOf;
+        let mut simplify_enums = SimplifyEnums;
+        let mut distribute_flattened_enums = DistributeFlattenedEnums;
+        let mut link_subsystems = LinkSubsystemSchemas;
+        let mut inject_aliases = InjectPropertyAliases;
+        let mut deny_additional = DenyAdditionalProperties;
+        let mut rewrite_storage = RewriteStorageRefs;
 
-            for schema_value in schemas_map.values_mut() {
-                if let Ok(schema) = <&mut schemars::Schema>::try_from(schema_value) {
-                    remove_nullable.transform(schema);
-                    simplify_enums.transform(schema);
-                    distribute_flattened_enums.transform(schema);
-                    link_subsystems.transform(schema);
-                    inject_aliases.transform(schema);
-                    deny_additional.transform(schema);
-                    rewrite_storage.transform(schema);
-                }
+        for schema_value in schemas_map.values_mut() {
+            if let Ok(schema) = <&mut schemars::Schema>::try_from(schema_value) {
+                remove_nullable.transform(schema);
+                simplify_enums.transform(schema);
+                distribute_flattened_enums.transform(schema);
+                link_subsystems.transform(schema);
+                inject_aliases.transform(schema);
+                deny_additional.transform(schema);
+                rewrite_storage.transform(schema);
             }
         }
     }

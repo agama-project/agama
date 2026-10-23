@@ -34,17 +34,21 @@ pub(crate) struct RewriteStorageRefs;
 
 impl Transform for RewriteStorageRefs {
     fn transform(&mut self, schema: &mut Schema) {
-        if let Some(map) = schema.as_object_mut() {
-            if let Some(Value::String(ref_str)) = map.get_mut("$ref") {
-                if ref_str == STORAGE_DEVICE_FILE {
-                    *ref_str = STORAGE_DEVICE_COMPONENT_PREFIX.to_string();
-                } else if let Some(def_name) = ref_str.strip_prefix(STORAGE_DEVICE_DEFS_PREFIX) {
-                    *ref_str = format!("{}{}", STORAGE_DEVICE_COMPONENT_PREFIX, capitalize(def_name));
-                }
-            }
-        }
-
         transform_subschemas(self, schema);
+
+        let Some(map) = schema.as_object_mut() else {
+            return;
+        };
+
+        let Some(Value::String(ref_str)) = map.get_mut("$ref") else {
+            return;
+        };
+
+        if ref_str == STORAGE_DEVICE_FILE {
+            *ref_str = STORAGE_DEVICE_COMPONENT_PREFIX.to_string();
+        } else if let Some(def_name) = ref_str.strip_prefix(STORAGE_DEVICE_DEFS_PREFIX) {
+            *ref_str = format!("{}{}", STORAGE_DEVICE_COMPONENT_PREFIX, capitalize(def_name));
+        }
     }
 }
 

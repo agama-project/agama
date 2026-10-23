@@ -37,51 +37,57 @@ pub(crate) struct InjectPropertyAliases;
 
 impl Transform for InjectPropertyAliases {
     fn transform(&mut self, schema: &mut Schema) {
-        if let Some(map) = schema.as_object_mut() {
-            if let Some(Value::Object(props)) = map.get_mut("properties") {
-                for &(orig, alias) in ALIAS_PAIRS {
-                    if let Some(orig_val) = props.get(orig).cloned() {
-                        if !props.contains_key(alias) {
-                            let mut alias_val = orig_val;
-                            if let Some(a_map) = alias_val.as_object_mut() {
-                                a_map.insert("deprecated".to_string(), Value::Bool(true));
-                            }
-                            props.insert(alias.to_string(), alias_val);
-                        }
-                    }
-                }
+        transform_subschemas(self, schema);
 
-                // Inject localization alias if l10n is present
-                if props.contains_key("l10n") && !props.contains_key("localization") {
-                    props.insert(
-                        "localization".to_string(),
-                        serde_json::json!({
-                            "deprecated": true,
-                            "title": "Localization settings (old schema)",
-                            "description": "Deprecated: use l10n instead.",
-                            "$ref": "#/components/schemas/l10n.Config"
-                        }),
-                    );
-                }
+        let Some(map) = schema.as_object_mut() else {
+            return;
+        };
 
-                // Inject $schema keyword on root Config
-                if props.contains_key("product")
-                    && props.contains_key("software")
-                    && !props.contains_key("$schema")
-                {
-                    props.insert(
-                        "$schema".to_string(),
-                        serde_json::json!({
-                            "title": "URL of the JSON validation schema",
-                            "description": "The schema location is ignored by the installer, it always uses the built-in schema, but it can be useful for automatic validation and code completion in some editors.",
-                            "type": "string"
-                        }),
-                    );
+        let Some(Value::Object(props)) = map.get_mut("properties") else {
+            return;
+        };
+
+        for &(orig, alias) in ALIAS_PAIRS {
+            let Some(orig_val) = props.get(orig).cloned() else {
+                continue;
+            };
+
+            if !props.contains_key(alias) {
+                let mut alias_val = orig_val;
+                if let Some(a_map) = alias_val.as_object_mut() {
+                    a_map.insert("deprecated".to_string(), Value::Bool(true));
                 }
+                props.insert(alias.to_string(), alias_val);
             }
         }
 
-        transform_subschemas(self, schema);
+        // Inject localization alias if l10n is present
+        if props.contains_key("l10n") && !props.contains_key("localization") {
+            props.insert(
+                "localization".to_string(),
+                serde_json::json!({
+                    "deprecated": true,
+                    "title": "Localization settings (old schema)",
+                    "description": "Deprecated: use l10n instead.",
+                    "$ref": "#/components/schemas/l10n.Config"
+                }),
+            );
+        }
+
+        // Inject $schema keyword on root Config
+        if props.contains_key("product")
+            && props.contains_key("software")
+            && !props.contains_key("$schema")
+        {
+            props.insert(
+                "$schema".to_string(),
+                serde_json::json!({
+                    "title": "URL of the JSON validation schema",
+                    "description": "The schema location is ignored by the installer, it always uses the built-in schema, but it can be useful for automatic validation and code completion in some editors.",
+                    "type": "string"
+                }),
+            );
+        }
     }
 }
 

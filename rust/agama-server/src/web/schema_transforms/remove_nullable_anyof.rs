@@ -24,18 +24,18 @@ use serde_json::Value;
 
 /// Checks whether a JSON Schema value represents a null type schema (e.g. `{"type": "null"}`).
 fn is_null_schema_value(val: &Value) -> bool {
-    if let Some(obj) = val.as_object() {
-        if let Some(ty) = obj.get("type") {
-            match ty {
-                Value::String(s) => s == "null",
-                Value::Array(arr) => arr.len() == 1 && arr[0].as_str() == Some("null"),
-                _ => false,
-            }
-        } else if let Some(c) = obj.get("const") {
-            c.is_null()
-        } else {
-            false
+    let Some(obj) = val.as_object() else {
+        return false;
+    };
+
+    if let Some(ty) = obj.get("type") {
+        match ty {
+            Value::String(s) => s == "null",
+            Value::Array(arr) => arr.len() == 1 && arr[0].as_str() == Some("null"),
+            _ => false,
         }
+    } else if let Some(c) = obj.get("const") {
+        c.is_null()
     } else {
         false
     }
@@ -62,53 +62,55 @@ impl Transform for RemoveNullableAnyOf {
         // Recurse into nested subschemas first so inner schemas are simplified before outer schemas
         transform_subschemas(self, schema);
 
-        if let Some(map) = schema.as_object_mut() {
-            // Strip "null" from type arrays (e.g. ["string", "null"] -> "string")
-            if let Some(Value::Array(arr)) = map.get("type") {
-                if arr.iter().any(|v| v.as_str() == Some("null")) {
-                    let non_null: Vec<Value> = arr
-                        .iter()
-                        .filter(|v| v.as_str() != Some("null"))
-                        .cloned()
-                        .collect();
+        let Some(map) = schema.as_object_mut() else {
+            return;
+        };
 
-                    if non_null.len() == 1 {
-                        map.insert("type".to_string(), non_null.into_iter().next().unwrap());
-                    } else if non_null.len() > 1 {
-                        map.insert("type".to_string(), Value::Array(non_null));
-                    }
+        // Strip "null" from type arrays (e.g. ["string", "null"] -> "string")
+        if let Some(Value::Array(arr)) = map.get("type") {
+            if arr.iter().any(|v| v.as_str() == Some("null")) {
+                let non_null: Vec<Value> = arr
+                    .iter()
+                    .filter(|v| v.as_str() != Some("null"))
+                    .cloned()
+                    .collect();
+
+                if non_null.len() == 1 {
+                    map.insert("type".to_string(), non_null.into_iter().next().unwrap());
+                } else if non_null.len() > 1 {
+                    map.insert("type".to_string(), Value::Array(non_null));
                 }
             }
+        }
 
-            if let Some(Value::Array(arr)) = map.get("anyOf") {
-                if arr.iter().any(is_null_schema_value) {
-                    let non_null: Vec<Value> = arr
-                        .iter()
-                        .filter(|item| !is_null_schema_value(item))
-                        .cloned()
-                        .collect();
+        if let Some(Value::Array(arr)) = map.get("anyOf") {
+            if arr.iter().any(is_null_schema_value) {
+                let non_null: Vec<Value> = arr
+                    .iter()
+                    .filter(|item| !is_null_schema_value(item))
+                    .cloned()
+                    .collect();
 
-                    map.remove("anyOf");
+                map.remove("anyOf");
 
-                    if non_null.len() == 1 {
-                        let single = non_null.into_iter().next().unwrap();
-                        match single {
-                            Value::Object(sub_map) => {
-                                for (k, v) in sub_map {
-                                    if !map.contains_key(&k) {
-                                        map.insert(k, v);
-                                    }
+                if non_null.len() == 1 {
+                    let single = non_null.into_iter().next().unwrap();
+                    match single {
+                        Value::Object(sub_map) => {
+                            for (k, v) in sub_map {
+                                if !map.contains_key(&k) {
+                                    map.insert(k, v);
                                 }
                             }
-                            Value::Bool(true) => {}
-                            Value::Bool(false) if !map.contains_key("not") => {
-                                map.insert("not".to_string(), serde_json::json!({}));
-                            }
-                            _ => {}
                         }
-                    } else if non_null.len() > 1 {
-                        map.insert("anyOf".to_string(), Value::Array(non_null));
+                        Value::Bool(true) => {}
+                        Value::Bool(false) if !map.contains_key("not") => {
+                            map.insert("not".to_string(), serde_json::json!({}));
+                        }
+                        _ => {}
                     }
+                } else if non_null.len() > 1 {
+                    map.insert("anyOf".to_string(), Value::Array(non_null));
                 }
             }
         }

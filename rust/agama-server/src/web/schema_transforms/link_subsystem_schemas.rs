@@ -44,54 +44,58 @@ pub(crate) struct LinkSubsystemSchemas;
 
 impl Transform for LinkSubsystemSchemas {
     fn transform(&mut self, schema: &mut Schema) {
-        if let Some(map) = schema.as_object_mut() {
-            let title = map.get("title").and_then(|t| t.as_str());
-            let is_profile = title == Some("Profile");
-            let is_proposal = title == Some("Proposal");
-            let is_system_info = title == Some("SystemInfo");
+        transform_subschemas(self, schema);
 
-            if let Some(Value::Object(props)) = map.get_mut("properties") {
-                // Config schema links
-                if is_profile
-                    || (props.contains_key("product")
-                        && props.contains_key("software")
-                        && props.contains_key("storage"))
-                {
-                    for &(prop, schema_name) in CONFIG_SUBSYSTEMS {
-                        if let Some(p) = props.get_mut(prop) {
-                            *p = serde_json::json!({
-                                "$ref": format!("#/components/schemas/{}", schema_name)
-                            });
-                        }
-                    }
-                } else if is_proposal
-                    || (!props.contains_key("product")
-                        && props.contains_key("storage")
-                        && props.contains_key("software"))
-                {
-                    if let Some(p) = props.get_mut("storage") {
-                        *p = serde_json::json!({
-                            "$ref": "#/components/schemas/StorageProposal"
-                        });
-                    }
-                } else if is_system_info
-                    || (!props.contains_key("product")
-                        && props.contains_key("bootloader")
-                        && props.contains_key("storage")
-                        && props.contains_key("dasd"))
-                {
-                    for &(prop, schema_name) in SYSTEM_INFO_SUBSYSTEMS {
-                        if let Some(p) = props.get_mut(prop) {
-                            *p = serde_json::json!({
-                                "$ref": format!("#/components/schemas/{}", schema_name)
-                            });
-                        }
-                    }
+        let Some(map) = schema.as_object_mut() else {
+            return;
+        };
+
+        let title = map.get("title").and_then(|t| t.as_str());
+        let is_profile = title == Some("Profile");
+        let is_proposal = title == Some("Proposal");
+        let is_system_info = title == Some("SystemInfo");
+
+        let Some(Value::Object(props)) = map.get_mut("properties") else {
+            return;
+        };
+
+        // Config schema links
+        if is_profile
+            || (props.contains_key("product")
+                && props.contains_key("software")
+                && props.contains_key("storage"))
+        {
+            for &(prop, schema_name) in CONFIG_SUBSYSTEMS {
+                if let Some(p) = props.get_mut(prop) {
+                    *p = serde_json::json!({
+                        "$ref": format!("#/components/schemas/{}", schema_name)
+                    });
+                }
+            }
+        } else if is_proposal
+            || (!props.contains_key("product")
+                && props.contains_key("storage")
+                && props.contains_key("software"))
+        {
+            if let Some(p) = props.get_mut("storage") {
+                *p = serde_json::json!({
+                    "$ref": "#/components/schemas/StorageProposal"
+                });
+            }
+        } else if is_system_info
+            || (!props.contains_key("product")
+                && props.contains_key("bootloader")
+                && props.contains_key("storage")
+                && props.contains_key("dasd"))
+        {
+            for &(prop, schema_name) in SYSTEM_INFO_SUBSYSTEMS {
+                if let Some(p) = props.get_mut(prop) {
+                    *p = serde_json::json!({
+                        "$ref": format!("#/components/schemas/{}", schema_name)
+                    });
                 }
             }
         }
-
-        transform_subschemas(self, schema);
     }
 }
 

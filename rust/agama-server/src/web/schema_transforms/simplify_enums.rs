@@ -80,79 +80,80 @@ impl Transform for SimplifyEnums {
     fn transform(&mut self, schema: &mut Schema) {
         transform_subschemas(self, schema);
 
-        if let Some(map) = schema.as_object_mut() {
-            for &key in ENUM_KEYWORDS {
-                if let Some(Value::Array(arr)) = map.get(key) {
-                    if !arr.is_empty() {
-                        let extracted: Option<Vec<(Value, &'static str, Option<String>)>> =
-                            arr.iter().map(extract_scalar_const).collect();
+        let Some(map) = schema.as_object_mut() else {
+            return;
+        };
 
-                        if let Some(items) = extracted {
-                            let first_type = items[0].1;
-                            let same_type = items.iter().all(|(_, ty, _)| *ty == first_type);
-                            let has_any_desc = items.iter().any(|(_, _, d)| d.is_some());
+        for &key in ENUM_KEYWORDS {
+            let Some(Value::Array(arr)) = map.get(key) else {
+                continue;
+            };
 
-                            let enum_values: Vec<Value> =
-                                items.iter().map(|(val, _, _)| val.clone()).collect();
+            if arr.is_empty() {
+                continue;
+            }
 
-                            map.remove(key);
-                            if same_type {
-                                map.insert(
-                                    "type".to_string(),
-                                    Value::String(first_type.to_string()),
-                                );
-                            }
-                            map.insert("enum".to_string(), Value::Array(enum_values));
-                            map.remove("additionalProperties");
+            let Some(items) = arr
+                .iter()
+                .map(extract_scalar_const)
+                .collect::<Option<Vec<_>>>()
+            else {
+                continue;
+            };
 
-                            if has_any_desc {
-                                let mut list_lines = Vec::new();
-                                let mut x_descriptions = serde_json::Map::new();
+            let first_type = items[0].1;
+            let same_type = items.iter().all(|(_, ty, _)| *ty == first_type);
+            let has_any_desc = items.iter().any(|(_, _, d)| d.is_some());
 
-                                for (val, _, desc) in &items {
-                                    let val_key = match val {
-                                        Value::String(s) => s.clone(),
-                                        other => other.to_string(),
-                                    };
+            let enum_values: Vec<Value> = items.iter().map(|(val, _, _)| val.clone()).collect();
 
-                                    if let Some(d) = desc {
-                                        list_lines.push(format!("- `{}` - {}", val_key, d));
-                                        x_descriptions.insert(val_key, Value::String(d.clone()));
-                                    } else {
-                                        list_lines.push(format!("- `{}`", val_key));
-                                    }
-                                }
+            map.remove(key);
+            if same_type {
+                map.insert("type".to_string(), Value::String(first_type.to_string()));
+            }
+            map.insert("enum".to_string(), Value::Array(enum_values));
+            map.remove("additionalProperties");
 
-                                let formatted_list = list_lines.join("\n");
-                                let new_desc = match map.get("description").and_then(|d| d.as_str())
-                                {
-                                    Some(existing) => {
-                                        let trimmed = existing.trim_end();
-                                        format!(
-                                            "{}\n\nAvailable values:\n{}",
-                                            trimmed, formatted_list
-                                        )
-                                    }
-                                    None => format!("Available values:\n{}", formatted_list),
-                                };
+            if has_any_desc {
+                let mut list_lines = Vec::new();
+                let mut x_descriptions = serde_json::Map::new();
 
-                                map.insert("description".to_string(), Value::String(new_desc));
-                                // Support both kebab-case and Redocly camelCase vendor extension conventions.
-                                map.insert(
-                                    "x-enum-descriptions".to_string(),
-                                    Value::Object(x_descriptions.clone()),
-                                );
-                                map.insert(
-                                    "x-enumDescriptions".to_string(),
-                                    Value::Object(x_descriptions),
-                                );
-                            }
+                for (val, _, desc) in &items {
+                    let val_key = match val {
+                        Value::String(s) => s.clone(),
+                        other => other.to_string(),
+                    };
 
-                            break;
-                        }
+                    if let Some(d) = desc {
+                        list_lines.push(format!("- `{}` - {}", val_key, d));
+                        x_descriptions.insert(val_key, Value::String(d.clone()));
+                    } else {
+                        list_lines.push(format!("- `{}`", val_key));
                     }
                 }
+
+                let formatted_list = list_lines.join("\n");
+                let new_desc = match map.get("description").and_then(|d| d.as_str()) {
+                    Some(existing) => {
+                        let trimmed = existing.trim_end();
+                        format!("{}\n\nAvailable values:\n{}", trimmed, formatted_list)
+                    }
+                    None => format!("Available values:\n{}", formatted_list),
+                };
+
+                map.insert("description".to_string(), Value::String(new_desc));
+                // Support both kebab-case and Redocly camelCase vendor extension conventions.
+                map.insert(
+                    "x-enum-descriptions".to_string(),
+                    Value::Object(x_descriptions.clone()),
+                );
+                map.insert(
+                    "x-enumDescriptions".to_string(),
+                    Value::Object(x_descriptions),
+                );
             }
+
+            break;
         }
     }
 }
