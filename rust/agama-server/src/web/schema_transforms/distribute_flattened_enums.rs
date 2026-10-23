@@ -113,6 +113,12 @@ impl Transform for DistributeFlattenedEnums {
             return;
         };
 
+        Self::distribute_properties_to_variants(map);
+    }
+}
+
+impl DistributeFlattenedEnums {
+    fn distribute_properties_to_variants(map: &mut serde_json::Map<String, Value>) {
         if !map.contains_key("properties") || !map.contains_key("anyOf") {
             return;
         }
@@ -131,36 +137,54 @@ impl Transform for DistributeFlattenedEnums {
         };
 
         for variant in variants.iter_mut() {
-            let Some(v_map) = variant.as_object_mut() else {
-                continue;
-            };
-
-            let v_props = v_map
-                .entry("properties".to_string())
-                .or_insert_with(|| Value::Object(serde_json::Map::new()));
-            if let Some(v_props_map) = v_props.as_object_mut() {
-                for (k, v) in &outer_props {
-                    v_props_map.entry(k.clone()).or_insert_with(|| v.clone());
-                }
+            if let Some(v_map) = variant.as_object_mut() {
+                Self::merge_outer_properties(v_map, &outer_props);
+                Self::merge_outer_required(v_map, outer_req.as_deref());
+                Self::ensure_object_type(v_map);
             }
-
-            if let Some(ref outer_req) = outer_req {
-                let v_req = v_map
-                    .entry("required".to_string())
-                    .or_insert_with(|| Value::Array(Vec::new()));
-                if let Some(v_req_arr) = v_req.as_array_mut() {
-                    for r in outer_req {
-                        if !v_req_arr.contains(r) {
-                            v_req_arr.push(r.clone());
-                        }
-                    }
-                }
-            }
-
-            v_map
-                .entry("type".to_string())
-                .or_insert_with(|| Value::String("object".to_string()));
         }
+    }
+
+    fn merge_outer_properties(
+        variant_map: &mut serde_json::Map<String, Value>,
+        outer_props: &serde_json::Map<String, Value>,
+    ) {
+        let v_props = variant_map
+            .entry("properties".to_string())
+            .or_insert_with(|| Value::Object(serde_json::Map::new()));
+
+        if let Some(v_props_map) = v_props.as_object_mut() {
+            for (key, val) in outer_props {
+                v_props_map.entry(key.clone()).or_insert_with(|| val.clone());
+            }
+        }
+    }
+
+    fn merge_outer_required(
+        variant_map: &mut serde_json::Map<String, Value>,
+        outer_req: Option<&[Value]>,
+    ) {
+        let Some(outer_req) = outer_req else {
+            return;
+        };
+
+        let v_req = variant_map
+            .entry("required".to_string())
+            .or_insert_with(|| Value::Array(Vec::new()));
+
+        if let Some(v_req_arr) = v_req.as_array_mut() {
+            for req_field in outer_req {
+                if !v_req_arr.contains(req_field) {
+                    v_req_arr.push(req_field.clone());
+                }
+            }
+        }
+    }
+
+    fn ensure_object_type(variant_map: &mut serde_json::Map<String, Value>) {
+        variant_map
+            .entry("type".to_string())
+            .or_insert_with(|| Value::String("object".to_string()));
     }
 }
 
