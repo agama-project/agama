@@ -95,6 +95,15 @@ describe("ConfigDialog", () => {
     expect(applyButton).toBeDisabled();
   });
 
+  it("disables Apply button when invalid JSON is entered", async () => {
+    const { user } = renderConfigDialog();
+    await screen.findByText("ConfigEditor Mock");
+
+    await user.click(screen.getByRole("button", { name: "Set Invalid Config" }));
+    const applyButton = screen.getByRole("button", { name: "Apply" });
+    expect(applyButton).toBeDisabled();
+  });
+
   it("applies valid config and closes dialog when Apply is clicked", async () => {
     mockPutConfig.mockResolvedValue({});
     const { user } = renderConfigDialog();
@@ -110,15 +119,33 @@ describe("ConfigDialog", () => {
     expect(mockOnClose).toHaveBeenCalled();
   });
 
-  it("shows an error alert when invalid JSON is submitted", async () => {
+  it("shows an error alert with expandable details when putConfig fails", async () => {
+    mockPutConfig.mockRejectedValue({
+      response: {
+        data: {
+          title: "Schema Validation Failed",
+          detail: "Configuration does not match schema",
+          errors: ["/software/product: is required"],
+        },
+      },
+    });
+
     const { user } = renderConfigDialog();
     await screen.findByText("ConfigEditor Mock");
 
-    await user.click(screen.getByRole("button", { name: "Set Invalid Config" }));
+    await user.click(screen.getByRole("button", { name: "Set Valid Config" }));
     await user.click(screen.getByRole("button", { name: "Apply" }));
 
-    expect(mockPutConfig).not.toHaveBeenCalled();
+    expect(mockPutConfig).toHaveBeenCalled();
     expect(mockOnClose).not.toHaveBeenCalled();
-    expect(screen.getByText("Invalid JSON syntax")).toBeInTheDocument();
+    expect(screen.getByText("Schema Validation Failed")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Show details" })).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "Show details" }));
+    expect(
+      screen.getByText(
+        /Configuration does not match schema[\s\S]*\/software\/product: is required/,
+      ),
+    ).toBeInTheDocument();
   });
 });

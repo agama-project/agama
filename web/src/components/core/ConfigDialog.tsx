@@ -20,14 +20,35 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { Suspense, useState } from "react";
-import { Alert, Bullseye, Content, Flex, Spinner } from "@patternfly/react-core";
+import React, { Suspense, useMemo, useState } from "react";
+import {
+  Alert,
+  Bullseye,
+  CodeBlock,
+  Content,
+  ExpandableSection,
+  Flex,
+  Spinner,
+} from "@patternfly/react-core";
 import Popup from "~/components/core/Popup";
 import { _ } from "~/i18n";
 import { putConfig } from "~/api";
+import type { AxiosError } from "axios";
 
 type ConfigDialogProps = {
   onClose: () => void;
+};
+
+type ApiErrorResponse = {
+  title?: string;
+  detail?: string;
+  errors?: string[];
+  [key: string]: unknown;
+};
+
+type ErrorState = {
+  title: string;
+  details?: string;
 };
 
 // load the component and its dependencies dynamically when needed, do not
@@ -46,7 +67,7 @@ const ConfigEditor = React.lazy(
  */
 export default function ConfigDialog({ onClose }: ConfigDialogProps) {
   const [configCode, setConfigCode] = useState<string | undefined>(undefined);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<ErrorState | null>(null);
   const [isApplying, setIsApplying] = useState(false);
 
   const fallback = (
@@ -54,6 +75,23 @@ export default function ConfigDialog({ onClose }: ConfigDialogProps) {
       <Spinner />
     </Bullseye>
   );
+
+  const isJsonValid = useMemo(() => {
+    if (configCode === undefined || configCode.trim() === "") return false;
+    try {
+      JSON.parse(configCode);
+      return true;
+    } catch {
+      return false;
+    }
+  }, [configCode]);
+
+  const handleConfigChange = (newCode: string) => {
+    setConfigCode(newCode);
+    if (error) {
+      setError(null);
+    }
+  };
 
   const handleApply = async () => {
     if (configCode === undefined) return;
@@ -65,11 +103,35 @@ export default function ConfigDialog({ onClose }: ConfigDialogProps) {
       onClose();
     } catch (e: unknown) {
       setIsApplying(false);
-      const msg =
-        e instanceof SyntaxError
-          ? _("Invalid JSON syntax")
-          : _("Failed to apply configuration");
-      setError(msg);
+      const axiosError = e as AxiosError<ApiErrorResponse>;
+      const data = axiosError?.response?.data;
+      let details: string | undefined;
+
+      if (data) {
+        if (typeof data === "string") {
+          details = data;
+        } else if (typeof data === "object") {
+          if (Array.isArray(data.errors) && data.errors.length > 0) {
+            details = data.errors.join("\n");
+            if (data.detail) {
+              details = `${data.detail}\n\n${details}`;
+            }
+          } else if (data.detail) {
+            details = data.detail;
+          } else {
+            details = JSON.stringify(data, null, 2);
+          }
+        }
+      } else if (axiosError?.message) {
+        details = axiosError.message;
+      }
+
+      const title = (typeof data === "object" && data?.title) || _("Failed to apply configuration");
+
+      setError({
+        title,
+        details,
+      });
     }
   };
 
@@ -85,17 +147,13 @@ export default function ConfigDialog({ onClose }: ConfigDialogProps) {
           <Popup.PrimaryAction
             onClick={handleApply}
             isLoading={isApplying}
-            isDisabled={configCode === undefined || isApplying}
+            isDisabled={!isJsonValid || isApplying}
           >
             {_("Apply")}
           </Popup.PrimaryAction>
-<<<<<<< HEAD
           <Popup.SecondaryAction onClick={onClose}>
             {_("Close")}
           </Popup.SecondaryAction>
-=======
-          <Popup.SecondaryAction onClick={onClose}>{_("Close")}</Popup.SecondaryAction>
->>>>>>> d3e5f77b2 (POC: rw monaco editor)
         </>
       }
     >
@@ -105,9 +163,24 @@ export default function ConfigDialog({ onClose }: ConfigDialogProps) {
             "Use this to reproduce this installation later using the installer command-line interface or the unattended mode.",
           )}
         </Content>
-        {error && <Alert variant="danger" isInline title={error} />}
+        {error && (
+          <Alert variant="danger" isInline title={error.title}>
+            {error.details && (
+              <ExpandableSection
+                toggleTextExpanded={_("Hide details")}
+                toggleTextCollapsed={_("Show details")}
+              >
+                <CodeBlock>
+                  <pre style={{ whiteSpace: "pre-wrap", maxHeight: "150px", overflowY: "auto" }}>
+                    {error.details}
+                  </pre>
+                </CodeBlock>
+              </ExpandableSection>
+            )}
+          </Alert>
+        )}
         <Suspense fallback={fallback}>
-          <ConfigEditor onChange={setConfigCode} />
+          <ConfigEditor onChange={handleConfigChange} />
         </Suspense>
       </Flex>
     </Popup>
