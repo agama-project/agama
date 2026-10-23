@@ -150,14 +150,10 @@ describe("ConfigEditor", () => {
     const { user } = plainRender(<ConfigEditor onChange={mockOnChange} />);
 
     await waitFor(() => {
-      expect(mockOnChange).toHaveBeenCalledWith(
-        JSON.stringify(mockConfig, null, 2),
-      );
+      expect(mockOnChange).toHaveBeenCalledWith(JSON.stringify(mockConfig, null, 2));
     });
 
     await user.click(screen.getByRole("button", { name: "Update code" }));
-    expect(mockOnChange).toHaveBeenCalledWith(
-      '{"software":{"product":"Updated"}}',
-    );
+    expect(mockOnChange).toHaveBeenCalledWith('{"software":{"product":"Updated"}}');
   });
 });

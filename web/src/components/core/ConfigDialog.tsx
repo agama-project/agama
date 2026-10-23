@@ -152,9 +152,7 @@ export default function ConfigDialog({ onClose }: ConfigDialogProps) {
           >
             {_("Apply")}
           </Popup.PrimaryAction>
-          <Popup.SecondaryAction onClick={onClose}>
-            {_("Close")}
-          </Popup.SecondaryAction>
+          <Popup.SecondaryAction onClick={onClose}>{_("Close")}</Popup.SecondaryAction>
         </>
       }
     >
