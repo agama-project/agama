@@ -35,20 +35,41 @@ jest.mock("~/utils", () => ({
 jest.mock(
   "~/components/core/ConfigEditor",
   () =>
-    ({ onChange }: { onChange?: (code: string) => void }) => (
+    ({
+      onChange,
+      onValidationChange,
+    }: {
+      onChange?: (code: string) => void;
+      onValidationChange?: (isValid: boolean) => void;
+    }) => (
       <div>
         <div>ConfigEditor Mock</div>
         <button
-          onClick={() => onChange?.('{"software":{"product":"Agama"}}')}
+          onClick={() => {
+            onChange?.('{"software":{"product":"Agama"}}');
+            onValidationChange?.(true);
+          }}
           aria-label="Set Valid Config"
         >
           Set Valid
         </button>
         <button
-          onClick={() => onChange?.("{invalid-json}")}
+          onClick={() => {
+            onChange?.("{invalid-json}");
+            onValidationChange?.(false);
+          }}
           aria-label="Set Invalid Config"
         >
           Set Invalid
+        </button>
+        <button
+          onClick={() => {
+            onChange?.('{"software":{"unknownProp":123}}');
+            onValidationChange?.(false);
+          }}
+          aria-label="Set Schema Invalid Config"
+        >
+          Set Schema Invalid
         </button>
       </div>
     ),
@@ -100,6 +121,15 @@ describe("ConfigDialog", () => {
     await screen.findByText("ConfigEditor Mock");
 
     await user.click(screen.getByRole("button", { name: "Set Invalid Config" }));
+    const applyButton = screen.getByRole("button", { name: "Apply" });
+    expect(applyButton).toBeDisabled();
+  });
+
+  it("disables Apply button when schema validation fails", async () => {
+    const { user } = renderConfigDialog();
+    await screen.findByText("ConfigEditor Mock");
+
+    await user.click(screen.getByRole("button", { name: "Set Schema Invalid Config" }));
     const applyButton = screen.getByRole("button", { name: "Apply" });
     expect(applyButton).toBeDisabled();
   });

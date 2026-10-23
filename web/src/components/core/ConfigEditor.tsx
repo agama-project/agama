@@ -40,42 +40,52 @@ type MonacoWithJson = typeof monaco & {
   };
 };
 
-const setMonacoSchema = (monacoInstance: unknown, schemaObj: object) => {
+const setMonacoSchema = (monacoInstance: unknown, schemaObj: object, modelUri?: string) => {
   const m = monacoInstance as MonacoWithJson;
   if (!m?.languages?.json?.jsonDefaults?.setDiagnosticsOptions) {
     return;
   }
+  const fileMatch = ["*"];
+  if (modelUri) {
+    fileMatch.push(modelUri);
+  }
   m.languages.json.jsonDefaults.setDiagnosticsOptions({
     validate: true,
     allowComments: false,
+    enableSchemaRequest: true,
+    schemaValidation: "error",
     schemas: [
       {
         uri: ROOT.configSchema,
-        fileMatch: ["*"],
+        fileMatch,
         schema: schemaObj,
       },
     ],
   });
 };
-
 export type ConfigEditorProps = {
   onChange?: (code: string) => void;
+  onValidationChange?: (isValid: boolean) => void;
 };
 
 /**
  * Component showing the installation configuration in JSON format, with
  * options to copy, download, and edit the content with schema validation.
  */
-export default function Editor({ onChange }: ConfigEditorProps) {
+export default function Editor({ onChange, onValidationChange }: ConfigEditorProps) {
   const { isDark } = useAppearance();
   const [config, setConfig] = useState<string | undefined>(undefined);
   const [schema, setSchema] = useState<object | null>(null);
   const [monacoInstance, setMonacoInstance] = useState<unknown>(null);
+  const editorModelUriRef = useRef<string | undefined>(undefined);
   // CodeEditor appends the extension based on the language, so it must be omitted here.
   const [downloadFileName, setDownloadFileName] = useState("agama-config");
 
   const onChangeRef = useRef(onChange);
   onChangeRef.current = onChange;
+
+  const onValidationChangeRef = useRef(onValidationChange);
+  onValidationChangeRef.current = onValidationChange;
 
   // avoid downloading the monaco editor parts from the CDN, load the locally bundled files
   loader.config({ monaco });
@@ -119,7 +129,7 @@ export default function Editor({ onChange }: ConfigEditorProps) {
 
   useEffect(() => {
     if (monacoInstance && schema) {
-      setMonacoSchema(monacoInstance, schema);
+      setMonacoSchema(monacoInstance, schema, editorModelUriRef.current);
     }
   }, [monacoInstance, schema]);
 
@@ -158,9 +168,34 @@ export default function Editor({ onChange }: ConfigEditorProps) {
       onEditorDidMount={(editor, monaco) => {
         editor.addCommand(monaco.KeyCode.F1, () => null);
         setMonacoInstance(monaco);
+        const model = editor.getModel();
+        const modelUri = model?.uri?.toString();
+        editorModelUriRef.current = modelUri;
         if (schema) {
-          setMonacoSchema(monaco, schema);
+          setMonacoSchema(monaco, schema, modelUri);
         }
+
+        const checkMarkers = () => {
+          const currentModel = editor.getModel();
+          if (!currentModel || currentModel.isDisposed()) return;
+          const markers = monaco.editor.getModelMarkers({ resource: currentModel.uri });
+          const hasProblems = markers.some(
+            (m) =>
+              m.severity === monaco.MarkerSeverity.Error ||
+              m.severity === monaco.MarkerSeverity.Warning,
+          );
+          onValidationChangeRef.current?.(!hasProblems);
+        };
+
+        const disposable = monaco.editor.onDidChangeMarkers(() => {
+          checkMarkers();
+        });
+
+        checkMarkers();
+
+        editor.onDidDispose(() => {
+          disposable.dispose();
+        });
       }}
     />
   );

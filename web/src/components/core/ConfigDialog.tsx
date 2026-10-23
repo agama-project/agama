@@ -69,6 +69,7 @@ export default function ConfigDialog({ onClose }: ConfigDialogProps) {
   const [configCode, setConfigCode] = useState<string | undefined>(undefined);
   const [error, setError] = useState<ErrorState | null>(null);
   const [isApplying, setIsApplying] = useState(false);
+  const [isSchemaValid, setIsSchemaValid] = useState(true);
 
   const fallback = (
     <Bullseye>
@@ -147,7 +148,7 @@ export default function ConfigDialog({ onClose }: ConfigDialogProps) {
           <Popup.PrimaryAction
             onClick={handleApply}
             isLoading={isApplying}
-            isDisabled={!isJsonValid || isApplying}
+            isDisabled={!isJsonValid || !isSchemaValid || isApplying}
           >
             {_("Apply")}
           </Popup.PrimaryAction>
@@ -180,7 +181,7 @@ export default function ConfigDialog({ onClose }: ConfigDialogProps) {
           </Alert>
         )}
         <Suspense fallback={fallback}>
-          <ConfigEditor onChange={handleConfigChange} />
+          <ConfigEditor onChange={handleConfigChange} onValidationChange={setIsSchemaValid} />
         </Suspense>
       </Flex>
     </Popup>
