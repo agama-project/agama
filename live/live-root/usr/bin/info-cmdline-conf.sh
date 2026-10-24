@@ -19,7 +19,7 @@ expand_info_arg() {
   # remove info param
   sed -in 's/\([[:space:]]\|^\)\(inst\|agama\)\.info=[^[:space:]]\+//' "${TARGET}"
   # and add content of info file
-  cat "${INFO_CONTENT}" >> "${TARGET}"
+  grep -- '=' "${INFO_CONTENT}" >> "${TARGET}"
 
   return 0
 }
