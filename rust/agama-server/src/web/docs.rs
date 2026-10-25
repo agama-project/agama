@@ -255,9 +255,10 @@ pub async fn build_json() -> Result<Value, serde_json::Error> {
     let openapi = build().await;
     let mut json_value = serde_json::to_value(&openapi)?;
 
-    // Post-process: Add empty security array to login endpoint to explicitly override global security
-    // Note: aide's serialization skips empty arrays (#[serde(skip_serializing_if = "Vec::is_empty")]),
-    // but OpenAPI spec requires explicit empty array to override global security
+    // Post-process: Add empty security array to login endpoint to explicitly override global
+    // security. Note: aide's serialization skips empty arrays
+    // (#[serde(skip_serializing_if = "Vec::is_empty")]), but OpenAPI spec requires explicit
+    // empty array to override global security.
     if let Some(paths) = json_value.get_mut("paths") {
         if let Some(auth_path) = paths.get_mut("/api/auth") {
             if let Some(post_op) = auth_path.get_mut("post") {

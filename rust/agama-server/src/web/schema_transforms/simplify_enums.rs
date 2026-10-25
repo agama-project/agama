@@ -67,11 +67,10 @@ const ENUM_KEYWORDS: &[&str] = &["oneOf", "anyOf"];
 /// `"value is not valid under any of the schemas listed in the 'oneOf' keyword"`
 ///
 /// Converting them into `"enum": [...]` produces much clearer validation errors listing the
-/// permitted values:
-/// `"'foo' is not one of ['enabled', 'default']"`
+/// permitted values: `"'foo' is not one of ['enabled', 'default']"`.
 ///
 /// If any variants have descriptions, they are preserved by:
-/// 1. Appending a Markdown list of the variants and their descriptions to the schema's `description`.
+/// 1. Appending a Markdown list of the variants and their descriptions to `description`.
 /// 2. Adding an `x-enum-descriptions` vendor extension map (`{ "variant": "description" }`).
 #[derive(Debug, Clone, Copy, Default)]
 pub(crate) struct SimplifyEnums;

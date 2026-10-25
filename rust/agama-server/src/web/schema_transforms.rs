@@ -20,13 +20,14 @@
 
 //! Schema transformations for schemars-generated JSON schemas.
 //!
-//! This module provides [`schemars::transform::Transform`] implementations for post-processing schemas:
+//! This module provides [`schemars::transform::Transform`] implementations for post-processing
+//! schemas:
 //! - [`DenyAdditionalProperties`]: Ensures all object schemas have `"additionalProperties": false`
 //!   so that schema validators complain about unknown or unexpected keys.
 //! - [`RemoveNullableAnyOf`]: Eliminates schemars default behavior for `Option<T>` that generates
 //!   `anyOf: [T, {"type": "null"}]` and `"type": [..., "null"]`.
-//! - [`SimplifyEnums`]: Converts `oneOf` or `anyOf` containing scalar constants into clean `enum: [...]` arrays,
-//!   preserving variant descriptions in `description` and `x-enum-descriptions`.
+//! - [`SimplifyEnums`]: Converts `oneOf` or `anyOf` containing scalar constants into clean
+//!   `enum: [...]` arrays, preserving descriptions in `description` and `x-enum-descriptions`.
 //! - [`DistributeFlattenedEnums`]: Merges outer struct properties into flattened untagged enum variants.
 //! - [`LinkSubsystemSchemas`]: Links manually defined subsystem schemas (Storage, Dasd, Zfcp, Iscsi)
 //!   into the Config, Proposal, and SystemInfo schemas.

@@ -22,8 +22,8 @@ use schemars::transform::{transform_subschemas, Transform};
 use schemars::Schema;
 use serde_json::Value;
 
-/// A schemars [`Transform`] that distributes outer struct properties and required fields into
-/// each variant of an `anyOf` array when a struct flattens an untagged enum (e.g. `UserFile`, `Script`).
+/// A schemars [`Transform`] that distributes outer struct properties and required fields into each
+/// variant of an `anyOf` array when a struct flattens an untagged enum (e.g. `UserFile`, `Script`).
 ///
 /// # Background & Motivation
 ///
@@ -55,18 +55,21 @@ use serde_json::Value;
 ///
 /// However, schemars generates a hybrid schema:
 /// - Outer `properties` has `destination` and `permissions`.
-/// - An `anyOf` array contains the variants: `{ "properties": { "content": ... } }` and `{ "properties": { "url": ... } }`.
+/// - An `anyOf` array contains the variants: `{ "properties": { "content": ... } }` and
+///   `{ "properties": { "url": ... } }`.
 ///
 /// If `"additionalProperties": false` is placed on the outer object and its variants:
-/// 1. The outer object only recognizes `destination` and `permissions`, rejecting `"content"` as an unexpected property.
-/// 2. Variant 1 only recognizes `content`, rejecting `"destination"` and `"permissions"` as unexpected properties.
+/// 1. The outer object only recognizes `destination` and `permissions`, rejecting `"content"`
+///    as an unexpected property.
+/// 2. Variant 1 only recognizes `content`, rejecting `"destination"` and `"permissions"`
+///    as unexpected properties.
 ///
 /// As a result, valid configurations become impossible to validate.
 ///
 /// # Solution
 ///
-/// This transform distributes the outer struct properties (`destination`, `permissions`) and outer
-/// required constraints into each variant of `anyOf`, and removes them from the outer container:
+/// This transform distributes the outer struct properties (`destination`, `permissions`) and
+/// outer required constraints into each variant of `anyOf`, and removes them from the outer container:
 /// ```json
 /// {
 ///   "anyOf": [
@@ -91,17 +94,20 @@ use serde_json::Value;
 ///   ]
 /// }
 /// ```
-/// When `DenyAdditionalProperties` runs next, it sets `"additionalProperties": false` on each variant.
-/// Now, valid instances pass, and unexpected keys like `"unknownKey"` are strictly rejected by both variants.
+/// When `DenyAdditionalProperties` runs next, it sets `"additionalProperties": false` on each
+/// variant. Now, valid instances pass, and unexpected keys like `"unknownKey"` are strictly rejected
+/// by both variants.
 ///
 /// # Why not `unevaluatedProperties: false`?
 ///
 /// JSON Schema Draft 2019-09 introduced the `unevaluatedProperties` keyword specifically to solve
 /// this problem by looking across `anyOf` and `allOf`. However:
-/// - Many OpenAPI tools, code generators, and schema validators (especially those targeting OpenAPI 3.0
-///   or older JSON Schema drafts) do not support or correctly implement `unevaluatedProperties`.
-/// - Distributing properties into `anyOf` variants uses only standard `properties` and `additionalProperties`,
-///   ensuring 100% compatibility across all OpenAPI tools, Swagger UI, code generators, and validators.
+/// - Many OpenAPI tools, code generators, and schema validators (especially those targeting
+///   OpenAPI 3.0 or older JSON Schema drafts) do not support or correctly implement
+///   `unevaluatedProperties`.
+/// - Distributing properties into `anyOf` variants uses only standard `properties` and
+///   `additionalProperties`, ensuring 100% compatibility across all OpenAPI tools, Swagger UI,
+///   code generators, and validators.
 #[derive(Debug, Clone, Copy, Default)]
 pub(crate) struct DistributeFlattenedEnums;
 

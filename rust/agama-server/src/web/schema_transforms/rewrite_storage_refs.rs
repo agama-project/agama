@@ -27,8 +27,8 @@ const STORAGE_DEVICE_FILE: &str = "device.storage.schema.json";
 const STORAGE_DEVICE_DEFS_PREFIX: &str = "device.storage.schema.json#/$defs/";
 const STORAGE_DEVICE_COMPONENT_PREFIX: &str = "#/components/schemas/StorageDevice";
 
-/// A schemars [`Transform`] that rewrites external file references to `device.storage.schema.json`
-/// into global OpenAPI component paths `#/components/schemas/StorageDevice...`.
+/// A schemars [`Transform`] that rewrites external references to `device.storage.schema.json` into
+/// global OpenAPI component paths (`#/components/schemas/StorageDevice...`).
 #[derive(Debug, Clone, Copy, Default)]
 pub(crate) struct RewriteStorageRefs;
 

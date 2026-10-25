@@ -51,9 +51,9 @@ fn is_null_schema_value(val: &Value) -> bool {
 ///
 /// Similarly, `"type": ["string", "null"]` is simplified to `"type": "string"`.
 ///
-/// This eliminates misleading validation errors such as:
+/// This eliminates misleading validation errors like:
 /// `"{"ID":"Tumbleweed"} is not valid under any of the schemas listed in the 'anyOf' keyword. /product"`
-/// allowing the validator to report specific field errors directly on `T`.
+/// and allows the validator to report specific field errors directly on `T`.
 #[derive(Debug, Clone, Copy, Default)]
 pub(crate) struct RemoveNullableAnyOf;
 
