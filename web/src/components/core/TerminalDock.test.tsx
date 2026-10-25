@@ -52,7 +52,7 @@ const Subject = () => {
   const { open } = useTerminal();
   return (
     <>
-      <button onClick={open}>open terminal</button>
+      <button onClick={() => open()}>open terminal</button>
       <TerminalDock>
         <div>{APP_CONTENT}</div>
       </TerminalDock>

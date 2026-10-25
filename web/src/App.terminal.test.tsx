@@ -83,7 +83,7 @@ class ResizeObserverMock {
 // terminal the way the real "Open terminal" menu entry would.
 const OpenTerminalButton = () => {
   const { open } = useTerminal();
-  return <button onClick={open}>open terminal</button>;
+  return <button onClick={() => open()}>open terminal</button>;
 };
 
 const Subject = () => (

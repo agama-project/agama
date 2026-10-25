@@ -1,11 +1,51 @@
 -------------------------------------------------------------------
-Sun Oct  4 16:25:30 UTC 2026 - Martin Pluskal <martin@pluskal.org>
+Sun Oct 25 16:25:30 UTC 2026 - Martin Pluskal <martin@pluskal.org>
 
 - Report the checksums correctly when asking the user to accept a file
   with a wrong digest. The question mixed up the expected and the
   found checksum and kept the Ruby gettext placeholders, so neither
   checksum nor the file name was shown at all
   (gh#agama-project/agama#2703).
+
+-------------------------------------------------------------------
+Thu Oct 22 09:42:52 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Version 25
+
+-------------------------------------------------------------------
+Thu Oct 15 07:36:10 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Do not run RPM scriptlets when updating the agama-scripts package
+  (bsc#1285032).
+
+-------------------------------------------------------------------
+Thu Oct 15 07:35:10 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Fix storage model schema: request password attribute instead of
+  non-existent method attribute (gh#agama-project/agama#4038).
+
+-------------------------------------------------------------------
+Thu Oct 15 07:34:10 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Fix the proxy section of the profile JSON schema to use the
+  same property names as the proxy config (http, https, ftp,
+  gopher, socks, socks5) and reject unknown properties instead of
+  silently ignoring them (gh#agama-project/agama#3999, related to
+  gh#agama-project/agama#3069).
+
+-------------------------------------------------------------------
+Thu Oct 15 07:34:10 UTC 2026 - Michal Filka <mfilka@suse.com>
+
+- bsc#1271374
+  - added references to storage definitions into the OpenAPI schema
+
+-------------------------------------------------------------------
+Thu Oct  8 06:22:28 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Move back packaging agama-openapi-nightly into agama.srpm as
+  it is fast moving target, so it make sense to live together with
+  code from which it is generated. agama-openapi will be from
+  separated repo for stable releases.
 
 -------------------------------------------------------------------
 Thu Oct  1 11:55:11 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
@@ -20,8 +60,9 @@ Thu Oct  1 11:53:11 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
     OpenAPI components using `cargo xtask openapi`.
   - Replace manually maintained profile.schema.json and
     software.schema.json with schemas generated from Rust sources.
-  - Install OpenAPI specifications and standalone schemas under
-    `/usr/share/agama/openapi/nightly/`.
+  - Move packaging of OpenAPI specifications and schemas to standalone
+    agama-openapi package, and require agama-openapi-nightly in
+    agama-common.
   - Port descriptions, titles, and examples from legacy schemas.
 
 -------------------------------------------------------------------

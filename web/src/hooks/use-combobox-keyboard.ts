@@ -196,10 +196,15 @@ export const useComboboxKeyboard = (
       }, 0);
     }
 
-    // When menu closes, restore focus to the toggle button
+    // When menu closes, restore focus to the toggle button, unless the user has
+    // already moved focus elsewhere (e.g., by clicking another field to close
+    // the menu, or by moving on before the restoration runs on a slow machine).
     if (prevIsOpen.current === true && isOpen === false) {
       setTimeout(() => {
-        toggleRef.current?.focus();
+        const active = document.activeElement;
+        const focusIsLost = !active || active === document.body;
+        const focusIsInMenu = menuRef.current?.contains(active);
+        if (focusIsLost || focusIsInMenu) toggleRef.current?.focus();
       }, 0);
     }
 
