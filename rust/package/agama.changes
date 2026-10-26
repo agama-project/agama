@@ -1,11 +1,5 @@
 -------------------------------------------------------------------
-Wed Oct 14 10:47:30 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
-
-- Do not run RPM scriptlets when updating the agama-scripts package
-  (bsc#1285032).
-
--------------------------------------------------------------------
-Thu Oct  8 10:40:48 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+Mon Oct 26 17:54:08 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
 
 - Allow nesting the ports of bonds and bridges in a new
   "portConnections" list, so stacked setups can be read and
@@ -27,6 +21,12 @@ Thu Oct  8 10:40:48 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
   it is read into (network.schema.json).
 - Report the state of the connections only in the system
   information, and not for the ports nested in their controller.
+
+-------------------------------------------------------------------
+Wed Oct 14 10:47:30 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Do not run RPM scriptlets when updating the agama-scripts package
+  (bsc#1285032).
 
 -------------------------------------------------------------------
 Tue Oct  6 15:51:28 UTC 2026 - José Iván López González <jlopez@suse.com>
