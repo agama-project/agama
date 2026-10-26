@@ -45,13 +45,17 @@ import { useConfigModel } from "~/hooks/model/storage/config-model";
  * The sheet the page opens is laid over it. The sheet wraps rather than sits
  * beside, because two of its three placements are about what the page does
  * while it is open.
+ *
+ * What the configuration will do stays above the sheet, never under it. A
+ * change made in the sheet can turn that report from a plan into a problem or
+ * back, and the reader has to be able to see it and act on it without closing
+ * the sheet first.
  */
 export default function StoragePageContent(): React.ReactNode {
   const model = useConfigModel();
 
   const body = (
     <Stack hasGutter>
-      <Result />
       {model && <TopLine />}
       {model && (
         <Page.Section>
@@ -65,5 +69,10 @@ export default function StoragePageContent(): React.ReactNode {
     </Stack>
   );
 
-  return <StorageSheet page={body} />;
+  return (
+    <>
+      <Result />
+      <StorageSheet page={body} />
+    </>
+  );
 }
