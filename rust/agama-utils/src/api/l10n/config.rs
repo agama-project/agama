@@ -24,7 +24,7 @@ use serde::{Deserialize, Serialize};
 
 /// Localization config.
 #[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq, Merge, JsonSchema)]
-#[serde(rename_all = "camelCase")]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 #[schemars(rename = "l10n.Config", title = "Localization settings")]
 pub struct Config {
     /// Locale (e.g., "en_US.UTF-8").

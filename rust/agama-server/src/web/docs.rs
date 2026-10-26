@@ -36,8 +36,8 @@ use crate::test_utils;
 use crate::web::error::ProblemDetailsResponse;
 use crate::web::http::{AuthResponse, LoginRequest};
 use crate::web::schema_transforms::{
-    capitalize, DenyAdditionalProperties, DistributeFlattenedEnums, InjectPropertyAliases,
-    LinkSubsystemSchemas, RemoveNullableAnyOf, RewriteStorageRefs, SimplifyEnums,
+    capitalize, InjectPropertyAliases, LinkSubsystemSchemas, RemoveNullableAnyOf,
+    RewriteStorageRefs, SimplifyEnums,
 };
 use schemars::transform::Transform;
 
@@ -222,20 +222,16 @@ pub async fn build() -> OpenApi {
     {
         let mut remove_nullable = RemoveNullableAnyOf;
         let mut simplify_enums = SimplifyEnums;
-        let mut distribute_flattened_enums = DistributeFlattenedEnums;
         let mut link_subsystems = LinkSubsystemSchemas;
         let mut inject_aliases = InjectPropertyAliases;
-        let mut deny_additional = DenyAdditionalProperties;
         let mut rewrite_storage = RewriteStorageRefs;
 
         for schema_value in schemas_map.values_mut() {
             if let Ok(schema) = <&mut schemars::Schema>::try_from(schema_value) {
                 remove_nullable.transform(schema);
                 simplify_enums.transform(schema);
-                distribute_flattened_enums.transform(schema);
                 link_subsystems.transform(schema);
                 inject_aliases.transform(schema);
-                deny_additional.transform(schema);
                 rewrite_storage.transform(schema);
             }
         }

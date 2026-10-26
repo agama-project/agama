@@ -42,8 +42,8 @@ pub enum Error {
 /// Profile definition for automated installation.
 #[skip_serializing_none]
 #[derive(Clone, Debug, Default, Deserialize, Serialize, Merge, JsonSchema)]
-#[serde(rename_all = "camelCase")]
-#[schemars(deny_unknown_fields, title = "Profile")]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+#[schemars(title = "Profile")]
 #[merge(strategy = merge::option::recurse)]
 pub struct Config {
     /// Bootloader configuration.

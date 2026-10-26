@@ -30,6 +30,7 @@ use crate::api::files::{
 };
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize, Merge, JsonSchema)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 #[schemars(rename = "files.Config")]
 pub struct Config {
     /// User-defined files to deploy after installation just before post install scripts.
@@ -55,7 +56,7 @@ impl Config {
 }
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize, Merge, JsonSchema, PartialEq)]
-#[serde(rename_all = "camelCase")]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 #[schemars(title = "User-defined installation scripts")]
 #[merge(strategy = merge::option::overwrite_none)]
 pub struct ScriptsConfig {

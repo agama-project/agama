@@ -382,7 +382,7 @@ impl fmt::Display for DhcpIaid {
 }
 
 #[derive(Debug, PartialEq, Clone, Deserialize, Serialize, JsonSchema)]
-#[serde(rename_all = "camelCase")]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct IpRoute {
     #[schemars(with = "schemas::IpInetSchema")]
     pub destination: IpInet,

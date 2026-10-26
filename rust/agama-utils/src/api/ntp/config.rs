@@ -25,7 +25,7 @@ use std::str::FromStr;
 
 /// NTP configuration.
 #[derive(Clone, Debug, Default, Merge, Serialize, Deserialize, PartialEq, JsonSchema)]
-#[serde(rename_all = "camelCase")]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 #[schemars(rename = "ntp.Config", title = "NTP configuration")]
 pub struct Config {
     /// NTP sources.
@@ -43,7 +43,7 @@ impl Config {
 
 /// NTP source configuration.
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, JsonSchema)]
-#[serde(rename_all = "camelCase")]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 #[schemars(title = "NTP source")]
 pub struct Source {
     /// Type of NTP source: pool (pool of servers), server (single server), or peer (symmetric association).

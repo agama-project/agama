@@ -411,4 +411,55 @@ mod tests {
             }
         }
     }
+
+    #[test]
+    fn test_all_config_schema_entries_define_additional_properties() {
+        let manifest_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+        let schema_path = manifest_dir.join("../out/schemas/config.schema.json");
+        if !schema_path.exists() {
+            return;
+        }
+
+        let content = fs::read_to_string(&schema_path).expect("read config.schema.json");
+        let schema_json: serde_json::Value = serde_json::from_str(&content).expect("parse schema");
+
+        // The root schema itself must define additionalProperties
+        assert!(
+            schema_json.get("additionalProperties").is_some(),
+            "Root schema in config.schema.json must define 'additionalProperties'"
+        );
+
+        // Every object component schema must define additionalProperties
+        if let Some(components) = schema_json
+            .pointer("/components/schemas")
+            .and_then(|c| c.as_object())
+        {
+            let mut missing = Vec::new();
+            for (name, comp) in components {
+                // Ignore schemas that are unions/anyOf variants (e.g. untagged enum containers like UserFile)
+                if comp.get("anyOf").is_some() || comp.get("oneOf").is_some() {
+                    continue;
+                }
+
+                let is_object = if let Some(ty) = comp.get("type") {
+                    ty == "object"
+                        || ty.as_array().map_or(false, |a| a.iter().any(|v| v == "object"))
+                } else {
+                    comp.get("properties").is_some()
+                };
+
+                // If it is an object definition, it must define additionalProperties
+                if is_object && comp.get("additionalProperties").is_none() {
+                    missing.push(name.clone());
+                }
+            }
+
+            assert!(
+                missing.is_empty(),
+                "The following schema entries in config.schema.json do not define 'additionalProperties':\n{:#?}\n\
+                Please define `#[serde(deny_unknown_fields)]` on the corresponding Rust structs!",
+                missing
+            );
+        }
+    }
 }
