@@ -21,6 +21,7 @@
  */
 
 import React from "react";
+import { createPortal } from "react-dom";
 import { screen } from "@testing-library/react";
 import { Button } from "@patternfly/react-core";
 import { plainRender } from "~/test-utils";
@@ -43,12 +44,16 @@ function Example({ placement = "overlay" }: { placement?: SheetPlacement }) {
       page={<Button onClick={() => setIsOpen(true)}>View all 5 needed actions</Button>}
     >
       <Button>Reformat</Button>
+      {createPortal(<Button>Pick a disk</Button>, document.body)}
     </Sheet>
   );
 }
 
 const opener = () => screen.getByRole("button", { name: "View all 5 needed actions" });
 const sheet = () => screen.getByRole("region", { name: "Result" });
+/* By its class, since it has no role on purpose: it is a decoration, and the
+   way out it offers is there for those who can see it. */
+const backdrop = () => sheet().closest<HTMLElement>(".pf-v6-c-drawer__main");
 
 describe("Sheet", () => {
   it("shows nothing of the sheet until it is opened", () => {
@@ -98,6 +103,41 @@ describe("Sheet", () => {
 
       expect(opener().closest("[inert]")).not.toBeNull();
     });
+
+    it("closes on a click on the backdrop", async () => {
+      const { user } = plainRender(<Example placement="overlay" />);
+      await user.click(opener());
+      await user.click(backdrop());
+
+      expect(screen.queryByRole("region", { name: "Result" })).not.toBeInTheDocument();
+    });
+
+    it("stays open on a click inside it", async () => {
+      const { user } = plainRender(<Example placement="overlay" />);
+      await user.click(opener());
+      await user.click(screen.getByRole("button", { name: "Reformat" }));
+
+      sheet();
+    });
+
+    it("stays open on a click in a dialog or menu opened from it", async () => {
+      const { user } = plainRender(<Example placement="overlay" />);
+      await user.click(opener());
+      await user.click(screen.getByRole("button", { name: "Pick a disk" }));
+
+      sheet();
+    });
+
+    it("stays open when a press inside it is released on the backdrop", async () => {
+      const { user } = plainRender(<Example placement="overlay" />);
+      await user.click(opener());
+      await user.pointer([
+        { keys: "[MouseLeft>]", target: screen.getByRole("button", { name: "Reformat" }) },
+        { keys: "[/MouseLeft]", target: backdrop() },
+      ]);
+
+      sheet();
+    });
   });
 
   describe("when it stands beside the page", () => {
@@ -106,6 +146,14 @@ describe("Sheet", () => {
       await user.click(opener());
 
       expect(opener().closest("[inert]")).toBeNull();
+    });
+
+    it("stays open on a click beside it, where there is no backdrop", async () => {
+      const { user } = plainRender(<Example placement="share" />);
+      await user.click(opener());
+      await user.click(backdrop());
+
+      sheet();
     });
   });
 });

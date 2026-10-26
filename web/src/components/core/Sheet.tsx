@@ -83,6 +83,13 @@ export type SheetProps = {
  *   see, and a screen reader reads the whole covered page as though it were
  *   available.
  * - Escape closes it, wherever the focus is inside it.
+ * - Where it comes over the page, a click on the backdrop closes it too, for
+ *   readers using a mouse or touch. The backdrop stays a decoration, not
+ *   a control: whoever uses a keyboard has Escape and the close button, and
+ *   one more stop with no clear name would only be noise. A click counts only
+ *   where both the press and the release land on the backdrop, so neither
+ *   a click in a dialog opened from the sheet nor a selection dragged out of
+ *   it closes the sheet.
  * - It is a named region, so it is one stop on a screen reader's list of
  *   landmarks rather than an unlabelled block of the page.
  *
@@ -118,6 +125,7 @@ export default function Sheet({
 }: SheetProps): React.ReactNode {
   const [panel, setPanel] = React.useState<HTMLDivElement | null>(null);
   const titleId = React.useId();
+  const isPressOnBackdrop = React.useRef(false);
 
   /* Where the reader was when they opened it, so closing it can put them back.
      Without this a reader who closes a sheet is dropped at the top of the
@@ -201,12 +209,28 @@ export default function Sheet({
   const reserves = isBeside && placeholder !== undefined;
   const isCovered = placement === "overlay" && isOpen;
 
+  /* The backdrop is drawn over the drawer's only child, so that is what
+     a click on it lands on. Anything else is something on top of it: the
+     sheet, or a dialog or menu opened from it, whose events reach here too
+     because React passes them up through portals. */
+  const isBackdrop = (event: React.SyntheticEvent<HTMLElement>) =>
+    event.target === event.currentTarget.firstElementChild;
+
   return (
     <Drawer
       isExpanded={isOpen || reserves}
       isInline={isBeside}
       position="end"
       className={isCovered ? "agm-sheet-frame agm-sheet-frame--covered" : "agm-sheet-frame"}
+      onPointerDown={(event) => {
+        isPressOnBackdrop.current = isCovered && isBackdrop(event);
+      }}
+      /* A click lands on whatever holds both the press and the release, which
+         for a selection dragged out of the sheet is the backdrop. */
+      onClick={(event) => {
+        if (isPressOnBackdrop.current && isBackdrop(event)) onClose();
+        isPressOnBackdrop.current = false;
+      }}
     >
       <DrawerContent
         panelContent={
