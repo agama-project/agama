@@ -49,7 +49,7 @@ jobs:
 
     container:
       # TODO: the 16.1 image is not available yet, use 16.0 for now
-      image: registry.opensuse.org/opensuse/leap:16.0
+      image: registry.opensuse.org/opensuse/leap:16.1
 
     steps:
 

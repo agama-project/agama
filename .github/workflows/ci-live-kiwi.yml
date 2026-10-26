@@ -31,7 +31,7 @@ jobs:
   kiwi-validate:
     runs-on: ubuntu-latest
     container:
-      image: registry.opensuse.org/opensuse/leap:16.0
+      image: registry.opensuse.org/opensuse/leap:16.1
 
     steps:
       - name: Configure and refresh repositories
