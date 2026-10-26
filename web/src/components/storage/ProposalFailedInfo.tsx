@@ -26,6 +26,7 @@ import AlertWithDetailsPopup from "~/components/core/AlertWithDetailsPopup";
 import { useConfigModel } from "~/hooks/model/storage/config-model";
 import * as partitionUtils from "~/components/storage/utils/partition";
 import { _, formatList } from "~/i18n";
+import type { TranslatedString } from "~/i18n";
 import { sprintf } from "sprintf-js";
 
 const Description = () => {
@@ -69,6 +70,13 @@ const Description = () => {
   );
 };
 
+/** The one line saying that no layout could be worked out. */
+function proposalFailedTitle(): TranslatedString {
+  // TRANSLATORS: reported at the top of the storage page when the installer
+  // cannot work out how to lay out the disks for the new system.
+  return _("No storage layout can be calculated with the current settings.");
+}
+
 /**
  * Displays information to help users understand why a storage proposal
  * could not be generated with the current configuration.
@@ -80,9 +88,7 @@ export default function ProposalFailedInfo() {
   return (
     <AlertWithDetailsPopup
       variant="warning"
-      // TRANSLATORS: reported at the top of the storage page when the installer
-      // cannot work out how to lay out the disks for the new system.
-      title={_("No storage layout can be calculated with the current settings.")}
+      title={proposalFailedTitle()}
       // TRANSLATORS: opens a popup explaining why no storage layout can be
       // calculated.
       actionLabel={_("Show more")}
@@ -98,3 +104,5 @@ export default function ProposalFailedInfo() {
     </AlertWithDetailsPopup>
   );
 }
+
+export { proposalFailedTitle };

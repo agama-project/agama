@@ -26,14 +26,23 @@ import AlertWithDetailsPopup from "~/components/core/AlertWithDetailsPopup";
 import PlannedChangesPopup from "~/components/storage/storage-page/PlannedChangesPopup";
 import { useActions } from "~/hooks/model/proposal/storage";
 import { _, n_ } from "~/i18n";
+import type { TranslatedString } from "~/i18n";
+import type { Storage } from "~/model/proposal";
 
 /**
  * The sentence that sums up the result: what applying the configuration takes.
  *
  * Its subject is the act of applying the configuration, so in translation the
  * verb never has to agree with the count.
+ *
+ * The count comes from the calculated actions, so it states what will happen
+ * rather than what the configuration asked for.
  */
-function Summary({ count }: { count: number }) {
+function summaryOf(actions: Storage.Action[]): TranslatedString {
+  /* Subvolumes are how one file system is laid out inside itself, so counting
+     them tells a reader how the installer works rather than what it will do. */
+  const count = actions.filter((action) => !action.subvol).length;
+
   return sprintf(
     n_(
       "Applying the configuration below will take %d action during installation.",
@@ -48,21 +57,14 @@ function Summary({ count }: { count: number }) {
  * What the current storage configuration will do to the disks: one line saying
  * how many actions it takes, and the way to the final layout and the full list
  * of actions.
- *
- * The count comes from the calculated actions, so it states what will happen
- * rather than what the configuration asked for.
  */
 export default function Consequences(): React.ReactNode {
   const actions = useActions();
 
-  /* Subvolumes are how one file system is laid out inside itself, so counting
-     them tells a reader how the installer works rather than what it will do. */
-  const counted = actions.filter((action) => !action.subvol);
-
   return (
     <AlertWithDetailsPopup
       variant="custom"
-      title={<Summary count={counted.length} />}
+      title={summaryOf(actions)}
       // TRANSLATORS: opens a popup with the layout the disks will have after
       // installation and the actions needed to get there.
       actionLabel={_("View changes")}
@@ -78,3 +80,5 @@ export default function Consequences(): React.ReactNode {
     </AlertWithDetailsPopup>
   );
 }
+
+export { summaryOf };
