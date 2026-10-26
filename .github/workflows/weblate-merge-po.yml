@@ -183,16 +183,42 @@ jobs:
           esac
 
           if [ -s tr.diff ]; then
+            case "${COMPONENT}" in
+              web) paths="web" ;;
+              products) paths="products.d" ;;
+              *) paths="${COMPONENT}/po" ;;
+            esac
+
+            # is there an open pull request with the same change?
+            while read -r pr url; do
+              git fetch --quiet origin "pull/${pr}/head"
+              # compare the working tree with the PR, ignore the timestamp changes
+              git diff --ignore-matching-lines="POT-Creation-Date:" \
+                --ignore-matching-lines="PO-Revision-Date:" FETCH_HEAD -- "${paths}" > pr.diff
+              if [ ! -s pr.diff ]; then
+                echo "Pull request already exists: ${url}"
+                duplicate=true
+                break
+              fi
+            done < <(gh pr list --base "${BRANCH}" --label "area: l10n" --label bot \
+              --state open --search "Update ${COMPONENT} translation files in:title" \
+              --json number,url --jq '.[] | "\(.number) \(.url)"')
+            rm -f pr.diff
+          fi
+
+          if [ -s tr.diff ] && [ "${duplicate:-false}" != "true" ]; then
             echo "Translations updated"
             # this is an Output Parameter
             # https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#setting-an-output-parameter
             echo "updated=true" >> "$GITHUB_OUTPUT"
           else
-            echo "Translations not changed"
+            [ "${duplicate:-false}" = "true" ] || echo "Translations not changed"
             echo "updated=false" >> "$GITHUB_OUTPUT"
           fi
 
           rm tr.diff
+        env:
+          GH_TOKEN: ${{ github.token }}
 
       - name: Push updated files
         # run only when a file has been updated
@@ -208,9 +234,21 @@ jobs:
         if: steps.check_changes.outputs.updated == 'true'
         working-directory: ./agama
         run: |
-          gh pr create -B "${{ matrix.branch }}" -H "${PR_BRANCH}" \
+          # remember the older open pull requests for this component, they will be superseded
+          old_prs=$(gh pr list --base "${BRANCH}" --label "area: l10n" --label bot \
+            --state open --search "Update ${COMPONENT} translation files in:title" \
+            --json number --jq '.[].number')
+
+          new_url=$(gh pr create -B "${{ matrix.branch }}" -H "${PR_BRANCH}" \
             --label "area: l10n" --label bot \
             --title "Update ${{ matrix.component }} translation files (${{ matrix.branch }})" \
-            --body "Updating the ${{ matrix.component }} translation files from the agama-weblate repository"
+            --body "Updating the ${{ matrix.component }} translation files from the agama-weblate repository")
+          echo "Created pull request: ${new_url}"
+
+          # the new pull request includes the old changes, close the obsolete ones
+          for pr in ${old_prs}; do
+            gh pr close "${pr}" --delete-branch \
+              --comment "Superseded by ${new_url}, which includes these changes as well."
+          done
         env:
           GH_TOKEN: ${{ github.token }}
