@@ -16,6 +16,7 @@ i18n-format = { workspace = true }
 openssl = { workspace = true }
 schemars = { workspace = true }
 serde = { workspace = true }
+tempfile = { workspace = true }
 thiserror = { workspace = true }
 tokio = { workspace = true }
 tracing = { workspace = true }

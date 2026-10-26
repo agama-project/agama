@@ -112,6 +112,68 @@ pub struct SoftwareConfig {
     pub extra_repositories: Option<Vec<RepositoryConfig>>,
     /// Flag indicating if only hard requirements should be used by solver.
     pub only_required: Option<bool>,
+    /// Image configuration for image-based deployment.
+    pub image: Option<ImageConfig>,
+}
+
+/// Supported image types for image-based deployment.
+#[derive(Clone, Copy, Debug, Default, Serialize, Deserialize, PartialEq, Eq, JsonSchema)]
+#[serde(rename_all = "lowercase")]
+pub enum ImageType {
+    /// Tarball archive containing the root filesystem.
+    #[default]
+    Tarball,
+    /// Raw disk or filesystem image.
+    Raw,
+    /// OCI container image.
+    Oci,
+}
+
+/// Image-based deployment configuration.
+#[skip_serializing_none]
+#[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq, Eq, JsonSchema)]
+#[serde(rename_all = "camelCase")]
+#[schemars(title = "Image configuration")]
+pub struct ImageConfig {
+    /// Path to the image.
+    pub path: String,
+    /// Type of the image (tarball, raw, oci).
+    #[serde(rename = "type")]
+    pub image_type: ImageType,
+    /// Flag indicating if recommended hardware packages should be installed after deploying the image.
+    pub recommended_hardware_packages: Option<bool>,
+}
+
+impl merge::Merge for ImageConfig {
+    fn merge(&mut self, other: Self) {
+        if !other.path.is_empty() {
+            self.path = other.path;
+        }
+        self.image_type = other.image_type;
+        if other.recommended_hardware_packages.is_some() {
+            self.recommended_hardware_packages = other.recommended_hardware_packages;
+        }
+    }
+}
+
+impl ImageConfig {
+    pub fn new(path: impl Into<String>, image_type: ImageType) -> Self {
+        Self {
+            path: path.into(),
+            image_type,
+            recommended_hardware_packages: None,
+        }
+    }
+
+    pub fn with_recommended_hardware_packages(mut self, enabled: bool) -> Self {
+        self.recommended_hardware_packages = Some(enabled);
+        self
+    }
+
+    /// Whether recommended hardware packages should be installed.
+    pub fn install_hardware_packages(&self) -> bool {
+        self.recommended_hardware_packages.unwrap_or(false)
+    }
 }
 
 /// List or modification map of user-selected patterns to install.
@@ -165,6 +227,7 @@ impl SoftwareConfig {
             && self.packages.is_none()
             && self.extra_repositories.is_none()
             && self.only_required.is_none()
+            && self.image.is_none()
         {
             None
         } else {
@@ -232,6 +295,7 @@ mod tests {
                     gpg_fingerprints: Some(vec!["fp1".to_string()]),
                 }]),
                 only_required: Some(false),
+                image: None,
             }),
         };
 
@@ -263,6 +327,7 @@ mod tests {
                     gpg_fingerprints: Some(vec!["fp2".to_string(), "fp3".to_string()]),
                 }]),
                 only_required: Some(true),
+                image: None,
             }),
         };
 
@@ -296,6 +361,7 @@ mod tests {
                 gpg_fingerprints: Some(vec!["fp1".to_string()]),
             }]),
             only_required: Some(false),
+            image: None,
         };
 
         assert_eq!(updated.product, Some(expected_product));
@@ -349,5 +415,84 @@ mod tests {
 
         assert_eq!(updated.product, original_clone.product);
         assert_eq!(updated.software, updated_clone.software);
+    }
+
+    #[test]
+    fn test_image_config_deserialization() {
+        let json = r#"{
+            "path": "/images/system.tar.xz",
+            "type": "tarball",
+            "recommendedHardwarePackages": true
+        }"#;
+
+        let image_config: ImageConfig = serde_json::from_str(json).unwrap();
+        assert_eq!(image_config.path, "/images/system.tar.xz");
+        assert_eq!(image_config.image_type, ImageType::Tarball);
+        assert_eq!(image_config.recommended_hardware_packages, Some(true));
+        assert!(image_config.install_hardware_packages());
+
+        let raw_json = r#"{
+            "path": "/images/system.raw",
+            "type": "raw"
+        }"#;
+        let raw_config: ImageConfig = serde_json::from_str(raw_json).unwrap();
+        assert_eq!(raw_config.path, "/images/system.raw");
+        assert_eq!(raw_config.image_type, ImageType::Raw);
+        assert_eq!(raw_config.recommended_hardware_packages, None);
+        assert!(!raw_config.install_hardware_packages());
+
+        let oci_json = r#"{
+            "path": "registry.opensuse.org/opensuse/tumbleweed:latest",
+            "type": "oci",
+            "recommendedHardwarePackages": false
+        }"#;
+        let oci_config: ImageConfig = serde_json::from_str(oci_json).unwrap();
+        assert_eq!(
+            oci_config.path,
+            "registry.opensuse.org/opensuse/tumbleweed:latest"
+        );
+        assert_eq!(oci_config.image_type, ImageType::Oci);
+        assert_eq!(oci_config.recommended_hardware_packages, Some(false));
+        assert!(!oci_config.install_hardware_packages());
+    }
+
+    #[test]
+    fn test_software_config_with_image_to_option() {
+        let config = SoftwareConfig {
+            image: Some(ImageConfig::new("/images/image.tar", ImageType::Tarball)),
+            ..Default::default()
+        };
+        assert!(config.to_option().is_some());
+    }
+
+    #[test]
+    fn test_merge_image_config() {
+        let mut updated = SoftwareConfig {
+            image: Some(ImageConfig {
+                path: "/new/path.tar".to_string(),
+                image_type: ImageType::Tarball,
+                recommended_hardware_packages: Some(true),
+            }),
+            ..Default::default()
+        };
+
+        let original = SoftwareConfig {
+            image: Some(ImageConfig {
+                path: "/old/path.tar".to_string(),
+                image_type: ImageType::Tarball,
+                recommended_hardware_packages: Some(false),
+            }),
+            ..Default::default()
+        };
+
+        updated.merge(original);
+        assert_eq!(
+            updated.image.as_ref().unwrap().path,
+            "/new/path.tar".to_string()
+        );
+        assert_eq!(
+            updated.image.as_ref().unwrap().recommended_hardware_packages,
+            Some(true)
+        );
     }
 }

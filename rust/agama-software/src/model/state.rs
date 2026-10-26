@@ -28,7 +28,9 @@ use std::fmt;
 use agama_utils::{
     api::{
         self,
-        software::{Config, PatternsConfig, ProductConfig, RepositoryConfig, SoftwareConfig},
+        software::{
+            Config, ImageConfig, PatternsConfig, ProductConfig, RepositoryConfig, SoftwareConfig,
+        },
     },
     kernel_cmdline::KernelCmdline,
     products::{ProductSpec, UserPatternSpec},
@@ -60,6 +62,7 @@ pub struct SoftwareState {
     pub allow_registration: bool,
     pub trusted_gpg_keys: Vec<RepoKey>,
     pub unsigned_repos: Vec<String>,
+    pub image: Option<ImageConfig>,
 }
 
 impl SoftwareState {
@@ -74,6 +77,7 @@ impl SoftwareState {
             allow_registration: false,
             trusted_gpg_keys: vec![],
             unsigned_repos: vec![],
+            image: None,
         }
     }
 }
@@ -156,6 +160,11 @@ impl<'a> SoftwareStateBuilder<'a> {
 
         if let Some(selection) = self.selection {
             self.add_selection(&mut state, selection);
+        }
+
+        if state.image.is_some() {
+            state.repositories.clear();
+            state.resolvables = ResolvablesState::default();
         }
 
         state
@@ -269,6 +278,10 @@ impl<'a> SoftwareStateBuilder<'a> {
 
         if let Some(only_required) = config.only_required {
             state.options.only_required = only_required;
+        }
+
+        if let Some(image) = &config.image {
+            state.image = Some(image.clone());
         }
     }
 
@@ -428,6 +441,7 @@ impl<'a> SoftwareStateBuilder<'a> {
             allow_registration: self.product.registration,
             trusted_gpg_keys: vec![],
             unsigned_repos: vec![],
+            image: None,
         }
     }
 }
@@ -556,6 +570,11 @@ impl ResolvablesState {
         });
     }
 
+    /// Returns true if the collection of resolvables is empty.
+    pub fn is_empty(&self) -> bool {
+        self.0.is_empty()
+    }
+
     /// Turns the list of resolvables into a vector.
     ///
     /// FIXME: return an interator instead.
@@ -666,8 +685,8 @@ mod tests {
 
     use agama_utils::{
         api::software::{
-            AddonConfig, Config, PatternsConfig, PatternsMap, ProductConfig, Repository,
-            RepositoryConfig, SoftwareConfig,
+            AddonConfig, Config, ImageConfig, ImageType, PatternsConfig, PatternsMap,
+            ProductConfig, Repository, RepositoryConfig, SoftwareConfig,
         },
         kernel_cmdline::KernelCmdline,
         products::{ProductSpec, ProductTemplate},
@@ -1300,5 +1319,33 @@ mod tests {
         };
         let debug_output_no_code = format!("{:?}", state_no_code);
         assert!(debug_output_no_code.contains("code: None"));
+    }
+
+    #[test]
+    fn test_software_state_with_image() {
+        let product = build_product_spec("tumbleweed", None);
+        let image = ImageConfig::new("/images/tumbleweed.tar.xz", ImageType::Tarball)
+            .with_recommended_hardware_packages(true);
+
+        let user_config = Config {
+            software: Some(SoftwareConfig {
+                image: Some(image),
+                ..Default::default()
+            }),
+            ..Default::default()
+        };
+
+        let state = SoftwareStateBuilder::for_product(&product)
+            .with_config(&user_config)
+            .build();
+
+        assert!(state.image.is_some());
+        let img = state.image.unwrap();
+        assert_eq!(img.path, "/images/tumbleweed.tar.xz");
+        assert_eq!(img.image_type, ImageType::Tarball);
+        assert_eq!(img.recommended_hardware_packages, Some(true));
+        // Repositories and resolvables are cleared for image deployment
+        assert!(state.repositories.is_empty());
+        assert!(state.resolvables.is_empty());
     }
 }

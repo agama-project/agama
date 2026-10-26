@@ -21,7 +21,8 @@
 use crate::{
     message,
     model::{
-        software_selection::SoftwareSelection, state::SoftwareState, ModelAdapter, WriteIssues,
+        image::ImageModel, software_selection::SoftwareSelection, state::SoftwareState,
+        ModelAdapter, WriteIssues,
     },
     zypp_server::{self, SoftwareAction, ZyppServer},
     Model, ResolvableType,
@@ -69,6 +70,8 @@ pub enum Error {
     ZyppError(#[from] zypp_agama::errors::ZyppError),
     #[error("Software installation failed")]
     InstallationFailed,
+    #[error("Image deployment failed: {0}")]
+    ImageDeploymentFailed(String),
 }
 
 impl From<tokio::sync::mpsc::error::SendError<SoftwareAction>> for Error {
@@ -125,37 +128,22 @@ impl Starter {
         self
     }
 
-    const TARGET_DIR: &str = "/run/agama/zypp";
-    // FIXME: it should be defined in a single place and injected where needed.
-    const INSTALL_DIR: &str = "/mnt";
-
     /// Starts the service and returns a handler to communicate with it.
     pub async fn start(self) -> Result<Handler<Service>, Error> {
         let kernel_cmdline = KernelCmdline::parse().unwrap_or_default();
-        let model = match self.model {
-            Some(model) => model,
-            None => {
-                let zypp_sender =
-                    ZyppServer::start(Self::TARGET_DIR, Self::INSTALL_DIR, &kernel_cmdline)?;
-                Arc::new(Mutex::new(Model::new(
-                    zypp_sender,
-                    find_mandatory_repositories("/"),
-                    self.progress.clone(),
-                    self.questions.clone(),
-                    self.security.clone(),
-                )?))
-            }
-        };
-
+        let custom_model = self.model.is_some();
         let state = Arc::new(RwLock::new(Default::default()));
         let mut service = Service {
-            model,
+            model: self.model,
+            custom_model,
             selection: Default::default(),
             state,
             events: self.events,
             issues: self.issues,
             l10n: self.l10n,
             progress: self.progress,
+            questions: self.questions,
+            security: self.security,
             product: None,
             kernel_cmdline,
         };
@@ -172,10 +160,13 @@ impl Starter {
 /// * Holds the user configuration.
 /// * Selects and installs the software.
 pub struct Service {
-    model: Arc<Mutex<dyn ModelAdapter + Send + 'static>>,
+    model: Option<Arc<Mutex<dyn ModelAdapter + Send + 'static>>>,
+    custom_model: bool,
     issues: Handler<issue::Service>,
     l10n: Handler<agama_l10n::Service>,
     progress: Handler<progress::Service>,
+    questions: Handler<question::Service>,
+    security: Handler<security::Service>,
     events: event::Sender,
     state: Arc<RwLock<ServiceState>>,
     product: Option<Arc<RwLock<ProductSpec>>>,
@@ -192,6 +183,10 @@ struct ServiceState {
 }
 
 impl Service {
+    const TARGET_DIR: &str = "/run/agama/zypp";
+    // FIXME: it should be defined in a single place and injected where needed.
+    const INSTALL_DIR: &str = "/mnt";
+
     pub fn starter(
         events: event::Sender,
         issues: Handler<issue::Service>,
@@ -205,6 +200,58 @@ impl Service {
 
     pub async fn setup(&mut self) -> Result<(), Error> {
         Ok(())
+    }
+
+    /// Ensures the appropriate model adapter is initialized based on the configuration.
+    ///
+    /// If an image-based deployment is configured in the profile, an `ImageModel` is created
+    /// and `ZyppServer` is never started. Otherwise, a `ZyppServer` is lazily started and a
+    /// libzypp `Model` is created.
+    pub async fn ensure_model(
+        &mut self,
+    ) -> Result<Arc<Mutex<dyn ModelAdapter + Send + 'static>>, Error> {
+        if self.custom_model {
+            if let Some(model) = &self.model {
+                return Ok(model.clone());
+            }
+        }
+
+        let state = self.state.read().await;
+        let image_config = state
+            .config
+            .software
+            .as_ref()
+            .and_then(|s| s.image.clone());
+
+        if let Some(image_config) = image_config {
+            // When deploying an image, zypp server should not run at all.
+            let model: Arc<Mutex<dyn ModelAdapter + Send + 'static>> =
+                Arc::new(Mutex::new(ImageModel::new(
+                    image_config,
+                    Self::INSTALL_DIR,
+                    self.progress.clone(),
+                    self.questions.clone(),
+                )));
+            self.model = Some(model.clone());
+            Ok(model)
+        } else {
+            if let Some(model) = &self.model {
+                return Ok(model.clone());
+            }
+
+            let zypp_sender =
+                ZyppServer::start(Self::TARGET_DIR, Self::INSTALL_DIR, &self.kernel_cmdline)?;
+            let model: Arc<Mutex<dyn ModelAdapter + Send + 'static>> =
+                Arc::new(Mutex::new(Model::new(
+                    zypp_sender,
+                    find_mandatory_repositories("/"),
+                    self.progress.clone(),
+                    self.questions.clone(),
+                    self.security.clone(),
+                )?));
+            self.model = Some(model.clone());
+            Ok(model)
+        }
     }
 
     async fn apply_config(&mut self) -> Result<(), Error> {
@@ -233,9 +280,11 @@ impl Service {
 
         let product = product.read().await.clone();
 
+        let model = self.ensure_model().await?;
+
         let predefined_repositories = {
-            let model = self.model.lock().await;
-            model.predefined_repositories()
+            let model_guard = model.lock().await;
+            model_guard.predefined_repositories()
         };
 
         let new_state = {
@@ -261,7 +310,7 @@ impl Service {
         }
 
         {
-            let mut my_model = self.model.lock().await;
+            let mut my_model = model.lock().await;
             my_model.set_product(product.clone());
         }
 
@@ -284,8 +333,12 @@ impl Service {
             return Ok(());
         };
 
+        let Some(model) = &self.model else {
+            return Ok(());
+        };
+
         tracing::info!("Synchronizing the wanted software state");
-        let mut my_model = self.model.lock().await;
+        let mut my_model = model.lock().await;
         let found_issues = my_model
             .write(wanted_state, self.l10n.clone(), self.progress.clone())
                 .await
@@ -421,6 +474,10 @@ impl MessageHandler<message::SetConfig<Config>> for Service {
             state.config = config;
         }
 
+        if !self.custom_model {
+            self.model = None;
+        }
+
         self.events.send(Event::ConfigChanged {
             scope: Scope::Software,
         })?;
@@ -444,7 +501,8 @@ impl MessageHandler<message::Probe> for Service {
 
 impl MessageHandler<message::Install> for Service {
     async fn handle(&mut self, _message: message::Install) -> Result<(), Error> {
-        if !self.model.lock().await.install().await? {
+        let model = self.ensure_model().await?;
+        if !model.lock().await.install().await? {
             return Err(Error::InstallationFailed);
         }
         Ok(())
@@ -453,7 +511,8 @@ impl MessageHandler<message::Install> for Service {
 
 impl MessageHandler<message::Finish> for Service {
     async fn handle(&mut self, _message: message::Finish) -> Result<(), Error> {
-        self.model.lock().await.finish().await?;
+        let model = self.ensure_model().await?;
+        model.lock().await.finish().await?;
         Ok(())
     }
 }
