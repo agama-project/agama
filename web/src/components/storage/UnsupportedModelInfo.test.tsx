@@ -21,8 +21,8 @@
  */
 
 import React from "react";
-import { screen } from "@testing-library/react";
-import { plainRender } from "~/test-utils";
+import { screen, within } from "@testing-library/react";
+import { installerRender } from "~/test-utils";
 import UnsupportedModelInfo from "./UnsupportedModelInfo";
 
 const mockConfigModel = jest.fn();
@@ -39,19 +39,46 @@ jest.mock("~/hooks/model/config/storage", () => ({
   useReset: () => mockReset,
 }));
 
+const seeOptions = () =>
+  screen.getByRole("button", { name: "See options for the unsupported configuration" });
+const popup = () => screen.getByRole("dialog", { name: "Unsupported configuration" });
+
 describe("if there is not config model", () => {
   beforeEach(() => {
     mockConfigModel.mockReturnValue(null);
   });
 
-  it("renders an alert", () => {
-    plainRender(<UnsupportedModelInfo />);
-    expect(screen.queryByText(/Unable to modify the settings/)).toBeInTheDocument();
+  it("says in one line that the settings cannot be modified, with a way to the options", () => {
+    installerRender(<UnsupportedModelInfo />);
+
+    const line = screen.getByText(/Unable to modify the settings./);
+    expect(line).toContainElement(seeOptions());
+    expect(seeOptions()).toHaveTextContent("See options");
   });
 
-  it("renders a button for resetting the config", () => {
-    plainRender(<UnsupportedModelInfo />);
-    expect(screen.queryByRole("button", { name: /Reset/ })).toBeInTheDocument();
+  it("keeps the options out of the page until they are asked for", () => {
+    installerRender(<UnsupportedModelInfo />);
+
+    expect(screen.queryByText(/uses elements not supported/)).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /Reset/ })).not.toBeInTheDocument();
+  });
+
+  it("explains the options in a popup", async () => {
+    const { user } = installerRender(<UnsupportedModelInfo />);
+    await user.click(seeOptions());
+
+    within(popup()).getByText(/uses elements not supported by this interface/);
+    within(popup()).getByText(/You can proceed to install with the current settings/);
+  });
+
+  it("offers resetting the config in the popup", async () => {
+    const { user } = installerRender(<UnsupportedModelInfo />);
+    await user.click(seeOptions());
+    await user.click(
+      within(popup()).getByRole("button", { name: "Reset to the default configuration" }),
+    );
+
+    expect(mockReset).toHaveBeenCalled();
   });
 });
 
@@ -60,13 +87,8 @@ describe("if there is config model", () => {
     mockConfigModel.mockReturnValue({ drives: [] });
   });
 
-  it("does not renders an alert", () => {
-    plainRender(<UnsupportedModelInfo />);
-    expect(screen.queryByText(/settings cannot be edited/)).not.toBeInTheDocument();
-  });
-
-  it("does not render a button for resetting the config", () => {
-    plainRender(<UnsupportedModelInfo />);
-    expect(screen.queryByRole("button", { name: "Reset" })).not.toBeInTheDocument();
+  it("does not render an alert", () => {
+    installerRender(<UnsupportedModelInfo />);
+    expect(screen.queryByText(/Unable to modify the settings/)).not.toBeInTheDocument();
   });
 });
