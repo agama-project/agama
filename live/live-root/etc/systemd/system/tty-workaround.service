@@ -1,0 +1,19 @@
+# This is a workaround for plymouth/gdm which sometimes switch back to tty1
+# when the booting is finished.
+# Remove this when https://bugzilla.suse.com/show_bug.cgi?id=1270027 is fixed.
+[Unit]
+Description=Switch from tty1 to tty2 (workaround)
+# run at the very end of the boot, after everything else has been started
+After=graphical.target gdm.service
+# run only in the graphical target
+Requisite=graphical.target
+ConditionPathExists=/dev/tty0
+
+[Service]
+# "idle" delays the start until all other jobs have been dispatched
+Type=idle
+# switch to tty2 only if tty1 is the currently active terminal
+ExecStart=/bin/sh -c 'tty=$(fgconsole); echo "Active console is tty$tty"; if test "$tty" = 1; then echo "Switching to tty2"; chvt 2; else echo "The expected console is active, not switching"; fi'
+
+[Install]
+WantedBy=graphical.target

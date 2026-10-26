@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Oct 26 14:44:46 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Added workaround for a plymouth/gdm bug where the active terminal
+  is switched back to tty1 console which makes the graphical
+  console with the running installer not visible (bsc#1270027)
+
+-------------------------------------------------------------------
 Thu Oct 22 09:44:07 UTC 2026 - José Iván López González <jlopez@suse.com>
 
 - Version 25
