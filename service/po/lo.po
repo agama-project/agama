@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-22 12:13+0000\n"
+"POT-Creation-Date: 2026-10-01 15:29+0000\n"
 "PO-Revision-Date: 2026-08-19 16:13+0000\n"
 "Last-Translator: Bone NI <bounkirdni@gmail.com>\n"
 "Language-Team: Lao <https://l10n.opensuse.org/projects/agama/agama-service-"
@@ -440,22 +440,22 @@ msgid "Shrinking is not supported by this device"
 msgstr "ອຸປະກອນນີ້ບໍ່ຮອງຮັບການຫຍໍ້ຂະໜາດ"
 
 #. Copy /etc/nvme/host* to keep NVMe working after installation, bsc#1238038
-#: service/lib/agama/storage/finisher.rb:126
+#: service/lib/agama/storage/finisher.rb:122
 msgid "Copying important installation files to the target system"
 msgstr "ກຳລັງຄັດລອກໄຟລ໌ການຕິດຕັ້ງທີ່ສຳຄັນໄປຍັງລະບົບເປົ້າໝາຍ"
 
 #. Step to write the bootloader configuration
-#: service/lib/agama/storage/finisher.rb:161
+#: service/lib/agama/storage/finisher.rb:157
 msgid "Installing bootloader"
 msgstr "ກຳລັງຕິດຕັ້ງບູດໂຫຼດເດີ"
 
 #. Step to finish the Y2Storage configuration
-#: service/lib/agama/storage/finisher.rb:178
+#: service/lib/agama/storage/finisher.rb:174
 msgid "Adjusting storage configuration"
 msgstr "ກຳລັງປັບແຕ່ງການກຳນົດຄ່າບ່ອນເກັບຂໍ້ມູນ"
 
 #. Step to finish the iSCSI configuration
-#: service/lib/agama/storage/finisher.rb:189
+#: service/lib/agama/storage/finisher.rb:188
 msgid "Adjusting iSCSI configuration"
 msgstr "ກຳລັງປັບແຕ່ງການກຳນົດຄ່າ iSCSI"
 
@@ -486,12 +486,12 @@ msgid "A problem occurred while calculating the storage setup"
 msgstr "ເກີດບັນຫາຂຶ້ນໃນຂະນະທີ່ກຳລັງຄຳນວນການຕັ້ງຄ່າບ່ອນເກັບຂໍ້ມູນ"
 
 #. Step to copy the installation logs
-#: service/lib/agama/storage/umounter.rb:112
+#: service/lib/agama/storage/umounter.rb:108
 msgid "Copying logs"
 msgstr "ກຳລັງຄັດລອກບັນທຶກ (logs)"
 
 #. Step to unmount the target file-systems
-#: service/lib/agama/storage/umounter.rb:153
+#: service/lib/agama/storage/umounter.rb:149
 msgid "Unmounting storage devices"
 msgstr "ກຳລັງຖອນການເຊື່ອມຕໍ່ອຸປະກອນເກັບຂໍ້ມູນ"
 
