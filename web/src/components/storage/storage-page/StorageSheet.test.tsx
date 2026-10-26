@@ -63,7 +63,7 @@ jest.mock("~/hooks/model/proposal/storage", () => ({
   useActions: () => mockActions(),
 }));
 
-jest.mock("~/components/storage/storage-page/ResultSheet", () => () => (
+jest.mock("~/components/storage/storage-page/PlannedChangesPopup", () => () => (
   <div>everything the installer will do</div>
 ));
 

@@ -23,7 +23,7 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender, mockRoutes } from "~/test-utils";
-import ResultSheet from "~/components/storage/storage-page/ResultSheet";
+import PlannedChangesPopup from "~/components/storage/storage-page/PlannedChangesPopup";
 
 jest.mock("~/hooks/model/system/storage", () => ({
   ...jest.requireActual("~/hooks/model/system/storage"),
@@ -39,23 +39,23 @@ jest.mock("~/hooks/model/proposal/storage", () => ({
 jest.mock("~/components/storage/ProposalActions", () => () => <div>every change, in order</div>);
 jest.mock("~/components/storage/ProposalResultTable", () => () => <div>the machine after</div>);
 
-describe("ResultSheet", () => {
+describe("PlannedChangesPopup", () => {
   it("offers what the installer will do and what it leaves behind", () => {
-    installerRender(<ResultSheet />);
+    installerRender(<PlannedChangesPopup />);
 
     screen.getByRole("tab", { name: "Actions" });
     screen.getByRole("tab", { name: "Final layout" });
   });
 
   it("opens on what the installer will do", () => {
-    installerRender(<ResultSheet />);
+    installerRender(<PlannedChangesPopup />);
 
     screen.getByText("every change, in order");
   });
 
   it("opens on the half the address names", () => {
     mockRoutes("/storage?sheet=result&sheetTab=layout");
-    installerRender(<ResultSheet />);
+    installerRender(<PlannedChangesPopup />);
 
     screen.getByText("the machine after");
   });

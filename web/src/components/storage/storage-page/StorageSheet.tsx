@@ -22,7 +22,7 @@
 
 import React from "react";
 import Sheet, { SheetPlacement } from "~/components/core/Sheet";
-import ResultSheet from "~/components/storage/storage-page/ResultSheet";
+import PlannedChangesPopup from "~/components/storage/storage-page/PlannedChangesPopup";
 import DeviceSheetHeading from "~/components/storage/device-sheet/DeviceSheetHeading";
 import DeviceDetail from "~/components/storage/device-sheet/DeviceDetail";
 import DriveMenu from "~/components/storage/entries-table/DriveMenu";
@@ -141,7 +141,7 @@ export default function StorageSheet({ page }: StorageSheetProps): React.ReactNo
         </EmptyState>
       }
     >
-      {isResult && <ResultSheet />}
+      {isResult && <PlannedChangesPopup />}
       {entry && selection && <DeviceDetail entry={entry} subject={selection} />}
     </Sheet>
   );
