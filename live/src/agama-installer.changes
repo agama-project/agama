@@ -1,20 +1,31 @@
 -------------------------------------------------------------------
-Fri Oct  2 12:16:56 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+Mon Oct 26 12:14:28 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
-- Drop the yast2-bootloader and yast2-reipl dependencies pulled in
-  by agama-yast (gh#agama-project/agama#4033).
+- Drop the dependencies on the following packages:
+  - yast2-bootloader and yast2-reipl dependencies pulled in
+    by agama-yast (gh#agama-project/agama#4033).
+  - yast2-iscsi-client dependency pulled in by agama-yast
+    (gh#agama-project/agama#4032).
+  - yast2-s390 and yast2-cio dependencies pulled in by
+    agama-yast on s390x (gh#agama-project/agama#4026).
 
 -------------------------------------------------------------------
-Fri Oct  2 10:51:04 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+Thu Oct 22 09:44:07 UTC 2026 - José Iván López González <jlopez@suse.com>
 
-- Drop the yast2-iscsi-client dependency pulled in by agama-yast
-  (gh#agama-project/agama#4032).
+- Version 25
 
 -------------------------------------------------------------------
-Fri Oct  2 09:17:47 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+Wed Oct  7 12:53:02 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
 
-- Drop the yast2-s390 and yast2-cio dependencies pulled in by
-  agama-yast on s390x (gh#agama-project/agama#4026).
+- Rename "Check Installation Medium" into "Check Medium & Install"
+  to make it more clear (bsc#1283085)
+
+-------------------------------------------------------------------
+Mon Oct  5 14:34:04 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Improved self-update cleanup to disable the added self-update
+  repositories also when the self-update fails or crashes.
+  (bsc#1254163)
 
 -------------------------------------------------------------------
 Wed Sep 30 12:48:23 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
@@ -33,7 +44,7 @@ Mon Sep 28 08:50:52 UTC 2026 - Andreas Schwab <schwab@suse.de>
 Thu Sep 24 14:03:15 UTC 2026 - Michal Filka <mfilka@suse.com>
 
 - bsc#1282603
-  - switched from 16.1 to 16.2 in kiwi build config 
+  - switched from 16.1 to 16.2 in kiwi build config
 
 -------------------------------------------------------------------
 Fri Sep 18 08:43:24 UTC 2026 - Santiago Zarate <santiago.zarate@suse.com>

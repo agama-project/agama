@@ -105,7 +105,7 @@ Release:        0
 Summary:        Common files for Agama server and CLI.
 License:        GPL-2.0-only
 Url:            https://github.com/agama-project/agama
-Requires:       agama-openapi
+Requires:       agama-openapi-nightly
 
 %description -n agama-common
 Files that are needed by the Agama server and the command-line interface, like
@@ -156,13 +156,15 @@ BuildArch:      noarch
 %description -n agama-cli-zsh-completion
 Zsh command-line completion support for %{name}-cli.
 
-%package -n agama-openapi
-Summary:        Agama's OpenAPI Specification
+%package -n agama-openapi-nightly
+Summary:        Nightly OpenAPI specification and JSON schemas for the Agama installer
+Group:          Development/Languages/Other
+BuildArch:      noarch
 
-%description -n agama-openapi
-The OpenAPI Specification (OAS) allows describing an HTTP API in an standard and
-language-agnostic way. This package contains the specification for Agama's HTTP
-API.
+%description -n agama-openapi-nightly
+The OpenAPI Specification (OAS) allows describing an HTTP API in a standard and
+language-agnostic way. This package contains the nightly specification and standalone
+JSON schemas for Agama's HTTP API.
 
 %package -n agama-scripts
 Summary:        Agama support for running user-defined scripts
@@ -217,17 +219,11 @@ echo $PATH
 %pre -n agama-autoinstall
 %service_add_pre agama-autoinstall.service
 
-%pre -n agama-scripts
-%service_add_pre agama-scripts.service
-
 %post
 %service_add_post agama-web-server.service agama-proxy-setup.service
 
 %post -n agama-autoinstall
 %service_add_post agama-autoinstall.service
-
-%post -n agama-scripts
-%service_add_post agama-scripts.service
 
 %preun
 %service_del_preun agama-web-server.service agama-proxy-setup.service
@@ -235,17 +231,11 @@ echo $PATH
 %preun -n agama-autoinstall
 %service_del_preun agama-autoinstall.service
 
-%preun -n agama-scripts
-%service_del_preun agama-scripts.service
-
 %postun
 %service_del_postun_with_restart agama-web-server.service agama-proxy-setup.service
 
 %postun -n agama-autoinstall
 %service_del_postun_with_restart agama-autoinstall.service
-
-%postun -n agama-scripts
-%service_del_postun_with_restart agama-scripts.service
 
 %files -f agama.lang
 %doc README.md
@@ -257,9 +247,11 @@ echo $PATH
 %{_pam_vendordir}/agama
 %{_unitdir}/agama-web-server.service
 %{_unitdir}/agama-proxy-setup.service
+%dir %{_datadir}/agama
 %dir %{_datadir}/agama/eula
 
 %files -n agama-common
+%dir %{_datadir}/agama
 %dir %{_datadir}/agama/jsonnet
 %{_datadir}/agama/jsonnet/agama.libsonnet
 
@@ -282,16 +274,10 @@ echo $PATH
 %dir %{_datadir}/zsh
 %{_datadir}/zsh/*
 
-%files -n agama-openapi
+%files -n agama-openapi-nightly
 %dir %{_datadir}/agama
 %dir %{_datadir}/agama/openapi
-%dir %{_datadir}/agama/openapi/nightly
-%dir %{_datadir}/agama/openapi/nightly/schemas
-%{_datadir}/agama/openapi/nightly/openapi.json
-%{_datadir}/agama/openapi/nightly/openapi.yaml
-%{_datadir}/agama/openapi/nightly/openapi_full.json
-%{_datadir}/agama/openapi/nightly/openapi_full.yaml
-%{_datadir}/agama/openapi/nightly/schemas/*.schema.json
+%{_datadir}/agama/openapi/nightly
 
 %files -n agama-scripts
 %{_unitdir}/agama-scripts.service

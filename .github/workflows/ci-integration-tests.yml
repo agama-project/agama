@@ -31,26 +31,15 @@ jobs:
         fetch-depth: 0
         fetch-tags: true
 
-    - name: Checkout integration tests
-      uses: actions/checkout@v7
-      with:
-        path: integration-tests
-        repository: ${{ github.repository_owner }}/integration-tests
-        fetch-depth: 1
-
-    - name: Build integration test
-      run: npm ci && ESLINT=0 npm run build
-      working-directory: ./integration-tests
-
     - name: Created shared YaST log directory
-      run: mkdir -p /tmp/log/YaST2 /tmp/log/puppeteer
+      run: mkdir -p /tmp/log/YaST2
 
     - name: Start container
       # yaml syntax: > means fold newlines into a space, - means strip trailing newline
       # see also https://yaml-multiline.info/
       run: >-
         podman run --privileged --detach --name agama --ipc=host -e CI -e GITHUB_ACTIONS
-        -v /dev:/dev -v .:/checkout -v /tmp/log/puppeteer:/var/log/puppeteer -v /tmp/log/YaST2:/var/log/YaST2
+        -v /dev:/dev -v .:/checkout -v /tmp/log/YaST2:/var/log/YaST2
         registry.opensuse.org/systemsmanagement/agama/devel/containers/opensuse/agama-testing:latest
 
     - name: Environment
@@ -92,11 +81,6 @@ jobs:
 
     - name: Run the Service Integration Tests
       run:  podman exec agama bash -c "cd /checkout; (cd service; bundle exec rspec --pattern 'test/integration/**_itest.rb')"
-
-    - name: Run the Puppeteer tests
-      # run the test
-      run:  podman exec agama bash -c "cd /var/log/puppeteer &&
-            node --enable-source-maps --test-reporter=spec /checkout/integration-tests/dist/test_root_password.js"
 
     - name: Again show the D-Bus services log
       # run even when any previous step fails

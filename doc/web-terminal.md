@@ -118,10 +118,10 @@ a clean exit from a network failure.
 
 Three layers, each with one job:
 
-- **`context/terminal.tsx`** is just state: `isOpen`, `isMinimized`, the preferred `height`, and the
-  actions that change them (`open`, `close`, `toggle`, `minimize`, `restore`, `setHeight`). It lives
-  above the page-swapping route outlet (mounted once, high in the app), so it survives navigating
-  between installer pages.
+- **`context/terminal.tsx`** is just state: `isOpen`, `isMinimized`, the preferred `height`, where
+  the focus should land when it opens (`openFocusTarget`), and the actions that change them (`open`,
+  `close`, `toggle`, `minimize`, `restore`, `setHeight`). It lives above the page-swapping route
+  outlet (mounted once, high in the app), so it survives navigating between installer pages.
 - **`TerminalDock`** is the app-shell layout: it docks the panel below the application, with a
   draggable divider ([`ResizeHandle`](../web/src/components/core/ResizeHandle.tsx)) to share the
   height. It also decides whether there's `enoughSpace` for a usable terminal (at least 1024×768 for
@@ -140,7 +140,9 @@ xterm.js's existing element to whatever container is current rather than recreat
 xterm.js's own `open()` does not help with that re-attachment: it only moves a terminal to a
 different _browser window_, and is a no-op if called again on one already open in the same window.
 The hook instead moves the existing `terminal.element` into the new container by hand
-(`container.appendChild(terminal.element)`) whenever its parent no longer matches, and refocuses it.
+(`container.appendChild(terminal.element)`) whenever its parent no longer matches, and refocuses it:
+taking an element out of the document is enough for the browser to drop the focus it had, so the
+move would otherwise leave a terminal that is there but cannot be typed into.
 
 ## Session lifecycle
 
@@ -170,20 +172,41 @@ as-is, that is a keyboard trap: once focused, someone not using a pointer has no
 rest of the interface, which WCAG forbids ([SC 2.1.2, "No Keyboard
 Trap"](https://www.w3.org/WAI/WCAG21/Understanding/no-keyboard-trap.html)).
 
-The way out is **Ctrl+Shift+L**, which moves the focus to the panel's "Skip to content" link (see
-below), so Enter goes straight back to the installer content. Embedded
-code editors each solve this differently, so there is no shared convention to follow, and most
-alternatives collide with something: Escape then Tab is Meta+Tab for bash, Shift+Tab reaches the
-running program, and Ctrl+M mutes the tab in Firefox. Ctrl+Shift+L is free on both sides: xterm.js
-sends nothing to the shell for Ctrl+Shift+letter combinations, and Firefox leaves this one
-unassigned. That shortcut cannot be guessed, so `TerminalPane` spells it out under the terminal itself (see `KeyboardHint`),
-and the terminal's input element points at that text via `aria-describedby` so it's announced on
-arrival, not only readable by sighted users.
+### A focus stop in front of the shell
+
+The shell is not a tab stop of its own: `useTerminalSession` takes xterm.js's input element out of
+the tab order, and the terminal surface around it (`TerminalScreen`) becomes the tab stop instead, a
+focusable `group` named "Terminal". So Tab reaches the terminal, and Tab again moves past it:
+getting to the rest of the page never means going through the shell first.
+
+Entering the shell from there is deliberate: **Enter** or **Space** (or a click anywhere on the
+surface). While the stop has the keyboard focus, an overlay says exactly that, along with **Tab** as
+the way past it, and how to get back out afterwards. The stop points at that same text with
+`aria-describedby`, so both sentences are announced on arrival rather than only shown. The overlay
+is faded rather than removed when the stop is not focused, so it stays in the accessibility tree; it
+never appears for a pointer user, who goes straight into the shell anyway.
+
+This is the arrangement editors embedded in a page use (PatternFly's `CodeEditor`, Ace), and what
+the W3C describes for a widget that handles its own keys (the [grid
+pattern](https://www.w3.org/WAI/ARIA/apg/patterns/grid/)).
+
+### Getting back out
+
+The way out is **Ctrl+Shift+L**, which returns the focus to the stop, so leaving is the exact
+opposite of entering: from there Tab moves past the terminal and Shift+Tab reaches the panel
+controls and its skip links. Embedded code editors each solve this differently, so there is no
+shared convention to follow, and most alternatives collide with something: Escape then Tab is
+Meta+Tab for bash, Shift+Tab reaches the running program, and Ctrl+M mutes the tab in Firefox.
+Ctrl+Shift+L is free on both sides: xterm.js sends nothing to the shell for Ctrl+Shift+letter
+combinations, and Firefox leaves this one unassigned. That shortcut cannot be guessed, so
+`TerminalPane` also spells it out under the terminal itself (see `KeyboardHint`), permanently, and
+the terminal's input element points at that text via `aria-describedby`.
 
 Two skip links also sit at the top of the panel: one back to the installer content and, once the
-terminal is actually usable, one straight into the terminal's input (expanding the panel first if it
-was minimized), so a keyboard user can jump in and out without tabbing through every panel control
-each time.
+terminal is actually usable, one to the terminal (expanding the panel first if it was minimized), so
+a keyboard user can jump in and out without tabbing through every panel control each time. That one
+lands on the stop as well, rather than in the shell: there is a single way in, and it is the one
+**Ctrl+Shift+L** leads back to.
 
 ## Opening the terminal
 
@@ -197,7 +220,13 @@ The toggle lives in two places, deliberately presented differently:
   a secondary option next to the primary "Download logs" action (a
   [`SplitButton`](../web/src/components/core/SplitButton.tsx)).
 
-Either one just calls `toggle()` from `useTerminal()`. Because `TerminalDock`
+Either one just calls `toggle()` from `useTerminal()`, telling it where to leave the focus
+(`focusTargetFor`, in `context/terminal.tsx`): in the shell when the entry was clicked, on the focus
+stop when it was activated with the keyboard (see [Keyboard
+accessibility](#keyboard-accessibility)). The two are told apart by the click count, which browsers
+report as zero only for a click synthesized from a key press (`isKeyboardActivation`).
+
+Because `TerminalDock`
 is mounted above the stage-driven swap between the pre-install wizard, the
 installing/failed/finished screens (see `App.tsx`), a session started before
 installing keeps running — and stays reachable — through all of them.

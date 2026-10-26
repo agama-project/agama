@@ -1,43 +1,25 @@
 -------------------------------------------------------------------
-Wed Oct  7 13:04:47 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+Mon Oct 26 12:15:36 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
-- Drop the unnecessary yast2 RPM dependency by vendoring the parts
-  of it that are really used, declaring yast2-ycp-ui-bindings and
-  augeas-lenses explicitly instead of relying on them being pulled
-  in transitively (gh#agama-project/agama#4063).
-
--------------------------------------------------------------------
-Fri Oct  2 14:31:42 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
-
-- Drop the unnecessary yast2-storage-ng RPM dependency by
-  vendoring the needed yast2-storage-ng code, declaring its
-  libstorage-ng-ruby and yast2-pkg-bindings dependencies explicitly
-  instead of relying on them being pulled in transitively. Also
-  vendor the few yast2-packager classes still needed, since
-  yast2-packager itself cannot be declared as a dependency (it has
-  a circular Requires: back on yast2-storage-ng)
-  (gh#agama-project/agama#4034).
+- Drop the following dependencies by vendoring the parts that are
+  really used.
+  - yast2, declaring yast2-ycp-ui-bindings and augeas-lenses
+    explicitly instead of relying on them being pulled in transitively
+    (gh#agama-project/agama#4063).
+  - yast2-storage-ng, declaring its libstorage-ng-ruby and
+    yast2-pkg-bindings dependencies explicitly instead of relying on
+    them being pulled in transitively. Also vendor the few
+    yast2-packager classes still needed, since yast2-packager itself
+    cannot be declared as a dependency (it has a circular Requires: back
+    on yast2-storage-ng) (gh#agama-project/agama#4034).
+  - yast2-bootloader and yast2-reipl (gh#agama-project/agama#4033).
+  - yast2-iscsi-client (gh#agama-project/agama#4032).
+  - yast2-s390 and yast2-cio (gh#agama-project/agama#4026).
 
 -------------------------------------------------------------------
-Fri Oct  2 12:16:56 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+Thu Oct 22 09:44:41 UTC 2026 - José Iván López González <jlopez@suse.com>
 
-- Drop the unnecessary yast2-bootloader and yast2-reipl RPM
-  dependencies by vendoring the needed yast2-bootloader code
-  (gh#agama-project/agama#4033).
-
--------------------------------------------------------------------
-Fri Oct  2 10:51:04 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
-
-- Drop the unnecessary yast2-iscsi-client RPM dependency by
-  vendoring the needed yast2-iscsi-client code
-  (gh#agama-project/agama#4032).
-
--------------------------------------------------------------------
-Fri Oct  2 09:17:47 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
-
-- Drop the unnecessary yast2-s390 and yast2-cio RPM dependencies by
-  vendoring the needed yast2-s390 code
-  (gh#agama-project/agama#4026).
+- Version 25
 
 -------------------------------------------------------------------
 Wed Sep 30 12:48:23 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
