@@ -115,8 +115,18 @@ pub async fn ensure_test_schemas() {
 
     if let Ok(json_value) = agama_server::web::docs::build_json().await {
         write_test_schema(&json_value, "Config", "config.schema.json", &schemas_dir);
-        write_test_schema(&json_value, "Proposal", "proposal.schema.json", &schemas_dir);
-        write_test_schema(&json_value, "SystemInfo", "system.schema.json", &schemas_dir);
+        write_test_schema(
+            &json_value,
+            "Proposal",
+            "proposal.schema.json",
+            &schemas_dir,
+        );
+        write_test_schema(
+            &json_value,
+            "SystemInfo",
+            "system.schema.json",
+            &schemas_dir,
+        );
     }
     INIT_TEST_SCHEMAS.get_or_init(|| ());
 }

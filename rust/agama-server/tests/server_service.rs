@@ -321,7 +321,10 @@ async fn test_system_matches_schema(ctx: &mut Context) -> Result<(), Box<dyn Err
     match validator.validate_str(&body)? {
         ValidationOutcome::Valid => {}
         ValidationOutcome::NotValid(errors) => {
-            panic!("GET /system response failed schema validation:\n{:#?}", errors);
+            panic!(
+                "GET /system response failed schema validation:\n{:#?}",
+                errors
+            );
         }
     }
 
@@ -350,7 +353,10 @@ async fn test_proposal_matches_schema(ctx: &mut Context) -> Result<(), Box<dyn E
     match validator.validate_str(&body)? {
         ValidationOutcome::Valid => {}
         ValidationOutcome::NotValid(errors) => {
-            panic!("GET /proposal response failed schema validation:\n{:#?}", errors);
+            panic!(
+                "GET /proposal response failed schema validation:\n{:#?}",
+                errors
+            );
         }
     }
 
