@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Oct 26 16:38:03 UTC 2026 - Akshat Lakhera <akshatlnct2024@gmail.com>
+
+- Label the mode shown in the "Current selection" card when
+  changing the product, so it is not read as part of the product
+  (gh#agama-project/agama#4142).
+
+-------------------------------------------------------------------
 Thu Oct 22 09:43:42 UTC 2026 - José Iván López González <jlopez@suse.com>
 
 - Version 25
