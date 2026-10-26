@@ -22,7 +22,7 @@
 
 import React from "react";
 import { screen } from "@testing-library/react";
-import { installerRender, mockRoutes } from "~/test-utils";
+import { installerRender } from "~/test-utils";
 import PlannedChangesPopup from "~/components/storage/storage-page/PlannedChangesPopup";
 
 jest.mock("~/hooks/model/system/storage", () => ({
@@ -53,10 +53,19 @@ describe("PlannedChangesPopup", () => {
     screen.getByText("every change, in order");
   });
 
-  it("opens on the half the address names", () => {
-    mockRoutes("/storage?sheet=result&sheetTab=layout");
+  it("opens on the final layout", () => {
     installerRender(<PlannedChangesPopup />);
 
-    screen.getByText("the machine after");
+    expect(screen.getByRole("tab", { name: "Final layout" })).toHaveAttribute(
+      "aria-selected",
+      "true",
+    );
+  });
+
+  it("switches to the actions when asked", async () => {
+    const { user } = installerRender(<PlannedChangesPopup />);
+    await user.click(screen.getByRole("tab", { name: "Actions" }));
+
+    expect(screen.getByRole("tab", { name: "Actions" })).toHaveAttribute("aria-selected", "true");
   });
 });

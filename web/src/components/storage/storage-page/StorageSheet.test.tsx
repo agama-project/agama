@@ -63,10 +63,6 @@ jest.mock("~/hooks/model/proposal/storage", () => ({
   useActions: () => mockActions(),
 }));
 
-jest.mock("~/components/storage/storage-page/PlannedChangesPopup", () => () => (
-  <div>everything the installer will do</div>
-));
-
 const config = (values: Partial<ConfigModel.Config> = {}): ConfigModel.Config => ({
   drives: [{ name: "/dev/sda", partitions: [] }],
   mdRaids: [],
@@ -556,12 +552,12 @@ describe("StorageSheet", () => {
     });
   });
 
-  describe("when the address names the whole picture", () => {
-    it("opens on it instead", () => {
+  describe("when the address names the whole picture, as it once could", () => {
+    it("reads as a shut panel, since the panel holds details only", () => {
       renderAt("/storage?sheet=result");
 
-      screen.getByRole("region", { name: "Result" });
-      screen.getByText("everything the installer will do");
+      screen.getByText("the storage page");
+      expect(sheet()).not.toBeInTheDocument();
     });
   });
 

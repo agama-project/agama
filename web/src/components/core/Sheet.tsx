@@ -104,11 +104,11 @@ export type SheetProps = {
  *   isOpen={isOpen}
  *   placement="overlay"
  *   onClose={close}
- *   title={_("Result")}
- *   description={_("What the installer will do")}
- *   page={<StoragePageBody />}
+ *   title={device.name}
+ *   description={device.description}
+ *   page={<DeviceList />}
  * >
- *   <ResultTabs />
+ *   <DeviceDetails device={device} />
  * </Sheet>
  */
 export default function Sheet({

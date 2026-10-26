@@ -22,8 +22,8 @@
 
 import React from "react";
 import { sprintf } from "sprintf-js";
-import SheetOpener from "~/components/storage/shared/SheetOpener";
-import StorageAlert from "~/components/storage/shared/StorageAlert";
+import AlertWithDetailsPopup from "~/components/core/AlertWithDetailsPopup";
+import PlannedChangesPopup from "~/components/storage/storage-page/PlannedChangesPopup";
 import { useActions } from "~/hooks/model/proposal/storage";
 import { _, n_ } from "~/i18n";
 
@@ -45,9 +45,9 @@ function Summary({ count }: { count: number }) {
 }
 
 /**
- * What the current storage configuration will do to the disks: a sentence with
- * the number of actions needed as the title, and links to the final layout and
- * to the full list of actions.
+ * What the current storage configuration will do to the disks: one line saying
+ * how many actions it takes, and the way to the final layout and the full list
+ * of actions.
  *
  * The count comes from the calculated actions, so it states what will happen
  * rather than what the configuration asked for.
@@ -60,23 +60,21 @@ export default function Consequences(): React.ReactNode {
   const counted = actions.filter((action) => !action.subvol);
 
   return (
-    <StorageAlert
+    <AlertWithDetailsPopup
       variant="custom"
       title={<Summary count={counted.length} />}
-      actions={
-        <>
-          <SheetOpener subject="result" tab="layout" variant="button">
-            {/* TRANSLATORS: opens a panel showing how the disks will look after
-                installation. */}
-            {_("View resulting layout")}
-          </SheetOpener>
-          <SheetOpener subject="result" tab="actions" variant="button">
-            {/* TRANSLATORS: opens a panel listing the steps the installer will
-                take on the disks. */}
-            {_("Check actions")}
-          </SheetOpener>
-        </>
-      }
-    />
+      // TRANSLATORS: opens a popup with the layout the disks will have after
+      // installation and the actions needed to get there.
+      actionLabel={_("View changes")}
+      // TRANSLATORS: title of the popup with the layout the disks will have and
+      // the actions needed to get there. "Planned" because nothing is applied
+      // until the installation starts.
+      popupTitle={_("Planned storage changes")}
+      // TRANSLATORS: says what the popup with the planned storage changes is for.
+      popupDescription={_("Result of applying the current storage configuration to the system")}
+      popupVariant="large"
+    >
+      <PlannedChangesPopup />
+    </AlertWithDetailsPopup>
   );
 }

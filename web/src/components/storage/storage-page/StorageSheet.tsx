@@ -22,7 +22,6 @@
 
 import React from "react";
 import Sheet, { SheetPlacement } from "~/components/core/Sheet";
-import PlannedChangesPopup from "~/components/storage/storage-page/PlannedChangesPopup";
 import DeviceSheetHeading from "~/components/storage/device-sheet/DeviceSheetHeading";
 import DeviceDetail from "~/components/storage/device-sheet/DeviceDetail";
 import DriveMenu from "~/components/storage/entries-table/DriveMenu";
@@ -72,10 +71,13 @@ export type StorageSheetProps = {
 };
 
 /**
- * The one panel the storage page opens, whatever it was opened on.
+ * The one panel the storage page opens, on whichever entry the reader picked.
+ *
+ * It holds the details of that entry and nothing else. What the whole
+ * configuration does is reported above the page, not here.
  *
  * One sheet and not several, because the reader only ever has one open and the
- * address only ever names one thing. What changes with the subject is what the
+ * address only ever names one thing. What changes with the entry is what the
  * panel says it is about and what it holds; how it behaves does not, which is
  * why that part is settled once in `core/Sheet`.
  *
@@ -89,8 +91,7 @@ export default function StorageSheet({ page }: StorageSheetProps): React.ReactNo
   const selection = subject === "result" ? null : subject;
   const entry = useEntry(selection);
 
-  const isResult = subject === "result";
-  const isOpen = isResult || entry !== null;
+  const isOpen = entry !== null;
 
   return (
     <Sheet
@@ -98,19 +99,8 @@ export default function StorageSheet({ page }: StorageSheetProps): React.ReactNo
       isOpen={isOpen}
       placement={placement}
       onClose={close}
-      title={
-        isResult
-          ? // TRANSLATORS: names the panel holding everything the installer will
-            // do and what the machine will look like afterwards.
-            _("Result")
-          : entry && <DeviceSheetHeading entry={entry} />
-      }
-      description={
-        isResult
-          ? // TRANSLATORS: says what the panel holding the whole picture is for.
-            _("Result of applying the current storage configuration to the system")
-          : entry && entryDescription(entry)
-      }
+      title={entry && <DeviceSheetHeading entry={entry} />}
+      description={entry && entryDescription(entry)}
       /* The same acts the entry's row offers, so a reader meets one menu per
          entry wherever they open it from. */
       actions={
@@ -141,7 +131,6 @@ export default function StorageSheet({ page }: StorageSheetProps): React.ReactNo
         </EmptyState>
       }
     >
-      {isResult && <PlannedChangesPopup />}
       {entry && selection && <DeviceDetail entry={entry} subject={selection} />}
     </Sheet>
   );

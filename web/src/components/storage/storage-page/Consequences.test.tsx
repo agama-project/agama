@@ -21,8 +21,8 @@
  */
 
 import React from "react";
-import { screen } from "@testing-library/react";
-import { installerRender, mockNavigateFn } from "~/test-utils";
+import { screen, within } from "@testing-library/react";
+import { installerRender } from "~/test-utils";
 import type { Storage as Proposal } from "~/model/proposal";
 import Consequences from "~/components/storage/storage-page/Consequences";
 
@@ -33,6 +33,10 @@ jest.mock("~/hooks/model/proposal/storage", () => ({
   useActions: () => mockActions(),
 }));
 
+jest.mock("~/components/storage/storage-page/PlannedChangesPopup", () => () => (
+  <div>the final layout and every action</div>
+));
+
 const action = (device: number, values: Partial<Proposal.Action> = {}): Proposal.Action => ({
   device,
   text: "",
@@ -40,7 +44,8 @@ const action = (device: number, values: Partial<Proposal.Action> = {}): Proposal
 });
 
 /** The summary sentence, read as a whole. */
-const summary = () => screen.getByText(/Applying the current configuration/);
+const summary = () => screen.getByText(/Applying the configuration below/);
+const viewChanges = () => screen.getByRole("button", { name: "View changes" });
 
 describe("Consequences", () => {
   beforeEach(() => {
@@ -51,21 +56,18 @@ describe("Consequences", () => {
     mockActions.mockReturnValue([action(1), action(2, { delete: true }), action(3)]);
     installerRender(<Consequences />);
 
-    expect(summary()).toHaveTextContent("Applying the current configuration takes 3 actions.");
-  });
-
-  it("puts the number of actions in bold", () => {
-    mockActions.mockReturnValue([action(1), action(2)]);
-    installerRender(<Consequences />);
-
-    expect(screen.getByText("2 actions").tagName).toBe("STRONG");
+    expect(summary()).toHaveTextContent(
+      "Applying the configuration below will take 3 actions during installation.",
+    );
   });
 
   it("uses the singular for a single action", () => {
     mockActions.mockReturnValue([action(1)]);
     installerRender(<Consequences />);
 
-    expect(summary()).toHaveTextContent("Applying the current configuration takes 1 action.");
+    expect(summary()).toHaveTextContent(
+      "Applying the configuration below will take 1 action during installation.",
+    );
   });
 
   it("does not count subvolumes", () => {
@@ -76,7 +78,9 @@ describe("Consequences", () => {
     ]);
     installerRender(<Consequences />);
 
-    expect(summary()).toHaveTextContent("Applying the current configuration takes 1 action.");
+    expect(summary()).toHaveTextContent(
+      "Applying the configuration below will take 1 action during installation.",
+    );
   });
 
   it("does not say what the actions destroy", () => {
@@ -86,30 +90,20 @@ describe("Consequences", () => {
     expect(screen.queryByText(/destructive|shrink/i)).toBeNull();
   });
 
-  it("offers the final layout and the actions, in the order of the result tabs", () => {
+  it("offers one way to the changes, at the end of the sentence", () => {
     installerRender(<Consequences />);
 
-    const links = screen.getAllByRole("link").map((link) => link.textContent);
-    expect(links).toEqual(["View final layout", "Check actions"]);
+    expect(summary()).toContainElement(viewChanges());
+    expect(screen.getAllByRole("button")).toHaveLength(1);
+    expect(screen.queryByRole("link")).not.toBeInTheDocument();
   });
 
-  it("opens the result on the final layout", async () => {
+  it("shows the planned changes in a popup", async () => {
     const { user } = installerRender(<Consequences />);
-    await user.click(screen.getByRole("link", { name: "View final layout" }));
+    await user.click(viewChanges());
 
-    expect(mockNavigateFn).toHaveBeenCalledWith(
-      { search: "?sheet=result&sheetTab=layout" },
-      { replace: true },
-    );
-  });
-
-  it("opens the result on the actions", async () => {
-    const { user } = installerRender(<Consequences />);
-    await user.click(screen.getByRole("link", { name: "Check actions" }));
-
-    expect(mockNavigateFn).toHaveBeenCalledWith(
-      { search: "?sheet=result&sheetTab=actions" },
-      { replace: true },
-    );
+    const popup = screen.getByRole("dialog", { name: "Planned storage changes" });
+    within(popup).getByText("Result of applying the current storage configuration to the system");
+    within(popup).getByText("the final layout and every action");
   });
 });

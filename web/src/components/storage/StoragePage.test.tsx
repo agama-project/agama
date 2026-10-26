@@ -27,7 +27,7 @@
  */
 import React from "react";
 import { screen } from "@testing-library/react";
-import { installerRender, mockRoutes } from "~/test-utils";
+import { installerRender } from "~/test-utils";
 import StoragePage from "~/components/storage/StoragePage";
 import type { Storage } from "~/model/proposal";
 import type { Issue } from "~/model/issue";
@@ -375,13 +375,6 @@ describe("if the UI supports the configuration (there is a model)", () => {
     it("keeps the result out of the page until it is asked for", () => {
       installerRender(<StoragePage />);
       expect(screen.queryByText("result")).not.toBeInTheDocument();
-    });
-
-    it("shows the result where the address asks for it", () => {
-      mockRoutes("/storage?sheet=result");
-      installerRender(<StoragePage />);
-
-      screen.getByText("result");
     });
   });
 
