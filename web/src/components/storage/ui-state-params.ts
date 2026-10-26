@@ -49,9 +49,6 @@ const SETTINGS_TAB = "settingsTab";
 /** Storage page: what the sheet beside the page is showing. */
 const SHEET = "sheet";
 
-/** Storage page: which half of the open sheet is being read. */
-const SHEET_TAB = "sheetTab";
-
 /** DASD page: sorted column and direction, as in `sortBy=channel:desc`. */
 const DASD_SORT = "sortBy";
 
@@ -88,7 +85,6 @@ export {
   EXPANDED,
   SETTINGS_TAB,
   SHEET,
-  SHEET_TAB,
   DASD_SORT,
   ZFCP_SORT,
   ISCSI_SORT,

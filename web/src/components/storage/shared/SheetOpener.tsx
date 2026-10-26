@@ -28,7 +28,6 @@ import type { SheetEntry } from "~/components/storage/shared/use-sheet";
 export type SheetOpenerProps = {
   /** What the sheet shows once this is followed. */
   subject: SheetEntry;
-  tab?: string;
   /**
    * How it is drawn: as a link within the text around it (the default), or as
    * a button where it stands apart from any text, such as among an alert's
@@ -62,7 +61,6 @@ export type SheetOpenerProps = {
  */
 export default function SheetOpener({
   subject,
-  tab,
   variant = "inline",
   children,
 }: SheetOpenerProps): React.ReactNode {
@@ -71,7 +69,7 @@ export default function SheetOpener({
 
   return (
     <Link
-      to={addressOf(subject, tab)}
+      to={addressOf(subject)}
       replace
       variant={isButton ? "tertiary" : "link"}
       size={isButton ? "sm" : undefined}

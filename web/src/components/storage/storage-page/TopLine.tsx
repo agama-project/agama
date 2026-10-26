@@ -30,7 +30,7 @@ import Icon, { IconProps } from "~/components/layout/Icon";
 import TruncatedDeviceName from "~/components/storage/TruncatedDeviceName";
 import { bootIcon } from "~/components/storage/shared/boot";
 import { STORAGE as PATHS } from "~/routes/paths";
-import { EXPANDED, SETTINGS_TAB, SHEET, SHEET_TAB } from "~/components/storage/ui-state-params";
+import { EXPANDED, SETTINGS_TAB, SHEET } from "~/components/storage/ui-state-params";
 import configModel from "~/model/storage/config-model";
 import { useConfigModel } from "~/hooks/model/storage/config-model";
 import { useReset } from "~/hooks/model/config/storage";
@@ -154,7 +154,7 @@ export default function TopLine(): React.ReactNode {
     reset();
     /* Everything the address says about how this page is being looked at. What
        it points at is about to stop existing. */
-    clearSearchParams(EXPANDED, SETTINGS_TAB, SHEET, SHEET_TAB);
+    clearSearchParams(EXPANDED, SETTINGS_TAB, SHEET);
   };
 
   return (

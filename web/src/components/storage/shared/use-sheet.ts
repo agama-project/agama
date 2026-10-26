@@ -21,8 +21,8 @@
  */
 
 import { useSearchParams } from "react-router";
-import { useSearchParamState, SEARCH_PARAM_UPDATE } from "~/hooks/use-search-param-state";
-import { SHEET, SHEET_TAB } from "~/components/storage/ui-state-params";
+import { SEARCH_PARAM_UPDATE } from "~/hooks/use-search-param-state";
+import { SHEET } from "~/components/storage/ui-state-params";
 import type { To } from "react-router";
 
 /**
@@ -90,64 +90,39 @@ function useSheet(): {
   /** What the sheet is showing, or nothing where it is shut. */
   subject: SheetEntry | null;
   /** Where a control that opens the sheet on something should point. */
-  addressOf: (subject: SheetEntry, tab?: string) => To;
+  addressOf: (subject: SheetEntry) => To;
   /**
    * Opens it, for a control that cannot carry an address. A menu item is one:
    * it is a menu item wherever it appears, so it acts rather than links, and
    * the address it writes is the same one a link would have carried.
    */
-  openSheet: (subject: SheetEntry, tab?: string) => void;
+  openSheet: (subject: SheetEntry) => void;
   /** Shuts it. */
   close: () => void;
 } {
   const [params, setParams] = useSearchParams();
   const subject = fromParam(params.get(SHEET));
 
-  const addressOf = (subject: SheetEntry, tab?: string): To => {
+  const addressOf = (subject: SheetEntry): To => {
     const next = new URLSearchParams(params);
     next.set(SHEET, toParam(subject));
-    if (tab) {
-      next.set(SHEET_TAB, tab);
-    } else {
-      next.delete(SHEET_TAB);
-    }
     return { search: `?${next}` };
   };
 
-  const openSheet = (subject: SheetEntry, tab?: string) =>
+  const openSheet = (subject: SheetEntry) =>
     setParams((next) => {
       next.set(SHEET, toParam(subject));
-      /* On its own first view unless the caller has a view in mind, which is
-         what sends a reader straight to the half of the panel they asked
-         about. */
-      if (tab) {
-        next.set(SHEET_TAB, tab);
-      } else {
-        next.delete(SHEET_TAB);
-      }
       return next;
     }, SEARCH_PARAM_UPDATE);
 
   const close = () =>
     setParams((next) => {
       next.delete(SHEET);
-      next.delete(SHEET_TAB);
       return next;
     }, SEARCH_PARAM_UPDATE);
 
   return { subject, addressOf, openSheet, close };
 }
 
-/**
- * Which half of the open sheet is being read.
- *
- * Held beside what the sheet shows rather than inside whatever draws it, so
- * that a reader comparing two things is not sent back to the first tab between
- * them, and so that an address names the tab as well as the subject.
- */
-function useSheetTab(defaultTab: string) {
-  return useSearchParamState(SHEET_TAB, defaultTab);
-}
-
-export { useSheet, useSheetTab, SHEET_ID };
+export { useSheet, SHEET_ID };
 export type { SheetEntry, SheetCollection };
