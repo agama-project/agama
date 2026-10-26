@@ -33,6 +33,7 @@ import {
   mergeSources,
   extendCollection,
   translateEntries,
+  isKeyboardActivation,
   isoTimestamp,
   download,
 } from "./utils";
@@ -1178,6 +1179,17 @@ describe("isoTimestamp", () => {
 
   it("returns the expected value for a known date", () => {
     expect(isoTimestamp()).toBe(FIXED_SAFE);
+  });
+});
+
+describe("isKeyboardActivation", () => {
+  it("is true for a click with no click count, as fired by a key press", () => {
+    expect(isKeyboardActivation({ detail: 0 })).toBe(true);
+  });
+
+  it("is false for a click coming from a pointer", () => {
+    expect(isKeyboardActivation({ detail: 1 })).toBe(false);
+    expect(isKeyboardActivation({ detail: 2 })).toBe(false);
   });
 });
 
