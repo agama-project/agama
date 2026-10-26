@@ -1,0 +1,45 @@
+{
+  "network": {
+    "connections": [
+      {
+        "id": "bond0",
+        "interface": "bond0",
+        "method4": "auto",
+        "bond": {
+          "mode": "active-backup",
+          "portConnections": [
+            {
+              "id": "eth1.100",
+              "interface": "eth1.100",
+              "vlan": {
+                "parent": "eth1",
+                "id": 100
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "br0",
+        "interface": "br0",
+        "method4": "auto",
+        "bridge": {
+          "portConnections": [
+            {
+              "id": "br1",
+              "interface": "br1",
+              "port": {
+                "priority": 16
+              },
+              "bridge": {
+                "portConnections": [
+                  "eth0"
+                ]
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

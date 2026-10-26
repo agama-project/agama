@@ -42,7 +42,7 @@ import Text from "~/components/core/Text";
 import SelectableDataTable, { SortedBy } from "~/components/core/SelectableDataTable";
 import TextinputFilter from "~/components/storage/dasd/TextinputFilter";
 import SimpleSelector from "~/components/core/SimpleSelector";
-import { useConnectionMutation } from "~/hooks/model/config/network";
+import { useConnectionMutation, useExtendedConfig } from "~/hooks/model/config/network";
 import { useDevices, useSystem } from "~/hooks/model/system/network";
 import { sortCollection } from "~/utils";
 import {
@@ -206,6 +206,7 @@ export default function ConnectionsTable() {
   const [state, dispatch] = useReducer(reducer, initialState);
   const devices = useDevices();
   const { state: systemState, connections = [] } = useSystem();
+  const { connections: configConnections = [] } = useExtendedConfig();
   const { mutateAsync: mutateConnection } = useConnectionMutation();
   const navigate = useNavigate();
 
@@ -221,29 +222,20 @@ export default function ConnectionsTable() {
 
   const resetFilters = () => dispatch({ type: "RESET_FILTERS" });
 
-  const upConnection = (connection: Connection) => {
-    const conn = new Connection(connection.id, {
-      ...connection,
-      status: ConnectionStatus.UP,
-    });
-    mutateConnection(conn);
+  // The listed connections come from the system, which reports their runtime state (also for
+  // the nested ports). Update the configured connection instead, which does not include it.
+  const updateStatus = (connection: Connection, status: ConnectionStatus) => {
+    const configConnection = configConnections.find((c) => c.id === connection.id);
+    if (!configConnection) return;
+
+    mutateConnection(new Connection(connection.id, { ...configConnection, status }));
   };
 
-  const downConnection = (connection: Connection) => {
-    const conn = new Connection(connection.id, {
-      ...connection,
-      status: ConnectionStatus.DOWN,
-    });
-    mutateConnection(conn);
-  };
-
-  const deleteConnection = (connection: Connection) => {
-    const toDelete = new Connection(connection.id, {
-      ...connection,
-      status: ConnectionStatus.DELETE,
-    });
-    mutateConnection(toDelete);
-  };
+  const upConnection = (connection: Connection) => updateStatus(connection, ConnectionStatus.UP);
+  const downConnection = (connection: Connection) =>
+    updateStatus(connection, ConnectionStatus.DOWN);
+  const deleteConnection = (connection: Connection) =>
+    updateStatus(connection, ConnectionStatus.DELETE);
 
   const filteredConnections = filterConnections(connections, state.filters);
   const sortedConnections = sortCollection(
