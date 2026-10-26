@@ -62,6 +62,45 @@ use std::sync::OnceLock;
 
 static INIT_TEST_SCHEMAS: OnceLock<()> = OnceLock::new();
 
+fn write_test_schema(
+    json_value: &serde_json::Value,
+    component_name: &str,
+    file_name: &str,
+    schemas_dir: &std::path::Path,
+) {
+    if let Some(component) = json_value
+        .pointer(&format!("/components/schemas/{}", component_name))
+        .cloned()
+    {
+        let mut schema_obj = component;
+        if let Some(map) = schema_obj.as_object_mut() {
+            map.insert(
+                "$schema".to_string(),
+                serde_json::json!("https://json-schema.org/draft/2019-09/schema"),
+            );
+            map.insert(
+                "$id".to_string(),
+                serde_json::json!(format!(
+                    "file:///usr/share/agama/openapi/nightly/schemas/{}",
+                    file_name
+                )),
+            );
+            if let Some(components) = json_value.get("components") {
+                map.insert("components".to_string(), components.clone());
+            }
+        }
+        let file_path = schemas_dir.join(file_name);
+        if let Ok(mut f) = std::fs::File::create(file_path) {
+            use std::io::Write;
+            _ = f.write_all(
+                serde_json::to_string_pretty(&schema_obj)
+                    .unwrap()
+                    .as_bytes(),
+            );
+        }
+    }
+}
+
 /// Cargo has no built-in pre-test hooks to run `cargo xtask openapi` before `cargo test`.
 /// To avoid committing generated schemas to git while ensuring tests always run against
 /// the latest compiled types in clean environments, generate the schema dynamically on test setup.
@@ -74,37 +113,10 @@ pub async fn ensure_test_schemas() {
     let schemas_dir = out_dir.join("schemas");
     _ = std::fs::create_dir_all(&schemas_dir);
 
-    if let Ok(mut json_value) = agama_server::web::docs::build_json().await {
-        if let Some(component) = json_value
-            .pointer_mut("/components/schemas/Config")
-            .map(|v| v.take())
-        {
-            let mut schema_obj = component;
-            if let Some(map) = schema_obj.as_object_mut() {
-                map.insert(
-                    "$schema".to_string(),
-                    serde_json::json!("https://json-schema.org/draft/2019-09/schema"),
-                );
-                map.insert(
-                    "$id".to_string(),
-                    serde_json::json!(
-                        "file:///usr/share/agama/openapi/nightly/schemas/config.schema.json"
-                    ),
-                );
-                if let Some(components) = json_value.get("components") {
-                    map.insert("components".to_string(), components.clone());
-                }
-            }
-            let config_path = schemas_dir.join("config.schema.json");
-            if let Ok(mut f) = std::fs::File::create(config_path) {
-                use std::io::Write;
-                _ = f.write_all(
-                    serde_json::to_string_pretty(&schema_obj)
-                        .unwrap()
-                        .as_bytes(),
-                );
-            }
-        }
+    if let Ok(json_value) = agama_server::web::docs::build_json().await {
+        write_test_schema(&json_value, "Config", "config.schema.json", &schemas_dir);
+        write_test_schema(&json_value, "Proposal", "proposal.schema.json", &schemas_dir);
+        write_test_schema(&json_value, "SystemInfo", "system.schema.json", &schemas_dir);
     }
     INIT_TEST_SCHEMAS.get_or_init(|| ());
 }

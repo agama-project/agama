@@ -19,6 +19,7 @@
 // find current contact information at www.suse.com.
 
 pub mod common;
+use agama_lib::profile::{ProfileValidator, ValidationOutcome};
 use agama_manager::test_utils::start_service;
 use agama_server::{
     profile::profile_service,
@@ -297,5 +298,61 @@ async fn test_patch_config_invalid_json(ctx: &mut Context) -> Result<(), Box<dyn
 
     let response = ctx.client.send_request(request).await;
     assert_eq!(response.status(), StatusCode::BAD_REQUEST);
+    Ok(())
+}
+
+#[test_context(Context)]
+#[test]
+async fn test_system_matches_schema(ctx: &mut Context) -> Result<(), Box<dyn Error>> {
+    let request = Request::builder()
+        .uri("/system")
+        .body("".to_string())
+        .unwrap();
+
+    let response = ctx.client.send_request(request).await;
+    assert_eq!(response.status(), StatusCode::OK);
+
+    let body = body_to_string(response.into_body()).await;
+
+    let manifest_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+    let schema_path = manifest_dir.join("../out/schemas/system.schema.json");
+
+    let validator = ProfileValidator::new(&schema_path)?;
+    match validator.validate_str(&body)? {
+        ValidationOutcome::Valid => {}
+        ValidationOutcome::NotValid(errors) => {
+            panic!("GET /system response failed schema validation:\n{:#?}", errors);
+        }
+    }
+
+    Ok(())
+}
+
+#[test_context(Context)]
+#[test]
+async fn test_proposal_matches_schema(ctx: &mut Context) -> Result<(), Box<dyn Error>> {
+    select_product(&ctx.client).await?;
+
+    let request = Request::builder()
+        .uri("/proposal")
+        .body("".to_string())
+        .unwrap();
+
+    let response = ctx.client.send_request(request).await;
+    assert_eq!(response.status(), StatusCode::OK);
+
+    let body = body_to_string(response.into_body()).await;
+
+    let manifest_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+    let schema_path = manifest_dir.join("../out/schemas/proposal.schema.json");
+
+    let validator = ProfileValidator::new(&schema_path)?;
+    match validator.validate_str(&body)? {
+        ValidationOutcome::Valid => {}
+        ValidationOutcome::NotValid(errors) => {
+            panic!("GET /proposal response failed schema validation:\n{:#?}", errors);
+        }
+    }
+
     Ok(())
 }
