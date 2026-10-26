@@ -37,13 +37,10 @@ type SheetCollection = "drives" | "mdRaids" | "volumeGroups";
 /** One entry of the configuration, as the address names it. */
 type SheetEntry = { collection: SheetCollection; index: number };
 
-/** What the sheet is showing: the whole picture, or one entry of the plan. */
-type SheetSubject = "result" | SheetEntry;
-
 const COLLECTIONS: SheetCollection[] = ["drives", "mdRaids", "volumeGroups"];
 
 /**
- * The address form of a subject: "result", or "drives.0".
+ * The address form of an entry: "drives.0".
  *
  * Readable and editable by hand, which is the point of keeping it in the
  * address at all. An entry is named by where it is written and its position,
@@ -53,20 +50,20 @@ const COLLECTIONS: SheetCollection[] = ["drives", "mdRaids", "volumeGroups"];
  * a query value: the encoder the browser gives us escapes it to `%3A`, and an
  * address nobody can read by eye is not one anybody will edit by hand.
  */
-function toParam(subject: SheetSubject): string {
-  return subject === "result" ? subject : `${subject.collection}.${subject.index}`;
+function toParam(entry: SheetEntry): string {
+  return `${entry.collection}.${entry.index}`;
 }
 
 /**
- * The subject an address names, or nothing where it names none.
+ * The entry an address names, or nothing where it names none.
  *
  * Anything the page cannot make sense of reads as a shut sheet rather than as
  * an error: the address is editable by hand, and a typo in it should leave the
- * reader on the page rather than on a broken one.
+ * reader on the page rather than on a broken one. So does an address written
+ * when the sheet could also show the whole result, which it no longer does.
  */
-function fromParam(value: string | null): SheetSubject | null {
+function fromParam(value: string | null): SheetEntry | null {
   if (!value) return null;
-  if (value === "result") return "result";
 
   const [collection, position] = value.split(".");
   const index = Number(position);
@@ -91,22 +88,22 @@ function fromParam(value: string | null): SheetSubject | null {
  */
 function useSheet(): {
   /** What the sheet is showing, or nothing where it is shut. */
-  subject: SheetSubject | null;
+  subject: SheetEntry | null;
   /** Where a control that opens the sheet on something should point. */
-  addressOf: (subject: SheetSubject, tab?: string) => To;
+  addressOf: (subject: SheetEntry, tab?: string) => To;
   /**
    * Opens it, for a control that cannot carry an address. A menu item is one:
    * it is a menu item wherever it appears, so it acts rather than links, and
    * the address it writes is the same one a link would have carried.
    */
-  openSheet: (subject: SheetSubject, tab?: string) => void;
+  openSheet: (subject: SheetEntry, tab?: string) => void;
   /** Shuts it. */
   close: () => void;
 } {
   const [params, setParams] = useSearchParams();
   const subject = fromParam(params.get(SHEET));
 
-  const addressOf = (subject: SheetSubject, tab?: string): To => {
+  const addressOf = (subject: SheetEntry, tab?: string): To => {
     const next = new URLSearchParams(params);
     next.set(SHEET, toParam(subject));
     if (tab) {
@@ -117,7 +114,7 @@ function useSheet(): {
     return { search: `?${next}` };
   };
 
-  const openSheet = (subject: SheetSubject, tab?: string) =>
+  const openSheet = (subject: SheetEntry, tab?: string) =>
     setParams((next) => {
       next.set(SHEET, toParam(subject));
       /* On its own first view unless the caller has a view in mind, which is
@@ -153,4 +150,4 @@ function useSheetTab(defaultTab: string) {
 }
 
 export { useSheet, useSheetTab, SHEET_ID };
-export type { SheetSubject, SheetEntry, SheetCollection };
+export type { SheetEntry, SheetCollection };

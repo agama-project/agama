@@ -102,10 +102,7 @@ export default function EntryRow({
 }: EntryRowProps): React.ReactNode {
   const { subject: open, addressOf } = useSheet();
   const isOpen =
-    open !== null &&
-    open !== "result" &&
-    open.collection === subject.collection &&
-    open.index === subject.index;
+    open !== null && open.collection === subject.collection && open.index === subject.index;
 
   return (
     /* No handler of its own: the row opens because the name's link is

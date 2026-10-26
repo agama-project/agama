@@ -23,11 +23,11 @@
 import React from "react";
 import Link from "~/components/core/Link";
 import { useSheet, SHEET_ID } from "~/components/storage/shared/use-sheet";
-import type { SheetSubject } from "~/components/storage/shared/use-sheet";
+import type { SheetEntry } from "~/components/storage/shared/use-sheet";
 
 export type SheetOpenerProps = {
   /** What the sheet shows once this is followed. */
-  subject: SheetSubject;
+  subject: SheetEntry;
   tab?: string;
   /**
    * How it is drawn: as a link within the text around it (the default), or as
@@ -53,10 +53,12 @@ export type SheetOpenerProps = {
  * text, it can be drawn as a button, and it is still a link.
  *
  * @example
- * <SheetOpener subject="result">{_("View all 5 needed actions")}</SheetOpener>
+ * <SheetOpener subject={{ collection: "drives", index: 0 }}>{name}</SheetOpener>
  *
  * @example
- * <SheetOpener subject="result" variant="button">{_("Check actions")}</SheetOpener>
+ * <SheetOpener subject={{ collection: "volumeGroups", index: 0 }} variant="button">
+ *   {_("View the volume group")}
+ * </SheetOpener>
  */
 export default function SheetOpener({
   subject,

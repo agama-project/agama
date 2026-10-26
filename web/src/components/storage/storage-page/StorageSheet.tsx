@@ -88,8 +88,7 @@ export type StorageSheetProps = {
 export default function StorageSheet({ page }: StorageSheetProps): React.ReactNode {
   const { subject, close } = useSheet();
   const placement = usePlacement();
-  const selection = subject === "result" ? null : subject;
-  const entry = useEntry(selection);
+  const entry = useEntry(subject);
 
   const isOpen = entry !== null;
 
@@ -131,7 +130,7 @@ export default function StorageSheet({ page }: StorageSheetProps): React.ReactNo
         </EmptyState>
       }
     >
-      {entry && selection && <DeviceDetail entry={entry} subject={selection} />}
+      {entry && subject && <DeviceDetail entry={entry} subject={subject} />}
     </Sheet>
   );
 }

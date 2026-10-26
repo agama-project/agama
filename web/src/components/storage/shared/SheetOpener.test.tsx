@@ -25,27 +25,29 @@ import { screen } from "@testing-library/react";
 import { installerRender, mockNavigateFn, mockRoutes } from "~/test-utils";
 import SheetOpener from "~/components/storage/shared/SheetOpener";
 
+const sda = { collection: "drives" as const, index: 0 };
+
 describe("SheetOpener", () => {
   it("is a link, so it can be copied and opened like any other", () => {
-    installerRender(<SheetOpener subject="result">View all 5 needed actions</SheetOpener>);
+    installerRender(<SheetOpener subject={sda}>sda</SheetOpener>);
 
-    screen.getByRole("link", { name: "View all 5 needed actions" });
+    screen.getByRole("link", { name: "sda" });
   });
 
   it("points at the page showing what it opens", async () => {
-    const { user } = installerRender(<SheetOpener subject="result">Everything</SheetOpener>);
+    const { user } = installerRender(<SheetOpener subject={sda}>sda</SheetOpener>);
     await user.click(screen.getByRole("link"));
 
-    expect(mockNavigateFn).toHaveBeenCalledWith({ search: "?sheet=result" }, { replace: true });
+    expect(mockNavigateFn).toHaveBeenCalledWith({ search: "?sheet=drives.0" }, { replace: true });
   });
 
   it("keeps whatever else the address was saying", async () => {
     mockRoutes("/storage?settingsTab=1");
-    const { user } = installerRender(<SheetOpener subject="result">Everything</SheetOpener>);
+    const { user } = installerRender(<SheetOpener subject={sda}>sda</SheetOpener>);
     await user.click(screen.getByRole("link"));
 
     expect(mockNavigateFn).toHaveBeenCalledWith(
-      { search: "?settingsTab=1&sheet=result" },
+      { search: "?settingsTab=1&sheet=drives.0" },
       { replace: true },
     );
   });
