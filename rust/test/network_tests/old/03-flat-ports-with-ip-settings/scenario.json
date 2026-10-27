@@ -1,0 +1,29 @@
+{
+  "title": "Ports at the top level with their IP methods disabled",
+  "description": "The flat style of the profiles written before the ports were nested. The IP settings of the ports are ignored (with a warning in the log) instead of rejected.",
+  "steps": [
+    {
+      "profile": "1-flat.json",
+      "description": "eth0 (MTU 9000) and eth1 at the top level with method4/6: disabled, listed by name in bond0",
+      "expect": {
+        "connections": {
+          "bond0": {
+            "controller": null,
+            "method4": "auto"
+          },
+          "eth0": {
+            "controller": "bond0",
+            "mtu": 9000,
+            "method4": null,
+            "method6": null
+          },
+          "eth1": {
+            "controller": "bond0",
+            "method4": null,
+            "method6": null
+          }
+        }
+      }
+    }
+  ]
+}
