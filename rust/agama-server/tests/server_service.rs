@@ -19,7 +19,7 @@
 // find current contact information at www.suse.com.
 
 pub mod common;
-use agama_lib::profile::{ProfileValidator, ValidationOutcome};
+use agama_lib::profile::ValidationOutcome;
 use agama_manager::test_utils::start_service;
 use agama_server::{
     profile::profile_service,
@@ -314,10 +314,7 @@ async fn test_system_matches_schema(ctx: &mut Context) -> Result<(), Box<dyn Err
 
     let body = body_to_string(response.into_body()).await;
 
-    let manifest_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
-    let schema_path = manifest_dir.join("../out/schemas/system.schema.json");
-
-    let validator = ProfileValidator::new(&schema_path)?;
+    let validator = common::build_test_validator("SystemInfo").await;
     match validator.validate_str(&body)? {
         ValidationOutcome::Valid => {}
         ValidationOutcome::NotValid(errors) => {
@@ -346,10 +343,7 @@ async fn test_proposal_matches_schema(ctx: &mut Context) -> Result<(), Box<dyn E
 
     let body = body_to_string(response.into_body()).await;
 
-    let manifest_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
-    let schema_path = manifest_dir.join("../out/schemas/proposal.schema.json");
-
-    let validator = ProfileValidator::new(&schema_path)?;
+    let validator = common::build_test_validator("Proposal").await;
     match validator.validate_str(&body)? {
         ValidationOutcome::Valid => {}
         ValidationOutcome::NotValid(errors) => {
@@ -360,5 +354,100 @@ async fn test_proposal_matches_schema(ctx: &mut Context) -> Result<(), Box<dyn E
         }
     }
 
+    Ok(())
+}
+
+#[tokio::test]
+async fn test_validate_config_full() -> Result<(), Box<dyn Error>> {
+    let validator = common::build_test_validator("Config").await;
+    let manifest_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+    let full_example = manifest_dir.join("../share/examples/config_full.json");
+    let result = validator.validate_file(&full_example)?;
+    match result {
+        ValidationOutcome::Valid => {}
+        ValidationOutcome::NotValid(errors) => {
+            panic!("Comprehensive config failed validation:\n{:#?}", errors);
+        }
+    }
+    Ok(())
+}
+
+#[tokio::test]
+async fn test_validate_profile_tw_invalid() -> Result<(), Box<dyn Error>> {
+    let validator = common::build_test_validator("Config").await;
+    let manifest_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+    let invalid_example = manifest_dir.join("../share/examples/profile_tw_invalid.json");
+    let result = validator.validate_file(&invalid_example)?;
+    match result {
+        ValidationOutcome::Valid => {
+            panic!("Invalid profile should have failed validation");
+        }
+        ValidationOutcome::NotValid(errors) => {
+            assert!(!errors.is_empty());
+            for err in &errors {
+                assert!(
+                    !err.contains("anyOf"),
+                    "Error should not mention 'anyOf', but got: {}",
+                    err
+                );
+            }
+        }
+    }
+    Ok(())
+}
+
+#[tokio::test]
+async fn test_validate_unknown_field_rejected() -> Result<(), Box<dyn Error>> {
+    let validator = common::build_test_validator("Config").await;
+    let json_with_unknown_field = r#"
+    {
+        "bootloader": {
+            "unknownKey": true
+        }
+    }
+    "#;
+    let result = validator.validate_str(json_with_unknown_field)?;
+    match result {
+        ValidationOutcome::Valid => {
+            panic!("Profile with unknown key should have failed validation");
+        }
+        ValidationOutcome::NotValid(errors) => {
+            assert!(!errors.is_empty());
+            assert!(
+                errors.iter().any(|e| e.contains("unknownKey")),
+                "Expected error mentioning unknownKey, got: {:#?}",
+                errors
+            );
+        }
+    }
+    Ok(())
+}
+
+#[tokio::test]
+async fn test_validate_invalid_enum_rejected_cleanly() -> Result<(), Box<dyn Error>> {
+    let validator = common::build_test_validator("Config").await;
+    let json_with_invalid_enum = r#"
+    {
+        "access": {
+            "ssh": "invalid_value"
+        }
+    }
+    "#;
+    let result = validator.validate_str(json_with_invalid_enum)?;
+    match result {
+        ValidationOutcome::Valid => {
+            panic!("Profile with invalid enum should have failed validation");
+        }
+        ValidationOutcome::NotValid(errors) => {
+            assert!(!errors.is_empty());
+            for err in &errors {
+                assert!(
+                    !err.contains("oneOf") && !err.contains("anyOf"),
+                    "Error should not mention 'oneOf' or 'anyOf', but got: {}",
+                    err
+                );
+            }
+        }
+    }
     Ok(())
 }

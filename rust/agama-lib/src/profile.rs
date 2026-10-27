@@ -134,7 +134,7 @@ pub enum ValidationOutcome {
 
 /// Checks whether an autoinstallation profile is valid
 ///
-/// ```
+/// ```no_run
 /// # use agama_lib::profile::{ProfileValidator, ValidationOutcome};
 /// # use std::path::PathBuf;
 /// let mut path = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
@@ -194,7 +194,12 @@ impl ProfileValidator {
             .as_object_mut()
             .and_then(|s| s.insert("$id".to_string(), serde_json::json!(id)));
 
-        let validator = jsonschema::validator_for(&schema).expect("A valid schema");
+        Self::from_value(&schema)
+    }
+
+    /// Creates a [`ProfileValidator`] directly from an in-memory JSON schema value.
+    pub fn from_value(schema: &serde_json::Value) -> Result<Self, ProfileError> {
+        let validator = jsonschema::validator_for(schema).expect("A valid schema");
         Ok(Self { validator })
     }
 
@@ -292,123 +297,36 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_validate_config_full() {
-        let manifest_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
-        let schema_path = manifest_dir.join("../out/schemas/config.schema.json");
-        if !schema_path.exists() {
-            return;
-        }
+    fn test_profile_validator_with_inline_schema() {
+        let dir = tempfile::tempdir().unwrap();
+        let schema_path = dir.path().join("test.schema.json");
+        fs::write(
+            &schema_path,
+            r#"{
+                "type": "object",
+                "properties": {
+                    "product": { "type": "string" }
+                },
+                "required": ["product"],
+                "additionalProperties": false
+            }"#,
+        )
+        .unwrap();
 
         let validator = ProfileValidator::new(&schema_path).expect("valid schema");
-        let full_example = manifest_dir.join("../share/examples/config_full.json");
-        let result = validator
-            .validate_file(&full_example)
-            .expect("validation result");
-        match result {
-            ValidationOutcome::Valid => {}
-            ValidationOutcome::NotValid(errors) => {
-                panic!("Comprehensive config failed validation:\n{:#?}", errors);
-            }
-        }
-    }
-
-    #[test]
-    fn test_validate_profile_tw_invalid() {
-        let manifest_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
-        let schema_path = manifest_dir.join("../out/schemas/config.schema.json");
-        if !schema_path.exists() {
-            return;
-        }
-
-        let validator = ProfileValidator::new(&schema_path).expect("valid schema");
-        let invalid_example = manifest_dir.join("../share/examples/profile_tw_invalid.json");
-        let result = validator
-            .validate_file(&invalid_example)
-            .expect("validation result");
-        match result {
-            ValidationOutcome::Valid => {
-                panic!("Invalid profile should have failed validation");
-            }
-            ValidationOutcome::NotValid(errors) => {
-                assert!(!errors.is_empty());
-                for err in &errors {
-                    assert!(
-                        !err.contains("anyOf"),
-                        "Error should not mention 'anyOf', but got: {}",
-                        err
-                    );
-                }
-            }
-        }
-    }
-
-    #[test]
-    fn test_validate_unknown_field_rejected() {
-        let manifest_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
-        let schema_path = manifest_dir.join("../out/schemas/config.schema.json");
-        if !schema_path.exists() {
-            return;
-        }
-
-        let validator = ProfileValidator::new(&schema_path).expect("valid schema");
-        let json_with_unknown_field = r#"
-        {
-            "bootloader": {
-                "unknownKey": true
-            }
-        }
-        "#;
-        let result = validator
-            .validate_str(json_with_unknown_field)
-            .expect("validation result");
-        match result {
-            ValidationOutcome::Valid => {
-                panic!("Profile with unknown key should have failed validation");
-            }
-            ValidationOutcome::NotValid(errors) => {
-                assert!(!errors.is_empty());
-                assert!(
-                    errors.iter().any(|e| e.contains("unknownKey")),
-                    "Expected error mentioning unknownKey, got: {:#?}",
-                    errors
-                );
-            }
-        }
-    }
-
-    #[test]
-    fn test_validate_invalid_enum_rejected_cleanly() {
-        let manifest_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
-        let schema_path = manifest_dir.join("../out/schemas/config.schema.json");
-        if !schema_path.exists() {
-            return;
-        }
-
-        let validator = ProfileValidator::new(&schema_path).expect("valid schema");
-        let json_with_invalid_enum = r#"
-        {
-            "access": {
-                "ssh": "invalid_value"
-            }
-        }
-        "#;
-        let result = validator
-            .validate_str(json_with_invalid_enum)
-            .expect("validation result");
-        match result {
-            ValidationOutcome::Valid => {
-                panic!("Profile with invalid enum should have failed validation");
-            }
-            ValidationOutcome::NotValid(errors) => {
-                assert!(!errors.is_empty());
-                for err in &errors {
-                    assert!(
-                        !err.contains("oneOf") && !err.contains("anyOf"),
-                        "Error should not mention 'oneOf' or 'anyOf', but got: {}",
-                        err
-                    );
-                }
-            }
-        }
+        assert!(matches!(
+            validator
+                .validate_str(r#"{"product": "Tumbleweed"}"#)
+                .unwrap(),
+            ValidationOutcome::Valid
+        ));
+        assert!(matches!(
+            validator.validate_str(r#"{"product": 123}"#).unwrap(),
+            ValidationOutcome::NotValid(_)
+        ));
+        assert!(matches!(
+            validator.validate_str(r#"{"unknown": "val"}"#).unwrap(),
+            ValidationOutcome::NotValid(_)
+        ));
     }
 }
