@@ -34,33 +34,44 @@ jest.mock("~/hooks/model/storage/config-model", () => ({
 
 /** Opens the menu and gives back its items. */
 const openMenu = async (user) => {
-  await user.click(screen.getByRole("button", { name: "Set all to" }));
-  return screen.getByRole("menu", { name: "Set all to" });
+  await user.click(screen.getByRole("button", { name: "Set all" }));
+  return screen.getByRole("menu", { name: "Set all" });
 };
 
 describe("SpaceDecision", () => {
-  it("offers the three decisions in the words of the Action column, safest first", async () => {
+  it("offers the three decisions for every partition, safest first", async () => {
     const { user } = installerRender(<SpaceDecision collection="drives" index={0} />);
     const menu = await openMenu(user);
 
     const names = within(menu)
       .getAllByRole("menuitem")
-      .map((item) => within(item).getByText(/^(Keep|Shrink if needed|Delete)$/).textContent);
+      .map((item) => within(item).getByText(/^(Keep|Shrink|Delete)/).textContent);
 
-    expect(names).toEqual(["Keep", "Shrink if needed", "Delete"]);
+    expect(names).toEqual([
+      "Keep all partitions",
+      "Shrink partitions if needed and possible",
+      "Delete all partitions",
+    ]);
+  });
+
+  it("leaves partitions with a mount point out of deleting them all", async () => {
+    const { user } = installerRender(<SpaceDecision collection="drives" index={0} someReused />);
+    const menu = await openMenu(user);
+
+    within(menu).getByText("Delete all partitions with no mount point");
   });
 
   it("says what each decision means in the menu", async () => {
     const { user } = installerRender(<SpaceDecision collection="drives" index={0} />);
     const menu = await openMenu(user);
 
-    within(menu).getByText("Their data is lost, and the space is freed for the new system.");
+    within(menu).getByText("Their data is lost and their space is freed.");
   });
 
   it("gives every partition the decision chosen", async () => {
     const { user } = installerRender(<SpaceDecision collection="drives" index={0} />);
     const menu = await openMenu(user);
-    await user.click(within(menu).getByRole("menuitem", { name: /^Shrink if needed/ }));
+    await user.click(within(menu).getByRole("menuitem", { name: /^Shrink partitions if needed/ }));
 
     expect(mockSetSpacePolicy).toHaveBeenCalledWith("drives", 0, { type: "resize" });
   });
@@ -70,7 +81,7 @@ describe("SpaceDecision", () => {
       <SpaceDecision collection="drives" index={0} current="delete" />,
     );
     const menu = await openMenu(user);
-    await user.click(within(menu).getByRole("menuitem", { name: /^Delete/ }));
+    await user.click(within(menu).getByRole("menuitem", { name: /^Delete all partitions/ }));
 
     expect(mockSetSpacePolicy).not.toHaveBeenCalled();
   });
