@@ -82,6 +82,12 @@ export type SheetProps = {
  *   own, so a reader tabbing out of the sheet lands on controls they cannot
  *   see, and a screen reader reads the whole covered page as though it were
  *   available.
+ * - Only what it covers is out of reach. Whatever lies outside it, such as the
+ *   installer's header or a report placed above it, stays visible and so stays
+ *   usable, and Shift+Tab from the sheet reaches it. That is on purpose: the
+ *   sheet is a panel of the page, not a dialog, so it does not hold the reader
+ *   in it. Taking away controls they can still see would only leave them
+ *   wondering why those do not answer.
  * - Escape closes it, wherever the focus is inside it.
  * - Where it comes over the page, a click on the backdrop closes it too, for
  *   readers using a mouse or touch. The backdrop stays a decoration, not
