@@ -214,9 +214,10 @@ const PENDING_REMOVAL_CLASS = "agm-pending-removal";
  * the reader anything.
  *
  * The words rather than a string: half the statuses are a loss and carry the
- * color saying so, and half are not.
+ * color saying so, and half are not. Some carry a note too, read under them
+ * the way the final layout reads its notes under a value.
  */
-type Status = { text: string; destroys: boolean };
+type Status = { text: string; destroys: boolean; note?: string };
 
 /**
  * What is to become of one thing already on the device, said beside its name.
@@ -245,6 +246,7 @@ function statusFor(
   reusedAs: string | undefined,
   formats: boolean,
   canShrink: boolean,
+  recoverable: number | undefined,
 ): Status | undefined {
   if (reusedAs) {
     const path = formattedPath(reusedAs);
@@ -266,12 +268,28 @@ function statusFor(
       // nothing.
       return { text: _("Keep"), destroys: false };
     case "resizeIfNeeded":
-      return canShrink
-        ? { text: _("Shrink if needed"), destroys: false }
-        : // TRANSLATORS: what is to become of a partition already on the disk:
-          // it was allowed to be made smaller, but that is not possible, so it
-          // stays as it is.
-          { text: _("Keep (cannot be shrunk)"), destroys: false };
+      if (!canShrink) {
+        return {
+          text: _("Keep"),
+          destroys: false,
+          // TRANSLATORS: read under "Keep" for a partition that was allowed to
+          // be made smaller, but cannot be, so it stays as it is.
+          note: _("Cannot be shrunk"),
+        };
+      }
+
+      return {
+        // TRANSLATORS: what is to become of a partition already on the disk: it
+        // may be made smaller, keeping its data, if room is needed.
+        text: _("Shrink if needed"),
+        destroys: false,
+        note: recoverable
+          ? // TRANSLATORS: read under "Shrink if needed": how much room making
+            // the partition smaller can give at most. %s is a size, such as
+            // "17.50 GiB".
+            sprintf(_("Up to %s may be freed"), deviceSize(recoverable))
+          : undefined,
+      };
     case "delete":
       // TRANSLATORS: what is to become of a partition already on the disk: it
       // is removed, and everything on it lost.
@@ -339,8 +357,8 @@ function PartitionRow({
     part.description ||
     // TRANSLATORS: said of a partition whose content is not recognized.
     _("unrecognized");
-  const status = statusFor(decision, reusedAs, formats, canShrink);
-  const keepsSize = decision !== "delete" && (!canShrink || decision !== "resizeIfNeeded");
+  const status = statusFor(decision, reusedAs, formats, canShrink, recoverableBy(part));
+  const keepsSize = decision !== "delete";
 
   /* A rule through what is on the partition today and how big it is, where
      the reader has allowed it to go: there now, gone once installed. Only a
@@ -399,7 +417,10 @@ function PartitionRow({
       </Td>
       <Td>
         {status && (
-          <span className={status.destroys ? DESTROYS_CLASS : undefined}>{status.text}</span>
+          <>
+            <div className={status.destroys ? DESTROYS_CLASS : undefined}>{status.text}</div>
+            {status.note && <div className="agm-row-note">{status.note}</div>}
+          </>
         )}
       </Td>
       <Td isActionCell>{menu}</Td>

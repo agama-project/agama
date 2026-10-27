@@ -65,13 +65,14 @@ const partition = (sid: number, systems: string[] = []): System.Device => ({
 const entry = (
   spacePolicy: ConfigModel.SpacePolicy,
   partitions: ConfigModel.Partition[] = [],
+  onDevice: System.Device[] = [partition(1, ["Windows 11"]), partition(2), partition(3)],
 ): Entry => ({
   config: { name: "/dev/vdd", spacePolicy, partitions } as Partitionable.Device,
   device: {
     sid: 10,
     name: "/dev/vdd",
     class: "drive",
-    partitions: [partition(1, ["Windows 11"]), partition(2), partition(3)],
+    partitions: onDevice,
   } as System.Device,
   name: "vdd",
   isVolumeGroup: false,
@@ -83,6 +84,13 @@ const options = () => screen.queryByRole("button", { name: "Set all" });
 
 /** The sentence summing up the content, which opens the section. */
 const summary = () => screen.getByRole("paragraph");
+
+/** The cells of a partition's row after its name: content, size, action and menu. */
+const cellsOf = (name: string) =>
+  within(screen.getByRole("rowheader", { name }).closest("tr")).getAllByRole("cell");
+
+/** Whether a cell draws a rule through anything in it. */
+const isStruck = (cell: HTMLElement) => cell.querySelector(".agm-pending-removal") !== null;
 
 /** Renders the section and opens what its toggle puts away. */
 const renderShown = async (ui: React.ReactElement) => {
@@ -235,6 +243,43 @@ describe("CurrentContentSection", () => {
       );
       expect(options()).toBeNull();
       expect(screen.queryByRole("button", { name: /^Actions for/ })).toBeNull();
+    });
+  });
+
+  describe("in the Action column", () => {
+    const GiB = 1024 ** 3;
+    const shrinkable: System.Device = {
+      sid: 2,
+      name: "/dev/vdd2",
+      class: "partition",
+      block: {
+        start: 2,
+        size: 18 * GiB,
+        systems: [],
+        shrinking: { supported: true, minSize: 0.5 * GiB },
+      },
+    };
+
+    it("keeps a partition allowed to shrink that cannot, and says why under it", async () => {
+      await renderShown(<CurrentContentSection entry={entry("resize")} subject={subject} />);
+
+      const [, , action] = cellsOf("vdd1");
+      within(action).getByText("Keep");
+      within(action).getByText("Cannot be shrunk");
+    });
+
+    it("says how much shrinking may free, and leaves the size as it is", async () => {
+      await renderShown(
+        <CurrentContentSection
+          entry={entry("resize", [], [partition(1), shrinkable])}
+          subject={subject}
+        />,
+      );
+
+      const [, size, action] = cellsOf("vdd2");
+      within(action).getByText("Shrink if needed");
+      within(action).getByText("Up to 17.5 GiB may be freed");
+      expect(isStruck(size)).toBe(false);
     });
   });
 });
