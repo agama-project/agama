@@ -24,7 +24,6 @@ import React from "react";
 import Link from "~/components/core/Link";
 import Interpolate from "~/components/core/Interpolate";
 import SheetItem from "~/components/storage/device-sheet/SheetItem";
-import { bootIcon } from "~/components/storage/shared/boot";
 import { STORAGE as PATHS } from "~/routes/paths";
 import configModel from "~/model/storage/config-model";
 import { useConfigModel } from "~/hooks/model/storage/config-model";
@@ -52,7 +51,6 @@ export default function BootStatement({ entry }: BootStatementProps): React.Reac
 
   return (
     <SheetItem
-      icon={bootIcon(config)}
       value={
         <Interpolate
           sentence={

@@ -27,8 +27,8 @@ import Icon from "~/components/layout/Icon";
 import type { IconProps } from "~/components/layout/Icon";
 
 export type SheetItemProps = {
-  /** A mark for the kind of thing the item is about. */
-  icon: IconProps["name"];
+  /** A mark for the kind of thing the item is about. Left out where the words carry it alone. */
+  icon?: IconProps["name"];
   /** What the item is about, such as "LVM". Left out where the value says it all. */
   name?: React.ReactNode;
   /** A short value read right after the name, on the same line. */
@@ -38,8 +38,8 @@ export type SheetItemProps = {
 };
 
 /**
- * One fact in a device sheet section: an icon, a bold name with an optional
- * value beside it, and whatever explains or changes it underneath.
+ * One fact in a device sheet section: an optional icon, a bold name with an
+ * optional value beside it, and whatever explains or changes it underneath.
  *
  * Every single fact in the sheet takes this shape, so a reader learns it once.
  * Lists of things, such as the partitions to create, are tables of their own
@@ -58,9 +58,11 @@ export default function SheetItem({ icon, name, value, children }: SheetItemProp
       flexWrap={{ default: "nowrap" }}
       alignItems={{ default: "alignItemsBaseline" }}
     >
-      <FlexItem>
-        <Icon name={icon} isMiddleAligned />
-      </FlexItem>
+      {icon && (
+        <FlexItem>
+          <Icon name={icon} isMiddleAligned />
+        </FlexItem>
+      )}
       <Flex
         direction={{ default: "column" }}
         gap={{ default: "gapSm" }}

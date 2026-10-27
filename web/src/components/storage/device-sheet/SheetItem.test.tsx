@@ -43,4 +43,10 @@ describe("SheetItem", () => {
 
     expect(container.querySelector("svg")).toHaveAttribute("aria-hidden", "true");
   });
+
+  it("shows no icon when given none", () => {
+    const { container } = plainRender(<SheetItem value="Automatically chosen for booting." />);
+
+    expect(container.querySelector("svg")).toBeNull();
+  });
 });
