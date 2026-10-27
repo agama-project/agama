@@ -3,6 +3,7 @@ Mon Oct 26 15:30:00 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
 
 - Simplify booting the rescue mode, use a single "rescue=1" boot
   option instead of passing many systemd specific boot options
+  (bsc#1275038)
 
 -------------------------------------------------------------------
 Mon Oct 26 14:44:46 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
