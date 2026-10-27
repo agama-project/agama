@@ -207,7 +207,6 @@ function PartitionMenu({
    phrases says it a second time while taking the width the phrases need. The
    color is the entries table's, so the same news reads the same in both. */
 const DESTROYS_CLASS = "agm-entries-table__cost--destroys";
-const PENDING_REMOVAL_CLASS = "agm-pending-removal";
 
 /**
  * What is to become of one thing already on the device, and whether that costs
@@ -245,6 +244,7 @@ function statusFor(
   decision: Decision | undefined,
   reusedAs: string | undefined,
   formats: boolean,
+  newFilesystem: string | undefined,
   canShrink: boolean,
   recoverable: number | undefined,
   size: number | undefined,
@@ -252,15 +252,27 @@ function statusFor(
   if (reusedAs) {
     const path = formattedPath(reusedAs);
 
-    return formats
+    if (!formats) {
+      // TRANSLATORS: what is to become of a partition already on the disk: the
+      // new system takes it over as it is. %s is where the new system mounts
+      // it, such as "/home".
+      return { text: sprintf(_("Mount at %s"), path), destroys: false };
+    }
+
+    /* Without the file system where neither the request nor the plan names
+       one yet. */
+    const text = newFilesystem
       ? // TRANSLATORS: what is to become of a partition already on the disk: it
+        // is emptied and given to the new system. %1$s is the new file system,
+        // such as "xfs", and %2$s where the new system mounts it, such as
+        // "/home".
+        sprintf(_("Format as %1$s for %2$s"), newFilesystem, path)
+      : // TRANSLATORS: what is to become of a partition already on the disk: it
         // is emptied and given to the new system. %s is where the new system
         // mounts it, such as "/home".
-        { text: sprintf(_("Format for %s"), path), destroys: true }
-      : // TRANSLATORS: what is to become of a partition already on the disk: the
-        // new system takes it over as it is. %s is where the new system mounts
-        // it, such as "/home".
-        { text: sprintf(_("Mount at %s"), path), destroys: false };
+        sprintf(_("Format for %s"), path);
+
+    return { text, destroys: true };
   }
 
   switch (decision) {
@@ -367,7 +379,15 @@ function PartitionRow({
     part.description ||
     // TRANSLATORS: said of a partition whose content is not recognized.
     _("unrecognized");
-  const status = statusFor(decision, reusedAs, formats, canShrink, recoverableBy(part), size);
+  const status = statusFor(
+    decision,
+    reusedAs,
+    formats,
+    newFilesystem,
+    canShrink,
+    recoverableBy(part),
+    size,
+  );
 
   return (
     <Tr>
@@ -383,20 +403,9 @@ function PartitionRow({
       </Th>
       <Td>
         <Flex gap={{ default: "gapXs" }} alignItems={{ default: "alignItemsCenter" }}>
-          <FlexItem>
-            {formats ? (
-              /* Struck through rather than colored: what is there now gives
-                 way to what follows it, and a word in the danger color would
-                 make the loss louder than the thing the reader asked for. */
-              <span className={PENDING_REMOVAL_CLASS}>{currentContent}</span>
-            ) : (
-              currentContent
-            )}
-          </FlexItem>
-          {/* Nothing where the request names no file system and the installer
-              has not settled on one either: the rule through what is there now
-              has already said it goes. */}
-          {formats && newFilesystem && <FlexItem>{newFilesystem}</FlexItem>}
+          {/* What is there today, as it is: the Action column says what it
+              becomes. */}
+          <FlexItem>{currentContent}</FlexItem>
           {/* The systems found on the partition, as marks rather than words:
               on a row being deleted they are what makes the deletion mean
               something. */}
@@ -486,10 +495,11 @@ export type CurrentContentSectionProps = {
  * It is a permission rather than a plan: "shrink if needed" is the whole truth
  * about a partition the installer did not have to shrink.
  *
- * A row allowed to go is struck through where it describes itself, so the loss
- * is read off the row rather than off one word in it. Not the verdict, which
- * is the thing the reader chose and the one part of the row still true
- * afterwards.
+ * What happens to a row is said in its Action column, with a short note under
+ * it where there is more to know: how much shrinking or deleting may free, or
+ * that a partition cannot be shrunk. What the partition holds today and its
+ * size are shown as they are, since they stay true until the installation
+ * runs.
  *
  * A sentence comes before the list, saying what the decisions amount to. The
  * list behind it is there to be checked rather than read, so it starts away

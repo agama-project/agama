@@ -292,5 +292,35 @@ describe("CurrentContentSection", () => {
       expect(isStruck(content)).toBe(false);
       expect(isStruck(size)).toBe(false);
     });
+
+    it("says what a formatted partition becomes, and shows what it holds today as it is", async () => {
+      await renderShown(
+        <CurrentContentSection
+          entry={entry("keep", [
+            { name: "/dev/vdd3", mountPath: "/docs", filesystem: { default: false, type: "xfs" } },
+          ])}
+          subject={subject}
+        />,
+      );
+
+      const [content, , action] = cellsOf("vdd3");
+      within(action).getByText('Format as xfs for "/docs"');
+      expect(within(content).queryByText("xfs")).toBeNull();
+      expect(isStruck(content)).toBe(false);
+    });
+
+    it("leaves the file system out where none is known yet", async () => {
+      await renderShown(
+        <CurrentContentSection
+          entry={entry("keep", [
+            { name: "/dev/vdd3", mountPath: "/docs", filesystem: { default: true } },
+          ])}
+          subject={subject}
+        />,
+      );
+
+      const [, , action] = cellsOf("vdd3");
+      within(action).getByText('Format for "/docs"');
+    });
   });
 });
