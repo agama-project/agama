@@ -408,7 +408,8 @@ nav.agm-breadcrumb > ol > li > a {
   flex-direction: column;
   min-height: 0;
   overflow: hidden;
-  padding: var(--pf-t--global--spacer--lg) var(--pf-t--global--spacer--xl);
+  padding: var(--agm-t--sheet--padding--block, var(--pf-t--global--spacer--sm))
+    var(--agm-t--sheet--padding--inline, var(--pf-t--global--spacer--md));
   background: var(--pf-t--global--background--color--primary--default);
 }
 
