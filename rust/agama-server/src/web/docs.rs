@@ -498,7 +498,9 @@ mod tests {
 
             let is_object = if let Some(ty) = comp.get("type") {
                 ty == "object"
-                    || ty.as_array().map_or(false, |a| a.iter().any(|v| v == "object"))
+                    || ty
+                        .as_array()
+                        .map_or(false, |a| a.iter().any(|v| v == "object"))
             } else {
                 comp.get("properties").is_some()
             };
