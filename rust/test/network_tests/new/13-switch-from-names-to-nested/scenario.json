@@ -1,0 +1,39 @@
+{
+  "title": "Switch a bond from the old format to the new one",
+  "description": "The same connections are updated, whichever format the profile uses.",
+  "steps": [
+    {
+      "profile": "1-old-format.json",
+      "description": "old/01-bond",
+      "expect": {
+        "connections": {
+          "bond0": {
+            "controller": null,
+            "method4": "auto"
+          },
+          "eth0": {
+            "controller": "bond0"
+          },
+          "eth1": {
+            "controller": "bond0"
+          }
+        }
+      }
+    },
+    {
+      "profile": "2-new-format.json",
+      "description": "The same bond with portConnections, eth0 with MTU 9000",
+      "expect": {
+        "connections": {
+          "eth0": {
+            "controller": "bond0",
+            "mtu": 9000
+          },
+          "eth1": {
+            "controller": "bond0"
+          }
+        }
+      }
+    }
+  ]
+}

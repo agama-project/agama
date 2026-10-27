@@ -90,7 +90,6 @@ systemctl enable checkmedia.service
 test -f /usr/lib/systemd/system/qemu-guest-agent.service && systemctl enable qemu-guest-agent.service
 systemctl enable setup-systemd-proxy-env.path
 test -f /usr/lib/systemd/system/gdm.service && systemctl enable gdm.service
-test -f /usr/lib/systemd/system/spice-vdagentd.service && systemctl enable spice-vdagentd.service
 systemctl enable zramswap
 
 # set the default target

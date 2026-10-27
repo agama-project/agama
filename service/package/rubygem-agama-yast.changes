@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Oct 27 12:08:59 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Do not give IP or DNS settings to the interfaces that AutoYaST
+  lists as ports of a bond or a bridge, as their controller holds
+  the IP configuration (gh#agama-project/agama#3995).
+
+-------------------------------------------------------------------
 Thu Oct 22 09:44:41 UTC 2026 - José Iván López González <jlopez@suse.com>
 
 - Version 25
