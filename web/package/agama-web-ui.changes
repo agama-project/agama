@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Oct 26 17:54:08 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Update the configured connection when connecting, disconnecting
+  or deleting it from the connections table, instead of sending the
+  state reported by the system (gh#agama-project/agama#3995).
+
+-------------------------------------------------------------------
 Wed Oct  7 11:50:47 UTC 2026 - Martin Vidner <mvidner@suse.com>
 
 - web dependencies: move those not needed for run time or building

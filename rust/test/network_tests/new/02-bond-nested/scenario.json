@@ -1,0 +1,25 @@
+{
+  "title": "Bond with a nested port",
+  "description": "A port that needs settings is given as a connection, the others just by name. The nested port does not need an ID.",
+  "steps": [
+    {
+      "profile": "1-bond.json",
+      "description": "Bond with eth0 nested (MTU 9000) and eth1 by name",
+      "expect": {
+        "connections": {
+          "bond0": {
+            "controller": null,
+            "method4": "auto"
+          },
+          "eth0": {
+            "controller": "bond0",
+            "mtu": 9000
+          },
+          "eth1": {
+            "controller": "bond0"
+          }
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,58 @@
+{
+  "network": {
+    "connections": [
+      {
+        "id": "eth0",
+        "interface": "eth0",
+        "mtu": 9000
+      },
+      {
+        "id": "eth1",
+        "interface": "eth1"
+      },
+      {
+        "id": "bond0",
+        "interface": "bond0",
+        "bond": {
+          "mode": "802.3ad",
+          "options": "miimon=100 lacp_rate=fast",
+          "ports": [
+            "eth0",
+            "eth1"
+          ]
+        }
+      },
+      {
+        "id": "br0",
+        "interface": "br0",
+        "method4": "manual",
+        "addresses": [
+          "192.168.1.100/24"
+        ],
+        "gateway4": "192.168.1.1",
+        "nameservers": [
+          "192.168.1.1"
+        ],
+        "bridge": {
+          "stp": true,
+          "forwardDelay": 4,
+          "ports": [
+            "bond0"
+          ]
+        }
+      },
+      {
+        "id": "br0.100",
+        "interface": "br0.100",
+        "method4": "manual",
+        "addresses": [
+          "10.100.0.10/24"
+        ],
+        "vlan": {
+          "id": 100,
+          "parent": "br0"
+        }
+      }
+    ]
+  }
+}

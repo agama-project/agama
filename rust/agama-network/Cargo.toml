@@ -23,3 +23,8 @@ tokio-stream = { workspace = true }
 tracing = { workspace = true }
 uuid = { workspace = true }
 zbus = { workspace = true }
+
+[dev-dependencies]
+agama-lib = { workspace = true }
+jsonschema = { workspace = true }
+serde_json = { workspace = true }
