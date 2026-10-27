@@ -10,11 +10,12 @@ rust-version.workspace = true
 agama-l10n = { workspace = true }
 agama-lib = { workspace = true }
 agama-manager = { workspace = true }
+agama-mcp = { workspace = true }
 agama-transfer = { workspace = true }
 agama-utils = { workspace = true }
 aide = { version = "0.16.0-alpha.4", features = ["axum", "axum-extra", "axum-json", "axum-query", "macros"] }
 anyhow = { workspace = true }
-axum = { version = "0.8.9", features = ["ws", "macros"] }
+axum = { workspace = true, features = ["ws", "macros"] }
 axum-extra = { version = "0.12.6", features = ["cookie", "typed-header"] }
 clap = { workspace = true }
 config = "0.15.11"
@@ -26,7 +27,7 @@ serde_json = { workspace = true }
 thiserror = { workspace = true }
 tokio = { workspace = true }
 tokio-stream = { workspace = true }
-tower = { version = "0.5.2", features = ["util"] }
+tower = { workspace = true }
 tower-http = { version = "0.6.2", features = ["compression-br", "fs", "trace", "set-header",] }
 tracing = { workspace = true }
 zbus = { workspace = true }
