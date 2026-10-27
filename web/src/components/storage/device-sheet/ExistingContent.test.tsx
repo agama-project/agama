@@ -68,7 +68,7 @@ describe("ExistingContent", () => {
       plainRender(<ExistingContent entry={entry(device)} isDeleted />);
 
       screen.getByText("Ext4");
-      screen.getByText("Delete");
+      screen.getByText("to be deleted");
     });
 
     it("offers what it is given to do with it", () => {
@@ -95,7 +95,7 @@ describe("ExistingContent", () => {
       plainRender(<ExistingContent entry={entry(disk())} isDeleted />);
 
       screen.getByText("physical volume of system");
-      screen.getByText("Delete");
+      screen.getByText("to be deleted");
     });
   });
 
@@ -116,7 +116,7 @@ describe("ExistingContent", () => {
       plainRender(<ExistingContent entry={entry(disk())} isDeleted />);
 
       screen.getByText("member of md0");
-      screen.getByText("Delete");
+      screen.getByText("to be deleted");
     });
   });
 

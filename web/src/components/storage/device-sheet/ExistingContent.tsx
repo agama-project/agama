@@ -64,9 +64,9 @@ function Fact({ isDeleted, children }: React.PropsWithChildren<{ isDeleted: bool
   return (
     <>
       {children}{" "}
-      {/* TRANSLATORS: what is to become of something already on the disk: it
-          is removed, and everything on it lost. */}
-      <span className={DESTROYS_CLASS}>{_("Delete")}</span>
+      {/* TRANSLATORS: follows what is on the disk today, such as "Ext4 file
+          system": it is removed, and everything on it lost. */}
+      <span className={DESTROYS_CLASS}>{_("to be deleted")}</span>
     </>
   );
 }
