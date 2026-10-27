@@ -411,15 +411,14 @@ function PartitionRow({
           {/* What is there today, as it is: the Action column says what it
               becomes. */}
           <FlexItem>{currentContent}</FlexItem>
-          {/* The systems found on the partition, as marks rather than words:
-              on a row being deleted they are what makes the deletion mean
-              something. */}
-          {!formats &&
-            systems.map((system) => (
-              <FlexItem key={system}>
-                <Label isCompact>{system}</Label>
-              </FlexItem>
-            ))}
+          {/* The systems found on the partition, as marks rather than words,
+              whatever becomes of it: on a row being deleted or formatted they
+              are what makes the loss mean something. */}
+          {systems.map((system) => (
+            <FlexItem key={system}>
+              <Label isCompact>{system}</Label>
+            </FlexItem>
+          ))}
         </Flex>
       </Td>
       <Td className={alignmentStyles.textAlignEnd}>

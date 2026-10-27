@@ -324,5 +324,19 @@ describe("CurrentContentSection", () => {
       within(action).getByText("Format");
       within(action).getByText('To mount "/docs"');
     });
+
+    it("names the system found on a partition the new system formats", async () => {
+      await renderShown(
+        <CurrentContentSection
+          entry={entry("keep", [
+            { name: "/dev/vdd1", mountPath: "/docs", filesystem: { default: false, type: "xfs" } },
+          ])}
+          subject={subject}
+        />,
+      );
+
+      const [content] = cellsOf("vdd1");
+      within(content).getByText("Windows 11");
+    });
   });
 });
