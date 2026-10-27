@@ -368,9 +368,10 @@ nav.agm-breadcrumb > ol > li > a {
 // The page under a sheet laid over it is out of reach, and visibly so: being
 // out of the tab order and the accessibility tree says nothing to a reader who
 // is looking at it. Behind the same backdrop as the rest of the installer, it
-// reads as the page behind the thing they are in. Lighter than the backdrop
-// that blocks the whole page while the installer works, since this page is
-// still there to be glanced at.
+// reads as the page behind the thing they are in. A light tint and no blur,
+// far from the backdrop that blocks the whole page while the installer works:
+// this page is still there to be glanced at and read, and a dark or blurred
+// one weighs on the screen while the reader works in the sheet.
 //
 // Laid over the drawer rather than the page, which scrolls: a layer inside it
 // would cover the first screen of it and scroll away with it. The drawer keeps
@@ -384,10 +385,9 @@ nav.agm-breadcrumb > ol > li > a {
   z-index: var(--pf-v6-c-drawer__content--ZIndex);
   inset: 0;
   content: "";
-  backdrop-filter: blur(2px);
   background-color: color-mix(
     in srgb,
-    var(--pf-t--global--background--color--backdrop--default) 50%,
+    var(--pf-t--global--background--color--backdrop--default) 15%,
     transparent
   );
   animation: agm-sheet-backdrop-in var(--pf-t--global--motion--duration--fade--default) ease-in-out;
