@@ -1,0 +1,12 @@
+---
+- disk:
+    name: /dev/sda
+    size: 50 GiB
+    partition_table: ms-dos
+    partitions:
+    - partition:
+        size: 63 MiB
+        name: /dev/sda1
+        type: primary
+        id: dos32
+        file_system: vfat

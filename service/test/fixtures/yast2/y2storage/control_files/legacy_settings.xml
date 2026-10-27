@@ -1,0 +1,74 @@
+<?xml version="1.0"?>
+<productDefines xmlns="http://www.suse.com/1.0/yast2ns" xmlns:config="http://www.suse.com/1.0/configns">
+
+<!--
+  Control file with a <partitioning> section that tries to emulate the behavior of the default
+  (ie. hardcoded) values of the now obsolete :legacy format of the ProposalSettings.
+
+  Used to keep old unit tests working, since those tests were written with the default legacy
+  settings in mind.
+-->
+
+  <partitioning>
+    <proposal>
+      <lvm config:type="boolean">false</lvm>
+      <resize_windows config:type="boolean">true</resize_windows>
+      <windows_delete_mode config:type="symbol">ondemand</windows_delete_mode>
+      <linux_delete_mode config:type="symbol">ondemand</linux_delete_mode>
+      <other_delete_mode config:type="symbol">ondemand</other_delete_mode>
+      <lvm_vg_strategy config:type="symbol">use_available</lvm_vg_strategy>
+    </proposal>
+
+    <volumes config:type="list">
+      <volume>
+        <mount_point>/</mount_point>
+        <fs_type>btrfs</fs_type>
+        <desired_size config:type="disksize">10 GiB</desired_size>
+        <min_size config:type="disksize">3 GiB</min_size>
+        <max_size config:type="disksize">10 GiB</max_size>
+        <weight config:type="integer">40</weight>
+
+        <snapshots config:type="boolean">true</snapshots>
+        <snapshots_configurable config:type="boolean">true</snapshots_configurable>
+        <snapshots_percentage config:type="integer">300</snapshots_percentage>
+
+        <disable_order config:type="integer">2</disable_order>
+
+        <subvolumes config:type="list">
+          <!-- empty list -->
+        </subvolumes>
+      </volume>
+
+      <volume>
+        <mount_point>swap</mount_point>
+        <proposed config:type="boolean">true</proposed>
+
+        <fs_type>swap</fs_type>
+        <fs_types>swap</fs_types>
+
+        <desired_size config:type="disksize">2 GiB</desired_size>
+        <min_size config:type="disksize">0.5 GiB</min_size>
+        <max_size config:type="disksize">2 GiB</max_size>
+        <weight config:type="integer">100</weight>
+
+        <adjust_by_ram config:type="boolean">false</adjust_by_ram>
+        <adjust_by_ram_configurable config:type="boolean">true</adjust_by_ram_configurable>
+
+        <disable_order config:type="integer">1</disable_order>
+      </volume>
+
+      <volume>
+        <mount_point>/home</mount_point>
+
+        <fs_type>xfs</fs_type>
+        <proposed config:type="boolean">false</proposed>
+        <proposed_configurable config:type="boolean">true</proposed_configurable>
+
+        <desired_size config:type="disksize">10 GiB</desired_size>
+        <min_size config:type="disksize">3 GiB</min_size>
+        <max_size config:type="disksize">unlimited</max_size>
+        <weight config:type="integer">60.0</weight>
+      </volume>
+    </volumes>
+  </partitioning>
+</productDefines>

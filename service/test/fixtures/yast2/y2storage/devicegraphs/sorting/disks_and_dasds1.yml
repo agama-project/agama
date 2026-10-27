@@ -1,0 +1,171 @@
+---
+# This file includes many holes in the names of the devices. The goal is not to
+# represent a valid devicegraph but to present challenging combinations of names
+# to test the stable sorting
+- dasd:
+    name: /dev/dasda
+    size: 50 GiB
+    partition_table:  dasd
+    partitions:
+
+    - partition:
+        size:         1 GiB
+        name:         /dev/dasda1
+
+    - partition:
+        size:         6 GiB
+        name:         /dev/dasda2
+
+    - partition:
+        size:         unlimited
+        name:         /dev/dasda10
+
+- disk:
+    name: /dev/sda
+    size: 50 GiB
+
+- dasd:
+    name: /dev/dasdab
+    size: 50 GiB
+
+- disk:
+    name: /dev/sdb
+    size: 800 GiB
+    partition_table:  ms-dos
+    partitions:
+
+    - partition:
+        size:         780 GiB
+        name:         /dev/sdb1
+
+    - partition:
+        size:         unlimited
+        name:         /dev/sdb2
+
+- dasd:
+    name: /dev/dasdb
+    size: 10 GiB
+    partition_table:  dasd
+    partitions:
+
+    - partition:
+        size:         1 GiB
+        name:         /dev/dasdb1
+
+    - partition:
+        size:         6 GiB
+        name:         /dev/dasdb2
+
+    - partition:
+        size:         unlimited
+        name:         /dev/dasdb3
+
+- disk:
+    size: 800 GiB
+    name: "/dev/nvme0n2"
+    partition_table: gpt
+    partitions:
+
+    - partition:
+        size: 75 GiB
+        name: /dev/nvme0n2p1
+
+    - partition:
+        size: 40 GiB
+        name: /dev/nvme0n2p2
+
+- disk:
+    name: /dev/sdc
+    size: 500 GiB
+    partition_table:  gpt
+    partitions:
+
+    - partition:
+        size:         50 GiB
+        name:         /dev/sdc1
+
+    - partition:
+        size:         2 GiB
+        name:         /dev/sdc2
+
+    - partition:
+        size:         20 GiB
+        name:         /dev/sdc3
+
+    - partition:
+        size:         20 GiB
+        name:         /dev/sdc4
+
+    - partition:
+        size:         20 GiB
+        name:         /dev/sdc10
+
+    - partition:
+        size:         20 GiB
+        name:         /dev/sdc21
+
+- disk:
+    size: 800 GiB
+    name: "/dev/nvme1n1"
+    partition_table:  gpt
+    partitions:
+
+    - partition:
+        size: 75 GiB
+        name: /dev/nvme1n1p2
+
+    - partition:
+        size: 40 GiB
+        name: /dev/nvme1n1p1
+
+- disk:
+    name: /dev/sdaa
+    size: 500 GiB
+    partition_table:  msdos
+    partitions:
+
+    - partition:
+        size:         250 GiB
+        name:         /dev/sdaa1
+
+    - partition:
+        size:         2 GiB
+        name:         /dev/sdaa2
+
+    - partition:
+        size:         20 GiB
+        name:         /dev/sdaa3
+
+- disk:
+    size: 800 GiB
+    name: "/dev/nvme0n1"
+    partition_table:  gpt
+    partitions:
+
+    - partition:
+        size: 75 GiB
+        name: /dev/nvme0n1p1
+
+    - partition:
+        size: 40 GiB
+        name: /dev/nvme0n1p2
+
+    - partition:
+        size: 2 GiB
+        name: /dev/nvme0n1p3
+
+    - partition:
+        size: 2 GiB
+        name: /dev/nvme0n1p4
+
+    - partition:
+        size: 2 GiB
+        name: /dev/nvme0n1p10
+
+    - partition:
+        size: 2 GiB
+        name: /dev/nvme0n1p11
+
+    - partition:
+        size: 2 GiB
+        name: /dev/nvme0n1p40

@@ -1,4 +1,15 @@
 -------------------------------------------------------------------
+Tue Oct 27 16:04:15 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Drop the dependencies on the following packages:
+  - yast2-bootloader and yast2-reipl dependencies pulled in
+    by agama-yast (gh#agama-project/agama#4033).
+  - yast2-iscsi-client dependency pulled in by agama-yast
+    (gh#agama-project/agama#4032).
+  - yast2-s390 and yast2-cio dependencies pulled in by
+    agama-yast on s390x (gh#agama-project/agama#4026).
+
+-------------------------------------------------------------------
 Tue Oct 27 12:08:59 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Do not try to enable the spice-vdagentd service because it is

@@ -1,0 +1,138 @@
+---
+# One partitioned disk
+- disk:
+    name: /dev/sda
+    size: 200 GiB
+    partition_table:  ms-dos
+    partitions:
+
+    - partition:
+        size:         100 GiB
+        name:         /dev/sda1
+        file_system:  xfs
+
+    - free:
+        size:         2 GiB
+
+    - partition:
+        size:         10 GiB
+        name:         /dev/sda2
+        file_system:  ext4
+        label:        root
+
+    - partition:
+        size:         10 KiB
+        name:         /dev/sda3
+        id:           lvm
+
+    - partition:
+        size:         unlimited
+        name:         /dev/sda4
+        file_system:  ext4
+        label:        encrypted_data
+        encryption:
+          name:       /dev/mapper/cr_sda4
+
+# One empty disk
+- disk:
+    name: /dev/sdb
+    size: 1 TiB
+
+# One directly encrypted disk
+# No filesystem, currently not supported by Yaml reader
+- disk:
+    name: /dev/sdc
+    size: 500 GiB
+    encryption:
+      name: /dev/mapper/cr_sdc
+
+# One directly encrypted disk as PV
+- disk:
+    name: /dev/sdd
+    size: 100 GiB
+    encryption:
+      name: /dev/mapper/cr_sdd
+
+- disk:
+    name: /dev/sde
+    size: 50 GiB
+    partition_table:  ms-dos
+    partitions:
+
+    - partition:
+        size:         20 GiB
+        name:         /dev/sde1
+        encryption:
+          name: /dev/mapper/cr_sde1
+
+    - partition:
+        size:         28 GiB
+        name:         /dev/sde2
+        id:           lvm
+
+    - partition:
+        size:         2 GiB
+        name:         /dev/sde3
+        id:           swap
+        file_system:  swap
+        label:        swap
+        encryption:
+          name:       /dev/mapper/cr_swap
+
+# One disk with a single partition
+- disk:
+    name: /dev/sdf
+    size: 200 GiB
+    partition_table:  gpt
+    partitions:
+
+    - partition:
+        size:         unlimited
+        name:         /dev/sdf1
+        id:           windows_basic_data
+        file_system:  ntfs
+        label:        windows
+
+# One disk directly used as PV
+- disk:
+    name: /dev/sdg
+    size: 100 GiB
+
+- lvm_vg:
+    vg_name: vg0
+    lvm_pvs:
+        - lvm_pv:
+            blk_device: /dev/mapper/cr_sdd
+        - lvm_pv:
+            blk_device: /dev/mapper/cr_sde1
+
+    lvm_lvs:
+        - lvm_lv:
+            size:         2 GiB
+            lv_name:      lv1
+            file_system:  ext4
+            mount_point:  /
+
+        - lvm_lv:
+            size:         2 GiB
+            lv_name:      lv2
+            file_system:  ext4
+
+- lvm_vg:
+    vg_name: vg1
+    lvm_pvs:
+        - lvm_pv:
+            blk_device: /dev/sde2
+        - lvm_pv:
+            blk_device: /dev/sdg
+    lvm_lvs:
+        - lvm_lv:
+            size:         5 GiB
+            lv_name:      lv1
+            file_system:  ext4
+        - lvm_lv:
+            size:         5 GiB
+            lv_name:      lv2
+            file_system:  ext4
+            encryption:
+              name: /dev/mapper/cr_vg1_lv2

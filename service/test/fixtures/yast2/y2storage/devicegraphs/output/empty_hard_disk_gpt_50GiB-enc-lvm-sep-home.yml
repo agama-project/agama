@@ -1,0 +1,48 @@
+---
+- disk:
+    name: /dev/sda
+    size: 50 GiB
+    partition_table: gpt
+    partitions:
+
+    - partition:
+        size: 8 MiB
+        name: /dev/sda1
+        id:   bios_boot
+
+    - partition:
+        size: unlimited
+        name: /dev/sda2
+        id:   lvm
+        encryption:
+          type: luks
+          name: /dev/mapper/cr_sda2
+          password: "12345678"
+
+    # Reserved by GPT
+    - free:
+        size: 16.5 KiB
+
+- lvm_vg:
+    vg_name: system
+
+    lvm_pvs:
+    - lvm_pv:
+        blk_device: "/dev/mapper/cr_sda2"
+
+    lvm_lvs:
+    - lvm_lv:
+        lv_name:      home
+        size:         23336 MiB
+        file_system:  xfs
+        mount_point:  "/home"
+    - lvm_lv:
+        lv_name:      root
+        size:         25800 MiB
+        file_system:  btrfs
+        mount_point:  "/"
+    - lvm_lv:
+        lv_name:      swap
+        size:         2 GiB
+        file_system:  swap
+        mount_point:  swap

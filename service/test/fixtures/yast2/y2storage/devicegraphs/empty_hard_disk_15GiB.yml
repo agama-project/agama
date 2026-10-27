@@ -1,0 +1,4 @@
+---
+- disk:
+    name: /dev/sda
+    size: 15 GiB

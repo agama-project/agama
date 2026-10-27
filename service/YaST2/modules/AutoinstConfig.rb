@@ -9,7 +9,6 @@
 # This is a permanent fork (see service/YaST2/README.md): the `autoyast2-installation`
 # RPM is no longer a runtime dependency of Agama.
 require "yast"
-require "y2packager/product"
 
 module Yast
   import "ServicesManagerTarget"

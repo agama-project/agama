@@ -1,0 +1,29 @@
+---
+- disk:
+    name: "/dev/sda"
+    size: 220 GiB
+    partition_table: gpt
+    partitions:
+    - partition:
+        size: 100 GiB
+        name: "/dev/sda1"
+        id: linux
+
+- disk:
+    name: "/dev/sdb"
+    size: 400 GiB
+    partition_table: gpt
+    partitions:
+    - partition:
+        size: 100 GiB
+        name: "/dev/sdb1"
+        id: linux
+
+- md:
+    name: "/dev/md/VirtualDisk01"
+    md_level: raid1
+    md_devices:
+    - md_device:
+        blk_device: "/dev/sda1"
+    - md_device:
+        blk_device: "/dev/sdb1"

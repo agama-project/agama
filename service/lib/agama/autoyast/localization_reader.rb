@@ -84,7 +84,6 @@ module Agama
         return @keymaps_map if @keymaps_map
 
         local_path = File.expand_path("../../../share/yast-keyboards.json", __dir__)
-        puts local_path
         path = if File.exist?(local_path)
           local_path
         else

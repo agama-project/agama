@@ -1,0 +1,44 @@
+---
+- disk:
+    name: "/dev/sda"
+    size: 488386584 KiB (465.76 GiB)
+    block_size: 0.5 KiB
+    partition_table: msdos
+    mbr_gap: 1 MiB
+    partitions:
+    - partition:
+        size: 2054 MiB (2.01 GiB)
+        name: "/dev/sda1"
+        type: primary
+        id: swap
+        file_system: swap
+    - partition:
+        size: 40963 MiB (40.00 GiB)
+        name: "/dev/sda2"
+        type: primary
+        file_system: btrfs
+    - partition:
+        size: 120 GiB
+        name: "/dev/sda3"
+        type: primary
+        file_system: btrfs
+    - partition:
+        size: 318507032 KiB (303.75 GiB)
+        name: "/dev/sda4"
+        type: extended
+        id: extended
+    - partition:
+        size: 40 GiB
+        name: "/dev/sda5"
+        type: logical
+    - partition:
+        size: 266170 MiB (259.93 GiB)
+        name: "/dev/sda6"
+        type: logical
+        file_system: xfs
+    - partition:
+        size: 4002840 KiB (3.82 GiB)
+        name: "/dev/sda7"
+        type: logical
+        id: swap
+        file_system: swap

@@ -1,0 +1,12 @@
+Bus-ID    Status    Name      Device  Type         BlkSz  Size      Blocks
+================================================================================
+0.0.0190  offline
+0.0.0191  offline
+0.0.0192  offline
+0.0.019d  offline
+0.0.0160  active    dasda     94:0    ECKD         4096   21127MB   5408640
+0.0.0150  active    dasdb     94:4    ECKD         4096   7042MB    1802880
+0.0.0592  active(ro)  dasdc     94:8    ECKD         4096   168MB     43200
+0.0.019e  active(ro)  dasdd     94:12   ECKD         4096   351MB     90000
+0.0.ffff  active    dasde     94:16    FBA          512    97MB      200000
+0.0.0300  n/f       dasdf     94:20   ECKD

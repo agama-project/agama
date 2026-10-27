@@ -1,0 +1,39 @@
+---
+- disk:
+    name: /dev/sda
+    size: 50 GiB
+    partition_table:  ms-dos
+    partitions:
+
+    - partition:
+        size:         25 GiB
+        name:         /dev/sda1
+        id:           lvm
+
+- disk:
+    name: /dev/sdb
+    size: 50 GiB
+    partition_table:  ms-dos
+    partitions:
+
+    - partition:
+        size:         25 GiB
+        name:         /dev/sdb1
+        id:           lvm
+
+
+- lvm_vg:
+    vg_name: vg0
+    lvm_pvs:
+        - lvm_pv:
+            blk_device: /dev/sda1
+        - lvm_pv:
+            blk_device: /dev/sdb1
+    lvm_lvs:
+        - lvm_lv:
+            size:         100 GiB
+            lv_name:      lv1
+            file_system:  btrfs
+            mount_point:  /
+            stripe_size:  4 KiB
+            stripes:      2

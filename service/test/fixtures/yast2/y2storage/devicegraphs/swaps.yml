@@ -1,0 +1,30 @@
+---
+- disk:
+    name: /dev/sda
+    size: 3 GiB
+    partition_table:  ms-dos
+    partitions:
+
+    - partition:
+        size:         1 GiB
+        name:         /dev/sda1
+        id:           swap
+        file_system:  swap
+        label:        swap1
+        uuid:         "11111111-1111-1111-1111-11111111"
+
+    - partition:
+        size:         1 GiB
+        name:         /dev/sda2
+        id:           swap
+        file_system:  swap
+        label:        swap2
+        uuid:         "22222222-2222-2222-2222-22222222"
+
+    - partition:
+        size:         unlimited
+        name:         /dev/sda3
+        id:           swap
+        file_system:  swap
+        label:        swap3
+        uuid:         "33333333-3333-3333-3333-33333333"

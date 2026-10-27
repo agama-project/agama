@@ -1,0 +1,23 @@
+---
+- disk:
+    name: /dev/sda
+    size: 800 GiB
+    partition_table:  gpt
+    partitions:
+
+    - partition:
+        size:         20 GiB
+        name:         /dev/sda1
+        id:           windows_basic_data
+        file_system:  ntfs
+        label:        recovery
+
+    - free:
+        size: 50 MiB
+
+    - partition:
+        size:         unlimited
+        name:         /dev/sda2
+        id:           windows_basic_data
+        file_system:  ntfs
+        label:        windows
