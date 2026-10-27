@@ -9,6 +9,8 @@ test -f /.profile && . /.profile
 # greeting
 echo "Configure image: [$kiwi_iname]..."
 
+arch=$(uname -m)
+
 # setup baseproduct link
 suseSetupProduct
 
@@ -76,6 +78,8 @@ systemctl enable agama-ssh-issue.service
 systemctl enable live-free-space.service
 systemctl enable live-password.service
 systemctl enable live-root-shell.service
+# no graphical console on s390x
+test "$arch" = "s390x" || systemctl enable tty-workaround.service
 
 # the self-update actually runs in the initramfs system, but the exit status
 # is lost if it is not enabled in the root image as well,
@@ -138,7 +142,6 @@ if [[ "$kiwi_profiles" == *SUSE_SLE_16* ]]; then
 fi
 
 ### setup dracut for live system
-arch=$(uname -m)
 # keep in sync with ISO Volume ID set in the fix_bootconfig script
 profile=$(echo "$kiwi_profiles" | tr "_" "-")
 label="Install-$profile-$arch"

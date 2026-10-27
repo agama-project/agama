@@ -44,7 +44,7 @@ pub struct Config {
 /// Addon settings for registration
 #[skip_serializing_none]
 #[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq, JsonSchema)]
-#[serde(rename_all = "camelCase")]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 #[schemars(title = "List of add-ons to activate")]
 pub struct AddonConfig {
     /// ID of the addon.
@@ -60,8 +60,8 @@ pub struct AddonConfig {
 /// Software settings for installation
 #[skip_serializing_none]
 #[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq, Merge, JsonSchema)]
-#[serde(rename_all = "camelCase")]
-#[schemars(deny_unknown_fields, title = "Product to install")]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+#[schemars(title = "Product to install")]
 #[merge(strategy = merge::option::overwrite_none)]
 pub struct ProductConfig {
     /// ID of the product to install (e.g., "SLES", "Tumbleweed", etc.).
@@ -99,7 +99,7 @@ impl ProductConfig {
 /// Software settings for installation
 #[skip_serializing_none]
 #[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq, Merge, JsonSchema)]
-#[serde(rename_all = "camelCase")]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 #[merge(strategy = merge::option::overwrite_none)]
 pub struct SoftwareConfig {
     /// List of user selected patterns to install.
@@ -136,6 +136,7 @@ impl Default for PatternsConfig {
 /// Modifications for the list of user-selected patterns to install
 #[skip_serializing_none]
 #[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq, JsonSchema)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct PatternsMap {
     /// List of user-selected patterns to add to the list.
     pub add: Option<Vec<String>>,
@@ -176,7 +177,7 @@ impl SoftwareConfig {
 /// Parameters for creating new a repository
 #[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize, JsonSchema)]
-#[serde(rename_all = "camelCase")]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct RepositoryConfig {
     /// repository alias. Has to be unique
     pub alias: String,

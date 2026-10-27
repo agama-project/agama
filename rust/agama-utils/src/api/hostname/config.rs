@@ -24,7 +24,7 @@ use serde::{Deserialize, Serialize};
 
 /// Hostname config.
 #[derive(Clone, Debug, Default, Merge, Serialize, Deserialize, PartialEq, JsonSchema)]
-#[serde(rename_all = "camelCase")]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 #[schemars(rename = "hostname.Config", title = "Hostname settings")]
 pub struct Config {
     /// System static hostname.

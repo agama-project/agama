@@ -15,6 +15,7 @@ members = [
     "agama-ntp",
     "agama-access",
     "agama-s390",
+    "agama-schema-transformations",
     "agama-security",
     "agama-server",
     "agama-software",
@@ -51,6 +52,7 @@ agama-network = { path = "agama-network" }
 agama-ntp = { path = "agama-ntp" }
 agama-proxy = { path = "agama-proxy" }
 agama-s390 = { path = "agama-s390" }
+agama-schema-transformations = { path = "agama-schema-transformations" }
 agama-security = { path = "agama-security" }
 agama-server = { path = "agama-server" }
 agama-software = { path = "agama-software" }

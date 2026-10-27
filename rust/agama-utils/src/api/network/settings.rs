@@ -48,7 +48,7 @@ pub struct NetworkSettings {
 /// allowing to enable or disable the copy of the network settings to the
 /// target system
 #[derive(Clone, Debug, Default, Serialize, Deserialize, Merge, JsonSchema, PartialEq)]
-#[serde(rename_all = "camelCase")]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 #[merge(strategy = merge::option::overwrite_none)]
 pub struct StateSettings {
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -62,6 +62,7 @@ pub struct StateSettings {
 }
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize, JsonSchema, PartialEq)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct MatchSettings {
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub driver: Vec<String>,
@@ -84,7 +85,7 @@ impl MatchSettings {
 
 /// Wireless configuration
 #[derive(Clone, Debug, Default, Serialize, Deserialize, JsonSchema, PartialEq)]
-#[serde(rename_all = "camelCase")]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct WirelessSettings {
     /// Password of the wireless network
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -122,6 +123,7 @@ pub struct WirelessSettings {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, JsonSchema, PartialEq)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct BondSettings {
     pub mode: String,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -141,7 +143,7 @@ impl Default for BondSettings {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, JsonSchema, PartialEq, Default)]
-#[serde(rename_all = "camelCase")]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct BridgeSettings {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub stp: Option<bool>,
@@ -220,6 +222,7 @@ impl VlanFlag {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, JsonSchema, PartialEq)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct VlanSettings {
     pub parent: String,
     pub id: u32,
@@ -231,7 +234,7 @@ pub struct VlanSettings {
 
 /// IEEE 802.1x (EAP) settings
 #[derive(Clone, Debug, Serialize, Deserialize, JsonSchema, PartialEq)]
-#[serde(rename_all = "camelCase")]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct IEEE8021XSettings {
     /// List of EAP methods used
     #[serde(skip_serializing_if = "Vec::is_empty")]
@@ -275,6 +278,7 @@ pub struct IEEE8021XSettings {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, JsonSchema)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct NetworkDevice {
     pub id: String,
     pub type_: DeviceType,
@@ -283,7 +287,7 @@ pub struct NetworkDevice {
 
 /// Represents the configuration details for a network connection
 #[derive(Clone, Debug, Default, Serialize, Deserialize, JsonSchema, PartialEq)]
-#[serde(rename_all = "camelCase")]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct NetworkConnection {
     /// Unique identifier for the network connection
     pub id: String,

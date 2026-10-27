@@ -63,6 +63,7 @@ pub struct LocaleEntry {
     /// Localized territory name (e.g., "Spain", "España", etc.)
     pub territory: String,
     /// Console font
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub consolefont: Option<String>,
 }
 
@@ -90,6 +91,7 @@ pub struct TimezoneEntry {
     /// Localized parts (e.g., "Atlántico", "Canarias").
     pub parts: Vec<String>,
     /// Localized name of the territory this timezone is associated to
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub country: Option<String>,
 }
 
@@ -112,6 +114,7 @@ impl PartialOrd for TimezoneEntry {
 #[derive(Clone, Debug, JsonSchema, PartialEq, Eq)]
 pub struct Keymap {
     /// Keymap identifier (e.g., "us")
+    #[schemars(with = "String")]
     pub id: KeymapId,
     /// Keymap description
     pub description: String,

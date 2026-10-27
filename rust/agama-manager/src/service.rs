@@ -809,6 +809,7 @@ impl MessageHandler<message::GetExtendedConfig> for Service {
         };
 
         Ok(Config {
+            schema: None,
             bootloader,
             hostname: Some(hostname),
             iscsi,

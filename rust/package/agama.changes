@@ -1,4 +1,16 @@
 -------------------------------------------------------------------
+Tue Oct 27 10:26:54 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Improve JSON Schema and OpenAPI generation:
+  - Enforce strict validation in configuration schemas by adding
+    `#[serde(deny_unknown_fields)]` across configuration structs and
+    test that each entry defines `additionalProperties`.
+  - Simplify enum schemas to scalar types with Markdown variant
+    descriptions and vendor extension maps.
+  - Eliminate nullable `anyOf` wraps for `Option<T>` fields.
+    (gh#agama-project/agama#4129).
+
+-------------------------------------------------------------------
 Sun Oct 25 16:25:30 UTC 2026 - Martin Pluskal <martin@pluskal.org>
 
 - Report the checksums correctly when asking the user to accept a file

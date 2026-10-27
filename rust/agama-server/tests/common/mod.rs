@@ -58,53 +58,111 @@ impl Client {
 }
 
 use std::path::PathBuf;
-use std::sync::OnceLock;
+use tokio::sync::OnceCell;
 
-static INIT_TEST_SCHEMAS: OnceLock<()> = OnceLock::new();
+static OPENAPI_SPEC: OnceCell<serde_json::Value> = OnceCell::const_new();
 
-/// Cargo has no built-in pre-test hooks to run `cargo xtask openapi` before `cargo test`.
-/// To avoid committing generated schemas to git while ensuring tests always run against
-/// the latest compiled types in clean environments, generate the schema dynamically on test setup.
-pub async fn ensure_test_schemas() {
-    if INIT_TEST_SCHEMAS.get().is_some() {
-        return;
-    }
-    let manifest_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
-    let out_dir = manifest_dir.join("../out");
-    let schemas_dir = out_dir.join("schemas");
-    _ = std::fs::create_dir_all(&schemas_dir);
-
-    if let Ok(mut json_value) = agama_server::web::docs::build_json().await {
-        if let Some(component) = json_value
-            .pointer_mut("/components/schemas/Config")
-            .map(|v| v.take())
-        {
-            let mut schema_obj = component;
-            if let Some(map) = schema_obj.as_object_mut() {
-                map.insert(
-                    "$schema".to_string(),
-                    serde_json::json!("https://json-schema.org/draft/2019-09/schema"),
-                );
-                map.insert(
-                    "$id".to_string(),
-                    serde_json::json!(
-                        "file:///usr/share/agama/openapi/nightly/schemas/config.schema.json"
-                    ),
-                );
-                if let Some(components) = json_value.get("components") {
-                    map.insert("components".to_string(), components.clone());
-                }
-            }
-            let config_path = schemas_dir.join("config.schema.json");
-            if let Ok(mut f) = std::fs::File::create(config_path) {
-                use std::io::Write;
-                _ = f.write_all(
-                    serde_json::to_string_pretty(&schema_obj)
-                        .unwrap()
-                        .as_bytes(),
-                );
+fn write_test_schema(
+    json_value: &serde_json::Value,
+    component_name: &str,
+    file_name: &str,
+    schemas_dir: &std::path::Path,
+) {
+    if let Some(component) = json_value
+        .pointer(&format!("/components/schemas/{}", component_name))
+        .cloned()
+    {
+        let mut schema_obj = component;
+        if let Some(map) = schema_obj.as_object_mut() {
+            map.insert(
+                "$schema".to_string(),
+                serde_json::json!("https://json-schema.org/draft/2019-09/schema"),
+            );
+            map.insert(
+                "$id".to_string(),
+                serde_json::json!(format!(
+                    "file:///usr/share/agama/openapi/nightly/schemas/{}",
+                    file_name
+                )),
+            );
+            if let Some(components) = json_value.get("components") {
+                map.insert("components".to_string(), components.clone());
             }
         }
+        let file_path = schemas_dir.join(file_name);
+        if let Ok(mut f) = std::fs::File::create(file_path) {
+            use std::io::Write;
+            _ = f.write_all(
+                serde_json::to_string_pretty(&schema_obj)
+                    .unwrap()
+                    .as_bytes(),
+            );
+        }
     }
-    INIT_TEST_SCHEMAS.get_or_init(|| ());
+}
+
+/// Ensures that the latest JSON schemas are generated and available in `out/schemas/`.
+///
+/// # Why this is needed
+///
+/// In development environments (unlike production where schemas are installed in `/usr/share`),
+/// when tests invoke HTTP endpoints like `PUT /config` or `PATCH /config`, the server's request
+/// handler (`agama_server::server::config_schema::check`) validates incoming payloads using
+/// `agama_lib::profile::ProfileValidator::default_schema()`.
+///
+/// `ProfileValidator::default_schema()` searches for `../out/schemas/config.schema.json` on disk.
+/// Since Cargo does not provide a pre-test hook to run `cargo xtask openapi` automatically,
+/// this function dynamically builds the OpenAPI specification via `docs::build_json()`, writes
+/// `config.schema.json` (as well as `proposal.schema.json` and `system.schema.json`) into
+/// `out/schemas/`, and caches the resulting spec in memory via [`OnceCell`].
+///
+/// This guarantees that:
+/// 1. `ProfileValidator::default_schema()` always finds an up-to-date schema on disk during HTTP test runs.
+/// 2. Schema generation and disk writes run exactly once across all tests in the test process.
+pub async fn ensure_test_schemas() -> &'static serde_json::Value {
+    OPENAPI_SPEC
+        .get_or_init(|| async {
+            let json_value = agama_server::web::docs::build_json()
+                .await
+                .expect("Failed to build OpenAPI specification");
+
+            let manifest_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+            let schemas_dir = manifest_dir.join("../out/schemas");
+            _ = std::fs::create_dir_all(&schemas_dir);
+
+            write_test_schema(&json_value, "Config", "config.schema.json", &schemas_dir);
+            write_test_schema(
+                &json_value,
+                "Proposal",
+                "proposal.schema.json",
+                &schemas_dir,
+            );
+            write_test_schema(
+                &json_value,
+                "SystemInfo",
+                "system.schema.json",
+                &schemas_dir,
+            );
+
+            json_value
+        })
+        .await
+}
+
+/// Builds an in-memory [`ProfileValidator`] for a given component directly from the
+/// cached OpenAPI spec without requiring `out/schemas` on disk or running `xtask`.
+pub async fn build_test_validator(component_name: &str) -> agama_lib::profile::ProfileValidator {
+    let json_value = ensure_test_schemas().await;
+    let mut schema_obj = json_value
+        .pointer(&format!("/components/schemas/{}", component_name))
+        .cloned()
+        .unwrap_or_else(|| panic!("Component {} not found in OpenAPI spec", component_name));
+
+    if let Some(map) = schema_obj.as_object_mut() {
+        if let Some(components) = json_value.get("components") {
+            map.insert("components".to_string(), components.clone());
+        }
+    }
+
+    agama_lib::profile::ProfileValidator::from_value(&schema_obj).expect("valid schema")
 }

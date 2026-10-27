@@ -1,5 +1,5 @@
 -------------------------------------------------------------------
-Mon Oct 26 12:14:28 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+Tue Oct 27 11:18:04 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Drop the dependencies on the following packages:
   - yast2-bootloader and yast2-reipl dependencies pulled in
@@ -8,6 +8,20 @@ Mon Oct 26 12:14:28 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
     (gh#agama-project/agama#4032).
   - yast2-s390 and yast2-cio dependencies pulled in by
     agama-yast on s390x (gh#agama-project/agama#4026).
+
+-------------------------------------------------------------------
+Mon Oct 26 15:30:00 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Simplify booting the rescue mode, use a single "rescue=1" boot
+  option instead of passing many systemd specific boot options
+  (bsc#1275038)
+
+-------------------------------------------------------------------
+Mon Oct 26 14:44:46 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Added workaround for a plymouth/gdm bug where the active terminal
+  is switched back to tty1 console which makes the graphical
+  console with the running installer not visible (bsc#1270027)
 
 -------------------------------------------------------------------
 Thu Oct 22 09:44:07 UTC 2026 - José Iván López González <jlopez@suse.com>
