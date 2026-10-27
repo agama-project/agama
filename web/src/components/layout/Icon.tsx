@@ -74,6 +74,7 @@ import KeyboardArrowDown from "@icons/keyboard_arrow_down.svg?component";
 import Globe from "@icons/globe.svg?component";
 import HardDrive from "@icons/hard_drive.svg?component";
 import Info from "@icons/info.svg?component";
+import Inventory2 from "@icons/inventory_2.svg?component";
 import Keyboard from "@icons/keyboard.svg?component";
 import Language from "@icons/language.svg?component";
 import ListAlt from "@icons/list_alt.svg?component";
@@ -155,6 +156,7 @@ const icons = {
   globe: Globe,
   hard_drive: HardDrive,
   info: Info,
+  inventory_2: Inventory2,
   keyboard: Keyboard,
   keyboard_arrow_down: KeyboardArrowDown,
   language: Language,

@@ -63,7 +63,7 @@ export default function DeviceDetail({ entry, subject }: DeviceDetailProps): Rea
     return (
       // TRANSLATORS: heading of a device's panel where the new system uses what
       // is on the device as it is.
-      <SheetSection title={_("Content")}>
+      <SheetSection title={_("Content")} icon="inventory_2">
         <PartitionableMountContent entry={entry} subject={subject} />
       </SheetSection>
     );
@@ -97,6 +97,7 @@ export default function DeviceDetail({ entry, subject }: DeviceDetailProps): Rea
   return (
     <Flex direction={{ default: "column" }} gap={{ default: "gapLg" }}>
       <SheetSection
+        icon="inventory_2"
         title={
           isNewVolumeGroup
             ? // TRANSLATORS: heading of the part of a volume group's panel
@@ -115,7 +116,7 @@ export default function DeviceDetail({ entry, subject }: DeviceDetailProps): Rea
         )}
         {entry.isVolumeGroup && <VolumeGroupCurrent entry={entry} subject={subject} />}
       </SheetSection>
-      <SheetSection title={newContentTitle}>
+      <SheetSection title={newContentTitle} icon="pending_actions">
         {!entry.isVolumeGroup && isMountedPartitionable && (
           <PartitionableMountContent entry={entry} subject={subject} showName={false} />
         )}
@@ -130,7 +131,7 @@ export default function DeviceDetail({ entry, subject }: DeviceDetailProps): Rea
       {isBootDevice && (
         // TRANSLATORS: heading of the part of a disk's panel shown when the
         // machine starts from that disk.
-        <SheetSection title={_("Boot device")}>
+        <SheetSection title={_("Boot device")} icon="settings_backup_restore">
           <BootStatement entry={entry} />
         </SheetSection>
       )}
