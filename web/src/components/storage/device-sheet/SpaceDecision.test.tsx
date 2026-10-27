@@ -23,7 +23,7 @@
 import React from "react";
 import { screen, within } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
-import SpaceDecision from "~/components/storage/device-sheet/SpaceDecision";
+import SpaceDecision, { SpaceDecisionProps } from "~/components/storage/device-sheet/SpaceDecision";
 
 const mockSetSpacePolicy = jest.fn();
 
@@ -32,56 +32,78 @@ jest.mock("~/hooks/model/storage/config-model", () => ({
   useSetSpacePolicy: () => mockSetSpacePolicy,
 }));
 
-/** Opens the menu and gives back its items. */
-const openMenu = async (user) => {
-  await user.click(screen.getByRole("button", { name: "Set all" }));
-  return screen.getByRole("menu", { name: "Set all" });
+const Example = (props: Partial<SpaceDecisionProps>) => (
+  <SpaceDecision collection="drives" index={0} policy="keep" {...props} />
+);
+
+const toggle = () => screen.getByRole("button", { name: /^Actions for all/ });
+
+/** Opens the menu and gives back the title of each item, in order. */
+const openItems = async (user) => {
+  await user.click(toggle());
+  return screen
+    .getAllByRole("menuitem")
+    .map((item) => within(item).getByText(/^(Keep|Shrink|Delete)/).textContent);
 };
 
+const item = (name: RegExp) => screen.getByRole("menuitem", { name });
+
 describe("SpaceDecision", () => {
-  it("offers the three decisions for every partition, safest first", async () => {
-    const { user } = installerRender(<SpaceDecision collection="drives" index={0} />);
-    const menu = await openMenu(user);
+  beforeEach(() => mockSetSpacePolicy.mockClear());
 
-    const names = within(menu)
-      .getAllByRole("menuitem")
-      .map((item) => within(item).getByText(/^(Keep|Shrink|Delete)/).textContent);
+  it("is named by what its actions apply to", () => {
+    installerRender(<Example />);
+    screen.getByRole("button", { name: "Actions for all partitions" });
+  });
 
-    expect(names).toEqual([
+  it("offers the three actions safest first", async () => {
+    const { user } = installerRender(<Example />);
+
+    expect(await openItems(user)).toEqual([
       "Keep all partitions",
       "Shrink partitions if needed and possible",
       "Delete all partitions",
     ]);
   });
 
+  it("speaks of logical volumes on a volume group", async () => {
+    const { user } = installerRender(<Example collection="volumeGroups" />);
+
+    screen.getByRole("button", { name: "Actions for all logical volumes" });
+    expect(await openItems(user)).toEqual([
+      "Keep all logical volumes",
+      "Shrink logical volumes if needed and possible",
+      "Delete all logical volumes",
+    ]);
+  });
+
   it("leaves partitions with a mount point out of deleting them all", async () => {
-    const { user } = installerRender(<SpaceDecision collection="drives" index={0} someReused />);
-    const menu = await openMenu(user);
+    const { user } = installerRender(<Example someReused />);
 
-    within(menu).getByText("Delete all partitions with no mount point");
+    expect(await openItems(user)).toContain("Delete all partitions with no mount point");
   });
 
-  it("says what each decision means in the menu", async () => {
-    const { user } = installerRender(<SpaceDecision collection="drives" index={0} />);
-    const menu = await openMenu(user);
+  it("says what each action means", async () => {
+    const { user } = installerRender(<Example />);
+    await user.click(toggle());
 
-    within(menu).getByText("Their data is lost and their space is freed.");
+    screen.getByText("Only the currently available space will be used for new partitions.");
+    screen.getByText("The size of some existing partitions may be reduced, keeping their data.");
+    screen.getByText("Their data is lost and their space is freed.");
   });
 
-  it("gives every partition the decision chosen", async () => {
-    const { user } = installerRender(<SpaceDecision collection="drives" index={0} />);
-    const menu = await openMenu(user);
-    await user.click(within(menu).getByRole("menuitem", { name: /^Shrink partitions if needed/ }));
+  it("gives every partition the action chosen", async () => {
+    const { user } = installerRender(<Example />);
+    await user.click(toggle());
+    await user.click(item(/^Shrink partitions if needed/));
 
     expect(mockSetSpacePolicy).toHaveBeenCalledWith("drives", 0, { type: "resize" });
   });
 
-  it("leaves the configuration alone when every partition already has it", async () => {
-    const { user } = installerRender(
-      <SpaceDecision collection="drives" index={0} current="delete" />,
-    );
-    const menu = await openMenu(user);
-    await user.click(within(menu).getByRole("menuitem", { name: /^Delete all partitions/ }));
+  it("leaves the configuration alone when the device already has the action", async () => {
+    const { user } = installerRender(<Example policy="delete" />);
+    await user.click(toggle());
+    await user.click(item(/^Delete all partitions/));
 
     expect(mockSetSpacePolicy).not.toHaveBeenCalled();
   });

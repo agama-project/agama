@@ -80,10 +80,16 @@ const entry = (
 
 const subject = { collection: "drives" as const, index: 0 };
 
-const options = () => screen.queryByRole("button", { name: "Set all" });
+/** The menu giving every partition the same action. */
+const options = () => screen.queryByRole("button", { name: "Actions for all partitions" });
 
-/** The sentence summing up the content, which opens the section. */
-const summary = () => screen.getByRole("paragraph");
+/** The sentence summing up the content, which describes the toggle under it. */
+const summary = () =>
+  document.getElementById(
+    screen
+      .getByRole("button", { name: /^(Show|Hide) partitions$/ })
+      .getAttribute("aria-describedby"),
+  );
 
 /** The cells of a partition's row after its name: content, size, action and menu. */
 const cellsOf = (name: string) =>
@@ -102,6 +108,18 @@ describe("CurrentContentSection", () => {
 
     expect(summary()).toHaveTextContent("3 partitions: all will be deleted (including Windows 11)");
     expect(within(summary()).getByText("3 partitions")).toHaveClass("pf-v6-u-font-weight-bold");
+  });
+
+  it("puts the actions for every partition right after the summary", () => {
+    installerRender(<CurrentContentSection entry={entry("delete")} subject={subject} />);
+
+    expect(summary().compareDocumentPosition(options())).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
+  });
+
+  it("describes the actions for every partition with the summary", () => {
+    installerRender(<CurrentContentSection entry={entry("delete")} subject={subject} />);
+
+    expect(document.getElementById(options().getAttribute("aria-describedby"))).toBe(summary());
   });
 
   it("keeps the partitions out of sight until asked for", async () => {
@@ -132,6 +150,16 @@ describe("CurrentContentSection", () => {
     await user.click(screen.getByRole("button", { name: "Show partitions" }));
 
     expect(screen.getByRole("table")).not.toContainElement(options());
+  });
+
+  it("never puts the partitions away when an action is chosen", async () => {
+    const { user } = await renderShown(
+      <CurrentContentSection entry={entry("delete")} subject={subject} />,
+    );
+    await user.click(options());
+    await user.click(screen.getByRole("menuitem", { name: /^Keep all partitions/ }));
+
+    screen.getByRole("table", { name: "Current content" });
   });
 
   it("heads the column of row menus with a name and nothing else", async () => {
@@ -192,7 +220,7 @@ describe("CurrentContentSection", () => {
       );
       await user.click(options());
 
-      screen.getByRole("menuitem", { name: /^Keep/ });
+      screen.getByRole("menuitem", { name: /^Keep all partitions/ });
     });
   });
 

@@ -26,7 +26,6 @@ import { Button, Divider, Flex, FlexItem, Label } from "@patternfly/react-core";
 import alignmentStyles from "@patternfly/react-styles/css/utilities/Alignment/alignment";
 import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
 import { sprintf } from "sprintf-js";
-import { unique } from "radashi";
 import Text from "~/components/core/Text";
 import Icon from "~/components/layout/Icon";
 import SpaceDecision from "~/components/storage/device-sheet/SpaceDecision";
@@ -493,8 +492,8 @@ export type CurrentContentSectionProps = {
  *
  * Changing what happens to one partition is in the row's menu, with everything
  * else the row can be told to do. Giving every partition the same decision at
- * once is offered beside the toggle that opens the table, so it can be used
- * without opening it.
+ * once is in a menu right after the summary, so it can be used without opening
+ * the table.
  *
  * It is a permission rather than a plan: "shrink if needed" is the whole truth
  * about a partition the installer did not have to shrink.
@@ -536,18 +535,9 @@ export default function CurrentContentSection({
       !isFreeSpace(row) && !entries.find((e) => e.name === row.name)?.mountPath,
   );
 
-  /* The decision every governed partition shares, which is the one reading
-     pressed among the options giving them all the same. */
-  const decisions = unique(
-    governed.map((row) =>
-      decisionFor(
-        rule,
-        entries.find((e) => e.name === row.name),
-      ),
-    ),
-  );
-  const sharedDecision = decisions.length === 1 ? decisions[0] : undefined;
   const someReused = entries.some((e) => e.name && e.mountPath);
+  /* Only where the partitions are the reader's to decide. */
+  const isDecidable = !fixedDecision && governed.length > 0;
 
   /* Closed at first, since the summary already says what happens to every part. */
   const [expanded, setExpanded] = React.useState(false);
@@ -587,13 +577,11 @@ export default function CurrentContentSection({
       {/* Only where there is something to sum up. */}
       {rows.some((row) => !isFreeSpace(row)) && (
         <>
-          {/* The toggle starts its own line under the summary, so its caret sits
-              right above what it opens. The summary says what that is about and
-              is the toggle's description for whoever lands on it without
-              reading the line. */}
-          <FlexItem component="p">
-            {/* How much there is in bold, as the answer to the heading; the
-                rest says what becomes of it. */}
+          {/* The summary first, with the menu acting on all of it right
+              after, where reading ends: in the same line of text, so it lines
+              up with the words and wraps with the last of them. */}
+          <FlexItem>
+            {/* How much there is in bold; the rest says what becomes of it. */}
             <Text id={summaryId}>
               {halves && (
                 <Interpolate sentence={summarySentence()}>
@@ -601,45 +589,38 @@ export default function CurrentContentSection({
                 </Interpolate>
               )}
             </Text>
-          </FlexItem>
-          {/* The menu shares the toggle's line, at its far end: it acts on every
-              row whether the table is open or not, and what it does reads in
-              the summary right above it. */}
-          <Flex
-            justifyContent={{ default: "justifyContentSpaceBetween" }}
-            alignItems={{ default: "alignItemsCenter" }}
-            gap={{ default: "gapSm" }}
-          >
-            <FlexItem>
-              <Button
-                variant="link"
-                isInline
-                className="agm-sheet-disclosure"
-                icon={
-                  <Icon
-                    name={expanded ? "keyboard_arrow_down" : "chevron_right"}
-                    verticalAlign="middle"
-                  />
-                }
-                aria-expanded={expanded}
-                aria-controls={contentId}
-                aria-describedby={summaryId}
-                onClick={() => setExpanded(!expanded)}
-              >
-                <Text isBold>{disclosureLabel(entry.isVolumeGroup, expanded)}</Text>
-              </Button>
-            </FlexItem>
-            {!fixedDecision && governed.length > 0 && (
-              <FlexItem>
-                <SpaceDecision
-                  collection={subject.collection}
-                  index={subject.index}
-                  current={sharedDecision}
-                  someReused={someReused}
-                />
-              </FlexItem>
+            {isDecidable && (
+              <SpaceDecision
+                collection={subject.collection}
+                index={subject.index}
+                policy={entry.config.spacePolicy || "keep"}
+                someReused={someReused}
+                describedBy={summaryId}
+              />
             )}
-          </Flex>
+          </FlexItem>
+          {/* On a line of its own, so its caret sits right above what it opens.
+              The summary is its description, for whoever lands on it without
+              reading the line above. */}
+          <FlexItem>
+            <Button
+              variant="link"
+              isInline
+              className="agm-sheet-disclosure"
+              icon={
+                <Icon
+                  name={expanded ? "keyboard_arrow_down" : "chevron_right"}
+                  verticalAlign="middle"
+                />
+              }
+              aria-expanded={expanded}
+              aria-controls={contentId}
+              aria-describedby={summaryId}
+              onClick={() => setExpanded(!expanded)}
+            >
+              <Text isBold>{disclosureLabel(entry.isVolumeGroup, expanded)}</Text>
+            </Button>
+          </FlexItem>
         </>
       )}
       {/* A bit more room above what the toggle opens than between the lines
