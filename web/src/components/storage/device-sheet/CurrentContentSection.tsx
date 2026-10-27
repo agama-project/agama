@@ -247,6 +247,7 @@ function statusFor(
   formats: boolean,
   canShrink: boolean,
   recoverable: number | undefined,
+  size: number | undefined,
 ): Status | undefined {
   if (reusedAs) {
     const path = formattedPath(reusedAs);
@@ -291,9 +292,18 @@ function statusFor(
           : undefined,
       };
     case "delete":
-      // TRANSLATORS: what is to become of a partition already on the disk: it
-      // is removed, and everything on it lost.
-      return { text: _("Delete"), destroys: true };
+      return {
+        // TRANSLATORS: what is to become of a partition already on the disk: it
+        // is removed, and everything on it lost.
+        text: _("Delete"),
+        destroys: true,
+        note:
+          size !== undefined
+            ? // TRANSLATORS: read under "Delete": the room deleting the
+              // partition gives. %s is a size, such as "17.99 GiB".
+              sprintf(_("%s will be freed"), deviceSize(size))
+            : undefined,
+      };
     default:
       return undefined;
   }
@@ -357,17 +367,7 @@ function PartitionRow({
     part.description ||
     // TRANSLATORS: said of a partition whose content is not recognized.
     _("unrecognized");
-  const status = statusFor(decision, reusedAs, formats, canShrink, recoverableBy(part));
-  const keepsSize = decision !== "delete";
-
-  /* A rule through what is on the partition today and how big it is, where
-     the reader has allowed it to go: there now, gone once installed. Only a
-     visual cue, styled to stay readable: not <s>, which would claim it is
-     already untrue, and the Action column says it in words. Not through the
-     status itself: crossing out "delete" says the opposite of what it means. */
-  const struck = (content: React.ReactNode) => (
-    <span className={PENDING_REMOVAL_CLASS}>{content}</span>
-  );
+  const status = statusFor(decision, reusedAs, formats, canShrink, recoverableBy(part), size);
 
   return (
     <Tr>
@@ -389,8 +389,6 @@ function PartitionRow({
                  way to what follows it, and a word in the danger color would
                  make the loss louder than the thing the reader asked for. */
               <span className={PENDING_REMOVAL_CLASS}>{currentContent}</span>
-            ) : decision === "delete" ? (
-              struck(currentContent)
             ) : (
               currentContent
             )}
@@ -399,11 +397,9 @@ function PartitionRow({
               has not settled on one either: the rule through what is there now
               has already said it goes. */}
           {formats && newFilesystem && <FlexItem>{newFilesystem}</FlexItem>}
-          {/* The system left standing on a row being deleted. It is a mark
-              rather than a word in the sentence, so a rule through it would be
-              a rule through a label; and it is the one thing on the row that
-              makes the deletion mean something, which is not helped by being
-              crossed out. */}
+          {/* The systems found on the partition, as marks rather than words:
+              on a row being deleted they are what makes the deletion mean
+              something. */}
           {!formats &&
             systems.map((system) => (
               <FlexItem key={system}>
@@ -413,7 +409,7 @@ function PartitionRow({
         </Flex>
       </Td>
       <Td className={alignmentStyles.textAlignEnd}>
-        {keepsSize ? <div>{deviceSize(size)}</div> : size !== undefined && struck(deviceSize(size))}
+        <div>{deviceSize(size)}</div>
       </Td>
       <Td>
         {status && (

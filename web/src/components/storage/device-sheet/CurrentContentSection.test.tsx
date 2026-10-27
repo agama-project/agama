@@ -281,5 +281,16 @@ describe("CurrentContentSection", () => {
       within(action).getByText("Up to 17.5 GiB may be freed");
       expect(isStruck(size)).toBe(false);
     });
+
+    it("says how much deleting frees, and strikes nothing through", async () => {
+      await renderShown(<CurrentContentSection entry={entry("delete")} subject={subject} />);
+
+      const [content, size, action] = cellsOf("vdd1");
+      within(action).getByText("Delete");
+      within(action).getByText("1 GiB will be freed");
+      within(content).getByText("Windows 11");
+      expect(isStruck(content)).toBe(false);
+      expect(isStruck(size)).toBe(false);
+    });
   });
 });
