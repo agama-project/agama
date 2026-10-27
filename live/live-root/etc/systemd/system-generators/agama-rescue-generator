@@ -1,0 +1,51 @@
+#! /bin/sh
+
+# Systemd generator for the simple rescue system. The rescue system reuses the
+# installation live media but boots to the text-mode only and disables the Agama
+# server.
+#
+# It is activated by the "rescue=1" boot option and it is equivalent to using
+# the "systemd.unit=multi-user.target systemd.mask=<unit>..." boot options.
+#
+# See "man systemd.generator" for more details about the systemd generators.
+#
+# Systemd passes: $1 = normal dir, $2 = early dir, $3 = late dir
+# Use the early directory as it has higher priority than /etc/systemd/system
+# where some of the masked units and the default target are defined.
+early_dir="$2"
+
+if [ -z "$early_dir" ]; then
+  echo "Missing the output directory argument" >&2
+  exit 1
+fi
+
+# check for the "rescue=1" boot option
+read -r cmdline < /proc/cmdline
+case " $cmdline " in
+  *" rescue=1 "*) ;;
+  *) exit 0 ;;
+esac
+
+# generate issue message
+mkdir -p /run/issue.d/
+touch /run/issue
+printf "\\\\e{yellow}Rescue mode is active\\\\e{reset}\n" > /run/issue.d/99-rescue-mode.issue
+
+# boot to the text mode only
+ln -sf /usr/lib/systemd/system/multi-user.target "$early_dir/default.target"
+
+# disable the Agama server and the related services
+for unit in \
+  agama.service \
+  agama-web-server.service \
+  agama-dbus-monitor.service \
+  agama-ssh-issue.service \
+  agama-avahi-issue.service \
+  agama-welcome-issue.service \
+  agama-url-issue.service \
+  agama-certificate-issue.service \
+  agama-certificate-issue.path \
+  agama-certificate-wait.service
+do
+  ln -sf /dev/null "$early_dir/$unit"
+done

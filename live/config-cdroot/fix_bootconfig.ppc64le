@@ -51,7 +51,7 @@ menuentry "Check Medium & Install" --class os --unrestricted {
 
 menuentry "Rescue System" --class os --unrestricted {
   echo 'Loading kernel...'
-  linux /boot/ppc64le/loader/linux $RESCUE_SYSTEM_BOOT_SETTINGS plymouth.ignore-serial-consoles
+  linux /boot/ppc64le/loader/linux rescue=1 plymouth.ignore-serial-consoles
   echo 'Loading initrd...'
   initrd /boot/ppc64le/loader/initrd
 }

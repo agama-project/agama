@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-22 12:13+0000\n"
+"POT-Creation-Date: 2026-10-01 15:29+0000\n"
 "PO-Revision-Date: 2026-02-13 10:41+0000\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -411,22 +411,22 @@ msgid "Shrinking is not supported by this device"
 msgstr ""
 
 #. Copy /etc/nvme/host* to keep NVMe working after installation, bsc#1238038
-#: service/lib/agama/storage/finisher.rb:126
+#: service/lib/agama/storage/finisher.rb:122
 msgid "Copying important installation files to the target system"
 msgstr ""
 
 #. Step to write the bootloader configuration
-#: service/lib/agama/storage/finisher.rb:161
+#: service/lib/agama/storage/finisher.rb:157
 msgid "Installing bootloader"
 msgstr ""
 
 #. Step to finish the Y2Storage configuration
-#: service/lib/agama/storage/finisher.rb:178
+#: service/lib/agama/storage/finisher.rb:174
 msgid "Adjusting storage configuration"
 msgstr ""
 
 #. Step to finish the iSCSI configuration
-#: service/lib/agama/storage/finisher.rb:189
+#: service/lib/agama/storage/finisher.rb:188
 msgid "Adjusting iSCSI configuration"
 msgstr ""
 
@@ -457,12 +457,12 @@ msgid "A problem occurred while calculating the storage setup"
 msgstr ""
 
 #. Step to copy the installation logs
-#: service/lib/agama/storage/umounter.rb:112
+#: service/lib/agama/storage/umounter.rb:108
 msgid "Copying logs"
 msgstr ""
 
 #. Step to unmount the target file-systems
-#: service/lib/agama/storage/umounter.rb:153
+#: service/lib/agama/storage/umounter.rb:149
 msgid "Unmounting storage devices"
 msgstr ""
 
