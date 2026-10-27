@@ -79,7 +79,7 @@ const entry = (
 
 const subject = { collection: "drives" as const, index: 0 };
 
-const options = () => screen.queryByRole("button", { name: "Set all to" });
+const options = () => screen.queryByRole("button", { name: "Set all" });
 
 /** The sentence summing up the content, which opens the section. */
 const summary = () => screen.getByRole("paragraph");
@@ -112,7 +112,7 @@ describe("CurrentContentSection", () => {
     await user.click(toggle);
 
     screen.getByRole("table", { name: "Current content" });
-    screen.getByRole("button", { name: "Set all to" });
+    screen.getByRole("button", { name: "Set all" });
     expect(screen.getByRole("button", { name: "Hide partitions" })).toHaveAttribute(
       "aria-expanded",
       "true",
