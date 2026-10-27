@@ -442,18 +442,18 @@ function disclosureLabel(isVolumeGroup: boolean, expanded: boolean): string {
     return expanded
       ? // TRANSLATORS: hides the list of logical volumes a volume group holds
         // today.
-        _("Hide logical volumes")
+        _("Hide logical volume details")
       : // TRANSLATORS: shows the list of logical volumes a volume group holds
         // today, where what happens to each can be seen and changed.
-        _("Show logical volumes");
+        _("Show logical volume details");
   }
 
   return expanded
     ? // TRANSLATORS: hides the list of partitions a disk holds today.
-      _("Hide partitions")
+      _("Hide partition details")
     : // TRANSLATORS: shows the list of partitions a disk holds today, where what
       // happens to each can be seen and changed.
-      _("Show partitions");
+      _("Show partition details");
 }
 
 export type CurrentContentSectionProps = {
@@ -618,7 +618,7 @@ export default function CurrentContentSection({
               aria-describedby={summaryId}
               onClick={() => setExpanded(!expanded)}
             >
-              <Text isBold>{disclosureLabel(entry.isVolumeGroup, expanded)}</Text>
+              {disclosureLabel(entry.isVolumeGroup, expanded)}
             </Button>
           </FlexItem>
         </>

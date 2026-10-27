@@ -87,7 +87,7 @@ const options = () => screen.queryByRole("button", { name: "Actions for all part
 const summary = () =>
   document.getElementById(
     screen
-      .getByRole("button", { name: /^(Show|Hide) partitions$/ })
+      .getByRole("button", { name: /^(Show|Hide) partition details$/ })
       .getAttribute("aria-describedby"),
   );
 
@@ -98,7 +98,7 @@ const cellsOf = (name: string) =>
 /** Renders the section and opens what its toggle puts away. */
 const renderShown = async (ui: React.ReactElement) => {
   const rendered = installerRender(ui);
-  await rendered.user.click(screen.getByRole("button", { name: "Show partitions" }));
+  await rendered.user.click(screen.getByRole("button", { name: "Show partition details" }));
   return rendered;
 };
 
@@ -128,13 +128,13 @@ describe("CurrentContentSection", () => {
     );
 
     expect(screen.queryByRole("table")).toBeNull();
-    const toggle = screen.getByRole("button", { name: "Show partitions" });
+    const toggle = screen.getByRole("button", { name: "Show partition details" });
     expect(toggle).toHaveAttribute("aria-expanded", "false");
 
     await user.click(toggle);
 
     screen.getByRole("table", { name: "Current content" });
-    expect(screen.getByRole("button", { name: "Hide partitions" })).toHaveAttribute(
+    expect(screen.getByRole("button", { name: "Hide partition details" })).toHaveAttribute(
       "aria-expanded",
       "true",
     );
@@ -147,7 +147,7 @@ describe("CurrentContentSection", () => {
 
     options();
 
-    await user.click(screen.getByRole("button", { name: "Show partitions" }));
+    await user.click(screen.getByRole("button", { name: "Show partition details" }));
 
     expect(screen.getByRole("table")).not.toContainElement(options());
   });
@@ -172,7 +172,7 @@ describe("CurrentContentSection", () => {
   it("describes the toggle with the summary", () => {
     installerRender(<CurrentContentSection entry={entry("delete")} subject={subject} />);
 
-    const toggle = screen.getByRole("button", { name: "Show partitions" });
+    const toggle = screen.getByRole("button", { name: "Show partition details" });
 
     const description = document.getElementById(toggle.getAttribute("aria-describedby"));
 
