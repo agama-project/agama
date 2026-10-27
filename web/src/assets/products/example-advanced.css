@@ -116,6 +116,12 @@
      of the radio grid gap. */
   --agm-t--radio--body--spacing: 0.5rem;
 
+  /* Room around the content of every page: above and below it, and at its
+     sides. Every page shares them, so they keep one frame across the whole
+     installer. Unset, both are 0.5rem. */
+  --agm-t--page--padding--block: 0.75rem;
+  --agm-t--page--padding--inline: 1rem;
+
   /* The terminal surface and the text drawn on it. Theme-independent on
      purpose: a console reads as a console in any theme, and these are the
      colors the shell and the programs running in it assume when they paint

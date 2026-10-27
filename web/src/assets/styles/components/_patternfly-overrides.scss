@@ -70,9 +70,26 @@
   );
 }
 
+// The room around the content of every page, one value per axis so that all
+// pages keep the same frame. The page sheet reads these to reach the edges of
+// the box, so it follows whatever they resolve to.
 .pf-v6-c-page__main-section {
-  --pf-v6-c-page__main-section--PaddingInlineStart: var(--pf-t--global--spacer--md);
-  --pf-v6-c-page__main-section--PaddingInlineEnd: var(--pf-t--global--spacer--md);
+  --pf-v6-c-page__main-section--PaddingBlockStart: var(
+    --agm-t--page--padding--block,
+    var(--pf-t--global--spacer--sm)
+  );
+  --pf-v6-c-page__main-section--PaddingBlockEnd: var(
+    --agm-t--page--padding--block,
+    var(--pf-t--global--spacer--sm)
+  );
+  --pf-v6-c-page__main-section--PaddingInlineStart: var(
+    --agm-t--page--padding--inline,
+    var(--pf-t--global--spacer--sm)
+  );
+  --pf-v6-c-page__main-section--PaddingInlineEnd: var(
+    --agm-t--page--padding--inline,
+    var(--pf-t--global--spacer--sm)
+  );
 }
 
 .pf-v6-c-page__main-section.pf-m-sticky-top {
