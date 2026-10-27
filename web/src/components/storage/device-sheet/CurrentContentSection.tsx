@@ -539,8 +539,19 @@ export default function CurrentContentSection({
   /* Only where the partitions are the reader's to decide. */
   const isDecidable = !fixedDecision && governed.length > 0;
 
-  /* Closed at first, since the summary already says what happens to every part. */
-  const [expanded, setExpanded] = React.useState(false);
+  /* Closed at first, since the summary already says what happens to every part,
+     except where every part is decided on its own: those decisions are the
+     content, and a click between the reader and them would hide what the
+     summary above points to. Decided again for each entry shown, and left to
+     the reader after that. */
+  const startsExpanded = isDecidable && entry.config.spacePolicy === "custom";
+  const shownEntry = `${subject.collection}.${subject.index}`;
+  const [expanded, setExpanded] = React.useState(startsExpanded);
+  const [expandedFor, setExpandedFor] = React.useState(shownEntry);
+  if (expandedFor !== shownEntry) {
+    setExpandedFor(shownEntry);
+    setExpanded(startsExpanded);
+  }
   const contentId = React.useId();
 
   const parts: ContentPart[] = rows

@@ -184,11 +184,31 @@ describe("CurrentContentSection", () => {
   describe("when the partitions are given different decisions", () => {
     const mixed = entry("custom", [{ name: "/dev/vdd1", delete: true }]);
 
-    it("counts what becomes of them, keeping the partitions out of sight", () => {
+    it("shows them from the start, since they are decided one by one", () => {
+      installerRender(<CurrentContentSection entry={mixed} subject={subject} />);
+
+      screen.getByRole("table", { name: "Current content" });
+      expect(screen.getByRole("button", { name: "Hide partition details" })).toHaveAttribute(
+        "aria-expanded",
+        "true",
+      );
+    });
+
+    it("decides again whether to show them for every entry shown", () => {
+      const { rerender } = installerRender(
+        <CurrentContentSection entry={entry("delete")} subject={subject} />,
+      );
+      expect(screen.queryByRole("table")).toBeNull();
+
+      rerender(<CurrentContentSection entry={mixed} subject={{ ...subject, index: 1 }} />);
+
+      screen.getByRole("table", { name: "Current content" });
+    });
+
+    it("says what becomes of them", () => {
       installerRender(<CurrentContentSection entry={mixed} subject={subject} />);
 
       expect(summary()).toHaveTextContent("3 partitions: 1 will be deleted (including Windows 11)");
-      expect(screen.queryByRole("table")).toBeNull();
     });
   });
 
