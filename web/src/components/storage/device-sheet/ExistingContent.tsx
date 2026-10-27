@@ -44,27 +44,26 @@ export type ExistingContentProps = {
  * the whole device, its membership of an LVM volume group or a RAID, or a line
  * saying nothing was found.
  *
- * Where the installation deletes it, it is struck out and followed by
- * "Delete", the way the partitions table says it.
+ * Where the installation deletes it, it is followed by "Delete", the way the
+ * partitions table says it.
  *
  * @example
  * <ExistingContent entry={entry} isDeleted />
- * // Ext4 file system (struck out)  Delete
+ * // Ext4 file system  Delete
  */
-/* The same marks as the partitions table, so a loss reads the same in both. */
-const PENDING_REMOVAL_CLASS = "agm-pending-removal";
+/* The same color as the partitions table, so a loss reads the same in both. */
 const DESTROYS_CLASS = "agm-entries-table__cost--destroys";
 
 /**
- * What is there now, struck out and followed by "Delete" where the installation
- * removes it, the way the partitions table says it.
+ * What is there now, followed by "Delete" where the installation removes it,
+ * the way the partitions table says it.
  */
 function Fact({ isDeleted, children }: React.PropsWithChildren<{ isDeleted: boolean }>) {
   if (!isDeleted) return children;
 
   return (
     <>
-      <span className={PENDING_REMOVAL_CLASS}>{children}</span>{" "}
+      {children}{" "}
       {/* TRANSLATORS: what is to become of something already on the disk: it
           is removed, and everything on it lost. */}
       <span className={DESTROYS_CLASS}>{_("Delete")}</span>
