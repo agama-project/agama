@@ -353,7 +353,12 @@ nav.agm-breadcrumb > ol > li > a {
 
 // The drawer scrolls its panel as a whole, heading included. The scroll moves
 // one level in, to the sheet's body, so the heading stays while the rest moves.
+// The room around the sheet's content is the sheet's own, so the panel adds
+// none above or below it.
 .agm-sheet-frame > .pf-v6-c-drawer__main > .pf-v6-c-drawer__panel {
+  --pf-v6-c-drawer__panel--PaddingBlockStart: 0;
+  --pf-v6-c-drawer__panel--PaddingBlockEnd: 0;
+
   overflow: hidden;
 }
 
