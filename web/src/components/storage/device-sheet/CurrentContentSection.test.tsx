@@ -304,7 +304,8 @@ describe("CurrentContentSection", () => {
       );
 
       const [content, , action] = cellsOf("vdd3");
-      within(action).getByText('Format as xfs for "/docs"');
+      within(action).getByText("Format as xfs");
+      within(action).getByText('To mount "/docs"');
       expect(within(content).queryByText("xfs")).toBeNull();
       expect(isStruck(content)).toBe(false);
     });
@@ -320,7 +321,8 @@ describe("CurrentContentSection", () => {
       );
 
       const [, , action] = cellsOf("vdd3");
-      within(action).getByText('Format for "/docs"');
+      within(action).getByText("Format");
+      within(action).getByText('To mount "/docs"');
     });
   });
 });

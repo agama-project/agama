@@ -259,20 +259,25 @@ function statusFor(
       return { text: sprintf(_("Mount at %s"), path), destroys: false };
     }
 
-    /* Without the file system where neither the request nor the plan names
-       one yet. */
+    /* What it becomes in the action, and what for in the note under it, as
+       the other notes say more about their action. Without the file system
+       where neither the request nor the plan names one yet. */
     const text = newFilesystem
       ? // TRANSLATORS: what is to become of a partition already on the disk: it
-        // is emptied and given to the new system. %1$s is the new file system,
-        // such as "xfs", and %2$s where the new system mounts it, such as
-        // "/home".
-        sprintf(_("Format as %1$s for %2$s"), newFilesystem, path)
+        // is emptied and given a new file system. %s is that file system, such
+        // as "xfs".
+        sprintf(_("Format as %s"), newFilesystem)
       : // TRANSLATORS: what is to become of a partition already on the disk: it
-        // is emptied and given to the new system. %s is where the new system
-        // mounts it, such as "/home".
-        sprintf(_("Format for %s"), path);
+        // is emptied and given a new file system, not chosen yet.
+        _("Format");
 
-    return { text, destroys: true };
+    return {
+      text,
+      destroys: true,
+      // TRANSLATORS: read under "Format as xfs": where the new system mounts
+      // the partition. %s is a mount point, such as "/home".
+      note: sprintf(_("To mount %s"), path),
+    };
   }
 
   switch (decision) {
