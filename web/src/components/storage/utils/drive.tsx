@@ -50,7 +50,10 @@ function mayShrink(partition: ConfigModel.Partition, device): boolean {
  * partitions after installation.
  */
 const contentActionsSummary = (drive: ConfigModel.Drive, device): TranslatedString[] => {
-  const parts = drive.partitions;
+  /* Nothing on the drive today, nothing to say about what happens to it. */
+  if (!device?.partitions?.length) return [];
+
+  const parts = drive?.partitions || [];
   const mountPaths = parts.filter((p) => isMounted(p)).map((p) => formattedPath(p.mountPath));
   const formatPaths = parts.filter((p) => isFormatted(p)).map((p) => formattedPath(p.mountPath));
   const toShrink = parts.filter((p) => p.resizeIfNeeded);
