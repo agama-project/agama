@@ -154,9 +154,7 @@ describe("CurrentContentSection", () => {
     it("counts what becomes of them, keeping the partitions out of sight", () => {
       installerRender(<CurrentContentSection entry={mixed} subject={subject} />);
 
-      expect(summary()).toHaveTextContent(
-        "3 partitions: 1 will be deleted (including Windows 11) and 2 will be kept",
-      );
+      expect(summary()).toHaveTextContent("3 partitions: 1 will be deleted (including Windows 11)");
       expect(screen.queryByRole("table")).toBeNull();
     });
   });

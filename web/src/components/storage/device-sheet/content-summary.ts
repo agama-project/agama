@@ -307,7 +307,7 @@ export type SummaryParts = {
 export function summarySentence(): TranslatedString {
   // TRANSLATORS: summary of what is on a disk or volume group. %1$s: how much,
   // in bold, such as "3 partitions". %2$s: what happens to it, such as
-  // "1 will be deleted and 2 will be kept". Adapt the colon to your language.
+  // "1 will be deleted and 1 may be shrunk". Adapt the colon to your language.
   return _("%1$s: %2$s");
 }
 
@@ -319,9 +319,15 @@ export function summaryParts(kind: ContentKind, parts: ContentPart[]): SummaryPa
   const total = parts.length;
   if (!total) return undefined;
 
+  /* What is kept is said only when it is all there is to say. Next to real
+     actions it is the absence of news, and the table lists it for whoever
+     wants to check. */
+  const isAllKept = parts.every((part) => outcomeOf(part) === "keep");
+  const outcomes = isAllKept ? OUTCOMES : OUTCOMES.filter((outcome) => outcome !== "keep");
+
   const fates = formatList(
     sift(
-      OUTCOMES.map((outcome) =>
+      outcomes.map((outcome) =>
         said(
           outcome,
           parts.filter((part) => outcomeOf(part) === outcome),
@@ -353,9 +359,13 @@ export function summaryParts(kind: ContentKind, parts: ContentPart[]): SummaryPa
  * than pieces of one. "It", "both" and "all" say when one fate covers every
  * part.
  *
+ * What is kept is said only when everything is. Otherwise the sentence lists
+ * what happens, so its clauses may cover fewer parts than it counts.
+ *
  * @example
  * contentSummary("partitions", parts)
  * // "5 partitions: 3 will be deleted, 1 may be shrunk (up to 30 GiB), and 1 will be mounted at /home"
+ * // "3 partitions: 1 will be deleted" (the other two are kept)
  * // "3 partitions: all will be kept"
  */
 export default function contentSummary(

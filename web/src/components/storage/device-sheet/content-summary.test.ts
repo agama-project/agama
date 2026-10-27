@@ -77,11 +77,23 @@ describe("contentSummary", () => {
     const parts = [part("vdd1", { decision: "delete", systems: ["Windows 11"] }), part("vdd2")];
 
     expect(contentSummary("partitions", parts)).toBe(
-      "2 partitions: 1 will be deleted (including Windows 11) and 1 will be kept",
+      "2 partitions: 1 will be deleted (including Windows 11)",
     );
   });
 
-  it("counts what is allowed to shrink but cannot as kept", () => {
+  it("leaves out what is kept next to anything that happens", () => {
+    const parts = [
+      ...given("delete", "vdd1"),
+      part("vdd2", { decision: "resizeIfNeeded", recoverable: 10 * GiB }),
+      ...given("keep", "vdd3"),
+    ];
+
+    expect(contentSummary("partitions", parts)).toBe(
+      "3 partitions: 1 will be deleted and 1 may be shrunk (up to 10 GiB)",
+    );
+  });
+
+  it("does not count what is allowed to shrink but cannot among what is shrunk", () => {
     const parts = [
       part("vdd1", { decision: "resizeIfNeeded", recoverable: 10 * GiB }),
       part("vdd2", { decision: "resizeIfNeeded", recoverable: 20 * GiB }),
@@ -89,7 +101,7 @@ describe("contentSummary", () => {
     ];
 
     expect(contentSummary("partitions", parts)).toBe(
-      "3 partitions: 2 may be shrunk (up to 30 GiB) and 1 will be kept",
+      "3 partitions: 2 may be shrunk (up to 30 GiB)",
     );
   });
 
@@ -124,7 +136,7 @@ describe("contentSummary", () => {
       ];
 
       expect(contentSummary("partitions", parts)).toBe(
-        "4 partitions: 1 will be deleted, 1 will be formatted for /, 1 will be kept, and 1 will be mounted at /home",
+        "4 partitions: 1 will be deleted, 1 will be formatted for /, and 1 will be mounted at /home",
       );
     });
 
