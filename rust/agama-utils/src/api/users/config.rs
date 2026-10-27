@@ -26,7 +26,7 @@ use serde::{Deserialize, Serialize};
 ///
 /// Holds the user settings for the installation.
 #[derive(Clone, Debug, Default, Merge, Serialize, Deserialize, PartialEq, JsonSchema)]
-#[serde(rename_all = "camelCase")]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 #[schemars(rename = "users.Config")]
 pub struct Config {
     #[merge(strategy = merge::option::overwrite_none)]
@@ -71,7 +71,7 @@ impl Config {
 ///
 /// Holds the settings for the first user.
 #[derive(Clone, Debug, Default, Merge, Serialize, Deserialize, PartialEq, JsonSchema)]
-#[serde(rename_all = "camelCase")]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 #[schemars(title = "First user settings")]
 pub struct FirstUserConfig {
     /// First user's full name
@@ -110,7 +110,7 @@ impl FirstUserConfig {
 ///
 /// It holds the password and whether it is a hashed or a plain text password.
 #[derive(Clone, Debug, Merge, Serialize, Deserialize, PartialEq, JsonSchema)]
-#[serde(rename_all = "camelCase")]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct UserPassword {
     /// User password
     #[schemars(example = &"nots3cr3t")]
@@ -162,7 +162,7 @@ impl StringOrList {
 ///
 /// Holds the settings for the root user.
 #[derive(Clone, Debug, Default, Merge, Serialize, Deserialize, PartialEq, JsonSchema)]
-#[serde(rename_all = "camelCase")]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 #[schemars(title = "Root authentication settings")]
 pub struct RootUserConfig {
     /// Root user password
