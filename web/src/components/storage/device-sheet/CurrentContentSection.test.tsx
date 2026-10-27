@@ -99,24 +99,41 @@ describe("CurrentContentSection", () => {
     expect(within(summary()).getByText("3 partitions")).toHaveClass("pf-v6-u-font-weight-bold");
   });
 
-  it("keeps the partitions and the options setting them out of sight until asked for", async () => {
+  it("keeps the partitions out of sight until asked for", async () => {
     const { user } = installerRender(
       <CurrentContentSection entry={entry("delete")} subject={subject} />,
     );
 
     expect(screen.queryByRole("table")).toBeNull();
-    expect(options()).toBeNull();
     const toggle = screen.getByRole("button", { name: "Show partitions" });
     expect(toggle).toHaveAttribute("aria-expanded", "false");
 
     await user.click(toggle);
 
     screen.getByRole("table", { name: "Current content" });
-    screen.getByRole("button", { name: "Set all" });
     expect(screen.getByRole("button", { name: "Hide partitions" })).toHaveAttribute(
       "aria-expanded",
       "true",
     );
+  });
+
+  it("offers giving every partition the same decision outside the table, open or not", async () => {
+    const { user } = installerRender(
+      <CurrentContentSection entry={entry("delete")} subject={subject} />,
+    );
+
+    options();
+
+    await user.click(screen.getByRole("button", { name: "Show partitions" }));
+
+    expect(screen.getByRole("table")).not.toContainElement(options());
+  });
+
+  it("heads the column of row menus with a name and nothing else", async () => {
+    await renderShown(<CurrentContentSection entry={entry("delete")} subject={subject} />);
+
+    const header = screen.getByRole("columnheader", { name: "Options" });
+    expect(within(header).queryByRole("button")).toBeNull();
   });
 
   it("describes the toggle with the summary", () => {

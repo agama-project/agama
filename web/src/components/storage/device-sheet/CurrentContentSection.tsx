@@ -463,8 +463,8 @@ export type CurrentContentSectionProps = {
  *
  * Changing what happens to one partition is in the row's menu, with everything
  * else the row can be told to do. Giving every partition the same decision at
- * once is offered above the table. When the partitions are given different
- * decisions, none of the options there reads pressed.
+ * once is offered beside the toggle that opens the table, so it can be used
+ * without opening it.
  *
  * It is a permission rather than a plan: "shrink if needed" is the whole truth
  * about a partition the installer did not have to shrink.
@@ -571,25 +571,44 @@ export default function CurrentContentSection({
               )}
             </Text>
           </FlexItem>
-          <FlexItem>
-            <Button
-              variant="link"
-              isInline
-              className="agm-sheet-disclosure"
-              icon={
-                <Icon
-                  name={expanded ? "keyboard_arrow_down" : "chevron_right"}
-                  verticalAlign="middle"
+          {/* The menu shares the toggle's line, at its far end: it acts on every
+              row whether the table is open or not, and what it does reads in
+              the summary right above it. */}
+          <Flex
+            justifyContent={{ default: "justifyContentSpaceBetween" }}
+            alignItems={{ default: "alignItemsCenter" }}
+            gap={{ default: "gapSm" }}
+          >
+            <FlexItem>
+              <Button
+                variant="link"
+                isInline
+                className="agm-sheet-disclosure"
+                icon={
+                  <Icon
+                    name={expanded ? "keyboard_arrow_down" : "chevron_right"}
+                    verticalAlign="middle"
+                  />
+                }
+                aria-expanded={expanded}
+                aria-controls={contentId}
+                aria-describedby={summaryId}
+                onClick={() => setExpanded(!expanded)}
+              >
+                <Text isBold>{disclosureLabel(entry.isVolumeGroup, expanded)}</Text>
+              </Button>
+            </FlexItem>
+            {!fixedDecision && governed.length > 0 && (
+              <FlexItem>
+                <SpaceDecision
+                  collection={subject.collection}
+                  index={subject.index}
+                  current={sharedDecision}
+                  someReused={someReused}
                 />
-              }
-              aria-expanded={expanded}
-              aria-controls={contentId}
-              aria-describedby={summaryId}
-              onClick={() => setExpanded(!expanded)}
-            >
-              <Text isBold>{disclosureLabel(entry.isVolumeGroup, expanded)}</Text>
-            </Button>
-          </FlexItem>
+              </FlexItem>
+            )}
+          </Flex>
         </>
       )}
       {/* A bit more room above what the toggle opens than between the lines
@@ -627,15 +646,16 @@ export default function CurrentContentSection({
                   {_("Size")}
                 </Th>
                 <Th modifier="nowrap">{_("Action")}</Th>
-                <Th modifier="nowrap">
-                  {!fixedDecision && governed.length > 0 && (
-                    <SpaceDecision
-                      collection={subject.collection}
-                      index={subject.index}
-                      current={sharedDecision}
-                      someReused={someReused}
-                    />
-                  )}
+                <Th>
+                  {/* The column of menus has nothing to head: a heading over it
+                      names a column the reader can already see the point of.
+                      Nothing but its name either, since what sits in a header
+                      cell is read out with every cell under it. */}
+                  <Text srOnly>
+                    {/* TRANSLATORS: names, for screen readers only, the column
+                        holding the menu of each partition. */}
+                    {_("Options")}
+                  </Text>
                 </Th>
               </Tr>
             </Thead>
