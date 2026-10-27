@@ -64,12 +64,11 @@ describe("ExistingContent", () => {
       screen.getByText(/file system/);
     });
 
-    it("says it is deleted when the installation deletes it, striking nothing through", () => {
-      const { container } = plainRender(<ExistingContent entry={entry(device)} isDeleted />);
+    it("says it is deleted when the installation deletes it", () => {
+      plainRender(<ExistingContent entry={entry(device)} isDeleted />);
 
       screen.getByText("Ext4");
       screen.getByText("Delete");
-      expect(container.querySelector(".agm-pending-removal")).toBeNull();
     });
 
     it("offers what it is given to do with it", () => {

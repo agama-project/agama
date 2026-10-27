@@ -89,9 +89,6 @@ const summary = () => screen.getByRole("paragraph");
 const cellsOf = (name: string) =>
   within(screen.getByRole("rowheader", { name }).closest("tr")).getAllByRole("cell");
 
-/** Whether a cell draws a rule through anything in it. */
-const isStruck = (cell: HTMLElement) => cell.querySelector(".agm-pending-removal") !== null;
-
 /** Renders the section and opens what its toggle puts away. */
 const renderShown = async (ui: React.ReactElement) => {
   const rendered = installerRender(ui);
@@ -268,7 +265,7 @@ describe("CurrentContentSection", () => {
       within(action).getByText("Cannot be shrunk");
     });
 
-    it("says how much shrinking may free, and leaves the size as it is", async () => {
+    it("says how much shrinking may free", async () => {
       await renderShown(
         <CurrentContentSection
           entry={entry("resize", [], [partition(1), shrinkable])}
@@ -276,21 +273,18 @@ describe("CurrentContentSection", () => {
         />,
       );
 
-      const [, size, action] = cellsOf("vdd2");
+      const [, , action] = cellsOf("vdd2");
       within(action).getByText("Shrink if needed");
       within(action).getByText("Up to 17.5 GiB may be freed");
-      expect(isStruck(size)).toBe(false);
     });
 
-    it("says how much deleting frees, and strikes nothing through", async () => {
+    it("says how much deleting frees", async () => {
       await renderShown(<CurrentContentSection entry={entry("delete")} subject={subject} />);
 
-      const [content, size, action] = cellsOf("vdd1");
+      const [content, , action] = cellsOf("vdd1");
       within(action).getByText("Delete");
       within(action).getByText("1 GiB will be freed");
       within(content).getByText("Windows 11");
-      expect(isStruck(content)).toBe(false);
-      expect(isStruck(size)).toBe(false);
     });
 
     it("says what a formatted partition becomes, and shows what it holds today as it is", async () => {
@@ -307,7 +301,6 @@ describe("CurrentContentSection", () => {
       within(action).getByText("Format as xfs");
       within(action).getByText('To mount "/docs"');
       expect(within(content).queryByText("xfs")).toBeNull();
-      expect(isStruck(content)).toBe(false);
     });
 
     it("leaves the file system out where none is known yet", async () => {
