@@ -1,0 +1,52 @@
+{
+  "network": {
+    "connections": [
+      {
+        "id": "br0",
+        "interface": "br0",
+        "method4": "manual",
+        "addresses": [
+          "192.168.1.100/24"
+        ],
+        "bridge": {
+          "stp": false,
+          "portConnections": [
+            {
+              "id": "bond0",
+              "interface": "bond0",
+              "bond": {
+                "mode": "802.3ad",
+                "options": "miimon=100",
+                "portConnections": [
+                  "eth0",
+                  "eth1"
+                ]
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "br100",
+        "interface": "br100",
+        "method4": "manual",
+        "addresses": [
+          "10.100.0.10/24"
+        ],
+        "bridge": {
+          "stp": false,
+          "portConnections": [
+            {
+              "id": "bond0.100",
+              "interface": "bond0.100",
+              "vlan": {
+                "id": 100,
+                "parent": "bond0"
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Oct 27 12:08:59 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Update the configured connection when connecting, disconnecting
+  or deleting it from the connections table, instead of sending the
+  state reported by the system (gh#agama-project/agama#3995).
+
+-------------------------------------------------------------------
 Tue Oct 27 09:04:07 UTC 2026 - Michal Filka <mfilka@suse.com>
 
 - bsc#1287867 (CVE-2026-115897)
