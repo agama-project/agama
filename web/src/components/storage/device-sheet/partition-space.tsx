@@ -150,11 +150,10 @@ function shrinkReason(partition: System.Device): string | undefined {
 /**
  * Why a partition cannot be shrunk, in the machine's own words.
  *
- * Every reason the machine gives, since any one of them is enough to stop it
- * and a reader fixing one would otherwise meet the next only after trying. One
- * reason reads as a sentence; several as a list, so each is read as one. None
- * of it can be opened or closed: it sits in a menu, where every control added
- * is one more stop for a keyboard and one more thing to find.
+ * The first reason only, as one sentence, since it sits under a menu item
+ * where there is room for a line. None of it can be opened or closed: every
+ * control added to a menu is one more stop for a keyboard and one more thing
+ * to find.
  *
  * The reasons come translated and are shown as they come. Where the machine
  * gives none, a sentence of our own says so rather than leaving the reader

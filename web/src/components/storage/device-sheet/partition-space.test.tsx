@@ -77,7 +77,7 @@ describe("ShrinkRefusal", () => {
     expect(screen.queryByRole("list")).toBeNull();
   });
 
-  it("reads several reasons as a list, every one of them", () => {
+  it("reads only the first of several reasons", () => {
     plainRender(
       <ShrinkRefusal
         partition={partition({
@@ -87,10 +87,9 @@ describe("ShrinkRefusal", () => {
       />,
     );
 
-    expect(screen.getAllByRole("listitem").map((item) => item.textContent)).toEqual([
-      "The file system is full.",
-      "A password is required.",
-    ]);
+    screen.getByText("The file system is full.");
+    expect(screen.queryByText("A password is required.")).toBeNull();
+    expect(screen.queryByRole("list")).toBeNull();
   });
 
   it("offers nothing to open or close, however many reasons there are", () => {
