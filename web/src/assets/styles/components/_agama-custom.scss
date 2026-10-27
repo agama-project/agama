@@ -311,6 +311,13 @@ nav.agm-breadcrumb > ol > li > a {
   min-height: 0;
 }
 
+// What sits above the sheet, such as a page's report, is spaced from it as the
+// parts of the page inside it are spaced from each other, so the report reads
+// as part of the page rather than as something apart from it.
+.pf-v6-c-page__main-section:has(> .agm-sheet-frame) {
+  --pf-v6-c-page__main-section--RowGap: var(--pf-t--global--spacer--gutter--default);
+}
+
 // The sheet and whatever lies over the page reach the edges of the rounded box
 // holding the page, which clips them to its corners. The section's room around
 // the page moves inside the drawer, so the page itself stays where it was.
