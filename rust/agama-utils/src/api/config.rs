@@ -46,6 +46,14 @@ pub enum Error {
 #[schemars(title = "Profile")]
 #[merge(strategy = merge::option::recurse)]
 pub struct Config {
+    /// Schema URL (ignored by installer, used by editors for validation and autocompletion).
+    #[serde(rename = "$schema", default, skip_serializing_if = "Option::is_none")]
+    #[schemars(
+        title = "URL of the JSON validation schema",
+        description = "The schema location is ignored by the installer, it always uses the built-in schema, but it can be useful for automatic validation and code completion in some editors."
+    )]
+    #[merge(strategy = merge::option::overwrite_none)]
+    pub schema: Option<String>,
     /// Bootloader configuration.
     pub bootloader: Option<bootloader::Config>,
     /// Hostname configuration.

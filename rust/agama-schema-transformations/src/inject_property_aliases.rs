@@ -33,7 +33,7 @@ const ALIAS_PAIRS: &[(&str, &str)] = &[
 /// A schemars [`Transform`] that injects deprecated compatibility aliases into schemas
 /// for properties with `#[serde(alias)]` attributes, as well as the editor `$schema` keyword.
 #[derive(Debug, Clone, Copy, Default)]
-pub(crate) struct InjectPropertyAliases;
+pub struct InjectPropertyAliases;
 
 impl Transform for InjectPropertyAliases {
     fn transform(&mut self, schema: &mut Schema) {

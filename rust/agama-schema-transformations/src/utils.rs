@@ -18,11 +18,23 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-/// Capitalizes the first character of a string.
-pub(crate) fn capitalize(str: &str) -> String {
-    let mut chars = str.chars();
+/// Capitalizes the first letter of a string slice while leaving the rest unchanged.
+pub fn capitalize(s: &str) -> String {
+    let mut chars = s.chars();
     match chars.next() {
         None => String::new(),
         Some(first) => first.to_uppercase().collect::<String>() + chars.as_str(),
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_capitalize() {
+        assert_eq!(capitalize("storage"), "Storage");
+        assert_eq!(capitalize("device"), "Device");
+        assert_eq!(capitalize(""), "");
     }
 }

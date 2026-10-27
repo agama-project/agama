@@ -296,6 +296,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "agama-schema-transformations"
+version = "0.1.0"
+dependencies = [
+ "schemars 1.2.1",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
 name = "agama-security"
 version = "0.1.0"
 dependencies = [
@@ -316,6 +325,7 @@ dependencies = [
  "agama-l10n",
  "agama-lib",
  "agama-manager",
+ "agama-schema-transformations",
  "agama-transfer",
  "agama-utils",
  "aide",

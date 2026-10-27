@@ -40,7 +40,7 @@ const SYSTEM_INFO_SUBSYSTEMS: &[(&str, &str)] = &[
 /// A schemars [`Transform`] that links manually defined external schemas
 /// (Storage, Dasd, Zfcp, Iscsi) into the Config, Proposal, and SystemInfo schemas.
 #[derive(Debug, Clone, Copy, Default)]
-pub(crate) struct LinkSubsystemSchemas;
+pub struct LinkSubsystemSchemas;
 
 impl Transform for LinkSubsystemSchemas {
     fn transform(&mut self, schema: &mut Schema) {

@@ -34,7 +34,6 @@ mod config;
 pub mod docs;
 pub mod error;
 mod http;
-pub(crate) mod schema_transforms;
 mod service;
 mod state;
 mod ws;

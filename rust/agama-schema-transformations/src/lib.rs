@@ -20,7 +20,7 @@
 
 //! Schema transformations for schemars-generated JSON schemas.
 //!
-//! This module provides [`schemars::transform::Transform`] implementations for post-processing
+//! This crate provides [`schemars::transform::Transform`] implementations for post-processing
 //! schemas:
 //! - [`RemoveNullableAnyOf`]: Eliminates schemars default behavior for `Option<T>` that generates
 //!   `anyOf: [T, {"type": "null"}]` and `"type": [..., "null"]`.
@@ -40,12 +40,12 @@ mod rewrite_storage_refs;
 mod simplify_enums;
 mod utils;
 
-pub(crate) use inject_property_aliases::InjectPropertyAliases;
-pub(crate) use link_subsystem_schemas::LinkSubsystemSchemas;
-pub(crate) use remove_nullable_anyof::RemoveNullableAnyOf;
-pub(crate) use rewrite_storage_refs::RewriteStorageRefs;
-pub(crate) use simplify_enums::SimplifyEnums;
-pub(crate) use utils::capitalize;
+pub use inject_property_aliases::InjectPropertyAliases;
+pub use link_subsystem_schemas::LinkSubsystemSchemas;
+pub use remove_nullable_anyof::RemoveNullableAnyOf;
+pub use rewrite_storage_refs::RewriteStorageRefs;
+pub use simplify_enums::SimplifyEnums;
+pub use utils::capitalize;
 
 #[cfg(test)]
 mod tests {

@@ -35,7 +35,7 @@ use tokio::sync::broadcast;
 use crate::test_utils;
 use crate::web::error::ProblemDetailsResponse;
 use crate::web::http::{AuthResponse, LoginRequest};
-use crate::web::schema_transforms::{
+use agama_schema_transformations::{
     capitalize, InjectPropertyAliases, LinkSubsystemSchemas, RemoveNullableAnyOf,
     RewriteStorageRefs, SimplifyEnums,
 };
@@ -420,5 +420,100 @@ fn extract_defs(
             }
         }
         _ => {}
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::collections::{BTreeSet, VecDeque};
+
+    fn collect_schema_refs(val: &Value, refs: &mut BTreeSet<String>) {
+        match val {
+            Value::Object(map) => {
+                if let Some(Value::String(r)) = map.get("$ref") {
+                    if let Some(name) = r.strip_prefix("#/components/schemas/") {
+                        refs.insert(name.to_string());
+                    }
+                }
+                for v in map.values() {
+                    collect_schema_refs(v, refs);
+                }
+            }
+            Value::Array(arr) => {
+                for item in arr {
+                    collect_schema_refs(item, refs);
+                }
+            }
+            _ => {}
+        }
+    }
+
+    #[tokio::test]
+    async fn test_all_config_schema_entries_define_additional_properties() {
+        let json_value = build_json()
+            .await
+            .expect("Failed to build OpenAPI JSON specification");
+
+        let components = json_value
+            .pointer("/components/schemas")
+            .and_then(|c| c.as_object())
+            .expect("Expected /components/schemas in OpenAPI spec");
+
+        let config_schema = components.get("Config").expect("Expected Config schema");
+
+        // The root Config schema must define additionalProperties
+        assert!(
+            config_schema.get("additionalProperties").is_some(),
+            "Root Config schema must define 'additionalProperties'"
+        );
+
+        // Collect all schemas reachable from Config (i.e. all entries in config.schema.json)
+        let mut needed = BTreeSet::new();
+        collect_schema_refs(config_schema, &mut needed);
+        let mut queue: VecDeque<String> = needed.iter().cloned().collect();
+
+        while let Some(current) = queue.pop_front() {
+            if let Some(child_val) = components.get(&current) {
+                let mut child_refs = BTreeSet::new();
+                collect_schema_refs(child_val, &mut child_refs);
+                for r in child_refs {
+                    if needed.insert(r.clone()) {
+                        queue.push_back(r);
+                    }
+                }
+            }
+        }
+
+        let mut missing = Vec::new();
+        for name in &needed {
+            let Some(comp) = components.get(name) else {
+                continue;
+            };
+
+            // Ignore schemas that are unions/anyOf variants (e.g. untagged enum containers like UserFile)
+            if comp.get("anyOf").is_some() || comp.get("oneOf").is_some() {
+                continue;
+            }
+
+            let is_object = if let Some(ty) = comp.get("type") {
+                ty == "object"
+                    || ty.as_array().map_or(false, |a| a.iter().any(|v| v == "object"))
+            } else {
+                comp.get("properties").is_some()
+            };
+
+            // If it is an object definition, it must define additionalProperties
+            if is_object && comp.get("additionalProperties").is_none() {
+                missing.push(name.clone());
+            }
+        }
+
+        assert!(
+            missing.is_empty(),
+            "The following schema entries in config schema do not define 'additionalProperties':\n{:#?}\n\
+            Please define `#[serde(deny_unknown_fields)]` on the corresponding Rust structs!",
+            missing
+        );
     }
 }

@@ -28,7 +28,7 @@ The build pipeline unifies Rust-derived schemas with these partial schemas:
 
 1. **Schema Import & Extraction (`agama-server::web::docs::build`)**:
    - Rust configuration structs implement `schemars::JsonSchema` and enforce strict schema boundaries via `#[serde(deny_unknown_fields)]`.
-   - `docs::build()` applies post-processing schema transforms:
+   - `docs::build()` applies schema transforms from the `agama-schema-transformations` crate:
      - `RemoveNullableAnyOf`: Unwraps nullable `Option<T>` constructs from `anyOf` and removes `"null"` from type arrays so validators produce clean error messages instead of `anyOf` failure errors.
      - `SimplifyEnums`: Converts scalar constant `oneOf`/`anyOf` enums into standard `type` + `enum: [...]` arrays, preserving variant documentation as a formatted Markdown list in `description` and via the `x-enum-descriptions` map vendor extension (`{ "value": "description" }`).
      - `LinkSubsystemSchemas`: Links manually defined subsystem schemas (Storage, Dasd, Zfcp, Iscsi) into `Config`, `Proposal`, and `SystemInfo`.

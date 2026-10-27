@@ -30,7 +30,7 @@ const STORAGE_DEVICE_COMPONENT_PREFIX: &str = "#/components/schemas/StorageDevic
 /// A schemars [`Transform`] that rewrites external references to `device.storage.schema.json` into
 /// global OpenAPI component paths (`#/components/schemas/StorageDevice...`).
 #[derive(Debug, Clone, Copy, Default)]
-pub(crate) struct RewriteStorageRefs;
+pub struct RewriteStorageRefs;
 
 impl Transform for RewriteStorageRefs {
     fn transform(&mut self, schema: &mut Schema) {

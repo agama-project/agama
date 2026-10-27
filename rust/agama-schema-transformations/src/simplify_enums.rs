@@ -73,7 +73,7 @@ const ENUM_KEYWORDS: &[&str] = &["oneOf", "anyOf"];
 /// 1. Appending a Markdown list of the variants and their descriptions to `description`.
 /// 2. Adding an `x-enum-descriptions` vendor extension map (`{ "variant": "description" }`).
 #[derive(Debug, Clone, Copy, Default)]
-pub(crate) struct SimplifyEnums;
+pub struct SimplifyEnums;
 
 impl Transform for SimplifyEnums {
     fn transform(&mut self, schema: &mut Schema) {
