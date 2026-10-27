@@ -22,7 +22,6 @@
 
 import { sprintf } from "sprintf-js";
 import { sift, unique } from "radashi";
-import { deviceSize } from "~/components/storage/utils";
 import { _, n_, formatList } from "~/i18n";
 import type { TranslatedString } from "~/i18n";
 import type { Decision } from "~/components/storage/device-sheet/partition-space";
@@ -135,33 +134,22 @@ function deleted(count: number, total: number, parts: ContentPart[]): Translated
   });
 }
 
-function shrunk(count: number, total: number, parts: ContentPart[]): TranslatedString {
-  const freed = deviceSize(parts.reduce((sum, part) => sum + (part.recoverable || 0), 0));
-
-  return clause(
-    count,
-    total,
-    {
-      // TRANSLATORS: follows "1 partition:" or "1 logical volume:" (must fit
-      // both nouns). May be made smaller if room is needed; data kept. %s: most
-      // space that can be freed, such as "30 GiB".
-      it: _("it may be shrunk (up to %s)"),
-      // TRANSLATORS: follows "2 partitions:" or "2 logical volumes:" (must fit
-      // both nouns). May be made smaller if room is needed; data kept. %s: most
-      // space that can be freed, such as "30 GiB".
-      both: _("both may be shrunk (up to %s)"),
-      // TRANSLATORS: follows "3 partitions:" or "3 logical volumes:", or more
-      // (must fit both nouns). May be made smaller if room is needed; data
-      // kept. %s: most space that can be freed, such as "30 GiB".
-      all: _("all may be shrunk (up to %s)"),
-      // TRANSLATORS: list item following "5 partitions:" or
-      // "5 logical volumes:" (must fit both nouns). May be made smaller if room
-      // is needed; data kept. %1$d: how many. %2$s: most space that can be
-      // freed, such as "30 GiB".
-      some: n_("%1$d may be shrunk (up to %2$s)", "%1$d may be shrunk (up to %2$s)", count),
-    },
-    freed,
-  );
+function shrunk(count: number, total: number): TranslatedString {
+  return clause(count, total, {
+    // TRANSLATORS: follows "1 partition:" or "1 logical volume:" (must fit both
+    // nouns). May be made smaller if room is needed; data kept.
+    it: _("it may be shrunk"),
+    // TRANSLATORS: follows "2 partitions:" or "2 logical volumes:" (must fit
+    // both nouns). May be made smaller if room is needed; data kept.
+    both: _("both may be shrunk"),
+    // TRANSLATORS: follows "3 partitions:" or "3 logical volumes:", or more
+    // (must fit both nouns). May be made smaller if room is needed; data kept.
+    all: _("all may be shrunk"),
+    // TRANSLATORS: list item following "5 partitions:" or "5 logical volumes:"
+    // (must fit both nouns). May be made smaller if room is needed; data kept.
+    // %d: how many.
+    some: n_("%d may be shrunk", "%d may be shrunk", count),
+  });
 }
 
 function kept(count: number, total: number): TranslatedString {
@@ -285,7 +273,7 @@ function said(outcome: Outcome, parts: ContentPart[], total: number): Translated
     case "delete":
       return deleted(count, total, parts);
     case "shrink":
-      return shrunk(count, total, parts);
+      return shrunk(count, total);
     case "keep":
       return kept(count, total);
     case "format":
@@ -364,7 +352,7 @@ export function summaryParts(kind: ContentKind, parts: ContentPart[]): SummaryPa
  *
  * @example
  * contentSummary("partitions", parts)
- * // "5 partitions: 3 will be deleted, 1 may be shrunk (up to 30 GiB), and 1 will be mounted at /home"
+ * // "5 partitions: 3 will be deleted, 1 may be shrunk, and 1 will be mounted at /home"
  * // "3 partitions: 1 will be deleted" (the other two are kept)
  * // "3 partitions: all will be kept"
  */

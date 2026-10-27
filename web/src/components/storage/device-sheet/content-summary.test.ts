@@ -49,7 +49,7 @@ describe("contentSummary", () => {
     ];
 
     expect(contentSummary("partitions", parts)).toBe(
-      "5 partitions: 3 will be deleted, 1 may be shrunk (up to 30 GiB), and 1 will be mounted at /home",
+      "5 partitions: 3 will be deleted, 1 may be shrunk, and 1 will be mounted at /home",
     );
   });
 
@@ -89,7 +89,7 @@ describe("contentSummary", () => {
     ];
 
     expect(contentSummary("partitions", parts)).toBe(
-      "3 partitions: 1 will be deleted and 1 may be shrunk (up to 10 GiB)",
+      "3 partitions: 1 will be deleted and 1 may be shrunk",
     );
   });
 
@@ -100,9 +100,7 @@ describe("contentSummary", () => {
       part("vdd3", { decision: "resizeIfNeeded" }),
     ];
 
-    expect(contentSummary("partitions", parts)).toBe(
-      "3 partitions: 2 may be shrunk (up to 30 GiB)",
-    );
+    expect(contentSummary("partitions", parts)).toBe("3 partitions: 2 may be shrunk");
   });
 
   it("says all are kept when nothing allowed to shrink can", () => {
