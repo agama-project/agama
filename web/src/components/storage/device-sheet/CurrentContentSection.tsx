@@ -405,7 +405,7 @@ function PartitionRow({
           </>
         )}
       </Th>
-      <Td>
+      <Td modifier="fitContent">
         <Flex gap={{ default: "gapXs" }} alignItems={{ default: "alignItemsCenter" }}>
           {/* What is there today, as it is: the Action column says what it
               becomes. */}
@@ -420,7 +420,7 @@ function PartitionRow({
           ))}
         </Flex>
       </Td>
-      <Td className={alignmentStyles.textAlignEnd}>
+      <Td className={alignmentStyles.textAlignEnd} modifier="fitContent">
         <div>{deviceSize(size)}</div>
       </Td>
       <Td>
@@ -664,8 +664,12 @@ export default function CurrentContentSection({
             <Thead>
               <Tr>
                 <Th modifier="nowrap">{_("Partition")}</Th>
-                <Th modifier="nowrap">{_("Content")}</Th>
-                <Th className={alignmentStyles.textAlignEnd} modifier="nowrap">
+                {/* Content and size kept whole, each on one line, as narrow as
+                    they are: a name like "BIOS Boot Partition" or a size cut
+                    in two reads as two things. The action takes what is
+                    left, its notes being the one thing that can wrap. */}
+                <Th modifier="fitContent">{_("Content")}</Th>
+                <Th className={alignmentStyles.textAlignEnd} modifier="fitContent">
                   {_("Size")}
                 </Th>
                 <Th modifier="nowrap">{_("Action")}</Th>
@@ -695,7 +699,9 @@ export default function CurrentContentSection({
                         </Text>
                       </Th>
                       <Td />
-                      <Td className={alignmentStyles.textAlignEnd}>{deviceSize(row.size)}</Td>
+                      <Td className={alignmentStyles.textAlignEnd} modifier="fitContent">
+                        {deviceSize(row.size)}
+                      </Td>
                       <Td>{_("Use if needed")}</Td>
                       <Td />
                     </Tr>
