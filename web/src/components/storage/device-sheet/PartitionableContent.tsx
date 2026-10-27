@@ -23,6 +23,7 @@
 import React from "react";
 import { Flex, FlexItem, List, ListItem } from "@patternfly/react-core";
 import Link from "~/components/core/Link";
+import Text from "~/components/core/Text";
 import Icon from "~/components/layout/Icon";
 import PlannedContentSection from "~/components/storage/device-sheet/PlannedContentSection";
 import UsedByStatement from "~/components/storage/device-sheet/UsedByStatement";
@@ -93,25 +94,52 @@ export default function PartitionableContent({
     </Link>
   );
 
+  /* What the disk gets so far, said before the way to add to it. */
+  const offer = () => {
+    if (users.length) {
+      // TRANSLATORS: offered on a disk that already gets some partitions,
+      // such as those a volume group needs.
+      return _("You can define additional partitions.");
+    }
+
+    /* What it gets in bold, then what can be done about it. */
+    if (isBoot) {
+      return (
+        <>
+          <div>
+            <Text isBold>
+              {/* TRANSLATORS: said of a disk the system boots from where
+                nothing else is planned yet: the installer only adds what
+                booting needs. */}
+              {_("Only partitions for booting")}
+            </Text>
+          </div>
+          <div>
+            {/* TRANSLATORS: follows "Only partitions for booting", above a
+                button to add partitions. */}
+            {_("Add partitions to use the rest of the disk.")}
+          </div>
+        </>
+      );
+    }
+
+    // TRANSLATORS: offered on a disk that gets no partitions yet.
+    return _("You can define partitions.");
+  };
+
   /* What is listed below, or the way to start listing it. */
   const listed = planned.length ? (
     <PlannedContentSection entry={entry} subject={subject} />
   ) : (
     <Flex direction={{ default: "column" }} gap={{ default: "gapSm" }}>
-      <FlexItem>
-        {users.length || isBoot
-          ? // TRANSLATORS: offered on a disk that already gets some partitions,
-            // such as those a volume group needs.
-            _("You can define additional partitions.")
-          : // TRANSLATORS: offered on a disk that gets no partitions yet.
-            _("You can define partitions.")}
-      </FlexItem>
+      <FlexItem>{offer()}</FlexItem>
       <FlexItem>{add("secondary")}</FlexItem>
     </Flex>
   );
 
-  /* Without a volume group to give room to, the list is all there is. */
-  if (!users.length) return planned.length ? listed : null;
+  /* Without a volume group to give room to, the list is all there is, or the
+     way to start it. */
+  if (!users.length) return listed;
 
   /* Two kinds of partitions to create, said side by side: those a volume
      group needs, first, and those listed. */
