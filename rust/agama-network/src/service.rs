@@ -30,7 +30,6 @@ use agama_utils::{
     api::{event, Event, Scope},
     progress,
 };
-use async_trait::async_trait;
 use gettextrs::gettext;
 use tokio::sync::broadcast;
 
@@ -218,7 +217,6 @@ impl Actor for Service {
     type Error = NetworkSystemError;
 }
 
-#[async_trait]
 impl MessageHandler<message::RefreshScan> for Service {
     async fn handle(
         &mut self,
@@ -237,7 +235,6 @@ impl MessageHandler<message::RefreshScan> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::NewConnection> for Service {
     async fn handle(&mut self, message: message::NewConnection) -> Result<(), NetworkSystemError> {
         if let Some(conn) = self.state.get_connection(&message.connection.id) {
@@ -260,7 +257,6 @@ impl MessageHandler<message::NewConnection> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::GetGeneralState> for Service {
     async fn handle(
         &mut self,
@@ -270,7 +266,6 @@ impl MessageHandler<message::GetGeneralState> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::GetConnection> for Service {
     async fn handle(
         &mut self,
@@ -280,7 +275,6 @@ impl MessageHandler<message::GetConnection> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::GetConnectionByUuid> for Service {
     async fn handle(
         &mut self,
@@ -290,7 +284,6 @@ impl MessageHandler<message::GetConnectionByUuid> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::GetSystem> for Service {
     async fn handle(
         &mut self,
@@ -301,7 +294,6 @@ impl MessageHandler<message::GetSystem> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::GetConfig> for Service {
     async fn handle(&mut self, _message: message::GetConfig) -> Result<Config, NetworkSystemError> {
         let config: Config = self.state.clone().try_into()?;
@@ -309,7 +301,6 @@ impl MessageHandler<message::GetConfig> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::GetProposal> for Service {
     async fn handle(
         &mut self,
@@ -320,7 +311,6 @@ impl MessageHandler<message::GetProposal> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::SetConfig> for Service {
     async fn handle(&mut self, message: message::SetConfig) -> Result<(), NetworkSystemError> {
         self.state.update_state(*message.config)?;
@@ -330,7 +320,6 @@ impl MessageHandler<message::SetConfig> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::GetConnections> for Service {
     async fn handle(
         &mut self,
@@ -347,7 +336,6 @@ impl MessageHandler<message::GetConnections> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::GetDevice> for Service {
     async fn handle(
         &mut self,
@@ -357,7 +345,6 @@ impl MessageHandler<message::GetDevice> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::AddDevice> for Service {
     async fn handle(&mut self, message: message::AddDevice) -> Result<(), NetworkSystemError> {
         self.state.add_device(*message.device.clone())?;
@@ -369,7 +356,6 @@ impl MessageHandler<message::AddDevice> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::UpdateDevice> for Service {
     async fn handle(&mut self, message: message::UpdateDevice) -> Result<(), NetworkSystemError> {
         if let Some(old_device) = self.state.get_device(&message.name) {
@@ -387,7 +373,6 @@ impl MessageHandler<message::UpdateDevice> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::RemoveDevice> for Service {
     async fn handle(&mut self, message: message::RemoveDevice) -> Result<(), NetworkSystemError> {
         self.state.remove_device(&message.name)?;
@@ -399,7 +384,6 @@ impl MessageHandler<message::RemoveDevice> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::GetDevices> for Service {
     async fn handle(
         &mut self,
@@ -409,7 +393,6 @@ impl MessageHandler<message::GetDevices> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::AddAccessPoint> for Service {
     async fn handle(&mut self, message: message::AddAccessPoint) -> Result<(), NetworkSystemError> {
         self.state.add_access_point(*message.access_point.clone())?;
@@ -419,7 +402,6 @@ impl MessageHandler<message::AddAccessPoint> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::RemoveAccessPoint> for Service {
     async fn handle(
         &mut self,
@@ -432,7 +414,6 @@ impl MessageHandler<message::RemoveAccessPoint> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::UpdateConnection> for Service {
     async fn handle(
         &mut self,
@@ -442,7 +423,6 @@ impl MessageHandler<message::UpdateConnection> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::ChangeConnectionState> for Service {
     async fn handle(
         &mut self,
@@ -467,7 +447,6 @@ impl MessageHandler<message::ChangeConnectionState> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::UpdateGeneralState> for Service {
     async fn handle(
         &mut self,
@@ -486,7 +465,6 @@ impl MessageHandler<message::UpdateGeneralState> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::RemoveConnection> for Service {
     async fn handle(
         &mut self,
@@ -510,7 +488,6 @@ impl MessageHandler<message::RemoveConnection> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::Apply> for Service {
     async fn handle(&mut self, _message: message::Apply) -> Result<(), NetworkSystemError> {
         self.apply().await?;
@@ -518,7 +495,6 @@ impl MessageHandler<message::Apply> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::ProposeDefault> for Service {
     async fn handle(
         &mut self,
@@ -529,7 +505,6 @@ impl MessageHandler<message::ProposeDefault> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::Install> for Service {
     async fn handle(&mut self, _message: message::Install) -> Result<(), NetworkSystemError> {
         self.state.install().await?;
@@ -537,7 +512,6 @@ impl MessageHandler<message::Install> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::SetLocale> for Service {
     async fn handle(&mut self, _message: message::SetLocale) -> Result<(), NetworkSystemError> {
         Ok(())
