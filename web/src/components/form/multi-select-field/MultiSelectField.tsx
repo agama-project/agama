@@ -165,21 +165,19 @@ type MultiSelectFieldProps = FieldLabelOptions & {
   allowCustomEntries?: boolean;
 
   /**
-   * Whether a Tab that commits something keeps focus in the field. On by
-   * default, so several values can be added one after another without leaving
-   * the text box.
+   * Whether a Tab that commits something keeps focus in the field. Off by
+   * default, so Tab moves focus on as the keyboard convention expects.
    *
-   * With nothing to commit, Tab always moves focus on, so the field can never
-   * hold the user in.
+   * Turn it on to add several values one after another without leaving the
+   * text box. With nothing to commit, Tab always moves focus on either way.
    *
-   * It is what `ArrayField` does too, so both fields take Tab the same way.
+   * `ArrayField` also moves focus on Tab, so both fields take Tab the same
+   * way unless this is turned on.
    *
-   * @note It is a deliberate departure from the convention that Tab moves
-   * focus from one component to another, made for the sake of agility: a field
-   * taking many values is filled a good deal faster when the key confirming a
-   * value is also the one already under the finger. Watch how users get on
-   * with it before turning the default around, and turn it around here and in
-   * `ArrayField` together if they do not.
+   * @note Turning this on is a deliberate departure from the convention that
+   * Tab moves focus from one component to another, made for the sake of
+   * agility: a field taking many values is filled a good deal faster when the
+   * key confirming a value is also the one already under the finger.
    * @see https://www.w3.org/WAI/ARIA/apg/practices/keyboard-interface/#fundamentalkeyboardnavigationconventions
    */
   tabKeepsFocus?: boolean;
@@ -348,7 +346,7 @@ export default function MultiSelectField({
   label,
   options,
   allowCustomEntries = false,
-  tabKeepsFocus = true,
+  tabKeepsFocus = false,
   autoHighlight = true,
   showNoResults = false,
   entriesThreshold = 0,

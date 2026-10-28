@@ -226,10 +226,12 @@ type ArrayFieldProps = {
 /**
  * A form field for entering and managing a list of string values.
  *
- * Users type in a text input and commit entries one at a time via Enter,
- * Tab, or blur. Each committed entry appears as a labeled token inside the
- * field. Entries can be edited by clicking them or selecting them with the
- * keyboard, and removed individually via the close button or Backspace/Delete.
+ * Users type in a text input and commit entries one at a time. Enter commits
+ * the draft and keeps focus in the field; Tab commits it and moves focus on.
+ * Leaving the field by any other means commits it too. Each committed entry
+ * appears as a labeled token inside the field. Entries can be edited by
+ * clicking them or selecting them with the keyboard, and removed individually
+ * via the close button or Backspace/Delete.
  * A clear-invalid button removes all invalid entries at once when any are present.
  *
  * Keyboard navigation follows the ARIA listbox pattern: ArrowLeft/Right/Up/Down
@@ -452,16 +454,11 @@ export default function ArrayField({
       return;
     }
 
+    // Tab is left to the browser: focus moves on and onBlur commits the draft.
     switch (e.key) {
       case "Enter":
         e.preventDefault();
         commit(draft);
-        return;
-      case "Tab":
-        if (draft.trim()) {
-          e.preventDefault();
-          commit(draft);
-        }
         return;
       case "ArrowLeft":
       case "Backspace":

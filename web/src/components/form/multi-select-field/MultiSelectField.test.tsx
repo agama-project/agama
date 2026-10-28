@@ -356,14 +356,14 @@ describe("MultiSelectField", () => {
   });
 
   describe("Tab", () => {
-    it("commits the picked out option and keeps focus in the field", async () => {
+    it("commits the picked out option and moves on", async () => {
       const { user } = installerRender(<TestForm />);
       await user.click(combobox());
       await user.keyboard("{ArrowDown}");
       await user.tab();
 
       within(entries()).getByRole("option", { name: "Ethernet 0" });
-      expect(combobox()).toHaveFocus();
+      expect(combobox()).not.toHaveFocus();
     });
 
     it("keeps a value the field already holds, instead of taking it back out", async () => {
@@ -375,13 +375,23 @@ describe("MultiSelectField", () => {
       expect(announcement()).toContain("Ethernet 0 is already selected.");
     });
 
-    it("commits the text and moves on when the field does not hold focus", async () => {
-      const { user } = installerRender(<TestForm tabKeepsFocus={false} />);
+    it("commits the text and moves on", async () => {
+      const { user } = installerRender(<TestForm />);
       await user.type(combobox(), "eth1");
       await user.tab();
 
       within(entries()).getByRole("option", { name: "Ethernet 1" });
       expect(combobox()).not.toHaveFocus();
+    });
+
+    it("keeps focus when tabKeepsFocus is set", async () => {
+      const { user } = installerRender(<TestForm tabKeepsFocus />);
+      await user.click(combobox());
+      await user.keyboard("{ArrowDown}");
+      await user.tab();
+
+      within(entries()).getByRole("option", { name: "Ethernet 0" });
+      expect(combobox()).toHaveFocus();
     });
 
     it("moves on when there is nothing to commit", async () => {

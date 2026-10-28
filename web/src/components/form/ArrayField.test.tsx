@@ -162,11 +162,13 @@ describe("ArrayField", () => {
       screen.getByText("gamma");
     });
 
-    it("adds a value on Tab", async () => {
+    it("adds a value and moves focus on Tab", async () => {
       const { user } = installerRender(<TestForm />);
-      await user.type(screen.getByRole("textbox", { name: "Tags" }), "delta");
+      const input = screen.getByRole("textbox", { name: "Tags" });
+      await user.type(input, "delta");
       await user.tab();
       screen.getByText("delta");
+      expect(input).not.toHaveFocus();
     });
 
     it("commits the draft on blur", async () => {
