@@ -30,6 +30,7 @@ use agama_utils::{
     api::{event, Event, Scope},
     progress,
 };
+use anyhow::Context;
 use gettextrs::gettext;
 use tokio::sync::broadcast;
 
@@ -90,7 +91,7 @@ impl Starter {
             None => Box::new(
                 NetworkManagerAdapter::from_system()
                     .await
-                    .expect("Could not connect to NetworkManager"),
+                    .context("Could not connect to NetworkManager")?,
             ),
         };
 
@@ -111,7 +112,12 @@ impl Starter {
         if let Some(watcher) = watcher {
             let handler_clone = handler.clone();
             tokio::spawn(async move {
-                watcher.run(handler_clone).await.unwrap();
+                if let Err(error) = watcher.run(handler_clone).await {
+                    tracing::error!(
+                        "The network watcher stopped, therefore changes from NetworkManager will \
+                         be ignored. The original error was {error}"
+                    );
+                }
             });
         }
 
