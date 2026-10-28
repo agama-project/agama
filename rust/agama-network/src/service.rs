@@ -221,13 +221,8 @@ impl MessageHandler<message::NewConnection> for Service {
                 "New connection to be added {:?}, forcing re-read",
                 &message.connection
             );
+            // It emits the events if the state changed.
             self.force_state_read().await?;
-            self.events.send(Event::SystemChanged {
-                scope: (Scope::Network),
-            })?;
-            self.events.send(Event::ProposalChanged {
-                scope: (Scope::Network),
-            })?;
         }
         Ok(())
     }
