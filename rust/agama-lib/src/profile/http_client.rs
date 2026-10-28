@@ -18,8 +18,8 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+use super::AutoyastConversionResult;
 use crate::http::{BaseHTTPClient, BaseHTTPClientError};
-use crate::profile::ValidationOutcome;
 use fluent_uri::Uri;
 use serde::Serialize;
 use std::collections::HashMap;
@@ -34,15 +34,20 @@ impl ProfileHTTPClient {
     }
 
     /// Validate a JSON profile, by doing a HTTP client request.
-    pub async fn validate(&self, request: &impl Serialize) -> anyhow::Result<ValidationOutcome> {
-        Ok(self.client.post("profile/validate", request).await?)
+    pub async fn validate(&self, request: &impl Serialize) -> anyhow::Result<()> {
+        self.client
+            .post_void("private/profile/validate", request)
+            .await?;
+        Ok(())
     }
 
     /// Evaluate a Jsonnet profile, by doing a HTTP client request.
     /// Return well-formed Agama JSON on success.
     pub async fn from_jsonnet(&self, request: &impl Serialize) -> anyhow::Result<String> {
-        let output: Box<serde_json::value::RawValue> =
-            self.client.post("profile/evaluate", request).await?;
+        let output: Box<serde_json::value::RawValue> = self
+            .client
+            .post("private/profile/evaluate", request)
+            .await?;
 
         Ok(output.to_string())
     }
@@ -50,16 +55,15 @@ impl ProfileHTTPClient {
     /// Process AutoYaST profile (*url* ending with .xml, .erb, or dir/) by doing a HTTP client request.
     /// Note that this client does not act on this *url*, it passes it as a parameter
     /// to our web backend.
-    /// Return well-formed Agama JSON on success.
-    pub async fn from_autoyast(&self, url: &Uri<String>) -> Result<String, BaseHTTPClientError> {
+    /// Returns the converted Agama configuration along with any unsupported elements found.
+    pub async fn from_autoyast(
+        &self,
+        url: &Uri<String>,
+    ) -> Result<AutoyastConversionResult, BaseHTTPClientError> {
         let mut map = HashMap::new();
 
         map.insert(String::from("url"), url.to_string());
 
-        // FIXME: how to escape it?
-        let output: Box<serde_json::value::RawValue> =
-            self.client.post("/profile/autoyast", &map).await?;
-        let config_string = format!("{}", output);
-        Ok(config_string)
+        self.client.post("private/profile/autoyast", &map).await
     }
 }

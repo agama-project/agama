@@ -38,8 +38,8 @@ describe("EncryptionSection", () => {
     beforeEach(() => {
       mockUseConfigModel.mockReturnValue({
         encryption: {
-          method: "luks2",
           password: "12345",
+          tpm: false,
         },
       });
     });
@@ -53,8 +53,8 @@ describe("EncryptionSection", () => {
       beforeEach(() => {
         mockUseConfigModel.mockReturnValue({
           encryption: {
-            method: "tpmFde",
             password: "12345",
+            tpm: true,
           },
         });
       });

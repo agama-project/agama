@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022-2025] SUSE LLC
+# Copyright (c) [2022-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -26,6 +26,7 @@ require "agama/storage/config_conversions"
 require "agama/storage/config_json_generator"
 require "agama/storage/config_solver"
 require "agama/storage/model_support_checker"
+require "agama/storage/bootloader_config"
 require "agama/storage/proposal_strategies"
 require "agama/storage/issue_classes"
 require "agama/storage/system"
@@ -35,6 +36,23 @@ require "y2storage"
 
 module Agama
   module Storage
+    # FIXME: This class needs a refactor. The proposal is calculated from a config, a product_config
+    #   and a bootloader_config. But the way to provide and update those configs differs for each
+    #   case:
+    #
+    #   * config:
+    #     * Provided as a param to #calculate_from_json
+    #     * The internal reference #source_config is updated everytime the proposal is calculated.
+    #   * product_config:
+    #     * Provided as a param to constructor.
+    #     * The internal reference #product_config is updated by replacing the object.
+    #   * bootloader_config:
+    #     * Provided as a param to constructor.
+    #     * The internal reference #source_bootloader_config is updated as side effect of changing
+    #       the internal state of the object owned by BootloaderManager class (#load_json).
+    #
+    #   The three configs should be provided as params to #calculate_from_json.
+    #
     # Class used for calculating a storage proposal.
     class Proposal
       include Yast::I18n
@@ -43,11 +61,13 @@ module Agama
       attr_accessor :product_config
 
       # @param product_config [Agama::Config] Agama config
+      # @param bootloader_config [BootloaderConfig, nil] Bootloader config
       # @param logger [Logger]
-      def initialize(product_config, logger: nil)
+      def initialize(product_config, bootloader_config: nil, logger: nil)
         textdomain "agama"
 
         @product_config = product_config
+        @source_bootloader_config = bootloader_config || BootloaderConfig.new
         @logger = logger || Logger.new($stdout)
       end
 
@@ -100,7 +120,10 @@ module Agama
         config = config(solved: true)
         return unless config && model_supported?(config)
 
-        ConfigConversions::ToModel.new(config, product_config).convert
+        bootloader_config = self.bootloader_config(solved: true)
+
+        ConfigConversions::ToModel.new(config,
+          product_config: product_config, bootloader_config: bootloader_config).convert
       end
 
       # Solves a given model.
@@ -110,12 +133,19 @@ module Agama
       def solve_model(model_json)
         return unless storage_manager.probed?
 
-        config = ConfigConversions::FromModel
-          .new(model_json, product_config: product_config, storage_system: storage_system)
-          .convert
+        bootloader_config = self.bootloader_config(solved: true)
 
-        ConfigSolver.new(product_config, storage_system).solve(config)
-        ConfigConversions::ToModel.new(config, product_config).convert
+        config = ConfigConversions::FromModel.new(
+          model_json,
+          product_config:    product_config,
+          bootloader_config: bootloader_config,
+          storage_system:    storage_system
+        ).convert
+
+        ConfigSolver.new(product_config, bootloader_config, storage_system).solve(config)
+
+        ConfigConversions::ToModel.new(config,
+          product_config: product_config, bootloader_config: bootloader_config).convert
       end
 
       # Calculates a new proposal using the given JSON.
@@ -150,7 +180,9 @@ module Agama
         logger.info("Calculating proposal with agama strategy: #{config.inspect}")
         reset
         @source_config = config.copy
-        @strategy = ProposalStrategies::Agama.new(product_config, storage_system, config, logger)
+        @strategy = ProposalStrategies::Agama.new(
+          product_config, storage_system, config, bootloader_config.copy, logger
+        )
         calculate
       end
 
@@ -165,7 +197,7 @@ module Agama
         # Ensures keys are strings.
         partitioning = JSON.parse(partitioning.to_json)
         @strategy = ProposalStrategies::Autoyast
-          .new(product_config, storage_system, partitioning, logger)
+          .new(product_config, storage_system, partitioning, bootloader_config.copy, logger)
         calculate
       end
 
@@ -212,6 +244,14 @@ module Agama
         @storage_system ||= Storage::System.new
       end
 
+      # Bootloader config used for calculating the proposal.
+      #
+      # @param solved [Boolean] Whether to get solved config.
+      # @return [Storage::BootloaderConfig]
+      def bootloader_config(solved: false)
+        solved && calculated? ? strategy.bootloader_config : source_bootloader_config
+      end
+
     private
 
       # @return [Logger]
@@ -229,6 +269,11 @@ module Agama
       #
       # @return [Storage::Config, nil] nil if no agama proposal has been calculated.
       attr_reader :source_config
+
+      # Source bootloader config without solving.
+      #
+      # @return [Storage::BootloaderConfig]
+      attr_reader :source_bootloader_config
 
       # Resets values.
       def reset
@@ -262,8 +307,9 @@ module Agama
       def calculate_agama_from_json(config_json)
         config = ConfigConversions::FromJSON.new(
           config_json,
-          default_paths:   product_config.default_paths,
-          mandatory_paths: product_config.mandatory_paths
+          bootloader_config: bootloader_config(solved: true),
+          default_paths:     product_config.default_paths,
+          mandatory_paths:   product_config.mandatory_paths
         ).convert
 
         calculate_agama(config)

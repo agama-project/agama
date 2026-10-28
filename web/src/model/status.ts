@@ -42,9 +42,17 @@ type Progress = {
   step: string;
 };
 
+type Task = {
+  id: number;
+  name: string;
+  description: string;
+  scope: Scope;
+};
+
 type Status = {
   stage: Stage;
   progresses: Progress[];
+  tasks: Task[];
 };
 
-export type { Status, Stage, Scope, Progress };
+export type { Status, Stage, Scope, Task, Progress };

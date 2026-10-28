@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024-2025] SUSE LLC
+# Copyright (c) [2024-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -22,6 +22,7 @@
 require "agama/storage/proposal_strategies/base"
 require "agama/storage/proposal_settings"
 require "agama/storage/proposal_settings_reader"
+require "agama/storage/bootloader_config_solver"
 
 module Agama
   module Storage
@@ -33,11 +34,12 @@ module Agama
         # @param product_config [Config] Product config
         # @param storage_system [Storage::System]
         # @param partitioning [Array<Hash>]
+        # @param bootloader_config [Agama::Storage::BootloaderConfig]
         # @param logger [Logger]
-        def initialize(product_config, storage_system, partitioning, logger)
+        def initialize(product_config, storage_system, partitioning, bootloader_config, logger)
           textdomain "agama"
 
-          super(product_config, storage_system, logger)
+          super(product_config, storage_system, bootloader_config, logger)
           @partitioning = partitioning
         end
 
@@ -50,6 +52,7 @@ module Agama
         # @see Base#calculate
         def calculate
           @ay_issues = ::Installation::AutoinstIssues::List.new
+          disable_bls_bootloader
           proposal = Y2Storage::AutoinstProposal.new(
             partitioning:      partitioning,
             proposal_settings: proposal_settings,
@@ -79,7 +82,11 @@ module Agama
         # @return [Y2Storage::ProposalSettings]
         def proposal_settings
           agama_default = ProposalSettingsReader.new(product_config).read
-          agama_default.to_y2storage(config: product_config)
+          root_vol = agama_default.volumes.find { |v| v.mount_path == "/" }
+          if root_vol&.btrfs
+            root_vol.btrfs.subvolumes.concat(bootloader_config.type.root_subvolumes)
+          end
+          agama_default.to_y2storage(config: product_config, bootloader_config: bootloader_config)
         end
 
         # Logs AutoYaST warnings
@@ -104,6 +111,22 @@ module Agama
         # Agama issue equivalent to the given AutoYaST issue
         def agama_issue(ay_issue)
           Issue.new(ay_issue.message)
+        end
+
+        # The underlying yast-storage-ng contains its own logic to infer which boot loader will
+        # be used when deciding the strategy to calculate boot partitions. This method tries to
+        # influence that logic in order to get a proposal that is aligned with the rest of the
+        # Agama settings.
+        #
+        # TODO: there is no way to actually enable a BLS-based bootloader if the product is
+        # configured in YaST to never use that kind of bootloaders. The plan is to re-evaluate the
+        # changes needed in Y2Storage::BootRequirementsChecker in the short future.
+        def disable_bls_bootloader
+          BootloaderConfigSolver.new(product_config).solve(@bootloader_config)
+          value = @bootloader_config.type == Y2Storage::BootloaderType::GRUB2 ? "1" : "0"
+          ENV["YAST_NO_BLS_BOOT"] = value
+          # Avoiding problems with cached values
+          Y2Storage::StorageEnv.instance.reset_cache
         end
       end
     end

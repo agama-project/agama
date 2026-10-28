@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024-2025] SUSE LLC
+ * Copyright (c) [2024-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -37,13 +37,12 @@ const sda: any = {
   type: "disk",
   vendor: "Micron",
   model: "Micron 1100 SATA",
-  driver: ["ahci", "mmcblk"],
+  drivers: ["ahci", "mmcblk"],
   bus: "IDE",
   busId: "",
   transport: "usb",
-  dellBOSS: false,
+  boss: false,
   sdCard: true,
-  active: true,
   name: "/dev/sda",
   size: 1024,
   shrinking: { unsupported: ["Resizing is not supported"] },
@@ -56,7 +55,6 @@ const sda1 = {
   sid: "60",
   isDrive: false,
   type: "",
-  active: true,
   name: "/dev/sda1",
   size: 512,
   shrinking: { supported: 128 },
@@ -69,7 +67,6 @@ const sda2 = {
   sid: "61",
   isDrive: false,
   type: "",
-  active: true,
   name: "/dev/sda2",
   size: 512,
   shrinking: { unsupported: ["Resizing is not supported"] },
@@ -90,13 +87,12 @@ const sdb = {
   type: "disk",
   vendor: "Samsung",
   model: "Samsung Evo 8 Pro",
-  driver: ["ahci"],
+  drivers: ["ahci"],
   bus: "IDE",
   busId: "",
   transport: "",
-  dellBOSS: false,
+  boss: false,
   sdCard: false,
-  active: true,
   name: "/dev/sdb",
   size: 2048,
   shrinking: { unsupported: ["Resizing is not supported"] },

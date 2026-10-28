@@ -1,0 +1,83 @@
+/*
+ * Per-product appearance overrides: BASIC example (start here).
+ *
+ * Copy this file to `src/assets/products/<product-id>.css` (named after the
+ * product id, e.g. `Tumbleweed.css`). Agama loads `assets/appearance/<id>.css`
+ * at runtime, after its own styles, so your `:root` overrides win. A product
+ * without such a file uses the Agama defaults. Keep only the roles you want to
+ * change.
+ *
+ * This file covers the basics: colors / brand, which is all most products need.
+ * example-advanced.css lists and documents EVERY available role (these colors
+ * plus typography, font/icon sizes, icon color, disabled, tooltip and
+ * terminal); reach for it when you need anything beyond the basics here.
+ *
+ * Color roles are theme-scoped (set them in the matching block). High contrast
+ * is governed by PatternFly; brand only its accent in the HC blocks. Picking
+ * values with accessible contrast (WCAG) is your responsibility.
+ *
+ * Demo palette (not the Agama green; replace with your own): the SUSE brand
+ * Persimmon accent (#fe7c3f, see brand.suse.com) in light, a violet in dark.
+ */
+
+/* Light theme. */
+:root:where(:not(.pf-v6-theme-dark)) {
+  --agm-t--surface--color: #fff;
+  --agm-t--surface--color--raised: #efefef;
+  --agm-t--surface--color--floating: #fff;
+  --agm-t--text--color: #1d1d1d;
+  --agm-t--text--color--subtle: #6f6f6f;
+  --agm-t--border--color: #dcdbdc;
+
+  --agm-t--brand--color: #fe7c3f;
+  --agm-t--brand--color--hover: #ff5a2b;
+  --agm-t--brand--color--clicked: #fe7c3f;
+  --agm-t--brand--text--color: #47190d;
+  --agm-t--link--color: #bd3314;
+  --agm-t--action--background--color--hover: #ffefe9;
+  --agm-t--focus--color: #fe7c3f;
+  --agm-t--focus--separator--color: #fff;
+
+  --agm-t--status--info--color: #2453ff;
+  --agm-t--status--caution--color: #9a6700;
+  --agm-t--status--danger--color: #d83b3b;
+  --agm-t--status--success--color: #008657;
+  --agm-t--status--custom--color: #c2410c;
+}
+
+/* Dark theme. */
+:root:where(.pf-v6-theme-dark) {
+  --agm-t--surface--color: #141420;
+  --agm-t--surface--color--raised: #1d1d2b;
+  --agm-t--surface--color--floating: #1d1d2b;
+  --agm-t--text--color: #e8e8f2;
+  --agm-t--text--color--subtle: #9a9ab0;
+  --agm-t--border--color: #34344a;
+
+  --agm-t--brand--color: #a98bff;
+  --agm-t--brand--color--hover: #bda6ff;
+  --agm-t--brand--color--clicked: #a98bff;
+  --agm-t--brand--text--color: #141420;
+  --agm-t--link--color: #a98bff;
+  --agm-t--action--background--color--hover: #262640;
+  --agm-t--focus--color: #a98bff;
+  --agm-t--focus--separator--color: #141420;
+
+  --agm-t--status--info--color: #6aa6ff;
+  --agm-t--status--caution--color: #f0b429;
+  --agm-t--status--danger--color: #f57171;
+  --agm-t--status--success--color: #4cc46e;
+  --agm-t--status--custom--color: #a98bff;
+}
+
+/* High contrast (optional): brand the accent only; PatternFly governs the rest.
+   Set values PER VARIANT (light HC on white, dark HC on black). */
+:root:where(.pf-v6-theme-high-contrast:not(.pf-v6-theme-dark)) {
+  --agm-t--brand--color: #bd3314;
+  --agm-t--link--color: #bd3314;
+}
+
+:root:where(.pf-v6-theme-dark.pf-v6-theme-high-contrast) {
+  --agm-t--brand--color: #a98bff;
+  --agm-t--link--color: #a98bff;
+}

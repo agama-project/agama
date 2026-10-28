@@ -1,4 +1,363 @@
 -------------------------------------------------------------------
+Tue Oct 27 16:04:15 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Drop the dependencies on the following packages:
+  - yast2-bootloader and yast2-reipl dependencies pulled in
+    by agama-yast (gh#agama-project/agama#4033).
+  - yast2-iscsi-client dependency pulled in by agama-yast
+    (gh#agama-project/agama#4032).
+  - yast2-s390 and yast2-cio dependencies pulled in by
+    agama-yast on s390x (gh#agama-project/agama#4026).
+
+-------------------------------------------------------------------
+Tue Oct 27 12:08:59 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Do not try to enable the spice-vdagentd service because it is
+  already activated via socket (gh#agama-project/agama#4104).
+
+-------------------------------------------------------------------
+Mon Oct 26 15:30:00 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Simplify booting the rescue mode, use a single "rescue=1" boot
+  option instead of passing many systemd specific boot options
+  (bsc#1275038)
+
+-------------------------------------------------------------------
+Mon Oct 26 14:44:46 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Added workaround for a plymouth/gdm bug where the active terminal
+  is switched back to tty1 console which makes the graphical
+  console with the running installer not visible (bsc#1270027)
+
+-------------------------------------------------------------------
+Thu Oct 22 09:44:07 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Version 25
+
+-------------------------------------------------------------------
+Wed Oct  7 12:53:02 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Rename "Check Installation Medium" into "Check Medium & Install"
+  to make it more clear (bsc#1283085)
+
+-------------------------------------------------------------------
+Mon Oct  5 14:34:04 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Improved self-update cleanup to disable the added self-update
+  repositories also when the self-update fails or crashes.
+  (bsc#1254163)
+
+-------------------------------------------------------------------
+Wed Sep 30 12:48:23 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Reduce the installer image footprint by dropping unnecessary
+  transitive YaST dependencies pulled in by agama-yast
+  (gh#agama-project/agama#4001, gh#agama-project/agama#4003,
+  gh#agama-project/agama#4004).
+
+-------------------------------------------------------------------
+Mon Sep 28 08:50:52 UTC 2026 - Andreas Schwab <schwab@suse.de>
+
+- Add support for riscv64 (gh#agama-project/agama#3867)
+
+-------------------------------------------------------------------
+Thu Sep 24 14:03:15 UTC 2026 - Michal Filka <mfilka@suse.com>
+
+- bsc#1282603
+  - switched from 16.1 to 16.2 in kiwi build config
+
+-------------------------------------------------------------------
+Fri Sep 18 08:43:24 UTC 2026 - Santiago Zarate <santiago.zarate@suse.com>
+
+- Set default bootloader for MicroOS to systemd-boot (bsc#1277929)
+
+-------------------------------------------------------------------
+Wed Sep 16 11:50:51 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Add experimental support for 32 bit architectures which are in
+  TW ports (bsc#1266309)
+
+-------------------------------------------------------------------
+Thu Sep 10 18:49:38 UTC 2026 - Lubos Kocman <lubos.kocman@suse.com>
+
+- Use license.txt for English in license.opensuse
+  (gh#agama-project/agama#3915)
+
+-------------------------------------------------------------------
+Mon Sep  7 09:43:01 UTC 2026 - Lubos Kocman <lubos.kocman@suse.com>
+
+- Add openSUSE license files (gh#agama-project/agama#3877).
+
+-------------------------------------------------------------------
+Tue Sep  1 15:51:10 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 24
+
+-------------------------------------------------------------------
+Mon Aug 31 12:55:59 UTC 2026 - Martin Vidner <mvidner@suse.com>
+
+- Remove agama-integration-tests, keep just nodejs(engine)
+  (gh#agama-project/agama#3852)
+
+-------------------------------------------------------------------
+Fri Aug 28 15:31:19 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Added Kiwi profile definition for the SLES for NVIDIA product,
+  use kernel-nvidia instead of kernel-default, disable self-update
+  for it (jsc#PED-16833)
+
+-------------------------------------------------------------------
+Tue Aug 25 10:12:59 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Omit the "multipath" dracut module from the initrd, it might
+  freeze during the boot process. In 16.0 it was omitted
+  automatically by Kiwi, but that hardcoded omit list has been
+  removed and now we need to omit the dracut module explicitly
+  here. (bsc#1274053, bsc#1271407)
+
+-------------------------------------------------------------------
+Tue Aug 18 12:58:28 UTC 2026 - Steffen Winterfeldt <snwint@suse.com>
+
+- remove ppc64 hacks from boot config scripts (gh#agama-project/agama#3826)
+
+-------------------------------------------------------------------
+Mon Aug 17 09:30:00 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- HCN: do not collect data from functions that log. dracut's
+  info() writes to stdout when DRACUT_SYSTEMD is set, so the
+  messages of carry_over_cmdline() and get_dev_hcn() would end up
+  in the generated command line and in the device mappings. Both
+  hand their result over in a variable now.
+- HCN: reset the master lookup in every iteration of
+  fixup_nm_connections, a connection that is in no mapping and
+  whose controller is no HCN bond inherited the values of the
+  previous iteration and was treated as HCN-related.
+- HCN: follow the dracut conventions in hcn-init-initrd.service
+  (DRACUT_SYSTEMD=1, StandardInput=null, Conflicts with
+  shutdown.target and emergency.target) and raise
+  TimeoutStartSec to 300s, the 3 minutes parse-hcn waits for the
+  devices exceed the default start timeout.
+- HCN: wait for all the devices to show up in sysfs with a single
+  3 minutes budget instead of restarting it for every device,
+  which exceeded the service start timeout with more than one
+  device, and do not take the name resolved by ofpathname for a
+  device that has no sysfs entry yet as a valid result
+  (gh#agama-project/agama#3790).
+
+-------------------------------------------------------------------
+Mon Aug  3 12:45:00 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- HCN: write the nm-initrd-generator configuration files to
+  /run/hcn/conf.d. The generator always emits
+  15-carrier-timeout.conf, so with the default directory the HCN
+  run overwrote the one NetworkManager had generated from the real
+  command line, resetting a user supplied rd.net.timeout.carrier.
+- HCN: fix the bond lookup in fixup_nm_connections, which matched
+  a space delimited name against the newline separated bond list
+  and therefore never matched at all as soon as there was more
+  than one bond.
+- Related to bsc#1272445 (gh#agama-project/agama#3790).
+
+-------------------------------------------------------------------
+Mon Aug  3 12:30:00 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- HCN: carry the device independent network options of the kernel
+  command line over to the nm-initrd-generator call, which so far
+  only received the bond=, ip= and rd.route= arguments built from
+  rd.hcn.*. nameserver=, rd.peerdns=, rd.net.timeout.dhcp=,
+  rd.net.dhcp.retry=, rd.net.dhcp.vendor-class= and
+  rd.net.dhcp.dscp= had no effect on an HCN boot so far, since the
+  ip=hcn marker keeps NetworkManager's own generator run from
+  producing any connection (bsc#1273219, related to bsc#1272445,
+  gh#agama-project/agama#3790).
+
+-------------------------------------------------------------------
+Mon Aug  3 10:50:00 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+Fixes related to bsc#1272445 ISO building and testing
+(gh#agama-project/agama#3782).
+- Fix ppc64le and s390x ISO build issues in fix_bootconfig by
+  ensuring the xorriso wrapper acts as a transparent pass-through
+  for read-only reporting and probing commands.
+- Clean up redundant ppc64le bootloader options, relying on KIWI-NG's
+  native support for making OFW ISOs bootable.
+
+-------------------------------------------------------------------
+Thu Jul 23 19:40:00 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Fix multiple IP/route assignments in multi-bond setups with
+  HCN/HVN inside the initrd (bsc#1272445, related to jsc#PED-14533).
+- Announce the HCN network configuration with an "ip=hcn" marker in
+  /etc/cmdline.d, preventing NetworkManager and the other Agama
+  dracut modules from configuring the bond ports on their own, which
+  could break HCN bonds. It requires NetworkManager with "ip=hcn"
+  support (bsc#1272445, related to jsc#PED-14533 and jsc#PED-14534).
+
+-------------------------------------------------------------------
+Mon Jul 20 11:12:36 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 23
+
+-------------------------------------------------------------------
+Thu Jul  9 10:04:12 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Add support for configuring HNV in the initramfs providing the
+  IP configuration through the kernel cmdline with the rd.hcn.ip
+  and the rd.hcn.route options (jsc#PED-14533).
+
+-------------------------------------------------------------------
+Wed Jul  8 13:19:39 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+Fixes related to bsc#1268779:
+- Removed "ignition" from the installer image
+- Do not start "combustion" by default, can be manually enabled
+  with the "rd.systemd.wants=firstboot.target" boot option
+
+-------------------------------------------------------------------
+Tue Jun 30 14:01:30 UTC 2026 - Santiago Zarate <santiago.zarate@suse.com>
+
+- Disable firefox's Link Preview feature gh#agama-project/agama#3687
+
+-------------------------------------------------------------------
+Wed Jun 24 15:19:28 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Break a initrd-nmtui systemd dependency cycle (systemd deletes some services
+  to break the cycle, that services are then missing and it might
+  trigger the emergency shell) (bsc#1268901)
+
+-------------------------------------------------------------------
+Thu Jun 18 08:16:25 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add support for alts as update-alternatives replacement
+  (gh#agama-project/agama#3645).
+
+-------------------------------------------------------------------
+Mon Jun 15 15:45:32 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 22
+
+-------------------------------------------------------------------
+Fri Jun  5 13:42:42 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Added "plymouth.ignore-serial-consoles" boot option on ppc64le
+  (bsc#1249569)
+
+-------------------------------------------------------------------
+Tue Jun  2 11:40:18 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Display the media check result and wait for a key press on all
+  system consoles to easily continue booting the installer system,
+  needed especially for openQA (bsc#1267263)
+
+-------------------------------------------------------------------
+Mon Jun  1 14:35:33 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Added "agama-screenshot" helper script to take screenshots
+  of the locally running Agama installer
+  (gh#agama-project/agama#3537)
+
+-------------------------------------------------------------------
+Mon May 25 15:25:49 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Enable back ignition and combustion, apply a workaround for
+  detecting the first boot (disable detection, consider every boot
+  as the first boot) (related to bsc#1266257)
+
+-------------------------------------------------------------------
+Mon May 25 12:06:55 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Temporarily disabled ignition and combustion because they cannot
+  start properly in the Live ISO environment (bsc#1266257)
+
+-------------------------------------------------------------------
+Thu May 21 15:39:19 UTC 2026 - Volkan OZTUZUN <volkan.oztuzun@suse.com>
+
+- Add ignition and combustion to the live image package list.
+
+-------------------------------------------------------------------
+Sat May 16 07:54:44 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 21
+
+-------------------------------------------------------------------
+Fri May 15 14:16:33 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Fixed starting the initrd-nmtui and live-self-update services
+  in the initrd (gh#agama-project/agama#3504)
+
+-------------------------------------------------------------------
+Thu May 14 03:45:16 UTC 2026 - Asish Kumar <officialasishkumar@gmail.com>
+
+- Install dracut systemd service units via the unit directory variable
+  so they are included in non-hostonly initrds with dracut 109
+  (gh#agama-project/agama#3264).
+
+-------------------------------------------------------------------
+Thu May 14 03:44:13 UTC 2026 - Asish Kumar <officialasishkumar@gmail.com>
+
+- Do not copy installer-only boot parameters like systemd.unit,
+  iso-scan/filename and brd.rd_nr to the installed system
+  (gh#agama-project/agama#3172).
+
+-------------------------------------------------------------------
+Wed May 13 12:45:19 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add the "ntp" dracut module to allow setting the NTP configuration
+  from the kernel command-line (gh#agama-project/agama#3488).
+
+-------------------------------------------------------------------
+Thu May  7 13:06:27 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Restore back the checkmedia option in the *.kiwi file
+  (reverts the change for bsc#1262229, the latest checkmedia
+  supports GPT partition tables and kiwi improved the check to
+  detect the checkmedia version)
+
+-------------------------------------------------------------------
+Thu May  7 08:19:56 UTC 2026 - Michal Filka <mfilka@suse.com>
+
+- bsc#1264099
+  - use --enable-vt-switch option conditionally only if gnome-kiosk
+    supports it
+
+-------------------------------------------------------------------
+Wed May  6 14:11:57 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Removed development GPG keys (bsc#1262143)
+
+-------------------------------------------------------------------
+Thu Apr 23 08:20:09 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Fixed medium check (bsc#1262311)
+  - Properly check the medium when booting from HDD or USB flash
+  - Fixed waiting for a key press when the check is finished
+
+-------------------------------------------------------------------
+Wed Apr 22 06:43:48 UTC 2026 - Michal Filka <mfilka@suse.com>
+
+- bsc#1262229
+  - Dropped mediacheck from the kiwi file as it caused build errors
+    after kiwi upgraded to new version
+
+-------------------------------------------------------------------
+Fri Apr 17 10:26:35 UTC 2026 - Michal Filka <mfilka@suse.com>
+
+- bsc#1261932
+  - Explicitly allow virtual terminal switching for the gnome kiosk
+    session
+
+-------------------------------------------------------------------
+Tue Apr 14 17:36:59 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 20
+
+-------------------------------------------------------------------
+Fri Apr 10 13:46:12 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- The remote access to the Agama web server can be disabled with
+  the "inst.remote=0" boot option (jsc#AGM-153)
+
+-------------------------------------------------------------------
 Wed Apr  1 14:46:08 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
 
 - Run the shell at tty8 as a login shell (to initialize some

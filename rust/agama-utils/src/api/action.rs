@@ -21,23 +21,24 @@
 use std::str::FromStr;
 
 use crate::{
-    api::{iscsi, l10n},
+    api::{iscsi, l10n, Scope},
     kernel_cmdline::KernelCmdline,
 };
+use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Serialize, Deserialize, utoipa::ToSchema)]
+#[derive(Debug, Serialize, Deserialize, JsonSchema)]
 pub enum Action {
     /// Performs an iSCSI discovery, finding nodes from the given portal.
     #[serde(rename = "discoverISCSI")]
     DiscoverISCSI(iscsi::DiscoverConfig),
     #[serde(rename = "activateStorage")]
     ActivateStorage,
-    #[serde(rename = "probeStorage")]
-    ProbeStorage,
-    /// Performs a DASD probing on demand.
-    #[serde(rename = "probeDASD")]
-    ProbeDASD,
+    /// Probes hardware and refreshes services (storage, DASD, software, etc).
+    ///
+    /// If `only` is not given, it probes everything.
+    #[serde(rename = "probe")]
+    Probe { only: Option<Vec<Scope>> },
     #[serde(rename = "configureL10n")]
     ConfigureL10n(l10n::SystemConfig),
     #[serde(rename = "install")]
@@ -57,7 +58,7 @@ pub enum Action {
     Copy,
     strum::Display,
     strum::EnumString,
-    utoipa::ToSchema,
+    JsonSchema,
 )]
 #[strum(serialize_all = "camelCase")]
 #[serde(rename_all = "camelCase")]

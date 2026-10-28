@@ -22,8 +22,7 @@
 
 import React from "react";
 import { screen } from "@testing-library/react";
-import { installerRender, mockStage } from "~/test-utils";
-import { useSystem } from "~/hooks/model/system";
+import { installerRender, mockStage, mockSystem } from "~/test-utils";
 import { Product } from "~/model/system";
 import { PRODUCT as PATHS } from "~/routes/paths";
 import ChangeProductOption from "./ChangeProductOption";
@@ -54,26 +53,14 @@ const tumbleweedWithModes: Product = {
   ],
 };
 
-const mockSystemProducts: jest.Mock<Product[]> = jest.fn();
-const mockSoftware: jest.Mock = jest.fn();
-
-jest.mock("~/hooks/model/system", () => ({
-  ...jest.requireActual("~/hooks/model/system"),
-  useSystem: (): ReturnType<typeof useSystem> => ({
-    products: mockSystemProducts(),
-    software: mockSoftware(),
-  }),
-}));
-
 describe("ChangeProductOption", () => {
   beforeEach(() => {
-    mockSoftware.mockReturnValue(null);
     mockStage("configuring");
   });
 
   describe("when there is more than one product available", () => {
     beforeEach(() => {
-      mockSystemProducts.mockReturnValue([tumbleweed, microos]);
+      mockSystem({ products: [tumbleweed, microos] });
     });
 
     it("renders a link by default for navigating to product selection page", () => {
@@ -90,7 +77,7 @@ describe("ChangeProductOption", () => {
     it("renders with an icon when showIcon is true", () => {
       const { container } = installerRender(<ChangeProductOption showIcon />);
       const icon = container.querySelector("svg");
-      expect(icon).toHaveAttribute("data-icon-name", "edit_square");
+      expect(icon).toHaveAttribute("data-icon-name", "amend");
     });
 
     it("does not render an icon by default", () => {
@@ -101,7 +88,7 @@ describe("ChangeProductOption", () => {
 
     describe("but a product is registered", () => {
       beforeEach(() => {
-        mockSoftware.mockReturnValue({ registration: true });
+        mockSystem({ products: [tumbleweed, microos], software: { registration: { addons: [] } } });
       });
 
       it("renders nothing", () => {
@@ -125,7 +112,7 @@ describe("ChangeProductOption", () => {
   describe("when there is only one product available", () => {
     describe("without modes", () => {
       beforeEach(() => {
-        mockSystemProducts.mockReturnValue([tumbleweed]);
+        mockSystem({ products: [tumbleweed] });
       });
 
       it("renders nothing", () => {
@@ -136,7 +123,7 @@ describe("ChangeProductOption", () => {
 
     describe("with modes", () => {
       beforeEach(() => {
-        mockSystemProducts.mockReturnValue([tumbleweedWithModes]);
+        mockSystem({ products: [tumbleweedWithModes] });
       });
 
       it("renders with 'Change mode' label", () => {
@@ -148,7 +135,7 @@ describe("ChangeProductOption", () => {
 
   describe("when there are multiple products and at least one has modes", () => {
     beforeEach(() => {
-      mockSystemProducts.mockReturnValue([tumbleweedWithModes, microos]);
+      mockSystem({ products: [tumbleweedWithModes, microos] });
     });
 
     it("renders with 'Change product or mode' label", () => {

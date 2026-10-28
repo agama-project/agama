@@ -21,6 +21,7 @@
 //! This module define types related to the progress report.
 
 use crate::api::scope::Scope;
+use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 #[derive(thiserror::Error, Debug)]
@@ -29,7 +30,7 @@ pub enum Error {
     MissingStep(Scope),
 }
 
-#[derive(Clone, Debug, Deserialize, Serialize, utoipa::ToSchema, PartialEq)]
+#[derive(Clone, Debug, Deserialize, Serialize, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct Progress {
     /// Scope of the progress
@@ -67,6 +68,10 @@ impl Progress {
 
     pub fn advance(&mut self) -> Result<(), Error> {
         if self.index >= self.size {
+            tracing::error!(
+                "Trying to call next step when there are no more steps. {:#?}",
+                self
+            );
             return Err(Error::MissingStep(self.scope));
         }
 

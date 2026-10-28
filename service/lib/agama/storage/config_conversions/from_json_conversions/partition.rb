@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -20,6 +20,7 @@
 # find current contact information at www.suse.com.
 
 require "agama/storage/config_conversions/from_json_conversions/base"
+require "agama/storage/config_conversions/from_json_conversions/partition_search"
 require "agama/storage/config_conversions/from_json_conversions/with_encryption"
 require "agama/storage/config_conversions/from_json_conversions/with_filesystem"
 require "agama/storage/config_conversions/from_json_conversions/with_search"
@@ -33,17 +34,33 @@ module Agama
       module FromJSONConversions
         # Partition conversion from JSON hash according to schema.
         class Partition < Base
-        private
-
           include WithSearch
           include WithEncryption
           include WithFilesystem
           include WithSize
 
+          # @param config_json [Hash]
+          # @param bootloader_config [BootloaderConfig]
+          def initialize(config_json, bootloader_config)
+            super(config_json)
+            @bootloader_config = bootloader_config
+          end
+
+        private
+
+          # @return [BootloaderConfig]
+          attr_reader :bootloader_config
+
           # @see Base
           # @return [Configs::Partition]
           def default_config
             Configs::Partition.new
+          end
+
+          # @see WithSearch
+          # @return [Class]
+          def search_converter_class
+            FromJSONConversions::PartitionSearch
           end
 
           alias_method :partition_json, :config_json

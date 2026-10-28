@@ -97,7 +97,7 @@ describe("PasswordInput", () => {
     screen.getByLabelText("User password");
     screen.getByText(/^Using/);
     screen.getByText("us");
-    screen.getByText(/keyboard$/);
+    screen.getByText(/keyboard layout$/);
     await user.keyboard("{CapsLock}");
     screen.getByText(/^CAPS LOCK/);
     screen.getByText(/is on$/);

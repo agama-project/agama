@@ -18,12 +18,9 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::{
-    storage,
-    storage_client::{
-        self,
-        proxies::{zfcp, ZFCPProxy},
-    },
+use crate::storage_client::{
+    self,
+    proxies::{zfcp, ZFCPProxy},
 };
 use agama_utils::{
     actor::Handler,
@@ -53,8 +50,6 @@ pub enum Error {
     #[error(transparent)]
     Json(#[from] serde_json::Error),
     #[error(transparent)]
-    Storage(#[from] storage::service::Error),
-    #[error(transparent)]
     StorageClient(#[from] storage_client::Error),
 }
 
@@ -79,7 +74,6 @@ impl From<ProgressData> for Progress {
 }
 
 pub struct Monitor {
-    storage: Handler<storage::Service>,
     progress: Handler<progress::Service>,
     issues: Handler<issue::Service>,
     events: event::Sender,
@@ -89,7 +83,6 @@ pub struct Monitor {
 
 impl Monitor {
     pub fn new(
-        storage: Handler<storage::Service>,
         progress: Handler<progress::Service>,
         issues: Handler<issue::Service>,
         events: event::Sender,
@@ -97,7 +90,6 @@ impl Monitor {
         storage_client: Handler<storage_client::Service>,
     ) -> Self {
         Self {
-            storage,
             progress,
             issues,
             events,
@@ -153,7 +145,6 @@ impl Monitor {
         if args.changed_properties().get("System").is_some() {
             self.events
                 .send(Event::SystemChanged { scope: Scope::ZFCP })?;
-            self.storage.cast(storage::message::Probe)?;
         }
         if let Some(issues) = args.changed_properties().get("Issues").cloned() {
             let issues: String = issues.try_into()?;

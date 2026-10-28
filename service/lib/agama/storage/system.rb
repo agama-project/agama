@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2025] SUSE LLC
+# Copyright (c) [2025-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -66,8 +66,7 @@ module Agama
 
       # All devices that can be referenced by an mdRaid entry at the Agama config
       #
-      # This excludes devices with any mounted filesystem and devices that contain a repository
-      # for installation.
+      # This excludes MD RAIDs that are not based on available devices.
       #
       # @return [Array<Y2Storage::Md>]
       def available_md_raids
@@ -92,14 +91,34 @@ module Agama
         available_md_raids.reject { |r| r.is?(:software_raid) }
       end
 
-      # Whether the device is usable as drive or mdRaid
+      # All devices that can be referenced by a volumeGroups entry at the Agama config
       #
-      # See {#available_drives} and {#available_md_raids}
+      # This excludes volume groups that are not based on available devices.
+      #
+      # @return [Array<Y2Storage::LvmVg>]
+      def available_volume_groups
+        return [] unless devicegraph
+
+        devicegraph.lvm_vgs.select { |v| available?(v) }
+      end
+
+      # Whether the device is usable for the installation.
+      #
+      # A device is usable if it contains neither a mounted filesystem nor a repository for the
+      # installation.
+      #
+      # For "compound" devices like MD RAIDs or volume groups, all the devices used for creating
+      # them have to be usable for the installation too.
+      #
+      # See {#available_drives}, {#available_md_raids} and {#available_volume_groups}
       #
       # @param device [Y2Storage::Partitionable, Y2Storage::Md]
       # @return [Boolean]
       def available?(device)
-        analyzer.available_device?(device)
+        devices = device.ancestors.select { |a| a.parents.none? }
+        devices << device  if devices.empty?
+
+        devices.all? { |d| analyzer.available_device?(d) }
       end
 
       # Whether the device can be used for installation, including the boot partitions

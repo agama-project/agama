@@ -1,4 +1,4 @@
-// Copyright (c) [2024] SUSE LLC
+// Copyright (c) [2024-2026] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -35,11 +35,17 @@ use crate::{model::state::SoftwareState, service, zypp_server::SoftwareAction};
 
 pub mod conflict;
 pub mod packages;
+#[cfg(target_pointer_width = "64")]
+pub mod registration;
+// replace registration with mocked one on unsupported architectures
+#[cfg(not(target_pointer_width = "64"))]
+#[path = "model/registration_stub.rs"]
 pub mod registration;
 pub mod software_selection;
 pub mod state;
 
-pub use packages::{Resolvable, ResolvableType};
+// Re-export from agama-utils for backwards compatibility
+pub use agama_utils::{Resolvable, ResolvableType};
 pub use registration::Registration;
 
 /// Issues found when applying the software configuration.
@@ -85,8 +91,11 @@ pub trait ModelAdapter: Send + Sync + 'static {
     async fn write(
         &mut self,
         software: SoftwareState,
+        l10n: Handler<agama_l10n::Service>,
         progress: Handler<progress::Service>,
     ) -> Result<WriteIssues, service::Error>;
+
+    fn predefined_repositories(&self) -> Vec<Repository>;
 }
 
 /// [ModelAdapter] implementation for libzypp systems.
@@ -128,15 +137,26 @@ impl ModelAdapter for Model {
         self.selected_product = Some(product_spec);
     }
 
+    fn predefined_repositories(&self) -> Vec<Repository> {
+        self.predefined_repositories.clone()
+    }
+
     async fn write(
         &mut self,
         software: SoftwareState,
+        l10n: Handler<agama_l10n::Service>,
         progress: Handler<progress::Service>,
     ) -> Result<WriteIssues, service::Error> {
         let (tx, rx) = oneshot::channel();
+        let l10n_proposal = l10n
+            .call(agama_l10n::message::GetProposal)
+            .await
+            .unwrap_or_default();
+
         self.zypp_sender.send(SoftwareAction::Write {
             state: software,
             progress,
+            l10n: l10n_proposal,
             security: self.security.clone(),
             question: self.question.clone(),
             tx,
@@ -153,28 +173,8 @@ impl ModelAdapter for Model {
         let (tx, rx) = oneshot::channel();
         self.zypp_sender
             .send(SoftwareAction::GetSystemInfo(product_spec, tx))?;
-        let mut system_info = rx.await??;
+        let system_info = rx.await??;
 
-        // Set "predefined" field as this struct holds the information to determine
-        // which repositories are "predefined".
-        let predefined_urls: Vec<_> = self
-            .predefined_repositories
-            .iter()
-            .map(|r| r.url.as_str())
-            .collect();
-        let mut missing_predefined_repos = self.predefined_repositories.clone();
-
-        for repo in system_info.repositories.iter_mut() {
-            repo.predefined = predefined_urls.contains(&repo.url.as_str());
-            if repo.predefined {
-                missing_predefined_repos.retain(|r| r.url != repo.url);
-            }
-        }
-
-        // Add all predefined repositories that are missing in libzypp.
-        // As a result, they will be added to libzypp when writing the new
-        // software state.
-        system_info.repositories.extend(missing_predefined_repos);
         tracing::info!("System info: {:?}", system_info);
 
         Ok(system_info)

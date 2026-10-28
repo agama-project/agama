@@ -1,4 +1,275 @@
 -------------------------------------------------------------------
+Tue Oct 27 16:04:15 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Drop the following dependencies by vendoring the parts that are
+  really used.
+  - yast2, declaring yast2-ycp-ui-bindings and augeas-lenses
+    explicitly instead of relying on them being pulled in transitively
+    (gh#agama-project/agama#4063).
+  - yast2-storage-ng, declaring its libstorage-ng-ruby and
+    yast2-pkg-bindings dependencies explicitly instead of relying on
+    them being pulled in transitively. Also vendor the few
+    yast2-packager classes still needed, since yast2-packager itself
+    cannot be declared as a dependency (it has a circular Requires: back
+    on yast2-storage-ng) (gh#agama-project/agama#4034).
+  - yast2-bootloader and yast2-reipl (gh#agama-project/agama#4033).
+  - yast2-iscsi-client (gh#agama-project/agama#4032).
+  - yast2-s390 and yast2-cio (gh#agama-project/agama#4026).
+
+-------------------------------------------------------------------
+Tue Oct 27 12:08:59 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Do not give IP or DNS settings to the interfaces that AutoYaST
+  lists as ports of a bond or a bridge, as their controller holds
+  the IP configuration (gh#agama-project/agama#3995).
+
+-------------------------------------------------------------------
+Thu Oct 22 09:44:41 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Version 25
+
+-------------------------------------------------------------------
+Wed Sep 30 12:48:23 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Drop unnecessary YaST RPM dependencies from the AutoYaST support
+  code:
+  - Vendor the needed autoyast2/yast2-installation code
+    (gh#agama-project/agama#4001).
+  - Vendor the needed yast2-network code and reimplement the
+    yast2-users profile parsing (gh#agama-project/agama#4003).
+  - Drop the unused yast2-country/yast2-proxy dependencies
+    (gh#agama-project/agama#4004).
+
+-------------------------------------------------------------------
+Wed Sep 23 09:30:35 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Fix support for AutoYaST classes adding the missing dependency on
+  xsltproc (bsc#1282368).
+
+-------------------------------------------------------------------
+Mon Sep 21 14:16:54 UTC 2026 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Do not crash if libstorage-ng raises an exception while trying
+  to check if a device can be resized (bsc#1272827).
+
+-------------------------------------------------------------------
+Tue Sep 15 16:16:50 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Generate a D-Bus error if the installation action fails
+  (bsc#1280006).
+
+-------------------------------------------------------------------
+Tue Sep  1 15:51:00 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 24
+
+-------------------------------------------------------------------
+Mon Aug 31 12:02:23 UTC 2026 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Adjust default encryption derivation function (PBKDF) according
+  to the used bootloader (bsc#1258955).
+
+-------------------------------------------------------------------
+Fri Aug 28 13:08:30 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Rename questions and issues classes to use a consistent naming
+  scheme (bsc#1277393).
+
+-------------------------------------------------------------------
+Mon Aug 17 09:07:56 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Improve the AutoYaST network conversion
+  (gh#agama-project/agama#3805):
+  - Ignore the reserved VLAN identifier 4095, which is rejected by
+    NetworkManager (gh#agama-project/agama#3805).
+  - Convert the interface "startmode" to the "autoconnect" and
+    "status" settings.
+  - Convert the "autoip" boot protocol to the "link-local" method.
+  - Stop reporting "bootproto" as unsupported, as it is converted
+    to the "method4" and "method6" settings.
+  - Improve the AutoYaST compatibility report for the network
+    section: fix the Agama counterparts and the notes of the
+    wireless elements and describe how the bonding, bridge and VLAN
+    ones are converted.
+
+-------------------------------------------------------------------
+Mon Aug 10 15:14:00 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Allow activating unknown zFCP LUNs (bsc#1271376).
+
+-------------------------------------------------------------------
+Wed Aug  5 15:05:24 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Adapt the exported information of the storage system and proposal
+  (gh#agama-project/agama#3800).
+
+-------------------------------------------------------------------
+Wed Aug  5 13:10:48 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Improve the AutoYaST network conversion
+  (gh#agama-project/agama#3799):
+  - Convert the bridge and VLAN devices.
+  - Fix the generated "bond" section, which was nested into itself
+    and therefore rejected by the Agama profile schema.
+  - Do not crash when "bonding_module_opts" does not include a
+    "mode" option and accept the numeric bonding modes.
+
+-------------------------------------------------------------------
+Wed Aug  5 08:57:51 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Extend storage search with logical operators and new search
+  conditions: filesystem, partitions, partition id, driver, boss
+  (related to bsc#1273493).
+
+-------------------------------------------------------------------
+Tue Aug  4 14:02:00 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Fix AutoYaST conversion (gh#agama-project/agama#3794):
+  - Import the network "lladdr" element.
+  - Fix the handling of "wireless_auth_mode" and "wireless_mode".
+  - Use the correct name "fcp_lun" instead of "lun".
+- Fix and extend the AutoYaST compatibility specification.
+
+-------------------------------------------------------------------
+Fri Jul 24 08:53:15 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Detect whether an AutoYaST profile is not found (bsc#1272439).
+
+-------------------------------------------------------------------
+Mon Jul 20 11:12:31 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 23
+
+-------------------------------------------------------------------
+Thu Jul 16 12:15:11 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Fix AutoYaST dns-search conversion (gh#agama-project/agama#3731,
+  bsc#1271481).
+
+-------------------------------------------------------------------
+Thu Jul 16 11:01:58 UTC 2026 - Michal Filka <mfilka@suse.com>
+
+- AutoYaST to Agama profile conversion doesn't crash when empty
+  profile is provided.
+
+-------------------------------------------------------------------
+Tue Jun 30 14:40:25 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Always emit signals for iSCSI, DASD and zFCP (needed for
+  bsc#1269224).
+- Remove unnecessary custom SystemChanged signal.
+
+-------------------------------------------------------------------
+Tue Jun 23 11:48:47 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Do not take zypp lock (bsc#1268344).
+- Avoid calling to YaST software and configure products to include
+  os-prober as optional package.
+
+-------------------------------------------------------------------
+Mon Jun 15 15:45:27 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 22
+
+-------------------------------------------------------------------
+Fri Jun 12 16:45:14 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Extend storage model to allow configuring filesystem options
+  (gh#agama-project/agama#3620).
+
+-------------------------------------------------------------------
+Tue Jun  9 13:21:28 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Avoid running DASD formatting in a separate thread (related to
+  bsc#1266276).
+
+-------------------------------------------------------------------
+Fri Jun  5 08:57:32 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Extend D-Bus API to allow getting the resolvables required by
+  storage and bootloader (needed for bsc#1266276).
+- Stop calling to software directly from the D-Bus service.
+
+-------------------------------------------------------------------
+Mon Jun  1 13:49:08 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Allow configuring the space policy for creating LVM physical
+  volumes (jsc#PED-14153).
+
+-------------------------------------------------------------------
+Thu May 28 15:59:07 UTC 2026 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- When proposing a booting partition, try with the desired size
+  before falling back to the minimal (gh#agama-project/agama#3559).
+
+-------------------------------------------------------------------
+Tue May 19 12:28:48 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Always activate storage devices in order to detect multipath and
+  new encryptions (bsc#1265302).
+
+-------------------------------------------------------------------
+Sat May 16 07:54:41 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 21
+
+-------------------------------------------------------------------
+Fri May 15 16:37:52 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Fix the monitor initialization when "agama config load" happens
+  too fast (gh#agama-project/agama#3507).
+
+-------------------------------------------------------------------
+Fri May 15 14:27:47 UTC 2026 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Added support for installing systemd-boot and grub2-bls,
+  based on the product definition (jsc#PED-10703).
+- Added possibility to force systemd-boot installation as tech
+  preview.
+- When installing systemd-boot or grub2-bls, use the BLS-compliant
+  new strategy from yast2-storage-ng.
+- Added support to configure TPM unlocking using sdbootutils.
+
+-------------------------------------------------------------------
+Fri May 15 11:41:34 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Fix handling of AutoYaST rules (gh#agama-project/agama#3502).
+
+-------------------------------------------------------------------
+Fri May 15 11:15:57 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Adapt code to new suseconnect-ng version (bsc#1265239)
+
+-------------------------------------------------------------------
+Thu May  7 12:11:45 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Import the ntp-client section from a AutoYaST profiles
+  (jsc#PED-15144).
+
+-------------------------------------------------------------------
+Fri Apr 17 10:29:38 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Add support for configuring pervasive encryption APQNs and key
+  type (gh#agama-project/agama#3384).
+
+-------------------------------------------------------------------
+Tue Apr 14 17:36:56 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 20
+
+-------------------------------------------------------------------
+Mon Apr 13 15:22:25 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Adapt storage model to reuse LVM volume groups
+  (gh#agama-project/agama#3380).
+
+-------------------------------------------------------------------
+Fri Apr 10 08:03:07 UTC 2026 - Lidong Zhong <lidong.zhong@suse.com>
+
+- Use /var/lib/agama/scripts to save the scripts in the target
+  system (bsc#1261787).
+
+-------------------------------------------------------------------
 Wed Apr  8 09:28:31 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
 
 - Fix for diskless installation making a proposal when

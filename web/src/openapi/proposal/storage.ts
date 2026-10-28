@@ -27,6 +27,48 @@ export type FilesystemType =
   | "xfs";
 export type MDLevel = "raid0" | "raid1" | "raid5" | "raid6" | "raid10";
 export type PartitionTableType = "gpt" | "msdos" | "dasd";
+export type PartitionId =
+  | "dos12"
+  | "dos16"
+  | "ntfs"
+  | "dos32"
+  | "extended"
+  | "diag"
+  | "prep"
+  | "swap"
+  | "linux"
+  | "irst"
+  | "lvm"
+  | "raid"
+  | "xbootldr"
+  | "esp"
+  | "bios_boot"
+  | "windows_basic_data"
+  | "microsoft_reserved"
+  | "linux_home"
+  | "linux_server_data"
+  | "linux_root_arm"
+  | "linux_root_aarch64"
+  | "linux_root_ppc32"
+  | "linux_root_ppc64be"
+  | "linux_root_ppc64le"
+  | "linux_root_riscv32"
+  | "linux_root_riscv64"
+  | "linux_root_s390"
+  | "linux_root_s390x"
+  | "linux_root_x86"
+  | "linux_root_x86_64"
+  | "linux_usr_arm"
+  | "linux_usr_aarch64"
+  | "linux_usr_ppc32"
+  | "linux_usr_ppc64be"
+  | "linux_usr_ppc64le"
+  | "linux_usr_riscv32"
+  | "linux_usr_riscv64"
+  | "linux_usr_s390"
+  | "linux_usr_s390x"
+  | "linux_usr_x86"
+  | "linux_usr_x86_64";
 
 /**
  * API description of the storage proposal.
@@ -63,7 +105,6 @@ export interface Device {
 export interface Block {
   start: number;
   size: number;
-  active?: boolean;
   encrypted?: boolean;
   udevIds?: string[];
   udevPaths?: string[];
@@ -82,12 +123,12 @@ export interface Drive {
   transport?: string;
   bus?: string;
   busId?: string;
-  driver?: string[];
+  drivers?: string[];
   info?: DriveInfo;
 }
 export interface DriveInfo {
   sdCard?: boolean;
-  dellBoss?: boolean;
+  boss?: boolean;
 }
 export interface Filesystem {
   sid: number;
@@ -113,6 +154,7 @@ export interface UnusedSlot {
 }
 export interface Partition {
   efi: boolean;
+  id?: PartitionId;
 }
 export interface VolumeGroup {
   size: number;

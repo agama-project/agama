@@ -1,0 +1,12 @@
+tmpfs / tmpfs rw,relatime,size=4020488k,nr_inodes=0 0 0
+proc /proc proc rw,relatime 0 0
+sysfs /sys sysfs rw,relatime 0 0
+/dev/loop0 /parts/mp_0000 squashfs ro,relatime 0 0
+/dev/loop1 /parts/mp_0001 squashfs ro,relatime 0 0
+devtmpfs /dev devtmpfs rw,relatime,size=1945132k,nr_inodes=486283,mode=755 0 0
+devpts /dev/pts devpts rw,relatime,mode=600,ptmxmode=000 0 0
+rpc_pipefs /var/lib/nfs/rpc_pipefs rpc_pipefs rw,relatime 0 0
+/dev/loop2 /mounts/mp_0000 squashfs ro,relatime 0 0
+/dev/loop3 /mounts/mp_0001 squashfs ro,relatime 0 0
+/dev/loop5 /mounts/mp_0003 squashfs ro,relatime 0 0
+

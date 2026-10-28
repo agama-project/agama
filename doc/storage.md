@@ -136,7 +136,6 @@ So it will be possible to define (or reuse) multi-device Btrfs file systems usin
   "metaDataRaidLevel": "..." ,
   "devices": [ ... ],
   "label": "...",
-  "mkfsOptions": { ... },
   "subvolumePrefix": "...",
   "subvolumes": [ ... ],
   "snapshots": ...,

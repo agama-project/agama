@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024-2025] SUSE LLC
+# Copyright (c) [2024-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -22,6 +22,7 @@
 require "agama/storage/config_checkers/base"
 require "agama/storage/config_checkers/logical_volume"
 require "agama/storage/config_checkers/physical_volumes_encryption"
+require "agama/storage/config_checkers/with_search"
 require "yast/i18n"
 
 module Agama
@@ -30,16 +31,19 @@ module Agama
       # Class for checking a volume group config.
       class VolumeGroup < Base
         include Yast::I18n
+        include WithSearch
 
         # @param config [Configs::VolumeGroup]
         # @param storage_config [Storage::Config]
+        # @param bootloader_config [Storage::BootloaderConfig]
         # @param product_config [Agama::Config]
-        def initialize(config, storage_config, product_config)
+        def initialize(config, storage_config, bootloader_config, product_config)
           super()
 
           textdomain "agama"
           @config = config
           @storage_config = storage_config
+          @bootloader_config = bootloader_config
           @product_config = product_config
         end
 
@@ -52,7 +56,8 @@ module Agama
             logical_volumes_issues,
             physical_volumes_issues,
             physical_volumes_devices_issues,
-            physical_volumes_encryption_issues
+            physical_volumes_encryption_issues,
+            search_issues
           ].compact.flatten
         end
 
@@ -63,6 +68,9 @@ module Agama
 
         # @return [Storage::Config]
         attr_reader :storage_config
+
+        # @return [Storage::BootloaderConfig]
+        attr_reader :bootloader_config
 
         # @return [Agama::Config]
         attr_reader :product_config
@@ -85,7 +93,7 @@ module Agama
         def logical_volumes_issues
           config.logical_volumes.flat_map do |logical_volume|
             ConfigCheckers::LogicalVolume
-              .new(logical_volume, config, product_config)
+              .new(logical_volume, config, storage_config, bootloader_config, product_config)
               .issues
           end
         end
@@ -165,7 +173,7 @@ module Agama
         # @return [Array<Issue>]
         def physical_volumes_encryption_issues
           ConfigCheckers::PhysicalVolumesEncryption
-            .new(config)
+            .new(config, bootloader_config)
             .issues
         end
 

@@ -32,9 +32,9 @@ BuildRequires: gcc
 BuildRequires: gcc-c++
 BuildRequires: make
 BuildRequires: libzypp-devel
+%ifnarch %ix86 s390 armv6 armv7
 BuildRequires: libsuseconnect
-# do not build on 32bits, the dependant libsuseconnect is 64bit only
-ExcludeArch:    %ix86 s390 ppc64
+%endif
 
 # defines the "limit_build" macro used in the "build" section below
 BuildRequires:  memory-constraints
@@ -76,6 +76,11 @@ Requires:       agama-yast
 Requires:       agama-common
 # required for importing SSL certificates
 Requires:       ca-certificates
+%ifarch s390x
+# s390 specific frame title that is read from readvalues from s390-tools
+# needed also for tests, so build require it
+Requires:       qclib
+%endif
 
 %description
 Agama is a service-based Linux installer. It is composed of an HTTP-based API,
@@ -100,6 +105,7 @@ Release:        0
 Summary:        Common files for Agama server and CLI.
 License:        GPL-2.0-only
 Url:            https://github.com/agama-project/agama
+Requires:       agama-openapi-nightly
 
 %description -n agama-common
 Files that are needed by the Agama server and the command-line interface, like
@@ -150,13 +156,15 @@ BuildArch:      noarch
 %description -n agama-cli-zsh-completion
 Zsh command-line completion support for %{name}-cli.
 
-%package -n agama-openapi
-Summary:        Agama's OpenAPI Specification
+%package -n agama-openapi-nightly
+Summary:        Nightly OpenAPI specification and JSON schemas for the Agama installer
+Group:          Development/Languages/Other
+BuildArch:      noarch
 
-%description -n agama-openapi
-The OpenAPI Specification (OAS) allows describing an HTTP API in an standard and
-language-agnostic way. This package contains the specification for Agama's HTTP
-API.
+%description -n agama-openapi-nightly
+The OpenAPI Specification (OAS) allows describing an HTTP API in a standard and
+language-agnostic way. This package contains the nightly specification and standalone
+JSON schemas for Agama's HTTP API.
 
 %package -n agama-scripts
 Summary:        Agama support for running user-defined scripts
@@ -211,17 +219,11 @@ echo $PATH
 %pre -n agama-autoinstall
 %service_add_pre agama-autoinstall.service
 
-%pre -n agama-scripts
-%service_add_pre agama-scripts.service
-
 %post
 %service_add_post agama-web-server.service agama-proxy-setup.service
 
 %post -n agama-autoinstall
 %service_add_post agama-autoinstall.service
-
-%post -n agama-scripts
-%service_add_post agama-scripts.service
 
 %preun
 %service_del_preun agama-web-server.service agama-proxy-setup.service
@@ -229,42 +231,29 @@ echo $PATH
 %preun -n agama-autoinstall
 %service_del_preun agama-autoinstall.service
 
-%preun -n agama-scripts
-%service_del_preun agama-scripts.service
-
 %postun
 %service_del_postun_with_restart agama-web-server.service agama-proxy-setup.service
 
 %postun -n agama-autoinstall
 %service_del_postun_with_restart agama-autoinstall.service
 
-%postun -n agama-scripts
-%service_del_postun_with_restart agama-scripts.service
-
 %files -f agama.lang
 %doc README.md
 %license LICENSE
 %{_bindir}/agama-web-server
-%{_bindir}/agama-web-server.sh
 %{_bindir}/agama-journal
 %{_bindir}/agama-zypp-journal
 %{_bindir}/agama-proxy-setup
 %{_pam_vendordir}/agama
 %{_unitdir}/agama-web-server.service
 %{_unitdir}/agama-proxy-setup.service
+%dir %{_datadir}/agama
 %dir %{_datadir}/agama/eula
 
 %files -n agama-common
+%dir %{_datadir}/agama
 %dir %{_datadir}/agama/jsonnet
 %{_datadir}/agama/jsonnet/agama.libsonnet
-%dir %{_datadir}/agama/schema
-%{_datadir}/agama/schema/dasd.schema.json
-%{_datadir}/agama/schema/iscsi.schema.json
-%{_datadir}/agama/schema/profile.schema.json
-%{_datadir}/agama/schema/software.schema.json
-%{_datadir}/agama/schema/storage.schema.json
-%{_datadir}/agama/schema/storage.model.schema.json
-%{_datadir}/agama/schema/zfcp.schema.json
 
 %files -n agama-autoinstall
 %{_bindir}/agama-autoinstall
@@ -285,10 +274,10 @@ echo $PATH
 %dir %{_datadir}/zsh
 %{_datadir}/zsh/*
 
-%files -n agama-openapi
+%files -n agama-openapi-nightly
 %dir %{_datadir}/agama
 %dir %{_datadir}/agama/openapi
-%{_datadir}/agama/openapi/*.json
+%{_datadir}/agama/openapi/nightly
 
 %files -n agama-scripts
 %{_unitdir}/agama-scripts.service

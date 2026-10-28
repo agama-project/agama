@@ -21,12 +21,13 @@
 //! Defines useful types to deal with localization values
 
 use regex::Regex;
+use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use std::sync::OnceLock;
 use std::{fmt::Display, str::FromStr};
 use thiserror::Error;
 
-#[derive(Debug, Clone, Serialize, PartialEq, Eq, PartialOrd, Ord, utoipa::ToSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, Eq, PartialOrd, Ord, JsonSchema)]
 pub struct TimezoneId(String);
 
 impl Default for TimezoneId {
@@ -60,9 +61,7 @@ impl FromStr for TimezoneId {
     }
 }
 
-#[derive(
-    Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Deserialize, Serialize, utoipa::ToSchema,
-)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Deserialize, Serialize, JsonSchema)]
 pub struct LocaleId {
     // ISO-639
     pub language: String,
@@ -73,11 +72,7 @@ pub struct LocaleId {
 
 impl Display for LocaleId {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(
-            f,
-            "{}_{}.{}",
-            &self.language, &self.territory, &self.encoding
-        )
+        write!(f, "{}_{}.{}", self.language, self.territory, self.encoding)
     }
 }
 
@@ -136,9 +131,7 @@ static KEYMAP_ID_REGEX: OnceLock<Regex> = OnceLock::new();
 /// let id_with_dashes: KeymapId = "es-ast".parse().unwrap();
 /// assert_eq!(id, id_with_dashes);
 /// ```
-#[derive(
-    Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Deserialize, Serialize, utoipa::ToSchema,
-)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Deserialize, Serialize, JsonSchema)]
 pub struct KeymapId {
     /// Keyboard layout (e.g., "es" in "es(ast)")
     pub layout: String,
@@ -162,7 +155,7 @@ pub struct InvalidKeymapId(String);
 impl KeymapId {
     pub fn dashed(&self) -> String {
         if let Some(variant) = &self.variant {
-            format!("{}-{}", &self.layout, variant)
+            format!("{}-{}", self.layout, variant)
         } else {
             self.layout.to_owned()
         }
@@ -172,9 +165,9 @@ impl KeymapId {
 impl Display for KeymapId {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         if let Some(variant) = &self.variant {
-            write!(f, "{}({})", &self.layout, variant)
+            write!(f, "{}({})", self.layout, variant)
         } else {
-            write!(f, "{}", &self.layout)
+            write!(f, "{}", self.layout)
         }
     }
 }

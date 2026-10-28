@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2025] SUSE LLC
+ * Copyright (c) [2025-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -40,22 +40,12 @@ function create(data: Data.LogicalVolume): ConfigModel.LogicalVolume {
   };
 }
 
-function createFromPartition(partition: ConfigModel.Partition): ConfigModel.LogicalVolume {
-  return {
-    ...partition,
-    lvName: partition.mountPath ? generateName(partition.mountPath) : undefined,
-  };
-}
-
 function add(
   config: ConfigModel.Config,
-  vgName: string,
+  vgIndex: number,
   data: Data.LogicalVolume,
 ): ConfigModel.Config {
   config = configModel.clone(config);
-
-  const vgIndex = configModel.volumeGroup.findIndex(config, vgName);
-  if (vgIndex === -1) return config;
 
   const volumeGroup = config.volumeGroups[vgIndex];
   const logicalVolume = create(data);
@@ -68,18 +58,15 @@ function add(
 
 function edit(
   config: ConfigModel.Config,
-  vgName: string,
-  mountPath: string,
+  vgIndex: number,
+  lvMountPath: string,
   data: Data.LogicalVolume,
 ): ConfigModel.Config {
   config = configModel.clone(config);
 
-  const vgIndex = configModel.volumeGroup.findIndex(config, vgName);
-  if (vgIndex === -1) return config;
-
   const volumeGroup = config.volumeGroups[vgIndex];
 
-  const lvIndex = findIndex(volumeGroup, mountPath);
+  const lvIndex = findIndex(volumeGroup, lvMountPath);
   if (lvIndex === -1) return config;
 
   const oldLogicalVolume = volumeGroup.logicalVolumes[lvIndex];
@@ -106,4 +93,19 @@ function remove(config: ConfigModel.Config, vgName: string, mountPath: string): 
   return config;
 }
 
-export default { generateName, create, createFromPartition, add, edit, remove };
+function convertToPartition(lv: ConfigModel.LogicalVolume): ConfigModel.Partition {
+  return {
+    mountPath: lv.mountPath,
+    filesystem: lv.filesystem,
+    size: lv.size,
+  };
+}
+
+export default {
+  generateName,
+  create,
+  add,
+  edit,
+  remove,
+  convertToPartition,
+};

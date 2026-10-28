@@ -22,15 +22,24 @@
 
 import React from "react";
 import { Alert, Content, List, ListItem, Stack } from "@patternfly/react-core";
-import Text from "~/components/core/Text";
+import Link from "~/components/core/Link";
+import Interpolate from "~/components/core/Interpolate";
 import { _, formatList } from "~/i18n";
 import { sprintf } from "sprintf-js";
 import { useDestructiveActions } from "~/hooks/use-destructive-actions";
+import { STORAGE } from "~/routes/paths";
 
-export default function PotentialDataLossAlert({
-  isCompact = false,
-  hint = _("If you are unsure, check and adjust the storage settings."),
-}) {
+/**
+ * Warns the user about pending destructive storage actions before they
+ * proceed with the installation.
+ *
+ * Renders nothing when there are no destructive actions to report, so
+ * callers can mount it unconditionally. The headline adapts to whether
+ * existing systems will be wiped, and the sub-line offers a direct link to
+ * the storage section so the user can review or adjust settings without
+ * having to cancel the current flow manually.
+ */
+export default function PotentialDataLossAlert() {
   let title: string;
   const { actions, affectedSystems } = useDestructiveActions();
 
@@ -50,15 +59,23 @@ export default function PotentialDataLossAlert({
   return (
     <Alert isInline title={title} variant="danger">
       <Stack hasGutter>
-        {!isCompact && (
-          <List>
-            {actions.map((a, i) => (
-              <ListItem key={i}>{a.text}</ListItem>
-            ))}
-          </List>
-        )}
-        <Content component="p" isEditorial>
-          <Text isBold>{hint}</Text>
+        <List>
+          {actions.map((a, i) => (
+            <ListItem key={i}>{a.text}</ListItem>
+          ))}
+        </List>
+        <Content component="p">
+          <Interpolate
+            // TRANSLATORS: advice shown when destructive actions are pending.
+            // The text inside [] becomes a link that navigates to the storage section.
+            sentence={_("If unsure, cancel and review [storage] settings.")}
+          >
+            {(text) => (
+              <Link to={STORAGE.root} variant="link" isInline>
+                {text}
+              </Link>
+            )}
+          </Interpolate>
         </Content>
       </Stack>
     </Alert>

@@ -34,7 +34,7 @@ import { Product } from "~/model/system";
 let question: Question;
 const questionMock: Question = {
   id: 1,
-  class: "storage.luks_activation",
+  class: "luksActivation",
   text: "A Luks device found. Do you want to open it?",
   field: { type: FieldType.String },
   actions: [
@@ -78,7 +78,11 @@ jest.mock("~/hooks/model/system", () => ({
 
 jest.mock("~/hooks/model/status", () => ({
   ...jest.requireActual("~/hooks/model/status"),
-  useStatus: (): ReturnType<typeof useStatus> => ({ stage: "configuring", progresses: [] }),
+  useStatus: (): ReturnType<typeof useStatus> => ({
+    stage: "configuring",
+    tasks: [],
+    progresses: [],
+  }),
 }));
 
 jest.mock("~/hooks/model/config/product", () => ({
@@ -86,18 +90,8 @@ jest.mock("~/hooks/model/config/product", () => ({
   useProductInfo: (): ReturnType<typeof useProductInfo> => tumbleweed,
 }));
 
-jest.mock("~/context/installerL10n", () => ({
-  InstallerL10nProvider: ({ children }) => <>{children}</>,
-  useInstallerL10n: () => ({
-    keymap: "us",
-    language: "de-DE",
-  }),
-}));
-
 const renderQuestion = () =>
-  installerRender(<LuksActivationQuestion question={question} answerCallback={answerFn} />, {
-    withL10n: true,
-  });
+  installerRender(<LuksActivationQuestion question={question} answerCallback={answerFn} />);
 
 describe("LuksActivationQuestion", () => {
   beforeEach(() => {
@@ -106,7 +100,7 @@ describe("LuksActivationQuestion", () => {
 
   it("allows opening the installer keymap settings", async () => {
     const { user } = renderQuestion();
-    const changeKeymapButton = screen.getByRole("button", { name: "Change keyboard layout" });
+    const changeKeymapButton = screen.getByRole("button", { name: "Keyboard" });
     await user.click(changeKeymapButton);
     screen.getByRole("dialog", { name: "Change keyboard" });
   });

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2025] SUSE LLC
+# Copyright (c) [2025-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -41,13 +41,15 @@ module Agama
 
         # @param config [Configs::MdRaid]
         # @param storage_config [Storage::Config]
+        # @param bootloader_config [Storage::BootloaderConfig]
         # @param product_config [Agama::Config]
-        def initialize(config, storage_config, product_config)
+        def initialize(config, storage_config, bootloader_config, product_config)
           super()
 
           textdomain "agama"
           @config = config
           @storage_config = storage_config
+          @bootloader_config = bootloader_config
           @product_config = product_config
         end
 
@@ -63,8 +65,7 @@ module Agama
             partitions_issues,
             devices_issues,
             level_issue,
-            devices_size_issue,
-            reused_member_issues
+            devices_size_issue
           ].flatten.compact
         end
 
@@ -75,6 +76,9 @@ module Agama
 
         # @return [Storage::Config]
         attr_reader :storage_config
+
+        # @return [Storage::BootloaderConfig]
+        attr_reader :bootloader_config
 
         # @return [Agama::Config]
         attr_reader :product_config
@@ -132,188 +136,6 @@ module Agama
         def used_devices
           storage_config.potential_for_md_device
             .select { |d| config.devices.include?(d.alias) }
-        end
-
-        # Issues from the member devices of a reused MD RAID.
-        #
-        # @return [Array<Issue>]
-        def reused_member_issues
-          return [] unless config.found_device
-
-          config.found_device.devices.map { |d| reused_member_issue(d) }
-        end
-
-        # Issue from the member devices of a reused MD RAID.
-        #
-        # @param device [Y2Storage::BlkDevice]
-        # @return [Issue, nil]
-        def reused_member_issue(device)
-          member_config = find_config(device)
-          return parent_reused_member_issue(device) unless member_config
-
-          deleted_reused_member_issue(member_config) ||
-            resized_reused_member_issue(member_config) ||
-            formatted_reused_member_issue(member_config) ||
-            partitioned_reused_member_issue(member_config) ||
-            target_reused_member_issue(member_config)
-        end
-
-        # Issue if the device member is deleted.
-        #
-        # @param member_config [#search]
-        # @return [Issue, nil]
-        def deleted_reused_member_issue(member_config)
-          return unless storage_config.supporting_delete.include?(member_config)
-          return unless member_config.delete? || member_config.delete_if_needed?
-
-          error(
-            format(
-              _(
-                # TRANSLATORS: %{member} is replaced by a device name (e.g., "/dev/vda") and
-                #   %{md_raid} is replaced by a MD RAID name (e.g., "/dev/md0").
-                "The device '%{member}' cannot be deleted because it is part of the MD RAID " \
-                "%{md_raid}"
-              ),
-              member:  member_config.found_device.name,
-              md_raid: config.found_device.name
-            ),
-            kind: IssueClasses::Config::MISUSED_MD_MEMBER
-          )
-        end
-
-        # Issue if the device member is resized.
-        #
-        # @param member_config [#search]
-        # @return [Issue, nil]
-        def resized_reused_member_issue(member_config)
-          return unless storage_config.supporting_size.include?(member_config)
-          return if member_config.size.default?
-
-          error(
-            format(
-              _(
-                # TRANSLATORS: %{member} is replaced by a device name (e.g., "/dev/vda") and
-                #   %{md_raid} is replaced by a MD RAID name (e.g., "/dev/md0").
-                "The device '%{member}' cannot be resized because it is part of the MD RAID " \
-                "%{md_raid}"
-              ),
-              member:  member_config.found_device.name,
-              md_raid: config.found_device.name
-            ),
-            kind: IssueClasses::Config::MISUSED_MD_MEMBER
-          )
-        end
-
-        # Issue if the device member is formatted.
-        #
-        # @param member_config [#search]
-        # @return [Issue, nil]
-        def formatted_reused_member_issue(member_config)
-          return unless storage_config.supporting_filesystem.include?(member_config)
-          return unless member_config.filesystem
-
-          error(
-            format(
-              _(
-                # TRANSLATORS: %{member} is replaced by a device name (e.g., "/dev/vda") and
-                #   %{md_raid} is replaced by a MD RAID name (e.g., "/dev/md0").
-                "The device '%{member}' cannot be formatted because it is part of the MD RAID " \
-                "%{md_raid}"
-              ),
-              member:  member_config.found_device.name,
-              md_raid: config.found_device.name
-            ),
-            kind: IssueClasses::Config::MISUSED_MD_MEMBER
-          )
-        end
-
-        # Issue if the device member is partitioned.
-        #
-        # @param member_config [#search]
-        # @return [Issue, nil]
-        def partitioned_reused_member_issue(member_config)
-          return unless storage_config.supporting_partitions.include?(member_config)
-          return unless member_config.partitions?
-
-          error(
-            format(
-              _(
-                # TRANSLATORS: %{member} is replaced by a device name (e.g., "/dev/vda") and
-                #   %{md_raid} is replaced by a MD RAID name (e.g., "/dev/md0").
-                "The device '%{member}' cannot be partitioned because it is part of the MD RAID " \
-                "%{md_raid}"
-              ),
-              member:  member_config.found_device.name,
-              md_raid: config.found_device.name
-            ),
-            kind: IssueClasses::Config::MISUSED_MD_MEMBER
-          )
-        end
-
-        # Issue if the device member is used by other device (e.g., as target for physical volumes).
-        #
-        # @param member_config [#search]
-        # @return [Issue, nil]
-        def target_reused_member_issue(member_config)
-          return unless users?(member_config)
-
-          error(
-            format(
-              _(
-                # TRANSLATORS: %{member} is replaced by a device name (e.g., "/dev/vda") and
-                #   %{md_raid} is replaced by a MD RAID name (e.g., "/dev/md0").
-                "The device '%{member}' cannot be used because it is part of the MD RAID " \
-                "%{md_raid}"
-              ),
-              member:  member_config.found_device.name,
-              md_raid: config.found_device.name
-            ),
-            kind: IssueClasses::Config::MISUSED_MD_MEMBER
-          )
-        end
-
-        # Issue if the parent of the device member is formatted.
-        #
-        # @param device [Y2Storage::BlkDevice]
-        # @return [Issue, nil]
-        def parent_reused_member_issue(device)
-          return unless device.respond_to?(:partitionable)
-
-          parent_config = find_config(device.partitionable)
-          return unless parent_config&.filesystem
-
-          error(
-            format(
-              _(
-                # TRANSLATORS: %{device} is replaced by a device name (e.g., "/dev/vda") and
-                #   %{md_raid} is replaced by a MD RAID name (e.g., "/dev/md0").
-                "The device '%{device}' cannot be formatted because it is part of the MD RAID " \
-                "%{md_raid}"
-              ),
-              device:  parent_config.found_device.name,
-              md_raid: config.found_device.name
-            ),
-            kind: IssueClasses::Config::MISUSED_MD_MEMBER
-          )
-        end
-
-        # Finds the config assigned to the given device.
-        #
-        # @param device [Y2Storage::BlkDevice]
-        # @return [#search]
-        def find_config(device)
-          storage_config.supporting_search.find { |c| c.found_device == device }
-        end
-
-        # Whether the given config has any user (direct user or as target).
-        #
-        # @param config [#search]
-        # @return [Boolean]
-        def users?(config)
-          return false unless config.alias
-
-          storage_config.users(config.alias).any? ||
-            storage_config.target_users(config.alias).any?
         end
       end
     end

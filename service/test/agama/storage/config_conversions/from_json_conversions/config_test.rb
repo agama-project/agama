@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2025] SUSE LLC
+# Copyright (c) [2025-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -20,6 +20,7 @@
 # find current contact information at www.suse.com.
 
 require_relative "../../../../test_helper"
+require "agama/storage/bootloader_config"
 require "agama/storage/config_conversions/from_json_conversions/config"
 require "agama/storage/config"
 require "agama/storage/configs/boot"
@@ -30,8 +31,16 @@ require "agama/storage/configs/volume_group"
 
 describe Agama::Storage::ConfigConversions::FromJSONConversions::Config do
   subject do
-    described_class.new(config_json)
+    described_class.new(config_json, bootloader_config)
   end
+
+  let(:bootloader_config) do
+    Agama::Storage::BootloaderConfig.new.tap do |config|
+      config.type = bootloader_type
+    end
+  end
+
+  let(:bootloader_type) { nil }
 
   describe "#convert" do
     let(:config_json) do

@@ -1,4 +1,4 @@
-// Copyright (c) [2025] SUSE LLC
+// Copyright (c) [2025-2026] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -23,7 +23,6 @@ use std::{
     sync::Arc,
 };
 
-use agama_software::{self as software, Resolvable, ResolvableType};
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
     api::{
@@ -34,10 +33,11 @@ use agama_utils::{
         question::QuestionSpec,
     },
     command::enable_service,
+    message::GetResolvables,
     progress,
     question::{self, ask_question, AskError},
+    Resolvable,
 };
-use async_trait::async_trait;
 use gettextrs::gettext;
 use strum::IntoEnumIterator;
 use tokio::sync::Mutex;
@@ -50,8 +50,6 @@ pub enum Error {
     Files(#[from] user_file::Error),
     #[error(transparent)]
     Scripts(#[from] scripts::Error),
-    #[error(transparent)]
-    Software(#[from] software::service::Error),
     #[error(transparent)]
     Actor(#[from] actor::Error),
     #[error(transparent)]
@@ -68,7 +66,6 @@ const DEFAULT_INSTALL_DIR: &str = "/mnt";
 pub struct Starter {
     workdir: PathBuf,
     install_dir: PathBuf,
-    software: Handler<software::Service>,
     progress: Handler<progress::Service>,
     questions: Handler<question::Service>,
 }
@@ -76,14 +73,13 @@ pub struct Starter {
 impl Starter {
     /// Creates a new starter.
     ///
-    /// * `events`: channel to emit the [localization-specific events](crate::Event).
+    /// * `progress`: handler to report the progress.
+    /// * `questions`: handler to interact with the user.
     pub fn new(
         progress: Handler<progress::Service>,
         questions: Handler<question::Service>,
-        software: Handler<software::Service>,
     ) -> Self {
         Self {
-            software,
             progress,
             questions,
             workdir: PathBuf::from(DEFAULT_WORK_DIR),
@@ -97,7 +93,6 @@ impl Starter {
         let service = Service {
             progress: self.progress,
             questions: self.questions,
-            software: self.software,
             scripts: Arc::new(Mutex::new(scripts)),
             files: vec![],
             install_dir: self.install_dir,
@@ -119,7 +114,6 @@ impl Starter {
 }
 
 pub struct Service {
-    software: Handler<software::Service>,
     progress: Handler<progress::Service>,
     questions: Handler<question::Service>,
     scripts: Arc<Mutex<ScriptsRepository>>,
@@ -132,9 +126,8 @@ impl Service {
     pub fn starter(
         progress: Handler<progress::Service>,
         questions: Handler<question::Service>,
-        software: Handler<software::Service>,
     ) -> Starter {
-        Starter::new(progress, questions, software)
+        Starter::new(progress, questions)
     }
 
     /// Clear the scripts.
@@ -168,19 +161,11 @@ impl Service {
             }
         }
 
-        let mut packages = vec![];
         if let Some(scripts) = config.init {
             for init in scripts {
                 self.add_script(init.into()).await?;
             }
-            packages.push(Resolvable::new("agama-scripts", ResolvableType::Package));
         }
-        self.software
-            .call(agama_software::message::SetResolvables::new(
-                "agama-scripts".to_string(),
-                packages,
-            ))
-            .await?;
         Ok(())
     }
 
@@ -197,7 +182,7 @@ impl Service {
             // TRANSLATORS: %s is replaced by the script name.
             let text = &gettext("Failed to retrieve the script %s. Do you want to try again?")
                 .replace("%s", script.name());
-            let question = QuestionSpec::new(text, "write_script_failed")
+            let question = QuestionSpec::new(text, "writeScriptError")
                 .with_yes_no_actions()
                 .with_data(&[
                     ("attempt", &attempt.to_string()),
@@ -221,7 +206,7 @@ impl Service {
             // TRANSLATORS: %s is replaced by the script name.
             let text = &gettext("Failed to write the file %s. Do you want to try again?")
                 .replace("%s", &file.destination);
-            let question = QuestionSpec::new(text, "write_file_failed")
+            let question = QuestionSpec::new(text, "writeFileError")
                 .with_yes_no_actions()
                 .with_data(&[
                     ("attempt", &attempt.to_string()),
@@ -242,7 +227,6 @@ impl Actor for Service {
     type Error = Error;
 }
 
-#[async_trait]
 impl MessageHandler<message::SetConfig> for Service {
     async fn handle(&mut self, message: message::SetConfig) -> Result<(), Error> {
         let config = message.config.unwrap_or_default();
@@ -262,7 +246,6 @@ impl MessageHandler<message::SetConfig> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::RunScripts> for Service {
     async fn handle(&mut self, message: message::RunScripts) -> Result<bool, Error> {
         let scripts = self.scripts.lock().await;
@@ -271,7 +254,7 @@ impl MessageHandler<message::RunScripts> for Service {
 
         if to_run.is_empty() {
             tracing::info!("No scripts to run in group {}", message.group.to_string());
-            return Ok(false);
+            Ok(false)
         } else {
             tracing::info!(
                 "{} scripts to run in group {}",
@@ -293,7 +276,6 @@ impl MessageHandler<message::RunScripts> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::Finish> for Service {
     async fn handle(&mut self, _message: message::Finish) -> Result<(), Error> {
         for file in &self.files {
@@ -302,16 +284,30 @@ impl MessageHandler<message::Finish> for Service {
 
         let scripts = self.scripts.lock().await;
         if !scripts.by_group(ScriptsGroup::Init).is_empty() {
-            enable_service(&self.install_dir, "agama-scripts");
+            enable_service(&self.install_dir, "agama-scripts").await;
         }
 
         Ok(())
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::SetLocale> for Service {
     async fn handle(&mut self, _message: message::SetLocale) -> Result<(), Error> {
         Ok(())
+    }
+}
+
+impl MessageHandler<GetResolvables> for Service {
+    async fn handle(&mut self, _message: GetResolvables) -> Result<Vec<Resolvable>, Error> {
+        let scripts = self.scripts.lock().await;
+        let has_init_scripts = !scripts.by_group(ScriptsGroup::Init).is_empty();
+
+        let resolvables = if has_init_scripts {
+            vec![Resolvable::package("agama-scripts")]
+        } else {
+            vec![]
+        };
+
+        Ok(resolvables)
     }
 }

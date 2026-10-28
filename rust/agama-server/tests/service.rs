@@ -22,6 +22,7 @@ pub mod common;
 
 use agama_lib::auth::AuthToken;
 use agama_server::web::{MainServiceBuilder, ServiceConfig};
+use aide::axum::ApiRouter;
 use axum::{
     body::Body,
     http::{Method, Request, StatusCode},
@@ -41,8 +42,9 @@ fn public_dir() -> PathBuf {
 async fn test_ping() -> Result<(), Box<dyn Error>> {
     let config = ServiceConfig::default();
     let (events_tx, _) = channel(16);
+    let protected_service = ApiRouter::new().route("/", get(protected));
     let web_service = MainServiceBuilder::new(events_tx, public_dir())
-        .add_service("/protected", get(protected))
+        .add_service("/protected", protected_service)
         .with_config(config)
         .build();
 
@@ -68,8 +70,9 @@ async fn access_protected_route(token: &str, jwt_secret: &str) -> Response {
         jwt_secret: jwt_secret.to_string(),
     };
     let (events_tx, _) = channel(16);
+    let protected_service = ApiRouter::new().route("/", get(protected));
     let web_service = MainServiceBuilder::new(events_tx, public_dir())
-        .add_service("/protected", get(protected))
+        .add_service("/protected", protected_service)
         .with_config(config)
         .build();
 

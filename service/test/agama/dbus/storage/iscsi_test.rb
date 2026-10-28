@@ -201,7 +201,6 @@ describe Agama::DBus::Storage::ISCSI do
 
   describe "#configure" do
     before do
-      allow(subject).to receive(:SystemChanged)
       allow(subject).to receive(:ProgressChanged)
       allow(subject).to receive(:ProgressFinished)
     end
@@ -225,7 +224,6 @@ describe Agama::DBus::Storage::ISCSI do
 
       it "does not configure iSCSI" do
         expect(manager).to_not receive(:configure)
-        expect(subject).to_not receive(:SystemChanged)
         expect(subject).to_not receive(:ProgressChanged)
         expect(subject).to_not receive(:ProgressFinished)
         subject.configure(serialized_config)
@@ -241,7 +239,6 @@ describe Agama::DBus::Storage::ISCSI do
 
       it "does not configure iSCSI" do
         expect(manager).to_not receive(:configure)
-        expect(subject).to_not receive(:SystemChanged)
         expect(subject).to_not receive(:ProgressChanged)
         expect(subject).to_not receive(:ProgressFinished)
         subject.configure(serialized_config)
@@ -255,48 +252,19 @@ describe Agama::DBus::Storage::ISCSI do
         allow(manager).to receive(:configured?).with(config_json).and_return(false)
       end
 
-      it "tries to configure iSCSI" do
+      it "configures iSCSI and emits progress signals" do
         expect(subject).to receive(:ProgressChanged).ordered
         expect(manager).to receive(:configure).with(config_json).ordered
         expect(subject).to receive(:ProgressFinished).ordered
         subject.configure(serialized_config)
-      end
-
-      context "and the system is modified" do
-        before do
-          expect(manager).to receive(:configure).with(config_json).and_return(true)
-          # Set serialized system to null in order to check if the signal is emitted when the system
-          # changes.
-          subject.serialized_system = nil.to_json
-        end
-
-        it "emits SystemChanged signal" do
-          expect(subject).to receive(:SystemChanged)
-          subject.configure(serialized_config)
-        end
-      end
-
-      context "and the system is not modified" do
-        before do
-          expect(manager).to receive(:configure).with(config_json).and_return(false)
-        end
-
-        it "does not emit SystemChanged signal" do
-          expect(subject).to_not receive(:SystemChanged)
-          subject.configure(serialized_config)
-        end
       end
     end
   end
 
   describe "#discover" do
     before do
-      allow(subject).to receive(:SystemChanged)
       allow(subject).to receive(:ProgressChanged)
       allow(subject).to receive(:ProgressFinished)
-      # Set serialized system to null in order to check if the signal is emitted when the system
-      # changes.
-      subject.serialized_system = nil.to_json
     end
 
     let(:options_json) do
@@ -310,8 +278,7 @@ describe Agama::DBus::Storage::ISCSI do
       }
     end
 
-    it "performs iSCSI discovery" do
-      expect(subject).to receive(:SystemChanged)
+    it "performs iSCSI discovery and emits progress signals" do
       expect(subject).to receive(:ProgressChanged)
       expect(subject).to receive(:ProgressFinished)
       expect(manager).to receive(:discover) do |address, port, credentials:|

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -29,18 +29,24 @@ module Agama
         # Boot config conversion to model according to the JSON schema.
         class Boot < Base
           # @param config [Storage::Config]
-          def initialize(config)
+          # @param bootloader_config [Storage::BootloaderConfig]
+          def initialize(config, bootloader_config)
             super()
             @config = config
+            @bootloader_config = bootloader_config
           end
 
         private
 
+          # @return [Storage::BootloaderConfig, nil]
+          attr_reader :bootloader_config
+
           # @see Base#conversions
           def conversions
             {
-              configure: config.boot.configure?,
-              device:    convert_device
+              configure:  config.boot.configure?,
+              device:     convert_device,
+              bootloader: convert_bootloader
             }
           end
 
@@ -49,6 +55,14 @@ module Agama
             return unless config.boot.configure?
 
             ToModelConversions::BootDevice.new(config).convert
+          end
+
+          # @return [String, nil]
+          def convert_bootloader
+            bootloader_type = bootloader_config&.type
+            return nil if bootloader_type.nil? || bootloader_type.is?(:none)
+
+            bootloader_type.value
           end
         end
       end

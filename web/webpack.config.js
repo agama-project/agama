@@ -7,23 +7,26 @@ const TerserJSPlugin = require("terser-webpack-plugin");
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const HtmlMinimizerPlugin = require("html-minimizer-webpack-plugin");
 const CompressionPlugin = require("compression-webpack-plugin");
-const ESLintPlugin = require("eslint-webpack-plugin");
-const StylelintPlugin = require("stylelint-webpack-plugin");
 const TsconfigPathsPlugin = require("tsconfig-paths-webpack-plugin");
-const ReactRefreshWebpackPlugin = require("@pmmmwh/react-refresh-webpack-plugin");
-const ReactRefreshTypeScript = require("react-refresh-typescript");
-const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
+const MonacoWebpackPlugin = require("monaco-editor-webpack-plugin");
 const webpack = require("webpack");
 
 /* A standard nodejs and webpack pattern */
 const production = process.env.NODE_ENV === "production";
 const development = !production;
 
+const ReactRefreshWebpackPlugin = development ? require("@pmmmwh/react-refresh-webpack-plugin") : null;
+const ReactRefreshTypeScript = development ? require("react-refresh-typescript") : null;
+const ForkTsCheckerWebpackPlugin = development ? require("fork-ts-checker-webpack-plugin") : null;
+
 /* development options for faster iteration */
 const eslint = process.env.ESLINT !== "0";
 
 /* Default to disable csslint for faster production builds */
 const stylelint = process.env.STYLELINT ? process.env.STYLELINT !== "0" : development;
+
+const ESLintPlugin = eslint ? require("eslint-webpack-plugin") : null;
+const StylelintPlugin = stylelint ? require("stylelint-webpack-plugin") : null;
 
 // Agama API server. By default it connects to a local development server.
 let agamaServer = process.env.AGAMA_SERVER || "localhost";
@@ -38,6 +41,8 @@ const copy_files = [
   "./src/assets/favicon.svg",
   "./src/languages.json",
   { from: "./src/assets/products/*.svg", to: "assets/logos/[name][ext]" },
+  // Per-product appearance overrides, loaded at runtime by product id.
+  { from: "./src/assets/products/*.css", to: "assets/appearance/[name][ext]" },
 ];
 
 const plugins = [
@@ -57,7 +62,11 @@ const plugins = [
   }),
   // run the TypeScript type checks in a parallel process (report the problems to the dev server in
   // the development mode)
-  new ForkTsCheckerWebpackPlugin({ devServer: development }),
+  development && new ForkTsCheckerWebpackPlugin({ devServer: development }),
+  new MonacoWebpackPlugin({
+    // include only support for the JSON format in the Monaco editor
+    languages: ["json"],
+  }),
 ].filter(Boolean);
 
 if (eslint) {
@@ -110,6 +119,12 @@ module.exports = {
     proxy: [
       {
         context: ["/api/ws"],
+        target: agamaServer.replace(/^http/, "ws"),
+        ws: true,
+        secure: false,
+      },
+      {
+        context: ["/api/terminal/ws"],
         target: agamaServer.replace(/^http/, "ws"),
         ws: true,
         secure: false,
@@ -187,8 +202,8 @@ module.exports = {
               sourceMap: true,
               url: {
                 // Only follow the Agama fonts links to be processed by the next rule and place
-                // them in dist/fonts
-                filter: (url) => url.includes("./fonts/"),
+                // them in dist/fonts, the codicon font is added by the Monaco editor
+                filter: (url) => url.includes("./fonts/") || url.includes("codicon.ttf"),
               },
             },
           },
@@ -199,6 +214,12 @@ module.exports = {
               sassOptions: {
                 includePaths: ["node_modules"],
                 outputStyle: production ? "compressed" : undefined,
+                // Never emit a @charset or a byte-order mark. Compressed output
+                // marks a non-ASCII stylesheet with a BOM, and the extracted
+                // stylesheets are concatenated into a single file, so that BOM
+                // would land mid-file, where it is part of the next selector
+                // rather than whitespace and silently kills that rule.
+                charset: false,
                 silenceDeprecations: ["global-builtin", "if-function"],
               },
             },

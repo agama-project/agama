@@ -41,12 +41,12 @@ jest.mock("~/hooks/model/system/storage", () => ({
 }));
 
 const mockConfigModel = jest.fn();
-const mockPartitionable = jest.fn();
+const mockDeviceConfig = jest.fn();
 const mockSetSpacePolicy = jest.fn();
 
 jest.mock("~/hooks/model/storage/config-model", () => ({
   useConfigModel: () => mockConfigModel(),
-  usePartitionable: () => mockPartitionable(),
+  useDevice: () => mockDeviceConfig(),
   useSetSpacePolicy: () => mockSetSpacePolicy,
 }));
 
@@ -66,7 +66,7 @@ describe("SpacePolicyMenu", () => {
   beforeEach(() => {
     mockSystemDevice.mockReturnValue(vda);
     mockConfigModel.mockReturnValue({ drives: [deviceModel] });
-    mockPartitionable.mockReturnValue(deviceModel);
+    mockDeviceConfig.mockReturnValue(deviceModel);
   });
 
   it("should render the SpacePolicyMenu with correct initial state", async () => {

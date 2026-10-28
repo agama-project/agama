@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024-2025] SUSE LLC
+# Copyright (c) [2024-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -54,7 +54,7 @@ module Agama
           device = found_device
           return device.name if device
 
-          search&.name unless search&.create_device?
+          search&.condition_name unless search&.create_device?
         end
 
         # Whether the device is going to be created.

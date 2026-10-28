@@ -34,17 +34,6 @@ jest.mock("~/api", () => ({
   discoverISCSIAction: (...args) => mockDiscoverISCSIAction(...args),
 }));
 
-// Needed by withL10n
-jest.mock("~/hooks/model/system", () => ({
-  useSystem: () => ({
-    l10n: {
-      keymap: "us",
-      timezone: "Europe/Berlin",
-      locale: "en_US",
-    },
-  }),
-}));
-
 describe("DiscoverFormPage", () => {
   beforeEach(() => {
     // .scrollIntoView is not yet implemented at jsdom, https://github.com/jsdom/jsdom/issues/1695
@@ -52,7 +41,7 @@ describe("DiscoverFormPage", () => {
   });
 
   it("allows discovering without authentication", async () => {
-    const { user } = installerRender(<DiscoverFormPage />, { withL10n: true });
+    const { user } = installerRender(<DiscoverFormPage />);
 
     const addressInput = screen.getByRole("textbox", { name: "Address" });
     const portInput = screen.getByRole("textbox", { name: "Port" });
@@ -71,7 +60,7 @@ describe("DiscoverFormPage", () => {
   });
 
   it("allows discovering with authentication", async () => {
-    const { user } = installerRender(<DiscoverFormPage />, { withL10n: true });
+    const { user } = installerRender(<DiscoverFormPage />);
 
     const addressInput = screen.getByRole("textbox", { name: "Address" });
     const portInput = screen.getByRole("textbox", { name: "Port" });
@@ -100,7 +89,7 @@ describe("DiscoverFormPage", () => {
   });
 
   it("allows discovering with mutual authentication", async () => {
-    const { user } = installerRender(<DiscoverFormPage />, { withL10n: true });
+    const { user } = installerRender(<DiscoverFormPage />);
 
     const addressInput = screen.getByRole("textbox", { name: "Address" });
     const portInput = screen.getByRole("textbox", { name: "Port" });
@@ -140,7 +129,7 @@ describe("DiscoverFormPage", () => {
   });
 
   it("shows validation errors for invalid IP address", async () => {
-    const { user } = installerRender(<DiscoverFormPage />, { withL10n: true });
+    const { user } = installerRender(<DiscoverFormPage />);
 
     const addressInput = screen.getByRole("textbox", { name: "Address" });
     const acceptButton = screen.getByRole("button", { name: "Accept" });
@@ -155,7 +144,7 @@ describe("DiscoverFormPage", () => {
   });
 
   it("shows validation errors for missing required fields", async () => {
-    const { user } = installerRender(<DiscoverFormPage />, { withL10n: true });
+    const { user } = installerRender(<DiscoverFormPage />);
 
     const authSwitch = screen.getByRole("switch", { name: "Provide authentication" });
     const acceptButton = screen.getByRole("button", { name: "Accept" });

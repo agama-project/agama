@@ -22,37 +22,78 @@ use std::{fs::File, io::BufReader};
 
 use agama_lib::{http::BaseHTTPClient, questions::http_client::HTTPClient};
 use agama_utils::api::question::{AnswerRule, Policy, QuestionSpec};
+use agama_utils::make_long;
 use anyhow::anyhow;
-use clap::{Args, Subcommand, ValueEnum};
+use clap::{value_parser, Arg, ArgMatches, Command, ValueEnum};
+use gettextrs::gettext;
 use serde::Deserialize;
 
-// TODO: use for answers also JSON to be consistent
-#[derive(Subcommand, Debug)]
-pub enum QuestionsCommands {
-    /// Set the mode for answering questions.
-    Mode(ModesArgs),
-
-    /// Load predefined answers.
-    ///
-    /// It allows predefining answers for specific questions in order to skip them in interactive
-    /// mode or change the answer in automatic mode.
-    ///
-    /// Please check Agama documentation for more details and examples:
-    /// https://github.com/openSUSE/agama/blob/master/doc/questions.
-    Answers {
-        /// Path to a file containing the answers in JSON format.
-        path: String,
-    },
-    /// Prints the list of questions that are waiting for an answer in JSON format
-    List,
-    /// Reads a question definition in JSON from stdin and prints the response when it is answered.
-    Ask,
+pub fn build_questions_cmd() -> Command {
+    // TRANSLATORS: CLI help for: agama questions
+    let about = gettext("Handle installer questions");
+    // TRANSLATORS: CLI help for: agama questions (details)
+    let long_about = make_long(&about, &gettext("\
+        Agama might require user intervention at any time. The reasons include providing some \
+        missing information (e.g., the password to decrypt a file system) or deciding what to do in \
+        case of an error (e.g., cannot connect to the repository).\n\
+        \n\
+        This command allows answering such questions directly from the command-line."));
+    Command::new("questions")
+        .subcommand_required(true)
+        .arg_required_else_help(true)
+        .about(&about)
+        .long_about(long_about)
+        .subcommand(
+            Command::new("mode")
+                // TRANSLATORS: CLI help for: agama questions mode
+                .about(gettext("Set the mode for answering questions"))
+                .arg(
+                    Arg::new("value")
+                        .value_name("VALUE")
+                        .required(true)
+                        .value_parser(value_parser!(Modes))
+                )
+        )
+        .subcommand(build_questions_answers_cmd())
+        .subcommand(
+            Command::new("list")
+                // TRANSLATORS: CLI help for: agama questions list
+                .about(gettext("Prints the list of questions that are waiting for an answer in JSON format"))
+        )
+        .subcommand(
+            Command::new("ask")
+                // TRANSLATORS: CLI help for: agama questions ask
+                .about(gettext("Reads a question definition in JSON from stdin and prints the response when it is answered"))
+        )
 }
 
-#[derive(Args, Debug)]
-pub struct ModesArgs {
-    #[arg(value_enum)]
-    value: Modes,
+fn build_questions_answers_cmd() -> Command {
+    // TRANSLATORS: CLI help for: agama questions answers
+    let about = gettext("Load predefined answers");
+    let long_about = make_long(
+        &about,
+        &gettext(
+            // TRANSLATORS: CLI help for: agama questions answers (details)
+            "\
+        It allows predefining answers for specific questions in order to skip them in interactive \
+        mode or change the answer in automatic mode.\n\
+        \n\
+        Please check Agama documentation for more details and examples: \
+        https://github.com/openSUSE/agama/blob/master/doc/questions.",
+        ),
+    );
+    Command::new("answers")
+        .about(&about)
+        .long_about(long_about)
+        .arg(
+            Arg::new("path")
+                .value_name("PATH")
+                .required(true)
+                .help(gettext(
+                    // TRANSLATORS: CLI help for: agama questions answers <PATH>
+                    "Path to a file containing the answers in JSON format",
+                )),
+        )
 }
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord, ValueEnum)]
@@ -105,12 +146,19 @@ async fn ask_question(client: HTTPClient) -> anyhow::Result<()> {
     Ok(())
 }
 
-pub async fn run(client: BaseHTTPClient, subcommand: QuestionsCommands) -> anyhow::Result<()> {
+pub async fn run(client: BaseHTTPClient, sub_matches: &ArgMatches) -> anyhow::Result<()> {
     let client = HTTPClient::new(client);
-    match subcommand {
-        QuestionsCommands::Mode(value) => set_mode(client, value.value).await,
-        QuestionsCommands::Answers { path } => set_answers(client, &path).await,
-        QuestionsCommands::List => list_questions(client).await,
-        QuestionsCommands::Ask => ask_question(client).await,
+    match sub_matches.subcommand() {
+        Some(("mode", matches)) => {
+            let value = *matches.get_one::<Modes>("value").unwrap();
+            set_mode(client, value).await
+        }
+        Some(("answers", matches)) => {
+            let path = matches.get_one::<String>("path").unwrap().clone();
+            set_answers(client, &path).await
+        }
+        Some(("list", _)) => list_questions(client).await,
+        Some(("ask", _)) => ask_question(client).await,
+        _ => Ok(()),
     }
 }

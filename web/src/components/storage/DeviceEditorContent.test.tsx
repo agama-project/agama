@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2025] SUSE LLC
+ * Copyright (c) [2025-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -42,6 +42,8 @@ const mockConfigModel = jest.fn();
 
 jest.mock("~/hooks/model/storage/config-model", () => ({
   useConfigModel: () => mockConfigModel(),
+  usePartitionable: (_collection: string, index: number) =>
+    mockConfigModel()?.drives[index] ?? null,
 }));
 
 const driveWithPartitions: ConfigModel.Drive = {

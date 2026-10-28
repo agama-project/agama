@@ -46,7 +46,7 @@ impl FileSystem {
 
     /// Kernel name of the block device containing the file system.
     pub fn device(&self) -> String {
-        format!("/dev/{}", &self.block_device)
+        format!("/dev/{}", self.block_device)
     }
 
     /// Mounts the file system and runs the given function.

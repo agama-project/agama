@@ -19,16 +19,21 @@
 // find current contact information at www.suse.com.
 
 use merge::Merge;
+use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 /// Hostname config.
-#[derive(Clone, Debug, Default, Merge, Serialize, Deserialize, PartialEq, utoipa::ToSchema)]
-#[serde(rename_all = "camelCase")]
-#[schema(as = hostname::Config)]
+#[derive(Clone, Debug, Default, Merge, Serialize, Deserialize, PartialEq, JsonSchema)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+#[schemars(rename = "hostname.Config", title = "Hostname settings")]
 pub struct Config {
+    /// System static hostname.
+    #[schemars(example = &"agama-host.example.com")]
     #[serde(skip_serializing_if = "Option::is_none")]
     #[merge(strategy = merge::option::overwrite_none)]
     pub r#static: Option<String>,
+    /// System transient hostname.
+    #[schemars(example = &"agama-host")]
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(alias = "transient")]
     #[merge(strategy = merge::option::overwrite_none)]

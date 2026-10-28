@@ -20,6 +20,7 @@
 
 //! This module includes the struct that represent a service progress step.
 
+use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 /// Scope to distinguish each service.
@@ -28,22 +29,31 @@ use serde::{Deserialize, Serialize};
     Clone,
     Debug,
     Eq,
+    Ord,
+    PartialOrd,
     Hash,
     strum::EnumString,
     strum::Display,
+    strum::VariantArray,
     Deserialize,
     Serialize,
-    utoipa::ToSchema,
+    JsonSchema,
     PartialEq,
 )]
 #[strum(serialize_all = "camelCase")]
 #[serde(rename_all = "camelCase")]
 pub enum Scope {
+    Access,
+    Bootloader,
     Manager,
     Network,
+    Ntp,
     Hostname,
     L10n,
     Product,
+    Proxy,
+    Questions,
+    Security,
     Software,
     Storage,
     Files,

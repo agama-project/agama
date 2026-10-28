@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2025] SUSE LLC
+ * Copyright (c) [2025-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -25,6 +25,10 @@ import { screen, within } from "@testing-library/react";
 import { installerRender, mockNavigateFn } from "~/test-utils";
 import MenuButton, { CustomToggleProps, MenuButtonItem } from "~/components/core/MenuButton";
 import { _ } from "~/i18n";
+
+// NOTE: Keyboard navigation tests (arrow keys open menu) are not duplicated here because:
+//   - The behavior is comprehensively tested in use-select-keyboard.test.tsx
+//   - These tests focus on menu functionality and drilldown behavior
 
 it("toggles the menu state on click", async () => {
   const { user } = installerRender(
@@ -300,4 +304,20 @@ it("allows receiving a fully custom toggle", async () => {
   expect(item1).toHaveAttribute("aria-current", "false");
   await user.click(item1);
   expect(item1).toHaveAttribute("aria-current", "true");
+});
+
+it("allows disabling arrow key opening", async () => {
+  const { user } = installerRender(
+    <MenuButton menuProps={{ "aria-label": _("test menu") }} disableArrowKeyOpen>
+      {"test"}
+    </MenuButton>,
+  );
+
+  const button = screen.getByRole("button", { name: "test" });
+  await user.tab();
+  expect(button).toHaveFocus();
+  await user.keyboard("[ArrowDown]");
+  expect(button).toHaveAttribute("aria-expanded", "false");
+  const menu = screen.queryByRole("menu", { name: "test menu" });
+  expect(menu).not.toBeInTheDocument();
 });

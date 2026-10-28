@@ -58,6 +58,27 @@ describe Agama::AutoYaST::ProfileChecker do
       end
     end
 
+    context "when a supported interface element is included" do
+      let(:profile) do
+        {
+          "networking" => {
+            "interfaces" => [
+              { "name"         => "br0",
+                "bridge"       => "yes",
+                "bridge_ports" => "eth0" },
+              { "name"        => "eth1.10",
+                "vlan_id"     => "10",
+                "etherdevice" => "eth1" }
+            ]
+          }
+        }
+      end
+
+      it "returns an empty array" do
+        expect(subject.find_unsupported(profile)).to eq([])
+      end
+    end
+
     context "when an unsupported nested element is included" do
       let(:profile) do
         {

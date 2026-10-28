@@ -26,6 +26,7 @@ use agama_utils::{
     api::{status::Stage, FinishMethod},
     kernel_cmdline::KernelCmdline,
     logging::init_logging,
+    runtime::run_async,
 };
 use anyhow::anyhow;
 use anyhow::Context;
@@ -43,8 +44,7 @@ pub fn insecure_from(cmdline: &KernelCmdline, key: &str) -> bool {
     Some("1".to_string()) == value
 }
 
-#[tokio::main]
-async fn main() -> anyhow::Result<()> {
+async fn run() -> anyhow::Result<()> {
     init_logging().context("Could not initialize the logger")?;
 
     let args = KernelCmdline::parse()?;
@@ -86,7 +86,8 @@ async fn main() -> anyhow::Result<()> {
     loop {
         sleep(Duration::from_secs(1)).await;
         let status = manager_client.status().await?;
-        if status.progresses.is_empty() {
+        tracing::info!("installer status: {:?}", &status);
+        if status.progresses.is_empty() && status.tasks.is_empty() {
             break;
         }
     }
@@ -111,4 +112,8 @@ async fn main() -> anyhow::Result<()> {
     manager_client.finish(method).await?;
 
     Ok(())
+}
+
+fn main() -> anyhow::Result<()> {
+    run_async(run())
 }

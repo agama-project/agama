@@ -18,10 +18,11 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 /// Information about conflict when resolving software
-#[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema)]
+#[derive(Clone, Debug, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct ConflictSolve {
     /// conflict id
@@ -37,7 +38,7 @@ impl From<ConflictSolve> for (u32, u32) {
 }
 
 /// Information about possible solution for conflict
-#[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema)]
+#[derive(Clone, Debug, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 #[allow(dead_code)]
 pub struct Solution {
@@ -50,7 +51,7 @@ pub struct Solution {
 }
 
 /// Information about conflict when resolving software
-#[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema)]
+#[derive(Clone, Debug, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 #[allow(dead_code)]
 pub struct Conflict {

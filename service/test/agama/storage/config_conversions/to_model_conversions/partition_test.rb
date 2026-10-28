@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2025] SUSE LLC
+# Copyright (c) [2025-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -21,6 +21,7 @@
 
 require_relative "../../storage_helpers"
 require_relative "./examples"
+require "agama/storage/bootloader_config"
 require "agama/storage/config_conversions/from_json_conversions/partition"
 require "agama/storage/config_conversions/to_model_conversions/partition"
 require "agama/storage/volume_templates_builder"
@@ -30,9 +31,11 @@ describe Agama::Storage::ConfigConversions::ToModelConversions::Partition do
 
   let(:config) do
     Agama::Storage::ConfigConversions::FromJSONConversions::Partition
-      .new(config_json)
+      .new(config_json, bootloader_config)
       .convert
   end
+
+  let(:bootloader_config) { Agama::Storage::BootloaderConfig.new }
 
   let(:config_json) do
     {
@@ -64,24 +67,8 @@ describe Agama::Storage::ConfigConversions::ToModelConversions::Partition do
       end
     end
 
-    context "if #delete is not configured" do
-      let(:delete) { nil }
-
-      it "generates the expected JSON" do
-        model_json = subject.convert
-        expect(model_json[:delete]).to eq(false)
-      end
-    end
-
-    context "if #delete_if_needed is not configured" do
-      let(:delete_if_needed) { nil }
-
-      it "generates the expected JSON" do
-        model_json = subject.convert
-        expect(model_json[:deleteIfNeeded]).to eq(false)
-      end
-    end
-
+    include_examples "without delete"
+    include_examples "without delete_if_needed"
     include_examples "without filesystem"
     include_examples "without size"
 
@@ -94,119 +81,11 @@ describe Agama::Storage::ConfigConversions::ToModelConversions::Partition do
       end
     end
 
-    context "if #delete is configured" do
-      let(:delete) { true }
-
-      it "generates the expected JSON" do
-        model_json = subject.convert
-        expect(model_json[:delete]).to eq(true)
-      end
-    end
-
-    context "if #delete_if_needed is not configured" do
-      let(:delete_if_needed) { true }
-
-      it "generates the expected JSON" do
-        model_json = subject.convert
-        expect(model_json[:deleteIfNeeded]).to eq(true)
-      end
-    end
-
+    include_examples "with delete"
+    include_examples "with delete_if_needed"
     include_examples "with filesystem"
     include_examples "with size"
-
     include_examples "device name"
-
-    context "for the 'resize' property" do
-      let(:search) { {} }
-
-      context "if there is not assigned device" do
-        before { config.search.solve }
-
-        it "generates the expected JSON" do
-          model_json = subject.convert
-          expect(model_json[:resize]).to eq(false)
-        end
-      end
-
-      context "if there is an assigned device" do
-        before { config.search.solve(device) }
-
-        let(:device) { instance_double(Y2Storage::BlkDevice, name: "/dev/vda1") }
-
-        context "and the #size is not configured" do
-          let(:size) { nil }
-
-          it "generates the expected JSON" do
-            model_json = subject.convert
-            expect(model_json[:resize]).to eq(false)
-          end
-        end
-
-        context "and the min size is equal to the max size" do
-          let(:size) { "1 GiB" }
-
-          it "generates the expected JSON" do
-            model_json = subject.convert
-            expect(model_json[:resize]).to eq(true)
-          end
-        end
-
-        context "and the min size is not equal to the max size" do
-          let(:size) { { min: "1 GiB", max: "2 GiB" } }
-
-          it "generates the expected JSON" do
-            model_json = subject.convert
-            expect(model_json[:resize]).to eq(false)
-          end
-        end
-      end
-    end
-
-    context "for the 'resizeIfNeeded' property" do
-      let(:search) { {} }
-
-      context "if there is not assigned device" do
-        before { config.search.solve }
-
-        it "generates the expected JSON" do
-          model_json = subject.convert
-          expect(model_json[:resizeIfNeeded]).to eq(false)
-        end
-      end
-
-      context "if there is an assigned device" do
-        before { config.search.solve(device) }
-
-        let(:device) { instance_double(Y2Storage::BlkDevice, name: "/dev/vda1") }
-
-        context "and the #size is not configured" do
-          let(:size) { nil }
-
-          it "generates the expected JSON" do
-            model_json = subject.convert
-            expect(model_json[:resizeIfNeeded]).to eq(false)
-          end
-        end
-
-        context "and the min size is equal to the max size" do
-          let(:size) { "1 GiB" }
-
-          it "generates the expected JSON" do
-            model_json = subject.convert
-            expect(model_json[:resizeIfNeeded]).to eq(false)
-          end
-        end
-
-        context "and the min size is not equal to the max size" do
-          let(:size) { { min: "1 GiB", max: "2 GiB" } }
-
-          it "generates the expected JSON" do
-            model_json = subject.convert
-            expect(model_json[:resizeIfNeeded]).to eq(true)
-          end
-        end
-      end
-    end
+    include_examples "resize"
   end
 end

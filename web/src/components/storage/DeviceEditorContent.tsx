@@ -25,7 +25,7 @@ import UnusedMenu from "~/components/storage/UnusedMenu";
 import FilesystemMenu from "~/components/storage/FilesystemMenu";
 import PartitionsSection from "~/components/storage/PartitionsSection";
 import SpacePolicyMenu from "~/components/storage/SpacePolicyMenu";
-import { useConfigModel } from "~/hooks/model/storage/config-model";
+import { useConfigModel, usePartitionable } from "~/hooks/model/storage/config-model";
 import configModel from "~/model/storage/config-model";
 
 type DeviceEditorContentProps = {
@@ -38,16 +38,18 @@ export default function DeviceEditorContent({
   index,
 }: DeviceEditorContentProps): React.ReactNode {
   const config = useConfigModel();
-  const device = config[collection][index];
-  const isUsed = configModel.partitionable.isUsed(config, device.name);
+  const deviceConfig = usePartitionable(collection, index);
+  const isUsed =
+    configModel.partitionable.isUsed(config, deviceConfig.name) ||
+    configModel.boot.hasDevice(config, deviceConfig.name);
 
   if (!isUsed) return <UnusedMenu collection={collection} index={index} />;
 
   return (
     <>
-      {device.filesystem && <FilesystemMenu collection={collection} index={index} />}
-      {!device.filesystem && <PartitionsSection collection={collection} index={index} />}
-      {!device.filesystem && <SpacePolicyMenu collection={collection} index={index} />}
+      {deviceConfig.filesystem && <FilesystemMenu collection={collection} index={index} />}
+      {!deviceConfig.filesystem && <PartitionsSection collection={collection} index={index} />}
+      {!deviceConfig.filesystem && <SpacePolicyMenu collection={collection} index={index} />}
     </>
   );
 }

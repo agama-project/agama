@@ -19,7 +19,7 @@
 // find current contact information at www.suse.com.
 
 //! NetworkManager client.
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::fs::{self, OpenOptions};
 use std::path::Path;
 
@@ -29,7 +29,7 @@ use super::dbus::{
     merge_dbus_connections,
 };
 use super::error::NmError;
-use super::model::{NmConnectionState, NmDeviceType};
+use super::model::{NmConnectionState, NmConnectivityState, NmDeviceType};
 use super::proxies::{
     AccessPointProxy, ActiveConnectionProxy, ConnectionProxy, DeviceProxy, NetworkManagerProxy,
     SettingsProxy, WirelessProxy,
@@ -37,7 +37,9 @@ use super::proxies::{
 use crate::model::{
     Connection, ConnectionConfig, GeneralState, SecurityProtocol, NOT_COPY_NETWORK_PATH,
 };
-use crate::types::{AccessPoint, AddFlags, ConnectionFlags, Device, DeviceType, UpdateFlags, SSID};
+use crate::types::{
+    AccessPoint, AddFlags, ConnectionFlags, ConnectionState, Device, DeviceType, UpdateFlags, SSID,
+};
 use agama_utils::dbus::get_optional_property;
 use semver::Version;
 use uuid::Uuid;
@@ -70,8 +72,7 @@ impl<'a> NetworkManagerClient<'a> {
         let networking_enabled = self.nm_proxy.networking_enabled().await?;
         // TODO:: Allow to set global DNS configuration
         // let global_dns_configuration = self.nm_proxy.global_dns_configuration().await?;
-        // Fixme: save as NMConnectivityState enum
-        let connectivity = self.nm_proxy.connectivity().await? == 4;
+        let connectivity = NmConnectivityState(self.nm_proxy.connectivity().await?).try_into()?;
         let copy_network = !Path::new(NOT_COPY_NETWORK_PATH).exists();
 
         Ok(GeneralState {
@@ -206,6 +207,7 @@ impl<'a> NetworkManagerClient<'a> {
     pub async fn connections(&self) -> Result<Vec<Connection>, NmError> {
         let mut controlled_by: HashMap<Uuid, String> = HashMap::new();
         let mut uuids_map: HashMap<String, Uuid> = HashMap::new();
+        let mut known_uuids: HashSet<Uuid> = HashSet::new();
 
         let proxy = SettingsProxy::new(&self.connection).await?;
         let paths = proxy.list_connections().await?;
@@ -228,9 +230,8 @@ impl<'a> NetworkManagerClient<'a> {
 
             match connection_from_dbus(settings) {
                 Ok(mut connection) => {
-                    let state = states.get(&connection.id).map(|s| NmConnectionState(*s));
-                    if let Some(state) = state {
-                        connection.state = state.try_into().unwrap_or_default();
+                    if let Some(state) = states.get(&connection.id) {
+                        connection.state = *state;
                     }
 
                     Self::add_secrets(&mut connection.config, &proxy).await?;
@@ -243,6 +244,7 @@ impl<'a> NetworkManagerClient<'a> {
                     if let Some(iname) = &connection.interface {
                         uuids_map.insert(iname.to_string(), connection.uuid);
                     }
+                    known_uuids.insert(connection.uuid);
                     if self.settings_active_connection(path).await?.is_none() {
                         connection.set_down()
                     }
@@ -255,17 +257,26 @@ impl<'a> NetworkManagerClient<'a> {
         }
 
         for conn in connections.iter_mut() {
-            if let Some(controller) = controlled_by.get(&conn.uuid) {
-                if let Some(iface) = uuids_map.get(controller) {
-                    conn.controller = Some(iface.to_owned());
-                }
+            let Some(controller) = controlled_by.get(&conn.uuid) else {
+                continue;
             };
+
+            match resolve_controller(controller, &uuids_map, &known_uuids) {
+                Some(uuid) => conn.controller = Some(uuid),
+                None => tracing::warn!(
+                    "Could not find the controller '{}' of the connection {} ({}), \
+                     so it is not reported as a port",
+                    controller,
+                    conn.id,
+                    conn.uuid
+                ),
+            }
         }
 
         Ok(connections)
     }
 
-    pub async fn connection_states(&self) -> Result<HashMap<String, u32>, NmError> {
+    pub async fn connection_states(&self) -> Result<HashMap<String, ConnectionState>, NmError> {
         let mut states = HashMap::new();
 
         for active_path in &self.nm_proxy.active_connections().await? {
@@ -273,7 +284,8 @@ impl<'a> NetworkManagerClient<'a> {
                 .path(active_path.as_str())?
                 .build()
                 .await?;
-            states.insert(proxy.id().await?, proxy.state().await?);
+            let state = NmConnectionState(proxy.state().await?).try_into()?;
+            states.insert(proxy.id().await?, state);
         }
 
         Ok(states)
@@ -286,7 +298,7 @@ impl<'a> NetworkManagerClient<'a> {
         &self,
         conn: &Connection,
         controller: Option<&Connection>,
-    ) -> Result<(), NmError> {
+    ) -> Result<OwnedObjectPath, NmError> {
         let mut new_conn = connection_to_dbus(
             conn,
             controller,
@@ -294,11 +306,14 @@ impl<'a> NetworkManagerClient<'a> {
                 .map_err(NmError::FailedNmVersionParse)?,
         );
 
-        let devices = self.devices().await?;
-
         let path = if let Ok(proxy) = self.get_connection_proxy(conn.uuid).await {
             let original = proxy.get_settings().await?;
-            let merged = merge_dbus_connections(&original, &new_conn)?;
+            let mut merged = merge_dbus_connections(&original, &new_conn)?;
+            // A connection that becomes a port must not keep the IP configuration it had.
+            if controller.is_some() {
+                merged.remove("ipv4");
+                merged.remove("ipv6");
+            }
             let persist = if conn.persistent {
                 UpdateFlags::ToDisk
             } else {
@@ -325,38 +340,7 @@ impl<'a> NetworkManagerClient<'a> {
             path
         };
 
-        // FIXME: Do not like that an activation/deactivation could not apply the changes because of
-        // a roolback when calling this method with an error.
-        if conn.is_up() {
-            if let Some(interface) = &conn.interface {
-                for device in devices {
-                    if interface != &device.name {
-                        continue;
-                    }
-
-                    if let Some(device_conn) = device.connection {
-                        if device_conn != conn.id {
-                            tracing::info!(
-                                "Disconnecting {} because the connection is {}",
-                                &device_conn,
-                                &conn.id,
-                            );
-                            self.disconnect_device(device.name).await?;
-                        }
-                    }
-                }
-            }
-
-            // FIXME: If it is a wireless and wireless is disabled it will fail, and if it is a
-            // device which is not available it will also fail.
-
-            tracing::info!("Activating connection {}", &conn.id);
-            self.activate_connection(path).await?;
-        } else if conn.is_down() || conn.is_removed() {
-            tracing::info!("Deactivating connection {}", &conn.id);
-            self.deactivate_connection(path).await?;
-        }
-        Ok(())
+        Ok(path)
     }
 
     /// Disconnect the device with the given name.
@@ -400,24 +384,37 @@ impl<'a> NetworkManagerClient<'a> {
 
     /// Activates a NetworkManager connection.
     ///
-    /// * `path`: D-Bus patch of the connection.
-    async fn activate_connection(&self, path: OwnedObjectPath) -> Result<(), NmError> {
+    /// * `path`: D-Bus path of the connection.
+    pub async fn activate_connection(
+        &self,
+        path: OwnedObjectPath,
+    ) -> Result<OwnedObjectPath, NmError> {
         let proxy = NetworkManagerProxy::new(&self.connection).await?;
         let root = ObjectPath::try_from("/").unwrap();
-        if let Err(e) = proxy
+        let path = proxy
             .activate_connection(&path.as_ref(), &root, &root)
-            .await
-        {
-            tracing::error!("Could not activate connection {}: {:?}", path, e);
-        }
+            .await?;
+        Ok(path)
+    }
 
-        Ok(())
+    /// Retrieves the state of an active connection.
+    ///
+    /// * `path`: D-Bus path of the active connection.
+    pub async fn active_connection_state(
+        &self,
+        path: &ObjectPath<'_>,
+    ) -> Result<ConnectionState, NmError> {
+        let proxy = ActiveConnectionProxy::builder(&self.connection)
+            .path(path)?
+            .build()
+            .await?;
+        NmConnectionState(proxy.state().await?).try_into()
     }
 
     /// Deactivates a NetworkManager connection.
     ///
-    /// * `path`: D-Bus patch of the connection.
-    async fn deactivate_connection(&self, path: OwnedObjectPath) -> Result<(), NmError> {
+    /// * `path`: D-Bus path of the connection.
+    pub async fn deactivate_connection(&self, path: OwnedObjectPath) -> Result<(), NmError> {
         let proxy = NetworkManagerProxy::new(&self.connection).await?;
 
         if let Some(active_connection) = self.settings_active_connection(path.clone()).await? {
@@ -445,8 +442,8 @@ impl<'a> NetworkManagerClient<'a> {
         Ok(proxy)
     }
 
-    // Returns the DeviceProxy for the given device name
-    //
+    /// Returns the DeviceProxy for the given device name
+    ///
     /// * `name`: Device name.
     async fn get_device_proxy(&self, name: String) -> Result<DeviceProxy<'_>, NmError> {
         let mut device_path: Option<OwnedObjectPath> = None;
@@ -542,5 +539,94 @@ impl<'a> NetworkManagerClient<'a> {
             }
         }
         Ok(())
+    }
+}
+
+/// Finds the connection a port refers to through the NetworkManager "master" property.
+///
+/// NetworkManager accepts two ways of pointing at the controller: the interface name of its
+/// device or the UUID of its connection. Agama writes the interface name, but connections set up
+/// by other tools may use the UUID. That is the case of the bonds and bridges created by dracut,
+/// whose ports would otherwise look like plain Ethernet connections and get their controller
+/// dropped when Agama writes them back (gh#agama-project/agama#3562).
+///
+/// The controller type plays no role here, so this covers any kind of controller (bond, bridge,
+/// OVS, etc.).
+///
+/// * `controller`: value of the "master" property.
+/// * `uuids_map`: interface name -> connection UUID.
+/// * `known_uuids`: UUIDs of the connections that were read.
+fn resolve_controller(
+    controller: &str,
+    uuids_map: &HashMap<String, Uuid>,
+    known_uuids: &HashSet<Uuid>,
+) -> Option<Uuid> {
+    if let Some(uuid) = uuids_map.get(controller) {
+        return Some(*uuid);
+    }
+
+    // Only accept a UUID that belongs to a connection that exists, as a dangling reference would
+    // make the model point at a controller that cannot be found later on.
+    Uuid::parse_str(controller)
+        .ok()
+        .filter(|uuid| known_uuids.contains(uuid))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn fixture() -> (HashMap<String, Uuid>, HashSet<Uuid>, Uuid) {
+        let br0 = Uuid::new_v4();
+        let uuids_map = HashMap::from([("br0".to_string(), br0)]);
+        let known_uuids = HashSet::from([br0, Uuid::new_v4()]);
+        (uuids_map, known_uuids, br0)
+    }
+
+    #[test]
+    fn test_resolve_controller_by_interface_name() {
+        let (uuids_map, known_uuids, br0) = fixture();
+
+        assert_eq!(
+            resolve_controller("br0", &uuids_map, &known_uuids),
+            Some(br0)
+        );
+    }
+
+    #[test]
+    fn test_resolve_controller_by_uuid() {
+        let (uuids_map, known_uuids, br0) = fixture();
+
+        // A bond or a bridge created by dracut refers to its controller by UUID.
+        assert_eq!(
+            resolve_controller(&br0.to_string(), &uuids_map, &known_uuids),
+            Some(br0)
+        );
+    }
+
+    #[test]
+    fn test_resolve_controller_prefers_the_interface_name() {
+        let (mut uuids_map, mut known_uuids, br0) = fixture();
+
+        // An interface named after some other connection's UUID must not shadow it.
+        let other = Uuid::new_v4();
+        uuids_map.insert(br0.to_string(), other);
+        known_uuids.insert(other);
+
+        assert_eq!(
+            resolve_controller(&br0.to_string(), &uuids_map, &known_uuids),
+            Some(other)
+        );
+    }
+
+    #[test]
+    fn test_resolve_unknown_controller() {
+        let (uuids_map, known_uuids, _) = fixture();
+
+        assert_eq!(resolve_controller("br1", &uuids_map, &known_uuids), None);
+        assert_eq!(
+            resolve_controller(&Uuid::new_v4().to_string(), &uuids_map, &known_uuids),
+            None
+        );
     }
 }

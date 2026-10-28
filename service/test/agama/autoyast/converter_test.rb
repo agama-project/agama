@@ -74,6 +74,32 @@ describe Agama::AutoYaST::Converter do
       end
     end
 
+    context "when networking is defined" do
+      let(:profile_name) { "network.xml" }
+
+      it "exports the bonding information" do
+        result = subject.to_agama(profile)
+        conn = result["network"]["connections"].find { |c| c["id"] == "bond0" }
+        expect(conn["bond"]).to eq(
+          "ports" => ["eth0", "eth1"], "mode" => "active-backup", "options" => "miimon=100"
+        )
+      end
+
+      it "exports the bridge information" do
+        result = subject.to_agama(profile)
+        conn = result["network"]["connections"].find { |c| c["id"] == "br0" }
+        expect(conn["bridge"]).to eq(
+          "ports" => ["eth2", "eth3"], "stp" => true, "forwardDelay" => 15
+        )
+      end
+
+      it "exports the VLAN information" do
+        result = subject.to_agama(profile)
+        conn = result["network"]["connections"].find { |c| c["id"] == "eth4.10" }
+        expect(conn["vlan"]).to eq("id" => 10, "parent" => "eth4")
+      end
+    end
+
     context "when iscsi-client is defined" do
       let(:profile_name) { "iscsi.xml" }
 
@@ -132,9 +158,14 @@ describe Agama::AutoYaST::Converter do
         result = subject.to_agama(profile)
 
         schema = File.expand_path(
-          "../../../../rust/agama-lib/share/profile.schema.json",
+          "../../../../rust/out/schemas/config.schema.json",
           __dir__
         )
+
+        if !File.exist?(schema)
+          pending "missing config.schema.json (run `cargo xtask openapi` first)"
+          break
+        end
 
         result_path = Tempfile.new("agama-test.json")
         result_path.write(JSON.pretty_generate(result))

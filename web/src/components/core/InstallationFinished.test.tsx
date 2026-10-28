@@ -22,74 +22,20 @@
 
 import React from "react";
 import { screen } from "@testing-library/react";
-import { installerRender, mockStage } from "~/test-utils";
-import type { Storage } from "~/model/config";
+import { installerRender, mockRoutes, mockStage } from "~/test-utils";
+import { ROOT } from "~/routes/paths";
 import InstallationFinished from "~/components/core/InstallationFinished";
 
-type storageConfigType = "guided" | "raw";
-type guidedEncryption = {
-  password: string;
-  method: string;
-  pbkdFunction?: string;
-};
-
-const mockUseExtendedConfigFn = jest.fn();
-
-const mockStorageConfig = (
-  type: storageConfigType,
-  encryption: undefined | Storage.Encryption | guidedEncryption,
-) => {
-  const encryptionHash = {};
-  if (encryption !== undefined) encryptionHash["encryption"] = encryption;
-
-  switch (type) {
-    case "guided":
-      return {
-        storage: {
-          guided: {
-            ...encryptionHash,
-          },
-        },
-      };
-    case "raw":
-      return {
-        storage: {
-          drives: [
-            {
-              partitions: [
-                {
-                  filesystem: {
-                    path: "/",
-                  },
-                  id: "linux",
-                  ...encryptionHash,
-                },
-                {
-                  filesystem: {
-                    mountBy: "uuid",
-                    path: "swap",
-                    type: "swap",
-                  },
-                  id: "swap",
-                  size: "2 GiB",
-                },
-              ],
-            },
-          ],
-        },
-      };
-  }
-};
-
-jest.mock("~/hooks/model/config", () => ({
-  ...jest.requireActual("~/hooks/model/config"),
-  useExtendedConfig: () => mockUseExtendedConfigFn(),
+const mockUseIsGrub2WithTpm = jest.fn();
+jest.mock("~/hooks/model/storage/config-model", () => ({
+  useIsGrub2WithTpm: () => mockUseIsGrub2WithTpm(),
 }));
 
 describe("InstallationFinished", () => {
   beforeEach(() => {
-    mockUseExtendedConfigFn.mockReturnValue(mockStorageConfig("guided", null));
+    mockUseIsGrub2WithTpm.mockReturnValue(false);
     mockStage("finished");
+    mockRoutes(ROOT.installationFinished);
   });
 
   it("shows the finished installation screen", () => {
@@ -104,83 +50,40 @@ describe("InstallationFinished", () => {
 
   it("shows the installer options menu", async () => {
     installerRender(<InstallationFinished />);
-    screen.getByRole("button", { name: /More installer options/i });
+    screen.getByRole("button", { name: /More options/i });
   });
 
   it("includes an option for downloading the logs", async () => {
     const { user } = installerRender(<InstallationFinished />);
-    await user.click(screen.getByRole("button", { name: /More installer options/i }));
-    const menuitem = screen.getByRole("menuitem", { name: /Download logs/i });
-    expect(menuitem).toHaveAttribute("download");
+    await user.click(screen.getByRole("button", { name: /More options/i }));
+    screen.getByRole("menuitem", { name: /Download logs/i });
   });
 
-  it("includes an option for downloading the config", async () => {
+  it("includes an option to show the configuration", async () => {
     const { user } = installerRender(<InstallationFinished />);
-    await user.click(screen.getByRole("button", { name: /More installer options/i }));
-    const menuitem = screen.getByRole("menuitem", { name: /Download config/i });
-    expect(menuitem).toHaveAttribute("download");
+    await user.click(screen.getByRole("button", { name: /More options/i }));
+    screen.getByRole("menuitem", { name: /Show configuration/i });
   });
 
-  describe("when running storage config in raw mode", () => {
+  describe("when using grub2 with TPM", () => {
     beforeEach(() => {
-      mockUseExtendedConfigFn.mockReturnValue(mockStorageConfig("raw", null));
+      mockUseIsGrub2WithTpm.mockReturnValue(true);
     });
 
-    describe("when TPM is set as encryption method", () => {
-      beforeEach(() => {
-        mockUseExtendedConfigFn.mockReturnValue(
-          mockStorageConfig("raw", {
-            tpmFde: {
-              password: "n0tS3cr3t",
-            },
-          }),
-        );
-      });
-
-      it("shows the TPM reminder", async () => {
-        installerRender(<InstallationFinished />);
-        await screen.findAllByText(/TPM/);
-      });
-    });
-
-    describe("when TPM is not set as encryption method", () => {
-      beforeEach(() => {
-        mockUseExtendedConfigFn.mockReturnValue(mockStorageConfig("raw", null));
-      });
-
-      it("does not show the TPM reminder", async () => {
-        installerRender(<InstallationFinished />);
-        expect(screen.queryAllByText(/TPM/)).toHaveLength(0);
-      });
+    it("shows the TPM reminder", async () => {
+      installerRender(<InstallationFinished />);
+      await screen.findAllByText(/TPM/);
     });
   });
 
-  describe("when running storage config in guided mode", () => {
-    describe("when TPM is set as encryption method", () => {
-      beforeEach(() => {
-        mockUseExtendedConfigFn.mockReturnValue(
-          mockStorageConfig("guided", {
-            method: "tpm_fde",
-            password: "n0tS3cr3t",
-          }),
-        );
-      });
-
-      it("shows the TPM reminder", async () => {
-        installerRender(<InstallationFinished />);
-        await screen.findAllByText(/TPM/);
-      });
+  describe("when not using grub2 with TPM", () => {
+    beforeEach(() => {
+      mockUseIsGrub2WithTpm.mockReturnValue(false);
     });
 
-    describe("when TPM is not set as encryption method", () => {
-      beforeEach(() => {
-        mockUseExtendedConfigFn.mockReturnValue(mockStorageConfig("guided", null));
-      });
-
-      it("does not show the TPM reminder", async () => {
-        installerRender(<InstallationFinished />);
-        expect(screen.queryAllByText(/TPM/)).toHaveLength(0);
-      });
+    it("does not show the TPM reminder", async () => {
+      installerRender(<InstallationFinished />);
+      expect(screen.queryAllByText(/TPM/)).toHaveLength(0);
     });
   });
 });

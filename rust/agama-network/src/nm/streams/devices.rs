@@ -114,29 +114,39 @@ impl DeviceChangedStream {
             "DeviceType",
             "HwAddress",
             "Interface",
+            "InterfaceFlags",
+            "Mtu",
             "State",
             "StateReason",
         ];
+        // Plugging a cable in changes the speed, and nothing else, so the
+        // device has to be read again for the change to be noticed.
+        const WIRED_PROPS: &[&str] = &["Carrier", "Speed"];
 
         let args = message.args().ok()?;
         let inner = message.message();
         let path = OwnedObjectPath::from(inner.header().path()?.to_owned());
 
         match args.interface_name.as_str() {
-            "org.freedesktop.NetworkManager.IP4Config" => {
-                if Self::include_properties(IP_CONFIG_PROPS, &args.changed_properties) {
-                    return Some(NmChange::IP4ConfigChanged(path));
-                }
+            "org.freedesktop.NetworkManager.IP4Config"
+                if Self::include_properties(IP_CONFIG_PROPS, &args.changed_properties) =>
+            {
+                return Some(NmChange::IP4ConfigChanged(path));
             }
-            "org.freedesktop.NetworkManager.IP6Config" => {
-                if Self::include_properties(IP_CONFIG_PROPS, &args.changed_properties) {
-                    return Some(NmChange::IP6ConfigChanged(path));
-                }
+            "org.freedesktop.NetworkManager.IP6Config"
+                if Self::include_properties(IP_CONFIG_PROPS, &args.changed_properties) =>
+            {
+                return Some(NmChange::IP6ConfigChanged(path));
             }
-            "org.freedesktop.NetworkManager.Device" => {
-                if Self::include_properties(DEVICE_PROPS, &args.changed_properties) {
-                    return Some(NmChange::DeviceUpdated(path));
-                }
+            "org.freedesktop.NetworkManager.Device"
+                if Self::include_properties(DEVICE_PROPS, &args.changed_properties) =>
+            {
+                return Some(NmChange::DeviceUpdated(path));
+            }
+            "org.freedesktop.NetworkManager.Device.Wired"
+                if Self::include_properties(WIRED_PROPS, &args.changed_properties) =>
+            {
+                return Some(NmChange::DeviceUpdated(path));
             }
             _ => {}
         };

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2025] SUSE LLC
+ * Copyright (c) [2025-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -31,7 +31,7 @@ const vda: Storage.Device = {
   sid: 59,
   class: "drive",
   name: "/dev/vda",
-  drive: { type: "disk", info: { sdCard: false, dellBoss: false } },
+  drive: { type: "disk", info: { sdCard: false, boss: false } },
   block: {
     start: 1,
     size: 1e12,
@@ -44,10 +44,25 @@ const vdb: Storage.Device = {
   sid: 60,
   class: "drive",
   name: "/dev/vdb",
-  drive: { type: "disk", info: { sdCard: false, dellBoss: false } },
+  drive: { type: "disk", info: { sdCard: false, boss: false } },
   block: {
     start: 1,
     size: 1e6,
+    systems: [],
+    shrinking: { supported: false },
+  },
+};
+
+const md0: Storage.Device = {
+  sid: 61,
+  class: "mdRaid",
+  name: "/dev/md0",
+  description: "MD RAID 0",
+  md: { level: "raid1", devices: [59, 60] },
+  block: {
+    start: 0,
+    size: 2e12,
+    encrypted: false,
     systems: [],
     shrinking: { supported: false },
   },
@@ -68,10 +83,13 @@ const vdbDrive: ConfigModel.Drive = {
 const mockAddDrive = jest.fn();
 const mockAddReusedMdRaid = jest.fn();
 const mockUseModel = jest.fn();
+const mockUseAvailableDevices = jest.fn();
 
 jest.mock("~/hooks/model/system/storage", () => ({
   ...jest.requireActual("~/hooks/model/system/storage"),
-  useAvailableDevices: () => [vda, vdb],
+  useAvailableDevices: () => mockUseAvailableDevices(),
+  useDevices: () => [],
+  useFlattenDevices: () => [],
 }));
 
 jest.mock("~/hooks/model/storage/config-model", () => ({
@@ -79,11 +97,13 @@ jest.mock("~/hooks/model/storage/config-model", () => ({
   useConfigModel: () => mockUseModel(),
   useAddDrive: () => mockAddDrive,
   useAddMdRaid: () => mockAddReusedMdRaid,
+  useAddVolumeGroup: () => jest.fn(),
 }));
 
 describe("ConfigureDeviceMenu", () => {
   beforeEach(() => {
-    mockUseModel.mockReturnValue({ drives: [], mdRaids: [] });
+    mockUseModel.mockReturnValue({ drives: [], mdRaids: [], volumeGroups: [] });
+    mockUseAvailableDevices.mockReturnValue([vda, vdb]);
   });
 
   it("renders an initially closed menu ", async () => {
@@ -113,18 +133,36 @@ describe("ConfigureDeviceMenu", () => {
         const disksMenuItem = screen.getByRole("menuitem", { name: "Add device menu" });
         await user.click(disksMenuItem);
         const dialog = screen.getByRole("dialog", { name: /Select a disk/ });
-        const confirmButton = screen.getByRole("button", { name: "Confirm" });
-        const vdaItemRow = within(dialog).getByRole("row", { name: /\/dev\/vda/ });
+        const confirmButton = screen.getByRole("button", { name: /Add/ });
+        const vdaItemRow = within(dialog).getByRole("row", { name: /vda/ });
         const vdaItemRadio = within(vdaItemRow).getByRole("radio");
         await user.click(vdaItemRadio);
         await user.click(confirmButton);
         expect(mockAddDrive).toHaveBeenCalledWith({ name: "/dev/vda", spacePolicy: "keep" });
       });
+
+      it("shows intro text in the device selector", async () => {
+        const { user } = installerRender(<ConfigureDeviceMenu />);
+        const toggler = screen.getByRole("button", { name: /More devices/ });
+        await user.click(toggler);
+        await user.click(screen.getByRole("menuitem", { name: "Add device menu" }));
+        within(screen.getByRole("dialog")).getByText("Start configuring a basic installation");
+      });
+
+      it("allows canceling the device selector without adding any device", async () => {
+        const { user } = installerRender(<ConfigureDeviceMenu />);
+        const toggler = screen.getByRole("button", { name: /More devices/ });
+        await user.click(toggler);
+        await user.click(screen.getByRole("menuitem", { name: "Add device menu" }));
+        await user.click(screen.getByRole("button", { name: "Cancel" }));
+        expect(screen.queryByRole("dialog")).toBeNull();
+        expect(mockAddDrive).not.toHaveBeenCalled();
+      });
     });
 
     describe("but some disks are already configured", () => {
       beforeEach(() => {
-        mockUseModel.mockReturnValue({ drives: [vdaDrive], mdRaids: [] });
+        mockUseModel.mockReturnValue({ drives: [vdaDrive], mdRaids: [], volumeGroups: [] });
       });
 
       it("allows users to add a new drive to an unused disk", async () => {
@@ -134,11 +172,11 @@ describe("ConfigureDeviceMenu", () => {
         const disksMenuItem = screen.getByRole("menuitem", { name: "Add device menu" });
         await user.click(disksMenuItem);
         const dialog = screen.getByRole("dialog", { name: /Select another disk/ });
-        const confirmButton = screen.getByRole("button", { name: "Confirm" });
-        expect(screen.queryByRole("row", { name: /vda$/ })).toBeNull();
-        const vdaItemRow = within(dialog).getByRole("row", { name: /\/dev\/vdb/ });
-        const vdaItemRadio = within(vdaItemRow).getByRole("radio");
-        await user.click(vdaItemRadio);
+        const confirmButton = screen.getByRole("button", { name: /Add/ });
+        expect(screen.queryByRole("row", { name: /vda/ })).toBeNull();
+        const vdbItemRow = within(dialog).getByRole("row", { name: /vdb/ });
+        const vdbItemRadio = within(vdbItemRow).getByRole("radio");
+        await user.click(vdbItemRadio);
         await user.click(confirmButton);
         expect(mockAddDrive).toHaveBeenCalledWith({ name: "/dev/vdb", spacePolicy: "keep" });
       });
@@ -147,7 +185,7 @@ describe("ConfigureDeviceMenu", () => {
 
   describe("when there are no more unused disks", () => {
     beforeEach(() => {
-      mockUseModel.mockReturnValue({ drives: [vdaDrive, vdbDrive], mdRaids: [] });
+      mockUseModel.mockReturnValue({ drives: [vdaDrive, vdbDrive], mdRaids: [], volumeGroups: [] });
     });
 
     it("renders the disks menu as disabled with an informative label", async () => {
@@ -156,6 +194,24 @@ describe("ConfigureDeviceMenu", () => {
       await user.click(toggler);
       const disksMenuItem = screen.getByRole("menuitem", { name: "Add device menu" });
       expect(disksMenuItem).toBeDisabled();
+      within(disksMenuItem).getByText("Already using all available disks");
+    });
+  });
+
+  describe("when there are MD RAID devices available", () => {
+    beforeEach(() => {
+      mockUseAvailableDevices.mockReturnValue([vda, md0]);
+    });
+
+    it("allows adding an MD RAID device", async () => {
+      const { user } = installerRender(<ConfigureDeviceMenu />);
+      const toggler = screen.getByRole("button", { name: /More devices/ });
+      await user.click(toggler);
+      await user.click(screen.getByRole("menuitem", { name: "Add device menu" }));
+      const dialog = screen.getByRole("dialog");
+      await user.click(within(dialog).getByRole("tab", { name: "RAID" }));
+      await user.click(screen.getByRole("button", { name: /Add/ }));
+      expect(mockAddReusedMdRaid).toHaveBeenCalledWith({ name: "/dev/md0", spacePolicy: "keep" });
     });
   });
 });

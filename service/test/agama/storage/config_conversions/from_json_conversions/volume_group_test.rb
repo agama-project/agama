@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2025] SUSE LLC
+# Copyright (c) [2025-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -20,6 +20,7 @@
 # find current contact information at www.suse.com.
 
 require_relative "../../../../test_helper"
+require "agama/storage/bootloader_config"
 require "agama/storage/config_conversions/from_json_conversions/volume_group"
 require "agama/storage/configs/encryption"
 require "agama/storage/configs/logical_volume"
@@ -31,8 +32,16 @@ using Y2Storage::Refinements::SizeCasts
 
 describe Agama::Storage::ConfigConversions::FromJSONConversions::VolumeGroup do
   subject do
-    described_class.new(volume_group_json)
+    described_class.new(volume_group_json, bootloader_config)
   end
+
+  let(:bootloader_config) do
+    Agama::Storage::BootloaderConfig.new.tap do |config|
+      config.type = bootloader_type
+    end
+  end
+
+  let(:bootloader_type) { nil }
 
   describe "#convert" do
     let(:volume_group_json) do
@@ -190,6 +199,7 @@ describe Agama::Storage::ConfigConversions::FromJSONConversions::VolumeGroup do
             {
               generate: {
                 targetDevices: target_devices,
+                spacePolicy:   space_policy,
                 encryption:    encryption
               }
             },
@@ -198,6 +208,8 @@ describe Agama::Storage::ConfigConversions::FromJSONConversions::VolumeGroup do
         end
 
         let(:target_devices) { nil }
+
+        let(:space_policy) { nil }
 
         let(:encryption) { nil }
 
@@ -212,6 +224,15 @@ describe Agama::Storage::ConfigConversions::FromJSONConversions::VolumeGroup do
           it "sets #physical_volumes_devices to the expected value" do
             volume_group = subject.convert
             expect(volume_group.physical_volumes_devices).to eq([])
+          end
+        end
+
+        context "if the physical volume does not specify 'spacePolicy'" do
+          let(:space_policy) { nil }
+
+          it "sets #physical_volumes_policy to the default value" do
+            volume_group = subject.convert
+            expect(volume_group.physical_volumes_policy).to eq(:use_needed)
           end
         end
 
@@ -230,6 +251,28 @@ describe Agama::Storage::ConfigConversions::FromJSONConversions::VolumeGroup do
           it "sets #physical_volumes_devices to the expected value" do
             volume_group = subject.convert
             expect(volume_group.physical_volumes_devices).to contain_exactly("disk1")
+          end
+        end
+
+        context "if the physical volume specifies 'spacePolicy'" do
+          let(:target_devices) { ["disk1"] }
+
+          context "with 'useNeeded'" do
+            let(:space_policy) { "useNeeded" }
+
+            it "sets #physical_volumes_policy to the expected value" do
+              volume_group = subject.convert
+              expect(volume_group.physical_volumes_policy).to eq(:use_needed)
+            end
+          end
+
+          context "with 'useAvailable'" do
+            let(:space_policy) { "useAvailable" }
+
+            it "sets #physical_volumes_policy to the expected value" do
+              volume_group = subject.convert
+              expect(volume_group.physical_volumes_policy).to eq(:use_available)
+            end
           end
         end
 

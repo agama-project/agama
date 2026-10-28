@@ -27,13 +27,23 @@ import React from "react";
 // value.
 import Add from "@icons/add.svg?component";
 import AddCircle from "@icons/add_circle.svg?component";
+import Amend from "@icons/amend.svg?component";
 import Apps from "@icons/apps.svg?component";
+import AppsOutage from "@icons/apps_outage.svg?component";
 import AppRegistration from "@icons/app_registration.svg?component";
+import Archive from "@icons/archive.svg?component";
 import ArrowDropDown from "@icons/arrow_drop_down.svg?component";
 import Backspace from "@icons/backspace.svg?component";
+import ClearAll from "@icons/clear_all.svg?component";
+import Close from "@icons/close.svg?component";
+import DragIndicator from "@icons/drag_indicator.svg?component";
+import Terminal from "@icons/terminal.svg?component";
+import TextDecrease from "@icons/text_decrease.svg?component";
+import TextIncrease from "@icons/text_increase.svg?component";
 import CheckCircle from "@icons/check_circle.svg?component";
 import ChevronLeft from "@icons/chevron_left.svg?component";
 import ChevronRight from "@icons/chevron_right.svg?component";
+import Monitor from "@icons/monitor.svg?component";
 import Delete from "@icons/delete.svg?component";
 import DoneAll from "@icons/done_all.svg?component";
 import DeployedCodeUpdate from "@icons/deployed_code_update.svg?component";
@@ -44,6 +54,7 @@ import Emergency from "@icons/emergency.svg?component";
 import Error from "@icons/error.svg?component";
 import ErrorFill from "@icons/error-fill.svg?component";
 import ExpandCircleDown from "@icons/expand_circle_down.svg?component";
+import FileJson from "@icons/file_json.svg?component";
 import Fingerprint from "@icons/fingerprint.svg?component";
 import KeyboardArrowDown from "@icons/keyboard_arrow_down.svg?component";
 import Globe from "@icons/globe.svg?component";
@@ -52,17 +63,22 @@ import Info from "@icons/info.svg?component";
 import Keyboard from "@icons/keyboard.svg?component";
 import Language from "@icons/language.svg?component";
 import ListAlt from "@icons/list_alt.svg?component";
+import ListAltCheck from "@icons/list_alt_check.svg?component";
 import Lock from "@icons/lock.svg?component";
 import ManageAccounts from "@icons/manage_accounts.svg?component";
 import Menu from "@icons/menu.svg?component";
+import Minimize from "@icons/minimize.svg?component";
 import MoreHoriz from "@bolderIcons/more_horiz.svg?component";
 import MoreVert from "@bolderIcons/more_vert.svg?component";
 import NetworkWifi from "@icons/network_wifi.svg?component";
 import NetworkWifi1Bar from "@icons/network_wifi_1_bar.svg?component";
 import NetworkWifi3Bar from "@icons/network_wifi_3_bar.svg?component";
+import NotificationsActive from "@icons/notifications_active.svg?component";
 import Report from "@icons/report.svg?component";
 import RestartAlt from "@icons/restart_alt.svg?component";
+import Routine from "@icons/routine.svg?component";
 import SearchOff from "@icons/search_off.svg?component";
+import SelectWindow from "@icons/select_window.svg?component";
 import SettingsEthernet from "@icons/settings_ethernet.svg?component";
 import Translate from "@icons/translate.svg?component";
 import UnfoldLess from "@icons/unfold_less.svg?component";
@@ -72,17 +88,32 @@ import Visibility from "@icons/visibility.svg?component";
 import VisibilityOff from "@icons/visibility_off.svg?component";
 import Wifi from "@icons/wifi.svg?component";
 import WifiOff from "@icons/wifi_off.svg?component";
+import MoreTime from "@icons/more_time.svg?component";
+import TaskAlt from "@icons/task_alt.svg?component";
+import HourglassDisabled from "@icons/hourglass_disabled.svg?component";
+import Pending from "@icons/pending.svg?component";
+import PowerSettingsNew from "@icons/power_settings_new.svg?component";
+import PowerSettingsCircle from "@icons/power_settings_circle.svg?component";
 
 const icons = {
   add: Add,
   add_circle: AddCircle,
+  amend: Amend,
   apps: Apps,
+  apps_outage: AppsOutage,
   app_registration: AppRegistration,
+  archive: Archive,
   arrow_drop_down: ArrowDropDown,
   backspace: Backspace,
   check_circle: CheckCircle,
   chevron_left: ChevronLeft,
   chevron_right: ChevronRight,
+  clear_all: ClearAll,
+  close: Close,
+  drag_indicator: DragIndicator,
+  terminal: Terminal,
+  text_decrease: TextDecrease,
+  text_increase: TextIncrease,
   delete: Delete,
   done_all: DoneAll,
   deployed_code_update: DeployedCodeUpdate,
@@ -93,6 +124,7 @@ const icons = {
   error: Error,
   error_fill: ErrorFill,
   expand_circle_down: ExpandCircleDown,
+  file_json: FileJson,
   fingerprint: Fingerprint,
   globe: Globe,
   hard_drive: HardDrive,
@@ -101,17 +133,23 @@ const icons = {
   keyboard_arrow_down: KeyboardArrowDown,
   language: Language,
   list_alt: ListAlt,
+  list_alt_check: ListAltCheck,
   lock: Lock,
   manage_accounts: ManageAccounts,
   menu: Menu,
+  minimize: Minimize,
+  monitor: Monitor,
   more_horiz: MoreHoriz,
   more_vert: MoreVert,
   network_wifi: NetworkWifi,
   network_wifi_1_bar: NetworkWifi1Bar,
   network_wifi_3_bar: NetworkWifi3Bar,
+  notifications_ative: NotificationsActive,
   report: Report,
   restart_alt: RestartAlt,
+  routine: Routine,
   search_off: SearchOff,
+  select_window: SelectWindow,
   settings_ethernet: SettingsEthernet,
   translate: Translate,
   unfold_less: UnfoldLess,
@@ -121,11 +159,53 @@ const icons = {
   warning: Warning,
   wifi: Wifi,
   wifi_off: WifiOff,
+  more_time: MoreTime,
+  task_alt: TaskAlt,
+  hourglass_disabled: HourglassDisabled,
+  pending: Pending,
+  power_settings_new: PowerSettingsNew,
+  power_settings_circle: PowerSettingsCircle,
 };
+
+/**
+ * Named icon sizes, mapped to CSS classes that set the size via a customizable
+ * `--agm-t--icon--size--*` token (see styles/components). A product can resize
+ * icons consistently without touching the call sites.
+ */
+const INLINE_SIZE_CLASS = "agm-icon-inline";
+
+const SIZE_CLASSES = {
+  xs: "agm-icon-xs",
+  sm: "agm-icon-sm",
+  md: "agm-icon-md",
+  lg: "agm-icon-lg",
+  xl: "agm-icon-xl",
+  "2xl": "agm-icon-2xl",
+  "3xl": "agm-icon-3xl",
+  "4xl": "agm-icon-4xl",
+} as const;
 
 export type IconProps = React.SVGAttributes<SVGElement> & {
   /** Name of the desired icon */
   name: keyof typeof icons;
+  /**
+   * Named size for the icon.
+   *
+   * Left out, the icon takes the size of the text around it, which is what an
+   * icon sitting inline with a label wants.
+   */
+  size?: keyof typeof SIZE_CLASSES;
+  /** Vertical alignment of the icon */
+  verticalAlign?: "baseline" | "middle" | "text-top" | "text-bottom" | "sub" | "super";
+  /**
+   * Shortcut for verticalAlign="text-top" to align icon with surrounding text.
+   *
+   * Use this when placing an icon inline with text in buttons, links, or labels.
+   * The `text-top` value aligns the icon's top edge with the tallest text in the
+   * line, which typically produces better visual alignment than `middle` when
+   * mixed with text content.
+   */
+  isMiddleAligned?: boolean;
 };
 
 /**
@@ -138,9 +218,23 @@ export type IconProps = React.SVGAttributes<SVGElement> & {
  * @example
  *   <Icon name="warning" />
  *
+ * @example
+ *   <Icon name="check_circle" isMiddleAligned />
+ *
+ * @example
+ *   <Icon name="check_circle" verticalAlign="text-top" />
+ *
  * @returns null if requested icon is not available or given a falsy value as name; JSX block otherwise.
  */
-export default function Icon({ name, ...otherProps }: IconProps): JSX.Element | null {
+export default function Icon({
+  name,
+  size,
+  verticalAlign,
+  isMiddleAligned,
+  className,
+  style,
+  ...otherProps
+}: IconProps): JSX.Element | null {
   // NOTE: Reaching this is unlikely, but let's be safe.
   if (!name || !icons[name]) {
     console.error(`Icon '${name}' not found.`);
@@ -149,5 +243,23 @@ export default function Icon({ name, ...otherProps }: IconProps): JSX.Element | 
 
   const IconComponent = icons[name];
 
-  return <IconComponent aria-hidden="true" data-icon-name={name} {...otherProps} />;
+  // isMiddleAligned shortcut takes precedence over verticalAlign
+  const align = isMiddleAligned ? "text-top" : verticalAlign;
+  const iconStyle = {
+    ...(align && { verticalAlign: align }),
+    ...style,
+  };
+  const classes =
+    [size ? SIZE_CLASSES[size] : INLINE_SIZE_CLASS, className].filter(Boolean).join(" ") ||
+    undefined;
+
+  return (
+    <IconComponent
+      aria-hidden="true"
+      data-icon-name={name}
+      {...otherProps}
+      className={classes}
+      style={iconStyle}
+    />
+  );
 }

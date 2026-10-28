@@ -25,9 +25,10 @@ require "agama/dbus/storage/iscsi"
 require "agama/dbus/storage/manager"
 require "agama/storage/manager"
 require "agama/storage/iscsi/adapter"
-require "agama/task_runner"
 require "yast"
 require "y2storage/inhibitors"
+
+Yast.import "Package"
 
 module Agama
   module DBus
@@ -53,6 +54,7 @@ module Agama
 
       # Starts storage service.
       def start
+        configure_yast_modules
         # Inhibits various storage subsystem (udisk, systemd mounts, raid auto-assembly) that
         # interfere with the operation of yast-storage-ng and libstorage-ng.
         Y2Storage::Inhibitors.new.inhibit
@@ -86,6 +88,13 @@ module Agama
       MULTIPATH_CONFIG = "/etc/multipath.conf"
       private_constant :MULTIPATH_CONFIG
 
+      # Configures YaST modules, see YaST2/modules/Package.rb.
+      def configure_yast_modules
+        # Sets the manager to allow checking the package requirements of the product, see
+        # YaST2/modules/Package.rb.
+        Yast::Package.storage = manager
+      end
+
       # Checks if all requirement for multipath probing is correct and if not then log it.
       def check_multipath
         # check if kernel module is loaded
@@ -113,7 +122,7 @@ module Agama
 
       # @return [Agama::DBus::Storage::Manager]
       def manager_object
-        @manager_object ||= Agama::DBus::Storage::Manager.new(manager, task_runner, logger: logger)
+        @manager_object ||= Agama::DBus::Storage::Manager.new(manager, logger: logger)
       end
 
       # @return [Agama::DBus::Storage::ISCSI]
@@ -130,7 +139,7 @@ module Agama
         require "agama/storage/dasd/manager"
         require "agama/dbus/storage/dasd"
         manager = Agama::Storage::DASD::Manager.new(logger: logger)
-        @dasd_object = Agama::DBus::Storage::DASD.new(manager, task_runner, logger: logger)
+        @dasd_object = Agama::DBus::Storage::DASD.new(manager, logger: logger)
       end
 
       # @return [Agama::DBus::Storage::ZFCP, nil]
@@ -148,11 +157,6 @@ module Agama
       # @return [Agama::Storage::Manager]
       def manager
         @manager ||= Agama::Storage::Manager.new(logger: logger)
-      end
-
-      # @return [Agama::TaskRunner]
-      def task_runner
-        @task_runner ||= Agama::TaskRunner.new
       end
     end
   end

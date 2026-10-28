@@ -26,6 +26,7 @@ require "agama/autoyast/hostname_reader"
 require "agama/autoyast/iscsi_reader"
 require "agama/autoyast/localization_reader"
 require "agama/autoyast/network_reader"
+require "agama/autoyast/ntp_client_reader"
 require "agama/autoyast/product_reader"
 require "agama/autoyast/root_reader"
 require "agama/autoyast/scripts_reader"
@@ -48,7 +49,10 @@ module Agama
       # Converts the given AutoYaST profile to an Agama profile.
       #
       # @return [Hash]
+      # rubocop:disable Metrics/AbcSize
       def to_agama(profile)
+        return {} if profile.empty?
+
         [
           BootloaderReader.new(profile).read,
           DASDReader.new(profile).read,
@@ -56,6 +60,7 @@ module Agama
           HostnameReader.new(profile).read,
           IscsiReader.new(profile).read,
           LocalizationReader.new(profile).read,
+          NtpClientReader.new(profile).read,
           NetworkReader.new(profile).read,
           ProductReader.new(profile).read,
           RootReader.new(profile).read,
@@ -67,6 +72,7 @@ module Agama
           ZFCPReader.new(profile).read
         ].inject(:merge)
       end
+      # rubocop:enable Metrics/AbcSize
     end
   end
 end

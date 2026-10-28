@@ -18,7 +18,6 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use async_trait::async_trait;
 use tokio::sync::broadcast;
 
 use super::message;
@@ -76,6 +75,11 @@ impl Service {
 
         self.config.as_ref().and_then(|config| {
             if let Some(Policy::Auto) = config.policy {
+                tracing::info!(
+                    "Returning automatic answer for question \"{}\": {:?}",
+                    &spec.text,
+                    &spec.default_action
+                );
                 spec.default_action.clone().map(|action| Answer {
                     action,
                     value: None,
@@ -91,14 +95,12 @@ impl Actor for Service {
     type Error = Error;
 }
 
-#[async_trait]
 impl MessageHandler<message::GetConfig> for Service {
     async fn handle(&mut self, _message: message::GetConfig) -> Result<Option<Config>, Error> {
         Ok(self.config.clone())
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::SetConfig> for Service {
     async fn handle(&mut self, message: message::SetConfig) -> Result<(), Error> {
         self.config = message.config;
@@ -106,7 +108,6 @@ impl MessageHandler<message::SetConfig> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::Get> for Service {
     async fn handle(
         &mut self,
@@ -116,7 +117,6 @@ impl MessageHandler<message::Get> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::Ask> for Service {
     async fn handle(&mut self, message: message::Ask) -> Result<Question, Error> {
         self.current_id += 1;
@@ -142,7 +142,6 @@ impl MessageHandler<message::Ask> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::Answer> for Service {
     async fn handle(&mut self, message: message::Answer) -> Result<(), Error> {
         let found = self.questions.iter_mut().find(|q| q.id == message.id);
@@ -159,7 +158,6 @@ impl MessageHandler<message::Answer> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::Delete> for Service {
     async fn handle(&mut self, message: message::Delete) -> Result<(), Error> {
         self.questions.retain(|q| q.id != message.id);

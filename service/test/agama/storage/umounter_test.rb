@@ -24,6 +24,7 @@ require_relative "storage_helpers"
 require "agama/helpers"
 require "agama/config"
 require "agama/storage/umounter"
+require "installation/clients/umount_finish"
 require "yaml"
 
 describe Agama::Storage::Umounter do
@@ -54,7 +55,7 @@ describe Agama::Storage::Umounter do
 
   describe described_class::CopyLogsStep do
     let(:logger) { Logger.new($stdout, level: :warn) }
-    let(:scripts_dir) { File.join(tmp_dir, "run", "agama", "scripts") }
+    let(:init_scripts_dir) { File.join(tmp_dir, "run", "agama", "scripts", "init") }
     let(:tmp_dir) { Dir.mktmpdir }
 
     subject { described_class.new(logger) }
@@ -72,14 +73,16 @@ describe Agama::Storage::Umounter do
 
     context "when scripts artifacts exist" do
       before do
-        FileUtils.mkdir_p(scripts_dir)
-        FileUtils.touch(File.join(scripts_dir, "test.sh"))
+        FileUtils.mkdir_p(init_scripts_dir)
+        FileUtils.touch(File.join(init_scripts_dir, "test.sh"))
       end
 
       it "copies the artifacts to the installed system" do
         subject.run
-        expect(File).to exist(File.join(tmp_dir, "mnt", "var", "log", "agama-installation",
-          "scripts"))
+        files = Dir.glob(File.join(tmp_dir, "**", "*"))
+        puts files
+        expect(File).to exist(File.join(tmp_dir, "mnt", "var", "lib", "agama",
+          "scripts", "init", "test.sh"))
       end
     end
   end
@@ -89,7 +92,8 @@ describe Agama::Storage::Umounter do
     subject { described_class.new(logger) }
 
     it "unmounts the storage devices" do
-      expect(Yast::WFM).to receive(:CallFunction).with("umount_finish", ["Write"])
+      expect_any_instance_of(Installation::Clients::UmountFinishClient)
+        .to receive(:write)
       subject.run
     end
   end

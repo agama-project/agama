@@ -20,6 +20,7 @@
 # find current contact information at www.suse.com.
 
 require_relative "../../test_helper"
+require "agama/http/clients/questions"
 require "agama/autoyast/profile_fetcher"
 require "json"
 require "tmpdir"
@@ -55,6 +56,14 @@ describe Agama::AutoYaST::ProfileFetcher do
     instance_double(Y2Storage::DiskAnalyzer, windows_partitions: [], linux_partitions: [])
   end
 
+  let(:questions_client) do
+    instance_double(Agama::HTTP::Clients::Questions).as_null_object
+  end
+
+  let(:lsblk) do
+    File.read(File.join(FIXTURES_PATH, "lsblk.json"))
+  end
+
   before do
     stub_const("Y2Autoinstallation::XmlChecks::ERRORS_PATH", File.join(tmpdir, "errors"))
     stub_const("Agama::AutoYaST::PreScript::SCRIPTS_DIR", File.join(tmpdir, "scripts"))
@@ -67,7 +76,8 @@ describe Agama::AutoYaST::ProfileFetcher do
     allow(Yast::AutoinstConfig).to receive(:modified_profile)
       .and_return(File.join(tmpdir, "profile", "modified.xml"))
     allow(Y2Autoinstallation::XmlValidator).to receive(:new).and_return(xml_validator)
-    allow(Y2Storage::StorageManager).to receive(:instance).and_return(storage_manager)
+    allow(Agama::HTTP::Clients::Questions).to receive(:new).and_return(questions_client)
+    allow(Yast::Execute).to receive(:locally).and_return(lsblk)
   end
 
   after do

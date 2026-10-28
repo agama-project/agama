@@ -21,18 +21,210 @@
  */
 
 import ipaddr from "ipaddr.js";
-import { isUndefined } from "radashi";
+import { isUndefined, sift, title } from "radashi";
+import { sprintf } from "sprintf-js";
 import {
   APIRoute,
   ApFlags,
   ApSecurityFlags,
   Connection,
   ConnectionBindingMode,
+  ConnectionType,
+  ConnectionState,
   Device,
+  DeviceState,
   IPAddress,
   Route,
   SecurityProtocols,
 } from "~/types/network";
+import { _, N_, formatNumber } from "~/i18n";
+import type { MarkedString, TranslatedString } from "~/i18n";
+
+/**
+ * Connection type constants.
+ *
+ * TypeScript enforces that all values match the ConnectionType union.
+ */
+export const CONNECTION_TYPE = {
+  ETHERNET: "ethernet",
+  WIFI: "wireless",
+  LOOPBACK: "loopback",
+  BOND: "bond",
+  BRIDGE: "bridge",
+  VLAN: "vlan",
+  UNKNOWN: "unknown",
+} as const;
+
+/**
+ * Translatable labels for connection states.
+ */
+const CONNECTION_STATE_LABELS: Record<ConnectionState, MarkedString> = {
+  unknown: N_("Unknown"),
+  activating: N_("Activating"),
+  activated: N_("Activated"),
+  deactivating: N_("Deactivating"),
+  deactivated: N_("Deactivated"),
+};
+
+/**
+ * Returns the translated label for a connection state.
+ */
+const connectionStateLabel = (state: ConnectionState): TranslatedString =>
+  _(CONNECTION_STATE_LABELS[state]);
+
+/**
+ * Translatable labels for device states.
+ */
+const DEVICE_STATE_LABELS: Record<DeviceState, MarkedString> = {
+  // TRANSLATORS: state of a network device whose situation cannot be determined
+  unknown: N_("Unknown"),
+  // TRANSLATORS: state of a network device that the installer does not manage
+  unmanaged: N_("Unmanaged"),
+  // TRANSLATORS: state of a network device that cannot be used, for example
+  // because its cable is unplugged
+  unavailable: N_("Unavailable"),
+  // TRANSLATORS: state of a network device that is establishing a connection
+  connecting: N_("Connecting"),
+  // TRANSLATORS: state of a network device that is up and running
+  connected: N_("Connected"),
+  // TRANSLATORS: state of a network device that is tearing its connection down
+  disconnecting: N_("Disconnecting"),
+  // TRANSLATORS: state of a network device that is available but not in use
+  disconnected: N_("Disconnected"),
+  // TRANSLATORS: state of a network device whose connection attempt did not succeed
+  failed: N_("Failed"),
+};
+
+/**
+ * Returns the translated label for a device state.
+ */
+const deviceStateLabel = (state: DeviceState): TranslatedString => _(DEVICE_STATE_LABELS[state]);
+
+/**
+ * Formats a link speed.
+ *
+ * The number is taken to be in Mb/s, the unit the kernel and NetworkManager
+ * report a link speed in, which is also what `Device.speed` holds.
+ *
+ * A rate of a gigabit or more is given in Gb/s, the unit such cards are sold
+ * and talked about in ("10 Gb/s", not "10000 Mb/s"), keeping a decimal for the
+ * rates that fall between two whole gigabits, e.g. "2.5 Gb/s".
+ */
+const formatLinkSpeed = (mbps: number): TranslatedString => {
+  if (mbps < 1000) {
+    // TRANSLATORS: link speed of a network device in megabits per second. %d is
+    // replaced by the number, e.g. "100 Mb/s".
+    return sprintf(_("%d Mb/s"), mbps);
+  }
+
+  // TRANSLATORS: link speed of a network device in gigabits per second. %s is
+  // replaced by the number, e.g. "2.5 Gb/s".
+  return sprintf(_("%s Gb/s"), formatNumber(mbps / 1000));
+};
+
+/**
+ * Describes the link of a device: its speed, or the lack of a link.
+ *
+ * Returns `undefined` when the device reports neither, which is the ordinary
+ * case for the virtual ones and for anything the kernel driver does not tell.
+ * That is left to the caller to render, since "unknown" and "no link" are
+ * different answers and only the second is the device's own.
+ */
+const deviceLinkLabel = (device: Device): TranslatedString | undefined => {
+  // A device with no cable in it reports no speed, so the missing speed is
+  // never what tells the user about it.
+  if (device.carrier === false) {
+    // TRANSLATORS: shown for a network device with no cable plugged in.
+    return _("No link");
+  }
+  if (device.speed) return formatLinkSpeed(device.speed);
+  // TRANSLATORS: shown for a network device that has a link but does not
+  // report how fast it is, e.g. a wireless or a virtual one.
+  if (device.carrier) return _("Link up");
+
+  return undefined;
+};
+
+/**
+ * Ranks the link of a device, for sorting a column showing
+ * {@link deviceLinkLabel}.
+ *
+ * Sorting on the raw speed would order the devices by a number the column does
+ * not show: a card with no cable in it may still report the speed it last ran
+ * at, and would sort among the fast ones while reading "No link". The rank
+ * follows what the column reads instead, from the devices saying nothing, to
+ * those with no link, to those with a link, the faster the further.
+ */
+const deviceLinkRank = (device: Device): number => {
+  if (device.carrier === false) return 0;
+  if (device.speed) return device.speed;
+  if (device.carrier) return 1;
+
+  return -1;
+};
+
+/**
+ * Name the kernel gives the loopback device.
+ */
+const LOOPBACK_IFACE = "lo";
+
+/**
+ * Returns true if the given device is the machine's loopback interface.
+ *
+ * A string is taken for a device name, which is all a form field holding names
+ * ever has to go on. A `Device` is told by the type the system reports, and by
+ * its name as well, so a device the system did not type stays recognizable.
+ */
+const isLoopback = (device: Device | string): boolean => {
+  if (typeof device === "string") return device === LOOPBACK_IFACE;
+
+  return device.type === CONNECTION_TYPE.LOOPBACK || device.name === LOOPBACK_IFACE;
+};
+
+/**
+ * Returns true if the given connection type is virtual.
+ */
+const isVirtual = (type: ConnectionType): boolean =>
+  (
+    [CONNECTION_TYPE.BOND, CONNECTION_TYPE.BRIDGE, CONNECTION_TYPE.VLAN] as ConnectionType[]
+  ).includes(type);
+
+/**
+ * Labels for connection types.
+ */
+const CONNECTION_TYPE_LABELS: Record<ConnectionType, MarkedString> = {
+  [CONNECTION_TYPE.ETHERNET]: N_("Ethernet"),
+  [CONNECTION_TYPE.WIFI]: N_("Wi-Fi"),
+  [CONNECTION_TYPE.LOOPBACK]: N_("Loopback"),
+  [CONNECTION_TYPE.BOND]: N_("Bond"),
+  [CONNECTION_TYPE.BRIDGE]: N_("Bridge"),
+  [CONNECTION_TYPE.VLAN]: N_("VLAN"),
+  [CONNECTION_TYPE.UNKNOWN]: N_("Unknown"),
+};
+
+/**
+ * Returns the label for a connection type.
+ */
+const connectionTypeLabel = (type: ConnectionType): TranslatedString =>
+  _(CONNECTION_TYPE_LABELS[type]);
+
+/**
+ * Returns the type for the given connection.
+ */
+const connectionType = (connection: Connection): ConnectionType => {
+  const { wireless, bond, bridge, vlan } = connection;
+  if (wireless) {
+    return CONNECTION_TYPE.WIFI;
+  } else if (bond) {
+    return CONNECTION_TYPE.BOND;
+  } else if (bridge) {
+    return CONNECTION_TYPE.BRIDGE;
+  } else if (vlan) {
+    return CONNECTION_TYPE.VLAN;
+  } else {
+    return CONNECTION_TYPE.ETHERNET;
+  }
+};
 
 /**
  * Check if an IP is valid
@@ -52,6 +244,46 @@ const isValidIp = (value: IPAddress["address"]) => ipaddr.IPv4.isValidFourPartDe
  * @param value - An netmask or a network prefix
  * @return true if given IP is valid; false otherwise.
  */
+/** Returns true if the value is a valid IP address, with or without a CIDR prefix. */
+const isValidAddress = (value: string): boolean =>
+  ipaddr.isValidCIDR(value) || ipaddr.isValid(value);
+
+/** Returns true if the value is a valid IPv4 address, with or without a CIDR prefix. */
+const isValidIPv4Address = (value: string): boolean =>
+  isValidAddress(value) && ipaddr.IPv4.isValidFourPartDecimal(value.split("/")[0]);
+
+/** Returns true if the value is a valid IPv6 address, with or without a CIDR prefix. */
+const isValidIPv6Address = (value: string): boolean =>
+  isValidAddress(value) && ipaddr.IPv6.isValid(value.split("/")[0]);
+
+/** Returns true if the value is a valid bare IPv4 address (no CIDR prefix). */
+const isValidIPv4 = (value: string): boolean => ipaddr.IPv4.isValidFourPartDecimal(value);
+
+/** Returns true if the value is a valid bare IPv6 address (no CIDR prefix). */
+const isValidIPv6 = (value: string): boolean => ipaddr.IPv6.isValid(value);
+
+/** Returns true if the value is a valid nameserver address (bare IPv4 or IPv6, no CIDR). */
+const isValidNameserver = (value: string): boolean =>
+  ipaddr.IPv4.isValidFourPartDecimal(value) || ipaddr.IPv6.isValid(value);
+
+/**
+ * Matches a valid DNS search domain or hostname per RFC 952 / RFC 1123.
+ *
+ * Rules:
+ * - Each label starts and ends with an alphanumeric character.
+ * - Labels may contain hyphens but not as the first or last character.
+ * - Labels are 1–63 characters long.
+ * - Labels are separated by dots.
+ * - No trailing dot (NetworkManager does not require one).
+ *
+ * Examples: `local`, `example.com`, `sub.example.com`.
+ */
+const DNS_SEARCH_DOMAIN_RE =
+  /^(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)*[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?$/;
+
+/** Returns true if the value is a valid DNS search domain or hostname. */
+const isValidDNSSearchDomain = (value: string): boolean => DNS_SEARCH_DOMAIN_RE.test(value);
+
 const isValidIpPrefix = (value: IPAddress["prefix"]) => {
   const prefix = String(value);
 
@@ -193,6 +425,38 @@ const connectionAddresses = (connection: Connection, devices: Device[]): string 
 };
 
 /**
+ * Returns the connection a device name refers to, if there is one.
+ *
+ * The name is matched against the interface first and against the connection
+ * id only then, the same order the backend uses to resolve the names listed as
+ * bond or bridge ports. Going through the same steps keeps what the user is
+ * told about a name and what the backend does with it in agreement.
+ */
+const connectionForName = (name: string, connections: Connection[]): Connection | undefined =>
+  connections.find((c) => c.iface === name) ?? connections.find((c) => c.id === name);
+
+/**
+ * Returns the bond or bridge the given device is already a port of, if any.
+ *
+ * Membership lives in the controller's own `ports` list, so it is found by
+ * going through the controllers instead of asking the port about it. A port is
+ * listed there by its interface name or, lacking one, by its connection id,
+ * and both are worth looking for.
+ *
+ * The answer is the controller's interface name, falling back to its
+ * connection id, which is how a controller is named everywhere else.
+ */
+const controllerOf = (name: string, connections: Connection[]): string | undefined => {
+  const port = connectionForName(name, connections);
+  const names = sift([name, port?.iface, port?.id]);
+  const controller = connections.find((c) =>
+    (c.bond?.ports ?? c.bridge?.ports)?.some((p) => names.includes(p)),
+  );
+
+  return controller && (controller.iface || controller.id);
+};
+
+/**
  * Returns the binding mode for the given connection.
  */
 const connectionBindingMode = (connection: Connection): ConnectionBindingMode => {
@@ -205,15 +469,114 @@ const connectionBindingMode = (connection: Connection): ConnectionBindingMode =>
   }
 };
 
+/**
+ * Generates a unique connection name based on type.
+ *
+ * Returns the connection type (e.g. "Ethernet"). If the name is already
+ * taken, a numeric suffix is appended starting at 2 (e.g. "Ethernet 2").
+ *
+ * @param type - Connection type string (e.g. "ethernet").
+ * @param existingIds - Set of already taken connection IDs.
+ */
+const generateConnectionName = (type: string, existingIds: Set<string>): string => {
+  const baseName = title(type);
+
+  if (!existingIds.has(baseName)) return baseName;
+
+  let n = 2;
+  while (existingIds.has(`${baseName} ${n}`)) n++;
+  return `${baseName} ${n}`;
+};
+
+/**
+ * IPv4 prefix configuration based on classful networking.
+ *
+ * Maps first octet ranges to their default CIDR prefix lengths.
+ * To change the prefix selection strategy, modify this configuration.
+ */
+const IPV4_PREFIX_BY_RANGE = new Map([
+  [{ min: 1, max: 127 }, 8], // Class A
+  [{ min: 128, max: 191 }, 16], // Class B
+  [{ min: 192, max: 255 }, 24], // Class C
+]);
+
+const IPV6_DEFAULT_PREFIX = 64;
+
+/**
+ * Returns the default CIDR prefix for an IPv4 address based on classful networking.
+ */
+const getDefaultIPv4Prefix = (address: string): number => {
+  const firstOctet = parseInt(address.split(".")[0], 10);
+
+  for (const [range, prefix] of IPV4_PREFIX_BY_RANGE) {
+    if (firstOctet >= range.min && firstOctet <= range.max) {
+      return prefix;
+    }
+  }
+
+  return 24; // Fallback
+};
+
+/**
+ * Adds default CIDR prefix to a valid IP address.
+ *
+ * For IPv4, uses classful networking rules. For IPv6, uses /64.
+ *
+ * @param address - A valid IPv4 or IPv6 address without a prefix
+ * @returns The address with the appropriate default prefix appended
+ *
+ * @note This function assumes the input is a valid IP address. Callers should
+ * validate the address before calling this function.
+ */
+const addDefaultIPPrefix = (address: string): string => {
+  if (isValidIPv4Address(address)) {
+    return `${address}/${getDefaultIPv4Prefix(address)}`;
+  }
+
+  return `${address}/${IPV6_DEFAULT_PREFIX}`;
+};
+
+/**
+ * Ensures a value has a default CIDR prefix if it's a valid IP address.
+ *
+ * Returns the value unchanged if it already has a prefix or is not a valid IP.
+ */
+const ensureIPPrefix = (value: string): string => {
+  if (value.includes("/")) return value;
+  if (!isValidIPv4Address(value) && !isValidIPv6Address(value)) return value;
+  return addDefaultIPPrefix(value);
+};
+
 export {
+  addDefaultIPPrefix,
   buildAddress,
+  isValidAddress,
+  isValidIPv4,
+  isValidIPv6,
+  isValidIPv4Address,
+  isValidIPv6Address,
+  isValidNameserver,
+  isValidDNSSearchDomain,
   buildAddresses,
   buildRoutes,
   connectionAddresses,
   connectionBindingMode,
+  connectionForName,
+  connectionStateLabel,
+  connectionType,
+  connectionTypeLabel,
+  controllerOf,
+  deviceLinkLabel,
+  deviceLinkRank,
+  deviceStateLabel,
+  ensureIPPrefix,
   formatIp,
+  formatLinkSpeed,
+  generateConnectionName,
   intToIPString,
   ipPrefixFor,
+  isLoopback,
+  isVirtual,
   isValidIp,
   isValidIpPrefix,
   securityFromFlags,

@@ -40,6 +40,10 @@ hardware architectures.
 If the matching disk label is not found then the online installation repository
 from the `installation_repositories` section is used.
 
+#### kernel
+
+Specifies the kernel flavor that should be installed. If not specified, it defaults to `kernel-default`.
+
 #### mandatory\_patterns
 
 Array of patterns that have to be selected.

@@ -36,12 +36,13 @@ void free_repository_list(struct RepositoryList *repo_list) noexcept;
 /// @param zypp see \ref init_target
 /// @param alias have to be unique
 /// @param url can contain repo variables
+/// @param priority repository priority, 0 uses libzypp's default
 /// @param[out] status (will overwrite existing contents)
 /// @param callback pointer to function with callback or NULL
 /// @param user_data
 void add_repository(struct Zypp *zypp, const char *alias, const char *url,
-                    struct Status *status, ZyppProgressCallback callback,
-                    void *user_data) noexcept;
+                    unsigned priority, struct Status *status,
+                    ZyppProgressCallback callback, void *user_data) noexcept;
 
 /// Disable repository in repo manager
 /// @param zypp see \ref init_target

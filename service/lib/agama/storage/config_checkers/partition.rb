@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024-2025] SUSE LLC
+# Copyright (c) [2024-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -37,12 +37,14 @@ module Agama
 
         # @param config [Configs::Partition]
         # @param storage_config [Storage::Config]
+        # @param bootloader_config [Storage::BootloaderConfig]
         # @param product_config [Agama::Config]
-        def initialize(config, storage_config, product_config)
+        def initialize(config, storage_config, bootloader_config, product_config)
           super()
 
           @config = config
           @storage_config = storage_config
+          @bootloader_config = bootloader_config
           @product_config = product_config
         end
 
@@ -65,6 +67,9 @@ module Agama
 
         # @return [Storage::Config]
         attr_reader :storage_config
+
+        # @return [Storage::BootloaderConfig]
+        attr_reader :bootloader_config
 
         # @return [Agama::Config]
         attr_reader :product_config

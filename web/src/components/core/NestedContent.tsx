@@ -25,13 +25,16 @@ import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacin
 
 type NestedContentProps = React.HTMLProps<HTMLDivElement> &
   React.PropsWithChildren<{
-    margin?: keyof typeof spacingStyles;
+    margin?: keyof typeof spacingStyles | (keyof typeof spacingStyles)[];
   }>;
 
 /**
  * A simple `<div>` wrapper component used to visually nest its children
- * with a configurable horizontal margin. By default, it applies a medium
- * horizontal margin ("mxMd").
+ * with one or more configurable horizontal margins. By default, it applies
+ * a medium horizontal margin ("mxMd").
+ *
+ * Accepts a single spacing key or an array of spacing keys from
+ * PatternFly's spacing utilities.
  *
  * Also accepts any standard <div> props.
  */
@@ -41,7 +44,9 @@ export default function NestedContent({
   children,
   ...props
 }: NestedContentProps) {
-  const classNames = [className, spacingStyles[margin]].join(" ");
+  const margins = Array.isArray(margin) ? margin : [margin];
+  const classNames = [className, ...margins.map((m) => spacingStyles[m])].filter(Boolean).join(" ");
+
   return (
     <div {...props} className={classNames}>
       {children}

@@ -39,6 +39,7 @@ export const InstallerL10nProvider = ({ children }) => {
     keymap: "us",
     changeLanguage: jest.fn(),
     changeKeymap: jest.fn(),
+    changeL10n: jest.fn(),
   };
 
   return <L10nContext.Provider value={value}>{children}</L10nContext.Provider>;

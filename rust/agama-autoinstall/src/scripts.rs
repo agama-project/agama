@@ -29,6 +29,7 @@ use agama_lib::http::BaseHTTPClient;
 use agama_transfer::Transfer;
 use agama_utils::command::{create_log_file, run_with_retry};
 use anyhow::anyhow;
+use i18n_format::i18n_format;
 use url::Url;
 
 use crate::UserQuestions;
@@ -115,9 +116,12 @@ impl ScriptsRunner {
             .mode(0o700)
             .open(path)?;
 
-        while let Err(error) = Transfer::get(url, &mut file, self.insecure) {
+        let mut url = url.to_string();
+        while let Err(error) = Transfer::get(&url, &mut file, self.insecure) {
             eprintln!("Could not load the script from {url}: {error}");
-            if !self.should_retry(url, &error.to_string()).await? {
+            if let Some(new_url) = self.should_retry(&url, &error.to_string()).await? {
+                url = new_url;
+            } else {
                 return Err(anyhow!(error));
             }
         }
@@ -125,13 +129,13 @@ impl ScriptsRunner {
         Ok(())
     }
 
-    async fn should_retry(&self, url: &str, error: &str) -> anyhow::Result<bool> {
-        let msg = format!(
-            r#"
-                It was not possible to load the script from {url}. Do you want to try again?
-                "#
+    async fn should_retry(&self, url: &str, error: &str) -> anyhow::Result<Option<String>> {
+        let msg = i18n_format!(
+            // TRANSLATORS: {0} is a URL
+            "It was not possible to load the script from {0}. Do you want to try again?",
+            url
         );
-        self.questions.should_retry(&msg, error).await
+        self.questions.should_retry(&msg, error, url).await
     }
 }
 

@@ -87,13 +87,15 @@ const DevicesList = ({ devices }: Pick<CommonFormatDASDProps, "devices">) => (
  */
 const DeviceOffline = ({ device, onClose }: Pick<CommonFormatDASDProps, "device" | "onClose">) => {
   return (
-    <Popup isOpen title={sprintf(_("Cannot format %s"), device.channel)}>
+    <Popup
+      isOpen
+      title={sprintf(_("Cannot format %s"), device.channel)}
+      onClose={onClose}
+      actions={<Popup.Close>{_("Accept")}</Popup.Close>}
+    >
       <Stack hasGutter>
         <Content>{_("It is offline and must be activated before formatting it.")}</Content>
       </Stack>
-      <Popup.Actions>
-        <Popup.Confirm onClick={onClose}>{_("Accept")}</Popup.Confirm>
-      </Popup.Actions>
     </Popup>
   );
 };
@@ -110,7 +112,12 @@ const SomeDevicesOffline = ({
   const totalOffline = offlineDevices.length;
 
   return (
-    <Popup isOpen title={_("Cannot format all the selected devices")}>
+    <Popup
+      isOpen
+      title={_("Cannot format all the selected devices")}
+      onClose={onClose}
+      actions={<Popup.Close>{_("Accept")}</Popup.Close>}
+    >
       <Stack hasGutter>
         <Content>
           {sprintf(_("Below %s devices are offline and cannot be formatted."), totalOffline)}
@@ -118,9 +125,6 @@ const SomeDevicesOffline = ({
         <Content>{_("Unselect or activate them and try it again.")}</Content>
         <DevicesList devices={offlineDevices} />
       </Stack>
-      <Popup.Actions>
-        <Popup.Confirm onClick={onClose}>{_("Accept")}</Popup.Confirm>
-      </Popup.Actions>
     </Popup>
   );
 };
@@ -134,17 +138,23 @@ const DeviceFormatConfirmation = ({
   onClose,
 }: Pick<CommonFormatDASDProps, "device" | "onAccept" | "onClose">) => {
   return (
-    <Popup isOpen title={sprintf(_("Format device %s"), device.channel)}>
+    <Popup
+      isOpen
+      title={sprintf(_("Format device %s"), device.channel)}
+      onClose={onClose}
+      actions={
+        <>
+          <Popup.DangerousAction onClick={onAccept}>{_("Format now")}</Popup.DangerousAction>
+          <Popup.Cancel onClick={onClose} autoFocus />
+        </>
+      }
+    >
       <Content>
         <Stack hasGutter>
           <Text isBold>{_("This action will destroy any data stored on the device.")}</Text>
           <Text>{_("Confirm that you really want to continue.")}</Text>
         </Stack>
       </Content>
-      <Popup.Actions>
-        <Popup.DangerousAction onClick={onAccept}>{_("Format now")}</Popup.DangerousAction>
-        <Popup.Cancel onClick={onClose} autoFocus />
-      </Popup.Actions>
     </Popup>
   );
 };
@@ -158,7 +168,17 @@ const MultipleDevicesFormatConfirmation = ({
   onClose,
 }: Pick<CommonFormatDASDProps, "devices" | "onAccept" | "onClose">) => {
   return (
-    <Popup isOpen title={_("Format selected devices?")}>
+    <Popup
+      isOpen
+      title={_("Format selected devices?")}
+      onClose={onClose}
+      actions={
+        <>
+          <Popup.DangerousAction onClick={onAccept}>{_("Format now")}</Popup.DangerousAction>
+          <Popup.Cancel onClick={onClose} autoFocus />
+        </>
+      }
+    >
       <Content isEditorial>
         <Stack hasGutter>
           <Text isBold>
@@ -168,10 +188,6 @@ const MultipleDevicesFormatConfirmation = ({
           <Text>{_("Confirm that you really want to continue.")}</Text>
         </Stack>
       </Content>
-      <Popup.Actions>
-        <Popup.DangerousAction onClick={onAccept}>{_("Format now")}</Popup.DangerousAction>
-        <Popup.Cancel onClick={onClose} autoFocus />
-      </Popup.Actions>
     </Popup>
   );
 };

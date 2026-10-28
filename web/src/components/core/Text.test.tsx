@@ -45,6 +45,12 @@ describe("Text", () => {
     expect(element.tagName).toBe("SMALL");
   });
 
+  it("renders a 'strong' HTML element when component='strong'", () => {
+    plainRender(<Text component="strong">Installer</Text>);
+    const element = screen.getByText("Installer");
+    expect(element.tagName).toBe("STRONG");
+  });
+
   it("applies bold style when isBold is true", () => {
     plainRender(<Text isBold>Installer</Text>);
     expect(screen.getByText("Installer")).toHaveClass(textStyles.fontWeightBold);
@@ -53,6 +59,11 @@ describe("Text", () => {
   it("applies screenReader class when srOnly is true", () => {
     plainRender(<Text srOnly>Installer</Text>);
     expect(screen.getByText("Installer")).toHaveClass(a11yStyles.screenReader);
+  });
+
+  it("sets aria-hidden when srHidden is true", () => {
+    plainRender(<Text srHidden>Installer</Text>);
+    expect(screen.getByText("Installer")).toHaveAttribute("aria-hidden", "true");
   });
 
   it("applies screenReader class when srOn is 'default'", () => {

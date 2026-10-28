@@ -21,7 +21,7 @@
 use std::time::Duration;
 
 use agama_utils::api::{
-    patch::{self, Patch},
+    patch::Patch,
     question::{
         Answer, AnswerRule, Config as QuestionsConfig, Policy, Question, QuestionSpec,
         UpdateQuestion,
@@ -39,7 +39,7 @@ pub enum QuestionsHTTPClientError {
     #[error("Unknown question with ID {0}")]
     UnknownQuestion(u32),
     #[error(transparent)]
-    Patch(#[from] patch::Error),
+    Json(#[from] serde_json::Error),
 }
 
 pub struct HTTPClient {
@@ -52,7 +52,7 @@ impl HTTPClient {
     }
 
     pub async fn get_questions(&self) -> Result<Vec<Question>, QuestionsHTTPClientError> {
-        Ok(self.client.get("/v2/questions").await?)
+        Ok(self.client.get("/questions").await?)
     }
 
     /// Creates question and return newly created question including id
@@ -60,7 +60,7 @@ impl HTTPClient {
         &self,
         question: &QuestionSpec,
     ) -> Result<Question, QuestionsHTTPClientError> {
-        Ok(self.client.post("/v2/questions", question).await?)
+        Ok(self.client.post("/questions", question).await?)
     }
 
     pub async fn get_question(
@@ -101,9 +101,9 @@ impl HTTPClient {
             ..Default::default()
         };
 
-        let patch = Patch::with_update(&config)?;
+        let patch = Patch::with_config(&config)?;
 
-        self.client.patch_void("/v2/config", &patch).await?;
+        self.client.patch_void("/config", &patch).await?;
         Ok(())
     }
 
@@ -120,14 +120,24 @@ impl HTTPClient {
             ..Default::default()
         };
 
-        let patch = Patch::with_update(&config)?;
-        self.client.patch_void("/v2/config", &patch).await?;
+        let patch = Patch::with_config(&config)?;
+        self.client.patch_void("/config", &patch).await?;
+        Ok(())
+    }
+
+    pub async fn answer_question(
+        &self,
+        id: u32,
+        answer: Answer,
+    ) -> Result<(), QuestionsHTTPClientError> {
+        let update = UpdateQuestion::Answer { id, answer };
+        self.client.patch_void("/questions", &update).await?;
         Ok(())
     }
 
     pub async fn delete_question(&self, id: u32) -> Result<(), QuestionsHTTPClientError> {
         let update = UpdateQuestion::Delete { id };
-        self.client.patch_void("/v2/questions", &update).await?;
+        self.client.patch_void("/questions", &update).await?;
         Ok(())
     }
 }
@@ -151,7 +161,7 @@ mod test {
         let client = questions_client(server.url("/api"));
 
         let mock = server.mock(|when, then| {
-            when.method(GET).path("/api/v2/questions");
+            when.method(GET).path("/api/questions");
             then.status(200)
                 .header("content-type", "application/json")
                 .body(

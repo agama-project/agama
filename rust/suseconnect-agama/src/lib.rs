@@ -1,3 +1,6 @@
+// suse connect is on 64bit only
+#![cfg(target_pointer_width = "64")]
+
 use std::{
     ffi::{CString, IntoStringError},
     fmt::Display,

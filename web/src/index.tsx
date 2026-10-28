@@ -30,8 +30,8 @@ import { router } from "~/router";
  * Import PF base styles before any JSX since components coming from PF may
  * import styles dependent on variables and rules previously defined there.
  */
-import "@patternfly/patternfly/patternfly-base.scss";
-import "@patternfly/patternfly/patternfly-addons.scss";
+import "@patternfly/patternfly/dist/patternfly-base.scss";
+import "@patternfly/patternfly/dist/patternfly-addons.scss";
 
 /**
  * As JSX components might import CSS stylesheets, our styles must be imported

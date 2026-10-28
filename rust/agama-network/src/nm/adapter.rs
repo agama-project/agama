@@ -22,12 +22,16 @@ use crate::{
     adapter::Watcher,
     model::{Connection, NetworkState, StateConfig},
     nm::{NetworkManagerClient, NetworkManagerWatcher},
+    types::ConnectionState,
     Adapter, NetworkAdapterError,
 };
 use anyhow::anyhow;
 use async_trait::async_trait;
 use core::time;
-use std::thread;
+use std::{collections::HashSet, thread};
+use tokio::time::{sleep, Duration, Instant};
+use uuid::Uuid;
+use zbus::zvariant::OwnedObjectPath;
 
 use super::error::NmError;
 
@@ -44,6 +48,47 @@ impl<'a> NetworkManagerAdapter<'a> {
         let client = NetworkManagerClient::new(connection.clone()).await?;
 
         Ok(Self { client, connection })
+    }
+
+    async fn activate_connection(
+        &self,
+        conn: &Connection,
+        path: zbus::zvariant::OwnedObjectPath,
+    ) -> Result<OwnedObjectPath, NmError> {
+        tracing::info!("Activating connection {}", &conn.id);
+        self.client.activate_connection(path).await
+    }
+
+    /// Ensures that devices are in a consistent state before activating a connection or
+    /// after updating it.
+    ///
+    /// It disconnects any device that is currently using the connection but is no longer
+    /// compatible with it. Also, it disconnects any device that should be used by the
+    /// connection (is a target) but is currently using a different one.
+    async fn cleanup_devices(&self, conn: &Connection) -> Result<(), NmError> {
+        if !conn.is_bound() {
+            return Ok(());
+        }
+
+        let devices = self.client.devices().await?;
+        for device in devices {
+            let is_using_this = device.connection.as_ref() == Some(&conn.id);
+            let is_target = conn.is_up() && conn.matches_device(&device.name, &device.mac_address);
+            let is_compatible = conn.is_compatible(&device.name, &device.mac_address);
+
+            if (is_using_this && !is_compatible)
+                || (is_target && !is_using_this && device.connection.is_some())
+            {
+                tracing::info!(
+                    "Disconnecting device {} (currently using {}) because connection {} matches it or is no longer compatible",
+                    &device.name,
+                    device.connection.as_deref().unwrap_or("nothing"),
+                    &conn.id
+                );
+                self.client.disconnect_device(device.name).await?;
+            }
+        }
+        Ok(())
     }
 }
 
@@ -132,17 +177,19 @@ impl Adapter for NetworkManagerAdapter<'_> {
             return Err(NetworkAdapterError::Write(anyhow!(e)));
         }
 
+        let mut active_paths = vec![];
         for conn in ordered_connections(network) {
             let ctrl = conn
                 .controller
                 .and_then(|uuid| network.get_connection_by_uuid(uuid));
 
-            /* Consider the connection as removed, whenever the controller connection
-            was removed */
+            /* Consider the connection as removed, whenever the controller connection was removed.
+            The model already marks the whole stack when a controller goes away, so this only
+            catches a state that was not built by the port resolver. */
             let is_removed = conn.is_removed() || ctrl.is_some_and(|c| c.is_removed());
 
             if let Some(old_conn) = old_state.get_connection_by_uuid(conn.uuid) {
-                if old_conn == conn {
+                if old_conn == conn && !is_removed {
                     tracing::info!(
                         "No change detected for connection {} ({})",
                         conn.id,
@@ -159,22 +206,54 @@ impl Adapter for NetworkManagerAdapter<'_> {
                 continue;
             }
 
-            let result = if is_removed {
+            if is_removed {
                 tracing::info!("Deleting connection {} ({})", conn.id, conn.uuid);
-                self.client.remove_connection(conn.uuid).await
+                if let Err(e) = self.client.remove_connection(conn.uuid).await {
+                    tracing::error!("Could not delete the connection {}: {}", conn.id, &e);
+                }
             } else {
                 tracing::info!("Updating connection {} ({})", conn.id, conn.uuid);
-                self.client.add_or_update_connection(conn, ctrl).await
-            };
+                let path = match self.client.add_or_update_connection(conn, ctrl).await {
+                    Ok(path) => path,
+                    Err(e) => {
+                        self.client
+                            .rollback_checkpoint(&checkpoint.as_ref())
+                            .await
+                            .map_err(|e| NetworkAdapterError::Checkpoint(anyhow!(e)))?;
+                        tracing::error!("Could not process the connection {}: {}", conn.id, &e);
 
-            if let Err(e) = result {
-                self.client
-                    .rollback_checkpoint(&checkpoint.as_ref())
-                    .await
-                    .map_err(|e| NetworkAdapterError::Checkpoint(anyhow!(e)))?;
-                tracing::error!("Could not process the connection {}: {}", conn.id, &e);
+                        return Err(NetworkAdapterError::Write(anyhow!(e)));
+                    }
+                };
 
-                return Err(NetworkAdapterError::Write(anyhow!(e)));
+                if let Err(e) = self.cleanup_devices(conn).await {
+                    tracing::error!("Failed to cleanup devices for {}: {}", &conn.id, e);
+                }
+
+                if conn.is_up() {
+                    match self.activate_connection(conn, path).await {
+                        Ok(active_path) => {
+                            tracing::info!(
+                                "Activating connection {} with path {}",
+                                &conn.id,
+                                &active_path
+                            );
+                            // Only wait for top-level connections / controllers that hold IP settings.
+                            // Ports must not delay apply return (e.g. unplugged backup bond slaves).
+                            if conn.controller.is_none() {
+                                active_paths.push(active_path);
+                            }
+                        }
+                        Err(e) => {
+                            tracing::error!("Failed to activate connection {}: {}", &conn.id, e);
+                        }
+                    }
+                } else if conn.is_down() {
+                    tracing::info!("Deactivating connection {}", &conn.id);
+                    if let Err(e) = self.client.deactivate_connection(path).await {
+                        tracing::error!("Failed to deactivate connection {}: {}", &conn.id, e);
+                    }
+                }
             }
         }
 
@@ -182,6 +261,43 @@ impl Adapter for NetworkManagerAdapter<'_> {
             .destroy_checkpoint(&checkpoint.as_ref())
             .await
             .map_err(|e| NetworkAdapterError::Checkpoint(anyhow!(e)))?;
+
+        if !active_paths.is_empty() {
+            let start = Instant::now();
+            let timeout = Duration::from_secs(30);
+            while !active_paths.is_empty() && start.elapsed() < timeout {
+                let mut i = 0;
+                while i < active_paths.len() {
+                    let path = &active_paths[i];
+                    match self.client.active_connection_state(path).await {
+                        // Finished if state is ACTIVATED or DEACTIVATED
+                        Ok(ConnectionState::Activated) => {
+                            tracing::info!("The connection for {} was activated", &path);
+                            active_paths.remove(i);
+                        }
+                        Ok(ConnectionState::Deactivated) => {
+                            tracing::info!("The connection for {} was deactivated", &path);
+                            active_paths.remove(i);
+                        }
+                        Ok(_) => {
+                            i += 1;
+                        }
+                        Err(e) => {
+                            tracing::error!(
+                                "Could not get the state of active connection {}: {}",
+                                path,
+                                e
+                            );
+                            active_paths.remove(i);
+                        }
+                    }
+                }
+                if !active_paths.is_empty() {
+                    sleep(Duration::from_millis(500)).await;
+                }
+            }
+        }
+
         Ok(())
     }
 
@@ -196,25 +312,88 @@ impl Adapter for NetworkManagerAdapter<'_> {
 fn ordered_connections(network: &NetworkState) -> Vec<&Connection> {
     let mut conns: Vec<&Connection> = vec![];
     for conn in &network.connections {
-        add_ordered_connections(conn, network, &mut conns);
+        add_ordered_connections(conn, network, &mut conns, &mut HashSet::new());
     }
     conns
 }
 
+/// Adds a connection to the list, making sure that its controller comes first.
+///
+/// * `visited`: connections seen while walking up this chain of controllers. It keeps a loop from
+///   blowing the stack, no matter how the state got into that shape.
 fn add_ordered_connections<'b>(
     conn: &'b Connection,
     network: &'b NetworkState,
     conns: &mut Vec<&'b Connection>,
+    visited: &mut HashSet<Uuid>,
 ) {
+    if !visited.insert(conn.uuid) {
+        tracing::error!(
+            "The connection {} belongs to a loop of controllers",
+            &conn.id
+        );
+        return;
+    }
+
     if let Some(uuid) = conn.controller {
         if let Some(controller) = network.get_connection_by_uuid(uuid) {
-            add_ordered_connections(controller, network, conns);
+            add_ordered_connections(controller, network, conns, visited);
         } else {
-            tracing::error!("Could not found the controller {}", &uuid);
+            tracing::error!("Could not find the controller {}", &uuid);
         }
     }
 
     if !conns.contains(&conn) {
         conns.push(conn);
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::ordered_connections;
+    use crate::{
+        model::{Connection, NetworkState},
+        test_utils::stacked_connections,
+    };
+    use agama_utils::api::network::DeviceType;
+
+    fn state_with(connections: Vec<Connection>) -> NetworkState {
+        NetworkState::new(None, Default::default(), vec![], vec![], connections)
+    }
+
+    /// Returns the position of each connection id in the ordered list.
+    fn position(ordered: &[&Connection], id: &str) -> usize {
+        ordered
+            .iter()
+            .position(|c| c.id == id)
+            .unwrap_or_else(|| panic!("'{id}' is missing from the ordered connections"))
+    }
+
+    #[test]
+    fn test_a_controller_comes_before_its_ports() {
+        let state = state_with(stacked_connections());
+        let ordered = ordered_connections(&state);
+
+        assert_eq!(ordered.len(), 5);
+        // br0 -> bond0 -> eth0 + eth1, each controller written before the ports that join it.
+        assert!(position(&ordered, "br0") < position(&ordered, "bond0"));
+        assert!(position(&ordered, "bond0") < position(&ordered, "eth0"));
+        assert!(position(&ordered, "bond0") < position(&ordered, "eth1"));
+        // The VLAN is not a port, so it only has to be there.
+        position(&ordered, "br0.100");
+    }
+
+    #[test]
+    fn test_a_loop_of_controllers_does_not_overflow_the_stack() {
+        let mut first = Connection::new("first".to_string(), DeviceType::Bridge);
+        let mut second = Connection::new("second".to_string(), DeviceType::Bridge);
+        first.controller = Some(second.uuid);
+        second.controller = Some(first.uuid);
+
+        let state = state_with(vec![first, second]);
+        let ordered = ordered_connections(&state);
+
+        // The loop is reported and the chain is cut, but both connections are still returned.
+        assert_eq!(ordered.len(), 2);
     }
 }

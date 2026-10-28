@@ -1,4 +1,869 @@
 -------------------------------------------------------------------
+Tue Oct 27 12:08:59 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Allow nesting the ports of bonds and bridges in a new
+  "portConnections" list, so stacked setups can be read and
+  modified (gh#agama-project/agama#3995).
+- Deprecate the "ports" list of names. It keeps working, but it is
+  ignored when "portConnections" is given.
+- Allow port settings only on the ports nested in their
+  controller, and no IP settings on them.
+- Accept any kind of connection in "portConnections", as
+  NetworkManager does, but the port settings only on the ports
+  of a bridge.
+- Keep the settings not modelled by the API when updating a
+  connection.
+- Fix reading the path cost of bridge ports from NetworkManager.
+- Accept "link-local" as the IP method, as documented, which also
+  fixes the AutoYaST "autoip" boot protocol. "linkLocal" is still
+  accepted.
+- Report the state of the connections only in the system
+  information, and not for the ports nested in their controller.
+
+-------------------------------------------------------------------
+Tue Oct 27 10:26:54 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Improve JSON Schema and OpenAPI generation:
+  - Enforce strict validation in configuration schemas by adding
+    `#[serde(deny_unknown_fields)]` across configuration structs and
+    test that each entry defines `additionalProperties`.
+  - Simplify enum schemas to scalar types with Markdown variant
+    descriptions and vendor extension maps.
+  - Eliminate nullable `anyOf` wraps for `Option<T>` fields.
+    (gh#agama-project/agama#4129).
+
+-------------------------------------------------------------------
+Sun Oct 25 16:25:30 UTC 2026 - Martin Pluskal <martin@pluskal.org>
+
+- Report the checksums correctly when asking the user to accept a file
+  with a wrong digest. The question mixed up the expected and the
+  found checksum and kept the Ruby gettext placeholders, so neither
+  checksum nor the file name was shown at all
+  (gh#agama-project/agama#2703).
+
+-------------------------------------------------------------------
+Thu Oct 22 09:42:52 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Version 25
+
+-------------------------------------------------------------------
+Thu Oct 15 07:36:10 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Do not run RPM scriptlets when updating the agama-scripts package
+  (bsc#1285032).
+
+-------------------------------------------------------------------
+Thu Oct 15 07:35:10 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Fix storage model schema: request password attribute instead of
+  non-existent method attribute (gh#agama-project/agama#4038).
+
+-------------------------------------------------------------------
+Thu Oct 15 07:34:10 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Fix the proxy section of the profile JSON schema to use the
+  same property names as the proxy config (http, https, ftp,
+  gopher, socks, socks5) and reject unknown properties instead of
+  silently ignoring them (gh#agama-project/agama#3999, related to
+  gh#agama-project/agama#3069).
+
+-------------------------------------------------------------------
+Thu Oct 15 07:34:10 UTC 2026 - Michal Filka <mfilka@suse.com>
+
+- bsc#1271374
+  - added references to storage definitions into the OpenAPI schema
+
+-------------------------------------------------------------------
+Thu Oct  8 06:22:28 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Move back packaging agama-openapi-nightly into agama.srpm as
+  it is fast moving target, so it make sense to live together with
+  code from which it is generated. agama-openapi will be from
+  separated repo for stable releases.
+
+-------------------------------------------------------------------
+Thu Oct  1 11:55:11 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- properly copy SSL certificates to target system (bsc#1283318)
+
+-------------------------------------------------------------------
+Thu Oct  1 11:53:11 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Unify OpenAPI specification and manual JSON schemas:
+  - Generate standalone profile, proposal, and system schemas from
+    OpenAPI components using `cargo xtask openapi`.
+  - Replace manually maintained profile.schema.json and
+    software.schema.json with schemas generated from Rust sources.
+  - Move packaging of OpenAPI specifications and schemas to standalone
+    agama-openapi package, and require agama-openapi-nightly in
+    agama-common.
+  - Port descriptions, titles, and examples from legacy schemas.
+
+-------------------------------------------------------------------
+Tue Sep 29 16:45:27 UTC 2026 - Martin Pluskal <martin@pluskal.org>
+
+- Do not query the software service while a software task is
+  pending: it cannot answer until the software proposal is ready,
+  and the waiting request held every other API request back
+  (bsc#1283098). Pending storage tasks now count too while
+  installing.
+
+-------------------------------------------------------------------
+Mon Sep 28 09:10:11 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Allow finishing installation independently on the current stage
+  (needed for gh#agama-project/agama#3911).
+
+-------------------------------------------------------------------
+Mon Sep 28 08:50:52 UTC 2026 - Andreas Schwab <schwab@suse.de>
+
+- Add support for riscv64 (gh#agama-project/agama#3867)
+
+-------------------------------------------------------------------
+Tue Sep 22 14:39:11 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Use correct scope to detect active storage tasks
+  (gh#agama-project/agama#3972).
+
+-------------------------------------------------------------------
+Tue Sep 22 13:50:57 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Avoid starting a task if there is already a previous task for the
+  same scope (bsc#1280257).
+
+-------------------------------------------------------------------
+Mon Sep 21 15:32:00 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Allow defining multiple licenses per product (jsc#PED-16988,
+  gh#agama-project/agama#3953).
+
+-------------------------------------------------------------------
+Mon Sep 21 15:31:00 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Recognize the ports whose connection refers to its controller by
+  UUID instead of by interface name, so the bonds and bridges
+  created by dracut are not broken when Agama writes the connections
+  back (gh#agama-project/agama#3562).
+
+-------------------------------------------------------------------
+Mon Sep 21 15:30:00 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Avoid blocking storage service (bsc#1280751).
+
+-------------------------------------------------------------------
+Mon Sep 21 07:11:10 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Drop the dependency on async_trait (gh#agama-project/agama#3950)
+  because it is not needed by our use case. This change reduces the
+  build time.
+
+-------------------------------------------------------------------
+Fri Sep 18 07:30:00 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Cancel actions if setting storage, DASD, zFCP, iSCSI or bootloader
+  configs fail (related to bsc#1280006).
+
+-------------------------------------------------------------------
+Wed Sep 16 11:50:09 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Add experimental support for 32 bit architectures which are in
+  TW ports (bsc#1266309)
+
+-------------------------------------------------------------------
+Thu Sep 10 14:00:00 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Report more details about the network devices ("speed",
+  "carrier", "driver", "busPath" and "mtu"), so the user interface
+  can tell one device from another when picking the ports of a bond
+  or a bridge (related to bsc#1279417, gh#agama-project/agama#3884)
+
+-------------------------------------------------------------------
+Thu Sep 10 13:10:57 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add a WebSocket-backed terminal endpoint, spawning a shell
+  attached to a pseudo-terminal for the web UI terminal panel
+  (gh#agama-project/agama#3868).
+
+-------------------------------------------------------------------
+Thu Sep 10 08:26:22 UTC 2026 - PadaCommit <185716433+PadaCommit@users.noreply.github.com>
+
+- Fix schema URLs in rust/share/ (gh#agama-project/agama#3881):
+  - Use parsable URLs for schema IDs
+  - Update schema paths in profile examples
+  - Fix SLE-16 profile schema URL example
+
+-------------------------------------------------------------------
+Wed Sep  9 10:21:21 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Disable local installation repositories instead of removing it
+  from target system (bsc#1277466)
+
+-------------------------------------------------------------------
+Fri Sep  4 10:52:03 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Do not crash when validating or evaluating a profile without
+  content (bsc#1278737).
+
+-------------------------------------------------------------------
+Wed Sep  2 14:15:16 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Improve storage schema to force the encryption key size to be
+  multiple of 8 (gh#agama-project/agama#3854).
+
+-------------------------------------------------------------------
+Wed Sep  2 14:09:43 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Sanitize rust dependencies and add CI task to check unused
+  dependencies (gh#agama-project/agama#3856).
+
+-------------------------------------------------------------------
+Wed Sep  2 09:31:32 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Use camelCase consistently for the JSON API keys renaming the
+  network connection "ieee-8021x" key to "ieee8021x", still
+  accepting the old name for backward compatibility
+  (gh#agama-project/agama#3858).
+
+-------------------------------------------------------------------
+Tue Sep  1 15:51:02 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 24
+
+-------------------------------------------------------------------
+Fri Aug 28 15:32:30 UTC 2026 - Martin Vidner <mvidner@suse.com>
+
+- update runtime dependencies to:
+  - serde_with 3.22.0, GHSA-7gcf-g7xr-8hxj (bsc#1271854)
+- updated on Mar 3, listing for tracking:
+  - bytes 1.11.1, CVE-2026-25541 (bsc#1274203)
+- updated on Dec 11, listing for tracking:
+  - tracing-subscriber 0.3.20 (now 0.3.22), CVE-2025-58160 (bsc#1249014)
+
+-------------------------------------------------------------------
+Fri Aug 28 13:08:30 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Rename question and issues classes to use a consistent naming
+  scheme. Make the answer matching backward compatible with the
+  previous class names and support using camelCase and snake_case
+  in the questions "data" object (bsc#1277393).
+
+-------------------------------------------------------------------
+Wed Aug 26 12:06:59 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Do not cancel remaining tasks if some part of the network
+  configuration cannot be applied (bsc#1276875).
+
+-------------------------------------------------------------------
+Wed Aug 26 09:57:09 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- "agama config generate" prints unsupported AutoYaST elements
+  in the stderr instead of registering a question (bsc#1276796).
+  The question is shown only when using the inst.auto argument
+  or when using a predefined location.
+
+-------------------------------------------------------------------
+Thu Aug 20 07:32:07 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Add ability for products to define own kernel flavor
+  (jsc#PED-16833)
+
+-------------------------------------------------------------------
+Mon Aug 17 09:07:56 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Do not accept the reserved VLAN identifier 4095, which is
+  rejected by NetworkManager (gh#agama-project/agama#3805).
+
+-------------------------------------------------------------------
+Wed Aug 12 13:55:31 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Wait for the software service when setting the configuration.
+  It prevents the monitor to exit before the Agama is ready
+  (bsc#1275030, gh#agama-project/agama#3817).
+
+-------------------------------------------------------------------
+Tue Aug 11 11:42:44 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Remove the following elements from the /api/system endpoint:
+  "proxy", "licenses", "repositories" and patterns "icon"
+  (gh#agama-project/agama#3775).
+
+-------------------------------------------------------------------
+Tue Aug 11 10:59:37 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Fix the detection of model and CPU on the s390x machines
+  (bsc#1270639).
+
+-------------------------------------------------------------------
+Wed Aug  5 15:08:46 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Fix storage system and proposal schemas
+  (gh#agama-project/agama#3800):
+  - Rename "driver" to "drivers".
+  - Rename "dellBoss" to "boss".
+  - Remove unused property "active" from "block" section.
+  - Add "id" to "partition" section.
+
+-------------------------------------------------------------------
+Wed Aug  5 10:30:34 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Extend schema of storage search with logical operators and new
+  search conditions: filesystem, partitions, partition id, driver,
+  boss (related to bsc#1273493).
+
+-------------------------------------------------------------------
+Mon Jul 27 11:23:53 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add an action to "probe" the software service (gh#agama-project/agama#3341).
+- Unify storage, software and DASD probing.
+- Fix the "agama probe" command.
+- Do not use the product's remote repositories when a local
+  installation repository (off-line media) is already available.
+
+-------------------------------------------------------------------
+Thu Jul 23 13:44:55 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Fix the "agama logs list" command (bsc#1261037).
+
+-------------------------------------------------------------------
+Thu Jul 23 12:08:50 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Do not copy the installation repositories (agama-0, agama-1, etc.)
+  to the installed system (bsc#1264277 gh#agama-project/agama#1458).
+
+-------------------------------------------------------------------
+Mon Jul 20 11:12:32 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 23
+
+-------------------------------------------------------------------
+Thu Jul 16 12:15:11 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Clear the IP configuration (dns-search, addresses, gateway, ...)
+  for disabled IP protocols, including values kept from the
+  existing connection, to avoid errors in NetworkManager
+  (gh#agama-project/agama#3731, bsc#1271481).
+
+-------------------------------------------------------------------
+Thu Jul 16 11:26:26 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Limit the number of Tokio worker threads to 4
+  (gh#agama-project/agama#3729, related to bsc#1265451).
+
+-------------------------------------------------------------------
+Thu Jul 16 11:01:05 UTC 2026 - Michal Filka <mfilka@suse.com>
+
+- Fixed issues when fetching AutoYast XML profile.
+  Agama cares about YAST_SKIP_PROFILE_FETCH_ERROR now.
+  agama-autoyast doesn't end with error when no profile found.
+
+-------------------------------------------------------------------
+Wed Jul 15 10:13:10 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Do not crash when running "lshw" fails or the output cannot be
+  parsed (bsc#1269367).
+- Fix the detection of model and CPU in s390x (bsc#1270639).
+- Fix the detection of the memory when lshw does not report a
+  node with id "memory", but "memory:0" (bsc#1271190).
+
+-------------------------------------------------------------------
+Wed Jul 15 09:16:44 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Fix setting security kernel parameter (bsc#1269581)
+
+-------------------------------------------------------------------
+Mon Jul 13 16:17:18 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Do not start config tasks until pre-scripts have finished
+  (bsc#1268891, bsc#1271085, bsc#1268778).
+
+-------------------------------------------------------------------
+Mon Jul 13 15:20:51 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Start the storage D-Bus service asynchronously (bsc#1265451,
+  bsc#1270014).
+
+-------------------------------------------------------------------
+Fri Jul 10 12:02:12 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Rename the network device match settings attribute to "match"
+  (gh#agama-project/agama#3708, bsc#1271236).
+
+-------------------------------------------------------------------
+Thu Jul  9 13:17:27 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Handle VLAN flags properly, using the kernel default value
+  of VLAN_FLAG_REORDER_HDR when not specified
+  (gh#agama-project/agama#3701, bsc#1271222).
+
+-------------------------------------------------------------------
+Thu Jul  9 10:21:27 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Set the service TimeoutStartSec to infinity in order to not
+  timeout when starting it (gh#agama-project/agama#3703).
+
+-------------------------------------------------------------------
+Wed Jul  8 07:58:08 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Update openssl dependency (bsc#1270992, bsc#1270891, bsc#1270850,
+  bsc#1270784, bsc#1270678, bsc#1270526, bsc#1270602, CVE-2026-45784,
+  CVE-2026-44662, CVE-2026-41898, CVE-2026-41681, CVE-2026-41678,
+  CVE-2026-42327, CVE-2026-41677).
+
+-------------------------------------------------------------------
+Tue Jun 30 14:43:50 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Adapt iSCSI, DASD and zFCP monitors to the changes in the D-Bus
+  API (needed for bsc#1269224).
+
+-------------------------------------------------------------------
+Fri Jun 26 15:19:40 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Fix error reporting in installation phase and fix failure report
+  to IPMI (follow up of bsc#1268803).
+
+-------------------------------------------------------------------
+Fri Jun 26 10:21:40 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Remove the translations from the Product's SystemInfo
+  (gh#agama-project/agama#3660).
+
+-------------------------------------------------------------------
+Fri Jun 26 10:10:30 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Do more cleaning after fix for full medium. Removes completely
+  dependency on software system info when computing target
+  software state (follow up of bsc#1268635)
+
+-------------------------------------------------------------------
+Thu Jun 25 12:03:06 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Use correct path for the source profile schema
+  (gh#agama-project/agama#3668).
+
+-------------------------------------------------------------------
+Wed Jun 24 13:18:37 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- fix unattended installation for full medium SLES iso
+  (bsc#1268635)
+- fix premature reboot or shutdown in unattended installation
+  when inst.finish kernel parameter is used (bsc##1268803)
+
+-------------------------------------------------------------------
+Tue Jun 23 11:53:44 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Allow adding optional resolvables (gh#agama-project/agama#3649).
+
+-------------------------------------------------------------------
+Mon Jun 22 14:22:52 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Unify cargo dependencies and move it to shared one in workspace
+  for easier future updates (gh#agama-project/agama#3652)
+
+-------------------------------------------------------------------
+Thu Jun 18 15:43:40 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Validate the profile before parsing it (bsc#1268432).
+- Fix the "agama config validate" command to work with the
+  server (gh#agama-project/agama#3641).
+
+-------------------------------------------------------------------
+Thu Jun 18 11:51:13 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Limit the number of Tokio worker threads (gh#agama-project/agama#3646
+  related to bsc#1265451).
+
+-------------------------------------------------------------------
+Wed Jun 17 13:40:22 UTC 2026 - Michal Filka <mfilka@suse.com>
+
+- Import statically defined schemas when generating OpenAPI schema
+- Schemas moved from agama-lib/share to share/
+
+-------------------------------------------------------------------
+Wed Jun 17 08:03:10 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- agama monitor: Properly report as waiting for user when
+  agama is busy and has some question to answer
+  (gh#agama-project/agama#3638)
+
+-------------------------------------------------------------------
+Tue Jun 16 14:01:07 UTC 2026 - Martin Vidner <mvidner@suse.com>
+
+- Remove a TODO note that slipped into translatable CLI help
+  (gh#agama-project/agama#3639).
+
+-------------------------------------------------------------------
+Mon Jun 15 15:45:28 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 22
+
+-------------------------------------------------------------------
+Mon Jun 15 15:15:12 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Unify text with the UI (gh#agama-project/agama#3637).
+
+-------------------------------------------------------------------
+Mon Jun 15 14:58:50 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Fixed copying URL credentials to the target system (bsc#1267881)
+
+-------------------------------------------------------------------
+Mon Jun 15 08:05:06 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Improve the "agama monitor" and "agama status" texts
+  (gh#agama-project/agama#3621).
+
+-------------------------------------------------------------------
+Mon Jun 15 07:33:59 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Mark properly autoinst retry question as the one that should
+  return value for new url (gh#agama-project/agama#3623)
+
+-------------------------------------------------------------------
+Fri Jun 12 17:28:32 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- The list of products only contains the products and modes
+  descriptions for the current language
+  (gh#agama-project/agama#3619).
+
+-------------------------------------------------------------------
+Fri Jun 12 16:35:53 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Adapt storate schemas to allow configuring filesystem options
+  (gh#agama-project/agama#3620).
+
+-------------------------------------------------------------------
+Fri Jun 12 14:06:18 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Use the same format to display the result on "validate" and
+  "validate --local" (gh#agama-project/agama#3616).
+- Reduce the validation attempts on "agama config load".
+
+-------------------------------------------------------------------
+Fri Jun 12 12:37:58 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Print the status after running the "monitor", "config load",
+  "config edit" and "install" commands (gh#agama-project/agama#3615).
+
+-------------------------------------------------------------------
+Fri Jun 12 12:19:51 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Add to `agama monitor` ability to answer questions
+  (gh#agama-project/agama#3606)
+
+-------------------------------------------------------------------
+Fri Jun 12 10:17:34 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Implement the RFC9457 for error reporting (gh#agama-project/agama#3611).
+
+-------------------------------------------------------------------
+Wed Jun 10 13:09:55 UTC 2026 - Martin Vidner <mvidner@suse.com>
+
+- Make `agama` command-line help translatable
+  (gh#agama-project/agama#3594).
+
+-------------------------------------------------------------------
+Wed Jun 10 06:18:24 UTC 2026 - Asish Kumar <officialasishkumar@gmail.com>
+
+- Honor extraRepositories repository priorities when adding software
+  repositories through libzypp (related to gh#agama-project/agama#3483).
+
+-------------------------------------------------------------------
+Tue Jun  9 13:27:17 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Improve tasks management: code refactoring, fix scope of zFCP and
+  DASD tasks, emit TaskAdded event, avoid iSCSI blocking, manage
+  storage reprobing (related to bsc#1266276).
+
+-------------------------------------------------------------------
+Fri Jun  5 09:10:56 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Adapt manager to set the list of resolvables. It asks each module
+  about its requirements and configures the software service
+  (bsc#1266276).
+
+-------------------------------------------------------------------
+Thu Jun  4 13:33:09 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Wait until all pending tasks are finished before starting the installation
+  (bsc#1266276).
+
+-------------------------------------------------------------------
+Wed Jun  3 10:05:13 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Fix software progress in openSUSE where it incorrectly report
+  proposing software selection instead of refreshing repositories
+  (gh#agama-project/agama#3579)
+
+-------------------------------------------------------------------
+Mon Jun  1 13:47:34 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Extend storage schemas to allow configuring the space policy for
+  creating new LVM physical volumes (jsc#PED-14153).
+
+-------------------------------------------------------------------
+Fri May 29 09:47:43 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Add "access" key to profile to allow after installation
+  remote access via ssh or cockpit (jsc#AGM-151)
+
+-------------------------------------------------------------------
+Wed May 27 13:40:40 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Use "sshPublicKeys" by default (gh#agama-project/agama#3531).
+
+-------------------------------------------------------------------
+Wed May 27 07:40:40 UTC 2026 - Michal Filka <mfilka@suse.com>
+
+- Do not display system information in output of agama status
+  command (gh#agama-project/agama#3553).
+
+-------------------------------------------------------------------
+Fri May 22 13:07:14 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- When activating a network connection which bind device has been
+  modified it will disconnect the devices which couldn't apply
+  the connection anymore (gh#agama-project/agama#3532, bsc#1265446).
+
+-------------------------------------------------------------------
+Fri May 22 09:08:29 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Redesign the progress tracking in the command-line interface.
+- Display the progress inline, preventing rendering artifacts in bsc#1265936.
+
+-------------------------------------------------------------------
+Thu May 21 15:53:10 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Prevent the monitor from blocking (related to bsc#1265431).
+
+-------------------------------------------------------------------
+Wed May 20 12:13:47 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Fix the network connection write allowing to unset some network
+  specific connection settings and improving the changes detection
+  (gh#agama-project/agama#3525, bsc#1265565, related bsc#1260465).
+
+-------------------------------------------------------------------
+Tue May 19 12:27:20 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Perform storage probing in a separate task to avoid blocking the
+  service (related to bsc#1265302).
+
+-------------------------------------------------------------------
+Mon May 18 10:58:44 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Detect when the WebSocket gets disconnected (bsc#1265431).
+
+-------------------------------------------------------------------
+Sun May 17 22:54:14 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Improve the monitor to work when the terminal is not available. It
+  allows loading profiles without errors (gh#agama-project/agama#3510).
+
+-------------------------------------------------------------------
+Sat May 16 07:54:41 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 21
+
+-------------------------------------------------------------------
+Sat May 16 00:43:49 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Consider the software service as not busy during the "installation"
+  phase to prevent potential deadlocks (gh#agama-project/agama#3508).
+
+-------------------------------------------------------------------
+Fri May 15 14:34:41 UTC 2026 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Support new boot section in product definition (jsc#PED-10703).
+- TPM unlocking of encrypted devices: improved schemas and APIs.
+
+-------------------------------------------------------------------
+Thu May 14 13:25:36 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Fix problems detected by cargo audit (gh#agama-project/agama#3497):
+  - Disable unused "reqwest" features.
+  - Update "inquire" to get rid of "fxhash" (unmaintained).
+  - Update "ratatui", "lru" and "paste".
+  - Update "tokio-tungstenite" and "rand".
+
+-------------------------------------------------------------------
+Thu May 14 10:30:11 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Add the connection state to the network system configuration
+  and extend the enum for IPv6 method.
+- Handled better user configuration changes.
+- Do not consider a config as writen until the active connections
+  generated by the config have been activated or deactivated once.
+  (gh#agama-project/agama#3377, related to bsc#1260465).
+
+-------------------------------------------------------------------
+Thu May 14 09:02:02 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Replace the user interface of the "agama monitor" command with
+  a new version (gh#agama-project/agama#3443).
+
+-------------------------------------------------------------------
+Wed May 13 11:54:03 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Allow setting the NTP configuration from the kernel command-line
+  (gh#agama-project/agama#3488).
+
+-------------------------------------------------------------------
+Tue May 12 10:17:19 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Add new popup when package installation failed if user wants
+  to retry it. (gh#agama-project/agama#3484)
+
+-------------------------------------------------------------------
+Fri May  8 12:36:00 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Move product availability issues to software scope
+  (gh#agama-project/agama#3456).
+
+-------------------------------------------------------------------
+Thu May  7 10:56:21 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Improved saving libzypp service (related to bsc#1261351)
+
+-------------------------------------------------------------------
+Thu May  7 09:50:03 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Improve handling of updates in the "agama monitor" command
+  (gh#agama-project/agama#3470).
+
+-------------------------------------------------------------------
+Thu May  7 06:03:28 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add support for synchronizing and configuring the NTP service
+  using an Agama configuration file (jsc#PED-15144).
+
+-------------------------------------------------------------------
+Wed May  6 08:54:42 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- HTTP API:
+  - remove v2 part of path
+  - add new X-API-Version response header with value 2
+  - move /profile path to /private/profile
+  (gh#agama-project/agama#3461)
+
+-------------------------------------------------------------------
+Mon May  4 10:46:08 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- fix zypp tests to work with new rpm with more tight permissions
+  (bsc#1254914)
+
+-------------------------------------------------------------------
+Thu Apr 30 09:04:17 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- CLI: add new `agama status` command that prints current state of
+  agama with textual or json output format
+  (gh#agama-project/agama#3442)
+
+-------------------------------------------------------------------
+Tue Apr 28 11:02:40 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Fix the path to the /private/resolvables/{id} endpoint (bsc#1262995).
+
+-------------------------------------------------------------------
+Mon Apr 27 16:12:45 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Prefer local media to download (gh#agama-project/agama#3405),
+  when registering the system using the Full medium prefer the
+  packages from DVD to avoid downloading them from SCC, use the
+  DVD as a local cache
+
+-------------------------------------------------------------------
+Fri Apr 24 14:16:43 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Expose the product-level `desktop_selection` option and the
+  pattern-level `desktop` property through the API so the web UI
+  can group desktop environments and alert when none is picked
+  (gh#agama-project/agama#3390, gh#agama-project/agama#3403).
+
+-------------------------------------------------------------------
+Fri Apr 24 08:37:21 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Extend the OpenAPI specification (gh#agama-project/agama#3414):
+  - Add missing summaries, operation IDs and descriptions to each
+    path.
+  - Use tags to classify the paths.
+  - Add missing schemas.
+  - Add authentication paths and security the specification.
+  - Update "cargo xtask openapi" to generate the specification in
+    JSON and YAML formats.
+  - Replace utoipa with aide to generate the documentation.
+
+-------------------------------------------------------------------
+Tue Apr 21 07:27:36 UTC 2026 - Clemens Famulla-Conrad <cfamullaconrad@suse.com>
+
+- network: Add ignore_auto_routes[46] and never_default[46]
+  (gh#agama-project/agama#3404)
+
+-------------------------------------------------------------------
+Mon Apr 20 11:00:37 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Properly initialize the GPG callbacks during registration so the
+  PackageHub GPG key can be imported from the autoinstallation
+  profile (bsc#1261351)
+
+-------------------------------------------------------------------
+Mon Apr 20 09:35:34 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Drop dead code (gh#agama-project/agama#3402).
+
+-------------------------------------------------------------------
+Fri Apr 17 16:56:48 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- CLI: improve `agama monitor` command to be able to show blocking
+  issues or waiting for questions. Also command now ends when
+  installation finishes. (gh#agama-project/agama#3377)
+
+-------------------------------------------------------------------
+Fri Apr 17 10:29:38 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Add support for pervasive encryption options in storage
+  configuration schema (gh#agama-project/agama#3384).
+
+-------------------------------------------------------------------
+Wed Apr 15 07:25:18 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Copy the Agama systemd network link files for renaming devices
+  after the installation (bsc#1261774).
+
+-------------------------------------------------------------------
+Tue Apr 14 17:36:56 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 20
+
+-------------------------------------------------------------------
+Tue Apr 14 10:20:25 UTC 2026 - Michal Filka <mfilka@suse.com>
+
+- jsc#PED-12285
+  - re-introduced initial implementation for installer state status
+    report via IPMI. Original implementation lost due to transition
+    from Ruby to Rust.
+
+-------------------------------------------------------------------
+Mon Apr 13 15:21:17 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Update storage schemas (gh#agama-project/agama#3380).
+
+-------------------------------------------------------------------
+Fri Apr 10 13:46:02 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Replace the "inst.listen_on" boot option with "inst.remote=0"
+  to disable remote access to the Agama web server (jsc#AGM-153)
+
+-------------------------------------------------------------------
+Fri Apr 10 08:02:40 UTC 2026 - Lidong Zhong <lidong.zhong@suse.com>
+
+- Run scripts from /var/lib/agama/scripts (bsc#1261787).
+
+-------------------------------------------------------------------
+Thu Apr  9 06:53:34 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Fix OpenAPI specification for PATCH /config (gh#agama-project/agama#3368).
+
+-------------------------------------------------------------------
 Tue Apr  7 16:55:22 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
 
 - Automatically try loading the autoinstallation profile from the

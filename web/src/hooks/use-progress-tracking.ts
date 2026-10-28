@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2025] SUSE LLC
+ * Copyright (c) [2025-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,99 +20,121 @@
  * find current contact information at www.suse.com.
  */
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { isEmpty } from "radashi";
 import useTrackQueriesRefetch from "~/hooks/use-track-queries-refetch";
 import { useProgress } from "~/hooks/model/progress";
-import { COMMON_PROPOSAL_KEYS } from "~/hooks/model/proposal";
+import { useStatus } from "~/hooks/model/status";
 import type { Scope } from "~/model/status";
 
 /**
- * Custom hook that manages loading state for operations with progress tracking.
+ * Custom hook that manages loading state for operations with progress and task tracking.
  *
- * This hook coordinates between progress status from the backend and query
- * refetch completion to provide a seamless loading experience. It ensures the
- * UI remains in a loading state until both the backend operation completes AND
- * all related queries have been refetched with fresh data.
+ * This hook coordinates between progress status, task status from the backend,
+ * and query refetch completion to provide a seamless loading experience. It
+ * ensures the UI remains in a loading state until backend operations complete,
+ * tasks finish, AND all related queries have been refetched with fresh data.
  *
- * @param scope - The progress scope to monitor (e.g., "software", "storage")
+ * @param scope - The progress/task scope to monitor (e.g., "software", "storage")
  * @param queryKeys - Array of TanStack Query keys to track for refetches after
- *   progress completes. Defaults to COMMON_PROPOSAL_KEYS if not provided.
+ *   progress completes. Defaults to empty array (no query waiting). Typically
+ *   contains the `*_QUERY_KEY` constant exported by each data hook the page uses.
+ *
+ *   Be careful about what you list here. Some data is only fetched again when
+ *   it actually changes. If an operation ends up changing nothing, that fetch
+ *   never happens, and the caller keeps loading forever. When in doubt, list
+ *   nothing: loading then ends as soon as the operation does.
  *
  * @returns Object containing:
- *   - `loading`: Boolean indicating whether an operation is in progress or
- *     waiting for queries to refetch
+ *   - `loading`: Boolean indicating whether an operation is in progress, tasks
+ *     are pending, or waiting for queries to refetch
  *   - `progress`: The current progress object from the backend, or undefined
  *     if no matching progress is active
  *
  * @example
  * ```tsx
- * // Basic usage with default query keys
- * function SoftwareSummary() {
- *   const { loading } = useProgressTracking("software");
+ * // Storage page uses proposal and storage model data
+ * function StorageSummary() {
+ *   const { loading } = useProgressTracking("storage", [
+ *     PROPOSAL_QUERY_KEY,
+ *     EXTENDED_CONFIG_QUERY_KEY,
+ *     STORAGE_MODEL_QUERY_KEY
+ *   ]);
  *
  *   if (loading) return <Skeleton />;
- *   return <SoftwareSummary />;
+ *   return <StorageSummary />;
  * }
  * ```
  *
  * @example
  * ```tsx
- * // With custom query keys to ensure specific data is refetched
- * function ProgressBackdrop({ scope, ensureRefetched }) {
- *   const { loading: isBlocked, progress } = useProgressTracking(
- *     scope,
- *     [...COMMON_PROPOSAL_KEYS, ...ensureRefetched]
- *   );
+ * // iSCSI page only uses system and config data
+ * function ISCSIPage() {
+ *   const { loading } = useProgressTracking("iscsi", [
+ *     SYSTEM_QUERY_KEY,
+ *     CONFIG_QUERY_KEY
+ *   ]);
  *
- *   if (!isBlocked) return null;
- *   return <Backdrop message={progress.message} />;
+ *   if (loading) return <Skeleton />;
+ *   return <ISCSIContent />;
  * }
  * ```
  *
  * @remarks
  *
- * In short, the hook works as follow
+ * In short, the hook works as follows
  *
- *   1. Backend operation starts → `loading` becomes `true`
- *   2. Backend operation finishes → hook waits for queries to refetch
+ *   1. Backend operation starts or tasks are created → `loading` becomes `true`
+ *   2. Backend operation finishes and tasks complete → hook waits for queries to refetch
  *   3. useTrackQueriesRefetch reports all queries refetched with fresh data →
  *      `loading` becomes `false`
  *
  *  The hook uses a ref to track when the operation finished, ensuring queries
- *  are only considered "fresh" if they refetched AFTER the operation completed
- *  to prevents showing stale data to users.
+ *  are only considered "fresh" if they refetched AFTER the operation completed,
+ *  to prevent showing stale data to users.
  *
  * @see {@link useProgress} - For monitoring backend progress status
+ * @see {@link useStatus} - For monitoring backend task status
  * @see {@link useTrackQueriesRefetch} - For tracking query refetch completion
  */
-export function useProgressTracking(
-  scope?: Scope,
-  queryKeys: readonly string[] = COMMON_PROPOSAL_KEYS,
-) {
+export function useProgressTracking(scope?: Scope, queryKeys: readonly string[] = []) {
   const progress = useProgress(scope);
+  const status = useStatus();
   const [loading, setLoading] = useState(false);
-  const progressFinishedAtRef = useRef(null);
+  const [tracking, setTracking] = useState(false);
+  const [trackingRequested, setTrackingRequested] = useState(false);
 
-  const { startTracking } = useTrackQueriesRefetch(queryKeys, (_, completedAt) => {
-    if (progressFinishedAtRef.current && completedAt > progressFinishedAtRef.current) {
-      setLoading(false);
-      progressFinishedAtRef.current = null;
-    }
+  const { startTracking } = useTrackQueriesRefetch(queryKeys, () => {
+    setTracking(false);
   });
 
+  // Filter tasks by scope
+  const tasks = scope
+    ? status?.tasks.filter((task) => task.scope === scope) || []
+    : status?.tasks || [];
+  const taskCount = tasks.length;
+
   const progressesFinished = scope ? !progress : isEmpty(progress);
+  const tasksFinished = taskCount === 0;
+  const allFinished = progressesFinished && tasksFinished;
 
   useEffect(() => {
-    if (progressesFinished && loading && !progressFinishedAtRef.current) {
-      progressFinishedAtRef.current = Date.now();
+    if (!allFinished && !trackingRequested) {
+      setTrackingRequested(true);
+      setTracking(true);
       startTracking();
     }
-  }, [progressesFinished, startTracking, loading, progressFinishedAtRef]);
+  }, [allFinished, setTrackingRequested, startTracking, trackingRequested]);
 
-  if (!progressesFinished && !loading) {
+  if (allFinished && !tracking && loading) {
+    setTrackingRequested(false);
+    setLoading(false);
+  }
+
+  // Enter the loading state as soon as an operation is detected. Setting state
+  // during render (instead of in an effect) avoids a flash of non-loading UI.
+  if (!loading && (!allFinished || tracking)) {
     setLoading(true);
-    progressFinishedAtRef.current = null;
   }
 
   return { loading, progress };

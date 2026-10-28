@@ -21,7 +21,7 @@
  */
 
 import { _, n_, formatList } from "~/i18n";
-import { SpacePolicy, SPACE_POLICIES, baseName, formattedPath } from "~/components/storage/utils";
+import { baseName, formattedPath } from "~/components/storage/utils";
 import { useConfigModel } from "~/hooks/model/storage/config-model";
 import configModel from "~/model/storage/config-model";
 import { sprintf } from "sprintf-js";
@@ -32,10 +32,6 @@ import type { ConfigModel } from "~/model/storage/config-model";
  */
 const label = (drive: ConfigModel.Drive): string => {
   return baseName(drive.name);
-};
-
-const spacePolicyEntry = (drive: ConfigModel.Drive): SpacePolicy => {
-  return SPACE_POLICIES.find((p) => p.id === drive.spacePolicy);
 };
 
 const deleteTextFor = (partitions) => {
@@ -210,7 +206,6 @@ const contentDescription = (drive: ConfigModel.Drive): string => {
 
 export {
   label,
-  spacePolicyEntry,
   contentActionsSummary,
   ContentActionsDescription as contentActionsDescription,
   contentDescription,

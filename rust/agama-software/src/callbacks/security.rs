@@ -22,12 +22,22 @@ impl Security {
     }
 
     pub fn set_trusted_gpg_keys(&mut self, trusted_gpg_keys: Vec<RepoKey>) {
+        tracing::info!("Configured trusted GPG keys: {:?}", trusted_gpg_keys);
         self.trusted_gpg_keys = trusted_gpg_keys;
     }
 
     pub fn set_unsigned_repos(&mut self, unsigned_repos: Vec<String>) {
+        tracing::info!("Allowed unsigned repositories: {:?}", unsigned_repos);
         self.unsigned_repos = unsigned_repos;
     }
+}
+
+fn wrong_checksum_message(file: &str, expected: &str, actual: &str) -> String {
+    format!(
+        "The checksum of the file {file} is \"{actual}\" but the expected checksum is \
+          \"{expected}\". The file has changed by accident or by an attacker since the \
+          creator signed it. Use it anyway?"
+    )
 }
 
 impl security::Callback for Security {
@@ -54,7 +64,7 @@ impl security::Callback for Security {
                 and integrity of the file cannot be verified. Use it anyway?"
             )
         };
-        let question = QuestionSpec::new(&text, "software.unsigned_file")
+        let question = QuestionSpec::new(&text, "unsignedFile")
             .with_yes_no_actions()
             .with_data(&[("filename", file.as_str())]);
         let result = ask_software_question(&self.questions, question);
@@ -105,12 +115,12 @@ impl security::Callback for Security {
             &key_name,
             &human_fingerprint
         );
-        let question = QuestionSpec::new(&text, "software.import_gpg")
+        let question = QuestionSpec::new(&text, "importGpg")
             .with_action_ids(&[gettext_noop("Trust"), gettext_noop("Skip")])
             .with_data(&[
                 ("id", key_id.as_str()),
                 ("name", key_name.as_str()),
-                ("fingerprint", key_fingerprint.as_str()),
+                ("fingerprint", human_fingerprint.as_str()),
             ])
             .with_default_action("Skip");
         let result = ask_software_question(&self.questions, question);
@@ -119,6 +129,7 @@ impl security::Callback for Security {
             return security::GpgKeyTrust::Reject;
         };
 
+        tracing::info!("Received answer: {:?}", answer);
         answer
             .action
             .as_str()
@@ -145,7 +156,7 @@ impl security::Callback for Security {
                 the following unknown GnuPG key: {key_id}. Use it anyway?"
             )
         };
-        let question = QuestionSpec::new(&text, "software.unknown_gpg")
+        let question = QuestionSpec::new(&text, "unknownGpg")
             .with_yes_no_actions()
             .with_data(&[("filename", file.as_str()), ("id", key_id.as_str())]);
         let result = ask_software_question(&self.questions, question);
@@ -187,7 +198,7 @@ impl security::Callback for Security {
                 Use it anyway?"
             )
         };
-        let question = QuestionSpec::new(&text, "software.verification_failed")
+        let question = QuestionSpec::new(&text, "gpgVerificationError")
             .with_yes_no_actions()
             .with_data(&[("filename", file.as_str())]);
         let result = ask_software_question(&self.questions, question);
@@ -207,7 +218,7 @@ impl security::Callback for Security {
               although the file is part of the signed repository, the list of checksums \
               does not mention this file. Use it anyway?"
         );
-        let question = QuestionSpec::new(&text, "software.digest.no_digest").with_yes_no_actions();
+        let question = QuestionSpec::new(&text, "noDigest").with_yes_no_actions();
         let result = ask_software_question(&self.questions, question);
         let Ok(answer) = result else {
             tracing::warn!("Failed to ask question {:?}", result);
@@ -228,8 +239,7 @@ impl security::Callback for Security {
               unknown. This means that the origin and integrity of the file cannot be verified. \
               Use it anyway?"
         );
-        let question =
-            QuestionSpec::new(&text, "software.digest.unknown_digest").with_yes_no_actions();
+        let question = QuestionSpec::new(&text, "unknownDigest").with_yes_no_actions();
         let result = ask_software_question(&self.questions, question);
         let Ok(answer) = result else {
             tracing::warn!("Failed to ask question {:?}", result);
@@ -246,14 +256,8 @@ impl security::Callback for Security {
             expected,
             actual
         );
-        let text = format!(
-            "The expected checksum of file %{file} is \"%{actual}\" but it was expected to be \
-              \"%{expected}\". The file has changed by accident or by an attacker since the \
-              creater signed it. Use it anyway?"
-        );
-
-        let question =
-            QuestionSpec::new(&text, "software.digest.unknown_digest").with_yes_no_actions();
+        let text = wrong_checksum_message(&file, &expected, &actual);
+        let question = QuestionSpec::new(&text, "unknownDigest").with_yes_no_actions();
         let result = ask_software_question(&self.questions, question);
         let Ok(answer) = result else {
             tracing::warn!("Failed to ask question {:?}", result);
@@ -261,5 +265,20 @@ impl security::Callback for Security {
         };
 
         answer.action == "Yes"
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_wrong_checksum_message() {
+        let text = wrong_checksum_message("zypp.rpm", "expected-sum", "actual-sum");
+        assert!(text.contains("zypp.rpm"));
+        assert!(text.contains("\"actual-sum\" but the expected checksum is \"expected-sum\""));
+        // the message used to be a transliteration of the Ruby one, keeping the
+        // gettext placeholders that `format!` does not substitute
+        assert!(!text.contains("%{"));
     }
 }

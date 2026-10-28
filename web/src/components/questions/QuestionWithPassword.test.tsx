@@ -77,7 +77,11 @@ jest.mock("~/hooks/model/system", () => ({
 
 jest.mock("~/hooks/model/status", () => ({
   ...jest.requireActual("~/hooks/model/status"),
-  useStatus: (): ReturnType<typeof useStatus> => ({ stage: "configuring", progresses: [] }),
+  useStatus: (): ReturnType<typeof useStatus> => ({
+    stage: "configuring",
+    tasks: [],
+    progresses: [],
+  }),
 }));
 
 jest.mock("~/hooks/model/config/product", () => ({
@@ -105,7 +109,7 @@ describe("QuestionWithPassword", () => {
 
   it("allows opening the installer keymap settings", async () => {
     const { user } = renderQuestion();
-    const changeKeymapButton = screen.getByRole("button", { name: "Change keyboard layout" });
+    const changeKeymapButton = screen.getByRole("button", { name: "Keyboard" });
     await user.click(changeKeymapButton);
     screen.getByRole("dialog", { name: "Change keyboard" });
   });
@@ -123,6 +127,20 @@ describe("QuestionWithPassword", () => {
         expect.objectContaining({ value: "notSecret", action: "ok" }),
       );
       expect(answerFn).toHaveBeenCalledWith(question);
+    });
+
+    it("answers the default action once when pressing Enter", async () => {
+      const { user } = renderQuestion();
+
+      answerFn.mockClear();
+      const passwordInput = await screen.findByLabelText("Password");
+      await user.clear(passwordInput);
+      await user.type(passwordInput, "stillNotSecret{Enter}");
+
+      expect(question.answer).toEqual(
+        expect.objectContaining({ value: "stillNotSecret", action: "cancel" }),
+      );
+      expect(answerFn).toHaveBeenCalledTimes(1);
     });
   });
 });

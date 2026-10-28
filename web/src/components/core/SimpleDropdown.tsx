@@ -31,6 +31,8 @@ import {
 } from "@patternfly/react-core";
 import Icon from "~/components/layout/Icon";
 
+import type { TranslatedString } from "~/i18n";
+
 /**
  * Represents a single action item in a {@link SimpleDropdown} menu.
  */
@@ -65,7 +67,7 @@ type SimpleDropdownProps = {
    * providing visual and accessible context about which row or entity
    * the actions belong to.
    */
-  label: string;
+  label: TranslatedString;
   /**
    * Props to pass to the PF Dropdown popper for controlling positioning.
    * Defaults to `{ position: "right" }` to align the menu to the right

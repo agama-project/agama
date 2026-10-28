@@ -52,16 +52,15 @@ const sda: Storage.Device = {
     bus: "IDE",
     busId: "",
     transport: "usb",
-    driver: ["ahci", "mmcblk"],
+    drivers: ["ahci", "mmcblk"],
     info: {
-      dellBoss: false,
+      boss: false,
       sdCard: true,
     },
   },
   block: {
     start: 1,
     size: gib(20),
-    active: true,
     encrypted: false,
     systems: [],
     shrinking: { supported: false },
@@ -82,7 +81,7 @@ const sdb: Storage.Device = {
   drive: {
     type: "disk",
     info: {
-      dellBoss: false,
+      boss: false,
       sdCard: false,
     },
   },
@@ -293,6 +292,29 @@ describe("LvmPage", () => {
         volumeGroups: [mockRootVolumeGroup, mockHomeVolumeGroup],
       });
       mockUseVolumeGroup.mockReturnValue(mockRootVolumeGroup);
+    });
+
+    it("shows helper text when targetDevicesPolicy is useNeeded", () => {
+      const vgWithUseNeeded = {
+        ...mockRootVolumeGroup,
+        targetDevicesPolicy: "useNeeded" as const,
+      };
+      mockUseVolumeGroup.mockReturnValue(vgWithUseNeeded);
+
+      installerRender(<LvmPage />);
+
+      screen.getByText(/This volume group only occupies the space required by its logical volumes/);
+      screen.getByText(/To expand it to cover all available disk space, recreate the volume group/);
+    });
+
+    it("does not show helper text when targetDevicesPolicy is not useNeeded", () => {
+      installerRender(<LvmPage />);
+
+      expect(
+        screen.queryByText(
+          /This volume group only occupies the space required by its logical volumes/,
+        ),
+      ).toBeNull();
     });
 
     it("performs basic validations", async () => {

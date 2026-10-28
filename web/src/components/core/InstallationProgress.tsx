@@ -22,11 +22,10 @@
 
 import React from "react";
 import { HelperText, HelperTextItem } from "@patternfly/react-core";
-import Page from "~/components/core/Page";
+import Page from "~/components/layout/Page";
 import ProgressReport from "~/components/core/ProgressReport";
-import InstallerOptionsMenu from "~/components/core/InstallerOptionsMenu";
 import ProductLogo from "~/components/product/ProductLogo";
-import SplitInfoLayout from "~/components/layout/SplitInfoLayout";
+import SideBySideLayout from "~/components/layout/SideBySideLayout";
 import { useProductInfo } from "~/hooks/model/config/product";
 import { _ } from "~/i18n";
 
@@ -34,22 +33,25 @@ export default function InstallationProgress() {
   const product = useProductInfo();
 
   return (
-    <Page noDefaultStartSlot endSlot={<InstallerOptionsMenu hideLabel />}>
+    <Page showProgressMonitor={false}>
       <Page.Content>
-        <SplitInfoLayout
+        <SideBySideLayout
+          stretchBody
           icon="deployed_code_update"
-          firstRowStart={
+          title={
             <>
-              <ProductLogo product={product} width="1.25em" /> {product?.name}
+              <ProductLogo product={product} width="var(--agm-t--logo--size--inline, 1.25em)" />{" "}
+              {product?.name}
             </>
           }
-          firstRowEnd={<ProgressReport />}
-          secondRowStart={
+          description={
             <HelperText>
               <HelperTextItem>{_("Installation in progress")}</HelperTextItem>
             </HelperText>
           }
-        />
+        >
+          <ProgressReport />
+        </SideBySideLayout>
       </Page.Content>
     </Page>
   );

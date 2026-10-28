@@ -29,7 +29,10 @@
 import agama from "~/agama";
 import type { Tagged } from "type-fest";
 
+// translated text (_() or n_())
 export type TranslatedString = Tagged<string, "Translated">;
+// text marked for translation but not translated yet (N_() or Nn_())
+export type MarkedString = Tagged<string, "Marked">;
 
 /**
  * Tests whether a special testing language is used.
@@ -127,7 +130,7 @@ const n_ = (str1: string, strN: string, n: number): TranslatedString => {
  * @param str the input string
  * @return the input string
  */
-const N_ = (str: string): string => str;
+const N_ = (str: string): MarkedString => str as MarkedString;
 
 /**
  * Similar to the N_() function, but for the singular and plural form.
@@ -140,17 +143,46 @@ const N_ = (str: string): string => str;
  * @return the original text, either "string1" or "stringN" depending
  *   on the value "num"
  */
-const Nn_ = (str1: string, strN: string, n: number): string => (n === 1 ? str1 : strN);
+const Nn_ = (str1: string, strN: string, n: number): MarkedString =>
+  (n === 1 ? str1 : strN) as MarkedString;
 
 /**
  * Wrapper around Intl.ListFormat to get a language-specific representation of the given list of
  * strings.
  *
- * @param {string[]} list iterable list of strings to represent
- * @param {object} options passed to the Intl.ListFormat constructor
- * @return {string} concatenation of the original strings with the correct language-specific
+ * Preserves the input type: formatting a list of {@link TranslatedString}
+ * values produces a {@link TranslatedString}, while a list of plain strings
+ * (e.g. device names or mount paths) stays a plain string.
+ *
+ * @param list iterable list of strings to represent
+ * @param options passed to the Intl.ListFormat constructor
+ * @return concatenation of the original strings with the correct language-specific
  *  separators according to the currently selected language for the Agama UI
  */
-const formatList = (list, options = {}) => agama.formatList(list, options);
+const formatList = <T extends string | TranslatedString>(list: T[], options: object = {}): T =>
+  agama.formatList(list, options) as T;
 
-export { _, n_, N_, Nn_, formatList };
+/**
+ * Wrapper around Intl.NumberFormat to write a number the way the language
+ * currently selected for the Agama UI writes it.
+ *
+ * The decimal separator is the reason this exists: a browser running in
+ * English while the installer runs in German would otherwise put a point where
+ * every other number on the screen has a comma.
+ *
+ * @param value number to write out
+ * @param options passed to the Intl.NumberFormat constructor
+ * @return the number as the current language writes it
+ */
+const formatNumber = (value: number, options: Intl.NumberFormatOptions = {}): string => {
+  try {
+    return new Intl.NumberFormat(agama.language, options).format(value);
+  } catch (e) {
+    // Same fallback as formatList: a language the runtime does not know is no
+    // reason to show nothing.
+    console.warn(`Using fallback number formatting for language "${agama.language}", details:`, e);
+    return value.toString();
+  }
+};
+
+export { _, n_, N_, Nn_, formatList, formatNumber };

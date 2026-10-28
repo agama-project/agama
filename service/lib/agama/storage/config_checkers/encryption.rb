@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024-2025] SUSE LLC
+# Copyright (c) [2024-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -32,11 +32,13 @@ module Agama
         include Yast::I18n
 
         # @param config [#encryption]
-        def initialize(config)
+        # @param bootloader_config [Storage::BootloaderConfig]
+        def initialize(config, bootloader_config)
           super()
 
           textdomain "agama"
           @config = config
+          @bootloader_config = bootloader_config
         end
 
         # Encryption config issues.
@@ -48,7 +50,8 @@ module Agama
           [
             missing_password_issue,
             unavailable_method_issue,
-            wrong_method_issue
+            wrong_device_method_issue,
+            wrong_bootloader_method_issue
           ].compact
         end
 
@@ -56,6 +59,9 @@ module Agama
 
         # @return [#encryption]
         attr_reader :config
+
+        # @return [Storage::BootloaderConfig]
+        attr_reader :bootloader_config
 
         # @return [Configs::Encryption, nil]
         def encryption
@@ -84,10 +90,47 @@ module Agama
 
           error(
             format(
-              # TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device
-              #   (e.g., 'luks1', 'random_swap').
-              _("Encryption method '%{crypt_method}' is not available in this system."),
+              # TRANSLATORS: %{crypt_method} is the identifier of the method to encrypt the device
+              #   (e.g., "luks1", "random swap").
+              _("%{crypt_method} is not available in this system."),
               crypt_method: method.to_human_string
+            ),
+            kind: IssueClasses::Config::WRONG_ENCRYPTION_METHOD
+          )
+        end
+
+        # @return [Issue, nil]
+        def wrong_device_method_issue
+          method = encryption&.method
+          return unless method&.only_for_swap?
+          return if config.filesystem&.path == Y2Storage::MountPoint::SWAP_PATH.to_s
+
+          error(
+            format(
+              # TRANSLATORS: %{crypt_method} is the identifier of the method to encrypt the device
+              #   (e.g., "luks1", "random swap").
+              _("%{crypt_method} is not suitable for a device different to swap."),
+              crypt_method: method.to_human_string
+            ),
+            kind: IssueClasses::Config::WRONG_ENCRYPTION_METHOD
+          )
+        end
+
+        # @return [Issue, nil]
+        def wrong_bootloader_method_issue
+          method = encryption&.method
+          error = tpm_bls_error? || tpm_fde_error?
+
+          return unless method && error
+
+          error(
+            format(
+              # TRANSLATORS: %{crypt_method} is the identifier of the method to encrypt the device
+              #   (e.g., "luks1", "random swap") and %{bootloader} by a bootloader name (e.g.,
+              #   "grub2").
+              _("%{crypt_method} is not suitable for the bootloader %{bootloader}."),
+              crypt_method: method.to_human_string,
+              bootloader:   bootloader_config.type&.to_s
             ),
             kind: IssueClasses::Config::WRONG_ENCRYPTION_METHOD
           )
@@ -98,27 +141,34 @@ module Agama
         # @return [Array<Y2Storage::EncryptionMethod::Base>]
         def available_encryption_methods
           tpm_fde = Y2Storage::EncryptionMethod::TPM_FDE
+          tpm_bls = Y2Storage::EncryptionMethod::TPM_BLS
 
           methods = Y2Storage::EncryptionMethod.available
           methods << tpm_fde if tpm_fde.possible?
+          methods << tpm_bls if tpm_bls.possible?
           methods
         end
 
-        # @return [Issue, nil]
-        def wrong_method_issue
-          method = encryption&.method
-          return unless method&.only_for_swap?
-          return if config.filesystem&.path == Y2Storage::MountPoint::SWAP_PATH.to_s
+        # Whether the encryption is TPM BLS and it cannot be used with the configured bootloader.
+        #
+        # @return [Boolean]
+        def tpm_bls_error?
+          return false unless encryption&.method&.is?(:tpm_bls)
 
-          error(
-            format(
-              # TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device
-              #   (e.g., 'luks1', 'random_swap').
-              _("'%{crypt_method}' is not a suitable method to encrypt the device."),
-              crypt_method: method.to_human_string
-            ),
-            kind: IssueClasses::Config::WRONG_ENCRYPTION_METHOD
-          )
+          return false unless bootloader_config.type
+
+          !bootloader_config.type.bls?
+        end
+
+        # Whether the encryption is TPM FDE and it cannot be used with the configured bootloader.
+        #
+        # @return [Boolean]
+        def tpm_fde_error?
+          return false unless encryption&.method&.is?(:tpm_fde)
+
+          return false unless bootloader_config.type
+
+          !bootloader_config.type.is?(:grub2)
         end
       end
     end

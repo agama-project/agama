@@ -38,19 +38,14 @@ install -D -t "${DESTDIR}${bindir}" "${SRCDIR}/target/${RUST_TARGET}/agama"
 install -D -t "${DESTDIR}${bindir}" "${SRCDIR}/target/${RUST_TARGET}/agama-autoinstall"
 install -D -t "${DESTDIR}${bindir}" "${SRCDIR}/target/${RUST_TARGET}/agama-proxy-setup"
 install -D -t "${DESTDIR}${bindir}" "${SRCDIR}/target/${RUST_TARGET}/agama-web-server"
-install -D -t "${DESTDIR}${bindir}" "${SRCDIR}/share/agama-web-server.sh"
 install -D -t "${DESTDIR}${bindir}" "${SRCDIR}/share/agama-journal"
 install -D -t "${DESTDIR}${bindir}" "${SRCDIR}/share/agama-zypp-journal"
 
 install6 -D -p "${SRCDIR}"/share/agama.pam "${DESTDIR}${pamvendordir}"/agama
 
-install6 -D -t "${DESTDIR}${datadir}"/agama/schema "${SRCDIR}"/agama-lib/share/dasd.schema.json
-install6 -D -t "${DESTDIR}${datadir}"/agama/schema "${SRCDIR}"/agama-lib/share/iscsi.schema.json
-install6 -D -t "${DESTDIR}${datadir}"/agama/schema "${SRCDIR}"/agama-lib/share/profile.schema.json
-install6 -D -t "${DESTDIR}${datadir}"/agama/schema "${SRCDIR}"/agama-lib/share/software.schema.json
-install6 -D -t "${DESTDIR}${datadir}"/agama/schema "${SRCDIR}"/agama-lib/share/storage.schema.json
-install6 -D -t "${DESTDIR}${datadir}"/agama/schema "${SRCDIR}"/agama-lib/share/zfcp.schema.json
-install6 -D -t "${DESTDIR}${datadir}"/agama/schema "${SRCDIR}"/agama-lib/share/storage.model.schema.json
+# install OpenAPI specification and standalone schemas to openapi/nightly
+install6 -D -t "${DESTDIR}${datadir}"/agama/openapi/nightly "${SRCDIR}"/out/openapi.* "${SRCDIR}"/out/openapi-full.*
+install6 -D -t "${DESTDIR}${datadir}"/agama/openapi/nightly/schemas "${SRCDIR}"/out/schemas/*.schema.json
 install6 -D -t "${DESTDIR}${datadir}"/agama/jsonnet "${SRCDIR}"/share/agama.libsonnet
 
 install -D -t "${DESTDIR}${libexecdir}" "${SRCDIR}"/share/agama-scripts.sh
@@ -70,9 +65,6 @@ install6 -D -t "${DESTDIR}${mandir}"/man1 "${SRCDIR}"/out/man/*
 install6 -D "${SRCDIR}"/out/shell/"${NAME}".bash "${DESTDIR}${datadir}/bash-completion/completions/${NAME}"
 install6 -D -t "${DESTDIR}${datadir}"/zsh/site-functions "${SRCDIR}"/out/shell/_"${NAME}"
 install6 -D -t "${DESTDIR}${datadir}"/fish/vendor_completions.d "${SRCDIR}"/out/shell/"${NAME}".fish
-
-# install OpenAPI specification
-install6 -D -t "${DESTDIR}${datadir}"/agama/openapi "${SRCDIR}"/out/openapi/*
 
 # install translations
 make -C "${SRCDIR}/po" install DESTDIR="${DESTDIR}" datadir="${datadir}"

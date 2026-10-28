@@ -35,13 +35,13 @@ import userEvent from "@testing-library/user-event";
 import { render, renderHook, within } from "@testing-library/react";
 import { isObject, noop } from "radashi";
 import { createClient } from "~/client/index";
-import { InstallerClientProvider } from "~/context/installer";
-import { InstallerL10nProvider } from "~/context/installerL10n";
-import { StorageUiStateProvider } from "~/context/storage-ui-state";
+import { TerminalProvider } from "~/context/terminal";
+import { AppearanceProvider } from "~/context/appearance";
+import { AnnouncerProvider } from "~/context/announcer";
 import { DummyWSClient } from "~/client/ws";
 import { Status } from "~/model/status";
 import { Question } from "~/model/question";
-import type { Product } from "~/model/system";
+import type { Product, System } from "~/model/system";
 import type { Config as ProductConfig } from "~/model/config/product";
 
 /**
@@ -136,6 +136,11 @@ const progressesMock = jest.fn().mockReturnValue([]);
 const stageMock = jest.fn().mockReturnValue("configuring");
 
 /**
+ * Internal mock for manipulating tasks
+ */
+const tasksMock = jest.fn().mockReturnValue([]);
+
+/**
  * Allows mocking useStatus#progresses for testing purpose
  *
  * @example
@@ -166,11 +171,22 @@ const mockProgresses = (progresses: Status["progresses"]) =>
  */
 const mockStage = (stage: Status["stage"]) => stageMock.mockReturnValue(stage);
 
+/**
+ * Allows mocking useStatus#tasks for testing purpose
+ *
+ * @example
+ *   mockTasks([{ id: 1, name: "software-proposal", description: "Calculating...", scope: "software" }]);
+ */
+const mockTasks = (tasks: Status["tasks"]) => tasksMock.mockReturnValue(tasks);
+
 jest.mock("~/hooks/model/status", () => ({
   useStatus: () => ({
     progresses: progressesMock(),
     stage: stageMock(),
+    tasks: tasksMock(),
   }),
+  // No-op: nothing in tests emits the events it would subscribe to.
+  useStatusChanges: () => {},
 }));
 
 /**
@@ -185,6 +201,7 @@ const mockUseProductInfo: jest.Mock<Product> = jest.fn().mockReturnValue({
 });
 
 const mockUseProduct = jest.fn().mockReturnValue(null);
+const mockUseExtendedProduct = jest.fn().mockReturnValue(null);
 
 /**
  * Allows mocking useProductInfo for testing purpose
@@ -201,14 +218,96 @@ const mockUseProduct = jest.fn().mockReturnValue(null);
 const mockProduct = (product: Product) => mockUseProductInfo.mockReturnValue(product);
 
 /**
- * Allows mocking useProduct for testing purpose
+ * Allows mocking useProduct and useExtendedProduct for testing purpose.
+ *
+ * By default, both hooks are mocked to return the same value. Use
+ * `mockExtendedProductConfig` if a test needs the extended (computed)
+ * configuration to differ from the plain, user-set one (e.g., to simulate a
+ * value coming from a boot argument such as `inst.register_url`).
  */
-const mockProductConfig = (product: ProductConfig | null) =>
+const mockProductConfig = (product: ProductConfig | null) => {
   mockUseProduct.mockReturnValue(product);
+  mockUseExtendedProduct.mockReturnValue(product);
+};
+
+/**
+ * Allows mocking useExtendedProduct independently of useProduct.
+ */
+const mockExtendedProductConfig = (product: ProductConfig | null) =>
+  mockUseExtendedProduct.mockReturnValue(product);
 
 jest.mock("~/hooks/model/config/product", () => ({
   useProductInfo: () => mockUseProductInfo(),
   useProduct: () => mockUseProduct(),
+  useExtendedProduct: () => mockUseExtendedProduct(),
+}));
+
+/**
+ * Internal mock for manipulating the system query (useSystem)
+ */
+const mockUseSystemFn: jest.Mock<System> = jest.fn().mockReturnValue({
+  products: [],
+  l10n: { locales: [], keymaps: [] },
+});
+
+/** Recursively optional version of a type, handy for partial test fixtures. */
+type DeepPartial<T> = {
+  [K in keyof T]?: T[K] extends Array<infer U> ? Array<DeepPartial<U>> : DeepPartial<T[K]>;
+};
+
+/**
+ * Allows mocking useSystem for testing purpose.
+ *
+ * It returns a minimal, empty system by default so components present on every
+ * page (e.g. the header localization selector) do not suspend in tests that do
+ * not provide system data. Override it when a test needs specific data, passing
+ * only the fields under test.
+ *
+ * @example
+ *   mockSystem({ products: [tumbleweed], l10n: { locales, keymaps } });
+ */
+const mockSystem = (system: DeepPartial<System>) =>
+  mockUseSystemFn.mockReturnValue(system as System);
+
+jest.mock("~/hooks/model/system", () => ({
+  ...jest.requireActual("~/hooks/model/system"),
+  useSystem: () => mockUseSystemFn(),
+}));
+
+/**
+ * Internal mock for manipulating installer L10n
+ */
+const mockChangeUIKeymap = jest.fn().mockResolvedValue(true);
+const mockChangeUILanguage = jest.fn().mockResolvedValue(true);
+
+const mockUseInstallerL10n = jest.fn().mockReturnValue({
+  keymap: "us",
+  language: "en-US",
+  changeKeymap: mockChangeUIKeymap,
+  changeLanguage: mockChangeUILanguage,
+});
+
+/**
+ * Allows mocking useInstallerL10n for testing purpose.
+ * Merges with current mock values, so you only need to override what changes.
+ *
+ * @example
+ *   mockL10n({ language: "de-DE" })
+ */
+const mockL10n = (l10n: {
+  keymap?: string;
+  language?: string;
+  changeKeymap?: jest.Mock;
+  changeLanguage?: jest.Mock;
+  changeL10n?: jest.Mock;
+}) => {
+  const current = mockUseInstallerL10n.getMockImplementation()?.() || mockUseInstallerL10n();
+  mockUseInstallerL10n.mockReturnValue({ ...current, ...l10n });
+};
+
+jest.mock("~/context/installerL10n", () => ({
+  ...jest.requireActual("~/context/installerL10n"),
+  useInstallerL10n: () => mockUseInstallerL10n(),
 }));
 
 /**
@@ -240,7 +339,35 @@ jest.mock("~/hooks/model/question", () => ({
   useQuestions: () => mockUseQuestions(),
 }));
 
-const Providers = ({ children, withL10n }) => {
+/**
+ * Loads actual UI translation files for testing.
+ *
+ * Extracts the language code from the locale and loads the corresponding PO
+ * file.
+ *
+ * @param locale - RFC 5646 language tag (e.g., "de-DE", "es-ES") or language
+ *   code (e.g., "de", "es")
+ *
+ * @example
+ *   await loadTranslations("de-DE");
+ *   await loadTranslations("es");
+ */
+const loadTranslations = async (locale: string) => {
+  const [language] = locale.split("-");
+
+  try {
+    const agama = await import("~/agama");
+    const po = await import(`~/po/po.${language}.js`);
+    agama.default.locale(po.default);
+  } catch (error) {
+    console.error(
+      `Failed to load translations for locale "${locale}" (language: ${language}):`,
+      error,
+    );
+  }
+};
+
+const Providers = ({ children }) => {
   const ws = new DummyWSClient();
   const client = createClient(new URL("https://localhost"), ws);
 
@@ -254,25 +381,13 @@ const Providers = ({ children, withL10n }) => {
     client.onClose = noop;
   }
 
-  if (withL10n) {
-    // FIXME
-    // const fetchConfig = async (): Promise<System> => ({
-    //   l10n: {
-    //     keymap: "us",
-    //     timezone: "Europe/Berlin",
-    //     locale: "en_US",
-    //   },
-    // });
-    return (
-      <InstallerClientProvider client={client}>
-        <InstallerL10nProvider initialLanguage="en-US">
-          <StorageUiStateProvider>{children}</StorageUiStateProvider>
-        </InstallerL10nProvider>
-      </InstallerClientProvider>
-    );
-  }
-
-  return <StorageUiStateProvider>{children}</StorageUiStateProvider>;
+  return (
+    <AppearanceProvider>
+      <AnnouncerProvider>
+        <TerminalProvider>{children}</TerminalProvider>
+      </AnnouncerProvider>
+    </AppearanceProvider>
+  );
 };
 
 /**
@@ -281,19 +396,22 @@ const Providers = ({ children, withL10n }) => {
  *
  * @see #plainRender for rendering without installer providers
  */
-const installerRender = (ui: React.ReactNode, options: { withL10n?: boolean } = {}) => {
+const installerRender = (ui: React.ReactNode, options = {}) => {
   const queryClient = new QueryClient({});
+  const { userEventOptions } = options as {
+    userEventOptions?: Parameters<typeof userEvent.setup>[0];
+  };
 
   const Wrapper = ({ children }) => (
     <QueryClientProvider client={queryClient}>
-      <Providers withL10n={options.withL10n}>
+      <Providers>
         <MemoryRouter initialEntries={initialRoutes()}>{children}</MemoryRouter>
       </Providers>
     </QueryClientProvider>
   );
 
   return {
-    user: userEvent.setup(),
+    user: userEvent.setup(userEventOptions),
     ...render(ui, { wrapper: Wrapper, ...options }),
   };
 };
@@ -318,20 +436,28 @@ const installerRenderHook: typeof renderHook = (hook, options) => {
  *
  * @see #installerRender for using installer providers
  *
- * @note Please, be aware that it's needed to mock the core/Sidebar component
- * when testing a Page with #plainRender helper in order to avoid the test crashing
- * because mounted without provides unless you take care of mocking core/sidebar
- * content. The reason for this is that core/Page is always rendering
- * core/Sidebar as part of the layout.
+ * @note Rendering a page brings its whole shell along, and the header includes
+ * elements that read installer data and navigate, like the localization
+ * selector or the installer options. Render a page with #installerRender, or
+ * mock those parts away.
  */
 const plainRender = (ui, options = {}) => {
   const queryClient = new QueryClient({});
+  const { userEventOptions } = options as {
+    userEventOptions?: Parameters<typeof userEvent.setup>[0];
+  };
 
   const Wrapper = ({ children }) => (
-    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    <QueryClientProvider client={queryClient}>
+      <AppearanceProvider>
+        <AnnouncerProvider>
+          <TerminalProvider>{children}</TerminalProvider>
+        </AnnouncerProvider>
+      </AppearanceProvider>
+    </QueryClientProvider>
   );
   return {
-    user: userEvent.setup(),
+    user: userEvent.setup(userEventOptions),
     ...render(ui, { wrapper: Wrapper, ...options }),
   };
 };
@@ -395,6 +521,23 @@ const getColumnValues = (table: HTMLElement | HTMLTableElement, columnName: stri
     .slice(1) // Skip header
     .map((row) => row.querySelector(`[data-label="${columnName}"]`)?.textContent?.trim());
 
+/**
+ * Returns the non-empty messages currently held by ARIA live regions.
+ *
+ * Use it to assert screen reader announcements without coupling the test to
+ * the announcer markup.
+ *
+ * @example
+ * ```ts
+ * await user.click(removeButton);
+ * expect(getAnnouncements()).toContain("alpha removed.");
+ * ```
+ */
+const getAnnouncements = (): string[] =>
+  Array.from(document.body.querySelectorAll("[aria-live]"))
+    .map((node) => node.textContent)
+    .filter((text) => text !== "");
+
 export {
   plainRender,
   installerRender,
@@ -408,9 +551,15 @@ export {
   mockUseRevalidator,
   resetLocalStorage,
   getColumnValues,
+  getAnnouncements,
   mockProgresses,
   mockStage,
+  mockTasks,
   mockProduct,
   mockProductConfig,
+  mockExtendedProductConfig,
+  mockSystem,
+  mockL10n,
+  loadTranslations,
   mockQuestions,
 };

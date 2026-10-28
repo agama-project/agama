@@ -21,7 +21,10 @@
 
 require "y2network/boot_protocol"
 require "y2network/ip_address"
+require "y2network/startmode"
 require "agama/autoyast/bond_reader"
+require "agama/autoyast/bridge_reader"
+require "agama/autoyast/vlan_reader"
 require "agama/autoyast/wireless_reader"
 require "ipaddr"
 
@@ -29,6 +32,40 @@ module Agama
   module AutoYaST
     # Builds the Agama "network.connections" section from an AutoYaST profile.
     class ConnectionsReader
+      # Readers for the device type specific settings of a connection.
+      TYPE_READERS = [
+        Agama::AutoYaST::BondReader,
+        Agama::AutoYaST::BridgeReader,
+        Agama::AutoYaST::VlanReader,
+        Agama::AutoYaST::WirelessReader
+      ].freeze
+      private_constant :TYPE_READERS
+
+      # Startmodes that do not bring the connection up on their own.
+      #
+      # The remaining ones ("auto", "hotplug", "ifplugd" and "nfsroot") are translated to an
+      # auto-connected connection, as NetworkManager has no equivalent for those distinctions.
+      MANUAL_STARTMODES = ["manual", "off"].freeze
+      private_constant :MANUAL_STARTMODES
+
+      # Settings that a port of a bond or a bridge cannot have, as its controller holds the IP
+      # configuration.
+      IP_SETTINGS = [
+        "method4", "method6", "addresses", "gateway4", "gateway6", "nameservers",
+        "dnsSearchList", "ignoreAutoDns"
+      ].freeze
+      private_constant :IP_SETTINGS
+
+      # Agama methods (method4 and method6) for the boot protocols that do not depend on whether
+      # IPv6 is wanted or not.
+      BOOTPROTO_METHODS = {
+        Y2Network::BootProtocol::DHCP4  => ["auto", "disabled"].freeze,
+        Y2Network::BootProtocol::DHCP6  => ["disabled", "auto"].freeze,
+        Y2Network::BootProtocol::AUTOIP => ["link-local", "disabled"].freeze,
+        Y2Network::BootProtocol::NONE   => ["disabled", "disabled"].freeze
+      }.freeze
+      private_constant :BOOTPROTO_METHODS
+
       # @param section [Y2Network::AutoinstProfile::Interfaces] AutoYaST interfaces section.
       # @param ipv6 [boolean] Whether IPv6 is wanted or not.
       # @param dns [Hash] Agama DNS settings.
@@ -46,6 +83,7 @@ module Agama
         return {} if interfaces.empty?
 
         connections = interfaces.map { |i| read_connection(i) }
+        drop_ports_ip_settings(connections)
         { "connections" => connections }
       end
 
@@ -69,18 +107,68 @@ module Agama
         end
         conn["id"] = interface.name unless interface.name.to_s.empty?
 
-        addresses = read_addresses(interface)
         method4, method6 = read_methods(interface)
         conn["method4"] = method4
         conn["method6"] = method6
-        conn["addresses"] = addresses
-        wireless = Agama::AutoYaST::WirelessReader.new(interface).read
-        conn.merge!(wireless) unless wireless.empty?
-        bond = Agama::AutoYaST::BondReader.new(interface).read
-        conn["bond"] = bond unless bond.empty?
+        conn["addresses"] = read_addresses(interface)
+        conn["macAddress"] = interface.lladdr unless interface.lladdr.to_s.empty?
+        conn.merge!(read_startmode(interface))
+        conn.merge!(read_type_settings(interface))
         conn.merge!(dns)
 
         conn
+      end
+
+      # Removes the IP settings of the connections that are ports of a bond or a bridge.
+      #
+      # @param connections [Array<Hash>] Agama connections.
+      def drop_ports_ip_settings(connections)
+        ports = ports_of(connections)
+
+        connections.each do |conn|
+          next unless ports.include?(conn["interface"]) || ports.include?(conn["id"])
+
+          IP_SETTINGS.each { |key| conn.delete(key) }
+        end
+      end
+
+      # Returns the names of the ports of the bonds and bridges.
+      #
+      # @param connections [Array<Hash>] Agama connections.
+      # @return [Array<String>]
+      def ports_of(connections)
+        connections.flat_map do |conn|
+          ["bond", "bridge"].flat_map { |type| conn.dig(type, "ports") || [] }
+        end
+      end
+
+      # Converts AutoYaST's startmode to the Agama "autoconnect" and "status" settings.
+      #
+      # Connections that are not started automatically are also left down during the installation.
+      #
+      # @param interface [Y2Network::AutoinstProfile::InterfaceSection] Interface section.
+      # @return [Hash]
+      def read_startmode(interface)
+        return {} if interface.startmode.to_s.empty?
+
+        # It takes care of the "boot", "on" and "onboot" aliases of "auto".
+        startmode = Y2Network::Startmode.create(interface.startmode)
+        return {} if startmode.nil?
+
+        return { "autoconnect" => true } unless MANUAL_STARTMODES.include?(startmode.name)
+
+        { "autoconnect" => false, "status" => "down" }
+      end
+
+      # Reads the device type specific settings (bond, bridge, VLAN and wireless).
+      #
+      # Each reader returns its settings wrapped in its own key (e.g., `{ "bond" => ... }`) or
+      # an empty hash when they do not apply to the given interface.
+      #
+      # @param interface [Y2Network::AutoinstProfile::InterfaceSection] Interface section.
+      # @return [Hash]
+      def read_type_settings(interface)
+        TYPE_READERS.reduce({}) { |all, reader| all.merge(reader.new(interface).read) }
       end
 
       # Reads the addresses from an AutoYaST interface section.
@@ -104,18 +192,13 @@ module Agama
       # @return [String, String] method4 and method6 values
       def read_methods(interface)
         bootproto = Y2Network::BootProtocol.from_name(interface.bootproto)
-        case bootproto
-        when Y2Network::BootProtocol::DHCP4
-          ["auto", "disabled"]
-        when Y2Network::BootProtocol::DHCP6
-          ["disabled", "auto"]
-        when Y2Network::BootProtocol::STATIC
-          ["manual", ipv6? ? "manual" : "disabled"]
-        when Y2Network::BootProtocol::NONE
-          ["disabled", "disabled"]
-        else
-          ["auto", ipv6? ? "auto" : "disabled"]
-        end
+        methods = BOOTPROTO_METHODS[bootproto]
+        return methods if methods
+
+        # The static protocol and the remaining (DHCP based or unknown) ones also configure IPv6
+        # when it is wanted.
+        method = bootproto&.static? ? "manual" : "auto"
+        [method, ipv6? ? method : "disabled"]
       end
 
       # Builds an IPAddress

@@ -22,7 +22,7 @@ use agama_security::test_utils::start_service as start_security_service;
 use agama_utils::{
     actor::Handler,
     api::{
-        event,
+        self, event,
         software::{SoftwareProposal, SystemInfo},
     },
     issue,
@@ -37,12 +37,18 @@ use crate::{
     ModelAdapter, Service,
 };
 
+use agama_l10n;
+
 pub struct TestModel;
 
 #[async_trait]
 impl ModelAdapter for TestModel {
     async fn system_info(&self) -> Result<SystemInfo, service::Error> {
         Ok(SystemInfo::default())
+    }
+
+    fn predefined_repositories(&self) -> Vec<api::software::Repository> {
+        Default::default()
     }
 
     async fn proposal(&self) -> Result<SoftwareProposal, service::Error> {
@@ -76,6 +82,7 @@ impl ModelAdapter for TestModel {
     async fn write(
         &mut self,
         _software: SoftwareState,
+        _l10n: Handler<agama_l10n::Service>,
         _progress: Handler<progress::Service>,
     ) -> Result<WriteIssues, service::Error> {
         Ok(Default::default())
@@ -86,11 +93,12 @@ impl ModelAdapter for TestModel {
 pub async fn start_service(
     events: event::Sender,
     issues: Handler<issue::Service>,
+    l10n: Handler<agama_l10n::Service>,
     progress: Handler<progress::Service>,
     questions: Handler<question::Service>,
 ) -> Handler<Service> {
     let security = start_security_service(questions.clone()).await;
-    Service::starter(events, issues, progress, questions, security)
+    Service::starter(events, issues, l10n, progress, questions, security)
         .with_model(TestModel {})
         .start()
         .await

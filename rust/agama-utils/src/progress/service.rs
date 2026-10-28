@@ -27,7 +27,6 @@ use crate::{
     api::scope::Scope,
     progress::message,
 };
-use async_trait::async_trait;
 use tokio::sync::broadcast;
 
 #[derive(thiserror::Error, Debug)]
@@ -123,21 +122,18 @@ impl Actor for Service {
     type Error = Error;
 }
 
-#[async_trait]
 impl MessageHandler<message::GetStatus> for Service {
     async fn handle(&mut self, _message: message::GetStatus) -> Result<Status, Error> {
         Ok(self.get_status().clone())
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::GetStage> for Service {
     async fn handle(&mut self, _message: message::GetStage) -> Result<Stage, Error> {
         Ok(self.get_stage())
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::SetStage> for Service {
     async fn handle(&mut self, message: message::SetStage) -> Result<(), Error> {
         self.status.stage = message.stage;
@@ -148,14 +144,12 @@ impl MessageHandler<message::SetStage> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::GetProgress> for Service {
     async fn handle(&mut self, _message: message::GetProgress) -> Result<Vec<Progress>, Error> {
         Ok(self.get_progresses().clone())
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::SetProgress> for Service {
     async fn handle(&mut self, message: message::SetProgress) -> Result<(), Error> {
         let progress = message.progress;
@@ -169,7 +163,6 @@ impl MessageHandler<message::SetProgress> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::IsEmpty> for Service {
     async fn handle(&mut self, message: message::IsEmpty) -> Result<bool, Error> {
         let result = match message.scope {
@@ -180,10 +173,10 @@ impl MessageHandler<message::IsEmpty> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::Start> for Service {
     async fn handle(&mut self, message: message::Start) -> Result<(), Error> {
         if self.get_progress(message.scope).is_some() {
+            tracing::error!("progress with scope #{:#?} already exists", message.scope);
             return Err(Error::DuplicatedProgress(message.scope));
         }
         let progress = Progress::new(message.scope, message.size, message.step);
@@ -193,10 +186,10 @@ impl MessageHandler<message::Start> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::StartWithSteps> for Service {
     async fn handle(&mut self, message: message::StartWithSteps) -> Result<(), Error> {
         if self.get_progress(message.scope).is_some() {
+            tracing::error!("progress with scope #{:#?} already exists", message.scope);
             return Err(Error::DuplicatedProgress(message.scope));
         }
         let progress = Progress::new_with_steps(message.scope, message.steps);
@@ -206,10 +199,10 @@ impl MessageHandler<message::StartWithSteps> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::Next> for Service {
     async fn handle(&mut self, message: message::Next) -> Result<(), Error> {
         let Some(progress) = self.get_mut_progress(message.scope) else {
+            tracing::error!("progress with scope #{:#?} not found", message.scope);
             return Err(Error::MissingProgress(message.scope));
         };
         progress.advance()?;
@@ -219,10 +212,10 @@ impl MessageHandler<message::Next> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::NextWithStep> for Service {
     async fn handle(&mut self, message: message::NextWithStep) -> Result<(), Error> {
         let Some(progress) = self.get_mut_progress(message.scope) else {
+            tracing::error!("progress with scope #{:#?} not found", message.scope);
             return Err(Error::MissingProgress(message.scope));
         };
         progress.advance_with_step(message.step)?;
@@ -232,7 +225,6 @@ impl MessageHandler<message::NextWithStep> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::Finish> for Service {
     async fn handle(&mut self, message: message::Finish) -> Result<(), Error> {
         let index = self

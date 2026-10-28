@@ -22,6 +22,7 @@
 require_relative "../../../test_helper"
 require_relative "../storage_helpers"
 require "agama/config"
+require "agama/storage/bootloader_config"
 require "agama/storage/device_settings"
 require "agama/storage/proposal_settings"
 require "agama/storage/proposal_settings_conversions/to_y2storage"
@@ -30,14 +31,12 @@ require "y2storage"
 describe Agama::Storage::ProposalSettingsConversions::ToY2Storage do
   include Agama::RSpec::StorageHelpers
 
-  subject { described_class.new(settings, config: config) }
+  subject { described_class.new(settings, config: config, bootloader_config: bootloader_cfg) }
 
   let(:config) { Agama::Config.new }
 
-  before do
-    # To speed-up the tests
-    allow(Y2Storage::BootRequirementsStrategies::Analyzer)
-      .to receive(:bls_bootloader_proposed?).and_return(false)
+  let(:bootloader_cfg) do
+    instance_double(Agama::Storage::BootloaderConfig, type: Y2Storage::BootloaderType::GRUB2)
   end
 
   describe "#convert" do
@@ -212,6 +211,11 @@ describe Agama::Storage::ProposalSettingsConversions::ToY2Storage do
     end
 
     context "boot conversion" do
+      it "sets the bootloader type" do
+        y2storage_settings = subject.convert
+        expect(y2storage_settings.bootloader).to eq(bootloader_cfg.type)
+      end
+
       context "if boot configuration is enabled" do
         before do
           settings.boot.configure = true

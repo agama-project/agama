@@ -20,6 +20,7 @@
 //! Representation of the software settings
 
 use merge::Merge;
+use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 use std::collections::HashMap;
@@ -29,8 +30,8 @@ use url::Url;
 ///
 /// This configuration is provided by the user, so all the values are optional.
 #[skip_serializing_none]
-#[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq, Merge, utoipa::ToSchema)]
-#[schema(as = software::UserConfig)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq, Merge, JsonSchema)]
+#[schemars(rename = "software.UserConfig")]
 #[serde(rename_all = "camelCase")]
 #[merge(strategy = merge::option::recurse)]
 pub struct Config {
@@ -42,29 +43,46 @@ pub struct Config {
 
 /// Addon settings for registration
 #[skip_serializing_none]
-#[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq, utoipa::ToSchema)]
-#[serde(rename_all = "camelCase")]
+#[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq, JsonSchema)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+#[schemars(title = "List of add-ons to activate")]
 pub struct AddonConfig {
+    /// ID of the addon.
+    #[schemars(example = &"sle-ha")]
     pub id: String,
-    /// Optional version of the addon, if not specified the version is found
-    /// from the available addons
+    /// Optional version of the addon. It is mandatory if there are multiple available versions.
+    /// If not specified, the version is found from the available addons.
     pub version: Option<String>,
-    /// Free extensions do not require a registration code
+    /// Registration code for the addon. Free extensions do not require a registration code.
     pub registration_code: Option<String>,
 }
 
 /// Software settings for installation
 #[skip_serializing_none]
-#[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq, Merge, utoipa::ToSchema)]
-#[serde(rename_all = "camelCase")]
+#[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq, Merge, JsonSchema)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+#[schemars(title = "Product to install")]
 #[merge(strategy = merge::option::overwrite_none)]
 pub struct ProductConfig {
-    /// ID of the product to install (e.g., "ALP", "Tumbleweed", etc.)
+    /// ID of the product to install (e.g., "SLES", "Tumbleweed", etc.).
+    #[schemars(
+        example = &"Tumbleweed",
+        example = &"MicroOS",
+        example = &"Slowroll",
+        example = &"openSUSE_Leap",
+        example = &"SLES",
+        example = &"Kalpa"
+    )]
     pub id: Option<String>,
+    /// The mode from the products.d/foo.yaml file.
     pub mode: Option<String>,
+    /// Product registration code.
     pub registration_code: Option<String>,
+    /// Product registration email.
     pub registration_email: Option<String>,
+    /// URL of the registration server.
     pub registration_url: Option<Url>,
+    /// List of product addons to register and install.
     pub addons: Option<Vec<AddonConfig>>,
 }
 
@@ -80,13 +98,15 @@ impl ProductConfig {
 
 /// Software settings for installation
 #[skip_serializing_none]
-#[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq, Merge, utoipa::ToSchema)]
-#[serde(rename_all = "camelCase")]
+#[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq, Merge, JsonSchema)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 #[merge(strategy = merge::option::overwrite_none)]
 pub struct SoftwareConfig {
     /// List of user selected patterns to install.
+    #[schemars(example = &["minimal_base"])]
     pub patterns: Option<PatternsConfig>,
     /// List of user selected packages to install.
+    #[schemars(example = &["vim"])]
     pub packages: Option<Vec<String>>,
     /// List of user specified repositories to use on top of default ones.
     pub extra_repositories: Option<Vec<RepositoryConfig>>,
@@ -94,10 +114,13 @@ pub struct SoftwareConfig {
     pub only_required: Option<bool>,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, utoipa::ToSchema)]
+/// List or modification map of user-selected patterns to install.
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, JsonSchema)]
 #[serde(untagged)]
 pub enum PatternsConfig {
+    /// List of user-selected patterns to install.
     PatternsList(Vec<String>),
+    /// Modifications for the list of user-selected patterns to install.
     PatternsMap(PatternsMap),
 }
 
@@ -110,10 +133,14 @@ impl Default for PatternsConfig {
     }
 }
 
+/// Modifications for the list of user-selected patterns to install
 #[skip_serializing_none]
-#[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq, utoipa::ToSchema)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq, JsonSchema)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct PatternsMap {
+    /// List of user-selected patterns to add to the list.
     pub add: Option<Vec<String>>,
+    /// List of user-selected patterns to remove from the list.
     pub remove: Option<Vec<String>>,
 }
 
@@ -149,8 +176,8 @@ impl SoftwareConfig {
 
 /// Parameters for creating new a repository
 #[skip_serializing_none]
-#[derive(Clone, Debug, PartialEq, Deserialize, Serialize, utoipa::ToSchema)]
-#[serde(rename_all = "camelCase")]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize, JsonSchema)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct RepositoryConfig {
     /// repository alias. Has to be unique
     pub alias: String,

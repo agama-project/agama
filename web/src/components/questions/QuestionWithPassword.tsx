@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024-2025] SUSE LLC
+ * Copyright (c) [2024-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -21,10 +21,10 @@
  */
 
 import React, { useState } from "react";
-import { Content, Form, FormGroup, Stack } from "@patternfly/react-core";
+import { Content, FormGroup, Stack } from "@patternfly/react-core";
 import { Icon } from "~/components/layout";
-import { InstallerL10nOptions, PasswordInput, Popup } from "~/components/core";
-import QuestionActions from "~/components/questions/QuestionActions";
+import { InstallerL10nOptions, PasswordInput } from "~/components/core";
+import QuestionDialog from "~/components/questions/QuestionDialog";
 import { _ } from "~/i18n";
 import type { AnswerCallback, Question } from "~/model/question";
 
@@ -43,22 +43,19 @@ export default function QuestionWithPassword({
 }): React.ReactNode {
   const [password, setPassword] = useState(question.answer?.value || "");
 
-  const actionCallback = (action: string) => {
-    const answer = { action, value: password };
-    question.answer = answer;
-    answerCallback(question);
-  };
-
   return (
-    <Popup
-      isOpen
+    <QuestionDialog
+      question={question}
+      answerCallback={answerCallback}
+      value={password}
+      hasForm
       title={_("Password Required")}
       titleIconVariant={() => <Icon name="lock" />}
       titleAddon={<InstallerL10nOptions variant="keyboard" />}
     >
       <Stack hasGutter>
         <Content>{question.text}</Content>
-        <Form>
+        <QuestionDialog.Form>
           {/* TRANSLATORS: field label */}
           <FormGroup label={_("Password")} fieldId="password">
             <PasswordInput
@@ -68,16 +65,8 @@ export default function QuestionWithPassword({
               onChange={(_, value) => setPassword(value)}
             />
           </FormGroup>
-        </Form>
+        </QuestionDialog.Form>
       </Stack>
-
-      <Popup.Actions>
-        <QuestionActions
-          actions={question.actions}
-          defaultAction={question.defaultAction}
-          actionCallback={actionCallback}
-        />
-      </Popup.Actions>
-    </Popup>
+    </QuestionDialog>
   );
 }

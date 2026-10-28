@@ -27,18 +27,20 @@ import ProgressStatusMonitor from "./ProgressStatusMonitor";
 
 describe("ProgressStatusMonitor", () => {
   describe("when there are no tasks in background", () => {
-    it("renders a disabled button with no content", () => {
+    it("renders a button with list_alt_check icon", () => {
       installerRender(<ProgressStatusMonitor />);
-      const button = screen.getByRole("button");
-      expect(button).toBeDisabled();
-      expect(button).toBeEmptyDOMElement();
+      const button = screen.getByRole("button", { name: /idle/i });
+      expect(button).toBeEnabled();
+      // list_alt_check icon is rendered
+      expect(button.querySelector("svg")).toBeInTheDocument();
     });
 
-    it("does nothing when the button is clicked", async () => {
+    it("shows idle state in popover when clicked", async () => {
       const { user } = installerRender(<ProgressStatusMonitor />);
-      const button = screen.getByRole("button");
+      const button = screen.getByRole("button", { name: /idle/i });
       await user.click(button);
-      expect(screen.queryByRole("dialog")).toBeNull();
+      const popover = screen.getByRole("dialog", { name: /no pending tasks/i });
+      within(popover).getByText(/all background tasks completed/i);
     });
   });
 
@@ -59,19 +61,37 @@ describe("ProgressStatusMonitor", () => {
       ]);
     });
 
-    it("renders an enabled button with PatternFly 'in-progress' modifier", () => {
+    it("shows spinner immediately when tasks are active", () => {
       installerRender(<ProgressStatusMonitor />);
-      const button = screen.getByRole("button");
-      expect(button).toBeEnabled();
+      const button = screen.getByRole("button", { name: /1 task active/i });
+
+      // Shows spinner immediately
       expect(button.classList).toContain("pf-m-in-progress");
     });
 
     it("renders a popover with tasks details when the button is clicked", async () => {
       const { user } = installerRender(<ProgressStatusMonitor />);
-      const button = screen.getByRole("button");
+      const button = screen.getByRole("button", { name: /1 task active/i });
       await user.click(button);
       const popover = screen.getByRole("dialog", { name: "1 task active" });
       within(popover).getByText("Software");
+    });
+  });
+
+  describe("the visual tooltip", () => {
+    beforeEach(() => mockProgresses([]));
+
+    it("does not add a second source for the accessible name", () => {
+      installerRender(<ProgressStatusMonitor />);
+      const buttons = screen.getAllByRole("button", { name: "Status: Idle" });
+      expect(buttons).toHaveLength(1);
+      expect(buttons[0]).not.toHaveAttribute("aria-describedby");
+    });
+
+    it("reveals its text on hover", async () => {
+      const { user } = installerRender(<ProgressStatusMonitor />);
+      await user.hover(screen.getByRole("button", { name: "Status: Idle" }));
+      await screen.findByText("Status: Idle");
     });
   });
 });

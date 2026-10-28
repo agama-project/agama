@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -20,6 +20,7 @@
 # find current contact information at www.suse.com.
 
 require "agama/config"
+require "agama/storage/bootloader_config"
 require "agama/storage/config_conversions/from_json_conversions/config"
 require "agama/storage/config_json_solver"
 
@@ -32,10 +33,12 @@ module Agama
       # generated from a profile.
       class FromJSON
         # @param config_json [Hash]
+        # @param bootloader_config [BootloaderConfig]
         # @param default_paths [Array<String>] Default paths of the product.
         # @param mandatory_paths [Array<String>] Mandatory paths of the product.
-        def initialize(config_json, default_paths: [], mandatory_paths: [])
+        def initialize(config_json, bootloader_config: nil, default_paths: [], mandatory_paths: [])
           @config_json = config_json
+          @bootloader_config = bootloader_config
           @default_paths = default_paths
           @mandatory_paths = mandatory_paths
         end
@@ -53,13 +56,16 @@ module Agama
             .new(default_paths: default_paths, mandatory_paths: mandatory_paths)
             .solve(config_json)
 
-          FromJSONConversions::Config.new(config_json).convert
+          FromJSONConversions::Config.new(config_json, bootloader_config).convert
         end
 
       private
 
         # @return [Hash]
         attr_reader :config_json
+
+        # @return [BootloaderConfig]
+        attr_reader :bootloader_config
 
         # @return [Array<String>]
         attr_reader :default_paths

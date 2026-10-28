@@ -29,6 +29,7 @@ import type * as Storage from "~/model/system/storage";
 import type * as ISCSI from "~/model/system/iscsi";
 import type * as DASD from "~/model/system/dasd";
 import type * as ZFCP from "~/model/system/zfcp";
+import type * as Bootloader from "~/model/system/bootloader";
 
 type System = {
   hardware?: Hardware.System;
@@ -36,35 +37,49 @@ type System = {
   l10n?: L10n.System;
   network?: Network.System;
   products?: Product[];
+  licenses?: License[];
   software?: Software.System;
   storage?: Storage.System;
   iscsi?: ISCSI.System;
   dasd?: DASD.System;
   zfcp?: ZFCP.System;
+  bootloader?: Bootloader.System;
 };
+
+/**
+ * Indicates whether the product expects a desktop environment to be selected.
+ *
+ * - "optional": server-oriented products; the UI stays silent when no desktop
+ *   is selected.
+ * - "suggested": the product suggests a desktop; the UI hints the user when
+ *   none has been selected.
+ */
+type DesktopSelection = "optional" | "suggested";
 
 type Product = {
   /** Product ID (e.g., "Leap") */
   id: string;
   /** Product name (e.g., "openSUSE Leap 15.4") */
   name: string;
-  /** Product description */
+  /** Product description (translated to current UI language) */
   description?: string;
   /** Product icon (e.g., "default.svg") */
   icon?: string;
   /** If product is registrable or not */
   registration: boolean;
-  /** The product license id, if any */
-  license?: string;
-  /** Translations */
-  translations?: {
-    /** The key is the locale (e.g., "en", "pt_BR") */
-    description: Record<string, string>;
-    /** Translation mapping: mode ID ("immutable") -> "name"/"description" ->
-     * locale -> translated text */
-    mode: Record<string, Record<string, Record<string, string>>>;
-  };
+  /** Ids of the licenses the user must accept to install the product */
+  licenses?: string[];
+  /** Desktop selection mode; absent when the product does not declare it */
+  desktopSelection?: DesktopSelection;
+  /** Available modes for this product (names and descriptions are translated to current UI language) */
   modes: Mode[];
+};
+
+type License = {
+  /** License ID (e.g., "license.final") */
+  id: string;
+  /** License name, in the current system language */
+  name: string;
 };
 
 type Mode = {
@@ -79,6 +94,8 @@ type Mode = {
 type LicenseContent = {
   /** License ID (e.g., "license.sle") */
   id: string;
+  /** License name */
+  name: string;
   /** License body */
   body: string;
   /** License language (e.g., "en-US") */
@@ -88,6 +105,8 @@ type LicenseContent = {
 export type {
   System,
   Product,
+  DesktopSelection,
+  License,
   LicenseContent,
   L10n,
   Hardware,
@@ -99,4 +118,5 @@ export type {
   ISCSI,
   DASD,
   ZFCP,
+  Bootloader,
 };

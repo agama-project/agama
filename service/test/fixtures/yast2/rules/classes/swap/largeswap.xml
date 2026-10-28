@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!DOCTYPE profile>
+<profile xmlns="http://www.suse.com/1.0/yast2ns" xmlns:config="http://www.suse.com/1.0/configns">
+        <partitioning config:type="list">
+            <drive>
+                <partitions config:type="list">
+                    <partition>
+                        <filesystem config:type="symbol">swap</filesystem>
+                        <format config:type="boolean">true</format>
+                        <mount>swap</mount>
+                        <partition_id config:type="integer">130</partition_id>
+                        <size>2000mb</size>
+                    </partition>
+                    <partition>
+                        <filesystem config:type="symbol">ext3</filesystem>
+                        <partition_type>primary</partition_type>
+                        <size>4Gb</size>
+                        <mount>/</mount>
+                    </partition>
+                </partitions>
+                <use>all</use>
+            </drive>
+        </partitioning>
+</profile>

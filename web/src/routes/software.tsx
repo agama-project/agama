@@ -22,25 +22,24 @@
 
 import React from "react";
 import SoftwarePage from "~/components/software/SoftwarePage";
-import SoftwarePatternsSelection from "~/components/software/SoftwarePatternsSelection";
+import SoftwarePatternsSelection from "~/components/software/patterns-form/Form";
 import { Route } from "~/types/routes";
 import { SOFTWARE as PATHS } from "~/routes/paths";
-import { N_ } from "~/i18n";
 
 const routes = (): Route => ({
   path: PATHS.root,
-  handle: {
-    name: N_("Software"),
-    icon: "apps",
-  },
   children: [
     {
       index: true,
       element: <SoftwarePage />,
     },
     {
+      path: PATHS.desktopSelection,
+      element: <SoftwarePatternsSelection scope="desktops" />,
+    },
+    {
       path: PATHS.patternsSelection,
-      element: <SoftwarePatternsSelection />,
+      element: <SoftwarePatternsSelection scope="other" />,
     },
   ],
 });

@@ -21,6 +21,7 @@
 use crate::model::ModelAdapter;
 use crate::{message, PasswordCheckResult, PasswordChecker};
 use crate::{Model, PasswordCheckerError};
+use agama_utils::api::access;
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
     api::{
@@ -31,7 +32,6 @@ use agama_utils::{
     },
     issue,
 };
-use async_trait::async_trait;
 use gettextrs::gettext;
 use tokio::sync::broadcast;
 
@@ -41,6 +41,8 @@ pub enum Error {
     MissingUserData,
     #[error("Missing required data for root.")]
     MissingRootData,
+    #[error(transparent)]
+    ChrootError(#[from] agama_utils::command::ChrootError),
     #[error("System command failed: {0}")]
     CommandFailed(String),
     #[error(transparent)]
@@ -57,24 +59,30 @@ pub enum Error {
 
 /// Builds and spawns the users service.
 pub struct Starter {
-    model: Option<Box<dyn ModelAdapter + Send + 'static>>,
+    model: Option<Box<dyn ModelAdapter + Send + Sync + 'static>>,
     issues: Handler<issue::Service>,
     events: event::Sender,
+    access: Handler<agama_access::Service>,
 }
 
 impl Starter {
-    pub fn new(events: event::Sender, issues: Handler<issue::Service>) -> Self {
+    pub fn new(
+        events: event::Sender,
+        issues: Handler<issue::Service>,
+        access: Handler<agama_access::Service>,
+    ) -> Self {
         Self {
             model: None,
             events,
             issues,
+            access,
         }
     }
 
     /// Uses the given model.
     ///
     /// * `model`: model to use. It must implement the [ModelAdapter] trait.
-    pub fn with_model<T: ModelAdapter + Send + 'static>(mut self, model: T) -> Self {
+    pub fn with_model<T: ModelAdapter + Send + Sync + 'static>(mut self, model: T) -> Self {
         self.model = Some(Box::new(model));
         self
     }
@@ -90,6 +98,7 @@ impl Starter {
             model,
             issues: self.issues,
             events: self.events,
+            access: self.access,
         };
         service.setup()?;
         let handler = actor::spawn(service);
@@ -103,15 +112,20 @@ pub struct Service {
     // complete users config
     full_config: Config,
     // service's backend which gets data from real world
-    model: Box<dyn ModelAdapter + Send + 'static>,
+    model: Box<dyn ModelAdapter + Send + Sync + 'static>,
     // infrastructure stuff
     issues: Handler<issue::Service>,
     events: event::Sender,
+    access: Handler<agama_access::Service>,
 }
 
 impl Service {
-    pub fn starter(events: event::Sender, issues: Handler<issue::Service>) -> Starter {
-        Starter::new(events, issues)
+    pub fn starter(
+        events: event::Sender,
+        issues: Handler<issue::Service>,
+        access: Handler<agama_access::Service>,
+    ) -> Starter {
+        Starter::new(events, issues, access)
     }
 
     pub fn setup(&self) -> Result<(), Error> {
@@ -126,6 +140,29 @@ impl Service {
         None
     }
 
+    /// checks if users service needs to enable remote ssh access
+    fn need_ssh_access(&self) -> bool {
+        let config = &self.full_config;
+
+        if config
+            .root
+            .as_ref()
+            .is_some_and(|r| r.ssh_public_keys.as_ref().is_some_and(|k| !k.is_empty()))
+        {
+            return true;
+        }
+
+        if config
+            .first_user
+            .as_ref()
+            .is_some_and(|u| u.ssh_public_keys.as_ref().is_some_and(|k| !k.is_empty()))
+        {
+            return true;
+        }
+
+        false
+    }
+
     /// Updates the service issues.
     ///
     /// At least one user is mandatory
@@ -135,7 +172,7 @@ impl Service {
         let mut issues = vec![];
         if self.full_config.is_empty() {
             issues.push(Issue::new(
-                "users.no_auth",
+                "noAuth",
                 &gettext(
                     "Defining a user, setting the root password or a SSH public key is required",
                 ),
@@ -149,7 +186,7 @@ impl Service {
             .is_some_and(|u| !u.is_valid())
         {
             issues.push(Issue::new(
-                "users.invalid_user",
+                "invalidUser",
                 &gettext("First user information is incomplete"),
             ));
         }
@@ -171,14 +208,12 @@ impl Actor for Service {
 //   service configuration. So GetConfig in those sub services does
 //   what GetExtendedConfig in manager
 // - GetExtendedConfig doesn't make sense for sub services thought
-#[async_trait]
 impl MessageHandler<message::GetConfig> for Service {
     async fn handle(&mut self, _message: message::GetConfig) -> Result<api::users::Config, Error> {
         Ok(self.full_config.clone())
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::SetConfig<api::users::Config>> for Service {
     async fn handle(
         &mut self,
@@ -199,6 +234,22 @@ impl MessageHandler<message::SetConfig<api::users::Config>> for Service {
 
         self.full_config = config;
 
+        let mut remote_config = access::Config::default();
+        if self.need_ssh_access() {
+            remote_config.ssh = Some(api::access::AccessValue::Enabled);
+        }
+
+        let res = self
+            .access
+            .call(agama_access::message::SetAccess::new(
+                "users".to_string(),
+                remote_config,
+            ))
+            .await;
+        if let Err(error) = res {
+            tracing::error!("Failed to set remote access config for users: {error}");
+        }
+
         self.events.send(Event::ProposalChanged {
             scope: Scope::Users,
         })?;
@@ -210,7 +261,6 @@ impl MessageHandler<message::SetConfig<api::users::Config>> for Service {
 
 // Basically same thing as GetConfig (in case of this service).
 // Only difference is that GetProposal checks for an issues.
-#[async_trait]
 impl MessageHandler<message::GetProposal> for Service {
     async fn handle(
         &mut self,
@@ -220,11 +270,10 @@ impl MessageHandler<message::GetProposal> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::Install> for Service {
     async fn handle(&mut self, _message: message::Install) -> Result<(), Error> {
         if let Some(proposal) = self.get_proposal() {
-            if let Err(error) = self.model.install(&proposal) {
+            if let Err(error) = self.model.install(&proposal).await {
                 tracing::error!("Failed to write users configuration: {error}");
             }
         } else {
@@ -235,7 +284,6 @@ impl MessageHandler<message::Install> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::CheckPassword> for Service {
     async fn handle(
         &mut self,
@@ -246,7 +294,6 @@ impl MessageHandler<message::CheckPassword> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::SetLocale> for Service {
     async fn handle(&mut self, _message: message::SetLocale) -> Result<(), Error> {
         self.update_issues()

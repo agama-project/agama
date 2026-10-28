@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024-2025] SUSE LLC
+# Copyright (c) [2024-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -21,12 +21,15 @@
 
 require "agama/storage/config_checker"
 require "agama/storage/config_solver"
+require "agama/storage/bootloader_config"
+require "agama/storage/bootloader_config_solver"
 require "yast"
 require "y2storage/exceptions"
 require "y2storage/planned"
 require "y2storage/proposal"
 require "y2storage/proposal/agama_devices_creator"
 require "y2storage/proposal/agama_devices_planner"
+require "y2storage/proposal/boot_planner"
 require "y2storage/proposal/space_settings_builder"
 require "y2storage/proposal/planned_devices_handler"
 
@@ -61,11 +64,14 @@ module Y2Storage
     # @param storage_system [Agama::Storage::System]
     # @param product_config [Agama::Config, nil]
     # @param issues_list [Array<Agama::Issue>, nil] Stores issues found during the process.
-    def initialize(config, storage_system, product_config: nil, issues_list: nil)
+    def initialize(
+      config, storage_system, product_config: nil, bootloader_config: nil, issues_list: nil
+    )
       super(devicegraph: storage_system.devicegraph, disk_analyzer: storage_system.analyzer)
       @config = config
       @storage_system = storage_system
       @product_config = product_config || Agama::Config.new
+      @bootloader_config = bootloader_config || Agama::Storage::BootloaderConfig.new
       @issues_list = issues_list || []
     end
 
@@ -80,6 +86,9 @@ module Y2Storage
     # @return [Proposal::AgamaSpaceMaker]
     attr_reader :space_maker
 
+    # @return [Agama::Storage::BootloaderConfig]
+    attr_reader :bootloader_config
+
     # Whether there is any issue.
     #
     # @return [Boolean]
@@ -91,12 +100,14 @@ module Y2Storage
     #
     # @raise [NoDiskSpaceError] if there is no enough space to perform the installation
     def calculate_proposal
+      Agama::Storage::BootloaderConfigSolver.new(product_config).solve(bootloader_config)
+
       Agama::Storage::ConfigSolver
-        .new(product_config, storage_system)
+        .new(product_config, bootloader_config, storage_system)
         .solve(config)
 
       issues = Agama::Storage::ConfigChecker
-        .new(config, product_config)
+        .new(config, bootloader_config: bootloader_config, product_config: product_config)
         .issues
 
       issues_list.concat(issues)
@@ -123,11 +134,40 @@ module Y2Storage
 
       configure_ptable_types(devicegraph)
       devicegraph = clean_graph(devicegraph)
-      complete_planned(devicegraph)
       return if issues?
 
-      result = create_devices(devicegraph)
+      result = create_devices_with_boot(devicegraph)
       result.devicegraph
+    end
+
+    # Creates the devices doing several attempts, each one for a different set of boot partitions
+    #
+    # @raise [NoDiskSpaceError] if there is no enough space to perform the installation
+    # @raise [NotBootableError] if adding partitions is not enough to make the system bootable
+    def create_devices_with_boot(devicegraph)
+      initial_devicegraph = devicegraph.dup
+      possible_boot_sets = Proposal::BootPlanner.new(devicegraph, config, bootloader_config)
+        .plans(planned_devices.mountable_devices)
+
+      result = nil
+      while !result && possible_boot_sets.any?
+        begin
+          boot_devices = possible_boot_sets.shift
+          planned_with_boot = planned_devices.prepend(boot_devices)
+          # Although this can affect the planned devices in the collection, that is not a problem
+          # because the different "boot plans" are almost equal (only the sizes change) so there is
+          # no difference in shadowing.
+          remove_shadowed_subvols(planned_with_boot)
+          result = create_devices(devicegraph, planned_with_boot)
+          @planned_devices = planned_with_boot
+        rescue NoDiskSpaceError
+          raise if possible_boot_sets.empty?
+
+          devicegraph = initial_devicegraph.dup
+        end
+      end
+
+      result
     end
 
     # Fills the list of planned devices, excluding partitions from the boot requirements checker
@@ -138,7 +178,8 @@ module Y2Storage
       @planned_devices = planner.planned_devices(config)
     end
 
-    # Performs the mandatory space-making actions on the given devicegraph
+    # Performs the mandatory partition actions for making space on the given devicegraph. The
+    # actions for making space in the volume groups are performed later by the devices creator.
     #
     # @param devicegraph [Devicegraph] the graph gets modified
     def clean_graph(devicegraph)
@@ -159,31 +200,6 @@ module Y2Storage
 
         dev.forced_ptable_type = drive.ptable_type
       end
-    end
-
-    # Modifies the list of planned devices, removing shadowed subvolumes and adding any planned
-    # partition needed for booting the new target system
-    #
-    # @param devicegraph [Devicegraph]
-    def complete_planned(devicegraph)
-      if config.boot.configure?
-        @planned_devices = planned_devices.prepend(boot_partitions(devicegraph))
-      end
-
-      remove_shadowed_subvols(planned_devices)
-    end
-
-    # @see #complete_planned
-    def boot_partitions(devicegraph)
-      checker = BootRequirementsChecker.new(
-        devicegraph,
-        planned_devices: planned_devices.mountable_devices,
-        boot_disk_name:  boot_device_name
-      )
-      # NOTE: Should we try with :desired first?
-      checker.needed_partitions(:min)
-    rescue BootRequirementsChecker::Error => e
-      raise NotBootableError, e.message
     end
 
     # Removes partition tables from candidate devices with empty partition table
@@ -215,9 +231,9 @@ module Y2Storage
     # Creates the planned devices on a given devicegraph
     #
     # @param devicegraph [Devicegraph] the graph gets modified
-    def create_devices(devicegraph)
+    def create_devices(devicegraph, all_devices)
       devices_creator = Proposal::AgamaDevicesCreator.new(devicegraph, issues_list)
-      result = devices_creator.populated_devicegraph(planned_devices, space_maker)
+      result = devices_creator.populated_devicegraph(all_devices, space_maker)
     end
 
     # Name of the boot device.

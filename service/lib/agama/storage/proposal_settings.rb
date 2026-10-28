@@ -106,9 +106,11 @@ module Agama
       # Generates Y2Storage proposal settings.
       #
       # @param config [Config]
+      # @param bootloader_config [Storage::BootloaderConfig]
       # @return [Y2Storage::ProposalSettings]
-      def to_y2storage(config:)
-        Storage::ProposalSettingsConversions::ToY2Storage.new(self, config: config).convert
+      def to_y2storage(config:, bootloader_config:)
+        Storage::ProposalSettingsConversions::ToY2Storage
+          .new(self, config: config, bootloader_config: bootloader_config).convert
       end
 
     private

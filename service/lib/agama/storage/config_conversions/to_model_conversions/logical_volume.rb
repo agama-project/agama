@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2025] SUSE LLC
+# Copyright (c) [2025-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -21,6 +21,7 @@
 
 require "agama/storage/config_conversions/to_model_conversions/base"
 require "agama/storage/config_conversions/to_model_conversions/with_filesystem"
+require "agama/storage/config_conversions/to_model_conversions/with_resize"
 require "agama/storage/config_conversions/to_model_conversions/with_size"
 
 module Agama
@@ -30,6 +31,7 @@ module Agama
         # LVM logical volume conversion to model according to the JSON schema.
         class LogicalVolume < Base
           include WithFilesystem
+          include WithResize
           include WithSize
 
           # @param config [Configs::LogicalVolume]
@@ -48,12 +50,17 @@ module Agama
           # @see Base#conversions
           def conversions
             {
-              lvName:     config.name,
-              mountPath:  config.filesystem&.path,
-              filesystem: convert_filesystem,
-              size:       convert_size,
-              stripes:    config.stripes,
-              stripeSize: config.stripe_size&.to_i
+              name:           config.device_name,
+              lvName:         config.name,
+              mountPath:      config.filesystem&.path,
+              filesystem:     convert_filesystem,
+              stripes:        config.stripes,
+              stripeSize:     config.stripe_size&.to_i,
+              size:           convert_size,
+              delete:         config.delete?,
+              deleteIfNeeded: config.delete_if_needed?,
+              resize:         convert_resize,
+              resizeIfNeeded: convert_resize_if_needed
             }
           end
         end

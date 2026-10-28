@@ -1,0 +1,20 @@
+/**
+ * File:
+ *   sysconfig_storage.scr
+ * Summary:
+ *   SCR Agent for reading/writing /etc/sysconfig/storage
+ * Access:
+ *   read/write
+ * Authors:
+ *   Thomas Fehr <fehr@suse.de>
+ *
+ * $Id$
+ *
+ * Read/Sets the values defined in <tt>/etc/sysconfig/storage</tt>
+ * in an easy manner.
+ */
+.sysconfig.storage
+
+`ag_ini(
+  `SysConfigFile("/etc/sysconfig/storage")
+)

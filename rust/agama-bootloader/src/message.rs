@@ -1,4 +1,4 @@
-// Copyright (c) [2025] SUSE LLC
+// Copyright (c) [2025-2026] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -18,7 +18,9 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use agama_utils::{actor::Message, api::bootloader::Config};
+use crate::service;
+use agama_utils::{actor::Message, api::bootloader::Config, BoxFuture};
+use serde_json::Value;
 
 pub struct GetConfig;
 
@@ -26,12 +28,18 @@ impl Message for GetConfig {
     type Reply = Config;
 }
 
+pub struct GetSystem;
+
+impl Message for GetSystem {
+    type Reply = Option<Value>;
+}
+
 pub struct SetConfig<T> {
     pub config: Option<T>,
 }
 
 impl<T: Send + 'static> Message for SetConfig<T> {
-    type Reply = ();
+    type Reply = BoxFuture<Result<(), service::Error>>;
 }
 
 impl<T> SetConfig<T> {

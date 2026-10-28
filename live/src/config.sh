@@ -9,6 +9,8 @@ test -f /.profile && . /.profile
 # greeting
 echo "Configure image: [$kiwi_iname]..."
 
+arch=$(uname -m)
+
 # setup baseproduct link
 suseSetupProduct
 
@@ -37,13 +39,6 @@ if [ -f "${REPO}.disabled" ]; then
 fi
 rm -f /etc/zypp/repos.d/*.disabled
 
-# configure the repositories in the Live system
-# import the OBS key for the systemsmanagement OBS project
-rpm --import /tmp/systemsmanagement_key.gpg
-rm /tmp/systemsmanagement_key.gpg
-# import the IBS key for the Devel:YaST:Agama:Head project
-rpm --import /tmp/Devel_YaST_Agama_Head_key.gpg
-rm /tmp/Devel_YaST_Agama_Head_key.gpg
 # import the openSUSE keys, but check if there is any
 if stat -t /usr/lib/rpm/gnupg/keys/*.asc 2>/dev/null 1>/dev/null; then
   rpm --import /usr/lib/rpm/gnupg/keys/*.asc
@@ -59,6 +54,9 @@ else
 # decrease the libzypp timeout to 20 seconds (the default is 60 seconds)
 sed -i -e "s/^\s*#\s*download.connect_timeout\s*=\s*.*$/download.connect_timeout = 20/" /etc/zypp/zypp.conf
 fi
+
+# combustion requires fstab file, create a dummy one
+touch /etc/fstab
 
 # activate services
 systemctl enable sshd.service
@@ -80,6 +78,8 @@ systemctl enable agama-ssh-issue.service
 systemctl enable live-free-space.service
 systemctl enable live-password.service
 systemctl enable live-root-shell.service
+# no graphical console on s390x
+test "$arch" = "s390x" || systemctl enable tty-workaround.service
 
 # the self-update actually runs in the initramfs system, but the exit status
 # is lost if it is not enabled in the root image as well,
@@ -87,15 +87,18 @@ systemctl enable live-root-shell.service
 systemctl enable live-self-update.service
 
 systemctl enable checkmedia.service
-systemctl enable qemu-guest-agent.service
+test -f /usr/lib/systemd/system/qemu-guest-agent.service && systemctl enable qemu-guest-agent.service
 systemctl enable setup-systemd-proxy-env.path
 test -f /usr/lib/systemd/system/gdm.service && systemctl enable gdm.service
-test -f /usr/lib/systemd/system/spice-vdagentd.service && systemctl enable spice-vdagentd.service
 systemctl enable zramswap
 
 # set the default target
+arch=$(uname -m)
 if [[ "$kiwi_profiles" == *MINI* ]]; then
   # the MINI images do not include graphical environment
+  systemctl set-default multi-user.target
+elif [[ "$arch" == armv* || "$arch" == i?86 ]]; then
+  # experimental support for these architectures (no Firefox, etc)
   systemctl set-default multi-user.target
 else
   systemctl set-default graphical.target
@@ -105,13 +108,12 @@ fi
 systemctl disable snapper-cleanup.timer
 systemctl disable snapper-timeline.timer
 
-# disable unused services
-systemctl disable YaST2-Firstboot.service
-systemctl disable YaST2-Second-Stage.service
-
 # Prevent premature activation of LVM (bsc#1246133)
 systemctl mask lvm2-monitor.service
-sed -i 's:# event_activation = 1:event_activation = 0:' /etc/lvm/lvm.conf
+if [[ -f /etc/lvm/lvm.conf ]]; then
+  echo "disabling lvm event_activation"
+  sed -i 's:# event_activation = 1:event_activation = 0:' /etc/lvm/lvm.conf
+fi
 
 # Prevent premature assembly of MD RAIDs (bsc#1245159)
 touch /etc/udev/rules.d/64-md-raid-assembly.rules
@@ -126,8 +128,8 @@ chmod -x /usr/lib/systemd/system-generators/systemd-gpt-auto-generator
 # the "eurlatgr" is the default font for the English locale
 echo -e "\nFONT=eurlatgr.psfu" >> /etc/vconsole.conf
 
-# configure self-update in SLES
-if [[ "$kiwi_profiles" == *SLE* ]]; then
+# configure self-update in SLES (but omit it in the SLES for NVIDIA)
+if [[ "$kiwi_profiles" == *SUSE_SLE_16* ]]; then
   echo "Configuring the installer self-update..."
   # read the self-update configuration variables
   . /usr/lib/live-self-update/conf.sh
@@ -139,7 +141,6 @@ if [[ "$kiwi_profiles" == *SLE* ]]; then
 fi
 
 ### setup dracut for live system
-arch=$(uname -m)
 # keep in sync with ISO Volume ID set in the fix_bootconfig script
 profile=$(echo "$kiwi_profiles" | tr "_" "-")
 label="Install-$profile-$arch"
@@ -149,7 +150,13 @@ mkdir /etc/cmdline.d
 echo "root=live:LABEL=$label" >/etc/cmdline.d/10-liveroot.conf
 echo "root_disk=live:LABEL=$label" >>/etc/cmdline.d/10-liveroot.conf
 echo 'install_items+=" /etc/cmdline.d/10-liveroot.conf "' >/etc/dracut.conf.d/10-liveroot-file.conf
-echo 'add_dracutmodules+=" dracut-menu agama-cmdline agama-dud live-self-update initrd-nmtui "' >>/etc/dracut.conf.d/10-liveroot-file.conf
+echo 'add_dracutmodules+=" dracut-menu agama-cmdline agama-dud live-self-update initrd-nmtui chrony "' >>/etc/dracut.conf.d/10-liveroot-file.conf
+
+if [ "${arch}" = "ppc64le" ]; then
+  # Added support for configuring HCN in dracut (jsc#PED-14533) only in ppc64le.
+  echo 'add_dracutmodules+=" hcn "' >>/etc/dracut.conf.d/10-liveroot-file.conf
+fi
+
 
 # decrease the kernel logging on the console, use a dracut module to do it early in the boot process
 echo 'add_dracutmodules+=" agama-logging "' > /etc/dracut.conf.d/10-agama-logging.conf
@@ -342,10 +349,13 @@ echo 'compress="xz -9 --check=crc32 --memlimit-compress=50%"' >> /etc/dracut.con
 
 # Kernel modules (+ firmware) for X13s
 if [ "$(arch)" == "aarch64" ]; then
-	echo 'add_drivers+=" clk-rpmh dispcc-sc8280xp gcc-sc8280xp gpucc-sc8280xp nvmem_qcom-spmi-sdam qcom_hwspinlock qcom_q6v5 qcom_q6v5_pas qnoc-sc8280xp pmic_glink pmic_glink_altmode smp2p spmi-pmic-arb leds-qcom-lpg "'  > /etc/dracut.conf.d/x13s_modules.conf
-	echo 'add_drivers+=" nvme phy_qcom_qmp_pcie pcie-qcom-ep i2c_hid_of i2c_qcom_geni leds-qcom-lpg pwm_bl qrtr pmic_glink_altmode gpio_sbu_mux phy_qcom_qmp_combo panel-edp msm phy_qcom_edp "' >> /etc/dracut.conf.d/x13s_modules.conf
-	echo 'install_items+=" /lib/firmware/qcom/sc8280xp/LENOVO/21BX/qcadsp8280.mbn.xz /lib/firmware/qcom/sc8280xp/LENOVO/21BX/qccdsp8280.mbn.xz "' >> /etc/dracut.conf.d/x13s_modules.conf
+  echo 'add_drivers+=" clk-rpmh dispcc-sc8280xp gcc-sc8280xp gpucc-sc8280xp nvmem_qcom-spmi-sdam qcom_hwspinlock qcom_q6v5 qcom_q6v5_pas qnoc-sc8280xp pmic_glink pmic_glink_altmode smp2p spmi-pmic-arb leds-qcom-lpg "' >/etc/dracut.conf.d/x13s_modules.conf
+  echo 'add_drivers+=" nvme phy_qcom_qmp_pcie pcie-qcom-ep i2c_hid_of i2c_qcom_geni leds-qcom-lpg pwm_bl qrtr pmic_glink_altmode gpio_sbu_mux phy_qcom_qmp_combo panel-edp msm phy_qcom_edp "' >>/etc/dracut.conf.d/x13s_modules.conf
+  echo 'install_items+=" /lib/firmware/qcom/sc8280xp/LENOVO/21BX/qcadsp8280.mbn.xz /lib/firmware/qcom/sc8280xp/LENOVO/21BX/qccdsp8280.mbn.xz "' >>/etc/dracut.conf.d/x13s_modules.conf
 fi
+
+# do not activate multipath in dracut, leave that for Agama
+echo 'omit_dracutmodules+=" multipath "' >> /etc/dracut.conf.d/omit-multipath.conf
 
 # Decompress kernel modules, better for squashfs (boo#1192457)
 find /lib/modules/*/kernel -name '*.ko.xz' -exec xz -d {} +

@@ -27,7 +27,6 @@ import Text from "~/components/core/Text";
 import Icon from "~/components/layout/Icon";
 import { TranslatedString, _ } from "~/i18n";
 
-import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import displayStyles from "@patternfly/react-styles/css/utilities/Display/display";
 
 export type BreadcrumbProps = {
@@ -92,21 +91,27 @@ const Breadcrumb = ({
   isEditorial = false,
 }: BreadcrumbProps) => {
   const content = (
-    <Text isBold={isEditorial} className={isEditorial && textStyles.fontSizeLg}>
+    // The editorial step is relative to the trail's own size, which is fluid, so
+    // it cannot come from a fixed font size utility.
+    <Text isBold={isEditorial} className={isEditorial && "agm-breadcrumb-editorial"}>
       {label}
     </Text>
   );
 
   return (
+    // `role="listitem"` is set explicitly because the flex display drops the
+    // implicit list semantics in some browsers (e.g. Safari/VoiceOver).
     <Flex
       component="li"
+      role="listitem"
       gap={{ default: "gapXs" }}
       alignItems={{ default: "alignItemsCenter" }}
-      aria-current={isCurrent ? "page" : undefined}
     >
       {!hideDivider && <Icon name="chevron_right" aria-hidden />}
       {isCurrent ? (
-        <h1 className={displayStyles.displayInline}>{content}</h1>
+        <h1 className={displayStyles.displayInline} aria-current="page">
+          {content}
+        </h1>
       ) : (
         <Link to={path} variant="link" isInline>
           {content}
@@ -130,8 +135,11 @@ const Breadcrumb = ({
 const Breadcrumbs = ({ a11yName = _("Breadcrumbs"), children }) => {
   return (
     <nav aria-label={a11yName} className="agm-breadcrumb">
+      {/* `role="list"` is set explicitly because the flex display drops the
+          implicit list semantics in some browsers (e.g. Safari/VoiceOver). */}
       <Flex
         component="ol"
+        role="list"
         gap={{ default: "gapNone" }}
         alignItems={{ default: "alignItemsCenter" }}
         alignContent={{ default: "alignContentCenter" }}

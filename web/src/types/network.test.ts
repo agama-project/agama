@@ -21,6 +21,21 @@
  */
 
 import { Connection, ConnectionStatus, NetworkConfig, NetworkProposal } from "./network";
+import { CONNECTION_TYPE, isVirtual } from "~/utils/network";
+
+describe("isVirtual", () => {
+  it("returns true for BOND, BRIDGE, and VLAN types", () => {
+    expect(isVirtual(CONNECTION_TYPE.BOND)).toBe(true);
+    expect(isVirtual(CONNECTION_TYPE.BRIDGE)).toBe(true);
+    expect(isVirtual(CONNECTION_TYPE.VLAN)).toBe(true);
+  });
+
+  it("returns false for ETHERNET, WIFI, and LOOPBACK types", () => {
+    expect(isVirtual(CONNECTION_TYPE.ETHERNET)).toBe(false);
+    expect(isVirtual(CONNECTION_TYPE.WIFI)).toBe(false);
+    expect(isVirtual(CONNECTION_TYPE.LOOPBACK)).toBe(false);
+  });
+});
 
 describe("NetworkConfig", () => {
   describe("addOrUpdateConnection", () => {

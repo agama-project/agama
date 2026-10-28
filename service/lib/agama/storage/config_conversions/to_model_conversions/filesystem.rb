@@ -25,7 +25,7 @@ module Agama
   module Storage
     module ConfigConversions
       module ToModelConversions
-        # Drive conversion to model according to the JSON schema.
+        # Filesystem conversion to model according to the JSON schema.
         class Filesystem < Base
           # @param config [Configs::Filesystem]
           # @param volumes [VolumeTemplatesBuilder]
@@ -43,10 +43,12 @@ module Agama
           # @see Base#conversions
           def conversions
             {
-              reuse:   config.reuse?,
-              default: convert_default,
-              type:    convert_type,
-              label:   config.label
+              reuse:              config.reuse?,
+              default:            convert_default,
+              type:               convert_type,
+              label:              config.label,
+              mkfsExtraArguments: config.mkfs_args,
+              mountOptions:       convert_mount_options
             }
           end
 
@@ -67,6 +69,13 @@ module Agama
             end
 
             config.type.fs_type.to_s
+          end
+
+          # @return [Array<String>, nil]
+          def convert_mount_options
+            return if config.mount_options.empty?
+
+            config.mount_options
           end
 
           # @return [Boolean]

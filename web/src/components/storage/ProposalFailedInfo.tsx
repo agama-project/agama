@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2025] SUSE LLC
+ * Copyright (c) [2025-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -31,17 +31,9 @@ const Description = () => {
   const model = useConfigModel();
   const partitions = model.drives.flatMap((d) => d.partitions || []);
   const logicalVolumes = model.volumeGroups.flatMap((vg) => vg.logicalVolumes || []);
-
-  const newPartitions = partitions.filter((p) => !p.name);
-
-  // FIXME: Currently, it's not possible to reuse a logical volume, so all
-  // volumes are treated as new. This code cannot be made future-proof due to an
-  // internal decision not to expose unused properties, even though "#name" is
-  // used to infer whether a "device" is new or not.
-  // const newLogicalVolumes = logicalVolumes.filter((lv) => !lv.name);
-
   const isBootConfigured = !!model.boot?.configure;
-  const mountPaths = [newPartitions, logicalVolumes]
+  const mountPaths = [...partitions, ...logicalVolumes]
+    .filter((p) => !p.name)
     .flat()
     .map((d) => partitionUtils.pathWithSize(d));
 

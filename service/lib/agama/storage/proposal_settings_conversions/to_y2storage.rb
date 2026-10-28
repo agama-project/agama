@@ -31,9 +31,11 @@ module Agama
       class ToY2Storage
         # @param settings [Agama::Storage::ProposalSettings]
         # @param config [Agama::Config]
-        def initialize(settings, config:)
+        # @param bootloader_config [Agama::Storage::BootloaderConfig]
+        def initialize(settings, config:, bootloader_config:)
           @settings = settings
           @config = config
+          @bootloader_config = bootloader_config
         end
 
         # Performs the conversion to Y2Storage.
@@ -59,6 +61,9 @@ module Agama
 
         # @return [Agama::Config]
         attr_reader :config
+
+        # @return [Agama::Storage::BootloaderConfig]
+        attr_reader :bootloader_config
 
         # @param target [Y2Storage::ProposalSettings]
         def device_conversion(target)
@@ -111,6 +116,7 @@ module Agama
         def boot_conversion(target)
           target.boot = settings.boot.configure?
           target.root_device = boot_device
+          target.bootloader = bootloader_config.type
         end
 
         # @param target [Y2Storage::ProposalSettings]

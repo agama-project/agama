@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2025] SUSE LLC
+ * Copyright (c) [2025-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -47,5 +47,10 @@ describe("Annotation", () => {
 
     const content = screen.getByText("Configured for installation only");
     expect(content.tagName).toBe("STRONG");
+  });
+
+  it("renders nothing when children is empty", () => {
+    const { container } = plainRender(<Annotation>{undefined}</Annotation>);
+    expect(container).toBeEmptyDOMElement();
   });
 });

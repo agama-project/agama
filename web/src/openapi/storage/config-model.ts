@@ -4,7 +4,7 @@
  * and run json-schema-to-typescript to regenerate this file.
  */
 
-export type EncryptionMethod = "luks1" | "luks2" | "tpmFde";
+export type BootloaderType = "grub2" | "grub2-bls" | "systemd-boot";
 export type FilesystemType =
   | "bcachefs"
   | "btrfs"
@@ -41,14 +41,15 @@ export interface Config {
 export interface Boot {
   configure: boolean;
   device?: BootDevice;
+  bootloader?: BootloaderType;
 }
 export interface BootDevice {
   default: boolean;
   name?: string;
 }
 export interface Encryption {
-  method: EncryptionMethod;
   password?: string;
+  tpm?: boolean;
 }
 export interface Drive {
   name: string;
@@ -63,6 +64,8 @@ export interface Filesystem {
   default: boolean;
   type?: FilesystemType;
   label?: string;
+  mkfsExtraArguments?: string;
+  mountOptions?: string[];
 }
 export interface Partition {
   name?: string;
@@ -89,16 +92,24 @@ export interface MdRaid {
   partitions?: Partition[];
 }
 export interface VolumeGroup {
+  name?: string;
   vgName: string;
   extentSize?: number;
   targetDevices?: string[];
+  targetDevicesPolicy?: "useNeeded" | "useAvailable";
+  spacePolicy?: SpacePolicy;
   logicalVolumes?: LogicalVolume[];
 }
 export interface LogicalVolume {
+  name?: string;
   lvName?: string;
   mountPath?: string;
   filesystem?: Filesystem;
-  size?: Size;
   stripes?: number;
   stripeSize?: number;
+  size?: Size;
+  delete?: boolean;
+  deleteIfNeeded?: boolean;
+  resize?: boolean;
+  resizeIfNeeded?: boolean;
 }

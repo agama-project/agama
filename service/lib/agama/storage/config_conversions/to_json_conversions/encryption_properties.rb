@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -47,6 +47,8 @@ module Agama
               pervasive_luks2_properties_conversions
             elsif method.is?(:tpm_fde)
               tpm_fde_properties_conversions
+            elsif method.is?(:tpm_bls)
+              tpm_bls_properties_conversions
             else
               {}
             end
@@ -63,26 +65,38 @@ module Agama
 
           # @return [Hash]
           def luks2_properties_conversions
+            luks2_common_properties
+          end
+
+          # @return [Hash]
+          def pervasive_luks2_properties_conversions
+            {
+              password: config.password,
+              apqns:    config.apqns,
+              keyType:  config.pervasive_key_type
+            }
+          end
+
+          # @return [Hash]
+          def tpm_fde_properties_conversions
+            luks2_common_properties.merge(tpm: true)
+          end
+
+          # @return [Hash]
+          def tpm_bls_properties_conversions
+            luks2_common_properties.merge(tpm: true)
+          end
+
+          # Common LUKS2 properties
+          #
+          # @return [Hash]
+          def luks2_common_properties
             {
               password:     config.password,
               keySize:      config.key_size,
               cipher:       config.cipher,
               label:        config.label,
               pbkdFunction: config.pbkd_function&.to_s
-            }
-          end
-
-          # @return [Hash]
-          def pervasive_luks2_properties_conversions
-            {
-              password: config.password
-            }
-          end
-
-          # @return [Hash]
-          def tpm_fde_properties_conversions
-            {
-              password: config.password
             }
           end
         end

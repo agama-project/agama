@@ -30,7 +30,8 @@ use agama_server::{
     cert::Certificate,
     web::{self},
 };
-use agama_utils::{api::event::Receiver, logging::init_logging};
+use agama_utils::{api::event::Receiver, logging::init_logging, runtime::run_async};
+use aide::axum::ApiRouter;
 use anyhow::Context;
 use axum::{
     extract::Request as AxumRequest,
@@ -49,6 +50,7 @@ use tower::Service;
 
 const DEFAULT_WEB_UI_DIR: &str = "/usr/share/agama/web_ui";
 const TOKEN_FILE: &str = "/run/agama/token";
+const EVENTS_CAPACITY: usize = 256;
 
 #[derive(Subcommand, Debug)]
 enum Commands {
@@ -207,7 +209,7 @@ fn https_redirect() -> Router {
     Router::new()
         // the wildcard path below does not match an empty path, we need to match it explicitly
         .route_service("/", redirect_service)
-        .route_service("/*path", redirect_service)
+        .route_service("/{*path}", redirect_service)
 }
 
 /// handle the HTTPS connection
@@ -215,7 +217,7 @@ async fn handle_https_stream(
     tls_acceptor: SslAcceptor,
     addr: std::net::SocketAddr,
     tcp_stream: tokio::net::TcpStream,
-    service: axum::Router,
+    service: ApiRouter,
 ) {
     // handle HTTPS connection
     let ssl = Ssl::new(tls_acceptor.context()).unwrap();
@@ -242,7 +244,7 @@ async fn handle_https_stream(
 async fn handle_http_stream(
     addr: std::net::SocketAddr,
     tcp_stream: tokio::net::TcpStream,
-    service: axum::Router,
+    service: ApiRouter,
     redirector_service: axum::Router,
 ) {
     let stream = TokioIo::new(tcp_stream);
@@ -287,7 +289,7 @@ async fn find_listener(addresses: String) -> Option<tokio::net::TcpListener> {
 }
 
 /// Starts the web server
-async fn start_server(address: String, service: Router, ssl_acceptor: SslAcceptor) {
+async fn start_server(address: String, service: ApiRouter, ssl_acceptor: SslAcceptor) {
     let opt_listener = find_listener(address).await;
     let listener = opt_listener.expect("None of the alternative addresses worked");
 
@@ -324,7 +326,7 @@ async fn serve_command(args: ServeArgs) -> anyhow::Result<()> {
     _ = l10n_helpers::init_locale();
     init_logging().context("Could not initialize the logger")?;
 
-    let (events_tx, events_rx) = channel(16);
+    let (events_tx, events_rx) = channel(EVENTS_CAPACITY);
     monitor_events_channel(events_rx);
 
     let config = web::ServiceConfig::load()?;
@@ -405,14 +407,15 @@ impl Termination for CliResult {
     }
 }
 
-#[tokio::main]
-async fn main() -> CliResult {
-    let cli = Cli::parse();
+fn main() -> CliResult {
+    run_async(async {
+        let cli = Cli::parse();
 
-    if let Err(error) = run_command(cli).await {
-        eprintln!("{:?}", error);
-        return CliResult::Error;
-    }
+        if let Err(error) = run_command(cli).await {
+            eprintln!("{:?}", error);
+            return CliResult::Error;
+        }
 
-    CliResult::Ok
+        CliResult::Ok
+    })
 }

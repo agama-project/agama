@@ -27,7 +27,7 @@ import DASDFormatProgress from "./DASDFormatProgress";
 
 const mockOnEvent = jest.fn();
 
-jest.mock("~/context/installer", () => ({
+jest.mock("~/hooks/use-installer-client", () => ({
   useInstallerClient: () => ({
     onEvent: mockOnEvent,
   }),

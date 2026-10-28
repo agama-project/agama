@@ -22,7 +22,7 @@
 
 import React from "react";
 import { screen, within } from "@testing-library/react";
-import { installerRender } from "~/test-utils";
+import { installerRender, mockRoutes } from "~/test-utils";
 import DASDTable from "./DASDTable";
 
 import type { Device } from "~/model/system/dasd";
@@ -177,6 +177,35 @@ describe("DASDTable", () => {
         screen.getByText("0.0.0200");
         expect(screen.queryByText("0.0.0160")).toBeNull();
         expect(screen.queryByText("0.0.0300")).toBeNull();
+      });
+    });
+
+    describe("filters given in the address", () => {
+      it("renders only the devices matching them, without touching any control", () => {
+        mockRoutes("/storage/dasd?status=active");
+        installerRender(<DASDTable devices={mockDASDDevices} />);
+
+        screen.getByText("0.0.0200");
+        expect(screen.queryByText("0.0.0160")).toBeNull();
+        expect(screen.queryByText("0.0.0300")).toBeNull();
+      });
+
+      it("combines them, taking the channel bounds into account", () => {
+        mockRoutes("/storage/dasd?formatted=no&minChannel=0.0.0300");
+        installerRender(<DASDTable devices={mockDASDDevices} />);
+
+        screen.getByText("0.0.0300");
+        expect(screen.queryByText("0.0.0160")).toBeNull();
+        expect(screen.queryByText("0.0.0200")).toBeNull();
+      });
+
+      it("renders every device when a filter names something unknown", () => {
+        mockRoutes("/storage/dasd?status=nonsense&formatted=maybe");
+        installerRender(<DASDTable devices={mockDASDDevices} />);
+
+        screen.getByText("0.0.0160");
+        screen.getByText("0.0.0200");
+        screen.getByText("0.0.0300");
       });
     });
 

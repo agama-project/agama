@@ -33,7 +33,8 @@ import {
   FormSelectOption,
 } from "@patternfly/react-core";
 import Icon from "~/components/layout/Icon";
-import { Page, PasswordInput } from "~/components/core";
+import { PasswordInput } from "~/components/core";
+import Page from "~/components/layout/Page";
 import { Connection, WifiNetwork, Wireless } from "~/types/network";
 import { useWifiNetworks } from "~/hooks/model/system/network";
 import { useConnectionMutation } from "~/hooks/model/config/network";
@@ -41,6 +42,7 @@ import WifiNetworksSelector from "./WifiNetworksSelector";
 import { useNavigate } from "react-router";
 import { PATHS } from "~/routes/network";
 import { N_, _ } from "~/i18n";
+import { SYSTEM_QUERY_KEY } from "~/hooks/model/system";
 
 const securityOptions = [
   // TRANSLATORS: WiFi authentication mode
@@ -132,6 +134,7 @@ function WifiConnectionFormContent() {
   if (networks.length === 0)
     return (
       <EmptyState
+        headingLevel="h2"
         titleText={_("No Wi-Fi networks were found")}
         icon={() => <Icon name="error" />}
       />
@@ -161,7 +164,6 @@ function WifiConnectionFormContent() {
               <FormSelectOption
                 key={security.value}
                 value={security.value}
-                /* eslint-disable agama-i18n/string-literals */
                 label={_(security.label)}
               />
             ))}
@@ -198,7 +200,7 @@ export default function wifiConnectionForm() {
         { label: _("Network"), path: PATHS.root },
         { label: _("New Wi-Fi connection") },
       ]}
-      progress={{ scope: "network", ensureRefetched: "system" }}
+      progress={{ scope: "network", awaitQueriesRefetch: [SYSTEM_QUERY_KEY] }}
     >
       <Page.Content>
         <WifiConnectionFormContent />

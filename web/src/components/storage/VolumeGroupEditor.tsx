@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2025] SUSE LLC
+ * Copyright (c) [2025-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -38,19 +38,17 @@ import {
   Title,
 } from "@patternfly/react-core";
 import { useNavigate } from "react-router";
-import {
-  useStorageUiState,
-  isExpandedInState,
-  toggleExpandedInState,
-} from "~/context/storage-ui-state";
+import { useSearchParamTokens } from "~/hooks/use-search-param-state";
+import { EXPANDED, volumeGroupToken } from "~/components/storage/ui-state-params";
 import * as partitionUtils from "~/components/storage/utils/partition";
 import { NestedContent } from "../core";
 import Text from "~/components/core/Text";
 import MenuButton, { CustomToggleProps } from "~/components/core/MenuButton";
 import ConfigEditorItem from "~/components/storage/ConfigEditorItem";
+import SpacePolicyMenu from "~/components/storage/SpacePolicyMenu";
 import Icon, { IconProps } from "~/components/layout/Icon";
 import { STORAGE as PATHS } from "~/routes/paths";
-import { baseName, formattedPath } from "~/components/storage/utils";
+import { baseName, deviceLabel, formattedPath } from "~/components/storage/utils";
 import { contentDescription } from "~/components/storage/utils/volume-group";
 import { generateEncodedPath } from "~/utils";
 import { isEmpty } from "radashi";
@@ -58,13 +56,17 @@ import { sprintf } from "sprintf-js";
 import { _, n_, formatList } from "~/i18n";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
+import SearchedVolumeGroupMenu from "~/components/storage/SearchedVolumeGroupMenu";
 import {
   useConfigModel,
+  useVolumeGroup,
   useDeleteVolumeGroup,
   useDeleteLogicalVolume,
 } from "~/hooks/model/storage/config-model";
 import configModel from "~/model/storage/config-model";
+import { useDevice } from "~/hooks/model/system/storage";
 import type { ConfigModel } from "~/model/storage/config-model";
+import type { Storage as System } from "~/model/system";
 
 const DeleteVgOption = ({ vg }: { vg: ConfigModel.VolumeGroup }) => {
   const config = useConfigModel();
@@ -72,11 +74,11 @@ const DeleteVgOption = ({ vg }: { vg: ConfigModel.VolumeGroup }) => {
   const lvs = vg.logicalVolumes.map((lv) => formattedPath(lv.mountPath));
   const targetDevices = configModel.volumeGroup.filterTargetDevices(config, vg);
   const convert = targetDevices.length === 1 && !!lvs.length;
-  let description;
+  let description: string;
 
   if (lvs.length) {
     if (convert) {
-      const diskName = baseName(targetDevices[0].name, true);
+      const diskName = baseName(targetDevices[0].name, { truncate: true });
       description = sprintf(
         n_(
           // TRANSLATORS: %1$s is a list of formatted mount points like '"/", "/var" and "swap"' (or a
@@ -110,7 +112,7 @@ const DeleteVgOption = ({ vg }: { vg: ConfigModel.VolumeGroup }) => {
   );
 };
 
-const EditVgOption = ({ vg }: { vg: ConfigModel.VolumeGroup }) => {
+const EditVgOption = ({ index }: { index: number }) => {
   const navigate = useNavigate();
 
   return (
@@ -119,17 +121,18 @@ const EditVgOption = ({ vg }: { vg: ConfigModel.VolumeGroup }) => {
       itemId="edit-volume-group"
       description={_("Modify settings and physical volumes")}
       role="menuitem"
-      onClick={() => navigate(generateEncodedPath(PATHS.volumeGroup.edit, { id: vg.vgName }))}
+      onClick={() => navigate(generateEncodedPath(PATHS.volumeGroup.edit, { id: String(index) }))}
     >
       {_("Edit volume group")}
     </MenuButton.Item>
   );
 };
 
-const LvRow = ({ lv, vg }) => {
+const LvRow = ({ index, lv }) => {
   const navigate = useNavigate();
+  const vg = useVolumeGroup(index);
   const editPath = generateEncodedPath(PATHS.volumeGroup.logicalVolume.edit, {
-    id: vg.vgName,
+    id: index,
     logicalVolumeId: lv.mountPath,
   });
   const deleteLogicalVolume = useDeleteLogicalVolume();
@@ -190,19 +193,31 @@ const LvRow = ({ lv, vg }) => {
   );
 };
 
-const VgHeader = ({ vg }: { vg: ConfigModel.VolumeGroup }) => {
-  const title = vg.logicalVolumes.length
-    ? _("Create LVM volume group %s")
-    : _("Empty LVM volume group %s");
+type VgHeaderProps = {
+  deviceConfig: ConfigModel.VolumeGroup;
+  device: System.Device;
+};
 
-  return <Title headingLevel="h4">{sprintf(title, vg.vgName)}</Title>;
+const VgHeader = ({ deviceConfig, device }: VgHeaderProps) => {
+  let title: string;
+
+  if (device) {
+    title = sprintf(_("Use LVM volume group %s"), deviceLabel(device, { truncate: true }));
+  } else {
+    title = deviceConfig.logicalVolumes.length
+      ? _("Create LVM volume group %s")
+      : _("Empty LVM volume group %s");
+  }
+
+  return <Title headingLevel="h3">{sprintf(title, deviceConfig.vgName)}</Title>;
 };
 
 type VgMenuToggleProps = CustomToggleProps & {
-  vg: ConfigModel.VolumeGroup;
+  deviceConfig: ConfigModel.VolumeGroup;
+  device?: System.Device;
 };
 
-const VgMenuToggle = forwardRef(({ vg, ...props }: VgMenuToggleProps, ref) => {
+const VgMenuToggle = forwardRef(({ deviceConfig, device, ...props }: VgMenuToggleProps, ref) => {
   return (
     <Button
       variant="link"
@@ -218,7 +233,7 @@ const VgMenuToggle = forwardRef(({ vg, ...props }: VgMenuToggleProps, ref) => {
         style={{ whiteSpace: "normal", textAlign: "start" }}
       >
         <FlexItem>
-          <VgHeader vg={vg} {...props} />
+          <VgHeader deviceConfig={deviceConfig} device={device} {...props} />
         </FlexItem>
         <FlexItem>
           <Icon name="keyboard_arrow_down" style={{ verticalAlign: "middle" }} />
@@ -228,43 +243,69 @@ const VgMenuToggle = forwardRef(({ vg, ...props }: VgMenuToggleProps, ref) => {
   );
 });
 
-const VgMenu = ({ vg }: { vg: ConfigModel.VolumeGroup }) => {
+const NewVgMenu = ({ index }: { index: number }) => {
+  const deviceConfig = useVolumeGroup(index);
+
   return (
     <MenuButton
       menuProps={{
         popperProps: { position: "end", maxWidth: "fit-content", minWidth: "fit-content" },
       }}
-      customToggle={<VgMenuToggle vg={vg} />}
-      items={[<EditVgOption key="edit" vg={vg} />, <DeleteVgOption key="delete" vg={vg} />]}
+      customToggle={<VgMenuToggle deviceConfig={deviceConfig} />}
+      items={[
+        <EditVgOption key="edit" index={index} />,
+        <DeleteVgOption key="delete" vg={deviceConfig} />,
+      ]}
     />
   );
 };
 
-const AddLvButton = ({ vg }: { vg: ConfigModel.VolumeGroup }) => {
+const ReusedVgMenu = ({ index }: { index: number }) => {
+  const deviceConfig = useVolumeGroup(index);
+  const device = useDevice(deviceConfig.name);
+
+  return (
+    <SearchedVolumeGroupMenu
+      deviceConfig={deviceConfig}
+      device={device}
+      toggle={<VgMenuToggle device={device} deviceConfig={deviceConfig} />}
+    />
+  );
+};
+
+const VgMenu = ({ index }: { index: number }) => {
+  const vg = useVolumeGroup(index);
+
+  return vg.name ? <ReusedVgMenu index={index} /> : <NewVgMenu index={index} />;
+};
+
+const AddLvButton = ({ index }: { index: number }) => {
   const navigate = useNavigate();
-  const newLvPath = generateEncodedPath(PATHS.volumeGroup.logicalVolume.add, { id: vg.vgName });
+  const volumeGroupConfig = useVolumeGroup(index);
+
+  const newLvPath = generateEncodedPath(PATHS.volumeGroup.logicalVolume.add, { id: String(index) });
 
   return (
     <Button variant="plain" key="add-logical-volume" onClick={() => navigate(newLvPath)}>
       <Flex alignItems={{ default: "alignItemsCenter" }} gap={{ default: "gapXs" }}>
         {/** TODO: choose one, "add" or "add_circle", and remove the other at Icon.tsx */}
-        <Icon name="add_circle" /> {_("Add logical volume")}
+        <Icon name="add_circle" />
+        {volumeGroupConfig.name ? _("Add or use logical volume") : _("Add logical volume")}
       </Flex>
     </Button>
   );
 };
 
-const LogicalVolumes = ({ vg }: { vg: ConfigModel.VolumeGroup }) => {
+const LogicalVolumes = ({ index }: { index: number }) => {
   const toggleId = useId();
   const contentId = useId();
-  const { uiState, setUiState } = useStorageUiState();
-  const uiIndex = `vg${vg.vgName}`;
-  const isExpanded = isExpandedInState(uiState, uiIndex);
+  const { hasSearchParamToken, toggleSearchParamToken } = useSearchParamTokens(EXPANDED);
+  const vg = useVolumeGroup(index);
+  const token = volumeGroupToken(vg.vgName);
+  const isExpanded = hasSearchParamToken(token);
   const menuAriaLabel = sprintf(_("Logical volumes for %s"), vg.vgName);
 
-  const onToggle = () => {
-    setUiState((state) => toggleExpandedInState(state, uiIndex));
-  };
+  const onToggle = () => toggleSearchParamToken(token);
 
   const iconName: IconProps["name"] = isExpanded ? "unfold_less" : "unfold_more";
   const commonProps: Pick<ExpandableSectionProps, "toggleId" | "contentId" | "isExpanded"> = {
@@ -274,7 +315,11 @@ const LogicalVolumes = ({ vg }: { vg: ConfigModel.VolumeGroup }) => {
   };
 
   if (isEmpty(vg.logicalVolumes)) {
-    return <AddLvButton vg={vg} />;
+    return (
+      <Flex>
+        <AddLvButton index={index} />
+      </Flex>
+    );
   }
 
   const description = n_(
@@ -305,12 +350,14 @@ const LogicalVolumes = ({ vg }: { vg: ConfigModel.VolumeGroup }) => {
               isCompact
               style={{ width: "fit-content", minWidth: "40dvw", maxWidth: "60dwh" }}
             >
-              {vg.logicalVolumes.map((lv) => {
-                return <LvRow key={lv.mountPath} lv={lv} vg={vg} />;
-              })}
+              {vg.logicalVolumes
+                .filter((l) => l.mountPath)
+                .map((lv) => {
+                  return <LvRow key={lv.mountPath} index={index} lv={lv} />;
+                })}
             </DataList>
             <Content component="p" style={{ marginBlockStart: "1rem" }}>
-              <AddLvButton vg={vg} />
+              <AddLvButton index={index} />
             </Content>
           </NestedContent>
         </NestedContent>
@@ -319,12 +366,13 @@ const LogicalVolumes = ({ vg }: { vg: ConfigModel.VolumeGroup }) => {
   );
 };
 
-export type VolumeGroupEditorProps = { vg: ConfigModel.VolumeGroup };
+export type VolumeGroupEditorProps = { index: number };
 
-export default function VolumeGroupEditor({ vg }: VolumeGroupEditorProps) {
+export default function VolumeGroupEditor({ index }: VolumeGroupEditorProps) {
   return (
-    <ConfigEditorItem header={<VgMenu vg={vg} />}>
-      <LogicalVolumes vg={vg} />
+    <ConfigEditorItem header={<VgMenu index={index} />}>
+      <LogicalVolumes index={index} />
+      <SpacePolicyMenu collection={"volumeGroups"} index={index} />
     </ConfigEditorItem>
   );
 }

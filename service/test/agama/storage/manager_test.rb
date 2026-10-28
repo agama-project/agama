@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022-2025] SUSE LLC
+# Copyright (c) [2022-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -21,7 +21,7 @@
 
 require_relative "../../test_helper"
 require_relative "storage_helpers"
-require "agama/http/clients"
+require "agama/http/clients/questions"
 require "agama/config"
 require "agama/http"
 require "agama/issue"
@@ -34,6 +34,8 @@ require "agama/storage/volume"
 require "agama/dbus"
 require "y2storage/issue"
 require "y2storage/luks"
+require "y2storage/clients/finish"
+require "y2iscsi_client/finish_client"
 require "yast2/fs_snapshot"
 require "yaml"
 
@@ -50,16 +52,14 @@ describe Agama::Storage::Manager do
   end
   let(:config) { Agama::Config.new(YAML.load_file(config_path)) }
   let(:tmp_dir) { Dir.mktmpdir }
-  let(:http_client) { instance_double(Agama::HTTP::Clients::Main) }
 
   before do
     mock_storage(devicegraph: scenario)
     allow(Agama::Storage::Proposal).to receive(:new).and_return(proposal)
     allow(Agama::HTTP::Clients::Questions).to receive(:new).and_return(questions_client)
-    allow(Agama::HTTP::Clients::Main).to receive(:new).and_return(http_client)
     allow(Bootloader::FinishClient).to receive(:new).and_return(bootloader_finish)
     # mock writting config as proposal call can do storage probing, which fails in CI
-    allow_any_instance_of(Agama::Storage::Bootloader).to receive(:write_config)
+    allow_any_instance_of(Agama::Storage::BootloaderManager).to receive(:write_config)
     allow(Yast::Installation).to receive(:destdir).and_return(File.join(tmp_dir, "mnt"))
     stub_const("Agama::Storage::Finisher::CopyLogsStep::SCRIPTS_DIR",
       File.join(tmp_dir, "run", "agama", "scripts"))
@@ -238,39 +238,6 @@ describe Agama::Storage::Manager do
       expect(storage.product_config).to eq(config)
       expect(storage.proposal.product_config).to eq(config)
     end
-
-    context "if the product does not require bls boot explicitly" do
-      before do
-        allow(ENV).to receive(:[]=)
-      end
-
-      let(:config) { Agama::Config.new({}) }
-
-      it "sets env YAST_NO_BLS_BOOT to yes " do
-        expect(ENV).to receive(:[]=).with("YAST_NO_BLS_BOOT", "1")
-        storage.update_product_config(config)
-      end
-    end
-
-    context "if the product requires bls boot explicitly" do
-      before do
-        allow(ENV).to receive(:[]=)
-        allow(ENV).to receive(:[]).with("YAST_NO_BLS_BOOT").and_return("0")
-      end
-
-      let(:config) do
-        Agama::Config.new({
-          "storage" => {
-            "boot_strategy" => "BLS"
-          }
-        })
-      end
-
-      it "keeps initial env YAST_NO_BLS_BOOT" do
-        expect(ENV).to receive(:[]=).with("YAST_NO_BLS_BOOT", "0")
-        storage.update_product_config(config)
-      end
-    end
   end
 
   describe "#configured?" do
@@ -329,7 +296,6 @@ describe Agama::Storage::Manager do
   describe "#install" do
     before do
       allow(Yast::WFM).to receive(:CallFunction).with("inst_prepdisk", [])
-      allow(Yast::WFM).to receive(:CallFunction).with("inst_bootloader", [])
       allow(Y2Storage::Clients::InstPrepdisk).to receive(:new).and_return(client)
     end
 
@@ -346,10 +312,10 @@ describe Agama::Storage::Manager do
     end
   end
 
-  describe "#add_packages" do
+  describe "#packages" do
     before do
       allow(y2storage_manager).to receive(:staging).and_return(proposed_devicegraph)
-      allow(Agama::HTTP::Clients::Main).to receive(:new).and_return(http_client)
+      allow(proposal).to receive(:success?).and_return(proposal_success)
     end
 
     let(:proposed_devicegraph) do
@@ -359,34 +325,48 @@ describe Agama::Storage::Manager do
     let(:used_features) do
       instance_double(
         Y2Storage::StorageFeaturesList,
-        pkg_list: ["btrfsprogs", "snapper"],
+        packages: [Y2Storage::Feature::Package.new("btrfsprogs"),
+                   Y2Storage::Feature::Package.new("snapper")],
         any?:     false
       )
     end
 
-    it "adds storage software to install" do
-      expect(http_client).to receive(:set_resolvables)
-        .with("storage_proposal", :package, match(include("btrfsprogs", "snapper")))
+    let(:proposal_success) { true }
 
-      storage.add_packages
+    it "returns packages for storage features" do
+      expect(storage.packages.map(&:name)).to include("btrfsprogs", "snapper")
     end
 
     context "if iSCSI was used" do
       before do
-        allow_any_instance_of(Agama::Storage::ISCSI::Manager)
-          .to receive(:configured?).and_return(false)
+        allow(used_features).to receive(:any?).and_return(true)
       end
 
-      let(:used_features) do
-        instance_double(Y2Storage::StorageFeaturesList, pkg_list: [], any?: true)
+      it "includes the iSCSI packages" do
+        expect(storage.packages.map(&:name)).to include("open-iscsi", "iscsiuio")
       end
+    end
 
-      it "adds the iSCSI software to install" do
-        expect(http_client).to receive(:set_resolvables)
-          .with("storage_proposal", :package, match(include("open-iscsi", "iscsiuio")))
+    context "if proposal was not successful" do
+      let(:proposal_success) { false }
 
-        storage.add_packages
+      it "returns an empty array" do
+        expect(storage.packages).to eq([])
       end
+    end
+  end
+
+  describe "#bootloader_packages" do
+    let(:bootloader) { instance_double(Agama::Storage::BootloaderManager) }
+    let(:bootloader_packages) { ["grub2", "grub2-x86_64-efi"] }
+
+    before do
+      allow(storage).to receive(:bootloader).and_return(bootloader)
+      allow(bootloader).to receive(:packages).and_return(bootloader_packages)
+    end
+
+    it "returns packages required by the bootloader" do
+      expect(storage.bootloader_packages.map(&:name)).to eq(bootloader_packages)
     end
   end
 
@@ -415,9 +395,18 @@ describe Agama::Storage::Manager do
        "unlink resolv.conf" do
       expect(copy_files).to receive(:run)
       expect(bootloader_finish).to receive(:write)
-      expect(Yast::WFM).to receive(:CallFunction).with("storage_finish", ["Write"])
-      expect(Yast::WFM).to receive(:CallFunction).with("iscsi-client_finish", ["Write"])
+      expect_any_instance_of(Y2Storage::Clients::Finish).to receive(:write)
+      expect_any_instance_of(Y2IscsiClient::FinishClient).to receive(:write)
       expect(Yast2::FsSnapshot).to receive(:configure_snapper)
+      storage.finish
+    end
+
+    it "passes questions_client to the Finisher" do
+      finisher = instance_double(Agama::Storage::Finisher, run: true)
+      expect(Agama::Storage::Finisher).to receive(:new)
+        .with(logger, anything, questions_client: questions_client)
+        .and_return(finisher)
+      expect(finisher).to receive(:run)
       storage.finish
     end
   end

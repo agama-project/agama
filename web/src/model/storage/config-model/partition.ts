@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2025] SUSE LLC
+ * Copyright (c) [2025-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -39,14 +39,6 @@ function create(data: Data.Partition): ConfigModel.Partition {
     // Using the ESP partition id for /boot/efi may not be strictly required, but it is
     // a good practice. Let's force it here since it cannot be selected in the UI.
     id: data.mountPath === "/boot/efi" ? "esp" : undefined,
-  };
-}
-
-function createFromLogicalVolume(lv: ConfigModel.LogicalVolume): ConfigModel.Partition {
-  return {
-    mountPath: lv.mountPath,
-    filesystem: lv.filesystem,
-    size: lv.size,
   };
 }
 
@@ -124,30 +116,19 @@ function remove(
   return config;
 }
 
-function isNew(partition: ConfigModel.Partition): boolean {
-  return !partition.name;
-}
-
-function isUsed(partition: ConfigModel.Partition): boolean {
-  return partition.filesystem !== undefined;
-}
-
-function isReused(partition: ConfigModel.Partition): boolean {
-  return !isNew(partition) && isUsed(partition);
-}
-
-function isUsedBySpacePolicy(partition: ConfigModel.Partition): boolean {
-  return partition.resizeIfNeeded || partition.delete || partition.deleteIfNeeded;
+function convertToLogicalVolume(partition: ConfigModel.Partition): ConfigModel.LogicalVolume {
+  return {
+    ...partition,
+    lvName: partition.mountPath
+      ? configModel.logicalVolume.generateName(partition.mountPath)
+      : undefined,
+  };
 }
 
 export default {
   create,
-  createFromLogicalVolume,
   add,
   edit,
   remove,
-  isNew,
-  isUsed,
-  isReused,
-  isUsedBySpacePolicy,
+  convertToLogicalVolume,
 };

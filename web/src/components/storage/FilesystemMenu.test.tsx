@@ -80,7 +80,7 @@ describe("FilesystemMenu", () => {
     const editItem = screen.getByText("Edit");
     await user.click(editItem);
 
-    const expectedPath = generatePath(PATHS.formatDevice, { collection: "drives", index: 0 });
+    const expectedPath = generatePath(PATHS.formatDevice, { collection: "drives", index: "0" });
     expect(mockNavigateFn).toHaveBeenCalledWith(expectedPath);
   });
 

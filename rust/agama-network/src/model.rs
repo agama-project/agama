@@ -22,15 +22,18 @@
 //!
 //! * This module contains the types that represent the network concepts. They are supposed to be
 //!   agnostic from the real network service (e.g., NetworkManager).
+mod ports;
+
 use crate::error::NetworkStateError;
 use crate::types::*;
+pub use ports::PortResolver;
 
-use agama_utils::openapi::schemas;
 use macaddr::MacAddr6;
+use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use serde_with::{serde_as, skip_serializing_none, DisplayFromStr};
 use std::{
-    collections::HashMap,
+    collections::{HashMap, HashSet},
     default::Default,
     fmt,
     path::{Path, PathBuf},
@@ -41,10 +44,15 @@ use tokio::process;
 use uuid::Uuid;
 
 #[derive(PartialEq)]
+/// Configuration for determining which parts of the network state should be retrieved or managed.
 pub struct StateConfig {
+    /// Whether to include access points in the state.
     pub access_points: bool,
+    /// Whether to include devices in the state.
     pub devices: bool,
+    /// Whether to include connections in the state.
     pub connections: bool,
+    /// Whether to include general state information.
     pub general_state: bool,
 }
 
@@ -60,10 +68,17 @@ impl Default for StateConfig {
 }
 
 #[derive(Default, Clone, Debug, PartialEq)]
+/// Represents the overall network state, including configuration and runtime information.
 pub struct NetworkState {
+    /// The user-defined configuration for the network.
+    pub user_config: Option<Config>,
+    /// General network state and settings.
     pub general_state: GeneralState,
+    /// List of detected wireless access points.
     pub access_points: Vec<AccessPoint>,
+    /// List of network devices present in the system.
     pub devices: Vec<Device>,
+    /// List of network connections (profiles).
     pub connections: Vec<Connection>,
 }
 
@@ -71,17 +86,20 @@ impl NetworkState {
     /// Returns a NetworkState struct with the given general_state, access_points, devices
     /// and connections.
     ///
+    /// * `user_config`: User-defined network configuration.
     /// * `general_state`: General network configuration
     /// * `access_points`: Access points to include in the state.
     /// * `devices`: devices to include in the state.
     /// * `connections`: connections to include in the state.
     pub fn new(
+        user_config: Option<Config>,
         general_state: GeneralState,
         access_points: Vec<AccessPoint>,
         devices: Vec<Device>,
         connections: Vec<Connection>,
     ) -> Self {
         Self {
+            user_config,
             general_state,
             access_points,
             devices,
@@ -141,7 +159,26 @@ impl NetworkState {
         self.devices.iter_mut().find(|c| c.name == name)
     }
 
+    /// Updates the current state from the one read from the system.
+    ///
+    /// It replaces all the state except for the `user_config`.
+    ///
+    /// Returns true if the state has changed.
+    ///
+    /// * `state`: The new network state to sync from.
+    pub fn sync_from(&mut self, mut state: NetworkState) -> bool {
+        state.user_config = self.user_config.clone();
+        if *self != state {
+            *self = state;
+            true
+        } else {
+            false
+        }
+    }
+
     /// Returns the controller's connection for the given connection Uuid.
+    ///
+    /// * `uuid`: connection UUID.
     pub fn get_controlled_by(&mut self, uuid: Uuid) -> Vec<&Connection> {
         let uuid = Some(uuid);
         self.connections
@@ -153,6 +190,8 @@ impl NetworkState {
     /// Adds a new connection.
     ///
     /// It uses the `id` to decide whether the connection already exists.
+    ///
+    /// * `conn`: The connection to add.
     pub fn add_connection(&mut self, conn: Connection) -> Result<(), NetworkStateError> {
         if self.get_connection(&conn.id).is_some() {
             return Err(NetworkStateError::ConnectionExists(conn.id));
@@ -191,10 +230,22 @@ impl NetworkState {
         let from = PathBuf::from(CONNECTIONS_PATH);
         let to = PathBuf::from(self.target_dir()).join(CONNECTIONS_PATH.trim_start_matches('/'));
 
-        self.copy_connections(&from, &to)?;
+        self.copy_files(&from, &to)?;
+
+        const NETWORKD_PATH: &str = "/run/agama/systemd/network";
+        const TARGET_NETWORKD_PATH: &str = "/etc/systemd/network";
+        let from = PathBuf::from(NETWORKD_PATH);
+        let to =
+            PathBuf::from(self.target_dir()).join(TARGET_NETWORKD_PATH.trim_start_matches('/'));
+
+        self.copy_files(&from, &to)?;
+
         self.enable_service(self.target_dir()).await
     }
 
+    /// Enables the NetworkManager service in the given path.
+    ///
+    /// * `path`: The path to the root directory where the service should be enabled.
     pub async fn enable_service(&self, path: &str) -> Result<(), NetworkStateError> {
         let mut command = process::Command::new("chroot");
         command.args([path, "systemctl", "enable", "NetworkManager.service"]);
@@ -213,7 +264,15 @@ impl NetworkState {
         Ok(())
     }
 
-    fn copy_connections(&self, from: &Path, to: &Path) -> Result<(), NetworkStateError> {
+    /// Copies the network configuration files from one directory to another.
+    ///
+    /// * `from`: The source directory.
+    /// * `to`: The destination directory.
+    fn copy_files(&self, from: &Path, to: &Path) -> Result<(), NetworkStateError> {
+        if !from.exists() {
+            return Ok(());
+        }
+
         if !to.exists() {
             std::fs::create_dir_all(to).map_err(|e| NetworkStateError::IoError(e.to_string()))?;
         }
@@ -242,61 +301,119 @@ impl NetworkState {
         "/mnt"
     }
 
+    /// Builds the internal connections for the given HTTP API connections.
+    ///
+    /// The connections that already exist are updated in place, keeping their UUID and the
+    /// settings that the HTTP API does not model. The controller/port relationships declared
+    /// through the `ports` lists are resolved against both the given connections and the ones
+    /// already in the state.
+    ///
+    /// * `connections`: connections as they arrive from the HTTP API.
+    pub fn connection_collection_from(
+        &self,
+        connections: &NetworkConnectionsCollection,
+    ) -> Result<ConnectionCollection, NetworkStateError> {
+        PortResolver::new(&self.connections).resolve(connections)
+    }
+
     /// Updates the current [NetworkState] with the configuration provided.
     ///
     /// The config could contain a [NetworkConnectionsCollection] to be updated, in case of
     /// provided it will iterate over the connections adding or updating them.
     ///
     /// If the general state is provided it will sets the options given.
+    ///
+    /// * `config`: The new configuration to apply.
     pub fn update_state(&mut self, config: Config) -> Result<(), NetworkStateError> {
-        if let Some(connections) = config.connections {
-            let mut collection: ConnectionCollection = connections.clone().try_into()?;
-            for conn in collection.iter_mut() {
-                if let Some(current_conn) = self.get_connection(conn.id.as_str()) {
-                    // Replaced the UUID with a real one
-                    conn.uuid = current_conn.uuid;
-                    self.update_connection(conn.to_owned())?;
-                } else {
-                    self.add_connection(conn.to_owned())?;
-                }
-            }
+        if self.user_config.as_ref() == Some(&config) {
+            tracing::info!("There is no user config change");
+            return Ok(());
+        }
 
-            for conn in connections.0 {
-                if conn.bridge.is_some() | conn.bond.is_some() {
-                    let mut ports = vec![];
-                    if let Some(model) = conn.bridge {
-                        ports = model.ports;
-                    }
-                    if let Some(model) = conn.bond {
-                        ports = model.ports;
-                    }
+        if let Some(connections) = &config.connections {
+            let changed_connections = self.changed_connections(connections);
 
-                    if let Some(controller) = self.get_connection(conn.id.as_str()) {
-                        self.set_ports(&controller.clone(), ports)?;
+            if !changed_connections.is_empty() {
+                let collection = self.connection_collection_from(&NetworkConnectionsCollection(
+                    changed_connections,
+                ))?;
+
+                for conn in collection.iter() {
+                    if self.get_connection(&conn.id).is_some() {
+                        tracing::info!("Updating connection {}", &conn.id);
+                        self.update_connection(conn.clone())?;
+                    } else {
+                        tracing::info!("Adding connection {}", &conn.id);
+                        self.add_connection(conn.clone())?;
                     }
                 }
+            } else {
+                tracing::info!("There is no connections change");
             }
         }
 
-        if let Some(state) = config.state {
-            if let Some(wireless_enabled) = state.wireless_enabled {
-                self.general_state.wireless_enabled = wireless_enabled;
-            }
-
-            if let Some(networking_enabled) = state.networking_enabled {
-                self.general_state.networking_enabled = networking_enabled;
-            }
-
-            if let Some(copy_network) = state.copy_network {
-                self.general_state.copy_network = copy_network;
-            }
+        if let Some(state) = &config.state {
+            self.update_general_state(state.clone());
         }
+
+        self.user_config = Some(config);
+
         Ok(())
+    }
+
+    /// Returns the root connections that have changed.
+    ///
+    /// A root is compared along with its nested ports, so a change anywhere in a stack sends the
+    /// whole stack. Sending only the changed port would lose the fact that it is nested, and
+    /// sending its controller without its `ports` list would not detach the dropped ones.
+    ///
+    /// * `connections`: The connections to check.
+    fn changed_connections(
+        &self,
+        connections: &NetworkConnectionsCollection,
+    ) -> Vec<NetworkConnection> {
+        connections
+            .0
+            .iter()
+            .filter(|conn| {
+                if let Some(user_config) = &self.user_config {
+                    user_config
+                        .connections
+                        .as_ref()
+                        .and_then(|c| c.0.iter().find(|cc| cc.id == conn.id))
+                        .map(|cc| conn != &cc)
+                        .unwrap_or(true)
+                } else {
+                    tracing::info!("There is no user config");
+                    true
+                }
+            })
+            .cloned()
+            .collect()
+    }
+
+    /// Updates the general state from the given settings.
+    ///
+    /// * `state`: The new general state settings.
+    fn update_general_state(&mut self, state: StateSettings) {
+        if let Some(wireless_enabled) = state.wireless_enabled {
+            self.general_state.wireless_enabled = wireless_enabled;
+        }
+
+        if let Some(networking_enabled) = state.networking_enabled {
+            self.general_state.networking_enabled = networking_enabled;
+        }
+
+        if let Some(copy_network) = state.copy_network {
+            self.general_state.copy_network = copy_network;
+        }
     }
 
     /// Updates a connection with a new one.
     ///
     /// It uses the `uuid` to decide which connection to update.
+    ///
+    /// * `conn`: The connection to update.
     pub fn update_connection(&mut self, conn: Connection) -> Result<(), NetworkStateError> {
         let Some(old_conn) = self.get_connection_by_uuid_mut(conn.uuid) else {
             return Err(NetworkStateError::UnknownConnection(conn.uuid.to_string()));
@@ -309,6 +426,8 @@ impl NetworkState {
     /// Removes a connection from the state.
     ///
     /// Additionally, it registers the connection to be removed when the changes are applied.
+    ///
+    /// * `uuid`: The UUID of the connection to remove.
     pub fn remove_connection(&mut self, uuid: Uuid) -> Result<(), NetworkStateError> {
         let Some(position) = self.connections.iter().position(|d| d.uuid == uuid) else {
             return Err(NetworkStateError::UnknownConnection(uuid.to_string()));
@@ -318,11 +437,18 @@ impl NetworkState {
         Ok(())
     }
 
+    /// Adds a new device to the state.
+    ///
+    /// * `device`: The device to add.
     pub fn add_device(&mut self, device: Device) -> Result<(), NetworkStateError> {
         self.devices.push(device);
         Ok(())
     }
 
+    /// Updates a device in the state.
+    ///
+    /// * `name`: The name of the device to update.
+    /// * `device`: The new device information.
     pub fn update_device(&mut self, name: &str, device: Device) -> Result<(), NetworkStateError> {
         let Some(old_device) = self.get_device_mut(name) else {
             return Err(NetworkStateError::UnknownDevice(device.name.clone()));
@@ -332,6 +458,9 @@ impl NetworkState {
         Ok(())
     }
 
+    /// Removes a device from the state.
+    ///
+    /// * `name`: The name of the device to remove.
     pub fn remove_device(&mut self, name: &str) -> Result<(), NetworkStateError> {
         let Some(position) = self.devices.iter().position(|d| d.name == name) else {
             return Err(NetworkStateError::UnknownDevice(name.to_string()));
@@ -341,6 +470,9 @@ impl NetworkState {
         Ok(())
     }
 
+    /// Adds a new access point to the state.
+    ///
+    /// * `ap`: The access point to add.
     pub fn add_access_point(&mut self, ap: AccessPoint) -> Result<(), NetworkStateError> {
         if let Some(position) = self
             .access_points
@@ -354,6 +486,9 @@ impl NetworkState {
         Ok(())
     }
 
+    /// Removes an access point from the state.
+    ///
+    /// * `hw_address`: The hardware address of the access point to remove.
     pub fn remove_access_point(&mut self, hw_address: &str) -> Result<(), NetworkStateError> {
         let Some(position) = self
             .access_points
@@ -371,294 +506,69 @@ impl NetworkState {
 
     /// Sets a controller's ports.
     ///
+    /// The ports that are not listed anymore are detached from the controller, but they are kept.
+    /// Removing a connection is an explicit operation, and a port that is no longer part of a
+    /// bond or a bridge is a perfectly usable stand-alone connection.
+    ///
+    /// This is the imperative counterpart of what [`Self::connection_collection_from`] does for a
+    /// whole document. Unlike the resolver, it only looks at the connections that already exist:
+    /// it does not create the missing ones and it does not validate the resulting graph.
+    ///
     /// If the connection is not a controller, returns an error.
     ///
     /// * `controller`: controller to set ports on.
-    /// * `ports`: list of port names (using the connection ID or the interface name).
+    /// * `ports`: list of port names (using the interface name or, failing that, the connection
+    ///   ID).
     pub fn set_ports(
         &mut self,
         controller: &Connection,
         ports: Vec<String>,
     ) -> Result<(), NetworkStateError> {
-        match &controller.config {
-            ConnectionConfig::Bond(_) | ConnectionConfig::Bridge(_) => {
-                let mut controlled = vec![];
-                for port in ports {
-                    let connection = self
-                        .get_connection_by_interface(&port)
-                        .or_else(|| self.get_connection(&port))
-                        .ok_or(NetworkStateError::UnknownConnection(port))?;
-                    controlled.push(connection.uuid);
-                }
-
-                for conn in self.connections.iter_mut() {
-                    if controlled.contains(&conn.uuid) {
-                        conn.controller = Some(controller.uuid);
-                        if conn.interface.is_none() {
-                            conn.interface = Some(conn.id.clone());
-                        }
-                    } else if conn.controller == Some(controller.uuid) {
-                        conn.controller = None;
-                    }
-                }
-                Ok(())
-            }
-            _ => Err(NetworkStateError::NotControllerConnection(
+        if !matches!(
+            controller.config,
+            ConnectionConfig::Bond(_) | ConnectionConfig::Bridge(_)
+        ) {
+            return Err(NetworkStateError::NotControllerConnection(
                 controller.id.to_owned(),
-            )),
+            ));
         }
+
+        let mut controlled = vec![];
+        for port in ports {
+            let connection = self
+                .get_connection_by_interface(&port)
+                .or_else(|| self.get_connection(&port))
+                .ok_or(NetworkStateError::UnknownConnection(port))?;
+            controlled.push(connection.uuid);
+        }
+
+        for conn in self.connections.iter_mut() {
+            if controlled.contains(&conn.uuid) {
+                conn.controller = Some(controller.uuid);
+            } else if conn.controller == Some(controller.uuid) {
+                tracing::info!(
+                    "Controller {} does not contain {} anymore, detaching the port",
+                    &controller.id,
+                    &conn.id
+                );
+                conn.controller = None;
+            }
+        }
+
+        Ok(())
     }
 }
 
 #[cfg(test)]
-mod tests {
-    use super::*;
-    use crate::error::NetworkStateError;
-    use uuid::Uuid;
-
-    #[test]
-    fn test_add_connection() {
-        let mut state = NetworkState::default();
-        let uuid = Uuid::new_v4();
-        let conn0 = Connection {
-            id: "eth0".to_string(),
-            uuid,
-            ..Default::default()
-        };
-        state.add_connection(conn0).unwrap();
-        let found = state.get_connection("eth0").unwrap();
-        assert_eq!(found.uuid, uuid);
-    }
-
-    #[test]
-    fn test_add_duplicated_connection() {
-        let mut state = NetworkState::default();
-        let mut conn0 = Connection::new("eth0".to_string(), DeviceType::Ethernet);
-        conn0.uuid = Uuid::new_v4();
-        state.add_connection(conn0.clone()).unwrap();
-        let error = state.add_connection(conn0).unwrap_err();
-        assert!(matches!(error, NetworkStateError::ConnectionExists(_)));
-    }
-
-    #[test]
-    fn test_update_connection() {
-        let mut state = NetworkState::default();
-        let uuid = Uuid::new_v4();
-        let conn0 = Connection {
-            id: "eth0".to_string(),
-            uuid,
-            ..Default::default()
-        };
-        state.add_connection(conn0).unwrap();
-
-        let conn1 = Connection {
-            id: "eth0".to_string(),
-            uuid,
-            firewall_zone: Some("public".to_string()),
-            ..Default::default()
-        };
-        state.update_connection(conn1).unwrap();
-        let found = state.get_connection_by_uuid(uuid).unwrap();
-        assert_eq!(found.firewall_zone, Some("public".to_string()));
-    }
-
-    #[test]
-    fn test_update_unknown_connection() {
-        let mut state = NetworkState::default();
-        let conn0 = Connection::new("eth0".to_string(), DeviceType::Ethernet);
-        let error = state.update_connection(conn0).unwrap_err();
-        assert!(matches!(error, NetworkStateError::UnknownConnection(_)));
-    }
-
-    #[test]
-    fn test_remove_connection() {
-        let mut state = NetworkState::default();
-        let uuid = Uuid::new_v4();
-        let conn0 = Connection {
-            id: "eth0".to_string(),
-            uuid,
-            ..Default::default()
-        };
-        state.add_connection(conn0).unwrap();
-        state.remove_connection(uuid).unwrap();
-        let found = state.get_connection_by_uuid(uuid);
-        assert!(found.is_none());
-    }
-
-    #[test]
-    fn test_remove_unknown_connection() {
-        let mut state = NetworkState::default();
-        let uuid = Uuid::new_v4();
-        let error = state.remove_connection(uuid).unwrap_err();
-        assert!(matches!(error, NetworkStateError::UnknownConnection(_)));
-    }
-
-    #[test]
-    fn test_remove_device() {
-        let mut state = NetworkState::default();
-        let device = Device {
-            name: "eth0".to_string(),
-            ..Default::default()
-        };
-        state.add_device(device).unwrap();
-        state.remove_device("eth0").unwrap();
-        assert!(state.get_device("eth0").is_none());
-    }
-
-    #[test]
-    fn test_add_access_point() {
-        let mut state = NetworkState::default();
-        let ap = AccessPoint {
-            hw_address: "AA:BB:CC:DD:EE:FF".to_string(),
-            ssid: SSID(b"test".to_vec()),
-            ..Default::default()
-        };
-        state.add_access_point(ap.clone()).unwrap();
-        assert_eq!(state.access_points.len(), 1);
-        assert_eq!(state.access_points[0].hw_address, "AA:BB:CC:DD:EE:FF");
-
-        // Adding same AP should replace it (in our implementation we remove and push)
-        let mut ap2 = ap.clone();
-        ap2.strength = 80;
-        state.add_access_point(ap2).unwrap();
-        assert_eq!(state.access_points.len(), 1);
-        assert_eq!(state.access_points[0].strength, 80);
-    }
-
-    #[test]
-    fn test_remove_access_point() {
-        let mut state = NetworkState::default();
-        let ap = AccessPoint {
-            hw_address: "AA:BB:CC:DD:EE:FF".to_string(),
-            ..Default::default()
-        };
-        state.add_access_point(ap).unwrap();
-        state.remove_access_point("AA:BB:CC:DD:EE:FF").unwrap();
-        assert_eq!(state.access_points.len(), 0);
-    }
-
-    #[test]
-    fn test_remove_unknown_access_point() {
-        let mut state = NetworkState::default();
-        let error = state.remove_access_point("unknown").unwrap_err();
-        assert!(matches!(error, NetworkStateError::UnknownAccessPoint(_)));
-    }
-
-    #[test]
-    fn test_is_loopback() {
-        let conn = Connection::new("eth0".to_string(), DeviceType::Ethernet);
-        assert!(!conn.is_loopback());
-
-        let conn = Connection::new("eth0".to_string(), DeviceType::Loopback);
-        assert!(conn.is_loopback());
-    }
-
-    #[test]
-    fn test_set_bonding_ports() {
-        let mut state = NetworkState::default();
-        let eth0 = Connection {
-            id: "eth0".to_string(),
-            interface: Some("eth0".to_string()),
-            ..Default::default()
-        };
-        let eth1 = Connection {
-            id: "eth1".to_string(),
-            interface: Some("eth1".to_string()),
-            ..Default::default()
-        };
-        let bond0 = Connection {
-            id: "bond0".to_string(),
-            interface: Some("bond0".to_string()),
-            config: ConnectionConfig::Bond(Default::default()),
-            ..Default::default()
-        };
-
-        state.add_connection(eth0).unwrap();
-        state.add_connection(eth1).unwrap();
-        state.add_connection(bond0.clone()).unwrap();
-
-        state.set_ports(&bond0, vec!["eth1".to_string()]).unwrap();
-
-        let eth1_found = state.get_connection("eth1").unwrap();
-        assert_eq!(eth1_found.controller, Some(bond0.uuid));
-        let eth0_found = state.get_connection("eth0").unwrap();
-        assert_eq!(eth0_found.controller, None);
-    }
-
-    #[test]
-    fn test_set_bonding_missing_port() {
-        let mut state = NetworkState::default();
-        let bond0 = Connection {
-            id: "bond0".to_string(),
-            interface: Some("bond0".to_string()),
-            config: ConnectionConfig::Bond(Default::default()),
-            ..Default::default()
-        };
-        state.add_connection(bond0.clone()).unwrap();
-
-        let error = state
-            .set_ports(&bond0, vec!["eth0".to_string()])
-            .unwrap_err();
-        assert!(matches!(error, NetworkStateError::UnknownConnection(_)));
-    }
-
-    #[test]
-    fn test_set_non_controller_ports() {
-        let mut state = NetworkState::default();
-        let eth0 = Connection {
-            id: "eth0".to_string(),
-            ..Default::default()
-        };
-        state.add_connection(eth0.clone()).unwrap();
-
-        let error = state
-            .set_ports(&eth0, vec!["eth1".to_string()])
-            .unwrap_err();
-        assert!(matches!(
-            error,
-            NetworkStateError::NotControllerConnection(_),
-        ));
-    }
-
-    #[test]
-    fn test_copy_connections() {
-        use std::fs;
-
-        let tmp_dir = std::env::temp_dir().join(format!("test_agama_network_{}", Uuid::new_v4()));
-        let source = tmp_dir.join("source");
-        let dest = tmp_dir.join("dest");
-
-        fs::create_dir_all(&source).unwrap();
-        fs::write(source.join("conn1.nmconnection"), "content1").unwrap();
-        fs::write(source.join("conn2.nmconnection"), "content2").unwrap();
-        fs::create_dir(source.join("ignored_dir")).unwrap();
-
-        let state = NetworkState::default();
-        state.copy_connections(&source, &dest).unwrap();
-
-        assert!(dest.join("conn1.nmconnection").exists());
-        assert_eq!(
-            fs::read_to_string(dest.join("conn1.nmconnection")).unwrap(),
-            "content1"
-        );
-        assert!(dest.join("conn2.nmconnection").exists());
-        assert_eq!(
-            fs::read_to_string(dest.join("conn2.nmconnection")).unwrap(),
-            "content2"
-        );
-        assert!(!dest.join("ignored_dir").exists());
-
-        fs::remove_dir_all(tmp_dir).unwrap();
-    }
-}
+mod tests;
 
 pub const NOT_COPY_NETWORK_PATH: &str = "/run/agama/not_copy_network";
 
-/// Network state
+/// General network state and settings.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct GeneralState {
     pub hostname: String,
-    pub connectivity: bool,
+    pub connectivity: ConnectivityState,
     pub copy_network: bool,
     pub wireless_enabled: bool,
     pub networking_enabled: bool, // pub network_state: NMSTATE
@@ -667,14 +577,15 @@ pub struct GeneralState {
 /// Represents a known network connection.
 #[serde_as]
 #[skip_serializing_none]
-#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, utoipa::ToSchema)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct Connection {
     pub id: String,
     pub uuid: Uuid,
-    #[schema(schema_with = schemas::mac_addr6)]
+    #[schemars(with = "Option<String>")]
     pub mac_address: Option<MacAddr6>,
     #[serde_as(as = "DisplayFromStr")]
+    #[schemars(with = "String")]
     pub custom_mac_address: MacAddress,
     pub firewall_zone: Option<String>,
     pub mtu: u32,
@@ -693,6 +604,10 @@ pub struct Connection {
 }
 
 impl Connection {
+    /// Creates a new connection with the given ID and device type.
+    ///
+    /// * `id`: The connection identifier.
+    /// * `device_type`: The type of the device.
     pub fn new(id: String, device_type: DeviceType) -> Self {
         let config = match device_type {
             DeviceType::Ethernet => ConnectionConfig::Ethernet,
@@ -751,6 +666,133 @@ impl Connection {
             || matches!(self.config, ConnectionConfig::Vlan(_))
             || matches!(self.config, ConnectionConfig::Bridge(_))
     }
+
+    /// Applies the settings coming from the HTTP API.
+    ///
+    /// The HTTP API does not model every setting of a connection, and the ones it does not know
+    /// about are left untouched. Otherwise, editing a connection over the API would silently drop
+    /// the settings that were read from NetworkManager or imported from an AutoYaST profile.
+    ///
+    /// Note that the controller/port relationships are not handled here, as they cannot be
+    /// resolved without looking at the other connections. See [`crate::model::ports`].
+    ///
+    /// * `conn`: settings to apply.
+    pub fn apply_settings(&mut self, conn: &NetworkConnection) -> Result<(), NetworkStateError> {
+        self.ip_config.method4 = conn.method4;
+        self.ip_config.method6 = conn.method6;
+
+        if let Some(status) = conn.status {
+            self.status = status;
+        }
+
+        if let Some(autoconnect) = conn.autoconnect {
+            self.autoconnect = autoconnect;
+        }
+
+        if let Some(persistent) = conn.persistent {
+            self.persistent = persistent;
+        }
+
+        if let Some(ignore_auto_dns) = conn.ignore_auto_dns {
+            self.ip_config.ignore_auto_dns = ignore_auto_dns;
+        }
+
+        // A missing section means "do not touch the device settings", not "turn this into an
+        // Ethernet connection". Changing the type of a connection requires removing it and
+        // creating a new one.
+        if let Some(vlan_config) = &conn.vlan {
+            self.config = VlanConfig::try_from(vlan_config.clone())?.into();
+        }
+        if let Some(wireless_config) = &conn.wireless {
+            self.config = WirelessConfig::try_from(wireless_config.clone())?.into();
+        }
+        if let Some(bond_config) = &conn.bond {
+            self.config = BondConfig::try_from(bond_config.clone())?.into();
+        }
+        if let Some(bridge_config) = &conn.bridge {
+            self.config = BridgeConfig::try_from(bridge_config.clone())?.into();
+        }
+
+        if let Some(ieee_8021x_config) = &conn.ieee_8021x {
+            self.ieee_8021x_config = Some(IEEE8021XConfig::try_from(ieee_8021x_config.clone())?);
+        }
+
+        if let Some(mac) = &conn.mac_address {
+            self.mac_address = MacAddr6::from_str(mac).ok();
+        }
+
+        if let Some(mac) = &conn.custom_mac_address {
+            self.custom_mac_address = MacAddress::from_str(mac)
+                .map_err(|_| NetworkStateError::InvalidMacAddress(mac.to_string()))?;
+        }
+
+        self.ip_config.addresses = conn.addresses.clone();
+        self.ip_config.nameservers = conn.nameservers.clone();
+        self.ip_config.dns_searchlist = conn.dns_searchlist.clone();
+        self.ip_config.gateway4 = conn.gateway4;
+        self.ip_config.gateway6 = conn.gateway6;
+        // Like the MTU, a port referred to by its ID only does not give its interface.
+        if conn.interface.is_some() {
+            self.interface = conn.interface.clone();
+        }
+
+        // An MTU of 0 means that it is not given, e.g. a port referred to by its interface only.
+        if conn.mtu != 0 {
+            self.mtu = conn.mtu;
+        }
+
+        if let Some(match_settings) = &conn.match_settings {
+            self.match_config = MatchConfig {
+                driver: match_settings.driver.clone(),
+                interface: match_settings.interface.clone(),
+                path: match_settings.path.clone(),
+                kernel: match_settings.kernel.clone(),
+            };
+        }
+
+        Ok(())
+    }
+
+    /// Determines whether the connection is bound to a specific interface or MAC address.
+    pub fn is_bound(&self) -> bool {
+        !self.interface.as_deref().unwrap_or("").is_empty() || self.mac_address.is_some()
+    }
+
+    /// Determines whether the connection is compatible with the given device name and MAC address.
+    pub fn is_compatible(&self, device_name: &str, device_mac: &MacAddress) -> bool {
+        if let Some(interface) = &self.interface {
+            if !interface.is_empty() && interface != device_name {
+                return false;
+            }
+        }
+        if let Some(mac) = self.mac_address {
+            if let MacAddress::MacAddress(d_mac) = device_mac {
+                if mac != *d_mac {
+                    return false;
+                }
+            } else {
+                return false;
+            }
+        }
+        true
+    }
+
+    /// Determines whether the connection matches the given device name or MAC address.
+    pub fn matches_device(&self, device_name: &str, device_mac: &MacAddress) -> bool {
+        if let Some(interface) = &self.interface {
+            if !interface.is_empty() && interface == device_name {
+                return true;
+            }
+        }
+        if let Some(mac) = self.mac_address {
+            if let MacAddress::MacAddress(d_mac) = device_mac {
+                if mac == *d_mac {
+                    return true;
+                }
+            }
+        }
+        false
+    }
 }
 
 impl Default for Connection {
@@ -782,68 +824,8 @@ impl TryFrom<NetworkConnection> for Connection {
     type Error = NetworkStateError;
 
     fn try_from(conn: NetworkConnection) -> Result<Self, Self::Error> {
-        let id = conn.clone().id;
-        let mut connection = Connection::new(id, conn.device_type());
-
-        if let Some(method) = conn.clone().method4 {
-            let method: Ipv4Method = method.parse().unwrap();
-            connection.ip_config.method4 = method;
-        }
-
-        if let Some(method) = conn.method6 {
-            let method: Ipv6Method = method.parse().unwrap();
-            connection.ip_config.method6 = method;
-        }
-
-        if let Some(status) = conn.status {
-            connection.status = status;
-        }
-
-        if let Some(autoconnect) = conn.autoconnect {
-            connection.autoconnect = autoconnect;
-        }
-
-        if let Some(persistent) = conn.persistent {
-            connection.persistent = persistent;
-        }
-
-        if let Some(ignore_auto_dns) = conn.ignore_auto_dns {
-            connection.ip_config.ignore_auto_dns = ignore_auto_dns;
-        }
-
-        if let Some(vlan_config) = conn.vlan {
-            let config = VlanConfig::try_from(vlan_config)?;
-            connection.config = config.into();
-        }
-        if let Some(wireless_config) = conn.wireless {
-            let config = WirelessConfig::try_from(wireless_config)?;
-            connection.config = config.into();
-        }
-
-        if let Some(bond_config) = conn.bond {
-            let config = BondConfig::try_from(bond_config)?;
-            connection.config = config.into();
-        }
-        if let Some(bridge_config) = conn.bridge {
-            let config = BridgeConfig::try_from(bridge_config)?;
-            connection.config = config.into();
-        }
-
-        if let Some(ieee_8021x_config) = conn.ieee_8021x {
-            connection.ieee_8021x_config = Some(IEEE8021XConfig::try_from(ieee_8021x_config)?);
-        }
-
-        if let Some(mac) = conn.mac_address {
-            connection.mac_address = MacAddr6::from_str(mac.as_str()).ok()
-        }
-
-        connection.ip_config.addresses = conn.addresses;
-        connection.ip_config.nameservers = conn.nameservers;
-        connection.ip_config.dns_searchlist = conn.dns_searchlist;
-        connection.ip_config.gateway4 = conn.gateway4;
-        connection.ip_config.gateway6 = conn.gateway6;
-        connection.interface = conn.interface;
-        connection.mtu = conn.mtu;
+        let mut connection = Connection::new(conn.id.clone(), conn.device_type());
+        connection.apply_settings(&conn)?;
 
         Ok(connection)
     }
@@ -855,8 +837,8 @@ impl TryFrom<Connection> for NetworkConnection {
     fn try_from(conn: Connection) -> Result<Self, Self::Error> {
         let id = conn.clone().id;
         let custom_mac = conn.custom_mac_address.to_string();
-        let method4 = Some(conn.ip_config.method4.to_string());
-        let method6 = Some(conn.ip_config.method6.to_string());
+        let method4 = conn.ip_config.method4;
+        let method6 = conn.ip_config.method6;
         let mac_address = conn.mac_address.map(|mac| mac.to_string());
         let custom_mac_address = (!custom_mac.is_empty()).then_some(custom_mac);
         let nameservers = conn.ip_config.nameservers;
@@ -873,6 +855,13 @@ impl TryFrom<Connection> for NetworkConnection {
             .and_then(|x| IEEE8021XSettings::try_from(x).ok());
         let autoconnect = Some(conn.autoconnect);
         let persistent = Some(conn.persistent);
+
+        let match_settings = (!conn.match_config.is_empty()).then(|| MatchSettings {
+            driver: conn.match_config.driver.clone(),
+            interface: conn.match_config.interface.clone(),
+            path: conn.match_config.path.clone(),
+            kernel: conn.match_config.kernel.clone(),
+        });
 
         let mut connection = NetworkConnection {
             id,
@@ -892,6 +881,7 @@ impl TryFrom<Connection> for NetworkConnection {
             ieee_8021x,
             autoconnect,
             persistent,
+            match_settings,
             ..Default::default()
         };
 
@@ -915,7 +905,7 @@ impl TryFrom<Connection> for NetworkConnection {
     }
 }
 
-#[derive(Default, Debug, PartialEq, Clone, Deserialize, Serialize, utoipa::ToSchema)]
+#[derive(Default, Debug, PartialEq, Clone, Deserialize, Serialize, JsonSchema)]
 pub enum ConnectionConfig {
     #[default]
     Ethernet,
@@ -932,7 +922,7 @@ pub enum ConnectionConfig {
     OvsInterface(OvsInterfaceConfig),
 }
 
-#[derive(Default, Debug, PartialEq, Clone, Deserialize, Serialize, utoipa::ToSchema)]
+#[derive(Default, Debug, PartialEq, Clone, Deserialize, Serialize, JsonSchema)]
 pub enum PortConfig {
     #[default]
     None,
@@ -965,7 +955,7 @@ impl From<WirelessConfig> for ConnectionConfig {
 }
 
 #[skip_serializing_none]
-#[derive(Debug, Default, PartialEq, Clone, Deserialize, Serialize, utoipa::ToSchema)]
+#[derive(Debug, Default, PartialEq, Clone, Deserialize, Serialize, JsonSchema)]
 pub struct MatchConfig {
     #[serde(skip_serializing_if = "Vec::is_empty")]
     pub driver: Vec<String>,
@@ -977,7 +967,16 @@ pub struct MatchConfig {
     pub kernel: Vec<String>,
 }
 
-#[derive(Debug, Default, PartialEq, Clone, Deserialize, Serialize, utoipa::ToSchema)]
+impl MatchConfig {
+    pub fn is_empty(&self) -> bool {
+        self.driver.is_empty()
+            && self.interface.is_empty()
+            && self.path.is_empty()
+            && self.kernel.is_empty()
+    }
+}
+
+#[derive(Debug, Default, PartialEq, Clone, Deserialize, Serialize, JsonSchema)]
 pub enum VlanProtocol {
     #[default]
     IEEE802_1Q,
@@ -1010,19 +1009,22 @@ impl fmt::Display for VlanProtocol {
     }
 }
 
-#[derive(Debug, Default, PartialEq, Clone, Deserialize, Serialize, utoipa::ToSchema)]
+#[derive(Debug, Default, PartialEq, Clone, Deserialize, Serialize, JsonSchema)]
 pub struct VlanConfig {
     pub parent: String,
     pub id: u32,
     pub protocol: VlanProtocol,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub flags: Option<Vec<VlanFlag>>,
 }
 
 #[serde_as]
-#[derive(Debug, Default, PartialEq, Clone, Deserialize, Serialize, utoipa::ToSchema)]
+#[derive(Debug, Default, PartialEq, Clone, Deserialize, Serialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct WirelessConfig {
     pub mode: WirelessMode,
     #[serde_as(as = "DisplayFromStr")]
+    #[schemars(with = "String")]
     pub ssid: SSID,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub password: Option<String>,
@@ -1031,7 +1033,7 @@ pub struct WirelessConfig {
     pub band: Option<WirelessBand>,
     pub channel: u32,
     #[serde(skip_serializing_if = "Option::is_none")]
-    #[schema(schema_with = schemas::mac_addr6)]
+    #[schemars(with = "Option<String>")]
     pub bssid: Option<macaddr::MacAddr6>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub wep_security: Option<WEPSecurity>,
@@ -1066,6 +1068,7 @@ impl TryFrom<VlanSettings> for VlanConfig {
         let mut config = VlanConfig {
             id,
             parent,
+            flags: settings.flags,
             ..Default::default()
         };
 
@@ -1086,6 +1089,7 @@ impl TryFrom<VlanConfig> for VlanSettings {
             id: vlan.id,
             parent: vlan.parent,
             protocol: Some(vlan.protocol.to_string()),
+            flags: vlan.flags,
         })
     }
 }
@@ -1195,7 +1199,7 @@ impl TryFrom<WirelessConfig> for WirelessSettings {
     }
 }
 
-#[derive(Debug, Default, Clone, Copy, PartialEq, Deserialize, Serialize, utoipa::ToSchema)]
+#[derive(Debug, Default, Clone, Copy, PartialEq, Deserialize, Serialize, JsonSchema)]
 pub enum WirelessMode {
     Unknown = 0,
     AdHoc = 1,
@@ -1233,7 +1237,7 @@ impl fmt::Display for WirelessMode {
     }
 }
 
-#[derive(Debug, Clone, Copy, Default, PartialEq, Deserialize, Serialize, utoipa::ToSchema)]
+#[derive(Debug, Clone, Copy, Default, PartialEq, Deserialize, Serialize, JsonSchema)]
 pub enum SecurityProtocol {
     #[default]
     WEP, // No encryption or WEP ("none")
@@ -1279,7 +1283,7 @@ impl TryFrom<&str> for SecurityProtocol {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Deserialize, Serialize, utoipa::ToSchema)]
+#[derive(Debug, Clone, Copy, PartialEq, Deserialize, Serialize, JsonSchema)]
 pub enum GroupAlgorithm {
     Wep40,
     Wep104,
@@ -1317,7 +1321,7 @@ impl fmt::Display for GroupAlgorithm {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Deserialize, Serialize, utoipa::ToSchema)]
+#[derive(Debug, Clone, Copy, PartialEq, Deserialize, Serialize, JsonSchema)]
 pub enum PairwiseAlgorithm {
     Tkip,
     Ccmp,
@@ -1349,7 +1353,7 @@ impl fmt::Display for PairwiseAlgorithm {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Deserialize, Serialize, utoipa::ToSchema)]
+#[derive(Debug, Clone, Copy, PartialEq, Deserialize, Serialize, JsonSchema)]
 pub enum WPAProtocolVersion {
     Wpa,
     Rsn,
@@ -1381,7 +1385,7 @@ impl fmt::Display for WPAProtocolVersion {
     }
 }
 
-#[derive(Debug, Default, PartialEq, Clone, Deserialize, Serialize, utoipa::ToSchema)]
+#[derive(Debug, Default, PartialEq, Clone, Deserialize, Serialize, JsonSchema)]
 pub struct WEPSecurity {
     pub auth_alg: WEPAuthAlg,
     pub wep_key_type: WEPKeyType,
@@ -1390,7 +1394,7 @@ pub struct WEPSecurity {
     pub wep_key_index: u32,
 }
 
-#[derive(Debug, Default, PartialEq, Clone, Deserialize, Serialize, utoipa::ToSchema)]
+#[derive(Debug, Default, PartialEq, Clone, Deserialize, Serialize, JsonSchema)]
 pub enum WEPKeyType {
     #[default]
     Unknown = 0,
@@ -1411,7 +1415,7 @@ impl TryFrom<u32> for WEPKeyType {
     }
 }
 
-#[derive(Debug, Default, PartialEq, Clone, Deserialize, Serialize, utoipa::ToSchema)]
+#[derive(Debug, Default, PartialEq, Clone, Deserialize, Serialize, JsonSchema)]
 pub enum WEPAuthAlg {
     #[default]
     Unset,
@@ -1446,7 +1450,7 @@ impl fmt::Display for WEPAuthAlg {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Deserialize, Serialize, utoipa::ToSchema)]
+#[derive(Debug, Clone, Copy, PartialEq, Deserialize, Serialize, JsonSchema)]
 pub enum WirelessBand {
     A,  // 5GHz
     BG, // 2.4GHz
@@ -1474,7 +1478,7 @@ impl TryFrom<&str> for WirelessBand {
     }
 }
 
-#[derive(Debug, Default, Clone, PartialEq, Deserialize, Serialize, utoipa::ToSchema)]
+#[derive(Debug, Default, Clone, PartialEq, Deserialize, Serialize, JsonSchema)]
 pub struct BondOptions(pub HashMap<String, String>);
 
 impl TryFrom<&str> for BondOptions {
@@ -1507,7 +1511,7 @@ impl fmt::Display for BondOptions {
     }
 }
 
-#[derive(Debug, Default, PartialEq, Clone, Deserialize, Serialize, utoipa::ToSchema)]
+#[derive(Debug, Default, PartialEq, Clone, Deserialize, Serialize, JsonSchema)]
 pub struct BondConfig {
     pub mode: BondMode,
     pub options: BondOptions,
@@ -1517,19 +1521,166 @@ pub struct BondConfig {
 pub struct ConnectionCollection(pub Vec<Connection>);
 
 impl ConnectionCollection {
-    pub fn ports_for(&self, uuid: Uuid) -> Vec<String> {
-        self.iter()
-            .filter(|c| c.controller == Some(uuid))
-            .map(|c| c.interface.as_ref().unwrap_or(&c.id).clone())
-            .collect()
+    /// Name used to refer to a connection by name, as a VLAN does with its parent.
+    ///
+    /// It is the interface name when the connection is bound to one, and the connection ID
+    /// otherwise (e.g., when the connection is bound by MAC address or by `match` settings).
+    pub fn reference_name(conn: &Connection) -> &str {
+        conn.interface.as_deref().unwrap_or(&conn.id)
+    }
+
+    /// Returns the controller whose `ports` list the connection is reported in, if any.
+    ///
+    /// Only bonds and bridges expose their ports. A connection that is on its way out, or whose
+    /// controller is, is reported on its own: listing it as a port would bring it back on the
+    /// next write.
+    ///
+    /// * `conn`: connection to find the controller of.
+    fn nesting_controller(&self, conn: &Connection) -> Option<&Connection> {
+        if conn.is_removed() {
+            return None;
+        }
+
+        let uuid = conn.controller?;
+        self.iter().find(|c| {
+            c.uuid == uuid
+                && !c.is_removed()
+                && matches!(
+                    c.config,
+                    ConnectionConfig::Bond(_) | ConnectionConfig::Bridge(_)
+                )
+        })
+    }
+
+    /// Converts the collection to its HTTP API representation.
+    ///
+    /// The ports of each bond and bridge are nested in its `portConnections` list, so only the
+    /// root connections are at the top level.
+    fn to_api(&self) -> Result<NetworkConnectionsCollection, NetworkStateError> {
+        let roots = self.to_api_roots()?;
+        Ok(NetworkConnectionsCollection(
+            roots.into_iter().map(|(_, root)| root).collect(),
+        ))
+    }
+
+    /// Converts the collection to its HTTP API representation, with the state of the connections.
+    ///
+    /// Only the root connections report their state: the nested ports are part of their
+    /// controller's representation.
+    fn to_api_with_state(
+        &self,
+    ) -> Result<NetworkConnectionsWithStateCollection, NetworkStateError> {
+        let roots = self.to_api_roots()?;
+        Ok(NetworkConnectionsWithStateCollection(
+            roots
+                .into_iter()
+                .map(|(conn, connection)| NetworkConnectionWithState {
+                    connection,
+                    state: conn.state,
+                })
+                .collect(),
+        ))
+    }
+
+    /// Converts the root connections, with their ports nested, to their HTTP API representation.
+    ///
+    /// Each one comes with the connection it was converted from.
+    fn to_api_roots(&self) -> Result<Vec<(&Connection, NetworkConnection)>, NetworkStateError> {
+        let mut placed = HashSet::new();
+        let mut roots = vec![];
+
+        for conn in self.iter() {
+            if self.nesting_controller(conn).is_some() {
+                continue;
+            }
+
+            if let Some(uuid) = conn.controller.filter(|_| !conn.is_removed()) {
+                if !self.iter().any(|c| c.uuid == uuid) {
+                    tracing::warn!(
+                        "Connection {} refers to the unknown controller {}",
+                        conn.id,
+                        uuid
+                    );
+                }
+            }
+
+            let root = self.to_api_tree(conn, &mut placed)?;
+            roots.push((conn, root));
+        }
+
+        // A loop of controllers is not reachable from any root. Report it anyway, starting at
+        // any of its members, rather than losing the connections on the way.
+        for conn in self.iter() {
+            if !placed.contains(&conn.uuid) {
+                tracing::warn!("Connection {} belongs to a loop of controllers", conn.id);
+                let root = self.to_api_tree(conn, &mut placed)?;
+                roots.push((conn, root));
+            }
+        }
+
+        Ok(roots)
+    }
+
+    /// Converts a connection and, recursively, its ports to their HTTP API representation.
+    ///
+    /// * `conn`: connection to convert.
+    /// * `placed`: connections converted so far, to not walk a loop of controllers forever.
+    fn to_api_tree(
+        &self,
+        conn: &Connection,
+        placed: &mut HashSet<Uuid>,
+    ) -> Result<NetworkConnection, NetworkStateError> {
+        placed.insert(conn.uuid);
+
+        let mut api_conn = NetworkConnection::try_from(conn.clone())?;
+
+        if api_conn.controller_settings().is_none() {
+            return Ok(api_conn);
+        }
+
+        let members: Vec<&Connection> = self
+            .iter()
+            .filter(|c| {
+                self.nesting_controller(c)
+                    .is_some_and(|p| p.uuid == conn.uuid)
+            })
+            .collect();
+
+        let mut ports = vec![];
+        for member in members {
+            if placed.contains(&member.uuid) {
+                continue;
+            }
+            let port = self.to_api_tree(member, placed)?;
+            ports.push((member, port));
+        }
+
+        if ports.is_empty() {
+            return Ok(api_conn);
+        }
+
+        if let Some(bond) = api_conn.bond.as_mut() {
+            let ports = ports
+                .into_iter()
+                .map(|(_, port)| BondPort::from_connection(port))
+                .collect();
+            bond.set_ports(ports);
+        } else if let Some(bridge) = api_conn.bridge.as_mut() {
+            let ports = ports
+                .into_iter()
+                .map(|(member, port)| {
+                    let settings = BridgePortSettings::from(&member.port_config);
+                    let settings = (!settings.is_empty()).then_some(settings);
+                    BridgePort::from_connection(port, settings)
+                })
+                .collect();
+            bridge.set_ports(ports);
+        }
+        Ok(api_conn)
     }
 
     fn iter(&self) -> impl Iterator<Item = &Connection> {
         self.0.iter()
-    }
-
-    fn iter_mut(&mut self) -> impl Iterator<Item = &mut Connection> {
-        self.0.iter_mut()
     }
 }
 
@@ -1537,86 +1688,19 @@ impl TryFrom<ConnectionCollection> for NetworkConnectionsCollection {
     type Error = NetworkStateError;
 
     fn try_from(collection: ConnectionCollection) -> Result<Self, Self::Error> {
-        let network_connections = collection
-            .iter()
-            .filter(|c| c.controller.is_none())
-            .map(|c| {
-                let mut conn = NetworkConnection::try_from(c.clone()).unwrap();
-                if let Some(ref mut bond) = conn.bond {
-                    bond.ports = collection.ports_for(c.uuid);
-                }
-                if let Some(ref mut bridge) = conn.bridge {
-                    bridge.ports = collection.ports_for(c.uuid);
-                };
-                conn
-            })
-            .collect();
-
-        Ok(NetworkConnectionsCollection(network_connections))
-    }
-}
-
-impl TryFrom<ConnectionCollection> for NetworkConnectionsWithStateCollection {
-    type Error = NetworkStateError;
-
-    fn try_from(collection: ConnectionCollection) -> Result<Self, Self::Error> {
-        let network_connections = collection
-            .iter()
-            .filter(|c| c.controller.is_none())
-            .map(|c| {
-                let mut conn = NetworkConnection::try_from(c.clone()).unwrap();
-                if let Some(ref mut bond) = conn.bond {
-                    bond.ports = collection.ports_for(c.uuid);
-                }
-                if let Some(ref mut bridge) = conn.bridge {
-                    bridge.ports = collection.ports_for(c.uuid);
-                };
-                NetworkConnectionWithState {
-                    connection: conn,
-                    state: c.state,
-                }
-            })
-            .collect();
-
-        Ok(NetworkConnectionsWithStateCollection(network_connections))
+        collection.to_api()
     }
 }
 
 impl TryFrom<NetworkConnectionsCollection> for ConnectionCollection {
     type Error = NetworkStateError;
 
+    /// Builds the collection without any previous knowledge about the system.
+    ///
+    /// Use [`NetworkState::connection_collection_from`] to take the existing connections into
+    /// account, which is what any code that updates the network state should do.
     fn try_from(collection: NetworkConnectionsCollection) -> Result<Self, Self::Error> {
-        let mut conns: Vec<Connection> = vec![];
-        let mut controller_ports: HashMap<String, Uuid> = HashMap::new();
-
-        for net_conn in &collection.0 {
-            let mut conn = Connection::try_from(net_conn.clone())?;
-            conn.uuid = Uuid::new_v4();
-            let mut ports = vec![];
-            if let Some(bridge) = &net_conn.bridge {
-                ports = bridge.ports.clone();
-            }
-            if let Some(bond) = &net_conn.bond {
-                ports = bond.ports.clone();
-            }
-            for port in &ports {
-                controller_ports.insert(port.to_string(), conn.uuid);
-            }
-
-            conns.push(conn);
-        }
-
-        for (port, uuid) in controller_ports {
-            let mut conn = conns
-                .iter()
-                .find(|c| c.id == port || c.interface.as_ref() == Some(&port))
-                .cloned()
-                .unwrap_or_else(|| Connection::new(port, DeviceType::Ethernet));
-            conn.controller = Some(uuid);
-            conns.push(conn);
-        }
-
-        Ok(ConnectionCollection(conns))
+        PortResolver::new(&[]).resolve(&collection)
     }
 }
 
@@ -1651,8 +1735,7 @@ impl TryFrom<NetworkState> for SystemInfo {
     type Error = NetworkStateError;
 
     fn try_from(state: NetworkState) -> Result<Self, Self::Error> {
-        let connections: NetworkConnectionsWithStateCollection =
-            ConnectionCollection(state.connections).try_into()?;
+        let connections = ConnectionCollection(state.connections).to_api_with_state()?;
 
         Ok(SystemInfo {
             access_points: state.access_points,
@@ -1716,7 +1799,7 @@ impl TryFrom<BondConfig> for BondSettings {
 }
 
 #[skip_serializing_none]
-#[derive(Debug, Default, PartialEq, Clone, Deserialize, Serialize, utoipa::ToSchema)]
+#[derive(Debug, Default, PartialEq, Clone, Deserialize, Serialize, JsonSchema)]
 pub struct BridgeConfig {
     pub stp: Option<bool>,
     pub priority: Option<u32>,
@@ -1741,17 +1824,14 @@ impl TryFrom<BridgeSettings> for BridgeConfig {
     type Error = NetworkStateError;
 
     fn try_from(settings: BridgeSettings) -> Result<Self, Self::Error> {
-        let stp = settings.stp;
-        let priority = settings.priority;
-        let forward_delay = settings.forward_delay;
-        let hello_time = settings.forward_delay;
-
         Ok(BridgeConfig {
-            stp,
-            priority,
-            forward_delay,
-            hello_time,
-            ..Default::default()
+            stp: settings.stp,
+            priority: settings.priority,
+            forward_delay: settings.forward_delay,
+            hello_time: settings.hello_time,
+            max_age: settings.max_age,
+            // Not exposed over the HTTP API yet.
+            ageing_time: None,
         })
     }
 }
@@ -1765,11 +1845,14 @@ impl TryFrom<BridgeConfig> for BridgeSettings {
             priority: bridge.priority,
             forward_delay: bridge.forward_delay,
             hello_time: bridge.hello_time,
-            ..Default::default()
+            max_age: bridge.max_age,
+            // Filled in by ConnectionCollection::to_api, which can see the other connections.
+            ports: None,
+            port_connections: None,
         })
     }
 }
-#[derive(Debug, Default, PartialEq, Clone, Deserialize, Serialize, utoipa::ToSchema)]
+#[derive(Debug, Default, PartialEq, Clone, Deserialize, Serialize, JsonSchema)]
 pub struct BridgePortConfig {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub priority: Option<u32>,
@@ -1777,14 +1860,56 @@ pub struct BridgePortConfig {
     pub path_cost: Option<u32>,
 }
 
-#[derive(Default, Debug, PartialEq, Clone, Deserialize, Serialize, utoipa::ToSchema)]
+impl PortConfig {
+    /// Whether these are the settings of a port of the given kind of controller.
+    ///
+    /// * `controller`: configuration of the controller.
+    pub fn fits(&self, controller: &ConnectionConfig) -> bool {
+        match self {
+            PortConfig::None => true,
+            PortConfig::Bridge(_) => matches!(controller, ConnectionConfig::Bridge(_)),
+            PortConfig::OvsBridge(_) => matches!(controller, ConnectionConfig::OvsBridge(_)),
+        }
+    }
+}
+
+impl From<PortSettings<'_>> for PortConfig {
+    fn from(settings: PortSettings<'_>) -> Self {
+        // The types of the nested ports make sure that they only give the port settings of their
+        // kind of controller.
+        match settings {
+            PortSettings::Bridge(settings) if !settings.is_empty() => {
+                PortConfig::Bridge(BridgePortConfig {
+                    priority: settings.priority,
+                    path_cost: settings.path_cost,
+                })
+            }
+            PortSettings::Bridge(_) => PortConfig::None,
+        }
+    }
+}
+
+impl From<&PortConfig> for BridgePortSettings {
+    fn from(config: &PortConfig) -> Self {
+        match config {
+            PortConfig::Bridge(bridge) => BridgePortSettings {
+                priority: bridge.priority,
+                path_cost: bridge.path_cost,
+            },
+            // Open vSwitch ports have no settings to expose yet.
+            PortConfig::OvsBridge(_) | PortConfig::None => BridgePortSettings::default(),
+        }
+    }
+}
+
+#[derive(Default, Debug, PartialEq, Clone, Deserialize, Serialize, JsonSchema)]
 pub struct InfinibandConfig {
     pub p_key: Option<i32>,
     pub parent: Option<String>,
     pub transport_mode: InfinibandTransportMode,
 }
 
-#[derive(Default, Debug, PartialEq, Clone, Deserialize, Serialize, utoipa::ToSchema)]
+#[derive(Default, Debug, PartialEq, Clone, Deserialize, Serialize, JsonSchema)]
 pub enum InfinibandTransportMode {
     #[default]
     Datagram,
@@ -1817,14 +1942,14 @@ impl fmt::Display for InfinibandTransportMode {
     }
 }
 
-#[derive(Default, Debug, PartialEq, Clone, Deserialize, Serialize, utoipa::ToSchema)]
+#[derive(Default, Debug, PartialEq, Clone, Deserialize, Serialize, JsonSchema)]
 pub enum TunMode {
     #[default]
     Tun = 1,
     Tap = 2,
 }
 
-#[derive(Default, Debug, PartialEq, Clone, Deserialize, Serialize, utoipa::ToSchema)]
+#[derive(Default, Debug, PartialEq, Clone, Deserialize, Serialize, JsonSchema)]
 pub struct TunConfig {
     pub mode: TunMode,
     pub group: Option<String>,
@@ -1856,7 +1981,7 @@ pub enum NetworkChange {
     AccessPointRemoved(String),
 }
 
-#[derive(Default, Debug, PartialEq, Clone, Deserialize, Serialize, utoipa::ToSchema)]
+#[derive(Default, Debug, PartialEq, Clone, Deserialize, Serialize, JsonSchema)]
 pub struct IEEE8021XConfig {
     pub eap: Vec<EAPMethod>,
     pub phase2_auth: Option<Phase2AuthMethod>,
@@ -1945,7 +2070,7 @@ impl TryFrom<IEEE8021XConfig> for IEEE8021XSettings {
 #[error("Invalid eap method: {0}")]
 pub struct InvalidEAPMethod(String);
 
-#[derive(Debug, PartialEq, Clone, Deserialize, Serialize, utoipa::ToSchema)]
+#[derive(Debug, PartialEq, Clone, Deserialize, Serialize, JsonSchema)]
 pub enum EAPMethod {
     LEAP,
     MD5,
@@ -1992,7 +2117,7 @@ impl fmt::Display for EAPMethod {
 #[error("Invalid phase2-auth method: {0}")]
 pub struct InvalidPhase2AuthMethod(String);
 
-#[derive(Debug, PartialEq, Clone, Deserialize, Serialize, utoipa::ToSchema)]
+#[derive(Debug, PartialEq, Clone, Deserialize, Serialize, JsonSchema)]
 pub enum Phase2AuthMethod {
     PAP,
     CHAP,
@@ -2038,14 +2163,14 @@ impl fmt::Display for Phase2AuthMethod {
     }
 }
 
-#[derive(Debug, Default, PartialEq, Clone, Deserialize, Serialize, utoipa::ToSchema)]
+#[derive(Debug, Default, PartialEq, Clone, Deserialize, Serialize, JsonSchema)]
 pub struct OvsBridgeConfig {
     pub mcast_snooping_enable: Option<bool>,
     pub rstp_enable: Option<bool>,
     pub stp_enable: Option<bool>,
 }
 
-#[derive(Debug, Default, PartialEq, Clone, Deserialize, Serialize, utoipa::ToSchema)]
+#[derive(Debug, Default, PartialEq, Clone, Deserialize, Serialize, JsonSchema)]
 pub struct OvsPortConfig {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub tag: Option<u16>,
@@ -2088,7 +2213,7 @@ impl fmt::Display for OvsInterfaceType {
         write!(f, "{}", value)
     }
 }
-#[derive(Default, Debug, PartialEq, Clone, Deserialize, Serialize, utoipa::ToSchema)]
+#[derive(Default, Debug, PartialEq, Clone, Deserialize, Serialize, JsonSchema)]
 pub enum OvsInterfaceType {
     #[default]
     Empty,
@@ -2098,10 +2223,10 @@ pub enum OvsInterfaceType {
     Dpdk,
 }
 
-#[derive(Debug, Default, PartialEq, Clone, Deserialize, Serialize, utoipa::ToSchema)]
+#[derive(Debug, Default, PartialEq, Clone, Deserialize, Serialize, JsonSchema)]
 pub struct OvsInterfaceConfig {
     pub interface_type: OvsInterfaceType,
 }
 
-#[derive(Debug, Default, PartialEq, Clone, Deserialize, Serialize, utoipa::ToSchema)]
+#[derive(Debug, Default, PartialEq, Clone, Deserialize, Serialize, JsonSchema)]
 pub struct OvsBridgePortConfig {}

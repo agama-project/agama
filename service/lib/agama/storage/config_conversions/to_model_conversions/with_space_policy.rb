@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -29,8 +29,6 @@ module Agama
         module WithSpacePolicy
           # @return [String, nil]
           def convert_space_policy
-            return unless config.respond_to?(:partitions)
-
             ToModelConversions::SpacePolicy.new(config).convert
           end
         end

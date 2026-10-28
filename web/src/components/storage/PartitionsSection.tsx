@@ -34,11 +34,8 @@ import {
   ExpandableSectionToggle,
   ExpandableSectionProps,
 } from "@patternfly/react-core";
-import {
-  useStorageUiState,
-  isExpandedInState,
-  toggleExpandedInState,
-} from "~/context/storage-ui-state";
+import { useSearchParamTokens } from "~/hooks/use-search-param-state";
+import { EXPANDED, expandedToken } from "~/components/storage/ui-state-params";
 import Text from "~/components/core/Text";
 import MenuButton from "~/components/core/MenuButton";
 import MountPathMenuItem from "~/components/storage/MountPathMenuItem";
@@ -67,7 +64,7 @@ const PartitionMenuItem = ({ device, mountPath, collection, index }: PartitionMe
   const partition = configModel.partitionable.findPartition(device, mountPath);
   const editPath = generateEncodedPath(PATHS.editPartition, {
     collection,
-    index,
+    index: String(index),
     partitionId: mountPath,
   });
   const deletePartition = useDeletePartition();
@@ -139,7 +136,7 @@ type PartitionRowProps = {
 const PartitionRow = ({ partition, collection, index }: PartitionRowProps) => {
   const editPath = generateEncodedPath(PATHS.editPartition, {
     collection,
-    index,
+    index: String(index),
     partitionId: partition.mountPath,
   });
   const deletePartition = useDeletePartition();
@@ -221,18 +218,19 @@ type PartitionsSectionProps = {
 };
 
 export default function PartitionsSection({ collection, index }: PartitionsSectionProps) {
-  const { uiState, setUiState } = useStorageUiState();
+  const { hasSearchParamToken, toggleSearchParamToken } = useSearchParamTokens(EXPANDED);
   const toggleId = useId();
   const contentId = useId();
   const device = usePartitionable(collection, index);
-  const uiIndex = `${collection[0]}${index}`;
-  const isExpanded = isExpandedInState(uiState, uiIndex);
-  const newPartitionPath = generateEncodedPath(PATHS.addPartition, { collection, index });
+  const token = expandedToken(collection, index);
+  const isExpanded = hasSearchParamToken(token);
+  const newPartitionPath = generateEncodedPath(PATHS.addPartition, {
+    collection,
+    index: String(index),
+  });
   const hasPartitions = device.partitions.some((p) => p.mountPath);
 
-  const onToggle = () => {
-    setUiState((state) => toggleExpandedInState(state, uiIndex));
-  };
+  const onToggle = () => toggleSearchParamToken(token);
   const iconName: IconProps["name"] = isExpanded ? "unfold_less" : "unfold_more";
   const commonProps: Pick<ExpandableSectionProps, "toggleId" | "contentId" | "isExpanded"> = {
     toggleId,

@@ -3,6 +3,8 @@
 #include <boost/bind/bind.hpp>
 #include <zypp/Callback.h>
 #include <zypp/ZYppCallbacks.h>
+#define ZYPP_BASE_LOGGER_LOGGROUP "rust-bindings"
+#include <zypp/base/Logger.h>
 
 #include "callbacks.h"
 
@@ -342,11 +344,29 @@ struct KeyRingReport
   askUserToAcceptKey(const zypp::PublicKey &key,
                      const zypp::KeyContext &context) override {
     if (callbacks == NULL || callbacks->accept_key == NULL) {
+      DBG << "Callback askUserToAcceptKey is not set, using defaults"
+          << std::endl;
       return zypp::KeyRingReport::askUserToAcceptKey(key, context);
     }
     enum GPGKeyTrust response = callbacks->accept_key(
         key.id().c_str(), key.name().c_str(), key.fingerprint().c_str(),
         context.repoInfo().alias().c_str(), callbacks->accept_key_data);
+
+    MIL << "Callback askUserToAcceptKey(id: " << key.id() << ", name: \""
+        << key.name() << "\", fingerprint: " << key.fingerprint()
+        << ", repository: " << context.repoInfo().alias() << ") result: ";
+
+    switch (response) {
+    case GPGKT_REJECT:
+      MIL << "REJECT" << std::endl;
+      break;
+    case GPGKT_TEMPORARY:
+      MIL << "TEMPORARY" << std::endl;
+      break;
+    case GPGKT_IMPORT:
+      MIL << "IMPORT" << std::endl;
+      break;
+    }
 
     return into_trust(response);
   }
@@ -354,6 +374,8 @@ struct KeyRingReport
   bool askUserToAcceptUnsignedFile(const std::string &file,
                                    const zypp::KeyContext &context) override {
     if (callbacks == NULL || callbacks->unsigned_file == NULL) {
+      DBG << "Callback askUserToAcceptUnsignedFile is not set, using defaults"
+          << std::endl;
       return zypp::KeyRingReport::askUserToAcceptUnsignedFile(file, context);
     }
     return callbacks->unsigned_file(file.c_str(),
@@ -364,6 +386,8 @@ struct KeyRingReport
   bool askUserToAcceptUnknownKey(const std::string &file, const std::string &id,
                                  const zypp::KeyContext &context) override {
     if (callbacks == NULL || callbacks->unknown_key == NULL) {
+      DBG << "Callback askUserToAcceptUnknownKey is not set, using defaults"
+          << std::endl;
       return zypp::KeyRingReport::askUserToAcceptUnknownKey(file, id, context);
     }
     return callbacks->unknown_key(file.c_str(), id.c_str(),
@@ -376,6 +400,9 @@ struct KeyRingReport
                                     const zypp::PublicKey &key,
                                     const zypp::KeyContext &context) override {
     if (callbacks == NULL || callbacks->verification_failed == NULL) {
+      DBG << "Callback askUserToAcceptVerificationFailed is not set, using "
+             "defaults"
+          << std::endl;
       return zypp::KeyRingReport::askUserToAcceptVerificationFailed(file, key,
                                                                     context);
     }

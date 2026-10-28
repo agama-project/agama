@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024-2025] SUSE LLC
+# Copyright (c) [2024-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -21,6 +21,7 @@
 
 require "agama/storage/config_conversions/to_model_conversions/base"
 require "agama/storage/config_conversions/to_model_conversions/with_filesystem"
+require "agama/storage/config_conversions/to_model_conversions/with_resize"
 require "agama/storage/config_conversions/to_model_conversions/with_size"
 
 module Agama
@@ -30,6 +31,7 @@ module Agama
         # Partition conversion to model according to the JSON schema.
         class Partition < Base
           include WithFilesystem
+          include WithResize
           include WithSize
 
           # @param config [Configs::Partition]
@@ -57,22 +59,6 @@ module Agama
               resize:         convert_resize,
               resizeIfNeeded: convert_resize_if_needed
             }
-          end
-
-          # @return [Booelan]
-          def convert_resize
-            return false unless config.found_device
-
-            size = config.size
-            !size.nil? && !size.default? && size.min == size.max
-          end
-
-          # @return [Booelan]
-          def convert_resize_if_needed
-            return false unless config.found_device
-
-            size = config.size
-            !size.nil? && !size.default? && size.min != size.max
           end
         end
       end

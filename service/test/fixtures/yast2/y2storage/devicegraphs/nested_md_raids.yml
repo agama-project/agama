@@ -1,0 +1,90 @@
+---
+- disk:
+    name: "/dev/sda"
+    size: 8 GiB
+    block_size: 0.5 KiB
+    io_size: 0 B
+    min_grain: 1 MiB
+    align_ofs: 0 B
+- disk:
+    name: "/dev/sdb"
+    size: 8 GiB
+    block_size: 0.5 KiB
+    io_size: 0 B
+    min_grain: 1 MiB
+    align_ofs: 0 B
+- disk:
+    name: "/dev/sdc"
+    size: 8 GiB
+    block_size: 0.5 KiB
+    io_size: 0 B
+    min_grain: 1 MiB
+    align_ofs: 0 B
+- disk:
+    name: "/dev/sdd"
+    size: 8 GiB
+    block_size: 0.5 KiB
+    io_size: 0 B
+    min_grain: 1 MiB
+    align_ofs: 0 B
+- md:
+    name: "/dev/md1"
+    md_level: raid1
+    md_parity: default
+    chunk_size: 0 B
+    md_uuid: 3e531727:0857f684:cd2e394b:62046b74
+    in_etc_mdadm: false
+    metadata: '1.0'
+    md_devices:
+    - md_device:
+        blk_device: "/dev/sda"
+    - md_device:
+        blk_device: "/dev/sdb"
+- md:
+    name: "/dev/md2"
+    md_level: raid1
+    md_parity: default
+    chunk_size: 0 B
+    md_uuid: c8440826:8e55745c:d7e14cdd:ac26716d
+    in_etc_mdadm: false
+    metadata: '1.0'
+    md_devices:
+    - md_device:
+        blk_device: "/dev/sdc"
+    - md_device:
+        blk_device: "/dev/sdd"
+- md:
+    name: "/dev/md0"
+    md_level: raid0
+    md_parity: default
+    chunk_size: 0.5 MiB
+    md_uuid: d11cbd17:b4fa9ccd:bb7b9bab:557d863c
+    in_etc_mdadm: false
+    metadata: '1.0'
+    partition_table: gpt
+    partitions:
+    - free:
+        size: 1 MiB
+        start: 0 B
+    - partition:
+        size: 487 MiB
+        start: 1 MiB
+        name: "/dev/md0p1"
+        type: primary
+        id: linux
+        file_system: ext4
+    - partition:
+        size: 32278 MiB (31.52 GiB)
+        start: 488 MiB
+        name: "/dev/md0p2"
+        type: primary
+        id: linux
+        file_system: ext4
+    - free:
+        size: 1 MiB
+        start: 32766 MiB (32.00 GiB)
+    md_devices:
+    - md_device:
+        blk_device: "/dev/md1"
+    - md_device:
+        blk_device: "/dev/md2"

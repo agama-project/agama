@@ -19,27 +19,27 @@
 // find current contact information at www.suse.com.
 
 use crate::api::config::Config;
+use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
-#[derive(thiserror::Error, Debug)]
-pub enum Error {
-    #[error(transparent)]
-    Json(#[from] serde_json::Error),
-}
-
 /// Patch for the config.
-#[derive(Deserialize, Serialize, utoipa::ToSchema)]
+#[derive(Deserialize, Serialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct Patch {
     /// Update for the current config.
+    #[schemars(with = "Option<Config>")]
     pub update: Option<Value>,
 }
 
 impl Patch {
-    pub fn with_update(config: &Config) -> Result<Self, Error> {
-        Ok(Self {
-            update: Some(serde_json::to_value(config)?),
-        })
+    pub fn with_update(config: Value) -> Self {
+        Self {
+            update: Some(config),
+        }
+    }
+
+    pub fn with_config(config: &Config) -> Result<Self, serde_json::Error> {
+        Ok(Self::with_update(serde_json::to_value(config)?))
     }
 }

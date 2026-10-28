@@ -1,4 +1,130 @@
 -------------------------------------------------------------------
+Thu Oct 22 09:44:24 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Version 25
+
+-------------------------------------------------------------------
+Mon Sep 28 08:50:52 UTC 2026 - Andreas Schwab <schwab@suse.de>
+
+- Add support for riscv64 (gh#agama-project/agama#3867)
+
+-------------------------------------------------------------------
+Mon Sep 28 06:46:36 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add the missing definition for Leap 16.2 (related to bsc#1282094).
+
+-------------------------------------------------------------------
+Wed Sep 23 13:45:32 UTC 2026 - Jason Swaan <duyfken@users.noreply.github.com>
+
+- Match Slowroll user_patterns with Tumbleweed
+    (gh#agama-project/agama#3969).
+
+-------------------------------------------------------------------
+Wed Sep 23 08:18:32 UTC 2026 - Michal Filka <mfilka@suse.com>
+
+- bsc#1282094
+  - Switched to SLES (resp SLES for SAP) 16.2 Alpha
+    (gh#agama-project/agama#3975).
+
+-------------------------------------------------------------------
+Thu Sep 17 13:23:17 UTC 2026 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Remove beta tag from the SLES and SLES for SAP product names
+  (gh#agama-project/agama#3836).
+
+-------------------------------------------------------------------
+Mon Sep  7 09:17:50 UTC 2026 - Lubos Kocman <lubos.kocman@suse.com>
+
+- Add Immutable and Standard modes to Leap 16.1 (gh#agama-project/agama#3877).
+
+- Add NetworkManager-config-server to avoid probe DHCP over
+  all ethernet devices and ignore carrier. To be in sync with SLES
+  (bsc#1241224, bsc#1224868).
+
+- Add openSUSE License (gh#agama-project/agama#3877).
+
+-------------------------------------------------------------------
+Mon Sep  7 09:13:23 UTC 2026 - Lubos Kocman <lubos.kocman@suse.com>
+
+- Drop Leap Micro 6.2 completely
+  it never really worked in the past (gh#agama-project/agama#3877).
+
+-------------------------------------------------------------------
+Tue Sep  1 15:51:09 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 24
+
+-------------------------------------------------------------------
+Tue Aug 18 06:28:54 UTC 2026 - Dominique Leuenberger <dimstar@opensuse.org>
+
+- Microos/Kalpa: No longer reference deprecated microos_hardware
+  pattern (boo#1275469).
+
+-------------------------------------------------------------------
+Fri Jul 24 07:03:30 UTC 2026 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Added generic storage volumes to the immutables modes, as
+  required by the web UI to work properly (bsc#1272461).
+
+-------------------------------------------------------------------
+Mon Jul 20 11:12:35 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 23
+
+-------------------------------------------------------------------
+Mon Jul 20 10:33:25 UTC 2026 - Dominique Leuenberger <dimstar@opensuse.org>
+
+- Allow selecting Cockpit pattern in Tumbleweed (bsc#1269939).
+
+-------------------------------------------------------------------
+Mon Jun 15 15:45:30 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 22
+
+-------------------------------------------------------------------
+Sat May 16 07:54:43 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 21
+
+-------------------------------------------------------------------
+Fri May 15 14:41:09 UTC 2026 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Tumbleweed and Slowroll configured to use systemd-boot relying
+  on the new BLS-compliant mechanism (jsc#PED-10703).
+
+-------------------------------------------------------------------
+Thu Apr 23 15:59:34 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Declare the `desktop_selection` policy (suggested/optional) per
+  product and mark desktop patterns with the `desktop` property
+  so the UI can group and hint about desktop environments
+  (gh#agama-project/agama#3390, gh#agama-project/agama#3403,
+  gh#agama-project/agama#3406).
+
+-------------------------------------------------------------------
+Tue Apr 14 17:36:58 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 20
+
+-------------------------------------------------------------------
+Mon Apr 13 15:33:52 UTC 2026 - Martin Vidner <mvidner@suse.com>
+
+- Fix syntax in the enhanced_base change (gh#agama-project/agama#3378)
+
+-------------------------------------------------------------------
+Mon Apr 13 14:47:11 UTC 2026 - Stefan Hundhammer <shundhammer@suse.com>
+
+- Moved sudo-policy-wheel-auth-self from mandatory patterns to
+  mandatory packages for TW MicroOS (bsc#1261991)
+
+-------------------------------------------------------------------
+Fri Apr  2 13:11:03 UTC 2026 - Jiri Srain <jsrain@suse.com>
+
+- Install by default the enhanced_base pattern for immutable mode
+  still allowing users to unselect it and stay with immutable_base
+  only
+
+-------------------------------------------------------------------
 Tue Mar 17 12:15:23 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 19
@@ -21,7 +147,7 @@ Wed Feb 25 16:04:52 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 Wed Feb 25 10:36:54 UTC 2026 - Michal Filka <mfilka@suse.com>
 
 - bsc#1258416
-  - made sudo-policy-wheel-auth-self for MicroOS 
+  - made sudo-policy-wheel-auth-self for MicroOS
   - missed in original implementation of jsc#PM-2128
 
 -------------------------------------------------------------------
@@ -144,7 +270,7 @@ Wed Aug  6 12:44:13 UTC 2025 - Lubos Kocman <lubos.kocman@suse.com>
 
 - Drop Beta from Leap 16.0.
   We've agreed to not use RC and simply go with Leap 16.0
-  just like on boot menu. 
+  just like on boot menu.
 
 -------------------------------------------------------------------
 Thu Jul 31 07:44:04 UTC 2025 - Josef Reidinger <jreidinger@suse.com>

@@ -18,7 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use agama_utils::api::manager::HardwareInfo;
+use agama_utils::{api::manager::HardwareInfo, arch::Arch};
 use serde::Deserialize;
 use serde_with::{formats::PreferMany, serde_as, OneOrMany};
 use std::{
@@ -68,7 +68,15 @@ impl Registry {
 
     pub async fn read(&mut self) -> Result<(), Error> {
         match &self.source {
-            Source::System => self.read_from_system().await,
+            Source::System => {
+                self.read_from_system().await?;
+                // On s390x, enrich the system and processor nodes with info from
+                // the "zname" command, as lshw does not report them properly.
+                if Arch::is_s390() {
+                    self.read_s390_model().await.ok();
+                }
+                Ok(())
+            }
             Source::File(ref path) => self.read_from_file(path.clone()),
         }
     }
@@ -96,6 +104,51 @@ impl Registry {
         let json = std::fs::read_to_string(path)?;
         self.root = Some(HardwareNode::from_json(&json)?);
         Ok(())
+    }
+
+    /// Enriches the s390x system and processor nodes with info read from the "zname" command.
+    ///
+    /// The model is built as "IBM <cpuid>-<model>" (e.g., "IBM 8561-LT1"), and the CPU is
+    /// the model name reported by "zname -n" (e.g., "IBM LinuxONE III").
+    async fn read_s390_model(&mut self) -> Result<(), Error> {
+        let Some(ref mut root) = self.root else {
+            return Ok(());
+        };
+
+        let type_id = Self::read_zname("-i").await;
+        let model = Self::read_zname("-m").await;
+        let name = Self::read_zname("-n").await;
+
+        if let (Some(type_id), Some(model)) = (type_id, model) {
+            if let Some(system) = root.find_first_by_class_mut("system") {
+                system.vendor = Some("IBM".to_string());
+                system.version = Some(format!("{type_id}-{model}"));
+            }
+        }
+
+        if let Some(name) = name {
+            if let Some(processor) = root.find_first_by_class_mut("processor") {
+                processor.product = Some(name);
+            }
+        }
+
+        Ok(())
+    }
+
+    /// Runs "zname" with the given argument and returns its trimmed output.
+    async fn read_zname(arg: &str) -> Option<String> {
+        let output = tokio::process::Command::new("zname")
+            .arg(arg)
+            .output()
+            .await
+            .ok()?;
+
+        if !output.status.success() {
+            return None;
+        }
+
+        let value = String::from_utf8_lossy(&output.stdout).trim().to_string();
+        (!value.is_empty()).then_some(value)
     }
 
     /// Converts the information to a HardwareInfo struct.
@@ -191,16 +244,39 @@ impl HardwareNode {
             children.search_by_class(class, results);
         }
     }
+
+    /// Searches and returns the first hardware node by class (mutable version).
+    ///
+    /// * `class`: class to search for (e.g., "disk", "processor", etc.).
+    pub fn find_first_by_class_mut(&mut self, class: &str) -> Option<&mut HardwareNode> {
+        if self.class == class {
+            return Some(self);
+        }
+
+        for children in &mut self.children {
+            let result = children.find_first_by_class_mut(class);
+            if result.is_some() {
+                return result;
+            }
+        }
+
+        None
+    }
 }
 
 impl From<&HardwareNode> for HardwareInfo {
     fn from(value: &HardwareNode) -> Self {
+        // Find the first "processor" node to get the CPU. Use the "product" key. If not present,
+        // fallback to "vendor" (like in s390x).
         let cpu = value
             .find_by_class("processor")
             .first()
-            .and_then(|c| c.product.clone());
+            .and_then(|c| c.product.clone().or(c.vendor.clone()));
 
-        let memory = value.find_by_id("memory").and_then(|m| m.size);
+        let memory = value
+            .find_by_id("memory")
+            .or_else(|| value.find_by_id("memory:0"))
+            .and_then(|m| m.size);
 
         let model = if let Some(system) = value.find_by_class("system").first() {
             let model_str = format!(
@@ -324,6 +400,23 @@ mod tests {
     }
 
     #[tokio::test]
+    async fn test_read_s390_model() -> Result<(), Box<dyn Error>> {
+        let old_path = std::env::var("PATH").unwrap();
+        let bin_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../share/bin");
+        std::env::set_var("PATH", format!("{}:{}", &bin_dir.display(), &old_path));
+
+        let fixtures = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../test/share");
+        let mut registry = Registry::new_from_file(fixtures.join("lshw-s390x.json"));
+        registry.read().await?;
+        registry.read_s390_model().await?;
+
+        let info = registry.to_hardware_info();
+        assert_eq!(info.model, Some("IBM 8561-LT1".to_string()));
+        assert_eq!(info.cpu, Some("IBM LinuxONE III".to_string()));
+        Ok(())
+    }
+
+    #[tokio::test]
     async fn test_to_hardware_incomplete() -> Result<(), Box<dyn Error>> {
         let fixtures = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../test/share");
         let mut registry = Registry::new_from_file(fixtures.join("lshw-incomplete.json"));
@@ -332,6 +425,107 @@ mod tests {
         assert_eq!(node.cpu, None);
         assert_eq!(node.memory, None);
         assert_eq!(node.model, None);
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn test_to_hardware_s390x() -> Result<(), Box<dyn Error>> {
+        let fixtures = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../test/share");
+        let mut registry = Registry::new_from_file(fixtures.join("lshw-s390x.json"));
+        registry.read().await?;
+        let node = registry.to_hardware_info();
+        assert_eq!(node.cpu, Some("IBM/S390".to_string()));
+        assert_eq!(node.memory, Some(8589934592));
+        // Model is not available from lshw on s390x
+        assert_eq!(node.model, None);
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn test_s390x_model_enrichment() -> Result<(), Box<dyn Error>> {
+        let fixtures = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../test/share");
+        let mut registry = Registry::new_from_file(fixtures.join("lshw-s390x.json"));
+        registry.read().await?;
+
+        // Simulate enriching the system node with s390 model data
+        if let Some(ref mut root) = registry.root {
+            if let Some(system) = root.find_first_by_class_mut("system") {
+                system.vendor = Some("IBM".to_string());
+                system.version = Some("LinuxONE III LT1".to_string());
+            }
+        }
+
+        let node = registry.to_hardware_info();
+        assert_eq!(node.cpu, Some("IBM/S390".to_string()));
+        assert_eq!(node.memory, Some(8589934592));
+        // Model should now be available from the enriched system node
+        assert_eq!(node.model, Some("IBM LinuxONE III LT1".to_string()));
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn test_s390x_enrich_with_different_formats() -> Result<(), Box<dyn Error>> {
+        let fixtures = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../test/share");
+
+        // Test "IBM LinuxONE III LT1" format - should split into vendor="IBM" and version="LinuxONE III LT1"
+        let mut registry = Registry::new_from_file(fixtures.join("lshw-s390x.json"));
+        registry.read().await?;
+        if let Some(ref mut root) = registry.root {
+            if let Some(system) = root.find_first_by_class_mut("system") {
+                system.vendor = Some("IBM".to_string());
+                system.version = Some("LinuxONE III LT1".to_string());
+            }
+        }
+        let info = registry.to_hardware_info();
+        assert_eq!(info.model, Some("IBM LinuxONE III LT1".to_string()));
+
+        // Test "IBM eServer zSeries 900" format - should split into vendor="IBM" and version="eServer zSeries 900"
+        let mut registry = Registry::new_from_file(fixtures.join("lshw-s390x.json"));
+        registry.read().await?;
+        if let Some(ref mut root) = registry.root {
+            if let Some(system) = root.find_first_by_class_mut("system") {
+                system.vendor = Some("IBM".to_string());
+                system.version = Some("eServer zSeries 900".to_string());
+            }
+        }
+        let info = registry.to_hardware_info();
+        assert_eq!(info.model, Some("IBM eServer zSeries 900".to_string()));
+
+        // Test "IBM LinuxONE Rockhopper" format - should split into vendor="IBM" and version="LinuxONE Rockhopper"
+        let mut registry = Registry::new_from_file(fixtures.join("lshw-s390x.json"));
+        registry.read().await?;
+        if let Some(ref mut root) = registry.root {
+            if let Some(system) = root.find_first_by_class_mut("system") {
+                system.vendor = Some("IBM".to_string());
+                system.version = Some("LinuxONE Rockhopper".to_string());
+            }
+        }
+        let info = registry.to_hardware_info();
+        assert_eq!(info.model, Some("IBM LinuxONE Rockhopper".to_string()));
+
+        // Test non-IBM format - everything should go to version
+        let mut registry = Registry::new_from_file(fixtures.join("lshw-s390x.json"));
+        registry.read().await?;
+        if let Some(ref mut root) = registry.root {
+            if let Some(system) = root.find_first_by_class_mut("system") {
+                system.version = Some("SomeOther Vendor Model".to_string());
+            }
+        }
+        let info = registry.to_hardware_info();
+        assert_eq!(info.model, Some("SomeOther Vendor Model".to_string()));
+
+        // Test "z900    IBM eServer zSeries 900" format with machine type prefix
+        let mut registry = Registry::new_from_file(fixtures.join("lshw-s390x.json"));
+        registry.read().await?;
+        if let Some(ref mut root) = registry.root {
+            if let Some(system) = root.find_first_by_class_mut("system") {
+                system.vendor = Some("IBM".to_string());
+                system.version = Some("eServer zSeries 900".to_string());
+            }
+        }
+        let info = registry.to_hardware_info();
+        assert_eq!(info.model, Some("IBM eServer zSeries 900".to_string()));
+
         Ok(())
     }
 }

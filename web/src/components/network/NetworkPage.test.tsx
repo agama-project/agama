@@ -24,13 +24,14 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import NetworkPage from "~/components/network/NetworkPage";
+import { ConnectivityState } from "~/types/network";
 
 const mockProgressFn = jest.fn();
 const mockSystem = {
   connections: [],
   devices: [],
   state: {
-    connectivity: true,
+    connectivity: ConnectivityState.FULL,
     copyNetwork: true,
     networkingEnabled: true,
     wirelessEnabled: false,

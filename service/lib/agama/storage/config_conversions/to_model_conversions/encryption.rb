@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2025] SUSE LLC
+# Copyright (c) [2025-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -20,7 +20,6 @@
 # find current contact information at www.suse.com.
 
 require "agama/storage/config_conversions/to_model_conversions/base"
-require "y2storage/encryption_method"
 
 module Agama
   module Storage
@@ -39,20 +38,17 @@ module Agama
           # @see Base#conversions
           def conversions
             {
-              method:   convert_method,
-              password: config.password
+              password: config.password,
+              tpm:      convert_tpm
             }
           end
 
-          # @return [string]
-          def convert_method
-            method_conversions = {
-              Y2Storage::EncryptionMethod::LUKS1.id   => "luks1",
-              Y2Storage::EncryptionMethod::LUKS2.id   => "luks2",
-              Y2Storage::EncryptionMethod::TPM_FDE.id => "tpmFde"
-            }
+          # @return [Boolean, nil]
+          def convert_tpm
+            method = config.method
+            return unless method
 
-            method_conversions[config.method.id] || "luks2"
+            method.is?(:tpm_fde) || method.is?(:tpm_bls)
           end
         end
       end

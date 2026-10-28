@@ -1,0 +1,42 @@
+{
+  "title": "Send a port alone at the top level",
+  "description": "The position in the document decides: a port given at the top level is moved out of its controller, with auto IP methods, even if the profile does not mention the controller.",
+  "steps": [
+    {
+      "profile": "1-bond.json",
+      "description": "Bond with eth0 and eth1 nested (MTU 9000)",
+      "expect": {
+        "connections": {
+          "bond0": {
+            "controller": null,
+            "method4": "auto"
+          },
+          "eth0": {
+            "controller": "bond0",
+            "mtu": 9000
+          },
+          "eth1": {
+            "controller": "bond0",
+            "mtu": 9000
+          }
+        }
+      }
+    },
+    {
+      "profile": "2-send-eth0-alone.json",
+      "description": "Only eth0, at the top level, with MTU 1500",
+      "expect": {
+        "connections": {
+          "eth0": {
+            "controller": null,
+            "mtu": 1500,
+            "method4": "auto"
+          },
+          "eth1": {
+            "controller": "bond0"
+          }
+        }
+      }
+    }
+  ]
+}

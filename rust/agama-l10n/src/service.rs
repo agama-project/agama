@@ -33,7 +33,6 @@ use agama_utils::{
     },
     issue,
 };
-use async_trait::async_trait;
 use tokio::sync::broadcast;
 
 #[derive(thiserror::Error, Debug)]
@@ -185,21 +184,21 @@ impl Service {
         let mut issues = vec![];
         if !self.model.locales_db().exists(&config.locale) {
             issues.push(Issue::new(
-                "unknown_locale",
+                "unknownLocale",
                 &format!("Locale '{}' is unknown", config.locale),
             ));
         }
 
         if !self.model.keymaps_db().exists(&config.keymap) {
             issues.push(Issue::new(
-                "unknown_keymap",
+                "unknownKeymap",
                 &format!("Keymap '{}' is unknown", config.keymap),
             ));
         }
 
         if !self.model.timezones_db().exists(&config.timezone) {
             issues.push(Issue::new(
-                "unknown_timezone",
+                "unknownTimezone",
                 &format!("Timezone '{}' is unknown", config.timezone),
             ));
         }
@@ -212,30 +211,43 @@ impl Actor for Service {
     type Error = Error;
 }
 
-#[async_trait]
 impl MessageHandler<message::GetSystem> for Service {
     async fn handle(&mut self, _message: message::GetSystem) -> Result<SystemInfo, Error> {
         Ok(self.system.clone())
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::SetSystem<SystemConfig>> for Service {
     async fn handle(&mut self, message: message::SetSystem<SystemConfig>) -> Result<(), Error> {
         let config = &message.config;
+
         if let Some(locale) = &config.locale {
-            self.model.set_locale(locale.parse()?)?;
+            let locale_id: LocaleId = locale.parse()?;
+            self.model.set_locale(locale_id.clone())?;
+            // Ensure the system value is updated (currently updated by a DBUS change property)
+            self.system.locale = locale_id;
+            // After changing locale, the databases are re-read with the new language.
+            // We need to update system info to reflect the newly translated locale/timezone names.
+            self.system.locales = self.model.locales_db().entries().clone();
+            self.system.timezones = self.model.timezones_db().entries().clone();
         }
 
         if let Some(keymap) = &config.keymap {
-            self.model.set_keymap(keymap.parse()?)?;
+            let keymap_id: KeymapId = keymap.parse()?;
+            self.model.set_keymap(keymap_id.clone())?;
+            // Ensure the system value is updated (currently updated by a DBUS change property)
+            self.system.keymap = keymap_id;
         };
+
+        // FIXME: Normally, property changes are notified via the monitor. However, a edge case
+        // occurs when the env VAR differs from the system locale, and the UI sets the value back
+        // to the system locale. In this case, the property value remains unchanged, so notification
+        // isn't triggered automatically. We manually ensure the system state is updated here.
 
         Ok(())
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::GetConfig> for Service {
     async fn handle(&mut self, _message: message::GetConfig) -> Result<api::l10n::Config, Error> {
         Ok(api::l10n::Config {
@@ -246,7 +258,6 @@ impl MessageHandler<message::GetConfig> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::SetConfig<api::l10n::Config>> for Service {
     async fn handle(
         &mut self,
@@ -274,14 +285,12 @@ impl MessageHandler<message::SetConfig<api::l10n::Config>> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::GetProposal> for Service {
     async fn handle(&mut self, _message: message::GetProposal) -> Result<Option<Proposal>, Error> {
         Ok(self.get_proposal())
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::Install> for Service {
     async fn handle(&mut self, _message: message::Install) -> Result<(), Error> {
         let Some(proposal) = self.get_proposal() else {
@@ -294,7 +303,6 @@ impl MessageHandler<message::Install> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::UpdateLocale> for Service {
     async fn handle(&mut self, message: message::UpdateLocale) -> Result<(), Error> {
         self.system.locale = message.locale;
@@ -305,7 +313,6 @@ impl MessageHandler<message::UpdateLocale> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::UpdateKeymap> for Service {
     async fn handle(&mut self, message: message::UpdateKeymap) -> Result<(), Error> {
         self.system.keymap = message.keymap;

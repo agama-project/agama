@@ -20,6 +20,8 @@ installkernel() {
 
 # install hook for dracut
 install() {
+  # fail if any install command fails (cannot be used globally as this file is sourced by dracut)
+  set -e
   # install the hook for processing the boot parameters
   inst_hook cmdline 99 "$moddir/live-self-update-parser.sh"
 
@@ -27,7 +29,7 @@ install() {
   inst_multiple systemd-cat dirname /usr/lib/live-self-update/conf.sh jq
 
   # install the systemd service and the self-update script to the initramfs
-  inst_multiple "$systemdsystemconfdir"/live-self-update.service live-self-update
+  inst_multiple /etc/systemd/system/live-self-update.service live-self-update
 
   # needed by the live-self-update script
   inst_multiple grep tail sed
@@ -47,4 +49,5 @@ install() {
 
   # enable the self-update service in the initramfs
   $SYSTEMCTL -q --root "$initdir" enable live-self-update.service
+  set +e
 }

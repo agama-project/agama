@@ -1,4 +1,4 @@
-#!/bin/sh -x
+#!/bin/bash -x
 
 # Using a git checkout in the current directory and set up the services, so that it can be used by:
 # - the web frontend (as set up by setup-web.sh)
@@ -57,18 +57,12 @@ $SUDO $ZYPPER install \
   gettext-runtime \
   glibc-locale \
   suseconnect-ruby-bindings \
-  autoyast2-installation \
-  yast2 \
-  yast2-bootloader \
-  yast2-country \
+  augeas-lenses \
+  hostname \
   yast2-hardware-detection \
-  yast2-installation \
-  yast2-iscsi-client \
-  yast2-network \
-  yast2-proxy \
   yast2-schema \
-  yast2-storage-ng \
-  yast2-users \
+  yast2-transfer \
+  yast2-ycp-ui-bindings \
   bcache-tools \
   btrfsprogs \
   cryptsetup \
@@ -79,6 +73,7 @@ $SUDO $ZYPPER install \
   fcoe-utils \
   jfsutils \
   libstorage-ng-lang \
+  libstorage-ng-ruby \
   lvm2 \
   mdadm \
   multipath-tools \
@@ -91,7 +86,8 @@ $SUDO $ZYPPER install \
   quota \
   snapper \
   udftools \
-  xfsprogs || exit 1
+  xfsprogs \
+  yast2-pkg-bindings || exit 1
 
 # Install x86_64 packages
 if [ $(uname -m) == "x86_64" ]; then
@@ -99,13 +95,14 @@ if [ $(uname -m) == "x86_64" ]; then
     fde-tools
 fi
 
-# Install s390 packages
-if [ $(uname -m) == "s390x" ]; then
-  $SUDO $ZYPPER install \
-    yast2-s390 \
-    yast2-reipl \
-    yast2-cio
-fi
+# No s390-specific YaST packages are needed anymore: yast2-s390's Ruby code is vendored into
+# service/YaST2/lib/y2s390, yast2-cio was confirmed unused, and yast2-reipl's only real effect
+# (the s390 "chreipl node /boot/zipl" call) is now inlined directly into the vendored
+# Bootloader::FinishClient (see service/package/gem2rpm.yml and service/YaST2/README.md).
+
+# The base `yast2` package itself is no longer needed either: its real-use closure is now vendored
+# into service/YaST2 (see service/YaST2/README.md). `yast2-ycp-ui-bindings` above replaces it as
+# an explicit dependency (previously only pulled in transitively via yast2.spec's own Requires:).
 
 # Rubygem dependencies
 (
@@ -212,13 +209,7 @@ EOS
 (
   cd $MYDIR/rust/share
   for SVC in agama*.service; do
-    # the web server uses a wrapper script from a different directory
-    if [ "$SVC" = "agama-web-server.service" ]; then
-      TARGET=rust/share
-    else
-      TARGET=rust/target/debug
-    fi
-    sudosed "s@\(ExecStart\)=/usr/bin/@\1=$MYDIR/$TARGET/@" \
+    sudosed "s@/usr/bin/agama@$MYDIR/rust/target/debug/agama@g" \
       $SVC /usr/lib/systemd/system/$SVC
   done
 )

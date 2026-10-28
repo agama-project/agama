@@ -40,7 +40,7 @@ import {
   Split,
   TextInput,
 } from "@patternfly/react-core";
-import Page from "~/components/core/Page";
+import Page from "~/components/layout/Page";
 import NestedContent from "~/components/core/NestedContent";
 import PasswordInput from "~/components/core/PasswordInput";
 import ResourceNotFound from "~/components/core/ResourceNotFound";
@@ -178,7 +178,6 @@ function TargetLoginForm({ target }): React.ReactNode {
   const onChange = handleInputChange(dispatch);
 
   const startupFormOptions = Object.values(StartupOptions).map((option, i) => (
-    /* eslint-disable agama-i18n/string-literals */
     <FormSelectOption key={i} value={option.value} label={_(option.label)} />
   ));
 
@@ -261,7 +260,7 @@ function TargetLoginForm({ target }): React.ReactNode {
                   onChange={onChange}
                 />
               </FormGroup>
-              <FormGroup fieldId="reversePassword" label="Initiator password">
+              <FormGroup fieldId="reversePassword" label={_("Initiator password")}>
                 <PasswordInput
                   id="reversePassword"
                   name="reversePassword"

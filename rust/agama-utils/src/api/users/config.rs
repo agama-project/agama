@@ -19,14 +19,15 @@
 // find current contact information at www.suse.com.
 
 use merge::Merge;
+use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 /// User settings
 ///
 /// Holds the user settings for the installation.
-#[derive(Clone, Debug, Default, Merge, Serialize, Deserialize, PartialEq, utoipa::ToSchema)]
-#[serde(rename_all = "camelCase")]
-#[schema(as = users::Config)]
+#[derive(Clone, Debug, Default, Merge, Serialize, Deserialize, PartialEq, JsonSchema)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+#[schemars(rename = "users.Config")]
 pub struct Config {
     #[merge(strategy = merge::option::overwrite_none)]
     #[serde(rename = "user")]
@@ -69,10 +70,12 @@ impl Config {
 /// First user settings
 ///
 /// Holds the settings for the first user.
-#[derive(Clone, Debug, Default, Merge, Serialize, Deserialize, PartialEq, utoipa::ToSchema)]
-#[serde(rename_all = "camelCase")]
+#[derive(Clone, Debug, Default, Merge, Serialize, Deserialize, PartialEq, JsonSchema)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+#[schemars(title = "First user settings")]
 pub struct FirstUserConfig {
     /// First user's full name
+    #[schemars(example = &"Jane Doe")]
     #[merge(strategy = merge::option::overwrite_none)]
     pub full_name: Option<String>,
     /// First user password
@@ -81,13 +84,13 @@ pub struct FirstUserConfig {
     #[merge(strategy = merge::option::overwrite_none)]
     pub password: Option<UserPassword>,
     /// First user's username
+    #[schemars(example = &"jane.doe")]
     #[merge(strategy = merge::option::overwrite_none)]
     pub user_name: Option<String>,
     #[merge(strategy = merge::option::overwrite_none)]
     #[serde(skip_serializing_if = "Option::is_none")]
-    #[serde(alias = "sshPublicKeys")]
-    #[schema(inline)]
-    pub ssh_public_key: Option<StringOrList>,
+    #[serde(alias = "sshPublicKey")]
+    pub ssh_public_keys: Option<StringOrList>,
 }
 
 impl FirstUserConfig {
@@ -106,10 +109,11 @@ impl FirstUserConfig {
 /// Represents a user password.
 ///
 /// It holds the password and whether it is a hashed or a plain text password.
-#[derive(Clone, Debug, Merge, Serialize, Deserialize, PartialEq, utoipa::ToSchema)]
-#[serde(rename_all = "camelCase")]
+#[derive(Clone, Debug, Merge, Serialize, Deserialize, PartialEq, JsonSchema)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct UserPassword {
     /// User password
+    #[schemars(example = &"nots3cr3t")]
     #[merge(strategy = overwrite_if_not_empty)]
     pub password: String,
     /// Whether the password is hashed or is plain text
@@ -130,8 +134,8 @@ fn overwrite_if_not_empty(old: &mut String, new: String) {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug, PartialEq, Clone, utoipa::ToSchema)]
-#[schema(as = StringOrList)]
+#[derive(Serialize, Deserialize, Debug, PartialEq, Clone, JsonSchema)]
+#[schemars(rename = "StringOrList")]
 #[serde(untagged)]
 pub enum StringOrList {
     Single(String),
@@ -157,8 +161,9 @@ impl StringOrList {
 /// Root user settings
 ///
 /// Holds the settings for the root user.
-#[derive(Clone, Debug, Default, Merge, Serialize, Deserialize, PartialEq, utoipa::ToSchema)]
-#[serde(rename_all = "camelCase")]
+#[derive(Clone, Debug, Default, Merge, Serialize, Deserialize, PartialEq, JsonSchema)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+#[schemars(title = "Root authentication settings")]
 pub struct RootUserConfig {
     /// Root user password
     #[merge(strategy = merge::option::overwrite_none)]
@@ -168,9 +173,8 @@ pub struct RootUserConfig {
     /// Root SSH public key
     #[merge(strategy = merge::option::overwrite_none)]
     #[serde(skip_serializing_if = "Option::is_none")]
-    #[serde(alias = "sshPublicKeys")]
-    #[schema(inline)]
-    pub ssh_public_key: Option<StringOrList>,
+    #[serde(alias = "sshPublicKey")]
+    pub ssh_public_keys: Option<StringOrList>,
 }
 
 impl RootUserConfig {
@@ -183,7 +187,7 @@ impl RootUserConfig {
             return false;
         }
 
-        if self.ssh_public_key.as_ref().is_some_and(|k| !k.is_empty()) {
+        if self.ssh_public_keys.as_ref().is_some_and(|k| !k.is_empty()) {
             return false;
         }
 
@@ -265,7 +269,7 @@ mod test {
         assert!(root_with_empty_password_config.is_empty());
 
         let root_with_ssh_key = RootUserConfig {
-            ssh_public_key: Some(StringOrList::Single("12345678".to_string())),
+            ssh_public_keys: Some(StringOrList::Single("12345678".to_string())),
             ..Default::default()
         };
         let root_with_ssh_key_config = Config {
@@ -275,7 +279,7 @@ mod test {
         assert!(!root_with_ssh_key_config.is_empty());
 
         let root_with_ssh_keys = RootUserConfig {
-            ssh_public_key: Some(StringOrList::List(vec!["12345678".to_string()])),
+            ssh_public_keys: Some(StringOrList::List(vec!["12345678".to_string()])),
             ..Default::default()
         };
         let root_with_ssh_keys_config = Config {
@@ -296,7 +300,7 @@ mod test {
                 password: "12345678".to_string(),
                 hashed_password: false,
             }),
-            ssh_public_key: None,
+            ssh_public_keys: None,
         };
         assert!(valid_user.is_valid());
 
@@ -307,7 +311,7 @@ mod test {
                 password: "12345678".to_string(),
                 hashed_password: false,
             }),
-            ssh_public_key: None,
+            ssh_public_keys: None,
         };
         assert!(!empty_user_name.is_valid());
 
@@ -318,7 +322,7 @@ mod test {
                 password: "12345678".to_string(),
                 hashed_password: false,
             }),
-            ssh_public_key: None,
+            ssh_public_keys: None,
         };
         assert!(!empty_full_name.is_valid());
 
@@ -329,13 +333,13 @@ mod test {
                 password: "".to_string(),
                 hashed_password: false,
             }),
-            ssh_public_key: None,
+            ssh_public_keys: None,
         };
         assert!(!empty_password.is_valid());
 
         let with_ssh_keys = FirstUserConfig {
             user_name: Some("firstuser".to_string()),
-            ssh_public_key: Some(StringOrList::List(vec!["12345678".to_string()])),
+            ssh_public_keys: Some(StringOrList::List(vec!["12345678".to_string()])),
             ..Default::default()
         };
         let with_ssh_keys_config = Config {

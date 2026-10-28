@@ -107,10 +107,10 @@ describe("SpaceActionsTable", () => {
     plainRender(<SpaceActionsTable {...props} />);
 
     screen.getByRole("row", {
-      name: "sda1 Swap partition 2 GiB Do not modify Allow shrink Delete",
+      name: "sda1 Swap partition 2 GiB Do not modify Allow shrinking Delete",
     });
     screen.getByRole("row", {
-      name: "sda2 EXT4 partition 6 GiB Do not modify Allow shrink Delete",
+      name: "sda2 EXT4 partition 6 GiB Do not modify Allow shrinking Delete",
     });
     screen.getByRole("row", { name: "Unused space 2 GiB" });
   });
@@ -120,12 +120,12 @@ describe("SpaceActionsTable", () => {
 
     const sda1Row = screen.getByRole("row", { name: /sda1/ });
     within(sda1Row).getByRole("button", { name: "Do not modify", pressed: true });
-    within(sda1Row).getByRole("button", { name: "Allow shrink", pressed: false });
+    within(sda1Row).getByRole("button", { name: "Allow shrinking", pressed: false });
     within(sda1Row).getByRole("button", { name: "Delete", pressed: false });
 
     const sda2Row = screen.getByRole("row", { name: /sda2/ });
     within(sda2Row).getByRole("button", { name: "Do not modify", pressed: false });
-    within(sda2Row).getByRole("button", { name: "Allow shrink", pressed: false });
+    within(sda2Row).getByRole("button", { name: "Allow shrinking", pressed: false });
     within(sda2Row).getByRole("button", { name: "Delete", pressed: true });
   });
 
@@ -133,11 +133,11 @@ describe("SpaceActionsTable", () => {
     plainRender(<SpaceActionsTable {...props} />);
 
     const sda1Row = screen.getByRole("row", { name: /sda1/ });
-    const sda1ShrinkButton = within(sda1Row).getByRole("button", { name: "Allow shrink" });
+    const sda1ShrinkButton = within(sda1Row).getByRole("button", { name: "Allow shrinking" });
     expect(sda1ShrinkButton).toBeDisabled();
 
     const sda2Row = screen.getByRole("row", { name: /sda2/ });
-    const sda2ShrinkButton = within(sda2Row).getByRole("button", { name: "Allow shrink" });
+    const sda2ShrinkButton = within(sda2Row).getByRole("button", { name: "Allow shrinking" });
     expect(sda2ShrinkButton).not.toBeDisabled();
   });
 
@@ -150,7 +150,7 @@ describe("SpaceActionsTable", () => {
       plainRender(<SpaceActionsTable {...props} />);
 
       const sda2Row = screen.getByRole("row", { name: /sda2/ });
-      const sda2ShrinkButton = within(sda2Row).getByRole("button", { name: "Allow shrink" });
+      const sda2ShrinkButton = within(sda2Row).getByRole("button", { name: "Allow shrinking" });
       const sda2DeleteButton = within(sda2Row).getByRole("button", { name: "Delete" });
       expect(sda2ShrinkButton).toBeDisabled();
       expect(sda2DeleteButton).toBeDisabled();

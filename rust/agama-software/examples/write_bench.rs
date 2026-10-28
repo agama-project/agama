@@ -91,7 +91,7 @@ async fn main() {
         value: None,
     };
     let rule = AnswerRule {
-        class: Some("software.import_gpg".to_string()),
+        class: Some("importGpg".to_string()),
         text: None,
         data: None,
         answer,
@@ -126,6 +126,7 @@ async fn main() {
         .send(SoftwareAction::Write {
             state: software_state,
             progress: progress_handler.clone(),
+            l10n: None,
             question: question_handler.clone(),
             security: security_handler.clone(),
             tx,
@@ -164,6 +165,7 @@ async fn main() {
         .send(SoftwareAction::Write {
             state: software_state,
             progress: progress_handler.clone(),
+            l10n: None,
             question: question_handler.clone(),
             security: security_handler.clone(),
             tx,
@@ -188,6 +190,7 @@ async fn main() {
         .send(SoftwareAction::Write {
             state: software_state,
             progress: progress_handler.clone(),
+            l10n: None,
             question: question_handler.clone(),
             security: security_handler.clone(),
             tx,

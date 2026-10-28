@@ -20,13 +20,14 @@
 
 //! This module define types related to the progress report.
 
+use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Debug, Deserialize, Serialize, utoipa::ToSchema)]
+#[derive(Clone, Debug, Deserialize, Serialize, JsonSchema)]
 #[serde(transparent)]
 pub struct FormatSummary(Vec<FormatInfo>);
 
-#[derive(Clone, Debug, Deserialize, Serialize, utoipa::ToSchema)]
+#[derive(Clone, Debug, Deserialize, Serialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 struct FormatInfo {
     /// DASD channel.

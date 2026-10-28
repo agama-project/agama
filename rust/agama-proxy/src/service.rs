@@ -29,7 +29,6 @@ use agama_utils::{
     },
     command::enable_service,
 };
-use async_trait::async_trait;
 
 use crate::{message, model::ProxyConfig};
 
@@ -88,7 +87,6 @@ impl Starter {
 
 #[derive(Default)]
 struct State {
-    system: Option<ProxyConfig>,
     config: Option<ProxyConfig>,
     config_path: PathBuf,
 }
@@ -100,25 +98,20 @@ impl State {
             ..Default::default()
         };
         let replace = ProxyConfig::from_cmdline().is_some();
-        object.load(replace);
+        if replace {
+            object.load();
+        }
         object
     }
 
-    pub fn load(&mut self, replace_config: bool) {
-        let mut config = None;
-        match ProxyConfig::read_from(&self.config_path) {
-            Ok(system) => {
-                if replace_config {
-                    config = Some(system.clone());
-                }
-                self.system = Some(system)
-            }
+    pub fn load(&mut self) {
+        self.config = match ProxyConfig::read_from(&self.config_path) {
+            Ok(system) => Some(system.clone()),
             Err(e) => {
                 tracing::error!("Failed to read proxy configuration: {}", e);
-                self.system = None
+                None
             }
         };
-        self.config = config;
     }
 
     pub fn to_config(&self, config: Option<ProxyConfig>) -> Option<api::proxy::Config> {
@@ -182,7 +175,7 @@ impl State {
         }
 
         proxy_config.write_to(path)?;
-        self.load(true);
+        self.load();
         Ok(())
     }
 }
@@ -201,9 +194,9 @@ impl Service {
     pub fn config_path(&self) -> PathBuf {
         self.install_dir.join(PROXY_PATH)
     }
-    pub fn enable_services(&self) {
-        enable_service(&self.install_dir, "setup-systemd-proxy-env.service");
-        enable_service(&self.install_dir, "setup-systemd-proxy-env.path");
+    pub async fn enable_services(&self) {
+        enable_service(&self.install_dir, "setup-systemd-proxy-env.service").await;
+        enable_service(&self.install_dir, "setup-systemd-proxy-env.path").await;
     }
 }
 
@@ -211,7 +204,6 @@ impl Actor for Service {
     type Error = Error;
 }
 
-#[async_trait]
 impl MessageHandler<message::SetConfig<api::proxy::Config>> for Service {
     async fn handle(
         &mut self,
@@ -224,7 +216,6 @@ impl MessageHandler<message::SetConfig<api::proxy::Config>> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::GetConfig> for Service {
     async fn handle(
         &mut self,
@@ -234,17 +225,6 @@ impl MessageHandler<message::GetConfig> for Service {
     }
 }
 
-#[async_trait]
-impl MessageHandler<message::GetSystem> for Service {
-    async fn handle(
-        &mut self,
-        _message: message::GetSystem,
-    ) -> Result<Option<api::proxy::Config>, Error> {
-        Ok(self.state.to_config(self.state.system.clone()))
-    }
-}
-
-#[async_trait]
 impl MessageHandler<message::Finish> for Service {
     async fn handle(&mut self, _message: message::Finish) -> Result<(), Error> {
         if let Some(config) = &self.state.config {
@@ -253,13 +233,12 @@ impl MessageHandler<message::Finish> for Service {
                 std::fs::create_dir_all(parent)?;
             }
             config.write_to(&path)?;
-            self.enable_services();
+            self.enable_services().await;
         }
         Ok(())
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::SetLocale> for Service {
     async fn handle(&mut self, _message: message::SetLocale) -> Result<(), Error> {
         Ok(())

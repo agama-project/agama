@@ -28,14 +28,14 @@ function setInitiator(config: Config, name: string): Config {
 }
 
 function addTarget(config: Config, target: Target): Config {
-  return { ...config, targets: [...config.targets, target] };
+  return { ...config, targets: [...(config.targets || []), target] };
 }
 
 function removeTarget(config: Config, name: string, addr: string, port: number): Config {
   return {
     ...config,
     targets: remove(
-      config.targets,
+      config.targets || [],
       (t) => t.name === name && t.address === addr && t.port === port,
     ),
   };

@@ -40,16 +40,11 @@ pub trait ISCSI {
     #[zbus(signal)]
     fn progress_finished(&self) -> zbus::Result<()>;
 
-    /// SystemChanged signal
-    #[zbus(signal)]
-    fn system_changed(&self, serialized_system: &str) -> zbus::Result<()>;
-
     /// Config property
     #[zbus(property)]
     fn config(&self) -> zbus::Result<String>;
 
     /// System property
-    /// Temporary rename to avoid clashing with the system_changed signal.
-    #[zbus(property, name = "System")]
-    fn iscsi_system(&self) -> zbus::Result<String>;
+    #[zbus(property)]
+    fn system(&self) -> zbus::Result<String>;
 }

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2025] SUSE LLC
+# Copyright (c) [2025-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -20,8 +20,10 @@
 # find current contact information at www.suse.com.
 
 require_relative "../../storage_helpers"
+require_relative "./examples"
 require "agama/storage/config_conversions/from_json"
 require "agama/storage/config_conversions/to_model_conversions/volume_group"
+require "y2storage/lvm_vg"
 require "y2storage/refinements"
 
 using Y2Storage::Refinements::SizeCasts
@@ -42,6 +44,7 @@ describe Agama::Storage::ConfigConversions::ToModelConversions::VolumeGroup do
       drives:       drives,
       volumeGroups: [
         {
+          search:          search,
           name:            name,
           extentSize:      extent_size,
           physicalVolumes: physical_volumes,
@@ -54,12 +57,18 @@ describe Agama::Storage::ConfigConversions::ToModelConversions::VolumeGroup do
   let(:volumes) { Agama::Storage::VolumeTemplatesBuilder.new([]) }
 
   let(:drives) { nil }
+  let(:search) { nil }
   let(:name) { nil }
   let(:extent_size) { nil }
   let(:physical_volumes) { nil }
   let(:logical_volumes) { nil }
 
   describe "#convert" do
+    include_examples "device name", ->(c) { c.volume_groups.first },
+      { size: { greater: "1 GiB" } }
+
+    include_examples "space policy", ->(c) { c.volume_groups.first }
+
     context "if #name is not configured" do
       let(:name) { nil }
 
@@ -127,40 +136,130 @@ describe Agama::Storage::ConfigConversions::ToModelConversions::VolumeGroup do
       it "generates the expected JSON" do
         model_json = subject.convert
         expect(model_json[:targetDevices]).to eq(["/dev/vda", "/dev/vdb"])
+        expect(model_json[:targetDevicesPolicy]).to eq("useNeeded")
+      end
+
+      context "with 'useNeeded' policy" do
+        let(:physical_volumes) do
+          [{ generate: { targetDevices: ["disk1", "disk2"], spacePolicy: "useNeeded" } }]
+        end
+
+        it "generates the expected JSON" do
+          model_json = subject.convert
+          expect(model_json[:targetDevices]).to eq(["/dev/vda", "/dev/vdb"])
+          expect(model_json[:targetDevicesPolicy]).to eq("useNeeded")
+        end
+      end
+
+      context "with 'useAvailable' policy" do
+        let(:physical_volumes) do
+          [{ generate: { targetDevices: ["disk1", "disk2"], spacePolicy: "useAvailable" } }]
+        end
+
+        it "generates the expected JSON" do
+          model_json = subject.convert
+          expect(model_json[:targetDevices]).to eq(["/dev/vda", "/dev/vdb"])
+          expect(model_json[:targetDevicesPolicy]).to eq("useAvailable")
+        end
+      end
+
+      context "without any specific policy" do
+        let(:physical_volumes) do
+          [{ generate: { targetDevices: ["disk1", "disk2"] } }]
+        end
+
+        before do
+          vg = config.volume_groups.first
+          vg.physical_volumes_policy = nil
+        end
+
+        it "generates the expected JSON" do
+          model_json = subject.convert
+          expect(model_json[:targetDevices]).to eq(["/dev/vda", "/dev/vdb"])
+          expect(model_json[:targetDevicesPolicy]).to be_nil
+        end
       end
     end
 
     context "if #logical_volumes is configured" do
       let(:logical_volumes) do
         [
-          { size: "10 GiB" },
+          {
+            search: search,
+            size:   "10 GiB"
+          },
           { filesystem: { path: "/" } }
         ]
       end
+
+      let(:search) { nil }
 
       it "generates the expected JSON" do
         model_json = subject.convert
         expect(model_json[:logicalVolumes]).to eq(
           [
             {
-              size: {
+              delete:         false,
+              deleteIfNeeded: false,
+              resize:         false,
+              resizeIfNeeded: false,
+              size:           {
                 default: false,
                 min:     10.GiB.to_i,
                 max:     10.GiB.to_i
               }
             },
             {
-              filesystem: {
+              filesystem:     {
                 reuse: false
               },
-              mountPath:  "/",
-              size:       {
+              mountPath:      "/",
+              delete:         false,
+              deleteIfNeeded: false,
+              resize:         false,
+              resizeIfNeeded: false,
+              size:           {
                 default: true,
                 min:     0
               }
             }
           ]
         )
+      end
+
+      context "if there are skipped logical volumes" do
+        let(:search) do
+          {
+            condition:  { name: "not-found" },
+            ifNotFound: "skip"
+          }
+        end
+
+        before do
+          config.logical_volumes.first.search.solve
+        end
+
+        it "generates the expected JSON" do
+          model_json = subject.convert
+          expect(model_json[:logicalVolumes]).to eq(
+            [
+              {
+                filesystem:     {
+                  reuse: false
+                },
+                mountPath:      "/",
+                delete:         false,
+                deleteIfNeeded: false,
+                resize:         false,
+                resizeIfNeeded: false,
+                size:           {
+                  default: true,
+                  min:     0
+                }
+              }
+            ]
+          )
+        end
       end
     end
   end

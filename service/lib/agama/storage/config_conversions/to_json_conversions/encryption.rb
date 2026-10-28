@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -56,6 +56,8 @@ module Agama
               pervasive_luks2_conversions
             elsif method.is?(:tpm_fde)
               tpm_fde_conversions
+            elsif method.is?(:tpm_bls)
+              tpm_bls_conversions
             else
               {}
             end
@@ -78,7 +80,12 @@ module Agama
 
           # @return [Hash]
           def tpm_fde_conversions
-            { tpmFde: convert_encryption_properties }
+            { luks2: convert_encryption_properties }
+          end
+
+          # @return [Hash]
+          def tpm_bls_conversions
+            { luks2: convert_encryption_properties }
           end
 
           # @return [Hash, nil]

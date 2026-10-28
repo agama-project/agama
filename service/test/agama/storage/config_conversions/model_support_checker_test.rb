@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2025] SUSE LLC
+# Copyright (c) [2025-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -143,6 +143,87 @@ describe Agama::Storage::ModelSupportChecker do
       include_examples "partitionable without name"
     end
 
+    # The search only combines conditions with an operator, so it has no top-level name.
+    context "if a drive searched with an operator condition is not found" do
+      let(:scenario) { "empty-hd-50GiB.yaml" }
+
+      let(:config_json) do
+        {
+          drives: [
+            {},
+            {
+              search: {
+                condition:  { and: [{ name: "/dev/vdb" }, { size: { greater: "1 GiB" } }] },
+                ifNotFound: if_not_found
+              }
+            }
+          ]
+        }
+      end
+
+      include_examples "partitionable without name"
+    end
+
+    # The search matches by filesystem, so it has no top-level name.
+    context "if a drive searched with a filesystem condition is not found" do
+      let(:scenario) { "empty-hd-50GiB.yaml" }
+
+      let(:config_json) do
+        {
+          drives: [
+            {},
+            {
+              search: {
+                condition:  { filesystem: { type: "ext4" } },
+                ifNotFound: if_not_found
+              }
+            }
+          ]
+        }
+      end
+
+      include_examples "partitionable without name"
+    end
+
+    # The search matches by partitions, so it has no top-level name.
+    context "if a drive searched with a partitions condition is not found" do
+      let(:scenario) { "empty-hd-50GiB.yaml" }
+
+      let(:config_json) do
+        {
+          drives: [
+            {},
+            {
+              search: {
+                condition:  { partitions: { count: { min: 3 } } },
+                ifNotFound: if_not_found
+              }
+            }
+          ]
+        }
+      end
+
+      include_examples "partitionable without name"
+    end
+
+    # The search matches by partitions, so it has no top-level name.
+    context "if a MD RAID searched with a partitions condition is not found" do
+      let(:config_json) do
+        {
+          mdRaids: [
+            {
+              search: {
+                condition:  { partitions: "any" },
+                ifNotFound: if_not_found
+              }
+            }
+          ]
+        }
+      end
+
+      include_examples "partitionable without name"
+    end
+
     shared_examples "partitionable with encryption" do
       context "and the device is going to be skipped" do
         let(:condition) { { name: "/not/found" } }
@@ -175,6 +256,129 @@ describe Agama::Storage::ModelSupportChecker do
 
           context "and the filesystem is going to be reused" do
             let(:filesystem) { { reuseIfPossible: true } }
+
+            it "returns false" do
+              expect(subject.supported?).to eq(false)
+            end
+          end
+        end
+      end
+    end
+
+    shared_examples "volume without mount path" do |device_name|
+      context "and the volume has not a search (new volume)" do
+        let(:search) { nil }
+
+        it "returns false" do
+          expect(subject.supported?).to eq(false)
+        end
+      end
+
+      context "and the volume has a search" do
+        let(:search) do
+          {
+            condition:  condition,
+            ifNotFound: if_not_found
+          }
+        end
+
+        let(:if_not_found) { nil }
+
+        shared_examples "reused volume" do
+          context "and the volume is set to be deleted" do
+            let(:delete) { true }
+
+            it "returns true" do
+              expect(subject.supported?).to eq(true)
+            end
+          end
+
+          context "and the volume is set to be deleted if needed" do
+            let(:deleteIfNeeded) { true }
+
+            it "returns true" do
+              expect(subject.supported?).to eq(true)
+            end
+          end
+
+          context "and the volume is not set to be deleted" do
+            let(:delete) { false }
+            let(:deleteIfNeeded) { false }
+
+            context "and the volume has encryption" do
+              let(:encryption) do
+                { luks1: { password: "12345" } }
+              end
+
+              it "returns false" do
+                expect(subject.supported?).to eq(false)
+              end
+            end
+
+            context "and the volume has filesystem" do
+              let(:filesystem) { { type: "xfs" } }
+
+              it "returns false" do
+                expect(subject.supported?).to eq(false)
+              end
+            end
+
+            context "and the volume has a size" do
+              let(:size) do
+                {
+                  default: false,
+                  min:     1.GiB,
+                  max:     10.GiB
+                }
+              end
+
+              it "returns false" do
+                expect(subject.supported?).to eq(false)
+              end
+            end
+
+            context "and the volume is only set to be resized if needed" do
+              let(:encryption) { nil }
+              let(:filesystem) { nil }
+              let(:size) do
+                {
+                  default: false,
+                  min:     Y2Storage::DiskSize.zero
+                }
+              end
+
+              it "returns true" do
+                expect(subject.supported?).to eq(true)
+              end
+            end
+          end
+        end
+
+        context "and the volume is found" do
+          let(:condition) { { name: device_name } }
+
+          include_examples "reused volume"
+        end
+
+        context "and the volume is not found" do
+          let(:condition) { { name: "/no/found" } }
+
+          context "and the volume can be skipped" do
+            let(:if_not_found) { "skip" }
+
+            it "returns true" do
+              expect(subject.supported?).to eq(true)
+            end
+          end
+
+          context "and the volume cannot be skipped" do
+            let(:if_not_found) { "error" }
+
+            include_examples "reused volume"
+          end
+
+          context "and the volume can be created" do
+            let(:if_not_found) { "create" }
 
             it "returns false" do
               expect(subject.supported?).to eq(false)
@@ -325,143 +529,44 @@ describe Agama::Storage::ModelSupportChecker do
       let(:encryption) { nil }
       let(:size) { nil }
 
-      context "and the partition has not a search (new partition)" do
-        let(:search) { nil }
-
-        it "returns false" do
-          expect(subject.supported?).to eq(false)
-        end
-      end
-
-      context "and the partition has a search" do
-        let(:search) do
-          {
-            condition:  condition,
-            ifNotFound: if_not_found
-          }
-        end
-
-        let(:if_not_found) { nil }
-
-        shared_examples "reused partition" do
-          context "and the partition is set to be deleted" do
-            let(:delete) { true }
-
-            it "returns true" do
-              expect(subject.supported?).to eq(true)
-            end
-          end
-
-          context "and the partition is set to be deleted if needed" do
-            let(:deleteIfNeeded) { true }
-
-            it "returns true" do
-              expect(subject.supported?).to eq(true)
-            end
-          end
-
-          context "and the partition is not set to be deleted" do
-            let(:delete) { false }
-            let(:deleteIfNeeded) { false }
-
-            context "and the partition has encryption" do
-              let(:encryption) do
-                { luks1: { password: "12345" } }
-              end
-
-              it "returns false" do
-                expect(subject.supported?).to eq(false)
-              end
-            end
-
-            context "and the partition has filesystem" do
-              let(:filesystem) { { type: "xfs" } }
-
-              it "returns false" do
-                expect(subject.supported?).to eq(false)
-              end
-            end
-
-            context "and the partition has a size" do
-              let(:size) do
-                {
-                  default: false,
-                  min:     1.GiB,
-                  max:     10.GiB
-                }
-              end
-
-              it "returns false" do
-                expect(subject.supported?).to eq(false)
-              end
-            end
-
-            context "and the partition is only set to be resized if needed" do
-              let(:encryption) { nil }
-              let(:filesystem) { nil }
-              let(:size) do
-                {
-                  default: false,
-                  min:     Y2Storage::DiskSize.zero
-                }
-              end
-
-              it "returns true" do
-                expect(subject.supported?).to eq(true)
-              end
-            end
-          end
-        end
-
-        context "and the partition is found" do
-          let(:condition) { { name: "/dev/vda1" } }
-
-          include_examples "reused partition"
-        end
-
-        context "and the partition is not found" do
-          let(:condition) { { name: "/no/found" } }
-
-          context "and the partition can be skipped" do
-            let(:if_not_found) { "skip" }
-
-            it "returns true" do
-              expect(subject.supported?).to eq(true)
-            end
-          end
-
-          context "and the partition cannot be skipped" do
-            let(:if_not_found) { "error" }
-
-            include_examples "reused partition"
-          end
-
-          context "and the partition can be created" do
-            let(:if_not_found) { "create" }
-
-            it "returns false" do
-              expect(subject.supported?).to eq(false)
-            end
-          end
-        end
-      end
+      include_examples "volume without mount path", "/dev/vda1"
     end
 
     context "if there is a LVM logical volume without mount path" do
+      let(:scenario) { "several_vgs.yaml" }
+
       let(:config_json) do
         {
           volumeGroups: [
             {
               name:           "system",
-              logicalVolumes: [{}]
+              logicalVolumes: [
+                {
+                  search:         search,
+                  delete:         delete,
+                  deleteIfNeeded: deleteIfNeeded,
+                  filesystem:     filesystem,
+                  encryption:     encryption,
+                  size:           size
+                }
+              ]
             }
           ]
         }
       end
 
-      it "returns false" do
-        expect(subject.supported?).to eq(false)
-      end
+      let(:search) { nil }
+      let(:delete) { nil }
+      let(:deleteIfNeeded) { nil }
+      let(:filesystem) { nil }
+      let(:encryption) { nil }
+      let(:size) { nil }
+
+      include_examples "volume without mount path", "/dev/system/root"
+
+      # it "returns false" do
+      #   expect(subject.supported?).to eq(false)
+      # end
     end
 
     context "if there is a LVM logical volume with encryption" do

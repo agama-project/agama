@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2025] SUSE LLC
+ * Copyright (c) [2025-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -45,6 +45,8 @@ type AnnotationProps = React.PropsWithChildren<{
  * ```
  */
 export default function Annotation({ icon = "emergency", children }: AnnotationProps) {
+  if (!children) return null;
+
   return (
     <Flex component="p" alignItems={{ default: "alignItemsCenter" }} gap={{ default: "gapXs" }}>
       <Icon name={icon} /> <strong>{children}</strong>

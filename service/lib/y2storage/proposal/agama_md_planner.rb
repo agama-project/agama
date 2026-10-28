@@ -32,6 +32,8 @@ module Y2Storage
       # @param config [Agama::Storage::Config]
       # @return [Array<Planned::Device>]
       def planned_devices(md_config, config)
+        return [] if md_config.search&.skip_device?
+
         md = planned_md(md_config, config)
         register_partitionable(md, md_config)
         [md]

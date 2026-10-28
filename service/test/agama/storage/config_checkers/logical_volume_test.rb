@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2025] SUSE LLC
+# Copyright (c) [2025-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -26,7 +26,7 @@ require "agama/storage/config_checkers/logical_volume"
 describe Agama::Storage::ConfigCheckers::LogicalVolume do
   include_context "config"
 
-  subject { described_class.new(lv_config, config, product_config) }
+  subject { described_class.new(lv_config, vg_config, config, bootloader_config, product_config) }
 
   let(:config_json) do
     {
@@ -34,6 +34,7 @@ describe Agama::Storage::ConfigCheckers::LogicalVolume do
         {
           logicalVolumes: [
             {
+              search:     search,
               filesystem: filesystem,
               encryption: encryption,
               usedPool:   pool
@@ -48,13 +49,16 @@ describe Agama::Storage::ConfigCheckers::LogicalVolume do
     }
   end
 
+  let(:search) { nil }
   let(:filesystem) { nil }
   let(:encryption) { nil }
   let(:pool) { nil }
 
-  let(:lv_config) { config.volume_groups.first.logical_volumes.first }
+  let(:vg_config) { config.volume_groups.first }
+  let(:lv_config) { vg_config.logical_volumes.first }
 
   describe "#issues" do
+    include_examples "search issues"
     include_examples "filesystem issues"
     include_examples "encryption issues"
 

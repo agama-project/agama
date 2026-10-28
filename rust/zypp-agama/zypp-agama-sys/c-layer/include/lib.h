@@ -195,6 +195,10 @@ struct Products get_products(struct Zypp *_zypp,
                              struct Status *status) noexcept;
 void free_products(const struct Products *products) noexcept;
 
+/// Select locale packages to install
+void select_locale(struct Zypp *_zypp, const char *language,
+                   const char *country) noexcept;
+
 void import_gpg_key(struct Zypp *zypp, const char *const pathname,
                     struct Status *status) noexcept;
 

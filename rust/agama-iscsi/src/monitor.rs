@@ -18,10 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::{
-    storage,
-    storage_client::proxies::{ISCSIProxy, ProgressChanged, ProgressFinished, SystemChanged},
-};
+use crate::storage_client::proxies::{iscsi, ISCSIProxy};
 use agama_utils::{
     actor::Handler,
     api::{
@@ -33,7 +30,7 @@ use agama_utils::{
 use serde::Deserialize;
 use tokio::sync::broadcast;
 use tokio_stream::StreamExt;
-use zbus::{message, Connection, MatchRule, MessageStream};
+use zbus::{fdo::PropertiesChanged, message, Connection, MatchRule, MessageStream};
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
@@ -44,9 +41,9 @@ pub enum Error {
     #[error(transparent)]
     DBus(#[from] zbus::Error),
     #[error(transparent)]
-    Json(#[from] serde_json::Error),
+    DBusConversion(#[from] zbus::zvariant::Error),
     #[error(transparent)]
-    Storage(#[from] storage::service::Error),
+    Json(#[from] serde_json::Error),
 }
 
 #[derive(Debug, Deserialize)]
@@ -70,7 +67,6 @@ impl From<ProgressData> for Progress {
 }
 
 pub struct Monitor {
-    storage: Handler<storage::Service>,
     progress: Handler<progress::Service>,
     events: event::Sender,
     connection: Connection,
@@ -78,13 +74,11 @@ pub struct Monitor {
 
 impl Monitor {
     pub fn new(
-        storage: Handler<storage::Service>,
         progress: Handler<progress::Service>,
         events: event::Sender,
         connection: Connection,
     ) -> Self {
         Self {
-            storage,
             progress,
             events,
             connection,
@@ -97,20 +91,21 @@ impl Monitor {
             .msg_type(message::Type::Signal)
             .sender(proxy.inner().destination())?
             .path(proxy.inner().path())?
-            .interface(proxy.inner().interface())?
             .build();
         let mut stream = MessageStream::for_match_rule(rule, &self.connection, None).await?;
 
-        while let Some(Ok(message)) = stream.next().await {
-            if let Some(signal) = SystemChanged::from_message(message.clone()) {
-                self.handle_system_changed(signal)?;
+        while let Some(message) = stream.next().await {
+            let message = message?;
+
+            if let Some(signal) = PropertiesChanged::from_message(message.clone()) {
+                self.handle_properties_changed(signal)?;
                 continue;
             }
-            if let Some(signal) = ProgressChanged::from_message(message.clone()) {
+            if let Some(signal) = iscsi::ProgressChanged::from_message(message.clone()) {
                 self.handle_progress_changed(signal).await?;
                 continue;
             }
-            if let Some(signal) = ProgressFinished::from_message(message.clone()) {
+            if let Some(signal) = iscsi::ProgressFinished::from_message(message.clone()) {
                 self.handle_progress_finished(signal).await?;
                 continue;
             }
@@ -120,15 +115,17 @@ impl Monitor {
         Ok(())
     }
 
-    fn handle_system_changed(&self, _signal: SystemChanged) -> Result<(), Error> {
-        self.events.send(Event::SystemChanged {
-            scope: Scope::ISCSI,
-        })?;
-        self.storage.cast(storage::message::Probe)?;
+    fn handle_properties_changed(&self, signal: PropertiesChanged) -> Result<(), Error> {
+        let args = signal.args()?;
+        if args.changed_properties().get("System").is_some() {
+            self.events.send(Event::SystemChanged {
+                scope: Scope::ISCSI,
+            })?;
+        }
         Ok(())
     }
 
-    async fn handle_progress_changed(&self, signal: ProgressChanged) -> Result<(), Error> {
+    async fn handle_progress_changed(&self, signal: iscsi::ProgressChanged) -> Result<(), Error> {
         let args = signal.args()?;
         let progress_data = serde_json::from_str::<ProgressData>(args.serialized_progress)?;
         self.progress
@@ -137,7 +134,10 @@ impl Monitor {
         Ok(())
     }
 
-    async fn handle_progress_finished(&self, _signal: ProgressFinished) -> Result<(), Error> {
+    async fn handle_progress_finished(
+        &self,
+        _signal: iscsi::ProgressFinished,
+    ) -> Result<(), Error> {
         self.progress
             .call(progress::message::Finish::new(Scope::ISCSI))
             .await?;

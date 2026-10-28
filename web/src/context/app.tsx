@@ -21,9 +21,9 @@
  */
 
 import React from "react";
-import { InstallerClientProvider } from "./installer";
+import Connected from "~/Connected";
 import { InstallerL10nProvider } from "./installerL10n";
-import { StorageUiStateProvider } from "./storage-ui-state";
+import { TerminalProvider } from "./terminal";
 import {
   DefaultOptions,
   MutationOptions,
@@ -110,13 +110,13 @@ const queryClient = new QueryClient({
  */
 function AppProviders({ children }: React.PropsWithChildren) {
   return (
-    <InstallerClientProvider>
+    <Connected>
       <QueryClientProvider client={queryClient}>
         <InstallerL10nProvider>
-          <StorageUiStateProvider>{children}</StorageUiStateProvider>
+          <TerminalProvider>{children}</TerminalProvider>
         </InstallerL10nProvider>
       </QueryClientProvider>
-    </InstallerClientProvider>
+    </Connected>
   );
 }
 

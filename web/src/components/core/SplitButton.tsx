@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2025] SUSE LLC
+ * Copyright (c) [2025-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -30,7 +30,7 @@ import {
   MenuToggleActionProps,
   MenuToggleProps,
 } from "@patternfly/react-core";
-import { Link } from "~/components/core";
+import Link from "~/components/core/Link";
 import { _, TranslatedString } from "~/i18n";
 
 /**

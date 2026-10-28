@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024-2025] SUSE LLC
+# Copyright (c) [2024-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -112,6 +112,11 @@ module Agama
         supporting_partitions.find { |d| d.alias?(device_alias) }
       end
 
+      # @return [Array<Configs::Partition, Configs::LogicalVolume>]
+      def volumes
+        partitions + logical_volumes
+      end
+
       # @return [Array<Configs::Partition>]
       def partitions
         supporting_partitions.flat_map(&:partitions)
@@ -131,7 +136,7 @@ module Agama
       #
       # @return [Array<#search>]
       def supporting_search
-        drives + md_raids + partitions
+        drives + md_raids + partitions + volume_groups + logical_volumes
       end
 
       # Configs with configurable encryption.
@@ -166,7 +171,7 @@ module Agama
       #
       # @return [#delete?]
       def supporting_delete
-        partitions
+        partitions + logical_volumes
       end
 
       # Config objects that could act as physical volume
@@ -223,6 +228,20 @@ module Agama
         partitions.reject { |p| skipped?(p) }
       end
 
+      # Volume group configs, excluding skipped ones.
+      #
+      # @return [Array<Configs::VolumeGroup>]
+      def valid_volume_groups
+        volume_groups.reject { |d| skipped?(d) }
+      end
+
+      # Logical volume configs, excluding skipped ones.
+      #
+      # @return [Array<Configs::LogicalVolume>]
+      def valid_logical_volumes
+        logical_volumes.reject { |d| skipped?(d) }
+      end
+
       # Configs directly using a device with the given alias.
       #
       # @note Devices using the given alias as a target device (e.g., for creating physical volumes)
@@ -240,6 +259,14 @@ module Agama
       # @return [Array<Configs::Boot, Configs::VolumeGroup>]
       def target_users(device_alias)
         [boot_target_user(device_alias), vg_target_users(device_alias)].flatten.compact
+      end
+
+      # Finds the config assigned to the given device.
+      #
+      # @param device [Y2Storage::BlkDevice]
+      # @return [#search]
+      def find_device(device)
+        supporting_search.find { |c| c.found_device == device }
       end
 
     private

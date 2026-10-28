@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2024-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -40,6 +40,7 @@ import { Icon } from "~/components/layout";
 import { TreeTableColumn } from "~/components/core/TreeTable";
 import { Table, Td, Th, Tr, Thead, Tbody } from "@patternfly/react-table";
 import { useConfigModel } from "~/hooks/model/storage/config-model";
+import configModel from "~/model/storage/config-model";
 import { supportShrink } from "~/model/storage/device";
 import type { Storage as Proposal } from "~/model/proposal";
 import type { ConfigModel } from "~/model/storage/config-model";
@@ -49,19 +50,15 @@ export type SpacePolicyAction = {
   value: "delete" | "resizeIfNeeded";
 };
 
-const isUsedPartition = (partition: ConfigModel.Partition): boolean => {
-  return partition.filesystem !== undefined;
-};
-
 // FIXME: there is too much logic here. This is one of those cases that should be considered
 // when restructuring the hooks and queries.
 const useReusedPartition = (name: string): ConfigModel.Partition | undefined => {
-  const model = useConfigModel();
+  const config = useConfigModel();
 
-  if (!model || !name) return;
+  if (!config || !name) return;
 
-  const allPartitions = model.drives.flatMap((d) => d.partitions);
-  return allPartitions.find((p) => p.name === name && isUsedPartition(p));
+  const volumes = configModel.devices(config).flatMap((d) => configModel.device.volumes(d));
+  return volumes.find((v) => v.name === name && configModel.volume.isUsed(v));
 };
 
 /**
@@ -152,20 +149,20 @@ const DeviceActionSelector = ({
       <FlexItem>
         <ToggleGroup isCompact>
           <ToggleGroupItem
-            text="Do not modify"
+            text={_("Do not modify")}
             buttonId="not-modify"
             isSelected={adjustedAction === "keep"}
             onChange={() => changeAction("keep")}
           />
           <ToggleGroupItem
-            text="Allow shrink"
+            text={_("Allow shrinking")}
             buttonId="resize"
             isDisabled={isResizeDisabled}
             isSelected={adjustedAction === "resizeIfNeeded"}
             onChange={() => changeAction("resizeIfNeeded")}
           />
           <ToggleGroupItem
-            text="Delete"
+            text={_("Delete")}
             buttonId="delete"
             isDisabled={isDeleteDisabled}
             isSelected={adjustedAction === "delete"}
@@ -223,7 +220,7 @@ export default function SpaceActionsTable({
 }: SpaceActionsTableProps) {
   const columns: TreeTableColumn[] = [
     {
-      name: _("proposal.Device"),
+      name: _("Device"),
       value: (item: Proposal.UnusedSlot | Proposal.Device) => <DeviceName item={item} />,
     },
     {

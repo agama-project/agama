@@ -18,9 +18,14 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+use crate::service::Error;
 use agama_utils::{
     actor::Message,
-    api::s390::{Config, SystemInfo},
+    api::{
+        s390::{Config, SystemInfo},
+        RawConfig,
+    },
+    BoxFuture,
 };
 
 pub struct ProbeDASD;
@@ -47,18 +52,32 @@ impl Message for GetConfig {
     type Reply = Config;
 }
 
-pub struct SetConfig {
-    pub config: Option<Config>,
+pub struct SetZFCPConfig {
+    pub config: Option<RawConfig>,
 }
 
-impl SetConfig {
-    pub fn new(config: Option<Config>) -> Self {
+impl SetZFCPConfig {
+    pub fn new(config: Option<RawConfig>) -> Self {
         Self { config }
     }
 }
 
-impl Message for SetConfig {
-    type Reply = ();
+impl Message for SetZFCPConfig {
+    type Reply = BoxFuture<Result<(), Error>>;
+}
+
+pub struct SetDASDConfig {
+    pub config: Option<RawConfig>,
+}
+
+impl SetDASDConfig {
+    pub fn new(config: Option<RawConfig>) -> Self {
+        Self { config }
+    }
+}
+
+impl Message for SetDASDConfig {
+    type Reply = BoxFuture<Result<(), Error>>;
 }
 
 #[derive(Clone)]

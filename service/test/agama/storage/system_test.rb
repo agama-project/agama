@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2025] SUSE LLC
+# Copyright (c) [2025-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -67,14 +67,18 @@ describe Agama::Storage::System do
   end
 
   describe "#available_md_raids" do
-    let(:scenario) { "md_raids.yaml" }
-
-    before do
-      allow(disk_analyzer).to receive(:available_device?) { |d| d.name != "/dev/md0" }
-    end
+    let(:scenario) { "available_md_raids.yaml" }
 
     it "includes all software RAIDs that are not in use" do
-      expect(subject.available_md_raids.map(&:name)).to contain_exactly("/dev/md1", "/dev/md2")
+      expect(subject.available_md_raids.map(&:name)).to contain_exactly("/dev/md0", "/dev/md1")
+    end
+
+    it "does not include software RAIDs in use" do
+      expect(subject.available_md_raids.map(&:name)).to_not include("/dev/md2")
+    end
+
+    it "does not include software RAIDs over devices in use" do
+      expect(subject.available_md_raids.map(&:name)).to_not include("/dev/md3")
     end
   end
 
@@ -83,6 +87,22 @@ describe Agama::Storage::System do
 
     it "returns an empty list if there are only software RAIDs" do
       expect(subject.candidate_md_raids).to be_empty
+    end
+  end
+
+  describe "#available_volume_groups  " do
+    let(:scenario) { "available_volume_groups.yaml" }
+
+    it "includes all volume groups that are not in use" do
+      expect(subject.available_volume_groups.map(&:name)).to contain_exactly("/dev/vg0", "/dev/vg1")
+    end
+
+    it "does not include volume groups in use" do
+      expect(subject.available_volume_groups.map(&:name)).to_not include("/dev/vg2")
+    end
+
+    it "does not include volume groups over devices in use" do
+      expect(subject.available_volume_groups.map(&:name)).to_not include("/dev/vg3")
     end
   end
 end

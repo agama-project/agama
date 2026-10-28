@@ -22,80 +22,193 @@
 
 import React from "react";
 import { screen } from "@testing-library/react";
-import { plainRender } from "~/test-utils";
+import { installerRender, mockRoutes } from "~/test-utils";
+import { PRODUCT, ROOT } from "~/routes/paths";
 import InstallerOptionsMenu from "./InstallerOptionsMenu";
 
 jest.mock("~/components/core/ChangeProductOption", () => () => (
   <a role="menuitem">Change product</a>
 ));
 
+// Monaco editor used in <ConfigEditor> is too heavy to render in tests
+jest.mock("~/components/core/ConfigEditor", () => () => <div>ConfigEditor Mock</div>);
+
+// Mock ExitInstallationDialog
+jest.mock("~/components/core/ExitInstallationDialog", () => {
+  return function ExitInstallationDialog({ onClose }) {
+    return (
+      <div role="dialog">
+        <button onClick={onClose}>Close Exit Dialog</button>
+      </div>
+    );
+  };
+});
+
 describe("InstallerOptionsMenu", () => {
   describe("toggle button", () => {
-    it("renders a toggle with 'More installer options' aria-label", () => {
-      plainRender(<InstallerOptionsMenu />);
-      screen.getByRole("button", { name: /More installer options/i });
+    it("renders a toggle with 'More options' aria-label", () => {
+      installerRender(<InstallerOptionsMenu />);
+      screen.getByRole("button", { name: /More options/i });
     });
 
     it("renders the 'More' label by default", () => {
-      plainRender(<InstallerOptionsMenu />);
-      expect(screen.getByRole("button", { name: /More installer options/i })).toHaveTextContent(
-        "More",
-      );
+      installerRender(<InstallerOptionsMenu />);
+      expect(screen.getByRole("button", { name: /More options/i })).toHaveTextContent("More");
     });
 
     it("hides the 'More' label when hideLabel is true", () => {
-      plainRender(<InstallerOptionsMenu hideLabel />);
-      const toggle = screen.getByRole("button", { name: /More installer options/i });
+      installerRender(<InstallerOptionsMenu hideLabel />);
+      const toggle = screen.getByRole("button", { name: /More options/i });
       expect(toggle).not.toHaveTextContent("More");
+    });
+
+    it("keeps a single accessible name despite the visual tooltip", () => {
+      installerRender(<InstallerOptionsMenu hideLabel />);
+      // The visual-only tooltip (aria="none") must not add a second source for
+      // the accessible name, so there is exactly one matching control.
+      const toggles = screen.getAllByRole("button", { name: "More options" });
+      expect(toggles).toHaveLength(1);
+      expect(toggles[0]).not.toHaveAttribute("aria-describedby");
+    });
+
+    it("reveals the tooltip text on hover", async () => {
+      const { user } = installerRender(<InstallerOptionsMenu hideLabel />);
+      const toggle = screen.getByRole("button", { name: "More options" });
+      await user.hover(toggle);
+      // The tooltip renders its label as visible text (separate from the
+      // toggle's aria-label, which is not text content).
+      await screen.findByText("More options");
     });
   });
 
   describe("dropdown open/close behavior", () => {
     it("is closed by default", () => {
-      plainRender(<InstallerOptionsMenu />);
+      installerRender(<InstallerOptionsMenu />);
       expect(screen.queryByRole("menu")).toBeNull();
     });
 
     it("opens the dropdown when the toggle is clicked", async () => {
-      const { user } = plainRender(<InstallerOptionsMenu />);
-      await user.click(screen.getByRole("button", { name: /More installer options/i }));
+      const { user } = installerRender(<InstallerOptionsMenu />);
+      await user.click(screen.getByRole("button", { name: /More options/i }));
       screen.getByRole("menu");
     });
 
     it("closes the dropdown after selecting an item", async () => {
-      const { user } = plainRender(<InstallerOptionsMenu />);
-      await user.click(screen.getByRole("button", { name: /More installer options/i }));
+      const { user } = installerRender(<InstallerOptionsMenu />);
+      await user.click(screen.getByRole("button", { name: /More options/i }));
       const menu = screen.getByRole("menu");
-      await user.click(screen.getByRole("menuitem", { name: /Download config/i }));
+      await user.click(screen.getByRole("menuitem", { name: /Show configuration/i }));
       expect(menu).not.toBeVisible();
     });
   });
 
   describe("dropdown items", () => {
-    it("renders the 'Change product' option when showChangeProductOption is true", async () => {
-      const { user } = plainRender(<InstallerOptionsMenu showChangeProductOption />);
-      await user.click(screen.getByRole("button", { name: /More installer options/i }));
+    it("renders the 'Change product' option", async () => {
+      const { user } = installerRender(<InstallerOptionsMenu />);
+      await user.click(screen.getByRole("button", { name: /More options/i }));
       screen.getByRole("menuitem", { name: /Change product/i });
     });
 
-    it("does not render the 'Change product' option by default", async () => {
-      const { user } = plainRender(<InstallerOptionsMenu />);
-      await user.click(screen.getByRole("button", { name: /More installer options/i }));
+    it("does not render the 'Change product' option on the product selection page", async () => {
+      mockRoutes(PRODUCT.changeProduct);
+      const { user } = installerRender(<InstallerOptionsMenu />);
+      await user.click(screen.getByRole("button", { name: /More options/i }));
+      expect(screen.queryByRole("menuitem", { name: /Change product/i })).not.toBeInTheDocument();
+    });
+
+    it("does not render the 'Change product' option once the installation started", async () => {
+      mockRoutes(ROOT.installationProgress);
+      const { user } = installerRender(<InstallerOptionsMenu />);
+      await user.click(screen.getByRole("button", { name: /More options/i }));
       expect(screen.queryByRole("menuitem", { name: /Change product/i })).not.toBeInTheDocument();
     });
 
     it("renders the 'Download config' link", async () => {
-      const { user } = plainRender(<InstallerOptionsMenu />);
-      await user.click(screen.getByRole("button", { name: /More installer options/i }));
-      const link = screen.getByRole("menuitem", { name: /Download config/i });
-      expect(link).toHaveAttribute("download", "agama-config.json");
+      const { user } = installerRender(<InstallerOptionsMenu />);
+      await user.click(screen.getByRole("button", { name: /More options/i }));
+      screen.getByRole("menuitem", { name: /Show configuration/i });
     });
 
     it("renders the 'Download logs' link", async () => {
-      const { user } = plainRender(<InstallerOptionsMenu />);
-      await user.click(screen.getByRole("button", { name: /More installer options/i }));
-      const link = screen.getByRole("menuitem", { name: /Download logs/i });
-      expect(link).toHaveAttribute("download", "agama-logs.tar.gz");
+      const { user } = installerRender(<InstallerOptionsMenu />);
+      await user.click(screen.getByRole("button", { name: /More options/i }));
+      screen.getByRole("menuitem", { name: /Download logs/i });
+    });
+
+    it("renders an 'Open terminal' entry when the terminal is closed", async () => {
+      const { user } = installerRender(<InstallerOptionsMenu />);
+      await user.click(screen.getByRole("button", { name: /More options/i }));
+      screen.getByRole("menuitem", { name: /Open terminal/i });
+    });
+
+    it("toggles to 'Close terminal' after selecting it", async () => {
+      const { user } = installerRender(<InstallerOptionsMenu />);
+
+      await user.click(screen.getByRole("button", { name: /More options/i }));
+      await user.click(screen.getByRole("menuitem", { name: /Open terminal/i }));
+
+      // Selecting an item closes the dropdown (see "dropdown open/close
+      // behavior" above); reopen it to check the entry's new label.
+      await user.click(screen.getByRole("button", { name: /More options/i }));
+      screen.getByRole("menuitem", { name: /Close terminal/i });
+    });
+
+    it("renders the 'Exit installation' option", async () => {
+      const { user } = installerRender(<InstallerOptionsMenu />);
+      await user.click(screen.getByRole("button", { name: /More options/i }));
+      screen.getByRole("menuitem", { name: /Exit installation/i });
+    });
+
+    it("does not render the 'Exit installation' option during installation", async () => {
+      mockRoutes(ROOT.installationProgress);
+      const { user } = installerRender(<InstallerOptionsMenu />);
+      await user.click(screen.getByRole("button", { name: /More options/i }));
+      expect(
+        screen.queryByRole("menuitem", { name: /Exit installation/i }),
+      ).not.toBeInTheDocument();
+    });
+
+    it("does not render the 'Exit installation' option after installation finished", async () => {
+      mockRoutes(ROOT.installationFinished);
+      const { user } = installerRender(<InstallerOptionsMenu />);
+      await user.click(screen.getByRole("button", { name: /More options/i }));
+      expect(
+        screen.queryByRole("menuitem", { name: /Exit installation/i }),
+      ).not.toBeInTheDocument();
+    });
+
+    it("does not render the 'Exit installation' option on reboot page", async () => {
+      mockRoutes(ROOT.installationReboot);
+      const { user } = installerRender(<InstallerOptionsMenu />);
+      await user.click(screen.getByRole("button", { name: /More options/i }));
+      expect(
+        screen.queryByRole("menuitem", { name: /Exit installation/i }),
+      ).not.toBeInTheDocument();
+    });
+
+    it("does not render the 'Exit installation' option on shutdown page", async () => {
+      mockRoutes(ROOT.installationShutdown);
+      const { user } = installerRender(<InstallerOptionsMenu />);
+      await user.click(screen.getByRole("button", { name: /More options/i }));
+      expect(
+        screen.queryByRole("menuitem", { name: /Exit installation/i }),
+      ).not.toBeInTheDocument();
+    });
+
+    it("opens the exit installation dialog when clicking the option", async () => {
+      const { user } = installerRender(<InstallerOptionsMenu />);
+      await user.click(screen.getByRole("button", { name: /More options/i }));
+      await user.click(screen.getByRole("menuitem", { name: /Exit installation/i }));
+      screen.getByRole("dialog");
+    });
+
+    it("closes the exit installation dialog when onClose is called", async () => {
+      const { user } = installerRender(<InstallerOptionsMenu />);
+      await user.click(screen.getByRole("button", { name: /More options/i }));
+      await user.click(screen.getByRole("menuitem", { name: /Exit installation/i }));
+      const dialog = screen.getByRole("dialog");
+      await user.click(screen.getByRole("button", { name: "Close Exit Dialog" }));
+      expect(dialog).not.toBeInTheDocument();
     });
   });
 });

@@ -57,9 +57,40 @@ describe Agama::AutoYaST::NetworkReader do
         expect(network["network"].keys).to include("connections")
         network["network"]["connections"].each do |conn|
           expect(conn).to include(
-            "nameservers" => ["1.1.1.1"], "dns_searchlist" => ["example.lan"]
+            "nameservers" => ["1.1.1.1"], "dnsSearchList" => ["example.lan"]
           )
         end
+      end
+    end
+
+    context "when the profile includes 'routing', 'net-udev' and 's390-devices' sections" do
+      # None of these sections are surfaced in Agama's own "network" hash (see
+      # connections_reader.rb), but Y2Network::AutoinstProfile::NetworkingSection#new_from_hashes
+      # unconditionally instantiates them when present, so this just checks parsing the profile
+      # does not raise.
+      let(:profile) do
+        {
+          "networking" => {
+            "interfaces"   => [{ "name" => "eth0" }],
+            "routing"      => {
+              "ipv4_forward" => false,
+              "routes"       => [
+                { "destination" => "192.168.1.0", "device" => "eth0", "gateway" => "-",
+                  "netmask" => "-" }
+              ]
+            },
+            "net-udev"     => [
+              { "name" => "eth0", "rule" => "KERNELS", "value" => "0000:00:19.0" }
+            ],
+            "s390-devices" => [
+              { "type" => "qeth", "chanids" => "0.0.0800 0.0.0801 0.0.0802" }
+            ]
+          }
+        }
+      end
+
+      it "does not raise an error" do
+        expect { subject.read }.to_not raise_error
       end
     end
   end

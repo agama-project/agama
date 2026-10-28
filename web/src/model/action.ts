@@ -20,7 +20,9 @@
  * find current contact information at www.suse.com.
  */
 
-type Action = ConfigureL10n | ActivateStorage | ProbeStorage | DiscoverISCSI | Install | Finish;
+import type { Scope } from "~/model/status";
+
+type Action = ConfigureL10n | ActivateStorage | Probe | DiscoverISCSI | Install | Finish;
 
 type ConfigureL10n = {
   configureL10n: L10nSystemConfig;
@@ -35,8 +37,8 @@ type ActivateStorage = {
   activateStorage: null;
 };
 
-type ProbeStorage = {
-  probeStorage: null;
+type Probe = {
+  probe: { only?: Scope[] | null };
 };
 
 type DiscoverISCSI = {

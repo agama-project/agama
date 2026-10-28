@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -35,17 +35,6 @@ module Agama
       # @param product_config [Agama::Config]
       def initialize(product_config)
         @product_config = product_config
-      end
-
-      # Default encryption config from the product definition.
-      #
-      # @return [Configs::Encryption]
-      def default_encryption
-        Configs::Encryption.new.tap do |config|
-          config.password = settings.encryption.password
-          config.method = settings.encryption.method
-          config.pbkd_function = settings.encryption.pbkd_function
-        end
       end
 
       # Default format config from the product definition.

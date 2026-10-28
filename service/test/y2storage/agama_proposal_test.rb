@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024-2025] SUSE LLC
+# Copyright (c) [2024-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -31,7 +31,7 @@ using Y2Storage::Refinements::SizeCasts
 def block_device_config(config, name: nil, filesystem: nil)
   if name
     config.search = Agama::Storage::Configs::Search.new.tap do |search_config|
-      search_config.name = name
+      search_config.condition = Agama::Storage::Configs::SearchConditions::Name.new(name)
     end
   end
 
@@ -75,8 +75,9 @@ describe Y2Storage::AgamaProposal do
     described_class.new(
       config,
       storage_system,
-      product_config: product_config,
-      issues_list:    issues_list
+      product_config:    product_config,
+      bootloader_config: bootloader_config,
+      issues_list:       issues_list
     )
   end
 
@@ -189,12 +190,6 @@ describe Y2Storage::AgamaProposal do
 
   let(:scenario) { "empty-hd-50GiB.yaml" }
 
-  before do
-    # To speed-up the tests
-    allow(Y2Storage::BootRequirementsStrategies::Analyzer)
-      .to receive(:bls_bootloader_proposed?).and_return(false)
-  end
-
   describe "#propose" do
     context "when only the root partition is specified" do
       let(:config) { default_config }
@@ -228,6 +223,52 @@ describe Y2Storage::AgamaProposal do
           root_fs = root_part.filesystem
           expect(root_fs.root?).to eq true
           expect(root_fs.type.is?(:btrfs)).to eq true
+        end
+      end
+    end
+
+    context "on an EFI system" do
+      let(:config) { default_config }
+
+      before do
+        allow_any_instance_of(Y2Storage::Arch).to receive(:efiboot?).and_return(true)
+        allow(Yast::Arch).to receive(:x86_64).and_return(true)
+        allow(Yast::Arch).to receive(:i386).and_return(false)
+        allow(Yast::Arch).to receive(:aarch64).and_return(false)
+        allow(Yast::Arch).to receive(:arm).and_return(false)
+        allow(Yast::Arch).to receive(:riscv64).and_return(false)
+      end
+
+      context "when systemd-boot is configured as bootloader" do
+        before do
+          allow(bootloader_config).to receive(:type)
+            .and_return Y2Storage::BootloaderType::SYSTEMD_BOOT
+        end
+
+        it "proposes the corresponding boot partitions" do
+          proposal.propose
+          efi_partition = proposal.devices.partitions.find do |part|
+            part.filesystem&.mount_path == "/boot"
+          end
+
+          expect(efi_partition).to_not be_nil
+          expect(efi_partition.size).to eq(1.GiB)
+        end
+      end
+
+      context "when Grub2 is configued as bootloader" do
+        before do
+          allow(bootloader_config).to receive(:type).and_return Y2Storage::BootloaderType::GRUB2
+        end
+
+        it "proposes the corresponding boot partitions" do
+          proposal.propose
+          efi_partition = proposal.devices.partitions.find do |part|
+            part.filesystem&.mount_path == "/boot/efi"
+          end
+
+          expect(efi_partition).to_not be_nil
+          expect(efi_partition.size).to eq(512.MiB)
         end
       end
     end
@@ -407,6 +448,41 @@ describe Y2Storage::AgamaProposal do
         end
       end
 
+      context "if the encryption settings contains pervasive method" do
+        before do
+          allow(Y2Storage::EncryptionProcesses::SecureKey).to receive(:all).and_return([])
+          allow(Y2Storage::EncryptionProcesses::Apqn).to receive(:all).and_return(apqns)
+        end
+
+        let(:apqns) { [apqn1, apqn2] }
+        let(:apqn1) { Y2Storage::EncryptionProcesses::Apqn.new("01.0001", "", "", "") }
+        let(:apqn2) { Y2Storage::EncryptionProcesses::Apqn.new("01.0002", "", "", "") }
+
+        let(:home_encryption) do
+          Agama::Storage::Configs::Encryption.new.tap do |enc|
+            enc.method = Y2Storage::EncryptionMethod::PERVASIVE_LUKS2
+            enc.password = "notSecreT"
+            enc.apqns = ["01.0001", "01.0002", "01.0003"]
+            enc.pervasive_key_type = "CCA-AESCIPHER"
+          end
+        end
+
+        it "proposes the right encryption layer" do
+          proposal.propose
+          partition = proposal.devices.partitions.find do |part|
+            part.blk_filesystem&.mount_path == "/home"
+          end
+          expect(partition.encrypted?).to eq true
+          expect(partition.encryption).to have_attributes(
+            method:   Y2Storage::EncryptionMethod::PERVASIVE_LUKS2,
+            password: "notSecreT"
+          )
+          expect(partition.encryption.encryption_process.apqns.map(&:name))
+            .to contain_exactly("01.0001", "01.0002")
+          expect(partition.encryption.encryption_process.key_type).to eq("CCA-AESCIPHER")
+        end
+      end
+
       context "if the encryption method is not available for this system" do
         let(:available?) { false }
 
@@ -418,7 +494,7 @@ describe Y2Storage::AgamaProposal do
         it "reports the corresponding error" do
           proposal.propose
           expect(proposal.issues_list).to include an_object_having_attributes(
-            description: /method 'Regular LUKS2' is not available/
+            description: /Regular LUKS2 is not available/
           )
         end
       end
@@ -434,7 +510,7 @@ describe Y2Storage::AgamaProposal do
         it "reports the corresponding error" do
           proposal.propose
           expect(proposal.issues_list).to include an_object_having_attributes(
-            description: /'Encryption with Volatile Random Key' is not a suitable method/
+            description: /Encryption with Volatile Random Key is not suitable/
           )
         end
       end
@@ -509,7 +585,7 @@ describe Y2Storage::AgamaProposal do
       let(:config) { default_config }
 
       before do
-        drive0.search.name = "/dev/vdb"
+        drive0.search.condition = Agama::Storage::Configs::SearchConditions::Name.new("/dev/vdb")
       end
 
       it "uses the drive" do
@@ -627,7 +703,7 @@ describe Y2Storage::AgamaProposal do
 
       before do
         home_partition.search = Agama::Storage::Configs::Search.new.tap do |search|
-          search.name = "/dev/vda3"
+          search.condition = Agama::Storage::Configs::SearchConditions::Name.new("/dev/vda3")
         end
       end
 
@@ -692,7 +768,7 @@ describe Y2Storage::AgamaProposal do
       end
 
       before do
-        drive0.search.name = "/dev/vda"
+        drive0.search.condition = Agama::Storage::Configs::SearchConditions::Name.new("/dev/vda")
       end
 
       it "deletes the partitions" do
@@ -723,7 +799,7 @@ describe Y2Storage::AgamaProposal do
 
       before do
         # vda has 18 GiB of free space.
-        drive0.search.name = "/dev/vda"
+        drive0.search.condition = Agama::Storage::Configs::SearchConditions::Name.new("/dev/vda")
       end
 
       context "if deleting the partition is not needed" do
@@ -774,7 +850,7 @@ describe Y2Storage::AgamaProposal do
       end
 
       before do
-        drive0.search.name = "/dev/vda"
+        drive0.search.condition = Agama::Storage::Configs::SearchConditions::Name.new("/dev/vda")
       end
 
       it "deletes the partition" do

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2025] SUSE LLC
+# Copyright (c) [2025-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -21,6 +21,7 @@
 
 require "agama/storage/config_conversions/to_model_conversions/base"
 require "agama/storage/config_conversions/to_model_conversions/logical_volume"
+require "agama/storage/config_conversions/to_model_conversions/with_space_policy"
 
 module Agama
   module Storage
@@ -28,7 +29,7 @@ module Agama
       module ToModelConversions
         # LVM volume group conversion to model according to the JSON schema.
         class VolumeGroup < Base
-          include WithFilesystem
+          include WithSpacePolicy
 
           # @param config [Configs::VolumeGroup]
           # @param storage_config [Storage::Config]
@@ -51,10 +52,13 @@ module Agama
           # @see Base#conversions
           def conversions
             {
-              vgName:         config.name,
-              extentSize:     config.extent_size&.to_i,
-              targetDevices:  convert_target_devices,
-              logicalVolumes: convert_logical_volumes
+              name:                config.device_name,
+              vgName:              config.name,
+              extentSize:          config.extent_size&.to_i,
+              targetDevices:       convert_target_devices,
+              targetDevicesPolicy: convert_target_devices_policy,
+              spacePolicy:         convert_space_policy,
+              logicalVolumes:      convert_logical_volumes
             }
           end
 
@@ -67,11 +71,21 @@ module Agama
               .compact
           end
 
+          # Policy for creating physical volumes in the target devices.
+          #
+          # @return ["useNeeded", "useAvailable", nil]
+          def convert_target_devices_policy
+            {
+              use_needed:    "useNeeded",
+              use_available: "useAvailable"
+            }[config.physical_volumes_policy]
+          end
+
           # @return [Array<Hash>]
           def convert_logical_volumes
-            config.logical_volumes.map do |logical_volume|
-              ToModelConversions::LogicalVolume.new(logical_volume, volumes).convert
-            end
+            config.logical_volumes
+              .reject(&:skipped?)
+              .map { |l| ToModelConversions::LogicalVolume.new(l, volumes).convert }
           end
         end
       end

@@ -1,0 +1,5 @@
+---
+# One empty disk
+- disk:
+    name: /dev/sda
+    size: 1 TiB

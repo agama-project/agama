@@ -1,0 +1,43 @@
+/**
+ * File:	proc_cpuinfo.scr
+ * Summary:	SCR Agent for reading /proc/cpuinfo
+ * Author:	Ladislav Slezak <lslezak@suse.cz>
+ * Access:	read
+ *
+ * Example:
+ *    read list of processors:  Dir(.proc.cpuinfo.section)
+ *		=> (["0"])
+ *
+ *    read available keys:  Dir(.proc.cpuinfo.value.0)
+ *		=> (["vendor_id", "cpu family", "model", ... ])
+ *
+ *    read value: Read(.cpu.value.0."model name")
+ *		=> ("AMD Athlon(tm) XP 1600+")
+ *
+ * $Id$
+ *
+ * <p>Reads <tt>/proc/cpuinfo</tt> file, each processor is in separate section.</p>
+ *
+ * <p><b>Note:</b> Keys and values are architecture dependent! (For example i386 has
+ * key "cpu MHz" and value "1400.072", but PPC has "clock" with value "668MHz"!)</p>
+ */
+.proc.cpuinfo
+
+`ag_ini(
+    `IniAgent( "/proc/cpuinfo",
+	$[
+	    /* allow comments after value, read only file */
+	    "options"	: [ "comments_last", "read_only" ],
+
+	    /* empty lines, comments after value and whole-line comments */
+	    "comments"	: [ "^[ \t]*$", "[ \t]*#.*$", "^[ \t]*#.*$" ],
+
+	    /* matching rules */
+	    "sections"	: [
+		 $[ "begin" : [ "^[ \t]*processor[ \t]*:[ \t]*([^ \t]*)[ \t]*", "%s" ] ]
+		],
+	    "params"	: [
+		$[ "match" : [ "^[ \t]*(.*[^ \t])[ \t]*:[ \t]*(.*[^ \t])[ \t]*", "%s=%s" ] ]
+	    ],
+	]
+))

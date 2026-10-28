@@ -91,6 +91,20 @@ export type SelectableDataTableColumn = {
    * sorting.
    */
   sortingKey?: string | ((item: object) => string | number);
+
+  /**
+   * Name identifying the column when its sorting is written somewhere outside
+   * the table, such as a URL search param.
+   *
+   * Only needed when `sortingKey` is a function, since when it is a string it
+   * already names the field. Keep it stable: changing it invalidates the links
+   * people saved.
+   *
+   * @example
+   * { name: _("Channel"), sortingKey: (d) => hex(d.channel), sortingId: "channel" }
+   */
+  sortingId?: string;
+
   /**
    * A space-separated string of additional CSS class names to apply to the column's cells.
    * Useful for custom styling or conditional formatting.
@@ -207,7 +221,7 @@ export type SelectableDataTableProps<T = any> = {
    * Used as the `aria-label` for the row action menu's trigger to improve
    * accessibility.
    */
-  itemActionsLabel?: (d: T) => string | string;
+  itemActionsLabel?: ((d: T) => TranslatedString) | TranslatedString;
 
   /**
    * Custom component to use for rendering the actions cell. When not provided,
@@ -216,7 +230,7 @@ export type SelectableDataTableProps<T = any> = {
    * The component will receive the actions for the row and the resolved
    * accessible label from `itemActionsLabel`.
    */
-  itemActionsComponent?: React.ComponentType<{ items: IAction[]; label: string }>;
+  itemActionsComponent?: React.ComponentType<{ items: IAction[]; label: TranslatedString }>;
 
   /**
    * Array of currently selected items.

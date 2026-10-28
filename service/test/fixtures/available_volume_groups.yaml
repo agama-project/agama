@@ -1,0 +1,72 @@
+---
+- disk:
+    name: /dev/vda
+    size: 500 GiB
+    partition_table: gpt
+    partitions:
+    - partition:
+        size: 10 GiB
+        name: /dev/vda1
+    - partition:
+        size: 10 GiB
+        name: /dev/vda2
+- disk:
+    name: /dev/vdb
+    size: 500 GiB
+    partition_table: gpt
+    partitions:
+    - partition:
+        size: 10 GiB
+        name: /dev/vdb1
+- disk:
+    name: /dev/vdc
+    size: 500 GiB
+    partition_table: gpt
+    partitions:
+    - partition:
+        size: 10 GiB
+        name: /dev/vdc1
+    - partition:
+        size: 10 GiB
+        name: /dev/vdc2
+        file_system:  ext4
+        mount_point: /test1
+- lvm_vg:
+    vg_name: vg0
+    lvm_pvs:
+        - lvm_pv:
+            blk_device: /dev/vda1
+    lvm_lvs:
+        - lvm_lv:
+            size:         10 GiB
+            lv_name:      lv1
+- lvm_vg:
+    vg_name: vg1
+    lvm_pvs:
+        - lvm_pv:
+            blk_device: /dev/vda2
+    lvm_lvs:
+        - lvm_lv:
+            size:         10 GiB
+            lv_name:      lv1
+            file_system:  btrfs
+- lvm_vg:
+    vg_name: vg2
+    lvm_pvs:
+        - lvm_pv:
+            blk_device: /dev/vdb1
+    lvm_lvs:
+        - lvm_lv:
+            size:         10 GiB
+            lv_name:      lv1
+            file_system:  btrfs
+            mount_point: /test2
+- lvm_vg:
+    vg_name: vg3
+    lvm_pvs:
+        - lvm_pv:
+            blk_device: /dev/vdc1
+    lvm_lvs:
+        - lvm_lv:
+            size:         10 GiB
+            lv_name:      lv1

@@ -27,7 +27,6 @@ pub mod test_utils;
 
 mod monitor;
 
-use agama_storage as storage;
 use agama_storage_client as storage_client;
 
 #[cfg(test)]
@@ -37,7 +36,7 @@ mod tests {
     use agama_utils::{
         actor::Handler,
         api::{iscsi::Config, iscsi::DiscoverConfig, Event},
-        issue, progress, test,
+        progress, test,
     };
     use test_context::{test_context, AsyncTestContext};
     use tokio::sync::broadcast;
@@ -52,16 +51,8 @@ mod tests {
             let (events, _) = broadcast::channel::<Event>(16);
             let connection = test::dbus::connection().await.unwrap();
             let progress = progress::Service::starter(events.clone()).start();
-            let issues = issue::Service::starter(events.clone()).start();
-            let storage = storage::test_utils::start_service(
-                events.clone(),
-                issues.clone(),
-                progress.clone(),
-                connection.clone(),
-            )
-            .await;
             let client = TestClient::new();
-            let handler = Service::starter(storage, events, progress, connection)
+            let handler = Service::starter(events, progress, connection)
                 .with_client(client.clone())
                 .start()
                 .await
@@ -107,7 +98,7 @@ mod tests {
         )
         .unwrap();
         let message = message::SetConfig::new(Some(config));
-        ctx.handler.call(message).await?;
+        let _ = ctx.handler.call(message).await?;
 
         let config = ctx.handler.call(message::GetConfig).await?;
         assert!(config.is_some());

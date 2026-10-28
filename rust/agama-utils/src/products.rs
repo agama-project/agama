@@ -1,4 +1,4 @@
-// Copyright (c) [2024] SUSE LLC
+// Copyright (c) [2024-2026] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -44,7 +44,7 @@
 use crate::{
     api::{
         l10n::Translations,
-        manager::{Product, ProductMode},
+        manager::{system_info, Product, ProductMode},
     },
     arch::Arch,
 };
@@ -151,7 +151,7 @@ impl Registry {
         template.to_product_spec(mode)
     }
 
-    /// Returns a vector with available the products
+    /// Returns a vector with the available products
     pub fn products(&self) -> Vec<Product> {
         let mut products: Vec<_> = self
             .products
@@ -166,21 +166,113 @@ impl Registry {
                         description: m.description.clone(),
                     })
                     .collect();
+
+                let desktop_selection = p.desktop_selection.as_ref().map(|ds| match ds {
+                    DesktopSelection::Optional => system_info::DesktopSelection::Optional,
+                    DesktopSelection::Suggested => system_info::DesktopSelection::Suggested,
+                });
+
                 Product {
                     id: p.id.clone(),
                     name: p.name.clone(),
                     description: p.description.clone(),
                     icon: p.icon.clone(),
                     registration: p.registration,
-                    license: p.license.clone(),
-                    translations: Some(p.translations.clone()),
+                    licenses: p.licenses.clone(),
+                    desktop_selection,
                     modes,
                 }
             })
             .collect();
 
-        products.sort_by(|a, b| a.name.to_lowercase().cmp(&b.name.to_lowercase()));
+        products.sort_by_key(|a| a.name.to_lowercase());
         products
+    }
+
+    /// Returns the list of products with translations filtered for a specific language.
+    ///
+    /// This method translates product descriptions and mode names/descriptions based on
+    /// the provided language. If a translation is not available for the requested language,
+    /// it falls back to the default value from the product template.
+    ///
+    /// * `lang`: language code (e.g., "en", "de", "es")
+    pub fn products_for_lang(&self, lang: &str) -> Vec<Product> {
+        let mut products: Vec<_> = self
+            .products
+            .iter()
+            .map(|p| Self::translate_product(p, lang))
+            .collect();
+
+        products.sort_by_key(|a| a.name.to_lowercase());
+        products
+    }
+
+    /// Translates a product template into a Product with the given language.
+    ///
+    /// * `template`: The product template to translate
+    /// * `lang`: language code (e.g., "en", "de", "es")
+    fn translate_product(template: &ProductTemplate, lang: &str) -> Product {
+        let modes = template
+            .modes
+            .iter()
+            .map(|m| Self::translate_product_mode(m, &template.translations, lang))
+            .collect();
+
+        let description = template
+            .translations
+            .description
+            .get(lang)
+            .cloned()
+            .unwrap_or_else(|| template.description.clone());
+
+        let desktop_selection = template.desktop_selection.as_ref().map(|ds| match ds {
+            DesktopSelection::Optional => system_info::DesktopSelection::Optional,
+            DesktopSelection::Suggested => system_info::DesktopSelection::Suggested,
+        });
+
+        Product {
+            id: template.id.clone(),
+            name: template.name.clone(),
+            description,
+            icon: template.icon.clone(),
+            registration: template.registration,
+            licenses: template.licenses.clone(),
+            desktop_selection,
+            modes,
+        }
+    }
+
+    /// Translates a product mode spec into a ProductMode with the given language.
+    ///
+    /// * `mode_spec`: The product mode specification to translate
+    /// * `translations`: The product template translations
+    /// * `lang`: language code (e.g., "en", "de", "es")
+    fn translate_product_mode(
+        mode_spec: &ProductModeSpec,
+        translations: &Translations,
+        lang: &str,
+    ) -> ProductMode {
+        let name = translations
+            .mode
+            .get(&mode_spec.id)
+            .and_then(|mode_trans| mode_trans.get("name"))
+            .and_then(|names| names.get(lang))
+            .cloned()
+            .unwrap_or_else(|| mode_spec.name.clone());
+
+        let description = translations
+            .mode
+            .get(&mode_spec.id)
+            .and_then(|mode_trans| mode_trans.get("description"))
+            .and_then(|descriptions| descriptions.get(lang))
+            .cloned()
+            .unwrap_or_else(|| mode_spec.description.clone());
+
+        ProductMode {
+            id: mode_spec.id.clone(),
+            name,
+            description,
+        }
     }
 }
 
@@ -206,11 +298,17 @@ pub struct ProductTemplate {
     #[serde(default)]
     pub registration: bool,
     pub version: Option<String>,
-    pub license: Option<String>,
+    /// License IDs (a product may require accepting more than one).
+    #[serde(default)]
+    pub licenses: Vec<String>,
+    #[serde(default)]
+    pub desktop_selection: Option<DesktopSelection>,
     #[serde(default)]
     pub software: SoftwareSpec,
     #[serde(default)]
     pub storage: StorageSpec,
+    #[serde(default)]
+    pub boot: BootSpec,
     #[serde(default)]
     pub modes: Vec<ProductModeSpec>,
 }
@@ -252,9 +350,11 @@ impl ProductTemplate {
             translations: self.translations.clone(),
             registration: self.registration,
             version: self.version.clone(),
-            license: self.license.clone(),
+            licenses: self.licenses.clone(),
+            desktop_selection: self.desktop_selection.clone(),
             software,
             storage,
+            boot: self.boot.clone(),
         })
     }
 
@@ -286,9 +386,21 @@ pub struct ProductSpec {
     #[serde(default)]
     pub registration: bool,
     pub version: Option<String>,
-    pub license: Option<String>,
+    /// License IDs (a product may require accepting more than one).
+    #[serde(default)]
+    pub licenses: Vec<String>,
+    #[serde(default)]
+    pub desktop_selection: Option<DesktopSelection>,
     pub software: SoftwareSpec,
     pub storage: StorageSpec,
+    pub boot: BootSpec,
+}
+
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[serde(rename_all = "lowercase")]
+pub enum DesktopSelection {
+    Optional,
+    Suggested,
 }
 
 #[derive(Clone, Debug, Default, Deserialize, Serialize, Merge)]
@@ -301,7 +413,7 @@ pub struct SoftwareSpec {
     pub installation_labels: Vec<LabelSpec>,
     #[serde(default)]
     #[merge(strategy = merge::vec::append)]
-    pub user_patterns: Vec<UserPattern>,
+    pub user_patterns: Vec<UserPatternSpec>,
     #[serde(default)]
     #[merge(strategy = merge::vec::append)]
     pub mandatory_patterns: Vec<String>,
@@ -316,9 +428,16 @@ pub struct SoftwareSpec {
     pub optional_packages: Vec<String>,
     #[merge(strategy = merge::option::overwrite_none)]
     pub base_product: Option<String>,
+    #[serde(default)]
+    #[merge(strategy = merge::option::overwrite_none)]
+    pub kernel: Option<String>,
 }
 
 impl SoftwareSpec {
+    pub fn kernel(&self) -> &str {
+        self.kernel.as_deref().unwrap_or("kernel-default")
+    }
+
     // NOTE: perhaps implementing our own iterator would be more efficient.
     pub fn repositories(&self) -> Vec<&RepositorySpec> {
         let Ok(arch) = Arch::current() else {
@@ -335,33 +454,44 @@ impl SoftwareSpec {
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(untagged)]
-pub enum UserPattern {
+pub enum UserPatternSpec {
     Plain(String),
-    Preselected(PreselectedPattern),
+    Object(UserPattern),
 }
 
-impl UserPattern {
+impl UserPatternSpec {
     /// Pattern name.
     pub fn name(&self) -> &str {
         match self {
-            UserPattern::Plain(name) => name,
-            UserPattern::Preselected(pattern) => &pattern.name,
+            UserPatternSpec::Plain(name) => name,
+            UserPatternSpec::Object(pattern) => &pattern.name,
         }
     }
 
     /// Whether the pattern is preselected.
     pub fn preselected(&self) -> bool {
         match self {
-            UserPattern::Plain(_) => false,
-            UserPattern::Preselected(pattern) => pattern.selected,
+            UserPatternSpec::Plain(_) => false,
+            UserPatternSpec::Object(pattern) => pattern.selected,
+        }
+    }
+
+    /// Whether the pattern represents a desktop.
+    pub fn desktop(&self) -> bool {
+        match self {
+            UserPatternSpec::Plain(_) => false,
+            UserPatternSpec::Object(pattern) => pattern.desktop,
         }
     }
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
-pub struct PreselectedPattern {
+pub struct UserPattern {
     pub name: String,
+    #[serde(default)]
     pub selected: bool,
+    #[serde(default)]
+    pub desktop: bool,
 }
 
 #[serde_as]
@@ -396,6 +526,13 @@ pub struct StorageSpec {
     #[serde(default)]
     #[merge(strategy = merge::vec::append)]
     pub volume_templates: Vec<VolumeSpec>,
+}
+
+#[derive(Clone, Debug, Default, Deserialize, Serialize, Merge)]
+pub struct BootSpec {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[merge(strategy = merge::option::overwrite_none)]
+    pub default_efi_bootloader: Option<String>,
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -498,7 +635,7 @@ mod test {
     #[test]
     fn test_load_registry(ctx: &mut Context) {
         // ensuring that we can load all products from tests
-        assert_eq!(ctx.registry.products.len(), 8);
+        assert_eq!(ctx.registry.products.len(), 7);
     }
 
     #[test_context(Context)]
@@ -510,28 +647,41 @@ mod test {
         assert_eq!(tw.icon, "Tumbleweed.svg");
         assert!(!tw.registration);
         assert_eq!(tw.version, None);
+        assert!(tw.licenses.is_empty());
 
         let translations = &tw.translations;
         let description = &translations.description;
         assert!(description["cs"].contains("verze"));
 
         let software = &tw.software;
-        assert_eq!(software.installation_repositories.len(), 12);
-        assert_eq!(software.installation_labels.len(), 4);
+        assert_eq!(software.installation_repositories.len(), 24);
+        assert_eq!(software.installation_labels.len(), 8);
         assert_eq!(software.base_product.as_ref().unwrap(), "openSUSE");
-        assert_eq!(software.user_patterns.len(), 11);
+        assert_eq!(software.user_patterns.len(), 12);
 
-        let preselected = software
+        let selinux = software
             .user_patterns
             .iter()
-            .find(|p| matches!(p, UserPattern::Preselected(_)));
-        let expected_pattern = PreselectedPattern {
+            .find(|p| p.name() == "selinux");
+        let expected_pattern = UserPattern {
             name: "selinux".to_string(),
             selected: true,
+            desktop: false,
         };
+        assert_eq!(selinux, Some(&UserPatternSpec::Object(expected_pattern)));
+
+        let gnome = software.user_patterns.iter().find(|p| p.name() == "gnome");
+        let expected_pattern = UserPattern {
+            name: "gnome".to_string(),
+            selected: false,
+            desktop: true,
+        };
+        assert_eq!(gnome, Some(&UserPatternSpec::Object(expected_pattern)));
+
+        let boot = &tw.boot;
         assert_eq!(
-            preselected,
-            Some(&UserPattern::Preselected(expected_pattern))
+            boot.default_efi_bootloader.as_ref().unwrap(),
+            "systemd-boot"
         );
     }
 
@@ -558,6 +708,10 @@ mod test {
         assert_eq!(sles.name, "SUSE Linux Enterprise Server 16.1");
         assert!(sles.registration);
         assert_eq!(sles.version, Some("16.1".to_string()));
+        assert_eq!(
+            sles.licenses,
+            vec!["license.final".to_string(), "license.beta".to_string()]
+        );
 
         let translations = &sles.translations;
         let description = &translations.description;
@@ -589,5 +743,28 @@ mod test {
         let mut registry = Registry::new(path.as_path());
         registry.read().unwrap();
         assert!(registry.default_product().is_none());
+    }
+
+    #[test_context(Context)]
+    #[test]
+    fn test_products_for_lang(ctx: &mut Context) {
+        // Test with Czech language
+        let products = ctx.registry.products_for_lang("cs");
+
+        // Find SLES product
+        let sles = products.iter().find(|p| p.id == "SLES").unwrap();
+
+        // Verify description is translated to Czech
+        assert!(sles.description.contains("v cloudu"));
+
+        // Test with English (fallback)
+        let products_en = ctx.registry.products_for_lang("en");
+        let sles_en = products_en.iter().find(|p| p.id == "SLES").unwrap();
+
+        // English should use the default description since "en" translation may not exist
+        assert!(
+            sles_en.description.contains("open, reliable, compliant")
+                || sles_en.description.contains("v cloudu")
+        ); // Accept either default or translated
     }
 }

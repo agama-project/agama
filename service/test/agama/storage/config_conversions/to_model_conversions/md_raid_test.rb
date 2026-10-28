@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2025] SUSE LLC
+# Copyright (c) [2025-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -21,18 +21,22 @@
 
 require_relative "../../storage_helpers"
 require_relative "./examples"
+require "agama/storage/bootloader_config"
 require "agama/storage/config_conversions/from_json_conversions/md_raid"
 require "agama/storage/config_conversions/to_model_conversions/md_raid"
 require "agama/storage/volume_templates_builder"
+require "y2storage/md"
 
 describe Agama::Storage::ConfigConversions::ToModelConversions::MdRaid do
   subject { described_class.new(config, volumes) }
 
   let(:config) do
     Agama::Storage::ConfigConversions::FromJSONConversions::MdRaid
-      .new(config_json)
+      .new(config_json, bootloader_config)
       .convert
   end
+
+  let(:bootloader_config) { Agama::Storage::BootloaderConfig.new }
 
   let(:config_json) do
     {
@@ -59,7 +63,8 @@ describe Agama::Storage::ConfigConversions::ToModelConversions::MdRaid do
     include_examples "with ptable_type"
     include_examples "with partitions"
 
-    include_examples "device name"
+    include_examples "device name", nil,
+      { partitions: { any: { filesystem: { type: "ext4" } } } }
     include_examples "space policy"
   end
 end

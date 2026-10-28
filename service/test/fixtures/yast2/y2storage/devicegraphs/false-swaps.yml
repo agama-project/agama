@@ -1,0 +1,36 @@
+---
+- disk:
+    name: /dev/sda
+    size: 10 GiB
+    partition_table:  ms-dos
+    partitions:
+
+    # Unformatted
+    - partition:
+        size:         2 GiB
+        name:         /dev/sda1
+        id:           swap
+
+    # Unformatted
+    - partition:
+        size:         3 GiB
+        name:         /dev/sda2
+        id:           linux
+
+    # Wrong id
+    - partition:
+        size:         3 KiB
+        name:         /dev/sda3
+        id:           swap
+        file_system:  ext4
+        label:        old_root
+        uuid:         "33333333-3333-3333-3333-33333333"
+
+    # The only real swap
+    - partition:
+        size:         unlimited
+        name:         /dev/sda4
+        id:           swap
+        file_system:  swap
+        label:        old_swap
+        uuid:         "44444444-4444-4444-4444-44444444"

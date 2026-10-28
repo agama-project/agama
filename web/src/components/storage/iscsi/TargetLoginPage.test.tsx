@@ -56,17 +56,6 @@ jest.mock("~/hooks/model/config/iscsi", () => ({
   useAddOrEditTarget: () => mockAddOrEditTargetFnt,
 }));
 
-// Needed by withL10n
-jest.mock("~/hooks/model/system", () => ({
-  useSystem: () => ({
-    l10n: {
-      keymap: "us",
-      timezone: "Europe/Berlin",
-      locale: "en_US",
-    },
-  }),
-}));
-
 describe("TargetLoginPage", () => {
   it("renders resource not found when target does not exits", () => {
     // There are no targets at all
@@ -95,7 +84,7 @@ describe("TargetLoginPage", () => {
     mockUseSystemFn.mockReturnValue({ targets: testingTargets });
     mockUseConfigFn.mockReturnValue({ targets: [] });
 
-    installerRender(<TargetLoginPage />, { withL10n: true });
+    installerRender(<TargetLoginPage />);
 
     screen.getByText(testingTargets[0].name);
     expect(screen.queryByRole("heading", { name: "Target not found" })).toBeNull();
@@ -111,7 +100,7 @@ describe("TargetLoginPage", () => {
     mockUseSystemFn.mockReturnValue({ targets: [] });
     mockUseConfigFn.mockReturnValue({ targets: testingTargets });
 
-    installerRender(<TargetLoginPage />, { withL10n: true });
+    installerRender(<TargetLoginPage />);
 
     screen.getByText(testingTargets[0].name);
     expect(screen.queryByRole("heading", { name: "Target not found" })).toBeNull();
@@ -127,7 +116,7 @@ describe("TargetLoginPage", () => {
     mockUseSystemFn.mockReturnValue({ targets: testingTargets });
     mockUseConfigFn.mockReturnValue({ targets: testingTargets });
 
-    installerRender(<TargetLoginPage />, { withL10n: true });
+    installerRender(<TargetLoginPage />);
 
     screen.getByText(testingTargets[0].name);
     expect(screen.queryByRole("heading", { name: "Target not found" })).toBeNull();
@@ -146,7 +135,7 @@ describe("TargetLoginPage", () => {
 
     const target = testingTargets[0];
 
-    const { user } = installerRender(<TargetLoginPage />, { withL10n: true });
+    const { user } = installerRender(<TargetLoginPage />);
     screen.getByText(target.name);
     screen.getByText(`${target.address}:${target.port}`);
 
@@ -171,7 +160,7 @@ describe("TargetLoginPage", () => {
 
     const target = testingTargets[0];
 
-    const { user } = installerRender(<TargetLoginPage />, { withL10n: true });
+    const { user } = installerRender(<TargetLoginPage />);
     screen.getByText(target.name);
     screen.getByText(`${target.address}:${target.port}`);
 
@@ -207,7 +196,7 @@ describe("TargetLoginPage", () => {
 
     const target = testingTargets[0];
 
-    const { user } = installerRender(<TargetLoginPage />, { withL10n: true });
+    const { user } = installerRender(<TargetLoginPage />);
     screen.getByText(target.name);
     screen.getByText(`${target.address}:${target.port}`);
 
@@ -258,7 +247,7 @@ describe("TargetLoginPage", () => {
     mockUseSystemFn.mockReturnValue({ targets: [] });
     mockUseConfigFn.mockReturnValue({ targets: [configTarget] });
 
-    installerRender(<TargetLoginPage />, { withL10n: true });
+    installerRender(<TargetLoginPage />);
 
     const provideAuthSwitch = screen.getByRole("switch", { name: "Provide authentication" });
     expect(provideAuthSwitch).toBeChecked();
@@ -298,7 +287,7 @@ describe("TargetLoginPage", () => {
     mockUseSystemFn.mockReturnValue({ targets: [] });
     mockUseConfigFn.mockReturnValue({ targets: [configTarget] });
 
-    installerRender(<TargetLoginPage />, { withL10n: true });
+    installerRender(<TargetLoginPage />);
 
     const provideAuthSwitch = screen.getByRole("switch", { name: "Provide authentication" });
     expect(provideAuthSwitch).toBeChecked();
@@ -334,7 +323,7 @@ describe("TargetLoginPage", () => {
     mockUseSystemFn.mockReturnValue({ targets: [] });
     mockUseConfigFn.mockReturnValue({ targets: [configTarget] });
 
-    const { user } = installerRender(<TargetLoginPage />, { withL10n: true });
+    const { user } = installerRender(<TargetLoginPage />);
 
     const acceptButton = screen.getByRole("button", { name: "Accept" });
     const username = screen.getByRole("textbox", { name: "User name" });
@@ -368,7 +357,7 @@ describe("TargetLoginPage", () => {
     mockUseSystemFn.mockReturnValue({ targets: testingTargets });
     mockUseConfigFn.mockReturnValue({ targets: [] });
 
-    installerRender(<TargetLoginPage />, { withL10n: true });
+    installerRender(<TargetLoginPage />);
 
     const target = testingTargets[0];
     screen.getByText(target.name);
@@ -403,7 +392,7 @@ describe("TargetLoginPage", () => {
     mockUseSystemFn.mockReturnValue({ targets: [systemTarget] });
     mockUseConfigFn.mockReturnValue({ targets: [configTarget] });
 
-    installerRender(<TargetLoginPage />, { withL10n: true });
+    installerRender(<TargetLoginPage />);
 
     const startupOptions = screen.getByRole("combobox", { name: "Startup" });
     expect(startupOptions).toHaveValue("manual");

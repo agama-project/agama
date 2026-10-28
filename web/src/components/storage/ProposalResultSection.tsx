@@ -23,7 +23,8 @@
 import React from "react";
 import { Skeleton, Stack, Tab, Tabs, TabTitleText } from "@patternfly/react-core";
 import SmallWarning from "~/components/core/SmallWarning";
-import { Page, NestedContent } from "~/components/core";
+import { NestedContent } from "~/components/core";
+import Page from "~/components/layout/Page";
 import DevicesManager from "~/model/storage/devices-manager";
 import ProposalResultTable from "~/components/storage/ProposalResultTable";
 import ProposalActions from "~/components/storage/ProposalActions";
@@ -35,7 +36,8 @@ import {
 } from "~/hooks/model/proposal/storage";
 import { sprintf } from "sprintf-js";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
-import { useStorageUiState } from "~/context/storage-ui-state";
+import { useSearchParamState } from "~/hooks/use-search-param-state";
+import { RESULT_TAB } from "~/components/storage/ui-state-params";
 
 /**
  * @todo Create a component for rendering a customized skeleton
@@ -110,7 +112,7 @@ export type ProposalResultSectionProps = {
 };
 
 export default function ProposalResultSection({ isLoading = false }: ProposalResultSectionProps) {
-  const { uiState, setUiState } = useStorageUiState();
+  const [activeTab, setActiveTab] = useSearchParamState(RESULT_TAB, "0");
   const system = useSystemFlattenDevices();
   const staging = useProposalFlattenDevices();
   const actions = useActions();
@@ -118,23 +120,19 @@ export default function ProposalResultSection({ isLoading = false }: ProposalRes
   const handleTabClick = (
     event: React.MouseEvent | React.KeyboardEvent | MouseEvent,
     tabIndex: number,
-  ) => {
-    setUiState((state) => {
-      state.set("rt", tabIndex.toString());
-      return state;
-    });
-  };
+  ) => setActiveTab(tabIndex);
 
   if (isLoading) return <ResultSkeleton />;
 
   return (
     <Page.Section
+      isFullHeight
       title={_("Result")}
       description={_(
         "Result of applying the configuration described at the 'Settings' section above.",
       )}
     >
-      <Tabs activeKey={uiState.get("rt") || "0"} onSelect={handleTabClick} role="region">
+      <Tabs activeKey={activeTab} onSelect={handleTabClick} role="region">
         <Tab key="action" eventKey={"0"} title={<TabTitleText>{_("Actions")}</TabTitleText>}>
           <NestedContent margin="mtSm">
             <Stack hasGutter>

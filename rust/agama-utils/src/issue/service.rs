@@ -24,7 +24,6 @@ use crate::api::{
     issue::IssueMap,
 };
 use crate::issue::message;
-use async_trait::async_trait;
 use std::collections::HashSet;
 use tokio::sync::broadcast;
 
@@ -73,14 +72,12 @@ impl Actor for Service {
     type Error = Error;
 }
 
-#[async_trait]
 impl MessageHandler<message::Get> for Service {
     async fn handle(&mut self, _message: message::Get) -> Result<IssueMap, Error> {
         Ok(self.issues.clone())
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::Set> for Service {
     async fn handle(&mut self, message: message::Set) -> Result<(), Error> {
         // Compare whether the issues has changed.
@@ -109,10 +106,16 @@ impl MessageHandler<message::Set> for Service {
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::Clear> for Service {
     async fn handle(&mut self, message: message::Clear) -> Result<(), Error> {
         _ = self.issues.remove(&message.scope);
+
+        if message.notify {
+            self.events.send(Event::IssuesChanged {
+                scope: message.scope,
+            })?;
+        }
+
         Ok(())
     }
 }

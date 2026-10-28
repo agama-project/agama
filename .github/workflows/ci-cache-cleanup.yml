@@ -1,0 +1,54 @@
+name: CI - Cache cleanup
+
+# This implements automatic cache cleanup after merging pull requests. See
+# https://docs.github.com/en/actions/how-tos/manage-workflow-runs/manage-caches
+#
+# When the cache quota is reached GitHub automatically deletes the least used
+# caches. But they might belong to a still open PR, while the left-over caches
+# for the recently closed PR might be still kept.
+#
+# To check the embedded script with shellcheck run:
+#
+#    yq ".jobs.cleanup.steps[0].run" ci-cache-cleanup.yml | shellcheck -s bash /dev/stdin
+
+on:
+  pull_request:
+    types:
+      - closed
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+    steps:
+      - name: "Cleanup (PR #${{ github.event.pull_request.number }}, branch \"${{ github.event.pull_request.head.ref }}\")"
+        # explicitly require bash, we use bash arrays here
+        shell: bash
+        run: |
+          echo "Fetching list of caches for $PR_BRANCH"
+          readarray -t prCacheIds < <(gh cache list --ref "$PR_BRANCH" --json id --jq ".[].id")
+          echo "Found ${#prCacheIds[@]} caches"
+
+          echo "Fetching list of caches for $BRANCH"
+          readarray -t branchCacheIds < <(gh cache list --ref "$BRANCH" --json id --jq ".[].id")
+          echo "Found ${#branchCacheIds[@]} caches"
+
+          ## merge the arrays
+          cacheIds=("${prCacheIds[@]}" "${branchCacheIds[@]}")
+
+          # do not fail the workflow while deleting caches
+          # (possible race condition when multiple pulls are merged at the same time)
+          set +e
+
+          for cacheId in "${cacheIds[@]}"; do
+            echo "Deleting cache ${cacheId}..."
+            gh cache delete "${cacheId}"
+          done
+
+          echo "Done"
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          BRANCH: refs/heads/${{ github.event.pull_request.head.ref }}
+          PR_BRANCH: refs/pull/${{ github.event.pull_request.number }}/merge

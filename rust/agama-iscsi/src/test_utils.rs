@@ -23,7 +23,6 @@
 use crate::{
     client::{DiscoverResult, Error, ISCSIClient},
     service::{Service, Starter},
-    storage,
 };
 use agama_utils::{
     actor::Handler,
@@ -31,7 +30,7 @@ use agama_utils::{
         event,
         iscsi::{Config, DiscoverConfig},
     },
-    progress,
+    progress, BoxFuture,
 };
 use async_trait::async_trait;
 use serde_json::Value;
@@ -109,10 +108,13 @@ impl ISCSIClient for TestClient {
         Ok(state.config.clone())
     }
 
-    async fn set_config(&self, config: Option<Config>) -> Result<(), Error> {
+    async fn set_config(
+        &self,
+        config: Option<Config>,
+    ) -> Result<BoxFuture<Result<(), Error>>, Error> {
         let mut state = self.state.lock().await;
         state.config = config;
-        Ok(())
+        Ok(Box::pin(async move { Ok(()) }))
     }
 
     async fn discover(&self, _config: DiscoverConfig) -> Result<DiscoverResult, Error> {
@@ -124,13 +126,12 @@ impl ISCSIClient for TestClient {
 
 /// Starts a testing iSCSI service.
 pub async fn start_service(
-    storage: Handler<storage::Service>,
     events: event::Sender,
     progress: Handler<progress::Service>,
     connection: zbus::Connection,
 ) -> Handler<Service> {
     let client = TestClient::new();
-    Starter::new(storage, events, progress, connection)
+    Starter::new(events, progress, connection)
         .with_client(client)
         .start()
         .await

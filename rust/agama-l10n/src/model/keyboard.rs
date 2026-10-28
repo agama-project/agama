@@ -98,7 +98,7 @@ fn get_keymap_descriptions() -> HashMap<String, String> {
         keymaps.insert(name.to_string(), layout.config_item.description.to_string());
 
         for variant in layout.variants_list.variants {
-            let id = format!("{}({})", &name, &variant.config_item.name);
+            let id = format!("{}({})", name, variant.config_item.name);
             keymaps.insert(id, variant.config_item.description);
         }
     }

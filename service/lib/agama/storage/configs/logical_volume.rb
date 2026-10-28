@@ -19,27 +19,17 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "agama/storage/configs/size"
-require "agama/storage/configs/with_alias"
-require "agama/storage/configs/with_filesystem"
-require "agama/storage/configs/with_search"
-require "agama/storage/configs/with_delete"
+require "agama/storage/configs/with_volume_properties"
 
 module Agama
   module Storage
     module Configs
       # Section of the configuration representing a LVM logical volume.
       class LogicalVolume
-        include WithAlias
-        include WithFilesystem
-        include WithSearch
-        include WithDelete
+        include WithVolumeProperties
 
         # @return [String, nil]
         attr_accessor :name
-
-        # @return [Size]
-        attr_accessor :size
 
         # @return [Integer, nil]
         attr_accessor :stripes
@@ -54,12 +44,8 @@ module Agama
         # @return [String, nil]
         attr_accessor :used_pool
 
-        # @return [Encryption, nil]
-        attr_accessor :encryption
-
         def initialize
-          initialize_delete
-          @size = Size.new
+          initialize_volume_properties
           @pool = false
         end
 

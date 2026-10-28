@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2025] SUSE LLC
+ * Copyright (c) [2025-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -22,6 +22,7 @@
 
 import React from "react";
 import { Select, MenuToggle, MenuToggleElement, SelectProps } from "@patternfly/react-core";
+import { useComboboxKeyboard } from "~/hooks/use-combobox-keyboard";
 import { TranslatedString } from "~/i18n";
 
 export type SelectWrapperProps = {
@@ -32,12 +33,15 @@ export type SelectWrapperProps = {
   isDisabled?: boolean;
   // Accessible name for the toggle
   toggleName?: TranslatedString;
-} & Omit<SelectProps, "toggle" | "onChange">;
+} & Omit<SelectProps, "toggle" | "onChange" | "onToggleKeydown">;
 
 /**
  * Wrapper to simplify the usage of PF/Menu/Select
  *
  * Abstracts the toggle setup by building it internally based on the received props.
+ *
+ * Uses {@link useComboboxKeyboard} hook for W3C-compliant keyboard navigation:
+ * arrow keys open the menu and focus first/last item when closed.
  *
  * @see https://www.patternfly.org/components/menus/select/
  */
@@ -50,11 +54,7 @@ export default function SelectWrapper({
   children,
   toggleName,
 }: SelectWrapperProps): React.ReactElement {
-  const [isOpen, setIsOpen] = React.useState(false);
-
-  const onToggleClick = () => {
-    setIsOpen(!isOpen);
-  };
+  const { isOpen, setIsOpen, menuRef, getToggleRef, onToggleKeydown } = useComboboxKeyboard();
 
   const onSelect = (
     _: React.MouseEvent<Element, MouseEvent> | undefined,
@@ -64,12 +64,12 @@ export default function SelectWrapper({
     onChange && nextValue !== value && onChange(nextValue as string);
   };
 
-  const toggle = (toggleRef: React.Ref<MenuToggleElement>) => {
+  const toggle = (pfToggleRef: React.Ref<MenuToggleElement>) => {
     return (
       <MenuToggle
         id={id}
-        ref={toggleRef}
-        onClick={onToggleClick}
+        ref={getToggleRef(pfToggleRef)}
+        onClick={() => setIsOpen(!isOpen)}
         isExpanded={isOpen}
         isDisabled={isDisabled}
         {...(toggleName && { "aria-label": toggleName })}
@@ -81,10 +81,12 @@ export default function SelectWrapper({
 
   return (
     <Select
+      ref={menuRef}
       isOpen={isOpen}
       selected={value}
       onSelect={onSelect}
-      onOpenChange={(isOpen) => setIsOpen(isOpen)}
+      onOpenChange={setIsOpen}
+      onToggleKeydown={onToggleKeydown}
       toggle={toggle}
       shouldFocusToggleOnSelect
     >

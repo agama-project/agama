@@ -1,4 +1,4 @@
-// Copyright (c) [2025] SUSE LLC
+// Copyright (c) [2025-2026] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -22,7 +22,7 @@
 
 use std::sync::Arc;
 
-use agama_utils::{actor::Handler, api::bootloader::Config, issue};
+use agama_utils::{actor::Handler, api::bootloader::Config, issue, BoxFuture, Resolvable};
 use async_trait::async_trait;
 use tokio::sync::Mutex;
 
@@ -83,13 +83,27 @@ impl BootloaderClient for TestClient {
         Ok(state.config.clone())
     }
 
-    async fn set_config(&self, config: &Config) -> Result<(), Error> {
-        let mut state = self.state.lock().await;
-        state.config = config.clone();
-        Ok(())
+    async fn get_system(&self) -> Result<Option<serde_json::Value>, Error> {
+        Ok(None)
     }
 
-    async fn set_kernel_arg(&mut self, _id: String, _value: String) {}
+    async fn get_resolvables(&self) -> Result<Vec<Resolvable>, Error> {
+        Ok(vec![])
+    }
+
+    async fn set_config(&mut self, config: &Config) -> Result<BoxFuture<Result<(), Error>>, Error> {
+        let mut state = self.state.lock().await;
+        state.config = config.clone();
+        Ok(Box::pin(async { Ok(()) }))
+    }
+
+    async fn set_kernel_arg(
+        &mut self,
+        _id: String,
+        _value: String,
+    ) -> Result<BoxFuture<Result<(), Error>>, Error> {
+        Ok(Box::pin(async { Ok(()) }))
+    }
 }
 
 /// Starts a testing storage service.

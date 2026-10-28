@@ -18,22 +18,25 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::api::progress::Progress;
+use crate::api::{progress::Progress, Scope};
+use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 // Information about the status of the installation.
-#[derive(Clone, Debug, Default, Deserialize, Serialize, utoipa::ToSchema)]
+#[derive(Clone, Debug, Default, Deserialize, Serialize, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct Status {
     /// Stage of the installation
     pub stage: Stage,
+    /// Active tasks
+    pub tasks: Vec<Task>,
     /// Active progresses
     pub progresses: Vec<Progress>,
 }
 
 /// Represents the current state of the installation process.
 #[derive(
-    Clone, Copy, Debug, Default, Deserialize, Serialize, PartialEq, strum::Display, utoipa::ToSchema,
+    Clone, Copy, Debug, Default, Deserialize, Serialize, PartialEq, strum::Display, JsonSchema,
 )]
 #[serde(rename_all = "camelCase")]
 pub enum Stage {
@@ -46,4 +49,23 @@ pub enum Stage {
     Finished,
     /// Installation failed
     Failed,
+}
+
+impl Stage {
+    pub fn is_last(&self) -> bool {
+        matches!(self, Stage::Finished | Stage::Failed)
+    }
+}
+
+/// Represents a background task.
+#[derive(Clone, Debug, Deserialize, Serialize, PartialEq, JsonSchema)]
+pub struct Task {
+    /// Id of the task
+    pub id: usize,
+    /// Short name identifying the task (e.g., "storage_config")
+    pub name: String,
+    /// Human-readable description of what the task does
+    pub description: String,
+    /// Scope that originated the task
+    pub scope: Scope,
 }

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024-2025] SUSE LLC
+# Copyright (c) [2024-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -110,7 +110,7 @@ module Y2Storage
         planned.mount_point = config.path
         planned.mount_by = config.mount_by
         planned.fstab_options = config.mount_options
-        planned.mkfs_options = config.mkfs_options.join(",")
+        planned.mkfs_options = config.mkfs_args
         planned.label = config.label
         configure_filesystem_type(planned, config.type) if config.type
       end
@@ -142,6 +142,21 @@ module Y2Storage
         planned.encryption_label = config.label
         planned.encryption_cipher = config.cipher
         planned.encryption_key_size = config.key_size
+        configure_pervasive_encryption(planned, config)
+      end
+
+      # @param planned [Planned::Disk, Planned::Partition, Planned::LvmLv]
+      # @param config [Agama::Storage::Configs::Encryption]
+      def configure_pervasive_encryption(planned, config)
+        planned.encryption_pervasive_key_type = config.pervasive_key_type
+
+        # TODO: report APQN issues (e.g., not found, incompatible types, different master key,
+        #   offline).
+
+        apqns = config.apqns || []
+        planned.encryption_pervasive_apqns = Y2Storage::EncryptionProcesses::Apqn
+          .all
+          .select { |a| apqns.include?(a.name) }
       end
 
       # @param planned [Planned::Partition, Planned::LvmLv]

@@ -22,26 +22,17 @@
 
 import React from "react";
 import { screen, waitFor } from "@testing-library/react";
-import { installerRender } from "~/test-utils";
+import { installerRender, mockL10n, loadTranslations } from "~/test-utils";
 import { useSystem } from "~/hooks/model/system";
-import { Product } from "~/model/system";
+import { License } from "~/model/system";
 import * as api from "~/api";
 import { Locale, Keymap } from "~/model/system/l10n";
 import LicenseDialog from "./LicenseDialog";
 
-const sle: Product = {
-  id: "SLE",
-  name: "SUSE Linux Enterprise",
-  modes: [],
-  icon: "sle.svg",
-  description: "SLE description",
-  registration: true,
-  license: "license.sle",
-};
+const license: License = { id: "license.sle", name: "SUSE Linux Enterprise License" };
 
 const mockUILanguage = "de-DE";
 let mockLicenseLanguage = "de-DE";
-const product: Product = sle;
 const onCloseFn = jest.fn();
 let mockGetLicense: jest.SpyInstance;
 
@@ -72,14 +63,11 @@ jest.mock("~/hooks/model/system", () => ({
   }),
 }));
 
-jest.mock("~/context/installerL10n", () => ({
-  ...jest.requireActual("~/context/installerL10n"),
-  useInstallerL10n: () => ({ language: mockUILanguage }),
-}));
-
 describe("LicenseDialog", () => {
   mockLicenseLanguage = mockUILanguage;
-  beforeEach(() => {
+  beforeEach(async () => {
+    await loadTranslations(mockUILanguage);
+    mockL10n({ language: mockUILanguage });
     mockGetLicense = jest.spyOn(api, "getLicense").mockImplementation(
       jest.fn().mockImplementation(async () => ({
         body: "El contenido de la licencia",
@@ -88,10 +76,20 @@ describe("LicenseDialog", () => {
     );
   });
 
-  it("loads given product license in the interface language", async () => {
-    installerRender(<LicenseDialog product={product} onClose={onCloseFn} />, { withL10n: true });
+  it("uses the license name as title", async () => {
+    installerRender(<LicenseDialog license={license} onClose={onCloseFn} />);
+    await screen.findByRole("dialog", { name: license.name });
+  });
+
+  it("uses the given title instead of the license name", async () => {
+    installerRender(<LicenseDialog license={license} title="SLES" onClose={onCloseFn} />);
+    await screen.findByRole("dialog", { name: "SLES" });
+  });
+
+  it("loads the given license", async () => {
+    installerRender(<LicenseDialog license={license} onClose={onCloseFn} />);
     await waitFor(() => {
-      expect(mockGetLicense).toHaveBeenCalledWith(sle.license, mockUILanguage);
+      expect(mockGetLicense).toHaveBeenCalledWith(license.id);
       screen.getByText("El contenido de la licencia");
     });
   });
@@ -102,9 +100,9 @@ describe("LicenseDialog", () => {
     });
 
     it("it warns the user that the license is not translated", async () => {
-      installerRender(<LicenseDialog product={product} onClose={onCloseFn} />, { withL10n: true });
+      installerRender(<LicenseDialog license={license} onClose={onCloseFn} />);
       await waitFor(() => {
-        expect(mockGetLicense).toHaveBeenCalledWith(sle.license, mockUILanguage);
+        expect(mockGetLicense).toHaveBeenCalledWith(license.id);
         screen.getByText("El contenido de la licencia");
         screen.getByText("Diese Lizenz ist in Deutsch nicht verfügbar.");
       });
@@ -112,9 +110,7 @@ describe("LicenseDialog", () => {
   });
 
   it("triggers given callback on Close click", async () => {
-    const { user } = installerRender(<LicenseDialog product={product} onClose={onCloseFn} />, {
-      withL10n: true,
-    });
+    const { user } = installerRender(<LicenseDialog license={license} onClose={onCloseFn} />);
     const closeButton = await screen.findByRole("button", { name: "Schließen" });
     await user.click(closeButton);
     expect(onCloseFn).toHaveBeenCalled();

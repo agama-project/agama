@@ -18,11 +18,12 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 /// Describes the current system hostname information
-#[derive(Clone, Debug, PartialEq, Deserialize, Serialize, utoipa::ToSchema)]
-#[schema(as = hostname::SystemInfo)]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize, JsonSchema)]
+#[schemars(rename = "hostname.SystemInfo")]
 pub struct SystemInfo {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub r#static: Option<String>,

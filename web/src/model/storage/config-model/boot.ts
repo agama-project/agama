@@ -43,6 +43,12 @@ function hasExplicitDevice(config: ConfigModel.Config, deviceName: string): bool
   return hasDevice(config, deviceName) && !isDefault(config);
 }
 
+function isFollowingRoot(config: ConfigModel.Config): boolean {
+  if (!config.boot?.configure) return false;
+
+  return config.boot.device?.default;
+}
+
 function setBoot(config: ConfigModel.Config, boot: ConfigModel.Boot): ConfigModel.Config {
   config = configModel.clone(config);
   const device = findDevice(config);
@@ -90,6 +96,7 @@ export default {
   isDefault,
   hasDevice,
   hasExplicitDevice,
+  isFollowingRoot,
   setDevice,
   setDefault,
   disable,

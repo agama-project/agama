@@ -1,4 +1,4 @@
-// Copyright (c) [2024] SUSE LLC
+// Copyright (c) [2024-2026] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -21,6 +21,7 @@
 use crate::error::ProfileError;
 use anyhow::Context;
 use log::info;
+use schemars::JsonSchema;
 use serde_json;
 use std::{
     env, fs,
@@ -34,7 +35,7 @@ use url::Url;
 pub mod http_client;
 pub use http_client::ProfileHTTPClient;
 
-pub const DEFAULT_SCHEMA_DIR: &str = "/usr/share/agama/schema";
+pub const DEFAULT_SCHEMA_DIR: &str = "/usr/share/agama/openapi/nightly/schemas";
 pub const DEFAULT_JSONNET_DIR: &str = "/usr/share/agama/jsonnet";
 
 #[derive(thiserror::Error, Debug)]
@@ -47,22 +48,49 @@ pub enum AutoyastError {
     Evaluation(String),
     #[error("Unsupported AutoYaST format at {0}")]
     UnsupportedFormat(Url),
+    #[error("Failed to parse the list of unsupported AutoYaST elements: {0}")]
+    InvalidUnsupported(#[from] serde_json::Error),
+}
+
+/// An AutoYaST element that could not be fully converted to its Agama equivalent.
+#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
+pub struct UnsupportedElement {
+    /// AutoYaST element key (e.g., "networking/backend").
+    pub key: String,
+    /// Support level for this element ("no", "planned" or "partial").
+    pub support: String,
+    /// Additional information about the element, if any.
+    pub notes: Option<String>,
+}
+
+/// Result of converting an AutoYaST profile: the Agama configuration and any
+/// unsupported elements found along the way.
+#[derive(Debug, Serialize, Deserialize, JsonSchema)]
+pub struct AutoyastConversionResult {
+    pub profile: serde_json::Value,
+    pub unsupported: Vec<UnsupportedElement>,
+}
+
+/// Whether the given path looks like an AutoYaST profile source (XML, ERB, or a directory).
+pub fn is_autoyast_path(path: &str) -> bool {
+    path.ends_with(".xml") || path.ends_with(".erb") || path.ends_with('/')
 }
 
 /// Downloads and converts autoyast profile.
 pub struct AutoyastProfileImporter {
     pub content: String,
+    pub unsupported: Vec<UnsupportedElement>,
 }
 
 impl AutoyastProfileImporter {
     pub async fn read(url: &Url) -> Result<Self, AutoyastError> {
-        let path = url.path();
-        if !path.ends_with(".xml") && !path.ends_with(".erb") && !path.ends_with('/') {
+        if !is_autoyast_path(url.path()) {
             return Err(AutoyastError::UnsupportedFormat(url.clone()));
         }
 
         const TMP_DIR_PREFIX: &str = "autoyast";
         const AUTOINST_JSON: &str = "autoinst.json";
+        const UNSUPPORTED_JSON: &str = "unsupported.json";
 
         let tmp_dir = TempDir::with_prefix(TMP_DIR_PREFIX)?;
         let result = tokio::process::Command::new("agama-autoyast")
@@ -80,45 +108,40 @@ impl AutoyastProfileImporter {
 
         let autoinst_json = tmp_dir.path().join(AUTOINST_JSON);
         let content = fs::read_to_string(&autoinst_json)?;
-        Ok(Self { content })
+
+        let unsupported_json = tmp_dir.path().join(UNSUPPORTED_JSON);
+        let unsupported = if unsupported_json.exists() {
+            let raw = fs::read_to_string(&unsupported_json)?;
+            serde_json::from_str(&raw)?
+        } else {
+            Vec::new()
+        };
+
+        Ok(Self {
+            content,
+            unsupported,
+        })
     }
 }
 
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Serialize, Deserialize, utoipa::ToSchema)]
+#[derive(Debug, Serialize, Deserialize, JsonSchema)]
 pub enum ValidationOutcome {
     Valid,
     NotValid(Vec<String>),
 }
 
-impl std::fmt::Display for ValidationOutcome {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            ValidationOutcome::Valid => {
-                writeln!(f, "The profile is valid.")
-            }
-            ValidationOutcome::NotValid(errors) => {
-                writeln!(
-                    f,
-                    "The profile is not valid. Please, check the following errors:\n",
-                )?;
-                for error in errors {
-                    writeln!(f, "\t* {error}")?;
-                }
-                Ok(())
-            }
-        }
-    }
-}
-
 /// Checks whether an autoinstallation profile is valid
 ///
-/// ```
+/// ```no_run
 /// # use agama_lib::profile::{ProfileValidator, ValidationOutcome};
-/// # use std::path::Path;
-/// let path = Path::new(env!("CARGO_MANIFEST_DIR"))
-///   .join("share/profile.schema.json");
+/// # use std::path::PathBuf;
+/// let mut path = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+///
+/// path.pop();
+/// path.push("out/schemas/config.schema.json");
+///
 /// let validator = ProfileValidator::new(&path)
 ///   .expect("the default validator");
 ///
@@ -130,8 +153,11 @@ impl std::fmt::Display for ValidationOutcome {
 /// assert!(matches!(result, ValidationOutcome::NotValid(_)));
 ///
 /// // or a file
-/// let path = Path::new(env!("CARGO_MANIFEST_DIR"))
-///   .join("share/examples/profile_tw.json");
+/// let mut path = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+///
+/// path.pop();
+/// path.push("share/examples/profile_tw.json");
+///
 /// let result = validator.validate_file(&path).unwrap();
 /// assert!(matches!(result, ValidationOutcome::Valid));
 /// ```
@@ -141,12 +167,13 @@ pub struct ProfileValidator {
 
 impl ProfileValidator {
     pub fn default_schema() -> Result<Self, ProfileError> {
-        let relative_path = PathBuf::from("agama-lib/share/profile.schema.json");
-        let path = if relative_path.exists() {
-            relative_path
+        let manifest_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+        let dev_path = manifest_dir.join("../out/schemas/config.schema.json");
+        let path = if dev_path.exists() {
+            dev_path
         } else {
             let schema_dir = env::var("AGAMA_SCHEMA_DIR").unwrap_or(DEFAULT_SCHEMA_DIR.to_string());
-            PathBuf::from(schema_dir).join("profile.schema.json")
+            PathBuf::from(schema_dir).join("config.schema.json")
         };
         info!("Validation with path {:?}", path);
         Self::new(path)
@@ -167,7 +194,12 @@ impl ProfileValidator {
             .as_object_mut()
             .and_then(|s| s.insert("$id".to_string(), serde_json::json!(id)));
 
-        let validator = jsonschema::validator_for(&schema).expect("A valid schema");
+        Self::from_value(&schema)
+    }
+
+    /// Creates a [`ProfileValidator`] directly from an in-memory JSON schema value.
+    pub fn from_value(schema: &serde_json::Value) -> Result<Self, ProfileError> {
+        let validator = jsonschema::validator_for(schema).expect("A valid schema");
         Ok(Self { validator })
     }
 
@@ -257,5 +289,44 @@ impl ProfileEvaluator {
         file.write_all(&result.stdout)?;
         file.write_all(b"\n}")?;
         Ok(())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_profile_validator_with_inline_schema() {
+        let dir = tempfile::tempdir().unwrap();
+        let schema_path = dir.path().join("test.schema.json");
+        fs::write(
+            &schema_path,
+            r#"{
+                "type": "object",
+                "properties": {
+                    "product": { "type": "string" }
+                },
+                "required": ["product"],
+                "additionalProperties": false
+            }"#,
+        )
+        .unwrap();
+
+        let validator = ProfileValidator::new(&schema_path).expect("valid schema");
+        assert!(matches!(
+            validator
+                .validate_str(r#"{"product": "Tumbleweed"}"#)
+                .unwrap(),
+            ValidationOutcome::Valid
+        ));
+        assert!(matches!(
+            validator.validate_str(r#"{"product": 123}"#).unwrap(),
+            ValidationOutcome::NotValid(_)
+        ));
+        assert!(matches!(
+            validator.validate_str(r#"{"unknown": "val"}"#).unwrap(),
+            ValidationOutcome::NotValid(_)
+        ));
     }
 }

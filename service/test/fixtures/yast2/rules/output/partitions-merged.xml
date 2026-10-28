@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<profile xmlns="http://www.suse.com/1.0/yast2ns" xmlns:config="http://www.suse.com/1.0/configns">
+  <partitioning config:type="list">
+    <drive>
+      <device>/dev/sda</device><disklabel>msdos</disklabel><enable_snapshots config:type="boolean">true</enable_snapshots><initialize config:type="boolean">true</initialize><partitions config:type="list">
+        <partition>
+          <create config:type="boolean">true</create><crypt_fs config:type="boolean">false</crypt_fs><filesystem config:type="symbol">swap</filesystem>
+          <format config:type="boolean">true</format>
+          <loop_fs config:type="boolean">false</loop_fs><mount>swap</mount>
+          <mountby config:type="symbol">uuid</mountby><partition_id config:type="integer">130</partition_id>
+          <partition_nr config:type="integer">1</partition_nr><resize config:type="boolean">false</resize><size>2000mb</size>
+        </partition>
+        <partition>
+          <create config:type="boolean">true</create><crypt_fs config:type="boolean">false</crypt_fs><filesystem config:type="symbol">ext3</filesystem>
+          <format config:type="boolean">true</format><fstopt>acl,user_xattr</fstopt><loop_fs config:type="boolean">false</loop_fs><partition_type>primary</partition_type>
+                        <size>4Gb</size>
+                        <mount>/</mount>
+          <mountby config:type="symbol">uuid</mountby>
+          <partition_id config:type="integer">131</partition_id>
+          <partition_nr config:type="integer">2</partition_nr>
+          <resize config:type="boolean">false</resize>
+          <size>5381455360</size>
+        </partition>
+      </partitions>
+      <pesize/><type config:type="symbol">CT_DISK</type><use>all</use>
+    </drive>
+  </partitioning>
+</profile>

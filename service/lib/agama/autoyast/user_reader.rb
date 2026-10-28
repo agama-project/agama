@@ -19,7 +19,7 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "y2users/autoinst/reader"
+require "agama/autoyast/users_profile_reader"
 
 module Agama
   module AutoYaST
@@ -34,18 +34,19 @@ module Agama
       #
       # @return [Hash] Agama "user" section
       def read
-        user = config.users.find { |u| !u.system? && !u.root? }
+        user = users_reader.regular_user
         return {} unless user
 
         hsh = basic_user_info(user)
 
-        password = user.password
+        password = user["user_password"]
         if password
-          hsh["password"] = password.value.to_s
-          hsh["hashedPassword"] = true if password.value.encrypted?
+          hsh["password"] = password.to_s
+          hsh["hashedPassword"] = true if user["encrypted"]
         end
 
-        hsh["sshPublicKeys"] = user.authorized_keys unless user.authorized_keys.empty?
+        keys = user["authorized_keys"] || []
+        hsh["sshPublicKeys"] = keys unless keys.empty?
 
         { "user" => hsh }
       end
@@ -54,19 +55,15 @@ module Agama
 
       attr_reader :profile
 
-      # @return [Y2Users::Config] Users configuration
-      def config
-        return @config if @config
-
-        reader = Y2Users::Autoinst::Reader.new(profile)
-        result = reader.read
-        @config = result.config
+      # @return [UsersProfileReader]
+      def users_reader
+        @users_reader ||= UsersProfileReader.new(profile)
       end
 
       def basic_user_info(user)
         {
-          "userName" => user.name,
-          "fullName" => user.gecos.first.to_s
+          "userName" => user["username"],
+          "fullName" => user["fullname"].to_s
         }
       end
     end

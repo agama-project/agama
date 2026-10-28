@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024-2025] SUSE LLC
+# Copyright (c) [2024-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -54,10 +54,12 @@ describe Agama::Storage::ConfigConversions::ToModel do
         ],
         volumeGroups: [
           {
+            search:          "/dev/test",
             name:            "test",
             physicalVolumes: [{ generate: ["disk1"] }],
             logicalVolumes:  [
               {
+                search:     "/dev/test/lv1",
                 filesystem: { path: "/" }
               }
             ]
@@ -112,17 +114,25 @@ describe Agama::Storage::ConfigConversions::ToModel do
           ],
           volumeGroups: [
             {
-              vgName:         "test",
-              targetDevices:  ["/dev/vda"],
-              logicalVolumes: [
+              name:                "/dev/test",
+              vgName:              "test",
+              targetDevices:       ["/dev/vda"],
+              targetDevicesPolicy: "useNeeded",
+              spacePolicy:         "keep",
+              logicalVolumes:      [
                 {
-                  filesystem: {
+                  name:           "/dev/test/lv1",
+                  filesystem:     {
                     reuse:   false,
                     default: true,
                     type:    "btrfs"
                   },
-                  mountPath:  "/",
-                  size:       {
+                  mountPath:      "/",
+                  delete:         false,
+                  deleteIfNeeded: false,
+                  resize:         false,
+                  resizeIfNeeded: false,
+                  size:           {
                     default: true,
                     min:     0
                   }

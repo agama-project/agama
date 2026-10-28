@@ -28,6 +28,7 @@ fn criterion_benchmark(c: &mut Criterion) {
     zypp.add_repository(
         "tw",
         "https://download.opensuse.org/tumbleweed/repo/oss/",
+        None,
         |_, _| true,
     )
     .unwrap();

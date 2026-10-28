@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2025] SUSE LLC
+# Copyright (c) [2025-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -20,12 +20,13 @@
 # find current contact information at www.suse.com.
 
 require_relative "../config_context"
+require_relative "./examples"
 require "agama/storage/config_checkers/volume_group"
 
 describe Agama::Storage::ConfigCheckers::VolumeGroup do
   include_context "config"
 
-  subject { described_class.new(vg_config, config, product_config) }
+  subject { described_class.new(vg_config, config, bootloader_config, product_config) }
 
   let(:config_json) do
     {
@@ -35,18 +36,22 @@ describe Agama::Storage::ConfigCheckers::VolumeGroup do
       volumeGroups: [
         {
           name:            name,
+          search:          search,
           physicalVolumes: physical_volumes
         }
       ]
     }
   end
 
-  let(:name) { nil }
+  let(:name) { "vg0" }
+  let(:search) { nil }
   let(:physical_volumes) { nil }
 
   let(:vg_config) { config.volume_groups.first }
 
   describe "#issues" do
+    include_examples "search issues"
+
     context "if the volume group has no name" do
       let(:name) { nil }
 
@@ -135,7 +140,7 @@ describe Agama::Storage::ConfigCheckers::VolumeGroup do
           issues = subject.issues
           expect(issues).to include an_object_having_attributes(
             kind:        Agama::Storage::IssueClasses::Config::WRONG_ENCRYPTION_METHOD,
-            description: /'Regular LUKS2' is not available/
+            description: /Regular LUKS2 is not available/
           )
         end
       end
@@ -147,7 +152,7 @@ describe Agama::Storage::ConfigCheckers::VolumeGroup do
           issues = subject.issues
           expect(issues).to include an_object_having_attributes(
             kind:        Agama::Storage::IssueClasses::Config::WRONG_ENCRYPTION_METHOD,
-            description: /'Encryption with Volatile Random Key' is not a suitable method/
+            description: /Encryption with Volatile Random Key is not suitable/
           )
         end
       end

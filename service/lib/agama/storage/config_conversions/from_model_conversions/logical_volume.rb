@@ -20,6 +20,7 @@
 # find current contact information at www.suse.com.
 
 require "agama/storage/config_conversions/from_model_conversions/base"
+require "agama/storage/config_conversions/from_model_conversions/with_delete"
 require "agama/storage/config_conversions/from_model_conversions/with_filesystem"
 require "agama/storage/config_conversions/from_model_conversions/with_size"
 require "agama/storage/config_conversions/from_model_conversions/with_search"
@@ -32,6 +33,7 @@ module Agama
       module FromModelConversions
         # Logical volume conversion from model according to the JSON schema.
         class LogicalVolume < Base
+          include WithDelete
           include WithFilesystem
           include WithSize
           include WithSearch
@@ -50,12 +52,14 @@ module Agama
           # @return [Hash]
           def conversions
             {
-              name:        logical_volume_model[:lvName],
-              search:      convert_search,
-              filesystem:  convert_filesystem,
-              size:        convert_size,
-              stripes:     logical_volume_model[:stripes],
-              stripe_size: convert_stripe_size
+              name:             logical_volume_model[:lvName],
+              search:           convert_search,
+              filesystem:       convert_filesystem,
+              size:             convert_size,
+              stripes:          logical_volume_model[:stripes],
+              stripe_size:      convert_stripe_size,
+              delete:           convert_delete,
+              delete_if_needed: convert_delete_if_needed
             }
           end
 

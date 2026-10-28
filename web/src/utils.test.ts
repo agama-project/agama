@@ -28,10 +28,14 @@ import {
   mask,
   maskSecrets,
   timezoneTime,
+  clearDateTimeFormatCache,
   sortCollection,
   mergeSources,
   extendCollection,
   translateEntries,
+  isKeyboardActivation,
+  isoTimestamp,
+  download,
 } from "./utils";
 
 import type { Target as ConfigTarget } from "~/openapi/config/iscsi";
@@ -122,6 +126,10 @@ describe("mask", () => {
 
 describe("timezoneTime", () => {
   const fixedDate = new Date("2023-01-01T12:34:56Z");
+
+  // The formatter cache is module-level; clear it so the mock-based cases below
+  // construct a fresh (mocked) formatter instead of reusing a cached one.
+  beforeEach(clearDateTimeFormatCache);
 
   it("returns time in 24h format for a valid timezone", () => {
     const time = timezoneTime("UTC", fixedDate);
@@ -979,6 +987,141 @@ describe("extendCollection", () => {
     expect(extended[0]).toEqual({ id: 1, value: "a", extra: "b" });
     expect(all).toEqual(extended);
   });
+
+  describe("mergeArrays", () => {
+    it("merges all array properties when mergeArrays is true", () => {
+      const base = [{ id: "conn1", addresses: [], nameservers: ["1.1.1.1"] }];
+      const extension = [{ id: "conn1", addresses: ["192.168.1.1"], nameservers: ["8.8.8.8"] }];
+
+      const { extended } = extendCollection(base, {
+        with: extension,
+        mergeArrays: true,
+      });
+
+      expect(extended[0]).toEqual({
+        id: "conn1",
+        addresses: ["192.168.1.1"],
+        nameservers: ["1.1.1.1", "8.8.8.8"],
+      });
+    });
+
+    it("merges only specified array properties when mergeArrays is an array", () => {
+      const base = [{ id: "conn1", addresses: [], tags: ["tag1"] }];
+      const extension = [{ id: "conn1", addresses: ["192.168.1.1"], tags: ["tag2"] }];
+
+      const { extended } = extendCollection(base, {
+        with: extension,
+        mergeArrays: ["addresses"],
+      });
+
+      expect(extended[0]).toEqual({
+        id: "conn1",
+        addresses: ["192.168.1.1"],
+        tags: ["tag1"], // baseWins precedence, not merged
+      });
+    });
+
+    it("removes duplicate values when merging arrays", () => {
+      const base = [{ id: "conn1", addresses: ["192.168.1.1", "192.168.1.2"] }];
+      const extension = [{ id: "conn1", addresses: ["192.168.1.2", "192.168.1.3"] }];
+
+      const { extended } = extendCollection(base, {
+        with: extension,
+        mergeArrays: true,
+      });
+
+      expect(extended[0].addresses).toEqual(["192.168.1.1", "192.168.1.2", "192.168.1.3"]);
+    });
+
+    it("merges arrays with extensionWins precedence", () => {
+      const base = [{ id: "conn1", method: "auto", addresses: ["192.168.1.1"] }];
+      const extension = [{ id: "conn1", method: "manual", addresses: ["192.168.1.2"] }];
+
+      const { extended } = extendCollection(base, {
+        with: extension,
+        precedence: "extensionWins",
+        mergeArrays: true,
+      });
+
+      expect(extended[0]).toEqual({
+        id: "conn1",
+        method: "manual", // extension wins
+        addresses: ["192.168.1.1", "192.168.1.2"], // merged
+      });
+    });
+
+    it("uses precedence for arrays when mergeArrays is false", () => {
+      const base = [{ id: "conn1", addresses: [] }];
+      const extension = [{ id: "conn1", addresses: ["192.168.1.1"] }];
+
+      const { extended } = extendCollection(base, {
+        with: extension,
+        mergeArrays: false,
+      });
+
+      expect(extended[0].addresses).toEqual([]); // baseWins, not merged
+    });
+
+    it("uses precedence for arrays when mergeArrays is undefined", () => {
+      const base = [{ id: "conn1", addresses: ["192.168.1.1"] }];
+      const extension = [{ id: "conn1", addresses: [] }];
+
+      const { extended } = extendCollection(base, {
+        with: extension,
+        precedence: "extensionWins",
+      });
+
+      expect(extended[0].addresses).toEqual([]); // extensionWins, not merged
+    });
+
+    it("handles case where only base has array values", () => {
+      const base = [{ id: "conn1", addresses: ["192.168.1.1"] }];
+      const extension = [{ id: "conn1", gateway: "10.0.0.1" }];
+
+      const { extended } = extendCollection(base, {
+        with: extension,
+        mergeArrays: true,
+      });
+
+      expect(extended[0]).toEqual({
+        id: "conn1",
+        addresses: ["192.168.1.1"],
+        gateway: "10.0.0.1",
+      });
+    });
+
+    it("handles case where only extension has array values", () => {
+      const base = [{ id: "conn1", method: "auto" }];
+      const extension = [{ id: "conn1", addresses: ["192.168.1.1"] }];
+
+      const { extended } = extendCollection(base, {
+        with: extension,
+        mergeArrays: true,
+      });
+
+      expect(extended[0]).toEqual({
+        id: "conn1",
+        method: "auto",
+        addresses: ["192.168.1.1"],
+      });
+    });
+
+    it("does not merge non-array properties even with mergeArrays true", () => {
+      const base = [{ id: "conn1", name: "Connection 1", addresses: [] }];
+      const extension = [{ id: "conn1", name: "Connection One", addresses: ["192.168.1.1"] }];
+
+      const { extended } = extendCollection(base, {
+        with: extension,
+        mergeArrays: true,
+      });
+
+      expect(extended[0]).toEqual({
+        id: "conn1",
+        name: "Connection 1", // baseWins precedence for non-arrays
+        addresses: ["192.168.1.1"], // merged
+      });
+    });
+  });
 });
 
 describe("translateEntries", () => {
@@ -1009,5 +1152,118 @@ describe("translateEntries", () => {
 
   it("returns an empty object when given an empty record", () => {
     expect(translateEntries({})).toEqual({});
+  });
+});
+
+describe("isoTimestamp", () => {
+  const FIXED_ISO = "2026-06-03T10:30:00.000Z";
+  const FIXED_SAFE = "2026-06-03T10-30-00-000Z";
+
+  beforeAll(() => {
+    jest
+      .spyOn(global, "Date")
+      .mockImplementation(() => ({ toISOString: () => FIXED_ISO }) as unknown as Date);
+  });
+
+  it("returns the current date and time in ISO 8601 format", () => {
+    expect(isoTimestamp()).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}-\d{2}-\d{2}-\d{3}Z$/);
+  });
+
+  it("replaces colons with hyphens", () => {
+    expect(isoTimestamp()).not.toContain(":");
+  });
+
+  it("replaces dots with hyphens", () => {
+    expect(isoTimestamp()).not.toContain(".");
+  });
+
+  it("returns the expected value for a known date", () => {
+    expect(isoTimestamp()).toBe(FIXED_SAFE);
+  });
+});
+
+describe("isKeyboardActivation", () => {
+  it("is true for a click with no click count, as fired by a key press", () => {
+    expect(isKeyboardActivation({ detail: 0 })).toBe(true);
+  });
+
+  it("is false for a click coming from a pointer", () => {
+    expect(isKeyboardActivation({ detail: 1 })).toBe(false);
+    expect(isKeyboardActivation({ detail: 2 })).toBe(false);
+  });
+});
+
+describe("download", () => {
+  const mockClick = jest.fn();
+  const mockRevokeObjectURL = jest.fn();
+  const mockCreateObjectURL = jest.fn(() => "blob:mock-url");
+
+  beforeAll(() => {
+    URL.createObjectURL = mockCreateObjectURL;
+    URL.revokeObjectURL = mockRevokeObjectURL;
+
+    jest.spyOn(document, "createElement").mockImplementation((tag: string) => {
+      if (tag !== "a") return document.createElement(tag);
+
+      return { click: mockClick, href: "", download: "" } as unknown as HTMLElement;
+    });
+  });
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("triggers a file download on a successful response", async () => {
+    const blob = new Blob(["content"], { type: "application/gzip" });
+    global.fetch = jest.fn().mockResolvedValue({ ok: true, blob: () => Promise.resolve(blob) });
+
+    await download("/api/private/download_logs", "agama-logs.tar.gz");
+
+    expect(fetch).toHaveBeenCalledWith("/api/private/download_logs");
+    expect(mockCreateObjectURL).toHaveBeenCalledWith(blob);
+    expect(mockClick).toHaveBeenCalled();
+    expect(mockRevokeObjectURL).toHaveBeenCalledWith("blob:mock-url");
+  });
+
+  it("sets the suggested filename on the anchor", async () => {
+    const blob = new Blob([]);
+    global.fetch = jest.fn().mockResolvedValue({ ok: true, blob: () => Promise.resolve(blob) });
+
+    const anchor = { click: mockClick, href: "", download: "" } as unknown as HTMLAnchorElement;
+    jest.spyOn(document, "createElement").mockReturnValue(anchor);
+
+    await download("/api/private/download_logs", "agama-logs.tar.gz");
+
+    expect(anchor.download).toBe("agama-logs.tar.gz");
+  });
+
+  it("throws when the server responds with a non-OK status", async () => {
+    global.fetch = jest.fn().mockResolvedValue({ ok: false, status: 503 });
+
+    await expect(download("/api/private/download_logs", "agama-logs.tar.gz")).rejects.toThrow(
+      "Request failed: 503",
+    );
+  });
+
+  it("does not create an anchor when the request fails", async () => {
+    global.fetch = jest.fn().mockResolvedValue({ ok: false, status: 500 });
+    const createElement = jest.spyOn(document, "createElement");
+
+    await expect(download("/api/private/download_logs", "agama-logs.tar.gz")).rejects.toThrow();
+
+    expect(createElement).not.toHaveBeenCalledWith("a");
+  });
+
+  it("revokes the object URL even if click throws", async () => {
+    const blob = new Blob([]);
+    global.fetch = jest.fn().mockResolvedValue({ ok: true, blob: () => Promise.resolve(blob) });
+    mockClick.mockImplementation(() => {
+      throw new Error("click failed");
+    });
+
+    await expect(download("/api/private/download_logs", "agama-logs.tar.gz")).rejects.toThrow(
+      "click failed",
+    );
+    expect(mockRevokeObjectURL).toHaveBeenCalledWith("blob:mock-url");
   });
 });

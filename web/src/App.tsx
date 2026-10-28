@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2025] SUSE LLC
+ * Copyright (c) [2022-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -21,15 +21,19 @@
  */
 
 import React, { useEffect } from "react";
-import { Outlet, useLocation } from "react-router";
+import { Navigate, Outlet, useLocation } from "react-router";
 import { useStatusChanges, useStatus } from "~/hooks/model/status";
 import { useSystemChanges } from "~/hooks/model/system";
 import { useProposal, useProposalChanges } from "~/hooks/model/proposal";
 import { useIssues, useIssuesChanges } from "~/hooks/model/issue";
 import { useProductInfo } from "~/hooks/model/config/product";
+import { useConfigModel } from "~/hooks/model/storage/config-model";
+import useProductAppearance from "~/hooks/use-product-appearance";
 import { useQueryClient } from "@tanstack/react-query";
 import { InstallationFinished, InstallationProgress } from "./components/core";
 import InstallationFailed from "./components/core/InstallationFailed";
+import TerminalDock from "~/components/core/TerminalDock";
+import { PRODUCT } from "./routes/paths";
 
 /**
  * Content guard and flow control component.
@@ -45,31 +49,44 @@ const Content = () => {
   // https://tanstack.com/query/latest/docs/framework/react/guides/query-invalidation
   useProposal();
   useIssues();
+  useConfigModel();
 
   const location = useLocation();
   const product = useProductInfo();
-  const { progresses, stage } = useStatus();
+  const status = useStatus();
+
+  // Load the product's optional appearance overrides (assets/appearance/<id>.css).
+  useProductAppearance(product?.id);
 
   console.log("App Content component", {
-    progresses,
-    stage,
+    stage: status?.stage,
+    tasks: status?.tasks,
+    progresses: status?.progresses,
     product,
     location: location.pathname,
   });
 
-  if (stage === "failed") {
-    return <InstallationFailed />;
+  if (!product && location.pathname !== PRODUCT.root) {
+    return <Navigate to={PRODUCT.root} />;
   }
 
-  if (stage === "installing") {
-    return <InstallationProgress />;
-  }
-
-  if (stage === "finished") {
-    return <InstallationFinished />;
-  }
-
-  return <Outlet />;
+  // The terminal panel is rendered here, above the stage-driven swap below, so
+  // that opening a shell before installing keeps it running (and reachable)
+  // through the installing/failed/finished screens instead of losing it as
+  // soon as the stage changes.
+  return (
+    <TerminalDock>
+      {status?.stage === "failed" ? (
+        <InstallationFailed />
+      ) : status?.stage === "installing" ? (
+        <InstallationProgress />
+      ) : status?.stage === "finished" ? (
+        <InstallationFinished />
+      ) : (
+        <Outlet />
+      )}
+    </TerminalDock>
+  );
 };
 
 /**

@@ -28,7 +28,7 @@ import { sprintf } from "sprintf-js";
 import { _, n_, formatList } from "~/i18n";
 import {
   useConfigModel,
-  useAddVolumeGroupFromPartitionable,
+  useConvertPartitionableToVolumeGroup,
 } from "~/hooks/model/storage/config-model";
 import configModel from "~/model/storage/config-model";
 import type { ConfigModel } from "~/model/storage/config-model";
@@ -37,13 +37,13 @@ export type NewVgMenuOptionProps = { device: ConfigModel.Drive | ConfigModel.MdR
 
 export default function NewVgMenuOption({ device }: NewVgMenuOptionProps): React.ReactNode {
   const config = useConfigModel();
-  const convertToVg = useAddVolumeGroupFromPartitionable();
+  const convertToVg = useConvertPartitionableToVolumeGroup();
 
   if (device.filesystem) return;
 
   const vgs = configModel.partitionable.filterVolumeGroups(config, device);
   const paths = device.partitions.filter((p) => !p.name).map((p) => formattedPath(p.mountPath));
-  const displayName = deviceBaseName(device, true);
+  const displayName = deviceBaseName(device, { truncate: true });
 
   const titleText = () => {
     if (vgs.length) {

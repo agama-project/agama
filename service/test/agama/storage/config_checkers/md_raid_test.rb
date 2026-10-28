@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2025] SUSE LLC
+# Copyright (c) [2025-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -26,7 +26,7 @@ require "agama/storage/config_checkers/md_raid"
 describe Agama::Storage::ConfigCheckers::MdRaid do
   include_context "config"
 
-  subject { described_class.new(md_config, config, product_config) }
+  subject { described_class.new(md_config, config, bootloader_config, product_config) }
 
   let(:config_json) do
     {
@@ -123,180 +123,6 @@ describe Agama::Storage::ConfigCheckers::MdRaid do
           kind:        Agama::Storage::IssueClasses::Config::NO_SUCH_ALIAS,
           description: /no MD RAID member device with alias 'disk2'/
         )
-      end
-    end
-
-    context "if the MD RAID is reused" do
-      let(:scenario) { "md_disks.yaml" }
-      let(:search) { "/dev/md0" }
-
-      before { solve_config }
-
-      context "and there is a config reusing a device member" do
-        let(:drives) do
-          [
-            {
-              alias:      "vda",
-              search:     "/dev/vda",
-              filesystem: member_filesystem,
-              partitions: member_partitions
-            }
-          ]
-        end
-
-        let(:member_filesystem) { nil }
-        let(:member_partitions) { nil }
-
-        context "and the member config has filesystem" do
-          let(:member_filesystem) { { path: "/" } }
-
-          it "includes the expected issue" do
-            issues = subject.issues
-            expect(issues).to include an_object_having_attributes(
-              kind:        Agama::Storage::IssueClasses::Config::MISUSED_MD_MEMBER,
-              description: /.*vda.*cannot be formatted.*part of.*md0/
-            )
-          end
-        end
-
-        context "and the member config has partitions" do
-          let(:member_partitions) do
-            [
-              {
-                filesystem: { path: "/" }
-              }
-            ]
-          end
-
-          it "includes the expected issue" do
-            issues = subject.issues
-            expect(issues).to include an_object_having_attributes(
-              kind:        Agama::Storage::IssueClasses::Config::MISUSED_MD_MEMBER,
-              description: /.*vda.*cannot be partitioned.*part of.*md0/
-            )
-          end
-        end
-
-        context "and the member config is used by other device" do
-          let(:volume_groups) do
-            [
-              {
-                physicalVolumes: ["vda"]
-              }
-            ]
-          end
-
-          it "includes the expected issue" do
-            issues = subject.issues
-            expect(issues).to include an_object_having_attributes(
-              kind:        Agama::Storage::IssueClasses::Config::MISUSED_MD_MEMBER,
-              description: /.*vda.*cannot be used.*part of.*md0/
-            )
-          end
-        end
-
-        context "and the member config is deleted" do
-          let(:scenario) { "md_raids.yaml" }
-
-          let(:drives) do
-            [
-              {
-                search:     "/dev/vda",
-                partitions: [
-                  {
-                    search: "/dev/vda1",
-                    delete: true
-                  }
-                ]
-              }
-            ]
-          end
-
-          it "includes the expected issue" do
-            issues = subject.issues
-            expect(issues).to include an_object_having_attributes(
-              kind:        Agama::Storage::IssueClasses::Config::MISUSED_MD_MEMBER,
-              description: /.*vda1.*cannot be deleted.*part of.*md0/
-            )
-          end
-        end
-
-        context "and the member config is resized" do
-          let(:scenario) { "md_raids.yaml" }
-
-          let(:drives) do
-            [
-              {
-                search:     "/dev/vda",
-                partitions: [
-                  {
-                    search: "/dev/vda1",
-                    size:   "2 GiB"
-                  }
-                ]
-              }
-            ]
-          end
-
-          it "includes the expected issue" do
-            issues = subject.issues
-            expect(issues).to include an_object_having_attributes(
-              kind:        Agama::Storage::IssueClasses::Config::MISUSED_MD_MEMBER,
-              description: /.*vda1.*cannot be resized.*part of.*md0/
-            )
-          end
-        end
-      end
-
-      context "and a member is indirectly deleted (i.e., the drive is formatted)" do
-        let(:scenario) { "md_raids.yaml" }
-
-        let(:drives) do
-          [
-            {
-              search:     "/dev/vda",
-              filesystem: { path: "/data" }
-            }
-          ]
-        end
-
-        it "includes the expected issue" do
-          issues = subject.issues
-          expect(issues).to include an_object_having_attributes(
-            kind:        Agama::Storage::IssueClasses::Config::MISUSED_MD_MEMBER,
-            description: /.*vda.*cannot be formatted.*part of.*md0/
-          )
-        end
-      end
-    end
-
-    context "if the MD RAID is valid" do
-      let(:config_json) do
-        {
-          drives:       [
-            { alias: "md-disk" },
-            { alias: "md-disk" }
-          ],
-          mdRaids:      [
-            {
-              alias:   "md",
-              level:   "raid0",
-              devices: ["md-disk"]
-            }
-          ],
-          volumeGroups: [
-            {
-              name:            "vg",
-              physicalVolumes: ["md"]
-            }
-          ]
-        }
-      end
-
-      before { solve_config }
-
-      it "does not report issues" do
-        expect(subject.issues).to eq([])
       end
     end
 

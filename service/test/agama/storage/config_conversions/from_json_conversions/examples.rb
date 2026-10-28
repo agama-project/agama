@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2025] SUSE LLC
+# Copyright (c) [2025-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -24,7 +24,9 @@ require "agama/storage/configs/encryption"
 require "agama/storage/configs/filesystem"
 require "agama/storage/configs/partition"
 require "agama/storage/configs/search"
+require "y2storage/bootloader_type"
 require "y2storage/encryption_method"
+require "y2storage/encryption_method/tpm_bls"
 require "y2storage/filesystems/mount_by_type"
 require "y2storage/filesystems/type"
 require "y2storage/pbkd_function"
@@ -140,7 +142,7 @@ shared_examples "with search" do
     it "sets #search to the expected value" do
       config = subject.convert
       expect(config.search).to be_a(Agama::Storage::Configs::Search)
-      expect(config.search.name).to eq("/dev/vda1")
+      expect(config.search.condition_name).to eq("/dev/vda1")
       expect(config.search.if_not_found).to eq(:error)
     end
   end
@@ -181,6 +183,8 @@ shared_examples "with encryption" do
       expect(encryption.pbkd_function).to eq(Y2Storage::PbkdFunction::ARGON2I)
       expect(encryption.cipher).to eq("twofish")
       expect(encryption.label).to eq("test")
+      expect(encryption.apqns).to be_empty
+      expect(encryption.pervasive_key_type).to be_nil
     end
 
     context "if 'encryption' only specifies 'password'" do
@@ -205,11 +209,37 @@ shared_examples "with encryption" do
       end
     end
 
+    context "if 'encryption' is 'luks1'" do
+      let(:encryption) do
+        {
+          luks1: {
+            password: "12345"
+          }
+        }
+      end
+
+      it "sets #encryption to the expected value" do
+        config = subject.convert
+        encryption = config.encryption
+        expect(encryption).to be_a(Agama::Storage::Configs::Encryption)
+        expect(encryption.method).to eq(Y2Storage::EncryptionMethod::LUKS1)
+        expect(encryption.password).to eq("12345")
+        expect(encryption.key_size).to be_nil
+        expect(encryption.pbkd_function).to be_nil
+        expect(encryption.cipher).to be_nil
+        expect(encryption.label).to be_nil
+        expect(encryption.apqns).to be_empty
+        expect(encryption.pervasive_key_type).to be_nil
+      end
+    end
+
     context "if 'encryption' is 'pervasiveLuks2'" do
       let(:encryption) do
         {
           pervasiveLuks2: {
-            password: "12345"
+            password: "12345",
+            apqns:    ["01.0001", "01.0002"],
+            keyType:  "CCA-AESCIPHER"
           }
         }
       end
@@ -220,6 +250,8 @@ shared_examples "with encryption" do
         expect(encryption).to be_a(Agama::Storage::Configs::Encryption)
         expect(encryption.method).to eq(Y2Storage::EncryptionMethod::PERVASIVE_LUKS2)
         expect(encryption.password).to eq("12345")
+        expect(encryption.apqns).to contain_exactly("01.0001", "01.0002")
+        expect(encryption.pervasive_key_type).to eq("CCA-AESCIPHER")
         expect(encryption.key_size).to be_nil
         expect(encryption.pbkd_function).to be_nil
         expect(encryption.cipher).to be_nil
@@ -227,7 +259,7 @@ shared_examples "with encryption" do
       end
     end
 
-    context "if 'encryption' is 'tmpFde'" do
+    context "if 'encryption' is 'tpmFde'" do
       let(:encryption) do
         {
           tpmFde: {
@@ -246,6 +278,132 @@ shared_examples "with encryption" do
         expect(encryption.pbkd_function).to be_nil
         expect(encryption.cipher).to be_nil
         expect(encryption.label).to be_nil
+        expect(encryption.apqns).to be_empty
+        expect(encryption.pervasive_key_type).to be_nil
+      end
+    end
+
+    context "if 'encryption' is implicit 'tpmFde' (LUKS2 with TPM and no BLS bootloader)" do
+      let(:encryption) do
+        {
+          luks2: {
+            tpm:          true,
+            password:     "12345",
+            keySize:      256,
+            pbkdFunction: "argon2i",
+            cipher:       "twofish",
+            label:        "test"
+          }
+        }
+      end
+
+      let(:bootloader_type) { Y2Storage::BootloaderType::GRUB2 }
+
+      it "sets #encryption to the expected value" do
+        config = subject.convert
+        encryption = config.encryption
+        expect(encryption).to be_a(Agama::Storage::Configs::Encryption)
+        expect(encryption.method).to eq(Y2Storage::EncryptionMethod::TPM_FDE)
+        expect(encryption.password).to eq("12345")
+        expect(encryption.key_size).to eq(256)
+        expect(encryption.pbkd_function).to eq(Y2Storage::PbkdFunction::ARGON2I)
+        expect(encryption.cipher).to eq("twofish")
+        expect(encryption.label).to eq("test")
+      end
+    end
+
+    context "if 'encryption' is 'tpmBls' (LUKS2 with TPM and BLS bootloader)" do
+      let(:encryption) do
+        {
+          luks2: {
+            tpm:          true,
+            password:     "12345",
+            keySize:      256,
+            pbkdFunction: "argon2i",
+            cipher:       "twofish",
+            label:        "test"
+          }
+        }
+      end
+
+      let(:bootloader_type) { Y2Storage::BootloaderType::SYSTEMD_BOOT }
+
+      it "sets #encryption to the expected value" do
+        config = subject.convert
+        encryption = config.encryption
+        expect(encryption).to be_a(Agama::Storage::Configs::Encryption)
+        expect(encryption.method.is?(:tpm_bls)).to eq(true)
+        expect(encryption.password).to eq("12345")
+        expect(encryption.key_size).to eq(256)
+        expect(encryption.pbkd_function).to eq(Y2Storage::PbkdFunction::ARGON2I)
+        expect(encryption.cipher).to eq("twofish")
+        expect(encryption.label).to eq("test")
+      end
+    end
+
+    context "if 'encryption' is 'random_swap' (snake_case)" do
+      let(:encryption) { "random_swap" }
+
+      it "sets #encryption to the expected value" do
+        config = subject.convert
+        encryption = config.encryption
+        expect(encryption).to be_a(Agama::Storage::Configs::Encryption)
+        expect(encryption.method).to eq(Y2Storage::EncryptionMethod::RANDOM_SWAP)
+      end
+    end
+
+    context "if 'encryption' is 'randomSwap' (camelCase)" do
+      let(:encryption) { "randomSwap" }
+
+      it "sets #encryption to the expected value" do
+        config = subject.convert
+        encryption = config.encryption
+        expect(encryption).to be_a(Agama::Storage::Configs::Encryption)
+        expect(encryption.method).to eq(Y2Storage::EncryptionMethod::RANDOM_SWAP)
+      end
+    end
+
+    context "if 'encryption' is 'protected_swap' (snake_case)" do
+      let(:encryption) { "protected_swap" }
+
+      it "sets #encryption to the expected value" do
+        config = subject.convert
+        encryption = config.encryption
+        expect(encryption).to be_a(Agama::Storage::Configs::Encryption)
+        expect(encryption.method).to eq(Y2Storage::EncryptionMethod::PROTECTED_SWAP)
+      end
+    end
+
+    context "if 'encryption' is 'protectedSwap' (camelCase)" do
+      let(:encryption) { "protectedSwap" }
+
+      it "sets #encryption to the expected value" do
+        config = subject.convert
+        encryption = config.encryption
+        expect(encryption).to be_a(Agama::Storage::Configs::Encryption)
+        expect(encryption.method).to eq(Y2Storage::EncryptionMethod::PROTECTED_SWAP)
+      end
+    end
+
+    context "if 'encryption' is 'secure_swap' (snake_case)" do
+      let(:encryption) { "secure_swap" }
+
+      it "sets #encryption to the expected value" do
+        config = subject.convert
+        encryption = config.encryption
+        expect(encryption).to be_a(Agama::Storage::Configs::Encryption)
+        expect(encryption.method).to eq(Y2Storage::EncryptionMethod::SECURE_SWAP)
+      end
+    end
+
+    context "if 'encryption' is 'secureSwap' (camelCase)" do
+      let(:encryption) { "secureSwap" }
+
+      it "sets #encryption to the expected value" do
+        config = subject.convert
+        encryption = config.encryption
+        expect(encryption).to be_a(Agama::Storage::Configs::Encryption)
+        expect(encryption.method).to eq(Y2Storage::EncryptionMethod::SECURE_SWAP)
       end
     end
   end
@@ -255,13 +413,13 @@ shared_examples "with filesystem" do
   context "if 'filesystem' is specified" do
     let(:filesystem) do
       {
-        reuseIfPossible: true,
-        type:            "xfs",
-        label:           "test",
-        path:            "/test",
-        mountBy:         "device",
-        mkfsOptions:     ["version=2"],
-        mountOptions:    ["rw"]
+        reuseIfPossible:    true,
+        type:               "xfs",
+        label:              "test",
+        path:               "/test",
+        mountBy:            "device",
+        mkfsExtraArguments: "-l version=2",
+        mountOptions:       ["rw"]
       }
     end
 
@@ -276,7 +434,7 @@ shared_examples "with filesystem" do
       expect(filesystem.label).to eq("test")
       expect(filesystem.path).to eq("/test")
       expect(filesystem.mount_by).to eq(Y2Storage::Filesystems::MountByType::DEVICE)
-      expect(filesystem.mkfs_options).to contain_exactly("version=2")
+      expect(filesystem.mkfs_args).to eq "-l version=2"
       expect(filesystem.mount_options).to contain_exactly("rw")
     end
 
@@ -302,7 +460,7 @@ shared_examples "with filesystem" do
         expect(filesystem.label).to be_nil
         expect(filesystem.path).to be_nil
         expect(filesystem.mount_by).to be_nil
-        expect(filesystem.mkfs_options).to eq([])
+        expect(filesystem.mkfs_args).to be_nil
         expect(filesystem.mount_options).to eq([])
       end
     end
@@ -319,9 +477,68 @@ shared_examples "with filesystem" do
         expect(filesystem.label).to be_nil
         expect(filesystem.path).to be_nil
         expect(filesystem.mount_by).to be_nil
-        expect(filesystem.mkfs_options).to eq([])
+        expect(filesystem.mkfs_args).to be_nil
         expect(filesystem.mount_options).to eq([])
       end
+    end
+  end
+
+  context "if 'filesystem' does not include mkfsExtraArguments or mkfsOptions" do
+    let(:filesystem) do
+      { path: "/test" }
+    end
+
+    it "sets #mkfs_args to nil" do
+      config = subject.convert
+      filesystem = config.filesystem
+      expect(filesystem.mkfs_args).to be_nil
+    end
+  end
+
+  context "if 'filesystem' includes both mkfsExtraArguments and mkfsOptions" do
+    let(:filesystem) do
+      {
+        path:               "/test",
+        mkfsExtraArguments: "-b 2k",
+        mkfsOptions:        ["noise", "to ignore"]
+      }
+    end
+
+    it "ignores mkfsOptions in favor of mkfsExtraArguments" do
+      config = subject.convert
+      filesystem = config.filesystem
+      expect(filesystem.mkfs_args).to eq "-b 2k"
+    end
+  end
+
+  context "if 'filesystem' includes empty mkfsExtraArguments and mkfsOptions" do
+    let(:filesystem) do
+      {
+        path:               "/test",
+        mkfsExtraArguments: "",
+        mkfsOptions:        []
+      }
+    end
+
+    it "sets #mkfs_args to nil" do
+      config = subject.convert
+      filesystem = config.filesystem
+      expect(filesystem.mkfs_args).to be_nil
+    end
+  end
+
+  context "if 'filesystem' includes a non-empty mkfsOptions but no mkfsExtraArguments" do
+    let(:filesystem) do
+      {
+        path:        "/test",
+        mkfsOptions: ["some", "-b content"]
+      }
+    end
+
+    it "sets #mkfs_args based on mkfsOptions" do
+      config = subject.convert
+      filesystem = config.filesystem
+      expect(filesystem.mkfs_args).to eq "some -b content"
     end
   end
 end

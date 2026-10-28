@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2025] SUSE LLC
+# Copyright (c) [2025-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -26,7 +26,7 @@ require "agama/storage/config_checkers/drive"
 describe Agama::Storage::ConfigCheckers::Drive do
   include_context "config"
 
-  subject { described_class.new(drive_config, config, product_config) }
+  subject { described_class.new(drive_config, config, bootloader_config, product_config) }
 
   let(:config_json) do
     {

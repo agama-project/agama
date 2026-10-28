@@ -30,15 +30,12 @@ import {
   HelperTextItem,
   Stack,
 } from "@patternfly/react-core";
-import Page from "~/components/core/Page";
+import Page from "~/components/layout/Page";
 import RebootButton from "~/components/core/RebootButton";
-import InstallerOptionsMenu from "~/components/core/InstallerOptionsMenu";
-import SplitInfoLayout from "~/components/layout/SplitInfoLayout";
-import { useExtendedConfig } from "~/hooks/model/config";
+import SideBySideLayout from "~/components/layout/SideBySideLayout";
+import { useIsGrub2WithTpm } from "~/hooks/model/storage/config-model";
 import { _ } from "~/i18n";
-
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
-import alignmentStyles from "@patternfly/react-styles/css/utilities/Alignment/alignment";
 
 const TpmAlert = () => {
   const title = _("TPM sealing requires the new system to be booted directly.");
@@ -66,65 +63,40 @@ the machine needs to boot directly to the new boot loader.",
   );
 };
 
-// TODO: define some utility method to get the device used as root (drive, partition, logical volume).
-// TODO: use type checking for config.
-function usingTpm(config): boolean {
-  if (!config) {
-    return null;
-  }
-
-  if (config.guided) return config.guided.encryption;
-
-  const { drives = [], volumeGroups = [] } = config;
-
-  const devices = [
-    ...drives,
-    ...drives.flatMap((d) => d.partitions || []),
-    ...volumeGroups.flatMap((v) => v.logicalVolumes || []),
-  ];
-
-  const root = devices.find((d) => d.filesystem?.path === "/");
-
-  return root?.encryption?.tpmFde !== undefined;
-}
-
 function InstallationFinished() {
-  const { storage: storageConfig } = useExtendedConfig();
-  const mountTpmAlert = usingTpm(storageConfig);
+  const isGrub2WithTpm = useIsGrub2WithTpm();
+  const rebootHint = _("You can reboot the machine to log in to the new system.");
 
   return (
-    <Page noDefaultStartSlot endSlot={<InstallerOptionsMenu hideLabel />}>
+    <Page showProgressMonitor={false}>
       <Page.Content>
-        <SplitInfoLayout
+        <SideBySideLayout
           icon="done_all"
-          firstRowStart={_("Installation complete")}
-          firstRowEnd={
-            mountTpmAlert ? (
-              <TpmAlert />
-            ) : (
-              <RebootButton size="default" style={{ minInlineSize: "25dvw" }} />
+          title={_("Installation complete")}
+          description={
+            isGrub2WithTpm && (
+              <HelperText>
+                <HelperTextItem>{rebootHint}</HelperTextItem>
+              </HelperText>
             )
           }
-          secondRowStart={
+        >
+          {isGrub2WithTpm ? (
             <Stack hasGutter>
-              <HelperText>
-                <HelperTextItem
-                  className={alignmentStyles.textAlignEnd}
-                  style={{ textWrap: "balance" }}
-                >
-                  {_("You can reboot the machine to log in to the new system.")}
-                </HelperTextItem>
-              </HelperText>
-              {mountTpmAlert && (
-                <Flex
-                  justifyContent={{ default: "justifyContentCenter", md: "justifyContentFlexEnd" }}
-                >
-                  <RebootButton size="default" style={{ minInlineSize: "25dvw" }} />
-                </Flex>
-              )}
+              <TpmAlert />
+              <RebootButton size="default" />
             </Stack>
-          }
-        />
+          ) : (
+            <Flex
+              direction={{ default: "column" }}
+              alignItems={{ default: "alignItemsFlexStart" }}
+              gap={{ default: "gapMd" }}
+            >
+              <Content>{rebootHint}</Content>
+              <RebootButton size="default" />
+            </Flex>
+          )}
+        </SideBySideLayout>
       </Page.Content>
     </Page>
   );

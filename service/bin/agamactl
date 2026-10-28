@@ -1,8 +1,7 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-#
-# Copyright (c) [2022] SUSE LLC
+# Copyright (c) [2022-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -22,6 +21,12 @@
 # find current contact information at www.suse.com.
 
 $LOAD_PATH.unshift File.expand_path("../lib", __dir__)
+
+# Make the vendored YaST/AutoYaST classic modules (service/YaST2/modules) discoverable through
+# Yast.import. Must happen before "yast" is required (directly or transitively); setting it
+# afterwards is silently ignored.
+agama_yast2_dir = File.expand_path("../YaST2", __dir__)
+ENV["Y2DIR"] = [ENV.fetch("Y2DIR", nil), agama_yast2_dir].compact.join(":")
 
 # Set the PATH to a known value
 ENV["PATH"] = "/sbin:/usr/sbin:/usr/bin:/bin"

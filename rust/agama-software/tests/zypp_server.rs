@@ -97,7 +97,7 @@ async fn test_start_zypp_server() {
         value: None,
     };
     let rule = AnswerRule {
-        class: Some("software.import_gpg".to_string()),
+        class: Some("importGpg".to_string()),
         text: None,
         data: None,
         answer,
@@ -118,6 +118,7 @@ async fn test_start_zypp_server() {
         alias: "signed_repo".to_string(),
         url: root_dir.join("usr/share/signed_repo").to_string(),
         enabled: true,
+        priority: None,
     };
 
     let mut software_state = SoftwareState::new("test_product");
@@ -127,6 +128,7 @@ async fn test_start_zypp_server() {
         .send(SoftwareAction::Write {
             state: software_state,
             progress: progress_handler,
+            l10n: None,
             question: question_handler.clone(),
             security: security_handler,
             tx,
@@ -146,7 +148,7 @@ async fn test_start_zypp_server() {
         1,
         "There are unexpected issues size {issues:#?}"
     );
-    assert_eq!(issues.software[0].class, "missing_product");
+    assert_eq!(issues.software[0].class, "missingProduct");
 
     let questions = question_handler
         .call(question::message::Get)

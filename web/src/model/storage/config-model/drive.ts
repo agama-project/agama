@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2025] SUSE LLC
+ * Copyright (c) [2025-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -35,16 +35,8 @@ function add(config: ConfigModel.Config, data: Data.Drive): ConfigModel.Config {
   return config;
 }
 
-function addFromMdRaid(
-  config: ConfigModel.Config,
-  oldName: string,
-  drive: Data.Drive,
-): ConfigModel.Config {
-  return configModel.partitionable.convert(config, oldName, drive.name, "drives");
-}
-
 function remove(config: ConfigModel.Config, index: number): ConfigModel.Config {
   return configModel.partitionable.remove(config, "drives", index);
 }
 
-export default { find, add, remove, addFromMdRaid };
+export default { find, add, remove };

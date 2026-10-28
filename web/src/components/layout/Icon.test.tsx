@@ -48,6 +48,13 @@ describe("Icon", () => {
       const icon = container.querySelector("svg");
       expect(icon).toHaveAttribute("data-icon-name", "wifi");
     });
+
+    it("applies the size class for the given size, keeping any custom class", () => {
+      const { container } = plainRender(<Icon name="wifi" size="lg" className="custom" />);
+      const icon = container.querySelector("svg");
+      expect(icon).toHaveClass("agm-icon-lg");
+      expect(icon).toHaveClass("custom");
+    });
   });
 
   describe("mounted with unknown name", () => {

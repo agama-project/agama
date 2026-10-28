@@ -25,7 +25,7 @@ import { generatePath } from "react-router";
 import { ISortBy, sort } from "fast-sort";
 import { _ } from "~/i18n";
 
-import type { TranslatedString } from "~/i18n";
+import type { MarkedString, TranslatedString } from "~/i18n";
 
 /**
  * Generates a new array without null and undefined values.
@@ -110,6 +110,41 @@ const localConnection = (location: Location | URL = window.location) => {
   return hostname === "localhost" || hostname.startsWith("127.");
 };
 
+const dateTimeFormatters = new Map<string, Intl.DateTimeFormat>();
+
+/**
+ * Cached `Intl.DateTimeFormat` for a time zone and options.
+ *
+ * Constructing a formatter is the costly part; formatting with it is cheap. Reuse
+ * instances across calls so building a long time-zone list (or rebuilding it when
+ * a selector opens) does not reconstruct hundreds of formatters.
+ *
+ * The locale is fixed to "en-US" so the output stays locale-neutral (24h time,
+ * "UTC+1"), which is why the cache key is just the time zone and options. If the
+ * locale is ever made dynamic, it must be added to the cache key too, otherwise a
+ * language change would reuse a stale-locale formatter.
+ *
+ * @param timezone - E.g., "Atlantic/Canary".
+ * @param options - Formatting options (e.g. `{ timeStyle: "short" }`).
+ */
+const dateTimeFormat = (
+  timezone: string,
+  options: Intl.DateTimeFormatOptions,
+): Intl.DateTimeFormat => {
+  const key = `${timezone}|${JSON.stringify(options)}`;
+  let formatter = dateTimeFormatters.get(key);
+  if (!formatter) {
+    formatter = new Intl.DateTimeFormat("en-US", { timeZone: timezone, ...options });
+    dateTimeFormatters.set(key, formatter);
+  }
+  return formatter;
+};
+
+/** Clears the cached formatters. Intended for tests that mock `Intl.DateTimeFormat`. */
+const clearDateTimeFormatCache = (): void => {
+  dateTimeFormatters.clear();
+};
+
 /**
  * Time for the given timezone.
  *
@@ -120,13 +155,7 @@ const localConnection = (location: Location | URL = window.location) => {
  */
 const timezoneTime = (timezone: string, date: Date = new Date()): string | undefined => {
   try {
-    const formatter = new Intl.DateTimeFormat("en-US", {
-      timeZone: timezone,
-      timeStyle: "short",
-      hour12: false,
-    });
-
-    return formatter.format(date);
+    return dateTimeFormat(timezone, { timeStyle: "short", hour12: false }).format(date);
   } catch (e) {
     if (e instanceof RangeError) return undefined;
 
@@ -500,6 +529,40 @@ interface ExtendCollectionOptions<T, U> {
    * @default "baseWins"
    */
   precedence?: "baseWins" | "extensionWins";
+
+  /**
+   * Controls how array properties are merged:
+   *  - `true`: Merge all array properties by concatenating values from both sources
+   *  - `string[]`: Merge only the specified array property names
+   *  - `false` or `undefined`: Use precedence rules (default behavior)
+   *
+   * When merging arrays, values from the extension are added to the base array,
+   * with duplicates removed using strict equality.
+   *
+   * @example
+   * ```ts
+   * // Merge all arrays
+   * extendCollection(
+   *   [{ id: "a", addresses: [], nameservers: [] }],
+   *   {
+   *     with: [{ id: "a", addresses: ["192.168.1.1"], nameservers: ["8.8.8.8"] }],
+   *     mergeArrays: true
+   *   }
+   * )
+   * // => addresses: ["192.168.1.1"], nameservers: ["8.8.8.8"]
+   *
+   * // Merge specific arrays only
+   * extendCollection(
+   *   [{ id: "a", addresses: [], tags: ["tag1"] }],
+   *   {
+   *     with: [{ id: "a", addresses: ["192.168.1.1"], tags: ["tag2"] }],
+   *     mergeArrays: ["addresses"]
+   *   }
+   * )
+   * // => addresses: ["192.168.1.1"], tags: ["tag1"] (precedence wins for tags)
+   * ```
+   */
+  mergeArrays?: boolean | string[];
 }
 
 /**
@@ -592,7 +655,7 @@ function extendCollection<T extends object, U extends object>(
   collection: T[] = [],
   options: ExtendCollectionOptions<T, U>,
 ): ExtendCollectionResult<T, U> {
-  const { with: extension = [], matching = "id", precedence = "baseWins" } = options;
+  const { with: extension = [], matching = "id", precedence = "baseWins", mergeArrays } = options;
 
   // Normalize matching field(s) to array
   const keys = Array.isArray(matching) ? matching : [matching];
@@ -609,17 +672,45 @@ function extendCollection<T extends object, U extends object>(
   const unmatched: U[] = [];
   const all: (T & U)[] = [];
 
+  // Helper to merge two items with array merging support
+  const mergeItems = (base: T, ext: U): T & U => {
+    const merged = precedence === "baseWins" ? { ...ext, ...base } : { ...base, ...ext };
+
+    if (!mergeArrays) return merged as T & U;
+
+    // Determine which properties should have their arrays merged
+    const shouldMergeArray = (key: string): boolean => {
+      if (mergeArrays === true) return true;
+      if (Array.isArray(mergeArrays)) return mergeArrays.includes(key);
+      return false;
+    };
+
+    // Merge array properties
+    for (const key of Object.keys(merged)) {
+      if (!shouldMergeArray(key)) continue;
+
+      const baseVal = base[key as keyof T];
+      const extVal = ext[key as keyof U];
+
+      if (isArray(baseVal) && isArray(extVal)) {
+        // Concatenate arrays and remove duplicates
+        const combined = [...baseVal, ...extVal];
+        merged[key as keyof typeof merged] = Array.from(new Set(combined)) as unknown as (T &
+          U)[keyof (T & U)];
+      }
+    }
+
+    return merged as T & U;
+  };
+
   // Extend each item in the base collection
   for (const item of collection) {
     const key = getKey(item);
     const match = extensionLookup.get(key);
 
-    const resolved = (
-      !match
-        ? item
-        : (extensionLookup.delete(key),
-          precedence === "baseWins" ? { ...match, ...item } : { ...item, ...match })
-    ) as T & U;
+    const resolved = !match
+      ? (item as T & U)
+      : (extensionLookup.delete(key), mergeItems(item, match));
 
     extended.push(resolved);
     all.push(resolved);
@@ -662,15 +753,67 @@ type TranslateEntriesOptions = {
  *
  */
 const translateEntries = (
-  entries: Record<string, string>,
+  entries: Record<string, MarkedString>,
   { filter }: TranslateEntriesOptions = {},
 ): Record<string, TranslatedString> =>
   Object.fromEntries(
     Object.entries(entries)
       .filter(([key]) => filter?.(key) ?? true)
-      /* eslint-disable agama-i18n/string-literals */
       .map(([key, value]) => [key, _(value)]),
   );
+
+/**
+ * Returns the current date and time as an ISO 8601 string with colons and
+ * dots replaced by hyphens, e.g. `2024-01-15T10-30-00-000Z`.
+ *
+ * @returns A string in the form `YYYY-MM-DDTHH-MM-SS-mmmZ`.
+ *
+ * @example
+ * const filename = `agama-logs-${isoTimestamp()}.tar.gz`;
+ */
+const isoTimestamp = (): string => new Date().toISOString().replace(/[:.]/g, "-");
+
+/**
+ * Whether a click came from the keyboard rather than from a pointer.
+ *
+ * Pressing Enter or Space on a button fires a click just like a mouse or a
+ * finger does, and nothing in the event says which it was. The one thing that
+ * tells them apart is `detail`, the click count: a real pointer always reports
+ * at least one, while a click synthesized from a key press reports none.
+ *
+ * It is a hint, not a fact: treat a `false` as "assume a pointer".
+ */
+const isKeyboardActivation = (event: { detail: number }): boolean => event.detail === 0;
+
+/**
+ * Fetches a resource and triggers a browser file download.
+ *
+ * The download is performed via `fetch` so the caller can `await` completion,
+ * enabling UI feedback (e.g. a loading indicator) that can be dismissed once
+ * the browser Save dialog appears.
+ *
+ * @param url - URL of the resource to download.
+ * @param filename - Suggested filename for the downloaded file.
+ *
+ * @throws {Error} If the server responds with a non-OK HTTP status.
+ *
+ * @example
+ * await download("/api/private/download_logs", "agama-logs.tar.gz");
+ */
+const download = async (url: string, filename: string): Promise<void> => {
+  const response = await fetch(url);
+  if (!response.ok) throw new Error(`Request failed: ${response.status}`);
+
+  const blob = await response.blob();
+  const anchor = document.createElement("a");
+  anchor.href = URL.createObjectURL(blob);
+  anchor.download = filename;
+  try {
+    anchor.click();
+  } finally {
+    URL.revokeObjectURL(anchor.href);
+  }
+};
 
 export {
   compact,
@@ -678,6 +821,8 @@ export {
   locationReload,
   setLocationSearch,
   localConnection,
+  dateTimeFormat,
+  clearDateTimeFormatCache,
   timezoneTime,
   mask,
   generateEncodedPath,
@@ -686,4 +831,7 @@ export {
   mergeSources,
   extendCollection,
   translateEntries,
+  isoTimestamp,
+  isKeyboardActivation,
+  download,
 };

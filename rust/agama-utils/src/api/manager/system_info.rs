@@ -1,4 +1,4 @@
-// Copyright (c) [2025] SUSE LLC
+// Copyright (c) [2025-2026] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -18,46 +18,56 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::api::{l10n::Translations, manager::License};
+use super::License;
+use schemars::JsonSchema;
 use serde::Serialize;
 
 /// Global information of the system where the installer is running.
-#[derive(Clone, Debug, Default, Serialize, utoipa::ToSchema)]
-#[schema(as = manager::SystemInfo)]
+#[derive(Clone, Debug, Default, Serialize, JsonSchema)]
+#[schemars(rename = "manager.SystemInfo")]
 pub struct SystemInfo {
     /// List of known products.
     pub products: Vec<Product>,
-    /// List of known licenses
+    /// List of available licenses (in the current system language).
     pub licenses: Vec<License>,
     /// Hardware information
     pub hardware: HardwareInfo,
 }
 
 /// Represents a software product
-#[derive(Clone, Default, Debug, Serialize, utoipa::ToSchema)]
+#[derive(Clone, Default, Debug, Serialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct Product {
-    /// Product ID (eg., "ALP", "Tumbleweed", etc.)
+    /// Product ID (eg., "SLES", "Tumbleweed", etc.)
     pub id: String,
     /// Product name (e.g., "openSUSE Tumbleweed")
     pub name: String,
-    /// Product description
+    /// Product description (translated to the current UI language)
     pub description: String,
     /// Product icon (e.g., "default.svg")
     pub icon: String,
     /// Registration requirement
     pub registration: bool,
-    /// License ID
-    pub license: Option<String>,
-    /// Translations
+    /// License IDs (a product may require accepting more than one).
+    #[serde(default)]
+    pub licenses: Vec<String>,
+    /// Desktop selection mode
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub translations: Option<Translations>,
-    /// Product modes
+    pub desktop_selection: Option<DesktopSelection>,
+    /// Product modes (names and descriptions are translated to the current UI language)
     #[serde(default)]
     pub modes: Vec<ProductMode>,
 }
 
-#[derive(Clone, Default, Debug, Serialize, utoipa::ToSchema)]
+/// Desktop selection mode for a product
+#[derive(Clone, Debug, Serialize, JsonSchema)]
+#[serde(rename_all = "camelCase")]
+pub enum DesktopSelection {
+    Optional,
+    Suggested,
+}
+
+#[derive(Clone, Default, Debug, Serialize, JsonSchema)]
 pub struct ProductMode {
     pub id: String,
     pub name: String,
@@ -65,7 +75,7 @@ pub struct ProductMode {
 }
 
 /// Represents the hardware information of the underlying system.
-#[derive(Clone, Default, Debug, Serialize, utoipa::ToSchema)]
+#[derive(Clone, Default, Debug, Serialize, JsonSchema)]
 pub struct HardwareInfo {
     /// CPU description.
     pub cpu: Option<String>,

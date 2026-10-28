@@ -44,11 +44,7 @@ export type SearchMax = number;
  */
 export type SearchActions = "skip" | "error";
 export type Encryption =
-  | EncryptionLuks1
-  | EncryptionLuks2
-  | EncryptionPervasiveLuks2
-  | EncryptionTPM
-  | EncryptionSwap;
+  EncryptionLuks1 | EncryptionLuks2 | EncryptionPervasiveLuks2 | EncryptionTpmFde | EncryptionSwap;
 /**
  * Password to use when creating a new encryption device.
  */
@@ -63,9 +59,10 @@ export type EncryptionCipher = string;
 export type EncryptionKeySize = number;
 export type EncryptionPbkdFunction = "pbkdf2" | "argon2i" | "argon2id";
 /**
- * Swap encryptions.
+ * Swap encryptions. The snake case names are deprecated.
  */
-export type EncryptionSwap = "protected_swap" | "secure_swap" | "random_swap";
+export type EncryptionSwap =
+  "protected_swap" | "secure_swap" | "random_swap" | "protectedSwap" | "secureSwap" | "randomSwap";
 export type FilesystemType = FilesystemTypeAny | FilesystemTypeBtrfs;
 export type FilesystemTypeAny =
   | "bcachefs"
@@ -100,13 +97,10 @@ export type PartitionElement =
   | PartitionToDeleteIfNeeded;
 export type PartitionSearch = SearchAll | SearchName | PartitionAdvancedSearch;
 export type PartitionSearchCondition =
-  | SearchConditionName
-  | SearchConditionSize
-  | SearchConditionPartitionNumber;
+  SearchConditionName | SearchConditionSize | SearchConditionPartitionNumber;
 export type PartitionSearchSort = PartitionSearchSortCriterion | PartitionSearchSortCriterion[];
 export type PartitionSearchSortCriterion =
-  | PartitionSearchSortCriterionShort
-  | PartitionSearchSortCriterionFull;
+  PartitionSearchSortCriterionShort | PartitionSearchSortCriterionFull;
 export type PartitionSearchSortCriterionShort = "name" | "size" | "number";
 /**
  * How to handle the section if the device is not found.
@@ -131,27 +125,41 @@ export type DeletePartitionSearch = SearchAll | SearchName | DeletePartitionAdva
  * Device base name.
  */
 export type BaseName = string;
+export type VolumeGroupSearch = SearchAll | SearchName | VolumeGroupAdvancedSearch;
+export type VolumeGroupSearchCondition = SearchConditionName | SearchConditionSize;
+export type VolumeGroupSearchSort =
+  VolumeGroupSearchSortCriterion | VolumeGroupSearchSortCriterion[];
+export type VolumeGroupSearchSortCriterion =
+  VolumeGroupSearchSortCriterionShort | VolumeGroupSearchSortCriterionFull;
+export type VolumeGroupSearchSortCriterionShort = "name" | "size";
 export type PhysicalVolumeElement =
-  | Alias
-  | SimplePhysicalVolumesGenerator
-  | AdvancedPhysicalVolumesGenerator;
+  Alias | SimplePhysicalVolumesGenerator | AdvancedPhysicalVolumesGenerator;
 export type LogicalVolumeElement =
   | SimpleVolumesGenerator
   | AdvancedLogicalVolumesGenerator
   | LogicalVolume
   | ThinPoolLogicalVolume
-  | ThinLogicalVolume;
+  | ThinLogicalVolume
+  | LogicalVolumeToDelete
+  | LogicalVolumeToDeleteIfNeeded;
 /**
  * Number of stripes.
  */
 export type LogicalVolumeStripes = number;
+export type LogicalVolumeSearch = SearchAll | SearchName | LogicalVolumeAdvancedSearch;
+export type LogicalVolumeSearchCondition = SearchConditionName | SearchConditionSize;
+export type LogicalVolumeSearchSort =
+  LogicalVolumeSearchSortCriterion | LogicalVolumeSearchSortCriterion[];
+export type LogicalVolumeSearchSortCriterion =
+  LogicalVolumeSearchSortCriterionShort | LogicalVolumeSearchSortCriterionFull;
+export type LogicalVolumeSearchSortCriterionShort = "name" | "size" | "number";
+export type DeleteLogicalVolumeSearch = SearchAll | SearchName | DeleteLogicalVolumeAdvancedSearch;
 export type MdRaidElement = NonPartitionedMdRaid | PartitionedMdRaid;
 export type MdRaidSearch = SearchAll | SearchName | MdRaidAdvancedSearch;
 export type MdRaidSearchCondition = SearchConditionName | SearchConditionSize;
 export type MdRaidSearchSort = MdRaidSearchSortCriterion | MdRaidSearchSortCriterion[];
 export type MdRaidSearchSortCriterion =
-  | MdRaidSearchSortCriterionShort
-  | MdRaidSearchSortCriterionFull;
+  MdRaidSearchSortCriterionShort | MdRaidSearchSortCriterionFull;
 export type MdRaidSearchSortCriterionShort = "name" | "size";
 export type MDLevel = "raid0" | "raid1" | "raid5" | "raid6" | "raid10";
 /**
@@ -260,6 +268,10 @@ export interface EncryptionLuks2 {
      * LUKS2 label.
      */
     label?: string;
+    /**
+     * Whether to use TPM2 unlocking.
+     */
+    tpm?: boolean;
   };
 }
 /**
@@ -268,12 +280,21 @@ export interface EncryptionLuks2 {
 export interface EncryptionPervasiveLuks2 {
   pervasiveLuks2: {
     password: EncryptionPassword;
+    /**
+     * List of APQNs used to generate secure keys.
+     */
+    apqns?: string[];
+    /**
+     * Type of the generated secure key.
+     */
+    keyType?: "EP11-AES" | "CCA-AESCIPHER" | "CCA-AESDATA";
   };
 }
 /**
+ * @deprecated
  * TPM-Based Full Disk Encryption.
  */
-export interface EncryptionTPM {
+export interface EncryptionTpmFde {
   tpmFde: {
     password: EncryptionPassword;
   };
@@ -294,9 +315,9 @@ export interface Filesystem {
   path?: string;
   mountBy?: MountBy;
   /**
-   * Options for creating the file system.
+   * Additional arguments injected as-is to the mkfs command when creating the file system.
    */
-  mkfsOptions?: string[];
+  mkfsExtraArguments?: string;
   /**
    * Options to add to the fourth field of fstab.
    */
@@ -392,12 +413,23 @@ export interface PartitionToDeleteIfNeeded {
  */
 export interface VolumeGroup {
   name: BaseName;
+  search?: VolumeGroupSearch;
   extentSize?: SizeValue;
   /**
    * Devices to use as physical volumes.
    */
   physicalVolumes?: PhysicalVolumeElement[];
   logicalVolumes?: LogicalVolumeElement[];
+}
+export interface VolumeGroupAdvancedSearch {
+  condition?: VolumeGroupSearchCondition;
+  sort?: VolumeGroupSearchSort;
+  max?: SearchMax;
+  ifNotFound?: SearchCreatableActions;
+}
+export interface VolumeGroupSearchSortCriterionFull {
+  name?: SearchSortCriterionOrder;
+  size?: SearchSortCriterionOrder;
 }
 /**
  * Automatically creates the needed physical volumes in the indicated devices.
@@ -411,6 +443,10 @@ export interface SimplePhysicalVolumesGenerator {
 export interface AdvancedPhysicalVolumesGenerator {
   generate: {
     targetDevices: Alias[];
+    /**
+     * Policy for creating physical volumes: either using all the available space or only the needed space for allocating the logical volumes.
+     */
+    spacePolicy?: "useNeeded" | "useAvailable";
     encryption?: Encryption;
   };
 }
@@ -427,11 +463,22 @@ export interface AdvancedLogicalVolumesGenerator {
 }
 export interface LogicalVolume {
   name?: BaseName;
+  search?: LogicalVolumeSearch;
   size?: Size;
   stripes?: LogicalVolumeStripes;
   stripeSize?: SizeValue;
   encryption?: Encryption;
   filesystem?: Filesystem;
+}
+export interface LogicalVolumeAdvancedSearch {
+  condition?: LogicalVolumeSearchCondition;
+  sort?: LogicalVolumeSearchSort;
+  max?: SearchMax;
+  ifNotFound?: SearchCreatableActions;
+}
+export interface LogicalVolumeSearchSortCriterionFull {
+  name?: SearchSortCriterionOrder;
+  size?: SearchSortCriterionOrder;
 }
 export interface ThinPoolLogicalVolume {
   /**
@@ -451,6 +498,27 @@ export interface ThinLogicalVolume {
   usedPool: Alias;
   encryption?: Encryption;
   filesystem?: Filesystem;
+}
+export interface LogicalVolumeToDelete {
+  search: DeleteLogicalVolumeSearch;
+  /**
+   * Delete the logical volume.
+   */
+  delete: true;
+}
+export interface DeleteLogicalVolumeAdvancedSearch {
+  condition?: LogicalVolumeSearchCondition;
+  sort?: LogicalVolumeSearchSort;
+  max?: SearchMax;
+  ifNotFound?: SearchActions;
+}
+export interface LogicalVolumeToDeleteIfNeeded {
+  search: DeleteLogicalVolumeSearch;
+  /**
+   * Delete the logical volume if needed to make space.
+   */
+  deleteIfNeeded: true;
+  size?: Size;
 }
 /**
  * MD RAID without a partition table (e.g., directly formatted).

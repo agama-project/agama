@@ -57,7 +57,7 @@ jobs:
     steps:
 
     - name: Git Checkout
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
 
     - name: Rust toolchain
       run: |
@@ -66,6 +66,54 @@ jobs:
 
     - name: Run rustfmt
       run: cargo fmt --all -- --check
+
+  # Detects dependencies which are declared in a Cargo.toml but never used, so
+  # they do not pile up unnoticed. It only parses the manifests and the sources,
+  # no compilation and no system libraries are needed, hence the plain runner.
+  machete:
+    # the default timeout is 6 hours, that's too much if the job gets stuck
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ./rust
+
+    env:
+      # keep the version pinned so the check cannot start failing on its own
+      CARGO_MACHETE_VERSION: 0.9.2
+
+    steps:
+
+    - name: Git Checkout
+      uses: actions/checkout@v7
+
+    - name: Rust toolchain
+      run: |
+        rustup show
+        cargo --version
+
+    - name: cargo-machete cache
+      uses: actions/cache@v5
+      with:
+        path: ~/.cargo/bin/cargo-machete
+        key: ${{ runner.os }}-cargo-machete-${{ env.CARGO_MACHETE_VERSION }}
+
+    - name: Install cargo-machete
+      run: |
+        if ! [ -x ~/.cargo/bin/cargo-machete ]; then
+          cargo install --locked cargo-machete --version "$CARGO_MACHETE_VERSION"
+        fi
+
+    # --with-metadata is required: without it the check reports plenty of false
+    # positives for crates whose library name differs from the package name
+    # (gettext-rs/gettextrs, for instance).
+    #
+    # A dependency which is only used from a doctest is not detected either, as
+    # cargo-machete does not scan doc comments. Add those to the
+    # [package.metadata.cargo-machete] "ignored" list of the affected crate.
+    - name: Run cargo-machete
+      run: cargo machete --with-metadata
 
   clippy:
     # the default timeout is 6 hours, that's too much if the job gets stuck
@@ -100,7 +148,7 @@ jobs:
       run:  git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
     - name: Git Checkout
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
 
     - name: Install Rust toolchains
       run: rustup toolchain install stable
@@ -171,7 +219,7 @@ jobs:
       run:  git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
     - name: Git Checkout
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
 
     - name: Install Rust toolchains
       run: rustup toolchain install stable
@@ -185,12 +233,20 @@ jobs:
       run: |
         # create the /etc/agama.d/locales file with list of locales
         mkdir -p /etc/agama.d
-        ls -1 -d /usr/lib/locale/*.utf8 | sed -e "s#/usr/lib/locale/##" -e "s#utf8#UTF-8#" >/etc/agama.d/locales
+        printf "%s\n" /usr/lib/locale/*.utf8 | sed -e "s#/usr/lib/locale/##" -e "s#utf8#UTF-8#" >/etc/agama.d/locales
+
+    - name: Generate the OpenAPI specification and schemas
+      run: cargo xtask openapi
+      working-directory: ./rust
 
     - name: Installed packages
       run: rpm -qa
 
     - name: Rust cache
+      # cache only the master branch (it is shared in pull requests), the Rust
+      # cache for unit tests is HUGE (about 3GB!) and we would quickly reach the
+      # 10GB limit for just few branches/pull requests
+      if: github.ref_name == 'master'
       id: cache-tests
       uses: actions/cache@v5
       with:
@@ -211,7 +267,8 @@ jobs:
       # flags, to avoid reusing the previous builds it always starts from scratch.
       # The --skip-clean skips the cleanup and allows using the cached results.
       # See https://github.com/xd009642/tarpaulin/discussions/772
-      run: cargo tarpaulin --workspace --all-targets --doc --engine llvm --out xml --target-dir target-coverage --skip-clean -- --nocapture
+      # Explicitly omit examples and benches as it depends on opensuse infrastructure and can fail due to network issues
+      run: cargo tarpaulin --workspace --lib --bins --tests --doc --engine llvm --out xml --target-dir target-coverage --skip-clean -- --nocapture
       working-directory: ./rust
       env:
         # use the "stable" tool chain (installed by default) instead of the "nightly" default in tarpaulin
@@ -259,6 +316,7 @@ jobs:
     - name: Install required packages
       run: zypper --non-interactive install --allow-downgrade
         clang-devel
+        dbus-1-daemon
         gcc-c++
         git
         libopenssl-3-devel
@@ -267,11 +325,12 @@ jobs:
         make
         openssl-3
         pam-devel
+        python-langtable-data
         python3-openapi_spec_validator
         rustup
 
     - name: Git Checkout
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
 
     - name: Install Rust toolchains
       run: rustup toolchain install stable
@@ -297,5 +356,5 @@ jobs:
       working-directory: ./rust
 
     - name: Validate the OpenAPI specification
-      run: openapi-spec-validator out/openapi/*
+      run: openapi-spec-validator out/openapi.json
       working-directory: ./rust

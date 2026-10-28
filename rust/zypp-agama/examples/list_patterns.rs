@@ -26,6 +26,7 @@ pub fn main() {
     zypp.add_repository(
         "tw",
         "https://download.opensuse.org/tumbleweed/repo/oss/",
+        None,
         |_, _| true,
     )
     .unwrap();

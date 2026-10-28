@@ -22,9 +22,23 @@
 
 import React from "react";
 import { screen } from "@testing-library/react";
-import { plainRender } from "~/test-utils";
+import { installerRender, plainRender } from "~/test-utils";
 import type { Product } from "~/model/system";
+import { useTerminal } from "~/context/terminal";
 import Header from "./Header";
+
+/** Controls for driving the terminal state the header reacts to, and a readout of it. */
+const TerminalControls = () => {
+  const { open, minimize, isMinimized } = useTerminal();
+
+  return (
+    <>
+      <button onClick={() => open()}>Open the terminal</button>
+      <button onClick={minimize}>Minimize the terminal</button>
+      {isMinimized && <p>The terminal is minimized</p>}
+    </>
+  );
+};
 
 const tumbleweed: Product = {
   id: "Tumbleweed",
@@ -45,6 +59,19 @@ describe("Header", () => {
     screen.getByRole("heading", { name: tumbleweed.name, level: 1 });
   });
 
+  it("renders the product name and the 'Installation' breadcrumb when no title is given", () => {
+    installerRender(<Header breadcrumbs={[{ label: "Authentication", path: "/auth" }]} />);
+    screen.getByText(tumbleweed.name);
+    screen.getByRole("link", { name: "Installation" });
+  });
+
+  it("omits the 'Installation' breadcrumb when hideSummaryLink is set", () => {
+    installerRender(<Header hideSummaryLink breadcrumbs={[{ label: "Installation summary" }]} />);
+    screen.getByText(tumbleweed.name);
+    expect(screen.queryByRole("link", { name: "Installation" })).toBeNull();
+    screen.getByRole("heading", { name: "Installation summary", level: 1 });
+  });
+
   it("renders skip to content link", async () => {
     plainRender(<Header />);
     screen.getByRole("link", { name: "Skip to content" });
@@ -57,18 +84,61 @@ describe("Header", () => {
     screen.queryByRole("link", { name: "Skip to content" });
   });
 
-  it("renders given content for slots", () => {
+  it("renders a skip to terminal link while the terminal is open", async () => {
+    const { user } = plainRender(
+      <>
+        <Header />
+        <TerminalControls />
+      </>,
+    );
+
+    expect(screen.queryByRole("link", { name: "Skip to terminal" })).toBeNull();
+
+    await user.click(screen.getByRole("button", { name: "Open the terminal" }));
+
+    expect(screen.getByRole("link", { name: "Skip to terminal" })).toHaveAttribute(
+      "href",
+      "#terminal-stop",
+    );
+
+    // Still reachable once collapsed to a bar: it is the same page, and the
+    // terminal is still there.
+    await user.click(screen.getByRole("button", { name: "Minimize the terminal" }));
+
+    screen.getByRole("link", { name: "Skip to terminal" });
+  });
+
+  it("expands a collapsed terminal when skipping to it", async () => {
+    const { user } = plainRender(
+      <>
+        <Header />
+        <TerminalControls />
+      </>,
+    );
+
+    await user.click(screen.getByRole("button", { name: "Open the terminal" }));
+    await user.click(screen.getByRole("button", { name: "Minimize the terminal" }));
+    screen.getByText("The terminal is minimized");
+
+    await user.click(screen.getByRole("link", { name: "Skip to terminal" }));
+
+    expect(screen.queryByText("The terminal is minimized")).toBeNull();
+  });
+
+  it("renders the given additional content", () => {
     plainRender(
       <Header
         title="Storage"
-        startSlot={<div role="progressbar" aria-label="Installation progress" />}
-        centerSlot={
-          <div role="menu" aria-label="Page actions">
-            <button role="menuitem">Export configuration</button>
-            <button role="menuitem">Advanced settings</button>
-          </div>
+        additionalContent={
+          <>
+            <div role="progressbar" aria-label="Installation progress" />
+            <div role="menu" aria-label="Page actions">
+              <button role="menuitem">Export configuration</button>
+              <button role="menuitem">Advanced settings</button>
+            </div>
+            <button>Install</button>
+          </>
         }
-        endSlot={<button>Install</button>}
       />,
     );
 

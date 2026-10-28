@@ -20,6 +20,26 @@
  * find current contact information at www.suse.com.
  */
 
+/**
+ * Hostname configuration for PATCH requests.
+ *
+ * Used to update hostname settings via `patchConfig({ hostname: {...} })`.
+ *
+ * To set a static hostname:
+ * ```typescript
+ * patchConfig({ hostname: { static: "my-server" } })
+ * ```
+ *
+ * To clear static hostname (switch to transient mode):
+ * ```typescript
+ * patchConfig({ hostname: { static: "" } })
+ * ```
+ *
+ * @property static - The static hostname value. Set to empty string to clear
+ *                    and use transient mode.
+ * @property hostname - The transient hostname. Typically not set via config, as
+ *                      it's provided by the network.
+ */
 type Config = {
   static?: string;
   hostname?: string;

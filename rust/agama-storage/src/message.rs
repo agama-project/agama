@@ -18,6 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+use crate::client;
 use agama_utils::{
     actor::Message,
     api::{storage::Config, Issue},
@@ -27,8 +28,6 @@ use agama_utils::{
 use serde_json::Value;
 use std::sync::Arc;
 use tokio::sync::RwLock;
-
-use crate::client;
 
 #[derive(Clone)]
 pub struct Activate;

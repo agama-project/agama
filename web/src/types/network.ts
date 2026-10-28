@@ -30,6 +30,12 @@ import {
 } from "~/utils/network";
 
 /**
+ * Union type of all connection type string values.
+ */
+export type ConnectionType =
+  "ethernet" | "wireless" | "loopback" | "bond" | "bridge" | "vlan" | "unknown";
+
+/**
  * Enum for AccessPoint flags
  *
  * https://networkmanager.dev/docs/api/latest/nm-dbus-types.html#NM80211ApFlags
@@ -68,14 +74,14 @@ enum ApSecurityFlags {
  */
 type ConnectionBindingMode = "none" | "iface" | "mac";
 
-enum ConnectionType {
-  ETHERNET = "ethernet",
-  WIFI = "wireless",
-  LOOPBACK = "loopback",
-  BOND = "bond",
-  BRIDGE = "bridge",
-  VLAN = "vlan",
-  UNKNOWN = "unknown",
+enum BondMode {
+  BALANCE_ROUND_ROBIN = "balance-rr",
+  ACTIVE_BACKUP = "active-backup",
+  BALANCE_XOR = "balance-xor",
+  BROADCAST = "broadcast",
+  LACP = "802.3ad",
+  BALANCE_TLB = "balance-tlb",
+  BALANCE_ALB = "balance-alb",
 }
 
 enum DeviceState {
@@ -97,15 +103,28 @@ enum ConnectionStatus {
 
 // Current state of the connection.
 enum ConnectionState {
-  activating = "activating",
-  activated = "activated",
-  deactivating = "deactivating",
-  deactivated = "deactivated",
+  UNKNOWN = "unknown",
+  ACTIVATING = "activating",
+  ACTIVATED = "activated",
+  DEACTIVATING = "deactivating",
+  DEACTIVATED = "deactivated",
 }
 
 enum ConnectionMethod {
   MANUAL = "manual",
   AUTO = "auto",
+}
+
+enum VlanProtocol {
+  IEEE_802_1Q = "802.1Q",
+  IEEE_802_1AD = "802.1ad",
+}
+
+enum VlanFlag {
+  REORDER_HEADERS = "reorder-headers",
+  GVRP = "gvrp",
+  LOOSE_BINDING = "loose-binding",
+  MVRP = "mvrp",
 }
 
 enum DeviceType {
@@ -122,6 +141,14 @@ enum NetworkState {
   DISCONNECTED = "disconnected",
   CONNECTING = "connecting",
   CONNECTED = "connected",
+}
+
+enum ConnectivityState {
+  UNKNOWN = "unknown",
+  NONE = "none",
+  PORTAL = "portal",
+  LIMITED = "limited",
+  FULL = "full",
 }
 
 enum SecurityProtocols {
@@ -201,6 +228,11 @@ class Device {
   macAddress: string;
   state: DeviceState;
   connection?: string;
+  speed?: number;
+  carrier?: boolean;
+  driver?: string;
+  busPath?: string;
+  mtu?: number;
 
   static fromApi(device: APIDevice) {
     const { ipConfig, stateReason, ...newDevice } = device;
@@ -241,6 +273,15 @@ type APIDevice = {
   connection?: string;
   ipConfig?: IPConfig;
   stateReason: string;
+  /** Link speed in Mb/s, only reported by wired devices with the link up. */
+  speed?: number;
+  /** Whether the device has a link, i.e. a cable plugged in. */
+  carrier?: boolean;
+  /** Kernel driver in use, e.g. "e1000e". */
+  driver?: string;
+  /** Physical location of the device, e.g. "pci-0000:c5:00.3". */
+  busPath?: string;
+  mtu?: number;
 };
 
 type APIRoute = {
@@ -251,6 +292,9 @@ type APIRoute = {
 
 type APIConnection = {
   id: string;
+  bond?: Bond;
+  bridge?: Bridge;
+  vlan?: Vlan;
   interface?: string;
   macAddress?: string;
   addresses?: string[];
@@ -258,11 +302,11 @@ type APIConnection = {
   dnsSearchList?: string[];
   gateway4?: string;
   gateway6?: string;
-  method4: string;
-  method6: string;
+  method4?: string;
+  method6?: string;
   wireless?: Wireless;
   status: ConnectionStatus;
-  state: ConnectionState;
+  state?: ConnectionState;
   persistent: boolean;
 };
 
@@ -290,6 +334,28 @@ class Wireless {
   }
 }
 
+type Bond = {
+  mode: BondMode;
+  options: string;
+  ports: string[];
+};
+
+type Bridge = {
+  forwardDelay?: number;
+  priority?: number;
+  maxAge?: number;
+  ports: string[];
+  helloTime?: number;
+  stp?: boolean;
+};
+
+type Vlan = {
+  id: number;
+  parent: string;
+  protocol?: VlanProtocol;
+  flags?: VlanFlag[];
+};
+
 type ConnectionOptions = {
   iface?: string;
   macAddress?: string;
@@ -301,15 +367,29 @@ type ConnectionOptions = {
   method4?: ConnectionMethod;
   method6?: ConnectionMethod;
   wireless?: Wireless;
+  bond?: Bond;
+  bridge?: Bridge;
+  vlan?: Vlan;
   status?: ConnectionStatus;
   state?: ConnectionState;
   persistent?: boolean;
 };
 
+// FIXME: Connection is modeled after an earlier API iteration that has not
+// yet been fully aligned with APIv2. Few inconsistencies
+// make the translation to/from form values and the API error-prone:
+// - Fields like gateway4/gateway6 default to "" rather than being absent,
+//   forcing toApi() to delete them explicitly and the form to mirror the
+//   empty-string default.
+// - Concepts like binding mode and IP method mode (e.g. "unset") have no
+//   direct field here; the form derives them from other fields or omits
+//   them entirely.
+// Hence, this class is worth revisiting or even dropping in favor of plain
+// types when moving closer to APIv2.
 class Connection {
   id: string;
   status: ConnectionStatus = ConnectionStatus.UP;
-  state: ConnectionState;
+  state?: ConnectionState;
   iface: string;
   macAddress?: string;
   addresses: IPAddress[] = [];
@@ -317,8 +397,11 @@ class Connection {
   dnsSearchList: string[] = [];
   gateway4?: string = "";
   gateway6?: string = "";
-  method4: ConnectionMethod = ConnectionMethod.AUTO;
-  method6: ConnectionMethod = ConnectionMethod.AUTO;
+  method4?: ConnectionMethod;
+  method6?: ConnectionMethod;
+  bond?: Bond;
+  bridge?: Bridge;
+  vlan?: Vlan;
   wireless?: Wireless;
   persistent: boolean;
 
@@ -333,13 +416,12 @@ class Connection {
   }
 
   static fromApi(connection: APIConnection) {
-    const { id, status, interface: iface, ...options } = connection;
+    const { id, interface: iface, ...options } = connection;
     const nameservers = connection.nameservers || [];
     const dnsSearchList = connection.dnsSearchList || [];
     const addresses = connection.addresses?.map(buildAddress) || [];
-    return new Connection(id, {
+    const conn = new Connection(id, {
       ...options,
-      status,
       // FIXME: try a better approach for methods/gateway and/or typecasting
       method4: options.method4 as ConnectionMethod,
       method6: options.method6 as ConnectionMethod,
@@ -348,10 +430,23 @@ class Connection {
       nameservers,
       dnsSearchList,
     });
+    // The constructor skips undefined values, meaning fields
+    // absent from the API response are never assigned as own properties.
+    // This matters when merging config and system connections via spread:
+    //   { ...systemConn, ...configConn }
+    // If configConn has no method4 own property, system's "auto" silently
+    // wins. That is not the expected behavior: choosing "Automatic" in the
+    // UI stores no method in config (undefined), which should override
+    // system's "auto" since config represents the user's explicit preferences.
+    // Assigning undefined explicitly ensures method4/method6 are always own
+    // properties, so the user's choice is honored when editing.
+    conn.method4 = options.method4 as ConnectionMethod | undefined;
+    conn.method6 = options.method6 as ConnectionMethod | undefined;
+    return conn;
   }
 
   toApi() {
-    const { iface, addresses, ...newConnection } = this;
+    const { iface, addresses, state, ...newConnection } = this;
     const result: APIConnection = {
       ...newConnection,
       interface: iface,
@@ -360,6 +455,8 @@ class Connection {
 
     if (result.gateway4 === "") delete result.gateway4;
     if (result.gateway6 === "") delete result.gateway6;
+    if (result.method4 === undefined) delete result.method4;
+    if (result.method6 === undefined) delete result.method6;
 
     return result;
   }
@@ -383,7 +480,7 @@ type WifiNetwork = AccessPoint & {
 
 type GeneralState = {
   copyNetwork: boolean;
-  connectivity: boolean;
+  connectivity: ConnectivityState;
   networkingEnabled: boolean;
   wirelessEnabled: boolean;
 };
@@ -519,11 +616,12 @@ export {
   AccessPoint,
   ApFlags,
   ApSecurityFlags,
+  BondMode,
   Connection,
+  ConnectivityState,
   ConnectionState,
   ConnectionStatus,
   ConnectionMethod,
-  ConnectionType,
   Device,
   DeviceState,
   DeviceType,
@@ -532,6 +630,8 @@ export {
   NetworkState,
   NetworkSystem,
   SecurityProtocols,
+  VlanProtocol,
+  VlanFlag,
   WifiNetworkStatus,
   Wireless,
 };
@@ -539,6 +639,9 @@ export {
 export type {
   APIAccessPoint,
   APIConnection,
+  Bond,
+  Bridge,
+  Vlan,
   ConnectionBindingMode,
   ConnectionOptions,
   APIDevice,

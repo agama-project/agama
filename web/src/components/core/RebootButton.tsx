@@ -23,7 +23,7 @@
 import React from "react";
 import { Button, ButtonProps } from "@patternfly/react-core";
 import { useNavigate } from "react-router";
-import { finishInstallation } from "~/api";
+import { rebootAction } from "~/api";
 import { ROOT } from "~/routes/paths";
 import { _ } from "~/i18n";
 
@@ -45,8 +45,8 @@ export default function RebootButton(props: Omit<ButtonProps, "onClick">) {
   const navigate = useNavigate();
 
   const onReboot = () => {
-    finishInstallation();
-    navigate(ROOT.installationExit, { replace: true });
+    rebootAction();
+    navigate(ROOT.installationReboot, { replace: true });
   };
 
   return (

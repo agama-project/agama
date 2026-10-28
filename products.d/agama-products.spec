@@ -26,9 +26,6 @@ URL:            https://github.com/agama-project/agama
 BuildArch:      noarch
 Source0:        agama.tar
 
-# do not include in the 32bit repos, the Agama is 64bit only
-ExcludeArch:    %ix86 s390 ppc64
-
 %description
 Products definition for Agama installer.
 
@@ -55,7 +52,7 @@ rm -f %{buildroot}%{_datadir}/agama/products.d/tumbleweed.yaml
 rm -f %{buildroot}%{_datadir}/agama/products.d/slowroll.yaml
 %endif
 
-# Keep TW-based distros on TW (drop Kalpa + Leap + Leap Micro)
+# Keep TW-based distros on TW (drop Kalpa + Leap)
 %if 0%{?is_opensuse} && 0%{?suse_version} > 1610
 rm -f %{buildroot}%{_datadir}/agama/products.d/leap*.yaml
 %endif
@@ -78,8 +75,7 @@ Definition of openSUSE products (Tumbleweed, Leap, MicroOS and Slowroll) for the
 %{_datadir}/agama/products.d/slowroll.yaml
 %endif
 %if !0%{?is_opensuse} || 0%{?suse_version} <= 1610
-%{_datadir}/agama/products.d/leap_161.yaml
-%{_datadir}/agama/products.d/leap_micro_62.yaml
+%{_datadir}/agama/products.d/leap_162.yaml
 %endif
 
 %package sle
@@ -94,7 +90,7 @@ Definition of SLE-based products (e.g., SUSE Linux Enterprise Server) for the Ag
 %license LICENSE
 %dir %{_datadir}/agama
 %dir %{_datadir}/agama/products.d
-%{_datadir}/agama/products.d/sles_161.yaml
-%{_datadir}/agama/products.d/sles_sap_161.yaml
+%{_datadir}/agama/products.d/sles_162.yaml
+%{_datadir}/agama/products.d/sles_sap_162.yaml
 
 %changelog

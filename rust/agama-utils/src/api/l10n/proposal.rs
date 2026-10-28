@@ -19,21 +19,25 @@
 // find current contact information at www.suse.com.
 
 use agama_locale_data::{KeymapId, LocaleId, TimezoneId};
+use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use serde_with::{serde_as, DisplayFromStr};
 
 /// Describes what Agama proposes for the target system.
 #[serde_as]
-#[derive(Clone, Debug, Deserialize, Serialize, utoipa::ToSchema)]
-#[schema(as = l10n::Proposal)]
+#[derive(Clone, Debug, Deserialize, Serialize, JsonSchema)]
+#[schemars(rename = "l10n.Proposal")]
 pub struct Proposal {
     /// Keymap (e.g., "us", "cz(qwerty)", etc.).
     #[serde_as(as = "DisplayFromStr")]
+    #[schemars(with = "String")]
     pub keymap: KeymapId,
     /// Locale (e.g., "en_US.UTF-8").
     #[serde_as(as = "DisplayFromStr")]
+    #[schemars(with = "String")]
     pub locale: LocaleId,
     /// Timezone (e.g., "Europe/Berlin").
     #[serde_as(as = "DisplayFromStr")]
+    #[schemars(with = "String")]
     pub timezone: TimezoneId,
 }

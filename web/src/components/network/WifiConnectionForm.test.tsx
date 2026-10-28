@@ -67,25 +67,25 @@ describe("WifiConnectionForm", () => {
 
   it("renders an empty state when no networks are found", () => {
     mockUseWifiNetworks.mockReturnValue([]);
-    installerRender(<WifiConnectionForm />, { withL10n: true });
+    installerRender(<WifiConnectionForm />);
     screen.getByText("No Wi-Fi networks were found");
   });
 
   it("renders the network selector", () => {
-    installerRender(<WifiConnectionForm />, { withL10n: true });
+    installerRender(<WifiConnectionForm />);
     screen.getByRole("combobox", { name: "Network" });
   });
 
   describe("when a public network is selected", () => {
     it("warns the user about connecting to an unprotected network", async () => {
-      const { user } = installerRender(<WifiConnectionForm />, { withL10n: true });
+      const { user } = installerRender(<WifiConnectionForm />);
       await user.selectOptions(screen.getByRole("combobox", { name: "Network" }), "Public Network");
       screen.getByText("Warning alert:");
       screen.getByText("Not protected network");
     });
 
     it("does not render the security selector", async () => {
-      const { user } = installerRender(<WifiConnectionForm />, { withL10n: true });
+      const { user } = installerRender(<WifiConnectionForm />);
       await user.selectOptions(screen.getByRole("combobox", { name: "Network" }), "Public Network");
       expect(screen.queryByRole("combobox", { name: "Security" })).toBeNull();
     });
@@ -93,7 +93,7 @@ describe("WifiConnectionForm", () => {
 
   describe("when a protected network is selected", () => {
     it("renders the security selector", async () => {
-      const { user } = installerRender(<WifiConnectionForm />, { withL10n: true });
+      const { user } = installerRender(<WifiConnectionForm />);
       await user.selectOptions(
         screen.getByRole("combobox", { name: "Network" }),
         "Visible Network",
@@ -102,7 +102,7 @@ describe("WifiConnectionForm", () => {
     });
 
     it("pre-selects the security based on network supported protocols", async () => {
-      const { user } = installerRender(<WifiConnectionForm />, { withL10n: true });
+      const { user } = installerRender(<WifiConnectionForm />);
       await user.selectOptions(
         screen.getByRole("combobox", { name: "Network" }),
         "Visible Network",
@@ -115,7 +115,7 @@ describe("WifiConnectionForm", () => {
 
   describe("when the form is submitted", () => {
     it("triggers a mutation and navigates to the network page", async () => {
-      const { user } = installerRender(<WifiConnectionForm />, { withL10n: true });
+      const { user } = installerRender(<WifiConnectionForm />);
       await user.selectOptions(
         screen.getByRole("combobox", { name: "Network" }),
         "Visible Network",

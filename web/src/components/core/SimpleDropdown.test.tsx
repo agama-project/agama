@@ -23,6 +23,7 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
+import { _ } from "~/i18n";
 import SimpleDropdown from "./SimpleDropdown";
 
 const mockItems = [
@@ -37,18 +38,18 @@ describe("SimpleDropdown", () => {
   });
 
   it("renders the toggle button with the given label", () => {
-    installerRender(<SimpleDropdown items={mockItems} label="Actions for 0.0.0160" />);
+    installerRender(<SimpleDropdown items={mockItems} label={_("Actions for 0.0.0160")} />);
     screen.getByRole("button", { name: "Actions for 0.0.0160" });
   });
 
   it("does not show the menu items initially", () => {
-    installerRender(<SimpleDropdown items={mockItems} label="Actions for 0.0.0160" />);
+    installerRender(<SimpleDropdown items={mockItems} label={_("Actions for 0.0.0160")} />);
     expect(screen.queryByRole("menuitem", { name: "Activate" })).toBeNull();
   });
 
   it("shows the menu items when the toggle is clicked", async () => {
     const { user } = installerRender(
-      <SimpleDropdown items={mockItems} label="Actions for 0.0.0160" />,
+      <SimpleDropdown items={mockItems} label={_("Actions for 0.0.0160")} />,
     );
 
     const toggle = screen.getByRole("button", { name: "Actions for 0.0.0160" });
@@ -61,7 +62,7 @@ describe("SimpleDropdown", () => {
 
   it("shows the group label when the menu is open", async () => {
     const { user } = installerRender(
-      <SimpleDropdown items={mockItems} label="Actions for 0.0.0160" />,
+      <SimpleDropdown items={mockItems} label={_("Actions for 0.0.0160")} />,
     );
     await user.click(screen.getByRole("button", { name: "Actions for 0.0.0160" }));
     screen.getByText("Actions for 0.0.0160");
@@ -69,7 +70,7 @@ describe("SimpleDropdown", () => {
 
   it("calls onClick when a menu item is clicked", async () => {
     const { user } = installerRender(
-      <SimpleDropdown items={mockItems} label="Actions for 0.0.0160" />,
+      <SimpleDropdown items={mockItems} label={_("Actions for 0.0.0160")} />,
     );
     await user.click(screen.getByRole("button", { name: "Actions for 0.0.0160" }));
     await user.click(screen.getByRole("menuitem", { name: "Activate" }));
@@ -78,7 +79,7 @@ describe("SimpleDropdown", () => {
 
   it("closes the menu after clicking an item", async () => {
     const { user } = installerRender(
-      <SimpleDropdown items={mockItems} label="Actions for 0.0.0160" />,
+      <SimpleDropdown items={mockItems} label={_("Actions for 0.0.0160")} />,
     );
     await user.click(screen.getByRole("button", { name: "Actions for 0.0.0160" }));
     await user.click(screen.getByRole("menuitem", { name: "Activate" }));
@@ -87,7 +88,7 @@ describe("SimpleDropdown", () => {
 
   it("renders danger items", async () => {
     const { user } = installerRender(
-      <SimpleDropdown items={mockItems} label="Actions for 0.0.0160" />,
+      <SimpleDropdown items={mockItems} label={_("Actions for 0.0.0160")} />,
     );
     await user.click(screen.getByRole("button", { name: "Actions for 0.0.0160" }));
     screen.getByRole("menuitem", { name: "Format" });
@@ -98,7 +99,7 @@ describe("SimpleDropdown", () => {
       const { user } = installerRender(
         <SimpleDropdown
           items={mockItems}
-          label="Actions for 0.0.0160"
+          label={_("Actions for 0.0.0160")}
           popperProps={{ position: "left" }}
         />,
       );

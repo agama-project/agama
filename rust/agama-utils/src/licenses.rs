@@ -45,27 +45,54 @@ pub enum Error {
 /// Each license is stored on a separate directory (e.g., "/usr/share/agama/eula/license.beta").
 /// The license diectory contains the default text (license.txt) and a set of translations (e.g.,
 /// "license.es.txt", "license.zh_CH.txt", etc.).
+///
+/// The registry only keeps the content of the licenses for a single language in memory (the
+/// language given to the constructor or to the last call to [Registry::read]).
 #[derive(Clone)]
 pub struct Registry {
     /// Repository path.
     path: std::path::PathBuf,
-    /// Licenses in the repository.
-    licenses: Vec<License>,
+    /// Licenses content for the current language.
+    content: Vec<LicenseContent>,
     /// Fallback languages per territory.
     fallback: HashMap<String, LanguageTag>,
 }
 
 impl Registry {
-    pub fn new<P: AsRef<Path>>(path: P) -> Self {
-        Self {
+    /// Builds a registry, reading the licenses from the given path for the given language.
+    pub fn new<P: AsRef<Path>>(path: P, language: LanguageTag) -> Result<Self, Error> {
+        let mut registry = Self {
             path: path.as_ref().to_owned(),
-            licenses: vec![],
+            content: vec![],
             fallback: HashMap::new(),
+        };
+        registry.read(&language)?;
+        Ok(registry)
+    }
+
+    /// Builds a registry, reading the licenses from the default path for the given language.
+    pub fn from_default_path(language: LanguageTag) -> Result<Self, Error> {
+        Self::new(Self::default_path(), language)
+    }
+
+    /// Default location: a local test override, or `$AGAMA_SHARE_DIR/eula`.
+    pub fn default_path() -> PathBuf {
+        let relative_path = PathBuf::from("test/share/eula");
+        if relative_path.exists() {
+            relative_path
+        } else {
+            let share_dir =
+                std::env::var("AGAMA_SHARE_DIR").unwrap_or("/usr/share/agama".to_string());
+            PathBuf::from(share_dir).join("eula")
         }
     }
 
-    /// Reads the licenses from the repository.
-    pub fn read(&mut self) -> Result<(), Error> {
+    /// Reads the licenses content from the repository for the given language.
+    ///
+    /// It should be called again whenever the language changes (e.g., as a reaction to a
+    /// ConfigureL10n action).
+    pub fn read(&mut self, language: &LanguageTag) -> Result<(), Error> {
+        let mut ids = vec![];
         let entries = read_dir(self.path.as_path())?;
 
         for entry in entries {
@@ -74,15 +101,27 @@ impl Registry {
                 let Ok(id) = entry.file_name().into_string() else {
                     continue;
                 };
-                let license = License {
-                    id,
-                    languages: Self::find_translations(&entry.path())?,
-                };
-                self.licenses.push(license);
+                ids.push(id);
             }
         }
 
-        self.fallback.clear();
+        self.fallback = Self::read_fallback_languages()?;
+
+        let mut content = vec![];
+        for id in &ids {
+            if let Some(license_content) = self.read_best_content(id, language) {
+                content.push(license_content);
+            }
+        }
+
+        self.content = content;
+
+        Ok(())
+    }
+
+    /// Builds the fallback languages map (main language per territory).
+    fn read_fallback_languages() -> Result<HashMap<String, LanguageTag>, Error> {
+        let mut fallback = HashMap::new();
 
         let territories = get_territories().map_err(|e| {
             std::io::Error::other(format!("Cannot read the territories list: {}", e))
@@ -90,61 +129,58 @@ impl Registry {
 
         for territory in territories.territory {
             if let Some(language) = territory.languages.language.first() {
-                let fallback = LanguageTag {
+                let fallback_language = LanguageTag {
                     language: language.id.to_string(),
                     territory: None,
                 };
-                self.fallback.insert(territory.id, fallback);
+                fallback.insert(territory.id, fallback_language);
             }
         }
 
-        Ok(())
+        Ok(fallback)
     }
 
-    /// Finds a license with the given ID and language.
-    ///
-    /// If a translation is not found for the given language, it returns the default text.
-    pub fn find(&self, id: &str, language: &LanguageTag) -> Option<LicenseContent> {
-        let license = self.licenses.iter().find(|l| l.id.as_str() == id)?;
-        let license_language = self.find_language(license, language).unwrap_or_default();
-        self.read_license_content(id, &license_language).ok()
+    /// Finds a license with the given ID in the current language.
+    pub fn find(&self, id: &str) -> Option<LicenseContent> {
+        self.content.iter().find(|l| l.id.as_str() == id).cloned()
     }
 
-    /// Finds translations in the given directory.
-    ///
-    /// * `path`: directory to search translations.
-    fn find_translations(path: &PathBuf) -> Result<Vec<LanguageTag>, std::io::Error> {
-        let entries = read_dir(path)?.filter_map(|entry| entry.ok());
+    /// Reads the content of a license, trying the given language and falling back to more
+    /// generic languages (and finally English) if a translation is not found.
+    fn read_best_content(&self, id: &str, language: &LanguageTag) -> Option<LicenseContent> {
+        for candidate in self.language_candidates(language) {
+            if let Ok(content) = self.read_license_content(id, &candidate) {
+                return Some(content);
+            }
+        }
+        None
+    }
 
-        let files = entries
-            .filter(|entry| entry.file_type().is_ok_and(|f| f.is_file()))
-            .filter_map(|entry| {
-                let path = entry.path();
-                let file = path.file_name()?;
-                file.to_owned().into_string().ok()
+    /// Builds an ordered list of language candidates to try when reading a license.
+    ///
+    /// It tries, in order: the given language and territory, the language alone, the main
+    /// language of the territory (if any) and, finally, English.
+    fn language_candidates(&self, language: &LanguageTag) -> Vec<LanguageTag> {
+        let mut candidates: Vec<LanguageTag> = vec![language.clone()];
+
+        if language.territory.is_some() {
+            candidates.push(LanguageTag {
+                language: language.language.clone(),
+                territory: None,
             });
-
-        Ok(files
-            .filter_map(|f| Self::language_tag_from_file(&f))
-            .collect())
-    }
-
-    /// Returns the language tag for the given file.
-    ///
-    /// The language is inferred from the file name (e.g., "es-ES" for license.es_ES.txt").
-    fn language_tag_from_file(name: &str) -> Option<LanguageTag> {
-        if !name.starts_with("license") {
-            tracing::warn!("Unexpected file in the licenses directory: {}", &name);
-            return None;
-        }
-        let mut parts = name.split(".");
-        let mut code = parts.nth(1)?;
-
-        if code == "txt" {
-            code = "en"
         }
 
-        code.try_into().ok()
+        if let Some(territory) = &language.territory {
+            if let Some(fallback) = self.fallback.get(territory) {
+                candidates.push(fallback.clone());
+            }
+        }
+
+        if *language != LanguageTag::default() {
+            candidates.push(LanguageTag::default());
+        }
+
+        candidates
     }
 
     /// Read a license content for a given language.
@@ -162,54 +198,44 @@ impl Registry {
         };
 
         let license_path = self.path.join(id).join(file_name);
-        let body = std::fs::read_to_string(license_path)?;
+        let text = std::fs::read_to_string(license_path)?;
+        let (name, body) = Self::parse_content(&text);
         Ok(LicenseContent {
             id: id.to_string(),
+            name,
             body,
             language: language.clone(),
         })
     }
 
-    /// It search for an available language for the translation.
+    /// Splits a license text into its name and body.
     ///
-    /// If translated to the given language, it returns that language. If that's
-    /// not the case, it searches for a "compatible" language (the main language
-    /// on the same territory, if given).
-    fn find_language(&self, license: &License, candidate: &LanguageTag) -> Option<LanguageTag> {
-        let mut candidates: Vec<LanguageTag> = vec![candidate.clone()];
-        candidates.push(LanguageTag {
-            language: candidate.language.clone(),
-            territory: None,
-        });
-
-        if let Some(territory) = &candidate.territory {
-            if let Some(fallback) = self.fallback.get(territory) {
-                candidates.push(fallback.clone());
+    /// The name is the first paragraph of the text (usually a couple of lines, joined with a
+    /// space); the body is the rest of it.
+    fn parse_content(text: &str) -> (String, String) {
+        match text.find("\n\n") {
+            Some(index) => {
+                let name = text[..index]
+                    .lines()
+                    .map(str::trim)
+                    .collect::<Vec<_>>()
+                    .join(" ");
+                let body = text[index..].trim().to_string();
+                (name, body)
             }
+            None => (String::new(), text.trim().to_string()),
         }
-
-        candidates
-            .into_iter()
-            .find(|c| license.languages.contains(c))
     }
 
-    /// Returns a vector with the licenses from the repository.
-    pub fn licenses(&self) -> Vec<&License> {
-        self.licenses.iter().collect()
-    }
-}
-
-impl Default for Registry {
-    fn default() -> Self {
-        let relative_path = PathBuf::from("test/share/eula");
-        let path = if relative_path.exists() {
-            relative_path
-        } else {
-            let share_dir =
-                std::env::var("AGAMA_SHARE_DIR").unwrap_or("/usr/share/agama".to_string());
-            PathBuf::from(share_dir).join("eula")
-        };
-        Self::new(path)
+    /// Returns the licenses available in the repository (ID and name), in the current language.
+    pub fn licenses(&self) -> Vec<License> {
+        self.content
+            .iter()
+            .map(|c| License {
+                id: c.id.clone(),
+                name: c.name.clone(),
+            })
+            .collect()
     }
 }
 
@@ -218,52 +244,83 @@ mod test {
     use super::{LanguageTag, Registry};
     use std::path::Path;
 
-    fn build_registry() -> Registry {
-        let mut repo = Registry::new(Path::new("../test/share/eula"));
-        repo.read().unwrap();
-        repo
+    fn build_registry(language: LanguageTag) -> Registry {
+        Registry::new(Path::new("../test/share/eula"), language).unwrap()
     }
 
     #[test]
     fn test_read_licenses_repository() {
-        let repo = build_registry();
-        let license = repo.licenses.first().unwrap();
+        let repo = build_registry(LanguageTag::default());
+        let licenses = repo.licenses();
+        let license = licenses.first().unwrap();
         assert_eq!(&license.id, "license.final");
+        assert_eq!(license.name, "End User License Agreement for SUSE Software");
     }
 
     #[test]
     fn test_find_license() {
-        let repo = build_registry();
         let es_language: LanguageTag = "es".try_into().unwrap();
-        let license = repo.find("license.final", &es_language).unwrap();
+        let repo = build_registry(es_language.clone());
+        let license = repo.find("license.final").unwrap();
+        assert_eq!(
+            license.name,
+            "Acuerdo de licencia de usuario final del software de SUSE"
+        );
         assert!(license.body.starts_with("Acuerdo de licencia"));
         assert_eq!(license.language, es_language);
 
         let language: LanguageTag = "es-ES".try_into().unwrap();
-        let license = repo.find("license.final", &language).unwrap();
+        let repo = build_registry(language);
+        let license = repo.find("license.final").unwrap();
         assert!(license.body.starts_with("Acuerdo de licencia"));
         assert_eq!(license.language, es_language);
 
         let language: LanguageTag = "zh-CN".try_into().unwrap();
-        let license = repo.find("license.final", &language).unwrap();
+        let repo = build_registry(language.clone());
+        let license = repo.find("license.final").unwrap();
         assert!(license.body.starts_with("SUSE 软件"));
         assert_eq!(license.language, language);
 
         let language: LanguageTag = "xx".try_into().unwrap();
-        let license = repo.find("license.final", &language).unwrap();
+        let repo = build_registry(language);
+        let license = repo.find("license.final").unwrap();
+        assert_eq!(license.name, "End User License Agreement for SUSE Software");
         assert!(license.body.starts_with("End User License"));
         assert_eq!(license.language, LanguageTag::default());
     }
 
     #[test]
-    fn test_find_alternate_license() {
-        let repo = build_registry();
+    fn test_parse_content() {
+        let (name, body) = Registry::parse_content("Name line 1\nName line 2\n\nBody text.");
+        assert_eq!(name, "Name line 1 Name line 2");
+        assert_eq!(body, "Body text.");
 
+        // Without a blank line separating the paragraphs, the whole text is the body.
+        let (name, body) = Registry::parse_content("Just a body, no name paragraph.");
+        assert_eq!(name, "");
+        assert_eq!(body, "Just a body, no name paragraph.");
+    }
+
+    #[test]
+    fn test_find_alternate_license() {
         // Tries to use the main language for the territory.
         let ca_language: LanguageTag = "ca-ES".try_into().unwrap();
         let es_language: LanguageTag = "es".try_into().unwrap();
-        let license = repo.find("license.final", &ca_language).unwrap();
+        let repo = build_registry(ca_language);
+        let license = repo.find("license.final").unwrap();
         assert_eq!(license.language, es_language);
+    }
+
+    #[test]
+    fn test_read_updates_content_for_new_language() {
+        let mut repo = build_registry(LanguageTag::default());
+        let license = repo.find("license.final").unwrap();
+        assert!(license.body.starts_with("End User License"));
+
+        let es_language: LanguageTag = "es".try_into().unwrap();
+        repo.read(&es_language).unwrap();
+        let license = repo.find("license.final").unwrap();
+        assert!(license.body.starts_with("Acuerdo de licencia"));
     }
 
     #[test]

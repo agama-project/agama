@@ -174,7 +174,7 @@ if osc ls "$PROJECT" > /dev/null 2>&1; then
 else
   echo "Creating project $PROJECT..."
   # packages to branch
-  packages=(agama agama-installer agama-auto agama-products agama-web-ui rubygem-agama-yast)
+  packages=(agama agama-installer agama-products agama-web-ui rubygem-agama-yast)
   for pkg in "${packages[@]}"; do
     echo "Branching package $pkg"
     # branch the package
@@ -184,11 +184,11 @@ else
     osc detachbranch "$PROJECT" "$pkg"
   done
 
-  # disable building on aarch64, ppc64le, i586 and s390x, usually not needed
+  # disable building on aarch64, armv6l, armv7l, i586, ppc64le, riscv64 and s390x, usually not needed
   if [ "$ALL_ARCHS" != true ]; then
-    echo "Disabling build on aarch64, i586, ppc64le and s390x"
+    echo "Disabling build on aarch64, armv6l, armv7l, i586, ppc64le, riscv64 and s390x"
     osc meta prj "$PROJECT" | \
-      sed "/<arch>aarch64<\/arch>/d;/<arch>i586<\/arch>/d;/<arch>ppc64le<\/arch>/d;/<arch>s390x<\/arch>/d;" | \
+      sed "/<arch>aarch64<\/arch>/d;/<arch>armv6l<\/arch>/d;/<arch>armv7l<\/arch>/d;/<arch>i586<\/arch>/d;/<arch>ppc64le<\/arch>/d;/<arch>riscv64<\/arch>/d;/<arch>s390x<\/arch>/d;" | \
       osc meta prj -F - "$PROJECT"
   fi
 
@@ -212,7 +212,7 @@ else
 
   echo "Set project description"
   url=$(gh repo view --json url --jq .url)
-  osc meta prj "$PROJECT" | 
+  osc meta prj "$PROJECT" |
     sed -e "s#<url>.*</url>#<url>$url/tree/$BRANCH</url>#" \
       -e "s#<title>.*</title>#<title>Agama from Git</title>#" \
       -e "s#<description>.*</description>#<description>This project contains the latest packages built from repository $repo_slug, branch \"$BRANCH\".</description>#" | \
@@ -236,14 +236,14 @@ workflows=(obs-staging-live.yml obs-staging-products.yml obs-staging-rust.yml ob
 if git ls-remote --exit-code --heads origin "$BRANCH" > /dev/null; then
   for workflow in "${workflows[@]}"; do
     echo "Starting GitHub Action $workflow..."
-    gh workflow run "$workflow" --ref "$BRANCH"
+    gh -R "$repo_slug" workflow run "$workflow" --ref "$BRANCH"
   done
 else
   echo "After creating the remote branch trigger the submission actions on the web"
   echo "or run these commands:"
   echo
   for workflow in "${workflows[@]}"; do
-    echo "    gh workflow run \"$workflow\" --ref \"$BRANCH\""
+    echo "    gh -R \"$repo_slug\" workflow run \"$workflow\" --ref \"$BRANCH\""
   done
 fi
 

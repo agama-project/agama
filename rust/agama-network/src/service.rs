@@ -147,8 +147,7 @@ impl Service {
         let result = match self.adapter.read(StateConfig::default()).await {
             Err(e) => Err(e),
             Ok(state) => {
-                if self.state != state {
-                    self.state = state;
+                if self.state.sync_from(state) {
                     self.events.send(Event::ProposalChanged {
                         scope: (Scope::Network),
                     })?;
@@ -175,8 +174,6 @@ impl Service {
             Scope::Network,
             steps,
         ));
-        self.progress
-            .cast(progress::message::Next::new(Scope::Network))?;
 
         if let Err(e) = self.adapter.write(&self.state).await {
             self.progress
@@ -191,7 +188,7 @@ impl Service {
         let result = match self.adapter.read(StateConfig::default()).await {
             Err(e) => Err(e),
             Ok(state) => {
-                self.state = state;
+                self.state.sync_from(state);
                 Ok(())
             }
         };

@@ -22,7 +22,8 @@
 
 import React from "react";
 import { Flex, Stack } from "@patternfly/react-core";
-import { Link, Page } from "~/components/core";
+import { Link } from "~/components/core";
+import Page from "~/components/layout/Page";
 import Text from "~/components/core/Text";
 import Icon from "~/components/layout/Icon";
 import NoPersistentConnectionsAlert from "~/components/network/NoPersistentConnectionsAlert";
@@ -30,6 +31,7 @@ import ConnectionsTable from "~/components/network/ConnectionsTable";
 import { useNetworkChanges, useSystem } from "~/hooks/model/system/network";
 import { NETWORK } from "~/routes/paths";
 import { _ } from "~/i18n";
+import { SYSTEM_QUERY_KEY } from "~/hooks/model/system";
 
 /**
  * Page component holding Network settings
@@ -41,7 +43,7 @@ export default function NetworkPage() {
   return (
     <Page
       breadcrumbs={[{ label: _("Network") }]}
-      progress={{ scope: "network", ensureRefetched: "system" }}
+      progress={{ scope: "network", awaitQueriesRefetch: [SYSTEM_QUERY_KEY] }}
     >
       <Page.Content>
         <NoPersistentConnectionsAlert />
@@ -50,16 +52,15 @@ export default function NetworkPage() {
             {_("Manage available connections, connect to Wi-Fi, or add a new connection.")}
           </Text>
           <Page.Section
-            pfCardProps={{ isCompact: true, component: "div", isFullHeight: false }}
             actions={
               <>
-                <Link to={NETWORK.newConnection} variant="plain">
+                <Link to={NETWORK.connection.new} variant="plain">
                   <Flex gap={{ default: "gapXs" }} alignItems={{ default: "alignItemsCenter" }}>
                     <Icon name="add_circle" /> {_("Add connection")}
                   </Flex>
                 </Link>
                 {state.wirelessEnabled && (
-                  <Link to={NETWORK.newWiFiConnection} variant="plain">
+                  <Link to={NETWORK.wifi.new} variant="plain">
                     <Flex gap={{ default: "gapSm" }} alignItems={{ default: "alignItemsCenter" }}>
                       <Icon name="wifi" /> {_("Connect to Wi-Fi network")}
                     </Flex>

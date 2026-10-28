@@ -1,0 +1,27 @@
+tmpfs / tmpfs rw,relatime,size=4020456k,nr_inodes=0 0 0
+proc /proc proc rw,relatime 0 0
+sysfs /sys sysfs rw,relatime 0 0
+/dev/loop0 /parts/mp_0000 squashfs ro,relatime 0 0
+/dev/loop1 /parts/mp_0001 squashfs ro,relatime 0 0
+devtmpfs /dev devtmpfs rw,relatime,size=1945116k,nr_inodes=486279,mode=755 0 0
+devpts /dev/pts devpts rw,relatime,mode=600,ptmxmode=000 0 0
+rpc_pipefs /var/lib/nfs/rpc_pipefs rpc_pipefs rw,relatime 0 0
+/dev/loop2 /mounts/mp_0000 squashfs ro,relatime 0 0
+/dev/loop3 /mounts/mp_0001 squashfs ro,relatime 0 0
+/dev/loop5 /mounts/mp_0003 squashfs ro,relatime 0 0
+/dev/sr0 /var/adm/mount/AP_0xpRErh6 iso9660 ro,relatime,nojoliet,check=s,map=n,blocksize=2048 0 0
+/dev/sda2 /mnt btrfs rw,relatime,space_cache,subvolid=256,subvol=/@ 0 0
+/dev/sda2 /mnt/boot/grub2/i386-pc btrfs rw,relatime,space_cache,subvolid=265,subvol=/@/boot/grub2/i386-pc 0 0
+/dev/sda2 /mnt/boot/grub2/x86_64-efi btrfs rw,relatime,space_cache,subvolid=264,subvol=/@/boot/grub2/x86_64-efi 0 0
+/dev/sda3 /mnt/home xfs rw,relatime,attr2,inode64,logbufs=8,logbsize=32k,noquota 0 0
+/dev/sda2 /mnt/opt btrfs rw,relatime,space_cache,subvolid=263,subvol=/@/opt 0 0
+/dev/sda2 /mnt/root btrfs rw,relatime,space_cache,subvolid=262,subvol=/@/root 0 0
+/dev/sda2 /mnt/srv btrfs rw,relatime,space_cache,subvolid=261,subvol=/@/srv 0 0
+/dev/sda2 /mnt/tmp btrfs rw,relatime,space_cache,subvolid=260,subvol=/@/tmp 0 0
+/dev/sda2 /mnt/usr/local btrfs rw,relatime,space_cache,subvolid=259,subvol=/@/usr/local 0 0
+/dev/sda2 /mnt/var btrfs rw,relatime,space_cache,subvolid=258,subvol=/@/var 0 0
+devtmpfs /mnt/dev devtmpfs rw,relatime,size=1945116k,nr_inodes=486279,mode=755 0 0
+proc /mnt/proc proc rw,relatime 0 0
+sysfs /mnt/sys sysfs rw,relatime 0 0
+tmpfs /mnt/run tmpfs rw,relatime,size=4020456k,nr_inodes=0 0 0
+

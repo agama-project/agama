@@ -20,6 +20,7 @@
 
 use fs_extra::copy_items;
 use fs_extra::dir::CopyOptions;
+use schemars::JsonSchema;
 use serde::Serialize;
 use std::fs;
 use std::fs::File;
@@ -28,7 +29,6 @@ use std::os::unix::fs::PermissionsExt;
 use std::path::{Path, PathBuf};
 use std::process::Command;
 use tempfile::TempDir;
-use utoipa::ToSchema;
 use zypp_agama::SOLVER_TESTCASE_DIR;
 
 const DEFAULT_COMMANDS: [(&str, &str); 4] = [
@@ -330,7 +330,7 @@ pub fn store() -> Result<PathBuf, LogsError> {
     Ok(PathBuf::from(result))
 }
 
-#[derive(Serialize, serde::Deserialize, ToSchema)]
+#[derive(Serialize, serde::Deserialize, JsonSchema)]
 pub struct LogsLists {
     pub commands: Vec<String>,
     pub files: Vec<String>,

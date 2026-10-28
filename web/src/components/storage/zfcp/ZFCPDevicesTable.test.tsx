@@ -22,7 +22,7 @@
 
 import React from "react";
 import { screen, within } from "@testing-library/react";
-import { installerRender } from "~/test-utils";
+import { installerRender, mockRoutes } from "~/test-utils";
 import ZFCPDevicesTable from "./ZFCPDevicesTable";
 import type { ZFCP as System } from "~/model/system";
 import type { Config } from "~/model/config/zfcp";
@@ -130,6 +130,26 @@ describe("ZFCPDevicesTable", () => {
         screen.getByText("0x0001000000000000");
         expect(screen.queryByText("0x0002000000000000")).toBeNull();
         expect(screen.queryByText("0x0003000000000000")).toBeNull();
+      });
+    });
+
+    describe("filters given in the address", () => {
+      it("renders only the devices matching them, without touching any control", () => {
+        mockRoutes("/storage/zfcp?status=activated");
+        installerRender(<ZFCPDevicesTable devices={mockZFCPDevices} />);
+
+        screen.getByText("0x0001000000000000");
+        expect(screen.queryByText("0x0002000000000000")).toBeNull();
+        expect(screen.queryByText("0x0003000000000000")).toBeNull();
+      });
+
+      it("renders every device when a filter names something unknown", () => {
+        mockRoutes("/storage/zfcp?status=nonsense");
+        installerRender(<ZFCPDevicesTable devices={mockZFCPDevices} />);
+
+        screen.getByText("0x0001000000000000");
+        screen.getByText("0x0002000000000000");
+        screen.getByText("0x0003000000000000");
       });
     });
 

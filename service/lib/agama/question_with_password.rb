@@ -24,5 +24,9 @@ require "agama/question"
 module Agama
   # This class represent a question that contain additional field to provide password
   class QuestionWithPassword < Question
+    def initialize(**args)
+      args[:field] = :password
+      super(**args)
+    end
   end
 end

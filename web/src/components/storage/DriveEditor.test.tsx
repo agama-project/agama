@@ -43,7 +43,8 @@ jest.mock("~/hooks/model/storage/config-model", () => ({
   useAddDriveFromMdRaid: jest.fn(),
   useAddMdRaidFromDrive: jest.fn(),
   useDeleteDrive: () => mockDeleteDrive,
-  useAddVolumeGroupFromPartitionable: () => mockAddVolumeGroupFromPartitionable,
+  useConvertPartitionableToVolumeGroup: () => mockAddVolumeGroupFromPartitionable,
+  useConvertDevice: () => jest.fn(),
 }));
 
 const mockSystemDevice = jest.fn();

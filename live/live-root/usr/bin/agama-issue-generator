@@ -21,8 +21,10 @@
 # issues
 CERT_ISSUE=/run/issue.d/50-agama-ssl-certificate.issue
 
-if grep -q "\binst.listen_on=localhost\b" /run/agama/cmdline.d/agama.conf; then
+if grep -q "\binst.remote=0\b" /run/agama/cmdline.d/agama.conf; then
   LOCAL_ONLY=1
+else
+  LOCAL_ONLY=0
 fi
 
 # a helper function which generates the Agama welcome message displayed at the

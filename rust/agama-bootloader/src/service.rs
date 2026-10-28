@@ -25,8 +25,10 @@ use crate::{
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
     api::bootloader::Config,
+    message::GetResolvables,
+    BoxFuture, Resolvable,
 };
-use async_trait::async_trait;
+use serde_json::Value;
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
@@ -98,34 +100,48 @@ impl Actor for Service {
     type Error = Error;
 }
 
-#[async_trait]
 impl MessageHandler<message::GetConfig> for Service {
     async fn handle(&mut self, _message: message::GetConfig) -> Result<Config, Error> {
         Ok(self.client.get_config().await?)
     }
 }
 
-#[async_trait]
+impl MessageHandler<message::GetSystem> for Service {
+    async fn handle(&mut self, _message: message::GetSystem) -> Result<Option<Value>, Error> {
+        Ok(self.client.get_system().await?)
+    }
+}
+
 impl MessageHandler<message::SetConfig<Config>> for Service {
-    async fn handle(&mut self, message: message::SetConfig<Config>) -> Result<(), Error> {
-        self.client
+    async fn handle(
+        &mut self,
+        message: message::SetConfig<Config>,
+    ) -> Result<BoxFuture<Result<(), Error>>, Error> {
+        let rx = self
+            .client
             .set_config(&message.config.unwrap_or_default())
             .await?;
-        Ok(())
+        Ok(Box::pin(async move { rx.await.map_err(Error::from) }))
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::SetKernelArg> for Service {
     async fn handle(&mut self, message: message::SetKernelArg) -> Result<(), Error> {
-        self.client.set_kernel_arg(message.id, message.value).await;
+        if let Err(err) = self.client.set_kernel_arg(message.id, message.value).await {
+            tracing::error!("Failed to set kernel args {:?}", err);
+        }
         Ok(())
     }
 }
 
-#[async_trait]
 impl MessageHandler<message::SetLocale> for Service {
     async fn handle(&mut self, _message: message::SetLocale) -> Result<(), Error> {
         Ok(())
+    }
+}
+
+impl MessageHandler<GetResolvables> for Service {
+    async fn handle(&mut self, _message: GetResolvables) -> Result<Vec<Resolvable>, Error> {
+        Ok(self.client.get_resolvables().await?)
     }
 }

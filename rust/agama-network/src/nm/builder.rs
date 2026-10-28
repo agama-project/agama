@@ -25,7 +25,10 @@ use crate::{
     nm::{
         dbus::connection_from_dbus,
         model::NmDeviceType,
-        proxies::{AccessPointProxy, ConnectionProxy, DeviceProxy, IP4ConfigProxy, IP6ConfigProxy},
+        proxies::{
+            AccessPointProxy, ConnectionProxy, DeviceProxy, IP4ConfigProxy, IP6ConfigProxy,
+            WiredProxy,
+        },
     },
     types::{
         AccessPoint, ConnectionFlags, Device, DeviceState, DeviceType, IpConfig, IpRoute,
@@ -36,6 +39,29 @@ use cidr::IpInet;
 use std::{collections::HashMap, net::IpAddr, str::FromStr};
 
 use super::{error::NmError, model::NmDeviceState};
+
+/// Whether the given NetworkManager interface flags say that the device has a link.
+///
+/// Introduced in NetworkManager 1.22, the `InterfaceFlags` property on the base
+/// `org.freedesktop.NetworkManager.Device` interface provides a unified way to
+/// query device flags. The `NM_DEVICE_INTERFACE_FLAG_CARRIER` (0x10000) bit indicates
+/// whether the physical carrier is online, replacing the deprecated device-specific
+/// `Carrier` property.
+///
+/// See https://networkmanager.dev/docs/api/latest/nm-dbus-types.html#NMDeviceInterfaceFlags
+fn carrier_from_flags(flags: u32) -> bool {
+    const NM_DEVICE_INTERFACE_FLAG_CARRIER: u32 = 0x10000;
+
+    flags & NM_DEVICE_INTERFACE_FLAG_CARRIER != 0
+}
+
+/// Converts a speed as reported by NetworkManager into a link speed in Mb/s.
+///
+/// NetworkManager reports 0 while the link is down or when it does not know the
+/// speed, which is not the same as a device running at 0 Mb/s.
+fn speed_from_dbus(speed: u32) -> Option<u32> {
+    (speed > 0).then_some(speed)
+}
 
 /// Builder to create a [Connection] from its corresponding NetworkManager D-Bus representation.
 pub struct ConnectionFromProxyBuilder<'a> {
@@ -135,7 +161,45 @@ impl<'a> DeviceFromProxyBuilder<'a> {
             device.connection = self.connection_id(connection);
         }
 
+        self.add_hardware_details(&mut device).await;
+
         Ok(device)
+    }
+
+    /// Adds the hardware details that help to tell one device from another.
+    ///
+    /// All of them are best-effort: a device that does not report a given
+    /// property just leaves it unset instead of failing the whole build.
+    async fn add_hardware_details(&self, device: &mut Device) {
+        device.carrier = self.carrier_from_proxy().await;
+        device.speed = self.speed_from_proxy().await;
+        device.driver = self.proxy.driver().await.ok().filter(|d| !d.is_empty());
+        device.bus_path = self.proxy.path().await.ok().filter(|p| !p.is_empty());
+        device.mtu = self.proxy.mtu().await.ok();
+    }
+
+    /// Returns whether the device has a link.
+    ///
+    /// It is read from the interface flags instead of the per-type `Carrier`
+    /// property, which NetworkManager deprecated and which does not exist for
+    /// every device type.
+    async fn carrier_from_proxy(&self) -> Option<bool> {
+        let flags = self.proxy.interface_flags().await.ok()?;
+        Some(carrier_from_flags(flags))
+    }
+
+    /// Returns the link speed in Mb/s, if the device reports one.
+    ///
+    /// Only wired devices implement the interface that carries the speed.
+    async fn speed_from_proxy(&self) -> Option<u32> {
+        let proxy = WiredProxy::builder(&self.connection)
+            .path(self.proxy.inner().path().to_owned())
+            .ok()?
+            .build()
+            .await
+            .ok()?;
+
+        speed_from_dbus(proxy.speed().await.ok()?)
     }
 
     async fn build_ip_config(&self) -> Result<Option<IpConfig>, NmError> {
@@ -349,5 +413,27 @@ impl<'a> DeviceFromProxyBuilder<'a> {
         };
 
         Ok(device_state)
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::{carrier_from_flags, speed_from_dbus};
+
+    #[test]
+    fn test_carrier_from_flags() {
+        // NM_DEVICE_INTERFACE_FLAG_UP | LOWER_UP | CARRIER, as reported by a
+        // connected device.
+        assert!(carrier_from_flags(0x10003));
+        // Up, but with the cable unplugged.
+        assert!(!carrier_from_flags(0x1));
+        assert!(!carrier_from_flags(0));
+    }
+
+    #[test]
+    fn test_speed_from_dbus() {
+        assert_eq!(speed_from_dbus(1000), Some(1000));
+        // A device with no link reports 0, which means "unknown" and not "0 Mb/s".
+        assert_eq!(speed_from_dbus(0), None);
     }
 }

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2025] SUSE LLC
+# Copyright (c) [2025-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -25,7 +25,7 @@ require "agama/storage/config_checker"
 describe Agama::Storage::ConfigChecker do
   include_context "config"
 
-  subject { described_class.new(config, product_config) }
+  subject { described_class.new(config, product_config: product_config) }
 
   let(:config_json) do
     {

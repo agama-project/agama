@@ -66,7 +66,7 @@ const KeymapReminder = () => {
     // will be replaced with the layout name (e.g., "de", "cn", "cz"). Keep
     // square brackets around %s to apply special formatting in
     // the UI.
-    _("Using [%s] keyboard"),
+    _("Using [%s] keyboard layout"),
     keymap,
   ).split(/[[\]]/);
 

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024-2025] SUSE LLC
+# Copyright (c) [2024-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -32,7 +32,17 @@ module Agama
       module FromJSONConversions
         # Config conversion from JSON hash according to schema.
         class Config < Base
+          # @param config_json [Hash]
+          # @param bootloader_config [BootloaderConfig]
+          def initialize(config_json, bootloader_config)
+            super(config_json)
+            @bootloader_config = bootloader_config
+          end
+
         private
+
+          # @return [BootloaderConfig]
+          attr_reader :bootloader_config
 
           # @see Base
           # @return [Config]
@@ -70,7 +80,7 @@ module Agama
           # @param drive_json [Hash]
           # @return [Configs::Drive]
           def convert_drive(drive_json)
-            FromJSONConversions::Drive.new(drive_json).convert
+            FromJSONConversions::Drive.new(drive_json, bootloader_config).convert
           end
 
           # @return [Array<Configs::VolumeGroup>, nil]
@@ -84,7 +94,7 @@ module Agama
           # @param volume_group_json [Hash]
           # @return [Configs::VolumeGroup]
           def convert_volume_group(volume_group_json)
-            FromJSONConversions::VolumeGroup.new(volume_group_json).convert
+            FromJSONConversions::VolumeGroup.new(volume_group_json, bootloader_config).convert
           end
 
           # @return [Array<Configs::MdRaid>, nil]
@@ -98,7 +108,7 @@ module Agama
           # @param md_raid_json [Hash]
           # @return [Configs::MdRaid]
           def convert_md_raid(md_raid_json)
-            FromJSONConversions::MdRaid.new(md_raid_json).convert
+            FromJSONConversions::MdRaid.new(md_raid_json, bootloader_config).convert
           end
         end
       end

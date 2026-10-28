@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-03-23 06:09+0000\n"
-"PO-Revision-Date: 2026-03-20 01:04+0000\n"
+"POT-Creation-Date: 2026-10-25 21:33+0000\n"
+"PO-Revision-Date: 2026-10-02 04:13+0000\n"
 "Last-Translator: Yasuhiko Kamata <belphegor@belbel.or.jp>\n"
 "Language-Team: Japanese <https://l10n.opensuse.org/projects/agama/agama-rust-"
 "master/ja/>\n"
@@ -17,114 +17,925 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.16.2\n"
+"X-Generator: Weblate 2026.9.1\n"
 
-#: agama-autoinstall/src/questions.rs:41 agama-utils/src/api/question.rs:293
-#: agama-utils/src/question/start.rs:54
-msgid "No"
-msgstr "いいえ"
+#: agama-autoinstall/src/auto_loader.rs:142
+msgid ""
+"Configuration cannot be applied because it is invalid or could not be "
+"reached."
+msgstr ""
+"内容が正しくないか、もしくはアクセスできないため、設定を適用できません。"
 
-#: agama-autoinstall/src/questions.rs:41 agama-utils/src/api/question.rs:293
-#: agama-utils/src/question/start.rs:54
-msgid "Yes"
-msgstr "はい"
+#: agama-autoinstall/src/questions.rs:47
+msgid "Reload configuration"
+msgstr "設定の再読み込み"
+
+#: agama-autoinstall/src/questions.rs:48
+msgid "Skip and configure manually"
+msgstr "処理を飛ばして手作業で設定する"
+
+#: agama-autoinstall/src/questions.rs:77 agama-cli/src/config.rs:371
+msgid "Found unsupported elements in the AutoYaST profile:"
+msgstr "AutoYaST プロファイル内にサポート対象外の要素が見つかりました:"
+
+#: agama-autoinstall/src/questions.rs:92
+#: agama-software/src/callbacks/install.rs:81
+msgid "Continue"
+msgstr "続行"
+
+#: agama-autoinstall/src/questions.rs:93
+msgid "Abort"
+msgstr "中止"
+
+#. TRANSLATORS: {0} is a URL
+#: agama-autoinstall/src/scripts.rs:135
+msgid ""
+"It was not possible to load the script from {0}. Do you want to try again?"
+msgstr "{0} からスクリプトを読み込むことができませんでした。再試行しますか？"
+
+#. TRANSLATORS: CLI help for: agama auth
+#: agama-cli/src/auth.rs:65
+msgid "Authenticate with Agama's server"
+msgstr "Agama サーバに対して認証を行います"
+
+#. TRANSLATORS: CLI help for: agama auth (details)
+#: agama-cli/src/auth.rs:67
+msgid ""
+"Unless you are executing this program as root, you need to authenticate with "
+"Agama's server for most operations. You can log in by specifying the root "
+"password through the \"auth login\" command. Upon successful authentication, "
+"the server returns a JSON Web Token (JWT) which is stored to authenticate "
+"the following requests.\n"
+"\n"
+"If you run this program locally as root, you can skip the authentication "
+"step because it automatically uses the master token at /run/agama/token. "
+"Only the root user must have access to such a file.\n"
+"\n"
+"You can logout at any time by using the \"auth logout\" command, although "
+"this command does not affect the root user."
+msgstr ""
+"このプログラムを root として動作させている場合を除き、ほとんどの操作に対して "
+"Agama サーバに対する認証が必要になります。認証は \"auth login\" コマンドで "
+"root のパスワードを指定することによって行います。認証が成功すると、サーバは以"
+"降の様々な操作で使用する JSON Web トークン (JWT) を返します。\n"
+"\n"
+"このプログラムをローカルで root として動作させた場合、 /run/agama/token に保"
+"存されているマスタートークンを自動的に使用しますので、認証は不要になります。"
+"このファイルは root ユーザのみがアクセスできるものであるためです。\n"
+"\n"
+"なお、 \"auth logout\" コマンドを使用することでログアウトを行うこともできま"
+"す。 root ユーザの場合は何も行いません。"
+
+#. TRANSLATORS: CLI help for: agama auth logout
+#: agama-cli/src/auth.rs:88
+msgid "Deauthenticate by removing the token"
+msgstr "トークンを削除して認証情報を解除します"
+
+#. TRANSLATORS: CLI help for: agama auth show
+#: agama-cli/src/auth.rs:93
+msgid "Print the used token to the standard output"
+msgstr "使用しているトークンを標準出力に出力します"
+
+#. TRANSLATORS: CLI help for: agama auth login
+#: agama-cli/src/auth.rs:99
+msgid "Authenticate with Agama's server and store the token"
+msgstr "Agama サーバに対して認証を行い、トークンを記憶します"
+
+#. TRANSLATORS: CLI help for: agama auth login (details)
+#: agama-cli/src/auth.rs:101
+msgid ""
+"This command tries to get the password from the standard input. If it is not "
+"there, it asks the user interactively. Upon successful login, it stores the "
+"token in .agama/agama-jwt. The token will be automatically sent to "
+"authenticate the following requests."
+msgstr ""
+"このコマンドではパスワードを標準入力から読み込もうとします。標準入力が存在し"
+"ない場合は、ユーザに対して対話的な入力を求めます。ログインが成功すると、トー"
+"クンは .agama/agama-jwt に保存されます。保存されたトークンは、以降のリクエス"
+"トで自動的に送信されます。"
+
+#: agama-cli/src/auth.rs:141
+msgid "Please enter the root password:"
+msgstr "root のパスワードを入力してください:"
+
+#. TRANSLATORS: {0} is a host name
+#: agama-cli/src/auth.rs:179
+msgid "Not authenticated in {0}"
+msgstr "{0} では認証されていません"
+
+#. TRANSLATORS: CLI help for: agama probe
+#: agama-cli/src/commands.rs:42
+msgid "Analyze the system"
+msgstr "システムを分析します"
+
+#. TRANSLATORS: CLI help for: agama probe (details)
+#: agama-cli/src/commands.rs:44
+msgid ""
+"In Agama's jargon, the term 'probing' refers to the process of 'analyzing' "
+"the system. This includes reading software repositories, analyzing storage "
+"devices, and more. The 'probe' command initiates this analysis process and "
+"returns immediately."
+msgstr ""
+"Agama では 'probe' とはシステムの分析処理のことを指します。分析処理ではソフト"
+"ウエアのリポジトリの読み込みのほか、ストレージデバイスの分析なども行います。 "
+"'probe' コマンドではこのような分析処理を裏で開始し、コマンド自体はすぐに終了"
+"します。"
+
+#. TRANSLATORS: CLI help for: agama install
+#: agama-cli/src/commands.rs:53
+msgid "Start the system installation"
+msgstr "システムのインストールを開始します"
+
+#. TRANSLATORS: CLI help for: agama install (details)
+#: agama-cli/src/commands.rs:55
+msgid ""
+"This command starts the installation process.  Beware it is a destructive "
+"operation because it will set up the storage devices, install the packages, "
+"etc.\n"
+"\n"
+"When the preconditions for the installation are not met, it informs the user "
+"and returns, making no changes to the system."
+msgstr ""
+"このコマンドを実行すると、インストール処理を開始します。  なお、インストール"
+"処理にはストレージデバイスのセットアップやパッケージのインストール等が含まれ"
+"ますので、破壊的な処理になりうることに注意してください。\n"
+"\n"
+"なお、インストールに必要な事前要件が満たされていない場合は、その旨をユーザに"
+"通知して終了します。この場合、システムに対して変更が加えられることはありませ"
+"ん。"
+
+#. TRANSLATORS: CLI help for: agama download
+#: agama-cli/src/commands.rs:78
+msgid "Download file from a given (AutoYaST) URL"
+msgstr "指定した (AutoYaST の) URL からファイルをダウンロードします"
+
+#. TRANSLATORS: CLI help for: agama download (details)
+#: agama-cli/src/commands.rs:80
+msgid ""
+"The purpose of this command is to download files using AutoYaST supported "
+"schemas (e.g. device://). It can be used to download additional scripts, "
+"configuration files and so on. You can use it for downloading Agama "
+"autoinstallation profiles. If you want to convert an AutoYaST profile, use "
+"\"agama config generate\"."
+msgstr ""
+"このコマンドは、 AutoYaST で対応している様々なスキーマ (例: device://) から"
+"ファイルをダウンロードします。追加のスクリプトや設定ファイルなどをダウンロー"
+"ドして使用することができますし、 Agama の自動インストールプロファイルをダウン"
+"ロードすることもできます。 AutoYaST で使用していたプロファイルを変換したい場"
+"合は、 \"agama config generate\" コマンドをお使いください。"
+
+#. TRANSLATORS: CLI help for: agama download <URL>
+#: agama-cli/src/commands.rs:94
+msgid ""
+"URL reference pointing to file for download. If a relative URL is provided, "
+"it will be resolved against the current working directory"
+msgstr ""
+"ファイルのダウンロード元となる URL を指定します。相対 URL で指定した場合、現"
+"在の作業ディレクトリからの相対パスとして処理されます"
+
+#. TRANSLATORS: CLI help for: agama download <DESTINATION>
+#: agama-cli/src/commands.rs:104
+msgid "File name"
+msgstr "ファイル名"
+
+#. TRANSLATORS: CLI help for: agama finish
+#: agama-cli/src/commands.rs:111
+msgid "Finish the installation"
+msgstr "インストールを完了します"
+
+#. TRANSLATORS: CLI help for: agama finish <METHOD>
+#: agama-cli/src/commands.rs:117
+msgid ""
+"What to do after finishing the installation. Possible values:\n"
+"\n"
+"   stop - do not reboot and the Agama backend continues running.\n"
+"\n"
+"   reboot - reboot into the installed system. This value is the default. It "
+"can be overriden by setting the inst.finish kernel command-line argument.\n"
+"\n"
+"   halt - halt the installed machine.\n"
+"\n"
+"   poweroff - power off the installed machine."
+msgstr ""
+"インストールの完了後に実施すべきことを指定します。指定可能な値は下記のとおり"
+"です:\n"
+"\n"
+"   stop - 再起動を行わず、 Agama バックエンドを動作させたままの状態にしま"
+"す。\n"
+"\n"
+"   reboot - システムを再起動してインストール済みのシステムに移行します。この"
+"値が既定値です。なお、カーネルのコマンドラインパラメータ inst.finish を指定す"
+"ることで、動作を上書きすることができます。\n"
+"\n"
+"   halt - インストールが完了後にシステムを停止 (halt) します。\n"
+"\n"
+"   poweroff - インストール完了後にシステムの電源を切ります。"
+
+#. TRANSLATORS: CLI help for: agama monitor
+#: agama-cli/src/commands.rs:135
+msgid "Continuously monitors the Agama service until it finishes"
+msgstr "Agama サービスを継続的に監視して、処理が完了するのを待機します"
+
+#. TRANSLATORS: CLI help for: agama status
+#: agama-cli/src/commands.rs:142
+msgid ""
+"Prints the current state of the installation (e.g., waiting, blocked, "
+"running, or finished)"
+msgstr ""
+"インストール処理における現在の状態を出力します (例: 待機中, ブロック, 処理"
+"中, 完了)"
+
+#. TRANSLATORS: CLI help for: agama status --format <FORMAT>
+#: agama-cli/src/commands.rs:150
+msgid "Specify in which format status will be shown"
+msgstr "状態を表示する際の形式を指定します"
+
+#. TRANSLATORS: CLI help for: agama events
+#: agama-cli/src/commands.rs:157
+msgid "Display Agama events"
+msgstr "Agama のイベントを表示します"
+
+#. TRANSLATORS: CLI help for: agama events --pretty
+#: agama-cli/src/commands.rs:164
+msgid "Display the events in a more human-readable way"
+msgstr "イベントをよりわかりやすく表示します"
+
+#. TRANSLATORS: CLI help for: agama config
+#: agama-cli/src/config.rs:46
+msgid "Inspect or change the installation settings"
+msgstr "インストール設定を調査もしくは変更します"
+
+#. TRANSLATORS: CLI help for: agama config (details)
+#: agama-cli/src/config.rs:48
+msgid ""
+"You can inspect and change installation settings from the command-line. The "
+"\"show\" subcommand generates a \"profile\" which is a JSON document "
+"describing the current configuration.\n"
+"\n"
+"If you want to change any configuration value, you can load a profile "
+"(complete or partial) using the \"load\" subcommand."
+msgstr ""
+"インストール設定はコマンドラインから調査および変更することができます。 "
+"\"show\" サブコマンドを実行すると、 JSON 形式の \"プロファイル\" で現在の設定"
+"を出力します。\n"
+"\n"
+"設定変更を行いたい場合は、 \"load\" サブコマンドでプロファイルの一部または全"
+"部を読み込むことができます。"
+
+#. TRANSLATORS: CLI help for: agama config load
+#: agama-cli/src/config.rs:64
+msgid "Read and load a profile"
+msgstr "プロファイルを読み込みます"
+
+#. TRANSLATORS: CLI help for: agama config load <URL_OR_PATH>
+#. TRANSLATORS: CLI help for: agama config generate <URL_OR_PATH>
+#: agama-cli/src/config.rs:70 agama-cli/src/config.rs:166
+msgid "JSON file: URL or path or `-` for standard input"
+msgstr "JSON ファイル: URL, パス, もしくは `-` (標準入力)"
+
+#. TRANSLATORS: CLI help for: agama config show
+#: agama-cli/src/config.rs:80
+msgid "Generate an installation profile with the current settings"
+msgstr "現在の設定でインストールプロファイルを生成します"
+
+#. TRANSLATORS: CLI help for: agama config show (details)
+#: agama-cli/src/config.rs:85
+msgid ""
+"It is possible that many configuration settings do not have a value. Those "
+"settings are not included in the output.\n"
+"\n"
+"The output of command can be used as input for the \"agama config load\"."
+msgstr ""
+"通常は多くの項目に設定値が割り当てられていません。そのため、それらの項目は出"
+"力には含まれなくなります。\n"
+"\n"
+"このコマンドの出力は \"agama config load\" コマンドの入力として使用することが"
+"できます。"
+
+#. TRANSLATORS: CLI help for: agama config show --output <FILE_PATH>
+#: agama-cli/src/config.rs:103
+msgid "Save the output here (goes to stdout if not given)"
+msgstr "出力先を指定します (何も指定しない場合は標準出力になります)"
+
+#. TRANSLATORS: CLI help for: agama config validate
+#: agama-cli/src/config.rs:110
+msgid "Validate a profile using JSON Schema"
+msgstr "JSON スキーマを利用してプロファイルを検証します"
+
+#. TRANSLATORS: CLI help for: agama config validate (details)
+#: agama-cli/src/config.rs:115
+msgid ""
+"Schema is available at /usr/share/agama/openapi/nightly/schemas/"
+"config.schema.json Note: validation is always done as part of all other "
+"\"agama config\" commands."
+msgstr ""
+"スキーマは /usr/share/agama/openapi/nightly/schemas/config.schema.json に存在"
+"しています。注意: 検証処理は \"agama config\" の全てのサブコマンドで実行され"
+"ます。"
+
+#. TRANSLATORS: CLI help for: agama config validate <URL_OR_PATH>
+#: agama-cli/src/config.rs:129
+msgid "JSON file, URL or path or `-` for standard input"
+msgstr ""
+"JSON ファイルを表す URL やパスを指定します。 `-` を指定した場合は標準入力から"
+"読み込みます"
+
+#. TRANSLATORS: CLI help for: agama config validate --local
+#: agama-cli/src/config.rs:137
+msgid ""
+"Run subcommands (if possible) in local mode - without trying to connect to "
+"remote agama server"
+msgstr ""
+"(可能であれば) リモートの Agama サーバに接続せず、サブコマンドをローカルで実"
+"行します"
+
+#. TRANSLATORS: CLI help for: agama config generate
+#: agama-cli/src/config.rs:144
+msgid ""
+"Generate and print a native Agama JSON configuration from any kind and "
+"location"
+msgstr "ネイティブ形式の Agama JSON 設定を生成して出力します"
+
+#. TRANSLATORS: CLI help for: agama config generate (details)
+#: agama-cli/src/config.rs:146
+msgid ""
+"Kinds:\n"
+"- JSON\n"
+"- Jsonnet, injecting the hardware information\n"
+"- AutoYaST profile, including ERB and rules/classes\n"
+"\n"
+"Locations:\n"
+"- path\n"
+"- URL (including AutoYaST specific schemes)\n"
+"\n"
+"For an example of Jsonnet-based profile, see\n"
+"https://github.com/openSUSE/agama/blob/master/rust/agama-lib/share/examples/"
+"profile.jsonnet"
+msgstr ""
+"種類:\n"
+"- JSON\n"
+"- Jsonnet (ハードウエア情報を注入します)\n"
+"- AutoYaST プロファイル (ERB およびルール／クラスを含みます)\n"
+"\n"
+"場所:\n"
+"- パス\n"
+"- URL (AutoYaST 固有のスキームを含みます)\n"
+"\n"
+"Jsonnet ベースのプロファイル例については、下記を参照してください:\n"
+"https://github.com/openSUSE/agama/blob/master/rust/agama-lib/share/examples/"
+"profile.jsonnet"
+
+#. TRANSLATORS: CLI help for: agama config edit
+#: agama-cli/src/config.rs:172
+msgid "Edit and update installation option using an external editor"
+msgstr "外部エディタを起動してインストールオプションを編集し、更新します"
+
+#. TRANSLATORS: CLI help for: agama config edit (details)
+#: agama-cli/src/config.rs:177
+msgid ""
+"The changes are not applied if the editor exits with an error code.\n"
+"\n"
+"If an editor is not specified, it honors the EDITOR environment variable. It "
+"falls back to `/usr/bin/vi` as a last resort."
+msgstr ""
+"外部エディタの終了コードがエラーを表すものであった場合、変更点は適用されませ"
+"ん。\n"
+"\n"
+"外部エディタの指定がない場合、 EDITOR 環境変数で指定したエディタを起動しま"
+"す。 EDITOR 環境変数にも設定がない場合は、 `/usr/bin/vi` を使用します。"
+
+#. TRANSLATORS: CLI help for: agama config edit --editor <EDITOR>
+#: agama-cli/src/config.rs:194
+msgid "Editor command (including additional arguments if needed)"
+msgstr "エディタコマンド (必要であれば追加のパラメータも設定できます)"
+
+#: agama-cli/src/config.rs:217
+msgid "It is not a valid JSON file"
+msgstr "JSON ファイルの形式が正しくありません"
+
+#: agama-cli/src/config.rs:434
+msgid "Ignoring the changes because the editor was closed with an error code."
+msgstr "エディタがエラー終了したため、変更点を適用しません。"
+
+#. TRANSLATORS: CLI help for: agama
+#: agama-cli/src/lib.rs:92
+msgid "Agama's command-line interface"
+msgstr "Agama のコマンドラインインターフェイス"
+
+#. TRANSLATORS: CLI help for: agama (details)
+#: agama-cli/src/lib.rs:97
+msgid ""
+"This program allows inspecting or changing Agama's configuration, handling "
+"installation profiles, starting the installation, monitoring the process, "
+"etc.\n"
+"\n"
+"Please, use the \"help\" command to learn more."
+msgstr ""
+"このプログラムは Agama の設定を調査／変更したりすることができるほか、インス"
+"トールプロファイルの処理方法やインストールの開始、そしてインストール処理の監"
+"視などを行うことができます。\n"
+"\n"
+"詳しくは \"help\" コマンドをお使いください。"
+
+#. TRANSLATORS: CLI help for: agama --host <HOST>
+#: agama-cli/src/lib.rs:115
+msgid ""
+"URI pointing to Agama's remote host.\n"
+"\n"
+"Examples: https://my-server.lan my-server.local localhost:10443"
+msgstr ""
+"Agama のリモートホストを表す URI を指定します。\n"
+"\n"
+"例: https://my-server.lan my-server.local localhost:10443"
+
+#. TRANSLATORS: CLI help for: agama --insecure
+#: agama-cli/src/lib.rs:127
+msgid "Whether to accept invalid (self-signed, ...) certificates or not"
+msgstr "自己署名証明書などの不正な証明書を受け付けるかどうかを指定します"
+
+#. TRANSLATORS: CLI help for: agama --local
+#: agama-cli/src/lib.rs:135
+msgid ""
+"Some commands could be able to work even without connection to the agama "
+"server"
+msgstr "コマンドによっては Agama サーバに接続せずに実行できるものがあります"
+
+#. TRANSLATORS: CLI help for: agama logs
+#: agama-cli/src/logs.rs:31
+msgid "Collect the installer logs"
+msgstr "インストーラログを収集します"
+
+#. TRANSLATORS: CLI help for: agama logs (details)
+#: agama-cli/src/logs.rs:36
+msgid ""
+"The installer logs are stored in a compressed archive for further "
+"inspection. The file includes system and Agama-specific logs and "
+"configuration files. They are crucial to troubleshoot and debug problems."
+msgstr ""
+"インストーラログは今後の調査のため、圧縮書庫形式で保存されます。インストーラ"
+"ログにはシステムログや Agama 固有のログのほか、設定ファイルそのも含まれます。"
+"これらは問題の調査やバグの解決に不可欠のものです。"
+
+#. TRANSLATORS: CLI help for: agama logs store
+#: agama-cli/src/logs.rs:50
+msgid "Collect and store the logs in a tar archive"
+msgstr "tar 書庫形式でログを収集して保存します"
+
+#. TRANSLATORS: CLI help for: agama logs store --destination <DESTINATION>
+#: agama-cli/src/logs.rs:58
+msgid ""
+"Path to destination directory and, optionally, the archive file name. The "
+"extension will be added automatically"
+msgstr ""
+"出力先のディレクトリパスを指定します。必要であれば書庫のファイル名を指定する"
+"こともできます。拡張子は自動的に付与されます"
+
+#. TRANSLATORS: CLI help for: agama logs list
+#: agama-cli/src/logs.rs:65
+msgid "List the logs to collect"
+msgstr "収集対象のログを一覧表示します"
+
+#. TRANSLATORS: an installation "scope", used in the "agama monitor" command
+#: agama-cli/src/monitor/ui.rs:41
+msgid "Bootloader"
+msgstr "ブートローダ"
+
+#. TRANSLATORS: an installation "scope", used in the "agama monitor" command
+#: agama-cli/src/monitor/ui.rs:43
+msgid "Manager"
+msgstr "マネージャ"
+
+#. TRANSLATORS: an installation "scope", used in the "agama monitor" command
+#: agama-cli/src/monitor/ui.rs:45
+msgid "Network"
+msgstr "ネットワーク"
+
+#. TRANSLATORS: an installation "scope", used in the "agama monitor" command
+#: agama-cli/src/monitor/ui.rs:47
+msgid "NTP"
+msgstr "NTP"
+
+#. TRANSLATORS: an installation "scope", used in the "agama monitor" command
+#: agama-cli/src/monitor/ui.rs:49
+msgid "Hostname"
+msgstr "ホスト名"
+
+#. TRANSLATORS: an installation "scope", used in the "agama monitor" command
+#: agama-cli/src/monitor/ui.rs:51
+msgid "Localization"
+msgstr "ローカライゼーション"
+
+#. TRANSLATORS: an installation "scope", used in the "agama monitor" command
+#: agama-cli/src/monitor/ui.rs:53
+msgid "Product"
+msgstr "製品"
+
+#. TRANSLATORS: an installation "scope", used in the "agama monitor" command
+#: agama-cli/src/monitor/ui.rs:55
+msgid "Remote Access"
+msgstr "リモートアクセス"
+
+#. TRANSLATORS: an installation "scope", used in the "agama monitor" command
+#: agama-cli/src/monitor/ui.rs:57
+msgid "Software"
+msgstr "ソフトウエア"
+
+#. TRANSLATORS: an installation "scope", used in the "agama monitor" command
+#: agama-cli/src/monitor/ui.rs:59
+msgid "Storage"
+msgstr "ストレージ"
+
+#. TRANSLATORS: an installation "scope", used in the "agama monitor" command
+#: agama-cli/src/monitor/ui.rs:61
+msgid "Files"
+msgstr "ファイル"
+
+#. TRANSLATORS: an installation "scope", used in the "agama monitor" command
+#: agama-cli/src/monitor/ui.rs:63
+msgid "iSCSI"
+msgstr "iSCSI"
+
+#. TRANSLATORS: an installation "scope", used in the "agama monitor" command
+#: agama-cli/src/monitor/ui.rs:65
+msgid "DASD"
+msgstr "DASD"
+
+#. TRANSLATORS: an installation "scope", used in the "agama monitor" command
+#: agama-cli/src/monitor/ui.rs:67
+msgid "zFCP"
+msgstr "zFCP"
+
+#. TRANSLATORS: an installation "scope", used in the "agama monitor" command
+#: agama-cli/src/monitor/ui.rs:69
+msgid "Users"
+msgstr "ユーザ"
+
+#. TRANSLATORS: an installation "scope", used in the "agama monitor" command
+#: agama-cli/src/monitor/ui.rs:71
+msgid "Proxy"
+msgstr "プロキシ"
+
+#. TRANSLATORS: an installation "scope", used in the "agama monitor" command
+#: agama-cli/src/monitor/ui.rs:73
+msgid "Questions"
+msgstr "問題点"
+
+#. TRANSLATORS: an installation "scope", used in the "agama monitor" command
+#: agama-cli/src/monitor/ui.rs:75
+msgid "Security"
+msgstr "セキュリティ"
+
+#: agama-cli/src/monitor/ui/content.rs:64
+msgid "Installation complete."
+msgstr "インストールが完了しました。"
+
+#: agama-cli/src/monitor/ui/content.rs:65
+msgid "You can reboot the machine to log in to the new system."
+msgstr "あとはマシンを再起動して新しいシステムにログインするだけです。"
+
+#: agama-cli/src/monitor/ui/content.rs:68
+msgid "Installation failed."
+msgstr "インストールが失敗しました。"
+
+#: agama-cli/src/monitor/ui/content.rs:69
+msgid "Use the \"agama logs\" command to collect the logs."
+msgstr "ログを収集するには、 \"agama logs\" コマンドをお使いください。"
+
+#: agama-cli/src/monitor/ui/content.rs:100
+msgid "Action needed:"
+msgstr "対応が必要です:"
+
+#: agama-cli/src/monitor/ui/content.rs:108
+msgid "No product has been selected yet."
+msgstr "まだ製品を選択していません。"
+
+#: agama-cli/src/monitor/ui/content.rs:172 agama-cli/src/status.rs:88
+msgid "Fix invalid settings before starting the installation:"
+msgstr "インストールを開始する前に、直すべき設定を修正してください。"
+
+#: agama-cli/src/monitor/ui/content.rs:193 agama-cli/src/status.rs:81
+msgid "Ready to start the installation."
+msgstr "インストールの準備ができています。"
+
+#: agama-cli/src/monitor/ui/content.rs:194
+msgid "Starting the installation."
+msgstr "インストールを開始しています。"
+
+#: agama-cli/src/monitor/ui/content.rs:210
+msgid "Step"
+msgstr "ステップ"
+
+#: agama-cli/src/monitor/ui/content.rs:212
+msgid "of"
+msgstr "/"
+
+#. TRANSLATORS: additional data that question passed to user beside main question message
+#: agama-cli/src/monitor/ui/question.rs:307
+msgid "Technical details"
+msgstr "記述詳細"
+
+#. TRANSLATORS: CLI hint how to scroll through additional data
+#: agama-cli/src/monitor/ui/question.rs:317
+msgid "use PageUp/PageDown to scroll"
+msgstr "PageUp/PageDown でスクロールできます"
+
+#: agama-cli/src/monitor/ui/question.rs:371
+msgid "Password"
+msgstr "パスワード"
+
+#: agama-cli/src/monitor/ui/question.rs:377
+msgid "Location"
+msgstr "場所"
+
+#: agama-cli/src/monitor/ui/question.rs:383
+msgid "Value"
+msgstr "値"
+
+#: agama-cli/src/monitor/ui/summary.rs:47
+msgid "Host: "
+msgstr "ホスト: "
+
+#: agama-cli/src/monitor/ui/summary.rs:48
+msgid "Model: "
+msgstr "モデル: "
+
+#: agama-cli/src/monitor/ui/summary.rs:49
+msgid "Product: "
+msgstr "製品: "
+
+#: agama-cli/src/monitor/ui/summary.rs:50
+msgid "Stage: "
+msgstr "ステージ: "
+
+#: agama-cli/src/monitor/ui/summary.rs:51
+msgid "Status: "
+msgstr "状態: "
+
+#: agama-cli/src/monitor/ui/summary.rs:76
+msgid "Busy"
+msgstr "処理しています"
+
+#: agama-cli/src/monitor/ui/summary.rs:77
+#: agama-cli/src/monitor/ui/summary.rs:105
+msgid "Failed"
+msgstr "失敗"
+
+#: agama-cli/src/monitor/ui/summary.rs:78
+msgid "Idle"
+msgstr "待機"
+
+#: agama-cli/src/monitor/ui/summary.rs:79
+msgid "Waiting for user"
+msgstr "ユーザの操作を待っています"
+
+#: agama-cli/src/monitor/ui/summary.rs:102
+msgid "Installing"
+msgstr "インストールしています"
+
+#: agama-cli/src/monitor/ui/summary.rs:103
+msgid "Configuring"
+msgstr "設定しています"
+
+#: agama-cli/src/monitor/ui/summary.rs:104
+msgid "Finished"
+msgstr "完了"
+
+#: agama-cli/src/monitor/ui/summary.rs:118
+msgid "Not selected yet"
+msgstr "まだ選択していません"
+
+#. TRANSLATORS: CLI help for: agama questions
+#: agama-cli/src/questions.rs:33
+msgid "Handle installer questions"
+msgstr "インストーラで発生した問題点を処理します"
+
+#. TRANSLATORS: CLI help for: agama questions (details)
+#: agama-cli/src/questions.rs:35
+msgid ""
+"Agama might require user intervention at any time. The reasons include "
+"providing some missing information (e.g., the password to decrypt a file "
+"system) or deciding what to do in case of an error (e.g., cannot connect to "
+"the repository).\n"
+"\n"
+"This command allows answering such questions directly from the command-line."
+msgstr ""
+"Agama では必要に応じてユーザ側への問い合わせを行います。不足している情報の確"
+"認 (たとえば暗号化されたファイルシステムを解読するためのパスワード) のほか、"
+"エラー発生時の処理方法 (たとえばリポジトリにアクセスできない場合) 等がありま"
+"す。\n"
+"\n"
+"このコマンドではそのような問題点に対して、コマンドラインから回答する方法を提"
+"供しています。"
+
+#. TRANSLATORS: CLI help for: agama questions mode
+#: agama-cli/src/questions.rs:49
+msgid "Set the mode for answering questions"
+msgstr "問題点に対する回答モードを設定します"
+
+#. TRANSLATORS: CLI help for: agama questions list
+#: agama-cli/src/questions.rs:61
+msgid ""
+"Prints the list of questions that are waiting for an answer in JSON format"
+msgstr "JSON 形式で回答待ちの問題点一覧を出力します"
+
+#. TRANSLATORS: CLI help for: agama questions ask
+#: agama-cli/src/questions.rs:66
+msgid ""
+"Reads a question definition in JSON from stdin and prints the response when "
+"it is answered"
+msgstr ""
+"標準入力から JSON 形式で問題点を読み込み、回答があった場合にそれを出力します"
+
+#. TRANSLATORS: CLI help for: agama questions answers
+#: agama-cli/src/questions.rs:72
+msgid "Load predefined answers"
+msgstr "事前に用意した回答を読み込みます"
+
+#. TRANSLATORS: CLI help for: agama questions answers (details)
+#: agama-cli/src/questions.rs:77
+msgid ""
+"It allows predefining answers for specific questions in order to skip them "
+"in interactive mode or change the answer in automatic mode.\n"
+"\n"
+"Please check Agama documentation for more details and examples: https://"
+"github.com/openSUSE/agama/blob/master/doc/questions."
+msgstr ""
+"この機能を使用すると、あらかじめ特定の問題点に対する回答を用意しておき、対話"
+"モードではそれらの問題点を表示しないようにしたり、自動モードでは回答を変更し"
+"たりすることができます。\n"
+"\n"
+"詳細や使用例については、 Agama のドキュメンテーションをお読みください: "
+"https://github.com/openSUSE/agama/blob/master/doc/questions ."
+
+#. TRANSLATORS: CLI help for: agama questions answers <PATH>
+#: agama-cli/src/questions.rs:94
+msgid "Path to a file containing the answers in JSON format"
+msgstr "JSON 形式での回答を含むファイルパスを指定します"
+
+#: agama-cli/src/status.rs:77
+msgid ""
+"The installation failed. Use the \"agama logs store\" command to get the "
+"logs to troubleshoot or share with support."
+msgstr ""
+"インストールが失敗しました。 \"agama logs store\" コマンドを利用してログを収"
+"集し、原因を調べるかサポートへの共有を行ってください。"
+
+#: agama-cli/src/status.rs:80
+msgid "The installation finished successfully."
+msgstr "インストールが成功しました。"
+
+#: agama-cli/src/status.rs:82
+msgid "The installation is in progress."
+msgstr "インストール処理中です。"
+
+#: agama-cli/src/status.rs:83
+msgid "The installer is preparing an installation proposal."
+msgstr "インストーラは提案内容を準備しています。"
+
+#: agama-cli/src/status.rs:85
+msgid ""
+"There are unanswered questions. Use the \"agama monitor\" command or the web "
+"user interface to answer them:"
+msgstr ""
+"未回答の問題点が残っています。 `agama monitor` コマンドか Web ユーザインター"
+"フェイスを利用して回答してください:"
 
 #. TRANSLATORS: %s is replaced by the script name.
-#: agama-files/src/service.rs:198
+#: agama-files/src/service.rs:183
 msgid "Failed to retrieve the script %s. Do you want to try again?"
 msgstr "スクリプト %s の取得に失敗しました。再試行しますか？"
 
 #. TRANSLATORS: %s is replaced by the script name.
-#: agama-files/src/service.rs:222
+#: agama-files/src/service.rs:207
 msgid "Failed to write the file %s. Do you want to try again?"
 msgstr "ファイル %s の書き込みに失敗しました。再試行しますか？"
 
-#: agama-manager/src/actions.rs:86
+#: agama-manager/src/actions.rs:79
 msgid "Prepare the system"
 msgstr "システムの準備"
 
-#: agama-manager/src/actions.rs:87
+#: agama-manager/src/actions.rs:80
 msgid "Install software"
 msgstr "ソフトウエアのインストール"
 
-#: agama-manager/src/actions.rs:88
+#: agama-manager/src/actions.rs:81
 msgid "Configure the system"
 msgstr "システムの設定"
 
-#: agama-manager/src/actions.rs:186
-msgid "Storing security settings"
-msgstr "セキュリティ設定を保存しています"
+#: agama-manager/src/actions.rs:95
+msgid "Preparing storage"
+msgstr "ストレージを準備しています"
 
-#: agama-manager/src/actions.rs:187
-msgid "Setting up the hostname"
-msgstr "ホスト名を設定しています"
+#: agama-manager/src/actions.rs:113
+msgid "Running post-partitioning scripts"
+msgstr "パーティション設定後スクリプトを実行しています"
 
-#: agama-manager/src/actions.rs:188
-msgid "Setting up the network proxy"
-msgstr "ネットワークプロキシを設定しています"
+#: agama-manager/src/actions.rs:138
+msgid "Installing software"
+msgstr "ソフトウエアをインストールしています"
 
-#: agama-manager/src/actions.rs:189
-msgid "Importing user files"
-msgstr "ユーザファイルを取り込んでいます"
+#: agama-manager/src/actions.rs:176
+msgid "Configuring the system"
+msgstr "システムを設定しています"
 
-#: agama-manager/src/actions.rs:190
+#: agama-manager/src/actions.rs:248
+msgid "Finishing installation"
+msgstr "インストールを完了しています"
+
+#: agama-manager/src/actions.rs:277
+msgid "Finalize installation"
+msgstr "インストールの完了"
+
+#: agama-manager/src/actions.rs:352
+msgid "Storing questions settings"
+msgstr "問題点設定を保存しています"
+
+#: agama-manager/src/actions.rs:363
+msgid "Importing user files and scripts"
+msgstr "ユーザファイルとスクリプトを取り込んでいます"
+
+#: agama-manager/src/actions.rs:377
 msgid "Running user pre-installation scripts"
 msgstr "ユーザ指定のインストール前スクリプトを実行しています"
 
-#: agama-manager/src/actions.rs:191
-msgid "Storing questions settings"
-msgstr "質問設定を保存しています"
+#: agama-manager/src/actions.rs:392
+msgid "Storing security settings"
+msgstr "セキュリティ設定を保存しています"
 
-#: agama-manager/src/actions.rs:192
+#: agama-manager/src/actions.rs:402
+msgid "Configuring remote access"
+msgstr "リモートアクセスを設定しています"
+
+#: agama-manager/src/actions.rs:412
+msgid "Setting up the hostname"
+msgstr "ホスト名を設定しています"
+
+#: agama-manager/src/actions.rs:422
+msgid "Setting up the network proxy"
+msgstr "ネットワークプロキシを設定しています"
+
+#: agama-manager/src/actions.rs:433
+msgid "Setting up NTP"
+msgstr "NTP を設定しています"
+
+#: agama-manager/src/actions.rs:443
 msgid "Storing localization settings"
 msgstr "言語設定を保存しています"
 
-#: agama-manager/src/actions.rs:193
+#: agama-manager/src/actions.rs:453
 msgid "Storing users settings"
 msgstr "ユーザ設定を保存しています"
 
-#: agama-manager/src/actions.rs:194
+#: agama-manager/src/actions.rs:563
 msgid "Configuring iSCSI devices"
 msgstr "iSCSI デバイスを設定しています"
 
-#: agama-manager/src/actions.rs:198
+#: agama-manager/src/actions.rs:588
+msgid "Configuring zFCP devices"
+msgstr "zFCP デバイスを設定しています"
+
+#: agama-manager/src/actions.rs:614
 msgid "Configuring DASD devices"
 msgstr "DASD デバイスを設定しています"
 
-#: agama-manager/src/actions.rs:202
+#: agama-manager/src/actions.rs:640
 msgid "Setting up the network"
 msgstr "ネットワークを設定しています"
 
-#: agama-manager/src/actions.rs:207
-msgid "Preparing the software proposal"
-msgstr "ソフトウエアの提案内容を準備しています"
-
-#: agama-manager/src/actions.rs:208
+#: agama-manager/src/actions.rs:670
 msgid "Preparing the storage proposal"
 msgstr "ストレージの提案内容を準備しています"
 
-#: agama-manager/src/actions.rs:209
+#: agama-manager/src/actions.rs:700
 msgid "Storing bootloader settings"
 msgstr "ブートローダ設定を保存しています"
 
-#: agama-network/src/service.rs:512
+#: agama-manager/src/actions.rs:734
+msgid "Preparing the software proposal"
+msgstr "ソフトウエアの提案内容を準備しています"
+
+#: agama-manager/src/actions.rs:764
+msgid "Configuring SELinux"
+msgstr "SELinux を設定しています"
+
+#: agama-network/src/service.rs:511
 msgid "Writing network configuration"
 msgstr "ネットワーク設定を書き込んでいます"
 
-#: agama-network/src/service.rs:513
+#: agama-network/src/service.rs:512
 msgid "Syncing the network service state"
 msgstr "ネットワークサービスの状態を同期しています"
 
-#: agama-security/src/service.rs:226
+#: agama-security/src/service.rs:227
 msgid "Reject"
 msgstr "拒否する"
 
-#: agama-security/src/service.rs:226
-#: agama-software/src/callbacks/security.rs:109
+#: agama-security/src/service.rs:227
+#: agama-software/src/callbacks/security.rs:119
 msgid "Trust"
 msgstr "信頼する"
 
-#: agama-security/src/service.rs:227
+#: agama-security/src/service.rs:228
 msgid ""
 "Trying to import a self-signed certificate. Do you want to trust it and "
 "register the product?"
@@ -132,12 +943,32 @@ msgstr ""
 "自己署名型の証明書を取り込もうとしています。この証明書を信用し、製品を登録し"
 "てよろしいですか？"
 
-#: agama-software/src/callbacks/commit_download.rs:48
+#: agama-server/src/profile/web.rs:92
+msgid "Profile validation failed"
+msgstr "プロファイルの検証に失敗しました"
+
+#: agama-server/src/profile/web.rs:95
+msgid "Could not retrieve profile"
+msgstr "プロファイルを取得できません"
+
+#: agama-server/src/profile/web.rs:98
+msgid "Invalid profile encoding"
+msgstr "プロファイルのエンコーディングが正しくありません"
+
+#: agama-server/src/profile/web.rs:103
+msgid "Invalid profile request"
+msgstr "プロファイルリクエストが正しくありません"
+
+#: agama-server/src/profile/web.rs:106
+msgid "AutoYaST conversion failed"
+msgstr "AudoYaST からの変換に失敗しました"
+
+#: agama-software/src/callbacks/commit_download.rs:47
 #: agama-software/src/callbacks/install.rs:56
 msgid "Ignore"
 msgstr "無視"
 
-#: agama-software/src/callbacks/commit_download.rs:48
+#: agama-software/src/callbacks/commit_download.rs:47
 #: agama-software/src/callbacks/install.rs:56
 #: agama-software/src/callbacks/install.rs:81
 msgid "Retry"
@@ -147,104 +978,233 @@ msgstr "再試行"
 msgid "There was a problem running a package script."
 msgstr "パッケージスクリプトの実行にあたって問題が発生しました。"
 
-#: agama-software/src/callbacks/install.rs:81
-msgid "Continue"
-msgstr "続行"
-
 #. TRANSLATORS: substituting: key ID, (key name), fingerprint
-#: agama-software/src/callbacks/security.rs:102
+#: agama-software/src/callbacks/security.rs:112
 msgid ""
 "The key {0} ({1}) with fingerprint {2} is unknown. Do you want to trust this "
 "key?"
 msgstr ""
 "指紋 {2} の鍵 {0} ({1}) は未知の鍵です。この鍵を信頼してよろしいですか？"
 
-#: agama-software/src/callbacks/security.rs:109
+#: agama-software/src/callbacks/security.rs:119
 msgid "Skip"
 msgstr "飛ばす"
 
-#: agama-software/src/model/packages.rs:54
-msgid "package"
-msgstr "パッケージ"
-
-#: agama-software/src/model/packages.rs:55
-msgid "pattern"
-msgstr "パターン"
-
-#: agama-software/src/model/packages.rs:56
-msgid "product"
-msgstr "製品"
-
-#: agama-software/src/service.rs:279
+#: agama-software/src/service.rs:295
 msgid ""
 "Due to an internal error, it was not possible to create a software proposal."
 msgstr "内部エラーにより、ソフトウエアの提案内容を作成できませんでした。"
 
-#: agama-software/src/zypp_server.rs:332
+#: agama-software/src/zypp_server.rs:300
+msgid "Starting packages installation"
+msgstr "パッケージのインストールを開始しています"
+
+#: agama-software/src/zypp_server.rs:313
+msgid "Packages download and installation failed. Would you like to retry?"
+msgstr "パッケージのダウンロードとインストールが失敗しました。再試行しますか？"
+
+#: agama-software/src/zypp_server.rs:367
 msgid "Updating the list of repositories"
 msgstr "リポジトリの一覧を更新しています"
 
-#: agama-software/src/zypp_server.rs:333
+#: agama-software/src/zypp_server.rs:368
 msgid "Refreshing metadata from the repositories"
 msgstr "リポジトリのメタデータを更新しています"
 
-#: agama-software/src/zypp_server.rs:334
+#: agama-software/src/zypp_server.rs:369
 msgid "Calculating the software proposal"
 msgstr "ソフトウエアの提案内容を作成しています"
 
-#: agama-software/src/zypp_server.rs:337
+#: agama-software/src/zypp_server.rs:372
 msgid "Registering the system"
 msgstr "システムを登録しています"
 
 #. TRANSLATORS: %s is the alias of the repository.
-#: agama-software/src/zypp_server.rs:401
+#: agama-software/src/zypp_server.rs:445
 msgid "Could not remove the repository %s"
 msgstr "リポジトリ %s を削除できませんでした"
 
-#: agama-software/src/zypp_server.rs:421
+#: agama-software/src/zypp_server.rs:465
 msgid "Could not read the repositories"
 msgstr "リポジトリの読み込みができませんでした"
 
-#: agama-software/src/zypp_server.rs:454
+#: agama-software/src/zypp_server.rs:501
 msgid ""
 "Failed to find the product in the repositories. You might need to register "
 "the system."
 msgstr ""
 "リポジトリ内の製品検索に失敗しました。システムの登録が必要と思われます。"
 
-#: agama-software/src/zypp_server.rs:459
+#: agama-software/src/zypp_server.rs:504
 msgid "Failed to find the product in the repositories."
 msgstr "リポジトリ内の製品検索に失敗しました。"
 
-#: agama-software/src/zypp_server.rs:517
+#: agama-software/src/zypp_server.rs:567
 msgid "There are conflicts in the software selection"
 msgstr "ソフトウエア選択において競合が発生しています"
 
 #. TRANSLATORS: the first %s is the kind of resolvable (e.g., "package")
 #. and the second %s is the name of the resolvable.
-#: agama-software/src/zypp_server.rs:546
+#: agama-software/src/zypp_server.rs:594
 msgid "Could not select %s '%s' for installation"
 msgstr "%s '%s' をインストール用に選択できませんでした"
 
-#: agama-software/src/zypp_server.rs:951
+#: agama-software/src/zypp_server.rs:1012
 msgid "Failed to register the system"
 msgstr "システムの登録に失敗しました"
 
-#: agama-users/src/service.rs:140
+#: agama-users/src/service.rs:177
 msgid ""
 "Defining a user, setting the root password or a SSH public key is required"
 msgstr ""
 "ユーザの設定、 root パスワードの設定、 SSH 公開鍵の設定のいずれかが必要です"
 
-#: agama-users/src/service.rs:153
+#: agama-users/src/service.rs:190
 msgid "First user information is incomplete"
 msgstr "最初のユーザ情報が不十分です"
 
-#~ msgid "Reading configuration"
-#~ msgstr "設定を読み込んでいます"
+#: agama-utils/src/api/problem_details.rs:120
+msgid "Schema validation failed"
+msgstr "スキーマの検証に失敗しました"
+
+#: agama-utils/src/api/problem_details.rs:122
+msgid "The provided configuration does not match the required schema"
+msgstr "指定した設定が必要なスキーマに合致していません"
+
+#: agama-utils/src/api/problem_details.rs:131
+msgid "Invalid JSON"
+msgstr "JSON 形式が正しくありません"
+
+#: agama-utils/src/api/problem_details.rs:139
+msgid "Internal server error"
+msgstr "内部サーバエラー"
+
+#: agama-utils/src/api/problem_details.rs:147
+msgid "Unauthorized"
+msgstr "未認証"
+
+#: agama-utils/src/api/problem_details.rs:205
+msgid "Error:"
+msgstr "エラー:"
+
+#: agama-utils/src/api/problem_details.rs:208
+msgid "Details:"
+msgstr "詳細:"
+
+#: agama-utils/src/api/question.rs:346 agama-utils/src/question/start.rs:48
+msgid "No"
+msgstr "いいえ"
+
+#: agama-utils/src/api/question.rs:346 agama-utils/src/question/start.rs:48
+msgid "Yes"
+msgstr "はい"
+
+#: agama-utils/src/resolvable.rs:65
+msgid "package"
+msgstr "パッケージ"
+
+#: agama-utils/src/resolvable.rs:66
+msgid "pattern"
+msgstr "パターン"
+
+#: agama-utils/src/resolvable.rs:67
+msgid "product"
+msgstr "製品"
+
+#~ msgid "Missing Language Tag"
+#~ msgstr "言語タグがありません"
+
+#~ msgid "Profile error"
+#~ msgstr "プロファイルエラー"
+
+#~ msgid "Additional data"
+#~ msgstr "追加データ"
+
+#~ msgid "Following issues needs to be addressed in the configuration:"
+#~ msgstr "設定内にある下記の問題を解決する必要があります:"
+
+#~ msgid "Waiting for these to be resolved."
+#~ msgstr "これらの解決を待っています。"
+
+#~ msgid "Installation is ready to start."
+#~ msgstr "インストールの開始準備ができています。"
+
+#~ msgid "Installation is being proposed."
+#~ msgstr "インストールの提案を行っています。"
+
+#~ msgid ""
+#~ "There are issues in configuration that are blocking the installation."
+#~ msgstr "インストールを妨げるような問題点が発生しています。"
+
+#~ msgid "Open questions:"
+#~ msgstr "未解決の問題点:"
+
+#~ msgid "Blocking issues:"
+#~ msgstr "インストールの実行を妨害している問題点:"
+
+#~ msgid "There are pending questions:"
+#~ msgstr "未解決の問題点があります:"
+
+#~ msgid ""
+#~ "Please use the web interface (recommended) or the \"agama questions\" "
+#~ "command to answer them."
+#~ msgstr ""
+#~ "Web インターフェイスを使用する (推奨) か、もしくは \"agama questions\" コ"
+#~ "マンドを利用して回答してください。"
+
+#~ msgid ""
+#~ "The installer failed to calculate the installation proposal. There are "
+#~ "issues blocking the installation."
+#~ msgstr ""
+#~ "インストーラは提案内容の作成に失敗しました。インストールの実行を妨害するよ"
+#~ "うな問題点が存在しています。"
+
+#~ msgid "Lost the connection with the server."
+#~ msgstr "サーバとの接続が失われました。"
+
+#~ msgid "Calculating the installation proposal:"
+#~ msgstr "インストールの提案内容を作成しています:"
+
+#~ msgid "Installation successfully finished"
+#~ msgstr "インストールが成功しました"
+
+#~ msgid ""
+#~ "There are unanswered questions. Please use `agama questions` command or "
+#~ "web interface to answer them:"
+#~ msgstr ""
+#~ "未回答の質問が残っています。 agama questions` コマンドを利用するか、もしく"
+#~ "は Web インターフェイスを利用して回答してください:"
+
+#~ msgid "Details"
+#~ msgstr "詳細"
+
+#~ msgid "Current step"
+#~ msgstr "現在のステップ"
 
 #~ msgid "The product must be registered"
 #~ msgstr "製品を登録しなければなりません"
 
 #~ msgid "There are software conflict in software selection"
 #~ msgstr "ソフトウエア選択において、ソフトウエア間の競合が発生しています"
+
+#~ msgid "Ready for installation."
+#~ msgstr "インストールの準備ができています。"
+
+#~ msgid "Waiting to start installation..."
+#~ msgstr "インストールの開始を待っています..."
+
+#~ msgid "Installation finished successfully."
+#~ msgstr "インストールが成功しました。"
+
+#~ msgid "Installation is in progress."
+#~ msgstr "インストールしています。"
+
+#~ msgid ""
+#~ "There are unanswered questions. Use `agama monitor` command or the web "
+#~ "user interface to answer them."
+#~ msgstr ""
+#~ "未回答の問題点が残っています。 `agama monitor` コマンドか Web ユーザイン"
+#~ "ターフェイスを利用して回答してください。"
+
+#~ msgid "Installer is failed to calculate the installation proposal."
+#~ msgstr "インストーラは提案内容の作成に失敗しました。"

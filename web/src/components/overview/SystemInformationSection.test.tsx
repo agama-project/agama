@@ -22,26 +22,29 @@
 
 import React from "react";
 import { screen } from "@testing-library/react";
-import { installerRender } from "~/test-utils";
-import { useSystem } from "~/hooks/model/system";
+import { installerRender, mockSystem } from "~/test-utils";
 import SystemInformationSection from "./SystemInformationSection";
-
-const mockUseSystem: jest.Mock<ReturnType<typeof useSystem>> = jest.fn();
-
-jest.mock("~/hooks/model/system", () => ({
-  ...jest.requireActual("~/hooks/model/system"),
-  useSystem: () => mockUseSystem(),
-}));
 
 jest.mock("~/components/network/FormattedIpsList", () => ({
   __esModule: true,
   default: () => <span>192.168.1.1</span>,
 }));
 
+const mockUseIpAddressesFn = jest.fn();
+
+jest.mock("~/hooks/model/system/network", () => ({
+  ...jest.requireActual("~/hooks/model/system/network"),
+  useIpAddresses: () => mockUseIpAddressesFn(),
+}));
+
+beforeEach(() => {
+  mockUseIpAddressesFn.mockReturnValue(["192.168.1.1"]);
+});
+
 describe("SystemInformationSection", () => {
   describe("when hardware data is available", () => {
     beforeEach(() => {
-      mockUseSystem.mockReturnValue({
+      mockSystem({
         hardware: {
           model: "ThinkPad X1 Carbon",
           cpu: "Intel Core i7",
@@ -68,7 +71,7 @@ describe("SystemInformationSection", () => {
 
   describe("when hardware data is missing", () => {
     beforeEach(() => {
-      mockUseSystem.mockReturnValue({
+      mockSystem({
         hardware: {
           model: undefined,
           cpu: undefined,
@@ -85,7 +88,7 @@ describe("SystemInformationSection", () => {
 
   describe("when only some hardware data is missing", () => {
     beforeEach(() => {
-      mockUseSystem.mockReturnValue({
+      mockSystem({
         hardware: {
           model: "ThinkPad X1 Carbon",
           cpu: undefined,
@@ -98,6 +101,31 @@ describe("SystemInformationSection", () => {
       installerRender(<SystemInformationSection />);
       screen.getByText("ThinkPad X1 Carbon");
       expect(screen.getAllByText("Unknown")).toHaveLength(2);
+    });
+  });
+
+  describe("when the system has IP addresses", () => {
+    beforeEach(() => {
+      mockSystem({ hardware: {} });
+      mockUseIpAddressesFn.mockReturnValue(["192.168.1.1"]);
+    });
+
+    it("renders the IPs field", () => {
+      installerRender(<SystemInformationSection />);
+      screen.getByText("IPs");
+      screen.getByText("192.168.1.1");
+    });
+  });
+
+  describe("when the system has no IP address", () => {
+    beforeEach(() => {
+      mockSystem({ hardware: {} });
+      mockUseIpAddressesFn.mockReturnValue([]);
+    });
+
+    it("does not render the IPs field", () => {
+      installerRender(<SystemInformationSection />);
+      expect(screen.queryByText("IPs")).toBeNull();
     });
   });
 });

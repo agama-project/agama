@@ -22,6 +22,7 @@
 require "agama/storage/config_conversions/from_json_conversions/base"
 require "agama/storage/config_conversions/from_json_conversions/encryption"
 require "agama/storage/config_conversions/from_json_conversions/logical_volume"
+require "agama/storage/config_conversions/from_json_conversions/volume_group_search"
 require "agama/storage/config_conversions/from_json_conversions/with_search"
 require "agama/storage/configs/volume_group"
 require "y2storage/disk_size"
@@ -32,9 +33,19 @@ module Agama
       module FromJSONConversions
         # Volume group conversion from JSON hash according to schema.
         class VolumeGroup < Base
+          include WithSearch
+
+          # @param config_json [Hash]
+          # @param bootloader_config [BootloaderConfig]
+          def initialize(config_json, bootloader_config)
+            super(config_json)
+            @bootloader_config = bootloader_config
+          end
+
         private
 
-          include WithSearch
+          # @return [BootloaderConfig]
+          attr_reader :bootloader_config
 
           alias_method :volume_group_json, :config_json
 
@@ -42,6 +53,12 @@ module Agama
           # @return [Configs::VolumeGroup]
           def default_config
             Configs::VolumeGroup.new
+          end
+
+          # @see WithSearch
+          # @return [Class]
+          def search_converter_class
+            FromJSONConversions::VolumeGroupSearch
           end
 
           # @see Base#conversions
@@ -52,6 +69,7 @@ module Agama
               search:                      convert_search,
               extent_size:                 convert_extent_size,
               physical_volumes_devices:    convert_physical_volumes_devices,
+              physical_volumes_policy:     convert_physical_volumes_policy,
               physical_volumes_encryption: convert_physical_volumes_encryption,
               physical_volumes:            convert_physical_volumes,
               logical_volumes:             convert_logical_volumes
@@ -74,6 +92,17 @@ module Agama
             generate_json.is_a?(Array) ? generate_json : generate_json[:targetDevices]
           end
 
+          # @return [:use_needed, :use_available]
+          def convert_physical_volumes_policy
+            generate_json = physical_volume_generate_json&.fetch(:generate)
+            return :use_needed unless generate_json.is_a?(Hash)
+
+            value = generate_json[:spacePolicy]
+            return :use_available if value == "useAvailable"
+
+            :use_needed
+          end
+
           # @return [Configs::Encryption, nil]
           def convert_physical_volumes_encryption
             generate_json = physical_volume_generate_json&.fetch(:generate)
@@ -82,7 +111,7 @@ module Agama
             encryption_json = generate_json[:encryption]
             return unless encryption_json
 
-            FromJSONConversions::Encryption.new(encryption_json).convert
+            FromJSONConversions::Encryption.new(encryption_json, bootloader_config).convert
           end
 
           # JSON of the physical volume with a 'generate'.
@@ -114,7 +143,7 @@ module Agama
           # @param logical_volume_json [Hash]
           # @return [Configs::LogicalVolume]
           def convert_logical_volume(logical_volume_json)
-            FromJSONConversions::LogicalVolume.new(logical_volume_json).convert
+            FromJSONConversions::LogicalVolume.new(logical_volume_json, bootloader_config).convert
           end
         end
       end

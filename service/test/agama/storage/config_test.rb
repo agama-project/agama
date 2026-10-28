@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2025] SUSE LLC
+# Copyright (c) [2025-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -558,11 +558,15 @@ describe Agama::Storage::Config do
 
     it "returns all configs with configurable search" do
       configs = subject.supporting_search
-      expect(configs.size).to eq(6)
+      expect(configs.size).to eq(8)
     end
 
     it "includes all drives" do
       expect(subject.supporting_search).to include(*subject.drives)
+    end
+
+    it "includes all volume groups" do
+      expect(subject.supporting_search).to include(*subject.volume_groups)
     end
 
     it "includes all MD RAIDs" do
@@ -813,11 +817,15 @@ describe Agama::Storage::Config do
 
     it "returns all configs with configurable delete" do
       configs = subject.supporting_delete
-      expect(configs.size).to eq(2)
+      expect(configs.size).to eq(3)
     end
 
     it "includes all partitions" do
       expect(subject.supporting_delete).to include(*subject.partitions)
+    end
+
+    it "includes all logical volumes" do
+      expect(subject.supporting_delete).to include(*subject.logical_volumes)
     end
 
     it "does not include drives" do
@@ -830,10 +838,6 @@ describe Agama::Storage::Config do
 
     it "does not include volume groups" do
       expect(subject.supporting_delete).to_not include(*subject.volume_groups)
-    end
-
-    it "does not include logical volumes" do
-      expect(subject.supporting_delete).to_not include(*subject.logical_volumes)
     end
   end
 

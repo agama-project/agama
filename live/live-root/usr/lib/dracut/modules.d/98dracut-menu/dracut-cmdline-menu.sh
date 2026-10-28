@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 if [ -d /sysroot  ] ; then
   type getarg > /dev/null 2>&1 || . /lib/dracut-lib.sh

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2025] SUSE LLC
+ * Copyright (c) [2025-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -39,6 +39,10 @@ function all(config: ConfigModel.Config): Device[] {
   const drives = config.drives || [];
   const mdRaids = config.mdRaids || [];
   return [...drives, ...mdRaids];
+}
+
+function findByName(config: ConfigModel.Config, deviceName: string): Device | null {
+  return all(config).find((d) => d.name === deviceName) || null;
 }
 
 function find(
@@ -82,11 +86,11 @@ function filterConfiguredExistingPartitions(device: Device): ConfigModel.Partiti
   if (device.spacePolicy === "custom")
     return device.partitions.filter(
       (p) =>
-        !configModel.partition.isNew(p) &&
-        (configModel.partition.isUsed(p) || configModel.partition.isUsedBySpacePolicy(p)),
+        !configModel.volume.isNew(p) &&
+        (configModel.volume.isUsed(p) || configModel.volume.isUsedBySpacePolicy(p)),
     );
 
-  return device.partitions.filter(configModel.partition.isReused);
+  return device.partitions.filter(configModel.volume.isReused);
 }
 
 function usedMountPaths(device: Device): string[] {
@@ -105,11 +109,11 @@ function isUsed(config: ConfigModel.Config, deviceName: string): boolean {
 }
 
 function isAddingPartitions(device: Device): boolean {
-  return device.partitions?.some((p) => p.mountPath && configModel.partition.isNew(p)) || false;
+  return device.partitions?.some((p) => p.mountPath && configModel.volume.isNew(p)) || false;
 }
 
 function isReusingPartitions(device: Device): boolean {
-  return device.partitions?.some(configModel.partition.isReused) || false;
+  return device.partitions?.some(configModel.volume.isReused) || false;
 }
 
 function remove(
@@ -167,8 +171,8 @@ function convert(
     return config;
   }
 
-  const [newPartitions, existingPartitions] = fork(device.partitions, configModel.partition.isNew);
-  const reusedPartitions = existingPartitions.filter(configModel.partition.isReused);
+  const [newPartitions, existingPartitions] = fork(device.partitions, configModel.volume.isNew);
+  const reusedPartitions = existingPartitions.filter(configModel.volume.isReused);
   const keepEntry =
     configModel.boot.hasExplicitDevice(config, device.name) || reusedPartitions.length;
 
@@ -192,51 +196,68 @@ function convert(
   return config;
 }
 
-function setActions(device: ConfigModel.Drive, actions: Data.SpacePolicyAction[]) {
-  device.partitions ||= [];
-
-  // Reset resize/delete actions of all current partition configs.
-  device.partitions
-    .filter((p) => p.name !== undefined)
-    .forEach((partition) => {
-      partition.delete = false;
-      partition.deleteIfNeeded = false;
-      partition.resizeIfNeeded = false;
-      partition.size = undefined;
-    });
-
-  // Apply the given actions.
-  actions.forEach(({ deviceName, value }) => {
-    const isDelete = value === "delete";
-    const isResizeIfNeeded = value === "resizeIfNeeded";
-    const partition = device.partitions.find((p) => p.name === deviceName);
-
-    if (partition) {
-      partition.delete = isDelete;
-      partition.resizeIfNeeded = isResizeIfNeeded;
-    } else {
-      device.partitions.push({
-        name: deviceName,
-        delete: isDelete,
-        resizeIfNeeded: isResizeIfNeeded,
-      });
-    }
-  });
+function convertToDrive(
+  config: ConfigModel.Config,
+  name: string,
+  driveData: Data.Drive,
+): ConfigModel.Config {
+  return convert(config, name, driveData.name, "drives");
 }
 
-function setSpacePolicy(
+function convertToMdRaid(
   config: ConfigModel.Config,
-  collection: CollectionName,
-  index: number,
-  data: Data.SpacePolicy,
+  name: string,
+  mdRaidData: Data.MdRaid,
+): ConfigModel.Config {
+  return convert(config, name, mdRaidData.name, "mdRaids");
+}
+
+function convertPartitionsToLogicalVolumes(
+  device: ConfigModel.Drive | ConfigModel.MdRaid,
+  volumeGroup: ConfigModel.VolumeGroup,
+) {
+  if (!device.partitions) return;
+
+  const newPartitions = device.partitions.filter((p) => !p.name);
+  const reusedPartitions = device.partitions.filter((p) => p.name);
+  device.partitions = [...reusedPartitions];
+  const logicalVolumes = volumeGroup.logicalVolumes || [];
+  volumeGroup.logicalVolumes = [
+    ...logicalVolumes,
+    ...newPartitions.map(configModel.partition.convertToLogicalVolume),
+  ];
+}
+
+function convertToVolumeGroup(
+  config: ConfigModel.Config,
+  devName: string,
+  targetName?: string,
 ): ConfigModel.Config {
   config = configModel.clone(config);
-  const device = find(config, collection, index);
 
-  if (device === undefined) return config;
+  const device = all(config).find((d) => d.name === devName);
+  if (!device) return config;
 
-  device.spacePolicy = data.type;
-  if (data.type === "custom") setActions(device, data.actions || []);
+  let volumeGroup: ConfigModel.VolumeGroup;
+
+  if (targetName) {
+    volumeGroup = config.volumeGroups?.find((v) => v.name === targetName);
+    volumeGroup ||= configModel.volumeGroup.create({
+      name: targetName,
+      vgName: targetName.split("/").pop(),
+    });
+  } else {
+    volumeGroup = configModel.volumeGroup.create({
+      vgName: configModel.volumeGroup.generateName(config),
+      targetDevices: [devName],
+    });
+  }
+  convertPartitionsToLogicalVolumes(device, volumeGroup);
+  config.volumeGroups ||= [];
+  if (!config.volumeGroups.find((v) => v.name === targetName))
+    config.volumeGroups.push(volumeGroup);
+
+  config = removeIfUnused(config, devName);
 
   return config;
 }
@@ -261,6 +282,7 @@ export default {
   isCollectionName,
   all,
   find,
+  findByName,
   findIndex,
   findLocation,
   findPartition,
@@ -272,8 +294,10 @@ export default {
   isReusingPartitions,
   remove,
   removeIfUnused,
-  convert,
-  setSpacePolicy,
+  convertToDrive,
+  convertToMdRaid,
+  convertPartitionsToLogicalVolumes,
+  convertToVolumeGroup,
   setFilesystem,
 };
 export type { Device, CollectionName, Location };

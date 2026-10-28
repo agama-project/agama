@@ -24,6 +24,7 @@ require "agama/config"
 require "agama/storage/device_settings"
 require "agama/storage/proposal_settings"
 require "agama/storage/volume"
+require "agama/storage/bootloader_config"
 require "y2storage/proposal_settings"
 
 describe Agama::Storage::ProposalSettings do
@@ -178,8 +179,12 @@ describe Agama::Storage::ProposalSettings do
 
     let(:settings) { Agama::Storage::ProposalSettings.new }
 
+    let(:bootloader_config) do
+      instance_double(Agama::Storage::BootloaderConfig, type: Y2Storage::BootloaderType::GRUB2)
+    end
+
     it "generates Y2Storage settings from proposal settings" do
-      result = subject.to_y2storage(config: config)
+      result = subject.to_y2storage(config: config, bootloader_config: bootloader_config)
       expect(result).to be_a(Y2Storage::ProposalSettings)
     end
   end

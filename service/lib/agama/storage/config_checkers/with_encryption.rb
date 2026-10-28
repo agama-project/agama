@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024-2025] SUSE LLC
+# Copyright (c) [2024-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -28,7 +28,7 @@ module Agama
       module WithEncryption
         # @return [Array<Issue>]
         def encryption_issues
-          ConfigCheckers::Encryption.new(config).issues
+          ConfigCheckers::Encryption.new(config, bootloader_config).issues
         end
       end
     end

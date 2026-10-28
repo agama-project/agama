@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2025] SUSE LLC
+# Copyright (c) [2025-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -22,6 +22,7 @@
 require_relative "../../../../test_helper"
 require "agama/storage/config_conversions"
 require "y2storage/refinements"
+require "y2storage/bootloader_type"
 
 using Y2Storage::Refinements::SizeCasts
 
@@ -196,7 +197,9 @@ shared_examples "with encryption" do
       let(:encryption) do
         {
           pervasiveLuks2: {
-            password: "12345"
+            password: "12345",
+            apqns:    ["01.0001", "01.0002"],
+            keyType:  "CCA-AESCIPHER"
           }
         }
       end
@@ -208,14 +211,16 @@ shared_examples "with encryption" do
         expect(encryption_json).to eq(
           {
             pervasiveLuks2: {
-              password: "12345"
+              password: "12345",
+              apqns:    ["01.0001", "01.0002"],
+              keyType:  "CCA-AESCIPHER"
             }
           }
         )
       end
     end
 
-    context "if encryption method is TMP FDE" do
+    context "if encryption method is TPM FDE" do
       let(:encryption) do
         {
           tpmFde: {
@@ -230,8 +235,44 @@ shared_examples "with encryption" do
 
         expect(encryption_json).to eq(
           {
-            tpmFde: {
+            luks2: {
+              tpm:      true,
               password: "12345"
+            }
+          }
+        )
+      end
+    end
+
+    context "if encryption method is TPM BLS" do
+      let(:encryption) do
+        {
+          luks2: {
+            tpm:          true,
+            password:     "12345",
+            keySize:      256,
+            pbkdFunction: "argon2i",
+            cipher:       "twofish",
+            label:        "test"
+          }
+        }
+      end
+
+      let(:bootloader_type) { Y2Storage::BootloaderType::SYSTEMD_BOOT }
+
+      it "generates the expected JSON" do
+        config_json = subject.convert
+        encryption_json = config_json[:encryption]
+
+        expect(encryption_json).to eq(
+          {
+            luks2: {
+              tpm:          true,
+              password:     "12345",
+              keySize:      256,
+              pbkdFunction: "argon2i",
+              cipher:       "twofish",
+              label:        "test"
             }
           }
         )
@@ -265,13 +306,13 @@ shared_examples "with filesystem" do
   context "if #encryption is configured" do
     let(:filesystem) do
       {
-        reuseIfPossible: true,
-        type:            "xfs",
-        label:           "test",
-        path:            "/test",
-        mountBy:         "device",
-        mkfsOptions:     ["version=2"],
-        mountOptions:    ["rw"]
+        reuseIfPossible:    true,
+        type:               "xfs",
+        label:              "test",
+        path:               "/test",
+        mountBy:            "device",
+        mkfsExtraArguments: "-l version=2",
+        mountOptions:       ["rw"]
       }
     end
 
@@ -281,13 +322,13 @@ shared_examples "with filesystem" do
 
       expect(filesystem_json).to eq(
         {
-          reuseIfPossible: true,
-          type:            "xfs",
-          label:           "test",
-          path:            "/test",
-          mountBy:         "device",
-          mkfsOptions:     ["version=2"],
-          mountOptions:    ["rw"]
+          reuseIfPossible:    true,
+          type:               "xfs",
+          label:              "test",
+          path:               "/test",
+          mountBy:            "device",
+          mkfsExtraArguments: "-l version=2",
+          mountOptions:       ["rw"]
         }
       )
     end
@@ -313,7 +354,6 @@ shared_examples "with filesystem" do
             type:            {
               btrfs: { snapshots: true }
             },
-            mkfsOptions:     [],
             mountOptions:    []
           }
         )
@@ -330,7 +370,6 @@ shared_examples "with filesystem" do
         expect(filesystem_json).to eq(
           {
             reuseIfPossible: false,
-            mkfsOptions:     [],
             mountOptions:    []
           }
         )

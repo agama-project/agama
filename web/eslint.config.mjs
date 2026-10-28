@@ -15,6 +15,8 @@ export default [
   ...neostandardConfig,
   js.configs.recommended,
   ...tsEslint.configs.recommended,
+  // TODO: enable TypeScript checks as well?
+  // ...tsEslint.configs.recommendedTypeChecked,
   eslintPluginPrettierRecommended,
   {
     languageOptions: {
@@ -28,6 +30,11 @@ export default [
         msCrypto: true,
       },
       parser: tsEslintParser,
+      parserOptions: {
+        // enable processing of the TypeScript types
+        // see https://typescript-eslint.io/getting-started/typed-linting/
+        projectService: true,
+      },
     },
   },
   {
@@ -43,6 +50,7 @@ export default [
       "agama-i18n/multiple-space": "error",
       "agama-i18n/string-literals": "error",
       "agama-i18n/top-level-translation": "error",
+      "agama-i18n/marked-string": "error",
       "i18next/no-literal-string": "error",
       "no-var": "error",
       "no-multi-str": "off",

@@ -22,17 +22,6 @@
 
 import { RouteObject } from "react-router";
 
-type RouteHandle = {
-  /** Text to be used as label when building a link from route information */
-  name: string;
-  /** Text to be shown in the layout header as an h1 */
-  title?: string;
-  /** Icon for representing the route in some places, like a menu entry */
-  icon?: string;
-  /** Whether the route link will be rendered for registrable products only */
-  needsRegistrableProduct?: boolean;
-};
-
-type Route = RouteObject & { handle?: RouteHandle };
+type Route = RouteObject;
 
 export type { Route };

@@ -1,0 +1,119 @@
+// Form field styles.
+//
+// Everything the form fields under components/form need: the values a field
+// holds, the control they share with a text box, and the parts the keyboard
+// reaches inside it. Shared by ArrayField, MultiSelectField and the entries
+// both of them draw (see form/primitives/FieldEntry).
+
+// The committed values of a multi-value field, sitting inside the control
+// before the text input. They flow in rows and wrap once the control runs out
+// of width, so no value is ever clipped.
+.agm-field-entries {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--pf-t--global--spacer--xs);
+  padding-block: 0.2rem;
+}
+
+// The values of a field that shares its control with a text box. Both wrappers
+// step out of the layout, so the values, the summary and the text box all
+// become items of the control's own wrapping row. That is what lets the text
+// box follow the last value on its line, instead of dropping below a block of
+// values as soon as they wrap. They stay a list for assistive technology: a
+// box taken out of the layout keeps its role.
+.agm-field-inline-entries,
+.agm-field-inline-entries__listbox {
+  display: contents;
+}
+
+// The row is as tall as the text box, so the values sit on its line rather than
+// stretching to meet it.
+.agm-field-entry,
+.agm-field-inline-entries__summary {
+  align-self: center;
+}
+
+// A control holding its values is only as wide as what it holds: the text box
+// on its own to begin with, the way any other dropdown starts, then wider with
+// every value, and never past the form. Given a width of its own it would have
+// to fill it, and a control at its minimum with one short value in it is all
+// gap: the value at one edge, the caret at the other, nothing in between.
+.agm-field-inline-control {
+  inline-size: fit-content;
+  max-inline-size: 100%;
+
+  // The text box starts closer to the border than PatternFly puts it. That
+  // room suits a lone line of text, but here it only pushes the values away
+  // from a border they already sit inside.
+  --pf-v6-c-text-input-group__text-input--PaddingInlineStart: var(
+    --pf-t--global--spacer--control--horizontal--compact
+  );
+  --pf-v6-c-text-input-group__text-input--PaddingInlineEnd: var(
+    --pf-t--global--spacer--control--horizontal--compact
+  );
+
+  // The caret sits as far from the end of the control as it does in a plain
+  // dropdown, where the toggle's own padding puts it: both are the same widget
+  // to the eye and the arrow has to land in the same place in each. Only the
+  // room on its other side is taken back, which the dropdown has no say over,
+  // since there the caret follows text rather than a whole row of values.
+  --pf-v6-c-menu-toggle__button--toggle-icon--PaddingInlineStart: var(
+    --pf-t--global--spacer--control--horizontal--compact
+  );
+
+  // The caret ends the control, whatever sits before it. A menu toggle centres
+  // its content, so any room left over inside one is shared out at both ends
+  // and the whole row drifts with the length of the values. Taking that room
+  // as a margin instead keeps the values against one edge and the caret
+  // against the other, however the box is sized.
+  > .pf-v6-c-menu-toggle__button {
+    margin-inline-start: auto;
+  }
+}
+
+// The text box shrunk away while the field rests with values in it, so the
+// values are all there is to read and no empty box trails them. Shrunk rather
+// than hidden: `display: none` would take it out of the tab order and out of
+// reach of a click on the control, and it has to come back the moment it is
+// focused.
+//
+// Only the box itself is taken down to nothing. Its wrapper keeps the room it
+// was given, so the row is laid out the same whether the box is there to be
+// seen or not, and a click on the space the values leave still lands in it.
+.agm-field-collapsed-input .pf-v6-c-text-input-group__text-input {
+  inline-size: 0;
+  min-inline-size: 0;
+  padding-inline: 0;
+}
+
+// The button emptying the field lines up with the caret beside it, which the
+// control keeps centred however tall the values make it.
+.agm-field-clear-all {
+  align-self: center;
+}
+
+// The entry leading somewhere else stays in reach: a long or filtered list must
+// never scroll the way out of the field out of sight. It draws the line above
+// itself, since a separate one would slide under it.
+.agm-field-footer-entry {
+  position: sticky;
+  inset-block-end: 0;
+  z-index: 1;
+  background-color: var(--pf-t--global--background--color--primary--default);
+  border-block-start: 1px solid var(--pf-t--global--border--color--default);
+}
+
+// Pressing an entry puts its value back in the text input for editing, so it
+// reads as something to press.
+.agm-field-entry {
+  cursor: pointer;
+}
+
+// Whatever inside the control the keyboard is on. Real focus never leaves the
+// text input, so that part draws the ring itself: the same one every focused
+// control gets (see base/_reset), kept thin and close because the parts sit
+// right next to each other.
+.agm-field-focus-ring {
+  outline: 2px solid var(--agm-t--focus--color, var(--agm-t--color--waterhole--50));
+  outline-offset: 1px;
+}

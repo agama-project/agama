@@ -20,6 +20,7 @@
 
 use fluent_uri::Uri;
 use merge::Merge;
+use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use crate::api::files::{
@@ -28,12 +29,15 @@ use crate::api::files::{
     FileSourceError, WithFileSource,
 };
 
-#[derive(Clone, Debug, Default, Serialize, Deserialize, Merge, utoipa::ToSchema)]
-#[schema(as = files::Config)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize, Merge, JsonSchema)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+#[schemars(rename = "files.Config")]
 pub struct Config {
+    /// User-defined files to deploy after installation just before post install scripts.
     #[serde(skip_serializing_if = "Option::is_none")]
     #[merge(strategy = merge::option::overwrite_none)]
     pub files: Option<Vec<UserFile>>,
+    /// User-defined scripts to run at different points of the installation.
     #[serde(skip_serializing_if = "Option::is_none")]
     #[merge(strategy = merge::option::overwrite_none)]
     pub scripts: Option<ScriptsConfig>,
@@ -51,8 +55,9 @@ impl Config {
     }
 }
 
-#[derive(Clone, Debug, Default, Serialize, Deserialize, Merge, utoipa::ToSchema, PartialEq)]
-#[serde(rename_all = "camelCase")]
+#[derive(Clone, Debug, Default, Serialize, Deserialize, Merge, JsonSchema, PartialEq)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+#[schemars(title = "User-defined installation scripts")]
 #[merge(strategy = merge::option::overwrite_none)]
 pub struct ScriptsConfig {
     /// User-defined pre-installation scripts

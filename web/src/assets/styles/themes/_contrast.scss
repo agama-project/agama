@@ -1,0 +1,51 @@
+// High-contrast axis.
+//
+// PatternFly's built-in high-contrast theme (.pf-v6-theme-high-contrast on
+// <html>) governs high contrast for both light and dark, so accessibility is
+// never compromised. It composes with the dark axis
+// (.pf-v6-theme-dark.pf-v6-theme-high-contrast), is loaded after _dark.scss, and
+// is independent of OS forced-colors mode.
+//
+// Only the brand/accent is exposed to products: setting --agm-t--brand--color /
+// --agm-t--link--color brands it; unset keeps PF's accessible values (the
+// fallbacks below). Surfaces, text and borders always stay at PF's values. Two
+// blocks are needed because PF's light and dark HC values differ; keeping the
+// accent accessible is the product's responsibility.
+
+:root:where(.pf-v6-theme-high-contrast:not(.pf-v6-theme-dark)) {
+  --pf-t--global--color--brand--default: var(
+    --agm-t--brand--color,
+    var(--pf-t--global--color--brand--300)
+  );
+  --pf-t--global--text--color--brand--default: var(
+    --agm-t--brand--color,
+    var(--pf-t--global--color--brand--400)
+  );
+  --pf-t--global--icon--color--brand--default: var(
+    --agm-t--brand--color,
+    var(--pf-t--global--color--brand--300)
+  );
+  --pf-t--global--text--color--link--default: var(
+    --agm-t--link--color,
+    var(--pf-t--global--text--color--link--200)
+  );
+}
+
+:root:where(.pf-v6-theme-dark.pf-v6-theme-high-contrast) {
+  --pf-t--global--color--brand--default: var(
+    --agm-t--brand--color,
+    var(--pf-t--global--dark--color--brand--100)
+  );
+  --pf-t--global--text--color--brand--default: var(
+    --agm-t--brand--color,
+    var(--pf-t--global--dark--color--brand--200)
+  );
+  --pf-t--global--icon--color--brand--default: var(
+    --agm-t--brand--color,
+    var(--pf-t--global--dark--color--brand--200)
+  );
+  --pf-t--global--text--color--link--default: var(
+    --agm-t--link--color,
+    var(--pf-t--global--dark--text--color--link--100)
+  );
+}

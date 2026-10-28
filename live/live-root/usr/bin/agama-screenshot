@@ -1,0 +1,48 @@
+#! /bin/bash
+
+# This is a helper script for taking screenshot of the Agama installer
+# running locally in Gnome kiosk.
+
+set -e
+
+# handle help option
+if [ "$1" == "-h" ] || [ "$1" == "--help" ]; then
+  echo "Usage: $0 [TARGET_FILE]"
+  echo
+  echo "Takes a screenshot of the Agama installer running locally."
+  echo "The screenshot is saved in PNG format."
+  echo
+  echo "If TARGET_FILE is not specified it generates a random name in"
+  echo "the current directory."
+  echo
+  echo "Options:"
+  echo "  -h, --help   Show this help message and exit."
+  exit 0
+fi
+
+# Gnome kiosk fails if the target file already exists,
+# create the screenshot in a temporary directory and then move it
+SCREENSHOT_DIR=$(mktemp -d -p /tmp "screenshot-XXXXXXX")
+FILE="$SCREENSHOT_DIR/screenshot.png"
+
+# see the DBus API description at
+# https://gitlab.gnome.org/GNOME/gnome-kiosk/-/blob/main/dbus-interfaces/org.gnome.Shell.Screenshot.xml?ref_type=heads
+# include cursor: false
+# flash screen: false
+gdbus call --session --dest org.gnome.Shell.Screenshot --object-path \
+  /org/gnome/Shell/Screenshot --method org.gnome.Shell.Screenshot.Screenshot \
+  false false "$FILE" >/dev/null
+
+# move the file
+if [ -n "$1" ]; then
+  # if the script is called with an argument, use it as the target file
+  TARGET_FILE="$1"
+else
+  # otherwise use a random name in the current directory
+  TARGET_FILE=$(mktemp "agama-$(date +%Y-%m-%d)-XXXX.png")
+fi
+
+mv "$FILE" "$TARGET_FILE"
+rm -rf "$SCREENSHOT_DIR"
+
+echo "Screenshot saved to $TARGET_FILE"

@@ -1,0 +1,8 @@
+#!/usr/bin/bash
+
+case "$1" in
+  -i) echo "8561" ;;
+  -m) echo "LT1" ;;
+  -n) echo "IBM LinuxONE III" ;;
+  *) exit 1 ;;
+esac

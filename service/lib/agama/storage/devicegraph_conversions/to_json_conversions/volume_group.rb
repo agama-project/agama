@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2025] SUSE LLC
+# Copyright (c) [2025-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -53,7 +53,7 @@ module Agama
           #
           # @return [Array<String>]
           def lvm_vg_pvs
-            storage_device.lvm_pvs.map(&:sid)
+            storage_device.lvm_pvs.map(&:plain_blk_device).map(&:sid)
           end
         end
       end

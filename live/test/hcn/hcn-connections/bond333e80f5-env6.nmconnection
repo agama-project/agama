@@ -1,0 +1,16 @@
+# Created by nm-initrd-generator
+[connection]
+id=bond333e80f5-env6
+uuid=cc202169-ad59-498c-b979-618a7284357a
+type=ethernet
+autoconnect-priority=-100
+autoconnect-retries=1
+controller=bond333e80f5
+interface-name=env6
+multi-connect=1
+port-type=bond
+
+[ethernet]
+
+[user]
+org.freedesktop.NetworkManager.origin=nm-initrd-generator

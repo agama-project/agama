@@ -34,14 +34,16 @@ import {
   Label,
   TextInput,
 } from "@patternfly/react-core";
-import { Page, SubtleContent } from "~/components/core";
+import { SubtleContent } from "~/components/core";
+import Page from "~/components/layout/Page";
+import { Icon } from "~/components/layout";
 import { useAvailableDevices } from "~/hooks/model/system/storage";
 import { deviceLabel } from "./utils";
 import { contentDescription, filesystemLabels, typeDescription } from "./utils/device";
 import { STORAGE } from "~/routes/paths";
 import { sprintf } from "sprintf-js";
-import { _ } from "~/i18n";
-import { deviceSystems, isDrive } from "~/model/storage/device";
+import { _, N_ } from "~/i18n";
+import { deviceSystems, isDrive, isMd } from "~/model/storage/device";
 import configModel from "~/model/storage/config-model";
 import {
   useConfigModel,
@@ -50,23 +52,38 @@ import {
   useEditVolumeGroup,
 } from "~/hooks/model/storage/config-model";
 import type { ConfigModel, Data } from "~/model/storage/config-model";
-import type { Storage } from "~/model/system";
+import type { Storage as System } from "~/model/system";
+import Text from "~/components/core/Text";
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const FUTURE = [
+  // TRANSLATORS: Option to decide which physical volumes create for an LVM
+  N_("As required by the logical volumes"),
+  // TRANSLATORS: Option to decide which physical volumes create for an LVM
+  N_("Use all available space"),
+  // TRANSLATORS: Explanation of the size option 'As required by the LVs'
+  N_(
+    "Physical volumes may be created on some of the chosen disks based on the logical volumes total size.",
+  ),
+  // TRANSLATORS: Explanation of the size option 'Use all available space'
+  N_("All the available space in the chosen disks will be used to create physical volumes."),
+  // TRANSLATORS: Label for the form element to configure LVM extent size
+  N_("Physical extent size"),
+];
 
 /**
  * Hook that returns the devices that can be selected as target to automatically create LVM PVs.
  *
  * Filters out devices that are going to be directly formatted.
  */
-function useLvmTargetDevices(): Storage.Device[] {
+function useLvmTargetDevices(): System.Device[] {
   const availableDevices = useAvailableDevices();
   const config = useConfigModel();
 
   const targetDevices = useMemo(() => {
-    return availableDevices.filter((candidate) => {
-      const collection = isDrive(candidate) ? config.drives : config.mdRaids;
-      const device = collection.find((d) => d.name === candidate.name);
-      return !device || !device.filesystem;
-    });
+    return availableDevices
+      .filter((d) => isDrive(d) || isMd(d))
+      .filter((d) => !configModel.partitionable.findByName(config, d.name)?.filesystem);
   }, [availableDevices, config]);
 
   return targetDevices;
@@ -84,8 +101,24 @@ function vgNameError(
     return sprintf(_("Volume group '%s' already exists. Enter a different name."), vgName);
 }
 
-function targetDevicesError(targetDevices: Storage.Device[]): string | undefined {
+function targetDevicesError(targetDevices: System.Device[]): string | undefined {
   if (!targetDevices.length) return _("Select at least one disk.");
+}
+
+function UseNeededHelperText() {
+  return (
+    <Content>
+      <Flex gap={{ default: "gapXs" }} alignItems={{ default: "alignItemsCenter" }}>
+        <Icon name="emergency" />
+        <Text component="span">
+          {_(
+            "This volume group only occupies the space required by its logical volumes. " +
+              "To expand it to cover all available disk space, recreate the volume group.",
+          )}
+        </Text>
+      </Flex>
+    </Content>
+  );
 }
 
 /**
@@ -95,15 +128,15 @@ function targetDevicesError(targetDevices: Storage.Device[]): string | undefined
  * model.VolumeGroup (build data.VolumeGroup from model.VolumeGroup).
  */
 export default function LvmPage() {
-  const { id } = useParams();
+  const { id: index } = useParams();
   const navigate = useNavigate();
   const config = useConfigModel();
-  const volumeGroup = useVolumeGroup(id);
+  const volumeGroup = useVolumeGroup(Number(index));
   const addVolumeGroup = useAddVolumeGroup();
   const editVolumeGroup = useEditVolumeGroup();
   const allDevices = useLvmTargetDevices();
   const [name, setName] = useState("");
-  const [selectedDevices, setSelectedDevices] = useState<Storage.Device[]>([]);
+  const [selectedDevices, setSelectedDevices] = useState<System.Device[]>([]);
   const [moveMountPoints, setMoveMountPoints] = useState(true);
   const [errors, setErrors] = useState<string[]>([]);
 
@@ -186,18 +219,14 @@ export default function LvmPage() {
           </FormGroup>
           <FormGroup label={_("Disks")} role="group" style={{ justifySelf: "stretch" }} isStack>
             <Content component="small">
-              {_(
-                "The needed LVM physical volumes will be added as partitions on the chosen disks, " +
-                  "based on the sizes of the logical volumes. If you select more than one disk, the " +
-                  "physical volumes may be distributed along several disks.",
-              )}
+              {_("LVM physical volumes will be added as partitions on the chosen disks.")}
             </Content>
             <Gallery hasGutter>
               {allDevices.map((device) => (
                 <Checkbox
                   key={device.sid}
                   id={`device${device.sid}`}
-                  label={<Content isEditorial>{deviceLabel(device, true)}</Content>}
+                  label={<Content isEditorial>{deviceLabel(device, { truncate: true })}</Content>}
                   description={
                     <Flex rowGap={{ default: "rowGapXs" }} columnGap={{ default: "columnGapSm" }}>
                       <SubtleContent>
@@ -220,6 +249,7 @@ export default function LvmPage() {
                 />
               ))}
             </Gallery>
+            {volumeGroup?.targetDevicesPolicy === "useNeeded" && <UseNeededHelperText />}
           </FormGroup>
           {!volumeGroup && (
             <FormGroup label={_("Move mount points")} isStack>

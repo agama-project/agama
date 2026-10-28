@@ -37,13 +37,11 @@ module Agama
         private_constant :PATH
 
         # @param manager [Agama::Storage::DASD::Manager]
-        # @param task_runner [Agama::TaskRunner]
         # @param logger [Logger, nil]
-        def initialize(manager, task_runner, logger: nil)
+        def initialize(manager, logger: nil)
           textdomain "agama"
           super(PATH, logger: logger)
           @manager = manager
-          @task_runner = task_runner
           @serialized_system = serialize_system
           @serialized_config = serialize_config
           register_callbacks
@@ -56,7 +54,6 @@ module Agama
           dbus_method(:SetConfig, "in serialized_config:s") do |serialized_config|
             configure(serialized_config)
           end
-          dbus_signal(:SystemChanged, "serialized_system:s")
           dbus_signal(:ProgressChanged, "serialized_progress:s")
           dbus_signal(:ProgressFinished)
           dbus_signal(:FormatChanged, "serialized_summary:s")
@@ -74,7 +71,6 @@ module Agama
         # Applies the given serialized DASD config.
         #
         # @todo Raise error if the config is not valid.
-        # @raise [Agama::TaskRunner::BusyError] If an async task is running, see {TaskRunner}.
         #
         # @param serialized_config [String] Serialized DASD config according to the JSON schema.
         def configure(serialized_config)
@@ -86,28 +82,36 @@ module Agama
           # Do not configure if there is nothing to change.
           return if manager.configured?(config_json)
 
-          # The configuration could take long time  (e.g., formatting devices). It is important to
-          # not block the service in order to make possible to attend other requests.
-          task_runner.async_run("Configure DASD") do
-            logger.info("Configuring DASD")
+          logger.info("Configuring DASD")
 
-            start_progress(1, _("Configuring DASD"))
-            manager.configure(config_json)
+          start_progress(1, _("Configuring DASD"))
+          manager.configure(config_json)
 
-            update_serialized_system
-            update_serialized_config
+          # The "return if unchanged" guard has been removed from the methods below to always
+          # emit the corresponding signal.
+          #
+          # Since signals do not carry payloads yet, the UI cannot update the query cache
+          # directly and must refetch after receiving the signal. Without emitting the signal,
+          # the related queries are never invalidated and never refetched, leaving the progress
+          # overlay blocked indefinitely.
+          #
+          # The overlay intentionally waits until fresh data arrives before unblocking, since
+          # data can take time to appear after progress completes. Dismissing it
+          # earlier would cause flickering and leave users able to interact with stale data.
+          #
+          # It can be reverted (and UI progress adapted accordingly) when signals carry payloads
+          # that allow the UI to update the cache directly, removing the need to wait for a
+          # refetch as part of progress completion.
+          update_serialized_system
+          update_serialized_config
 
-            finish_progress
-          end
+          finish_progress
         end
 
       private
 
         # @return [Agama::Storage::DASD::Manager]
         attr_reader :manager
-
-        # @return [Agama::TaskRunner]
-        attr_reader :task_runner
 
         def register_callbacks
           on_progress_change { self.ProgressChanged(serialize_progress) }
@@ -123,17 +127,14 @@ module Agama
         # Updates the system info if needed.
         def update_serialized_system
           serialized_system = serialize_system
-          return if self.serialized_system == serialized_system
 
           # This assignment emits a D-Bus PropertiesChanged.
           self.serialized_system = serialized_system
-          self.SystemChanged(serialized_system)
         end
 
         # Updates the config info if needed.
         def update_serialized_config
           serialized_config = serialize_config
-          return if self.serialized_config == serialized_config
 
           # This assignment emits a D-Bus PropertiesChanged.
           self.serialized_config = serialized_config

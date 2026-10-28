@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-03-16 17:01+0000\n"
+"POT-Creation-Date: 2026-10-01 15:29+0000\n"
 "PO-Revision-Date: 2026-03-27 22:04+0000\n"
 "Last-Translator: Amger ugurzil <amger_ugurzil@proton.me>\n"
 "Language-Team: Kabyle <https://l10n.opensuse.org/projects/agama/agama-"
@@ -19,27 +19,18 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
 "X-Generator: Weblate 5.16.2\n"
 
-#. Reports the problems and decide whether to continue or not.
-#.
-#. @param elements [Array<Element>] List of unsupported elements.
-#: service/lib/agama/autoyast/profile_reporter.rb:51
-#, perl-brace-format
-msgid "Found unsupported elements in the AutoYaST profile: %{keys}."
-msgstr "Nufa-d iferdisen ur nettwasefrak ara deg umaɣnu AutoYaST: %{keys}."
-
 #. Implementation for the API method #Probe.
-#: service/lib/agama/dbus/storage/dasd.rb:68
+#: service/lib/agama/dbus/storage/dasd.rb:65
 msgid "Probing DASD devices"
 msgstr ""
 
-#. The configuration could take long time  (e.g., formatting devices). It is important to
-#. not block the service in order to make possible to attend other requests.
-#: service/lib/agama/dbus/storage/dasd.rb:94
+#. Do not configure if there is nothing to change.
+#: service/lib/agama/dbus/storage/dasd.rb:87
 msgid "Configuring DASD"
 msgstr "Aswel n DASD"
 
 #. Do not configure if there is nothing to change.
-#: service/lib/agama/dbus/storage/iscsi.rb:80
+#: service/lib/agama/dbus/storage/iscsi.rb:79
 msgid "Configuring iSCSI"
 msgstr "Aswel n iSCSI"
 
@@ -47,82 +38,49 @@ msgstr "Aswel n iSCSI"
 #.
 #. @param serialized_options [String] Serialized dicovery options.
 #. @return [Number] 0 success; 1 failure.
-#: service/lib/agama/dbus/storage/iscsi.rb:105
+#: service/lib/agama/dbus/storage/iscsi.rb:120
 msgid "Performing iSCSI discovery"
 msgstr "Aseqdec n tifin n iSCSI"
 
 #. Implementation for the API method #Install.
-#: service/lib/agama/dbus/storage/manager.rb:187
+#.
+#. @raise [RuntimeError] If there is an unexpected error or the user decides to abort, see
+#. bsc#1280006.
+#: service/lib/agama/dbus/storage/manager.rb:195
 msgid "Preparing bootloader proposal"
 msgstr ""
 
-#: service/lib/agama/dbus/storage/manager.rb:190
+#: service/lib/agama/dbus/storage/manager.rb:198
 msgid "Preparing the storage devices"
 msgstr "Aheggi n yibenkan n usekles"
 
-#: service/lib/agama/dbus/storage/manager.rb:193
+#: service/lib/agama/dbus/storage/manager.rb:202
 msgid "Writing bootloader sysconfig"
 msgstr ""
 
 #. Implementation for the API method #Finish.
-#: service/lib/agama/dbus/storage/manager.rb:201
+#: service/lib/agama/dbus/storage/manager.rb:210
 msgid "Finishing installation"
 msgstr "Fak asbeddi"
 
 #. Implementation for the API method #Umount.
-#: service/lib/agama/dbus/storage/manager.rb:208
+#: service/lib/agama/dbus/storage/manager.rb:217
 msgid "Unmounting devices"
 msgstr ""
 
 #. after loading config try to apply it, so proper packages can be requested
 #. TODO: generate also new issue from configuration
-#: service/lib/agama/dbus/storage/manager.rb:237
+#: service/lib/agama/dbus/storage/manager.rb:256
 msgid "Activating storage devices"
 msgstr "Armad n yibenkan n uḥraz"
 
-#: service/lib/agama/dbus/storage/manager.rb:240
+#: service/lib/agama/dbus/storage/manager.rb:259
 msgid "Probing storage devices"
 msgstr ""
 
-#: service/lib/agama/dbus/storage/manager.rb:243
+#: service/lib/agama/dbus/storage/manager.rb:262
 msgid "Applying storage configuration"
 msgstr "Asnas n twila n uḥraz"
-
-#. TRANSLATORS: SSL certificate details
-#: service/lib/agama/ssl/certificate_details.rb:31
-msgid "Certificate:"
-msgstr "Aselkin:"
-
-#: service/lib/agama/ssl/certificate_details.rb:31
-msgid "Issued To"
-msgstr "Yettunefk i"
-
-#: service/lib/agama/ssl/certificate_details.rb:32
-msgid "Issued By"
-msgstr "Yettunefk sɣur"
-
-#: service/lib/agama/ssl/certificate_details.rb:32
-msgid "SHA1 Fingerprint: "
-msgstr "Adsil SHA1: "
-
-#: service/lib/agama/ssl/certificate_details.rb:34
-msgid "SHA256 Fingerprint: "
-msgstr "Adsil umḍin SHA256: "
-
-#. label followed by the SSL certificate identification
-#: service/lib/agama/ssl/certificate_details.rb:46
-msgid "Common Name (CN): "
-msgstr "Isem amezdi (CN): "
-
-#. label followed by the SSL certificate identification
-#: service/lib/agama/ssl/certificate_details.rb:48
-msgid "Organization (O): "
-msgstr "Tuddsa (O): "
-
-#. label followed by the SSL certificate identification
-#: service/lib/agama/ssl/certificate_details.rb:50
-msgid "Organization Unit (OU): "
-msgstr "Aferdis n tuddsa (OU): "
 
 #. Issue when the device has several users.
 #.
@@ -174,7 +132,7 @@ msgstr "Ulac ibenk n usenker s tzaẓlut n '%s'"
 
 #. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device
 #. (e.g., 'luks1', 'random_swap').
-#: service/lib/agama/storage/config_checkers/encryption.rb:73
+#: service/lib/agama/storage/config_checkers/encryption.rb:79
 #, perl-brace-format
 msgid ""
 "No passphrase provided (required for using the method '%{crypt_method}')."
@@ -182,18 +140,26 @@ msgstr ""
 "Ulac tafyirt n uɛeddi i d-ittunefken (yettwasra i useqdec n tarrayt '%"
 "{crypt_method}')."
 
-#. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device
-#. (e.g., 'luks1', 'random_swap').
-#: service/lib/agama/storage/config_checkers/encryption.rb:89
-#, perl-brace-format
-msgid "Encryption method '%{crypt_method}' is not available in this system."
+#. TRANSLATORS: %{crypt_method} is the identifier of the method to encrypt the device
+#. (e.g., "luks1", "random swap").
+#: service/lib/agama/storage/config_checkers/encryption.rb:95
+#, fuzzy, perl-brace-format
+msgid "%{crypt_method} is not available in this system."
 msgstr "Tarrayt n uwgelhen '%{crypt_method}' ulac-itt deg unagraw-agi."
 
-#. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device
-#. (e.g., 'luks1', 'random_swap').
-#: service/lib/agama/storage/config_checkers/encryption.rb:117
-#, perl-brace-format
-msgid "'%{crypt_method}' is not a suitable method to encrypt the device."
+#. TRANSLATORS: %{crypt_method} is the identifier of the method to encrypt the device
+#. (e.g., "luks1", "random swap").
+#: service/lib/agama/storage/config_checkers/encryption.rb:112
+#, fuzzy, perl-brace-format
+msgid "%{crypt_method} is not suitable for a device different to swap."
+msgstr "'%{crypt_method}' mačči d tarrayt iwulmen i uwgelhen n yibenk."
+
+#. TRANSLATORS: %{crypt_method} is the identifier of the method to encrypt the device
+#. (e.g., "luks1", "random swap") and %{bootloader} by a bootloader name (e.g.,
+#. "grub2").
+#: service/lib/agama/storage/config_checkers/encryption.rb:131
+#, fuzzy, perl-brace-format
+msgid "%{crypt_method} is not suitable for the bootloader %{bootloader}."
 msgstr "'%{crypt_method}' mačči d tarrayt iwulmen i uwgelhen n yibenk."
 
 #. TRANSLATORS: %s is replaced by a mount path (e.g., "/home").
@@ -210,13 +176,13 @@ msgid "The file system type '%{filesystem}' is not suitable for '%{path}'"
 msgstr "Anaw n unagraw n ufaylu '%{filesystem}' ur iwata ara i '%{path}'"
 
 #. TRANSLATORS: %s is the replaced by a device alias (e.g., "pv1").
-#: service/lib/agama/storage/config_checkers/logical_volume.rb:82
+#: service/lib/agama/storage/config_checkers/logical_volume.rb:100
 #, c-format
 msgid "There is no LVM thin pool volume with alias '%s'"
 msgstr "Ulac ableɣ usgrew arqaqan LVM s tazaẓlut '%s'"
 
 #. TRANSLATORS: %s is the replaced by a device alias (e.g., "md1").
-#: service/lib/agama/storage/config_checkers/md_raid.rb:98
+#: service/lib/agama/storage/config_checkers/md_raid.rb:102
 #, c-format
 msgid "There is no MD RAID member device with alias '%s'"
 msgstr "Ulac ibenk aɛeggal deg MD RAID s tzaẓlut '%s'"
@@ -224,27 +190,79 @@ msgstr "Ulac ibenk aɛeggal deg MD RAID s tzaẓlut '%s'"
 #. Issue if the MD RAID level is missing and the device is not reused.
 #.
 #. @return [Issue, nil]
-#: service/lib/agama/storage/config_checkers/md_raid.rb:111
+#: service/lib/agama/storage/config_checkers/md_raid.rb:115
 msgid "There is a MD RAID without level"
 msgstr "Yella yiwen n MD RAID war Aswir"
 
 #. Issue if the MD RAID does not contain enough member devices.
 #.
 #. @return [Issue, nil]
-#: service/lib/agama/storage/config_checkers/md_raid.rb:124
+#: service/lib/agama/storage/config_checkers/md_raid.rb:128
 #, c-format
 msgid "At least %s devices are required for %s"
 msgstr "Ma drus %s n yibenkan ttwasran i %s"
 
-#. Issue if the device member is deleted.
+#. TRANSLATORS: 'method' is the identifier of the method to encrypt the device
+#. (e.g., 'luks1').
+#: service/lib/agama/storage/config_checkers/physical_volumes_encryption.rb:62
+#, fuzzy, perl-brace-format
+msgid "%{method} is not suitable to encrypt the physical volumes."
+msgstr "'%{crypt_method}' mačči d tarrayt iwulmen i uwgelhen n yibenk."
+
+#. TRANSLATORS: %s is replaced by a device name (e.g., "/dev/vda").
+#: service/lib/agama/storage/config_checkers/search.rb:77
+#, c-format
+msgid "Mandatory device %s not found"
+msgstr ""
+
+#. TRANSLATORS: %s is replaced by a device type (e.g., "drive").
+#: service/lib/agama/storage/config_checkers/search.rb:83
+#, c-format
+msgid "Mandatory %s not found"
+msgstr ""
+
+#. Issue if the parent of the member device is formatted.
+#.
+#. @param device [Y2Storage::BlkDevice] Parent of the member device.
+#. @return [Issue, nil]
+#: service/lib/agama/storage/config_checkers/search.rb:127
+#, fuzzy, perl-brace-format
+msgid ""
+"The device '%{parent_name}' cannot be formatted because it is part of the "
+"reused MD RAID '%{reused_name}'"
+msgstr ""
+"Ibenk '%{member}' ur izmer ara ad yemsel acku d aḥric seg MD RAID %{md_raid}"
+
+#. TRANSLATORS: %{parent_name} and %{reused_name} are replaced by device names (e.g.,
+#. "/dev/vda", "/dev/md0").
+#: service/lib/agama/storage/config_checkers/search.rb:137
+#, fuzzy, perl-brace-format
+msgid ""
+"The device '%{parent_name}' cannot be formatted because it is a physical "
+"volume of the reused LVM volume group '%{reused_name}'"
+msgstr ""
+"Ibenk '%{member}' ur izmer ara ad yemsel acku d aḥric seg MD RAID %{md_raid}"
+
+#. Issue if the member device is deleted.
 #.
 #. @param member_config [#search]
 #. @return [Issue, nil]
-#: service/lib/agama/storage/config_checkers/md_raid.rb:171
-#, perl-brace-format
+#: service/lib/agama/storage/config_checkers/search.rb:167
+#, fuzzy, perl-brace-format
 msgid ""
-"The device '%{member}' cannot be deleted because it is part of the MD RAID %"
+"The device '%{member_name}' cannot be deleted because it is part of the "
+"reused MD RAID '%{reused_name}'"
+msgstr ""
+"Ibenk '%{member}' ur yezmir ara ad yettwakkes acku d aḥric seg MD RAID %"
 "{md_raid}"
+
+#. TRANSLATORS: %{member_name} and %{reused_name} are replaced by device names (e.g.,
+#. "/dev/vda", "/dev/md0").
+#: service/lib/agama/storage/config_checkers/search.rb:177
+#, fuzzy, perl-brace-format
+msgid ""
+"The device '%{member_name}' cannot be deleted because it is a physical "
+"volume of the reused LVM volume group '%{reused_name}'"
 msgstr ""
 "Ibenk '%{member}' ur yezmir ara ad yettwakkes acku d aḥric seg MD RAID %"
 "{md_raid}"
@@ -253,11 +271,22 @@ msgstr ""
 #.
 #. @param member_config [#search]
 #. @return [Issue, nil]
-#: service/lib/agama/storage/config_checkers/md_raid.rb:194
-#, perl-brace-format
+#: service/lib/agama/storage/config_checkers/search.rb:207
+#, fuzzy, perl-brace-format
 msgid ""
-"The device '%{member}' cannot be resized because it is part of the MD RAID %"
-"{md_raid}"
+"The device '%{member_name}' cannot be resized because it is part of the "
+"reused MD RAID '%{reused_name}'"
+msgstr ""
+"Ibenk '%{member}' ur izmer ara ad isnifel tasekta acku yella d aḥric seg MD "
+"RAID %{md_raid}"
+
+#. TRANSLATORS: %{member_name} and %{reused_name} are replaced by device names (e.g.,
+#. "/dev/vda", "/dev/md0").
+#: service/lib/agama/storage/config_checkers/search.rb:217
+#, fuzzy, perl-brace-format
+msgid ""
+"The device '%{member_name}' cannot be resized because it is a physical "
+"volume of the reused LVM volume group '%{reused_name}'"
 msgstr ""
 "Ibenk '%{member}' ur izmer ara ad isnifel tasekta acku yella d aḥric seg MD "
 "RAID %{md_raid}"
@@ -266,11 +295,21 @@ msgstr ""
 #.
 #. @param member_config [#search]
 #. @return [Issue, nil]
-#: service/lib/agama/storage/config_checkers/md_raid.rb:217
-#, perl-brace-format
+#: service/lib/agama/storage/config_checkers/search.rb:247
+#, fuzzy, perl-brace-format
 msgid ""
-"The device '%{member}' cannot be formatted because it is part of the MD RAID "
-"%{md_raid}"
+"The device '%{member_name}' cannot be formatted because it is part of the "
+"reused MD RAID '%{reused_name}'"
+msgstr ""
+"Ibenk '%{member}' ur izmer ara ad yemsel acku d aḥric seg MD RAID %{md_raid}"
+
+#. TRANSLATORS: %{member_name} and %{reused_name} are replaced by device names (e.g.,
+#. "/dev/vda", "/dev/md0").
+#: service/lib/agama/storage/config_checkers/search.rb:257
+#, fuzzy, perl-brace-format
+msgid ""
+"The device '%{member_name}' cannot be formatted because it is a physical "
+"volume of the reused LVM volume group '%{reused_name}'"
 msgstr ""
 "Ibenk '%{member}' ur izmer ara ad yemsel acku d aḥric seg MD RAID %{md_raid}"
 
@@ -278,11 +317,22 @@ msgstr ""
 #.
 #. @param member_config [#search]
 #. @return [Issue, nil]
-#: service/lib/agama/storage/config_checkers/md_raid.rb:240
-#, perl-brace-format
+#: service/lib/agama/storage/config_checkers/search.rb:287
+#, fuzzy, perl-brace-format
 msgid ""
-"The device '%{member}' cannot be partitioned because it is part of the MD "
-"RAID %{md_raid}"
+"The device '%{member_name}' cannot be partitioned because it is part of the "
+"reused MD RAID '%{reused_name}'"
+msgstr ""
+"Ibenk '%{member}' ur izmer ara ad yettwabḍu d iḥricen acku atan d aḥric seg "
+"MD RAID %{md_raid}"
+
+#. TRANSLATORS: %{member_name} and %{reused_name} are replaced by device names (e.g.,
+#. "/dev/vda", "/dev/md0").
+#: service/lib/agama/storage/config_checkers/search.rb:297
+#, fuzzy, perl-brace-format
+msgid ""
+"The device '%{member_name}' cannot be partitioned because it is a physical "
+"volume of the reused LVM volume group '%{reused_name}'"
 msgstr ""
 "Ibenk '%{member}' ur izmer ara ad yettwabḍu d iḥricen acku atan d aḥric seg "
 "MD RAID %{md_raid}"
@@ -291,79 +341,66 @@ msgstr ""
 #.
 #. @param member_config [#search]
 #. @return [Issue, nil]
-#: service/lib/agama/storage/config_checkers/md_raid.rb:262
-#, perl-brace-format
+#: service/lib/agama/storage/config_checkers/search.rb:326
+#, fuzzy, perl-brace-format
 msgid ""
-"The device '%{member}' cannot be used because it is part of the MD RAID %"
-"{md_raid}"
+"The device '%{member_name}' cannot be used because it is part of the reused "
+"MD RAID '%{reused_name}'"
 msgstr ""
+"Ibenk '%{member}' ur izmer ara ad isnifel tasekta acku yella d aḥric seg MD "
+"RAID %{md_raid}"
 
-#. Issue if the parent of the device member is formatted.
-#.
-#. @param device [Y2Storage::BlkDevice]
-#. @return [Issue, nil]
-#: service/lib/agama/storage/config_checkers/md_raid.rb:287
-#, perl-brace-format
+#. TRANSLATORS: %{member_name} and %{reused_name} are replaced by device names (e.g.,
+#. "/dev/vda", "/dev/md0").
+#: service/lib/agama/storage/config_checkers/search.rb:336
+#, fuzzy, perl-brace-format
 msgid ""
-"The device '%{device}' cannot be formatted because it is part of the MD RAID "
-"%{md_raid}"
+"The device '%{member_name}' cannot be used because it is a physical volume "
+"of the reused LVM volume group '%{reused_name}'"
 msgstr ""
-
-#. TRANSLATORS: 'method' is the identifier of the method to encrypt the device
-#. (e.g., 'luks1').
-#: service/lib/agama/storage/config_checkers/physical_volumes_encryption.rb:61
-#, perl-brace-format
-msgid "'%{method}' is not a suitable method to encrypt the physical volumes."
-msgstr ""
-
-#. TRANSLATORS: %s is replaced by a device name (e.g., "/dev/vda").
-#: service/lib/agama/storage/config_checkers/search.rb:74
-#, c-format
-msgid "Mandatory device %s not found"
-msgstr ""
-
-#. TRANSLATORS: %s is replaced by a device type (e.g., "drive").
-#: service/lib/agama/storage/config_checkers/search.rb:77
-#, c-format
-msgid "Mandatory %s not found"
-msgstr ""
+"Ibenk '%{member}' ur izmer ara ad isnifel tasekta acku yella d aḥric seg MD "
+"RAID %{md_raid}"
 
 #. @return [String]
-#: service/lib/agama/storage/config_checkers/search.rb:85
+#: service/lib/agama/storage/config_checkers/search.rb:384
 msgid "drive"
 msgstr "anuḍaf"
 
-#: service/lib/agama/storage/config_checkers/search.rb:87
+#: service/lib/agama/storage/config_checkers/search.rb:386
 msgid "MD RAID"
 msgstr ""
 
-#: service/lib/agama/storage/config_checkers/search.rb:89
+#: service/lib/agama/storage/config_checkers/search.rb:388
 msgid "partition"
 msgstr "aḥric"
 
-#: service/lib/agama/storage/config_checkers/search.rb:91
+#: service/lib/agama/storage/config_checkers/search.rb:390
 msgid "LVM logical volume"
 msgstr "ableɣ ameẓẓul LVM"
 
-#: service/lib/agama/storage/config_checkers/search.rb:93
+#: service/lib/agama/storage/config_checkers/search.rb:392
+msgid "LVM volume group"
+msgstr ""
+
+#: service/lib/agama/storage/config_checkers/search.rb:394
 msgid "device"
 msgstr "ibenk"
 
 #. Issue if the volume group name is missing.
 #.
 #. @return [Issue, nil]
-#: service/lib/agama/storage/config_checkers/volume_group.rb:77
+#: service/lib/agama/storage/config_checkers/volume_group.rb:85
 msgid "There is a volume group without name"
 msgstr "Yella ugraw n yiblaɣen war isem"
 
 #. TRANSLATORS: %s is the replaced by a device alias (e.g., "pv1").
-#: service/lib/agama/storage/config_checkers/volume_group.rb:109
+#: service/lib/agama/storage/config_checkers/volume_group.rb:117
 #, c-format
 msgid "There is no LVM physical volume with alias '%s'"
 msgstr "Ulac ableɣ LVM afekkan s tzaẓlut n '%s'"
 
 #. TRANSLATORS: %s is the replaced by a device alias (e.g., "pv1").
-#: service/lib/agama/storage/config_checkers/volume_group.rb:136
+#: service/lib/agama/storage/config_checkers/volume_group.rb:144
 #, c-format
 msgid ""
 "The list of target devices for the volume group '%s' is mixing reused "
@@ -373,7 +410,7 @@ msgstr ""
 "tikkelt nniḍen akked ibenkan imaynuten"
 
 #. TRANSLATORS: %s is the replaced by a device alias (e.g., "disk1").
-#: service/lib/agama/storage/config_checkers/volume_group.rb:156
+#: service/lib/agama/storage/config_checkers/volume_group.rb:164
 #, c-format
 msgid "There is no target device for LVM physical volumes with alias '%s'"
 msgstr "Ulac ibenk anican i yiblaɣen ifekkanen LVM s tzaẓlut n '%s'"
@@ -389,7 +426,7 @@ msgstr ""
 #. Text of the reason preventing to shrink because there is no content.
 #.
 #. @return [String, nil] nil if there is content or there is any other reasons.
-#: service/lib/agama/storage/device_shrinking.rb:151
+#: service/lib/agama/storage/device_shrinking.rb:157
 msgid ""
 "Neither a file system nor a storage system was detected on the device. In "
 "case the device does contain a file system or a storage system that is not "
@@ -399,27 +436,27 @@ msgstr ""
 #. Text of the reason preventing to shrink because there is no valid minimum size.
 #.
 #. @return [String, nil] nil if there is a minimum size or there is any other reasons.
-#: service/lib/agama/storage/device_shrinking.rb:162
+#: service/lib/agama/storage/device_shrinking.rb:168
 msgid "Shrinking is not supported by this device"
 msgstr "Asemẓi ur itteddu ara deg yibenk-agi"
 
 #. Copy /etc/nvme/host* to keep NVMe working after installation, bsc#1238038
-#: service/lib/agama/storage/finisher.rb:126
+#: service/lib/agama/storage/finisher.rb:122
 msgid "Copying important installation files to the target system"
 msgstr "Anɣal n yifuyla ixataren ɣer unagraw n wammud"
 
 #. Step to write the bootloader configuration
-#: service/lib/agama/storage/finisher.rb:161
+#: service/lib/agama/storage/finisher.rb:157
 msgid "Installing bootloader"
 msgstr "Asbeddi n umsali usenker"
 
 #. Step to finish the Y2Storage configuration
-#: service/lib/agama/storage/finisher.rb:178
+#: service/lib/agama/storage/finisher.rb:174
 msgid "Adjusting storage configuration"
 msgstr "Ṣeggem tawila n usekles"
 
 #. Step to finish the iSCSI configuration
-#: service/lib/agama/storage/finisher.rb:189
+#: service/lib/agama/storage/finisher.rb:188
 msgid "Adjusting iSCSI configuration"
 msgstr "Aṣeggem n twila iSCSI"
 
@@ -431,82 +468,82 @@ msgstr "Aswel n tuṭṭfiwin n unagraw n yifuyla"
 #. Returns an issue if there is no candidate device for installation
 #.
 #. @return [Issue, nil]
-#: service/lib/agama/storage/manager.rb:251
+#: service/lib/agama/storage/manager.rb:316
 msgid "There is no suitable device for installation"
 msgstr "Ulac ibenk iwatan i usebded"
 
 #. Issue representing the proposal is not valid.
 #.
 #. @return [Issue]
-#: service/lib/agama/storage/proposal.rb:305
+#: service/lib/agama/storage/proposal.rb:351
 msgid "Cannot calculate a valid storage setup with the current configuration"
 msgstr "Ur izmir ara ad isiḍen asbeddi n usekles ameɣtu s twila tamirant"
 
 #. Issue to communicate a generic Y2Storage error.
 #.
 #. @return [Issue]
-#: service/lib/agama/storage/proposal.rb:315
-msgid "A problem ocurred while calculating the storage setup"
+#: service/lib/agama/storage/proposal.rb:361
+#, fuzzy
+msgid "A problem occurred while calculating the storage setup"
 msgstr "Yeḍra-d wugur deg usiḍen n twila n usekles"
 
 #. Step to copy the installation logs
-#: service/lib/agama/storage/umounter.rb:112
+#: service/lib/agama/storage/umounter.rb:108
 msgid "Copying logs"
 msgstr "Anɣal n yiɣmisen"
 
 #. Step to unmount the target file-systems
-#: service/lib/agama/storage/umounter.rb:146
+#: service/lib/agama/storage/umounter.rb:149
 msgid "Unmounting storage devices"
 msgstr "Tukksa userkeb n yibenkan n usekles"
 
-#. Activates the controller if it is not active yet.
-#.
-#. @note: If "allow_lun_scan" is active, then all its LUNs are automatically activated.
-#.
-#. @param controller [Controller]
-#. @return [Boolean] Whether the controller was activated.
-#: service/lib/agama/storage/zfcp/manager.rb:206
+#. TRANSLATORS: %s is replaced by a zFCP channel (e.g., "0.0.5223").
+#: service/lib/agama/storage/zfcp/manager.rb:205
 #, c-format
 msgid "The zFCP controller %s cannot be activated"
 msgstr ""
 
-#. Activates a device if it is not active yet.
-#.
-#. @param device [Device]
-#. @return [Boolean] Whether the device was activated.
-#: service/lib/agama/storage/zfcp/manager.rb:239
+#. TRANSLATORS: %s is replaced by a zFCP device (e.g.,
+#. "0.0.5223 0x500507681015a2b2 0x0186000000000000").
+#: service/lib/agama/storage/zfcp/manager.rb:245
 #, c-format
 msgid "The zFCP device %s cannot be activated"
 msgstr ""
 
-#. Deactivates a device if it is active.
-#.
-#. @note: If "allow_lun_scan" is active, then the disk cannot be deactivated.
-#.
-#. @param device [Device]
-#. @return [Boolean] Whether the device was deactivated.
-#: service/lib/agama/storage/zfcp/manager.rb:277
+#. TRANSLATORS: %s is replaced by a zFCP device (e.g.,
+#. "0.0.5223 0x500507681015a2b2 0x0186000000000000").
+#: service/lib/agama/storage/zfcp/manager.rb:289
 #, c-format
 msgid "The zFCP device %s cannot be deactivated"
 msgstr ""
 
-#. Issue if the controller is missing.
-#.
-#. @param channel [String]
-#. @return [Issue, nil]
-#: service/lib/agama/storage/zfcp/manager.rb:307
-#, c-format
-msgid "Unknown zFCP controller %s"
-msgstr ""
+#, perl-brace-format
+#~ msgid "Found unsupported elements in the AutoYaST profile: %{keys}."
+#~ msgstr "Nufa-d iferdisen ur nettwasefrak ara deg umaɣnu AutoYaST: %{keys}."
 
-#. Issue if the device is missing.
-#.
-#. @param device_config [Configs::Device]
-#. @return [Issue, nil]
-#: service/lib/agama/storage/zfcp/manager.rb:326
-#, c-format
-msgid "Unknown zFCP LUN %s"
-msgstr ""
+#~ msgid "Certificate:"
+#~ msgstr "Aselkin:"
+
+#~ msgid "Issued To"
+#~ msgstr "Yettunefk i"
+
+#~ msgid "Issued By"
+#~ msgstr "Yettunefk sɣur"
+
+#~ msgid "SHA1 Fingerprint: "
+#~ msgstr "Adsil SHA1: "
+
+#~ msgid "SHA256 Fingerprint: "
+#~ msgstr "Adsil umḍin SHA256: "
+
+#~ msgid "Common Name (CN): "
+#~ msgstr "Isem amezdi (CN): "
+
+#~ msgid "Organization (O): "
+#~ msgstr "Tuddsa (O): "
+
+#~ msgid "Organization Unit (OU): "
+#~ msgstr "Aferdis n tuddsa (OU): "
 
 #~ msgid "Configure software"
 #~ msgstr "Swel aseɣẓan"
@@ -525,3 +562,11 @@ msgstr ""
 
 #~ msgid "No"
 #~ msgstr "Uhu"
+
+#, perl-brace-format
+#~ msgid "Encryption method '%{crypt_method}' is not available in this system."
+#~ msgstr "Tarrayt n uwgelhen '%{crypt_method}' ulac-itt deg unagraw-agi."
+
+#, perl-brace-format
+#~ msgid "'%{crypt_method}' is not a suitable method to encrypt the device."
+#~ msgstr "'%{crypt_method}' mačči d tarrayt iwulmen i uwgelhen n yibenk."

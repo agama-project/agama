@@ -21,7 +21,9 @@
  */
 
 import React, { useState } from "react";
+import { useLocation } from "react-router";
 import {
+  Divider,
   Dropdown,
   DropdownItem,
   DropdownList,
@@ -29,9 +31,14 @@ import {
   MenuToggle,
   MenuToggleElement,
 } from "@patternfly/react-core";
-import Icon from "~/components/layout/Icon";
+import Icon, { IconProps } from "~/components/layout/Icon";
+import VisualTooltip from "~/components/core/VisualTooltip";
 import ChangeProductOption from "~/components/core/ChangeProductOption";
-import { ROOT } from "~/routes/paths";
+import ConfigDialog from "~/components/core/ConfigDialog";
+import ExitInstallationDialog from "~/components/core/ExitInstallationDialog";
+import DownloadLogsFeedback from "~/components/core/DownloadLogsFeedback";
+import { PRODUCT, ROOT } from "~/routes/paths";
+import { focusTargetFor, useTerminal } from "~/context/terminal";
 import { _ } from "~/i18n";
 
 /**
@@ -43,57 +50,129 @@ export type InstallerOptionsMenuProps = {
    * space is limited or when placed in a narrow slot.
    */
   hideLabel?: boolean;
-  /**
-   * Whether to include the "Change product" entry in the dropdown list. Set
-   * this to `true` only on pages where including the link for switching to
-   * another product or mode make sense (e.g., the Overview page).
-   */
-  showChangeProductOption?: boolean;
 };
+
+/** Renders a menu item label with a leading icon, aligned consistently. */
+const ItemContent = ({ icon, text }: { icon: IconProps["name"]; text: string }) => (
+  <Flex alignItems={{ default: "alignItemsCenter" }} gap={{ default: "gapSm" }}>
+    <Icon name={icon} size="lg" />
+    {text}
+  </Flex>
+);
 
 /**
  * A dropdown menu containing some installer options, such as
  * product switching and log downloading.
  */
-export default function InstallerOptionsMenu({
-  hideLabel = false,
-  showChangeProductOption = false,
-}: InstallerOptionsMenuProps) {
-  const [isOpen, setIsOpen] = useState(false);
-  const toggle = () => setIsOpen(!isOpen);
+export default function InstallerOptionsMenu({ hideLabel = false }: InstallerOptionsMenuProps) {
+  const location = useLocation();
 
+  const installationPaths = [
+    ROOT.installation,
+    ROOT.installationProgress,
+    ROOT.installationFinished,
+    ROOT.installationReboot,
+    ROOT.installationShutdown,
+  ];
+
+  // Changing the product or mode makes no sense on the product selection page
+  // itself nor during/after the installation.
+  const showChangeProductOption = ![PRODUCT.changeProduct, ...installationPaths].includes(
+    location.pathname,
+  );
+
+  // Exiting the installation makes no sense during/after the installation.
+  const showExitInstallationOption = !installationPaths.includes(location.pathname);
+
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isConfigOpen, setIsConfigOpen] = useState(false);
+  const [isExitInstallationOpen, setIsExitInstallationOpen] = useState(false);
+  const { isOpen: isTerminalOpen, toggle: toggleTerminal } = useTerminal();
+  const toggle = () => setIsMenuOpen(!isMenuOpen);
+  const toggleConfig = () => setIsConfigOpen(!isConfigOpen);
+  const toggleExitInstallation = () => setIsExitInstallationOpen(!isExitInstallationOpen);
+  // TRANSLATORS: label for the button that opens the menu with additional
+  // actions (show settings, download logs, change product...)
+  const toggleLabel = _("More options");
+
+  // DownloadLogsFeedback must wrap the entire Dropdown rather than just the
+  // DropdownItem. When the dropdown closes, PatternFly unmounts its children,
+  // which would reset the feedback alert state and dismiss the pending toast
+  // prematurely. Keeping it as the outermost element ensures it stays mounted
+  // regardless of the dropdown lifecycle.
   return (
-    <Dropdown
-      popperProps={{ position: "right", appendTo: () => document.body }}
-      isOpen={isOpen}
-      onOpenChange={toggle}
-      onSelect={toggle}
-      onActionClick={toggle}
-      toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
-        <MenuToggle
-          ref={toggleRef}
-          onClick={toggle}
-          // TRANSLATORS: this is an ARIA (accesibility) description of an UI element
-          aria-label={_("More installer options")}
-          isExpanded={isOpen}
-          isFullHeight
-          variant="plain"
-        >
-          <Flex gap={{ default: "gapXs" }} alignItems={{ default: "alignItemsCenter" }}>
-            {!hideLabel && _("More")} <Icon name="expand_circle_down" />
-          </Flex>
-        </MenuToggle>
-      )}
-    >
-      <DropdownList>
-        {showChangeProductOption && <ChangeProductOption component="dropdownitem" />}
-        <DropdownItem key="download-config" to={ROOT.config} download="agama-config.json">
-          {_("Download config")}
-        </DropdownItem>
-        <DropdownItem key="download-logs" to={ROOT.logs} download="agama-logs.tar.gz">
-          {_("Download logs")}
-        </DropdownItem>
-      </DropdownList>
-    </Dropdown>
+    <>
+      <DownloadLogsFeedback>
+        {({ download: downloadLogs }) => (
+          <Dropdown
+            popperProps={{ position: "right", appendTo: () => document.body }}
+            isOpen={isMenuOpen}
+            onOpenChange={toggle}
+            onSelect={toggle}
+            // Picking an entry closes the menu, and PatternFly drops the focus
+            // when it goes. Sending it back to the trigger keeps the keyboard
+            // where the user left it, ready to reach the next control or to
+            // reopen the menu. Entries that take the focus somewhere on purpose
+            // (the terminal) still do: they claim it after the menu is gone.
+            shouldFocusToggleOnSelect
+            onActionClick={toggle}
+            toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
+              <VisualTooltip content={toggleLabel}>
+                <MenuToggle
+                  ref={toggleRef}
+                  onClick={toggle}
+                  aria-label={toggleLabel}
+                  isExpanded={isMenuOpen}
+                  isFullHeight
+                  variant="plain"
+                >
+                  <Flex gap={{ default: "gapXs" }} alignItems={{ default: "alignItemsCenter" }}>
+                    {!hideLabel && _("More")} <Icon name="expand_circle_down" isMiddleAligned />
+                  </Flex>
+                </MenuToggle>
+              </VisualTooltip>
+            )}
+          >
+            <DropdownList>
+              <DropdownItem key="show-settings" onClick={toggleConfig}>
+                {/* TRANSLATORS: menu entry that opens the installation
+                    configuration as a JSON file: the machine-readable
+                    representation of the same settings the UI otherwise shows
+                    as widgets across its screens. */}
+                <ItemContent icon="file_json" text={_("Show configuration")} />
+              </DropdownItem>
+              <DropdownItem key="download-logs" onClick={downloadLogs}>
+                {/* TRANSLATORS: menu entry to download the installer logs as an archive */}
+                <ItemContent icon="archive" text={_("Download logs")} />
+              </DropdownItem>
+              <DropdownItem
+                key="toggle-terminal"
+                onClick={(event) => toggleTerminal({ focusTarget: focusTargetFor(event) })}
+              >
+                <ItemContent
+                  icon="terminal"
+                  text={
+                    isTerminalOpen
+                      ? /* TRANSLATORS: menu entry that closes the terminal, closing the session */
+                        _("Close terminal")
+                      : /* TRANSLATORS: menu entry that opens the terminal */
+                        _("Open terminal")
+                  }
+                />
+                <Divider component="li" />
+              </DropdownItem>
+              {showChangeProductOption && <ChangeProductOption component="dropdownitem" showIcon />}
+              {showExitInstallationOption && (
+                <DropdownItem key="exit-installation" onClick={toggleExitInstallation}>
+                  <ItemContent icon="power_settings_new" text={_("Exit installation")} />
+                </DropdownItem>
+              )}
+            </DropdownList>
+          </Dropdown>
+        )}
+      </DownloadLogsFeedback>
+      {isConfigOpen && <ConfigDialog onClose={toggleConfig} />}
+      {isExitInstallationOpen && <ExitInstallationDialog onClose={toggleExitInstallation} />}
+    </>
   );
 }

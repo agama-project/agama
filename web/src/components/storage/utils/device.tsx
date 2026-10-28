@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2024-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -24,6 +24,8 @@ import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
 import { compact } from "~/utils";
 import type { Storage as System } from "~/model/system";
+import { isEmpty } from "radashi";
+import { baseName } from "~/components/storage/utils";
 
 const driveTypeDescription = (device: System.Device): string => {
   if (device.drive.type === "multipath") {
@@ -61,10 +63,26 @@ const typeDescription = (device: System.Device): string | undefined => {
     }
     case "drive": {
       type = driveTypeDescription(device);
+      break;
+    }
+    case "volumeGroup": {
+      type = device.description;
     }
   }
 
   return type;
+};
+
+/**
+ * Description of the content of a LVM volume group.
+ */
+const volumeGroupContentDescription = (device: System.Device): string => {
+  if (isEmpty(device.logicalVolumes)) return _("No content found");
+
+  const lv_names = device.logicalVolumes.map((l) => baseName(l.name));
+  if (lv_names.length === 1) return sprintf(_("Volume %s"), lv_names[0]);
+
+  return sprintf(_("Volumes %s"), lv_names.join(", "));
 };
 
 /*
@@ -74,6 +92,8 @@ const typeDescription = (device: System.Device): string | undefined => {
  * device.description (comes from YaST) to be way more granular
  */
 const contentDescription = (device: System.Device): string => {
+  if (device.class === "volumeGroup") return volumeGroupContentDescription(device);
+
   if (device.partitionTable) {
     const type = device.partitionTable.type.toUpperCase();
     const numPartitions = device.partitions.length;
@@ -101,6 +121,10 @@ const contentDescription = (device: System.Device): string => {
 const filesystemLabels = (device: System.Device): string[] => {
   if (device.partitionTable) {
     return compact(device.partitions.map((p) => p.filesystem?.label));
+  }
+
+  if (device.class === "volumeGroup") {
+    return compact(device.logicalVolumes.map((l) => l.filesystem?.label));
   }
 
   const label = device.filesystem?.label;

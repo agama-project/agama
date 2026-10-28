@@ -138,10 +138,8 @@ impl ProxyConfig {
                     "PROXY_ENABLED" => {
                         enabled = Some(value == "yes");
                     }
-                    "SOCKS5_SERVER" => {
-                        if !value.is_empty() {
-                            proxies.push(Proxy::new(value.to_string(), Protocol::SOCKS5));
-                        }
+                    "SOCKS5_SERVER" if !value.is_empty() => {
+                        proxies.push(Proxy::new(value.to_string(), Protocol::SOCKS5));
                     }
                     "NO_PROXY" => {
                         no_proxy = Some(value.to_string());

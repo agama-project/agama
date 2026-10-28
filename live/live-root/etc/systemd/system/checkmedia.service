@@ -1,7 +1,7 @@
 [Unit]
 Description=Installation medium integrity check
 
-# before X11 because it switches the terminal to VT7
+# before starting the installer to possibly avoid installing from a broken medium
 Before=agama.service
 
 # copied from YaST2-Second-Stage.service
@@ -38,6 +38,7 @@ ExecStartPost=dmesg --console-on
 # enable back the systemd status messages on the console
 ExecStartPost=kill -SIGRTMIN+20 1
 
+StandardInput=tty
 StandardOutput=tty
 RemainAfterExit=true
 TimeoutStartSec=infinity

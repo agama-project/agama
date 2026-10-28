@@ -24,19 +24,20 @@
 //! * Emit relevant events via websocket.
 //! * Serve the code for the web user interface (not implemented yet).
 
-use crate::{profile::web::profile_service, server::server_service};
+use crate::server::{server_service, web::Error};
+use crate::terminal::terminal_service;
 use agama_utils::api::event;
-use axum::Router;
+use aide::axum::ApiRouter;
 
 mod auth;
 mod config;
 pub mod docs;
+pub mod error;
 mod http;
 mod service;
 mod state;
 mod ws;
 
-use agama_lib::error::ServiceError;
 pub use config::ServiceConfig;
 pub use service::MainServiceBuilder;
 use std::path::Path;
@@ -52,13 +53,13 @@ pub async fn service<P>(
     events: event::Sender,
     dbus: zbus::Connection,
     web_ui_dir: P,
-) -> Result<Router, ServiceError>
+) -> Result<ApiRouter, Error>
 where
     P: AsRef<Path>,
 {
     let router = MainServiceBuilder::new(events.clone(), web_ui_dir)
-        .add_service("/v2", server_service(events, dbus.clone()).await?)
-        .add_service("/profile", profile_service().await?)
+        .add_service("/", server_service(events, dbus.clone()).await?)
+        .add_service("/terminal", terminal_service())
         .with_config(config)
         .build();
     Ok(router)

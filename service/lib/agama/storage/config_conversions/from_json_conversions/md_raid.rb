@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2025] SUSE LLC
+# Copyright (c) [2025-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -20,10 +20,12 @@
 # find current contact information at www.suse.com.
 
 require "agama/storage/config_conversions/from_json_conversions/base"
+require "agama/storage/config_conversions/from_json_conversions/md_raid_search"
 require "agama/storage/config_conversions/from_json_conversions/with_encryption"
 require "agama/storage/config_conversions/from_json_conversions/with_filesystem"
 require "agama/storage/config_conversions/from_json_conversions/with_partitions"
 require "agama/storage/config_conversions/from_json_conversions/with_ptable_type"
+require "agama/storage/config_conversions/from_json_conversions/with_search"
 require "agama/storage/configs/md_raid"
 require "y2storage/disk_size"
 require "y2storage/md_level"
@@ -35,13 +37,23 @@ module Agama
       module FromJSONConversions
         # MD RAID conversion from JSON hash according to schema.
         class MdRaid < Base
-        private
-
           include WithSearch
           include WithEncryption
           include WithFilesystem
           include WithPtableType
           include WithPartitions
+
+          # @param config_json [Hash]
+          # @param bootloader_config [BootloaderConfig]
+          def initialize(config_json, bootloader_config)
+            super(config_json)
+            @bootloader_config = bootloader_config
+          end
+
+        private
+
+          # @return [BootloaderConfig]
+          attr_reader :bootloader_config
 
           alias_method :md_raid_json, :config_json
 
@@ -49,6 +61,12 @@ module Agama
           # @return [Configs::MdRaid]
           def default_config
             Configs::MdRaid.new
+          end
+
+          # @see WithSearch
+          # @return [Class]
+          def search_converter_class
+            FromJSONConversions::MdRaidSearch
           end
 
           # @see Base#conversions

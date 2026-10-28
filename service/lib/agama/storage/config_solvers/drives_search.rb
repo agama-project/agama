@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2025] SUSE LLC
+# Copyright (c) [2025-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -20,7 +20,7 @@
 # find current contact information at www.suse.com.
 
 require "agama/storage/config_solvers/devices_search"
-require "agama/storage/config_solvers/search_matchers"
+require "agama/storage/config_solvers/search_matchers/drive"
 require "agama/storage/config_solvers/with_partitions_search"
 
 module Agama
@@ -28,7 +28,6 @@ module Agama
     module ConfigSolvers
       # Solver for the search of the drive configs.
       class DrivesSearch < DevicesSearch
-        include SearchMatchers
         include WithPartitionsSearch
 
         # @param storage_system [Storage::System]
@@ -54,13 +53,9 @@ module Agama
         # @return [Storage::System]
         attr_reader :storage_system
 
-        # @see DevicesSearch#match_condition?
-        # @param drive_config [Configs::Drive]
-        # @param drive [Y2Storage::Disk, Y2Storage::StrayBlkDevice]
-        #
-        # @return [Boolean]
-        def match_condition?(drive_config, drive)
-          match_name?(drive_config, drive) && match_size?(drive_config, drive)
+        # @see DevicesSearch#matcher
+        def matcher
+          @matcher ||= SearchMatchers::Drive.new
         end
       end
     end

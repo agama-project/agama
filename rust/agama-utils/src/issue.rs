@@ -52,7 +52,7 @@ mod tests {
     fn build_issue() -> Issue {
         Issue {
             description: "Product not selected".to_string(),
-            class: "missing_product".to_string(),
+            class: "missingProduct".to_string(),
             details: Some("A product is required.".to_string()),
         }
     }

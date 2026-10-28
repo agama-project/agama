@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024-2025] SUSE LLC
+# Copyright (c) [2024-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -22,9 +22,9 @@
 require "agama/storage/config_conversions/from_model_conversions/base"
 require "agama/storage/config_conversions/from_model_conversions/with_encryption"
 require "agama/storage/config_conversions/from_model_conversions/with_filesystem"
-require "agama/storage/config_conversions/from_model_conversions/with_partitions"
 require "agama/storage/config_conversions/from_model_conversions/with_ptable_type"
 require "agama/storage/config_conversions/from_model_conversions/with_search"
+require "agama/storage/config_conversions/from_model_conversions/with_volumes"
 require "agama/storage/configs/drive"
 
 module Agama
@@ -36,15 +36,17 @@ module Agama
           include WithEncryption
           include WithFilesystem
           include WithPtableType
-          include WithPartitions
+          include WithVolumes
           include WithSearch
 
           # @param model_json [Hash]
           # @param product_config [Agama::Config]
+          # @param bootloader_config [Storage::BootloaderConfig]
           # @param encryption_model [Hash, nil]
-          def initialize(model_json, product_config, encryption_model = nil)
+          def initialize(model_json, product_config, bootloader_config, encryption_model = nil)
             super(model_json)
             @product_config = product_config
+            @bootloader_config = bootloader_config
             @encryption_model = encryption_model
           end
 
@@ -54,6 +56,9 @@ module Agama
 
           # @return [Agama::Config]
           attr_reader :product_config
+
+          # @return [Storage::BootloaderConfig]
+          attr_reader :bootloader_config
 
           # @return [Hash, nil]
           attr_reader :encryption_model
@@ -72,7 +77,7 @@ module Agama
               encryption:  convert_encryption,
               filesystem:  convert_filesystem,
               ptable_type: convert_ptable_type,
-              partitions:  convert_partitions(encryption_model)
+              partitions:  convert_volumes(encryption_model)
             }
           end
         end

@@ -20,6 +20,7 @@
 
 use crate::openapi::schemas;
 use cidr::{errors::NetworkParseError, IpInet};
+use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use serde_with::{serde_as, skip_serializing_none, DisplayFromStr};
 use std::{
@@ -33,11 +34,12 @@ use zbus::zvariant::Value;
 
 /// Access Point
 #[serde_as]
-#[derive(Default, Debug, Clone, PartialEq, Deserialize, Serialize, utoipa::ToSchema)]
+#[derive(Default, Debug, Clone, PartialEq, Deserialize, Serialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct AccessPoint {
     pub device: String,
     #[serde_as(as = "DisplayFromStr")]
+    #[schemars(with = "String")]
     pub ssid: SSID,
     pub hw_address: String,
     pub strength: u8,
@@ -49,23 +51,35 @@ pub struct AccessPoint {
 /// Network device
 #[serde_as]
 #[skip_serializing_none]
-#[derive(Default, Debug, Clone, PartialEq, Deserialize, Serialize, utoipa::ToSchema)]
+#[derive(Default, Debug, Clone, PartialEq, Deserialize, Serialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct Device {
     pub name: String,
     #[serde(rename = "type")]
     pub type_: DeviceType,
     #[serde_as(as = "DisplayFromStr")]
+    #[schemars(with = "String")]
     pub mac_address: MacAddress,
     pub ip_config: Option<IpConfig>,
     // Connection.id
     pub connection: Option<String>,
     pub state: DeviceState,
+    /// Link speed in Mb/s, when the device reports one.
+    ///
+    /// Only wired devices report a speed, and only while the link is up.
+    pub speed: Option<u32>,
+    /// Whether the device currently has a link (carrier).
+    pub carrier: Option<bool>,
+    /// Kernel driver in use, e.g. "e1000e".
+    pub driver: Option<String>,
+    /// Physical location of the device, e.g. "pci-0000:c5:00.3".
+    pub bus_path: Option<String>,
+    pub mtu: Option<u32>,
 }
 
-#[derive(Debug, Default, Clone, PartialEq, Serialize, utoipa::ToSchema)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, JsonSchema)]
 pub enum MacAddress {
-    #[schema(value_type = String, format = "MAC address in EUI-48 format")]
+    #[schemars(with = "String")]
     MacAddress(macaddr::MacAddr6),
     Preserve,
     Permanent,
@@ -128,7 +142,7 @@ impl From<InvalidMacAddress> for zbus::fdo::Error {
     }
 }
 
-#[derive(Debug, Default, Copy, Clone, PartialEq, Deserialize, Serialize, utoipa::ToSchema)]
+#[derive(Debug, Default, Copy, Clone, PartialEq, Deserialize, Serialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub enum LinkLocal {
     #[default]
@@ -140,7 +154,7 @@ pub enum LinkLocal {
 }
 
 #[derive(Debug, Error)]
-#[error("Invalid link-local value: {0}")]
+#[error("Invalid linkLocal value: {0}")]
 pub struct InvalidLinkLocalValue(i32);
 
 impl TryFrom<i32> for LinkLocal {
@@ -159,16 +173,15 @@ impl TryFrom<i32> for LinkLocal {
 }
 
 #[skip_serializing_none]
-#[derive(Default, Debug, PartialEq, Clone, Deserialize, Serialize, utoipa::ToSchema)]
+#[derive(Default, Debug, PartialEq, Clone, Deserialize, Serialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct IpConfig {
-    pub method4: Ipv4Method,
-    pub method6: Ipv6Method,
+    pub method4: Option<Ipv4Method>,
+    pub method6: Option<Ipv6Method>,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    #[schema(schema_with = schemas::ip_inet_array)]
+    #[schemars(with = "Vec<schemas::IpInetSchema>")]
     pub addresses: Vec<IpInet>,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    #[schema(schema_with = schemas::ip_addr_array)]
     pub nameservers: Vec<IpAddr>,
     #[serde(
         default,
@@ -178,9 +191,7 @@ pub struct IpConfig {
     )]
     pub dns_searchlist: Vec<String>,
     pub ignore_auto_dns: bool,
-    #[schema(schema_with = schemas::ip_addr)]
     pub gateway4: Option<IpAddr>,
-    #[schema(schema_with = schemas::ip_addr)]
     pub gateway6: Option<IpAddr>,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub routes4: Vec<IpRoute>,
@@ -191,11 +202,15 @@ pub struct IpConfig {
     pub ip6_privacy: Option<i32>,
     pub dns_priority4: Option<i32>,
     pub dns_priority6: Option<i32>,
+    pub ignore_auto_routes4: Option<bool>,
+    pub ignore_auto_routes6: Option<bool>,
+    pub never_default4: Option<bool>,
+    pub never_default6: Option<bool>,
     pub link_local4: LinkLocal,
 }
 
 #[skip_serializing_none]
-#[derive(Debug, Default, PartialEq, Clone, Deserialize, Serialize, utoipa::ToSchema)]
+#[derive(Debug, Default, PartialEq, Clone, Deserialize, Serialize, JsonSchema)]
 pub struct Dhcp4Settings {
     pub send_hostname: Option<bool>,
     pub hostname: Option<String>,
@@ -205,7 +220,7 @@ pub struct Dhcp4Settings {
 }
 
 #[skip_serializing_none]
-#[derive(Debug, Default, PartialEq, Clone, Deserialize, Serialize, utoipa::ToSchema)]
+#[derive(Debug, Default, PartialEq, Clone, Deserialize, Serialize, JsonSchema)]
 pub struct Dhcp6Settings {
     pub send_hostname: Option<bool>,
     pub hostname: Option<String>,
@@ -213,7 +228,7 @@ pub struct Dhcp6Settings {
     pub duid: DhcpDuid,
     pub iaid: DhcpIaid,
 }
-#[derive(Debug, Default, Clone, PartialEq, Deserialize, Serialize, utoipa::ToSchema)]
+#[derive(Debug, Default, Clone, PartialEq, Deserialize, Serialize, JsonSchema)]
 pub enum DhcpClientId {
     Id(String),
     Mac,
@@ -266,7 +281,7 @@ impl fmt::Display for DhcpClientId {
     }
 }
 
-#[derive(Debug, Default, Clone, PartialEq, Deserialize, Serialize, utoipa::ToSchema)]
+#[derive(Debug, Default, Clone, PartialEq, Deserialize, Serialize, JsonSchema)]
 pub enum DhcpDuid {
     Id(String),
     Lease,
@@ -319,7 +334,7 @@ impl fmt::Display for DhcpDuid {
     }
 }
 
-#[derive(Debug, Default, Clone, PartialEq, Deserialize, Serialize, utoipa::ToSchema)]
+#[derive(Debug, Default, Clone, PartialEq, Deserialize, Serialize, JsonSchema)]
 pub enum DhcpIaid {
     Id(String),
     Mac,
@@ -366,13 +381,13 @@ impl fmt::Display for DhcpIaid {
     }
 }
 
-#[derive(Debug, PartialEq, Clone, Deserialize, Serialize, utoipa::ToSchema)]
-#[serde(rename_all = "camelCase")]
+#[derive(Debug, PartialEq, Clone, Deserialize, Serialize, JsonSchema)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct IpRoute {
-    #[schema(schema_with = schemas::ip_inet_ref)]
+    #[schemars(with = "schemas::IpInetSchema")]
     pub destination: IpInet,
     #[serde(skip_serializing_if = "Option::is_none")]
-    #[schema(schema_with = schemas::ip_addr)]
+    #[schemars(with = "Option<String>")]
     pub next_hop: Option<IpAddr>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub metric: Option<u32>,
@@ -397,86 +412,68 @@ impl From<&IpRoute> for HashMap<&str, Value<'_>> {
     }
 }
 
+use strum::{Display, EnumString, VariantNames};
+
 #[derive(Debug, Error)]
 #[error("Unknown IP configuration method name: {0}")]
 pub struct UnknownIpMethod(String);
 
-#[derive(Debug, Default, Copy, Clone, PartialEq, Deserialize, Serialize, utoipa::ToSchema)]
+#[derive(
+    Debug,
+    Default,
+    Copy,
+    Clone,
+    PartialEq,
+    Deserialize,
+    Serialize,
+    Display,
+    EnumString,
+    VariantNames,
+    JsonSchema,
+)]
 #[serde(rename_all = "camelCase")]
+#[strum(serialize_all = "camelCase")]
 pub enum Ipv4Method {
     Disabled = 0,
     #[default]
     Auto = 1,
     Manual = 2,
+    // Documented as "link-local", the name NetworkManager uses. "linkLocal" is still accepted, as
+    // it was the name the API used.
+    #[serde(rename = "link-local", alias = "linkLocal")]
+    #[strum(serialize = "link-local")]
     LinkLocal = 3,
+    Shared = 4,
 }
 
-impl fmt::Display for Ipv4Method {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let name = match &self {
-            Ipv4Method::Disabled => "disabled",
-            Ipv4Method::Auto => "auto",
-            Ipv4Method::Manual => "manual",
-            Ipv4Method::LinkLocal => "link-local",
-        };
-        write!(f, "{}", name)
-    }
-}
-
-impl FromStr for Ipv4Method {
-    type Err = UnknownIpMethod;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        match s {
-            "disabled" => Ok(Ipv4Method::Disabled),
-            "auto" => Ok(Ipv4Method::Auto),
-            "manual" => Ok(Ipv4Method::Manual),
-            "link-local" => Ok(Ipv4Method::LinkLocal),
-            _ => Err(UnknownIpMethod(s.to_string())),
-        }
-    }
-}
-
-#[derive(Debug, Default, Copy, Clone, PartialEq, Deserialize, Serialize, utoipa::ToSchema)]
+#[derive(
+    Debug,
+    Default,
+    Copy,
+    Clone,
+    PartialEq,
+    Deserialize,
+    Serialize,
+    Display,
+    EnumString,
+    VariantNames,
+    JsonSchema,
+)]
 #[serde(rename_all = "camelCase")]
+#[strum(serialize_all = "camelCase")]
 pub enum Ipv6Method {
     Disabled = 0,
     #[default]
     Auto = 1,
     Manual = 2,
+    // Documented as "link-local", the name NetworkManager uses. "linkLocal" is still accepted, as
+    // it was the name the API used.
+    #[serde(rename = "link-local", alias = "linkLocal")]
+    #[strum(serialize = "link-local")]
     LinkLocal = 3,
     Ignore = 4,
     Dhcp = 5,
-}
-
-impl fmt::Display for Ipv6Method {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let name = match &self {
-            Ipv6Method::Disabled => "disabled",
-            Ipv6Method::Auto => "auto",
-            Ipv6Method::Manual => "manual",
-            Ipv6Method::LinkLocal => "link-local",
-            Ipv6Method::Ignore => "ignore",
-            Ipv6Method::Dhcp => "dhcp",
-        };
-        write!(f, "{}", name)
-    }
-}
-
-impl FromStr for Ipv6Method {
-    type Err = UnknownIpMethod;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        match s {
-            "disabled" => Ok(Ipv6Method::Disabled),
-            "auto" => Ok(Ipv6Method::Auto),
-            "manual" => Ok(Ipv6Method::Manual),
-            "link-local" => Ok(Ipv6Method::LinkLocal),
-            "ignore" => Ok(Ipv6Method::Ignore),
-            "dhcp" => Ok(Ipv6Method::Dhcp),
-            _ => Err(UnknownIpMethod(s.to_string())),
-        }
-    }
+    Shared = 6,
 }
 
 impl From<UnknownIpMethod> for zbus::fdo::Error {
@@ -484,7 +481,7 @@ impl From<UnknownIpMethod> for zbus::fdo::Error {
         zbus::fdo::Error::Failed(value.to_string())
     }
 }
-#[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize, utoipa::ToSchema)]
+#[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize, JsonSchema)]
 pub struct SSID(pub Vec<u8>);
 
 impl SSID {
@@ -513,7 +510,7 @@ impl From<SSID> for Vec<u8> {
     }
 }
 
-#[derive(Default, Debug, PartialEq, Copy, Clone, Serialize, Deserialize, utoipa::ToSchema)]
+#[derive(Default, Debug, PartialEq, Copy, Clone, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub enum DeviceType {
     Loopback = 0,
@@ -538,7 +535,7 @@ pub enum DeviceType {
     Copy,
     strum::Display,
     strum::EnumString,
-    utoipa::ToSchema,
+    JsonSchema,
 )]
 #[strum(serialize_all = "camelCase")]
 #[serde(rename_all = "camelCase")]
@@ -573,11 +570,13 @@ pub enum DeviceState {
     Copy,
     strum::Display,
     strum::EnumString,
-    utoipa::ToSchema,
+    JsonSchema,
 )]
 #[strum(serialize_all = "camelCase")]
 #[serde(rename_all = "camelCase")]
 pub enum ConnectionState {
+    /// The connection state is unknown.
+    Unknown,
     /// The connection is getting activated.
     Activating,
     /// The connection is activated.
@@ -589,7 +588,37 @@ pub enum ConnectionState {
     Deactivated,
 }
 
-#[derive(Debug, Default, Clone, Copy, PartialEq, Serialize, Deserialize, utoipa::ToSchema)]
+/// Network connectivity state.
+#[derive(
+    Default,
+    Serialize,
+    Deserialize,
+    Debug,
+    PartialEq,
+    Eq,
+    Clone,
+    Copy,
+    strum::Display,
+    strum::EnumString,
+    JsonSchema,
+)]
+#[strum(serialize_all = "camelCase")]
+#[serde(rename_all = "camelCase")]
+pub enum ConnectivityState {
+    #[default]
+    /// The connectivity state is unknown.
+    Unknown,
+    /// No connectivity.
+    None,
+    /// The network is behind a captive portal and cannot reach the full internet.
+    Portal,
+    /// The network is connected but it has no access to the full internet.
+    Limited,
+    /// The network is connected and it has access to the full internet.
+    Full,
+}
+
+#[derive(Debug, Default, Clone, Copy, PartialEq, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub enum Status {
     #[default]
@@ -631,7 +660,7 @@ impl TryFrom<&str> for Status {
 }
 
 /// Bond mode
-#[derive(Serialize, Deserialize, Debug, Default, PartialEq, Eq, Clone, Copy, utoipa::ToSchema)]
+#[derive(Serialize, Deserialize, Debug, Default, PartialEq, Eq, Clone, Copy, JsonSchema)]
 pub enum BondMode {
     #[serde(rename = "balance-rr")]
     #[default]
@@ -777,6 +806,7 @@ mod tests {
             "dnsSearchList": ["example.com"],
             "ignoreAutoDns": false,
             "linkLocal4": "default"
+
         }"#;
         let config: IpConfig = serde_json::from_str(json).unwrap();
         assert_eq!(config.dns_searchlist, vec!["example.com"]);
@@ -794,6 +824,7 @@ mod tests {
             "dnsSearchlist": ["example.org"],
             "ignoreAutoDns": false,
             "linkLocal4": "default"
+
         }"#;
         let config: IpConfig = serde_json::from_str(json).unwrap();
         assert_eq!(config.dns_searchlist, vec!["example.org"]);

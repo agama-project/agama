@@ -23,10 +23,11 @@
 import React from "react";
 import { Grid, GridItem } from "@patternfly/react-core";
 import InitiatorSection from "~/components/storage/iscsi/InitiatorSection";
-import Page from "~/components/core/Page";
+import Page from "~/components/layout/Page";
 import TargetsTable from "~/components/storage/iscsi/TargetsTable";
 import { STORAGE } from "~/routes/paths";
 import { _ } from "~/i18n";
+import { SYSTEM_QUERY_KEY } from "~/hooks/model/system";
 
 export default function ISCSIPage() {
   return (
@@ -38,7 +39,7 @@ export default function ISCSIPage() {
         },
         { label: _("iSCSI") },
       ]}
-      progress={{ scope: "iscsi" }}
+      progress={{ scope: "iscsi", awaitQueriesRefetch: [SYSTEM_QUERY_KEY] }}
     >
       <Page.Content>
         <Grid hasGutter>

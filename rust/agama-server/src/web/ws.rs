@@ -63,7 +63,7 @@ async fn handle_socket(mut socket: WebSocket, events: event::Sender, _client_id:
                             continue;
                         };
 
-                        if socket.send(Message::Text(json)).await.is_err() {
+                        if socket.send(Message::Text(json.into())).await.is_err() {
                             // Failed to send the message, client probably disconnected.
                             break;
                         }

@@ -1,0 +1,52 @@
+# 2018-12-12 16:41:55 -0500
+---
+- disk:
+    name: "/dev/mmcblk0"
+    size: 14080 MiB (13.75 GiB)
+    block_size: 0.5 KiB
+    io_size: 0 B
+    min_grain: 1 MiB
+    align_ofs: 0 B
+    partition_table: gpt
+    partitions:
+    - free:
+        size: 1 MiB
+        start: 0 B
+    - partition:
+        size: 255 MiB
+        start: 1 MiB
+        name: "/dev/mmcblk0p1"
+        type: primary
+        id: esp
+        file_system: vfat
+    - partition:
+        size: 14155759 KiB (13.50 GiB)
+        start: 256 MiB
+        name: "/dev/mmcblk0p2"
+        type: primary
+        id: linux
+        file_system: ext4
+    - free:
+        size: 17 KiB
+        start: 14417903 KiB (13.75 GiB)
+- disk:
+    name: "/dev/mmcblk0boot0"
+    size: 16 MiB
+    block_size: 0.5 KiB
+    io_size: 0 B
+    min_grain: 1 MiB
+    align_ofs: 0 B
+- disk:
+    name: "/dev/mmcblk0boot1"
+    size: 16 MiB
+    block_size: 0.5 KiB
+    io_size: 0 B
+    min_grain: 1 MiB
+    align_ofs: 0 B
+- disk:
+    name: "/dev/mmcblk1rpmb"
+    size: 16 MiB
+    block_size: 0.5 KiB
+    io_size: 0 B
+    min_grain: 1 MiB
+    align_ofs: 0 B    

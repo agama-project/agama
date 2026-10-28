@@ -48,25 +48,19 @@ pub async fn start_service(events: event::Sender, dbus: zbus::Connection) -> Han
         dbus.clone(),
     )
     .await;
-    let iscsi = start_iscsi_service(
-        storage.clone(),
-        events.clone(),
-        progress.clone(),
-        dbus.clone(),
-    )
-    .await;
+    let iscsi = start_iscsi_service(events.clone(), progress.clone(), dbus.clone()).await;
     let s390 = start_s390_service(
-        storage.clone(),
         events.clone(),
         progress.clone(),
         issues.clone(),
         dbus.clone(),
     )
     .await;
+    let l10n = start_l10n_service(events.clone(), issues.clone()).await;
 
     Service::starter(questions.clone(), events.clone(), dbus.clone())
         .with_hostname(start_hostname_service(events.clone(), issues.clone()).await)
-        .with_l10n(start_l10n_service(events.clone(), issues.clone()).await)
+        .with_l10n(l10n.clone())
         .with_storage(storage)
         .with_iscsi(iscsi)
         .with_s390(s390)
@@ -74,7 +68,7 @@ pub async fn start_service(events: event::Sender, dbus: zbus::Connection) -> Han
         .with_network(start_network_service(events.clone(), progress.clone()).await)
         .with_proxy(start_proxy_service(events.clone()).await)
         .with_security(security.clone())
-        .with_software(start_software_service(events, issues, progress, questions).await)
+        .with_software(start_software_service(events, issues, l10n, progress, questions).await)
         .with_hardware(hardware::Registry::new_from_file(
             fixtures.join("lshw.json"),
         ))

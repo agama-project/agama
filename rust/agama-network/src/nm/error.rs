@@ -42,10 +42,12 @@ pub enum NmError {
     UnsupportedDeviceType(u32),
     #[error("Unsupported connection state: '{0}'")]
     UnsupportedConnectionState(u32),
+    #[error("Unsupported connectivity state: '{0}'")]
+    UnsupportedConnectivityState(u32),
     #[error("Unsupported security protocol: '{0}'")]
     UnsupportedSecurityProtocol(String),
     #[error("Unsupported wireless mode: '{0}'")]
-    UnsupporedWirelessMode(String),
+    UnsupportedWirelessMode(String),
     #[error("Missing connection information")]
     MissingConnectionSection,
     #[error("Invalid device name: '{0}'")]
@@ -69,7 +71,7 @@ pub enum NmError {
     #[error("Invalid WPA protocol version: '{0}'")]
     InvalidWPAProtocolVersion(#[from] crate::model::InvalidWPAProtocolVersion),
     #[error("Invalid infiniband transport mode: '{0}'")]
-    InvalidInfinibandTranportMode(#[from] crate::model::InvalidInfinibandTransportMode),
+    InvalidInfinibandTransportMode(#[from] crate::model::InvalidInfinibandTransportMode),
     #[error("Invalid MAC address: '{0}'")]
     InvalidMACAddress(#[from] crate::types::InvalidMacAddress),
     #[error("Invalid network prefix: '{0}'")]
@@ -80,7 +82,7 @@ pub enum NmError {
     InvalidDeviceState(#[from] InvalidNmDeviceState),
     #[error("Failed to parse NetworkManager version: '{0}'")]
     FailedNmVersionParse(#[from] semver::Error),
-    #[error("Invalid valud from DBUS: '{0}'")]
+    #[error("Invalid value from DBUS: '{0}'")]
     InvalidDBUSValue(String),
     #[error("Invalid ovs-interface type '{0}'")]
     InvalidOvsInterfaceType(#[from] crate::model::InvalidOvsInterfaceType),

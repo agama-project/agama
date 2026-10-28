@@ -20,6 +20,7 @@
 # find current contact information at www.suse.com.
 
 require "agama/storage/config_conversions/from_json_conversions/base"
+require "agama/storage/config_conversions/from_json_conversions/logical_volume_search"
 require "agama/storage/config_conversions/from_json_conversions/with_encryption"
 require "agama/storage/config_conversions/from_json_conversions/with_filesystem"
 require "agama/storage/config_conversions/from_json_conversions/with_size"
@@ -33,17 +34,33 @@ module Agama
       module FromJSONConversions
         # Logical volume conversion from JSON hash according to schema.
         class LogicalVolume < Base
-        private
-
           include WithEncryption
           include WithFilesystem
           include WithSize
           include WithSearch
 
+          # @param config_json [Hash]
+          # @param bootloader_config [BootloaderConfig]
+          def initialize(config_json, bootloader_config)
+            super(config_json)
+            @bootloader_config = bootloader_config
+          end
+
+        private
+
+          # @return [BootloaderConfig]
+          attr_reader :bootloader_config
+
           # @see Base
           # @return [Configs::LogicalVolume]
           def default_config
             Configs::LogicalVolume.new
+          end
+
+          # @see WithSearch
+          # @return [Class]
+          def search_converter_class
+            FromJSONConversions::LogicalVolumeSearch
           end
 
           alias_method :logical_volume_json, :config_json

@@ -1,0 +1,108 @@
+---
+- disk:
+    name: /dev/vda
+    size: 500 GiB
+    partition_table: gpt
+    partitions:
+    - partition:
+        size: 10 GiB
+        name: /dev/vda1
+    - partition:
+        size: 10 GiB
+        name: /dev/vda2
+- disk:
+    name: /dev/vdb
+    size: 500 GiB
+    partition_table: gpt
+    partitions:
+    - partition:
+        size: 10 GiB
+        name: /dev/vdb1
+    - partition:
+        size: 10 GiB
+        name: /dev/vdb2
+- disk:
+    name: /dev/vdc
+    size: 500 GiB
+    partition_table: gpt
+    partitions:
+    - partition:
+        size: 10 GiB
+        name: /dev/vdc1
+- disk:
+    name: /dev/vdd
+    size: 500 GiB
+    partition_table: gpt
+    partitions:
+    - partition:
+        size: 10 GiB
+        name: /dev/vdd1
+- disk:
+    name: /dev/vde
+    size: 500 GiB
+    partition_table: gpt
+    partitions:
+    - partition:
+        size: 10 GiB
+        name: /dev/vde1
+- disk:
+    name: /dev/vdf
+    size: 500 GiB
+    partition_table: gpt
+    partitions:
+    - partition:
+        size: 10 GiB
+        name: /dev/vdf1
+    - partition:
+        size: 10 GiB
+        name: /dev/vdf2
+        file_system:  ext4
+        mount_point: /test1
+
+- md:
+    name: "/dev/md0"
+    chunk_size: 16 KiB
+    partition_table: gpt
+    partitions:
+    - partition:
+        size: 1 GiB
+        name: /dev/md0p1
+    - partition:
+        size: 1 GiB
+        name: /dev/md0p2
+    md_devices:
+    - md_device:
+        blk_device: /dev/vda1
+    - md_device:
+        blk_device: /dev/vdb1
+- md:
+    name: "/dev/md1"
+    chunk_size: 16 KiB
+    md_devices:
+    - md_device:
+        blk_device: /dev/vda2
+    - md_device:
+        blk_device: /dev/vdb2
+- md:
+    name: "/dev/md2"
+    chunk_size: 16 KiB
+    md_devices:
+    - md_device:
+        blk_device: /dev/vdc1
+    - md_device:
+        blk_device: /dev/vdd1
+    partition_table: gpt
+    partitions:
+    - partition:
+        size: 10 GiB
+        name: /dev/md2p1
+        file_system:  ext4
+        mount_point: /test1
+- md:
+    name: "/dev/md3"
+    chunk_size: 16 KiB
+    md_devices:
+    - md_device:
+        blk_device: /dev/vde1
+    - md_device:
+        blk_device: /dev/vdf1

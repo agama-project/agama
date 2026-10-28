@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024-2025] SUSE LLC
+# Copyright (c) [2024-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -35,12 +35,13 @@ module Agama
 
         # @param product_config [Agama::Config]
         # @param storage_system [Storage::System]
-        # @param config [Agama::Storage::Config]
+        # @param config [Storage::Config]
+        # @param bootloader_config [Storage::BootloaderConfig]
         # @param logger [Logger]
-        def initialize(product_config, storage_system, config, logger)
+        def initialize(product_config, storage_system, config, bootloader_config, logger)
           textdomain "agama"
 
-          super(product_config, storage_system, logger)
+          super(product_config, storage_system, bootloader_config, logger)
           @config = config
         end
 
@@ -71,8 +72,9 @@ module Agama
           Y2Storage::AgamaProposal.new(
             config,
             storage_system,
-            product_config: product_config,
-            issues_list:    []
+            product_config:    product_config,
+            bootloader_config: @bootloader_config,
+            issues_list:       []
           )
         end
       end

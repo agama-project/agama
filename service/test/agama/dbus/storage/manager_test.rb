@@ -28,7 +28,6 @@ require "agama/storage/manager"
 require "agama/storage/proposal"
 require "agama/storage/proposal_settings"
 require "agama/storage/volume"
-require "agama/task_runner"
 require "y2storage"
 require "dbus"
 
@@ -43,11 +42,9 @@ end
 describe Agama::DBus::Storage::Manager do
   include Agama::RSpec::StorageHelpers
 
-  subject(:manager) { described_class.new(backend, task_runner, logger: logger) }
+  subject(:manager) { described_class.new(backend, logger: logger) }
 
   let(:backend) { Agama::Storage::Manager.new }
-
-  let(:task_runner) { Agama::TaskRunner.new }
 
   let(:logger) { Logger.new($stdout, level: :warn) }
 
@@ -57,25 +54,30 @@ describe Agama::DBus::Storage::Manager do
 
   let(:config_data) { {} }
 
-  let(:bootloader) { instance_double(Agama::Storage::Bootloader) }
+  let(:bootloader) { instance_double(Agama::Storage::BootloaderManager) }
 
   before do
     allow_any_instance_of(DBus::Object).to receive(:emit)
-    allow(Agama::TaskRunner).to receive(:new).and_return(task_runner)
-    allow(task_runner).to receive(:run).and_yield
     # Speed up tests by avoiding real check of TPM presence.
     allow(Y2Storage::EncryptionMethod::TPM_FDE).to receive(:possible?).and_return(true)
     # Speed up tests by avoiding looking up by name in the system
     allow(Y2Storage::BlkDevice).to receive(:find_by_any_name)
-    allow(Y2Storage::BootRequirementsStrategies::Analyzer)
-      .to receive(:bls_bootloader_proposed?).and_return(false)
+    allow(Bootloader::Systeminfo).to receive(:efi?).and_return(false)
 
     allow(backend).to receive(:on_configure)
     allow(backend).to receive(:on_issues_change)
     allow(backend).to receive(:actions).and_return([])
     allow(backend).to receive(:proposal).and_return(proposal)
     allow(backend).to receive(:bootloader).and_return(bootloader)
+    allow(backend).to receive(:bootloader_probed?).and_return(false)
+    allow(backend).to receive(:available_bootloaders).and_return([])
+    allow(backend).to receive(:bootloader_config).and_return({})
+    allow(backend).to receive(:bootloader_packages).and_return([])
+    allow(backend).to receive(:probe_bootloader)
     allow(bootloader).to receive(:config)
+    allow(bootloader).to receive(:probed?).and_return(false)
+    allow(bootloader).to receive(:probe)
+    allow(bootloader).to receive(:packages).and_return([])
     mock_storage(devicegraph: "empty-hd-50GiB.yaml")
   end
 
@@ -209,12 +211,14 @@ describe Agama::DBus::Storage::Manager do
       allow(proposal.storage_system).to receive(:candidate_md_raids).and_return(candidate_raids)
       allow(proposal.storage_system).to receive(:candidate_devices)
         .and_return(candidate_drives + candidate_raids)
+      allow(proposal.storage_system).to receive(:available_volume_groups).and_return(available_vgs)
     end
 
     let(:available_drives) { [] }
     let(:candidate_drives) { [] }
     let(:available_raids) { [] }
     let(:candidate_raids) { [] }
+    let(:available_vgs) { [] }
 
     describe "serialized_system[:availableDrives]" do
       context "if there is no available drives" do
@@ -302,6 +306,29 @@ describe Agama::DBus::Storage::Manager do
         it "returns the path of each MD RAID" do
           result = parse(subject.serialized_system)[:candidateMdRaids]
           expect(result).to contain_exactly(100, 101)
+        end
+      end
+    end
+
+    describe "serialized_system[:availableVolumeGroups]" do
+      context "if there is no available volume groups" do
+        let(:available_vgs) { [] }
+
+        it "returns an empty list" do
+          expect(parse(subject.serialized_system)[:availableVolumeGroups]).to eq([])
+        end
+      end
+
+      context "if there are available volume groups" do
+        let(:available_vgs) { [vg1, vg2, vg3] }
+
+        let(:vg1) { instance_double(Y2Storage::LvmVg, sid: 200) }
+        let(:vg2) { instance_double(Y2Storage::LvmVg, sid: 201) }
+        let(:vg3) { instance_double(Y2Storage::LvmVg, sid: 202) }
+
+        it "retuns the id of each volume group" do
+          result = parse(subject.serialized_system)[:availableVolumeGroups]
+          expect(result).to contain_exactly(200, 201, 202)
         end
       end
     end
@@ -452,8 +479,6 @@ describe Agama::DBus::Storage::Manager do
 
   describe "#configure" do
     before do
-      allow(subject).to receive(:ProposalChanged)
-      allow(subject).to receive(:SystemChanged)
       allow(subject).to receive(:ProgressChanged)
       allow(subject).to receive(:ProgressFinished)
 
@@ -462,7 +487,6 @@ describe Agama::DBus::Storage::Manager do
 
       allow(backend).to receive(:activate)
       allow(backend).to receive(:probe)
-      allow(backend).to receive(:add_packages)
 
       allow(proposal).to receive(:success?).and_return true
 
@@ -479,34 +503,6 @@ describe Agama::DBus::Storage::Manager do
 
     let(:serialized_product) { config_data.to_json }
     let(:serialized_config) { config_json.to_json }
-
-    RSpec.shared_examples "emit SystemChanged" do
-      it "emits the signal SystemChanged" do
-        expect(subject).to receive(:SystemChanged)
-        subject.configure(serialized_product, serialized_config)
-      end
-    end
-
-    RSpec.shared_examples "do not emit SystemChanged" do
-      it "does not emit the signal SystemChanged" do
-        expect(subject).to_not receive(:SystemChanged)
-        subject.configure(serialized_product, serialized_config)
-      end
-    end
-
-    RSpec.shared_examples "emit ProposalChanged" do
-      it "emits the signal ProposalChanged" do
-        expect(subject).to receive(:ProposalChanged)
-        subject.configure(serialized_product, serialized_config)
-      end
-    end
-
-    RSpec.shared_examples "do not emit ProposalChanged" do
-      it "does not emit the signal ProposalChanged" do
-        expect(subject).to_not receive(:ProposalChanged)
-        subject.configure(serialized_product, serialized_config)
-      end
-    end
 
     RSpec.shared_examples "emit ProgressChanged and ProgressFinished" do
       it "emits signals ProgressChanged and ProgressFinished" do
@@ -564,13 +560,6 @@ describe Agama::DBus::Storage::Manager do
       end
     end
 
-    RSpec.shared_examples "adjust software" do
-      it "adjusts the packages to install in the target system" do
-        expect(backend).to receive(:add_packages)
-        subject.configure(serialized_product, serialized_config)
-      end
-    end
-
     RSpec.shared_examples "calculate proposal" do
       it "calculates the proposal" do
         expect(backend).to receive(:configure)
@@ -578,8 +567,6 @@ describe Agama::DBus::Storage::Manager do
       end
 
       include_examples "emit ProgressChanged and ProgressFinished"
-      include_examples "emit ProposalChanged"
-      include_examples "adjust software"
     end
 
     RSpec.shared_examples "do not calculate proposal" do
@@ -589,7 +576,6 @@ describe Agama::DBus::Storage::Manager do
       end
 
       include_examples "do not emit ProgressChanged and ProgressFinished"
-      include_examples "do not emit ProposalChanged"
     end
 
     context "if no storage configuration is given" do
@@ -621,7 +607,6 @@ describe Agama::DBus::Storage::Manager do
           context "and the storage configuration has not changed" do
             include_examples "do not activate or probe"
             include_examples "update product configuration", ["/", "swap"]
-            include_examples "emit SystemChanged"
             include_examples "calculate proposal"
           end
 
@@ -632,7 +617,6 @@ describe Agama::DBus::Storage::Manager do
 
             include_examples "do not activate or probe"
             include_examples "update product configuration", ["/", "swap"]
-            include_examples "emit SystemChanged"
             include_examples "calculate proposal"
           end
         end
@@ -641,7 +625,6 @@ describe Agama::DBus::Storage::Manager do
           context "and the storage configuration has not changed" do
             include_examples "do not activate or probe"
             include_examples "do not update product configuration"
-            include_examples "do not emit SystemChanged"
             include_examples "do not calculate proposal"
           end
 
@@ -652,7 +635,6 @@ describe Agama::DBus::Storage::Manager do
 
             include_examples "do not activate or probe"
             include_examples "do not update product configuration"
-            include_examples "emit SystemChanged"
             include_examples "calculate proposal"
           end
         end
@@ -678,7 +660,6 @@ describe Agama::DBus::Storage::Manager do
           context "and the storage configuration has not changed" do
             include_examples "activate and probe"
             include_examples "update product configuration", ["/", "swap"]
-            include_examples "emit SystemChanged"
             include_examples "calculate proposal"
           end
 
@@ -689,7 +670,6 @@ describe Agama::DBus::Storage::Manager do
 
             include_examples "activate and probe"
             include_examples "update product configuration", ["/", "swap"]
-            include_examples "emit SystemChanged"
             include_examples "calculate proposal"
           end
         end
@@ -698,7 +678,6 @@ describe Agama::DBus::Storage::Manager do
           context "and the storage configuration has not changed" do
             include_examples "do not activate or probe"
             include_examples "do not update product configuration"
-            include_examples "do not emit SystemChanged"
             include_examples "do not calculate proposal"
           end
 
@@ -709,7 +688,6 @@ describe Agama::DBus::Storage::Manager do
 
             include_examples "activate and probe"
             include_examples "do not update product configuration"
-            include_examples "emit SystemChanged"
             include_examples "calculate proposal"
           end
         end
@@ -721,6 +699,9 @@ describe Agama::DBus::Storage::Manager do
       let(:config_hash) do
         {
           storage: {
+            boot:   {
+              configure: false
+            },
             drives: [
               {
                 ptableType: "gpt",
@@ -757,8 +738,6 @@ describe Agama::DBus::Storage::Manager do
         end
 
         include_examples "emit ProgressChanged and ProgressFinished"
-        include_examples "emit ProposalChanged"
-        include_examples "adjust software"
 
         context "if the serialized config contains legacy AutoYaST settings" do
           let(:config_hash) do
@@ -778,8 +757,6 @@ describe Agama::DBus::Storage::Manager do
           end
 
           include_examples "emit ProgressChanged and ProgressFinished"
-          include_examples "emit ProposalChanged"
-          include_examples "adjust software"
         end
       end
 
@@ -804,7 +781,6 @@ describe Agama::DBus::Storage::Manager do
 
           include_examples "do not activate or probe"
           include_examples "update product configuration", ["/", "swap"]
-          include_examples "emit SystemChanged"
           include_examples "calculate new proposal"
         end
 
@@ -816,7 +792,6 @@ describe Agama::DBus::Storage::Manager do
 
             include_examples "do not activate or probe"
             include_examples "do not update product configuration"
-            include_examples "do not emit SystemChanged"
             include_examples "do not calculate proposal"
           end
 
@@ -827,7 +802,6 @@ describe Agama::DBus::Storage::Manager do
 
             include_examples "do not activate or probe"
             include_examples "do not update product configuration"
-            include_examples "emit SystemChanged"
             include_examples "calculate new proposal"
           end
         end
@@ -852,7 +826,6 @@ describe Agama::DBus::Storage::Manager do
 
           include_examples "activate and probe"
           include_examples "update product configuration", ["/", "swap"]
-          include_examples "emit SystemChanged"
           include_examples "calculate new proposal"
         end
 
@@ -864,7 +837,6 @@ describe Agama::DBus::Storage::Manager do
 
             include_examples "do not activate or probe"
             include_examples "do not update product configuration"
-            include_examples "do not emit SystemChanged"
             include_examples "do not calculate proposal"
           end
 
@@ -875,7 +847,6 @@ describe Agama::DBus::Storage::Manager do
 
             include_examples "activate and probe"
             include_examples "do not update product configuration"
-            include_examples "emit SystemChanged"
             include_examples "calculate new proposal"
           end
         end
@@ -998,11 +969,12 @@ describe Agama::DBus::Storage::Manager do
         expect(subject.serialized_config_model).to eq(
           serialize({
             boot:         {
-              configure: true,
-              device:    {
+              configure:  true,
+              device:     {
                 default: true,
                 name:    "/dev/sda"
-              }
+              },
+              bootloader: "grub2"
             },
             drives:       [
               {
@@ -1124,14 +1096,11 @@ describe Agama::DBus::Storage::Manager do
 
   describe "#probe" do
     before do
-      allow(subject).to receive(:SystemChanged)
-      allow(subject).to receive(:ProposalChanged)
       allow(subject).to receive(:ProgressChanged)
       allow(subject).to receive(:ProgressFinished)
 
       allow(backend).to receive(:activated?).and_return activated
       allow(backend).to receive(:probe)
-      allow(backend).to receive(:add_packages)
       allow(bootloader).to receive(:configure)
       # Initializes serialized_system to mimic the system is not probed yet.
       subject.serialized_system = "null"
@@ -1145,8 +1114,8 @@ describe Agama::DBus::Storage::Manager do
     end
 
     context "when storage devices are already activated" do
-      it "does not activate devices" do
-        expect(backend).to_not receive(:activate)
+      it "activates the devices" do
+        expect(backend).to receive(:activate)
         subject.probe
       end
     end
@@ -1171,20 +1140,7 @@ describe Agama::DBus::Storage::Manager do
         subject.probe
       end
 
-      it "adjusts the packages to install in the target system" do
-        allow(proposal).to receive(:success?).and_return(true)
-        expect(backend).to receive(:add_packages)
-        subject.probe
-      end
-
-      it "emits signals for ProposalChanged, SystemChanged, ProgressChanged and ProgressFinished" do
-        expect(subject).to receive(:SystemChanged) do |system_str|
-          system = parse(system_str)
-          device = system[:devices].first
-          expect(device[:name]).to eq "/dev/sda"
-          expect(system[:availableDrives]).to eq [device[:sid]]
-        end
-        expect(subject).to receive(:ProposalChanged)
+      it "emits signals for ProgressChanged and ProgressFinished" do
         expect(subject).to receive(:ProgressChanged).with(/storage configuration/i)
         expect(subject).to receive(:ProgressFinished)
         subject.probe
@@ -1195,7 +1151,6 @@ describe Agama::DBus::Storage::Manager do
       before do
         allow(proposal).to receive(:storage_json).and_return config_json
         allow(backend).to receive(:config_json).and_return config_json
-        allow(subject).to receive(:ProposalChanged)
       end
 
       let(:config_json) do
@@ -1223,23 +1178,7 @@ describe Agama::DBus::Storage::Manager do
         subject.probe
       end
 
-      it "adjusts the packages to install in the target system" do
-        expect(backend).to receive(:add_packages)
-        subject.probe
-      end
-
-      it "emits signals for ProposalChanged, SystemChanged, ProgressChanged and ProgressFinished" do
-        expect(subject).to receive(:SystemChanged) do |system_str|
-          system = parse(system_str)
-          device = system[:devices].first
-          expect(device[:name]).to eq "/dev/sda"
-          expect(system[:availableDrives]).to eq [device[:sid]]
-        end
-        expect(subject).to receive(:ProposalChanged) do |proposal_str|
-          proposal = parse(proposal_str)
-          expect(proposal[:devices]).to be_a Array
-          expect(proposal[:actions]).to be_a Array
-        end
+      it "emits signals for ProgressChanged and ProgressFinished" do
         expect(subject).to receive(:ProgressChanged).with(/storage configuration/i)
         expect(subject).to receive(:ProgressFinished)
 
@@ -1308,6 +1247,178 @@ describe Agama::DBus::Storage::Manager do
             description: /boot device cannot be automatically/i
           )
         )
+      end
+    end
+  end
+
+  describe "#serialized_resolvables" do
+    before do
+      allow(backend).to receive(:packages).and_return(packages)
+    end
+
+    context "if there are no packages" do
+      let(:packages) { [] }
+
+      it "returns an empty list" do
+        expect(parse(subject.serialized_resolvables)).to eq([])
+      end
+    end
+
+    context "if there are packages" do
+      let(:packages) do
+        [
+          Y2Storage::Feature::Package.new("package1"),
+          Y2Storage::Feature::Package.new("package2")
+        ]
+      end
+
+      it "returns the list of packages" do
+        result = parse(subject.serialized_resolvables)
+
+        expect(result).to eq(
+          [
+            {
+              name:     "package1",
+              type:     "package",
+              optional: false
+            },
+            {
+              name:     "package2",
+              type:     "package",
+              optional: false
+            }
+          ]
+        )
+      end
+    end
+  end
+
+  describe "#serialized_bootloader_resolvables" do
+    before do
+      allow(backend).to receive(:bootloader_packages).and_return(packages)
+    end
+
+    context "if there are no bootloader packages" do
+      let(:packages) { [] }
+
+      it "returns an empty list" do
+        expect(parse(subject.serialized_bootloader_resolvables)).to eq([])
+      end
+    end
+
+    context "if there are bootloader packages" do
+      let(:packages) do
+        [
+          Y2Storage::Feature::Package.new("grub2"),
+          Y2Storage::Feature::Package.new("shim")
+        ]
+      end
+
+      it "returns the list of bootloader packages" do
+        result = parse(subject.serialized_bootloader_resolvables)
+
+        expect(result).to eq(
+          [
+            {
+              name:     "grub2",
+              type:     "package",
+              optional: false
+            },
+            {
+              name:     "shim",
+              type:     "package",
+              optional: false
+            }
+          ]
+        )
+      end
+    end
+  end
+
+  describe "#serialized_bootloader_system" do
+    context "if the bootloader has not been probed yet" do
+      before do
+        allow(backend).to receive(:bootloader_probed?).and_return(false)
+      end
+
+      it "returns 'null'" do
+        expect(subject.serialized_bootloader_system).to eq("null")
+      end
+    end
+
+    context "if the bootloader has been probed" do
+      before do
+        allow(backend).to receive(:bootloader_probed?).and_return(true)
+        allow(backend).to receive(:available_bootloaders).and_return(available_bootloaders)
+      end
+
+      describe "serialized_bootloader_system[:availableBootloaders]" do
+        context "if there are no available bootloaders" do
+          let(:available_bootloaders) { [] }
+
+          it "returns an empty list" do
+            expect(parse(subject.serialized_bootloader_system)[:availableBootloaders]).to eq([])
+          end
+        end
+
+        context "if there are available bootloaders" do
+          let(:available_bootloaders) { [grub2, grub2_bls, systemd_boot] }
+
+          let(:grub2) do
+            Agama::Storage::Bootloader.new(Y2Storage::BootloaderType::GRUB2, tpm: false)
+          end
+
+          let(:grub2_bls) do
+            Agama::Storage::Bootloader.new(Y2Storage::BootloaderType::GRUB2_BLS, tpm: true)
+          end
+
+          let(:systemd_boot) do
+            Agama::Storage::Bootloader.new(Y2Storage::BootloaderType::SYSTEMD_BOOT, tpm: true)
+          end
+
+          it "returns a list with information for each bootloader" do
+            all_bootloaders = parse(subject.serialized_bootloader_system)[:availableBootloaders]
+            expect(all_bootloaders.size).to eq(3)
+            expect(all_bootloaders).to all(be_a(Hash))
+
+            grub2_info, grub2_bls_info, systemd_boot_info = all_bootloaders
+
+            expect(grub2_info).to eq({
+              type:           "grub2",
+              encryptionAuth: ["password"]
+            })
+
+            expect(grub2_bls_info).to eq({
+              type:           "grub2-bls",
+              encryptionAuth: ["password", "tpm"]
+            })
+
+            expect(systemd_boot_info).to eq({
+              type:           "systemd-boot",
+              encryptionAuth: ["password", "tpm"]
+            })
+          end
+        end
+
+        context "if a bootloader is not available" do
+          let(:available_bootloaders) { [grub2] }
+
+          let(:grub2) do
+            Agama::Storage::Bootloader.new(Y2Storage::BootloaderType::GRUB2, tpm: false)
+          end
+
+          it "does not include the bootloader" do
+            all_bootloaders = parse(subject.serialized_bootloader_system)[:availableBootloaders]
+            expect(all_bootloaders.size).to eq(1)
+
+            grub2_info = all_bootloaders.first
+
+            expect(grub2_info).to eq({
+              type:           "grub2",
+              encryptionAuth: ["password"]
+            })
+          end
+        end
       end
     end
   end

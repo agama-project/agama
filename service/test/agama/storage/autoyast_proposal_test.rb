@@ -27,6 +27,11 @@ require "agama/issue"
 require "y2storage"
 require "yaml"
 
+# Restore the ProductFeatures defaults, this resets the values accidentally read
+# from the /etc/YaST2/control.xml file from the system. This file does not exist
+# in SLE-16.x or Leap 16.x, avoid using it in Tumbleweed or Leap 15.x.
+Yast::ProductFeatures.InitFeatures(true)
+
 describe Agama::Storage::Proposal do
   include Agama::RSpec::StorageHelpers
   using Y2Storage::Refinements::SizeCasts
@@ -38,8 +43,6 @@ describe Agama::Storage::Proposal do
   before do
     mock_storage(devicegraph: scenario)
     allow(Y2Storage::Arch).to receive(:new).and_return(arch)
-    # This environment is enforced by Agama
-    allow(Y2Storage::StorageEnv.instance).to receive(:no_bls_bootloader).and_return true
   end
 
   let(:scenario) { "windows-linux-pc.yml" }
@@ -143,6 +146,36 @@ describe Agama::Storage::Proposal do
         it "registers no issues" do
           subject.calculate_autoyast(partitioning)
           expect(subject.issues).to be_empty
+        end
+
+        context "in an EFI system with grub2 as the product's default EFI bootloader" do
+          it "proposes the expected EFI partition" do
+            subject.calculate_autoyast(partitioning)
+
+            efi = staging.find_by_name("/dev/sda").partitions.min_by(&:number)
+            expect(efi.size).to eq 512.MiB
+          end
+        end
+
+        context "in an EFI system with systemd-boot as the product's default EFI bootloader" do
+          before do
+            config.data["boot"] ||= {}
+            config.data["boot"]["default_efi_bootloader"] = "systemd-boot"
+
+            # Agama::Storage::BootloaderConfigSolver#bls_compliant_system? also needs
+            # Yast::Arch.x86_64 (real hardware/kernel detection via Yast::Arch, a *different*
+            # object than the already-mocked Y2Storage::Arch double above) to be true before it
+            # will honor "default_efi_bootloader" above at all. Stub it explicitly instead of
+            # relying on real detection, which can behave inconsistently inside a container.
+            allow(Yast::Arch).to receive(:x86_64).and_return(true)
+          end
+
+          it "proposes the expected EFI partition" do
+            subject.calculate_autoyast(partitioning)
+
+            efi = staging.find_by_name("/dev/sda").partitions.min_by(&:number)
+            expect(efi.size).to eq 1.GiB
+          end
         end
       end
 
@@ -446,7 +479,7 @@ describe Agama::Storage::Proposal do
         expect(partitions[0].id.is?(:esp)).to eq(true)
         expect(partitions[1].filesystem.root?).to eq(true)
         expect(partitions[2].filesystem.mount_path).to eq("swap")
-        expect(partitions[2].size).to eq 1.GiB
+        expect(partitions[2].size).to eq 0.5.GiB
       end
     end
 

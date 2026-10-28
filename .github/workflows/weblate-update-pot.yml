@@ -63,12 +63,12 @@ jobs:
           zypper --non-interactive install --no-recommends diffutils git gettext-tools npm-default "rubygem(ruby:$RUBY_VERSION:yast-rake)" "rubygem(ruby:$RUBY_VERSION:gettext)" yast2-devtools which
 
       - name: Checkout Agama sources
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           path: agama
 
       - name: Checkout Weblate sources
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           path: agama-weblate
           repository: ${{ github.repository_owner }}/agama-weblate
@@ -101,10 +101,10 @@ jobs:
 
           if [ -s pot.diff ]; then
             echo "POT file updated"
-            echo "pot_updated=true" >> $GITHUB_OUTPUT
+            echo "pot_updated=true" >> "$GITHUB_OUTPUT"
           else
             echo "POT file unchanged"
-            echo "pot_updated=false" >> $GITHUB_OUTPUT
+            echo "pot_updated=false" >> "$GITHUB_OUTPUT"
             # reset any possible changes so they are not accidentally committed later
             git -C agama-weblate reset --hard
           fi
@@ -135,6 +135,7 @@ jobs:
       - name: (products) Generate POT file
         run: |
           cd agama/products.d
+          # shellcheck disable=SC2035
           ../.github/workflows/product_translations/products_pot *.yaml > products.pot
           msgfmt --statistics products.pot
 
@@ -154,10 +155,10 @@ jobs:
 
           if [ -s pot.diff ]; then
             echo "POT file updated"
-            echo "pot_updated=true" >> $GITHUB_OUTPUT
+            echo "pot_updated=true" >> "$GITHUB_OUTPUT"
           else
             echo "POT file unchanged"
-            echo "pot_updated=false" >> $GITHUB_OUTPUT
+            echo "pot_updated=false" >> "$GITHUB_OUTPUT"
             git -C agama-weblate reset --hard
           fi
 
@@ -201,10 +202,10 @@ jobs:
 
           if [ -s pot.diff ]; then
             echo "POT file updated"
-            echo "pot_updated=true" >> $GITHUB_OUTPUT
+            echo "pot_updated=true" >> "$GITHUB_OUTPUT"
           else
             echo "POT file unchanged"
-            echo "pot_updated=false" >> $GITHUB_OUTPUT
+            echo "pot_updated=false" >> "$GITHUB_OUTPUT"
             # reset any possible changes so they are not accidentally committed later
             git -C agama-weblate reset --hard
           fi
@@ -249,10 +250,10 @@ jobs:
 
           if [ -s pot.diff ]; then
             echo "POT file updated"
-            echo "pot_updated=true" >> $GITHUB_OUTPUT
+            echo "pot_updated=true" >> "$GITHUB_OUTPUT"
           else
             echo "POT file unchanged"
-            echo "pot_updated=false" >> $GITHUB_OUTPUT
+            echo "pot_updated=false" >> "$GITHUB_OUTPUT"
             # reset any possible changes so they are not accidentally committed later
             git -C agama-weblate reset --hard
           fi

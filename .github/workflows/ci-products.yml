@@ -1,0 +1,55 @@
+name: CI - Products
+
+permissions:
+  contents: read
+
+on:
+  push:
+    paths:
+      # NOTE: GitHub Actions do not allow using YAML references, the same path
+      # list is used below for the pull request event. Keep both lists in sync!!
+
+      # this file as well
+      - .github/workflows/ci-products.yml
+      # any change in the products subfolder
+      - products.d/**
+      # except Markdown documentation
+      - "!products.d/**.md"
+
+  pull_request:
+    paths:
+      # NOTE: GitHub Actions do not allow using YAML references, the same path
+      # list is used above for the push event. Keep both lists in sync!!
+
+      # this file as well
+      - .github/workflows/ci-products.yml
+      # any change in the products subfolder
+      - products.d/**
+      # except Markdown documentation
+      - "!products.d/**.md"
+
+  # allow running manually
+  workflow_dispatch:
+
+jobs:
+  products_tests:
+    # the default timeout is 6 hours, that's too much if the job gets stuck
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    env:
+      COVERAGE: 1
+
+    defaults:
+      run:
+        working-directory: ./products.d
+
+    steps:
+
+    - name: Git Checkout
+      uses: actions/checkout@v7
+
+    - name: Configure git
+      run:  git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
+    - name: Check product well-formedness
+      run: make check

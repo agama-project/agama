@@ -24,13 +24,7 @@ use crate::{
     api::event,
 };
 
-#[derive(thiserror::Error, Debug)]
-pub enum Error {
-    #[error(transparent)]
-    Service(#[from] service::Error),
-}
-
-pub async fn start(events: event::Sender) -> Result<Handler<Service>, Error> {
+pub async fn start(events: event::Sender) -> Result<Handler<Service>, service::Error> {
     let service = Service::new(events);
     let handler = actor::spawn(service);
 

@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useId, useState } from "react";
+import React, { useId } from "react";
 import {
   Flex,
   MenuToggle,
@@ -32,6 +32,7 @@ import {
 } from "@patternfly/react-core";
 
 import Text from "~/components/core/Text";
+import { useComboboxKeyboard } from "~/hooks/use-combobox-keyboard";
 
 import type { TranslatedString } from "~/i18n";
 
@@ -49,17 +50,20 @@ type SimpleSelectorProps = {
  * options. The selected value is passed to the parent via the `onChange`
  * callback along with the event originating the action.
  *
+ * Uses {@link useComboboxKeyboard} hook for W3C-compliant keyboard navigation:
+ * arrow keys open the menu and focus first/last item when closed.
+ *
  * @privateRemarks
  * There is an issue with a11y label for the PF/MenuToggle, check
  * https://github.com/patternfly/patternfly-react/issues/11805
  */
 export default function SimpleSelector({ label, value, options, onChange }: SimpleSelectorProps) {
   const id = useId();
-  const [isOpen, setIsOpen] = useState(false);
+  const { isOpen, setIsOpen, menuRef, getToggleRef, onToggleKeydown } = useComboboxKeyboard();
   const onToggle = () => setIsOpen(!isOpen);
 
-  const toggle = (toggleRef: React.Ref<MenuToggleElement>) => (
-    <MenuToggle id={id} ref={toggleRef} onClick={onToggle} isExpanded={isOpen}>
+  const toggle = (pfToggleRef: React.Ref<MenuToggleElement>) => (
+    <MenuToggle id={id} ref={getToggleRef(pfToggleRef)} onClick={onToggle} isExpanded={isOpen}>
       {options[value]}
     </MenuToggle>
   );
@@ -73,6 +77,7 @@ export default function SimpleSelector({ label, value, options, onChange }: Simp
       </label>
 
       <Select
+        ref={menuRef}
         isOpen={isOpen}
         selected={value}
         onSelect={(e, v) => {
@@ -80,6 +85,7 @@ export default function SimpleSelector({ label, value, options, onChange }: Simp
           setIsOpen(false);
         }}
         onOpenChange={(isOpen) => setIsOpen(isOpen)}
+        onToggleKeydown={onToggleKeydown}
         toggle={toggle}
       >
         <SelectList>

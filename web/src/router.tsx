@@ -21,16 +21,16 @@
  */
 
 import React from "react";
-import { createHashRouter, Outlet } from "react-router";
+import { createHashRouter, Navigate, Outlet } from "react-router";
 import App from "~/App";
 import Protected from "~/Protected";
 import ErrorPage from "~/components/core/ErrorPage";
-import InstallationExit from "~/components/core/InstallationExit";
+import TeardownDialog from "~/components/core/TeardownDialog";
 import InstallationFinished from "~/components/core/InstallationFinished";
 import InstallationProgress from "~/components/core/InstallationProgress";
 import LoginPage from "~/components/core/LoginPage";
 import OverviewPage from "~/components/overview/OverviewPage";
-import HostnamePage from "~/components/system/HostnamePage";
+import SystemPage from "~/components/system/SystemPage";
 import l10nRoutes from "~/routes/l10n";
 import networkRoutes from "~/routes/network";
 import productsRoutes from "~/routes/products";
@@ -38,18 +38,44 @@ import registrationRoutes from "~/routes/registration";
 import storageRoutes from "~/routes/storage";
 import softwareRoutes from "~/routes/software";
 import usersRoutes from "~/routes/users";
-import { HOSTNAME, ROOT as PATHS } from "./routes/paths";
-import { N_ } from "~/i18n";
+import { SYSTEM, USER, ROOT as PATHS } from "./routes/paths";
+
+// Redirects for legacy routes that have been consolidated or renamed. These
+// help prevent 404s for bookmarked URLs or external links after route
+// refactors. While direct access to these routes is not a fully supported or
+// common use case, maintaining redirects preserves backward compatibility.
+//
+// Using `replace` prevents unnecessary browser history entries, ensuring
+// expected back-button behavior. These redirects are intended as a temporary
+// compatibility measure and should be retained for some time to allow
+// bookmarked URLs and external links to naturally transition.
+const legacyRedirects = () => [
+  {
+    path: "/overview",
+    element: <Navigate to={PATHS.root} replace />,
+  },
+  {
+    path: "/hostname",
+    element: <Navigate to={SYSTEM.root} replace />,
+  },
+  {
+    path: "/users/first",
+    element: <Navigate to={USER.root} replace />,
+  },
+  {
+    path: "/users/first/edit",
+    element: <Navigate to={USER.root} replace />,
+  },
+  {
+    path: "/users/root/edit",
+    element: <Navigate to={USER.root} replace />,
+  },
+];
 
 const rootRoutes = () => [
   {
-    path: "/overview",
-    element: <OverviewPage />,
-  },
-  {
-    path: HOSTNAME.root,
-    element: <HostnamePage />,
-    handle: { name: N_("Hostname"), icon: "fingerprint" },
+    path: SYSTEM.root,
+    element: <SystemPage />,
   },
   registrationRoutes(),
   l10nRoutes(),
@@ -57,6 +83,7 @@ const rootRoutes = () => [
   storageRoutes(),
   softwareRoutes(),
   usersRoutes(),
+  ...legacyRedirects(),
 ];
 
 const protectedRoutes = () => [
@@ -100,8 +127,12 @@ const router = () =>
       element: <LoginPage />,
     },
     {
-      path: PATHS.installationExit,
-      element: <InstallationExit />,
+      path: PATHS.installationReboot,
+      element: <TeardownDialog action="reboot" />,
+    },
+    {
+      path: PATHS.installationShutdown,
+      element: <TeardownDialog action="shutdown" />,
     },
     {
       path: PATHS.root,
@@ -111,4 +142,4 @@ const router = () =>
     },
   ]);
 
-export { router, rootRoutes, PATHS };
+export { router, PATHS };

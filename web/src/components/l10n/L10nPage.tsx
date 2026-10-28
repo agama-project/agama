@@ -21,112 +21,65 @@
  */
 
 import React from "react";
-import { Button, Content, Grid, GridItem } from "@patternfly/react-core";
-import { InstallerL10nOptions, Link, Page } from "~/components/core";
-import { L10N as PATHS } from "~/routes/paths";
+import { Button } from "@patternfly/react-core";
+import InstallerL10nOptions from "~/components/core/InstallerL10nOptions";
+import Interpolate from "~/components/core/Interpolate";
+import Page from "~/components/layout/Page";
+import IssuesAlert from "~/components/core/IssuesAlert";
+import Text from "~/components/core/Text";
+import L10nForm from "~/components/l10n/l10n-form/Form";
+import { useIssues } from "~/hooks/model/issue";
 import { localConnection } from "~/utils";
-import { useProposal } from "~/hooks/model/proposal/l10n";
-import { useSystem } from "~/hooks/model/system/l10n";
 import { _ } from "~/i18n";
 
 const InstallerL10nSettingsInfo = () => {
   const info = localConnection()
     ? // TRANSLATORS: Text used for helping user to set the interface language
-      // and keymap from product localization options. Text in the square brackets [] is
-      // used for the link to open the settings panel, please keep the brackets.
+      // and keymap. Text in the square brackets [] is the link to the header
+      // option that opens those settings; please keep the brackets.
       _(
-        "These are the settings for the product to install. The installer language and keyboard layout can be adjusted via the [settings panel] accessible from the top bar.",
+        "These are the settings for the product to install. The installer language and keyboard layout can be adjusted using the [language and keyboard] option at the top bar.",
       )
-    : // TRANSLATORS: Text used for helping user to set the interface language
-      // from product localization options. Text in the square brackets [] is used
-      // for the link to open the settings panel, please keep the brackets.
+    : // TRANSLATORS: Text used for helping user to set the interface language.
+      // Text in the square brackets [] is the link to the header option that
+      // opens those settings; please keep the brackets.
       _(
-        "These are the settings for the product to install. The installer language can be adjusted via the [settings panel] accessible from the top bar.",
+        "These are the settings for the product to install. The installer language can be adjusted using the [language] option at the top bar.",
       );
 
-  const [infoStart, infoLink, infoEnd] = info.split(/[[\]]/);
-
   return (
-    <small>
-      {infoStart}{" "}
-      <InstallerL10nOptions
-        toggle={({ onClick }) => (
-          <Button variant="link" isInline onClick={onClick}>
-            {infoLink}
-          </Button>
+    <Text textStyle="textColorSubtle">
+      <Interpolate sentence={info}>
+        {(text) => (
+          <InstallerL10nOptions
+            toggle={({ onClick }) => (
+              <Button variant="link" isInline onClick={onClick}>
+                {text}
+              </Button>
+            )}
+          />
         )}
-      />
-      {infoEnd}
-    </small>
+      </Interpolate>
+    </Text>
   );
 };
 
-// FIXME: re-evaluate the need of "Thing not selected yet"
-
 /**
  * Page for configuring localization.
+ *
+ * Reports the localization issues found by the backend, which is where users
+ * learn which of the three settings is not recognized after the overview flags
+ * them as invalid.
  */
 export default function L10nPage() {
-  // FIXME: retrieve selection from config when ready
-  const l10nProposal = useProposal();
-  const l10nSystem = useSystem();
-  const locale =
-    l10nProposal.locale && l10nSystem.locales.find((l) => l.id === l10nProposal.locale);
-  const keymap =
-    l10nProposal.keymap && l10nSystem.keymaps.find((k) => k.id === l10nProposal.keymap);
-  const timezone =
-    l10nProposal.timezone && l10nSystem.timezones.find((t) => t.id === l10nProposal.timezone);
+  const issues = useIssues("l10n");
 
   return (
     <Page breadcrumbs={[{ label: "Language and region" }]}>
       <Page.Content>
-        <Grid hasGutter>
-          <GridItem md={4}>
-            <Page.Section
-              title={_("Language")}
-              actions={
-                <Link to={PATHS.localeSelection} isPrimary={!locale}>
-                  {locale ? _("Change") : _("Select")}
-                </Link>
-              }
-            >
-              <Content isEditorial>
-                {locale ? `${locale.language} - ${locale.territory}` : _("Wrong selection")}
-              </Content>
-            </Page.Section>
-          </GridItem>
-          <GridItem md={4}>
-            <Page.Section
-              title={_("Keyboard")}
-              actions={
-                <Link to={PATHS.keymapSelection} isPrimary={!keymap}>
-                  {keymap ? _("Change") : _("Select")}
-                </Link>
-              }
-            >
-              <Content isEditorial>{keymap ? keymap.description : _("Wrong selection")}</Content>
-            </Page.Section>
-          </GridItem>
-          <GridItem md={4}>
-            <Page.Section
-              title={_("Time zone")}
-              actions={
-                <Link to={PATHS.timezoneSelection} isPrimary={!timezone}>
-                  {timezone ? _("Change") : _("Select")}
-                </Link>
-              }
-            >
-              <Content isEditorial>
-                {timezone ? (timezone.parts || []).join(" - ") : _("Wrong selection")}
-              </Content>
-            </Page.Section>
-          </GridItem>
-          <GridItem>
-            <Content>
-              <InstallerL10nSettingsInfo />
-            </Content>
-          </GridItem>
-        </Grid>
+        <InstallerL10nSettingsInfo />
+        <IssuesAlert issues={issues} />
+        <L10nForm />
       </Page.Content>
     </Page>
   );

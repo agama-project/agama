@@ -20,7 +20,9 @@
 
 use crate::gettext_noop;
 use gettextrs::gettext;
+use heck::{ToLowerCamelCase, ToSnakeCase};
 use merge::Merge;
+use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, fmt};
 
@@ -32,19 +34,21 @@ pub enum Error {
 }
 
 /// Questions configuration.
-#[derive(Clone, Debug, Default, Serialize, Deserialize, Merge, utoipa::ToSchema)]
-#[serde(rename_all = "camelCase")]
-#[schema(as = questions::Config)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize, Merge, JsonSchema)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+#[schemars(rename = "questions.Config", title = "How to handle Agama questions")]
 pub struct Config {
+    /// Policy to answer questions: "auto" to automatically answer questions or "user" to ask the user.
     #[serde(skip_serializing_if = "Option::is_none")]
     #[merge(strategy = merge::option::overwrite_none)]
     pub policy: Option<Policy>,
+    /// List of answers to automatically use for matching questions.
     #[serde(skip_serializing_if = "Option::is_none")]
     #[merge(strategy = merge::option::overwrite_none)]
     pub answers: Option<Vec<AnswerRule>>,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, utoipa::ToSchema)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub enum Policy {
     /// Automatically answer questions.
@@ -57,9 +61,12 @@ pub enum Policy {
 ///
 /// If the rule matches with the question ([class](Self::class),
 /// [text](Self::text) or [data](Self::data), it applies the specified `answer`).
-#[derive(Clone, Serialize, Deserialize, Debug, utoipa::ToSchema, PartialEq)]
+#[derive(Clone, Serialize, Deserialize, Debug, JsonSchema, PartialEq)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+#[schemars(title = "Automatic answer to questions")]
 pub struct AnswerRule {
     /// Question class (see [QuestionSpec::class]).
+    #[schemars(example = &"multipathActivation")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub class: Option<String>,
     /// Question text (see [QuestionSpec::text]).
@@ -74,13 +81,65 @@ pub struct AnswerRule {
     pub answer: Answer,
 }
 
+/// Resolves a question class into its current name.
+///
+/// Some question classes were renamed to use a more consistent naming
+/// scheme. This maps the old names to the new ones so that existing answer
+/// rules keep matching the corresponding question after the renaming.
+///
+/// If a class is renamed again in the future, update the entry below to
+/// point directly to the latest name (do not chain deprecated classes).
+fn resolve_class(class: &str) -> &str {
+    match class {
+        "autoyast.password" => "autoyastPassword",
+        "autoyast.popup" => "autoyastPopup",
+        "autoyast.unsupported" => "autoyastUnsupported",
+        "load.retry" => "loadConfigError",
+        "registration.certificate" => "selfSignedRegCert",
+        "scripts.retry" => "retryScript",
+        "software.digest.no_digest" => "noDigest",
+        "software.digest.unknown_digest" => "unknownDigest",
+        "software.import_gpg" => "importGpg",
+        "software.installation_retry" => "retryInstallation",
+        "software.package_error.install_error" => "packageInstallError",
+        "software.package_error.provide_error" => "packageProvideError",
+        "software.script_problem" => "packageScriptProblem",
+        "software.unknown_gpg" => "unknownGpg",
+        "software.unsigned_file" => "unsignedFile",
+        "software.verification_failed" => "gpgVerificationError",
+        "storage.activate_multipath" => "multipathActivation",
+        "storage.commit_error" => "storageCommitError",
+        "storage.luks_activation" => "luksActivation",
+        "write_file_failed" => "writeFileError",
+        "write_script_failed" => "writeScriptError",
+        other => other,
+    }
+}
+
+/// Checks whether the given key/value pair is present in the question's
+/// data, regardless of whether the key uses snake_case or camelCase.
+///
+/// Answer rules and the actual question data are not consistent about the
+/// naming convention used for the data keys (e.g., "error_code" vs.
+/// "errorCode"). To avoid relying on users guessing the right one, both
+/// forms of the given key are checked against the question's data.
+fn data_matches(data: &HashMap<String, String>, key: &str, value: &str) -> bool {
+    let camel = key.to_lower_camel_case();
+    let snake = key.to_snake_case();
+
+    [key, camel.as_str(), snake.as_str()]
+        .iter()
+        .filter_map(|k| data.get(*k))
+        .any(|v| v == value)
+}
+
 impl AnswerRule {
     /// Determines whether the answer responds to the given question.
     ///
     /// * `spec`: question spec to compare with.
     pub fn answers_to(&self, spec: &QuestionSpec) -> bool {
         if let Some(class) = &self.class {
-            if spec.class != *class {
+            if spec.class != resolve_class(class) {
                 return false;
             }
         }
@@ -92,13 +151,9 @@ impl AnswerRule {
         }
 
         if let Some(data) = &self.data {
-            return data.iter().all(|(key, value)| {
-                let Some(e_val) = spec.data.get(key) else {
-                    return false;
-                };
-
-                e_val == value
-            });
+            return data
+                .iter()
+                .all(|(key, value)| data_matches(&spec.data, key, value));
         }
 
         true
@@ -106,7 +161,7 @@ impl AnswerRule {
 }
 
 /// Represents a question including its [specification](QuestionSpec) and [answer](QuestionAnswer).
-#[derive(Clone, Serialize, Deserialize, utoipa::ToSchema)]
+#[derive(Clone, Serialize, Deserialize, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct Question {
     /// Question ID.
@@ -165,12 +220,12 @@ impl Question {
 /// * a password field.
 ///
 /// In other cases, like a simple "yes/no" questions, the field would not be needed.
-#[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema, PartialEq)]
+#[derive(Clone, Debug, Serialize, Deserialize, JsonSchema, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct QuestionSpec {
     /// Question text.
     pub text: String,
-    /// Question class (e.g., "autoyast.unsupported"). It works as a hint for
+    /// Question class (e.g., "autoyastUnsupported"). It works as a hint for
     /// the UI or to match pre-defined answers. The values that are understood
     /// by Agama's UI are documented [in the Questions
     /// page](https://agama-project.github.io/docs/user/reference/profile/answers).
@@ -186,7 +241,6 @@ pub struct QuestionSpec {
     pub default_action: Option<String>,
     /// Additional data that can be set for any question.
     // FIXME: set the proper value_type.
-    #[schema(value_type = HashMap<String, String>)]
     #[serde(default, skip_serializing_if = "HashMap::is_empty")]
     pub data: HashMap<String, String>,
 }
@@ -317,7 +371,7 @@ impl QuestionSpec {
 /// from a string to a selector.
 ///
 /// The field is usually presented as a control in a form.
-#[derive(Clone, Debug, Default, Serialize, Deserialize, utoipa::ToSchema, PartialEq)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize, JsonSchema, PartialEq)]
 #[serde(rename_all = "camelCase", tag = "type")]
 pub enum QuestionField {
     /// No field.
@@ -332,10 +386,10 @@ pub enum QuestionField {
 }
 
 /// Selector option.
-#[derive(Clone, Debug, Default, Serialize, Deserialize, utoipa::ToSchema, PartialEq)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize, JsonSchema, PartialEq)]
 pub struct SelectionOption {
-    id: String,
-    label: String,
+    pub id: String,
+    pub label: String,
 }
 
 impl SelectionOption {
@@ -350,11 +404,12 @@ impl SelectionOption {
 /// Question action.
 ///
 /// They are usually presented as the button in a form.
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, utoipa::ToSchema)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, JsonSchema)]
+#[schemars(rename = "questions.Action")]
 pub struct Action {
     /// Action value.
     pub id: String,
-    /// Localized option.
+    /// Description of the action.
     pub label: String,
 }
 
@@ -371,10 +426,14 @@ impl Action {
 ///
 /// It includes the action and, optionally, and additional value which depends
 /// on the question field.
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, utoipa::ToSchema)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, JsonSchema)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+#[schemars(rename = "questions.Answer", title = "Predefined question action")]
 pub struct Answer {
+    /// Action to use for answering the question.
     #[serde(alias = "answer")]
     pub action: String,
+    /// Value to use for the question (e.g. password or string input, depending on the question type).
     #[serde(alias = "password", skip_serializing_if = "Option::is_none")]
     pub value: Option<String>,
 }
@@ -398,7 +457,7 @@ impl Answer {
 /// Represents an update operation over the list of questions.
 ///
 /// It is used by the HTTP layer only.
-#[derive(Serialize, Deserialize, utoipa::ToSchema)]
+#[derive(Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub enum UpdateQuestion {
     /// Answer the question with the given answer.
@@ -500,6 +559,135 @@ mod tests {
             answer: answer.clone(),
         };
         assert!(!not_matching_rule.answers_to(&q));
+    }
+
+    #[test]
+    fn test_answers_to_deprecated_class() {
+        let answer = Answer {
+            action: "Yes".to_string(),
+            value: None,
+        };
+
+        // The question is created with its current class name only, the
+        // mapping to the deprecated one is resolved internally.
+        let q =
+            QuestionSpec::new("Activate the LUKS device?", "luksActivation").with_yes_no_actions();
+
+        // A rule using the old (deprecated) class still matches.
+        let rule_by_deprecated_class = AnswerRule {
+            text: Default::default(),
+            class: Some("storage.luks_activation".to_string()),
+            data: Default::default(),
+            answer: answer.clone(),
+        };
+        assert!(rule_by_deprecated_class.answers_to(&q));
+
+        // A rule using the current class still matches.
+        let rule_by_current_class = AnswerRule {
+            text: Default::default(),
+            class: Some("luksActivation".to_string()),
+            data: Default::default(),
+            answer: answer.clone(),
+        };
+        assert!(rule_by_current_class.answers_to(&q));
+
+        // A rule using an unrelated class does not match.
+        let rule_by_unrelated_class = AnswerRule {
+            text: Default::default(),
+            class: Some("storage.commit_error".to_string()),
+            data: Default::default(),
+            answer: answer.clone(),
+        };
+        assert!(!rule_by_unrelated_class.answers_to(&q));
+    }
+
+    #[test]
+    fn test_resolve_class() {
+        assert_eq!(resolve_class("storage.luks_activation"), "luksActivation");
+        // A class that was never renamed is returned as-is.
+        assert_eq!(resolve_class("luksActivation"), "luksActivation");
+        assert_eq!(resolve_class("some_unknown_class"), "some_unknown_class");
+    }
+
+    #[test]
+    fn test_answers_to_data_snake_case_rule_matches_camel_case_data() {
+        let answer = Answer {
+            action: "Retry".to_string(),
+            value: None,
+        };
+
+        // The question data uses camelCase, as some producers do.
+        let q = QuestionSpec::new("Failed to install the package", "packageProvideError")
+            .with_data(&[("errorCode", "INVALID")]);
+
+        let rule = AnswerRule {
+            text: Default::default(),
+            class: Default::default(),
+            data: Some(HashMap::from([(
+                "error_code".to_string(),
+                "INVALID".to_string(),
+            )])),
+            answer: answer.clone(),
+        };
+        assert!(rule.answers_to(&q));
+    }
+
+    #[test]
+    fn test_answers_to_data_camel_case_rule_matches_snake_case_data() {
+        let answer = Answer {
+            action: "Manual".to_string(),
+            value: None,
+        };
+
+        // The question data uses snake_case, as some producers do.
+        let q = QuestionSpec::new("Failed to load the configuration", "loadConfigError")
+            .with_data(&[("original_value", "http://example.com/profile.json")]);
+
+        let rule = AnswerRule {
+            text: Default::default(),
+            class: Default::default(),
+            data: Some(HashMap::from([(
+                "originalValue".to_string(),
+                "http://example.com/profile.json".to_string(),
+            )])),
+            answer: answer.clone(),
+        };
+        assert!(rule.answers_to(&q));
+    }
+
+    #[test]
+    fn test_answers_to_data_not_matching() {
+        let answer = Answer {
+            action: "Retry".to_string(),
+            value: None,
+        };
+
+        let q = QuestionSpec::new("Failed to install the package", "packageProvideError")
+            .with_data(&[("errorCode", "INVALID")]);
+
+        // Same key (in both forms), but a different value.
+        let rule_with_wrong_value = AnswerRule {
+            text: Default::default(),
+            class: Default::default(),
+            data: Some(HashMap::from([(
+                "error_code".to_string(),
+                "OTHER".to_string(),
+            )])),
+            answer: answer.clone(),
+        };
+        assert!(!rule_with_wrong_value.answers_to(&q));
+
+        // A key that is not present under any naming variant.
+        let rule_with_unknown_key = AnswerRule {
+            text: Default::default(),
+            class: Default::default(),
+            data: Some(HashMap::from([(
+                "unknown_key".to_string(),
+                "INVALID".to_string(),
+            )])),
+            answer: answer.clone(),
+        };
+        assert!(!rule_with_unknown_key.answers_to(&q));
     }
 
     #[test]

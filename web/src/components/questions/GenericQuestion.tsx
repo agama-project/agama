@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2025] SUSE LLC
+ * Copyright (c) [2022-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -22,8 +22,7 @@
 
 import React from "react";
 import { Content } from "@patternfly/react-core";
-import { Popup } from "~/components/core";
-import QuestionActions from "~/components/questions/QuestionActions";
+import QuestionDialog from "~/components/questions/QuestionDialog";
 import { _ } from "~/i18n";
 import type { AnswerCallback, Question } from "~/model/question";
 
@@ -40,24 +39,12 @@ export default function GenericQuestion({
   question: Question;
   answerCallback: AnswerCallback;
 }): React.ReactNode {
-  const actionCallback = (action: string) => {
-    question.answer = { action };
-    answerCallback(question);
-  };
-
   const details = question.data?.details;
 
   return (
-    <Popup isOpen aria-label={_("Question")}>
+    <QuestionDialog question={question} answerCallback={answerCallback} aria-label={_("Question")}>
       <Content component="p">{question.text}</Content>
       {details && <Content>{details}</Content>}
-      <Popup.Actions>
-        <QuestionActions
-          actions={question.actions}
-          defaultAction={question.defaultAction}
-          actionCallback={actionCallback}
-        />
-      </Popup.Actions>
-    </Popup>
+    </QuestionDialog>
   );
 }

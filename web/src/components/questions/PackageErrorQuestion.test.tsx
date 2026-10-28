@@ -29,7 +29,7 @@ import PackageErrorQuestion from "~/components/questions/PackageErrorQuestion";
 const answerFn = jest.fn();
 const question: Question = {
   id: 1,
-  class: "software.package_error.provide_error",
+  class: "packageProvideError",
   text: "Package download failed",
   field: { type: FieldType.None },
   actions: [

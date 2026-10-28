@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2025] SUSE LLC
+# Copyright (c) [2025-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -59,8 +59,7 @@ module Agama
           any_partitionable_without_name? ||
           any_volume_group_without_name? ||
           any_volume_group_with_pvs? ||
-          any_partition_without_mount_path? ||
-          any_logical_volume_without_mount_path? ||
+          any_volume_without_mount_path? ||
           any_logical_volume_with_encryption? ||
           any_different_encryption? ||
           any_missing_encryption? ||
@@ -71,8 +70,8 @@ module Agama
       #
       # @return [Boolean]
       def any_unsupported_device?
-        thin_pools = config.logical_volumes.select(&:pool?)
-        thin_volumes = config.logical_volumes.select(&:thin_volume?)
+        thin_pools = config.valid_logical_volumes.select(&:pool?)
+        thin_volumes = config.valid_logical_volumes.select(&:thin_volume?)
 
         [
           config.btrfs_raids,
@@ -91,7 +90,7 @@ module Agama
         config.supporting_partitions.any? do |device_config|
           !device_config.found_device &&
             !device_config.search&.skip_device? &&
-            !device_config.search&.name
+            !device_config.search&.condition_name
         end
       end
 
@@ -99,7 +98,7 @@ module Agama
       #
       # @return [Boolean]
       def any_volume_group_without_name?
-        !config.volume_groups.all?(&:name)
+        !config.valid_volume_groups.all?(&:name)
       end
 
       # Only volume groups with automatically generated physical volumes are supported.
@@ -107,96 +106,91 @@ module Agama
       #
       # @return [Boolean]
       def any_volume_group_with_pvs?
-        config.volume_groups.any? { |v| v.physical_volumes.any? }
-      end
-
-      # Whether there is any logical volume with missing mount path.
-      # @todo Revisit this check once volume groups can be reused.
-      #
-      # @return [Boolean]
-      def any_logical_volume_without_mount_path?
-        config.logical_volumes.any? { |p| !p.filesystem&.path }
+        config.valid_volume_groups.any? { |v| v.physical_volumes.any? }
       end
 
       # Whether there is any logical volume with encryption.
       #
       # @return [Boolean]
       def any_logical_volume_with_encryption?
-        config.logical_volumes.any?(&:encryption)
+        config.valid_logical_volumes.any?(&:encryption)
       end
 
-      # Whether there is any partition with missing mount path.
+      # Whether there is any volume (i.e., partition or logical volume) with missing mount path.
       # @see #need_mount_path?
       #
       # @return [Boolean]
-      def any_partition_without_mount_path?
-        config.partitions.any? { |p| need_mount_path?(p) && !p.filesystem&.path }
+      def any_volume_without_mount_path?
+        config.volumes.any? { |v| need_mount_path?(v) && !v.filesystem&.path }
       end
 
-      # Whether the config represents a partition that requires a mount path.
+      # Whether the volume config requires a mount path.
       #
-      # A mount path is required for all the partitions that are going to be created. For a config
-      # reusing an existing partition, the mount path is required only if the partition does not
-      # represent a space policy action (delete or resize).
+      # A mount path is required for all the volumes (i.e., partitions or logical volumes) that are
+      # going to be created. For a config reusing an existing device, the mount path is required
+      # only if the volume does not represent a space policy action (delete or resize).
       #
       # @todo Revisit this check once individual physical volumes are supported by the model. The
       #   partitions representing the new physical volumes would not need a mount path.
       #
-      # @param partition_config [Configs::Partition]
+      # @param volume_config [Configs::Partition, Configs::LogicalVolume]
       # @return [Boolean]
-      def need_mount_path?(partition_config)
-        return true if new_partition?(partition_config)
+      def need_mount_path?(volume_config)
+        return true if new_volume?(volume_config)
 
-        reused_partition?(partition_config) &&
-          !delete_action_partition?(partition_config) &&
-          !resize_action_partition?(partition_config)
+        reused_volume?(volume_config) &&
+          !delete_action?(volume_config) &&
+          !resize_action?(volume_config)
       end
 
-      # Whether the config represents a new partition to be created.
+      # Whether the config represents a new volume (i.e., partition or logical volume) to be
+      # created.
       #
       # @note The config has to be solved. Otherwise, in some cases it would be impossible to
-      #   determine whether the partition is going to be created or reused. For example, if the
+      #   determine whether the volume is going to be created or reused. For example, if the
       #   config has a search and #if_not_found is set to :create.
       #
-      # @param partition_config [Configs::Partition]
+      # @param volume_config [Configs::Partition, Configs::LogicalVolume]
       # @return [Boolean]
-      def new_partition?(partition_config)
-        partition_config.search.nil? || partition_config.search.create_device?
+      def new_volume?(volume_config)
+        volume_config.search.nil? || volume_config.search.create_device?
       end
 
-      # Whether the config is reusing an existing partition.
+      # Whether the config is reusing an existing volume (i.e., partition or logical volume).
       #
       # @note The config has to be solved. Otherwise, in some cases it would be impossible to
-      #   determine whether the partition is going to be reused or skipped.
+      #   determine whether the volume is going to be reused or skipped.
       #
-      # @param partition_config [Configs::Partition]
+      # @param volume_config [Configs::Partition, Configs::LogicalVolume]
       # @return [Boolean]
-      def reused_partition?(partition_config)
-        !new_partition?(partition_config) && !partition_config.search.skip_device?
+      def reused_volume?(volume_config)
+        !new_volume?(volume_config) && !volume_config.search.skip_device?
       end
 
-      # Whether the partition is configured to be deleted or deleted if needed.
+      # Whether the volume (i.e., partition or logical volume) is configured to be deleted or
+      # deleted if needed.
       #
-      # @param partition_config [Configs::Partition]
+      # @param volume_config [Configs::Partition, Configs::LogicalVolume]
       # @return [Boolean]
-      def delete_action_partition?(partition_config)
-        return false unless reused_partition?(partition_config)
+      def delete_action?(volume_config)
+        return false unless reused_volume?(volume_config)
 
-        partition_config.delete? || partition_config.delete_if_needed?
+        volume_config.delete? || volume_config.delete_if_needed?
       end
 
-      # Whether the partition is configured to be resized if needed.
+      # Whether the volume (i.e., partition or logical volume) is configured to be resized if
+      # needed.
       #
-      # @param partition_config [Configs::Partition]
+      # @param volume_config [Configs::Partition, Configs::LogicalVolume]
       # @return [Boolean]
-      def resize_action_partition?(partition_config)
-        return false unless reused_partition?(partition_config)
+      def resize_action?(volume_config)
+        return false unless reused_volume?(volume_config)
 
-        partition_config.filesystem.nil? &&
-          partition_config.encryption.nil? &&
-          partition_config.size &&
-          !partition_config.size.default? &&
-          partition_config.size.min == Y2Storage::DiskSize.zero
+        volume_config.filesystem.nil? &&
+          volume_config.encryption.nil? &&
+          volume_config.size &&
+          !volume_config.size.default? &&
+          volume_config.size.min == Y2Storage::DiskSize.zero
       end
 
       # Whether there are different encryptions.
@@ -238,7 +232,7 @@ module Agama
       def any_missing_volume_group_encryption?
         return false if config.valid_encryptions.none?
 
-        config.volume_groups
+        config.valid_volume_groups
           .reject { |c| c.physical_volumes_devices.none? }
           .reject(&:physical_volumes_encryption)
           .any?

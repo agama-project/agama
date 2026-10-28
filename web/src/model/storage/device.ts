@@ -22,6 +22,7 @@
 
 import type { Storage as System } from "~/model/system";
 import type { Storage as Proposal } from "~/model/proposal";
+import { flat, sift } from "radashi";
 
 type Device = System.Device | Proposal.Device;
 
@@ -46,6 +47,9 @@ function isLogicalVolume(device: Device): boolean {
 }
 
 function deviceSystems(device: Device): string[] {
+  if (device.class === "volumeGroup")
+    return sift(flat(device.logicalVolumes.map((l) => l.block.systems)));
+
   return device.block?.systems || [];
 }
 

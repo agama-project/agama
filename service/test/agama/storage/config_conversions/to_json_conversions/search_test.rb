@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2025] SUSE LLC
+# Copyright (c) [2025-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -20,7 +20,8 @@
 # find current contact information at www.suse.com.
 
 require_relative "../../../../test_helper"
-require "agama/storage/config_conversions/from_json_conversions/search"
+require "agama/storage/config_conversions/from_json_conversions/drive_search"
+require "agama/storage/config_conversions/from_json_conversions/partition_search"
 require "agama/storage/config_conversions/to_json_conversions/search"
 require "y2storage/blk_device"
 require "y2storage/refinements"
@@ -30,10 +31,17 @@ using Y2Storage::Refinements::SizeCasts
 describe Agama::Storage::ConfigConversions::ToJSONConversions::Search do
   subject { described_class.new(config) }
 
-  let(:config) do
-    Agama::Storage::ConfigConversions::FromJSONConversions::Search
-      .new(config_json)
-      .convert
+  let(:config) { from_json_converter_class.new(config_json).convert }
+
+  # The conversion to JSON is generic, but the conversion from JSON is not. A drive search accepts
+  # most of the conditions, so it is used by default. The partition one is used for the conditions
+  # that only a partition search accepts.
+  let(:from_json_converter_class) do
+    Agama::Storage::ConfigConversions::FromJSONConversions::DriveSearch
+  end
+
+  let(:partition_search_converter_class) do
+    Agama::Storage::ConfigConversions::FromJSONConversions::PartitionSearch
   end
 
   let(:config_json) do
@@ -122,7 +130,43 @@ describe Agama::Storage::ConfigConversions::ToJSONConversions::Search do
       include_examples "with device"
     end
 
+    context "if #condition is configured to search by driver" do
+      let(:condition) { { driver: "ahci" } }
+
+      context "and there is no assigned device" do
+        it "generates the expected JSON" do
+          config_json = subject.convert
+          expect(config_json[:condition]).to eq({ driver: "ahci" })
+        end
+      end
+
+      include_examples "with device"
+    end
+
+    context "if #condition is configured to search by boss" do
+      let(:condition) { { boss: true } }
+
+      context "and there is no assigned device" do
+        it "generates the expected JSON" do
+          config_json = subject.convert
+          expect(config_json[:condition]).to eq({ boss: true })
+        end
+      end
+
+      context "and the value is false" do
+        let(:condition) { { boss: false } }
+
+        it "generates the expected JSON" do
+          config_json = subject.convert
+          expect(config_json[:condition]).to eq({ boss: false })
+        end
+      end
+
+      include_examples "with device"
+    end
+
     context "if #condition is configured to search by partition number" do
+      let(:from_json_converter_class) { partition_search_converter_class }
       let(:condition) { { number: 2 } }
 
       context "and there is no assigned device" do
@@ -133,6 +177,222 @@ describe Agama::Storage::ConfigConversions::ToJSONConversions::Search do
       end
 
       include_examples "with device"
+    end
+
+    context "if #condition is configured to search by partition id" do
+      let(:from_json_converter_class) { partition_search_converter_class }
+      let(:condition) { { id: "esp" } }
+
+      context "and there is no assigned device" do
+        it "generates the expected JSON" do
+          config_json = subject.convert
+          expect(config_json[:condition]).to eq({ id: "esp" })
+        end
+      end
+
+      include_examples "with device"
+    end
+
+    context "if #condition is configured with an 'and' operator" do
+      let(:condition) do
+        { and: [{ name: "/dev/vda" }, { size: { less: "1 TiB" } }] }
+      end
+
+      it "generates the expected JSON" do
+        config_json = subject.convert
+        expect(config_json[:condition]).to eq(
+          { and: [{ name: "/dev/vda" }, { size: { less: 1.TiB.to_i } }] }
+        )
+      end
+    end
+
+    context "if #condition is configured with an 'or' operator" do
+      let(:from_json_converter_class) { partition_search_converter_class }
+
+      let(:condition) do
+        { or: [{ number: 1 }, { number: 2 }] }
+      end
+
+      it "generates the expected JSON" do
+        config_json = subject.convert
+        expect(config_json[:condition]).to eq(
+          { or: [{ number: 1 }, { number: 2 }] }
+        )
+      end
+    end
+
+    context "if #condition is configured with a 'not' operator" do
+      let(:condition) { { not: { name: "/dev/vda" } } }
+
+      it "generates the expected JSON" do
+        config_json = subject.convert
+        expect(config_json[:condition]).to eq({ not: { name: "/dev/vda" } })
+      end
+    end
+
+    context "if #condition is configured to search by filesystem presence" do
+      context "with the 'any' shortcut" do
+        let(:condition) { { filesystem: "any" } }
+
+        it "generates the expected JSON" do
+          config_json = subject.convert
+          expect(config_json[:condition]).to eq({ filesystem: "any" })
+        end
+      end
+
+      context "with the 'none' shortcut" do
+        let(:condition) { { filesystem: "none" } }
+
+        it "generates the expected JSON" do
+          config_json = subject.convert
+          expect(config_json[:condition]).to eq({ filesystem: "none" })
+        end
+      end
+    end
+
+    context "if #condition is configured to search by filesystem type" do
+      let(:condition) { { filesystem: { type: "ext4" } } }
+
+      it "generates the expected JSON" do
+        config_json = subject.convert
+        expect(config_json[:condition]).to eq({ filesystem: { type: "ext4" } })
+      end
+    end
+
+    context "if #condition is configured to search by filesystem label" do
+      let(:condition) { { filesystem: { label: "data" } } }
+
+      it "generates the expected JSON" do
+        config_json = subject.convert
+        expect(config_json[:condition]).to eq({ filesystem: { label: "data" } })
+      end
+    end
+
+    context "if #condition is configured with a filesystem operator" do
+      let(:condition) do
+        { filesystem: { and: [{ type: "btrfs" }, { not: { label: "root" } }] } }
+      end
+
+      it "generates the expected JSON" do
+        config_json = subject.convert
+        expect(config_json[:condition]).to eq(
+          { filesystem: { and: [{ type: "btrfs" }, { not: { label: "root" } }] } }
+        )
+      end
+    end
+
+    context "if #condition is configured with partitions presence 'any'" do
+      let(:condition) { { partitions: "any" } }
+
+      it "generates the expected JSON" do
+        expect(subject.convert[:condition]).to eq({ partitions: "any" })
+      end
+    end
+
+    context "if #condition is configured with partitions presence 'none'" do
+      let(:condition) { { partitions: "none" } }
+
+      it "generates the expected JSON" do
+        expect(subject.convert[:condition]).to eq({ partitions: "none" })
+      end
+    end
+
+    context "if #condition is configured with a partitions 'any' quantifier" do
+      let(:condition) { { partitions: { any: { size: { greater: "2 GiB" } } } } }
+
+      it "generates the expected JSON" do
+        expect(subject.convert[:condition]).to eq(
+          { partitions: { any: { size: { greater: 2.GiB.to_i } } } }
+        )
+      end
+    end
+
+    context "if #condition is configured with a partitions 'all' quantifier" do
+      let(:condition) { { partitions: { all: { filesystem: { type: "ext4" } } } } }
+
+      it "generates the expected JSON" do
+        expect(subject.convert[:condition]).to eq(
+          { partitions: { all: { filesystem: { type: "ext4" } } } }
+        )
+      end
+    end
+
+    context "if #condition is configured with a partitions 'count' (min only)" do
+      let(:condition) { { partitions: { count: { min: 2 } } } }
+
+      it "generates the expected JSON" do
+        expect(subject.convert[:condition]).to eq({ partitions: { count: { min: 2 } } })
+      end
+    end
+
+    context "if #condition is configured with a partitions 'count' (condition, min, max)" do
+      let(:condition) do
+        { partitions: { count: { condition: { size: { greater: "10 GiB" } }, min: 2, max: 5 } } }
+      end
+
+      it "generates the expected JSON" do
+        expect(subject.convert[:condition]).to eq(
+          {
+            partitions: {
+              count: { condition: { size: { greater: 10.GiB.to_i } }, min: 2, max: 5 }
+            }
+          }
+        )
+      end
+    end
+
+    context "if #condition is configured with a partitions quantifier with an id condition" do
+      let(:condition) { { partitions: { any: { id: "esp" } } } }
+
+      it "generates the expected JSON" do
+        expect(subject.convert[:condition]).to eq({ partitions: { any: { id: "esp" } } })
+      end
+    end
+
+    context "if #condition is configured with operators over driver and size" do
+      let(:condition) do
+        {
+          and: [
+            { not: { driver: "sd" } },
+            { size: { greater: "100 GiB" } }
+          ]
+        }
+      end
+
+      it "generates the expected JSON" do
+        config_json = subject.convert
+        expect(config_json[:condition]).to eq(
+          {
+            and: [
+              { not: { driver: "sd" } },
+              { size: { greater: 100.GiB.to_i } }
+            ]
+          }
+        )
+      end
+    end
+
+    context "if #condition is configured with nested operators" do
+      let(:condition) do
+        {
+          and: [
+            { size: { less: "1 TiB" } },
+            { not: { name: "/dev/vda" } }
+          ]
+        }
+      end
+
+      it "generates the expected JSON" do
+        config_json = subject.convert
+        expect(config_json[:condition]).to eq(
+          {
+            and: [
+              { size: { less: 1.TiB.to_i } },
+              { not: { name: "/dev/vda" } }
+            ]
+          }
+        )
+      end
     end
 
     context "if #if_not_found is configured" do

@@ -1,0 +1,300 @@
+{
+  "storage": {
+    "drives": [
+      {
+        "search": {
+          "condition": {
+            "and": [
+              { "size": { "greater": "10 GiB" } },
+              { "not": { "name": "/dev/vdb" } }
+            ]
+          }
+        }
+      },
+      {
+        "search": {
+          "condition": {
+            "or": [
+              { "name": "/dev/vda" },
+              { "name": "/dev/vdb" }
+            ]
+          }
+        }
+      },
+      {
+        "search": {
+          "condition": {
+            "not": { "size": { "less": "10 GiB" } }
+          }
+        }
+      },
+      {
+        "search": {
+          "condition": {
+            "and": [
+              {
+                "or": [
+                  { "name": "/dev/vda" },
+                  { "name": "/dev/vdb" }
+                ]
+              },
+              { "not": { "size": { "less": "1 GiB" } } }
+            ]
+          },
+          "ifNotFound": "skip",
+          "max": 1
+        },
+        "partitions": [
+          {
+            "search": {
+              "condition": {
+                "and": [
+                  { "number": 1 },
+                  { "size": { "greater": "1 GiB" } }
+                ]
+              }
+            }
+          },
+          {
+            "search": {
+              "condition": {
+                "or": [
+                  { "number": 1 },
+                  { "number": 2 }
+                ]
+              }
+            }
+          },
+          {
+            "search": {
+              "condition": {
+                "not": { "name": "/dev/vda1" }
+              }
+            },
+            "delete": true
+          },
+          {
+            "search": {
+              "condition": {
+                "and": [
+                  { "size": { "greater": "10 GiB" } },
+                  { "filesystem": { "type": "xfs" } }
+                ]
+              }
+            }
+          },
+          {
+            "search": {
+              "condition": {
+                "filesystem": { "label": "data" }
+              }
+            }
+          },
+          {
+            "search": {
+              "condition": {
+                "id": "esp"
+              }
+            }
+          },
+          {
+            "search": {
+              "condition": {
+                "and": [
+                  { "id": "linux" },
+                  { "not": { "filesystem": "none" } }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      {
+        "search": {
+          "condition": {
+            "filesystem": "none"
+          }
+        }
+      },
+      {
+        "search": {
+          "condition": {
+            "filesystem": "any"
+          }
+        }
+      },
+      {
+        "search": {
+          "condition": {
+            "filesystem": { "type": "ext4" }
+          }
+        }
+      },
+      {
+        "search": {
+          "condition": {
+            "and": [
+              { "name": "/dev/vda" },
+              {
+                "filesystem": {
+                  "and": [
+                    { "type": "btrfs" },
+                    { "not": { "label": "root" } }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      },
+      { "search": { "condition": { "partitions": "any" } } },
+      { "search": { "condition": { "partitions": "none" } } },
+      {
+        "search": {
+          "condition": {
+            "partitions": { "any": { "size": { "greater": "10 GiB" } } }
+          }
+        }
+      },
+      {
+        "search": {
+          "condition": {
+            "partitions": { "none": { "filesystem": "any" } }
+          }
+        }
+      },
+      {
+        "search": {
+          "condition": {
+            "partitions": { "all": { "filesystem": { "type": "xfs" } } }
+          }
+        }
+      },
+      {
+        "search": {
+          "condition": {
+            "partitions": { "count": { "min": 2 } }
+          }
+        }
+      },
+      {
+        "search": {
+          "condition": {
+            "partitions": { "count": { "max": 3 } }
+          }
+        }
+      },
+      {
+        "search": {
+          "condition": {
+            "partitions": {
+              "count": {
+                "condition": { "size": { "greater": "10 GiB" } },
+                "min": 2,
+                "max": 5
+              }
+            }
+          }
+        }
+      },
+      {
+        "search": {
+          "condition": {
+            "driver": "ahci"
+          }
+        }
+      },
+      {
+        "search": {
+          "condition": {
+            "and": [
+              { "not": { "driver": "sd" } },
+              { "size": { "greater": "100 GiB" } }
+            ]
+          }
+        }
+      },
+      {
+        "search": {
+          "condition": {
+            "boss": true
+          }
+        }
+      },
+      {
+        "search": {
+          "condition": {
+            "and": [
+              { "boss": false },
+              { "driver": "nvme" }
+            ]
+          }
+        }
+      }
+    ],
+    "mdRaids": [
+      {
+        "search": {
+          "condition": {
+            "and": [
+              { "name": "/dev/md0" },
+              { "not": { "size": { "less": "100 GiB" } } }
+            ]
+          }
+        }
+      },
+      {
+        "search": {
+          "condition": {
+            "or": [
+              { "filesystem": "none" },
+              { "filesystem": { "type": "ext4" } }
+            ]
+          }
+        }
+      },
+      {
+        "search": {
+          "condition": {
+            "partitions": { "any": { "filesystem": { "type": "ext4" } } }
+          }
+        }
+      }
+    ],
+    "volumeGroups": [
+      {
+        "name": "system",
+        "search": {
+          "condition": {
+            "or": [
+              { "name": "vg0" },
+              { "name": "vg1" }
+            ]
+          }
+        },
+        "logicalVolumes": [
+          {
+            "search": {
+              "condition": {
+                "and": [
+                  { "not": { "name": "root" } },
+                  { "size": { "greater": "5 GiB" } }
+                ]
+              }
+            }
+          },
+          {
+            "search": {
+              "condition": {
+                "and": [
+                  { "filesystem": { "label": "home" } },
+                  { "not": { "filesystem": { "type": "swap" } } }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

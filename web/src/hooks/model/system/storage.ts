@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2025] SUSE LLC
+ * Copyright (c) [2025-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -36,22 +36,12 @@ function useSystem(): Storage.System | null {
   return data;
 }
 
-const selectEncryptionMethods = (data: System | null): Storage.EncryptionMethod[] =>
-  data?.storage?.encryptionMethods || [];
-
-function useEncryptionMethods(): Storage.EncryptionMethod[] {
-  const { data } = useSuspenseQuery({
-    ...systemQuery,
-    select: selectEncryptionMethods,
-  });
-  return data;
-}
-
 const enum DeviceGroup {
   AvailableDrives = "availableDrives",
   CandidateDrives = "candidateDrives",
   AvailableMdRaids = "availableMdRaids",
   CandidateMdRaids = "candidateMdRaids",
+  AvailableVolumeGroups = "availableVolumeGroups",
 }
 
 function selectDeviceGroups(data: System | null, groups: DeviceGroup[]): Storage.Device[] {
@@ -117,7 +107,11 @@ function useCandidateMdRaids(): Storage.Device[] {
 }
 
 const selectAvailableDevices = (data: System | null): Storage.Device[] =>
-  selectDeviceGroups(data, [DeviceGroup.AvailableDrives, DeviceGroup.AvailableMdRaids]);
+  selectDeviceGroups(data, [
+    DeviceGroup.AvailableDrives,
+    DeviceGroup.AvailableMdRaids,
+    DeviceGroup.AvailableVolumeGroups,
+  ]);
 
 /**
  * Hook that returns the list of available devices for installation.
@@ -215,7 +209,6 @@ function useIssues() {
 
 export {
   useSystem,
-  useEncryptionMethods,
   useAvailableDrives,
   useCandidateDrives,
   useAvailableMdRaids,

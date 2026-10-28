@@ -18,10 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::{
-    storage,
-    storage_client::proxies::{dasd, DASDProxy},
-};
+use crate::storage_client::proxies::{dasd, DASDProxy};
 use agama_utils::{
     actor::Handler,
     api::{
@@ -35,7 +32,7 @@ use serde::Deserialize;
 use serde_json;
 use tokio::sync::broadcast;
 use tokio_stream::StreamExt;
-use zbus::{message, Connection, MatchRule, MessageStream};
+use zbus::{fdo::PropertiesChanged, message, Connection, MatchRule, MessageStream};
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
@@ -46,9 +43,9 @@ pub enum Error {
     #[error(transparent)]
     DBus(#[from] zbus::Error),
     #[error(transparent)]
-    Json(#[from] serde_json::Error),
+    DBusConversion(#[from] zbus::zvariant::Error),
     #[error(transparent)]
-    Storage(#[from] storage::service::Error),
+    Json(#[from] serde_json::Error),
 }
 
 #[derive(Debug, Deserialize)]
@@ -72,7 +69,6 @@ impl From<ProgressData> for Progress {
 }
 
 pub struct Monitor {
-    storage: Handler<storage::Service>,
     progress: Handler<progress::Service>,
     events: event::Sender,
     connection: Connection,
@@ -80,13 +76,11 @@ pub struct Monitor {
 
 impl Monitor {
     pub fn new(
-        storage: Handler<storage::Service>,
         progress: Handler<progress::Service>,
         events: event::Sender,
         connection: Connection,
     ) -> Self {
         Self {
-            storage,
             progress,
             events,
             connection,
@@ -99,15 +93,14 @@ impl Monitor {
             .msg_type(message::Type::Signal)
             .sender(proxy.inner().destination())?
             .path(proxy.inner().path())?
-            .interface(proxy.inner().interface())?
             .build();
         let mut stream = MessageStream::for_match_rule(rule, &self.connection, None).await?;
 
         while let Some(message) = stream.next().await {
             let message = message?;
 
-            if let Some(signal) = dasd::SystemChanged::from_message(message.clone()) {
-                self.handle_system_changed(signal)?;
+            if let Some(signal) = PropertiesChanged::from_message(message.clone()) {
+                self.handle_properties_changed(signal)?;
                 continue;
             }
             if let Some(signal) = dasd::ProgressChanged::from_message(message.clone()) {
@@ -132,13 +125,6 @@ impl Monitor {
         Ok(())
     }
 
-    fn handle_system_changed(&self, _signal: dasd::SystemChanged) -> Result<(), Error> {
-        self.events
-            .send(Event::SystemChanged { scope: Scope::DASD })?;
-        self.storage.cast(storage::message::Probe)?;
-        Ok(())
-    }
-
     async fn handle_progress_changed(&self, signal: dasd::ProgressChanged) -> Result<(), Error> {
         let args = signal.args()?;
         let progress_data = serde_json::from_str::<ProgressData>(args.progress)?;
@@ -152,6 +138,15 @@ impl Monitor {
         self.progress
             .call(progress::message::Finish::new(Scope::DASD))
             .await?;
+        Ok(())
+    }
+
+    fn handle_properties_changed(&self, signal: PropertiesChanged) -> Result<(), Error> {
+        let args = signal.args()?;
+        if args.changed_properties().get("System").is_some() {
+            self.events
+                .send(Event::SystemChanged { scope: Scope::DASD })?;
+        }
         Ok(())
     }
 

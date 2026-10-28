@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -38,7 +38,7 @@ module Agama
           # @param partition_json [Hash]
           # @return [Configs::Partition]
           def convert_partition(partition_json)
-            FromJSONConversions::Partition.new(partition_json).convert
+            FromJSONConversions::Partition.new(partition_json, bootloader_config).convert
           end
         end
       end

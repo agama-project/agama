@@ -48,7 +48,7 @@ module Agama
               label:         filesystem_json[:label],
               path:          filesystem_json[:path],
               mount_options: filesystem_json[:mountOptions],
-              mkfs_options:  filesystem_json[:mkfsOptions],
+              mkfs_args:     convert_mkfs_args,
               mount_by:      convert_mount_by,
               type:          convert_type
             }
@@ -68,6 +68,15 @@ module Agama
             return unless filesystem_type_json
 
             FromJSONConversions::FilesystemType.new(filesystem_type_json).convert
+          end
+
+          # @return [String, nil]
+          def convert_mkfs_args
+            fallback_value = (filesystem_json[:mkfsOptions] || []).join(" ")
+            value = filesystem_json[:mkfsExtraArguments] || fallback_value
+            return nil if value.empty?
+
+            value
           end
         end
       end

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024-2025] SUSE LLC
+# Copyright (c) [2024-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -29,6 +29,8 @@ module Y2Storage
       # @param vg_config [Agama::Storage::Configs::VolumeGroup]
       # @return [Array<Planned::Device>]
       def planned_devices(vg_config)
+        return [] if vg_config.search&.skip_device?
+
         [planned_vg(vg_config)]
       end
 
@@ -49,7 +51,7 @@ module Y2Storage
         Y2Storage::Planned::LvmVg.new(volume_group_name: vg_config.vg_name).tap do |planned|
           planned.extent_size = vg_config.extent_size
           planned.lvs = planned_lvs(vg_config)
-          planned.size_strategy = :use_needed
+          planned.size_strategy = vg_config.physical_volumes_policy || :use_needed
           planned.pvs_candidate_devices = devices_for_pvs(vg_config)
           configure_pvs_encryption(planned, vg_config)
           configure_reuse(planned, vg_config)
@@ -95,15 +97,18 @@ module Y2Storage
       # @param config [Agama::Storage::Configs::VolumeGroup]
       # @return [Array<Planned::LvmLv>]
       def planned_normal_lvs(config)
-        configs = config.logical_volumes.reject(&:pool?).reject(&:thin_volume?)
-        configs.map { |c| planned_lv(c, LvType::NORMAL) }
+        valid_lv_configs(config)
+          .reject(&:pool?)
+          .reject(&:thin_volume?)
+          .map { |c| planned_lv(c, LvType::NORMAL) }
       end
 
       # @param config [Agama::Storage::Configs::VolumeGroup]
       # @return [Array<Planned::LvmLv>]
       def planned_thin_pool_lvs(config)
-        pool_configs = config.logical_volumes.select(&:pool?)
-        pool_configs.map { |c| planned_thin_pool_lv(c, config) }
+        valid_lv_configs(config)
+          .select(&:pool?)
+          .map { |c| planned_thin_pool_lv(c, config) }
       end
 
       # Plan a thin pool logical volume and its thin volumes.
@@ -146,6 +151,17 @@ module Y2Storage
           configure_size(planned, config.size)
           configure_reuse(planned, config)
         end
+      end
+
+      # Valid logical volume configs to plan for.
+      #
+      # @param config [Agama::Storage::Configs::VolumeGroup]
+      # @return [Array<Agama::Storage::Configs::LogicalVolume>]
+      def valid_lv_configs(config)
+        config.logical_volumes
+          .reject(&:delete?)
+          .reject(&:delete_if_needed?)
+          .reject { |c| c.search&.skip_device? }
       end
     end
   end

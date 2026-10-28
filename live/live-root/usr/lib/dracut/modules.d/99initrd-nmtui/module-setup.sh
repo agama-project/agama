@@ -20,12 +20,15 @@ installkernel() {
 
 # install hook for dracut
 install() {
+  # fail if any install command fails (cannot be used globally as this file is sourced by dracut)
+  set -e
   # install the hook for processing the boot parameters and enabling network support in dracut
   inst_hook cmdline 99 "$moddir/initrd-nmtui-cmdline.sh"
 
   # install the systemd service and the self-update script to the initramfs
-  inst_multiple "$systemdsystemconfdir"/initrd-nmtui.service initrd-network-setup.sh dialog nmtui nmcli kill tput clear
+  inst_multiple /etc/systemd/system/initrd-nmtui.service initrd-network-setup.sh dialog nmtui nmcli kill tput clear
 
   # enable the self-update service in the initramfs
   $SYSTEMCTL -q --root "$initdir" enable initrd-nmtui.service
+  set +e
 }

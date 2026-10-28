@@ -19,15 +19,18 @@
 // find current contact information at www.suse.com.
 
 use merge::Merge;
+use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
-#[derive(Clone, Debug, Default, Serialize, Deserialize, utoipa::ToSchema)]
+/// Storage configuration.
+#[derive(Clone, Debug, Default, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[schema(as = storage::Config)]
 pub struct Config {
+    /// Storage configuration.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub storage: Option<Value>,
+    /// Accepts all options of the AutoYaST partitioning section (i.e., XML to JSON).
     #[serde(skip_serializing_if = "Option::is_none")]
     pub legacy_autoyast_storage: Option<Value>,
 }

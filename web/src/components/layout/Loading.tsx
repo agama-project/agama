@@ -31,7 +31,7 @@ type LoadingProps = {
   /** Text to be rendered alongside the spinner */
   text?: TranslatedString;
   /** Accessible text, required when rendering only the spinner */
-  "aria-label"?: string;
+  "aria-label"?: TranslatedString;
   /** Loader style, full screen or inline */
   variant?: "full-screen" | "inline";
   /** Size for the spinner icon */

@@ -57,6 +57,10 @@ translations:
       "stabili" e più recenti.
     ja: 実験的なディストリビューションではありますが、 Tumbleweed よりは比較的ゆっくりした、かつ Leap よりは速いペースで公開される
       openSUSE ローリングリリース型ディストリビューションです。 "安定性" と最新パッケージの中間を目指しています。
+    lo: ລຸ້ນ rolling release ແບບທົດລອງ ແລະ ຊ້າກວ່າຂອງ openSUSE ທີ່ຖືກອອກແບບມາໃຫ້ມີ
+      ການອັບເດດໜ້ອຍກວ່າ Tumbleweed ແຕ່ຫຼາຍກວ່າ Leap
+      ໂດຍທີ່ຜູ້ໃຊ້ບໍ່ຈຳເປັນຕ້ອງເລືອກ ລະຫວ່າງຊຸດຊອບແວທີ່ "ໝັ້ນຄົງ" ຫຼື
+      ຊຸດຊອບແວທີ່ໃໝ່ກວ່າ.
     nb_NO: En eksperimentell og en litt saktere rullende utgivelse av openSUSE, som
       er designet for å oppdatere sjeldnere enn Tumbleweed men oftere enn Leap
       uten å måtte tvinge brukere til å velge mellom "stabile" og nyere pakker.
@@ -64,6 +68,10 @@ translations:
       ontworpen minder updates te hebben dan Tumbleweed maar vaker dan Leap
       zonder gebruikers te dwingen om te kiezen tussen "stabiele" en nieuwere
       pakketten.
+    pl: Eksperymentalna dystrybucja ciągła openSUSE o nieco wolniejszym cyklu
+      wydawniczym, aktualizowana rzadziej niż Tumbleweed, ale częściej niż Leap,
+      bez zmuszania użytkowników do wyboru między „stabilnymi” a nowszymi
+      pakietami.
     pt_BR: Uma versão experimental e um pouco mais lenta do openSUSE, projetada para
       atualizar com menos frequência que o Tumbleweed, mas com mais frequência
       que o Leap, sem forçar os usuários a escolher entre pacotes "estáveis" e
@@ -71,6 +79,9 @@ translations:
     ru: Экспериментальная непрерывно обновляемая версия openSUSE, обновляющаяся реже
       Tumbleweed, но чаще Leap. Предлагает баланс между высокой стабильностью и
       новизной пакетов.
+    sk: Experimentálne a trochu pomalšie rolujúce vydanie openSUSE navrhnuté tak,
+      aby sa aktualizovalo menej často ako Tumbleweed, ale častejšie ako Leap,
+      bez nútenia používateľov vyberať si medzi "stabilnými" a novšími balíkmi.
     sv: En experimentell och något långsammare rullande utgåva av openSUSE utformad
       för att få nya paketuppdateringar mer sällan än Tumbleweed men oftare än
       Leap utan att tvinga användarna att välja mellan "stabila" eller nyare
@@ -85,6 +96,7 @@ translations:
       之间，旨在让用户无需在“稳定版”和新版软件包之间抉择。
     zh_TW: 一個具實驗性質且稍慢的 openSUSE 滾動發行版本，其更新頻率低於 Tumbleweed、高於 Leap，讓使用者無需在 "穩定性"
       與新套件之間做出選擇。
+desktop_selection: suggested
 software:
   installation_repositories:
     - url: https://download.opensuse.org/slowroll/repo/oss/
@@ -98,35 +110,37 @@ software:
     - enhanced_base
   optional_patterns: []
   user_patterns:
-    - basic-desktop
-    - gnome
-    - kde
-    - yast2_basis
-    - yast2_desktop
-    - yast2_server
+    - name: basic_desktop
+      desktop: true
+    - name: xfce_wayland
+      desktop: true
+    - name: kde
+      desktop: true
+    - name: gnome
+      desktop: true
+    - name: lxqt_wayland
+      desktop: true
+    - name: openSUSEway
+      desktop: true
+    - name: hyprland
+      desktop: true
+    - cockpit
     - multimedia
     - office
+    - name: selinux
+      selected: true
+    - apparmor
   mandatory_packages:
     - NetworkManager
     - openSUSE-repos-Slowroll
     - sudo-policy-wheel-auth-self # explicit wheel group policy to conform new auth model
-  optional_packages: []
+  optional_packages: [ os-prober ]
   base_product: openSUSE
 
-security:
-  lsm: apparmor
-  available_lsms:
-    apparmor:
-      patterns:
-        - apparmor
-    selinux:
-      patterns:
-        - selinux
-    none:
-      patterns: null
+boot:
+  default_efi_bootloader: "systemd-boot"
 
 storage:
-  boot_strategy: BLS
   space_policy: delete
   volumes:
     - "/"
@@ -147,21 +161,6 @@ storage:
           # Unified var subvolume - https://lists.opensuse.org/opensuse-packaging/2017-11/msg00017.html
           - path: var
             copy_on_write: false
-          # Architecture specific subvolumes
-          - path: boot/grub2/arm64-efi
-            archs: aarch64
-          - path: boot/grub2/arm-efi
-            archs: arm
-          - path: boot/grub2/i386-pc
-            archs: x86_64
-          - path: boot/grub2/powerpc-ieee1275
-            archs: ppc,!board_powernv
-          - path: boot/grub2/s390x-emu
-            archs: s390
-          - path: boot/grub2/x86_64-efi
-            archs: x86_64
-          - path: boot/grub2/riscv64-efi
-            archs: riscv64
       size:
         auto: true
       outline:

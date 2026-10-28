@@ -24,64 +24,65 @@ import React, { useState } from "react";
 import { ActionGroup, Divider, Form } from "@patternfly/react-core";
 import { sprintf } from "sprintf-js";
 import { useNavigate, useParams } from "react-router";
-import { Page, SubtleContent } from "~/components/core";
+import { SubtleContent } from "~/components/core";
+import Page from "~/components/layout/Page";
 import SpaceActionsTable, { SpacePolicyAction } from "~/components/storage/SpaceActionsTable";
-import { createPartitionableLocation, deviceChildren } from "~/components/storage/utils";
-import { useDevices } from "~/hooks/model/system/storage";
-import { usePartitionable, useSetSpacePolicy } from "~/hooks/model/storage/config-model";
+import { deviceChildren } from "~/components/storage/utils";
+import { useDevice } from "~/hooks/model/system/storage";
+import {
+  useDevice as useDeviceConfig,
+  useSetSpacePolicy,
+} from "~/hooks/model/storage/config-model";
 import { toDevice } from "~/components/storage/device-utils";
 import { STORAGE } from "~/routes/paths";
 import { _ } from "~/i18n";
+import configModel from "~/model/storage/config-model";
+import type { Storage as System } from "~/model/system";
+import type { DeviceCollection } from "~/model/storage/config-model";
+import { isVolumeGroup } from "~/model/storage/device";
 
-import type { Storage as Proposal } from "~/model/proposal";
-import type { ConfigModel, Partitionable } from "~/model/storage/config-model";
+type Action = "delete" | "resizeIfNeeded";
 
-const partitionAction = (partition: ConfigModel.Partition) => {
-  if (partition.delete) return "delete";
-  if (partition.resizeIfNeeded) return "resizeIfNeeded";
-
-  return undefined;
-};
-
-function useDeviceModelFromParams(): Partitionable.Device | null {
+function useDeviceParams(): [DeviceCollection, number] {
   const { collection, index } = useParams();
-  const location = createPartitionableLocation(collection, index);
-  const deviceModel = usePartitionable(location.collection, location.index);
 
-  return deviceModel;
+  return [collection as DeviceCollection, Number(index)];
 }
 
 /**
  * Renders a page that allows the user to select the space policy and actions.
  */
 export default function SpacePolicySelectionPage() {
-  const deviceModel = useDeviceModelFromParams();
-  const devices = useDevices();
-  const device = devices.find((d) => d.name === deviceModel.name);
-  const children = deviceChildren(device);
+  const [collection, index] = useDeviceParams();
+  const deviceConfig = useDeviceConfig(collection, index);
+  const device = useDevice(deviceConfig.name);
   const setSpacePolicy = useSetSpacePolicy();
-  const { collection, index } = useParams();
+  const navigate = useNavigate();
 
-  const partitionDeviceAction = (device: Proposal.Device) => {
-    const partition = deviceModel.partitions?.find((p) => p.name === device.name);
+  const children = deviceChildren(device);
 
-    return partition ? partitionAction(partition) : undefined;
+  const volumeDeviceAction = (volumeDevice: System.Device): Action | null => {
+    const volumeConfig = configModel.device
+      .volumes(deviceConfig)
+      .find((v) => v.name === volumeDevice.name);
+
+    if (!volumeConfig) return null;
+
+    if (volumeConfig.delete) return "delete";
+
+    if (volumeConfig.resizeIfNeeded) return "resizeIfNeeded";
   };
 
   const [actions, setActions] = useState(
     children
-      .filter((d) => toDevice(d) && partitionDeviceAction(toDevice(d)))
-      .map(
-        (d: Proposal.Device): SpacePolicyAction => ({
-          deviceName: toDevice(d).name,
-          value: partitionDeviceAction(toDevice(d)),
-        }),
-      ),
+      .filter((d) => toDevice(d) && volumeDeviceAction(toDevice(d)))
+      .map((d: System.Device): SpacePolicyAction => ({
+        deviceName: toDevice(d).name,
+        value: volumeDeviceAction(toDevice(d)),
+      })),
   );
 
-  const navigate = useNavigate();
-
-  const deviceAction = (device: Proposal.Device | Proposal.UnusedSlot) => {
+  const deviceAction = (device: System.Device | System.UnusedSlot) => {
     if (toDevice(device) === undefined) return "keep";
 
     return actions.find((a) => a.deviceName === toDevice(device).name)?.value || "keep";
@@ -96,16 +97,22 @@ export default function SpacePolicySelectionPage() {
 
   const onSubmit = (e) => {
     e.preventDefault();
-    const location = createPartitionableLocation(collection, index);
-    if (!location) return;
 
-    setSpacePolicy(location.collection, location.index, { type: "custom", actions });
+    setSpacePolicy(collection, index, { type: "custom", actions });
     navigate("..");
   };
 
-  const description = _(
-    "Select what to do with each partition in order to find space for allocating the new system.",
-  );
+  const description = (): string => {
+    if (isVolumeGroup(device)) {
+      return _(
+        "Select what to do with each logical volume in order to find space for allocating the new system.",
+      );
+    }
+
+    return _(
+      "Select what to do with each partition in order to find space for allocating the new system.",
+    );
+  };
 
   return (
     <Page
@@ -115,7 +122,7 @@ export default function SpacePolicySelectionPage() {
       ]}
     >
       <Page.Content>
-        <SubtleContent>{description}</SubtleContent>
+        <SubtleContent>{description()}</SubtleContent>
         <Divider />
         <Form id="space-policy-form" onSubmit={onSubmit}>
           <SpaceActionsTable

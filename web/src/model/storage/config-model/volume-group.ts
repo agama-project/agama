@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2025] SUSE LLC
+ * Copyright (c) [2025-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -24,22 +24,6 @@ import { sift } from "radashi";
 import configModel from "~/model/storage/config-model";
 import type { ConfigModel, Data } from "~/model/storage/config-model";
 
-function movePartitions(
-  device: ConfigModel.Drive | ConfigModel.MdRaid,
-  volumeGroup: ConfigModel.VolumeGroup,
-) {
-  if (!device.partitions) return;
-
-  const newPartitions = device.partitions.filter((p) => !p.name);
-  const reusedPartitions = device.partitions.filter((p) => p.name);
-  device.partitions = [...reusedPartitions];
-  const logicalVolumes = volumeGroup.logicalVolumes || [];
-  volumeGroup.logicalVolumes = [
-    ...logicalVolumes,
-    ...newPartitions.map(configModel.logicalVolume.createFromPartition),
-  ];
-}
-
 function adjustSpacePolicies(config: ConfigModel.Config, targets: string[]) {
   const devices = configModel.partitionable.all(config);
   devices
@@ -59,8 +43,16 @@ function usedMountPaths(volumeGroup: ConfigModel.VolumeGroup): string[] {
   return sift(mountPaths);
 }
 
+function find(config: ConfigModel.Config, index: number): ConfigModel.VolumeGroup | null {
+  return config.volumeGroups?.[index] ?? null;
+}
+
 function findIndex(config: ConfigModel.Config, vgName: string): number {
   return (config.volumeGroups || []).findIndex((v) => v.vgName === vgName);
+}
+
+function findByName(config: ConfigModel.Config, vgName: string): ConfigModel.VolumeGroup | null {
+  return (config.volumeGroups || []).find((v) => v.vgName === vgName);
 }
 
 function candidateTargetDevices(
@@ -84,7 +76,7 @@ function add(
   moveContent: boolean,
 ): ConfigModel.Config {
   config = configModel.clone(config);
-  adjustSpacePolicies(config, data.targetDevices);
+  adjustSpacePolicies(config, data.targetDevices || []);
 
   const volumeGroup = create(data);
 
@@ -92,7 +84,7 @@ function add(
     configModel.partitionable
       .all(config)
       .filter((d) => data.targetDevices.includes(d.name))
-      .forEach((d) => movePartitions(d, volumeGroup));
+      .forEach((d) => configModel.partitionable.convertPartitionsToLogicalVolumes(d, volumeGroup));
   }
 
   config.volumeGroups ||= [];
@@ -153,54 +145,107 @@ function generateName(config: ConfigModel.Config): string {
   return `system${Math.max(...numbers) + 1}`;
 }
 
-function addFromPartitionable(config: ConfigModel.Config, devName: string): ConfigModel.Config {
-  config = configModel.clone(config);
-
-  const device = configModel.partitionable.all(config).find((d) => d.name === devName);
-  if (!device) return config;
-
-  const volumeGroup = create({
-    vgName: generateName(config),
-    targetDevices: [devName],
-  });
-  movePartitions(device, volumeGroup);
-  config.volumeGroups ||= [];
-  config.volumeGroups.push(volumeGroup);
-
-  return config;
-}
-
-function convertToPartitionable(config: ConfigModel.Config, vgName: string): ConfigModel.Config {
+function convertToPartitionable(
+  config: ConfigModel.Config,
+  vgName: string,
+  targetName?: string,
+  targetCollection?: "drives" | "mdRaids",
+): ConfigModel.Config {
   config = configModel.clone(config);
 
   const index = (config.volumeGroups || []).findIndex((v) => v.vgName === vgName);
   if (index === -1) return config;
 
-  const targetDevice = config.volumeGroups[index].targetDevices[0];
+  const targetDevice = targetName || config.volumeGroups[index].targetDevices[0];
   if (!targetDevice) return config;
 
-  const device = configModel.partitionable.all(config).find((d) => d.name === targetDevice);
-  if (!device) return config;
+  let targetDeviceConfig = configModel.partitionable
+    .all(config)
+    .find((d) => d.name === targetDevice);
+
+  if (!targetDeviceConfig) {
+    targetDeviceConfig ||= { name: targetName };
+    config[targetCollection || "drives"].push(targetDeviceConfig);
+  }
 
   const logicalVolumes = config.volumeGroups[index].logicalVolumes || [];
+
   config.volumeGroups.splice(index, 1);
-  const partitions = device.partitions || [];
-  device.partitions = [
+
+  const partitions = targetDeviceConfig.partitions || [];
+  targetDeviceConfig.partitions = [
     ...partitions,
-    ...logicalVolumes.map(configModel.partition.createFromLogicalVolume),
+    ...logicalVolumes
+      .filter(configModel.volume.isUsed)
+      .filter((l) => !configModel.volume.isReused(l))
+      .map(configModel.logicalVolume.convertToPartition),
   ];
 
   return config;
 }
 
+function convertToDrive(
+  config: ConfigModel.Config,
+  vgName: string,
+  targetName: string,
+): ConfigModel.Config {
+  return convertToPartitionable(config, vgName, targetName, "drives");
+}
+
+function convertToMdRaid(
+  config: ConfigModel.Config,
+  vgName: string,
+  targetName: string,
+): ConfigModel.Config {
+  return convertToPartitionable(config, vgName, targetName, "mdRaids");
+}
+
+function convertToVolumeGroup(
+  config: ConfigModel.Config,
+  vgName: string,
+  targetVgName: string,
+): ConfigModel.Config {
+  config = configModel.clone(config);
+
+  if (vgName === targetVgName) return config;
+
+  const vgConfig = config.volumeGroups?.find((v) => v.vgName === vgName);
+  const targetVgConfig = config.volumeGroups?.find((v) => v.vgName === targetVgName);
+
+  if (!vgConfig || !targetVgConfig) return config;
+
+  const lvs = vgConfig.logicalVolumes || [];
+  targetVgConfig.logicalVolumes ||= [];
+  targetVgConfig.logicalVolumes = [...targetVgConfig.logicalVolumes, ...lvs];
+
+  return config;
+}
+
+function isAddingLogicalVolumes(volumeGroup: ConfigModel.VolumeGroup): boolean {
+  return (
+    volumeGroup.logicalVolumes?.some((l) => l.mountPath && configModel.volume.isNew(l)) || false
+  );
+}
+
+function isReusingLogicalVolumes(volumeGroup: ConfigModel.VolumeGroup): boolean {
+  return volumeGroup.logicalVolumes?.some(configModel.volume.isReused) || false;
+}
+
 export default {
+  generateName,
   create,
   usedMountPaths,
+  find,
   findIndex,
+  findByName,
   filterTargetDevices,
   add,
   edit,
   remove,
-  addFromPartitionable,
   convertToPartitionable,
+  convertToDrive,
+  convertToMdRaid,
+  convertToVolumeGroup,
+  isAddingLogicalVolumes,
+  isReusingLogicalVolumes,
 };

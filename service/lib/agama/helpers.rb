@@ -39,7 +39,7 @@ module Agama
       begin
         block.call
       rescue StandardError => e
-        logger.error "Error while running on target tasks: #{e.inspect}"
+        logger.error "Error while running tasks on the target system: #{e.inspect}"
       ensure
         Yast::WFM.SCRSetDefault(old_handle)
         Yast::WFM.SCRClose(handle)
@@ -58,7 +58,7 @@ module Agama
       begin
         block.call
       rescue StandardError => e
-        logger.error "Error while running on target tasks: #{e.inspect}"
+        logger.error "Error while running tasks on the local system: #{e.inspect}"
       ensure
         Yast::WFM.SCRSetDefault(old_handle)
         Yast::WFM.SCRClose(handle)
