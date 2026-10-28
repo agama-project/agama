@@ -3,7 +3,7 @@ Thu Oct 29 10:00:00 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
 
 - Allow disabling the IPv4 or the IPv6 configuration of a
   connection, and keep it disabled when editing a connection that
-  already has it.
+  already has it (bsc#1288233, gh#agama-project/agama#3994).
 
 -------------------------------------------------------------------
 Thu Oct 29 09:57:13 UTC 2026 - Michal Filka <mfilka@suse.com>
