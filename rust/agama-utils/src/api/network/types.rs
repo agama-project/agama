@@ -427,6 +427,9 @@ pub enum Ipv4Method {
     #[default]
     Auto = 1,
     Manual = 2,
+    // Documented as "link-local", the name NetworkManager uses. "linkLocal" is still accepted, as
+    // it was the name the API used.
+    #[serde(rename = "link-local", alias = "linkLocal")]
     #[strum(serialize = "link-local")]
     LinkLocal = 3,
     Shared = 4,
@@ -452,6 +455,9 @@ pub enum Ipv6Method {
     #[default]
     Auto = 1,
     Manual = 2,
+    // Documented as "link-local", the name NetworkManager uses. "linkLocal" is still accepted, as
+    // it was the name the API used.
+    #[serde(rename = "link-local", alias = "linkLocal")]
     #[strum(serialize = "link-local")]
     LinkLocal = 3,
     Ignore = 4,

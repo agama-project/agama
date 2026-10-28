@@ -1,9 +1,16 @@
 -------------------------------------------------------------------
-Thu Oct  8 10:40:48 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+Tue Oct 28 06:00:48 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
 
 - Allow disabling the IPv4 or the IPv6 configuration of a
   connection, and keep it disabled when editing a connection that
   already has it.
+
+-------------------------------------------------------------------
+Mon Oct 26 17:54:08 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Update the configured connection when connecting, disconnecting
+  or deleting it from the connections table, instead of sending the
+  state reported by the system (gh#agama-project/agama#3995).
 
 -------------------------------------------------------------------
 Wed Oct  7 11:50:47 UTC 2026 - Martin Vidner <mvidner@suse.com>

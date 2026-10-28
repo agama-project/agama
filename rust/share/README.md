@@ -13,6 +13,8 @@ The Agama autoinstallation profile JSON schema is defined in these files:
 - [dasd.schema.json](./dasd.schema.json) (referenced from the main definition)
 - [zfcp.schema.json](./zfcp.schema.json) (referenced from the main definition)
 - [software.schema.json](./software.schema.json) (referenced from the main definition)
+- [network.schema.json](./network.schema.json) (referenced from the main definition, generated
+  from the Rust types with `cargo xtask network-schema`, do not edit it by hand)
 
 ## Agama REST API
 
