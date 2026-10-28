@@ -21,8 +21,8 @@
 use crate::{
     error::NetworkStateError,
     message,
-    model::{Connection, GeneralState, NetworkChange, NetworkState, StateConfig},
-    types::{Config, Device, Proposal, SystemInfo},
+    model::{NetworkChange, NetworkState, StateConfig},
+    types::{Config, Proposal, SystemInfo},
     Adapter, NetworkAdapterError, NetworkManagerAdapter,
 };
 use agama_utils::{
@@ -217,24 +217,6 @@ impl Actor for Service {
     type Error = NetworkSystemError;
 }
 
-impl MessageHandler<message::RefreshScan> for Service {
-    async fn handle(
-        &mut self,
-        _message: message::RefreshScan,
-    ) -> Result<Result<(), NetworkAdapterError>, NetworkSystemError> {
-        let state = self
-            .adapter
-            .read(StateConfig {
-                access_points: true,
-                ..Default::default()
-            })
-            .await?;
-        self.state.general_state = state.general_state;
-        self.state.access_points = state.access_points;
-        Ok(Ok(()))
-    }
-}
-
 impl MessageHandler<message::NewConnection> for Service {
     async fn handle(&mut self, message: message::NewConnection) -> Result<(), NetworkSystemError> {
         if let Some(conn) = self.state.get_connection(&message.connection.id) {
@@ -254,33 +236,6 @@ impl MessageHandler<message::NewConnection> for Service {
             self.send_update(NetworkChange::ConnectionAdded(message.connection));
         }
         Ok(())
-    }
-}
-
-impl MessageHandler<message::GetGeneralState> for Service {
-    async fn handle(
-        &mut self,
-        _message: message::GetGeneralState,
-    ) -> Result<GeneralState, NetworkSystemError> {
-        Ok(self.state.general_state.clone())
-    }
-}
-
-impl MessageHandler<message::GetConnection> for Service {
-    async fn handle(
-        &mut self,
-        message: message::GetConnection,
-    ) -> Result<Option<Connection>, NetworkSystemError> {
-        Ok(self.state.get_connection(message.id.as_ref()).cloned())
-    }
-}
-
-impl MessageHandler<message::GetConnectionByUuid> for Service {
-    async fn handle(
-        &mut self,
-        message: message::GetConnectionByUuid,
-    ) -> Result<Option<Connection>, NetworkSystemError> {
-        Ok(self.state.get_connection_by_uuid(message.uuid).cloned())
     }
 }
 
@@ -317,31 +272,6 @@ impl MessageHandler<message::SetConfig> for Service {
 
         self.apply().await?;
         Ok(())
-    }
-}
-
-impl MessageHandler<message::GetConnections> for Service {
-    async fn handle(
-        &mut self,
-        _message: message::GetConnections,
-    ) -> Result<Vec<Connection>, NetworkSystemError> {
-        let connections = self
-            .state
-            .connections
-            .clone()
-            .into_iter()
-            .filter(|c| !c.is_removed())
-            .collect();
-        Ok(connections)
-    }
-}
-
-impl MessageHandler<message::GetDevice> for Service {
-    async fn handle(
-        &mut self,
-        message: message::GetDevice,
-    ) -> Result<Option<Device>, NetworkSystemError> {
-        Ok(self.state.get_device(message.name.as_str()).cloned())
     }
 }
 
@@ -384,15 +314,6 @@ impl MessageHandler<message::RemoveDevice> for Service {
     }
 }
 
-impl MessageHandler<message::GetDevices> for Service {
-    async fn handle(
-        &mut self,
-        _message: message::GetDevices,
-    ) -> Result<Vec<Device>, NetworkSystemError> {
-        Ok(self.state.devices.clone())
-    }
-}
-
 impl MessageHandler<message::AddAccessPoint> for Service {
     async fn handle(&mut self, message: message::AddAccessPoint) -> Result<(), NetworkSystemError> {
         self.state.add_access_point(*message.access_point.clone())?;
@@ -411,15 +332,6 @@ impl MessageHandler<message::RemoveAccessPoint> for Service {
         tracing::info!("Access point removed: {:?}", &message.hw_address);
         self.send_update(NetworkChange::AccessPointRemoved(message.hw_address));
         Ok(())
-    }
-}
-
-impl MessageHandler<message::UpdateConnection> for Service {
-    async fn handle(
-        &mut self,
-        message: message::UpdateConnection,
-    ) -> Result<Result<(), NetworkStateError>, NetworkSystemError> {
-        Ok(self.state.update_connection(*message.connection))
     }
 }
 
@@ -508,12 +420,6 @@ impl MessageHandler<message::ProposeDefault> for Service {
 impl MessageHandler<message::Install> for Service {
     async fn handle(&mut self, _message: message::Install) -> Result<(), NetworkSystemError> {
         self.state.install().await?;
-        Ok(())
-    }
-}
-
-impl MessageHandler<message::SetLocale> for Service {
-    async fn handle(&mut self, _message: message::SetLocale) -> Result<(), NetworkSystemError> {
         Ok(())
     }
 }
