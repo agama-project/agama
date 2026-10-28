@@ -21,7 +21,7 @@
 use crate::{
     error::NetworkStateError,
     message,
-    model::{NetworkChange, NetworkState, StateConfig},
+    model::{NetworkState, StateConfig},
     types::{Config, Proposal, SystemInfo},
     Adapter, NetworkAdapterError, NetworkManagerAdapter,
 };
@@ -96,14 +96,12 @@ impl Starter {
         };
 
         let state = adapter.read(StateConfig::default()).await?;
-        let (updates_tx, _updates_rx) = broadcast::channel(1024);
         let watcher = adapter.watcher();
 
         let service = Service {
             events: self.events,
             progress: self.progress,
             state,
-            output: updates_tx,
             adapter,
         };
 
@@ -129,17 +127,12 @@ pub struct Service {
     events: event::Sender,
     progress: Handler<progress::Service>,
     state: NetworkState,
-    output: broadcast::Sender<NetworkChange>,
     adapter: Box<dyn Adapter + Send + 'static>,
 }
 
 impl Service {
     pub fn starter(events: event::Sender, progress: Handler<progress::Service>) -> Starter {
         Starter::new(events, progress)
-    }
-
-    pub fn subscribe(&self) -> broadcast::Receiver<NetworkChange> {
-        self.output.subscribe()
     }
 
     /// Reads the system network configuration.
@@ -213,10 +206,6 @@ impl Service {
 
         result
     }
-
-    fn send_update(&self, update: NetworkChange) {
-        _ = self.output.send(update);
-    }
 }
 
 impl Actor for Service {
@@ -239,7 +228,6 @@ impl MessageHandler<message::NewConnection> for Service {
             self.events.send(Event::ProposalChanged {
                 scope: (Scope::Network),
             })?;
-            self.send_update(NetworkChange::ConnectionAdded(message.connection));
         }
         Ok(())
     }
@@ -283,11 +271,10 @@ impl MessageHandler<message::SetConfig> for Service {
 
 impl MessageHandler<message::AddDevice> for Service {
     async fn handle(&mut self, message: message::AddDevice) -> Result<(), NetworkSystemError> {
-        self.state.add_device(*message.device.clone())?;
+        self.state.add_device(*message.device)?;
         self.events.send(Event::SystemChanged {
             scope: (Scope::Network),
         })?;
-        self.send_update(NetworkChange::DeviceAdded(*message.device));
         Ok(())
     }
 }
@@ -299,12 +286,10 @@ impl MessageHandler<message::UpdateDevice> for Service {
                 return Ok(());
             }
         }
-        self.state
-            .update_device(&message.name, *message.device.clone())?;
+        self.state.update_device(&message.name, *message.device)?;
         self.events.send(Event::SystemChanged {
             scope: (Scope::Network),
         })?;
-        self.send_update(NetworkChange::DeviceUpdated(message.name, *message.device));
         Ok(())
     }
 }
@@ -315,16 +300,14 @@ impl MessageHandler<message::RemoveDevice> for Service {
         self.events.send(Event::SystemChanged {
             scope: (Scope::Network),
         })?;
-        self.send_update(NetworkChange::DeviceRemoved(message.name));
         Ok(())
     }
 }
 
 impl MessageHandler<message::AddAccessPoint> for Service {
     async fn handle(&mut self, message: message::AddAccessPoint) -> Result<(), NetworkSystemError> {
-        self.state.add_access_point(*message.access_point.clone())?;
-        tracing::info!("Access point added: {:?}", &message.access_point);
-        self.send_update(NetworkChange::AccessPointAdded(*message.access_point));
+        tracing::info!("Adding access point: {:?}", &message.access_point);
+        self.state.add_access_point(*message.access_point)?;
         Ok(())
     }
 }
@@ -336,7 +319,6 @@ impl MessageHandler<message::RemoveAccessPoint> for Service {
     ) -> Result<(), NetworkSystemError> {
         self.state.remove_access_point(&message.hw_address)?;
         tracing::info!("Access point removed: {:?}", &message.hw_address);
-        self.send_update(NetworkChange::AccessPointRemoved(message.hw_address));
         Ok(())
     }
 }
@@ -356,10 +338,6 @@ impl MessageHandler<message::ChangeConnectionState> for Service {
                 );
                 conn.state = message.state;
             }
-            self.send_update(NetworkChange::ConnectionStateChanged {
-                uuid: message.uuid,
-                state: message.state,
-            });
         }
         Ok(())
     }
@@ -401,7 +379,6 @@ impl MessageHandler<message::RemoveConnection> for Service {
         } else {
             tracing::info!("Connection {} does not exists, skipping it", message.uuid);
         }
-        self.send_update(NetworkChange::ConnectionRemoved(message.uuid));
         Ok(())
     }
 }
