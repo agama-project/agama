@@ -1,9 +1,16 @@
 -------------------------------------------------------------------
-Thu Oct 29 10:00:00 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+Thu Oct 29 13:00:00 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
 
 - Allow disabling the IPv4 or the IPv6 configuration of a
   connection, and keep it disabled when editing a connection that
   already has it (bsc#1288233, gh#agama-project/agama#3994).
+
+-------------------------------------------------------------------
+Thu Oct 29 12:19:20 UTC 2026 - Akshat Lakhera <akshatlnct2024@gmail.com>
+
+- Label the mode shown in the "Current selection" card when
+  changing the product, so it is not read as part of the product
+  (gh#agama-project/agama#4142).
 
 -------------------------------------------------------------------
 Thu Oct 29 09:57:13 UTC 2026 - Michal Filka <mfilka@suse.com>
