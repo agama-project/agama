@@ -38,6 +38,13 @@ jest.mock("~/hooks/model/system/storage", () => ({
   useFlattenDevices: () => [],
 }));
 
+const mockUsers = jest.fn().mockReturnValue([]);
+
+jest.mock("~/components/storage/shared/users", () => ({
+  ...jest.requireActual("~/components/storage/shared/users"),
+  usersOf: () => mockUsers(),
+}));
+
 const entry: Entry = {
   config: { name: "/dev/vdc", partitions: [] } as Partitionable.Device,
   device: undefined,
@@ -48,6 +55,21 @@ const entry: Entry = {
 const subject = { collection: "drives" as const, index: 0 };
 
 describe("PartitionableContent", () => {
+  describe("on a disk whose partitions a volume group needs, with nothing else planned", () => {
+    beforeEach(() => mockUsers.mockReturnValue([{ name: "system" }]));
+    afterEach(() => mockUsers.mockReturnValue([]));
+
+    it("says what the group needs in bold, then how to use the rest, then the way to it", () => {
+      installerRender(<PartitionableContent entry={entry} subject={subject} />);
+
+      const [summary, detail] = screen.getAllByRole("paragraph");
+      expect(summary).toHaveTextContent("Partitions needed as physical volumes for system.");
+      expect(detail).toHaveTextContent("Add partitions to use the rest of the disk.");
+      screen.getByRole("link", { name: "Add partition" });
+      expect(screen.queryByRole("list")).toBeNull();
+    });
+  });
+
   describe("on a disk used only for booting", () => {
     beforeEach(() => jest.spyOn(configModel.boot, "hasDevice").mockReturnValue(true));
     afterEach(() => jest.restoreAllMocks());

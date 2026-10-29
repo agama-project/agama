@@ -94,44 +94,44 @@ export default function PartitionableContent({
     </Link>
   );
 
-  /* What the disk gets so far, said before the way to add to it. */
-  const offer = () => {
+  /* Nothing listed yet: what the disk gets so far, then the way to add to it.
+     A volume group's partitions, or booting's, come first where the disk
+     gets them, since they are all it gets yet. */
+  if (!planned.length) {
     if (users.length) {
-      // TRANSLATORS: offered on a disk that already gets some partitions,
-      // such as those a volume group needs.
-      return _("You can define additional partitions.");
+      return (
+        <SummaryWithActions
+          summary={<UsedByStatement entry={entry} />}
+          // TRANSLATORS: follows what a disk already gets, such as the partitions
+          // a volume group needs, above a button to add partitions.
+          detail={_("Add partitions to use the rest of the disk.")}
+          actions={add("secondary")}
+        />
+      );
     }
 
-    // TRANSLATORS: offered on a disk that gets no partitions yet.
-    return _("You can define partitions.");
-  };
+    if (isBoot) {
+      return (
+        <SummaryWithActions
+          // TRANSLATORS: said of a disk the system boots from where nothing else
+          // is planned yet, above a button to add partitions.
+          summary={_("Used for booting only, no other partitions planned yet")}
+          actions={add("secondary")}
+        />
+      );
+    }
 
-  /* What is listed below, or the way to start listing it. A disk used only
-     for booting says so first, since the partitions booting needs are all it
-     gets yet. */
-  let listed: React.ReactNode;
-  if (planned.length) {
-    listed = <PlannedContentSection entry={entry} subject={subject} />;
-  } else if (isBoot && !users.length) {
-    listed = (
-      <SummaryWithActions
-        // TRANSLATORS: said of a disk the system boots from where nothing else
-        // is planned yet, above a button to add partitions.
-        summary={_("Used for booting only, no other partitions planned yet")}
-        actions={add("secondary")}
-      />
-    );
-  } else {
-    listed = (
+    return (
       <Flex direction={{ default: "column" }} gap={{ default: "gapSm" }}>
-        <FlexItem>{offer()}</FlexItem>
+        {/* TRANSLATORS: offered on a disk that gets no partitions yet. */}
+        <FlexItem>{_("You can define partitions.")}</FlexItem>
         <FlexItem>{add("secondary")}</FlexItem>
       </Flex>
     );
   }
 
-  /* Without a volume group to give room to, the list is all there is, or the
-     way to start it. */
+  /* Without a volume group to give room to, the list is all there is. */
+  const listed = <PlannedContentSection entry={entry} subject={subject} />;
   if (!users.length) return listed;
 
   /* Two kinds of partitions to create, said side by side: those a volume
@@ -142,18 +142,14 @@ export default function PartitionableContent({
         <UsedByStatement entry={entry} />
       </ListItem>
       <ListItem>
-        {planned.length ? (
-          <Flex direction={{ default: "column" }} gap={{ default: "gapSm" }}>
-            <FlexItem>
-              {/* TRANSLATORS: introduces the table of partitions the user asked
-                  to create on a disk, next to those a volume group needs. */}
-              {_("Partitions from the following list")}
-            </FlexItem>
-            <FlexItem>{listed}</FlexItem>
-          </Flex>
-        ) : (
-          listed
-        )}
+        <Flex direction={{ default: "column" }} gap={{ default: "gapSm" }}>
+          <FlexItem>
+            {/* TRANSLATORS: introduces the table of partitions the user asked
+                to create on a disk, next to those a volume group needs. */}
+            {_("Partitions from the following list")}
+          </FlexItem>
+          <FlexItem>{listed}</FlexItem>
+        </Flex>
       </ListItem>
     </List>
   );
