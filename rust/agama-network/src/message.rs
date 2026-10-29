@@ -25,7 +25,7 @@ use agama_utils::api::network::Config;
 use uuid::Uuid;
 
 pub struct NewConnection {
-    pub connection: Box<Connection>,
+    pub connection: Connection,
 }
 
 impl Message for NewConnection {
@@ -44,12 +44,23 @@ impl Message for GetProposal {
     type Reply = Proposal;
 }
 
+/// Sets the network configuration and applies it to the system.
+///
+/// Unlike other services, the configuration is not optional: the network configuration is applied
+/// to the running system, so when a profile has no network section, the network is left untouched
+/// instead of resetting it to the defaults.
 pub struct SetConfig {
-    pub config: Box<Config>,
+    pub config: Config,
 }
 
 impl Message for SetConfig {
     type Reply = ();
+}
+
+impl SetConfig {
+    pub fn new(config: Config) -> Self {
+        Self { config }
+    }
 }
 
 pub struct GetSystem;
@@ -59,7 +70,7 @@ impl Message for GetSystem {
 }
 
 pub struct AddAccessPoint {
-    pub access_point: Box<AccessPoint>,
+    pub access_point: AccessPoint,
 }
 
 impl Message for AddAccessPoint {
@@ -75,7 +86,7 @@ impl Message for RemoveAccessPoint {
 }
 
 pub struct AddDevice {
-    pub device: Box<Device>,
+    pub device: Device,
 }
 
 impl Message for AddDevice {
@@ -84,7 +95,7 @@ impl Message for AddDevice {
 
 pub struct UpdateDevice {
     pub name: String,
-    pub device: Box<Device>,
+    pub device: Device,
 }
 
 impl Message for UpdateDevice {

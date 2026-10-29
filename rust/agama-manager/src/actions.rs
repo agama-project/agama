@@ -643,9 +643,7 @@ impl SetConfigAction {
                 )
                 .depends_on(dependencies)
                 .run(|| async move {
-                    let message = network::message::SetConfig {
-                        config: Box::new(network_config),
-                    };
+                    let message = network::message::SetConfig::new(network_config);
                     if let Err(error) = handler.call(message).await {
                         tracing::error!("Failed to set the network configuration: {error}");
                     }

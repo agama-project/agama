@@ -265,9 +265,7 @@ impl ActionDispatcher<'_> {
         let (_, proxy) = self.proxies.find_or_add_connection(&path).await?;
         tracing::info!("New connection was found");
         if let Ok(connection) = Self::connection_from_proxy(&self.connection, proxy.clone()).await {
-            _ = self.handler.cast(message::NewConnection {
-                connection: Box::new(connection),
-            });
+            _ = self.handler.cast(message::NewConnection { connection });
         }
         // TODO: report an error if the device cannot get generated
 
@@ -291,9 +289,7 @@ impl ActionDispatcher<'_> {
     async fn handle_device_added(&mut self, path: OwnedObjectPath) -> Result<(), NmError> {
         let (_, proxy) = self.proxies.find_or_add_device(&path).await?;
         if let Ok(device) = Self::device_from_proxy(&self.connection, proxy.clone()).await {
-            _ = self.handler.cast(message::AddDevice {
-                device: Box::new(device),
-            });
+            _ = self.handler.cast(message::AddDevice { device });
         }
         // TODO: report an error if the device cannot get generated
 
@@ -309,7 +305,7 @@ impl ActionDispatcher<'_> {
         let new_name = device.name.clone();
         _ = self.handler.cast(message::UpdateDevice {
             name: old_name.to_string(),
-            device: Box::new(device),
+            device,
         });
         self.proxies.update_device_name(&path, &new_name);
         Ok(())
@@ -333,7 +329,7 @@ impl ActionDispatcher<'_> {
             let device = Self::device_from_proxy(&self.connection, proxy.clone()).await?;
             _ = self.handler.cast(message::UpdateDevice {
                 name: name.to_string(),
-                device: Box::new(device),
+                device,
             });
         }
         Ok(())
@@ -347,7 +343,7 @@ impl ActionDispatcher<'_> {
             let device = Self::device_from_proxy(&self.connection, proxy.clone()).await?;
             _ = self.handler.cast(message::UpdateDevice {
                 name: name.to_string(),
-                device: Box::new(device),
+                device,
             });
         }
         Ok(())
@@ -406,9 +402,7 @@ impl ActionDispatcher<'_> {
         let device_name = name.clone();
         let (_, proxy) = self.proxies.find_or_add_access_point(&ap_path).await?;
         if let Ok(access_point) = Self::access_point_from_proxy(device_name, proxy.clone()).await {
-            _ = self.handler.cast(message::AddAccessPoint {
-                access_point: Box::new(access_point),
-            });
+            _ = self.handler.cast(message::AddAccessPoint { access_point });
         }
         Ok(())
     }

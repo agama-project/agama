@@ -257,7 +257,7 @@ impl MessageHandler<message::GetProposal> for Service {
 
 impl MessageHandler<message::SetConfig> for Service {
     async fn handle(&mut self, message: message::SetConfig) -> Result<(), NetworkSystemError> {
-        self.state.update_state(*message.config)?;
+        self.state.update_state(message.config)?;
 
         self.apply().await?;
         Ok(())
@@ -266,7 +266,7 @@ impl MessageHandler<message::SetConfig> for Service {
 
 impl MessageHandler<message::AddDevice> for Service {
     async fn handle(&mut self, message: message::AddDevice) -> Result<(), NetworkSystemError> {
-        self.state.add_device(*message.device)?;
+        self.state.add_device(message.device)?;
         self.events.send(Event::SystemChanged {
             scope: (Scope::Network),
         })?;
@@ -277,11 +277,11 @@ impl MessageHandler<message::AddDevice> for Service {
 impl MessageHandler<message::UpdateDevice> for Service {
     async fn handle(&mut self, message: message::UpdateDevice) -> Result<(), NetworkSystemError> {
         if let Some(old_device) = self.state.get_device(&message.name) {
-            if old_device == message.device.as_ref() {
+            if old_device == &message.device {
                 return Ok(());
             }
         }
-        self.state.update_device(&message.name, *message.device)?;
+        self.state.update_device(&message.name, message.device)?;
         self.events.send(Event::SystemChanged {
             scope: (Scope::Network),
         })?;
@@ -302,7 +302,7 @@ impl MessageHandler<message::RemoveDevice> for Service {
 impl MessageHandler<message::AddAccessPoint> for Service {
     async fn handle(&mut self, message: message::AddAccessPoint) -> Result<(), NetworkSystemError> {
         tracing::info!("Adding access point: {:?}", &message.access_point);
-        self.state.add_access_point(*message.access_point)?;
+        self.state.add_access_point(message.access_point)?;
         Ok(())
     }
 }
