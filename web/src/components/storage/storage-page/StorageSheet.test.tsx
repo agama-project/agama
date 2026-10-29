@@ -486,6 +486,13 @@ describe("StorageSheet", () => {
       screen.getByRole("link", { name: "sda" });
     });
 
+    it("leaves the form out of the panel's menu, since the section links to it", async () => {
+      const { user } = renderAt("/storage?device=volumeGroups.system");
+      await user.click(screen.getByRole("button", { name: "Actions for system" }));
+
+      expect(screen.queryByRole("menuitem", { name: /^Edit/ })).toBeNull();
+    });
+
     it("offers the form that changes both, after what it changes", () => {
       renderAt("/storage?device=volumeGroups.system");
 

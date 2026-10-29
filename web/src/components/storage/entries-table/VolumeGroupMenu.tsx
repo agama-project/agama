@@ -40,7 +40,10 @@ import type { SheetEntry } from "~/components/storage/shared/use-sheet";
 export type VolumeGroupMenuProps = {
   /** The group as the configuration describes it. */
   group: ConfigModel.VolumeGroup;
-  /** Where it is written. Given only where opening it is one of the offers. */
+  /**
+   * Where it is written. Given on the group's row, where opening its panel and
+   * its edit form are among the offers; left out in the panel itself.
+   */
   subject?: SheetEntry;
 };
 
@@ -125,21 +128,31 @@ export default function VolumeGroupMenu({ group, subject }: VolumeGroupMenuProps
               </MenuButtonItem>,
             ]
           : []),
-        <MenuButtonItem
-          key="edit"
-          description={_("Change how the volume group will be created")}
-          onClick={() =>
-            navigate({
-              pathname: generateEncodedPath(PATHS.volumeGroup.edit, { id: String(subject.index) }),
-              /* The page keeps its state across the form, open panel included. */
-              search: location.search,
-            })
-          }
-        >
-          {/* TRANSLATORS: offered on an LVM volume group of the installation:
-              change which disks it is built on and what it will hold. */}
-          {_("Edit")}
-        </MenuButtonItem>,
+        /* Only on the row. The group's panel offers the same form as a link
+           under its properties, after what the form changes. */
+        ...(subject
+          ? [
+              <MenuButtonItem
+                key="edit"
+                description={_("Change how the volume group will be created")}
+                onClick={() =>
+                  navigate({
+                    pathname: generateEncodedPath(PATHS.volumeGroup.edit, {
+                      id: String(subject.index),
+                    }),
+                    /* The page keeps its state across the form, open panel
+                       included. */
+                    search: location.search,
+                  })
+                }
+              >
+                {/* TRANSLATORS: offered on an LVM volume group of the
+                    installation: change which disks it is built on and what it
+                    will hold. */}
+                {_("Edit")}
+              </MenuButtonItem>,
+            ]
+          : []),
         <Divider key="before-remove" />,
         <MenuButtonItem
           key="remove"
