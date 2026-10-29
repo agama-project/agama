@@ -447,15 +447,11 @@ nav.agm-breadcrumb > ol > li > a {
   color: var(--pf-t--global--text--color--subtle);
 }
 
-// A device sheet section's content sits one step in from its heading, and
-// its tables run edge to edge, so their columns line up with the text above
-// them instead of adding an indent of their own. Their header row drops its
-// top padding too, so a table starts as close to what precedes it as any other
-// content does.
-.agm-sheet-section__content {
-  padding-inline-start: var(--pf-t--global--spacer--sm);
-}
-
+// A device sheet section's content starts where its heading's words start,
+// after the section's icon, and its tables run edge to edge, so their columns
+// line up with the text above them instead of adding an indent of their own.
+// Their header row drops its top padding too, so a table starts as close to
+// what precedes it as any other content does.
 .agm-sheet-section__content .pf-v6-c-table {
   --pf-v6-c-table--cell--first-last-child--PaddingInline: 0;
   --pf-v6-c-table--m-compact__th--PaddingBlockStart: 0;
