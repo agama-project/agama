@@ -23,7 +23,6 @@
 import React from "react";
 import { Table, Tbody, Td, Th, Thead, Tr } from "@patternfly/react-table";
 import { Button, Divider, Flex, FlexItem, Label } from "@patternfly/react-core";
-import alignmentStyles from "@patternfly/react-styles/css/utilities/Alignment/alignment";
 import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
 import { sprintf } from "sprintf-js";
 import Text from "~/components/core/Text";
@@ -49,6 +48,7 @@ import {
 import { useDevicesManager } from "~/components/storage/shared/use-devices-manager";
 import { baseName, deviceSize, formattedPath } from "~/components/storage/utils";
 import { useSearchParamTokens } from "~/hooks/use-search-param-state";
+import { columnProps } from "~/components/storage/shared/table-columns";
 import { CURRENT_CONTENT, EXPANDED } from "~/components/storage/ui-state-params";
 import { _, n_ } from "~/i18n";
 import type DevicesManager from "~/model/storage/devices-manager";
@@ -58,6 +58,7 @@ import type { ConfigModel, DeviceCollection, Partitionable } from "~/model/stora
 import type { Entry } from "~/components/storage/device-sheet/entry";
 import type { SheetEntry } from "~/components/storage/shared/use-sheet";
 import type { Storage as System } from "~/model/system";
+import type { ColumnLook } from "~/components/storage/shared/table-columns";
 
 type FreeSpace = System.UnusedSlot;
 type Row = System.Device | FreeSpace;
@@ -202,6 +203,17 @@ function PartitionMenu({
     />
   );
 }
+
+/* How each column of the table looks, for its header and every cell under it.
+   Content and size kept whole, each on one line, as narrow as they are: a name
+   like "BIOS Boot Partition" or a size cut in two reads as two things. The
+   action takes what is left, its notes being the one thing that can wrap. */
+const COLUMNS = {
+  partition: { modifier: "nowrap" },
+  content: { modifier: "fitContent" },
+  size: { modifier: "fitContent", isEndAligned: true },
+  action: {},
+} satisfies Record<string, ColumnLook>;
 
 /* The one report that costs the reader something, colored rather than marked.
    The words say what happens, and a mark beside them in a column of short
@@ -397,7 +409,7 @@ function PartitionRow({
 
   return (
     <Tr>
-      <Th scope="row" modifier="nowrap">
+      <Th scope="row" {...columnProps(COLUMNS.partition)}>
         <Text>{baseName(part.name)}</Text>
         {part.block?.encrypted && (
           <>
@@ -407,7 +419,7 @@ function PartitionRow({
           </>
         )}
       </Th>
-      <Td modifier="fitContent">
+      <Td {...columnProps(COLUMNS.content)}>
         <Flex gap={{ default: "gapXs" }} alignItems={{ default: "alignItemsCenter" }}>
           {/* What is there today, as it is: the Action column says what it
               becomes. */}
@@ -422,10 +434,10 @@ function PartitionRow({
           ))}
         </Flex>
       </Td>
-      <Td className={alignmentStyles.textAlignEnd} modifier="fitContent">
+      <Td {...columnProps(COLUMNS.size)}>
         <div>{deviceSize(size)}</div>
       </Td>
-      <Td>
+      <Td {...columnProps(COLUMNS.action)}>
         {status && (
           <>
             <div className={status.destroys ? DESTROYS_CLASS : undefined}>{status.text}</div>
@@ -659,16 +671,10 @@ export default function CurrentContentSection({
                 whose whole job is to be read. */}
             <Thead>
               <Tr>
-                <Th modifier="nowrap">{_("Partition")}</Th>
-                {/* Content and size kept whole, each on one line, as narrow as
-                    they are: a name like "BIOS Boot Partition" or a size cut
-                    in two reads as two things. The action takes what is
-                    left, its notes being the one thing that can wrap. */}
-                <Th modifier="fitContent">{_("Content")}</Th>
-                <Th className={alignmentStyles.textAlignEnd} modifier="fitContent">
-                  {_("Size")}
-                </Th>
-                <Th modifier="nowrap">{_("Action")}</Th>
+                <Th {...columnProps(COLUMNS.partition)}>{_("Partition")}</Th>
+                <Th {...columnProps(COLUMNS.content)}>{_("Content")}</Th>
+                <Th {...columnProps(COLUMNS.size)}>{_("Size")}</Th>
+                <Th {...columnProps(COLUMNS.action)}>{_("Action")}</Th>
                 <Th>
                   {/* The column of menus has nothing to head: a heading over it
                       names a column the reader can already see the point of.
@@ -687,18 +693,16 @@ export default function CurrentContentSection({
                 if (isFreeSpace(row)) {
                   return (
                     <Tr key={`free-${at}`}>
-                      <Th scope="row">
+                      <Th scope="row" {...columnProps(COLUMNS.partition)}>
                         <Text textStyle="textColorSubtle">
                           {/* TRANSLATORS: a row for room on a device that no
                             partition takes. */}
                           {_("Free space")}
                         </Text>
                       </Th>
-                      <Td />
-                      <Td className={alignmentStyles.textAlignEnd} modifier="fitContent">
-                        {deviceSize(row.size)}
-                      </Td>
-                      <Td>{_("Use if needed")}</Td>
+                      <Td {...columnProps(COLUMNS.content)} />
+                      <Td {...columnProps(COLUMNS.size)}>{deviceSize(row.size)}</Td>
+                      <Td {...columnProps(COLUMNS.action)}>{_("Use if needed")}</Td>
                       <Td />
                     </Tr>
                   );

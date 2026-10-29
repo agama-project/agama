@@ -23,7 +23,6 @@
 import React from "react";
 import { Table, Tbody, Td, Th, Thead, Tr } from "@patternfly/react-table";
 import { Flex, FlexItem, Stack, StackItem } from "@patternfly/react-core";
-import alignmentStyles from "@patternfly/react-styles/css/utilities/Alignment/alignment";
 import { sprintf } from "sprintf-js";
 import Link from "~/components/core/Link";
 import Text from "~/components/core/Text";
@@ -34,15 +33,26 @@ import MoveToOtherDevice from "~/components/storage/device-sheet/MoveToOtherDevi
 import { filesystemType, partitionIdLabel, sizeDescription } from "~/components/storage/utils";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { generateEncodedPath } from "~/utils";
+import { columnProps } from "~/components/storage/shared/table-columns";
 import configModel from "~/model/storage/config-model";
 import { useDeleteLogicalVolume, useDeletePartition } from "~/hooks/model/storage/config-model";
 import { _ } from "~/i18n";
 import type { ConfigModel, Partitionable } from "~/model/storage/config-model";
 import type { Entry } from "~/components/storage/device-sheet/entry";
 import type { SheetEntry } from "~/components/storage/shared/use-sheet";
+import type { ColumnLook } from "~/components/storage/shared/table-columns";
 
 /** One thing the new system gets here, whatever the entry calls its parts. */
 type Planned = ConfigModel.Partition | ConfigModel.LogicalVolume;
+
+/* How each column of the table looks, for its header and every cell under it.
+   Sizes on the same edge, so a column of them is compared by looking down
+   rather than by reading each one. */
+const COLUMNS = {
+  path: {},
+  filesystem: {},
+  size: { isEndAligned: true },
+} satisfies Record<string, ColumnLook>;
 
 /**
  * The partition id, where the thing planned is a partition asked for by id.
@@ -197,9 +207,13 @@ export default function PlannedContentSection({
               row whose whole job is to be read. */}
           <Thead>
             <Tr>
-              <Th modifier="nowrap">{_("Path")}</Th>
-              <Th modifier="nowrap">{_("File system")}</Th>
-              <Th className={alignmentStyles.textAlignEnd} modifier="nowrap">
+              <Th {...columnProps(COLUMNS.path)} modifier="nowrap">
+                {_("Path")}
+              </Th>
+              <Th {...columnProps(COLUMNS.filesystem)} modifier="nowrap">
+                {_("File system")}
+              </Th>
+              <Th {...columnProps(COLUMNS.size)} modifier="nowrap">
                 {_("Size")}
               </Th>
               <Th>
@@ -222,8 +236,10 @@ export default function PlannedContentSection({
 
               return (
                 <Tr key={label(part)}>
-                  <Th scope="row">{label(part)}</Th>
-                  <Td>
+                  <Th scope="row" {...columnProps(COLUMNS.path)}>
+                    {label(part)}
+                  </Th>
+                  <Td {...columnProps(COLUMNS.filesystem)}>
                     {(keepsData
                       ? source?.filesystem?.type
                       : part.filesystem && filesystemType(part.filesystem)) ||
@@ -231,10 +247,7 @@ export default function PlannedContentSection({
                       // told which file system to use.
                       _("default")}
                   </Td>
-                  {/* On the same edge as every other size, so a column of
-                      them is compared by looking down rather than by
-                      reading each one. */}
-                  <Td className={alignmentStyles.textAlignEnd}>
+                  <Td {...columnProps(COLUMNS.size)}>
                     {part.size
                       ? sizeDescription(part.size)
                       : // TRANSLATORS: said where the size of something the
