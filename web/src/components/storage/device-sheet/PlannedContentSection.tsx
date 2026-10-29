@@ -178,25 +178,26 @@ export default function PlannedContentSection({
      a partition, and volume is the word the logical ones own. */
   const addLabel = isVolumeGroup ? _("Add logical volume") : _("Add partition");
 
-  const add = (variant: "primary" | "secondary") => (
-    <Link to={addPath} keepQuery variant={variant} size="sm">
-      <Flex alignItems={{ default: "alignItemsCenter" }} gap={{ default: "gapSm" }}>
-        <Icon name="add_circle" /> {addLabel}
-      </Flex>
+  /* A link, since it leads to a form. */
+  const add = (
+    <Link to={addPath} keepQuery variant="link" isInline icon={<Icon name="add_circle" />}>
+      {addLabel}
     </Link>
   );
 
   /* What the reader does about the device rather than about any one row, the
-     same whether there are rows yet or not. */
+     same whether there are rows yet or not. Moving the plan elsewhere sits at
+     the far end: it acts on the whole device, and keeps apart from adding to
+     it. */
   const actions = (
     <Flex
       gap={{ default: "gapSm" }}
       flexWrap={{ default: "wrap" }}
       alignItems={{ default: "alignItemsCenter" }}
     >
-      <FlexItem>{add("secondary")}</FlexItem>
+      <FlexItem>{add}</FlexItem>
       {!isVolumeGroup && (
-        <FlexItem>
+        <FlexItem align={{ default: "alignRight" }}>
           <MoveToOtherDevice entry={device} device={entry.device} />
         </FlexItem>
       )}

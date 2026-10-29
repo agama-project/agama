@@ -21,7 +21,6 @@
  */
 
 import React from "react";
-import { Flex } from "@patternfly/react-core";
 import Link from "~/components/core/Link";
 import Icon from "~/components/layout/Icon";
 import SummaryWithActions from "~/components/storage/device-sheet/SummaryWithActions";
@@ -52,27 +51,24 @@ export default function PartitionableNoContent({ subject }: DeviceDetailProps) {
           <Link
             to={generateEncodedPath(PATHS.addPartition, params)}
             keepQuery
-            variant="secondary"
-            size="sm"
+            variant="link"
+            isInline
+            icon={<Icon name="add_circle" />}
           >
-            <Flex alignItems={{ default: "alignItemsCenter" }} gap={{ default: "gapSm" }}>
-              <Icon name="add_circle" /> {_("Add partition")}
-            </Flex>
+            {_("Add partition")}
           </Link>
           <Link
             to={generateEncodedPath(PATHS.formatDevice, params)}
             keepQuery
-            variant="secondary"
-            size="sm"
+            variant="link"
+            isInline
+            icon={<Icon name="hard_drive" />}
           >
-            <Flex alignItems={{ default: "alignItemsCenter" }} gap={{ default: "gapSm" }}>
-              <Icon name="hard_drive" />{" "}
-              {
-                // TRANSLATORS: offered on a device nothing is planned on yet:
-                // give the whole device to one file system, with no partitions.
-                _("Format device")
-              }
-            </Flex>
+            {
+              // TRANSLATORS: offered on a device nothing is planned on yet:
+              // give the whole device to one file system, with no partitions.
+              _("Format device")
+            }
           </Link>
         </>
       }

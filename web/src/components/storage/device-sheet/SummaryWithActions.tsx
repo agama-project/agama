@@ -79,7 +79,7 @@ export default function SummaryWithActions({ summary, detail, actions }: Summary
       </FlexItem>
       {actions && (
         <FlexItem>
-          <Flex gap={{ default: "gapSm" }}>{actions}</Flex>
+          <Flex gap={{ default: "gapLg" }}>{actions}</Flex>
         </FlexItem>
       )}
     </Flex>

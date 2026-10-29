@@ -86,11 +86,10 @@ export default function PartitionableContent({
     index: String(subject.index),
   });
 
-  const add = (variant: "primary" | "secondary") => (
-    <Link to={addPath} keepQuery variant={variant} size="sm">
-      <Flex alignItems={{ default: "alignItemsCenter" }} gap={{ default: "gapSm" }}>
-        <Icon name="add_circle" /> {_("Add partition")}
-      </Flex>
+  /* A link, since it leads to a form. */
+  const add = (
+    <Link to={addPath} keepQuery variant="link" isInline icon={<Icon name="add_circle" />}>
+      {_("Add partition")}
     </Link>
   );
 
@@ -105,7 +104,7 @@ export default function PartitionableContent({
           // TRANSLATORS: follows what a disk already gets, such as the partitions
           // a volume group needs, above a button to add partitions.
           detail={_("Add partitions to use the rest of the disk.")}
-          actions={add("secondary")}
+          actions={add}
         />
       );
     }
@@ -116,7 +115,7 @@ export default function PartitionableContent({
           // TRANSLATORS: said of a disk the system boots from where nothing else
           // is planned yet, above a button to add partitions.
           summary={_("Used for booting only, no other partitions planned yet")}
-          actions={add("secondary")}
+          actions={add}
         />
       );
     }
@@ -125,7 +124,7 @@ export default function PartitionableContent({
       <Flex direction={{ default: "column" }} gap={{ default: "gapSm" }}>
         {/* TRANSLATORS: offered on a disk that gets no partitions yet. */}
         <FlexItem>{_("You can define partitions.")}</FlexItem>
-        <FlexItem>{add("secondary")}</FlexItem>
+        <FlexItem>{add}</FlexItem>
       </Flex>
     );
   }

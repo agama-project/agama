@@ -94,17 +94,15 @@ export default function PropertiesSection({ entry, subject }: PropertiesSectionP
         <Link
           to={generateEncodedPath(PATHS.volumeGroup.edit, { id: String(subject.index) })}
           keepQuery
-          variant="secondary"
-          size="sm"
+          variant="link"
+          isInline
+          icon={<Icon name="edit_square" />}
         >
-          <Flex alignItems={{ default: "alignItemsCenter" }} gap={{ default: "gapSm" }}>
-            <Icon name="edit_square" />{" "}
-            {
-              // TRANSLATORS: offered inside an LVM volume group's panel: change
-              // which disks it is built on and how it uses them.
-              _("Edit the volume group")
-            }
-          </Flex>
+          {
+            // TRANSLATORS: offered inside an LVM volume group's panel: change
+            // which disks it is built on and how it uses them.
+            _("Edit the volume group")
+          }
         </Link>
       </FlexItem>
     </Flex>

@@ -51,6 +51,10 @@ export type MoveToOtherDeviceProps = {
  * that lays its mark out the first way, the two read as a pair of different
  * things rather than as two offers of the same kind.
  *
+ * A plain button, as "Add more devices" is: it opens a dialog rather than
+ * leading to a form, so it is not drawn as the links beside it are, and it
+ * does not compete with them as an outlined button would.
+ *
  * Always open. Whether the move can be made is settled in the dialog it opens,
  * which is where the reader sees what there is to move to; a button that knows
  * the answer in advance is a button that has to explain itself before the
@@ -69,7 +73,7 @@ export default function MoveToOtherDevice({
 
   return (
     <>
-      <Button variant="secondary" size="sm" onClick={open}>
+      <Button variant="plain" onClick={open}>
         <Flex alignItems={{ default: "alignItemsCenter" }} gap={{ default: "gapSm" }}>
           <Icon name="move_down" />{" "}
           {
