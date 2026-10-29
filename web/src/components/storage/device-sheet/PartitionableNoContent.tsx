@@ -21,24 +21,18 @@
  */
 
 import React from "react";
-import {
-  EmptyState,
-  EmptyStateActions,
-  EmptyStateBody,
-  EmptyStateFooter,
-  Flex,
-} from "@patternfly/react-core";
+import { Flex } from "@patternfly/react-core";
 import Link from "~/components/core/Link";
 import Icon from "~/components/layout/Icon";
+import SummaryWithActions from "~/components/storage/device-sheet/SummaryWithActions";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { generateEncodedPath } from "~/utils";
 import { _ } from "~/i18n";
 import type { DeviceDetailProps } from "~/components/storage/device-sheet/DeviceDetail";
 
 /**
- * A device the installation does not use yet, as an empty state: it says so,
- * and offers the two ways to start, partitioning it or giving it whole to one
- * file system.
+ * A device the installation does not use yet: it says so, and offers the two
+ * ways to start, partitioning it or giving it whole to one file system.
  */
 export default function PartitionableNoContent({ subject }: DeviceDetailProps) {
   const params = {
@@ -47,19 +41,14 @@ export default function PartitionableNoContent({ subject }: DeviceDetailProps) {
   };
 
   return (
-    <EmptyState
-      variant="sm"
-      headingLevel="h4"
+    <SummaryWithActions
       // TRANSLATORS: said of a device the installation does not use yet.
-      titleText={_("Not used by the installation yet")}
-    >
-      <EmptyStateBody>
-        {/* TRANSLATORS: says how a device the installation does not use yet can
-            be put to use. */}
-        {_("Add partitions to it, or format it whole for a single file system.")}
-      </EmptyStateBody>
-      <EmptyStateFooter>
-        <EmptyStateActions>
+      summary={_("Not used by the installation yet")}
+      // TRANSLATORS: says how a device the installation does not use yet can be
+      // put to use.
+      detail={_("Add partitions to it, or format it whole for a single file system.")}
+      actions={
+        <>
           <Link
             to={generateEncodedPath(PATHS.addPartition, params)}
             keepQuery
@@ -85,8 +74,8 @@ export default function PartitionableNoContent({ subject }: DeviceDetailProps) {
               }
             </Flex>
           </Link>
-        </EmptyStateActions>
-      </EmptyStateFooter>
-    </EmptyState>
+        </>
+      }
+    />
   );
 }

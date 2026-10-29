@@ -40,7 +40,12 @@ describe("PartitionableNoContent", () => {
       <PartitionableNoContent entry={entry} subject={{ collection: "drives", index: 0 }} />,
     );
 
-    screen.getByRole("heading", { level: 4, name: "Not used by the installation yet" });
+    const [summary, detail] = screen.getAllByRole("paragraph");
+    expect(summary).toHaveTextContent("Not used by the installation yet");
+    expect(detail).toHaveTextContent(
+      "Add partitions to it, or format it whole for a single file system.",
+    );
+    expect(screen.queryByRole("heading")).toBeNull();
     screen.getByRole("link", { name: "Add partition" });
     screen.getByRole("link", { name: "Format device" });
   });
