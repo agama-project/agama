@@ -231,7 +231,7 @@ export default function PlannedContentSection({
           gridBreakPoint=""
           variant="compact"
           isStriped={isStriped}
-          {...tableProps()}
+          {...tableProps({ hasVerticallyCenteredRows: true })}
           // TRANSLATORS: names the list of what the installation will put on
           // one of its entries.
           aria-label={_("Planned content")}

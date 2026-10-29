@@ -164,6 +164,19 @@ describe("SelectableDataTable", () => {
     screen.getByRole("grid", { name: "Device selector" });
   });
 
+  it("keeps rows' cells at their top by default", () => {
+    plainRender(<SelectableDataTable {...props} className="custom" />);
+    const table = screen.getByRole("grid");
+    expect(table).toHaveClass("custom");
+    expect(table).not.toHaveClass("agm-table--vertically-centered-rows");
+  });
+
+  it("centers rows' cells vertically when asked to, keeping the given class names", () => {
+    plainRender(<SelectableDataTable {...props} className="custom" hasVerticallyCenteredRows />);
+    const table = screen.getByRole("grid");
+    expect(table).toHaveClass("custom", "agm-table--vertically-centered-rows");
+  });
+
   it("renders the table headers", () => {
     plainRender(<SelectableDataTable {...props} />);
     const table = screen.getByRole("grid");

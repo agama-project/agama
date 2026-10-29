@@ -37,6 +37,7 @@ import {
   IAction,
   ActionsColumn,
 } from "@patternfly/react-table";
+import { css } from "@patternfly/react-styles";
 import { isEmpty, isFunction } from "radashi";
 import Icon from "~/components/layout/Icon";
 import { _, TranslatedString } from "~/i18n";
@@ -282,6 +283,16 @@ export type SelectableDataTableProps<T = any> = {
    * (including selection and action columns, if enabled).
    */
   emptyState?: React.ReactNode;
+
+  /**
+   * Whether the cells of every row are centered vertically in it, rather than
+   * placed at its top.
+   *
+   * Useful when some cells hold more than one line, such as a value with a note
+   * under it: the single-line cells then sit beside the whole of that cell
+   * instead of beside its first line only. Off by default.
+   */
+  hasVerticallyCenteredRows?: boolean;
 } & TableProps;
 
 /**
@@ -495,6 +506,8 @@ export default function SelectableDataTable({
   itemActionsLabel,
   itemActionsComponent,
   emptyState,
+  hasVerticallyCenteredRows = false,
+  className,
   ...tableProps
 }: SelectableDataTableProps) {
   const [expandedItemsKeys, setExpandedItemsKeys] = useState(initialExpandedKeys);
@@ -656,7 +669,11 @@ export default function SelectableDataTable({
   }
 
   return (
-    <Table data-type="agama/expandable-selector" {...tableProps}>
+    <Table
+      data-type="agama/expandable-selector"
+      className={css(className, hasVerticallyCenteredRows && "agm-table--vertically-centered-rows")}
+      {...tableProps}
+    >
       <TableHeader columns={columns} sharedData={sharedData} />
       {items?.map((item) => renderItem(item, sharedData))}
     </Table>

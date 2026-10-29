@@ -457,6 +457,14 @@ nav.agm-breadcrumb > ol > li > a {
   --pf-v6-c-table--m-compact__th--PaddingBlockStart: 0;
 }
 
+// A table asked to center its rows' cells vertically, rather than place them at
+// the top, as PatternFly does. A row where one cell carries a note under its
+// value then reads as one row, its single-line cells beside the whole of that
+// cell rather than beside its first line only.
+.agm-table--vertically-centered-rows > .pf-v6-c-table__tbody {
+  vertical-align: middle;
+}
+
 // A storage table ends without a rule under its last row: whatever follows it,
 // a heading or a line of actions, sets it apart already, and a rule there
 // reads as one more row about to start.

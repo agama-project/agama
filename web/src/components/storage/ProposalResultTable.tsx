@@ -194,6 +194,7 @@ export default function ProposalResultTable({
         if (!toDevice(item)) return "dimmed-row";
       }}
       className="proposal-result"
+      hasVerticallyCenteredRows
     />
   );
 }

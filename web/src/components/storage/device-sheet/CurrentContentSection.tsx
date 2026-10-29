@@ -673,7 +673,7 @@ export default function CurrentContentSection({
             isStriped={isStriped}
             /* The column names ruled off from the rows, as the Action column is
                ruled off from what is there today. */
-            {...tableProps({ hasHeaderRule: true })}
+            {...tableProps({ hasHeaderRule: true, hasVerticallyCenteredRows: true })}
             // TRANSLATORS: names the list of what is on a device already.
             aria-label={_("Current content")}
           >

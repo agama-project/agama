@@ -32,6 +32,12 @@ describe("tableProps", () => {
       className: "agm-storage-table agm-storage-table--header-rule",
     });
   });
+
+  it("centers the rows' cells vertically where asked for", () => {
+    expect(tableProps({ hasVerticallyCenteredRows: true })).toEqual({
+      className: "agm-storage-table agm-table--vertically-centered-rows",
+    });
+  });
 });
 
 describe("columnProps", () => {

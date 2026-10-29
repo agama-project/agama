@@ -20,6 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
+import { css } from "@patternfly/react-styles";
 import alignmentStyles from "@patternfly/react-styles/css/utilities/Alignment/alignment";
 import type { TdProps } from "@patternfly/react-table";
 
@@ -48,21 +49,31 @@ export type ColumnLook = {
 export type TableLook = {
   /** A rule under the header row, setting the column names apart from the rows. */
   hasHeaderRule?: boolean;
+  /**
+   * Whether the cells of every row are centered vertically in it, rather than
+   * placed at its top, for rows where some cells hold more than one line.
+   */
+  hasVerticallyCenteredRows?: boolean;
 };
 
 /**
  * The props that give a storage table its look: no rule under its last row,
- * since whatever follows the table already sets it apart, and a rule under its
- * header row where asked for.
+ * since whatever follows the table already sets it apart, and, where asked for,
+ * a rule under its header row and cells centered vertically in their rows.
  *
  * @example
  * <Table variant="compact" {...tableProps({ hasHeaderRule: true })}>
  */
-export function tableProps({ hasHeaderRule = false }: TableLook = {}) {
+export function tableProps({
+  hasHeaderRule = false,
+  hasVerticallyCenteredRows = false,
+}: TableLook = {}) {
   return {
-    className: hasHeaderRule
-      ? "agm-storage-table agm-storage-table--header-rule"
-      : "agm-storage-table",
+    className: css(
+      "agm-storage-table",
+      hasHeaderRule && "agm-storage-table--header-rule",
+      hasVerticallyCenteredRows && "agm-table--vertically-centered-rows",
+    ),
   };
 }
 
