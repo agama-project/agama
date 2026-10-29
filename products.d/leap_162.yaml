@@ -1,5 +1,5 @@
 id: openSUSE_Leap
-name: Leap 16.2 Alpha
+name: Leap 16.2
 licenses:
   - "license.opensuse"
 # ------------------------------------------------------------------------------
@@ -190,6 +190,7 @@ software:
     - multimedia
     - office
     - cockpit
+    - cockpit-client
     - fips
     - name: selinux
       selected: true
