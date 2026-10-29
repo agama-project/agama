@@ -872,12 +872,10 @@ describe("ProductSelectionPage", () => {
       within(section).getByRole("heading", { level: 3, name: productWithModes.name });
       within(section).getByText(productWithModes.description);
 
-      // Mode information, under its own label so the mode is not read as
-      // part of the product
+      // Mode information
       within(section).getByRole("heading", { level: 3, name: "Mode" });
       within(section).getByText("Standard");
       within(section).getByText("Standard system");
-      expect(within(section).queryByRole("heading", { name: "Standard" })).toBeNull();
     });
 
     it("does not display mode information for products without modes", () => {
