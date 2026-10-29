@@ -141,6 +141,7 @@ export default function SpaceDecision({
       customToggle={
         <RowMenuToggle
           label={name}
+          icon="expand_circle_down"
           size="sm"
           className="agm-inline-menu-toggle"
           aria-describedby={describedBy}

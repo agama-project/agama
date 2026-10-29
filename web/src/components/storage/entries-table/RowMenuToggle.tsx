@@ -23,10 +23,18 @@
 import React from "react";
 import { MenuToggle, MenuToggleProps } from "@patternfly/react-core";
 import Icon from "~/components/layout/Icon";
+import type { IconProps } from "~/components/layout/Icon";
 
 export type RowMenuToggleProps = Omit<MenuToggleProps, "ref"> & {
   /** Says which entry the menu is about, since three dots say nothing. */
   label: string;
+  /**
+   * The mark drawn, three dots in a line by default. A toggle sitting at the
+   * end of a sentence takes a downward arrow in a circle instead, as the
+   * page's own menu in the header does, so it is not read as the sentence
+   * trailing off.
+   */
+  icon?: Extract<IconProps["name"], "more_horiz" | "expand_circle_down">;
 };
 
 /**
@@ -44,9 +52,9 @@ export type RowMenuToggleProps = Omit<MenuToggleProps, "ref"> & {
  * meets them one at a time nothing about which device they are on.
  */
 const RowMenuToggle = React.forwardRef<HTMLButtonElement, RowMenuToggleProps>(
-  ({ label, ...props }, ref) => (
+  ({ label, icon = "more_horiz", ...props }, ref) => (
     <MenuToggle ref={ref} variant="plain" aria-label={label} {...props}>
-      <Icon name="more_horiz" />
+      <Icon name={icon} />
     </MenuToggle>
   ),
 );
