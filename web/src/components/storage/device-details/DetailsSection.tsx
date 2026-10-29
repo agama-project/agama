@@ -73,7 +73,7 @@ export default function DetailsSection({ title, icon, children }: DetailsSection
       flexWrap={{ default: "nowrap" }}
       alignItems={{ default: "alignItemsBaseline" }}
     >
-      <FlexItem>
+      <FlexItem className={textStyles.textColorSubtle}>
         <Icon name={icon} isMiddleAligned />
       </FlexItem>
       {body}
