@@ -461,7 +461,6 @@ impl Service {
     ///
     /// If a default product is set, it asks the other services to initialize their configurations.
     pub async fn setup(&mut self) -> Result<(), Error> {
-        self.network_default().await?;
         self.read_system_info().await?;
 
         if let Some(product) = self.products.default_product() {
@@ -471,13 +470,6 @@ impl Service {
             self.update_issues()?;
         };
 
-        Ok(())
-    }
-
-    // Configure the network according to defaults
-    async fn network_default(&mut self) -> Result<(), Error> {
-        self.network.call(network::message::ProposeDefault).await?;
-        self.network.call(network::message::Apply).await?;
         Ok(())
     }
 

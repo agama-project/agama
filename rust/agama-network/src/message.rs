@@ -119,12 +119,6 @@ impl Message for ChangeConnectionState {
     type Reply = ();
 }
 
-pub struct ProposeDefault;
-
-impl Message for ProposeDefault {
-    type Reply = ();
-}
-
 pub struct Install;
 
 impl Message for Install {
@@ -144,11 +138,5 @@ pub struct RemoveConnection {
 }
 
 impl Message for RemoveConnection {
-    type Reply = ();
-}
-
-pub struct Apply;
-
-impl Message for Apply {
     type Reply = ();
 }

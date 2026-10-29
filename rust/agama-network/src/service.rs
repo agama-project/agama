@@ -22,6 +22,7 @@ use crate::{
     error::NetworkStateError,
     message,
     model::{NetworkState, StateConfig},
+    nm::NmError,
     types::{Config, Proposal, SystemInfo},
     Adapter, NetworkAdapterError, NetworkManagerAdapter,
 };
@@ -30,7 +31,6 @@ use agama_utils::{
     api::{event, Event, Scope},
     progress,
 };
-use anyhow::Context;
 use gettextrs::gettext;
 use tokio::sync::broadcast;
 
@@ -46,8 +46,8 @@ pub enum NetworkSystemError {
     Event(#[from] broadcast::error::SendError<Event>),
     #[error(transparent)]
     Progress(#[from] progress::service::Error),
-    #[error(transparent)]
-    Generic(#[from] anyhow::Error),
+    #[error("Could not connect to NetworkManager: {0}")]
+    NetworkManager(#[from] NmError),
 }
 
 /// Starts the network service
@@ -85,25 +85,25 @@ impl Starter {
     }
 
     /// Starts the network configuration service and returns a handler to communicate with it.
+    ///
+    /// Before handling any message, it proposes and applies the default network configuration.
     pub async fn start(self) -> Result<Handler<Service>, NetworkSystemError> {
         let adapter = match self.adapter {
             Some(adapter) => adapter,
-            None => Box::new(
-                NetworkManagerAdapter::from_system()
-                    .await
-                    .context("Could not connect to NetworkManager")?,
-            ),
+            None => Box::new(NetworkManagerAdapter::from_system().await?),
         };
 
         let state = adapter.read(StateConfig::default()).await?;
         let watcher = adapter.watcher();
 
-        let service = Service {
+        let mut service = Service {
             events: self.events,
             progress: self.progress,
             state,
             adapter,
         };
+        service.state.propose_default()?;
+        service.apply().await?;
 
         let handler = actor::spawn(service);
 
@@ -369,23 +369,6 @@ impl MessageHandler<message::RemoveConnection> for Service {
         } else {
             tracing::info!("Connection {} does not exists, skipping it", message.uuid);
         }
-        Ok(())
-    }
-}
-
-impl MessageHandler<message::Apply> for Service {
-    async fn handle(&mut self, _message: message::Apply) -> Result<(), NetworkSystemError> {
-        self.apply().await?;
-        Ok(())
-    }
-}
-
-impl MessageHandler<message::ProposeDefault> for Service {
-    async fn handle(
-        &mut self,
-        _message: message::ProposeDefault,
-    ) -> Result<(), NetworkSystemError> {
-        self.state.propose_default()?;
         Ok(())
     }
 }

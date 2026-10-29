@@ -48,14 +48,18 @@ mod tests {
     };
     use agama_utils::{
         actor::Handler,
-        api::{event::Event, network::DeviceType, scope::Scope},
+        api::{
+            event::{self, Event},
+            network::DeviceType,
+            scope::Scope,
+        },
         progress,
     };
     use test_context::{test_context, AsyncTestContext};
     use tokio::sync::broadcast;
 
     struct Context {
-        events_rx: broadcast::Receiver<Event>,
+        events_rx: event::Receiver,
         adapter: TestAdapter,
         handler: Handler<Service>,
     }
@@ -72,11 +76,14 @@ mod tests {
                 .await
                 .expect("Could not start the network service");
 
-            Self {
+            let mut context = Self {
                 events_rx,
                 adapter,
                 handler,
-            }
+            };
+            // Discard the events emitted when applying the default configuration on start.
+            context.network_events();
+            context
         }
     }
 
