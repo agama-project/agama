@@ -297,6 +297,21 @@ describe("what a row says the installer will do", () => {
     expect(rowText("sda")).toContain("Host LVM volume group system and boot");
   });
 
+  it("says a disk with nothing planned on it will be skipped", () => {
+    mockConfig.mockReturnValue(
+      config({
+        drives: [
+          { name: "/dev/sda", partitions: [{ mountPath: "/" }] },
+          { name: "/dev/sdb", partitions: [] },
+        ],
+      }),
+    );
+    installerRender(<EntriesTable />);
+
+    expect(rowText("sdb")).toContain("Nothing planned yet, will be skipped");
+    expect(rowText("sda")).not.toContain("will be skipped");
+  });
+
   it("names what a disk holds, so the relationship reads from either end", () => {
     mockConfig.mockReturnValue(
       config({

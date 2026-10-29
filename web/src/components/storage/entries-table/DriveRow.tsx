@@ -126,13 +126,21 @@ export default function DriveRow({ name, subject }: DriveRowProps): React.ReactN
 
   const groups = entry ? configModel.partitionable.filterVolumeGroups(config, entry) : [];
   const boots = configModel.boot.hasDevice(config, name);
-  const purpose = entry
-    ? purposeOf(
-        entry,
-        groups.map((group) => group.vgName),
-        boots,
-      )
-    : ([] as TranslatedString[]);
+  let purpose: TranslatedString[] = [];
+  if (entry && !configModel.partitionable.isUsed(config, name)) {
+    /* Added to the installation with nothing planned on it, which the
+       installer leaves out. Said where the other rows say what each device is
+       for, so it is not mistaken for one in use. */
+    // TRANSLATORS: what a disk added to the installation is for, when nothing
+    // is planned on it yet: the installation leaves it out.
+    purpose = [_("Nothing planned yet, will be skipped")];
+  } else if (entry) {
+    purpose = purposeOf(
+      entry,
+      groups.map((group) => group.vgName),
+      boots,
+    );
+  }
 
   const space = driveUtils.contentActionsSummary(entry as ConfigModel.Drive, device);
 
