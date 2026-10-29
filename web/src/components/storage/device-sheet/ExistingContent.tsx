@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import { FlexItem } from "@patternfly/react-core";
+import { Flex, FlexItem } from "@patternfly/react-core";
 import { sprintf } from "sprintf-js";
 import Interpolate from "~/components/core/Interpolate";
 import Text from "~/components/core/Text";
@@ -85,11 +85,11 @@ export default function ExistingContent({
     const type = filesystemLabel(device.filesystem.type);
 
     /* The type first and in bold, since it is what tells one file system from
-       another. */
+       another. One line, with what can be done to it right after: the
+       section's icon already marks what the line is about. */
     return (
-      <SheetItem
-        icon="hard_drive"
-        value={
+      <Flex gap={{ default: "gapSm" }} alignItems={{ default: "alignItemsBaseline" }}>
+        <FlexItem>
           <Fact isDeleted={isDeleted}>
             <Interpolate
               // TRANSLATORS: a file system found on a whole device. %s is its
@@ -99,10 +99,9 @@ export default function ExistingContent({
               {() => <Text isBold>{type}</Text>}
             </Interpolate>
           </Fact>
-        }
-      >
+        </FlexItem>
         {controls}
-      </SheetItem>
+      </Flex>
     );
   }
 
