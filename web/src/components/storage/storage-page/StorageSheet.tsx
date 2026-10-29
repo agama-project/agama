@@ -27,7 +27,7 @@ import DeviceDetail from "~/components/storage/device-sheet/DeviceDetail";
 import DriveMenu from "~/components/storage/entries-table/DriveMenu";
 import VolumeGroupMenu from "~/components/storage/entries-table/VolumeGroupMenu";
 import { useEntry } from "~/components/storage/device-sheet/entry";
-import { driveDescription } from "~/components/storage/utils/device";
+import { driveDescription, volumeGroupFacts } from "~/components/storage/utils/device";
 import { useSheet, SHEET_ID } from "~/components/storage/shared/use-sheet";
 import { useMediaQuery } from "~/hooks/use-media-query";
 import { EmptyState, EmptyStateBody } from "@patternfly/react-core";
@@ -55,14 +55,16 @@ function usePlacement(): SheetPlacement {
 }
 
 /**
- * What the entry is, under its name, as its row says it under the name.
- *
- * A volume group has no hardware to describe, so its row says nothing there,
- * and neither does the sheet.
+ * What the entry is, under its name, as its row says it under the name: a
+ * disk's model or kind, or for a volume group its kind or that it is to be
+ * created.
  */
 function entryDescription(entry: Entry): string | undefined {
-  if (entry.isVolumeGroup || !entry.device) return undefined;
-  return driveDescription(entry.device);
+  if (entry.isVolumeGroup) {
+    return volumeGroupFacts(entry.config as ConfigModel.VolumeGroup, entry.device).description;
+  }
+
+  return entry.device ? driveDescription(entry.device) : undefined;
 }
 
 export type StorageSheetProps = {

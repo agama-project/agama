@@ -27,6 +27,8 @@ import VolumeGroupMenu from "~/components/storage/entries-table/VolumeGroupMenu"
 import TruncatedDeviceName from "~/components/storage/TruncatedDeviceName";
 import { NAMES_PER_LINE } from "~/components/storage/shared/naming";
 import { baseName, formattedPath } from "~/components/storage/utils";
+import { volumeGroupFacts } from "~/components/storage/utils/device";
+import { useDevice } from "~/hooks/model/system/storage";
 import { isEmpty } from "radashi";
 import configModel from "~/model/storage/config-model";
 import { _, n_, formatList, TranslatedString } from "~/i18n";
@@ -127,18 +129,23 @@ export type VolumeGroupRowProps = {
 /**
  * An LVM volume group, as a row of the list.
  *
- * Nothing beside the name. A group is defined rather than found, so there is no
- * hardware to describe: how big it is follows from the disks under it, and the
- * category it is listed under already says what kind of thing it is.
+ * Its first column reads like a disk's: the size beside the name, where the
+ * machine has the group, and a short line under it, its kind or that it is to
+ * be created (see {@link volumeGroupFacts}).
  *
  * A group being defined for the first time costs nothing, since there is
  * nothing of it on the machine yet. One that already exists is read like any
  * other entry: what the installer does to what it holds.
  */
 export default function VolumeGroupRow({ group, subject }: VolumeGroupRowProps): React.ReactNode {
+  const device = useDevice(group.name || "");
+  const { size, description } = volumeGroupFacts(group, device);
+
   return (
     <EntryRow
       name={<TruncatedDeviceName device={{ name: group.vgName }} maxLength={13} />}
+      size={size}
+      description={description}
       purpose={contentLines(group)}
       actions={actionsFor(group)}
       menu={<VolumeGroupMenu group={group} subject={subject} />}

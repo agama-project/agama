@@ -297,6 +297,18 @@ describe("what a row says the installer will do", () => {
     expect(rowText("sda")).toContain("Host LVM volume group system and boot");
   });
 
+  it("says under a volume group's name that it is to be created, where a disk shows its model", () => {
+    mockConfig.mockReturnValue(
+      config({
+        drives: [{ name: "/dev/sda", partitions: [] }],
+        volumeGroups: [{ vgName: "system", targetDevices: ["/dev/sda"], logicalVolumes: [] }],
+      }),
+    );
+    installerRender(<EntriesTable />);
+
+    expect(rowText("system")).toContain("LVM");
+  });
+
   it("says a disk with nothing planned on it will be skipped", () => {
     mockConfig.mockReturnValue(
       config({

@@ -24,6 +24,8 @@ import React from "react";
 import Text from "~/components/core/Text";
 import TruncatedDeviceName from "~/components/storage/TruncatedDeviceName";
 import { deviceSize } from "~/components/storage/utils";
+import { volumeGroupFacts } from "~/components/storage/utils/device";
+import type { ConfigModel } from "~/model/storage/config-model";
 import type { Entry } from "~/components/storage/device-sheet/entry";
 
 export type DeviceSheetHeadingProps = {
@@ -37,12 +39,14 @@ export type DeviceSheetHeadingProps = {
  * row a reader opened and the panel that opens are visibly the same thing. The
  * sheet can cover the list, and then this is what keeps the entry at hand.
  *
- * A volume group carries only its name, as in its row: how big it is follows
- * from the disks under it, and a group being defined has none yet.
+ * A volume group the machine has carries its size too, as in its row; one
+ * being created has none yet (see {@link volumeGroupFacts}).
  */
 export default function DeviceSheetHeading({ entry }: DeviceSheetHeadingProps): React.ReactNode {
   const { device, name, isVolumeGroup } = entry;
-  const size = !isVolumeGroup && device?.block?.size ? deviceSize(device.block.size) : undefined;
+  const size = isVolumeGroup
+    ? volumeGroupFacts(entry.config as ConfigModel.VolumeGroup, device).size
+    : device?.block?.size && deviceSize(device.block.size);
 
   return (
     <>

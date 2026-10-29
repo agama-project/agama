@@ -24,8 +24,9 @@ import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
 import { compact } from "~/utils";
 import type { Storage as System } from "~/model/system";
+import type { ConfigModel } from "~/model/storage/config-model";
 import { isEmpty } from "radashi";
-import { baseName } from "~/components/storage/utils";
+import { baseName, deviceSize } from "~/components/storage/utils";
 
 const driveTypeDescription = (device: System.Device): string => {
   if (device.drive.type === "multipath") {
@@ -145,4 +146,32 @@ const driveDescription = (device: System.Device): string | undefined => {
   return typeDescription(device);
 };
 
-export { typeDescription, contentDescription, driveDescription, filesystemLabels };
+/**
+ * What the list and the device panel say about an LVM volume group beside and
+ * under its name, the way they say a disk's size and model.
+ *
+ * Its kind under its name, as a disk says "Disk", whether it exists or is
+ * being created. Its size beside the name where the machine has it: a group
+ * being created has none until its volumes are made.
+ */
+const volumeGroupFacts = (
+  group: ConfigModel.VolumeGroup,
+  device: System.Device | null,
+): { size?: string; description?: string } => {
+  const size = group.name ? device?.volumeGroup?.size : undefined;
+
+  return {
+    size: size === undefined ? undefined : deviceSize(size),
+    // TRANSLATORS: said under the name of an LVM volume group, where a disk
+    // shows its kind, such as "Disk".
+    description: _("LVM"),
+  };
+};
+
+export {
+  typeDescription,
+  contentDescription,
+  driveDescription,
+  volumeGroupFacts,
+  filesystemLabels,
+};
