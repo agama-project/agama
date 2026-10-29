@@ -30,7 +30,10 @@ use agama_utils::{
 };
 use async_trait::async_trait;
 use macaddr::MacAddr6;
-use std::{str::FromStr, sync::Mutex};
+use std::{
+    str::FromStr,
+    sync::{Arc, Mutex},
+};
 
 use crate::{
     adapter::Watcher,
@@ -46,9 +49,24 @@ use crate::{
 /// It starts with the default network state and keeps whatever is written to it, without the
 /// removed connections, as NetworkManager would. Additionally, it does not have an associated
 /// watcher.
-#[derive(Default)]
+///
+/// Its clones share the same state, so a test can keep a clone to change the system behind the
+/// service, as NetworkManager would.
+#[derive(Clone, Default)]
 pub struct TestAdapter {
-    state: Mutex<NetworkState>,
+    state: Arc<Mutex<NetworkState>>,
+}
+
+impl TestAdapter {
+    /// Returns the network state of the system.
+    pub fn state(&self) -> NetworkState {
+        self.state.lock().unwrap().clone()
+    }
+
+    /// Replaces the network state of the system.
+    pub fn set_state(&self, state: NetworkState) {
+        *self.state.lock().unwrap() = state;
+    }
 }
 
 #[async_trait]
