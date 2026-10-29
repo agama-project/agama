@@ -142,8 +142,10 @@ export default function PlannedContentSection({
 
   const planned = plannedOn(entry).filter((p) => !p.name);
 
+  /* The forms address a volume group by its place in the configuration, as
+     they address a disk. */
   const addPath = isVolumeGroup
-    ? generateEncodedPath(PATHS.volumeGroup.logicalVolume.add, { id: group.vgName })
+    ? generateEncodedPath(PATHS.volumeGroup.logicalVolume.add, { id: String(subject.index) })
     : generateEncodedPath(PATHS.addPartition, {
         collection: subject.collection,
         index: String(subject.index),
@@ -152,7 +154,7 @@ export default function PlannedContentSection({
   const editPath = (part: Planned) =>
     isVolumeGroup
       ? generateEncodedPath(PATHS.volumeGroup.logicalVolume.edit, {
-          id: group.vgName,
+          id: String(subject.index),
           logicalVolumeId: part.mountPath,
         })
       : generateEncodedPath(PATHS.editPartition, {
