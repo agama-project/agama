@@ -706,7 +706,7 @@ tr.agm-entries-table__row > :is(th, td):not(.agm-entries-table__menu) {
 // rather than as a second cell.
 .agm-row-note {
   font-family: var(--pf-t--global--font--family--mono);
-  font-size: var(--pf-t--global--font--size--xs);
+  font-size: var(--agm-t--font--size--xxs);
   color: var(--pf-t--global--text--color--subtle);
 }
 
