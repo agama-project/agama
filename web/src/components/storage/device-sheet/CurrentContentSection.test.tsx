@@ -113,7 +113,9 @@ describe("CurrentContentSection", () => {
   it("sums up what happens to the partitions, with how many there are in bold", () => {
     installerRender(<CurrentContentSection entry={entry("delete")} subject={subject} />);
 
-    expect(summary()).toHaveTextContent("3 partitions: all will be deleted (including Windows 11)");
+    expect(summary()).toHaveTextContent(
+      "3 partitions: all will be deleted. Windows 11 will be lost.",
+    );
     expect(within(summary()).getByText("3 partitions")).toHaveClass("pf-v6-u-font-weight-bold");
   });
 
@@ -235,7 +237,7 @@ describe("CurrentContentSection", () => {
     const description = document.getElementById(toggle.getAttribute("aria-describedby"));
 
     expect(description).toHaveTextContent(
-      "3 partitions: all will be deleted (including Windows 11)",
+      "3 partitions: all will be deleted. Windows 11 will be lost.",
     );
   });
 
@@ -251,7 +253,9 @@ describe("CurrentContentSection", () => {
     it("says what becomes of them", () => {
       installerRender(<CurrentContentSection entry={mixed} subject={subject} />);
 
-      expect(summary()).toHaveTextContent("3 partitions: 1 will be deleted (including Windows 11)");
+      expect(summary()).toHaveTextContent(
+        "3 partitions: 1 will be deleted. Windows 11 will be lost.",
+      );
     });
   });
 
@@ -262,7 +266,7 @@ describe("CurrentContentSection", () => {
       installerRender(<CurrentContentSection entry={reusing} subject={subject} />);
 
       expect(summary()).toHaveTextContent(
-        '3 partitions: 2 will be deleted (including Windows 11) and 1 will be formatted for "/home"',
+        '3 partitions: 2 will be deleted and 1 will be formatted. Windows 11 will be lost. "/home" will be formatted.',
       );
     });
 
@@ -273,7 +277,7 @@ describe("CurrentContentSection", () => {
       installerRender(<CurrentContentSection entry={keeping} subject={subject} />);
 
       expect(summary()).toHaveTextContent(
-        '3 partitions: 2 will be deleted (including Windows 11) and 1 will be mounted at "/home"',
+        '3 partitions: 2 will be deleted and 1 will be mounted unchanged. Windows 11 will be lost. "/home" will be mounted unchanged.',
       );
     });
 
@@ -294,7 +298,9 @@ describe("CurrentContentSection", () => {
     );
     await renderShown(<CurrentContentSection entry={reusingAll} subject={subject} />);
 
-    expect(summary()).toHaveTextContent("3 partitions: all will be formatted for the new system");
+    expect(summary()).toHaveTextContent(
+      /^3 partitions: all will be formatted\. .* will be formatted\.$/,
+    );
     expect(options()).toBeNull();
   });
 
@@ -306,7 +312,7 @@ describe("CurrentContentSection", () => {
 
     rerender(<CurrentContentSection entry={entry("keep")} subject={subject} />);
 
-    expect(mockAnnounce).toHaveBeenCalledWith("3 partitions: all will be kept");
+    expect(mockAnnounce).toHaveBeenCalledWith("3 partitions: all will be kept.");
   });
 
   describe("on a device the installation does not use", () => {
@@ -315,7 +321,7 @@ describe("CurrentContentSection", () => {
         <CurrentContentSection entry={entry("keep")} subject={subject} fixedDecision="keep" />,
       );
 
-      expect(summary()).toHaveTextContent("3 partitions: all will be kept");
+      expect(summary()).toHaveTextContent("3 partitions: all will be kept.");
       expect(options()).toBeNull();
     });
   });
@@ -327,7 +333,7 @@ describe("CurrentContentSection", () => {
       );
 
       expect(summary()).toHaveTextContent(
-        "3 partitions: all will be deleted (including Windows 11)",
+        "3 partitions: all will be deleted. Windows 11 will be lost.",
       );
       expect(options()).toBeNull();
       expect(screen.queryByRole("button", { name: /^Actions for/ })).toBeNull();

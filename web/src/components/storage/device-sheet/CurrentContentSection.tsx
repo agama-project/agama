@@ -28,10 +28,11 @@ import { sprintf } from "sprintf-js";
 import Text from "~/components/core/Text";
 import Icon from "~/components/layout/Icon";
 import SpaceDecision from "~/components/storage/device-sheet/SpaceDecision";
-import contentSummary, {
-  summaryParts,
-  summarySentence,
-} from "~/components/storage/device-sheet/content-summary";
+import {
+  buildCurrentContentSummary,
+  sentenceGap,
+  summaryText,
+} from "~/components/storage/device-sheet/current-content-summary";
 import Interpolate from "~/components/core/Interpolate";
 import MenuButton, { MenuButtonItem } from "~/components/core/MenuButton";
 import RowMenuToggle from "~/components/storage/entries-table/RowMenuToggle";
@@ -53,7 +54,7 @@ import { CURRENT_CONTENT, EXPANDED } from "~/components/storage/ui-state-params"
 import { _, n_ } from "~/i18n";
 import type DevicesManager from "~/model/storage/devices-manager";
 import type { Decision } from "~/components/storage/device-sheet/partition-space";
-import type { ContentPart } from "~/components/storage/device-sheet/content-summary";
+import type { ContentPart } from "~/components/storage/device-sheet/current-content-summary";
 import type { ConfigModel, DeviceCollection, Partitionable } from "~/model/storage/config-model";
 import type { Entry } from "~/components/storage/device-sheet/entry";
 import type { SheetEntry } from "~/components/storage/shared/use-sheet";
@@ -579,8 +580,8 @@ export default function CurrentContentSection({
       };
     });
   const kind = entry.isVolumeGroup ? "logicalVolumes" : "partitions";
-  const summary = contentSummary(kind, parts);
-  const halves = summaryParts(kind, parts);
+  const built = buildCurrentContentSummary({ kind, parts });
+  const summary = built && summaryText(built);
   const summaryId = React.useId();
 
   /* Said when the decisions change, so a screen reader user hears what their
@@ -602,12 +603,21 @@ export default function CurrentContentSection({
               after, where reading ends: in the same line of text, so it lines
               up with the words and wraps with the last of them. */}
           <FlexItem>
-            {/* How much there is in bold; the rest says what becomes of it. */}
+            {/* How much there is in bold, then what becomes of it, then what
+                there is more to say, a sentence each. */}
             <Text id={summaryId}>
-              {halves && (
-                <Interpolate sentence={summarySentence()}>
-                  {[() => <Text isBold>{halves.amount}</Text>, () => halves.fates]}
-                </Interpolate>
+              {built && (
+                <>
+                  <Interpolate sentence={built.sentence}>
+                    {(amount) => <Text isBold>{amount}</Text>}
+                  </Interpolate>
+                  {built.details.map((detail) => (
+                    <React.Fragment key={detail}>
+                      {sentenceGap()}
+                      {detail}
+                    </React.Fragment>
+                  ))}
+                </>
               )}
             </Text>
             {isDecidable && (
