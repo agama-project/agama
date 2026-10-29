@@ -113,6 +113,7 @@ enum ConnectionState {
 enum ConnectionMethod {
   MANUAL = "manual",
   AUTO = "auto",
+  DISABLED = "disabled",
 }
 
 enum VlanProtocol {

@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Oct 29 11:57:48 UTC 2026 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- SLES 16.2 and SLES for SAP 16.2 use now by default systemd-boot
+  in BLS-compliant mode (jsc#PED-10703, jsc#PED-16648).
+
+-------------------------------------------------------------------
 Thu Oct 22 09:44:24 UTC 2026 - José Iván López González <jlopez@suse.com>
 
 - Version 25
