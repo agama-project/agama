@@ -33,7 +33,7 @@ import { isEmpty } from "radashi";
 import configModel from "~/model/storage/config-model";
 import { _, n_, formatList, TranslatedString } from "~/i18n";
 import type { ConfigModel } from "~/model/storage/config-model";
-import type { SheetEntry } from "~/components/storage/shared/use-sheet";
+import type { DetailsSubject } from "~/components/storage/shared/use-device-details";
 
 const contentLines = (volumeGroup: ConfigModel.VolumeGroup): TranslatedString[] => {
   const newLogicalVolumes = volumeGroup.logicalVolumes.filter(configModel.volume.isNew);
@@ -122,8 +122,8 @@ function actionsFor(group: ConfigModel.VolumeGroup): TranslatedString[] {
 export type VolumeGroupRowProps = {
   /** The group as the configuration describes it. */
   group: ConfigModel.VolumeGroup;
-  /** Where it is written, which is how the sheet is opened on it. */
-  subject: SheetEntry;
+  /** Where it is written, which is how the panel is opened on it. */
+  subject: DetailsSubject;
 };
 
 /**

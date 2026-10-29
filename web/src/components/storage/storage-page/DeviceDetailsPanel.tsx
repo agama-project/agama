@@ -1,0 +1,147 @@
+/*
+ * Copyright (c) [2026] SUSE LLC
+ *
+ * All Rights Reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by the Free
+ * Software Foundation; either version 2 of the License, or (at your option)
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, contact SUSE LLC.
+ *
+ * To contact SUSE LLC about this file by physical or electronic mail, you may
+ * find current contact information at www.suse.com.
+ */
+
+import React from "react";
+import SidePanel, { SidePanelPlacement } from "~/components/core/SidePanel";
+import DeviceDetailsHeading from "~/components/storage/device-details/DeviceDetailsHeading";
+import DeviceDetailsBody from "~/components/storage/device-details/DeviceDetailsBody";
+import DriveMenu from "~/components/storage/entries-table/DriveMenu";
+import VolumeGroupMenu from "~/components/storage/entries-table/VolumeGroupMenu";
+import { useEntry } from "~/components/storage/device-details/entry";
+import { driveDescription, volumeGroupFacts } from "~/components/storage/utils/device";
+import { useDeviceDetails, DETAILS_PANEL_ID } from "~/components/storage/shared/use-device-details";
+import { useMediaQuery } from "~/hooks/use-media-query";
+import { EmptyState, EmptyStateBody } from "@patternfly/react-core";
+import { _ } from "~/i18n";
+import type { ConfigModel, Partitionable } from "~/model/storage/config-model";
+import type { Entry } from "~/components/storage/device-details/entry";
+
+/** PatternFly's `2xl`, from where there is room for the page and a panel both. */
+const WIDE = "(min-width: 90.625rem)";
+
+/**
+ * How much of the window the panel takes, and what that leaves the page.
+ *
+ * Two bands. Wide enough for both, the two share the width and the page keeps
+ * working; otherwise the panel comes over the page, which is where most readers
+ * are.
+ *
+ * `2xl` rather than `xl`, which was tried first: a page sharing its width from
+ * 1200px keeps the list of entries but crushes it, wrapping a row's every line
+ * into three. Sharing has to leave the page usable, or it is an overlay that
+ * also makes the page hard to read.
+ */
+function usePlacement(): SidePanelPlacement {
+  return useMediaQuery(WIDE) ? "share" : "overlay";
+}
+
+/**
+ * What the entry is, under its name, as its row says it under the name: a
+ * disk's model or kind, or for a volume group its kind or that it is to be
+ * created.
+ */
+function entryDescription(entry: Entry): string | undefined {
+  if (entry.isVolumeGroup) {
+    return volumeGroupFacts(entry.config as ConfigModel.VolumeGroup, entry.device).description;
+  }
+
+  return entry.device ? driveDescription(entry.device) : undefined;
+}
+
+export type DeviceDetailsPanelProps = {
+  /** The page the panel opens over. */
+  page: React.ReactNode;
+};
+
+/**
+ * The one panel the storage page opens, on whichever entry the reader picked.
+ *
+ * It holds the details of that entry and nothing else. What the whole
+ * configuration does is reported above the page, not here.
+ *
+ * One panel and not several, because the reader only ever has one open and the
+ * address only ever names one thing. What changes with the entry is what the
+ * panel says it is about and what it holds; how it behaves does not, which is
+ * why that part is settled once in `core/SidePanel`.
+ *
+ * An address naming an entry the configuration no longer has reads as a shut
+ * panel, and the name leaves the address, so the two always agree. Addresses
+ * outlive plans: one can be written down, shared, or reloaded after the entry
+ * it named has gone. The same goes for a change made from the panel itself
+ * that takes its entry away: the panel closes rather than moving on to another
+ * entry, since going from one entry to another is always the reader's doing.
+ */
+export default function DeviceDetailsPanel({ page }: DeviceDetailsPanelProps): React.ReactNode {
+  const { subject, isStale, close } = useDeviceDetails();
+  const placement = usePlacement();
+  const entry = useEntry(subject);
+
+  const isOpen = entry !== null;
+
+  /* Replaced rather than pushed, as every change of the panel is, so Back does
+     not lead to the address of an entry that is gone. */
+  React.useEffect(() => {
+    if (isStale) close();
+  }, [isStale, close]);
+
+  return (
+    <SidePanel
+      id={DETAILS_PANEL_ID}
+      isOpen={isOpen}
+      placement={placement}
+      onClose={close}
+      title={entry && <DeviceDetailsHeading entry={entry} />}
+      description={entry && entryDescription(entry)}
+      /* The same acts the entry's row offers, so a reader meets one menu per
+         entry wherever they open it from. */
+      actions={
+        entry &&
+        (entry.isVolumeGroup ? (
+          <VolumeGroupMenu group={entry.config as ConfigModel.VolumeGroup} />
+        ) : (
+          <DriveMenu entry={entry.config as Partitionable.Device} />
+        ))
+      }
+      page={page}
+      /* Only where there is a list to pick from. On a plan of one device there
+         is nothing to select, and a third of a wide screen saying so reports an
+         absence the reader did not cause. */
+      placeholder={
+        <EmptyState
+          headingLevel="h2"
+          variant="sm"
+          // TRANSLATORS: said in the empty column beside the list, where no
+          // entry of the installation has been opened yet.
+          titleText={_("Nothing selected")}
+        >
+          <EmptyStateBody>
+            {/* TRANSLATORS: says what the empty column beside the list is
+                for. */}
+            {_("Pick an entry in the list to see and change what happens to it.")}
+          </EmptyStateBody>
+        </EmptyState>
+      }
+    >
+      {entry && subject && <DeviceDetailsBody entry={entry} subject={subject} />}
+    </SidePanel>
+  );
+}

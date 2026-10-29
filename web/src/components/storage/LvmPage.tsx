@@ -41,7 +41,7 @@ import { useAvailableDevices } from "~/hooks/model/system/storage";
 import { deviceLabel } from "./utils";
 import { contentDescription, filesystemLabels, typeDescription } from "./utils/device";
 import { STORAGE } from "~/routes/paths";
-import { renamedGroupSearch } from "~/components/storage/shared/use-sheet";
+import { renamedGroupSearch } from "~/components/storage/shared/use-device-details";
 import { sprintf } from "sprintf-js";
 import { _, N_ } from "~/i18n";
 import { deviceSystems, isDrive, isMd } from "~/model/storage/device";

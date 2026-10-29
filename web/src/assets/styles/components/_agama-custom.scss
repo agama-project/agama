@@ -296,96 +296,99 @@ nav.agm-breadcrumb > ol > li > a {
   white-space: nowrap;
 }
 
-// A page holding a sheet does not scroll: the page beside the sheet and the
-// sheet each scroll on their own. A page that scrolls as a whole opens the
-// sheet at whatever offset the page was left at, with its heading out of sight.
+// A page holding a panel does not scroll: the page beside the panel and the
+// panel each scroll on their own. A page that scrolls as a whole opens the
+// panel at whatever offset the page was left at, with its heading out of sight.
 //
 // PatternFly grows the main group and the section but keeps both from
 // shrinking, so they stay as tall as their content and the page scrolls. Both
 // properties have to go: a zero minimum does nothing to an item that does not
 // shrink.
-.pf-v6-c-page__main-group:has(> .pf-v6-c-page__main-section > .agm-sheet-frame),
-.pf-v6-c-page__main-section:has(> .agm-sheet-frame),
-.agm-sheet-frame {
+.pf-v6-c-page__main-group:has(> .pf-v6-c-page__main-section > .agm-side-panel-frame),
+.pf-v6-c-page__main-section:has(> .agm-side-panel-frame),
+.agm-side-panel-frame {
   flex: 1 1 auto;
   min-height: 0;
 }
 
-// What sits above the sheet, such as a page's report, is spaced from it as the
+// What sits above the panel, such as a page's report, is spaced from it as the
 // parts of the page inside it are spaced from each other, so the report reads
 // as part of the page rather than as something apart from it.
-.pf-v6-c-page__main-section:has(> .agm-sheet-frame) {
+.pf-v6-c-page__main-section:has(> .agm-side-panel-frame) {
   --pf-v6-c-page__main-section--RowGap: var(--pf-t--global--spacer--gutter--default);
 }
 
-// The sheet and whatever lies over the page reach the edges of the rounded box
+// The panel and whatever lies over the page reach the edges of the rounded box
 // holding the page, which clips them to its corners. The section's room around
 // the page moves inside the drawer, so the page itself stays where it was.
 // Except above the drawer where something comes before it in the section,
 // which keeps the room between the two.
-.agm-sheet-frame {
-  --agm-sheet-frame--inset-block-start: var(--pf-v6-c-page__main-section--PaddingBlockStart);
-  --agm-sheet-frame--inset-block-end: var(--pf-v6-c-page__main-section--PaddingBlockEnd);
-  --agm-sheet-frame--border-start: var(--pf-v6-c-page__main-container--BorderInlineStartWidth);
-  --agm-sheet-frame--border-end: var(--pf-v6-c-page__main-container--BorderInlineEndWidth);
-  --agm-sheet-frame--inset-inline-start: calc(
-    var(--pf-v6-c-page__main-section--PaddingInlineStart) - var(--agm-sheet-frame--border-start)
+.agm-side-panel-frame {
+  --agm-side-panel-frame--inset-block-start: var(--pf-v6-c-page__main-section--PaddingBlockStart);
+  --agm-side-panel-frame--inset-block-end: var(--pf-v6-c-page__main-section--PaddingBlockEnd);
+  --agm-side-panel-frame--border-start: var(--pf-v6-c-page__main-container--BorderInlineStartWidth);
+  --agm-side-panel-frame--border-end: var(--pf-v6-c-page__main-container--BorderInlineEndWidth);
+  --agm-side-panel-frame--inset-inline-start: calc(
+    var(--pf-v6-c-page__main-section--PaddingInlineStart) - var(
+        --agm-side-panel-frame--border-start
+      )
   );
-  --agm-sheet-frame--inset-inline-end: calc(
-    var(--pf-v6-c-page__main-section--PaddingInlineEnd) - var(--agm-sheet-frame--border-end)
+  --agm-side-panel-frame--inset-inline-end: calc(
+    var(--pf-v6-c-page__main-section--PaddingInlineEnd) - var(--agm-side-panel-frame--border-end)
   );
 
-  margin-block: calc(-1 * var(--agm-sheet-frame--inset-block-start))
-    calc(-1 * var(--agm-sheet-frame--inset-block-end));
-  margin-inline: calc(-1 * var(--agm-sheet-frame--inset-inline-start))
-    calc(-1 * var(--agm-sheet-frame--inset-inline-end));
+  margin-block: calc(-1 * var(--agm-side-panel-frame--inset-block-start))
+    calc(-1 * var(--agm-side-panel-frame--inset-block-end));
+  margin-inline: calc(-1 * var(--agm-side-panel-frame--inset-inline-start))
+    calc(-1 * var(--agm-side-panel-frame--inset-inline-end));
 }
 
-.agm-sheet-frame:not(:first-child) {
-  --agm-sheet-frame--inset-block-start: 0px;
+.agm-side-panel-frame:not(:first-child) {
+  --agm-side-panel-frame--inset-block-start: 0px;
 }
 
-.agm-sheet-frame > .pf-v6-c-drawer__main > .pf-v6-c-drawer__content > .pf-v6-c-drawer__body {
-  padding-block: var(--agm-sheet-frame--inset-block-start) var(--agm-sheet-frame--inset-block-end);
-  padding-inline: var(--agm-sheet-frame--inset-inline-start)
-    var(--agm-sheet-frame--inset-inline-end);
+.agm-side-panel-frame > .pf-v6-c-drawer__main > .pf-v6-c-drawer__content > .pf-v6-c-drawer__body {
+  padding-block: var(--agm-side-panel-frame--inset-block-start)
+    var(--agm-side-panel-frame--inset-block-end);
+  padding-inline: var(--agm-side-panel-frame--inset-inline-start)
+    var(--agm-side-panel-frame--inset-inline-end);
 }
 
 // The drawer scrolls its panel as a whole, heading included. The scroll moves
-// one level in, to the sheet's body, so the heading stays while the rest moves.
-// The room around the sheet's content is the sheet's own, so the panel adds
+// one level in, to the side panel's body, so the heading stays while the rest moves.
+// The room around the side panel's content is its own, so the drawer adds
 // none above or below it.
-.agm-sheet-frame > .pf-v6-c-drawer__main > .pf-v6-c-drawer__panel {
+.agm-side-panel-frame > .pf-v6-c-drawer__main > .pf-v6-c-drawer__panel {
   --pf-v6-c-drawer__panel--PaddingBlockStart: 0;
   --pf-v6-c-drawer__panel--PaddingBlockEnd: 0;
 
   overflow: hidden;
 }
 
-// The one plain block PatternFly leaves between the panel and the sheet.
-.agm-sheet-frame > .pf-v6-c-drawer__main > .pf-v6-c-drawer__panel > .pf-v6-c-drawer__body {
+// The one plain block PatternFly leaves between the drawer and the side panel.
+.agm-side-panel-frame > .pf-v6-c-drawer__main > .pf-v6-c-drawer__panel > .pf-v6-c-drawer__body {
   display: flex;
   flex: 1 1 auto;
   flex-direction: column;
   min-height: 0;
 }
 
-// The page under a sheet laid over it is out of reach, and visibly so: being
+// The page under a panel laid over it is out of reach, and visibly so: being
 // out of the tab order and the accessibility tree says nothing to a reader who
 // is looking at it. Behind the same backdrop as the rest of the installer, it
 // reads as the page behind the thing they are in. A light tint and no blur,
 // far from the backdrop that blocks the whole page while the installer works:
 // this page is still there to be glanced at and read, and a dark or blurred
-// one weighs on the screen while the reader works in the sheet.
+// one weighs on the screen while the reader works in the panel.
 //
 // Laid over the drawer rather than the page, which scrolls: a layer inside it
 // would cover the first screen of it and scroll away with it. The drawer keeps
-// its sheet above its page, so the layer sits between the two.
-.agm-sheet-frame--covered > .pf-v6-c-drawer__main {
+// its panel above its page, so the layer sits between the two.
+.agm-side-panel-frame--covered > .pf-v6-c-drawer__main {
   position: relative;
 }
 
-.agm-sheet-frame--covered > .pf-v6-c-drawer__main::after {
+.agm-side-panel-frame--covered > .pf-v6-c-drawer__main::after {
   position: absolute;
   z-index: var(--pf-v6-c-drawer__content--ZIndex);
   inset: 0;
@@ -395,10 +398,11 @@ nav.agm-breadcrumb > ol > li > a {
     var(--pf-t--global--background--color--backdrop--default) 15%,
     transparent
   );
-  animation: agm-sheet-backdrop-in var(--pf-t--global--motion--duration--fade--default) ease-in-out;
+  animation: agm-side-panel-backdrop-in var(--pf-t--global--motion--duration--fade--default)
+    ease-in-out;
 }
 
-@keyframes agm-sheet-backdrop-in {
+@keyframes agm-side-panel-backdrop-in {
   from {
     opacity: 0;
   }
@@ -407,52 +411,52 @@ nav.agm-breadcrumb > ol > li > a {
 // A panel opened beside or over the page it belongs to. It fills the height it
 // is given and scrolls its own content, so the heading saying what the reader
 // is looking at stays put while the panel is read.
-.agm-sheet {
+.agm-side-panel {
   display: flex;
   flex: 1 1 auto;
   flex-direction: column;
   min-height: 0;
   overflow: hidden;
-  padding: var(--agm-t--sheet--padding--block, var(--pf-t--global--spacer--sm))
-    var(--agm-t--sheet--padding--inline, var(--pf-t--global--spacer--md));
+  padding: var(--agm-t--side-panel--padding--block, var(--pf-t--global--spacer--sm))
+    var(--agm-t--side-panel--padding--inline, var(--pf-t--global--spacer--md));
   background: var(--pf-t--global--background--color--primary--default);
 }
 
-// Opening the sheet moves the reader into it, and a panel that takes focus
+// Opening the panel moves the reader into it, and a panel that takes focus
 // without showing where it went leaves a keyboard reader guessing.
-.agm-sheet:focus-visible {
+.agm-side-panel:focus-visible {
   outline: 2px solid var(--pf-t--global--border--color--brand--default);
   outline-offset: -2px;
 }
 
-.agm-sheet__head {
+.agm-side-panel__head {
   flex: 0 0 auto;
   padding-block-end: var(--pf-t--global--spacer--sm);
   margin-block-end: var(--pf-t--global--spacer--md);
   border-block-end: 1px solid var(--pf-t--global--border--color--default);
 }
 
-// Named rather than sized as a heading: the sheet's title says which thing is
+// Named rather than sized as a heading: the panel's title says which thing is
 // being read, and a page whose panel shouts louder than its own sentence has
 // its ranking the wrong way round.
-.agm-sheet__title {
+.agm-side-panel__title {
   margin: 0;
   font-size: var(--pf-t--global--font--size--body--lg);
   font-weight: var(--pf-t--global--font--weight--body--bold);
   line-height: var(--pf-t--global--font--line-height--heading);
 }
 
-.agm-sheet__description {
+.agm-side-panel__description {
   font-size: var(--pf-t--global--font--size--body--sm);
   color: var(--pf-t--global--text--color--subtle);
 }
 
-// A device sheet section's content starts where its heading's words start,
+// A device details section's content starts where its heading's words start,
 // after the section's icon, and its tables run edge to edge, so their columns
 // line up with the text above them instead of adding an indent of their own.
 // Their header row drops its top padding too, so a table starts as close to
 // what precedes it as any other content does.
-.agm-sheet-section__content .pf-v6-c-table {
+.agm-details-section__content .pf-v6-c-table {
   --pf-v6-c-table--cell--first-last-child--PaddingInline: 0;
   --pf-v6-c-table--m-compact__th--PaddingBlockStart: 0;
 }
@@ -481,13 +485,13 @@ nav.agm-breadcrumb > ol > li > a {
 
 // The control showing what is on a device: its caret sits right against the
 // words, so the two read as one control. The icon's own padding is gap enough.
-.pf-v6-c-button.agm-sheet-disclosure {
+.pf-v6-c-button.agm-details-disclosure {
   --pf-v6-c-button--Gap: 0;
 }
 
 // The icon draws its caret inside a square with room on every side, so pull it
 // back by that room: the caret, not its box, lines up with the text above.
-.pf-v6-c-button.agm-sheet-disclosure .pf-v6-c-button__icon {
+.pf-v6-c-button.agm-details-disclosure .pf-v6-c-button__icon {
   margin-inline-start: -0.25em;
 }
 
@@ -501,21 +505,21 @@ nav.agm-breadcrumb > ol > li > a {
 
 // Where its content cannot have the room it wants, the content scrolls rather
 // than the panel growing to fit it.
-.agm-sheet__body {
+.agm-side-panel__body {
   flex: 1 1 auto;
   min-width: 0;
   min-height: 0;
   overflow: auto;
 }
 
-// The page keeps its edge where the sheet stands beside it.
-.agm-sheet__panel {
+// The page keeps its edge where the panel stands beside it.
+.agm-side-panel-frame__side {
   border-inline-start: 1px solid var(--pf-t--global--border--color--default);
 }
 
-// The wider the window, the less of it the sheet needs: a panel has a width it
+// The wider the window, the less of it the panel needs: a panel has a width it
 // reads well at, and everything past that is spent on nothing.
-.agm-sheet__panel--share {
+.agm-side-panel-frame__side--share {
   max-width: 44rem;
 }
 

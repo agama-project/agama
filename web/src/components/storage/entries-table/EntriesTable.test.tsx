@@ -297,7 +297,7 @@ describe("EntriesTable", () => {
       within(table()).getByRole("rowheader", { name: /^sda · 60 GiB\s*Disk$/ });
     });
 
-    it("leaves what is on the disk today to the sheet", () => {
+    it("leaves what is on the disk today to the panel", () => {
       installerRender(<EntriesTable />);
       const cell = within(table()).getByRole("rowheader", { name: /^sda/ });
 
@@ -630,7 +630,7 @@ describe("the way into an entry", () => {
     expect(screen.getByRole("status").textContent).toBe("");
   });
 
-  it("marks the entry whose sheet is open", async () => {
+  it("marks the entry whose panel is open", async () => {
     const { user } = renderWithAddress();
     await user.click(screen.getByRole("link", { name: "sdb" }));
 

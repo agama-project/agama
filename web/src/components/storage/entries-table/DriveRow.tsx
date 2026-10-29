@@ -34,7 +34,7 @@ import TruncatedDeviceName from "~/components/storage/TruncatedDeviceName";
 import configModel from "~/model/storage/config-model";
 import { _, n_, formatList, TranslatedString } from "~/i18n";
 import type { ConfigModel, Partitionable } from "~/model/storage/config-model";
-import type { SheetEntry } from "~/components/storage/shared/use-sheet";
+import type { DetailsSubject } from "~/components/storage/shared/use-device-details";
 
 /**
  * What the installer will do here, as counts and never as names.
@@ -99,8 +99,8 @@ function purposeOf(
 export type DriveRowProps = {
   /** The device the configuration names, as the model spells it. */
   name: string;
-  /** Where it is written, which is how the sheet is opened on it. */
-  subject: SheetEntry;
+  /** Where it is written, which is how the panel is opened on it. */
+  subject: DetailsSubject;
 };
 
 /**

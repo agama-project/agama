@@ -25,13 +25,13 @@ import { Divider } from "@patternfly/react-core";
 import { sprintf } from "sprintf-js";
 import MenuButton, { MenuButtonItem } from "~/components/core/MenuButton";
 import RowMenuToggle from "~/components/storage/entries-table/RowMenuToggle";
-import { useSheet } from "~/components/storage/shared/use-sheet";
+import { useDeviceDetails } from "~/components/storage/shared/use-device-details";
 import { baseName } from "~/components/storage/utils";
 import configModel from "~/model/storage/config-model";
 import { useConfigModel, useDeleteVolumeGroup } from "~/hooks/model/storage/config-model";
 import { _ } from "~/i18n";
 import type { ConfigModel } from "~/model/storage/config-model";
-import type { SheetEntry } from "~/components/storage/shared/use-sheet";
+import type { DetailsSubject } from "~/components/storage/shared/use-device-details";
 
 type RemoveVolumeGroupMenuItemProps = {
   deviceConfig: ConfigModel.VolumeGroup;
@@ -56,7 +56,7 @@ export type SearchedVolumeGroupMenuProps = {
   /** The disk or RAID as the configuration describes it. */
   entry: ConfigModel.VolumeGroup;
   /** Where it is written. Given only where opening it is one of the offers. */
-  subject?: SheetEntry;
+  subject?: DetailsSubject;
 };
 
 /**
@@ -80,7 +80,7 @@ export default function SearchedVolumeGroupMenu({
   subject,
 }: SearchedVolumeGroupMenuProps): React.ReactNode {
   const config = useConfigModel();
-  const { openSheet } = useSheet();
+  const { openDetails } = useDeviceDetails();
 
   const name = baseName(entry.name);
   // TRANSLATORS: names the menu of things that can be done to one device of the
@@ -92,7 +92,7 @@ export default function SearchedVolumeGroupMenu({
        is the row's own act says what the row does, for a reader who never
        discovers that rows can be opened and for one who cannot click.
 
-       Left out in the sheet's own header, where the reader is already inside
+       Left out in the panel's own header, where the reader is already inside
        what it would open. */
     ...(subject
       ? [
@@ -108,7 +108,7 @@ export default function SearchedVolumeGroupMenu({
               name,
             )}
             description={_("Configure how the volume group will be used")}
-            onClick={() => openSheet(subject)}
+            onClick={() => openDetails(subject)}
           >
             {/* TRANSLATORS: opens the panel where one entry of the installation
                 is read and changed. */}

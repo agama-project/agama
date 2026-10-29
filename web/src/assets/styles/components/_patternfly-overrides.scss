@@ -71,7 +71,7 @@
 }
 
 // The room around the content of every page, one value per axis so that all
-// pages keep the same frame. The page sheet reads these to reach the edges of
+// pages keep the same frame. The side panel reads these to reach the edges of
 // the box, so it follows whatever they resolve to.
 .pf-v6-c-page__main-section {
   --pf-v6-c-page__main-section--PaddingBlockStart: var(

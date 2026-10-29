@@ -45,8 +45,8 @@ jest.mock("~/components/storage/storage-page/Result", () => () => (
 jest.mock("~/components/storage/storage-page/TopLine", () => () => <button>boot disk</button>);
 jest.mock("~/components/storage/entries-table/EntriesTable", () => () => <div>entries</div>);
 jest.mock("~/components/storage/storage-page/GlobalActions", () => () => null);
-jest.mock("~/components/storage/device-sheet/DeviceSheetHeading", () => () => "sda");
-jest.mock("~/components/storage/device-sheet/DeviceDetail", () => () => null);
+jest.mock("~/components/storage/device-details/DeviceDetailsHeading", () => () => "sda");
+jest.mock("~/components/storage/device-details/DeviceDetailsBody", () => () => null);
 jest.mock("~/components/storage/entries-table/DriveMenu", () => () => null);
 
 const report = () => screen.getByRole("button", { name: "what the configuration does" });
@@ -59,8 +59,8 @@ describe("StoragePageContent", () => {
     expect(report().compareDocumentPosition(setting())).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
   });
 
-  describe("while the sheet covers the page", () => {
-    it("keeps the report within reach, so a change made in the sheet can be acted on", () => {
+  describe("while the panel covers the page", () => {
+    it("keeps the report within reach, so a change made in the panel can be acted on", () => {
       mockRoutes("/storage?device=drives.sda");
       installerRender(<StoragePageContent />);
 

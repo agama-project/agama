@@ -1,0 +1,765 @@
+/*
+ * Copyright (c) [2026] SUSE LLC
+ *
+ * All Rights Reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by the Free
+ * Software Foundation; either version 2 of the License, or (at your option)
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, contact SUSE LLC.
+ *
+ * To contact SUSE LLC about this file by physical or electronic mail, you may
+ * find current contact information at www.suse.com.
+ */
+
+import React from "react";
+import { screen } from "@testing-library/react";
+import { useSearchParams } from "react-router";
+import { installerRender, mockNavigateFn, mockRoutes } from "~/test-utils";
+import type { ConfigModel } from "~/model/storage/config-model";
+import DeviceDetailsPanel from "~/components/storage/storage-page/DeviceDetailsPanel";
+
+const mockConfig = jest.fn();
+const mockSystemDevice = jest.fn();
+const mockSystemDevices = jest.fn();
+const mockSetSpacePolicy = jest.fn();
+const mockProposalDevices = jest.fn();
+const mockActions = jest.fn();
+
+jest.mock("~/hooks/model/storage/config-model", () => ({
+  ...jest.requireActual("~/hooks/model/storage/config-model"),
+  useConfigModel: () => mockConfig(),
+  useConvertDevice: () => jest.fn(),
+  useConvertPartitionableToVolumeGroup: () => jest.fn(),
+  useDeleteDrive: () => jest.fn(),
+  useDeleteMdRaid: () => jest.fn(),
+  useDeleteVolumeGroup: () => jest.fn(),
+  useDeletePartition: () => jest.fn(),
+  useDeleteLogicalVolume: () => jest.fn(),
+  useSetSpacePolicy: () => mockSetSpacePolicy,
+  /* Mocked although the module above it already is: a hook calling another
+     hook of its own module calls the module's binding, not the mocked export,
+     so the real suspense query underneath would run. */
+  useDevice: () => ({ name: "/dev/sda", spacePolicy: "keep" }),
+}));
+
+jest.mock("~/hooks/model/system/storage", () => ({
+  ...jest.requireActual("~/hooks/model/system/storage"),
+  useDevice: () => mockSystemDevice(),
+  useAvailableDevices: () => [],
+  useFlattenDevices: () => mockSystemDevices(),
+}));
+
+jest.mock("~/hooks/model/proposal/storage", () => ({
+  ...jest.requireActual("~/hooks/model/proposal/storage"),
+  useFlattenDevices: () => mockProposalDevices(),
+  useActions: () => mockActions(),
+}));
+
+const config = (values: Partial<ConfigModel.Config> = {}): ConfigModel.Config => ({
+  drives: [{ name: "/dev/sda", partitions: [] }],
+  mdRaids: [],
+  volumeGroups: [],
+  ...values,
+});
+
+const page = <div>the storage page</div>;
+
+/** What the address says, for checking what the panel leaves in it. */
+const Address = () => {
+  const [params] = useSearchParams();
+  return <output>{params.toString()}</output>;
+};
+const panel = () => screen.queryByRole("region");
+
+/**
+ * Renders the page at one address.
+ *
+ * The address is set here rather than in a `beforeEach`, because `mockRoutes`
+ * queues one value per call: set in two nested blocks, the outer one is never
+ * consumed and turns up in whatever test runs next.
+ */
+const renderAt = (address: string) => {
+  mockRoutes(address);
+  return installerRender(<DeviceDetailsPanel page={page} />);
+};
+
+describe("DeviceDetailsPanel", () => {
+  beforeEach(() => {
+    mockConfig.mockReturnValue(config());
+    mockProposalDevices.mockReturnValue([]);
+    mockActions.mockReturnValue([]);
+    mockSystemDevices.mockReturnValue([]);
+    mockSystemDevice.mockReturnValue({
+      name: "/dev/sda",
+      class: "drive",
+      drive: { type: "disk", info: {} },
+      block: { size: 64424509440, udevPaths: ["pci-0000:0a:00.0"] },
+      partitionTable: { type: "gpt" },
+    });
+  });
+
+  it("shows the page and no panel where the address names nothing", () => {
+    installerRender(<DeviceDetailsPanel page={page} />);
+
+    screen.getByText("the storage page");
+    expect(panel()).not.toBeInTheDocument();
+  });
+
+  describe("when the address names an entry", () => {
+    it("opens on it, saying what it is the way its row says it", () => {
+      renderAt("/storage?device=drives.sda");
+
+      screen.getByRole("region", { name: /sda/ });
+      screen.getByText(/60 GiB/);
+    });
+
+    it("says what it is under its name, as its row does", () => {
+      renderAt("/storage?device=drives.sda");
+
+      screen.getByRole("heading", { name: "sda · 60 GiB" });
+      screen.getByText("Disk");
+      expect(screen.queryByText("pci-0000:0a:00.0")).not.toBeInTheDocument();
+    });
+
+    it("offers the same acts its row offers", () => {
+      renderAt("/storage?device=drives.sda");
+
+      screen.getByRole("button", { name: "Actions for sda" });
+    });
+
+    it("opens on what the device is left as, which is why a reader came", () => {
+      mockProposalDevices.mockReturnValue([
+        { sid: 59, name: "/dev/sda", class: "drive", block: { size: 64424509440 } },
+      ]);
+      mockActions.mockReturnValue([{ device: 59, text: "" }]);
+      renderAt("/storage?device=drives.sda");
+
+      screen.getByText("How this disk looks once the installer is done.");
+      screen.getByRole("treegrid");
+    });
+
+    it("says so where the installer has worked no layout out", () => {
+      renderAt("/storage?device=drives.sda");
+
+      screen.getByText(/no layout to show/);
+    });
+
+    it("marks each view without the mark becoming part of its name", () => {
+      /* With something on it, so the view of what is there today is offered. */
+      mockSystemDevice.mockReturnValue({
+        name: "/dev/sda",
+        class: "drive",
+        drive: { type: "disk", info: {} },
+        block: { size: 64424509440 },
+        partitions: [{ sid: 41, name: "/dev/sda1", block: { size: 5e10, systems: [] } }],
+      });
+      renderAt("/storage?device=drives.sda");
+
+      /* Exact names: a mark read out with the words would change them. */
+      screen.getByRole("tab", { name: "Final layout" });
+      screen.getByRole("tab", { name: "Planned content" });
+      screen.getByRole("tab", { name: "Current content" });
+    });
+
+    it("offers the views of it left to right, as time moving forwards", () => {
+      renderAt("/storage?device=drives.sda");
+
+      screen.getByRole("tab", { name: "Final layout" });
+      screen.getByRole("tab", { name: "Planned content" });
+    });
+
+    it("says in each view where what it holds is decided, and leads there", async () => {
+      /* With something on it, so the view of what is there today is offered. */
+      mockSystemDevice.mockReturnValue({
+        name: "/dev/sda",
+        class: "drive",
+        drive: { type: "disk", info: {} },
+        block: { size: 64424509440 },
+        partitions: [{ sid: 41, name: "/dev/sda1", block: { size: 5e10, systems: [] } }],
+      });
+      const { user } = renderAt("/storage?device=drives.sda");
+      await user.click(screen.getByRole("button", { name: "Current content" }));
+
+      expect(screen.getByRole("tab", { name: "Current content" })).toHaveAttribute(
+        "aria-selected",
+        "true",
+      );
+    });
+
+    it("opens on what it becomes, not on what there is to change", () => {
+      renderAt("/storage?device=drives.sda");
+
+      expect(screen.getByRole("tab", { name: "Final layout" })).toHaveAttribute(
+        "aria-selected",
+        "true",
+      );
+    });
+
+    describe("and the address names one of its views", () => {
+      beforeEach(() => {
+        mockConfig.mockReturnValue(
+          config({
+            drives: [
+              {
+                name: "/dev/sda",
+                partitions: [{ mountPath: "/", size: { default: false, min: 1e10 } }],
+              },
+            ],
+          }),
+        );
+      });
+
+      it("opens on that one instead, listing what the new system gets here", () => {
+        renderAt("/storage?device=drives.sda");
+
+        screen.getByText("What this disk will hold for the new system.");
+        screen.getByRole("rowheader", { name: /\// });
+      });
+
+      it("offers the one act that changes what is planned here", () => {
+        renderAt("/storage?device=drives.sda");
+
+        screen.getByRole("link", { name: /Add partition/ });
+      });
+
+      it("offers moving what is planned to another device, after what it would move", () => {
+        renderAt("/storage?device=drives.sda");
+
+        screen.getByRole("button", { name: /Use another device/ });
+      });
+
+      it("calls a partition asked for by id what it is for, not what the id is", () => {
+        mockConfig.mockReturnValue(
+          config({ drives: [{ name: "/dev/sda", partitions: [{ id: "bios_boot" }] }] }),
+        );
+        renderAt("/storage?device=drives.sda");
+
+        screen.getByRole("rowheader", { name: "BIOS boot partition" });
+      });
+
+      it("calls dropping a partition it creates a deletion", async () => {
+        const { user } = renderAt("/storage?device=drives.sda");
+        await user.click(screen.getByRole("button", { name: "Actions for /" }));
+
+        screen.getByRole("menuitem", { name: "Delete" });
+      });
+
+      it("calls dropping one it takes over an end to the reuse, since it stays", async () => {
+        mockSystemDevice.mockReturnValue({
+          name: "/dev/sda",
+          class: "drive",
+          drive: { type: "disk", info: {} },
+          block: { size: 64424509440 },
+          partitions: [{ sid: 41, name: "/dev/sda1", block: { size: 5e10, systems: [] } }],
+        });
+        mockConfig.mockReturnValue(
+          config({
+            drives: [{ name: "/dev/sda", partitions: [{ name: "/dev/sda1", mountPath: "/home" }] }],
+          }),
+        );
+        const { user } = renderAt("/storage?device=drives.sda");
+        await user.click(screen.getByRole("button", { name: "Actions for /home" }));
+
+        screen.getByRole("menuitem", { name: "Stop reusing" });
+        expect(screen.queryByRole("menuitem", { name: "Delete" })).not.toBeInTheDocument();
+      });
+    });
+
+    describe("and the address names what is on it today", () => {
+      beforeEach(() => {
+        mockSystemDevice.mockReturnValue({
+          name: "/dev/sda",
+          class: "drive",
+          drive: { type: "disk", info: {} },
+          block: { size: 64424509440 },
+          partitions: [
+            { sid: 41, name: "/dev/sda1", block: { size: 5e10, systems: ["Windows 11"] } },
+          ],
+        });
+        /* The plan still has it, which is what keeping a partition looks like:
+           a row reads what becomes of one from the plan rather than from the
+           actions, so one the plan holds on to has to be there. */
+        mockProposalDevices.mockReturnValue([{ sid: 41, name: "/dev/sda1" }]);
+      });
+
+      it("names what is there and what becomes of it", () => {
+        renderAt("/storage?device=drives.sda");
+
+        screen.getByText("What to do with the existing partitions");
+        screen.getByRole("rowheader", { name: "sda1" });
+        /* The system found on it reads in its own column, beside what it is. */
+        screen.getByText("Windows 11");
+        screen.getByText("Kept");
+      });
+
+      /* Emptying a partition for the new system deletes the file system that
+         was on it, and the plan says so. The partition itself stays, so the
+         row that reads "delete" out of the plan reads it about the wrong
+         thing. */
+      it("does not call a partition deleted while the new system reuses it", () => {
+        mockConfig.mockReturnValue(
+          config({
+            drives: [{ name: "/dev/sda", partitions: [{ name: "/dev/sda1", mountPath: "/home" }] }],
+          }),
+        );
+        mockProposalDevices.mockReturnValue([
+          { sid: 41, name: "/dev/sda1", filesystem: { sid: 99, type: "btrfs" } },
+        ]);
+        mockActions.mockReturnValue([{ device: 41, text: "", delete: true }]);
+        renderAt("/storage?device=drives.sda");
+
+        screen.getByText('To be formatted as "/home"');
+        expect(screen.queryByText("To be deleted")).not.toBeInTheDocument();
+      });
+
+      it("lists the free space too, so keeping everything has something to show", () => {
+        mockSystemDevice.mockReturnValue({
+          name: "/dev/sda",
+          class: "drive",
+          drive: { type: "disk", info: {} },
+          block: { size: 64424509440 },
+          partitionTable: { type: "gpt", unusedSlots: [{ start: 9e10, size: 1e10 }] },
+          partitions: [
+            { sid: 41, name: "/dev/sda1", block: { start: 0, size: 5e10, systems: [] } },
+          ],
+        });
+        renderAt("/storage?device=drives.sda");
+
+        screen.getByRole("rowheader", { name: "Free space" });
+      });
+
+      it("puts the decision above the column it governs", () => {
+        renderAt("/storage?device=drives.sda");
+
+        screen.getByRole("group", { name: "Allowed changes" });
+      });
+
+      it("is not offered at all where the device is empty", () => {
+        mockSystemDevice.mockReturnValue({
+          name: "/dev/sda",
+          class: "drive",
+          drive: { type: "disk", info: {} },
+          block: { size: 64424509440 },
+          partitions: [],
+        });
+        renderAt("/storage?device=drives.sda");
+
+        expect(screen.queryByRole("tab", { name: "Current content" })).toBeNull();
+        expect(screen.queryByRole("group", { name: "Allowed changes" })).toBeNull();
+        /* The address named a view this device has not got, so the panel opens
+           on the first rather than on a strip with nothing selected. */
+        expect(screen.getByRole("tab", { name: "Final layout" })).toHaveAttribute(
+          "aria-selected",
+          "true",
+        );
+      });
+    });
+
+    describe("and nothing is planned on it", () => {
+      it("says so, and carries the act that changes it", () => {
+        renderAt("/storage?device=drives.sda");
+
+        screen.getByRole("heading", { name: "Nothing planned for this device yet" });
+        screen.getByText(/Add a volume, or reuse one of the partitions already on it/);
+        screen.getByRole("link", { name: /Add partition/ });
+      });
+
+      it("does not offer moving it, since there is nothing to move", () => {
+        renderAt("/storage?device=drives.sda");
+
+        expect(
+          screen.queryByRole("button", { name: /Use another device/ }),
+        ).not.toBeInTheDocument();
+      });
+    });
+
+    describe("and the whole device goes to something else", () => {
+      beforeEach(() => {
+        mockConfig.mockReturnValue(
+          config({
+            drives: [{ name: "/dev/sda", partitions: [] }],
+            volumeGroups: [{ vgName: "system", targetDevices: ["/dev/sda"] }],
+          }),
+        );
+      });
+
+      it("says which, and offers the way to it", () => {
+        renderAt("/storage?device=drives.sda");
+
+        screen.getByRole("heading", { name: "No partitions are planned here" });
+        screen.getByText(/The whole device goes to/);
+        /* Twice: once in the statement above the content, once in the state
+           that says nothing is planned. Both lead to the same entry. */
+        expect(screen.getAllByRole("link", { name: "system" })).toHaveLength(2);
+      });
+
+      it("says the device starts the machine, and what that costs it", () => {
+        mockConfig.mockReturnValue(
+          config({
+            drives: [{ name: "/dev/sda", partitions: [] }],
+            volumeGroups: [{ vgName: "system", targetDevices: ["/dev/sda"] }],
+            /* Automatic still records which disk it chose. */
+            boot: { configure: true, device: { default: true, name: "/dev/sda" } },
+          }),
+        );
+        mockProposalDevices.mockReturnValue([
+          {
+            sid: 59,
+            name: "/dev/sda",
+            partitions: [
+              {
+                sid: 90,
+                name: "/dev/sda1",
+                description: "BIOS Boot Partition",
+                block: { size: 8388608 },
+              },
+            ],
+          },
+        ]);
+        renderAt("/storage?device=drives.sda");
+
+        screen.getByText("Boot device, chosen automatically.");
+        screen.getByText(/Partitions to boot: a new partition \(8 MiB\)\./);
+        /* Told what booting costs, and given the page that decides it. */
+        expect(screen.getByRole("link", { name: "Check boot options" })).toHaveAttribute(
+          "href",
+          expect.stringContaining("/storage/boot-device/edit"),
+        );
+      });
+
+      it("says so above the content too, on one line", () => {
+        renderAt("/storage?device=drives.sda");
+
+        /* The heading and what it says share one line rather than stacking. */
+        const heading = screen.getByText("Used by");
+        expect(heading.parentElement).toHaveTextContent(/^Used by system$/);
+      });
+    });
+  });
+
+  describe("when the entry is one the configuration defines rather than finds", () => {
+    beforeEach(() => {
+      mockConfig.mockReturnValue(
+        config({
+          drives: [{ name: "/dev/sda", partitions: [] }],
+          volumeGroups: [
+            { vgName: "system", targetDevices: ["/dev/sda"], targetDevicesPolicy: "useNeeded" },
+          ],
+        }),
+      );
+    });
+
+    it("says what kind of thing it is, and the name it will answer to", () => {
+      /* Not on the machine yet, which is the state a group is defined in. */
+      mockSystemDevice.mockReturnValue(null);
+      renderAt("/storage?device=volumeGroups.system");
+
+      screen.getByRole("region", { name: "system LVM volume group" });
+      screen.getByText("/dev/system");
+    });
+
+    it("says what it is made of in a section of its own", () => {
+      renderAt("/storage?device=volumeGroups.system");
+
+      screen.getByRole("heading", { name: "Properties" });
+    });
+
+    it("offers a disk no such section, since a disk is the hardware", () => {
+      renderAt("/storage?device=drives.sda");
+
+      expect(screen.queryByRole("heading", { name: "Properties" })).toBeNull();
+    });
+
+    it("names what it is built on, and offers the way to each", () => {
+      renderAt("/storage?device=volumeGroups.system");
+
+      screen.getByText(/Physical volumes on/);
+      screen.getByRole("link", { name: "sda" });
+    });
+
+    it("leaves the form out of the panel's menu, since the section links to it", async () => {
+      const { user } = renderAt("/storage?device=volumeGroups.system");
+      await user.click(screen.getByRole("button", { name: "Actions for system" }));
+
+      expect(screen.queryByRole("menuitem", { name: /^Edit/ })).toBeNull();
+    });
+
+    it("offers the form that changes both, after what it changes", () => {
+      renderAt("/storage?device=volumeGroups.system");
+
+      screen.getByRole("link", { name: /Edit the volume group/ });
+    });
+
+    describe("and it already exists, holding volumes of its own", () => {
+      beforeEach(() => {
+        mockConfig.mockReturnValue(
+          config({
+            drives: [{ name: "/dev/sda", partitions: [] }],
+            volumeGroups: [
+              {
+                vgName: "system",
+                targetDevices: ["/dev/sda"],
+                spacePolicy: "custom",
+                logicalVolumes: [{ name: "/dev/system/home", delete: true }],
+              },
+            ],
+          }),
+        );
+        mockSystemDevice.mockReturnValue({
+          name: "/dev/system",
+          class: "volumeGroup",
+          volumeGroup: { size: 1e11 },
+          logicalVolumes: [
+            { sid: 71, name: "/dev/system/home", block: { size: 5e10, systems: [] } },
+            { sid: 72, name: "/dev/system/data", block: { size: 5e10, systems: [] } },
+          ],
+        });
+      });
+
+      it("lets the group be told what may happen to them, as a disk is", () => {
+        renderAt("/storage?device=volumeGroups.system");
+
+        screen.getByRole("group", { name: "Allowed changes" });
+      });
+
+      /* A logical volume is governed the same way a partition is, and the
+         playground decides both one at a time. */
+      it("gives each volume its own decision, where they are decided one at a time", () => {
+        renderAt("/storage?device=volumeGroups.system");
+
+        screen.getByRole("button", { name: "Changes allowed for home: Delete" });
+        screen.getByRole("button", { name: "Changes allowed for data: Keep" });
+      });
+    });
+  });
+
+  describe("when the address names an entry the configuration no longer has", () => {
+    it("leaves the reader on the page rather than on a broken panel", () => {
+      renderAt("/storage?device=drives.vdz");
+
+      screen.getByText("the storage page");
+      expect(panel()).not.toBeInTheDocument();
+    });
+
+    it("takes the entry out of the address, keeping the rest of it", () => {
+      mockRoutes("/storage?settingsTab=1&device=drives.vdz");
+      installerRender(
+        <>
+          <DeviceDetailsPanel page={page} />
+          <Address />
+        </>,
+      );
+
+      expect(screen.getByRole("status").textContent).toBe("settingsTab=1");
+    });
+
+    it("reads an address by position, as it was once written, the same way", () => {
+      renderAt("/storage?device=drives.0");
+
+      expect(panel()).not.toBeInTheDocument();
+    });
+  });
+
+  describe("when its entry goes away while it is open", () => {
+    it("closes rather than showing whatever entry takes its place", () => {
+      mockConfig.mockReturnValue(
+        config({
+          drives: [
+            { name: "/dev/sda", partitions: [] },
+            { name: "/dev/sdb", partitions: [] },
+          ],
+        }),
+      );
+      const { rerender } = renderAt("/storage?device=drives.sda");
+      screen.getByRole("region", { name: /sda/ });
+
+      /* The first disk leaves; another one now sits where it was. */
+      mockConfig.mockReturnValue(config({ drives: [{ name: "/dev/sdb", partitions: [] }] }));
+      rerender(<DeviceDetailsPanel page={page} />);
+
+      expect(panel()).not.toBeInTheDocument();
+    });
+  });
+
+  describe("when the address makes no sense at all", () => {
+    it("reads as a shut panel, since an address can be edited by hand", () => {
+      renderAt("/storage?device=nonsense");
+
+      expect(panel()).not.toBeInTheDocument();
+    });
+  });
+
+  describe("when the address names the whole picture, as it once could", () => {
+    it("reads as a shut panel, since the panel holds details only", () => {
+      renderAt("/storage?device=result");
+
+      screen.getByText("the storage page");
+      expect(panel()).not.toBeInTheDocument();
+    });
+  });
+
+  describe("when a device's space is decided one partition at a time", () => {
+    const sda1 = {
+      sid: 41,
+      name: "/dev/sda1",
+      block: { start: 0, size: 5e10, systems: [], shrinking: { supported: false } },
+    };
+    const sda2 = {
+      sid: 42,
+      name: "/dev/sda2",
+      block: { start: 5e10, size: 5e10, systems: [], shrinking: { supported: true } },
+    };
+
+    beforeEach(() => {
+      mockConfig.mockReturnValue(
+        config({
+          drives: [
+            {
+              name: "/dev/sda",
+              spacePolicy: "custom",
+              partitions: [{ name: "/dev/sda1", delete: true }],
+            },
+          ],
+        }),
+      );
+      mockSystemDevice.mockReturnValue({
+        name: "/dev/sda",
+        class: "drive",
+        drive: { type: "disk", info: {} },
+        block: { size: 1e11 },
+        partitions: [sda1, sda2],
+      });
+    });
+
+    it("gives each partition its own decision, saying what it is now", () => {
+      renderAt("/storage?device=drives.sda");
+
+      screen.getByRole("button", { name: "Changes allowed for sda1: Delete" });
+      screen.getByRole("button", { name: "Changes allowed for sda2: Keep" });
+    });
+
+    it("writes every partition's decision back with the one that changed", async () => {
+      const { user } = renderAt("/storage?device=drives.sda");
+      await user.click(screen.getByRole("button", { name: "Changes allowed for sda2: Keep" }));
+      await user.click(screen.getByRole("menuitem", { name: /Shrink if needed/ }));
+
+      /* sda1 keeps its deletion: the configuration clears every decision before
+         applying the list, so leaving it out would quietly undo it. */
+      expect(mockSetSpacePolicy).toHaveBeenCalledWith("drives", 0, {
+        type: "custom",
+        actions: [
+          { deviceName: "/dev/sda1", value: "delete" },
+          { deviceName: "/dev/sda2", value: "resizeIfNeeded" },
+        ],
+      });
+    });
+
+    it("keeps a shrink it cannot allow offered and says why, rather than hiding it", async () => {
+      const { user } = renderAt("/storage?device=drives.sda");
+      await user.click(screen.getByRole("button", { name: "Changes allowed for sda1: Delete" }));
+
+      const shrink = screen.getByRole("menuitem", { name: /Shrink if needed/ });
+      expect(shrink).toHaveAttribute("aria-disabled", "true");
+      screen.getByText("This partition cannot be made smaller.");
+    });
+
+    it("offers no decision per partition where the device follows one rule", () => {
+      mockConfig.mockReturnValue(
+        config({ drives: [{ name: "/dev/sda", spacePolicy: "keep", partitions: [] }] }),
+      );
+      renderAt("/storage?device=drives.sda");
+
+      expect(screen.queryByRole("button", { name: /Changes allowed for/ })).not.toBeInTheDocument();
+    });
+  });
+
+  describe("what can be done to a partition already on the device", () => {
+    beforeEach(() => {
+      mockSystemDevice.mockReturnValue({
+        name: "/dev/sda",
+        class: "drive",
+        drive: { type: "disk", info: {} },
+        block: { size: 1e11 },
+        partitions: [{ sid: 41, name: "/dev/sda1", block: { start: 0, size: 5e10, systems: [] } }],
+      });
+    });
+
+    it("offers to reuse it for the new system, whatever the space answer", async () => {
+      const { user } = renderAt("/storage?device=drives.sda");
+      await user.click(screen.getByRole("button", { name: "Actions for sda1" }));
+      await user.click(screen.getByRole("menuitem", { name: "Reuse for the new system…" }));
+
+      expect(mockNavigateFn).toHaveBeenCalledWith(
+        expect.objectContaining({
+          pathname: expect.stringMatching(/\/storage\/drives\/0\/partitions\/.*sda1\/use$/),
+        }),
+      );
+    });
+
+    it("offers to change or stop a reuse already planned", async () => {
+      mockConfig.mockReturnValue(
+        config({
+          drives: [{ name: "/dev/sda", partitions: [{ name: "/dev/sda1", mountPath: "/home" }] }],
+        }),
+      );
+      const { user } = renderAt("/storage?device=drives.sda");
+      await user.click(screen.getByRole("button", { name: "Actions for sda1" }));
+
+      screen.getByRole("menuitem", { name: "Edit the reused partition" });
+      screen.getByRole("menuitem", { name: "Stop reusing" });
+    });
+  });
+
+  describe("when the entry is a software RAID", () => {
+    beforeEach(() => {
+      mockConfig.mockReturnValue(
+        config({
+          drives: [{ name: "/dev/sda", partitions: [] }],
+          mdRaids: [{ name: "/dev/md0", ptableType: "gpt", partitions: [] }],
+        }),
+      );
+      mockSystemDevice.mockReturnValue({
+        name: "/dev/md0",
+        class: "mdRaid",
+        block: { size: 1e11 },
+        md: { level: "raid1", devices: [11, 12] },
+      });
+      mockSystemDevices.mockReturnValue([
+        { sid: 11, name: "/dev/sda" },
+        { sid: 12, name: "/dev/sdb" },
+      ]);
+    });
+
+    it("offers a view of what it is made of", () => {
+      renderAt("/storage?sheet=mdRaids.0");
+
+      screen.getByRole("tab", { name: "Properties" });
+    });
+
+    it("names the disks it stands on, leading to those that are entries of the plan", () => {
+      renderAt("/storage?sheet=mdRaids.0");
+
+      screen.getByText("Uses");
+      screen.getByRole("link", { name: "sda" });
+      /* sdb is not an entry of the plan, so there is no panel for it to open. */
+      expect(screen.queryByRole("link", { name: "sdb" })).not.toBeInTheDocument();
+      screen.getByText(/sdb/);
+    });
+
+    it("says how it is partitioned", () => {
+      renderAt("/storage?sheet=mdRaids.0");
+
+      screen.getByText("Partition table");
+      screen.getByText("GPT");
+    });
+  });
+});

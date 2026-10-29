@@ -46,13 +46,13 @@ const EXPANDED = "expanded";
 /** Proposal page: selected tab of the settings section. */
 const SETTINGS_TAB = "settingsTab";
 
-/** Storage page: what the sheet beside the page is showing. */
-const SHEET = "device";
+/** Storage page: what the panel beside the page is showing. */
+const DEVICE_DETAILS = "device";
 
 /**
- * Storage page: the token of {@link EXPANDED} saying the sheet's list of what
- * its device holds today is open. Belongs to the sheet: it goes whenever the
- * sheet closes or moves to another device.
+ * Storage page: the token of {@link EXPANDED} saying the panel's list of what
+ * its device holds today is open. Belongs to the panel: it goes whenever the
+ * panel closes or moves to another device.
  */
 const CURRENT_CONTENT = "content";
 
@@ -91,7 +91,7 @@ function volumeGroupToken(vgName: string): string {
 export {
   EXPANDED,
   SETTINGS_TAB,
-  SHEET,
+  DEVICE_DETAILS,
   CURRENT_CONTENT,
   DASD_SORT,
   ZFCP_SORT,

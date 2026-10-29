@@ -126,8 +126,8 @@
   /* Room inside the panel a page opens beside its content, such as the one
      for a storage device. Unset, 0.5rem above and below and 1rem at the
      sides. */
-  --agm-t--sheet--padding--block: 0.75rem;
-  --agm-t--sheet--padding--inline: 1.25rem;
+  --agm-t--side-panel--padding--block: 0.75rem;
+  --agm-t--side-panel--padding--inline: 1.25rem;
 
   /* The terminal surface and the text drawn on it. Theme-independent on
      purpose: a console reads as a console in any theme, and these are the
