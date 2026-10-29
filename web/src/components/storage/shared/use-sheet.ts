@@ -103,6 +103,26 @@ function fromParam(config: ConfigModel.Config | null, value: string | null): She
 }
 
 /**
+ * The query of an address, with a renamed volume group's panel following it.
+ *
+ * Renaming a group changes the name its panel is addressed by. Whoever renames
+ * one passes the address it is leaving through this, so a panel open on the
+ * group reopens under the new name: the reader asked for the change, so it is
+ * the same group to them. Any other address is returned as it was.
+ *
+ * @example
+ * renamedGroupSearch("?device=volumeGroups.system", "system", "data");
+ * // "?device=volumeGroups.data"
+ */
+function renamedGroupSearch(search: string, from: string, to: string): string {
+  const params = new URLSearchParams(search);
+  if (params.get(SHEET) !== `volumeGroups.${from}`) return search;
+
+  params.set(SHEET, `volumeGroups.${to}`);
+  return `?${params}`;
+}
+
+/**
  * The open state of the storage page's sheet, which lives in the address.
  *
  * Several places on the page open the same panel, and putting what it shows in
@@ -162,5 +182,5 @@ function useSheet(): {
   return { subject, addressOf, openSheet, isStale: value !== null && !subject, close };
 }
 
-export { useSheet, SHEET_ID };
+export { useSheet, renamedGroupSearch, SHEET_ID };
 export type { SheetEntry, SheetCollection };

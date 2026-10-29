@@ -21,7 +21,7 @@
  */
 
 import React, { useState, useEffect, useMemo } from "react";
-import { useParams, useNavigate } from "react-router";
+import { useParams, useNavigate, useLocation } from "react-router";
 import {
   ActionGroup,
   Alert,
@@ -41,6 +41,7 @@ import { useAvailableDevices } from "~/hooks/model/system/storage";
 import { deviceLabel } from "./utils";
 import { contentDescription, filesystemLabels, typeDescription } from "./utils/device";
 import { STORAGE } from "~/routes/paths";
+import { renamedGroupSearch } from "~/components/storage/shared/use-sheet";
 import { sprintf } from "sprintf-js";
 import { _, N_ } from "~/i18n";
 import { deviceSystems, isDrive, isMd } from "~/model/storage/device";
@@ -130,6 +131,7 @@ function UseNeededHelperText() {
 export default function LvmPage() {
   const { id: index } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const config = useConfigModel();
   const volumeGroup = useVolumeGroup(Number(index));
   const addVolumeGroup = useAddVolumeGroup();
@@ -194,7 +196,12 @@ export default function LvmPage() {
       editVolumeGroup(volumeGroup.vgName, data);
     }
 
-    navigate(STORAGE.root);
+    /* Back to the page as it was left, with an open panel on the group still
+       open on it, under its new name if it was renamed. */
+    const search = volumeGroup
+      ? renamedGroupSearch(location.search, volumeGroup.vgName, name)
+      : location.search;
+    navigate({ pathname: STORAGE.root, search });
   };
 
   return (

@@ -24,7 +24,7 @@ import React from "react";
 import { renderHook } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
 import type { ConfigModel } from "~/model/storage/config-model";
-import { useSheet } from "~/components/storage/shared/use-sheet";
+import { renamedGroupSearch, useSheet } from "~/components/storage/shared/use-sheet";
 
 const mockConfig: ConfigModel.Config = {
   drives: [{ name: "/dev/vdb" }, { name: "/dev/sda.1" }],
@@ -104,5 +104,23 @@ describe("useSheet", () => {
     expect(sheet.addressOf({ collection: "volumeGroups", index: 1 })).toEqual({
       search: "?settingsTab=1&device=volumeGroups.vdb",
     });
+  });
+});
+
+describe("renamedGroupSearch", () => {
+  it("follows a panel open on the renamed group to its new name", () => {
+    expect(renamedGroupSearch("?settingsTab=1&device=volumeGroups.system", "system", "data")).toBe(
+      "?settingsTab=1&device=volumeGroups.data",
+    );
+  });
+
+  it("leaves any other address as it was", () => {
+    expect(renamedGroupSearch("?device=volumeGroups.home", "system", "data")).toBe(
+      "?device=volumeGroups.home",
+    );
+    expect(renamedGroupSearch("?device=drives.system", "system", "data")).toBe(
+      "?device=drives.system",
+    );
+    expect(renamedGroupSearch("", "system", "data")).toBe("");
   });
 });

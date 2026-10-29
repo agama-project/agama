@@ -22,7 +22,7 @@
 
 import React from "react";
 import { Divider } from "@patternfly/react-core";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import { sprintf } from "sprintf-js";
 import MenuButton, { MenuButtonItem } from "~/components/core/MenuButton";
 import RowMenuToggle from "~/components/storage/entries-table/RowMenuToggle";
@@ -56,6 +56,7 @@ export type VolumeGroupMenuProps = {
 export default function VolumeGroupMenu({ group, subject }: VolumeGroupMenuProps): React.ReactNode {
   const config = useConfigModel();
   const navigate = useNavigate();
+  const location = useLocation();
   const deleteVolumeGroup = useDeleteVolumeGroup();
   const lvs = group.logicalVolumes.map((lv) => formattedPath(lv.mountPath));
   const targetDevices = configModel.volumeGroup.filterTargetDevices(config, group);
@@ -128,7 +129,11 @@ export default function VolumeGroupMenu({ group, subject }: VolumeGroupMenuProps
           key="edit"
           description={_("Change how the volume group will be created")}
           onClick={() =>
-            navigate(generateEncodedPath(PATHS.volumeGroup.edit, { id: String(subject.index) }))
+            navigate({
+              pathname: generateEncodedPath(PATHS.volumeGroup.edit, { id: String(subject.index) }),
+              /* The page keeps its state across the form, open panel included. */
+              search: location.search,
+            })
           }
         >
           {/* TRANSLATORS: offered on an LVM volume group of the installation:
