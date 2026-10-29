@@ -49,12 +49,16 @@ jest.mock("~/hooks/model/storage/config-model", () => ({
   useChangeTargetDrive: () => jest.fn(),
 }));
 
+/* Disks the installation could move to: changing it is offered only with more
+   than one. */
+const mockCandidateDrives = jest.fn().mockReturnValue([]);
+
 jest.mock("~/hooks/model/system/storage", () => ({
   ...jest.requireActual("~/hooks/model/system/storage"),
   useDevice: (name: string) => mockSystemDevice(name),
   useFlattenDevices: () => mockSystemDevices(),
   useAvailableDevices: () => [],
-  useCandidateDrives: () => [],
+  useCandidateDrives: () => mockCandidateDrives(),
 }));
 
 jest.mock("~/hooks/model/proposal/storage", () => ({
@@ -99,13 +103,16 @@ const config = (values: Partial<ConfigModel.Config> = {}): ConfigModel.Config =>
 
 /**
  * The entries of one category, as a reader who cannot see the arrangement
- * meets them: a table named by the heading over it.
+ * meets them: a group of rows of the list's table, named by its heading.
  *
- * Asking for a table rather than for the element also guards the one prop that
- * would fail quietly: PatternFly calls its tables grids by default, and a grid
- * is an interactive widget rather than something to read.
+ * Asking for the table by its role also guards the one prop that would fail
+ * quietly: PatternFly calls its tables grids by default, and a grid is an
+ * interactive widget rather than something to read.
  */
-const table = (name = "Used disks") => screen.getByRole("table", { name });
+const table = (name = "Used disks") =>
+  within(screen.getByRole("table", { name: "Devices of the installation" })).getByRole("rowgroup", {
+    name,
+  });
 
 /**
  * The address, so a test can read what a control wrote to it.
@@ -177,12 +184,42 @@ describe("EntriesTable", () => {
       mockConfig.mockReturnValue(config({ drives: [{ name: "/dev/sda", partitions: [] }] }));
     });
 
-    it("offers changing it beside the heading of the disks", () => {
+    it("offers changing it beside the heading of the disks, in a plain cell", () => {
+      mockCandidateDrives.mockReturnValueOnce([{ name: "/dev/sda" }, { name: "/dev/sdb" }]);
       installerRender(<EntriesTable />);
 
-      const disks = screen.getByRole("region", { name: "Used disks" });
-      const button = within(disks).getByRole("button", { name: "Change installation disk" });
-      expect(button).toHaveTextContent("Change…");
+      const heading = within(table("Used disk")).getByRole("heading", { level: 2 });
+      const cell = heading.closest("td");
+      const button = within(cell).getByRole("button", { name: "Change installation disk" });
+      expect(button).toHaveTextContent("Change target disk…");
+    });
+  });
+
+  describe("as one table", () => {
+    beforeEach(() => {
+      mockConfig.mockReturnValue(
+        config({
+          drives: [{ name: "/dev/sda", partitions: [] }],
+          volumeGroups: [{ vgName: "system", targetDevices: ["/dev/sda"], logicalVolumes: [] }],
+        }),
+      );
+    });
+
+    it("lists every category in a single table, a group of rows each, named by its heading", () => {
+      installerRender(<EntriesTable />);
+
+      const list = screen.getByRole("table", { name: "Devices of the installation" });
+      expect(screen.getAllByRole("table")).toHaveLength(1);
+      within(list).getByRole("rowgroup", { name: "Volume group" });
+      within(list).getByRole("rowgroup", { name: "Used disk" });
+    });
+
+    it("keeps each heading a real heading, in a data cell rather than a header cell", () => {
+      installerRender(<EntriesTable />);
+
+      const headings = screen.getAllByRole("heading", { level: 2 });
+      expect(headings.map((h) => h.textContent)).toEqual(["Volume group", "Used disk"]);
+      headings.forEach((heading) => expect(heading.closest("td")).not.toBeNull());
     });
   });
 

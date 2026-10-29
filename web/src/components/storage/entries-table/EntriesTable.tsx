@@ -22,7 +22,7 @@
 
 import React from "react";
 import { Flex } from "@patternfly/react-core";
-import { Table, Tbody, Th, Thead, Tr } from "@patternfly/react-table";
+import { Table, Tbody, Td, Th, Thead, Tr } from "@patternfly/react-table";
 import a11yStyles from "@patternfly/react-styles/css/utilities/Accessibility/accessibility";
 import { columnName } from "~/components/storage/entries-table/columns";
 import DriveRow from "~/components/storage/entries-table/DriveRow";
@@ -31,7 +31,7 @@ import ChangeInstallationDisk from "~/components/storage/storage-page/ChangeInst
 import { useConfigModel } from "~/hooks/model/storage/config-model";
 import { useCandidateDrives } from "~/hooks/model/system/storage";
 import configModel from "~/model/storage/config-model";
-import { n_, TranslatedString } from "~/i18n";
+import { _, n_, TranslatedString } from "~/i18n";
 
 /** Where an entry is written in the configuration, which is also what it is. */
 type Category = "volumeGroups" | "mdRaids" | "drives";
@@ -65,82 +65,93 @@ function categoryTitle(category: Category, entries: object[]): TranslatedString 
 }
 
 /**
- * One category of the configuration: a heading naming it, then a table of its
- * entries.
+ * One category of the configuration, as a body of the list's table: a title
+ * row naming it, then a row per entry.
  *
- * The heading names both the section and the table, so a reader moving by
- * headings, by landmarks or by tables meets the same name, written once.
+ * The title row is a plain row, not a header row. Its one cell holds the
+ * category's heading and the controls acting on the whole category, such as
+ * changing the installation disk. Content placed in a header cell is announced
+ * with every cell that header covers, so a control there would be read out on
+ * every row of the category; in a plain cell it is read once, where the
+ * category starts.
  *
- * A named section is a region landmark. With every category present, that is
- * three landmarks inside the page. If that turns out to be noise when moving by
- * landmarks, the section can drop its name and the table keep it.
+ * The heading is a real `<h2>`. HTML allows headings in a data cell (`<td>`
+ * takes any flow content) but not in a header cell (`<th>` forbids heading
+ * descendants), which is the other reason the title row is plain. The body is
+ * named after the heading, so a screen reader that announces named groups says
+ * which category a row belongs to when entering it.
  */
-function CategorySection({
+function CategoryBody({
   category,
   entries,
   actions,
   children,
 }: {
   category: Category;
+  entries: object[];
   /** Controls acting on the category as a whole, shown beside its heading. */
-  entries?: object[];
   actions?: React.ReactNode;
   children: React.ReactNode;
 }): React.ReactNode {
   const headingId = React.useId();
 
   return (
-    <section aria-labelledby={headingId} className="agm-entries-table__section">
-      <Flex
-        className="agm-entries-table__header"
-        alignItems={{ default: "alignItemsCenter" }}
-        gap={{ default: "gapSm" }}
-      >
-        <h2 id={headingId} className="agm-entries-table__category">
-          {categoryTitle(category, entries)}
-        </h2>
-        {actions}
-      </Flex>
-      <Table role="table" gridBreakPoint="" variant="compact" aria-labelledby={headingId}>
-        {/* Read out and not drawn. A strip of names sitting once at the top of
-            a list of eight devices labels columns that have scrolled away from
-            it, and every row already carries its own name. */}
-        {/* The same widths in every category, so entries line up across the
-            tables as if they were one. */}
-        <colgroup>
-          <col className="agm-entries-table__col--entry" />
-          <col className="agm-entries-table__col--actions" />
-          <col />
-          <col className="agm-entries-table__col--options" />
-        </colgroup>
-        <Thead className={a11yStyles.screenReader}>
-          <Tr>
-            <Th>{columnName("entry")}</Th>
-            <Th>{columnName("actions")}</Th>
-            <Th>{columnName("content")}</Th>
-            <Th>{columnName("options")}</Th>
-          </Tr>
-        </Thead>
-        <Tbody>{children}</Tbody>
-      </Table>
-    </section>
+    <Tbody aria-labelledby={headingId} className="agm-entries-table__group">
+      <Tr className="agm-entries-table__title-row">
+        <Td colSpan={4}>
+          <Flex alignItems={{ default: "alignItemsCenter" }} gap={{ default: "gapSm" }}>
+            <h2 id={headingId} className="agm-entries-table__category">
+              {categoryTitle(category, entries)}
+            </h2>
+            {actions}
+          </Flex>
+        </Td>
+      </Tr>
+      {children}
+    </Tbody>
   );
 }
 
 /**
  * What the configuration is made of, under the summary of what it does.
  *
- * A section per category, each a heading over a table of its entries. Entries
- * are read by comparing them, and a table is what lets a screen reader say
- * which entry and which column every cell belongs to.
+ * One table, with a body per category (see {@link CategoryBody}). Entries are
+ * read by comparing them, and a table is what lets a screen reader say which
+ * entry and which column every cell belongs to. Being one table, its columns
+ * line up across categories by themselves and take the width their content
+ * needs: a long name or model widens its column rather than wrapping inside a
+ * width fixed for every category.
  *
- * Each category has a table of its own rather than a body in a shared one, so
- * its name can be a real heading, and controls acting on a whole category can
- * sit beside that heading without being read out as part of every cell under
- * it. The tables share their column widths, so entries still line up from one
- * category to the next.
+ * For example, with a volume group and one disk:
  *
- * Arrow keys walk the entries across every table, as one list.
+ * ```html
+ * <table aria-label="Devices of the installation">
+ *   <thead class="pf-v6-screen-reader"> Device | Actions | Content | Options </thead>
+ *   <tbody aria-labelledby="vgs">
+ *     <tr><td colspan="4"><h2 id="vgs">Volume group</h2></td></tr>
+ *     <tr><th scope="row">system</th> <td>…</td> <td>…</td> <td>⋯</td></tr>
+ *   </tbody>
+ *   <tbody aria-labelledby="disks">
+ *     <tr><td colspan="4"><h2 id="disks">Used disk</h2> [Change…]</td></tr>
+ *     <tr><th scope="row">vdd · 20 GiB</th> <td>…</td> <td>…</td> <td>⋯</td></tr>
+ *   </tbody>
+ * </table>
+ * ```
+ *
+ * What readers get:
+ *
+ * - Keyboard: title rows are not focusable and add no tab stop. Arrow keys walk
+ *   the entries as one list, Up and Down from name to name and Left and Right
+ *   between a name and its menu, skipping title rows, since only entries mark
+ *   their name and menu for it. Every name and every menu stays a tab stop.
+ * - Screen readers: categories are headings, reachable by heading navigation.
+ *   A cell of an entry is announced with its column and its entry, as in any
+ *   table. Not available: moving by table from one category to the next,
+ *   which the headings replace, and the category announced on every cell of an
+ *   entry, which a header row scoped to its body would give but would also read
+ *   out any control placed in it. Some readers announce the column names on a
+ *   title row's cell, since it spans all of them, and title rows count among
+ *   the rows.
  *
  * Two of PatternFly's defaults are turned off rather than accepted, and both
  * would be quiet failures:
@@ -149,8 +160,8 @@ function CategorySection({
  *   keyboard model of its own. This is something to read.
  * - It stacks each row into a block below a breakpoint, which leaves the rows
  *   and cells `display: grid`, and an element laid out that way loses the role
- *   its element gave it, exactly where the window is tightest. The tables keep
- *   their width instead and scroll inside their own box.
+ *   its element gave it, exactly where the window is tightest. The table keeps
+ *   its width instead and scrolls inside its own box.
  */
 export default function EntriesTable(): React.ReactNode {
   const config = useConfigModel();
@@ -213,30 +224,50 @@ export default function EntriesTable(): React.ReactNode {
 
   return (
     <div className="agm-entries-table" ref={list} onKeyDown={onKeyDown}>
-      {groups.map(({ category, entries }) => (
-        <CategorySection
-          key={category}
-          category={category}
-          entries={entries}
-          actions={category === "drives" && canChangeTarget && <ChangeInstallationDisk />}
-        >
-          {entries.map((entry, index) =>
-            category === "volumeGroups" ? (
-              <VolumeGroupRow
-                key={entry.vgName}
-                group={entry}
-                subject={{ collection: category, index }}
-              />
-            ) : (
-              <DriveRow
-                key={entry.name}
-                name={entry.name}
-                subject={{ collection: category, index }}
-              />
-            ),
-          )}
-        </CategorySection>
-      ))}
+      <Table
+        role="table"
+        gridBreakPoint=""
+        variant="compact"
+        // TRANSLATORS: names the list of the disks, RAID devices and volume
+        // groups the installation is made of.
+        aria-label={_("Devices of the installation")}
+      >
+        {/* Read out and not drawn. A strip of names sitting once at the top of
+            a list of eight devices labels columns that have scrolled away from
+            it, and every row already carries its own name. */}
+        <Thead className={a11yStyles.screenReader}>
+          <Tr>
+            <Th>{columnName("entry")}</Th>
+            <Th>{columnName("actions")}</Th>
+            <Th>{columnName("content")}</Th>
+            <Th>{columnName("options")}</Th>
+          </Tr>
+        </Thead>
+        {groups.map(({ category, entries }) => (
+          <CategoryBody
+            key={category}
+            category={category}
+            entries={entries}
+            actions={category === "drives" && canChangeTarget && <ChangeInstallationDisk />}
+          >
+            {entries.map((entry, index) =>
+              category === "volumeGroups" ? (
+                <VolumeGroupRow
+                  key={entry.vgName}
+                  group={entry}
+                  subject={{ collection: category, index }}
+                />
+              ) : (
+                <DriveRow
+                  key={entry.name}
+                  name={entry.name}
+                  subject={{ collection: category, index }}
+                />
+              ),
+            )}
+          </CategoryBody>
+        ))}
+      </Table>
     </div>
   );
 }
