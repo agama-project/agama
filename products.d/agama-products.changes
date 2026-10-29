@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Oct 29 20:11:26 UTC 2026 - Lubos Kocman <lubos.kocman@suse.com>
+
+- Add cockpit-client pattern to provide cockpit-client-launcher 
+
+-------------------------------------------------------------------
 Thu Oct 29 11:57:48 UTC 2026 - Ancor Gonzalez Sosa <ancor@suse.com>
 
 - SLES 16.2 and SLES for SAP 16.2 use now by default systemd-boot
