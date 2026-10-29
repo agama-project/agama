@@ -58,7 +58,7 @@ export default function VolumeGroupMenu({ group, subject }: VolumeGroupMenuProps
   const navigate = useNavigate();
   const location = useLocation();
   const deleteVolumeGroup = useDeleteVolumeGroup();
-  const lvs = group.logicalVolumes.map((lv) => formattedPath(lv.mountPath));
+  const lvs = (group.logicalVolumes || []).map((lv) => formattedPath(lv.mountPath));
   const targetDevices = configModel.volumeGroup.filterTargetDevices(config, group);
   const convert = targetDevices.length === 1 && !!lvs.length;
   const { openSheet } = useSheet();
