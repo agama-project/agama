@@ -265,6 +265,9 @@ software:
   optional_packages: []
   base_product: SLES
 
+boot:
+  default_efi_bootloader: "systemd-boot"
+
 modes:
   - id: standard
     # ------------------------------------------------------------------------------
