@@ -38,7 +38,6 @@ type TestFormProps = {
   defaultValues?: string[];
   options?: MultiSelectOption[];
   allowCustomEntries?: boolean;
-  tabKeepsFocus?: boolean;
   autoHighlight?: boolean;
   showNoResults?: boolean;
   entriesThreshold?: number;
@@ -60,7 +59,6 @@ function TestForm({
   defaultValues = [],
   options = OPTIONS,
   allowCustomEntries,
-  tabKeepsFocus,
   autoHighlight,
   showNoResults,
   entriesThreshold,
@@ -100,7 +98,6 @@ function TestForm({
               label={_("Bond ports")}
               options={options}
               allowCustomEntries={allowCustomEntries}
-              tabKeepsFocus={tabKeepsFocus}
               autoHighlight={autoHighlight}
               showNoResults={showNoResults}
               entriesThreshold={entriesThreshold}
@@ -382,16 +379,6 @@ describe("MultiSelectField", () => {
 
       within(entries()).getByRole("option", { name: "Ethernet 1" });
       expect(combobox()).not.toHaveFocus();
-    });
-
-    it("keeps focus when tabKeepsFocus is set", async () => {
-      const { user } = installerRender(<TestForm tabKeepsFocus />);
-      await user.click(combobox());
-      await user.keyboard("{ArrowDown}");
-      await user.tab();
-
-      within(entries()).getByRole("option", { name: "Ethernet 0" });
-      expect(combobox()).toHaveFocus();
     });
 
     it("moves on when there is nothing to commit", async () => {

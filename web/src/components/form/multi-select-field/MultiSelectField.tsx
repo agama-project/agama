@@ -165,24 +165,6 @@ type MultiSelectFieldProps = FieldLabelOptions & {
   allowCustomEntries?: boolean;
 
   /**
-   * Whether a Tab that commits something keeps focus in the field. Off by
-   * default, so Tab moves focus on as the keyboard convention expects.
-   *
-   * Turn it on to add several values one after another without leaving the
-   * text box. With nothing to commit, Tab always moves focus on either way.
-   *
-   * `ArrayField` also moves focus on Tab, so both fields take Tab the same
-   * way unless this is turned on.
-   *
-   * @note Turning this on is a deliberate departure from the convention that
-   * Tab moves focus from one component to another, made for the sake of
-   * agility: a field taking many values is filled a good deal faster when the
-   * key confirming a value is also the one already under the finger.
-   * @see https://www.w3.org/WAI/ARIA/apg/practices/keyboard-interface/#fundamentalkeyboardnavigationconventions
-   */
-  tabKeepsFocus?: boolean;
-
-  /**
    * Whether the best match is picked out as the user types, so Enter or Tab
    * takes it without a trip through the list. On by default.
    *
@@ -309,7 +291,8 @@ type MultiSelectFieldProps = FieldLabelOptions & {
  * and the values already added, is pointed at with `aria-activedescendant`
  * instead of taking focus. Because that attribute points at one thing at a
  * time, the keyboard is in one part of the field at a time; see
- * {@link useKeyboard} for the whole contract.
+ * {@link useKeyboard} for the whole contract. Tab commits any pending choice
+ * and moves focus to the next control.
  *
  * Validation of the form is deferred to submit, as everywhere else; the
  * per-value validators are about the shape of a single value.
@@ -346,7 +329,6 @@ export default function MultiSelectField({
   label,
   options,
   allowCustomEntries = false,
-  tabKeepsFocus = false,
   autoHighlight = true,
   showNoResults = false,
   entriesThreshold = 0,
@@ -624,7 +606,6 @@ export default function MultiSelectField({
     isListOpen: isListVisible,
     hasClearAll,
     hasText: text.trim() !== "",
-    tabKeepsFocus,
     actions: {
       openList,
       closeList,
