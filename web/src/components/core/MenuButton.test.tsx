@@ -22,6 +22,7 @@
 
 import React, { LegacyRef } from "react";
 import { screen, within } from "@testing-library/react";
+import { Divider } from "@patternfly/react-core";
 import { installerRender, mockNavigateFn } from "~/test-utils";
 import MenuButton, { CustomToggleProps, MenuButtonItem } from "~/components/core/MenuButton";
 import { _ } from "~/i18n";
@@ -111,6 +112,33 @@ it("renders all the given menu items", async () => {
   within(menu).getByRole("menuitem", { name: "item 1" });
   within(menu).getByRole("menuitem", { name: "item 2" });
   within(menu).getByRole("menuitem", { name: "item 3" });
+});
+
+it("leaves out dividers that separate nothing", async () => {
+  const { user } = installerRender(
+    <MenuButton
+      items={[
+        <Divider key="leading" />,
+        <MenuButtonItem key="item1">{"item 1"}</MenuButtonItem>,
+        <Divider key="first" />,
+        false,
+        <Divider key="doubled" />,
+        <MenuButtonItem key="item2">{"item 2"}</MenuButtonItem>,
+        <Divider key="trailing" />,
+      ]}
+    >
+      test
+    </MenuButton>,
+  );
+
+  await user.click(screen.getByRole("button", { name: "test" }));
+  const menu = screen.getByRole("menu");
+
+  expect(within(menu).getAllByRole("separator")).toHaveLength(1);
+  const [first, second] = within(menu).getAllByRole("menuitem");
+  const separator = within(menu).getByRole("separator");
+  expect(first.compareDocumentPosition(separator)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
+  expect(separator.compareDocumentPosition(second)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
 });
 
 it("allows passing props to the toggle", () => {
