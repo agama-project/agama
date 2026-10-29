@@ -43,6 +43,13 @@ const group = (logicalVolumes: ConfigModel.LogicalVolume[]): Entry => ({
 const subject = { collection: "volumeGroups" as const, index: 0 };
 
 describe("PlannedContentSection", () => {
+  it("says nothing is planned yet instead of showing a table with no rows", () => {
+    installerRender(<PlannedContentSection entry={group([])} subject={subject} />);
+
+    expect(screen.queryByRole("table")).toBeNull();
+    expect(screen.getByRole("paragraph")).toHaveTextContent("No logical volumes planned yet");
+  });
+
   it("leads to the form of this very group, by its place in the configuration", async () => {
     const { user } = installerRender(
       <PlannedContentSection
@@ -56,5 +63,16 @@ describe("PlannedContentSection", () => {
       expect.objectContaining({ pathname: "/storage/volume-groups/2/logical-volumes/add" }),
       expect.anything(),
     );
+  });
+
+  it("offers the same way to add as under a table", () => {
+    const { rerender } = installerRender(
+      <PlannedContentSection entry={group([])} subject={subject} />,
+    );
+    screen.getByRole("link", { name: "Add logical volume" });
+
+    rerender(<PlannedContentSection entry={group([{ mountPath: "/home" }])} subject={subject} />);
+    screen.getByRole("table", { name: "Planned content" });
+    screen.getByRole("link", { name: "Add logical volume" });
   });
 });

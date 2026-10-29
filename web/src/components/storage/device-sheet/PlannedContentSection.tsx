@@ -30,6 +30,7 @@ import Icon from "~/components/layout/Icon";
 import MenuButton, { MenuButtonItem } from "~/components/core/MenuButton";
 import RowMenuToggle from "~/components/storage/entries-table/RowMenuToggle";
 import MoveToOtherDevice from "~/components/storage/device-sheet/MoveToOtherDevice";
+import SummaryWithActions from "~/components/storage/device-sheet/SummaryWithActions";
 import { filesystemType, partitionIdLabel, sizeDescription } from "~/components/storage/utils";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { generateEncodedPath } from "~/utils";
@@ -122,11 +123,9 @@ export type PlannedContentSectionProps = {
  * it are two kinds of thing, and a view that opens the second with the first
  * reads as content that starts twice.
  *
- * Where nothing is planned, the state says so and carries the one act that
- * changes it. An empty state and a lone button underneath it are the same offer
- * made twice. Moving the plan elsewhere is not offered here either: under a view
- * that has just said there is nothing here, moving nothing is not an act the
- * reader can want.
+ * Where nothing is planned, a line says so instead of a table of headings over
+ * no rows, and the same ways to act follow it as follow a table, so they are
+ * found in the same place either way.
  */
 export default function PlannedContentSection({
   entry,
@@ -186,6 +185,42 @@ export default function PlannedContentSection({
       </Flex>
     </Link>
   );
+
+  /* What the reader does about the device rather than about any one row, the
+     same whether there are rows yet or not. */
+  const actions = (
+    <Flex
+      gap={{ default: "gapSm" }}
+      flexWrap={{ default: "wrap" }}
+      alignItems={{ default: "alignItemsCenter" }}
+    >
+      <FlexItem>{add("secondary")}</FlexItem>
+      {!isVolumeGroup && (
+        <FlexItem>
+          <MoveToOtherDevice entry={device} device={entry.device} />
+        </FlexItem>
+      )}
+    </Flex>
+  );
+
+  /* Nothing planned yet: said in a line, not as a table of headings over no
+     rows, followed by the same ways to act as under a table. */
+  if (!planned.length) {
+    return (
+      <SummaryWithActions
+        summary={
+          isVolumeGroup
+            ? // TRANSLATORS: said of an LVM volume group where the installation
+              // creates no logical volume yet, above a button to add one.
+              _("No logical volumes planned yet")
+            : // TRANSLATORS: said of a disk where the installation creates no
+              // partition yet, above a button to add one.
+              _("No partitions planned yet")
+        }
+        actions={actions}
+      />
+    );
+  }
 
   return (
     <Stack hasGutter>
@@ -314,27 +349,9 @@ export default function PlannedContentSection({
         </Table>
       </StackItem>
       <StackItem>
-        {/* After the table rather than in the header: these are what the
-            reader does about the device rather than about any one row, and
-            neither is urgent enough to sit beside its name.
-
-            Beside a table that already lists what is planned, adding is one
-            option among several rather than the point of the view. And
-            moving the plan is offered only here, where there is something
-            to move: under a view that has just said nothing is planned, it
-            would promise the move of nothing. */}
-        <Flex
-          gap={{ default: "gapSm" }}
-          flexWrap={{ default: "wrap" }}
-          alignItems={{ default: "alignItemsCenter" }}
-        >
-          <FlexItem>{add("secondary")}</FlexItem>
-          {!isVolumeGroup && (
-            <FlexItem>
-              <MoveToOtherDevice entry={device} device={entry.device} />
-            </FlexItem>
-          )}
-        </Flex>
+        {/* After the table rather than in the header: neither is urgent
+            enough to sit beside the device's name. */}
+        {actions}
       </StackItem>
     </Stack>
   );
