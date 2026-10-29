@@ -21,7 +21,7 @@
  */
 
 import type { Storage as System } from "~/model/system";
-import { volumeGroupFacts } from "~/components/storage/utils/device";
+import { contentDescription, volumeGroupFacts } from "~/components/storage/utils/device";
 
 const GiB = 1024 ** 3;
 
@@ -51,5 +51,22 @@ describe("volumeGroupFacts", () => {
       size: undefined,
       description: "LVM",
     });
+  });
+});
+
+describe("contentDescription", () => {
+  it("names the logical volumes of a volume group as the language lists them", () => {
+    const group = (names: string[]) =>
+      ({
+        sid: 1,
+        name: "/dev/system",
+        class: "volumeGroup",
+        logicalVolumes: names.map((name, i) => ({ sid: 10 + i, name: `/dev/system/${name}` })),
+      }) as System.Device;
+
+    expect(contentDescription(group(["home"]))).toBe("Volume home");
+    expect(contentDescription(group(["home", "root", "swap"]))).toBe(
+      "Volumes home, root, and swap",
+    );
   });
 });
