@@ -136,33 +136,29 @@ impl Service {
     }
 
     /// Reads the system network configuration.
-    pub async fn read(&mut self) -> Result<NetworkState, NetworkAdapterError> {
+    async fn read(&mut self) -> Result<NetworkState, NetworkAdapterError> {
         self.adapter.read(StateConfig::default()).await
     }
 
-    /// Reads the system network configuration.
-    pub async fn force_state_read(&mut self) -> Result<(), NetworkAdapterError> {
-        let result = match self.adapter.read(StateConfig::default()).await {
-            Err(e) => Err(e),
-            Ok(state) => {
-                if self.state.sync_from(state) {
-                    self.events.send(Event::ProposalChanged {
-                        scope: (Scope::Network),
-                    })?;
-                    self.events.send(Event::SystemChanged {
-                        scope: (Scope::Network),
-                    })?;
-                }
-                Ok(())
-            }
-        };
-
-        result
+    /// Reads the system network configuration and syncs the state with it.
+    ///
+    /// It emits the events only when the state changes.
+    async fn force_state_read(&mut self) -> Result<(), NetworkAdapterError> {
+        let state = self.adapter.read(StateConfig::default()).await?;
+        if self.state.sync_from(state) {
+            self.events.send(Event::ProposalChanged {
+                scope: (Scope::Network),
+            })?;
+            self.events.send(Event::SystemChanged {
+                scope: (Scope::Network),
+            })?;
+        }
+        Ok(())
     }
 
     /// Writes the network configuration based on current state and then replace the state from the
     /// one read from the system.
-    pub async fn apply(&mut self) -> Result<(), NetworkAdapterError> {
+    async fn apply(&mut self) -> Result<(), NetworkAdapterError> {
         let steps = vec![
             gettext("Writing network configuration"),
             gettext("Syncing the network service state"),
@@ -221,7 +217,6 @@ impl MessageHandler<message::NewConnection> for Service {
                 "New connection to be added {:?}, forcing re-read",
                 &message.connection
             );
-            // It emits the events if the state changed.
             self.force_state_read().await?;
         }
         Ok(())
