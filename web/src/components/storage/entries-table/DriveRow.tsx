@@ -126,8 +126,9 @@ export default function DriveRow({ name, subject }: DriveRowProps): React.ReactN
 
   const groups = entry ? configModel.partitionable.filterVolumeGroups(config, entry) : [];
   const boots = configModel.boot.hasDevice(config, name);
+  const isIdle = !!entry && !configModel.partitionable.isUsed(config, name);
   let purpose: TranslatedString[] = [];
-  if (entry && !configModel.partitionable.isUsed(config, name)) {
+  if (isIdle) {
     /* Added to the installation with nothing planned on it, which the
        installer leaves out. Said where the other rows say what each device is
        for, so it is not mistaken for one in use. */
@@ -150,6 +151,7 @@ export default function DriveRow({ name, subject }: DriveRowProps): React.ReactN
       size={size}
       description={description}
       purpose={purpose}
+      isIdle={isIdle}
       actions={space}
       menu={entry && <DriveMenu entry={entry} subject={subject} />}
       subject={subject}

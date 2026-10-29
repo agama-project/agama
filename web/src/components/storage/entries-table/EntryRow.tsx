@@ -44,6 +44,11 @@ export type EntryRowProps = {
   marks?: string[];
   /** What the installer will do here, one statement per line. */
   purpose: TranslatedString[];
+  /**
+   * Whether nothing is planned here, so the installation leaves the entry out.
+   * The whole row reads quieter then, as the absence it is.
+   */
+  isIdle?: boolean;
   /** What is going to be done to create this or make space. */
   actions: TranslatedString[];
   /** The menu of what can be done to this entry. */
@@ -96,6 +101,7 @@ export default function EntryRow({
   description,
   marks = [],
   purpose,
+  isIdle = false,
   actions,
   menu,
   subject,
@@ -111,7 +117,11 @@ export default function EntryRow({
        than from `isClickable`, which would also make the row itself a focus
        stop with no role and handle keys meant for the menu. */
     <Tr
-      className={css("agm-entries-table__row", tableStyles.modifiers.clickable)}
+      className={css(
+        "agm-entries-table__row",
+        tableStyles.modifiers.clickable,
+        isIdle && "agm-entries-table__row--idle",
+      )}
       isRowSelected={isOpen}
     >
       <Th scope="row" dataLabel={columnName("entry")}>

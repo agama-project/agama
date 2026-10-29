@@ -358,6 +358,11 @@ describe("what a row says the installer will do", () => {
     installerRender(<EntriesTable />);
 
     expect(rowText("sdb")).toContain("Nothing planned yet, will be skipped");
+    const rows = screen.getAllByRole("row");
+    const rowOf = (name: string) =>
+      rows.find((row) => within(row).queryByRole("rowheader")?.textContent?.startsWith(name));
+    expect(rowOf("sdb")).toHaveClass("agm-entries-table__row--idle");
+    expect(rowOf("sda")).not.toHaveClass("agm-entries-table__row--idle");
     expect(rowText("sda")).not.toContain("will be skipped");
   });
 

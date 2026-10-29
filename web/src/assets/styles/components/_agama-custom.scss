@@ -630,6 +630,25 @@ nav.agm-breadcrumb > ol > li > a {
   position: relative;
 }
 
+// An entry the installation leaves out reads quieter, every cell of it: in the
+// lightest text colour the themes keep at AA contrast (4.5:1) on the page,
+// which they define for disabled text. PatternFly colours each cell itself,
+// so the row sets the colour its cells read.
+.agm-entries-table__row--idle {
+  --pf-v6-c-table--cell--Color: var(--pf-t--global--text--color--disabled);
+}
+
+.agm-entries-table__row--idle .agm-entries-table__facts {
+  color: inherit;
+}
+
+// Except under high contrast, where PatternFly's theme leaves disabled text
+// dim on purpose, as disabled controls need no contrast. Its subtle text keeps
+// the contrast that theme is for, and still reads quieter than the rest.
+:root.pf-v6-theme-high-contrast .agm-entries-table__row--idle {
+  --pf-v6-c-table--cell--Color: var(--pf-t--global--text--color--subtle);
+}
+
 // PatternFly positions every cell, which would keep the stretched link inside
 // the first one. The row has to be the nearest positioned box.
 tr.agm-entries-table__row > :is(th, td):not(.agm-entries-table__menu) {
