@@ -461,6 +461,20 @@ nav.agm-breadcrumb > ol > li > a {
   --pf-v6-c-table--m-compact__th--PaddingBlockStart: 0;
 }
 
+// A storage table ends without a rule under its last row: whatever follows it,
+// a heading or a line of actions, sets it apart already, and a rule there
+// reads as one more row about to start.
+.agm-storage-table > .pf-v6-c-table__tbody > .pf-v6-c-table__tr:last-child {
+  --pf-v6-c-table__tr--BorderBlockEndWidth: 0;
+}
+
+// And can rule its header row off from its rows. PatternFly draws no rule
+// there, so the row draws it with the same width and colour as the others.
+.agm-storage-table--header-rule > .pf-v6-c-table__thead > .pf-v6-c-table__tr {
+  border-block-end: var(--pf-v6-c-table__tr--BorderBlockEndWidth) solid
+    var(--pf-v6-c-table__tr--BorderBlockEndColor);
+}
+
 // The control showing what is on a device: its caret sits right against the
 // words, so the two read as one control. The icon's own padding is gap enough.
 .pf-v6-c-button.agm-sheet-disclosure {

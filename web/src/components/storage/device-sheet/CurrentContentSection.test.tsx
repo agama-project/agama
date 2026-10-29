@@ -313,6 +313,21 @@ describe("CurrentContentSection", () => {
     });
   });
 
+  it("rules the Action column off from what is there today, header included", async () => {
+    await renderShown(<CurrentContentSection entry={entry("delete")} subject={subject} />);
+
+    expect(screen.getByRole("columnheader", { name: "Action" })).toHaveClass("pf-m-border-left");
+    expect(cellsOf("vdd1")[2]).toHaveClass("pf-m-border-left");
+    expect(cellsOf("vdd1")[1]).not.toHaveClass("pf-m-border-left");
+  });
+
+  it("rules its header row off from the rows, as a storage table that asks for it", async () => {
+    await renderShown(<CurrentContentSection entry={entry("delete")} subject={subject} />);
+
+    const table = screen.getByRole("table", { name: "Current content" });
+    expect(table).toHaveClass("agm-storage-table", "agm-storage-table--header-rule");
+  });
+
   describe("in the Action column", () => {
     const GiB = 1024 ** 3;
     const shrinkable: System.Device = {

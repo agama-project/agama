@@ -33,7 +33,7 @@ import MoveToOtherDevice from "~/components/storage/device-sheet/MoveToOtherDevi
 import { filesystemType, partitionIdLabel, sizeDescription } from "~/components/storage/utils";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { generateEncodedPath } from "~/utils";
-import { columnProps } from "~/components/storage/shared/table-columns";
+import { columnProps, tableProps } from "~/components/storage/shared/table-columns";
 import configModel from "~/model/storage/config-model";
 import { useDeleteLogicalVolume, useDeletePartition } from "~/hooks/model/storage/config-model";
 import { _ } from "~/i18n";
@@ -193,6 +193,7 @@ export default function PlannedContentSection({
           gridBreakPoint=""
           variant="compact"
           isStriped={isStriped}
+          {...tableProps()}
           // TRANSLATORS: names the list of what the installation will put on
           // one of its entries.
           aria-label={_("Planned content")}

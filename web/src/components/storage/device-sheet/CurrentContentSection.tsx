@@ -48,7 +48,7 @@ import {
 import { useDevicesManager } from "~/components/storage/shared/use-devices-manager";
 import { baseName, deviceSize, formattedPath } from "~/components/storage/utils";
 import { useSearchParamTokens } from "~/hooks/use-search-param-state";
-import { columnProps } from "~/components/storage/shared/table-columns";
+import { columnProps, tableProps } from "~/components/storage/shared/table-columns";
 import { CURRENT_CONTENT, EXPANDED } from "~/components/storage/ui-state-params";
 import { _, n_ } from "~/i18n";
 import type DevicesManager from "~/model/storage/devices-manager";
@@ -207,12 +207,14 @@ function PartitionMenu({
 /* How each column of the table looks, for its header and every cell under it.
    Content and size kept whole, each on one line, as narrow as they are: a name
    like "BIOS Boot Partition" or a size cut in two reads as two things. The
-   action takes what is left, its notes being the one thing that can wrap. */
+   action takes what is left, its notes being the one thing that can wrap, and
+   a rule before it sets what is there today apart from what the installer
+   will do. */
 const COLUMNS = {
   partition: { modifier: "nowrap" },
   content: { modifier: "fitContent" },
   size: { modifier: "fitContent", isEndAligned: true },
-  action: {},
+  action: { hasBorderBefore: true },
 } satisfies Record<string, ColumnLook>;
 
 /* The one report that costs the reader something, colored rather than marked.
@@ -659,6 +661,9 @@ export default function CurrentContentSection({
             gridBreakPoint=""
             variant="compact"
             isStriped={isStriped}
+            /* The column names ruled off from the rows, as the Action column is
+               ruled off from what is there today. */
+            {...tableProps({ hasHeaderRule: true })}
             // TRANSLATORS: names the list of what is on a device already.
             aria-label={_("Current content")}
           >

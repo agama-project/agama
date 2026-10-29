@@ -44,6 +44,28 @@ export type ColumnLook = {
   modifier?: TdProps["modifier"];
 };
 
+/** How a storage table looks as a whole. */
+export type TableLook = {
+  /** A rule under the header row, setting the column names apart from the rows. */
+  hasHeaderRule?: boolean;
+};
+
+/**
+ * The props that give a storage table its look: no rule under its last row,
+ * since whatever follows the table already sets it apart, and a rule under its
+ * header row where asked for.
+ *
+ * @example
+ * <Table variant="compact" {...tableProps({ hasHeaderRule: true })}>
+ */
+export function tableProps({ hasHeaderRule = false }: TableLook = {}) {
+  return {
+    className: hasHeaderRule
+      ? "agm-storage-table agm-storage-table--header-rule"
+      : "agm-storage-table",
+  };
+}
+
 /**
  * The props that give a header cell or a body cell its column's look.
  *
