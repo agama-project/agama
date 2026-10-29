@@ -28,6 +28,9 @@ install() {
   # install the systemd service and the self-update script to the initramfs
   inst_multiple /etc/systemd/system/initrd-nmtui.service initrd-network-setup.sh dialog nmtui nmcli kill tput clear
 
+  # install the generator which disables the plymouth splash screen
+  inst_script /etc/systemd/system-generators/live-net-config-tui-generator
+
   # enable the self-update service in the initramfs
   $SYSTEMCTL -q --root "$initdir" enable initrd-nmtui.service
   set +e

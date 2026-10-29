@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Oct 29 16:35:16 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Disable the plymouth boot splash when the interactive network
+  configuration is requested by the "live.net_config_tui=1" boot
+  option (bsc#1279466)
+
+-------------------------------------------------------------------
 Tue Oct 27 16:04:15 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Drop the dependencies on the following packages:

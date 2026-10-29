@@ -1,0 +1,43 @@
+#! /bin/sh
+
+# Systemd generator which disables the Plymouth boot splash when the
+# "live.net_config_tui=1" boot option is used. The splash screen would interfere
+# with the text mode network configuration tool.
+#
+# It is equivalent to adding the "plymouth.enable=0 nosplash" boot options. The
+# generator is used in the initramfs and also in the root file system. See "man
+# systemd.generator" for more details about the systemd generators.
+#
+# Systemd passes: $1 = normal dir, $2 = early dir, $3 = late dir
+# Use the early directory as it has higher priority than /etc/systemd/system and
+# /usr/lib/systemd/system where the Plymouth units are defined.
+early_dir="$2"
+
+if [ -z "$early_dir" ]; then
+  echo "Missing the output directory argument" >&2
+  exit 1
+fi
+
+# check for the "live.net_config_tui=1" boot option
+read -r cmdline < /proc/cmdline
+case " $cmdline " in
+  *" live.net_config_tui=1 "*) ;;
+  *) exit 0 ;;
+esac
+
+# Mask all Plymouth services (systemd ignores masks for missing units, so it is
+# OK even when some units are missing).
+for unit in \
+  plymouth-halt.service \
+  plymouth-kexec.service \
+  plymouth-poweroff.service \
+  plymouth-quit-wait.service \
+  plymouth-quit.service \
+  plymouth-read-write.service \
+  plymouth-reboot.service \
+  plymouth-start.service \
+  plymouth-switch-root-initramfs.service \
+  plymouth-switch-root.service
+do
+  ln -sf /dev/null "$early_dir/$unit"
+done
