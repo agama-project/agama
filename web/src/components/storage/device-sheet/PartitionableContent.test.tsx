@@ -52,11 +52,12 @@ describe("PartitionableContent", () => {
     beforeEach(() => jest.spyOn(configModel.boot, "hasDevice").mockReturnValue(true));
     afterEach(() => jest.restoreAllMocks());
 
-    it("says it gets only the partitions booting needs, and offers adding more", () => {
+    it("says it is used for booting only, in one line, and offers adding more", () => {
       installerRender(<PartitionableContent entry={entry} subject={subject} />);
 
-      screen.getByText("Only partitions for booting");
-      screen.getByText("Add partitions to use the rest of the disk.");
+      expect(screen.getByRole("paragraph")).toHaveTextContent(
+        "Used for booting only, no other partitions planned yet",
+      );
       screen.getByRole("link", { name: "Add partition" });
     });
   });

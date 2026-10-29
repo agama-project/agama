@@ -23,7 +23,7 @@
 import React from "react";
 import { Flex, FlexItem, List, ListItem } from "@patternfly/react-core";
 import Link from "~/components/core/Link";
-import Text from "~/components/core/Text";
+import SummaryWithActions from "~/components/storage/device-sheet/SummaryWithActions";
 import Icon from "~/components/layout/Icon";
 import PlannedContentSection from "~/components/storage/device-sheet/PlannedContentSection";
 import UsedByStatement from "~/components/storage/device-sheet/UsedByStatement";
@@ -102,40 +102,33 @@ export default function PartitionableContent({
       return _("You can define additional partitions.");
     }
 
-    /* What it gets in bold, then what can be done about it. */
-    if (isBoot) {
-      return (
-        <>
-          <div>
-            <Text isBold>
-              {/* TRANSLATORS: said of a disk the system boots from where
-                nothing else is planned yet: the installer only adds what
-                booting needs. */}
-              {_("Only partitions for booting")}
-            </Text>
-          </div>
-          <div>
-            {/* TRANSLATORS: follows "Only partitions for booting", above a
-                button to add partitions. */}
-            {_("Add partitions to use the rest of the disk.")}
-          </div>
-        </>
-      );
-    }
-
     // TRANSLATORS: offered on a disk that gets no partitions yet.
     return _("You can define partitions.");
   };
 
-  /* What is listed below, or the way to start listing it. */
-  const listed = planned.length ? (
-    <PlannedContentSection entry={entry} subject={subject} />
-  ) : (
-    <Flex direction={{ default: "column" }} gap={{ default: "gapSm" }}>
-      <FlexItem>{offer()}</FlexItem>
-      <FlexItem>{add("secondary")}</FlexItem>
-    </Flex>
-  );
+  /* What is listed below, or the way to start listing it. A disk used only
+     for booting says so first, since the partitions booting needs are all it
+     gets yet. */
+  let listed: React.ReactNode;
+  if (planned.length) {
+    listed = <PlannedContentSection entry={entry} subject={subject} />;
+  } else if (isBoot && !users.length) {
+    listed = (
+      <SummaryWithActions
+        // TRANSLATORS: said of a disk the system boots from where nothing else
+        // is planned yet, above a button to add partitions.
+        summary={_("Used for booting only, no other partitions planned yet")}
+        actions={add("secondary")}
+      />
+    );
+  } else {
+    listed = (
+      <Flex direction={{ default: "column" }} gap={{ default: "gapSm" }}>
+        <FlexItem>{offer()}</FlexItem>
+        <FlexItem>{add("secondary")}</FlexItem>
+      </Flex>
+    );
+  }
 
   /* Without a volume group to give room to, the list is all there is, or the
      way to start it. */
