@@ -49,9 +49,10 @@ export default function UnusedPartitionableCurrent({ entry, subject }: DeviceDet
 
   const mount = entry.device?.filesystem && (
     <Link to={formatPath} keepQuery variant="link" isInline>
-      {/* TRANSLATORS: offered on a file system found on a whole device: use it
-          for the new system, choosing where to mount it. */}
-      {_("Mount…")}
+      {/* TRANSLATORS: a link offered on a file system found on a whole device,
+          leading to where it is used for the new system and given a place to
+          mount it. */}
+      {_("Mount")}
     </Link>
   );
 
