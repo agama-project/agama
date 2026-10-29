@@ -82,18 +82,24 @@ export type StorageSheetProps = {
  * why that part is settled once in `core/Sheet`.
  *
  * An address naming an entry the configuration no longer has reads as a shut
- * sheet. Addresses outlive plans: one can be written down, shared, or reloaded
- * after the entry it named has gone. The same goes for a change made from the
- * panel itself that takes its entry away: the panel closes rather than moving
- * on to another entry, since going from one entry to another is always the
- * reader's doing.
+ * sheet, and the name leaves the address, so the two always agree. Addresses
+ * outlive plans: one can be written down, shared, or reloaded after the entry
+ * it named has gone. The same goes for a change made from the panel itself
+ * that takes its entry away: the panel closes rather than moving on to another
+ * entry, since going from one entry to another is always the reader's doing.
  */
 export default function StorageSheet({ page }: StorageSheetProps): React.ReactNode {
-  const { subject, close } = useSheet();
+  const { subject, isStale, close } = useSheet();
   const placement = usePlacement();
   const entry = useEntry(subject);
 
   const isOpen = entry !== null;
+
+  /* Replaced rather than pushed, as every change of the sheet is, so Back does
+     not lead to the address of an entry that is gone. */
+  React.useEffect(() => {
+    if (isStale) close();
+  }, [isStale, close]);
 
   return (
     <Sheet

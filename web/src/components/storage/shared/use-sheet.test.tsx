@@ -76,17 +76,23 @@ describe("useSheet", () => {
     });
   });
 
-  it("reads an address naming nothing as a shut sheet", () => {
-    expect(sheetAt("/storage").subject).toBeNull();
+  it("reads an address naming nothing as a shut sheet with nothing to clean up", () => {
+    const sheet = sheetAt("/storage");
+
+    expect(sheet.subject).toBeNull();
+    expect(sheet.isStale).toBe(false);
   });
 
-  it("reads an address naming an entry the configuration does not have as a shut sheet", () => {
-    expect(sheetAt("/storage?device=drives.vdz").subject).toBeNull();
+  it("reads an address naming an entry the configuration does not have as stale", () => {
+    const sheet = sheetAt("/storage?device=drives.vdz");
+
+    expect(sheet.subject).toBeNull();
+    expect(sheet.isStale).toBe(true);
   });
 
-  it("reads older addresses, by position or for the whole result, as a shut sheet", () => {
-    expect(sheetAt("/storage?device=drives.0").subject).toBeNull();
-    expect(sheetAt("/storage?device=result").subject).toBeNull();
+  it("reads older addresses, by position or for the whole result, as stale", () => {
+    expect(sheetAt("/storage?device=drives.0").isStale).toBe(true);
+    expect(sheetAt("/storage?device=result").isStale).toBe(true);
   });
 
   it("points at an entry by its name", () => {

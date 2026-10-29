@@ -125,12 +125,19 @@ function useSheet(): {
    * the address it writes is the same one a link would have carried.
    */
   openSheet: (subject: SheetEntry) => void;
+  /**
+   * Whether the address names an entry the sheet cannot show, such as one the
+   * configuration no longer has. The sheet reads as shut then, and whoever
+   * owns it takes the name out of the address so the two agree.
+   */
+  isStale: boolean;
   /** Shuts it. */
   close: () => void;
 } {
   const config = useConfigModel();
   const [params, setParams] = useSearchParams();
-  const subject = fromParam(config, params.get(SHEET));
+  const value = params.get(SHEET);
+  const subject = fromParam(config, value);
 
   const addressOf = (subject: SheetEntry): To => {
     const next = new URLSearchParams(params);
@@ -152,7 +159,7 @@ function useSheet(): {
       return next;
     }, SEARCH_PARAM_UPDATE);
 
-  return { subject, addressOf, openSheet, close };
+  return { subject, addressOf, openSheet, isStale: value !== null && !subject, close };
 }
 
 export { useSheet, SHEET_ID };

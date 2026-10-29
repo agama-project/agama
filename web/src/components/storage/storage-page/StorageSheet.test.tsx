@@ -22,6 +22,7 @@
 
 import React from "react";
 import { screen } from "@testing-library/react";
+import { useSearchParams } from "react-router";
 import { installerRender, mockNavigateFn, mockRoutes } from "~/test-utils";
 import type { ConfigModel } from "~/model/storage/config-model";
 import StorageSheet from "~/components/storage/storage-page/StorageSheet";
@@ -71,6 +72,12 @@ const config = (values: Partial<ConfigModel.Config> = {}): ConfigModel.Config =>
 });
 
 const page = <div>the storage page</div>;
+
+/** What the address says, for checking what the panel leaves in it. */
+const Address = () => {
+  const [params] = useSearchParams();
+  return <output>{params.toString()}</output>;
+};
 const sheet = () => screen.queryByRole("region");
 
 /**
@@ -541,6 +548,18 @@ describe("StorageSheet", () => {
 
       screen.getByText("the storage page");
       expect(sheet()).not.toBeInTheDocument();
+    });
+
+    it("takes the entry out of the address, keeping the rest of it", () => {
+      mockRoutes("/storage?settingsTab=1&device=drives.vdz");
+      installerRender(
+        <>
+          <StorageSheet page={page} />
+          <Address />
+        </>,
+      );
+
+      expect(screen.getByRole("status").textContent).toBe("settingsTab=1");
     });
 
     it("reads an address by position, as it was once written, the same way", () => {
