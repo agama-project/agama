@@ -873,7 +873,8 @@ describe("ProductSelectionPage", () => {
       within(section).getByText(productWithModes.description);
 
       // Mode information
-      within(section).getByRole("heading", { level: 3, name: "Standard" });
+      within(section).getByRole("heading", { level: 3, name: "Mode" });
+      within(section).getByText("Standard");
       within(section).getByText("Standard system");
     });
 
