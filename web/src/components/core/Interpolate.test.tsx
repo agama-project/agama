@@ -22,7 +22,7 @@
 
 import React from "react";
 import { plainRender } from "~/test-utils";
-import Interpolate from "./Interpolate";
+import Interpolate, { markerText } from "./Interpolate";
 
 let consoleErrorSpy: jest.SpyInstance;
 
@@ -337,5 +337,17 @@ describe("Interpolate", () => {
 
       expect(second.container.textContent).toBe("second two");
     });
+  });
+});
+
+describe("markerText", () => {
+  it("keeps each marker's text and drops its brackets, as rendering does", () => {
+    expect(markerText("[3 partitions]: all will be deleted.")).toBe(
+      "3 partitions: all will be deleted.",
+    );
+  });
+
+  it("leaves a sentence with no marker as it is", () => {
+    expect(markerText("Nothing to mark.")).toBe("Nothing to mark.");
   });
 });
