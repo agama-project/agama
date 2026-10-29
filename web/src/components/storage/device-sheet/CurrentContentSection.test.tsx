@@ -94,7 +94,7 @@ const options = () => screen.queryByRole("button", { name: "Actions for all part
 const summary = () =>
   document.getElementById(
     screen
-      .getByRole("button", { name: /^(Show|Hide) partition details$/ })
+      .getByRole("button", { name: /^(Show|Hide) partitions? details$/ })
       .getAttribute("aria-describedby"),
   );
 
@@ -105,7 +105,7 @@ const cellsOf = (name: string) =>
 /** Renders the section and opens what its toggle puts away. */
 const renderShown = async (ui: React.ReactElement) => {
   const rendered = installerRender(ui);
-  await rendered.user.click(screen.getByRole("button", { name: "Show partition details" }));
+  await rendered.user.click(screen.getByRole("button", { name: "Show partitions details" }));
   return rendered;
 };
 
@@ -137,10 +137,10 @@ describe("CurrentContentSection", () => {
       </>,
     );
 
-    await user.click(screen.getByRole("button", { name: "Show partition details" }));
+    await user.click(screen.getByRole("button", { name: "Show partitions details" }));
     expect(screen.getByRole("status").textContent).toBe("expanded=content");
 
-    await user.click(screen.getByRole("button", { name: "Hide partition details" }));
+    await user.click(screen.getByRole("button", { name: "Hide partitions details" }));
     expect(screen.getByRole("status").textContent).toBe("");
   });
 
@@ -151,19 +151,27 @@ describe("CurrentContentSection", () => {
     screen.getByRole("table", { name: "Current content" });
   });
 
+  it("speaks of one partition in the singular", () => {
+    installerRender(
+      <CurrentContentSection entry={entry("delete", [], [partition(1)])} subject={subject} />,
+    );
+
+    screen.getByRole("button", { name: "Show partition details" });
+  });
+
   it("keeps the partitions out of sight until asked for", async () => {
     const { user } = installerRender(
       <CurrentContentSection entry={entry("delete")} subject={subject} />,
     );
 
     expect(screen.queryByRole("table")).toBeNull();
-    const toggle = screen.getByRole("button", { name: "Show partition details" });
+    const toggle = screen.getByRole("button", { name: "Show partitions details" });
     expect(toggle).toHaveAttribute("aria-expanded", "false");
 
     await user.click(toggle);
 
     screen.getByRole("table", { name: "Current content" });
-    expect(screen.getByRole("button", { name: "Hide partition details" })).toHaveAttribute(
+    expect(screen.getByRole("button", { name: "Hide partitions details" })).toHaveAttribute(
       "aria-expanded",
       "true",
     );
@@ -176,7 +184,7 @@ describe("CurrentContentSection", () => {
 
     options();
 
-    await user.click(screen.getByRole("button", { name: "Show partition details" }));
+    await user.click(screen.getByRole("button", { name: "Show partitions details" }));
 
     expect(screen.getByRole("table")).not.toContainElement(options());
   });
@@ -201,7 +209,7 @@ describe("CurrentContentSection", () => {
   it("describes the toggle with the summary", () => {
     installerRender(<CurrentContentSection entry={entry("delete")} subject={subject} />);
 
-    const toggle = screen.getByRole("button", { name: "Show partition details" });
+    const toggle = screen.getByRole("button", { name: "Show partitions details" });
 
     const description = document.getElementById(toggle.getAttribute("aria-describedby"));
 

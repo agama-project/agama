@@ -50,7 +50,7 @@ import { useDevicesManager } from "~/components/storage/shared/use-devices-manag
 import { baseName, deviceSize, formattedPath } from "~/components/storage/utils";
 import { useSearchParamTokens } from "~/hooks/use-search-param-state";
 import { CURRENT_CONTENT, EXPANDED } from "~/components/storage/ui-state-params";
-import { _ } from "~/i18n";
+import { _, n_ } from "~/i18n";
 import type DevicesManager from "~/model/storage/devices-manager";
 import type { Decision } from "~/components/storage/device-sheet/partition-space";
 import type { ContentPart } from "~/components/storage/device-sheet/content-summary";
@@ -439,23 +439,24 @@ function PartitionRow({
 }
 
 /** The name of the control showing or hiding the list of what is on a device. */
-function disclosureLabel(isVolumeGroup: boolean, expanded: boolean): string {
+/** The toggle's words, in the singular or the plural by how many there are. */
+function disclosureLabel(isVolumeGroup: boolean, expanded: boolean, count: number): string {
   if (isVolumeGroup) {
     return expanded
-      ? // TRANSLATORS: hides the list of logical volumes a volume group holds
-        // today.
-        _("Hide logical volume details")
-      : // TRANSLATORS: shows the list of logical volumes a volume group holds
-        // today, where what happens to each can be seen and changed.
-        _("Show logical volume details");
+      ? // TRANSLATORS: hides the list of the logical volumes a volume group
+        // holds today.
+        n_("Hide logical volume details", "Hide logical volumes details", count)
+      : // TRANSLATORS: shows the list of the logical volumes a volume group
+        // holds today, where what happens to each can be seen and changed.
+        n_("Show logical volume details", "Show logical volumes details", count);
   }
 
   return expanded
-    ? // TRANSLATORS: hides the list of partitions a disk holds today.
-      _("Hide partition details")
-    : // TRANSLATORS: shows the list of partitions a disk holds today, where what
-      // happens to each can be seen and changed.
-      _("Show partition details");
+    ? // TRANSLATORS: hides the list of the partitions a disk holds today.
+      n_("Hide partition details", "Hide partitions details", count)
+    : // TRANSLATORS: shows the list of the partitions a disk holds today, where
+      // what happens to each can be seen and changed.
+      n_("Show partition details", "Show partitions details", count);
 }
 
 export type CurrentContentSectionProps = {
@@ -624,7 +625,7 @@ export default function CurrentContentSection({
               aria-describedby={summaryId}
               onClick={() => toggleSearchParamToken(CURRENT_CONTENT)}
             >
-              {disclosureLabel(entry.isVolumeGroup, expanded)}
+              {disclosureLabel(entry.isVolumeGroup, expanded, parts.length)}
             </Button>
           </FlexItem>
         </>
