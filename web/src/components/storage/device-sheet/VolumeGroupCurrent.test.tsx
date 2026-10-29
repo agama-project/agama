@@ -53,19 +53,6 @@ describe("VolumeGroupCurrent", () => {
     });
   });
 
-  it("names the disks a new group takes its room from, as ways to their panels", () => {
-    installerRender(
-      <VolumeGroupCurrent
-        entry={entry({ vgName: "system", targetDevices: ["/dev/vda"] })}
-        subject={subject}
-      />,
-    );
-
-    screen.getByText("Disks");
-    screen.getByRole("link", { name: "vda" });
-    screen.getByText("Partitions are created there as needed.");
-  });
-
   it("says an existing group holds nothing when it has no logical volumes", () => {
     installerRender(
       <VolumeGroupCurrent

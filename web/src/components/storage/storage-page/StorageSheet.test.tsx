@@ -467,30 +467,23 @@ describe("StorageSheet", () => {
       screen.getByText("/dev/system");
     });
 
-    it("offers a view of what it is made of", () => {
+    it("says what it is made of in a section of its own", () => {
       renderAt("/storage?device=volumeGroups.system");
 
-      screen.getByRole("tab", { name: "Properties" });
+      screen.getByRole("heading", { name: "Properties" });
     });
 
-    it("offers a disk no such view, since a disk is the hardware", () => {
+    it("offers a disk no such section, since a disk is the hardware", () => {
       renderAt("/storage?device=drives.sda");
 
-      expect(screen.queryByRole("tab", { name: "Properties" })).not.toBeInTheDocument();
+      expect(screen.queryByRole("heading", { name: "Properties" })).toBeNull();
     });
 
     it("names what it is built on, and offers the way to each", () => {
       renderAt("/storage?device=volumeGroups.system");
 
-      screen.getByText("Uses");
+      screen.getByText(/Physical volumes on/);
       screen.getByRole("link", { name: "sda" });
-    });
-
-    it("says how much of those devices it takes", () => {
-      renderAt("/storage?device=volumeGroups.system");
-
-      screen.getByText("Space taken");
-      screen.getByText("Only what its volumes need");
     });
 
     it("offers the form that changes both, after what it changes", () => {

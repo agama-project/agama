@@ -27,6 +27,7 @@ import BootStatement from "~/components/storage/device-sheet/BootStatement";
 import UsedPartitionableCurrent from "~/components/storage/device-sheet/UsedPartitionableCurrent";
 import UnusedPartitionableCurrent from "~/components/storage/device-sheet/UnusedPartitionableCurrent";
 import VolumeGroupCurrent from "~/components/storage/device-sheet/VolumeGroupCurrent";
+import PropertiesSection from "~/components/storage/device-sheet/PropertiesSection";
 import PartitionableContent from "~/components/storage/device-sheet/PartitionableContent";
 import PartitionableNoContent from "~/components/storage/device-sheet/PartitionableNoContent";
 import PartitionableMountContent from "~/components/storage/device-sheet/PartitionableMountContent";
@@ -96,26 +97,28 @@ export default function DeviceDetail({ entry, subject }: DeviceDetailProps): Rea
 
   return (
     <Flex direction={{ default: "column" }} gap={{ default: "gapLg" }}>
-      <SheetSection
-        icon="inventory_2"
-        title={
-          isNewVolumeGroup
-            ? // TRANSLATORS: heading of the part of a volume group's panel
-              // listing the disks it takes its room from.
-              _("Physical volumes")
-            : // TRANSLATORS: heading of the part of a device's panel saying
-              // what is on the device now, before installing.
-              _("Current content")
-        }
-      >
-        {!entry.isVolumeGroup && isUsedPartitionable && (
-          <UsedPartitionableCurrent entry={entry} subject={subject} />
-        )}
-        {!entry.isVolumeGroup && !isUsedPartitionable && (
-          <UnusedPartitionableCurrent entry={entry} subject={subject} />
-        )}
-        {entry.isVolumeGroup && <VolumeGroupCurrent entry={entry} subject={subject} />}
-      </SheetSection>
+      {/* A group being created has nothing on it today: what defines it comes
+          first instead. */}
+      {isNewVolumeGroup ? (
+        // TRANSLATORS: heading of the part of a volume group's panel saying
+        // what defines it: the disks it takes its room from, its name and how
+        // it uses those disks.
+        <SheetSection title={_("Properties")} icon="schema">
+          <PropertiesSection entry={entry} subject={subject} />
+        </SheetSection>
+      ) : (
+        // TRANSLATORS: heading of the part of a device's panel saying what is
+        // on the device now, before installing.
+        <SheetSection title={_("Current content")} icon="inventory_2">
+          {!entry.isVolumeGroup && isUsedPartitionable && (
+            <UsedPartitionableCurrent entry={entry} subject={subject} />
+          )}
+          {!entry.isVolumeGroup && !isUsedPartitionable && (
+            <UnusedPartitionableCurrent entry={entry} subject={subject} />
+          )}
+          {entry.isVolumeGroup && <VolumeGroupCurrent entry={entry} subject={subject} />}
+        </SheetSection>
+      )}
       <SheetSection title={newContentTitle} icon="pending_actions">
         {!entry.isVolumeGroup && isMountedPartitionable && (
           <PartitionableMountContent entry={entry} subject={subject} showName={false} />
