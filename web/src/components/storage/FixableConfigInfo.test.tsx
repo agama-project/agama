@@ -39,14 +39,14 @@ describe("FixableConfigInfo", () => {
     installerRender(<FixableConfigInfo issues={[issue("No root"), issue("No swap")]} />);
 
     screen.getByText("Warning alert:");
-    const line = screen.getByText(/The configuration has 2 issues to fix./);
+    const line = screen.getByText(/The configuration has 2 issues to fix/);
     expect(line).toContainElement(seeIssues());
   });
 
   it("uses the singular for a single issue", () => {
     installerRender(<FixableConfigInfo issues={[issue("No root")]} />);
 
-    screen.getByText(/The configuration has 1 issue to fix./);
+    screen.getByText(/The configuration has 1 issue to fix/);
   });
 
   it("keeps the issues out of the page until they are asked for", () => {

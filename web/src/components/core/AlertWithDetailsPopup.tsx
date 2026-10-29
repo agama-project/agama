@@ -59,10 +59,13 @@ export type AlertWithDetailsPopupProps = {
  * says so on purpose: the reader is taken out of the page for a moment, which
  * is different from an alert that expands in place.
  *
- * The action is a button drawn as an inline link, not a link. A link goes to
- * an address, which can be copied, reloaded or opened in another tab. The
- * popup has no address of its own, so the action only does something on this
- * page, which is what a button is for.
+ * The action is a button, and looks like one: small and bordered, right after
+ * the sentence. A link goes to an address, which can be copied, reloaded or
+ * opened in another tab. The popup has no address of its own, so the action
+ * only does something on this page, which is what a button is for.
+ *
+ * The title is written without a period at its end, as titles are, so the
+ * button after it does not follow a sentence that has already finished.
  *
  * The popup is a dismissible one: it closes with its Close button and with
  * Escape, and closing it puts the reader back on the action that opened it.
@@ -74,7 +77,7 @@ export type AlertWithDetailsPopupProps = {
  * @example <caption>A report with the full list a click away</caption>
  *   <AlertWithDetailsPopup
  *     variant="custom"
- *     title={_("Applying the configuration below will take 8 actions during installation.")}
+ *     title={_("Applying the configuration below will take 8 actions during installation")}
  *     actionLabel={_("View changes")}
  *     popupTitle={_("Planned storage changes")}
  *     popupVariant="large"
@@ -85,7 +88,7 @@ export type AlertWithDetailsPopupProps = {
  * @example <caption>A short action named in full for assistive technologies</caption>
  *   <AlertWithDetailsPopup
  *     variant="warning"
- *     title={_("No storage layout can be calculated with the current settings.")}
+ *     title={_("No storage layout can be calculated with the current settings")}
  *     actionLabel={_("Show more")}
  *     actionAriaLabel={_("Show more about the storage layout")}
  *     popupTitle={_("Storage layout not calculated")}
@@ -96,7 +99,7 @@ export type AlertWithDetailsPopupProps = {
  * @example <caption>A popup offering a way out besides closing it</caption>
  *   <AlertWithDetailsPopup
  *     variant="info"
- *     title={_("Unable to modify the settings.")}
+ *     title={_("Unable to modify the settings")}
  *     actionLabel={_("See options")}
  *     popupTitle={_("Unsupported configuration")}
  *     popupActions={
@@ -132,8 +135,8 @@ export default function AlertWithDetailsPopup({
           <>
             {title}{" "}
             <Button
-              variant="link"
-              isInline
+              variant="tertiary"
+              size="sm"
               aria-label={actionAriaLabel}
               onClick={() => setIsOpen(true)}
             >

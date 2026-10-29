@@ -57,7 +57,7 @@ describe("Consequences", () => {
     installerRender(<Consequences />);
 
     expect(summary()).toHaveTextContent(
-      "Applying the configuration below will take 3 actions during installation.",
+      "Applying the configuration below will take 3 actions during installation",
     );
   });
 
@@ -66,7 +66,7 @@ describe("Consequences", () => {
     installerRender(<Consequences />);
 
     expect(summary()).toHaveTextContent(
-      "Applying the configuration below will take 1 action during installation.",
+      "Applying the configuration below will take 1 action during installation",
     );
   });
 
@@ -79,7 +79,7 @@ describe("Consequences", () => {
     installerRender(<Consequences />);
 
     expect(summary()).toHaveTextContent(
-      "Applying the configuration below will take 1 action during installation.",
+      "Applying the configuration below will take 1 action during installation",
     );
   });
 

@@ -167,7 +167,7 @@ describe("ProposalFailedInfo", () => {
     installerRender(<ProposalFailedInfo />);
 
     screen.getByText("Warning alert:");
-    const line = screen.getByText(/No storage layout can be calculated with the current settings./);
+    const line = screen.getByText(/No storage layout can be calculated with the current settings/);
     expect(line).toContainElement(showMore());
     expect(showMore()).toHaveTextContent("Show more");
   });

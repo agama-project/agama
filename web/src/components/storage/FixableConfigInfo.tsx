@@ -49,8 +49,8 @@ function fixableConfigTitle(issues: Issue[]): TranslatedString {
     // settings have problems that can be fixed on that page. %d is the number
     // of problems.
     n_(
-      "The configuration has %d issue to fix.",
-      "The configuration has %d issues to fix.",
+      "The configuration has %d issue to fix",
+      "The configuration has %d issues to fix",
       issues.length,
     ),
     issues.length,

@@ -51,7 +51,7 @@ describe("if there is not config model", () => {
   it("says in one line that the settings cannot be modified, with a way to the options", () => {
     installerRender(<UnsupportedModelInfo />);
 
-    const line = screen.getByText(/Unable to modify the settings./);
+    const line = screen.getByText(/Unable to modify the settings/);
     expect(line).toContainElement(seeOptions());
     expect(seeOptions()).toHaveTextContent("See options");
   });

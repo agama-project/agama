@@ -74,7 +74,7 @@ const Description = () => {
 function proposalFailedTitle(): TranslatedString {
   // TRANSLATORS: reported at the top of the storage page when the installer
   // cannot work out how to lay out the disks for the new system.
-  return _("No storage layout can be calculated with the current settings.");
+  return _("No storage layout can be calculated with the current settings");
 }
 
 /**

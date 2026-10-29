@@ -46,7 +46,7 @@ export default function UnsupportedModelInfo(): React.ReactNode {
       variant="info"
       // TRANSLATORS: reported at the top of the storage page when the storage
       // configuration uses features this interface cannot edit.
-      title={_("Unable to modify the settings.")}
+      title={_("Unable to modify the settings")}
       // TRANSLATORS: opens a popup with what can be done about a storage
       // configuration this interface cannot edit.
       actionLabel={_("See options")}

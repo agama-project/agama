@@ -45,8 +45,8 @@ function summaryOf(actions: Storage.Action[]): TranslatedString {
 
   return sprintf(
     n_(
-      "Applying the configuration below will take %d action during installation.",
-      "Applying the configuration below will take %d actions during installation.",
+      "Applying the configuration below will take %d action during installation",
+      "Applying the configuration below will take %d actions during installation",
       count,
     ),
     count,
