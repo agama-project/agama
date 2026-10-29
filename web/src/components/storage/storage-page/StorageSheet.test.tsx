@@ -109,14 +109,14 @@ describe("StorageSheet", () => {
 
   describe("when the address names an entry", () => {
     it("opens on it, saying what it is the way its row says it", () => {
-      renderAt("/storage?sheet=drives.0");
+      renderAt("/storage?device=drives.sda");
 
       screen.getByRole("region", { name: /sda/ });
       screen.getByText(/60 GiB/);
     });
 
     it("says what it is under its name, as its row does", () => {
-      renderAt("/storage?sheet=drives.0");
+      renderAt("/storage?device=drives.sda");
 
       screen.getByRole("heading", { name: "sda · 60 GiB" });
       screen.getByText("Disk");
@@ -124,7 +124,7 @@ describe("StorageSheet", () => {
     });
 
     it("offers the same acts its row offers", () => {
-      renderAt("/storage?sheet=drives.0");
+      renderAt("/storage?device=drives.sda");
 
       screen.getByRole("button", { name: "Actions for sda" });
     });
@@ -134,14 +134,14 @@ describe("StorageSheet", () => {
         { sid: 59, name: "/dev/sda", class: "drive", block: { size: 64424509440 } },
       ]);
       mockActions.mockReturnValue([{ device: 59, text: "" }]);
-      renderAt("/storage?sheet=drives.0");
+      renderAt("/storage?device=drives.sda");
 
       screen.getByText("How this disk looks once the installer is done.");
       screen.getByRole("treegrid");
     });
 
     it("says so where the installer has worked no layout out", () => {
-      renderAt("/storage?sheet=drives.0");
+      renderAt("/storage?device=drives.sda");
 
       screen.getByText(/no layout to show/);
     });
@@ -155,7 +155,7 @@ describe("StorageSheet", () => {
         block: { size: 64424509440 },
         partitions: [{ sid: 41, name: "/dev/sda1", block: { size: 5e10, systems: [] } }],
       });
-      renderAt("/storage?sheet=drives.0");
+      renderAt("/storage?device=drives.sda");
 
       /* Exact names: a mark read out with the words would change them. */
       screen.getByRole("tab", { name: "Final layout" });
@@ -164,7 +164,7 @@ describe("StorageSheet", () => {
     });
 
     it("offers the views of it left to right, as time moving forwards", () => {
-      renderAt("/storage?sheet=drives.0");
+      renderAt("/storage?device=drives.sda");
 
       screen.getByRole("tab", { name: "Final layout" });
       screen.getByRole("tab", { name: "Planned content" });
@@ -179,7 +179,7 @@ describe("StorageSheet", () => {
         block: { size: 64424509440 },
         partitions: [{ sid: 41, name: "/dev/sda1", block: { size: 5e10, systems: [] } }],
       });
-      const { user } = renderAt("/storage?sheet=drives.0");
+      const { user } = renderAt("/storage?device=drives.sda");
       await user.click(screen.getByRole("button", { name: "Current content" }));
 
       expect(screen.getByRole("tab", { name: "Current content" })).toHaveAttribute(
@@ -189,7 +189,7 @@ describe("StorageSheet", () => {
     });
 
     it("opens on what it becomes, not on what there is to change", () => {
-      renderAt("/storage?sheet=drives.0");
+      renderAt("/storage?device=drives.sda");
 
       expect(screen.getByRole("tab", { name: "Final layout" })).toHaveAttribute(
         "aria-selected",
@@ -212,20 +212,20 @@ describe("StorageSheet", () => {
       });
 
       it("opens on that one instead, listing what the new system gets here", () => {
-        renderAt("/storage?sheet=drives.0&sheetTab=planned");
+        renderAt("/storage?device=drives.sda");
 
         screen.getByText("What this disk will hold for the new system.");
         screen.getByRole("rowheader", { name: /\// });
       });
 
       it("offers the one act that changes what is planned here", () => {
-        renderAt("/storage?sheet=drives.0&sheetTab=planned");
+        renderAt("/storage?device=drives.sda");
 
         screen.getByRole("link", { name: /Add partition/ });
       });
 
       it("offers moving what is planned to another device, after what it would move", () => {
-        renderAt("/storage?sheet=drives.0&sheetTab=planned");
+        renderAt("/storage?device=drives.sda");
 
         screen.getByRole("button", { name: /Use another device/ });
       });
@@ -234,13 +234,13 @@ describe("StorageSheet", () => {
         mockConfig.mockReturnValue(
           config({ drives: [{ name: "/dev/sda", partitions: [{ id: "bios_boot" }] }] }),
         );
-        renderAt("/storage?sheet=drives.0&sheetTab=planned");
+        renderAt("/storage?device=drives.sda");
 
         screen.getByRole("rowheader", { name: "BIOS boot partition" });
       });
 
       it("calls dropping a partition it creates a deletion", async () => {
-        const { user } = renderAt("/storage?sheet=drives.0&sheetTab=planned");
+        const { user } = renderAt("/storage?device=drives.sda");
         await user.click(screen.getByRole("button", { name: "Actions for /" }));
 
         screen.getByRole("menuitem", { name: "Delete" });
@@ -259,7 +259,7 @@ describe("StorageSheet", () => {
             drives: [{ name: "/dev/sda", partitions: [{ name: "/dev/sda1", mountPath: "/home" }] }],
           }),
         );
-        const { user } = renderAt("/storage?sheet=drives.0&sheetTab=planned");
+        const { user } = renderAt("/storage?device=drives.sda");
         await user.click(screen.getByRole("button", { name: "Actions for /home" }));
 
         screen.getByRole("menuitem", { name: "Stop reusing" });
@@ -285,7 +285,7 @@ describe("StorageSheet", () => {
       });
 
       it("names what is there and what becomes of it", () => {
-        renderAt("/storage?sheet=drives.0&sheetTab=current");
+        renderAt("/storage?device=drives.sda");
 
         screen.getByText("What to do with the existing partitions");
         screen.getByRole("rowheader", { name: "sda1" });
@@ -308,7 +308,7 @@ describe("StorageSheet", () => {
           { sid: 41, name: "/dev/sda1", filesystem: { sid: 99, type: "btrfs" } },
         ]);
         mockActions.mockReturnValue([{ device: 41, text: "", delete: true }]);
-        renderAt("/storage?sheet=drives.0&sheetTab=current");
+        renderAt("/storage?device=drives.sda");
 
         screen.getByText('To be formatted as "/home"');
         expect(screen.queryByText("To be deleted")).not.toBeInTheDocument();
@@ -325,13 +325,13 @@ describe("StorageSheet", () => {
             { sid: 41, name: "/dev/sda1", block: { start: 0, size: 5e10, systems: [] } },
           ],
         });
-        renderAt("/storage?sheet=drives.0&sheetTab=current");
+        renderAt("/storage?device=drives.sda");
 
         screen.getByRole("rowheader", { name: "Free space" });
       });
 
       it("puts the decision above the column it governs", () => {
-        renderAt("/storage?sheet=drives.0&sheetTab=current");
+        renderAt("/storage?device=drives.sda");
 
         screen.getByRole("group", { name: "Allowed changes" });
       });
@@ -344,7 +344,7 @@ describe("StorageSheet", () => {
           block: { size: 64424509440 },
           partitions: [],
         });
-        renderAt("/storage?sheet=drives.0&sheetTab=current");
+        renderAt("/storage?device=drives.sda");
 
         expect(screen.queryByRole("tab", { name: "Current content" })).toBeNull();
         expect(screen.queryByRole("group", { name: "Allowed changes" })).toBeNull();
@@ -359,7 +359,7 @@ describe("StorageSheet", () => {
 
     describe("and nothing is planned on it", () => {
       it("says so, and carries the act that changes it", () => {
-        renderAt("/storage?sheet=drives.0&sheetTab=planned");
+        renderAt("/storage?device=drives.sda");
 
         screen.getByRole("heading", { name: "Nothing planned for this device yet" });
         screen.getByText(/Add a volume, or reuse one of the partitions already on it/);
@@ -367,7 +367,7 @@ describe("StorageSheet", () => {
       });
 
       it("does not offer moving it, since there is nothing to move", () => {
-        renderAt("/storage?sheet=drives.0&sheetTab=planned");
+        renderAt("/storage?device=drives.sda");
 
         expect(
           screen.queryByRole("button", { name: /Use another device/ }),
@@ -386,7 +386,7 @@ describe("StorageSheet", () => {
       });
 
       it("says which, and offers the way to it", () => {
-        renderAt("/storage?sheet=drives.0&sheetTab=planned");
+        renderAt("/storage?device=drives.sda");
 
         screen.getByRole("heading", { name: "No partitions are planned here" });
         screen.getByText(/The whole device goes to/);
@@ -418,7 +418,7 @@ describe("StorageSheet", () => {
             ],
           },
         ]);
-        renderAt("/storage?sheet=drives.0&sheetTab=planned");
+        renderAt("/storage?device=drives.sda");
 
         screen.getByText("Boot device, chosen automatically.");
         screen.getByText(/Partitions to boot: a new partition \(8 MiB\)\./);
@@ -430,7 +430,7 @@ describe("StorageSheet", () => {
       });
 
       it("says so above the content too, on one line", () => {
-        renderAt("/storage?sheet=drives.0&sheetTab=planned");
+        renderAt("/storage?device=drives.sda");
 
         /* The heading and what it says share one line rather than stacking. */
         const heading = screen.getByText("Used by");
@@ -454,40 +454,40 @@ describe("StorageSheet", () => {
     it("says what kind of thing it is, and the name it will answer to", () => {
       /* Not on the machine yet, which is the state a group is defined in. */
       mockSystemDevice.mockReturnValue(null);
-      renderAt("/storage?sheet=volumeGroups.0");
+      renderAt("/storage?device=volumeGroups.system");
 
       screen.getByRole("region", { name: "system LVM volume group" });
       screen.getByText("/dev/system");
     });
 
     it("offers a view of what it is made of", () => {
-      renderAt("/storage?sheet=volumeGroups.0");
+      renderAt("/storage?device=volumeGroups.system");
 
       screen.getByRole("tab", { name: "Properties" });
     });
 
     it("offers a disk no such view, since a disk is the hardware", () => {
-      renderAt("/storage?sheet=drives.0");
+      renderAt("/storage?device=drives.sda");
 
       expect(screen.queryByRole("tab", { name: "Properties" })).not.toBeInTheDocument();
     });
 
     it("names what it is built on, and offers the way to each", () => {
-      renderAt("/storage?sheet=volumeGroups.0&sheetTab=properties");
+      renderAt("/storage?device=volumeGroups.system");
 
       screen.getByText("Uses");
       screen.getByRole("link", { name: "sda" });
     });
 
     it("says how much of those devices it takes", () => {
-      renderAt("/storage?sheet=volumeGroups.0&sheetTab=properties");
+      renderAt("/storage?device=volumeGroups.system");
 
       screen.getByText("Space taken");
       screen.getByText("Only what its volumes need");
     });
 
     it("offers the form that changes both, after what it changes", () => {
-      renderAt("/storage?sheet=volumeGroups.0&sheetTab=properties");
+      renderAt("/storage?device=volumeGroups.system");
 
       screen.getByRole("link", { name: /Edit the volume group/ });
     });
@@ -519,7 +519,7 @@ describe("StorageSheet", () => {
       });
 
       it("lets the group be told what may happen to them, as a disk is", () => {
-        renderAt("/storage?sheet=volumeGroups.0&sheetTab=current");
+        renderAt("/storage?device=volumeGroups.system");
 
         screen.getByRole("group", { name: "Allowed changes" });
       });
@@ -527,7 +527,7 @@ describe("StorageSheet", () => {
       /* A logical volume is governed the same way a partition is, and the
          playground decides both one at a time. */
       it("gives each volume its own decision, where they are decided one at a time", () => {
-        renderAt("/storage?sheet=volumeGroups.0&sheetTab=current");
+        renderAt("/storage?device=volumeGroups.system");
 
         screen.getByRole("button", { name: "Changes allowed for home: Delete" });
         screen.getByRole("button", { name: "Changes allowed for data: Keep" });
@@ -537,16 +537,43 @@ describe("StorageSheet", () => {
 
   describe("when the address names an entry the configuration no longer has", () => {
     it("leaves the reader on the page rather than on a broken panel", () => {
-      renderAt("/storage?sheet=drives.7");
+      renderAt("/storage?device=drives.vdz");
 
       screen.getByText("the storage page");
+      expect(sheet()).not.toBeInTheDocument();
+    });
+
+    it("reads an address by position, as it was once written, the same way", () => {
+      renderAt("/storage?device=drives.0");
+
+      expect(sheet()).not.toBeInTheDocument();
+    });
+  });
+
+  describe("when its entry goes away while it is open", () => {
+    it("closes rather than showing whatever entry takes its place", () => {
+      mockConfig.mockReturnValue(
+        config({
+          drives: [
+            { name: "/dev/sda", partitions: [] },
+            { name: "/dev/sdb", partitions: [] },
+          ],
+        }),
+      );
+      const { rerender } = renderAt("/storage?device=drives.sda");
+      screen.getByRole("region", { name: /sda/ });
+
+      /* The first disk leaves; another one now sits where it was. */
+      mockConfig.mockReturnValue(config({ drives: [{ name: "/dev/sdb", partitions: [] }] }));
+      rerender(<StorageSheet page={page} />);
+
       expect(sheet()).not.toBeInTheDocument();
     });
   });
 
   describe("when the address makes no sense at all", () => {
     it("reads as a shut panel, since an address can be edited by hand", () => {
-      renderAt("/storage?sheet=nonsense");
+      renderAt("/storage?device=nonsense");
 
       expect(sheet()).not.toBeInTheDocument();
     });
@@ -554,7 +581,7 @@ describe("StorageSheet", () => {
 
   describe("when the address names the whole picture, as it once could", () => {
     it("reads as a shut panel, since the panel holds details only", () => {
-      renderAt("/storage?sheet=result");
+      renderAt("/storage?device=result");
 
       screen.getByText("the storage page");
       expect(sheet()).not.toBeInTheDocument();
@@ -595,14 +622,14 @@ describe("StorageSheet", () => {
     });
 
     it("gives each partition its own decision, saying what it is now", () => {
-      renderAt("/storage?sheet=drives.0&sheetTab=current");
+      renderAt("/storage?device=drives.sda");
 
       screen.getByRole("button", { name: "Changes allowed for sda1: Delete" });
       screen.getByRole("button", { name: "Changes allowed for sda2: Keep" });
     });
 
     it("writes every partition's decision back with the one that changed", async () => {
-      const { user } = renderAt("/storage?sheet=drives.0&sheetTab=current");
+      const { user } = renderAt("/storage?device=drives.sda");
       await user.click(screen.getByRole("button", { name: "Changes allowed for sda2: Keep" }));
       await user.click(screen.getByRole("menuitem", { name: /Shrink if needed/ }));
 
@@ -618,7 +645,7 @@ describe("StorageSheet", () => {
     });
 
     it("keeps a shrink it cannot allow offered and says why, rather than hiding it", async () => {
-      const { user } = renderAt("/storage?sheet=drives.0&sheetTab=current");
+      const { user } = renderAt("/storage?device=drives.sda");
       await user.click(screen.getByRole("button", { name: "Changes allowed for sda1: Delete" }));
 
       const shrink = screen.getByRole("menuitem", { name: /Shrink if needed/ });
@@ -630,7 +657,7 @@ describe("StorageSheet", () => {
       mockConfig.mockReturnValue(
         config({ drives: [{ name: "/dev/sda", spacePolicy: "keep", partitions: [] }] }),
       );
-      renderAt("/storage?sheet=drives.0&sheetTab=current");
+      renderAt("/storage?device=drives.sda");
 
       expect(screen.queryByRole("button", { name: /Changes allowed for/ })).not.toBeInTheDocument();
     });
@@ -648,7 +675,7 @@ describe("StorageSheet", () => {
     });
 
     it("offers to reuse it for the new system, whatever the space answer", async () => {
-      const { user } = renderAt("/storage?sheet=drives.0&sheetTab=current");
+      const { user } = renderAt("/storage?device=drives.sda");
       await user.click(screen.getByRole("button", { name: "Actions for sda1" }));
       await user.click(screen.getByRole("menuitem", { name: "Reuse for the new system…" }));
 
@@ -665,7 +692,7 @@ describe("StorageSheet", () => {
           drives: [{ name: "/dev/sda", partitions: [{ name: "/dev/sda1", mountPath: "/home" }] }],
         }),
       );
-      const { user } = renderAt("/storage?sheet=drives.0&sheetTab=current");
+      const { user } = renderAt("/storage?device=drives.sda");
       await user.click(screen.getByRole("button", { name: "Actions for sda1" }));
 
       screen.getByRole("menuitem", { name: "Edit the reused partition" });

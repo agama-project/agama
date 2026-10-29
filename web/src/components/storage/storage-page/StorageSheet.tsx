@@ -83,7 +83,10 @@ export type StorageSheetProps = {
  *
  * An address naming an entry the configuration no longer has reads as a shut
  * sheet. Addresses outlive plans: one can be written down, shared, or reloaded
- * after the entry it named has gone.
+ * after the entry it named has gone. The same goes for a change made from the
+ * panel itself that takes its entry away: the panel closes rather than moving
+ * on to another entry, since going from one entry to another is always the
+ * reader's doing.
  */
 export default function StorageSheet({ page }: StorageSheetProps): React.ReactNode {
   const { subject, close } = useSheet();

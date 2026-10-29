@@ -47,7 +47,7 @@ const EXPANDED = "expanded";
 const SETTINGS_TAB = "settingsTab";
 
 /** Storage page: what the sheet beside the page is showing. */
-const SHEET = "sheet";
+const SHEET = "device";
 
 /** DASD page: sorted column and direction, as in `sortBy=channel:desc`. */
 const DASD_SORT = "sortBy";

@@ -532,14 +532,14 @@ describe("the way into an entry", () => {
     const { user } = renderWithAddress();
     await user.click(screen.getByRole("link", { name: "sdb" }));
 
-    expect(screen.getByRole("status").textContent).toBe("sheet=drives.1");
+    expect(screen.getByRole("status").textContent).toBe("device=drives.sdb");
   });
 
   it("names the group where the group is what the row is about", async () => {
     const { user } = renderWithAddress();
     await user.click(screen.getByRole("link", { name: "system" }));
 
-    expect(screen.getByRole("status").textContent).toBe("sheet=volumeGroups.0");
+    expect(screen.getByRole("status").textContent).toBe("device=volumeGroups.system");
   });
 
   it("leaves the rest of the row to the name's link, with no handler of its own", async () => {

@@ -22,8 +22,10 @@
 
 import { useSearchParams } from "react-router";
 import { SEARCH_PARAM_UPDATE } from "~/hooks/use-search-param-state";
+import { useConfigModel } from "~/hooks/model/storage/config-model";
 import { SHEET } from "~/components/storage/ui-state-params";
 import type { To } from "react-router";
+import type { ConfigModel } from "~/model/storage/config-model";
 
 /**
  * The identity of the one sheet the storage page opens, so that a control can
@@ -40,38 +42,64 @@ type SheetEntry = { collection: SheetCollection; index: number };
 const COLLECTIONS: SheetCollection[] = ["drives", "mdRaids", "volumeGroups"];
 
 /**
- * The address form of an entry: "drives.0".
+ * What an entry of the configuration is called in the address: a disk or a
+ * RAID by its device name without the leading `/dev/` (`vdb`, `md0`), a
+ * volume group by its name (`system`). Nothing where the configuration has no
+ * such entry.
+ */
+function nameOf(config: ConfigModel.Config | null, entry: SheetEntry): string | undefined {
+  const item = config?.[entry.collection]?.[entry.index];
+  if (!item) return undefined;
+
+  return "vgName" in item ? item.vgName : item.name.replace(/^\/dev\//, "");
+}
+
+/**
+ * The address form of an entry: "drives.vdb", "volumeGroups.system".
  *
  * Readable and editable by hand, which is the point of keeping it in the
- * address at all. An entry is named by where it is written and its position,
- * which is how the storage pages already address one.
+ * address at all. An entry is named by where it is written and by its name,
+ * not by its position there: a position names whatever entry is at that place
+ * now, so a change that adds or removes entries would leave the address
+ * naming another one, and the panel showing it without the reader asking.
+ * Names are unique within each collection: a device is in the configuration
+ * once, and a volume group name is refused when it is taken.
  *
  * A full stop rather than a colon between the two, although a colon is legal in
  * a query value: the encoder the browser gives us escapes it to `%3A`, and an
  * address nobody can read by eye is not one anybody will edit by hand.
  */
-function toParam(entry: SheetEntry): string {
-  return `${entry.collection}.${entry.index}`;
+function toParam(config: ConfigModel.Config | null, entry: SheetEntry): string | undefined {
+  const name = nameOf(config, entry);
+  return name && `${entry.collection}.${name}`;
 }
 
 /**
  * The entry an address names, or nothing where it names none.
  *
+ * Split at the first full stop only, since device names can hold full stops
+ * of their own.
+ *
  * Anything the page cannot make sense of reads as a shut sheet rather than as
  * an error: the address is editable by hand, and a typo in it should leave the
- * reader on the page rather than on a broken one. So does an address written
- * when the sheet could also show the whole result, which it no longer does.
+ * reader on the page rather than on a broken one. So does an address naming an
+ * entry the configuration no longer has, and one written in an older form,
+ * by position (`drives.0`) or for the whole result (`result`).
  */
-function fromParam(value: string | null): SheetEntry | null {
+function fromParam(config: ConfigModel.Config | null, value: string | null): SheetEntry | null {
   if (!value) return null;
 
-  const [collection, position] = value.split(".");
-  const index = Number(position);
+  const dot = value.indexOf(".");
+  if (dot < 0) return null;
 
-  if (!COLLECTIONS.includes(collection as SheetCollection)) return null;
-  if (!Number.isInteger(index) || index < 0) return null;
+  const collection = value.slice(0, dot) as SheetCollection;
+  const name = value.slice(dot + 1);
+  if (!COLLECTIONS.includes(collection)) return null;
 
-  return { collection: collection as SheetCollection, index };
+  const entries = config?.[collection] || [];
+  const index = entries.findIndex((_, i) => nameOf(config, { collection, index: i }) === name);
+
+  return index < 0 ? null : { collection, index };
 }
 
 /**
@@ -100,18 +128,21 @@ function useSheet(): {
   /** Shuts it. */
   close: () => void;
 } {
+  const config = useConfigModel();
   const [params, setParams] = useSearchParams();
-  const subject = fromParam(params.get(SHEET));
+  const subject = fromParam(config, params.get(SHEET));
 
   const addressOf = (subject: SheetEntry): To => {
     const next = new URLSearchParams(params);
-    next.set(SHEET, toParam(subject));
+    const param = toParam(config, subject);
+    if (param) next.set(SHEET, param);
     return { search: `?${next}` };
   };
 
   const openSheet = (subject: SheetEntry) =>
     setParams((next) => {
-      next.set(SHEET, toParam(subject));
+      const param = toParam(config, subject);
+      if (param) next.set(SHEET, param);
       return next;
     }, SEARCH_PARAM_UPDATE);
 

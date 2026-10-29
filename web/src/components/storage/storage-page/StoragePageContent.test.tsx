@@ -61,7 +61,7 @@ describe("StoragePageContent", () => {
 
   describe("while the sheet covers the page", () => {
     it("keeps the report within reach, so a change made in the sheet can be acted on", () => {
-      mockRoutes("/storage?sheet=drives.0");
+      mockRoutes("/storage?device=drives.sda");
       installerRender(<StoragePageContent />);
 
       screen.getByRole("region", { name: "sda" });
@@ -69,7 +69,7 @@ describe("StoragePageContent", () => {
     });
 
     it("puts the rest of the page out of reach", () => {
-      mockRoutes("/storage?sheet=drives.0");
+      mockRoutes("/storage?device=drives.sda");
       installerRender(<StoragePageContent />);
 
       expect(setting().closest("[inert]")).not.toBeNull();

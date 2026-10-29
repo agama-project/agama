@@ -23,30 +23,80 @@
 import React from "react";
 import { renderHook } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
+import type { ConfigModel } from "~/model/storage/config-model";
 import { useSheet } from "~/components/storage/shared/use-sheet";
 
-/** What the sheet shows, read from one address. */
-const subjectAt = (address: string) => {
+const mockConfig: ConfigModel.Config = {
+  drives: [{ name: "/dev/vdb" }, { name: "/dev/sda.1" }],
+  mdRaids: [{ name: "/dev/md/data" }],
+  volumeGroups: [{ vgName: "system" }, { vgName: "vdb" }],
+};
+
+jest.mock("~/hooks/model/storage/config-model", () => ({
+  ...jest.requireActual("~/hooks/model/storage/config-model"),
+  useConfigModel: () => mockConfig,
+}));
+
+/** The sheet's state, read from one address. */
+const sheetAt = (address: string) => {
   const { result } = renderHook(() => useSheet(), {
     wrapper: ({ children }) => <MemoryRouter initialEntries={[address]}>{children}</MemoryRouter>,
   });
 
-  return result.current.subject;
+  return result.current;
 };
 
 describe("useSheet", () => {
-  it("reads the entry the address names", () => {
-    expect(subjectAt("/storage?sheet=volumeGroups.1")).toEqual({
+  it("reads the entry the address names, by its name", () => {
+    expect(sheetAt("/storage?device=drives.vdb").subject).toEqual({
+      collection: "drives",
+      index: 0,
+    });
+    expect(sheetAt("/storage?device=volumeGroups.system").subject).toEqual({
+      collection: "volumeGroups",
+      index: 0,
+    });
+  });
+
+  it("tells a volume group from a disk of the same name", () => {
+    expect(sheetAt("/storage?device=volumeGroups.vdb").subject).toEqual({
       collection: "volumeGroups",
       index: 1,
     });
   });
 
-  it("reads an address naming nothing as a shut sheet", () => {
-    expect(subjectAt("/storage")).toBeNull();
+  it("reads names holding slashes and full stops", () => {
+    expect(sheetAt("/storage?device=mdRaids.md%2Fdata").subject).toEqual({
+      collection: "mdRaids",
+      index: 0,
+    });
+    expect(sheetAt("/storage?device=drives.sda.1").subject).toEqual({
+      collection: "drives",
+      index: 1,
+    });
   });
 
-  it("reads an old address naming the whole result as a shut sheet", () => {
-    expect(subjectAt("/storage?sheet=result")).toBeNull();
+  it("reads an address naming nothing as a shut sheet", () => {
+    expect(sheetAt("/storage").subject).toBeNull();
+  });
+
+  it("reads an address naming an entry the configuration does not have as a shut sheet", () => {
+    expect(sheetAt("/storage?device=drives.vdz").subject).toBeNull();
+  });
+
+  it("reads older addresses, by position or for the whole result, as a shut sheet", () => {
+    expect(sheetAt("/storage?device=drives.0").subject).toBeNull();
+    expect(sheetAt("/storage?device=result").subject).toBeNull();
+  });
+
+  it("points at an entry by its name", () => {
+    const sheet = sheetAt("/storage?settingsTab=1");
+
+    expect(sheet.addressOf({ collection: "drives", index: 0 })).toEqual({
+      search: "?settingsTab=1&device=drives.vdb",
+    });
+    expect(sheet.addressOf({ collection: "volumeGroups", index: 1 })).toEqual({
+      search: "?settingsTab=1&device=volumeGroups.vdb",
+    });
   });
 });

@@ -23,7 +23,15 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender, mockNavigateFn, mockRoutes } from "~/test-utils";
+import type { ConfigModel } from "~/model/storage/config-model";
 import SheetOpener from "~/components/storage/shared/SheetOpener";
+
+const mockConfig: ConfigModel.Config = { drives: [{ name: "/dev/sda" }] };
+
+jest.mock("~/hooks/model/storage/config-model", () => ({
+  ...jest.requireActual("~/hooks/model/storage/config-model"),
+  useConfigModel: () => mockConfig,
+}));
 
 const sda = { collection: "drives" as const, index: 0 };
 
@@ -38,7 +46,10 @@ describe("SheetOpener", () => {
     const { user } = installerRender(<SheetOpener subject={sda}>sda</SheetOpener>);
     await user.click(screen.getByRole("link"));
 
-    expect(mockNavigateFn).toHaveBeenCalledWith({ search: "?sheet=drives.0" }, { replace: true });
+    expect(mockNavigateFn).toHaveBeenCalledWith(
+      { search: "?device=drives.sda" },
+      { replace: true },
+    );
   });
 
   it("keeps whatever else the address was saying", async () => {
@@ -47,7 +58,7 @@ describe("SheetOpener", () => {
     await user.click(screen.getByRole("link"));
 
     expect(mockNavigateFn).toHaveBeenCalledWith(
-      { search: "?settingsTab=1&sheet=drives.0" },
+      { search: "?settingsTab=1&device=drives.sda" },
       { replace: true },
     );
   });
