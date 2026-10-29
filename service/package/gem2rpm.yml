@@ -35,7 +35,13 @@
     Requires:       yast2-transfer
     # Needed by service/YaST2/modules/Popup.rb (Yast.import "UI") - previously only a transitive
     # dependency pulled in by the now-dropped `yast2` RPM's own Requires:
+    %if 0%{?suse_version} == 1699 || 0%{?is_opensuse}
+    # use the standard UI in openSUSE Tumbleweed or Leap
     Requires:       yast2-ycp-ui-bindings
+    %else
+    # use dummy UI in SLES (without libyui dependency)
+    Requires:       yast2-ycp-ui-bindings-dummy
+    %endif
     # Needed by service/YaST2/{modules/ShadowConfig.rb,lib/cfa/{login_defs,shadow_config}.rb} (the
     # "login_defs.lns" Augeas lens) - previously only a transitive dependency pulled in by the
     # now-dropped `yast2` RPM's own Requires:
