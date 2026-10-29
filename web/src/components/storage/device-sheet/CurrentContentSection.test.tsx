@@ -151,6 +151,27 @@ describe("CurrentContentSection", () => {
     screen.getByRole("table", { name: "Current content" });
   });
 
+  it("heads the first column after what a volume group holds, its logical volumes", async () => {
+    const group: Entry = {
+      config: { vgName: "system", name: "/dev/system", spacePolicy: "keep", logicalVolumes: [] },
+      device: {
+        sid: 20,
+        name: "/dev/system",
+        class: "volumeGroup",
+        logicalVolumes: [partition(1)],
+      } as System.Device,
+      name: "system",
+      isVolumeGroup: true,
+    };
+    const { user } = installerRender(
+      <CurrentContentSection entry={group} subject={{ collection: "volumeGroups", index: 0 }} />,
+    );
+    await user.click(screen.getByRole("button", { name: "Show logical volume details" }));
+
+    screen.getByRole("columnheader", { name: "Logical volume" });
+    expect(screen.queryByRole("columnheader", { name: "Partition" })).toBeNull();
+  });
+
   it("speaks of one partition in the singular", () => {
     installerRender(
       <CurrentContentSection entry={entry("delete", [], [partition(1)])} subject={subject} />,

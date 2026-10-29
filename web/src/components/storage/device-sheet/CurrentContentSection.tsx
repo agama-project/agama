@@ -676,7 +676,15 @@ export default function CurrentContentSection({
                 whose whole job is to be read. */}
             <Thead>
               <Tr>
-                <Th {...columnProps(COLUMNS.partition)}>{_("Partition")}</Th>
+                <Th {...columnProps(COLUMNS.partition)}>
+                  {entry.isVolumeGroup
+                    ? // TRANSLATORS: heads the column naming each logical volume
+                      // a volume group holds today.
+                      _("Logical volume")
+                    : // TRANSLATORS: heads the column naming each partition a
+                      // disk holds today.
+                      _("Partition")}
+                </Th>
                 <Th {...columnProps(COLUMNS.content)}>{_("Content")}</Th>
                 <Th {...columnProps(COLUMNS.size)}>{_("Size")}</Th>
                 <Th {...columnProps(COLUMNS.action)}>{_("Action")}</Th>
