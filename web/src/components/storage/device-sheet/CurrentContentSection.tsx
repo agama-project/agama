@@ -48,6 +48,8 @@ import {
 } from "~/components/storage/device-sheet/partition-space";
 import { useDevicesManager } from "~/components/storage/shared/use-devices-manager";
 import { baseName, deviceSize, formattedPath } from "~/components/storage/utils";
+import { useSearchParamTokens } from "~/hooks/use-search-param-state";
+import { CURRENT_CONTENT, EXPANDED } from "~/components/storage/ui-state-params";
 import { _ } from "~/i18n";
 import type DevicesManager from "~/model/storage/devices-manager";
 import type { Decision } from "~/components/storage/device-sheet/partition-space";
@@ -539,19 +541,12 @@ export default function CurrentContentSection({
   /* Only where the partitions are the reader's to decide. */
   const isDecidable = !fixedDecision && governed.length > 0;
 
-  /* Closed at first, since the summary already says what happens to every part,
-     except where every part is decided on its own: those decisions are the
-     content, and a click between the reader and them would hide what the
-     summary above points to. Decided again for each entry shown, and left to
-     the reader after that. */
-  const startsExpanded = isDecidable && entry.config.spacePolicy === "custom";
-  const shownEntry = `${subject.collection}.${subject.index}`;
-  const [expanded, setExpanded] = React.useState(startsExpanded);
-  const [expandedFor, setExpandedFor] = React.useState(shownEntry);
-  if (expandedFor !== shownEntry) {
-    setExpandedFor(shownEntry);
-    setExpanded(startsExpanded);
-  }
+  /* Kept in the address, so a reload, Back or a shared link keep it. Closed
+     until the reader opens it: the summary already says what happens to every
+     part. The sheet takes it out of the address when it closes or moves to
+     another device, so every device starts closed. */
+  const { hasSearchParamToken, toggleSearchParamToken } = useSearchParamTokens(EXPANDED);
+  const expanded = hasSearchParamToken(CURRENT_CONTENT);
   const contentId = React.useId();
 
   const parts: ContentPart[] = rows
@@ -627,7 +622,7 @@ export default function CurrentContentSection({
               aria-expanded={expanded}
               aria-controls={contentId}
               aria-describedby={summaryId}
-              onClick={() => setExpanded(!expanded)}
+              onClick={() => toggleSearchParamToken(CURRENT_CONTENT)}
             >
               {disclosureLabel(entry.isVolumeGroup, expanded)}
             </Button>

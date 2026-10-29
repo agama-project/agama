@@ -21,8 +21,8 @@
  */
 
 import React from "react";
-import { renderHook } from "@testing-library/react";
-import { MemoryRouter } from "react-router";
+import { act, renderHook } from "@testing-library/react";
+import { MemoryRouter, useSearchParams } from "react-router";
 import type { ConfigModel } from "~/model/storage/config-model";
 import { renamedGroupSearch, useSheet } from "~/components/storage/shared/use-sheet";
 
@@ -103,6 +103,37 @@ describe("useSheet", () => {
     });
     expect(sheet.addressOf({ collection: "volumeGroups", index: 1 })).toEqual({
       search: "?settingsTab=1&device=volumeGroups.vdb",
+    });
+  });
+});
+
+describe("useSheet and the state the sheet keeps in the address", () => {
+  /** The sheet and the address it reads, rendered at one address. */
+  const renderAt = (address: string) =>
+    renderHook(() => ({ sheet: useSheet(), params: useSearchParams()[0] }), {
+      wrapper: ({ children }) => <MemoryRouter initialEntries={[address]}>{children}</MemoryRouter>,
+    });
+
+  it("drops an open list when the sheet closes, keeping the rest", () => {
+    const { result } = renderAt("/storage?device=drives.vdb&expanded=content,other");
+    act(() => result.current.sheet.close());
+
+    expect(result.current.params.toString()).toBe("expanded=other");
+  });
+
+  it("drops an open list when the sheet moves to another device", () => {
+    const { result } = renderAt("/storage?device=drives.vdb&expanded=content");
+
+    expect(result.current.sheet.addressOf({ collection: "volumeGroups", index: 0 })).toEqual({
+      search: "?device=volumeGroups.system",
+    });
+  });
+
+  it("keeps an open list when the sheet is pointed at the device it shows", () => {
+    const { result } = renderAt("/storage?device=drives.vdb&expanded=content");
+
+    expect(result.current.sheet.addressOf({ collection: "drives", index: 0 })).toEqual({
+      search: "?device=drives.vdb&expanded=content",
     });
   });
 });

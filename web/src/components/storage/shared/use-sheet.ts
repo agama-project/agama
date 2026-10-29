@@ -23,7 +23,7 @@
 import { useSearchParams } from "react-router";
 import { SEARCH_PARAM_UPDATE } from "~/hooks/use-search-param-state";
 import { useConfigModel } from "~/hooks/model/storage/config-model";
-import { SHEET } from "~/components/storage/ui-state-params";
+import { CURRENT_CONTENT, EXPANDED, SHEET } from "~/components/storage/ui-state-params";
 import type { To } from "react-router";
 import type { ConfigModel } from "~/model/storage/config-model";
 
@@ -103,6 +103,33 @@ function fromParam(config: ConfigModel.Config | null, value: string | null): She
 }
 
 /**
+ * The address with the sheet showing `param`, or shut where `param` is nothing.
+ *
+ * What the sheet keeps of its own in the address, such as an open list,
+ * belongs to the device it was showing: it goes when the sheet closes or moves
+ * to another device, so every device starts as it first shows. It stays when
+ * the sheet is pointed again at the device it already shows.
+ */
+function withSheet(params: URLSearchParams, param: string | undefined): URLSearchParams {
+  if (param && params.get(SHEET) === param) return params;
+
+  const tokens = (params.get(EXPANDED)?.split(",") ?? []).filter((t) => t !== CURRENT_CONTENT);
+  if (tokens.length) {
+    params.set(EXPANDED, tokens.join(","));
+  } else {
+    params.delete(EXPANDED);
+  }
+
+  if (param) {
+    params.set(SHEET, param);
+  } else {
+    params.delete(SHEET);
+  }
+
+  return params;
+}
+
+/**
  * The query of an address, with a renamed volume group's panel following it.
  *
  * Renaming a group changes the name its panel is addressed by. Whoever renames
@@ -159,25 +186,20 @@ function useSheet(): {
   const value = params.get(SHEET);
   const subject = fromParam(config, value);
 
+  /* An entry the configuration cannot name leaves the address as it is. */
   const addressOf = (subject: SheetEntry): To => {
-    const next = new URLSearchParams(params);
     const param = toParam(config, subject);
-    if (param) next.set(SHEET, param);
-    return { search: `?${next}` };
+    const next = new URLSearchParams(params);
+    return { search: `?${param ? withSheet(next, param) : next}` };
   };
 
   const openSheet = (subject: SheetEntry) =>
     setParams((next) => {
       const param = toParam(config, subject);
-      if (param) next.set(SHEET, param);
-      return next;
+      return param ? withSheet(next, param) : next;
     }, SEARCH_PARAM_UPDATE);
 
-  const close = () =>
-    setParams((next) => {
-      next.delete(SHEET);
-      return next;
-    }, SEARCH_PARAM_UPDATE);
+  const close = () => setParams((next) => withSheet(next, undefined), SEARCH_PARAM_UPDATE);
 
   return { subject, addressOf, openSheet, isStale: value !== null && !subject, close };
 }

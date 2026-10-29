@@ -22,7 +22,8 @@
 
 import React from "react";
 import { screen, within } from "@testing-library/react";
-import { installerRender } from "~/test-utils";
+import { useSearchParams } from "react-router";
+import { installerRender, mockRoutes } from "~/test-utils";
 import type { Storage as System } from "~/model/system";
 import type { ConfigModel, Partitionable } from "~/model/storage/config-model";
 import type { Entry } from "~/components/storage/device-sheet/entry";
@@ -80,6 +81,12 @@ const entry = (
 
 const subject = { collection: "drives" as const, index: 0 };
 
+/** What the address says, for checking what the section keeps in it. */
+const Address = () => {
+  const [params] = useSearchParams();
+  return <output>{params.toString()}</output>;
+};
+
 /** The menu giving every partition the same action. */
 const options = () => screen.queryByRole("button", { name: "Actions for all partitions" });
 
@@ -120,6 +127,28 @@ describe("CurrentContentSection", () => {
     installerRender(<CurrentContentSection entry={entry("delete")} subject={subject} />);
 
     expect(document.getElementById(options().getAttribute("aria-describedby"))).toBe(summary());
+  });
+
+  it("keeps the open list in the address", async () => {
+    const { user } = installerRender(
+      <>
+        <CurrentContentSection entry={entry("delete")} subject={subject} />
+        <Address />
+      </>,
+    );
+
+    await user.click(screen.getByRole("button", { name: "Show partition details" }));
+    expect(screen.getByRole("status").textContent).toBe("expanded=content");
+
+    await user.click(screen.getByRole("button", { name: "Hide partition details" }));
+    expect(screen.getByRole("status").textContent).toBe("");
+  });
+
+  it("shows the list open where the address says so", () => {
+    mockRoutes("/storage?device=drives.vdd&expanded=content");
+    installerRender(<CurrentContentSection entry={entry("delete")} subject={subject} />);
+
+    screen.getByRole("table", { name: "Current content" });
   });
 
   it("keeps the partitions out of sight until asked for", async () => {
@@ -184,25 +213,10 @@ describe("CurrentContentSection", () => {
   describe("when the partitions are given different decisions", () => {
     const mixed = entry("custom", [{ name: "/dev/vdd1", delete: true }]);
 
-    it("shows them from the start, since they are decided one by one", () => {
+    it("keeps them out of sight until asked for, as on any other device", () => {
       installerRender(<CurrentContentSection entry={mixed} subject={subject} />);
 
-      screen.getByRole("table", { name: "Current content" });
-      expect(screen.getByRole("button", { name: "Hide partition details" })).toHaveAttribute(
-        "aria-expanded",
-        "true",
-      );
-    });
-
-    it("decides again whether to show them for every entry shown", () => {
-      const { rerender } = installerRender(
-        <CurrentContentSection entry={entry("delete")} subject={subject} />,
-      );
       expect(screen.queryByRole("table")).toBeNull();
-
-      rerender(<CurrentContentSection entry={mixed} subject={{ ...subject, index: 1 }} />);
-
-      screen.getByRole("table", { name: "Current content" });
     });
 
     it("says what becomes of them", () => {

@@ -49,6 +49,13 @@ const SETTINGS_TAB = "settingsTab";
 /** Storage page: what the sheet beside the page is showing. */
 const SHEET = "device";
 
+/**
+ * Storage page: the token of {@link EXPANDED} saying the sheet's list of what
+ * its device holds today is open. Belongs to the sheet: it goes whenever the
+ * sheet closes or moves to another device.
+ */
+const CURRENT_CONTENT = "content";
+
 /** DASD page: sorted column and direction, as in `sortBy=channel:desc`. */
 const DASD_SORT = "sortBy";
 
@@ -85,6 +92,7 @@ export {
   EXPANDED,
   SETTINGS_TAB,
   SHEET,
+  CURRENT_CONTENT,
   DASD_SORT,
   ZFCP_SORT,
   ISCSI_SORT,
