@@ -1,0 +1,24 @@
+{
+  "title": "Bond with ports given by name",
+  "description": "The ports do not exist yet, so an Ethernet connection is created for each name.",
+  "steps": [
+    {
+      "profile": "1-bond.json",
+      "description": "Bond with ports: [eth0, eth1]",
+      "expect": {
+        "connections": {
+          "bond0": {
+            "controller": null,
+            "method4": "auto"
+          },
+          "eth0": {
+            "controller": "bond0"
+          },
+          "eth1": {
+            "controller": "bond0"
+          }
+        }
+      }
+    }
+  ]
+}

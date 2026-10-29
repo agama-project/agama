@@ -230,17 +230,20 @@ dependencies = [
 name = "agama-network"
 version = "0.1.0"
 dependencies = [
+ "agama-lib",
  "agama-utils",
  "anyhow",
  "async-trait",
  "cidr",
  "futures-util",
  "gettext-rs",
+ "jsonschema",
  "macaddr",
  "pin-project",
  "schemars 1.2.1",
  "semver",
  "serde",
+ "serde_json",
  "serde_with",
  "thiserror 2.0.18",
  "tokio",
@@ -296,6 +299,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "agama-schema-transformations"
+version = "0.1.0"
+dependencies = [
+ "schemars 1.2.1",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
 name = "agama-security"
 version = "0.1.0"
 dependencies = [
@@ -316,6 +328,7 @@ dependencies = [
  "agama-l10n",
  "agama-lib",
  "agama-manager",
+ "agama-schema-transformations",
  "agama-transfer",
  "agama-utils",
  "aide",

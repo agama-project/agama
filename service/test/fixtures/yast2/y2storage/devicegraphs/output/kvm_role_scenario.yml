@@ -1,0 +1,30 @@
+---
+- disk:
+    name: "/dev/sda"
+    size: 26 GiB
+    partition_table: gpt
+    partitions:
+    - partition:
+        size: 16212 MiB (15.83 GiB)
+        name: "/dev/sda1"
+        id: linux
+        file_system: xfs
+        mount_point: "/var/lib/libvirt"
+    - partition:
+        size: 2 GiB
+        name: "/dev/sda2"
+        id: swap
+        file_system: swap
+        mount_point: swap
+    - partition:
+        size: 2 MiB
+        name: "/dev/sda3"
+        id: bios_boot
+    - partition:
+        size: unlimited
+        name: "/dev/sda4"
+        id: linux
+        file_system: xfs
+        mount_point: "/"
+    - free:
+        size: 16.5 KiB

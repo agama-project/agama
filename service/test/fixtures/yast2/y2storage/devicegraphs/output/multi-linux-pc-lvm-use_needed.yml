@@ -1,0 +1,72 @@
+---
+- disk:
+    size: 1.00 TiB
+    name: "/dev/sda"
+    partition_table: msdos
+    partitions:
+
+    - partition:
+        size: 4.00 GiB
+        name: "/dev/sda1"
+        type: primary
+        id: swap
+        file_system: swap
+        label: swap
+
+    - partition:
+        size: 60.00 GiB
+        name: "/dev/sda2"
+        type: primary
+        id: linux
+        file_system: btrfs
+        label: suse_root
+
+    - partition:
+        size: 60.00 GiB
+        name: "/dev/sda3"
+        type: primary
+        id: linux
+        file_system: ext4
+        label: ubuntu_root
+
+    - partition:
+        size: unlimited
+        name: "/dev/sda4"
+        type: extended
+
+    - partition:
+        size: 300.00 GiB
+        name: "/dev/sda5"
+        type: logical
+        id: linux
+        file_system: xfs
+        label: shared_home
+
+    - partition:
+        size: 43009 MiB
+        name: "/dev/sda6"
+        type: logical
+        id: lvm
+
+    - free:
+        size: unlimited
+
+- lvm_vg:
+    vg_name: system
+    lvm_lvs:
+
+    - lvm_lv:
+        lv_name: root
+        size: 40 GiB
+        file_system: btrfs
+        mount_point: "/"
+
+    - lvm_lv:
+        lv_name: swap
+        size: 2 GiB
+        file_system: swap
+        mount_point: swap
+
+    lvm_pvs:
+    - lvm_pv:
+        blk_device: "/dev/sda6"

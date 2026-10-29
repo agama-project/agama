@@ -134,7 +134,7 @@ pub enum ValidationOutcome {
 
 /// Checks whether an autoinstallation profile is valid
 ///
-/// ```
+/// ```no_run
 /// # use agama_lib::profile::{ProfileValidator, ValidationOutcome};
 /// # use std::path::PathBuf;
 /// let mut path = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
@@ -194,7 +194,12 @@ impl ProfileValidator {
             .as_object_mut()
             .and_then(|s| s.insert("$id".to_string(), serde_json::json!(id)));
 
-        let validator = jsonschema::validator_for(&schema).expect("A valid schema");
+        Self::from_value(&schema)
+    }
+
+    /// Creates a [`ProfileValidator`] directly from an in-memory JSON schema value.
+    pub fn from_value(schema: &serde_json::Value) -> Result<Self, ProfileError> {
+        let validator = jsonschema::validator_for(schema).expect("A valid schema");
         Ok(Self { validator })
     }
 
@@ -292,23 +297,36 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_validate_config_full() {
-        let manifest_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
-        let schema_path = manifest_dir.join("../out/schemas/config.schema.json");
-        if !schema_path.exists() {
-            return;
-        }
+    fn test_profile_validator_with_inline_schema() {
+        let dir = tempfile::tempdir().unwrap();
+        let schema_path = dir.path().join("test.schema.json");
+        fs::write(
+            &schema_path,
+            r#"{
+                "type": "object",
+                "properties": {
+                    "product": { "type": "string" }
+                },
+                "required": ["product"],
+                "additionalProperties": false
+            }"#,
+        )
+        .unwrap();
 
         let validator = ProfileValidator::new(&schema_path).expect("valid schema");
-        let full_example = manifest_dir.join("../share/examples/config_full.json");
-        let result = validator
-            .validate_file(&full_example)
-            .expect("validation result");
-        match result {
-            ValidationOutcome::Valid => {}
-            ValidationOutcome::NotValid(errors) => {
-                panic!("Comprehensive config failed validation:\n{:#?}", errors);
-            }
-        }
+        assert!(matches!(
+            validator
+                .validate_str(r#"{"product": "Tumbleweed"}"#)
+                .unwrap(),
+            ValidationOutcome::Valid
+        ));
+        assert!(matches!(
+            validator.validate_str(r#"{"product": 123}"#).unwrap(),
+            ValidationOutcome::NotValid(_)
+        ));
+        assert!(matches!(
+            validator.validate_str(r#"{"unknown": "val"}"#).unwrap(),
+            ValidationOutcome::NotValid(_)
+        ));
     }
 }

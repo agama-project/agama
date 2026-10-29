@@ -1,0 +1,18 @@
+{
+  "title": "A port named after a connection being removed",
+  "description": "Rejected by the network service: the profile both removes eth0 and wants it as a port. Nothing is created.",
+  "steps": [
+    {
+      "profile": "1-removed-port.json",
+      "description": "eth0 with status: removed, and listed by name in bond0",
+      "expect": {
+        "error": "RemovedPort",
+        "connections": {
+          "bond0": {
+            "removed": true
+          }
+        }
+      }
+    }
+  ]
+}

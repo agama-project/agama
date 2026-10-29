@@ -1,0 +1,17 @@
+/**
+ * File:
+ *   cfg_yast2.scr
+ * Summary:
+ *   SCR Agent for reading/writing /etc/sysconfig/yast2
+ *   using the sysconfig-agent
+ *
+ * $Id: cfg_displaymanager.scr 12455 2003-10-22 12:24:49Z visnov $
+ *
+ * Read/Sets the values defined in <tt>/etc/sysconfig/yast2</tt>
+ * in an easy manner.
+ */
+.sysconfig.yast2
+
+`ag_ini(
+  `SysConfigFile("/etc/sysconfig/yast2")
+)

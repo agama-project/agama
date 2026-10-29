@@ -42,10 +42,18 @@ pub enum Error {
 /// Profile definition for automated installation.
 #[skip_serializing_none]
 #[derive(Clone, Debug, Default, Deserialize, Serialize, Merge, JsonSchema)]
-#[serde(rename_all = "camelCase")]
-#[schemars(deny_unknown_fields, title = "Profile")]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+#[schemars(title = "Profile")]
 #[merge(strategy = merge::option::recurse)]
 pub struct Config {
+    /// Schema URL (ignored by installer, used by editors for validation and autocompletion).
+    #[serde(rename = "$schema", default, skip_serializing_if = "Option::is_none")]
+    #[schemars(
+        title = "URL of the JSON validation schema",
+        description = "The schema location is ignored by the installer, it always uses the built-in schema, but it can be useful for automatic validation and code completion in some editors."
+    )]
+    #[merge(strategy = merge::option::overwrite_none)]
+    pub schema: Option<String>,
     /// Bootloader configuration.
     pub bootloader: Option<bootloader::Config>,
     /// Hostname configuration.

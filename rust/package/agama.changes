@@ -1,4 +1,38 @@
 -------------------------------------------------------------------
+Tue Oct 27 12:08:59 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Allow nesting the ports of bonds and bridges in a new
+  "portConnections" list, so stacked setups can be read and
+  modified (gh#agama-project/agama#3995).
+- Deprecate the "ports" list of names. It keeps working, but it is
+  ignored when "portConnections" is given.
+- Allow port settings only on the ports nested in their
+  controller, and no IP settings on them.
+- Accept any kind of connection in "portConnections", as
+  NetworkManager does, but the port settings only on the ports
+  of a bridge.
+- Keep the settings not modelled by the API when updating a
+  connection.
+- Fix reading the path cost of bridge ports from NetworkManager.
+- Accept "link-local" as the IP method, as documented, which also
+  fixes the AutoYaST "autoip" boot protocol. "linkLocal" is still
+  accepted.
+- Report the state of the connections only in the system
+  information, and not for the ports nested in their controller.
+
+-------------------------------------------------------------------
+Tue Oct 27 10:26:54 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Improve JSON Schema and OpenAPI generation:
+  - Enforce strict validation in configuration schemas by adding
+    `#[serde(deny_unknown_fields)]` across configuration structs and
+    test that each entry defines `additionalProperties`.
+  - Simplify enum schemas to scalar types with Markdown variant
+    descriptions and vendor extension maps.
+  - Eliminate nullable `anyOf` wraps for `Option<T>` fields.
+    (gh#agama-project/agama#4129).
+
+-------------------------------------------------------------------
 Sun Oct 25 16:25:30 UTC 2026 - Martin Pluskal <martin@pluskal.org>
 
 - Report the checksums correctly when asking the user to accept a file
