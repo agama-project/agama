@@ -46,14 +46,12 @@ export type MoveToOtherDeviceProps = {
  * of nothing.
  *
  * The mark travels with the offer, so the same act is recognizable wherever it
- * is made. It is laid out beside the words rather than through the button's own
- * icon slot, which sets it smaller and on the text's baseline: next to the menu
- * that lays its mark out the first way, the two read as a pair of different
- * things rather than as two offers of the same kind.
+ * is made. It is laid out beside the words, at their size, rather than through
+ * the button's own icon slot, which sets it smaller.
  *
- * A plain button, as "Add more devices" is: it opens a dialog rather than
- * leading to a form, so it is not drawn as the links beside it are, and it
- * does not compete with them as an outlined button would.
+ * A plain button: it opens a dialog rather than leading to a form, so it is
+ * not drawn as the links beside it are, and it does not compete with them as
+ * an outlined button would.
  *
  * Always open. Whether the move can be made is settled in the dialog it opens,
  * which is where the reader sees what there is to move to; a button that knows

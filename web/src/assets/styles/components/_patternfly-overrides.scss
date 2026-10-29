@@ -200,6 +200,14 @@
   --pf-v6-c-button--m-link--m-inline__icon--Color: var(--pf-t--global--text--color--link--default);
 }
 
+// Agama's icons placed in PatternFly's icon slots sit where PatternFly's own
+// icons do. Those slots are laid out for PatternFly's icons, which are moved
+// down by an eighth of their size; without that, Agama's icons sat higher than
+// the words beside them.
+:is(.pf-v6-c-button__icon, .pf-v6-c-menu-toggle__icon) > svg[data-icon-name] {
+  vertical-align: -0.125em;
+}
+
 label.pf-m-disabled + .pf-v6-c-check__description {
   color: var(--pf-v6-c-check__label--disabled--Color);
 }

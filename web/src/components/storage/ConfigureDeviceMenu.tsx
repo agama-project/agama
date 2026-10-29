@@ -23,7 +23,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router";
 import MenuButton, { MenuButtonItem } from "~/components/core/MenuButton";
-import { Divider, Flex, MenuItemProps, MenuPopperProps } from "@patternfly/react-core";
+import { Divider, MenuItemProps, MenuPopperProps } from "@patternfly/react-core";
 import { useAvailableDevices } from "~/hooks/model/system/storage";
 import {
   useConfigModel,
@@ -184,7 +184,9 @@ export default function ConfigureDeviceMenu({
           "aria-label": _("Configure device menu"),
           popperProps,
         }}
-        toggleProps={{ variant: "plain" }}
+        /* Bordered, as any control that opens something on the page is, so it
+           is not taken for a link to another page. */
+        toggleProps={{ variant: "default", icon: <Icon name="add_circle" /> }}
         items={[
           <AddDeviceMenuItem
             key="select-disk-option"
@@ -204,9 +206,7 @@ export default function ConfigureDeviceMenu({
           </MenuButtonItem>,
         ]}
       >
-        <Flex alignItems={{ default: "alignItemsCenter" }} gap={{ default: "gapSm" }}>
-          <Icon name="add_circle" /> {label}
-        </Flex>
+        {label}
       </MenuButton>
       {deviceSelectorOpen && (
         <DeviceSelectorModal
