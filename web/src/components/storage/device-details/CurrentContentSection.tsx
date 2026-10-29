@@ -595,7 +595,7 @@ export default function CurrentContentSection({
   }, [summary, announce]);
 
   return (
-    <Flex direction={{ default: "column" }} gap={{ default: "gapSm" }}>
+    <Flex direction={{ default: "column" }} gap={{ default: "gapXs" }}>
       {/* Only where there is something to sum up. */}
       {rows.some((row) => !isFreeSpace(row)) && (
         <>
@@ -636,7 +636,6 @@ export default function CurrentContentSection({
           <FlexItem>
             <Button
               variant="link"
-              isInline
               className="agm-details-disclosure"
               icon={
                 <Icon
