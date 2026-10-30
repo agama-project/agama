@@ -14,13 +14,14 @@
   position: relative;
 
   .agm-main-content-overlay {
-    position: absolute;
-    backdrop-filter: blur(2px);
-    background-color: color-mix(
+    --pf-v6-c-backdrop--BackgroundColor: color-mix(
       in srgb,
       var(--pf-t--global--background--color--backdrop--default) 80%,
       transparent
     );
+
+    position: absolute;
+    backdrop-filter: blur(2px);
   }
 }
 

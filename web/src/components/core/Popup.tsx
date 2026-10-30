@@ -310,7 +310,6 @@ const Popup = ({
     <Modal
       {...props}
       width={props.variant ? undefined : "auto"}
-      hasAnimations={false}
       isOpen={isOpen}
       onClose={onClose}
       aria-labelledby={title ? titleId : undefined}
