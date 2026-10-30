@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Oct 30 08:34:43 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Do not fail to read the hardware information when lshw reports
+  unescaped control characters in some strings (bsc#1271190).
+
+-------------------------------------------------------------------
 Mon Oct 26 17:54:08 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
 
 - Allow nesting the ports of bonds and bridges in a new
