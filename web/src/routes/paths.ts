@@ -56,6 +56,7 @@ const ROOT = {
   installationShutdown: "/installation/shutdown",
   logs: "/api/private/download_logs",
   config: "/api/config",
+  configSchema: "/schemas/config.schema.json",
 };
 
 const USER = {
