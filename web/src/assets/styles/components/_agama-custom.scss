@@ -498,7 +498,15 @@ nav.agm-breadcrumb > ol > li > a {
 // A menu toggle inside a line of text, right after its last word. Its middle
 // sits at the middle of the lowercase letters, where the words are, rather
 // than at the middle of the line, and a small gap keeps it off the last word.
-.agm-inline-menu-toggle {
+// Its mark is drawn halfway between the subtle and the disabled colours, so it
+// does not outweigh the words while keeping the contrast a control needs.
+.pf-v6-c-menu-toggle.agm-inline-menu-toggle {
+  --pf-v6-c-menu-toggle--m-plain--Color: color-mix(
+    in srgb,
+    var(--pf-t--global--icon--color--subtle),
+    var(--pf-t--global--icon--color--disabled)
+  );
+
   margin-inline-start: var(--pf-t--global--spacer--xs);
   vertical-align: middle;
 }

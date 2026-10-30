@@ -96,12 +96,12 @@ import SearchOff from "@icons/search_off.svg?component";
 import SelectWindow from "@icons/select_window.svg?component";
 import SettingsEthernet from "@icons/settings_ethernet.svg?component";
 import Translate from "@icons/translate.svg?component";
-import Tune from "@icons/tune.svg?component";
 import UnfoldLess from "@icons/unfold_less.svg?component";
 import UnfoldMore from "@icons/unfold_more.svg?component";
 import Warning from "@icons/warning.svg?component";
 import Visibility from "@icons/visibility.svg?component";
 import VisibilityOff from "@icons/visibility_off.svg?component";
+import WandStars from "@icons/wand_stars.svg?component";
 import Wifi from "@icons/wifi.svg?component";
 import WifiOff from "@icons/wifi_off.svg?component";
 import MoreTime from "@icons/more_time.svg?component";
@@ -181,11 +181,11 @@ const icons = {
   select_window: SelectWindow,
   settings_ethernet: SettingsEthernet,
   translate: Translate,
-  tune: Tune,
   unfold_less: UnfoldLess,
   unfold_more: UnfoldMore,
   visibility: Visibility,
   visibility_off: VisibilityOff,
+  wand_stars: WandStars,
   warning: Warning,
   wifi: Wifi,
   wifi_off: WifiOff,
