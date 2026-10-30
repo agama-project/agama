@@ -72,12 +72,23 @@
 //   --agm-t--radio--body--spacing                 extra space between a radio label
 //                                                 and the content below it (see
 //                                                 components/_patternfly-overrides)
+//   --agm-t--page--padding--{block,inline}        room around the content of every
+//                                                 page, above and below it and at
+//                                                 its sides (see
+//                                                 components/_patternfly-overrides)
+//   --agm-t--side-panel--padding--{block,inline}
+//                                                 room inside the panel a page opens
+//                                                 beside its content, above and below
+//                                                 it and at its sides (see
+//                                                 components/_agama-custom)
 //
 // Typography roles (convenience; not needed to reskin, override only with strong
 // reasons):
 //   --agm-t--font--family--{body,heading,mono}    font families
 //   --agm-t--font--weight--{body,heading,bold}    font weights
-//   --agm-t--font--size--100 .. --800             font size scale (--200 is body)
+//   --agm-t--font--size--50 .. --800              font size scale (--200 is body;
+//                                                 --50 is below PatternFly's scale,
+//                                                 used as --agm-t--font--size--xxs)
 //   --agm-t--icon--size--100 .. --800             icon size scale (Agama's own
 //                                                 icons and PatternFly's alike)
 //
@@ -141,6 +152,11 @@
   --pf-t--global--font--size--600: var(--agm-t--font--size--600, 1.75rem);
   --pf-t--global--font--size--700: var(--agm-t--font--size--700, 2rem);
   --pf-t--global--font--size--800: var(--agm-t--font--size--800, 2.25rem);
+  // One step below the scale, for asides that must not compete with the text
+  // they annotate, such as the notes under a table cell. PatternFly has no step
+  // under --100, so this one is Agama's own: --50 is the override hook, like the
+  // steps above, and --xxs is the name to use, as PatternFly names --100 "xs".
+  --agm-t--font--size--xxs: var(--agm-t--font--size--50, 0.75rem);
   // Some known environments run Agama on 1024x768 install screens, which handle
   // the "lg" layout fine; lower the lg breakpoint to 64rem (1024px) so they use
   // it instead of dropping to the narrower layout.

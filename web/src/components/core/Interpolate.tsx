@@ -124,6 +124,20 @@ export type InterpolateProps = {
  *   )}
  * </Interpolate>
  */
+/**
+ * The text of a sentence with `[marker]` placeholders, as it reads once
+ * rendered: each marker's text kept, its brackets gone. For where the sentence
+ * is needed as plain text too, such as for an announcement, so the two never
+ * read the marks differently.
+ *
+ * @example
+ * markerText(_("[3 partitions]: all will be deleted."));
+ * // "3 partitions: all will be deleted."
+ */
+export function markerText(sentence: string): string {
+  return sentence.replace(MARKER_PLACEHOLDER, "$1");
+}
+
 export default function Interpolate({ sentence, children }: InterpolateProps) {
   const renderers = Array.isArray(children) ? children : [children];
 

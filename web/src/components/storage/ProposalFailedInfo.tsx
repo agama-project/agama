@@ -22,10 +22,11 @@
 
 import React from "react";
 import { Content } from "@patternfly/react-core";
-import StorageAlert from "~/components/storage/shared/StorageAlert";
+import AlertWithDetailsPopup from "~/components/core/AlertWithDetailsPopup";
 import { useConfigModel } from "~/hooks/model/storage/config-model";
 import * as partitionUtils from "~/components/storage/utils/partition";
 import { _, formatList } from "~/i18n";
+import type { TranslatedString } from "~/i18n";
 import { sprintf } from "sprintf-js";
 
 const Description = () => {
@@ -69,14 +70,39 @@ const Description = () => {
   );
 };
 
+/** The one line saying that no layout could be worked out. */
+function proposalFailedTitle(): TranslatedString {
+  // TRANSLATORS: reported at the top of the storage page when the installer
+  // cannot work out how to lay out the disks for the new system.
+  return _("No storage layout can be calculated with the current settings");
+}
+
 /**
  * Displays information to help users understand why a storage proposal
  * could not be generated with the current configuration.
+ *
+ * The line says only what the problem is. What does not fit, and what to do
+ * about it, is one action away.
  */
 export default function ProposalFailedInfo() {
   return (
-    <StorageAlert variant="warning" title={_("Failed to calculate a storage layout")}>
+    <AlertWithDetailsPopup
+      variant="warning"
+      title={proposalFailedTitle()}
+      // TRANSLATORS: opens a popup explaining why no storage layout can be
+      // calculated.
+      actionLabel={_("Show more")}
+      // TRANSLATORS: the full name of the "Show more" action, read by screen
+      // readers. It must start with the same words as the translation of "Show
+      // more", so that people using speech input can say what they see.
+      actionAriaLabel={_("Show more about the storage layout")}
+      // TRANSLATORS: title of the popup explaining why no storage layout can be
+      // calculated.
+      popupTitle={_("Storage layout not calculated")}
+    >
       <Description />
-    </StorageAlert>
+    </AlertWithDetailsPopup>
   );
 }
+
+export { proposalFailedTitle };

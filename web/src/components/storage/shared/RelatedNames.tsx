@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import SheetOpener from "~/components/storage/shared/SheetOpener";
+import DetailsOpener from "~/components/storage/shared/DetailsOpener";
 import { formatListToParts } from "~/i18n";
 import type { Related } from "~/components/storage/shared/users";
 
@@ -57,9 +57,9 @@ export default function RelatedNames({ items }: RelatedNamesProps): React.ReactN
         if (!item.subject) return <React.Fragment key={index}>{item.name}</React.Fragment>;
 
         return (
-          <SheetOpener key={index} subject={item.subject}>
+          <DetailsOpener key={index} subject={item.subject}>
             {item.name}
-          </SheetOpener>
+          </DetailsOpener>
         );
       })}
     </>

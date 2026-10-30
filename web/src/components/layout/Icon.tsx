@@ -74,6 +74,7 @@ import KeyboardArrowDown from "@icons/keyboard_arrow_down.svg?component";
 import Globe from "@icons/globe.svg?component";
 import HardDrive from "@icons/hard_drive.svg?component";
 import Info from "@icons/info.svg?component";
+import Inventory2 from "@icons/inventory_2.svg?component";
 import Keyboard from "@icons/keyboard.svg?component";
 import Language from "@icons/language.svg?component";
 import ListAlt from "@icons/list_alt.svg?component";
@@ -100,6 +101,7 @@ import UnfoldMore from "@icons/unfold_more.svg?component";
 import Warning from "@icons/warning.svg?component";
 import Visibility from "@icons/visibility.svg?component";
 import VisibilityOff from "@icons/visibility_off.svg?component";
+import WandStars from "@icons/wand_stars.svg?component";
 import Wifi from "@icons/wifi.svg?component";
 import WifiOff from "@icons/wifi_off.svg?component";
 import MoreTime from "@icons/more_time.svg?component";
@@ -155,6 +157,7 @@ const icons = {
   globe: Globe,
   hard_drive: HardDrive,
   info: Info,
+  inventory_2: Inventory2,
   keyboard: Keyboard,
   keyboard_arrow_down: KeyboardArrowDown,
   language: Language,
@@ -182,6 +185,7 @@ const icons = {
   unfold_more: UnfoldMore,
   visibility: Visibility,
   visibility_off: VisibilityOff,
+  wand_stars: WandStars,
   warning: Warning,
   wifi: Wifi,
   wifi_off: WifiOff,

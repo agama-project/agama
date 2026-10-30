@@ -65,7 +65,7 @@ describe("when the configuration is one disk", () => {
   });
 
   describe("and it starts the machine too", () => {
-    it("says so, rather than leaving it to the sheet", () => {
+    it("says so, rather than leaving it to the panel", () => {
       mockConfig.mockReturnValue(
         config({
           drives: [{ name: "/dev/vdd" }],

@@ -32,6 +32,7 @@ import {
   TdProps,
   TreeRowWrapper,
 } from "@patternfly/react-table";
+import { css } from "@patternfly/react-styles";
 import { TranslatedString } from "~/i18n";
 
 export type TreeTableColumn = {
@@ -47,6 +48,15 @@ type TreeTableProps = {
   /* eslint-disable @typescript-eslint/no-explicit-any */
   itemChildren?: (item: any) => any[];
   rowClassNames?: (item: object) => string;
+  /**
+   * Whether the cells of every row are centered vertically in it, rather than
+   * placed at its top.
+   *
+   * Useful when some cells hold more than one line, such as a value with a note
+   * under it: the single-line cells then sit beside the whole of that cell
+   * instead of beside its first line only. Off by default.
+   */
+  hasVerticallyCenteredRows?: boolean;
 } & Omit<TableProps, "isTreeTable">;
 
 /**
@@ -59,6 +69,8 @@ export default function TreeTable({
   itemChildren = () => [],
   expandedItems = [],
   rowClassNames = () => "",
+  hasVerticallyCenteredRows = false,
+  className,
   ...tableProps
 }: TreeTableProps) {
   const [expanded, setExpanded] = useState(expandedItems);
@@ -128,7 +140,13 @@ export default function TreeTable({
   };
 
   return (
-    <Table variant="compact" {...tableProps} isTreeTable data-type="agama/tree-table">
+    <Table
+      variant="compact"
+      className={css(className, hasVerticallyCenteredRows && "agm-table--vertically-centered-rows")}
+      {...tableProps}
+      isTreeTable
+      data-type="agama/tree-table"
+    >
       <Thead noWrap>
         <Tr>
           {columns.map((c, i) => (

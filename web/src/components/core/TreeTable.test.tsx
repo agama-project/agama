@@ -20,6 +20,38 @@
  * find current contact information at www.suse.com.
  */
 
+import React from "react";
+import { screen } from "@testing-library/react";
+import { plainRender } from "~/test-utils";
+import { _ } from "~/i18n";
+import TreeTable from "./TreeTable";
+
+const columns = () => [{ name: _("Name"), value: (item: { name: string }) => item.name }];
+const items = [{ name: "vda" }];
+
 describe("TreeTable", () => {
   it.todo("add examples for testing core/TreeTable component");
+
+  it("keeps rows' cells at their top by default", () => {
+    plainRender(
+      <TreeTable columns={columns()} items={items} className="custom" aria-label="Devices" />,
+    );
+    const table = screen.getByRole("treegrid", { name: "Devices" });
+    expect(table).toHaveClass("custom");
+    expect(table).not.toHaveClass("agm-table--vertically-centered-rows");
+  });
+
+  it("centers rows' cells vertically when asked to, keeping the given class names", () => {
+    plainRender(
+      <TreeTable
+        columns={columns()}
+        items={items}
+        className="custom"
+        hasVerticallyCenteredRows
+        aria-label="Devices"
+      />,
+    );
+    const table = screen.getByRole("treegrid", { name: "Devices" });
+    expect(table).toHaveClass("custom", "agm-table--vertically-centered-rows");
+  });
 });

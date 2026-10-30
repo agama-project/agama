@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import { screen } from "@testing-library/react";
+import { screen, within } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import type { ConfigModel } from "~/model/storage/config-model";
 import ProposalFailedInfo from "./ProposalFailedInfo";
@@ -149,9 +149,33 @@ jest.mock("~/hooks/model/storage/config-model", () => ({
   useConfigModel: () => mockUseConfigModel(),
 }));
 
+const showMore = () => screen.getByRole("button", { name: "Show more about the storage layout" });
+const popup = () => screen.getByRole("dialog", { name: "Storage layout not calculated" });
+
+/** Renders the alert and opens its popup, where the explanation is. */
+const renderOpen = async () => {
+  const { user } = installerRender(<ProposalFailedInfo />);
+  await user.click(showMore());
+};
+
 describe("ProposalFailedInfo", () => {
   beforeEach(() => {
     mockUseConfigModel.mockReturnValue(mockFullConfigModel);
+  });
+
+  it("says in one line that no layout can be calculated, with a way to learn more", () => {
+    installerRender(<ProposalFailedInfo />);
+
+    screen.getByText("Warning alert:");
+    const line = screen.getByText(/No storage layout can be calculated with the current settings/);
+    expect(line).toContainElement(showMore());
+    expect(showMore()).toHaveTextContent("Show more");
+  });
+
+  it("keeps the explanation out of the page until it is asked for", () => {
+    installerRender(<ProposalFailedInfo />);
+
+    expect(screen.queryByText(/It is not possible/)).not.toBeInTheDocument();
   });
 
   describe("when there are no new partitions or logical volumes", () => {
@@ -159,29 +183,28 @@ describe("ProposalFailedInfo", () => {
       mockUseConfigModel.mockReturnValue(mockCreateNothingConfigModel);
     });
 
-    it("renders a generic warning message", () => {
-      installerRender(<ProposalFailedInfo />);
-      screen.getByText("Warning alert:");
-      screen.getByText("Failed to calculate a storage layout");
-      screen.getByText(/It is not possible to install the system with the current configuration/);
+    it("explains it in general terms", async () => {
+      await renderOpen();
+      within(popup()).getByText(
+        /It is not possible to install the system with the current configuration/,
+      );
     });
   });
 
   describe("when there are new partitions or logical volumes", () => {
     describe("and boot is configured", () => {
-      it("renders a warning mentioning boot partition", () => {
-        installerRender(<ProposalFailedInfo />);
-        screen.getByText("Warning alert:");
-        screen.getByText("Failed to calculate a storage layout");
-        screen.getByText(/It is not possible to allocate space for the boot partition and for/);
+      it("says the boot partition does not fit either", async () => {
+        await renderOpen();
+        within(popup()).getByText(
+          /It is not possible to allocate space for the boot partition and for/,
+        );
       });
 
-      it("displays the mount paths with sizes", () => {
-        installerRender(<ProposalFailedInfo />);
+      it("displays the mount paths with sizes", async () => {
+        await renderOpen();
         // Should show mount paths for new partitions and logical volumes
-        expect(screen.getByText(/\/documents/)).toBeInTheDocument();
-        expect(screen.getByText(/\//)).toBeInTheDocument();
-        expect(screen.getByText(/swap/)).toBeInTheDocument();
+        within(popup()).getByText(/\/documents/);
+        within(popup()).getByText(/swap/);
       });
     });
 
@@ -193,20 +216,18 @@ describe("ProposalFailedInfo", () => {
         });
       });
 
-      it("renders a warning without mentioning boot partition", () => {
-        installerRender(<ProposalFailedInfo />);
-        screen.getByText("Warning alert:");
-        screen.getByText("Failed to calculate a storage layout");
-        screen.getByText(/It is not possible to allocate space for/);
-        expect(screen.queryByText(/boot partition/)).not.toBeInTheDocument();
+      it("does not mention the boot partition", async () => {
+        await renderOpen();
+        within(popup()).getByText(/It is not possible to allocate space for/);
+        expect(within(popup()).queryByText(/boot partition/)).not.toBeInTheDocument();
       });
     });
   });
 
   describe("helper text", () => {
-    it("always shows adjustment guidance", () => {
-      installerRender(<ProposalFailedInfo />);
-      screen.getByText(/Adjust the settings below/);
+    it("always shows adjustment guidance", async () => {
+      await renderOpen();
+      within(popup()).getByText(/Adjust the settings below/);
     });
   });
 });

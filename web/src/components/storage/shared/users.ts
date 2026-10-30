@@ -22,7 +22,7 @@
 
 import { baseName } from "~/components/storage/utils";
 import type { ConfigModel } from "~/model/storage/config-model";
-import type { SheetEntry } from "~/components/storage/shared/use-sheet";
+import type { DetailsSubject } from "~/components/storage/shared/use-device-details";
 import type { Storage } from "~/model/system";
 
 /**
@@ -31,7 +31,7 @@ import type { Storage } from "~/model/system";
  * A RAID can be built from disks the configuration says nothing else about, and
  * those have no panel of their own to lead to.
  */
-export type Related = { name: string; subject?: SheetEntry };
+export type Related = { name: string; subject?: DetailsSubject };
 
 /**
  * The entries built on this device, which is what the device is for.

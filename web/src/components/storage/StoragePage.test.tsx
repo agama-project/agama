@@ -27,7 +27,7 @@
  */
 import React from "react";
 import { screen } from "@testing-library/react";
-import { installerRender, mockRoutes } from "~/test-utils";
+import { installerRender } from "~/test-utils";
 import StoragePage from "~/components/storage/StoragePage";
 import type { Storage } from "~/model/proposal";
 import type { Issue } from "~/model/issue";
@@ -104,11 +104,19 @@ jest.mock("~/hooks/model/system/zfcp", () => ({
   useSystem: () => mockUseZFCPSystem(),
 }));
 
-jest.mock("./ProposalFailedInfo", () => () => <div>proposal failed info</div>);
+jest.mock("./ProposalFailedInfo", () => ({
+  __esModule: true,
+  default: () => <div>proposal failed info</div>,
+  proposalFailedTitle: () => "proposal failed",
+}));
 jest.mock("./UnsupportedModelInfo", () => () => <div>unsupported model info</div>);
-jest.mock("./FixableConfigInfo", () => () => <div>fixable config info</div>);
+jest.mock("./FixableConfigInfo", () => ({
+  __esModule: true,
+  default: () => <div>fixable config info</div>,
+  fixableConfigTitle: () => "fixable config",
+}));
 jest.mock("./ConnectedDevicesMenu", () => () => <div>connected devices menu</div>);
-jest.mock("./storage-page/ResultSheet", () => () => <div>result</div>);
+jest.mock("./storage-page/PlannedChangesPopup", () => () => <div>result</div>);
 
 beforeEach(() => {
   mockUseReset.mockReturnValue(jest.fn());
@@ -375,13 +383,6 @@ describe("if the UI supports the configuration (there is a model)", () => {
     it("keeps the result out of the page until it is asked for", () => {
       installerRender(<StoragePage />);
       expect(screen.queryByText("result")).not.toBeInTheDocument();
-    });
-
-    it("shows the result where the address asks for it", () => {
-      mockRoutes("/storage?sheet=result");
-      installerRender(<StoragePage />);
-
-      screen.getByText("result");
     });
   });
 

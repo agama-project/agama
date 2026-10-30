@@ -70,9 +70,26 @@
   );
 }
 
+// The room around the content of every page, one value per axis so that all
+// pages keep the same frame. The side panel reads these to reach the edges of
+// the box, so it follows whatever they resolve to.
 .pf-v6-c-page__main-section {
-  --pf-v6-c-page__main-section--PaddingInlineStart: var(--pf-t--global--spacer--md);
-  --pf-v6-c-page__main-section--PaddingInlineEnd: var(--pf-t--global--spacer--md);
+  --pf-v6-c-page__main-section--PaddingBlockStart: var(
+    --agm-t--page--padding--block,
+    var(--pf-t--global--spacer--sm)
+  );
+  --pf-v6-c-page__main-section--PaddingBlockEnd: var(
+    --agm-t--page--padding--block,
+    var(--pf-t--global--spacer--sm)
+  );
+  --pf-v6-c-page__main-section--PaddingInlineStart: var(
+    --agm-t--page--padding--inline,
+    var(--pf-t--global--spacer--sm)
+  );
+  --pf-v6-c-page__main-section--PaddingInlineEnd: var(
+    --agm-t--page--padding--inline,
+    var(--pf-t--global--spacer--sm)
+  );
 }
 
 .pf-v6-c-page__main-section.pf-m-sticky-top {
@@ -181,6 +198,14 @@
   // The inline variant (used for headings) carries its own color tokens.
   --pf-v6-c-button--m-link--m-inline--Color: var(--pf-t--global--text--color--link--default);
   --pf-v6-c-button--m-link--m-inline__icon--Color: var(--pf-t--global--text--color--link--default);
+}
+
+// Agama's icons placed in PatternFly's icon slots sit where PatternFly's own
+// icons do. Those slots are laid out for PatternFly's icons, which are moved
+// down by an eighth of their size; without that, Agama's icons sat higher than
+// the words beside them.
+:is(.pf-v6-c-button__icon, .pf-v6-c-menu-toggle__icon) > svg[data-icon-name] {
+  vertical-align: -0.125em;
 }
 
 label.pf-m-disabled + .pf-v6-c-check__description {

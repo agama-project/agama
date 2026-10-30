@@ -22,7 +22,7 @@
 
 import React from "react";
 import { screen, within } from "@testing-library/react";
-import { installerRender, mockParams } from "~/test-utils";
+import { installerRender, mockNavigateFn, mockParams, mockRoutes } from "~/test-utils";
 import type { ConfigModel } from "~/model/storage/config-model";
 import type { Storage } from "~/model/system";
 import { gib } from "./utils";
@@ -367,6 +367,31 @@ describe("LvmPage", () => {
       expect(mockEditVolumeGroup).toHaveBeenCalledWith("fakeRootVg", {
         vgName: "updatedRootVg",
         targetDevices: ["/dev/sda"],
+      });
+    });
+
+    it("returns to the storage page keeping its panel open on the renamed group", async () => {
+      mockRoutes("/storage/volume-groups/edit/0?device=volumeGroups.fakeRootVg");
+      const { user } = installerRender(<LvmPage />);
+      const name = screen.getByRole("textbox", { name: "Name" });
+      await user.clear(name);
+      await user.type(name, "updatedRootVg");
+      await user.click(screen.getByRole("button", { name: "Accept" }));
+
+      expect(mockNavigateFn).toHaveBeenCalledWith({
+        pathname: "/storage",
+        search: "?device=volumeGroups.updatedRootVg",
+      });
+    });
+
+    it("leaves a panel open on another entry as it was", async () => {
+      mockRoutes("/storage/volume-groups/edit/0?device=drives.sda");
+      const { user } = installerRender(<LvmPage />);
+      await user.click(screen.getByRole("button", { name: "Accept" }));
+
+      expect(mockNavigateFn).toHaveBeenCalledWith({
+        pathname: "/storage",
+        search: "?device=drives.sda",
       });
     });
   });

@@ -26,7 +26,7 @@ import { Tab, Tabs, TabTitleText } from "@patternfly/react-core";
 import { plainRender } from "~/test-utils";
 import { useTablistKeyboard } from "~/hooks/use-tablist-keyboard";
 
-/** A strip of three, as the sheet builds one. */
+/** A strip of three, as the panel builds one. */
 function Strip() {
   const [tab, setTab] = React.useState("one");
   const { containerProps, tabProps } = useTablistKeyboard(["one", "two", "three"], tab, setTab);

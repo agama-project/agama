@@ -21,14 +21,19 @@
  */
 
 import React from "react";
-import { Button, Content } from "@patternfly/react-core";
-import StorageAlert from "~/components/storage/shared/StorageAlert";
+import { Content } from "@patternfly/react-core";
+import AlertWithDetailsPopup from "~/components/core/AlertWithDetailsPopup";
+import Popup from "~/components/core/Popup";
 import { _ } from "~/i18n";
 import { useConfigModel } from "~/hooks/model/storage/config-model";
 import { useReset } from "~/hooks/model/config/storage";
 
 /**
  * Info about unsupported model.
+ *
+ * One line saying the settings cannot be changed here. What can be done about
+ * it, including starting over from the default configuration, is in a popup
+ * one action away, as with every other report on the storage page.
  */
 export default function UnsupportedModelInfo(): React.ReactNode {
   const config = useConfigModel();
@@ -37,13 +42,25 @@ export default function UnsupportedModelInfo(): React.ReactNode {
   if (config) return null;
 
   return (
-    <StorageAlert
+    <AlertWithDetailsPopup
       variant="info"
+      // TRANSLATORS: reported at the top of the storage page when the storage
+      // configuration uses features this interface cannot edit.
       title={_("Unable to modify the settings")}
-      actions={
-        <Button variant="link" isInline onClick={() => reset()}>
+      // TRANSLATORS: opens a popup with what can be done about a storage
+      // configuration this interface cannot edit.
+      actionLabel={_("See options")}
+      // TRANSLATORS: the full name of the "See options" action, read by screen
+      // readers. It must start with the same words as the translation of "See
+      // options", so that people using speech input can say what they see.
+      actionAriaLabel={_("See options for the unsupported configuration")}
+      // TRANSLATORS: title of the popup about a storage configuration this
+      // interface cannot edit.
+      popupTitle={_("Unsupported configuration")}
+      popupActions={
+        <Popup.SecondaryAction onClick={() => reset()}>
           {_("Reset to the default configuration")}
-        </Button>
+        </Popup.SecondaryAction>
       }
     >
       <Content component="p">
@@ -56,6 +73,6 @@ export default function UnsupportedModelInfo(): React.ReactNode {
           "You can proceed to install with the current settings or you may want to discard the configuration and start from scratch with a simple one.",
         )}
       </Content>
-    </StorageAlert>
+    </AlertWithDetailsPopup>
   );
 }

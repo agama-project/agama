@@ -51,6 +51,30 @@ function useMenuId() {
   return menuId;
 }
 
+/**
+ * The items of a menu without the dividers that separate nothing: one at
+ * either end, or right after another divider.
+ *
+ * Menus often build their items from conditions, and a divider placed between
+ * two groups is left alone when one of the groups turns out empty. Tidying it
+ * here keeps every menu from having to work out whether its divider has
+ * something on both sides.
+ */
+function withoutStrayDividers(items: React.ReactNode[]): React.ReactNode[] {
+  const isDivider = (item: React.ReactNode) => React.isValidElement(item) && item.type === Divider;
+  const tidy: React.ReactNode[] = [];
+
+  items.forEach((item) => {
+    if (item === null || item === undefined || item === false) return;
+    if (isDivider(item) && (!tidy.length || isDivider(tidy[tidy.length - 1]))) return;
+    tidy.push(item);
+  });
+
+  while (tidy.length && isDivider(tidy[tidy.length - 1])) tidy.pop();
+
+  return tidy;
+}
+
 interface MenuButtonItemProps extends Omit<MenuItemProps, "direction" | "drilldownMenu"> {
   items?: React.ReactNode[];
   keepQuery?: boolean;
@@ -121,7 +145,7 @@ export function MenuButtonItem({
             {upProps.label}
           </MenuItem>
           <Divider />
-          {items}
+          {withoutStrayDividers(items)}
         </DrilldownMenu>
       }
     >
@@ -256,7 +280,7 @@ export default function MenuButton({
               aria-label={menuProps["aria-label"]}
               aria-labelledby={menuProps["aria-labelledby"]}
             >
-              {items}
+              {withoutStrayDividers(items)}
             </MenuList>
           </MenuContent>
         </Menu>

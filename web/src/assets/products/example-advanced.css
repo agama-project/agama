@@ -56,6 +56,7 @@
   --agm-t--font--weight--bold: 700; /* emphasis / bold text */
 
   /* Font size scale: the single source every size derives from; --200 is body. */
+  --agm-t--font--size--50: 0.6875rem;
   --agm-t--font--size--100: 0.8125rem;
   --agm-t--font--size--200: 0.9375rem;
   --agm-t--font--size--300: 1rem;
@@ -115,6 +116,18 @@
      a nested control, ...). Unset, that content follows the label by one step
      of the radio grid gap. */
   --agm-t--radio--body--spacing: 0.5rem;
+
+  /* Room around the content of every page: above and below it, and at its
+     sides. Every page shares them, so they keep one frame across the whole
+     installer. Unset, both are 0.5rem. */
+  --agm-t--page--padding--block: 0.75rem;
+  --agm-t--page--padding--inline: 1rem;
+
+  /* Room inside the panel a page opens beside its content, such as the one
+     for a storage device. Unset, 0.5rem above and below and 1rem at the
+     sides. */
+  --agm-t--side-panel--padding--block: 0.75rem;
+  --agm-t--side-panel--padding--inline: 1.25rem;
 
   /* The terminal surface and the text drawn on it. Theme-independent on
      purpose: a console reads as a console in any theme, and these are the

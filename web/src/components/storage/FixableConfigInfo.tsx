@@ -22,8 +22,10 @@
 
 import React from "react";
 import { List, ListItem } from "@patternfly/react-core";
-import StorageAlert from "~/components/storage/shared/StorageAlert";
-import { n_ } from "~/i18n";
+import { sprintf } from "sprintf-js";
+import AlertWithDetailsPopup from "~/components/core/AlertWithDetailsPopup";
+import { _, n_ } from "~/i18n";
+import type { TranslatedString } from "~/i18n";
 import type { Issue } from "~/model/issue";
 
 const Description = ({ issues }: { issues: Issue[] }) => {
@@ -40,20 +42,39 @@ type FixableConfigInfoProps = {
   issues: Issue[];
 };
 
-/**
- * Information about a wrong but fixable storage configuration
- *
- */
-export default function FixableConfigInfo({ issues }: FixableConfigInfoProps) {
-  const title = n_(
-    "The configuration must be adapted to address the following issue:",
-    "The configuration must be adapted to address the following issues:",
+/** The one line saying how many issues there are to fix. */
+function fixableConfigTitle(issues: Issue[]): TranslatedString {
+  return sprintf(
+    // TRANSLATORS: reported at the top of the storage page when the storage
+    // settings have problems that can be fixed on that page. %d is the number
+    // of problems.
+    n_(
+      "The configuration has %d issue to fix",
+      "The configuration has %d issues to fix",
+      issues.length,
+    ),
     issues.length,
   );
+}
 
+/**
+ * Information about a wrong but fixable storage configuration: how many issues
+ * there are in one line, and the list of them one action away.
+ */
+export default function FixableConfigInfo({ issues }: FixableConfigInfoProps) {
   return (
-    <StorageAlert variant="warning" title={title}>
+    <AlertWithDetailsPopup
+      variant="warning"
+      title={fixableConfigTitle(issues)}
+      // TRANSLATORS: opens a popup listing the problems of the storage settings.
+      actionLabel={_("See issues")}
+      // TRANSLATORS: title of the popup listing the problems of the storage
+      // settings.
+      popupTitle={_("Issues to fix")}
+    >
       <Description issues={issues} />
-    </StorageAlert>
+    </AlertWithDetailsPopup>
   );
 }
+
+export { fixableConfigTitle };

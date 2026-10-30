@@ -22,7 +22,7 @@
 
 import React from "react";
 import { Divider } from "@patternfly/react-core";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import { sprintf } from "sprintf-js";
 import MenuButton, { MenuButtonItem } from "~/components/core/MenuButton";
 import RowMenuToggle from "~/components/storage/entries-table/RowMenuToggle";
@@ -30,18 +30,21 @@ import SearchedVolumeGroupMenu from "~/components/storage/entries-table/Searched
 import { STORAGE as PATHS } from "~/routes/paths";
 import { generateEncodedPath } from "~/utils";
 import { baseName, formattedPath } from "~/components/storage/utils";
-import { useSheet } from "~/components/storage/shared/use-sheet";
+import { useDeviceDetails } from "~/components/storage/shared/use-device-details";
 import { useConfigModel, useDeleteVolumeGroup } from "~/hooks/model/storage/config-model";
 import configModel from "~/model/storage/config-model";
 import { _, n_, formatList } from "~/i18n";
 import type { ConfigModel } from "~/model/storage/config-model";
-import type { SheetEntry } from "~/components/storage/shared/use-sheet";
+import type { DetailsSubject } from "~/components/storage/shared/use-device-details";
 
 export type VolumeGroupMenuProps = {
   /** The group as the configuration describes it. */
   group: ConfigModel.VolumeGroup;
-  /** Where it is written. Given only where opening it is one of the offers. */
-  subject?: SheetEntry;
+  /**
+   * Where it is written. Given on the group's row, where opening its panel and
+   * its edit form are among the offers; left out in the panel itself.
+   */
+  subject?: DetailsSubject;
 };
 
 /**
@@ -56,11 +59,12 @@ export type VolumeGroupMenuProps = {
 export default function VolumeGroupMenu({ group, subject }: VolumeGroupMenuProps): React.ReactNode {
   const config = useConfigModel();
   const navigate = useNavigate();
+  const location = useLocation();
   const deleteVolumeGroup = useDeleteVolumeGroup();
-  const lvs = group.logicalVolumes.map((lv) => formattedPath(lv.mountPath));
+  const lvs = (group.logicalVolumes || []).map((lv) => formattedPath(lv.mountPath));
   const targetDevices = configModel.volumeGroup.filterTargetDevices(config, group);
   const convert = targetDevices.length === 1 && !!lvs.length;
-  const { openSheet } = useSheet();
+  const { openDetails } = useDeviceDetails();
   // TRANSLATORS: names the menu of things that can be done to one LVM volume
   // group of the installation. %s is its name, such as "system".
   const label = sprintf(_("Actions for %s"), group.vgName);
@@ -115,7 +119,7 @@ export default function VolumeGroupMenu({ group, subject }: VolumeGroupMenuProps
                   _("Configure %s LVM volume group"),
                   group.vgName,
                 )}
-                onClick={() => openSheet(subject)}
+                onClick={() => openDetails(subject)}
                 description={_("Configure how the volume group will be used")}
               >
                 {/* TRANSLATORS: opens the panel where one entry of the
@@ -124,17 +128,31 @@ export default function VolumeGroupMenu({ group, subject }: VolumeGroupMenuProps
               </MenuButtonItem>,
             ]
           : []),
-        <MenuButtonItem
-          key="edit"
-          description={_("Change how the volume group will be created")}
-          onClick={() =>
-            navigate(generateEncodedPath(PATHS.volumeGroup.edit, { id: String(subject.index) }))
-          }
-        >
-          {/* TRANSLATORS: offered on an LVM volume group of the installation:
-              change which disks it is built on and what it will hold. */}
-          {_("Edit")}
-        </MenuButtonItem>,
+        /* Only on the row. The group's panel offers the same form as a link
+           under its properties, after what the form changes. */
+        ...(subject
+          ? [
+              <MenuButtonItem
+                key="edit"
+                description={_("Change how the volume group will be created")}
+                onClick={() =>
+                  navigate({
+                    pathname: generateEncodedPath(PATHS.volumeGroup.edit, {
+                      id: String(subject.index),
+                    }),
+                    /* The page keeps its state across the form, open panel
+                       included. */
+                    search: location.search,
+                  })
+                }
+              >
+                {/* TRANSLATORS: offered on an LVM volume group of the
+                    installation: change which disks it is built on and what it
+                    will hold. */}
+                {_("Edit")}
+              </MenuButtonItem>,
+            ]
+          : []),
         <Divider key="before-remove" />,
         <MenuButtonItem
           key="remove"

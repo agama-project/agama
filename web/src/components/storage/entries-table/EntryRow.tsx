@@ -28,9 +28,9 @@ import { css } from "@patternfly/react-styles";
 import tableStyles from "@patternfly/react-styles/css/components/Table/table";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import Text from "~/components/core/Text";
-import { useSheet, SHEET_ID } from "~/components/storage/shared/use-sheet";
+import { useDeviceDetails, DETAILS_PANEL_ID } from "~/components/storage/shared/use-device-details";
 import { columnName } from "~/components/storage/entries-table/columns";
-import type { SheetEntry } from "~/components/storage/shared/use-sheet";
+import type { DetailsSubject } from "~/components/storage/shared/use-device-details";
 import type { TranslatedString } from "~/i18n";
 
 export type EntryRowProps = {
@@ -44,12 +44,17 @@ export type EntryRowProps = {
   marks?: string[];
   /** What the installer will do here, one statement per line. */
   purpose: TranslatedString[];
+  /**
+   * Whether nothing is planned here, so the installation leaves the entry out.
+   * The whole row reads quieter then, as the absence it is.
+   */
+  isIdle?: boolean;
   /** What is going to be done to create this or make space. */
   actions: TranslatedString[];
   /** The menu of what can be done to this entry. */
   menu: React.ReactNode;
-  /** Where this entry is written, which is how the sheet is opened on it. */
-  subject: SheetEntry;
+  /** Where this entry is written, which is how the panel is opened on it. */
+  subject: DetailsSubject;
 };
 
 /**
@@ -66,10 +71,10 @@ export type EntryRowProps = {
  * stays beside the name: it is short, and it is what a reader tells two disks
  * of the same model apart by. What is on
  * the device today is not repeated here: whoever picked the device saw it while
- * choosing, and anyone else finds it in the sheet, which opens from the name.
+ * choosing, and anyone else finds it in the panel, which opens from the name.
  *
  * Clicking anywhere in the row opens the entry, except in the menu cell, which
- * opens nothing so that a click meant for the menu cannot open the sheet. This
+ * opens nothing so that a click meant for the menu cannot open the panel. This
  * goes against the advice of not making a row clickable when it holds a second
  * control (https://adrianroselli.com/2023/11/dont-turn-a-table-into-an-aria-grid-just-for-a-clickable-row.html);
  * the dead menu cell is what makes it acceptable. The cost: text in the row
@@ -96,16 +101,14 @@ export default function EntryRow({
   description,
   marks = [],
   purpose,
+  isIdle = false,
   actions,
   menu,
   subject,
 }: EntryRowProps): React.ReactNode {
-  const { subject: open, addressOf } = useSheet();
+  const { subject: open, addressOf } = useDeviceDetails();
   const isOpen =
-    open !== null &&
-    open !== "result" &&
-    open.collection === subject.collection &&
-    open.index === subject.index;
+    open !== null && open.collection === subject.collection && open.index === subject.index;
 
   return (
     /* No handler of its own: the row opens because the name's link is
@@ -114,7 +117,11 @@ export default function EntryRow({
        than from `isClickable`, which would also make the row itself a focus
        stop with no role and handle keys meant for the menu. */
     <Tr
-      className={css("agm-entries-table__row", tableStyles.modifiers.clickable)}
+      className={css(
+        "agm-entries-table__row",
+        tableStyles.modifiers.clickable,
+        isIdle && "agm-entries-table__row--idle",
+      )}
       isRowSelected={isOpen}
     >
       <Th scope="row" dataLabel={columnName("entry")}>
@@ -126,7 +133,7 @@ export default function EntryRow({
             <Link
               to={addressOf(subject)}
               replace
-              aria-controls={SHEET_ID}
+              aria-controls={DETAILS_PANEL_ID}
               aria-current={isOpen || undefined}
               className="agm-entries-table__opener"
               /* So the list around it can walk its entries with the arrow keys

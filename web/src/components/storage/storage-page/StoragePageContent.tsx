@@ -27,7 +27,7 @@ import EntriesTable from "~/components/storage/entries-table/EntriesTable";
 import TopLine from "~/components/storage/storage-page/TopLine";
 import GlobalActions from "~/components/storage/storage-page/GlobalActions";
 import Result from "~/components/storage/storage-page/Result";
-import StorageSheet from "~/components/storage/storage-page/StorageSheet";
+import DeviceDetailsPanel from "~/components/storage/storage-page/DeviceDetailsPanel";
 import { useConfigModel } from "~/hooks/model/storage/config-model";
 
 /**
@@ -42,16 +42,20 @@ import { useConfigModel } from "~/hooks/model/storage/config-model";
  * that apply to the whole installation, and then a box holding the devices it
  * uses and the controls that apply to all of them.
  *
- * The sheet the page opens is laid over it. The sheet wraps rather than sits
+ * The panel the page opens is laid over it. The panel wraps rather than sits
  * beside, because two of its three placements are about what the page does
  * while it is open.
+ *
+ * What the configuration will do stays above the panel, never under it. A
+ * change made in the panel can turn that report from a plan into a problem or
+ * back, and the reader has to be able to see it and act on it without closing
+ * the panel first.
  */
 export default function StoragePageContent(): React.ReactNode {
   const model = useConfigModel();
 
   const body = (
     <Stack hasGutter>
-      <Result />
       {model && <TopLine />}
       {model && (
         <Page.Section>
@@ -65,5 +69,10 @@ export default function StoragePageContent(): React.ReactNode {
     </Stack>
   );
 
-  return <StorageSheet page={body} />;
+  return (
+    <>
+      <Result />
+      <DeviceDetailsPanel page={body} />
+    </>
+  );
 }

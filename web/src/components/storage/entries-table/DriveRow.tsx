@@ -34,7 +34,7 @@ import TruncatedDeviceName from "~/components/storage/TruncatedDeviceName";
 import configModel from "~/model/storage/config-model";
 import { _, n_, formatList, TranslatedString } from "~/i18n";
 import type { ConfigModel, Partitionable } from "~/model/storage/config-model";
-import type { SheetEntry } from "~/components/storage/shared/use-sheet";
+import type { DetailsSubject } from "~/components/storage/shared/use-device-details";
 
 /**
  * What the installer will do here, as counts and never as names.
@@ -99,8 +99,8 @@ function purposeOf(
 export type DriveRowProps = {
   /** The device the configuration names, as the model spells it. */
   name: string;
-  /** Where it is written, which is how the sheet is opened on it. */
-  subject: SheetEntry;
+  /** Where it is written, which is how the panel is opened on it. */
+  subject: DetailsSubject;
 };
 
 /**
@@ -126,13 +126,22 @@ export default function DriveRow({ name, subject }: DriveRowProps): React.ReactN
 
   const groups = entry ? configModel.partitionable.filterVolumeGroups(config, entry) : [];
   const boots = configModel.boot.hasDevice(config, name);
-  const purpose = entry
-    ? purposeOf(
-        entry,
-        groups.map((group) => group.vgName),
-        boots,
-      )
-    : ([] as TranslatedString[]);
+  const isIdle = !!entry && !configModel.partitionable.isUsed(config, name);
+  let purpose: TranslatedString[] = [];
+  if (isIdle) {
+    /* Added to the installation with nothing planned on it, which the
+       installer leaves out. Said where the other rows say what each device is
+       for, so it is not mistaken for one in use. */
+    // TRANSLATORS: what a disk added to the installation is for, when nothing
+    // is planned on it yet: the installation leaves it out.
+    purpose = [_("Nothing planned yet, will be skipped")];
+  } else if (entry) {
+    purpose = purposeOf(
+      entry,
+      groups.map((group) => group.vgName),
+      boots,
+    );
+  }
 
   const space = driveUtils.contentActionsSummary(entry as ConfigModel.Drive, device);
 
@@ -142,6 +151,7 @@ export default function DriveRow({ name, subject }: DriveRowProps): React.ReactN
       size={size}
       description={description}
       purpose={purpose}
+      isIdle={isIdle}
       actions={space}
       menu={entry && <DriveMenu entry={entry} subject={subject} />}
       subject={subject}

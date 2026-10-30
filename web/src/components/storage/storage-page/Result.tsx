@@ -22,8 +22,8 @@
 
 import React from "react";
 import { Flex } from "@patternfly/react-core";
-import FixableConfigInfo from "~/components/storage/FixableConfigInfo";
-import ProposalFailedInfo from "~/components/storage/ProposalFailedInfo";
+import FixableConfigInfo, { fixableConfigTitle } from "~/components/storage/FixableConfigInfo";
+import ProposalFailedInfo, { proposalFailedTitle } from "~/components/storage/ProposalFailedInfo";
 import UnsupportedModelInfo from "~/components/storage/UnsupportedModelInfo";
 import InvalidConfigMessage from "~/components/storage/storage-page/InvalidConfigMessage";
 import NoDevicesMessage from "~/components/storage/storage-page/NoDevicesMessage";
@@ -32,7 +32,34 @@ import { useAvailableDevices } from "~/hooks/model/system/storage";
 import { useIssues } from "~/hooks/model/issue";
 import { useProposal } from "~/hooks/model/proposal/storage";
 import { useConfigModel } from "~/hooks/model/storage/config-model";
-import Consequences from "~/components/storage/storage-page/Consequences";
+import Consequences, { summaryOf } from "~/components/storage/storage-page/Consequences";
+import { useAnnounce } from "~/context/announcer";
+import type { TranslatedString } from "~/i18n";
+
+/** Whether the alert reports a plan or a problem. */
+type AlertKind = "success" | "problem";
+
+/**
+ * Says the alert to screen readers when it turns from a plan into a problem or
+ * back, but not on the first render, and not when only its numbers change.
+ *
+ * A change made in the panel below can flip the alert, which a sighted reader
+ * sees and a screen reader user working in the panel does not. New counts are
+ * left unsaid: they would talk over the summary the panel itself announces on
+ * every change.
+ */
+function useAnnounceKind(kind: AlertKind | null, title: TranslatedString) {
+  const announce = useAnnounce();
+  const announcedKind = React.useRef(kind);
+
+  React.useEffect(() => {
+    if (announcedKind.current === kind) return;
+
+    const previous = announcedKind.current;
+    announcedKind.current = kind;
+    if (previous && kind) announce(title);
+  }, [kind, title, announce]);
+}
 
 /**
  * What the storage page reports about its configuration.
@@ -60,10 +87,28 @@ export default function Result(): React.ReactNode {
   const unfixableIssues = issues.filter((i) => !fixable.includes(i.class));
   const isModelEditable = model && !unfixableIssues.length;
 
-  if (!availableDevices.length) return <NoDevicesMessage />;
-  if (configIssues.length && !isModelEditable)
-    return <InvalidConfigMessage issues={configIssues} />;
-  if (!configIssues.length && !model && !proposal) return <UnknownConfigMessage />;
+  const isNoDevices = availableDevices.length === 0;
+  const isInvalid = configIssues.length > 0 && !isModelEditable;
+  const isUnknown = configIssues.length === 0 && !model && !proposal;
+  const isReplaced = isNoDevices || isInvalid || isUnknown;
+
+  /* The states that replace the page have no alert to flip, so they are not
+     a kind of alert. */
+  let kind: AlertKind | null = null;
+  if (!isReplaced) kind = proposal ? "success" : "problem";
+
+  let title = proposalFailedTitle();
+  if (proposal) {
+    title = summaryOf(proposal.actions || []);
+  } else if (configIssues.length) {
+    title = fixableConfigTitle(configIssues);
+  }
+
+  useAnnounceKind(kind, title);
+
+  if (isNoDevices) return <NoDevicesMessage />;
+  if (isInvalid) return <InvalidConfigMessage issues={configIssues} />;
+  if (isUnknown) return <UnknownConfigMessage />;
   if (proposal) return <Consequences />;
 
   /* A flex column rather than a stack, which takes the whole height of what
