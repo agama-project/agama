@@ -263,7 +263,6 @@ function statusFor(
   newFilesystem: string | undefined,
   canShrink: boolean,
   recoverable: number | undefined,
-  size: number | undefined,
 ): Status | undefined {
   if (reusedAs) {
     const path = formattedPath(reusedAs);
@@ -330,12 +329,6 @@ function statusFor(
         // is removed, and everything on it lost.
         text: _("Delete"),
         destroys: true,
-        note:
-          size !== undefined
-            ? // TRANSLATORS: read under "Delete": the room deleting the
-              // partition gives. %s is a size, such as "17.99 GiB".
-              sprintf(_("%s will be freed"), deviceSize(size))
-            : undefined,
       };
     default:
       return undefined;
@@ -407,7 +400,6 @@ function PartitionRow({
     newFilesystem,
     canShrink,
     recoverableBy(part),
-    size,
   );
 
   return (

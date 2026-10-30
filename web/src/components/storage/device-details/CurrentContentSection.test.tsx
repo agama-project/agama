@@ -390,12 +390,12 @@ describe("CurrentContentSection", () => {
       within(action).getByText("Up to 17.5 GiB may be freed");
     });
 
-    it("says how much deleting frees", async () => {
+    it("says a deleted partition is deleted, without repeating its size", async () => {
       await renderShown(<CurrentContentSection entry={entry("delete")} subject={subject} />);
 
       const [content, , action] = cellsOf("vdd1");
       within(action).getByText("Delete");
-      within(action).getByText("1 GiB will be freed");
+      expect(within(action).queryByText(/will be freed/)).toBeNull();
       within(content).getByText("Windows 11");
     });
 
