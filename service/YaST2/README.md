@@ -36,7 +36,8 @@ Agama suite, so they were turned into opt-in shared contexts that only the porte
 
 Some YaST pieces are not Ruby code and cannot be vendored. They remain regular RPM dependencies,
 declared in `service/package/gem2rpm.yml`: the native bindings (`libstorage-ng-ruby`,
-`yast2-pkg-bindings`, `yast2-ycp-ui-bindings`) and `yast2-transfer` (native curl/tftp agents).
+`yast2-pkg-bindings`, `yast2-ycp-ui-bindings` or `yast2-ycp-ui-bindings-dummy`) and `yast2-transfer`
+(native curl/tftp agents).
 
 `yast2-packager` must never be declared as a dependency: it requires `yast2-storage-ng` back, which
 would defeat the purpose of vendoring.

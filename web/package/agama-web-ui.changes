@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Thu Oct 29 19:32:20 UTC 2026 - Michal Filka <mfilka@suse.com>
+
+- bsc#1286292 (CVE-2026-111755)
+  - upgrade follow-redirects to at least 1.16.1
+- bsc#1288801 (CVE-2026-116689)
+  - upgrade follow-redirects to at least 1.16.2
+
+-------------------------------------------------------------------
 Thu Oct 29 13:00:00 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
 
 - Allow disabling the IPv4 or the IPv6 configuration of a
