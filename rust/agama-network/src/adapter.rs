@@ -18,11 +18,11 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::{model::StateConfig, Action, NetworkState};
-use agama_utils::{api::event::Event, issue, progress};
+use crate::{model::StateConfig, NetworkState, Service};
+use agama_utils::{actor::Handler, api::event::Event, issue, progress};
 use async_trait::async_trait;
 use thiserror::Error;
-use tokio::sync::{broadcast, mpsc::UnboundedSender};
+use tokio::sync::broadcast;
 
 #[derive(Error, Debug)]
 pub enum NetworkAdapterError {
@@ -68,9 +68,6 @@ impl From<NetworkAdapterError> for zbus::fdo::Error {
 pub trait Watcher {
     /// Listens for network changes and emit actions to update the state.
     ///
-    /// * `actions`: channel to emit the actions.
-    async fn run(
-        self: Box<Self>,
-        actions: UnboundedSender<Action>,
-    ) -> Result<(), NetworkAdapterError>;
+    /// * `handler`: handler to the service to emit the actions.
+    async fn run(self: Box<Self>, handler: Handler<Service>) -> Result<(), NetworkAdapterError>;
 }
