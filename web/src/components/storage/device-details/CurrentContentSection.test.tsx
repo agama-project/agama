@@ -410,8 +410,8 @@ describe("CurrentContentSection", () => {
       );
 
       const [content, , action] = cellsOf("vdd3");
-      within(action).getByText("Format as xfs");
-      within(action).getByText('To mount "/docs"');
+      within(action).getByText('Format for "/docs"');
+      within(action).getByText("As xfs");
       expect(within(content).queryByText("xfs")).toBeNull();
     });
 
@@ -426,8 +426,8 @@ describe("CurrentContentSection", () => {
       );
 
       const [, , action] = cellsOf("vdd3");
-      within(action).getByText("Format");
-      within(action).getByText('To mount "/docs"');
+      within(action).getByText('Format for "/docs"');
+      expect(within(action).queryByText(/^As /)).toBeNull();
     });
 
     it("names the system found on a partition the new system formats", async () => {
