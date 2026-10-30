@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Oct 30 16:23:39 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Fix scripts execution progress reporting (bsc#1285983,
+  gh#agama-project/agama#4116).
+
+-------------------------------------------------------------------
 Fri Oct 30 08:34:43 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Do not fail to read the hardware information when lshw reports
