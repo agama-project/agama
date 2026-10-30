@@ -1,5 +1,5 @@
 -------------------------------------------------------------------
-Wed Oct 28 21:44:33 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+Fri Oct 30 10:17:43 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
 
 - Move the network service to the actor based model used by the
   rest of services (gh#agama-project/agama#3340).
