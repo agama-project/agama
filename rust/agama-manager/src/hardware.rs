@@ -196,6 +196,14 @@ impl HardwareNode {
     ///
     /// * `json`: JSON string reference.
     fn from_json(json: &str) -> Result<HardwareNode, Error> {
+        // lshw does not escape control characters found in some strings, which makes the JSON
+        // invalid. Outside of strings those characters are just whitespace, so replacing them with
+        // spaces is safe.
+        let json: String = json
+            .chars()
+            .map(|c| if c.is_control() { ' ' } else { c })
+            .collect();
+        let json = json.as_str();
         let node = serde_json::from_str(json).map_err(|error| Error::Parse {
             json: json.to_string(),
             source: error,
@@ -382,6 +390,21 @@ mod tests {
         );
         assert_eq!(node.memory, Some(4294967296));
         assert_eq!(node.model, Some("QEMU pc-q35-9.2".to_string()));
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn test_to_hardware_info_control_character() -> Result<(), Box<dyn Error>> {
+        let fixtures = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../test/share");
+        let mut registry = Registry::new_from_file(fixtures.join("lshw-control-character.json"));
+        registry.read().await?;
+        let node = registry.to_hardware_info();
+        assert_eq!(
+            node.cpu,
+            Some("Intel(R) Xeon(R) Platinum 8360Y CPU @ 2.40GHz".to_string())
+        );
+        assert_eq!(node.memory, Some(1099511627776));
+        assert_eq!(node.model, Some("Lenovo 07".to_string()));
         Ok(())
     }
 
