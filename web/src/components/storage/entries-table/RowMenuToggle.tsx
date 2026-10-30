@@ -30,11 +30,12 @@ export type RowMenuToggleProps = Omit<MenuToggleProps, "ref"> & {
   label: string;
   /**
    * The mark drawn, three dots in a line by default. A toggle sitting at the
-   * end of a sentence takes a downward arrow in a circle instead, as the
-   * page's own menu in the header does, so it is not read as the sentence
+   * end of a sentence takes sliders instead, so it is not read as the sentence
    * trailing off.
    */
-  icon?: Extract<IconProps["name"], "more_horiz" | "expand_circle_down">;
+  icon?: Extract<IconProps["name"], "more_horiz" | "tune">;
+  /** The size of the mark, the size of the text around it by default. */
+  iconSize?: IconProps["size"];
 };
 
 /**
@@ -52,9 +53,9 @@ export type RowMenuToggleProps = Omit<MenuToggleProps, "ref"> & {
  * meets them one at a time nothing about which device they are on.
  */
 const RowMenuToggle = React.forwardRef<HTMLButtonElement, RowMenuToggleProps>(
-  ({ label, icon = "more_horiz", ...props }, ref) => (
+  ({ label, icon = "more_horiz", iconSize, ...props }, ref) => (
     <MenuToggle ref={ref} variant="plain" aria-label={label} {...props}>
-      <Icon name={icon} />
+      <Icon name={icon} size={iconSize} />
     </MenuToggle>
   ),
 );

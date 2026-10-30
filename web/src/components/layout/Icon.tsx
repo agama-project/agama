@@ -96,6 +96,7 @@ import SearchOff from "@icons/search_off.svg?component";
 import SelectWindow from "@icons/select_window.svg?component";
 import SettingsEthernet from "@icons/settings_ethernet.svg?component";
 import Translate from "@icons/translate.svg?component";
+import Tune from "@icons/tune.svg?component";
 import UnfoldLess from "@icons/unfold_less.svg?component";
 import UnfoldMore from "@icons/unfold_more.svg?component";
 import Warning from "@icons/warning.svg?component";
@@ -180,6 +181,7 @@ const icons = {
   select_window: SelectWindow,
   settings_ethernet: SettingsEthernet,
   translate: Translate,
+  tune: Tune,
   unfold_less: UnfoldLess,
   unfold_more: UnfoldMore,
   visibility: Visibility,
