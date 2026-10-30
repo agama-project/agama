@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Oct 30 17:18:10 UTC 2026 - Balsa Asanovic <balsaasanovic95@gmail.com>
+
+- Let Tab move focus in multi-value fields, and update the helper texts
+  so they no longer advertise Tab for adding values (bsc#1280715,
+  gh#agama-project/agama#4113).
+
+-------------------------------------------------------------------
 Thu Oct 15 07:41:55 UTC 2026 - Martin Vidner <mvidner@suse.com>
 
 - web dependencies: move those not needed for run time or building
