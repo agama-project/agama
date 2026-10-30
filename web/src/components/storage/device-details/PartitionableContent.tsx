@@ -24,7 +24,6 @@ import React from "react";
 import { Flex, FlexItem, List, ListItem } from "@patternfly/react-core";
 import Link from "~/components/core/Link";
 import SummaryWithActions from "~/components/storage/device-details/SummaryWithActions";
-import Icon from "~/components/layout/Icon";
 import PlannedContentSection from "~/components/storage/device-details/PlannedContentSection";
 import UsedByStatement from "~/components/storage/device-details/UsedByStatement";
 import { STORAGE as PATHS } from "~/routes/paths";
@@ -88,7 +87,7 @@ export default function PartitionableContent({
 
   /* A link, since it leads to a form. */
   const add = (
-    <Link to={addPath} keepQuery variant="link" isInline icon={<Icon name="add_circle" />}>
+    <Link to={addPath} keepQuery variant="link" isInline>
       {_("Add partition")}
     </Link>
   );

@@ -24,7 +24,6 @@ import React from "react";
 import { Flex, FlexItem } from "@patternfly/react-core";
 import Interpolate from "~/components/core/Interpolate";
 import Link from "~/components/core/Link";
-import Icon from "~/components/layout/Icon";
 import RelatedNames from "~/components/storage/shared/RelatedNames";
 import { baseName } from "~/components/storage/utils";
 import { STORAGE as PATHS } from "~/routes/paths";
@@ -96,7 +95,6 @@ export default function PropertiesSection({ entry, subject }: PropertiesSectionP
           keepQuery
           variant="link"
           isInline
-          icon={<Icon name="edit_square" />}
         >
           {
             // TRANSLATORS: offered inside an LVM volume group's panel: change

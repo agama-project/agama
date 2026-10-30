@@ -26,7 +26,6 @@ import { Flex, FlexItem, Stack, StackItem } from "@patternfly/react-core";
 import { sprintf } from "sprintf-js";
 import Link from "~/components/core/Link";
 import Text from "~/components/core/Text";
-import Icon from "~/components/layout/Icon";
 import MenuButton, { MenuButtonItem } from "~/components/core/MenuButton";
 import RowMenuToggle from "~/components/storage/entries-table/RowMenuToggle";
 import MoveToOtherDevice from "~/components/storage/device-details/MoveToOtherDevice";
@@ -180,7 +179,7 @@ export default function PlannedContentSection({
 
   /* A link, since it leads to a form. */
   const add = (
-    <Link to={addPath} keepQuery variant="link" isInline icon={<Icon name="add_circle" />}>
+    <Link to={addPath} keepQuery variant="link" isInline>
       {addLabel}
     </Link>
   );

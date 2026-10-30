@@ -22,7 +22,6 @@
 
 import React from "react";
 import Link from "~/components/core/Link";
-import Icon from "~/components/layout/Icon";
 import SummaryWithActions from "~/components/storage/device-details/SummaryWithActions";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { generateEncodedPath } from "~/utils";
@@ -53,7 +52,6 @@ export default function PartitionableNoContent({ subject }: DeviceDetailsBodyPro
             keepQuery
             variant="link"
             isInline
-            icon={<Icon name="add_circle" />}
           >
             {_("Add partition")}
           </Link>
@@ -62,7 +60,6 @@ export default function PartitionableNoContent({ subject }: DeviceDetailsBodyPro
             keepQuery
             variant="link"
             isInline
-            icon={<Icon name="hard_drive" />}
           >
             {
               // TRANSLATORS: offered on a device nothing is planned on yet:
