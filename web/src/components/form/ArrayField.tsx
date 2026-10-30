@@ -64,7 +64,7 @@ function ScreenReaderInstructions({ id }: { id: string }) {
         {
           // TRANSLATORS: keyboard usage hint for screen readers.
           _(
-            "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate entries, Escape to exit",
+            "Enter to add, Backspace or Delete to remove, arrow keys to navigate entries, Escape to exit",
           )
         }
       </Text>
@@ -86,9 +86,9 @@ function SightedInstructions({ hasEntries, isDirty }: { hasEntries: boolean; isD
       <Text textStyle={["fontSizeXs", "textColorSubtle"]}>
         {hasEntries
           ? // TRANSLATORS: keyboard usage hint when entries exist.
-            _("Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate")
+            _("Enter to add, Backspace or Delete to remove, arrow keys to navigate")
           : // TRANSLATORS: keyboard usage hint when field is empty.
-            _("Enter or Tab to add")}
+            _("Enter to add")}
       </Text>
     </HelperTextItem>
   );

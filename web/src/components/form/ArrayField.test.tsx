@@ -132,7 +132,7 @@ describe("ArrayField", () => {
   it("does not show sighted instructions on empty field", () => {
     installerRender(<TestForm />);
     expect(
-      screen.queryByText("Enter or Tab to add", { selector: ":not([class*='screenReader'])" }),
+      screen.queryByText("Enter to add", { selector: ":not([class*='screenReader'])" }),
     ).not.toBeInTheDocument();
   });
 
@@ -140,12 +140,12 @@ describe("ArrayField", () => {
     const { user } = installerRender(<TestForm />);
     const input = screen.getByRole("textbox", { name: "Tags" });
     await user.type(input, "a");
-    screen.getByText("Enter or Tab to add");
+    screen.getByText("Enter to add");
   });
 
   it("shows sighted instructions when field has entries", () => {
     installerRender(<TestForm defaultValues={["alpha"]} />);
-    screen.getByText("Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate");
+    screen.getByText("Enter to add, Backspace or Delete to remove, arrow keys to navigate");
   });
 
   it("renders given existing values", () => {
