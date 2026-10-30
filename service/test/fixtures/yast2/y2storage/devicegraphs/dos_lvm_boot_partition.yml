@@ -1,0 +1,31 @@
+---
+- disk:
+    name: /dev/sda
+    size: 200 GiB
+    partition_table:  ms-dos
+    mbr_gap: 0
+    partitions:
+
+    - partition:
+        size:         200 MiB
+        name:         /dev/sda1
+        file_system:  ext4
+        mount_point:  /boot
+
+    - partition:
+        size:         unlimited
+        name:         /dev/sda2
+        id:           lvm
+
+- lvm_vg:
+    vg_name: vg0
+    lvm_pvs:
+        - lvm_pv:
+            blk_device: /dev/sda2
+
+    lvm_lvs:
+        - lvm_lv:
+            size:         200 GiB
+            lv_name:      lv1
+            file_system:  btrfs
+            mount_point:  /

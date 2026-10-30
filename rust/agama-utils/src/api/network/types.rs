@@ -382,7 +382,7 @@ impl fmt::Display for DhcpIaid {
 }
 
 #[derive(Debug, PartialEq, Clone, Deserialize, Serialize, JsonSchema)]
-#[serde(rename_all = "camelCase")]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct IpRoute {
     #[schemars(with = "schemas::IpInetSchema")]
     pub destination: IpInet,
@@ -438,6 +438,9 @@ pub enum Ipv4Method {
     #[default]
     Auto = 1,
     Manual = 2,
+    // Documented as "link-local", the name NetworkManager uses. "linkLocal" is still accepted, as
+    // it was the name the API used.
+    #[serde(rename = "link-local", alias = "linkLocal")]
     #[strum(serialize = "link-local")]
     LinkLocal = 3,
     Shared = 4,
@@ -463,6 +466,9 @@ pub enum Ipv6Method {
     #[default]
     Auto = 1,
     Manual = 2,
+    // Documented as "link-local", the name NetworkManager uses. "linkLocal" is still accepted, as
+    // it was the name the API used.
+    #[serde(rename = "link-local", alias = "linkLocal")]
     #[strum(serialize = "link-local")]
     LinkLocal = 3,
     Ignore = 4,

@@ -1,4 +1,40 @@
 -------------------------------------------------------------------
+Tue Oct 27 16:04:15 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Drop the dependencies on the following packages:
+  - yast2-bootloader and yast2-reipl dependencies pulled in
+    by agama-yast (gh#agama-project/agama#4033).
+  - yast2-iscsi-client dependency pulled in by agama-yast
+    (gh#agama-project/agama#4032).
+  - yast2-s390 and yast2-cio dependencies pulled in by
+    agama-yast on s390x (gh#agama-project/agama#4026).
+
+-------------------------------------------------------------------
+Tue Oct 27 12:08:59 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Do not try to enable the spice-vdagentd service because it is
+  already activated via socket (gh#agama-project/agama#4104).
+
+-------------------------------------------------------------------
+Mon Oct 26 15:30:00 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Simplify booting the rescue mode, use a single "rescue=1" boot
+  option instead of passing many systemd specific boot options
+  (bsc#1275038)
+
+-------------------------------------------------------------------
+Mon Oct 26 14:44:46 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Added workaround for a plymouth/gdm bug where the active terminal
+  is switched back to tty1 console which makes the graphical
+  console with the running installer not visible (bsc#1270027)
+
+-------------------------------------------------------------------
+Thu Oct 22 09:44:07 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Version 25
+
+-------------------------------------------------------------------
 Wed Oct  7 12:53:02 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
 
 - Rename "Check Installation Medium" into "Check Medium & Install"
@@ -28,7 +64,7 @@ Mon Sep 28 08:50:52 UTC 2026 - Andreas Schwab <schwab@suse.de>
 Thu Sep 24 14:03:15 UTC 2026 - Michal Filka <mfilka@suse.com>
 
 - bsc#1282603
-  - switched from 16.1 to 16.2 in kiwi build config 
+  - switched from 16.1 to 16.2 in kiwi build config
 
 -------------------------------------------------------------------
 Fri Sep 18 08:43:24 UTC 2026 - Santiago Zarate <santiago.zarate@suse.com>

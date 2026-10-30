@@ -1,0 +1,35 @@
+---
+- disk:
+    name: "/dev/sda"
+    size: 50 GiB
+    partition_table: gpt
+    partitions:
+    - partition:
+        size: 8 MiB
+        name: "/dev/sda1"
+        id: bios_boot
+    - partition:
+        size: unlimited
+        name: "/dev/sda2"
+        id: lvm
+    # Reserved by GPT
+    - free:
+        size: 16.5 KiB
+- lvm_vg:
+    vg_name: system
+    lvm_lvs:
+    - lvm_lv:
+        lv_name: root
+        size: 30708 MiB
+        file_system: ext4
+        mount_point: "/"
+    - lvm_lv:
+        lv_name: var_lib_docker
+        size: 20 GiB
+        file_system: btrfs
+        mount_point: "/var/lib/docker"
+        btrfs:
+          subvolumes: []
+    lvm_pvs:
+    - lvm_pv:
+        blk_device: "/dev/sda2"

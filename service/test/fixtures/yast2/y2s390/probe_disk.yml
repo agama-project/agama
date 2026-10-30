@@ -1,0 +1,183 @@
+---
+- bus: SCSI
+  bus_hwcfg: scsi
+  class_id: 262
+  detail:
+    channel: 0
+    controller_id: 0.0.fa00
+    fcp_lun: '0x4010400000000000'
+    host: 0
+    id: 0
+    lun: 0
+    wwpn: '0x500507630500873a'
+  dev_name: "/dev/sda"
+  dev_name2: "/dev/sg0"
+  dev_names:
+  - "/dev/sda"
+  - "/dev/disk/by-path/ccw-0.0.fa00-zfcp-0x500507630500873a:0x4010400000000000"
+  dev_num:
+    major: 8
+    minor: 0
+    range: 16
+    type: b
+  device: '2107900'
+  driver: zfcp
+  driver_module: zfcp
+  model: IBM 2107900
+  old_unique_key: IWc2.6bauZ5mFTd6
+  parent_unique_key: J+9e.AbUgA7O1gK4
+  resource:
+    disk_log_geo:
+    - cylinders: 10240
+      heads: 64
+      sectors: 32
+    fc:
+    - fcp_lun: 4616259986798936064
+      wwpn: 5766023019784865594
+    size:
+    - unit: sectors
+      x: 20971520
+      y: 512
+  rev: ".107"
+  sub_class_id: 0
+  sysfs_bus_id: 0:0:0:1073758224
+  sysfs_id: "/class/block/sda"
+  unique_key: 45Yl.GSrOUlvrrQE
+  vendor: IBM
+- bus: SCSI
+  bus_hwcfg: scsi
+  class_id: 262
+  detail:
+    channel: 0
+    controller_id: 0.0.fa00
+    fcp_lun: '0x401340ec00000000'
+    host: 0
+    id: 0
+    lun: 0
+    wwpn: '0x500507630500873a'
+  dev_name: "/dev/sdb"
+  dev_name2: "/dev/sg1"
+  dev_names:
+  - "/dev/sdb"
+  - "/dev/disk/by-path/ccw-0.0.fa00-zfcp-0x500507630500873a:0x401340ec00000000"
+  dev_num:
+    major: 8
+    minor: 16
+    range: 16
+    type: b
+  device: '2107900'
+  driver: zfcp
+  driver_module: zfcp
+  model: IBM 2107900
+  old_unique_key: BC8F.foOOC_QWNz0
+  parent_unique_key: J+9e.AbUgA7O1gK4
+  resource:
+    disk_log_geo:
+    - cylinders: 1011
+      heads: 34
+      sectors: 61
+    fc:
+    - fcp_lun: 4617105425341349888
+      wwpn: 5766023019784865594
+    size:
+    - unit: sectors
+      x: 2097152
+      y: 512
+  rev: ".107"
+  sub_class_id: 0
+  sysfs_bus_id: 0:0:0:1089224723
+  sysfs_id: "/class/block/sdb"
+  unique_key: XGop.pffu6ea6mm8
+  vendor: IBM
+- bus: SCSI
+  bus_hwcfg: scsi
+  class_id: 262
+  detail:
+    channel: 0
+    fcp_lun: '0x0000000000000000'
+    host: 0
+    id: 0
+    lun: 0
+    wwpn: '0x0000000000000000'
+  dev_name: "/dev/sdc"
+  dev_name2: "/dev/sg3"
+  dev_names:
+  - "/dev/sdc"
+  - "/dev/disk/by-path/ip-10.100.12.158:3260-iscsi-iqn.2020-03.iscsi.test:for.test-lun-1"
+  dev_num:
+    major: 8
+    minor: 32
+    range: 16
+    type: b
+  device: VIRTUAL-DISK
+  driver: sd
+  driver_module: sd_mod
+  model: IET VIRTUAL-DISK
+  old_unique_key: K1ot.XFis0A0w1l6
+  resource:
+    disk_log_geo:
+    - cylinders: 20480
+      heads: 64
+      sectors: 32
+    size:
+    - unit: sectors
+      x: 41943080
+      y: 512
+  rev: '0001'
+  sub_class_id: 0
+  sysfs_bus_id: 1:0:0:1
+  sysfs_id: "/class/block/sdc"
+  unique_key: _R2u.eVSycZhnQ60
+  vendor: IET
+- bus: None
+  bus_hwcfg: none
+  class_id: 262
+  detail:
+    cu_model: 233
+    dev_model: 12
+    lcss: 0
+  dev_name: \"/dev/dasda\"
+  dev_names:
+  - "/dev/dasda"
+  - "/dev/disk/by-path/ccw-0.0.0160"
+  - "/dev/disk/by-id/ccw-IBM.750000000FRK11.1192.4b.00000001000075600000000000000000"
+  - "/dev/disk/by-id/ccw-0X0160"
+  - "/dev/disk/by-id/ccw-IBM.750000000FRK11.1192.4b"
+  dev_num:
+    major: 94
+    minor: 0
+    range: 4
+    type: b
+  device: DASD
+  device_id: 276880
+  driver: io_subchannel
+  drivers:
+  - active: true
+    modprobe: true
+    modules:
+    - - dasd_eckd_mod
+      - ''
+  model: IBM DASD
+  old_unique_key: N5EP.J4gQoPlOYuE
+  prog_if: 1
+  resource:
+    disk_log_geo:
+    - cylinders: 30048
+      heads: 15
+      sectors: 12
+    io:
+    - active: true
+      length: 1
+      mode: rw
+      start: 352
+    size:
+    - unit: sectors
+      x: 5408640
+      y: 4096
+  sub_class_id: 0
+  sub_device_id: 275344
+  sysfs_bus_id: 0.0.0160
+  sysfs_id: "/class/block/dasda"
+  unique_key: 5czR.ALFATSt_U8F
+  vendor: IBM
+  vendor_id: 286721

@@ -110,7 +110,7 @@ export default {
     "%d mer"
   ],
   "%d options available.": [
-    "%d alternativ tillgängliga"
+    "%d alternativ tillgängliga."
   ],
   "%d other mode available": [
     "%d annat läge tillgängligt",
@@ -232,26 +232,8 @@ export default {
   "802.1ad": [
     "802.1ad"
   ],
-  "A %1$s of %2$s will be created for %3$s if possible": [
-    "En %1$s av %2$s kommer att skapas för %3$s om möjligt"
-  ],
-  "A %1$s of at least %2$s will be created for %3$s if possible": [
-    "En %1$s på minst %2$s kommer att skapas för %3$s om möjligt"
-  ],
-  "A %1$s with a size between %2$s and %3$s will be created for %4$s if possible": [
-    "En %1$s med en storlek mellan %2$s och %3$s kommer att skapas för %4$s om möjligt"
-  ],
   "A file system will be used for the whole device": [
     "Ett filsystem kommer att användas för hela enheten"
-  ],
-  "A generic minimum size of %1$s will be used for the new %2$s": [
-    "En generisk minimistorlek av%1$s kommer att användas för den nya %2$s"
-  ],
-  "A generic size of %1$s will be used for the new %2$s": [
-    "En generisk storlek av %1$s kommer att användas för den nya %2$s"
-  ],
-  "A generic size range between %1$s and %2$s will be used for the new %3$s": [
-    "Ett generiskt storleksintervall mellan %1$s och %2$s kommer att användas för den nya %3$s"
   ],
   "A logical volume may be deleted": [
     "En logisk volym kan tas bort"
@@ -400,9 +382,6 @@ export default {
   "All values removed.": [
     "Alla värden har tagits bort."
   ],
-  "Allow growing": [
-    "Tillåt växande"
-  ],
   "Allow shrinking": [
     "Tillåt krympning"
   ],
@@ -500,15 +479,6 @@ export default {
   ],
   "Back": [
     "Bakåt"
-  ],
-  "Based on the amount of RAM in the system, a %1$s of %2$s will be planned for %3$s": [
-    "Baserat på mängden RAM i systemet, kommer en %1$s av %2$s att planeras för %3$s"
-  ],
-  "Based on the amount of RAM in the system, a %1$s of at least %2$s will be planned for %3$s": [
-    "Baserat på mängden RAM i systemet, kommer en %1$s på minst %2$s att planeras för %3$s"
-  ],
-  "Based on the amount of RAM in the system, a %1$s with a size between %2$s and %3$s will be planned for %4$s": [
-    "Baserat på mängden RAM i systemet, kommer en %1$s med en storlek mellan %2$s och %3$s att planeras för %4$s"
   ],
   "Based on the mount point": [
     "Baserat på monteringspunkt"
@@ -758,6 +728,9 @@ export default {
   "Configuration from the network plus static addresses and gateway": [
     "Konfiguration från nätverket plus statiska adresser och gateway"
   ],
+  "Configuration pre-scripts have been executed and may have modified your system. You can reboot or shut down, but any changes made by these scripts will not be undone.": [
+    "Förkonfigurationsskript har körts och kan ha ändrat ditt system. Du kan starta om eller stänga av datorn, men eventuella ändringar som gjorts av dessa skript kommer inte att återställas."
+  ],
   "Configuration read from the iSCSI Boot Firmware Table (iBFT). Initiator cannot be changed.": [
     "Konfiguration läst från iSCSI Boot Firmware Table (iBFT). Initieraren kan inte ändras."
   ],
@@ -969,9 +942,6 @@ export default {
   "Default selection": [
     "Standard val"
   ],
-  "Define a custom size": [
-    "Definiera en anpassad storlek"
-  ],
   "Define a new LVM on the disk": [
     "Definiera en ny LVM på disken"
   ],
@@ -1041,9 +1011,6 @@ export default {
   "Discard changes": [
     "Förkasta ändringar"
   ],
-  "Discard the maximum size and continue with simplified configuration": [
-    "Kassera den maximala storleken och fortsätt med förenklad konfiguration"
-  ],
   "Disconnect": [
     "Koppla ifrån"
   ],
@@ -1102,7 +1069,7 @@ export default {
     "Nedåtpil för alternativ, Enter för att lägga till, Delete för att ta bort, piltangenter för att navigera"
   ],
   "Down arrow opens the list of options.": [
-    "Nedåtpil  öppnar listan med alternativ."
+    "Nedåtpil öppnar listan med alternativ."
   ],
   "Download configuration": [
     "Ladda ner konfiguration"
@@ -1206,6 +1173,9 @@ export default {
   "Encryption settings": [
     "Krypteringsinställningar"
   ],
+  "Enter": [
+    "Enter"
+  ],
   "Enter a hostname value.": [
     "Ange ett värdnamn värde."
   ],
@@ -1253,6 +1223,9 @@ export default {
   ],
   "ExFAT": [
     "ExFAT"
+  ],
+  "Exit installation": [
+    "Avsluta installation"
   ],
   "Expand if possible": [
     "Expandera om möjligt"
@@ -1695,9 +1668,6 @@ export default {
   ],
   "Left arrow reaches the %d values already added.": [
     "Vänsterpil når de värden (%d) som redan har lagts till."
-  ],
-  "Let the installer propose a sensible size": [
-    "Låt installationsprogrammet föreslå en vettig storlek"
   ],
   "Let the installer set the size": [
     "Låt installationsprogrammet ställa in storleken"
@@ -2295,6 +2265,9 @@ export default {
   "Potential data loss affecting at least %s": [
     "Potentiell dataförlust som påverkar minst %s"
   ],
+  "Press %1$s or %2$s to type here, or %3$s to move on.": [
+    "Tryck på %1$s eller %2$s för att skriva här, eller %3$s för att gå vidare."
+  ],
   "Priority": [
     "Prioritet"
   ],
@@ -2711,14 +2684,14 @@ export default {
   "Shrink existing partitions": [
     "Krymp existerande partitioner"
   ],
+  "Shut down": [
+    "Stäng av"
+  ],
   "Signal strength": [
     "Signalstyrka"
   ],
   "Size": [
     "Storlek"
-  ],
-  "Size modes": [
-    "Storlekslägen"
   ],
   "Skip to content": [
     "Hoppa till innehåll"
@@ -2776,6 +2749,9 @@ export default {
   ],
   "Something went wrong": [
     "Något gick fel"
+  ],
+  "Space": [
+    "Mellanslag"
   ],
   "Spanning Tree Protocol (STP)": [
     "Spanning Tree-protokoll (STP)"
@@ -2858,6 +2834,9 @@ export default {
   "TPM sealing requires the new system to be booted directly.": [
     "TPM-försegling kräver att det nya systemet startas upp direkt."
   ],
+  "Tab": [
+    "Tabb"
+  ],
   "Take a moment to review the installation settings below and adjust them as needed.": [
     "Ta en stund för att granska installationsinställningarna nedan och justera dem efter behov."
   ],
@@ -2906,15 +2885,6 @@ export default {
   ],
   "The current configuration will be discarded to apply the default settings of the new product.": [
     "Den nuvarande konfigurationen kommer att kasseras för att tillämpa standardinställningarna för den nya produkten."
-  ],
-  "The current configuration will result in an attempt to create a %1$s of %2$s.": [
-    "Den nuvarande konfigurationen kommer att resultera i ett försök att skapa en %1$s på %2$s."
-  ],
-  "The current configuration will result in an attempt to create a %1$s of at least %2$s.": [
-    "Den nuvarande konfigurationen kommer att resultera i ett försök att skapa en %1$s på minst %2$s."
-  ],
-  "The current configuration will result in an attempt to create a %1$s with a size between %2$s and %3$s.": [
-    "Den nuvarande konfigurationen kommer att resultera i ett försök att skapa en %1$s med en storlek mellan %2$s och %3$s."
   ],
   "The current file system will be mounted at %s": [
     "Det nuvarande filsystemet kommer att monteras på %s"
@@ -2977,9 +2947,6 @@ export default {
   "The file %s contains a record of the installer activity so far, useful to diagnose installation issues.": [
     "filen %s innehåller en registrering av installationsprogrammets aktivitet hittills, användbar för att diagnostisera installationsproblem."
   ],
-  "The final size can be bigger in order to fill the extra free space.": [
-    "Den slutliga storleken kan bli större för att fylla det extra fria utrymmet."
-  ],
   "The final step to configure the Trusted Platform Module (TPM) to automatically open encrypted devices will take place during the first boot of the new system. For that to work, the machine needs to boot directly to the new boot loader.": [
     "Det sista steget för att konfigurera Trusted Platform Module (TPM) för att automatiskt öppna krypterade enheter kommer att ske under den första uppstarten av det nya systemet. För att det ska fungera måste maskinen startas direkt till den nya uppstartshanteraren."
   ],
@@ -3032,42 +2999,6 @@ export default {
   "The product was not found in the repositories so it is not possible to proceed with the installation.": [
     "Produkten hittades inte i förrådet så det är inte möjligt att fortsätta med installationen."
   ],
-  "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
-    "Storleken för %1$s kommer att justeras dynamiskt baserat på mängden RAM i systemet och förekomsten av ett separat filsystem för %2$s."
-  ],
-  "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of separate file systems for %2$s.": [
-    "Storleken för %1$s kommer att justeras dynamiskt baserat på mängden RAM i systemet och förekomsten av separata filsystem för %2$s."
-  ],
-  "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of a separate file system for %2$s.": [
-    "Storleken för %1$s kommer att justeras dynamiskt baserat på mängden RAM i systemet, användningen av Btrfs-ögonblicksavbilder och förekomsten av ett separat filsystem för %2$s."
-  ],
-  "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of separate file systems for %2$s.": [
-    "Storleken för %1$s kommer att justeras dynamiskt baserat på mängden RAM i systemet, användningen av Btrfs-ögonblicksavbilder och förekomsten av separata filsystem för %2$s."
-  ],
-  "The size for %1$s will be dynamically adjusted based on the presence of a separate file system for %2$s.": [
-    "Storleken för %1$s kommer att justeras dynamiskt baserat på närvaron av ett separat filsystem för %2$s."
-  ],
-  "The size for %1$s will be dynamically adjusted based on the presence of separate file systems for %2$s.": [
-    "Storleken för %1$s kommer att justeras dynamiskt baserat på närvaron av separata filsystem för %2$s."
-  ],
-  "The size for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of a separate file system for %2$s.": [
-    "Storleken för %1$s kommer att justeras dynamiskt baserat på användningen av Btrfs-ögonblicksavbilder och närvaron av ett separat filsystem för %2$s."
-  ],
-  "The size for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of separate file systems for %2$s.": [
-    "Storleken för %1$s kommer att justeras dynamiskt baserat på användningen av Btrfs-ögonblicksavbilder och förekomsten av separata filsystem för %2$s."
-  ],
-  "The size for %s will be dynamically adjusted based on the amount of RAM in the system and the usage of Btrfs snapshots.": [
-    "Storleken för %s kommer att justeras dynamiskt baserat på mängden RAM i systemet och användningen av Btrfs-ögonblicksavbilder."
-  ],
-  "The size for %s will be dynamically adjusted based on the usage of Btrfs snapshots.": [
-    "Storleken för %s kommer att justeras dynamiskt baserat på användningen av Btrfs-ögonblicksavbilder."
-  ],
-  "The size is configured as a range between %s and %s, but this interface cannot handle ranges with a given max size.": [
-    "Storleken är konfigurerad som ett intervall mellan %s och %s, men det här gränssnittet kan inte hantera intervall med en given maxstorlek."
-  ],
-  "The size must be a number followed by a unit of the form GiB (power of 2) or GB (power of 10).": [
-    "Storleken måste vara ett tal följt av en enhet av formen GiB (potens 2) eller GB (potens 10)."
-  ],
   "The software selection could not be loaded.": [
     "Programvalet kunde inte laddas."
   ],
@@ -3080,6 +3011,9 @@ export default {
   "The system is rebooting": [
     "Systemet startar om"
   ],
+  "The system is shutting down": [
+    "Systemet stängs av"
+  ],
   "The system will boot to a command-line interface.": [
     "Systemet kommer att starta till ett kommandoradsgränssnitt."
   ],
@@ -3088,6 +3022,9 @@ export default {
   ],
   "The whole device will be used for %s": [
     "Hela enheten kommer att användas för %s"
+  ],
+  "Then %1$s+%2$s+%3$s to move out.": [
+    "Sedan %1$s+%2$s+%3$s för att flytta ut."
   ],
   "There are %s deactivated zFCP controllers.": [
     "Det finns %s inaktiverade zFCP-styrenheter."
@@ -3512,6 +3449,9 @@ export default {
   "You can safely close this window.": [
     "Du kan säkert stänga det här fönstret."
   ],
+  "You can safely reboot or shut down the system. No changes have been made to your disks, and your current installation setup will be canceled.": [
+    "Du kan säkert starta om eller stänga av systemet. Inga ändringar har gjorts på dina diskar, och din nuvarande installationskonfiguration kommer att avbrytas."
+  ],
   "You may want to discard the current settings and start from scratch with a simple configuration.": [
     "Du kanske vill ignorera de nuvarande inställningarna och börja från början med en enkel konfiguration."
   ],
@@ -3526,9 +3466,6 @@ export default {
   ],
   "[CAPS LOCK] is on": [
     "[CAPS LOCK] är på"
-  ],
-  "approx. %s": [
-    "cirka. %s"
   ],
   "at least %s": [
     "åtminstone %s"
@@ -3547,12 +3484,6 @@ export default {
   ],
   "immutable Btrfs": [
     "oföränderlig Btrfs"
-  ],
-  "logical volume": [
-    "logisk volym"
-  ],
-  "partition": [
-    "partition"
   ],
   "reset to defaults": [
     "återställ till standard"

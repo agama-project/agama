@@ -1,0 +1,27 @@
+---
+- disk:
+    name: "/dev/sda"
+    size: 50 GiB
+    partition_table: gpt
+    partitions:
+    - partition:
+        size: 8 MiB
+        name: "/dev/sda1"
+        id: bios_boot
+    - partition:
+        size: 30 GiB
+        name: "/dev/sda2"
+        id: linux
+        file_system: btrfs
+        mount_point: "/"
+        btrfs:
+          default_subvolume: "@"
+    - partition:
+        size: unlimited
+        name: "/dev/sda3"
+        id: linux
+        file_system: btrfs
+        mount_point: "/var/lib/docker"
+    # The final 16.5 KiB are reserved by GPT
+    - free:
+        size: 16.5 KiB

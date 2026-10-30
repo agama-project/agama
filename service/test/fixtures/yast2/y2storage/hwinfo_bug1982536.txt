@@ -1,0 +1,327 @@
+01: CCW 00.0: 10600 Disk
+  [Created at s390.191]
+  Unique ID: kGpU.ALFATSt_U8F
+  SysFS ID: /devices/css0/0.0.0018/0.0.019d
+  SysFS BusID: 0.0.019d
+  SysFS Device Link: /devices/css0/0.0.0018/0.0.019d
+  Hardware Class: disk
+  Model: "IBM DASD"
+  Vendor: int 0x6001 "IBM"
+  Device: int 0x3990 "DASD"
+  SubVendor: 
+  SubDevice: int 0x3390 
+  I/O Port: 0x19d (rw,disabled)
+  Driver Info #0:
+    Driver Status: dasd_eckd_mod is active
+    Driver Activation Cmd: "modprobe dasd_eckd_mod"
+  Config Status: cfg=no, avail=yes, need=no, active=unknown
+  LCSS: 0.0
+  CU Model: 0xe9
+  Device Model: 0xc
+
+02: CCW 00.0: 10600 Disk
+  [Created at s390.191]
+  Unique ID: 4VvC.QXpeV9WJ_32
+  SysFS ID: /devices/css0/0.0.001b/0.0.ffff
+  SysFS BusID: 0.0.ffff
+  SysFS Device Link: /devices/css0/0.0.001b/0.0.ffff
+  Hardware Class: disk
+  Model: "IBM DASD"
+  Vendor: int 0x6001 "IBM"
+  Device: int 0x6310 "DASD"
+  SubVendor: 
+  SubDevice: int 0x9336 
+  I/O Port: 0xffff (rw,disabled)
+  Driver Info #0:
+    Driver Status: dasd_fba_mod is active
+    Driver Activation Cmd: "modprobe dasd_fba_mod"
+  Config Status: cfg=no, avail=yes, need=no, active=unknown
+  LCSS: 0.0
+  CU Model: 0x80
+  Device Model: 0x10
+
+04: CCW 00.0: 10600 Disk
+  [Created at s390.191]
+  Unique ID: WDYe.ALFATSt_U8F
+  SysFS ID: /devices/css0/0.0.000c/0.0.0200
+  SysFS BusID: 0.0.0200
+  SysFS Device Link: /devices/css0/0.0.000c/0.0.0200
+  Hardware Class: disk
+  Model: "IBM DASD"
+  Vendor: int 0x6001 "IBM"
+  Device: int 0x3990 "DASD"
+  SubVendor: 
+  SubDevice: int 0x3390 
+  I/O Port: 0x200 (rw,disabled)
+  Driver Info #0:
+    Driver Status: dasd_eckd_mod is active
+    Driver Activation Cmd: "modprobe dasd_eckd_mod"
+  Config Status: cfg=no, avail=yes, need=no, active=unknown
+  LCSS: 0.0
+  CU Model: 0xe9
+  Device Model: 0xc
+
+05: CCW 00.0: 10600 Disk
+  [Created at s390.191]
+  Unique ID: dQpB.ALFATSt_U8F
+  SysFS ID: /devices/css0/0.0.0016/0.0.0190
+  SysFS BusID: 0.0.0190
+  SysFS Device Link: /devices/css0/0.0.0016/0.0.0190
+  Hardware Class: disk
+  Model: "IBM DASD"
+  Vendor: int 0x6001 "IBM"
+  Device: int 0x3990 "DASD"
+  SubVendor: 
+  SubDevice: int 0x3390 
+  I/O Port: 0x190 (rw,disabled)
+  Driver Info #0:
+    Driver Status: dasd_eckd_mod is active
+    Driver Activation Cmd: "modprobe dasd_eckd_mod"
+  Config Status: cfg=no, avail=yes, need=no, active=unknown
+  LCSS: 0.0
+  CU Model: 0xe9
+  Device Model: 0xc
+
+06: CCW 00.0: 10600 Disk
+  [Created at s390.191]
+  Unique ID: fueD.ALFATSt_U8F
+  SysFS ID: /devices/css0/0.0.000b/0.0.0150
+  SysFS BusID: 0.0.0150
+  SysFS Device Link: /devices/css0/0.0.000b/0.0.0150
+  Hardware Class: disk
+  Model: "IBM DASD"
+  Vendor: int 0x6001 "IBM"
+  Device: int 0x3990 "DASD"
+  SubVendor: 
+  SubDevice: int 0x3390 
+  I/O Port: 0x150 (rw,disabled)
+  Driver Info #0:
+    Driver Status: dasd_eckd_mod is active
+    Driver Activation Cmd: "modprobe dasd_eckd_mod"
+  Config Status: cfg=no, avail=yes, need=no, active=unknown
+  LCSS: 0.0
+  CU Model: 0xe9
+  Device Model: 0xc
+
+07: CCW 00.0: 10600 Disk
+  [Created at s390.191]
+  Unique ID: BS3Z.ALFATSt_U8F
+  SysFS ID: /devices/css0/0.0.0017/0.0.019e
+  SysFS BusID: 0.0.019e
+  SysFS Device Link: /devices/css0/0.0.0017/0.0.019e
+  Hardware Class: disk
+  Model: "IBM DASD"
+  Vendor: int 0x6001 "IBM"
+  Device: int 0x3990 "DASD"
+  SubVendor: 
+  SubDevice: int 0x3390 
+  I/O Port: 0x19e (rw,disabled)
+  Driver Info #0:
+    Driver Status: dasd_eckd_mod is active
+    Driver Activation Cmd: "modprobe dasd_eckd_mod"
+  Config Status: cfg=no, avail=yes, need=no, active=unknown
+  LCSS: 0.0
+  CU Model: 0xe9
+  Device Model: 0xc
+
+08: CCW 00.0: 10600 Disk
+  [Created at s390.191]
+  Unique ID: S5IN.ALFATSt_U8F
+  SysFS ID: /devices/css0/0.0.001a/0.0.0120
+  SysFS BusID: 0.0.0120
+  SysFS Device Link: /devices/css0/0.0.001a/0.0.0120
+  Hardware Class: disk
+  Model: "IBM DASD"
+  Vendor: int 0x6001 "IBM"
+  Device: int 0x3990 "DASD"
+  SubVendor: 
+  SubDevice: int 0x3390 
+  I/O Port: 0x120 (rw,disabled)
+  Driver Info #0:
+    Driver Status: dasd_eckd_mod is active
+    Driver Activation Cmd: "modprobe dasd_eckd_mod"
+  Config Status: cfg=no, avail=yes, need=no, active=unknown
+  LCSS: 0.0
+  CU Model: 0xe9
+  Device Model: 0xc
+
+10: CCW 00.0: 10600 Disk
+  [Created at s390.191]
+  Unique ID: 4c3G.ALFATSt_U8F
+  SysFS ID: /devices/css0/0.0.0019/0.0.0191
+  SysFS BusID: 0.0.0191
+  SysFS Device Link: /devices/css0/0.0.0019/0.0.0191
+  Hardware Class: disk
+  Model: "IBM DASD"
+  Vendor: int 0x6001 "IBM"
+  Device: int 0x3990 "DASD"
+  SubVendor: 
+  SubDevice: int 0x3390 
+  I/O Port: 0x191 (rw,disabled)
+  Driver Info #0:
+    Driver Status: dasd_eckd_mod is active
+    Driver Activation Cmd: "modprobe dasd_eckd_mod"
+  Config Status: cfg=no, avail=yes, need=no, active=unknown
+  LCSS: 0.0
+  CU Model: 0xe9
+  Device Model: 0xa
+
+11: None 00.0: 10600 Disk
+  [Created at block.245]
+  Unique ID: tfcu.dcqA0TtIFgE
+  SysFS ID: /class/block/dm-1
+  Hardware Class: disk
+  Model: "Disk"
+  Device File: /dev/dm-1
+  Device Files: /dev/dm-1, /dev/disk/by-id/dm-name-36005076305ffc73a000000000000111f-part1, /dev/disk/by-id/dm-uuid-part1-mpath-36005076305ffc73a000000000000111f, /dev/disk/by-id/scsi-36005076305ffc73a000000000000111f-part1, /dev/disk/by-id/wwn-0x6005076305ffc73a000000000000111f-part1, /dev/disk/by-partuuid/3bb3a955-01, /dev/disk/by-uuid/8186fc41-3e4d-4b58-96d7-9ca3c99503ec, /dev/mapper/36005076305ffc73a000000000000111f-part1
+  Device Number: block 254:1
+  Geometry (Logical): CHS 0/0/12
+  Drive status: no medium
+  Config Status: cfg=new, avail=yes, need=no, active=unknown
+
+12: SCSI 100.401f4011: 10600 Disk
+  [Created at block.245]
+  Unique ID: XGop.GQ4L0mZI5t7
+  Parent ID: 1f8J.AbUgA7O1gK4
+  SysFS ID: /class/block/sdb
+  SysFS BusID: 1:0:0:1075789841
+  SysFS Device Link: /devices/css0/0.0.000d/0.0.fc00/host1/rport-1:0-0/target1:0:0/1:0:0:1075789841
+  Hardware Class: disk
+  Model: "IBM 2107900"
+  Vendor: "IBM"
+  Device: "2107900"
+  Revision: ".107"
+  Serial ID: "75L2371111F"
+  Driver: "zfcp", "sd"
+  Driver Modules: "zfcp", "sd_mod"
+  Device File: /dev/sdb (/dev/sg1)
+  Device Files: /dev/sdb, /dev/disk/by-id/scsi-36005076305ffc73a000000000000111f, /dev/disk/by-id/scsi-SIBM_2107900_75L2371111F, /dev/disk/by-id/wwn-0x6005076305ffc73a000000000000111f, /dev/disk/by-path/ccw-0.0.fc00-fc-0x50050763050b873a-lun-0x4011401f00000000, /dev/disk/by-path/ccw-0.0.fc00-zfcp-0x50050763050b873a:0x4011401f00000000
+  Device Number: block 8:16-8:31 (char 21:1)
+  WWPN: 0x50050763050b873a
+  FCP LUN: 0x4011401f00000000
+  SCSI Host CCW ID: 0.0.fc00
+  Geometry (Logical): CHS 20480/64/32
+  Size: 41943040 sectors a 512 bytes
+  Capacity: 20 GB (21474836480 bytes)
+  Config Status: cfg=no, avail=yes, need=no, active=unknown
+  Attached to: #9 (SCSI storage controller)
+
+13: None 00.0: 10600 Disk
+  [Created at block.245]
+  Unique ID: FCN5.dcqA0TtIFgE
+  SysFS ID: /class/block/dm-4
+  Hardware Class: disk
+  Model: "Disk"
+  Device File: /dev/dm-4
+  Device Files: /dev/dm-4, /dev/disk/by-id/dm-name-36005076305ffc73a000000000000111f-part6, /dev/disk/by-id/dm-uuid-part6-mpath-36005076305ffc73a000000000000111f, /dev/disk/by-id/scsi-36005076305ffc73a000000000000111f-part6, /dev/disk/by-id/wwn-0x6005076305ffc73a000000000000111f-part6, /dev/disk/by-partuuid/3bb3a955-06, /dev/disk/by-uuid/d0282be4-7b67-454a-abb9-ed676b6049f8, /dev/mapper/36005076305ffc73a000000000000111f-part6
+  Device Number: block 254:4
+  Geometry (Logical): CHS 0/0/12
+  Drive status: no medium
+  Config Status: cfg=new, avail=yes, need=no, active=unknown
+
+14: None 00.0: 10600 Disk
+  [Created at block.245]
+  Unique ID: Krsy.dcqA0TtIFgE
+  SysFS ID: /class/block/dm-2
+  Hardware Class: disk
+  Model: "Disk"
+  Device File: /dev/dm-2
+  Device Files: /dev/dm-2, /dev/disk/by-id/dm-name-36005076305ffc73a000000000000111f-part2, /dev/disk/by-id/dm-uuid-part2-mpath-36005076305ffc73a000000000000111f, /dev/disk/by-id/scsi-36005076305ffc73a000000000000111f-part2, /dev/disk/by-id/wwn-0x6005076305ffc73a000000000000111f-part2, /dev/disk/by-partuuid/3bb3a955-02, /dev/mapper/36005076305ffc73a000000000000111f-part2
+  Device Number: block 254:2
+  Geometry (Logical): CHS 0/0/12
+  Drive status: no medium
+  Config Status: cfg=new, avail=yes, need=no, active=unknown
+
+15: None 00.0: 10600 Disk
+  [Created at block.245]
+  Unique ID: QUMq.dcqA0TtIFgE
+  SysFS ID: /class/block/dm-0
+  Hardware Class: disk
+  Model: "Disk"
+  Device File: /dev/dm-0
+  Device Files: /dev/dm-0, /dev/disk/by-id/dm-name-36005076305ffc73a000000000000111f, /dev/disk/by-id/dm-uuid-mpath-36005076305ffc73a000000000000111f, /dev/disk/by-id/scsi-36005076305ffc73a000000000000111f, /dev/disk/by-id/wwn-0x6005076305ffc73a000000000000111f, /dev/mapper/36005076305ffc73a000000000000111f
+  Device Number: block 254:0
+  Geometry (Logical): CHS 20480/64/32
+  Size: 41943040 sectors a 512 bytes
+  Capacity: 20 GB (21474836480 bytes)
+  Config Status: cfg=new, avail=yes, need=no, active=unknown
+
+16: SCSI 101.401f4011: 10600 Disk
+  [Created at block.245]
+  Unique ID: _R2u.GQ4L0mZI5t7
+  Parent ID: 1f8J.AbUgA7O1gK4
+  SysFS ID: /class/block/sdc
+  SysFS BusID: 1:0:1:1075789841
+  SysFS Device Link: /devices/css0/0.0.000d/0.0.fc00/host1/rport-1:0-1/target1:0:1/1:0:1:1075789841
+  Hardware Class: disk
+  Model: "IBM 2107900"
+  Vendor: "IBM"
+  Device: "2107900"
+  Revision: ".107"
+  Serial ID: "75L2371111F"
+  Driver: "zfcp", "sd"
+  Driver Modules: "zfcp", "sd_mod"
+  Device File: /dev/sdc (/dev/sg2)
+  Device Files: /dev/sdc, /dev/disk/by-id/scsi-36005076305ffc73a000000000000111f, /dev/disk/by-id/scsi-SIBM_2107900_75L2371111F, /dev/disk/by-id/wwn-0x6005076305ffc73a000000000000111f, /dev/disk/by-path/ccw-0.0.fc00-fc-0x50050763051b473a-lun-0x4011401f00000000, /dev/disk/by-path/ccw-0.0.fc00-zfcp-0x50050763051b473a:0x4011401f00000000
+  Device Number: block 8:32-8:47 (char 21:2)
+  WWPN: 0x50050763051b473a
+  FCP LUN: 0x4011401f00000000
+  SCSI Host CCW ID: 0.0.fc00
+  Geometry (Logical): CHS 20480/64/32
+  Size: 41943040 sectors a 512 bytes
+  Capacity: 20 GB (21474836480 bytes)
+  Config Status: cfg=no, avail=yes, need=no, active=unknown
+  Attached to: #9 (SCSI storage controller)
+
+17: SCSI 00.401f4011: 10600 Disk
+  [Created at block.245]
+  Unique ID: 45Yl.GQ4L0mZI5t7
+  Parent ID: J+9e.AbUgA7O1gK4
+  SysFS ID: /class/block/sda
+  SysFS BusID: 0:0:0:1075789841
+  SysFS Device Link: /devices/css0/0.0.000e/0.0.fa00/host0/rport-0:0-0/target0:0:0/0:0:0:1075789841
+  Hardware Class: disk
+  Model: "IBM 2107900"
+  Vendor: "IBM"
+  Device: "2107900"
+  Revision: ".107"
+  Serial ID: "75L2371111F"
+  Driver: "zfcp", "sd"
+  Driver Modules: "zfcp", "sd_mod"
+  Device File: /dev/sda (/dev/sg0)
+  Device Files: /dev/sda, /dev/disk/by-id/scsi-36005076305ffc73a000000000000111f, /dev/disk/by-id/scsi-SIBM_2107900_75L2371111F, /dev/disk/by-id/wwn-0x6005076305ffc73a000000000000111f, /dev/disk/by-path/ccw-0.0.fa00-fc-0x500507630510473a-lun-0x4011401f00000000, /dev/disk/by-path/ccw-0.0.fa00-zfcp-0x500507630510473a:0x4011401f00000000
+  Device Number: block 8:0-8:15 (char 21:0)
+  WWPN: 0x500507630510473a
+  FCP LUN: 0x4011401f00000000
+  SCSI Host CCW ID: 0.0.fa00
+  Geometry (Logical): CHS 20480/64/32
+  Size: 41943040 sectors a 512 bytes
+  Capacity: 20 GB (21474836480 bytes)
+  Config Status: cfg=no, avail=yes, need=no, active=unknown
+  Attached to: #3 (SCSI storage controller)
+
+18: None 00.0: 10600 Disk
+  [Created at block.245]
+  Unique ID: iNd9.dcqA0TtIFgE
+  SysFS ID: /class/block/dm-5
+  Hardware Class: disk
+  Model: "Disk"
+  Device File: /dev/dm-5
+  Device Files: /dev/dm-5, /dev/disk/by-id/dm-name-36005076305ffc73a000000000000111f-part7, /dev/disk/by-id/dm-uuid-part7-mpath-36005076305ffc73a000000000000111f, /dev/disk/by-id/scsi-36005076305ffc73a000000000000111f-part7, /dev/disk/by-id/wwn-0x6005076305ffc73a000000000000111f-part7, /dev/disk/by-partuuid/3bb3a955-07, /dev/disk/by-uuid/f272f511-0875-48d7-b67d-69618dcc506e, /dev/mapper/36005076305ffc73a000000000000111f-part7
+  Device Number: block 254:5
+  Geometry (Logical): CHS 0/0/12
+  Drive status: no medium
+  Config Status: cfg=new, avail=yes, need=no, active=unknown
+
+19: None 00.0: 10600 Disk
+  [Created at block.245]
+  Unique ID: n071.dcqA0TtIFgE
+  SysFS ID: /class/block/dm-3
+  Hardware Class: disk
+  Model: "Disk"
+  Device File: /dev/dm-3
+  Device Files: /dev/dm-3, /dev/disk/by-id/dm-name-36005076305ffc73a000000000000111f-part5, /dev/disk/by-id/dm-uuid-part5-mpath-36005076305ffc73a000000000000111f, /dev/disk/by-id/scsi-36005076305ffc73a000000000000111f-part5, /dev/disk/by-id/wwn-0x6005076305ffc73a000000000000111f-part5, /dev/disk/by-partuuid/3bb3a955-05, /dev/disk/by-uuid/8b7338e1-1bd6-49f2-8192-1d4f43e0a55b, /dev/mapper/36005076305ffc73a000000000000111f-part5
+  Device Number: block 254:3
+  Geometry (Logical): CHS 0/0/12
+  Drive status: no medium
+  Config Status: cfg=new, avail=yes, need=no, active=unknown

@@ -35,7 +35,7 @@ pub enum Error {
 
 /// Questions configuration.
 #[derive(Clone, Debug, Default, Serialize, Deserialize, Merge, JsonSchema)]
-#[serde(rename_all = "camelCase")]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 #[schemars(rename = "questions.Config", title = "How to handle Agama questions")]
 pub struct Config {
     /// Policy to answer questions: "auto" to automatically answer questions or "user" to ask the user.
@@ -62,6 +62,7 @@ pub enum Policy {
 /// If the rule matches with the question ([class](Self::class),
 /// [text](Self::text) or [data](Self::data), it applies the specified `answer`).
 #[derive(Clone, Serialize, Deserialize, Debug, JsonSchema, PartialEq)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 #[schemars(title = "Automatic answer to questions")]
 pub struct AnswerRule {
     /// Question class (see [QuestionSpec::class]).
@@ -426,6 +427,7 @@ impl Action {
 /// It includes the action and, optionally, and additional value which depends
 /// on the question field.
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, JsonSchema)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 #[schemars(rename = "questions.Answer", title = "Predefined question action")]
 pub struct Answer {
     /// Action to use for answering the question.

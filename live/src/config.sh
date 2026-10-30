@@ -9,6 +9,8 @@ test -f /.profile && . /.profile
 # greeting
 echo "Configure image: [$kiwi_iname]..."
 
+arch=$(uname -m)
+
 # setup baseproduct link
 suseSetupProduct
 
@@ -76,6 +78,8 @@ systemctl enable agama-ssh-issue.service
 systemctl enable live-free-space.service
 systemctl enable live-password.service
 systemctl enable live-root-shell.service
+# no graphical console on s390x
+test "$arch" = "s390x" || systemctl enable tty-workaround.service
 
 # the self-update actually runs in the initramfs system, but the exit status
 # is lost if it is not enabled in the root image as well,
@@ -86,7 +90,6 @@ systemctl enable checkmedia.service
 test -f /usr/lib/systemd/system/qemu-guest-agent.service && systemctl enable qemu-guest-agent.service
 systemctl enable setup-systemd-proxy-env.path
 test -f /usr/lib/systemd/system/gdm.service && systemctl enable gdm.service
-test -f /usr/lib/systemd/system/spice-vdagentd.service && systemctl enable spice-vdagentd.service
 systemctl enable zramswap
 
 # set the default target
@@ -107,7 +110,10 @@ systemctl disable snapper-timeline.timer
 
 # Prevent premature activation of LVM (bsc#1246133)
 systemctl mask lvm2-monitor.service
-sed -i 's:# event_activation = 1:event_activation = 0:' /etc/lvm/lvm.conf
+if [[ -f /etc/lvm/lvm.conf ]]; then
+  echo "disabling lvm event_activation"
+  sed -i 's:# event_activation = 1:event_activation = 0:' /etc/lvm/lvm.conf
+fi
 
 # Prevent premature assembly of MD RAIDs (bsc#1245159)
 touch /etc/udev/rules.d/64-md-raid-assembly.rules
@@ -135,7 +141,6 @@ if [[ "$kiwi_profiles" == *SUSE_SLE_16* ]]; then
 fi
 
 ### setup dracut for live system
-arch=$(uname -m)
 # keep in sync with ISO Volume ID set in the fix_bootconfig script
 profile=$(echo "$kiwi_profiles" | tr "_" "-")
 label="Install-$profile-$arch"

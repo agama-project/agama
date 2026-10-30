@@ -15,6 +15,7 @@ members = [
     "agama-ntp",
     "agama-access",
     "agama-s390",
+    "agama-schema-transformations",
     "agama-security",
     "agama-server",
     "agama-software",
@@ -51,6 +52,7 @@ agama-network = { path = "agama-network" }
 agama-ntp = { path = "agama-ntp" }
 agama-proxy = { path = "agama-proxy" }
 agama-s390 = { path = "agama-s390" }
+agama-schema-transformations = { path = "agama-schema-transformations" }
 agama-security = { path = "agama-security" }
 agama-server = { path = "agama-server" }
 agama-software = { path = "agama-software" }
@@ -72,6 +74,7 @@ gettext-rs = { version = "0.7.7", features = ["gettext-system"] }
 glob = { version = "0.3.1" }
 home = { version = "0.5.11" }
 i18n-format = { version = "0.4.0" }
+jsonschema = { version = "0.30.0", default-features = false }
 macaddr = { version = "1.0.1", features = ["serde_std"] }
 merge = { version = "0.2.0", features = ["std"] }
 openssl = { version = "0.10.81" }

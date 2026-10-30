@@ -1,28 +1,51 @@
 ---
 :sourceurl: "%{mod_full_name}.gem"
+# this list is for buildrequires and rest which is needed for initial rpm build
+# see https://build.opensuse.org/projects/home:darix:apps/packages/rubygem-rails-8.1/files/gem2rpm.yml?expand=1
 :preamble: |-
-  %global rb_build_versions %{rb_default_ruby}
-  BuildRequires:  dbus-1-common
-  Requires:       dbus-1-common
-:main:
-  :preamble: |-
     # Override build.rpm, see also https://github.com/openSUSE/obs-build/blob/master/configs/
     %global rb_build_versions %{rb_default_ruby}
     BuildRequires:  dbus-1-common
+    # YaST dependencies used in tests
+    BuildRequires:  %{rubygem ruby-dbus}
+    BuildRequires:  %{rubygem rspec}
+    BuildRequires:  %{rubygem eventmachine}
+    BuildRequires:  %{rubygem cfa_grub2}
+    BuildRequires:  %{rubygem abstract_method}
+    BuildRequires:  %{rubygem cheetah}
+    BuildRequires:  %{rubygem nokogiri}
+    BuildRequires:  augeas-lenses
+    BuildRequires:  yast2-ruby-bindings
+    BuildRequires:  distribution-release
+    BuildRequires:  yast2-transfer
+    BuildRequires:  yast2-pkg-bindings
+    BuildRequires:  libstorage-ng-ruby
+    BuildRequires:  xsltproc
+    # lsmod
+    BuildRequires:  kmod
+
+# place runtime dependencies in below list as it is used by "versioned" packages
+:main:
+ :preamble: |-
     Requires:       dbus-1-common
     Requires:       dbus-1-daemon
-    # YaST dependencies
-    # ArchFilter
-    Requires:       yast2 >= 4.5.20
-    Requires:       yast2-bootloader >= 5.0.30
     Requires:       yast2-hardware-detection
-    Requires:       yast2-iscsi-client >= 5.0.11
-    Requires:       yast2-storage-ng >= 5.0.49
-    %ifarch s390 s390x
-    Requires:       yast2-s390 >= 4.6.4
-    Requires:       yast2-reipl
-    Requires:       yast2-cio
+    Requires:       libstorage-ng-ruby
+    Requires:       yast2-pkg-bindings
+    Requires:       yast2-transfer
+    # Needed by service/YaST2/modules/Popup.rb (Yast.import "UI") - previously only a transitive
+    # dependency pulled in by the now-dropped `yast2` RPM's own Requires:
+    %if 0%{?suse_version} == 1699 || 0%{?is_opensuse}
+    # use the standard UI in openSUSE Tumbleweed or Leap
+    Requires:       yast2-ycp-ui-bindings
+    %else
+    # use dummy UI in SLES (without libyui dependency)
+    Requires:       yast2-ycp-ui-bindings-dummy
     %endif
+    # Needed by service/YaST2/{modules/ShadowConfig.rb,lib/cfa/{login_defs,shadow_config}.rb} (the
+    # "login_defs.lns" Augeas lens) - previously only a transitive dependency pulled in by the
+    # now-dropped `yast2` RPM's own Requires:
+    Requires:       augeas-lenses
     # Storage dependencies
     Requires:       bcache-tools
     Requires:       btrfsprogs
@@ -34,6 +57,7 @@
     %ifarch x86_64 aarch64
     Requires:       fde-tools
     %endif
+    Requires:       hostname
     Requires:       jfsutils
     Requires:       libstorage-ng-lang
     Requires:       lvm2
@@ -45,7 +69,6 @@
     Requires:       nvme-cli
     Requires:       open-iscsi
     Requires:       quota
-    Requires:       snapper
     Requires:       udftools
     Requires:       xfsprogs
     Requires:       yast2-schema
@@ -53,3 +76,8 @@
     Requires:       util-linux-systemd
     # AutoYaST compatibility
     Requires:       xsltproc
+    # Includes the "installation-helper" needed by libstorage-ng
+    Requires:       snapper
+:testsuite_command: |-
+  cd %{buildroot}%{gem_base}/gems/%{mod_full_name}
+  rspec

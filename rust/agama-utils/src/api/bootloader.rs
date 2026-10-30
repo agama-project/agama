@@ -25,7 +25,7 @@ use serde::{Deserialize, Serialize};
 
 /// Bootloader configuration.
 #[derive(Clone, Debug, Serialize, Deserialize, Default, Merge, JsonSchema)]
-#[serde(rename_all = "camelCase")]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 #[merge(strategy = merge::option::overwrite_none)]
 #[schemars(rename = "bootloader.Config", title = "Bootloader settings")]
 pub struct Config {
