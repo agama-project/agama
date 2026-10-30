@@ -131,6 +131,7 @@ export default function ProgressBackdrop({
 
   return (
     <Backdrop
+      hasAnimations={false}
       role="alert"
       aria-labelledby="progressStatus"
       className={["agm-main-content-overlay", spacingStyles.pt_4xl, spacingStyles.pt_0OnMd].join(
