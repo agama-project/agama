@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Oct 30 09:20:02 UTC 2026 - David Díaz <dgonzalez@suse.com>
+
+- Drop the final period from the login error title
+  (gh#agama-project/agama#4161).
+
+-------------------------------------------------------------------
 Thu Oct 29 19:32:20 UTC 2026 - Michal Filka <mfilka@suse.com>
 
 - bsc#1286292 (CVE-2026-111755)
