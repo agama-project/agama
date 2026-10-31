@@ -20,7 +20,7 @@
 import { useCallback, useEffect, useLayoutEffect, useRef } from "react";
 import { ITheme, Terminal } from "@xterm/xterm";
 import { FitAddon } from "@xterm/addon-fit";
-import { TERMINAL_HINT_ID } from "~/context/terminal";
+import { isToggleShortcut, TERMINAL_HINT_ID } from "~/context/terminal";
 import "@xterm/xterm/css/xterm.css";
 
 const DEFAULT_FONT_SIZE = 14;
@@ -267,6 +267,11 @@ export const useTerminalSession = (
         // Keeps xterm.js from handling the key.
         return false;
       }
+
+      // Not for the shell either: keep xterm.js from handling the key (and
+      // sending it on to the shell), leaving it to reach the shortcut handler
+      // that hides the terminal.
+      if (isToggleShortcut(event)) return false;
 
       return true;
     });
