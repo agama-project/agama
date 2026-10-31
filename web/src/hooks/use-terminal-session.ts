@@ -20,7 +20,7 @@
 import { useCallback, useEffect, useLayoutEffect, useRef } from "react";
 import { ITheme, Terminal } from "@xterm/xterm";
 import { FitAddon } from "@xterm/addon-fit";
-import { TERMINAL_HINT_ID } from "~/context/terminal";
+import { isToggleShortcut, TERMINAL_HINT_ID } from "~/context/terminal";
 import "@xterm/xterm/css/xterm.css";
 
 const DEFAULT_FONT_SIZE = 14;
@@ -267,6 +267,9 @@ export const useTerminalSession = (
         // Keeps xterm.js from handling the key.
         return false;
       }
+
+      // Do not send the terminal toggle shortcut Ctrl+` to the terminal itself
+      if (isToggleShortcut(event)) return false;
 
       return true;
     });

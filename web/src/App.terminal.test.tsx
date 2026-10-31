@@ -108,7 +108,8 @@ describe("App", () => {
 
     screen.getByText("Installing screen");
     await user.click(screen.getByRole("button", { name: "open terminal" }));
-    screen.getByRole("region", { name: "Terminal" });
+    // The panel is lazy loaded, wait until it replaces the loading spinner.
+    await screen.findByRole("region", { name: "Terminal" });
 
     mockStage("finished");
     rerender(<Subject />);

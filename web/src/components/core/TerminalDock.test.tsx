@@ -80,8 +80,9 @@ describe("TerminalDock", () => {
 
       await user.click(screen.getByRole("button", { name: "open terminal" }));
 
+      // The panel is lazy loaded, wait until it replaces the loading spinner.
+      await screen.findByRole("region", { name: "Terminal" });
       expect(screen.getByText(APP_CONTENT)).toBeVisible();
-      screen.getByRole("region", { name: "Terminal" });
       screen.getByRole("separator", { name: "Resize terminal" });
     });
   });
@@ -93,7 +94,7 @@ describe("TerminalDock", () => {
 
       await user.click(screen.getByRole("button", { name: "open terminal" }));
 
-      screen.getByText("The terminal requires a larger screen size");
+      await screen.findByText("The terminal requires a larger screen size");
       expect(screen.queryByRole("separator", { name: "Resize terminal" })).toBeNull();
       expect(screen.getByText(APP_CONTENT)).not.toBeVisible();
     });
@@ -103,7 +104,7 @@ describe("TerminalDock", () => {
       const { user } = installerRender(<Subject />);
 
       await user.click(screen.getByRole("button", { name: "open terminal" }));
-      await user.click(screen.getByRole("button", { name: "Close terminal" }));
+      await user.click(await screen.findByRole("button", { name: "Close terminal" }));
 
       expect(screen.queryByRole("region", { name: "Terminal" })).toBeNull();
       expect(screen.getByText(APP_CONTENT)).toBeVisible();
@@ -116,15 +117,15 @@ describe("TerminalDock", () => {
       const { user } = installerRender(<Subject />);
 
       await user.click(screen.getByRole("button", { name: "open terminal" }));
-      screen.getByRole("region", { name: "Terminal" });
+      await screen.findByRole("region", { name: "Terminal" });
 
-      await user.click(screen.getByRole("button", { name: "Close terminal" }));
+      await user.click(await screen.findByRole("button", { name: "Close terminal" }));
 
       expect(screen.queryByRole("region", { name: "Terminal" })).toBeNull();
 
       // Opening it again creates a fresh panel.
       await user.click(screen.getByRole("button", { name: "open terminal" }));
-      expect(screen.getByRole("region", { name: "Terminal" })).toBeVisible();
+      expect(await screen.findByRole("region", { name: "Terminal" })).toBeVisible();
     });
   });
 });

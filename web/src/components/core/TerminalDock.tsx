@@ -17,10 +17,10 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { Suspense, useCallback, useEffect, useRef, useState } from "react";
+import { Bullseye, Spinner } from "@patternfly/react-core";
 import { clamp } from "radashi";
 import ResizeHandle from "~/components/core/ResizeHandle";
-import TerminalPane from "~/components/core/TerminalPane";
 import { useTerminal } from "~/context/terminal";
 import { _ } from "~/i18n";
 
@@ -60,6 +60,16 @@ function useElementSize(ref: React.RefObject<HTMLElement>): Size {
 
   return size;
 }
+
+// Load the terminal component and its dependencies (including CSS) dynamically
+// when needed, do not include it in the default index.js file to save memory.
+const TerminalPane = React.lazy(
+  () =>
+    import(
+      /* webpackChunkName: "terminal" */
+      "~/components/core/TerminalPane"
+    ),
+);
 
 /**
  * App-shell layout that optionally docks the terminal panel below the
@@ -125,6 +135,14 @@ export default function TerminalDock({ children }: React.PropsWithChildren) {
     [terminalHeight, maxTerminalHeight, setHeight],
   );
 
+  const fallback = (
+    // The panel is a flex row, let the Bullseye to fill it otherwise it would
+    // collapse to the left side.
+    <Bullseye style={{ flex: 1 }}>
+      <Spinner />
+    </Bullseye>
+  );
+
   return (
     <div ref={containerRef} className="agm-terminal-dock">
       <div className="agm-terminal-dock__main" hidden={isOpen && !enoughSpace}>
@@ -149,7 +167,9 @@ export default function TerminalDock({ children }: React.PropsWithChildren) {
             }
             style={terminalStyle}
           >
-            <TerminalPane enoughSpace={enoughSpace} />
+            <Suspense fallback={fallback}>
+              <TerminalPane enoughSpace={enoughSpace} />
+            </Suspense>
           </div>
         </>
       )}
