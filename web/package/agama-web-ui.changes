@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Sat Oct 31 17:43:12 UTC 2026 - Michal Filka <mfilka@suse.com>
+
+- bsc#1277423, bsc#1278439, bsc#1278442, bsc#1280783, bsc#1286307
+  (CVE-2026-110725,CVE-2026-110306,CVE-2026-110095,CVE-2026-110180,
+  CVE-2026-86472, CVE-2026-84394, CVE-2026-84292, CVE-2026-76172,
+  CVE-2026-75899, CVE-2026-75975, CVE-2026-75931)
+  - fast-uri upgraded to 3.1.9
+
+-------------------------------------------------------------------
 Fri Oct 30 17:18:10 UTC 2026 - Balsa Asanovic <balsaasanovic95@gmail.com>
 
 - Let Tab move focus in multi-value fields, and update the helper texts
