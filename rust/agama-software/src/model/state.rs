@@ -162,9 +162,13 @@ impl<'a> SoftwareStateBuilder<'a> {
             self.add_selection(&mut state, selection);
         }
 
-        if state.image.is_some() {
+        if let Some(image) = &state.image {
             state.repositories.clear();
-            state.resolvables = ResolvablesState::default();
+            if !image.install_required_packages() {
+                state.resolvables = ResolvablesState::default();
+            } else {
+                state.resolvables.0.retain(|_, sel| sel.selected());
+            }
         }
 
         state
@@ -573,6 +577,24 @@ impl ResolvablesState {
     /// Returns true if the collection of resolvables is empty.
     pub fn is_empty(&self) -> bool {
         self.0.is_empty()
+    }
+
+    /// Returns the sorted and deduplicated list of selected resolvable names formatted for zypper.
+    ///
+    /// Patterns are prefixed with `pattern:` so zypper can install them directly.
+    pub fn selected_resolvable_names(&self) -> Vec<String> {
+        let mut names: Vec<String> = self
+            .0
+            .iter()
+            .filter(|(_, sel)| sel.selected())
+            .map(|((name, r#type), _)| match r#type {
+                ResolvableType::Pattern => format!("pattern:{name}"),
+                _ => name.clone(),
+            })
+            .collect();
+        names.sort();
+        names.dedup();
+        names
     }
 
     /// Turns the list of resolvables into a vector.

@@ -188,3 +188,25 @@ async fn test_service_image_model_install_and_finish() {
     let finish_result = service.call(message::Finish).await;
     assert!(finish_result.is_ok());
 }
+
+#[tokio::test]
+async fn test_service_image_deployment_with_required_packages() {
+    let (service, _events_rx) = start_test_software_service().await;
+    let product = create_test_product();
+
+    let image = ImageConfig::new("/images/tumbleweed.tar.xz", ImageType::Tarball)
+        .with_install_required_packages(true);
+
+    let config = Config {
+        software: Some(SoftwareConfig {
+            image: Some(image),
+            ..Default::default()
+        }),
+        ..Default::default()
+    };
+
+    let set_config_result = service
+        .call(message::SetConfig::new(product, Some(config)))
+        .await;
+    assert!(set_config_result.is_ok());
+}

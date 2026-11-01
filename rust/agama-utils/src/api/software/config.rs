@@ -135,13 +135,17 @@ pub enum ImageType {
 #[serde(rename_all = "camelCase")]
 #[schemars(title = "Image configuration")]
 pub struct ImageConfig {
-    /// Path to the image.
+    /// Path to the image file, remote URL, or container image reference (e.g. "registry.mycompany.com/myorg/gold:latest").
     pub path: String,
     /// Type of the image (tarball, raw, oci).
     #[serde(rename = "type")]
     pub image_type: ImageType,
+    /// Whether to ignore SSL/TLS certificate verification when downloading or pulling images.
+    pub insecure: Option<bool>,
     /// Flag indicating if recommended hardware packages should be installed after deploying the image.
     pub recommended_hardware_packages: Option<bool>,
+    /// Flag indicating if packages required by Agama (kernel, storage, bootloader) should be installed via zypper.
+    pub install_required_packages: Option<bool>,
 }
 
 impl merge::Merge for ImageConfig {
@@ -150,8 +154,14 @@ impl merge::Merge for ImageConfig {
             self.path = other.path;
         }
         self.image_type = other.image_type;
+        if other.insecure.is_some() {
+            self.insecure = other.insecure;
+        }
         if other.recommended_hardware_packages.is_some() {
             self.recommended_hardware_packages = other.recommended_hardware_packages;
+        }
+        if other.install_required_packages.is_some() {
+            self.install_required_packages = other.install_required_packages;
         }
     }
 }
@@ -161,8 +171,15 @@ impl ImageConfig {
         Self {
             path: path.into(),
             image_type,
+            insecure: None,
             recommended_hardware_packages: None,
+            install_required_packages: None,
         }
+    }
+
+    pub fn with_insecure(mut self, insecure: bool) -> Self {
+        self.insecure = Some(insecure);
+        self
     }
 
     pub fn with_recommended_hardware_packages(mut self, enabled: bool) -> Self {
@@ -170,9 +187,29 @@ impl ImageConfig {
         self
     }
 
+    pub fn with_install_required_packages(mut self, enabled: bool) -> Self {
+        self.install_required_packages = Some(enabled);
+        self
+    }
+
     /// Whether recommended hardware packages should be installed.
     pub fn install_hardware_packages(&self) -> bool {
         self.recommended_hardware_packages.unwrap_or(false)
+    }
+
+    /// Whether packages required by Agama (kernel, storage, bootloader) should be installed.
+    pub fn install_required_packages(&self) -> bool {
+        self.install_required_packages.unwrap_or(false)
+    }
+
+    /// Whether to ignore SSL/TLS certificate verification.
+    pub fn insecure(&self) -> bool {
+        self.insecure.unwrap_or(false)
+    }
+
+    /// Returns true if the path is a URL (e.g. http://, https://, ftp://, file://).
+    pub fn is_url(&self) -> bool {
+        self.path.contains("://") && Url::parse(&self.path).is_ok()
     }
 }
 
@@ -444,7 +481,9 @@ mod tests {
         let oci_json = r#"{
             "path": "registry.opensuse.org/opensuse/tumbleweed:latest",
             "type": "oci",
-            "recommendedHardwarePackages": false
+            "insecure": true,
+            "recommendedHardwarePackages": false,
+            "installRequiredPackages": true
         }"#;
         let oci_config: ImageConfig = serde_json::from_str(oci_json).unwrap();
         assert_eq!(
@@ -452,8 +491,14 @@ mod tests {
             "registry.opensuse.org/opensuse/tumbleweed:latest"
         );
         assert_eq!(oci_config.image_type, ImageType::Oci);
+        assert!(oci_config.insecure());
         assert_eq!(oci_config.recommended_hardware_packages, Some(false));
         assert!(!oci_config.install_hardware_packages());
+        assert_eq!(oci_config.install_required_packages, Some(true));
+        assert!(oci_config.install_required_packages());
+
+        let url_config = ImageConfig::new("https://example.com/image.tar.xz", ImageType::Tarball);
+        assert!(url_config.is_url());
     }
 
     #[test]
@@ -472,6 +517,7 @@ mod tests {
                 path: "/new/path.tar".to_string(),
                 image_type: ImageType::Tarball,
                 recommended_hardware_packages: Some(true),
+                ..Default::default()
             }),
             ..Default::default()
         };
@@ -481,6 +527,7 @@ mod tests {
                 path: "/old/path.tar".to_string(),
                 image_type: ImageType::Tarball,
                 recommended_hardware_packages: Some(false),
+                ..Default::default()
             }),
             ..Default::default()
         };
