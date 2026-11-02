@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Oct 29 20:11:26 UTC 2026 - Lubos Kocman <lubos.kocman@suse.com>
+
+- Add cockpit-client pattern to provide cockpit-client-launcher 
+
+-------------------------------------------------------------------
 Thu Sep 17 13:23:17 UTC 2026 - Ancor Gonzalez Sosa <ancor@suse.com>
 
 - Remove beta tag from the SLES and SLES for SAP product names
