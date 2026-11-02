@@ -861,9 +861,6 @@ export default {
   "Copy to the clipboard": [
     "Копировать в буфер обмена"
   ],
-  "Could not authenticate against the server.": [
-    "Не удалось пройти аутентификацию на сервере."
-  ],
   "Could not log in": [
     "Не удалось войти"
   ],
@@ -1211,15 +1208,6 @@ export default {
   ],
   "Enter a server URL": [
     "Введите URL сервера"
-  ],
-  "Enter or Tab to add": [
-    "Enter или Tab для добавления"
-  ],
-  "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate": [
-    "Enter или Tab для добавления, Backspace или Delete для удаления, стрелки для навигации"
-  ],
-  "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate entries, Escape to exit": [
-    "Enter или Tab для добавления, Backspace или Delete для удаления, стрелки для навигации по записям, Escape для выхода"
   ],
   "Enter removes every value, Left arrow goes back to the text box.": [
     "Enter удаляет все значения, стрелка влево возвращает к полю ввода."

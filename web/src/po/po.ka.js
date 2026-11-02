@@ -840,8 +840,8 @@ export default {
   "Copy to the clipboard": [
     "ბუფერში კოპირება"
   ],
-  "Could not authenticate against the server.": [
-    "სერვერთან ავთენტიკაცია შეუძლებელია."
+  "Could not authenticate against the server": [
+    "სერვერთან ავთენტიკაცია შეუძლებელია"
   ],
   "Could not log in": [
     "შესვლის შეცდომა"
@@ -1191,15 +1191,6 @@ export default {
   "Enter a server URL": [
     "შეიყვანეთ სერვერის URL"
   ],
-  "Enter or Tab to add": [
-    "დასამატებლად დააჭირეთ Enter-ს, ან Tab-ს"
-  ],
-  "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate": [
-    ""
-  ],
-  "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate entries, Escape to exit": [
-    ""
-  ],
   "Enter removes every value, Left arrow goes back to the text box.": [
     ""
   ],
@@ -1216,6 +1207,15 @@ export default {
     "ღილაკი Enter აჩვენებს, ან დამალავს დანარჩენ მნიშვნელობებს."
   ],
   "Enter takes a value back to the text box, Delete removes it, arrow keys move between values.": [
+    ""
+  ],
+  "Enter to add": [
+    "დასამატებლად დააჭირეთ Enter-ს"
+  ],
+  "Enter to add, Backspace or Delete to remove, arrow keys to navigate": [
+    ""
+  ],
+  "Enter to add, Backspace or Delete to remove, arrow keys to navigate entries, Escape to exit": [
     ""
   ],
   "Ethernet": [
@@ -1943,6 +1943,9 @@ export default {
   ],
   "No DASD devices found in this machine.": [
     "ამ მანქანაში DASD მოწყობილობები აღმოჩენილი არაა."
+  ],
+  "No IP configuration for this protocol": [
+    "ამ პროტოკოლს IP კონფიგურაცია არ აქვს"
   ],
   "No LVM volume groups are available for selection.": [
     "მოსანიშნად LVM ტომის ჯგუფები ხელმისაწვდომი არაა."

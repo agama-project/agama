@@ -840,9 +840,6 @@ export default {
   "Copy to the clipboard": [
     "Kopiera till urklipp"
   ],
-  "Could not authenticate against the server.": [
-    "Kunde inte autentisera mot servern."
-  ],
   "Could not log in": [
     "Kunde inte logga in"
   ],
@@ -1190,15 +1187,6 @@ export default {
   ],
   "Enter a server URL": [
     "Ange en server URL"
-  ],
-  "Enter or Tab to add": [
-    "Enter eller Tabb för att lägga till"
-  ],
-  "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate": [
-    "Enter eller Tabb för att lägga till, Backspace eller Delete för att ta bort, piltangenterna för att navigera"
-  ],
-  "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate entries, Escape to exit": [
-    "Enter eller Tabb för att lägga till, Backspace eller Delete för att ta bort, piltangenter för att navigera i poster, Escape för att avsluta"
   ],
   "Enter removes every value, Left arrow goes back to the text box.": [
     "Enter tar bort alla värden, vänsterpil går tillbaka till textrutan."
