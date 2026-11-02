@@ -46,7 +46,7 @@ use agama_utils::{
         software::{ImageConfig, ImageType, Repository, SoftwareProposal, SystemInfo},
         Progress, Scope,
     },
-    command::ChrootCommand,
+    command::{ChrootCommand, ResolvConfLink},
     products::ProductSpec,
     progress, question,
 };
@@ -907,6 +907,8 @@ impl ImageModel {
     async fn enable_hardware(&self) -> Result<(), service::Error> {
         tracing::info!("Running hardware enablement with 'zypper inr --no-recommends'");
 
+        let _resolv = ResolvConfLink::new("/", &self.install_dir);
+
         let mut chroot_cmd = ChrootCommand::new(&self.install_dir).map_err(|e| {
             service::Error::ImageDeploymentFailed(format!(
                 "Failed to initialize chroot command: {e}"
@@ -957,6 +959,8 @@ impl ImageModel {
         }
 
         tracing::info!("Installing required system packages and patterns: {pkgs:?}");
+
+        let _resolv = ResolvConfLink::new("/", &self.install_dir);
 
         let mut chroot_cmd = ChrootCommand::new(&self.install_dir).map_err(|e| {
             service::Error::ImageDeploymentFailed(format!(

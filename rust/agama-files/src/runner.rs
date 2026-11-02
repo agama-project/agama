@@ -29,7 +29,7 @@ use std::{
 use agama_utils::{
     actor::Handler,
     api::{files::Script, question::QuestionSpec, Scope},
-    command::{create_log_file, run_with_retry},
+    command::{create_log_file, run_with_retry, ResolvConfLink},
     progress,
     question::{self, ask_question},
 };
@@ -44,11 +44,6 @@ pub enum Error {
     #[error(transparent)]
     Question(#[from] question::AskError),
 }
-
-// Relative path to the resolv.conf file.
-const RESOLV_CONF_PATH: &str = "etc/resolv.conf";
-// Relative path to the NetworkManager resolv.conf file.
-const NM_RESOLV_CONF_PATH: &str = "run/NetworkManager/resolv.conf";
 
 /// Implements the logic to run a script.
 ///
@@ -97,9 +92,9 @@ impl ScriptsRunner {
         let scripts: Vec<_> = self.find_scripts_to_run(scripts);
         self.start_progress(&scripts);
 
-        let mut resolv_linked = false;
+        let mut resolv_link = None;
         if scripts.iter().any(|s| s.chroot()) {
-            resolv_linked = self.link_resolv()?;
+            resolv_link = Some(ResolvConfLink::new(&self.root_dir, &self.install_dir)?);
         }
 
         for script in scripts {
@@ -109,8 +104,8 @@ impl ScriptsRunner {
             self.run_script(script).await?;
         }
 
-        if resolv_linked {
-            self.unlink_resolv();
+        if let Some(mut link) = resolv_link {
+            link.unlink();
         }
 
         _ = self
@@ -241,34 +236,6 @@ impl ScriptsRunner {
         _ = file.read_to_end(&mut buffer)?;
         let string = String::from_utf8_lossy(&buffer);
         Ok(string.into_owned())
-    }
-
-    /// Make sures that the resolv.conf is linked and returns true if any action was needed.
-    ///
-    /// It returns false if the resolv.conf was already linked and no action was required.
-    fn link_resolv(&self) -> Result<bool, std::io::Error> {
-        let original = self.root_dir.join(NM_RESOLV_CONF_PATH);
-        let link = self.resolv_link_path();
-
-        if fs::exists(&link)? || !fs::exists(&original)? {
-            return Ok(false);
-        }
-
-        // It assumes that the directory of the resolv.conf (/etc) exists.
-        symlink(original.as_path(), link.as_path())?;
-        Ok(true)
-    }
-
-    /// Removes the resolv.conf file from the chroot.
-    fn unlink_resolv(&self) {
-        let link = self.resolv_link_path();
-        if let Err(error) = fs::remove_file(link) {
-            tracing::warn!("Could not remove the resolv.conf link: {error}");
-        }
-    }
-
-    fn resolv_link_path(&self) -> PathBuf {
-        self.install_dir.join(RESOLV_CONF_PATH)
     }
 }
 

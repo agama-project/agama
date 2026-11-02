@@ -21,8 +21,8 @@
 use std::{
     fs::{self, File},
     ops::{Deref, DerefMut},
-    os::unix::fs::OpenOptionsExt,
-    path::Path,
+    os::unix::fs::{symlink, OpenOptionsExt},
+    path::{Path, PathBuf},
     process::Output,
     time::Duration,
 };
@@ -213,4 +213,101 @@ pub async fn open_firewall<P: AsRef<Path>>(
     }
 
     Ok(())
+}
+
+/// Relative path to the resolv.conf file in target.
+pub const RESOLV_CONF_PATH: &str = "etc/resolv.conf";
+/// Relative path to the NetworkManager resolv.conf file in host.
+pub const NM_RESOLV_CONF_PATH: &str = "run/NetworkManager/resolv.conf";
+
+/// Helper to link and unlink resolv.conf for chroot environments.
+#[derive(Debug)]
+pub struct ResolvConfLink {
+    link_path: PathBuf,
+    is_linked: bool,
+}
+
+impl ResolvConfLink {
+    /// Makes sure that the resolv.conf is linked into the chroot target.
+    ///
+    /// * `root_dir`: root directory of the host system.
+    /// * `install_dir`: target directory where the chrooted system is installed.
+    pub fn new<P: AsRef<Path>, Q: AsRef<Path>>(root_dir: P, install_dir: Q) -> io::Result<Self> {
+        let original = root_dir.as_ref().join(NM_RESOLV_CONF_PATH);
+        let link = install_dir.as_ref().join(RESOLV_CONF_PATH);
+
+        if link.exists() || !original.exists() {
+            return Ok(Self {
+                link_path: link,
+                is_linked: false,
+            });
+        }
+
+        if let Some(parent) = link.parent() {
+            fs::create_dir_all(parent)?;
+        }
+
+        symlink(original.as_path(), link.as_path())?;
+        Ok(Self {
+            link_path: link,
+            is_linked: true,
+        })
+    }
+
+    /// Returns whether the resolv.conf link was created by this helper.
+    pub fn is_linked(&self) -> bool {
+        self.is_linked
+    }
+
+    /// Removes the resolv.conf link from the chroot if it was created by this helper.
+    pub fn unlink(&mut self) {
+        if self.is_linked {
+            if let Err(error) = fs::remove_file(&self.link_path) {
+                tracing::warn!("Could not remove the resolv.conf link: {error}");
+            }
+            self.is_linked = false;
+        }
+    }
+}
+
+impl Drop for ResolvConfLink {
+    fn drop(&mut self) {
+        self.unlink();
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::io::Write;
+    use tempfile::TempDir;
+
+    #[test]
+    fn test_resolv_conf_link_lifecycle() {
+        let host_temp = TempDir::new().unwrap();
+        let target_temp = TempDir::new().unwrap();
+
+        let nm_dir = host_temp.path().join("run/NetworkManager");
+        fs::create_dir_all(&nm_dir).unwrap();
+        let nm_resolv = nm_dir.join("resolv.conf");
+        let mut f = File::create(&nm_resolv).unwrap();
+        writeln!(f, "nameserver 1.1.1.1").unwrap();
+
+        let target_etc = target_temp.path().join("etc");
+        fs::create_dir_all(&target_etc).unwrap();
+
+        {
+            let link = ResolvConfLink::new(host_temp.path(), target_temp.path()).unwrap();
+            assert!(link.is_linked());
+            let target_resolv = target_etc.join("resolv.conf");
+            assert!(target_resolv.is_symlink());
+            assert!(target_resolv.exists());
+            let content = fs::read_to_string(&target_resolv).unwrap();
+            assert!(content.contains("nameserver 1.1.1.1"));
+        }
+
+        // Dropping the guard should automatically remove the link
+        let target_resolv = target_etc.join("resolv.conf");
+        assert!(!target_resolv.exists());
+    }
 }
