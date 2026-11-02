@@ -840,9 +840,6 @@ export default {
   "Copy to the clipboard": [
     "In die Zwischenablage kopieren"
   ],
-  "Could not authenticate against the server.": [
-    "Die Authentifizierung beim Server war nicht möglich."
-  ],
   "Could not log in": [
     "Anmeldung nicht möglich"
   ],
@@ -1190,15 +1187,6 @@ export default {
   ],
   "Enter a server URL": [
     "Server-URL eingeben"
-  ],
-  "Enter or Tab to add": [
-    "Eingabe oder Tab zum Hinzufügen"
-  ],
-  "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate": [
-    "Eingabe oder Tab zum Hinzufügen, Rücktaste oder Entf zum Löschen, Pfeiltasten zum Navigieren"
-  ],
-  "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate entries, Escape to exit": [
-    "Eingabe oder Tab zum Hinzufügen, Rücktaste oder Entf zum Löschen, Pfeiltasten zum Navigieren zwischen den Einträgen, Esc zum Beenden"
   ],
   "Enter removes every value, Left arrow goes back to the text box.": [
     "Mit der Eingabetaste werden alle Werte gelöscht, mit dem Pfeil nach links gelangt man zum Textfeld zurück."
@@ -1943,6 +1931,9 @@ export default {
   ],
   "No DASD devices found in this machine.": [
     "In dieser Maschine wurden keine DASD-Geräte gefunden."
+  ],
+  "No IP configuration for this protocol": [
+    "Keine IP-Konfiguration für dieses Protokoll"
   ],
   "No LVM volume groups are available for selection.": [
     "Es stehen keine LVM-Volume-Gruppen zur Auswahl."

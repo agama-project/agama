@@ -861,9 +861,6 @@ export default {
   "Copy to the clipboard": [
     "Скопіювати в буфер обміну"
   ],
-  "Could not authenticate against the server.": [
-    "Не вдалося виконати автентифікацію на сервері."
-  ],
   "Could not log in": [
     "Не вдалося увійти"
   ],
@@ -1211,15 +1208,6 @@ export default {
   ],
   "Enter a server URL": [
     "Введіть URL сервера"
-  ],
-  "Enter or Tab to add": [
-    "Натисніть Enter або Tab, щоб додати"
-  ],
-  "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate": [
-    "Натисніть Enter або Tab, щоб додати, Backspace або Delete, щоб видалити, клавіші зі стрілками для навігації"
-  ],
-  "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate entries, Escape to exit": [
-    "Натисніть Enter або Tab, щоб додати, Backspace або Delete, щоб видалити, клавіші зі стрілками для переходу між записами, Escape для виходу"
   ],
   "Enter removes every value, Left arrow goes back to the text box.": [
     "Клавіша «Enter» видаляє всі значення, стрілка вліво повертає курсор у текстове поле."

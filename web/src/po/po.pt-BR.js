@@ -801,9 +801,6 @@ export default {
   "Copy to the clipboard": [
     "Copiar para a área de transferência"
   ],
-  "Could not authenticate against the server.": [
-    "Não foi possível autenticar no servidor."
-  ],
   "Could not log in": [
     "Não foi possível efetuar login"
   ],
@@ -1145,15 +1142,6 @@ export default {
   ],
   "Enter a server URL": [
     "Inserir URL de um servidor"
-  ],
-  "Enter or Tab to add": [
-    "Enter ou Tab para adicionar"
-  ],
-  "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate": [
-    "Enter ou Tab para adicionar, Backspace ou Delete para remover, teclas de setas para navegar"
-  ],
-  "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate entries, Escape to exit": [
-    "Enter ou Tab para adicionar, Backspace ou Delete para remover, teclas de setas para navegar pelas entradas, Escape para sair"
   ],
   "Enter removes every value, Left arrow goes back to the text box.": [
     ""
