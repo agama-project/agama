@@ -21,11 +21,10 @@
  */
 
 import React from "react";
-import { sprintf } from "sprintf-js";
 import AlertWithDetailsPopup from "~/components/core/AlertWithDetailsPopup";
 import PlannedChangesPopup from "~/components/storage/storage-page/PlannedChangesPopup";
 import { useActions } from "~/hooks/model/proposal/storage";
-import { _, n_ } from "~/i18n";
+import { _ } from "~/i18n";
 import type { TranslatedString } from "~/i18n";
 import type { Storage } from "~/model/proposal";
 
@@ -39,18 +38,11 @@ import type { Storage } from "~/model/proposal";
  * rather than what the configuration asked for.
  */
 function summaryOf(actions: Storage.Action[]): TranslatedString {
-  /* Subvolumes are how one file system is laid out inside itself, so counting
-     them tells a reader how the installer works rather than what it will do. */
-  const count = actions.filter((action) => !action.subvol).length;
+  const deleteActions = actions.filter((a) => a.delete && !a.subvol).length;
 
-  return sprintf(
-    n_(
-      "Applying the configuration below will take %d action during installation",
-      "Applying the configuration below will take %d actions during installation",
-      count,
-    ),
-    count,
-  );
+  return deleteActions
+    ? _("The configuration will be applied during installation with potential data loss")
+    : _("The configuration will be applied during installation with no expected data loss");
 }
 
 /**
@@ -67,7 +59,7 @@ export default function Consequences(): React.ReactNode {
       title={summaryOf(actions)}
       // TRANSLATORS: opens a popup with the layout the disks will have after
       // installation and the actions needed to get there.
-      actionLabel={_("View changes")}
+      actionLabel={_("Show result")}
       // TRANSLATORS: title of the popup with the layout the disks will have and
       // the actions needed to get there. "Planned" because nothing is applied
       // until the installation starts.

@@ -101,7 +101,7 @@ export default function Result(): React.ReactNode {
   if (proposal) {
     title = summaryOf(proposal.actions || []);
   } else if (configIssues.length) {
-    title = fixableConfigTitle(configIssues);
+    title = fixableConfigTitle();
   }
 
   useAnnounceKind(kind, title);
