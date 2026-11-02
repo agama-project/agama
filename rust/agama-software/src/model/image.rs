@@ -1110,7 +1110,7 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_deploy_tarball_compressed_stream_url() {
+    async fn test_deploy_tarball_compressed_local() {
         let (progress, questions) = create_test_handlers().await;
 
         let temp_src = TempDir::new().unwrap();
@@ -1130,10 +1130,9 @@ mod tests {
             .unwrap();
         assert!(create_tar.status.success());
 
-        let file_url = url::Url::from_file_path(&tar_path).unwrap().to_string();
         let temp_dest = TempDir::new().unwrap();
-        let image_config = ImageConfig::new(file_url, ImageType::Tarball);
-        assert!(image_config.is_url());
+        let image_config = ImageConfig::new(tar_path.to_str().unwrap(), ImageType::Tarball);
+        assert!(!image_config.is_url());
 
         let model = ImageModel::new(image_config, temp_dest.path(), progress, questions);
 
