@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-25 21:33+0000\n"
+"POT-Creation-Date: 2026-10-30 13:11+0000\n"
 "PO-Revision-Date: 2026-08-19 15:13+0000\n"
 "Last-Translator: Bone NI <bounkirdni@gmail.com>\n"
 "Language-Team: Lao <https://l10n.opensuse.org/projects/agama/agama-rust-"
@@ -787,119 +787,119 @@ msgstr "ບໍ່ສາມາດດຶງຂໍ້ມູນສະຄຣິບ %s
 msgid "Failed to write the file %s. Do you want to try again?"
 msgstr "ບໍ່ສາມາດຂຽນໄຟລ໌ %s ໄດ້. ເຈົ້າຕ້ອງການລອງໃໝ່ບໍ່?"
 
-#: agama-manager/src/actions.rs:79
+#: agama-manager/src/actions.rs:78
 msgid "Prepare the system"
 msgstr "ກະກຽມລະບົບ"
 
-#: agama-manager/src/actions.rs:80
+#: agama-manager/src/actions.rs:79
 msgid "Install software"
 msgstr "ຕິດຕັ້ງຊອບແວ"
 
-#: agama-manager/src/actions.rs:81
+#: agama-manager/src/actions.rs:80
 msgid "Configure the system"
 msgstr "ຕັ້ງຄ່າລະບົບ"
 
-#: agama-manager/src/actions.rs:95
+#: agama-manager/src/actions.rs:94
 msgid "Preparing storage"
 msgstr "ກຳລັງກະກຽມໜ່ວຍຈັດເກັບຂໍ້ມູນ"
 
-#: agama-manager/src/actions.rs:113
+#: agama-manager/src/actions.rs:112
 msgid "Running post-partitioning scripts"
 msgstr "ກຳລັງລັນສະຄຣິບຫຼັງການແບ່ງພາດທິຊັນ"
 
-#: agama-manager/src/actions.rs:138
+#: agama-manager/src/actions.rs:137
 msgid "Installing software"
 msgstr "ກຳລັງຕິດຕັ້ງຊອບແວ"
 
-#: agama-manager/src/actions.rs:176
+#: agama-manager/src/actions.rs:175
 msgid "Configuring the system"
 msgstr "ກຳລັງຕັ້ງຄ່າລະບົບ"
 
-#: agama-manager/src/actions.rs:248
+#: agama-manager/src/actions.rs:250
 msgid "Finishing installation"
 msgstr "ກຳລັງສຳເລັດການຕິດຕັ້ງ"
 
-#: agama-manager/src/actions.rs:277
+#: agama-manager/src/actions.rs:279
 msgid "Finalize installation"
 msgstr "ເຮັດໃຫ້ການຕິດຕັ້ງສຳເລັດຂັ້ນສຸດທ້າຍ"
 
-#: agama-manager/src/actions.rs:352
+#: agama-manager/src/actions.rs:354
 msgid "Storing questions settings"
 msgstr "ກຳລັງບັນທຶກການຕັ້ງຄ່າຄຳຖາມ"
 
-#: agama-manager/src/actions.rs:363
+#: agama-manager/src/actions.rs:365
 msgid "Importing user files and scripts"
 msgstr "ກຳລັງນຳເຂົ້າໄຟລ໌ ແລະ ສະຄຣິບຂອງຜູ້ໃຊ້"
 
-#: agama-manager/src/actions.rs:377
+#: agama-manager/src/actions.rs:379
 msgid "Running user pre-installation scripts"
 msgstr "ກຳລັງລັນສະຄຣິບກ່ອນການຕິດຕັ້ງຂອງຜູ້ໃຊ້"
 
-#: agama-manager/src/actions.rs:392
+#: agama-manager/src/actions.rs:394
 msgid "Storing security settings"
 msgstr "ກຳລັງບັນທຶກການຕັ້ງຄ່າຄວາມປອດໄພ"
 
-#: agama-manager/src/actions.rs:402
+#: agama-manager/src/actions.rs:404
 msgid "Configuring remote access"
 msgstr "ກຳລັງຕັ້ງຄ່າການເຂົ້າເຖິງທາງໄກ"
 
-#: agama-manager/src/actions.rs:412
+#: agama-manager/src/actions.rs:414
 msgid "Setting up the hostname"
 msgstr "ກຳລັງຕັ້ງຄ່າຊື່ເຄື່ອງ (hostname)"
 
-#: agama-manager/src/actions.rs:422
+#: agama-manager/src/actions.rs:424
 msgid "Setting up the network proxy"
 msgstr "ກຳລັງຕັ້ງຄ່າພຣັອກຊີເຄືອຂ່າຍ"
 
-#: agama-manager/src/actions.rs:433
+#: agama-manager/src/actions.rs:435
 msgid "Setting up NTP"
 msgstr "ກຳລັງຕັ້ງຄ່າ NTP"
 
-#: agama-manager/src/actions.rs:443
+#: agama-manager/src/actions.rs:445
 msgid "Storing localization settings"
 msgstr "ກຳລັງບັນທຶກການຕັ້ງຄ່າທ້ອງຖິ່ນ"
 
-#: agama-manager/src/actions.rs:453
+#: agama-manager/src/actions.rs:455
 msgid "Storing users settings"
 msgstr "ກຳລັງບັນທຶກການຕັ້ງຄ່າຜູ້ໃຊ້"
 
-#: agama-manager/src/actions.rs:563
+#: agama-manager/src/actions.rs:565
 msgid "Configuring iSCSI devices"
 msgstr "ກຳລັງຕັ້ງຄ່າອຸປະກອນ iSCSI"
 
-#: agama-manager/src/actions.rs:588
+#: agama-manager/src/actions.rs:590
 msgid "Configuring zFCP devices"
 msgstr "ກຳລັງຕັ້ງຄ່າອຸປະກອນ zFCP"
 
-#: agama-manager/src/actions.rs:614
+#: agama-manager/src/actions.rs:616
 msgid "Configuring DASD devices"
 msgstr "ກຳລັງຕັ້ງຄ່າອຸປະກອນ DASD"
 
-#: agama-manager/src/actions.rs:640
+#: agama-manager/src/actions.rs:642
 msgid "Setting up the network"
 msgstr "ກຳລັງຕັ້ງຄ່າເຄືອຂ່າຍ"
 
-#: agama-manager/src/actions.rs:670
+#: agama-manager/src/actions.rs:671
 msgid "Preparing the storage proposal"
 msgstr "ກຳລັງກະກຽມຂໍ້ສະເໜີໜ່ວຍຈັດເກັບຂໍ້ມູນ"
 
-#: agama-manager/src/actions.rs:700
+#: agama-manager/src/actions.rs:701
 msgid "Storing bootloader settings"
 msgstr "ກຳລັງບັນທຶກການຕັ້ງຄ່າບູດໂຫລດເດີ"
 
-#: agama-manager/src/actions.rs:734
+#: agama-manager/src/actions.rs:735
 msgid "Preparing the software proposal"
 msgstr "ກຳລັງກະກຽມຂໍ້ສະເໜີຊອບແວ"
 
-#: agama-manager/src/actions.rs:764
+#: agama-manager/src/actions.rs:765
 msgid "Configuring SELinux"
 msgstr "ກຳລັງຕັ້ງຄ່າ SELinux"
 
-#: agama-network/src/service.rs:511
+#: agama-network/src/service.rs:163
 msgid "Writing network configuration"
 msgstr "ກຳລັງຂຽນການຕັ້ງຄ່າເຄືອຂ່າຍ"
 
-#: agama-network/src/service.rs:512
+#: agama-network/src/service.rs:164
 msgid "Syncing the network service state"
 msgstr "ກຳລັງຊິງຄ໌ສະຖານະບໍລິການເຄືອຂ່າຍ"
 
@@ -1064,11 +1064,11 @@ msgstr "ຂໍ້ຜິດພາດ:"
 msgid "Details:"
 msgstr "ລາຍລະອຽດ:"
 
-#: agama-utils/src/api/question.rs:346 agama-utils/src/question/start.rs:48
+#: agama-utils/src/api/question.rs:347 agama-utils/src/question/start.rs:48
 msgid "No"
 msgstr "ບໍ່"
 
-#: agama-utils/src/api/question.rs:346 agama-utils/src/question/start.rs:48
+#: agama-utils/src/api/question.rs:347 agama-utils/src/question/start.rs:48
 msgid "Yes"
 msgstr "ແມ່ນ"
 
