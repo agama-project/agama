@@ -538,7 +538,11 @@ mod tests {
             "/new/path.tar".to_string()
         );
         assert_eq!(
-            updated.image.as_ref().unwrap().recommended_hardware_packages,
+            updated
+                .image
+                .as_ref()
+                .unwrap()
+                .recommended_hardware_packages,
             Some(true)
         );
     }

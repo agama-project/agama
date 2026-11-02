@@ -135,11 +135,13 @@ impl ImageModel {
             total_steps += 1;
         }
 
-        let _ = self.progress.cast(progress::message::SetProgress::new(Progress::new(
-            Scope::Software,
-            total_steps,
-            gettext("Starting image deployment"),
-        )));
+        let _ = self
+            .progress
+            .cast(progress::message::SetProgress::new(Progress::new(
+                Scope::Software,
+                total_steps,
+                gettext("Starting image deployment"),
+            )));
 
         // Step 1: Deploy image
         self.deploy_image().await?;
@@ -163,7 +165,9 @@ impl ImageModel {
             self.enable_hardware().await?;
         }
 
-        let _ = self.progress.cast(progress::message::Finish::new(Scope::Software));
+        let _ = self
+            .progress
+            .cast(progress::message::Finish::new(Scope::Software));
         tracing::info!("Image deployment finished successfully");
         Ok(true)
     }
@@ -281,11 +285,8 @@ impl ImageModel {
                 let tar_stderr = tar_child.stderr.take().unwrap();
                 let tar_logger = spawn_stderr_logger("tar", tar_stderr);
 
-                let (curl_res, decomp_res, tar_res) = tokio::join!(
-                    curl_child.wait(),
-                    decomp_child.wait(),
-                    tar_child.wait(),
-                );
+                let (curl_res, decomp_res, tar_res) =
+                    tokio::join!(curl_child.wait(), decomp_child.wait(), tar_child.wait(),);
 
                 let curl_status = curl_res.map_err(|e| {
                     service::Error::ImageDeploymentFailed(format!("curl wait failed: {e}"))
@@ -762,9 +763,10 @@ impl ImageModel {
         let cp_stderr = cp_child.stderr.take().unwrap();
         let cp_logger = spawn_stderr_logger("cp", cp_stderr);
 
-        let status = cp_child.wait().await.map_err(|e| {
-            service::Error::ImageDeploymentFailed(format!("cp wait failed: {e}"))
-        })?;
+        let status = cp_child
+            .wait()
+            .await
+            .map_err(|e| service::Error::ImageDeploymentFailed(format!("cp wait failed: {e}")))?;
 
         if !status.success() {
             let err = collect_last_lines(cp_logger).await;
@@ -782,7 +784,9 @@ impl ImageModel {
         let insecure = self.image_config.insecure();
         let install_dir = self.install_dir.to_string_lossy().to_string();
 
-        tracing::info!("Deploying OCI image '{image_ref}' into '{install_dir}' using podman export");
+        tracing::info!(
+            "Deploying OCI image '{image_ref}' into '{install_dir}' using podman export"
+        );
 
         let container_name = "agama-oci-deploy";
 
@@ -837,9 +841,7 @@ impl ImageModel {
             .stderr(Stdio::piped())
             .spawn()
             .map_err(|e| {
-                service::Error::ImageDeploymentFailed(format!(
-                    "Failed to spawn podman export: {e}"
-                ))
+                service::Error::ImageDeploymentFailed(format!("Failed to spawn podman export: {e}"))
             })?;
 
         let export_stdout = export_child.stdout.take().unwrap();
@@ -882,9 +884,8 @@ impl ImageModel {
         let export_status = export_res.map_err(|e| {
             service::Error::ImageDeploymentFailed(format!("podman export wait failed: {e}"))
         })?;
-        let tar_status = tar_res.map_err(|e| {
-            service::Error::ImageDeploymentFailed(format!("tar wait failed: {e}"))
-        })?;
+        let tar_status = tar_res
+            .map_err(|e| service::Error::ImageDeploymentFailed(format!("tar wait failed: {e}")))?;
 
         if !export_status.success() {
             let err = collect_last_lines(export_logger).await;
@@ -1092,11 +1093,7 @@ mod tests {
             .expect("Failed to start l10n service");
 
         let issues = model
-            .write(
-                SoftwareState::new("test"),
-                l10n_handler,
-                progress,
-            )
+            .write(SoftwareState::new("test"), l10n_handler, progress)
             .await
             .unwrap();
         assert!(issues.is_empty());
@@ -1112,7 +1109,13 @@ mod tests {
 
         let tar_path = temp_src.path().join("image.tar");
         let create_tar = std::process::Command::new("tar")
-            .args(["-cf", tar_path.to_str().unwrap(), "-C", temp_src.path().to_str().unwrap(), "hello.txt"])
+            .args([
+                "-cf",
+                tar_path.to_str().unwrap(),
+                "-C",
+                temp_src.path().to_str().unwrap(),
+                "hello.txt",
+            ])
             .output()
             .unwrap();
         assert!(create_tar.status.success());

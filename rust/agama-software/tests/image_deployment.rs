@@ -58,8 +58,8 @@ async fn start_test_software_service() -> (Handler<Service>, Receiver<Event>) {
 }
 
 fn create_test_product() -> Arc<RwLock<ProductSpec>> {
-    let path = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
-        .join("../test/share/products.d/tumbleweed.yaml");
+    let path =
+        PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../test/share/products.d/tumbleweed.yaml");
     let template = std::fs::read_to_string(&path).unwrap();
     let template: ProductTemplate = serde_yaml::from_str(&template).unwrap();
     Arc::new(RwLock::new(template.to_product_spec(None).unwrap()))

@@ -215,11 +215,7 @@ impl Service {
         }
 
         let state = self.state.read().await;
-        let image_config = state
-            .config
-            .software
-            .as_ref()
-            .and_then(|s| s.image.clone());
+        let image_config = state.config.software.as_ref().and_then(|s| s.image.clone());
 
         if let Some(image_config) = image_config {
             // When deploying an image, zypp server should not run at all.
