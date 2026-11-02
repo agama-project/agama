@@ -1956,31 +1956,6 @@ pub struct TunConfig {
     pub owner: Option<String>,
 }
 
-/// Represents a network change.
-#[derive(Debug, Clone, Deserialize, Serialize)]
-#[serde(rename_all = "camelCase")]
-pub enum NetworkChange {
-    ConnectionAdded(Box<Connection>),
-    ConnectionRemoved(Uuid),
-    /// A new device has been added.
-    DeviceAdded(Device),
-    /// A device has been removed.
-    DeviceRemoved(String),
-    /// The device has been updated. The String corresponds to the
-    /// original device name, which is especially useful if the
-    /// device gets renamed.
-    DeviceUpdated(String, Device),
-    /// A connection state has changed.
-    ConnectionStateChanged {
-        uuid: Uuid,
-        state: ConnectionState,
-    },
-    /// A new access point has been added.
-    AccessPointAdded(AccessPoint),
-    /// An access point has been removed.
-    AccessPointRemoved(String),
-}
-
 #[derive(Default, Debug, PartialEq, Clone, Deserialize, Serialize, JsonSchema)]
 pub struct IEEE8021XConfig {
     pub eap: Vec<EAPMethod>,

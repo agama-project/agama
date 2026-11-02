@@ -40,7 +40,6 @@ use agama_utils::{
     progress, question,
 };
 use merge::Merge;
-use network::NetworkSystemClient;
 use serde_json::Value;
 use std::{collections::HashMap, sync::Arc};
 use strum::VariantArray;
@@ -116,7 +115,7 @@ pub struct Starter {
     hostname: Option<Handler<hostname::Service>>,
     iscsi: Option<Handler<iscsi::Service>>,
     l10n: Option<Handler<l10n::Service>>,
-    network: Option<NetworkSystemClient>,
+    network: Option<Handler<network::Service>>,
     proxy: Option<Handler<proxy::Service>>,
     ntp: Option<Handler<ntp::Service>>,
     security: Option<Handler<security::Service>>,
@@ -174,7 +173,7 @@ impl Starter {
         self
     }
 
-    pub fn with_network(mut self, network: NetworkSystemClient) -> Self {
+    pub fn with_network(mut self, network: Handler<network::Service>) -> Self {
         self.network = Some(network);
         self
     }
@@ -432,7 +431,7 @@ pub struct Service {
     issues: Handler<issue::Service>,
     l10n: Handler<l10n::Service>,
     licenses: licenses::Registry,
-    network: NetworkSystemClient,
+    network: Handler<network::Service>,
     ntp: Handler<ntp::Service>,
     product: Option<Arc<RwLock<ProductSpec>>>,
     products: products::Registry,
@@ -462,7 +461,6 @@ impl Service {
     ///
     /// If a default product is set, it asks the other services to initialize their configurations.
     pub async fn setup(&mut self) -> Result<(), Error> {
-        self.network_default().await?;
         self.read_system_info().await?;
 
         if let Some(product) = self.products.default_product() {
@@ -472,13 +470,6 @@ impl Service {
             self.update_issues()?;
         };
 
-        Ok(())
-    }
-
-    // Configure the network according to defaults
-    async fn network_default(&mut self) -> Result<(), Error> {
-        self.network.propose_default().await?;
-        self.network.apply().await?;
         Ok(())
     }
 
@@ -734,7 +725,7 @@ impl MessageHandler<message::GetSystem> for Service {
 
         let iscsi = self.iscsi.call(iscsi::message::GetSystem).await?;
         let bootloader = self.bootloader.call(bootloader::message::GetSystem).await?;
-        let network = self.network.get_system().await?;
+        let network = self.network.call(network::message::GetSystem).await?;
 
         let s390 = if let Some(s390) = &self.s390 {
             Some(s390.call(s390::message::GetSystem).await?)
@@ -783,7 +774,7 @@ impl MessageHandler<message::GetExtendedConfig> for Service {
         let proxy = self.proxy.call(proxy::message::GetConfig).await?;
         let ntp = self.ntp.call(ntp::message::GetConfig).await?;
         let questions = self.questions.call(question::message::GetConfig).await?;
-        let network = self.network.get_config().await?;
+        let network = self.network.call(network::message::GetConfig).await?;
         let access = self.access.call(agama_access::message::GetConfig).await?;
 
         // If the storage service is busy, it will not answer.
@@ -867,7 +858,7 @@ impl MessageHandler<message::GetProposal> for Service {
             Default::default()
         };
 
-        let network = self.network.get_proposal().await?;
+        let network = self.network.call(network::message::GetProposal).await?;
         let users = self.users.call(users::message::GetProposal).await?;
         let access = self.access.call(agama_access::message::GetProposal).await?;
 

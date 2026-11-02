@@ -36,4 +36,5 @@ mod watcher;
 
 pub use adapter::NetworkManagerAdapter;
 pub use client::NetworkManagerClient;
+pub use error::NmError;
 pub use watcher::NetworkManagerWatcher;

@@ -82,8 +82,6 @@ type MultiSelectKeyboardInput = {
   hasClearAll: boolean;
   /** Whether the input holds anything other than blanks. */
   hasText: boolean;
-  /** Whether a Tab that commits keeps focus in the field. */
-  tabKeepsFocus: boolean;
   actions: KeyboardActions;
 };
 
@@ -147,11 +145,10 @@ function wrap(index: number, count: number, step: number): number {
  * after it. A stop that lays the values out anew, such as the summary, takes
  * the keyboard with it through `highlightStop`.
  *
- * Tab commits the picked out row, or the text, and then keeps focus only if
- * something was committed and the field asks for it. It only ever adds: a
- * value the field already holds is left where it is, since Tab confirms a
- * choice rather than undoing one. An entry that leads somewhere else is not
- * something to commit, so Tab moves on instead of following it.
+ * Tab commits the picked out row, or the text, and then moves focus on. It
+ * only ever adds: a value the field already holds is left where it is, since
+ * Tab confirms a choice rather than undoing one. An entry that leads somewhere
+ * else is not something to commit, so Tab moves on instead of following it.
  */
 export function useKeyboard({
   optionRows,
@@ -159,7 +156,6 @@ export function useKeyboard({
   isListOpen,
   hasClearAll,
   hasText,
-  tabKeepsFocus,
   actions,
 }: MultiSelectKeyboardInput): KeyboardApi {
   const [navigation, setNavigation] = useState<Navigation>(IDLE);
@@ -214,19 +210,18 @@ export function useKeyboard({
   };
 
   /**
-   * Commits whatever Tab should commit and answers whether focus stays. A
-   * picked out option goes first, the text second, and an entry leading
-   * elsewhere is left for Enter.
+   * Commits whatever Tab should commit. A picked out option goes first, the
+   * text second, and an entry leading elsewhere is left for Enter.
    */
-  const commitOnTab = (): boolean => {
+  const commitOnTab = () => {
     if (navigation.mode === "options") {
       const row = optionRows[navigation.index];
       if (row && row.kind !== "footer") {
         actions.commitRow(row);
-        return true;
+        return;
       }
     }
-    return hasText && actions.commitText();
+    if (hasText) actions.commitText();
   };
 
   const onEntriesKeyDown = (event: React.KeyboardEvent<HTMLInputElement>, index: number) => {
@@ -345,11 +340,8 @@ export function useKeyboard({
 
   const onKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Tab") {
-      const committed = commitOnTab();
-      // No preventDefault unless focus is meant to stay: a field nobody can
-      // Tab out of is a trap.
-      if (committed && tabKeepsFocus) event.preventDefault();
-      else actions.closeList();
+      commitOnTab();
+      actions.closeList();
       reset();
       return;
     }
