@@ -97,6 +97,9 @@ pub trait ModelAdapter: Send + Sync + 'static {
     ) -> Result<WriteIssues, service::Error>;
 
     fn predefined_repositories(&self) -> Vec<Repository>;
+
+    /// Updates the software state in the model if needed (used for image deployment).
+    fn set_software_state(&self, _state: SoftwareState) {}
 }
 
 /// [ModelAdapter] implementation for libzypp systems.

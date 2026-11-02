@@ -205,11 +205,15 @@ impl ImageModel {
 
         tracing::info!("Deploying tarball '{path}' into '{install_dir}' with parallel streaming");
 
+        // Do not use --acls: VFAT on /boot lacks ACL support, causing tar to abort with unsuppressible fatal errors.
         let tar_args = vec![
             "--xattrs",
             "--xattrs-include=*",
-            "--acls",
+            "--warning=no-xattr-write",
             "--numeric-owner",
+            "--exclude=*boot/vmlinuz",
+            "--exclude=*boot/initrd",
+            "--exclude=*boot/sysctl.conf",
             "-xf",
             "-",
             "-C",
@@ -408,12 +412,16 @@ impl ImageModel {
                 }
             } else {
                 // Local uncompressed tarball: tar -xf <path> -C <install_dir>
+                // Do not use --acls: VFAT on /boot lacks ACL support, causing tar to abort with unsuppressible fatal errors.
                 let mut tar_cmd = Command::new("tar");
                 tar_cmd.args([
                     "--xattrs",
                     "--xattrs-include=*",
-                    "--acls",
+                    "--warning=no-xattr-write",
                     "--numeric-owner",
+                    "--exclude=*boot/vmlinuz",
+                    "--exclude=*boot/initrd",
+                    "--exclude=*boot/sysctl.conf",
                     "-xf",
                     path,
                     "-C",
@@ -844,12 +852,16 @@ impl ImageModel {
             ))
         })?;
 
+        // Do not use --acls: VFAT on /boot lacks ACL support, causing tar to abort with unsuppressible fatal errors.
         let mut tar_child = Command::new("tar")
             .args([
                 "--xattrs",
                 "--xattrs-include=*",
-                "--acls",
+                "--warning=no-xattr-write",
                 "--numeric-owner",
+                "--exclude=*boot/vmlinuz",
+                "--exclude=*boot/initrd",
+                "--exclude=*boot/sysctl.conf",
                 "-xf",
                 "-",
                 "-C",
@@ -919,11 +931,13 @@ impl ImageModel {
 
         if !status.success() {
             let err = collect_last_lines(logger).await;
-            tracing::warn!("Hardware enablement command completed with non-zero exit code:\n{err}");
-        } else {
-            tracing::info!("Hardware enablement completed successfully");
+            tracing::error!("Hardware enablement failed:\n{err}");
+            return Err(service::Error::ImageDeploymentFailed(format!(
+                "Hardware enablement failed:\n{err}"
+            )));
         }
 
+        tracing::info!("Hardware enablement completed successfully");
         Ok(())
     }
 
@@ -1027,6 +1041,10 @@ impl ModelAdapter for ImageModel {
 
     fn predefined_repositories(&self) -> Vec<Repository> {
         vec![]
+    }
+
+    fn set_software_state(&self, state: SoftwareState) {
+        *self.software_state.lock().unwrap() = Some(state);
     }
 }
 

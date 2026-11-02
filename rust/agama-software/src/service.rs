@@ -210,10 +210,8 @@ impl Service {
     pub async fn ensure_model(
         &mut self,
     ) -> Result<Arc<Mutex<dyn ModelAdapter + Send + 'static>>, Error> {
-        if self.custom_model {
-            if let Some(model) = &self.model {
-                return Ok(model.clone());
-            }
+        if let Some(model) = &self.model {
+            return Ok(model.clone());
         }
 
         let state = self.state.read().await;
@@ -235,10 +233,6 @@ impl Service {
             self.model = Some(model.clone());
             Ok(model)
         } else {
-            if let Some(model) = &self.model {
-                return Ok(model.clone());
-            }
-
             let zypp_sender =
                 ZyppServer::start(Self::TARGET_DIR, Self::INSTALL_DIR, &self.kernel_cmdline)?;
             let model: Arc<Mutex<dyn ModelAdapter + Send + 'static>> =
@@ -502,6 +496,9 @@ impl MessageHandler<message::Probe> for Service {
 impl MessageHandler<message::Install> for Service {
     async fn handle(&mut self, _message: message::Install) -> Result<(), Error> {
         let model = self.ensure_model().await?;
+        if let Some(software_state) = self.state.read().await.state.clone() {
+            model.lock().await.set_software_state(software_state);
+        }
         if !model.lock().await.install().await? {
             return Err(Error::InstallationFailed);
         }
