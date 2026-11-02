@@ -26,9 +26,13 @@ use serde::{Deserialize, Serialize};
 pub struct DiscoverConfig {
     pub address: String,
     pub port: u32,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub username: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub password: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub initiator_username: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub initiator_password: Option<String>,
 }
 

@@ -305,6 +305,28 @@ async fn test_patch_config_invalid_json(ctx: &mut Context) -> Result<(), Box<dyn
     Ok(())
 }
 
+fn find_nulls(prefix: &str, val: &serde_json::Value, nulls: &mut Vec<String>) {
+    match val {
+        serde_json::Value::Null => nulls.push(prefix.to_string()),
+        serde_json::Value::Object(map) => {
+            for (k, v) in map {
+                let p = if prefix.is_empty() {
+                    k.clone()
+                } else {
+                    format!("{}/{}", prefix, k)
+                };
+                find_nulls(&p, v, nulls);
+            }
+        }
+        serde_json::Value::Array(arr) => {
+            for (i, v) in arr.iter().enumerate() {
+                find_nulls(&format!("{}/{}", prefix, i), v, nulls);
+            }
+        }
+        _ => {}
+    }
+}
+
 #[test_context(Context)]
 #[test]
 async fn test_system_matches_schema(ctx: &mut Context) -> Result<(), Box<dyn Error>> {
@@ -317,6 +339,15 @@ async fn test_system_matches_schema(ctx: &mut Context) -> Result<(), Box<dyn Err
     assert_eq!(response.status(), StatusCode::OK);
 
     let body = body_to_string(response.into_body()).await;
+
+    let parsed_val: serde_json::Value = serde_json::from_str(&body)?;
+    let mut nulls = Vec::new();
+    find_nulls("", &parsed_val, &mut nulls);
+    assert!(
+        nulls.is_empty(),
+        "GET /system returned serialized null values at: {:?}",
+        nulls
+    );
 
     let validator = common::build_test_validator("SystemInfo").await;
     match validator.validate_str(&body)? {
@@ -395,6 +426,15 @@ async fn test_proposal_matches_schema(ctx: &mut Context) -> Result<(), Box<dyn E
     assert_eq!(response.status(), StatusCode::OK);
 
     let body = body_to_string(response.into_body()).await;
+
+    let parsed_val: serde_json::Value = serde_json::from_str(&body)?;
+    let mut nulls = Vec::new();
+    find_nulls("", &parsed_val, &mut nulls);
+    assert!(
+        nulls.is_empty(),
+        "GET /proposal returned serialized null values at: {:?}",
+        nulls
+    );
 
     let validator = common::build_test_validator("Proposal").await;
     match validator.validate_str(&body)? {
