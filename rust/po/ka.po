@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-25 21:33+0000\n"
+"POT-Creation-Date: 2026-10-30 13:11+0000\n"
 "PO-Revision-Date: 2026-09-08 02:13+0000\n"
 "Last-Translator: Temuri Doghonadze <temuri.doghonadze@gmail.com>\n"
 "Language-Team: Georgian <https://l10n.opensuse.org/projects/agama/agama-rust-"
@@ -700,119 +700,119 @@ msgstr "სკრიპტის %s მიღება ჩავარდა. �
 msgid "Failed to write the file %s. Do you want to try again?"
 msgstr "ფაილის %s ჩაწერა ჩავარდა. გნებავთ, თავიდან ვცადო?"
 
-#: agama-manager/src/actions.rs:79
+#: agama-manager/src/actions.rs:78
 msgid "Prepare the system"
 msgstr "სისტემის მომზადება"
 
-#: agama-manager/src/actions.rs:80
+#: agama-manager/src/actions.rs:79
 msgid "Install software"
 msgstr "პროგრამების დაყენება"
 
-#: agama-manager/src/actions.rs:81
+#: agama-manager/src/actions.rs:80
 msgid "Configure the system"
 msgstr "სისტემის მორგება"
 
-#: agama-manager/src/actions.rs:95
+#: agama-manager/src/actions.rs:94
 msgid "Preparing storage"
 msgstr "საცავის მომზადება"
 
-#: agama-manager/src/actions.rs:113
+#: agama-manager/src/actions.rs:112
 msgid "Running post-partitioning scripts"
 msgstr "გაშვებულია დისკის დაყოფის შემდგომი სკრიპტები"
 
-#: agama-manager/src/actions.rs:138
+#: agama-manager/src/actions.rs:137
 msgid "Installing software"
 msgstr "მიმდინარეობს პროგრამების დაყენება"
 
-#: agama-manager/src/actions.rs:176
+#: agama-manager/src/actions.rs:175
 msgid "Configuring the system"
 msgstr "მიმდინარეობს სისტემის მორგება"
 
-#: agama-manager/src/actions.rs:248
+#: agama-manager/src/actions.rs:250
 msgid "Finishing installation"
 msgstr "დაყენება სრულდება"
 
-#: agama-manager/src/actions.rs:277
+#: agama-manager/src/actions.rs:279
 msgid "Finalize installation"
 msgstr "დაყენების დასრულება"
 
-#: agama-manager/src/actions.rs:352
+#: agama-manager/src/actions.rs:354
 msgid "Storing questions settings"
 msgstr "კითხვის პარამეტრების დამახსოვრება"
 
-#: agama-manager/src/actions.rs:363
+#: agama-manager/src/actions.rs:365
 msgid "Importing user files and scripts"
 msgstr "მომხმარებლის ფაილებისა და სკრიპტების შემოტანა"
 
-#: agama-manager/src/actions.rs:377
+#: agama-manager/src/actions.rs:379
 msgid "Running user pre-installation scripts"
 msgstr "მომხმარებლის დაყენებისწინა სკრიპტების გაშვება"
 
-#: agama-manager/src/actions.rs:392
+#: agama-manager/src/actions.rs:394
 msgid "Storing security settings"
 msgstr "უსაფრთხოების პარამეტრების დამახსოვრება"
 
-#: agama-manager/src/actions.rs:402
+#: agama-manager/src/actions.rs:404
 msgid "Configuring remote access"
 msgstr "დაშორებული წვდომის მორგება"
 
-#: agama-manager/src/actions.rs:412
+#: agama-manager/src/actions.rs:414
 msgid "Setting up the hostname"
 msgstr "ჰოსტის სახელის დაყენება"
 
-#: agama-manager/src/actions.rs:422
+#: agama-manager/src/actions.rs:424
 msgid "Setting up the network proxy"
 msgstr "ქსელური პროქსის მორგება"
 
-#: agama-manager/src/actions.rs:433
+#: agama-manager/src/actions.rs:435
 msgid "Setting up NTP"
 msgstr "NTP-ის მორგება"
 
-#: agama-manager/src/actions.rs:443
+#: agama-manager/src/actions.rs:445
 msgid "Storing localization settings"
 msgstr "ლოკალიზაიის პარამეტრების დამახსოვრება"
 
-#: agama-manager/src/actions.rs:453
+#: agama-manager/src/actions.rs:455
 msgid "Storing users settings"
 msgstr "მომხმარებლის პარამეტრების დამახსოვრება"
 
-#: agama-manager/src/actions.rs:563
+#: agama-manager/src/actions.rs:565
 msgid "Configuring iSCSI devices"
 msgstr "iSCSI მოწყობილობების დამახსოვრება"
 
-#: agama-manager/src/actions.rs:588
+#: agama-manager/src/actions.rs:590
 msgid "Configuring zFCP devices"
 msgstr "iSCSI მოწყობილობების მორგება"
 
-#: agama-manager/src/actions.rs:614
+#: agama-manager/src/actions.rs:616
 msgid "Configuring DASD devices"
 msgstr "DASD მოწყობილობების მორგება"
 
-#: agama-manager/src/actions.rs:640
+#: agama-manager/src/actions.rs:642
 msgid "Setting up the network"
 msgstr "ქსელის მორგება"
 
-#: agama-manager/src/actions.rs:670
+#: agama-manager/src/actions.rs:671
 msgid "Preparing the storage proposal"
 msgstr "საცავის შეთავაზების მომზადება"
 
-#: agama-manager/src/actions.rs:700
+#: agama-manager/src/actions.rs:701
 msgid "Storing bootloader settings"
 msgstr "ჩამტვირთავის პარამეტრების დამახსოვრება"
 
-#: agama-manager/src/actions.rs:734
+#: agama-manager/src/actions.rs:735
 msgid "Preparing the software proposal"
 msgstr "პროგრამების შეთავაზების მომზადება"
 
-#: agama-manager/src/actions.rs:764
+#: agama-manager/src/actions.rs:765
 msgid "Configuring SELinux"
 msgstr "SELinux-ის მორგება"
 
-#: agama-network/src/service.rs:511
+#: agama-network/src/service.rs:163
 msgid "Writing network configuration"
 msgstr "ქსელის კონფიგურაციის ჩაწერა"
 
-#: agama-network/src/service.rs:512
+#: agama-network/src/service.rs:164
 msgid "Syncing the network service state"
 msgstr "ქსელის სერვისის მდგომარეობის სინქრონიზაცია"
 
@@ -981,11 +981,11 @@ msgstr "შეცდომა:"
 msgid "Details:"
 msgstr "დეტალები:"
 
-#: agama-utils/src/api/question.rs:346 agama-utils/src/question/start.rs:48
+#: agama-utils/src/api/question.rs:347 agama-utils/src/question/start.rs:48
 msgid "No"
 msgstr "არა"
 
-#: agama-utils/src/api/question.rs:346 agama-utils/src/question/start.rs:48
+#: agama-utils/src/api/question.rs:347 agama-utils/src/question/start.rs:48
 msgid "Yes"
 msgstr "დიახ"
 
