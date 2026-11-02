@@ -21,20 +21,28 @@
  */
 
 import React from "react";
-import { List, ListItem } from "@patternfly/react-core";
-import { sprintf } from "sprintf-js";
+import { Content, List, ListItem } from "@patternfly/react-core";
 import AlertWithDetailsPopup from "~/components/core/AlertWithDetailsPopup";
 import { _, n_ } from "~/i18n";
 import type { TranslatedString } from "~/i18n";
 import type { Issue } from "~/model/issue";
 
 const Description = ({ issues }: { issues: Issue[] }) => {
+  const intro = n_(
+    "The configuration must be adapted to address the following issue.",
+    "The configuration must be adapted to address the following issues.",
+    issues.length,
+  );
+
   return (
-    <List isPlain>
-      {issues.map((e, i) => (
-        <ListItem key={i}>{e.description}</ListItem>
-      ))}
-    </List>
+    <>
+      <Content component="p">{intro}</Content>
+      <List>
+        {issues.map((e, i) => (
+          <ListItem key={i}>{e.description}</ListItem>
+        ))}
+      </List>
+    </>
   );
 };
 
@@ -43,18 +51,8 @@ type FixableConfigInfoProps = {
 };
 
 /** The one line saying how many issues there are to fix. */
-function fixableConfigTitle(issues: Issue[]): TranslatedString {
-  return sprintf(
-    // TRANSLATORS: reported at the top of the storage page when the storage
-    // settings have problems that can be fixed on that page. %d is the number
-    // of problems.
-    n_(
-      "The configuration has %d issue to fix",
-      "The configuration has %d issues to fix",
-      issues.length,
-    ),
-    issues.length,
-  );
+function fixableConfigTitle(): TranslatedString {
+  return _("The configuration is not valid to install the system");
 }
 
 /**
@@ -65,12 +63,12 @@ export default function FixableConfigInfo({ issues }: FixableConfigInfoProps) {
   return (
     <AlertWithDetailsPopup
       variant="warning"
-      title={fixableConfigTitle(issues)}
+      title={fixableConfigTitle()}
       // TRANSLATORS: opens a popup listing the problems of the storage settings.
-      actionLabel={_("See issues")}
+      actionLabel={_("Show issues")}
       // TRANSLATORS: title of the popup listing the problems of the storage
       // settings.
-      popupTitle={_("Issues to fix")}
+      popupTitle={_("Invalid storage configuration")}
     >
       <Description issues={issues} />
     </AlertWithDetailsPopup>
