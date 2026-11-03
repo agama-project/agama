@@ -5,6 +5,12 @@ Mon Nov  2 16:37:46 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
   to decrease the used browser memory.
 
 -------------------------------------------------------------------
+Mon Nov  2 10:36:43 UTC 2026 - Michal Filka <mfilka@suse.com>
+
+- bsc#1283415, bsc#1283398 (CVE-2026-102277, CVE-2026-102278)
+  - brace-expansion upgraded to 5.0.12
+
+-------------------------------------------------------------------
 Sat Oct 31 17:43:12 UTC 2026 - Michal Filka <mfilka@suse.com>
 
 - bsc#1277423, bsc#1278439, bsc#1278442, bsc#1280783, bsc#1286307
