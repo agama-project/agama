@@ -376,6 +376,8 @@ dependencies = [
  "agama-utils",
  "async-trait",
  "camino",
+ "curl",
+ "futures-util",
  "gettext-rs",
  "glob",
  "i18n-format",

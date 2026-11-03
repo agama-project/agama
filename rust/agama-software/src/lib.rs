@@ -45,6 +45,9 @@ pub use model::{
 
 mod callbacks;
 pub mod message;
+pub mod probe;
 pub mod zypp_server;
+
+pub use probe::{DefaultRepoProber, RepoProber};
 
 pub mod test_utils;
