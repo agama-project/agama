@@ -19,9 +19,8 @@
 // find current contact information at www.suse.com.
 
 use std::{
-    fs::{self, File},
+    fs::File,
     io::{self, Read, Seek, SeekFrom, Write},
-    os::unix::fs::symlink,
     path::{Path, PathBuf},
     process::ExitStatus,
 };
@@ -328,8 +327,8 @@ mod tests {
         // Set up a fake chroot.
         pub fn setup_chroot(&self) -> std::io::Result<()> {
             let nm_dir = self.workdir.join("run/NetworkManager");
-            fs::create_dir_all(&nm_dir)?;
-            fs::create_dir_all(self.install_dir.join("etc"))?;
+            std::fs::create_dir_all(&nm_dir)?;
+            std::fs::create_dir_all(self.install_dir.join("etc"))?;
 
             let mut file = File::create(nm_dir.join("resolv.conf"))?;
             file.write_all(b"nameserver 127.0.0.1\n")?;
