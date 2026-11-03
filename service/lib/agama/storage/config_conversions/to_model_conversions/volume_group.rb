@@ -53,7 +53,7 @@ module Agama
           def conversions
             {
               name:                config.device_name,
-              vgName:              config.name,
+              vgName:              config.vg_name,
               extentSize:          config.extent_size&.to_i,
               targetDevices:       convert_target_devices,
               targetDevicesPolicy: convert_target_devices_policy,
