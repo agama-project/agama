@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Nov  3 18:06:14 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Use "ka-GE" instead of the wrong language id "ka-KZ"
+  (related to gh#agama-project/agama#4178).
+
+-------------------------------------------------------------------
 Mon Nov  2 10:36:43 UTC 2026 - Michal Filka <mfilka@suse.com>
 
 - bsc#1283415, bsc#1283398 (CVE-2026-102277, CVE-2026-102278)
