@@ -146,6 +146,9 @@ impl ImageModel {
         // Step 1: Deploy image
         self.deploy_image().await?;
 
+        // Clean up container runtime markers left by container engines
+        self.cleanup_container_markers().await;
+
         // Step 2: Install required Agama packages/patterns if requested (before hardware enablement,
         // so supplements based on installed software like the kernel can match correctly)
         if install_required_packages {
@@ -178,6 +181,22 @@ impl ImageModel {
             ImageType::Tarball => self.deploy_tarball(&self.image_config.path).await,
             ImageType::Raw => self.deploy_raw(&self.image_config.path).await,
             ImageType::Oci => self.deploy_oci().await,
+        }
+    }
+
+    /// Cleans up any container runtime indicators left over from exported container images.
+    ///
+    /// Files like `/run/.containerenv`, `/run/systemd/container`, and `/.dockerenv` cause
+    /// `systemd`, `bootctl`, and `sdbootutil` to assume they are inside a container, disabling
+    /// UEFI runtime services and EFI variable access.
+    async fn cleanup_container_markers(&self) {
+        let markers = ["run/.containerenv", "run/systemd/container", ".dockerenv"];
+        for marker in markers {
+            let path = self.install_dir.join(marker);
+            if path.exists() || tokio::fs::symlink_metadata(&path).await.is_ok() {
+                tracing::info!("Removing container runtime marker '{}'", path.display());
+                let _ = tokio::fs::remove_file(&path).await;
+            }
         }
     }
 
@@ -1180,5 +1199,34 @@ mod tests {
 
         let result = model.deploy().await;
         assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_cleanup_container_markers() {
+        let (progress, questions) = create_test_handlers().await;
+        let temp_dest = TempDir::new().unwrap();
+
+        let run_dir = temp_dest.path().join("run/systemd");
+        std::fs::create_dir_all(&run_dir).unwrap();
+        let containerenv = temp_dest.path().join("run/.containerenv");
+        let container_file = run_dir.join("container");
+        let dockerenv = temp_dest.path().join(".dockerenv");
+
+        std::fs::write(&containerenv, "engine=podman\n").unwrap();
+        std::fs::write(&container_file, "podman\n").unwrap();
+        std::fs::write(&dockerenv, "").unwrap();
+
+        assert!(containerenv.exists());
+        assert!(container_file.exists());
+        assert!(dockerenv.exists());
+
+        let image_config = ImageConfig::new("/dummy/path.tar", ImageType::Tarball);
+        let model = ImageModel::new(image_config, temp_dest.path(), progress, questions);
+
+        model.cleanup_container_markers().await;
+
+        assert!(!containerenv.exists());
+        assert!(!container_file.exists());
+        assert!(!dockerenv.exists());
     }
 }
