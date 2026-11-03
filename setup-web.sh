@@ -29,4 +29,4 @@ npm run build
 cd -
 
 $SUDO mkdir -p /usr/share/agama
-$SUDO ln -snf `pwd`/web/dist /usr/share/agama/web_ui
+$SUDO ln -snf $(pwd)/web/dist /usr/share/agama/web_ui

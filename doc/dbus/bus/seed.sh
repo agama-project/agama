@@ -24,7 +24,7 @@ look() {
   abusctl tree --list $DD.${1%.*}
   abusctl introspect --xml-interface $DD.${1%.*} $SS/${1//./\/} |
     cleanup \
-      >$DD.$1.bus.xml
+      > $DD.$1.bus.xml
 }
 
 look Storage1

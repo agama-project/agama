@@ -1,12 +1,11 @@
 #!/bin/bash
 
-if [ -d /sysroot  ] ; then
+if [ -d /sysroot ]; then
   type getarg > /dev/null 2>&1 || . /lib/dracut-lib.sh
   getarg "rd.cmdline=menu" || exit 0
 fi
 
 # -----------------------------------------------------------------------------
-
 
 # usage example:
 #
@@ -17,19 +16,19 @@ fi
 #
 # echo "selected_item=$selected_item"
 #
-dia_menu () {
+dia_menu() {
   local -n x_title=$1
   local -n x_list=$2
   local -n x_item=$3
 
   local tmp i ind ok
 
-  until [[ "$ok" ]] ; do
+  until [[ "$ok" ]]; do
     echo -e "\n$x_title\n"
 
     echo "0) <-- Back <--"
     ind=1
-    for i in "${x_list[@]}" ; do
+    for i in "${x_list[@]}"; do
       echo "$ind) $i"
       ind=$((ind + 1))
     done
@@ -38,7 +37,7 @@ dia_menu () {
 
     read -e -r -p "> " x_item tmp
 
-    [[ ( -z "$x_item" || "$x_item" = $((x_item)) ) && "$x_item" -lt $ind ]] && ok=1
+    [[ (-z "$x_item" || "$x_item" = $((x_item))) && "$x_item" -lt $ind ]] && ok=1
   done
 
   x_item=$((x_item))
@@ -46,21 +45,20 @@ dia_menu () {
   return 0
 }
 
-
 # usage example
 #
 # title="Foo input"
 # value="foo bar"
 # dia_input title value
 # aborted=$?
-# 
+#
 # if [ $aborted = 1 ] ; then
 #   echo aborted
 # else
 #   echo -e "input=\"$value\""
 # fi
 #
-dia_input () {
+dia_input() {
   local -n x_title=$1
   local -n x_value=$2
 
@@ -70,7 +68,7 @@ dia_input () {
 
   read -e -r -p "[$tmp]> " -i "$tmp" tmp
 
-  if [[ "$tmp" = "${tmp%+++}+++" ]] ; then
+  if [[ "$tmp" = "${tmp%+++}+++" ]]; then
     return 1
   else
     x_value="$tmp"
@@ -97,7 +95,7 @@ live_root_net=${live_root_net#live:}
 
 aborted=1
 
-while [ "$aborted" != 0 ] ; do
+while [ "$aborted" != 0 ]; do
   echo -n > /etc/cmdline.d/98-cmdline-menu.conf
 
   title="Live image location"
@@ -112,7 +110,7 @@ while [ "$aborted" != 0 ] ; do
     2) live_root="$live_root_net" ;;
   esac
 
-  if [[ "$selected_item" = 2 ]] ; then
+  if [[ "$selected_item" = 2 ]]; then
     title="Live image location (e.g. http://example.com/live.iso)"
     dia_input title live_root
     aborted=$?

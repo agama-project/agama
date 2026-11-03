@@ -20,18 +20,18 @@ dst=${1#iso:}
 # KIWI config
 # Copy it to $dst from where it can be later read by xorriso
 if [ -f .profile ]; then
-    source .profile
-    cp .profile "$dst"
+  source .profile
+  cp .profile "$dst"
 fi
 
-arch=`uname -m`
+arch=$(uname -m)
 
 bootfix=$dst/fix_bootconfig.$arch
-if [ -f $bootfix ] ; then
+if [ -f $bootfix ]; then
   echo "bootconfig script found: \"$bootfix\""
 fi
 
-cat <<XXX >/usr/local/bin/xorriso
+cat << XXX > /usr/local/bin/xorriso
 #! /bin/bash
 
 set -x

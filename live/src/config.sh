@@ -40,19 +40,22 @@ fi
 rm -f /etc/zypp/repos.d/*.disabled
 
 # import the openSUSE keys, but check if there is any
-if stat -t /usr/lib/rpm/gnupg/keys/*.asc 2>/dev/null 1>/dev/null; then
+if stat -t /usr/lib/rpm/gnupg/keys/*.asc 2> /dev/null 1> /dev/null; then
   rpm --import /usr/lib/rpm/gnupg/keys/*.asc
 fi
 
-if [ $(rpm -q --provides libzypp | grep -q 'libzypp(econf)'; echo $?) -eq 0 ]; then
-# A new enough version of libzypp is in use which supports UAPI configuration. Configure a drop-in conf
-cat <<EOF > /etc/zypp/zypp.conf.d/90-agama.conf
+if [ $(
+  rpm -q --provides libzypp | grep -q 'libzypp(econf)'
+  echo $?
+) -eq 0 ]; then
+  # A new enough version of libzypp is in use which supports UAPI configuration. Configure a drop-in conf
+  cat << EOF > /etc/zypp/zypp.conf.d/90-agama.conf
 [main]
 download.connect_timeout = 20
 EOF
 else
-# decrease the libzypp timeout to 20 seconds (the default is 60 seconds)
-sed -i -e "s/^\s*#\s*download.connect_timeout\s*=\s*.*$/download.connect_timeout = 20/" /etc/zypp/zypp.conf
+  # decrease the libzypp timeout to 20 seconds (the default is 60 seconds)
+  sed -i -e "s/^\s*#\s*download.connect_timeout\s*=\s*.*$/download.connect_timeout = 20/" /etc/zypp/zypp.conf
 fi
 
 # combustion requires fstab file, create a dummy one
@@ -133,7 +136,7 @@ if [[ "$kiwi_profiles" == *SUSE_SLE_16* ]]; then
   echo "Configuring the installer self-update..."
   # read the self-update configuration variables
   . /usr/lib/live-self-update/conf.sh
-  mkdir -p  "$CONFIG_DIR"
+  mkdir -p "$CONFIG_DIR"
   # the default registration server (SCC) if RMT is not set
   echo "https://scc.suse.com" > "$CONFIG_DEFAULT_REG_SERVER_FILE"
   # fallback URL when contacting SCC/RMT fails or no self-update is returned
@@ -147,16 +150,15 @@ label="Install-$profile-$arch"
 
 echo "Setting default live root: live:LABEL=$label"
 mkdir /etc/cmdline.d
-echo "root=live:LABEL=$label" >/etc/cmdline.d/10-liveroot.conf
-echo "root_disk=live:LABEL=$label" >>/etc/cmdline.d/10-liveroot.conf
-echo 'install_items+=" /etc/cmdline.d/10-liveroot.conf "' >/etc/dracut.conf.d/10-liveroot-file.conf
-echo 'add_dracutmodules+=" dracut-menu agama-cmdline agama-dud live-self-update initrd-nmtui chrony "' >>/etc/dracut.conf.d/10-liveroot-file.conf
+echo "root=live:LABEL=$label" > /etc/cmdline.d/10-liveroot.conf
+echo "root_disk=live:LABEL=$label" >> /etc/cmdline.d/10-liveroot.conf
+echo 'install_items+=" /etc/cmdline.d/10-liveroot.conf "' > /etc/dracut.conf.d/10-liveroot-file.conf
+echo 'add_dracutmodules+=" dracut-menu agama-cmdline agama-dud live-self-update initrd-nmtui chrony "' >> /etc/dracut.conf.d/10-liveroot-file.conf
 
 if [ "${arch}" = "ppc64le" ]; then
   # Added support for configuring HCN in dracut (jsc#PED-14533) only in ppc64le.
-  echo 'add_dracutmodules+=" hcn "' >>/etc/dracut.conf.d/10-liveroot-file.conf
+  echo 'add_dracutmodules+=" hcn "' >> /etc/dracut.conf.d/10-liveroot-file.conf
 fi
-
 
 # decrease the kernel logging on the console, use a dracut module to do it early in the boot process
 echo 'add_dracutmodules+=" agama-logging "' > /etc/dracut.conf.d/10-agama-logging.conf
@@ -164,8 +166,7 @@ echo 'add_dracutmodules+=" agama-logging "' > /etc/dracut.conf.d/10-agama-loggin
 # add the ipmi drivers to the initrd (bsc#1237354)
 extra_drivers=(acpi_ipmi ipmi_devintf ipmi_poweroff ipmi_si ipmi_ssif ipmi_watchdog)
 
-for driver in "${extra_drivers[@]}"
-do
+for driver in "${extra_drivers[@]}"; do
   # check if the driver is present (allow a suffix like .zstd or .xz for optionally compressed drivers)
   if find /lib/modules -type f -name "$driver.ko*" -print0 | grep -qz .; then
     echo "Adding $driver driver to initrd..."
@@ -236,7 +237,7 @@ rm /var/log/zypper.log /var/log/zypp/history
 # reduce the "vim-data" content, this package is huge (37MB unpacked!), keep
 # only support for JSON (for "agama config edit"), YAML (the product definition
 # files) and Ruby (fixing/debugging the Ruby service)
-rpm -ql vim-data | grep -v -e '/ruby.vim$' -e '/json.vim$' -e '/yaml.vim$' -e '/bash.vim$' -e colors | xargs rm 2>/dev/null || true
+rpm -ql vim-data | grep -v -e '/ruby.vim$' -e '/json.vim$' -e '/yaml.vim$' -e '/bash.vim$' -e colors | xargs rm 2> /dev/null || true
 
 du -h -s /usr/{share,lib}/locale/
 
@@ -250,7 +251,7 @@ du -h -s /usr/{share,lib}/locale/
 mkdir -p /etc/agama.d
 # emulate "localectl list-locales" call, it cannot be used here because it
 # insists on running systemd as PID 1 :-/
-ls -1 -d /usr/lib/locale/*.utf8 | sed -e "s#/usr/lib/locale/##" -e "s#utf8#UTF-8#" >/etc/agama.d/locales
+ls -1 -d /usr/lib/locale/*.utf8 | sed -e "s#/usr/lib/locale/##" -e "s#utf8#UTF-8#" > /etc/agama.d/locales
 
 # delete translations and unsupported languages (makes ISO about 22MiB smaller)
 # build list of ignore options for "ls" with supported languages like "-I cs -I cs_CZ ..."
@@ -349,9 +350,9 @@ echo 'compress="xz -9 --check=crc32 --memlimit-compress=50%"' >> /etc/dracut.con
 
 # Kernel modules (+ firmware) for X13s
 if [ "$(arch)" == "aarch64" ]; then
-  echo 'add_drivers+=" clk-rpmh dispcc-sc8280xp gcc-sc8280xp gpucc-sc8280xp nvmem_qcom-spmi-sdam qcom_hwspinlock qcom_q6v5 qcom_q6v5_pas qnoc-sc8280xp pmic_glink pmic_glink_altmode smp2p spmi-pmic-arb leds-qcom-lpg "' >/etc/dracut.conf.d/x13s_modules.conf
-  echo 'add_drivers+=" nvme phy_qcom_qmp_pcie pcie-qcom-ep i2c_hid_of i2c_qcom_geni leds-qcom-lpg pwm_bl qrtr pmic_glink_altmode gpio_sbu_mux phy_qcom_qmp_combo panel-edp msm phy_qcom_edp "' >>/etc/dracut.conf.d/x13s_modules.conf
-  echo 'install_items+=" /lib/firmware/qcom/sc8280xp/LENOVO/21BX/qcadsp8280.mbn.xz /lib/firmware/qcom/sc8280xp/LENOVO/21BX/qccdsp8280.mbn.xz "' >>/etc/dracut.conf.d/x13s_modules.conf
+  echo 'add_drivers+=" clk-rpmh dispcc-sc8280xp gcc-sc8280xp gpucc-sc8280xp nvmem_qcom-spmi-sdam qcom_hwspinlock qcom_q6v5 qcom_q6v5_pas qnoc-sc8280xp pmic_glink pmic_glink_altmode smp2p spmi-pmic-arb leds-qcom-lpg "' > /etc/dracut.conf.d/x13s_modules.conf
+  echo 'add_drivers+=" nvme phy_qcom_qmp_pcie pcie-qcom-ep i2c_hid_of i2c_qcom_geni leds-qcom-lpg pwm_bl qrtr pmic_glink_altmode gpio_sbu_mux phy_qcom_qmp_combo panel-edp msm phy_qcom_edp "' >> /etc/dracut.conf.d/x13s_modules.conf
+  echo 'install_items+=" /lib/firmware/qcom/sc8280xp/LENOVO/21BX/qcadsp8280.mbn.xz /lib/firmware/qcom/sc8280xp/LENOVO/21BX/qccdsp8280.mbn.xz "' >> /etc/dracut.conf.d/x13s_modules.conf
 fi
 
 # do not activate multipath in dracut, leave that for Agama

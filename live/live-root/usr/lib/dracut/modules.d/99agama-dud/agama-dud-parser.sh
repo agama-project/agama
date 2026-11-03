@@ -9,7 +9,7 @@ fetch_updates() {
   local updates
   updates=$(getargs inst.dud=)
   if [ -n "$updates" ]; then
-    echo "$updates" >/tmp/agamadud.info
+    echo "$updates" > /tmp/agamadud.info
 
     # automatically configure network when a remote DUD is used,
     # check for all remote URL scheme supported by the "agama download"
@@ -19,7 +19,7 @@ fetch_updates() {
       echo "rd.neednet=1" > /etc/cmdline.d/agama-generated.conf
       # use DHCP if there is no network configuration provided by user
       # (the HCN module writes "ip=hcn" when it configures the network itself)
-      if ! getarg "ip=" >/dev/null; then
+      if ! getarg "ip=" > /dev/null; then
         echo "ip=dhcp" >> /etc/cmdline.d/agama-generated.conf
       fi
     fi

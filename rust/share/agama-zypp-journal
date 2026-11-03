@@ -30,7 +30,6 @@
 # It accepts special "--input-file <file>" parameter to load the data from
 # previously saved journal in JSON format.
 
-
 # Use colors if the output goes to a terminal
 if [ -t 1 ]; then
   USE_COLORS="true"

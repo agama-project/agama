@@ -31,9 +31,9 @@ sudosed() {
 }
 
 # if agama is already running -> stop it
-$SUDO systemctl list-unit-files agama.service &>/dev/null && $SUDO systemctl stop agama.service
-$SUDO systemctl list-unit-files agama-dbus-monitor.service &>/dev/null && $SUDO systemctl stop agama-dbus-monitor.service
-$SUDO systemctl list-unit-files agama-web-server.service &>/dev/null && $SUDO systemctl stop agama-web-server.service
+$SUDO systemctl list-unit-files agama.service &> /dev/null && $SUDO systemctl stop agama.service
+$SUDO systemctl list-unit-files agama-dbus-monitor.service &> /dev/null && $SUDO systemctl stop agama-dbus-monitor.service
+$SUDO systemctl list-unit-files agama-web-server.service &> /dev/null && $SUDO systemctl stop agama-web-server.service
 
 # Ruby services
 
@@ -109,11 +109,11 @@ fi
   cd $MYDIR/service
 
   if [ -d /checkout-ruby-dbus ]; then
-      # we are in a container, told to use that one
-      # instead of a released version
-      # edit +Gemfile and -gemspec
-      sed -e '/ruby-dbus/d' -i Gemfile agama-yast.gemspec
-      sed -e '/gemspec/a gem "ruby-dbus", path: "/checkout-ruby-dbus"' -i Gemfile
+    # we are in a container, told to use that one
+    # instead of a released version
+    # edit +Gemfile and -gemspec
+    sed -e '/ruby-dbus/d' -i Gemfile agama-yast.gemspec
+    sed -e '/gemspec/a gem "ruby-dbus", path: "/checkout-ruby-dbus"' -i Gemfile
   fi
 
   if [ -n "${CI:-}" ]; then
@@ -169,7 +169,7 @@ $SUDO $ZYPPER install \
   for f in $MYDIR/service/bin/agama*; do
     base=${f##*/}
     stub="/usr/bin/$base"
-    $SUDO tee "$stub" >/dev/null <<EOS
+    $SUDO tee "$stub" > /dev/null << EOS
 #!/bin/bash
 cd "$MYDIR/service"
 bundle exec "bin/$base" "\$@"
