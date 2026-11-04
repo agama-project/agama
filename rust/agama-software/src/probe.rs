@@ -75,7 +75,7 @@ pub async fn probe_url(url_str: &str) -> bool {
         Ok(()) => {
             tracing::info!("Repository probe success for '{url_str}'.");
             true
-        },
+        }
         Err(err) => {
             tracing::info!("Repository probe failed for '{url_str}': {err}");
             false
