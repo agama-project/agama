@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Nov  4 11:11:43 UTC 2026 - David Díaz <dgonzalez@suse.com>
+
+- Keep the options menu divider out of the terminal entry
+  (gh#agama-project/agama#4186).
+
+-------------------------------------------------------------------
 Mon Nov  2 10:36:43 UTC 2026 - Michal Filka <mfilka@suse.com>
 
 - bsc#1283415, bsc#1283398 (CVE-2026-102277, CVE-2026-102278)
