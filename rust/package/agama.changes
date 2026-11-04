@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Nov  3 08:35:30 UTC 2026 - Clemens Famulla-Conrad <cfamullaconrad@suse.com>
+
+- Support the IPv6 address generation mode (ipv6.addr-gen-mode)
+  in network connections (bsc#1279546)
+
+-------------------------------------------------------------------
 Fri Oct 30 10:17:43 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
 
 - Move the network service to the actor based model used by the

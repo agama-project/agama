@@ -108,7 +108,7 @@ describe("App", () => {
 
     screen.getByText("Installing screen");
     await user.click(screen.getByRole("button", { name: "open terminal" }));
-    screen.getByRole("region", { name: "Terminal" });
+    await screen.findByRole("button", { name: "Minimize terminal" });
 
     mockStage("finished");
     rerender(<Subject />);
