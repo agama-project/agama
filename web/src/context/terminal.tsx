@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { isKeyboardActivation } from "~/utils";
 
 /**
@@ -100,6 +100,19 @@ function focusTargetFor(event: { detail: number }): TerminalFocusTarget {
   return isKeyboardActivation(event) ? "stop" : "shell";
 }
 
+/**
+ * Check whether `event` is the Ctrl+` shortcut that toggles the terinal
+ */
+function isToggleShortcut(event: KeyboardEvent): boolean {
+  return (
+    event.code === "Backquote" &&
+    event.ctrlKey &&
+    !event.shiftKey &&
+    !event.altKey &&
+    !event.metaKey
+  );
+}
+
 const TerminalContext = React.createContext<TerminalContextValue | undefined>(undefined);
 
 /**
@@ -147,6 +160,19 @@ function TerminalProvider({ children }: React.PropsWithChildren) {
   const minimize = useCallback(() => setIsMinimized(true), []);
   const restore = useCallback(() => setIsMinimized(false), []);
 
+  // Handle the terminal toggle keyboard shortcut
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.repeat || !isToggleShortcut(event)) return;
+
+      event.preventDefault();
+      toggle({ focusTarget: "shell" });
+    };
+
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [toggle]);
+
   const value = useMemo(
     () => ({
       isOpen,
@@ -166,4 +192,4 @@ function TerminalProvider({ children }: React.PropsWithChildren) {
   return <TerminalContext.Provider value={value}>{children}</TerminalContext.Provider>;
 }
 
-export { TerminalProvider, useTerminal, focusTargetFor };
+export { TerminalProvider, useTerminal, focusTargetFor, isToggleShortcut };
