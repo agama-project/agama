@@ -173,24 +173,36 @@ software:
   user_patterns:
     - name: basic_desktop
       desktop: true
-    - name: xfce_wayland
+    - name: gnome
+      desktop: true
+    - name: hyprland
       desktop: true
     - name: kde
-      desktop: true
-    - name: gnome
       desktop: true
     - name: lxqt_wayland
       desktop: true
     - name: openSUSEway
       desktop: true
-    - name: hyprland
+    - name: xfce_wayland
       desktop: true
     - cockpit
+    - container_runtime_podman
+    - dhcp_dns_server
+    - directory_server
+    - documentation
+    - file_server
+    - fips
+    - gateway_server
+    - kvm_server
+    - kvm_tools
+    - lamp_server
+    - mail_server
     - multimedia
     - office
+    - printing
     - name: selinux
       selected: true
-    - apparmor
+    - sw_management
   mandatory_packages:
     - NetworkManager
     - openSUSE-repos-Tumbleweed
