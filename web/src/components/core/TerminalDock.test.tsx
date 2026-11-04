@@ -64,6 +64,8 @@ afterEach(() => {
   delete (window as { ResizeObserver?: unknown }).ResizeObserver;
 });
 
+// The terminal panel is lazy loaded, so the tests wait for it with findBy*
+// queries until it replaces the loading spinner.
 describe("TerminalDock", () => {
   it("shows only the application before the terminal has ever been opened", () => {
     mockResizeObserver(1600, 900);
@@ -80,8 +82,9 @@ describe("TerminalDock", () => {
 
       await user.click(screen.getByRole("button", { name: "open terminal" }));
 
-      expect(screen.getByText(APP_CONTENT)).toBeVisible();
+      await screen.findByRole("button", { name: "Minimize terminal" });
       screen.getByRole("region", { name: "Terminal" });
+      expect(screen.getByText(APP_CONTENT)).toBeVisible();
       screen.getByRole("separator", { name: "Resize terminal" });
     });
   });
@@ -93,7 +96,7 @@ describe("TerminalDock", () => {
 
       await user.click(screen.getByRole("button", { name: "open terminal" }));
 
-      screen.getByText("The terminal requires a larger screen size");
+      await screen.findByText("The terminal requires a larger screen size");
       expect(screen.queryByRole("separator", { name: "Resize terminal" })).toBeNull();
       expect(screen.getByText(APP_CONTENT)).not.toBeVisible();
     });
@@ -103,7 +106,7 @@ describe("TerminalDock", () => {
       const { user } = installerRender(<Subject />);
 
       await user.click(screen.getByRole("button", { name: "open terminal" }));
-      await user.click(screen.getByRole("button", { name: "Close terminal" }));
+      await user.click(await screen.findByRole("button", { name: "Close terminal" }));
 
       expect(screen.queryByRole("region", { name: "Terminal" })).toBeNull();
       expect(screen.getByText(APP_CONTENT)).toBeVisible();
@@ -116,15 +119,15 @@ describe("TerminalDock", () => {
       const { user } = installerRender(<Subject />);
 
       await user.click(screen.getByRole("button", { name: "open terminal" }));
-      screen.getByRole("region", { name: "Terminal" });
+      await screen.findByRole("region", { name: "Terminal" });
 
-      await user.click(screen.getByRole("button", { name: "Close terminal" }));
+      await user.click(await screen.findByRole("button", { name: "Close terminal" }));
 
       expect(screen.queryByRole("region", { name: "Terminal" })).toBeNull();
 
       // Opening it again creates a fresh panel.
       await user.click(screen.getByRole("button", { name: "open terminal" }));
-      expect(screen.getByRole("region", { name: "Terminal" })).toBeVisible();
+      expect(await screen.findByRole("region", { name: "Terminal" })).toBeVisible();
     });
   });
 });

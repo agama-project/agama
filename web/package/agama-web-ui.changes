@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Nov  4 08:50:12 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Load the terminal component only when needed (lazy loading)
+  to decrease the used browser memory.
+
+-------------------------------------------------------------------
 Tue Nov  3 18:06:14 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Use "ka-GE" instead of the wrong language id "ka-KZ"
