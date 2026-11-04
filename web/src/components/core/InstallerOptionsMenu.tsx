@@ -159,8 +159,10 @@ export default function InstallerOptionsMenu({ hideLabel = false }: InstallerOpt
                         _("Open terminal")
                   }
                 />
-                <Divider component="li" />
               </DropdownItem>
+              {(showChangeProductOption || showExitInstallationOption) && (
+                <Divider component="li" key="separator" />
+              )}
               {showChangeProductOption && <ChangeProductOption component="dropdownitem" showIcon />}
               {showExitInstallationOption && (
                 <DropdownItem key="exit-installation" onClick={toggleExitInstallation}>
