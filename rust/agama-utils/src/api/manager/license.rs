@@ -67,6 +67,7 @@ pub struct LanguageTag {
     // ISO-639
     pub language: String,
     // ISO-3166
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub territory: Option<String>,
 }
 
