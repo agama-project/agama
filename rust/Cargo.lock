@@ -227,6 +227,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "agama-netsetup"
+version = "0.1.0"
+dependencies = [
+ "agama-network",
+ "anyhow",
+ "cidr",
+ "clap",
+ "tempfile",
+ "tokio",
+ "tracing",
+ "tracing-subscriber",
+]
+
+[[package]]
 name = "agama-network"
 version = "0.1.0"
 dependencies = [

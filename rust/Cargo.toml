@@ -11,6 +11,7 @@ members = [
     "agama-locale-data",
     "agama-manager",
     "agama-proxy",
+    "agama-netsetup",
     "agama-network",
     "agama-ntp",
     "agama-access",
