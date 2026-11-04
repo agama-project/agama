@@ -78,9 +78,12 @@ pub struct ProductMode {
 #[derive(Clone, Default, Debug, Serialize, JsonSchema)]
 pub struct HardwareInfo {
     /// CPU description.
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub cpu: Option<String>,
     /// Memory size (in bytes).
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub memory: Option<u64>,
     /// Computer model.
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub model: Option<String>,
 }
