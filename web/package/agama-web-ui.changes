@@ -1,4 +1,22 @@
 -------------------------------------------------------------------
+Wed Nov  4 09:04:37 UTC 2026 - Michal Filka <mfilka@suse.com>
+
+- bsc#1278291 (CVE-2026-84369), bsc#1278292 (CVE-2026-84370)
+  - svgo version 3.3.5 
+
+-------------------------------------------------------------------
+Wed Nov  4 08:50:12 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Load the terminal component only when needed (lazy loading)
+  to decrease the used browser memory.
+
+-------------------------------------------------------------------
+Tue Nov  3 18:06:14 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Use "ka-GE" instead of the wrong language id "ka-KZ"
+  (related to gh#agama-project/agama#4178).
+
+-------------------------------------------------------------------
 Mon Nov  2 10:36:43 UTC 2026 - Michal Filka <mfilka@suse.com>
 
 - bsc#1283415, bsc#1283398 (CVE-2026-102277, CVE-2026-102278)
