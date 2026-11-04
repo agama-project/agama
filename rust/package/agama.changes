@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Nov  4 18:03:24 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add forward-compatibility fallbacks to client-facing enums
+  (gh#agama-project/agama#3993).
+
+-------------------------------------------------------------------
 Fri Oct 30 16:23:39 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Fix scripts execution progress reporting (bsc#1285983,
