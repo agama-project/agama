@@ -830,7 +830,8 @@ void remove_repository(struct Zypp *zypp, const char *alias,
                                // match correct repo
 
     zypp->repo_manager->removeRepository(zypp_repo, zypp_callback);
-    // remove also all resolvables from this repository from pool, otherwise there will be ghosts
+    // remove also all resolvables from this repository from pool, otherwise
+    // there will be ghosts
     zypp::sat::Pool::instance().reposErase(alias);
     STATUS_OK(status);
   } catch (zypp::Exception &excpt) {
