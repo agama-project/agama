@@ -1,7 +1,13 @@
 -------------------------------------------------------------------
-Wed Nov  4 08:58:57 UTC 2026 - David Diaz <dgonzalez@suse.com>
+Wed Nov  4 09:18:57 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Update PatternFly to version 6.7 (gh#agama-project/agama#4180).
+
+-------------------------------------------------------------------
+Wed Nov  4 09:04:37 UTC 2026 - Michal Filka <mfilka@suse.com>
+
+- bsc#1278291 (CVE-2026-84369), bsc#1278292 (CVE-2026-84370)
+  - svgo version 3.3.5 
 
 -------------------------------------------------------------------
 Wed Nov  4 08:50:12 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
