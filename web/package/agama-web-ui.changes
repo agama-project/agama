@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Nov  4 08:58:57 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Update PatternFly to version 6.7 (gh#agama-project/agama#4180).
+
+-------------------------------------------------------------------
 Wed Nov  4 08:50:12 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
 
 - Load the terminal component only when needed (lazy loading)
