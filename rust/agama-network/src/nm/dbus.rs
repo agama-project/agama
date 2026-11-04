@@ -104,8 +104,9 @@ pub fn connection_to_dbus<'a>(
         connection_dbus.insert("zone", zone.into());
     }
 
-    // A port has no IP configuration of its own, and NetworkManager drops it anyway.
-    if controller.is_none() {
+    // A port has no IP configuration of its own, and NetworkManager drops it anyway. The
+    // exception is the Open vSwitch internal interface, which holds the IP configuration.
+    if controller.is_none() || conn.keeps_ip_config_as_port() {
         result.insert("ipv4", ip_config_to_ipv4_dbus(&conn.ip_config, &nm_version));
         result.insert("ipv6", ip_config_to_ipv6_dbus(&conn.ip_config, &nm_version));
     }
@@ -2942,6 +2943,42 @@ mod test {
         let conn_dbus = connection_to_dbus(&port, None, semver::Version::parse("1.50.0").unwrap());
         assert!(conn_dbus.contains_key("ipv4"));
         assert!(conn_dbus.contains_key("ipv6"));
+    }
+
+    #[test]
+    fn test_dbus_from_an_ovs_internal_interface_keeps_the_ip_configuration() {
+        let mut ovs_port = build_base_connection();
+        ovs_port.config = ConnectionConfig::OvsPort(OvsPortConfig::default());
+
+        let mut ovs_interface = build_base_connection();
+        ovs_interface.config = ConnectionConfig::OvsInterface(OvsInterfaceConfig {
+            interface_type: OvsInterfaceType::Internal,
+        });
+        ovs_interface.ip_config.method4 = Some(Ipv4Method::Manual);
+        ovs_interface.ip_config.addresses = vec!["10.0.2.2/15".parse().unwrap()];
+
+        let ifc_dbus = connection_to_dbus(
+            &ovs_interface,
+            Some(&ovs_port),
+            semver::Version::parse("1.50.0").unwrap(),
+        );
+        let ipv4 = ifc_dbus.get("ipv4").unwrap();
+        assert_eq!(
+            *ipv4.get("method").unwrap(),
+            Value::new("manual".to_string())
+        );
+        assert!(ifc_dbus.contains_key("ipv6"));
+
+        // A system interface attached to the same ovs-port is a regular port.
+        let mut tap = build_base_connection();
+        tap.config = ConnectionConfig::Tun(TunConfig::default());
+        let tap_dbus = connection_to_dbus(
+            &tap,
+            Some(&ovs_port),
+            semver::Version::parse("1.50.0").unwrap(),
+        );
+        assert!(!tap_dbus.contains_key("ipv4"));
+        assert!(!tap_dbus.contains_key("ipv6"));
     }
 
     #[test]

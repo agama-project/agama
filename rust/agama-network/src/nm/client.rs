@@ -310,7 +310,7 @@ impl<'a> NetworkManagerClient<'a> {
             let original = proxy.get_settings().await?;
             let mut merged = merge_dbus_connections(&original, &new_conn)?;
             // A connection that becomes a port must not keep the IP configuration it had.
-            if controller.is_some() {
+            if controller.is_some() && !conn.keeps_ip_config_as_port() {
                 merged.remove("ipv4");
                 merged.remove("ipv6");
             }

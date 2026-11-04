@@ -658,6 +658,16 @@ impl Connection {
         matches!(self.config, ConnectionConfig::Loopback)
     }
 
+    /// Whether it keeps its own IP configuration even when it is a port.
+    ///
+    /// The ports of a bond or a bridge have no IP configuration, as it belongs to the controller.
+    /// Open vSwitch works the other way around: the IP configuration lives in the internal
+    /// `ovs-interface`, which is a port of an `ovs-port`, while the `ovs-bridge` and the
+    /// `ovs-port` have none.
+    pub fn keeps_ip_config_as_port(&self) -> bool {
+        matches!(self.config, ConnectionConfig::OvsInterface(_))
+    }
+
     pub fn is_ethernet(&self) -> bool {
         matches!(self.config, ConnectionConfig::Loopback)
             || matches!(self.config, ConnectionConfig::Ethernet)
