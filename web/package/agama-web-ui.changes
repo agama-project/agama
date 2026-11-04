@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Nov  4 09:04:37 UTC 2026 - Michal Filka <mfilka@suse.com>
+
+- bsc#1278291 (CVE-2026-84369), bsc#1278292 (CVE-2026-84370)
+  - svgo version 3.3.5 
+
+-------------------------------------------------------------------
 Wed Nov  4 08:50:12 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
 
 - Load the terminal component only when needed (lazy loading)
