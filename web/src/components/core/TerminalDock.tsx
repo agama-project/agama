@@ -18,9 +18,10 @@
  */
 
 import React, { Suspense, useCallback, useEffect, useRef, useState } from "react";
-import { Bullseye, Spinner } from "@patternfly/react-core";
+import { Bullseye, CardBody, Spinner } from "@patternfly/react-core";
 import { clamp } from "radashi";
 import ResizeHandle from "~/components/core/ResizeHandle";
+import TerminalShell, { TerminalCloseButton } from "~/components/core/TerminalShell";
 import { useTerminal } from "~/context/terminal";
 import { _ } from "~/i18n";
 
@@ -135,12 +136,16 @@ export default function TerminalDock({ children }: React.PropsWithChildren) {
     [terminalHeight, maxTerminalHeight, setHeight],
   );
 
+  // The panel frame shows up at once; only its body waits for the terminal.
   const fallback = (
-    // The panel is a flex row, let the Bullseye to fill it otherwise it would
-    // collapse to the left side.
-    <Bullseye style={{ flex: 1 }}>
-      <Spinner />
-    </Bullseye>
+    <TerminalShell actions={<TerminalCloseButton />}>
+      <CardBody isFilled>
+        <Bullseye>
+          {/* TRANSLATORS: accessible text while the terminal panel is loading */}
+          <Spinner aria-label={_("Loading terminal")} />
+        </Bullseye>
+      </CardBody>
+    </TerminalShell>
   );
 
   return (

@@ -64,6 +64,8 @@ afterEach(() => {
   delete (window as { ResizeObserver?: unknown }).ResizeObserver;
 });
 
+// The terminal panel is lazy loaded, so the tests wait for it with findBy*
+// queries until it replaces the loading spinner.
 describe("TerminalDock", () => {
   it("shows only the application before the terminal has ever been opened", () => {
     mockResizeObserver(1600, 900);
@@ -80,8 +82,8 @@ describe("TerminalDock", () => {
 
       await user.click(screen.getByRole("button", { name: "open terminal" }));
 
-      // The panel is lazy loaded, wait until it replaces the loading spinner.
-      await screen.findByRole("region", { name: "Terminal" });
+      await screen.findByRole("button", { name: "Minimize terminal" });
+      screen.getByRole("region", { name: "Terminal" });
       expect(screen.getByText(APP_CONTENT)).toBeVisible();
       screen.getByRole("separator", { name: "Resize terminal" });
     });
