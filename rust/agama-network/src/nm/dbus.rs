@@ -2979,6 +2979,19 @@ mod test {
         );
         assert!(!tap_dbus.contains_key("ipv4"));
         assert!(!tap_dbus.contains_key("ipv6"));
+
+        // NetworkManager adds an ovs-interface section of type "system" to an ethernet port.
+        let mut eth = build_base_connection();
+        eth.config = ConnectionConfig::OvsInterface(OvsInterfaceConfig {
+            interface_type: OvsInterfaceType::System,
+        });
+        let eth_dbus = connection_to_dbus(
+            &eth,
+            Some(&ovs_port),
+            semver::Version::parse("1.50.0").unwrap(),
+        );
+        assert!(!eth_dbus.contains_key("ipv4"));
+        assert!(!eth_dbus.contains_key("ipv6"));
     }
 
     #[test]

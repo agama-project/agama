@@ -664,8 +664,15 @@ impl Connection {
     /// Open vSwitch works the other way around: the IP configuration lives in the internal
     /// `ovs-interface`, which is a port of an `ovs-port`, while the `ovs-bridge` and the
     /// `ovs-port` have none.
+    ///
+    /// A `system` interface is a regular device (e.g. an ethernet card) attached to an `ovs-port`,
+    /// so it is a regular port too. NetworkManager adds an `ovs-interface` section to it, which
+    /// is why it can be read as an [`ConnectionConfig::OvsInterface`].
     pub fn keeps_ip_config_as_port(&self) -> bool {
-        matches!(self.config, ConnectionConfig::OvsInterface(_))
+        matches!(
+            &self.config,
+            ConnectionConfig::OvsInterface(ifc) if ifc.interface_type != OvsInterfaceType::System
+        )
     }
 
     pub fn is_ethernet(&self) -> bool {
