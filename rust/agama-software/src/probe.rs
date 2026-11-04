@@ -72,7 +72,10 @@ pub enum ProbeError {
 /// Returns true if reachable; logs the exact failure error and returns false if unreachable.
 pub async fn probe_url(url_str: &str) -> bool {
     match try_probe_url(url_str).await {
-        Ok(()) => true,
+        Ok(()) => {
+            tracing::info!("Repository probe success for '{url_str}'.");
+            true
+        },
         Err(err) => {
             tracing::info!("Repository probe failed for '{url_str}': {err}");
             false
