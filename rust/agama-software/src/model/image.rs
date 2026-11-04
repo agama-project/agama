@@ -89,6 +89,166 @@ async fn collect_last_lines(handle: tokio::task::JoinHandle<Vec<String>>) -> Str
     handle.await.unwrap_or_default().join("\n")
 }
 
+/// Guard to handle VFAT `/boot` (ESP) during image deployment.
+///
+/// In systemd-boot setups, `/boot` is mounted as a VFAT filesystem (the EFI System Partition).
+/// Because VFAT does not support POSIX symbolic links, extracting a rootfs archive containing
+/// kernel symlinks (`vmlinuz`, `initrd`, `sysctl.conf`) directly into a mounted VFAT partition
+/// causes `tar` to fail with `EPERM`.
+///
+/// This guard temporarily unmounts the VFAT partition, allowing `tar` to unpack the rootfs
+/// cleanly onto the native root partition (Btrfs/Ext4/XFS), copies the regular boot files
+/// (real kernel binaries and initrds) onto the ESP, and remounts `/boot`.
+struct VfatBootGuard {
+    device: Option<String>,
+    target_boot: PathBuf,
+}
+
+impl VfatBootGuard {
+    async fn unmount_if_vfat(install_dir: &Path) -> Self {
+        let target_boot = install_dir.join("boot");
+        let mut device = None;
+
+        if let Ok(content) = std::fs::read_to_string("/proc/mounts") {
+            for line in content.lines() {
+                let parts: Vec<&str> = line.split_whitespace().collect();
+                if parts.len() >= 3 {
+                    let dev = parts[0];
+                    let mp = parts[1];
+                    let fstype = parts[2];
+                    if mp == target_boot.to_string_lossy() && fstype == "vfat" {
+                        device = Some(dev.to_string());
+                        break;
+                    }
+                }
+            }
+        }
+
+        if let Some(dev) = &device {
+            tracing::info!(
+                "Temporarily unmounting VFAT /boot ('{}' on '{}') for extraction",
+                dev,
+                target_boot.display()
+            );
+            let status = Command::new("umount").arg(&target_boot).status().await;
+            match status {
+                Ok(s) if s.success() => {
+                    tracing::info!("Successfully unmounted '{}'", target_boot.display());
+                }
+                _ => {
+                    tracing::warn!(
+                        "Failed to unmount '{}', proceeding without unmount",
+                        target_boot.display()
+                    );
+                    device = None;
+                }
+            }
+        }
+
+        Self {
+            device,
+            target_boot,
+        }
+    }
+
+    async fn sync_and_remount(&mut self) -> Result<(), std::io::Error> {
+        let Some(dev) = self.device.take() else {
+            return Ok(());
+        };
+
+        tracing::info!(
+            "Populating VFAT ESP from extracted /boot and remounting '{}' to '{}'",
+            dev,
+            self.target_boot.display()
+        );
+
+        // Mount the ESP device to a temporary directory to copy regular files
+        let temp_dir = tempfile::Builder::new()
+            .prefix("agama-esp-sync-")
+            .tempdir()?;
+        let temp_path = temp_dir.path();
+
+        let mount_res = Command::new("mount")
+            .args([&dev, temp_path.to_str().unwrap()])
+            .status()
+            .await;
+
+        if let Ok(status) = mount_res {
+            if status.success() {
+                if let Err(e) = Self::copy_regular_boot_files(&self.target_boot, temp_path) {
+                    tracing::warn!("Failed to copy some boot files to ESP: {e}");
+                }
+                _ = Command::new("umount").arg(temp_path).status().await;
+            } else {
+                tracing::warn!("Failed to mount ESP to temp directory, skipping sync");
+            }
+        }
+
+        // Remount the ESP at <install_dir>/boot
+        let remount_status = Command::new("mount")
+            .args([&dev, self.target_boot.to_str().unwrap()])
+            .status()
+            .await?;
+
+        if !remount_status.success() {
+            return Err(std::io::Error::new(
+                std::io::ErrorKind::Other,
+                format!(
+                    "Failed to remount '{}' at '{}'",
+                    dev,
+                    self.target_boot.display()
+                ),
+            ));
+        }
+
+        tracing::info!(
+            "Successfully remounted '{}' at '{}'",
+            dev,
+            self.target_boot.display()
+        );
+        Ok(())
+    }
+
+    fn copy_regular_boot_files(source_dir: &Path, dest_dir: &Path) -> std::io::Result<()> {
+        if !source_dir.is_dir() {
+            return Ok(());
+        }
+
+        for entry in std::fs::read_dir(source_dir)? {
+            let entry = entry?;
+            let file_type = entry.file_type()?;
+            let file_name = entry.file_name();
+            let src_path = entry.path();
+            let dst_path = dest_dir.join(&file_name);
+
+            if file_type.is_dir() {
+                std::fs::create_dir_all(&dst_path)?;
+                Self::copy_regular_boot_files(&src_path, &dst_path)?;
+            } else if file_type.is_file() {
+                std::fs::copy(&src_path, &dst_path)?;
+            }
+            // Symlinks are skipped since destination is VFAT
+        }
+
+        Ok(())
+    }
+}
+
+impl Drop for VfatBootGuard {
+    fn drop(&mut self) {
+        if let Some(dev) = self.device.take() {
+            tracing::warn!(
+                "VfatBootGuard dropped without explicit remount; remounting '{}' to '{}'",
+                dev,
+                self.target_boot.display()
+            );
+            _ = std::process::Command::new("mount")
+                .args([&dev, self.target_boot.to_str().unwrap()])
+                .status();
+        }
+    }
+}
+
 /// Model adapter for deploying pre-built system images.
 pub struct ImageModel {
     image_config: ImageConfig,
@@ -143,8 +303,24 @@ impl ImageModel {
                 gettext("Starting image deployment"),
             )));
 
+        // Prepare VFAT /boot guard: if /mnt/boot is mounted as VFAT (e.g. systemd-boot ESP),
+        // unmount it so rootfs tarball extraction can create symlinks cleanly on the rootfs.
+        let mut vfat_boot = VfatBootGuard::unmount_if_vfat(&self.install_dir).await;
+
         // Step 1: Deploy image
-        self.deploy_image().await?;
+        let deploy_res = self.deploy_image().await;
+
+        // Sync regular files (kernels, initrds) to the ESP and remount /mnt/boot
+        if let Err(e) = vfat_boot.sync_and_remount().await {
+            tracing::error!("Failed to sync and remount VFAT /boot: {e}");
+            if deploy_res.is_ok() {
+                return Err(service::Error::ImageDeploymentFailed(format!(
+                    "Failed to remount /boot: {e}"
+                )));
+            }
+        }
+
+        deploy_res?;
 
         // Clean up container runtime markers left by container engines
         self.cleanup_container_markers().await;
@@ -234,9 +410,6 @@ impl ImageModel {
             "--xattrs-include=*",
             "--warning=no-xattr-write",
             "--numeric-owner",
-            "--exclude=*boot/vmlinuz",
-            "--exclude=*boot/initrd",
-            "--exclude=*boot/sysctl.conf",
             "-xf",
             "-",
             "-C",
@@ -439,9 +612,6 @@ impl ImageModel {
                     "--xattrs-include=*",
                     "--warning=no-xattr-write",
                     "--numeric-owner",
-                    "--exclude=*boot/vmlinuz",
-                    "--exclude=*boot/initrd",
-                    "--exclude=*boot/sysctl.conf",
                     "-xf",
                     path,
                     "-C",
@@ -880,9 +1050,6 @@ impl ImageModel {
                 "--xattrs-include=*",
                 "--warning=no-xattr-write",
                 "--numeric-owner",
-                "--exclude=*boot/vmlinuz",
-                "--exclude=*boot/initrd",
-                "--exclude=*boot/sysctl.conf",
                 "-xf",
                 "-",
                 "-C",
@@ -1228,5 +1395,34 @@ mod tests {
         assert!(!containerenv.exists());
         assert!(!container_file.exists());
         assert!(!dockerenv.exists());
+    }
+
+    #[test]
+    fn test_vfat_boot_guard_copy_skips_symlinks() {
+        let src_dir = TempDir::new().unwrap();
+        let dest_dir = TempDir::new().unwrap();
+
+        // Real kernel binary
+        let kernel_file = src_dir.path().join("vmlinuz-6.12.0-default");
+        std::fs::write(&kernel_file, "binary kernel data").unwrap();
+
+        // Symlink pointing to kernel
+        let kernel_symlink = src_dir.path().join("vmlinuz");
+        std::os::unix::fs::symlink("vmlinuz-6.12.0-default", &kernel_symlink).unwrap();
+
+        // Subdirectory (like EFI/ or loader/)
+        let efi_dir = src_dir.path().join("EFI/BOOT");
+        std::fs::create_dir_all(&efi_dir).unwrap();
+        let boot_efi = efi_dir.join("bootx64.efi");
+        std::fs::write(&boot_efi, "UEFI binary").unwrap();
+
+        VfatBootGuard::copy_regular_boot_files(src_dir.path(), dest_dir.path()).unwrap();
+
+        // Real kernel and subdirectories must be copied
+        assert!(dest_dir.path().join("vmlinuz-6.12.0-default").exists());
+        assert!(dest_dir.path().join("EFI/BOOT/bootx64.efi").exists());
+
+        // Symlink must be skipped
+        assert!(!dest_dir.path().join("vmlinuz").exists());
     }
 }
