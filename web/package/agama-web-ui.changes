@@ -7,7 +7,7 @@ Wed Nov  4 08:58:57 UTC 2026 - David Diaz <dgonzalez@suse.com>
 Wed Nov  4 08:50:12 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
 
 - Load the terminal component only when needed (lazy loading)
-  to decrease the used browser memory.
+  to decrease the used browser memory (gh#agama-project/agama#4175).
 
 -------------------------------------------------------------------
 Tue Nov  3 18:06:14 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
