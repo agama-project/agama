@@ -123,6 +123,7 @@ impl Config {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::test::{assert_omits_null, find_null_paths};
     use std::path::PathBuf;
 
     #[test]
@@ -159,8 +160,7 @@ mod tests {
         let config = Config::from_json(&contents, &base_uri).expect("deserialize Config");
 
         let serialized = serde_json::to_value(&config).expect("serialize config");
-        let mut nulls = Vec::new();
-        find_null_paths("", &serialized, &mut nulls);
+        let nulls = find_null_paths(&serialized);
         assert!(
             nulls.is_empty(),
             "config_full.json reserialized to null values at paths: {:?}",
@@ -191,39 +191,5 @@ mod tests {
 
         assert_omits_null(&Config::default());
         assert_omits_null(&all_subsystems_default_config);
-    }
-
-    fn find_null_paths(prefix: &str, val: &serde_json::Value, nulls: &mut Vec<String>) {
-        match val {
-            serde_json::Value::Null => nulls.push(prefix.to_string()),
-            serde_json::Value::Object(map) => {
-                for (k, v) in map {
-                    let p = if prefix.is_empty() {
-                        k.clone()
-                    } else {
-                        format!("{}/{}", prefix, k)
-                    };
-                    find_null_paths(&p, v, nulls);
-                }
-            }
-            serde_json::Value::Array(arr) => {
-                for (i, v) in arr.iter().enumerate() {
-                    find_null_paths(&format!("{}/{}", prefix, i), v, nulls);
-                }
-            }
-            _ => {}
-        }
-    }
-
-    fn assert_omits_null<T: serde::Serialize>(val: &T) {
-        let json = serde_json::to_value(val).expect("serialize value");
-        let mut nulls = Vec::new();
-        find_null_paths("", &json, &mut nulls);
-        assert!(
-            nulls.is_empty(),
-            "Type {} serialized null values at paths: {:?}. Ensure `#[serde(skip_serializing_if = \"Option::is_none\")]` is set on optional fields.",
-            std::any::type_name::<T>(),
-            nulls
-        );
     }
 }
