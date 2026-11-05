@@ -1,0 +1,27 @@
+[Unit]
+Description=Check the root image matches the booted kernel
+Documentation=man:dracut.bootup(7)
+DefaultDependencies=no
+
+# Run after the root image is mounted to /sysroot and before the pre-pivot
+# hooks (the driver update) and switching the root.
+# See https://man7.org/linux/man-pages/man7/dracut.bootup.7.html
+After=initrd-fs.target
+Before=dracut-pre-pivot.service initrd-switch-root.target
+
+ConditionPathExists=/usr/lib/initrd-release
+# allow skipping the check with the "live.sanity_check=0" boot option
+ConditionKernelCommandLine=!live.sanity_check=0
+Conflicts=shutdown.target emergency.target
+
+# start the emergency shell if the check fails
+OnFailure=emergency.target
+OnFailureJobMode=isolate
+
+[Service]
+Type=oneshot
+ExecStart=/bin/initrd-kernel-check /sysroot
+RemainAfterExit=yes
+StandardOutput=journal+console
+StandardError=journal+console
+SyslogIdentifier=initrd-rootfs-kernel-check

@@ -29,7 +29,11 @@ install() {
 
   inst_simple "$moddir/initrd-kernel-check.service" "$systemdsystemunitdir/initrd-kernel-check.service"
 
-  # make sure the service is started in the initramfs
+  inst_simple "$moddir/initrd-rootfs-kernel-check.service" "$systemdsystemunitdir/initrd-rootfs-kernel-check.service"
+
+  # make sure the services are started in the initramfs, the initrd check runs
+  # early in the boot, the root image check runs after /sysroot is mounted
   $SYSTEMCTL -q --root "$initdir" add-wants sysinit.target initrd-kernel-check.service
+  $SYSTEMCTL -q --root "$initdir" add-wants initrd.target initrd-rootfs-kernel-check.service
   set +e
 }
