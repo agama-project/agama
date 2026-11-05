@@ -319,6 +319,26 @@ const withoutPortLists = <T extends APIPorts>(settings: T): Omit<T, keyof APIPor
   return rest;
 };
 
+/**
+ * Kinds of connections that have ports.
+ */
+type ControllerKind = "bond" | "bridge";
+
+/**
+ * Settings of a connection that a port cannot have, as its controller holds the
+ * IP configuration.
+ */
+const IP_SETTINGS = [
+  "addresses",
+  "nameservers",
+  "dnsSearchList",
+  "ignoreAutoDns",
+  "gateway4",
+  "gateway6",
+  "method4",
+  "method6",
+] as const;
+
 type APIConnection = {
   id: string;
   bond?: Omit<Bond, "ports"> & APIPorts;
@@ -330,6 +350,7 @@ type APIConnection = {
   addresses?: string[];
   nameservers?: string[];
   dnsSearchList?: string[];
+  ignoreAutoDns?: boolean;
   gateway4?: string;
   gateway6?: string;
   method4?: string;
@@ -474,8 +495,10 @@ class Connection {
     return entries.map((p) => (typeof p === "string" ? p : Connection.fromApi(p)));
   }
 
-  private static portsToApi(ports: Port[] = []): APIPorts {
-    return { portConnections: ports.map((p) => (typeof p === "string" ? p : p.toApi())) };
+  private static portsToApi(ports: Port[] = [], controller: ControllerKind): APIPorts {
+    return {
+      portConnections: ports.map((p) => (typeof p === "string" ? p : p.toApi(controller))),
+    };
   }
 
   static fromApi(connection: APIConnection) {
@@ -510,8 +533,20 @@ class Connection {
     return conn;
   }
 
-  toApi() {
-    const { iface, addresses, state, bond, bridge, ...newConnection } = this;
+  /**
+   * Returns the connection as the API takes it.
+   *
+   * What a connection may hold depends on where it goes. A port nested in its
+   * controller has no IP settings, as the controller holds them, and only the
+   * ports of a bridge have port settings. A connection at the top level has no
+   * port settings, even when a controller lists it by name. The backend rejects
+   * any of them in the wrong place.
+   *
+   * @param controller - Kind of controller the connection is nested in, when it
+   *   is a port.
+   */
+  toApi(controller?: ControllerKind) {
+    const { iface, addresses, state, bond, bridge, port, ...newConnection } = this;
     const result: APIConnection = {
       ...newConnection,
       interface: iface,
@@ -520,11 +555,18 @@ class Connection {
 
     if (bond) {
       const { ports, ...settings } = bond;
-      result.bond = { ...settings, ...Connection.portsToApi(ports) };
+      result.bond = { ...settings, ...Connection.portsToApi(ports, "bond") };
     }
     if (bridge) {
       const { ports, ...settings } = bridge;
-      result.bridge = { ...settings, ...Connection.portsToApi(ports) };
+      result.bridge = { ...settings, ...Connection.portsToApi(ports, "bridge") };
+    }
+
+    if (controller === "bridge" && port) result.port = port;
+
+    if (controller) {
+      for (const key of IP_SETTINGS) delete result[key];
+      return result;
     }
 
     if (result.gateway4 === "") delete result.gateway4;

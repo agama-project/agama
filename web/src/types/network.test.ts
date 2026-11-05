@@ -125,6 +125,38 @@ describe("Connection", () => {
       // Agama does not accept both lists.
       expect(api.bond).not.toHaveProperty("ports");
     });
+
+    it("writes the nested ports without IP settings, as the backend rejects them", () => {
+      const eth0 = ethernet("eth0", {
+        method4: ConnectionMethod.MANUAL,
+        addresses: [{ address: "192.168.1.1", prefix: 24 }],
+        nameservers: ["8.8.8.8"],
+        dnsSearchList: ["example.com"],
+        gateway4: "192.168.1.254",
+      });
+      const [port] = bond("bond0", [eth0]).toApi().bond.portConnections;
+
+      for (const key of ["addresses", "nameservers", "dnsSearchList", "gateway4", "method4"]) {
+        expect(port).not.toHaveProperty(key);
+      }
+    });
+
+    it("keeps the port settings only in the ports of a bridge", () => {
+      const eth0 = ethernet("eth0", { port: { priority: 16 } });
+      const eth1 = ethernet("eth1", { port: { priority: 16 } });
+
+      const [bridgePort] = bridge("br0", [eth0]).toApi().bridge.portConnections;
+      expect(bridgePort).toEqual(expect.objectContaining({ port: { priority: 16 } }));
+
+      const [bondPort] = bond("bond0", [eth1]).toApi().bond.portConnections;
+      expect(bondPort).not.toHaveProperty("port");
+    });
+
+    it("drops the port settings of a connection at the top level", () => {
+      const api = ethernet("eth0", { port: { priority: 16 } }).toApi();
+
+      expect(api).not.toHaveProperty("port");
+    });
   });
 });
 
