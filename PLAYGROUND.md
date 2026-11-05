@@ -32,7 +32,9 @@ Start the development server against any Agama machine:
     AGAMA_SERVER=https://<agama-machine> npm run server
 
 A machine with several disks, an existing volume group or a RAID shows the
-table best.
+table best. The screenshots in the shared documents come from a made-up machine
+like that (two NVMe disks, one with Windows, a RAID and an existing volume
+group), answered by a local mock of the API that is not part of this branch.
 
 Then, from the browser developer tools console:
 
