@@ -28,6 +28,7 @@ import TruncatedDeviceName from "~/components/storage/TruncatedDeviceName";
 import { NAMES_PER_LINE } from "~/components/storage/shared/naming";
 import { baseName, formattedPath } from "~/components/storage/utils";
 import { volumeGroupFacts } from "~/components/storage/utils/device";
+import { useGroupedTable } from "~/components/storage/storage-page/playground-switches";
 import { useDevice } from "~/hooks/model/system/storage";
 import { isEmpty } from "radashi";
 import configModel from "~/model/storage/config-model";
@@ -140,12 +141,19 @@ export type VolumeGroupRowProps = {
 export default function VolumeGroupRow({ group, subject }: VolumeGroupRowProps): React.ReactNode {
   const device = useDevice(group.name || "");
   const { size, description } = volumeGroupFacts(group, device);
+  /* PLAYGROUND: in the grouped table the group's title already says these are
+     volume groups, so the row says only whether this one is new. */
+  const isGrouped = useGroupedTable() === "on";
+  // TRANSLATORS: said under the name of a volume group the installation
+  // creates, in a list headed "Volume groups".
+  const note = isGrouped && !group.name ? _("New") : undefined;
 
   return (
     <EntryRow
       name={<TruncatedDeviceName device={{ name: group.vgName }} maxLength={13} />}
       size={size}
-      description={description}
+      description={isGrouped ? undefined : description}
+      note={note}
       purpose={contentLines(group)}
       actions={actionsFor(group)}
       menu={<VolumeGroupMenu group={group} subject={subject} />}
