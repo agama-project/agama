@@ -1,10 +1,34 @@
 -------------------------------------------------------------------
-Sun Nov  1 05:38:17 UTC 2026 - Aaryan Pawar <pawararyan989@gmail.com>
+Thu Nov  5 14:01:06 UTC 2026 - Aaryan Pawar <pawararyan989@gmail.com>
 
 - Move the form to configure an LVM volume group to the new form
   stack. The name is checked against what LVM accepts, and the
   disks are chosen from a list, or from a dialog showing their
   details (gh#agama-project/agama#4110).
+
+-------------------------------------------------------------------
+Wed Nov  4 09:04:37 UTC 2026 - Michal Filka <mfilka@suse.com>
+
+- bsc#1278291 (CVE-2026-84369), bsc#1278292 (CVE-2026-84370)
+  - svgo version 3.3.5
+
+-------------------------------------------------------------------
+Wed Nov  4 08:50:12 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Load the terminal component only when needed (lazy loading)
+  to decrease the used browser memory.
+
+-------------------------------------------------------------------
+Tue Nov  3 18:06:14 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Use "ka-GE" instead of the wrong language id "ka-KZ"
+  (related to gh#agama-project/agama#4178).
+
+-------------------------------------------------------------------
+Mon Nov  2 10:36:43 UTC 2026 - Michal Filka <mfilka@suse.com>
+
+- bsc#1283415, bsc#1283398 (CVE-2026-102277, CVE-2026-102278)
+  - brace-expansion upgraded to 5.0.12
 
 -------------------------------------------------------------------
 Sat Oct 31 17:43:12 UTC 2026 - Michal Filka <mfilka@suse.com>

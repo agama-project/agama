@@ -3,7 +3,7 @@
 <!-- OBS-Profiles: @BUILD_FLAVOR@ -->
 <!-- OBS-Milestone: %current_milestone -->
 
-<image schemaversion="7.5" name="agama-installer">
+<image schemaversion="8.3" name="agama-installer">
     <description type="system">
         <author>YaST Team</author>
         <contact>yast2-maintainers@suse.de</contact>
