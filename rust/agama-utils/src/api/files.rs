@@ -28,4 +28,4 @@ pub mod scripts;
 pub use scripts::{BaseScript, InitScript, PostPartitioningScript, PostScript, PreScript, Script};
 
 mod file_source;
-pub use file_source::{FileSource, FileSourceError, WithFileSource};
+pub use file_source::{FileSource, FileSourceError};
