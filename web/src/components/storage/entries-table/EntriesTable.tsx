@@ -26,6 +26,7 @@ import { columnName } from "~/components/storage/entries-table/columns";
 import DriveRow from "~/components/storage/entries-table/DriveRow";
 import VolumeGroupRow from "~/components/storage/entries-table/VolumeGroupRow";
 import { baseName } from "~/components/storage/utils";
+import { useTypeColumn } from "~/components/storage/storage-page/playground-switches";
 import { useConfigModel } from "~/hooks/model/storage/config-model";
 import { _ } from "~/i18n";
 import type { ThProps } from "@patternfly/react-table";
@@ -107,6 +108,9 @@ export default function EntriesTable(): React.ReactNode {
   const config = useConfigModel();
   const list = React.useRef<HTMLDivElement>(null);
   const [sortBy, setSortBy] = React.useState<SortBy>({ index: TYPE_COLUMN, direction: "asc" });
+  /* PLAYGROUND: the Type column can be left out from the console. Without it,
+     rows keep their type order until sorted by device. */
+  const hasTypeColumn = useTypeColumn() === "on";
 
   const onKeyDown = (event: React.KeyboardEvent) => {
     /* Right and left move between an entry's name and its menu. Both stay tab
@@ -174,9 +178,11 @@ export default function EntriesTable(): React.ReactNode {
       >
         <Thead>
           <Tr>
-            <Th sort={sortParams(TYPE_COLUMN)} modifier="fitContent">
-              {columnName("type")}
-            </Th>
+            {hasTypeColumn && (
+              <Th sort={sortParams(TYPE_COLUMN)} modifier="fitContent">
+                {columnName("type")}
+              </Th>
+            )}
             <Th sort={sortParams(DEVICE_COLUMN)}>{columnName("device")}</Th>
             <Th>{columnName("existingData")}</Th>
             <Th>{columnName("newSystem")}</Th>

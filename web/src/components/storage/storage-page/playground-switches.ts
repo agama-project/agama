@@ -33,6 +33,11 @@
  *   agamaDevicesBox(false)  // right on the page (default)
  *   agamaDevicesBox(true)   // in a bordered box
  *
+ * Whether the devices table has a Type column:
+ *
+ *   agamaTypeColumn(true)   // shown (default)
+ *   agamaTypeColumn(false)  // left out
+ *
  * Choices survive reloads. To be dropped once the design is settled.
  */
 
@@ -40,13 +45,15 @@ import React from "react";
 
 type TopLineOrder = "description" | "status";
 type DevicesBox = "off" | "on";
+type TypeColumn = "on" | "off";
 
-type SwitchName = "agamaTopLineOrder" | "agamaDevicesBox";
+type SwitchName = "agamaTopLineOrder" | "agamaDevicesBox" | "agamaTypeColumn";
 
 declare global {
   interface Window {
     agamaTopLineOrder?: (value: TopLineOrder) => void;
     agamaDevicesBox?: (value: boolean) => void;
+    agamaTypeColumn?: (value: boolean) => void;
   }
 }
 
@@ -94,4 +101,8 @@ const useDevicesBox = consoleSwitch<DevicesBox>("agamaDevicesBox", ["off", "on"]
   input ? "on" : "off",
 );
 
-export { useTopLineOrder, useDevicesBox };
+const useTypeColumn = consoleSwitch<TypeColumn>("agamaTypeColumn", ["on", "off"], (input) =>
+  input ? "on" : "off",
+);
+
+export { useTopLineOrder, useDevicesBox, useTypeColumn };

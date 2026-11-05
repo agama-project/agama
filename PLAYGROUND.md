@@ -42,6 +42,8 @@ Then, from the browser developer tools console:
 | `agamaTopLineOrder("status")`      | Result and settings first           |
 | `agamaDevicesBox(false)`           | Devices right on the page (default) |
 | `agamaDevicesBox(true)`            | Devices in a bordered box           |
+| `agamaTypeColumn(true)`            | Type column shown (default)         |
+| `agamaTypeColumn(false)`           | Type column left out                |
 
 Every choice is kept across reloads.
 
