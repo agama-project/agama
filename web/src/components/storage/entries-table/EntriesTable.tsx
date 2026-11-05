@@ -26,9 +26,13 @@ import { columnName } from "~/components/storage/entries-table/columns";
 import DriveRow from "~/components/storage/entries-table/DriveRow";
 import VolumeGroupRow from "~/components/storage/entries-table/VolumeGroupRow";
 import { baseName } from "~/components/storage/utils";
-import { useTypeColumn } from "~/components/storage/storage-page/playground-switches";
+import {
+  useGroupedTable,
+  useHasTypeColumn,
+} from "~/components/storage/storage-page/playground-switches";
 import { useConfigModel } from "~/hooks/model/storage/config-model";
-import { _ } from "~/i18n";
+import { _, n_ } from "~/i18n";
+import type { TranslatedString } from "~/i18n";
 import type { ThProps } from "@patternfly/react-table";
 import type { ConfigModel } from "~/model/storage/config-model";
 import type {
@@ -74,6 +78,24 @@ function rowsOf(config: ConfigModel.Config | null): Row[] {
   return [...groups, ...partitionables("mdRaids"), ...partitionables("drives")];
 }
 
+/** What a group of the table is called, by kind and by how many it holds. */
+function groupTitle(collection: DetailsCollection, count: number): TranslatedString {
+  switch (collection) {
+    case "volumeGroups":
+      // TRANSLATORS: heads the LVM volume groups in the list of what the
+      // installation is made of.
+      return n_("Volume group", "Volume groups", count);
+    case "mdRaids":
+      // TRANSLATORS: heads the software RAID devices in the list of what the
+      // installation is made of.
+      return n_("RAID device", "RAID devices", count);
+    case "drives":
+      // TRANSLATORS: heads the disks in the list of what the installation is
+      // made of.
+      return n_("Used disk", "Used disks", count);
+  }
+}
+
 function compareRows(column: number, a: Row, b: Row): number {
   if (column === DEVICE_COLUMN) {
     return a.name.localeCompare(b.name, undefined, { numeric: true });
@@ -108,9 +130,13 @@ export default function EntriesTable(): React.ReactNode {
   const config = useConfigModel();
   const list = React.useRef<HTMLDivElement>(null);
   const [sortBy, setSortBy] = React.useState<SortBy>({ index: TYPE_COLUMN, direction: "asc" });
-  /* PLAYGROUND: the Type column can be left out from the console. Without it,
-     rows keep their type order until sorted by device. */
-  const hasTypeColumn = useTypeColumn() === "on";
+  /* PLAYGROUND: the Type column can be left out from the console, and the
+     rows grouped by kind instead. Without the column, rows keep their type
+     order until sorted by device; grouped, a sort orders each group on its
+     own and the groups keep their order. */
+  const hasTypeColumn = useHasTypeColumn();
+  const isGrouped = useGroupedTable() === "on";
+  const groupId = React.useId();
 
   const onKeyDown = (event: React.KeyboardEvent) => {
     /* Right and left move between an entry's name and its menu. Both stay tab
@@ -160,6 +186,23 @@ export default function EntriesTable(): React.ReactNode {
     return sortBy.direction === "asc" ? order : -order;
   });
 
+  const renderRow = ({ subject, group, deviceName }: Row) =>
+    group ? (
+      <VolumeGroupRow key={`vg-${group.vgName}`} group={group} subject={subject} />
+    ) : (
+      <DriveRow key={deviceName} name={deviceName} subject={subject} />
+    );
+
+  /* Every column, the Type one only where it is drawn. */
+  const columnCount = hasTypeColumn ? 5 : 4;
+
+  /* One body per kind, in the configuration's order, each starting with a row
+     group header naming it. */
+  const groups = TYPE_ORDER.map((collection) => ({
+    collection,
+    rows: sorted.filter((row) => row.subject.collection === collection),
+  })).filter(({ rows }) => rows.length > 0);
+
   const sortParams = (columnIndex: number): ThProps["sort"] => ({
     sortBy,
     onSort: (_event, index, direction) => setSortBy({ index, direction }),
@@ -189,15 +232,29 @@ export default function EntriesTable(): React.ReactNode {
             <Th aria-label={columnName("actions")} />
           </Tr>
         </Thead>
-        <Tbody>
-          {sorted.map(({ subject, group, deviceName }) =>
-            group ? (
-              <VolumeGroupRow key={`vg-${group.vgName}`} group={group} subject={subject} />
-            ) : (
-              <DriveRow key={deviceName} name={deviceName} subject={subject} />
-            ),
-          )}
-        </Tbody>
+        {isGrouped ? (
+          groups.map(({ collection, rows }) => (
+            <Tbody
+              key={collection}
+              className="agm-entries-table__group"
+              aria-labelledby={`${groupId}-${collection}`}
+            >
+              <Tr>
+                <Th
+                  id={`${groupId}-${collection}`}
+                  scope="rowgroup"
+                  colSpan={columnCount}
+                  className="agm-entries-table__group-header"
+                >
+                  {groupTitle(collection, rows.length)}
+                </Th>
+              </Tr>
+              {rows.map(renderRow)}
+            </Tbody>
+          ))
+        ) : (
+          <Tbody>{sorted.map(renderRow)}</Tbody>
+        )}
       </Table>
     </div>
   );

@@ -579,6 +579,26 @@ nav.agm-breadcrumb > ol > li > a {
   --pf-v6-c-table--cell--first-last-child--PaddingInline: var(--pf-t--global--spacer--md);
 }
 
+// PLAYGROUND: in the grouped table, the row naming each group reads as a title
+// over its rows rather than as a row of its own: smaller and set apart by
+// weight, no rule under it, and more room above it than under it.
+.agm-entries-table .pf-v6-c-table tbody tr:has(> .agm-entries-table__group-header) {
+  --pf-v6-c-table__tr--BorderBlockEndWidth: 0;
+}
+
+.agm-entries-table .pf-v6-c-table th.agm-entries-table__group-header {
+  padding-block-end: var(--pf-t--global--spacer--xs);
+  font-size: var(--pf-t--global--font--size--body--sm);
+  font-weight: var(--pf-t--global--font--weight--body--bold);
+  color: var(--pf-t--global--text--color--subtle);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.agm-entries-table__group + .agm-entries-table__group th.agm-entries-table__group-header {
+  padding-block-start: var(--pf-t--global--spacer--lg);
+}
+
 // What the entry is, read under the name: a fact about the name rather than a
 // column of its own.
 .agm-entries-table__facts {

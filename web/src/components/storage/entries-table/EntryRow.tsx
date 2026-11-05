@@ -30,7 +30,7 @@ import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import Text from "~/components/core/Text";
 import { useDeviceDetails, DETAILS_PANEL_ID } from "~/components/storage/shared/use-device-details";
 import { columnName, typeName } from "~/components/storage/entries-table/columns";
-import { useTypeColumn } from "~/components/storage/storage-page/playground-switches";
+import { useHasTypeColumn } from "~/components/storage/storage-page/playground-switches";
 import type { DetailsSubject } from "~/components/storage/shared/use-device-details";
 import type { TranslatedString } from "~/i18n";
 
@@ -109,7 +109,7 @@ export default function EntryRow({
   subject,
 }: EntryRowProps): React.ReactNode {
   const { subject: open, addressOf } = useDeviceDetails();
-  const hasTypeColumn = useTypeColumn() === "on";
+  const hasTypeColumn = useHasTypeColumn();
   const isOpen =
     open !== null && open.collection === subject.collection && open.index === subject.index;
 

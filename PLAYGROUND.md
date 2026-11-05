@@ -44,6 +44,8 @@ Then, from the browser developer tools console:
 | `agamaDevicesBox(true)`            | Devices in a bordered box           |
 | `agamaTypeColumn(true)`            | Type column shown (default)         |
 | `agamaTypeColumn(false)`           | Type column left out                |
+| `agamaGroupedTable(false)`         | One flat list of devices (default)  |
+| `agamaGroupedTable(true)`          | Grouped by kind, sorted per group   |
 
 Every choice is kept across reloads.
 

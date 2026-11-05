@@ -38,6 +38,12 @@
  *   agamaTypeColumn(true)   // shown (default)
  *   agamaTypeColumn(false)  // left out
  *
+ * Whether the devices table groups them by kind, each group sorted on its
+ * own, which also leaves the Type column out:
+ *
+ *   agamaGroupedTable(false)  // one flat list (default)
+ *   agamaGroupedTable(true)   // volume groups, RAID devices and disks apart
+ *
  * Choices survive reloads. To be dropped once the design is settled.
  */
 
@@ -46,14 +52,16 @@ import React from "react";
 type TopLineOrder = "description" | "status";
 type DevicesBox = "off" | "on";
 type TypeColumn = "on" | "off";
+type GroupedTable = "off" | "on";
 
-type SwitchName = "agamaTopLineOrder" | "agamaDevicesBox" | "agamaTypeColumn";
+type SwitchName = "agamaTopLineOrder" | "agamaDevicesBox" | "agamaTypeColumn" | "agamaGroupedTable";
 
 declare global {
   interface Window {
     agamaTopLineOrder?: (value: TopLineOrder) => void;
     agamaDevicesBox?: (value: boolean) => void;
     agamaTypeColumn?: (value: boolean) => void;
+    agamaGroupedTable?: (value: boolean) => void;
   }
 }
 
@@ -105,4 +113,15 @@ const useTypeColumn = consoleSwitch<TypeColumn>("agamaTypeColumn", ["on", "off"]
   input ? "on" : "off",
 );
 
-export { useTopLineOrder, useDevicesBox, useTypeColumn };
+const useGroupedTable = consoleSwitch<GroupedTable>("agamaGroupedTable", ["off", "on"], (input) =>
+  input ? "on" : "off",
+);
+
+/** Whether the Type column is drawn: asked for, and not made redundant by groups. */
+function useHasTypeColumn(): boolean {
+  const typeColumn = useTypeColumn();
+  const grouped = useGroupedTable();
+  return typeColumn === "on" && grouped === "off";
+}
+
+export { useTopLineOrder, useDevicesBox, useTypeColumn, useGroupedTable, useHasTypeColumn };
