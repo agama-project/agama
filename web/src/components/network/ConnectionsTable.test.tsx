@@ -49,11 +49,6 @@ const mockConnections = [
   }),
 ];
 
-// The configured connections do not include the runtime state.
-const mockConfigConnections = mockConnections.map(
-  ({ id, state: _state, ...options }) => new Connection(id, options),
-);
-
 // The top-level connections the system reports, with the ports of bonds and
 // bridges nested in them.
 let mockRoots = mockConnections;
@@ -73,6 +68,14 @@ const stackedConnections = [
   }),
 ];
 
+// The configured connections are the reported ones, without the runtime state
+// (neither at the top level nor in the nested ports).
+const mockConfigOf = (connections: Connection[]): Connection[] =>
+  connections.map(({ id, state: _state, bond, ...options }) => {
+    const ports = bond?.ports.map((p) => (typeof p === "string" ? p : mockConfigOf([p])[0]));
+    return new Connection(id, { ...options, bond: bond && { ...bond, ports } });
+  });
+
 const mockDevices = [
   { name: "eth0", connection: "Wired connection 0", addresses: [] },
   { name: "wlan0", connection: "Wifi1", addresses: [] },
@@ -81,7 +84,7 @@ const mockDevices = [
 
 jest.mock("~/hooks/model/config/network", () => ({
   useConnectionMutation: () => ({ mutateAsync: mockMutateAsync }),
-  useExtendedConfig: () => ({ connections: mockConfigConnections }),
+  useExtendedConfig: () => ({ connections: mockConfigOf(mockRoots) }),
 }));
 
 jest.mock("~/hooks/model/system/network", () => ({
