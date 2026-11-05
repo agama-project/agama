@@ -609,7 +609,8 @@ pub struct NetworkConnection {
 /// A connection as the system reports it, with its current state.
 ///
 /// The state is not part of the configuration, so only the system information reports it. The
-/// ports nested in a controller do not report it.
+/// ports nested in a controller report their own one (see [`BondPort::with_state`] and
+/// [`BridgePort::with_state`]).
 #[derive(Clone, Debug, Serialize, Deserialize, JsonSchema, PartialEq)]
 pub struct NetworkConnectionWithState {
     #[serde(flatten)]
@@ -700,6 +701,13 @@ macro_rules! port_type {
             /// Specifies whether the connection should be persisted or not
             #[serde(skip_serializing_if = "Option::is_none")]
             pub persistent: Option<bool>,
+            /// Current state of the connection
+            ///
+            /// It is read-only: only the system information reports it, and it is ignored when
+            /// given, so a port can be sent back as it was read.
+            #[serde(skip_serializing_if = "Option::is_none", default)]
+            #[schemars(extend("readOnly" = true))]
+            pub state: Option<ConnectionState>,
         }
 
         impl $name {
@@ -745,6 +753,7 @@ macro_rules! port_type {
                     ieee_8021x,
                     autoconnect,
                     persistent,
+                    state: None,
                 }
             }
 
@@ -944,6 +953,23 @@ impl BridgePort {
             Self::Ethernet(Box::new(BridgeEthernetPort::from_connection(conn, port)))
         }
     }
+
+    /// Returns the port with the given state, as the system reports it.
+    ///
+    /// A port given by name is not a connection yet, so it has no state.
+    ///
+    /// * `state`: current state of the connection.
+    pub fn with_state(mut self, state: ConnectionState) -> Self {
+        match &mut self {
+            Self::Name(_) => {}
+            Self::Ethernet(port) => port.state = Some(state),
+            Self::Bond(port) => port.state = Some(state),
+            Self::Bridge(port) => port.state = Some(state),
+            Self::Vlan(port) => port.state = Some(state),
+            Self::Wireless(port) => port.state = Some(state),
+        }
+        self
+    }
 }
 
 /// Entry of the `portConnections` list of a bond.
@@ -984,6 +1010,23 @@ impl BondPort {
         } else {
             Self::Ethernet(Box::new(BondEthernetPort::from_connection(conn)))
         }
+    }
+
+    /// Returns the port with the given state, as the system reports it.
+    ///
+    /// A port given by name is not a connection yet, so it has no state.
+    ///
+    /// * `state`: current state of the connection.
+    pub fn with_state(mut self, state: ConnectionState) -> Self {
+        match &mut self {
+            Self::Name(_) => {}
+            Self::Ethernet(port) => port.state = Some(state),
+            Self::Bond(port) => port.state = Some(state),
+            Self::Bridge(port) => port.state = Some(state),
+            Self::Vlan(port) => port.state = Some(state),
+            Self::Wireless(port) => port.state = Some(state),
+        }
+        self
     }
 }
 
