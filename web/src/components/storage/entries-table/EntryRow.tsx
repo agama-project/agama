@@ -159,14 +159,14 @@ export default function EntryRow({
           {description && <StackItem className="agm-entries-table__facts">{description}</StackItem>}
         </Stack>
       </Th>
-      <Td dataLabel={columnName("currentContent")}>
+      <Td dataLabel={columnName("existingData")}>
         <Stack>
           {actions.map((line) => (
             <StackItem key={line}>{line}</StackItem>
           ))}
         </Stack>
       </Td>
-      <Td dataLabel={columnName("plannedContent")}>
+      <Td dataLabel={columnName("newSystem")}>
         <Stack>
           {purpose.map((line) => (
             <StackItem key={line}>{line}</StackItem>

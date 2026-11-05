@@ -87,8 +87,8 @@ function compareRows(column: number, a: Row, b: Row): number {
  * What the configuration is made of, under the summary of what it does.
  *
  * A regular table, one row per entry, with the columns named in its header:
- * the type of device, the device, what happens to its current content, what is
- * planned on it, and the menu of actions. It can be sorted by type, which is
+ * the type of device, the device, what happens to its existing data, what the
+ * new system puts on it, and the menu of actions. It can be sorted by type, which is
  * also the initial order, or by device name.
  *
  * Keyboard: arrow keys walk the entries, Up and Down from name to name and Left
@@ -178,8 +178,8 @@ export default function EntriesTable(): React.ReactNode {
               {columnName("type")}
             </Th>
             <Th sort={sortParams(DEVICE_COLUMN)}>{columnName("device")}</Th>
-            <Th>{columnName("currentContent")}</Th>
-            <Th>{columnName("plannedContent")}</Th>
+            <Th>{columnName("existingData")}</Th>
+            <Th>{columnName("newSystem")}</Th>
             <Th aria-label={columnName("actions")} />
           </Tr>
         </Thead>

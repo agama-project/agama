@@ -10,7 +10,7 @@ even possible, before the idea is dropped.
 ## What changed
 
 - The devices are a regular table: one row per device, with visible headers
-  (Type, Device, Current content, Planned content), sortable by type and by
+  (Type, Device, Existing data, New system), sortable by type and by
   device.
 - "Change target disk…" is an option of the disk's menu instead of a button
   beside the devices.

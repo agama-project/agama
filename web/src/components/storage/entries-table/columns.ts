@@ -27,7 +27,7 @@ import type { DetailsCollection } from "~/components/storage/shared/use-device-d
  * What each column of the list is called, as its header shows it.
  */
 function columnName(
-  column: "type" | "device" | "currentContent" | "plannedContent" | "actions",
+  column: "type" | "device" | "existingData" | "newSystem" | "actions",
 ): TranslatedString {
   switch (column) {
     case "type":
@@ -38,14 +38,14 @@ function columnName(
       // TRANSLATORS: names the column of the list holding what each entry of
       // the installation is called.
       return _("Device");
-    case "currentContent":
-      // TRANSLATORS: names the column of the list saying what happens to what
-      // is already on each entry.
-      return _("Current content");
-    case "plannedContent":
-      // TRANSLATORS: names the column of the list saying what the installer
-      // will put on each entry, or what it will use it for.
-      return _("Planned content");
+    case "existingData":
+      // TRANSLATORS: names the column of the list saying what happens to the
+      // data already on each entry: kept, shrunk, deleted or reused.
+      return _("Existing data");
+    case "newSystem":
+      // TRANSLATORS: names the column of the list saying what the system being
+      // installed will put on each entry, or what it will use it for.
+      return _("New system");
     case "actions":
       // TRANSLATORS: names the column of the list holding the menu of what can
       // be done to each entry of the installation.
