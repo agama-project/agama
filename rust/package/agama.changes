@@ -5,6 +5,13 @@ Wed Nov  4 18:03:24 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
   (gh#agama-project/agama#3993).
 
 -------------------------------------------------------------------
+Wed Nov  4 14:19:07 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Keep the IP configuration of the Open vSwitch internal interface
+  when writing it to NetworkManager, fixing the migration of OVS
+  bridges from wicked (gh#agama-project/agama#4190).
+
+-------------------------------------------------------------------
 Fri Oct 30 16:23:39 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Fix scripts execution progress reporting (bsc#1285983,
