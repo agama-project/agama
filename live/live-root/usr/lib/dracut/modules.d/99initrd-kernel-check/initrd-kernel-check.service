@@ -1,0 +1,28 @@
+[Unit]
+Description=Check the initrd matches the booted kernel
+Documentation=man:dracut.bootup(7)
+DefaultDependencies=no
+
+# Run as early as possible, before anything tries to load the kernel modules
+# (the udev daemon loads the drivers for the detected hardware), the logging
+# socket is the only dependency
+Wants=systemd-journald.socket
+After=systemd-journald.socket
+Before=systemd-udevd.service systemd-udev-trigger.service systemd-modules-load.service sysinit.target
+
+ConditionPathExists=/usr/lib/initrd-release
+# allow skipping the check with the "live.sanity_check=0" boot option
+ConditionKernelCommandLine=!live.sanity_check=0
+Conflicts=shutdown.target emergency.target
+
+# start the emergency shell if the check fails
+OnFailure=emergency.target
+OnFailureJobMode=isolate
+
+[Service]
+Type=oneshot
+ExecStart=/bin/initrd-kernel-check
+RemainAfterExit=yes
+StandardOutput=journal+console
+StandardError=journal+console
+SyslogIdentifier=initrd-kernel-check
