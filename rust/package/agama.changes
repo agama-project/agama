@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Nov  5 10:36:26 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Offer only the products available on the current architecture,
+  honoring the "archs" of their definition (e.g., SLES for SAP was
+  offered on aarch64) (bsc#1289499, gh#agama-project/agama#4196).
+
+-------------------------------------------------------------------
 Thu Oct 22 08:05:15 UTC 2026 - Josef Reidinger <jreidinger@suse.cz>
 
 - Fix syntax of zypp.conf.d that is generated if onlyRequired is 

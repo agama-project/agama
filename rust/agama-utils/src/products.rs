@@ -71,7 +71,8 @@ pub enum Error {
 /// location by setting the `AGAMA_SHARE_DIR` environment variable. This variable points to
 /// the parent of `products.d`.
 ///
-/// Dynamic behavior, like filtering by architecture, is not supported yet.
+/// Only the products available on the current architecture are loaded (see
+/// [`ProductTemplate::archs`]).
 #[derive(Clone, Debug, Deserialize)]
 pub struct Registry {
     path: std::path::PathBuf,
@@ -87,7 +88,25 @@ impl Registry {
     }
 
     /// Creates a registry loading the products from its location.
+    ///
+    /// Only the products available on the current architecture are loaded.
     pub fn read(&mut self) -> Result<(), Error> {
+        let arch = match Arch::current() {
+            Ok(arch) => Some(arch.to_yast_id()),
+            Err(error) => {
+                tracing::error!("Failed to determine the architecture: {error}");
+                None
+            }
+        };
+        self.read_for_arch(arch.as_deref())
+    }
+
+    /// Loads the products available on the given architecture from its location.
+    ///
+    /// * `arch`: architecture, as named in the products definition (see [`Arch::to_yast_id`]).
+    ///   When it is unknown, only the products that are not restricted to some architectures are
+    ///   loaded.
+    fn read_for_arch(&mut self, arch: Option<&str>) -> Result<(), Error> {
         let entries = std::fs::read_dir(&self.path)?;
         self.products.clear();
 
@@ -101,6 +120,15 @@ impl Registry {
 
             if path.is_file() && (ext == "yaml" || ext == "yml") {
                 let product = ProductTemplate::load_from(path)?;
+                if !product.is_available_on(arch) {
+                    tracing::info!(
+                        "Skipping product {}, which is only available on {:?}",
+                        &product.id,
+                        &product.archs
+                    );
+                    continue;
+                }
+
                 tracing::debug!(
                     "Loading product {} with modes {:?}",
                     &product.id,
@@ -287,10 +315,16 @@ impl Default for Registry {
 /// Represents a product that can be installed using Agama.
 ///
 /// A product can have multiple modes (e.g., "Traditional" and "Immutable").
+#[serde_as]
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct ProductTemplate {
     pub id: String,
     pub name: String,
+    /// Architectures the product is available on (e.g., "x86_64,ppc"), as named by
+    /// [`Arch::to_yast_id`]. When it is empty, the product is available on every architecture.
+    #[serde(default)]
+    #[serde_as(as = "StringWithSeparator::<CommaSeparator, String>")]
+    pub archs: Vec<String>,
     pub description: String,
     pub icon: String,
     #[serde(default)]
@@ -314,6 +348,16 @@ pub struct ProductTemplate {
 }
 
 impl ProductTemplate {
+    /// Whether the product is available on the given architecture.
+    ///
+    /// * `arch`: architecture, as named in the products definition (see [`Arch::to_yast_id`]).
+    ///   When it is unknown, only a product that is not restricted to some architectures is
+    ///   available.
+    pub fn is_available_on(&self, arch: Option<&str>) -> bool {
+        self.archs.is_empty()
+            || arch.is_some_and(|arch| self.archs.iter().any(|a| a.trim() == arch))
+    }
+
     pub fn load_from<P: AsRef<Path>>(path: P) -> Result<Self, Error> {
         let contents = std::fs::read_to_string(path)?;
         let template: ProductTemplate = serde_yaml::from_str(&contents)?;
@@ -625,7 +669,7 @@ mod test {
         fn setup() -> Self {
             let path = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../test/share/products.d");
             let mut registry = Registry::new(path.as_path());
-            registry.read().unwrap();
+            registry.read_for_arch(Some("x86_64")).unwrap();
 
             Self { registry }
         }
@@ -636,6 +680,51 @@ mod test {
     fn test_load_registry(ctx: &mut Context) {
         // ensuring that we can load all products from tests
         assert_eq!(ctx.registry.products.len(), 7);
+    }
+
+    /// Returns the IDs of the products available on the given architecture, sorted.
+    fn product_ids_for_arch(arch: Option<&str>) -> Vec<String> {
+        let path = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../test/share/products.d");
+        let mut registry = Registry::new(path.as_path());
+        registry.read_for_arch(arch).unwrap();
+        let mut ids: Vec<String> = registry.products.into_iter().map(|p| p.id).collect();
+        ids.sort();
+        ids
+    }
+
+    #[test]
+    fn test_load_only_the_products_for_the_architecture() {
+        // SLES for SAP is only available on x86_64 and ppc, and Slowroll on x86_64.
+        let x86_64 = product_ids_for_arch(Some("x86_64"));
+        assert!(x86_64.contains(&"SLES_SAP".to_string()));
+        assert!(x86_64.contains(&"Slowroll".to_string()));
+
+        let ppc = product_ids_for_arch(Some("ppc"));
+        assert!(ppc.contains(&"SLES_SAP".to_string()));
+        assert!(!ppc.contains(&"Slowroll".to_string()));
+
+        let aarch64 = product_ids_for_arch(Some("aarch64"));
+        assert!(!aarch64.contains(&"SLES_SAP".to_string()));
+        assert!(!aarch64.contains(&"Slowroll".to_string()));
+        assert_eq!(aarch64.len(), 5);
+    }
+
+    #[test]
+    fn test_load_only_unrestricted_products_for_an_unknown_architecture() {
+        let ids = product_ids_for_arch(None);
+        assert!(!ids.contains(&"SLES_SAP".to_string()));
+        assert!(!ids.contains(&"Slowroll".to_string()));
+        assert!(ids.contains(&"Tumbleweed".to_string()));
+    }
+
+    #[test]
+    fn test_product_archs_ignore_spaces() {
+        let template: ProductTemplate = serde_yaml::from_str(
+            "id: test\nname: Test\ndescription: Test\nicon: test.svg\narchs: x86_64, ppc\n",
+        )
+        .unwrap();
+        assert!(template.is_available_on(Some("ppc")));
+        assert!(!template.is_available_on(Some("s390")));
     }
 
     #[test_context(Context)]
