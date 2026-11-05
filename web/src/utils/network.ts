@@ -36,6 +36,8 @@ import {
   IPAddress,
   Route,
   SecurityProtocols,
+  portName,
+  portsOf,
 } from "~/types/network";
 import { _, N_, formatNumber } from "~/i18n";
 import type { MarkedString, TranslatedString } from "~/i18n";
@@ -436,25 +438,54 @@ const connectionForName = (name: string, connections: Connection[]): Connection 
   connections.find((c) => c.iface === name) ?? connections.find((c) => c.id === name);
 
 /**
+ * Returns the connection the given device is running, if there is one.
+ *
+ * A connection reaches a device in two ways. It can name it, which is what
+ * `connectionForName` looks for, or it can be handed to whatever device turns
+ * up: a connection bound by hardware address, or bound to nothing at all,
+ * carries no device name and only the device knows which one it ended up on.
+ */
+const connectionForDevice = (device: Device, connections: Connection[]): Connection | undefined =>
+  connectionForName(device.name, connections) ??
+  connections.find((c) => c.id === device.connection);
+
+/**
  * Returns the bond or bridge the given device is already a port of, if any.
  *
  * Membership lives in the controller's own `ports` list, so it is found by
- * going through the controllers instead of asking the port about it. A port is
- * listed there by its interface name or, lacking one, by its connection id,
- * and both are worth looking for.
+ * going through the controllers instead of asking the port about it. The
+ * connections are expected to be flattened (see `flattenConnections`), so the
+ * controllers nested in others are gone through too. A port is usually the
+ * connection itself, but it can also be a name still to be resolved: its
+ * interface name or, lacking one, its connection id. Both are worth looking
+ * for, including those of a connection that reached the device without naming
+ * it.
  *
  * The answer is the controller's interface name, falling back to its
  * connection id, which is how a controller is named everywhere else.
  */
-const controllerOf = (name: string, connections: Connection[]): string | undefined => {
-  const port = connectionForName(name, connections);
-  const names = sift([name, port?.iface, port?.id]);
+const controllerOf = (device: Device, connections: Connection[]): string | undefined => {
+  const port = connectionForDevice(device, connections);
+  const names = sift([device.name, port?.iface, port?.id]);
   const controller = connections.find((c) =>
-    (c.bond?.ports ?? c.bridge?.ports)?.some((p) => names.includes(p)),
+    portsOf(c).some((p) =>
+      typeof p === "string" ? names.includes(p) : p.id === port?.id || names.includes(portName(p)),
+    ),
   );
 
   return controller && (controller.iface || controller.id);
 };
+
+/**
+ * Returns the name of whatever is already using the given device, if anything.
+ *
+ * A device is spoken for as soon as a connection is running on it, whether or
+ * not a bond or a bridge is involved. The controller comes first when there is
+ * one: it is the more useful answer, and it is the one a port's own connection
+ * would only hint at.
+ */
+const deviceUsedBy = (device: Device, connections: Connection[]): string | undefined =>
+  controllerOf(device, connections) ?? connectionForDevice(device, connections)?.id;
 
 /**
  * Returns the binding mode for the given connection.
@@ -561,6 +592,7 @@ export {
   buildRoutes,
   connectionAddresses,
   connectionBindingMode,
+  connectionForDevice,
   connectionForName,
   connectionStateLabel,
   connectionType,
@@ -569,6 +601,7 @@ export {
   deviceLinkLabel,
   deviceLinkRank,
   deviceStateLabel,
+  deviceUsedBy,
   ensureIPPrefix,
   formatIp,
   formatLinkSpeed,

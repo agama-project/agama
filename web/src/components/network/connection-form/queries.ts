@@ -33,16 +33,19 @@ import { useConfig } from "~/hooks/model/config/network";
 import { useSystem, useDevices } from "~/hooks/model/system/network";
 import { extendCollection } from "~/utils";
 
+import { flattenConnections, isPort } from "~/types/network";
+
 import type { Connection, Device } from "~/types/network";
 
 /**
- * System connections available to the form, excluding removed ones.
+ * System connections available to the form, excluding removed ones and
+ * including the ports nested in bonds and bridges.
  *
  * Used to generate non-colliding names for new connections.
  */
 export function useSystemConnections(): Connection[] {
   const { connections = [] } = useSystem();
-  return connections.filter((c) => c.status !== "removed");
+  return flattenConnections(connections).filter((c) => c.status !== "removed");
 }
 
 /**
@@ -62,6 +65,9 @@ export function useSystemConnections(): Connection[] {
  *
  * Removed connections are filtered out before merging to avoid carrying over
  * stale entries that may still exist in persisted config or system state.
+ *
+ * Both sides are flattened first, so a port nested in a bond or a bridge can be
+ * edited like any other connection.
  */
 export function useInitialConnection(): Connection | null {
   const { id } = useParams();
@@ -69,11 +75,29 @@ export function useInitialConnection(): Connection | null {
   const systemConns = useSystemConnections();
 
   const { all: connections } = extendCollection(
-    configConns.filter((c) => c.status !== "removed"),
+    flattenConnections(configConns).filter((c) => c.status !== "removed"),
     { with: systemConns, mergeArrays: true },
   );
 
   return connections.find((c) => c.id === id) ?? null;
+}
+
+/**
+ * Whether the connection being edited is a port of a bond or a bridge.
+ *
+ * The config decides for a connection it knows about, since a port may have
+ * been moved out of its controller or into another one there. The system
+ * decides otherwise.
+ */
+export function useIsPort(): boolean {
+  const { id } = useParams();
+  const { connections: configConns = [] } = useConfig();
+  const systemConns = useSystemConnections();
+  const connection = useInitialConnection();
+  if (!id || !connection) return false;
+
+  const known = flattenConnections(configConns).some((c) => c.id === id);
+  return isPort(known ? configConns : systemConns, connection);
 }
 
 /**
@@ -84,6 +108,7 @@ export function useInitialConnection(): Connection | null {
  */
 export type ConnectionFormContentQuery = {
   initialConnection: Connection | null;
+  isPort: boolean;
   devices: Device[];
   systemConnections: Connection[];
 };
@@ -95,6 +120,7 @@ export type ConnectionFormContentQuery = {
 export function useConnectionFormContentQuery(): ConnectionFormContentQuery {
   return {
     initialConnection: useInitialConnection(),
+    isPort: useIsPort(),
     devices: useDevices(),
     systemConnections: useSystemConnections(),
   };

@@ -59,6 +59,8 @@ import {
   ConnectionStatus,
   ConnectionType,
   Device,
+  flattenConnections,
+  portConnections,
 } from "~/types/network";
 import { NETWORK } from "~/routes/paths";
 import useSortedByParam from "~/hooks/use-sorted-by-param";
@@ -166,21 +168,25 @@ const createColumns = (devices: Device[]) => [
 
 export default function ConnectionsTable() {
   const devices = useDevices();
-  const { state: systemState, connections = [] } = useSystem();
-  const { connections: configConnections = [] } = useExtendedConfig();
+  // The top-level connections, with the ports of bonds and bridges nested in
+  // them, and every connection as a single list.
+  const { state: systemState, connections: roots = [] } = useSystem();
+  const connections = flattenConnections(roots);
+  const { connections: configRoots = [] } = useExtendedConfig();
+  const configConnections = flattenConnections(configRoots);
   const { mutateAsync: mutateConnection } = useConnectionMutation();
   const navigate = useNavigate();
-
-  const columns = createColumns(devices);
-  const [sortedBy, updateSorting] = useSortedByParam(columns, {
-    param: SORT,
-    defaultValue: { index: 0, direction: "asc" },
-  });
 
   const { filters, setFilter, resetFilters, hasActiveFilters } = useFilterParams({
     name: textFilter(),
     type: choiceFilter(Object.values(CONNECTION_TYPE)),
     state: choiceFilter(Object.values(ConnectionState)),
+  });
+
+  const columns = createColumns(devices);
+  const [sortedBy, updateSorting] = useSortedByParam(columns, {
+    param: SORT,
+    defaultValue: { index: 0, direction: "asc" },
   });
 
   const onFilterChange = (filter: keyof ConnectionsFilters, value: string) =>
@@ -201,12 +207,14 @@ export default function ConnectionsTable() {
   const deleteConnection = (connection: Connection) =>
     updateStatus(connection, ConnectionStatus.DELETE);
 
+  // While filtering, every matching connection gets a row of its own, so a port
+  // is not hidden in a collapsed controller. Otherwise, the ports are shown as
+  // a tree under their controller.
   const filteredConnections = filterConnections(connections, filters);
-  const sortedConnections = sortCollection(
-    filteredConnections,
-    sortedBy.direction,
-    columns[sortedBy.index].sortingKey,
-  );
+  const sort = (conns: Connection[]) =>
+    sortCollection(conns, sortedBy.direction, columns[sortedBy.index].sortingKey);
+  const sortedConnections = sort(hasActiveFilters ? filteredConnections : roots);
+  const itemChildren = hasActiveFilters ? () => [] : (c: Connection) => sort(portConnections(c));
 
   const countText = hasActiveFilters
     ? sprintf(
@@ -291,6 +299,11 @@ export default function ConnectionsTable() {
         columns={columns}
         items={sortedConnections}
         itemIdKey="id"
+        itemChildren={itemChildren}
+        isTree={!hasActiveFilters}
+        initialExpandedKeys={connections
+          .filter((c) => !isEmpty(portConnections(c)))
+          .map((c) => c.id)}
         selectionMode="none"
         variant="compact"
         sortedBy={sortedBy}
