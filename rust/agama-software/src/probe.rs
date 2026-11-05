@@ -24,9 +24,6 @@ use std::time::Duration;
 
 use async_trait::async_trait;
 use curl::easy::Easy;
-use url::Url;
-
-use crate::state::Repository;
 
 pub const PROBE_TIMEOUT_SECS: u64 = 10;
 const NFS_DEFAULT_PORT: u16 = 2049;
@@ -54,7 +51,7 @@ impl RepoProber for DefaultRepoProber {
 pub enum ProbeError {
     #[error("Could not determine the host in the URL: {0}")]
     MissingHost(String),
-    #[error("Curl error: {0}")]
+    #[error("curl error: {0}")]
     Curl(#[from] curl::Error),
     #[error("Blocking task join error: {0}")]
     Task(#[from] tokio::task::JoinError),
@@ -83,13 +80,53 @@ pub async fn probe_url(url_str: &str) -> bool {
     }
 }
 
+/// Parsed repository URL components.
+#[derive(Debug, PartialEq, Eq)]
+struct ParsedUrl<'a> {
+    url_str: &'a str,
+    scheme: &'a str,
+    host: Option<&'a str>,
+    port: Option<u16>,
+}
+
+impl<'a> ParsedUrl<'a> {
+    /// Parses a repository URL into scheme, optional host, and optional port.
+    ///
+    /// Uses string splitting rather than `url` / `fluent_uri` crates (which fail on libzypp
+    /// URLs with unencoded spaces or custom schemes) or libzypp FFI (to avoid unsafe overhead).
+    fn parse(url_str: &'a str) -> Option<Self> {
+        let (scheme, rest) = url_str.split_once(':')?;
+        let (host, port) = if let Some(after_slashes) = rest.strip_prefix("//") {
+            let authority = after_slashes.split('/').next().unwrap_or("");
+            let host_port = authority.split('@').next_back().unwrap_or("");
+            if host_port.is_empty() {
+                (None, None)
+            } else {
+                match host_port.split_once(':') {
+                    Some((h, p)) if !h.is_empty() => (Some(h), p.parse::<u16>().ok()),
+                    _ if !host_port.is_empty() => (Some(host_port), None),
+                    _ => (None, None),
+                }
+            }
+        } else {
+            (None, None)
+        };
+
+        Some(Self {
+            url_str,
+            scheme,
+            host,
+            port,
+        })
+    }
+}
+
 async fn try_probe_url(url_str: &str) -> Result<(), ProbeError> {
-    // Uses split_once instead of Url::parse because libzypp supports custom schemes (e.g. hd:/, cd:/, dir:/) that fail strict WHATWG URL parsing.
-    let scheme = match url_str.split_once(':').map(|(s, _)| s.to_ascii_lowercase()) {
-        Some(s) => s,
-        None => return Ok(()),
+    let Some(parsed) = ParsedUrl::parse(url_str) else {
+        return Ok(());
     };
 
+    let scheme = parsed.scheme.to_ascii_lowercase();
     if scheme.starts_with("plugin") {
         // Plugin schemes (e.g. plugin:susecloud) handle authentication and metadata themselves.
         return Ok(());
@@ -106,7 +143,8 @@ async fn try_probe_url(url_str: &str) -> Result<(), ProbeError> {
         }
 
         // Shared network filesystems
-        "nfs" | "nfs4" | "smb" | "cifs" => probe_network_filesystem(url_str, &scheme).await,
+        "nfs" | "nfs4" => probe_network_filesystem(&parsed, NFS_DEFAULT_PORT).await,
+        "smb" | "cifs" => probe_network_filesystem(&parsed, SMB_DEFAULT_PORT).await,
 
         // Pass any other scheme directly
         _ => Ok(()),
@@ -137,36 +175,16 @@ fn probe_download_url(url: &str) -> Result<(), ProbeError> {
 }
 
 /// Probes shared network filesystems (NFS, SMB, CIFS) using async non-blocking TCP connect.
-async fn probe_network_filesystem(url_str: &str, scheme: &str) -> Result<(), ProbeError> {
-    let default_port = match scheme {
-        "nfs" | "nfs4" => NFS_DEFAULT_PORT,
-        "smb" | "cifs" => SMB_DEFAULT_PORT,
-        _ => return Ok(()),
-    };
-
-    let (host, port) = if let Ok(parsed) = Url::parse(url_str) {
-        let host = match parsed.host_str() {
-            Some(h) => h.to_string(),
-            None => return Err(ProbeError::MissingHost(url_str.to_string())),
-        };
-        let port = parsed.port().unwrap_or(default_port);
-        (host, port)
-    } else {
-        let after_scheme = match url_str.split_once("://") {
-            Some((_, rest)) => rest,
-            None => return Err(ProbeError::MissingHost(url_str.to_string())),
-        };
-        let authority = after_scheme.split('/').next().unwrap_or("");
-        if authority.is_empty() {
-            return Err(ProbeError::MissingHost(url_str.to_string()));
-        }
-        match authority.split_once(':') {
-            Some((h, p)) => (h.to_string(), p.parse::<u16>().unwrap_or(default_port)),
-            None => (authority.to_string(), default_port),
-        }
-    };
-
+async fn probe_network_filesystem(
+    parsed: &ParsedUrl<'_>,
+    default_port: u16,
+) -> Result<(), ProbeError> {
+    let host = parsed
+        .host
+        .ok_or_else(|| ProbeError::MissingHost(parsed.url_str.to_string()))?;
+    let port = parsed.port.unwrap_or(default_port);
     let addr = format!("{host}:{port}");
+
     match tokio::time::timeout(
         Duration::from_secs(PROBE_TIMEOUT_SECS),
         tokio::net::TcpStream::connect(&addr),
@@ -179,31 +197,30 @@ async fn probe_network_filesystem(url_str: &str, scheme: &str) -> Result<(), Pro
     }
 }
 
-/// Probes candidate repositories concurrently via Tokio, filtering only reachable ones.
-/// Total wait time is bounded by PROBE_TIMEOUT_SECS (10s) regardless of repository count.
-pub async fn probe_reachable_repositories<P: RepoProber + ?Sized>(
-    repos: Vec<Repository>,
+/// Concurrently probes a list of URLs with Tokio, filtering and returning only reachable ones.
+/// Total wait time is bounded by PROBE_TIMEOUT_SECS (10s) regardless of URL count.
+pub async fn filter_reachable_urls<S: AsRef<str> + Send, P: RepoProber + ?Sized>(
+    urls: Vec<S>,
     prober: &P,
-) -> Vec<Repository> {
-    let futures: Vec<_> = repos
+) -> Vec<S> {
+    let futures: Vec<_> = urls
         .into_iter()
-        .map(|repo| async move {
-            let reachable = prober.is_reachable(&repo.url).await;
-            (repo, reachable)
+        .map(|url| async move {
+            let reachable = prober.is_reachable(url.as_ref()).await;
+            (url, reachable)
         })
         .collect();
 
     let results = futures_util::future::join_all(futures).await;
     results
         .into_iter()
-        .filter_map(|(repo, reachable)| {
+        .filter_map(|(url, reachable)| {
             if reachable {
-                Some(repo)
+                Some(url)
             } else {
                 tracing::info!(
-                    "Repository '{}' ({}) is unreachable; skipping silently",
-                    repo.alias,
-                    repo.url
+                    "Repository URL '{}' is unreachable; skipping silently",
+                    url.as_ref()
                 );
                 None
             }
@@ -299,37 +316,39 @@ mod tests {
 
     #[tokio::test]
     async fn test_concurrent_probing_filters_unreachable() {
-        let repo1 = Repository {
-            alias: "agama-0".to_string(),
-            name: "agama-0".to_string(),
-            url: "http://example.com/repo1".to_string(),
-            enabled: true,
-            priority: None,
-        };
-        let repo2 = Repository {
-            alias: "agama-1".to_string(),
-            name: "agama-1".to_string(),
-            url: "http://example.com/repo2".to_string(),
-            enabled: true,
-            priority: None,
-        };
-        let repo3 = Repository {
-            alias: "agama-2".to_string(),
-            name: "agama-2".to_string(),
-            url: "http://example.com/repo3".to_string(),
-            enabled: true,
-            priority: None,
-        };
-
-        let repos = vec![repo1, repo2, repo3];
+        let urls = vec![
+            "http://example.com/repo1".to_string(),
+            "http://example.com/repo2".to_string(),
+            "http://example.com/repo3".to_string(),
+        ];
         let prober = MockRepoProber::with_reachable(&[
             "http://example.com/repo1",
             "http://example.com/repo3",
         ]);
 
-        let filtered = probe_reachable_repositories(repos, &prober).await;
+        let filtered = filter_reachable_urls(urls, &prober).await;
         assert_eq!(filtered.len(), 2);
-        assert_eq!(filtered[0].alias, "agama-0");
-        assert_eq!(filtered[1].alias, "agama-2");
+        assert_eq!(filtered[0], "http://example.com/repo1");
+        assert_eq!(filtered[1], "http://example.com/repo3");
+    }
+
+    #[test]
+    fn test_parsed_url() {
+        let p1 = ParsedUrl::parse("hd:/install").unwrap();
+        assert_eq!(p1.scheme, "hd");
+        assert_eq!(p1.host, None);
+        assert_eq!(p1.port, None);
+
+        let p2 = ParsedUrl::parse("nfs://127.0.0.1:2049/exports/repo").unwrap();
+        assert_eq!(p2.scheme, "nfs");
+        assert_eq!(p2.host, Some("127.0.0.1"));
+        assert_eq!(p2.port, Some(2049));
+
+        let p3 = ParsedUrl::parse("smb://DOMAIN;user:pass@fileserver/share").unwrap();
+        assert_eq!(p3.scheme, "smb");
+        assert_eq!(p3.host, Some("fileserver"));
+        assert_eq!(p3.port, None);
+
+        assert!(ParsedUrl::parse("invalid-url-without-colon").is_none());
     }
 }

@@ -319,33 +319,32 @@ impl<'a> SoftwareStateBuilder<'a> {
     }
 
     async fn build_repositories(&self) -> Vec<Repository> {
-        let software = &self.product.software;
         let kernel_repos = self.kernel_cmdline.get_last("inst.install_url");
-        let mut repositories = if let Some(kernel_repos) = kernel_repos {
-            kernel_repos
-                .split(",")
-                .enumerate()
-                .map(|(i, url)| Self::build_repo(i, url.to_string()))
-                .collect()
-        } else if self.has_local_install_media() {
-            tracing::info!(
-                "Local installation media found; concurrently probing candidate remote repositories"
-            );
-            let product_repos = software
-                .repositories()
-                .into_iter()
-                .enumerate()
-                .map(|(i, r)| Self::build_repo(i, r.url.clone()))
-                .collect();
-            crate::probe::probe_reachable_repositories(product_repos, self.prober.as_ref()).await
+        let urls: Vec<&str> = if let Some(kernel_repos) = kernel_repos.as_deref() {
+            kernel_repos.split(",").collect()
         } else {
-            software
+            let product_urls: Vec<&str> = self
+                .product
+                .software
                 .repositories()
-                .into_iter()
-                .enumerate()
-                .map(|(i, r)| Self::build_repo(i, r.url.clone()))
-                .collect()
+                .iter()
+                .map(|r| r.url.as_str())
+                .collect();
+            if self.has_local_install_media() {
+                tracing::info!(
+                    "Local installation media found; concurrently probing candidate remote repositories"
+                );
+                crate::probe::filter_reachable_urls(product_urls, self.prober.as_ref()).await
+            } else {
+                product_urls
+            }
         };
+
+        let mut repositories: Vec<_> = urls
+            .into_iter()
+            .enumerate()
+            .map(|(i, url)| Self::build_repo(i, url.to_string()))
+            .collect();
 
         // add all predefined repositories here
         for repo in self.predefined_repositories.iter() {
