@@ -1,0 +1,2 @@
+CARD.DOMAIN TYPE  MODE        STATUS  REQUESTS  PENDING HWTYPE QDEPTH FUNCTIONS  DRIVER     
+--------------------------------------------------------------------------------------------

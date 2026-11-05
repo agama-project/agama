@@ -1,0 +1,59 @@
+---
+- disk:
+    name: /dev/sda
+    size: 200 GiB
+    partition_table:  gpt
+    partitions:
+
+    - partition:
+        size:         20 GiB
+        name:         /dev/sda1
+        id:           lvm
+
+    - partition:
+        size:         10 GiB
+        name:         /dev/sda2
+
+    - partition:
+        size:         10 GiB
+        name:         /dev/sda3
+        encryption:
+          name:       /dev/mapper/cr_sda3
+
+    - partition:
+        size:         10 GiB
+        name:         /dev/sda4
+        file_system:  btrfs
+        label:        crypted_btrfs
+        encryption:
+          name:       /dev/mapper/cr_sda4
+        btrfs:
+          subvolumes:
+          - subvolume:
+              path: subvol4_1
+          - subvolume:
+              path: subvol4_1/sub
+
+    - partition:
+        size:         10 GiB
+        name:         /dev/sda5
+        file_system:  btrfs
+        label:        mounted_btrfs
+        mount_point:  /home
+        btrfs:
+          subvolumes:
+          - subvolume:
+              path: subvol5_1
+
+- lvm_vg:
+    vg_name: vg0
+    lvm_pvs:
+        - lvm_pv:
+            blk_device: /dev/sda1
+
+    lvm_lvs:
+        - lvm_lv:
+            size:         200 GiB
+            lv_name:      lv1
+            file_system:  btrfs
+            mount_point:  /

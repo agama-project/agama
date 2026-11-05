@@ -113,6 +113,7 @@ translations:
         kab: Tizeɣt
         lo: ມາດຕະຖານ
         nb_NO: Standard
+        nl: Standaard
         pl: Standardowy
         pt_BR: Padrão
         ru: Стандартная
@@ -240,6 +241,9 @@ software:
     - sudo-policy-wheel-auth-self # explicit wheel group policy to conform new auth model
   optional_packages: []
   base_product: SLES_SAP
+
+boot:
+  default_efi_bootloader: "systemd-boot"
 
 modes:
   - id: standard

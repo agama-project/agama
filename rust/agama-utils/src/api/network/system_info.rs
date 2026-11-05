@@ -33,7 +33,7 @@ use std::default::Default;
 #[schemars(rename = "network.SystemInfo")]
 pub struct SystemInfo {
     pub access_points: Vec<AccessPoint>, // networks or access_points shold be returned
-    /// Connections to use in the installation
+    /// Connections to use in the installation, with their current state
     pub connections: NetworkConnectionsWithStateCollection,
     pub devices: Vec<Device>,
     pub state: StateSettings,

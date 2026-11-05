@@ -41,7 +41,7 @@ const getError = (authError) => {
     };
   }
 
-  return { title: _("Could not authenticate against the server.") };
+  return { title: _("Could not authenticate against the server") };
 };
 
 /**

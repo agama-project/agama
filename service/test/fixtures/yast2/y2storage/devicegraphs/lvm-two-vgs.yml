@@ -1,0 +1,89 @@
+---
+- disk:
+    name: /dev/sda
+    size: 50 GiB
+    partition_table:  ms-dos
+    partitions:
+
+    - partition:
+        size:         20 GiB
+        name:         /dev/sda1
+        id:           ntfs
+        file_system:  ntfs
+        label:        windows
+
+    - partition:
+        size:         10 GiB
+        name:         /dev/sda2
+        id:           ntfs
+        file_system:  ntfs
+        label:        data
+
+    - partition:
+        size:         unlimited
+        name:         /dev/sda3
+        type:         extended
+
+    - partition:
+        size:         3 GiB
+        name:         /dev/sda5
+        type:         logical
+        id:           lvm
+
+    - partition:
+        size:         5 GiB
+        name:         /dev/sda6
+        type:         logical
+        file_system:  ext4
+        label:        linux1
+
+    - partition:
+        size:         4 GiB
+        name:         /dev/sda7
+        type:         logical
+        id:           lvm
+
+    - partition:
+        size:         5 GiB
+        name:         /dev/sda8
+        type:         logical
+        file_system:  ext4
+        label:        linux2
+
+    - partition:
+        size:         unlimited
+        name:         /dev/sda9
+        type:         logical
+        id:           lvm
+
+- lvm_vg:
+    vg_name: vg0
+    lvm_pvs:
+        - lvm_pv:
+            blk_device: /dev/sda7
+
+    lvm_lvs:
+        - lvm_lv:
+            size:         2 GiB
+            lv_name:      lv1
+            file_system:  ext4
+
+        - lvm_lv:
+            size:         2 GiB
+            lv_name:      lv2
+            file_system:  ext4
+            label:        rootfs
+            uuid:         lv2-uuid
+
+- lvm_vg:
+    vg_name: vg1
+    lvm_pvs:
+        - lvm_pv:
+            blk_device: /dev/sda5
+        - lvm_pv:
+            blk_device: /dev/sda9
+    lvm_lvs:
+        - lvm_lv:
+            size:         5 GiB
+            lv_name:      lv1
+            file_system:  ext4

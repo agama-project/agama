@@ -308,7 +308,12 @@ impl<'a> NetworkManagerClient<'a> {
 
         let path = if let Ok(proxy) = self.get_connection_proxy(conn.uuid).await {
             let original = proxy.get_settings().await?;
-            let merged = merge_dbus_connections(&original, &new_conn)?;
+            let mut merged = merge_dbus_connections(&original, &new_conn)?;
+            // A connection that becomes a port must not keep the IP configuration it had.
+            if controller.is_some() {
+                merged.remove("ipv4");
+                merged.remove("ipv6");
+            }
             let persist = if conn.persistent {
                 UpdateFlags::ToDisk
             } else {

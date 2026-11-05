@@ -1,0 +1,68 @@
+/**
+ * File:
+ *   proc_meminfo.scr
+ * Summary:
+ *   SCR Agent for reading /proc/meminfo
+ * Access:
+ *   read-only
+ * Authors:
+ *   Unknown <yast2-hacker@suse.de>
+ * See:
+ *   anyagent
+ *   libscr
+ * Example:
+ *   Read (.proc.meminfo)
+ *	-> $[
+ *		"active":804312,
+ *		"buffers":71292,
+ *		"cached":254736,
+ *		"highfree":0,
+ *		"hightotal":0,
+ *		"inactive":140676,
+ *		"lowfree":9960,
+ *		"lowtotal":1028088,
+ *		"memfree":9960,
+ *		"memtotal":1028088,
+ *		"swapcached":30172,
+ *		"swapfree":2037508,
+ *		"swaptotal":2104472
+ *   	]
+ *
+ * $Id$
+ *
+ * Returns a map. Keys for the map are: "active", "buffers", "cached",
+ * "highfree", "hightotal", "inactive", "lowfree", "lowtotal", "memfree",
+ * "memtotal", "swapcached", "swapfree", and "swaptotal".
+ * Values for all but "mem", "swap" are the respective size in kB. 
+ */
+.proc.meminfo
+
+`ag_anyagent(
+  `Description (
+  (`File("/proc/meminfo")),	// real file name
+  "#\n",			// Comment
+  true,				// read-only
+  (`Tuple (
+      `Choice (
+	["     ", `Sequence (`Whitespace(),"total",`String("^\n"))],
+	["Mem:", `mem(`Tuple (`Whitespace(), `total(`Number()), `Whitespace(), `used(`Number()), `Whitespace(), `free(`Number()), `Whitespace(), `shared(`Number()), `Whitespace(), `buffers(`Number()), `Whitespace(), `cached(`Number())))],
+	["Swap:", `swap(`Tuple (`Whitespace(), `total(`Number()), `Whitespace(), `used(`Number()), `Whitespace(), `free(`Number())))],
+	["MemTotal:", `Sequence (`Whitespace(), `memtotal(`Number()), `String("^\n"))],
+	["MemFree:", `Sequence (`Whitespace(), `memfree(`Number()), `String("^\n"))],
+	["MemShared:", `Sequence (`Whitespace(), `memshared(`Number()), `String("^\n"))],
+	["Buffers:", `Sequence (`Whitespace(), `buffers(`Number()), `String("^\n"))],
+	["Cached:", `Sequence (`Whitespace(), `cached(`Number()), `String("^\n"))],
+	["SwapCached:", `Sequence (`Whitespace(), `swapcached(`Number()), `String("^\n"))],
+	["Active:", `Sequence (`Whitespace(), `active(`Number()), `String("^\n"))],
+	["Inactive:", `Sequence (`Whitespace(), `inactive(`Number()), `String("^\n"))],
+	["HighTotal:", `Sequence (`Whitespace(), `hightotal(`Number()), `String("^\n"))],
+	["HighFree:", `Sequence (`Whitespace(), `highfree(`Number()), `String("^\n"))],
+	["LowTotal:", `Sequence (`Whitespace(), `lowtotal(`Number()), `String("^\n"))],
+	["LowFree:", `Sequence (`Whitespace(), `lowfree(`Number()), `String("^\n"))],
+	["SwapTotal:", `Sequence (`Whitespace(), `swaptotal(`Number()), `String("^\n"))],
+	["SwapFree:", `Sequence (`Whitespace(), `swapfree(`Number()), `String("^\n"))]
+      ),
+      `Continue ("\n")
+  ))
+  )
+)

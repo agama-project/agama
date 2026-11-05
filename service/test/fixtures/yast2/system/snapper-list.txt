@@ -1,0 +1,6 @@
+number,type,pre-number,date,user,cleanup,description
+0,single,,,root,,current
+1,pre,,2015-05-13 04:14:14,root,number,zypp(y2base)
+3,pre,,2015-05-15 05:01:47,root,number,zypp(zypper)
+4,post,3,2015-05-13 05:03:13,root,number,zypp(zypper)
+15,single,,2015-05-13 05:11:25,root,,

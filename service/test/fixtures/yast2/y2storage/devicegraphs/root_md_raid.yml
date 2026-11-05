@@ -1,0 +1,86 @@
+---
+- disk:
+    name: "/dev/sda"
+    size: 50 GiB
+    block_size: 0.5 KiB
+    io_size: 0 B
+    min_grain: 1 MiB
+    align_ofs: 0 B
+    partition_table: gpt
+    partitions:
+    - free:
+        size: 1 MiB
+        start: 0 B
+    - partition:
+        size: 10 GiB
+        start: 1 MiB
+        name: "/dev/sda1"
+        type: primary
+        id: raid
+    - partition:
+        size: 10 GiB
+        start: 10241 MiB (10.00 GiB)
+        name: "/dev/sda2"
+        type: primary
+        id: raid
+    - partition:
+        size: 31456239.5 KiB (30.00 GiB)
+        start: 20481 MiB (20.00 GiB)
+        name: "/dev/sda3"
+        type: primary
+        id: linux
+    - free:
+        size: 16.5 KiB
+        start: 52428783.5 KiB (50.00 GiB)
+- md:
+    name: "/dev/md/md0"
+    md_level: raid0
+    md_parity: default
+    chunk_size: 32 KiB
+    md_devices:
+    - md_device:
+        blk_device: "/dev/sda1"
+    - md_device:
+        blk_device: "/dev/sda2"
+    file_system: btrfs
+    mount_point: "/"
+    btrfs:
+        default_subvolume: "@"
+        subvolumes:
+        - subvolume:
+            path: "@/home"
+            nocow: false
+        - subvolume:
+            path: "@/srv"
+            nocow: false
+        - subvolume:
+            path: "@/tmp"
+            nocow: false
+        - subvolume:
+            path: "@/usr/local"
+            nocow: false
+        - subvolume:
+            path: "@/var/cache"
+            nocow: false
+        - subvolume:
+            path: "@/var/crash"
+            nocow: false
+        - subvolume:
+            path: "@/log"
+            nocow: false
+        - subvolume:
+            path: "@/opt"
+            nocow: false
+        - subvolume:
+            path: "@/var/lib/mariadb"
+            nocow: true
+        - subvolume:
+            path: "@/var/lib/mysql"
+            nocow: true
+        - subvolume:
+            path: "@/var/lib/pgsql"
+            nocow: true
+        - subvolume:
+            path: "@/.snapshots"
+        - subvolume:
+            path: "@/.snapshots/1/snapshot"

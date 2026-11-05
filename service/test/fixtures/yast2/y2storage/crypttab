@@ -1,0 +1,3 @@
+luks1	/dev/sda1	passw1	option1,option2=2
+luks2	/dev/sda2	passw2
+luks3	/dev/sda3	passw3

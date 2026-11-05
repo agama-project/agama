@@ -1,0 +1,20 @@
+---
+- disk:
+    name: /dev/sda
+    size: 200 GiB
+    partition_table:  gpt
+    partitions:
+
+    - partition:
+        size:         50MiB
+        name:         /dev/sda1
+        id:           bios_boot
+
+    - partition:
+        size:         unlimited
+        name:         /dev/sda2
+        file_system:  ext4
+        mount_point:  /
+        encryption:
+          name: /dev/mapper/cr_sda2
+

@@ -1,0 +1,77 @@
+# 2025-04-15 08:19:52 -0400
+---
+- disk:
+    name: "/dev/vda"
+    size: 20 GiB
+    block_size: 0.5 KiB
+    io_size: 0 B
+    min_grain: 1 MiB
+    align_ofs: 0 B
+    partition_table: gpt
+    partitions:
+    - free:
+        size: 1 MiB
+        start: 0 B
+    - partition:
+        size: 951 MiB (0.93 GiB)
+        start: 1 MiB
+        name: "/dev/vda1"
+        type: primary
+        id: esp
+        file_system: vfat
+        mount_point: "/boot/efi"
+        fstab_options:
+        - utf8
+    - partition:
+        size: 18359 MiB (17.93 GiB)
+        start: 952 MiB (0.93 GiB)
+        name: "/dev/vda2"
+        type: primary
+        id: linux
+        file_system: btrfs
+        mount_point: "/"
+        btrfs:
+          default_subvolume: "@"
+          subvolumes:
+          - subvolume:
+              path: "@"
+          - subvolume:
+              path: "@/boot/grub2/i386-pc"
+          - subvolume:
+              path: "@/boot/grub2/x86_64-efi"
+          - subvolume:
+              path: "@/home"
+          - subvolume:
+              path: "@/opt"
+          - subvolume:
+              path: "@/root"
+          - subvolume:
+              path: "@/srv"
+          - subvolume:
+              path: "@/usr/local"
+          - subvolume:
+              path: "@/var"
+              nocow: true
+        encryption:
+          type: systemd_fde
+          name: "/dev/mapper/cr_root"
+          pbkdf: argon2id
+          authentication: fido2
+          password: "123456"
+    - partition:
+        size: 1197039.5 KiB (1.14 GiB)
+        start: 19311 MiB (18.86 GiB)
+        name: "/dev/vda3"
+        type: primary
+        id: swap
+        file_system: swap
+        mount_point: swap
+        encryption:
+          type: systemd_fde
+          name: "/dev/mapper/cr_swap"
+          pbkdf: argon2id
+          authentication: fido2
+          password: "123456"
+    - free:
+        size: 16.5 KiB
+        start: 20971503.5 KiB (20.00 GiB)

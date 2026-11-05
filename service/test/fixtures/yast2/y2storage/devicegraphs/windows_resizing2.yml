@@ -1,0 +1,36 @@
+---
+- disk:
+    name: /dev/sda
+    size: 1 TiB
+    partition_table:  ms-dos
+    partitions:
+
+    - partition:
+        size:         100 GiB
+        name:         /dev/sda1
+        file_system:  ext2
+
+    - free:
+        size: 10 GiB
+
+    - partition:
+        size:         50 GiB
+        name:         /dev/sda2
+        file_system:  ext3
+
+    - partition:
+        size:         50 GiB
+        name:         /dev/sda3
+        file_system:  ext4
+
+    - partition:
+        size:         unlimited
+        name:         /dev/sda4
+        type:         extended
+
+    - partition:
+        size:         unlimited
+        name:         /dev/sda5
+        type:         logical
+        file_system:  ntfs
+        label:        windows

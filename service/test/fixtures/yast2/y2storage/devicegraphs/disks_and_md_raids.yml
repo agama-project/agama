@@ -1,0 +1,66 @@
+---
+- disk:
+    name: /dev/sda
+    size: 500 GiB
+    partition_table: gpt
+    partitions:
+
+    - partition:
+        size: 100 GiB
+        name: /dev/sda1
+
+    - partition:
+        size: 100 GiB
+        name: /dev/sda2
+
+- disk:
+    name: /dev/sdb
+    size: 500 GiB
+    partition_table: gpt
+    partitions:
+
+    - partition:
+        size: 100 GiB
+        name: /dev/sdb1
+
+    - partition:
+        size: 100 GiB
+        name: /dev/sdb2
+
+- disk:
+    name: /dev/sdc
+    size: 500 GiB
+    file_system:  btrfs
+    label: "sdc_btrfs"
+
+- md:
+    name: "/dev/md0"
+    chunk_size: 16 KiB
+    md_uuid: "111-222-000"
+    partition_table: ms-dos
+    partitions:
+
+    - partition:
+        size: 10 GiB
+        name: /dev/md0p1
+        type: primary
+        file_system: ext4
+        label: "md0p1_ext4"
+
+    md_devices:
+    - md_device:
+        blk_device: /dev/sda1
+    - md_device:
+        blk_device: /dev/sdb1
+
+- md:
+    name: "/dev/md1"
+    chunk_size: 16 KiB
+    md_uuid: "111-222-111"
+    file_system: ext4
+    label: "md1_ext4"
+    md_devices:
+    - md_device:
+        blk_device: /dev/sda2
+    - md_device:
+        blk_device: /dev/sdb2

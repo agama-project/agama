@@ -1,0 +1,51 @@
+- disk:
+    size: 800 GiB
+    name: "/dev/sda"
+    partition_table: msdos
+    partitions:
+
+    - partition:
+        size: 75 GiB
+        name: /dev/sda1
+        id: dos32
+        file_system: vfat
+
+    - partition:
+        size: 40 GiB
+        name: /dev/sda2
+        id: prep
+        file_system: vfat
+
+    - partition:
+        size: 2 GiB
+        name: /dev/sda3
+        id: dos16
+        file_system: vfat
+
+    - partition:
+        size: unlimited
+        name: /dev/sda4
+        file_system: ext4
+
+- disk:
+    name: "/dev/sdb"
+    size: 50 GiB
+    partition_table: gpt
+    partitions:
+    - partition:
+        size: 200 MiB
+        name: "/dev/sdb1"
+        type: primary
+        id: linux
+        file_system: ext4
+        mount_point: "/boot"
+    - partition:
+        size: 1 MiB
+        name: "/dev/sdb2"
+        type: primary
+        id: prep
+    - partition:
+        size: 43009 MiB (42.00 GiB)
+        name: "/dev/sdb3"
+        type: primary
+        id: lvm

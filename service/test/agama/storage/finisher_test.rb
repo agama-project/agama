@@ -55,6 +55,15 @@ describe Agama::Storage::Finisher do
       expect(copy_files).to receive(:run)
       subject.run
     end
+
+    it "passes questions_client to the BootloaderStep" do
+      questions_client = instance_double(Agama::HTTP::Clients::Questions)
+      finisher = described_class.new(logger, config, questions_client: questions_client)
+      bootloader_step = finisher.send(:possible_steps).find do |s|
+        s.is_a?(described_class::BootloaderStep)
+      end
+      expect(bootloader_step.send(:questions_client)).to eq(questions_client)
+    end
   end
 
   describe described_class::Step do
@@ -110,12 +119,13 @@ describe Agama::Storage::Finisher do
   end
 
   describe described_class::BootloaderStep do
-    subject { described_class.new(logger) }
+    subject { described_class.new(logger, questions_client) }
+    let(:questions_client) { instance_double(Agama::HTTP::Clients::Questions) }
     let(:on_s390) { false }
 
     before do
       allow(Yast::Arch).to receive(:s390).and_return(on_s390)
-      allow_any_instance_of(::Bootloader::FinishClient).to receive(:write)
+      allow_any_instance_of(::Bootloader::FinishClient).to receive(:write).and_return(true)
     end
 
     context "when running on s390x" do
@@ -139,8 +149,109 @@ describe Agama::Storage::Finisher do
     end
 
     it "runs the Bootloader Finish Client" do
-      expect_any_instance_of(::Bootloader::FinishClient).to receive(:write)
+      expect_any_instance_of(::Bootloader::FinishClient).to receive(:write).and_return(true)
       subject.run
+    end
+
+    context "when bootloader write succeeds" do
+      it "does not ask any question" do
+        expect(questions_client).to_not receive(:ask)
+        subject.run
+      end
+    end
+
+    context "when bootloader write raises an error" do
+      let(:error) { RuntimeError.new("grub2-install: error: cannot find EFI directory") }
+
+      before do
+        allow_any_instance_of(::Bootloader::FinishClient).to receive(:write).and_raise(error)
+      end
+
+      it "asks the user what to do with the error details" do
+        expect(questions_client).to receive(:ask) do |question|
+          expect(question.qclass).to eq("bootloaderInstallError")
+          expect(question.options).to eq([:retry, :skip, :abort])
+          expect(question.default_option).to eq(:skip)
+          expect(question.data).to eq("details" => error.message)
+          Agama::Answer.new(:skip)
+        end
+
+        subject.run
+      end
+
+      context "and the user decides to retry" do
+        it "retries the bootloader write" do
+          call_count = 0
+          allow_any_instance_of(::Bootloader::FinishClient).to receive(:write) do
+            call_count += 1
+            call_count == 1 ? raise(error) : true
+          end
+
+          expect(questions_client).to receive(:ask)
+            .once
+            .and_return(Agama::Answer.new(:retry))
+
+          subject.run
+          expect(call_count).to eq(2)
+        end
+      end
+
+      context "and the user decides to skip" do
+        it "does not raise an error and finishes" do
+          allow(questions_client).to receive(:ask)
+            .and_return(Agama::Answer.new(:skip))
+
+          expect { subject.run }.to_not raise_error
+        end
+      end
+
+      context "and the user decides to abort" do
+        it "re-raises the error" do
+          allow(questions_client).to receive(:ask)
+            .and_return(Agama::Answer.new(:abort))
+
+          expect { subject.run }.to raise_error(error)
+        end
+      end
+    end
+
+    context "when bootloader write returns false" do
+      before do
+        allow_any_instance_of(::Bootloader::FinishClient).to receive(:write).and_return(false)
+      end
+
+      it "asks the user what to do" do
+        expect(questions_client).to receive(:ask) do |question|
+          expect(question.qclass).to eq("bootloaderInstallError")
+          expect(question.options).to eq([:retry, :skip, :abort])
+          expect(question.default_option).to eq(:skip)
+          expect(question.data["details"]).to_not be_empty
+          Agama::Answer.new(:skip)
+        end
+
+        subject.run
+      end
+    end
+
+    context "when cio_ignore_finish raises an error on s390x" do
+      let(:on_s390) { true }
+      let(:error) { RuntimeError.new("cio_ignore command failed") }
+
+      before do
+        allow_any_instance_of(Installation::CIOIgnoreFinish).to receive(:run)
+          .with("Write").and_raise(error)
+      end
+
+      it "asks the user what to do" do
+        expect(questions_client).to receive(:ask) do |question|
+          expect(question.qclass).to eq("bootloaderInstallError")
+          expect(question.default_option).to eq(:skip)
+          expect(question.data).to eq("details" => error.message)
+          Agama::Answer.new(:skip)
+        end
+
+        subject.run
+      end
     end
   end
 

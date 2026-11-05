@@ -1,0 +1,42 @@
+{
+  "title": "Edit one port",
+  "description": "To edit a port, send it nested in its controller. The other ports can be given by name, which keeps their settings.",
+  "steps": [
+    {
+      "profile": "1-bond.json",
+      "description": "Bond with eth0 and eth1 nested (MTU 9000)",
+      "expect": {
+        "connections": {
+          "bond0": {
+            "controller": null,
+            "method4": "auto"
+          },
+          "eth0": {
+            "controller": "bond0",
+            "mtu": 9000
+          },
+          "eth1": {
+            "controller": "bond0",
+            "mtu": 9000
+          }
+        }
+      }
+    },
+    {
+      "profile": "2-change-eth0-mtu.json",
+      "description": "Same bond, eth0 with MTU 1500 and eth1 by name",
+      "expect": {
+        "connections": {
+          "eth0": {
+            "controller": "bond0",
+            "mtu": 1500
+          },
+          "eth1": {
+            "controller": "bond0",
+            "mtu": 9000
+          }
+        }
+      }
+    }
+  ]
+}

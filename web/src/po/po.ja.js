@@ -219,26 +219,8 @@ export default {
   "802.1ad": [
     "802.1ad"
   ],
-  "A %1$s of %2$s will be created for %3$s if possible": [
-    "可能であれば、 %2$s の %1$s を %3$s 向けに作成します"
-  ],
-  "A %1$s of at least %2$s will be created for %3$s if possible": [
-    "可能であれば、少なくとも %2$s の %1$s を %3$s 向けに作成します"
-  ],
-  "A %1$s with a size between %2$s and %3$s will be created for %4$s if possible": [
-    "可能であれば、 %2$s から %3$s までの範囲で %1$s を %4$s 向けに作成します"
-  ],
   "A file system will be used for the whole device": [
     "ファイルシステムはデバイス全体を使用する"
-  ],
-  "A generic minimum size of %1$s will be used for the new %2$s": [
-    "新しい %2$s に対して少なくとも %1$s を使用します"
-  ],
-  "A generic size of %1$s will be used for the new %2$s": [
-    "新しい %2$s に対して一般的なサイズ %1$s を使用します"
-  ],
-  "A generic size range between %1$s and %2$s will be used for the new %3$s": [
-    "新しい %3$s に対して一般的なサイズ %1$s から %2$s の範囲を使用します"
   ],
   "A logical volume may be deleted": [
     "論理ボリュームを削除するかもしれません"
@@ -384,9 +366,6 @@ export default {
   "All values removed.": [
     "すべての値を削除しました。"
   ],
-  "Allow growing": [
-    "サイズ拡大を許可する"
-  ],
   "Allow shrinking": [
     "サイズ縮小を許可する"
   ],
@@ -482,15 +461,6 @@ export default {
   ],
   "Back": [
     "戻る"
-  ],
-  "Based on the amount of RAM in the system, a %1$s of %2$s will be planned for %3$s": [
-    "システムのメモリサイズに応じて、 %2$s の %1$s を %3$s 向けに計画します"
-  ],
-  "Based on the amount of RAM in the system, a %1$s of at least %2$s will be planned for %3$s": [
-    "システムのメモリサイズに応じて、少なくとも %2$s の %1$s を %3$s 向けに計画します"
-  ],
-  "Based on the amount of RAM in the system, a %1$s with a size between %2$s and %3$s will be planned for %4$s": [
-    "システムのメモリサイズに応じて、 %2$s から %3$s までの範囲で %1$s を %4$s 向けに計画します"
   ],
   "Based on the mount point": [
     "マウントポイントをもとに設定します"
@@ -738,6 +708,9 @@ export default {
   "Configuration from the network plus static addresses and gateway": [
     "ネットワーク側からの設定に加え、固定のアドレスとゲートウエイを設定します"
   ],
+  "Configuration pre-scripts have been executed and may have modified your system. You can reboot or shut down, but any changes made by these scripts will not be undone.": [
+    "事前スクリプトを動作させたため、システムに修正が行われている可能性があります。ここからシステムを再起動したりシャットダウンしたりすることができますが、事前スクリプトが修正した内容は元には戻りません。"
+  ],
   "Configuration read from the iSCSI Boot Firmware Table (iBFT). Initiator cannot be changed.": [
     "iSCSI Boot Firmware Table (iBFT) から読み込んだ設定です。イニシエータの設定は変更できません。"
   ],
@@ -948,9 +921,6 @@ export default {
   "Default selection": [
     "既定の選択"
   ],
-  "Define a custom size": [
-    "独自のサイズを指定する"
-  ],
   "Define a new LVM on the disk": [
     "ディスクに対して新しい LVM を設定する"
   ],
@@ -1019,9 +989,6 @@ export default {
   ],
   "Discard changes": [
     "変更点を破棄する"
-  ],
-  "Discard the maximum size and continue with simplified configuration": [
-    "最大サイズの設定を破棄してシンプルな設定にして続ける"
   ],
   "Disconnect": [
     "切断"
@@ -1185,6 +1152,9 @@ export default {
   "Encryption settings": [
     "暗号化の設定"
   ],
+  "Enter": [
+    "Enter"
+  ],
   "Enter a hostname value.": [
     "ホスト名を入力してください。"
   ],
@@ -1232,6 +1202,9 @@ export default {
   ],
   "ExFAT": [
     "ExFAT"
+  ],
+  "Exit installation": [
+    "インストールの終了"
   ],
   "Expand if possible": [
     "可能であれば拡張する"
@@ -1670,9 +1643,6 @@ export default {
   ],
   "Left arrow reaches the %d values already added.": [
     "左矢印キーを押すと追加済みの %d 個の値にアクセスできます。"
-  ],
-  "Let the installer propose a sensible size": [
-    "インストーラに適切なサイズを提案させる"
   ],
   "Let the installer set the size": [
     "インストーラに適切なサイズを設定させる"
@@ -2268,6 +2238,9 @@ export default {
   "Potential data loss affecting at least %s": [
     "少なくとも %s に影響する潜在的なデータ削除が発生します"
   ],
+  "Press %1$s or %2$s to type here, or %3$s to move on.": [
+    "ここに入力したい場合は %1$s キーまたは %2$s キーを、他の箇所に移動する場合は %3$s をそれぞれ押してください。"
+  ],
   "Priority": [
     "優先度"
   ],
@@ -2682,14 +2655,14 @@ export default {
   "Shrink existing partitions": [
     "既存のパーティションを縮小する"
   ],
+  "Shut down": [
+    "シャットダウン"
+  ],
   "Signal strength": [
     "信号強度"
   ],
   "Size": [
     "サイズ"
-  ],
-  "Size modes": [
-    "サイズのモード"
   ],
   "Skip to content": [
     "コンテンツに移動"
@@ -2747,6 +2720,9 @@ export default {
   ],
   "Something went wrong": [
     "何らかの問題が発生しました"
+  ],
+  "Space": [
+    "スペース"
   ],
   "Spanning Tree Protocol (STP)": [
     "スパニングツリープロトコル (STP)"
@@ -2826,6 +2802,9 @@ export default {
   "TPM sealing requires the new system to be booted directly.": [
     "TPM シーリングを使用するには、新しいシステムを直接起動する必要があります。"
   ],
+  "Tab": [
+    "Tab"
+  ],
   "Take a moment to review the installation settings below and adjust them as needed.": [
     "下記に示すインストール設定をご確認のうえ、必要であれば調整してください。"
   ],
@@ -2873,15 +2852,6 @@ export default {
   ],
   "The current configuration will be discarded to apply the default settings of the new product.": [
     "新しい製品に対する既定値を適用するため、現在の設定が破棄されます。"
-  ],
-  "The current configuration will result in an attempt to create a %1$s of %2$s.": [
-    "現在の設定では %2$s の %1$s を作成する予定になります。"
-  ],
-  "The current configuration will result in an attempt to create a %1$s of at least %2$s.": [
-    "現在の設定では少なくとも %2$s の %1$s を作成する予定になります。"
-  ],
-  "The current configuration will result in an attempt to create a %1$s with a size between %2$s and %3$s.": [
-    "現在の設定では %2$s から %3$s までの %1$s を作成する予定になります。"
   ],
   "The current file system will be mounted at %s": [
     "現在のファイルシステムを %s にマウントします"
@@ -2943,9 +2913,6 @@ export default {
   "The file %s contains a record of the installer activity so far, useful to diagnose installation issues.": [
     "ファイル %s には、ここまでにインストーラが実施した処理の記録が含まれています。インストール時に何らかの問題が発生した場合の解析に有用です。"
   ],
-  "The final size can be bigger in order to fill the extra free space.": [
-    "最終的なサイズは、連続した空き容量にあわせて拡大される可能性があります。"
-  ],
   "The final step to configure the Trusted Platform Module (TPM) to automatically open encrypted devices will take place during the first boot of the new system. For that to work, the machine needs to boot directly to the new boot loader.": [
     "Trusted Platform Module (TPM) の設定の最後では、新しいシステムの初回起動時に暗号化されたデバイスを自動で解除するよう設定します。これを動作させるためには、マシンが新しいブートローダを直接起動するように設定しておく必要があります。"
   ],
@@ -2994,42 +2961,6 @@ export default {
   "The product was not found in the repositories so it is not possible to proceed with the installation.": [
     "リポジトリ内には製品が見つかりませんでした。そのため、インストールを続行することができません。"
   ],
-  "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
-    "システムのメモリサイズと %2$s 向けの個別ファイルシステムの存在に応じて、 %1$s 向けのサイズを動的に調整します。"
-  ],
-  "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of separate file systems for %2$s.": [
-    "システムのメモリサイズと %2$s 向けの個別ファイルシステムの存在に応じて、 %1$s 向けのサイズを動的に調整します。"
-  ],
-  "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of a separate file system for %2$s.": [
-    "システムのメモリサイズと btrfs スナップショットの使用可否、そして %2$s 向けの個別ファイルシステムの存在に応じて、 %1$s 向けのサイズを動的に調整します。"
-  ],
-  "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of separate file systems for %2$s.": [
-    "システムのメモリサイズと btrfs スナップショットの使用可否、そして %2$s 向けの個別ファイルシステムの存在に応じて、 %1$s 向けのサイズを動的に調整します。"
-  ],
-  "The size for %1$s will be dynamically adjusted based on the presence of a separate file system for %2$s.": [
-    "%2$s 向けの個別ファイルシステムの存在に応じて、 %1$s 向けのサイズを動的に調整します。"
-  ],
-  "The size for %1$s will be dynamically adjusted based on the presence of separate file systems for %2$s.": [
-    "%2$s 向けの個別ファイルシステムの存在に応じて、 %1$s 向けのサイズを動的に調整します。"
-  ],
-  "The size for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of a separate file system for %2$s.": [
-    "btrfs スナップショットの使用可否と %2$s 向けの個別ファイルシステムの存在に応じて、 %1$s 向けのサイズを動的に調整します。"
-  ],
-  "The size for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of separate file systems for %2$s.": [
-    "btrfs スナップショットの使用可否と %2$s 向けの個別のファイルシステムの存在に応じて、 %1$s 向けのサイズを動的に調整します。"
-  ],
-  "The size for %s will be dynamically adjusted based on the amount of RAM in the system and the usage of Btrfs snapshots.": [
-    "システムのメモリサイズと btrfs スナップショットの使用可否に応じて、 %s 向けのサイズを動的に調整します。"
-  ],
-  "The size for %s will be dynamically adjusted based on the usage of Btrfs snapshots.": [
-    "btrfs スナップショットの使用可否に応じて、 %s 向けのサイズを動的に調整します。"
-  ],
-  "The size is configured as a range between %s and %s, but this interface cannot handle ranges with a given max size.": [
-    "サイズを %s から %s までの範囲で設定していますが、この最大値の設定は本インターフェイスではサポートされていません。"
-  ],
-  "The size must be a number followed by a unit of the form GiB (power of 2) or GB (power of 10).": [
-    "サイズは、数値の後に GiB (2 のべき乗で指定する場合) や GB (10 のべき乗で指定する場合) の形式で単位を付けて入力する必要があります。"
-  ],
   "The software selection could not be loaded.": [
     "ソフトウエア選択を読み込めませんでした。"
   ],
@@ -3042,6 +2973,9 @@ export default {
   "The system is rebooting": [
     "システムを再起動しています"
   ],
+  "The system is shutting down": [
+    "システムを再起動しています"
+  ],
   "The system will boot to a command-line interface.": [
     "インストール後のシステムではコマンドラインインターフェイスを使用することになります。"
   ],
@@ -3050,6 +2984,9 @@ export default {
   ],
   "The whole device will be used for %s": [
     "デバイス全体を %s 向けに使用する"
+  ],
+  "Then %1$s+%2$s+%3$s to move out.": [
+    "他の箇所に移動するには %1$s+%2$s+%3$s を押してください。"
   ],
   "There are %s deactivated zFCP controllers.": [
     "%s 個の無効化された zFCP コントローラがあります。"
@@ -3471,6 +3408,9 @@ export default {
   "You can safely close this window.": [
     "このウインドウは閉じてかまいません。"
   ],
+  "You can safely reboot or shut down the system. No changes have been made to your disks, and your current installation setup will be canceled.": [
+    "システムを再起動またはシャットダウンして問題有りません。ディスクには一切変更が行われていませんので、ここまでに設定したインストール設定は完全にキャンセルされることになります。"
+  ],
   "You may want to discard the current settings and start from scratch with a simple configuration.": [
     "現在の設定を破棄してシンプルな設定からやり直すこともできます。"
   ],
@@ -3485,9 +3425,6 @@ export default {
   ],
   "[CAPS LOCK] is on": [
     "[CAPS LOCK] が有効化されています"
-  ],
-  "approx. %s": [
-    "おおよそ %s"
   ],
   "at least %s": [
     "少なくとも %s"
@@ -3506,12 +3443,6 @@ export default {
   ],
   "immutable Btrfs": [
     "不変性を持つ btrfs"
-  ],
-  "logical volume": [
-    "論理ボリューム"
-  ],
-  "partition": [
-    "パーティション"
   ],
   "reset to defaults": [
     "既定値に戻す"

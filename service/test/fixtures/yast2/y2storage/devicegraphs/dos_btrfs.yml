@@ -1,0 +1,15 @@
+---
+- disk:
+    name: /dev/sda
+    size: 1 TiB
+    partition_table:  ms-dos
+    partitions:
+
+    - partition:
+        size:         unlimited
+        name:         /dev/sda1
+        file_system:  btrfs
+        label:        root
+        mount_point:  "/"
+
+

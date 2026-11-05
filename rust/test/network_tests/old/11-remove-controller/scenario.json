@@ -1,0 +1,41 @@
+{
+  "title": "Remove a bond",
+  "description": "Removing a controller removes its ports too.",
+  "steps": [
+    {
+      "profile": "1-bond.json",
+      "description": "Bond with ports: [eth0, eth1]",
+      "expect": {
+        "connections": {
+          "bond0": {
+            "controller": null,
+            "method4": "auto"
+          },
+          "eth0": {
+            "controller": "bond0"
+          },
+          "eth1": {
+            "controller": "bond0"
+          }
+        }
+      }
+    },
+    {
+      "profile": "2-remove-bond0.json",
+      "description": "bond0 with status: removed",
+      "expect": {
+        "connections": {
+          "bond0": {
+            "removed": true
+          },
+          "eth0": {
+            "removed": true
+          },
+          "eth1": {
+            "removed": true
+          }
+        }
+      }
+    }
+  ]
+}

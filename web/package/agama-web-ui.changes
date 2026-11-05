@@ -1,4 +1,94 @@
 -------------------------------------------------------------------
+Wed Nov  4 09:04:37 UTC 2026 - Michal Filka <mfilka@suse.com>
+
+- bsc#1278291 (CVE-2026-84369), bsc#1278292 (CVE-2026-84370)
+  - svgo version 3.3.5 
+
+-------------------------------------------------------------------
+Wed Nov  4 08:50:12 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Load the terminal component only when needed (lazy loading)
+  to decrease the used browser memory.
+
+-------------------------------------------------------------------
+Tue Nov  3 18:06:14 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Use "ka-GE" instead of the wrong language id "ka-KZ"
+  (related to gh#agama-project/agama#4178).
+
+-------------------------------------------------------------------
+Mon Nov  2 10:36:43 UTC 2026 - Michal Filka <mfilka@suse.com>
+
+- bsc#1283415, bsc#1283398 (CVE-2026-102277, CVE-2026-102278)
+  - brace-expansion upgraded to 5.0.12
+
+-------------------------------------------------------------------
+Sat Oct 31 17:43:12 UTC 2026 - Michal Filka <mfilka@suse.com>
+
+- bsc#1277423, bsc#1278439, bsc#1278442, bsc#1280783, bsc#1286307
+  (CVE-2026-110725,CVE-2026-110306,CVE-2026-110095,CVE-2026-110180,
+  CVE-2026-86472, CVE-2026-84394, CVE-2026-84292, CVE-2026-76172,
+  CVE-2026-75899, CVE-2026-75975, CVE-2026-75931)
+  - fast-uri upgraded to 3.1.9
+
+-------------------------------------------------------------------
+Fri Oct 30 17:18:10 UTC 2026 - Balsa Asanovic <balsaasanovic95@gmail.com>
+
+- Let Tab move focus in multi-value fields, and update the helper texts
+  so they no longer advertise Tab for adding values (bsc#1280715,
+  gh#agama-project/agama#4113).
+
+-------------------------------------------------------------------
+Fri Oct 30 09:20:02 UTC 2026 - David Díaz <dgonzalez@suse.com>
+
+- Drop the final period from the login error title
+  (gh#agama-project/agama#4161).
+
+-------------------------------------------------------------------
+Thu Oct 29 19:32:20 UTC 2026 - Michal Filka <mfilka@suse.com>
+
+- bsc#1286292 (CVE-2026-111755)
+  - upgrade follow-redirects to at least 1.16.1
+- bsc#1288801 (CVE-2026-116689)
+  - upgrade follow-redirects to at least 1.16.2
+
+-------------------------------------------------------------------
+Thu Oct 29 13:00:00 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Allow disabling the IPv4 or the IPv6 configuration of a
+  connection, and keep it disabled when editing a connection that
+  already has it (bsc#1288233, gh#agama-project/agama#3994).
+
+-------------------------------------------------------------------
+Thu Oct 29 12:19:20 UTC 2026 - Akshat Lakhera <akshatlnct2024@gmail.com>
+
+- Label the mode shown in the "Current selection" card when
+  changing the product, so it is not read as part of the product
+  (gh#agama-project/agama#4142).
+
+-------------------------------------------------------------------
+Thu Oct 29 09:57:13 UTC 2026 - Michal Filka <mfilka@suse.com>
+
+- bsc#1286904 (CVE-2026-111756)
+  - upgrade follow-redirects to at least 1.16.1
+
+-------------------------------------------------------------------
+Tue Oct 27 12:08:59 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Update the configured connection when connecting, disconnecting
+  or deleting it from the connections table, instead of sending the
+  state reported by the system (gh#agama-project/agama#3995).
+
+-------------------------------------------------------------------
+Tue Oct 27 09:04:07 UTC 2026 - Michal Filka <mfilka@suse.com>
+
+- bsc#1287867 (CVE-2026-115897)
+- bsc#1287878 (CVE-2026-115754)
+  - upgrade of serialize-javascript to version at least 7.1.3
+- bsc#1287340 (CVE-2026-111181)
+  - upgrade of body-parser to version at least 1.20.9
+
+-------------------------------------------------------------------
 Thu Oct 22 09:43:42 UTC 2026 - José Iván López González <jlopez@suse.com>
 
 - Version 25

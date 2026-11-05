@@ -1,0 +1,38 @@
+{
+  "title": "HA stack: eth0 + eth1 -> bond0 -> br0 -> br0.100 (VLAN)",
+  "description": "The network section of autoyast-examples/04-full.xml, as the AutoYaST importer writes it: every connection at the top level, the ports given by name, and no IP settings on the ports.",
+  "steps": [
+    {
+      "profile": "1-ha-stack.json",
+      "description": "The whole stack, flat",
+      "expect": {
+        "connections": {
+          "eth0": {
+            "controller": "bond0",
+            "mtu": 9000
+          },
+          "eth1": {
+            "controller": "bond0"
+          },
+          "bond0": {
+            "controller": "br0"
+          },
+          "br0": {
+            "controller": null,
+            "method4": "manual",
+            "addresses": [
+              "192.168.1.100/24"
+            ]
+          },
+          "br0.100": {
+            "controller": null,
+            "method4": "manual",
+            "addresses": [
+              "10.100.0.10/24"
+            ]
+          }
+        }
+      }
+    }
+  ]
+}

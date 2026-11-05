@@ -1,0 +1,115 @@
+# 2019-11-06 10:06:31 +0000
+---
+- disk:
+    name: "/dev/vda"
+    size: 20 GiB
+    block_size: 0.5 KiB
+    io_size: 0 B
+    min_grain: 1 MiB
+    align_ofs: 0 B
+    partition_table: gpt
+    partitions:
+    - free:
+        size: 1 MiB
+        start: 0 B
+    - partition:
+        size: 8 MiB
+        start: 1 MiB
+        name: "/dev/vda1"
+        type: primary
+        id: bios_boot
+    - partition:
+        size: 20962287.5 KiB (19.99 GiB)
+        start: 9 MiB
+        name: "/dev/vda2"
+        type: primary
+        id: raid
+    - free:
+        size: 16.5 KiB
+        start: 20971503.5 KiB (20.00 GiB)
+- disk:
+    name: "/dev/vdb"
+    size: 20 GiB
+    block_size: 0.5 KiB
+    io_size: 0 B
+    min_grain: 1 MiB
+    align_ofs: 0 B
+    partition_table: gpt
+    partitions:
+    - free:
+        size: 1 MiB
+        start: 0 B
+    - partition:
+        size: 20970479.5 KiB (20.00 GiB)
+        start: 1 MiB
+        name: "/dev/vdb1"
+        type: primary
+        id: raid
+    - free:
+        size: 16.5 KiB
+        start: 20971503.5 KiB (20.00 GiB)
+- md:
+    name: "/dev/md0"
+    md_level: raid0
+    md_parity: default
+    chunk_size: 64 KiB
+    md_uuid: ''
+    in_etc_mdadm: true
+    metadata: ''
+    partition_table: gpt
+    partitions:
+    - free:
+        size: 1 MiB
+        start: 0 B
+    - partition:
+        size: 39 GiB
+        start: 1 MiB
+        name: "/dev/md0p1"
+        type: primary
+        id: linux
+        file_system: btrfs
+        mount_point: "/"
+        btrfs:
+          default_subvolume: "@"
+          subvolumes:
+          - subvolume:
+              path: "@"
+          - subvolume:
+              path: "@/boot/grub2/i386-pc"
+          - subvolume:
+              path: "@/var"
+              nocow: true
+          - subvolume:
+              path: "@/root"
+          - subvolume:
+              path: "@/usr/local"
+          - subvolume:
+              path: "@/opt"
+          - subvolume:
+              path: "@/boot/grub2/x86_64-efi"
+          - subvolume:
+              path: "@/home"
+          - subvolume:
+              path: "@/tmp"
+          - subvolume:
+              path: "@/srv"
+          - subvolume:
+              path: "@/.snapshots"
+          - subvolume:
+              path: "@/.snapshots/1/snapshot"
+    - partition:
+        size: 775023.5 KiB (0.74 GiB)
+        start: 39937 MiB (39.00 GiB)
+        name: "/dev/md0p2"
+        type: primary
+        id: swap
+        file_system: swap
+        mount_point: swap
+    - free:
+        size: 16.5 KiB
+        start: 41670511.5 KiB (39.74 GiB)
+    md_devices:
+    - md_device:
+        blk_device: "/dev/vda2"
+    - md_device:
+        blk_device: "/dev/vdb1"

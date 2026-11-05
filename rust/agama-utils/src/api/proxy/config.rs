@@ -24,7 +24,7 @@ use serde::{Deserialize, Serialize};
 
 /// Proxy config.
 #[derive(Clone, Debug, Default, Merge, Serialize, Deserialize, PartialEq, JsonSchema)]
-#[serde(rename_all = "camelCase")]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 #[schemars(rename = "proxy.Config", title = "Proxy settings")]
 pub struct Config {
     /// Whether proxy is enabled.

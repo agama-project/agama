@@ -1,0 +1,69 @@
+<?xml version="1.0"?>
+<productDefines xmlns="http://www.suse.com/1.0/yast2ns" xmlns:config="http://www.suse.com/1.0/configns">
+
+  <textdomain>control</textdomain>
+
+  <partitioning>
+    <!-- All default settings will become final, since the user can't change them -->
+    <proposal>
+      <lvm config:type="boolean">false</lvm>
+      <!-- Delete all previous partitions -->
+      <windows_delete_mode>all</windows_delete_mode>
+      <linux_delete_mode>all</linux_delete_mode>
+      <other_delete_mode>all</other_delete_mode>
+    </proposal>
+
+    <volumes config:type="list">
+      <!-- The root filesystem -->
+      <volume>
+        <mount_point>/</mount_point>
+        <!-- Default == final, since the user can't change it -->
+        <fs_type>btrfs</fs_type>
+        <desired_size>15GiB</desired_size>
+        <min_size>10GiB</min_size>
+        <max_size>30GiB</max_size>
+        <weight>80</weight>
+
+        <!-- Always use snapshots, no matter what -->
+        <snapshots config:type="boolean">true</snapshots>
+        <snapshots_configurable config:type="boolean">false</snapshots_configurable>
+
+        <btrfs_default_subvolume>@</btrfs_default_subvolume>
+        <subvolumes config:type="list">
+          <!--
+            This would be the same than the <subvolumes> list in the current
+            (old) control.xml. Reproducing the whole list doesn't make much sense.
+          -->
+        </subvolumes>
+
+        <proposed config:type="boolean">true</proposed>
+        <proposed_configurable config:type="boolean">false</proposed_configurable>
+      </volume>
+
+      <!-- The /var/lib/docker filesystem -->
+      <volume>
+        <mount_point>/var/lib/docker</mount_point>
+        <!-- Default == final, since the user can't change it -->
+        <fs_type>btrfs</fs_type>
+        <snapshots config:type="boolean">false</snapshots>
+        <snapshots_configurable config:type="boolean">false</snapshots_configurable>
+
+        <!-- No max_size specified, so unlimited -->
+        <desired_size>10GiB</desired_size>
+        <min_size>10GiB</min_size>
+        <weight>20</weight>
+
+        <!-- Give up in a separate partition if the min size doesn't fit -->
+        <proposed config:type="boolean">true</proposed>
+        <proposed_configurable config:type="boolean">true</proposed_configurable>
+        <disable_order>1</disable_order>
+        <!-- If this volume is disabled, we want "/" to become greedy
+            (unlimited max) -->
+        <fallback_for_max_size>/</fallback_for_max_size>
+      </volume>
+
+      <!-- No swap partition is defined, so it's never created -->
+    </volumes>
+  </partitioning>
+
+</productDefines>

@@ -157,13 +157,17 @@ describe Agama::Storage::Proposal do
           end
         end
 
-        # TODO: Actually this also depends on the value of "preferred_bootloader" at
-        # Yast::ProductFeatures, but let's assume all distributions has the same value
-        # than Tumbleweed currently uses.
         context "in an EFI system with systemd-boot as the product's default EFI bootloader" do
           before do
             config.data["boot"] ||= {}
             config.data["boot"]["default_efi_bootloader"] = "systemd-boot"
+
+            # Agama::Storage::BootloaderConfigSolver#bls_compliant_system? also needs
+            # Yast::Arch.x86_64 (real hardware/kernel detection via Yast::Arch, a *different*
+            # object than the already-mocked Y2Storage::Arch double above) to be true before it
+            # will honor "default_efi_bootloader" above at all. Stub it explicitly instead of
+            # relying on real detection, which can behave inconsistently inside a container.
+            allow(Yast::Arch).to receive(:x86_64).and_return(true)
           end
 
           it "proposes the expected EFI partition" do

@@ -38,6 +38,7 @@ import {
 } from "@patternfly/react-core";
 import { Navigate, useNavigate, useSearchParams } from "react-router";
 import { SubtleContent } from "~/components/core";
+import Text from "~/components/core/Text";
 import Page from "~/components/layout/Page";
 import ProductLogo from "~/components/product/ProductLogo";
 import LicenseButton from "~/components/product/LicenseButton";
@@ -103,10 +104,17 @@ const CurrentProductInfo = ({ product, modeId, licenses }: CurrentProductInfoPro
 
           {mode && (
             <>
-              <Title headingLevel="h3">{mode.name}</Title>
-
-              <Divider />
-              <SubtleContent>{mode.description}</SubtleContent>
+              <Title headingLevel="h3">
+                {
+                  // TRANSLATORS: title of the block showing the mode selected
+                  // for the current product (e.g., "Standard" or "Immutable")
+                  _("Mode")
+                }
+              </Title>
+              <Stack>
+                <Text isBold>{mode.name}</Text>
+                <SubtleContent>{mode.description}</SubtleContent>
+              </Stack>
             </>
           )}
 

@@ -18,17 +18,15 @@
  */
 
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { Button, Card, CardBody, CardHeader, Content, Flex, Title } from "@patternfly/react-core";
+import { Button, CardBody, Content, Flex } from "@patternfly/react-core";
 import Icon from "~/components/layout/Icon";
 import Text from "~/components/core/Text";
-import SkipTo from "~/components/core/SkipTo";
 import VisualTooltip from "~/components/core/VisualTooltip";
+import TerminalShell, { TerminalCloseButton } from "~/components/core/TerminalShell";
 import TerminalUnavailable from "~/components/core/TerminalUnavailable";
 import { TERMINAL_HINT_ID, TERMINAL_STOP_ID, useTerminal } from "~/context/terminal";
 import { useTerminalSession } from "~/hooks/use-terminal-session";
 import { _ } from "~/i18n";
-
-import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 
 const DEFAULT_FONT_SIZE = 14;
 const MIN_FONT_SIZE = 8;
@@ -246,79 +244,6 @@ const TerminalScreen = ({
 };
 
 /**
- * Card chrome shared by every terminal state: the title with its icon, an
- * optional description, the header actions, and the given body as children.
- *
- * The region is focusable programmatically (but not with Tab) so that callers
- * can send the focus to it; see {@link TerminalPane}.
- *
- * It opens with the same skip links as the page header, so that reaching the
- * panel with the keyboard offers a way out (back to the installer content)
- * and a way in (to the terminal, past the panel controls) before anything
- * else.
- */
-const TerminalShell = ({
-  regionRef,
-  hasTerminal = false,
-  minimized = false,
-  description,
-  actions,
-  children,
-}: React.PropsWithChildren<{
-  regionRef?: React.Ref<HTMLDivElement>;
-  hasTerminal?: boolean;
-  minimized?: boolean;
-  description?: React.ReactNode;
-  actions?: React.ReactNode;
-}>) => {
-  const { restore } = useTerminal();
-  // TRANSLATORS: accessible name of the terminal panel region
-  const regionLabel = _("Terminal");
-
-  return (
-    <Card
-      ref={regionRef}
-      tabIndex={-1}
-      isFullHeight
-      isCompact
-      component="section"
-      aria-label={regionLabel}
-      className={minimized ? "agm-terminal agm-terminal--minimized" : "agm-terminal"}
-    >
-      <SkipTo />
-      {hasTerminal && (
-        // Collapsed panels are expanded on the way, so the link always lands
-        // on a terminal that can be stepped into.
-        // TRANSLATORS: link that moves the focus to the terminal
-        <SkipTo contentId={TERMINAL_STOP_ID} onSkip={restore} icon="terminal">
-          {_("Skip to terminal")}
-        </SkipTo>
-      )}
-      <CardHeader actions={{ actions, hasNoOffset: true }}>
-        <Flex
-          direction={{ default: "column" }}
-          alignItems={{ default: "alignItemsFlexStart" }}
-          gap={{ default: "gapXs" }}
-        >
-          <Flex
-            alignItems={{ default: "alignItemsCenter" }}
-            flexWrap={{ default: "nowrap" }}
-            gap={{ default: "gapSm" }}
-          >
-            <Icon name="terminal" size="lg" aria-hidden />
-            <Title headingLevel="h2" className={textStyles.fontSizeSm}>
-              {regionLabel}
-            </Title>
-          </Flex>
-          {description && <Text textStyle={["textColorSubtle", "fontSizeXs"]}>{description}</Text>}
-        </Flex>
-      </CardHeader>
-      {children}
-    </Card>
-  );
-};
-
-/**
  * Contents of the terminal panel: a header with its actions and the terminal
  * itself.
  *
@@ -368,20 +293,6 @@ export default function TerminalPane({ enoughSpace }: TerminalPaneProps) {
     setSessionFontSize(size);
   };
 
-  // TRANSLATORS: tooltip and accessible name for the button that ends the
-  // terminal session
-  const closeLabel = _("Close terminal");
-  const closeButton = (
-    <VisualTooltip content={closeLabel} position="top">
-      <Button
-        variant="plain"
-        aria-label={closeLabel}
-        icon={<Icon name="close" />}
-        onClick={close}
-      />
-    </VisualTooltip>
-  );
-
   // Not enough room for a usable terminal: just explain it. The message offers
   // its own Close action, so the header needs no actions here.
   if (!enoughSpace) {
@@ -422,7 +333,7 @@ export default function TerminalPane({ enoughSpace }: TerminalPaneProps) {
           onClick={isMinimized ? restore : minimize}
         />
       </VisualTooltip>
-      {closeButton}
+      <TerminalCloseButton />
     </Flex>
   );
 

@@ -1,0 +1,6 @@
+---
+- dasd:
+    name: /dev/dasda
+    type: eckd
+    format: none
+    size: 23 GiB

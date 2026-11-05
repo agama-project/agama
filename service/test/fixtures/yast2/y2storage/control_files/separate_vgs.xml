@@ -1,0 +1,75 @@
+<?xml version="1.0"?>
+<productDefines xmlns="http://www.suse.com/1.0/yast2ns" xmlns:config="http://www.suse.com/1.0/configns">
+
+  <partitioning>
+    <proposal>
+      <windows_delete_mode config:type="symbol">all</windows_delete_mode>
+      <linux_delete_mode config:type="symbol">all</linux_delete_mode>
+      <other_delete_mode config:type="symbol">ondemand</other_delete_mode>
+      <lvm_vg_strategy config:type="symbol">use_needed</lvm_vg_strategy>
+      <allocate_volume_mode config:type="symbol">device</allocate_volume_mode>
+    </proposal>
+
+    <volumes config:type="list">
+      <volume>
+        <mount_point>/</mount_point>
+        <fs_type>xfs</fs_type>
+        <desired_size config:type="disksize">10 GiB</desired_size>
+        <min_size config:type="disksize">5 GiB</min_size>
+        <max_size config:type="disksize">30 GiB</max_size>
+        <weight config:type="integer">20</weight>
+
+        <snapshots config:type="boolean">false</snapshots>
+        <snapshots_configurable config:type="boolean">true</snapshots_configurable>
+        <snapshots_percentage config:type="integer">300</snapshots_percentage>
+      </volume>
+
+      <!-- /var/spacewalk, potentially as separate LVM VG -->
+      <volume>
+        <mount_point>/var/spacewalk</mount_point>
+        <fs_type>xfs</fs_type>
+        <fs_types>xfs,ext3,ext4</fs_types>
+
+        <proposed config:type="boolean">true</proposed>
+        <proposed_configurable config:type="boolean">true</proposed_configurable>
+
+        <separate_vg_name>spacewalk</separate_vg_name>
+
+        <desired_size config:type="disksize">15 GiB</desired_size>
+        <min_size config:type="disksize">5 GiB</min_size>
+        <max_size config:type="disksize">unlimited</max_size>
+        <weight config:type="integer">70</weight>
+        <fallback_for_max_size>/</fallback_for_max_size>
+      </volume>
+
+      <!-- swap partition -->
+      <volume>
+        <mount_point>swap</mount_point>
+        <fs_type>swap</fs_type>
+
+        <desired_size config:type="disksize">1 GiB</desired_size>
+        <min_size config:type="disksize">512 MiB</min_size>
+        <max_size config:type="disksize">2 GiB</max_size>
+        <weight config:type="integer">5</weight>
+      </volume>
+
+      <!-- /srv, potentially as separate LVM VG -->
+      <volume>
+        <mount_point>/srv</mount_point>
+        <fs_type>xfs</fs_type>
+        <fs_types>xfs</fs_types>
+
+        <proposed config:type="boolean">true</proposed>
+        <proposed_configurable config:type="boolean">true</proposed_configurable>
+
+        <separate_vg_name>srv_vg</separate_vg_name>
+
+        <desired_size config:type="disksize">5 GiB</desired_size>
+        <min_size config:type="disksize">3 GiB</min_size>
+        <max_size config:type="disksize">10 GiB</max_size>
+        <weight config:type="integer">5</weight>
+        <fallback_for_max_size>/</fallback_for_max_size>
+      </volume>
+    </volumes>
+   </partitioning>
+ </productDefines>

@@ -21,11 +21,10 @@
 use crate::{
     bootloader, checks, files, hostname,
     ipmi::Ipmi,
-    iscsi, l10n, ntp, proxy, s390, security, service, software, storage,
+    iscsi, l10n, network, ntp, proxy, s390, security, service, software, storage,
     task_manager::{TaskError, TaskId, TaskManager},
     users,
 };
-use agama_network::NetworkSystemClient;
 use agama_utils::{
     actor::{Handler, MessageHandler},
     api::{files::scripts::ScriptsGroup, status::Stage, Config, FinishMethod, Scope},
@@ -45,7 +44,7 @@ pub struct InstallAction {
     pub hostname: Handler<hostname::Service>,
     pub issues: Handler<issue::Service>,
     pub l10n: Handler<l10n::Service>,
-    pub network: NetworkSystemClient,
+    pub network: Handler<network::Service>,
     pub proxy: Handler<proxy::Service>,
     pub ntp: Handler<ntp::Service>,
     pub access: Handler<agama_access::Service>,
@@ -192,7 +191,10 @@ impl InstallAction {
                         .call(files::message::Finish)
                         .await
                         .map_err(TaskError::from_error)?;
-                    network.install().await.map_err(TaskError::from_error)?;
+                    network
+                        .call(network::message::Install)
+                        .await
+                        .map_err(TaskError::from_error)?;
                     proxy
                         .call(proxy::message::Finish)
                         .await
@@ -323,7 +325,7 @@ pub struct SetConfigAction {
     pub hostname: Handler<hostname::Service>,
     pub iscsi: Handler<iscsi::Service>,
     pub l10n: Handler<l10n::Service>,
-    pub network: NetworkSystemClient,
+    pub network: Handler<network::Service>,
     pub proxy: Handler<proxy::Service>,
     pub ntp: Handler<ntp::Service>,
     pub progress: Handler<progress::Service>,
@@ -641,11 +643,10 @@ impl SetConfigAction {
                 )
                 .depends_on(dependencies)
                 .run(|| async move {
-                    if let Err(error) = handler.update_config(network_config).await {
-                        tracing::error!("Failed to update the network configuration: {error}");
-                    } else if let Err(error) = handler.apply().await {
-                        tracing::error!("Failed to apply the network configuration: {error}");
-                    }
+                    handler
+                        .call(network::message::SetConfig::new(network_config))
+                        .await
+                        .map_err(TaskError::from_error)?;
                     Ok(())
                 })
                 .await,

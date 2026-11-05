@@ -1,0 +1,37 @@
+---
+- disk:
+    name: "/dev/sda"
+    size: 800 GiB
+    partition_table: msdos
+    partitions:
+
+    - partition:
+        size: 730 GiB
+        name: /dev/sda1
+        id: ntfs
+        file_system: ntfs
+        label: windows
+
+    - partition:
+        size: 40 GiB
+        name: /dev/sda2
+        id: linux
+        file_system: btrfs
+        mount_point: "/"
+
+    - partition:
+        size: 2 GiB
+        name: /dev/sda4
+        id: swap
+        file_system: swap
+        mount_point: swap
+
+    - free:
+        size: 8 GiB
+
+    - partition:
+        size: unlimited
+        name: /dev/sda3
+        id: 0xb
+        file_system: vfat
+        label: recovery

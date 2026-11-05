@@ -1,0 +1,29 @@
+---
+- disk:
+    name: /dev/sda
+    size: 1 TiB
+    file_system:  ext4
+    label:        root
+    mount_point:  "/"
+
+- disk:
+    name: /dev/sdb
+    size: 1 GiB
+    partition_table:  msdos
+    partitions:
+
+    - partition:
+        size:         500 MiB
+        name:         /dev/sdb1
+        file_system:  ext4
+        # /fidiu/qdima (/video/old)
+        mount_point:  "/\u0641\u064A\u062F\u064A\u0648/\u0642\u062F\u064A\u0645\u0629"
+
+    - partition:
+        size:         500 MiB
+        name:         /dev/sdb2
+        file_system:  ext4
+        # /fidiu/jdida (/video/new)
+        mount_point:  "/\u0641\u064A\u062F\u064A\u0648/\u062C\u062F\u064A\u062F\u0629"
+
+

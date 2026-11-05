@@ -42,10 +42,18 @@ pub enum Error {
 /// Profile definition for automated installation.
 #[skip_serializing_none]
 #[derive(Clone, Debug, Default, Deserialize, Serialize, Merge, JsonSchema)]
-#[serde(rename_all = "camelCase")]
-#[schemars(deny_unknown_fields, title = "Profile")]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+#[schemars(title = "Profile")]
 #[merge(strategy = merge::option::recurse)]
 pub struct Config {
+    /// Schema URL (ignored by installer, used by editors for validation and autocompletion).
+    #[serde(rename = "$schema", default, skip_serializing_if = "Option::is_none")]
+    #[schemars(
+        title = "URL of the JSON validation schema",
+        description = "The schema location is ignored by the installer, it always uses the built-in schema, but it can be useful for automatic validation and code completion in some editors."
+    )]
+    #[merge(strategy = merge::option::overwrite_none)]
+    pub schema: Option<String>,
     /// Bootloader configuration.
     pub bootloader: Option<bootloader::Config>,
     /// Hostname configuration.
@@ -115,6 +123,7 @@ impl Config {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::test::{assert_omits_null, find_null_paths};
     use std::path::PathBuf;
 
     #[test]
@@ -140,5 +149,47 @@ mod tests {
         assert!(config.files.is_some());
         assert!(config.users.is_some());
         assert!(config.s390.is_some());
+    }
+
+    #[test]
+    fn test_deserialize_and_reserialize_config_full_omits_null() {
+        let manifest_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+        let full_example = manifest_dir.join("../share/examples/config_full.json");
+        let contents = std::fs::read_to_string(&full_example).expect("read config_full.json");
+        let base_uri = Uri::try_from("file:///".to_string()).unwrap();
+        let config = Config::from_json(&contents, &base_uri).expect("deserialize Config");
+
+        let serialized = serde_json::to_value(&config).expect("serialize config");
+        let nulls = find_null_paths(&serialized);
+        assert!(
+            nulls.is_empty(),
+            "config_full.json reserialized to null values at paths: {:?}",
+            nulls
+        );
+    }
+
+    #[test]
+    fn test_default_config_tree_omits_null() {
+        let all_subsystems_default_config = Config {
+            schema: None,
+            bootloader: Some(bootloader::Config::default()),
+            hostname: Some(hostname::Config::default()),
+            l10n: Some(l10n::Config::default()),
+            proxy: Some(proxy::Config::default()),
+            security: Some(security::Config::default()),
+            software: Some(software::Config::default()),
+            network: Some(network::Config::default()),
+            ntp: Some(ntp::Config::default()),
+            questions: Some(question::Config::default()),
+            access: Some(access::Config::default()),
+            storage: Some(storage::Config::default()),
+            iscsi: Some(iscsi::Config::default()),
+            files: Some(files::Config::default()),
+            users: Some(users::Config::default()),
+            s390: Some(s390::Config::default()),
+        };
+
+        assert_omits_null(&Config::default());
+        assert_omits_null(&all_subsystems_default_config);
     }
 }

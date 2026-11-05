@@ -1,0 +1,21 @@
+{
+  "title": "A loop of controllers",
+  "description": "Rejected by the network service. Nothing is created.",
+  "steps": [
+    {
+      "profile": "1-cycle.json",
+      "description": "bond0 nested in br0, listing br0 by name",
+      "expect": {
+        "error": "ControllerCycle",
+        "connections": {
+          "bond0": {
+            "removed": true
+          },
+          "br0": {
+            "removed": true
+          }
+        }
+      }
+    }
+  ]
+}

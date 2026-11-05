@@ -132,7 +132,7 @@ describe("ArrayField", () => {
   it("does not show sighted instructions on empty field", () => {
     installerRender(<TestForm />);
     expect(
-      screen.queryByText("Enter or Tab to add", { selector: ":not([class*='screenReader'])" }),
+      screen.queryByText("Enter to add", { selector: ":not([class*='screenReader'])" }),
     ).not.toBeInTheDocument();
   });
 
@@ -140,12 +140,12 @@ describe("ArrayField", () => {
     const { user } = installerRender(<TestForm />);
     const input = screen.getByRole("textbox", { name: "Tags" });
     await user.type(input, "a");
-    screen.getByText("Enter or Tab to add");
+    screen.getByText("Enter to add");
   });
 
   it("shows sighted instructions when field has entries", () => {
     installerRender(<TestForm defaultValues={["alpha"]} />);
-    screen.getByText("Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate");
+    screen.getByText("Enter to add, Backspace or Delete to remove, arrow keys to navigate");
   });
 
   it("renders given existing values", () => {
@@ -162,11 +162,13 @@ describe("ArrayField", () => {
       screen.getByText("gamma");
     });
 
-    it("adds a value on Tab", async () => {
+    it("adds a value and moves focus on Tab", async () => {
       const { user } = installerRender(<TestForm />);
-      await user.type(screen.getByRole("textbox", { name: "Tags" }), "delta");
+      const input = screen.getByRole("textbox", { name: "Tags" });
+      await user.type(input, "delta");
       await user.tab();
       screen.getByText("delta");
+      expect(input).not.toHaveFocus();
     });
 
     it("commits the draft on blur", async () => {

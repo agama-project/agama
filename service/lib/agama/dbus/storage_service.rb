@@ -88,10 +88,10 @@ module Agama
       MULTIPATH_CONFIG = "/etc/multipath.conf"
       private_constant :MULTIPATH_CONFIG
 
-      # Configures mocked YaST modules, see agama/y2dir/modules.
+      # Configures YaST modules, see YaST2/modules/Package.rb.
       def configure_yast_modules
         # Sets the manager to allow checking the package requirements of the product, see
-        # agama/y2dir/modules/Package.rb.
+        # YaST2/modules/Package.rb.
         Yast::Package.storage = manager
       end
 

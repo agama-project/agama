@@ -36,6 +36,8 @@ import { _, N_ } from "~/i18n";
  * - ADVANCED_AUTO: method set to auto with required static addresses and
  *   optional gateway, combining automatic and manual addressing.
  * - MANUAL: method set to manual, with required addresses and required gateway.
+ * - DISABLED: method set to disabled, no IP configuration for the protocol at
+ *   all, e.g. to turn IPv6 off.
  *
  * Labels and descriptions use `N_()` for extraction and `_()` at render time.
  */
@@ -61,6 +63,13 @@ const modeOptions = () => [
     // TRANSLATORS: description for manual IP configuration mode.
     description: N_("Static addresses and gateway"),
   },
+  {
+    value: FormIpMode.DISABLED,
+    // TRANSLATORS: option label for disabling the IP configuration.
+    label: N_("Disabled"),
+    // TRANSLATORS: description for the disabled IP configuration mode.
+    description: N_("No IP configuration for this protocol"),
+  },
 ];
 
 type IpFieldsProps = {
@@ -70,7 +79,8 @@ type IpFieldsProps = {
 /**
  * Protocol-specific IP fields for a connection form.
  *
- * Shows a selector with three options: Automatic, Manual, and Advanced.
+ * Shows a selector with four options: Automatic, Automatic + manual, Manual,
+ * and Disabled.
  *
  * Receives a typed form instance via `withForm`.
  *

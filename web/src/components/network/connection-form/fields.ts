@@ -105,11 +105,14 @@ export const SUPPORTED_CONNECTION_TYPES = [
  * - AUTO: no address/gateway fields shown → ConnectionMethod.AUTO
  * - ADVANCED_AUTO: addresses required, gateway optional → ConnectionMethod.AUTO
  * - MANUAL: addresses and gateway required → ConnectionMethod.MANUAL
+ * - DISABLED: no IP configuration for the protocol at all
+ *   → ConnectionMethod.DISABLED
  */
 export const FormIpMode = {
   AUTO: "auto",
   ADVANCED_AUTO: "advanced-auto",
   MANUAL: "manual",
+  DISABLED: "disabled",
 } as const;
 
 export type FormIpMode = (typeof FormIpMode)[keyof typeof FormIpMode];

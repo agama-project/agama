@@ -1,0 +1,93 @@
+---
+- disk:
+    name: /dev/sda
+    size: 1 TiB
+    partition_table:  ms-dos
+    partitions:
+
+    - partition:
+        name:         /dev/sda1
+        size:         1033214 MiB (0.99 TiB)
+        id:           0x7
+        file_system:  ntfs
+        label:        windows
+    - partition:
+        name:         /dev/sda2
+        id:           lvm
+
+- disk:
+    name: /dev/sdb
+    size: 400 GiB
+    partition_table:  gpt
+    partitions:
+
+    - partition:
+        name:         /dev/sdb1
+        size:         398331 MiB (389.00 GiB)
+        id:           windows_basic_data
+        file_system:  ntfs
+        label:        windows
+    - partition:
+        size:         2 MiB
+        name:         /dev/sdb2
+        id:           bios_boot
+    - partition:
+        name:         /dev/sdb3
+        id:           lvm
+
+- disk:
+    name: /dev/sdc
+    size: 400 GiB
+    partition_table:  ms-dos
+    partitions:
+
+    - partition:
+        name:         /dev/sdc1
+        size:         404478 MiB (395.00 GiB)
+        id:           0x7
+        file_system:  ntfs
+        label:        windows
+    - partition:
+        name:         /dev/sdc2
+        id:           lvm
+
+- lvm_vg:
+    vg_name: system
+    lvm_lvs:
+    - lvm_lv:
+        lv_name:     root
+        size:        10 GiB
+        file_system: xfs
+        mount_point: /
+    - lvm_lv:
+        lv_name:     swap
+        size:        1 GiB
+        file_system: swap
+        mount_point: swap
+    lvm_pvs:
+    - lvm_pv:
+        blk_device:  /dev/sdb3
+
+- lvm_vg:
+    vg_name: home
+    lvm_lvs:
+    - lvm_lv:
+        lv_name:     home
+        size:        15 GiB
+        file_system: xfs
+        mount_point: /home
+    lvm_pvs:
+    - lvm_pv:
+        blk_device:  /dev/sda2
+
+- lvm_vg:
+    vg_name: srv
+    lvm_lvs:
+    - lvm_lv:
+        lv_name:     srv
+        size:        5 GiB
+        file_system: xfs
+        mount_point: /srv
+    lvm_pvs:
+    - lvm_pv:
+        blk_device:  /dev/sdc2

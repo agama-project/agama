@@ -1,0 +1,17 @@
+MainPID=0
+Id=apparmor.service
+Description=Load AppArmor profiles
+LoadState=loaded
+ActiveState=active
+SubState=exited
+FragmentPath=/usr/lib/systemd/system/apparmor.service
+UnitFileState=enabled
+
+MainPID=25772
+Id=cups.service
+Description=CUPS Scheduler
+LoadState=loaded
+ActiveState=active
+SubState=running
+FragmentPath=/usr/lib/systemd/system/cups.service
+UnitFileState=disabled

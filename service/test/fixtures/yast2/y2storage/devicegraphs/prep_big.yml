@@ -1,0 +1,20 @@
+---
+- disk:
+    name: /dev/sda
+    size: 1 TiB
+    partition_table:  gpt
+    partitions:
+
+    - partition:
+        size:         50 MiB
+        name:         /dev/sda1
+        id:           prep
+
+    - partition:
+        size:         900 GiB
+        name:         /dev/sda2
+        file_system:  ext4
+        label:        root
+        mount_point:  "/"
+
+

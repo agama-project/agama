@@ -86,6 +86,19 @@ describe("buildPayload", () => {
       expect(result.addresses).toEqual([{ address: "192.168.1.10", prefix: 24 }]);
     });
 
+    it("omits addresses and gateway in Disabled mode", () => {
+      const result = buildPayload(
+        formValues({
+          ipv4Mode: FormIpMode.DISABLED,
+          addresses4: ["192.168.1.10/24"],
+          gateway4: "192.168.1.1",
+        }),
+      );
+      expect(result.method4).toBe(ConnectionMethod.DISABLED);
+      expect(result.addresses).toEqual([]);
+      expect(result.gateway4).toBe("");
+    });
+
     it("drops the gateway when there are no addresses", () => {
       const result = buildPayload(
         formValues({ ipv4Mode: FormIpMode.MANUAL, addresses4: [], gateway4: "192.168.1.1" }),
@@ -253,6 +266,14 @@ describe("toFormValues", () => {
         apiConnection("eth0", { method4: "auto", addresses: ["192.168.1.10/24"] }),
       );
       expect(result.ipv4Mode).toBe(FormIpMode.ADVANCED_AUTO);
+    });
+
+    it("infers Disabled when the method is disabled", () => {
+      const result = toFormValues(
+        apiConnection("eth0", { method4: "disabled", method6: "disabled" }),
+      );
+      expect(result.ipv4Mode).toBe(FormIpMode.DISABLED);
+      expect(result.ipv6Mode).toBe(FormIpMode.DISABLED);
     });
 
     it("infers Automatic when there is no method and no addresses", () => {

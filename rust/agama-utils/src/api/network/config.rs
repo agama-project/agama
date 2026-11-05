@@ -26,9 +26,9 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use std::default::Default;
 
-/// Network config settings for installation
+/// Network settings
 #[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize, Merge, JsonSchema)]
-#[serde(rename_all = "camelCase")]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 #[schemars(rename = "network.Config")]
 pub struct Config {
     /// Connections to use in the installation

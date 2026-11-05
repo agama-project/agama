@@ -23,9 +23,15 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
-#[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq, Eq, JsonSchema)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, JsonSchema)]
 #[serde(transparent)]
 pub struct RawConfig(pub Value);
+
+impl Default for RawConfig {
+    fn default() -> Self {
+        RawConfig(Value::Object(serde_json::Map::new()))
+    }
+}
 
 impl Merge for RawConfig {
     // Merge by using "ignore" strategy, that is, lhs takes precedence over rhs.
