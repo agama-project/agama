@@ -1557,7 +1557,7 @@ impl ConnectionCollection {
     /// The ports of each bond and bridge are nested in its `portConnections` list, so only the
     /// root connections are at the top level.
     fn to_api(&self) -> Result<NetworkConnectionsCollection, NetworkStateError> {
-        let roots = self.to_api_roots()?;
+        let roots = self.to_api_roots(false)?;
         Ok(NetworkConnectionsCollection(
             roots.into_iter().map(|(_, root)| root).collect(),
         ))
@@ -1565,12 +1565,12 @@ impl ConnectionCollection {
 
     /// Converts the collection to its HTTP API representation, with the state of the connections.
     ///
-    /// Only the root connections report their state: the nested ports are part of their
-    /// controller's representation.
+    /// The nested ports report their state too, as it is not the one of their controller (e.g., a
+    /// backup port of a bond is not active while the bond is).
     fn to_api_with_state(
         &self,
     ) -> Result<NetworkConnectionsWithStateCollection, NetworkStateError> {
-        let roots = self.to_api_roots()?;
+        let roots = self.to_api_roots(true)?;
         Ok(NetworkConnectionsWithStateCollection(
             roots
                 .into_iter()
@@ -1585,7 +1585,13 @@ impl ConnectionCollection {
     /// Converts the root connections, with their ports nested, to their HTTP API representation.
     ///
     /// Each one comes with the connection it was converted from.
-    fn to_api_roots(&self) -> Result<Vec<(&Connection, NetworkConnection)>, NetworkStateError> {
+    ///
+    /// * `with_state`: whether the nested ports report their state, which only the system
+    ///   information does.
+    fn to_api_roots(
+        &self,
+        with_state: bool,
+    ) -> Result<Vec<(&Connection, NetworkConnection)>, NetworkStateError> {
         let mut placed = HashSet::new();
         let mut roots = vec![];
 
@@ -1604,7 +1610,7 @@ impl ConnectionCollection {
                 }
             }
 
-            let root = self.to_api_tree(conn, &mut placed)?;
+            let root = self.to_api_tree(conn, &mut placed, with_state)?;
             roots.push((conn, root));
         }
 
@@ -1613,7 +1619,7 @@ impl ConnectionCollection {
         for conn in self.iter() {
             if !placed.contains(&conn.uuid) {
                 tracing::warn!("Connection {} belongs to a loop of controllers", conn.id);
-                let root = self.to_api_tree(conn, &mut placed)?;
+                let root = self.to_api_tree(conn, &mut placed, with_state)?;
                 roots.push((conn, root));
             }
         }
@@ -1625,10 +1631,12 @@ impl ConnectionCollection {
     ///
     /// * `conn`: connection to convert.
     /// * `placed`: connections converted so far, to not walk a loop of controllers forever.
+    /// * `with_state`: whether the ports report their state.
     fn to_api_tree(
         &self,
         conn: &Connection,
         placed: &mut HashSet<Uuid>,
+        with_state: bool,
     ) -> Result<NetworkConnection, NetworkStateError> {
         placed.insert(conn.uuid);
 
@@ -1651,7 +1659,7 @@ impl ConnectionCollection {
             if placed.contains(&member.uuid) {
                 continue;
             }
-            let port = self.to_api_tree(member, placed)?;
+            let port = self.to_api_tree(member, placed, with_state)?;
             ports.push((member, port));
         }
 
@@ -1662,7 +1670,14 @@ impl ConnectionCollection {
         if let Some(bond) = api_conn.bond.as_mut() {
             let ports = ports
                 .into_iter()
-                .map(|(_, port)| BondPort::from_connection(port))
+                .map(|(member, port)| {
+                    let port = BondPort::from_connection(port);
+                    if with_state {
+                        port.with_state(member.state)
+                    } else {
+                        port
+                    }
+                })
                 .collect();
             bond.set_ports(ports);
         } else if let Some(bridge) = api_conn.bridge.as_mut() {
@@ -1671,7 +1686,12 @@ impl ConnectionCollection {
                 .map(|(member, port)| {
                     let settings = BridgePortSettings::from(&member.port_config);
                     let settings = (!settings.is_empty()).then_some(settings);
-                    BridgePort::from_connection(port, settings)
+                    let port = BridgePort::from_connection(port, settings);
+                    if with_state {
+                        port.with_state(member.state)
+                    } else {
+                        port
+                    }
                 })
                 .collect();
             bridge.set_ports(ports);
