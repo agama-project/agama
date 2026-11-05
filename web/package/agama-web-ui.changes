@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Nov  4 09:18:57 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Update PatternFly to version 6.7 (gh#agama-project/agama#4180).
+
+-------------------------------------------------------------------
 Wed Nov  4 09:04:37 UTC 2026 - Michal Filka <mfilka@suse.com>
 
 - bsc#1278291 (CVE-2026-84369), bsc#1278292 (CVE-2026-84370)
@@ -8,7 +13,7 @@ Wed Nov  4 09:04:37 UTC 2026 - Michal Filka <mfilka@suse.com>
 Wed Nov  4 08:50:12 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
 
 - Load the terminal component only when needed (lazy loading)
-  to decrease the used browser memory.
+  to decrease the used browser memory (gh#agama-project/agama#4175).
 
 -------------------------------------------------------------------
 Tue Nov  3 18:06:14 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
