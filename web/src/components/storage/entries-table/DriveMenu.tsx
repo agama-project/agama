@@ -26,6 +26,7 @@ import { sprintf } from "sprintf-js";
 import MenuButton, { MenuButtonItem } from "~/components/core/MenuButton";
 import RowMenuToggle from "~/components/storage/entries-table/RowMenuToggle";
 import NewVgMenuOption from "~/components/storage/NewVgMenuOption";
+import ChangeInstallationDisk from "~/components/storage/storage-page/ChangeInstallationDisk";
 import { useDeviceDetails } from "~/components/storage/shared/use-device-details";
 import { baseName } from "~/components/storage/utils";
 import configModel from "~/model/storage/config-model";
@@ -34,6 +35,7 @@ import {
   useDeleteDrive,
   useDeleteMdRaid,
 } from "~/hooks/model/storage/config-model";
+import { useCandidateDrives } from "~/hooks/model/system/storage";
 import { _ } from "~/i18n";
 import type { Partitionable } from "~/model/storage/config-model";
 import type { DetailsSubject } from "~/components/storage/shared/use-device-details";
@@ -106,6 +108,8 @@ export default function DriveMenu({ entry, subject }: DriveMenuProps): React.Rea
   const deleteDrive = useDeleteDrive();
   const deleteMdRaid = useDeleteMdRaid();
   const { openDetails } = useDeviceDetails();
+  const candidate = useCandidateDrives();
+  const [isChangingDisk, setIsChangingDisk] = React.useState(false);
 
   const name = baseName(entry.name);
   // TRANSLATORS: names the menu of things that can be done to one device of the
@@ -145,6 +149,27 @@ export default function DriveMenu({ entry, subject }: DriveMenuProps): React.Rea
     <NewVgMenuOption key="volume-group" device={entry} />,
   ];
 
+  const canChangeTarget =
+    location?.collection === "drives" &&
+    configModel.canChangeTargetDrive(config) &&
+    candidate.length > 1;
+
+  if (canChangeTarget) {
+    items.push(
+      <MenuButtonItem
+        key="change-disk"
+        // TRANSLATORS: description of the menu item that puts the whole
+        // installation on a different disk.
+        description={_("Install the system on a different disk")}
+        onClick={() => setIsChangingDisk(true)}
+      >
+        {/* TRANSLATORS: menu item that opens a choice of another disk to
+            install the system on. */}
+        {_("Change target disk…")}
+      </MenuButtonItem>,
+    );
+  }
+
   // When no additional drives has been added, the "Do not use" button can be confusing so it is
   // omitted for all drives.
   if (configModel.hasAdditionalDevices(config) && location) {
@@ -163,10 +188,13 @@ export default function DriveMenu({ entry, subject }: DriveMenuProps): React.Rea
   }
 
   return (
-    <MenuButton
-      menuProps={{ "aria-label": label, popperProps: { position: "end" } }}
-      customToggle={<RowMenuToggle label={label} />}
-      items={items}
-    />
+    <>
+      <MenuButton
+        menuProps={{ "aria-label": label, popperProps: { position: "end" } }}
+        customToggle={<RowMenuToggle label={label} />}
+        items={items}
+      />
+      {isChangingDisk && <ChangeInstallationDisk onClose={() => setIsChangingDisk(false)} />}
+    </>
   );
 }
