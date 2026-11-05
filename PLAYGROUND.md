@@ -9,9 +9,9 @@ even possible, before the idea is dropped.
 
 ## What changed
 
-- The devices are a regular table: one row per device, with visible headers
-  (Type, Device, Existing data, New system), sortable by type and by
-  device.
+- The devices are a table with visible headers (Device, Existing data, New
+  system), grouped by kind: volume groups, RAID devices and disks, each under
+  its own title, and sorted by device within each group.
 - "Change target disk…" is an option of the disk's menu instead of a button
   beside the devices.
 - The result is no longer an alert above the page. The line above the devices
@@ -44,23 +44,29 @@ Then, from the browser developer tools console:
 | `agamaTopLineOrder("status")`      | Result and settings first           |
 | `agamaDevicesBox(false)`           | Devices right on the page (default) |
 | `agamaDevicesBox(true)`            | Devices in a bordered box           |
-| `agamaTypeColumn(true)`            | Type column shown (default)         |
-| `agamaTypeColumn(false)`           | Type column left out                |
-| `agamaGroupedTable(false)`         | One flat list of devices (default)  |
-| `agamaGroupedTable(true)`          | Grouped by kind, sorted per group   |
+| `agamaGroupedTable(true)`          | Grouped by kind (default)           |
+| `agamaGroupedTable(false)`         | One flat list of devices            |
+| `agamaTypeColumn(false)`           | Flat list without Type (default)    |
+| `agamaTypeColumn(true)`            | Flat list with a Type column        |
 
 Every choice is kept across reloads.
 
 ## Under evaluation: the grouped table
 
-`agamaGroupedTable(true)` shows a teammate's suggestion: the devices grouped by
-kind again (volume groups, RAID devices, disks), each group with its own title
-and mark, and the column headers sorting the rows inside every group. The Type
-column is left out there, since the group title says what each device is, and
-a new volume group says only "New" under its name.
+The devices table opens grouped by kind, a teammate's suggestion: each group
+with its own title and mark, and the column headers sorting the rows inside
+every group. The branch this playground builds on already grouped the devices,
+but as headed sections that hid the table they are, and less polished. A new
+volume group says only "New" under its name, since the group title says the
+rest. `agamaGroupedTable(false)` shows the flat table instead, to compare.
 
-It is valid HTML and works with the keyboard and screen readers as built, but
-it is not decided. Still open: whether "Used disk" should stay when there is
+The Type column was an experiment along the way, to show the devices as the
+table they are; it is discarded, since the groups say what each device is
+better. `agamaTypeColumn(true)` brings it back in the flat table, only to
+compare.
+
+The grouped table is valid HTML and works with the keyboard and screen readers
+as built, but it is not decided. Still open: whether "Used disk" should stay when there is
 only one (it tells users these are the disks used for the installation, not
 every disk they have), room for actions beside a group's title, and what the
 two content columns should hold once the groups say what each device is.

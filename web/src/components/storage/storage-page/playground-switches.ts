@@ -35,14 +35,14 @@
  *
  * Whether the devices table has a Type column:
  *
- *   agamaTypeColumn(true)   // shown (default)
- *   agamaTypeColumn(false)  // left out
+ *   agamaTypeColumn(true)   // shown
+ *   agamaTypeColumn(false)  // left out (default)
  *
  * Whether the devices table groups them by kind, each group sorted on its
  * own, which also leaves the Type column out:
  *
- *   agamaGroupedTable(false)  // one flat list (default)
- *   agamaGroupedTable(true)   // volume groups, RAID devices and disks apart
+ *   agamaGroupedTable(false)  // one flat list
+ *   agamaGroupedTable(true)   // volume groups, RAID devices and disks apart (default)
  *
  * Choices survive reloads. To be dropped once the design is settled.
  */
@@ -109,11 +109,11 @@ const useDevicesBox = consoleSwitch<DevicesBox>("agamaDevicesBox", ["off", "on"]
   input ? "on" : "off",
 );
 
-const useTypeColumn = consoleSwitch<TypeColumn>("agamaTypeColumn", ["on", "off"], (input) =>
+const useTypeColumn = consoleSwitch<TypeColumn>("agamaTypeColumn", ["off", "on"], (input) =>
   input ? "on" : "off",
 );
 
-const useGroupedTable = consoleSwitch<GroupedTable>("agamaGroupedTable", ["off", "on"], (input) =>
+const useGroupedTable = consoleSwitch<GroupedTable>("agamaGroupedTable", ["on", "off"], (input) =>
   input ? "on" : "off",
 );
 
