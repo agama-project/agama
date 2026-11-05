@@ -21,8 +21,11 @@
  */
 
 import React from "react";
-import { Alert, AlertProps, Button, ModalProps } from "@patternfly/react-core";
+import { Alert, AlertProps, Button, Flex, ModalProps } from "@patternfly/react-core";
+import SmallWarning from "~/components/core/SmallWarning";
 import Popup from "~/components/core/Popup";
+import { _ } from "~/i18n";
+import type { TranslatedString } from "~/i18n";
 
 export type AlertWithDetailsPopupProps = {
   /** How it is presented, from a neutral report to something needing care. */
@@ -47,6 +50,11 @@ export type AlertWithDetailsPopupProps = {
   popupActions?: React.ReactNode;
   /** The details, shown in the popup. */
   children: React.ReactNode;
+  /**
+   * Drawn as a line of text with a status mark rather than as an
+   * alert box, to sit among other content.
+   */
+  isPlain?: boolean;
 };
 
 /**
@@ -121,30 +129,49 @@ export default function AlertWithDetailsPopup({
   popupVariant,
   popupActions,
   children,
+  isPlain = false,
 }: AlertWithDetailsPopupProps): React.ReactNode {
   const [isOpen, setIsOpen] = React.useState(false);
   const close = () => setIsOpen(false);
 
+  const action = (
+    <Button
+      variant="tertiary"
+      size="sm"
+      aria-label={actionAriaLabel}
+      onClick={() => setIsOpen(true)}
+    >
+      {isPlain
+        ? // TRANSLATORS: opens a popup with the details of what is said
+          // right before it.
+          _("Details…")
+        : actionLabel}
+    </Button>
+  );
+
   return (
     <>
-      <Alert
-        isInline
-        variant={variant}
-        component="p"
-        title={
-          <>
-            {title}{" "}
-            <Button
-              variant="tertiary"
-              size="sm"
-              aria-label={actionAriaLabel}
-              onClick={() => setIsOpen(true)}
-            >
-              {actionLabel}
-            </Button>
-          </>
-        }
-      />
+      {isPlain ? (
+        <Flex alignItems={{ default: "alignItemsCenter" }} gap={{ default: "gapSm" }}>
+          {variant === "custom" ? (
+            <strong>{title}</strong>
+          ) : (
+            <SmallWarning text={title as TranslatedString} />
+          )}
+          {action}
+        </Flex>
+      ) : (
+        <Alert
+          isInline
+          variant={variant}
+          component="p"
+          title={
+            <>
+              {title} {action}
+            </>
+          }
+        />
+      )}
       {isOpen && (
         <Popup
           isOpen

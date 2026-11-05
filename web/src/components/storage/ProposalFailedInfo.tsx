@@ -223,9 +223,15 @@ function proposalFailedTitle(): TranslatedString {
  * TODO: the whole component needs to be revisited. Right now is reusing code
  * and strings from an old experiment.
  */
-export default function ProposalFailedInfo() {
+export default function ProposalFailedInfo({
+  isPlain,
+}: {
+  /** Drawn as a line of text rather than as an alert box. */
+  isPlain?: boolean;
+}) {
   return (
     <AlertWithDetailsPopup
+      isPlain={isPlain}
       variant="warning"
       title={proposalFailedTitle()}
       // TRANSLATORS: opens a popup explaining why no storage layout can be

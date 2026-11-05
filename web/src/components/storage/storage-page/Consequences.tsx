@@ -21,12 +21,18 @@
  */
 
 import React from "react";
-import AlertWithDetailsPopup from "~/components/core/AlertWithDetailsPopup";
+import { Button } from "@patternfly/react-core";
+import Popup from "~/components/core/Popup";
 import PlannedChangesPopup from "~/components/storage/storage-page/PlannedChangesPopup";
 import { useActions } from "~/hooks/model/proposal/storage";
 import { _ } from "~/i18n";
 import type { TranslatedString } from "~/i18n";
 import type { Storage } from "~/model/proposal";
+
+/** Whether applying the configuration deletes anything. */
+function losesData(actions: Storage.Action[]): boolean {
+  return actions.some((a) => a.delete && !a.subvol);
+}
 
 /**
  * The sentence that sums up the result: what applying the configuration takes.
@@ -38,39 +44,54 @@ import type { Storage } from "~/model/proposal";
  * rather than what the configuration asked for.
  */
 function summaryOf(actions: Storage.Action[]): TranslatedString {
-  const deleteActions = actions.filter((a) => a.delete && !a.subvol).length;
-
-  return deleteActions
+  return losesData(actions)
     ? _("The configuration will be applied during installation with potential data loss")
     : _("The configuration will be applied during installation with no expected data loss");
 }
 
+export type ConsequencesProps = {
+  /** What the button opening the popup says. "Details…" if not given. */
+  label?: React.ReactNode;
+  /** The name of the button for assistive technologies, starting with its visible words. */
+  "aria-label"?: string;
+};
+
 /**
- * What the current storage configuration will do to the disks: one line saying
- * how many actions it takes, and the way to the final layout and the full list
- * of actions.
+ * A button opening what the current storage configuration will do to the
+ * disks: the final layout and the full list of actions, in a popup.
  */
-export default function Consequences(): React.ReactNode {
+export default function Consequences({
+  label,
+  "aria-label": ariaLabel,
+}: ConsequencesProps): React.ReactNode {
   const actions = useActions();
+  const [isOpen, setIsOpen] = React.useState(false);
+  const close = () => setIsOpen(false);
 
   return (
-    <AlertWithDetailsPopup
-      variant="custom"
-      title={summaryOf(actions)}
-      // TRANSLATORS: opens a popup with the layout the disks will have after
-      // installation and the actions needed to get there.
-      actionLabel={_("Show result")}
-      // TRANSLATORS: title of the popup with the layout the disks will have and
-      // the actions needed to get there. "Planned" because nothing is applied
-      // until the installation starts.
-      popupTitle={_("Planned storage changes")}
-      // TRANSLATORS: says what the popup with the planned storage changes is for.
-      popupDescription={_("Result of applying the current storage configuration to the system")}
-      popupVariant="large"
-    >
-      <PlannedChangesPopup />
-    </AlertWithDetailsPopup>
+    <>
+      <Button variant="tertiary" size="sm" aria-label={ariaLabel} onClick={() => setIsOpen(true)}>
+        {/* TRANSLATORS: opens a popup with the layout the disks will have and
+            the actions needed to get there. */}
+        {label || _("Details…")}
+      </Button>
+      {isOpen && (
+        <Popup
+          isOpen
+          // TRANSLATORS: title of the popup with the layout the disks will have
+          // and the actions needed to get there. "Planned" because nothing is
+          // applied until the installation starts.
+          title={_("Planned storage changes")}
+          description={summaryOf(actions)}
+          variant="large"
+          onClose={close}
+          actions={<Popup.Close />}
+        >
+          <PlannedChangesPopup />
+        </Popup>
+      )}
+    </>
   );
 }
 
-export { summaryOf };
+export { summaryOf, losesData };

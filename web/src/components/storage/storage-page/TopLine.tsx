@@ -22,6 +22,10 @@
 
 import React from "react";
 import { Flex, FlexItem } from "@patternfly/react-core";
+import SmallWarning from "~/components/core/SmallWarning";
+import FixableConfigInfo from "~/components/storage/FixableConfigInfo";
+import ProposalFailedInfo from "~/components/storage/ProposalFailedInfo";
+import { useIssues } from "~/hooks/model/issue";
 import Interpolate from "~/components/core/Interpolate";
 import Link from "~/components/core/Link";
 import MenuButton from "~/components/core/MenuButton";
@@ -32,7 +36,10 @@ import { bootIcon } from "~/components/storage/shared/boot";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { EXPANDED, SETTINGS_TAB, DEVICE_DETAILS } from "~/components/storage/ui-state-params";
 import configModel from "~/model/storage/config-model";
+import Consequences, { losesData } from "~/components/storage/storage-page/Consequences";
 import { useConfigModel } from "~/hooks/model/storage/config-model";
+import { useTopLineOrder } from "~/components/storage/storage-page/playground-switches";
+import { useActions, useProposal } from "~/hooks/model/proposal/storage";
 import { useReset } from "~/hooks/model/config/storage";
 import { useClearSearchParams } from "~/hooks/use-search-param-state";
 import { _ } from "~/i18n";
@@ -142,6 +149,12 @@ function encryption(config: ConfigModel.Config): {
  */
 export default function TopLine(): React.ReactNode {
   const config = useConfigModel();
+  const proposal = useProposal();
+  const actions = useActions();
+  const issues = useIssues("storage");
+  const configIssues = issues.filter((i) => i.class !== "proposal");
+  const topLineOrder = useTopLineOrder();
+  const statusFirst = topLineOrder === "status";
   const reset = useReset();
   const clearSearchParams = useClearSearchParams();
 
@@ -157,11 +170,20 @@ export default function TopLine(): React.ReactNode {
     clearSearchParams(EXPANDED, SETTINGS_TAB, DEVICE_DETAILS);
   };
 
+  /* A line of its own, above or under the status and the settings. */
+  const description = (
+    <FlexItem fullWidth={{ default: "fullWidth" }}>
+      <Text textStyle={["fontSizeSm", "textColorSubtle"]}>
+        {/* TRANSLATORS: says what the storage page is for, next to the
+            settings that apply to the whole installation. */}
+        {_("Configure which storage devices will be used to install and how")}
+      </Text>
+    </FlexItem>
+  );
+
   return (
-    /* On one baseline, so the sentence and the settings read as one line
-       although they are set in different sizes. */
     <Flex
-      alignItems={{ default: "alignItemsBaseline" }}
+      alignItems={{ default: "alignItemsCenter" }}
       justifyContent={{ default: "justifyContentSpaceBetween" }}
       gap={{ default: "gapMd" }}
       /* Wrapping rather than pinned on one line. A strip this crowded runs out
@@ -169,14 +191,54 @@ export default function TopLine(): React.ReactNode {
          page sideways instead. */
       flexWrap={{ default: "wrap" }}
     >
-      <FlexItem>
-        <Text textStyle={["fontSizeSm", "textColorSubtle"]}>
-          {/* TRANSLATORS: says what the storage page is for, on its own line
-              above what the page reports. */}
-          {_("Configure which storage devices will be used to install and how")}
-        </Text>
-      </FlexItem>
-      <FlexItem>
+      {!statusFirst && description}
+      {!proposal && (
+        /* Where no layout could be found, the problem takes the place of the
+           result. */
+        <FlexItem>
+          {configIssues.length ? (
+            <FixableConfigInfo issues={configIssues} isPlain />
+          ) : (
+            <ProposalFailedInfo isPlain />
+          )}
+        </FlexItem>
+      )}
+      {proposal && (
+        <FlexItem>
+          <Flex alignItems={{ default: "alignItemsCenter" }} gap={{ default: "gapSm" }}>
+            {/* Drawn as the popup draws its destructive actions, so the
+                caution reads the same in both places. */}
+            {losesData(actions) ? (
+              <SmallWarning
+                // TRANSLATORS: what applying the storage configuration does,
+                // where something may be deleted.
+                text={_("The setup below will be applied with potential data loss")}
+              />
+            ) : (
+              <>
+                <Icon name="list_alt" aria-hidden />
+                <Text>
+                  {
+                    // TRANSLATORS: what applying the storage configuration
+                    // does, where nothing is deleted.
+                    _("The setup below will be applied with no expected data loss")
+                  }
+                </Text>
+              </>
+            )}
+            <Consequences
+              // TRANSLATORS: opens a popup with the layout the disks will have
+              // and the actions needed to get there.
+              label={_("Details…")}
+              // TRANSLATORS: full name of the "Details" button, for screen
+              // readers.
+              aria-label={_("Details of the planned storage changes")}
+            />
+          </Flex>
+        </FlexItem>
+      )}
+      {/* Kept at the right edge also when it wraps under the sentence. */}
+      <FlexItem align={{ default: "alignRight" }}>
         <Flex
           alignItems={{ default: "alignItemsCenter" }}
           gap={{ default: "gapMd" }}
@@ -237,6 +299,7 @@ export default function TopLine(): React.ReactNode {
           </FlexItem>
         </Flex>
       </FlexItem>
+      {statusFirst && description}
     </Flex>
   );
 }

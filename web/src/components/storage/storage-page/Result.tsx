@@ -32,7 +32,7 @@ import { useAvailableDevices } from "~/hooks/model/system/storage";
 import { useIssues } from "~/hooks/model/issue";
 import { useProposal } from "~/hooks/model/proposal/storage";
 import { useConfigModel } from "~/hooks/model/storage/config-model";
-import Consequences, { summaryOf } from "~/components/storage/storage-page/Consequences";
+import { summaryOf } from "~/components/storage/storage-page/Consequences";
 import { useAnnounce } from "~/context/announcer";
 import type { TranslatedString } from "~/i18n";
 
@@ -109,7 +109,9 @@ export default function Result(): React.ReactNode {
   if (isNoDevices) return <NoDevicesMessage />;
   if (isInvalid) return <InvalidConfigMessage issues={configIssues} />;
   if (isUnknown) return <UnknownConfigMessage />;
-  if (proposal) return <Consequences />;
+  /* The result, or the problem finding one, is reported in the page's top
+     line, which is there whenever the configuration can be read. */
+  if (proposal || model) return null;
 
   /* A flex column rather than a stack, which takes the whole height of what
      holds it: inside a column of its own, that leaves a gap under the alerts

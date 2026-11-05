@@ -48,6 +48,8 @@ const Description = ({ issues }: { issues: Issue[] }) => {
 
 type FixableConfigInfoProps = {
   issues: Issue[];
+  /** Drawn as a line of text rather than as an alert box. */
+  isPlain?: boolean;
 };
 
 /** The one line saying how many issues there are to fix. */
@@ -59,9 +61,10 @@ function fixableConfigTitle(): TranslatedString {
  * Information about a wrong but fixable storage configuration: how many issues
  * there are in one line, and the list of them one action away.
  */
-export default function FixableConfigInfo({ issues }: FixableConfigInfoProps) {
+export default function FixableConfigInfo({ issues, isPlain }: FixableConfigInfoProps) {
   return (
     <AlertWithDetailsPopup
+      isPlain={isPlain}
       variant="warning"
       title={fixableConfigTitle()}
       // TRANSLATORS: opens a popup listing the problems of the storage settings.
