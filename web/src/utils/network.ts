@@ -568,68 +568,6 @@ const addDefaultIPPrefix = (address: string): string => {
 };
 
 /**
- * Returns the state of a connection as told by the device using it.
- *
- * A connection that no device is using is not active.
- */
-const connectionStateFromDevice = (device?: Device): ConnectionState => {
-  if (!device) return ConnectionState.DEACTIVATED;
-
-  switch (device.state) {
-    case DeviceState.CONNECTED:
-      return ConnectionState.ACTIVATED;
-    case DeviceState.CONNECTING:
-      return ConnectionState.ACTIVATING;
-    case DeviceState.DISCONNECTING:
-      return ConnectionState.DEACTIVATING;
-    case DeviceState.UNKNOWN:
-      return ConnectionState.UNKNOWN;
-    default:
-      return ConnectionState.DEACTIVATED;
-  }
-};
-
-/**
- * Returns the given connections with the state of their nested ports.
- *
- * The system reports the state of the top-level connections only, as a port is
- * part of its controller. It is taken from the device using the port instead,
- * all the way down a stack. A port that already has a state keeps it.
- *
- * @param connections - Top-level connections, with their ports nested.
- * @param devices - Devices of the system, which tell the connection they use.
- */
-const withPortStates = (
-  connections: Connection[],
-  devices: Device[],
-  nested = false,
-): Connection[] =>
-  connections.map((connection) => {
-    const state =
-      nested && !connection.state
-        ? connectionStateFromDevice(devices.find((d) => d.connection === connection.id))
-        : connection.state;
-    const kind = connection.bond ? "bond" : connection.bridge ? "bridge" : undefined;
-    const ports = portsOf(connection);
-
-    if (state === connection.state && !ports.length) return connection;
-
-    const { id, ...options } = connection;
-    return new Connection(id, {
-      ...options,
-      state,
-      ...(kind && {
-        [kind]: {
-          ...connection[kind],
-          ports: ports.map((p) =>
-            typeof p === "string" ? p : withPortStates([p], devices, true)[0],
-          ),
-        },
-      }),
-    });
-  });
-
-/**
  * Ensures a value has a default CIDR prefix if it's a valid IP address.
  *
  * Returns the value unchanged if it already has a prefix or is not a valid IP.
@@ -676,5 +614,4 @@ export {
   isValidIpPrefix,
   securityFromFlags,
   stringToIPInt,
-  withPortStates,
 };

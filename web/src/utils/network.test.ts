@@ -20,14 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import {
-  BondMode,
-  Connection,
-  ConnectionState,
-  DeviceState,
-  SecurityProtocols,
-  portsOf,
-} from "~/types/network";
+import { BondMode, Connection, SecurityProtocols } from "~/types/network";
 import type { Device } from "~/types/network";
 import {
   addDefaultIPPrefix,
@@ -48,7 +41,6 @@ import {
   isLoopback,
   securityFromFlags,
   connectionBindingMode,
-  withPortStates,
   CONNECTION_TYPE,
 } from "./network";
 
@@ -411,61 +403,5 @@ describe("addDefaultIPPrefix", () => {
       expect(addDefaultIPPrefix("fe80::1")).toBe("fe80::1/64");
       expect(addDefaultIPPrefix("::1")).toBe("::1/64");
     });
-  });
-});
-
-describe("withPortStates", () => {
-  const device = (name: string, state: DeviceState, connection?: string) =>
-    ({ name, state, connection, addresses: [] }) as unknown as Device;
-
-  const stack = () =>
-    new Connection("br0", {
-      iface: "br0",
-      state: ConnectionState.ACTIVATED,
-      bridge: {
-        ports: [
-          new Connection("bond0", {
-            iface: "bond0",
-            bond: {
-              mode: BondMode.ACTIVE_BACKUP,
-              options: "",
-              ports: [new Connection("eth0", { iface: "eth0" }), "eth1"],
-            },
-          }),
-        ],
-      },
-    });
-
-  it("takes the state of each port from the device using it, all the way down", () => {
-    const devices = [
-      device("bond0", DeviceState.CONNECTED, "bond0"),
-      device("eth0", DeviceState.CONNECTING, "eth0"),
-    ];
-    const [br0] = withPortStates([stack()], devices);
-    const [bond0] = portsOf(br0) as Connection[];
-    const [eth0, eth1] = portsOf(bond0);
-
-    expect(br0.state).toBe(ConnectionState.ACTIVATED);
-    expect(bond0.state).toBe(ConnectionState.ACTIVATED);
-    expect((eth0 as Connection).state).toBe(ConnectionState.ACTIVATING);
-    // A port given by name is left alone.
-    expect(eth1).toBe("eth1");
-  });
-
-  it("considers a port that no device uses as not active", () => {
-    const devices = [device("eth0", DeviceState.DISCONNECTED)];
-    const [br0] = withPortStates([stack()], devices);
-    const [bond0] = portsOf(br0) as Connection[];
-
-    expect(bond0.state).toBe(ConnectionState.DEACTIVATED);
-    expect((portsOf(bond0)[0] as Connection).state).toBe(ConnectionState.DEACTIVATED);
-  });
-
-  it("leaves the state of a top-level connection as the system reports it", () => {
-    const eth0 = new Connection("eth0", { iface: "eth0" });
-    const [result] = withPortStates([eth0], [device("eth0", DeviceState.CONNECTED, "eth0")]);
-
-    expect(result).toBe(eth0);
-    expect(result.state).toBeUndefined();
   });
 });

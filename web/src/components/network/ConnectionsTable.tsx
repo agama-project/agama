@@ -51,7 +51,6 @@ import {
   connectionTypeLabel,
   connectionStateLabel,
   formatIp,
-  withPortStates,
 } from "~/utils/network";
 import { _ } from "~/i18n";
 import {
@@ -171,10 +170,7 @@ export default function ConnectionsTable() {
   const devices = useDevices();
   // The top-level connections, with the ports of bonds and bridges nested in
   // them, and every connection as a single list.
-  // The system reports the state of the top-level connections only, so the one
-  // of each port is taken from its device.
-  const { state: systemState, connections: reported = [] } = useSystem();
-  const roots = withPortStates(reported, devices);
+  const { state: systemState, connections: roots = [] } = useSystem();
   const connections = flattenConnections(roots);
   const { connections: configRoots = [] } = useExtendedConfig();
   const configConnections = flattenConnections(configRoots);
@@ -196,8 +192,8 @@ export default function ConnectionsTable() {
   const onFilterChange = (filter: keyof ConnectionsFilters, value: string) =>
     setFilter(filter, value);
 
-  // The listed connections come from the system, with their runtime state. Update the configured
-  // connection instead, which does not include it.
+  // The listed connections come from the system, which reports their runtime state (also for
+  // the nested ports). Update the configured connection instead, which does not include it.
   const updateStatus = (connection: Connection, status: ConnectionStatus) => {
     const configConnection = configConnections.find((c) => c.id === connection.id);
     if (!configConnection) return;
