@@ -148,6 +148,8 @@ label="Install-$profile-$arch"
 echo "Setting default live root: live:LABEL=$label"
 mkdir /etc/cmdline.d
 echo "root=live:LABEL=$label" >/etc/cmdline.d/10-liveroot.conf
+# the root image has been moved to the arch dependant location
+echo "rd.live.dir=boot/$arch/LiveOS" >>/etc/cmdline.d/10-liveroot.conf
 echo "root_disk=live:LABEL=$label" >>/etc/cmdline.d/10-liveroot.conf
 echo 'install_items+=" /etc/cmdline.d/10-liveroot.conf "' >/etc/dracut.conf.d/10-liveroot-file.conf
 echo 'add_dracutmodules+=" dracut-menu agama-cmdline agama-dud live-self-update initrd-nmtui chrony "' >>/etc/dracut.conf.d/10-liveroot-file.conf
