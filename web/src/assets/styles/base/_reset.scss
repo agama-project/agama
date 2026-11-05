@@ -89,8 +89,10 @@ figcaption {
   }
 }
 
+// Emphasis follows the bold role, so a product that retunes bold text retunes
+// it too. Unset, it keeps the heaviest weight step.
 strong {
-  font-weight: var(--pf-t--global--font--weight--400);
+  font-weight: var(--agm-t--font--weight--bold, var(--pf-t--global--font--weight--400));
 }
 
 div[aria-live]:empty {

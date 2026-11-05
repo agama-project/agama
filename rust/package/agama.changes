@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Nov  4 20:49:37 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Omit null values when serializing optional fields and empty
+  configuration structures so produced JSON are valid against JSON
+  schemas (gh#agama-project/agama#4177).
+
+-------------------------------------------------------------------
 Tue Nov  3 08:35:30 UTC 2026 - Clemens Famulla-Conrad <cfamullaconrad@suse.com>
 
 - Support the IPv6 address generation mode (ipv6.addr-gen-mode)

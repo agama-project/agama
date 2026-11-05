@@ -63,7 +63,13 @@ export default function SimpleSelector({ label, value, options, onChange }: Simp
   const onToggle = () => setIsOpen(!isOpen);
 
   const toggle = (pfToggleRef: React.Ref<MenuToggleElement>) => (
-    <MenuToggle id={id} ref={getToggleRef(pfToggleRef)} onClick={onToggle} isExpanded={isOpen}>
+    <MenuToggle
+      id={id}
+      ref={getToggleRef(pfToggleRef)}
+      onClick={onToggle}
+      isExpanded={isOpen}
+      aria-haspopup="listbox"
+    >
       {options[value]}
     </MenuToggle>
   );

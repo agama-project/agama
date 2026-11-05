@@ -112,7 +112,6 @@ const SplitButton = ({
             ),
           ]}
           isExpanded={isOpen}
-          aria-haspopup
           aria-controls={menuId}
           aria-label={toggleAriaLabel}
         />

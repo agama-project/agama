@@ -84,6 +84,12 @@ describe("DropdownField", () => {
     screen.getByText("IPv4 Settings");
   });
 
+  it("tells screen readers the toggle opens a list of options", () => {
+    installerRender(<TestForm />);
+    const toggle = screen.getByRole("button", { name: "IPv4 Settings" });
+    expect(toggle).toHaveAttribute("aria-haspopup", "listbox");
+  });
+
   it("shows the selected option label", () => {
     installerRender(<TestForm defaultValue="custom" />);
     screen.getByText("Custom");

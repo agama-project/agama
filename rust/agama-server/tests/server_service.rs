@@ -318,6 +318,14 @@ async fn test_system_matches_schema(ctx: &mut Context) -> Result<(), Box<dyn Err
 
     let body = body_to_string(response.into_body()).await;
 
+    let parsed_val: serde_json::Value = serde_json::from_str(&body)?;
+    let nulls = test::find_null_paths(&parsed_val);
+    assert!(
+        nulls.is_empty(),
+        "GET /system returned serialized null values at: {:?}",
+        nulls
+    );
+
     let validator = common::build_test_validator("SystemInfo").await;
     match validator.validate_str(&body)? {
         ValidationOutcome::Valid => {}
@@ -395,6 +403,14 @@ async fn test_proposal_matches_schema(ctx: &mut Context) -> Result<(), Box<dyn E
     assert_eq!(response.status(), StatusCode::OK);
 
     let body = body_to_string(response.into_body()).await;
+
+    let parsed_val: serde_json::Value = serde_json::from_str(&body)?;
+    let nulls = test::find_null_paths(&parsed_val);
+    assert!(
+        nulls.is_empty(),
+        "GET /proposal returned serialized null values at: {:?}",
+        nulls
+    );
 
     let validator = common::build_test_validator("Proposal").await;
     match validator.validate_str(&body)? {

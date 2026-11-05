@@ -158,6 +158,12 @@ describe("MultiSelectField", () => {
       expect(combobox().getAttribute("aria-describedby")).toContain(instructionsId);
     });
 
+    it("tells screen readers the arrow button opens a list of options", () => {
+      installerRender(<TestForm />);
+      const arrow = screen.getByRole("button", { name: "Show options" });
+      expect(arrow).toHaveAttribute("aria-haspopup", "listbox");
+    });
+
     it("does not show the list until it is asked for", () => {
       installerRender(<TestForm />);
       expect(combobox()).toHaveAttribute("aria-expanded", "false");
