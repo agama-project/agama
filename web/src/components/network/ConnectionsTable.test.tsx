@@ -24,7 +24,13 @@ import React from "react";
 import { screen, within } from "@testing-library/react";
 import { installerRender, mockNavigateFn, mockRoutes } from "~/test-utils";
 import ConnectionsTable from "~/components/network/ConnectionsTable";
-import { BondMode, Connection, ConnectionState, ConnectionStatus } from "~/types/network";
+import {
+  BondMode,
+  Connection,
+  ConnectionState,
+  ConnectionStatus,
+  DeviceState,
+} from "~/types/network";
 
 const mockMutateAsync = jest.fn();
 const mockConnections = [
@@ -61,8 +67,9 @@ const stackedConnections = [
       mode: BondMode.ACTIVE_BACKUP,
       options: "",
       ports: [
-        new Connection("Port 1", { iface: "eth1", state: ConnectionState.ACTIVATED }),
-        new Connection("Port 2", { iface: "eth2", state: ConnectionState.DEACTIVATED }),
+        // As the system reports them, without their state.
+        new Connection("Port 1", { iface: "eth1" }),
+        new Connection("Port 2", { iface: "eth2" }),
       ],
     },
   }),
@@ -80,6 +87,9 @@ const mockDevices = [
   { name: "eth0", connection: "Wired connection 0", addresses: [] },
   { name: "wlan0", connection: "Wifi1", addresses: [] },
   { name: "enp2s0", connection: "MAC connection", addresses: [] },
+  // The devices of the ports of the bond, which tell their state.
+  { name: "eth1", connection: "Port 1", state: DeviceState.CONNECTED, addresses: [] },
+  { name: "eth2", state: DeviceState.DISCONNECTED, addresses: [] },
 ];
 
 jest.mock("~/hooks/model/config/network", () => ({
