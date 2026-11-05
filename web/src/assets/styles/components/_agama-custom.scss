@@ -314,7 +314,8 @@ nav.agm-breadcrumb > ol > li > a {
 // What sits above the panel, such as a page's report, is spaced from it as the
 // parts of the page inside it are spaced from each other, so the report reads
 // as part of the page rather than as something apart from it.
-.pf-v6-c-page__main-section:has(> .agm-side-panel-frame) {
+.pf-v6-c-page__main-section:has(> .agm-side-panel-frame),
+.pf-v6-c-page__main-section:has(> .pf-v6-c-card .agm-side-panel-frame) {
   --pf-v6-c-page__main-section--RowGap: var(--pf-t--global--spacer--gutter--default);
 }
 
@@ -345,6 +346,41 @@ nav.agm-breadcrumb > ol > li > a {
 
 .agm-side-panel-frame:not(:first-child) {
   --agm-side-panel-frame--inset-block-start: 0px;
+}
+
+// A panel set inside a box of the page covers only that box. The box takes the
+// room left under what comes before it, and the panel reaches the box edges,
+// clipped to its corners, so the room around the page moves inside the drawer
+// as it does for a panel over the whole page.
+.pf-v6-c-page__main-group:has(> .pf-v6-c-page__main-section > .pf-v6-c-card .agm-side-panel-frame),
+.pf-v6-c-page__main-section:has(> .pf-v6-c-card .agm-side-panel-frame),
+.pf-v6-c-card:has(> .pf-v6-c-card__body > .agm-side-panel-frame),
+.pf-v6-c-card__body:has(> .agm-side-panel-frame) {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.pf-v6-c-card:has(> .pf-v6-c-card__body > .agm-side-panel-frame),
+.pf-v6-c-card__body:has(> .agm-side-panel-frame) {
+  display: flex;
+  flex-direction: column;
+}
+
+.pf-v6-c-card:has(> .pf-v6-c-card__body > .agm-side-panel-frame) {
+  overflow: hidden;
+}
+
+// Without a box around them, a rule sets the devices apart from the top line,
+// with the same, smaller, room on both sides of it.
+.pf-v6-c-page__main-section:has(> .pf-v6-c-divider + .agm-side-panel-frame) {
+  --pf-v6-c-page__main-section--RowGap: var(--pf-t--global--spacer--md);
+}
+
+.pf-v6-c-card__body > .agm-side-panel-frame {
+  --agm-side-panel-frame--inset-block-start: var(--pf-v6-c-card--first-child--PaddingBlockStart);
+  --agm-side-panel-frame--inset-block-end: var(--pf-v6-c-card--child--PaddingBlockEnd);
+  --agm-side-panel-frame--inset-inline-start: var(--pf-v6-c-card--child--PaddingInlineStart);
+  --agm-side-panel-frame--inset-inline-end: var(--pf-v6-c-card--child--PaddingInlineEnd);
 }
 
 .agm-side-panel-frame > .pf-v6-c-drawer__main > .pf-v6-c-drawer__content > .pf-v6-c-drawer__body {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2026] SUSE LLC
+ * Copyright (c) [2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -28,6 +28,7 @@ import TopLine from "~/components/storage/storage-page/TopLine";
 import GlobalActions from "~/components/storage/storage-page/GlobalActions";
 import Result from "~/components/storage/storage-page/Result";
 import DeviceDetailsPanel from "~/components/storage/storage-page/DeviceDetailsPanel";
+import { useDevicesBox } from "~/components/storage/storage-page/playground-switches";
 import { useConfigModel } from "~/hooks/model/storage/config-model";
 
 /**
@@ -37,42 +38,43 @@ import { useConfigModel } from "~/hooks/model/storage/config-model";
  * anything else is arranged: no disk to install on, settings this interface
  * cannot read, and a configuration it knows nothing about.
  *
- * Everything else is the page, laid out as other pages are: what the
- * configuration will do first, then the page description next to the settings
- * that apply to the whole installation, and then a box holding the devices it
- * uses and the controls that apply to all of them.
- *
- * The panel the page opens is laid over it. The panel wraps rather than sits
- * beside, because two of its three placements are about what the page does
- * while it is open.
- *
- * What the configuration will do stays above the panel, never under it. A
- * change made in the panel can turn that report from a plan into a problem or
- * back, and the reader has to be able to see it and act on it without closing
- * the panel first.
+ * Everything else is the page: the top line, with the result and the settings
+ * that apply to the whole installation, and then the devices it uses and the
+ * controls that apply to all of them. The panel the page opens covers the
+ * devices only, so the top line stays in sight while an entry is open.
  */
 export default function StoragePageContent(): React.ReactNode {
   const model = useConfigModel();
+  const box = useDevicesBox();
 
-  const body = (
-    <Stack hasGutter>
-      {model && <TopLine />}
-      {model && (
-        <Page.Section>
-          <Stack hasGutter>
-            <EntriesTable />
-            <Divider />
-            <GlobalActions />
-          </Stack>
-        </Page.Section>
-      )}
-    </Stack>
+  if (!model) return <Result />;
+
+  const devices = (
+    <DeviceDetailsPanel
+      page={
+        <Stack hasGutter>
+          <EntriesTable />
+          <Divider />
+          <GlobalActions />
+        </Stack>
+      }
+    />
   );
 
   return (
     <>
       <Result />
-      <DeviceDetailsPanel page={body} />
+      <TopLine />
+      {/* PLAYGROUND: the devices in a bordered box, or right on the page with
+          a rule setting them apart from the top line. */}
+      {box === "on" ? (
+        <Page.Section>{devices}</Page.Section>
+      ) : (
+        <>
+          <Divider />
+          {devices}
+        </>
+      )}
     </>
   );
 }
