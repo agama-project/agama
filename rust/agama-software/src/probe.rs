@@ -52,7 +52,7 @@ impl RepoProber for DefaultRepoProber {
 /// Detailed error encountered while probing a repository URL.
 #[derive(thiserror::Error, Debug)]
 pub enum ProbeError {
-    #[error("Could not determine host in URL: {0}")]
+    #[error("Could not determine the host in the URL: {0}")]
     MissingHost(String),
     #[error("Curl error: {0}")]
     Curl(#[from] curl::Error),
