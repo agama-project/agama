@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Thu Nov  5 09:59:29 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Handle the ports of bonds and bridges nested in their controller:
+  show them as a tree in the connections table, edit them on their
+  own and send them in "portConnections", without IP settings
+  (gh#agama-project/agama#3996).
+
+-------------------------------------------------------------------
 Wed Nov  4 09:04:37 UTC 2026 - Michal Filka <mfilka@suse.com>
 
 - bsc#1278291 (CVE-2026-84369), bsc#1278292 (CVE-2026-84370)
