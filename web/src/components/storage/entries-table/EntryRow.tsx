@@ -29,7 +29,7 @@ import tableStyles from "@patternfly/react-styles/css/components/Table/table";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import Text from "~/components/core/Text";
 import { useDeviceDetails, DETAILS_PANEL_ID } from "~/components/storage/shared/use-device-details";
-import { columnName } from "~/components/storage/entries-table/columns";
+import { columnName, typeName } from "~/components/storage/entries-table/columns";
 import type { DetailsSubject } from "~/components/storage/shared/use-device-details";
 import type { TranslatedString } from "~/i18n";
 
@@ -60,9 +60,10 @@ export type EntryRowProps = {
 /**
  * One entry of the configuration, as a row of the list.
  *
- * Three answers, one per column, so that a reader compares eight devices by
- * going down a column rather than by reading eight paragraphs: what this entry
- * is, what the installer will do with it, and what that costs.
+ * One answer per column, so that a reader compares eight devices by going down
+ * a column rather than by reading eight paragraphs: what kind of device this
+ * entry is, which one, what happens to what it holds today, and what the
+ * installer will put on it.
  *
  * The name heads the row rather than sitting in a cell of it, so that a screen
  * reader reading any other cell says which entry it belongs to first. What the
@@ -124,7 +125,8 @@ export default function EntryRow({
       )}
       isRowSelected={isOpen}
     >
-      <Th scope="row" dataLabel={columnName("entry")}>
+      <Td dataLabel={columnName("type")}>{typeName(subject.collection)}</Td>
+      <Th scope="row" dataLabel={columnName("device")}>
         <Stack>
           <StackItem>
             {/* A plain anchor rather than the page's Link: that one is a
@@ -157,14 +159,14 @@ export default function EntryRow({
           {description && <StackItem className="agm-entries-table__facts">{description}</StackItem>}
         </Stack>
       </Th>
-      <Td dataLabel={columnName("actions")}>
+      <Td dataLabel={columnName("currentContent")}>
         <Stack>
           {actions.map((line) => (
             <StackItem key={line}>{line}</StackItem>
           ))}
         </Stack>
       </Td>
-      <Td dataLabel={columnName("content")}>
+      <Td dataLabel={columnName("plannedContent")}>
         <Stack>
           {purpose.map((line) => (
             <StackItem key={line}>{line}</StackItem>
@@ -173,7 +175,12 @@ export default function EntryRow({
       </Td>
       {/* Above the stretched link: a click anywhere in this cell opens
           nothing but the menu. */}
-      <Td isActionCell className="agm-entries-table__menu" data-entry-menu="">
+      <Td
+        isActionCell
+        dataLabel={columnName("actions")}
+        className="agm-entries-table__menu"
+        data-entry-menu=""
+      >
         {menu}
       </Td>
     </Tr>

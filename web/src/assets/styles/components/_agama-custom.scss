@@ -543,49 +543,6 @@ nav.agm-breadcrumb > ol > li > a {
   --pf-v6-c-table--cell--first-last-child--PaddingInline: var(--pf-t--global--spacer--md);
 }
 
-// A category's title row reads as a heading over the rows under it rather than
-// as a row of its own: no rule under it, and less room under it than above.
-.agm-entries-table__title-row {
-  --pf-v6-c-table__tr--BorderBlockEndWidth: 0;
-}
-
-// Nor does it light up as the entry rows do on hover or while something in it
-// has focus: it is not an entry, and its control shows its own focus.
-.agm-entries-table .pf-v6-c-table tbody tr.agm-entries-table__title-row {
-  background-color: transparent;
-}
-
-.agm-entries-table__title-row > td {
-  padding-block-end: var(--pf-t--global--spacer--xs);
-}
-
-.agm-entries-table__group + .agm-entries-table__group .agm-entries-table__title-row > td {
-  padding-block-start: var(--pf-t--global--spacer--lg);
-}
-
-// A control beside a category heading acts on the whole category, and stays
-// quieter than the heading it sits beside. PatternFly's small button only trims
-// the padding, so the text is set smaller too, keeping the button tall enough
-// to hit comfortably.
-.agm-entries-table__title-row .pf-v6-c-button {
-  --pf-v6-c-button--FontSize: var(--pf-t--global--font--size--xs);
-  --pf-v6-c-button--PaddingBlockStart: var(--pf-t--global--spacer--xs);
-  --pf-v6-c-button--PaddingBlockEnd: var(--pf-t--global--spacer--xs);
-  --pf-v6-c-button--PaddingInlineStart: var(--pf-t--global--spacer--sm);
-  --pf-v6-c-button--PaddingInlineEnd: var(--pf-t--global--spacer--sm);
-}
-
-// Set apart from the entries under it by weight and size rather than by a
-// filled band.
-.agm-entries-table__category {
-  margin: 0;
-  font-size: var(--pf-t--global--font--size--body--sm);
-  font-weight: var(--pf-t--global--font--weight--body--bold);
-  color: var(--pf-t--global--text--color--subtle);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-
 // What the entry is, read under the name: a fact about the name rather than a
 // column of its own.
 .agm-entries-table__facts {
