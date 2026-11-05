@@ -406,7 +406,19 @@ impl<'a> QuestionWidget<'a> {
                 }
                 lines.push(Line::from(""));
             }
-            QuestionField::Unknown => {}
+            QuestionField::Unknown => {
+                // TRANSLATORS: shown instead of a question's input field when the server asks
+                // for a kind of answer this client version does not know how to display
+                let warning = gettext(
+                    "This question needs a kind of answer this client version does not support. \
+                     Choosing an action below might not answer it as intended.",
+                );
+                lines.push(Line::from(vec![Span::styled(
+                    format!("! {}", warning),
+                    Style::default().add_modifier(Modifier::BOLD),
+                )]));
+                lines.push(Line::from(""));
+            }
         }
     }
 
