@@ -135,6 +135,13 @@ Client connects over HTTPS passing the dedicated token:
 }
 ```
 
+### Self-Signed TLS Certificates
+Agama uses self-signed HTTPS certificates by default. Node.js-based orchestrators (Gemini CLI, Claude) require:
+
+```bash
+NODE_TLS_REJECT_UNAUTHORIZED=0 <client-command>
+```
+
 ------------------------------------------------------------------------
 
 ## 6. UX Fallback

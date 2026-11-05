@@ -83,7 +83,7 @@ bypass MCP safety boundaries, Agama enforces strict **Token Isolation**:
     kernel command line, or read locally from `/run/agama/mcp-token` on
     the target host (permissions 0400).
 
-Configure the AI client (e.g., Gemini CLI) with the dedicated MCP token:
+Configure the AI client (e.g., Gemini CLI or Claude) with the dedicated MCP token:
 
 ``` json
 {
@@ -96,4 +96,18 @@ Configure the AI client (e.g., Gemini CLI) with the dedicated MCP token:
     }
   }
 }
+```
+
+### Self-Signed TLS Certificates
+
+Agama generates and uses a self-signed HTTPS certificate by default. Node.js-based AI orchestrators (including Gemini CLI and Claude) reject connections to self-signed TLS certificates unless validation is bypassed.
+
+Launch the client with `NODE_TLS_REJECT_UNAUTHORIZED=0`:
+
+```bash
+# Gemini CLI
+NODE_TLS_REJECT_UNAUTHORIZED=0 gemini
+
+# Claude
+NODE_TLS_REJECT_UNAUTHORIZED=0 claude
 ```
