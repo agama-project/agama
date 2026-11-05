@@ -774,6 +774,7 @@ export default function MultiSelectField({
           className="agm-field-inline-control"
           isDisabled={isDisabled}
           isExpanded={isListVisible}
+          aria-haspopup="listbox"
           // The toggle draws the control's border, so it is also where the
           // field being in error shows.
           status={(hasAnyError && "danger") || undefined}

@@ -14,13 +14,14 @@
   position: relative;
 
   .agm-main-content-overlay {
-    position: absolute;
-    backdrop-filter: blur(2px);
-    background-color: color-mix(
+    --pf-v6-c-backdrop--BackgroundColor: color-mix(
       in srgb,
       var(--pf-t--global--background--color--backdrop--default) 80%,
       transparent
     );
+
+    position: absolute;
+    backdrop-filter: blur(2px);
   }
 }
 
@@ -262,6 +263,24 @@ label.pf-m-disabled + .pf-v6-c-check__description {
 
 .pf-v6-c-modal-box {
   --pf-v6-c-modal-box__header--Gap: var(--pf-t--global--spacer--xs);
+
+  // Space between the footer buttons. By default it is PatternFly's gap
+  // between actions, the same one alerts, cards, empty states and toolbars
+  // use, at every width. PatternFly moved dialogs to it in 6.6, which turned
+  // the 8px gap from 576px up into 16px; it gave no design reason beyond
+  // using the right token (https://github.com/patternfly/patternfly/issues/7226).
+  //
+  // The --agm-t--modal--actions--gap role lets a design set its own, for every
+  // width at once. Use it sparingly: whatever it sets applies only to dialogs,
+  // so their buttons stop matching the spacing of every other set of actions.
+  --pf-v6-c-modal-box__footer--c-button--MarginInlineEnd: var(
+    --agm-t--modal--actions--gap,
+    var(--pf-t--global--spacer--gap--action-to-action--default)
+  );
+  --pf-v6-c-modal-box__footer--c-button--sm--MarginInlineEnd: var(
+    --agm-t--modal--actions--gap,
+    var(--pf-t--global--spacer--gap--action-to-action--default)
+  );
 }
 
 // Nested content inside forms should respect parent grid gap

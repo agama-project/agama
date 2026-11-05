@@ -116,6 +116,13 @@
      of the radio grid gap. */
   --agm-t--radio--body--spacing: 0.5rem;
 
+  /* Space between the buttons in a dialog footer, at every screen width.
+     Unset, it follows the PatternFly gap between actions, which alerts,
+     cards, empty states and toolbars share. Setting it changes dialogs only,
+     so their buttons no longer match those; do it only with strong reasons.
+     See components/_patternfly-overrides for the background. */
+  --agm-t--modal--actions--gap: 0.5rem;
+
   /* The terminal surface and the text drawn on it. Theme-independent on
      purpose: a console reads as a console in any theme, and these are the
      colors the shell and the programs running in it assume when they paint

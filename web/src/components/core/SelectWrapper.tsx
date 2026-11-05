@@ -71,6 +71,7 @@ export default function SelectWrapper({
         ref={getToggleRef(pfToggleRef)}
         onClick={() => setIsOpen(!isOpen)}
         isExpanded={isOpen}
+        aria-haspopup="listbox"
         isDisabled={isDisabled}
         {...(toggleName && { "aria-label": toggleName })}
       >
