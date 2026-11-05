@@ -29,7 +29,7 @@ import ProposalPage from "~/components/storage/ProposalPage";
 import ISCSIPage from "~/components/storage/ISCSIPage";
 import FormattableDeviceForm from "~/components/storage/formattable-device-form/Form";
 import PartitionForm from "~/components/storage/partition-form/Form";
-import LvmPage from "~/components/storage/LvmPage";
+import VolumeGroupForm from "~/components/storage/volume-group-form/Form";
 import LogicalVolumeForm from "~/components/storage/logical-volume-form/Form";
 import ZFCPPage from "~/components/storage/zfcp/ZFCPPage";
 import ZFCPControllersPage from "~/components/storage/zfcp/ZFCPControllersPage";
@@ -77,11 +77,11 @@ const routes = (): Route => ({
     },
     {
       path: PATHS.volumeGroup.add,
-      element: <LvmPage />,
+      element: <VolumeGroupForm />,
     },
     {
       path: PATHS.volumeGroup.edit,
-      element: <LvmPage />,
+      element: <VolumeGroupForm />,
     },
     {
       path: PATHS.volumeGroup.logicalVolume.add,
