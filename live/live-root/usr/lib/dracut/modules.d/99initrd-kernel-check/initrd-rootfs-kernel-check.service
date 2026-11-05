@@ -1,5 +1,5 @@
 [Unit]
-Description=Check the root image matches the booted kernel
+Description=Check the root image matches the booted kernel 
 Documentation=man:dracut.bootup(7)
 DefaultDependencies=no
 
