@@ -19,7 +19,7 @@
 // find current contact information at www.suse.com.
 
 mod config;
-pub use config::{Config, ScriptsConfig};
+pub use config::{resolve_urls_in_value, Config, ScriptsConfig};
 
 pub mod user_file;
 pub use user_file::UserFile;
