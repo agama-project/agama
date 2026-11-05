@@ -26,6 +26,8 @@ import { columnName } from "~/components/storage/entries-table/columns";
 import DriveRow from "~/components/storage/entries-table/DriveRow";
 import VolumeGroupRow from "~/components/storage/entries-table/VolumeGroupRow";
 import { baseName } from "~/components/storage/utils";
+import Icon from "~/components/layout/Icon";
+import type { IconProps } from "~/components/layout/Icon";
 import {
   useGroupedTable,
   useHasTypeColumn,
@@ -77,6 +79,16 @@ function rowsOf(config: ConfigModel.Config | null): Row[] {
 
   return [...groups, ...partitionables("mdRaids"), ...partitionables("drives")];
 }
+
+/**
+ * The mark beside a group's title, the same one the device panel uses for
+ * that kind: what the title says, recognized before it is read.
+ */
+const GROUP_ICON: Record<DetailsCollection, IconProps["name"]> = {
+  volumeGroups: "stacks",
+  mdRaids: "dns",
+  drives: "hard_drive",
+};
 
 /** What a group of the table is called, by kind and by how many it holds. */
 function groupTitle(collection: DetailsCollection, count: number): TranslatedString {
@@ -210,7 +222,11 @@ export default function EntriesTable(): React.ReactNode {
   });
 
   return (
-    <div className="agm-entries-table" ref={list} onKeyDown={onKeyDown}>
+    <div
+      className={isGrouped ? "agm-entries-table agm-entries-table--grouped" : "agm-entries-table"}
+      ref={list}
+      onKeyDown={onKeyDown}
+    >
       <Table
         role="table"
         gridBreakPoint=""
@@ -246,7 +262,10 @@ export default function EntriesTable(): React.ReactNode {
                   colSpan={columnCount}
                   className="agm-entries-table__group-header"
                 >
-                  {groupTitle(collection, rows.length)}
+                  <span className="agm-entries-table__group-title">
+                    <Icon name={GROUP_ICON[collection]} aria-hidden />
+                    {groupTitle(collection, rows.length)}
+                  </span>
                 </Th>
               </Tr>
               {rows.map(renderRow)}

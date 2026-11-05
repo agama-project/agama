@@ -595,6 +595,48 @@ nav.agm-breadcrumb > ol > li > a {
   letter-spacing: 0.04em;
 }
 
+// The kind's mark leads the title, centred on its capitals, in the title's
+// own colour so it adds recognition, not weight.
+.agm-entries-table__group-title {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--pf-t--global--spacer--xs);
+}
+
+.agm-entries-table__group-title > svg {
+  inline-size: var(--agm-entries-table--group-mark);
+  block-size: var(--agm-entries-table--group-mark);
+  fill: currentcolor;
+}
+
+// The mark's box, and the room its title text starts after. The rows of a
+// group start their first column at the same place, so the names line up
+// under the title's words and the mark stands out at the edge.
+.agm-entries-table {
+  --agm-entries-table--group-mark: 1rem;
+  --agm-entries-table--group-indent: calc(
+    var(--agm-entries-table--group-mark) + var(--pf-t--global--spacer--xs)
+  );
+}
+
+.agm-entries-table
+  .pf-v6-c-table
+  .agm-entries-table__group
+  tr.agm-entries-table__row
+  > :first-child {
+  --edge: var(--pf-v6-c-table--cell--first-last-child--PaddingInline);
+
+  padding-inline-start: calc(var(--edge) + var(--agm-entries-table--group-indent));
+}
+
+// The header of that column moves with it, so it heads the names, not the
+// marks of the group titles.
+.agm-entries-table--grouped .pf-v6-c-table thead tr > :first-child {
+  --edge: var(--pf-v6-c-table--cell--first-last-child--PaddingInline);
+
+  padding-inline-start: calc(var(--edge) + var(--agm-entries-table--group-indent));
+}
+
 .agm-entries-table__group + .agm-entries-table__group th.agm-entries-table__group-header {
   padding-block-start: var(--pf-t--global--spacer--lg);
 }
