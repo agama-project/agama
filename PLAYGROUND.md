@@ -49,6 +49,20 @@ Then, from the browser developer tools console:
 
 Every choice is kept across reloads.
 
+## Under evaluation: the grouped table
+
+`agamaGroupedTable(true)` shows a teammate's suggestion: the devices grouped by
+kind again (volume groups, RAID devices, disks), each group with its own title
+and mark, and the column headers sorting the rows inside every group. The Type
+column is left out there, since the group title says what each device is, and
+a new volume group says only "New" under its name.
+
+It is valid HTML and works with the keyboard and screen readers as built, but
+it is not decided. Still open: whether "Used disk" should stay when there is
+only one (it tells users these are the disks used for the installation, not
+every disk they have), room for actions beside a group's title, and what the
+two content columns should hold once the groups say what each device is.
+
 ## Not covered
 
 - Tests are not updated to these changes.
