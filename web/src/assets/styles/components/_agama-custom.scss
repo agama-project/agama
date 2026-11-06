@@ -704,6 +704,13 @@ nav.agm-breadcrumb > ol > li > a {
   position: relative;
 }
 
+// PatternFly hides the rule under the last clickable row. Kept here, under the
+// last row of every group too, so each device ends the same way and the last
+// one does not read as running into what follows.
+.pf-v6-c-table tr.agm-entries-table__row:last-child {
+  border-block-end-color: var(--pf-v6-c-table__tr--BorderBlockEndColor);
+}
+
 // An entry the installation leaves out reads quieter, every cell of it: in the
 // lightest text colour the themes keep at AA contrast (4.5:1) on the page,
 // which they define for disabled text. PatternFly colours each cell itself,
