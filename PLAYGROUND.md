@@ -33,11 +33,12 @@ the line at the top into a real summary of what the installer will do.
   devices scrolling inside their own box under a fixed top area. Only the
   summary stays at the top, in the same sticky section (PatternFly's
   `stickyOnBreakpoint`) the software patterns page keeps its filter in, with
-  the same placement, padding, background and shadow. Boot disk, Encryption
-  and the devices scroll away under it.
-- The details panel stays in view under the summary while the page scrolls,
-  as tall as what is in view, and scrolls its own content. Opening it brings
-  it fully into view.
+  the same placement, padding, background and shadow; the sticky section
+  reaches the page's edges, on both pages. Boot disk, Encryption and the
+  devices scroll away under it.
+- The details panel covers everything but the summary, starting right under
+  it, and stays in view as the page scrolls, fitting what is in view and
+  scrolling its own content. Opening it never moves the page.
 - The room around the page is master's again; prototyping had tightened it.
 - The device links' `aria-controls` now always points at an element in the
   page. The panel is always rendered and only hidden while shut.
