@@ -51,6 +51,12 @@ describe("SelectWrapper", () => {
     within(button).getByText("The value");
   });
 
+  it("tells screen readers the toggle opens a list of options", () => {
+    plainRender(<TestingSelector />);
+    const button = screen.getByRole("button", { name: "Selector" });
+    expect(button).toHaveAttribute("aria-haspopup", "listbox");
+  });
+
   it("toggles select options when the toggle button is clicked", async () => {
     const { user } = plainRender(<TestingSelector />);
     const button = screen.getByRole("button", { name: "Selector" });

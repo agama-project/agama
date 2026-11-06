@@ -62,7 +62,7 @@ describe("SplitButton", () => {
     const { user } = installerRender(<SplitButtonTest />);
 
     const toggleAction = screen.getByRole("button", { name: "More actions" });
-    expect(toggleAction).toHaveAttribute("aria-haspopup");
+    expect(toggleAction).toHaveAttribute("aria-haspopup", "menu");
     expect(toggleAction).toHaveAttribute("aria-controls");
     expect(toggleAction).toHaveAttribute("aria-expanded", "false");
 

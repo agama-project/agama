@@ -756,7 +756,9 @@ void add_repository(struct Zypp *zypp, const char *alias, const char *url,
     zypp::RepoInfo zypp_repo = zypp::RepoInfo();
     zypp_repo.setBaseUrl(zypp::Url(url));
     zypp_repo.setAlias(alias);
-    zypp_repo.setPriority(priority);
+    if (priority != 0) {
+      zypp_repo.setPriority(priority);
+    }
 
     zypp->repo_manager->addRepository(zypp_repo, zypp_callback);
     STATUS_OK(status);
@@ -828,6 +830,9 @@ void remove_repository(struct Zypp *zypp, const char *alias,
                                // match correct repo
 
     zypp->repo_manager->removeRepository(zypp_repo, zypp_callback);
+    // remove also all resolvables from this repository from pool, otherwise
+    // there will be ghosts
+    zypp::sat::Pool::instance().reposErase(alias);
     STATUS_OK(status);
   } catch (zypp::Exception &excpt) {
     STATUS_EXCEPT(status, excpt);

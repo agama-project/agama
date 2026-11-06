@@ -1,4 +1,29 @@
 -------------------------------------------------------------------
+Fri Nov  6 13:48:02 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Add embedded Model Context Protocol (MCP) server at /mcp:
+  - Configurable via kernel command line `inst.mcp=full` or
+    `inst.mcp=config` (default: disabled).
+  - Provide tools to probe hardware, inspect profile schemas,
+    inject configurations, verify proposals, answer interactive
+    questions, and track installation progress and logs.
+  - Expose `agama://schema/config.json` as an MCP resource.
+  - Enforce token isolation with dedicated MCP credentials via
+    `inst.mcp.token` or local `/run/agama/mcp-token`.
+  - add to agama-web-server CLI options
+    `--mcp` and --mcp-token` to manually start mcp server
+  (gh#agama-project/agama#4080)
+
+-------------------------------------------------------------------
+Thu Nov  5 15:48:22 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Probe and add reachable online repositories alongside local
+  installation media when network is available
+  (gh#agama-project/agama#3926).
+- Ensure software configuration task waits for proxy
+  setup (gh#agama-project/agama#3926).
+
+-------------------------------------------------------------------
 Wed Nov  4 20:49:37 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
 
 - Omit null values when serializing optional fields and empty

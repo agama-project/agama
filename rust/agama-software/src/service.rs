@@ -246,12 +246,14 @@ impl Service {
                 state,
                 &predefined_repositories
             );
-            SoftwareState::build_from(
-                &product,
-                &state.config,
-                &self.selection,
-                predefined_repositories,
-            )
+            let config = state.config.clone();
+            // Drop read lock before async probing to prevent blocking writers and stalling readers.
+            // Even if we block writers here, it this won't prevent double write. If we really want
+            // to prevent double calculation of wanted state we would need to have some additional
+            // locking that do not block reading state as it is used for http api responses
+            drop(state);
+            SoftwareState::build_from(&product, &config, &self.selection, predefined_repositories)
+                .await
         };
 
         tracing::info!("Wanted software state: {new_state:?}");

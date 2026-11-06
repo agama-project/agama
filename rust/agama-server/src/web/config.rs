@@ -39,6 +39,9 @@ use serde::Deserialize;
 pub struct ServiceConfig {
     /// Key to sign the JSON Web Tokens.
     pub jwt_secret: String,
+    /// Dedicated token for MCP server authentication.
+    #[serde(default)]
+    pub mcp_token: Option<String>,
 }
 
 impl ServiceConfig {
@@ -60,6 +63,7 @@ impl Default for ServiceConfig {
     fn default() -> Self {
         Self {
             jwt_secret: "".to_string(),
+            mcp_token: None,
         }
     }
 }
