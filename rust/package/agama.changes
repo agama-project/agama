@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Nov  6 13:20:39 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Do not parse the Config object from the CLI, just treat it
+  as a generic JSON object (gh#agama-project/agama#4199).
+
+-------------------------------------------------------------------
 Wed Nov  4 18:03:24 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Add forward-compatibility fallbacks to client-facing enums
