@@ -65,7 +65,6 @@ export default function StoragePageContent(): React.ReactNode {
           <TopLine />
           {box === "off" && <Divider />}
           <EntriesTable />
-          <Divider />
           <GlobalActions />
         </Stack>
       }
