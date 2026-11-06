@@ -29,8 +29,7 @@ import tableStyles from "@patternfly/react-styles/css/components/Table/table";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import Text from "~/components/core/Text";
 import { useDeviceDetails, DETAILS_PANEL_ID } from "~/components/storage/shared/use-device-details";
-import { columnName, typeName } from "~/components/storage/entries-table/columns";
-import { useHasTypeColumn } from "~/components/storage/storage-page/playground-switches";
+import { columnName } from "~/components/storage/entries-table/columns";
 import type { DetailsSubject } from "~/components/storage/shared/use-device-details";
 import type { TranslatedString } from "~/i18n";
 
@@ -67,8 +66,8 @@ export type EntryRowProps = {
  * One entry of the configuration, as a row of the list.
  *
  * One answer per column, so that a reader compares eight devices by going down
- * a column rather than by reading eight paragraphs: what kind of device this
- * entry is, which one, what happens to what it holds today, and what the
+ * a column rather than by reading eight paragraphs: which device this entry
+ * is, what happens to what it holds today, and what the
  * installer will put on it.
  *
  * The name heads the row rather than sitting in a cell of it, so that a screen
@@ -115,7 +114,6 @@ export default function EntryRow({
   subject,
 }: EntryRowProps): React.ReactNode {
   const { subject: open, addressOf } = useDeviceDetails();
-  const hasTypeColumn = useHasTypeColumn();
   const isOpen =
     open !== null && open.collection === subject.collection && open.index === subject.index;
 
@@ -133,7 +131,6 @@ export default function EntryRow({
       )}
       isRowSelected={isOpen}
     >
-      {hasTypeColumn && <Td dataLabel={columnName("type")}>{typeName(subject.collection)}</Td>}
       <Th scope="row" dataLabel={columnName("device")}>
         <Stack>
           <StackItem>

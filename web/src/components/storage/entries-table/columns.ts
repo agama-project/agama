@@ -21,19 +21,12 @@
  */
 
 import { _, TranslatedString } from "~/i18n";
-import type { DetailsCollection } from "~/components/storage/shared/use-device-details";
 
 /**
  * What each column of the list is called, as its header shows it.
  */
-function columnName(
-  column: "type" | "device" | "existingData" | "newSystem" | "actions",
-): TranslatedString {
+function columnName(column: "device" | "existingData" | "newSystem" | "actions"): TranslatedString {
   switch (column) {
-    case "type":
-      // TRANSLATORS: names the column of the list saying what kind of device
-      // each entry is, such as a disk or a volume group.
-      return _("Type");
     case "device":
       // TRANSLATORS: names the column of the list holding what each entry of
       // the installation is called.
@@ -53,24 +46,4 @@ function columnName(
   }
 }
 
-/**
- * What kind of device an entry is, as the type column reads it.
- */
-function typeName(collection: DetailsCollection): TranslatedString {
-  switch (collection) {
-    case "volumeGroups":
-      // TRANSLATORS: kind of device in the list of the installation devices:
-      // an LVM volume group, abbreviated.
-      return _("VG");
-    case "mdRaids":
-      // TRANSLATORS: kind of device in the list of the installation devices:
-      // a software RAID.
-      return _("RAID");
-    case "drives":
-      // TRANSLATORS: kind of device in the list of the installation devices:
-      // a disk.
-      return _("Disk");
-  }
-}
-
-export { columnName, typeName };
+export { columnName };

@@ -38,7 +38,6 @@ import { EXPANDED, SETTINGS_TAB, DEVICE_DETAILS } from "~/components/storage/ui-
 import configModel from "~/model/storage/config-model";
 import Consequences, { losesData } from "~/components/storage/storage-page/Consequences";
 import { useConfigModel } from "~/hooks/model/storage/config-model";
-import { useTopLineOrder } from "~/components/storage/storage-page/playground-switches";
 import { useActions, useProposal } from "~/hooks/model/proposal/storage";
 import { useReset } from "~/hooks/model/config/storage";
 import { useClearSearchParams } from "~/hooks/use-search-param-state";
@@ -153,8 +152,6 @@ export default function TopLine(): React.ReactNode {
   const actions = useActions();
   const issues = useIssues("storage");
   const configIssues = issues.filter((i) => i.class !== "proposal");
-  const topLineOrder = useTopLineOrder();
-  const statusFirst = topLineOrder === "status";
   const reset = useReset();
   const clearSearchParams = useClearSearchParams();
 
@@ -191,7 +188,7 @@ export default function TopLine(): React.ReactNode {
          page sideways instead. */
       flexWrap={{ default: "wrap" }}
     >
-      {!statusFirst && description}
+      {description}
       {!proposal && (
         /* Where no layout could be found, the problem takes the place of the
            result. */
@@ -299,7 +296,6 @@ export default function TopLine(): React.ReactNode {
           </FlexItem>
         </Flex>
       </FlexItem>
-      {statusFirst && description}
     </Flex>
   );
 }

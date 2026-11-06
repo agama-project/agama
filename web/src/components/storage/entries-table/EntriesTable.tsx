@@ -28,10 +28,7 @@ import VolumeGroupRow from "~/components/storage/entries-table/VolumeGroupRow";
 import { baseName } from "~/components/storage/utils";
 import Icon from "~/components/layout/Icon";
 import type { IconProps } from "~/components/layout/Icon";
-import {
-  useGroupedTable,
-  useHasTypeColumn,
-} from "~/components/storage/storage-page/playground-switches";
+import { useGroupedTable } from "~/components/storage/storage-page/playground-switches";
 import { useConfigModel } from "~/hooks/model/storage/config-model";
 import { _, n_ } from "~/i18n";
 import type { TranslatedString } from "~/i18n";
@@ -43,14 +40,14 @@ import type {
 } from "~/components/storage/shared/use-device-details";
 
 /**
- * The order the type column sorts in, which is the one the configuration is
- * built in: from what is defined down to the hardware it is defined on.
+ * The order of the rows until sorted by device, which is the one the
+ * configuration is built in: from what is defined down to the hardware it is
+ * defined on.
  */
 const TYPE_ORDER: DetailsCollection[] = ["volumeGroups", "mdRaids", "drives"];
 
-/** The sortable columns, by their position in the header. */
-const TYPE_COLUMN = 0;
-const DEVICE_COLUMN = 1;
+/** The sortable column, by its position in the header. */
+const DEVICE_COLUMN = 0;
 
 type SortBy = { index: number; direction: "asc" | "desc" };
 
@@ -122,9 +119,9 @@ function compareRows(column: number, a: Row, b: Row): number {
  * What the configuration is made of, under the summary of what it does.
  *
  * A regular table, one row per entry, with the columns named in its header:
- * the type of device, the device, what happens to its existing data, what the
- * new system puts on it, and the menu of actions. It can be sorted by type, which is
- * also the initial order, or by device name.
+ * the device, what happens to its existing data, what the new system puts on
+ * it, and the menu of actions. It starts in the configuration's order and can
+ * be sorted by device name.
  *
  * Keyboard: arrow keys walk the entries, Up and Down from name to name and Left
  * and Right between a name and its menu. Every name and every menu stays a tab
@@ -141,12 +138,10 @@ function compareRows(column: number, a: Row, b: Row): number {
 export default function EntriesTable(): React.ReactNode {
   const config = useConfigModel();
   const list = React.useRef<HTMLDivElement>(null);
-  const [sortBy, setSortBy] = React.useState<SortBy>({ index: TYPE_COLUMN, direction: "asc" });
-  /* PLAYGROUND: the Type column can be left out from the console, and the
-     rows grouped by kind instead. Without the column, rows keep their type
-     order until sorted by device; grouped, a sort orders each group on its
-     own and the groups keep their order. */
-  const hasTypeColumn = useHasTypeColumn();
+  /* Unsorted until a header is used: the rows keep the configuration's order. */
+  const [sortBy, setSortBy] = React.useState<SortBy | null>(null);
+  /* PLAYGROUND: the rows can be grouped by kind from the console. Grouped, a
+     sort orders each group on its own and the groups keep their order. */
   const isGrouped = useGroupedTable() === "on";
   const groupId = React.useId();
 
@@ -194,6 +189,7 @@ export default function EntriesTable(): React.ReactNode {
   if (!rows.length) return null;
 
   const sorted = [...rows].sort((a, b) => {
+    if (!sortBy) return compareRows(-1, a, b);
     const order = compareRows(sortBy.index, a, b);
     return sortBy.direction === "asc" ? order : -order;
   });
@@ -205,8 +201,7 @@ export default function EntriesTable(): React.ReactNode {
       <DriveRow key={deviceName} name={deviceName} subject={subject} />
     );
 
-  /* Every column, the Type one only where it is drawn. */
-  const columnCount = hasTypeColumn ? 5 : 4;
+  const columnCount = 4;
 
   /* One body per kind, in the configuration's order, each starting with a row
      group header naming it. */
@@ -216,7 +211,7 @@ export default function EntriesTable(): React.ReactNode {
   })).filter(({ rows }) => rows.length > 0);
 
   const sortParams = (columnIndex: number): ThProps["sort"] => ({
-    sortBy,
+    sortBy: sortBy ?? {},
     onSort: (_event, index, direction) => setSortBy({ index, direction }),
     columnIndex,
   });
@@ -237,11 +232,6 @@ export default function EntriesTable(): React.ReactNode {
       >
         <Thead>
           <Tr>
-            {hasTypeColumn && (
-              <Th sort={sortParams(TYPE_COLUMN)} modifier="fitContent">
-                {columnName("type")}
-              </Th>
-            )}
             <Th sort={sortParams(DEVICE_COLUMN)}>{columnName("device")}</Th>
             <Th>{columnName("existingData")}</Th>
             <Th>{columnName("newSystem")}</Th>

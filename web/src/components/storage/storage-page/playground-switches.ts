@@ -23,23 +23,13 @@
 /*
  * PLAYGROUND: switches for the storage page, from the browser console.
  *
- * Which line of the top line comes first:
- *
- *   agamaTopLineOrder("description")  // the page description first (default)
- *   agamaTopLineOrder("status")       // the status and settings first
- *
  * Whether the devices sit in a bordered box or right on the page:
  *
  *   agamaDevicesBox(false)  // right on the page (default)
  *   agamaDevicesBox(true)   // in a bordered box
  *
- * Whether the devices table has a Type column:
- *
- *   agamaTypeColumn(true)   // shown
- *   agamaTypeColumn(false)  // left out (default)
- *
  * Whether the devices table groups them by kind, each group sorted on its
- * own, which also leaves the Type column out:
+ * own:
  *
  *   agamaGroupedTable(false)  // one flat list
  *   agamaGroupedTable(true)   // volume groups, RAID devices and disks apart (default)
@@ -49,18 +39,14 @@
 
 import React from "react";
 
-type TopLineOrder = "description" | "status";
 type DevicesBox = "off" | "on";
-type TypeColumn = "on" | "off";
 type GroupedTable = "off" | "on";
 
-type SwitchName = "agamaTopLineOrder" | "agamaDevicesBox" | "agamaTypeColumn" | "agamaGroupedTable";
+type SwitchName = "agamaDevicesBox" | "agamaGroupedTable";
 
 declare global {
   interface Window {
-    agamaTopLineOrder?: (value: TopLineOrder) => void;
     agamaDevicesBox?: (value: boolean) => void;
-    agamaTypeColumn?: (value: boolean) => void;
     agamaGroupedTable?: (value: boolean) => void;
   }
 }
@@ -103,13 +89,7 @@ function consoleSwitch<T extends string>(
   return () => React.useSyncExternalStore(subscribe, read);
 }
 
-const useTopLineOrder = consoleSwitch<TopLineOrder>("agamaTopLineOrder", ["description", "status"]);
-
 const useDevicesBox = consoleSwitch<DevicesBox>("agamaDevicesBox", ["off", "on"], (input) =>
-  input ? "on" : "off",
-);
-
-const useTypeColumn = consoleSwitch<TypeColumn>("agamaTypeColumn", ["off", "on"], (input) =>
   input ? "on" : "off",
 );
 
@@ -117,11 +97,4 @@ const useGroupedTable = consoleSwitch<GroupedTable>("agamaGroupedTable", ["on", 
   input ? "on" : "off",
 );
 
-/** Whether the Type column is drawn: asked for, and not made redundant by groups. */
-function useHasTypeColumn(): boolean {
-  const typeColumn = useTypeColumn();
-  const grouped = useGroupedTable();
-  return typeColumn === "on" && grouped === "off";
-}
-
-export { useTopLineOrder, useDevicesBox, useTypeColumn, useGroupedTable, useHasTypeColumn };
+export { useDevicesBox, useGroupedTable };
