@@ -22,7 +22,7 @@
 
 import React from "react";
 import { sprintf } from "sprintf-js";
-import { Flex, FlexItem, Hint, HintBody } from "@patternfly/react-core";
+import { Flex, FlexItem, Hint, HintBody, HintTitle } from "@patternfly/react-core";
 import Interpolate, { markerText } from "~/components/core/Interpolate";
 import Text from "~/components/core/Text";
 import Icon from "~/components/layout/Icon";
@@ -173,7 +173,31 @@ export default function Summary(): React.ReactNode {
 
   useAnnounceLossFlip(isLossy, markerText(first ? `${first} ${second}` : second));
 
-  const content = (
+  const details = (
+    <Consequences
+      // TRANSLATORS: opens a popup with the layout the disks will have and
+      // the actions needed to get there.
+      label={_("Details…")}
+      // TRANSLATORS: full name of the "Details" button, for screen readers.
+      aria-label={_("Details of the planned storage changes")}
+    />
+  );
+
+  /* PLAYGROUND: in a hint box, from the console: no mark, the first sentence
+     as its title, and the details right after the sentence they detail, which
+     the hint's corner would leave far away on a wide screen. */
+  if (style === "hint") {
+    return (
+      <Hint>
+        {first && <HintTitle>{first}</HintTitle>}
+        <HintBody>
+          <Marked sentence={second} /> {details}
+        </HintBody>
+      </Hint>
+    );
+  }
+
+  return (
     <Flex
       alignItems={{ default: "alignItemsFlexStart" }}
       gap={{ default: "gapSm" }}
@@ -189,26 +213,8 @@ export default function Summary(): React.ReactNode {
             <br />
           </>
         )}
-        <Marked sentence={second} />{" "}
-        <Consequences
-          // TRANSLATORS: opens a popup with the layout the disks will have and
-          // the actions needed to get there.
-          label={_("Details…")}
-          // TRANSLATORS: full name of the "Details" button, for screen readers.
-          aria-label={_("Details of the planned storage changes")}
-        />
+        <Marked sentence={second} /> {details}
       </FlexItem>
     </Flex>
   );
-
-  /* PLAYGROUND: a line on the page, or in a hint box, from the console. */
-  if (style === "hint") {
-    return (
-      <Hint>
-        <HintBody>{content}</HintBody>
-      </Hint>
-    );
-  }
-
-  return content;
 }
