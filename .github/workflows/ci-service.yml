@@ -58,6 +58,7 @@ jobs:
 
     - name: Install Ruby development files
       run: zypper --non-interactive install
+        augeas-devel
         gawk
         git
         gcc
