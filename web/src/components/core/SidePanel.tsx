@@ -68,7 +68,8 @@ export type SidePanelProps = {
    * Lets the page scroll as a whole, as pages do, rather than the page beside
    * the panel scrolling on its own. The panel then stays pinned in view as the
    * page scrolls, this many pixels below the top of the scrolling area, where
-   * something kept in sight sits, and scrolls its own content.
+   * something kept in sight sits, fits what is in view, and scrolls its own
+   * content.
    */
   pinnedOffset?: number;
   /**
@@ -155,48 +156,47 @@ export default function SidePanel({
   const isPressOnBackdrop = React.useRef(false);
   const frameId = React.useId();
   const isPinned = pinnedOffset !== undefined;
-  const [visibleHeight, setVisibleHeight] = React.useState<number>();
+  const [pinnedHeight, setPinnedHeight] = React.useState<number>();
 
-  /* Pinned, the panel is as tall as what the scrolling area shows below the
-     offset, less whatever the page keeps under the panel's frame at its very
-     end (its own padding, a box around it). Any taller, and at the end of the
-     page the frame would run out first and push the panel up under what is
-     kept in sight. */
+  /* Pinned, the panel fits what is in view: from where it starts, under what
+     the page keeps in sight or lower while the page above has not scrolled
+     away yet, down to the bottom of the scrolling area or the end of the page
+     beside it, whichever comes first. It is worked out again as the page
+     scrolls, so the panel never sticks out of view and never makes the page
+     longer, and nothing moves the page on the reader's behalf. */
   React.useEffect(() => {
     if (!isPinned) return;
 
-    const scroller = scrollerOf(document.getElementById(frameId));
-    if (!scroller) return;
-
-    const frame = document.getElementById(frameId);
-    const measure = () => {
-      const scrollerBox = scroller.getBoundingClientRect();
-      const contentEnd = scrollerBox.top + scroller.scrollHeight - scroller.scrollTop;
-      const below = frame ? Math.max(0, contentEnd - frame.getBoundingClientRect().bottom) : 0;
-      setVisibleHeight(scroller.clientHeight - below);
-    };
-    measure();
-    if (typeof ResizeObserver === "undefined") return;
-
-    const observer = new ResizeObserver(measure);
-    observer.observe(scroller);
-    if (frame) observer.observe(frame);
-    return () => observer.disconnect();
-  }, [isPinned, frameId]);
-
-  /* Opened below the fold, the panel would start where the page around it
-     happens to be, partly out of view. The page moves just enough to bring
-     the panel up to where it stays pinned. */
-  React.useEffect(() => {
-    if (!isPinned || !isOpen) return;
-
     const frame = document.getElementById(frameId);
     const scroller = scrollerOf(frame);
-    if (!frame || !scroller) return;
+    const content = frame?.querySelector<HTMLElement>(
+      ":scope > .pf-v6-c-drawer__main > .pf-v6-c-drawer__content",
+    );
+    if (!frame || !scroller || !content) return;
 
-    const gap =
-      frame.getBoundingClientRect().top - scroller.getBoundingClientRect().top - pinnedOffset;
-    if (gap > 0) scroller.scrollBy({ top: gap, behavior: "instant" });
+    let frameRequest = 0;
+    const measure = () => {
+      cancelAnimationFrame(frameRequest);
+      frameRequest = requestAnimationFrame(() => {
+        const view = scroller.getBoundingClientRect();
+        const top = Math.max(view.top + pinnedOffset, frame.getBoundingClientRect().top);
+        const bottom = Math.min(view.bottom, content.getBoundingClientRect().bottom);
+        setPinnedHeight(Math.max(0, Math.round(bottom - top)));
+      });
+    };
+
+    measure();
+    scroller.addEventListener("scroll", measure, { passive: true });
+    const observer =
+      typeof ResizeObserver === "undefined" ? undefined : new ResizeObserver(measure);
+    observer?.observe(scroller);
+    observer?.observe(content);
+
+    return () => {
+      cancelAnimationFrame(frameRequest);
+      scroller.removeEventListener("scroll", measure);
+      observer?.disconnect();
+    };
   }, [isPinned, isOpen, frameId, pinnedOffset]);
 
   /* Where the reader was when they opened it, so closing it can put them back.
@@ -294,7 +294,7 @@ export default function SidePanel({
         isPinned
           ? ({
               "--agm-side-panel--pinned-offset": `${pinnedOffset}px`,
-              "--agm-side-panel--visible-height": visibleHeight ? `${visibleHeight}px` : "100dvh",
+              "--agm-side-panel--pinned-height": pinnedHeight ? `${pinnedHeight}px` : "auto",
             } as React.CSSProperties)
           : undefined
       }

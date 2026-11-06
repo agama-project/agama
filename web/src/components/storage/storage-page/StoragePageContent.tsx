@@ -22,6 +22,7 @@
 
 import React from "react";
 import { Divider, PageSection, Stack } from "@patternfly/react-core";
+import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
 import Page from "~/components/layout/Page";
 import EntriesTable from "~/components/storage/entries-table/EntriesTable";
 import TopLine, { TopResult } from "~/components/storage/storage-page/TopLine";
@@ -43,8 +44,8 @@ import { useConfigModel } from "~/hooks/model/storage/config-model";
  * the whole installation, and then the devices it uses and the controls that
  * apply to all of them. The page scrolls as a whole, as every Agama page does,
  * with the result kept in sight at its top, as the software patterns page
- * keeps its filter. The panel the page opens stays in view under the result,
- * scrolling on its own.
+ * keeps its filter. The panel the page opens covers everything under the
+ * result, stays in view as the page scrolls, and scrolls on its own.
  */
 export default function StoragePageContent(): React.ReactNode {
   const model = useConfigModel();
@@ -59,6 +60,10 @@ export default function StoragePageContent(): React.ReactNode {
       pinnedOffset={resultHeight}
       page={
         <Stack hasGutter>
+          {/* Inside what the panel opens over, so the panel covers everything
+              but the result kept in sight above it. */}
+          <TopLine />
+          {box === "off" && <Divider />}
           <EntriesTable />
           <Divider />
           <GlobalActions />
@@ -79,20 +84,16 @@ export default function StoragePageContent(): React.ReactNode {
         padding={{ default: "noPadding" }}
       >
         <div ref={setResultNode}>
-          <TopResult />
+          {/* Room under it, so what scrolls under it does not run into its
+              last line. Inside what is measured, so the panel starts below. */}
+          <div className={spacingStyles.pbMd}>
+            <TopResult />
+          </div>
         </div>
       </PageSection>
-      <TopLine />
-      {/* PLAYGROUND: the devices in a bordered box, or right on the page with
-          a rule setting them apart from the top line. */}
-      {box === "on" ? (
-        <Page.Section>{devices}</Page.Section>
-      ) : (
-        <>
-          <Divider />
-          {devices}
-        </>
-      )}
+      {/* PLAYGROUND: the settings and devices in a bordered box, or right on
+          the page with a rule setting the devices apart from the settings. */}
+      {box === "on" ? <Page.Section>{devices}</Page.Section> : devices}
     </>
   );
 }

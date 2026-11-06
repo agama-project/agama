@@ -101,6 +101,18 @@
   background-color: var(--pf-t--global--background--color--primary--default);
 }
 
+// A sticky section inside a page section reaches the page's edges, so what
+// scrolls under it, a backdrop included, never shows beside it. Its content
+// stays where it was: the same room moves inside it.
+.pf-v6-c-page__main-section .pf-v6-c-page__main-section.pf-m-sticky-top {
+  // The page's room, read from the token rather than from the section's own
+  // padding variables, which its no-padding modifier sets to zero.
+  --agm-sticky-section--edge: var(--agm-t--page--padding--inline, var(--pf-t--global--spacer--md));
+
+  margin-inline: calc(-1 * var(--agm-sticky-section--edge));
+  padding-inline: var(--agm-sticky-section--edge);
+}
+
 .pf-v6-c-page__main-group.pf-m-sticky-bottom {
   --pf-v6-c-page--section--m-sticky-bottom--BoxShadow: var(--pf-t--global--box-shadow--md--top);
 }

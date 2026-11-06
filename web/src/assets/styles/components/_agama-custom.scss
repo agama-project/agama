@@ -343,6 +343,20 @@ nav.agm-breadcrumb > ol > li > a {
   --agm-side-panel-frame--inset-block-start: 0px;
 }
 
+// A pinned panel starts right under what the page keeps in sight above it:
+// the frame takes over the room between the two, and the page inside it keeps
+// as much room at its top as at its sides.
+.agm-side-panel-frame--pinned:not(:first-child) {
+  margin-block-start: calc(-1 * var(--pf-v6-c-page__main-section--RowGap));
+}
+
+.agm-side-panel-frame--pinned:not(:first-child)
+  > .pf-v6-c-drawer__main
+  > .pf-v6-c-drawer__content
+  > .pf-v6-c-drawer__body {
+  padding-block-start: var(--agm-side-panel-frame--inset-inline-start);
+}
+
 // A panel set inside a box of the page covers only that box. The box takes the
 // room left under what comes before it, and the panel reaches the box edges,
 // clipped to its corners, so the room around the page moves inside the drawer
@@ -375,12 +389,6 @@ nav.agm-breadcrumb > ol > li > a {
 // scrolls on its own: clipping without scrolling keeps the box's corners.
 .pf-v6-c-card:has(> .pf-v6-c-card__body > .agm-side-panel-frame--pinned) {
   overflow: clip;
-}
-
-// Without a box around them, a rule sets the devices apart from the top line,
-// with the same, smaller, room on both sides of it.
-.pf-v6-c-page__main-section:has(> .pf-v6-c-divider + .agm-side-panel-frame) {
-  --pf-v6-c-page__main-section--RowGap: var(--pf-t--global--spacer--md);
 }
 
 .pf-v6-c-card__body > .agm-side-panel-frame {
@@ -948,8 +956,8 @@ tr.agm-entries-table__row > :is(th, td):not(.agm-entries-table__menu) {
 
 // A pinned panel: the page scrolls as a whole, as every other page does, and
 // the panel stays in view as it scrolls, right under whatever the page keeps
-// in sight at its top, as tall as what is left of the scrolling area, and
-// scrolling its own content. Sticking needs every box between the panel and
+// in sight at its top, fitting what is in view (worked out as the page
+// scrolls), and scrolling its own content. Sticking needs every box between the panel and
 // the scrolling area to leave overflow alone: clipping without scrolling is
 // what keeps the panel's slide hidden without that.
 .agm-side-panel-frame--pinned,
@@ -967,8 +975,6 @@ tr.agm-entries-table__row > :is(th, td):not(.agm-entries-table__menu) {
   position: sticky;
   inset-block-start: var(--agm-side-panel--pinned-offset, 0);
   align-self: flex-start;
-  block-size: calc(
-    var(--agm-side-panel--visible-height, 100dvh) - var(--agm-side-panel--pinned-offset)
-  );
+  block-size: var(--agm-side-panel--pinned-height, auto);
   max-block-size: none;
 }
