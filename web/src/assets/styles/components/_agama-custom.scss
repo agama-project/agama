@@ -901,3 +901,17 @@ tr.agm-entries-table__row > :is(th, td):not(.agm-entries-table__menu) {
     background-color: Highlight;
   }
 }
+
+// PLAYGROUND: the button opening the planned storage changes, set in the
+// sentence it follows: no extra height over the text line, and sitting on its
+// baseline, while keeping a target of at least 24 by 24 pixels (WCAG 2.5.8).
+.agm-summary__details.pf-v6-c-button {
+  --pf-v6-c-button--m-small--PaddingBlockStart: 0;
+  --pf-v6-c-button--m-small--PaddingBlockEnd: 0;
+  --pf-v6-c-button--m-small--PaddingInlineStart: var(--pf-t--global--spacer--sm);
+  --pf-v6-c-button--m-small--PaddingInlineEnd: var(--pf-t--global--spacer--sm);
+
+  min-block-size: 24px;
+  vertical-align: baseline;
+}
+

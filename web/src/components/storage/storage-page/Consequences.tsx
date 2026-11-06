@@ -94,7 +94,13 @@ export default function Consequences({
   return (
     <>
       <span className="agm-unseen-dot-anchor">
-        <Button variant="tertiary" size="sm" aria-label={name} onClick={open}>
+        <Button
+          variant="tertiary"
+          size="sm"
+          className="agm-summary__details"
+          aria-label={name}
+          onClick={open}
+        >
           {/* TRANSLATORS: opens a popup with the layout the disks will have
               and the actions needed to get there. */}
           {label || _("Details…")}
