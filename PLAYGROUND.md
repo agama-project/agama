@@ -1,28 +1,32 @@
-# Storage page: third iteration playground
+# Storage page: fourth iteration playground
 
 ## Why
 
-This round tries to make the storage page look like the other pages of the
-installer that are built around tables, such as Network, so that moving to a
-panel with the details of whatever is picked in the table becomes easier, or
-even possible, before the idea is dropped.
+The third iteration made the storage page a table, like the other pages of
+the installer built around a list of things, with a panel for the details of
+each device. This round makes that table say less and say it better, and turns
+the line at the top into a real summary of what the installer will do.
 
-## What changed
+## What changed in this round
 
-- The devices are a table with visible headers (Device, Existing data, New
-  system), grouped by kind: volume groups, RAID devices and disks, each under
-  its own title, and sorted by device within each group.
-- "Change target disk…" is an option of the disk's menu instead of a button
-  beside the devices.
-- The result is no longer an alert above the page. The line above the devices
-  says whether applying the setup may lose data, with a "Details…" button
-  opening the planned changes.
-- A configuration that cannot be applied is reported in that same line too,
-  instead of in an alert.
-- The details panel opens over the devices only, so the line above them stays
-  in sight.
-- The devices sit on the page instead of in a bordered box, with a divider
-  setting them apart from the line above.
+- The table has three columns, Device, Used for and Existing data, matching
+  the three lines master shows per device: the device, what it holds, and what
+  happens to what is on it today. Values are short and have the same shape on
+  every row, so a column can be scanned instead of read.
+- Losing data is in bold in the Existing data column. A device with nothing on
+  it yet leaves that cell visually empty and says "No existing data" to screen
+  readers only.
+- The top of the page opens with a summary: when the installation starts, how
+  many actions the installer will perform, and whether data is lost, with
+  "Details…" opening the planned changes. It is plain text, not a caution:
+  only the count and "with data loss" are in bold.
+- The page description now sits on the same line as the boot disk and
+  encryption settings.
+- The device links' `aria-controls` now always points at an element in the
+  page. The panel is always rendered and only hidden while shut.
+- The actions columns are named with visually hidden text instead of an
+  `aria-label`.
+- The Type column and the top line order switches are gone.
 
 ## How to play
 
@@ -38,38 +42,45 @@ group), answered by a local mock of the API that is not part of this branch.
 
 Then, from the browser developer tools console:
 
-| Call                               | What it does                        |
-| ---------------------------------- | ----------------------------------- |
-| `agamaTopLineOrder("description")` | Page description first (default)    |
-| `agamaTopLineOrder("status")`      | Result and settings first           |
-| `agamaDevicesBox(false)`           | Devices right on the page (default) |
-| `agamaDevicesBox(true)`            | Devices in a bordered box           |
-| `agamaGroupedTable(true)`          | Grouped by kind (default)           |
-| `agamaGroupedTable(false)`         | One flat list of devices            |
-| `agamaTypeColumn(false)`           | Flat list without Type (default)    |
-| `agamaTypeColumn(true)`            | Flat list with a Type column        |
+| Call                                    | What it does                                     |
+| --------------------------------------- | ------------------------------------------------ |
+| `agamaDevicesBox(false)`                | Devices right on the page (default)              |
+| `agamaDevicesBox(true)`                 | Devices in a bordered box                        |
+| `agamaGroupedTable(true)`               | Grouped by kind (default)                        |
+| `agamaGroupedTable(false)`              | One flat list of devices                         |
+| `agamaGroupTitleStyle("band")`          | Group titles on a faint band (default)           |
+| `agamaGroupTitleStyle("plain")`         | Group titles as small capitals on the page       |
+| `agamaNamesStyle("mono")`               | Names in Used for in monospace (default)         |
+| `agamaNamesStyle("plain")`              | Names in Used for in the body face               |
+| `agamaExistingDataWording("short")`     | Kept, May be shrunk, All deleted (default)       |
+| `agamaExistingDataWording("verbose")`   | Current partitions kept, Partitions may be ...   |
+| `agamaExistingDataWording("blunt")`     | No changes, May shrink, Wiped                    |
+| `agamaExistingDataWording("loss")`      | All kept, Possible data loss, Data loss          |
+| `agamaSummaryWording("when")`           | "When the installation starts, ..." (default)    |
+| `agamaSummaryWording("until")`          | "Nothing is changed until ...", in two lines     |
+| `agamaActionCount("all")`               | Count every action, as "N actions" (default)     |
+| `agamaActionCount("noSubvolumes")`      | Leave Btrfs subvolumes out, as "N actions"       |
+| `agamaActionCount("changes")`           | Leave Btrfs subvolumes out, as "N changes"       |
 
-Every choice is kept across reloads.
+Every choice is kept across reloads. WORDING.md lists every wording of the
+table and the summary, the discarded ones included.
 
-## Under evaluation: the grouped table
+## Under evaluation
 
-The devices table opens grouped by kind, a teammate's suggestion: each group
-with its own title and mark, and the column headers sorting the rows inside
-every group. The branch this playground builds on already grouped the devices,
-but as headed sections that hid the table they are, and less polished. A new
-volume group says only "New" under its name, since the group title says the
-rest. `agamaGroupedTable(false)` shows the flat table instead, to compare.
+- **The grouped table.** A teammate's suggestion: each kind of device under
+  its own title, sorted inside each group. Still open: whether "Used disk"
+  should stay when there is only one, and room for actions beside a group's
+  title.
+- **The wording of the Existing data column.** Four sets to compare, none
+  decided.
+- **The summary.** Two wordings, and three ways of counting.
 
-The Type column was an experiment along the way, to show the devices as the
-table they are; it is discarded, since the groups say what each device is
-better. `agamaTypeColumn(true)` brings it back in the flat table, only to
-compare.
+## To re-evaluate later
 
-The grouped table is valid HTML and works with the keyboard and screen readers
-as built, but it is not decided. Still open: whether "Used disk" should stay when there is
-only one (it tells users these are the disks used for the installation, not
-every disk they have), room for actions beside a group's title, and what the
-two content columns should hold once the groups say what each device is.
+- **Announcements.** Screen readers hear the summary only when the setup
+  starts or stops losing data, not on every change of the count, to avoid
+  talking over the reader while they edit. Whether that is enough, or the
+  count should be announced too, needs testing with real screen reader users.
 
 ## Not covered
 
