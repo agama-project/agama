@@ -196,7 +196,7 @@ function existingDataOf(
   const existing = volumes.filter((v) => !configModel.volume.isNew(v));
   const count = (test: (v: Volume) => boolean) => existing.filter(test).length;
 
-  return {
+  const data: ExistingData = {
     unit,
     total: current.length,
     deleted: count((v) => !!v.delete),
@@ -206,6 +206,14 @@ function existingDataOf(
     reused: count((v) => !v.delete && !!v.mountPath && !!v.filesystem?.reuse),
     isDeleteAll: spacePolicy === "delete",
   };
+
+  /* Deleting everything as a whole-device choice deletes whatever is not
+     reused or formatted, whether or not each one is flagged for it. */
+  if (data.isDeleteAll) {
+    data.deleted = Math.max(data.deleted, data.total - data.reused - data.formatted);
+  }
+
+  return data;
 }
 
 function existingDataOfDrive(
@@ -246,7 +254,7 @@ function shortWording(data: ExistingData): string {
   const erased = data.deleted + data.formatted;
 
   if (erased && erased === data.total) return _("All deleted");
-  if (data.isDeleteAll && data.reused) return _("All deleted except reused");
+  if (data.isDeleteAll && data.reused && erased) return _("All deleted except reused");
 
   if (erased) {
     if (data.mayShrink || data.mayDelete) {
@@ -281,7 +289,7 @@ function verboseWording(data: ExistingData): string {
   const erased = data.deleted + data.formatted;
 
   if (erased && erased === data.total) return _("All content deleted");
-  if (data.isDeleteAll && data.reused) {
+  if (data.isDeleteAll && data.reused && erased) {
     return isPartition
       ? _("All content deleted except reused partitions")
       : _("All content deleted except reused logical volumes");
@@ -316,7 +324,7 @@ function bluntWording(data: ExistingData): string {
   const erased = data.deleted + data.formatted;
 
   if (erased && erased === data.total) return _("Wiped");
-  if (data.isDeleteAll && data.reused) return _("Wiped except reused");
+  if (data.isDeleteAll && data.reused && erased) return _("Wiped except reused");
   if (erased) {
     const done = sprintf(_("%d deleted"), erased);
     if (data.mayDelete) return `${done}, ${_("may delete more")}`;
