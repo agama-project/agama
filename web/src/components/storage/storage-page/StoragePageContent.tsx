@@ -39,10 +39,12 @@ import { useConfigModel } from "~/hooks/model/storage/config-model";
  * anything else is arranged: no disk to install on, settings this interface
  * cannot read, and a configuration it knows nothing about.
  *
- * Everything else is the page: the top line, with the result and the settings
- * that apply to the whole installation, and then the devices it uses and the
- * controls that apply to all of them. The panel the page opens covers the
- * devices only, so the top line stays in sight while an entry is open.
+ * Everything else is the page: the result, then the settings that apply to
+ * the whole installation, and then the devices it uses and the controls that
+ * apply to all of them. The page scrolls as a whole, as every Agama page does,
+ * with the result kept in sight at its top, as the software patterns page
+ * keeps its filter. The panel the page opens stays in view under the result,
+ * scrolling on its own.
  */
 export default function StoragePageContent(): React.ReactNode {
   const model = useConfigModel();
