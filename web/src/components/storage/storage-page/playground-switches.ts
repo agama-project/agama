@@ -56,6 +56,7 @@
  *
  *   agamaSummaryWording("when")   // "When the installation starts, ..." (default)
  *   agamaSummaryWording("until")  // "Nothing is changed until ...", in two lines
+ *   agamaSummaryWording("single") // one sentence, the details on the next line
  *
  * What holds the summary:
  *
@@ -85,7 +86,7 @@ type GroupTitleStyle = "band" | "flat" | "plain";
 type NamesStyle = "mono" | "plain";
 type SummaryStyle = "plain" | "hint";
 type FailedDetails = "popup" | "expandable";
-type SummaryWording = "when" | "until";
+type SummaryWording = "when" | "until" | "single";
 type ActionCount = "all" | "noSubvolumes" | "changes";
 
 type SwitchName =
@@ -181,7 +182,11 @@ const useFailedDetails = consoleSwitch<FailedDetails>("agamaFailedDetails", [
   "expandable",
 ]);
 
-const useSummaryWording = consoleSwitch<SummaryWording>("agamaSummaryWording", ["when", "until"]);
+const useSummaryWording = consoleSwitch<SummaryWording>("agamaSummaryWording", [
+  "when",
+  "until",
+  "single",
+]);
 
 const useActionCount = consoleSwitch<ActionCount>("agamaActionCount", [
   "all",

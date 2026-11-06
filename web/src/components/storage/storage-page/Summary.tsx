@@ -77,10 +77,40 @@ function countPhrase(count: number, asChanges: boolean): string {
 function sentences(
   count: number,
   isLossy: boolean,
-  wording: "when" | "until",
+  wording: "when" | "until" | "single",
   asChanges: boolean,
 ): { first?: string; second: string } {
   const what = `[${countPhrase(count, asChanges)}]`;
+
+  if (wording === "single") {
+    if (!count) {
+      // TRANSLATORS: summary of the storage setup in one sentence, when the
+      // setup needs no changes to the disks at all.
+      return {
+        second: _(
+          "Nothing changes until the installation starts, and even then the disks stay as they are.",
+        ),
+      };
+    }
+
+    return {
+      second: sprintf(
+        isLossy
+          ? // TRANSLATORS: summary of the storage setup in one sentence. %s is
+            // a count such as "12 actions". Text in square brackets is shown
+            // in bold; keep the brackets.
+            _(
+              "Nothing changes until the installation starts, which will apply the settings below in %s, [with data loss].",
+            )
+          : // TRANSLATORS: summary of the storage setup in one sentence. %s is
+            // a count such as "12 actions".
+            _(
+              "Nothing changes until the installation starts, which will apply the settings below in %s, without data loss.",
+            ),
+        what,
+      ),
+    };
+  }
 
   if (wording === "until") {
     // TRANSLATORS: first line of the summary of the storage setup: nothing is
@@ -183,6 +213,9 @@ export default function Summary(): React.ReactNode {
 
   const counted = countMode === "all" ? actions : actions.filter((a) => !a.subvol);
   const isLossy = losesData(actions);
+  /* PLAYGROUND: in the one-sentence wording, the details go on a line of
+     their own under it. */
+  const isSingle = wording === "single";
   const { first, second } = sentences(counted.length, isLossy, wording, countMode === "changes");
 
   const { hasUnseenChanges } = useUnseenChanges();
@@ -207,7 +240,8 @@ export default function Summary(): React.ReactNode {
       <Hint>
         {first && <HintTitle>{first}</HintTitle>}
         <HintBody>
-          <Marked sentence={second} /> {details}
+          <Marked sentence={second} />{" "}
+          {isSingle ? <div className="agm-summary__details-line">{details}</div> : details}
         </HintBody>
       </Hint>
     );
@@ -229,7 +263,8 @@ export default function Summary(): React.ReactNode {
             <br />
           </>
         )}
-        <Marked sentence={second} /> {details}
+        <Marked sentence={second} />{" "}
+        {isSingle ? <div className="agm-summary__details-line">{details}</div> : details}
       </FlexItem>
     </Flex>
   );
