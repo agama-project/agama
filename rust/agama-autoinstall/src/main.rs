@@ -21,7 +21,9 @@
 use std::{process::exit, time::Duration};
 
 use agama_autoinstall::{ConfigAutoLoader, ScriptsRunner};
+use agama_lib::questions::http_client::HTTPClient as QuestionsHTTPClient;
 use agama_lib::{auth::AuthToken, http::BaseHTTPClient, manager::ManagerHTTPClient};
+use agama_utils::api::question::QuestionSpec;
 use agama_utils::{
     api::{status::Stage, FinishMethod},
     kernel_cmdline::KernelCmdline,
@@ -104,6 +106,16 @@ async fn run() -> anyhow::Result<()> {
         }
         if status.stage == Stage::Failed {
             tracing::error!("Installation failed");
+
+            let questions_client = QuestionsHTTPClient::new(http.clone());
+            let question_spec =
+                QuestionSpec::new("Autoinstallation cannot proceed", "autoinstallError")
+                    .with_action_ids(&["Ok"])
+                    .with_default_action("Ok");
+
+            let question = questions_client.create_question(&question_spec).await?;
+            let _answer = questions_client.get_answer(question.id).await?;
+
             exit(1);
         }
     }
