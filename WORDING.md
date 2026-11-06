@@ -103,15 +103,19 @@ compared with `agamaSummaryWording`.
 | ---------------- | ---------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
 | when (default)   | When the installation starts, the installer will apply the settings below in **12 actions**, **with data loss**. | When the installation starts, nothing will be changed on the disks.           |
 | until (2 lines)  | Nothing is changed until the installation starts.<br>Then the installer will apply the settings below in **12 actions**, **with data loss**. | Nothing is changed until the installation starts.<br>The setup below needs no changes to the disks. |
-| single           | Nothing changes until the installation starts, which will apply the settings below in **12 actions**, **with data loss**. Details on the next line. | Nothing changes until the installation starts, and even then the disks stay as they are. (provisional) |
+| single           | Applying the settings below takes **12 actions**, **with data loss**. <small>Nothing changes until the installation starts.</small> Details on the next line. | Applying the settings below needs no changes to the disks. <small>Nothing changes until the installation starts.</small> (provisional) |
 
-Without data loss, each ends "…in **12 actions**, without data loss."
+Without data loss, each ends "…**12 actions**, without data loss."
 
 Discarded:
 
 - "…will perform **12 actions** to reach the setup below, with data loss": the
   first version, replaced by the shorter "apply the settings below in".
 - "…will apply the settings below with 12 actions involving data loss".
+- For the one-sentence version: "Nothing changes until the installation
+  starts, which will apply the settings below in 12 actions, with data loss."
+  Long when rendered, so it became two sentences on one line, the reassurance
+  second, smaller and dimmed.
 - "…in 12 actions, some of them deleting data" / "…none deleting data".
 - "…apply the settings below, losing data, in 12 actions".
 - "Only when the installation starts will the installer apply…", "Once the
