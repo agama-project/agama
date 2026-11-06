@@ -424,6 +424,13 @@ nav.agm-breadcrumb > ol > li > a {
   position: relative;
 }
 
+// The covered page is inert, so nothing in it can be focused or scrolled by
+// the reader anyway. Left scrollable, it is a scrolling region no keyboard can
+// reach, which assistive technologies report as a barrier.
+.agm-side-panel-frame--covered > .pf-v6-c-drawer__main > .pf-v6-c-drawer__content {
+  overflow: hidden;
+}
+
 .agm-side-panel-frame--covered > .pf-v6-c-drawer__main::after {
   position: absolute;
   z-index: var(--pf-v6-c-drawer__content--ZIndex);

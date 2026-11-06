@@ -64,7 +64,12 @@ export type SidePanelProps = {
   placeholder?: React.ReactNode;
   /** What the panel holds. */
   children?: React.ReactNode;
-  /** Lets a control that opens this panel point at it with `aria-controls`. */
+  /**
+   * Lets a control that opens this panel point at it with `aria-controls`.
+   *
+   * It names an element that is always in the page, shut or open, so the
+   * reference never points at nothing.
+   */
   id?: string;
 };
 
@@ -161,7 +166,6 @@ export default function SidePanel({
 
   const region = (
     <div
-      id={id}
       ref={setPanel}
       role="region"
       aria-labelledby={titleId}
@@ -243,6 +247,10 @@ export default function SidePanel({
       <DrawerContent
         panelContent={
           <DrawerPanelContent
+            /* On the drawer's panel rather than on the region inside it: the
+               panel is always rendered, merely hidden while shut, whereas the
+               region exists only while something is open. */
+            id={id}
             /* Set as a size rather than through the widths prop, whose steps
                jump from three quarters to the whole width. Over the page the
                panel is what the reader is in, so it takes most of the room;
