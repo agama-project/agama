@@ -240,7 +240,7 @@ impl Adapter for NetworkManagerAdapter<'_> {
                             );
                             // Only wait for top-level connections / controllers that hold IP settings.
                             // Ports must not delay apply return (e.g. unplugged backup bond slaves).
-                            if conn.controller.is_none() {
+                            if conn.controller.is_none() || conn.keeps_ip_config_as_port() {
                                 active_paths.push(active_path);
                             }
                         }

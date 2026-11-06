@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Fri Nov  6 13:05:49 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Do not crash when unexpected square brackets are present in the
+  translation. Fixes crash in the first user configuration dialog
+  when using the French, Catalan or Brazilian Portuguese languages
+  (bsc#1286560)
+- Fixed the translations which caused the crash above
+
+-------------------------------------------------------------------
 Thu Nov  5 11:11:43 UTC 2026 - David Díaz <dgonzalez@suse.com>
 
 - Keep the options menu divider out of the terminal entry
