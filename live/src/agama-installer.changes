@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Nov  6 13:05:49 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Use kernel-nvidia64kb package (bsc#1282794)
+
+-------------------------------------------------------------------
 Mon Nov  2 09:32:14 UTC 2026 - Michal Filka <mfilka@suse.com>
 
 - bsc#1289014

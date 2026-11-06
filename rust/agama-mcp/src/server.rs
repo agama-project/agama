@@ -350,7 +350,7 @@ impl McpServer {
         let percent = match status.stage {
             Stage::Configuring => 0.0,
             Stage::Finished => 100.0,
-            Stage::Failed => 0.0,
+            Stage::Failed | Stage::Unknown => 0.0,
             Stage::Installing => {
                 if status.progresses.is_empty() {
                     50.0
