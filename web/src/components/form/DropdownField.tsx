@@ -159,6 +159,7 @@ export default function DropdownField<T extends string>({
             ref={getToggleRef(pfToggleRef)}
             onClick={() => setIsOpen(!isOpen)}
             isExpanded={isOpen}
+            aria-haspopup="listbox"
             isDisabled={isDisabled}
             {...labelProps}
           >

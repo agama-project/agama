@@ -132,6 +132,12 @@ describe("SearchableSelectField", () => {
     expect(combobox()).toBeInTheDocument();
   });
 
+  it("tells screen readers the arrow button opens a list of options", () => {
+    installerRender(<TestForm />);
+    const arrow = screen.getByRole("button", { name: "Language" });
+    expect(arrow).toHaveAttribute("aria-haspopup", "listbox");
+  });
+
   it("focuses the input when the visible label is clicked", async () => {
     const { user } = installerRender(<TestForm />);
     await user.click(screen.getByText("Language"));

@@ -63,6 +63,7 @@ export default function StatusFilter({ value = "all", options, onChange }: Statu
       ref={toggleRef}
       onClick={onToggle}
       isExpanded={isOpen}
+      aria-haspopup="listbox"
       aria-label={_("Status filter toggle")}
     >
       {/* eslint-disable agama-i18n/string-literals */}

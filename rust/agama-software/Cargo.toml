@@ -10,6 +10,8 @@ agama-security = { workspace = true }
 agama-utils = { workspace = true }
 async-trait = { workspace = true }
 camino = { workspace = true }
+curl = { workspace = true }
+futures-util = { workspace = true }
 gettext-rs = { workspace = true }
 glob = { workspace = true }
 i18n-format = { workspace = true }

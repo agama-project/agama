@@ -71,6 +71,7 @@ camino = { version = "1.2.1" }
 chrono = { version = "0.4.38", features = ["alloc", "clock", "now", "std"] }
 cidr = { version = "0.3.1", features = ["serde"] }
 clap = { version = "4.5.19", features = ["derive", "wrap_help"] }
+curl = { version = "0.4.49", features = ["protocol-ftp"] }
 fluent-uri = { version = "0.4.1", features = ["serde"] }
 futures-util = { version = "0.3.30", features = ["alloc"] }
 gettext-rs = { version = "0.7.7", features = ["gettext-system"] }
