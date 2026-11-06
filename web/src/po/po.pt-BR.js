@@ -3273,7 +3273,7 @@ export default {
     "Usando %s como servidor NTP"
   ],
   "Using %s keyboard layout": [
-    "Usando o layout de teclado [%s]"
+    "Usando o layout de teclado %s"
   ],
   "Using [%s] keyboard layout": [
     "Usando o layout de teclado [%s]"
