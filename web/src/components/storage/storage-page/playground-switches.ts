@@ -34,6 +34,13 @@
  *   agamaGroupedTable(false)  // one flat list
  *   agamaGroupedTable(true)   // volume groups, RAID devices and disks apart (default)
  *
+ * Which set of words the "Existing data" column uses:
+ *
+ *   agamaExistingDataWording("short")    // Kept, May be shrunk, All deleted (default)
+ *   agamaExistingDataWording("verbose")  // Current partitions kept, Partitions may be shrunk, ...
+ *   agamaExistingDataWording("blunt")    // No changes, May shrink, Wiped
+ *   agamaExistingDataWording("loss")     // All kept, Possible data loss, Data loss
+ *
  * Choices survive reloads. To be dropped once the design is settled.
  */
 
@@ -41,13 +48,15 @@ import React from "react";
 
 type DevicesBox = "off" | "on";
 type GroupedTable = "off" | "on";
+type ExistingDataWording = "short" | "verbose" | "blunt" | "loss";
 
-type SwitchName = "agamaDevicesBox" | "agamaGroupedTable";
+type SwitchName = "agamaDevicesBox" | "agamaGroupedTable" | "agamaExistingDataWording";
 
 declare global {
   interface Window {
     agamaDevicesBox?: (value: boolean) => void;
     agamaGroupedTable?: (value: boolean) => void;
+    agamaExistingDataWording?: (value: ExistingDataWording) => void;
   }
 }
 
@@ -97,4 +106,12 @@ const useGroupedTable = consoleSwitch<GroupedTable>("agamaGroupedTable", ["on", 
   input ? "on" : "off",
 );
 
-export { useDevicesBox, useGroupedTable };
+const useExistingDataWording = consoleSwitch<ExistingDataWording>("agamaExistingDataWording", [
+  "short",
+  "verbose",
+  "blunt",
+  "loss",
+]);
+
+export { useDevicesBox, useGroupedTable, useExistingDataWording };
+export type { ExistingDataWording };

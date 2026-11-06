@@ -21,81 +21,24 @@
  */
 
 import React from "react";
-import { sprintf } from "sprintf-js";
 import EntryRow from "~/components/storage/entries-table/EntryRow";
 import DriveMenu from "~/components/storage/entries-table/DriveMenu";
-import * as driveUtils from "~/components/storage/utils/drive";
-import { NAMES_PER_LINE } from "~/components/storage/shared/naming";
-import { deviceSize, formattedPath } from "~/components/storage/utils";
+import {
+  driveUsedFor,
+  existingDataOfDrive,
+  ExistingDataCell,
+} from "~/components/storage/entries-table/cells";
+import { deviceSize } from "~/components/storage/utils";
 import { driveDescription, typeDescription } from "~/components/storage/utils/device";
 import { useConfigModel } from "~/hooks/model/storage/config-model";
-import { useGroupedTable } from "~/components/storage/storage-page/playground-switches";
+import {
+  useExistingDataWording,
+  useGroupedTable,
+} from "~/components/storage/storage-page/playground-switches";
 import { useDevice } from "~/hooks/model/system/storage";
 import TruncatedDeviceName from "~/components/storage/TruncatedDeviceName";
 import configModel from "~/model/storage/config-model";
-import { _, n_, formatList, TranslatedString } from "~/i18n";
-import type { ConfigModel, Partitionable } from "~/model/storage/config-model";
 import type { DetailsSubject } from "~/components/storage/shared/use-device-details";
-
-/**
- * What the installer will do here, as counts and never as names.
- *
- * The list is read by comparing many devices at a glance, and a row spelling
- * out six mount paths is taller than the entry it points at. The names are in
- * the device's own panel, one click away.
- *
- * Every line names something the installer does, so the ones about what a disk
- * carries take a verb like the rest rather than sitting there as a bare count.
- * Booting joins the hosting line rather than taking one of its own: a disk that
- * carries a volume group and starts the machine is doing two jobs, and the
- * reader takes them in as one answer to "what is this disk for".
- */
-function purposeOf(
-  device: Partitionable.Device,
-  groups: string[],
-  boots: boolean,
-): TranslatedString[] {
-  const lines: TranslatedString[] = driveUtils.contentDescription(device);
-
-  /* Named rather than counted while there is room, which is the other end of
-     what a group's own row says. A reader arriving at the disk used to learn
-     that something LVM was there and had to go looking for what.
-
-     One sentence whatever the limit is, with the names punctuated by the
-     language rather than by a conjunction of ours. Written with a hole per name
-     instead, the sentence and the limit have to agree on a number, and nothing
-     makes them: a limit raised past what the sentence has room for drops the
-     rest of the names without a mark. */
-  if (groups.length && groups.length <= NAMES_PER_LINE) {
-    lines.unshift(
-      sprintf(
-        // TRANSLATORS: what a disk is for: it holds one or more LVM volume
-        // groups. %s is their names, such as "system" or "system and data".
-        _("Create LVM physical volumes for %s"),
-        formatList(groups.map((g) => formattedPath(g))),
-      ),
-    );
-  } else if (groups.length > NAMES_PER_LINE) {
-    lines.unshift(
-      sprintf(
-        n_(
-          "Create LVM physical volumes for %d volume group",
-          "Create LVM physical volumes for %d volume groups",
-          groups.length,
-        ),
-        groups.length,
-      ),
-    );
-  }
-
-  /* Nothing else to hang it on, so it is a line of its own. */
-  if (boots) {
-    // TRANSLATORS: what a disk is for: the machine starts from it.
-    lines.push(_("Configure partitions to boot"));
-  }
-
-  return lines;
-}
 
 export type DriveRowProps = {
   /** The device the configuration names, as the model spells it. */
@@ -136,32 +79,27 @@ export default function DriveRow({ name, subject }: DriveRowProps): React.ReactN
   const groups = entry ? configModel.partitionable.filterVolumeGroups(config, entry) : [];
   const boots = configModel.boot.hasDevice(config, name);
   const isIdle = !!entry && !configModel.partitionable.isUsed(config, name);
-  let purpose: TranslatedString[] = [];
-  if (isIdle) {
-    /* Added to the installation with nothing planned on it, which the
-       installer leaves out. Said where the other rows say what each device is
-       for, so it is not mistaken for one in use. */
-    // TRANSLATORS: what a disk added to the installation is for, when nothing
-    // is planned on it yet: the installation leaves it out.
-    purpose = [_("Nothing planned yet, will be skipped")];
-  } else if (entry) {
-    purpose = purposeOf(
-      entry,
-      groups.map((group) => group.vgName),
-      boots,
-    );
-  }
-
-  const space = driveUtils.contentActionsSummary(entry as ConfigModel.Drive, device);
+  const usedFor = entry
+    ? driveUsedFor(
+        entry,
+        groups.map((group) => group.vgName),
+        boots,
+        isIdle,
+      )
+    : [];
+  const wording = useExistingDataWording();
+  const existingData = entry && (
+    <ExistingDataCell data={existingDataOfDrive(entry, device)} wording={wording} />
+  );
 
   return (
     <EntryRow
       name={<TruncatedDeviceName device={device || { name }} maxLength={13} />}
       size={size}
       description={description}
-      purpose={purpose}
+      usedFor={usedFor}
       isIdle={isIdle}
-      actions={space}
+      existingData={existingData}
       menu={entry && <DriveMenu entry={entry} subject={subject} />}
       subject={subject}
     />

@@ -25,7 +25,7 @@ import { _, TranslatedString } from "~/i18n";
 /**
  * What each column of the list is called, as its header shows it.
  */
-function columnName(column: "device" | "existingData" | "newSystem" | "actions"): TranslatedString {
+function columnName(column: "device" | "usedFor" | "existingData" | "actions"): TranslatedString {
   switch (column) {
     case "device":
       // TRANSLATORS: names the column of the list holding what each entry of
@@ -33,12 +33,12 @@ function columnName(column: "device" | "existingData" | "newSystem" | "actions")
       return _("Device");
     case "existingData":
       // TRANSLATORS: names the column of the list saying what happens to the
-      // data already on each entry: kept, shrunk, deleted or reused.
+      // data already on each device: kept, shrunk or deleted.
       return _("Existing data");
-    case "newSystem":
+    case "usedFor":
       // TRANSLATORS: names the column of the list saying what the system being
-      // installed will put on each entry, or what it will use it for.
-      return _("New system");
+      // installed uses each device for, such as its mount points.
+      return _("Used for");
     case "actions":
       // TRANSLATORS: names the column of the list holding the menu of what can
       // be done to each entry of the installation.

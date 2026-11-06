@@ -119,8 +119,8 @@ function compareRows(column: number, a: Row, b: Row): number {
  * What the configuration is made of, under the summary of what it does.
  *
  * A regular table, one row per entry, with the columns named in its header:
- * the device, what happens to its existing data, what the new system puts on
- * it, and the menu of actions. It starts in the configuration's order and can
+ * the device, what the new system uses it for, what happens to its existing
+ * data, and the menu of actions. It starts in the configuration's order and can
  * be sorted by device name.
  *
  * Keyboard: arrow keys walk the entries, Up and Down from name to name and Left
@@ -233,8 +233,8 @@ export default function EntriesTable(): React.ReactNode {
         <Thead>
           <Tr>
             <Th sort={sortParams(DEVICE_COLUMN)}>{columnName("device")}</Th>
+            <Th>{columnName("usedFor")}</Th>
             <Th>{columnName("existingData")}</Th>
-            <Th>{columnName("newSystem")}</Th>
             <Th screenReaderText={columnName("actions")} />
           </Tr>
         </Thead>

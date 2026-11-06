@@ -42,15 +42,15 @@ export type EntryRowProps = {
   description?: string;
   /** What it is for, in the words the panel marks it with. */
   marks?: string[];
-  /** What the installer will do here, one statement per line. */
-  purpose: TranslatedString[];
+  /** What the new system uses it for, one value per line. */
+  usedFor: TranslatedString[];
   /**
    * Whether nothing is planned here, so the installation leaves the entry out.
    * The whole row reads quieter then, as the absence it is.
    */
   isIdle?: boolean;
-  /** What is going to be done to create this or make space. */
-  actions: TranslatedString[];
+  /** What happens to what it holds today. */
+  existingData: React.ReactNode;
   /** The menu of what can be done to this entry. */
   menu: React.ReactNode;
   /** Where this entry is written, which is how the panel is opened on it. */
@@ -90,8 +90,8 @@ export type EntryRowProps = {
  *   name="sda"
  *   size="60 GiB"
  *   description="Samsung SSD 980 PRO 2TB"
- *   purpose={[_("Host LVM and boot")]}
- *   actions={[_("Windows 11 will be deleted")]}
+ *   usedFor={[_("Volume group system"), _("Boot partitions")]}
+ *   existingData={<ExistingDataCell data={data} wording="short" />}
  *   menu={<DriveMenu entry={entry} device={device} />}
  *   subject={{ collection: "drives", index: 0 }}
  * />
@@ -101,9 +101,9 @@ export default function EntryRow({
   size,
   description,
   marks = [],
-  purpose,
+  usedFor,
   isIdle = false,
-  actions,
+  existingData,
   menu,
   subject,
 }: EntryRowProps): React.ReactNode {
@@ -158,20 +158,14 @@ export default function EntryRow({
           {description && <StackItem className="agm-entries-table__facts">{description}</StackItem>}
         </Stack>
       </Th>
-      <Td dataLabel={columnName("existingData")}>
+      <Td dataLabel={columnName("usedFor")}>
         <Stack>
-          {actions.map((line) => (
+          {usedFor.map((line) => (
             <StackItem key={line}>{line}</StackItem>
           ))}
         </Stack>
       </Td>
-      <Td dataLabel={columnName("newSystem")}>
-        <Stack>
-          {purpose.map((line) => (
-            <StackItem key={line}>{line}</StackItem>
-          ))}
-        </Stack>
-      </Td>
+      <Td dataLabel={columnName("existingData")}>{existingData}</Td>
       {/* Above the stretched link: a click anywhere in this cell opens
           nothing but the menu. */}
       <Td
