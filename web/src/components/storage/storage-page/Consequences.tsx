@@ -24,7 +24,10 @@ import React from "react";
 import { Button } from "@patternfly/react-core";
 import Popup from "~/components/core/Popup";
 import PlannedChangesPopup from "~/components/storage/storage-page/PlannedChangesPopup";
+import Text from "~/components/core/Text";
+import { useUnseenChanges } from "~/components/storage/storage-page/use-unseen-changes";
 import { useActions } from "~/hooks/model/proposal/storage";
+import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
 import type { TranslatedString } from "~/i18n";
 import type { Storage } from "~/model/proposal";
@@ -66,15 +69,47 @@ export default function Consequences({
 }: ConsequencesProps): React.ReactNode {
   const actions = useActions();
   const [isOpen, setIsOpen] = React.useState(false);
+  const { hasUnseenChanges, markSeen } = useUnseenChanges();
   const close = () => setIsOpen(false);
+  const open = () => {
+    markSeen();
+    setIsOpen(true);
+  };
+
+  /* What changes while the popup is open is seen as it happens. */
+  React.useEffect(() => {
+    if (isOpen && hasUnseenChanges) markSeen();
+  }, [isOpen, hasUnseenChanges, markSeen]);
+
+  /* The dot is only what the eye catches; the name says the same in words,
+     after the visible ones, so it still starts with what is on the button. */
+  const name =
+    ariaLabel && hasUnseenChanges
+      ? // TRANSLATORS: name of the "Details" button for screen readers when
+        // the planned changes differ from the ones last reviewed. %s is its
+        // usual name, such as "Details of the planned storage changes".
+        sprintf(_("%s (updated)"), ariaLabel)
+      : ariaLabel;
 
   return (
     <>
-      <Button variant="tertiary" size="sm" aria-label={ariaLabel} onClick={() => setIsOpen(true)}>
-        {/* TRANSLATORS: opens a popup with the layout the disks will have and
-            the actions needed to get there. */}
-        {label || _("Details…")}
-      </Button>
+      <span className="agm-unseen-dot-anchor">
+        <Button variant="tertiary" size="sm" aria-label={name} onClick={open}>
+          {/* TRANSLATORS: opens a popup with the layout the disks will have
+              and the actions needed to get there. */}
+          {label || _("Details…")}
+          {!ariaLabel && hasUnseenChanges && (
+            <Text srOnly>
+              {
+                // TRANSLATORS: hidden hint read after "Details" when the
+                // planned storage changes differ from the ones last reviewed.
+                _(" (updated)")
+              }
+            </Text>
+          )}
+        </Button>
+        {hasUnseenChanges && <span className="agm-unseen-dot" aria-hidden />}
+      </span>
       {isOpen && (
         <Popup
           isOpen

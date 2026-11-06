@@ -870,3 +870,34 @@ tr.agm-entries-table__row > :is(th, td):not(.agm-entries-table__menu) {
 .agm-failure-alert__suggestions {
   margin-block-start: var(--pf-t--global--spacer--sm);
 }
+
+// PLAYGROUND: a dot on the corner of a button, in the blue that marks
+// something new or informative rather than in the brand colour, saying there is something new
+// behind it since it was last opened. It sits outside the button, so the
+// button keeps its size and its padding cannot clip it, and it is only a
+// visual cue: the button's name says the same in words. A ring in the page
+// colour keeps it apart from the button's edge; in forced colours it takes
+// the system highlight, since backgrounds are dropped there.
+.agm-unseen-dot-anchor {
+  position: relative;
+  display: inline-block;
+}
+
+.agm-unseen-dot {
+  position: absolute;
+  inset-block-start: calc(-1 * var(--pf-t--global--spacer--xs));
+  inset-inline-end: calc(-1 * var(--pf-t--global--spacer--xs));
+  inline-size: 0.625rem;
+  block-size: 0.625rem;
+  border-radius: 50%;
+  background-color: var(--pf-t--global--icon--color--status--info--default);
+  box-shadow: 0 0 0 2px var(--pf-t--global--background--color--primary--default);
+  pointer-events: none;
+}
+
+@media (forced-colors: active) {
+  .agm-unseen-dot {
+    forced-color-adjust: none;
+    background-color: Highlight;
+  }
+}

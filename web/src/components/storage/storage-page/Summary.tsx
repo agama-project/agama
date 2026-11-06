@@ -32,6 +32,7 @@ import {
   useSummaryStyle,
   useSummaryWording,
 } from "~/components/storage/storage-page/playground-switches";
+import { useUnseenChanges } from "~/components/storage/storage-page/use-unseen-changes";
 import { useAnnounce } from "~/context/announcer";
 import { useActions } from "~/hooks/model/proposal/storage";
 import { _, n_ } from "~/i18n";
@@ -134,23 +135,36 @@ function sentences(
 }
 
 /**
- * Tells screen readers that the setup has started or stopped losing data.
+ * Tells screen readers, in one polite message, what changed in the summary
+ * that matters:
  *
- * Only that flip is announced, not every change of the count: the count
- * changes with almost every setting, and announcing it each time would talk
- * over whatever the reader is doing. PLAYGROUND: to be re-evaluated, see
- * PLAYGROUND.md.
+ * - The setup starts or stops losing data: the summary is read.
+ * - The planned changes become different from the ones last reviewed: a short
+ *   notice says so, once, until they are reviewed again.
+ *
+ * The count alone is not announced: it changes with almost every setting,
+ * and announcing it each time would talk over whatever the reader is doing.
+ * PLAYGROUND: to be re-evaluated, see PLAYGROUND.md.
  */
-function useAnnounceLossFlip(isLossy: boolean, message: string) {
+function useAnnounceChanges(isLossy: boolean, hasUnseenChanges: boolean, summary: string) {
   const announce = useAnnounce();
-  const previous = React.useRef(isLossy);
+  const wasLossy = React.useRef(isLossy);
+  const hadUnseenChanges = React.useRef(hasUnseenChanges);
 
   React.useEffect(() => {
-    if (previous.current === isLossy) return;
+    const parts: string[] = [];
 
-    previous.current = isLossy;
-    announce(message as TranslatedString);
-  }, [isLossy, message, announce]);
+    if (wasLossy.current !== isLossy) parts.push(summary);
+    if (hasUnseenChanges && !hadUnseenChanges.current) {
+      // TRANSLATORS: read by screen readers when the planned storage changes
+      // differ from the ones the user last opened in "Details".
+      parts.push(_("The planned changes are different since you last reviewed them."));
+    }
+
+    wasLossy.current = isLossy;
+    hadUnseenChanges.current = hasUnseenChanges;
+    if (parts.length) announce(parts.join(" ") as TranslatedString);
+  }, [isLossy, hasUnseenChanges, summary, announce]);
 }
 
 /**
@@ -171,7 +185,9 @@ export default function Summary(): React.ReactNode {
   const isLossy = losesData(actions);
   const { first, second } = sentences(counted.length, isLossy, wording, countMode === "changes");
 
-  useAnnounceLossFlip(isLossy, markerText(first ? `${first} ${second}` : second));
+  const { hasUnseenChanges } = useUnseenChanges();
+
+  useAnnounceChanges(isLossy, hasUnseenChanges, markerText(first ? `${first} ${second}` : second));
 
   const details = (
     <Consequences
