@@ -101,9 +101,9 @@ compared with `agamaSummaryWording`.
 
 | Wording          | With actions                                                                                                     | No actions                                                                    |
 | ---------------- | ---------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
-| when (default)   | When the installation starts, the installer will apply the settings below in **12 actions**, **with data loss**. | When the installation starts, nothing will be changed on the disks.           |
+| when             | When the installation starts, the installer will apply the settings below in **12 actions**, **with data loss**. | When the installation starts, nothing will be changed on the disks.           |
 | until (2 lines)  | Nothing is changed until the installation starts.<br>Then the installer will apply the settings below in **12 actions**, **with data loss**. | Nothing is changed until the installation starts.<br>The setup below needs no changes to the disks. |
-| single           | Applying the settings below takes **12 actions**, **with data loss**. <small>Nothing changes until the installation starts.</small> Details on the next line. | Applying the settings below needs no changes to the disks. <small>Nothing changes until the installation starts.</small> (provisional) |
+| single (default) | Applying the settings below takes **12 actions**, **with data loss**. <small>Nothing changes until the installation starts.</small> Details on the next line. | Applying the settings below needs no changes to the disks. <small>Nothing changes until the installation starts.</small> (provisional) |
 
 Without data loss, each ends "…**12 actions**, without data loss."
 

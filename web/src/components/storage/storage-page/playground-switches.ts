@@ -54,9 +54,9 @@
  *
  * How the summary at the top of the page is worded:
  *
- *   agamaSummaryWording("when")   // "When the installation starts, ..." (default)
+ *   agamaSummaryWording("single") // what applying takes, then a quieter note; details below (default)
+ *   agamaSummaryWording("when")   // "When the installation starts, ..."
  *   agamaSummaryWording("until")  // "Nothing is changed until ...", in two lines
- *   agamaSummaryWording("single") // one sentence, the details on the next line
  *
  * What holds the summary:
  *
@@ -183,9 +183,9 @@ const useFailedDetails = consoleSwitch<FailedDetails>("agamaFailedDetails", [
 ]);
 
 const useSummaryWording = consoleSwitch<SummaryWording>("agamaSummaryWording", [
+  "single",
   "when",
   "until",
-  "single",
 ]);
 
 const useActionCount = consoleSwitch<ActionCount>("agamaActionCount", [

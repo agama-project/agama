@@ -64,9 +64,9 @@ Then, from the browser developer tools console:
 | `agamaExistingDataWording("verbose")`   | Current partitions kept, Partitions may be ...   |
 | `agamaExistingDataWording("blunt")`     | No changes, May shrink, Wiped                    |
 | `agamaExistingDataWording("loss")`      | All kept, Possible data loss, Data loss          |
-| `agamaSummaryWording("when")`           | "When the installation starts, ..." (default)    |
+| `agamaSummaryWording("when")`           | "When the installation starts, ..."              |
 | `agamaSummaryWording("until")`          | "Nothing is changed until ...", in two lines     |
-| `agamaSummaryWording("single")`         | One sentence, Details on the next line           |
+| `agamaSummaryWording("single")`         | What applying takes + quiet note (default)       |
 | `agamaSummaryStyle("plain")`            | Summary as a line on the page (default)          |
 | `agamaSummaryStyle("hint")`             | Summary in a PatternFly hint box                 |
 | `agamaActionCount("all")`               | Count every action, as "N actions" (default)     |
