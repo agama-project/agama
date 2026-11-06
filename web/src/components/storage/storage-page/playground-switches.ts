@@ -42,8 +42,8 @@
  *
  * Which set of words the "Existing data" column uses:
  *
- *   agamaExistingDataWording("short")    // Kept, May be shrunk, All deleted (default)
- *   agamaExistingDataWording("verbose")  // Current partitions kept, Partitions may be shrunk, ...
+ *   agamaExistingDataWording("verbose")  // Current partitions kept, Partitions may be shrunk, ... (default)
+ *   agamaExistingDataWording("short")    // Kept, May be shrunk, All deleted
  *   agamaExistingDataWording("blunt")    // No changes, May shrink, Wiped
  *   agamaExistingDataWording("loss")     // All kept, Possible data loss, Data loss
  *
@@ -161,8 +161,8 @@ const useGroupedTable = consoleSwitch<GroupedTable>("agamaGroupedTable", ["on", 
 );
 
 const useExistingDataWording = consoleSwitch<ExistingDataWording>("agamaExistingDataWording", [
-  "short",
   "verbose",
+  "short",
   "blunt",
   "loss",
 ]);

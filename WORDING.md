@@ -55,7 +55,7 @@ What happens to what a device holds today. Anything that deletes, or may
 delete, is in **bold**. Not settled: four sets can be compared from the console
 with `agamaExistingDataWording`.
 
-| Case                                    | short (default)                     | verbose                                          | blunt                       | loss                    |
+| Case                                    | short                               | verbose (default)                                | blunt                       | loss                    |
 | --------------------------------------- | ----------------------------------- | ------------------------------------------------ | --------------------------- | ----------------------- |
 | Nothing touched                         | Kept                                | Current partitions kept                          | No changes                  | All kept                |
 | May be shrunk                           | May be shrunk                       | Partitions may be shrunk                         | May shrink                  | All kept, may be shrunk |

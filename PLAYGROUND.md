@@ -71,8 +71,8 @@ Then, from the browser developer tools console:
 | `agamaGroupTitleStyle("plain")`         | Group titles as small capitals on the page       |
 | `agamaNamesStyle("mono")`               | Names in Used for in monospace (default)         |
 | `agamaNamesStyle("plain")`              | Names in Used for in the body face               |
-| `agamaExistingDataWording("short")`     | Kept, May be shrunk, All deleted (default)       |
-| `agamaExistingDataWording("verbose")`   | Current partitions kept, Partitions may be ...   |
+| `agamaExistingDataWording("short")`     | Kept, May be shrunk, All deleted                 |
+| `agamaExistingDataWording("verbose")`   | Current partitions kept, ... (default)           |
 | `agamaExistingDataWording("blunt")`     | No changes, May shrink, Wiped                    |
 | `agamaExistingDataWording("loss")`      | All kept, Possible data loss, Data loss          |
 | `agamaSummaryWording("when")`           | "When the installation starts, ..."              |
