@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import { Alert, Button, Content } from "@patternfly/react-core";
+import { Alert, Button, Content, Flex } from "@patternfly/react-core";
 import Popup from "~/components/core/Popup";
 import Icon from "~/components/layout/Icon";
 import { useFailedDetails } from "~/components/storage/storage-page/playground-switches";
@@ -102,13 +102,19 @@ export default function FailureAlert({
   return (
     <>
       <Alert isInline variant="warning" component="p" title={title}>
-        <Content>{body}</Content>
-        {action && <div className="agm-failure-alert__action">{action}</div>}
-        {isExpandable && suggestions && (
-          <div id={regionId} hidden={!isOpen} className="agm-failure-alert__suggestions">
-            {suggestions}
-          </div>
-        )}
+        <Flex
+          direction={{ default: "column" }}
+          alignItems={{ default: "alignItemsFlexStart" }}
+          gap={{ default: "gapSm" }}
+        >
+          <Content>{body}</Content>
+          {action}
+          {isExpandable && suggestions && (
+            <div id={regionId} hidden={!isOpen}>
+              {suggestions}
+            </div>
+          )}
+        </Flex>
       </Alert>
       {!isExpandable && isOpen && (
         <Popup isOpen title={popupTitle} onClose={() => setIsOpen(false)} actions={<Popup.Close />}>

@@ -249,16 +249,22 @@ export default function Summary(): React.ReactNode {
      mark, the reassurance right after the sentence in a quieter voice, and the
      details on a line of their own, at their regular size. */
   const singleContent = (
-    <>
-      <Marked sentence={second} />
-      {note && (
-        <>
-          {" "}
-          <Text textStyle={["fontSizeSm", "textColorSubtle"]}>{note}</Text>
-        </>
-      )}
-      <div className="agm-summary__details-line">{regularDetails}</div>
-    </>
+    <Flex
+      direction={{ default: "column" }}
+      alignItems={{ default: "alignItemsFlexStart" }}
+      gap={{ default: "gapXs" }}
+    >
+      <FlexItem>
+        <Marked sentence={second} />
+        {note && (
+          <>
+            {" "}
+            <Text textStyle={["fontSizeSm", "textColorSubtle"]}>{note}</Text>
+          </>
+        )}
+      </FlexItem>
+      <FlexItem>{regularDetails}</FlexItem>
+    </Flex>
   );
 
   if (isSingle) {
