@@ -648,6 +648,33 @@ nav.agm-breadcrumb > ol > li > a {
   padding-block-start: var(--pf-t--global--spacer--lg);
 }
 
+// PLAYGROUND: the group titles on a faint band, tight around their words,
+// either fading from a soft tint of the secondary background to nothing, or
+// flat in that tint. The fade ends in transparency rather than in white, so
+// it blends into whatever the table sits on, dark themes included. The band
+// sets the groups apart by itself, so no room is added before it.
+.agm-entries-table--banded,
+.agm-entries-table--flat-band {
+  --agm-entries-table--band: color-mix(
+    in srgb,
+    var(--pf-t--global--background--color--secondary--default) 30%,
+    transparent
+  );
+}
+
+.agm-entries-table--banded .pf-v6-c-table th.agm-entries-table__group-header,
+.agm-entries-table--flat-band .pf-v6-c-table th.agm-entries-table__group-header {
+  padding-block: var(--pf-t--global--spacer--xs);
+}
+
+.agm-entries-table--banded .pf-v6-c-table th.agm-entries-table__group-header {
+  background: linear-gradient(var(--agm-entries-table--band), transparent);
+}
+
+.agm-entries-table--flat-band .pf-v6-c-table th.agm-entries-table__group-header {
+  background-color: var(--agm-entries-table--band);
+}
+
 // What the entry is, read under the name: a fact about the name rather than a
 // column of its own.
 .agm-entries-table__facts {

@@ -28,7 +28,11 @@ import VolumeGroupRow from "~/components/storage/entries-table/VolumeGroupRow";
 import { baseName } from "~/components/storage/utils";
 import Icon from "~/components/layout/Icon";
 import type { IconProps } from "~/components/layout/Icon";
-import { useGroupedTable } from "~/components/storage/storage-page/playground-switches";
+import {
+  useGroupedTable,
+  useGroupTitleStyle,
+} from "~/components/storage/storage-page/playground-switches";
+import { css } from "@patternfly/react-styles";
 import { useConfigModel } from "~/hooks/model/storage/config-model";
 import { _, n_ } from "~/i18n";
 import type { TranslatedString } from "~/i18n";
@@ -143,6 +147,7 @@ export default function EntriesTable(): React.ReactNode {
   /* PLAYGROUND: the rows can be grouped by kind from the console. Grouped, a
      sort orders each group on its own and the groups keep their order. */
   const isGrouped = useGroupedTable() === "on";
+  const groupTitleStyle = useGroupTitleStyle();
   const groupId = React.useId();
 
   const onKeyDown = (event: React.KeyboardEvent) => {
@@ -218,7 +223,12 @@ export default function EntriesTable(): React.ReactNode {
 
   return (
     <div
-      className={isGrouped ? "agm-entries-table agm-entries-table--grouped" : "agm-entries-table"}
+      className={css(
+        "agm-entries-table",
+        isGrouped && "agm-entries-table--grouped",
+        isGrouped && groupTitleStyle === "band" && "agm-entries-table--banded",
+        isGrouped && groupTitleStyle === "flat" && "agm-entries-table--flat-band",
+      )}
       ref={list}
       onKeyDown={onKeyDown}
     >

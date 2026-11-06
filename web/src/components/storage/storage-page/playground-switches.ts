@@ -34,6 +34,12 @@
  *   agamaGroupedTable(false)  // one flat list
  *   agamaGroupedTable(true)   // volume groups, RAID devices and disks apart (default)
  *
+ * How the title row of each group looks in the grouped table:
+ *
+ *   agamaGroupTitleStyle("band")   // band fading down behind each title (default)
+ *   agamaGroupTitleStyle("flat")   // flat faint band behind each title
+ *   agamaGroupTitleStyle("plain")  // small capitals on the page, as before
+ *
  * Which set of words the "Existing data" column uses:
  *
  *   agamaExistingDataWording("short")    // Kept, May be shrunk, All deleted (default)
@@ -65,6 +71,7 @@ import React from "react";
 type DevicesBox = "off" | "on";
 type GroupedTable = "off" | "on";
 type ExistingDataWording = "short" | "verbose" | "blunt" | "loss";
+type GroupTitleStyle = "band" | "flat" | "plain";
 type NamesStyle = "mono" | "plain";
 type SummaryWording = "when" | "until";
 type ActionCount = "all" | "noSubvolumes" | "changes";
@@ -74,6 +81,7 @@ type SwitchName =
   | "agamaGroupedTable"
   | "agamaExistingDataWording"
   | "agamaNamesStyle"
+  | "agamaGroupTitleStyle"
   | "agamaSummaryWording"
   | "agamaActionCount";
 
@@ -82,6 +90,7 @@ declare global {
     agamaDevicesBox?: (value: boolean) => void;
     agamaGroupedTable?: (value: boolean) => void;
     agamaExistingDataWording?: (value: ExistingDataWording) => void;
+    agamaGroupTitleStyle?: (value: GroupTitleStyle) => void;
     agamaNamesStyle?: (value: NamesStyle) => void;
     agamaSummaryWording?: (value: SummaryWording) => void;
     agamaActionCount?: (value: ActionCount) => void;
@@ -141,6 +150,12 @@ const useExistingDataWording = consoleSwitch<ExistingDataWording>("agamaExisting
   "loss",
 ]);
 
+const useGroupTitleStyle = consoleSwitch<GroupTitleStyle>("agamaGroupTitleStyle", [
+  "band",
+  "flat",
+  "plain",
+]);
+
 const useNamesStyle = consoleSwitch<NamesStyle>("agamaNamesStyle", ["mono", "plain"]);
 
 const useSummaryWording = consoleSwitch<SummaryWording>("agamaSummaryWording", ["when", "until"]);
@@ -156,6 +171,7 @@ export {
   useGroupedTable,
   useExistingDataWording,
   useNamesStyle,
+  useGroupTitleStyle,
   useSummaryWording,
   useActionCount,
 };
