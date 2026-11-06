@@ -57,6 +57,11 @@ export type ConsequencesProps = {
   label?: React.ReactNode;
   /** The name of the button for assistive technologies, starting with its visible words. */
   "aria-label"?: string;
+  /**
+   * Fitted into the line of text it follows, rather than at a button's
+   * regular size. True if not given.
+   */
+  isCompact?: boolean;
 };
 
 /**
@@ -66,6 +71,7 @@ export type ConsequencesProps = {
 export default function Consequences({
   label,
   "aria-label": ariaLabel,
+  isCompact = true,
 }: ConsequencesProps): React.ReactNode {
   const actions = useActions();
   const [isOpen, setIsOpen] = React.useState(false);
@@ -97,7 +103,7 @@ export default function Consequences({
         <Button
           variant="tertiary"
           size="sm"
-          className="agm-summary__details"
+          className={isCompact ? "agm-summary__details" : undefined}
           aria-label={name}
           onClick={open}
         >

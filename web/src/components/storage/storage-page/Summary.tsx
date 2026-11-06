@@ -79,36 +79,33 @@ function sentences(
   isLossy: boolean,
   wording: "when" | "until" | "single",
   asChanges: boolean,
-): { first?: string; second: string } {
+): { first?: string; second: string; note?: string } {
   const what = `[${countPhrase(count, asChanges)}]`;
 
   if (wording === "single") {
+    // TRANSLATORS: second, quieter sentence of the summary of the storage
+    // setup: nothing is done to the disks before the installation starts.
+    const note = _("Nothing changes until the installation starts.");
+
     if (!count) {
-      // TRANSLATORS: summary of the storage setup in one sentence, when the
-      // setup needs no changes to the disks at all.
-      return {
-        second: _(
-          "Nothing changes until the installation starts, and even then the disks stay as they are.",
-        ),
-      };
+      // TRANSLATORS: summary of the storage setup, when the setup needs no
+      // changes to the disks at all.
+      return { second: _("Applying the settings below needs no changes to the disks."), note };
     }
 
     return {
       second: sprintf(
         isLossy
-          ? // TRANSLATORS: summary of the storage setup in one sentence. %s is
-            // a count such as "12 actions". Text in square brackets is shown
-            // in bold; keep the brackets.
-            _(
-              "Nothing changes until the installation starts, which will apply the settings below in %s, [with data loss].",
-            )
-          : // TRANSLATORS: summary of the storage setup in one sentence. %s is
-            // a count such as "12 actions".
-            _(
-              "Nothing changes until the installation starts, which will apply the settings below in %s, without data loss.",
-            ),
+          ? // TRANSLATORS: summary of the storage setup. %s is a count such as
+            // "12 actions". Text in square brackets is shown in bold; keep the
+            // brackets.
+            _("Applying the settings below takes %s, [with data loss].")
+          : // TRANSLATORS: summary of the storage setup. %s is a count such as
+            // "12 actions".
+            _("Applying the settings below takes %s, without data loss."),
         what,
       ),
+      note,
     };
   }
 
@@ -216,11 +213,20 @@ export default function Summary(): React.ReactNode {
   /* PLAYGROUND: in the one-sentence wording, the details go on a line of
      their own under it. */
   const isSingle = wording === "single";
-  const { first, second } = sentences(counted.length, isLossy, wording, countMode === "changes");
+  const { first, second, note } = sentences(
+    counted.length,
+    isLossy,
+    wording,
+    countMode === "changes",
+  );
 
   const { hasUnseenChanges } = useUnseenChanges();
 
-  useAnnounceChanges(isLossy, hasUnseenChanges, markerText(first ? `${first} ${second}` : second));
+  useAnnounceChanges(
+    isLossy,
+    hasUnseenChanges,
+    markerText([first, second, note].filter(Boolean).join(" ")),
+  );
 
   const details = (
     <Consequences
@@ -231,6 +237,39 @@ export default function Summary(): React.ReactNode {
       aria-label={_("Details of the planned storage changes")}
     />
   );
+  const regularDetails = (
+    <Consequences
+      label={_("Details…")}
+      aria-label={_("Details of the planned storage changes")}
+      isCompact={false}
+    />
+  );
+
+  /* PLAYGROUND: the one-sentence wording, with or without the hint box: no
+     mark, the reassurance right after the sentence in a quieter voice, and the
+     details on a line of their own, at their regular size. */
+  const singleContent = (
+    <>
+      <Marked sentence={second} />
+      {note && (
+        <>
+          {" "}
+          <Text textStyle={["fontSizeSm", "textColorSubtle"]}>{note}</Text>
+        </>
+      )}
+      <div className="agm-summary__details-line">{regularDetails}</div>
+    </>
+  );
+
+  if (isSingle) {
+    return style === "hint" ? (
+      <Hint>
+        <HintBody>{singleContent}</HintBody>
+      </Hint>
+    ) : (
+      singleContent
+    );
+  }
 
   /* PLAYGROUND: in a hint box, from the console: no mark, the first sentence
      as its title, and the details right after the sentence they detail, which
@@ -240,8 +279,7 @@ export default function Summary(): React.ReactNode {
       <Hint>
         {first && <HintTitle>{first}</HintTitle>}
         <HintBody>
-          <Marked sentence={second} />{" "}
-          {isSingle ? <div className="agm-summary__details-line">{details}</div> : details}
+          <Marked sentence={second} /> {details}
         </HintBody>
       </Hint>
     );
@@ -263,8 +301,7 @@ export default function Summary(): React.ReactNode {
             <br />
           </>
         )}
-        <Marked sentence={second} />{" "}
-        {isSingle ? <div className="agm-summary__details-line">{details}</div> : details}
+        <Marked sentence={second} /> {details}
       </FlexItem>
     </Flex>
   );
