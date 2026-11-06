@@ -76,19 +76,19 @@
 .pf-v6-c-page__main-section {
   --pf-v6-c-page__main-section--PaddingBlockStart: var(
     --agm-t--page--padding--block,
-    var(--pf-t--global--spacer--sm)
+    var(--pf-t--global--spacer--md)
   );
   --pf-v6-c-page__main-section--PaddingBlockEnd: var(
     --agm-t--page--padding--block,
-    var(--pf-t--global--spacer--sm)
+    var(--pf-t--global--spacer--md)
   );
   --pf-v6-c-page__main-section--PaddingInlineStart: var(
     --agm-t--page--padding--inline,
-    var(--pf-t--global--spacer--sm)
+    var(--pf-t--global--spacer--md)
   );
   --pf-v6-c-page__main-section--PaddingInlineEnd: var(
     --agm-t--page--padding--inline,
-    var(--pf-t--global--spacer--sm)
+    var(--pf-t--global--spacer--md)
   );
 }
 
