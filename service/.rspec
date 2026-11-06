@@ -1,1 +1,1 @@
---pattern **/*_test.rb --default-path test
+--pattern test/**/*_test.rb

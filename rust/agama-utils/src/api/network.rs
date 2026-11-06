@@ -25,6 +25,7 @@ mod config;
 pub use config::Config;
 mod proposal;
 pub use proposal::Proposal;
+pub mod schema;
 mod settings;
 mod system_info;
 pub use system_info::SystemInfo;

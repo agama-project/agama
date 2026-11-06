@@ -1,0 +1,30 @@
+---
+- disk:
+    name: /dev/sda
+    size: 50 GiB
+    partition_table: gpt
+    partitions:
+
+    - partition:
+        size:         8 MiB
+        name:         /dev/sda1
+        id:           bios_boot
+    - partition:
+        size:         40 GiB
+        name:         /dev/sda2
+        file_system:  btrfs
+        mount_point:  "/"
+        encryption:
+          type: luks
+          name: "/dev/mapper/cr_root"
+          password: '12345678'
+    - partition:
+        size:         2 GiB
+        name:         /dev/sda3
+        id:           swap
+        file_system:  swap
+        mount_point:  swap
+        encryption:
+          type: luks
+          name: "/dev/mapper/cr_swap"
+          password: '12345678'

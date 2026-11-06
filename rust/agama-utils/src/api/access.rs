@@ -38,7 +38,7 @@ pub enum AccessValue {
 ///
 /// Allows to explicitly specify how machine has to be accessed after installation.
 #[derive(Clone, Debug, Default, Serialize, Deserialize, Merge, JsonSchema)]
-#[serde(rename_all = "camelCase")]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 #[schemars(rename = "access.Config")]
 pub struct Config {
     /// Allows to specify if ssh access has to be enabled after installation or keep product defaults.
@@ -53,7 +53,7 @@ pub struct Config {
 
 /// Remote Access extended configuration that is resolved
 #[derive(Clone, Debug, Default, Serialize, Deserialize, JsonSchema)]
-#[serde(rename_all = "camelCase")]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 #[schemars(rename = "access.ExtendedConfig")]
 pub struct ExtendedConfig {
     /// Remote access to SSH

@@ -1,0 +1,42 @@
+{
+  "title": "HA stack: eth0 + eth1 -> bond0 -> br0 -> br0.100 (VLAN)",
+  "description": "Same tree as old/04-ha-stack, nested (rust/share/examples/network/stacked.json plus a gateway and DNS), with the bridge port settings of bond0 and the MTU of eth0.",
+  "steps": [
+    {
+      "profile": "1-ha-stack.json",
+      "description": "The whole stack, nested",
+      "expect": {
+        "connections": {
+          "eth0": {
+            "controller": "bond0",
+            "mtu": 9000
+          },
+          "eth1": {
+            "controller": "bond0"
+          },
+          "bond0": {
+            "controller": "br0",
+            "port": {
+              "priority": 24,
+              "pathCost": 200
+            }
+          },
+          "br0": {
+            "controller": null,
+            "method4": "manual",
+            "addresses": [
+              "192.168.1.100/24"
+            ]
+          },
+          "br0.100": {
+            "controller": null,
+            "method4": "manual",
+            "addresses": [
+              "10.100.0.10/24"
+            ]
+          }
+        }
+      }
+    }
+  ]
+}

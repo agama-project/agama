@@ -1,0 +1,160 @@
+---
+- disk:
+    name: "/dev/ram0"
+    size: 2 GiB
+    block_size: 0.5 KiB
+    io_size: 0 B
+    min_grain: 1 MiB
+    align_ofs: 0 B
+- disk:
+    name: "/dev/ram1"
+    size: 2 GiB
+    block_size: 0.5 KiB
+    io_size: 0 B
+    min_grain: 1 MiB
+    align_ofs: 0 B
+    partition_table: gpt
+    partitions:
+    - free:
+        size: 1 MiB
+        start: 0 B
+    - partition:
+        size: 2 MiB
+        start: 1 MiB
+        name: "/dev/ram1p1"
+        type: primary
+        id: linux
+    - free:
+        size: 2045 MiB (2.00 GiB)
+        start: 3 MiB
+- disk:
+    name: "/dev/ram2"
+    size: 2 GiB
+    block_size: 0.5 KiB
+    io_size: 0 B
+    min_grain: 1 MiB
+    align_ofs: 0 B
+- disk:
+    name: "/dev/ram3"
+    size: 2 GiB
+    block_size: 0.5 KiB
+    io_size: 0 B
+    min_grain: 1 MiB
+    align_ofs: 0 B
+- disk:
+    name: "/dev/ram4"
+    size: 2 GiB
+    block_size: 0.5 KiB
+    io_size: 0 B
+    min_grain: 1 MiB
+    align_ofs: 0 B
+- disk:
+    name: "/dev/ram5"
+    size: 2 GiB
+    block_size: 0.5 KiB
+    io_size: 0 B
+    min_grain: 1 MiB
+    align_ofs: 0 B
+- disk:
+    name: "/dev/ram6"
+    size: 2 GiB
+    block_size: 0.5 KiB
+    io_size: 0 B
+    min_grain: 1 MiB
+    align_ofs: 0 B
+- disk:
+    name: "/dev/ram7"
+    size: 2 GiB
+    block_size: 0.5 KiB
+    io_size: 0 B
+    min_grain: 1 MiB
+    align_ofs: 0 B
+- disk:
+    name: "/dev/ram8"
+    size: 2 GiB
+    block_size: 0.5 KiB
+    io_size: 0 B
+    min_grain: 1 MiB
+    align_ofs: 0 B
+- disk:
+    name: "/dev/ram9"
+    size: 2 GiB
+    block_size: 0.5 KiB
+    io_size: 0 B
+    min_grain: 1 MiB
+    align_ofs: 0 B
+- disk:
+    name: "/dev/ram10"
+    size: 2 GiB
+    block_size: 0.5 KiB
+    io_size: 0 B
+    min_grain: 1 MiB
+    align_ofs: 0 B
+- disk:
+    name: "/dev/ram11"
+    size: 2 GiB
+    block_size: 0.5 KiB
+    io_size: 0 B
+    min_grain: 1 MiB
+    align_ofs: 0 B
+- disk:
+    name: "/dev/ram12"
+    size: 2 GiB
+    block_size: 0.5 KiB
+    io_size: 0 B
+    min_grain: 1 MiB
+    align_ofs: 0 B
+- disk:
+    name: "/dev/ram13"
+    size: 2 GiB
+    block_size: 0.5 KiB
+    io_size: 0 B
+    min_grain: 1 MiB
+    align_ofs: 0 B
+- disk:
+    name: "/dev/ram14"
+    size: 2 GiB
+    block_size: 0.5 KiB
+    io_size: 0 B
+    min_grain: 1 MiB
+    align_ofs: 0 B
+- disk:
+    name: "/dev/ram15"
+    size: 2 GiB
+    block_size: 0.5 KiB
+    io_size: 0 B
+    min_grain: 1 MiB
+    align_ofs: 0 B
+- disk:
+    name: "/dev/sda"
+    size: 70 GiB
+    block_size: 0.5 KiB
+    io_size: 0 B
+    min_grain: 1 MiB
+    align_ofs: 0 B
+    partition_table: gpt
+    partitions:
+    - free:
+        size: 1 MiB
+        start: 0 B
+    - partition:
+        size: 8 MiB
+        start: 1 MiB
+        name: "/dev/sda1"
+        type: primary
+        id: bios_boot
+    - partition:
+        size: 69622 MiB (67.99 GiB)
+        start: 9 MiB
+        name: "/dev/sda2"
+        type: primary
+        id: linux
+    - partition:
+        size: 2098159.5 KiB (2.00 GiB)
+        start: 69631 MiB (68.00 GiB)
+        name: "/dev/sda3"
+        type: primary
+        id: swap
+    - free:
+        size: 16.5 KiB
+        start: 73400303.5 KiB (70.00 GiB)

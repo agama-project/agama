@@ -1,0 +1,62 @@
+---
+- dasd:
+    name:             /dev/dasda
+    size:             50 GiB
+    type:             eckd
+    format:           ldl
+    partition_table:  implicit
+    # Implicit partition table, the partition is omitted here
+
+- dasd:
+    name:             /dev/dasdb
+    size:             50 GiB
+    type:             fba
+    partition_table:  implicit
+    # Implicit partition table, the partition is omitted here
+
+- dasd:
+    name:             /dev/dasdc
+    size:             50 GiB
+    type:             eckd
+    format:           cdl
+    partition_table:  dasd
+    partitions:
+
+    - partition:
+        size:         1 GiB
+        name:         /dev/dasdc1
+
+    - partition:
+        size:         1 GiB
+        name:         /dev/dasdc2
+
+    - partition:
+        size:         unlimited
+        name:         /dev/dasdc3
+
+- dasd:
+    name:             /dev/dasdd
+    size:             50 GiB
+    type:             eckd
+    format:           cdl
+    partition_table:  dasd
+    partitions:
+
+    - partition:
+        size:         20 GiB
+        name:         /dev/dasdd1
+
+    - partition:
+        size:         20 GiB
+        name:         /dev/dasdd2
+
+- lvm_vg:
+    vg_name: vg0
+    lvm_pvs:
+        - lvm_pv:
+            blk_device: /dev/dasdd1
+
+    lvm_lvs:
+        - lvm_lv:
+            size:         10 GiB
+            lv_name:      lv1

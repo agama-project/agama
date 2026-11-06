@@ -2,12 +2,10 @@
 inherit_from:
   /usr/share/YaST2/data/devtools/data/rubocop-1.24.1_yast_style.yml
 
-# vendor is not controlled by us and y2dir is often modified old yast code that
-# we do not want to rewrite now
+# vendor is not controlled by us and YaST2 contains old code we do not want to rewrite now
 AllCops:
   Exclude:
     - vendor/**/*
-    - lib/agama/y2dir/**/*
     - YaST2/**/*
     - agama-yast.gemspec
     - package/*.spec
@@ -38,4 +36,3 @@ Metrics/ClassLength:
 Naming/FileName:
   Exclude:
     - test/YaST2/modules/*.rb
-

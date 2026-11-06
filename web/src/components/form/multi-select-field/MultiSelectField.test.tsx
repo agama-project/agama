@@ -38,7 +38,6 @@ type TestFormProps = {
   defaultValues?: string[];
   options?: MultiSelectOption[];
   allowCustomEntries?: boolean;
-  tabKeepsFocus?: boolean;
   autoHighlight?: boolean;
   showNoResults?: boolean;
   entriesThreshold?: number;
@@ -60,7 +59,6 @@ function TestForm({
   defaultValues = [],
   options = OPTIONS,
   allowCustomEntries,
-  tabKeepsFocus,
   autoHighlight,
   showNoResults,
   entriesThreshold,
@@ -100,7 +98,6 @@ function TestForm({
               label={_("Bond ports")}
               options={options}
               allowCustomEntries={allowCustomEntries}
-              tabKeepsFocus={tabKeepsFocus}
               autoHighlight={autoHighlight}
               showNoResults={showNoResults}
               entriesThreshold={entriesThreshold}
@@ -159,6 +156,12 @@ describe("MultiSelectField", () => {
       const instructions = screen.getByText("Down arrow opens the list of options.");
       const instructionsId = instructions.closest("[id]")?.id;
       expect(combobox().getAttribute("aria-describedby")).toContain(instructionsId);
+    });
+
+    it("tells screen readers the arrow button opens a list of options", () => {
+      installerRender(<TestForm />);
+      const arrow = screen.getByRole("button", { name: "Show options" });
+      expect(arrow).toHaveAttribute("aria-haspopup", "listbox");
     });
 
     it("does not show the list until it is asked for", () => {
@@ -356,14 +359,14 @@ describe("MultiSelectField", () => {
   });
 
   describe("Tab", () => {
-    it("commits the picked out option and keeps focus in the field", async () => {
+    it("commits the picked out option and moves on", async () => {
       const { user } = installerRender(<TestForm />);
       await user.click(combobox());
       await user.keyboard("{ArrowDown}");
       await user.tab();
 
       within(entries()).getByRole("option", { name: "Ethernet 0" });
-      expect(combobox()).toHaveFocus();
+      expect(combobox()).not.toHaveFocus();
     });
 
     it("keeps a value the field already holds, instead of taking it back out", async () => {
@@ -375,8 +378,8 @@ describe("MultiSelectField", () => {
       expect(announcement()).toContain("Ethernet 0 is already selected.");
     });
 
-    it("commits the text and moves on when the field does not hold focus", async () => {
-      const { user } = installerRender(<TestForm tabKeepsFocus={false} />);
+    it("commits the text and moves on", async () => {
+      const { user } = installerRender(<TestForm />);
       await user.type(combobox(), "eth1");
       await user.tab();
 

@@ -1,0 +1,7 @@
+---
+- disk:
+    name: /dev/sda
+    size: 1 TiB
+    file_system:  xfs
+    label:        root
+    mount_point:  "/"

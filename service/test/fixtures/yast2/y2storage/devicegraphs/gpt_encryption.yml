@@ -1,0 +1,46 @@
+---
+- disk:
+    size: 800.00 GiB
+    name: "/dev/sda"
+    partition_table: gpt
+    partitions:
+
+    - partition:
+        size: 755707 MiB
+        name: /dev/sda1
+        id: windows_basic_data
+        file_system: ntfs
+        label: windows
+
+    - partition:
+        size: 5 MiB
+        name: "/dev/sda3"
+        id: bios_boot
+
+    - partition:
+        size: 40 GiB
+        name: "/dev/sda4"
+        id: linux
+        file_system: btrfs
+        encryption:
+          type: luks
+          name: "/dev/mapper/cr_sda4"
+          password: '12345678'
+
+    - partition:
+        size: 2 GiB
+        name: "/dev/sda5"
+        id: swap
+        file_system: swap
+        mount_point: swap
+        encryption:
+          type: luks
+          name: "/dev/mapper/cr_sda5"
+          password: '12345678'
+
+    - partition:
+        size: unlimited
+        name: "/dev/sda2"
+        id: windows_basic_data
+        file_system: vfat
+        label: recovery

@@ -1,0 +1,4 @@
+---
+- disk:
+    name: /dev/sda
+    size: 128 MiB

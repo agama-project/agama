@@ -1,0 +1,38 @@
+{
+  "title": "HA with a VLAN bridge: bond0 -> br0, bond0.100 (VLAN) -> br100",
+  "description": "The untagged traffic of the bond goes to br0 and VLAN 100 to br100, the usual setup of a virtualization host.",
+  "steps": [
+    {
+      "profile": "1-ha-vlan-bridge.json",
+      "description": "The whole setup, flat",
+      "expect": {
+        "connections": {
+          "eth0": {
+            "controller": "bond0"
+          },
+          "eth1": {
+            "controller": "bond0"
+          },
+          "bond0": {
+            "controller": "br0"
+          },
+          "bond0.100": {
+            "controller": "br100"
+          },
+          "br0": {
+            "controller": null,
+            "addresses": [
+              "192.168.1.100/24"
+            ]
+          },
+          "br100": {
+            "controller": null,
+            "addresses": [
+              "10.100.0.10/24"
+            ]
+          }
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+#
+
+.product.features
+
+`ag_ini(
+    `IniAgent("/etc/YaST2/ProductFeatures", $[
+	"options" : [ "no_nested_sections" ],
+	"sections" : [
+	    $[
+		"begin" : [ "^[ \t]*\\[[ \t]*(.*[^ \t])[ \t]*\\][ \t]*", "[%s]" ],
+	    ],
+	],
+	// we need to exclude ; because of the second matching rule
+	"params" : [
+	    $[
+		"match" : [ "^[ \t]*([_a-zA-Z0-9]+)[ \t]*=[ \t]*\"(.*)\"[ \t]*$" , "\t%s = \"%s\""],
+	    ]
+	]
+    ]
+  )
+)
+

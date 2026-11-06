@@ -23,10 +23,16 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
-#[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq, Eq, JsonSchema)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, JsonSchema)]
 #[serde(transparent)]
 #[schemars(rename = "iscsi.Config")]
 pub struct Config(pub Value);
+
+impl Default for Config {
+    fn default() -> Self {
+        Config(Value::Object(serde_json::Map::new()))
+    }
+}
 
 impl Merge for Config {
     // Merge by using "ignore" strategy, that is, lhs takes precedence over rhs.

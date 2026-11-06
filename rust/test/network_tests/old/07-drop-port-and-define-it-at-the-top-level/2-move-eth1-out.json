@@ -1,0 +1,26 @@
+{
+  "network": {
+    "connections": [
+      {
+        "id": "bond0",
+        "interface": "bond0",
+        "method4": "auto",
+        "bond": {
+          "mode": "active-backup",
+          "options": "miimon=100",
+          "ports": [
+            "eth0"
+          ]
+        }
+      },
+      {
+        "id": "eth1",
+        "interface": "eth1",
+        "method4": "manual",
+        "addresses": [
+          "192.168.2.10/24"
+        ]
+      }
+    ]
+  }
+}

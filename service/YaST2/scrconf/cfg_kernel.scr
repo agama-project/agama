@@ -1,0 +1,16 @@
+/**
+ * File:	cfg_kernel.scr
+ * Summary:	Agent for reading/writing /etc/sysconfig/kernel
+ * Author:	Klaus Kaempf <kkaempf@suse.de>
+ * Access:	read / write
+ *
+ * $Id$
+ *
+ * Read/Sets the values defined in <tt>/etc/sysconfig/kernel</tt>
+ * in an easy manner.
+ */
+.sysconfig.kernel
+
+`ag_ini(
+    `SysConfigFile("/etc/sysconfig/kernel")
+)

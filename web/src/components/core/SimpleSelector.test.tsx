@@ -74,6 +74,19 @@ describe("SimpleSelector", () => {
     screen.getByText("Status");
   });
 
+  it("tells screen readers the toggle opens a list of options", () => {
+    plainRender(
+      <SimpleSelector
+        label={_("Status")}
+        value="all"
+        options={selectOptions}
+        onChange={onChangeFn}
+      />,
+    );
+
+    expect(screen.getByRole("button")).toHaveAttribute("aria-haspopup", "listbox");
+  });
+
   it("renders the current value in the toggle", () => {
     plainRender(
       <SimpleSelector

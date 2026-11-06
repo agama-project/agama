@@ -1,0 +1,6 @@
+---
+- dasd:
+    name: /dev/dasda
+    type: fba
+    size: 50 GiB
+    partition_table: gpt

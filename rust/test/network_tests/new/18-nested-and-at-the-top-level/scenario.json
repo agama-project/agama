@@ -1,0 +1,18 @@
+{
+  "title": "A port nested and given at the top level too",
+  "description": "Rejected by the network service. Nothing is created.",
+  "steps": [
+    {
+      "profile": "1-duplicated.json",
+      "description": "eth0 nested in bond0 and at the top level",
+      "expect": {
+        "error": "DuplicatedConnection",
+        "connections": {
+          "bond0": {
+            "removed": true
+          }
+        }
+      }
+    }
+  ]
+}

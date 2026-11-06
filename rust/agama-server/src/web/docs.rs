@@ -35,6 +35,11 @@ use tokio::sync::broadcast;
 use crate::test_utils;
 use crate::web::error::ProblemDetailsResponse;
 use crate::web::http::{AuthResponse, LoginRequest};
+use agama_schema_transformations::{
+    capitalize, InjectPropertyAliases, LinkSubsystemSchemas, RemoveNullableAnyOf,
+    RewriteStorageRefs, SimplifyEnums,
+};
+use schemars::transform::Transform;
 
 /// Builds the unified OpenAPI specification for the Agama HTTP API using aide.
 ///
@@ -156,7 +161,7 @@ pub async fn build() -> OpenApi {
     let mut api_json = serde_json::to_value(&api).unwrap();
 
     // Link manual schemas into components/schemas
-    let schemas_to_import = [
+    const SCHEMAS_TO_IMPORT: &[(&str, &str, &str)] = &[
         // (file name, schema name, schema parent)
         // Config schemas
         ("dasd.schema.json", "Dasd", "Config"),
@@ -179,7 +184,7 @@ pub async fn build() -> OpenApi {
     let mut extracted_defs = serde_json::Map::new();
     let schemas_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../schemas");
 
-    for (file, name, group) in schemas_to_import {
+    for &(file, name, group) in SCHEMAS_TO_IMPORT {
         let full_path = schemas_dir.join(file);
         let content = std::fs::read_to_string(&full_path).unwrap_or_else(|e| {
             panic!(
@@ -193,137 +198,42 @@ pub async fn build() -> OpenApi {
         let prefix = format!("{}{}", name, capitalize(group));
         extract_defs(&mut schema_value, &prefix, &mut extracted_defs);
 
-        if let Some(components_schemas) = api_json.pointer_mut("/components/schemas") {
-            if let Some(schemas_map) = components_schemas.as_object_mut() {
-                schemas_map.insert(prefix, schema_value);
-            }
-        }
-    }
-
-    if let Some(components_schemas) = api_json.pointer_mut("/components/schemas") {
-        if let Some(schemas_map) = components_schemas.as_object_mut() {
-            for (def_name, def_value) in extracted_defs {
-                schemas_map.insert(def_name, def_value);
-            }
-        }
-    }
-
-    // Rewrite shared storage device references to OpenAPI components
-    rewrite_storage_refs(&mut api_json);
-
-    // Config references for manually defined schemas
-    for (prop, schema_name) in [
-        ("storage", "StorageConfig"),
-        ("dasd", "DasdConfig"),
-        ("zfcp", "ZfcpConfig"),
-        ("iscsi", "IscsiConfig"),
-    ] {
-        if let Some(schema) =
-            api_json.pointer_mut(format!("/components/schemas/Config/properties/{}", prop).as_str())
+        if let Some(schemas_map) = api_json
+            .pointer_mut("/components/schemas")
+            .and_then(|cs| cs.as_object_mut())
         {
-            *schema = serde_json::json!({
-                "$ref": format!("#/components/schemas/{}", schema_name)
-            });
+            schemas_map.insert(prefix, schema_value);
         }
     }
 
-    // Support deprecated localization alias (l10n) and editor $schema keyword
-    if let Some(config_props) = api_json.pointer_mut("/components/schemas/Config/properties") {
-        if let Some(map) = config_props.as_object_mut() {
-            if !map.contains_key("localization") {
-                map.insert(
-                    "localization".to_string(),
-                    serde_json::json!({
-                        "deprecated": true,
-                        "title": "Localization settings (old schema)",
-                        "description": "Deprecated: use l10n instead.",
-                        "$ref": "#/components/schemas/l10n.Config"
-                    }),
-                );
-            }
-            // Allow $schema used by editors (e.g. VSCode) to prevent rejection by additionalProperties: false (gh#2773)
-            if !map.contains_key("$schema") {
-                map.insert(
-                    "$schema".to_string(),
-                    serde_json::json!({
-                        "title": "URL of the JSON validation schema",
-                        "description": "The schema location is ignored by the installer, it always uses the built-in schema, but it can be useful for automatic validation and code completion in some editors.",
-                        "type": "string"
-                    }),
-                );
-            }
+    if let Some(schemas_map) = api_json
+        .pointer_mut("/components/schemas")
+        .and_then(|cs| cs.as_object_mut())
+    {
+        for (def_name, def_value) in extracted_defs {
+            schemas_map.insert(def_name, def_value);
         }
     }
 
-    // Inject serde aliases missing in schemars generation for backwards compatibility.
-    // schemars currently ignores `#[serde(alias)]` attributes because JSON Schema
-    // does not natively support aliases.
-    // See: https://github.com/gresau/schemars/issues/338
-    let inject_alias = |api: &mut Value, path: &str, prop: &str, alias: &str| {
-        if let Some(props) = api.pointer_mut(path) {
-            if let Some(map) = props.as_object_mut() {
-                if let Some(original) = map.get(prop).cloned() {
-                    let mut alias_schema = original;
-                    if let Some(a_map) = alias_schema.as_object_mut() {
-                        a_map.insert("deprecated".to_string(), serde_json::json!(true));
-                    }
-                    map.insert(alias.to_string(), alias_schema);
-                }
+    // Apply schema transforms to all components in the OpenAPI specification
+    if let Some(schemas_map) = api_json
+        .pointer_mut("/components/schemas")
+        .and_then(|cs| cs.as_object_mut())
+    {
+        let mut remove_nullable = RemoveNullableAnyOf;
+        let mut simplify_enums = SimplifyEnums;
+        let mut link_subsystems = LinkSubsystemSchemas;
+        let mut inject_aliases = InjectPropertyAliases;
+        let mut rewrite_storage = RewriteStorageRefs;
+
+        for schema_value in schemas_map.values_mut() {
+            if let Ok(schema) = <&mut schemars::Schema>::try_from(schema_value) {
+                remove_nullable.transform(schema);
+                simplify_enums.transform(schema);
+                link_subsystems.transform(schema);
+                inject_aliases.transform(schema);
+                rewrite_storage.transform(schema);
             }
-        }
-    };
-    inject_alias(
-        &mut api_json,
-        "/components/schemas/hostname.Config/properties",
-        "hostname",
-        "transient",
-    );
-    inject_alias(
-        &mut api_json,
-        "/components/schemas/l10n.Config/properties",
-        "locale",
-        "language",
-    );
-    inject_alias(
-        &mut api_json,
-        "/components/schemas/l10n.Config/properties",
-        "keymap",
-        "keyboard",
-    );
-    inject_alias(
-        &mut api_json,
-        "/components/schemas/FirstUserConfig/properties",
-        "sshPublicKeys",
-        "sshPublicKey",
-    );
-    inject_alias(
-        &mut api_json,
-        "/components/schemas/RootUserConfig/properties",
-        "sshPublicKeys",
-        "sshPublicKey",
-    );
-
-    // Proposal references
-    if let Some(schema) = api_json.pointer_mut("/components/schemas/Proposal/properties/storage") {
-        *schema = serde_json::json!({
-            "$ref": "#/components/schemas/StorageProposal"
-        });
-    }
-
-    // SystemInfo references
-    for (prop, schema_name) in [
-        ("bootloader", "BootloaderSystemInfo"),
-        ("dasd", "DasdSystemInfo"),
-        ("iscsi", "IscsiSystemInfo"),
-        ("storage", "StorageSystemInfo"),
-        ("zfcp", "ZfcpSystemInfo"),
-    ] {
-        if let Some(schema) = api_json
-            .pointer_mut(format!("/components/schemas/SystemInfo/properties/{}", prop).as_str())
-        {
-            *schema = serde_json::json!({
-                "$ref": format!("#/components/schemas/{}", schema_name)
-            });
         }
     }
 
@@ -341,9 +251,10 @@ pub async fn build_json() -> Result<Value, serde_json::Error> {
     let openapi = build().await;
     let mut json_value = serde_json::to_value(&openapi)?;
 
-    // Post-process: Add empty security array to login endpoint to explicitly override global security
-    // Note: aide's serialization skips empty arrays (#[serde(skip_serializing_if = "Vec::is_empty")]),
-    // but OpenAPI spec requires explicit empty array to override global security
+    // Post-process: Add empty security array to login endpoint to explicitly override global
+    // security. Note: aide's serialization skips empty arrays
+    // (#[serde(skip_serializing_if = "Vec::is_empty")]), but OpenAPI spec requires explicit
+    // empty array to override global security.
     if let Some(paths) = json_value.get_mut("paths") {
         if let Some(auth_path) = paths.get_mut("/api/auth") {
             if let Some(post_op) = auth_path.get_mut("post") {
@@ -512,40 +423,99 @@ fn extract_defs(
     }
 }
 
-/// Traverses the entire JSON tree to intercept external file pointers
-/// This is specific for storage Proposal and System schemas which have
-/// shared definitions located in device.storage.schema.json
-fn rewrite_storage_refs(value: &mut serde_json::Value) {
-    match value {
-        serde_json::Value::Object(map) => {
-            if let Some(serde_json::Value::String(ref_str)) = map.get_mut("$ref") {
-                if ref_str == "device.storage.schema.json" {
-                    *ref_str = "#/components/schemas/StorageDevice".to_string();
-                } else if ref_str.starts_with("device.storage.schema.json#/$defs/") {
-                    let def_name = ref_str.trim_start_matches("device.storage.schema.json#/$defs/");
-                    *ref_str =
-                        format!("#/components/schemas/StorageDevice{}", capitalize(def_name));
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::collections::{BTreeSet, VecDeque};
+
+    fn collect_schema_refs(val: &Value, refs: &mut BTreeSet<String>) {
+        match val {
+            Value::Object(map) => {
+                if let Some(Value::String(r)) = map.get("$ref") {
+                    if let Some(name) = r.strip_prefix("#/components/schemas/") {
+                        refs.insert(name.to_string());
+                    }
+                }
+                for v in map.values() {
+                    collect_schema_refs(v, refs);
                 }
             }
-
-            for (_, val) in map.iter_mut() {
-                rewrite_storage_refs(val);
+            Value::Array(arr) => {
+                for item in arr {
+                    collect_schema_refs(item, refs);
+                }
             }
+            _ => {}
         }
-        serde_json::Value::Array(arr) => {
-            for val in arr.iter_mut() {
-                rewrite_storage_refs(val);
-            }
-        }
-        _ => {}
     }
-}
 
-/// Turn first letter of the string uppercase
-fn capitalize(str: &str) -> String {
-    let mut chars = str.chars();
-    match chars.next() {
-        None => String::new(),
-        Some(first) => first.to_uppercase().collect::<String>() + chars.as_str(),
+    #[tokio::test]
+    async fn test_all_config_schema_entries_define_additional_properties() {
+        let json_value = build_json()
+            .await
+            .expect("Failed to build OpenAPI JSON specification");
+
+        let components = json_value
+            .pointer("/components/schemas")
+            .and_then(|c| c.as_object())
+            .expect("Expected /components/schemas in OpenAPI spec");
+
+        let config_schema = components.get("Config").expect("Expected Config schema");
+
+        // The root Config schema must define additionalProperties
+        assert!(
+            config_schema.get("additionalProperties").is_some(),
+            "Root Config schema must define 'additionalProperties'"
+        );
+
+        // Collect all schemas reachable from Config (i.e. all entries in config.schema.json)
+        let mut needed = BTreeSet::new();
+        collect_schema_refs(config_schema, &mut needed);
+        let mut queue: VecDeque<String> = needed.iter().cloned().collect();
+
+        while let Some(current) = queue.pop_front() {
+            if let Some(child_val) = components.get(&current) {
+                let mut child_refs = BTreeSet::new();
+                collect_schema_refs(child_val, &mut child_refs);
+                for r in child_refs {
+                    if needed.insert(r.clone()) {
+                        queue.push_back(r);
+                    }
+                }
+            }
+        }
+
+        let mut missing = Vec::new();
+        for name in &needed {
+            let Some(comp) = components.get(name) else {
+                continue;
+            };
+
+            // Ignore schemas that are unions/anyOf variants (e.g. untagged enum containers like UserFile)
+            if comp.get("anyOf").is_some() || comp.get("oneOf").is_some() {
+                continue;
+            }
+
+            let is_object = if let Some(ty) = comp.get("type") {
+                ty == "object"
+                    || ty
+                        .as_array()
+                        .map_or(false, |a| a.iter().any(|v| v == "object"))
+            } else {
+                comp.get("properties").is_some()
+            };
+
+            // If it is an object definition, it must define additionalProperties
+            if is_object && comp.get("additionalProperties").is_none() {
+                missing.push(name.clone());
+            }
+        }
+
+        assert!(
+            missing.is_empty(),
+            "The following schema entries in config schema do not define 'additionalProperties':\n{:#?}\n\
+            Please define `#[serde(deny_unknown_fields)]` on the corresponding Rust structs!",
+            missing
+        );
     }
 }

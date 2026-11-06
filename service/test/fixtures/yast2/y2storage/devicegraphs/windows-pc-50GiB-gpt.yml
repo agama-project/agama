@@ -1,0 +1,13 @@
+---
+- disk:
+    name: /dev/sda
+    size: 50 GiB
+    partition_table:  gpt
+    partitions:
+
+    - partition:
+        size:         51198 MiB
+        name:         /dev/sda1
+        id:           windows_basic_data
+        file_system:  ntfs
+        label:        windows

@@ -1,0 +1,8 @@
+require "y2storage/filesystems/base"
+require "y2storage/filesystems/blk_filesystem"
+require "y2storage/filesystems/btrfs"
+require "y2storage/filesystems/type"
+require "y2storage/filesystems/mount_by_type"
+require "y2storage/filesystems/tmpfs"
+require "y2storage/filesystems/nfs"
+require "y2storage/filesystems/legacy_nfs"

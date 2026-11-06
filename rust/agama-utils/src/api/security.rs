@@ -27,7 +27,7 @@ use serde::{Deserialize, Deserializer, Serialize};
 
 /// Security settings
 #[derive(Clone, Debug, Default, Merge, Serialize, Deserialize, PartialEq, JsonSchema)]
-#[serde(rename_all = "camelCase")]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 #[schemars(rename = "security.Config", title = "Security settings")]
 pub struct Config {
     /// List of SSL certificates to add to the system.
@@ -48,6 +48,7 @@ pub enum SSLFingerprintAlgorithm {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, JsonSchema)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct SSLFingerprint {
     /// The string value for SSL certificate fingerprint.
     /// Example value is "F6:7A:ED:BB:BC:94:CF:55:9D:B3:BA:74:7A:87:05:EF:67:4E:C2:DB"

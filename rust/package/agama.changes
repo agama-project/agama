@@ -1,4 +1,123 @@
 -------------------------------------------------------------------
+Fri Nov  6 13:48:02 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Add embedded Model Context Protocol (MCP) server at /mcp:
+  - Configurable via kernel command line `inst.mcp=full` or
+    `inst.mcp=config` (default: disabled).
+  - Provide tools to probe hardware, inspect profile schemas,
+    inject configurations, verify proposals, answer interactive
+    questions, and track installation progress and logs.
+  - Expose `agama://schema/config.json` as an MCP resource.
+  - Enforce token isolation with dedicated MCP credentials via
+    `inst.mcp.token` or local `/run/agama/mcp-token`.
+  - add to agama-web-server CLI options
+    `--mcp` and --mcp-token` to manually start mcp server
+  (gh#agama-project/agama#4080)
+
+-------------------------------------------------------------------
+Thu Nov  5 15:48:22 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Probe and add reachable online repositories alongside local
+  installation media when network is available
+  (gh#agama-project/agama#3926).
+- Ensure software configuration task waits for proxy
+  setup (gh#agama-project/agama#3926).
+
+-------------------------------------------------------------------
+Wed Nov  4 20:49:37 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Omit null values when serializing optional fields and empty
+  configuration structures so produced JSON are valid against JSON
+  schemas (gh#agama-project/agama#4177).
+
+-------------------------------------------------------------------
+Tue Nov  3 08:35:30 UTC 2026 - Clemens Famulla-Conrad <cfamullaconrad@suse.com>
+
+- Support the IPv6 address generation mode (ipv6.addr-gen-mode)
+  in network connections (bsc#1279546)
+
+-------------------------------------------------------------------
+Fri Oct 30 10:17:43 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Move the network service to the actor based model used by the
+  rest of services (gh#agama-project/agama#3340).
+
+-------------------------------------------------------------------
+Tue Oct 27 12:08:59 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Allow nesting the ports of bonds and bridges in a new
+  "portConnections" list, so stacked setups can be read and
+  modified (gh#agama-project/agama#3995).
+- Deprecate the "ports" list of names. It keeps working, but it is
+  ignored when "portConnections" is given.
+- Allow port settings only on the ports nested in their
+  controller, and no IP settings on them.
+- Accept any kind of connection in "portConnections", as
+  NetworkManager does, but the port settings only on the ports
+  of a bridge.
+- Keep the settings not modelled by the API when updating a
+  connection.
+- Fix reading the path cost of bridge ports from NetworkManager.
+- Accept "link-local" as the IP method, as documented, which also
+  fixes the AutoYaST "autoip" boot protocol. "linkLocal" is still
+  accepted.
+- Report the state of the connections only in the system
+  information, and not for the ports nested in their controller.
+
+-------------------------------------------------------------------
+Tue Oct 27 10:26:54 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Improve JSON Schema and OpenAPI generation:
+  - Enforce strict validation in configuration schemas by adding
+    `#[serde(deny_unknown_fields)]` across configuration structs and
+    test that each entry defines `additionalProperties`.
+  - Simplify enum schemas to scalar types with Markdown variant
+    descriptions and vendor extension maps.
+  - Eliminate nullable `anyOf` wraps for `Option<T>` fields.
+    (gh#agama-project/agama#4129).
+
+-------------------------------------------------------------------
+Sun Oct 25 16:25:30 UTC 2026 - Martin Pluskal <martin@pluskal.org>
+
+- Report the checksums correctly when asking the user to accept a file
+  with a wrong digest. The question mixed up the expected and the
+  found checksum and kept the Ruby gettext placeholders, so neither
+  checksum nor the file name was shown at all
+  (gh#agama-project/agama#2703).
+
+-------------------------------------------------------------------
+Thu Oct 22 09:42:52 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Version 25
+
+-------------------------------------------------------------------
+Thu Oct 15 07:36:10 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Do not run RPM scriptlets when updating the agama-scripts package
+  (bsc#1285032).
+
+-------------------------------------------------------------------
+Thu Oct 15 07:35:10 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Fix storage model schema: request password attribute instead of
+  non-existent method attribute (gh#agama-project/agama#4038).
+
+-------------------------------------------------------------------
+Thu Oct 15 07:34:10 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Fix the proxy section of the profile JSON schema to use the
+  same property names as the proxy config (http, https, ftp,
+  gopher, socks, socks5) and reject unknown properties instead of
+  silently ignoring them (gh#agama-project/agama#3999, related to
+  gh#agama-project/agama#3069).
+
+-------------------------------------------------------------------
+Thu Oct 15 07:34:10 UTC 2026 - Michal Filka <mfilka@suse.com>
+
+- bsc#1271374
+  - added references to storage definitions into the OpenAPI schema
+
+-------------------------------------------------------------------
 Thu Oct  8 06:22:28 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
 
 - Move back packaging agama-openapi-nightly into agama.srpm as

@@ -1,0 +1,209 @@
+---
+- disk:
+    name: /dev/sda
+    size: 200 GiB
+    partition_table:  ms-dos
+    partitions:
+
+    - partition:
+        size:         100 GiB
+        name:         /dev/sda1
+        id:           0x7
+        file_system:  ntfs
+        label:        windows
+
+    - free:
+        size:         2 GiB
+
+    - partition:
+        size:         80 GiB
+        name:         /dev/sda2
+        mount_point:  /
+        label:        root
+        mount_by:     label
+        file_system:  btrfs
+        btrfs:
+            default_subvolume: "@"
+            subvolumes:
+            - subvolume:
+                path: "@/home"
+                nocow: false
+            - subvolume:
+                path: "@/srv"
+                nocow: false
+            - subvolume:
+                path: "@/tmp"
+                nocow: false
+            - subvolume:
+                path: "@/usr/local"
+                nocow: false
+            - subvolume:
+                path: "@/var/cache"
+                nocow: false
+            - subvolume:
+                path: "@/var/crash"
+                nocow: false
+            - subvolume:
+                path: "@/log"
+                nocow: false
+            - subvolume:
+                path: "@/opt"
+                nocow: false
+            - subvolume:
+                path: "@/var/lib/mariadb"
+                nocow: true
+            - subvolume:
+                path: "@/var/lib/mysql"
+                nocow: true
+            - subvolume:
+                path: "@/var/lib/pgsql"
+                nocow: true
+
+    - partition:
+        size:         unlimited
+        name:         /dev/sda3
+        mount_point:  /mnt
+        file_system:  ext3
+
+- disk:
+    name: /dev/sdb
+    size: 1 TiB
+    partition_table:  ms-dos
+    partitions:
+
+    - partition:
+        size:         4 GiB
+        name:         /dev/sdb1
+        id:           swap
+        file_system:  swap
+        mount_point:  swap
+        label:        swap
+
+    - partition:
+        size:         60 GiB
+        name:         /dev/sdb2
+        file_system:  btrfs
+        mount_point:  /mnt
+        label:        suse_root
+        btrfs:
+            default_subvolume: "@"
+            subvolumes:
+            - subvolume:
+                path: "@/home"
+                nocow: false
+            - subvolume:
+                path: "@/srv"
+                nocow: false
+            - subvolume:
+                path: "@/tmp"
+                nocow: false
+
+    - partition:
+        size:         60 GiB
+        name:         /dev/sdb3
+        file_system:  btrfs
+        label:        ubuntu_root
+
+    - partition:
+        size:         810 GiB
+        name:         /dev/sdb4
+        type:         extended
+
+    - partition:
+        size:         300 GiB
+        name:         /dev/sdb5
+        type:         logical
+        file_system:  xfs
+        mount_point:  /home
+        label:        home
+
+    - partition:
+        size:         500 GiB
+        name:         /dev/sdb6
+        type:         logical
+        file_system:  ext3
+        mount_point:  /mnt/data
+        label:        data
+
+    - partition:
+        size:         unlimited
+        name:         /dev/sdb7
+        type:         logical
+
+    - free:
+        size: unlimited
+
+- disk:
+    name: /dev/sdc
+    size: 500 GiB
+    partition_table: ms-dos
+
+- disk:
+    name: /dev/sdd
+    size: 200 GiB
+    partition_table:  ms-dos
+    partitions:
+
+    - partition:
+        size:         unlimited
+        name:         /dev/sdd1
+        mount_point:  /
+        label:        root
+        file_system:  btrfs
+        btrfs:
+            subvolumes:
+            - subvolume:
+                path: "@/home"
+                nocow: false
+            - subvolume:
+                path: "@/srv"
+                nocow: false
+            - subvolume:
+                path: "@/tmp"
+                nocow: false
+            - subvolume:
+                path: "@/usr/local"
+                nocow: false
+            - subvolume:
+                path: "@/var/cache"
+                nocow: false
+            - subvolume:
+                path: "@/var/crash"
+                nocow: false
+            - subvolume:
+                path: "@/log"
+                nocow: false
+            - subvolume:
+                path: "@/opt"
+                nocow: false
+            - subvolume:
+                path: "@/var/lib/mariadb"
+                nocow: true
+            - subvolume:
+                path: "@/var/lib/mysql"
+                nocow: true
+            - subvolume:
+                path: "@/var/lib/pgsql"
+                nocow: true
+
+- disk:
+    name: /dev/sde
+    size: 200 GiB
+    partition_table:  ms-dos
+    partitions:
+
+    - partition:
+        size:         unlimited
+        name:         /dev/sde1
+        mount_point:  /
+        label:        root
+        file_system:  btrfs
+        btrfs:
+            default_subvolume: ""
+            subvolumes:
+            - subvolume:
+                path: ".snapshots"
+                nocow: false
+            - subvolume:
+                path: ".snapshots/1/snapshot"
+                nocow: false

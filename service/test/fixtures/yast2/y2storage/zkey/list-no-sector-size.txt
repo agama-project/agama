@@ -1,0 +1,16 @@
+Key                          : YaST_cr_ccw-0X0150-part4                              
+-------------------------------------------------------------------------------------
+        Description          : 
+        Secure key size      : 128 bytes
+        Clear key size       : 512 bits
+        XTS type key         : Yes
+        Volumes              : (none)
+        APQNs                : (none)
+        Key file name        : /etc/zkey/repository/test.skey
+        Sector size          : (system default)
+        Volume type          : LUKS2
+        Verification pattern : df3f05854fb735a6f9ce4d9e1b79429a
+                               23a7ff44cf2bded878aee481fa1e31c7
+        Created              : 2019-10-11 09:19:30
+        Changed              : (never)
+        Re-enciphered        : (never) 

@@ -1,0 +1,25 @@
+---
+- disk:
+    name: "/dev/sda"
+    size: 26 GiB
+    partition_table: gpt
+    partitions:
+    - partition:
+        size: 6622 MiB (6.47 GiB)
+        name: "/dev/sda1"
+        id: linux
+        file_system: ext4
+    - partition:
+        size: 10376 MiB (10.13 GiB)
+        name: "/dev/sda2"
+        id: linux
+        file_system: xfs
+    - partition:
+        size: 1262 MiB (1.23 GiB)
+        name: "/dev/sda4"
+        id: swap
+        file_system: swap
+    - partition:
+        size: 2 MiB
+        name: "/dev/sda3"
+        id: bios_boot

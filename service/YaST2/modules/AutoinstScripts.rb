@@ -53,7 +53,6 @@ module Yast
 
       Yast.import "Mode"
       Yast.import "AutoinstConfig"
-      Yast.import "Summary"
       Yast.import "URL"
       Yast.import "Popup"
       Yast.import "Label"
@@ -160,33 +159,6 @@ module Yast
       true
     end
 
-    # Return Summary
-    # @return [String] summary
-    def Summary
-      summary = ""
-
-      scripts_desc = {
-        _("Preinstallation Scripts")  => pre_scripts,
-        _("Postinstallation Scripts") => post_scripts,
-        _("Chroot Scripts")           => chroot_scripts,
-        _("Init Scripts")             => init_scripts,
-        _("Postpartitioning Scripts") => postpart_scripts
-      }
-
-      scripts_desc.each_pair do |label, scs|
-        summary = Summary.AddHeader(summary, label)
-        if scs.empty?
-          summary = Summary.AddLine(summary, Summary.NotConfigured)
-        else
-          summary = Summary.OpenList(summary)
-          scs.each { |s| summary = Summary.AddListItem(summary, s.filename) }
-          summary = Summary.CloseList(summary)
-        end
-      end
-
-      summary
-    end
-
     # delete a script from a list
     # @param scriptName [String] script name
     # @return [void]
@@ -274,7 +246,6 @@ module Yast
     publish function: :GetModified, type: "boolean ()"
     publish function: :Export, type: "map <string, list> ()"
     publish function: :Import, type: "boolean (map)"
-    publish function: :Summary, type: "string ()"
     publish function: :deleteScript, type: "void (string)"
     publish function: :AddEditScript,
       type:     "void (string, string, string, string, boolean, boolean, " \

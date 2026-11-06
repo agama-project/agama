@@ -101,3 +101,32 @@ describe("useTerminal", () => {
     spy.mockRestore();
   });
 });
+
+describe("toggle shortcut", () => {
+  const press = (init: KeyboardEventInit) =>
+    act(() => {
+      window.dispatchEvent(new KeyboardEvent("keydown", { code: "Backquote", ...init }));
+    });
+
+  it("opens and closes the terminal panel with Ctrl+`", () => {
+    const { result } = renderHook(() => useTerminal(), { wrapper });
+
+    press({ ctrlKey: true });
+    expect(result.current.isOpen).toBe(true);
+    expect(result.current.openFocusTarget).toBe("shell");
+
+    press({ ctrlKey: true });
+    expect(result.current.isOpen).toBe(false);
+  });
+
+  it("ignores the key without Ctrl, with Shift, Alt or Meta, and when auto-repeating", () => {
+    const { result } = renderHook(() => useTerminal(), { wrapper });
+
+    press({});
+    press({ ctrlKey: true, shiftKey: true });
+    press({ ctrlKey: true, altKey: true });
+    press({ ctrlKey: true, metaKey: true });
+    press({ ctrlKey: true, repeat: true });
+    expect(result.current.isOpen).toBe(false);
+  });
+});

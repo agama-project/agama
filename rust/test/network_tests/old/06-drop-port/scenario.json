@@ -1,0 +1,38 @@
+{
+  "title": "Drop a port from the list",
+  "description": "A port left out of the list of its controller, and not given anywhere else, is deleted.",
+  "steps": [
+    {
+      "profile": "1-bond.json",
+      "description": "Bond with ports: [eth0, eth1]",
+      "expect": {
+        "connections": {
+          "bond0": {
+            "controller": null,
+            "method4": "auto"
+          },
+          "eth0": {
+            "controller": "bond0"
+          },
+          "eth1": {
+            "controller": "bond0"
+          }
+        }
+      }
+    },
+    {
+      "profile": "2-drop-eth1.json",
+      "description": "Same bond with ports: [eth0]",
+      "expect": {
+        "connections": {
+          "eth0": {
+            "controller": "bond0"
+          },
+          "eth1": {
+            "removed": true
+          }
+        }
+      }
+    }
+  ]
+}

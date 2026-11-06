@@ -1,0 +1,624 @@
+<?xml version="1.0"?>
+<productDefines xmlns="http://www.suse.com/1.0/yast2ns" xmlns:config="http://www.suse.com/1.0/configns">
+
+<!--
+Work around for the text domain
+textdomain="control"
+-->
+
+    <textdomain>control</textdomain>
+
+    <texts>
+        <roles_caption>
+          <!-- TRANSLATORS: dialog caption -->
+          <label>System Role</label>
+        </roles_caption>
+        <roles_text>
+          <!-- TRANSLATORS: label in a dialog -->
+          <label>System Roles are predefined use cases which tailor the system
+for the selected scenario.</label>
+        </roles_text>
+        <roles_help>
+          <!-- TRANSLATORS: dialog help -->
+          <label>&lt;p&gt;The system roles adjustments are in the range from package selection up
+to disk partitioning. By choosing a system role, the system is
+configured accordingly to match the use case of the role. The settings
+defined by a role can be overridden in the next steps if necessary.&lt;/p&gt;</label>
+        </roles_help>
+        <minimal_role>
+          <!-- TRANSLATORS: a label for a system role -->
+          <label>Minimal</label>
+        </minimal_role>
+        <minimal_role_description>
+          <label>Minimal software selection for SUSE Linux Enterprise.</label>
+        </minimal_role_description>
+    </texts>
+
+    <partitioning>
+        <!-- taken from control.CAASP.xml and modified just for the purpose of testing the proposal settings UI -->
+
+        <proposal>
+            <lvm config:type="boolean">false</lvm>
+        </proposal>
+
+        <volumes config:type="list">
+            <!-- The / filesystem -->
+            <volume>
+                <mount_point>/</mount_point>
+                <fs_type>btrfs</fs_type>
+                <desired_size config:type="disksize">23 GiB</desired_size>
+                <min_size config:type="disksize">12 GiB</min_size>
+                <max_size config:type="disksize">30 GiB</max_size>
+                <weight config:type="integer">80</weight>
+
+                <snapshots config:type="boolean">true</snapshots>
+                <snapshots_configurable config:type="boolean">true</snapshots_configurable>
+
+                <!-- the default subvolume "@" was requested by product management -->
+                <btrfs_default_subvolume>@</btrfs_default_subvolume>
+
+                <!-- Subvolumes to be created for a Btrfs root file system -->
+                <!-- copy_on_write is true by default -->
+                <!-- The XML parser is very simplistic, thus not using attributes, but sub-elements -->
+                <subvolumes config:type="list">
+                    <subvolume>
+                        <path>root</path>
+                    </subvolume>
+                    <subvolume>
+                        <path>tmp</path>
+                    </subvolume>
+                    <subvolume>
+                        <path>home</path>
+                    </subvolume>
+                    <subvolume>
+                        <path>var/cache</path>
+                    </subvolume>
+                    <subvolume>
+                        <path>var/crash</path>
+                    </subvolume>
+                    <subvolume>
+                        <path>var/spool</path>
+                    </subvolume>
+
+                    <!-- architecture specific subvolumes -->
+
+                    <subvolume>
+                        <path>boot/grub2/i386-pc</path>
+                        <archs>x86_64</archs>
+                    </subvolume>
+                </subvolumes>
+            </volume>
+
+            <!-- /home partition -->
+            <volume>
+                <mount_point>/home</mount_point>
+
+                <fs_type>ext4</fs_type>
+                <fs_types>ext4,xfs, btrfs </fs_types>
+                <snapshots config:type="boolean">false</snapshots>
+
+                <proposed config:type="boolean">false</proposed>
+                <proposed_configurable config:type="boolean">true</proposed_configurable>
+
+                <desired_size config:type="disksize">20 GiB</desired_size>
+                <min_size config:type="disksize">7 GiB</min_size>
+                <max_size config:type="disksize">unlimited</max_size>
+                <weight config:type="integer">20</weight>
+
+                <!-- Give up in a separate partition if the min size doesn't fit -->
+                <disable_order config:type="integer">1</disable_order>
+
+                <!-- If this volume is disabled, we want "/" to increase -->
+                <fallback_for_desired_size>/</fallback_for_desired_size>
+                <fallback_for_max_size>/</fallback_for_max_size>
+                <fallback_for_weight>/</fallback_for_weight>
+            </volume>
+
+            <!-- /data partition -->
+            <volume>
+                <mount_point>/data</mount_point>
+
+                <fs_type>xfs</fs_type>
+                <fs_types>ext4, xfs</fs_types>
+                <snapshots config:type="boolean">false</snapshots>
+
+                <proposed config:type="boolean">true</proposed>
+                <proposed_configurable config:type="boolean">true</proposed_configurable>
+
+                <desired_size config:type="disksize">12 GiB</desired_size>
+                <min_size config:type="disksize">3 GiB</min_size>
+                <max_size config:type="disksize">100 GiB</max_size>
+                <weight config:type="integer">20</weight>
+
+                <!-- Give up in a separate partition if the min size doesn't fit -->
+                <disable_order config:type="integer">4</disable_order>
+
+                <!-- If this volume is disabled, we want "/" to increase -->
+                <fallback_for_desired_size>/</fallback_for_desired_size>
+                <fallback_for_max_size>/</fallback_for_max_size>
+                <fallback_for_weight>/</fallback_for_weight>
+            </volume>
+
+            <!-- swap partition -->
+            <volume>
+                <mount_point>swap</mount_point>
+                <proposed config:type="boolean">true</proposed>
+
+                <fs_type>swap</fs_type>
+                <fs_types>swap</fs_types>
+
+                <desired_size config:type="disksize">2 GiB</desired_size>
+                <min_size config:type="disksize">1 GiB</min_size>
+                <max_size config:type="disksize">16 GiB</max_size>
+                <weight config:type="integer">20</weight>
+
+                <adjust_by_ram config:type="boolean">false</adjust_by_ram>
+                <adjust_by_ram_configurable config:type="boolean">true</adjust_by_ram_configurable>
+
+                <!-- Give up in a separate partition if the min size doesn't fit -->
+                <disable_order config:type="integer">2</disable_order>
+            </volume>
+
+        </volumes>
+    </partitioning>
+
+    <update>
+      <system_roles>
+        <insert_system_roles config:type="list">
+          <insert_system_role>
+            <!-- FATE#317481 -->
+            <system_roles config:type="list">
+              <system_role>
+                <!-- the id is a key for texts/$id/label
+                                     and texts/$id_description/label below -->
+                <id>minimal_role</id>
+                <!-- nothing is overlaid for the normal role -->
+
+                <order config:type="integer">1000</order>
+                <software>
+                  <default_patterns>base</default_patterns>
+                  <!-- the cdata trick produces an empty string in the data
+                       instead of omitting the key entirely -->
+                  <optional_default_patterns><![CDATA[]]></optional_default_patterns>
+                </software>
+              </system_role>
+            </system_roles>
+          </insert_system_role>
+        </insert_system_roles>
+      </system_roles>
+
+      <workflows config:type="list">
+        <workflow>
+          <defaults>
+            <archs>all</archs>
+            <enable_back>no</enable_back>
+            <enable_next>no</enable_next>
+          </defaults>
+          <mode>installation</mode>
+          <stage>initial</stage>
+          <append_modules config:type="list">
+            <module>
+                <name>scc</name>
+                <enable_back>yes</enable_back>
+                <enable_next>yes</enable_next>
+            </module>
+            <module>
+                <label>System Analysis</label>
+                <name>installation_options</name>
+            </module>
+            <module>
+                <label>Add-On Products</label>
+                <name>add-on</name>
+                <enable_back>yes</enable_back>
+                <enable_next>yes</enable_next>
+            </module>
+            <module>
+                <label>Apply Modules Extensions</label>
+                <name>modules_extensions</name>
+            </module>
+            <module>
+                <name>download_release_notes</name>
+            </module>
+            <module>
+                <name>system_role</name>
+            </module>
+             <module>
+                <label>Disk</label>
+                <name>disk_proposal</name>
+                <enable_back>yes</enable_back>
+                <enable_next>yes</enable_next>
+            </module>
+            <module>
+                <label>Time Zone</label>
+                <name>timezone</name>
+                <enable_back>yes</enable_back>
+                <enable_next>yes</enable_next>
+                <arguments>
+                    <first_run>yes</first_run>
+                </arguments>
+            </module>
+            <module>
+                <name>user_first</name>
+            </module>
+            <module>
+                <name>root_first</name>
+            </module>
+            <module>
+                <heading>yes</heading>
+                <label>Installation</label>
+            </module>
+            <module>
+                <label>Installation Summary</label>
+                <name>initial_installation_proposal</name>
+                <execute>inst_proposal</execute>
+                <proposal>initial</proposal>
+            </module>
+            <!-- FATE #303860: Provide consistent progress during installation -->
+            <module>
+                <label>Perform Installation</label>
+                <name>prepareprogress</name>
+            </module>
+            <module>
+                <label>Perform Installation</label>
+                <name>prepdisk</name>
+            </module>
+            <!-- Clean up the inst-sys to have more free RAM on low memory systems -->
+            <!-- Note: Needs to be call *after* the partitioning step as it might delete
+            the file system or storage kernel modules from inst-sys. They need to be already
+            loaded and active. -->
+            <module>
+                <label>Installer Cleanup</label>
+                <name>instsys_cleanup</name>
+            </module>
+            <module>
+                <label>Perform Installation</label>
+                <name>kickoff</name>
+            </module>
+            <module>
+                <label>Perform Installation</label>
+                <name>rpmcopy</name>
+            </module>
+            <module>
+                <label>Perform Installation</label>
+                <name>addon_update_sources</name>
+            </module>
+            <module>
+                <label>Perform Installation</label>
+                <name>extrasources</name>
+            </module>
+            <module>
+                <label>Perform Installation</label>
+                <name>save_hardware_status</name>
+            </module>
+            <module>
+                <label>Perform Installation</label>
+                <name>finish</name>
+            </module>
+          </append_modules>
+        </workflow>
+
+        <workflow>
+            <defaults>
+                <archs>all</archs>
+            </defaults>
+            <label>Preparation</label>
+            <mode>update</mode>
+            <stage>initial</stage>
+            <append_modules config:type="list">
+                <module>
+                    <label>Load Linuxrc Network Configuration</label>
+                    <name>install_inf</name>
+                </module>
+                <module>
+                    <label>Network Autosetup</label>
+                    <name>setup_dhcp</name>
+                </module>
+                <!-- As soon as possible but after network is initialized -->
+                <module>
+                    <label>Installer Update</label>
+                    <name>update_installer</name>
+                </module>
+                <module>
+                    <name>complex_welcome</name>
+                    <label>Welcome</label>
+                    <enable_back>no</enable_back>
+                    <enable_next>yes</enable_next>
+                    <arguments>
+                        <first_run>yes</first_run>
+                    </arguments>
+                    <retranslate config:type="boolean">true</retranslate>
+                </module>
+                <module>
+                    <label>Network Activation</label>
+                    <name>lan</name>
+                    <enable_back>yes</enable_back>
+                    <enable_next>yes</enable_next>
+                </module>
+                <module>
+                    <label>Disk Activation</label>
+                    <name>disks_activate</name>
+                    <enable_back>yes</enable_back>
+                    <enable_next>yes</enable_next>
+                </module>
+                <module>
+                    <label>System Analysis</label>
+                    <name>system_analysis</name>
+                    <enable_back>yes</enable_back>
+                    <enable_next>yes</enable_next>
+                </module>
+                <module>
+                    <label>System for Update</label>
+                    <name>update_partition</name>
+                    <enable_back>yes</enable_back>
+                    <enable_next>yes</enable_next>
+                </module>
+                <module>
+                    <name>upgrade_urls</name>
+                    <enable_back>yes</enable_back>
+                </module>
+                <module>
+                    <name>scc</name>
+                    <enable_back>yes</enable_back>
+                </module>
+                <module>
+                    <label>Add-On Products</label>
+                    <name>add-on</name>
+                    <enable_back>yes</enable_back>
+                    <enable_next>yes</enable_next>
+                </module>
+                <module>
+                    <name>download_release_notes</name>
+                </module>
+                <module>
+                    <heading>yes</heading>
+                    <label>Update</label>
+                </module>
+                <module>
+                    <label>Update Summary</label>
+                    <name>initial_update_proposal</name>
+                    <execute>inst_proposal</execute>
+                    <proposal>initial</proposal>
+                </module>
+                <!--
+                    FATE #303860: Provide consistent progress during installation
+                    BNC  #438848: Also during upgrade
+                -->
+                <module>
+                    <label>Perform Update</label>
+                    <name>prepareprogress</name>
+                </module>
+                <module>
+                    <label>Perform Update</label>
+                    <name>prepdisk</name>
+                </module>
+                <!-- Clean up the inst-sys to have more free RAM on low memory systems -->
+                <!-- Note: Needs to be call *after* the partitioning step as it might delete
+                the file system or storage kernel append_modules from inst-sys. They need to be already
+                loaded and active. -->
+                <module>
+                    <label>Installer Cleanup</label>
+                    <name>instsys_cleanup</name>
+                </module>
+                <module>
+                    <label>Perform Update</label>
+                    <name>kickoff</name>
+                </module>
+                <module>
+                    <label>Perform Update</label>
+                    <name>rpmcopy</name>
+                </module>
+                <module>
+                    <label>Perform Update</label>
+                    <name>finish</name>
+                </module>
+            </append_modules>
+        </workflow>
+
+        <workflow>
+            <stage>initial</stage>
+            <label>Base Installation</label>
+            <mode>autoinstallation</mode>
+            <defaults>
+                <archs>all</archs>
+                <enable_back>no</enable_back>
+                <enable_next>no</enable_next>
+            </defaults>
+            <append_modules config:type="list">
+                <module>
+                    <label>AutoYaST Settings</label>
+                    <name>initial_autoinstallation_proposal</name>
+                    <execute>inst_proposal</execute>
+                    <proposal>initial</proposal>
+                    <enable_back>no</enable_back>
+                    <enable_next>yes</enable_next>
+                </module>
+                <!-- FATE #303860: Provide consistent progress during installation -->
+                <module>
+                    <label>Perform Installation</label>
+                    <name>prepareprogress</name>
+                </module>
+                <module>
+                    <label>Perform Installation</label>
+                    <name>prepdisk</name>
+                </module>
+                <!-- Clean up the inst-sys to have more free RAM on low memory systems -->
+                <!-- Note: Needs to be call *after* the partitioning step as it might delete
+                the file system or storage kernel append_modules from inst-sys. They need to be already
+                loaded and active. -->
+                <module>
+                    <label>Installer Cleanup</label>
+                    <name>instsys_cleanup</name>
+                </module>
+                <module>
+                    <label>Perform Installation</label>
+                    <name>kickoff</name>
+                </module>
+                <module>
+                    <label>Perform Installation</label>
+                    <name>autoimage</name>
+                </module>
+                <module>
+                    <label>Perform Installation</label>
+                    <name>rpmcopy</name>
+                </module>
+                <module>
+                    <label>Perform Installation</label>
+                    <name>finish</name>
+                </module>
+            </append_modules>
+        </workflow>
+
+        <workflow>
+            <defaults>
+                <archs>all</archs>
+            </defaults>
+            <label>Preparation</label>
+            <mode>autoupgrade</mode>
+            <stage>initial</stage>
+            <append_modules config:type="list">
+                <!-- As soon as possible -->
+                <module>
+                    <label>Installer Update</label>
+                    <name>update_installer</name>
+                    <enable_back>no</enable_back>
+                    <enable_next>yes</enable_next>
+                </module>
+                <module>
+                    <label>System Analysis</label>
+                    <name>system_analysis</name>
+                    <enable_back>yes</enable_back>
+                    <enable_next>yes</enable_next>
+                </module>
+                <module>
+                    <label>System for Update</label>
+                    <name>update_partition_auto</name>
+                    <enable_back>yes</enable_back>
+                    <enable_next>yes</enable_next>
+                </module>
+                <module>
+                    <label>AutoYaST Settings</label>
+                    <name>autoinit</name>
+                    <archs>all</archs>
+                    <retranslate config:type="boolean">true</retranslate>
+                </module>
+                <module>
+                    <label>AutoYaST Settings</label>
+                    <name>autosetup_upgrade</name>
+                </module>
+                <module>
+                    <heading>yes</heading>
+                    <label>Update</label>
+                </module>
+                <module>
+                    <label>AutoYaST Settings</label>
+                    <name>initial_update_proposal</name>
+                    <execute>inst_proposal</execute>
+                    <proposal>initial</proposal>
+                    <enable_back>no</enable_back>
+                    <enable_next>yes</enable_next>
+                </module>
+                <module>
+                    <label>Perform Update</label>
+                    <name>prepareprogress</name>
+                </module>
+
+                <module>
+                    <label>Perform Update</label>
+                    <name>do_resize</name>
+                    <update config:type="boolean">false</update>
+                    <archs>i386,x86_64,ia64</archs>
+                </module>
+                <module>
+                    <label>Perform Update</label>
+                    <name>prepdisk</name>
+                </module>
+                <!-- Clean up the inst-sys to have more free RAM on low memory systems -->
+                <!-- Note: Needs to be call *after* the partitioning step as it might delete
+                the file system or storage kernel modules from inst-sys. They need to be already
+                loaded and active. -->
+                <module>
+                    <label>Installer Cleanup</label>
+                    <name>instsys_cleanup</name>
+                </module>
+                <module>
+                    <label>Perform Update</label>
+                    <name>kickoff</name>
+                </module>
+                <module>
+                    <label>Perform Update</label>
+                    <name>store_upgrade_software</name>
+                </module>
+                <module>
+                    <label>Perform Update</label>
+                    <name>rpmcopy</name>
+                </module>
+                <module>
+                    <label>Perform Update</label>
+                    <name>finish</name>
+                </module>
+            </append_modules>
+        </workflow>
+
+
+        <workflow>
+            <defaults>
+                <archs>all</archs>
+                <enable_back>no</enable_back>
+                <enable_next>no</enable_next>
+            </defaults>
+            <stage>continue</stage>
+            <mode>autoinstallation</mode>
+            <append_modules config:type="list">
+                <module>
+                    <label>Perform Installation</label>
+                    <name>autopost</name>
+                </module>
+                <module>
+                    <label>Perform Installation</label>
+                    <name>rpmcopy_secondstage_autoinstall</name>
+                    <execute>inst_rpmcopy_secondstage</execute>
+                </module>
+                <module>
+                    <heading>yes</heading>
+                    <label>Configuration</label>
+                </module>
+                <module>
+                    <label>System Configuration</label>
+                    <name>autoconfigure</name>
+                </module>
+            </append_modules>
+        </workflow>
+
+        <workflow>
+            <defaults>
+                <archs>all</archs>
+                <enable_back>no</enable_back>
+                <enable_next>no</enable_next>
+            </defaults>
+            <stage>continue</stage>
+            <mode>autoupgrade</mode>
+            <append_modules config:type="list">
+                <module>
+                    <label>Perform Update</label>
+                    <name>autopost</name>
+                </module>
+                <module>
+                    <label>Perform Update</label>
+                    <name>rpmcopy_secondstage_autoupgrade</name>
+                    <execute>inst_rpmcopy_secondstage</execute>
+                </module>
+                <module>
+                    <heading>yes</heading>
+                    <label>Configuration</label>
+                </module>
+                <module>
+                    <label>System Configuration</label>
+                    <name>autoconfigure</name>
+                </module>
+            </append_modules>
+        </workflow>
+
+
+      </workflows>
+    </update>
+</productDefines>

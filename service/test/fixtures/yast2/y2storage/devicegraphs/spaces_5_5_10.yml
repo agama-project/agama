@@ -1,0 +1,40 @@
+---
+- disk:
+    name: /dev/sda
+    size: 400 GiB
+    partition_table:  gpt
+    partitions:
+
+    - partition:
+        size:         100 GiB
+        name:         /dev/sda1
+        id:           windows_basic_data
+        file_system:  ntfs
+        label:        data1
+
+    - free:
+        size:         5 GiB
+
+    - partition:
+        size:         94 GiB
+        name:         /dev/sda2
+        file_system:  ntfs
+        label:        data2
+
+    - free:
+        size:         5 GiB
+
+    - partition:
+        size:         92 GiB
+        name:         /dev/sda3
+        file_system:  ntfs
+        label:        data3
+
+    - free:
+        size:         10 GiB
+
+    - partition:
+        size:         unlimited
+        name:         /dev/sda4
+        file_system:  ntfs
+        label:        data4

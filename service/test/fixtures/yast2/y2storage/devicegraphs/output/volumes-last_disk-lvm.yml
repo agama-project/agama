@@ -1,0 +1,55 @@
+---
+- disk:
+    name: /dev/sda
+    size: 1 TiB
+    partition_table:  ms-dos
+    partitions:
+    - partition:
+        size:         1 GiB
+        name:         /dev/sda1
+
+- disk:
+    name: /dev/sdb
+    size: 400 GiB
+    partition_table:  gpt
+
+- disk:
+    name: /dev/sdc
+    size: 400 GiB
+    partition_table: gpt
+    partitions:
+    - partition:
+        size: 8 MiB
+        name: /dev/sdc1
+        id: bios_boot
+    - partition:
+        size: unlimited
+        name: /dev/sdc2
+        id: lvm
+
+- lvm_vg:
+    vg_name: system
+    lvm_lvs:
+    - lvm_lv:
+        lv_name: var_spacewalk
+        size: 366580 MiB
+        file_system: xfs
+        mount_point: /var/spacewalk
+    - lvm_lv:
+        lv_name: srv
+        size: 10 GiB
+        file_system: xfs
+        mount_point: /srv
+    - lvm_lv:
+        lv_name: root
+        size: 30 GiB
+        file_system: xfs
+        mount_point: /
+    - lvm_lv:
+        lv_name: swap
+        size: 2 GiB
+        file_system: swap
+        mount_point: swap
+    lvm_pvs:
+    - lvm_pv:
+        blk_device: /dev/sdc2

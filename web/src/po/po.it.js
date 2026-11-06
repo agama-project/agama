@@ -208,26 +208,8 @@ export default {
   "802.1ad": [
     "802.1ad"
   ],
-  "A %1$s of %2$s will be created for %3$s if possible": [
-    "Una %1$s di %2$s verrà creata per %3$s se possibile"
-  ],
-  "A %1$s of at least %2$s will be created for %3$s if possible": [
-    "Una %1$s di almeno %2$s verrà creata per %3$s se possibile"
-  ],
-  "A %1$s with a size between %2$s and %3$s will be created for %4$s if possible": [
-    "Una %1$s con una dimensione tra %2$s e %3$s verrà creata per %4$s se possibile"
-  ],
   "A file system will be used for the whole device": [
     "Verrà utilizzato un file system per l'intero dispositivo"
-  ],
-  "A generic minimum size of %1$s will be used for the new %2$s": [
-    "Una dimensione minima generica di %1$s sarà utilizzata per la nuova %2$s"
-  ],
-  "A generic size of %1$s will be used for the new %2$s": [
-    "Una dimensione generica di %1$s sará utilizzata per la nuova %2$s"
-  ],
-  "A generic size range between %1$s and %2$s will be used for the new %3$s": [
-    "Una dimensione generica tra %1$s e %2$s sará utilizzata per la nuova %3$s"
   ],
   "A logical volume may be deleted": [
     "Un volume logico potrebbe essere eliminato"
@@ -370,9 +352,6 @@ export default {
   "All the available zFCP controllers are already activated.": [
     "Tutti i controller zFCP disponibili sono già attivati."
   ],
-  "Allow growing": [
-    "Consenti crescita"
-  ],
   "Allow shrinking": [
     "Consenti riduzione"
   ],
@@ -470,15 +449,6 @@ export default {
   ],
   "Back": [
     "Indietro"
-  ],
-  "Based on the amount of RAM in the system, a %1$s of %2$s will be planned for %3$s": [
-    "In base alla quantità di RAM nel sistema, %1$s di %2$s saranno pianificati per %3$s"
-  ],
-  "Based on the amount of RAM in the system, a %1$s of at least %2$s will be planned for %3$s": [
-    "In base alla quantità di RAM nel sistema, un %1$s di almeno %2$s sarà pianificato per %3$s"
-  ],
-  "Based on the amount of RAM in the system, a %1$s with a size between %2$s and %3$s will be planned for %4$s": [
-    "In base alla quantità di RAM nel sistema, un %1$s con dimensione compresa tra %2$s e %3$s sarà pianificato per %4$s"
   ],
   "Based on the mount point": [
     "In base al punto di mount"
@@ -719,6 +689,9 @@ export default {
   "Configuration from the network plus static addresses and gateway": [
     "Configurazione dalla rete più gateway e indirizzi statici"
   ],
+  "Configuration pre-scripts have been executed and may have modified your system. You can reboot or shut down, but any changes made by these scripts will not be undone.": [
+    ""
+  ],
   "Configuration read from the iSCSI Boot Firmware Table (iBFT). Initiator cannot be changed.": [
     "Configurazione letta da iBFT (iSCSI Boot Firmware Table). Impossibile modificare l'iniziatore."
   ],
@@ -930,9 +903,6 @@ export default {
   "Default selection": [
     "Selezione predefinita"
   ],
-  "Define a custom size": [
-    "Definisci una dimensione personalizzata"
-  ],
   "Define a new LVM on the disk": [
     "Definisci un nuovo LVM sul disco"
   ],
@@ -1001,9 +971,6 @@ export default {
   ],
   "Discard changes": [
     "Ignora modifiche"
-  ],
-  "Discard the maximum size and continue with simplified configuration": [
-    "Ignora la dimensione massima e continua con la configurazione semplificata"
   ],
   "Disconnect": [
     "Disconnetti"
@@ -1157,6 +1124,9 @@ export default {
   ],
   "Encryption settings": [
     "Impostazioni di cifratura"
+  ],
+  "Enter": [
+    ""
   ],
   "Enter a hostname value.": [
     "Inserire un valore per il nome host."
@@ -1641,9 +1611,6 @@ export default {
   ],
   "Left arrow reaches the %d values already added.": [
     ""
-  ],
-  "Let the installer propose a sensible size": [
-    "Lascia proporre una dimensione sensibile al programma di installazione"
   ],
   "Let the installer set the size": [
     "Consenti al programma di installazione di stabilire la dimensione"
@@ -2232,6 +2199,9 @@ export default {
   "Potential data loss affecting at least %s": [
     "Possibile perdita di dati da almeno %s"
   ],
+  "Press %1$s or %2$s to type here, or %3$s to move on.": [
+    ""
+  ],
   "Priority": [
     "Priorità"
   ],
@@ -2633,14 +2603,14 @@ export default {
   "Shrink existing partitions": [
     "Riduci partizioni esistenti"
   ],
+  "Shut down": [
+    ""
+  ],
   "Signal strength": [
     "Potenza del segnale"
   ],
   "Size": [
     "Dimensione"
-  ],
-  "Size modes": [
-    "Modalità dimensione"
   ],
   "Skip to content": [
     "Salta al contenuto"
@@ -2695,6 +2665,9 @@ export default {
   ],
   "Something went wrong": [
     "Qualcosa è andato storto"
+  ],
+  "Space": [
+    ""
   ],
   "Spanning Tree Protocol (STP)": [
     "STP (Spanning Tree Protocol)"
@@ -2777,6 +2750,9 @@ export default {
   "TPM sealing requires the new system to be booted directly.": [
     "Il nuovo sistema deve essere avviato direttamente per permettere la sigillatura TPM."
   ],
+  "Tab": [
+    ""
+  ],
   "Take a moment to review the installation settings below and adjust them as needed.": [
     "Esaminare le impostazioni di seguito e modificarle secondo necessità."
   ],
@@ -2825,15 +2801,6 @@ export default {
   ],
   "The current configuration will be discarded to apply the default settings of the new product.": [
     "La configurazione attuale sarà ignorata per applicare le impostazioni predefinite al nuovo prodotto."
-  ],
-  "The current configuration will result in an attempt to create a %1$s of %2$s.": [
-    "La configurazione corrente darà come risultato un tentativo di creazione %1$s di %2$s."
-  ],
-  "The current configuration will result in an attempt to create a %1$s of at least %2$s.": [
-    "La configurazione attuale porterà a un tentativo di creazione di una %1$s di almeno %2$s."
-  ],
-  "The current configuration will result in an attempt to create a %1$s with a size between %2$s and %3$s.": [
-    "La configurazione attuale porterà a un tentativo di creazione di una %1$s con una dimensione compresa tra %2$s e %3$s."
   ],
   "The current file system will be mounted at %s": [
     "L'attuale file system sarà montato in %s"
@@ -2896,9 +2863,6 @@ export default {
   "The file %s contains a record of the installer activity so far, useful to diagnose installation issues.": [
     "Il file %s contiene un registro dell'attività svolta finora dal programma di installazione, utile per diagnosticare i problemi di installazione."
   ],
-  "The final size can be bigger in order to fill the extra free space.": [
-    "La dimensione finale può essere maggiore al fine di utilizzare tutto lo spazio libero aggiuntivo."
-  ],
   "The final step to configure the Trusted Platform Module (TPM) to automatically open encrypted devices will take place during the first boot of the new system. For that to work, the machine needs to boot directly to the new boot loader.": [
     "Per configurare il Trusted Platform Module (TPM) in modo che apra automaticamente i dispositivi cifrati, l'ultimo passaggio avrà luogo al primo avvio del nuovo sistema. La macchina deve avviarsi direttamente nel nuovo boot loader per completare l'operazione."
   ],
@@ -2948,42 +2912,6 @@ export default {
   "The product was not found in the repositories so it is not possible to proceed with the installation.": [
     "Il prodotto non è stato trovato nei repository, pertanto non è possibile procedere con l'installazione."
   ],
-  "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
-    "La dimensione di %1$s verrà regolata dinamicamente in base alla quantità di RAM nel sistema e alla presenza di un file system separato per %2$s."
-  ],
-  "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of separate file systems for %2$s.": [
-    "La dimensione di %1$s verrà regolata dinamicamente in base alla quantità di RAM nel sistema e alla presenza di file system separati per %2$s."
-  ],
-  "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of a separate file system for %2$s.": [
-    "La dimensione di %1$s verrà dinamicamente regolata in base alla quantità di RAM nel sistema, all'utilizzo degli snapshot Btrfs e alla presenza di un file system separato per %2$s."
-  ],
-  "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of separate file systems for %2$s.": [
-    "La dimensione di %1$s verrà dinamicamente regolata in base alla quantità di RAM nel sistema, all'utilizzo degli snapshot Btrfs e alla presenza di un file system separato per %2$s."
-  ],
-  "The size for %1$s will be dynamically adjusted based on the presence of a separate file system for %2$s.": [
-    "La dimensione di %1$s verrà regolata dinamicamente in base alla presenza di un file system separato per %2$s."
-  ],
-  "The size for %1$s will be dynamically adjusted based on the presence of separate file systems for %2$s.": [
-    "La dimensione di %1$s verrà regolata dinamicamente in base alla presenza di file system separati per %2$s."
-  ],
-  "The size for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of a separate file system for %2$s.": [
-    "La dimensione di %1$s verrà regolata dinamicamente in base all'utilizzo degli snapshot Btrfs e alla presenza di un file system separato per %2$s."
-  ],
-  "The size for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of separate file systems for %2$s.": [
-    "La dimensione di %1$s verrà regolata dinamicamente in base all'utilizzo degli snapshot Btrfs e alla presenza di file system separati per %2$s."
-  ],
-  "The size for %s will be dynamically adjusted based on the amount of RAM in the system and the usage of Btrfs snapshots.": [
-    "La dimensione di %s verrà regolata dinamicamente in base alla quantità di RAM nel sistema e all'utilizzo degli snapshot Btrfs."
-  ],
-  "The size for %s will be dynamically adjusted based on the usage of Btrfs snapshots.": [
-    "La dimensione di %s verrà regolata dinamicamente in base all'utilizzo degli snapshot Btrfs."
-  ],
-  "The size is configured as a range between %s and %s, but this interface cannot handle ranges with a given max size.": [
-    "La dimensione è configurata come un intervallo tra %s e %s, ma questa interfaccia non è in grado di gestire intervalli in cui è specificata una dimensione massima."
-  ],
-  "The size must be a number followed by a unit of the form GiB (power of 2) or GB (power of 10).": [
-    "La dimensione deve essere un numero seguito da un'unità nella forma GiB (potenza di 2) o GB (potenza di 10)."
-  ],
   "The software selection could not be loaded.": [
     "Impossibile caricare la selezione del software."
   ],
@@ -3004,6 +2932,9 @@ export default {
   ],
   "The whole device will be used for %s": [
     "L'intero dispositivo verrà utilizzato per %s"
+  ],
+  "Then %1$s+%2$s+%3$s to move out.": [
+    ""
   ],
   "There are %s deactivated zFCP controllers.": [
     "Esistono %s controller zFCP disattivati."
@@ -3422,6 +3353,9 @@ export default {
   "You can safely close this window.": [
     "Puoi chiudere con sicurezza questa finestra."
   ],
+  "You can safely reboot or shut down the system. No changes have been made to your disks, and your current installation setup will be canceled.": [
+    ""
+  ],
   "You may want to discard the current settings and start from scratch with a simple configuration.": [
     "Se lo si desidera, è possibile ignorare le impostazioni attuali e iniziare da zero con una configurazione semplice."
   ],
@@ -3436,9 +3370,6 @@ export default {
   ],
   "[CAPS LOCK] is on": [
     "[BLOC MAIUSC] attivo"
-  ],
-  "approx. %s": [
-    "circa %s"
   ],
   "at least %s": [
     "almeno %s"
@@ -3457,12 +3388,6 @@ export default {
   ],
   "immutable Btrfs": [
     "Btrfs immutabili"
-  ],
-  "logical volume": [
-    "volume logico"
-  ],
-  "partition": [
-    "partizione"
   ],
   "reset to defaults": [
     "ripristina le impostazioni predefinite"

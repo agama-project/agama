@@ -1,0 +1,36 @@
+---
+- disk:
+    name: /dev/sda
+    size: 1 TiB
+    partition_table:  ms-dos
+    partitions:
+
+    - partition:
+        name:         /dev/sda1
+        id:           0x7
+        file_system:  ntfs
+        label:        windows
+
+- disk:
+    name: /dev/sdb
+    size: 400 GiB
+    partition_table:  gpt
+    partitions:
+
+    - partition:
+        name:         /dev/sdb1
+        id: windows_basic_data
+        file_system:  ntfs
+        label:        windows
+
+- disk:
+    name: /dev/sdc
+    size: 400 GiB
+    partition_table:  ms-dos
+    partitions:
+
+    - partition:
+        name:         /dev/sdc1
+        id:           0x7
+        file_system:  ntfs
+        label:        windows

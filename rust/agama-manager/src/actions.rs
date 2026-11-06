@@ -21,11 +21,10 @@
 use crate::{
     bootloader, checks, files, hostname,
     ipmi::Ipmi,
-    iscsi, l10n, ntp, proxy, s390, security, service, software, storage,
+    iscsi, l10n, network, ntp, proxy, s390, security, service, software, storage,
     task_manager::{TaskError, TaskId, TaskManager},
     users,
 };
-use agama_network::NetworkSystemClient;
 use agama_utils::{
     actor::{Handler, MessageHandler},
     api::{files::scripts::ScriptsGroup, status::Stage, Config, FinishMethod, Scope},
@@ -45,7 +44,7 @@ pub struct InstallAction {
     pub hostname: Handler<hostname::Service>,
     pub issues: Handler<issue::Service>,
     pub l10n: Handler<l10n::Service>,
-    pub network: NetworkSystemClient,
+    pub network: Handler<network::Service>,
     pub proxy: Handler<proxy::Service>,
     pub ntp: Handler<ntp::Service>,
     pub access: Handler<agama_access::Service>,
@@ -192,7 +191,10 @@ impl InstallAction {
                         .call(files::message::Finish)
                         .await
                         .map_err(TaskError::from_error)?;
-                    network.install().await.map_err(TaskError::from_error)?;
+                    network
+                        .call(network::message::Install)
+                        .await
+                        .map_err(TaskError::from_error)?;
                     proxy
                         .call(proxy::message::Finish)
                         .await
@@ -323,7 +325,7 @@ pub struct SetConfigAction {
     pub hostname: Handler<hostname::Service>,
     pub iscsi: Handler<iscsi::Service>,
     pub l10n: Handler<l10n::Service>,
-    pub network: NetworkSystemClient,
+    pub network: Handler<network::Service>,
     pub proxy: Handler<proxy::Service>,
     pub ntp: Handler<ntp::Service>,
     pub progress: Handler<progress::Service>,
@@ -417,14 +419,15 @@ impl SetConfigAction {
         .await;
 
         // Proxy
-        self.spawn_config_task(
-            Scope::Proxy,
-            &gettext("Setting up the network proxy"),
-            self.proxy.clone(),
-            proxy::message::SetConfig::new(config.proxy.clone()),
-            &[pre_scripts_task],
-        )
-        .await;
+        let proxy_task = self
+            .spawn_config_task(
+                Scope::Proxy,
+                &gettext("Setting up the network proxy"),
+                self.proxy.clone(),
+                proxy::message::SetConfig::new(config.proxy.clone()),
+                &[pre_scripts_task],
+            )
+            .await;
 
         // NTP
         let ntp_task = self
@@ -460,7 +463,8 @@ impl SetConfigAction {
         let mut iscsi_deps = vec![pre_scripts_task];
 
         // Network configuration
-        if let Some(task_id) = self.set_network_config(&config, &[pre_scripts_task]).await {
+        let network_task = self.set_network_config(&config, &[pre_scripts_task]).await;
+        if let Some(task_id) = network_task {
             iscsi_deps.push(task_id);
         }
 
@@ -502,19 +506,21 @@ impl SetConfigAction {
                 .set_bootloader_config(&config, &[pre_scripts_task, storage_task])
                 .await;
 
-            // Software configuration - depends on files, storage, and bootloader
+            // Software configuration - depends on files, storage, bootloader, ntp, proxy, and network
+            let mut software_deps = vec![
+                files_task,
+                pre_scripts_task,
+                storage_task,
+                bootloader_task,
+                ntp_task,
+                proxy_task,
+            ];
+            if let Some(network_task_id) = network_task {
+                software_deps.push(network_task_id);
+            }
+
             let software_task = self
-                .set_software_config(
-                    Arc::clone(&product),
-                    &config,
-                    &[
-                        files_task,
-                        pre_scripts_task,
-                        storage_task,
-                        bootloader_task,
-                        ntp_task,
-                    ],
-                )
+                .set_software_config(Arc::clone(&product), &config, &software_deps)
                 .await;
 
             // SELinux configuration - depends on software configuration
@@ -641,11 +647,10 @@ impl SetConfigAction {
                 )
                 .depends_on(dependencies)
                 .run(|| async move {
-                    if let Err(error) = handler.update_config(network_config).await {
-                        tracing::error!("Failed to update the network configuration: {error}");
-                    } else if let Err(error) = handler.apply().await {
-                        tracing::error!("Failed to apply the network configuration: {error}");
-                    }
+                    handler
+                        .call(network::message::SetConfig::new(network_config))
+                        .await
+                        .map_err(TaskError::from_error)?;
                     Ok(())
                 })
                 .await,

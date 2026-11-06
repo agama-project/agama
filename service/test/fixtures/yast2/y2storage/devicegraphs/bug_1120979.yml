@@ -1,0 +1,61 @@
+---
+- disk:
+    name: "/dev/vda"
+    size: 120 GiB
+    partition_table: gpt
+    partitions:
+    - partition:
+        size: 500 MiB
+        name: "/dev/vda1"
+        type: primary
+        id: esp
+        file_system: vfat
+    - partition:
+        size: 120330 MiB (117.51 GiB)
+        name: "/dev/vda2"
+        type: primary
+        id: linux
+        file_system: ext4
+        label: rootfs
+    - partition:
+        size: unlimited
+        name: "/dev/vda3"
+        type: primary
+        id: swap
+        file_system: swap
+
+- disk:
+    name: "/dev/vdb"
+    size: 20 GiB
+    partition_table: gpt
+    partitions:
+    - partition:
+        size: unlimited
+        name: "/dev/vdb1"
+        type: primary
+        id: raid
+
+- disk:
+    name: "/dev/vdc"
+    size: 20 GiB
+    partition_table: gpt
+    partitions:
+    - partition:
+        size: unlimited
+        start: 1 MiB
+        name: "/dev/vdc1"
+        type: primary
+        id: raid
+
+- md:
+    name: "/dev/md/0"
+    md_level: raid1
+    md_parity: default
+    chunk_size: 0 B
+    md_uuid: 9735ad92:634c370d:52b5ce28:e204610c
+    file_system: ext4
+    md_devices:
+    - md_device:
+        blk_device: "/dev/vdb1"
+    - md_device:
+        blk_device: "/dev/vdc1"

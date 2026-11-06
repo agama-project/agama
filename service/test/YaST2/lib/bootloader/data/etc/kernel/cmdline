@@ -1,0 +1,1 @@
+splash=silent quiet security=apparmor mitigations=off

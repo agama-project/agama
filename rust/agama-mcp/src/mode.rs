@@ -31,7 +31,8 @@ pub enum McpMode {
     #[default]
     Disabled,
     /// Configuration-only mode: allows inspecting system hardware, retrieving schemas,
-    /// injecting configurations, answering prompts, and checking proposals. `commit_install` is forbidden.
+    /// injecting configurations, answering prompts, and checking proposals.
+    /// `commit_install` is forbidden.
     Config,
     /// Full mode: allows all operations including executing the installation via `commit_install`.
     Full,

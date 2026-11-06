@@ -23,9 +23,7 @@
     "gopher": "http://proxy.example.com:8080",
     "socks": "socks://proxy.example.com:1080",
     "socks5": "socks5://proxy.example.com:1080",
-    "noProxy": "localhost,127.0.0.1,.example.com",
-    "user": "proxyuser",
-    "password": "proxypassword"
+    "noProxy": "localhost,127.0.0.1,.example.com"
   },
   "security": {
     "sslCertificates": [

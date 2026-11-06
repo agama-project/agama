@@ -1,0 +1,39 @@
+{
+  "title": "Any kind of connection as a port",
+  "description": "NetworkManager does not check the kind of the ports of a controller, so a VLAN can be the port of a bond and a bridge the port of a bridge. They are reported nested, with their own section.",
+  "steps": [
+    {
+      "profile": "1-vlan-in-bond-and-bridge-in-bridge.json",
+      "description": "eth1.100 (VLAN) nested in bond0, and br1 nested in br0 (priority 16) with eth0 by name",
+      "expect": {
+        "connections": {
+          "bond0": {
+            "controller": null,
+            "method4": "auto"
+          },
+          "eth1.100": {
+            "controller": "bond0",
+            "vlan": {
+              "parent": "eth1",
+              "id": 100,
+              "protocol": "802.1Q"
+            }
+          },
+          "br0": {
+            "controller": null,
+            "method4": "auto"
+          },
+          "br1": {
+            "controller": "br0",
+            "port": {
+              "priority": 16
+            }
+          },
+          "eth0": {
+            "controller": "br1"
+          }
+        }
+      }
+    }
+  ]
+}

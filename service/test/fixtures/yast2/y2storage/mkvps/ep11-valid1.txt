@@ -1,0 +1,2 @@
+WK CUR: valid 0xbcd32323232325dbc44312012034455933aaacccbbbb32999abcd123bcdf1098
+WK NEW: empty -

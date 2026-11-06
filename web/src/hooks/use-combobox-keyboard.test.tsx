@@ -21,7 +21,7 @@
  */
 
 import React, { useState } from "react";
-import { screen } from "@testing-library/react";
+import { act, screen } from "@testing-library/react";
 import {
   Select,
   SelectList,
@@ -165,6 +165,30 @@ describe("useComboboxKeyboard", () => {
 
     // Focus should be restored to the toggle button
     expect(toggle).toHaveFocus();
+  });
+
+  // Let pending timers run, as a browser does between two keystrokes.
+  const nextTick = () => act(() => new Promise((resolve) => setTimeout(resolve, 0)));
+
+  it("does not steal focus from a field clicked to close the menu", async () => {
+    const { user } = installerRender(
+      <>
+        <TestSelect />
+        <input aria-label="Password" />
+      </>,
+      { userEventOptions: { delay: null } },
+    );
+
+    await user.click(screen.getByRole("button", { name: "option1" }));
+    screen.getByRole("option", { name: "Option 2" });
+
+    const password = screen.getByRole("textbox", { name: "Password" });
+    await user.click(password);
+    await nextTick();
+    await user.keyboard("secret123");
+
+    expect(password).toHaveFocus();
+    expect(password).toHaveValue("secret123");
   });
 
   describe("with external state management", () => {

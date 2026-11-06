@@ -54,7 +54,17 @@ struct MockBackend {
 
 fn sample_system_info() -> SystemInfo {
     SystemInfo {
-        manager: Default::default(),
+        manager: agama_utils::api::manager::SystemInfo {
+            products: vec![agama_utils::api::manager::Product {
+                id: "Tumbleweed".to_string(),
+                name: "openSUSE Tumbleweed".to_string(),
+                description: "openSUSE Tumbleweed rolling release".to_string(),
+                icon: "default.svg".to_string(),
+                registration: false,
+                ..Default::default()
+            }],
+            ..Default::default()
+        },
         hostname: agama_utils::api::hostname::SystemInfo {
             r#static: None,
             hostname: "localhost".to_string(),
@@ -265,6 +275,26 @@ async fn test_get_system_filtered() {
     let text = &res.content[0].as_text().unwrap().text;
     assert!(text.contains("/dev/sda"));
     assert!(text.contains("/dev/nvme0n1"));
+}
+
+#[tokio::test]
+async fn test_get_system_filtered_products_returns_json_object() {
+    let backend = Arc::new(MockBackend::default());
+    let server = McpServer::with_backend(backend, McpMode::Full);
+
+    let res = server
+        .get_system(Parameters(GetSystemArgs {
+            resource: Some("products".to_string()),
+        }))
+        .await
+        .unwrap();
+
+    let text = &res.content[0].as_text().unwrap().text;
+    let parsed: serde_json::Value = serde_json::from_str(text).unwrap();
+    // Must return a JSON Object wrapping the array under the resource key, not a bare Array
+    assert!(parsed.is_object());
+    assert!(parsed["products"].is_array());
+    assert_eq!(parsed["products"][0]["id"], "Tumbleweed");
 }
 
 #[tokio::test]

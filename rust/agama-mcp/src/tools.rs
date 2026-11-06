@@ -51,7 +51,9 @@ pub struct GetSystemArgs {
 /// Arguments for the `get_config_schema` tool.
 #[derive(Debug, Clone, Default, Deserialize, JsonSchema)]
 pub struct GetConfigSchemaArgs {
-    /// Optional section name to retrieve detailed schema for (e.g. 'storage', 'software', 'access', 'network', 'user', 'bootloader'). Omit to get root profile schema overview and available sections.
+    /// Optional section name to retrieve detailed schema for (e.g. 'storage', 'software', 'access',
+    /// 'network', 'user', 'bootloader'). Omit to get root profile schema overview and available
+    /// sections.
     pub section: Option<String>,
 }
 
@@ -65,7 +67,8 @@ pub struct SetConfigArgs {
 /// Arguments for the `get_logs` tool.
 #[derive(Debug, Clone, Default, Deserialize, JsonSchema)]
 pub struct GetLogsArgs {
-    /// Log scope: 'installer' for Agama traces (agama* units), 'system' for system-wide journalctl, 'zypp' for package manager logs, or a specific systemd unit name. Defaults to 'installer'.
+    /// Log scope: 'installer' for Agama traces (agama* units), 'system' for system-wide journalctl,
+    /// 'zypp' for package manager logs, or a specific systemd unit name. Defaults to 'installer'.
     pub log_type: Option<String>,
     /// Number of most recent log lines to retrieve (default: 100, max: 1000).
     pub lines: Option<usize>,
@@ -194,10 +197,15 @@ impl ProposalOutcome {
 
 /// Filters system inventory information by resource category.
 /// Dynamically matches against top-level keys in the serialized SystemInfo.
+/// Always returns a JSON Object (wrapping arrays or non-object values under the resource key).
 pub(crate) fn filter_system_resource(system_val: &Value, resource: &str) -> Value {
     if let Some(map) = system_val.as_object() {
         if let Some(val) = map.get(resource) {
-            val.clone()
+            if val.is_object() {
+                val.clone()
+            } else {
+                json!({ resource: val })
+            }
         } else {
             let mut available: Vec<&str> = map.keys().map(|k| k.as_str()).collect();
             available.sort_unstable();
@@ -207,7 +215,7 @@ pub(crate) fn filter_system_resource(system_val: &Value, resource: &str) -> Valu
             })
         }
     } else {
-        system_val.clone()
+        json!({ resource: system_val })
     }
 }
 
@@ -357,20 +365,32 @@ mod tests {
         let system_val = json!({
             "storage": { "disks": ["/dev/sda", "/dev/nvme0n1"] },
             "network": { "interfaces": ["eth0"] },
-            "software": { "products": ["SLES"] },
-            "hardware": { "cpu": "x86_64", "memory": 16000000000u64, "model": "TestVM" }
+            "software": { "packages": ["kernel-default"] },
+            "hardware": { "cpu": "x86_64", "memory": 16000000000u64, "model": "TestVM" },
+            "products": [
+                { "id": "openSUSE-Tumbleweed", "name": "openSUSE Tumbleweed" }
+            ]
         });
 
         let storage = filter_system_resource(&system_val, "storage");
+        assert!(storage.is_object());
         assert_eq!(storage["disks"][0], "/dev/sda");
 
         let network = filter_system_resource(&system_val, "network");
+        assert!(network.is_object());
         assert_eq!(network["interfaces"][0], "eth0");
 
         let hardware = filter_system_resource(&system_val, "hardware");
+        assert!(hardware.is_object());
         assert_eq!(hardware["cpu"], "x86_64");
 
+        let products = filter_system_resource(&system_val, "products");
+        assert!(products.is_object());
+        assert!(products["products"].is_array());
+        assert_eq!(products["products"][0]["id"], "openSUSE-Tumbleweed");
+
         let unknown = filter_system_resource(&system_val, "unknown_item");
+        assert!(unknown.is_object());
         assert!(unknown.get("error").is_some());
     }
 

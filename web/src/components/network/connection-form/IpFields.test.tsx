@@ -94,6 +94,20 @@ describe("IpFields", () => {
     });
   });
 
+  describe("when mode is disabled", () => {
+    it("does not show addresses or gateway", () => {
+      installerRender(<TestForm defaultValues={{ ipv4Mode: FormIpMode.DISABLED }} />);
+      expect(screen.queryByText("IPv4 Addresses")).not.toBeInTheDocument();
+      expect(screen.queryByText("IPv4 Gateway")).not.toBeInTheDocument();
+    });
+  });
+
+  it("offers disabling the IP configuration", async () => {
+    const { user } = installerRender(<TestForm />);
+    await user.click(screen.getByLabelText("IPv4 Settings"));
+    screen.getByRole("option", { name: /^Disabled/ });
+  });
+
   describe("address normalization", () => {
     it("adds default /24 prefix to Class C IPv4 addresses without prefix", async () => {
       const { user } = installerRender(

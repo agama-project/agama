@@ -1,0 +1,15 @@
+---
+# This file includes many holes in the names of the devices. The goal is not to
+# represent a valid devicegraph but to present challenging combinations of names
+# to test the stable sorting
+- disk:
+    name: /dev/vda
+    size: 50 GiB
+
+- dasd:
+    name: /dev/vdaa
+    size: 50 GiB
+
+- disk:
+    name: /dev/vdb
+    size: 50 GiB

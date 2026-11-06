@@ -232,26 +232,8 @@ export default {
   "802.1ad": [
     "802.1ad"
   ],
-  "A %1$s of %2$s will be created for %3$s if possible": [
-    "%1$s ზომით %2$s შეიქმნება %3$s-სთვის, თუ ეს შესაძლებელია"
-  ],
-  "A %1$s of at least %2$s will be created for %3$s if possible": [
-    "%1$s ზომით %2$s შეიქმნება %3$s-სთვის, თუ შესაძლებელია"
-  ],
-  "A %1$s with a size between %2$s and %3$s will be created for %4$s if possible": [
-    "%1$s ზომით %2$s-%3$s შეიქმნება %4$s-სთვის, თუ ეს შესაძლებელია"
-  ],
   "A file system will be used for the whole device": [
     "ფაილური სისტემა მთელი მოწყობილობისთვის იქნება გამოყენებული"
-  ],
-  "A generic minimum size of %1$s will be used for the new %2$s": [
-    "ახალი %2$s-სთვის გამოყენებული იქნება ზოგადი ზომა %1$s"
-  ],
-  "A generic size of %1$s will be used for the new %2$s": [
-    "ზოგადი ზომა %1$s გამოყენებული იქნება ახალი %2$s-სთვის"
-  ],
-  "A generic size range between %1$s and %2$s will be used for the new %3$s": [
-    ""
   ],
   "A logical volume may be deleted": [
     "შეიძლება წაიშალოს ლოგიკური ტომი"
@@ -400,9 +382,6 @@ export default {
   "All values removed.": [
     "ყველა მნიშვნელობა წაშლილია."
   ],
-  "Allow growing": [
-    "გაზრდის დაშვება"
-  ],
   "Allow shrinking": [
     "დაპატარავების დაშვება"
   ],
@@ -500,15 +479,6 @@ export default {
   ],
   "Back": [
     "უკან"
-  ],
-  "Based on the amount of RAM in the system, a %1$s of %2$s will be planned for %3$s": [
-    ""
-  ],
-  "Based on the amount of RAM in the system, a %1$s of at least %2$s will be planned for %3$s": [
-    ""
-  ],
-  "Based on the amount of RAM in the system, a %1$s with a size between %2$s and %3$s will be planned for %4$s": [
-    "სისტემის RAM-ზე დამოკიდებულებით %1$s-ის ზომა %2$s-%3$s შუალედიდან იქნება %4$s-სთვის"
   ],
   "Based on the mount point": [
     "დაფუძნებულია მიმაგრების წერტილზე"
@@ -758,6 +728,9 @@ export default {
   "Configuration from the network plus static addresses and gateway": [
     "კონფიგურაცია ქსელიდან, პლუს სტატიკური მისამართები და ნაგულისხმევი რაუტერი"
   ],
+  "Configuration pre-scripts have been executed and may have modified your system. You can reboot or shut down, but any changes made by these scripts will not be undone.": [
+    ""
+  ],
   "Configuration read from the iSCSI Boot Firmware Table (iBFT). Initiator cannot be changed.": [
     "iSCSI-დან ჩამტვირთავი მიკროკოდიდან (iBFT) წაკითხული კონფიგურაცია. ინიციატორის შეცვლა შეუძლებელია."
   ],
@@ -969,9 +942,6 @@ export default {
   "Default selection": [
     "ნაგულისხმევი არჩევანი"
   ],
-  "Define a custom size": [
-    "აღერეთ თქვენი ზომა"
-  ],
   "Define a new LVM on the disk": [
     "ახალი LVM-ის აღწერა დისკზე"
   ],
@@ -1040,9 +1010,6 @@ export default {
   ],
   "Discard changes": [
     "ცვლილებების მოცილება"
-  ],
-  "Discard the maximum size and continue with simplified configuration": [
-    "მაქსიმალური ზომის მოცილება და გამარტივებული კონფიგურაციით გაგრძელება"
   ],
   "Disconnect": [
     "გამოერთება"
@@ -1206,6 +1173,9 @@ export default {
   "Encryption settings": [
     "დაშიფვრის პარამეტრები"
   ],
+  "Enter": [
+    ""
+  ],
   "Enter a hostname value.": [
     "შეიყვანეთ ჰოსტის სახელის მნიშვნელობა."
   ],
@@ -1253,6 +1223,9 @@ export default {
   ],
   "ExFAT": [
     "ExFAT"
+  ],
+  "Exit installation": [
+    "დაყენების პროგრამიდან გასვლა"
   ],
   "Expand if possible": [
     "გაფართოება, თუ შესაძლებელია"
@@ -1695,9 +1668,6 @@ export default {
   ],
   "Left arrow reaches the %d values already added.": [
     ""
-  ],
-  "Let the installer propose a sensible size": [
-    "დაყენების პროგრამისთვის ზომის შეთავაზების უფლების დართვა"
   ],
   "Let the installer set the size": [
     "დაყენების პროგრამისთვის ზომის დაყენების უფლების დართვა"
@@ -2295,6 +2265,9 @@ export default {
   "Potential data loss affecting at least %s": [
     "პოტენციური მონაცემთა კარგვა, რომელიც, მინიმუმ, ეხება სისტემას %s"
   ],
+  "Press %1$s or %2$s to type here, or %3$s to move on.": [
+    ""
+  ],
   "Priority": [
     "პრიორიტეტი"
   ],
@@ -2515,7 +2488,7 @@ export default {
     "STP"
   ],
   "SUSE Customer Center (SCC)": [
-    "SUSE Customer Center (SCC)"
+    "SUSE-ის კლიენტების მომსახურების ცენტრი (SCC)"
   ],
   "Security": [
     "უსაფრთხოება"
@@ -2533,7 +2506,7 @@ export default {
     "გრაფიკული ინტერფეისის მისაღებად აირჩიეთ სამუშაო გარემო."
   ],
   "Select a device": [
-    "აირჩიეთ მოწყობილობა"
+    "მოწყობილობის არჩევა"
   ],
   "Select a disk": [
     "აირჩიეთ დისკი"
@@ -2711,14 +2684,14 @@ export default {
   "Shrink existing partitions": [
     "არსებული დანაყოფების დაპატარავება"
   ],
+  "Shut down": [
+    "გამორთვა"
+  ],
   "Signal strength": [
     "სიგნალის სიძლიერე"
   ],
   "Size": [
     "ზომა"
-  ],
-  "Size modes": [
-    "ზომის რეჟიმები"
   ],
   "Skip to content": [
     "შემცველობაზე გადასვლა"
@@ -2776,6 +2749,9 @@ export default {
   ],
   "Something went wrong": [
     "რაღაც არასწორია"
+  ],
+  "Space": [
+    ""
   ],
   "Spanning Tree Protocol (STP)": [
     "პროტოკოლი Spanning Tree (STP)"
@@ -2858,6 +2834,9 @@ export default {
   "TPM sealing requires the new system to be booted directly.": [
     "TPM-ის დაბეჭდვას ახალი სისტემის პირდაპირ ჩატვირთვა სჭირდება."
   ],
+  "Tab": [
+    ""
+  ],
   "Take a moment to review the installation settings below and adjust them as needed.": [
     ""
   ],
@@ -2905,15 +2884,6 @@ export default {
     ""
   ],
   "The current configuration will be discarded to apply the default settings of the new product.": [
-    ""
-  ],
-  "The current configuration will result in an attempt to create a %1$s of %2$s.": [
-    ""
-  ],
-  "The current configuration will result in an attempt to create a %1$s of at least %2$s.": [
-    ""
-  ],
-  "The current configuration will result in an attempt to create a %1$s with a size between %2$s and %3$s.": [
     ""
   ],
   "The current file system will be mounted at %s": [
@@ -2977,9 +2947,6 @@ export default {
   "The file %s contains a record of the installer activity so far, useful to diagnose installation issues.": [
     ""
   ],
-  "The final size can be bigger in order to fill the extra free space.": [
-    ""
-  ],
   "The final step to configure the Trusted Platform Module (TPM) to automatically open encrypted devices will take place during the first boot of the new system. For that to work, the machine needs to boot directly to the new boot loader.": [
     ""
   ],
@@ -3032,42 +2999,6 @@ export default {
   "The product was not found in the repositories so it is not possible to proceed with the installation.": [
     ""
   ],
-  "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
-    ""
-  ],
-  "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of separate file systems for %2$s.": [
-    ""
-  ],
-  "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of a separate file system for %2$s.": [
-    ""
-  ],
-  "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of separate file systems for %2$s.": [
-    ""
-  ],
-  "The size for %1$s will be dynamically adjusted based on the presence of a separate file system for %2$s.": [
-    ""
-  ],
-  "The size for %1$s will be dynamically adjusted based on the presence of separate file systems for %2$s.": [
-    ""
-  ],
-  "The size for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of a separate file system for %2$s.": [
-    ""
-  ],
-  "The size for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of separate file systems for %2$s.": [
-    ""
-  ],
-  "The size for %s will be dynamically adjusted based on the amount of RAM in the system and the usage of Btrfs snapshots.": [
-    ""
-  ],
-  "The size for %s will be dynamically adjusted based on the usage of Btrfs snapshots.": [
-    ""
-  ],
-  "The size is configured as a range between %s and %s, but this interface cannot handle ranges with a given max size.": [
-    ""
-  ],
-  "The size must be a number followed by a unit of the form GiB (power of 2) or GB (power of 10).": [
-    ""
-  ],
   "The software selection could not be loaded.": [
     "პროგრამების არჩევნის ჩატვირთვა შეუძლებელია."
   ],
@@ -3080,6 +3011,9 @@ export default {
   "The system is rebooting": [
     "მიმდინარეობს სისტემის გადატვირთვა"
   ],
+  "The system is shutting down": [
+    "მიმდინარეობს სისტემის გამორთვა"
+  ],
   "The system will boot to a command-line interface.": [
     "სისტემა ბრძანების სტრიქონის ინტერფეისში ჩაიტვირთება."
   ],
@@ -3088,6 +3022,9 @@ export default {
   ],
   "The whole device will be used for %s": [
     "%s-სთვის გამოყენებული იქნება მთლიანი მოწყობილობა"
+  ],
+  "Then %1$s+%2$s+%3$s to move out.": [
+    "შემდეგ %1$s+%2$s+%3$s გარეთ გასატანად."
   ],
   "There are %s deactivated zFCP controllers.": [
     "არსებობს %s დეაქტივირებული zFCP კონტროლერები."
@@ -3512,6 +3449,9 @@ export default {
   "You can safely close this window.": [
     "ეს ფანჯარა შეგიძლიათ, უსაფრთხოდ დახუროთ."
   ],
+  "You can safely reboot or shut down the system. No changes have been made to your disks, and your current installation setup will be canceled.": [
+    ""
+  ],
   "You may want to discard the current settings and start from scratch with a simple configuration.": [
     ""
   ],
@@ -3526,9 +3466,6 @@ export default {
   ],
   "[CAPS LOCK] is on": [
     "[CAPS LOCK] ჩართულია"
-  ],
-  "approx. %s": [
-    "დაახლ. %s"
   ],
   "at least %s": [
     "%s მაინც"
@@ -3547,12 +3484,6 @@ export default {
   ],
   "immutable Btrfs": [
     "უცვლადი Btrfs"
-  ],
-  "logical volume": [
-    "ლოგიკური ტომი"
-  ],
-  "partition": [
-    "დანაყოფი"
   ],
   "reset to defaults": [
     "ჩამოყრა ნაგულისხმევზე"

@@ -1,0 +1,22 @@
+---
+- disk:
+    name: "/dev/sda"
+    size: 15 GiB
+    partition_table: gpt
+    partitions:
+    - partition:
+        size: 8 MiB
+        name: "/dev/sda1"
+        type: primary
+        id: bios_boot
+    - partition:
+        size: unlimited
+        name: "/dev/sda2"
+        id: linux
+        file_system: btrfs
+        mount_point: "/"
+        btrfs:
+          default_subvolume: "@"
+    # The final 16.5 KiB are reserved by GPT
+    - free:
+        size: 16.5 KiB

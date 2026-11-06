@@ -410,6 +410,7 @@ export default function SearchableSelectField({
       ref={pfRef as React.Ref<HTMLButtonElement>}
       variant="typeahead"
       isExpanded={isOpen}
+      aria-haspopup="listbox"
       isFullWidth
       onClick={() => (isOpen ? closeList() : openForBrowsing())}
       // Lands on PF's caret <button>, whose default name is the untranslated

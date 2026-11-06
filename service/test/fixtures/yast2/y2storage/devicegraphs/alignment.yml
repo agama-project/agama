@@ -1,0 +1,30 @@
+---
+- disk:
+    name: /dev/sda
+    size: 1 GiB
+    partition_table:  gpt
+    partitions:
+
+    - partition:
+        size:         1024 KiB
+        name:         /dev/sda1
+
+- disk:
+    name: /dev/sdb
+    size: 1 GiB
+    partition_table:  gpt
+    partitions:
+
+    - partition:
+        size:         1000 KiB
+        name:         /dev/sdb1
+
+- disk:
+    name: /dev/sdc
+    size: 1 GiB
+    partition_table:  msdos
+    partitions:
+
+    - partition:
+        size:         1000 KiB
+        name:         /dev/sdc1
