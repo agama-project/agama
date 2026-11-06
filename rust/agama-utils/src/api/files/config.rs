@@ -23,23 +23,20 @@ use merge::Merge;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
+use strum::IntoEnumIterator;
 
 use crate::api::files::{
     file_source::resolve_url_field,
-    scripts::{InitScript, PostPartitioningScript, PostScript, PreScript},
+    scripts::{InitScript, PostPartitioningScript, PostScript, PreScript, ScriptsGroup},
     user_file::UserFile,
     FileSourceError,
 };
 
-/// Names of the "scripts" sub-keys that may contain file-bearing entries, matching
-/// `ScriptsConfig`'s `#[serde(rename_all = "camelCase")]` field names.
-const SCRIPT_KEYS: [&str; 4] = ["pre", "postPartitioning", "post", "init"];
-
 /// Resolves relative URLs in the "files" and "scripts" sections of a raw JSON profile, leaving
 /// every other key untouched (including keys this build doesn't recognize).
 ///
-/// This is the JSON-only counterpart of [`Config::resolve_urls`], used by callers that must
-/// treat the profile as opaque JSON instead of deserializing it into the typed `Config` (see
+/// This is the JSON-only counterpart of walking the typed `files::Config`, used by callers that
+/// must treat the profile as opaque JSON instead of deserializing it into the typed `Config` (see
 /// API-COMPATIBILITY-POLICY.md).
 pub fn resolve_urls_in_value(
     profile: &mut Value,
@@ -56,8 +53,9 @@ pub fn resolve_urls_in_value(
     }
 
     if let Some(scripts) = root.get_mut("scripts").and_then(Value::as_object_mut) {
-        for key in SCRIPT_KEYS {
-            if let Some(list) = scripts.get_mut(key).and_then(Value::as_array_mut) {
+        for group in ScriptsGroup::iter() {
+            let key = group.to_string();
+            if let Some(list) = scripts.get_mut(&key).and_then(Value::as_array_mut) {
                 for script in list {
                     resolve_url_field(script, base_uri)?;
                 }
