@@ -57,6 +57,11 @@
  *   agamaSummaryWording("when")   // "When the installation starts, ..." (default)
  *   agamaSummaryWording("until")  // "Nothing is changed until ...", in two lines
  *
+ * What holds the summary:
+ *
+ *   agamaSummaryStyle("plain")  // a line on the page (default)
+ *   agamaSummaryStyle("hint")   // a PatternFly hint box
+ *
  * What the summary counts:
  *
  *   agamaActionCount("all")           // every action, as "N actions" (default)
@@ -78,6 +83,7 @@ type GroupedTable = "off" | "on";
 type ExistingDataWording = "short" | "verbose" | "blunt" | "loss";
 type GroupTitleStyle = "band" | "flat" | "plain";
 type NamesStyle = "mono" | "plain";
+type SummaryStyle = "plain" | "hint";
 type FailedDetails = "popup" | "expandable";
 type SummaryWording = "when" | "until";
 type ActionCount = "all" | "noSubvolumes" | "changes";
@@ -89,6 +95,7 @@ type SwitchName =
   | "agamaNamesStyle"
   | "agamaGroupTitleStyle"
   | "agamaFailedDetails"
+  | "agamaSummaryStyle"
   | "agamaSummaryWording"
   | "agamaActionCount";
 
@@ -99,6 +106,7 @@ declare global {
     agamaExistingDataWording?: (value: ExistingDataWording) => void;
     agamaGroupTitleStyle?: (value: GroupTitleStyle) => void;
     agamaNamesStyle?: (value: NamesStyle) => void;
+    agamaSummaryStyle?: (value: SummaryStyle) => void;
     agamaFailedDetails?: (value: FailedDetails) => void;
     agamaSummaryWording?: (value: SummaryWording) => void;
     agamaActionCount?: (value: ActionCount) => void;
@@ -166,6 +174,8 @@ const useGroupTitleStyle = consoleSwitch<GroupTitleStyle>("agamaGroupTitleStyle"
 
 const useNamesStyle = consoleSwitch<NamesStyle>("agamaNamesStyle", ["mono", "plain"]);
 
+const useSummaryStyle = consoleSwitch<SummaryStyle>("agamaSummaryStyle", ["plain", "hint"]);
+
 const useFailedDetails = consoleSwitch<FailedDetails>("agamaFailedDetails", [
   "popup",
   "expandable",
@@ -188,5 +198,6 @@ export {
   useSummaryWording,
   useActionCount,
   useFailedDetails,
+  useSummaryStyle,
 };
 export type { ExistingDataWording, NamesStyle };

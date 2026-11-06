@@ -22,13 +22,14 @@
 
 import React from "react";
 import { sprintf } from "sprintf-js";
-import { Flex, FlexItem } from "@patternfly/react-core";
+import { Flex, FlexItem, Hint, HintBody } from "@patternfly/react-core";
 import Interpolate, { markerText } from "~/components/core/Interpolate";
 import Text from "~/components/core/Text";
 import Icon from "~/components/layout/Icon";
 import Consequences, { losesData } from "~/components/storage/storage-page/Consequences";
 import {
   useActionCount,
+  useSummaryStyle,
   useSummaryWording,
 } from "~/components/storage/storage-page/playground-switches";
 import { useAnnounce } from "~/context/announcer";
@@ -164,6 +165,7 @@ export default function Summary(): React.ReactNode {
   const actions = useActions();
   const wording = useSummaryWording();
   const countMode = useActionCount();
+  const style = useSummaryStyle();
 
   const counted = countMode === "all" ? actions : actions.filter((a) => !a.subvol);
   const isLossy = losesData(actions);
@@ -171,7 +173,7 @@ export default function Summary(): React.ReactNode {
 
   useAnnounceLossFlip(isLossy, markerText(first ? `${first} ${second}` : second));
 
-  return (
+  const content = (
     <Flex
       alignItems={{ default: "alignItemsFlexStart" }}
       gap={{ default: "gapSm" }}
@@ -198,4 +200,15 @@ export default function Summary(): React.ReactNode {
       </FlexItem>
     </Flex>
   );
+
+  /* PLAYGROUND: a line on the page, or in a hint box, from the console. */
+  if (style === "hint") {
+    return (
+      <Hint>
+        <HintBody>{content}</HintBody>
+      </Hint>
+    );
+  }
+
+  return content;
 }
