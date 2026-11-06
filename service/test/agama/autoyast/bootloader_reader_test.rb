@@ -77,5 +77,29 @@ describe Agama::AutoYaST::BootloaderReader do
         end
       end
     end
+
+    context "when update_nvram is defined" do
+      let(:global) do
+        { "update_nvram" => true }
+      end
+
+      it "returns a hash including the 'updateNvram'" do
+        expect(subject.read["bootloader"]).to include(
+          "updateNvram" => true
+        )
+      end
+
+      context "and it is false" do
+        let(:global) do
+          { "update_nvram" => false }
+        end
+
+        it "returns a hash including 'updateNvram' as false" do
+          expect(subject.read["bootloader"]).to include(
+            "updateNvram" => false
+          )
+        end
+      end
+    end
   end
 end
