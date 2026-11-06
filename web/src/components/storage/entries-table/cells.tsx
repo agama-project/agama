@@ -220,12 +220,19 @@ function existingDataOfDrive(
   device: ConfigModel.Drive | ConfigModel.MdRaid,
   current: System.Device | undefined,
 ): ExistingData | null {
-  return existingDataOf(
+  const data = existingDataOf(
     device.partitions || [],
     current?.partitions || [],
     "partition",
     device.spacePolicy,
   );
+
+  /* A new file system over the whole device leaves none of its partitions. */
+  if (data && device.filesystem && !device.filesystem.reuse) {
+    return { ...data, deleted: data.total, formatted: 0, mayDelete: 0, mayShrink: 0, reused: 0 };
+  }
+
+  return data;
 }
 
 function existingDataOfVolumeGroup(
