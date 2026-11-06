@@ -46,6 +46,7 @@ fn public_dir() -> PathBuf {
 async fn start_server() -> String {
     let config = ServiceConfig {
         jwt_secret: JWT_SECRET.to_string(),
+        mcp_token: None,
     };
     let (events_tx, _) = channel(16);
     let router = MainServiceBuilder::new(events_tx, public_dir())
