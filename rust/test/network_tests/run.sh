@@ -43,7 +43,10 @@ else
 fi
 
 for tool in agama curl jq; do
-  command -v "$tool" >/dev/null || { echo "$tool is required" >&2; exit 2; }
+  command -v "$tool" > /dev/null || {
+    echo "$tool is required" >&2
+    exit 2
+  }
 done
 
 # Runs the Agama CLI against the server to test.
@@ -56,7 +59,7 @@ case "$AGAMA_HOST" in
   *) LOCAL=0 ;;
 esac
 
-TOKEN=$(cli auth show 2>/dev/null || cat /run/agama/token 2>/dev/null)
+TOKEN=$(cli auth show 2> /dev/null || cat /run/agama/token 2> /dev/null)
 if [ -z "$TOKEN" ]; then
   echo "Cannot get an Agama token: run 'agama auth login' or run it as root" >&2
   exit 2
@@ -66,8 +69,15 @@ CHECKS=0
 FAILURES=()
 STEPS=0
 
-ok() { CHECKS=$((CHECKS + 1)); echo "      ${GREEN}✓${RESET_COLOR} $1"; }
-fail() { CHECKS=$((CHECKS + 1)); echo "      ${RED}✗${RESET_COLOR} $1"; FAILURES+=("$CONTEXT: $1"); }
+ok() {
+  CHECKS=$((CHECKS + 1))
+  echo "      ${GREEN}✓${RESET_COLOR} $1"
+}
+fail() {
+  CHECKS=$((CHECKS + 1))
+  echo "      ${RED}✗${RESET_COLOR} $1"
+  FAILURES+=("$CONTEXT: $1")
+}
 skip() { echo "      ${YELLOW}?${RESET_COLOR} $1"; }
 
 # Replaces eth0 and eth1 with the NICs to use.
@@ -96,10 +106,10 @@ save_step() {
   [ "$SAVE_FULL" = "1" ] && filter="."
   mkdir -p "$out"
   cp "$TMP/$name.json" "$out/$name.profile.json"
-  printf '%s\n' "$3" ${4:+"$4"} >"$out/$name.load.log"
+  printf '%s\n' "$3" ${4:+"$4"} > "$out/$name.load.log"
   for endpoint in config extended_config proposal system; do
-    api "$endpoint" | jq "$filter" >"$out/$name.$endpoint.json" 2>/dev/null ||
-      echo "Could not get /api/$endpoint" >"$out/$name.$endpoint.json"
+    api "$endpoint" | jq "$filter" > "$out/$name.$endpoint.json" 2> /dev/null ||
+      echo "Could not get /api/$endpoint" > "$out/$name.$endpoint.json"
   done
 }
 
@@ -157,7 +167,7 @@ take_baseline() {
       | select(.id as $id | $names | index($id) | not)
       | select(.interface == null or (.interface as $i | $names | index($i) | not))
       | .id] | unique')
-  echo "Keeping the connections that are not part of the tests: $(jq -r 'join(", ") | if . == "" then "none" else . end' <<<"$BASELINE")"
+  echo "Keeping the connections that are not part of the tests: $(jq -r 'join(", ") | if . == "" then "none" else . end' <<< "$BASELINE")"
 }
 
 # Prints the connections of the system that are not in the baseline: [id].
@@ -171,10 +181,10 @@ leftovers() {
 clean_up() {
   local ids
   ids=$(leftovers)
-  [ "$(jq length <<<"$ids")" -gt 0 ] || return 0
-  echo "  ${DIM}$1: deleting $(jq -r 'join(", ")' <<<"$ids")${RESET_COLOR}"
-  jq '{network: {connections: map({id: ., status: "removed"})}}' <<<"$ids" >"$TMP/reset.json"
-  cli config load "$TMP/reset.json" >/dev/null 2>&1
+  [ "$(jq length <<< "$ids")" -gt 0 ] || return 0
+  echo "  ${DIM}$1: deleting $(jq -r 'join(", ")' <<< "$ids")${RESET_COLOR}"
+  jq '{network: {connections: map({id: ., status: "removed"})}}' <<< "$ids" > "$TMP/reset.json"
+  cli config load "$TMP/reset.json" > /dev/null 2>&1
   ids=$(leftovers | jq -r 'join(", ")')
   [ -z "$ids" ] || echo "  ${YELLOW}$1: could not delete $ids${RESET_COLOR}"
 }
@@ -186,20 +196,20 @@ on_exit() {
 
 # Prints the network error logged since the given time, if any.
 logged_error() {
-  journalctl -u agama-web-server --since "$1" -o cat 2>/dev/null |
+  journalctl -u agama-web-server --since "$1" -o cat 2> /dev/null |
     grep -m1 "Failed to update the network configuration"
 }
 
 run_step() {
   local dir=$1 index=$2 total=$3 step profile expect_schema expect_error since output rc error
   step=$(jq ".steps[$index]" "$dir/scenario.json")
-  profile=$(jq -r '.profile' <<<"$step")
-  expect_schema=$(jq -r '.expect.schema // "valid"' <<<"$step")
-  expect_error=$(jq -r '.expect.error // empty' <<<"$step")
+  profile=$(jq -r '.profile' <<< "$step")
+  expect_schema=$(jq -r '.expect.schema // "valid"' <<< "$step")
+  expect_error=$(jq -r '.expect.error // empty' <<< "$step")
   CONTEXT="${dir#"$DIR"/}/$profile"
 
-  echo "  ${BOLD}[$((index + 1))/$total] $profile${RESET_COLOR}: $(jq -r '.description' <<<"$step")"
-  nics <"$dir/$profile" >"$TMP/$profile"
+  echo "  ${BOLD}[$((index + 1))/$total] $profile${RESET_COLOR}: $(jq -r '.description' <<< "$step")"
+  nics < "$dir/$profile" > "$TMP/$profile"
 
   since=$(date '+%Y-%m-%d %H:%M:%S')
   output=$(cli config load "$TMP/$profile" 2>&1)
@@ -208,18 +218,18 @@ run_step() {
 
   if [ "$expect_schema" = "invalid" ]; then
     if [ $rc -ne 0 ]; then
-      ok "rejected by agama config load: $(head -n1 <<<"$output")"
+      ok "rejected by agama config load: $(head -n1 <<< "$output")"
     else
       fail "accepted by agama config load, but the schema should reject it"
     fi
   elif [ $rc -ne 0 ]; then
-    fail "agama config load failed: $(head -n1 <<<"$output")"
+    fail "agama config load failed: $(head -n1 <<< "$output")"
   else
     sleep 1
     error=$(logged_error "$since")
     if [ "$LOCAL" = "0" ]; then
       skip "network: the logs of a remote server cannot be checked"
-    elif ! journalctl -n0 >/dev/null 2>&1; then
+    elif ! journalctl -n0 > /dev/null 2>&1; then
       skip "network: cannot read the Agama logs (not root?)"
     elif [ -n "$expect_error" ] && [ -n "$error" ]; then
       ok "network: rejected (expected $expect_error): ${error#*configuration: }"
@@ -232,16 +242,16 @@ run_step() {
     fi
   fi
 
-  jq -n -r --argjson actual "$(proposal)" --argjson expect "$(jq '.expect.connections // {}' <<<"$step" | nics)" \
+  jq -n -r --argjson actual "$(proposal)" --argjson expect "$(jq '.expect.connections // {}' <<< "$step" | nics)" \
     "$JQ_COMPARE" | while IFS=$'\t' read -r result text; do
     if [ "$result" = "OK" ]; then
       echo "      ${GREEN}✓${RESET_COLOR} $text"
     else
       echo "      ${RED}✗${RESET_COLOR} $text"
     fi
-  done >"$TMP/checks"
+  done > "$TMP/checks"
   cat "$TMP/checks"
-  CHECKS=$((CHECKS + $(wc -l <"$TMP/checks")))
+  CHECKS=$((CHECKS + $(wc -l < "$TMP/checks")))
   while read -r line; do
     FAILURES+=("$CONTEXT: ${line#*✗* }")
   done < <(grep "✗" "$TMP/checks")
@@ -263,14 +273,17 @@ for format in old new; do
   done
 done
 
-[ ${#scenarios[@]} -gt 0 ] || { echo "No scenario matches: $*" >&2; exit 2; }
+[ ${#scenarios[@]} -gt 0 ] || {
+  echo "No scenario matches: $*" >&2
+  exit 2
+}
 
 # The server reads the profile schema from /usr/share/agama/openapi/nightly/schemas, so updating
 # only its binary leaves a schema that rejects every profile of new/.
 if [[ " ${scenarios[*]}" == *" $DIR/new/"* ]]; then
   echo '{"network": {"connections": [{"id": "bond0", "bond": {"mode": "active-backup", "portConnections": ["eth0"]}}]}}' \
-    >"$TMP/schema-check.json"
-  if ! output=$(cli config validate - <"$TMP/schema-check.json" 2>&1); then
+    > "$TMP/schema-check.json"
+  if ! output=$(cli config validate - < "$TMP/schema-check.json" 2>&1); then
     echo "${RED}The Agama server rejects portConnections, so the scenarios of new/ would fail.${RESET_COLOR}" >&2
     echo "Is its profile schema up to date? Generate it with 'cargo xtask openapi' and copy rust/out/schemas/*.schema.json to /usr/share/agama/openapi/nightly/schemas/." >&2
     echo "$output" >&2

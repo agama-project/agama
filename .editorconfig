@@ -13,7 +13,9 @@ trim_trailing_whitespace = true
 # file with a shell hashbang on the first line, it does not need the *.sh
 # extension in the file name (needs shfmt >= 3.8.0).
 #
-# To reformat all files run `shfmt -w -l .` at the top-level directory.
+# To reformat all files using any shfmt version run at the top-level directory
+# `shfmt -i 2 -ci -sr -w -l .`, with shfmt >= 3.8.0 it is enough to just run
+# `shfmt -w -l .`.
 [[shell]]
 indent_style = space
 indent_size = 2

@@ -16,32 +16,32 @@ write_kernel_args() {
   # shellcheck disable=SC2013
   for _i in $(cat "${SOURCE}"); do
     case ${_i} in
-    # remove all agama kernel params
-    # Add here also all linuxrc supported parameters
-    LIBSTORAGE_* | YAST_* | inst* | agama* | live* | Y2* | ZYPP_* | autoyast*)
-      _found=1
-      ;;
-    # remove the Kiwi PXE boot options or Live options
-    rd.kiwi.* | rd.live.* | ramdisk_size=* | initrd=* | BOOT_IMAGE=* | \
-    iso-scan/filename=* | brd.rd_nr=* | systemd.unit=*)
-      _found=1
-      ;;
-    # remove the network configuration options
-    # https://man7.org/linux/man-pages/man7/dracut.cmdline.7.html
-    ip=* | rd.route=* | bootdev=* | BOOTIF=* | rd.bootif=* | nameserver=* | \
-    rd.peerdns=* | rd.neednet=* | vlan=* | bond=* | team=* | bridge=* | ifname=*)
-      _found=1
-      ;;
-    # remove the HCN (Hybrid Cloud Network) options, they are only meaningful
-    # for the installation media, see the 99hcn dracut module
-    rd.hcn | rd.hcn=* | rd.hcn.*)
-      _found=1
-      ;;
+      # remove all agama kernel params
+      # Add here also all linuxrc supported parameters
+      LIBSTORAGE_* | YAST_* | inst* | agama* | live* | Y2* | ZYPP_* | autoyast*)
+        _found=1
+        ;;
+      # remove the Kiwi PXE boot options or Live options
+      rd.kiwi.* | rd.live.* | ramdisk_size=* | initrd=* | BOOT_IMAGE=* | \
+        iso-scan/filename=* | brd.rd_nr=* | systemd.unit=*)
+        _found=1
+        ;;
+      # remove the network configuration options
+      # https://man7.org/linux/man-pages/man7/dracut.cmdline.7.html
+      ip=* | rd.route=* | bootdev=* | BOOTIF=* | rd.bootif=* | nameserver=* | \
+        rd.peerdns=* | rd.neednet=* | vlan=* | bond=* | team=* | bridge=* | ifname=*)
+        _found=1
+        ;;
+      # remove the HCN (Hybrid Cloud Network) options, they are only meaningful
+      # for the installation media, see the 99hcn dracut module
+      rd.hcn | rd.hcn=* | rd.hcn.*)
+        _found=1
+        ;;
     esac
 
     if [ -z "$_found" ]; then
       echo "Using boot parameter \"$_i\""
-      echo -n " $_i" >>"${TARGET}"
+      echo -n " $_i" >> "${TARGET}"
     else
       echo "Ignoring boot parameter \"$_i\""
     fi

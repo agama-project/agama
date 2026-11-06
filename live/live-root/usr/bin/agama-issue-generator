@@ -129,31 +129,30 @@ generate_avahi_url() {
   dbus-monitor --system "sender='org.freedesktop.systemd1',\
   interface='org.freedesktop.DBus.Properties',\
   path='/org/freedesktop/systemd1/unit/avahi_2ddaemon_2eservice',type=signal" \
-  2> /dev/null | while read -r line;
-    do
-      AVAHINAME=$(echo "$line" | grep "Server startup complete. Host name is" \
-      | sed -e "s/^.*Server startup complete. Host name is \(.*\)\. Local.*$/\\1/")
+    2> /dev/null | while read -r line; do
+    AVAHINAME=$(echo "$line" | grep "Server startup complete. Host name is" |
+      sed -e "s/^.*Server startup complete. Host name is \(.*\)\. Local.*$/\\1/")
 
-      # mDNS host name found and it is different than the previous one (or the initial value)
-      if [ -n "$AVAHINAME" ] && [ "$AVAHINAME" != "$OLDNAME" ]; then
-        OLDNAME="$AVAHINAME"
-        echo "    https://$AVAHINAME" > "$AVAHI_MESSAGE"
-        write_url_headers
+    # mDNS host name found and it is different than the previous one (or the initial value)
+    if [ -n "$AVAHINAME" ] && [ "$AVAHINAME" != "$OLDNAME" ]; then
+      OLDNAME="$AVAHINAME"
+      echo "    https://$AVAHINAME" > "$AVAHI_MESSAGE"
+      write_url_headers
 
-        # reload if not in the initial state
-        if [ -e "$CERT_ISSUE" ]; then
-          touch /run/agetty.reload
-        fi
-      fi
-
-      # daemon stopped, remove the message file
-      if echo "$line" | grep -q "avahi-daemon .* exiting"; then
-        OLDNAME=""
-        rm -f "$AVAHI_MESSAGE"
-        write_url_headers
+      # reload if not in the initial state
+      if [ -e "$CERT_ISSUE" ]; then
         touch /run/agetty.reload
       fi
-    done
+    fi
+
+    # daemon stopped, remove the message file
+    if echo "$line" | grep -q "avahi-daemon .* exiting"; then
+      OLDNAME=""
+      rm -f "$AVAHI_MESSAGE"
+      write_url_headers
+      touch /run/agetty.reload
+    fi
+  done
 }
 
 # function for centering text
@@ -169,90 +168,90 @@ function center_text() {
 
 # generate QR codes for the access URLs
 function create_qr_codes() {
-    ADDRESSES=("$@")
-    # width of the generated QR code
-    QR_WIDTH=30
+  ADDRESSES=("$@")
+  # width of the generated QR code
+  QR_WIDTH=30
 
-    # check if serial console is used, get the terminal size (width)
-    TERM_WIDTH=$(stty -F /dev/ttyS0 size 2> /dev/null | cut -d " " -f 2)
+  # check if serial console is used, get the terminal size (width)
+  TERM_WIDTH=$(stty -F /dev/ttyS0 size 2> /dev/null | cut -d " " -f 2)
 
-    # otherwise check the first console size
-    if [ -z "$TERM_WIDTH" ]; then
-      TERM_WIDTH=$(stty -F /dev/tty1 size 2> /dev/null | cut -d " " -f 2)
-      echo "Linux console width $TERM_WIDTH"
-    else
-      echo "Serial console width $TERM_WIDTH"
-    fi
+  # otherwise check the first console size
+  if [ -z "$TERM_WIDTH" ]; then
+    TERM_WIDTH=$(stty -F /dev/tty1 size 2> /dev/null | cut -d " " -f 2)
+    echo "Linux console width $TERM_WIDTH"
+  else
+    echo "Serial console width $TERM_WIDTH"
+  fi
 
-    # display QR codes only if the terminal is bigger than the 80x24(25) default
-    if [ -n "$TERM_WIDTH" ] && [ "$TERM_WIDTH" -gt 80 ]; then
-      # compute how much QR codes can fit on the screen side-by-side
-      QR_NUM=$(( TERM_WIDTH / QR_WIDTH ))
-      # split the list into the IPv4 and IPv6 addresses, display QR codes only for the IPv4 addresses
-      IP4ADDR=()
-      IP6ADDR=()
-      for ADDR in "${ADDRESSES[@]}"; do [[ "$ADDR" =~ : ]] && IP6ADDR+=("$ADDR") || IP4ADDR+=("$ADDR"); done
-      # split the IPv4 list into 2 parts, for the first part display the QR codes,
-      QR_ADDRESSES=("${IP4ADDR[@]:0:$QR_NUM}")
-      SZ="${#IP4ADDR[@]}"
-      # for the rest display just the text URL as the list is too long
-      REST_ADDRESSES=("${IP4ADDR[@]:$QR_NUM:$SZ}")
-    else
-      QR_ADDRESSES=()
-      REST_ADDRESSES=()
-      IP6ADDR=()
-      # put IPv6 addresses into a separate list to display [] around them
-      for ADDR in "${ADDRESSES[@]}"; do
-        [[ "$ADDR" =~ : ]] && IP6ADDR+=("$ADDR") || REST_ADDRESSES+=("$ADDR")
-      done
-    fi
-
-    if [ -n "${REST_ADDRESSES[*]}" ]; then
-      printf "    https://%s\n" "${REST_ADDRESSES[@]}" >> "$URL_ISSUES"
-    fi
-    if [ -n "${IP6ADDR[*]}" ]; then
-      printf "    https://[%s]\n" "${IP6ADDR[@]}" >> "$URL_ISSUES"
-    fi
-
-    if [ -z "${QR_ADDRESSES[*]}" ]; then
-      echo >> "$URL_ISSUES"
-      return 0
-    fi
-
-    # temporary file for generated QR code
-    QR_TEMP=$(mktemp)
-    # temporary file for merged QR codes (displayed side-by-side)
-    QR_RESULT=$(mktemp)
-    # copy of the merged QR codes (the merged file cannot be used as input and
-    # output at the same time)
-    QR_RESULT_COPY=$(mktemp)
-
-    # label with URLs displayed below the QR codes
-    LABEL=""
-
-    # generate the QR codes and merge them side-by-side
-    for ADDR in "${QR_ADDRESSES[@]}"; do
-      cp "$QR_RESULT" "$QR_RESULT_COPY"
-      URL="https://$ADDR"
-      echo "Rendering QR code for $URL"
-      # force (the -v option) using at least symbol version 2 (QR size 25x25),
-      # for short addresses (like https://1.1.1.1) it would be enough using
-      # version 1 (QR size 21x21), but longer addresses need version 2 and
-      # putting different sizes side-by-side breaks formatting, see `man
-      # qrencode` and https://www.qrcode.com/en/about/version.html
-      qrencode -t ANSIUTF8 -m 2 -v 2 -o "$QR_TEMP" "$URL"
-      # put the QR codes side-by-side
-      paste -d " " "$QR_RESULT_COPY" "$QR_TEMP" > "$QR_RESULT"
-      PADDED_URL=$(center_text "$URL" "$QR_WIDTH")
-      LABEL="$LABEL$PADDED_URL "
+  # display QR codes only if the terminal is bigger than the 80x24(25) default
+  if [ -n "$TERM_WIDTH" ] && [ "$TERM_WIDTH" -gt 80 ]; then
+    # compute how much QR codes can fit on the screen side-by-side
+    QR_NUM=$((TERM_WIDTH / QR_WIDTH))
+    # split the list into the IPv4 and IPv6 addresses, display QR codes only for the IPv4 addresses
+    IP4ADDR=()
+    IP6ADDR=()
+    for ADDR in "${ADDRESSES[@]}"; do [[ "$ADDR" =~ : ]] && IP6ADDR+=("$ADDR") || IP4ADDR+=("$ADDR"); done
+    # split the IPv4 list into 2 parts, for the first part display the QR codes,
+    QR_ADDRESSES=("${IP4ADDR[@]:0:$QR_NUM}")
+    SZ="${#IP4ADDR[@]}"
+    # for the rest display just the text URL as the list is too long
+    REST_ADDRESSES=("${IP4ADDR[@]:$QR_NUM:$SZ}")
+  else
+    QR_ADDRESSES=()
+    REST_ADDRESSES=()
+    IP6ADDR=()
+    # put IPv6 addresses into a separate list to display [] around them
+    for ADDR in "${ADDRESSES[@]}"; do
+      [[ "$ADDR" =~ : ]] && IP6ADDR+=("$ADDR") || REST_ADDRESSES+=("$ADDR")
     done
+  fi
 
-    cat "$QR_RESULT" >> "$URL_ISSUES"
-    echo "$LABEL" >> "$URL_ISSUES"
+  if [ -n "${REST_ADDRESSES[*]}" ]; then
+    printf "    https://%s\n" "${REST_ADDRESSES[@]}" >> "$URL_ISSUES"
+  fi
+  if [ -n "${IP6ADDR[*]}" ]; then
+    printf "    https://[%s]\n" "${IP6ADDR[@]}" >> "$URL_ISSUES"
+  fi
+
+  if [ -z "${QR_ADDRESSES[*]}" ]; then
     echo >> "$URL_ISSUES"
+    return 0
+  fi
 
-    # delete the temporary files
-    rm -f "$QR_TEMP" "$QR_RESULT_COPY" "$QR_RESULT"
+  # temporary file for generated QR code
+  QR_TEMP=$(mktemp)
+  # temporary file for merged QR codes (displayed side-by-side)
+  QR_RESULT=$(mktemp)
+  # copy of the merged QR codes (the merged file cannot be used as input and
+  # output at the same time)
+  QR_RESULT_COPY=$(mktemp)
+
+  # label with URLs displayed below the QR codes
+  LABEL=""
+
+  # generate the QR codes and merge them side-by-side
+  for ADDR in "${QR_ADDRESSES[@]}"; do
+    cp "$QR_RESULT" "$QR_RESULT_COPY"
+    URL="https://$ADDR"
+    echo "Rendering QR code for $URL"
+    # force (the -v option) using at least symbol version 2 (QR size 25x25),
+    # for short addresses (like https://1.1.1.1) it would be enough using
+    # version 1 (QR size 21x21), but longer addresses need version 2 and
+    # putting different sizes side-by-side breaks formatting, see `man
+    # qrencode` and https://www.qrcode.com/en/about/version.html
+    qrencode -t ANSIUTF8 -m 2 -v 2 -o "$QR_TEMP" "$URL"
+    # put the QR codes side-by-side
+    paste -d " " "$QR_RESULT_COPY" "$QR_TEMP" > "$QR_RESULT"
+    PADDED_URL=$(center_text "$URL" "$QR_WIDTH")
+    LABEL="$LABEL$PADDED_URL "
+  done
+
+  cat "$QR_RESULT" >> "$URL_ISSUES"
+  echo "$LABEL" >> "$URL_ISSUES"
+  echo >> "$URL_ISSUES"
+
+  # delete the temporary files
+  rm -f "$QR_TEMP" "$QR_RESULT_COPY" "$QR_RESULT"
 }
 
 # helper function, write the issue with the currently available URLs for

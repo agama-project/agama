@@ -58,18 +58,18 @@ apply_updates() {
 
     format=$("$NEWROOT/usr/bin/chroot" "$NEWROOT" file "${file##"$NEWROOT"}")
     case "$format" in
-    *RPM*)
-      apply_rpm_update "$file" "$dir"
-      ;;
+      *RPM*)
+        apply_rpm_update "$file" "$dir"
+        ;;
 
-    *)
-      unpack_dud_update "$file" "$dir"
-      apply_dud_update "$dir"
-      ;;
+      *)
+        unpack_dud_update "$file" "$dir"
+        apply_dud_update "$dir"
+        ;;
     esac
 
     ((index++))
-  done <$AGAMA_DUD_INFO
+  done < $AGAMA_DUD_INFO
 
   rm -r "$DUD_DIR"
   umount "$NEWROOT"/dev
@@ -84,12 +84,12 @@ apply_updates() {
 # changes too often.
 get_dist() {
   dist=
-  if [ -f "/etc/os-release" ] ; then
+  if [ -f "/etc/os-release" ]; then
     . "/etc/os-release"
-    if [ -n "$ID" -a -n "$VERSION_ID" ] ; then
+    if [ -n "$ID" -a -n "$VERSION_ID" ]; then
       # Tumbleweed and Slowroll use a date (e.g. "20261231") as VERSION_ID.
       # In this case, do not include it.
-      if [[ "$VERSION_ID" =~ ^[0-9]{8}$ ]] ; then
+      if [[ "$VERSION_ID" =~ ^[0-9]{8}$ ]]; then
         dist="$ID"
       else
         dist="$ID$VERSION_ID"
@@ -277,7 +277,7 @@ update_kernel_modules() {
 setup_from_modules_order() {
   dud_modules_dir=$1
 
-  readarray -t module_order <"${dud_modules_dir}/module.order"
+  readarray -t module_order < "${dud_modules_dir}/module.order"
   # unload the modules in reverse order
   local idx
   idx=("${!module_order[@]}")
@@ -285,7 +285,7 @@ setup_from_modules_order() {
     rmmod "${module_order[$i]}" 2>&1
   done
 
-  cat "${dud_modules_dir}/module.order" >>"${NEWROOT}/etc/modules-load.d/99-agama.conf"
+  cat "${dud_modules_dir}/module.order" >> "${NEWROOT}/etc/modules-load.d/99-agama.conf"
 }
 
 # Sets up the kernel modules.
@@ -301,7 +301,7 @@ setup_modules() {
     module_name=$(basename "$module")
     module_name=${module_name%.ko*}
     rmmod "${module_name}" 2>&1
-    echo "${module_name}" >>"${NEWROOT}/etc/modules-load.d/99-agama.conf"
+    echo "${module_name}" >> "${NEWROOT}/etc/modules-load.d/99-agama.conf"
   done
 }
 

@@ -9,7 +9,7 @@ IBS_DEVEL_PROJECT="Devel:YaST:Agama:Head"
 # packages to branch
 PACKAGES=(agama agama-installer agama-products agama-web-ui rubygem-agama-yast)
 
-usage () {
+usage() {
   echo "Usage: $0 [options]"
   echo
   echo "Options:"
@@ -82,7 +82,7 @@ done
 # check if all needed tools are installed
 tools=(git gh jq osc)
 for tool in "${tools[@]}"; do
-  if ! command -v "$tool" >/dev/null 2>&1; then
+  if ! command -v "$tool" > /dev/null 2>&1; then
     echo "Tool \"$tool\" is not installed, please run \"sudo zypper install $tool\""
     exit 1
   fi
@@ -250,27 +250,27 @@ else
   # disable building on aarch64, armv6l, armv7l, i586, ppc64le, riscv64 and s390x, usually not needed
   if [ "$ALL_ARCHS" != true ]; then
     echo "Disabling build on aarch64, armv6l, armv7l, i586, ppc64le, riscv64 and s390x"
-    osc meta prj "$PROJECT" | \
-      sed "/<arch>aarch64<\/arch>/d;/<arch>armv6l<\/arch>/d;/<arch>armv7l<\/arch>/d;/<arch>i586<\/arch>/d;/<arch>ppc64le<\/arch>/d;/<arch>riscv64<\/arch>/d;/<arch>s390x<\/arch>/d;" | \
+    osc meta prj "$PROJECT" |
+      sed "/<arch>aarch64<\/arch>/d;/<arch>armv6l<\/arch>/d;/<arch>armv7l<\/arch>/d;/<arch>i586<\/arch>/d;/<arch>ppc64le<\/arch>/d;/<arch>riscv64<\/arch>/d;/<arch>s390x<\/arch>/d;" |
       osc meta prj -F - "$PROJECT"
   fi
 
   # disable Leap 16.0 target
   if [ "$ALL_TARGETS" != true ]; then
     echo "Disabling openSUSE Leap 16.0 build target"
-    osc meta prj "$PROJECT" | \
-      sed 's#</description>#</description><build><disable repository="openSUSE_Leap_16.0"/><disable repository="images_Leap_16.0"/></build>##' | \
+    osc meta prj "$PROJECT" |
+      sed 's#</description>#</description><build><disable repository="openSUSE_Leap_16.0"/><disable repository="images_Leap_16.0"/></build>##' |
       osc meta prj -F - "$PROJECT"
   fi
 
   # disable building the agama-installer-Leap image for Tumbleweed, that does not work
-  osc meta pkg "$PROJECT" agama-installer-Leap | \
-    sed 's#</package>#<build><disable repository="images"/></build></package>##' | \
+  osc meta pkg "$PROJECT" agama-installer-Leap |
+    sed 's#</package>#<build><disable repository="images"/></build></package>##' |
     osc meta pkg -F - "$PROJECT" agama-installer-Leap
 
   # enable publishing of the built packages and images (delete the disabled publish section)
   echo "Enable publishing of the build results"
-  osc meta prj "$PROJECT" | sed "/^\s*<publish>\s*$/,/^\s*<\/publish>\s*$/d" | \
+  osc meta prj "$PROJECT" | sed "/^\s*<publish>\s*$/,/^\s*<\/publish>\s*$/d" |
     osc meta prj -F - "$PROJECT"
 
   echo "Set project description"
@@ -278,7 +278,7 @@ else
   osc meta prj "$PROJECT" |
     sed -e "s#<url>.*</url>#<url>$url/tree/$BRANCH</url>#" \
       -e "s#<title>.*</title>#<title>Agama from Git</title>#" \
-      -e "s#<description>.*</description>#<description>This project contains the latest packages built from repository $repo_slug, branch \"$BRANCH\".</description>#" | \
+      -e "s#<description>.*</description>#<description>This project contains the latest packages built from repository $repo_slug, branch \"$BRANCH\".</description>#" |
     osc meta prj -F - "$PROJECT"
 fi
 
@@ -316,8 +316,8 @@ if [ -n "$IBS" ]; then
     # disable building on all archs except x86_64, usually not needed
     if [ "$ALL_ARCHS" != true ]; then
       echo "Disabling build on aarch64, armv6l, armv7l, i586, ppc64le, riscv64 and s390x"
-      osc -A "$IBS_URL" meta prj "$IBS_PROJECT" | \
-        sed "/<arch>aarch64<\/arch>/d;/<arch>armv6l<\/arch>/d;/<arch>armv7l<\/arch>/d;/<arch>i586<\/arch>/d;/<arch>ppc64le<\/arch>/d;/<arch>riscv64<\/arch>/d;/<arch>s390x<\/arch>/d;" | \
+      osc -A "$IBS_URL" meta prj "$IBS_PROJECT" |
+        sed "/<arch>aarch64<\/arch>/d;/<arch>armv6l<\/arch>/d;/<arch>armv7l<\/arch>/d;/<arch>i586<\/arch>/d;/<arch>ppc64le<\/arch>/d;/<arch>riscv64<\/arch>/d;/<arch>s390x<\/arch>/d;" |
         osc -A "$IBS_URL" meta prj -F - "$IBS_PROJECT"
     fi
 
@@ -326,7 +326,7 @@ if [ -n "$IBS" ]; then
     osc -A "$IBS_URL" meta prj "$IBS_PROJECT" |
       sed -e "s#<url>.*</url>#<url>$url/tree/$BRANCH</url>#" \
         -e "s#<title>.*</title>#<title>Agama from Git</title>#" \
-        -e "s#<description>.*</description>#<description>This project contains the latest packages built from repository $repo_slug, branch \"$BRANCH\".</description>#" | \
+        -e "s#<description>.*</description>#<description>This project contains the latest packages built from repository $repo_slug, branch \"$BRANCH\".</description>#" |
       osc -A "$IBS_URL" meta prj -F - "$IBS_PROJECT"
   fi
 fi

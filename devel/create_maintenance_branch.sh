@@ -103,7 +103,7 @@ configure_github_autosubmission() {
 create_git_branch() {
   local branch_name="$1"
 
-  if git ls-remote --exit-code --heads origin "$branch_name" >/dev/null; then
+  if git ls-remote --exit-code --heads origin "$branch_name" > /dev/null; then
     echo "Branch $branch_name already exists on remote origin. Skipping branch creation."
     git fetch
     git checkout "$branch_name"
@@ -223,7 +223,7 @@ EOF
 
   # initialize the project by copying the current packages from systemsmanagement:Agama:Devel
   for package in "${AGAMA_PACKAGES[@]}"; do
-    if osc meta pkg "systemsmanagement:Agama:Maintenance:$branch_name" "$package" &>/dev/null; then
+    if osc meta pkg "systemsmanagement:Agama:Maintenance:$branch_name" "$package" &> /dev/null; then
       echo "Package $package already exists in systemsmanagement:Agama:Maintenance:$branch_name, skipping copy."
     else
       echo "Copying package $package from systemsmanagement:Agama:Devel to systemsmanagement:Agama:Maintenance:$branch_name..."
@@ -232,7 +232,7 @@ EOF
   done
 
   # create agama-installer-SLES -> agama-installer link
-  if ! osc meta pkg "systemsmanagement:Agama:Maintenance:$branch_name" agama-installer-SLES &>/dev/null; then
+  if ! osc meta pkg "systemsmanagement:Agama:Maintenance:$branch_name" agama-installer-SLES &> /dev/null; then
     osc linkpac "systemsmanagement:Agama:Maintenance:$branch_name" agama-installer "systemsmanagement:Agama:Maintenance:$branch_name" agama-installer-SLES
   fi
 
@@ -245,8 +245,8 @@ EOF
     cd "systemsmanagement:Agama:Maintenance:$branch_name/agama-installer-SLES"
     if [ -f _multibuild ]; then
       sed -i "s/openSUSE/SUSE_SLE_$version/" _multibuild
-      if ! git diff --quiet _multibuild 2>/dev/null || [ -n "$(git status --porcelain 2>/dev/null)" ]; then
-         osc commit -m "Build the SUSE_SLE_$version profile" || true
+      if ! git diff --quiet _multibuild 2> /dev/null || [ -n "$(git status --porcelain 2> /dev/null)" ]; then
+        osc commit -m "Build the SUSE_SLE_$version profile" || true
       fi
     fi
   )
@@ -307,7 +307,7 @@ EOF
 
   # link the IBS package to the OBS
   for package in "${AGAMA_PACKAGES[@]}"; do
-    if osc -A https://api.suse.de meta pkg "Devel:YaST:Agama:Maintenance:$branch_name" "$package" &>/dev/null; then
+    if osc -A https://api.suse.de meta pkg "Devel:YaST:Agama:Maintenance:$branch_name" "$package" &> /dev/null; then
       echo "Package $package already linked in Devel:YaST:Agama:Maintenance:$branch_name, skipping."
     else
       echo "Linking package $package from openSUSE.org:systemsmanagement:Agama:Maintenance:$branch_name to Devel:YaST:Agama:Maintenance:$branch_name..."
@@ -316,7 +316,7 @@ EOF
   done
 
   # link also agama-installer-SLES
-  if ! osc -A https://api.suse.de meta pkg "Devel:YaST:Agama:Maintenance:$branch_name" agama-installer-SLES &>/dev/null; then
+  if ! osc -A https://api.suse.de meta pkg "Devel:YaST:Agama:Maintenance:$branch_name" agama-installer-SLES &> /dev/null; then
     osc -A https://api.suse.de linkpac "openSUSE.org:systemsmanagement:Agama:Maintenance:$branch_name" agama-installer-SLES "Devel:YaST:Agama:Maintenance:$branch_name"
   fi
 
@@ -380,7 +380,7 @@ adapt_translation_workflows() {
 create_weblate_branch() {
   local branch_name="$1"
 
-  if gh api "repos/agama-project/agama-weblate/git/ref/heads/$branch_name" --silent 2>/dev/null; then
+  if gh api "repos/agama-project/agama-weblate/git/ref/heads/$branch_name" --silent 2> /dev/null; then
     echo "Branch $branch_name already exists in agama-weblate. Skipping creation."
   else
     echo "Creating branch $branch_name in agama-project/agama-weblate..."
@@ -483,24 +483,24 @@ BRANCH_NAME=""
 # parse CLI arguments
 while [[ $# -gt 0 ]]; do
   case "$1" in
-  -h | --help)
-    show_help
-    exit 0
-    ;;
-  -*)
-    echo "Error: Unknown option '$1'" >&2
-    show_help >&2
-    exit 1
-    ;;
-  *)
-    if [ -n "$BRANCH_NAME" ]; then
-      echo "Error: Multiple branch names provided." >&2
+    -h | --help)
+      show_help
+      exit 0
+      ;;
+    -*)
+      echo "Error: Unknown option '$1'" >&2
       show_help >&2
       exit 1
-    fi
-    BRANCH_NAME="$1"
-    shift
-    ;;
+      ;;
+    *)
+      if [ -n "$BRANCH_NAME" ]; then
+        echo "Error: Multiple branch names provided." >&2
+        show_help >&2
+        exit 1
+      fi
+      BRANCH_NAME="$1"
+      shift
+      ;;
   esac
 done
 

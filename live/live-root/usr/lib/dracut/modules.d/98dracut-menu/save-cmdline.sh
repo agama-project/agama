@@ -4,10 +4,10 @@
 
 rm -f "$NEWROOT/etc/cmdline.d/10-liveroot.conf"
 
-if [ -e /etc/cmdline.d/98-cmdline-menu.conf ] ; then
+if [ -e /etc/cmdline.d/98-cmdline-menu.conf ]; then
   cp /etc/cmdline.d/98-cmdline-menu.conf "$NEWROOT/etc/cmdline-menu.conf"
 else
-  echo "root=$root" >"$NEWROOT/etc/cmdline-menu.conf"
+  echo "root=$root" > "$NEWROOT/etc/cmdline-menu.conf"
 fi
 
-echo "$CMDLINE" >"$NEWROOT/etc/cmdline-full.conf"
+echo "$CMDLINE" > "$NEWROOT/etc/cmdline-full.conf"

@@ -30,22 +30,34 @@ trap cleanup_chroot EXIT
 # see https://www.freedesktop.org/software/systemd/man/latest/sd-daemon.html
 # for the log level numbers
 milestone() {
-  ({ set +x; } 2>/dev/null; echo "<5>$1")
+  (
+    { set +x; } 2> /dev/null
+    echo "<5>$1"
+  )
 }
 
 # log warning
 warning() {
-  ({ set +x; } 2>/dev/null; echo "<4>$1")
+  (
+    { set +x; } 2> /dev/null
+    echo "<4>$1"
+  )
 }
 
 # log error
 error() {
-  ({ set +x; } 2>/dev/null; echo "<3>$1")
+  (
+    { set +x; } 2> /dev/null
+    echo "<3>$1"
+  )
 }
 
 # normal message
 info() {
-  ({ set +x; } 2>/dev/null; echo "<6>$1")
+  (
+    { set +x; } 2> /dev/null
+    echo "<6>$1"
+  )
 }
 
 # the proxy might contain a password, make sure it is not displayed or logged
@@ -54,7 +66,7 @@ set +x
 # get the configured network proxy (empty string if not configured)
 # see ../lib/dracut/modules.d/98dracut-menu/dracut-cmdline-menu.sh
 # get the last found, it has the highest priority
-PROXY=$(grep "\bproxy=" /proc/cmdline /etc/cmdline.d/*  | tail -n 1 | sed "s/.*\bproxy=\([^ \t]*\).*/\1/")
+PROXY=$(grep "\bproxy=" /proc/cmdline /etc/cmdline.d/* | tail -n 1 | sed "s/.*\bproxy=\([^ \t]*\).*/\1/")
 
 if [ -n "$PROXY" ]; then
   if [[ "$PROXY" == *@* ]]; then
@@ -116,7 +128,7 @@ disable_update_repos() {
 
   for repo in "${self_update_repos[@]}"; do
     # do not abort the cleanup when disabling fails ("set -e" is active)
-    run_command zypper modifyrepo --disable "$repo" || \
+    run_command zypper modifyrepo --disable "$repo" ||
       warning "Disabling repository $repo failed"
   done
 }
@@ -142,7 +154,7 @@ cleanup_chroot() {
     # restore the original resolv.conf if it was replaced
     if [ -e "$NEWROOT$RESOLV_BACKUP" ] || [ -L "$NEWROOT$RESOLV_BACKUP" ]; then
       rm -f "$NEWROOT"/etc/resolv.conf
-      mv "$NEWROOT$RESOLV_BACKUP" "$NEWROOT"/etc/resolv.conf || \
+      mv "$NEWROOT$RESOLV_BACKUP" "$NEWROOT"/etc/resolv.conf ||
         warning "Restoring resolv.conf failed"
     fi
     for dir in run sys proc dev; do
@@ -175,7 +187,7 @@ query_reg_server() {
   if [ -f "$SERVER_FILE" ]; then
     server=$(< "$SERVER_FILE")
   # default server (SCC)
-  elif  [ -f "$CONFIG_DEFAULT_REG_SERVER_FILE" ]; then
+  elif [ -f "$CONFIG_DEFAULT_REG_SERVER_FILE" ]; then
     server=$(< "$CONFIG_DEFAULT_REG_SERVER_FILE")
   fi
 
@@ -188,9 +200,9 @@ query_reg_server() {
 
     # the query parameters are URL-encoded by curl (the values may contain spaces)
     local curl_options
-    curl_options=(--silent --globoff --location --retry 3 --retry-connrefused \
-      --connect-timeout 20 --max-time 30 --fail --show-error --output "$RESPONSE_FILE" \
-      --get --data-urlencode "identifier=$NAME" --data-urlencode "version=$VERSION_ID" \
+    curl_options=(--silent --globoff --location --retry 3 --retry-connrefused
+      --connect-timeout 20 --max-time 30 --fail --show-error --output "$RESPONSE_FILE"
+      --get --data-urlencode "identifier=$NAME" --data-urlencode "version=$VERSION_ID"
       --data-urlencode "arch=$ARCH")
 
     if grep -q "\binst.self_update_ssl=0\b" /run/agama/cmdline.d/agama.conf; then
