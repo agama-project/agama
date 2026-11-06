@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Thu Nov  5 12:11:29 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Do not crash when unexpected square brackets are present in the
+  translation. Fixes crash in the first user configuration dialog
+  when using the French, Catalan or Brazilian Portuguese languages
+  (bsc#1286560)
+- Fixed the translations which caused the crash above
+
+-------------------------------------------------------------------
 Tue Oct 28 06:00:48 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
 
 - Allow disabling the IPv4 or the IPv6 configuration of a
