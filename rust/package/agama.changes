@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Nov  6 13:20:39 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Do not parse the Config object from the CLI, just treat it
+  as a generic JSON object (gh#agama-project/agama#4199).
+
+-------------------------------------------------------------------
 Fri Nov  6 10:29:26 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
 
 - Offer only the products available on the current architecture,
