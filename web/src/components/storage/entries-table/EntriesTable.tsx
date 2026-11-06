@@ -235,7 +235,7 @@ export default function EntriesTable(): React.ReactNode {
             <Th sort={sortParams(DEVICE_COLUMN)}>{columnName("device")}</Th>
             <Th>{columnName("existingData")}</Th>
             <Th>{columnName("newSystem")}</Th>
-            <Th aria-label={columnName("actions")} />
+            <Th screenReaderText={columnName("actions")} />
           </Tr>
         </Thead>
         {isGrouped ? (

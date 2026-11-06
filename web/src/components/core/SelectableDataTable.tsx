@@ -424,7 +424,7 @@ const TableHeader = ({
         {
           // TODO: replace with itemActionsMap in SharedData to avoid calling itemActions
           // twice per item and to correctly hide the actions column when no items have actions.
-          itemActions && <Th aria-label={_("Row actions")} />
+          itemActions && <Th screenReaderText={_("Row actions")} />
         }
       </Tr>
     </Thead>
