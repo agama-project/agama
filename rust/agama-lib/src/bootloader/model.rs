@@ -32,6 +32,8 @@ pub struct BootloaderSettings {
     pub timeout: Option<u32>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub extra_kernel_params: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub update_nvram: Option<bool>,
 }
 
 impl BootloaderSettings {
@@ -39,10 +41,35 @@ impl BootloaderSettings {
         if self.stop_on_boot_menu.is_none()
             && self.timeout.is_none()
             && self.extra_kernel_params.is_none()
+            && self.update_nvram.is_none()
         {
             None
         } else {
             Some(self)
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_to_option() {
+        let settings = BootloaderSettings::default();
+        assert!(settings.to_option().is_none());
+
+        let settings = BootloaderSettings {
+            update_nvram: Some(false),
+            ..Default::default()
+        };
+        assert!(settings.to_option().is_some());
+    }
+
+    #[test]
+    fn test_deserialize_update_nvram() {
+        let json = r#"{"updateNvram":false}"#;
+        let settings: BootloaderSettings = serde_json::from_str(json).unwrap();
+        assert_eq!(settings.update_nvram, Some(false));
     }
 }
