@@ -99,10 +99,10 @@ function sentences(
           ? // TRANSLATORS: second line of the summary of the storage setup. %s
             // is a count such as "12 actions". Text in square brackets is
             // shown in bold; keep the brackets.
-            _("Then the installer will perform %s to reach the setup below, [with data loss].")
+            _("Then the installer will apply the settings below in %s, [with data loss].")
           : // TRANSLATORS: second line of the summary of the storage setup. %s
             // is a count such as "12 actions".
-            _("Then the installer will perform %s to reach the setup below, without data loss."),
+            _("Then the installer will apply the settings below in %s, without data loss."),
         what,
       ),
     };
@@ -121,12 +121,12 @@ function sentences(
           // "12 actions". Text in square brackets is shown in bold; keep the
           // brackets.
           _(
-            "When the installation starts, the installer will perform %s to reach the setup below, [with data loss].",
+            "When the installation starts, the installer will apply the settings below in %s, [with data loss].",
           )
         : // TRANSLATORS: summary of the storage setup. %s is a count such as
           // "12 actions".
           _(
-            "When the installation starts, the installer will perform %s to reach the setup below, without data loss.",
+            "When the installation starts, the installer will apply the settings below in %s, without data loss.",
           ),
       what,
     ),
