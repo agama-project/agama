@@ -863,3 +863,10 @@ tr.agm-entries-table__row > :is(th, td):not(.agm-entries-table__menu) {
   font-size: var(--pf-t--global--font--size--body--sm);
   color: var(--pf-t--global--text--color--subtle);
 }
+
+// PLAYGROUND: the storage page's failure alert. Its action and, in place, the
+// suggestions it reveals sit under what went wrong, a step apart.
+.agm-failure-alert__action,
+.agm-failure-alert__suggestions {
+  margin-block-start: var(--pf-t--global--spacer--sm);
+}

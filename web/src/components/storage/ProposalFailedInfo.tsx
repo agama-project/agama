@@ -196,6 +196,47 @@ const Intro = () => {
   );
 };
 
+/**
+ * PLAYGROUND: what does not fit, said in place: "Not enough space for the
+ * boot partition, "/opt" (100 GiB), "/" (at least 2 TiB) and "swap"."
+ */
+function NotEnoughSpace() {
+  const model = useConfigModel();
+  const partitions = model.drives.flatMap((d) => d.partitions || []);
+  const logicalVolumes = model.volumeGroups.flatMap((vg) => vg.logicalVolumes || []);
+  const isBootConfigured = !!model.boot?.configure;
+  const mountPaths = [...partitions, ...logicalVolumes]
+    .filter((p) => !p.name)
+    .map((d) => partitionUtils.pathWithSize(d));
+
+  return (
+    <>
+      {sprintf(
+        isBootConfigured
+          ? // TRANSLATORS: says what the disks have no room for. %s is a list of
+            // mount points with their sizes, such as '"/" (at least 10 GiB) and
+            // "swap" (2 GiB)'.
+            _("Not enough space for the boot partition, %s.")
+          : // TRANSLATORS: says what the disks have no room for. %s is a list of
+            // mount points with their sizes, such as '"/" (at least 10 GiB) and
+            // "swap" (2 GiB)'.
+            _("Not enough space for %s."),
+        formatList(mountPaths),
+      )}
+    </>
+  );
+}
+
+/** PLAYGROUND: the suggestions alone, for when what failed is said in place. */
+function Suggestions() {
+  return (
+    <>
+      <PossibleActions />
+      <SizeExplanations />
+    </>
+  );
+}
+
 const Description = () => {
   return (
     <>
@@ -250,4 +291,4 @@ export default function ProposalFailedInfo({
   );
 }
 
-export { proposalFailedTitle };
+export { proposalFailedTitle, NotEnoughSpace, Suggestions };

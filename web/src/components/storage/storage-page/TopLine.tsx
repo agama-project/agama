@@ -22,8 +22,13 @@
 
 import React from "react";
 import { Flex, FlexItem } from "@patternfly/react-core";
-import FixableConfigInfo from "~/components/storage/FixableConfigInfo";
-import ProposalFailedInfo from "~/components/storage/ProposalFailedInfo";
+import { fixableConfigTitle, IssuesList } from "~/components/storage/FixableConfigInfo";
+import {
+  proposalFailedTitle,
+  NotEnoughSpace,
+  Suggestions,
+} from "~/components/storage/ProposalFailedInfo";
+import FailureAlert from "~/components/storage/storage-page/FailureAlert";
 import { useIssues } from "~/hooks/model/issue";
 import Interpolate from "~/components/core/Interpolate";
 import Link from "~/components/core/Link";
@@ -187,9 +192,20 @@ export default function TopLine(): React.ReactNode {
         {proposal && <Summary />}
         {!proposal &&
           (configIssues.length ? (
-            <FixableConfigInfo issues={configIssues} />
+            <FailureAlert
+              title={fixableConfigTitle()}
+              body={<IssuesList issues={configIssues} />}
+              popupTitle={_("Invalid storage configuration")}
+            />
           ) : (
-            <ProposalFailedInfo />
+            <FailureAlert
+              title={proposalFailedTitle()}
+              body={<NotEnoughSpace />}
+              // TRANSLATORS: title of the popup with suggestions on how to fix
+              // a storage setup that cannot be applied.
+              popupTitle={_("Failed to plan storage changes")}
+              suggestions={<Suggestions />}
+            />
           ))}
       </FlexItem>
       <FlexItem>

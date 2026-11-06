@@ -63,6 +63,11 @@
  *   agamaActionCount("noSubvolumes")  // without Btrfs subvolumes, as "N actions"
  *   agamaActionCount("changes")       // without Btrfs subvolumes, as "N changes"
  *
+ * How a setup that cannot be applied offers its suggestions:
+ *
+ *   agamaFailedDetails("popup")       // in a popup (default)
+ *   agamaFailedDetails("expandable")  // in place, under the alert
+ *
  * Choices survive reloads. To be dropped once the design is settled.
  */
 
@@ -73,6 +78,7 @@ type GroupedTable = "off" | "on";
 type ExistingDataWording = "short" | "verbose" | "blunt" | "loss";
 type GroupTitleStyle = "band" | "flat" | "plain";
 type NamesStyle = "mono" | "plain";
+type FailedDetails = "popup" | "expandable";
 type SummaryWording = "when" | "until";
 type ActionCount = "all" | "noSubvolumes" | "changes";
 
@@ -82,6 +88,7 @@ type SwitchName =
   | "agamaExistingDataWording"
   | "agamaNamesStyle"
   | "agamaGroupTitleStyle"
+  | "agamaFailedDetails"
   | "agamaSummaryWording"
   | "agamaActionCount";
 
@@ -92,6 +99,7 @@ declare global {
     agamaExistingDataWording?: (value: ExistingDataWording) => void;
     agamaGroupTitleStyle?: (value: GroupTitleStyle) => void;
     agamaNamesStyle?: (value: NamesStyle) => void;
+    agamaFailedDetails?: (value: FailedDetails) => void;
     agamaSummaryWording?: (value: SummaryWording) => void;
     agamaActionCount?: (value: ActionCount) => void;
   }
@@ -158,6 +166,11 @@ const useGroupTitleStyle = consoleSwitch<GroupTitleStyle>("agamaGroupTitleStyle"
 
 const useNamesStyle = consoleSwitch<NamesStyle>("agamaNamesStyle", ["mono", "plain"]);
 
+const useFailedDetails = consoleSwitch<FailedDetails>("agamaFailedDetails", [
+  "popup",
+  "expandable",
+]);
+
 const useSummaryWording = consoleSwitch<SummaryWording>("agamaSummaryWording", ["when", "until"]);
 
 const useActionCount = consoleSwitch<ActionCount>("agamaActionCount", [
@@ -174,5 +187,6 @@ export {
   useGroupTitleStyle,
   useSummaryWording,
   useActionCount,
+  useFailedDetails,
 };
 export type { ExistingDataWording, NamesStyle };

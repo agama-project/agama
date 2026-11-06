@@ -46,6 +46,15 @@ const Description = ({ issues }: { issues: Issue[] }) => {
   );
 };
 
+/** PLAYGROUND: the issues alone, for when they are listed in place. */
+const IssuesList = ({ issues }: { issues: Issue[] }) => (
+  <List>
+    {issues.map((e, i) => (
+      <ListItem key={i}>{e.description}</ListItem>
+    ))}
+  </List>
+);
+
 type FixableConfigInfoProps = {
   issues: Issue[];
   /** Drawn as a line of text rather than as an alert box. */
@@ -78,4 +87,4 @@ export default function FixableConfigInfo({ issues, isPlain }: FixableConfigInfo
   );
 }
 
-export { fixableConfigTitle };
+export { fixableConfigTitle, IssuesList };
