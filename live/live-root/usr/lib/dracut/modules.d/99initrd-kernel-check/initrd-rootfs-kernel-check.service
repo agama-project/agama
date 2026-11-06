@@ -10,12 +10,11 @@ After=initrd-fs.target
 Before=dracut-pre-pivot.service initrd-switch-root.target
 
 ConditionPathExists=/usr/lib/initrd-release
-# allow skipping the check with the "live.sanity_check=0" boot option
-ConditionKernelCommandLine=!live.sanity_check=0
 Conflicts=shutdown.target emergency.target
 
 # start the emergency shell if the check fails
 OnFailure=emergency.target
+# on failure do not start other units
 OnFailureJobMode=isolate
 
 [Service]
