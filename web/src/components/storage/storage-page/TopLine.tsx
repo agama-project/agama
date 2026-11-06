@@ -22,7 +22,6 @@
 
 import React from "react";
 import { Flex, FlexItem } from "@patternfly/react-core";
-import SmallWarning from "~/components/core/SmallWarning";
 import FixableConfigInfo from "~/components/storage/FixableConfigInfo";
 import ProposalFailedInfo from "~/components/storage/ProposalFailedInfo";
 import { useIssues } from "~/hooks/model/issue";
@@ -36,9 +35,9 @@ import { bootIcon } from "~/components/storage/shared/boot";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { EXPANDED, SETTINGS_TAB, DEVICE_DETAILS } from "~/components/storage/ui-state-params";
 import configModel from "~/model/storage/config-model";
-import Consequences, { losesData } from "~/components/storage/storage-page/Consequences";
+import Summary from "~/components/storage/storage-page/Summary";
 import { useConfigModel } from "~/hooks/model/storage/config-model";
-import { useActions, useProposal } from "~/hooks/model/proposal/storage";
+import { useProposal } from "~/hooks/model/proposal/storage";
 import { useReset } from "~/hooks/model/config/storage";
 import { useClearSearchParams } from "~/hooks/use-search-param-state";
 import { _ } from "~/i18n";
@@ -149,7 +148,6 @@ function encryption(config: ConfigModel.Config): {
 export default function TopLine(): React.ReactNode {
   const config = useConfigModel();
   const proposal = useProposal();
-  const actions = useActions();
   const issues = useIssues("storage");
   const configIssues = issues.filter((i) => i.class !== "proposal");
   const reset = useReset();
@@ -167,9 +165,9 @@ export default function TopLine(): React.ReactNode {
     clearSearchParams(EXPANDED, SETTINGS_TAB, DEVICE_DETAILS);
   };
 
-  /* A line of its own, above or under the status and the settings. */
+  /* On the same line as the settings, which it introduces. */
   const description = (
-    <FlexItem fullWidth={{ default: "fullWidth" }}>
+    <FlexItem>
       <Text textStyle={["fontSizeSm", "textColorSubtle"]}>
         {/* TRANSLATORS: says what the storage page is for, next to the
             settings that apply to the whole installation. */}
@@ -179,120 +177,93 @@ export default function TopLine(): React.ReactNode {
   );
 
   return (
-    <Flex
-      alignItems={{ default: "alignItemsCenter" }}
-      justifyContent={{ default: "justifyContentSpaceBetween" }}
-      gap={{ default: "gapMd" }}
-      /* Wrapping rather than pinned on one line. A strip this crowded runs out
-         of room before the window does, and a row that cannot wrap scrolls the
-         page sideways instead. */
-      flexWrap={{ default: "wrap" }}
-    >
-      {description}
-      {!proposal && (
-        /* Where no layout could be found, the problem takes the place of the
-           result. */
-        <FlexItem>
-          {configIssues.length ? (
-            <FixableConfigInfo issues={configIssues} isPlain />
+    /* A flex column rather than a stack, which takes the whole height of what
+       holds it and pushes the devices down. */
+    <Flex direction={{ default: "column" }} gap={{ default: "gapMd" }}>
+      {/* The result first, on a line of its own: what every setting below
+          leads to, and the place to glance back at after changing one. Where
+          no layout could be found, the problem takes its place. */}
+      <FlexItem>
+        {proposal && <Summary />}
+        {!proposal &&
+          (configIssues.length ? (
+            <FixableConfigInfo issues={configIssues} />
           ) : (
-            <ProposalFailedInfo isPlain />
-          )}
-        </FlexItem>
-      )}
-      {proposal && (
-        <FlexItem>
-          <Flex alignItems={{ default: "alignItemsCenter" }} gap={{ default: "gapSm" }}>
-            {/* Drawn as the popup draws its destructive actions, so the
-                caution reads the same in both places. */}
-            {losesData(actions) ? (
-              <SmallWarning
-                // TRANSLATORS: what applying the storage configuration does,
-                // where something may be deleted.
-                text={_("The setup below will be applied with potential data loss")}
-              />
-            ) : (
-              <>
-                <Icon name="list_alt" aria-hidden />
-                <Text>
-                  {
-                    // TRANSLATORS: what applying the storage configuration
-                    // does, where nothing is deleted.
-                    _("The setup below will be applied with no expected data loss")
-                  }
-                </Text>
-              </>
-            )}
-            <Consequences
-              // TRANSLATORS: opens a popup with the layout the disks will have
-              // and the actions needed to get there.
-              label={_("Details…")}
-              // TRANSLATORS: full name of the "Details" button, for screen
-              // readers.
-              aria-label={_("Details of the planned storage changes")}
-            />
-          </Flex>
-        </FlexItem>
-      )}
-      {/* Kept at the right edge also when it wraps under the sentence. */}
-      <FlexItem align={{ default: "alignRight" }}>
+            <ProposalFailedInfo />
+          ))}
+      </FlexItem>
+      <FlexItem>
         <Flex
           alignItems={{ default: "alignItemsCenter" }}
+          justifyContent={{ default: "justifyContentSpaceBetween" }}
           gap={{ default: "gapMd" }}
+          /* Wrapping rather than pinned on one line. A strip this crowded runs
+             out of room before the window does, and a row that cannot wrap
+             scrolls the page sideways instead. */
           flexWrap={{ default: "wrap" }}
         >
-          <FlexItem>
-            {/* Laid out as a row of pairs rather than as PatternFly's columns,
+          {description}
+          {/* Kept at the right edge also when it wraps under the sentence. */}
+          <FlexItem align={{ default: "alignRight" }}>
+            <Flex
+              alignItems={{ default: "alignItemsCenter" }}
+              gap={{ default: "gapMd" }}
+              flexWrap={{ default: "wrap" }}
+            >
+              <FlexItem>
+                {/* Laid out as a row of pairs rather than as PatternFly's columns,
                 which share out whatever width they are given: two settings and
                 a sentence spread across a whole strip read as three things
                 placed apart rather than as one line. */}
-            {/* Each setting said as one phrase that is also the way to change
+                {/* Each setting said as one phrase that is also the way to change
                 it, so it reads the same anywhere, including in a screen
                 reader's list of links. */}
-            <ul className="agm-top-line__settings">
-              <li>
-                <Icon name={bootMark} aria-hidden />
-                <Link to={PATHS.editBootDevice} keepQuery variant="link" isInline>
-                  {bootValue}
-                </Link>
-              </li>
-              <li>
-                <Icon name={encryptionIcon} aria-hidden />
-                <Link to={PATHS.editEncryption} keepQuery variant="link" isInline>
-                  {encryptionValue}
-                </Link>
-              </li>
-            </ul>
-          </FlexItem>
-          <FlexItem>
-            <MenuButton
-              menuProps={{
-                // TRANSLATORS: names the menu of things that can be done to the
-                // whole storage configuration.
-                "aria-label": _("Actions for this configuration"),
-                popperProps: { position: "end" },
-              }}
-              toggleProps={{
-                /* PatternFly's own padding kept, so the toggle is a target a
+                <ul className="agm-top-line__settings">
+                  <li>
+                    <Icon name={bootMark} aria-hidden />
+                    <Link to={PATHS.editBootDevice} keepQuery variant="link" isInline>
+                      {bootValue}
+                    </Link>
+                  </li>
+                  <li>
+                    <Icon name={encryptionIcon} aria-hidden />
+                    <Link to={PATHS.editEncryption} keepQuery variant="link" isInline>
+                      {encryptionValue}
+                    </Link>
+                  </li>
+                </ul>
+              </FlexItem>
+              <FlexItem>
+                <MenuButton
+                  menuProps={{
+                    // TRANSLATORS: names the menu of things that can be done to the
+                    // whole storage configuration.
+                    "aria-label": _("Actions for this configuration"),
+                    popperProps: { position: "end" },
+                  }}
+                  toggleProps={{
+                    /* PatternFly's own padding kept, so the toggle is a target a
                    finger or an unsteady hand can hit, not just its three
                    dots. */
-                variant: "plain",
-                /* Three dots name nothing. Without this the toggle reaches a
+                    variant: "plain",
+                    /* Three dots name nothing. Without this the toggle reaches a
                    screen reader as an unnamed button. */
-                "aria-label": _("Actions for this configuration"),
-              }}
-              items={[
-                <MenuButton.Item
-                  key="reset"
-                  onClick={onReset}
-                  description={_("Start from scratch with the default configuration")}
+                    "aria-label": _("Actions for this configuration"),
+                  }}
+                  items={[
+                    <MenuButton.Item
+                      key="reset"
+                      onClick={onReset}
+                      description={_("Start from scratch with the default configuration")}
+                    >
+                      {_("Reset to defaults")}
+                    </MenuButton.Item>,
+                  ]}
                 >
-                  {_("Reset to defaults")}
-                </MenuButton.Item>,
-              ]}
-            >
-              <Icon name="more_horiz" className="agm-three-dots-icon" />
-            </MenuButton>
+                  <Icon name="more_horiz" className="agm-three-dots-icon" />
+                </MenuButton>
+              </FlexItem>
+            </Flex>
           </FlexItem>
         </Flex>
       </FlexItem>

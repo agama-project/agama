@@ -41,6 +41,17 @@
  *   agamaExistingDataWording("blunt")    // No changes, May shrink, Wiped
  *   agamaExistingDataWording("loss")     // All kept, Possible data loss, Data loss
  *
+ * How the summary at the top of the page is worded:
+ *
+ *   agamaSummaryWording("when")   // "When the installation starts, ..." (default)
+ *   agamaSummaryWording("until")  // "Nothing is changed until ...", in two lines
+ *
+ * What the summary counts:
+ *
+ *   agamaActionCount("all")           // every action, as "N actions" (default)
+ *   agamaActionCount("noSubvolumes")  // without Btrfs subvolumes, as "N actions"
+ *   agamaActionCount("changes")       // without Btrfs subvolumes, as "N changes"
+ *
  * Choices survive reloads. To be dropped once the design is settled.
  */
 
@@ -49,14 +60,23 @@ import React from "react";
 type DevicesBox = "off" | "on";
 type GroupedTable = "off" | "on";
 type ExistingDataWording = "short" | "verbose" | "blunt" | "loss";
+type SummaryWording = "when" | "until";
+type ActionCount = "all" | "noSubvolumes" | "changes";
 
-type SwitchName = "agamaDevicesBox" | "agamaGroupedTable" | "agamaExistingDataWording";
+type SwitchName =
+  | "agamaDevicesBox"
+  | "agamaGroupedTable"
+  | "agamaExistingDataWording"
+  | "agamaSummaryWording"
+  | "agamaActionCount";
 
 declare global {
   interface Window {
     agamaDevicesBox?: (value: boolean) => void;
     agamaGroupedTable?: (value: boolean) => void;
     agamaExistingDataWording?: (value: ExistingDataWording) => void;
+    agamaSummaryWording?: (value: SummaryWording) => void;
+    agamaActionCount?: (value: ActionCount) => void;
   }
 }
 
@@ -113,5 +133,19 @@ const useExistingDataWording = consoleSwitch<ExistingDataWording>("agamaExisting
   "loss",
 ]);
 
-export { useDevicesBox, useGroupedTable, useExistingDataWording };
+const useSummaryWording = consoleSwitch<SummaryWording>("agamaSummaryWording", ["when", "until"]);
+
+const useActionCount = consoleSwitch<ActionCount>("agamaActionCount", [
+  "all",
+  "noSubvolumes",
+  "changes",
+]);
+
+export {
+  useDevicesBox,
+  useGroupedTable,
+  useExistingDataWording,
+  useSummaryWording,
+  useActionCount,
+};
 export type { ExistingDataWording };
