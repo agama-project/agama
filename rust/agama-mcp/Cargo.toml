@@ -1,0 +1,23 @@
+[package]
+name = "agama-mcp"
+version = "0.1.0"
+rust-version.workspace = true
+edition.workspace = true
+description = "Model Context Protocol (MCP) server for Agama installer"
+
+[dependencies]
+agama-lib = { workspace = true }
+agama-manager = { workspace = true }
+agama-utils = { workspace = true }
+async-trait = { workspace = true }
+axum = { workspace = true }
+rmcp = { version = "3.5", features = ["server", "macros", "transport-streamable-http-server", "transport-streamable-http-server-session"] }
+schemars = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+tokio = { workspace = true }
+tracing = { workspace = true }
+
+[dev-dependencies]
+tower = { workspace = true }
