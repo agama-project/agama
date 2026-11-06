@@ -31,7 +31,6 @@ import Text from "~/components/core/Text";
 import { useDeviceDetails, DETAILS_PANEL_ID } from "~/components/storage/shared/use-device-details";
 import { columnName } from "~/components/storage/entries-table/columns";
 import type { DetailsSubject } from "~/components/storage/shared/use-device-details";
-import type { TranslatedString } from "~/i18n";
 
 export type EntryRowProps = {
   /** What the entry is called, as the page names things: `sda`, `system`. */
@@ -43,7 +42,7 @@ export type EntryRowProps = {
   /** What it is for, in the words the panel marks it with. */
   marks?: string[];
   /** What the new system uses it for, one value per line. */
-  usedFor: TranslatedString[];
+  usedFor: React.ReactNode[];
   /**
    * Whether nothing is planned here, so the installation leaves the entry out.
    * The whole row reads quieter then, as the absence it is.
@@ -160,8 +159,8 @@ export default function EntryRow({
       </Th>
       <Td dataLabel={columnName("usedFor")}>
         <Stack>
-          {usedFor.map((line) => (
-            <StackItem key={line}>{line}</StackItem>
+          {usedFor.map((line, index) => (
+            <StackItem key={index}>{line}</StackItem>
           ))}
         </Stack>
       </Td>

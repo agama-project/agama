@@ -31,14 +31,17 @@
 
 import React from "react";
 import { sprintf } from "sprintf-js";
+import Interpolate from "~/components/core/Interpolate";
 import Text from "~/components/core/Text";
 import { NAMES_PER_LINE } from "~/components/storage/shared/naming";
 import configModel from "~/model/storage/config-model";
-import { _, n_, formatList } from "~/i18n";
-import type { TranslatedString } from "~/i18n";
+import { _, n_, formatList, formatListToParts } from "~/i18n";
 import type { ConfigModel } from "~/model/storage/config-model";
 import type { Storage as System } from "~/model/system";
-import type { ExistingDataWording } from "~/components/storage/storage-page/playground-switches";
+import type {
+  ExistingDataWording,
+  NamesStyle,
+} from "~/components/storage/storage-page/playground-switches";
 
 type Volume = ConfigModel.Partition | ConfigModel.LogicalVolume;
 
@@ -49,28 +52,60 @@ function mountPathsOf(volumes: Volume[]): string[] {
   return volumes.filter((v) => v.mountPath).map((v) => v.mountPath);
 }
 
+/**
+ * Names such as mount points or volume groups, joined the way the language
+ * joins a list. PLAYGROUND: set in monospace or not, from the console, so a
+ * name like "/" is not lost among the words around it.
+ */
+function Names({ names, style }: { names: string[]; style: NamesStyle }) {
+  if (style === "plain") return <>{formatList(names)}</>;
+
+  return (
+    <>
+      {formatListToParts(names).map((part, index) =>
+        part.type === "element" ? (
+          <span key={index} className="agm-device-name">
+            {part.value}
+          </span>
+        ) : (
+          part.value
+        ),
+      )}
+    </>
+  );
+}
+
+/** A sentence with one `%s`, filled with names. */
+function withNames(sentence: string, names: string[], style: NamesStyle): React.ReactNode {
+  return (
+    <Interpolate sentence={sentence}>{() => <Names names={names} style={style} />}</Interpolate>
+  );
+}
+
 /** What a disk or a RAID is used for, one value per line. */
 function driveUsedFor(
   device: ConfigModel.Drive | ConfigModel.MdRaid,
   groups: string[],
   boots: boolean,
   isIdle: boolean,
-): TranslatedString[] {
+  style: NamesStyle,
+): React.ReactNode[] {
   if (isIdle) {
     // TRANSLATORS: what a disk added to the installation is used for, when
     // nothing is planned on it yet; the installer leaves it untouched.
     return [_("Nothing yet (skipped)")];
   }
 
-  const lines: TranslatedString[] = [];
+  const lines: React.ReactNode[] = [];
 
   if (groups.length && groups.length <= NAMES_PER_LINE) {
     lines.push(
-      sprintf(
+      withNames(
         // TRANSLATORS: what a disk is used for: it holds the LVM volume
         // group(s) named by %s, such as "system" or "system and data".
         n_("Volume group %s", "Volume groups %s", groups.length),
-        formatList(groups),
+        groups,
+        style,
       ),
     );
   } else if (groups.length) {
@@ -86,11 +121,12 @@ function driveUsedFor(
   if (device.filesystem) {
     lines.push(
       device.mountPath
-        ? sprintf(
+        ? withNames(
             // TRANSLATORS: what a disk is used for: a single file system over
             // all of it, mounted at %s, such as "/home".
             _("%s (whole device)"),
-            device.mountPath,
+            [device.mountPath],
+            style,
           )
         : // TRANSLATORS: what a disk is used for: a single file system over all
           // of it, not mounted anywhere.
@@ -98,8 +134,7 @@ function driveUsedFor(
     );
   } else {
     const paths = mountPathsOf(device.partitions || []);
-    // A list of mount points, such as "/ and swap"; the language joins them.
-    if (paths.length) lines.push(formatList(paths) as TranslatedString);
+    if (paths.length) lines.push(<Names names={paths} style={style} />);
   }
 
   if (boots) {
@@ -112,9 +147,9 @@ function driveUsedFor(
 }
 
 /** What a volume group is used for. */
-function volumeGroupUsedFor(group: ConfigModel.VolumeGroup): TranslatedString[] {
+function volumeGroupUsedFor(group: ConfigModel.VolumeGroup, style: NamesStyle): React.ReactNode[] {
   const paths = mountPathsOf(group.logicalVolumes || []);
-  if (paths.length) return [formatList(paths) as TranslatedString];
+  if (paths.length) return [<Names key="paths" names={paths} style={style} />];
 
   // TRANSLATORS: what a volume group is used for, when no logical volume is
   // planned in it yet.

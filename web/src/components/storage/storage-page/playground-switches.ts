@@ -41,6 +41,11 @@
  *   agamaExistingDataWording("blunt")    // No changes, May shrink, Wiped
  *   agamaExistingDataWording("loss")     // All kept, Possible data loss, Data loss
  *
+ * How names (mount points, volume groups) read in the "Used for" column:
+ *
+ *   agamaNamesStyle("mono")   // in monospace, apart from the words around them (default)
+ *   agamaNamesStyle("plain")  // in the same face as the rest
+ *
  * How the summary at the top of the page is worded:
  *
  *   agamaSummaryWording("when")   // "When the installation starts, ..." (default)
@@ -60,6 +65,7 @@ import React from "react";
 type DevicesBox = "off" | "on";
 type GroupedTable = "off" | "on";
 type ExistingDataWording = "short" | "verbose" | "blunt" | "loss";
+type NamesStyle = "mono" | "plain";
 type SummaryWording = "when" | "until";
 type ActionCount = "all" | "noSubvolumes" | "changes";
 
@@ -67,6 +73,7 @@ type SwitchName =
   | "agamaDevicesBox"
   | "agamaGroupedTable"
   | "agamaExistingDataWording"
+  | "agamaNamesStyle"
   | "agamaSummaryWording"
   | "agamaActionCount";
 
@@ -75,6 +82,7 @@ declare global {
     agamaDevicesBox?: (value: boolean) => void;
     agamaGroupedTable?: (value: boolean) => void;
     agamaExistingDataWording?: (value: ExistingDataWording) => void;
+    agamaNamesStyle?: (value: NamesStyle) => void;
     agamaSummaryWording?: (value: SummaryWording) => void;
     agamaActionCount?: (value: ActionCount) => void;
   }
@@ -133,6 +141,8 @@ const useExistingDataWording = consoleSwitch<ExistingDataWording>("agamaExisting
   "loss",
 ]);
 
+const useNamesStyle = consoleSwitch<NamesStyle>("agamaNamesStyle", ["mono", "plain"]);
+
 const useSummaryWording = consoleSwitch<SummaryWording>("agamaSummaryWording", ["when", "until"]);
 
 const useActionCount = consoleSwitch<ActionCount>("agamaActionCount", [
@@ -145,7 +155,8 @@ export {
   useDevicesBox,
   useGroupedTable,
   useExistingDataWording,
+  useNamesStyle,
   useSummaryWording,
   useActionCount,
 };
-export type { ExistingDataWording };
+export type { ExistingDataWording, NamesStyle };

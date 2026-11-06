@@ -33,6 +33,7 @@ import { volumeGroupFacts } from "~/components/storage/utils/device";
 import {
   useExistingDataWording,
   useGroupedTable,
+  useNamesStyle,
 } from "~/components/storage/storage-page/playground-switches";
 import { useDevice } from "~/hooks/model/system/storage";
 import { _ } from "~/i18n";
@@ -68,13 +69,14 @@ export default function VolumeGroupRow({ group, subject }: VolumeGroupRowProps):
   // creates, in a list headed "Volume groups".
   const newMark = !group.name ? _("New") : undefined;
   const wording = useExistingDataWording();
+  const namesStyle = useNamesStyle();
 
   return (
     <EntryRow
       name={<TruncatedDeviceName device={{ name: group.vgName }} maxLength={13} />}
       size={size}
       description={isGrouped ? newMark : description}
-      usedFor={volumeGroupUsedFor(group)}
+      usedFor={volumeGroupUsedFor(group, namesStyle)}
       existingData={
         <ExistingDataCell data={existingDataOfVolumeGroup(group, device)} wording={wording} />
       }
