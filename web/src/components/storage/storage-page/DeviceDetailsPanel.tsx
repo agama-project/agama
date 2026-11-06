@@ -70,6 +70,11 @@ function entryDescription(entry: Entry): string | undefined {
 export type DeviceDetailsPanelProps = {
   /** The page the panel opens over. */
   page: React.ReactNode;
+  /**
+   * Where the panel stays pinned below the top of the page as it scrolls, if
+   * the page scrolls as a whole. See `SidePanel`.
+   */
+  pinnedOffset?: number;
 };
 
 /**
@@ -90,7 +95,10 @@ export type DeviceDetailsPanelProps = {
  * that takes its entry away: the panel closes rather than moving on to another
  * entry, since going from one entry to another is always the reader's doing.
  */
-export default function DeviceDetailsPanel({ page }: DeviceDetailsPanelProps): React.ReactNode {
+export default function DeviceDetailsPanel({
+  page,
+  pinnedOffset,
+}: DeviceDetailsPanelProps): React.ReactNode {
   const { subject, isStale, close } = useDeviceDetails();
   const placement = usePlacement();
   const entry = useEntry(subject);
@@ -106,6 +114,7 @@ export default function DeviceDetailsPanel({ page }: DeviceDetailsPanelProps): R
   return (
     <SidePanel
       id={DETAILS_PANEL_ID}
+      pinnedOffset={pinnedOffset}
       isOpen={isOpen}
       placement={placement}
       onClose={close}

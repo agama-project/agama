@@ -21,10 +21,11 @@
  */
 
 import React from "react";
-import { Divider, Stack } from "@patternfly/react-core";
+import { Divider, PageSection, Stack } from "@patternfly/react-core";
 import Page from "~/components/layout/Page";
 import EntriesTable from "~/components/storage/entries-table/EntriesTable";
-import TopLine from "~/components/storage/storage-page/TopLine";
+import TopLine, { TopResult } from "~/components/storage/storage-page/TopLine";
+import { useElementSize } from "~/hooks/use-element-size";
 import GlobalActions from "~/components/storage/storage-page/GlobalActions";
 import Result from "~/components/storage/storage-page/Result";
 import DeviceDetailsPanel from "~/components/storage/storage-page/DeviceDetailsPanel";
@@ -46,11 +47,14 @@ import { useConfigModel } from "~/hooks/model/storage/config-model";
 export default function StoragePageContent(): React.ReactNode {
   const model = useConfigModel();
   const box = useDevicesBox();
+  const [resultNode, setResultNode] = React.useState<HTMLDivElement | null>(null);
+  const { height: resultHeight = 0 } = useElementSize(resultNode);
 
   if (!model) return <Result />;
 
   const devices = (
     <DeviceDetailsPanel
+      pinnedOffset={resultHeight}
       page={
         <Stack hasGutter>
           <EntriesTable />
@@ -64,6 +68,18 @@ export default function StoragePageContent(): React.ReactNode {
   return (
     <>
       <Result />
+      {/* Kept in sight while the rest of the page scrolls: what every setting
+          leads to. The same sticky section the software patterns page keeps
+          its filter in. */}
+      <PageSection
+        component="div"
+        stickyOnBreakpoint={{ default: "top" }}
+        padding={{ default: "noPadding" }}
+      >
+        <div ref={setResultNode}>
+          <TopResult />
+        </div>
+      </PageSection>
       <TopLine />
       {/* PLAYGROUND: the devices in a bordered box, or right on the page with
           a rule setting them apart from the top line. */}

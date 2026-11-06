@@ -296,7 +296,8 @@ nav.agm-breadcrumb > ol > li > a {
   white-space: nowrap;
 }
 
-// A page holding a panel does not scroll: the page beside the panel and the
+// A page holding a panel does not scroll, unless the panel is pinned (see
+// below): the page beside the panel and the
 // panel each scroll on their own. A page that scrolls as a whole opens the
 // panel at whatever offset the page was left at, with its heading out of sight.
 //
@@ -304,19 +305,13 @@ nav.agm-breadcrumb > ol > li > a {
 // shrinking, so they stay as tall as their content and the page scrolls. Both
 // properties have to go: a zero minimum does nothing to an item that does not
 // shrink.
-.pf-v6-c-page__main-group:has(> .pf-v6-c-page__main-section > .agm-side-panel-frame),
-.pf-v6-c-page__main-section:has(> .agm-side-panel-frame),
-.agm-side-panel-frame {
+.pf-v6-c-page__main-group:has(
+  > .pf-v6-c-page__main-section > .agm-side-panel-frame:not(.agm-side-panel-frame--pinned)
+),
+.pf-v6-c-page__main-section:has(> .agm-side-panel-frame:not(.agm-side-panel-frame--pinned)),
+.agm-side-panel-frame:not(.agm-side-panel-frame--pinned) {
   flex: 1 1 auto;
   min-height: 0;
-}
-
-// What sits above the panel, such as a page's report, is spaced from it as the
-// parts of the page inside it are spaced from each other, so the report reads
-// as part of the page rather than as something apart from it.
-.pf-v6-c-page__main-section:has(> .agm-side-panel-frame),
-.pf-v6-c-page__main-section:has(> .pf-v6-c-card .agm-side-panel-frame) {
-  --pf-v6-c-page__main-section--RowGap: var(--pf-t--global--spacer--gutter--default);
 }
 
 // The panel and whatever lies over the page reach the edges of the rounded box
@@ -352,10 +347,16 @@ nav.agm-breadcrumb > ol > li > a {
 // room left under what comes before it, and the panel reaches the box edges,
 // clipped to its corners, so the room around the page moves inside the drawer
 // as it does for a panel over the whole page.
-.pf-v6-c-page__main-group:has(> .pf-v6-c-page__main-section > .pf-v6-c-card .agm-side-panel-frame),
-.pf-v6-c-page__main-section:has(> .pf-v6-c-card .agm-side-panel-frame),
-.pf-v6-c-card:has(> .pf-v6-c-card__body > .agm-side-panel-frame),
-.pf-v6-c-card__body:has(> .agm-side-panel-frame) {
+.pf-v6-c-page__main-group:has(
+  > .pf-v6-c-page__main-section
+    > .pf-v6-c-card
+    .agm-side-panel-frame:not(.agm-side-panel-frame--pinned)
+),
+.pf-v6-c-page__main-section:has(
+  > .pf-v6-c-card .agm-side-panel-frame:not(.agm-side-panel-frame--pinned)
+),
+.pf-v6-c-card:has(> .pf-v6-c-card__body > .agm-side-panel-frame:not(.agm-side-panel-frame--pinned)),
+.pf-v6-c-card__body:has(> .agm-side-panel-frame:not(.agm-side-panel-frame--pinned)) {
   flex: 1 1 auto;
   min-height: 0;
 }
@@ -368,6 +369,12 @@ nav.agm-breadcrumb > ol > li > a {
 
 .pf-v6-c-card:has(> .pf-v6-c-card__body > .agm-side-panel-frame) {
   overflow: hidden;
+}
+
+// A pinned panel sticks only where nothing between it and the scrolling page
+// scrolls on its own: clipping without scrolling keeps the box's corners.
+.pf-v6-c-card:has(> .pf-v6-c-card__body > .agm-side-panel-frame--pinned) {
+  overflow: clip;
 }
 
 // Without a box around them, a rule sets the devices apart from the top line,
@@ -919,4 +926,49 @@ tr.agm-entries-table__row > :is(th, td):not(.agm-entries-table__menu) {
 // under it, a step apart.
 .agm-summary__details-line {
   margin-block-start: var(--pf-t--global--spacer--xs);
+}
+
+// With a pinned panel the page still fills the window when it is short, down
+// to the footer, but grows past it instead of shrinking, so it scrolls as a
+// whole once it is longer.
+.pf-v6-c-page__main-group:has(.agm-side-panel-frame--pinned),
+.pf-v6-c-page__main-section:has(.agm-side-panel-frame--pinned),
+.pf-v6-c-card:has(> .pf-v6-c-card__body > .agm-side-panel-frame--pinned),
+.pf-v6-c-card__body:has(> .agm-side-panel-frame--pinned),
+.agm-side-panel-frame--pinned {
+  flex: 1 0 auto;
+}
+
+// PatternFly makes a drawer as tall as what holds it, which here would add the
+// whole section's height to whatever comes before the drawer. Pinned, it takes
+// its content's height and grows only into the room left.
+.agm-side-panel-frame--pinned {
+  block-size: auto;
+}
+
+// A pinned panel: the page scrolls as a whole, as every other page does, and
+// the panel stays in view as it scrolls, right under whatever the page keeps
+// in sight at its top, as tall as what is left of the scrolling area, and
+// scrolling its own content. Sticking needs every box between the panel and
+// the scrolling area to leave overflow alone: clipping without scrolling is
+// what keeps the panel's slide hidden without that.
+.agm-side-panel-frame--pinned,
+.agm-side-panel-frame--pinned > .pf-v6-c-drawer__main {
+  overflow: clip;
+}
+
+.agm-side-panel-frame--pinned > .pf-v6-c-drawer__main > .pf-v6-c-drawer__content {
+  overflow: visible;
+}
+
+// Only while it shows: a shut panel stays in the layout, merely hidden, and
+// would otherwise keep the page as long as an open one.
+.agm-side-panel-frame--pinned > .pf-v6-c-drawer__main > .pf-v6-c-drawer__panel:not([hidden]) {
+  position: sticky;
+  inset-block-start: var(--agm-side-panel--pinned-offset, 0);
+  align-self: flex-start;
+  block-size: calc(
+    var(--agm-side-panel--visible-height, 100dvh) - var(--agm-side-panel--pinned-offset)
+  );
+  max-block-size: none;
 }

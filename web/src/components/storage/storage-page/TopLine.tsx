@@ -152,9 +152,6 @@ function encryption(config: ConfigModel.Config): {
  */
 export default function TopLine(): React.ReactNode {
   const config = useConfigModel();
-  const proposal = useProposal();
-  const issues = useIssues("storage");
-  const configIssues = issues.filter((i) => i.class !== "proposal");
   const reset = useReset();
   const clearSearchParams = useClearSearchParams();
 
@@ -182,107 +179,109 @@ export default function TopLine(): React.ReactNode {
   );
 
   return (
-    /* A flex column rather than a stack, which takes the whole height of what
-       holds it and pushes the devices down. */
-    <Flex direction={{ default: "column" }} gap={{ default: "gapMd" }}>
-      {/* The result first, on a line of its own: what every setting below
-          leads to, and the place to glance back at after changing one. Where
-          no layout could be found, the problem takes its place. */}
-      <FlexItem>
-        {proposal && <Summary />}
-        {!proposal &&
-          (configIssues.length ? (
-            <FailureAlert
-              title={fixableConfigTitle()}
-              body={<IssuesList issues={configIssues} />}
-              popupTitle={_("Invalid storage configuration")}
-            />
-          ) : (
-            <FailureAlert
-              title={proposalFailedTitle()}
-              body={<NotEnoughSpace />}
-              // TRANSLATORS: title of the popup with suggestions on how to fix
-              // a storage setup that cannot be applied.
-              popupTitle={_("Failed to plan storage changes")}
-              suggestions={<Suggestions />}
-            />
-          ))}
-      </FlexItem>
-      <FlexItem>
-        <Flex
-          alignItems={{ default: "alignItemsCenter" }}
-          justifyContent={{ default: "justifyContentSpaceBetween" }}
-          gap={{ default: "gapMd" }}
-          /* Wrapping rather than pinned on one line. A strip this crowded runs
+    <Flex
+      alignItems={{ default: "alignItemsCenter" }}
+      justifyContent={{ default: "justifyContentSpaceBetween" }}
+      gap={{ default: "gapMd" }}
+      /* Wrapping rather than pinned on one line. A strip this crowded runs
              out of room before the window does, and a row that cannot wrap
              scrolls the page sideways instead. */
+      flexWrap={{ default: "wrap" }}
+    >
+      {description}
+      {/* Kept at the right edge also when it wraps under the sentence. */}
+      <FlexItem align={{ default: "alignRight" }}>
+        <Flex
+          alignItems={{ default: "alignItemsCenter" }}
+          gap={{ default: "gapMd" }}
           flexWrap={{ default: "wrap" }}
         >
-          {description}
-          {/* Kept at the right edge also when it wraps under the sentence. */}
-          <FlexItem align={{ default: "alignRight" }}>
-            <Flex
-              alignItems={{ default: "alignItemsCenter" }}
-              gap={{ default: "gapMd" }}
-              flexWrap={{ default: "wrap" }}
-            >
-              <FlexItem>
-                {/* Laid out as a row of pairs rather than as PatternFly's columns,
+          <FlexItem>
+            {/* Laid out as a row of pairs rather than as PatternFly's columns,
                 which share out whatever width they are given: two settings and
                 a sentence spread across a whole strip read as three things
                 placed apart rather than as one line. */}
-                {/* Each setting said as one phrase that is also the way to change
+            {/* Each setting said as one phrase that is also the way to change
                 it, so it reads the same anywhere, including in a screen
                 reader's list of links. */}
-                <ul className="agm-top-line__settings">
-                  <li>
-                    <Icon name={bootMark} aria-hidden />
-                    <Link to={PATHS.editBootDevice} keepQuery variant="link" isInline>
-                      {bootValue}
-                    </Link>
-                  </li>
-                  <li>
-                    <Icon name={encryptionIcon} aria-hidden />
-                    <Link to={PATHS.editEncryption} keepQuery variant="link" isInline>
-                      {encryptionValue}
-                    </Link>
-                  </li>
-                </ul>
-              </FlexItem>
-              <FlexItem>
-                <MenuButton
-                  menuProps={{
-                    // TRANSLATORS: names the menu of things that can be done to the
-                    // whole storage configuration.
-                    "aria-label": _("Actions for this configuration"),
-                    popperProps: { position: "end" },
-                  }}
-                  toggleProps={{
-                    /* PatternFly's own padding kept, so the toggle is a target a
+            <ul className="agm-top-line__settings">
+              <li>
+                <Icon name={bootMark} aria-hidden />
+                <Link to={PATHS.editBootDevice} keepQuery variant="link" isInline>
+                  {bootValue}
+                </Link>
+              </li>
+              <li>
+                <Icon name={encryptionIcon} aria-hidden />
+                <Link to={PATHS.editEncryption} keepQuery variant="link" isInline>
+                  {encryptionValue}
+                </Link>
+              </li>
+            </ul>
+          </FlexItem>
+          <FlexItem>
+            <MenuButton
+              menuProps={{
+                // TRANSLATORS: names the menu of things that can be done to the
+                // whole storage configuration.
+                "aria-label": _("Actions for this configuration"),
+                popperProps: { position: "end" },
+              }}
+              toggleProps={{
+                /* PatternFly's own padding kept, so the toggle is a target a
                    finger or an unsteady hand can hit, not just its three
                    dots. */
-                    variant: "plain",
-                    /* Three dots name nothing. Without this the toggle reaches a
+                variant: "plain",
+                /* Three dots name nothing. Without this the toggle reaches a
                    screen reader as an unnamed button. */
-                    "aria-label": _("Actions for this configuration"),
-                  }}
-                  items={[
-                    <MenuButton.Item
-                      key="reset"
-                      onClick={onReset}
-                      description={_("Start from scratch with the default configuration")}
-                    >
-                      {_("Reset to defaults")}
-                    </MenuButton.Item>,
-                  ]}
+                "aria-label": _("Actions for this configuration"),
+              }}
+              items={[
+                <MenuButton.Item
+                  key="reset"
+                  onClick={onReset}
+                  description={_("Start from scratch with the default configuration")}
                 >
-                  <Icon name="more_horiz" className="agm-three-dots-icon" />
-                </MenuButton>
-              </FlexItem>
-            </Flex>
+                  {_("Reset to defaults")}
+                </MenuButton.Item>,
+              ]}
+            >
+              <Icon name="more_horiz" className="agm-three-dots-icon" />
+            </MenuButton>
           </FlexItem>
         </Flex>
       </FlexItem>
     </Flex>
+  );
+}
+
+/**
+ * What every setting on the storage page leads to: the summary of the planned
+ * changes or, where no layout could be found, the problem that takes its
+ * place. Kept apart from the settings line so the page can keep it in sight
+ * while the rest scrolls.
+ */
+export function TopResult(): React.ReactNode {
+  const proposal = useProposal();
+  const issues = useIssues("storage");
+  const configIssues = issues.filter((i) => i.class !== "proposal");
+
+  if (proposal) return <Summary />;
+
+  return configIssues.length ? (
+    <FailureAlert
+      title={fixableConfigTitle()}
+      body={<IssuesList issues={configIssues} />}
+      popupTitle={_("Invalid storage configuration")}
+    />
+  ) : (
+    <FailureAlert
+      title={proposalFailedTitle()}
+      body={<NotEnoughSpace />}
+      // TRANSLATORS: title of the popup with suggestions on how to fix a
+      // storage setup that cannot be applied.
+      popupTitle={_("Failed to plan storage changes")}
+      suggestions={<Suggestions />}
+    />
   );
 }

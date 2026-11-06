@@ -65,6 +65,13 @@ export type SidePanelProps = {
   /** What the panel holds. */
   children?: React.ReactNode;
   /**
+   * Lets the page scroll as a whole, as pages do, rather than the page beside
+   * the panel scrolling on its own. The panel then stays pinned in view as the
+   * page scrolls, this many pixels below the top of the scrolling area, where
+   * something kept in sight sits, and scrolls its own content.
+   */
+  pinnedOffset?: number;
+  /**
    * Lets a control that opens this panel point at it with `aria-controls`.
    *
    * It names an element that is always in the page, shut or open, so the
@@ -122,6 +129,14 @@ export type SidePanelProps = {
  *   <DeviceDetails device={device} />
  * </SidePanel>
  */
+/** The nearest ancestor that scrolls, where the page scrolls as a whole. */
+function scrollerOf(node: HTMLElement | null): HTMLElement | null {
+  for (let at = node?.parentElement; at; at = at.parentElement) {
+    if (/(auto|scroll)/.test(getComputedStyle(at).overflowY)) return at;
+  }
+  return null;
+}
+
 export default function SidePanel({
   isOpen,
   placement,
@@ -133,10 +148,56 @@ export default function SidePanel({
   placeholder,
   children,
   id,
+  pinnedOffset,
 }: SidePanelProps): React.ReactNode {
   const [panel, setPanel] = React.useState<HTMLDivElement | null>(null);
   const titleId = React.useId();
   const isPressOnBackdrop = React.useRef(false);
+  const frameId = React.useId();
+  const isPinned = pinnedOffset !== undefined;
+  const [visibleHeight, setVisibleHeight] = React.useState<number>();
+
+  /* Pinned, the panel is as tall as what the scrolling area shows below the
+     offset, less whatever the page keeps under the panel's frame at its very
+     end (its own padding, a box around it). Any taller, and at the end of the
+     page the frame would run out first and push the panel up under what is
+     kept in sight. */
+  React.useEffect(() => {
+    if (!isPinned) return;
+
+    const scroller = scrollerOf(document.getElementById(frameId));
+    if (!scroller) return;
+
+    const frame = document.getElementById(frameId);
+    const measure = () => {
+      const scrollerBox = scroller.getBoundingClientRect();
+      const contentEnd = scrollerBox.top + scroller.scrollHeight - scroller.scrollTop;
+      const below = frame ? Math.max(0, contentEnd - frame.getBoundingClientRect().bottom) : 0;
+      setVisibleHeight(scroller.clientHeight - below);
+    };
+    measure();
+    if (typeof ResizeObserver === "undefined") return;
+
+    const observer = new ResizeObserver(measure);
+    observer.observe(scroller);
+    if (frame) observer.observe(frame);
+    return () => observer.disconnect();
+  }, [isPinned, frameId]);
+
+  /* Opened below the fold, the panel would start where the page around it
+     happens to be, partly out of view. The page moves just enough to bring
+     the panel up to where it stays pinned. */
+  React.useEffect(() => {
+    if (!isPinned || !isOpen) return;
+
+    const frame = document.getElementById(frameId);
+    const scroller = scrollerOf(frame);
+    if (!frame || !scroller) return;
+
+    const gap =
+      frame.getBoundingClientRect().top - scroller.getBoundingClientRect().top - pinnedOffset;
+    if (gap > 0) scroller.scrollBy({ top: gap, behavior: "instant" });
+  }, [isPinned, isOpen, frameId, pinnedOffset]);
 
   /* Where the reader was when they opened it, so closing it can put them back.
      Without this a reader who closes a panel is dropped at the top of the
@@ -228,12 +289,25 @@ export default function SidePanel({
 
   return (
     <Drawer
+      id={frameId}
+      style={
+        isPinned
+          ? ({
+              "--agm-side-panel--pinned-offset": `${pinnedOffset}px`,
+              "--agm-side-panel--visible-height": visibleHeight ? `${visibleHeight}px` : "100dvh",
+            } as React.CSSProperties)
+          : undefined
+      }
       isExpanded={isOpen || reserves}
       isInline={isBeside}
       position="end"
-      className={
-        isCovered ? "agm-side-panel-frame agm-side-panel-frame--covered" : "agm-side-panel-frame"
-      }
+      className={[
+        "agm-side-panel-frame",
+        isCovered && "agm-side-panel-frame--covered",
+        isPinned && "agm-side-panel-frame--pinned",
+      ]
+        .filter(Boolean)
+        .join(" ")}
       onPointerDown={(event) => {
         isPressOnBackdrop.current = isCovered && isBackdrop(event);
       }}
