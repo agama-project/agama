@@ -22,6 +22,13 @@ the line at the top into a real summary of what the installer will do.
   only the count and "with data loss" are in bold.
 - The page description now sits on the same line as the boot disk and
   encryption settings.
+- Once the planned changes have been reviewed, a new, different proposal puts
+  a blue dot on "Details…", until they are reviewed again. Its name gains
+  "(updated)" and screen readers hear once that the changes are different.
+- A setup that cannot be applied is a caution at the top again, saying what
+  does not fit in place, with the suggestions behind "See suggestions…".
+- Mount points and volume group names in Used for are set in monospace.
+- Group titles sit on a faint band; the last row of each group keeps its rule.
 - The device links' `aria-controls` now always points at an element in the
   page. The panel is always rendered and only hidden while shut.
 - The actions columns are named with visually hidden text instead of an
@@ -48,7 +55,8 @@ Then, from the browser developer tools console:
 | `agamaDevicesBox(true)`                 | Devices in a bordered box                        |
 | `agamaGroupedTable(true)`               | Grouped by kind (default)                        |
 | `agamaGroupedTable(false)`              | One flat list of devices                         |
-| `agamaGroupTitleStyle("band")`          | Group titles on a faint band (default)           |
+| `agamaGroupTitleStyle("band")`          | Group titles on a band fading down (default)     |
+| `agamaGroupTitleStyle("flat")`          | Group titles on a flat faint band                |
 | `agamaGroupTitleStyle("plain")`         | Group titles as small capitals on the page       |
 | `agamaNamesStyle("mono")`               | Names in Used for in monospace (default)         |
 | `agamaNamesStyle("plain")`              | Names in Used for in the body face               |
@@ -58,9 +66,14 @@ Then, from the browser developer tools console:
 | `agamaExistingDataWording("loss")`      | All kept, Possible data loss, Data loss          |
 | `agamaSummaryWording("when")`           | "When the installation starts, ..." (default)    |
 | `agamaSummaryWording("until")`          | "Nothing is changed until ...", in two lines     |
+| `agamaSummaryWording("single")`         | One sentence, Details on the next line           |
+| `agamaSummaryStyle("plain")`            | Summary as a line on the page (default)          |
+| `agamaSummaryStyle("hint")`             | Summary in a PatternFly hint box                 |
 | `agamaActionCount("all")`               | Count every action, as "N actions" (default)     |
 | `agamaActionCount("noSubvolumes")`      | Leave Btrfs subvolumes out, as "N actions"       |
 | `agamaActionCount("changes")`           | Leave Btrfs subvolumes out, as "N changes"       |
+| `agamaFailedDetails("popup")`           | Failure suggestions in a popup (default)         |
+| `agamaFailedDetails("expandable")`      | Failure suggestions opening in place             |
 
 Every choice is kept across reloads. WORDING.md lists every wording of the
 table and the summary, the discarded ones included.
@@ -73,7 +86,9 @@ table and the summary, the discarded ones included.
   title.
 - **The wording of the Existing data column.** Four sets to compare, none
   decided.
-- **The summary.** Two wordings, and three ways of counting.
+- **The summary.** Three wordings, two looks, and three ways of counting.
+- **The failure suggestions.** In a popup or in place.
+- **The group titles.** Fading band, flat band or none.
 
 ## To re-evaluate later
 
@@ -81,6 +96,15 @@ table and the summary, the discarded ones included.
   starts or stops losing data, not on every change of the count, to avoid
   talking over the reader while they edit. Whether that is enough, or the
   count should be announced too, needs testing with real screen reader users.
+
+## Known limits of the mocked machine
+
+The local mock answers a fixed proposal per scenario, so editing settings does
+not change the summary or the planned changes. To see the "updated" dot, open
+Details once and then run `agamaMockProposalSwap()` (local mock only), which
+swaps the proposal in place. Swapping back does not clear the dot, because the
+mock rebuilds the proposal with its devices in a different order; with a real
+backend, a setting set back by hand is expected to clear it.
 
 ## Not covered
 
