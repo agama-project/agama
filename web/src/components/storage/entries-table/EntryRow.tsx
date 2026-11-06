@@ -40,11 +40,6 @@ export type EntryRowProps = {
   size?: string;
   /** What it is, under the name: its model or its kind. */
   description?: string;
-  /**
-   * An aside about the entry under its name, smaller and quieter than the
-   * description, such as that the installation creates it.
-   */
-  note?: string;
   /** What it is for, in the words the panel marks it with. */
   marks?: string[];
   /** What the installer will do here, one statement per line. */
@@ -105,7 +100,6 @@ export default function EntryRow({
   name,
   size,
   description,
-  note,
   marks = [],
   purpose,
   isIdle = false,
@@ -162,7 +156,6 @@ export default function EntryRow({
             ))}
           </StackItem>
           {description && <StackItem className="agm-entries-table__facts">{description}</StackItem>}
-          {note && <StackItem className="agm-row-note">{note}</StackItem>}
         </Stack>
       </Th>
       <Td dataLabel={columnName("existingData")}>

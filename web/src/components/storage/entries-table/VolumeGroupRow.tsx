@@ -142,18 +142,18 @@ export default function VolumeGroupRow({ group, subject }: VolumeGroupRowProps):
   const device = useDevice(group.name || "");
   const { size, description } = volumeGroupFacts(group, device);
   /* PLAYGROUND: in the grouped table the group's title already says these are
-     volume groups, so the row says only whether this one is new. */
+     volume groups, so the row says only whether this one is new, in the same
+     style as any other line under a name. */
   const isGrouped = useGroupedTable() === "on";
   // TRANSLATORS: said under the name of a volume group the installation
   // creates, in a list headed "Volume groups".
-  const note = isGrouped && !group.name ? _("New") : undefined;
+  const newMark = !group.name ? _("New") : undefined;
 
   return (
     <EntryRow
       name={<TruncatedDeviceName device={{ name: group.vgName }} maxLength={13} />}
       size={size}
-      description={isGrouped ? undefined : description}
-      note={note}
+      description={isGrouped ? newMark : description}
       purpose={contentLines(group)}
       actions={actionsFor(group)}
       menu={<VolumeGroupMenu group={group} subject={subject} />}
