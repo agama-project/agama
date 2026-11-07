@@ -34,6 +34,25 @@ import {
 } from "@patternfly/react-table";
 import { css } from "@patternfly/react-styles";
 import { TranslatedString } from "~/i18n";
+import { useElementSize } from "~/hooks/use-element-size";
+
+/** PatternFly's grid breakpoints, in rem. */
+const BREAKPOINTS = { "grid-md": 48, "grid-lg": 62, "grid-xl": 75, "grid-2xl": 90.625 };
+
+/**
+ * Stacks a tree table by the width it has rather than by the window width,
+ * the way PatternFly already does for regular tables.
+ */
+function useContainerGridBreakPoint(
+  node: HTMLElement | null,
+  gridBreakPoint: TableProps["gridBreakPoint"],
+): TableProps["gridBreakPoint"] {
+  const { width } = useElementSize(node);
+  const rem = BREAKPOINTS[gridBreakPoint ?? "grid-md"];
+  if (width === undefined || rem === undefined) return gridBreakPoint;
+  const px = rem * parseFloat(getComputedStyle(document.documentElement).fontSize);
+  return width < px ? "grid" : "";
+}
 
 export type TreeTableColumn = {
   name: TranslatedString;
@@ -71,8 +90,11 @@ export default function TreeTable({
   rowClassNames = () => "",
   hasVerticallyCenteredRows = false,
   className,
+  gridBreakPoint,
   ...tableProps
 }: TreeTableProps) {
+  const [wrapper, setWrapper] = useState<HTMLDivElement | null>(null);
+  const breakPoint = useContainerGridBreakPoint(wrapper, gridBreakPoint);
   const [expanded, setExpanded] = useState(expandedItems);
 
   useEffect(() => {
@@ -140,23 +162,29 @@ export default function TreeTable({
   };
 
   return (
-    <Table
-      variant="compact"
-      className={css(className, hasVerticallyCenteredRows && "agm-table--vertically-centered-rows")}
-      {...tableProps}
-      isTreeTable
-      data-type="agama/tree-table"
-    >
-      <Thead noWrap>
-        <Tr>
-          {columns.map((c, i) => (
-            <Th key={i} className={c.classNames}>
-              {c.name}
-            </Th>
-          ))}
-        </Tr>
-      </Thead>
-      <Tbody>{renderRows(items, 1)}</Tbody>
-    </Table>
+    <div ref={setWrapper}>
+      <Table
+        variant="compact"
+        gridBreakPoint={breakPoint}
+        className={css(
+          className,
+          hasVerticallyCenteredRows && "agm-table--vertically-centered-rows",
+        )}
+        {...tableProps}
+        isTreeTable
+        data-type="agama/tree-table"
+      >
+        <Thead noWrap>
+          <Tr>
+            {columns.map((c, i) => (
+              <Th key={i} className={c.classNames}>
+                {c.name}
+              </Th>
+            ))}
+          </Tr>
+        </Thead>
+        <Tbody>{renderRows(items, 1)}</Tbody>
+      </Table>
+    </div>
   );
 }
