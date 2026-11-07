@@ -24,7 +24,7 @@ use crate::error::{SchemaError, ValidationError};
 use agama_lib::profile::{ProfileValidator, ValidationOutcome};
 use agama_utils::api::question::Question;
 use agama_utils::api::status::{Stage, Status, Task};
-use agama_utils::api::{IssueWithScope, Proposal};
+use agama_utils::api::{Config, IssueWithScope, Proposal};
 use rmcp::model::{CallToolResult, ContentBlock};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
@@ -231,6 +231,16 @@ pub(crate) fn validate_config_schema(raw_json: &Value) -> Result<(), ValidationE
         Ok(ValidationOutcome::NotValid(reasons)) => Err(ValidationError::NotValid(reasons)),
         Err(e) => Err(ValidationError::Validation(e.to_string())),
     }
+}
+
+/// Checks if an Agama profile defines any pre-installation scripts.
+pub(crate) fn has_pre_scripts(config: &Config) -> bool {
+    config
+        .files
+        .as_ref()
+        .and_then(|f| f.scripts.as_ref())
+        .and_then(|s| s.pre.as_ref())
+        .is_some_and(|pre| !pre.is_empty())
 }
 
 /// Resolves the file path of the Agama JSON Schema.

@@ -23,7 +23,7 @@
 use crate::error::{BackendError, Error};
 use crate::mode::McpMode;
 use crate::tools::{
-    filter_system_resource, format_progress_report, tool_error, tool_success,
+    filter_system_resource, format_progress_report, has_pre_scripts, tool_error, tool_success,
     validate_config_schema, AnswerQuestionArgs, GetConfigSchemaArgs, GetLogsArgs, GetSystemArgs,
     ProposalOutcome, SetConfigArgs, WaitProgressArgs,
 };
@@ -306,6 +306,12 @@ impl McpServer {
                 )));
             }
         };
+
+        if !self.mode.allows_install() && has_pre_scripts(&config) {
+            return Ok(tool_error(
+                "Pre-installation scripts ('scripts.pre') are not permitted in configuration-only mode (inst.mcp=config). Pre-scripts execute arbitrary shell commands immediately.",
+            ));
+        }
 
         if let Err(e) = self.backend.set_config(config).await {
             return Ok(tool_error(format!(

@@ -527,6 +527,56 @@ async fn test_set_config_invalid_json_reports_tool_error() {
 }
 
 #[tokio::test]
+async fn test_set_config_pre_scripts_forbidden_in_config_mode() {
+    ensure_test_schema();
+    let backend = Arc::new(MockBackend::default());
+    let server = McpServer::with_backend(backend, McpMode::Config);
+
+    let res = server
+        .set_config(Parameters(SetConfigArgs {
+            config: json!({
+                "product": { "id": "Tumbleweed" },
+                "scripts": {
+                    "pre": [
+                        { "name": "danger.sh", "content": "#!/bin/sh\nrm -rf /" }
+                    ]
+                }
+            }),
+        }))
+        .await
+        .unwrap();
+
+    assert_eq!(res.is_error, Some(true));
+    let text = &res.content[0].as_text().unwrap().text;
+    assert!(text.contains("Pre-installation scripts ('scripts.pre') are not permitted"));
+}
+
+#[tokio::test]
+async fn test_set_config_pre_scripts_allowed_in_full_mode() {
+    ensure_test_schema();
+    let backend = Arc::new(MockBackend::default());
+    let server = McpServer::with_backend(backend, McpMode::Full);
+
+    let res = server
+        .set_config(Parameters(SetConfigArgs {
+            config: json!({
+                "product": { "id": "Tumbleweed" },
+                "scripts": {
+                    "pre": [
+                        { "name": "setup.sh", "content": "#!/bin/sh\necho setup" }
+                    ]
+                }
+            }),
+        }))
+        .await
+        .unwrap();
+
+    assert_eq!(res.is_error, Some(false));
+    let text = &res.content[0].as_text().unwrap().text;
+    assert!(text.contains("Configuration profile replaced"));
+}
+
+#[tokio::test]
 async fn test_get_questions_and_answer() {
     let backend = Arc::new(MockBackend::default());
     let server = McpServer::with_backend(backend.clone(), McpMode::Full);

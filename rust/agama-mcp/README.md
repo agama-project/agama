@@ -23,10 +23,11 @@ is activated via the kernel command-line:
     trigger installation (`commit_install`).
 -   `inst.mcp=config`: Configuration-only mode. AI tools can inspect
     hardware, retrieve schemas, inject profiles, and check proposals,
-    but `commit_install` is disabled (returning a `403 Forbidden`
-    error), requiring approval and triggering of installation by a human
-    operator in the Web UI. (If you are looking for a `read-only` mode,
-    this is it, with respect to the target system.)
+    but `commit_install` and `reboot` are disabled (returning
+    `403 Forbidden`). Additionally, configurations defining
+    pre-installation scripts (`scripts.pre`) are rejected to prevent
+    arbitrary command execution. Installation requires approval and
+    triggering by a human operator in the Web UI.
 -   `inst.mcp=disabled` (or omitted): MCP server is disabled.
 
 ## Tools Provided

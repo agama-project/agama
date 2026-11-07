@@ -30,8 +30,10 @@ Disabled by default. Activated via kernel command line:
 -   `inst.mcp=full`: Unrestricted access, including installation commit
     (`commit_install`).
 -   `inst.mcp=config`: Configuration-only mode. All tools active except
-    `commit_install`, which returns `403 Forbidden`. A human must
-    approve and trigger installation in the Web UI.
+    `commit_install` and `reboot`, which return `403 Forbidden`.
+    Configurations defining pre-installation scripts (`scripts.pre`)
+    are rejected to prevent immediate arbitrary command execution.
+    A human must approve and trigger installation in the Web UI.
 -   `inst.mcp=disabled` (default): MCP server is disabled.
 
 ------------------------------------------------------------------------
