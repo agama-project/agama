@@ -965,3 +965,14 @@ tr.agm-entries-table__row > :is(th, td):not(.agm-entries-table__menu) {
   block-size: var(--agm-side-panel--pinned-height, auto);
   max-block-size: none;
 }
+
+// A stacked tree table shows each cell as "label value"; a label with nothing
+// after it says nothing, so empty cells go away there.
+.pf-v6-c-table.pf-m-tree-view-grid .pf-v6-c-table__tr > .pf-v6-c-table__td[data-label]:empty {
+  display: none;
+}
+
+// A note under a value stays with the value, not under the label.
+.pf-v6-c-table.pf-m-tree-view-grid .pf-v6-c-table__td[data-label] > .agm-row-note {
+  grid-column: 2;
+}
