@@ -23,7 +23,7 @@ use std::{
     path::{Path, PathBuf},
 };
 
-use crate::api::files::{FileSource, FileSourceError, WithFileSource};
+use crate::api::files::{FileSource, FileSourceError};
 use agama_transfer::Error as TransferError;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
@@ -41,22 +41,6 @@ pub enum Error {
     FileSourceError(#[from] FileSourceError),
     #[error("Text file busy")]
     TextFileBusy,
-}
-
-macro_rules! impl_with_file_source {
-    ($struct:ident) => {
-        impl WithFileSource for $struct {
-            /// File source.
-            fn file_source(&self) -> &FileSource {
-                &self.base.source
-            }
-
-            /// Mutable file source.
-            fn file_source_mut(&mut self) -> &mut FileSource {
-                &mut self.base.source
-            }
-        }
-    };
 }
 
 #[derive(
@@ -177,8 +161,6 @@ impl TryFrom<Script> for PreScript {
     }
 }
 
-impl_with_file_source!(PreScript);
-
 /// Represents a script that runs after partitioning.
 #[derive(Clone, Debug, Serialize, Deserialize, JsonSchema, PartialEq)]
 pub struct PostPartitioningScript {
@@ -202,8 +184,6 @@ impl TryFrom<Script> for PostPartitioningScript {
         }
     }
 }
-
-impl_with_file_source!(PostPartitioningScript);
 
 /// Represents a script that runs after the installation finishes.
 #[derive(Clone, Debug, Serialize, Deserialize, JsonSchema, PartialEq)]
@@ -232,8 +212,6 @@ impl TryFrom<Script> for PostScript {
     }
 }
 
-impl_with_file_source!(PostScript);
-
 /// Represents a script that runs during the first boot of the target system,
 /// once the installation is finished.
 #[derive(Clone, Debug, Serialize, Deserialize, JsonSchema, PartialEq)]
@@ -258,8 +236,6 @@ impl TryFrom<Script> for InitScript {
         }
     }
 }
-
-impl_with_file_source!(InitScript);
 
 /// Manages a set of installation scripts.
 ///
