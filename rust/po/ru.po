@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-25 21:33+0000\n"
+"POT-Creation-Date: 2026-11-09 08:21+0000\n"
 "PO-Revision-Date: 2026-10-15 14:16+0000\n"
 "Last-Translator: Andrei Stepanov <adem4ik@gmail.com>\n"
 "Language-Team: Russian <https://l10n.opensuse.org/projects/agama/agama-rust-"
@@ -588,6 +588,11 @@ msgstr "Вопросы"
 msgid "Security"
 msgstr "Безопасность"
 
+#. TRANSLATORS: fallback for a scope not known to this client version
+#: agama-cli/src/monitor/ui.rs:77 agama-cli/src/monitor/ui/summary.rs:106
+msgid "Unknown"
+msgstr ""
+
 #: agama-cli/src/monitor/ui/content.rs:64
 msgid "Installation complete."
 msgstr "Установка завершена."
@@ -654,6 +659,12 @@ msgstr "Местоположение"
 msgid "Value"
 msgstr "Значение"
 
+#: agama-cli/src/monitor/ui/question.rs:413
+msgid ""
+"This question needs a kind of answer this client version does not support. "
+"Choosing an action below might not answer it as intended."
+msgstr ""
+
 #: agama-cli/src/monitor/ui/summary.rs:47
 msgid "Host: "
 msgstr "Хост: "
@@ -703,7 +714,7 @@ msgstr "Настройка"
 msgid "Finished"
 msgstr "Завершено"
 
-#: agama-cli/src/monitor/ui/summary.rs:118
+#: agama-cli/src/monitor/ui/summary.rs:119
 msgid "Not selected yet"
 msgstr "Ещё не выбрано"
 
@@ -814,119 +825,119 @@ msgstr "Не удалось получить скрипт %s. Хотите по�
 msgid "Failed to write the file %s. Do you want to try again?"
 msgstr "Не удалось записать файл %s. Хотите попробовать снова?"
 
-#: agama-manager/src/actions.rs:79
+#: agama-manager/src/actions.rs:78
 msgid "Prepare the system"
 msgstr "Подготовка системы"
 
-#: agama-manager/src/actions.rs:80
+#: agama-manager/src/actions.rs:79
 msgid "Install software"
 msgstr "Установка программного обеспечения"
 
-#: agama-manager/src/actions.rs:81
+#: agama-manager/src/actions.rs:80
 msgid "Configure the system"
 msgstr "Настройка системы"
 
-#: agama-manager/src/actions.rs:95
+#: agama-manager/src/actions.rs:94
 msgid "Preparing storage"
 msgstr "Подготовка хранилища"
 
-#: agama-manager/src/actions.rs:113
+#: agama-manager/src/actions.rs:112
 msgid "Running post-partitioning scripts"
 msgstr "Выполнение скриптов после разбиения"
 
-#: agama-manager/src/actions.rs:138
+#: agama-manager/src/actions.rs:137
 msgid "Installing software"
 msgstr "Установка программного обеспечения"
 
-#: agama-manager/src/actions.rs:176
+#: agama-manager/src/actions.rs:175
 msgid "Configuring the system"
 msgstr "Настройка системы"
 
-#: agama-manager/src/actions.rs:248
+#: agama-manager/src/actions.rs:250
 msgid "Finishing installation"
 msgstr "Завершение установки"
 
-#: agama-manager/src/actions.rs:277
+#: agama-manager/src/actions.rs:279
 msgid "Finalize installation"
 msgstr "Завершение установки"
 
-#: agama-manager/src/actions.rs:352
+#: agama-manager/src/actions.rs:354
 msgid "Storing questions settings"
 msgstr "Сохранение настроек вопросов"
 
-#: agama-manager/src/actions.rs:363
+#: agama-manager/src/actions.rs:365
 msgid "Importing user files and scripts"
 msgstr "Импорт пользовательских файлов и скриптов"
 
-#: agama-manager/src/actions.rs:377
+#: agama-manager/src/actions.rs:379
 msgid "Running user pre-installation scripts"
 msgstr "Выполнение пользовательских скриптов перед установкой"
 
-#: agama-manager/src/actions.rs:392
+#: agama-manager/src/actions.rs:394
 msgid "Storing security settings"
 msgstr "Сохранение настроек безопасности"
 
-#: agama-manager/src/actions.rs:402
+#: agama-manager/src/actions.rs:404
 msgid "Configuring remote access"
 msgstr "Настройка удалённого доступа"
 
-#: agama-manager/src/actions.rs:412
+#: agama-manager/src/actions.rs:414
 msgid "Setting up the hostname"
 msgstr "Настройка имени хоста"
 
-#: agama-manager/src/actions.rs:422
+#: agama-manager/src/actions.rs:425
 msgid "Setting up the network proxy"
 msgstr "Настройка сетевого прокси"
 
-#: agama-manager/src/actions.rs:433
+#: agama-manager/src/actions.rs:436
 msgid "Setting up NTP"
 msgstr "Настройка NTP"
 
-#: agama-manager/src/actions.rs:443
+#: agama-manager/src/actions.rs:446
 msgid "Storing localization settings"
 msgstr "Сохранение настроек локализации"
 
-#: agama-manager/src/actions.rs:453
+#: agama-manager/src/actions.rs:456
 msgid "Storing users settings"
 msgstr "Сохранение настроек пользователей"
 
-#: agama-manager/src/actions.rs:563
+#: agama-manager/src/actions.rs:569
 msgid "Configuring iSCSI devices"
 msgstr "Настройка устройств iSCSI"
 
-#: agama-manager/src/actions.rs:588
+#: agama-manager/src/actions.rs:594
 msgid "Configuring zFCP devices"
 msgstr "Настройка устройств zFCP"
 
-#: agama-manager/src/actions.rs:614
+#: agama-manager/src/actions.rs:620
 msgid "Configuring DASD devices"
 msgstr "Настройка устройств DASD"
 
-#: agama-manager/src/actions.rs:640
+#: agama-manager/src/actions.rs:646
 msgid "Setting up the network"
 msgstr "Настройка сети"
 
-#: agama-manager/src/actions.rs:670
+#: agama-manager/src/actions.rs:675
 msgid "Preparing the storage proposal"
 msgstr "Подготовка предложения по хранилищу"
 
-#: agama-manager/src/actions.rs:700
+#: agama-manager/src/actions.rs:705
 msgid "Storing bootloader settings"
 msgstr "Сохранение настроек загрузчика"
 
-#: agama-manager/src/actions.rs:734
+#: agama-manager/src/actions.rs:739
 msgid "Preparing the software proposal"
 msgstr "Подготовка предложения по программному обеспечению"
 
-#: agama-manager/src/actions.rs:764
+#: agama-manager/src/actions.rs:769
 msgid "Configuring SELinux"
 msgstr "Настройка SELinux"
 
-#: agama-network/src/service.rs:511
+#: agama-network/src/service.rs:163
 msgid "Writing network configuration"
 msgstr "Запись конфигурации сети"
 
-#: agama-network/src/service.rs:512
+#: agama-network/src/service.rs:164
 msgid "Syncing the network service state"
 msgstr "Синхронизация состояния сетевой службы"
 
@@ -994,7 +1005,7 @@ msgstr ""
 msgid "Skip"
 msgstr "Пропустить"
 
-#: agama-software/src/service.rs:295
+#: agama-software/src/service.rs:297
 msgid ""
 "Due to an internal error, it was not possible to create a software proposal."
 msgstr ""
@@ -1071,39 +1082,43 @@ msgstr ""
 msgid "First user information is incomplete"
 msgstr "Информация о первом пользователе неполная"
 
-#: agama-utils/src/api/problem_details.rs:120
+#: agama-utils/src/api/problem_details.rs:129
 msgid "Schema validation failed"
 msgstr "Ошибка проверки схемы"
 
-#: agama-utils/src/api/problem_details.rs:122
+#: agama-utils/src/api/problem_details.rs:131
 msgid "The provided configuration does not match the required schema"
 msgstr "Предоставленная конфигурация не соответствует требуемой схеме"
 
-#: agama-utils/src/api/problem_details.rs:131
+#: agama-utils/src/api/problem_details.rs:140
 msgid "Invalid JSON"
 msgstr "Неверный JSON"
 
-#: agama-utils/src/api/problem_details.rs:139
+#: agama-utils/src/api/problem_details.rs:148
 msgid "Internal server error"
 msgstr "Внутренняя ошибка сервера"
 
-#: agama-utils/src/api/problem_details.rs:147
+#: agama-utils/src/api/problem_details.rs:156
 msgid "Unauthorized"
 msgstr "Неавторизован"
 
 #: agama-utils/src/api/problem_details.rs:205
+msgid "An error occurred that this client version doesn't recognize"
+msgstr ""
+
+#: agama-utils/src/api/problem_details.rs:221
 msgid "Error:"
 msgstr "Ошибка:"
 
-#: agama-utils/src/api/problem_details.rs:208
+#: agama-utils/src/api/problem_details.rs:224
 msgid "Details:"
 msgstr "Подробности:"
 
-#: agama-utils/src/api/question.rs:346 agama-utils/src/question/start.rs:48
+#: agama-utils/src/api/question.rs:347 agama-utils/src/question/start.rs:48
 msgid "No"
 msgstr "Нет"
 
-#: agama-utils/src/api/question.rs:346 agama-utils/src/question/start.rs:48
+#: agama-utils/src/api/question.rs:347 agama-utils/src/question/start.rs:48
 msgid "Yes"
 msgstr "Да"
 

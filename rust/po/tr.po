@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-25 21:33+0000\n"
+"POT-Creation-Date: 2026-11-09 08:21+0000\n"
 "PO-Revision-Date: 2026-08-25 15:33+0000\n"
 "Last-Translator: Efe Mert <efemert1@proton.me>\n"
 "Language-Team: Turkish <https://l10n.opensuse.org/projects/agama/agama-rust-"
@@ -491,6 +491,11 @@ msgstr "Sorular"
 msgid "Security"
 msgstr "Güvenlik"
 
+#. TRANSLATORS: fallback for a scope not known to this client version
+#: agama-cli/src/monitor/ui.rs:77 agama-cli/src/monitor/ui/summary.rs:106
+msgid "Unknown"
+msgstr ""
+
 #: agama-cli/src/monitor/ui/content.rs:64
 msgid "Installation complete."
 msgstr "Kurulum tamamlandı."
@@ -557,6 +562,12 @@ msgstr "Konum"
 msgid "Value"
 msgstr "Değer"
 
+#: agama-cli/src/monitor/ui/question.rs:413
+msgid ""
+"This question needs a kind of answer this client version does not support. "
+"Choosing an action below might not answer it as intended."
+msgstr ""
+
 #: agama-cli/src/monitor/ui/summary.rs:47
 msgid "Host: "
 msgstr "Ana bilgisayar: "
@@ -606,7 +617,7 @@ msgstr "Yapılandırılıyor"
 msgid "Finished"
 msgstr "Bitti"
 
-#: agama-cli/src/monitor/ui/summary.rs:118
+#: agama-cli/src/monitor/ui/summary.rs:119
 msgid "Not selected yet"
 msgstr "Henüz seçilmedi"
 
@@ -704,122 +715,122 @@ msgid "Failed to write the file %s. Do you want to try again?"
 msgstr ""
 "%s dosyasına yazma işlemi başarısız oldu. Tekrar denemek ister misiniz?"
 
-#: agama-manager/src/actions.rs:79
+#: agama-manager/src/actions.rs:78
 msgid "Prepare the system"
 msgstr "Sistemi hazırla"
 
-#: agama-manager/src/actions.rs:80
+#: agama-manager/src/actions.rs:79
 msgid "Install software"
 msgstr "Yazılım yükle"
 
-#: agama-manager/src/actions.rs:81
+#: agama-manager/src/actions.rs:80
 msgid "Configure the system"
 msgstr "Sistemi yapılandır"
 
-#: agama-manager/src/actions.rs:95
+#: agama-manager/src/actions.rs:94
 msgid "Preparing storage"
 msgstr "Depolama hazırlanıyor"
 
-#: agama-manager/src/actions.rs:113
+#: agama-manager/src/actions.rs:112
 #, fuzzy
 msgid "Running post-partitioning scripts"
 msgstr "Kullanıcı ön kurulum komut dosyalarını çalıştır"
 
-#: agama-manager/src/actions.rs:138
+#: agama-manager/src/actions.rs:137
 msgid "Installing software"
 msgstr "Yazılım yükleniyor"
 
-#: agama-manager/src/actions.rs:176
+#: agama-manager/src/actions.rs:175
 msgid "Configuring the system"
 msgstr "Sistem yapılandırılıyor"
 
-#: agama-manager/src/actions.rs:248
+#: agama-manager/src/actions.rs:250
 msgid "Finishing installation"
 msgstr "Kurulum bitiriliyor"
 
-#: agama-manager/src/actions.rs:277
+#: agama-manager/src/actions.rs:279
 msgid "Finalize installation"
 msgstr "Kurulum sonlandırılıyor"
 
-#: agama-manager/src/actions.rs:352
+#: agama-manager/src/actions.rs:354
 msgid "Storing questions settings"
 msgstr "Soru ayarlarını sakla"
 
-#: agama-manager/src/actions.rs:363
+#: agama-manager/src/actions.rs:365
 #, fuzzy
 msgid "Importing user files and scripts"
 msgstr "Kullanıcı dosyalarını içe aktar"
 
-#: agama-manager/src/actions.rs:377
+#: agama-manager/src/actions.rs:379
 msgid "Running user pre-installation scripts"
 msgstr "Kullanıcı ön kurulum komut dosyalarını çalıştır"
 
-#: agama-manager/src/actions.rs:392
+#: agama-manager/src/actions.rs:394
 msgid "Storing security settings"
 msgstr "Güvenlik ayarlarını sakla"
 
-#: agama-manager/src/actions.rs:402
+#: agama-manager/src/actions.rs:404
 msgid "Configuring remote access"
 msgstr "Uzaktan erişimi yapılandır"
 
-#: agama-manager/src/actions.rs:412
+#: agama-manager/src/actions.rs:414
 msgid "Setting up the hostname"
 msgstr "Sunucu adını ayarla"
 
-#: agama-manager/src/actions.rs:422
+#: agama-manager/src/actions.rs:425
 msgid "Setting up the network proxy"
 msgstr "Ağ vekil sunucusu'nu kur"
 
-#: agama-manager/src/actions.rs:433
+#: agama-manager/src/actions.rs:436
 msgid "Setting up NTP"
 msgstr "NTP'yi ayarla"
 
-#: agama-manager/src/actions.rs:443
+#: agama-manager/src/actions.rs:446
 msgid "Storing localization settings"
 msgstr "Yerelleştirme ayarlarını sakla"
 
-#: agama-manager/src/actions.rs:453
+#: agama-manager/src/actions.rs:456
 msgid "Storing users settings"
 msgstr "Kullanıcı ayarlarını sakla"
 
-#: agama-manager/src/actions.rs:563
+#: agama-manager/src/actions.rs:569
 msgid "Configuring iSCSI devices"
 msgstr "iSCSI aygıtlarını yapılandır"
 
-#: agama-manager/src/actions.rs:588
+#: agama-manager/src/actions.rs:594
 #, fuzzy
 msgid "Configuring zFCP devices"
 msgstr "iSCSI aygıtlarını yapılandır"
 
-#: agama-manager/src/actions.rs:614
+#: agama-manager/src/actions.rs:620
 msgid "Configuring DASD devices"
 msgstr "DASD cihazlarını yapılandır"
 
-#: agama-manager/src/actions.rs:640
+#: agama-manager/src/actions.rs:646
 msgid "Setting up the network"
 msgstr "Ağ kurulumu"
 
-#: agama-manager/src/actions.rs:670
+#: agama-manager/src/actions.rs:675
 msgid "Preparing the storage proposal"
 msgstr "Depolama teklifinin hazırlanması"
 
-#: agama-manager/src/actions.rs:700
+#: agama-manager/src/actions.rs:705
 msgid "Storing bootloader settings"
 msgstr "Önyükleyici ayarlarının saklanması"
 
-#: agama-manager/src/actions.rs:734
+#: agama-manager/src/actions.rs:739
 msgid "Preparing the software proposal"
 msgstr "Yazılım teklifinin hazırlanması"
 
-#: agama-manager/src/actions.rs:764
+#: agama-manager/src/actions.rs:769
 msgid "Configuring SELinux"
 msgstr "SELinux yapılandırılıyor"
 
-#: agama-network/src/service.rs:511
+#: agama-network/src/service.rs:163
 msgid "Writing network configuration"
 msgstr "Ağ yapılandırması yazılıyor"
 
-#: agama-network/src/service.rs:512
+#: agama-network/src/service.rs:164
 msgid "Syncing the network service state"
 msgstr "Ağ hizmeti durumunun senkronize edilmesi"
 
@@ -889,7 +900,7 @@ msgstr ""
 msgid "Skip"
 msgstr "Atla"
 
-#: agama-software/src/service.rs:295
+#: agama-software/src/service.rs:297
 msgid ""
 "Due to an internal error, it was not possible to create a software proposal."
 msgstr "Dahili bir hata nedeniyle yazılım teklifi oluşturulamadı."
@@ -962,39 +973,43 @@ msgstr ""
 msgid "First user information is incomplete"
 msgstr "İlk kullanıcı bilgileri eksik"
 
-#: agama-utils/src/api/problem_details.rs:120
+#: agama-utils/src/api/problem_details.rs:129
 msgid "Schema validation failed"
 msgstr "Şema doğrulama başarısız"
 
-#: agama-utils/src/api/problem_details.rs:122
+#: agama-utils/src/api/problem_details.rs:131
 msgid "The provided configuration does not match the required schema"
 msgstr ""
 
-#: agama-utils/src/api/problem_details.rs:131
+#: agama-utils/src/api/problem_details.rs:140
 msgid "Invalid JSON"
 msgstr "Geçersiz JSON"
 
-#: agama-utils/src/api/problem_details.rs:139
+#: agama-utils/src/api/problem_details.rs:148
 msgid "Internal server error"
 msgstr ""
 
-#: agama-utils/src/api/problem_details.rs:147
+#: agama-utils/src/api/problem_details.rs:156
 msgid "Unauthorized"
 msgstr "Yetkisiz"
 
 #: agama-utils/src/api/problem_details.rs:205
+msgid "An error occurred that this client version doesn't recognize"
+msgstr ""
+
+#: agama-utils/src/api/problem_details.rs:221
 msgid "Error:"
 msgstr "Hata:"
 
-#: agama-utils/src/api/problem_details.rs:208
+#: agama-utils/src/api/problem_details.rs:224
 msgid "Details:"
 msgstr "Detaylar:"
 
-#: agama-utils/src/api/question.rs:346 agama-utils/src/question/start.rs:48
+#: agama-utils/src/api/question.rs:347 agama-utils/src/question/start.rs:48
 msgid "No"
 msgstr "Hayır"
 
-#: agama-utils/src/api/question.rs:346 agama-utils/src/question/start.rs:48
+#: agama-utils/src/api/question.rs:347 agama-utils/src/question/start.rs:48
 msgid "Yes"
 msgstr "Evet"
 
