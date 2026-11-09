@@ -93,16 +93,16 @@ table and the summary, the discarded ones included.
 
 ## Under evaluation
 
-- **"Details" in the row menu.** With the sixth and seventh iterations, the
-  row's menu offers almost every action of the device's panel, so whether
-  "Details" is still needed deserves a look, always keeping discoverability
-  and consistency in mind. The aim is to keep the option without it
-  overwhelming the menu, rather than to remove it: the row's name opens the
-  panel but does not look like a link, so for many readers "Details" is the
-  only visible way to the full view, and the network page's rows start their
-  menu with "Details" too. What can change is how much it weighs, for example
-  a quieter look set apart from the actions, or a clearer name, while it stays
-  first and the same as on the network page.
+- **"Details" in the row menu: keep it, make it lighter.** After the sixth and
+  seventh iterations the row's menu holds almost every panel action, so
+  "Details" may look redundant. It is not: for some users it is the only
+  visible way into the device's panel, since the row's name opens the panel
+  but does not look like a link. The network page's rows also start their menu
+  with "Details". What to evaluate is how it can stay without overwhelming the
+  menu:
+  - a quieter look, set apart from the actions;
+  - a clearer name;
+  - always first, as on the network page.
 - **The grouped table.** A teammate's suggestion: each kind of device under
   its own title, sorted inside each group. Still open: whether "Used disk"
   should stay when there is only one, and room for actions beside a group's
