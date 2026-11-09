@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-25 21:33+0000\n"
+"POT-Creation-Date: 2026-11-09 08:21+0000\n"
 "PO-Revision-Date: 2026-03-11 07:04+0000\n"
 "Last-Translator: Timo Jyrinki <tjyrinki@suse.com>\n"
 "Language-Team: Finnish <https://l10n.opensuse.org/projects/agama/agama-rust-"
@@ -493,6 +493,11 @@ msgstr ""
 msgid "Security"
 msgstr ""
 
+#. TRANSLATORS: fallback for a scope not known to this client version
+#: agama-cli/src/monitor/ui.rs:77 agama-cli/src/monitor/ui/summary.rs:106
+msgid "Unknown"
+msgstr ""
+
 #: agama-cli/src/monitor/ui/content.rs:64
 #, fuzzy
 msgid "Installation complete."
@@ -563,6 +568,12 @@ msgstr ""
 msgid "Value"
 msgstr ""
 
+#: agama-cli/src/monitor/ui/question.rs:413
+msgid ""
+"This question needs a kind of answer this client version does not support. "
+"Choosing an action below might not answer it as intended."
+msgstr ""
+
 #: agama-cli/src/monitor/ui/summary.rs:47
 msgid "Host: "
 msgstr ""
@@ -615,7 +626,7 @@ msgstr "Tehdään DASD-laitteiden asetuksia"
 msgid "Finished"
 msgstr ""
 
-#: agama-cli/src/monitor/ui/summary.rs:118
+#: agama-cli/src/monitor/ui/summary.rs:119
 msgid "Not selected yet"
 msgstr ""
 
@@ -709,130 +720,130 @@ msgstr ""
 msgid "Failed to write the file %s. Do you want to try again?"
 msgstr ""
 
-#: agama-manager/src/actions.rs:79
+#: agama-manager/src/actions.rs:78
 msgid "Prepare the system"
 msgstr "Valmistele järjestelmä"
 
-#: agama-manager/src/actions.rs:80
+#: agama-manager/src/actions.rs:79
 msgid "Install software"
 msgstr "Asenna ohjelmistoja"
 
-#: agama-manager/src/actions.rs:81
+#: agama-manager/src/actions.rs:80
 msgid "Configure the system"
 msgstr "Tee järjestelmän asetukset"
 
-#: agama-manager/src/actions.rs:95
+#: agama-manager/src/actions.rs:94
 #, fuzzy
 msgid "Preparing storage"
 msgstr "Valmistellaan tallennustilaehdotusta"
 
-#: agama-manager/src/actions.rs:113
+#: agama-manager/src/actions.rs:112
 #, fuzzy
 msgid "Running post-partitioning scripts"
 msgstr "Suoritetaan käyttäjään esiasennuskomentojonoja"
 
-#: agama-manager/src/actions.rs:138
+#: agama-manager/src/actions.rs:137
 #, fuzzy
 msgid "Installing software"
 msgstr "Asenna ohjelmistoja"
 
-#: agama-manager/src/actions.rs:176
+#: agama-manager/src/actions.rs:175
 #, fuzzy
 msgid "Configuring the system"
 msgstr "Tee järjestelmän asetukset"
 
-#: agama-manager/src/actions.rs:248
+#: agama-manager/src/actions.rs:250
 msgid "Finishing installation"
 msgstr ""
 
-#: agama-manager/src/actions.rs:277
+#: agama-manager/src/actions.rs:279
 #, fuzzy
 msgid "Finalize installation"
 msgstr "Lasketaan ohjelmistoehdotusta"
 
-#: agama-manager/src/actions.rs:352
+#: agama-manager/src/actions.rs:354
 msgid "Storing questions settings"
 msgstr "Tallentaan kysymysasetuksia"
 
-#: agama-manager/src/actions.rs:363
+#: agama-manager/src/actions.rs:365
 #, fuzzy
 msgid "Importing user files and scripts"
 msgstr "Tuodaan käyttäjän tiedostoja"
 
-#: agama-manager/src/actions.rs:377
+#: agama-manager/src/actions.rs:379
 msgid "Running user pre-installation scripts"
 msgstr "Suoritetaan käyttäjään esiasennuskomentojonoja"
 
-#: agama-manager/src/actions.rs:392
+#: agama-manager/src/actions.rs:394
 msgid "Storing security settings"
 msgstr "Tallennetaan tietoturva-asetuksia"
 
-#: agama-manager/src/actions.rs:402
+#: agama-manager/src/actions.rs:404
 #, fuzzy
 msgid "Configuring remote access"
 msgstr "Tehdään DASD-laitteiden asetuksia"
 
-#: agama-manager/src/actions.rs:412
+#: agama-manager/src/actions.rs:414
 msgid "Setting up the hostname"
 msgstr "Asetataan isäntänimi"
 
-#: agama-manager/src/actions.rs:422
+#: agama-manager/src/actions.rs:425
 msgid "Setting up the network proxy"
 msgstr "Asetetaan verkkovälipalvelinta"
 
-#: agama-manager/src/actions.rs:433
+#: agama-manager/src/actions.rs:436
 #, fuzzy
 msgid "Setting up NTP"
 msgstr "Tehdään verkkoasetuksia"
 
-#: agama-manager/src/actions.rs:443
+#: agama-manager/src/actions.rs:446
 msgid "Storing localization settings"
 msgstr "Tallennetaan kotoistusasetuksia"
 
-#: agama-manager/src/actions.rs:453
+#: agama-manager/src/actions.rs:456
 msgid "Storing users settings"
 msgstr "Tallennetaan käyttäjien asetuksia"
 
-#: agama-manager/src/actions.rs:563
+#: agama-manager/src/actions.rs:569
 msgid "Configuring iSCSI devices"
 msgstr "Tehdään iSCSI-laitteiden asetuksia"
 
-#: agama-manager/src/actions.rs:588
+#: agama-manager/src/actions.rs:594
 #, fuzzy
 msgid "Configuring zFCP devices"
 msgstr "Tehdään iSCSI-laitteiden asetuksia"
 
-#: agama-manager/src/actions.rs:614
+#: agama-manager/src/actions.rs:620
 msgid "Configuring DASD devices"
 msgstr "Tehdään DASD-laitteiden asetuksia"
 
-#: agama-manager/src/actions.rs:640
+#: agama-manager/src/actions.rs:646
 msgid "Setting up the network"
 msgstr "Tehdään verkkoasetuksia"
 
-#: agama-manager/src/actions.rs:670
+#: agama-manager/src/actions.rs:675
 msgid "Preparing the storage proposal"
 msgstr "Valmistellaan tallennustilaehdotusta"
 
-#: agama-manager/src/actions.rs:700
+#: agama-manager/src/actions.rs:705
 msgid "Storing bootloader settings"
 msgstr "Tallennetaan käynnistyslataimen asetuksia"
 
-#: agama-manager/src/actions.rs:734
+#: agama-manager/src/actions.rs:739
 msgid "Preparing the software proposal"
 msgstr "Valmistellaan ohjelmistoehdotusta"
 
-#: agama-manager/src/actions.rs:764
+#: agama-manager/src/actions.rs:769
 #, fuzzy
 msgid "Configuring SELinux"
 msgstr "Tehdään DASD-laitteiden asetuksia"
 
-#: agama-network/src/service.rs:511
+#: agama-network/src/service.rs:163
 #, fuzzy
 msgid "Writing network configuration"
 msgstr "Kirjoitetaan asetuksia"
 
-#: agama-network/src/service.rs:512
+#: agama-network/src/service.rs:164
 msgid "Syncing the network service state"
 msgstr ""
 
@@ -903,7 +914,7 @@ msgstr ""
 msgid "Skip"
 msgstr "Ohita tämä kohta"
 
-#: agama-software/src/service.rs:295
+#: agama-software/src/service.rs:297
 msgid ""
 "Due to an internal error, it was not possible to create a software proposal."
 msgstr "Ohjelmistoehdotusta ei voi luoda sisäisen virheen takia."
@@ -977,40 +988,44 @@ msgstr ""
 msgid "First user information is incomplete"
 msgstr "Ensimmäisen käyttäjän tiedot eivät ole riittävät"
 
-#: agama-utils/src/api/problem_details.rs:120
+#: agama-utils/src/api/problem_details.rs:129
 #, fuzzy
 msgid "Schema validation failed"
 msgstr "Asenna ohjelmistoja"
 
-#: agama-utils/src/api/problem_details.rs:122
+#: agama-utils/src/api/problem_details.rs:131
 msgid "The provided configuration does not match the required schema"
 msgstr ""
 
-#: agama-utils/src/api/problem_details.rs:131
+#: agama-utils/src/api/problem_details.rs:140
 msgid "Invalid JSON"
 msgstr ""
 
-#: agama-utils/src/api/problem_details.rs:139
+#: agama-utils/src/api/problem_details.rs:148
 msgid "Internal server error"
 msgstr ""
 
-#: agama-utils/src/api/problem_details.rs:147
+#: agama-utils/src/api/problem_details.rs:156
 msgid "Unauthorized"
 msgstr ""
 
 #: agama-utils/src/api/problem_details.rs:205
+msgid "An error occurred that this client version doesn't recognize"
+msgstr ""
+
+#: agama-utils/src/api/problem_details.rs:221
 msgid "Error:"
 msgstr ""
 
-#: agama-utils/src/api/problem_details.rs:208
+#: agama-utils/src/api/problem_details.rs:224
 msgid "Details:"
 msgstr ""
 
-#: agama-utils/src/api/question.rs:346 agama-utils/src/question/start.rs:48
+#: agama-utils/src/api/question.rs:347 agama-utils/src/question/start.rs:48
 msgid "No"
 msgstr "Ei"
 
-#: agama-utils/src/api/question.rs:346 agama-utils/src/question/start.rs:48
+#: agama-utils/src/api/question.rs:347 agama-utils/src/question/start.rs:48
 msgid "Yes"
 msgstr "Kyllä"
 
