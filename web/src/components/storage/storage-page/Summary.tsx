@@ -90,7 +90,7 @@ function sentences(
     if (!count) {
       // TRANSLATORS: summary of the storage setup, when the setup needs no
       // changes to the disks at all.
-      return { second: _("Applying the settings below needs no changes to the disks."), note };
+      return { second: _("Applying the current settings needs no changes to the disks."), note };
     }
 
     return {
@@ -99,10 +99,10 @@ function sentences(
           ? // TRANSLATORS: summary of the storage setup. %s is a count such as
             // "12 actions". Text in square brackets is shown in bold; keep the
             // brackets.
-            _("Applying the settings below takes %s, [with data loss].")
+            _("Applying the current settings takes %s, [with data loss].")
           : // TRANSLATORS: summary of the storage setup. %s is a count such as
             // "12 actions".
-            _("Applying the settings below takes %s, without data loss."),
+            _("Applying the current settings takes %s, without data loss."),
         what,
       ),
       note,
