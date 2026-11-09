@@ -82,8 +82,8 @@
  *
  * How a row's menu offers the choices for the partitions already on a device:
  *
- *   agamaSpacePolicyMenu("flyout")     // in a menu to the side of the item (default)
- *   agamaSpacePolicyMenu("drilldown")  // replacing the menu, with a way back
+ *   agamaSpacePolicyMenu("drilldown")  // replacing the menu, with a way back (default)
+ *   agamaSpacePolicyMenu("flyout")     // in a menu to the side of the item
  *
  * Choices survive reloads. To be dropped once the design is settled.
  */
@@ -210,8 +210,8 @@ const useActionCount = consoleSwitch<ActionCount>("agamaActionCount", [
 ]);
 
 const useSpacePolicyMenu = consoleSwitch<SpacePolicyMenu>("agamaSpacePolicyMenu", [
-  "flyout",
   "drilldown",
+  "flyout",
 ]);
 
 export {
