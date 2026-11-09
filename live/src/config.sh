@@ -108,6 +108,12 @@ fi
 systemctl disable snapper-cleanup.timer
 systemctl disable snapper-timeline.timer
 
+# Disable desktop file MIME cache updates (not needed in kiosk mode, saves ~2.8s at boot)
+systemctl mask update-desktop-database.service
+
+# Prevent hardware database updates at boot (pre-compiled below, saves ~1.0s at boot)
+systemctl mask systemd-hwdb-update.service
+
 # Prevent premature activation of LVM (bsc#1246133)
 systemctl mask lvm2-monitor.service
 if [[ -f /etc/lvm/lvm.conf ]]; then
@@ -392,6 +398,9 @@ rm -f /lib/modules/*/vmlinux*.[gx]z
 
 # Remove generated files (boo#1098535)
 rm -rf /var/cache/zypp/* /var/lib/zypp/AnonymousUniqueId /var/lib/systemd/random-seed
+
+# Pre-compile the udev hardware database so systemd-hwdb-update is not needed at boot
+systemd-hwdb update || true
 
 # gnome-kiosk startup script, executable rights not preserved during copying
 chmod +x /root/.local/bin/gnome-kiosk-script
