@@ -114,6 +114,18 @@ declare global {
   }
 }
 
+/** A switch as the playground overlay lists it. */
+export type PlaygroundSwitch = {
+  name: SwitchName;
+  values: string[];
+  read: () => string;
+  write: (value: string) => void;
+  subscribe: (onChange: () => void) => () => void;
+};
+
+/** Every switch, in the order they are made, for the playground overlay. */
+const registry: PlaygroundSwitch[] = [];
+
 /** A value picked from the console, kept in local storage, read as a hook. */
 function consoleSwitch<T extends string>(
   name: SwitchName,
@@ -139,8 +151,7 @@ function consoleSwitch<T extends string>(
     return () => window.removeEventListener(event, onChange);
   };
 
-  (window as unknown as Record<SwitchName, (input: unknown) => void>)[name] = (input) => {
-    const value = fromInput(input);
+  const write = (value: T) => {
     try {
       localStorage.setItem(key, value);
     } catch {
@@ -148,6 +159,11 @@ function consoleSwitch<T extends string>(
     }
     window.dispatchEvent(new Event(event));
   };
+
+  (window as unknown as Record<SwitchName, (input: unknown) => void>)[name] = (input) =>
+    write(fromInput(input));
+
+  registry.push({ name, values, read, write: (value) => write(value as T), subscribe });
 
   return () => React.useSyncExternalStore(subscribe, read);
 }
@@ -194,6 +210,7 @@ const useActionCount = consoleSwitch<ActionCount>("agamaActionCount", [
   "changes",
 ]);
 
+export { registry as playgroundSwitches };
 export {
   useDevicesBox,
   useGroupedTable,

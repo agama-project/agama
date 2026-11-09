@@ -965,3 +965,23 @@ tr.agm-entries-table__row > :is(th, td):not(.agm-entries-table__menu) {
   block-size: var(--agm-side-panel--pinned-height, auto);
   max-block-size: none;
 }
+
+// PLAYGROUND: the overlay with every console switch, at the bottom right, over
+// everything, out of the way of the page's own content.
+.agm-playground-overlay {
+  position: fixed;
+  inset-block-end: var(--pf-t--global--spacer--md);
+  inset-inline-end: var(--pf-t--global--spacer--md);
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--pf-t--global--spacer--sm);
+}
+
+.agm-playground-overlay__card {
+  max-block-size: 70vh;
+  overflow-y: auto;
+  inline-size: 22rem;
+  box-shadow: var(--pf-t--global--box-shadow--lg);
+}

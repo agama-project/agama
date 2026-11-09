@@ -58,6 +58,11 @@ table best. The screenshots in the shared documents come from a made-up machine
 like that (two NVMe disks, one with Windows, a RAID and an existing volume
 group), answered by a local mock of the API that is not part of this branch.
 
+To try the switches without the console, run `agamaPlayground(true)` there
+once: a "Playground" button at the bottom right then opens all of them, and
+the mocked machine's scenario where the local mock is loaded.
+`agamaPlayground(false)` hides it again.
+
 Then, from the browser developer tools console:
 
 | Call                                  | What it does                                 |
