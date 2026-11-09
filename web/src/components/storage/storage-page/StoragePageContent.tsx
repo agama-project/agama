@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import { Divider, PageSection, Stack } from "@patternfly/react-core";
+import { PageSection, Stack } from "@patternfly/react-core";
 import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
 import Page from "~/components/layout/Page";
 import EntriesTable from "~/components/storage/entries-table/EntriesTable";
@@ -70,7 +70,6 @@ export default function StoragePageContent(): React.ReactNode {
           {/* Inside what the panel opens over, so the panel covers everything
               but the result kept in sight above it. */}
           <TopLine />
-          {box === "off" && <Divider />}
           <EntriesTable />
           <GlobalActions />
         </Stack>
