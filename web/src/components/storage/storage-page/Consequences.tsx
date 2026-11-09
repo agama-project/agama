@@ -126,9 +126,9 @@ export default function Consequences({
         <Popup
           isOpen
           // TRANSLATORS: title of the popup with the layout the disks will have
-          // and the actions needed to get there. "Planned" because nothing is
+          // and the actions needed to get there. "Preview" because nothing is
           // applied until the installation starts.
-          title={_("Planned storage changes")}
+          title={_("Storage result preview")}
           description={summaryOf(actions)}
           variant="large"
           onClose={close}

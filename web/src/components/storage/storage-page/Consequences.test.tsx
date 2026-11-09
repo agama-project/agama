@@ -102,7 +102,7 @@ describe("Consequences", () => {
     const { user } = installerRender(<Consequences />);
     await user.click(viewChanges());
 
-    const popup = screen.getByRole("dialog", { name: "Planned storage changes" });
+    const popup = screen.getByRole("dialog", { name: "Storage result preview" });
     within(popup).getByText("Result of applying the current storage configuration to the system");
     within(popup).getByText("the final layout and every action");
   });
