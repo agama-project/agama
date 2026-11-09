@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Nov  9 13:24:42 UTC 2026 - David Díaz <dgonzalez@suse.com>
+
+- Let translations reorder the values of a sentence with numbered
+  placeholders (gh#agama-project/agama#4212).
+
+-------------------------------------------------------------------
 Fri Nov  6 13:05:49 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
 
 - Do not crash when unexpected square brackets are present in the
