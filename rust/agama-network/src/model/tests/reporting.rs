@@ -106,7 +106,7 @@ fn test_the_system_info_reports_the_state_of_every_connection() {
         .connections
         .0
         .iter()
-        .map(|c| (c.connection.id.as_str(), c.state))
+        .map(|c| (c.id.as_str(), c.info.state))
         .collect();
     assert_eq!(
         roots,
@@ -129,6 +129,22 @@ fn test_the_system_info_reports_the_state_of_every_connection() {
 }
 
 #[test]
+fn test_the_system_info_connections_round_trip() {
+    let mut state = stacked_state();
+    for conn in state.connections.iter_mut() {
+        conn.state = ConnectionState::Activated;
+    }
+    state.get_connection_mut("eth1").unwrap().state = ConnectionState::Deactivated;
+    let info = SystemInfo::try_from(state).unwrap();
+
+    // A client reads the connections back, with the state of the nested ports.
+    let json = serde_json::to_string(&info.connections).unwrap();
+    let read: NetworkConnectionsWithStateCollection = serde_json::from_str(&json).unwrap();
+
+    assert_eq!(read, info.connections);
+}
+
+#[test]
 fn test_the_config_does_not_report_the_state_of_the_ports() {
     let mut state = stacked_state();
     for conn in state.connections.iter_mut() {
@@ -142,29 +158,18 @@ fn test_the_config_does_not_report_the_state_of_the_ports() {
 }
 
 #[test]
-fn test_the_state_of_a_port_is_ignored_when_given() {
-    let mut state = stacked_state();
-    state.get_connection_mut("eth0").unwrap().state = ConnectionState::Activated;
-
-    // A client sends back a port as it read it, with a state that does not hold anymore.
-    let connections: NetworkConnectionsCollection = serde_json::from_value(serde_json::json!([{
+fn test_the_config_does_not_take_the_state_of_a_port() {
+    // The state is only reported by the system information: it is not a setting.
+    let result = serde_json::from_value::<NetworkConnectionsCollection>(serde_json::json!([{
         "id": "bond0",
         "interface": "bond0",
         "bond": {
             "mode": "active-backup",
-            "portConnections": [{ "id": "eth0", "interface": "eth0", "state": "deactivated" }, "eth1"]
+            "portConnections": [{ "id": "eth0", "interface": "eth0", "state": "activated" }]
         }
-    }]))
-    .unwrap();
-    state
-        .update_state(Config {
-            connections: Some(connections),
-            ..Default::default()
-        })
-        .unwrap();
+    }]));
 
-    let eth0 = state.get_connection("eth0").unwrap();
-    assert_eq!(eth0.state, ConnectionState::Activated);
+    assert!(result.is_err());
 }
 
 #[test]

@@ -78,18 +78,6 @@
             "null"
           ]
         },
-        "state": {
-          "anyOf": [
-            {
-              "$ref": "#/$defs/ConnectionState"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "Current state of the connection\n\nIt is read-only: only the system information reports it, and it is ignored when\ngiven, so a port can be sent back as it was read.",
-          "readOnly": true
-        },
         "status": {
           "anyOf": [
             {
@@ -185,18 +173,6 @@
             "null"
           ]
         },
-        "state": {
-          "anyOf": [
-            {
-              "$ref": "#/$defs/ConnectionState"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "Current state of the connection\n\nIt is read-only: only the system information reports it, and it is ignored when\ngiven, so a port can be sent back as it was read.",
-          "readOnly": true
-        },
         "status": {
           "anyOf": [
             {
@@ -287,18 +263,6 @@
             "boolean",
             "null"
           ]
-        },
-        "state": {
-          "anyOf": [
-            {
-              "$ref": "#/$defs/ConnectionState"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "Current state of the connection\n\nIt is read-only: only the system information reports it, and it is ignored when\ngiven, so a port can be sent back as it was read.",
-          "readOnly": true
         },
         "status": {
           "anyOf": [
@@ -463,18 +427,6 @@
             "null"
           ]
         },
-        "state": {
-          "anyOf": [
-            {
-              "$ref": "#/$defs/ConnectionState"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "Current state of the connection\n\nIt is read-only: only the system information reports it, and it is ignored when\ngiven, so a port can be sent back as it was read.",
-          "readOnly": true
-        },
         "status": {
           "anyOf": [
             {
@@ -569,18 +521,6 @@
             "boolean",
             "null"
           ]
-        },
-        "state": {
-          "anyOf": [
-            {
-              "$ref": "#/$defs/ConnectionState"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "Current state of the connection\n\nIt is read-only: only the system information reports it, and it is ignored when\ngiven, so a port can be sent back as it was read.",
-          "readOnly": true
         },
         "status": {
           "anyOf": [
@@ -692,18 +632,6 @@
           ],
           "description": "Settings that this connection has because it is a port of a bridge"
         },
-        "state": {
-          "anyOf": [
-            {
-              "$ref": "#/$defs/ConnectionState"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "Current state of the connection\n\nIt is read-only: only the system information reports it, and it is ignored when\ngiven, so a port can be sent back as it was read.",
-          "readOnly": true
-        },
         "status": {
           "anyOf": [
             {
@@ -810,18 +738,6 @@
           ],
           "description": "Settings that this connection has because it is a port of a bridge"
         },
-        "state": {
-          "anyOf": [
-            {
-              "$ref": "#/$defs/ConnectionState"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "Current state of the connection\n\nIt is read-only: only the system information reports it, and it is ignored when\ngiven, so a port can be sent back as it was read.",
-          "readOnly": true
-        },
         "status": {
           "anyOf": [
             {
@@ -923,18 +839,6 @@
             }
           ],
           "description": "Settings that this connection has because it is a port of a bridge"
-        },
-        "state": {
-          "anyOf": [
-            {
-              "$ref": "#/$defs/ConnectionState"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "Current state of the connection\n\nIt is read-only: only the system information reports it, and it is ignored when\ngiven, so a port can be sent back as it was read.",
-          "readOnly": true
         },
         "status": {
           "anyOf": [
@@ -1155,18 +1059,6 @@
           ],
           "description": "Settings that this connection has because it is a port of a bridge"
         },
-        "state": {
-          "anyOf": [
-            {
-              "$ref": "#/$defs/ConnectionState"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "Current state of the connection\n\nIt is read-only: only the system information reports it, and it is ignored when\ngiven, so a port can be sent back as it was read.",
-          "readOnly": true
-        },
         "status": {
           "anyOf": [
             {
@@ -1273,18 +1165,6 @@
           ],
           "description": "Settings that this connection has because it is a port of a bridge"
         },
-        "state": {
-          "anyOf": [
-            {
-              "$ref": "#/$defs/ConnectionState"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "Current state of the connection\n\nIt is read-only: only the system information reports it, and it is ignored when\ngiven, so a port can be sent back as it was read.",
-          "readOnly": true
-        },
         "status": {
           "anyOf": [
             {
@@ -1305,35 +1185,6 @@
         "wireless"
       ],
       "type": "object"
-    },
-    "ConnectionState": {
-      "oneOf": [
-        {
-          "const": "unknown",
-          "description": "The connection state is unknown.",
-          "type": "string"
-        },
-        {
-          "const": "activating",
-          "description": "The connection is getting activated.",
-          "type": "string"
-        },
-        {
-          "const": "activated",
-          "description": "The connection is activated.",
-          "type": "string"
-        },
-        {
-          "const": "deactivating",
-          "description": "The connection is getting deactivated.",
-          "type": "string"
-        },
-        {
-          "const": "deactivated",
-          "description": "The connection is deactivated.",
-          "type": "string"
-        }
-      ]
     },
     "ConnectivityState": {
       "description": "Network connectivity state.",

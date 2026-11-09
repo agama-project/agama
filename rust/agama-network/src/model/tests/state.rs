@@ -44,7 +44,7 @@ fn test_connection_match_settings_conversion() {
     assert_eq!(conn.match_config.kernel, vec!["eth*"]);
 
     // Connection -> NetworkConnection
-    let net_conn2 = NetworkConnection::try_from(conn).unwrap();
+    let net_conn2: NetworkConnection = NetworkConnection::try_from(conn).unwrap();
     assert_eq!(net_conn.match_settings, net_conn2.match_settings);
 }
 
