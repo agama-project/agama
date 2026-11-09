@@ -21,6 +21,7 @@
  */
 
 import React from "react";
+import { sprintf } from "sprintf-js";
 import MenuButton, { MenuButtonItem } from "~/components/core/MenuButton";
 import RowMenuToggle from "~/components/storage/entries-table/RowMenuToggle";
 import { useSetSpacePolicy } from "~/hooks/model/storage/config-model";
@@ -191,33 +192,46 @@ export function SpacePolicyMenuItem({
     if (next !== policy) setSpacePolicy(collection, index, { type: next });
   };
 
+  const choices = POLICIES.map((value) => (
+    <MenuButtonItem
+      key={value}
+      isChecked={value === policy}
+      isDanger={value === "delete"}
+      description={meaning(value)}
+      onClick={() => choose(value)}
+    >
+      {label(value, isVolumeGroup, someReused)}
+    </MenuButtonItem>
+  ));
+
+  const title = isVolumeGroup
+    ? // TRANSLATORS: menu item on a volume group, opening the choices for
+      // what may happen to its current logical volumes to make room for the
+      // new system.
+      _("Existing logical volumes")
+    : // TRANSLATORS: menu item on a disk or RAID, opening the choices for
+      // what may happen to its current partitions to make room for the new
+      // system.
+      _("Existing partitions");
+
   return (
     <MenuButtonItem
       key="space-policy"
+      /* Leading back out, named after where the reader is, for context; and
+         saying it leads back, for whoever hears rather than sees it. */
+      upProps={{
+        label: title,
+        // TRANSLATORS: name of the item leading back to the full menu from
+        // the choices for a device's current partitions. %s is the title of
+        // those choices, such as "Existing partitions".
+        "aria-label": sprintf(_("Back from %s"), title),
+      }}
       // TRANSLATORS: description of the menu item opening the choices for the
       // current partitions or logical volumes of a device.
       description={_("Keep, shrink or delete them")}
-      flyoutItems={POLICIES.map((value) => (
-        <MenuButtonItem
-          key={value}
-          isChecked={value === policy}
-          isDanger={value === "delete"}
-          description={meaning(value)}
-          onClick={() => choose(value)}
-        >
-          {label(value, isVolumeGroup, someReused)}
-        </MenuButtonItem>
-      ))}
+      flyoutItems={choices}
     >
-      {isVolumeGroup
-        ? // TRANSLATORS: menu item on a volume group, opening the choices for
-          // what may happen to its current logical volumes to make room for
-          // the new system.
-          _("Existing logical volumes")
-        : // TRANSLATORS: menu item on a disk or RAID, opening the choices for
-          // what may happen to its current partitions to make room for the new
-          // system.
-          _("Existing partitions")}
+      {title}
     </MenuButtonItem>
   );
 }

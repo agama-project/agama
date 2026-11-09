@@ -310,7 +310,11 @@ export default function DriveMenu({
   return (
     <>
       <MenuButton
-        menuProps={{ "aria-label": label, popperProps: { position: "end" }, hasFlyouts: true }}
+        menuProps={{
+          "aria-label": label,
+          popperProps: { position: "end", minWidth: "24rem" },
+          hasFlyouts: true,
+        }}
         customToggle={<RowMenuToggle label={label} />}
         items={items}
       />
