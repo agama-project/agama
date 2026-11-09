@@ -37,6 +37,7 @@ import {
   hasSpaceDecision,
   SpacePolicyMenuItem,
 } from "~/components/storage/device-details/SpaceDecision";
+import { useSpacePolicyMenu } from "~/components/storage/storage-page/playground-switches";
 import { _ } from "~/i18n";
 import type { ConfigModel } from "~/model/storage/config-model";
 import type { DetailsSubject } from "~/components/storage/shared/use-device-details";
@@ -96,6 +97,8 @@ export default function SearchedVolumeGroupMenu({
   const label = sprintf(_("Actions for %s"), name);
 
   const navigate = useNavigate();
+  // PLAYGROUND: whether the space policy opens to the side of its item.
+  const spacePolicyMenu = useSpacePolicyMenu();
   const { search } = useLocation();
   const device = useDevice(entry.name);
   const items = [
@@ -173,7 +176,7 @@ export default function SearchedVolumeGroupMenu({
       menuProps={{
         "aria-label": label,
         popperProps: { position: "end", minWidth: "24rem" },
-        hasFlyouts: true,
+        hasFlyouts: spacePolicyMenu === "flyout",
       }}
       customToggle={<RowMenuToggle label={label} />}
       items={items}

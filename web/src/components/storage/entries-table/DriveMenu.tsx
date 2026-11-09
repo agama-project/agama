@@ -34,6 +34,7 @@ import {
   hasSpaceDecision,
   SpacePolicyMenuItem,
 } from "~/components/storage/device-details/SpaceDecision";
+import { useSpacePolicyMenu } from "~/components/storage/storage-page/playground-switches";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { generateEncodedPath } from "~/utils";
 import { baseName } from "~/components/storage/utils";
@@ -121,6 +122,8 @@ export default function DriveMenu({
   device = null,
 }: DriveMenuProps): React.ReactNode {
   const navigate = useNavigate();
+  // PLAYGROUND: whether the space policy opens to the side of its item.
+  const spacePolicyMenu = useSpacePolicyMenu();
   const { search } = useLocation();
   const retarget = useRetarget(entry, device);
   const setFilesystem = useSetFilesystem();
@@ -313,7 +316,7 @@ export default function DriveMenu({
         menuProps={{
           "aria-label": label,
           popperProps: { position: "end", minWidth: "24rem" },
-          hasFlyouts: true,
+          hasFlyouts: spacePolicyMenu === "flyout",
         }}
         customToggle={<RowMenuToggle label={label} />}
         items={items}

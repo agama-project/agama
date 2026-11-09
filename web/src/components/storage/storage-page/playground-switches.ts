@@ -80,6 +80,11 @@
  *   agamaPinnedResult(false)  // only in the popup, as before (default)
  *   agamaPinnedResult(true)   // docked beside the page
  *
+ * How a row's menu offers the choices for the partitions already on a device:
+ *
+ *   agamaSpacePolicyMenu("flyout")     // in a menu to the side of the item (default)
+ *   agamaSpacePolicyMenu("drilldown")  // replacing the menu, with a way back
+ *
  * Choices survive reloads. To be dropped once the design is settled.
  */
 
@@ -94,6 +99,7 @@ type SummaryStyle = "plain" | "hint";
 type FailedDetails = "popup" | "expandable";
 type SummaryWording = "when" | "until" | "single";
 type ActionCount = "all" | "noSubvolumes" | "changes";
+type SpacePolicyMenu = "flyout" | "drilldown";
 
 type SwitchName =
   | "agamaDevicesBox"
@@ -104,7 +110,8 @@ type SwitchName =
   | "agamaFailedDetails"
   | "agamaSummaryStyle"
   | "agamaSummaryWording"
-  | "agamaActionCount";
+  | "agamaActionCount"
+  | "agamaSpacePolicyMenu";
 
 declare global {
   interface Window {
@@ -117,6 +124,7 @@ declare global {
     agamaFailedDetails?: (value: FailedDetails) => void;
     agamaSummaryWording?: (value: SummaryWording) => void;
     agamaActionCount?: (value: ActionCount) => void;
+    agamaSpacePolicyMenu?: (value: SpacePolicyMenu) => void;
     agamaPinnedResult?: (value: boolean) => void;
   }
 }
@@ -201,7 +209,13 @@ const useActionCount = consoleSwitch<ActionCount>("agamaActionCount", [
   "changes",
 ]);
 
+const useSpacePolicyMenu = consoleSwitch<SpacePolicyMenu>("agamaSpacePolicyMenu", [
+  "flyout",
+  "drilldown",
+]);
+
 export {
+  useSpacePolicyMenu,
   useDevicesBox,
   useGroupedTable,
   useExistingDataWording,

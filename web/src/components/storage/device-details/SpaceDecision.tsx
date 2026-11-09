@@ -25,6 +25,7 @@ import { sprintf } from "sprintf-js";
 import MenuButton, { MenuButtonItem } from "~/components/core/MenuButton";
 import RowMenuToggle from "~/components/storage/entries-table/RowMenuToggle";
 import { useSetSpacePolicy } from "~/hooks/model/storage/config-model";
+import { useSpacePolicyMenu } from "~/components/storage/storage-page/playground-switches";
 import { _, TranslatedString } from "~/i18n";
 import type { ConfigModel, DeviceCollection } from "~/model/storage/config-model";
 
@@ -185,6 +186,8 @@ export function SpacePolicyMenuItem({
 }: SpacePolicyMenuItemProps) {
   const setSpacePolicy = useSetSpacePolicy();
   const isVolumeGroup = collection === "volumeGroups";
+  /* PLAYGROUND: to the side, or replacing the menu, from the console. */
+  const isFlyout = useSpacePolicyMenu() === "flyout";
 
   /* Choosing what the device already allows changes nothing, so nothing is
      written. */
@@ -229,7 +232,7 @@ export function SpacePolicyMenuItem({
       // TRANSLATORS: description of the menu item opening the choices for the
       // current partitions or logical volumes of a device.
       description={_("Keep, shrink or delete them")}
-      flyoutItems={choices}
+      {...(isFlyout ? { flyoutItems: choices } : { items: choices })}
     >
       {title}
     </MenuButtonItem>
