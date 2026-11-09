@@ -1115,3 +1115,9 @@ tr.agm-entries-table__row > :is(th, td):not(.agm-entries-table__menu) {
 .agm-details-section--band-flat > .agm-details-section__title.pf-v6-c-title {
   background: var(--agm-details-section--band);
 }
+
+// PLAYGROUND: without the marks before the group titles, the rows need only a
+// short indent to read as held by their group.
+.agm-entries-table.agm-entries-table--no-group-marks {
+  --agm-entries-table--group-indent: var(--pf-t--global--spacer--sm);
+}

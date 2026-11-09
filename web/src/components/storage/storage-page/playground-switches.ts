@@ -114,6 +114,11 @@
  *   agamaSectionBand("fading")  // the band fading down, as behind the table's group titles
  *   agamaSectionBand("flat")    // an even band
  *
+ * Whether the titles of the devices table's groups carry an icon:
+ *
+ *   agamaGroupTitleIcons("off")  // words only, as every icon left does something (default)
+ *   agamaGroupTitleIcons("on")   // an icon before each title, as before
+ *
  * Choices survive reloads. To be dropped once the design is settled.
  */
 
@@ -131,6 +136,7 @@ type ActionCount = "all" | "noSubvolumes" | "changes";
 type DetailsIcon = "none" | "list";
 type DetailsButton = "inline" | "below" | "end";
 type DetailsSize = "compact" | "regular";
+type GroupTitleIcons = "off" | "on";
 type SectionBand = "none" | "fading" | "flat";
 type SectionIndent = "medium" | "small" | "none";
 type SectionTitle = "plain" | "spaced" | "rule" | "both" | "grouped" | "separated" | "smallcaps";
@@ -149,6 +155,7 @@ type SwitchName =
   | "agamaDetailsButton"
   | "agamaDetailsSize"
   | "agamaSectionTitle"
+  | "agamaGroupTitleIcons"
   | "agamaSectionBand"
   | "agamaSectionIndent";
 
@@ -167,6 +174,7 @@ declare global {
     agamaDetailsButton?: (value: DetailsButton) => void;
     agamaDetailsSize?: (value: DetailsSize) => void;
     agamaSectionTitle?: (value: SectionTitle) => void;
+    agamaGroupTitleIcons?: (value: GroupTitleIcons) => void;
     agamaSectionBand?: (value: SectionBand) => void;
     agamaSectionIndent?: (value: SectionIndent) => void;
   }
@@ -284,6 +292,7 @@ const useSectionTitle = consoleSwitch<SectionTitle>("agamaSectionTitle", [
   "separated",
   "smallcaps",
 ]);
+const useGroupTitleIcons = consoleSwitch<GroupTitleIcons>("agamaGroupTitleIcons", ["off", "on"]);
 const useSectionBand = consoleSwitch<SectionBand>("agamaSectionBand", ["none", "fading", "flat"]);
 const useSectionIndent = consoleSwitch<SectionIndent>("agamaSectionIndent", [
   "medium",
@@ -297,6 +306,7 @@ export {
   useDetailsButton,
   useDetailsSize,
   useSectionTitle,
+  useGroupTitleIcons,
   useSectionBand,
   useSectionIndent,
   useDevicesBox,

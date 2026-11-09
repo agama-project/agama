@@ -111,13 +111,15 @@ Then, from the browser developer tools console:
 | `agamaSectionTitle("both")`           | A line and more room under section titles                        |
 | `agamaSectionTitle("grouped")`        | Section titles close to their content, far from the next section |
 | `agamaSectionTitle("separated")`      | A line between sections instead of under titles                  |
-| `agamaSectionTitle("smallcaps")`      | Section titles as the table's group titles       |
-| `agamaSectionBand("none")` | No band behind section titles (default) |
-| `agamaSectionBand("fading")` | Section titles on the table's fading band |
-| `agamaSectionBand("flat")` | Section titles on an even band |
-| `agamaSectionIndent("medium")` | Section content indented 16 px (default) |
-| `agamaSectionIndent("small")` | Section content indented 8 px |
-| `agamaSectionIndent("none")` | Section content in line with its title |
+| `agamaSectionTitle("smallcaps")`      | Section titles as the table's group titles                       |
+| `agamaSectionBand("none")`            | No band behind section titles (default)                          |
+| `agamaSectionBand("fading")`          | Section titles on the table's fading band                        |
+| `agamaSectionBand("flat")`            | Section titles on an even band                                   |
+| `agamaSectionIndent("medium")`        | Section content indented 16 px (default)                         |
+| `agamaSectionIndent("small")`         | Section content indented 8 px                                    |
+| `agamaSectionIndent("none")`          | Section content in line with its title                           |
+| `agamaGroupTitleIcons("off")`         | Table group titles without icons, rows less indented (default)   |
+| `agamaGroupTitleIcons("on")`          | Table group titles with their icons                              |
 
 Every choice is kept across reloads. WORDING.md lists every wording of the
 table and the summary, the discarded ones included.

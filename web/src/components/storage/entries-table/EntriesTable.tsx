@@ -30,6 +30,7 @@ import Icon from "~/components/layout/Icon";
 import type { IconProps } from "~/components/layout/Icon";
 import {
   useGroupedTable,
+  useGroupTitleIcons,
   useGroupTitleStyle,
 } from "~/components/storage/storage-page/playground-switches";
 import { css } from "@patternfly/react-styles";
@@ -148,6 +149,8 @@ export default function EntriesTable(): React.ReactNode {
      sort orders each group on its own and the groups keep their order. */
   const isGrouped = useGroupedTable() === "on";
   const groupTitleStyle = useGroupTitleStyle();
+  // PLAYGROUND: group titles with or without an icon, from the console.
+  const hasGroupIcons = useGroupTitleIcons() === "on";
   const groupId = React.useId();
 
   const onKeyDown = (event: React.KeyboardEvent) => {
@@ -226,6 +229,7 @@ export default function EntriesTable(): React.ReactNode {
       className={css(
         "agm-entries-table",
         isGrouped && "agm-entries-table--grouped",
+        isGrouped && !hasGroupIcons && "agm-entries-table--no-group-marks",
         isGrouped && groupTitleStyle === "band" && "agm-entries-table--banded",
         isGrouped && groupTitleStyle === "flat" && "agm-entries-table--flat-band",
       )}
@@ -263,7 +267,7 @@ export default function EntriesTable(): React.ReactNode {
                   className="agm-entries-table__group-header"
                 >
                   <span className="agm-entries-table__group-title">
-                    <Icon name={GROUP_ICON[collection]} aria-hidden />
+                    {hasGroupIcons && <Icon name={GROUP_ICON[collection]} aria-hidden />}
                     {groupTitle(collection, rows.length)}
                   </span>
                 </Th>
