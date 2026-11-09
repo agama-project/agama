@@ -37,6 +37,7 @@ export default function GlobalActions() {
         // installation is made of: bring more disks into it.
         label={_("Add more devices")}
         popperProps={{ position: "left" }}
+        layout="buttons"
       />
     </Flex>
   );

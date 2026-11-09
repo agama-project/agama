@@ -23,7 +23,16 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router";
 import MenuButton, { MenuButtonItem } from "~/components/core/MenuButton";
-import { Divider, MenuItemProps, MenuPopperProps } from "@patternfly/react-core";
+import {
+  Button,
+  Divider,
+  Flex,
+  FlexItem,
+  MenuItemProps,
+  MenuPopperProps,
+} from "@patternfly/react-core";
+import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
+import Text from "~/components/core/Text";
 import { useAvailableDevices } from "~/hooks/model/system/storage";
 import {
   useConfigModel,
@@ -129,7 +138,27 @@ export type ConfigureDeviceMenuProps = {
   label?: TranslatedString;
   /** Which way the menu opens, for a toggle that sits against an edge. */
   popperProps?: MenuPopperProps;
+  /**
+   * "menu" (default) offers both acts in one menu; "buttons" offers them as two
+   * buttons side by side, picking an existing device apart from creating a new
+   * one, with the reason written under the first when nothing is left to pick.
+   */
+  layout?: "menu" | "buttons";
 };
+
+/**
+ * The name of picking an existing device, for the buttons layout: "existing"
+ * sets it apart from creating a new one beside it.
+ */
+function pickTitleOf(withRaids: boolean, withLvm: boolean) {
+  return withRaids || withLvm
+    ? // TRANSLATORS: button adding to the installation a disk, RAID or volume
+      // group the machine already has, as opposed to creating a new one.
+      _("Add existing device")
+    : // TRANSLATORS: button adding to the installation a disk the machine
+      // already has.
+      _("Add existing disk");
+}
 
 /**
  * Menu that provides options for users to configure storage drives
@@ -143,7 +172,9 @@ export type ConfigureDeviceMenuProps = {
 export default function ConfigureDeviceMenu({
   label = _("More devices"),
   popperProps = { position: "left" },
+  layout = "menu",
 }: ConfigureDeviceMenuProps): React.ReactNode {
+  const reasonId = React.useId();
   const [deviceSelectorOpen, setDeviceSelectorOpen] = useState(false);
   const openDeviceSelector = () => setDeviceSelectorOpen(true);
   const closeDeviceSelector = () => setDeviceSelectorOpen(false);
@@ -177,37 +208,87 @@ export default function ConfigureDeviceMenu({
     ? _("Define a new LVM on top of one or several disks")
     : _("Define a new LVM on the disk");
 
+  const isPickDisabled = !availableDevices.length;
+  const pickTitle = pickTitleOf(withRaids, withLvm);
+
+  const offers =
+    layout === "buttons" ? (
+      <div>
+        <Flex gap={{ default: "gapMd" }}>
+          <FlexItem>
+            <Button
+              variant="secondary"
+              icon={<Icon name="add_circle" />}
+              /* Still reachable by keyboard, so the reason under it is met. */
+              isAriaDisabled={isPickDisabled}
+              aria-describedby={isPickDisabled ? reasonId : undefined}
+              onClick={openDeviceSelector}
+            >
+              {pickTitle}
+            </Button>
+          </FlexItem>
+          <FlexItem>
+            <Button
+              variant="secondary"
+              icon={<Icon name="add_circle" />}
+              onClick={() => navigate(PATHS.volumeGroup.add)}
+            >
+              {/* TRANSLATORS: button defining a new LVM volume group for the
+                  installation. */}
+              {_("Create LVM volume group")}
+            </Button>
+          </FlexItem>
+        </Flex>
+        {/* Under the row rather than under its button, which it would
+            otherwise widen, pushing the other button away. */}
+        {isPickDisabled && (
+          <div id={reasonId} className={spacingStyles.mtXs}>
+            <Text textStyle={["fontSizeSm", "textColorSubtle"]}>
+              <AddDeviceDescription
+                withRaids={withRaids}
+                withLvm={withLvm}
+                usedCount={usedDevicesCount}
+                isDisabled
+              />
+            </Text>
+          </div>
+        )}
+      </div>
+    ) : null;
+
   return (
     <>
-      <MenuButton
-        menuProps={{
-          "aria-label": _("Configure device menu"),
-          popperProps,
-        }}
-        /* Bordered, as any control that opens something on the page is, so it
+      {offers ?? (
+        <MenuButton
+          menuProps={{
+            "aria-label": _("Configure device menu"),
+            popperProps,
+          }}
+          /* Bordered, as any control that opens something on the page is, so it
            is not taken for a link to another page. */
-        toggleProps={{ variant: "default", icon: <Icon name="add_circle" /> }}
-        items={[
-          <AddDeviceMenuItem
-            key="select-disk-option"
-            usedCount={usedDevicesCount}
-            devices={availableDevices}
-            withRaids={withRaids}
-            withLvm={withLvm}
-            onClick={openDeviceSelector}
-          />,
-          <Divider key="divider-option" />,
-          <MenuButtonItem
-            key="add-lvm-option"
-            onClick={() => navigate(PATHS.volumeGroup.add)}
-            description={lvmDescription}
-          >
-            {_("Add LVM volume group")}
-          </MenuButtonItem>,
-        ]}
-      >
-        {label}
-      </MenuButton>
+          toggleProps={{ variant: "default", icon: <Icon name="add_circle" /> }}
+          items={[
+            <AddDeviceMenuItem
+              key="select-disk-option"
+              usedCount={usedDevicesCount}
+              devices={availableDevices}
+              withRaids={withRaids}
+              withLvm={withLvm}
+              onClick={openDeviceSelector}
+            />,
+            <Divider key="divider-option" />,
+            <MenuButtonItem
+              key="add-lvm-option"
+              onClick={() => navigate(PATHS.volumeGroup.add)}
+              description={lvmDescription}
+            >
+              {_("Add LVM volume group")}
+            </MenuButtonItem>,
+          ]}
+        >
+          {label}
+        </MenuButton>
+      )}
       {deviceSelectorOpen && (
         <DeviceSelectorModal
           disks={disks}
