@@ -320,7 +320,6 @@ const Popup = ({
       aria-describedby={contentId}
     >
       <CloseContext.Provider value={onClose}>
-        <AnnouncerTarget />
         {title && (
           <ModalHeader
             labelId={titleId}
@@ -334,6 +333,9 @@ const Popup = ({
           {isLoading ? <Loading text={loadingText} /> : children}
         </ModalBody>
         {actions && <ModalFooter>{actions}</ModalFooter>}
+        {/* Last, after the header: PatternFly makes room for anything next to
+            its close button only when the header follows it right away. */}
+        <AnnouncerTarget />
       </CloseContext.Provider>
     </Modal>
   );
