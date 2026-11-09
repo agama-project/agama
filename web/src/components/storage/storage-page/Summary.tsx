@@ -89,19 +89,22 @@ function sentences(
 
     if (!count) {
       // TRANSLATORS: summary of the storage setup, when the setup needs no
-      // changes to the disks at all.
+      // changes to the disks at all. Shown above the settings, or in a panel
+      // beside them.
       return { second: _("Applying the current settings needs no changes to the disks."), note };
     }
 
     return {
       second: sprintf(
         isLossy
-          ? // TRANSLATORS: summary of the storage setup. %s is a count such as
-            // "12 actions". Text in square brackets is shown in bold; keep the
+          ? // TRANSLATORS: summary of the storage setup, shown above the
+            // settings or in a panel beside them. %s is a count such as "12
+            // actions". Text in square brackets is shown in bold; keep the
             // brackets.
             _("Applying the current settings takes %s, [with data loss].")
-          : // TRANSLATORS: summary of the storage setup. %s is a count such as
-            // "12 actions".
+          : // TRANSLATORS: summary of the storage setup, shown above the
+            // settings or in a panel beside them. %s is a count such as "12
+            // actions".
             _("Applying the current settings takes %s, without data loss."),
         what,
       ),
@@ -194,6 +197,14 @@ function useAnnounceChanges(isLossy: boolean, hasUnseenChanges: boolean, summary
   }, [isLossy, hasUnseenChanges, summary, announce]);
 }
 
+export type SummaryProps = {
+  /**
+   * Whether it opens the panel with the planned changes, beside the settings,
+   * rather than sitting above them with a button to see the changes in full.
+   */
+  isDocked?: boolean;
+};
+
 /**
  * The summary of what the installer will do to the disks, at the top of the
  * storage page, with the way to see it in full.
@@ -202,9 +213,10 @@ function useAnnounceChanges(isLossy: boolean, hasUnseenChanges: boolean, summary
  * plain text, with only the count and a data loss in bold. It changes with
  * every setting, which is what makes it worth glancing back at.
  */
-export default function Summary(): React.ReactNode {
+export default function Summary({ isDocked = false }: SummaryProps): React.ReactNode {
   const actions = useActions();
-  const wording = useSummaryWording();
+  const pageWording = useSummaryWording();
+  const wording = isDocked ? "single" : pageWording;
   const countMode = useActionCount();
   const style = useSummaryStyle();
 
@@ -224,7 +236,8 @@ export default function Summary(): React.ReactNode {
 
   useAnnounceChanges(
     isLossy,
-    hasUnseenChanges,
+    /* Docked, the changes are in sight as they happen: never unseen. */
+    hasUnseenChanges && !isDocked,
     markerText([first, second, note].filter(Boolean).join(" ")),
   );
 
@@ -244,6 +257,16 @@ export default function Summary(): React.ReactNode {
       isCompact={false}
     />
   );
+
+  /* The changes in full are right under it, so there is nothing to open. */
+  if (isDocked) {
+    return (
+      <p>
+        <Marked sentence={second} />{" "}
+        <Text textStyle={["fontSizeSm", "textColorSubtle"]}>{note}</Text>
+      </p>
+    );
+  }
 
   /* PLAYGROUND: the one-sentence wording, with or without the hint box: no
      mark, the reassurance right after the sentence in a quieter voice, and the

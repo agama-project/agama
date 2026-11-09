@@ -25,6 +25,7 @@ import Page from "~/components/layout/Page";
 import IssuesAlert from "~/components/core/IssuesAlert";
 import ConnectedDevicesMenu from "~/components/storage/ConnectedDevicesMenu";
 import StoragePageContent from "~/components/storage/storage-page/StoragePageContent";
+import ResultPreviewPanel from "~/components/storage/storage-page/ResultPreviewPanel";
 import { useIssues } from "~/hooks/model/issue";
 import { STORAGE_MODEL_QUERY_KEY } from "~/hooks/model/storage/config-model";
 import { PROPOSAL_QUERY_KEY } from "~/hooks/model/proposal";
@@ -36,11 +37,24 @@ import { _ } from "~/i18n";
  */
 export default function StoragePage(): React.ReactNode {
   const zfcpIssues = useIssues("zfcp");
+  const panelId = React.useId();
 
   return (
     <Page
       breadcrumbs={[{ label: _("Storage") }]}
       additionalContent={<ConnectedDevicesMenu />}
+      sideDock={{
+        page: "storage",
+        panelId,
+        // TRANSLATORS: name of a panel beside the storage settings, with what
+        // the disks will look like and the actions to get there, as screen
+        // readers list it. Nothing is applied until the installation starts.
+        label: _("Storage result preview"),
+        // TRANSLATORS: name of the handle that makes the panel with the
+        // storage result preview wider or narrower.
+        resizeLabel: _("Resize storage result preview"),
+        panel: <ResultPreviewPanel />,
+      }}
       progress={{
         scope: "storage",
         awaitQueriesRefetch: [PROPOSAL_QUERY_KEY, STORAGE_MODEL_QUERY_KEY],

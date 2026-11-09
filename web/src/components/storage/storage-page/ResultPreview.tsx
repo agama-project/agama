@@ -31,7 +31,9 @@ import { useActions } from "~/hooks/model/proposal/storage";
 import { _ } from "~/i18n";
 
 /**
- * The whole picture, which the page's summary reports one clause of.
+ * The whole picture, which the page's summary reports one clause of: the
+ * storage result preview, in its popup or in the panel docked beside the page.
+ * It brings no heading of its own; whatever holds it names it.
  *
  * Two halves of the same answer: every change the installer carries out, and
  * what the machine looks like once it has. Tabs rather than one under the
@@ -42,7 +44,8 @@ import { _ } from "~/i18n";
 export default function ResultPreview(): React.ReactNode {
   const actions = useActions();
   const manager = useDevicesManager();
-  /* Not in the address, as the popup holding it is not: a reload closes both. */
+  /* Not in the address: a reload closes the popup, and the docked panel
+     starts again from the actions. */
   /* The actions first: what will be done is what the reader came for, and the
      final layout, a long table, is built only when asked for. */
   const [tab, setTab] = React.useState("actions");

@@ -41,6 +41,7 @@ import { STORAGE as PATHS } from "~/routes/paths";
 import { EXPANDED, SETTINGS_TAB, DEVICE_DETAILS } from "~/components/storage/ui-state-params";
 import configModel from "~/model/storage/config-model";
 import Summary from "~/components/storage/storage-page/Summary";
+import { SideDockToggle } from "~/components/layout/SideDock";
 import { useConfigModel } from "~/hooks/model/storage/config-model";
 import { useProposal } from "~/hooks/model/proposal/storage";
 import { useReset } from "~/hooks/model/config/storage";
@@ -267,7 +268,28 @@ export function TopResult(): React.ReactNode {
   const issues = useIssues("storage");
   const configIssues = issues.filter((i) => i.class !== "proposal");
 
-  if (proposal) return <Summary />;
+  if (proposal) {
+    return (
+      <Flex
+        alignItems={{ default: "alignItemsFlexStart" }}
+        justifyContent={{ default: "justifyContentSpaceBetween" }}
+        flexWrap={{ default: "nowrap" }}
+        gap={{ default: "gapMd" }}
+      >
+        <FlexItem>
+          <Summary />
+        </FlexItem>
+        <FlexItem>
+          <SideDockToggle
+            // TRANSLATORS: name and tooltip of a button that shows a panel
+            // beside the storage settings with what the disks will look like
+            // and the actions to get there.
+            label={_("Storage result preview beside the page")}
+          />
+        </FlexItem>
+      </Flex>
+    );
+  }
 
   return configIssues.length ? (
     <FailureAlert

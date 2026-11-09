@@ -21,8 +21,10 @@
  */
 
 import React from "react";
-import { Button } from "@patternfly/react-core";
+import { Button, Tooltip } from "@patternfly/react-core";
+import Icon from "~/components/layout/Icon";
 import Popup from "~/components/core/Popup";
+import { useDockPanel } from "~/components/layout/SideDock";
 import ResultPreview from "~/components/storage/storage-page/ResultPreview";
 import Text from "~/components/core/Text";
 import { useUnseenChanges } from "~/components/storage/storage-page/use-unseen-changes";
@@ -76,7 +78,15 @@ export default function Consequences({
   const actions = useActions();
   const [isOpen, setIsOpen] = React.useState(false);
   const { hasUnseenChanges, markSeen } = useUnseenChanges();
+  const dockPanel = useDockPanel();
   const close = () => setIsOpen(false);
+  // TRANSLATORS: name and tooltip of a button in the storage result preview
+  // popup: closes it and keeps its content in a panel beside the settings.
+  const pinLabel = _("Pin beside the page");
+  const pin = () => {
+    close();
+    dockPanel();
+  };
   const open = () => {
     markSeen();
     setIsOpen(true);
@@ -132,6 +142,20 @@ export default function Consequences({
           description={summaryOf(actions)}
           variant="large"
           onClose={close}
+          titleAddon={
+            dockPanel && (
+              /* Next to the popup's own close button, with the icon the page
+                 uses to dock the same content. */
+              <Tooltip content={pinLabel} aria="none">
+                <Button
+                  variant="plain"
+                  aria-label={pinLabel}
+                  icon={<Icon name="right_panel_open" />}
+                  onClick={pin}
+                />
+              </Tooltip>
+            )
+          }
           actions={<Popup.Close />}
         >
           <ResultPreview />

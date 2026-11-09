@@ -32,6 +32,8 @@ import Result from "~/components/storage/storage-page/Result";
 import DeviceDetailsPanel from "~/components/storage/storage-page/DeviceDetailsPanel";
 import { useDevicesBox } from "~/components/storage/storage-page/playground-switches";
 import { useConfigModel } from "~/hooks/model/storage/config-model";
+import { useProposal } from "~/hooks/model/proposal/storage";
+import { useIsSideDockShown } from "~/components/layout/SideDock";
 
 /**
  * What the storage page shows, and where everything it needs is read.
@@ -52,6 +54,11 @@ export default function StoragePageContent(): React.ReactNode {
   const box = useDevicesBox();
   const [resultNode, setResultNode] = React.useState<HTMLDivElement | null>(null);
   const { height: resultHeight = 0 } = useElementSize(resultNode);
+  const proposal = useProposal();
+  /* The summary moves into the panel docked beside the page, when there is
+     one in sight. A setup that cannot be applied stays here, next to the
+     settings that fix it. */
+  const isResultDocked = useIsSideDockShown() && !!proposal;
 
   if (!model) return <Result />;
 
@@ -77,19 +84,21 @@ export default function StoragePageContent(): React.ReactNode {
       {/* Kept in sight while the rest of the page scrolls: what every setting
           leads to. The same sticky section the software patterns page keeps
           its filter in. */}
-      <PageSection
-        component="div"
-        stickyOnBreakpoint={{ default: "top" }}
-        padding={{ default: "noPadding" }}
-      >
-        <div ref={setResultNode}>
-          {/* Room under it, so what scrolls under it does not run into its
+      {!isResultDocked && (
+        <PageSection
+          component="div"
+          stickyOnBreakpoint={{ default: "top" }}
+          padding={{ default: "noPadding" }}
+        >
+          <div ref={setResultNode}>
+            {/* Room under it, so what scrolls under it does not run into its
               last line. Inside what is measured, so the panel starts below. */}
-          <div className={spacingStyles.pbMd}>
-            <TopResult />
+            <div className={spacingStyles.pbMd}>
+              <TopResult />
+            </div>
           </div>
-        </div>
-      </PageSection>
+        </PageSection>
+      )}
       {/* PLAYGROUND: the settings and devices in a bordered box, or right on
           the page with a rule setting the devices apart from the settings. */}
       {box === "on" ? <Page.Section>{devices}</Page.Section> : devices}
