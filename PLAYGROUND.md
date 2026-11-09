@@ -1,14 +1,32 @@
-# Storage page: fifth iteration playground
+# Storage page: sixth iteration playground
 
 ## Why
 
-The fourth iteration turned the line at the top into a real summary of what
-the installer will do, with the planned changes behind "Details…". Watching
-those changes meant opening a popup after every edit. This round lets the
-result preview stay docked beside the page, so it changes in sight while the
-reader works on the devices.
+The fifth iteration let the result of the settings stay in sight beside the
+page. This round makes acting on the devices more direct: what can be done to
+a device is offered from its own row, and adding a device the machine already
+has is told apart from creating a new one.
 
 ## What changed in this round
+
+- Each row's menu offers what the device's panel offers, without opening the
+  panel, in the same cases:
+  - a disk or RAID with partitions planned: Add partition, Move to other
+    device;
+  - one with nothing planned yet: Add partition, Format device;
+  - one given whole to a file system: Edit file system, Stop using as file
+    system;
+  - a volume group, new or existing: Add logical volume.
+
+  The menu in the panel's own header leaves them out, since the panel shows
+  them under its sections.
+
+- "Add more devices" is now two buttons: "Add existing disk" (or "Add existing
+  device", where the machine also has RAIDs or volume groups) and "Create LVM
+  volume group". Where nothing is left to add, the first stays focusable but
+  disabled, with the reason written under the buttons.
+
+## From the fifth round
 
 - The planned changes are now the "Storage result preview". The popup keeps
   that title; docked, the panel shows "Result preview" and is listed by screen
@@ -42,45 +60,6 @@ reader works on the devices.
   away, and no notice about changes not yet reviewed.
 - Tree tables, such as the final layout, stack their columns by the width
   they have rather than by the window's.
-
-## From the fourth round
-
-- The table has three columns, Device, Used for and Existing data, matching
-  the three lines master shows per device: the device, what it holds, and what
-  happens to what is on it today. Values are short and have the same shape on
-  every row, so a column can be scanned instead of read.
-- Losing data is in bold in the Existing data column. A device with nothing on
-  it yet leaves that cell visually empty and says "No existing data" to screen
-  readers only.
-- The top of the page opens with a summary: when the installation starts, how
-  many actions the installer will perform, and whether data is lost, with
-  "Details…" opening the planned changes. It is plain text, not a caution:
-  only the count and "with data loss" are in bold.
-- The page description now sits on the same line as the boot disk and
-  encryption settings.
-- Once the planned changes have been reviewed, a new, different proposal puts
-  a blue dot on "Details…", until they are reviewed again. Its name gains
-  "(updated)" and screen readers hear once that the changes are different.
-- A setup that cannot be applied is a caution at the top again, saying what
-  does not fit in place, with the suggestions behind "See suggestions…".
-- Mount points and volume group names in Used for are set in monospace.
-- Group titles sit on a faint band; the last row of each group keeps its rule.
-- The page scrolls as a whole, like every other Agama page, instead of the
-  devices scrolling inside their own box under a fixed top area. Only the
-  summary stays at the top, in the same sticky section (PatternFly's
-  `stickyOnBreakpoint`) the software patterns page keeps its filter in, with
-  the same placement, padding, background and shadow; the sticky section
-  reaches the page's edges, on both pages. Boot disk, Encryption and the
-  devices scroll away under it.
-- The details panel covers everything but the summary, starting right under
-  it, and stays in view as the page scrolls, fitting what is in view and
-  scrolling its own content. Opening it never moves the page.
-- The room around the page is master's again; prototyping had tightened it.
-- The device links' `aria-controls` now always points at an element in the
-  page. The panel is always rendered and only hidden while shut.
-- The actions columns are named with visually hidden text instead of an
-  `aria-label`.
-- The Type column and the top line order switches are gone.
 
 ## How to play
 
@@ -138,6 +117,10 @@ table and the summary, the discarded ones included.
 - **The summary.** Three wordings, two looks, and three ways of counting.
 - **The failure suggestions.** In a popup or in place.
 - **The group titles.** Fading band, flat band or none.
+- **The row menus.** Whether offering the panel's acts from each row helps, or
+  makes the menus too long.
+- **The two add buttons.** Their names, and whether two buttons read better
+  than one menu.
 - **The docked preview.** The whole interaction: whether watching the result
   beside the page while editing devices is worth the room it takes, and how
   it feels at 1024 px.
