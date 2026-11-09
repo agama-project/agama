@@ -32,6 +32,7 @@ mod tests {
             ntp::{Config, Source, SourceType},
             Event,
         },
+        message::GetResolvables,
         Resolvable,
     };
     use async_trait::async_trait;
@@ -91,7 +92,7 @@ mod tests {
         }
 
         fn resolvables(&self) -> Vec<Resolvable> {
-            vec![]
+            vec![Resolvable::package("chrony")]
         }
 
         async fn sync(&self) -> Result<(), model::Error> {
@@ -189,6 +190,35 @@ server ntp.example.com offline
 
         let retrieved = ctx.handler.call(message::GetConfig).await.unwrap();
         assert_eq!(retrieved.unwrap(), test_config);
+    }
+
+    #[test_context(Context)]
+    #[tokio::test]
+    async fn test_get_resolvables_empty_config(ctx: &mut Context) {
+        let resolvables = ctx.handler.call(GetResolvables).await.unwrap();
+        assert!(resolvables.is_empty());
+    }
+
+    #[test_context(Context)]
+    #[tokio::test]
+    async fn test_get_resolvables_with_config(ctx: &mut Context) {
+        let test_config = Config {
+            sources: Some(vec![Source {
+                source_type: SourceType::Pool,
+                address: "ntp.example.com".to_string(),
+                iburst: true,
+                offline: false,
+            }]),
+        };
+
+        ctx.handler
+            .call(message::SetConfig::new(Some(test_config)))
+            .await
+            .unwrap();
+
+        let resolvables = ctx.handler.call(GetResolvables).await.unwrap();
+        assert!(!resolvables.is_empty());
+        assert_eq!(resolvables, vec![Resolvable::package("chrony")]);
     }
 
     #[test_context(Context)]
