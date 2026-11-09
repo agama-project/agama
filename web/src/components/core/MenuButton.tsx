@@ -89,7 +89,11 @@ interface MenuButtonItemProps extends Omit<MenuItemProps, "direction" | "drilldo
    */
   isChecked?: boolean;
   keepQuery?: boolean;
-  upProps?: { label?: TranslatedString };
+  /**
+   * The item leading back out of a drill-down: "Back" unless told otherwise,
+   * such as the name of the item drilled into, for context.
+   */
+  upProps?: { label?: TranslatedString; "aria-label"?: string };
 }
 
 export type CustomToggleProps = {
@@ -263,7 +267,11 @@ export function MenuButtonItem({
       direction="down"
       drilldownMenu={
         <DrilldownMenu id={menuId}>
-          <MenuItem direction="up" onClick={(e) => e.stopPropagation()}>
+          <MenuItem
+            aria-label={upProps["aria-label"]}
+            direction="up"
+            onClick={(e) => e.stopPropagation()}
+          >
             {upProps.label}
           </MenuItem>
           <Divider />
