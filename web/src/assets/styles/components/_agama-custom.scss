@@ -348,6 +348,21 @@ nav.agm-breadcrumb > ol > li > a {
   min-inline-size: 0;
 }
 
+// On a narrow page the panel takes all of it, as PatternFly does on a narrow
+// window: the panel is where the reader works, and needs about three quarters
+// of this width to be read. Above it, the strip of the page left beside the
+// panel keeps the reader oriented. Measured on the page itself, which is
+// narrow also beside a docked panel in a wide window.
+.agm-side-panel-frame {
+  container-type: inline-size;
+}
+
+@container (max-width: 36rem) {
+  .agm-side-panel-frame .agm-side-panel-frame__side {
+    flex-basis: 100%;
+  }
+}
+
 .agm-side-panel-frame:not(:first-child) {
   --agm-side-panel-frame--inset-block-start: 0px;
 }
