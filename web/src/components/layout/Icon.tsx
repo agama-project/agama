@@ -79,6 +79,8 @@ import Keyboard from "@icons/keyboard.svg?component";
 import Language from "@icons/language.svg?component";
 import ListAlt from "@icons/list_alt.svg?component";
 import ListAltCheck from "@icons/list_alt_check.svg?component";
+import RightPanelClose from "@icons/right_panel_close.svg?component";
+import RightPanelOpen from "@icons/right_panel_open.svg?component";
 import Lock from "@icons/lock.svg?component";
 import ManageAccounts from "@icons/manage_accounts.svg?component";
 import Menu from "@icons/menu.svg?component";
@@ -163,6 +165,8 @@ const icons = {
   language: Language,
   list_alt: ListAlt,
   list_alt_check: ListAltCheck,
+  right_panel_close: RightPanelClose,
+  right_panel_open: RightPanelOpen,
   lock: Lock,
   manage_accounts: ManageAccounts,
   menu: Menu,

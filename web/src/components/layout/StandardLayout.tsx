@@ -26,6 +26,8 @@ import { Page as PFPage, PageGroup } from "@patternfly/react-core";
 import type { ProgressBackdropProps } from "~/components/core/ProgressBackdrop";
 import ProgressBackdrop from "~/components/core/ProgressBackdrop";
 import Header, { HeaderProps } from "~/components/layout/Header";
+import SideDock from "~/components/layout/SideDock";
+import type { SideDockSetup } from "~/components/layout/SideDock";
 import Loading from "~/components/layout/Loading";
 import { MAIN_CONTENT_ID } from "~/components/core/SkipTo";
 import InstallerL10nOptions from "~/components/core/InstallerL10nOptions";
@@ -54,6 +56,12 @@ export type StandardLayoutProps = React.PropsWithChildren<
      * Default: `false` (icon-only, to save space in the header)
      */
     showL10nValues?: boolean;
+
+    /**
+     * A panel the page can dock beside itself. See {@link SideDock} for when a
+     * page should offer one.
+     */
+    sideDock?: SideDockSetup;
   }
 >;
 
@@ -71,6 +79,7 @@ export default function StandardLayout({
   additionalContent,
   showProgressMonitor = true,
   showL10nValues = false,
+  sideDock,
   ...headerProps
 }: StandardLayoutProps) {
   const headerContent = (
@@ -83,20 +92,24 @@ export default function StandardLayout({
     </>
   );
 
+  const content = (
+    // Focusable, so that the "Skip to content" link moves the focus here, but
+    // not a tab stop of its own.
+    <PageGroup tabIndex={-1} id={MAIN_CONTENT_ID}>
+      {/* Own content when used as a page, the active route when used as a
+          layout. */}
+      {children || <Outlet />}
+      {progress && <ProgressBackdrop {...progress} />}
+    </PageGroup>
+  );
+
   return (
     <PFPage
       isContentFilled
       masthead={<Header {...headerProps} additionalContent={headerContent} />}
     >
       <Suspense fallback={<Loading />}>
-        {/* Focusable, so that the "Skip to content" link moves the focus here,
-            but not a tab stop of its own. */}
-        <PageGroup tabIndex={-1} id={MAIN_CONTENT_ID}>
-          {/* Own content when used as a page, the active route when used as a
-              layout. */}
-          {children || <Outlet />}
-          {progress && <ProgressBackdrop {...progress} />}
-        </PageGroup>
+        {sideDock ? <SideDock {...sideDock}>{content}</SideDock> : content}
       </Suspense>
       <Questions />
     </PFPage>

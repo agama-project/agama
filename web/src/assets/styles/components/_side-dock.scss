@@ -1,0 +1,42 @@
+// A page with a panel docked beside it, sharing the page area under the
+// header. The page scrolls on its own, as the page area does when nothing is
+// docked; the panel keeps the whole height and scrolls its own content.
+.agm-side-dock {
+  display: flex;
+  flex: 1 1 auto;
+  min-block-size: 0;
+}
+
+.agm-side-dock__page {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0;
+  min-inline-size: 0;
+  overflow-y: auto;
+}
+
+// Inside the page's frame, as the panels a page opens are: the handle draws
+// the line between them, and the panel scrolls under its heading.
+.agm-side-dock__panel {
+  display: flex;
+  flex-direction: column;
+  flex: none;
+  min-block-size: 0;
+}
+
+.agm-side-dock__panel[hidden] {
+  display: none;
+}
+
+.agm-side-dock__body {
+  flex: 1 1 auto;
+  min-block-size: 0;
+  overflow-y: auto;
+}
+
+// Where the focus lands when the panel is docked: Agama's focus color, drawn
+// inside the target so the panel's edge never clips it.
+.agm-side-dock__panel [tabindex="-1"]:focus-visible {
+  outline: 3px solid var(--agm-t--focus--color, var(--agm-t--color--waterhole--50));
+  outline-offset: -3px;
+}
