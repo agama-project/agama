@@ -861,8 +861,8 @@ export default {
   "Copy to the clipboard": [
     "Копировать в буфер обмена"
   ],
-  "Could not authenticate against the server.": [
-    "Не удалось пройти аутентификацию на сервере."
+  "Could not authenticate against the server": [
+    "Не удалось пройти аутентификацию на сервере"
   ],
   "Could not log in": [
     "Не удалось войти"
@@ -1212,15 +1212,6 @@ export default {
   "Enter a server URL": [
     "Введите URL сервера"
   ],
-  "Enter or Tab to add": [
-    "Enter или Tab для добавления"
-  ],
-  "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate": [
-    "Enter или Tab для добавления, Backspace или Delete для удаления, стрелки для навигации"
-  ],
-  "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate entries, Escape to exit": [
-    "Enter или Tab для добавления, Backspace или Delete для удаления, стрелки для навигации по записям, Escape для выхода"
-  ],
   "Enter removes every value, Left arrow goes back to the text box.": [
     "Enter удаляет все значения, стрелка влево возвращает к полю ввода."
   ],
@@ -1238,6 +1229,15 @@ export default {
   ],
   "Enter takes a value back to the text box, Delete removes it, arrow keys move between values.": [
     "Enter возвращает значение в поле ввода, Delete удаляет его, стрелки перемещают между значениями."
+  ],
+  "Enter to add": [
+    "Нажмите Enter для добавления"
+  ],
+  "Enter to add, Backspace or Delete to remove, arrow keys to navigate": [
+    "Нажмите Enter, чтобы добавить, Backspace или Delete — чтобы удалить, клавиши со стрелками — для перемещения"
+  ],
+  "Enter to add, Backspace or Delete to remove, arrow keys to navigate entries, Escape to exit": [
+    "Нажмите Enter, чтобы добавить, Backspace или Delete — чтобы удалить, клавиши со стрелками — для перехода между записями, Escape — для выхода"
   ],
   "Ethernet": [
     "Ethernet"
@@ -1971,6 +1971,9 @@ export default {
   "No DASD devices found in this machine.": [
     "На этой машине не найдено устройств DASD."
   ],
+  "No IP configuration for this protocol": [
+    "Для этого протокола не настроен IP-адрес"
+  ],
   "No LVM volume groups are available for selection.": [
     "Нет доступных групп томов LVM для выбора."
   ],
@@ -2542,7 +2545,7 @@ export default {
     "Выберите тип файловой системы"
   ],
   "Select a mode": [
-    "Выберите режим"
+    "Выбор режима"
   ],
   "Select a mode and confirm your choice.": [
     "Выберите режим и подтвердите свой выбор."
@@ -2786,7 +2789,7 @@ export default {
     "Протокол связующего дерева (STP)"
   ],
   "Standard": [
-    "Стандартная"
+    "Стандартный"
   ],
   "Standard contrast": [
     "Стандартная контрастность"
@@ -3384,9 +3387,6 @@ export default {
   ],
   "Using %s keyboard layout": [
     "Используется раскладка клавиатуры %s"
-  ],
-  "Using [%s] keyboard layout": [
-    "Используется раскладка клавиатуры [%s]"
   ],
   "Using a hashed password.": [
     "Используя хэшированный пароль."

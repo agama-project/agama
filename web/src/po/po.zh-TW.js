@@ -777,9 +777,6 @@ export default {
   "Copy to the clipboard": [
     "複製到剪貼簿"
   ],
-  "Could not authenticate against the server.": [
-    "無法向伺服器完成驗證。"
-  ],
   "Could not log in": [
     "無法登入"
   ],
@@ -1118,15 +1115,6 @@ export default {
   ],
   "Enter a server URL": [
     "輸入伺服器 URL"
-  ],
-  "Enter or Tab to add": [
-    "按 Enter 或 Tab 鍵可新增項目"
-  ],
-  "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate": [
-    "按 Enter 或 Tab 鍵可新增項目，按 Backspace 或 Delete 鍵可移除項目，按方向鍵可導覽項目"
-  ],
-  "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate entries, Escape to exit": [
-    "按 Enter 或 Tab 鍵可新增項目，按 Backspace 或 Delete 鍵可移除項目，按方向鍵可導覽項目，按 Escape 鍵可結束"
   ],
   "Enter removes every value, Left arrow goes back to the text box.": [
     ""
@@ -3203,9 +3191,6 @@ export default {
   ],
   "Using %s keyboard layout": [
     "使用 %s 鍵盤配置"
-  ],
-  "Using [%s] keyboard layout": [
-    "使用 [%s] 鍵盤配置"
   ],
   "Using a hashed password.": [
     "正在使用經過雜湊處理的密碼。"
