@@ -30,6 +30,7 @@ import Consequences, { losesData } from "~/components/storage/storage-page/Conse
 import {
   useActionCount,
   useDetailsButton,
+  useDetailsSize,
   useSummaryStyle,
   useSummaryWording,
 } from "~/components/storage/storage-page/playground-switches";
@@ -209,6 +210,7 @@ export default function Summary(): React.ReactNode {
   const countMode = useActionCount();
   const style = useSummaryStyle();
   const detailsButton = useDetailsButton();
+  const isCompactDetails = useDetailsSize() === "compact";
 
   const counted = countMode === "all" ? actions : actions.filter((a) => !a.subvol);
   const isLossy = losesData(actions);
@@ -237,6 +239,7 @@ export default function Summary(): React.ReactNode {
       label={_("Details…")}
       // TRANSLATORS: full name of the "Details" button, for screen readers.
       aria-label={_("Details of the planned storage changes")}
+      isCompact={isCompactDetails}
     />
   );
 
@@ -258,27 +261,38 @@ export default function Summary(): React.ReactNode {
   /* The details at the end of the sentence they detail, fitted into its line;
      PLAYGROUND: or on a line of their own at their regular size, from the
      console. */
-  const singleContent =
-    detailsButton === "inline" ? (
+
+  let singleContent: React.ReactNode;
+  if (detailsButton === "inline") {
+    singleContent = (
       <div>
         {sentence} {details}
       </div>
-    ) : (
+    );
+  } else if (detailsButton === "end") {
+    singleContent = (
+      <Flex
+        alignItems={{ default: "alignItemsCenter" }}
+        justifyContent={{ default: "justifyContentSpaceBetween" }}
+        flexWrap={{ default: "nowrap" }}
+        gap={{ default: "gapMd" }}
+      >
+        <FlexItem>{sentence}</FlexItem>
+        <FlexItem>{details}</FlexItem>
+      </Flex>
+    );
+  } else {
+    singleContent = (
       <Flex
         direction={{ default: "column" }}
         alignItems={{ default: "alignItemsFlexStart" }}
         gap={{ default: "gapXs" }}
       >
         <FlexItem>{sentence}</FlexItem>
-        <FlexItem>
-          <Consequences
-            label={_("Details…")}
-            aria-label={_("Details of the planned storage changes")}
-            isCompact={false}
-          />
-        </FlexItem>
+        <FlexItem>{details}</FlexItem>
       </Flex>
     );
+  }
 
   if (isSingle) {
     return style === "hint" ? (

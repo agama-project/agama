@@ -26,6 +26,7 @@ import Popup from "~/components/core/Popup";
 import Icon from "~/components/layout/Icon";
 import {
   useDetailsButton,
+  useDetailsSize,
   useFailedDetails,
 } from "~/components/storage/storage-page/playground-switches";
 import { _ } from "~/i18n";
@@ -65,7 +66,8 @@ export default function FailureAlert({
   const regionId = React.useId();
   const isExpandable = mode === "expandable";
   // PLAYGROUND: at the end of the sentence, or on a line of its own.
-  const isInline = useDetailsButton() === "inline";
+  const isInline = useDetailsButton() !== "below";
+  const isCompact = useDetailsSize() === "compact";
 
   let action: React.ReactNode = null;
   if (suggestions && isExpandable) {
@@ -93,7 +95,7 @@ export default function FailureAlert({
         variant="tertiary"
         size="sm"
         /* Fitted into the line of the sentence it follows. */
-        className={isInline ? "agm-summary__details" : undefined}
+        className={isCompact ? "agm-summary__details" : undefined}
         // TRANSLATORS: full name of the "See suggestions…" button, for screen
         // readers. It must start with the same words as the visible label.
         aria-label={_("See suggestions to make the storage setup fit")}

@@ -83,6 +83,13 @@
  *
  *   agamaDetailsButton("inline")  // fitted at the end of their sentence (default)
  *   agamaDetailsButton("below")   // at their regular size, on a line of their own
+ *   agamaDetailsButton("end")     // Details at its regular size, at the right end of the summary line
+ *
+ * How big the buttons opening the details and the suggestions are, wherever
+ * they sit:
+ *
+ *   agamaDetailsSize("compact")  // fitted to a line of text (default)
+ *   agamaDetailsSize("regular")  // PatternFly's small button, as elsewhere
  *
  * Choices survive reloads. To be dropped once the design is settled.
  */
@@ -99,7 +106,8 @@ type FailedDetails = "popup" | "expandable";
 type SummaryWording = "when" | "until" | "single";
 type ActionCount = "all" | "noSubvolumes" | "changes";
 type DetailsIcon = "none" | "list";
-type DetailsButton = "inline" | "below";
+type DetailsButton = "inline" | "below" | "end";
+type DetailsSize = "compact" | "regular";
 
 type SwitchName =
   | "agamaDevicesBox"
@@ -112,7 +120,8 @@ type SwitchName =
   | "agamaSummaryWording"
   | "agamaActionCount"
   | "agamaDetailsIcon"
-  | "agamaDetailsButton";
+  | "agamaDetailsButton"
+  | "agamaDetailsSize";
 
 declare global {
   interface Window {
@@ -127,6 +136,7 @@ declare global {
     agamaActionCount?: (value: ActionCount) => void;
     agamaDetailsIcon?: (value: DetailsIcon) => void;
     agamaDetailsButton?: (value: DetailsButton) => void;
+    agamaDetailsSize?: (value: DetailsSize) => void;
   }
 }
 
@@ -227,12 +237,18 @@ const useActionCount = consoleSwitch<ActionCount>("agamaActionCount", [
 ]);
 
 const useDetailsIcon = consoleSwitch<DetailsIcon>("agamaDetailsIcon", ["none", "list"]);
-const useDetailsButton = consoleSwitch<DetailsButton>("agamaDetailsButton", ["inline", "below"]);
+const useDetailsButton = consoleSwitch<DetailsButton>("agamaDetailsButton", [
+  "inline",
+  "below",
+  "end",
+]);
+const useDetailsSize = consoleSwitch<DetailsSize>("agamaDetailsSize", ["compact", "regular"]);
 
 export { registry as playgroundSwitches };
 export {
   useDetailsIcon,
   useDetailsButton,
+  useDetailsSize,
   useDevicesBox,
   useGroupedTable,
   useExistingDataWording,

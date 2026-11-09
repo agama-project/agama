@@ -94,6 +94,9 @@ Then, from the browser developer tools console:
 | `agamaDetailsIcon("list")`            | Details button with a list icon                                |
 | `agamaDetailsButton("inline")`        | Details and suggestions at the end of their sentence (default) |
 | `agamaDetailsButton("below")`         | Details and suggestions on a line of their own                 |
+| `agamaDetailsButton("end")`           | Details at the right end of the summary line                   |
+| `agamaDetailsSize("compact")`         | Details and suggestions fitted to a line of text (default)     |
+| `agamaDetailsSize("regular")`         | Details and suggestions at PatternFly's small size             |
 
 Every choice is kept across reloads. WORDING.md lists every wording of the
 table and the summary, the discarded ones included.
