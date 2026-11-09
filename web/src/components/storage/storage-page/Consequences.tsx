@@ -23,7 +23,7 @@
 import React from "react";
 import { Button } from "@patternfly/react-core";
 import Popup from "~/components/core/Popup";
-import PlannedChangesPopup from "~/components/storage/storage-page/PlannedChangesPopup";
+import ResultPreview from "~/components/storage/storage-page/ResultPreview";
 import Text from "~/components/core/Text";
 import { useUnseenChanges } from "~/components/storage/storage-page/use-unseen-changes";
 import { useActions } from "~/hooks/model/proposal/storage";
@@ -134,7 +134,7 @@ export default function Consequences({
           onClose={close}
           actions={<Popup.Close />}
         >
-          <PlannedChangesPopup />
+          <ResultPreview />
         </Popup>
       )}
     </>

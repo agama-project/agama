@@ -116,7 +116,7 @@ jest.mock("./FixableConfigInfo", () => ({
   fixableConfigTitle: () => "fixable config",
 }));
 jest.mock("./ConnectedDevicesMenu", () => () => <div>connected devices menu</div>);
-jest.mock("./storage-page/PlannedChangesPopup", () => () => <div>result</div>);
+jest.mock("./storage-page/ResultPreview", () => () => <div>result</div>);
 
 beforeEach(() => {
   mockUseReset.mockReturnValue(jest.fn());

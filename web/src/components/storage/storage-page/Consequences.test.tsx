@@ -33,7 +33,7 @@ jest.mock("~/hooks/model/proposal/storage", () => ({
   useActions: () => mockActions(),
 }));
 
-jest.mock("~/components/storage/storage-page/PlannedChangesPopup", () => () => (
+jest.mock("~/components/storage/storage-page/ResultPreview", () => () => (
   <div>the final layout and every action</div>
 ));
 

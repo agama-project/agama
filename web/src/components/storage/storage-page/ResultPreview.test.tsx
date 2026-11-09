@@ -23,7 +23,7 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
-import PlannedChangesPopup from "~/components/storage/storage-page/PlannedChangesPopup";
+import ResultPreview from "~/components/storage/storage-page/ResultPreview";
 
 jest.mock("~/hooks/model/system/storage", () => ({
   ...jest.requireActual("~/hooks/model/system/storage"),
@@ -39,22 +39,22 @@ jest.mock("~/hooks/model/proposal/storage", () => ({
 jest.mock("~/components/storage/ProposalActions", () => () => <div>every change, in order</div>);
 jest.mock("~/components/storage/ProposalResultTable", () => () => <div>the machine after</div>);
 
-describe("PlannedChangesPopup", () => {
+describe("ResultPreview", () => {
   it("offers what the installer will do and what it leaves behind", () => {
-    installerRender(<PlannedChangesPopup />);
+    installerRender(<ResultPreview />);
 
     screen.getByRole("tab", { name: "Actions" });
     screen.getByRole("tab", { name: "Final layout" });
   });
 
   it("opens on what the installer will do", () => {
-    installerRender(<PlannedChangesPopup />);
+    installerRender(<ResultPreview />);
 
     screen.getByText("every change, in order");
   });
 
   it("opens on the final layout", () => {
-    installerRender(<PlannedChangesPopup />);
+    installerRender(<ResultPreview />);
 
     expect(screen.getByRole("tab", { name: "Final layout" })).toHaveAttribute(
       "aria-selected",
@@ -63,7 +63,7 @@ describe("PlannedChangesPopup", () => {
   });
 
   it("switches to the actions when asked", async () => {
-    const { user } = installerRender(<PlannedChangesPopup />);
+    const { user } = installerRender(<ResultPreview />);
     await user.click(screen.getByRole("tab", { name: "Actions" }));
 
     expect(screen.getByRole("tab", { name: "Actions" })).toHaveAttribute("aria-selected", "true");

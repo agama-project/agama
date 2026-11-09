@@ -39,7 +39,7 @@ import { _ } from "~/i18n";
  * them, and a reader deciding whether they can afford the changes is not made
  * to scroll past all of them to see the result.
  */
-export default function PlannedChangesPopup(): React.ReactNode {
+export default function ResultPreview(): React.ReactNode {
   const actions = useActions();
   const manager = useDevicesManager();
   /* Not in the address, as the popup holding it is not: a reload closes both. */
