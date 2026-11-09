@@ -24,7 +24,10 @@ import React from "react";
 import { Alert, Button, Content, Flex } from "@patternfly/react-core";
 import Popup from "~/components/core/Popup";
 import Icon from "~/components/layout/Icon";
-import { useFailedDetails } from "~/components/storage/storage-page/playground-switches";
+import {
+  useDetailsButton,
+  useFailedDetails,
+} from "~/components/storage/storage-page/playground-switches";
 import { _ } from "~/i18n";
 
 export type FailureAlertProps = {
@@ -61,6 +64,8 @@ export default function FailureAlert({
   const [isOpen, setIsOpen] = React.useState(false);
   const regionId = React.useId();
   const isExpandable = mode === "expandable";
+  // PLAYGROUND: at the end of the sentence, or on a line of its own.
+  const isInline = useDetailsButton() === "inline";
 
   let action: React.ReactNode = null;
   if (suggestions && isExpandable) {
@@ -88,7 +93,7 @@ export default function FailureAlert({
         variant="tertiary"
         size="sm"
         /* Fitted into the line of the sentence it follows. */
-        className="agm-summary__details"
+        className={isInline ? "agm-summary__details" : undefined}
         // TRANSLATORS: full name of the "See suggestions…" button, for screen
         // readers. It must start with the same words as the visible label.
         aria-label={_("See suggestions to make the storage setup fit")}
@@ -111,7 +116,7 @@ export default function FailureAlert({
         >
           {/* In place, the way to the suggestions follows the sentence; opening
               them under it, it stays on a line of its own above them. */}
-          {isExpandable ? (
+          {isExpandable || !isInline ? (
             <>
               <Content>{body}</Content>
               {action}

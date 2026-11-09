@@ -29,6 +29,7 @@ import Icon from "~/components/layout/Icon";
 import Consequences, { losesData } from "~/components/storage/storage-page/Consequences";
 import {
   useActionCount,
+  useDetailsButton,
   useSummaryStyle,
   useSummaryWording,
 } from "~/components/storage/storage-page/playground-switches";
@@ -207,6 +208,7 @@ export default function Summary(): React.ReactNode {
   const wording = useSummaryWording();
   const countMode = useActionCount();
   const style = useSummaryStyle();
+  const detailsButton = useDetailsButton();
 
   const counted = countMode === "all" ? actions : actions.filter((a) => !a.subvol);
   const isLossy = losesData(actions);
@@ -241,20 +243,42 @@ export default function Summary(): React.ReactNode {
   /* PLAYGROUND: the one-sentence wording, with or without the hint box: no
      mark, the reassurance right after the sentence in a quieter voice, and the
      details on a line of their own, at their regular size. */
-  /* The details at the end of the sentence they detail, fitted into its line,
-     rather than on a line of their own. */
-  const singleContent = (
-    <div>
+  const sentence = (
+    <>
       <Marked sentence={second} />
       {note && (
         <>
           {" "}
           <Text textStyle={["fontSizeSm", "textColorSubtle"]}>{note}</Text>
         </>
-      )}{" "}
-      {details}
-    </div>
+      )}
+    </>
   );
+
+  /* The details at the end of the sentence they detail, fitted into its line;
+     PLAYGROUND: or on a line of their own at their regular size, from the
+     console. */
+  const singleContent =
+    detailsButton === "inline" ? (
+      <div>
+        {sentence} {details}
+      </div>
+    ) : (
+      <Flex
+        direction={{ default: "column" }}
+        alignItems={{ default: "alignItemsFlexStart" }}
+        gap={{ default: "gapXs" }}
+      >
+        <FlexItem>{sentence}</FlexItem>
+        <FlexItem>
+          <Consequences
+            label={_("Details…")}
+            aria-label={_("Details of the planned storage changes")}
+            isCompact={false}
+          />
+        </FlexItem>
+      </Flex>
+    );
 
   if (isSingle) {
     return style === "hint" ? (

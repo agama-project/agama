@@ -65,33 +65,35 @@ the mocked machine's scenario where the local mock is loaded.
 
 Then, from the browser developer tools console:
 
-| Call                                  | What it does                                 |
-| ------------------------------------- | -------------------------------------------- |
-| `agamaDevicesBox(false)`              | Devices right on the page (default)          |
-| `agamaDevicesBox(true)`               | Devices in a bordered box                    |
-| `agamaGroupedTable(true)`             | Grouped by kind (default)                    |
-| `agamaGroupedTable(false)`            | One flat list of devices                     |
-| `agamaGroupTitleStyle("band")`        | Group titles on a band fading down (default) |
-| `agamaGroupTitleStyle("flat")`        | Group titles on a flat faint band            |
-| `agamaGroupTitleStyle("plain")`       | Group titles as small capitals on the page   |
-| `agamaNamesStyle("mono")`             | Names in Used for in monospace (default)     |
-| `agamaNamesStyle("plain")`            | Names in Used for in the body face           |
-| `agamaExistingDataWording("short")`   | Kept, May be shrunk, All deleted             |
-| `agamaExistingDataWording("verbose")` | Current partitions kept, ... (default)       |
-| `agamaExistingDataWording("blunt")`   | No changes, May shrink, Wiped                |
-| `agamaExistingDataWording("loss")`    | All kept, Possible data loss, Data loss      |
-| `agamaSummaryWording("when")`         | "When the installation starts, ..."          |
-| `agamaSummaryWording("until")`        | "Nothing is changed until ...", in two lines |
-| `agamaSummaryWording("single")`       | What applying takes + quiet note (default)   |
-| `agamaSummaryStyle("plain")`          | Summary as a line on the page (default)      |
-| `agamaSummaryStyle("hint")`           | Summary in a PatternFly hint box             |
-| `agamaActionCount("all")`             | Count every action, as "N actions" (default) |
-| `agamaActionCount("noSubvolumes")`    | Leave Btrfs subvolumes out, as "N actions"   |
-| `agamaActionCount("changes")`         | Leave Btrfs subvolumes out, as "N changes"   |
-| `agamaFailedDetails("popup")`         | Failure suggestions in a popup (default)     |
-| `agamaFailedDetails("expandable")`    | Failure suggestions opening in place         |
-| `agamaDetailsIcon("none")`            | Details button with words only (default)     |
-| `agamaDetailsIcon("list")`            | Details button with a list icon              |
+| Call                                  | What it does                                                   |
+| ------------------------------------- | -------------------------------------------------------------- |
+| `agamaDevicesBox(false)`              | Devices right on the page (default)                            |
+| `agamaDevicesBox(true)`               | Devices in a bordered box                                      |
+| `agamaGroupedTable(true)`             | Grouped by kind (default)                                      |
+| `agamaGroupedTable(false)`            | One flat list of devices                                       |
+| `agamaGroupTitleStyle("band")`        | Group titles on a band fading down (default)                   |
+| `agamaGroupTitleStyle("flat")`        | Group titles on a flat faint band                              |
+| `agamaGroupTitleStyle("plain")`       | Group titles as small capitals on the page                     |
+| `agamaNamesStyle("mono")`             | Names in Used for in monospace (default)                       |
+| `agamaNamesStyle("plain")`            | Names in Used for in the body face                             |
+| `agamaExistingDataWording("short")`   | Kept, May be shrunk, All deleted                               |
+| `agamaExistingDataWording("verbose")` | Current partitions kept, ... (default)                         |
+| `agamaExistingDataWording("blunt")`   | No changes, May shrink, Wiped                                  |
+| `agamaExistingDataWording("loss")`    | All kept, Possible data loss, Data loss                        |
+| `agamaSummaryWording("when")`         | "When the installation starts, ..."                            |
+| `agamaSummaryWording("until")`        | "Nothing is changed until ...", in two lines                   |
+| `agamaSummaryWording("single")`       | What applying takes + quiet note (default)                     |
+| `agamaSummaryStyle("plain")`          | Summary as a line on the page (default)                        |
+| `agamaSummaryStyle("hint")`           | Summary in a PatternFly hint box                               |
+| `agamaActionCount("all")`             | Count every action, as "N actions" (default)                   |
+| `agamaActionCount("noSubvolumes")`    | Leave Btrfs subvolumes out, as "N actions"                     |
+| `agamaActionCount("changes")`         | Leave Btrfs subvolumes out, as "N changes"                     |
+| `agamaFailedDetails("popup")`         | Failure suggestions in a popup (default)                       |
+| `agamaFailedDetails("expandable")`    | Failure suggestions opening in place                           |
+| `agamaDetailsIcon("none")`            | Details button with words only (default)                       |
+| `agamaDetailsIcon("list")`            | Details button with a list icon                                |
+| `agamaDetailsButton("inline")`        | Details and suggestions at the end of their sentence (default) |
+| `agamaDetailsButton("below")`         | Details and suggestions on a line of their own                 |
 
 Every choice is kept across reloads. WORDING.md lists every wording of the
 table and the summary, the discarded ones included.

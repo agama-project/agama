@@ -79,6 +79,11 @@
  *   agamaDetailsIcon("none")  // words only (default)
  *   agamaDetailsIcon("list")  // a list icon before the words
  *
+ * Where the buttons opening the details and the suggestions sit:
+ *
+ *   agamaDetailsButton("inline")  // fitted at the end of their sentence (default)
+ *   agamaDetailsButton("below")   // at their regular size, on a line of their own
+ *
  * Choices survive reloads. To be dropped once the design is settled.
  */
 
@@ -94,6 +99,7 @@ type FailedDetails = "popup" | "expandable";
 type SummaryWording = "when" | "until" | "single";
 type ActionCount = "all" | "noSubvolumes" | "changes";
 type DetailsIcon = "none" | "list";
+type DetailsButton = "inline" | "below";
 
 type SwitchName =
   | "agamaDevicesBox"
@@ -105,7 +111,8 @@ type SwitchName =
   | "agamaSummaryStyle"
   | "agamaSummaryWording"
   | "agamaActionCount"
-  | "agamaDetailsIcon";
+  | "agamaDetailsIcon"
+  | "agamaDetailsButton";
 
 declare global {
   interface Window {
@@ -119,6 +126,7 @@ declare global {
     agamaSummaryWording?: (value: SummaryWording) => void;
     agamaActionCount?: (value: ActionCount) => void;
     agamaDetailsIcon?: (value: DetailsIcon) => void;
+    agamaDetailsButton?: (value: DetailsButton) => void;
   }
 }
 
@@ -219,10 +227,12 @@ const useActionCount = consoleSwitch<ActionCount>("agamaActionCount", [
 ]);
 
 const useDetailsIcon = consoleSwitch<DetailsIcon>("agamaDetailsIcon", ["none", "list"]);
+const useDetailsButton = consoleSwitch<DetailsButton>("agamaDetailsButton", ["inline", "below"]);
 
 export { registry as playgroundSwitches };
 export {
   useDetailsIcon,
+  useDetailsButton,
   useDevicesBox,
   useGroupedTable,
   useExistingDataWording,
