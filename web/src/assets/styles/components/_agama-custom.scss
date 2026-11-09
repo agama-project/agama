@@ -614,9 +614,10 @@ nav.agm-breadcrumb > ol > li > a {
 
 // One table, so its columns line up across categories by themselves and take
 // the width their content needs. The minimum width is where it stops narrowing
-// and the box scrolls.
+// and the box scrolls: low enough for the page beside a docked panel, so the
+// menu of every device stays in sight there.
 .agm-entries-table .pf-v6-c-table {
-  min-width: 40rem;
+  min-width: 32rem;
 }
 
 // Inside the page box, so its first and last columns take the regular cell
