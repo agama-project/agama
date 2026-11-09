@@ -92,7 +92,7 @@ mod tests {
         }
 
         fn resolvables(&self) -> Vec<Resolvable> {
-            vec![Resolvable::package("chrony")]
+            vec![Resolvable::package("the-ntp-server")]
         }
 
         async fn sync(&self) -> Result<(), model::Error> {
@@ -218,7 +218,7 @@ server ntp.example.com offline
 
         let resolvables = ctx.handler.call(GetResolvables).await.unwrap();
         assert!(!resolvables.is_empty());
-        assert_eq!(resolvables, vec![Resolvable::package("chrony")]);
+        assert_eq!(resolvables, vec![Resolvable::package("the-ntp-server")]);
     }
 
     #[test_context(Context)]
