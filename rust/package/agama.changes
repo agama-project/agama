@@ -1,5 +1,5 @@
 -------------------------------------------------------------------
-Mon Nov  9 8:14:13 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+Mon Nov  9 09:36:49 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
 
 - Report the state of the ports nested in a bond or a bridge in the
   network system information (gh#agama-project/agama#4195).
