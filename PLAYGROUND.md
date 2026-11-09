@@ -1,13 +1,29 @@
-# Storage page: sixth iteration playground
+# Storage page: seventh iteration playground
 
 ## Why
 
-The fifth iteration let the result of the settings stay in sight beside the
-page. This round makes acting on the devices more direct: what can be done to
-a device is offered from its own row, and adding a device the machine already
-has is told apart from creating a new one.
+The sixth iteration offered each device's panel actions from its row. This
+round adds the one choice the panel makes about what is already on a device,
+and puts the row menus in order.
 
 ## What changed in this round
+
+- A row's menu offers "Existing partitions" ("Existing logical volumes" on a
+  volume group), opening to its side with the panel's three choices: keep,
+  shrink if needed, or delete them. The one in effect is checked. Offered
+  where the panel offers it: a device with something today the new system
+  does not use.
+- Row menus in groups: Details; then what goes on the device (existing
+  partitions, add a partition); then acts on the device as a whole (move to
+  another device, create a volume group on it); then Do not use.
+- "Move to other device" is now "Move to another device", in the menu and in
+  the panel.
+- No rule between the settings line and the devices table.
+- Menus with a fly-out keep it inside the window, flipping it to the left or
+  moving it up as needed, and tell screen readers it opens a menu and which
+  choice is checked.
+
+## From the sixth round
 
 - Each row's menu offers what the device's panel offers, without opening the
   panel, in the same cases:
@@ -25,41 +41,6 @@ has is told apart from creating a new one.
   device", where the machine also has RAIDs or volume groups) and "Create LVM
   volume group". Where nothing is left to add, the first stays focusable but
   disabled, with the reason written under the buttons.
-
-## From the fifth round
-
-- The planned changes are now the "Storage result preview". The popup keeps
-  that title; docked, the panel shows "Result preview" and is listed by screen
-  readers as "Storage result preview".
-- A button at the end of the summary line docks the preview beside the page,
-  and a button in the popup's header does the same from there. Docking moves
-  the focus to the panel's title.
-- Docked, the summary moves into the panel, under its title, and the Details
-  button is not rendered. One sentence serves both places: "Applying the
-  current settings takes N actions, …".
-- The panel is put away from its own header, and the focus goes back to the
-  docking button. Escape never closes it: it is not a dialog, and Escape keeps
-  closing the device panel.
-- The line between the page and the panel resizes it, with the pointer or the
-  keyboard (arrows, Home, End), between 320 px and half the page area. The
-  terminal's handle gained the same keyboard and screen reader support.
-- Whether the preview is docked, and how wide, is kept for the session, per
-  page.
-- The preview is not offered where the page area is narrower than 960 px or
-  shorter than 320 px, as with a tall terminal; it comes back once there is
-  room.
-- The device panel takes the whole page column when that column is narrower
-  than 36 rem, and its usual three quarters otherwise. The device table
-  narrows to 32 rem before scrolling in its own box.
-- The sentence saying what the page is for is hidden when it cannot share a
-  line with the boot disk and encryption settings; screen readers still get
-  it.
-- The preview opens on the Actions tab; the final layout table is built only
-  when its tab is opened.
-- While docked, every change counts as seen: no "updated" dot once it is put
-  away, and no notice about changes not yet reviewed.
-- Tree tables, such as the final layout, stack their columns by the width
-  they have rather than by the window's.
 
 ## How to play
 
@@ -117,6 +98,8 @@ table and the summary, the discarded ones included.
 - **The summary.** Three wordings, two looks, and three ways of counting.
 - **The failure suggestions.** In a popup or in place.
 - **The group titles.** Fading band, flat band or none.
+- **The space policy fly-out.** Whether a choice this weighty belongs in a
+  row's menu, and its name.
 - **The row menus.** Whether offering the panel's acts from each row helps, or
   makes the menus too long.
 - **The two add buttons.** Their names, and whether two buttons read better
@@ -129,6 +112,10 @@ table and the summary, the discarded ones included.
 
 ## To re-evaluate later
 
+- **Fly-outs on narrow screens.** On a phone-sized window there is no room
+  on either side, and the space policy fly-out runs off the screen. There it
+  should become a drill-down, the choices replacing the menu with a way back.
+  To fix once the prototype is accepted.
 - **Announcements.** Screen readers hear the summary only when the setup
   starts or stops losing data, not on every change of the count, to avoid
   talking over the reader while they edit. Whether that is enough, or the
