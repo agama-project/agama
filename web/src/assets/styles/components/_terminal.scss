@@ -47,6 +47,13 @@
   background-color: var(--pf-t--global--background--color--action--plain--hover);
 }
 
+// Agama's focus color rather than the browser's, drawn over the handle's own
+// edges so the areas on either side never cover it.
+.agm-resize-handle:focus-visible {
+  outline: 3px solid var(--agm-t--focus--color, var(--agm-t--color--waterhole--50));
+  outline-offset: -1px;
+}
+
 // Between side-by-side areas: as thin across, and dragged sideways.
 .agm-resize-handle--vertical {
   block-size: auto;
