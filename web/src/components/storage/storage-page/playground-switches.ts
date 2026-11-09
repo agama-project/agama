@@ -91,6 +91,13 @@
  *   agamaDetailsSize("compact")  // fitted to a line of text (default)
  *   agamaDetailsSize("regular")  // PatternFly's small button, as elsewhere
  *
+ * How a device panel's section title stands apart from what it holds:
+ *
+ *   agamaSectionTitle("plain")   // nothing more than the indent under it (default)
+ *   agamaSectionTitle("spaced")  // more room under the title
+ *   agamaSectionTitle("rule")    // a line under the title
+ *   agamaSectionTitle("both")    // a line under the title, and more room under it
+ *
  * Choices survive reloads. To be dropped once the design is settled.
  */
 
@@ -108,6 +115,7 @@ type ActionCount = "all" | "noSubvolumes" | "changes";
 type DetailsIcon = "none" | "list";
 type DetailsButton = "inline" | "below" | "end";
 type DetailsSize = "compact" | "regular";
+type SectionTitle = "plain" | "spaced" | "rule" | "both";
 
 type SwitchName =
   | "agamaDevicesBox"
@@ -121,7 +129,8 @@ type SwitchName =
   | "agamaActionCount"
   | "agamaDetailsIcon"
   | "agamaDetailsButton"
-  | "agamaDetailsSize";
+  | "agamaDetailsSize"
+  | "agamaSectionTitle";
 
 declare global {
   interface Window {
@@ -137,6 +146,7 @@ declare global {
     agamaDetailsIcon?: (value: DetailsIcon) => void;
     agamaDetailsButton?: (value: DetailsButton) => void;
     agamaDetailsSize?: (value: DetailsSize) => void;
+    agamaSectionTitle?: (value: SectionTitle) => void;
   }
 }
 
@@ -243,12 +253,19 @@ const useDetailsButton = consoleSwitch<DetailsButton>("agamaDetailsButton", [
   "end",
 ]);
 const useDetailsSize = consoleSwitch<DetailsSize>("agamaDetailsSize", ["compact", "regular"]);
+const useSectionTitle = consoleSwitch<SectionTitle>("agamaSectionTitle", [
+  "plain",
+  "spaced",
+  "rule",
+  "both",
+]);
 
 export { registry as playgroundSwitches };
 export {
   useDetailsIcon,
   useDetailsButton,
   useDetailsSize,
+  useSectionTitle,
   useDevicesBox,
   useGroupedTable,
   useExistingDataWording,

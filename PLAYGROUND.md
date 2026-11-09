@@ -1,4 +1,12 @@
-# Storage page: fourth iteration playground
+# Storage page: fourth and a half iteration playground
+
+## This round
+
+The device panel's sections lose their icons, keeping the indent their
+content had, so the only icons left on the page are ones that do something:
+a decorative icon beside a title no longer looks like a button, and no
+section needs an icon found for it. A console switch tries ways to set a
+title apart from its content without one.
 
 ## Why
 
@@ -97,6 +105,10 @@ Then, from the browser developer tools console:
 | `agamaDetailsButton("end")`           | Details at the right end of the summary line                   |
 | `agamaDetailsSize("compact")`         | Details and suggestions fitted to a line of text (default)     |
 | `agamaDetailsSize("regular")`         | Details and suggestions at PatternFly's small size             |
+| `agamaSectionTitle("plain")`          | Section titles with their content indented (default)           |
+| `agamaSectionTitle("spaced")`         | More room under section titles                                 |
+| `agamaSectionTitle("rule")`           | A line under section titles                                    |
+| `agamaSectionTitle("both")`           | A line and more room under section titles                      |
 
 Every choice is kept across reloads. WORDING.md lists every wording of the
 table and the summary, the discarded ones included.
