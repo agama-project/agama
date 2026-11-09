@@ -74,6 +74,12 @@
  *   agamaFailedDetails("popup")       // in a popup (default)
  *   agamaFailedDetails("expandable")  // in place, under the alert
  *
+ * The result preview, docked beside the page or only in its popup, until
+ * there is a control for it (kept for the session, not across sessions):
+ *
+ *   agamaPinnedResult(false)  // only in the popup, as before (default)
+ *   agamaPinnedResult(true)   // docked beside the page
+ *
  * Choices survive reloads. To be dropped once the design is settled.
  */
 
@@ -111,6 +117,7 @@ declare global {
     agamaFailedDetails?: (value: FailedDetails) => void;
     agamaSummaryWording?: (value: SummaryWording) => void;
     agamaActionCount?: (value: ActionCount) => void;
+    agamaPinnedResult?: (value: boolean) => void;
   }
 }
 

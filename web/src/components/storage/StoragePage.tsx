@@ -25,6 +25,7 @@ import Page from "~/components/layout/Page";
 import IssuesAlert from "~/components/core/IssuesAlert";
 import ConnectedDevicesMenu from "~/components/storage/ConnectedDevicesMenu";
 import StoragePageContent from "~/components/storage/storage-page/StoragePageContent";
+import { useSideDock } from "~/components/layout/SideDock";
 import ResultPreviewPanel from "~/components/storage/storage-page/ResultPreviewPanel";
 import { useIssues } from "~/hooks/model/issue";
 import { STORAGE_MODEL_QUERY_KEY } from "~/hooks/model/storage/config-model";
@@ -38,6 +39,12 @@ import { _ } from "~/i18n";
 export default function StoragePage(): React.ReactNode {
   const zfcpIssues = useIssues("zfcp");
   const panelId = React.useId();
+  const { setDocked } = useSideDock("storage");
+
+  // PLAYGROUND: docked from the console until there is a control for it.
+  React.useEffect(() => {
+    window.agamaPinnedResult = (value) => setDocked(!!value);
+  }, [setDocked]);
 
   return (
     <Page
