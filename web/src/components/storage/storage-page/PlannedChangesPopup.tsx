@@ -43,8 +43,10 @@ export default function PlannedChangesPopup(): React.ReactNode {
   const actions = useActions();
   const manager = useDevicesManager();
   /* Not in the address, as the popup holding it is not: a reload closes both. */
-  const [tab, setTab] = React.useState("layout");
-  const { containerProps, tabProps } = useTablistKeyboard(["layout", "actions"], tab, setTab);
+  /* The actions first: what will be done is what the reader came for, and the
+     final layout, a long table, is built only when asked for. */
+  const [tab, setTab] = React.useState("actions");
+  const { containerProps, tabProps } = useTablistKeyboard(["actions", "layout"], tab, setTab);
 
   return (
     <div {...containerProps}>
@@ -52,17 +54,11 @@ export default function PlannedChangesPopup(): React.ReactNode {
       <Tabs
         activeKey={tab}
         onSelect={(_event, key) => setTab(String(key))}
+        mountOnEnter
         // TRANSLATORS: names the pair of tabs offering the changes the installer
         // will make and the layout they leave behind.
         aria-label={_("What will happen")}
       >
-        <Tab
-          eventKey="layout"
-          {...tabProps("layout")}
-          title={<TabTitleText>{_("Final layout")}</TabTitleText>}
-        >
-          <ProposalResultTable devicesManager={manager} />
-        </Tab>
         {/* The same word the page's own line uses, since that line is what opens
             this. Two vocabularies for one fact is worse than either. */}
         <Tab
@@ -71,6 +67,13 @@ export default function PlannedChangesPopup(): React.ReactNode {
           title={<TabTitleText>{_("Actions")}</TabTitleText>}
         >
           <ProposalActions actions={actions} />
+        </Tab>
+        <Tab
+          eventKey="layout"
+          {...tabProps("layout")}
+          title={<TabTitleText>{_("Final layout")}</TabTitleText>}
+        >
+          <ProposalResultTable devicesManager={manager} />
         </Tab>
       </Tabs>
     </div>
