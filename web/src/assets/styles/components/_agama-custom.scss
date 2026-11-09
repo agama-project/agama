@@ -738,6 +738,25 @@ nav.agm-breadcrumb > ol > li > a {
 
 // The two settings of the page's own line, side by side and no wider than
 // they need, each a mark and the phrase that changes it.
+// The sentence saying what the page is for shares the line with the settings,
+// or is not shown: two lines would push the devices down for a sentence read
+// once. Screen readers still get it. Measured on the line itself, which is as
+// wide as the page, beside a docked panel or not.
+.agm-top-line {
+  container-type: inline-size;
+}
+
+@container (max-width: 56rem) {
+  .agm-top-line__description {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
+
 .agm-top-line__settings {
   display: flex;
   flex-wrap: wrap;

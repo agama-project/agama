@@ -169,7 +169,7 @@ export default function TopLine(): React.ReactNode {
 
   /* On the same line as the settings, which it introduces. */
   const description = (
-    <FlexItem>
+    <FlexItem className="agm-top-line__description">
       <Text textStyle={["fontSizeSm", "textColorSubtle"]}>
         {/* TRANSLATORS: says what the storage page is for, next to the
             settings that apply to the whole installation. */}
@@ -180,6 +180,7 @@ export default function TopLine(): React.ReactNode {
 
   return (
     <Flex
+      className="agm-top-line"
       alignItems={{ default: "alignItemsCenter" }}
       justifyContent={{ default: "justifyContentSpaceBetween" }}
       gap={{ default: "gapMd" }}
