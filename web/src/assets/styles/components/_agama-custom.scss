@@ -921,6 +921,20 @@ tr.agm-entries-table__row > :is(th, td):not(.agm-entries-table__menu) {
 
   min-block-size: 24px;
   vertical-align: baseline;
+  align-items: center;
+}
+
+// Its icon, where it carries one, at the size of its words and centered with
+// them, rather than at the size of regular text, sitting high.
+.agm-summary__details.pf-v6-c-button .pf-v6-c-button__icon {
+  display: inline-flex;
+  align-items: center;
+}
+
+.agm-summary__details.pf-v6-c-button .pf-v6-c-button__icon svg {
+  inline-size: 1em;
+  block-size: 1em;
+  vertical-align: 0;
 }
 
 // With a pinned panel the page still fills the window when it is short, down
