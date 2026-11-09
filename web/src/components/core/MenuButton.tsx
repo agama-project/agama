@@ -247,8 +247,10 @@ export default function MenuButton({
       toggleRef={pfToggleRef}
       popperProps={{
         direction: "down",
+        /* Opens upward where there is no room below. PatternFly's default
+           falls back to the placement opposite the one asked for, on the same
+           side; listing placements instead leaves only those to try. */
         enableFlip: true,
-        flipBehavior: ["bottom-start"],
         ...menuProps.popperProps,
       }}
       toggle={
