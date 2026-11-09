@@ -175,6 +175,15 @@
   --pf-v6-c-menu__item-select-icon--Color: var(--pf-t--global--icon--color--brand--default);
 }
 
+// An item's name wraps, as its description does, rather than being cut short:
+// what an item does is in its name, and a name cut off in a narrow menu (or in
+// a longer language) can no longer be told apart from its neighbours.
+.pf-v6-c-menu__item-text {
+  overflow: visible;
+  text-overflow: clip;
+  white-space: normal;
+}
+
 .pf-v6-c-button {
   // Buttons follow the same controls role as text inputs and selects (see
   // tokens/_semantic.scss), so a product retunes --agm-t--control--border-radius
