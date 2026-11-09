@@ -999,3 +999,10 @@ tr.agm-entries-table__row > :is(th, td):not(.agm-entries-table__menu) {
   inline-size: 22rem;
   box-shadow: var(--pf-t--global--box-shadow--lg);
 }
+
+// The popup with the planned changes keeps one size: PatternFly's large width,
+// and the height PatternFly allows a dialog at most, so it does not grow and
+// shrink with the tab shown. Its content scrolls inside it.
+.pf-v6-c-modal-box.agm-planned-changes-popup {
+  block-size: var(--pf-v6-c-modal-box--MaxHeight);
+}

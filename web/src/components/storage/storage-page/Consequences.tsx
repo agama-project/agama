@@ -136,6 +136,9 @@ export default function Consequences({
           title={_("Planned storage changes")}
           description={summaryOf(actions)}
           variant="large"
+          /* As tall as the window allows, whatever its tab holds, so switching
+             between the actions and the layout does not resize it. */
+          className="agm-planned-changes-popup"
           onClose={close}
           actions={<Popup.Close />}
         >
