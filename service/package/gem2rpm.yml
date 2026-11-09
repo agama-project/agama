@@ -56,3 +56,5 @@
     Requires:       yast2-schema
     # lsblk
     Requires:       util-linux-systemd
+    # AutoYaST compatibility
+    Requires:       xsltproc

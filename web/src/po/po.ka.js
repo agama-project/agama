@@ -1643,7 +1643,7 @@ export default {
     "ღია ფერთა სქემა"
   ],
   "Linux command-line with administrative privileges on the installer system.": [
-    ""
+    "Linux-ის ბრძანების სტრიქონი ადმინისტრატორის პრივილეგიებით დაყენების პროგრამის სიტემაში."
   ],
   "Listening and learning time (4-30 seconds).": [
     "მოსმენისა და სწავლის დრო (4-30 წმ)."
@@ -2419,7 +2419,7 @@ export default {
     "STP"
   ],
   "SUSE Customer Center (SCC)": [
-    "SUSE Customer Center (SCC)"
+    "SUSE-ის კლიენტების მომსახურების ცენტრი (SCC)"
   ],
   "Secured network": [
     "დაცული ქსელი"
@@ -2440,7 +2440,7 @@ export default {
     "გრაფიკული ინტერფეისის მისაღებად აირჩიეთ სამუშაო გარემო."
   ],
   "Select a device": [
-    "აირჩიეთ მოწყობილობა"
+    "მოწყობილობის არჩევა"
   ],
   "Select a disk": [
     "აირჩიეთ დისკი"
