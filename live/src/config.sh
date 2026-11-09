@@ -113,6 +113,9 @@ systemctl mask update-desktop-database.service
 # Prevent hardware database updates at boot (pre-compiled below, saves ~1.0s at boot)
 systemctl mask systemd-hwdb-update.service
 
+# Disable boot session/login accounting (not needed on live media, saves ~840ms at boot)
+systemctl mask wtmpdb-update-boot.service
+
 # Prevent premature activation of LVM (bsc#1246133)
 systemctl mask lvm2-monitor.service
 if [[ -f /etc/lvm/lvm.conf ]]; then
