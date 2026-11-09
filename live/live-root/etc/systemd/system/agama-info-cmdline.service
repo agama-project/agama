@@ -1,0 +1,21 @@
+[Unit]
+Description=Agama info= file downloader
+
+# only needed when inst.info or agama.info is present on the kernel command line
+ConditionKernelCommandLine=|inst.info
+ConditionKernelCommandLine=|agama.info
+
+# has to be after network to download the info file
+After=network-online.target
+
+# before starting the Agama servers so they read the downloaded configuration
+Before=agama-web-server.service
+Before=agama.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/info-cmdline-conf.sh
+StandardOutput=journal
+
+[Install]
+WantedBy=multi-user.target
