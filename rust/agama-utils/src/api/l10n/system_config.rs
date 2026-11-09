@@ -21,9 +21,11 @@
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Debug, Serialize, Deserialize, JsonSchema)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize, JsonSchema)]
 #[schemars(rename = "l10n.SystemConfig")]
 pub struct SystemConfig {
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub locale: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub keymap: Option<String>,
 }

@@ -72,6 +72,9 @@
 //   --agm-t--radio--body--spacing                 extra space between a radio label
 //                                                 and the content below it (see
 //                                                 components/_patternfly-overrides)
+//   --agm-t--modal--actions--gap                  space between the buttons in a
+//                                                 dialog footer (see
+//                                                 components/_patternfly-overrides)
 //
 // Typography roles (convenience; not needed to reskin, override only with strong
 // reasons):
@@ -109,10 +112,18 @@
     monospace
   );
 
+  // Font weight steps. PatternFly 6.6 made them heavier (600 / 600 / 800), and
+  // Agama keeps the earlier ones. Bold and heading text derive from these in
+  // every theme, high contrast included.
+  --pf-t--global--font--weight--200: 500;
+  --pf-t--global--font--weight--300: 500;
+  --pf-t--global--font--weight--400: 700;
+
   // Convenience tokens to retune the font weight. Unset by default, so text
-  // keeps the PatternFly weight. Redefine --agm-t--font--weight--body /
+  // keeps the weight of the steps above. Redefine --agm-t--font--weight--body /
   // --agm-t--font--weight--heading / --agm-t--font--weight--bold to override
-  // them, but only with strong reasons.
+  // them, but only with strong reasons. The bold one also covers <strong>
+  // (see base/_reset).
   --pf-t--global--font--weight--body--default: var(
     --agm-t--font--weight--body,
     var(--pf-t--global--font--weight--100)

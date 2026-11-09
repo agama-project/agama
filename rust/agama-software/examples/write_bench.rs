@@ -115,7 +115,7 @@ async fn main() {
     let mut registry = Registry::new(product_dir);
     registry.read().unwrap();
     let product = registry.find("Tumbleweed", None).unwrap();
-    let software_state = SoftwareStateBuilder::for_product(&product).build();
+    let software_state = SoftwareStateBuilder::for_product(&product).build().await;
 
     println!(
         "before first write: {:?}ms",
@@ -157,7 +157,8 @@ async fn main() {
     };
     let software_state = SoftwareStateBuilder::for_product(&product)
         .with_config(&config)
-        .build();
+        .build()
+        .await;
     let (tx, rx) = oneshot::channel();
 
     let now = SystemTime::now();
@@ -182,7 +183,7 @@ async fn main() {
         now.elapsed().unwrap().as_millis()
     );
 
-    let software_state = SoftwareStateBuilder::for_product(&product).build();
+    let software_state = SoftwareStateBuilder::for_product(&product).build().await;
     let (tx, rx) = oneshot::channel();
 
     let now = SystemTime::now();

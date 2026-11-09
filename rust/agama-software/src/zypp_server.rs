@@ -745,7 +745,7 @@ impl ZyppServer {
     fn modify_zypp_conf(&self) {
         // write only if different from default
         if self.only_required {
-            let contents = "# Use only hard dependencies as configured in installer\nsolver.onlyRequires = true\n";
+            let contents = "# Use only hard dependencies as configured in installer\n[main]\nsolver.onlyRequires = true\n";
             let path = self.install_dir.join("etc/zypp/zypp.conf.d/installer.conf");
             let write_result = std::fs::write(path.as_path(), contents);
             if write_result.is_err() {

@@ -24,6 +24,7 @@
 
 use std::collections::HashMap;
 use std::fmt;
+use std::sync::Arc;
 
 use agama_utils::{
     api::{
@@ -35,7 +36,9 @@ use agama_utils::{
 };
 use url::Url;
 
-use crate::{model::software_selection::SoftwareSelection, Resolvable, ResolvableType};
+use crate::{
+    model::software_selection::SoftwareSelection, probe::RepoProber, Resolvable, ResolvableType,
+};
 
 #[derive(Clone, Debug)]
 pub struct RepoKey {
@@ -102,6 +105,8 @@ pub struct SoftwareStateBuilder<'a> {
     kernel_cmdline: KernelCmdline,
     /// List of predefined repositories.
     predefined_repositories: Vec<api::software::Repository>,
+    /// Reachability prober for remote repositories.
+    prober: Arc<dyn RepoProber>,
 }
 
 impl<'a> SoftwareStateBuilder<'a> {
@@ -113,6 +118,7 @@ impl<'a> SoftwareStateBuilder<'a> {
             selection: None,
             kernel_cmdline: KernelCmdline::default(),
             predefined_repositories: vec![],
+            prober: Arc::new(crate::probe::DefaultRepoProber),
         }
     }
 
@@ -146,9 +152,19 @@ impl<'a> SoftwareStateBuilder<'a> {
         self
     }
 
+    /// Sets a custom reachability prober.
+    pub fn with_prober(mut self, prober: Arc<dyn RepoProber>) -> Self {
+        self.prober = prober;
+        self
+    }
+
     /// Builds the [SoftwareState] combining all the sources.
-    pub fn build(self) -> SoftwareState {
-        let mut state = self.to_software_state();
+    ///
+    /// If local installation media is present, candidate remote repositories are probed
+    /// concurrently and only reachable ones are added.
+    pub async fn build(self) -> SoftwareState {
+        let repositories = self.build_repositories().await;
+        let mut state = self.to_software_state_with_repositories(repositories);
 
         if let Some(config) = self.config {
             self.add_user_config(&mut state, config);
@@ -302,28 +318,33 @@ impl<'a> SoftwareStateBuilder<'a> {
             .any(|repo| repo.alias == crate::service::INSTALLATION_REPO_ALIAS)
     }
 
-    fn build_repositories(&self) -> Vec<Repository> {
-        let software = &self.product.software;
+    async fn build_repositories(&self) -> Vec<Repository> {
         let kernel_repos = self.kernel_cmdline.get_last("inst.install_url");
-        let mut repositories: Vec<_> = if let Some(kernel_repos) = kernel_repos {
-            kernel_repos
-                .split(",")
-                .enumerate()
-                .map(|(i, url)| Self::build_repo(i, url.to_string()))
-                .collect()
-        } else if self.has_local_install_media() {
-            tracing::info!(
-                "Local installation media found; skipping the product's remote repositories"
-            );
-            vec![]
+        let urls: Vec<&str> = if let Some(kernel_repos) = kernel_repos.as_deref() {
+            kernel_repos.split(",").collect()
         } else {
-            software
+            let product_urls: Vec<&str> = self
+                .product
+                .software
                 .repositories()
-                .into_iter()
-                .enumerate()
-                .map(|(i, r)| Self::build_repo(i, r.url.clone()))
-                .collect()
+                .iter()
+                .map(|r| r.url.as_str())
+                .collect();
+            if self.has_local_install_media() {
+                tracing::info!(
+                    "Local installation media found; concurrently probing candidate remote repositories"
+                );
+                crate::probe::filter_reachable_urls(product_urls, self.prober.as_ref()).await
+            } else {
+                product_urls
+            }
         };
+
+        let mut repositories: Vec<_> = urls
+            .into_iter()
+            .enumerate()
+            .map(|(i, url)| Self::build_repo(i, url.to_string()))
+            .collect();
 
         // add all predefined repositories here
         for repo in self.predefined_repositories.iter() {
@@ -413,7 +434,7 @@ impl<'a> SoftwareStateBuilder<'a> {
         resolvables
     }
 
-    fn to_software_state(&self) -> SoftwareState {
+    fn to_software_state_with_repositories(&self, repositories: Vec<Repository>) -> SoftwareState {
         SoftwareState {
             product: self
                 .product
@@ -421,7 +442,7 @@ impl<'a> SoftwareStateBuilder<'a> {
                 .base_product
                 .clone()
                 .expect("Expected a base product to be defined"),
-            repositories: self.build_repositories(),
+            repositories,
             resolvables: self.build_resolvables(),
             registration: None,
             options: Default::default(),
@@ -433,7 +454,7 @@ impl<'a> SoftwareStateBuilder<'a> {
 }
 
 impl SoftwareState {
-    pub fn build_from(
+    pub async fn build_from(
         product: &ProductSpec,
         config: &Config,
         selection: &SoftwareSelection,
@@ -445,6 +466,7 @@ impl SoftwareState {
             .with_kernel_cmdline(KernelCmdline::parse().unwrap_or_default())
             .with_predefined_repositories(predefined_repositories)
             .build()
+            .await
     }
 }
 
@@ -663,6 +685,7 @@ impl Addon {
 #[cfg(test)]
 mod tests {
     use std::path::PathBuf;
+    use std::sync::Arc;
 
     use agama_utils::{
         api::software::{
@@ -711,13 +734,14 @@ mod tests {
         template.to_product_spec(mode).unwrap()
     }
 
-    #[test]
-    fn test_build_state() {
+    #[tokio::test]
+    async fn test_build_state() {
         let product = build_product_spec("tumbleweed", None);
         let config = Config::default();
         let state = SoftwareStateBuilder::for_product(&product)
             .with_config(&config)
-            .build();
+            .build()
+            .await;
 
         assert_eq!(state.repositories.len(), 3);
         let aliases: Vec<_> = state.repositories.iter().map(|r| r.alias.clone()).collect();
@@ -784,13 +808,14 @@ mod tests {
         );
     }
 
-    #[test]
-    fn test_add_user_repositories() {
+    #[tokio::test]
+    async fn test_add_user_repositories() {
         let product = build_product_spec("tumbleweed", None);
         let config = build_user_config(None);
         let state = SoftwareStateBuilder::for_product(&product)
             .with_config(&config)
-            .build();
+            .build()
+            .await;
 
         assert_eq!(state.repositories.len(), 4);
         let aliases: Vec<_> = state.repositories.iter().map(|r| r.alias.clone()).collect();
@@ -804,8 +829,8 @@ mod tests {
         assert_eq!(state.repositories[3].priority, None);
     }
 
-    #[test]
-    fn test_add_user_repository_priority() {
+    #[tokio::test]
+    async fn test_add_user_repository_priority() {
         let product = build_product_spec("tumbleweed", None);
         let mut config = build_user_config(None);
         let repository = config
@@ -818,13 +843,14 @@ mod tests {
 
         let state = SoftwareStateBuilder::for_product(&product)
             .with_config(&config)
-            .build();
+            .build()
+            .await;
 
         assert_eq!(state.repositories[3].priority, Some(30));
     }
 
-    #[test]
-    fn test_add_patterns() {
+    #[tokio::test]
+    async fn test_add_patterns() {
         let product = build_product_spec("tumbleweed", None);
         let patterns = PatternsConfig::PatternsMap(PatternsMap {
             add: Some(vec!["gnome".to_string()]),
@@ -834,7 +860,8 @@ mod tests {
 
         let state = SoftwareStateBuilder::for_product(&product)
             .with_config(&config)
-            .build();
+            .build()
+            .await;
         let patterns: Vec<_> = state
             .resolvables
             .to_vec()
@@ -865,8 +892,8 @@ mod tests {
         );
     }
 
-    #[test]
-    fn test_add_registration() {
+    #[tokio::test]
+    async fn test_add_registration() {
         let product = build_product_spec("sles_161", Some("standard"));
         let mut config = build_user_config(None);
         config.product = ProductConfig {
@@ -884,7 +911,8 @@ mod tests {
         .into();
         let state = SoftwareStateBuilder::for_product(&product)
             .with_config(&config)
-            .build();
+            .build()
+            .await;
 
         let registration = state.registration.unwrap();
         assert_eq!(registration.code, Some("123456".to_string()));
@@ -900,8 +928,8 @@ mod tests {
         assert_eq!(addon.code, Some("ABCDEF".to_string()));
     }
 
-    #[test]
-    fn test_remove_patterns() {
+    #[tokio::test]
+    async fn test_remove_patterns() {
         let product = build_product_spec("tumbleweed", None);
         let patterns = PatternsConfig::PatternsMap(PatternsMap {
             add: None,
@@ -911,7 +939,8 @@ mod tests {
 
         let state = SoftwareStateBuilder::for_product(&product)
             .with_config(&config)
-            .build();
+            .build()
+            .await;
         let patterns: Vec<_> = state
             .resolvables
             .to_vec()
@@ -937,8 +966,8 @@ mod tests {
         );
     }
 
-    #[test]
-    fn test_remove_mandatory_patterns() {
+    #[tokio::test]
+    async fn test_remove_mandatory_patterns() {
         let product = build_product_spec("tumbleweed", None);
         let patterns = PatternsConfig::PatternsMap(PatternsMap {
             add: None,
@@ -948,7 +977,8 @@ mod tests {
 
         let state = SoftwareStateBuilder::for_product(&product)
             .with_config(&config)
-            .build();
+            .build()
+            .await;
         let patterns: Vec<_> = state
             .resolvables
             .to_vec()
@@ -974,15 +1004,16 @@ mod tests {
         );
     }
 
-    #[test]
-    fn test_replace_patterns_list() {
+    #[tokio::test]
+    async fn test_replace_patterns_list() {
         let product = build_product_spec("tumbleweed", None);
         let patterns = PatternsConfig::PatternsList(vec!["gnome".to_string()]);
         let config = build_user_config(Some(patterns));
 
         let state = SoftwareStateBuilder::for_product(&product)
             .with_config(&config)
-            .build();
+            .build()
+            .await;
         let patterns: Vec<_> = state
             .resolvables
             .to_vec()
@@ -1008,8 +1039,8 @@ mod tests {
         );
     }
 
-    #[test]
-    fn test_use_base_repositories() {
+    #[tokio::test]
+    async fn test_use_base_repositories() {
         let product = build_product_spec("tumbleweed", None);
         let patterns = PatternsConfig::PatternsList(vec!["gnome".to_string()]);
         let config = build_user_config(Some(patterns));
@@ -1027,7 +1058,8 @@ mod tests {
         let state = SoftwareStateBuilder::for_product(&product)
             .with_config(&config)
             .with_predefined_repositories(repos)
-            .build();
+            .build()
+            .await;
 
         let aliases: Vec<_> = state.repositories.iter().map(|r| r.alias.clone()).collect();
         let expected_aliases = vec![
@@ -1040,8 +1072,8 @@ mod tests {
         assert_eq!(expected_aliases, aliases);
     }
 
-    #[test]
-    fn test_skips_product_repositories_when_installation_media_present() {
+    #[tokio::test]
+    async fn test_skips_unreachable_product_repositories_when_installation_media_present() {
         let product = build_product_spec("tumbleweed", None);
         let config = Config::default();
 
@@ -1053,10 +1085,14 @@ mod tests {
             predefined: true,
         };
 
+        let prober = Arc::new(crate::probe::MockRepoProber::all_unreachable());
+
         let state = SoftwareStateBuilder::for_product(&product)
             .with_config(&config)
             .with_predefined_repositories(vec![install_repo])
-            .build();
+            .with_prober(prober)
+            .build()
+            .await;
 
         let aliases: Vec<_> = state.repositories.iter().map(|r| r.alias.clone()).collect();
         assert_eq!(
@@ -1065,8 +1101,77 @@ mod tests {
         );
     }
 
-    #[test]
-    fn test_keeps_product_repositories_without_installation_media() {
+    #[tokio::test]
+    async fn test_adds_reachable_product_repositories_when_installation_media_present() {
+        let product = build_product_spec("tumbleweed", None);
+        let config = Config::default();
+
+        let install_repo = Repository {
+            alias: crate::service::INSTALLATION_REPO_ALIAS.to_string(),
+            name: crate::service::INSTALLATION_REPO_ALIAS.to_string(),
+            url: "hd:/install".to_string(),
+            enabled: true,
+            predefined: true,
+        };
+
+        let prober = Arc::new(crate::probe::MockRepoProber::all_reachable());
+
+        let state = SoftwareStateBuilder::for_product(&product)
+            .with_config(&config)
+            .with_predefined_repositories(vec![install_repo])
+            .with_prober(prober)
+            .build()
+            .await;
+
+        let aliases: Vec<_> = state.repositories.iter().map(|r| r.alias.clone()).collect();
+        assert_eq!(
+            aliases,
+            vec![
+                "agama-0".to_string(),
+                "agama-1".to_string(),
+                "agama-2".to_string(),
+                crate::service::INSTALLATION_REPO_ALIAS.to_string(),
+            ]
+        );
+    }
+
+    #[tokio::test]
+    async fn test_partially_reachable_product_repositories_when_installation_media_present() {
+        let product = build_product_spec("tumbleweed", None);
+        let config = Config::default();
+
+        let install_repo = Repository {
+            alias: crate::service::INSTALLATION_REPO_ALIAS.to_string(),
+            name: crate::service::INSTALLATION_REPO_ALIAS.to_string(),
+            url: "hd:/install".to_string(),
+            enabled: true,
+            predefined: true,
+        };
+
+        let first_repo_url = product.software.repositories()[0].url.clone();
+        let prober = Arc::new(crate::probe::MockRepoProber::with_reachable(&[
+            &first_repo_url,
+        ]));
+
+        let state = SoftwareStateBuilder::for_product(&product)
+            .with_config(&config)
+            .with_predefined_repositories(vec![install_repo])
+            .with_prober(prober)
+            .build()
+            .await;
+
+        let aliases: Vec<_> = state.repositories.iter().map(|r| r.alias.clone()).collect();
+        assert_eq!(
+            aliases,
+            vec![
+                "agama-0".to_string(),
+                crate::service::INSTALLATION_REPO_ALIAS.to_string(),
+            ]
+        );
+    }
+
+    #[tokio::test]
+    async fn test_keeps_product_repositories_without_installation_media() {
         let product = build_product_spec("tumbleweed", None);
         let config = Config::default();
 
@@ -1078,10 +1183,14 @@ mod tests {
             predefined: true,
         };
 
+        let prober = Arc::new(crate::probe::MockRepoProber::all_unreachable());
+
         let state = SoftwareStateBuilder::for_product(&product)
             .with_config(&config)
             .with_predefined_repositories(vec![dud_repo])
-            .build();
+            .with_prober(prober)
+            .build()
+            .await;
 
         let aliases: Vec<_> = state.repositories.iter().map(|r| r.alias.clone()).collect();
         assert_eq!(
@@ -1095,8 +1204,8 @@ mod tests {
         );
     }
 
-    #[test]
-    fn test_keeps_kernel_cmdline_repositories_with_installation_media_present() {
+    #[tokio::test]
+    async fn test_keeps_kernel_cmdline_repositories_with_installation_media_present() {
         let product = build_product_spec("tumbleweed", None);
         let kernel_cmdline = KernelCmdline::parse_str("inst.install_url=http://example.com/repo1");
 
@@ -1108,10 +1217,14 @@ mod tests {
             predefined: true,
         };
 
+        let prober = Arc::new(crate::probe::MockRepoProber::all_unreachable());
+
         let state = SoftwareStateBuilder::for_product(&product)
             .with_kernel_cmdline(kernel_cmdline)
             .with_predefined_repositories(vec![install_repo])
-            .build();
+            .with_prober(prober)
+            .build()
+            .await;
 
         let aliases: Vec<_> = state.repositories.iter().map(|r| r.alias.clone()).collect();
         assert_eq!(
@@ -1123,13 +1236,14 @@ mod tests {
         );
     }
 
-    #[test]
-    fn test_mandatory_packages() {
+    #[tokio::test]
+    async fn test_mandatory_packages() {
         let product = build_product_spec("tumbleweed", None);
         let config = Config::default();
         let state = SoftwareStateBuilder::for_product(&product)
             .with_config(&config)
-            .build();
+            .build()
+            .await;
 
         let packages: Vec<_> = state
             .resolvables
@@ -1180,11 +1294,11 @@ mod tests {
         );
     }
 
-    #[test]
-    fn test_system_adds_default_kernel() {
+    #[tokio::test]
+    async fn test_system_adds_default_kernel() {
         let product = build_product_spec("tumbleweed", None);
 
-        let state = SoftwareStateBuilder::for_product(&product).build();
+        let state = SoftwareStateBuilder::for_product(&product).build().await;
 
         let kernel = state
             .resolvables
@@ -1206,12 +1320,12 @@ mod tests {
         );
     }
 
-    #[test]
-    fn test_system_adds_custom_kernel() {
+    #[tokio::test]
+    async fn test_system_adds_custom_kernel() {
         let mut product = build_product_spec("tumbleweed", None);
         product.software.kernel = Some("kernel-rt".to_string());
 
-        let state = SoftwareStateBuilder::for_product(&product).build();
+        let state = SoftwareStateBuilder::for_product(&product).build().await;
 
         let kernel = state
             .resolvables
@@ -1231,8 +1345,8 @@ mod tests {
         );
     }
 
-    #[test]
-    fn test_repositories_from_kernel_cmdline() {
+    #[tokio::test]
+    async fn test_repositories_from_kernel_cmdline() {
         let product = build_product_spec("tumbleweed", None);
         let kernel_cmdline = KernelCmdline::parse_str(
             "inst.install_url=http://example.com/repo1,http://example.com/repo2",
@@ -1240,7 +1354,8 @@ mod tests {
 
         let state = SoftwareStateBuilder::for_product(&product)
             .with_kernel_cmdline(kernel_cmdline)
-            .build();
+            .build()
+            .await;
 
         assert_eq!(state.repositories.len(), 2);
         assert_eq!(state.repositories[0].url, "http://example.com/repo1");
@@ -1249,28 +1364,30 @@ mod tests {
         assert_eq!(state.repositories[1].alias, "agama-1");
     }
 
-    #[test]
-    fn test_single_repository_from_kernel_cmdline() {
+    #[tokio::test]
+    async fn test_single_repository_from_kernel_cmdline() {
         let product = build_product_spec("tumbleweed", None);
         let kernel_cmdline = KernelCmdline::parse_str("inst.install_url=http://example.com/repo1");
 
         let state = SoftwareStateBuilder::for_product(&product)
             .with_kernel_cmdline(kernel_cmdline)
-            .build();
+            .build()
+            .await;
 
         assert_eq!(state.repositories.len(), 1);
         assert_eq!(state.repositories[0].url, "http://example.com/repo1");
         assert_eq!(state.repositories[0].alias, "agama-0");
     }
 
-    #[test]
-    fn test_repositories_fallback_to_product() {
+    #[tokio::test]
+    async fn test_repositories_fallback_to_product() {
         let product = build_product_spec("tumbleweed", None);
         let kernel_cmdline = KernelCmdline::default();
 
         let state = SoftwareStateBuilder::for_product(&product)
             .with_kernel_cmdline(kernel_cmdline)
-            .build();
+            .build()
+            .await;
 
         assert_eq!(state.repositories.len(), 3);
     }
