@@ -160,3 +160,75 @@ export default function SpaceDecision({
     />
   );
 }
+
+export type SpacePolicyMenuItemProps = {
+  collection: DeviceCollection;
+  index: number;
+  /** What the device allows its partitions today. */
+  policy: ConfigModel.SpacePolicy;
+  /** Whether any of the partitions or logical volumes have an assigned mount point */
+  someReused?: boolean;
+};
+
+/**
+ * The same choice as {@link SpaceDecision}, as an item of a device's menu
+ * opening the three choices to its side, the one in effect checked. Its
+ * holder decides where it applies, as the panel does: a device with
+ * partitions or logical volumes today that the new system does not use.
+ */
+export function SpacePolicyMenuItem({
+  collection,
+  index,
+  policy,
+  someReused = false,
+}: SpacePolicyMenuItemProps) {
+  const setSpacePolicy = useSetSpacePolicy();
+  const isVolumeGroup = collection === "volumeGroups";
+
+  /* Choosing what the device already allows changes nothing, so nothing is
+     written. */
+  const choose = (next: ConfigModel.SpacePolicy) => {
+    if (next !== policy) setSpacePolicy(collection, index, { type: next });
+  };
+
+  return (
+    <MenuButtonItem
+      key="space-policy"
+      // TRANSLATORS: description of the menu item opening the choices for the
+      // current partitions or logical volumes of a device.
+      description={_("Keep, shrink or delete them")}
+      flyoutItems={POLICIES.map((value) => (
+        <MenuButtonItem
+          key={value}
+          isChecked={value === policy}
+          isDanger={value === "delete"}
+          description={meaning(value)}
+          onClick={() => choose(value)}
+        >
+          {label(value, isVolumeGroup, someReused)}
+        </MenuButtonItem>
+      ))}
+    >
+      {isVolumeGroup
+        ? // TRANSLATORS: menu item on a volume group, opening the choices for
+          // what may happen to its current logical volumes to make room for
+          // the new system.
+          _("Existing logical volumes")
+        : // TRANSLATORS: menu item on a disk or RAID, opening the choices for
+          // what may happen to its current partitions to make room for the new
+          // system.
+          _("Existing partitions")}
+    </MenuButtonItem>
+  );
+}
+
+/**
+ * Whether a device has anything today whose fate is the reader's to decide:
+ * a partition or logical volume the new system does not mount.
+ */
+export function hasSpaceDecision(
+  today: { name: string }[] | undefined,
+  planned: { name?: string; mountPath?: string }[] | undefined,
+): boolean {
+  return (today || []).some((c) => !(planned || []).find((p) => p.name === c.name)?.mountPath);
+}

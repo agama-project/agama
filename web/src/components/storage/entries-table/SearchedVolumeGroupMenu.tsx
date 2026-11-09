@@ -32,6 +32,11 @@ import configModel from "~/model/storage/config-model";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { generateEncodedPath } from "~/utils";
 import { useConfigModel, useDeleteVolumeGroup } from "~/hooks/model/storage/config-model";
+import { useDevice } from "~/hooks/model/system/storage";
+import {
+  hasSpaceDecision,
+  SpacePolicyMenuItem,
+} from "~/components/storage/device-details/SpaceDecision";
 import { _ } from "~/i18n";
 import type { ConfigModel } from "~/model/storage/config-model";
 import type { DetailsSubject } from "~/components/storage/shared/use-device-details";
@@ -92,6 +97,7 @@ export default function SearchedVolumeGroupMenu({
 
   const navigate = useNavigate();
   const { search } = useLocation();
+  const device = useDevice(entry.name);
   const items = [
     /* First, because it is what clicking the row does. A menu whose first item
        is the row's own act says what the row does, for a reader who never
@@ -119,6 +125,19 @@ export default function SearchedVolumeGroupMenu({
                 is read and changed. */}
             {_("Details")}
           </MenuButtonItem>,
+          <Divider key="before-content" />,
+          /* What may happen to its logical volumes today, as in its panel. */
+          ...(hasSpaceDecision(device?.logicalVolumes, entry.logicalVolumes)
+            ? [
+                <SpacePolicyMenuItem
+                  key="space-policy"
+                  collection="volumeGroups"
+                  index={subject.index}
+                  policy={entry.spacePolicy || "keep"}
+                  someReused={(entry.logicalVolumes || []).some((v) => v.name && v.mountPath)}
+                />,
+              ]
+            : []),
           /* The panel's own act, also from the row. */
           <MenuButtonItem
             key="add-logical-volume"
@@ -151,7 +170,7 @@ export default function SearchedVolumeGroupMenu({
 
   return (
     <MenuButton
-      menuProps={{ "aria-label": label, popperProps: { position: "end" } }}
+      menuProps={{ "aria-label": label, popperProps: { position: "end" }, hasFlyouts: true }}
       customToggle={<RowMenuToggle label={label} />}
       items={items}
     />

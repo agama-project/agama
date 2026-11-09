@@ -77,7 +77,7 @@ export default function MoveToOtherDevice({
           {
             // TRANSLATORS: offered under the list of what a device will hold:
             // move all of it to a different device.
-            _("Move to other device")
+            _("Move to another device")
           }
         </Flex>
       </Button>

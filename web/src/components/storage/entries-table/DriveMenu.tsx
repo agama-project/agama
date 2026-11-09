@@ -30,6 +30,10 @@ import NewVgMenuOption from "~/components/storage/NewVgMenuOption";
 import ChangeInstallationDisk from "~/components/storage/storage-page/ChangeInstallationDisk";
 import { useDeviceDetails } from "~/components/storage/shared/use-device-details";
 import { useRetarget } from "~/components/storage/shared/use-retarget";
+import {
+  hasSpaceDecision,
+  SpacePolicyMenuItem,
+} from "~/components/storage/device-details/SpaceDecision";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { generateEncodedPath } from "~/utils";
 import { baseName } from "~/components/storage/utils";
@@ -181,20 +185,7 @@ export default function DriveMenu({
       ];
     }
 
-    if (isUsed) {
-      return [
-        addPartition,
-        <MenuButtonItem
-          key="move"
-          description={_("Move what is planned for this device to another one")}
-          onClick={() => retarget.open()}
-        >
-          {/* TRANSLATORS: menu item on a disk or RAID of the installation:
-              moves everything planned for it to a different device. */}
-          {_("Move to other device")}
-        </MenuButtonItem>,
-      ];
-    }
+    if (isUsed) return [addPartition];
 
     return [
       addPartition,
@@ -209,6 +200,20 @@ export default function DriveMenu({
       </MenuButtonItem>,
     ];
   };
+
+  /* Moving what is planned elsewhere acts on the device as a whole, so it sits
+     with the other such acts rather than with what goes on it. */
+  const move = isUsed && !isMounted && (
+    <MenuButtonItem
+      key="move"
+      description={_("Move what is planned for this device to another one")}
+      onClick={() => retarget.open()}
+    >
+      {/* TRANSLATORS: menu item on a disk or RAID of the installation: moves
+          everything planned for it to a different device. */}
+      {_("Move to another device")}
+    </MenuButtonItem>
+  );
 
   const items = [
     /* First, because it is what clicking the row does. A menu whose first item
@@ -237,12 +242,30 @@ export default function DriveMenu({
                 is read and changed. */}
             {_("Details")}
           </MenuButtonItem>,
-          /* The panel's own acts, also from the row, for a reader who wants
-             them without opening the panel. Left out of the panel's header,
-             where they sit under its sections. */
-          ...panelActs(subject),
+          <Divider key="before-content" />,
         ]
       : []),
+    /* What may happen to what the device holds today, as the panel's own
+       choice; only on the row, and only where there is something to decide. */
+    ...(subject &&
+    configModel.partitionable.isCollectionName(subject.collection) &&
+    hasSpaceDecision(device?.partitions, entry.partitions)
+      ? [
+          <SpacePolicyMenuItem
+            key="space-policy"
+            collection={subject.collection}
+            index={subject.index}
+            policy={entry.spacePolicy || "keep"}
+            someReused={(entry.partitions || []).some((p) => p.name && p.mountPath)}
+          />,
+        ]
+      : []),
+    /* The panel's own acts, also from the row, for a reader who wants them
+       without opening the panel. Left out of the panel's header, where they
+       sit under its sections. */
+    ...(subject ? panelActs(subject) : []),
+    <Divider key="after-content" />,
+    ...(subject ? [move] : []),
     <NewVgMenuOption key="volume-group" device={entry} />,
   ];
 
@@ -287,7 +310,7 @@ export default function DriveMenu({
   return (
     <>
       <MenuButton
-        menuProps={{ "aria-label": label, popperProps: { position: "end" } }}
+        menuProps={{ "aria-label": label, popperProps: { position: "end" }, hasFlyouts: true }}
         customToggle={<RowMenuToggle label={label} />}
         items={items}
       />

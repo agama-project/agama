@@ -132,6 +132,7 @@ export default function VolumeGroupMenu({ group, subject }: VolumeGroupMenuProps
            under its properties, after what the form changes. */
         ...(subject
           ? [
+              <Divider key="before-content" />,
               /* The panel's own act, also from the row. */
               <MenuButtonItem
                 key="add-logical-volume"
@@ -149,6 +150,7 @@ export default function VolumeGroupMenu({ group, subject }: VolumeGroupMenuProps
                     installation: opens the form to add a logical volume. */}
                 {_("Add logical volume")}
               </MenuButtonItem>,
+              <Divider key="after-content" />,
               <MenuButtonItem
                 key="edit"
                 description={_("Change how the volume group will be created")}
