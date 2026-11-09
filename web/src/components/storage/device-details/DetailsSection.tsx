@@ -23,7 +23,11 @@
 import React from "react";
 import { Flex, Title } from "@patternfly/react-core";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
-import { useSectionTitle } from "~/components/storage/storage-page/playground-switches";
+import {
+  useSectionBand,
+  useSectionIndent,
+  useSectionTitle,
+} from "~/components/storage/storage-page/playground-switches";
 
 export type DetailsSectionProps = {
   /** What the section holds, such as "Current content". */
@@ -46,15 +50,17 @@ export type DetailsSectionProps = {
 export default function DetailsSection({ title, children }: DetailsSectionProps) {
   // PLAYGROUND: how the title stands apart from what it holds, from the console.
   const titleStyle = useSectionTitle();
+  const band = useSectionBand();
+  const indent = useSectionIndent();
 
-  /* The content indented under its title, by the room an icon before the title
-     once took, so it reads as held by the section. */
+  /* The content indented under its title, so it reads as held by the
+     section. */
   return (
     <Flex
       component="section"
       direction={{ default: "column" }}
       gap={{ default: "gapMd" }}
-      className={`agm-details-section agm-details-section--${titleStyle}`}
+      className={`agm-details-section agm-details-section--${titleStyle} agm-details-section--band-${band} agm-details-section--indent-${indent}`}
     >
       <Title
         headingLevel="h3"

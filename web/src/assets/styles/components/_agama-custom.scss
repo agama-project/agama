@@ -1025,15 +1025,24 @@ tr.agm-entries-table__row > :is(th, td):not(.agm-entries-table__menu) {
   );
 }
 
-// A device panel's section: its content indented under the title, by the room
-// an icon before the title once took (the icon's width and the gap after it),
-// so it reads as held by the section.
-.agm-details-section {
-  --agm-details-section--indent: calc(1.2em + var(--pf-t--global--spacer--sm));
+// A device panel's section: its content indented under the title, so it reads
+// as held by the section. PLAYGROUND: by how much, from the console.
+.agm-details-section--indent-none {
+  --agm-details-section--indent: 0px;
 }
 
-.pf-v6-l-flex > .agm-details-section__content.pf-v6-l-flex {
-  margin-inline-start: var(--agm-details-section--indent);
+.agm-details-section--indent-small {
+  --agm-details-section--indent: var(--pf-t--global--spacer--sm);
+}
+
+.agm-details-section--indent-medium {
+  --agm-details-section--indent: var(--pf-t--global--spacer--md);
+}
+
+.pf-v6-l-flex > .agm-details-section > .agm-details-section__content.pf-v6-l-flex {
+  margin-inline-start: calc(
+    var(--agm-details-section--indent) + var(--agm-details-section--band-inset, 0px)
+  );
 }
 
 // PLAYGROUND: how the title stands apart from what it holds.
@@ -1047,4 +1056,62 @@ tr.agm-entries-table__row > :is(th, td):not(.agm-entries-table__menu) {
   padding-block-end: var(--pf-t--global--spacer--xs);
   border-block-end: var(--pf-t--global--border--width--divider--default) solid
     var(--pf-t--global--border--color--default);
+}
+
+// PLAYGROUND: titles set apart by spacing, a line between sections, or set as
+// the devices table's group titles; how much their content is indented is a
+// switch of its own. A title sits close to what it holds, and
+// further from the section before it, which is what groups them.
+.pf-v6-l-flex:is(
+  .agm-details-section--grouped,
+  .agm-details-section--separated,
+  .agm-details-section--smallcaps
+) {
+  --pf-v6-l-flex--RowGap: var(--pf-t--global--spacer--sm);
+  row-gap: var(--pf-t--global--spacer--sm);
+}
+
+.pf-v6-l-flex
+  > :is(.agm-details-section--grouped, .agm-details-section--smallcaps):not(:first-child) {
+  margin-block-start: var(--pf-t--global--spacer--lg);
+}
+
+.pf-v6-l-flex > .agm-details-section--separated:not(:first-child) {
+  padding-block-start: var(--pf-t--global--spacer--lg);
+  border-block-start: var(--pf-t--global--border--width--divider--default) solid
+    var(--pf-t--global--border--color--default);
+}
+
+.agm-details-section--smallcaps > .agm-details-section__title.pf-v6-c-title {
+  font-size: var(--pf-t--global--font--size--body--sm);
+  font-weight: var(--pf-t--global--font--weight--body--bold);
+  color: var(--pf-t--global--text--color--subtle);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+// PLAYGROUND: a band behind the title, with any of the styles above: fading
+// down, as behind the devices table's group titles, or flat. The title's
+// words get a little room inside it, and the content moves with them.
+:is(.agm-details-section--band-fading, .agm-details-section--band-flat) {
+  --agm-details-section--band: color-mix(
+    in srgb,
+    var(--pf-t--global--background--color--secondary--default) 30%,
+    transparent
+  );
+  --agm-details-section--band-inset: var(--pf-t--global--spacer--sm);
+}
+
+:is(.agm-details-section--band-fading, .agm-details-section--band-flat)
+  > .agm-details-section__title.pf-v6-c-title {
+  padding-block: var(--pf-t--global--spacer--xs);
+  padding-inline: var(--agm-details-section--band-inset);
+}
+
+.agm-details-section--band-fading > .agm-details-section__title.pf-v6-c-title {
+  background: linear-gradient(var(--agm-details-section--band), transparent);
+}
+
+.agm-details-section--band-flat > .agm-details-section__title.pf-v6-c-title {
+  background: var(--agm-details-section--band);
 }

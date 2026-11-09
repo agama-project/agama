@@ -97,6 +97,22 @@
  *   agamaSectionTitle("spaced")  // more room under the title
  *   agamaSectionTitle("rule")    // a line under the title
  *   agamaSectionTitle("both")    // a line under the title, and more room under it
+ *   agamaSectionTitle("grouped")    // no line: close to its content, far from the next section
+ *   agamaSectionTitle("separated")  // a line between sections rather than under titles
+ *   agamaSectionTitle("smallcaps")  // spaced as "grouped", titles as the table's group titles
+ *
+ * How far a device panel's section content is indented under its title, with
+ * any title style:
+ *
+ *   agamaSectionIndent("medium")  // 16 px (default)
+ *   agamaSectionIndent("small")   // 8 px
+ *   agamaSectionIndent("none")    // in line with the title
+ *
+ * Whether a device panel's section title sits on a band, with any title style:
+ *
+ *   agamaSectionBand("none")    // no band (default)
+ *   agamaSectionBand("fading")  // the band fading down, as behind the table's group titles
+ *   agamaSectionBand("flat")    // an even band
  *
  * Choices survive reloads. To be dropped once the design is settled.
  */
@@ -115,7 +131,9 @@ type ActionCount = "all" | "noSubvolumes" | "changes";
 type DetailsIcon = "none" | "list";
 type DetailsButton = "inline" | "below" | "end";
 type DetailsSize = "compact" | "regular";
-type SectionTitle = "plain" | "spaced" | "rule" | "both";
+type SectionBand = "none" | "fading" | "flat";
+type SectionIndent = "medium" | "small" | "none";
+type SectionTitle = "plain" | "spaced" | "rule" | "both" | "grouped" | "separated" | "smallcaps";
 
 type SwitchName =
   | "agamaDevicesBox"
@@ -130,7 +148,9 @@ type SwitchName =
   | "agamaDetailsIcon"
   | "agamaDetailsButton"
   | "agamaDetailsSize"
-  | "agamaSectionTitle";
+  | "agamaSectionTitle"
+  | "agamaSectionBand"
+  | "agamaSectionIndent";
 
 declare global {
   interface Window {
@@ -147,6 +167,8 @@ declare global {
     agamaDetailsButton?: (value: DetailsButton) => void;
     agamaDetailsSize?: (value: DetailsSize) => void;
     agamaSectionTitle?: (value: SectionTitle) => void;
+    agamaSectionBand?: (value: SectionBand) => void;
+    agamaSectionIndent?: (value: SectionIndent) => void;
   }
 }
 
@@ -258,6 +280,15 @@ const useSectionTitle = consoleSwitch<SectionTitle>("agamaSectionTitle", [
   "spaced",
   "rule",
   "both",
+  "grouped",
+  "separated",
+  "smallcaps",
+]);
+const useSectionBand = consoleSwitch<SectionBand>("agamaSectionBand", ["none", "fading", "flat"]);
+const useSectionIndent = consoleSwitch<SectionIndent>("agamaSectionIndent", [
+  "medium",
+  "small",
+  "none",
 ]);
 
 export { registry as playgroundSwitches };
@@ -266,6 +297,8 @@ export {
   useDetailsButton,
   useDetailsSize,
   useSectionTitle,
+  useSectionBand,
+  useSectionIndent,
   useDevicesBox,
   useGroupedTable,
   useExistingDataWording,
