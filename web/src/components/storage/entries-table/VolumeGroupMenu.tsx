@@ -132,6 +132,23 @@ export default function VolumeGroupMenu({ group, subject }: VolumeGroupMenuProps
            under its properties, after what the form changes. */
         ...(subject
           ? [
+              /* The panel's own act, also from the row. */
+              <MenuButtonItem
+                key="add-logical-volume"
+                description={_("Define a new logical volume in the group")}
+                onClick={() =>
+                  navigate({
+                    pathname: generateEncodedPath(PATHS.volumeGroup.logicalVolume.add, {
+                      id: String(subject.index),
+                    }),
+                    search: location.search,
+                  })
+                }
+              >
+                {/* TRANSLATORS: menu item on an LVM volume group of the
+                    installation: opens the form to add a logical volume. */}
+                {_("Add logical volume")}
+              </MenuButtonItem>,
               <MenuButtonItem
                 key="edit"
                 description={_("Change how the volume group will be created")}

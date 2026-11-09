@@ -103,7 +103,7 @@ export default function DriveRow({ name, subject }: DriveRowProps): React.ReactN
       usedFor={usedFor}
       isIdle={isIdle}
       existingData={existingData}
-      menu={entry && <DriveMenu entry={entry} subject={subject} />}
+      menu={entry && <DriveMenu entry={entry} subject={subject} device={device} />}
       subject={subject}
     />
   );

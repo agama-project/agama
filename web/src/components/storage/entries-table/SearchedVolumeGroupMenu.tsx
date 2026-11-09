@@ -22,12 +22,15 @@
 
 import React from "react";
 import { Divider } from "@patternfly/react-core";
+import { useLocation, useNavigate } from "react-router";
 import { sprintf } from "sprintf-js";
 import MenuButton, { MenuButtonItem } from "~/components/core/MenuButton";
 import RowMenuToggle from "~/components/storage/entries-table/RowMenuToggle";
 import { useDeviceDetails } from "~/components/storage/shared/use-device-details";
 import { baseName } from "~/components/storage/utils";
 import configModel from "~/model/storage/config-model";
+import { STORAGE as PATHS } from "~/routes/paths";
+import { generateEncodedPath } from "~/utils";
 import { useConfigModel, useDeleteVolumeGroup } from "~/hooks/model/storage/config-model";
 import { _ } from "~/i18n";
 import type { ConfigModel } from "~/model/storage/config-model";
@@ -87,6 +90,8 @@ export default function SearchedVolumeGroupMenu({
   // installation. %s is a device name, such as "sda".
   const label = sprintf(_("Actions for %s"), name);
 
+  const navigate = useNavigate();
+  const { search } = useLocation();
   const items = [
     /* First, because it is what clicking the row does. A menu whose first item
        is the row's own act says what the row does, for a reader who never
@@ -113,6 +118,23 @@ export default function SearchedVolumeGroupMenu({
             {/* TRANSLATORS: opens the panel where one entry of the installation
                 is read and changed. */}
             {_("Details")}
+          </MenuButtonItem>,
+          /* The panel's own act, also from the row. */
+          <MenuButtonItem
+            key="add-logical-volume"
+            description={_("Define a new logical volume in the group")}
+            onClick={() =>
+              navigate({
+                pathname: generateEncodedPath(PATHS.volumeGroup.logicalVolume.add, {
+                  id: String(subject.index),
+                }),
+                search,
+              })
+            }
+          >
+            {/* TRANSLATORS: menu item on an LVM volume group of the
+                installation: opens the form to add a logical volume. */}
+            {_("Add logical volume")}
           </MenuButtonItem>,
         ]
       : []),

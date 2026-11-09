@@ -22,23 +22,29 @@
 
 import React from "react";
 import { Divider } from "@patternfly/react-core";
+import { useLocation, useNavigate } from "react-router";
 import { sprintf } from "sprintf-js";
 import MenuButton, { MenuButtonItem } from "~/components/core/MenuButton";
 import RowMenuToggle from "~/components/storage/entries-table/RowMenuToggle";
 import NewVgMenuOption from "~/components/storage/NewVgMenuOption";
 import ChangeInstallationDisk from "~/components/storage/storage-page/ChangeInstallationDisk";
 import { useDeviceDetails } from "~/components/storage/shared/use-device-details";
+import { useRetarget } from "~/components/storage/shared/use-retarget";
+import { STORAGE as PATHS } from "~/routes/paths";
+import { generateEncodedPath } from "~/utils";
 import { baseName } from "~/components/storage/utils";
 import configModel from "~/model/storage/config-model";
 import {
   useConfigModel,
   useDeleteDrive,
   useDeleteMdRaid,
+  useSetFilesystem,
 } from "~/hooks/model/storage/config-model";
 import { useCandidateDrives } from "~/hooks/model/system/storage";
 import { _ } from "~/i18n";
 import type { Partitionable } from "~/model/storage/config-model";
 import type { DetailsSubject } from "~/components/storage/shared/use-device-details";
+import type { Storage } from "~/model/system";
 
 type RemoveDeviceMenuItemProps = {
   device: Partitionable.Device;
@@ -85,6 +91,8 @@ export type DriveMenuProps = {
   entry: Partitionable.Device;
   /** Where it is written. Given only where opening it is one of the offers. */
   subject?: DetailsSubject;
+  /** The same device as the machine reports it, where the machine has it. */
+  device?: Storage.Device | null;
 };
 
 /**
@@ -103,7 +111,15 @@ export type DriveMenuProps = {
  * keyboard: a control the browser disables is skipped, and the explanation
  * printed beside it is then never met by the reader it was written for.
  */
-export default function DriveMenu({ entry, subject }: DriveMenuProps): React.ReactNode {
+export default function DriveMenu({
+  entry,
+  subject,
+  device = null,
+}: DriveMenuProps): React.ReactNode {
+  const navigate = useNavigate();
+  const { search } = useLocation();
+  const retarget = useRetarget(entry, device);
+  const setFilesystem = useSetFilesystem();
   const config = useConfigModel();
   const deleteDrive = useDeleteDrive();
   const deleteMdRaid = useDeleteMdRaid();
@@ -116,6 +132,83 @@ export default function DriveMenu({ entry, subject }: DriveMenuProps): React.Rea
   // installation. %s is a device name, such as "sda".
   const label = sprintf(_("Actions for %s"), name);
   const location = configModel.partitionable.findLocation(config, entry.name);
+
+  const isMounted = !!entry.mountPath;
+  const isUsed = configModel.partitionable.isUsed(config, entry.name);
+
+  /* The same acts the panel offers, in the same cases: a device given whole
+     to one file system, one with partitions planned, or one with nothing
+     planned yet. */
+  const panelActs = (at: DetailsSubject) => {
+    const params = { collection: at.collection, index: String(at.index) };
+    const go = (path: string) => navigate({ pathname: generateEncodedPath(path, params), search });
+
+    const addPartition = (
+      <MenuButtonItem
+        key="add-partition"
+        description={_("Define a new partition on the device")}
+        onClick={() => go(PATHS.addPartition)}
+      >
+        {/* TRANSLATORS: menu item on a disk or RAID of the installation:
+            opens the form to add a partition to it. */}
+        {_("Add partition")}
+      </MenuButtonItem>
+    );
+
+    if (isMounted) {
+      return [
+        <MenuButtonItem
+          key="edit-filesystem"
+          description={_("Change how the file system on the whole device is used")}
+          onClick={() => go(PATHS.formatDevice)}
+        >
+          {/* TRANSLATORS: menu item on a disk or RAID used whole for one file
+              system: change how it is used. */}
+          {_("Edit file system")}
+        </MenuButtonItem>,
+        <MenuButtonItem
+          key="stop-filesystem"
+          description={_("Leave nothing planned on the device")}
+          onClick={() => {
+            if (configModel.partitionable.isCollectionName(at.collection))
+              setFilesystem(at.collection, at.index, {});
+          }}
+        >
+          {/* TRANSLATORS: menu item on a disk or RAID used whole for one file
+              system: stop using it for that file system. */}
+          {_("Stop using as file system")}
+        </MenuButtonItem>,
+      ];
+    }
+
+    if (isUsed) {
+      return [
+        addPartition,
+        <MenuButtonItem
+          key="move"
+          description={_("Move what is planned for this device to another one")}
+          onClick={() => retarget.open()}
+        >
+          {/* TRANSLATORS: menu item on a disk or RAID of the installation:
+              moves everything planned for it to a different device. */}
+          {_("Move to other device")}
+        </MenuButtonItem>,
+      ];
+    }
+
+    return [
+      addPartition,
+      <MenuButtonItem
+        key="format"
+        description={_("Give the whole device to one file system, with no partitions")}
+        onClick={() => go(PATHS.formatDevice)}
+      >
+        {/* TRANSLATORS: menu item on a disk or RAID nothing is planned on
+            yet: use the whole device for one file system. */}
+        {_("Format device")}
+      </MenuButtonItem>,
+    ];
+  };
 
   const items = [
     /* First, because it is what clicking the row does. A menu whose first item
@@ -144,6 +237,10 @@ export default function DriveMenu({ entry, subject }: DriveMenuProps): React.Rea
                 is read and changed. */}
             {_("Details")}
           </MenuButtonItem>,
+          /* The panel's own acts, also from the row, for a reader who wants
+             them without opening the panel. Left out of the panel's header,
+             where they sit under its sections. */
+          ...panelActs(subject),
         ]
       : []),
     <NewVgMenuOption key="volume-group" device={entry} />,
@@ -195,6 +292,7 @@ export default function DriveMenu({ entry, subject }: DriveMenuProps): React.Rea
         items={items}
       />
       {isChangingDisk && <ChangeInstallationDisk onClose={() => setIsChangingDisk(false)} />}
+      {retarget.selector}
     </>
   );
 }
