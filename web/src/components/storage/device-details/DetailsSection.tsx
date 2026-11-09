@@ -21,16 +21,12 @@
  */
 
 import React from "react";
-import { Flex, FlexItem, Title } from "@patternfly/react-core";
+import { Flex, Title } from "@patternfly/react-core";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
-import Icon from "~/components/layout/Icon";
-import type { IconProps } from "~/components/layout/Icon";
 
 export type DetailsSectionProps = {
   /** What the section holds, such as "Current content". */
   title: React.ReactNode;
-  /** A mark shown before the title. Decorative: screen readers skip it. */
-  icon?: IconProps["name"];
   /** What the section shows, such as a table or a sentence. */
   children: React.ReactNode;
 };
@@ -46,10 +42,21 @@ export type DetailsSectionProps = {
  *   <CurrentContentSection entry={entry} subject={subject} />
  * </DetailsSection>
  */
-export default function DetailsSection({ title, icon, children }: DetailsSectionProps) {
-  const body = (
-    <Flex direction={{ default: "column" }} gap={{ default: "gapMd" }} flex={{ default: "flex_1" }}>
-      <Title headingLevel="h3" size="md" className={textStyles.textColorBrand}>
+export default function DetailsSection({ title, children }: DetailsSectionProps) {
+  /* The content indented under its title, by the room an icon before the title
+     once took, so it reads as held by the section. */
+  return (
+    <Flex
+      component="section"
+      direction={{ default: "column" }}
+      gap={{ default: "gapMd" }}
+      className="agm-details-section"
+    >
+      <Title
+        headingLevel="h3"
+        size="md"
+        className={`agm-details-section__title ${textStyles.textColorBrand}`}
+      >
         {title}
       </Title>
       <Flex
@@ -59,24 +66,6 @@ export default function DetailsSection({ title, icon, children }: DetailsSection
       >
         {children}
       </Flex>
-    </Flex>
-  );
-
-  if (!icon) return <section>{body}</section>;
-
-  /* The icon in a column of its own, so the content starts where the title
-     does and reads as held by the section. */
-  return (
-    <Flex
-      component="section"
-      gap={{ default: "gapSm" }}
-      flexWrap={{ default: "nowrap" }}
-      alignItems={{ default: "alignItemsBaseline" }}
-    >
-      <FlexItem className={textStyles.textColorSubtle}>
-        <Icon name={icon} isMiddleAligned />
-      </FlexItem>
-      {body}
     </Flex>
   );
 }

@@ -1024,3 +1024,14 @@ tr.agm-entries-table__row > :is(th, td):not(.agm-entries-table__menu) {
     var(--pf-t--global--spacer--sm) + var(--pf-t--global--spacer--xs)
   );
 }
+
+// A device panel's section: its content indented under the title, by the room
+// an icon before the title once took (the icon's width and the gap after it),
+// so it reads as held by the section.
+.agm-details-section {
+  --agm-details-section--indent: calc(1.2em + var(--pf-t--global--spacer--sm));
+}
+
+.pf-v6-l-flex > .agm-details-section__content.pf-v6-l-flex {
+  margin-inline-start: var(--agm-details-section--indent);
+}

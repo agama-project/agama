@@ -39,7 +39,7 @@ describe("DetailsSection", () => {
 
   it("can show an icon before its title, out of what screen readers read", () => {
     const { container } = plainRender(
-      <DetailsSection icon="rotate_auto" title="Current content">
+      <DetailsSection title="Current content">
         <p>Nothing detected.</p>
       </DetailsSection>,
     );
