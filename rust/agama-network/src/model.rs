@@ -848,10 +848,30 @@ impl TryFrom<NetworkConnection> for Connection {
     }
 }
 
-impl TryFrom<Connection> for NetworkConnection {
+/// Information the HTTP API reports about a connection besides its settings (see
+/// [`ConnectionInfo`]).
+trait ApiConnectionInfo: ConnectionInfo {
+    /// Returns the information about the given connection.
+    fn for_connection(conn: &Connection) -> Self;
+}
+
+impl ApiConnectionInfo for NoConnectionInfo {
+    fn for_connection(_conn: &Connection) -> Self {
+        Self {}
+    }
+}
+
+impl ApiConnectionInfo for SystemConnectionInfo {
+    fn for_connection(conn: &Connection) -> Self {
+        Self { state: conn.state }
+    }
+}
+
+impl<I: ApiConnectionInfo> TryFrom<Connection> for NetworkConnection<I> {
     type Error = NetworkStateError;
 
     fn try_from(conn: Connection) -> Result<Self, Self::Error> {
+        let info = I::for_connection(&conn);
         let id = conn.clone().id;
         let custom_mac = conn.custom_mac_address.to_string();
         let method4 = conn.ip_config.method4;
@@ -899,6 +919,7 @@ impl TryFrom<Connection> for NetworkConnection {
             autoconnect,
             persistent,
             match_settings,
+            info,
             ..Default::default()
         };
 
@@ -1574,35 +1595,26 @@ impl ConnectionCollection {
     /// The ports of each bond and bridge are nested in its `portConnections` list, so only the
     /// root connections are at the top level.
     fn to_api(&self) -> Result<NetworkConnectionsCollection, NetworkStateError> {
-        let roots = self.to_api_roots()?;
-        Ok(NetworkConnectionsCollection(
-            roots.into_iter().map(|(_, root)| root).collect(),
-        ))
+        Ok(NetworkConnectionsCollection(self.to_api_roots()?))
     }
 
     /// Converts the collection to its HTTP API representation, with the state of the connections.
     ///
-    /// Only the root connections report their state: the nested ports are part of their
-    /// controller's representation.
+    /// The nested ports report their state too, as it is not the one of their controller (e.g., a
+    /// backup port of a bond is not active while the bond is).
     fn to_api_with_state(
         &self,
     ) -> Result<NetworkConnectionsWithStateCollection, NetworkStateError> {
-        let roots = self.to_api_roots()?;
-        Ok(NetworkConnectionsWithStateCollection(
-            roots
-                .into_iter()
-                .map(|(conn, connection)| NetworkConnectionWithState {
-                    connection,
-                    state: conn.state,
-                })
-                .collect(),
-        ))
+        Ok(NetworkConnectionsCollection(self.to_api_roots()?))
     }
 
     /// Converts the root connections, with their ports nested, to their HTTP API representation.
     ///
-    /// Each one comes with the connection it was converted from.
-    fn to_api_roots(&self) -> Result<Vec<(&Connection, NetworkConnection)>, NetworkStateError> {
+    /// Every connection, ports included, comes with the information the representation reports
+    /// besides its settings (see [`ConnectionInfo`]).
+    fn to_api_roots<I: ApiConnectionInfo>(
+        &self,
+    ) -> Result<Vec<NetworkConnection<I>>, NetworkStateError> {
         let mut placed = HashSet::new();
         let mut roots = vec![];
 
@@ -1621,8 +1633,7 @@ impl ConnectionCollection {
                 }
             }
 
-            let root = self.to_api_tree(conn, &mut placed)?;
-            roots.push((conn, root));
+            roots.push(self.to_api_tree(conn, &mut placed)?);
         }
 
         // A loop of controllers is not reachable from any root. Report it anyway, starting at
@@ -1630,8 +1641,7 @@ impl ConnectionCollection {
         for conn in self.iter() {
             if !placed.contains(&conn.uuid) {
                 tracing::warn!("Connection {} belongs to a loop of controllers", conn.id);
-                let root = self.to_api_tree(conn, &mut placed)?;
-                roots.push((conn, root));
+                roots.push(self.to_api_tree(conn, &mut placed)?);
             }
         }
 
@@ -1642,16 +1652,16 @@ impl ConnectionCollection {
     ///
     /// * `conn`: connection to convert.
     /// * `placed`: connections converted so far, to not walk a loop of controllers forever.
-    fn to_api_tree(
+    fn to_api_tree<I: ApiConnectionInfo>(
         &self,
         conn: &Connection,
         placed: &mut HashSet<Uuid>,
-    ) -> Result<NetworkConnection, NetworkStateError> {
+    ) -> Result<NetworkConnection<I>, NetworkStateError> {
         placed.insert(conn.uuid);
 
-        let mut api_conn = NetworkConnection::try_from(conn.clone())?;
+        let mut api_conn = NetworkConnection::<I>::try_from(conn.clone())?;
 
-        if api_conn.controller_settings().is_none() {
+        if api_conn.bond.is_none() && api_conn.bridge.is_none() {
             return Ok(api_conn);
         }
 
@@ -1803,11 +1813,11 @@ impl TryFrom<BondSettings> for BondConfig {
     }
 }
 
-impl TryFrom<BondConfig> for BondSettings {
+impl<I: ConnectionInfo> TryFrom<BondConfig> for BondSettings<I> {
     type Error = NetworkStateError;
 
     fn try_from(bond: BondConfig) -> Result<Self, Self::Error> {
-        Ok(BondSettings {
+        Ok(Self {
             mode: bond.mode.to_string(),
             options: Some(bond.options.to_string()),
             ..Default::default()
@@ -1853,11 +1863,11 @@ impl TryFrom<BridgeSettings> for BridgeConfig {
     }
 }
 
-impl TryFrom<BridgeConfig> for BridgeSettings {
+impl<I: ConnectionInfo> TryFrom<BridgeConfig> for BridgeSettings<I> {
     type Error = NetworkStateError;
 
     fn try_from(bridge: BridgeConfig) -> Result<Self, Self::Error> {
-        Ok(BridgeSettings {
+        Ok(Self {
             stp: bridge.stp,
             priority: bridge.priority,
             forward_delay: bridge.forward_delay,
