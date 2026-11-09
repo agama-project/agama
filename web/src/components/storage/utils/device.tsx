@@ -164,16 +164,11 @@ const volumeGroupFacts = (
   device: System.Device | null,
 ): { size?: string; description?: string } => {
   const size = group.name ? device?.volumeGroup?.size : undefined;
+  const desc = group.name ? _("Volume group") : _("New volume group");
 
   return {
     size: size === undefined ? undefined : deviceSize(size),
-    description: group.name
-      ? // TRANSLATORS: said under the name of an LVM volume group already on
-        // the machine, where a disk shows its kind, such as "Disk".
-        _("LVM")
-      : // TRANSLATORS: said under the name of an LVM volume group the
-        // installation creates, where a disk shows its kind, such as "Disk".
-        _("New LVM"),
+    description: desc,
   };
 };
 

@@ -476,6 +476,19 @@ function findPartitionableDevice(
   return configModel.partitionable.find(config, collection, Number(index));
 }
 
+/**
+ * Whether a partition was likely created to boot a system (not necessarily the
+ * system being installed or even a system of the same architecture).
+ */
+function isExistingBootPartition(partition: System.Device): boolean {
+  return (
+    partition.partition?.efi === true ||
+    partition.partition?.id === "bios_boot" ||
+    partition.partition?.id === "prep" ||
+    partition.partition?.id === "xbootldr"
+  );
+}
+
 export {
   DEFAULT_SIZE_UNIT,
   SIZE_METHODS,
@@ -499,4 +512,5 @@ export {
   volumeLabel,
   createPartitionableLocation,
   findPartitionableDevice,
+  isExistingBootPartition,
 };

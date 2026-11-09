@@ -98,7 +98,7 @@ function groupTitle(collection: DetailsCollection, count: number): TranslatedStr
     case "volumeGroups":
       // TRANSLATORS: heads the LVM volume groups in the list of what the
       // installation is made of.
-      return n_("Volume group", "Volume groups", count);
+      return n_("LVM volume group", "LVM volume groups", count);
     case "mdRaids":
       // TRANSLATORS: heads the software RAID devices in the list of what the
       // installation is made of.

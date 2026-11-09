@@ -23,7 +23,7 @@
 import React from "react";
 import { sprintf } from "sprintf-js";
 import { MenuButtonItem } from "~/components/core/MenuButton";
-import { deviceSize } from "~/components/storage/utils";
+import { deviceSize, isExistingBootPartition } from "~/components/storage/utils";
 import { useConfigModel, useSetSpacePolicy } from "~/hooks/model/storage/config-model";
 import configModel from "~/model/storage/config-model";
 import { _, TranslatedString } from "~/i18n";
@@ -103,14 +103,6 @@ function meaning(decision: Decision, partition: System.Device): TranslatedString
 }
 
 /**
- * Whether a partition is one the machine may start from: an EFI system
- * partition or a BIOS boot one.
- */
-function isBootPartition(partition: System.Device): boolean {
-  return partition.partition?.efi === true || partition.partition?.id === "bios_boot";
-}
-
-/**
  * Whether the installer configures booting on the device at the given place,
  * whether it chose that device itself or the reader did.
  */
@@ -183,7 +175,7 @@ function descriptionOf(
 ): React.ReactNode {
   if (refused) return <ShrinkRefusal partition={partition} />;
 
-  if (decision === "keep" && booting && isBootPartition(partition)) {
+  if (decision === "keep" && booting && isExistingBootPartition(partition)) {
     // TRANSLATORS: explains keeping one partition that the new system may
     // need in order to start.
     return _("May be used to boot the new system.");
