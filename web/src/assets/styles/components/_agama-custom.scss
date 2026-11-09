@@ -339,6 +339,15 @@ nav.agm-breadcrumb > ol > li > a {
     calc(-1 * var(--agm-side-panel-frame--inset-inline-end));
 }
 
+// The page under the panel takes the width it is given, as narrow as a column
+// beside a docked panel. A drawer's content otherwise grows to whatever its
+// widest part asks for, past the edge of the page, pushing the panel open over
+// it out of sight too. What cannot narrow, such as a wide table, scrolls in its
+// own box instead.
+.agm-side-panel-frame > .pf-v6-c-drawer__main > .pf-v6-c-drawer__content {
+  min-inline-size: 0;
+}
+
 .agm-side-panel-frame:not(:first-child) {
   --agm-side-panel-frame--inset-block-start: 0px;
 }
