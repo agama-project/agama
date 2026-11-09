@@ -29,7 +29,7 @@
   display: none;
 }
 
-.agm-terminal-dock__handle {
+.agm-resize-handle {
   flex: 0 0 auto;
   block-size: var(--pf-t--global--spacer--sm);
   display: flex;
@@ -43,8 +43,17 @@
   touch-action: none;
 }
 
-.agm-terminal-dock__handle:hover {
+.agm-resize-handle:hover {
   background-color: var(--pf-t--global--background--color--action--plain--hover);
+}
+
+// Between side-by-side areas: as thin across, and dragged sideways.
+.agm-resize-handle--vertical {
+  block-size: auto;
+  inline-size: var(--pf-t--global--spacer--sm);
+  cursor: col-resize;
+  border-block: 0;
+  border-inline: 1px solid var(--pf-t--global--border--color--default);
 }
 
 // The docked area uses the page surface (the gray behind the cards) and a bit

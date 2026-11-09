@@ -17,7 +17,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useId, useState } from "react";
 import { clamp } from "radashi";
 import ResizeHandle from "~/components/core/ResizeHandle";
 import TerminalPane from "~/components/core/TerminalPane";
@@ -98,12 +98,7 @@ export default function TerminalDock({ children }: React.PropsWithChildren) {
     [container, maxTerminalHeight, setHeight],
   );
 
-  const resizeByStep = useCallback(
-    (delta: number) => {
-      setHeight(clamp(terminalHeight + delta, MIN_TERMINAL_HEIGHT, maxTerminalHeight));
-    },
-    [terminalHeight, maxTerminalHeight, setHeight],
-  );
+  const panelId = useId();
 
   return (
     <div ref={setContainer} className="agm-terminal-dock">
@@ -117,11 +112,17 @@ export default function TerminalDock({ children }: React.PropsWithChildren) {
               // TRANSLATORS: accessible name for the divider used to resize the
               // terminal panel by dragging or with the arrow keys
               label={_("Resize terminal")}
+              panelAt="bottom"
+              controls={panelId}
+              size={terminalHeight}
+              min={MIN_TERMINAL_HEIGHT}
+              max={maxTerminalHeight}
+              onResize={setHeight}
               onDrag={resizeToPointer}
-              onStep={resizeByStep}
             />
           )}
           <div
+            id={panelId}
             className={
               minimized
                 ? "agm-terminal-dock__panel agm-terminal-dock__panel--minimized"
