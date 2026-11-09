@@ -237,34 +237,23 @@ export default function Summary(): React.ReactNode {
       aria-label={_("Details of the planned storage changes")}
     />
   );
-  const regularDetails = (
-    <Consequences
-      label={_("Details…")}
-      aria-label={_("Details of the planned storage changes")}
-      isCompact={false}
-    />
-  );
 
   /* PLAYGROUND: the one-sentence wording, with or without the hint box: no
      mark, the reassurance right after the sentence in a quieter voice, and the
      details on a line of their own, at their regular size. */
+  /* The details at the end of the sentence they detail, fitted into its line,
+     rather than on a line of their own. */
   const singleContent = (
-    <Flex
-      direction={{ default: "column" }}
-      alignItems={{ default: "alignItemsFlexStart" }}
-      gap={{ default: "gapXs" }}
-    >
-      <FlexItem>
-        <Marked sentence={second} />
-        {note && (
-          <>
-            {" "}
-            <Text textStyle={["fontSizeSm", "textColorSubtle"]}>{note}</Text>
-          </>
-        )}
-      </FlexItem>
-      <FlexItem>{regularDetails}</FlexItem>
-    </Flex>
+    <div>
+      <Marked sentence={second} />
+      {note && (
+        <>
+          {" "}
+          <Text textStyle={["fontSizeSm", "textColorSubtle"]}>{note}</Text>
+        </>
+      )}{" "}
+      {details}
+    </div>
   );
 
   if (isSingle) {

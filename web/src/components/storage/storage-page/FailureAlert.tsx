@@ -87,6 +87,8 @@ export default function FailureAlert({
       <Button
         variant="tertiary"
         size="sm"
+        /* Fitted into the line of the sentence it follows. */
+        className="agm-summary__details"
         // TRANSLATORS: full name of the "See suggestions…" button, for screen
         // readers. It must start with the same words as the visible label.
         aria-label={_("See suggestions to make the storage setup fit")}
@@ -107,8 +109,18 @@ export default function FailureAlert({
           alignItems={{ default: "alignItemsFlexStart" }}
           gap={{ default: "gapSm" }}
         >
-          <Content>{body}</Content>
-          {action}
+          {/* In place, the way to the suggestions follows the sentence; opening
+              them under it, it stays on a line of its own above them. */}
+          {isExpandable ? (
+            <>
+              <Content>{body}</Content>
+              {action}
+            </>
+          ) : (
+            <Content>
+              {body} {action}
+            </Content>
+          )}
           {isExpandable && suggestions && (
             <div id={regionId} hidden={!isOpen}>
               {suggestions}
