@@ -53,13 +53,10 @@ describe("ResultPreview", () => {
     screen.getByText("every change, in order");
   });
 
-  it("opens on the final layout", () => {
+  it("opens on the actions", () => {
     installerRender(<ResultPreview />);
 
-    expect(screen.getByRole("tab", { name: "Final layout" })).toHaveAttribute(
-      "aria-selected",
-      "true",
-    );
+    expect(screen.getByRole("tab", { name: "Actions" })).toHaveAttribute("aria-selected", "true");
   });
 
   it("switches to the actions when asked", async () => {
