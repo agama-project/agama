@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-01 15:29+0000\n"
+"POT-Creation-Date: 2026-10-27 17:52+0000\n"
 "PO-Revision-Date: 2025-09-23 02:46+0000\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -16,6 +16,11 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+
+#. writes default to system making it persistent
+#: service/YaST2/lib/bootloader/sections.rb:53
+msgid "Failed to set default GRUB2 boot entry:"
+msgstr ""
 
 #. Implementation for the API method #Probe.
 #: service/lib/agama/dbus/storage/dasd.rb:65
@@ -57,26 +62,28 @@ msgid "Writing bootloader sysconfig"
 msgstr ""
 
 #. Implementation for the API method #Finish.
-#: service/lib/agama/dbus/storage/manager.rb:210
+#.
+#. @raise [RuntimeError] If there is an unexpected error or the user decides to abort.
+#: service/lib/agama/dbus/storage/manager.rb:212
 msgid "Finishing installation"
 msgstr ""
 
 #. Implementation for the API method #Umount.
-#: service/lib/agama/dbus/storage/manager.rb:217
+#: service/lib/agama/dbus/storage/manager.rb:220
 msgid "Unmounting devices"
 msgstr ""
 
 #. after loading config try to apply it, so proper packages can be requested
 #. TODO: generate also new issue from configuration
-#: service/lib/agama/dbus/storage/manager.rb:256
+#: service/lib/agama/dbus/storage/manager.rb:259
 msgid "Activating storage devices"
 msgstr ""
 
-#: service/lib/agama/dbus/storage/manager.rb:259
+#: service/lib/agama/dbus/storage/manager.rb:262
 msgid "Probing storage devices"
 msgstr ""
 
-#: service/lib/agama/dbus/storage/manager.rb:262
+#: service/lib/agama/dbus/storage/manager.rb:265
 msgid "Applying storage configuration"
 msgstr ""
 
@@ -410,27 +417,51 @@ msgid "Shrinking is not supported by this device"
 msgstr ""
 
 #. Copy /etc/nvme/host* to keep NVMe working after installation, bsc#1238038
-#: service/lib/agama/storage/finisher.rb:122
+#: service/lib/agama/storage/finisher.rb:130
 msgid "Copying important installation files to the target system"
 msgstr ""
 
-#. Step to write the bootloader configuration
-#: service/lib/agama/storage/finisher.rb:157
+#. Constructor
+#.
+#. @param logger [Logger]
+#. @param questions_client [Agama::HTTP::Clients::Questions]
+#: service/lib/agama/storage/finisher.rb:174
 msgid "Installing bootloader"
 msgstr ""
 
+#. Executes the bootloader installation.
+#.
+#. If the installation fails, it asks the user whether to retry,
+#. skip or abort the installation.
+#.
+#. @raise [StandardError] if the installation fails and the user chooses to abort.
+#. Asks the user whether to retry, skip, or abort the installation.
+#.
+#. @param exception [Exception] Exception with details of the problem
+#. @return [Symbol] Action chosen by the user (:retry, :skip, :abort)
+#: service/lib/agama/storage/finisher.rb:186
+#: service/lib/agama/storage/finisher.rb:222
+msgid "Writing bootloader configuration failed."
+msgstr ""
+
+#: service/lib/agama/storage/finisher.rb:223
+msgid ""
+"Bootloader installation failed. Do you want to retry, skip or abort the "
+"installation?"
+msgstr ""
+
 #. Step to finish the Y2Storage configuration
-#: service/lib/agama/storage/finisher.rb:174
+#: service/lib/agama/storage/finisher.rb:243
 msgid "Adjusting storage configuration"
 msgstr ""
 
 #. Step to finish the iSCSI configuration
-#: service/lib/agama/storage/finisher.rb:188
+#: service/lib/agama/storage/finisher.rb:257
 msgid "Adjusting iSCSI configuration"
 msgstr ""
 
 #. Step to configure the file-system snapshots
-#: service/lib/agama/storage/finisher.rb:200
+#: service/lib/agama/storage/finisher.rb:269
 msgid "Configuring file systems snapshots"
 msgstr ""
 
