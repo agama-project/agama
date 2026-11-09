@@ -106,8 +106,16 @@
 // stays where it was: the same room moves inside it.
 .pf-v6-c-page__main-section .pf-v6-c-page__main-section.pf-m-sticky-top {
   // The page's room, read from the token rather than from the section's own
-  // padding variables, which its no-padding modifier sets to zero.
-  --agm-sticky-section--edge: var(--agm-t--page--padding--inline, var(--pf-t--global--spacer--md));
+  // padding variables, which its no-padding modifier sets to zero. Like the
+  // page's sections, it leaves out the width of the frame's border: reaching
+  // over it made the page a few pixels wider than its area, which then always
+  // showed a horizontal scrollbar.
+  --agm-sticky-section--edge: calc(
+    var(--agm-t--page--padding--inline, var(--pf-t--global--spacer--md)) - var(
+        --pf-v6-c-page__main-container--BorderInlineEndWidth,
+        0px
+      )
+  );
 
   margin-inline: calc(-1 * var(--agm-sticky-section--edge));
   padding-inline: var(--agm-sticky-section--edge);
