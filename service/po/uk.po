@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-24 09:16+0000\n"
-"PO-Revision-Date: 2026-07-11 19:12+0000\n"
+"POT-Creation-Date: 2026-09-10 11:22+0000\n"
+"PO-Revision-Date: 2026-11-05 18:13+0000\n"
 "Last-Translator: Eugene Krater <lachend@gmail.com>\n"
 "Language-Team: Ukrainian <https://l10n.opensuse.org/projects/agama/agama-"
 "service-sle-16/uk/>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 2026.7.1\n"
+"X-Generator: Weblate 2026.11.1\n"
 
 #. Reports the problems and decide whether to continue or not.
 #.
@@ -48,11 +48,11 @@ msgstr "Підготовка дисків"
 
 #: service/lib/agama/manager.rb:119
 msgid "Install software"
-msgstr "Встановити програмне забезпечення"
+msgstr "Встановлення програм"
 
 #: service/lib/agama/manager.rb:120
 msgid "Configure the system"
-msgstr "Налаштуйте систему"
+msgstr "Налаштування системи"
 
 #. rubocop:enable Metrics/AbcSize, Metrics/MethodLength
 #: service/lib/agama/manager.rb:161
