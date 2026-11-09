@@ -840,8 +840,8 @@ export default {
   "Copy to the clipboard": [
     "Kopiera till urklipp"
   ],
-  "Could not authenticate against the server.": [
-    "Kunde inte autentisera mot servern."
+  "Could not authenticate against the server": [
+    "Kunde inte autentisera mot servern"
   ],
   "Could not log in": [
     "Kunde inte logga in"
@@ -1191,15 +1191,6 @@ export default {
   "Enter a server URL": [
     "Ange en server URL"
   ],
-  "Enter or Tab to add": [
-    "Enter eller Tabb för att lägga till"
-  ],
-  "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate": [
-    "Enter eller Tabb för att lägga till, Backspace eller Delete för att ta bort, piltangenterna för att navigera"
-  ],
-  "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate entries, Escape to exit": [
-    "Enter eller Tabb för att lägga till, Backspace eller Delete för att ta bort, piltangenter för att navigera i poster, Escape för att avsluta"
-  ],
   "Enter removes every value, Left arrow goes back to the text box.": [
     "Enter tar bort alla värden, vänsterpil går tillbaka till textrutan."
   ],
@@ -1217,6 +1208,15 @@ export default {
   ],
   "Enter takes a value back to the text box, Delete removes it, arrow keys move between values.": [
     "Enter för tillbaka ett värde till textrutan, Delete tar bort det och piltangenterna flyttar markören mellan värdena."
+  ],
+  "Enter to add": [
+    "Enter för att lägga till"
+  ],
+  "Enter to add, Backspace or Delete to remove, arrow keys to navigate": [
+    "Enter för att lägga till, Backspace eller Delete för att ta bort, piltangenterna för att navigera"
+  ],
+  "Enter to add, Backspace or Delete to remove, arrow keys to navigate entries, Escape to exit": [
+    "Enter för att lägga till, Backspace eller Delete för att ta bort, piltangenter för att navigera i poster, Escape för att avsluta"
   ],
   "Ethernet": [
     "Ethernet"
@@ -1705,6 +1705,9 @@ export default {
   "Loading data...": [
     "Laddar data..."
   ],
+  "Loading terminal": [
+    "Laddar terminal"
+  ],
   "Loading the installation repositories...": [
     "Laddar installationsförråd..."
   ],
@@ -1943,6 +1946,9 @@ export default {
   ],
   "No DASD devices found in this machine.": [
     "Inga DASD-enheter hittades i den här maskinen."
+  ],
+  "No IP configuration for this protocol": [
+    "Ingen IP konfiguration för detta protokoll"
   ],
   "No LVM volume groups are available for selection.": [
     "Inga LVM-volymgrupper är tillgängliga för val."
@@ -3343,9 +3349,6 @@ export default {
   ],
   "Using %s keyboard layout": [
     "Använder %s tangentbordslayout"
-  ],
-  "Using [%s] keyboard layout": [
-    "Använder [%s] tangentbordslayout"
   ],
   "Using a hashed password.": [
     "Använder ett hashat lösenord."

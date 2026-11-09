@@ -840,8 +840,8 @@ export default {
   "Copy to the clipboard": [
     "In die Zwischenablage kopieren"
   ],
-  "Could not authenticate against the server.": [
-    "Die Authentifizierung beim Server war nicht möglich."
+  "Could not authenticate against the server": [
+    "Die Authentifizierung beim Server war nicht möglich"
   ],
   "Could not log in": [
     "Anmeldung nicht möglich"
@@ -1191,15 +1191,6 @@ export default {
   "Enter a server URL": [
     "Server-URL eingeben"
   ],
-  "Enter or Tab to add": [
-    "Eingabe oder Tab zum Hinzufügen"
-  ],
-  "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate": [
-    "Eingabe oder Tab zum Hinzufügen, Rücktaste oder Entf zum Löschen, Pfeiltasten zum Navigieren"
-  ],
-  "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate entries, Escape to exit": [
-    "Eingabe oder Tab zum Hinzufügen, Rücktaste oder Entf zum Löschen, Pfeiltasten zum Navigieren zwischen den Einträgen, Esc zum Beenden"
-  ],
   "Enter removes every value, Left arrow goes back to the text box.": [
     "Mit der Eingabetaste werden alle Werte gelöscht, mit dem Pfeil nach links gelangt man zum Textfeld zurück."
   ],
@@ -1217,6 +1208,15 @@ export default {
   ],
   "Enter takes a value back to the text box, Delete removes it, arrow keys move between values.": [
     "Mit der Eingabetaste wird ein Wert in das Textfeld übernommen, mit der Entf-Taste wird er gelöscht, mit den Pfeiltasten kann man zwischen den Werten wechseln."
+  ],
+  "Enter to add": [
+    "Eingabe zum Hinzufügen"
+  ],
+  "Enter to add, Backspace or Delete to remove, arrow keys to navigate": [
+    "Eingabe zum Hinzufügen, Rücktaste oder Entf zum Entfernen, Pfeiltasten zum Navigieren"
+  ],
+  "Enter to add, Backspace or Delete to remove, arrow keys to navigate entries, Escape to exit": [
+    "Eingabe zum Hinzufügen, Rücktaste oder Entf zum Entfernen, Pfeiltasten zum Navigieren zwischen den Einträgen, Esc zum Beenden"
   ],
   "Ethernet": [
     "Ethernet"
@@ -1691,7 +1691,7 @@ export default {
     "Link"
   ],
   "Link up": [
-    ""
+    "Anschließen"
   ],
   "Linux command-line with administrative privileges on the installer system.": [
     "Linux-Befehlszeile mit Administratorrechten auf dem Installationssystem."
@@ -1704,6 +1704,9 @@ export default {
   ],
   "Loading data...": [
     "Daten werden gelesen ..."
+  ],
+  "Loading terminal": [
+    "Terminal wird geladen"
   ],
   "Loading the installation repositories...": [
     "Installations-Repositorien werden geladen ..."
@@ -1943,6 +1946,9 @@ export default {
   ],
   "No DASD devices found in this machine.": [
     "In dieser Maschine wurden keine DASD-Geräte gefunden."
+  ],
+  "No IP configuration for this protocol": [
+    "Keine IP-Konfiguration für dieses Protokoll"
   ],
   "No LVM volume groups are available for selection.": [
     "Es stehen keine LVM-Volume-Gruppen zur Auswahl."
@@ -3343,9 +3349,6 @@ export default {
   ],
   "Using %s keyboard layout": [
     "Tastaturbelegung %s wird verwendet"
-  ],
-  "Using [%s] keyboard layout": [
-    "Tastaturbelegung [%s] wird verwendet"
   ],
   "Using a hashed password.": [
     "Verwendung eines gehashten Passworts."

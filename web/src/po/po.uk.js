@@ -861,8 +861,8 @@ export default {
   "Copy to the clipboard": [
     "Скопіювати в буфер обміну"
   ],
-  "Could not authenticate against the server.": [
-    "Не вдалося виконати автентифікацію на сервері."
+  "Could not authenticate against the server": [
+    "Не вдалося виконати автентифікацію на сервері"
   ],
   "Could not log in": [
     "Не вдалося увійти"
@@ -1212,15 +1212,6 @@ export default {
   "Enter a server URL": [
     "Введіть URL сервера"
   ],
-  "Enter or Tab to add": [
-    "Натисніть Enter або Tab, щоб додати"
-  ],
-  "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate": [
-    "Натисніть Enter або Tab, щоб додати, Backspace або Delete, щоб видалити, клавіші зі стрілками для навігації"
-  ],
-  "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate entries, Escape to exit": [
-    "Натисніть Enter або Tab, щоб додати, Backspace або Delete, щоб видалити, клавіші зі стрілками для переходу між записами, Escape для виходу"
-  ],
   "Enter removes every value, Left arrow goes back to the text box.": [
     "Клавіша «Enter» видаляє всі значення, стрілка вліво повертає курсор у текстове поле."
   ],
@@ -1238,6 +1229,15 @@ export default {
   ],
   "Enter takes a value back to the text box, Delete removes it, arrow keys move between values.": [
     "Клавіша Enter повертає значення у текстове поле, клавіша Delete видаляє його, а клавіші зі стрілками дозволяють переходити між значеннями."
+  ],
+  "Enter to add": [
+    "Натисніть Enter, щоб додати"
+  ],
+  "Enter to add, Backspace or Delete to remove, arrow keys to navigate": [
+    "Натисніть Enter, щоб додати, Backspace або Delete — щоб видалити, клавіші зі стрілками — для навігації"
+  ],
+  "Enter to add, Backspace or Delete to remove, arrow keys to navigate entries, Escape to exit": [
+    "Натисніть Enter, щоб додати, Backspace або Delete — щоб видалити, клавіші зі стрілками — для переходу між записами, Escape — щоб вийти"
   ],
   "Ethernet": [
     "Ethernet"
@@ -1730,6 +1730,9 @@ export default {
   "Loading data...": [
     "Завантаження даних..."
   ],
+  "Loading terminal": [
+    "Завантаження терміналу"
+  ],
   "Loading the installation repositories...": [
     "Завантаження інсталяційних репозиторіїв..."
   ],
@@ -1970,6 +1973,9 @@ export default {
   ],
   "No DASD devices found in this machine.": [
     "У цій машині не знайдено пристроїв DASD."
+  ],
+  "No IP configuration for this protocol": [
+    "Для цього протоколу не налаштовано IP-адресу"
   ],
   "No LVM volume groups are available for selection.": [
     "Для вибору немає доступних груп томів LVM."
@@ -3384,9 +3390,6 @@ export default {
   ],
   "Using %s keyboard layout": [
     "Використано %s розкладку клавіатури"
-  ],
-  "Using [%s] keyboard layout": [
-    "Використано розкладку клавіатури [%s]"
   ],
   "Using a hashed password.": [
     "Використовуючи хешований пароль."
