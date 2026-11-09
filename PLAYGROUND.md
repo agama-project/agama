@@ -90,6 +90,8 @@ Then, from the browser developer tools console:
 | `agamaActionCount("changes")`         | Leave Btrfs subvolumes out, as "N changes"   |
 | `agamaFailedDetails("popup")`         | Failure suggestions in a popup (default)     |
 | `agamaFailedDetails("expandable")`    | Failure suggestions opening in place         |
+| `agamaDetailsIcon("none")`            | Details button with words only (default)     |
+| `agamaDetailsIcon("list")`            | Details button with a list icon              |
 
 Every choice is kept across reloads. WORDING.md lists every wording of the
 table and the summary, the discarded ones included.

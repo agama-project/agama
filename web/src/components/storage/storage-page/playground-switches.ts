@@ -74,6 +74,11 @@
  *   agamaFailedDetails("popup")       // in a popup (default)
  *   agamaFailedDetails("expandable")  // in place, under the alert
  *
+ * Whether the button opening the planned changes carries an icon:
+ *
+ *   agamaDetailsIcon("none")  // words only (default)
+ *   agamaDetailsIcon("list")  // a list icon before the words
+ *
  * Choices survive reloads. To be dropped once the design is settled.
  */
 
@@ -88,6 +93,7 @@ type SummaryStyle = "plain" | "hint";
 type FailedDetails = "popup" | "expandable";
 type SummaryWording = "when" | "until" | "single";
 type ActionCount = "all" | "noSubvolumes" | "changes";
+type DetailsIcon = "none" | "list";
 
 type SwitchName =
   | "agamaDevicesBox"
@@ -98,7 +104,8 @@ type SwitchName =
   | "agamaFailedDetails"
   | "agamaSummaryStyle"
   | "agamaSummaryWording"
-  | "agamaActionCount";
+  | "agamaActionCount"
+  | "agamaDetailsIcon";
 
 declare global {
   interface Window {
@@ -111,6 +118,7 @@ declare global {
     agamaFailedDetails?: (value: FailedDetails) => void;
     agamaSummaryWording?: (value: SummaryWording) => void;
     agamaActionCount?: (value: ActionCount) => void;
+    agamaDetailsIcon?: (value: DetailsIcon) => void;
   }
 }
 
@@ -210,8 +218,11 @@ const useActionCount = consoleSwitch<ActionCount>("agamaActionCount", [
   "changes",
 ]);
 
+const useDetailsIcon = consoleSwitch<DetailsIcon>("agamaDetailsIcon", ["none", "list"]);
+
 export { registry as playgroundSwitches };
 export {
+  useDetailsIcon,
   useDevicesBox,
   useGroupedTable,
   useExistingDataWording,
