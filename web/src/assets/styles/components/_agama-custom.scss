@@ -924,14 +924,15 @@ tr.agm-entries-table__row > :is(th, td):not(.agm-entries-table__menu) {
   align-items: center;
 }
 
-// Its icon, where it carries one, at the size of its words and centered with
-// them, rather than at the size of regular text, sitting high.
-.agm-summary__details.pf-v6-c-button .pf-v6-c-button__icon {
+// The details button's icon, where it carries one, at the size of its words
+// and centered with them, rather than at the size of regular text, sitting
+// high. At any size of the button.
+.agm-details-button.pf-v6-c-button .pf-v6-c-button__icon {
   display: inline-flex;
   align-items: center;
 }
 
-.agm-summary__details.pf-v6-c-button .pf-v6-c-button__icon svg {
+.agm-details-button.pf-v6-c-button .pf-v6-c-button__icon svg {
   inline-size: 1em;
   block-size: 1em;
   vertical-align: 0;
@@ -1005,4 +1006,21 @@ tr.agm-entries-table__row > :is(th, td):not(.agm-entries-table__menu) {
 // shrink with the tab shown. Its content scrolls inside it.
 .pf-v6-c-modal-box.agm-planned-changes-popup {
   block-size: var(--pf-v6-c-modal-box--MaxHeight);
+}
+
+// The details button's icon and words centered with each other, at any size,
+// rather than lined up on the words' baseline, which left the icon high. With
+// an icon, less room before it than after the words: the icon carries some
+// room of its own, and PatternFly's padding is meant for words alone.
+.agm-details-button.pf-v6-c-button {
+  align-items: center;
+}
+
+.agm-details-button.pf-v6-c-button:not(.agm-summary__details):has(.pf-v6-c-button__icon) {
+  --pf-v6-c-button--PaddingInlineStart: calc(
+    var(--pf-t--global--spacer--sm) + var(--pf-t--global--spacer--xs)
+  );
+  --pf-v6-c-button--m-small--PaddingInlineStart: calc(
+    var(--pf-t--global--spacer--sm) + var(--pf-t--global--spacer--xs)
+  );
 }

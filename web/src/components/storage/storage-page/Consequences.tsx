@@ -108,7 +108,7 @@ export default function Consequences({
           variant="tertiary"
           size="sm"
           icon={hasIcon ? <Icon name="list_alt" /> : undefined}
-          className={isCompact ? "agm-summary__details" : undefined}
+          className={isCompact ? "agm-details-button agm-summary__details" : "agm-details-button"}
           aria-label={name}
           onClick={open}
         >
