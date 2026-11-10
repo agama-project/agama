@@ -202,7 +202,10 @@ impl McpServer {
 
     async fn fetch_pending_questions(&self) -> Vec<Question> {
         match self.backend.get_questions().await {
-            Ok(questions) => questions.into_iter().filter(|q| q.answer.is_none()).collect(),
+            Ok(questions) => questions
+                .into_iter()
+                .filter(|q| q.answer.is_none())
+                .collect(),
             Err(err) => {
                 tracing::warn!("Failed to retrieve questions: {err}");
                 Vec::new()

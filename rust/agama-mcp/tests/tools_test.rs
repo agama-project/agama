@@ -730,7 +730,11 @@ async fn test_wait_progress_wakes_up_on_question_event() {
     let events_tx_clone = events_tx.clone();
     tokio::spawn(async move {
         tokio::time::sleep(Duration::from_millis(50)).await;
-        backend_clone.questions.lock().unwrap().push(sample_question());
+        backend_clone
+            .questions
+            .lock()
+            .unwrap()
+            .push(sample_question());
         let _ = events_tx_clone.send(Event::QuestionAdded { id: 1 });
     });
 

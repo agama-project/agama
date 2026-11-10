@@ -110,7 +110,10 @@ pub(crate) fn format_progress_report(
     } else if is_failed {
         ("failed", "Installation failed. Check 'get_logs'.")
     } else if has_questions {
-        ("question_pending", "Question pending. Call 'answer_question'.")
+        (
+            "question_pending",
+            "Question pending. Call 'answer_question'.",
+        )
     } else {
         match status.stage {
             Stage::Configuring if !status.tasks.is_empty() => (
