@@ -52,6 +52,14 @@ function mountPathsOf(volumes: Volume[]): string[] {
   return volumes.filter((v) => v.mountPath).map((v) => v.mountPath);
 }
 
+function isNew(volume: Volume): boolean {
+  return !volume.name && !!volume.mountPath;
+}
+
+function isUsed(volume: Volume): boolean {
+  return volume.name && !!volume.mountPath;
+}
+
 /**
  * Names such as mount points or volume groups, joined the way the language
  * joins a list. PLAYGROUND: set in monospace or not, from the console, so a
@@ -96,14 +104,37 @@ function driveUsedFor(
     return [_("Nothing yet (skipped)")];
   }
 
+  if (device.filesystem) {
+    return device.filesystem.reuse
+      ? // TRANSLATORS: what a disk is used for: a single file system over
+        // all of it, mounted at %s, such as "/home".
+        [withNames(_("Mounting it at %s"), [device.mountPath], style)]
+      : // TRANSLATORS: what a disk is used for: a single file system over
+        // all of it, formatted and mounted at %s, such as "/home".
+        [withNames(_("Formating it for %s"), [device.mountPath], style)];
+  }
+
   const lines: React.ReactNode[] = [];
+
+  const partitions = device.partitions || [];
+  const paths = mountPathsOf(partitions);
+
+  if (paths.includes("/")) {
+    if (boots) {
+      lines.push(_("Installing and booting the system"));
+    } else {
+      lines.push(_("Installing the system"));
+    }
+  } else if (boots) {
+    lines.push(_("Booting the system"));
+  }
 
   if (groups.length && groups.length <= NAMES_PER_LINE) {
     lines.push(
       withNames(
         // TRANSLATORS: what a disk is used for: it holds the LVM volume
         // group(s) named by %s, such as "system" or "system and data".
-        n_("Volume group %s", "Volume groups %s", groups.length),
+        n_("Hosting the volume group %s", "Hosting the volume groups %s", groups.length),
         groups,
         style,
       ),
@@ -112,35 +143,66 @@ function driveUsedFor(
     lines.push(
       sprintf(
         // TRANSLATORS: what a disk is used for: it holds %d LVM volume groups.
-        n_("%d volume group", "%d volume groups", groups.length),
+        n_("Hosting %d LVM volume group", "Hosting %d LVM volume groups", groups.length),
         groups.length,
       ),
     );
   }
 
-  if (device.filesystem) {
-    lines.push(
-      device.mountPath
-        ? withNames(
-            // TRANSLATORS: what a disk is used for: a single file system over
-            // all of it, mounted at %s, such as "/home".
-            _("%s (whole device)"),
-            [device.mountPath],
-            style,
-          )
-        : // TRANSLATORS: what a disk is used for: a single file system over all
-          // of it, not mounted anywhere.
-          _("File system (whole device)"),
-    );
-  } else {
-    const paths = mountPathsOf(device.partitions || []);
-    if (paths.length) lines.push(<Names names={paths} style={style} />);
+  const usedPartitions = partitions.filter((p) => isUsed(p) && p.mountPath !== "/");
+  if (usedPartitions.length) {
+    const usedPaths = mountPathsOf(usedPartitions);
+
+    if (usedPaths.length <= NAMES_PER_LINE) {
+      lines.push(
+        withNames(
+          n_("%s on an existing partition", "%s on existing partitions", usedPaths.length),
+          usedPaths,
+          style,
+        ),
+      );
+    } else {
+      lines.push(
+        sprintf(
+          n_("%d existing partition", "%d existing partitions", usedPartitions.length),
+          usedPartitions.length,
+        ),
+      );
+    }
   }
 
-  if (boots) {
-    // TRANSLATORS: what a disk is used for: it holds the partitions the
-    // machine needs to start, such as the EFI system partition.
-    lines.push(_("Boot partitions"));
+  const newPartitions = partitions.filter((p) => isNew(p));
+  if (!paths.includes("/") && newPartitions.length) {
+    const newPartPaths = mountPathsOf(newPartitions);
+    if (groups.length) {
+      if (newPartPaths.length <= NAMES_PER_LINE) {
+        lines.push(
+          withNames(
+            n_("%s as an additional partition", "%s as additional partitions", newPartPaths.length),
+            newPartPaths,
+            style,
+          ),
+        );
+      } else {
+        lines.push(
+          sprintf(
+            n_("%d additional partition", "%d additional partitions", newPartitions.length),
+            newPartitions.length,
+          ),
+        );
+      }
+    } else {
+      if (newPartPaths.length <= NAMES_PER_LINE) {
+        lines.push(withNames(_("%s"), newPartPaths, style));
+      } else {
+        lines.push(
+          sprintf(
+            n_("%d new partition", "%d new partitions", newPartitions.length),
+            newPartitions.length,
+          ),
+        );
+      }
+    }
   }
 
   return lines;
@@ -148,12 +210,61 @@ function driveUsedFor(
 
 /** What a volume group is used for. */
 function volumeGroupUsedFor(group: ConfigModel.VolumeGroup, style: NamesStyle): React.ReactNode[] {
-  const paths = mountPathsOf(group.logicalVolumes || []);
-  if (paths.length) return [<Names key="paths" names={paths} style={style} />];
+  const logicalVols = group.logicalVolumes || [];
+  const newVols = logicalVols.filter((v) => isNew(v));
+  const usedVols = logicalVols.filter((v) => isUsed(v));
 
   // TRANSLATORS: what a volume group is used for, when no logical volume is
   // planned in it yet.
-  return [_("Nothing yet")];
+  if (!newVols.length && !usedVols.length) return [_("Nothing yet")];
+
+  const lines: React.ReactNode[] = [];
+  const newPaths = mountPathsOf(newVols);
+  const usedPaths = mountPathsOf(usedVols);
+  const isSystem = newPaths.includes("/") || usedPaths.includes("/");
+
+  if (isSystem) {
+    lines.push(_("Installing the system"));
+  }
+
+  const relevantUsedPaths = usedPaths.filter((p) => p !== "/");
+  if (relevantUsedPaths.length) {
+    if (relevantUsedPaths.length <= NAMES_PER_LINE) {
+      lines.push(
+        withNames(
+          n_(
+            "%s on an existing logical volume",
+            "%s on existing logical volumes",
+            relevantUsedPaths.length,
+          ),
+          relevantUsedPaths,
+          style,
+        ),
+      );
+    } else {
+      lines.push(
+        sprintf(
+          n_("%d existing logical volume", "%d existing logical volumes", relevantUsedPaths.length),
+          relevantUsedPaths.length,
+        ),
+      );
+    }
+  }
+
+  if (!isSystem && newVols.length) {
+    if (newPaths.length <= NAMES_PER_LINE) {
+      lines.push(withNames(_("%s"), newPaths, style));
+    } else {
+      lines.push(
+        sprintf(
+          n_("%d new logical volume", "%d new logical volumes", newVols.length),
+          newVols.length,
+        ),
+      );
+    }
+  }
+
+  return lines;
 }
 
 /* ---- Existing data -------------------------------------------------------- */
