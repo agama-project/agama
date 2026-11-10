@@ -200,6 +200,41 @@ describe Y2Storage::AgamaProposal do
           )
         )
       end
+
+      it "sets the LVM id to the partitions used as physical volumes" do
+        devicegraph = proposal.propose
+
+        pvs = devicegraph.lvm_pvs.map(&:plain_blk_device)
+        expect(pvs.map(&:name)).to contain_exactly("/dev/sda2", "/dev/sda3")
+        expect(pvs.map(&:id)).to all(eq(Y2Storage::PartitionId::LVM))
+      end
+    end
+
+    context "when a partition used as physical volume has an explicit id" do
+      let(:scenario) { "empty-hd-50GiB.yaml" }
+
+      let(:config_json) do
+        {
+          drives:       [
+            { partitions: [{ alias: "pv", id: "linux", size: "40 GiB" }] }
+          ],
+          volumeGroups: [
+            {
+              name:            "system",
+              physicalVolumes: ["pv"],
+              logicalVolumes:  [{ filesystem: { path: "/" }, size: "10 GiB" }]
+            }
+          ],
+          boot:         { configure: false }
+        }
+      end
+
+      it "keeps the explicit id" do
+        devicegraph = proposal.propose
+
+        pv = devicegraph.lvm_pvs.first.plain_blk_device
+        expect(pv.id).to eq(Y2Storage::PartitionId::LINUX)
+      end
     end
 
     context "when a LVM physical volume is not found" do

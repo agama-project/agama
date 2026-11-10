@@ -124,6 +124,19 @@ describe Y2Storage::Proposal::AgamaPartitionCreator do
           end
         end
 
+        context "and the partition is a physical volume with the LVM id" do
+          let(:mount_point) { nil }
+
+          before do
+            vol.partition_id = ids::LVM
+            vol.lvm_volume_group_name = "vg0"
+          end
+
+          it "sets the LVM id" do
+            expect(partition.id).to eq(ids::LVM)
+          end
+        end
+
         context "and the partition is a member of a MD RAID" do
           let(:mount_point) { "/home" }
 
