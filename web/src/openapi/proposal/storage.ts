@@ -68,7 +68,9 @@ export type PartitionId =
   | "linux_usr_s390"
   | "linux_usr_s390x"
   | "linux_usr_x86"
-  | "linux_usr_x86_64";
+  | "linux_usr_x86_64"
+  | "linux_var"
+  | "linux_var_tmp";
 
 /**
  * API description of the storage proposal.
