@@ -407,7 +407,7 @@ rm -f /lib/modules/*/vmlinux*.[gx]z
 rm -rf /var/cache/zypp/* /var/lib/zypp/AnonymousUniqueId /var/lib/systemd/random-seed
 
 # Pre-compile the udev hardware database so systemd-hwdb-update is not needed at boot
-systemd-hwdb update || true
+systemd-hwdb update
 
 # gnome-kiosk startup script, executable rights not preserved during copying
 chmod +x /root/.local/bin/gnome-kiosk-script
