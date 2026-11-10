@@ -445,6 +445,14 @@ describe Y2Storage::AgamaProposal do
         expect(pv_vg1.blk_device.is?(:encryption)).to eq true
         expect(pv_vg1.blk_device.type.is?(:luks2)).to eq true
       end
+
+      it "sets the LVM id to the generated physical volumes" do
+        devicegraph = proposal.propose
+
+        pvs = devicegraph.lvm_pvs.map(&:plain_blk_device)
+        expect(pvs.size).to eq 3
+        expect(pvs.map(&:id)).to all(eq(Y2Storage::PartitionId::LVM))
+      end
     end
 
     context "when two volume groups with generated physical volumes share a disk" do
