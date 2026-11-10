@@ -132,7 +132,7 @@
       "enum": ["gpt", "msdos", "dasd"]
     },
     "partitionId": {
-      "enum": ["linux", "swap", "lvm", "raid", "esp", "prep", "bios_boot"]
+      "enum": ["linux", "swap", "lvm", "raid", "esp", "prep", "bios_boot", "xbootldr"]
     },
     "filesystem": {
       "type": "object",

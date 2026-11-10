@@ -38,6 +38,7 @@
         },
         {
           "name": "/dev/vda2",
+          "id": "xbootldr",
           "size": {
             "default": false,
             "min": 1234567,
