@@ -1,4 +1,4 @@
-# Copyright (c) [2015] SUSE LLC
+# Copyright (c) [2015, 2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -54,10 +54,12 @@ module Y2Storage
       # @see [BootRequirementsChecker#devicegraph]
       # @see [BootRequirementsChecker#planned_devices]
       # @see [BootRequirementsChecker#boot_disk_name]
-      def initialize(devicegraph, planned_devices, boot_disk_name)
+      # @see [BootRequirementsChecker#assign_boot_ids]
+      def initialize(devicegraph, planned_devices, boot_disk_name, assign_boot_ids = false)
         textdomain "storage"
 
         @devicegraph = devicegraph
+        @assign_boot_ids = assign_boot_ids
         @analyzer = Analyzer.new(devicegraph, planned_devices, boot_disk_name)
 
         log.info "boot disk: #{boot_disk.inspect}"
@@ -142,6 +144,14 @@ module Y2Storage
       end
 
       protected
+
+      # Whether the id of the planned partitions without id that are mounted at boot mount points
+      # must be set, see {BootRequirementsChecker#assign_boot_ids}.
+      #
+      # @return [Boolean]
+      def assign_boot_ids?
+        !!@assign_boot_ids
+      end
 
       # @return [Devicegraph]
       attr_reader :devicegraph

@@ -56,7 +56,8 @@ module Y2Storage
           devicegraph,
           planned_devices: planned_devices,
           boot_disk_name:  boot_device_name,
-          bootloader:      bootloader_config.type
+          bootloader:      bootloader_config.type,
+          assign_boot_ids: true
         )
         different_plans(checker)
       rescue BootRequirementsChecker::Error => e
