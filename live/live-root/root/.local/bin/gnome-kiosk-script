@@ -10,7 +10,7 @@ PREFS=$HOME/.mozilla/firefox/profile/user.js
 LANG_FILE=/sys/firmware/efi/efivars/PlatformLang-8be4df61-93ca-11d2-aa0d-00e098032b8c
 
 # file exists and is not empty
-if [ -s  "$LANG_FILE" ]; then
+if [ -s "$LANG_FILE" ]; then
   # skip the first 4 bytes (the EFI attributes), keep only the characters allowed in a language code,
   # especially remove the trailing null byte
   EFI_LANG=$(cat "$LANG_FILE" | tail -c +5 | tr -cd "[_a-zA-Z-]")
@@ -27,7 +27,6 @@ gsettings set org.gnome.desktop.session idle-delay 0
 gsettings set org.gnome.desktop.screensaver idle-activation-enabled false
 gsettings set org.gnome.desktop.screensaver lock-enabled false
 gsettings set org.gnome.settings-daemon.plugins.power sleep-inactive-ac-type 'nothing'
-
 
 # Waiting until Agama web server is listening.
 until [ "$(curl --silent --output /dev/null --write-out "%{http_code}" --head http://localhost/)" == "200" ]; do

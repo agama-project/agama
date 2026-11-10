@@ -31,7 +31,7 @@ FILE="$SCREENSHOT_DIR/screenshot.png"
 # flash screen: false
 gdbus call --session --dest org.gnome.Shell.Screenshot --object-path \
   /org/gnome/Shell/Screenshot --method org.gnome.Shell.Screenshot.Screenshot \
-  false false "$FILE" >/dev/null
+  false false "$FILE" > /dev/null
 
 # move the file
 if [ -n "$1" ]; then
