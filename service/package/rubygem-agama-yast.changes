@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Nov 10 08:24:48 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Add support for updateNvram bootloader key (jsc#PED-14224,
+  ECO jsc#PED-14413)
+- Add support for AutoYaST key bootloader->update_nvram conversion
+
+-------------------------------------------------------------------
 Fri Jul 17 08:24:39 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
 
 - Fix AutoYaST dns-search conversion (gh#agama-project/agama#3735, 

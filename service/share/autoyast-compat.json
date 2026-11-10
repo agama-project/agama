@@ -61,7 +61,7 @@
           { "key": "terminal", "support": "no" },
           { "key": "timeout", "support": "yes", "agama": "bootloader.timeout" },
           { "key": "trusted_boot", "support": "no" },
-          { "key": "update_nvram", "support": "no" },
+          { "key": "update_nvram", "support": "yes", "agama": "bootloader.updateNvram" },
           { "key": "vgamode", "support": "no" },
           { "key": "xen_append", "support": "no" },
           { "key": "xen_kernel_append", "support": "no" }

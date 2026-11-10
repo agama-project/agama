@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Nov 10 08:23:35 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Add support for bootloader config updateNvram (jsc#PED-14224,
+  ECO jsc#PED-14413)
+
+-------------------------------------------------------------------
 Wed Oct 14 10:47:30 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Do not run RPM scriptlets when updating the agama-scripts package
