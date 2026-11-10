@@ -211,6 +211,7 @@ describe Y2Storage::AgamaProposal do
       context "if no boot devices should be created" do
         before do
           config.boot = Agama::Storage::Configs::Boot.new.tap { |b| b.configure = false }
+          allow(Yast::Arch).to receive(:x86_64).and_return(true)
         end
 
         it "proposes to create only the root device" do
@@ -218,7 +219,7 @@ describe Y2Storage::AgamaProposal do
           partitions = proposal.devices.partitions
           expect(partitions.size).to eq 1
           root_part = partitions.first
-          expect(root_part.id).to eq Y2Storage::PartitionId::LINUX
+          expect(root_part.id).to eq Y2Storage::PartitionId::LINUX_ROOT_X86_64
           expect(root_part.size).to be > 49.GiB
           root_fs = root_part.filesystem
           expect(root_fs.root?).to eq true

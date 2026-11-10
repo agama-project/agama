@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2017-2025] SUSE LLC
+# Copyright (c) [2017-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -22,7 +22,7 @@
 require "y2storage/exceptions"
 require "y2storage/proposal/lvm_creator"
 require "y2storage/proposal/agama_md_creator"
-require "y2storage/proposal/partition_creator"
+require "y2storage/proposal/agama_partition_creator"
 
 module Y2Storage
   module Proposal
@@ -138,7 +138,7 @@ module Y2Storage
         distribution = space_result[:partitions_distribution]
 
         grow_and_reuse_devices(distribution)
-        self.creator_result = PartitionCreator.new(devicegraph).create_partitions(distribution)
+        self.creator_result = AgamaPartitionCreator.new(devicegraph).create_partitions(distribution)
       end
 
       # @see #process_devices
@@ -167,7 +167,7 @@ module Y2Storage
           raise NoDiskSpaceError, "Partitions cannot be allocated into #{devices.map(&:name)}"
         end
 
-        new_result = PartitionCreator.new(devicegraph).create_partitions(distribution)
+        new_result = AgamaPartitionCreator.new(devicegraph).create_partitions(distribution)
         self.creator_result = creator_result.merge(new_result)
       end
 
