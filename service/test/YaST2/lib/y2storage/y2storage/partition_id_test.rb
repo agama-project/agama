@@ -1,7 +1,7 @@
 #!/usr/bin/env rspec
 # frozen_string_literal: true
 
-# Copyright (c) [2017] SUSE LLC
+# Copyright (c) [2017, 2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -41,6 +41,57 @@ describe Y2Storage::PartitionId do
 
       expect(ids.size).to eq(size + 1)
       expect(described_class.linux_system_ids.size).to eq size
+    end
+  end
+
+  describe ".linux_system_ids" do
+    let(:dps_ids) do
+      archs = [:arm, :aarch64, :ppc32, :ppc64be, :ppc64le, :riscv32, :riscv64, :s390, :s390x, :x86, :x86_64]
+
+      [:linux_home, :linux_server_data, :linux_var, :linux_var_tmp] +
+        archs.map { |a| :"linux_root_#{a}" } + archs.map { |a| :"linux_usr_#{a}" }
+    end
+
+    it "includes the traditional Linux ids" do
+      ids = described_class.linux_system_ids
+
+      expect(ids).to include(
+        Y2Storage::PartitionId::LINUX, Y2Storage::PartitionId::SWAP,
+        Y2Storage::PartitionId::LVM, Y2Storage::PartitionId::RAID
+      )
+    end
+
+    it "includes the ids from the Discoverable Partitions Specification" do
+      expect(described_class.linux_system_ids.map(&:to_sym)).to include(*dps_ids)
+    end
+
+    it "does not include boot or Windows ids" do
+      ids = described_class.linux_system_ids
+
+      expect(ids).to_not include(
+        Y2Storage::PartitionId::ESP, Y2Storage::PartitionId::XBOOTLDR,
+        Y2Storage::PartitionId::BIOS_BOOT, Y2Storage::PartitionId::PREP,
+        Y2Storage::PartitionId::NTFS, Y2Storage::PartitionId::WINDOWS_BASIC_DATA
+      )
+    end
+  end
+
+  describe "#is?" do
+    it "returns true for :linux_system with the Discoverable Partitions Specification ids" do
+      [
+        Y2Storage::PartitionId::LINUX_HOME, Y2Storage::PartitionId::LINUX_SERVER_DATA,
+        Y2Storage::PartitionId::LINUX_ROOT_X86_64, Y2Storage::PartitionId::LINUX_USR_AARCH64,
+        Y2Storage::PartitionId::LINUX_VAR, Y2Storage::PartitionId::LINUX_VAR_TMP
+      ].each { |id| expect(id.is?(:linux_system)).to eq true }
+    end
+
+    it "returns false for :linux_system with boot ids" do
+      expect(Y2Storage::PartitionId::ESP.is?(:linux_system)).to eq false
+      expect(Y2Storage::PartitionId::XBOOTLDR.is?(:linux_system)).to eq false
+    end
+
+    it "returns false for :windows_system with the Discoverable Partitions Specification ids" do
+      expect(Y2Storage::PartitionId::LINUX_VAR.is?(:windows_system)).to eq false
     end
   end
 

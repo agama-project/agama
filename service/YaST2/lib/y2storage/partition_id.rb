@@ -1,4 +1,4 @@
-# Copyright (c) [2017] SUSE LLC
+# Copyright (c) [2017, 2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -125,7 +125,19 @@ module Y2Storage
       end
     end
 
-    LINUX_SYSTEM_IDS = [LINUX, SWAP, LVM, RAID].freeze
+    # Ids of the partitions that can host part of a Linux system, including the ones from the
+    # Discoverable Partitions Specification (root, /usr, /home, /srv, /var and /var/tmp).
+    LINUX_SYSTEM_IDS = [
+      LINUX, SWAP, LVM, RAID,
+      LINUX_HOME, LINUX_SERVER_DATA,
+      LINUX_ROOT_ARM, LINUX_ROOT_AARCH64, LINUX_ROOT_PPC32, LINUX_ROOT_PPC64BE,
+      LINUX_ROOT_PPC64LE, LINUX_ROOT_RISCV32, LINUX_ROOT_RISCV64, LINUX_ROOT_S390,
+      LINUX_ROOT_S390X, LINUX_ROOT_X86, LINUX_ROOT_X86_64,
+      LINUX_USR_ARM, LINUX_USR_AARCH64, LINUX_USR_PPC32, LINUX_USR_PPC64BE,
+      LINUX_USR_PPC64LE, LINUX_USR_RISCV32, LINUX_USR_RISCV64, LINUX_USR_S390,
+      LINUX_USR_S390X, LINUX_USR_X86, LINUX_USR_X86_64,
+      LINUX_VAR, LINUX_VAR_TMP
+    ].freeze
 
     WINDOWS_SYSTEM_IDS = [NTFS, DOS32, DOS16, DOS12, WINDOWS_BASIC_DATA, MICROSOFT_RESERVED].freeze
 
