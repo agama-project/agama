@@ -33,6 +33,13 @@ describe Bootloader::BootloaderFactory do
     end
   end
   describe "#supported_names" do
+    # Do not read the host's /etc/sysconfig/bootloader: the system bootloader is
+    # prepended to the list, which would make the result depend on the machine.
+    before do
+      allow(Bootloader::Sysconfig).to receive(:from_system)
+        .and_return(Bootloader::Sysconfig.new)
+    end
+
     context "on x86_64 architectures" do
       before do
         allow(Yast::Arch).to receive(:architecture).and_return("x86_64")

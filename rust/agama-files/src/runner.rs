@@ -102,11 +102,16 @@ impl ScriptsRunner {
             resolv_linked = self.link_resolv()?;
         }
 
-        for script in scripts {
-            _ = self
-                .progress
-                .cast(progress::message::Next::new(Scope::Files));
+        let total = scripts.len();
+        for (i, script) in scripts.into_iter().enumerate() {
             self.run_script(script).await?;
+            // The first step is already active after starting the progress,
+            // so advance only if there are more scripts to run.
+            if i + 1 < total {
+                _ = self
+                    .progress
+                    .cast(progress::message::Next::new(Scope::Files));
+            }
         }
 
         if resolv_linked {
@@ -342,8 +347,12 @@ mod tests {
         }
 
         pub fn setup_script(&self, content: &str, chroot: bool) -> Script {
+            self.setup_named_script("test.sh", content, chroot)
+        }
+
+        pub fn setup_named_script(&self, name: &str, content: &str, chroot: bool) -> Script {
             let base = BaseScript {
-                name: "test.sh".to_string(),
+                name: name.to_string(),
                 source: FileSource::Text {
                     content: content.to_string(),
                 },
@@ -397,6 +406,66 @@ mod tests {
         assert_eq!(ctx.result_content("post", "test.exit"), "0");
 
         assert!(std::fs::exists(file).unwrap());
+        Ok(())
+    }
+
+    #[test_context(Context)]
+    #[tokio::test]
+    async fn test_run_several_scripts_progress(ctx: &mut Context) -> Result<(), Error> {
+        let flag = ctx.tmp_dir.path().join("continue");
+        let content_1 = format!(
+            "#!/usr/bin/bash\necho started\nwhile [ ! -f {} ]; do sleep 0.05; done",
+            flag.display()
+        );
+        let script_1 = ctx.setup_named_script("one.sh", &content_1, false);
+        let script_2 = ctx.setup_named_script("two.sh", "#!/usr/bin/bash\necho second", false);
+        let script_3 = ctx.setup_named_script("three.sh", "#!/usr/bin/bash\necho third", false);
+        let scripts = vec![&script_1, &script_2, &script_3];
+
+        let runner = ctx.runner();
+        let stdout_1 = ctx.scripts_dir().join("post/one.stdout");
+
+        // While the first script runs, the progress must point to the first step.
+        let check = async {
+            loop {
+                let started = std::fs::read_to_string(&stdout_1)
+                    .map(|c| c.contains("started"))
+                    .unwrap_or(false);
+                if started {
+                    break;
+                }
+                tokio::time::sleep(std::time::Duration::from_millis(50)).await;
+            }
+
+            let progresses = ctx
+                .progress
+                .call(progress::message::GetProgress)
+                .await
+                .unwrap();
+            assert_eq!(progresses.len(), 1);
+            let progress = &progresses[0];
+            assert_eq!(progress.index, 1);
+            assert_eq!(progress.size, 3);
+            assert_eq!(progress.step, "Running user script 'one.sh'");
+
+            std::fs::File::create(&flag)?;
+            Ok::<_, Error>(())
+        };
+
+        let (result, check_result) = tokio::join!(runner.run(&scripts), check);
+        result?;
+        check_result?;
+
+        assert_eq!(ctx.result_content("post", "one.stdout"), "started\n");
+        assert_eq!(ctx.result_content("post", "two.stdout"), "second\n");
+        assert_eq!(ctx.result_content("post", "three.stdout"), "third\n");
+
+        let progresses = ctx
+            .progress
+            .call(progress::message::GetProgress)
+            .await
+            .unwrap();
+        assert!(progresses.is_empty());
         Ok(())
     }
 
