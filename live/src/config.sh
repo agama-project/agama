@@ -116,6 +116,11 @@ systemctl mask systemd-hwdb-update.service
 # Disable boot session/login accounting (not needed on live media, saves ~840ms at boot)
 systemctl mask wtmpdb-update-boot.service
 
+# Disable long-term maintenance timers on short-lived live installer media
+for t in backup-rpmdb.timer backup-sysconfig.timer logrotate.timer fstrim.timer wtmpdb-rotate.timer; do
+  systemctl mask $t
+done
+
 # Prevent premature activation of LVM (bsc#1246133)
 systemctl mask lvm2-monitor.service
 if [[ -f /etc/lvm/lvm.conf ]]; then
