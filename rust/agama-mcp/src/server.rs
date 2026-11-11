@@ -312,7 +312,7 @@ impl McpServer {
 
         if !self.mode.allows_install() && has_pre_scripts(&config) {
             return Ok(tool_error(
-                "Pre-installation scripts ('scripts.pre') are not permitted in configuration-only mode (inst.mcp=config). Pre-scripts execute arbitrary shell commands immediately.",
+                "Pre-installation scripts ('scripts.pre') are not permitted in configuration-only mode (inst.mcp=config) becase they execute arbitrary shell commands.",
             ));
         }
 

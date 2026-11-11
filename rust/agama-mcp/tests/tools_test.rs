@@ -232,7 +232,7 @@ async fn test_reboot_forbidden_in_config_mode() {
 }
 
 #[tokio::test]
-async fn test_reboot_blocked_during_installing() {
+async fn test_reboot_blocked_during_installation() {
     let backend_inner = MockBackend::default();
     backend_inner.status.lock().unwrap().stage = Stage::Installing;
     let backend = Arc::new(backend_inner);
