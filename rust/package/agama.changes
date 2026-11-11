@@ -2,7 +2,13 @@
 Wed Nov 11 12:00:00 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
 
 - Enable autorefresh for extraRepositories and disable it for the
-  Full Live medium repository (bsc#1243064).
+  Full Live medium repository (bsc#1279856).
+
+-------------------------------------------------------------------
+Wed Nov 11 08:44:35 UTC 2026 - Clemens Famulla-Conrad <cfamullaconrad@suse.com>
+
+- Support the IPv6 address generation mode (ipv6.addr-gen-mode)
+  in network connections (bsc#1279546)
 
 -------------------------------------------------------------------
 Mon Nov  9 13:40:53 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
