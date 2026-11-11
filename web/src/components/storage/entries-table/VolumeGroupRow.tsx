@@ -24,14 +24,9 @@ import React from "react";
 import EntryRow from "~/components/storage/entries-table/EntryRow";
 import VolumeGroupMenu from "~/components/storage/entries-table/VolumeGroupMenu";
 import TruncatedDeviceName from "~/components/storage/TruncatedDeviceName";
-import {
-  volumeGroupUsedFor,
-  existingDataOfVolumeGroup,
-  ExistingDataCell,
-} from "~/components/storage/entries-table/cells";
+import { volumeGroupUsedFor, ExistingDataCell } from "~/components/storage/entries-table/cells";
 import { volumeGroupFacts } from "~/components/storage/utils/device";
 import {
-  useExistingDataWording,
   useGroupedTable,
   useNamesStyle,
 } from "~/components/storage/storage-page/playground-switches";
@@ -68,7 +63,6 @@ export default function VolumeGroupRow({ group, subject }: VolumeGroupRowProps):
   // TRANSLATORS: said under the name of a volume group the installation
   // creates, in a list headed "Volume groups".
   const newMark = !group.name ? _("New") : undefined;
-  const wording = useExistingDataWording();
   const namesStyle = useNamesStyle();
 
   return (
@@ -77,9 +71,7 @@ export default function VolumeGroupRow({ group, subject }: VolumeGroupRowProps):
       size={size}
       description={isGrouped ? newMark : description}
       usedFor={volumeGroupUsedFor(group, namesStyle)}
-      existingData={
-        <ExistingDataCell data={existingDataOfVolumeGroup(group, device)} wording={wording} />
-      }
+      existingData={<ExistingDataCell config={group} device={device} />}
       menu={<VolumeGroupMenu group={group} subject={subject} />}
       subject={subject}
     />

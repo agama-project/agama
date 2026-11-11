@@ -34,7 +34,7 @@ function columnName(column: "device" | "usedFor" | "existingData" | "actions"): 
     case "existingData":
       // TRANSLATORS: names the column of the list saying what happens to the
       // data already on each device: kept, shrunk or deleted.
-      return _("Existing data");
+      return _("Actions on current content");
     case "usedFor":
       // TRANSLATORS: names the column of the list saying what the system being
       // installed uses each device for, such as its mount points.

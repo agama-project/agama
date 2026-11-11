@@ -30,18 +30,15 @@
  */
 
 import React from "react";
+import { Stack, StackItem } from "@patternfly/react-core";
 import { sprintf } from "sprintf-js";
 import Interpolate from "~/components/core/Interpolate";
 import Text from "~/components/core/Text";
 import { NAMES_PER_LINE } from "~/components/storage/shared/naming";
-import configModel from "~/model/storage/config-model";
-import { _, n_, formatList, formatListToParts } from "~/i18n";
-import type { ConfigModel } from "~/model/storage/config-model";
+import { _, n_, formatList, formatListToParts, TranslatedString } from "~/i18n";
+import type { Partitionable, ConfigModel } from "~/model/storage/config-model";
 import type { Storage as System } from "~/model/system";
-import type {
-  ExistingDataWording,
-  NamesStyle,
-} from "~/components/storage/storage-page/playground-switches";
+import type { NamesStyle } from "~/components/storage/storage-page/playground-switches";
 
 type Volume = ConfigModel.Partition | ConfigModel.LogicalVolume;
 
@@ -267,206 +264,78 @@ function volumeGroupUsedFor(group: ConfigModel.VolumeGroup, style: NamesStyle): 
   return lines;
 }
 
-/* ---- Existing data -------------------------------------------------------- */
+function isFormatted(partition: ConfigModel.Partition): boolean {
+  return partition.name && partition.mountPath && !partition.filesystem?.reuse;
+}
 
-/** What happens to what a device holds today, counted. */
-type ExistingData = {
-  /** Partitions or logical volumes: what the counts are of. */
-  unit: "partition" | "logicalVolume";
-  /** How many the device holds today. */
-  total: number;
-  /** Deleted for sure. */
-  deleted: number;
-  /** Formatted for the new system, which erases what they hold. */
-  formatted: number;
-  /** Deleted only if the space is needed. */
-  mayDelete: number;
-  /** Shrunk only if the space is needed. */
-  mayShrink: number;
-  /** Mounted as they are by the new system. */
-  reused: number;
-  /**
-   * Whether everything not reused is to be deleted, as a whole-device choice
-   * rather than one by one: said as "all except reused" instead of counted.
-   */
-  isDeleteAll: boolean;
+function mayShrink(partition: ConfigModel.Partition, device): boolean {
+  const devPart = device.partitions.find((p) => p.name === partition.name);
+  return devPart.block?.shrinking?.supported;
+}
+
+/**
+ * TODO: just a sketch
+ */
+const existingVgActions = (group: ConfigModel.VolumeGroup, device): TranslatedString[] => {
+  /* Nothing on the drive today, nothing to say about what happens to it. */
+  if (!device?.logicalVolumes?.length) return [];
+
+  return [_("TODO: what happens to existing LVs")];
 };
 
 /**
- * What happens to what a disk, a RAID or a volume group holds today, or
- * nothing where there is nothing on it yet.
+ * This considers only the case in which the drive contains partitions initially and will contain
+ * partitions after installation.
  */
-function existingDataOf(
-  volumes: Volume[],
-  current: System.Device[],
-  unit: ExistingData["unit"],
-  spacePolicy: ConfigModel.SpacePolicy | undefined,
-): ExistingData | null {
-  if (!current.length) return null;
+const existingDriveActions = (drive: Partitionable.Device, device): TranslatedString[] => {
+  /* Nothing on the drive today, nothing to say about what happens to it. */
+  if (!device?.partitions?.length) return [];
 
-  const existing = volumes.filter((v) => !configModel.volume.isNew(v));
-  const count = (test: (v: Volume) => boolean) => existing.filter(test).length;
+  const parts = drive?.partitions || [];
+  const formatParts = parts.filter((p) => isFormatted(p));
+  const toShrink = parts.filter((p) => p.resizeIfNeeded);
+  const canShrink = toShrink.filter((p) => mayShrink(p, device)).length;
+  const deleted = parts.filter((p) => p.delete).length;
+  const total = device.partitions.length;
 
-  const data: ExistingData = {
-    unit,
-    total: current.length,
-    deleted: count((v) => !!v.delete),
-    formatted: count((v) => !v.delete && !!v.mountPath && !v.filesystem?.reuse),
-    mayDelete: count((v) => !v.delete && !!v.deleteIfNeeded),
-    mayShrink: count((v) => !v.delete && !!v.resizeIfNeeded),
-    reused: count((v) => !v.delete && !!v.mountPath && !!v.filesystem?.reuse),
-    isDeleteAll: spacePolicy === "delete",
-  };
+  const lines: TranslatedString[] = [];
 
-  /* Deleting everything as a whole-device choice deletes whatever is not
-     reused or formatted, whether or not each one is flagged for it. */
-  if (data.isDeleteAll) {
-    data.deleted = Math.max(data.deleted, data.total - data.reused - data.formatted);
-  }
-
-  return data;
-}
-
-function existingDataOfDrive(
-  device: ConfigModel.Drive | ConfigModel.MdRaid,
-  current: System.Device | undefined,
-): ExistingData | null {
-  const data = existingDataOf(
-    device.partitions || [],
-    current?.partitions || [],
-    "partition",
-    device.spacePolicy,
-  );
-
-  /* A new file system over the whole device leaves none of its partitions. */
-  if (data && device.filesystem && !device.filesystem.reuse) {
-    return { ...data, deleted: data.total, formatted: 0, mayDelete: 0, mayShrink: 0, reused: 0 };
-  }
-
-  return data;
-}
-
-function existingDataOfVolumeGroup(
-  group: ConfigModel.VolumeGroup,
-  current: System.Device | undefined,
-): ExistingData | null {
-  if (!group.name) return null;
-  return existingDataOf(
-    group.logicalVolumes || [],
-    current?.logicalVolumes || [],
-    "logicalVolume",
-    group.spacePolicy,
-  );
-}
-
-/** Whether the device loses, or may lose, data. Shown in bold. */
-function losesData(data: ExistingData): boolean {
-  return data.deleted + data.formatted + data.mayDelete > 0;
-}
-
-/* The pieces each wording set is built from. Sentences composed from pieces
-   do not translate well; acceptable while the wording is being decided. */
-
-function shortWording(data: ExistingData): string {
-  const isPartition = data.unit === "partition";
-  const erased = data.deleted + data.formatted;
-
-  if (erased && erased === data.total) return _("All deleted");
-  if (data.isDeleteAll && data.reused && erased) return _("All deleted except reused");
-
-  if (erased) {
-    if (data.mayShrink || data.mayDelete) {
-      return sprintf(
-        data.mayDelete
-          ? // TRANSLATORS: what happens to the existing data of a device: %d
-            // partitions or logical volumes are deleted, and others may be.
-            _("%d deleted, others may be deleted")
-          : // TRANSLATORS: what happens to the existing data of a device: %d
-            // partitions or logical volumes are deleted, and others may be
-            // made smaller.
-            _("%d deleted, others may be shrunk"),
-        erased,
-      );
-    }
-    return sprintf(
-      isPartition
-        ? n_("%d partition deleted", "%d partitions deleted", erased)
-        : n_("%d logical volume deleted", "%d logical volumes deleted", erased),
-      erased,
+  if (formatParts.length) {
+    lines.push(
+      n_(
+        "An existing partition will be formatted",
+        "%d existing partitions will be formatted",
+        formatParts.length,
+      ),
     );
   }
 
-  if (data.mayDelete && data.mayShrink) return _("May be deleted or shrunk");
-  if (data.mayDelete) return _("May be deleted");
-  if (data.mayShrink) return _("May be shrunk");
-  return _("Kept");
-}
-
-function verboseWording(data: ExistingData): string {
-  const isPartition = data.unit === "partition";
-  const erased = data.deleted + data.formatted;
-
-  if (erased && erased === data.total) return _("All content deleted");
-  if (data.isDeleteAll && data.reused && erased) {
-    return isPartition
-      ? _("All content deleted except reused partitions")
-      : _("All content deleted except reused logical volumes");
+  if (canShrink === 1) {
+    lines.push(_("An existing partition may be shrunk"));
   }
 
-  if (erased) {
-    const done = sprintf(
-      isPartition
-        ? n_("%d partition deleted", "%d partitions deleted", erased)
-        : n_("%d logical volume deleted", "%d logical volumes deleted", erased),
-      erased,
+  if (canShrink > 1) {
+    lines.push(_("Some existing partitions may be shrunk"));
+  }
+
+  if (deleted + formatParts.length === total) {
+    lines.push(_("All disk content will be deleted"));
+  } else if (!deleted && !formatParts.length) {
+    if (canShrink) {
+      lines.push(_("The current data will be kept"));
+    } else {
+      lines.push(_("The current data and partitions will be kept"));
+    }
+  } else if (deleted > 0) {
+    lines.push(
+      sprintf(
+        n_("%d partition will be deleted", "%d partitions will be deleted", deleted),
+        deleted,
+      ),
     );
-    if (data.mayDelete) {
-      return `${done}, ${isPartition ? _("other partitions may be deleted") : _("other logical volumes may be deleted")}`;
-    }
-    if (data.mayShrink) {
-      return `${done}, ${isPartition ? _("other partitions may be shrunk") : _("other logical volumes may be shrunk")}`;
-    }
-    return done;
   }
 
-  if (data.mayDelete) {
-    return isPartition ? _("Partitions may be deleted") : _("Logical volumes may be deleted");
-  }
-  if (data.mayShrink) {
-    return isPartition ? _("Partitions may be shrunk") : _("Logical volumes may be shrunk");
-  }
-  return isPartition ? _("Current partitions kept") : _("Current logical volumes kept");
-}
-
-function bluntWording(data: ExistingData): string {
-  const erased = data.deleted + data.formatted;
-
-  if (erased && erased === data.total) return _("Wiped");
-  if (data.isDeleteAll && data.reused && erased) return _("Wiped except reused");
-  if (erased) {
-    const done = sprintf(_("%d deleted"), erased);
-    if (data.mayDelete) return `${done}, ${_("may delete more")}`;
-    if (data.mayShrink) return `${done}, ${_("may shrink")}`;
-    return done;
-  }
-  if (data.mayDelete && data.mayShrink) return _("May delete or shrink");
-  if (data.mayDelete) return _("May delete");
-  if (data.mayShrink) return _("May shrink");
-  return _("No changes");
-}
-
-function lossWording(data: ExistingData): string {
-  if (data.deleted + data.formatted) return _("Data loss");
-  if (data.mayDelete) return _("Possible data loss");
-  if (data.mayShrink) return _("All kept, may be shrunk");
-  return _("All kept");
-}
-
-const WORDINGS: Record<ExistingDataWording, (data: ExistingData) => string> = {
-  short: shortWording,
-  verbose: verboseWording,
-  blunt: bluntWording,
-  loss: lossWording,
+  return lines;
 };
 
 /**
@@ -474,34 +343,37 @@ const WORDINGS: Record<ExistingDataWording, (data: ExistingData) => string> = {
  * tells screen readers so, rather than leaving them on a cell read as "blank".
  */
 function ExistingDataCell({
-  data,
-  wording,
+  config,
+  device,
 }: {
-  data: ExistingData | null;
-  wording: ExistingDataWording;
+  config: Partitionable.Device | ConfigModel.VolumeGroup;
+  device: System.Device | null;
 }) {
-  if (!data) {
+  const isVolumeGroup = "vgName" in config;
+  const lines = isVolumeGroup
+    ? existingVgActions(config, device)
+    : existingDriveActions(config, device);
+
+  if (lines.length) {
     return (
-      <Text srOnly>
-        {
-          // TRANSLATORS: read by screen readers in the "Existing data" column
-          // for a device that holds nothing yet, such as a volume group the
-          // installation creates.
-          _("No existing data")
-        }
-      </Text>
+      <Stack>
+        {lines.map((line) => (
+          <StackItem key={line}>{line}</StackItem>
+        ))}
+      </Stack>
     );
   }
 
-  const text = WORDINGS[wording](data);
-  return losesData(data) ? <Text isBold>{text}</Text> : <>{text}</>;
+  return (
+    <Text srOnly>
+      {
+        // TRANSLATORS: read by screen readers in the "Existing data" column
+        // for a device that holds nothing yet, such as a volume group the
+        // installation creates.
+        _("No existing data")
+      }
+    </Text>
+  );
 }
 
-export {
-  driveUsedFor,
-  volumeGroupUsedFor,
-  existingDataOfDrive,
-  existingDataOfVolumeGroup,
-  ExistingDataCell,
-};
-export type { ExistingData };
+export { driveUsedFor, volumeGroupUsedFor, ExistingDataCell };

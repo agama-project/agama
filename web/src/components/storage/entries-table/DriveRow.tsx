@@ -23,16 +23,11 @@
 import React from "react";
 import EntryRow from "~/components/storage/entries-table/EntryRow";
 import DriveMenu from "~/components/storage/entries-table/DriveMenu";
-import {
-  driveUsedFor,
-  existingDataOfDrive,
-  ExistingDataCell,
-} from "~/components/storage/entries-table/cells";
+import { driveUsedFor, ExistingDataCell } from "~/components/storage/entries-table/cells";
 import { deviceSize } from "~/components/storage/utils";
 import { driveDescription, typeDescription } from "~/components/storage/utils/device";
 import { useConfigModel } from "~/hooks/model/storage/config-model";
 import {
-  useExistingDataWording,
   useGroupedTable,
   useNamesStyle,
 } from "~/components/storage/storage-page/playground-switches";
@@ -90,10 +85,7 @@ export default function DriveRow({ name, subject }: DriveRowProps): React.ReactN
         namesStyle,
       )
     : [];
-  const wording = useExistingDataWording();
-  const existingData = entry && (
-    <ExistingDataCell data={existingDataOfDrive(entry, device)} wording={wording} />
-  );
+  const existingData = entry && <ExistingDataCell config={entry} device={device} />;
 
   return (
     <EntryRow

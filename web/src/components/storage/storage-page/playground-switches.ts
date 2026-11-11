@@ -40,13 +40,6 @@
  *   agamaGroupTitleStyle("flat")   // flat faint band behind each title
  *   agamaGroupTitleStyle("plain")  // small capitals on the page, as before
  *
- * Which set of words the "Existing data" column uses:
- *
- *   agamaExistingDataWording("verbose")  // Current partitions kept, Partitions may be shrunk, ... (default)
- *   agamaExistingDataWording("short")    // Kept, May be shrunk, All deleted
- *   agamaExistingDataWording("blunt")    // No changes, May shrink, Wiped
- *   agamaExistingDataWording("loss")     // All kept, Possible data loss, Data loss
- *
  * How names (mount points, volume groups) read in the "Used for" column:
  *
  *   agamaNamesStyle("mono")   // in monospace, apart from the words around them (default)
@@ -126,7 +119,6 @@ import React from "react";
 
 type DevicesBox = "off" | "on";
 type GroupedTable = "off" | "on";
-type ExistingDataWording = "short" | "verbose" | "blunt" | "loss";
 type GroupTitleStyle = "band" | "flat" | "plain";
 type NamesStyle = "mono" | "plain";
 type SummaryStyle = "plain" | "hint";
@@ -144,7 +136,6 @@ type SectionTitle = "plain" | "spaced" | "rule" | "both" | "grouped" | "separate
 type SwitchName =
   | "agamaDevicesBox"
   | "agamaGroupedTable"
-  | "agamaExistingDataWording"
   | "agamaNamesStyle"
   | "agamaGroupTitleStyle"
   | "agamaFailedDetails"
@@ -163,7 +154,6 @@ declare global {
   interface Window {
     agamaDevicesBox?: (value: boolean) => void;
     agamaGroupedTable?: (value: boolean) => void;
-    agamaExistingDataWording?: (value: ExistingDataWording) => void;
     agamaGroupTitleStyle?: (value: GroupTitleStyle) => void;
     agamaNamesStyle?: (value: NamesStyle) => void;
     agamaSummaryStyle?: (value: SummaryStyle) => void;
@@ -242,13 +232,6 @@ const useGroupedTable = consoleSwitch<GroupedTable>("agamaGroupedTable", ["on", 
   input ? "on" : "off",
 );
 
-const useExistingDataWording = consoleSwitch<ExistingDataWording>("agamaExistingDataWording", [
-  "verbose",
-  "short",
-  "blunt",
-  "loss",
-]);
-
 const useGroupTitleStyle = consoleSwitch<GroupTitleStyle>("agamaGroupTitleStyle", [
   "band",
   "flat",
@@ -311,7 +294,6 @@ export {
   useSectionIndent,
   useDevicesBox,
   useGroupedTable,
-  useExistingDataWording,
   useNamesStyle,
   useGroupTitleStyle,
   useSummaryWording,
@@ -319,4 +301,4 @@ export {
   useFailedDetails,
   useSummaryStyle,
 };
-export type { ExistingDataWording, NamesStyle };
+export type { NamesStyle };
