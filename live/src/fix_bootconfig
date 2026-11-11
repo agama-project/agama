@@ -90,6 +90,9 @@ if [ -n "\$target_dir" ]; then
 
   rmdir "\$mount_dir1"
   rmdir "\$mount_dir2"
+
+  # move the root image into the arch dependent location
+  mv "\$target_dir/LiveOS/" "\$target_dir/boot/$arch"
 fi
 
 profile=$(echo "$kiwi_profiles" | tr "_" "-")
