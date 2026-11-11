@@ -61,6 +61,14 @@ pub enum Error {
     Generic(#[from] anyhow::Error),
     #[error("There is no proposal for localization")]
     MissingProposal,
+    #[error("Failed to read locales database: {0}")]
+    LocalesDatabaseRead(String),
+    #[error("Failed to read timezones database: {0}")]
+    TimezonesDatabaseRead(String),
+    #[error("Failed to read keymaps database: {0}")]
+    KeymapsDatabaseRead(String),
+    #[error("Thread panicked while reading {0} database")]
+    DatabaseThreadPanicked(&'static str),
 }
 
 /// Builds and spawns the l10n service.
@@ -214,6 +222,12 @@ impl Actor for Service {
 impl MessageHandler<message::GetSystem> for Service {
     async fn handle(&mut self, _message: message::GetSystem) -> Result<SystemInfo, Error> {
         Ok(self.system.clone())
+    }
+}
+
+impl MessageHandler<message::GetLocale> for Service {
+    async fn handle(&mut self, _message: message::GetLocale) -> Result<LocaleId, Error> {
+        Ok(self.system.locale.clone())
     }
 }
 

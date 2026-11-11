@@ -105,6 +105,11 @@ impl Registry {
             }
         }
 
+        if ids.is_empty() {
+            self.content = vec![];
+            return Ok(());
+        }
+
         self.fallback = Self::read_fallback_languages()?;
 
         let mut content = vec![];
