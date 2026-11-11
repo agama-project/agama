@@ -37,7 +37,6 @@ describe Y2Storage::StorageManager do
 
   before do
     described_class.create_test_instance
-    allow(Yast::Pkg).to receive(:SourceReleaseAll)
     allow(Storage::LvmDevicesFile).to receive(:status).and_return lvm_devs_disabled
   end
 

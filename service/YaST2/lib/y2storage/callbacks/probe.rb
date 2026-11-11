@@ -24,7 +24,6 @@ require "y2storage/storage_features_list"
 require "y2storage/package_handler"
 
 Yast.import "Mode"
-Yast.import "Pkg"
 
 module Y2Storage
   module Callbacks
@@ -97,12 +96,6 @@ module Y2Storage
 
       # Initialization
       def begin
-        # Release all sources before probing. Otherwise, unmount action could fail if the mount point
-        # of the software source device is modified. Note that this is only necessary during the
-        # installation because libstorage-ng would try to unmount from the chroot path
-        # (e.g., /mnt/mount/point) and there is nothing mounted there.
-        Yast::Pkg.SourceReleaseAll if Yast::Mode.installation
-
         @again = false
       end
 
