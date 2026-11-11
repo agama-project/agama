@@ -357,6 +357,84 @@ describe Y2Storage::AgamaProposal do
         end
       end
 
+      context "and some partitions are encrypted" do
+        let(:ptable_type) { nil }
+
+        let(:encryption) { { luks2: { password: "12345" } } }
+
+        let(:config_json) do
+          {
+            boot:   { configure: false },
+            drives: [
+              {
+                ptableType: ptable_type,
+                partitions: ["/", "/usr", "/home", "/var/tmp", "swap", "/tmp", "/opt"].map do |path|
+                  { filesystem: { path: path }, size: "1 GiB", encryption: encryption }
+                end
+              }
+            ].map(&:compact)
+          }
+        end
+
+        # @return [Hash{String => String}] device mapper name of the encryptions by mount path
+        def names_by_path(devicegraph)
+          devicegraph.encryptions.map { |e| [e.mount_point.path, e.dm_table_name] }.to_h
+        end
+
+        it "uses the device mapper names defined by the Discoverable Partitions Specification" do
+          result = names_by_path(proposal.propose)
+
+          expect(result).to include(
+            "/" => "root", "/usr" => "usr", "/home" => "home", "/var/tmp" => "tmp", "swap" => "swap"
+          )
+        end
+
+        it "keeps the usual names for the partitions without discoverable id" do
+          result = names_by_path(proposal.propose)
+
+          expect(result).to include("/tmp" => "cr_tmp", "/opt" => "cr_opt")
+        end
+
+        context "and the partition table is MSDOS" do
+          let(:ptable_type) { "msdos" }
+
+          it "keeps the usual names" do
+            result = names_by_path(proposal.propose)
+
+            expect(result).to include(
+              "/" => "cr_root", "/usr" => "cr_usr", "/home" => "cr_home",
+              "/var/tmp" => "cr_var_tmp", "swap" => "cr_swap"
+            )
+          end
+        end
+
+        context "and the device mapper name is already used by another device" do
+          let(:scenario) { "encrypted-home-50GiB.yaml" }
+
+          let(:config_json) do
+            {
+              boot:   { configure: false },
+              drives: [
+                {
+                  partitions: [
+                    { search: "/dev/sda1" },
+                    { filesystem: { path: "/home" }, size: "1 GiB", encryption: encryption }
+                  ]
+                }
+              ]
+            }
+          end
+
+          it "keeps the usual name" do
+            devicegraph = proposal.propose
+            new_encryption = devicegraph.encryptions.find { |e| e.mount_point&.path == "/home" }
+
+            expect(devicegraph.encryptions.map(&:dm_table_name)).to include("home")
+            expect(new_encryption.dm_table_name).to eq("cr_home")
+          end
+        end
+      end
+
       # Boot partitions in the config, with the expected ids and the mount points that are proposed
       # to complete the config.
       {

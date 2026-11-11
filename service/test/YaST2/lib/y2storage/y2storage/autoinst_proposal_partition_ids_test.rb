@@ -26,7 +26,8 @@ require_relative "../support/shared_setup"
 require "y2storage"
 
 # The AutoYaST proposal must not set the partition ids that the Agama proposal sets (ids from the
-# Discoverable Partitions Specification and ids of the partitions configured at boot mount points).
+# Discoverable Partitions Specification, device mapper names of those partitions and ids of the
+# partitions configured at boot mount points).
 describe Y2Storage::AutoinstProposal do
   include_context "yast2-storage-ng test setup"
 
@@ -169,6 +170,29 @@ describe Y2Storage::AutoinstProposal do
 
         expect(result["/boot"]).to eq(ids::ESP)
         expect(result["/boot/efi"]).to eq(ids::LINUX)
+      end
+    end
+
+    context "when the profile partitions are encrypted" do
+      let(:profile_paths) { ["/", "/home", "swap"] }
+
+      let(:partitioning) do
+        [
+          {
+            "device"     => "/dev/sda",
+            "use"        => "all",
+            "partitions" => profile_paths.map do |path|
+              profile_partition(path).merge("crypt_method" => :luks1, "crypt_key" => "12345")
+            end
+          }
+        ]
+      end
+
+      it "does not use the device mapper names from the Discoverable Partitions Specification" do
+        proposal.propose
+        names = proposal.devices.encryptions.map(&:dm_table_name)
+
+        expect(names).to contain_exactly("cr_root", "cr_home", "cr_swap")
       end
     end
 
