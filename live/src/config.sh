@@ -69,7 +69,6 @@ systemctl enable agama-autoinstall.service
 systemctl enable agama-hostname.service
 systemctl enable agama-proxy-setup.service
 systemctl enable agama-certificate-issue.path
-systemctl enable agama-certificate-wait.service
 systemctl enable agama-cmdline-process.service
 systemctl enable agama-welcome-issue.service
 systemctl enable agama-avahi-issue.service
@@ -107,6 +106,20 @@ fi
 # disable snapshot cleanup
 systemctl disable snapper-cleanup.timer
 systemctl disable snapper-timeline.timer
+
+# Disable desktop file MIME cache updates (not needed in kiosk mode, saves ~2.8s at boot)
+systemctl mask update-desktop-database.service
+
+# Prevent hardware database updates at boot (pre-compiled below, saves ~1.0s at boot)
+systemctl mask systemd-hwdb-update.service
+
+# Disable boot session/login accounting (not needed on live media, saves ~840ms at boot)
+systemctl mask wtmpdb-update-boot.service
+
+# Disable long-term maintenance timers on short-lived live installer media
+for t in backup-rpmdb.timer backup-sysconfig.timer logrotate.timer fstrim.timer wtmpdb-rotate.timer; do
+  systemctl mask $t
+done
 
 # Prevent premature activation of LVM (bsc#1246133)
 systemctl mask lvm2-monitor.service
@@ -392,6 +405,9 @@ rm -f /lib/modules/*/vmlinux*.[gx]z
 
 # Remove generated files (boo#1098535)
 rm -rf /var/cache/zypp/* /var/lib/zypp/AnonymousUniqueId /var/lib/systemd/random-seed
+
+# Pre-compile the udev hardware database so systemd-hwdb-update is not needed at boot
+systemd-hwdb update
 
 # gnome-kiosk startup script, executable rights not preserved during copying
 chmod +x /root/.local/bin/gnome-kiosk-script
