@@ -1,10 +1,10 @@
 [Unit]
 Description=Generate Agama welcome message
-Before=systemd-user-sessions.service
+Before=getty.target
 
 [Service]
 Type=oneshot
 ExecStart=agama-issue-generator --welcome
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=getty.target

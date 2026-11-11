@@ -1,0 +1,27 @@
+#! /bin/sh
+
+# Systemd generator for conditionally enabling the Agama info= downloader.
+#
+# Only enable agama-info-cmdline.service if inst.info= or agama.info= is present
+# on the kernel command line. This prevents agama.service and agama-web-server.service
+# from being held back by network-online.target on standard boots where no info=
+# parameter is used.
+#
+# See "man systemd.generator" for more details.
+normal_dir="$1"
+
+if [ -z "$normal_dir" ]; then
+  echo "Missing the output directory argument" >&2
+  exit 1
+fi
+
+read -r cmdline < /proc/cmdline
+case "$cmdline" in
+  *inst.info=*|*agama.info=*)
+    mkdir -p "$normal_dir/multi-user.target.wants"
+    ln -sf /etc/systemd/system/agama-info-cmdline.service "$normal_dir/multi-user.target.wants/agama-info-cmdline.service"
+    ;;
+  *)
+    exit 0
+    ;;
+esac
