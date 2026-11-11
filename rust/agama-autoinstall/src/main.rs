@@ -95,6 +95,9 @@ async fn run() -> anyhow::Result<()> {
     tracing::info!("Starting the auto-installation");
     if let Err(_) = manager_client.install().await {
         let questions = UserQuestions::new(http.clone());
+        // install action compresses about 20 possible manager service errors into
+        // either 422 unprocessable entity or 500 internal server error -> not much
+        // details can be provided to the user
         questions.autoinstall_start_failed().await?;
     }
 
