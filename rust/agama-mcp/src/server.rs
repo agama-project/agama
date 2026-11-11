@@ -44,6 +44,10 @@ use std::sync::Arc;
 use std::time::Duration;
 use tokio::sync::broadcast;
 
+const DEFAULT_WAIT_TIMEOUT_SECS: u64 = 60;
+const MIN_WAIT_TIMEOUT_SECS: u64 = 1;
+const MAX_WAIT_TIMEOUT_SECS: u64 = 300;
+
 /// Backend trait abstracting interactions with the Agama installer state machine.
 #[async_trait]
 pub trait McpBackend: Send + Sync {
@@ -211,6 +215,16 @@ impl McpServer {
                 Vec::new()
             }
         }
+    }
+
+    async fn progress_report_tool_result(
+        &self,
+        status: &Status,
+        detail_message: Option<&str>,
+    ) -> Result<CallToolResult, Error> {
+        let pending = self.fetch_pending_questions().await;
+        let report = format_progress_report(status, pending, detail_message);
+        Ok(tool_success(serde_json::to_string_pretty(&report)?))
     }
 
     /// Queries Agama's hardware probe engines to map the physical state of the machine.
@@ -417,10 +431,7 @@ impl McpServer {
             Err(e) => return Ok(tool_error(format!("Failed to retrieve progress: {e}"))),
         };
 
-        let pending_questions = self.fetch_pending_questions().await;
-        let report = format_progress_report(&status, pending_questions, None);
-        let formatted = serde_json::to_string_pretty(&report)?;
-        Ok(tool_success(formatted))
+        self.progress_report_tool_result(&status, None).await
     }
 
     /// Waits for an installation event or progress update.
@@ -434,7 +445,10 @@ impl McpServer {
         &self,
         Parameters(args): Parameters<WaitProgressArgs>,
     ) -> Result<CallToolResult, Error> {
-        let timeout_secs = args.timeout_seconds.unwrap_or(60).clamp(1, 300);
+        let timeout_secs = args
+            .timeout_seconds
+            .unwrap_or(DEFAULT_WAIT_TIMEOUT_SECS)
+            .clamp(MIN_WAIT_TIMEOUT_SECS, MAX_WAIT_TIMEOUT_SECS);
         let deadline = tokio::time::Instant::now() + Duration::from_secs(timeout_secs);
 
         // 1. Subscribe to events FIRST before querying status to prevent missing state transitions
@@ -472,23 +486,17 @@ impl McpServer {
                     event_res = rx.recv() => {
                         match event_res {
                             Ok(Event::QuestionAdded { id }) => {
-                                let pending = self.fetch_pending_questions().await;
                                 let msg = format!("Question {id} pending. Call 'answer_question'.");
-                                let report = format_progress_report(&status, pending, Some(&msg));
-                                return Ok(tool_success(serde_json::to_string_pretty(&report)?));
+                                return self.progress_report_tool_result(&status, Some(&msg)).await;
                             }
                             Ok(Event::StageChanged { stage }) if stage == Stage::Finished || stage == Stage::Failed => {
-                                let cur = self.backend.get_progress().await.unwrap_or_else(|_| status.clone());
-                                let pending = self.fetch_pending_questions().await;
-                                let report = format_progress_report(&cur, pending, None);
-                                return Ok(tool_success(serde_json::to_string_pretty(&report)?));
+                                let current_status = self.backend.get_progress().await.unwrap_or_else(|_| status.clone());
+                                return self.progress_report_tool_result(&current_status, None).await;
                             }
                             Ok(Event::TaskFinished { remaining: 0, .. }) | Ok(Event::ProposalChanged { .. }) => {
-                                let cur = self.backend.get_progress().await.unwrap_or_else(|_| status.clone());
-                                if cur.tasks.is_empty() {
-                                    let pending = self.fetch_pending_questions().await;
-                                    let report = format_progress_report(&cur, pending, None);
-                                    return Ok(tool_success(serde_json::to_string_pretty(&report)?));
+                                let current_status = self.backend.get_progress().await.unwrap_or_else(|_| status.clone());
+                                if current_status.tasks.is_empty() {
+                                    return self.progress_report_tool_result(&current_status, None).await;
                                 }
                             }
                             Ok(_) => {
@@ -497,17 +505,16 @@ impl McpServer {
                             Err(broadcast::error::RecvError::Lagged(_)) => {
                                 // Channel buffer overflowed: clear backlog, re-read state, and then continue with events.
                                 while rx.try_recv().is_ok() {}
-                                let cur = self.backend.get_progress().await.unwrap_or_default();
-                                if cur.stage == Stage::Finished
-                                    || cur.stage == Stage::Failed
-                                    || (cur.stage == Stage::Configuring && cur.tasks.is_empty())
+                                let current_status = self.backend.get_progress().await.unwrap_or_default();
+                                if current_status.stage == Stage::Finished
+                                    || current_status.stage == Stage::Failed
+                                    || (current_status.stage == Stage::Configuring && current_status.tasks.is_empty())
                                 {
                                     break;
                                 }
                                 let pending = self.fetch_pending_questions().await;
                                 if !pending.is_empty() {
-                                    let report = format_progress_report(&cur, pending, None);
-                                    return Ok(tool_success(serde_json::to_string_pretty(&report)?));
+                                    return self.progress_report_tool_result(&current_status, None).await;
                                 }
                             }
                             Err(broadcast::error::RecvError::Closed) => {
@@ -524,10 +531,7 @@ impl McpServer {
 
         // 4. Timeout elapsed or channel closed: return state-derived report with next steps
         let latest_status = self.backend.get_progress().await.unwrap_or(status);
-        let latest_pending = self.fetch_pending_questions().await;
-        let report = format_progress_report(&latest_status, latest_pending, None);
-
-        Ok(tool_success(serde_json::to_string_pretty(&report)?))
+        self.progress_report_tool_result(&latest_status, None).await
     }
 
     /// Retrieves specific subsets of system logs directly from journalctl.

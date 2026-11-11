@@ -202,23 +202,23 @@ impl ProposalOutcome {
 /// Dynamically matches against top-level keys in the serialized SystemInfo.
 /// Always returns a JSON Object (wrapping arrays or non-object values under the resource key).
 pub(crate) fn filter_system_resource(system_val: &Value, resource: &str) -> Value {
-    if let Some(map) = system_val.as_object() {
-        if let Some(val) = map.get(resource) {
-            if val.is_object() {
-                val.clone()
-            } else {
-                json!({ resource: val })
-            }
+    let Some(map) = system_val.as_object() else {
+        return json!({ resource: system_val });
+    };
+
+    if let Some(val) = map.get(resource) {
+        if val.is_object() {
+            val.clone()
         } else {
-            let mut available: Vec<&str> = map.keys().map(|k| k.as_str()).collect();
-            available.sort_unstable();
-            json!({
-                "error": format!("Resource '{resource}' not found in system inventory"),
-                "available_resources": available,
-            })
+            json!({ resource: val })
         }
     } else {
-        json!({ resource: system_val })
+        let mut available: Vec<&str> = map.keys().map(|k| k.as_str()).collect();
+        available.sort_unstable();
+        json!({
+            "error": format!("Resource '{resource}' not found in system inventory"),
+            "available_resources": available,
+        })
     }
 }
 
