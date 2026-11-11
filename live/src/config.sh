@@ -161,9 +161,11 @@ label="Install-$profile-$arch"
 echo "Setting default live root: live:LABEL=$label"
 mkdir /etc/cmdline.d
 echo "root=live:LABEL=$label" >/etc/cmdline.d/10-liveroot.conf
+# the root image has been moved to the arch dependant location
+echo "rd.live.dir=boot/$arch/LiveOS" >>/etc/cmdline.d/10-liveroot.conf
 echo "root_disk=live:LABEL=$label" >>/etc/cmdline.d/10-liveroot.conf
 echo 'install_items+=" /etc/cmdline.d/10-liveroot.conf "' >/etc/dracut.conf.d/10-liveroot-file.conf
-echo 'add_dracutmodules+=" dracut-menu agama-cmdline agama-dud live-self-update initrd-nmtui chrony "' >>/etc/dracut.conf.d/10-liveroot-file.conf
+echo 'add_dracutmodules+=" dracut-menu agama-cmdline agama-dud live-self-update initrd-nmtui initrd-kernel-check chrony "' >>/etc/dracut.conf.d/10-liveroot-file.conf
 
 if [ "${arch}" = "ppc64le" ]; then
   # Added support for configuring HCN in dracut (jsc#PED-14533) only in ppc64le.
@@ -407,7 +409,7 @@ rm -f /lib/modules/*/vmlinux*.[gx]z
 rm -rf /var/cache/zypp/* /var/lib/zypp/AnonymousUniqueId /var/lib/systemd/random-seed
 
 # Pre-compile the udev hardware database so systemd-hwdb-update is not needed at boot
-systemd-hwdb update || true
+systemd-hwdb update
 
 # gnome-kiosk startup script, executable rights not preserved during copying
 chmod +x /root/.local/bin/gnome-kiosk-script
