@@ -817,13 +817,7 @@ async fn test_wait_progress_wakes_up_when_configuring_tasks_finish() -> TestResu
     let events_tx_clone = events_tx.clone();
     tokio::spawn(async move {
         tokio::time::sleep(Duration::from_millis(50)).await;
-        let finished_task = backend_clone
-            .state
-            .lock()
-            .unwrap()
-            .status
-            .tasks
-            .remove(0);
+        let finished_task = backend_clone.state.lock().unwrap().status.tasks.remove(0);
         let _ = events_tx_clone.send(Event::TaskFinished {
             task: finished_task,
             remaining: 0,
