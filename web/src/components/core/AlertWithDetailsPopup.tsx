@@ -21,11 +21,12 @@
  */
 
 import React from "react";
-import { Alert, AlertProps, Button, Flex, ModalProps } from "@patternfly/react-core";
-import SmallWarning from "~/components/core/SmallWarning";
+import { Alert, AlertProps, Button, Flex, FlexItem, ModalProps } from "@patternfly/react-core";
 import Popup from "~/components/core/Popup";
-import { _ } from "~/i18n";
-import type { TranslatedString } from "~/i18n";
+import {
+  useDetailsButton,
+  useDetailsSize,
+} from "~/components/storage/storage-page/playground-switches";
 
 export type AlertWithDetailsPopupProps = {
   /** How it is presented, from a neutral report to something needing care. */
@@ -129,49 +130,48 @@ export default function AlertWithDetailsPopup({
   popupVariant,
   popupActions,
   children,
-  isPlain = false,
 }: AlertWithDetailsPopupProps): React.ReactNode {
   const [isOpen, setIsOpen] = React.useState(false);
   const close = () => setIsOpen(false);
+  const detailsButton = useDetailsButton();
+  const compactButton = useDetailsSize() === "compact";
 
   const action = (
     <Button
       variant="tertiary"
       size="sm"
+      className={compactButton ? "agm-details-button agm-summary__details" : "agm-details-button"}
       aria-label={actionAriaLabel}
       onClick={() => setIsOpen(true)}
     >
-      {isPlain
-        ? // TRANSLATORS: opens a popup with the details of what is said
-          // right before it.
-          _("Details…")
-        : actionLabel}
+      {actionLabel}
     </Button>
   );
 
+  let titleContent: React.ReactNode;
+  if (detailsButton === "inline") {
+    titleContent = (
+      <>
+        {title} {action}
+      </>
+    );
+  } else {
+    titleContent = (
+      <Flex
+        alignItems={{ default: "alignItemsCenter" }}
+        justifyContent={{ default: "justifyContentSpaceBetween" }}
+        flexWrap={{ default: "nowrap" }}
+        gap={{ default: "gapMd" }}
+      >
+        <FlexItem>{title}</FlexItem>
+        <FlexItem>{action}</FlexItem>
+      </Flex>
+    );
+  }
+
   return (
     <>
-      {isPlain ? (
-        <Flex alignItems={{ default: "alignItemsCenter" }} gap={{ default: "gapSm" }}>
-          {variant === "custom" ? (
-            <strong>{title}</strong>
-          ) : (
-            <SmallWarning text={title as TranslatedString} />
-          )}
-          {action}
-        </Flex>
-      ) : (
-        <Alert
-          isInline
-          variant={variant}
-          component="p"
-          title={
-            <>
-              {title} {action}
-            </>
-          }
-        />
-      )}
+      <Alert isInline variant={variant} title={titleContent} />
       {isOpen && (
         <Popup
           isOpen

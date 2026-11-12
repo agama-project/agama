@@ -45,37 +45,14 @@
  *   agamaNamesStyle("mono")   // in monospace, apart from the words around them (default)
  *   agamaNamesStyle("plain")  // in the same face as the rest
  *
- * How the summary at the top of the page is worded:
- *
- *   agamaSummaryWording("single") // what applying takes, then a quieter note; details below (default)
- *   agamaSummaryWording("when")   // "When the installation starts, ..."
- *   agamaSummaryWording("until")  // "Nothing is changed until ...", in two lines
- *
  * What holds the summary:
  *
  *   agamaSummaryStyle("plain")  // a line on the page (default)
  *   agamaSummaryStyle("hint")   // a PatternFly hint box
  *
- * What the summary counts:
- *
- *   agamaActionCount("all")           // every action, as "N actions" (default)
- *   agamaActionCount("noSubvolumes")  // without Btrfs subvolumes, as "N actions"
- *   agamaActionCount("changes")       // without Btrfs subvolumes, as "N changes"
- *
- * How a setup that cannot be applied offers its suggestions:
- *
- *   agamaFailedDetails("popup")       // in a popup (default)
- *   agamaFailedDetails("expandable")  // in place, under the alert
- *
- * Whether the button opening the planned changes carries an icon:
- *
- *   agamaDetailsIcon("none")  // words only (default)
- *   agamaDetailsIcon("list")  // a list icon before the words
- *
  * Where the buttons opening the details and the suggestions sit:
  *
  *   agamaDetailsButton("inline")  // fitted at the end of their sentence (default)
- *   agamaDetailsButton("below")   // at their regular size, on a line of their own
  *   agamaDetailsButton("end")     // Details at its regular size, at the right end of the summary line
  *
  * How big the buttons opening the details and the suggestions are, wherever
@@ -122,11 +99,7 @@ type GroupedTable = "off" | "on";
 type GroupTitleStyle = "band" | "flat" | "plain";
 type NamesStyle = "mono" | "plain";
 type SummaryStyle = "plain" | "hint";
-type FailedDetails = "popup" | "expandable";
-type SummaryWording = "when" | "until" | "single";
-type ActionCount = "all" | "noSubvolumes" | "changes";
-type DetailsIcon = "none" | "list";
-type DetailsButton = "inline" | "below" | "end";
+type DetailsButton = "inline" | "end";
 type DetailsSize = "compact" | "regular";
 type GroupTitleIcons = "off" | "on";
 type SectionBand = "none" | "fading" | "flat";
@@ -138,11 +111,7 @@ type SwitchName =
   | "agamaGroupedTable"
   | "agamaNamesStyle"
   | "agamaGroupTitleStyle"
-  | "agamaFailedDetails"
   | "agamaSummaryStyle"
-  | "agamaSummaryWording"
-  | "agamaActionCount"
-  | "agamaDetailsIcon"
   | "agamaDetailsButton"
   | "agamaDetailsSize"
   | "agamaSectionTitle"
@@ -157,10 +126,6 @@ declare global {
     agamaGroupTitleStyle?: (value: GroupTitleStyle) => void;
     agamaNamesStyle?: (value: NamesStyle) => void;
     agamaSummaryStyle?: (value: SummaryStyle) => void;
-    agamaFailedDetails?: (value: FailedDetails) => void;
-    agamaSummaryWording?: (value: SummaryWording) => void;
-    agamaActionCount?: (value: ActionCount) => void;
-    agamaDetailsIcon?: (value: DetailsIcon) => void;
     agamaDetailsButton?: (value: DetailsButton) => void;
     agamaDetailsSize?: (value: DetailsSize) => void;
     agamaSectionTitle?: (value: SectionTitle) => void;
@@ -242,29 +207,7 @@ const useNamesStyle = consoleSwitch<NamesStyle>("agamaNamesStyle", ["mono", "pla
 
 const useSummaryStyle = consoleSwitch<SummaryStyle>("agamaSummaryStyle", ["plain", "hint"]);
 
-const useFailedDetails = consoleSwitch<FailedDetails>("agamaFailedDetails", [
-  "popup",
-  "expandable",
-]);
-
-const useSummaryWording = consoleSwitch<SummaryWording>("agamaSummaryWording", [
-  "single",
-  "when",
-  "until",
-]);
-
-const useActionCount = consoleSwitch<ActionCount>("agamaActionCount", [
-  "all",
-  "noSubvolumes",
-  "changes",
-]);
-
-const useDetailsIcon = consoleSwitch<DetailsIcon>("agamaDetailsIcon", ["none", "list"]);
-const useDetailsButton = consoleSwitch<DetailsButton>("agamaDetailsButton", [
-  "inline",
-  "below",
-  "end",
-]);
+const useDetailsButton = consoleSwitch<DetailsButton>("agamaDetailsButton", ["inline", "end"]);
 const useDetailsSize = consoleSwitch<DetailsSize>("agamaDetailsSize", ["compact", "regular"]);
 const useSectionTitle = consoleSwitch<SectionTitle>("agamaSectionTitle", [
   "plain",
@@ -285,7 +228,6 @@ const useSectionIndent = consoleSwitch<SectionIndent>("agamaSectionIndent", [
 
 export { registry as playgroundSwitches };
 export {
-  useDetailsIcon,
   useDetailsButton,
   useDetailsSize,
   useSectionTitle,
@@ -296,9 +238,6 @@ export {
   useGroupedTable,
   useNamesStyle,
   useGroupTitleStyle,
-  useSummaryWording,
-  useActionCount,
-  useFailedDetails,
   useSummaryStyle,
 };
 export type { NamesStyle };

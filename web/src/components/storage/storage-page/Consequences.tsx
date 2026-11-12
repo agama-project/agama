@@ -23,8 +23,6 @@
 import React from "react";
 import { Button } from "@patternfly/react-core";
 import Popup from "~/components/core/Popup";
-import Icon from "~/components/layout/Icon";
-import { useDetailsIcon } from "~/components/storage/storage-page/playground-switches";
 import PlannedChangesPopup from "~/components/storage/storage-page/PlannedChangesPopup";
 import Text from "~/components/core/Text";
 import { useUnseenChanges } from "~/components/storage/storage-page/use-unseen-changes";
@@ -78,7 +76,6 @@ export default function Consequences({
   const actions = useActions();
   const [isOpen, setIsOpen] = React.useState(false);
   // PLAYGROUND: with or without a list icon, from the console.
-  const hasIcon = useDetailsIcon() === "list";
   const { hasUnseenChanges, markSeen } = useUnseenChanges();
   const close = () => setIsOpen(false);
   const open = () => {
@@ -107,7 +104,6 @@ export default function Consequences({
         <Button
           variant="tertiary"
           size="sm"
-          icon={hasIcon ? <Icon name="list_alt" /> : undefined}
           className={isCompact ? "agm-details-button agm-summary__details" : "agm-details-button"}
           aria-label={name}
           onClick={open}

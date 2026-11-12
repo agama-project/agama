@@ -196,47 +196,6 @@ const Intro = () => {
   );
 };
 
-/**
- * PLAYGROUND: what does not fit, said in place: "Not enough space for the
- * boot partition, "/opt" (100 GiB), "/" (at least 2 TiB) and "swap"."
- */
-function NotEnoughSpace() {
-  const model = useConfigModel();
-  const partitions = model.drives.flatMap((d) => d.partitions || []);
-  const logicalVolumes = model.volumeGroups.flatMap((vg) => vg.logicalVolumes || []);
-  const isBootConfigured = !!model.boot?.configure;
-  const mountPaths = [...partitions, ...logicalVolumes]
-    .filter((p) => !p.name)
-    .map((d) => partitionUtils.pathWithSize(d));
-
-  return (
-    <>
-      {sprintf(
-        isBootConfigured
-          ? // TRANSLATORS: says what the disks have no room for. %s is a list of
-            // mount points with their sizes, such as '"/" (at least 10 GiB) and
-            // "swap" (2 GiB)'.
-            _("Not enough space for the boot partition, %s.")
-          : // TRANSLATORS: says what the disks have no room for. %s is a list of
-            // mount points with their sizes, such as '"/" (at least 10 GiB) and
-            // "swap" (2 GiB)'.
-            _("Not enough space for %s."),
-        formatList(mountPaths),
-      )}
-    </>
-  );
-}
-
-/** PLAYGROUND: the suggestions alone, for when what failed is said in place. */
-function Suggestions() {
-  return (
-    <>
-      <PossibleActions />
-      <SizeExplanations />
-    </>
-  );
-}
-
 const Description = () => {
   return (
     <>
@@ -264,20 +223,14 @@ function proposalFailedTitle(): TranslatedString {
  * TODO: the whole component needs to be revisited. Right now is reusing code
  * and strings from an old experiment.
  */
-export default function ProposalFailedInfo({
-  isPlain,
-}: {
-  /** Drawn as a line of text rather than as an alert box. */
-  isPlain?: boolean;
-}) {
+export default function ProposalFailedInfo() {
   return (
     <AlertWithDetailsPopup
-      isPlain={isPlain}
       variant="warning"
       title={proposalFailedTitle()}
       // TRANSLATORS: opens a popup explaining why no storage layout can be
       // calculated.
-      actionLabel={_("Show details")}
+      actionLabel={_("Show details…")}
       // TRANSLATORS: the full name of the "Show more" action, read by screen
       // readers. It must start with the same words as the translation of "Show
       // more", so that people using speech input can say what they see.
@@ -291,4 +244,4 @@ export default function ProposalFailedInfo({
   );
 }
 
-export { proposalFailedTitle, NotEnoughSpace, Suggestions };
+export { proposalFailedTitle };
