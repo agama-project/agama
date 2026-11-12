@@ -185,7 +185,7 @@ module Y2Storage
       graph_file = StorageEnv.instance.devicegraph_file
       return probe_from_file(graph_file) if graph_file
 
-      probe_callbacks = Callbacks::Probe.new(user_callbacks: callbacks)
+      probe_callbacks = Callbacks::Probe.new
 
       begin
         @storage.probe(probe_callbacks)

@@ -38,18 +38,6 @@ module Y2Storage
         log.info "Found the following issues in the devicegraph: #{issues.inspect}"
         true
       end
-
-      # Determines whether to install packages which provide missing commands
-      #
-      # This default implementation always returns false, preventing packages
-      # installation.
-      #
-      # @param packages [Array<String>] List of packages to install
-      # @return [Boolean] return true if the package should be installed; false otherwise
-      def install_packages?(packages)
-        log.info "Found the following issues in the devicegraph: #{packages}"
-        false
-      end
     end
   end
 end
