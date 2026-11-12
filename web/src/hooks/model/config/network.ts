@@ -21,7 +21,7 @@
  */
 
 import { useSuspenseQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Connection, NetworkConfig } from "~/types/network";
+import { Connection, NetworkConfig, flattenConnections } from "~/types/network";
 import { Network, Proposal } from "~/model/proposal";
 import { Config } from "~/model/config";
 import { patchConfig } from "~/api";
@@ -71,8 +71,14 @@ const useConfigMutation = () => {
   return useMutation(query);
 };
 
+/**
+ * Every connection but the removed ones, including the ports nested in bonds
+ * and bridges. The ports of a removed controller go away with it.
+ */
 const selectConnections = (data: Network.Proposal): Connection[] =>
-  data.connections.filter((c) => c.status !== "removed").map((c) => Connection.fromApi(c));
+  flattenConnections(
+    data.connections.filter((c) => c.status !== "removed").map((c) => Connection.fromApi(c)),
+  ).filter((c) => c.status !== "removed");
 
 const useConfig = (): NetworkConfig => {
   const { data } = useSuspenseQuery({
