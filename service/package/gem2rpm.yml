@@ -20,6 +20,8 @@
     BuildRequires:  yast2-transfer
     BuildRequires:  libstorage-ng-ruby
     BuildRequires:  xsltproc
+    # GPG module dependency
+    BuildRequires:  gpg2
     # lsmod
     BuildRequires:  kmod
 
@@ -76,6 +78,8 @@
     Requires:       xsltproc
     # Includes the "installation-helper" needed by libstorage-ng
     Requires:       snapper
+    # GPG module dependency
+    Requires:       gpg2
 :testsuite_command: |-
   cd %{buildroot}%{gem_base}/gems/%{mod_full_name}
   rspec
