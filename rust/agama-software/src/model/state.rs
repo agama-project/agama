@@ -1166,7 +1166,10 @@ mod tests {
             vec![
                 "agama-0".to_string(),
                 crate::service::INSTALLATION_REPO_ALIAS.to_string(),
-            ]
+            ],
+            "only the product repository {} should be reachable, got repositories: {:#?}",
+            first_repo_url,
+            state.repositories
         );
     }
 
