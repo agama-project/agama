@@ -23,11 +23,6 @@
 /*
  * PLAYGROUND: switches for the storage page, from the browser console.
  *
- * Whether the devices sit in a bordered box or right on the page:
- *
- *   agamaDevicesBox(false)  // right on the page (default)
- *   agamaDevicesBox(true)   // in a bordered box
- *
  * Whether the devices table groups them by kind, each group sorted on its
  * own:
  *
@@ -94,7 +89,6 @@
 
 import React from "react";
 
-type DevicesBox = "off" | "on";
 type GroupedTable = "off" | "on";
 type GroupTitleStyle = "band" | "flat" | "plain";
 type NamesStyle = "mono" | "plain";
@@ -107,7 +101,6 @@ type SectionIndent = "medium" | "small" | "none";
 type SectionTitle = "plain" | "spaced" | "rule" | "both" | "grouped" | "separated" | "smallcaps";
 
 type SwitchName =
-  | "agamaDevicesBox"
   | "agamaGroupedTable"
   | "agamaNamesStyle"
   | "agamaGroupTitleStyle"
@@ -121,7 +114,6 @@ type SwitchName =
 
 declare global {
   interface Window {
-    agamaDevicesBox?: (value: boolean) => void;
     agamaGroupedTable?: (value: boolean) => void;
     agamaGroupTitleStyle?: (value: GroupTitleStyle) => void;
     agamaNamesStyle?: (value: NamesStyle) => void;
@@ -189,10 +181,6 @@ function consoleSwitch<T extends string>(
   return () => React.useSyncExternalStore(subscribe, read);
 }
 
-const useDevicesBox = consoleSwitch<DevicesBox>("agamaDevicesBox", ["off", "on"], (input) =>
-  input ? "on" : "off",
-);
-
 const useGroupedTable = consoleSwitch<GroupedTable>("agamaGroupedTable", ["on", "off"], (input) =>
   input ? "on" : "off",
 );
@@ -234,7 +222,6 @@ export {
   useGroupTitleIcons,
   useSectionBand,
   useSectionIndent,
-  useDevicesBox,
   useGroupedTable,
   useNamesStyle,
   useGroupTitleStyle,

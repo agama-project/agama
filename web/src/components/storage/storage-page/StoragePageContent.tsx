@@ -23,14 +23,12 @@
 import React from "react";
 import { Divider, PageSection, Stack } from "@patternfly/react-core";
 import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
-import Page from "~/components/layout/Page";
 import EntriesTable from "~/components/storage/entries-table/EntriesTable";
 import TopLine, { TopResult } from "~/components/storage/storage-page/TopLine";
 import { useElementSize } from "~/hooks/use-element-size";
 import GlobalActions from "~/components/storage/storage-page/GlobalActions";
 import Result from "~/components/storage/storage-page/Result";
 import DeviceDetailsPanel from "~/components/storage/storage-page/DeviceDetailsPanel";
-import { useDevicesBox } from "~/components/storage/storage-page/playground-switches";
 import { useConfigModel } from "~/hooks/model/storage/config-model";
 
 /**
@@ -49,7 +47,6 @@ import { useConfigModel } from "~/hooks/model/storage/config-model";
  */
 export default function StoragePageContent(): React.ReactNode {
   const model = useConfigModel();
-  const box = useDevicesBox();
   const [resultNode, setResultNode] = React.useState<HTMLDivElement | null>(null);
   const { height: resultHeight = 0 } = useElementSize(resultNode);
 
@@ -63,7 +60,7 @@ export default function StoragePageContent(): React.ReactNode {
           {/* Inside what the panel opens over, so the panel covers everything
               but the result kept in sight above it. */}
           <TopLine />
-          {box === "off" && <Divider />}
+          <Divider />
           <EntriesTable />
           <GlobalActions />
         </Stack>
@@ -90,9 +87,7 @@ export default function StoragePageContent(): React.ReactNode {
           </div>
         </div>
       </PageSection>
-      {/* PLAYGROUND: the settings and devices in a bordered box, or right on
-          the page with a rule setting the devices apart from the settings. */}
-      {box === "on" ? <Page.Section>{devices}</Page.Section> : devices}
+      {devices}
     </>
   );
 }
