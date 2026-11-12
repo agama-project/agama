@@ -24,7 +24,7 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender, mockParams } from "~/test-utils";
 import { useProgress } from "~/hooks/model/progress";
-import { Connection, ConnectionState } from "~/types/network";
+import { BondMode, Connection, ConnectionState } from "~/types/network";
 import ConnectionPage from "~/components/network/ConnectionPage";
 
 jest.mock("~/hooks/model/progress", () => ({
@@ -35,7 +35,16 @@ const mockConnection: Connection = new Connection("Network 1", {
   state: ConnectionState.ACTIVATED,
 });
 
-jest.mock("~/components/network/ConnectionDetails", () => () => <div>ConnectionDetails Mock</div>);
+const mockPort: Connection = new Connection("Port 1", { iface: "eth1" });
+
+const mockBond: Connection = new Connection("Bond 1", {
+  iface: "bond0",
+  bond: { mode: BondMode.ACTIVE_BACKUP, options: "", ports: [mockPort] },
+});
+
+jest.mock("~/components/network/ConnectionDetails", () => ({ controller }) => (
+  <div>ConnectionDetails Mock{controller && ` (port of ${controller.id})`}</div>
+));
 
 jest.mock("~/components/network/NoPersistentConnectionsAlert", () => () => (
   <div>NoPersistentConnectionsAlert Mock</div>
@@ -43,7 +52,8 @@ jest.mock("~/components/network/NoPersistentConnectionsAlert", () => () => (
 
 jest.mock("~/hooks/model/proposal/network", () => ({
   useNetworkChanges: jest.fn(),
-  useConnections: () => [mockConnection],
+  // The hook includes the ports nested in bonds and bridges.
+  useConnections: () => [mockConnection, mockBond, mockPort],
 }));
 
 describe("<ConnectionPage />", () => {
@@ -60,6 +70,17 @@ describe("<ConnectionPage />", () => {
     it("mounts component for rendering connection details", () => {
       installerRender(<ConnectionPage />);
       screen.getByText("ConnectionDetails Mock");
+    });
+  });
+
+  describe("when given connection is a port", () => {
+    beforeEach(() => {
+      mockParams({ id: mockPort.id });
+    });
+
+    it("gives its controller to the details", () => {
+      installerRender(<ConnectionPage />);
+      screen.getByText("ConnectionDetails Mock (port of Bond 1)");
     });
   });
 

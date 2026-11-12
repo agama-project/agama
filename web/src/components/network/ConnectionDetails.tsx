@@ -40,7 +40,7 @@ import { generatePath } from "react-router";
 import Text from "~/components/core/Text";
 import { Link, NestedContent, Page } from "~/components/core";
 import InstallationOnlySwitch from "~/components/network/InstallationOnlySwitch";
-import { Connection, Device, portName } from "~/types/network";
+import { Connection, Device, Port, portName } from "~/types/network";
 import { connectionBindingMode, formatIp } from "~/utils/network";
 import { NETWORK } from "~/routes/paths";
 import { useDevices, useWifiNetworks } from "~/hooks/model/system/network";
@@ -65,6 +65,41 @@ const bindingModeFor = (connection: Connection) => {
       return sprintf(_("Connection is bound to MAC address %s."), connection.macAddress);
   }
 };
+
+/**
+ * Link to the details of the given connection.
+ */
+const ConnectionLink = ({ connection, label }: { connection: Connection; label: string }) => (
+  <Link
+    to={generatePath(NETWORK.connection.details, { id: connection.id })}
+    variant="link"
+    isInline
+  >
+    {label}
+  </Link>
+);
+
+/**
+ * The given ports of a bond or a bridge, one per line.
+ *
+ * A port that is a connection of its own links to its details, where it can be
+ * edited. A port only given by name has nothing to link to.
+ */
+const PortsList = ({ ports }: { ports: Port[] }) => (
+  <Flex direction={{ default: "column" }}>
+    {isEmpty(ports)
+      ? _("None set")
+      : ports.map((port, idx) => (
+          <FlexItem key={idx}>
+            {typeof port === "string" ? (
+              port
+            ) : (
+              <ConnectionLink connection={port} label={portName(port)} />
+            )}
+          </FlexItem>
+        ))}
+  </Flex>
+);
 
 const NetworkDetails = ({ connection }: { connection: Connection }) => {
   const networks = useWifiNetworks();
@@ -124,13 +159,7 @@ const BondDetails = ({ connection }: { connection: Connection }) => {
         <DescriptionListGroup>
           <DescriptionListTerm>{_("Bond ports")}</DescriptionListTerm>
           <DescriptionListDescription>
-            <Flex direction={{ default: "column" }}>
-              {isEmpty(connection.bond?.ports)
-                ? _("None set")
-                : connection.bond?.ports.map((port, idx) => (
-                    <FlexItem key={idx}>{portName(port)}</FlexItem>
-                  ))}
-            </Flex>
+            <PortsList ports={connection.bond?.ports ?? []} />
           </DescriptionListDescription>
         </DescriptionListGroup>
       </DescriptionList>
@@ -175,13 +204,7 @@ const BridgeDetails = ({ connection }: { connection: Connection }) => {
         <DescriptionListGroup>
           <DescriptionListTerm>{_("Bridge ports")}</DescriptionListTerm>
           <DescriptionListDescription>
-            <Flex direction={{ default: "column" }}>
-              {isEmpty(connection.bridge.ports)
-                ? _("None set")
-                : connection.bridge?.ports.map((port, idx) => (
-                    <FlexItem key={idx}>{portName(port)}</FlexItem>
-                  ))}
-            </Flex>
+            <PortsList ports={connection.bridge?.ports ?? []} />
           </DescriptionListDescription>
         </DescriptionListGroup>
       </DescriptionList>
@@ -342,7 +365,19 @@ const DevicesDetails = ({ connection }: { connection: Connection }) => {
   );
 };
 
-const SettingsCard = ({ connection }: { connection: Connection }) => {
+/**
+ * The settings of the given connection.
+ *
+ * A port of a bond or a bridge has no IP settings: its controller holds them.
+ * It tells which one it is instead, linked to its details.
+ */
+const SettingsCard = ({
+  connection,
+  controller,
+}: {
+  connection: Connection;
+  controller?: Connection;
+}) => {
   const gateways = [connection.gateway4, connection.gateway6];
   return (
     <Page.Section
@@ -360,65 +395,79 @@ const SettingsCard = ({ connection }: { connection: Connection }) => {
             <DescriptionListTerm>{_("Binding")}</DescriptionListTerm>
             <DescriptionListDescription>{bindingModeFor(connection)}</DescriptionListDescription>
           </DescriptionListGroup>
-          <DescriptionListGroup>
-            <DescriptionListTerm>{_("Mode")}</DescriptionListTerm>
-            <DescriptionListDescription>
-              <Flex direction={{ default: "column" }}>
-                <FlexItem>
-                  {_("IPv4")} {connection.method4 ?? _("None set")}
-                </FlexItem>
-                <FlexItem>
-                  {_("IPv6")} {connection.method6 ?? _("None set")}
-                </FlexItem>
-              </Flex>
-            </DescriptionListDescription>
-          </DescriptionListGroup>
-          <DescriptionListGroup>
-            <DescriptionListTerm>{_("Gateway")}</DescriptionListTerm>
-            <DescriptionListDescription>
-              <Flex direction={{ default: "column" }}>
-                {gateways.every((g) => isEmpty(g))
-                  ? _("None set")
-                  : gateways
-                      .filter((g) => !isEmpty(g))
-                      .map((g, i) => <FlexItem key={i}>{g}</FlexItem>)}
-              </Flex>
-            </DescriptionListDescription>
-          </DescriptionListGroup>
-          <DescriptionListGroup>
-            <DescriptionListTerm>{_("IP Addresses")}</DescriptionListTerm>
-            <DescriptionListDescription>
-              <Flex direction={{ default: "column" }}>
-                {isEmpty(connection.addresses)
-                  ? _("None set")
-                  : connection.addresses.map((ip, idx) => (
-                      <FlexItem key={idx}>{formatIp(ip)}</FlexItem>
-                    ))}
-              </Flex>
-            </DescriptionListDescription>
-          </DescriptionListGroup>
-          <DescriptionListGroup>
-            <DescriptionListTerm>{_("DNS")}</DescriptionListTerm>
-            <DescriptionListDescription>
-              <Flex direction={{ default: "column" }}>
-                {isEmpty(connection.nameservers)
-                  ? _("None set")
-                  : connection.nameservers.map((dns, idx) => <FlexItem key={idx}>{dns}</FlexItem>)}
-              </Flex>
-            </DescriptionListDescription>
-          </DescriptionListGroup>
-          <DescriptionListGroup>
-            <DescriptionListTerm>{_("DNS search domains")}</DescriptionListTerm>
-            <DescriptionListDescription>
-              <Flex direction={{ default: "column" }}>
-                {isEmpty(connection.dnsSearchList)
-                  ? _("None set")
-                  : connection.dnsSearchList.map((domain, idx) => (
-                      <FlexItem key={idx}>{domain}</FlexItem>
-                    ))}
-              </Flex>
-            </DescriptionListDescription>
-          </DescriptionListGroup>
+          {controller && (
+            <DescriptionListGroup>
+              <DescriptionListTerm>{_("Controller")}</DescriptionListTerm>
+              <DescriptionListDescription>
+                <ConnectionLink connection={controller} label={controller.iface || controller.id} />
+              </DescriptionListDescription>
+            </DescriptionListGroup>
+          )}
+          {!controller && (
+            <>
+              <DescriptionListGroup>
+                <DescriptionListTerm>{_("Mode")}</DescriptionListTerm>
+                <DescriptionListDescription>
+                  <Flex direction={{ default: "column" }}>
+                    <FlexItem>
+                      {_("IPv4")} {connection.method4 ?? _("None set")}
+                    </FlexItem>
+                    <FlexItem>
+                      {_("IPv6")} {connection.method6 ?? _("None set")}
+                    </FlexItem>
+                  </Flex>
+                </DescriptionListDescription>
+              </DescriptionListGroup>
+              <DescriptionListGroup>
+                <DescriptionListTerm>{_("Gateway")}</DescriptionListTerm>
+                <DescriptionListDescription>
+                  <Flex direction={{ default: "column" }}>
+                    {gateways.every((g) => isEmpty(g))
+                      ? _("None set")
+                      : gateways
+                          .filter((g) => !isEmpty(g))
+                          .map((g, i) => <FlexItem key={i}>{g}</FlexItem>)}
+                  </Flex>
+                </DescriptionListDescription>
+              </DescriptionListGroup>
+              <DescriptionListGroup>
+                <DescriptionListTerm>{_("IP Addresses")}</DescriptionListTerm>
+                <DescriptionListDescription>
+                  <Flex direction={{ default: "column" }}>
+                    {isEmpty(connection.addresses)
+                      ? _("None set")
+                      : connection.addresses.map((ip, idx) => (
+                          <FlexItem key={idx}>{formatIp(ip)}</FlexItem>
+                        ))}
+                  </Flex>
+                </DescriptionListDescription>
+              </DescriptionListGroup>
+              <DescriptionListGroup>
+                <DescriptionListTerm>{_("DNS")}</DescriptionListTerm>
+                <DescriptionListDescription>
+                  <Flex direction={{ default: "column" }}>
+                    {isEmpty(connection.nameservers)
+                      ? _("None set")
+                      : connection.nameservers.map((dns, idx) => (
+                          <FlexItem key={idx}>{dns}</FlexItem>
+                        ))}
+                  </Flex>
+                </DescriptionListDescription>
+              </DescriptionListGroup>
+              <DescriptionListGroup>
+                <DescriptionListTerm>{_("DNS search domains")}</DescriptionListTerm>
+                <DescriptionListDescription>
+                  <Flex direction={{ default: "column" }}>
+                    {isEmpty(connection.dnsSearchList)
+                      ? _("None set")
+                      : connection.dnsSearchList.map((domain, idx) => (
+                          <FlexItem key={idx}>{domain}</FlexItem>
+                        ))}
+                  </Flex>
+                </DescriptionListDescription>
+              </DescriptionListGroup>
+            </>
+          )}
         </DescriptionList>
         <Divider />
         <InstallationOnlySwitch connection={connection} />
@@ -428,12 +477,23 @@ const SettingsCard = ({ connection }: { connection: Connection }) => {
   );
 };
 
-export default function ConnectionDetails({ connection }: { connection: Connection }) {
+/**
+ * The details of the given connection.
+ *
+ * @param controller - the bond or bridge the connection is a port of, if any
+ */
+export default function ConnectionDetails({
+  connection,
+  controller,
+}: {
+  connection: Connection;
+  controller?: Connection;
+}) {
   return (
     <Grid hasGutter>
       <GridItem md={6}>
         <Stack hasGutter>
-          <SettingsCard connection={connection} />
+          <SettingsCard connection={connection} controller={controller} />
         </Stack>
       </GridItem>
       <GridItem md={6} order={{ default: "1", md: "2" }}>
