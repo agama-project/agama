@@ -32,7 +32,10 @@ import displayStyles from "@patternfly/react-styles/css/utilities/Display/displa
 export type BreadcrumbProps = {
   /** The label to display for the breadcrumb item */
   label: React.ReactNode | TranslatedString;
-  /** The URL path the breadcrumb item links to */
+  /**
+   * The URL path the breadcrumb item links to. Without it, an item that is
+   * not the current one names its level as plain text.
+   */
   path?: string;
   /**
    * Optional menu providing contextual navigation for the breadcrumb item.
@@ -108,15 +111,17 @@ const Breadcrumb = ({
       alignItems={{ default: "alignItemsCenter" }}
     >
       {!hideDivider && <Icon name="chevron_right" aria-hidden />}
-      {isCurrent ? (
+      {isCurrent && (
         <h1 className={displayStyles.displayInline} aria-current="page">
           {content}
         </h1>
-      ) : (
+      )}
+      {!isCurrent && path && (
         <Link to={path} variant="link" isInline>
           {content}
         </Link>
       )}
+      {!isCurrent && !path && content}
       {menu}
     </Flex>
   );
