@@ -239,6 +239,15 @@ describe("ConnectionsTable", () => {
       expect(within(bond).queryByText(/port of/)).not.toBeInTheDocument();
     });
 
+    it("leaves the device and IP addresses cells of a port without them empty", () => {
+      installerRender(<ConnectionsTable />);
+      const port = screen.getByRole("row", { name: /Port 2/ });
+      const column = (label: string) => port.querySelector(`td[data-label="${label}"]`);
+      expect(column("Device")).toBeEmptyDOMElement();
+      expect(column("IP Addresses")).toBeEmptyDOMElement();
+      expect(within(port).queryByText("-")).not.toBeInTheDocument();
+    });
+
     it("updates the configured port when acting on it", async () => {
       const { user } = installerRender(<ConnectionsTable />);
       await user.click(screen.getByRole("button", { name: /actions for Port 1/i }));

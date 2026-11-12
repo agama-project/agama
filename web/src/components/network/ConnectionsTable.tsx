@@ -206,7 +206,8 @@ const createColumns = (devices: Device[], connections: Connection[]) => [
     value: (c: Connection) => {
       const usingDevices = devices.filter((d) => d.connection === c.id);
 
-      if (isEmpty(usingDevices)) return "-";
+      // An empty cell already says there is nothing to say.
+      if (isEmpty(usingDevices)) return null;
 
       if (usingDevices.length === 1) {
         return (
@@ -229,7 +230,7 @@ const createColumns = (devices: Device[], connections: Connection[]) => [
     value: (c: Connection) => {
       const device = devices.find((d) => d.connection === c.id);
       const addresses = device ? device.addresses : c.addresses;
-      return addresses.map(formatIp).join(", ") || "-";
+      return addresses.map(formatIp).join(", ");
     },
   },
 ];
