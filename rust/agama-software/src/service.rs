@@ -523,7 +523,7 @@ fn find_mandatory_repositories<P: Into<PathBuf>>(root: P) -> Vec<Repository> {
     let mut repos = vec![];
 
     let live_repo_dir = base.join(LIVE_REPO_DIR);
-    if let Some(mut install) = find_repository(&live_repo_dir, INSTALLATION_REPO_ALIAS, false) {
+    if let Some(mut install) = find_repository(&live_repo_dir, INSTALLATION_REPO_ALIAS) {
         let mount_point = live_repo_dir.display().to_string();
         if let Some(normalized_url) = normalize_repository_url(&mount_point, "/install") {
             install.url = normalized_url;
@@ -532,7 +532,7 @@ fn find_mandatory_repositories<P: Into<PathBuf>>(root: P) -> Vec<Repository> {
     }
 
     let dud_repo_dir = base.join(DUD_REPO_DIR);
-    if let Some(dud) = find_repository(&dud_repo_dir, DUD_REPO_ALIAS, false) {
+    if let Some(dud) = find_repository(&dud_repo_dir, DUD_REPO_ALIAS) {
         repos.push(dud)
     }
 
@@ -542,7 +542,7 @@ fn find_mandatory_repositories<P: Into<PathBuf>>(root: P) -> Vec<Repository> {
 }
 
 /// Returns the repository for the given directory if it exists.
-fn find_repository(dir: &PathBuf, name: &str, autorefresh: bool) -> Option<Repository> {
+fn find_repository(dir: &PathBuf, name: &str) -> Option<Repository> {
     if !std::fs::exists(dir).is_ok_and(|e| e) {
         return None;
     }
@@ -562,7 +562,8 @@ fn find_repository(dir: &PathBuf, name: &str, autorefresh: bool) -> Option<Repos
         url: url.to_string(),
         enabled: true,
         predefined: true,
-        autorefresh,
+        // Local installation media is static and never updated
+        autorefresh: false,
     })
 }
 
