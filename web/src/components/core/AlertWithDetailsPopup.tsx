@@ -21,9 +21,8 @@
  */
 
 import React from "react";
-import { Alert, AlertProps, Button, Flex, FlexItem, ModalProps } from "@patternfly/react-core";
+import { Alert, AlertProps, Button, ModalProps } from "@patternfly/react-core";
 import Popup from "~/components/core/Popup";
-import { useDetailsButton } from "~/components/storage/storage-page/playground-switches";
 
 export type AlertWithDetailsPopupProps = {
   /** How it is presented, from a neutral report to something needing care. */
@@ -130,7 +129,6 @@ export default function AlertWithDetailsPopup({
 }: AlertWithDetailsPopupProps): React.ReactNode {
   const [isOpen, setIsOpen] = React.useState(false);
   const close = () => setIsOpen(false);
-  const detailsButton = useDetailsButton();
 
   const action = (
     <Button
@@ -144,26 +142,11 @@ export default function AlertWithDetailsPopup({
     </Button>
   );
 
-  let titleContent: React.ReactNode;
-  if (detailsButton === "inline") {
-    titleContent = (
-      <>
-        {title} {action}
-      </>
-    );
-  } else {
-    titleContent = (
-      <Flex
-        alignItems={{ default: "alignItemsCenter" }}
-        justifyContent={{ default: "justifyContentSpaceBetween" }}
-        flexWrap={{ default: "nowrap" }}
-        gap={{ default: "gapMd" }}
-      >
-        <FlexItem>{title}</FlexItem>
-        <FlexItem>{action}</FlexItem>
-      </Flex>
-    );
-  }
+  const titleContent = (
+    <>
+      {title} {action}
+    </>
+  );
 
   return (
     <>

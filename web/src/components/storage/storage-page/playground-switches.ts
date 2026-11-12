@@ -40,11 +40,6 @@
  *   agamaNamesStyle("mono")   // in monospace, apart from the words around them (default)
  *   agamaNamesStyle("plain")  // in the same face as the rest
  *
- * Where the buttons opening the details and the suggestions sit:
- *
- *   agamaDetailsButton("inline")  // fitted at the end of their sentence (default)
- *   agamaDetailsButton("end")     // Details at its regular size, at the right end of the summary line
- *
  * How a device panel's section title stands apart from what it holds:
  *
  *   agamaSectionTitle("plain")   // nothing more than the indent under it (default)
@@ -81,7 +76,6 @@ import React from "react";
 type GroupedTable = "off" | "on";
 type GroupTitleStyle = "band" | "flat" | "plain";
 type NamesStyle = "mono" | "plain";
-type DetailsButton = "inline" | "end";
 type GroupTitleIcons = "off" | "on";
 type SectionBand = "none" | "fading" | "flat";
 type SectionIndent = "medium" | "small" | "none";
@@ -91,7 +85,6 @@ type SwitchName =
   | "agamaGroupedTable"
   | "agamaNamesStyle"
   | "agamaGroupTitleStyle"
-  | "agamaDetailsButton"
   | "agamaSectionTitle"
   | "agamaGroupTitleIcons"
   | "agamaSectionBand"
@@ -102,7 +95,6 @@ declare global {
     agamaGroupedTable?: (value: boolean) => void;
     agamaGroupTitleStyle?: (value: GroupTitleStyle) => void;
     agamaNamesStyle?: (value: NamesStyle) => void;
-    agamaDetailsButton?: (value: DetailsButton) => void;
     agamaSectionTitle?: (value: SectionTitle) => void;
     agamaGroupTitleIcons?: (value: GroupTitleIcons) => void;
     agamaSectionBand?: (value: SectionBand) => void;
@@ -176,7 +168,6 @@ const useGroupTitleStyle = consoleSwitch<GroupTitleStyle>("agamaGroupTitleStyle"
 
 const useNamesStyle = consoleSwitch<NamesStyle>("agamaNamesStyle", ["mono", "plain"]);
 
-const useDetailsButton = consoleSwitch<DetailsButton>("agamaDetailsButton", ["inline", "end"]);
 const useSectionTitle = consoleSwitch<SectionTitle>("agamaSectionTitle", [
   "plain",
   "spaced",
@@ -196,7 +187,6 @@ const useSectionIndent = consoleSwitch<SectionIndent>("agamaSectionIndent", [
 
 export { registry as playgroundSwitches };
 export {
-  useDetailsButton,
   useSectionTitle,
   useGroupTitleIcons,
   useSectionBand,

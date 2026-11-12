@@ -22,11 +22,9 @@
 
 import React from "react";
 import { sprintf } from "sprintf-js";
-import { Flex, FlexItem } from "@patternfly/react-core";
 import Interpolate, { markerText } from "~/components/core/Interpolate";
 import Text from "~/components/core/Text";
 import Consequences, { losesData } from "~/components/storage/storage-page/Consequences";
-import { useDetailsButton } from "~/components/storage/storage-page/playground-switches";
 import { useUnseenChanges } from "~/components/storage/storage-page/use-unseen-changes";
 import { useAnnounce } from "~/context/announcer";
 import { useActions } from "~/hooks/model/proposal/storage";
@@ -111,7 +109,6 @@ function useAnnounceChanges(isLossy: boolean, hasUnseenChanges: boolean, summary
  */
 export default function Summary(): React.ReactNode {
   const actions = useActions();
-  const detailsButton = useDetailsButton();
 
   const isLossy = losesData(actions);
   const title = sentence(actions.length, isLossy);
@@ -131,32 +128,9 @@ export default function Summary(): React.ReactNode {
     />
   );
 
-  /* The details at the end of the sentence they detail, fitted into its line;
-     PLAYGROUND: or on a line of their own at their regular size, from the
-     console. */
-
-  let content: React.ReactNode;
-  if (detailsButton === "inline") {
-    content = (
-      <div>
-        <Marked sentence={title} /> {details}
-      </div>
-    );
-  } else {
-    content = (
-      <Flex
-        alignItems={{ default: "alignItemsCenter" }}
-        justifyContent={{ default: "justifyContentSpaceBetween" }}
-        flexWrap={{ default: "nowrap" }}
-        gap={{ default: "gapMd" }}
-      >
-        <FlexItem>
-          <Marked sentence={title} />
-        </FlexItem>
-        <FlexItem>{details}</FlexItem>
-      </Flex>
-    );
-  }
-
-  return content;
+  return (
+    <div>
+      <Marked sentence={title} /> {details}
+    </div>
+  );
 }
