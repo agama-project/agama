@@ -202,7 +202,6 @@ rm -f /etc/nvme/host*
 rm -f /etc/iscsi/initiatorname.iscsi
 
 # replace the @@LIVE_MEDIUM_LABEL@@ with the real Live partition label name from KIWI
-sed -i -e "s/@@LIVE_MEDIUM_LABEL@@/$label/g" /usr/bin/live-password
 sed -i -e "s/@@LIVE_MEDIUM_LABEL@@/$label/g" /usr/bin/checkmedia-service
 
 # Increase the Live ISO image size to have some extra free space for installing
