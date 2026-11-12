@@ -28,7 +28,6 @@
 
 import { isEmpty, shake } from "radashi";
 import { anyFieldChanged } from "~/hooks/form";
-import { dateTimeFormat } from "~/utils";
 
 import type { Config } from "~/model/config/l10n";
 import type { FormFields } from "./fields";
@@ -71,21 +70,4 @@ export function buildL10nConfig(
   if (isEmpty(patch)) return undefined;
 
   return patch;
-}
-
-/**
- * Current UTC offset of a time zone as a label like "UTC+1" or "UTC-3:30",
- * derived from the zone id. The backend does not send the offset, so it is read
- * from the same Intl machinery used for the local time, which means it reflects
- * DST. Returns an empty string for an unknown zone.
- */
-export function timezoneUtcOffset(timezone: string, date: Date = new Date()): string {
-  try {
-    const parts = dateTimeFormat(timezone, { timeZoneName: "shortOffset" }).formatToParts(date);
-    const name = parts.find((part) => part.type === "timeZoneName")?.value ?? "";
-    // Intl yields a "GMT±H[:MM]" label (just "GMT" at zero); present it as "UTC".
-    return name.replace("GMT", "UTC");
-  } catch {
-    return "";
-  }
 }

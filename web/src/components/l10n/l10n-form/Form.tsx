@@ -26,11 +26,11 @@ import { patchConfig } from "~/api";
 import { useFormSubmit } from "~/hooks/use-form-submit";
 import { useAppForm } from "~/hooks/form";
 import { withFrozenQuery } from "~/components/form/with-frozen-query";
+import KeyboardField from "~/components/l10n/shared/KeyboardField";
+import TimezoneField from "~/components/l10n/shared/TimezoneField";
 import { _ } from "~/i18n";
 
 import LanguageField from "./LanguageField";
-import KeyboardField from "./KeyboardField";
-import TimezoneField from "./TimezoneField";
 import { defaultOptions } from "./fields";
 import { buildL10nConfig, toFormValues } from "./transformations";
 import { validate } from "./validations";
@@ -102,8 +102,10 @@ function L10nForm({ locales, keymaps, timezones, locale, keymap, timezone }: L10
         <AlertSubscribe form={form} />
 
         <LanguageField form={form} locales={locales} />
-        <KeyboardField form={form} keymaps={keymaps} />
-        <TimezoneField form={form} timezones={timezones} />
+        <form.AppField name="keymap">{() => <KeyboardField keymaps={keymaps} />}</form.AppField>
+        <form.AppField name="timezone">
+          {() => <TimezoneField timezones={timezones} />}
+        </form.AppField>
 
         <ActionGroup>
           {/* TRANSLATORS: button to save the localization settings */}
