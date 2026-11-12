@@ -30,7 +30,6 @@ import { css } from "@patternfly/react-styles";
 import { useConfigModel } from "~/hooks/model/storage/config-model";
 import { _, n_ } from "~/i18n";
 import type { TranslatedString } from "~/i18n";
-import type { ThProps } from "@patternfly/react-table";
 import type { ConfigModel } from "~/model/storage/config-model";
 import type {
   DetailsCollection,
@@ -46,8 +45,6 @@ const TYPE_ORDER: DetailsCollection[] = ["volumeGroups", "mdRaids", "drives"];
 
 /** The sortable column, by its position in the header. */
 const DEVICE_COLUMN = 0;
-
-type SortBy = { index: number; direction: "asc" | "desc" };
 
 type Row = {
   subject: DetailsSubject;
@@ -126,8 +123,8 @@ function compareRows(column: number, a: Row, b: Row): number {
 export default function EntriesTable(): React.ReactNode {
   const config = useConfigModel();
   const list = React.useRef<HTMLDivElement>(null);
-  /* Unsorted until a header is used: the rows keep the configuration's order. */
-  const [sortBy, setSortBy] = React.useState<SortBy | null>(null);
+  /* Unsorted until a header is used. */
+  const sortBy = null;
   const isGrouped = true;
   const groupId = React.useId();
 
@@ -196,12 +193,6 @@ export default function EntriesTable(): React.ReactNode {
     rows: sorted.filter((row) => row.subject.collection === collection),
   })).filter(({ rows }) => rows.length > 0);
 
-  const sortParams = (columnIndex: number): ThProps["sort"] => ({
-    sortBy: sortBy ?? {},
-    onSort: (_event, index, direction) => setSortBy({ index, direction }),
-    columnIndex,
-  });
-
   return (
     <div
       className={css(
@@ -222,7 +213,7 @@ export default function EntriesTable(): React.ReactNode {
       >
         <Thead>
           <Tr>
-            <Th sort={sortParams(DEVICE_COLUMN)}>{columnName("device")}</Th>
+            <Th>{columnName("device")}</Th>
             <Th>{columnName("usedFor")}</Th>
             <Th>{columnName("existingData")}</Th>
             <Th screenReaderText={columnName("actions")} />
