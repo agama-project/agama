@@ -24,7 +24,7 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use std::{io, num::ParseIntError, path::Path, process};
 
-use crate::api::files::{FileSource, FileSourceError, WithFileSource};
+use crate::api::files::{FileSource, FileSourceError};
 use agama_transfer::Error as TransferError;
 
 #[derive(thiserror::Error, Debug)]
@@ -149,17 +149,5 @@ impl UserFile {
             ));
         }
         Ok(())
-    }
-}
-
-impl WithFileSource for UserFile {
-    /// File source.
-    fn file_source(&self) -> &FileSource {
-        &self.source
-    }
-
-    /// Mutable file source.
-    fn file_source_mut(&mut self) -> &mut FileSource {
-        &mut self.source
     }
 }

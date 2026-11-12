@@ -27,6 +27,7 @@ pub fn main() {
         "tw",
         "https://download.opensuse.org/tumbleweed/repo/oss/",
         None,
+        true,
         |_, _| true,
     )
     .unwrap();
