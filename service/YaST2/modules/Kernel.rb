@@ -50,7 +50,6 @@ module Yast
     def main
       Yast.import "Arch"
       Yast.import "Mode"
-      Yast.import "PackagesProposal"
       Yast.import "Popup"
       Yast.import "Stage"
       Yast.import "FileUtils"
