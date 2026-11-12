@@ -23,18 +23,6 @@
 /*
  * PLAYGROUND: switches for the storage page, from the browser console.
  *
- * Whether the devices table groups them by kind, each group sorted on its
- * own:
- *
- *   agamaGroupedTable(false)  // one flat list
- *   agamaGroupedTable(true)   // volume groups, RAID devices and disks apart (default)
- *
- * How the title row of each group looks in the grouped table:
- *
- *   agamaGroupTitleStyle("band")   // band fading down behind each title (default)
- *   agamaGroupTitleStyle("flat")   // flat faint band behind each title
- *   agamaGroupTitleStyle("plain")  // small capitals on the page, as before
- *
  * How names (mount points, volume groups) read in the "Used for" column:
  *
  *   agamaNamesStyle("mono")   // in monospace, apart from the words around them (default)
@@ -63,40 +51,22 @@
  *   agamaSectionBand("fading")  // the band fading down, as behind the table's group titles
  *   agamaSectionBand("flat")    // an even band
  *
- * Whether the titles of the devices table's groups carry an icon:
- *
- *   agamaGroupTitleIcons("off")  // words only, as every icon left does something (default)
- *   agamaGroupTitleIcons("on")   // an icon before each title, as before
- *
  * Choices survive reloads. To be dropped once the design is settled.
  */
 
 import React from "react";
 
-type GroupedTable = "off" | "on";
-type GroupTitleStyle = "band" | "flat" | "plain";
 type NamesStyle = "mono" | "plain";
-type GroupTitleIcons = "off" | "on";
 type SectionBand = "none" | "fading" | "flat";
 type SectionIndent = "medium" | "small" | "none";
 type SectionTitle = "plain" | "spaced" | "rule" | "both" | "grouped" | "separated" | "smallcaps";
-
 type SwitchName =
-  | "agamaGroupedTable"
-  | "agamaNamesStyle"
-  | "agamaGroupTitleStyle"
-  | "agamaSectionTitle"
-  | "agamaGroupTitleIcons"
-  | "agamaSectionBand"
-  | "agamaSectionIndent";
+  "agamaNamesStyle" | "agamaSectionTitle" | "agamaSectionBand" | "agamaSectionIndent";
 
 declare global {
   interface Window {
-    agamaGroupedTable?: (value: boolean) => void;
-    agamaGroupTitleStyle?: (value: GroupTitleStyle) => void;
     agamaNamesStyle?: (value: NamesStyle) => void;
     agamaSectionTitle?: (value: SectionTitle) => void;
-    agamaGroupTitleIcons?: (value: GroupTitleIcons) => void;
     agamaSectionBand?: (value: SectionBand) => void;
     agamaSectionIndent?: (value: SectionIndent) => void;
   }
@@ -156,16 +126,6 @@ function consoleSwitch<T extends string>(
   return () => React.useSyncExternalStore(subscribe, read);
 }
 
-const useGroupedTable = consoleSwitch<GroupedTable>("agamaGroupedTable", ["on", "off"], (input) =>
-  input ? "on" : "off",
-);
-
-const useGroupTitleStyle = consoleSwitch<GroupTitleStyle>("agamaGroupTitleStyle", [
-  "band",
-  "flat",
-  "plain",
-]);
-
 const useNamesStyle = consoleSwitch<NamesStyle>("agamaNamesStyle", ["mono", "plain"]);
 
 const useSectionTitle = consoleSwitch<SectionTitle>("agamaSectionTitle", [
@@ -177,7 +137,6 @@ const useSectionTitle = consoleSwitch<SectionTitle>("agamaSectionTitle", [
   "separated",
   "smallcaps",
 ]);
-const useGroupTitleIcons = consoleSwitch<GroupTitleIcons>("agamaGroupTitleIcons", ["off", "on"]);
 const useSectionBand = consoleSwitch<SectionBand>("agamaSectionBand", ["none", "fading", "flat"]);
 const useSectionIndent = consoleSwitch<SectionIndent>("agamaSectionIndent", [
   "medium",
@@ -186,13 +145,5 @@ const useSectionIndent = consoleSwitch<SectionIndent>("agamaSectionIndent", [
 ]);
 
 export { registry as playgroundSwitches };
-export {
-  useSectionTitle,
-  useGroupTitleIcons,
-  useSectionBand,
-  useSectionIndent,
-  useGroupedTable,
-  useNamesStyle,
-  useGroupTitleStyle,
-};
+export { useSectionTitle, useSectionBand, useSectionIndent, useNamesStyle };
 export type { NamesStyle };

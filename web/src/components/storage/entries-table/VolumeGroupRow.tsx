@@ -26,10 +26,7 @@ import VolumeGroupMenu from "~/components/storage/entries-table/VolumeGroupMenu"
 import TruncatedDeviceName from "~/components/storage/TruncatedDeviceName";
 import { volumeGroupUsedFor, ExistingDataCell } from "~/components/storage/entries-table/cells";
 import { volumeGroupFacts } from "~/components/storage/utils/device";
-import {
-  useGroupedTable,
-  useNamesStyle,
-} from "~/components/storage/storage-page/playground-switches";
+import { useNamesStyle } from "~/components/storage/storage-page/playground-switches";
 import { useDevice } from "~/hooks/model/system/storage";
 import { _ } from "~/i18n";
 import type { ConfigModel } from "~/model/storage/config-model";
@@ -56,10 +53,7 @@ export type VolumeGroupRowProps = {
 export default function VolumeGroupRow({ group, subject }: VolumeGroupRowProps): React.ReactNode {
   const device = useDevice(group.name || "");
   const { size, description } = volumeGroupFacts(group, device);
-  /* PLAYGROUND: in the grouped table the group's title already says these are
-     volume groups, so the row says only whether this one is new, in the same
-     style as any other line under a name. */
-  const isGrouped = useGroupedTable() === "on";
+  const isGrouped = true;
   // TRANSLATORS: said under the name of a volume group the installation
   // creates, in a list headed "Volume groups".
   const newMark = !group.name ? _("New") : undefined;

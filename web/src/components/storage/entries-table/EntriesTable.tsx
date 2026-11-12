@@ -26,13 +26,6 @@ import { columnName } from "~/components/storage/entries-table/columns";
 import DriveRow from "~/components/storage/entries-table/DriveRow";
 import VolumeGroupRow from "~/components/storage/entries-table/VolumeGroupRow";
 import { baseName } from "~/components/storage/utils";
-import Icon from "~/components/layout/Icon";
-import type { IconProps } from "~/components/layout/Icon";
-import {
-  useGroupedTable,
-  useGroupTitleIcons,
-  useGroupTitleStyle,
-} from "~/components/storage/storage-page/playground-switches";
 import { css } from "@patternfly/react-styles";
 import { useConfigModel } from "~/hooks/model/storage/config-model";
 import { _, n_ } from "~/i18n";
@@ -81,16 +74,6 @@ function rowsOf(config: ConfigModel.Config | null): Row[] {
 
   return [...groups, ...partitionables("mdRaids"), ...partitionables("drives")];
 }
-
-/**
- * The mark beside a group's title, the same one the device panel uses for
- * that kind: what the title says, recognized before it is read.
- */
-const GROUP_ICON: Record<DetailsCollection, IconProps["name"]> = {
-  volumeGroups: "stacks",
-  mdRaids: "dns",
-  drives: "hard_drive",
-};
 
 /** What a group of the table is called, by kind and by how many it holds. */
 function groupTitle(collection: DetailsCollection, count: number): TranslatedString {
@@ -145,12 +128,7 @@ export default function EntriesTable(): React.ReactNode {
   const list = React.useRef<HTMLDivElement>(null);
   /* Unsorted until a header is used: the rows keep the configuration's order. */
   const [sortBy, setSortBy] = React.useState<SortBy | null>(null);
-  /* PLAYGROUND: the rows can be grouped by kind from the console. Grouped, a
-     sort orders each group on its own and the groups keep their order. */
-  const isGrouped = useGroupedTable() === "on";
-  const groupTitleStyle = useGroupTitleStyle();
-  // PLAYGROUND: group titles with or without an icon, from the console.
-  const hasGroupIcons = useGroupTitleIcons() === "on";
+  const isGrouped = true;
   const groupId = React.useId();
 
   const onKeyDown = (event: React.KeyboardEvent) => {
@@ -229,9 +207,7 @@ export default function EntriesTable(): React.ReactNode {
       className={css(
         "agm-entries-table",
         isGrouped && "agm-entries-table--grouped",
-        isGrouped && !hasGroupIcons && "agm-entries-table--no-group-marks",
-        isGrouped && groupTitleStyle === "band" && "agm-entries-table--banded",
-        isGrouped && groupTitleStyle === "flat" && "agm-entries-table--flat-band",
+        isGrouped && "agm-entries-table--no-group-marks",
       )}
       ref={list}
       onKeyDown={onKeyDown}
@@ -267,7 +243,6 @@ export default function EntriesTable(): React.ReactNode {
                   className="agm-entries-table__group-header"
                 >
                   <span className="agm-entries-table__group-title">
-                    {hasGroupIcons && <Icon name={GROUP_ICON[collection]} aria-hidden />}
                     {groupTitle(collection, rows.length)}
                   </span>
                 </Th>

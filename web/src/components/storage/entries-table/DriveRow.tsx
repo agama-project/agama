@@ -27,10 +27,7 @@ import { driveUsedFor, ExistingDataCell } from "~/components/storage/entries-tab
 import { deviceSize } from "~/components/storage/utils";
 import { driveDescription, typeDescription } from "~/components/storage/utils/device";
 import { useConfigModel } from "~/hooks/model/storage/config-model";
-import {
-  useGroupedTable,
-  useNamesStyle,
-} from "~/components/storage/storage-page/playground-switches";
+import { useNamesStyle } from "~/components/storage/storage-page/playground-switches";
 import { useDevice } from "~/hooks/model/system/storage";
 import TruncatedDeviceName from "~/components/storage/TruncatedDeviceName";
 import configModel from "~/model/storage/config-model";
@@ -62,14 +59,8 @@ export default function DriveRow({ name, subject }: DriveRowProps): React.ReactN
 
   const entry = configModel.partitionable.findByName(config, name);
   const size = device?.block?.size ? deviceSize(device.block.size) : undefined;
-  /* PLAYGROUND: in the grouped table the group's title already says these are
-     disks, so a disk whose description is only its kind ("Disk", whether from
-     a missing model or a model reported as just that) says nothing under its
-     name. RAID devices keep theirs, which carries their level. */
-  const isGrouped = useGroupedTable() === "on";
   const fullDescription = device && driveDescription(device);
-  const isOnlyKind =
-    isGrouped && subject.collection === "drives" && fullDescription === typeDescription(device);
+  const isOnlyKind = subject.collection === "drives" && fullDescription === typeDescription(device);
   const description = isOnlyKind ? undefined : fullDescription;
 
   const groups = entry ? configModel.partitionable.filterVolumeGroups(config, entry) : [];
