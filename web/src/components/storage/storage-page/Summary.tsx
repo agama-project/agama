@@ -22,14 +22,13 @@
 
 import React from "react";
 import { sprintf } from "sprintf-js";
-import { Flex, FlexItem, Hint, HintBody } from "@patternfly/react-core";
+import { Flex, FlexItem } from "@patternfly/react-core";
 import Interpolate, { markerText } from "~/components/core/Interpolate";
 import Text from "~/components/core/Text";
 import Consequences, { losesData } from "~/components/storage/storage-page/Consequences";
 import {
   useDetailsButton,
   useDetailsSize,
-  useSummaryStyle,
 } from "~/components/storage/storage-page/playground-switches";
 import { useUnseenChanges } from "~/components/storage/storage-page/use-unseen-changes";
 import { useAnnounce } from "~/context/announcer";
@@ -115,7 +114,6 @@ function useAnnounceChanges(isLossy: boolean, hasUnseenChanges: boolean, summary
  */
 export default function Summary(): React.ReactNode {
   const actions = useActions();
-  const style = useSummaryStyle();
   const detailsButton = useDetailsButton();
   const isCompactDetails = useDetailsSize() === "compact";
 
@@ -161,14 +159,6 @@ export default function Summary(): React.ReactNode {
         </FlexItem>
         <FlexItem>{details}</FlexItem>
       </Flex>
-    );
-  }
-
-  if (style === "hint") {
-    return (
-      <Hint>
-        <HintBody>{content}</HintBody>
-      </Hint>
     );
   }
 

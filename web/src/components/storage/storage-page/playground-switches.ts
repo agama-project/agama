@@ -40,11 +40,6 @@
  *   agamaNamesStyle("mono")   // in monospace, apart from the words around them (default)
  *   agamaNamesStyle("plain")  // in the same face as the rest
  *
- * What holds the summary:
- *
- *   agamaSummaryStyle("plain")  // a line on the page (default)
- *   agamaSummaryStyle("hint")   // a PatternFly hint box
- *
  * Where the buttons opening the details and the suggestions sit:
  *
  *   agamaDetailsButton("inline")  // fitted at the end of their sentence (default)
@@ -92,7 +87,6 @@ import React from "react";
 type GroupedTable = "off" | "on";
 type GroupTitleStyle = "band" | "flat" | "plain";
 type NamesStyle = "mono" | "plain";
-type SummaryStyle = "plain" | "hint";
 type DetailsButton = "inline" | "end";
 type DetailsSize = "compact" | "regular";
 type GroupTitleIcons = "off" | "on";
@@ -104,7 +98,6 @@ type SwitchName =
   | "agamaGroupedTable"
   | "agamaNamesStyle"
   | "agamaGroupTitleStyle"
-  | "agamaSummaryStyle"
   | "agamaDetailsButton"
   | "agamaDetailsSize"
   | "agamaSectionTitle"
@@ -117,7 +110,6 @@ declare global {
     agamaGroupedTable?: (value: boolean) => void;
     agamaGroupTitleStyle?: (value: GroupTitleStyle) => void;
     agamaNamesStyle?: (value: NamesStyle) => void;
-    agamaSummaryStyle?: (value: SummaryStyle) => void;
     agamaDetailsButton?: (value: DetailsButton) => void;
     agamaDetailsSize?: (value: DetailsSize) => void;
     agamaSectionTitle?: (value: SectionTitle) => void;
@@ -193,8 +185,6 @@ const useGroupTitleStyle = consoleSwitch<GroupTitleStyle>("agamaGroupTitleStyle"
 
 const useNamesStyle = consoleSwitch<NamesStyle>("agamaNamesStyle", ["mono", "plain"]);
 
-const useSummaryStyle = consoleSwitch<SummaryStyle>("agamaSummaryStyle", ["plain", "hint"]);
-
 const useDetailsButton = consoleSwitch<DetailsButton>("agamaDetailsButton", ["inline", "end"]);
 const useDetailsSize = consoleSwitch<DetailsSize>("agamaDetailsSize", ["compact", "regular"]);
 const useSectionTitle = consoleSwitch<SectionTitle>("agamaSectionTitle", [
@@ -225,6 +215,5 @@ export {
   useGroupedTable,
   useNamesStyle,
   useGroupTitleStyle,
-  useSummaryStyle,
 };
 export type { NamesStyle };
