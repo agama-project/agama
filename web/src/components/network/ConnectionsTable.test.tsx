@@ -24,7 +24,7 @@ import React from "react";
 import { screen, within } from "@testing-library/react";
 import { installerRender, mockNavigateFn } from "~/test-utils";
 import ConnectionsTable from "~/components/network/ConnectionsTable";
-import { Connection, ConnectionState, ConnectionStatus } from "~/types/network";
+import { BondMode, Connection, ConnectionState, ConnectionStatus } from "~/types/network";
 
 const mockMutateAsync = jest.fn();
 const mockConnections = [
@@ -49,10 +49,30 @@ const mockConnections = [
   }),
 ];
 
-// The configured connections do not include the runtime state.
-const mockConfigConnections = mockConnections.map(
-  ({ id, state: _state, ...options }) => new Connection(id, options),
-);
+// The top-level connections the system reports, with the ports of bonds and
+// bridges nested in them.
+let mockRoots = mockConnections;
+
+const mockBond = new Connection("Bond 1", {
+  iface: "bond0",
+  state: ConnectionState.ACTIVATED,
+  bond: {
+    mode: BondMode.ACTIVE_BACKUP,
+    options: "",
+    ports: [
+      new Connection("Port 1", { iface: "eth1", state: ConnectionState.ACTIVATED }),
+      new Connection("Port 2", { iface: "eth2", state: ConnectionState.DEACTIVATED }),
+    ],
+  },
+});
+
+// The configured connections are the reported ones, without the runtime state
+// (neither at the top level nor in the nested ports).
+const mockConfigOf = (connections: Connection[]): Connection[] =>
+  connections.map(({ id, state: _state, bond, ...options }) => {
+    const ports = bond?.ports.map((p) => (typeof p === "string" ? p : mockConfigOf([p])[0]));
+    return new Connection(id, { ...options, bond: bond && { ...bond, ports } });
+  });
 
 const mockDevices = [
   { name: "eth0", connection: "Wired connection 0", addresses: [] },
@@ -62,14 +82,14 @@ const mockDevices = [
 
 jest.mock("~/hooks/model/config/network", () => ({
   useConnectionMutation: () => ({ mutateAsync: mockMutateAsync }),
-  useExtendedConfig: () => ({ connections: mockConfigConnections }),
+  useExtendedConfig: () => ({ connections: mockConfigOf(mockRoots) }),
 }));
 
 jest.mock("~/hooks/model/system/network", () => ({
   useConnections: () => mockConnections,
   useDevices: () => mockDevices,
   useSystem: () => ({
-    connections: mockConnections,
+    connections: mockRoots,
     devices: mockDevices,
     state: { wirelessEnabled: true },
   }),
@@ -190,5 +210,42 @@ describe("ConnectionsTable", () => {
         status: "removed",
       }),
     );
+  });
+
+  describe("when there are bonds or bridges", () => {
+    beforeEach(() => {
+      mockRoots = [...mockConnections, mockBond];
+    });
+
+    afterEach(() => {
+      mockRoots = mockConnections;
+    });
+
+    it("renders their ports as any other connection", () => {
+      installerRender(<ConnectionsTable />);
+      screen.getByRole("row", { name: /Bond 1/ });
+      screen.getByRole("row", { name: /Port 1/ });
+      screen.getByRole("row", { name: /Port 2/ });
+      screen.getByText("6 connections available");
+    });
+
+    it("tells the controller of a port next to its name", () => {
+      installerRender(<ConnectionsTable />);
+      const port = screen.getByRole("row", { name: /Port 1/ });
+      const name = within(port).getByText("(port of bond0)").parentElement;
+      expect(name).toHaveTextContent(/^Port 1 \(port of bond0\)$/);
+
+      const bond = screen.getByRole("row", { name: /Bond 1/ });
+      expect(within(bond).queryByText(/port of/)).not.toBeInTheDocument();
+    });
+
+    it("updates the configured port when acting on it", async () => {
+      const { user } = installerRender(<ConnectionsTable />);
+      await user.click(screen.getByRole("button", { name: /actions for Port 1/i }));
+      await user.click(screen.getByText("Delete"));
+      expect(mockMutateAsync).toHaveBeenCalledWith(
+        expect.objectContaining({ id: "Port 1", status: "removed" }),
+      );
+    });
   });
 });
