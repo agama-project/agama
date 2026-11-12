@@ -292,6 +292,7 @@ impl<'a> SoftwareStateBuilder<'a> {
             url,
             enabled: true,
             priority: None,
+            autorefresh: true,
         }
     }
 
@@ -449,13 +450,14 @@ impl SoftwareState {
 }
 
 /// Defines a repository.
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct Repository {
     pub alias: String,
     pub name: String,
     pub url: String,
     pub enabled: bool,
     pub priority: Option<u32>,
+    pub autorefresh: bool,
 }
 
 impl From<&RepositoryConfig> for Repository {
@@ -466,6 +468,7 @@ impl From<&RepositoryConfig> for Repository {
             url: value.url.clone(),
             enabled: value.enabled.unwrap_or(true),
             priority: value.priority.and_then(|p| u32::try_from(p).ok()),
+            autorefresh: true, // extra repositories is always with autorefresh enabled
         }
     }
 }
@@ -478,6 +481,7 @@ impl From<&agama_utils::api::software::Repository> for Repository {
             url: value.url.clone(),
             enabled: value.enabled,
             priority: None,
+            autorefresh: value.autorefresh,
         }
     }
 }
@@ -1013,6 +1017,7 @@ mod tests {
             url: "hd:/run/initramfs/install".to_string(),
             enabled: false,
             predefined: true,
+            autorefresh: false,
         };
 
         let repos = vec![base_repo];
@@ -1044,6 +1049,7 @@ mod tests {
             url: "hd:/install".to_string(),
             enabled: true,
             predefined: true,
+            autorefresh: false,
         };
 
         let state = SoftwareStateBuilder::for_product(&product)
@@ -1069,6 +1075,7 @@ mod tests {
             url: "hd:/dud".to_string(),
             enabled: true,
             predefined: true,
+            autorefresh: false,
         };
 
         let state = SoftwareStateBuilder::for_product(&product)
@@ -1099,6 +1106,7 @@ mod tests {
             url: "hd:/install".to_string(),
             enabled: true,
             predefined: true,
+            autorefresh: false,
         };
 
         let state = SoftwareStateBuilder::for_product(&product)
@@ -1114,6 +1122,47 @@ mod tests {
                 crate::service::INSTALLATION_REPO_ALIAS.to_string(),
             ]
         );
+    }
+
+    #[test]
+    fn test_extra_repositories_have_autorefresh_enabled() {
+        let repo_config = RepositoryConfig {
+            alias: "extra_repo".to_string(),
+            name: None,
+            url: "http://example.com/repo".to_string(),
+            product_dir: None,
+            enabled: Some(true),
+            priority: None,
+            allow_unsigned: None,
+            gpg_fingerprints: None,
+        };
+        let repo = super::Repository::from(&repo_config);
+        assert!(repo.autorefresh);
+    }
+
+    #[test]
+    fn test_predefined_repositories_autorefresh_preserved() {
+        let install_repo = Repository {
+            alias: crate::service::INSTALLATION_REPO_ALIAS.to_string(),
+            name: crate::service::INSTALLATION_REPO_ALIAS.to_string(),
+            url: "hd:/install".to_string(),
+            enabled: true,
+            predefined: true,
+            autorefresh: false,
+        };
+        let repo = super::Repository::from(&install_repo);
+        assert!(!repo.autorefresh);
+
+        let online_repo = Repository {
+            alias: "remote_repo".to_string(),
+            name: "remote_repo".to_string(),
+            url: "http://example.com/repo".to_string(),
+            enabled: true,
+            predefined: true,
+            autorefresh: true,
+        };
+        let repo = super::Repository::from(&online_repo);
+        assert!(repo.autorefresh);
     }
 
     #[test]
