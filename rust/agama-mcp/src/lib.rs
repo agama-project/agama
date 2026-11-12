@@ -34,4 +34,5 @@ pub mod web;
 pub use error::{BackendError, Error, SchemaError, ValidationError};
 pub use mode::{McpMode, ModeParseError};
 pub use server::{McpBackend, McpServer};
+pub use tools::WaitProgressArgs;
 pub use web::mcp_router;

@@ -23,10 +23,11 @@ is activated via the kernel command-line:
     trigger installation (`commit_install`).
 -   `inst.mcp=config`: Configuration-only mode. AI tools can inspect
     hardware, retrieve schemas, inject profiles, and check proposals,
-    but `commit_install` is disabled (returning a `403 Forbidden`
-    error), requiring approval and triggering of installation by a human
-    operator in the Web UI. (If you are looking for a `read-only` mode,
-    this is it, with respect to the target system.)
+    but `commit_install` and `reboot` are disabled (returning
+    `403 Forbidden`). Additionally, configurations defining
+    pre-installation scripts (`scripts.pre`) are rejected to prevent
+    arbitrary command execution. Installation requires approval and
+    triggering by a human operator in the Web UI.
 -   `inst.mcp=disabled` (or omitted): MCP server is disabled.
 
 ## Tools Provided
@@ -48,19 +49,27 @@ is activated via the kernel command-line:
     impossible.
 5.  `commit_install()`: Locks state machine and triggers disk format and
     software installation. Forbidden in configuration mode.
-6.  `get_progress()`: Returns structured completion percentage, current
-    stage, background tasks, and pending questions
-    (`hasPendingQuestions`, `pendingQuestions`).
-7.  `get_logs(log_type?, lines?)`: Retrieves scoped system logs directly
+6.  `get_progress()`: Returns structured installer state: stage,
+    background tasks, and pending questions (`hasPendingQuestions`,
+    `pendingQuestions`).
+7.  `wait_progress(timeout_seconds?)`: Event-driven progress monitor.
+    Suspends until background tasks finish, an interactive question
+    requires an answer, installation completes or fails, or the timeout
+    elapses (default 60s). Avoids repeated polling overhead.
+8.  `get_logs(log_type?, lines?)`: Retrieves scoped system logs directly
     from `journalctl` (defaulting to the last 100 lines, max 1000).
     Supported scopes: `installer` (default, queries `agama*` units),
     `system` (system-wide journal), `zypp` (package manager entries), or
     any specific systemd unit name.
-8.  `get_questions()`: Retrieves interactive questions raised by
+9.  `get_questions()`: Retrieves interactive questions raised by
     installer services awaiting an answer (e.g. disk decryption, GPG key
     import, package retry).
-9.  `answer_question(id, action, value?)`: Submits an answer to a
+10. `answer_question(id, action, value?)`: Submits an answer to a
     pending question by ID to unblock installer progress.
+11. `reboot()`: Reboots the machine into the installed system. Collect
+    all required logs using `get_logs` in advance; the MCP server and
+    installer session terminate immediately upon reboot. Forbidden in
+    configuration mode.
 
 ## Resources Provided
 
