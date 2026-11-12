@@ -19,7 +19,8 @@
     BuildRequires:  distribution-release
     BuildRequires:  yast2-transfer
     BuildRequires:  yast2-pkg-bindings
-    BuildRequires:  libstorage-ng-ruby
+    # 4.5.369 or newer is needed for the partition ids from the Discoverable Partitions Specification
+    BuildRequires:  libstorage-ng-ruby >= 4.5.369
     BuildRequires:  xsltproc
     # lsmod
     BuildRequires:  kmod
@@ -30,7 +31,8 @@
     Requires:       dbus-1-common
     Requires:       dbus-1-daemon
     Requires:       yast2-hardware-detection
-    Requires:       libstorage-ng-ruby
+    # 4.5.369 or newer is needed for the partition ids from the Discoverable Partitions Specification
+    Requires:       libstorage-ng-ruby >= 4.5.369
     Requires:       yast2-pkg-bindings
     Requires:       yast2-transfer
     # Needed by service/YaST2/modules/Popup.rb (Yast.import "UI") - previously only a transitive
