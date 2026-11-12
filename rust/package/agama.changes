@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Nov 12 14:33:50 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Fix a repository probing unit test that failed on ppc64le because
+  it depended on the architecture specific product repositories.
+
+-------------------------------------------------------------------
 Fri Nov  6 14:58:52 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
 
 - Offer only the products available on the current architecture,
