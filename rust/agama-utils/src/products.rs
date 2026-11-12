@@ -743,7 +743,7 @@ mod test {
         assert!(description["cs"].contains("verze"));
 
         let software = &tw.software;
-        assert_eq!(software.installation_repositories.len(), 23);
+        assert_eq!(software.installation_repositories.len(), 24);
         assert_eq!(software.installation_labels.len(), 8);
         assert_eq!(software.base_product.as_ref().unwrap(), "openSUSE");
         assert_eq!(software.user_patterns.len(), 12);

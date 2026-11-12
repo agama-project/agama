@@ -1160,20 +1160,17 @@ mod tests {
             .build()
             .await;
 
-        // Check the URLs instead of the aliases: the product repositories depend on the
-        // architecture and the aliases are assigned after filtering the unreachable ones.
-        let (install, product_repos): (Vec<_>, Vec<_>) = state
-            .repositories
-            .iter()
-            .partition(|r| r.alias == crate::service::INSTALLATION_REPO_ALIAS);
-        assert_eq!(install.len(), 1);
+        let aliases: Vec<_> = state.repositories.iter().map(|r| r.alias.clone()).collect();
         assert_eq!(
-            state.repositories.last().unwrap().alias,
-            crate::service::INSTALLATION_REPO_ALIAS
+            aliases,
+            vec![
+                "agama-0".to_string(),
+                crate::service::INSTALLATION_REPO_ALIAS.to_string(),
+            ],
+            "only the product repository {} should be reachable, got repositories: {:#?}",
+            first_repo_url,
+            state.repositories
         );
-        assert!(!product_repos.is_empty());
-        assert!(product_repos.iter().all(|r| r.url == first_repo_url));
-        assert!(product_repos.len() < product.software.repositories().len());
     }
 
     #[tokio::test]
