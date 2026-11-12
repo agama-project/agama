@@ -240,6 +240,18 @@ impl Starter {
 
     /// Starts the service and returns a handler to communicate with it.
     pub async fn start(self) -> Result<Handler<Service>, Error> {
+        let mut hardware = match self.hardware {
+            Some(hardware) => hardware,
+            None => hardware::Registry::new_from_system(),
+        };
+
+        let hardware_task = tokio::spawn(async move {
+            if let Err(e) = hardware.read().await {
+                tracing::warn!("Failed to read hardware information: {e}");
+            }
+            hardware
+        });
+
         let issues = match self.issues {
             Some(issues) => issues,
             None => issue::Service::starter(self.events.clone()).start(),
@@ -250,45 +262,76 @@ impl Starter {
             None => progress::Service::starter(self.events.clone()).start(),
         };
 
-        let bootloader = match self.bootloader {
-            Some(bootloader) => bootloader,
-            None => {
-                bootloader::Service::starter(self.dbus.clone())
-                    .start()
-                    .await?
-            }
-        };
-
-        let hostname = match self.hostname {
-            Some(hostname) => hostname,
-            None => {
-                hostname::Service::starter(self.events.clone(), issues.clone())
-                    .start()
-                    .await?
-            }
-        };
-
         let proxy = match self.proxy {
             Some(proxy) => proxy,
             None => proxy::Service::starter(self.events.clone()).start()?,
         };
 
-        let l10n = match self.l10n {
-            Some(l10n) => l10n,
-            None => {
-                l10n::Service::starter(self.events.clone(), issues.clone())
-                    .start()
-                    .await?
-            }
+        let ntp = match self.ntp {
+            Some(ntp) => ntp,
+            None => ntp::Service::starter(self.events.clone()).start()?,
         };
-
-        let l10n_system = l10n.call(l10n::message::GetSystem).await?;
-        let language = LanguageTag::from(&l10n_system.locale);
 
         let security = match self.security {
             Some(security) => security,
             None => security::Service::starter(self.questions.clone()).start()?,
         };
+
+        let access = agama_access::Service::starter(self.events.clone()).start()?;
+
+        macro_rules! start_or_default {
+            ($field:expr, $starter:expr) => {
+                async {
+                    match $field {
+                        Some(service) => Ok(service),
+                        None => $starter.start().await.map_err(Error::from),
+                    }
+                }
+            };
+        }
+
+        let (bootloader, hostname, l10n, storage, iscsi, files, network, users) = tokio::try_join!(
+            start_or_default!(
+                self.bootloader,
+                bootloader::Service::starter(self.dbus.clone())
+            ),
+            start_or_default!(
+                self.hostname,
+                hostname::Service::starter(self.events.clone(), issues.clone())
+            ),
+            start_or_default!(
+                self.l10n,
+                l10n::Service::starter(self.events.clone(), issues.clone())
+            ),
+            start_or_default!(
+                self.storage,
+                storage::Service::starter(
+                    self.events.clone(),
+                    issues.clone(),
+                    progress.clone(),
+                    self.dbus.clone(),
+                )
+            ),
+            start_or_default!(
+                self.iscsi,
+                iscsi::Service::starter(self.events.clone(), progress.clone(), self.dbus.clone(),)
+            ),
+            start_or_default!(
+                self.files,
+                files::Service::starter(progress.clone(), self.questions.clone())
+            ),
+            start_or_default!(
+                self.network,
+                network::Service::starter(self.events.clone(), progress.clone())
+            ),
+            start_or_default!(
+                self.users,
+                users::Service::starter(self.events.clone(), issues.clone(), access.clone())
+            ),
+        )?;
+
+        let locale = l10n.call(l10n::message::GetLocale).await?;
+        let language = LanguageTag::from(&locale);
 
         let software = match self.software {
             Some(software) => software,
@@ -303,68 +346,6 @@ impl Starter {
                 )
                 .start()
                 .await?
-            }
-        };
-
-        let storage = match self.storage {
-            Some(storage) => storage,
-            None => {
-                storage::Service::starter(
-                    self.events.clone(),
-                    issues.clone(),
-                    progress.clone(),
-                    self.dbus.clone(),
-                )
-                .start()
-                .await?
-            }
-        };
-
-        let ntp = match self.ntp {
-            Some(ntp) => ntp,
-            None => ntp::Service::starter(self.events.clone()).start()?,
-        };
-
-        let iscsi = match self.iscsi {
-            Some(iscsi) => iscsi,
-            None => {
-                iscsi::Service::starter(self.events.clone(), progress.clone(), self.dbus.clone())
-                    .start()
-                    .await?
-            }
-        };
-
-        let files = match self.files {
-            Some(files) => files,
-            None => {
-                files::Service::starter(progress.clone(), self.questions.clone())
-                    .start()
-                    .await?
-            }
-        };
-
-        let network = match self.network {
-            Some(network) => network,
-            None => {
-                network::Service::starter(self.events.clone(), progress.clone())
-                    .start()
-                    .await?
-            }
-        };
-
-        let hardware = match self.hardware {
-            Some(hardware) => hardware,
-            None => hardware::Registry::new_from_system(),
-        };
-
-        let access = agama_access::Service::starter(self.events.clone()).start()?;
-
-        let users = match self.users {
-            Some(users) => users,
-            None => {
-                users::Service::starter(self.events.clone(), issues.clone(), access.clone())
-                    .start()
-                    .await?
             }
         };
 
@@ -386,6 +367,10 @@ impl Starter {
                 }
             }
         };
+
+        let hardware = hardware_task
+            .await
+            .unwrap_or_else(|_| hardware::Registry::new_from_system());
 
         let task_manager = Arc::new(TaskManager::new(self.events.clone()));
 
@@ -475,10 +460,6 @@ impl Service {
 
     async fn read_system_info(&mut self) -> Result<(), Error> {
         self.products.read()?;
-        if let Err(error) = self.hardware.read().await {
-            tracing::warn!("Failed to read hardware information: {error}");
-        }
-
         self.system.products = self.products.products();
         self.system.hardware = self.hardware.to_hardware_info();
 
@@ -713,6 +694,7 @@ impl MessageHandler<message::GetSystem> for Service {
         // Build manager system info with language-filtered products. It filters the products
         // to include only translations for the current language.
         let mut manager = self.system.clone();
+        manager.hardware = self.hardware.to_hardware_info();
         manager.products = self.products.products_for_lang(lang);
         manager.licenses = self.licenses.licenses();
 
