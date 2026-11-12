@@ -1,7 +1,8 @@
 -------------------------------------------------------------------
 Thu Nov 12 14:33:50 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
 
-- Do not add the openSUSE Tumbleweed ppc OSS repository twice.
+- Do not add the openSUSE Tumbleweed ppc OSS repository twice
+  (gh#agama-project/agama#4228).
 
 -------------------------------------------------------------------
 Wed Nov  4 07:48:14 UTC 2026 - Dominique Leuenberger <dimstar@opensuse.org>
