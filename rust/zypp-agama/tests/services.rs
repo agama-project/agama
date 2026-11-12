@@ -60,4 +60,34 @@ fn test_services() {
         "Unexpected repos count. Repos: {:#?}",
         repos
     );
+
+    zypp.add_repository(
+        "test_autorefresh_on",
+        "http://example.com/repo1",
+        None,
+        true,
+        |_, _| true,
+    )
+    .unwrap();
+    zypp.add_repository(
+        "test_autorefresh_off",
+        "http://example.com/repo2",
+        None,
+        false,
+        |_, _| true,
+    )
+    .unwrap();
+
+    let repos = zypp.list_repositories().unwrap();
+    let on_repo = repos
+        .iter()
+        .find(|r| r.alias == "test_autorefresh_on")
+        .expect("test_autorefresh_on repo should exist");
+    assert!(on_repo.autorefresh);
+
+    let off_repo = repos
+        .iter()
+        .find(|r| r.alias == "test_autorefresh_off")
+        .expect("test_autorefresh_off repo should exist");
+    assert!(!off_repo.autorefresh);
 }

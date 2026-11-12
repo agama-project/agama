@@ -553,6 +553,8 @@ fn find_repository(dir: &PathBuf, name: &str) -> Option<Repository> {
         url: url.to_string(),
         enabled: true,
         predefined: true,
+        // Local installation media is static and never updated
+        autorefresh: false,
     })
 }
 
@@ -603,11 +605,13 @@ mod tests {
         assert_eq!(&install.alias, "Installation");
         assert!(install.url.contains(&format!("hd:/install")));
         assert!(install.predefined);
+        assert!(!install.autorefresh);
 
         let dud = repositories.last().unwrap();
         assert!(dud.url.contains(&format!("/{}", DUD_REPO_DIR)));
         assert_eq!(&dud.alias, "AgamaDriverUpdate");
         assert!(dud.predefined);
+        assert!(!dud.autorefresh);
         Ok(())
     }
 }
