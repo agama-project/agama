@@ -26,10 +26,7 @@ import { Flex, FlexItem } from "@patternfly/react-core";
 import Interpolate, { markerText } from "~/components/core/Interpolate";
 import Text from "~/components/core/Text";
 import Consequences, { losesData } from "~/components/storage/storage-page/Consequences";
-import {
-  useDetailsButton,
-  useDetailsSize,
-} from "~/components/storage/storage-page/playground-switches";
+import { useDetailsButton } from "~/components/storage/storage-page/playground-switches";
 import { useUnseenChanges } from "~/components/storage/storage-page/use-unseen-changes";
 import { useAnnounce } from "~/context/announcer";
 import { useActions } from "~/hooks/model/proposal/storage";
@@ -115,7 +112,6 @@ function useAnnounceChanges(isLossy: boolean, hasUnseenChanges: boolean, summary
 export default function Summary(): React.ReactNode {
   const actions = useActions();
   const detailsButton = useDetailsButton();
-  const isCompactDetails = useDetailsSize() === "compact";
 
   const isLossy = losesData(actions);
   const title = sentence(actions.length, isLossy);
@@ -131,7 +127,7 @@ export default function Summary(): React.ReactNode {
       label={_("Preview result…")}
       // TRANSLATORS: full name of the "Details" button, for screen readers.
       aria-label={_("Details of the planned storage changes")}
-      isCompact={isCompactDetails}
+      isCompact={false}
     />
   );
 

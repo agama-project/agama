@@ -23,10 +23,7 @@
 import React from "react";
 import { Alert, AlertProps, Button, Flex, FlexItem, ModalProps } from "@patternfly/react-core";
 import Popup from "~/components/core/Popup";
-import {
-  useDetailsButton,
-  useDetailsSize,
-} from "~/components/storage/storage-page/playground-switches";
+import { useDetailsButton } from "~/components/storage/storage-page/playground-switches";
 
 export type AlertWithDetailsPopupProps = {
   /** How it is presented, from a neutral report to something needing care. */
@@ -134,13 +131,12 @@ export default function AlertWithDetailsPopup({
   const [isOpen, setIsOpen] = React.useState(false);
   const close = () => setIsOpen(false);
   const detailsButton = useDetailsButton();
-  const compactButton = useDetailsSize() === "compact";
 
   const action = (
     <Button
       variant="tertiary"
       size="sm"
-      className={compactButton ? "agm-details-button agm-summary__details" : "agm-details-button"}
+      className="agm-details-button"
       aria-label={actionAriaLabel}
       onClick={() => setIsOpen(true)}
     >
