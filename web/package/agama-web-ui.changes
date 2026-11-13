@@ -1,11 +1,26 @@
 -------------------------------------------------------------------
-Thu Nov  5 14:01:06 UTC 2026 - Aaryan Pawar <pawararyan989@gmail.com>
+Fri Nov 13 09:00:00 UTC 2026 - Aaryan Pawar <pawararyan989@gmail.com>
 
 - Move the form to configure an LVM volume group to the new form
   stack. The name is checked against what LVM accepts, and the
   disks are chosen from a list, or from a dialog showing their
   details (gh#agama-project/agama#4110).
 
+-------------------------------------------------------------------
+Fri Nov  6 13:05:49 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Do not crash when unexpected square brackets are present in the
+  translation. Fixes crash in the first user configuration dialog
+  when using the French, Catalan or Brazilian Portuguese languages
+  (bsc#1286560)
+- Fixed the translations which caused the crash above
+
+-------------------------------------------------------------------
+Thu Nov  5 11:11:43 UTC 2026 - David Díaz <dgonzalez@suse.com>
+
+- Keep the options menu divider out of the terminal entry
+  (gh#agama-project/agama#4186).
+  
 -------------------------------------------------------------------
 Wed Nov  4 09:18:57 UTC 2026 - David Diaz <dgonzalez@suse.com>
 

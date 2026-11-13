@@ -30,10 +30,9 @@ fi
 # a helper function which generates the Agama welcome message displayed at the
 # console
 generate_welcome() {
-  # get the latest version of any Agama package (except the integration tests, it lives in a
-  # separate git repository and has different number of commits than the rest)
-  AGAMA_VERSION=$(rpm -qa | grep agama | grep -v agama-integration-tests | xargs rpm -q --queryformat \
-    "%{VERSION}\n" | sed -e "s/\\.devel/+/" -e 's/+0$//' | sort -V | tail -n 1)
+  # get the latest version of the core Agama packages
+  AGAMA_VERSION=$(rpm -q --queryformat "%{VERSION}\n" agama agama-web-ui agama-yast 2>/dev/null | \
+    sed -e "s/\\.devel/+/" -e 's/+0$//' | sort -V | tail -n 1)
 
   ISSUE=/run/issue.d/10-agama-welcome.issue
   printf "Welcome to \\\\e{lightgreen}Agama\\\\e{reset} installer version %s! (\\\\l)\n\n" "$AGAMA_VERSION" > "$ISSUE"

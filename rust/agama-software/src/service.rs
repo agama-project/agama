@@ -246,12 +246,14 @@ impl Service {
                 state,
                 &predefined_repositories
             );
-            SoftwareState::build_from(
-                &product,
-                &state.config,
-                &self.selection,
-                predefined_repositories,
-            )
+            let config = state.config.clone();
+            // Drop read lock before async probing to prevent blocking writers and stalling readers.
+            // Even if we block writers here, it this won't prevent double write. If we really want
+            // to prevent double calculation of wanted state we would need to have some additional
+            // locking that do not block reading state as it is used for http api responses
+            drop(state);
+            SoftwareState::build_from(&product, &config, &self.selection, predefined_repositories)
+                .await
         };
 
         tracing::info!("Wanted software state: {new_state:?}");
@@ -551,6 +553,8 @@ fn find_repository(dir: &PathBuf, name: &str) -> Option<Repository> {
         url: url.to_string(),
         enabled: true,
         predefined: true,
+        // Local installation media is static and never updated
+        autorefresh: false,
     })
 }
 
@@ -601,11 +605,13 @@ mod tests {
         assert_eq!(&install.alias, "Installation");
         assert!(install.url.contains(&format!("hd:/install")));
         assert!(install.predefined);
+        assert!(!install.autorefresh);
 
         let dud = repositories.last().unwrap();
         assert!(dud.url.contains(&format!("/{}", DUD_REPO_DIR)));
         assert_eq!(&dud.alias, "AgamaDriverUpdate");
         assert!(dud.predefined);
+        assert!(!dud.autorefresh);
         Ok(())
     }
 }
