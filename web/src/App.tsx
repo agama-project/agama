@@ -35,6 +35,7 @@ import { InstallationFinished, InstallationProgress } from "./components/core";
 import InstallationFailed from "./components/core/InstallationFailed";
 import TerminalDock from "~/components/core/TerminalDock";
 import { isLanguageConfirmed } from "~/components/welcome/flags";
+import { useInterfaceLanguageFromConfig } from "~/components/welcome/use-interface-language";
 import { PRODUCT, WELCOME } from "./routes/paths";
 
 /**
@@ -66,6 +67,7 @@ const Content = () => {
   const location = useLocation();
   const product = useProductInfo();
   const l10nConfig = useL10n();
+  useInterfaceLanguageFromConfig();
   const status = useStatus();
 
   // Load the product's optional appearance overrides (assets/appearance/<id>.css).
