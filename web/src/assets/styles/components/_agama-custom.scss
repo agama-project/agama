@@ -328,3 +328,21 @@ nav.agm-breadcrumb > ol > li > a {
 .agm-progress-detail {
   max-inline-size: 80ch;
 }
+
+// The installer languages in as many columns as fit, so the list stays short
+// and the keyboard field below stays in view at 1024x768. A wrapping flex row,
+// since an auto-fill grid nested in a form group is measured as one column.
+.agm-language-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--pf-t--global--spacer--md) var(--pf-t--global--spacer--lg);
+
+  > * {
+    flex: 0 0 10rem;
+  }
+
+  // The names are what the screen is about, and there is room for them.
+  .pf-v6-c-radio__label {
+    font-size: var(--pf-t--global--font--size--lg);
+  }
+}
