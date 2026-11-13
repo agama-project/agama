@@ -27,13 +27,25 @@ import { useSystemChanges } from "~/hooks/model/system";
 import { useProposal, useProposalChanges } from "~/hooks/model/proposal";
 import { useIssues, useIssuesChanges } from "~/hooks/model/issue";
 import { useProductInfo } from "~/hooks/model/config/product";
+import { useL10n } from "~/hooks/model/config/l10n";
 import { useConfigModel } from "~/hooks/model/storage/config-model";
 import useProductAppearance from "~/hooks/use-product-appearance";
 import { useQueryClient } from "@tanstack/react-query";
 import { InstallationFinished, InstallationProgress } from "./components/core";
 import InstallationFailed from "./components/core/InstallationFailed";
 import TerminalDock from "~/components/core/TerminalDock";
-import { PRODUCT } from "./routes/paths";
+import { isLanguageConfirmed } from "~/components/welcome/flags";
+import { PRODUCT, WELCOME } from "./routes/paths";
+
+/**
+ * Where a new installation goes while no product is selected: the language and
+ * keyboard screen, until the language is confirmed, then product selection.
+ *
+ * The language counts as confirmed when the user accepted that screen in this
+ * browser, or when the config already sets a locale, as a loaded profile may.
+ */
+const pendingPath = (configLocale?: string) =>
+  isLanguageConfirmed() || configLocale ? PRODUCT.root : WELCOME.root;
 
 /**
  * Content guard and flow control component.
@@ -53,6 +65,7 @@ const Content = () => {
 
   const location = useLocation();
   const product = useProductInfo();
+  const l10nConfig = useL10n();
   const status = useStatus();
 
   // Load the product's optional appearance overrides (assets/appearance/<id>.css).
@@ -66,8 +79,12 @@ const Content = () => {
     location: location.pathname,
   });
 
-  if (!product && location.pathname !== PRODUCT.root) {
-    return <Navigate to={PRODUCT.root} />;
+  // Without a product, only the screens of a new installation can be visited:
+  // the one still pending, and the language and keyboard screen, which stays
+  // reachable from the header.
+  const allowedWithoutProduct = [pendingPath(l10nConfig?.locale), WELCOME.root];
+  if (!product && !allowedWithoutProduct.includes(location.pathname)) {
+    return <Navigate to={pendingPath(l10nConfig?.locale)} />;
   }
 
   // The terminal panel is rendered here, above the stage-driven swap below, so

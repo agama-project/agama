@@ -49,6 +49,11 @@ jest.mock("~/hooks/model/storage/config-model", () => ({
   useConfigModel: () => undefined,
 }));
 
+jest.mock("~/hooks/model/config/l10n", () => ({
+  ...jest.requireActual("~/hooks/model/config/l10n"),
+  useL10n: () => null,
+}));
+
 jest.mock("~/hooks/use-product-appearance", () => () => undefined);
 
 // Keep the stage screens as simple markers: their own data needs are already
