@@ -110,15 +110,11 @@ const TargetDevicesField = withForm({
                 // volume group from a table with details about each of them.
                 title={_("Select disks")}
                 selectionMode="multiple"
+                // Only disks and software RAID devices can hold physical volumes.
+                tabs={["disks", "mdRaids"]}
                 disks={devices.filter(isDrive)}
                 mdRaids={devices.filter(isMd)}
                 selected={devices.filter((d) => field.state.value.includes(d.name))}
-                emptyStateBodies={{
-                  volumeGroups: _(
-                    "Only disks and software RAID devices can hold the physical volumes of a " +
-                      "volume group.",
-                  ),
-                }}
                 // Every device the field takes is among the ones offered, so
                 // what the dialog answers is the new value as it is.
                 onConfirm={(picked) => {

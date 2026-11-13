@@ -275,12 +275,13 @@ describe("TargetDevicesField", () => {
       deviceRow("md0");
     });
 
-    it("explains that volume groups are not offered", async () => {
+    it("does not offer a tab for the volume groups", async () => {
       const { user } = installerRender(<TestForm />);
       await openDialog(user);
-      await user.click(dialog().getByRole("tab", { name: "LVM" }));
 
-      dialog().getByText(/Only disks and software RAID devices can hold/);
+      dialog().getByRole("tab", { name: "Disks" });
+      dialog().getByRole("tab", { name: "RAID" });
+      expect(dialog().queryByRole("tab", { name: "LVM" })).not.toBeInTheDocument();
     });
 
     it("starts with the devices already chosen picked", async () => {
