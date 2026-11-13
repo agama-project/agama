@@ -33,6 +33,8 @@ readonly CMDLINE_FILE="/run/agama/cmdline.d/agama.conf"
 readonly RMT_URL_OPTION="inst.register_url"
 # Installation repository URL passed via boot command line
 readonly INSTALL_URL_OPTION="inst.install_url"
+# Alternative name of the installation repository URL option
+readonly AGAMA_INSTALL_URL_OPTION="agama.install_url"
 readonly AGAMA_TOKEN_FILE="/run/agama/token"
 # Storage actions of the current proposal
 readonly STORAGE_ACTIONS_URL="http://localhost/api/storage/devices/actions"
@@ -675,7 +677,9 @@ has_install_url() {
   read -ra options -d '' < "$CMDLINE_FILE" || true
 
   for option in "${options[@]}"; do
-    [[ $option == "$INSTALL_URL_OPTION="* ]] && return 0
+    case "$option" in
+      "$INSTALL_URL_OPTION="?* | "$AGAMA_INSTALL_URL_OPTION="?*) return 0 ;;
+    esac
   done
   return 1
 }
