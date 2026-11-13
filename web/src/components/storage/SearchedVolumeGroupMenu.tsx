@@ -192,7 +192,7 @@ const RemoveVolumeGroupMenuItem = ({
 
 type SearchedDeviceSelectorProps = DistributedOmit<
   DeviceSelectorModalProps,
-  "disks" | "mdRaids" | "volumeGroups" | "selected"
+  "disks" | "mdRaids" | "volumeGroups" | "selected" | "selectionMode"
 > & {
   device: Storage.Device;
   deviceConfig: ConfigModel.VolumeGroup;

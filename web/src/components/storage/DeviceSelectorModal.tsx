@@ -21,7 +21,7 @@
  */
 
 import React, { useId, useState } from "react";
-import { first } from "radashi";
+import { castArray, first } from "radashi";
 import { sprintf } from "sprintf-js";
 import {
   ButtonProps,
@@ -87,54 +87,77 @@ export type NewDeviceLinkTexts = {
   [K in CreatableTabKey]?: React.ReactNode;
 };
 
+/** Props that depend on whether the user picks one device or several. */
+type SelectionProps =
+  | {
+      /** Whether the user picks one device or several. Defaults to `"single"`. */
+      selectionMode?: "single";
+      /** Currently selected device. Determines the initial tab and initial selection. */
+      selected?: Storage.Device;
+    }
+  | {
+      /** Whether the user picks one device or several. Defaults to `"single"`. */
+      selectionMode: "multiple";
+      /**
+       * Currently selected devices. They are the initial selection, and the first
+       * one determines the initial tab.
+       */
+      selected?: Storage.Device[];
+    };
+
 /** Props for {@link DeviceSelectorModal}. */
 export type DeviceSelectorModalProps = DistributedOmit<
   PopupProps,
   "children" | "selected" | "description" | "isOpen" | "actions" | "onClose"
-> & {
-  /** General information shown at the top of the modal, above the tabs. */
-  intro?: React.ReactNode;
-  /** Tab to open initially. Takes precedence over the tab derived from {@link selected}. */
-  initialTab?: TabKey;
-  /** Currently selected device. Determines the initial tab and initial selection. */
-  selected?: Storage.Device;
-  /** Available disks. */
-  disks?: Storage.Device[];
-  /** Available software RAID devices. */
-  mdRaids?: Storage.Device[];
-  /** Available LVM volume groups. */
-  volumeGroups?: Storage.Device[];
-  /**
-   * Side effects shown when selecting a device from a specific tab.
-   * Only shown when the selection differs from {@link selected}.
-   */
-  sideEffects?: SideEffects;
-  /**
-   * Introductory content shown at the top of each tab.
-   * Not rendered when the tab is empty (empty state is shown instead).
-   */
-  tabIntros?: TabIntros;
-  /** Custom titles for empty states. Defaults are provided for each tab. */
-  emptyStateTitles?: EmptyStateTitles;
-  /** Custom body text for empty states. Defaults are provided for each tab. */
-  emptyStateBodies?: EmptyStateBodies;
-  /**
-   * Link text for creating new devices in each tab.
-   * When set, a link is shown with this text. Only available for creatable device types.
-   */
-  newDeviceLinkTexts?: NewDeviceLinkTexts;
-  /**
-   * Whether switching tabs auto-selects the first device of the new tab,
-   * or clears the selection when the tab is empty. Defaults to `true`.
-   */
-  autoSelectOnTabChange?: boolean;
-  /** Called with the new selection when the user confirms. */
-  onConfirm: (selection: Storage.Device[]) => void;
-  /** Called when the user cancels. */
-  onCancel: ButtonProps["onClick"];
-};
+> &
+  SelectionProps & {
+    /** General information shown at the top of the modal, above the tabs. */
+    intro?: React.ReactNode;
+    /**
+     * Which tabs to render, always in the order disks, RAID, LVM. Defaults to all
+     * three. Tabs left out are not mounted at all, and with a single tab left the
+     * tab bar is not rendered either: its content is shown directly.
+     */
+    tabs?: TabKey[];
+    /** Tab to open initially. Takes precedence over the tab derived from {@link selected}. */
+    initialTab?: TabKey;
+    /** Available disks. */
+    disks?: Storage.Device[];
+    /** Available software RAID devices. */
+    mdRaids?: Storage.Device[];
+    /** Available LVM volume groups. */
+    volumeGroups?: Storage.Device[];
+    /**
+     * Side effects shown when selecting a device from a specific tab.
+     * Only shown when the selection differs from {@link selected}.
+     */
+    sideEffects?: SideEffects;
+    /**
+     * Introductory content shown at the top of each tab.
+     * Not rendered when the tab is empty (empty state is shown instead).
+     */
+    tabIntros?: TabIntros;
+    /** Custom titles for empty states. Defaults are provided for each tab. */
+    emptyStateTitles?: EmptyStateTitles;
+    /** Custom body text for empty states. Defaults are provided for each tab. */
+    emptyStateBodies?: EmptyStateBodies;
+    /**
+     * Link text for creating new devices in each tab.
+     * When set, a link is shown with this text. Only available for creatable device types.
+     */
+    newDeviceLinkTexts?: NewDeviceLinkTexts;
+    /**
+     * Whether switching tabs auto-selects the first device of the new tab,
+     * or clears the selection when the tab is empty. Defaults to `true`.
+     */
+    autoSelectOnTabChange?: boolean;
+    /** Called with the new selection when the user confirms. */
+    onConfirm: (selection: Storage.Device[]) => void;
+    /** Called when the user cancels. */
+    onCancel: ButtonProps["onClick"];
+  };
 
-const TABS: Record<TabKey, number> = { disks: 0, mdRaids: 1, volumeGroups: 2 };
+const TAB_KEYS: TabKey[] = ["disks", "mdRaids", "volumeGroups"];
 
 /** Empty state shown in a tab when no devices of that type are available. */
 const NoDevicesFound = ({
@@ -205,31 +228,35 @@ const TabContent = ({
 );
 
 /**
- * Returns the tab index to activate when the modal opens.
+ * Returns the tab to activate when the modal opens.
  *
- * Resolution order:
+ * Resolution order, among the rendered tabs only:
  * 1. Explicit `initialTab` key.
  * 2. Tab that contains `selected`.
- * 3. First tab (index 0).
+ * 3. First rendered tab.
  */
-function getInitialTabIndex(
+function getInitialTab(
+  tabs: TabKey[],
+  deviceLists: Record<TabKey, Storage.Device[]>,
   initialTab?: TabKey,
   selected?: Storage.Device,
-  deviceLists?: Storage.Device[][],
-): number {
-  if (initialTab) return TABS[initialTab];
+): TabKey {
+  if (initialTab && tabs.includes(initialTab)) return initialTab;
 
-  if (selected && deviceLists) {
-    const index = deviceLists.findIndex((list) => list.some((d) => d.sid === selected.sid));
-    return index !== -1 ? index : 0;
+  if (selected) {
+    const tab = tabs.find((key) => deviceLists[key].some((d) => d.sid === selected.sid));
+    if (tab) return tab;
   }
 
-  return 0;
+  return tabs[0];
 }
 
 /**
  * Modal for selecting a storage device across three categories: disks,
  * software RAID devices, and LVM volume groups.
+ *
+ * Each category is a tab. Use {@link DeviceSelectorModalProps.tabs} to offer
+ * only some of them, for example only disks where nothing else can be picked.
  *
  * The confirm button label reflects the state of the selection:
  *
@@ -244,9 +271,18 @@ function getInitialTabIndex(
  * user switches to a different device. Both the alert and the "Select a device"
  * hint are live regions linked to the confirm button via `aria-describedby` so
  * assistive technologies announce changes.
+ *
+ * With `selectionMode="multiple"` the user picks any number of devices, from
+ * any of the tabs. The selection is kept when switching tabs, nothing is
+ * selected on the user's behalf, and the selection can be confirmed empty, so
+ * the caller is handed an empty list exactly as if the user had unselected
+ * every device. The confirm button is labelled "Accept", and the side effects
+ * alert and the "Select a device" hint do not apply.
  */
 export default function DeviceSelectorModal({
-  selected: previousDevice,
+  selected,
+  selectionMode = "single",
+  tabs = TAB_KEYS,
   initialTab,
   onConfirm,
   onCancel,
@@ -263,36 +299,46 @@ export default function DeviceSelectorModal({
   ...popupProps
 }: DeviceSelectorModalProps): React.ReactNode {
   const confirmHintId = useId();
-  const initialDevice = previousDevice ?? first([...disks, ...mdRaids, ...volumeGroups]);
+  const isMultiple = selectionMode === "multiple";
+  const previousDevices: Storage.Device[] = selected ? castArray(selected) : [];
+  const previousDevice = previousDevices[0];
+  const shownTabs = TAB_KEYS.filter((key) => tabs.includes(key));
+  const tabLists: Record<TabKey, Storage.Device[]> = { disks, mdRaids, volumeGroups };
+  const shownDevices = shownTabs.flatMap((key) => tabLists[key]);
+  // Picking one device always leaves an answer, so the first one is selected
+  // unless the caller says otherwise. Picking several starts from what the
+  // caller already holds: anything else would be added behind the user's back
+  // when confirming.
+  const initialDevice = isMultiple ? previousDevice : (previousDevice ?? first(shownDevices));
   const [selectedDevices, setSelectedDevices] = useState<Storage.Device[]>(
-    initialDevice ? [initialDevice] : [],
+    isMultiple ? previousDevices : initialDevice ? [initialDevice] : [],
   );
-  const [activeTab, setActiveTab] = useState(() =>
-    getInitialTabIndex(initialTab, initialDevice, [disks, mdRaids, volumeGroups]),
+  const [activeTab, setActiveTab] = useState<TabKey>(() =>
+    getInitialTab(shownTabs, tabLists, initialTab, initialDevice),
   );
-  const tabLists = [disks, mdRaids, volumeGroups];
 
   const currentDevice = selectedDevices[0];
-  const deviceSideEffectsAlert =
+  const currentTab =
     currentDevice &&
-    [
-      { list: disks, alert: sideEffects?.disks },
-      { list: mdRaids, alert: sideEffects?.mdRaids },
-      { list: volumeGroups, alert: sideEffects?.volumeGroups },
-    ].find(({ list }) => list.some((d) => d.sid === currentDevice.sid))?.alert;
+    shownTabs.find((key) => tabLists[key].some((d) => d.sid === currentDevice.sid));
+  const deviceSideEffectsAlert = !isMultiple && currentTab && sideEffects?.[currentTab];
 
-  const deviceInInitialTab =
-    currentDevice && tabLists[activeTab].some((d) => d.sid === currentDevice.sid);
+  const deviceInInitialTab = selectedDevices.some((selectedDevice) =>
+    tabLists[activeTab].some((d) => d.sid === selectedDevice.sid),
+  );
 
-  const onTabClick = (_, tabIndex: number) => {
-    setActiveTab(tabIndex);
-    if (autoSelectOnTabChange) {
-      const device = first(tabLists[tabIndex]);
+  const onTabClick = (_, tabKey: TabKey) => {
+    setActiveTab(tabKey);
+    // The selection of several devices spans all the tabs, so it stays as it is.
+    if (autoSelectOnTabChange && !isMultiple) {
+      const device = first(tabLists[tabKey]);
       setSelectedDevices(device ? [device] : []);
     }
   };
 
   const confirmLabel = (): string => {
+    // TRANSLATORS: confirmation button of the dialog selecting several devices.
+    if (isMultiple) return _("Accept");
     if (!currentDevice) return previousDevice ? _("Change") : _("Add");
     // TRANSLATORS: %s is replaced by a device label, e.g. "sda (512 GiB)"
     if (!previousDevice) return sprintf(_("Add %s"), deviceLabel(currentDevice));
@@ -305,7 +351,7 @@ export default function DeviceSelectorModal({
 
   const actions = (
     <Stack hasGutter>
-      {!currentDevice && (
+      {!isMultiple && !currentDevice && (
         <HelperText id={confirmHintId} isLiveRegion>
           <HelperTextItem variant="warning">{_("Select a device")}</HelperTextItem>
         </HelperText>
@@ -320,8 +366,9 @@ export default function DeviceSelectorModal({
       <Flex>
         <Popup.Confirm
           onClick={() => onConfirm(selectedDevices)}
-          isDisabled={!currentDevice}
-          aria-describedby={confirmHintId}
+          // Confirming no device at all is an answer when picking several.
+          isDisabled={!isMultiple && !currentDevice}
+          aria-describedby={isMultiple ? undefined : confirmHintId}
         >
           {confirmLabel()}
         </Popup.Confirm>
@@ -330,12 +377,99 @@ export default function DeviceSelectorModal({
     </Stack>
   );
 
+  const tabTitles: Record<TabKey, string> = {
+    disks: _("Disks"),
+    mdRaids: _("RAID"),
+    volumeGroups: _("LVM"),
+  };
+
+  const tabContents: Record<TabKey, React.ReactNode> = {
+    disks: (
+      <TabContent
+        emptyTitle={emptyStateTitles?.disks || _("No disks found")}
+        emptyBody={emptyStateBodies?.disks || _("No disks are available for selection.")}
+        intro={tabIntros?.disks}
+      >
+        {disks.length > 0 && (
+          <DrivesTable
+            devices={disks}
+            selectedDevices={selectedDevices}
+            onSelectionChange={setSelectedDevices}
+            selectionMode={selectionMode}
+          />
+        )}
+      </TabContent>
+    ),
+    mdRaids: (
+      <TabContent
+        emptyTitle={emptyStateTitles?.mdRaids || _("No RAID devices found")}
+        emptyBody={
+          emptyStateBodies?.mdRaids || _("No software RAID devices are available for selection.")
+        }
+        intro={tabIntros?.mdRaids}
+      >
+        {mdRaids.length > 0 && (
+          <MdRaidsTable
+            devices={mdRaids}
+            selectedDevices={selectedDevices}
+            onSelectionChange={setSelectedDevices}
+            selectionMode={selectionMode}
+          />
+        )}
+      </TabContent>
+    ),
+    volumeGroups: (
+      <TabContent
+        emptyTitle={emptyStateTitles?.volumeGroups || _("No LVM volume groups found")}
+        emptyBody={
+          emptyStateBodies?.volumeGroups || _("No LVM volume groups are available for selection.")
+        }
+        intro={tabIntros?.volumeGroups}
+        emptyAction={
+          newDeviceLinkTexts?.volumeGroups && (
+            <Link to={STORAGE.volumeGroup.add}>{newDeviceLinkTexts.volumeGroups}</Link>
+          )
+        }
+      >
+        {volumeGroups.length > 0 && (
+          <>
+            {newDeviceLinkTexts?.volumeGroups && (
+              <CreateDeviceLink
+                text={sprintf("[%s]", newDeviceLinkTexts.volumeGroups)}
+                to={STORAGE.volumeGroup.add}
+              />
+            )}
+            <VolumeGroupsTable
+              devices={volumeGroups}
+              selectedDevices={selectedDevices}
+              onSelectionChange={setSelectedDevices}
+              selectionMode={selectionMode}
+            />
+          </>
+        )}
+      </TabContent>
+    ),
+  };
+
+  const isSingleTab = shownTabs.length === 1;
+
+  /* The description is about the tabs, so it only says something where there
+     are tabs to talk about. */
+  let description: string | undefined;
+  if (shownTabs.length === TAB_KEYS.length) {
+    description = _("Use the tabs to browse disks, RAID devices and LVM volume groups.");
+  } else if (!isSingleTab) {
+    description = _("Use the tabs to browse the available devices.");
+  }
+
   return (
     <Popup
       isOpen
       variant="medium"
-      description={_("Use the tabs to browse disks, RAID devices and LVM volume groups.")}
-      elementToFocus={deviceInInitialTab ? "input[type=radio]:checked" : undefined}
+      description={description}
+      elementToFocus={
+        deviceInInitialTab ? `input[type=${isMultiple ? "checkbox" : "radio"}]:checked` : undefined
+      }
       actions={actions}
       onClose={onCancel}
       {...popupProps}
@@ -343,84 +477,29 @@ export default function DeviceSelectorModal({
     >
       <Stack hasGutter>
         {intro}
-        <PageSection type="tabs">
-          <Tabs
-            activeKey={activeTab}
-            onSelect={onTabClick}
-            style={{
-              position: "sticky",
-              marginTop: "calc(var(--pf-t--global--spacer--sm) * -1)",
-              top: "calc(var(--pf-t--global--spacer--sm) * -1)",
-              zIndex: "var(--pf-t--global--z-index--md)",
-              background: "var(--pf-t--global--background--color--primary--default)",
-            }}
-          >
-            <Tab eventKey={0} title={_("Disks")}>
-              <TabContent
-                emptyTitle={emptyStateTitles?.disks || _("No disks found")}
-                emptyBody={emptyStateBodies?.disks || _("No disks are available for selection.")}
-                intro={tabIntros?.disks}
-              >
-                {disks.length > 0 && (
-                  <DrivesTable
-                    devices={disks}
-                    selectedDevices={selectedDevices}
-                    onSelectionChange={setSelectedDevices}
-                  />
-                )}
-              </TabContent>
-            </Tab>
-            <Tab eventKey={1} title={_("RAID")}>
-              <TabContent
-                emptyTitle={emptyStateTitles?.mdRaids || _("No RAID devices found")}
-                emptyBody={
-                  emptyStateBodies?.mdRaids ||
-                  _("No software RAID devices are available for selection.")
-                }
-                intro={tabIntros?.mdRaids}
-              >
-                {mdRaids.length > 0 && (
-                  <MdRaidsTable
-                    devices={mdRaids}
-                    selectedDevices={selectedDevices}
-                    onSelectionChange={setSelectedDevices}
-                  />
-                )}
-              </TabContent>
-            </Tab>
-            <Tab eventKey={2} title={_("LVM")}>
-              <TabContent
-                emptyTitle={emptyStateTitles?.volumeGroups || _("No LVM volume groups found")}
-                emptyBody={
-                  emptyStateBodies?.volumeGroups ||
-                  _("No LVM volume groups are available for selection.")
-                }
-                intro={tabIntros?.volumeGroups}
-                emptyAction={
-                  newDeviceLinkTexts?.volumeGroups && (
-                    <Link to={STORAGE.volumeGroup.add}>{newDeviceLinkTexts.volumeGroups}</Link>
-                  )
-                }
-              >
-                {volumeGroups.length > 0 && (
-                  <>
-                    {newDeviceLinkTexts?.volumeGroups && (
-                      <CreateDeviceLink
-                        text={sprintf("[%s]", newDeviceLinkTexts.volumeGroups)}
-                        to={STORAGE.volumeGroup.add}
-                      />
-                    )}
-                    <VolumeGroupsTable
-                      devices={volumeGroups}
-                      selectedDevices={selectedDevices}
-                      onSelectionChange={setSelectedDevices}
-                    />
-                  </>
-                )}
-              </TabContent>
-            </Tab>
-          </Tabs>
-        </PageSection>
+        {isSingleTab ? (
+          tabContents[shownTabs[0]]
+        ) : (
+          <PageSection type="tabs">
+            <Tabs
+              activeKey={activeTab}
+              onSelect={onTabClick}
+              style={{
+                position: "sticky",
+                marginTop: "calc(var(--pf-t--global--spacer--sm) * -1)",
+                top: "calc(var(--pf-t--global--spacer--sm) * -1)",
+                zIndex: "var(--pf-t--global--z-index--md)",
+                background: "var(--pf-t--global--background--color--primary--default)",
+              }}
+            >
+              {shownTabs.map((key) => (
+                <Tab key={key} eventKey={key} title={tabTitles[key]}>
+                  {tabContents[key]}
+                </Tab>
+              ))}
+            </Tabs>
+          </PageSection>
+        )}
       </Stack>
     </Popup>
   );
