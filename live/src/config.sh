@@ -202,7 +202,6 @@ rm -f /etc/nvme/host*
 rm -f /etc/iscsi/initiatorname.iscsi
 
 # replace the @@LIVE_MEDIUM_LABEL@@ with the real Live partition label name from KIWI
-sed -i -e "s/@@LIVE_MEDIUM_LABEL@@/$label/g" /usr/bin/live-password
 sed -i -e "s/@@LIVE_MEDIUM_LABEL@@/$label/g" /usr/bin/checkmedia-service
 
 # Increase the Live ISO image size to have some extra free space for installing
@@ -359,8 +358,8 @@ du -h -s /lib/modules /lib/firmware
 # https://build.opensuse.org/projects/openSUSE:Factory:Live/packages/livecd-tumbleweed-kde/files/config.sh?expand=1
 #
 
-# Stronger compression for the initrd
-echo 'compress="xz -9 --check=crc32 --memlimit-compress=50%"' >> /etc/dracut.conf.d/less-storage.conf
+# Fast decompression for the initrd
+echo 'compress="zstd -19 -T0"' >> /etc/dracut.conf.d/less-storage.conf
 
 # Kernel modules (+ firmware) for X13s
 if [ "$(arch)" == "aarch64" ]; then

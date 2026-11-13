@@ -53,7 +53,9 @@ pub trait ModelAdapter: Send + 'static {
             keymaps,
             timezones,
             locale: self.locale(),
-            keymap: self.keymap().unwrap(),
+            keymap: self
+                .keymap()
+                .unwrap_or_else(|_| "us".parse().unwrap_or_default()),
             timezone: Default::default(),
         }
     }
@@ -121,11 +123,41 @@ impl Model {
     }
 
     fn read(&mut self, locale: &LocaleId) -> Result<(), service::Error> {
-        self.locales_db.read(&locale.language)?;
-        self.timezones_db.read(&locale.language)?;
-        self.keymaps_db.read()?;
+        self.reload_databases(&locale.language, true)
+    }
 
-        Ok(())
+    fn reload_databases(&mut self, lang: &str, load_keymaps: bool) -> Result<(), service::Error> {
+        let locales_db = &mut self.locales_db;
+        let timezones_db = &mut self.timezones_db;
+        let keymaps_db = &mut self.keymaps_db;
+
+        std::thread::scope(|s| {
+            let h_locales = s.spawn(|| locales_db.read(lang));
+            let h_timezones = s.spawn(|| timezones_db.read(lang));
+            let h_keymaps = if load_keymaps {
+                Some(s.spawn(|| keymaps_db.read()))
+            } else {
+                None
+            };
+
+            h_locales
+                .join()
+                .map_err(|_| service::Error::DatabaseThreadPanicked("locales"))?
+                .map_err(|e| service::Error::LocalesDatabaseRead(e.to_string()))?;
+
+            h_timezones
+                .join()
+                .map_err(|_| service::Error::DatabaseThreadPanicked("timezones"))?
+                .map_err(|e| service::Error::TimezonesDatabaseRead(e.to_string()))?;
+
+            if let Some(h) = h_keymaps {
+                h.join()
+                    .map_err(|_| service::Error::DatabaseThreadPanicked("keymaps"))?
+                    .map_err(|e| service::Error::KeymapsDatabaseRead(e.to_string()))?;
+            }
+
+            Ok(())
+        })
     }
 }
 
@@ -174,9 +206,7 @@ impl ModelAdapter for Model {
             .output()?;
 
         helpers::set_service_locale(&locale);
-        self.timezones_db.read(&locale.language)?;
-        self.locales_db.read(&locale.language)?;
-        Ok(())
+        self.reload_databases(&locale.language, false)
     }
 
     fn set_keymap(&mut self, keymap: KeymapId) -> Result<(), service::Error> {
