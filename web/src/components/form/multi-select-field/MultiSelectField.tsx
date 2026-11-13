@@ -160,7 +160,8 @@ type MultiSelectFieldProps = FieldLabelOptions & {
    *
    * Those values are drawn outlined, so they read as something the user
    * brought in themselves. Without this, text matching no option is refused
-   * and the refusal is announced.
+   * and the refusal is announced, and the text is cleared when focus leaves
+   * the field, so the field never shows anything the form does not hold.
    */
   allowCustomEntries?: boolean;
 
@@ -715,7 +716,10 @@ export default function MultiSelectField({
     hintedParts.current.clear();
     keyboard.reset();
     closeList();
-    if (text.trim()) commitText();
+    if (text.trim() === "") return;
+    // Text the field cannot take is a search, not a value: left in the box, it
+    // would show something the form does not submit.
+    if (!commitText() && !allowCustomEntries) setText("");
   };
 
   const onPaste = (event: React.ClipboardEvent<HTMLInputElement>) => {
