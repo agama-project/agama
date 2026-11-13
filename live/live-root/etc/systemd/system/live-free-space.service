@@ -3,7 +3,8 @@ Description=Delete a temporary file to have more disk space
 
 [Service]
 ExecStart=rm -f /var/lib/live_free_space
-Type=oneshot
+# run asynchronously so removing the 2GB sparse file does not block multi-user.target
+Type=simple
 
 [Install]
 WantedBy=multi-user.target

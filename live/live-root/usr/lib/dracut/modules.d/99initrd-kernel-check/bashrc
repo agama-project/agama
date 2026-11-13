@@ -1,0 +1,19 @@
+# Display the errors found by the initrd-kernel-check script again, the
+# messages printed during boot might have already scrolled away.
+#
+# /etc/profile (which loads this file) is also sourced by the non-interactive
+# dracut-emergency script, print the errors only in an interactive shell.
+case "$-" in
+  *i*)
+    if [ -s /run/initrd-kernel-check.log ]; then
+      if [ -n "$TERM" ] && [ "$TERM" != "dumb" ]; then
+        # print the error in red and bold
+        printf '\033[1;31m'
+        cat /run/initrd-kernel-check.log
+        printf '\033[0m'
+      else
+        cat /run/initrd-kernel-check.log
+      fi
+    fi
+    ;;
+esac

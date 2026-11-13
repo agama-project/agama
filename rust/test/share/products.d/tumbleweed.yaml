@@ -141,7 +141,7 @@ software:
       archs: armv6hl
     - url: https://download.opensuse.org/ports/zsystems/update/tumbleweed/
       archs: s390
-    - url: https://download.opensuse.org/ports/ppc/tumbleweed/repo/oss/
+    - url: https://download.opensuse.org/ports/ppc/update/tumbleweed/
       archs: ppc
     - url: https://download.opensuse.org/ports/riscv/tumbleweed/repo/oss/
       archs: riscv64

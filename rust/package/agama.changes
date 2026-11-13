@@ -4,6 +4,24 @@ Thu Nov 12 15:30:01 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 - Drop the yast2-pkg-bindings dependency (gh#agama-project/agama#4223).
 
 -------------------------------------------------------------------
+Wed Nov 11 12:00:00 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Enable autorefresh for extraRepositories and disable it for the
+  Full Live medium repository (bsc#1279856).
+
+-------------------------------------------------------------------
+Mon Nov  9 13:40:53 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Install the chrony-pool-empty package when using a custom
+  NTP configuration (bsc#1280027).
+
+-------------------------------------------------------------------
+Fri Nov  6 14:59:52 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Do not parse the Config object from the CLI, just treat it
+  as a generic JSON object (gh#agama-project/agama#4199).
+
+-------------------------------------------------------------------
 Fri Nov  6 14:58:52 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
 
 - Offer only the products available on the current architecture,

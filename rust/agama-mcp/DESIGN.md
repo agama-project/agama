@@ -30,8 +30,10 @@ Disabled by default. Activated via kernel command line:
 -   `inst.mcp=full`: Unrestricted access, including installation commit
     (`commit_install`).
 -   `inst.mcp=config`: Configuration-only mode. All tools active except
-    `commit_install`, which returns `403 Forbidden`. A human must
-    approve and trigger installation in the Web UI.
+    `commit_install` and `reboot`, which return `403 Forbidden`.
+    Configurations defining pre-installation scripts (`scripts.pre`)
+    are rejected to prevent immediate arbitrary command execution.
+    A human must approve and trigger installation in the Web UI.
 -   `inst.mcp=disabled` (default): MCP server is disabled.
 
 ------------------------------------------------------------------------
@@ -82,12 +84,22 @@ Disabled by default. Activated via kernel command line:
 
 -   `commit_install()`: Starts disk partitioning and deployment.
     Forbidden in `config` mode (`403 Forbidden`).
--   `get_progress()`: Returns percentage, stage (`Configuring`,
-    `Installing`, `Finished`, `Failed`), tasks, and pending questions.
+-   `wait_progress(timeout_seconds?)`: Event-driven progress monitor
+    (default 60s, max 300s). Subscribes to Agama's internal event bus,
+    waking up on actionable events (background task completion,
+    `question_pending`, `finished`, `failed`) or on timeout. Avoids
+    polling overhead and returns interactive questions immediately.
+-   `get_progress()`: One-shot state check returning stage
+    (`Configuring`, `Installing`, `Finished`, `Failed`), active tasks,
+    and pending questions.
 -   `get_questions()`: Returns currently pending, unanswered interactive
     questions.
 -   `answer_question(id, action, value?)`: Submits answer to unblock
     installer.
+-   `reboot()`: Reboots the machine into the installed system. Forbidden
+    in `config` mode (`403 Forbidden`). Collect logs in advance with
+    `get_logs`; the installer environment and MCP session terminate upon
+    reboot.
 -   `get_logs(log_type?, lines?)`: Queries `journalctl` directly.
     Scopes: `installer` (`agama*`), `system`, `zypp`, or specific unit
     (e.g. `NetworkManager.service`). Default 100 lines (max 1000).

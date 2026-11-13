@@ -31,8 +31,7 @@ gsettings set org.gnome.settings-daemon.plugins.power sleep-inactive-ac-type 'no
 
 # Waiting until Agama web server is listening.
 until [ "$(curl --silent --output /dev/null --write-out "%{http_code}" --head http://localhost/)" == "200" ]; do
-  echo "Waiting for agama-web-server"
-  sleep 2
+  sleep 0.1
 done
 
 TOKEN=$(cat $TOKEN_FILE)
