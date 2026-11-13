@@ -742,45 +742,6 @@ describe Y2Storage::StorageManager do
           manager.probe
         end
       end
-
-      context "and there are issues during probing" do
-        before do
-          allow(manager.storage).to receive(:probed).and_return st_probed
-          allow_any_instance_of(Y2Storage::Callbacks::UserProbe)
-            .to receive(:report_issues).and_return(continue)
-        end
-
-        let(:st_probed) { devicegraph_from("lvm-errors1-devicegraph.xml").to_storage_value }
-        let(:continue) { true }
-
-        it "reports the probing issues" do
-          expect_any_instance_of(Y2Storage::Callbacks::UserProbe).to receive(:report_issues)
-
-          manager.probe
-        end
-
-        context "but the user decides to continue" do
-          let(:continue) { true }
-
-          it "returns true" do
-            expect(manager.probe).to eq(true)
-          end
-        end
-
-        context "and the user decides to abort" do
-          let(:continue) { false }
-
-          it "returns false" do
-            expect(manager.probe).to eq(false)
-          end
-
-          it "logs an error" do
-            expect(log).to receive(:error).with(/Devicegraph contains errors/)
-
-            manager.probe
-          end
-        end
-      end
     end
   end
 
@@ -893,8 +854,6 @@ describe Y2Storage::StorageManager do
     context "and there are issues during probing" do
       before do
         allow(manager.storage).to receive(:probed).and_return st_probed
-        allow_any_instance_of(Y2Storage::Callbacks::UserProbe)
-          .to receive(:report_issues).and_return(continue)
       end
 
       let(:st_probed) { devicegraph_from("lvm-errors1-devicegraph.xml").to_storage_value }
@@ -917,28 +876,6 @@ describe Y2Storage::StorageManager do
 
         expect(probing_issues).to be_a(Y2Issues::List)
         expect(probing_issues).to_not be_empty
-      end
-
-      it "reports the probing issues" do
-        expect_any_instance_of(Y2Storage::Callbacks::UserProbe).to receive(:report_issues)
-
-        manager.probe!
-      end
-
-      context "and the user decides to continue" do
-        let(:continue) { true }
-
-        it "does not raise an exception" do
-          expect { manager.probe! }.to_not raise_error
-        end
-      end
-
-      context "and the user decides to abort" do
-        let(:continue) { false }
-
-        it "raises a Yast::AbortException" do
-          expect { manager.probe! }.to raise_error(Yast::AbortException)
-        end
       end
     end
   end

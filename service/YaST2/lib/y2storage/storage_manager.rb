@@ -157,12 +157,11 @@ module Y2Storage
     #
     # @see #probe!
     #
-    # @param callbacks [Callbacks::UserProbe, nil]
     # @return [Boolean] whether probing was successful, false if libstorage-ng
     #   found a problem and the corresponding callback returned false (i.e. it
     #   was decided to abort due to the error)
     def probe(callbacks = nil)
-      probe!(callbacks)
+      probe!
       true
     rescue Storage::Exception, Yast::AbortException => e
       log.error("ERROR: #{e.message}")
@@ -179,9 +178,7 @@ module Y2Storage
     # {#probe_issues} list.
     #
     # @raise [Storage::Exception, Yast::AbortException] when probe fails
-    #
-    # @param callbacks [Callbacks::Probe, nil]
-    def probe!(callbacks = nil)
+    def probe!
       graph_file = StorageEnv.instance.devicegraph_file
       return probe_from_file(graph_file) if graph_file
 
@@ -198,7 +195,7 @@ module Y2Storage
       @probe_issues = probe_callbacks.issues
 
       probe_performed
-      manage_probing_issues(callbacks)
+      manage_probing_issues
       DumpManager.dump(@probed_graph)
 
       nil
@@ -508,24 +505,10 @@ module Y2Storage
     #
     # The raw probed devicegraph remains untouched, and the new sanitized one is internally saved and
     # copied into the staging devicegraph.
-    #
-    # @param callbacks [Callbacks::UserProbe,nil]
-    # @raise [Yast::AbortException] if the user decides to not continue. In that case, the probed
-    #   and staging devicegraphs also remain untouched, but they are useless for
-    #   proposal/partitioner.
-    def manage_probing_issues(callbacks = nil)
+    def manage_probing_issues
       probing_issues = raw_probed.probing_issues
 
-      continue = true
-      if !StorageEnv.instance.ignore_probe_errors? && probing_issues.any?
-        callbacks ||= Callbacks::UserProbe.new
-        continue = callbacks.report_issues(raw_probed.probing_issues)
-      end
-
-      raise Yast::AbortException, "Devicegraph contains errors. User has aborted." unless continue
-
       sanitizer = DevicegraphSanitizer.new(raw_probed)
-
       @probed_graph = sanitizer.sanitized_devicegraph
       @probed_graph.safe_copy(staging)
 
