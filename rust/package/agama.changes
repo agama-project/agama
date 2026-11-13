@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Nov 13 15:08:12 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Require at least 1.5GB RAM per parallel build job on s390x to
+  avoid running out of memory (bsc#1290197)
+
+-------------------------------------------------------------------
 Thu Nov 12 15:30:01 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Drop the yast2-pkg-bindings dependency (gh#agama-project/agama#4223).
