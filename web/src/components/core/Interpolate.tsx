@@ -25,6 +25,14 @@ import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 
 type RenderFunction = (text: string) => React.ReactNode;
 
+/* Positional specifiers are part of the printf form: a translation is free to
+   put the second value first, and says so by numbering the placeholders.
+
+   Both are read with matchAll, which works on a copy and so never moves the
+   lastIndex of the expression it is given. */
+const PRINTF_PLACEHOLDER = /%(?:(\d+)\$)?[sdfi]/g;
+const MARKER_PLACEHOLDER = /\[([^[\]]*)\]/g;
+
 export type InterpolateProps = {
   /**
    * A translated sentence containing one or more placeholders.
@@ -41,7 +49,8 @@ export type InterpolateProps = {
    * render function.
    *
    * Pass a single function for one placeholder, or an array of functions for
-   * multiple placeholders (matched in order).
+   * several. Placeholders take the functions in the order they appear, unless
+   * they are numbered (`%1$s`), and then the number says which one they take.
    */
   children: RenderFunction | RenderFunction[];
 };
@@ -57,18 +66,26 @@ export type InterpolateProps = {
  *
  * Two placeholder styles are supported (do not mix them in the same sentence):
  *
- *  - `%s` / `%d` / `%f` / `%i`: printf-style placeholders. These are
- *    positional placeholders where the caller supplies the full rendered
- *    content. The render function always receives an empty string.
+ *  - `%s` / `%d` / `%f` / `%i`: printf-style placeholders. The caller supplies
+ *    the whole content, so the render function always receives an empty string.
+ *
+ *    Number them, `%1$s` and `%2$s`, when the sentence carries two values of
+ *    different kinds. The number says which render function fills the
+ *    placeholder, so a translation is free to put the volume group before the
+ *    disk and each value still arrives wrapped in what it is. Number all of
+ *    them or none, as gettext also asks.
  *
  *  - `[marker]`: bracket placeholders. The text inside the brackets is
  *    extracted and passed to the render function.
  *
- * Multiple placeholders are supported and matched in order against the provided
- * render functions.
+ * Unnumbered placeholders take the render functions in the order they appear.
  *
  * Malformed or unmatched bracket placeholders are treated as plain text. A
- * sentence with no placeholder is rendered unchanged.
+ * sentence with no placeholder is rendered unchanged. A broken translation,
+ * such as one mixing both styles, numbering only some placeholders or asking
+ * for a value no render function gives, is logged and rendered as well as it
+ * can be, with a bold "???" where a value is missing, rather than breaking the
+ * page.
  *
  * @example
  * // %d: caller supplies the full content; text argument is always "".
@@ -82,6 +99,15 @@ export type InterpolateProps = {
  *   {[
  *     () => <Text isBold>{userName}</Text>,
  *     () => <Text isBold>root</Text>,
+ *   ]}
+ * </Interpolate>
+ *
+ * @example
+ * // Numbered: the sentence decides which value goes where.
+ * <Interpolate sentence={_("Create %1$s on top of %2$s")}>
+ *   {[
+ *     () => <Text isBold>{systemName}</Text>,
+ *     () => <DeviceName device={device} />,
  *   ]}
  * </Interpolate>
  *
@@ -105,15 +131,12 @@ export default function Interpolate({ sentence, children }: InterpolateProps) {
   // copy the array, it might be extended with dummy renderers below
   const renderers = Array.isArray(children) ? [...children] : [children];
 
-  const printfRegex = /%[sdfi]/g;
-  const markerRegex = /\[([^[\]]*)\]/g;
+  const printfMatches = [...sentence.matchAll(PRINTF_PLACEHOLDER)];
+  const markerMatches = [...sentence.matchAll(MARKER_PLACEHOLDER)];
 
-  const hasPrintf = printfRegex.test(sentence);
-  const hasMarkers = markerRegex.test(sentence);
+  let useMarkers = markerMatches.length > 0;
 
-  let useMarkers = hasMarkers;
-
-  if (hasPrintf && hasMarkers) {
+  if (printfMatches.length > 0 && markerMatches.length > 0) {
     console.error("<Interpolate>: Cannot mix printf and [marker] placeholders in: ", sentence);
 
     // try to guess which placeholder style to actually use: if the render functions accept an
@@ -122,25 +145,45 @@ export default function Interpolate({ sentence, children }: InterpolateProps) {
     console.warn("Automatically using the", useMarkers ? "markers" : "printf", "style");
   }
 
-  const matches = useMarkers
-    ? [...sentence.matchAll(/\[([^[\]]*)\]/g)]
-    : [...sentence.matchAll(/%[sdfi]/g)];
+  const matches = useMarkers ? markerMatches : printfMatches;
 
   if (matches.length === 0) {
     return <>{sentence}</>;
   }
 
-  if (matches.length < renderers.length) {
-    console.warn(
-      `<Interpolate>: Specified more renderers (${renderers.length}) than the matches (${matches.length}) for text: ${sentence}`,
-    );
-  } else if (matches.length > renderers.length) {
+  /* A numbered placeholder names the render function that fills it, which is
+     what lets a translation reorder the values without swapping what they are:
+     "%2$s on %1$s" still puts the device where the device belongs. Half of them
+     numbered cannot be read for sure, as gettext also says; they are then taken
+     in the order they appear. */
+  const numbered = useMarkers ? [] : matches.filter((match) => match[1] !== undefined);
+  let isNumbered = numbered.length > 0;
+
+  if (isNumbered && numbered.length < matches.length) {
     console.error(
-      `<Interpolate>: Found ${matches.length} placeholder(s) but received ${renderers.length} render function(s) for text: ${sentence}`,
+      "<Interpolate>: Number all printf placeholders or none of them, taking them in order in: ",
+      sentence,
+    );
+    isNumbered = false;
+  }
+
+  /* How many values the sentence asks for: up to its highest number, or one per
+     placeholder. A number used twice asks for the same value twice. */
+  const needed = isNumbered
+    ? Math.max(...numbered.map((match) => Number(match[1])))
+    : matches.length;
+
+  if (needed < renderers.length) {
+    console.warn(
+      `<Interpolate>: Specified more renderers (${renderers.length}) than the matches (${needed}) for text: ${sentence}`,
+    );
+  } else if (needed > renderers.length) {
+    console.error(
+      `<Interpolate>: Found ${needed} placeholder(s) but received ${renderers.length} render function(s) for text: ${sentence}`,
     );
 
     // pad with dummy renderers so the missing content is visible in the UI
-    while (renderers.length < matches.length) {
+    while (renderers.length < needed) {
       renderers.push(() => <strong className={textStyles.textColorStatusDanger}>???</strong>);
     }
   }
@@ -158,8 +201,12 @@ export default function Interpolate({ sentence, children }: InterpolateProps) {
 
     // Marker text for [text], empty string for printf
     const content = useMarkers ? (match[1] ?? "") : "";
+    // The number says which render function fills it; %0$s names none
+    const at = isNumbered ? Number(match[1]) - 1 : index;
+    const render =
+      renderers[at] ?? (() => <strong className={textStyles.textColorStatusDanger}>???</strong>);
 
-    result.push(<React.Fragment key={index}>{renderers[index](content)}</React.Fragment>);
+    result.push(<React.Fragment key={index}>{render(content)}</React.Fragment>);
 
     lastIndex = matchIndex + matchText.length;
   });
