@@ -66,9 +66,9 @@ module Y2Storage
         what.force_encoding("UTF-8")
         command.force_encoding("UTF-8")
 
-        log.info "libstorage-ng reported a missing command"
-        log.info "Error details. message: #{message}. what: #{what}. command: #{command}. "\
-                 "used_features: #{used_features}."
+        log.error "libstorage-ng reported a missing command"
+        log.error "Error details. message: #{message}. what: #{what}. command: #{command}. "\
+                  "used_features: #{used_features}."
 
         error(message, what)
       end
