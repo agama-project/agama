@@ -75,14 +75,18 @@ const TargetDevicesField = withForm({
         {(field) => (
           <>
             <field.MultiSelectField
+              // TRANSLATORS: label of the field to choose the disks of an LVM volume
+              // group. Translate as "Disks", not "Devices": RAIDs are offered too, but
+              // partitions and other devices are not.
               label={_("Disks")}
               options={options}
               entriesThreshold={3}
               collapseInputOnBlur
               hideClearAllOnBlur
-              helperText={_(
-                "LVM physical volumes will be added as partitions on the chosen disks.",
-              )}
+              helperText={
+                // TRANSLATORS: "physical volumes" is an LVM term
+                _("LVM physical volumes will be added as partitions on the chosen disks.")
+              }
               // Nothing to browse, nothing to lead to: a dialog opening on an
               // empty table is worse than no way in at all.
               footerEntry={

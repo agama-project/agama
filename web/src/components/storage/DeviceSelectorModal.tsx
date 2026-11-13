@@ -21,7 +21,7 @@
  */
 
 import React, { useId, useState } from "react";
-import { first } from "radashi";
+import { castArray, first } from "radashi";
 import { sprintf } from "sprintf-js";
 import {
   ButtonProps,
@@ -289,11 +289,7 @@ export default function DeviceSelectorModal({
 }: DeviceSelectorModalProps): React.ReactNode {
   const confirmHintId = useId();
   const isMultiple = selectionMode === "multiple";
-  const previousDevices: Storage.Device[] = Array.isArray(selected)
-    ? selected
-    : selected
-      ? [selected]
-      : [];
+  const previousDevices: Storage.Device[] = selected ? castArray(selected) : [];
   const previousDevice = previousDevices[0];
   // Picking one device always leaves an answer, so the first one is selected
   // unless the caller says otherwise. Picking several starts from what the

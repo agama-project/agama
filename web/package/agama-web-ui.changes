@@ -2,9 +2,10 @@
 Fri Nov 13 09:00:00 UTC 2026 - Aaryan Pawar <pawararyan989@gmail.com>
 
 - Move the form to configure an LVM volume group to the new form
-  stack. The name is checked against what LVM accepts, and the
-  disks are chosen from a list, or from a dialog showing their
-  details (gh#agama-project/agama#4110).
+  stack. The disks are chosen from a list, or from a dialog showing
+  their details (gh#agama-project/agama#4166).
+- Check the name of an LVM volume group against what LVM accepts
+  (gh#agama-project/agama#2652).
 
 -------------------------------------------------------------------
 Fri Nov  6 13:05:49 UTC 2026 - Ladislav Slezák <lslezak@suse.com>

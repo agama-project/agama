@@ -56,6 +56,7 @@ function validateVolumeGroupName(
 
   if (!VG_NAME_CHARACTERS.test(vgName)) {
     return {
+      // TRANSLATORS: error message, keep the quoted characters as they are
       vgName: _(
         "The name can only contain letters, digits and the characters '+', '_', '.' and '-'.",
       ),
@@ -64,11 +65,13 @@ function validateVolumeGroupName(
 
   // LVM does not allow these, even though their characters are valid.
   if (vgName.startsWith("-") || vgName === "." || vgName === "..") {
+    // TRANSLATORS: error message, keep '.' and '..' as they are
     return { vgName: _("The name cannot begin with a hyphen or be '.' or '..'.") };
   }
 
   if (usedNames.includes(vgName)) {
     return {
+      // TRANSLATORS: error message, %s is replaced with a volume group name, e.g. "system"
       vgName: sprintf(_("Volume group '%s' already exists. Enter a different name."), vgName),
     };
   }
@@ -78,6 +81,8 @@ function validateVolumeGroupName(
 
 function validateTargetDevices(fields: FormFields): FieldsValidationResult<TargetDevicesFields> {
   return {
+    // TRANSLATORS: error in the LVM volume group form when no disk is chosen. Translate as
+    // "disk", not "device": RAIDs are offered too, but partitions and other devices are not.
     targetDevices: fields.targetDevices.length ? undefined : _("Select at least one disk."),
   };
 }

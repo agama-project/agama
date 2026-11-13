@@ -57,10 +57,13 @@ function UseNeededHelperText() {
       <Flex gap={{ default: "gapXs" }} alignItems={{ default: "alignItemsCenter" }}>
         <Icon name="emergency" />
         <Text component="span">
-          {_(
-            "This volume group only occupies the space required by its logical volumes. " +
-              "To expand it to cover all available disk space, recreate the volume group.",
-          )}
+          {
+            // TRANSLATORS: note when editing a volume group
+            _(
+              "This volume group only occupies the space required by its logical volumes. " +
+                "To expand it to cover all available disk space, recreate the volume group.",
+            )
+          }
         </Text>
       </Flex>
     </Content>
@@ -145,6 +148,8 @@ function VolumeGroupFormContent({ config, volumeGroup, devices }: VolumeGroupFor
         <form.Subscribe selector={(s) => s.errorMap.onSubmit?.form}>
           {(serverError) =>
             serverError && (
+              // TRANSLATORS: title of an error for a failed volume group save.
+              // Do not end with a period.
               <Alert isInline variant="danger" title={_("Volume group could not be configured")}>
                 {serverError}
               </Alert>
@@ -168,17 +173,21 @@ function VolumeGroupFormContent({ config, volumeGroup, devices }: VolumeGroupFor
           <form.AppField name="moveMountPoints">
             {(field) => (
               <field.CheckboxField
-                label={_(
-                  "Move the mount points currently configured at the selected disks to logical " +
-                    "volumes of this volume group.",
-                )}
+                label={
+                  // TRANSLATORS: checkbox label in the form to create an LVM volume group.
+                  // Mount points are paths such as /home or /var
+                  _(
+                    "Move the mount points currently configured at the selected disks to logical " +
+                      "volumes of this volume group.",
+                  )
+                }
               />
             )}
           </form.AppField>
         )}
 
         <ActionGroup>
-          <form.SubmitButton label={_("Accept")} />
+          <form.SubmitButton />
           <form.CancelButton />
         </ActionGroup>
       </Form>
