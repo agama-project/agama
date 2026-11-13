@@ -103,6 +103,10 @@ jest.mock("~/api", () => ({
   patchConfig: (payload) => mockPatchConfigFn(payload),
 }));
 
+jest.mock("~/components/l10n/shared/product-l10n", () => ({
+  useInstallerL10nForProduct: () => () => undefined,
+}));
+
 jest.mock("~/hooks/model/system/software", () => ({
   ...jest.requireActual("~/hooks/model/system/software"),
   useSystem: () => mockUseSystemSoftwareFn(),

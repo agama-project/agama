@@ -44,6 +44,7 @@ import ProductLogo from "~/components/product/ProductLogo";
 import LicenseButton from "~/components/product/LicenseButton";
 import ProductForm from "~/components/product/product-selection-form/Form";
 import { productLicenses } from "~/components/product/licenses";
+import { useInstallerL10nForProduct } from "~/components/l10n/shared/product-l10n";
 import { patchConfig, putConfig } from "~/api";
 import { useProduct, useProductInfo } from "~/hooks/model/config/product";
 import { useSystem } from "~/hooks/model/system";
@@ -225,6 +226,7 @@ const ProductSelectionContent = () => {
   const product = useProduct();
   const { products, licenses } = useSystem();
   const currentProduct = useProductInfo();
+  const installerL10nForProduct = useInstallerL10nForProduct();
   const [submittedSelection, setSubmmitedSelection] = useState<Product>();
   const [isSubmitted, setIsSubmmited] = useState(false);
   const isWaiting = useDeferredValue(isSubmitted);
@@ -240,13 +242,13 @@ const ProductSelectionContent = () => {
   const onSubmit = async (selectedProduct: Product, selectedMode: string) => {
     setIsSubmmited(true);
     setSubmmitedSelection(selectedProduct);
-    const productConfig = { product: { id: selectedProduct.id, mode: selectedMode } };
+    const product = { id: selectedProduct.id, mode: selectedMode };
     if (currentProduct) {
       // Use PUT to reset the config when changing product (bsc#1264438)
-      putConfig(productConfig);
+      putConfig({ product, l10n: installerL10nForProduct(true) });
     } else {
       // Use PATCH to preserve initial settings when no product was selected yet
-      patchConfig(productConfig);
+      patchConfig({ product, l10n: installerL10nForProduct(false) });
     }
   };
 
