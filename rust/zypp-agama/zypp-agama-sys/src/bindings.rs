@@ -560,6 +560,8 @@ const _: () = {
 pub struct Repository {
     #[doc = "<"]
     pub enabled: bool,
+    #[doc = "<"]
+    pub autorefresh: bool,
     #[doc = "< owned"]
     pub url: *mut ::std::os::raw::c_char,
     #[doc = "< owned"]
@@ -574,6 +576,8 @@ const _: () = {
     ["Size of Repository"][::std::mem::size_of::<Repository>() - 40usize];
     ["Alignment of Repository"][::std::mem::align_of::<Repository>() - 8usize];
     ["Offset of field: Repository::enabled"][::std::mem::offset_of!(Repository, enabled) - 0usize];
+    ["Offset of field: Repository::autorefresh"]
+        [::std::mem::offset_of!(Repository, autorefresh) - 1usize];
     ["Offset of field: Repository::url"][::std::mem::offset_of!(Repository, url) - 8usize];
     ["Offset of field: Repository::alias"][::std::mem::offset_of!(Repository, alias) - 16usize];
     ["Offset of field: Repository::userName"]
@@ -687,12 +691,13 @@ unsafe extern "C" {
     #[doc = " repository array in list.\n when no longer needed, use \\ref free_repository_list to release memory\n @param zypp see \\ref init_target\n @param[out] status (will overwrite existing contents)"]
     pub fn list_repositories(zypp: *mut Zypp, status: *mut Status) -> RepositoryList;
     pub fn free_repository_list(repo_list: *mut RepositoryList);
-    #[doc = " Adds repository to repo manager\n @param zypp see \\ref init_target\n @param alias have to be unique\n @param url can contain repo variables\n @param priority repository priority, 0 uses libzypp's default\n @param[out] status (will overwrite existing contents)\n @param callback pointer to function with callback or NULL\n @param user_data"]
+    #[doc = " Adds repository to repo manager\n @param zypp see \\ref init_target\n @param alias have to be unique\n @param url can contain repo variables\n @param priority repository priority, 0 uses libzypp's default\n @param autorefresh whether repository should be refreshed automatically\n @param[out] status (will overwrite existing contents)\n @param callback pointer to function with callback or NULL\n @param user_data"]
     pub fn add_repository(
         zypp: *mut Zypp,
         alias: *const ::std::os::raw::c_char,
         url: *const ::std::os::raw::c_char,
         priority: ::std::os::raw::c_uint,
+        autorefresh: bool,
         status: *mut Status,
         callback: ZyppProgressCallback,
         user_data: *mut ::std::os::raw::c_void,
