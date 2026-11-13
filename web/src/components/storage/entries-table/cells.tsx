@@ -20,15 +20,6 @@
  * find current contact information at www.suse.com.
  */
 
-/*
- * PLAYGROUND: what the "Used for" and "Existing data" cells of the devices
- * table say. Short values with the same shape on every row, so a column can be
- * scanned rather than read. The full story of each device stays in its panel.
- *
- * Every wording here, the discarded ones included, is listed in WORDING.md at
- * the root of the repository.
- */
-
 import React from "react";
 import { Stack, StackItem } from "@patternfly/react-core";
 import { sprintf } from "sprintf-js";

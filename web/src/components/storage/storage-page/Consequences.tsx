@@ -75,7 +75,6 @@ export default function Consequences({
 }: ConsequencesProps): React.ReactNode {
   const actions = useActions();
   const [isOpen, setIsOpen] = React.useState(false);
-  // PLAYGROUND: with or without a list icon, from the console.
   const { hasUnseenChanges, markSeen } = useUnseenChanges();
   const close = () => setIsOpen(false);
   const open = () => {
