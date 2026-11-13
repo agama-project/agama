@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2025] SUSE LLC
+# Copyright (c) [2025, 2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -129,6 +129,14 @@ describe Y2Storage::AgamaProposal do
 
         expect(raid_home.partitions.size).to eq 0
         expect(raid_home.filesystem.mount_path).to eq "/home"
+      end
+
+      it "sets the RAID id to the MD members" do
+        devicegraph = proposal.propose
+
+        members = devicegraph.md_raids.flat_map(&:devices)
+        expect(members.size).to eq 4
+        expect(members.map(&:id)).to all(eq(Y2Storage::PartitionId::RAID))
       end
     end
 

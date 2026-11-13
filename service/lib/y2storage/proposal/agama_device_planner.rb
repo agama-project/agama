@@ -200,6 +200,10 @@ module Y2Storage
         end
       end
 
+      # Configures the planned device as physical volume if needed
+      #
+      # A partition without explicit id gets the LVM id.
+      #
       # @param planned [Planned::Disk, Planned::Partition]
       # @param device_config [Agama::Storage::Configs::Drive, Agama::Storage::Configs::Partition]
       # @param config [Agama::Storage::Config]
@@ -210,8 +214,13 @@ module Y2Storage
         return unless vg
 
         planned.lvm_volume_group_name = vg.vg_name
+        planned.partition_id ||= PartitionId::LVM if planned.respond_to?(:partition_id=)
       end
 
+      # Configures the planned device as MD member if needed
+      #
+      # A partition without explicit id gets the RAID id.
+      #
       # @param planned [Planned::Disk, Planned::Partition]
       # @param device_config [Agama::Storage::Configs::Drive, Agama::Storage::Configs::Partition]
       # @param config [Agama::Storage::Config]
@@ -222,6 +231,7 @@ module Y2Storage
         return unless md
 
         planned.raid_name = member_md_name(md, device_config, config)
+        planned.partition_id ||= PartitionId::RAID if planned.respond_to?(:partition_id=)
       end
 
       # Stores the given device at the map of partitionables

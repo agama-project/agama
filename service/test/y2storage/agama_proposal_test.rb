@@ -211,6 +211,7 @@ describe Y2Storage::AgamaProposal do
       context "if no boot devices should be created" do
         before do
           config.boot = Agama::Storage::Configs::Boot.new.tap { |b| b.configure = false }
+          allow(Yast::Arch).to receive(:x86_64).and_return(true)
         end
 
         it "proposes to create only the root device" do
@@ -218,7 +219,7 @@ describe Y2Storage::AgamaProposal do
           partitions = proposal.devices.partitions
           expect(partitions.size).to eq 1
           root_part = partitions.first
-          expect(root_part.id).to eq Y2Storage::PartitionId::LINUX
+          expect(root_part.id).to eq Y2Storage::PartitionId::LINUX_ROOT_X86_64
           expect(root_part.size).to be > 49.GiB
           root_fs = root_part.filesystem
           expect(root_fs.root?).to eq true
@@ -269,6 +270,296 @@ describe Y2Storage::AgamaProposal do
 
           expect(efi_partition).to_not be_nil
           expect(efi_partition.size).to eq(512.MiB)
+        end
+      end
+    end
+
+    context "when the system architecture has discoverable partition ids" do
+      let(:ids) { Y2Storage::PartitionId }
+
+      before do
+        allow_any_instance_of(Y2Storage::Arch).to receive(:efiboot?).and_return(true)
+        [:i386, :aarch64, :arm, :riscv64].each do |arch|
+          allow(Yast::Arch).to receive(arch).and_return(false)
+        end
+        allow(Yast::Arch).to receive(:x86_64).and_return(true)
+
+        allow(bootloader_config).to receive(:type).and_return(bootloader_type)
+      end
+
+      let(:bootloader_type) { Y2Storage::BootloaderType::GRUB2 }
+
+      # @return [Hash{String => Y2Storage::PartitionId}] id of the partitions by mount path
+      def ids_by_path(devicegraph)
+        devicegraph.partitions.map { |p| [p.filesystem&.mount_path, p.id] }.to_h
+      end
+
+      # @return [Array<String>] mount paths of all the partitions
+      def paths(devicegraph)
+        devicegraph.partitions.map { |p| p.filesystem&.mount_path }.compact
+      end
+
+      context "and some partitions have no id" do
+        let(:ptable_type) { nil }
+
+        let(:config_json) do
+          {
+            drives: [
+              {
+                ptableType: ptable_type,
+                partitions: [
+                  { filesystem: { path: "/" }, size: "20 GiB" },
+                  { filesystem: { path: "/home" }, size: "10 GiB", id: home_id },
+                  { filesystem: { path: "/var" }, size: "5 GiB" }
+                ]
+              }
+            ].map(&:compact)
+          }
+        end
+
+        let(:home_id) { nil }
+
+        it "sets the id defined by the Discoverable Partitions Specification" do
+          result = ids_by_path(proposal.propose)
+
+          expect(result["/"]).to eq(ids::LINUX_ROOT_X86_64)
+          expect(result["/home"]).to eq(ids::LINUX_HOME)
+          expect(result["/var"]).to eq(ids::LINUX_VAR)
+        end
+
+        it "sets the ESP id for the partition created for booting" do
+          result = ids_by_path(proposal.propose)
+
+          expect(result["/boot/efi"]).to eq(ids::ESP)
+        end
+
+        context "and the partition table is MSDOS" do
+          let(:ptable_type) { "msdos" }
+
+          it "sets the linux id" do
+            result = ids_by_path(proposal.propose)
+
+            expect(result["/"]).to eq(ids::LINUX)
+            expect(result["/home"]).to eq(ids::LINUX)
+            expect(result["/var"]).to eq(ids::LINUX)
+          end
+        end
+
+        context "and a partition indicates its id" do
+          let(:home_id) { "linux" }
+
+          it "does not replace the indicated id" do
+            result = ids_by_path(proposal.propose)
+
+            expect(result["/home"]).to eq(ids::LINUX)
+            expect(result["/"]).to eq(ids::LINUX_ROOT_X86_64)
+          end
+        end
+      end
+
+      context "and some partitions are encrypted" do
+        let(:ptable_type) { nil }
+
+        let(:encryption) { { luks2: { password: "12345" } } }
+
+        let(:config_json) do
+          {
+            boot:   { configure: false },
+            drives: [
+              {
+                ptableType: ptable_type,
+                partitions: ["/", "/usr", "/home", "/var/tmp", "swap", "/tmp", "/opt"].map do |path|
+                  { filesystem: { path: path }, size: "1 GiB", encryption: encryption }
+                end
+              }
+            ].map(&:compact)
+          }
+        end
+
+        # @return [Hash{String => String}] device mapper name of the encryptions by mount path
+        def names_by_path(devicegraph)
+          devicegraph.encryptions.map { |e| [e.mount_point.path, e.dm_table_name] }.to_h
+        end
+
+        it "uses the device mapper names defined by the Discoverable Partitions Specification" do
+          result = names_by_path(proposal.propose)
+
+          expect(result).to include(
+            "/" => "root", "/usr" => "usr", "/home" => "home", "/var/tmp" => "tmp", "swap" => "swap"
+          )
+        end
+
+        it "keeps the usual names for the partitions without discoverable id" do
+          result = names_by_path(proposal.propose)
+
+          expect(result).to include("/tmp" => "cr_tmp", "/opt" => "cr_opt")
+        end
+
+        context "and the partition table is MSDOS" do
+          let(:ptable_type) { "msdos" }
+
+          it "keeps the usual names" do
+            result = names_by_path(proposal.propose)
+
+            expect(result).to include(
+              "/" => "cr_root", "/usr" => "cr_usr", "/home" => "cr_home",
+              "/var/tmp" => "cr_var_tmp", "swap" => "cr_swap"
+            )
+          end
+        end
+
+        context "and the device mapper name is already used by another device" do
+          let(:scenario) { "encrypted-home-50GiB.yaml" }
+
+          let(:config_json) do
+            {
+              boot:   { configure: false },
+              drives: [
+                {
+                  partitions: [
+                    { search: "/dev/sda1" },
+                    { filesystem: { path: "/home" }, size: "1 GiB", encryption: encryption }
+                  ]
+                }
+              ]
+            }
+          end
+
+          it "keeps the usual name" do
+            devicegraph = proposal.propose
+            new_encryption = devicegraph.encryptions.find { |e| e.mount_point&.path == "/home" }
+
+            expect(devicegraph.encryptions.map(&:dm_table_name)).to include("home")
+            expect(new_encryption.dm_table_name).to eq("cr_home")
+          end
+        end
+      end
+
+      # Boot partitions in the config, with the expected ids and the mount points that are proposed
+      # to complete the config.
+      {
+        "GRUB2 and /boot/efi"                 => [
+          Y2Storage::BootloaderType::GRUB2, { "/boot/efi" => [nil, :ESP] }, []
+        ],
+        "systemd-boot and /boot/efi"          => [
+          Y2Storage::BootloaderType::SYSTEMD_BOOT, { "/boot/efi" => [nil, :ESP] }, []
+        ],
+        "systemd-boot and /efi"               => [
+          Y2Storage::BootloaderType::SYSTEMD_BOOT, { "/efi" => [nil, :ESP] }, []
+        ],
+        "systemd-boot and a big /boot"        => [
+          Y2Storage::BootloaderType::SYSTEMD_BOOT, { "/boot" => [nil, :ESP] }, []
+        ],
+        "systemd-boot and a small /boot"      => [
+          Y2Storage::BootloaderType::SYSTEMD_BOOT,
+          { "/boot" => [nil, :XBOOTLDR, "100 MiB"] },
+          ["/efi"]
+        ],
+        "systemd-boot, /boot/efi and /boot"   => [
+          Y2Storage::BootloaderType::SYSTEMD_BOOT,
+          { "/boot/efi" => [nil, :ESP], "/boot" => [nil, :XBOOTLDR] },
+          []
+        ],
+        "systemd-boot, /efi and /boot"        => [
+          Y2Storage::BootloaderType::SYSTEMD_BOOT,
+          { "/efi" => [nil, :ESP], "/boot" => [nil, :XBOOTLDR] },
+          []
+        ],
+        "systemd-boot and /efi with linux id" => [
+          Y2Storage::BootloaderType::SYSTEMD_BOOT, { "/efi" => ["linux", :LINUX] }, []
+        ],
+        "systemd-boot and /boot with ESP id"  => [
+          Y2Storage::BootloaderType::SYSTEMD_BOOT, { "/boot" => ["esp", :ESP] }, []
+        ]
+      }.each do |name, (type, boot_partitions, proposed)|
+        context "and the config includes boot partitions: #{name}" do
+          let(:bootloader_type) { type }
+
+          let(:config_json) do
+            {
+              drives: [
+                {
+                  partitions: boot_partitions.map do |path, (id, _expected, size)|
+                    { filesystem: { path: path }, size: size || "1 GiB", id: id }.compact
+                  end + [{ filesystem: { path: "/" } }]
+                }
+              ]
+            }
+          end
+
+          it "sets the expected ids" do
+            result = ids_by_path(proposal.propose)
+
+            boot_partitions.each do |path, (_id, expected)|
+              expect(result[path]).to eq(ids.const_get(expected))
+            end
+          end
+
+          it "only proposes the missing boot partitions, without duplicating mount points" do
+            mount_paths = paths(proposal.propose)
+
+            expect(mount_paths).to contain_exactly("/", *boot_partitions.keys, *proposed)
+          end
+        end
+      end
+
+      context "and the system is a Raspberry Pi" do
+        before do
+          allow(Yast::Arch).to receive(:x86_64).and_return(false)
+          allow(Yast::Arch).to receive(:aarch64).and_return(true)
+          allow_any_instance_of(Y2Storage::BootRequirementsChecker)
+            .to receive(:raspberry_pi?).and_return(true)
+        end
+
+        let(:config_json) do
+          {
+            drives: [
+              {
+                partitions: [
+                  { filesystem: { path: "/" }, size: "20 GiB" },
+                  { filesystem: { path: "/home" }, size: "10 GiB" }
+                ]
+              }
+            ]
+          }
+        end
+
+        it "creates a MSDOS partition table without discoverable partition ids" do
+          devicegraph = proposal.propose
+          result = ids_by_path(devicegraph)
+
+          expect(devicegraph.disks.first.partition_table.type).to eq(
+            Y2Storage::PartitionTables::Type::MSDOS
+          )
+          expect(result["/boot/efi"]).to eq(ids::DOS32)
+          expect(result["/"]).to eq(ids::LINUX)
+          expect(result["/home"]).to eq(ids::LINUX)
+        end
+      end
+
+      context "and boot is not configured" do
+        let(:config_json) do
+          {
+            boot:   { configure: false },
+            drives: [
+              {
+                partitions: [
+                  { filesystem: { path: "/boot/efi" }, size: "512 MiB" },
+                  { filesystem: { path: "/boot" }, size: "1 GiB" },
+                  { filesystem: { path: "/efi" }, size: "1 GiB" },
+                  { filesystem: { path: "/" } }
+                ]
+              }
+            ]
+          }
+        end
+
+        it "does not set the ids of the partitions for boot mount points" do
+          result = ids_by_path(proposal.propose)
+
+          expect(result["/boot/efi"]).to eq(ids::LINUX)
+          expect(result["/boot"]).to eq(ids::LINUX)
+          expect(result["/efi"]).to eq(ids::LINUX)
         end
       end
     end

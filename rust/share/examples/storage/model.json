@@ -1,6 +1,5 @@
 {
   "encryption": {
-    "method": "luks1",
     "password": "12345"
   },
   "boot": {
@@ -16,8 +15,7 @@
       "mountPath": "/",
       "filesystem": {
         "default": true,
-        "type": "btrfs",
-        "snapshots": true
+        "type": "btrfsSnapshots"
       },
       "spacePolicy": "delete"
     },
@@ -38,6 +36,7 @@
         },
         {
           "name": "/dev/vda2",
+          "id": "xbootldr",
           "size": {
             "default": false,
             "min": 1234567,
