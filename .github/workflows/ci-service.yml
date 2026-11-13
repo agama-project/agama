@@ -78,7 +78,6 @@ jobs:
         augeas-lenses \
         hostname \
         libstorage-ng-ruby \
-        yast2-pkg-bindings \
         yast2-transfer \
         gettext-tools \
         "rubygem(ruby:$RUBY_VERSION:yast-rake)" \

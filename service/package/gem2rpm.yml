@@ -18,9 +18,10 @@
     BuildRequires:  yast2-ruby-bindings
     BuildRequires:  distribution-release
     BuildRequires:  yast2-transfer
-    BuildRequires:  yast2-pkg-bindings
     BuildRequires:  libstorage-ng-ruby
     BuildRequires:  xsltproc
+    # GPG module dependency
+    BuildRequires:  gpg2
     # lsmod
     BuildRequires:  kmod
 
@@ -31,7 +32,6 @@
     Requires:       dbus-1-daemon
     Requires:       yast2-hardware-detection
     Requires:       libstorage-ng-ruby
-    Requires:       yast2-pkg-bindings
     Requires:       yast2-transfer
     # Needed by service/YaST2/modules/Popup.rb (Yast.import "UI") - previously only a transitive
     # dependency pulled in by the now-dropped `yast2` RPM's own Requires:
@@ -78,6 +78,8 @@
     Requires:       xsltproc
     # Includes the "installation-helper" needed by libstorage-ng
     Requires:       snapper
+    # GPG module dependency
+    Requires:       gpg2
 :testsuite_command: |-
   cd %{buildroot}%{gem_base}/gems/%{mod_full_name}
   rspec

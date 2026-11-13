@@ -19,12 +19,6 @@
 
 require "yast"
 require "y2storage/callbacks/issues_callback"
-require "y2storage/callbacks/user_probe"
-require "y2storage/storage_features_list"
-require "y2storage/package_handler"
-
-Yast.import "Mode"
-Yast.import "Pkg"
 
 module Y2Storage
   module Callbacks
@@ -36,12 +30,10 @@ module Y2Storage
 
       include Yast::Logger
 
-      # @param user_callbacks [UserProbe] Probing user callbacks
-      def initialize(user_callbacks: nil)
+      def initialize
         textdomain "storage"
 
         super()
-        @user_callbacks = user_callbacks || UserProbe.new
       end
 
       # Callback for libstorage-ng to show a message to the user.
@@ -74,35 +66,15 @@ module Y2Storage
         what.force_encoding("UTF-8")
         command.force_encoding("UTF-8")
 
-        log.info "libstorage-ng reported a missing command, asking the user whether to continue"
-        log.info "Error details. message: #{message}. what: #{what}. command: #{command}. "\
-                 "used_features: #{used_features}."
+        log.error "libstorage-ng reported a missing command"
+        log.error "Error details. message: #{message}. what: #{what}. command: #{command}. "\
+                  "used_features: #{used_features}."
 
-        packages = StorageFeaturesList.from_bitfield(used_features).pkg_list
-
-        # Redirect to error callback if no packages can be installed.
-        return error(message, what) unless can_install?(packages)
-
-        answer = user_callbacks.install_packages?(packages)
-        log.info "User answer: #{answer} (packages #{packages})"
-
-        # continue if the user does not want to install the missing packages
-        return true unless answer
-
-        # install the missing packages and try again
-        PackageHandler.new(packages).commit
-        @again = true
-        false
+        error(message, what)
       end
 
       # Initialization
       def begin
-        # Release all sources before probing. Otherwise, unmount action could fail if the mount point
-        # of the software source device is modified. Note that this is only necessary during the
-        # installation because libstorage-ng would try to unmount from the chroot path
-        # (e.g., /mnt/mount/point) and there is nothing mounted there.
-        Yast::Pkg.SourceReleaseAll if Yast::Mode.installation
-
         @again = false
       end
 
@@ -111,25 +83,6 @@ module Y2Storage
       # @return [Boolean] Whether probing should be run again
       def again?
         @again
-      end
-
-      private
-
-      # @return [UserProbe] Probing user callbacks
-      attr_reader :user_callbacks
-
-      def can_install?(packages)
-        if packages.empty?
-          log.info "No packages to install"
-          return false
-        end
-
-        if !Yast::Mode.normal
-          log.info "Packages can only be installed in normal mode"
-          return false
-        end
-
-        true
       end
     end
   end

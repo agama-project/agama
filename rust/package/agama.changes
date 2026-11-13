@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Nov 12 15:30:01 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Drop the yast2-pkg-bindings dependency (gh#agama-project/agama#4223).
+
+-------------------------------------------------------------------
 Wed Nov 11 12:00:00 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
 
 - Enable autorefresh for extraRepositories and disable it for the

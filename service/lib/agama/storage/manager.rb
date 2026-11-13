@@ -119,8 +119,7 @@ module Agama
 
       # Probes the devices.
       def probe
-        callbacks = Y2Storage::Callbacks::UserProbe.new
-        Y2Storage::StorageManager.instance.probe(callbacks)
+        Y2Storage::StorageManager.instance.probe
       end
 
       # Configures storage.

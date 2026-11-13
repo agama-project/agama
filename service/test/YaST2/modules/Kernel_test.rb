@@ -60,19 +60,6 @@ describe Yast::Kernel do
     end
   end
 
-  describe "#GetPackages" do
-    it "returns kernel packages for i386 and no cpu info flags" do
-      allow(Yast::Arch).to receive(:architecture).and_return("i386")
-      allow(Yast::Arch).to receive(:is_uml).and_return(false)
-      allow(Yast::Arch).to receive(:is_xen).and_return(false)
-      expect(Yast::SCR).to receive(:Read).with(path(".probe.is_xen")).and_return(false)
-      expect(Yast::SCR).to receive(:Read)
-        .with(path(".proc.cpuinfo.value.\"0\".\"flags\"")).and_return(nil)
-      expect(Yast::SCR).to receive(:Read).with(path(".probe.memory")).and_return(10)
-      expect(Yast::Kernel.GetPackages).to eq(["kernel-default"])
-    end
-  end
-
   describe "#module_to_be_loaded?" do
     it "tests whether module is loaded on boot" do
       ["module-a", "module-b", "user-module-1", "user-module-2", "user-module-3",

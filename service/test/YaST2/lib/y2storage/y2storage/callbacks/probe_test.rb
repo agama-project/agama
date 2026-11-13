@@ -40,35 +40,9 @@ describe Y2Storage::Callbacks::Probe do
   end
 
   describe "#begin" do
-    before do
-      allow(Yast::Pkg).to receive(:SourceReleaseAll)
-    end
-
     it "clears again flag" do
       subject.begin
       expect(subject.again?).to be false
-    end
-
-    context "during installation" do
-      before do
-        allow(Yast::Mode).to receive(:installation).and_return(true)
-      end
-
-      it "releases software source devices before probing" do
-        expect(Yast::Pkg).to receive(:SourceReleaseAll)
-        subject.begin
-      end
-    end
-
-    context "in an installed system" do
-      before do
-        allow(Yast::Mode).to receive(:installation).and_return(false)
-      end
-
-      it "releases software source devices before probing" do
-        expect(Yast::Pkg).to_not receive(:SourceReleaseAll)
-        subject.begin
-      end
     end
   end
 
@@ -83,10 +57,6 @@ describe Y2Storage::Callbacks::Probe do
   end
 
   describe "#missing_command" do
-    before do
-      allow(Yast::Mode).to receive(:normal).and_return normal_mode
-    end
-
     # unary +"..." to get mutable copies: #missing_command calls #force_encoding on the message
     let(:msg) { +"the message" }
     let(:what) { +"the what" }
@@ -102,112 +72,28 @@ describe Y2Storage::Callbacks::Probe do
         expect(issue.message).to eq(msg)
         expect(issue.details).to include(what)
       end
-    end
 
-    context "during (auto)installation" do
-      let(:normal_mode) { false }
-
-      context "if features is 0" do
-        let(:features) { 0 }
-
-        include_examples "generic error"
+      it "returns true" do
+        expect(subject.missing_command(msg, what, cmd, features)).to eq true
       end
 
-      context "if features is not 0" do
-        let(:features) { Storage::UF_BTRFS }
-
-        include_examples "generic error"
+      it "does not set #again? to true" do
+        subject.begin
+        subject.missing_command(msg, what, cmd, features)
+        expect(subject.again?).to eq false
       end
     end
 
-    context "during normal execution" do
-      let(:normal_mode) { true }
+    context "if features is 0" do
+      let(:features) { 0 }
 
-      context "if features is 0" do
-        let(:features) { 0 }
+      include_examples "generic error"
+    end
 
-        include_examples "generic error"
-      end
+    context "if features is not 0" do
+      let(:features) { Storage::UF_BTRFS }
 
-      context "if features is not 0" do
-        let(:features) { Storage::UF_BTRFS }
-
-        # The default user_callbacks (UserProbe) is non-interactive and always declines to
-        # install missing packages - there is no classic YaST pop-up involved.
-        it "does not try to install the missing packages" do
-          expect(Y2Storage::PackageHandler).to_not receive(:new)
-
-          subject.missing_command(msg, what, cmd, features)
-        end
-
-        it "returns true" do
-          expect(subject.missing_command(msg, what, cmd, features)).to eq true
-        end
-
-        it "does not set #again? to true" do
-          subject.begin
-          subject.missing_command(msg, what, cmd, features)
-          expect(subject.again?).to eq false
-        end
-
-        context "if the user callbacks allow installing the missing packages" do
-          subject(:callbacks) { described_class.new(user_callbacks: user_callbacks) }
-
-          let(:user_callbacks) do
-            instance_double(Y2Storage::Callbacks::UserProbe, install_packages?: true)
-          end
-
-          before do
-            allow(Y2Storage::PackageHandler).to receive(:new).and_return pkg_handler
-          end
-
-          let(:pkg_handler) { double("PackageHandler", commit: true) }
-
-          it "returns false" do
-            expect(subject.missing_command(msg, what, cmd, features)).to eq false
-          end
-
-          it "installs the packages" do
-            expect(Y2Storage::PackageHandler).to receive(:new).with(["btrfsprogs", "e2fsprogs"])
-            expect(pkg_handler).to receive(:commit)
-
-            subject.missing_command(msg, what, cmd, features)
-          end
-
-          it "sets #again? to true" do
-            subject.begin
-            expect(subject.again?).to eq false
-
-            subject.missing_command(msg, what, cmd, features)
-            expect(subject.again?).to eq true
-          end
-        end
-
-        context "if the user callbacks decline to install the missing packages" do
-          subject(:callbacks) { described_class.new(user_callbacks: user_callbacks) }
-
-          let(:user_callbacks) do
-            instance_double(Y2Storage::Callbacks::UserProbe, install_packages?: false)
-          end
-
-          it "returns true" do
-            expect(subject.missing_command(msg, what, cmd, features)).to eq true
-          end
-
-          it "does not install the packages" do
-            expect(Y2Storage::PackageHandler).to_not receive(:new)
-            subject.missing_command(msg, what, cmd, features)
-          end
-
-          it "does not set #again?" do
-            subject.begin
-            expect(subject.again?).to eq false
-
-            subject.missing_command(msg, what, cmd, features)
-            expect(subject.again?).to eq false
-          end
-        end
-      end
+      include_examples "generic error"
     end
   end
 end
