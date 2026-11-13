@@ -173,6 +173,27 @@ impl ProblemDetails {
             detail: detail.into(),
         }
     }
+
+    /// Extracts detail or returns generic string if no details available
+    pub fn details(&self) -> String {
+        let detail_opt: Option<&str> = match self {
+            Self::SchemaValidationFailed { detail, .. } | Self::InvalidJson { detail, .. } => {
+                detail.as_deref()
+            }
+
+            Self::Unauthorized { detail, .. }
+            | Self::InternalError { detail, .. }
+            | Self::Generic { detail, .. }
+            | Self::BadRequest { detail, .. } => Some(detail.as_str()),
+
+            Self::Unknown => None,
+        };
+
+        match detail_opt {
+            Some(d) => d.to_string(),
+            None => gettext("An error occurred that this client version doesn't recognize"),
+        }
+    }
 }
 
 impl Display for ProblemDetails {

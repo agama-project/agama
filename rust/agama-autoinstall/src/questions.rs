@@ -106,4 +106,21 @@ impl UserQuestions {
         let answer = self.questions.get_answer(question.id).await?;
         Ok(answer.action == "Continue")
     }
+
+    /// Reports that autoinstallation could not start. No further actions required, just
+    /// information.
+    ///
+    /// Returns Ok()
+    pub async fn autoinstall_start_failed(&self, error: &str) -> anyhow::Result<()> {
+        let question_text = gettextrs::gettext("Failed to start autoinstallation");
+        let question_spec = QuestionSpec::new(&question_text, "autoinstallError")
+            .with_data(&[("error", error)])
+            .with_action_ids(&["Ok"])
+            .with_default_action("Ok");
+
+        let question = self.questions.create_question(&question_spec).await?;
+        let _answer = self.questions.get_answer(question.id).await?;
+
+        Ok(())
+    }
 }
