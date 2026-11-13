@@ -160,7 +160,7 @@ module Y2Storage
     # @return [Boolean] whether probing was successful, false if libstorage-ng
     #   found a problem and the corresponding callback returned false (i.e. it
     #   was decided to abort due to the error)
-    def probe(callbacks = nil)
+    def probe
       probe!
       true
     rescue Storage::Exception, Yast::AbortException => e
@@ -174,8 +174,7 @@ module Y2Storage
     # Invalidates the probed and staging devicegraph. Real probing is
     # only performed when the instance is not for testing.
     #
-    # With the default probe callbacks, the errors reported by libstorage-ng are stored in the
-    # {#probe_issues} list.
+    # The errors reported by libstorage-ng are stored in the {#probe_issues} list.
     #
     # @raise [Storage::Exception, Yast::AbortException] when probe fails
     def probe!
