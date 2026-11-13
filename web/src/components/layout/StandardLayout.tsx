@@ -54,6 +54,12 @@ export type StandardLayoutProps = React.PropsWithChildren<
      * Default: `false` (icon-only, to save space in the header)
      */
     showL10nValues?: boolean;
+
+    /**
+     * Whether to leave the localization selector out of the header, on the
+     * page that already is about the installer language and keyboard.
+     */
+    hideL10nOptions?: boolean;
   }
 >;
 
@@ -71,13 +77,14 @@ export default function StandardLayout({
   additionalContent,
   showProgressMonitor = true,
   showL10nValues = false,
+  hideL10nOptions = false,
   ...headerProps
 }: StandardLayoutProps) {
   const headerContent = (
     <>
       {additionalContent}
       {showProgressMonitor && <ProgressStatusMonitor />}
-      <InstallerL10nOptions showValues={showL10nValues} />
+      {!hideL10nOptions && <InstallerL10nOptions showValues={showL10nValues} />}
       <AppearanceSettings />
       <InstallerOptionsMenu hideLabel />
     </>
