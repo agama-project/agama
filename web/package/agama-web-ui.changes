@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Thu Nov 12 12:00:25 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Handle the ports of bonds and bridges nested in their controller
+  ("portConnections"): list them in the connections table, telling
+  their controller next to their name, link them from the details
+  of their controller and the other way around, and edit them on
+  their own, without IP settings (gh#agama-project/agama#3996).
+
+-------------------------------------------------------------------
 Thu Nov  5 12:11:29 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
 
 - Do not crash when unexpected square brackets are present in the

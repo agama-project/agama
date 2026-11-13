@@ -59,6 +59,8 @@ import {
   ConnectionStatus,
   ConnectionType,
   Device,
+  controllerConnection,
+  flattenConnections,
 } from "~/types/network";
 import { NETWORK } from "~/routes/paths";
 
@@ -153,10 +155,40 @@ const bindingHint = (connection: Connection) => {
   return null;
 };
 
-const createColumns = (devices: Device[]) => [
+/**
+ * Returns a hint naming the bond or bridge the given connection is a port of,
+ * or `null` if it is not a port.
+ *
+ * The table lists the ports as any other connection, so this is how they tell
+ * where they belong. It is used as a supplementary label in the "Name" column
+ * of the network connections table.
+ */
+const controllerHint = (connection: Connection, connections: Connection[]) => {
+  const controller = controllerConnection(connections, connection);
+  if (!controller) return null;
+
+  return sprintf(
+    // TRANSLATORS: supplementary label in the "Name" column of the network
+    // connections table for a port of a bond or a bridge. %s is replaced by
+    // the name of the bond or the bridge, e.g. "(port of bond0)".
+    _("(port of %s)"),
+    controller.iface || controller.id,
+  );
+};
+
+const createColumns = (devices: Device[], connections: Connection[]) => [
   {
     name: _("Name"),
-    value: (c: Connection) => c.id,
+    value: (c: Connection) => {
+      const hint = controllerHint(c, connections);
+      if (!hint) return c.id;
+
+      return (
+        <Text>
+          {c.id} <Text textStyle={["fontSizeXs", "textColorSubtle"]}>{hint}</Text>
+        </Text>
+      );
+    },
     sortingKey: (c: Connection) => c.id,
   },
   {
@@ -174,7 +206,8 @@ const createColumns = (devices: Device[]) => [
     value: (c: Connection) => {
       const usingDevices = devices.filter((d) => d.connection === c.id);
 
-      if (isEmpty(usingDevices)) return "-";
+      // An empty cell already says there is nothing to say.
+      if (isEmpty(usingDevices)) return null;
 
       if (usingDevices.length === 1) {
         return (
@@ -197,7 +230,7 @@ const createColumns = (devices: Device[]) => [
     value: (c: Connection) => {
       const device = devices.find((d) => d.connection === c.id);
       const addresses = device ? device.addresses : c.addresses;
-      return addresses.map(formatIp).join(", ") || "-";
+      return addresses.map(formatIp).join(", ");
     },
   },
 ];
@@ -205,12 +238,16 @@ const createColumns = (devices: Device[]) => [
 export default function ConnectionsTable() {
   const [state, dispatch] = useReducer(reducer, initialState);
   const devices = useDevices();
-  const { state: systemState, connections = [] } = useSystem();
-  const { connections: configConnections = [] } = useExtendedConfig();
+  // The ports of bonds and bridges are nested in them, but the table lists
+  // every connection on its own.
+  const { state: systemState, connections: roots = [] } = useSystem();
+  const connections = flattenConnections(roots);
+  const { connections: configRoots = [] } = useExtendedConfig();
+  const configConnections = flattenConnections(configRoots);
   const { mutateAsync: mutateConnection } = useConnectionMutation();
   const navigate = useNavigate();
 
-  const columns = createColumns(devices);
+  const columns = createColumns(devices, connections);
 
   const onSortingChange = (sortedBy: SortedBy) => {
     dispatch({ type: "UPDATE_SORTING", payload: sortedBy });

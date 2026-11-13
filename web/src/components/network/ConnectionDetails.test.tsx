@@ -25,6 +25,7 @@ import { screen, within } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import ConnectionDetails from "~/components/network/ConnectionDetails";
 import {
+  BondMode,
   Connection,
   ConnectionMethod,
   ConnectionState,
@@ -244,6 +245,67 @@ describe("ConnectionDetails", () => {
       const section = screen.getByRole("region", { name: "Bridge" });
 
       within(section).queryAllByText("None set");
+    });
+  });
+
+  describe("Ports of a bond", () => {
+    const port = new Connection("Port 1", { iface: "eth1" });
+    const connection = new Connection("Bond 1", {
+      iface: "bond0",
+      bond: { mode: BondMode.ACTIVE_BACKUP, options: "", ports: [port, "eth2"] },
+    });
+
+    it("links each port that is a connection to its details", () => {
+      installerRender(<ConnectionDetails connection={connection} />);
+      const section = screen.getByRole("region", { name: "Bond" });
+
+      const link = within(section).getByRole("link", { name: "eth1" });
+      expect(link).toHaveAttribute("href", "/network/connections/Port%201/details");
+    });
+
+    it("renders a port given only by name as plain text", () => {
+      installerRender(<ConnectionDetails connection={connection} />);
+      const section = screen.getByRole("region", { name: "Bond" });
+
+      within(section).getByText("eth2");
+      expect(within(section).queryByRole("link", { name: "eth2" })).not.toBeInTheDocument();
+    });
+  });
+
+  describe("when the connection is a port", () => {
+    const controller = new Connection("Bond 1", {
+      iface: "bond0",
+      bond: { mode: BondMode.ACTIVE_BACKUP, options: "", ports: [] },
+    });
+
+    it("links its controller from the settings", () => {
+      installerRender(<ConnectionDetails connection={mockConnection} controller={controller} />);
+      const section = screen.getByRole("region", { name: "Settings" });
+
+      within(section).getByText("Controller");
+      const link = within(section).getByRole("link", { name: "bond0" });
+      expect(link).toHaveAttribute("href", "/network/connections/Bond%201/details");
+    });
+
+    it("does not render the IP settings, which a port does not have", () => {
+      installerRender(<ConnectionDetails connection={mockConnection} controller={controller} />);
+      const section = screen.getByRole("region", { name: "Settings" });
+
+      expect(within(section).queryByText("Mode")).not.toBeInTheDocument();
+      expect(within(section).queryByText("IP Addresses")).not.toBeInTheDocument();
+      expect(within(section).queryByText("DNS")).not.toBeInTheDocument();
+      within(section).getByText("Binding");
+      within(section).getByRole("link", { name: "Edit connection settings" });
+    });
+  });
+
+  describe("when the connection is not a port", () => {
+    it("does not render any controller", () => {
+      installerRender(<ConnectionDetails connection={mockConnection} />);
+      const section = screen.getByRole("region", { name: "Settings" });
+
+      expect(within(section).queryByText("Controller")).not.toBeInTheDocument();
+      within(section).getByText("Mode");
     });
   });
 
