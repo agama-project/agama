@@ -31,6 +31,10 @@ readonly LOCAL_REPO_DIR="/run/initramfs/live/install"
 readonly CMDLINE_FILE="/run/agama/cmdline.d/agama.conf"
 # RMT server URL passed via boot command line
 readonly RMT_URL_OPTION="inst.register_url"
+# Installation repository URL passed via boot command line
+readonly INSTALL_URL_OPTION="inst.install_url"
+# Alternative name of the installation repository URL option
+readonly AGAMA_INSTALL_URL_OPTION="agama.install_url"
 readonly AGAMA_TOKEN_FILE="/run/agama/token"
 # Storage actions of the current proposal
 readonly STORAGE_ACTIONS_URL="http://localhost/api/storage/devices/actions"
@@ -664,6 +668,22 @@ detect_rmt_url() {
   done
 }
 
+# Check if the installation repository URL is set on the boot command line.
+has_install_url() {
+  local -a options=()
+  local option
+
+  [[ -r $CMDLINE_FILE ]] || return 1
+  read -ra options -d '' < "$CMDLINE_FILE" || true
+
+  for option in "${options[@]}"; do
+    case "$option" in
+      "$INSTALL_URL_OPTION="?* | "$AGAMA_INSTALL_URL_OPTION="?*) return 0 ;;
+    esac
+  done
+  return 1
+}
+
 # Only display the progress of the unattended installation. The installation
 # running in background reboots the system when it is finished so this call never returns.
 run_unattended() {
@@ -676,8 +696,8 @@ run_unattended() {
 detect_registration_requirement() {
   detect_rmt_url
 
-  if [[ -d $LOCAL_REPO_DIR ]]; then
-    # On Full medium registration is optional
+  if [[ -d $LOCAL_REPO_DIR ]] || has_install_url; then
+    # On Full medium or with a custom installation URL registration is optional
     REGISTRATION_REQUIRED=false
   else
     REGISTRATION_REQUIRED=true
