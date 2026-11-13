@@ -23,11 +23,6 @@
 /*
  * PLAYGROUND: switches for the storage page, from the browser console.
  *
- * How names (mount points, volume groups) read in the "Used for" column:
- *
- *   agamaNamesStyle("mono")   // in monospace, apart from the words around them (default)
- *   agamaNamesStyle("plain")  // in the same face as the rest
- *
  * How a device panel's section title stands apart from what it holds:
  *
  *   agamaSectionTitle("plain")   // nothing more than the indent under it (default)
@@ -56,16 +51,13 @@
 
 import React from "react";
 
-type NamesStyle = "mono" | "plain";
 type SectionBand = "none" | "fading" | "flat";
 type SectionIndent = "medium" | "small" | "none";
 type SectionTitle = "plain" | "spaced" | "rule" | "both" | "grouped" | "separated" | "smallcaps";
-type SwitchName =
-  "agamaNamesStyle" | "agamaSectionTitle" | "agamaSectionBand" | "agamaSectionIndent";
+type SwitchName = "agamaSectionTitle" | "agamaSectionBand" | "agamaSectionIndent";
 
 declare global {
   interface Window {
-    agamaNamesStyle?: (value: NamesStyle) => void;
     agamaSectionTitle?: (value: SectionTitle) => void;
     agamaSectionBand?: (value: SectionBand) => void;
     agamaSectionIndent?: (value: SectionIndent) => void;
@@ -126,8 +118,6 @@ function consoleSwitch<T extends string>(
   return () => React.useSyncExternalStore(subscribe, read);
 }
 
-const useNamesStyle = consoleSwitch<NamesStyle>("agamaNamesStyle", ["mono", "plain"]);
-
 const useSectionTitle = consoleSwitch<SectionTitle>("agamaSectionTitle", [
   "plain",
   "spaced",
@@ -145,5 +135,4 @@ const useSectionIndent = consoleSwitch<SectionIndent>("agamaSectionIndent", [
 ]);
 
 export { registry as playgroundSwitches };
-export { useSectionTitle, useSectionBand, useSectionIndent, useNamesStyle };
-export type { NamesStyle };
+export { useSectionTitle, useSectionBand, useSectionIndent };

@@ -32,13 +32,13 @@
 import React from "react";
 import { Stack, StackItem } from "@patternfly/react-core";
 import { sprintf } from "sprintf-js";
+import { formattedPath } from "~/components/storage/utils";
 import Interpolate from "~/components/core/Interpolate";
 import Text from "~/components/core/Text";
 import { NAMES_PER_LINE } from "~/components/storage/shared/naming";
-import { _, n_, formatList, formatListToParts, TranslatedString } from "~/i18n";
+import { _, n_, formatList, TranslatedString } from "~/i18n";
 import type { Partitionable, ConfigModel } from "~/model/storage/config-model";
 import type { Storage as System } from "~/model/system";
-import type { NamesStyle } from "~/components/storage/storage-page/playground-switches";
 
 type Volume = ConfigModel.Partition | ConfigModel.LogicalVolume;
 
@@ -59,32 +59,15 @@ function isUsed(volume: Volume): boolean {
 
 /**
  * Names such as mount points or volume groups, joined the way the language
- * joins a list. PLAYGROUND: set in monospace or not, from the console, so a
- * name like "/" is not lost among the words around it.
+ * joins a list.
  */
-function Names({ names, style }: { names: string[]; style: NamesStyle }) {
-  if (style === "plain") return <>{formatList(names)}</>;
-
-  return (
-    <>
-      {formatListToParts(names).map((part, index) =>
-        part.type === "element" ? (
-          <span key={index} className="agm-device-name">
-            {part.value}
-          </span>
-        ) : (
-          part.value
-        ),
-      )}
-    </>
-  );
+function Names({ names }: { names: string[] }) {
+  return <>{formatList(names.map((n) => formattedPath(n)))}</>;
 }
 
 /** A sentence with one `%s`, filled with names. */
-function withNames(sentence: string, names: string[], style: NamesStyle): React.ReactNode {
-  return (
-    <Interpolate sentence={sentence}>{() => <Names names={names} style={style} />}</Interpolate>
-  );
+function withNames(sentence: string, names: string[]): React.ReactNode {
+  return <Interpolate sentence={sentence}>{() => <Names names={names} />}</Interpolate>;
 }
 
 /** What a disk or a RAID is used for, one value per line. */
@@ -93,7 +76,6 @@ function driveUsedFor(
   groups: string[],
   boots: boolean,
   isIdle: boolean,
-  style: NamesStyle,
 ): React.ReactNode[] {
   if (isIdle) {
     // TRANSLATORS: what a disk added to the installation is used for, when
@@ -105,10 +87,10 @@ function driveUsedFor(
     return device.filesystem.reuse
       ? // TRANSLATORS: what a disk is used for: a single file system over
         // all of it, mounted at %s, such as "/home".
-        [withNames(_("Mounting it at %s"), [device.mountPath], style)]
+        [withNames(_("Mounting it at %s"), [device.mountPath])]
       : // TRANSLATORS: what a disk is used for: a single file system over
         // all of it, formatted and mounted at %s, such as "/home".
-        [withNames(_("Formating it for %s"), [device.mountPath], style)];
+        [withNames(_("Formating it for %s"), [device.mountPath])];
   }
 
   const lines: React.ReactNode[] = [];
@@ -133,7 +115,6 @@ function driveUsedFor(
         // group(s) named by %s, such as "system" or "system and data".
         n_("Hosting the volume group %s", "Hosting the volume groups %s", groups.length),
         groups,
-        style,
       ),
     );
   } else if (groups.length) {
@@ -155,7 +136,6 @@ function driveUsedFor(
         withNames(
           n_("%s on an existing partition", "%s on existing partitions", usedPaths.length),
           usedPaths,
-          style,
         ),
       );
     } else {
@@ -177,7 +157,6 @@ function driveUsedFor(
           withNames(
             n_("%s as an additional partition", "%s as additional partitions", newPartPaths.length),
             newPartPaths,
-            style,
           ),
         );
       } else {
@@ -190,7 +169,7 @@ function driveUsedFor(
       }
     } else {
       if (newPartPaths.length <= NAMES_PER_LINE) {
-        lines.push(withNames(_("%s"), newPartPaths, style));
+        lines.push(withNames(_("%s"), newPartPaths));
       } else {
         lines.push(
           sprintf(
@@ -206,7 +185,7 @@ function driveUsedFor(
 }
 
 /** What a volume group is used for. */
-function volumeGroupUsedFor(group: ConfigModel.VolumeGroup, style: NamesStyle): React.ReactNode[] {
+function volumeGroupUsedFor(group: ConfigModel.VolumeGroup): React.ReactNode[] {
   const logicalVols = group.logicalVolumes || [];
   const newVols = logicalVols.filter((v) => isNew(v));
   const usedVols = logicalVols.filter((v) => isUsed(v));
@@ -235,7 +214,6 @@ function volumeGroupUsedFor(group: ConfigModel.VolumeGroup, style: NamesStyle): 
             relevantUsedPaths.length,
           ),
           relevantUsedPaths,
-          style,
         ),
       );
     } else {
@@ -250,7 +228,7 @@ function volumeGroupUsedFor(group: ConfigModel.VolumeGroup, style: NamesStyle): 
 
   if (!isSystem && newVols.length) {
     if (newPaths.length <= NAMES_PER_LINE) {
-      lines.push(withNames(_("%s"), newPaths, style));
+      lines.push(withNames(_("%s"), newPaths));
     } else {
       lines.push(
         sprintf(

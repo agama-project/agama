@@ -27,7 +27,6 @@ import { driveUsedFor, ExistingDataCell } from "~/components/storage/entries-tab
 import { deviceSize } from "~/components/storage/utils";
 import { driveDescription, typeDescription } from "~/components/storage/utils/device";
 import { useConfigModel } from "~/hooks/model/storage/config-model";
-import { useNamesStyle } from "~/components/storage/storage-page/playground-switches";
 import { useDevice } from "~/hooks/model/system/storage";
 import TruncatedDeviceName from "~/components/storage/TruncatedDeviceName";
 import configModel from "~/model/storage/config-model";
@@ -66,14 +65,12 @@ export default function DriveRow({ name, subject }: DriveRowProps): React.ReactN
   const groups = entry ? configModel.partitionable.filterVolumeGroups(config, entry) : [];
   const boots = configModel.boot.hasDevice(config, name);
   const isIdle = !!entry && !configModel.partitionable.isUsed(config, name);
-  const namesStyle = useNamesStyle();
   const usedFor = entry
     ? driveUsedFor(
         entry,
         groups.map((group) => group.vgName),
         boots,
         isIdle,
-        namesStyle,
       )
     : [];
   const existingData = entry && <ExistingDataCell config={entry} device={device} />;

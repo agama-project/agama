@@ -26,7 +26,6 @@ import VolumeGroupMenu from "~/components/storage/entries-table/VolumeGroupMenu"
 import TruncatedDeviceName from "~/components/storage/TruncatedDeviceName";
 import { volumeGroupUsedFor, ExistingDataCell } from "~/components/storage/entries-table/cells";
 import { volumeGroupFacts } from "~/components/storage/utils/device";
-import { useNamesStyle } from "~/components/storage/storage-page/playground-switches";
 import { useDevice } from "~/hooks/model/system/storage";
 import { _ } from "~/i18n";
 import type { ConfigModel } from "~/model/storage/config-model";
@@ -57,14 +56,13 @@ export default function VolumeGroupRow({ group, subject }: VolumeGroupRowProps):
   // TRANSLATORS: said under the name of a volume group the installation
   // creates, in a list headed "Volume groups".
   const newMark = !group.name ? _("New") : undefined;
-  const namesStyle = useNamesStyle();
 
   return (
     <EntryRow
       name={<TruncatedDeviceName device={{ name: group.vgName }} maxLength={13} />}
       size={size}
       description={isGrouped ? newMark : description}
-      usedFor={volumeGroupUsedFor(group, namesStyle)}
+      usedFor={volumeGroupUsedFor(group)}
       existingData={<ExistingDataCell config={group} device={device} />}
       menu={<VolumeGroupMenu group={group} subject={subject} />}
       subject={subject}
