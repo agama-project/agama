@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Nov 13 15:11:26 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- CC installation: Allow skipping registration when the
+  "inst.install_url" boot option is set (bsc#1289783)
+
+-------------------------------------------------------------------
 Mon Oct 12 12:59:34 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
 
 - Use the new "cc-password-check" script for checking the password
