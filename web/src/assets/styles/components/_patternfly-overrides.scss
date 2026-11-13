@@ -183,6 +183,12 @@
   --pf-v6-c-menu__item-select-icon--Color: var(--pf-t--global--icon--color--brand--default);
 }
 
+.pf-v6-c-menu__item-text {
+  overflow: visible;
+  text-overflow: clip;
+  white-space: normal;
+}
+
 .pf-v6-c-button {
   // Buttons follow the same controls role as text inputs and selects (see
   // tokens/_semantic.scss), so a product retunes --agm-t--control--border-radius

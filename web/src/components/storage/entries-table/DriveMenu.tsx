@@ -27,6 +27,7 @@ import MenuButton, { MenuButtonItem } from "~/components/core/MenuButton";
 import RowMenuToggle from "~/components/storage/entries-table/RowMenuToggle";
 import NewVgMenuOption from "~/components/storage/NewVgMenuOption";
 import ChangeInstallationDisk from "~/components/storage/storage-page/ChangeInstallationDisk";
+import SpacePolicyMenuItem from "~/components/storage/entries-table/SpacePolicyMenuItem";
 import { useDeviceDetails } from "~/components/storage/shared/use-device-details";
 import { baseName } from "~/components/storage/utils";
 import configModel from "~/model/storage/config-model";
@@ -110,6 +111,7 @@ export default function DriveMenu({ entry, subject }: DriveMenuProps): React.Rea
   const { openDetails } = useDeviceDetails();
   const candidate = useCandidateDrives();
   const [isChangingDisk, setIsChangingDisk] = React.useState(false);
+  const withFlyouts = true;
 
   const name = baseName(entry.name);
   // TRANSLATORS: names the menu of things that can be done to one device of the
@@ -117,37 +119,28 @@ export default function DriveMenu({ entry, subject }: DriveMenuProps): React.Rea
   const label = sprintf(_("Actions for %s"), name);
   const location = configModel.partitionable.findLocation(config, entry.name);
 
-  const items = [
-    /* First, because it is what clicking the row does. A menu whose first item
-       is the row's own act says what the row does, for a reader who never
-       discovers that rows can be opened and for one who cannot click.
-
-       Left out in the panel's own header, where the reader is already inside
-       what it would open. */
-    ...(subject
-      ? [
-          <MenuButtonItem
-            key="open"
-            /* Named in full only for a reader who is told the item rather than
-               shown it. On screen the menu hangs off the row it belongs to, and
-               a name the reader can see beside the item is a name repeated. */
-            aria-label={sprintf(
-              // TRANSLATORS: opens the panel where one entry of the installation
-              // is read and changed. %s is its name, such as "sda".
-              _("Configure %s"),
-              name,
-            )}
-            description={_("Configure how the disk will be used")}
-            onClick={() => openDetails(subject)}
-          >
-            {/* TRANSLATORS: opens the panel where one entry of the installation
-                is read and changed. */}
-            {_("Details")}
-          </MenuButtonItem>,
-        ]
-      : []),
-    <NewVgMenuOption key="volume-group" device={entry} />,
-  ];
+  const items = subject
+    ? [
+        <MenuButtonItem
+          key="open"
+          /* Named in full only for a reader who is told the item rather than
+             shown it. On screen the menu hangs off the row it belongs to, and
+             a name the reader can see beside the item is a name repeated. */
+          aria-label={sprintf(
+            // TRANSLATORS: opens the panel where one entry of the installation
+            // is read and changed. %s is its name, such as "sda".
+            _("Configure %s"),
+            name,
+          )}
+          description={_("Customize how the disk will be used")}
+          onClick={() => openDetails(subject)}
+        >
+          {/* TRANSLATORS: opens the panel where one entry of the installation
+              is read and changed. */}
+          {_("Details")}
+        </MenuButtonItem>,
+      ]
+    : [];
 
   const canChangeTarget =
     location?.collection === "drives" &&
@@ -160,7 +153,7 @@ export default function DriveMenu({ entry, subject }: DriveMenuProps): React.Rea
         key="change-disk"
         // TRANSLATORS: description of the menu item that puts the whole
         // installation on a different disk.
-        description={_("Install the system on a different disk")}
+        description={_("Choose a different disk to install the system")}
         onClick={() => setIsChangingDisk(true)}
       >
         {/* TRANSLATORS: menu item that opens a choice of another disk to
@@ -168,6 +161,20 @@ export default function DriveMenu({ entry, subject }: DriveMenuProps): React.Rea
         {_("Change target disk…")}
       </MenuButtonItem>,
     );
+  }
+
+  if (subject) {
+    items.push(
+      <SpacePolicyMenuItem
+        key="space-policy"
+        collection={subject.collection}
+        index={subject.index}
+        policy={entry.spacePolicy}
+        isFlyout={withFlyouts}
+      />,
+    );
+  } else {
+    items.push(<NewVgMenuOption key="volume-group" device={entry} />);
   }
 
   // When no additional drives has been added, the "Do not use" button can be confusing so it is
@@ -190,7 +197,11 @@ export default function DriveMenu({ entry, subject }: DriveMenuProps): React.Rea
   return (
     <>
       <MenuButton
-        menuProps={{ "aria-label": label, popperProps: { position: "end" } }}
+        menuProps={{
+          "aria-label": label,
+          popperProps: { position: "end", minWidth: "25rem" },
+          hasFlyouts: withFlyouts,
+        }}
         customToggle={<RowMenuToggle label={label} />}
         items={items}
       />

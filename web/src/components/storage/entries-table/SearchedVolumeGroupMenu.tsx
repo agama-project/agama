@@ -28,6 +28,7 @@ import RowMenuToggle from "~/components/storage/entries-table/RowMenuToggle";
 import { useDeviceDetails } from "~/components/storage/shared/use-device-details";
 import { baseName } from "~/components/storage/utils";
 import configModel from "~/model/storage/config-model";
+import SpacePolicyMenuItem from "~/components/storage/entries-table/SpacePolicyMenuItem";
 import { useConfigModel, useDeleteVolumeGroup } from "~/hooks/model/storage/config-model";
 import { _ } from "~/i18n";
 import type { ConfigModel } from "~/model/storage/config-model";
@@ -81,6 +82,7 @@ export default function SearchedVolumeGroupMenu({
 }: SearchedVolumeGroupMenuProps): React.ReactNode {
   const config = useConfigModel();
   const { openDetails } = useDeviceDetails();
+  const withFlyouts = true;
 
   const name = baseName(entry.name);
   // TRANSLATORS: names the menu of things that can be done to one device of the
@@ -107,7 +109,7 @@ export default function SearchedVolumeGroupMenu({
               _("Configure %s"),
               name,
             )}
-            description={_("Configure how the volume group will be used")}
+            description={_("Customize how the volume group will be used")}
             onClick={() => openDetails(subject)}
           >
             {/* TRANSLATORS: opens the panel where one entry of the installation
@@ -117,6 +119,18 @@ export default function SearchedVolumeGroupMenu({
         ]
       : []),
   ];
+
+  if (subject) {
+    items.push(
+      <SpacePolicyMenuItem
+        key="space-policy"
+        collection={subject.collection}
+        index={subject.index}
+        policy={entry.spacePolicy}
+        isFlyout={withFlyouts}
+      />,
+    );
+  }
 
   // When no additional drives has been added, the "Do not use" button can be confusing so it is
   // omitted for all drives.
@@ -129,7 +143,11 @@ export default function SearchedVolumeGroupMenu({
 
   return (
     <MenuButton
-      menuProps={{ "aria-label": label, popperProps: { position: "end" } }}
+      menuProps={{
+        "aria-label": label,
+        popperProps: { position: "end", minWidth: "25rem" },
+        hasFlyouts: withFlyouts,
+      }}
       customToggle={<RowMenuToggle label={label} />}
       items={items}
     />

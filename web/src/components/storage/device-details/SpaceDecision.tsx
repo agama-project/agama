@@ -27,8 +27,7 @@ import { useSetSpacePolicy } from "~/hooks/model/storage/config-model";
 import { _, TranslatedString } from "~/i18n";
 import type { ConfigModel, DeviceCollection } from "~/model/storage/config-model";
 
-/** Safest first, so the one that loses data comes last. */
-const POLICIES: ConfigModel.SpacePolicy[] = ["keep", "resize", "delete"];
+const POLICIES: ConfigModel.SpacePolicy[] = ["delete", "resize", "keep"];
 
 /** The title of each item. */
 function label(
@@ -38,36 +37,19 @@ function label(
 ): TranslatedString {
   switch (policy) {
     case "delete":
-      if (isVolumeGroup) {
-        // TRANSLATORS: one of the choices for what may happen to the logical
-        // volumes of a volume group, to make room for the new system.
-        return _("Delete all logical volumes");
-      }
-
       return someReused
-        ? // TRANSLATORS: one of the choices for what may happen to the
-          // partitions of a disk, to make room for the new system. Partitions
-          // used by the new system have a mount point and are left alone.
-          _("Delete all partitions with no mount point")
-        : // TRANSLATORS: one of the choices for what may happen to the
-          // partitions of a disk, to make room for the new system.
-          _("Delete all partitions");
+        ? isVolumeGroup
+          ? _("Delete all logical volumes with no mount point")
+          : _("Delete all partitions with no mount point")
+        : isVolumeGroup
+          ? _("Delete all logical volumes")
+          : _("Delete all partitions");
     case "resize":
       return isVolumeGroup
-        ? // TRANSLATORS: one of the choices for what may happen to the logical
-          // volumes of a volume group, to make room for the new system.
-          _("Shrink logical volumes if needed and possible")
-        : // TRANSLATORS: one of the choices for what may happen to the
-          // partitions of a disk, to make room for the new system.
-          _("Shrink partitions if needed and possible");
+        ? _("Shrink logical volumes if needed and possible")
+        : _("Shrink partitions if needed and possible");
     case "keep":
-      return isVolumeGroup
-        ? // TRANSLATORS: one of the choices for what may happen to the logical
-          // volumes of a volume group, to make room for the new system.
-          _("Keep all logical volumes")
-        : // TRANSLATORS: one of the choices for what may happen to the
-          // partitions of a disk, to make room for the new system.
-          _("Keep all partitions");
+      return isVolumeGroup ? _("Keep all logical volumes") : _("Keep all partitions");
   }
 }
 
@@ -76,18 +58,24 @@ function label(
  * What it ends up doing to the device is said by the sentence beside the
  * menu.
  */
-function meaning(policy: ConfigModel.SpacePolicy): TranslatedString {
+function meaning(policy: ConfigModel.SpacePolicy, isVg: boolean): TranslatedString {
   switch (policy) {
     case "delete":
       // TRANSLATORS: description of "Delete all partitions". "Their" means the
       // partitions or logical volumes (must fit both nouns).
       return _("Their data is lost and their space is freed.");
     case "resize":
-      // TRANSLATORS: description of "Shrink partitions if needed and possible".
-      return _("The size of some existing partitions may be reduced, keeping their data.");
+      return isVg
+        ? // TRANSLATORS: description of "Shrink volume groups if needed and possible".
+          _("The size of some existing volumes may be reduced, keeping their data.")
+        : // TRANSLATORS: description of "Shrink partitions groups if needed and possible".
+          _("The size of some existing partitions may be reduced, keeping their data.");
     case "keep":
-      // TRANSLATORS: description of "Keep all partitions".
-      return _("Only the currently available space will be used for new partitions.");
+      return isVg
+        ? // TRANSLATORS: description of "Keep all logical volumes".
+          _("Only the currently available space will be used for new volumes.")
+        : // TRANSLATORS: description of "Keep all partitions".
+          _("Only the currently available space will be used for new partitions.");
   }
 }
 
@@ -151,7 +139,7 @@ export default function SpaceDecision({
         <MenuButtonItem
           key={value}
           isDanger={value === "delete"}
-          description={meaning(value)}
+          description={meaning(value, isVolumeGroup)}
           onClick={() => choose(value)}
         >
           {label(value, isVolumeGroup, someReused)}
