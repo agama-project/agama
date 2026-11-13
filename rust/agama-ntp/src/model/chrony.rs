@@ -160,7 +160,10 @@ impl ModelAdapter for Model {
     }
 
     fn resolvables(&self) -> Vec<Resolvable> {
-        vec![Resolvable::package("chrony")]
+        vec![
+            Resolvable::package("chrony"),
+            Resolvable::package("chrony-pool-empty"),
+        ]
     }
 
     async fn remove_config(&self) -> Result<(), Error> {

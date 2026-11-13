@@ -340,6 +340,7 @@ impl ZyppServer {
                 url: repo.url,
                 enabled: repo.enabled,
                 priority: None,
+                autorefresh: repo.autorefresh,
             })
             .collect();
 
@@ -420,11 +421,16 @@ impl ZyppServer {
             .filter(|r| !aliases.contains(&r.alias))
             .collect();
         for repo in &to_add {
-            let result =
-                zypp.add_repository(&repo.alias, &repo.url, repo.priority, |percent, alias| {
+            let result = zypp.add_repository(
+                &repo.alias,
+                &repo.url,
+                repo.priority,
+                repo.autorefresh,
+                |percent, alias| {
                     tracing::info!("Adding repository {} ({}%)", alias, percent);
                     true
-                });
+                },
+            );
 
             if let Err(error) = result {
                 let message = format!("Could not add the repository {}", repo.alias);
