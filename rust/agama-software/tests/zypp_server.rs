@@ -19,16 +19,18 @@
 // find current contact information at www.suse.com.
 
 use agama_security as security;
-use agama_software::state::{Repository as StateRepository, SoftwareState};
+use agama_software::state::{
+    Repository as StateRepository, ResolvableSelection, SoftwareState,
+};
 use agama_software::zypp_server::{SoftwareAction, ZyppServer, ZyppServerResult};
-use agama_software::WriteIssues;
+use agama_software::{Resolvable, WriteIssues};
 use agama_utils::{
     actor,
     api::{
         event::Event,
         question::{Answer, AnswerRule, Config},
     },
-    progress, question,
+    progress, question, ResolvableType,
 };
 use camino::{Utf8Path, Utf8PathBuf};
 use glob::glob;
@@ -128,10 +130,10 @@ async fn test_start_zypp_server() {
     client
         .send(SoftwareAction::Write {
             state: software_state,
-            progress: progress_handler,
+            progress: progress_handler.clone(),
             l10n: None,
             question: question_handler.clone(),
-            security: security_handler,
+            security: security_handler.clone(),
             tx,
         })
         .expect("Failed to send SoftwareAction::Write");
@@ -150,6 +152,54 @@ async fn test_start_zypp_server() {
         "There are unexpected issues size {issues:#?}"
     );
     assert_eq!(issues.software[0].class, "missingProduct");
+
+    // Test with repository where refresh fails and packages cannot be selected
+    let (tx2, rx2) = oneshot::channel();
+    let invalid_repo = StateRepository {
+        name: "invalid_repo".to_string(),
+        alias: "invalid_repo".to_string(),
+        url: "dir:/non/existent/path".to_string(),
+        enabled: true,
+        priority: None,
+        autorefresh: true,
+    };
+    let mut software_state2 = SoftwareState::new("test_product");
+    software_state2.repositories = vec![invalid_repo];
+    software_state2.resolvables.add_or_replace_resolvable(
+        &Resolvable::new("test-package", ResolvableType::Package),
+        ResolvableSelection::Selected,
+    );
+
+    client
+        .send(SoftwareAction::Write {
+            state: software_state2,
+            progress: progress_handler,
+            l10n: None,
+            question: question_handler.clone(),
+            security: security_handler,
+            tx: tx2,
+        })
+        .expect("Failed to send SoftwareAction::Write with invalid repo");
+
+    let result2: ZyppServerResult<WriteIssues> =
+        rx2.await.expect("Failed to receive response from server");
+    assert!(
+        result2.is_ok(),
+        "SoftwareAction::Write failed: {:?}",
+        result2.unwrap_err()
+    );
+    let issues2 = result2.unwrap();
+    assert!(
+        issues2.software.iter().any(|i| i.class == "loadSource"),
+        "Expected loadSource issue, got: {issues2:#?}"
+    );
+    assert!(
+        !issues2
+            .software
+            .iter()
+            .any(|i| i.class == "selectResolvable"),
+        "Expected no selectResolvable issue when repo refresh failed, got: {issues2:#?}"
+    );
 
     let questions = question_handler
         .call(question::message::Get)
