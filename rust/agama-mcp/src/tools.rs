@@ -22,8 +22,9 @@
 
 use crate::error::{SchemaError, ValidationError};
 use agama_lib::profile::{ProfileValidator, ValidationOutcome};
-use agama_utils::api::status::Task;
-use agama_utils::api::{IssueWithScope, Proposal};
+use agama_utils::api::question::Question;
+use agama_utils::api::status::{Stage, Status, Task};
+use agama_utils::api::{Config, IssueWithScope, Proposal};
 use rmcp::model::{CallToolResult, ContentBlock};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
@@ -82,6 +83,64 @@ pub struct AnswerQuestionArgs {
     pub action: String,
     /// Optional value if the question expects input (e.g. password for disk decryption).
     pub value: Option<String>,
+}
+
+/// Arguments for the `wait_progress` tool.
+#[derive(Debug, Clone, Default, Deserialize, JsonSchema)]
+pub struct WaitProgressArgs {
+    /// Maximum seconds to wait for an installation event or state change before returning progress (default 60s, max 300s).
+    pub timeout_seconds: Option<u64>,
+}
+
+/// Formats a unified installation progress report with state-aware guidance for the AI.
+pub(crate) fn format_progress_report(
+    status: &Status,
+    pending_questions: Vec<Question>,
+    detail_message: Option<&str>,
+) -> Value {
+    let is_finished = status.stage == Stage::Finished;
+    let is_failed = status.stage == Stage::Failed;
+    let has_questions = !pending_questions.is_empty();
+
+    let (state_str, default_msg) = if is_finished {
+        (
+            "finished",
+            "Installation finished. Collect logs with 'get_logs' if needed, then call 'reboot' to restart.",
+        )
+    } else if is_failed {
+        ("failed", "Installation failed. Check 'get_logs'.")
+    } else if has_questions {
+        (
+            "question_pending",
+            "Question pending. Call 'answer_question'.",
+        )
+    } else {
+        match status.stage {
+            Stage::Configuring if !status.tasks.is_empty() => (
+                "proposal_computing",
+                "Proposal calculation in progress. Call 'wait_progress' to wait.",
+            ),
+            Stage::Configuring => (
+                "configuring",
+                "Ready for review. Inspect proposal with 'get_proposal' or start installation with 'commit_install'.",
+            ),
+            _ => ("installing", "Installing. Call 'wait_progress' to continue monitoring."),
+        }
+    };
+
+    let msg = detail_message.unwrap_or(default_msg);
+
+    json!({
+        "status": state_str,
+        "stage": status.stage,
+        "isFinished": is_finished,
+        "isFailed": is_failed,
+        "tasks": status.tasks,
+        "progresses": status.progresses,
+        "hasPendingQuestions": has_questions,
+        "pendingQuestions": pending_questions,
+        "message": msg,
+    })
 }
 
 /// Represents the possible outcomes of computing the installation proposal.
@@ -143,23 +202,23 @@ impl ProposalOutcome {
 /// Dynamically matches against top-level keys in the serialized SystemInfo.
 /// Always returns a JSON Object (wrapping arrays or non-object values under the resource key).
 pub(crate) fn filter_system_resource(system_val: &Value, resource: &str) -> Value {
-    if let Some(map) = system_val.as_object() {
-        if let Some(val) = map.get(resource) {
-            if val.is_object() {
-                val.clone()
-            } else {
-                json!({ resource: val })
-            }
+    let Some(map) = system_val.as_object() else {
+        return json!({ resource: system_val });
+    };
+
+    if let Some(val) = map.get(resource) {
+        if val.is_object() {
+            val.clone()
         } else {
-            let mut available: Vec<&str> = map.keys().map(|k| k.as_str()).collect();
-            available.sort_unstable();
-            json!({
-                "error": format!("Resource '{resource}' not found in system inventory"),
-                "available_resources": available,
-            })
+            json!({ resource: val })
         }
     } else {
-        json!({ resource: system_val })
+        let mut available: Vec<&str> = map.keys().map(|k| k.as_str()).collect();
+        available.sort_unstable();
+        json!({
+            "error": format!("Resource '{resource}' not found in system inventory"),
+            "available_resources": available,
+        })
     }
 }
 
@@ -175,6 +234,16 @@ pub(crate) fn validate_config_schema(raw_json: &Value) -> Result<(), ValidationE
         Ok(ValidationOutcome::NotValid(reasons)) => Err(ValidationError::NotValid(reasons)),
         Err(e) => Err(ValidationError::Validation(e.to_string())),
     }
+}
+
+/// Checks if an Agama profile defines any pre-installation scripts.
+pub(crate) fn has_pre_scripts(config: &Config) -> bool {
+    config
+        .files
+        .as_ref()
+        .and_then(|f| f.scripts.as_ref())
+        .and_then(|s| s.pre.as_ref())
+        .is_some_and(|pre| !pre.is_empty())
 }
 
 /// Resolves the file path of the Agama JSON Schema.

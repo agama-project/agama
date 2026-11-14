@@ -1,6 +1,5 @@
 [Unit]
 Description=Agama Installer Service
-After=network-online.target
 
 [Service]
 Type=forking

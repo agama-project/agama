@@ -23,6 +23,8 @@ module Bootloader
     # @param [CFA::Grub2::GrubCfg, nil] grub_cfg - loaded parsed grub cfg tree
     # or nil if not available yet
     def initialize(grub_cfg = nil)
+      textdomain "bootloader"
+
       @data = grub_cfg ? grub_cfg.boot_entries : []
       @all = @data.map { |e| e[:title] }
       @default = grub_cfg ? read_default : ""

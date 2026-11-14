@@ -81,7 +81,7 @@ where
 
     if mode.is_enabled() {
         tracing::info!("Mounting Agama MCP server in {} mode at /mcp", mode);
-        let mcp_server = agama_mcp::McpServer::new(manager, questions, mode);
+        let mcp_server = agama_mcp::McpServer::new(manager, questions, events.clone(), mode);
         let mcp_router = agama_mcp::web::mcp_router(mcp_server);
         builder = builder.with_mcp_service(mcp_router);
     }
