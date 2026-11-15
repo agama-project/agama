@@ -20,10 +20,11 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useState } from "react";
+import React, { useId, useState } from "react";
 import { isEmpty, toggle } from "radashi";
 import { sprintf } from "sprintf-js";
 import {
+  Button,
   ExpandableSection,
   Flex,
   FormGroup,
@@ -33,6 +34,7 @@ import {
   Radio,
   Stack,
 } from "@patternfly/react-core";
+import VisualTooltip from "~/components/core/VisualTooltip";
 import FieldNestedContent from "~/components/form/FieldNestedContent";
 import Icon from "~/components/layout/Icon";
 import EulaCheckbox from "~/components/product/EulaCheckbox";
@@ -58,44 +60,88 @@ const ProductName = ({ product }: { product: Product }) => (
   </>
 );
 
+type DescriptionToggleProps = {
+  isExpanded: boolean;
+  onToggle: () => void;
+  /** Id of the description it shows and hides. */
+  descriptionId: string;
+};
+
+/**
+ * Shows or hides the description of the picked product, next to it. A fixed
+ * name with its state, as a disclosure: the description was read when choosing
+ * the product, so reading it again stays one press away without taking room.
+ *
+ * @see https://www.w3.org/WAI/ARIA/apg/patterns/disclosure/
+ */
+const DescriptionToggle = ({ isExpanded, onToggle, descriptionId }: DescriptionToggleProps) => {
+  // TRANSLATORS: name of the button showing or hiding the description of the
+  // picked product
+  const label = _("Product description");
+  // The name stays as is, its state told apart, while the tooltip says what
+  // pressing it does.
+  const tooltip = isExpanded
+    ? // TRANSLATORS: tooltip of the button hiding the description of the
+      // picked product
+      _("Hide product description")
+    : // TRANSLATORS: tooltip of the button showing the description of the
+      // picked product
+      _("Show product description");
+
+  return (
+    <VisualTooltip content={tooltip} position="top">
+      <Button
+        variant="plain"
+        aria-label={label}
+        aria-expanded={isExpanded}
+        aria-controls={descriptionId}
+        // Pressed while shown.
+        isClicked={isExpanded}
+        icon={<Icon name="text_snippet" />}
+        onClick={onToggle}
+      />
+    </VisualTooltip>
+  );
+};
+
 type ProductDetailsProps = {
   product: Product;
   licenses: License[];
   /** Whether its licenses were accepted already, so they can be read again. */
   hasAcceptedLicenses: boolean;
+  /** Whether the description is shown. */
+  showsDescription: boolean;
+  descriptionId: string;
 };
 
 /**
- * About the picked product, below its name: the description in one small line
- * that can be expanded, and a way to read again each license accepted already.
- * The description is not tied to the field, so reading it stays optional: the
- * product list and its dialog already tell it.
+ * What is known about the picked product, one step in below it: its
+ * description, when asked for, and a way to read again each license accepted
+ * already.
  */
-const ProductDetails = ({ product, licenses, hasAcceptedLicenses }: ProductDetailsProps) => {
+const ProductDetails = ({
+  product,
+  licenses,
+  hasAcceptedLicenses,
+  showsDescription,
+  descriptionId,
+}: ProductDetailsProps) => {
   const accepted = hasAcceptedLicenses ? productLicenses(product, licenses) : [];
-  if (!product.description && isEmpty(accepted)) return null;
 
   return (
     // Nested as the mode and licenses below it are, one step in.
-    <div className={[spacingStyles.mtXs, spacingStyles.mlMd, textStyles.fontSizeXs].join(" ")}>
+    <div className={[spacingStyles.mlMd, textStyles.fontSizeSm].join(" ")}>
       {product.description && (
-        <ExpandableSection
-          variant="truncate"
-          truncateMaxLines={1}
-          toggleTextCollapsed={
-            // TRANSLATORS: expands a shortened text to show all of it
-            _("Show more")
-          }
-          toggleTextExpanded={
-            // TRANSLATORS: shortens the text back to its first lines
-            _("Show less")
-          }
+        <div
+          id={descriptionId}
+          hidden={!showsDescription}
+          className={[spacingStyles.mtXs, textStyles.textColorSubtle].join(" ")}
         >
           {product.description}
-        </ExpandableSection>
+        </div>
       )}
       {!isEmpty(accepted) && (
-        <Flex gap={{ default: "gapMd" }}>
+        <Flex className={spacingStyles.mtXs} gap={{ default: "gapMd" }}>
           {accepted.map((license) => (
             <LicenseButton
               key={license.id}
@@ -109,8 +155,8 @@ const ProductDetails = ({ product, licenses, hasAcceptedLicenses }: ProductDetai
                 ? // TRANSLATORS: opens a license of the product accepted before, to
                   // read it again. %s is the license name.
                   sprintf(_("View %s"), license.name)
-                : // TRANSLATORS: opens the product license accepted before, to read it
-                  // again
+                : // TRANSLATORS: opens the product license accepted before, to read
+                  // it again
                   _("View accepted license")}
             </LicenseButton>
           ))}
@@ -230,6 +276,8 @@ const ProductFields = withForm({
   render: function Render({ form, data, isLocked = false }) {
     const { products, licenses } = data;
     const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [showsDescription, setShowsDescription] = useState(false);
+    const descriptionId = useId();
     const findProduct = (id: string) => products.find((p) => p.id === id);
     const options = products.map((product) => ({
       value: product.id,
@@ -256,6 +304,13 @@ const ProductFields = withForm({
             {(field) => {
               const product = findProduct(field.state.value);
               const isCurrent = product?.id === data.currentProduct?.id;
+              const descriptionToggle = product?.description && (
+                <DescriptionToggle
+                  isExpanded={showsDescription}
+                  onToggle={() => setShowsDescription(!showsDescription)}
+                  descriptionId={descriptionId}
+                />
+              );
               const details = product && (
                 <form.Subscribe
                   // Accepted when the current product was chosen, until it
@@ -270,6 +325,8 @@ const ProductFields = withForm({
                         product={product}
                         licenses={licenses}
                         hasAcceptedLicenses={hasAcceptedLicenses}
+                        showsDescription={showsDescription}
+                        descriptionId={descriptionId}
                       />
                       {!isLocked && (
                         <ProductChoices
@@ -292,7 +349,7 @@ const ProductFields = withForm({
                     text={
                       <>
                         <ProductName product={product} />
-                        {mode && <> · {mode.name}</>}
+                        {mode && <> · {mode.name}</>} {descriptionToggle}
                       </>
                     }
                   >
@@ -309,7 +366,14 @@ const ProductFields = withForm({
 
               if (products.length === 1) {
                 return (
-                  <field.ReadOnlyField label={label} text={<ProductName product={products[0]} />}>
+                  <field.ReadOnlyField
+                    label={label}
+                    text={
+                      <>
+                        <ProductName product={products[0]} /> {descriptionToggle}
+                      </>
+                    }
+                  >
                     {details}
                   </field.ReadOnlyField>
                 );
@@ -322,6 +386,7 @@ const ProductFields = withForm({
                     // TRANSLATORS: shown in the product field until one is picked
                     placeholder={_("Select a product")}
                     options={options}
+                    actions={descriptionToggle}
                     maxMenuHeight="15rem"
                     footerEntry={{
                       // TRANSLATORS: last entry of the product list, opening a dialog
