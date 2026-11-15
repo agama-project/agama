@@ -34,7 +34,7 @@ import {
   TextInputGroup,
   TextInputGroupMain,
 } from "@patternfly/react-core";
-import { debounce } from "radashi";
+import { debounce, sift } from "radashi";
 import { buildHaystacks, filterOptions } from "~/components/form/primitives/option-filter";
 import { resolveAriaLabelProps, useFieldLabel } from "~/hooks/use-field-label";
 import { useFieldContext } from "~/hooks/form";
@@ -98,6 +98,10 @@ type SearchableSelectFieldProps = FieldLabelOptions & {
   // the first render.
   onOpen?: () => void;
   maxHeight?: string;
+  // Help or notice shown below the field, and read as the input's description.
+  helperText?: React.ReactNode;
+  // Icon leading the helper text, e.g. to mark it as information.
+  helperTextIcon?: React.ReactNode;
 };
 
 /**
@@ -156,6 +160,8 @@ export default function SearchableSelectField({
   clearable = false,
   onOpen,
   maxHeight = "300px",
+  helperText,
+  helperTextIcon,
   "aria-label": ariaLabel,
   "aria-labelledby": ariaLabelledBy,
   labelPrefixedBy,
@@ -199,6 +205,8 @@ export default function SearchableSelectField({
 
   // Stable prefix for option element IDs referenced by aria-activedescendant.
   const idPrefix = useId();
+  const describedBy =
+    sift([helperText && `${idPrefix}-helper`, error && `${idPrefix}-error`]).join(" ") || undefined;
   const optionId = (index: number) => `${idPrefix}-option-${index}`;
 
   // Debounced writer for the applied filter, so a burst of keystrokes reflows
@@ -411,7 +419,6 @@ export default function SearchableSelectField({
       variant="typeahead"
       isExpanded={isOpen}
       aria-haspopup="listbox"
-      isFullWidth
       onClick={() => (isOpen ? closeList() : openForBrowsing())}
       // Lands on PF's caret <button>, whose default name is the untranslated
       // "Menu toggle"; reusing the field label avoids that English default.
@@ -471,7 +478,8 @@ export default function SearchableSelectField({
           // they go through inputProps. While filtering the text is whatever the
           // user typed, so the option's `lang` no longer describes it.
           inputProps={{
-            ...(error && { "aria-invalid": true, "aria-describedby": `${idPrefix}-error` }),
+            ...(error && { "aria-invalid": true }),
+            "aria-describedby": describedBy,
             lang: isFiltering ? undefined : selectedOption?.lang,
           }}
         />
@@ -532,6 +540,15 @@ export default function SearchableSelectField({
           )}
         </SelectList>
       </Select>
+      {helperText && (
+        <FormHelperText>
+          <HelperText>
+            <HelperTextItem id={`${idPrefix}-helper`} icon={helperTextIcon}>
+              {helperText}
+            </HelperTextItem>
+          </HelperText>
+        </FormHelperText>
+      )}
       {error && (
         <FormHelperText>
           <HelperText>
