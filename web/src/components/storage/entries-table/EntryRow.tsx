@@ -21,14 +21,12 @@
  */
 
 import React from "react";
-import { Link } from "react-router";
 import { Td, Th, Tr } from "@patternfly/react-table";
 import { Label, Stack, StackItem } from "@patternfly/react-core";
 import { css } from "@patternfly/react-styles";
-import tableStyles from "@patternfly/react-styles/css/components/Table/table";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import Text from "~/components/core/Text";
-import { useDeviceDetails, DETAILS_PANEL_ID } from "~/components/storage/shared/use-device-details";
+import { useDeviceDetails } from "~/components/storage/shared/use-device-details";
 import { columnName } from "~/components/storage/entries-table/columns";
 import type { DetailsSubject } from "~/components/storage/shared/use-device-details";
 
@@ -58,42 +56,6 @@ export type EntryRowProps = {
 
 /**
  * One entry of the configuration, as a row of the list.
- *
- * One answer per column, so that a reader compares eight devices by going down
- * a column rather than by reading eight paragraphs: which device this entry
- * is, what happens to what it holds today, and what the
- * installer will put on it.
- *
- * The name heads the row rather than sitting in a cell of it, so that a screen
- * reader reading any other cell says which entry it belongs to first. What the
- * entry is sits under the name, smaller, so the first column is only as wide as
- * a name and leaves the room to the two columns a reader compares. The size
- * stays beside the name: it is short, and it is what a reader tells two disks
- * of the same model apart by. What is on
- * the device today is not repeated here: whoever picked the device saw it while
- * choosing, and anyone else finds it in the panel, which opens from the name.
- *
- * Clicking anywhere in the row opens the entry, except in the menu cell, which
- * opens nothing so that a click meant for the menu cannot open the panel. This
- * goes against the advice of not making a row clickable when it holds a second
- * control (https://adrianroselli.com/2023/11/dont-turn-a-table-into-an-aria-grid-just-for-a-clickable-row.html);
- * the dead menu cell is what makes it acceptable. The cost: text in the row
- * cannot be selected with the mouse.
- *
- * A row that costs nothing leaves the last column empty. It once said "Nothing
- * planned" there, borrowed from the column before it, which made a device that
- * destroys nothing look like a device nobody had configured.
- *
- * @example
- * <EntryRow
- *   name="sda"
- *   size="60 GiB"
- *   description="Samsung SSD 980 PRO 2TB"
- *   usedFor={[_("Volume group system"), _("Boot partitions")]}
- *   existingData={<ExistingDataCell data={data} wording="short" />}
- *   menu={<DriveMenu entry={entry} device={device} />}
- *   subject={{ collection: "drives", index: 0 }}
- * />
  */
 export default function EntryRow({
   name,
@@ -106,7 +68,7 @@ export default function EntryRow({
   menu,
   subject,
 }: EntryRowProps): React.ReactNode {
-  const { subject: open, addressOf } = useDeviceDetails();
+  const { subject: open } = useDeviceDetails();
   const isOpen =
     open !== null && open.collection === subject.collection && open.index === subject.index;
 
@@ -117,34 +79,14 @@ export default function EntryRow({
        than from `isClickable`, which would also make the row itself a focus
        stop with no role and handle keys meant for the menu. */
     <Tr
-      className={css(
-        "agm-entries-table__row",
-        tableStyles.modifiers.clickable,
-        isIdle && "agm-entries-table__row--idle",
-      )}
+      className={css("agm-entries-table__row", isIdle && "agm-entries-table__row--idle")}
       isRowSelected={isOpen}
     >
       <Th scope="row" dataLabel={columnName("device")}>
         <Stack>
           <StackItem>
-            {/* A plain anchor rather than the page's Link: that one is a
-                PatternFly button, which is positioned and draws its border
-                with the same pseudo-element the stretch needs. */}
-            <Link
-              to={addressOf(subject)}
-              replace
-              aria-controls={DETAILS_PANEL_ID}
-              aria-current={isOpen || undefined}
-              className="agm-entries-table__opener"
-              /* So the list around it can walk its entries with the arrow keys
-                 without knowing how any of them is drawn. */
-              data-entry-name=""
-            >
-              <Text isBold>{name}</Text>
-            </Link>
+            <Text isBold>{name}</Text>
             {size && <> · {size}</>}
-            {/* The same words the panel puts beside the same name, so the row a
-                reader opened and the panel that opens carry one vocabulary. */}
             {marks.map((mark) => (
               <React.Fragment key={mark}>
                 {" "}
