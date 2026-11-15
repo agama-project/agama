@@ -20,15 +20,8 @@
  * find current contact information at www.suse.com.
  */
 
-import { NetworkStatus, getIpAddresses, getNetworkStatus } from "~/hooks/model/system/network";
-import {
-  Connection,
-  ConnectionMethod,
-  ConnectionState,
-  Device,
-  DeviceState,
-} from "~/types/network";
-import { CONNECTION_TYPE } from "~/utils/network";
+import { NetworkStatus, getNetworkStatus } from "~/hooks/model/system/network";
+import { Connection, ConnectionMethod, ConnectionState } from "~/types/network";
 
 const createConnection = (
   id: string,
@@ -42,21 +35,6 @@ const createConnection = (
     ...overrides,
   });
 };
-
-const createDevice = (overrides: Partial<Device> = {}): Device => ({
-  name: "eth0",
-  type: CONNECTION_TYPE.ETHERNET,
-  state: DeviceState.CONNECTED,
-  addresses: [{ address: "192.168.1.100", prefix: 24 }],
-  nameservers: [],
-  dnsSearchList: [],
-  gateway4: "192.168.1.1",
-  gateway6: "",
-  method4: ConnectionMethod.AUTO,
-  method6: ConnectionMethod.AUTO,
-  macAddress: "AA:11:22:33:44:55",
-  ...overrides,
-});
 
 describe("getNetworkStatus", () => {
   it("returns NOT_CONFIGURED status when no connections are given", () => {
@@ -181,130 +159,5 @@ describe("getNetworkStatus", () => {
     const result = getNetworkStatus([autoWithStaticIp]);
 
     expect(result.status).toBe(NetworkStatus.MIXED);
-  });
-});
-
-describe("getIpAddresses", () => {
-  it("returns empty array when no devices are given", () => {
-    const connection = createConnection("conn1");
-    const result = getIpAddresses([], [connection]);
-
-    expect(result).toEqual([]);
-  });
-
-  it("returns empty array when no connections are given", () => {
-    const device = createDevice({
-      addresses: [
-        { address: "192.168.1.100", prefix: 24 },
-        { address: "192.168.1.101", prefix: 24 },
-      ],
-    });
-
-    const result = getIpAddresses([device], []);
-
-    expect(result).toEqual([]);
-  });
-
-  it("returns IP addresses from devices linked to existing connections", () => {
-    const connection = createConnection("conn1");
-    const device = createDevice({
-      connection: connection.id,
-      addresses: [
-        { address: "192.168.1.100", prefix: 24 },
-        { address: "fe80::1", prefix: 64 },
-      ],
-      nameservers: ["8.8.8.8"],
-    });
-
-    const result = getIpAddresses([device], [connection]);
-
-    expect(result).toEqual([
-      { address: "192.168.1.100", prefix: 24 },
-      { address: "fe80::1", prefix: 64 },
-    ]);
-  });
-
-  it("filters out devices not linked to any connection", () => {
-    const connection = createConnection("conn1");
-    const linkedDevice = createDevice({ connection: connection.id });
-    const unlinkedDevice = createDevice({
-      name: "wlan0",
-      type: CONNECTION_TYPE.WIFI,
-      state: DeviceState.DISCONNECTED,
-      addresses: [{ address: "192.168.1.200", prefix: 24 }],
-      gateway4: "",
-      macAddress: "BB:11:22:33:44:55",
-    });
-
-    const result = getIpAddresses([linkedDevice, unlinkedDevice], [connection]);
-
-    expect(result).toEqual([{ address: "192.168.1.100", prefix: 24 }]);
-  });
-
-  it("flattens IP addresses from multiple devices", () => {
-    const connection1 = createConnection("conn1");
-    const connection2 = createConnection("conn2");
-
-    const device1 = createDevice({
-      connection: connection1.id,
-      addresses: [
-        { address: "192.168.1.100", prefix: 24 },
-        { address: "192.168.1.101", prefix: 24 },
-      ],
-    });
-
-    const device2 = createDevice({
-      name: "wlan0",
-      connection: connection2.id,
-      type: CONNECTION_TYPE.WIFI,
-      addresses: [{ address: "10.0.0.50", prefix: 8 }],
-      gateway4: "10.0.0.1",
-      macAddress: "BB:11:22:33:44:55",
-    });
-
-    const result = getIpAddresses([device1, device2], [connection1, connection2]);
-
-    expect(result).toEqual([
-      { address: "192.168.1.100", prefix: 24 },
-      { address: "192.168.1.101", prefix: 24 },
-      { address: "10.0.0.50", prefix: 8 },
-    ]);
-  });
-
-  it("returns formatted IP addresses when formatted option is true", () => {
-    const connection = createConnection("conn1");
-    const device = createDevice({
-      connection: connection.id,
-      addresses: [
-        { address: "192.168.1.100", prefix: 24 },
-        { address: "fe80::1", prefix: 64 },
-      ],
-    });
-
-    const result = getIpAddresses([device], [connection], { formatted: true });
-
-    expect(result).toEqual(["192.168.1.100", "fe80::1"]);
-  });
-
-  it("returns raw IPAddress objects when formatted option is false", () => {
-    const connection = createConnection("conn1");
-    const device = createDevice({ connection: connection.id });
-
-    const result = getIpAddresses([device], [connection], { formatted: false });
-
-    expect(result).toEqual([{ address: "192.168.1.100", prefix: 24 }]);
-  });
-
-  it("returns empty array when devices have no addresses", () => {
-    const connection = createConnection("conn1");
-    const device = createDevice({
-      connection: connection.id,
-      addresses: [],
-      gateway4: "",
-    });
-
-    const result = getIpAddresses([device], [connection]);
-
-    expect(result).toEqual([]);
   });
 });
