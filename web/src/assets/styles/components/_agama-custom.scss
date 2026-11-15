@@ -296,7 +296,8 @@ nav.agm-breadcrumb > ol > li > a {
   white-space: nowrap;
 }
 
-// A page holding a panel does not scroll: the page beside the panel and the
+// A page holding a panel does not scroll, unless the panel is pinned (see
+// below): the page beside the panel and the
 // panel each scroll on their own. A page that scrolls as a whole opens the
 // panel at whatever offset the page was left at, with its heading out of sight.
 //
@@ -304,18 +305,13 @@ nav.agm-breadcrumb > ol > li > a {
 // shrinking, so they stay as tall as their content and the page scrolls. Both
 // properties have to go: a zero minimum does nothing to an item that does not
 // shrink.
-.pf-v6-c-page__main-group:has(> .pf-v6-c-page__main-section > .agm-side-panel-frame),
-.pf-v6-c-page__main-section:has(> .agm-side-panel-frame),
-.agm-side-panel-frame {
+.pf-v6-c-page__main-group:has(
+  > .pf-v6-c-page__main-section > .agm-side-panel-frame:not(.agm-side-panel-frame--pinned)
+),
+.pf-v6-c-page__main-section:has(> .agm-side-panel-frame:not(.agm-side-panel-frame--pinned)),
+.agm-side-panel-frame:not(.agm-side-panel-frame--pinned) {
   flex: 1 1 auto;
   min-height: 0;
-}
-
-// What sits above the panel, such as a page's report, is spaced from it as the
-// parts of the page inside it are spaced from each other, so the report reads
-// as part of the page rather than as something apart from it.
-.pf-v6-c-page__main-section:has(> .agm-side-panel-frame) {
-  --pf-v6-c-page__main-section--RowGap: var(--pf-t--global--spacer--gutter--default);
 }
 
 // The panel and whatever lies over the page reach the edges of the rounded box
@@ -345,6 +341,61 @@ nav.agm-breadcrumb > ol > li > a {
 
 .agm-side-panel-frame:not(:first-child) {
   --agm-side-panel-frame--inset-block-start: 0px;
+}
+
+// A pinned panel starts right under what the page keeps in sight above it:
+// the frame takes over the room between the two, and the page inside it keeps
+// as much room at its top as at its sides.
+.agm-side-panel-frame--pinned:not(:first-child) {
+  margin-block-start: calc(-1 * var(--pf-v6-c-page__main-section--RowGap));
+}
+
+.agm-side-panel-frame--pinned:not(:first-child)
+  > .pf-v6-c-drawer__main
+  > .pf-v6-c-drawer__content
+  > .pf-v6-c-drawer__body {
+  padding-block-start: var(--agm-side-panel-frame--inset-inline-start);
+}
+
+// A panel set inside a box of the page covers only that box. The box takes the
+// room left under what comes before it, and the panel reaches the box edges,
+// clipped to its corners, so the room around the page moves inside the drawer
+// as it does for a panel over the whole page.
+.pf-v6-c-page__main-group:has(
+  > .pf-v6-c-page__main-section
+    > .pf-v6-c-card
+    .agm-side-panel-frame:not(.agm-side-panel-frame--pinned)
+),
+.pf-v6-c-page__main-section:has(
+  > .pf-v6-c-card .agm-side-panel-frame:not(.agm-side-panel-frame--pinned)
+),
+.pf-v6-c-card:has(> .pf-v6-c-card__body > .agm-side-panel-frame:not(.agm-side-panel-frame--pinned)),
+.pf-v6-c-card__body:has(> .agm-side-panel-frame:not(.agm-side-panel-frame--pinned)) {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.pf-v6-c-card:has(> .pf-v6-c-card__body > .agm-side-panel-frame),
+.pf-v6-c-card__body:has(> .agm-side-panel-frame) {
+  display: flex;
+  flex-direction: column;
+}
+
+.pf-v6-c-card:has(> .pf-v6-c-card__body > .agm-side-panel-frame) {
+  overflow: hidden;
+}
+
+// A pinned panel sticks only where nothing between it and the scrolling page
+// scrolls on its own: clipping without scrolling keeps the box's corners.
+.pf-v6-c-card:has(> .pf-v6-c-card__body > .agm-side-panel-frame--pinned) {
+  overflow: clip;
+}
+
+.pf-v6-c-card__body > .agm-side-panel-frame {
+  --agm-side-panel-frame--inset-block-start: var(--pf-v6-c-card--first-child--PaddingBlockStart);
+  --agm-side-panel-frame--inset-block-end: var(--pf-v6-c-card--child--PaddingBlockEnd);
+  --agm-side-panel-frame--inset-inline-start: var(--pf-v6-c-card--child--PaddingInlineStart);
+  --agm-side-panel-frame--inset-inline-end: var(--pf-v6-c-card--child--PaddingInlineEnd);
 }
 
 .agm-side-panel-frame > .pf-v6-c-drawer__main > .pf-v6-c-drawer__content > .pf-v6-c-drawer__body {
@@ -386,6 +437,13 @@ nav.agm-breadcrumb > ol > li > a {
 // its panel above its page, so the layer sits between the two.
 .agm-side-panel-frame--covered > .pf-v6-c-drawer__main {
   position: relative;
+}
+
+// The covered page is inert, so nothing in it can be focused or scrolled by
+// the reader anyway. Left scrollable, it is a scrolling region no keyboard can
+// reach, which assistive technologies report as a barrier.
+.agm-side-panel-frame--covered > .pf-v6-c-drawer__main > .pf-v6-c-drawer__content {
+  overflow: hidden;
 }
 
 .agm-side-panel-frame--covered > .pf-v6-c-drawer__main::after {
@@ -543,47 +601,93 @@ nav.agm-breadcrumb > ol > li > a {
   --pf-v6-c-table--cell--first-last-child--PaddingInline: var(--pf-t--global--spacer--md);
 }
 
-// A category's title row reads as a heading over the rows under it rather than
-// as a row of its own: no rule under it, and less room under it than above.
-.agm-entries-table__title-row {
+// PLAYGROUND: in the grouped table, the row naming each group reads as a title
+// over its rows rather than as a row of its own: smaller and set apart by
+// weight, no rule under it, and more room above it than under it.
+.agm-entries-table .pf-v6-c-table tbody tr:has(> .agm-entries-table__group-header) {
   --pf-v6-c-table__tr--BorderBlockEndWidth: 0;
 }
 
-// Nor does it light up as the entry rows do on hover or while something in it
-// has focus: it is not an entry, and its control shows its own focus.
-.agm-entries-table .pf-v6-c-table tbody tr.agm-entries-table__title-row {
-  background-color: transparent;
-}
-
-.agm-entries-table__title-row > td {
+.agm-entries-table .pf-v6-c-table th.agm-entries-table__group-header {
   padding-block-end: var(--pf-t--global--spacer--xs);
-}
-
-.agm-entries-table__group + .agm-entries-table__group .agm-entries-table__title-row > td {
-  padding-block-start: var(--pf-t--global--spacer--lg);
-}
-
-// A control beside a category heading acts on the whole category, and stays
-// quieter than the heading it sits beside. PatternFly's small button only trims
-// the padding, so the text is set smaller too, keeping the button tall enough
-// to hit comfortably.
-.agm-entries-table__title-row .pf-v6-c-button {
-  --pf-v6-c-button--FontSize: var(--pf-t--global--font--size--xs);
-  --pf-v6-c-button--PaddingBlockStart: var(--pf-t--global--spacer--xs);
-  --pf-v6-c-button--PaddingBlockEnd: var(--pf-t--global--spacer--xs);
-  --pf-v6-c-button--PaddingInlineStart: var(--pf-t--global--spacer--sm);
-  --pf-v6-c-button--PaddingInlineEnd: var(--pf-t--global--spacer--sm);
-}
-
-// Set apart from the entries under it by weight and size rather than by a
-// filled band.
-.agm-entries-table__category {
-  margin: 0;
   font-size: var(--pf-t--global--font--size--body--sm);
   font-weight: var(--pf-t--global--font--weight--body--bold);
   color: var(--pf-t--global--text--color--subtle);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+
+// The kind's mark leads the title, centred on its capitals, in the title's
+// own colour so it adds recognition, not weight.
+.agm-entries-table__group-title {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--pf-t--global--spacer--xs);
+}
+
+.agm-entries-table__group-title > svg {
+  inline-size: var(--agm-entries-table--group-mark);
+  block-size: var(--agm-entries-table--group-mark);
+  fill: currentcolor;
+}
+
+// The mark's box, and the room its title text starts after. The rows of a
+// group start their first column at the same place, so the names line up
+// under the title's words and the mark stands out at the edge.
+.agm-entries-table {
+  --agm-entries-table--group-mark: 1rem;
+  --agm-entries-table--group-indent: calc(
+    var(--agm-entries-table--group-mark) + var(--pf-t--global--spacer--xs)
+  );
+}
+
+.agm-entries-table
+  .pf-v6-c-table
+  .agm-entries-table__group
+  tr.agm-entries-table__row
+  > :first-child {
+  --edge: var(--pf-v6-c-table--cell--first-last-child--PaddingInline);
+
+  padding-inline-start: calc(var(--edge) + var(--agm-entries-table--group-indent));
+}
+
+// The header of that column moves with it, so it heads the names, not the
+// marks of the group titles.
+.agm-entries-table--grouped .pf-v6-c-table thead tr > :first-child {
+  --edge: var(--pf-v6-c-table--cell--first-last-child--PaddingInline);
+
+  padding-inline-start: calc(var(--edge) + var(--agm-entries-table--group-indent));
+}
+
+.agm-entries-table__group + .agm-entries-table__group th.agm-entries-table__group-header {
+  padding-block-start: var(--pf-t--global--spacer--lg);
+}
+
+// PLAYGROUND: the group titles on a faint band, tight around their words,
+// either fading from a soft tint of the secondary background to nothing, or
+// flat in that tint. The fade ends in transparency rather than in white, so
+// it blends into whatever the table sits on, dark themes included. The band
+// sets the groups apart by itself, so no room is added before it.
+.agm-entries-table--banded,
+.agm-entries-table--flat-band {
+  --agm-entries-table--band: color-mix(
+    in srgb,
+    var(--pf-t--global--background--color--secondary--default) 30%,
+    transparent
+  );
+}
+
+.agm-entries-table--banded .pf-v6-c-table th.agm-entries-table__group-header,
+.agm-entries-table--flat-band .pf-v6-c-table th.agm-entries-table__group-header {
+  padding-block: var(--pf-t--global--spacer--xs);
+}
+
+.agm-entries-table--banded .pf-v6-c-table th.agm-entries-table__group-header {
+  background: linear-gradient(var(--agm-entries-table--band), transparent);
+}
+
+.agm-entries-table--flat-band .pf-v6-c-table th.agm-entries-table__group-header {
+  background-color: var(--agm-entries-table--band);
 }
 
 // What the entry is, read under the name: a fact about the name rather than a
@@ -640,6 +744,13 @@ nav.agm-breadcrumb > ol > li > a {
 // hover look and the pointer come from PatternFly's clickable row.
 .agm-entries-table__row {
   position: relative;
+}
+
+// PatternFly hides the rule under the last clickable row. Kept here, under the
+// last row of every group too, so each device ends the same way and the last
+// one does not read as running into what follows.
+.pf-v6-c-table tr.agm-entries-table__row:last-child {
+  border-block-end-color: var(--pf-v6-c-table__tr--BorderBlockEndColor);
 }
 
 // An entry the installation leaves out reads quieter, every cell of it: in the
@@ -766,4 +877,247 @@ tr.agm-entries-table__row > :is(th, td):not(.agm-entries-table__menu) {
 .agm-statement__detail {
   font-size: var(--pf-t--global--font--size--body--sm);
   color: var(--pf-t--global--text--color--subtle);
+}
+
+// PLAYGROUND: a dot on the corner of a button, in the blue that marks
+// something new or informative rather than in the brand colour, saying there is something new
+// behind it since it was last opened. It sits outside the button, so the
+// button keeps its size and its padding cannot clip it, and it is only a
+// visual cue: the button's name says the same in words. A ring in the page
+// colour keeps it apart from the button's edge; in forced colours it takes
+// the system highlight, since backgrounds are dropped there.
+.agm-unseen-dot-anchor {
+  position: relative;
+  display: inline-block;
+}
+
+.agm-unseen-dot {
+  position: absolute;
+  inset-block-start: calc(-1 * var(--pf-t--global--spacer--xs));
+  inset-inline-end: calc(-1 * var(--pf-t--global--spacer--xs));
+  inline-size: 0.625rem;
+  block-size: 0.625rem;
+  border-radius: 50%;
+  background-color: var(--pf-t--global--icon--color--status--info--default);
+  box-shadow: 0 0 0 2px var(--pf-t--global--background--color--primary--default);
+  pointer-events: none;
+}
+
+@media (forced-colors: active) {
+  .agm-unseen-dot {
+    forced-color-adjust: none;
+    background-color: Highlight;
+  }
+}
+
+// PLAYGROUND: the button opening the planned storage changes, set in the
+// sentence it follows: no extra height over the text line, and sitting on its
+// baseline, while keeping a target of at least 24 by 24 pixels (WCAG 2.5.8).
+.agm-summary__details.pf-v6-c-button {
+  --pf-v6-c-button--m-small--PaddingBlockStart: 0;
+  --pf-v6-c-button--m-small--PaddingBlockEnd: 0;
+  --pf-v6-c-button--m-small--PaddingInlineStart: var(--pf-t--global--spacer--sm);
+  --pf-v6-c-button--m-small--PaddingInlineEnd: var(--pf-t--global--spacer--sm);
+
+  min-block-size: 24px;
+  vertical-align: baseline;
+  align-items: center;
+}
+
+// The details button's icon, where it carries one, at the size of its words
+// and centered with them, rather than at the size of regular text, sitting
+// high. At any size of the button.
+.agm-details-button.pf-v6-c-button .pf-v6-c-button__icon {
+  display: inline-flex;
+  align-items: center;
+}
+
+.agm-details-button.pf-v6-c-button .pf-v6-c-button__icon svg {
+  inline-size: 1em;
+  block-size: 1em;
+  vertical-align: 0;
+}
+
+// With a pinned panel the page still fills the window when it is short, down
+// to the footer, but grows past it instead of shrinking, so it scrolls as a
+// whole once it is longer.
+.pf-v6-c-page__main-group:has(.agm-side-panel-frame--pinned),
+.pf-v6-c-page__main-section:has(.agm-side-panel-frame--pinned),
+.pf-v6-c-card:has(> .pf-v6-c-card__body > .agm-side-panel-frame--pinned),
+.pf-v6-c-card__body:has(> .agm-side-panel-frame--pinned),
+.agm-side-panel-frame--pinned {
+  flex: 1 0 auto;
+}
+
+// PatternFly makes a drawer as tall as what holds it, which here would add the
+// whole section's height to whatever comes before the drawer. Pinned, it takes
+// its content's height and grows only into the room left.
+.agm-side-panel-frame--pinned {
+  block-size: auto;
+}
+
+// A pinned panel: the page scrolls as a whole, as every other page does, and
+// the panel stays in view as it scrolls, right under whatever the page keeps
+// in sight at its top, fitting what is in view (worked out as the page
+// scrolls), and scrolling its own content. Sticking needs every box between the panel and
+// the scrolling area to leave overflow alone: clipping without scrolling is
+// what keeps the panel's slide hidden without that.
+.agm-side-panel-frame--pinned,
+.agm-side-panel-frame--pinned > .pf-v6-c-drawer__main {
+  overflow: clip;
+}
+
+.agm-side-panel-frame--pinned > .pf-v6-c-drawer__main > .pf-v6-c-drawer__content {
+  overflow: visible;
+}
+
+// Only while it shows: a shut panel stays in the layout, merely hidden, and
+// would otherwise keep the page as long as an open one.
+.agm-side-panel-frame--pinned > .pf-v6-c-drawer__main > .pf-v6-c-drawer__panel:not([hidden]) {
+  position: sticky;
+  inset-block-start: var(--agm-side-panel--pinned-offset, 0);
+  align-self: flex-start;
+  block-size: var(--agm-side-panel--pinned-height, auto);
+  max-block-size: none;
+}
+
+// PLAYGROUND: the overlay with every console switch, at the bottom right, over
+// everything, out of the way of the page's own content.
+.agm-playground-overlay {
+  position: fixed;
+  inset-block-end: var(--pf-t--global--spacer--md);
+  inset-inline-end: var(--pf-t--global--spacer--md);
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--pf-t--global--spacer--sm);
+}
+
+.agm-playground-overlay__card {
+  max-block-size: 70vh;
+  overflow-y: auto;
+  inline-size: 22rem;
+  box-shadow: var(--pf-t--global--box-shadow--lg);
+}
+
+// The popup with the planned changes keeps one size: PatternFly's large width,
+// and the height PatternFly allows a dialog at most, so it does not grow and
+// shrink with the tab shown. Its content scrolls inside it.
+.pf-v6-c-modal-box.agm-planned-changes-popup {
+  block-size: var(--pf-v6-c-modal-box--MaxHeight);
+}
+
+// The details button's icon and words centered with each other, at any size,
+// rather than lined up on the words' baseline, which left the icon high. With
+// an icon, less room before it than after the words: the icon carries some
+// room of its own, and PatternFly's padding is meant for words alone.
+.agm-details-button.pf-v6-c-button {
+  align-items: center;
+}
+
+.agm-details-button.pf-v6-c-button:not(.agm-summary__details):has(.pf-v6-c-button__icon) {
+  --pf-v6-c-button--PaddingInlineStart: calc(
+    var(--pf-t--global--spacer--sm) + var(--pf-t--global--spacer--xs)
+  );
+  --pf-v6-c-button--m-small--PaddingInlineStart: calc(
+    var(--pf-t--global--spacer--sm) + var(--pf-t--global--spacer--xs)
+  );
+}
+
+// A device panel's section: its content indented under the title, so it reads
+// as held by the section. PLAYGROUND: by how much, from the console.
+.agm-details-section--indent-none {
+  --agm-details-section--indent: 0px;
+}
+
+.agm-details-section--indent-small {
+  --agm-details-section--indent: var(--pf-t--global--spacer--sm);
+}
+
+.agm-details-section--indent-medium {
+  --agm-details-section--indent: var(--pf-t--global--spacer--md);
+}
+
+.pf-v6-l-flex > .agm-details-section > .agm-details-section__content.pf-v6-l-flex {
+  margin-inline-start: calc(
+    var(--agm-details-section--indent) + var(--agm-details-section--band-inset, 0px)
+  );
+}
+
+// PLAYGROUND: how the title stands apart from what it holds.
+.agm-details-section--spaced > .agm-details-section__title,
+.agm-details-section--both > .agm-details-section__title {
+  margin-block-end: var(--pf-t--global--spacer--sm);
+}
+
+.agm-details-section--rule > .agm-details-section__title,
+.agm-details-section--both > .agm-details-section__title {
+  padding-block-end: var(--pf-t--global--spacer--xs);
+  border-block-end: var(--pf-t--global--border--width--divider--default) solid
+    var(--pf-t--global--border--color--default);
+}
+
+// PLAYGROUND: titles set apart by spacing, a line between sections, or set as
+// the devices table's group titles; how much their content is indented is a
+// switch of its own. A title sits close to what it holds, and
+// further from the section before it, which is what groups them.
+.pf-v6-l-flex:is(
+  .agm-details-section--grouped,
+  .agm-details-section--separated,
+  .agm-details-section--smallcaps
+) {
+  --pf-v6-l-flex--RowGap: var(--pf-t--global--spacer--sm);
+  row-gap: var(--pf-t--global--spacer--sm);
+}
+
+.pf-v6-l-flex
+  > :is(.agm-details-section--grouped, .agm-details-section--smallcaps):not(:first-child) {
+  margin-block-start: var(--pf-t--global--spacer--lg);
+}
+
+.pf-v6-l-flex > .agm-details-section--separated:not(:first-child) {
+  padding-block-start: var(--pf-t--global--spacer--lg);
+  border-block-start: var(--pf-t--global--border--width--divider--default) solid
+    var(--pf-t--global--border--color--default);
+}
+
+.agm-details-section--smallcaps > .agm-details-section__title.pf-v6-c-title {
+  font-size: var(--pf-t--global--font--size--body--sm);
+  font-weight: var(--pf-t--global--font--weight--body--bold);
+  color: var(--pf-t--global--text--color--subtle);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+// PLAYGROUND: a band behind the title, with any of the styles above: fading
+// down, as behind the devices table's group titles, or flat. The title's
+// words get a little room inside it, and the content moves with them.
+:is(.agm-details-section--band-fading, .agm-details-section--band-flat) {
+  --agm-details-section--band: color-mix(
+    in srgb,
+    var(--pf-t--global--background--color--secondary--default) 30%,
+    transparent
+  );
+  --agm-details-section--band-inset: var(--pf-t--global--spacer--sm);
+}
+
+:is(.agm-details-section--band-fading, .agm-details-section--band-flat)
+  > .agm-details-section__title.pf-v6-c-title {
+  padding-block: var(--pf-t--global--spacer--xs);
+  padding-inline: var(--agm-details-section--band-inset);
+}
+
+.agm-details-section--band-fading > .agm-details-section__title.pf-v6-c-title {
+  background: linear-gradient(var(--agm-details-section--band), transparent);
+}
+
+.agm-details-section--band-flat > .agm-details-section__title.pf-v6-c-title {
+  background: var(--agm-details-section--band);
+}
+
+// PLAYGROUND: without the marks before the group titles, the rows need only a
+// short indent to read as held by their group.
+.agm-entries-table.agm-entries-table--no-group-marks {
+  --agm-entries-table--group-indent: var(--pf-t--global--spacer--sm);
 }

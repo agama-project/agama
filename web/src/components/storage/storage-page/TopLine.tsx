@@ -22,6 +22,9 @@
 
 import React from "react";
 import { Flex, FlexItem } from "@patternfly/react-core";
+import FixableConfigInfo from "~/components/storage/FixableConfigInfo";
+import ProposalFailedInfo from "~/components/storage/ProposalFailedInfo";
+import { useIssues } from "~/hooks/model/issue";
 import Interpolate from "~/components/core/Interpolate";
 import Link from "~/components/core/Link";
 import MenuButton from "~/components/core/MenuButton";
@@ -32,7 +35,9 @@ import { bootIcon } from "~/components/storage/shared/boot";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { EXPANDED, SETTINGS_TAB, DEVICE_DETAILS } from "~/components/storage/ui-state-params";
 import configModel from "~/model/storage/config-model";
+import Summary from "~/components/storage/storage-page/Summary";
 import { useConfigModel } from "~/hooks/model/storage/config-model";
+import { useProposal } from "~/hooks/model/proposal/storage";
 import { useReset } from "~/hooks/model/config/storage";
 import { useClearSearchParams } from "~/hooks/use-search-param-state";
 import { _ } from "~/i18n";
@@ -157,26 +162,30 @@ export default function TopLine(): React.ReactNode {
     clearSearchParams(EXPANDED, SETTINGS_TAB, DEVICE_DETAILS);
   };
 
+  /* On the same line as the settings, which it introduces. */
+  const description = (
+    <FlexItem>
+      <Text textStyle={["fontSizeSm", "textColorSubtle"]}>
+        {/* TRANSLATORS: says what the storage page is for, next to the
+            settings that apply to the whole installation. */}
+        {_("Configure which storage devices will be used to install and how")}
+      </Text>
+    </FlexItem>
+  );
+
   return (
-    /* On one baseline, so the sentence and the settings read as one line
-       although they are set in different sizes. */
     <Flex
-      alignItems={{ default: "alignItemsBaseline" }}
+      alignItems={{ default: "alignItemsCenter" }}
       justifyContent={{ default: "justifyContentSpaceBetween" }}
       gap={{ default: "gapMd" }}
-      /* Wrapping rather than pinned on one line. A strip this crowded runs out
-         of room before the window does, and a row that cannot wrap scrolls the
-         page sideways instead. */
+      /* Wrapping rather than pinned on one line. A strip this crowded runs
+             out of room before the window does, and a row that cannot wrap
+             scrolls the page sideways instead. */
       flexWrap={{ default: "wrap" }}
     >
-      <FlexItem>
-        <Text textStyle={["fontSizeSm", "textColorSubtle"]}>
-          {/* TRANSLATORS: says what the storage page is for, on its own line
-              above what the page reports. */}
-          {_("Configure which storage devices will be used to install and how")}
-        </Text>
-      </FlexItem>
-      <FlexItem>
+      {description}
+      {/* Kept at the right edge also when it wraps under the sentence. */}
+      <FlexItem align={{ default: "alignRight" }}>
         <Flex
           alignItems={{ default: "alignItemsCenter" }}
           gap={{ default: "gapMd" }}
@@ -239,4 +248,20 @@ export default function TopLine(): React.ReactNode {
       </FlexItem>
     </Flex>
   );
+}
+
+/**
+ * What every setting on the storage page leads to: the summary of the planned
+ * changes or, where no layout could be found, the problem that takes its
+ * place. Kept apart from the settings line so the page can keep it in sight
+ * while the rest scrolls.
+ */
+export function TopResult(): React.ReactNode {
+  const proposal = useProposal();
+  const issues = useIssues("storage");
+  const configIssues = issues.filter((i) => i.class !== "proposal");
+
+  if (proposal) return <Summary />;
+
+  return configIssues.length ? <FixableConfigInfo issues={configIssues} /> : <ProposalFailedInfo />;
 }

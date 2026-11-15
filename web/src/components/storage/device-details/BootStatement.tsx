@@ -27,6 +27,7 @@ import DetailsItem from "~/components/storage/device-details/DetailsItem";
 import { STORAGE as PATHS } from "~/routes/paths";
 import configModel from "~/model/storage/config-model";
 import { useConfigModel } from "~/hooks/model/storage/config-model";
+import { isExistingBootPartition } from "~/components/storage/utils";
 import { _ } from "~/i18n";
 import type { Entry } from "~/components/storage/device-details/entry";
 
@@ -49,23 +50,31 @@ export default function BootStatement({ entry }: BootStatementProps): React.Reac
 
   if (!config || !name || !configModel.boot.hasDevice(config, name)) return null;
 
+  const potentialReuse = entry.device.partitions.some((p) => isExistingBootPartition(p));
+  const sentence = potentialReuse
+    ? configModel.boot.isDefault(config)
+      ? // TRANSLATORS: The text in square brackets is a link to the boot setting.
+        _(
+          "[Automatically chosen] for booting. Some existing partition may be used for that purpose if possible. Additional new ones may be created if needed.",
+        )
+      : // TRANSLATORS: The text in square brackets is a link to the boot setting.
+        _(
+          "[Explicitly chosen] for booting. Some existing partition may be used for that purpose if possible. Additional new ones may be created if needed.",
+        )
+    : configModel.boot.isDefault(config)
+      ? // TRANSLATORS: The text in square brackets is a link to the boot setting.
+        _(
+          "[Automatically chosen] for booting. Additional partitions may be created for that purpose if needed.",
+        )
+      : // TRANSLATORS: The text in square brackets is a link to the boot setting.
+        _(
+          "[Explicitly chosen] for booting. Additional partitions may be created for that purpose if needed.",
+        );
+
   return (
     <DetailsItem
       value={
-        <Interpolate
-          sentence={
-            configModel.boot.isDefault(config)
-              ? // TRANSLATORS: said under the heading of the part of a disk's
-                // panel about booting. The text in square brackets is a link to
-                // the boot setting.
-                _("[Automatically chosen] for booting, any needed partition will be configured.")
-              : // TRANSLATORS: said under the heading of the part of a disk's
-                // panel about booting, where the boot disk was picked rather than
-                // worked out by the installer. The text in square brackets is a
-                // link to the boot setting.
-                _("[Explicitly chosen] for booting, any needed partition will be configured.")
-          }
-        >
+        <Interpolate sentence={sentence}>
           {(text) => (
             <Link to={PATHS.editBootDevice} keepQuery variant="link" isInline>
               {text}

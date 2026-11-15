@@ -230,7 +230,7 @@ export default function ProposalFailedInfo() {
       title={proposalFailedTitle()}
       // TRANSLATORS: opens a popup explaining why no storage layout can be
       // calculated.
-      actionLabel={_("Show details")}
+      actionLabel={_("Show details…")}
       // TRANSLATORS: the full name of the "Show more" action, read by screen
       // readers. It must start with the same words as the translation of "Show
       // more", so that people using speech input can say what they see.

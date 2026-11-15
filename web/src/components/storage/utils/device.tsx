@@ -154,21 +154,21 @@ const driveDescription = (device: System.Device): string | undefined => {
  * What the list and the device panel say about an LVM volume group beside and
  * under its name, the way they say a disk's size and model.
  *
- * Its kind under its name, as a disk says "Disk", whether it exists or is
- * being created. Its size beside the name where the machine has it: a group
- * being created has none until its volumes are made.
+ * Its kind under its name, as a disk says "Disk", marked as new when the
+ * installation creates it, so a group already on the machine and one still to
+ * be made can be told apart at a glance. Its size beside the name where the
+ * machine has it: a group being created has none until its volumes are made.
  */
 const volumeGroupFacts = (
   group: ConfigModel.VolumeGroup,
   device: System.Device | null,
 ): { size?: string; description?: string } => {
   const size = group.name ? device?.volumeGroup?.size : undefined;
+  const desc = group.name ? _("Volume group") : _("New volume group");
 
   return {
     size: size === undefined ? undefined : deviceSize(size),
-    // TRANSLATORS: said under the name of an LVM volume group, where a disk
-    // shows its kind, such as "Disk".
-    description: _("LVM"),
+    description: desc,
   };
 };
 

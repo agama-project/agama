@@ -21,158 +21,113 @@
  */
 
 import React from "react";
-import { Flex } from "@patternfly/react-core";
-import { Table, Tbody, Td, Th, Thead, Tr } from "@patternfly/react-table";
-import a11yStyles from "@patternfly/react-styles/css/utilities/Accessibility/accessibility";
+import { Table, Tbody, Th, Thead, Tr } from "@patternfly/react-table";
 import { columnName } from "~/components/storage/entries-table/columns";
 import DriveRow from "~/components/storage/entries-table/DriveRow";
 import VolumeGroupRow from "~/components/storage/entries-table/VolumeGroupRow";
-import ChangeInstallationDisk from "~/components/storage/storage-page/ChangeInstallationDisk";
+import { baseName } from "~/components/storage/utils";
+import { css } from "@patternfly/react-styles";
 import { useConfigModel } from "~/hooks/model/storage/config-model";
-import { useCandidateDrives } from "~/hooks/model/system/storage";
-import configModel from "~/model/storage/config-model";
-import { _, n_, TranslatedString } from "~/i18n";
-
-/** Where an entry is written in the configuration, which is also what it is. */
-type Category = "volumeGroups" | "mdRaids" | "drives";
+import { _, n_ } from "~/i18n";
+import type { TranslatedString } from "~/i18n";
+import type { ConfigModel } from "~/model/storage/config-model";
+import type {
+  DetailsCollection,
+  DetailsSubject,
+} from "~/components/storage/shared/use-device-details";
 
 /**
- * Read as a list rather than as two special cases, so that adding a kind of
- * entry is a line here. RAID has a category today with nothing to put in it on
- * most machines, and multi-device Btrfs will want one next.
- *
- * The order is the one the configuration is already built in, from what is
- * defined down to the hardware it is defined on. It was always there and
- * nothing said so, which left a reader with a pile rather than an arrangement.
+ * The order of the rows until sorted by device, which is the one the
+ * configuration is built in: from what is defined down to the hardware it is
+ * defined on.
  */
-const CATEGORIES: Category[] = ["volumeGroups", "mdRaids", "drives"];
+const TYPE_ORDER: DetailsCollection[] = ["volumeGroups", "mdRaids", "drives"];
 
-function categoryTitle(category: Category, entries: object[]): TranslatedString {
-  switch (category) {
+/** The sortable column, by its position in the header. */
+const DEVICE_COLUMN = 0;
+
+type Row = {
+  subject: DetailsSubject;
+  /** What the device column shows and sorts by. */
+  name: string;
+  /** Set for a volume group, whose row reads the group itself. */
+  group?: ConfigModel.VolumeGroup;
+  /** Set for a disk or a RAID, as the model spells its name. */
+  deviceName?: string;
+};
+
+function rowsOf(config: ConfigModel.Config | null): Row[] {
+  const groups: Row[] = (config?.volumeGroups || []).map((group, index) => ({
+    subject: { collection: "volumeGroups", index },
+    name: group.vgName,
+    group,
+  }));
+  const partitionables = (collection: "mdRaids" | "drives"): Row[] =>
+    (config?.[collection] || []).map((device, index) => ({
+      subject: { collection, index },
+      name: baseName(device.name),
+      deviceName: device.name,
+    }));
+
+  return [...groups, ...partitionables("mdRaids"), ...partitionables("drives")];
+}
+
+/** What a group of the table is called, by kind and by how many it holds. */
+function groupTitle(collection: DetailsCollection, count: number): TranslatedString {
+  switch (collection) {
     case "volumeGroups":
       // TRANSLATORS: heads the LVM volume groups in the list of what the
       // installation is made of.
-      return n_("Volume group", "Volume groups", entries.length);
+      return n_("LVM volume group", "LVM volume groups", count);
     case "mdRaids":
       // TRANSLATORS: heads the software RAID devices in the list of what the
       // installation is made of.
-      return n_("RAID device", "RAID devices", entries.length);
+      return n_("RAID device", "RAID devices", count);
     case "drives":
       // TRANSLATORS: heads the disks in the list of what the installation is
       // made of.
-      return n_("Used disk", "Used disks", entries.length);
+      return n_("Used disk", "Used disks", count);
   }
 }
 
-/**
- * One category of the configuration, as a body of the list's table: a title
- * row naming it, then a row per entry.
- *
- * The title row is a plain row, not a header row. Its one cell holds the
- * category's heading and the controls acting on the whole category, such as
- * changing the installation disk. Content placed in a header cell is announced
- * with every cell that header covers, so a control there would be read out on
- * every row of the category; in a plain cell it is read once, where the
- * category starts.
- *
- * The heading is a real `<h2>`. HTML allows headings in a data cell (`<td>`
- * takes any flow content) but not in a header cell (`<th>` forbids heading
- * descendants), which is the other reason the title row is plain. The body is
- * named after the heading, so a screen reader that announces named groups says
- * which category a row belongs to when entering it.
- */
-function CategoryBody({
-  category,
-  entries,
-  actions,
-  children,
-}: {
-  category: Category;
-  entries: object[];
-  /** Controls acting on the category as a whole, shown beside its heading. */
-  actions?: React.ReactNode;
-  children: React.ReactNode;
-}): React.ReactNode {
-  const headingId = React.useId();
+function compareRows(column: number, a: Row, b: Row): number {
+  if (column === DEVICE_COLUMN) {
+    return a.name.localeCompare(b.name, undefined, { numeric: true });
+  }
 
-  return (
-    <Tbody aria-labelledby={headingId} className="agm-entries-table__group">
-      <Tr className="agm-entries-table__title-row">
-        <Td colSpan={4}>
-          <Flex alignItems={{ default: "alignItemsCenter" }} gap={{ default: "gapSm" }}>
-            <h2 id={headingId} className="agm-entries-table__category">
-              {categoryTitle(category, entries)}
-            </h2>
-            {actions}
-          </Flex>
-        </Td>
-      </Tr>
-      {children}
-    </Tbody>
-  );
+  const byType =
+    TYPE_ORDER.indexOf(a.subject.collection) - TYPE_ORDER.indexOf(b.subject.collection);
+  return byType || a.subject.index - b.subject.index;
 }
 
 /**
  * What the configuration is made of, under the summary of what it does.
  *
- * One table, with a body per category (see {@link CategoryBody}). Entries are
- * read by comparing them, and a table is what lets a screen reader say which
- * entry and which column every cell belongs to. Being one table, its columns
- * line up across categories by themselves and take the width their content
- * needs: a long name or model widens its column rather than wrapping inside a
- * width fixed for every category.
+ * A regular table, one row per entry, with the columns named in its header:
+ * the device, what the new system uses it for, what happens to its existing
+ * data, and the menu of actions. It starts in the configuration's order and can
+ * be sorted by device name.
  *
- * For example, with a volume group and one disk:
+ * Keyboard: arrow keys walk the entries, Up and Down from name to name and Left
+ * and Right between a name and its menu. Every name and every menu stays a tab
+ * stop.
  *
- * ```html
- * <table aria-label="Devices of the installation">
- *   <thead class="pf-v6-screen-reader"> Device | Actions | Content | Options </thead>
- *   <tbody aria-labelledby="vgs">
- *     <tr><td colspan="4"><h2 id="vgs">Volume group</h2></td></tr>
- *     <tr><th scope="row">system</th> <td>…</td> <td>…</td> <td>⋯</td></tr>
- *   </tbody>
- *   <tbody aria-labelledby="disks">
- *     <tr><td colspan="4"><h2 id="disks">Used disk</h2> [Change…]</td></tr>
- *     <tr><th scope="row">vdd · 20 GiB</th> <td>…</td> <td>…</td> <td>⋯</td></tr>
- *   </tbody>
- * </table>
- * ```
- *
- * What readers get:
- *
- * - Keyboard: title rows are not focusable and add no tab stop. Arrow keys walk
- *   the entries as one list, Up and Down from name to name and Left and Right
- *   between a name and its menu, skipping title rows, since only entries mark
- *   their name and menu for it. Every name and every menu stays a tab stop.
- * - Screen readers: categories are headings, reachable by heading navigation.
- *   A cell of an entry is announced with its column and its entry, as in any
- *   table. Not available: moving by table from one category to the next,
- *   which the headings replace, and the category announced on every cell of an
- *   entry, which a header row scoped to its body would give but would also read
- *   out any control placed in it. Some readers announce the column names on a
- *   title row's cell, since it spans all of them, and title rows count among
- *   the rows.
- *
- * Two of PatternFly's defaults are turned off rather than accepted, and both
- * would be quiet failures:
+ * Two of PatternFly's defaults are turned off:
  *
  * - It calls a table a grid, which announces an interactive widget with a
  *   keyboard model of its own. This is something to read.
- * - It stacks each row into a block below a breakpoint, which leaves the rows
- *   and cells `display: grid`, and an element laid out that way loses the role
- *   its element gave it, exactly where the window is tightest. The table keeps
- *   its width instead and scrolls inside its own box.
+ * - It stacks each row into a block below a breakpoint, which drops the table
+ *   semantics exactly where the window is tightest. The table keeps its width
+ *   instead and scrolls inside its own box.
  */
 export default function EntriesTable(): React.ReactNode {
   const config = useConfigModel();
-  const candidate = useCandidateDrives();
   const list = React.useRef<HTMLDivElement>(null);
+  /* Unsorted until a header is used. */
+  const sortBy = null;
+  const isGrouped = true;
+  const groupId = React.useId();
 
-  /* Arrow keys walk the entries, which is what a reader expects of a list they
-     are comparing rather than reading once. Every name and every menu stays a
-     tab stop, since
-     this is a table to read and not a widget to operate: the arrows are a way
-     of moving faster, not the only way of moving. */
   const onKeyDown = (event: React.KeyboardEvent) => {
     /* Right and left move between an entry's name and its menu. Both stay tab
        stops: this is a shortcut, not the only way to reach the menu. */
@@ -213,17 +168,41 @@ export default function EntriesTable(): React.ReactNode {
     }
   };
 
-  const groups = CATEGORIES.map((category) => ({
-    category,
-    entries: config?.[category] || [],
-  })).filter((group) => group.entries.length > 0);
+  const rows = rowsOf(config);
+  if (!rows.length) return null;
 
-  if (!groups.length) return null;
+  const sorted = [...rows].sort((a, b) => {
+    if (!sortBy) return compareRows(-1, a, b);
+    const order = compareRows(sortBy.index, a, b);
+    return sortBy.direction === "asc" ? order : -order;
+  });
 
-  const canChangeTarget = configModel.canChangeTargetDrive(config) && candidate.length > 1;
+  const renderRow = ({ subject, group, deviceName }: Row) =>
+    group ? (
+      <VolumeGroupRow key={`vg-${group.vgName}`} group={group} subject={subject} />
+    ) : (
+      <DriveRow key={deviceName} name={deviceName} subject={subject} />
+    );
+
+  const columnCount = 4;
+
+  /* One body per kind, in the configuration's order, each starting with a row
+     group header naming it. */
+  const groups = TYPE_ORDER.map((collection) => ({
+    collection,
+    rows: sorted.filter((row) => row.subject.collection === collection),
+  })).filter(({ rows }) => rows.length > 0);
 
   return (
-    <div className="agm-entries-table" ref={list} onKeyDown={onKeyDown}>
+    <div
+      className={css(
+        "agm-entries-table",
+        isGrouped && "agm-entries-table--grouped",
+        isGrouped && "agm-entries-table--no-group-marks",
+      )}
+      ref={list}
+      onKeyDown={onKeyDown}
+    >
       <Table
         role="table"
         gridBreakPoint=""
@@ -232,41 +211,39 @@ export default function EntriesTable(): React.ReactNode {
         // groups the installation is made of.
         aria-label={_("Devices of the installation")}
       >
-        {/* Read out and not drawn. A strip of names sitting once at the top of
-            a list of eight devices labels columns that have scrolled away from
-            it, and every row already carries its own name. */}
-        <Thead className={a11yStyles.screenReader}>
+        <Thead>
           <Tr>
-            <Th>{columnName("entry")}</Th>
-            <Th>{columnName("actions")}</Th>
-            <Th>{columnName("content")}</Th>
-            <Th>{columnName("options")}</Th>
+            <Th>{columnName("device")}</Th>
+            <Th>{columnName("usedFor")}</Th>
+            <Th>{columnName("existingData")}</Th>
+            <Th screenReaderText={columnName("actions")} />
           </Tr>
         </Thead>
-        {groups.map(({ category, entries }) => (
-          <CategoryBody
-            key={category}
-            category={category}
-            entries={entries}
-            actions={category === "drives" && canChangeTarget && <ChangeInstallationDisk />}
-          >
-            {entries.map((entry, index) =>
-              category === "volumeGroups" ? (
-                <VolumeGroupRow
-                  key={entry.vgName}
-                  group={entry}
-                  subject={{ collection: category, index }}
-                />
-              ) : (
-                <DriveRow
-                  key={entry.name}
-                  name={entry.name}
-                  subject={{ collection: category, index }}
-                />
-              ),
-            )}
-          </CategoryBody>
-        ))}
+        {isGrouped ? (
+          groups.map(({ collection, rows }) => (
+            <Tbody
+              key={collection}
+              className="agm-entries-table__group"
+              aria-labelledby={`${groupId}-${collection}`}
+            >
+              <Tr>
+                <Th
+                  id={`${groupId}-${collection}`}
+                  scope="rowgroup"
+                  colSpan={columnCount}
+                  className="agm-entries-table__group-header"
+                >
+                  <span className="agm-entries-table__group-title">
+                    {groupTitle(collection, rows.length)}
+                  </span>
+                </Th>
+              </Tr>
+              {rows.map(renderRow)}
+            </Tbody>
+          ))
+        ) : (
+          <Tbody>{sorted.map(renderRow)}</Tbody>
+        )}
       </Table>
     </div>
   );

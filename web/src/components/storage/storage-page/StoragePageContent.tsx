@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2026] SUSE LLC
+ * Copyright (c) [2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -21,10 +21,11 @@
  */
 
 import React from "react";
-import { Divider, Stack } from "@patternfly/react-core";
-import Page from "~/components/layout/Page";
+import { Divider, PageSection, Stack } from "@patternfly/react-core";
+import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
 import EntriesTable from "~/components/storage/entries-table/EntriesTable";
-import TopLine from "~/components/storage/storage-page/TopLine";
+import TopLine, { TopResult } from "~/components/storage/storage-page/TopLine";
+import { useElementSize } from "~/hooks/use-element-size";
 import GlobalActions from "~/components/storage/storage-page/GlobalActions";
 import Result from "~/components/storage/storage-page/Result";
 import DeviceDetailsPanel from "~/components/storage/storage-page/DeviceDetailsPanel";
@@ -37,42 +38,56 @@ import { useConfigModel } from "~/hooks/model/storage/config-model";
  * anything else is arranged: no disk to install on, settings this interface
  * cannot read, and a configuration it knows nothing about.
  *
- * Everything else is the page, laid out as other pages are: what the
- * configuration will do first, then the page description next to the settings
- * that apply to the whole installation, and then a box holding the devices it
- * uses and the controls that apply to all of them.
- *
- * The panel the page opens is laid over it. The panel wraps rather than sits
- * beside, because two of its three placements are about what the page does
- * while it is open.
- *
- * What the configuration will do stays above the panel, never under it. A
- * change made in the panel can turn that report from a plan into a problem or
- * back, and the reader has to be able to see it and act on it without closing
- * the panel first.
+ * Everything else is the page: the result, then the settings that apply to
+ * the whole installation, and then the devices it uses and the controls that
+ * apply to all of them. The page scrolls as a whole, as every Agama page does,
+ * with the result kept in sight at its top, as the software patterns page
+ * keeps its filter. The panel the page opens covers everything under the
+ * result, stays in view as the page scrolls, and scrolls on its own.
  */
 export default function StoragePageContent(): React.ReactNode {
   const model = useConfigModel();
+  const [resultNode, setResultNode] = React.useState<HTMLDivElement | null>(null);
+  const { height: resultHeight = 0 } = useElementSize(resultNode);
 
-  const body = (
-    <Stack hasGutter>
-      {model && <TopLine />}
-      {model && (
-        <Page.Section>
-          <Stack hasGutter>
-            <EntriesTable />
-            <Divider />
-            <GlobalActions />
-          </Stack>
-        </Page.Section>
-      )}
-    </Stack>
+  if (!model) return <Result />;
+
+  const devices = (
+    <DeviceDetailsPanel
+      pinnedOffset={resultHeight}
+      page={
+        <Stack hasGutter>
+          {/* Inside what the panel opens over, so the panel covers everything
+              but the result kept in sight above it. */}
+          <TopLine />
+          <Divider />
+          <EntriesTable />
+          <GlobalActions />
+        </Stack>
+      }
+    />
   );
 
   return (
     <>
       <Result />
-      <DeviceDetailsPanel page={body} />
+      {/* Kept in sight while the rest of the page scrolls: what every setting
+          leads to. The same sticky section the software patterns page keeps
+          its filter in. */}
+      <PageSection
+        component="div"
+        stickyOnBreakpoint={{ default: "top" }}
+        padding={{ default: "noPadding" }}
+      >
+        <div ref={setResultNode}>
+          {/* Room under it, so what scrolls under it does not run into its
+              last line. Inside what is measured, so the panel starts below. */}
+          <div className={spacingStyles.pbMd}>
+            <TopResult />
+          </div>
+        </div>
+      </PageSection>
+      {devices}
     </>
   );
 }

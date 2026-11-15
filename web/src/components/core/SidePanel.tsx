@@ -64,7 +64,20 @@ export type SidePanelProps = {
   placeholder?: React.ReactNode;
   /** What the panel holds. */
   children?: React.ReactNode;
-  /** Lets a control that opens this panel point at it with `aria-controls`. */
+  /**
+   * Lets the page scroll as a whole, as pages do, rather than the page beside
+   * the panel scrolling on its own. The panel then stays pinned in view as the
+   * page scrolls, this many pixels below the top of the scrolling area, where
+   * something kept in sight sits, fits what is in view, and scrolls its own
+   * content.
+   */
+  pinnedOffset?: number;
+  /**
+   * Lets a control that opens this panel point at it with `aria-controls`.
+   *
+   * It names an element that is always in the page, shut or open, so the
+   * reference never points at nothing.
+   */
   id?: string;
 };
 
@@ -117,6 +130,14 @@ export type SidePanelProps = {
  *   <DeviceDetails device={device} />
  * </SidePanel>
  */
+/** The nearest ancestor that scrolls, where the page scrolls as a whole. */
+function scrollerOf(node: HTMLElement | null): HTMLElement | null {
+  for (let at = node?.parentElement; at; at = at.parentElement) {
+    if (/(auto|scroll)/.test(getComputedStyle(at).overflowY)) return at;
+  }
+  return null;
+}
+
 export default function SidePanel({
   isOpen,
   placement,
@@ -128,10 +149,55 @@ export default function SidePanel({
   placeholder,
   children,
   id,
+  pinnedOffset,
 }: SidePanelProps): React.ReactNode {
   const [panel, setPanel] = React.useState<HTMLDivElement | null>(null);
   const titleId = React.useId();
   const isPressOnBackdrop = React.useRef(false);
+  const frameId = React.useId();
+  const isPinned = pinnedOffset !== undefined;
+  const [pinnedHeight, setPinnedHeight] = React.useState<number>();
+
+  /* Pinned, the panel fits what is in view: from where it starts, under what
+     the page keeps in sight or lower while the page above has not scrolled
+     away yet, down to the bottom of the scrolling area or the end of the page
+     beside it, whichever comes first. It is worked out again as the page
+     scrolls, so the panel never sticks out of view and never makes the page
+     longer, and nothing moves the page on the reader's behalf. */
+  React.useEffect(() => {
+    if (!isPinned) return;
+
+    const frame = document.getElementById(frameId);
+    const scroller = scrollerOf(frame);
+    const content = frame?.querySelector<HTMLElement>(
+      ":scope > .pf-v6-c-drawer__main > .pf-v6-c-drawer__content",
+    );
+    if (!frame || !scroller || !content) return;
+
+    let frameRequest = 0;
+    const measure = () => {
+      cancelAnimationFrame(frameRequest);
+      frameRequest = requestAnimationFrame(() => {
+        const view = scroller.getBoundingClientRect();
+        const top = Math.max(view.top + pinnedOffset, frame.getBoundingClientRect().top);
+        const bottom = Math.min(view.bottom, content.getBoundingClientRect().bottom);
+        setPinnedHeight(Math.max(0, Math.round(bottom - top)));
+      });
+    };
+
+    measure();
+    scroller.addEventListener("scroll", measure, { passive: true });
+    const observer =
+      typeof ResizeObserver === "undefined" ? undefined : new ResizeObserver(measure);
+    observer?.observe(scroller);
+    observer?.observe(content);
+
+    return () => {
+      cancelAnimationFrame(frameRequest);
+      scroller.removeEventListener("scroll", measure);
+      observer?.disconnect();
+    };
+  }, [isPinned, isOpen, frameId, pinnedOffset]);
 
   /* Where the reader was when they opened it, so closing it can put them back.
      Without this a reader who closes a panel is dropped at the top of the
@@ -161,7 +227,6 @@ export default function SidePanel({
 
   const region = (
     <div
-      id={id}
       ref={setPanel}
       role="region"
       aria-labelledby={titleId}
@@ -224,12 +289,25 @@ export default function SidePanel({
 
   return (
     <Drawer
+      id={frameId}
+      style={
+        isPinned
+          ? ({
+              "--agm-side-panel--pinned-offset": `${pinnedOffset}px`,
+              "--agm-side-panel--pinned-height": pinnedHeight ? `${pinnedHeight}px` : "auto",
+            } as React.CSSProperties)
+          : undefined
+      }
       isExpanded={isOpen || reserves}
       isInline={isBeside}
       position="end"
-      className={
-        isCovered ? "agm-side-panel-frame agm-side-panel-frame--covered" : "agm-side-panel-frame"
-      }
+      className={[
+        "agm-side-panel-frame",
+        isCovered && "agm-side-panel-frame--covered",
+        isPinned && "agm-side-panel-frame--pinned",
+      ]
+        .filter(Boolean)
+        .join(" ")}
       onPointerDown={(event) => {
         isPressOnBackdrop.current = isCovered && isBackdrop(event);
       }}
@@ -243,6 +321,10 @@ export default function SidePanel({
       <DrawerContent
         panelContent={
           <DrawerPanelContent
+            /* On the drawer's panel rather than on the region inside it: the
+               panel is always rendered, merely hidden while shut, whereas the
+               region exists only while something is open. */
+            id={id}
             /* Set as a size rather than through the widths prop, whose steps
                jump from three quarters to the whole width. Over the page the
                panel is what the reader is in, so it takes most of the room;

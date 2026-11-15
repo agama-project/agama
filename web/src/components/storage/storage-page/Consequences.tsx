@@ -21,12 +21,21 @@
  */
 
 import React from "react";
-import AlertWithDetailsPopup from "~/components/core/AlertWithDetailsPopup";
+import { Button } from "@patternfly/react-core";
+import Popup from "~/components/core/Popup";
 import PlannedChangesPopup from "~/components/storage/storage-page/PlannedChangesPopup";
+import Text from "~/components/core/Text";
+import { useUnseenChanges } from "~/components/storage/storage-page/use-unseen-changes";
 import { useActions } from "~/hooks/model/proposal/storage";
+import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
 import type { TranslatedString } from "~/i18n";
 import type { Storage } from "~/model/proposal";
+
+/** Whether applying the configuration deletes anything. */
+function losesData(actions: Storage.Action[]): boolean {
+  return actions.some((a) => a.delete && !a.subvol);
+}
 
 /**
  * The sentence that sums up the result: what applying the configuration takes.
@@ -38,39 +47,101 @@ import type { Storage } from "~/model/proposal";
  * rather than what the configuration asked for.
  */
 function summaryOf(actions: Storage.Action[]): TranslatedString {
-  const deleteActions = actions.filter((a) => a.delete && !a.subvol).length;
-
-  return deleteActions
+  return losesData(actions)
     ? _("The configuration will be applied during installation with potential data loss")
     : _("The configuration will be applied during installation with no expected data loss");
 }
 
+export type ConsequencesProps = {
+  /** What the button opening the popup says. "Details…" if not given. */
+  label?: React.ReactNode;
+  /** The name of the button for assistive technologies, starting with its visible words. */
+  "aria-label"?: string;
+  /**
+   * Fitted into the line of text it follows, rather than at a button's
+   * regular size. True if not given.
+   */
+  isCompact?: boolean;
+};
+
 /**
- * What the current storage configuration will do to the disks: one line saying
- * how many actions it takes, and the way to the final layout and the full list
- * of actions.
+ * A button opening what the current storage configuration will do to the
+ * disks: the final layout and the full list of actions, in a popup.
  */
-export default function Consequences(): React.ReactNode {
+export default function Consequences({
+  label,
+  "aria-label": ariaLabel,
+  isCompact = true,
+}: ConsequencesProps): React.ReactNode {
   const actions = useActions();
+  const [isOpen, setIsOpen] = React.useState(false);
+  const { hasUnseenChanges, markSeen } = useUnseenChanges();
+  const close = () => setIsOpen(false);
+  const open = () => {
+    markSeen();
+    setIsOpen(true);
+  };
+
+  /* What changes while the popup is open is seen as it happens. */
+  React.useEffect(() => {
+    if (isOpen && hasUnseenChanges) markSeen();
+  }, [isOpen, hasUnseenChanges, markSeen]);
+
+  /* The dot is only what the eye catches; the name says the same in words,
+     after the visible ones, so it still starts with what is on the button. */
+  const name =
+    ariaLabel && hasUnseenChanges
+      ? // TRANSLATORS: name of the "Details" button for screen readers when
+        // the planned changes differ from the ones last reviewed. %s is its
+        // usual name, such as "Details of the planned storage changes".
+        sprintf(_("%s (updated)"), ariaLabel)
+      : ariaLabel;
 
   return (
-    <AlertWithDetailsPopup
-      variant="custom"
-      title={summaryOf(actions)}
-      // TRANSLATORS: opens a popup with the layout the disks will have after
-      // installation and the actions needed to get there.
-      actionLabel={_("Show result")}
-      // TRANSLATORS: title of the popup with the layout the disks will have and
-      // the actions needed to get there. "Planned" because nothing is applied
-      // until the installation starts.
-      popupTitle={_("Planned storage changes")}
-      // TRANSLATORS: says what the popup with the planned storage changes is for.
-      popupDescription={_("Result of applying the current storage configuration to the system")}
-      popupVariant="large"
-    >
-      <PlannedChangesPopup />
-    </AlertWithDetailsPopup>
+    <>
+      <span className="agm-unseen-dot-anchor">
+        <Button
+          variant="tertiary"
+          size="sm"
+          className={isCompact ? "agm-details-button agm-summary__details" : "agm-details-button"}
+          aria-label={name}
+          onClick={open}
+        >
+          {/* TRANSLATORS: opens a popup with the layout the disks will have
+              and the actions needed to get there. */}
+          {label || _("Details…")}
+          {!ariaLabel && hasUnseenChanges && (
+            <Text srOnly>
+              {
+                // TRANSLATORS: hidden hint read after "Details" when the
+                // planned storage changes differ from the ones last reviewed.
+                _(" (updated)")
+              }
+            </Text>
+          )}
+        </Button>
+        {hasUnseenChanges && <span className="agm-unseen-dot" aria-hidden />}
+      </span>
+      {isOpen && (
+        <Popup
+          isOpen
+          // TRANSLATORS: title of the popup with the layout the disks will have
+          // and the actions needed to get there. "Planned" because nothing is
+          // applied until the installation starts.
+          title={_("Planned storage changes")}
+          description={summaryOf(actions)}
+          variant="large"
+          /* As tall as the window allows, whatever its tab holds, so switching
+             between the actions and the layout does not resize it. */
+          className="agm-planned-changes-popup"
+          onClose={close}
+          actions={<Popup.Close />}
+        >
+          <PlannedChangesPopup />
+        </Popup>
+      )}
+    </>
   );
 }
 
-export { summaryOf };
+export { summaryOf, losesData };

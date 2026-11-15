@@ -65,7 +65,7 @@ export default function FixableConfigInfo({ issues }: FixableConfigInfoProps) {
       variant="warning"
       title={fixableConfigTitle()}
       // TRANSLATORS: opens a popup listing the problems of the storage settings.
-      actionLabel={_("Show issues")}
+      actionLabel={_("Show issues…")}
       // TRANSLATORS: title of the popup listing the problems of the storage
       // settings.
       popupTitle={_("Invalid storage configuration")}

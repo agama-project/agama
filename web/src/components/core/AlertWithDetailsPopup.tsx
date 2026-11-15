@@ -47,6 +47,11 @@ export type AlertWithDetailsPopupProps = {
   popupActions?: React.ReactNode;
   /** The details, shown in the popup. */
   children: React.ReactNode;
+  /**
+   * Drawn as a line of text with a status mark rather than as an
+   * alert box, to sit among other content.
+   */
+  isPlain?: boolean;
 };
 
 /**
@@ -125,26 +130,27 @@ export default function AlertWithDetailsPopup({
   const [isOpen, setIsOpen] = React.useState(false);
   const close = () => setIsOpen(false);
 
+  const action = (
+    <Button
+      variant="tertiary"
+      size="sm"
+      className="agm-details-button"
+      aria-label={actionAriaLabel}
+      onClick={() => setIsOpen(true)}
+    >
+      {actionLabel}
+    </Button>
+  );
+
+  const titleContent = (
+    <>
+      {title} {action}
+    </>
+  );
+
   return (
     <>
-      <Alert
-        isInline
-        variant={variant}
-        component="p"
-        title={
-          <>
-            {title}{" "}
-            <Button
-              variant="tertiary"
-              size="sm"
-              aria-label={actionAriaLabel}
-              onClick={() => setIsOpen(true)}
-            >
-              {actionLabel}
-            </Button>
-          </>
-        }
-      />
+      <Alert isInline variant={variant} title={titleContent} />
       {isOpen && (
         <Popup
           isOpen

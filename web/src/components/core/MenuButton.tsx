@@ -77,8 +77,23 @@ function withoutStrayDividers(items: React.ReactNode[]): React.ReactNode[] {
 
 interface MenuButtonItemProps extends Omit<MenuItemProps, "direction" | "drilldownMenu"> {
   items?: React.ReactNode[];
+  /**
+   * Choices opening in a menu to the side of this item (a fly-out), rather
+   * than replacing the menu (a drill-down, see `items`). The menu holding the
+   * item needs `menuProps.hasFlyouts`.
+   */
+  flyoutItems?: React.ReactNode[];
+  /**
+   * Marks the item as one of a set of exclusive choices, checked or not, for
+   * a menu where one of several options is in effect.
+   */
+  isChecked?: boolean;
   keepQuery?: boolean;
-  upProps?: { label?: TranslatedString };
+  /**
+   * The item leading back out of a drill-down: "Back" unless told otherwise,
+   * such as the name of the item drilled into, for context.
+   */
+  upProps?: { label?: TranslatedString; "aria-label"?: string };
 }
 
 export type CustomToggleProps = {
@@ -93,6 +108,8 @@ export type MenuButtonProps = {
     ["aria-labelledby"]?: string;
     closeOnClick?: boolean;
     popperProps?: MenuPopperProps;
+    /** Whether some of its items open a fly-out (`flyoutItems`). */
+    hasFlyouts?: boolean;
   };
   customToggle?: React.ReactElement<CustomToggleProps>;
   toggleProps?: MenuToggleProps;
@@ -100,8 +117,87 @@ export type MenuButtonProps = {
   disableArrowKeyOpen?: boolean;
 };
 
+const MARGIN = 8;
+
+/**
+ * Keeps a fly-out inside the window: opening to the left where there is no
+ * room on the right (PatternFly's own class for it), and moved up where there
+ * is none below. PatternFly measures the fly-out once, before it has its final
+ * size, and the variable it moves it up with is not used by its styles, so
+ * both are done again here once it is shown.
+ */
+function keepInView(flyout: HTMLElement) {
+  if (flyout.getBoundingClientRect().right > window.innerWidth - MARGIN) {
+    flyout.classList.add("pf-m-left");
+  }
+
+  const shift = parseFloat(flyout.style.translate.split(" ")[1] || "0") || 0;
+  const { top, bottom } = flyout.getBoundingClientRect();
+  const overflow = bottom - (window.innerHeight - MARGIN);
+  if (overflow <= 0) return;
+
+  /* Never above the top of the window, where nothing could reach it. */
+  const up = Math.min(overflow, Math.max(0, top - MARGIN));
+  flyout.style.translate = `0 ${shift - up}px`;
+}
+
+/**
+ * Sets ARIA attributes PatternFly's menu items do not, on the element it
+ * renders for the item, and keeps an open fly-out inside the window.
+ *
+ * - An item opening a fly-out gets no role from PatternFly, only
+ *   `aria-haspopup` and `aria-expanded`; the menu pattern asks for a menu
+ *   item.
+ * - A checked item only gets a check icon; exclusive choices are radio items
+ *   that say whether they are checked.
+ *
+ * @see https://www.w3.org/WAI/ARIA/apg/patterns/menubar/
+ */
+function useMenuItemAria(
+  ref: React.RefObject<HTMLElement>,
+  { hasFlyout, isChecked }: { hasFlyout: boolean; isChecked?: boolean },
+) {
+  React.useEffect(() => {
+    const item = ref.current;
+    if (!item) return;
+
+    if (isChecked !== undefined) {
+      item.setAttribute("role", "menuitemradio");
+      item.setAttribute("aria-checked", String(isChecked));
+    }
+
+    if (!hasFlyout) return;
+
+    const holder = item.parentElement;
+    /* Again on every change: PatternFly renders the item over again as the
+       fly-out opens and closes. */
+    /* Measured again whenever the fly-out changes size: it opens before
+       PatternFly has flipped and laid it out. */
+    let sizes: ResizeObserver | undefined;
+    const sync = () => {
+      item.setAttribute("role", "menuitem");
+      sizes?.disconnect();
+      const flyout = holder?.querySelector<HTMLElement>(":scope > .pf-v6-c-menu");
+      if (!flyout) return;
+      sizes = new ResizeObserver(() => keepInView(flyout));
+      sizes.observe(flyout);
+      requestAnimationFrame(() => requestAnimationFrame(() => keepInView(flyout)));
+    };
+    sync();
+    if (!holder) return;
+    const observer = new MutationObserver(sync);
+    observer.observe(holder, { childList: true });
+    return () => {
+      observer.disconnect();
+      sizes?.disconnect();
+    };
+  }, [ref, hasFlyout, isChecked]);
+}
+
 export function MenuButtonItem({
   items = [],
+  flyoutItems = [],
+  isChecked,
   upProps = { label: _("Back") },
   onClick,
   children,
@@ -114,15 +210,45 @@ export function MenuButtonItem({
   const navigate = useNavigate();
   const location = useLocation();
 
+  const innerRef = React.useRef<HTMLAnchorElement | HTMLButtonElement>(null);
+  const hasFlyout = flyoutItems.length > 0;
+  useMenuItemAria(innerRef, { hasFlyout, isChecked });
+
   const onDownClick = (event) => {
     event.stopPropagation();
     onClick && onClick(event);
   };
 
+  if (hasFlyout) {
+    return (
+      <MenuItem
+        itemId={itemId}
+        ref={innerRef}
+        {...props}
+        /* Opens the fly-out rather than choosing anything, so the menu stays
+           open. */
+        onClick={(event) => event.stopPropagation()}
+        flyoutMenu={
+          <Menu containsFlyout id={`${itemId}-flyout`}>
+            <MenuContent>
+              <MenuList aria-label={typeof children === "string" ? children : undefined}>
+                {withoutStrayDividers(flyoutItems)}
+              </MenuList>
+            </MenuContent>
+          </Menu>
+        }
+      >
+        {children}
+      </MenuItem>
+    );
+  }
+
   if (!items.length) {
     return (
       <MenuItem
         itemId={itemId}
+        ref={innerRef}
+        isSelected={isChecked}
         onClick={() => {
           onClick && onClick();
           to && navigate({ pathname: to, search: keepQuery ? location.search : "" });
@@ -141,7 +267,11 @@ export function MenuButtonItem({
       direction="down"
       drilldownMenu={
         <DrilldownMenu id={menuId}>
-          <MenuItem direction="up" onClick={(e) => e.stopPropagation()}>
+          <MenuItem
+            aria-label={upProps["aria-label"]}
+            direction="up"
+            onClick={(e) => e.stopPropagation()}
+          >
             {upProps.label}
           </MenuItem>
           <Divider />
@@ -247,8 +377,10 @@ export default function MenuButton({
       toggleRef={pfToggleRef}
       popperProps={{
         direction: "down",
+        /* Opens upward where there is no room below. PatternFly's default
+           falls back to the placement opposite the one asked for, on the same
+           side; listing placements instead leaves only those to try. */
         enableFlip: true,
-        flipBehavior: ["bottom-start"],
         ...menuProps.popperProps,
       }}
       toggle={
@@ -264,7 +396,10 @@ export default function MenuButton({
       menu={
         <Menu
           id={rootId}
-          containsDrilldown
+          /* Not both: a drill-down menu hides whatever reaches past its edges,
+             which is where a fly-out opens. */
+          containsDrilldown={!menuProps.hasFlyouts}
+          containsFlyout={menuProps.hasFlyouts}
           onDrillIn={drillIn}
           onDrillOut={drillOut}
           onGetMenuHeight={setHeight}

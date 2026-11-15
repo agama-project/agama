@@ -26,10 +26,10 @@ import { contentDescription, volumeGroupFacts } from "~/components/storage/utils
 const GiB = 1024 ** 3;
 
 describe("volumeGroupFacts", () => {
-  it("gives a group being created its kind, with no size", () => {
+  it("gives a group being created its kind marked as new, with no size", () => {
     expect(volumeGroupFacts({ vgName: "system" }, null)).toEqual({
       size: undefined,
-      description: "LVM",
+      description: "New LVM",
     });
   });
 

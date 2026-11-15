@@ -120,7 +120,7 @@ export default function VolumeGroupMenu({ group, subject }: VolumeGroupMenuProps
                   group.vgName,
                 )}
                 onClick={() => openDetails(subject)}
-                description={_("Configure how the volume group will be used")}
+                description={_("Customize how the volume group will be used")}
               >
                 {/* TRANSLATORS: opens the panel where one entry of the
                     installation is read and changed. */}

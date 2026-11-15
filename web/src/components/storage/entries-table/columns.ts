@@ -23,31 +23,26 @@
 import { _, TranslatedString } from "~/i18n";
 
 /**
- * What each column of the list is called.
- *
- * The names are not drawn. A header strip sitting once at the top of a list of
- * eight devices labels columns that have scrolled away from it, and the first
- * column already carries every row's own name. They are read out instead, to
- * whoever is meeting the list one cell at a time, which is who needs them.
+ * What each column of the list is called, as its header shows it.
  */
-function columnName(column: "entry" | "content" | "actions" | "options"): TranslatedString {
+function columnName(column: "device" | "usedFor" | "existingData" | "actions"): TranslatedString {
   switch (column) {
-    case "entry":
+    case "device":
       // TRANSLATORS: names the column of the list holding what each entry of
       // the installation is called.
       return _("Device");
-    case "content":
-      // TRANSLATORS: names the column of the list saying what the installer
-      // will put on each entry, or what it will use it for.
-      return _("Content");
+    case "existingData":
+      // TRANSLATORS: names the column of the list saying what happens to the
+      // data already on each device: kept, shrunk or deleted.
+      return _("Actions on current content");
+    case "usedFor":
+      // TRANSLATORS: names the column of the list saying what the system being
+      // installed uses each device for, such as its mount points.
+      return _("Used for");
     case "actions":
-      // TRANSLATORS: names the column of the list saying what the installation
-      // costs whatever is already on each entry.
-      return _("Actions");
-    case "options":
       // TRANSLATORS: names the column of the list holding the menu of what can
       // be done to each entry of the installation.
-      return _("Options");
+      return _("Actions");
   }
 }
 

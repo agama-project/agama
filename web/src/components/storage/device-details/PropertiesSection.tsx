@@ -79,7 +79,7 @@ export default function PropertiesSection({ entry, subject }: PropertiesSectionP
             // physical volumes: partitions created on these disks. %s is a
             // list of disks, such as "vdb, vdc and vdd", each a link to its
             // panel.
-            sentence={_("Physical volumes on %s.")}
+            sentence={_("LVM physical volumes will be added as partitions on %s.")}
           >
             {() => <RelatedNames items={sources} />}
           </Interpolate>

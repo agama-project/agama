@@ -67,7 +67,7 @@ export default function DeviceDetailsBody({
     return (
       // TRANSLATORS: heading of a device's panel where the new system uses what
       // is on the device as it is.
-      <DetailsSection title={_("Content")} icon="inventory_2">
+      <DetailsSection title={_("Content")}>
         <PartitionableMountContent entry={entry} subject={subject} />
       </DetailsSection>
     );
@@ -106,13 +106,13 @@ export default function DeviceDetailsBody({
         // TRANSLATORS: heading of the part of a volume group's panel saying
         // what defines it: the disks it takes its room from, its name and how
         // it uses those disks.
-        <DetailsSection title={_("Properties")} icon="schema">
+        <DetailsSection title={_("Properties")}>
           <PropertiesSection entry={entry} subject={subject} />
         </DetailsSection>
       ) : (
         // TRANSLATORS: heading of the part of a device's panel saying what is
         // on the device now, before installing.
-        <DetailsSection title={_("Current content")} icon="inventory_2">
+        <DetailsSection title={_("Current content")}>
           {!entry.isVolumeGroup && isUsedPartitionable && (
             <UsedPartitionableCurrent entry={entry} subject={subject} />
           )}
@@ -122,7 +122,7 @@ export default function DeviceDetailsBody({
           {entry.isVolumeGroup && <VolumeGroupCurrent entry={entry} subject={subject} />}
         </DetailsSection>
       )}
-      <DetailsSection title={newContentTitle} icon="pending_actions">
+      <DetailsSection title={newContentTitle}>
         {!entry.isVolumeGroup && isMountedPartitionable && (
           <PartitionableMountContent entry={entry} subject={subject} showName={false} />
         )}
@@ -137,7 +137,7 @@ export default function DeviceDetailsBody({
       {isBootDevice && (
         // TRANSLATORS: heading of the part of a disk's panel shown when the
         // machine starts from that disk.
-        <DetailsSection title={_("Boot device")} icon="settings_backup_restore">
+        <DetailsSection title={_("Boot device")}>
           <BootStatement entry={entry} />
         </DetailsSection>
       )}
