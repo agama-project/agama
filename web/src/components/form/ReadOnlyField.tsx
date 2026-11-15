@@ -26,6 +26,27 @@ import { useFieldContext } from "~/hooks/form-contexts";
 
 import formStyles from "@patternfly/react-styles/css/components/Form/form";
 
+type ReadOnlyGroupProps = {
+  label: React.ReactNode;
+  children: React.ReactNode;
+};
+
+/**
+ * A label above some content, laid out as a form field but with no control to
+ * label: the frame of {@link ReadOnlyField}, for read-only content that does
+ * not come from a form field.
+ */
+export function ReadOnlyGroup({ label, children }: ReadOnlyGroupProps) {
+  return (
+    <div className={formStyles.formGroup}>
+      <div className={formStyles.formLabel}>
+        <span className={formStyles.formLabelText}>{label}</span>
+      </div>
+      {children}
+    </div>
+  );
+}
+
 type ReadOnlyFieldProps = {
   label: React.ReactNode;
   text?: React.ReactNode;
@@ -77,12 +98,9 @@ export default function ReadOnlyField({ label, text, children }: ReadOnlyFieldPr
   const field = useFieldContext<React.ReactNode>();
 
   return (
-    <div className={formStyles.formGroup}>
-      <div className={formStyles.formLabel}>
-        <span className={formStyles.formLabelText}>{label}</span>
-      </div>
+    <ReadOnlyGroup label={label}>
       <Text>{text ?? field.state.value}</Text>
       {children}
-    </div>
+    </ReadOnlyGroup>
   );
 }
