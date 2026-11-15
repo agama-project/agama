@@ -137,7 +137,11 @@ const ProductChoices = withForm({
     return (
       <FieldNestedContent>
         {/* Apart, so the licenses do not read as one more mode. */}
-        <Flex direction={{ default: "column" }} gap={{ default: "gapLg" }}>
+        <Flex
+          direction={{ default: "column" }}
+          flexWrap={{ default: "nowrap" }}
+          gap={{ default: "gapLg" }}
+        >
           {hasModes && (
             <form.AppField name="mode">
               {(field) => (
@@ -236,110 +240,116 @@ const ProductFields = withForm({
 
     return (
       <>
-        <form.AppField
-          name="product"
-          listeners={{
-            // Mode and licenses belong to the product they were picked for.
-            onChange: () => {
-              form.setFieldValue("mode", "");
-              form.setFieldValue("acceptedLicenses", []);
-            },
-          }}
-        >
-          {(field) => {
-            const product = findProduct(field.state.value);
-            const isCurrent = product?.id === data.currentProduct?.id;
-            const details = product && (
-              <form.Subscribe
-                // Accepted when the current product was chosen, until it
-                // changes. A registered one cannot change.
-                selector={(s) => isLocked || (isCurrent && !s.fieldMeta.acceptedLicenses?.isDirty)}
-              >
-                {(hasAcceptedLicenses) => (
-                  <>
-                    <ProductDetails
-                      product={product}
-                      licenses={licenses}
-                      hasAcceptedLicenses={hasAcceptedLicenses}
-                    />
-                    {!isLocked && (
-                      <ProductChoices
-                        form={form}
-                        product={product}
-                        licenses={licenses}
-                        asksLicenses={!hasAcceptedLicenses}
-                      />
-                    )}
-                  </>
-                )}
-              </form.Subscribe>
-            );
-
-            if (isLocked && product) {
-              const mode = product.modes?.find((m) => m.id === form.getFieldValue("mode"));
-              return (
-                <field.ReadOnlyField
-                  label={label}
-                  text={
-                    <>
-                      <ProductName product={product} />
-                      {mode && <> · {mode.name}</>}
-                    </>
+        {/* Spans the column, so the modes below take the room there is, not the
+            width of what happens to be shown. */}
+        <div className="agm-stretched-field">
+          <form.AppField
+            name="product"
+            listeners={{
+              // Mode and licenses belong to the product they were picked for.
+              onChange: () => {
+                form.setFieldValue("mode", "");
+                form.setFieldValue("acceptedLicenses", []);
+              },
+            }}
+          >
+            {(field) => {
+              const product = findProduct(field.state.value);
+              const isCurrent = product?.id === data.currentProduct?.id;
+              const details = product && (
+                <form.Subscribe
+                  // Accepted when the current product was chosen, until it
+                  // changes. A registered one cannot change.
+                  selector={(s) =>
+                    isLocked || (isCurrent && !s.fieldMeta.acceptedLicenses?.isDirty)
                   }
                 >
-                  {details}
-                  <HelperText className={spacingStyles.mtSm}>
-                    <HelperTextItem icon={<Icon name="lock" />}>
-                      {/* TRANSLATORS: shown below the product on a registered system */}
-                      {_("The product is registered and cannot be changed.")}
-                    </HelperTextItem>
-                  </HelperText>
-                </field.ReadOnlyField>
+                  {(hasAcceptedLicenses) => (
+                    <>
+                      <ProductDetails
+                        product={product}
+                        licenses={licenses}
+                        hasAcceptedLicenses={hasAcceptedLicenses}
+                      />
+                      {!isLocked && (
+                        <ProductChoices
+                          form={form}
+                          product={product}
+                          licenses={licenses}
+                          asksLicenses={!hasAcceptedLicenses}
+                        />
+                      )}
+                    </>
+                  )}
+                </form.Subscribe>
               );
-            }
 
-            if (products.length === 1) {
+              if (isLocked && product) {
+                const mode = product.modes?.find((m) => m.id === form.getFieldValue("mode"));
+                return (
+                  <field.ReadOnlyField
+                    label={label}
+                    text={
+                      <>
+                        <ProductName product={product} />
+                        {mode && <> · {mode.name}</>}
+                      </>
+                    }
+                  >
+                    {details}
+                    <HelperText className={spacingStyles.mtSm}>
+                      <HelperTextItem icon={<Icon name="lock" />}>
+                        {/* TRANSLATORS: shown below the product on a registered system */}
+                        {_("The product is registered and cannot be changed.")}
+                      </HelperTextItem>
+                    </HelperText>
+                  </field.ReadOnlyField>
+                );
+              }
+
+              if (products.length === 1) {
+                return (
+                  <field.ReadOnlyField label={label} text={<ProductName product={products[0]} />}>
+                    {details}
+                  </field.ReadOnlyField>
+                );
+              }
+
               return (
-                <field.ReadOnlyField label={label} text={<ProductName product={products[0]} />}>
-                  {details}
-                </field.ReadOnlyField>
-              );
-            }
-
-            return (
-              <>
-                <field.DropdownField
-                  label={label}
-                  // TRANSLATORS: shown in the product field until one is picked
-                  placeholder={_("Select a product")}
-                  options={options}
-                  maxMenuHeight="15rem"
-                  footerEntry={{
-                    // TRANSLATORS: last entry of the product list, opening a dialog
-                    // with the products and their descriptions
-                    label: _("Browse with details..."),
-                    onSelect: () => setIsDialogOpen(true),
-                    opensDialog: true,
-                  }}
-                >
-                  {() => details}
-                </field.DropdownField>
-                {isDialogOpen && (
-                  <ProductSelectorModal
-                    isOpen
-                    products={products}
-                    selected={field.state.value}
-                    onSelect={(id) => {
-                      setIsDialogOpen(false);
-                      field.handleChange(id);
+                <>
+                  <field.DropdownField
+                    label={label}
+                    // TRANSLATORS: shown in the product field until one is picked
+                    placeholder={_("Select a product")}
+                    options={options}
+                    maxMenuHeight="15rem"
+                    footerEntry={{
+                      // TRANSLATORS: last entry of the product list, opening a dialog
+                      // with the products and their descriptions
+                      label: _("Browse with details..."),
+                      onSelect: () => setIsDialogOpen(true),
+                      opensDialog: true,
                     }}
-                    onCancel={() => setIsDialogOpen(false)}
-                  />
-                )}
-              </>
-            );
-          }}
-        </form.AppField>
+                  >
+                    {() => details}
+                  </field.DropdownField>
+                  {isDialogOpen && (
+                    <ProductSelectorModal
+                      isOpen
+                      products={products}
+                      selected={field.state.value}
+                      onSelect={(id) => {
+                        setIsDialogOpen(false);
+                        field.handleChange(id);
+                      }}
+                      onCancel={() => setIsDialogOpen(false)}
+                    />
+                  )}
+                </>
+              );
+            }}
+          </form.AppField>
+        </div>
         <form.Subscribe selector={(s) => changesProduct(s.values, data)}>
           {(changes) =>
             changes && (

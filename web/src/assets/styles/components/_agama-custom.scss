@@ -336,3 +336,10 @@ nav.agm-breadcrumb > ol > li > a {
   --pf-v6-c-button--m-link--m-inline--hover--TextDecorationLine: none;
   --pf-v6-c-button--m-link--m-inline--m-clicked--TextDecorationLine: none;
 }
+
+// A field spanning its column, for one holding content laid out by the room
+// there is (e.g. options side by side while they fit), which would otherwise
+// change with the width of whatever else the field shows.
+.agm-stretched-field > .pf-v6-c-form__group {
+  justify-self: stretch;
+}
