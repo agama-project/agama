@@ -33,7 +33,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { InstallationFinished, InstallationProgress } from "./components/core";
 import InstallationFailed from "./components/core/InstallationFailed";
 import TerminalDock from "~/components/core/TerminalDock";
-import { PRODUCT } from "./routes/paths";
+import { NETWORK, PRODUCT } from "./routes/paths";
 
 /**
  * Content guard and flow control component.
@@ -66,7 +66,10 @@ const Content = () => {
     location: location.pathname,
   });
 
-  if (!product && location.pathname !== PRODUCT.root) {
+  // Without a product, the network pages stay reachable, from the network state
+  // in the header.
+  const isNetworkPath = location.pathname.startsWith(NETWORK.root);
+  if (!product && location.pathname !== PRODUCT.root && !isNetworkPath) {
     return <Navigate to={PRODUCT.root} />;
   }
 
