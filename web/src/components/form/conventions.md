@@ -21,6 +21,7 @@ examples and refined patterns.
   - [6. Revealed by a checkbox](#6-revealed-by-a-checkbox)
   - [7. Footer entry, help that stays out of the way](#7-footer-entry-help-that-stays-out-of-the-way)
   - [8. Several values in one field](#8-several-values-in-one-field)
+- [Fields side by side](#fields-side-by-side)
 - [Read-only information](#read-only-information)
 - [Accessibility notes](#accessibility-notes)
 - [Validation](#validation)
@@ -385,6 +386,32 @@ placed inside the option instead is invalid HTML, and tells assistive
 technologies nothing they do not already get. A drawn glyph works, but earns
 its place no better: the list already says it takes several values, and each
 option already says whether it is one of them.
+
+---
+
+## Fields side by side
+
+Put related fields on one line with `FieldsRow`: a name and a username, a
+password and its confirmation, a minimum and a maximum, a binding mode and the
+device it binds to. Each field keeps the width of its content, and the row
+wraps when there is no room, so it works at any width without breakpoints.
+
+The fields are aligned at the top. A helper text or an error below one of them
+then grows its own column only, and the controls stay in line.
+
+```tsx
+<FieldsRow>
+  <form.AppField name="rangeMinSize">
+    {(field) => <field.TextField label={_("Minimum")} />}
+  </form.AppField>
+  <form.AppField name="rangeMaxSize">
+    {(field) => <field.TextField label={_("Maximum")} />}
+  </form.AppField>
+</FieldsRow>
+```
+
+Prefer it over grid columns. Columns stretch short fields to half the form and
+leave the values far from their labels.
 
 ---
 

@@ -22,10 +22,11 @@
 
 import React from "react";
 import { generatePath, useNavigate, useParams } from "react-router";
-import { Alert, ActionGroup, Flex, Form } from "@patternfly/react-core";
+import { Alert, ActionGroup, Form } from "@patternfly/react-core";
 import Page from "~/components/layout/Page";
 import NestedContent from "~/components/core/NestedContent";
 import ResourceNotFound from "~/components/core/ResourceNotFound";
+import FieldsRow from "~/components/form/FieldsRow";
 import { withFrozenQuery } from "~/components/form/with-frozen-query";
 import { useConnectionMutation } from "~/hooks/model/config/network";
 import { useAppForm, mergeFormDefaults } from "~/hooks/form";
@@ -215,7 +216,7 @@ function ConnectionFormContent({
             ([CONNECTION_TYPE.ETHERNET, CONNECTION_TYPE.WIFI] as ConnectionType[]).includes(
               type,
             ) && (
-              <Flex alignItems={{ default: "alignItemsFlexEnd" }} gap={{ default: "gapMd" }}>
+              <FieldsRow>
                 <BindingModeSelector form={form} />
 
                 <form.Subscribe selector={(s) => s.values.bindingMode}>
@@ -242,7 +243,7 @@ function ConnectionFormContent({
                     </>
                   )}
                 </form.Subscribe>
-              </Flex>
+              </FieldsRow>
             )
           }
         </form.Subscribe>
