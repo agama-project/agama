@@ -50,6 +50,7 @@ import DeployedCodeUpdate from "@icons/deployed_code_update.svg?component";
 import DeployedCodeAlert from "@icons/deployed_code_alert.svg?component";
 import Download from "@icons/download.svg?component";
 import EditSquare from "@icons/edit_square.svg?component";
+import SwapHoriz from "@icons/swap_horiz.svg?component";
 import Emergency from "@icons/emergency.svg?component";
 import Error from "@icons/error.svg?component";
 import ErrorFill from "@icons/error-fill.svg?component";
@@ -120,6 +121,7 @@ const icons = {
   deployed_code_alert: DeployedCodeAlert,
   download: Download,
   edit_square: EditSquare,
+  swap_horiz: SwapHoriz,
   emergency: Emergency,
   error: Error,
   error_fill: ErrorFill,
