@@ -85,6 +85,7 @@ const IpsItem = () => {
 
 /**
  * Displays basic hardware information (model, CPU, memory, IPs) in a card.
+ * Placed beside the page content, it stays in view while the content scrolls.
  *
  * Fields with missing or undefined values fall back to "Unknown" rather than
  * rendering a blank space. The IPs field is an exception: it is not rendered
@@ -105,7 +106,7 @@ export default function SystemInformationSection() {
   const { hardware } = useSystem();
 
   return (
-    <Card variant="secondary">
+    <Card variant="secondary" className="agm-sticky-aside">
       <CardTitle component="h3">{_("System Information")}</CardTitle>
       <CardBody>
         <NestedContent margin="mxSm">

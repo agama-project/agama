@@ -34,6 +34,16 @@
   flex-shrink: 0;
 }
 
+// Information beside the page content (see SystemInformationSection), kept in
+// view while the content scrolls. Only where it sits beside it: stacked below,
+// it would cover the content.
+@media (width >= 768px) {
+  .agm-sticky-aside {
+    position: sticky;
+    inset-block-start: var(--pf-t--global--spacer--md);
+  }
+}
+
 // Sticky category header inside the scrollable patterns list.
 .agm-sticky-category-header {
   position: sticky;
