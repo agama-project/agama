@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2026] SUSE LLC
+ * Copyright (c) [2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -22,62 +22,53 @@
 
 import React from "react";
 import { isEmpty } from "radashi";
-import { sprintf } from "sprintf-js";
 import {
   Card,
   CardBody,
-  Divider,
   ExpandableSection,
   Label,
   ListItem,
   Radio,
   Split,
-  SplitItem,
   Stack,
 } from "@patternfly/react-core";
 import { SubtleContent } from "~/components/core";
 import ProductLogo from "~/components/product/ProductLogo";
 import Text from "~/components/core/Text";
-import { Mode, Product } from "~/model/system";
-import { n_, _ } from "~/i18n";
+import { _ } from "~/i18n";
+
+import type { Product } from "~/model/system";
 
 import pfTextStyles from "@patternfly/react-styles/css/utilities/Text/text";
 
-/**
- * Props for ProductOption component
- */
-export type ProductOptionProps = {
+export type ProductSummaryProps = {
   product: Product;
-  isCurrent: boolean;
+  /** Whether the product is the picked one. */
   isChecked: boolean;
-  selectedModeId?: Mode["id"];
-  currentModeId?: Mode["id"];
+  /** Called when the user picks the product. */
   onChange: () => void;
-  onModeChange: (mode: Mode) => void;
+  /** What to tell about the product modes, if anything. */
+  modesLabel?: string;
+  /** Content shown after the description, such as choices of the product. */
+  children?: React.ReactNode;
 };
 
 /**
- * Renders a single product option as a radio button with expandable details.
+ * A product in a list to pick one from: a radio with its logo and name, labels
+ * telling whether it needs a license accepted and what about its modes, and its
+ * description, truncated to two lines with a way to show it all.
+ *
+ * Meant to be a list item of a plain `List` acting as a radio group.
  */
-export default function ProductOption({
+export default function ProductSummary({
   product,
-  currentModeId,
-  selectedModeId,
-  isCurrent,
   isChecked,
   onChange,
-  onModeChange,
-}: ProductOptionProps) {
+  modesLabel,
+  children,
+}: ProductSummaryProps) {
   const detailsId = `${product.id}-details`;
-
-  const availableModes = product.modes?.filter((mode) =>
-    isCurrent ? mode.id !== currentModeId : true,
-  );
-
-  const modesCount = availableModes?.length || 0;
-  const modesLabel = isCurrent
-    ? sprintf(n_("%d other mode available", "%d other modes available", modesCount), modesCount)
-    : sprintf(n_("%d mode available", "%d modes available", modesCount), modesCount);
+  const needsLicense = !isEmpty(product.licenses);
 
   return (
     <ListItem aria-label={product.name}>
@@ -97,49 +88,36 @@ export default function ProductOption({
             }
             body={
               <Stack hasGutter id={detailsId}>
-                {(!isEmpty(product.licenses) || !isEmpty(availableModes)) && (
+                {(needsLicense || modesLabel) && (
                   <Split hasGutter>
-                    {!isEmpty(product.licenses) && (
+                    {needsLicense && (
                       <Label variant="outline" isCompact>
+                        {/* TRANSLATORS: tag on a product whose license must be accepted to install it */}
                         {_("License acceptance required")}
                       </Label>
                     )}
-                    {!isEmpty(availableModes) && (
+                    {modesLabel && (
                       <Label variant="outline" isCompact>
                         {modesLabel}
                       </Label>
                     )}
                   </Split>
                 )}
-
                 <ExpandableSection
                   variant="truncate"
+                  toggleTextCollapsed={
+                    // TRANSLATORS: expands a shortened text to show all of it
+                    _("Show more")
+                  }
+                  toggleTextExpanded={
+                    // TRANSLATORS: shortens the text back to its first lines
+                    _("Show less")
+                  }
                   truncateMaxLines={2}
-                  toggleTextCollapsed={_("Show more")}
-                  toggleTextExpanded={_("Show less")}
                 >
                   <SubtleContent>{product.description}</SubtleContent>
                 </ExpandableSection>
-
-                {isChecked && !isEmpty(availableModes) && (
-                  <>
-                    <Divider />
-                    <Split hasGutter>
-                      {availableModes.map((mode) => (
-                        <SplitItem key={mode.id}>
-                          <Radio
-                            id={mode.id}
-                            name="mode"
-                            isChecked={mode.id === selectedModeId}
-                            onChange={() => onModeChange(mode)}
-                            label={<Text isBold>{mode.name}</Text>}
-                            description={mode.description}
-                          />
-                        </SplitItem>
-                      ))}
-                    </Split>
-                  </>
-                )}
+                {children}
               </Stack>
             }
           />

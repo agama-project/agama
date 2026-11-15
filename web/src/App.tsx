@@ -33,7 +33,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { InstallationFinished, InstallationProgress } from "./components/core";
 import InstallationFailed from "./components/core/InstallationFailed";
 import TerminalDock from "~/components/core/TerminalDock";
-import { PRODUCT } from "./routes/paths";
+import { QUICK_SETUP } from "./routes/paths";
 
 /**
  * Content guard and flow control component.
@@ -66,8 +66,8 @@ const Content = () => {
     location: location.pathname,
   });
 
-  if (!product && location.pathname !== PRODUCT.root) {
-    return <Navigate to={PRODUCT.root} />;
+  if (!product && location.pathname !== QUICK_SETUP.root) {
+    return <Navigate to={QUICK_SETUP.root} />;
   }
 
   // The terminal panel is rendered here, above the stage-driven swap below, so

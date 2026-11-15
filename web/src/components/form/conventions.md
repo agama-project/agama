@@ -528,6 +528,26 @@ which TanStack Form exposes via `state.errorMap.onSubmit.form`. The form
 renders it as an inline alert at the top so the user knows what went wrong and
 can try again.
 
+### Exception: a submit that waits for its fields
+
+Quick setup keeps its Accept button unavailable until every field has a value,
+with a note next to it saying what is left ("Choose the installation disk and
+location to continue."). It departs from the rule above, and from the UI
+principle that a form's submit button never waits for its fields, for these
+reasons:
+
+- It is a short, special screen whose only action needs all of its fields: there
+  is nothing to submit partially, and nothing else to do on the screen.
+- The note sits next to the button, so the reason is in words where the user
+  looks. The button only looks unavailable (`isAriaDisabled`): it stays
+  focusable, so keyboard and screen reader users reach it and hear the note,
+  linked through `aria-describedby`.
+- Product selection, which Quick setup replaces, worked this way, so returning
+  users find what they know.
+
+Do not extend it to other forms: a form that can be submitted with some fields
+left as they are, or that sits among other content, validates on submit.
+
 ---
 
 ## Combining patterns
