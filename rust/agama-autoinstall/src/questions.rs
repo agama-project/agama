@@ -112,7 +112,7 @@ impl UserQuestions {
     ///
     /// Returns Ok()
     pub async fn autoinstall_start_failed(&self, error: &str) -> anyhow::Result<()> {
-        let question_text = gettextrs::gettext("Failed to start autoinstallation");
+        let question_text = gettextrs::gettext("Failed to start auto-installation");
         let question_spec = QuestionSpec::new(&question_text, "autoinstallError")
             .with_data(&[("error", error)])
             .with_action_ids(&["Ok"])
