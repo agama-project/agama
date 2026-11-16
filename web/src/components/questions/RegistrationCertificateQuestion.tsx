@@ -82,7 +82,7 @@ export default function RegistrationCertificateQuestion({
           <DescriptionList isHorizontal isCompact className={spacingStyles.mxLg}>
             <QuestionData label={_("Issuer")} value={question.data.issuer} />
             {question.data.organization && (
-              <QuestionData label={_("Issuer")} value={question.data.organization} />
+              <QuestionData label={_("Organization")} value={question.data.organization} />
             )}
             <QuestionData label={_("Issue date")} value={question.data.issueDate} />
             <QuestionData label={_("Expiration date")} value={question.data.expirationDate} />
