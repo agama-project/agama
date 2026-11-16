@@ -22,7 +22,6 @@ Yast.import "BootStorage"
 Yast.import "HTML"
 Yast.import "Initrd"
 Yast.import "Mode"
-Yast.import "Pkg"
 Yast.import "ProductFeatures"
 Yast.import "Stage"
 
