@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Nov 16 08:23:59 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Added "x-agama-translated" vendor flag to the openAPI
+  specification to mark the end points which return translated
+  texts in the response
+
+-------------------------------------------------------------------
 Fri Nov 13 15:08:12 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
 
 - Require at least 1.5GB RAM per parallel build job on s390x to
