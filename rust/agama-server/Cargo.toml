@@ -29,7 +29,7 @@ thiserror = { workspace = true }
 tokio = { workspace = true }
 tokio-stream = { workspace = true }
 tower = { workspace = true }
-tower-http = { version = "0.6.2", features = ["compression-br", "fs", "trace", "set-header",] }
+tower-http = { version = "0.6.2", features = ["compression-br", "fs", "trace", "set-header", "cors",] }
 tracing = { workspace = true }
 zbus = { workspace = true }
 # pam 0.8.0 (2023-11) plus an unreleased commit from 2023-12

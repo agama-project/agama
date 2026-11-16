@@ -25,7 +25,7 @@ use agama_server::web::{MainServiceBuilder, ServiceConfig};
 use aide::axum::ApiRouter;
 use axum::{
     body::Body,
-    http::{Method, Request, StatusCode},
+    http::{HeaderValue, Method, Request, StatusCode},
     response::Response,
     routing::get,
 };
@@ -58,6 +58,114 @@ async fn test_ping() -> Result<(), Box<dyn Error>> {
 
     let body = body_to_string(response.into_body()).await;
     assert_eq!(&body, "{\"status\":\"success\"}");
+    Ok(())
+}
+
+// test cors reply with the wildcard "*" value
+#[test]
+async fn test_cors_header() -> Result<(), Box<dyn Error>> {
+    let (events_tx, _) = channel(16);
+    let protected_service = ApiRouter::new().route("/", get(protected));
+    let web_service = MainServiceBuilder::new(events_tx, public_dir())
+        .add_service("/protected", protected_service)
+        .with_config(ServiceConfig::default())
+        .with_cors(Some(HeaderValue::from_static("*")))
+        .build();
+
+    // successful response
+    let request = Request::builder()
+        .uri("/api/ping")
+        .body(Body::empty())
+        .unwrap();
+    let response = web_service.clone().oneshot(request).await.unwrap();
+    assert_eq!(response.status(), StatusCode::OK);
+    assert_eq!(response.headers()["access-control-allow-origin"], "*");
+
+    // error response (missing authentication)
+    let request = Request::builder()
+        .uri("/api/protected")
+        .body(Body::empty())
+        .unwrap();
+    let response = web_service.oneshot(request).await.unwrap();
+    assert_eq!(response.status(), StatusCode::UNAUTHORIZED);
+    assert_eq!(response.headers()["access-control-allow-origin"], "*");
+    Ok(())
+}
+
+// CORS is disabled by default (the header value is not present)
+#[test]
+async fn test_cors_disabled_by_default() -> Result<(), Box<dyn Error>> {
+    let (events_tx, _) = channel(16);
+    let web_service = MainServiceBuilder::new(events_tx, public_dir())
+        .with_config(ServiceConfig::default())
+        .build();
+
+    let request = Request::builder()
+        .uri("/api/ping")
+        .body(Body::empty())
+        .unwrap();
+    let response = web_service.oneshot(request).await.unwrap();
+    assert_eq!(response.status(), StatusCode::OK);
+    assert!(!response
+        .headers()
+        .contains_key("access-control-allow-origin"));
+    Ok(())
+}
+
+// CORS with specific server
+#[test]
+async fn test_cors_specific_origin() -> Result<(), Box<dyn Error>> {
+    let (events_tx, _) = channel(16);
+    let web_service = MainServiceBuilder::new(events_tx, public_dir())
+        .with_config(ServiceConfig::default())
+        .with_cors(Some(HeaderValue::from_static("https://example.com")))
+        .build();
+
+    let request = Request::builder()
+        .uri("/api/ping")
+        .header("Origin", "https://example.com")
+        .body(Body::empty())
+        .unwrap();
+    let response = web_service.oneshot(request).await.unwrap();
+    assert_eq!(response.status(), StatusCode::OK);
+    let headers = response.headers();
+    assert_eq!(
+        headers["access-control-allow-origin"],
+        "https://example.com"
+    );
+    assert!(headers["vary"].to_str()?.to_lowercase().contains("origin"));
+    Ok(())
+}
+
+// test preflight request (OPTIONS request)
+#[test]
+async fn test_cors_preflight() -> Result<(), Box<dyn Error>> {
+    let (events_tx, _) = channel(16);
+    let protected_service = ApiRouter::new().route("/", get(protected));
+    let web_service = MainServiceBuilder::new(events_tx, public_dir())
+        .add_service("/protected", protected_service)
+        .with_config(ServiceConfig::default())
+        .with_cors(Some(HeaderValue::from_static("*")))
+        .build();
+
+    // preflight requests carry no credentials, so they must not require authentication
+    let request = Request::builder()
+        .method(Method::OPTIONS)
+        .uri("/api/protected")
+        .header("Origin", "http://example.com")
+        .header("Access-Control-Request-Method", "PUT")
+        .header(
+            "Access-Control-Request-Headers",
+            "authorization,content-type",
+        )
+        .body(Body::empty())
+        .unwrap();
+    let response = web_service.oneshot(request).await.unwrap();
+    assert!(response.status().is_success());
+    let headers = response.headers();
+    assert_eq!(headers["access-control-allow-origin"], "*");
+    assert_eq!(headers["access-control-allow-methods"], "*");
+    assert_eq!(headers["access-control-allow-headers"], "*");
     Ok(())
 }
 

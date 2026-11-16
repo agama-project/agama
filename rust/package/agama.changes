@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Nov 18 15:32:09 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Added the "inst.cors=<origin>" boot option, its value is passed
+  to the "--enable-cors" option of the web server
+ 
+-------------------------------------------------------------------
 Tue Nov 17 11:30:16 UTC 2026 - José Iván López González <jlopez@suse.com>
 
 - Add "linux_var" and "linux_var_tmp" to the partition ids in the

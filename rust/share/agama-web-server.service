@@ -11,8 +11,10 @@ BindsTo=agama.service
 EnvironmentFile=-/run/agama/environment.conf
 Environment="AGAMA_LOG=debug,zbus=info"
 Type=notify
-# listen only on the loopback interface if the inst.remote=0 boot option is set
-ExecStart=/usr/bin/bash -c "grep -q '\\binst.remote=0\\b' /run/agama/cmdline.d/agama.conf && exec /usr/bin/agama-web-server serve --address ::1:80,127.0.0.1:80 --address ::1:443,127.0.0.1:443 || exec /usr/bin/agama-web-server serve --address :::80,0.0.0.0:80 --address :::443,0.0.0.0:443"
+# - listen only on the loopback interface if the inst.remote=0 boot option is set
+# - enable CORS if the inst.cors=<origin> boot option is set
+# Note: "$$" is a systemd escape for a literal "$".
+ExecStart=/usr/bin/bash -c "conf=/run/agama/cmdline.d/agama.conf; cors=$$(sed -n 's/^inst[.]cors=//p' $$conf 2>/dev/null | tail -n 1); if grep -q '\\binst.remote=0\\b' $$conf; then addr='--address ::1:80,127.0.0.1:80 --address ::1:443,127.0.0.1:443'; else addr='--address :::80,0.0.0.0:80 --address :::443,0.0.0.0:443'; fi; exec /usr/bin/agama-web-server serve $$addr $${cors:+--enable-cors \"$$cors\"}"
 PIDFile=/run/agama/web.pid
 User=root
 TimeoutStopSec=5

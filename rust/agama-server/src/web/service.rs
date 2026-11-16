@@ -42,6 +42,7 @@ use hyper::header::CACHE_CONTROL;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
 use std::time::Duration;
+use tower_http::cors::{AllowOrigin, Any, CorsLayer};
 use tower_http::set_header::SetResponseHeaderLayer;
 use tower_http::{compression::CompressionLayer, services::ServeDir, trace::TraceLayer};
 use tracing::span::Id;
@@ -62,6 +63,7 @@ pub struct MainServiceBuilder {
     api_router: ApiRouter<ServiceState>,
     mcp_router: Option<ApiRouter<ServiceState>>,
     public_dir: PathBuf,
+    cors_origin: Option<HeaderValue>,
 }
 
 impl MainServiceBuilder {
@@ -82,6 +84,19 @@ impl MainServiceBuilder {
             mcp_router: None,
             config,
             public_dir: PathBuf::from(public_dir.as_ref()),
+            cors_origin: None,
+        }
+    }
+
+    /// Enables CORS using the given value for the `Access-Control-Allow-Origin` header, or
+    /// disables it if `None` (the default).
+    ///
+    /// When enabled, all responses include the `Access-Control-Allow-Origin` header and
+    /// preflight requests are answered. Use `*` to allow any origin.
+    pub fn with_cors(self, cors_origin: Option<HeaderValue>) -> Self {
+        Self {
+            cors_origin,
+            ..self
         }
     }
 
@@ -150,7 +165,8 @@ impl MainServiceBuilder {
             app = app.nest("/mcp", mcp_authenticated);
         }
 
-        app.fallback_service(serve)
+        let app = app
+            .fallback_service(serve)
             .route_layer(middleware::from_fn(version_header))
             .layer(
                 TraceLayer::new_for_http()
@@ -177,8 +193,27 @@ impl MainServiceBuilder {
             .layer(SetResponseHeaderLayer::if_not_present(
                 CACHE_CONTROL,
                 HeaderValue::from_static("no-store"),
-            ))
-            .with_state(state)
+            ));
+
+        // add the CORS layer if a CORS value is set
+        let app = if let Some(origin) = self.cors_origin {
+            let allow_origin = if origin == "*" {
+                AllowOrigin::any()
+            } else {
+                AllowOrigin::exact(origin)
+            };
+            // outermost layer, so preflight requests are answered before authentication
+            app.layer(
+                CorsLayer::new()
+                    .allow_origin(allow_origin)
+                    .allow_methods(Any)
+                    .allow_headers(Any),
+            )
+        } else {
+            app
+        };
+
+        app.with_state(state)
     }
 }
 
