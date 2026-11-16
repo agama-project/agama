@@ -34,6 +34,12 @@
   flex-shrink: 0;
 }
 
+// Fields reached with the keyboard scroll into view clear of the sticky form
+// actions, instead of behind them.
+.pf-v6-c-page__main:has(.agm-sticky-actions) {
+  scroll-padding-block-end: 8rem;
+}
+
 // Information beside the page content (see SystemInformationSection), kept in
 // view while the content scrolls. Only where it sits beside it: stacked below,
 // it would cover the content.
