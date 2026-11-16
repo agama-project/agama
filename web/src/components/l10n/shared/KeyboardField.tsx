@@ -27,7 +27,13 @@ import { _ } from "~/i18n";
 
 import type { Keymap } from "~/model/system/l10n";
 
-type KeyboardFieldProps = { keymaps: Keymap[] };
+type KeyboardFieldProps = {
+  keymaps: Keymap[];
+  /** Help or notice shown below the field. */
+  helperText?: React.ReactNode;
+  /** Icon leading the helper text, e.g. to mark it as information. */
+  helperTextIcon?: React.ReactNode;
+};
 
 /**
  * Keyboard layout selector. Each option shows the layout description, with the
@@ -39,7 +45,7 @@ type KeyboardFieldProps = { keymaps: Keymap[] };
  * @example
  * <form.AppField name="keymap">{() => <KeyboardField keymaps={keymaps} />}</form.AppField>
  */
-export default function KeyboardField({ keymaps }: KeyboardFieldProps) {
+export default function KeyboardField({ keymaps, helperText, helperTextIcon }: KeyboardFieldProps) {
   const options = keymaps.map((keymap) => ({
     value: keymap.id,
     label: keymap.description,
@@ -61,6 +67,8 @@ export default function KeyboardField({ keymaps }: KeyboardFieldProps) {
       noResultsText={_("None of the keymaps match the filter.")}
       clearable
       options={options}
+      helperText={helperText}
+      helperTextIcon={helperTextIcon}
     />
   );
 }

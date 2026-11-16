@@ -328,3 +328,28 @@ nav.agm-breadcrumb > ol > li > a {
 .agm-progress-detail {
   max-inline-size: 80ch;
 }
+
+// The installer languages in as many columns as fit, so the list stays short
+// and the keyboard field below stays in view at 1024x768, filled column by
+// column (see welcome-form/LanguageField). The field spans its column: sized
+// to its content, a multi-column list collapses into a single column.
+.agm-language-field {
+  justify-self: stretch;
+}
+
+.agm-language-list {
+  column-width: var(--agm-t--language-list--column--width, 10rem);
+  column-gap: var(--pf-t--global--spacer--lg);
+  // Cancels the space below the last row, which each item brings.
+  margin-block-end: calc(-1 * var(--pf-t--global--spacer--md));
+
+  > * {
+    break-inside: avoid;
+    margin-block-end: var(--pf-t--global--spacer--md);
+  }
+
+  // The names are what the screen is about, and there is room for them.
+  .pf-v6-c-radio__label {
+    font-size: var(--agm-t--language-list--font--size, var(--pf-t--global--font--size--lg));
+  }
+}

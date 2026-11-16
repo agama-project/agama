@@ -110,4 +110,8 @@ const SYSTEM = {
   root: "/system",
 };
 
-export { L10N, NETWORK, PRODUCT, REGISTRATION, ROOT, SOFTWARE, STORAGE, SYSTEM, USER };
+const WELCOME = {
+  root: "/welcome",
+};
+
+export { L10N, NETWORK, PRODUCT, REGISTRATION, ROOT, SOFTWARE, STORAGE, SYSTEM, USER, WELCOME };
