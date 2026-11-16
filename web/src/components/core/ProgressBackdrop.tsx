@@ -50,8 +50,15 @@ export type ProgressBackdropProps = {
   /**
    * Scope identifier to filter which progresses trigger the backdrop
    * overlay. If no matching tasks exist, the backdrop won't be displayed.
+   * Left out, the progress of any scope counts.
    */
-  scope: Scope;
+  scope?: Scope;
+  /**
+   * Whether to show the backdrop regardless of the backend, e.g. from the
+   * moment a request starting an operation is sent, before the backend
+   * reports it. While set, the backdrop shows any progress reported meanwhile.
+   */
+  isShown?: boolean;
   /**
    * Query keys to wait for after progress completes.
    *
@@ -119,15 +126,21 @@ export type ProgressBackdropProps = {
  */
 export default function ProgressBackdrop({
   scope,
+  isShown = false,
   awaitQueriesRefetch,
   extraContent,
   // TRANSLATORS: Message shown next to a spinner while the UI is being updated
   // after an operation has completed.
   waitingLabel = _("Refreshing data..."),
 }: ProgressBackdropProps): React.ReactNode {
-  const { loading: isBlocked, progress } = useProgressTracking(scope, awaitQueriesRefetch ?? []);
+  const { loading: isBlocked, progress: tracked } = useProgressTracking(
+    scope,
+    awaitQueriesRefetch ?? [],
+  );
+  // Without a scope, every progress reported comes: the first one is shown.
+  const progress = Array.isArray(tracked) ? tracked[0] : tracked;
 
-  if (!isBlocked) return null;
+  if (!isBlocked && !isShown) return null;
 
   return (
     <Backdrop
