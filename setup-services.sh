@@ -86,8 +86,7 @@ $SUDO $ZYPPER install \
   quota \
   snapper \
   udftools \
-  xfsprogs \
-  yast2-pkg-bindings || exit 1
+  xfsprogs || exit 1
 
 # Install x86_64 packages
 if [ $(uname -m) == "x86_64" ]; then

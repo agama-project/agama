@@ -48,11 +48,8 @@ module Yast
     MODULES_SCR = Path.new(".kernel_modules_to_load")
 
     def main
-      Yast.import "Pkg"
-
       Yast.import "Arch"
       Yast.import "Mode"
-      Yast.import "PackagesProposal"
       Yast.import "Popup"
       Yast.import "Stage"
       Yast.import "FileUtils"
@@ -207,146 +204,7 @@ module Yast
       @cmdLine
     end
 
-    # Simple check any graphical desktop was selected
-    def IsGraphicalDesktop
-      # Get patterns set for installation during desktop selection
-      # (see DefaultDesktop::packages_proposal_ID_patterns for the first argument)
-      pt = PackagesProposal.GetResolvables("DefaultDesktopPatterns", :pattern)
-      Builtins.contains(pt, "x11")
-    end
-
     #---------------------------------------------------------------
-
-    # specifies limit of memory which can be addressed without pae on 32-bit system
-    PAE_LIMIT = 3_221_225_472
-    # select kernel depending on architecture and system type.
-    #
-    # @return [void]
-    def ProbeKernel
-      kernel_desktop_exists = ((Mode.normal || Mode.repair) &&
-        Pkg.PkgInstalled("kernel-desktop")) ||
-        Pkg.PkgAvailable("kernel-desktop")
-      Builtins.y2milestone(
-        "Desktop kernel available: %1",
-        kernel_desktop_exists
-      )
-
-      @kernel_packages = ["kernel-default"]
-
-      # add Xen paravirtualized drivers to a full virtualized host
-      xen = Convert.to_boolean(SCR.Read(path(".probe.is_xen")))
-      if xen.nil?
-        Builtins.y2warning("XEN detection failed, assuming XEN is NOT running")
-        xen = false
-      end
-
-      Builtins.y2milestone("Detected XEN: %1", xen)
-
-      if Arch.is_uml
-        Builtins.y2milestone("ProbeKernel: UML")
-        @kernel_packages = ["kernel-um"]
-      elsif Arch.is_xen
-        # kernel-xen contains PAE kernel (since oS11.0)
-        @kernel_packages = ["kernel-xen"]
-      elsif Arch.i386
-        # get flags from WFM /proc/cpuinfo (for pae and tsc tests below)
-
-        cpuinfo_flags = Convert.to_string(
-          SCR.Read(path(".proc.cpuinfo.value.\"0\".\"flags\""))
-        ) # check only first processor
-        cpuflags = []
-
-        # bugzilla #303842
-        if cpuinfo_flags
-          cpuflags = cpuinfo_flags.empty? ? [] : cpuinfo_flags.split
-        else
-          Builtins.y2error("Cannot read cpuflags")
-          Builtins.y2milestone(
-            "Mounted: %1",
-            SCR.Execute(path(".target.bash_output"), "/usr/bin/mount -l")
-          )
-        end
-
-        # check for "roughly" >= 4GB memory (see bug #40729)
-        memories = Convert.to_list(SCR.Read(path(".probe.memory")))
-        memsize = Ops.get_integer(
-          memories,
-          [0, "resource", "phys_mem", 0, "range"],
-          0
-        )
-        Builtins.y2milestone("Physical memory %1", memsize)
-
-        # for memory > 4GB and PAE support we install kernel-pae,
-        # PAE kernel is needed if NX flag exists as well (bnc#467328)
-        if (Ops.greater_or_equal(memsize, PAE_LIMIT) ||
-            Builtins.contains(cpuflags, "nx")) &&
-            Builtins.contains(cpuflags, "pae")
-          Builtins.y2milestone("Kernel switch: PAE detected")
-          if kernel_desktop_exists && IsGraphicalDesktop()
-            @kernel_packages = ["kernel-desktop"]
-
-            # add PV drivers
-            if xen
-              Builtins.y2milestone("Adding Xen PV drivers: xen-kmp-desktop")
-              @kernel_packages = Builtins.add(
-                @kernel_packages,
-                "xen-kmp-desktop"
-              )
-            end
-          else
-            @kernel_packages = ["kernel-pae"]
-
-            # add PV drivers
-            if xen
-              Builtins.y2milestone("Adding Xen PV drivers: xen-kmp-pae")
-              @kernel_packages = Builtins.add(@kernel_packages, "xen-kmp-pae")
-            end
-          end
-        # add PV drivers
-        elsif xen
-          Builtins.y2milestone("Adding Xen PV drivers: xen-kmp-default")
-          @kernel_packages = Builtins.add(@kernel_packages, "xen-kmp-default")
-        end
-      elsif Arch.x86_64
-        if kernel_desktop_exists && IsGraphicalDesktop()
-          @kernel_packages = ["kernel-desktop"]
-          if xen
-            Builtins.y2milestone("Adding Xen PV drivers: xen-kmp-desktop")
-            @kernel_packages = Builtins.add(@kernel_packages, "xen-kmp-desktop")
-          end
-        elsif xen
-          Builtins.y2milestone("Adding Xen PV drivers: xen-kmp-default")
-          @kernel_packages = Builtins.add(@kernel_packages, "xen-kmp-default")
-        end
-      elsif Arch.ppc
-        @binary = "vmlinux"
-
-        @kernel_packages = if Arch.board_iseries
-          ["kernel-iseries64"]
-        elsif Arch.ppc32
-          ["kernel-default"]
-        else
-          ["kernel-ppc64"]
-        end
-      elsif Arch.s390
-        @kernel_packages = ["kernel-default"]
-        @binary = "image"
-      end
-
-      @kernel_probed = true
-      Builtins.y2milestone("ProbeKernel determined: %1", @kernel_packages)
-
-      nil
-    end
-
-    # functinos related to kernel packages
-
-    # Get the list of kernel packages
-    # @return a list of kernel packages
-    def GetPackages
-      ProbeKernel() if !@kernel_probed
-      deep_copy(@kernel_packages)
-    end
 
     # functions related to kernel's modules loaded on boot
 
@@ -458,8 +316,6 @@ module Yast
     publish function: :AddCmdLine, type: "void (string, string)"
     publish function: :GetVgaType, type: "string ()"
     publish function: :GetCmdLine, type: "string ()"
-    publish function: :ProbeKernel, type: "void ()"
-    publish function: :GetPackages, type: "list <string> ()"
     publish function: :GetInformAboutKernelChange, type: "boolean ()"
     publish function: :InformAboutKernelChange, type: "boolean ()"
 
