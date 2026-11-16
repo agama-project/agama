@@ -226,15 +226,17 @@ type InstallerL10nOptionsVariants = "all" | "language" | "keyboard";
 /**
  * Props passed to each toggle variant.
  */
+/**
+ * Which current values a toggle shows next to its icons: all of them, only the
+ * keymap, or none (false), in which case the accessible name comes from the
+ * button's aria-label.
+ */
+type ShowValues = boolean | "keymap";
+
 type ToggleProps = Pick<ButtonProps, "onClick"> & {
   language?: string;
   keymap?: string;
-  /**
-   * Whether to render the current values (language and keymap) next to the
-   * icons. When false, only the icons are shown and the accessible name comes
-   * from the button's aria-label.
-   */
-  showValues?: boolean;
+  showValues?: ShowValues;
 };
 
 type TextWithLinkToL10nProps = {
@@ -457,7 +459,7 @@ const LanguageOnlyToggle = ({ onClick, language, showValues }: ToggleProps) => {
       <Button onClick={onClick} aria-label={label} aria-haspopup="dialog" variant="plain">
         <CenteredContent>
           <LanguageIcon />
-          {showValues && language}
+          {showValues === true && language}
         </CenteredContent>
       </Button>
     </VisualTooltip>
@@ -495,7 +497,7 @@ const AllSettingsToggle = ({ onClick, language, keymap, showValues }: ToggleProp
       <Button onClick={onClick} aria-label={label} variant="plain">
         <CenteredContent>
           <LanguageIcon />
-          {showValues && language}
+          {showValues === true && language}
           {isLocal && <KeyboardIcon />}
           {isLocal && showValues && <code>{keymap}</code>}
         </CenteredContent>
@@ -526,6 +528,8 @@ const toggles: { [key in InstallerL10nOptionsVariants]: React.FC<ToggleProps> } 
 /**
  * Props for the main InstallerL10nOptions component.
  */
+export type { ShowValues };
+
 export type InstallerL10nOptionsProps = {
   /** Determines which dialog variant to render. */
   variant?: InstallerL10nOptionsVariants;
@@ -536,10 +540,11 @@ export type InstallerL10nOptionsProps = {
    */
   toggle?: (props: ToggleProps) => JSX.Element;
   /**
-   * Whether the toggle should display the current values next to the icons.
-   * Defaults to false (icon-only) to save space in crowded headers.
+   * Which current values the toggle displays next to the icons: all of them
+   * (true), only the keymap ("keymap"), or none (false, the default, to save
+   * space in crowded headers).
    */
-  showValues?: boolean;
+  showValues?: ShowValues;
   /** Optional callback when the dialog is closed. */
   onClose?: () => void;
 };

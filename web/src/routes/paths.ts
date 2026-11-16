@@ -39,7 +39,11 @@ const NETWORK = {
 
 const PRODUCT = {
   root: "/products",
-  changeProduct: "/products",
+  changeProduct: "/quick-setup",
+};
+
+const QUICK_SETUP = {
+  root: "/quick-setup",
 };
 
 const REGISTRATION = {
@@ -114,4 +118,16 @@ const WELCOME = {
   root: "/welcome",
 };
 
-export { L10N, NETWORK, PRODUCT, REGISTRATION, ROOT, SOFTWARE, STORAGE, SYSTEM, USER, WELCOME };
+export {
+  L10N,
+  NETWORK,
+  PRODUCT,
+  QUICK_SETUP,
+  REGISTRATION,
+  ROOT,
+  SOFTWARE,
+  STORAGE,
+  SYSTEM,
+  USER,
+  WELCOME,
+};

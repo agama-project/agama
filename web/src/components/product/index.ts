@@ -20,6 +20,5 @@
  * find current contact information at www.suse.com.
  */
 
-export { default as ProductSelectionPage } from "./ProductSelectionPage";
 export { default as ProductRegistrationPage } from "./ProductRegistrationPage";
 export { default as LicenseDialog } from "./LicenseDialog";

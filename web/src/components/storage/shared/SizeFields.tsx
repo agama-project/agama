@@ -25,6 +25,7 @@ import { sprintf } from "sprintf-js";
 import { Flex } from "@patternfly/react-core";
 import Text from "~/components/core/Text";
 import FieldNestedContent from "~/components/form/FieldNestedContent";
+import FieldsRow from "~/components/form/FieldsRow";
 import { withForm } from "~/hooks/form";
 import { useVolumeTemplate } from "~/hooks/model/system/storage";
 import { sharedDefaultOptions, SIZE_MODE, type SizeMode } from "./fields";
@@ -357,14 +358,14 @@ const SizeFieldsContent = withForm({
       case SIZE_MODE.RANGE:
         return (
           <Flex direction={{ default: "column" }} gap={{ default: "gapSm" }}>
-            <Flex alignItems={{ default: "alignItemsFlexEnd" }} gap={{ default: "gapMd" }}>
+            <FieldsRow>
               <form.AppField name="rangeMinSize">
                 {(field) => <field.TextField label={_("Minimum")} />}
               </form.AppField>
               <form.AppField name="rangeMaxSize">
                 {(field) => <field.TextField label={_("Maximum")} />}
               </form.AppField>
-            </Flex>
+            </FieldsRow>
             <SizeInputHelp />
           </Flex>
         );

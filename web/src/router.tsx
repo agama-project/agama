@@ -32,6 +32,7 @@ import LoginPage from "~/components/core/LoginPage";
 import OverviewPage from "~/components/overview/OverviewPage";
 import SystemPage from "~/components/system/SystemPage";
 import WelcomePage from "~/components/welcome/WelcomePage";
+import QuickSetupPage from "~/components/quick-setup/QuickSetupPage";
 import l10nRoutes from "~/routes/l10n";
 import networkRoutes from "~/routes/network";
 import productsRoutes from "~/routes/products";
@@ -39,7 +40,7 @@ import registrationRoutes from "~/routes/registration";
 import storageRoutes from "~/routes/storage";
 import softwareRoutes from "~/routes/software";
 import usersRoutes from "~/routes/users";
-import { SYSTEM, USER, WELCOME, ROOT as PATHS } from "./routes/paths";
+import { QUICK_SETUP, SYSTEM, USER, WELCOME, ROOT as PATHS } from "./routes/paths";
 
 // Redirects for legacy routes that have been consolidated or renamed. These
 // help prevent 404s for bookmarked URLs or external links after route
@@ -77,6 +78,10 @@ const rootRoutes = () => [
   {
     path: WELCOME.root,
     element: <WelcomePage />,
+  },
+  {
+    path: QUICK_SETUP.root,
+    element: <QuickSetupPage />,
   },
   {
     path: SYSTEM.root,

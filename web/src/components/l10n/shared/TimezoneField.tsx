@@ -28,9 +28,16 @@ import { timezoneUtcOffset } from "./helpers";
 import { timezoneTime } from "~/utils";
 import { _ } from "~/i18n";
 
+import type { TranslatedString } from "~/i18n";
 import type { Timezone } from "~/model/system/l10n";
 
-type TimezoneFieldProps = { timezones: Timezone[] };
+type TimezoneFieldProps = {
+  timezones: Timezone[];
+  /** Field label, "Time zone" unless told otherwise. */
+  label?: TranslatedString;
+  /** Shown while no time zone is selected. */
+  emptyPlaceholder?: TranslatedString;
+};
 
 /**
  * Time zone selector. Each option shows the time zone territory, with the
@@ -43,7 +50,12 @@ type TimezoneFieldProps = { timezones: Timezone[] };
  * @example
  * <form.AppField name="timezone">{() => <TimezoneField timezones={timezones} />}</form.AppField>
  */
-export default function TimezoneField({ timezones }: TimezoneFieldProps) {
+export default function TimezoneField({
+  timezones,
+  // TRANSLATORS: label for the time zone selector
+  label = _("Time zone"),
+  emptyPlaceholder,
+}: TimezoneFieldProps) {
   // Refreshed when the list opens (see onOpen) so the shown local times reflect
   // when the user opens the selector, not when the page was first rendered.
   const [now, setNow] = useState(() => new Date());
@@ -85,8 +97,8 @@ export default function TimezoneField({ timezones }: TimezoneFieldProps) {
 
   return (
     <SearchableSelectField
-      // TRANSLATORS: label for the time zone selector
-      label={_("Time zone")}
+      label={label}
+      emptyPlaceholder={emptyPlaceholder}
       // TRANSLATORS: hint for the time zone filter input
       placeholder={_("Filter by territory, time zone code or UTC offset")}
       // TRANSLATORS: shown when no time zone matches the filter

@@ -21,6 +21,7 @@ examples and refined patterns.
   - [6. Revealed by a checkbox](#6-revealed-by-a-checkbox)
   - [7. Footer entry, help that stays out of the way](#7-footer-entry-help-that-stays-out-of-the-way)
   - [8. Several values in one field](#8-several-values-in-one-field)
+- [Fields side by side](#fields-side-by-side)
 - [Read-only information](#read-only-information)
 - [Accessibility notes](#accessibility-notes)
 - [Validation](#validation)
@@ -388,6 +389,32 @@ option already says whether it is one of them.
 
 ---
 
+## Fields side by side
+
+Put related fields on one line with `FieldsRow`: a name and a username, a
+password and its confirmation, a minimum and a maximum, a binding mode and the
+device it binds to. Each field keeps the width of its content, and the row
+wraps when there is no room, so it works at any width without breakpoints.
+
+The fields are aligned at the top. A helper text or an error below one of them
+then grows its own column only, and the controls stay in line.
+
+```tsx
+<FieldsRow>
+  <form.AppField name="rangeMinSize">
+    {(field) => <field.TextField label={_("Minimum")} />}
+  </form.AppField>
+  <form.AppField name="rangeMaxSize">
+    {(field) => <field.TextField label={_("Maximum")} />}
+  </form.AppField>
+</FieldsRow>
+```
+
+Prefer it over grid columns. Columns stretch short fields to half the form and
+leave the values far from their labels.
+
+---
+
 ## Read-only information
 
 Use `ReadOnlyField` to display contextual information alongside editable fields
@@ -500,6 +527,26 @@ Server errors follow the same path: a save failure returns `{ form: message }`,
 which TanStack Form exposes via `state.errorMap.onSubmit.form`. The form
 renders it as an inline alert at the top so the user knows what went wrong and
 can try again.
+
+### Exception: a submit that waits for its fields
+
+Quick setup keeps its Accept button unavailable until every field has a value,
+with a note next to it saying what is left ("Choose the installation disk and
+location to continue."). It departs from the rule above, and from the UI
+principle that a form's submit button never waits for its fields, for these
+reasons:
+
+- It is a short, special screen whose only action needs all of its fields: there
+  is nothing to submit partially, and nothing else to do on the screen.
+- The note sits next to the button, so the reason is in words where the user
+  looks. The button only looks unavailable (`isAriaDisabled`): it stays
+  focusable, so keyboard and screen reader users reach it and hear the note,
+  linked through `aria-describedby`.
+- Product selection, which Quick setup replaces, worked this way, so returning
+  users find what they know.
+
+Do not extend it to other forms: a form that can be submitted with some fields
+left as they are, or that sits among other content, validates on submit.
 
 ---
 

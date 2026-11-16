@@ -36,17 +36,17 @@ import InstallationFailed from "./components/core/InstallationFailed";
 import TerminalDock from "~/components/core/TerminalDock";
 import { isLanguageConfirmed } from "~/components/welcome/flags";
 import { useInterfaceLanguageFromConfig } from "~/components/welcome/use-interface-language";
-import { PRODUCT, WELCOME } from "./routes/paths";
+import { QUICK_SETUP, WELCOME } from "./routes/paths";
 
 /**
  * Where a new installation goes while no product is selected: the language and
- * keyboard screen, until the language is confirmed, then product selection.
+ * keyboard screen, until the language is confirmed, then Quick setup.
  *
  * The language counts as confirmed when the user accepted that screen in this
  * browser, or when the config already sets a locale, as a loaded profile may.
  */
 const pendingPath = (configLocale?: string) =>
-  isLanguageConfirmed() || configLocale ? PRODUCT.root : WELCOME.root;
+  isLanguageConfirmed() || configLocale ? QUICK_SETUP.root : WELCOME.root;
 
 /**
  * Content guard and flow control component.

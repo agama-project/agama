@@ -34,6 +34,8 @@ import ProgressStatusMonitor from "~/components/core/ProgressStatusMonitor";
 import AppearanceSettings from "~/components/core/AppearanceSettings";
 import Questions from "~/components/questions/Questions";
 
+import type { ShowValues } from "~/components/core/InstallerL10nOptions";
+
 export type StandardLayoutProps = React.PropsWithChildren<
   HeaderProps & {
     /** Optional progress tracking configuration */
@@ -48,12 +50,13 @@ export type StandardLayoutProps = React.PropsWithChildren<
     showProgressMonitor?: boolean;
 
     /**
-     * Whether the localization selector in the header shows its current values
-     * (language and keyboard) next to the icons.
+     * Which current values the localization selector in the header shows next
+     * to its icons: all (language and keyboard), only the keymap, or none.
      *
-     * Default: `false` (icon-only, to save space in the header)
+     * Default: `"keymap"`, the keyboard in use, which matters whenever
+     * something is typed; the language is the one being read.
      */
-    showL10nValues?: boolean;
+    showL10nValues?: ShowValues;
 
     /**
      * Whether to leave the localization selector out of the header, on the
@@ -76,7 +79,7 @@ export default function StandardLayout({
   children,
   additionalContent,
   showProgressMonitor = true,
-  showL10nValues = false,
+  showL10nValues = "keymap",
   hideL10nOptions = false,
   ...headerProps
 }: StandardLayoutProps) {

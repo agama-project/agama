@@ -64,6 +64,11 @@ export type MaskedFieldProps = FieldLabelOptions & {
    * It expect an array of reminders to hide.
    */
   hideReminders?: ReminderType[];
+  /**
+   * Whether the value is shown. When given, the field follows it and offers no
+   * button of its own, e.g. when a single switch reveals several fields.
+   */
+  isRevealed?: boolean;
 };
 
 /**
@@ -159,6 +164,7 @@ export default function MaskedField({
   helperText,
   size,
   hideReminders = [],
+  isRevealed,
   "aria-label": ariaLabel,
   "aria-labelledby": ariaLabelledBy,
   labelPrefixedBy,
@@ -170,7 +176,9 @@ export default function MaskedField({
     labelPrefixedBy,
   });
   const error = field.state.meta.errors[0];
-  const [showValue, setShowValue] = useState(false);
+  const [isShownHere, setIsShownHere] = useState(false);
+  const isControlled = isRevealed !== undefined;
+  const showValue = isControlled ? isRevealed : isShownHere;
   const visibilityIconName = showValue ? "visibility_off" : "visibility";
 
   return (
@@ -188,16 +196,18 @@ export default function MaskedField({
             {...labelProps}
           />
         </InputGroupItem>
-        <InputGroupItem>
-          <Button
-            variant="control"
-            aria-label={_("Password visibility button")}
-            onClick={() => setShowValue((prev) => !prev)}
-            isInline
-          >
-            <Icon name={visibilityIconName} style={{ width: "1em", height: "1em" }} />
-          </Button>
-        </InputGroupItem>
+        {!isControlled && (
+          <InputGroupItem>
+            <Button
+              variant="control"
+              aria-label={_("Password visibility button")}
+              onClick={() => setIsShownHere((prev) => !prev)}
+              isInline
+            >
+              <Icon name={visibilityIconName} style={{ width: "1em", height: "1em" }} />
+            </Button>
+          </InputGroupItem>
+        )}
       </InputGroup>
       <Reminders hideReminders={hideReminders} />
       {(error || helperText) && (

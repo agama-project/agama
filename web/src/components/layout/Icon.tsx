@@ -50,6 +50,7 @@ import DeployedCodeUpdate from "@icons/deployed_code_update.svg?component";
 import DeployedCodeAlert from "@icons/deployed_code_alert.svg?component";
 import Download from "@icons/download.svg?component";
 import EditSquare from "@icons/edit_square.svg?component";
+import SwapHoriz from "@icons/swap_horiz.svg?component";
 import Emergency from "@icons/emergency.svg?component";
 import Error from "@icons/error.svg?component";
 import ErrorFill from "@icons/error-fill.svg?component";
@@ -73,6 +74,7 @@ import MoreVert from "@bolderIcons/more_vert.svg?component";
 import NetworkWifi from "@icons/network_wifi.svg?component";
 import NetworkWifi1Bar from "@icons/network_wifi_1_bar.svg?component";
 import NetworkWifi3Bar from "@icons/network_wifi_3_bar.svg?component";
+import TextSnippet from "@icons/text_snippet.svg?component";
 import NotificationsActive from "@icons/notifications_active.svg?component";
 import Report from "@icons/report.svg?component";
 import RestartAlt from "@icons/restart_alt.svg?component";
@@ -120,6 +122,7 @@ const icons = {
   deployed_code_alert: DeployedCodeAlert,
   download: Download,
   edit_square: EditSquare,
+  swap_horiz: SwapHoriz,
   emergency: Emergency,
   error: Error,
   error_fill: ErrorFill,
@@ -144,6 +147,7 @@ const icons = {
   network_wifi: NetworkWifi,
   network_wifi_1_bar: NetworkWifi1Bar,
   network_wifi_3_bar: NetworkWifi3Bar,
+  text_snippet: TextSnippet,
   notifications_ative: NotificationsActive,
   report: Report,
   restart_alt: RestartAlt,
