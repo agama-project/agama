@@ -840,9 +840,6 @@ export default {
   "Copy to the clipboard": [
     "Copiar en el portapapeles"
   ],
-  "Could not authenticate against the server.": [
-    "No se pudo autenticar con el servidor."
-  ],
   "Could not log in": [
     "No se pudo iniciar sesión"
   ],
@@ -1190,15 +1187,6 @@ export default {
   ],
   "Enter a server URL": [
     "Introduzca una URL de servidor"
-  ],
-  "Enter or Tab to add": [
-    "Intro o Tabulador para añadir"
-  ],
-  "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate": [
-    "Intro o Tabulador para añadir, Atrás o Supr para eliminar, teclas de flecha para desplazarse"
-  ],
-  "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate entries, Escape to exit": [
-    "Intro o Tabulador para añadir, Atrás o Supr para eliminar, teclas de flecha para desplazarse por las entradas, Esc para salir"
   ],
   "Enter removes every value, Left arrow goes back to the text box.": [
     "Enter elimina todos los valores, la flecha izquierda vuelve al cuadro de texto."
@@ -3334,9 +3322,6 @@ export default {
   ],
   "Using %s keyboard layout": [
     "Usando distribución de teclado %s"
-  ],
-  "Using [%s] keyboard layout": [
-    "Usando distribución de teclado [%s]"
   ],
   "Using a hashed password.": [
     "Utiliza una contraseña con hash."
