@@ -39,7 +39,12 @@ type LanguageFieldProps = {
 /**
  * The installer languages as radios, each name written in its own language, so
  * whoever cannot read the language in use still finds theirs. Laid out in as
- * many columns as fit, so the list stays short.
+ * many columns as fit, so the list stays short, and filled column by column:
+ * an alphabetical list is scanned faster down a column than across a row, and
+ * the arrow keys, which follow the list order, then move the way it reads.
+ *
+ * @see https://webarchive.library.unt.edu/eot2008/20080916213614/http:/usability.gov/pdfs/chapter12.pdf
+ * @see https://www.w3.org/WAI/WCAG22/Understanding/meaningful-sequence.html
  *
  * Holds the language tag of the field it is rendered for, so it must be used
  * inside a `form.AppField` render prop.
@@ -58,6 +63,7 @@ export default function LanguageField({ focusSelected = false }: LanguageFieldPr
     <FormGroup
       role="radiogroup"
       fieldId={field.name}
+      className="agm-language-field"
       // TRANSLATORS: label of the list of languages for the installer
       label={_("Language")}
     >
