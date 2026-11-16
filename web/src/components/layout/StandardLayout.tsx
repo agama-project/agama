@@ -29,6 +29,7 @@ import Header, { HeaderProps } from "~/components/layout/Header";
 import Loading from "~/components/layout/Loading";
 import { MAIN_CONTENT_ID } from "~/components/core/SkipTo";
 import InstallerL10nOptions from "~/components/core/InstallerL10nOptions";
+import NetworkIndicator from "~/components/network/NetworkIndicator";
 import InstallerOptionsMenu from "~/components/core/InstallerOptionsMenu";
 import ProgressStatusMonitor from "~/components/core/ProgressStatusMonitor";
 import AppearanceSettings from "~/components/core/AppearanceSettings";
@@ -71,8 +72,8 @@ export type StandardLayoutProps = React.PropsWithChildren<
  *
  * It composes the header's trailing content shared by every page: any
  * page-specific content first, followed by the tools always available (the
- * localization selector, the progress status monitor, the appearance settings
- * and the installer options menu).
+ * progress status monitor, the network state, the localization selector, the
+ * appearance settings and the installer options menu).
  */
 export default function StandardLayout({
   progress,
@@ -87,6 +88,7 @@ export default function StandardLayout({
     <>
       {additionalContent}
       {showProgressMonitor && <ProgressStatusMonitor />}
+      <NetworkIndicator />
       {!hideL10nOptions && <InstallerL10nOptions showValues={showL10nValues} />}
       <AppearanceSettings />
       <InstallerOptionsMenu hideLabel />

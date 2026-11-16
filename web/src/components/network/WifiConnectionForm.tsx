@@ -39,7 +39,7 @@ import { Connection, WifiNetwork, Wireless } from "~/types/network";
 import { useWifiNetworks } from "~/hooks/model/system/network";
 import { useConnectionMutation } from "~/hooks/model/config/network";
 import WifiNetworksSelector from "./WifiNetworksSelector";
-import { useNavigate } from "react-router";
+import { useNavigate, useSearchParams } from "react-router";
 import { PATHS } from "~/routes/network";
 import { N_, _ } from "~/i18n";
 import { SYSTEM_QUERY_KEY } from "~/hooks/model/system";
@@ -104,6 +104,10 @@ const formReducer = (state: FormState, action: FormAction): FormState => {
 
 function WifiConnectionFormContent() {
   const navigate = useNavigate();
+  // A link opening the form can tell where to go after connecting, e.g.
+  // `?returnTo=/quick-setup`; the network page otherwise.
+  const [searchParams] = useSearchParams();
+  const returnTo = searchParams.get("returnTo");
   const networks = useWifiNetworks();
   const [form, dispatch] = useReducer(formReducer, { ssid: "", security: "", password: "" });
   const { mutateAsync: updateConnection } = useConnectionMutation();
@@ -128,7 +132,7 @@ function WifiConnectionFormContent() {
       }),
     });
     updateConnection(nextConnection);
-    navigate(PATHS.root);
+    navigate(returnTo ?? PATHS.root);
   };
 
   if (networks.length === 0)

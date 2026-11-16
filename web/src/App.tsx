@@ -36,7 +36,7 @@ import InstallationFailed from "./components/core/InstallationFailed";
 import TerminalDock from "~/components/core/TerminalDock";
 import { isLanguageConfirmed } from "~/components/welcome/flags";
 import { useInterfaceLanguageFromConfig } from "~/components/welcome/use-interface-language";
-import { QUICK_SETUP, WELCOME } from "./routes/paths";
+import { NETWORK, QUICK_SETUP, WELCOME } from "./routes/paths";
 
 /**
  * Where a new installation goes while no product is selected: the language and
@@ -83,9 +83,11 @@ const Content = () => {
 
   // Without a product, only the screens of a new installation can be visited:
   // the one still pending, and the language and keyboard screen, which stays
-  // reachable from the header.
+  // reachable from the header, and the network pages, reachable from the
+  // network state in the header.
   const allowedWithoutProduct = [pendingPath(l10nConfig?.locale), WELCOME.root];
-  if (!product && !allowedWithoutProduct.includes(location.pathname)) {
+  const isNetworkPath = location.pathname.startsWith(NETWORK.root);
+  if (!product && !allowedWithoutProduct.includes(location.pathname) && !isNetworkPath) {
     return <Navigate to={pendingPath(l10nConfig?.locale)} />;
   }
 

@@ -33,12 +33,10 @@ import {
   DeviceState,
   WifiNetwork,
   ConnectionState,
-  IPAddress,
   ConnectionMethod,
 } from "~/types/network";
 import { useInstallerClient } from "~/hooks/use-installer-client";
 import React, { useCallback } from "react";
-import { formatIp } from "~/utils/network";
 import { isEmpty } from "radashi";
 
 const selectSystem = (data: System | null): NetworkSystem =>
@@ -120,65 +118,6 @@ const useWifiNetworks = () => {
       };
     });
 };
-
-/**
- * Options to influence returned value by useIpAddresses
- */
-type UseIpAddressesOptions = {
-  /**
-   * Whether format IPs as string or not. When true, returns IP addresses as
-   * formatted strings without prefix. If false or omitted, returns raw
-   * IPAddress objects.
-   */
-  formatted?: boolean;
-};
-
-/**
- * @internal
- *
- * Retrieves all IP addresses from devices associated with active connections.
- *
- * It filters devices to only include those linked to existing connections, then
- * extracts and flattens all IP addresses from those devices.
- *
- * @note
- *
- * This is actually the implementation of {@link useIpAddresses}
- *
- * Extracted and exported for testing purposes only. See reasoning at note in
- * {@link useNetworkStatus}
- *
- */
-function getIpAddresses(
-  devices: Device[] = [],
-  connections: Connection[] = [],
-  options: UseIpAddressesOptions = {},
-) {
-  const connectionsIds = connections.map((c) => c.id);
-  const filteredDevices = devices.filter((d) => connectionsIds.includes(d.connection));
-
-  if (options.formatted) {
-    return filteredDevices.flatMap((d) =>
-      d.addresses.map((a) => formatIp(a, { removePrefix: true })),
-    );
-  }
-
-  return filteredDevices.flatMap((d) => d.addresses);
-}
-
-/**
- * Retrieves all IP addresses from devices associated with active connections.
- *
- * @see {@link getIpAddresses} for implementation details
- */
-function useIpAddresses(options: { formatted: true }): string[];
-function useIpAddresses(options?: { formatted?: false }): IPAddress[];
-function useIpAddresses(options: UseIpAddressesOptions = {}): string[] | IPAddress[] {
-  const devices = useDevices();
-  const connections = useConnections();
-
-  return getIpAddresses(devices, connections, options);
-}
 
 /**
  * Network status constants
@@ -379,9 +318,7 @@ export {
   useNetworkChanges,
   useNetworkStatus,
   useSystem,
-  useIpAddresses,
   useWifiNetworks,
   useState,
   getNetworkStatus,
-  getIpAddresses,
 };
