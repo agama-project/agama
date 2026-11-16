@@ -359,9 +359,6 @@ du -h -s /lib/modules /lib/firmware
 # https://build.opensuse.org/projects/openSUSE:Factory:Live/packages/livecd-tumbleweed-kde/files/config.sh?expand=1
 #
 
-# Stronger compression for the initrd
-echo 'compress="xz -9 --check=crc32 --memlimit-compress=50%"' >> /etc/dracut.conf.d/less-storage.conf
-
 # Kernel modules (+ firmware) for X13s
 if [ "$(arch)" == "aarch64" ]; then
   echo 'add_drivers+=" clk-rpmh dispcc-sc8280xp gcc-sc8280xp gpucc-sc8280xp nvmem_qcom-spmi-sdam qcom_hwspinlock qcom_q6v5 qcom_q6v5_pas qnoc-sc8280xp pmic_glink pmic_glink_altmode smp2p spmi-pmic-arb leds-qcom-lpg "' >/etc/dracut.conf.d/x13s_modules.conf
