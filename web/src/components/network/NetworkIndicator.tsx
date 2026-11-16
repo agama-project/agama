@@ -179,7 +179,7 @@ export default function NetworkIndicator() {
   const { stage } = useStatus();
   const announce = useAnnounce();
   const triggerRef = useRef<HTMLButtonElement>(null);
-  const { key: locationKey } = useLocation();
+  const { key: locationKey, pathname, search } = useLocation();
   const [isOpen, setIsOpen] = useState(false);
   // Nothing to tell until the installer reports the network.
   const hasNetwork = !!network?.devices && !!network?.state;
@@ -234,7 +234,16 @@ export default function NetworkIndicator() {
   const footer = isConfiguring && (
     <Flex gap={{ default: "gapMd" }}>
       {offersWifi && (
-        <Link to={NETWORK.wifi.new} variant="link" isInline>
+        <Link
+          // Back where the user was once connected, as joining a network from
+          // here is a step on the way, not a visit to the network settings.
+          to={{
+            pathname: NETWORK.wifi.new,
+            search: new URLSearchParams({ returnTo: pathname + search }).toString(),
+          }}
+          variant="link"
+          isInline
+        >
           {/* TRANSLATORS: link in the network popover to join a Wi-Fi network */}
           {_("Connect to Wi-Fi network")}
         </Link>
