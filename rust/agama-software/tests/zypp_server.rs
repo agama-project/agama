@@ -61,8 +61,11 @@ fn remove_rpmdb(root_dir: &Path) {
     }
 }
 
+// libzypp itself is not thread-safe and Cargo runs tests in parallel by default,
+// so we cannot ensure that multiple tests are not run in parallel.
+// Therefore, all zypp_server integration test scenarios are combined into this single test.
 #[tokio::test]
-async fn test_start_zypp_server() {
+async fn test_zypp_server() {
     let _ = tracing_subscriber::fmt::try_init();
 
     let root_dir =
