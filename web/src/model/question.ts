@@ -35,6 +35,11 @@ type Field = {
   type: FieldType;
 };
 
+// TODO: no component reads `options` yet, so a question using this field
+// falls back to GenericQuestion and its options are never shown. Add a
+// dedicated renderer (e.g. a `SelectQuestion` component, dispatched in
+// Questions.tsx like the other specialized classes) once a backend question
+// actually uses this field type.
 type SelectionField = {
   type: FieldType.Select;
   options: object;
