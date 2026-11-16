@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Nov 16 07:25:05 UTC 2026 - Michal Filka <mfilka@suse.com>
+
+- bsc#1286581 (CVE-2026-112944)
+  - launch-editor upgraded to 2.14.2
+
+-------------------------------------------------------------------
 Fri Nov  6 13:05:49 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
 
 - Do not crash when unexpected square brackets are present in the
