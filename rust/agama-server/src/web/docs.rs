@@ -41,6 +41,20 @@ use agama_schema_transformations::{
 };
 use schemars::transform::Transform;
 
+/// Name of the OpenAPI vendor extension marking locale-dependent responses.
+pub const X_TRANSLATED: &str = "x-agama-translated";
+
+/// Marks a response as returning translated texts according to the current locale.
+///
+/// Adds the `x-agama-translated: true` vendor extension so clients know that the response must
+/// be reloaded when the locale changes.
+pub fn translated(mut op: TransformOperation) -> TransformOperation {
+    op.inner_mut()
+        .extensions
+        .insert(X_TRANSLATED.to_string(), Value::Bool(true));
+    op
+}
+
 /// Builds the unified OpenAPI specification for the Agama HTTP API using aide.
 ///
 /// Instantiates an ApiRouter using the test_utils::router function and generates
@@ -447,6 +461,33 @@ mod tests {
             }
             _ => {}
         }
+    }
+
+    #[tokio::test]
+    async fn test_translated_operations_are_marked() {
+        let json_value = build_json()
+            .await
+            .expect("Failed to build OpenAPI JSON specification");
+
+        let translated = [
+            "/api/status",
+            "/api/system",
+            "/api/proposal",
+            "/api/issues",
+            "/api/questions",
+            "/api/licenses/{id}",
+        ];
+        for path in translated {
+            let flag = json_value.pointer(&format!(
+                "/paths/{}/get/{X_TRANSLATED}",
+                path.replace('~', "~0").replace('/', "~1")
+            ));
+            assert_eq!(flag, Some(&Value::Bool(true)), "{path} is not marked");
+        }
+
+        // the -comfig path is not translated
+        let flag = json_value.pointer("/paths/~1api~1config/get/x-agama-translated");
+        assert_eq!(flag, None);
     }
 
     #[tokio::test]
