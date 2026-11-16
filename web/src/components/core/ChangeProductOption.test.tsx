@@ -63,15 +63,15 @@ describe("ChangeProductOption", () => {
       mockSystem({ products: [tumbleweed, microos] });
     });
 
-    it("renders a link by default for navigating to product selection page", () => {
+    it("renders a link by default for navigating to Quick setup", () => {
       installerRender(<ChangeProductOption />);
-      const link = screen.getByRole("link", { name: "Change product" });
+      const link = screen.getByRole("link", { name: "Quick setup" });
       expect(link).toHaveAttribute("href", `${PATHS.changeProduct}?byUser`);
     });
 
     it("renders a menu item when component prop is 'dropdownitem'", () => {
       installerRender(<ChangeProductOption component="dropdownitem" />);
-      screen.getByRole("menuitem", { name: "Change product" });
+      screen.getByRole("menuitem", { name: /^Quick setup/ });
     });
 
     it("renders with an icon when showIcon is true", () => {
@@ -82,7 +82,7 @@ describe("ChangeProductOption", () => {
 
     it("does not render an icon by default", () => {
       installerRender(<ChangeProductOption />);
-      const link = screen.getByRole("link", { name: "Change product" });
+      const link = screen.getByRole("link", { name: "Quick setup" });
       expect(link.querySelector("svg")).toBeNull();
     });
 
@@ -91,9 +91,9 @@ describe("ChangeProductOption", () => {
         mockSystem({ products: [tumbleweed, microos], software: { registration: { addons: [] } } });
       });
 
-      it("renders nothing", () => {
-        const { container } = installerRender(<ChangeProductOption />);
-        expect(container).toBeEmptyDOMElement();
+      it("renders with 'Quick setup' label", () => {
+        installerRender(<ChangeProductOption />);
+        screen.getByRole("link", { name: "Quick setup" });
       });
     });
 
@@ -115,9 +115,9 @@ describe("ChangeProductOption", () => {
         mockSystem({ products: [tumbleweed] });
       });
 
-      it("renders nothing", () => {
-        const { container } = installerRender(<ChangeProductOption />);
-        expect(container).toBeEmptyDOMElement();
+      it("renders with 'Quick setup' label", () => {
+        installerRender(<ChangeProductOption />);
+        screen.getByRole("link", { name: "Quick setup" });
       });
     });
 
@@ -126,9 +126,9 @@ describe("ChangeProductOption", () => {
         mockSystem({ products: [tumbleweedWithModes] });
       });
 
-      it("renders with 'Change mode' label", () => {
+      it("renders with 'Quick setup' label", () => {
         installerRender(<ChangeProductOption />);
-        screen.getByRole("link", { name: "Change mode" });
+        screen.getByRole("link", { name: "Quick setup" });
       });
     });
   });
@@ -138,14 +138,14 @@ describe("ChangeProductOption", () => {
       mockSystem({ products: [tumbleweedWithModes, microos] });
     });
 
-    it("renders with 'Change product or mode' label", () => {
+    it("renders with 'Quick setup' label", () => {
       installerRender(<ChangeProductOption />);
-      screen.getByRole("link", { name: "Change product or mode" });
+      screen.getByRole("link", { name: "Quick setup" });
     });
 
     it("renders with icon when showIcon is true", () => {
       installerRender(<ChangeProductOption showIcon component="dropdownitem" />);
-      screen.getByRole("menuitem", { name: /Change product or mode/ });
+      screen.getByRole("menuitem", { name: /^Quick setup/ });
     });
   });
 });

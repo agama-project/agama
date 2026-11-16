@@ -25,11 +25,11 @@ import { DropdownItem, DropdownItemProps, Flex } from "@patternfly/react-core";
 import { href, useHref } from "react-router";
 import { PRODUCT as PATHS } from "~/routes/paths";
 import { _ } from "~/i18n";
-import { useSystem } from "~/hooks/model/system";
 import { useStatus } from "~/hooks/model/status";
-import { isEmpty } from "radashi";
 import Link, { LinkProps } from "~/components/core/Link";
 import Icon from "~/components/layout/Icon";
+
+import menuStyles from "@patternfly/react-styles/css/components/Menu/menu";
 
 type ChangeProductOptionProps = Omit<DropdownItemProps, "to" | "component" | "children"> &
   Omit<LinkProps, "to" | "component" | "children"> & {
@@ -47,18 +47,12 @@ type ChangeProductOptionProps = Omit<DropdownItemProps, "to" | "component" | "ch
   };
 
 /**
- * Navigation option for changing the selected product or mode.
+ * Navigation option leading to Quick setup, where the product, location, disk
+ * and login are set.
  *
- * This component conditionally renders based on the system state:
- *   - Returns null if there's only one product without modes
- *   - Returns null if software is registered
- *   - Returns null if installation stage is not "configuring"
- *
- * The label adapts to the available options:
- *   - "Change mode" when there's one product with modes
- *   - "Change product or mode" when there are multiple products and at least
- *     one has modes
- *   - "Change product" when there are multiple products without modes
+ * Available while the installation is being configured, always with the same
+ * label and, as a menu item, the same description, whether the product can
+ * change or not.
  *
  * Can be rendered as either a link (default) or dropdown menu item. Optionally
  * displays an edit icon when `showIcon` is true.
@@ -76,32 +70,43 @@ export default function ChangeProductOption({
   showIcon = false,
   ...props
 }: ChangeProductOptionProps) {
-  const system = useSystem();
-  const products = system?.products ?? [];
-  const software = system?.software;
   const { stage } = useStatus();
   const resolvedPath = useHref(PATHS.changeProduct);
   const to = component === "a" ? href(PATHS.changeProduct) : resolvedPath;
-  const hasModes = products.find((p) => !isEmpty(p.modes));
 
-  if (products.length <= 1 && !hasModes) return null;
-  if (software?.registration) return null;
   if (stage !== "configuring") return null;
 
-  const getLabel = () => {
-    if (products.length === 1 && hasModes) return _("Change mode");
-    if (hasModes) return _("Change product or mode");
-    return _("Change product");
-  };
+  // TRANSLATORS: menu entry leading to the screen with the basic settings
+  // (product, location, disk and login)
+  const label = _("Quick setup");
 
-  const Component = component === "a" ? Link : DropdownItem;
+  if (component === "dropdownitem") {
+    return (
+      <DropdownItem to={`${to}?byUser`} {...props}>
+        {/* The description goes below the name, not below the icon too, as the
+            item's own description would. */}
+        <Flex gap={{ default: "gapSm" }} flexWrap={{ default: "nowrap" }}>
+          {showIcon && <Icon name="amend" size="lg" />}
+          <div>
+            {label}
+            <div className={menuStyles.menuItemDescription}>
+              {
+                // TRANSLATORS: description of the "Quick setup" menu entry
+                _("Run the quick setup again")
+              }
+            </div>
+          </div>
+        </Flex>
+      </DropdownItem>
+    );
+  }
 
   return (
-    <Component to={`${to}?byUser`} {...props}>
+    <Link to={`${to}?byUser`} {...props}>
       <Flex alignItems={{ default: "alignItemsCenter" }} gap={{ default: "gapSm" }}>
         {showIcon && <Icon name="amend" size="lg" />}
-        {getLabel()}
+        {label}
       </Flex>
-    </Component>
+    </Link>
   );
 }

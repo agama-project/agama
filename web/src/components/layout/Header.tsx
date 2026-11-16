@@ -155,11 +155,11 @@ function MainBreadcrumbs({
         <ProductLogo product={product} width="var(--agm-t--logo--size--header, 35px)" />
       </FlexItem>
       <Flex direction={{ default: "column" }} gap={{ default: "gapNone" }}>
-        {product && (
-          <Text textStyle="textColorSubtle" className={textStyles.fontSizeXs}>
-            {product.name}
-          </Text>
-        )}
+        {/* The line stays without a product, empty, so the header keeps its
+            height when one is picked. */}
+        <Text textStyle="textColorSubtle" className={textStyles.fontSizeXs} srHidden={!product}>
+          {product ? product.name : "\u00a0"}
+        </Text>
         <Breadcrumbs>
           {items.map((item, index) => (
             <Breadcrumbs.Item key={index} {...item} hideDivider={index === 0 || item.hideDivider} />
