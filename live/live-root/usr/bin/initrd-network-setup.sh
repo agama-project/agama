@@ -33,7 +33,7 @@ while :; do
 
   # list all devices
   summary=$(
-    cat <<EOF
+    cat << EOF
 Network Devices
 ---------------
 $(nmcli d)
@@ -53,8 +53,8 @@ EOF
   summary="$summary\n\nProxy configuration:\n      server: $proxy_label"
 
   # terminal size might change during runtime, evaluate it in each iteration
-  term_width=$(tput cols 2>/dev/null || echo 80)
-  term_height=$(tput lines 2>/dev/null || echo 24)
+  term_width=$(tput cols 2> /dev/null || echo 80)
+  term_height=$(tput lines 2> /dev/null || echo 24)
   # set to 80% of terminal size
   width=$((term_width * 80 / 100))
   height=$((term_height * 80 / 100))
@@ -105,7 +105,7 @@ EOF
         unset https_proxy
         rm -f "$proxy_file"
       else
-        echo "proxy=$proxy_address" >"$proxy_file"
+        echo "proxy=$proxy_address" > "$proxy_file"
         export http_proxy="$proxy_address"
         export https_proxy="$proxy_address"
       fi

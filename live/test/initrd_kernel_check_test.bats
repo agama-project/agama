@@ -275,4 +275,3 @@ write_root_os_release() {
   [ "$status" -eq 1 ]
   [[ "$output" == *"The CPE_NAME value is different"* ]]
 }
-
