@@ -19,9 +19,7 @@
 // find current contact information at www.suse.com.
 
 use agama_security as security;
-use agama_software::state::{
-    Repository as StateRepository, ResolvableSelection, SoftwareState,
-};
+use agama_software::state::{Repository as StateRepository, ResolvableSelection, SoftwareState};
 use agama_software::zypp_server::{SoftwareAction, ZyppServer, ZyppServerResult};
 use agama_software::{Resolvable, WriteIssues};
 use agama_utils::{
