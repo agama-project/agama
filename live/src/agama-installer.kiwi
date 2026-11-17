@@ -182,6 +182,12 @@
         <!-- a11y packages -->
         <package name="orca" arch="aarch64,x86_64,ppc64le,s390x,riscv64"/>
         <package name="at-spi2-core" arch="aarch64,x86_64,ppc64le,s390x,riscv64"/>
+        <package name="speech-dispatcher" arch="aarch64,x86_64,ppc64le,s390x,riscv64"/>
+        <package name="speech-dispatcher-module-espeak" arch="aarch64,x86_64,ppc64le,s390x,riscv64"/>
+        <!-- audio stack needed for Orca/speech-dispatcher to actually produce sound -->
+        <package name="pipewire" arch="aarch64,x86_64,ppc64le,s390x,riscv64"/>
+        <package name="pipewire-pulseaudio" arch="aarch64,x86_64,ppc64le,s390x,riscv64"/>
+        <package name="wireplumber" arch="aarch64,x86_64,ppc64le,s390x,riscv64"/>
     </packages>
 
     <!-- common packages for openSUSE Tumbleweed and Leap distributions -->
