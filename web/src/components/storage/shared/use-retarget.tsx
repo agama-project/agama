@@ -136,25 +136,28 @@ type TitleProps = {
 
 const Title = ({ modelDevice }: TitleProps) => {
   if (modelDevice.filesystem) {
-    // TRANSLATORS: %s is a formatted mount point like '"/home"'
-    return sprintf(_("Change the device to format as %s"), formattedPath(modelDevice.mountPath));
+    return sprintf(
+      // TRANSLATORS: %s is a formatted mount point like '"/home"'
+      _("Choose a different device to format as %s"),
+      formattedPath(modelDevice.mountPath),
+    );
   }
 
   const newMountPaths = modelDevice.partitions.filter((p) => !p.name).map((p) => p.mountPath);
   const hasMountPaths = newMountPaths.length > 0;
 
   if (!hasMountPaths) {
-    return _("Change the device to configure");
+    return _("Choose a different device to configure");
   }
 
   if (newMountPaths.includes("/")) {
-    return _("Change the device to install the system");
+    return _("Choose a different device to install the system");
   }
 
   return sprintf(
     // TRANSLATORS: %s is a list of formatted mount points like '"/", "/var" and "swap"' (or a
     // single mount point in the singular case).
-    _("Change the device to create %s"),
+    _("Choose a different device to create %s"),
     formatList(newMountPaths.map((p) => formattedPath(p))),
   );
 };

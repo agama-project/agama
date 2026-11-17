@@ -103,8 +103,8 @@ const Description = ({ modelDevice, actionDescription }: DescriptionProps) => {
 export type ChangeDeviceMenuItemProps = {
   modelDevice: ConfigModel.Drive | ConfigModel.MdRaid;
   device: Storage.Device;
-  actionTitle: React.ReactNode;
-  actionDescription: React.ReactNode;
+  actionTitle?: React.ReactNode;
+  actionDescription?: React.ReactNode;
   openFn: () => void;
 } & MenuItemProps;
 
@@ -115,7 +115,6 @@ export default function ChangeDeviceMenuItem({
   modelDevice,
   device,
   actionTitle,
-  actionDescription,
   openFn,
   ...props
 }: ChangeDeviceMenuItemProps): React.ReactNode {
@@ -125,13 +124,13 @@ export default function ChangeDeviceMenuItem({
   return (
     <MenuButtonItem
       aria-label={_("Change device menu")}
-      description={<Description modelDevice={modelDevice} actionDescription={actionDescription} />}
+      description={<Description modelDevice={modelDevice} actionDescription={actionTitle} />}
       isDisabled={isDisabled}
       key="retarget"
       {...props}
       onClick={isDisabled ? undefined : openFn}
     >
-      {isDisabled ? "Selected disk cannot be changed" : actionTitle}
+      {isDisabled ? _("Selected disk cannot be changed") : _("Change target disk")}
     </MenuButtonItem>
   );
 }

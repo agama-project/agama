@@ -111,7 +111,7 @@ export default function DriveMenu({ entry, subject }: DriveMenuProps): React.Rea
   const deleteMdRaid = useDeleteMdRaid();
   const device = useDevice(entry.name);
   const { openDetails } = useDeviceDetails();
-  const { title, description, open, selector } = useRetarget(entry, device);
+  const { title, open, selector } = useRetarget(entry, device);
   const withFlyouts = true;
 
   const name = baseName(entry.name);
@@ -148,7 +148,6 @@ export default function DriveMenu({ entry, subject }: DriveMenuProps): React.Rea
       <ChangeDeviceMenuItem
         key="change"
         actionTitle={title}
-        actionDescription={description}
         device={device}
         modelDevice={entry}
         openFn={open}
