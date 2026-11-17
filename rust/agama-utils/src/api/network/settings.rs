@@ -606,18 +606,6 @@ pub struct NetworkConnection {
     pub persistent: Option<bool>,
 }
 
-/// A connection as the system reports it, with its current state.
-///
-/// The state is not part of the configuration, so only the system information reports it. The
-/// ports nested in a controller do not report it.
-#[derive(Clone, Debug, Serialize, Deserialize, JsonSchema, PartialEq)]
-pub struct NetworkConnectionWithState {
-    #[serde(flatten)]
-    pub connection: NetworkConnection,
-    /// Current state of the connection
-    pub state: ConnectionState,
-}
-
 /// Sections that only some kinds of ports have (see [`port_type`]).
 #[derive(Default)]
 struct PortSections<'a> {
@@ -983,6 +971,360 @@ impl BondPort {
             Self::Wireless(Box::new(BondWirelessPort::from_connection(conn, wireless)))
         } else {
             Self::Ethernet(Box::new(BondEthernetPort::from_connection(conn)))
+        }
+    }
+}
+
+/// A connection as the system reports it, with its current state.
+///
+/// The state is not part of the configuration, so only the system information reports it, for
+/// every connection, nested ports included. The connection is reported as in the configuration,
+/// but for its `bond` and `bridge` sections, which hold the ports: they are left empty in
+/// `connection` and given here, with the state of the ports (see [`BondSettingsWithState`] and
+/// [`BridgeSettingsWithState`]).
+///
+/// The flattened field goes first: the fields declared here replace the ones it has with the same
+/// name in the JSON schema.
+#[derive(Clone, Debug, Serialize, Deserialize, JsonSchema, PartialEq)]
+#[schemars(deny_unknown_fields)]
+pub struct NetworkConnectionWithState {
+    /// The connection, without its `bond` and `bridge` sections.
+    #[serde(flatten)]
+    pub connection: NetworkConnection,
+    /// Bonding settings if part of a bond
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub bond: Option<BondSettingsWithState>,
+    /// Bridge settings if part of a bridge
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub bridge: Option<BridgeSettingsWithState>,
+    /// Current state of the connection
+    pub state: ConnectionState,
+}
+
+impl NetworkConnectionWithState {
+    /// Adds the state to a connection and, recursively, to its nested ports.
+    ///
+    /// * `conn`: connection to report.
+    /// * `state_of`: returns the state of the connection with the given ID.
+    pub fn new(mut conn: NetworkConnection, state_of: &dyn Fn(&str) -> ConnectionState) -> Self {
+        let bond = conn.bond.take();
+        let bridge = conn.bridge.take();
+        Self {
+            state: state_of(&conn.id),
+            bond: bond.map(|bond| BondSettingsWithState::new(bond, state_of)),
+            bridge: bridge.map(|bridge| BridgeSettingsWithState::new(bridge, state_of)),
+            connection: conn,
+        }
+    }
+}
+
+/// Bonding settings with the state of the ports, as the system reports them.
+///
+/// The ports are left empty in `settings` and given here.
+#[derive(Clone, Debug, Serialize, Deserialize, JsonSchema, PartialEq)]
+#[serde(rename_all = "camelCase")]
+#[schemars(deny_unknown_fields)]
+pub struct BondSettingsWithState {
+    /// The settings, without their `portConnections`.
+    #[serde(flatten)]
+    pub settings: BondSettings,
+    /// Ports of the controller, with their current state
+    #[serde(skip_serializing_if = "Option::is_none", default)]
+    pub port_connections: Option<Vec<BondPortWithState>>,
+}
+
+impl BondSettingsWithState {
+    fn new(mut settings: BondSettings, state_of: &dyn Fn(&str) -> ConnectionState) -> Self {
+        let ports = settings.port_connections.take();
+        Self {
+            settings,
+            port_connections: ports.map(|ports| {
+                ports
+                    .into_iter()
+                    .map(|port| BondPortWithState::new(port, state_of))
+                    .collect()
+            }),
+        }
+    }
+}
+
+/// Bridge settings with the state of the ports, as the system reports them.
+///
+/// The ports are left empty in `settings` and given here.
+#[derive(Clone, Debug, Serialize, Deserialize, JsonSchema, PartialEq)]
+#[serde(rename_all = "camelCase")]
+#[schemars(deny_unknown_fields)]
+pub struct BridgeSettingsWithState {
+    /// The settings, without their `portConnections`.
+    #[serde(flatten)]
+    pub settings: BridgeSettings,
+    /// Ports of the controller, with their current state
+    #[serde(skip_serializing_if = "Option::is_none", default)]
+    pub port_connections: Option<Vec<BridgePortWithState>>,
+}
+
+impl BridgeSettingsWithState {
+    fn new(mut settings: BridgeSettings, state_of: &dyn Fn(&str) -> ConnectionState) -> Self {
+        let ports = settings.port_connections.take();
+        Self {
+            settings,
+            port_connections: ports.map(|ports| {
+                ports
+                    .into_iter()
+                    .map(|port| BridgePortWithState::new(port, state_of))
+                    .collect()
+            }),
+        }
+    }
+}
+
+/// Returns the state of a nested port, which is known by its ID or, when it has none, by its
+/// interface (see [`NetworkConnectionsCollection::flatten`]).
+fn port_state(
+    port: &dyn NestedPort,
+    state_of: &dyn Fn(&str) -> ConnectionState,
+) -> ConnectionState {
+    state_of(port.id().or(port.interface()).unwrap_or_default())
+}
+
+/// A port that cannot have ports of its own, with its current state.
+///
+/// Unknown fields are rejected, as the port does, so that each kind of port is told apart from
+/// the others (see [`BondPortWithState`]). It must not flatten a type that flattens another one:
+/// serde would then reject even the known fields.
+#[derive(Clone, Debug, Serialize, Deserialize, JsonSchema, PartialEq)]
+#[serde(deny_unknown_fields)]
+#[schemars(rename = "{T}WithState")]
+pub struct WithState<T> {
+    /// The port.
+    #[serde(flatten)]
+    pub port: T,
+    /// Current state of the connection
+    pub state: ConnectionState,
+}
+
+impl<T: NestedPort> WithState<T> {
+    fn new(port: T, state_of: &dyn Fn(&str) -> ConnectionState) -> Self {
+        Self {
+            state: port_state(&port, state_of),
+            port,
+        }
+    }
+}
+
+/// Port of a bond that is a bond itself, with the state of its ports and its own one.
+///
+/// It is reported as a [`BondBondPort`], but its settings come in two parts: the ones every port of
+/// a bond has, which are the ones of an Ethernet port, and its bonding settings with its ports.
+#[derive(Clone, Debug, Serialize, Deserialize, JsonSchema, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct BondBondPortWithState {
+    /// The settings that every port of a bond has.
+    #[serde(flatten)]
+    pub port: BondEthernetPort,
+    /// Bonding settings
+    pub bond: BondSettingsWithState,
+    /// Current state of the connection
+    pub state: ConnectionState,
+}
+
+impl BondBondPortWithState {
+    fn new(port: BondBondPort, state_of: &dyn Fn(&str) -> ConnectionState) -> Self {
+        let state = port_state(&port, state_of);
+        Self {
+            port: BondEthernetPort {
+                id: port.id,
+                interface: port.interface,
+                match_settings: port.match_settings,
+                custom_mac_address: port.custom_mac_address,
+                mac_address: port.mac_address,
+                status: port.status,
+                mtu: port.mtu,
+                ieee_8021x: port.ieee_8021x,
+                autoconnect: port.autoconnect,
+                persistent: port.persistent,
+            },
+            bond: BondSettingsWithState::new(port.bond, state_of),
+            state,
+        }
+    }
+}
+
+/// Port of a bond that is a bridge, with the state of its ports and its own one.
+///
+/// Like [`BondBondPortWithState`], but with bridge settings.
+#[derive(Clone, Debug, Serialize, Deserialize, JsonSchema, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct BondBridgePortWithState {
+    /// The settings that every port of a bond has.
+    #[serde(flatten)]
+    pub port: BondEthernetPort,
+    /// Bridge settings
+    pub bridge: BridgeSettingsWithState,
+    /// Current state of the connection
+    pub state: ConnectionState,
+}
+
+impl BondBridgePortWithState {
+    fn new(port: BondBridgePort, state_of: &dyn Fn(&str) -> ConnectionState) -> Self {
+        let state = port_state(&port, state_of);
+        Self {
+            port: BondEthernetPort {
+                id: port.id,
+                interface: port.interface,
+                match_settings: port.match_settings,
+                custom_mac_address: port.custom_mac_address,
+                mac_address: port.mac_address,
+                status: port.status,
+                mtu: port.mtu,
+                ieee_8021x: port.ieee_8021x,
+                autoconnect: port.autoconnect,
+                persistent: port.persistent,
+            },
+            bridge: BridgeSettingsWithState::new(port.bridge, state_of),
+            state,
+        }
+    }
+}
+
+/// Port of a bridge that is a bond, with the state of its ports and its own one.
+///
+/// It is reported as a [`BridgeBondPort`], but its settings come in two parts: the ones every port
+/// of a bridge has, which are the ones of an Ethernet port (port settings included), and its
+/// bonding settings with its ports.
+#[derive(Clone, Debug, Serialize, Deserialize, JsonSchema, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct BridgeBondPortWithState {
+    /// The settings that every port of a bridge has.
+    #[serde(flatten)]
+    pub port: BridgeEthernetPort,
+    /// Bonding settings
+    pub bond: BondSettingsWithState,
+    /// Current state of the connection
+    pub state: ConnectionState,
+}
+
+impl BridgeBondPortWithState {
+    fn new(port: BridgeBondPort, state_of: &dyn Fn(&str) -> ConnectionState) -> Self {
+        let state = port_state(&port, state_of);
+        Self {
+            port: BridgeEthernetPort {
+                id: port.id,
+                interface: port.interface,
+                match_settings: port.match_settings,
+                port: port.port,
+                custom_mac_address: port.custom_mac_address,
+                mac_address: port.mac_address,
+                status: port.status,
+                mtu: port.mtu,
+                ieee_8021x: port.ieee_8021x,
+                autoconnect: port.autoconnect,
+                persistent: port.persistent,
+            },
+            bond: BondSettingsWithState::new(port.bond, state_of),
+            state,
+        }
+    }
+}
+
+/// Port of a bridge that is a bridge itself, with the state of its ports and its own one.
+///
+/// Like [`BridgeBondPortWithState`], but with bridge settings.
+#[derive(Clone, Debug, Serialize, Deserialize, JsonSchema, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct BridgeBridgePortWithState {
+    /// The settings that every port of a bridge has.
+    #[serde(flatten)]
+    pub port: BridgeEthernetPort,
+    /// Bridge settings
+    pub bridge: BridgeSettingsWithState,
+    /// Current state of the connection
+    pub state: ConnectionState,
+}
+
+impl BridgeBridgePortWithState {
+    fn new(port: BridgeBridgePort, state_of: &dyn Fn(&str) -> ConnectionState) -> Self {
+        let state = port_state(&port, state_of);
+        Self {
+            port: BridgeEthernetPort {
+                id: port.id,
+                interface: port.interface,
+                match_settings: port.match_settings,
+                port: port.port,
+                custom_mac_address: port.custom_mac_address,
+                mac_address: port.mac_address,
+                status: port.status,
+                mtu: port.mtu,
+                ieee_8021x: port.ieee_8021x,
+                autoconnect: port.autoconnect,
+                persistent: port.persistent,
+            },
+            bridge: BridgeSettingsWithState::new(port.bridge, state_of),
+            state,
+        }
+    }
+}
+
+/// Entry of the `portConnections` list of a bond, with the state of the port.
+///
+/// Like [`BondPort`], with the state of every port given as a connection.
+#[derive(Clone, Debug, Serialize, Deserialize, JsonSchema, PartialEq)]
+#[serde(untagged)]
+pub enum BondPortWithState {
+    /// Interface name or ID of a connection, which reports no state.
+    Name(String),
+    Ethernet(Box<WithState<BondEthernetPort>>),
+    Bond(Box<BondBondPortWithState>),
+    Bridge(Box<BondBridgePortWithState>),
+    Vlan(Box<WithState<BondVlanPort>>),
+    Wireless(Box<WithState<BondWirelessPort>>),
+}
+
+impl BondPortWithState {
+    fn new(port: BondPort, state_of: &dyn Fn(&str) -> ConnectionState) -> Self {
+        match port {
+            BondPort::Name(name) => Self::Name(name),
+            BondPort::Ethernet(port) => Self::Ethernet(Box::new(WithState::new(*port, state_of))),
+            BondPort::Bond(port) => {
+                Self::Bond(Box::new(BondBondPortWithState::new(*port, state_of)))
+            }
+            BondPort::Bridge(port) => {
+                Self::Bridge(Box::new(BondBridgePortWithState::new(*port, state_of)))
+            }
+            BondPort::Vlan(port) => Self::Vlan(Box::new(WithState::new(*port, state_of))),
+            BondPort::Wireless(port) => Self::Wireless(Box::new(WithState::new(*port, state_of))),
+        }
+    }
+}
+
+/// Entry of the `portConnections` list of a bridge, with the state of the port.
+///
+/// Like [`BridgePort`], with the state of every port given as a connection.
+#[derive(Clone, Debug, Serialize, Deserialize, JsonSchema, PartialEq)]
+#[serde(untagged)]
+pub enum BridgePortWithState {
+    /// Interface name or ID of a connection, which reports no state.
+    Name(String),
+    Ethernet(Box<WithState<BridgeEthernetPort>>),
+    Bond(Box<BridgeBondPortWithState>),
+    Bridge(Box<BridgeBridgePortWithState>),
+    Vlan(Box<WithState<BridgeVlanPort>>),
+    Wireless(Box<WithState<BridgeWirelessPort>>),
+}
+
+impl BridgePortWithState {
+    fn new(port: BridgePort, state_of: &dyn Fn(&str) -> ConnectionState) -> Self {
+        match port {
+            BridgePort::Name(name) => Self::Name(name),
+            BridgePort::Ethernet(port) => Self::Ethernet(Box::new(WithState::new(*port, state_of))),
+            BridgePort::Bond(port) => {
+                Self::Bond(Box::new(BridgeBondPortWithState::new(*port, state_of)))
+            }
+            BridgePort::Bridge(port) => {
+                Self::Bridge(Box::new(BridgeBridgePortWithState::new(*port, state_of)))
+            }
+            BridgePort::Vlan(port) => Self::Vlan(Box::new(WithState::new(*port, state_of))),
+            BridgePort::Wireless(port) => Self::Wireless(Box::new(WithState::new(*port, state_of))),
         }
     }
 }
@@ -1490,5 +1832,116 @@ mod tests {
         let serialized = serde_json::to_value(&conn).unwrap();
         let read: NetworkConnection = serde_json::from_value(serialized).unwrap();
         assert_eq!(read, conn);
+    }
+
+    #[test]
+    fn test_the_state_of_every_kind_of_port_is_read_and_written_back() {
+        let json = serde_json::json!({
+            "id": "br0",
+            "bridge": {
+                "stp": false,
+                "portConnections": [
+                    "eth9",
+                    { "id": "eth0", "port": { "priority": 16 }, "state": "activated" },
+                    {
+                        "id": "bond0",
+                        "bond": {
+                            "mode": "active-backup",
+                            "portConnections": [
+                                { "id": "eth1", "state": "activated" },
+                                { "id": "eth2", "state": "deactivated" },
+                                { "id": "br1", "bridge": { "portConnections": [] }, "state": "activating" },
+                                { "id": "eth3.10", "vlan": { "parent": "eth3", "id": 10 }, "state": "activated" }
+                            ]
+                        },
+                        "port": { "priority": 32 },
+                        "state": "activated"
+                    },
+                    {
+                        "id": "wlan0",
+                        "wireless": { "ssid": "agama", "security": "none", "mode": "infrastructure" },
+                        "state": "deactivated"
+                    }
+                ]
+            },
+            "state": "activated"
+        });
+        let conn: NetworkConnectionWithState = serde_json::from_value(json.clone()).unwrap();
+
+        // The ports are in the wrappers only, not in the config values they flatten.
+        assert!(conn.connection.bridge.is_none());
+        let bridge = conn.bridge.as_ref().unwrap();
+        assert_eq!(bridge.settings.stp, Some(false));
+        assert!(bridge.settings.port_connections.is_none());
+        let ports = bridge.port_connections.as_ref().unwrap();
+        let [BridgePortWithState::Name(_), BridgePortWithState::Ethernet(eth0), BridgePortWithState::Bond(bond0), BridgePortWithState::Wireless(wlan0)] =
+            ports.as_slice()
+        else {
+            panic!("unexpected ports: {ports:?}");
+        };
+        assert_eq!(eth0.state, ConnectionState::Activated);
+        assert_eq!(eth0.port.port.as_ref().unwrap().priority, Some(16));
+        assert_eq!(bond0.port.port.as_ref().unwrap().priority, Some(32));
+        assert_eq!(wlan0.state, ConnectionState::Deactivated);
+        assert!(bond0.bond.settings.port_connections.is_none());
+        let ports = bond0.bond.port_connections.as_ref().unwrap();
+        let [BondPortWithState::Ethernet(_), BondPortWithState::Ethernet(eth2), BondPortWithState::Bridge(br1), BondPortWithState::Vlan(_)] =
+            ports.as_slice()
+        else {
+            panic!("unexpected ports: {ports:?}");
+        };
+        assert_eq!(eth2.state, ConnectionState::Deactivated);
+        assert_eq!(br1.state, ConnectionState::Activating);
+
+        // Written back as it was read, without the sections twice.
+        let written = serde_json::to_string(&conn).unwrap();
+        assert_eq!(written.matches("\"bond\"").count(), 1);
+        assert_eq!(written.matches("\"bridge\"").count(), 2);
+        assert_eq!(written.matches("\"portConnections\"").count(), 3);
+        assert_eq!(
+            serde_json::from_str::<serde_json::Value>(&written).unwrap(),
+            json
+        );
+    }
+
+    #[test]
+    fn test_the_ports_with_state_reject_unknown_fields() {
+        for port in [
+            r#"{ "id": "eth0", "state": "activated", "unknown": true }"#,
+            r#"{ "id": "bond1", "bond": { "mode": "802.3ad" }, "state": "activated", "unknown": true }"#,
+            // Only the ports of a bridge have port settings.
+            r#"{ "id": "eth0", "port": { "priority": 32 }, "state": "activated" }"#,
+            // A port is a single kind of connection.
+            r#"{ "id": "bond1", "bond": { "mode": "802.3ad" }, "vlan": { "parent": "eth0", "id": 10 }, "state": "activated" }"#,
+        ] {
+            let json = format!(
+                r#"{{ "id": "bond0", "bond": {{ "mode": "802.3ad", "portConnections": [{port}] }}, "state": "activated" }}"#
+            );
+            assert!(
+                serde_json::from_str::<NetworkConnectionWithState>(&json).is_err(),
+                "{port}"
+            );
+        }
+    }
+
+    #[test]
+    fn test_the_schema_with_state_documents_the_ports_with_state() {
+        // The wrappers flatten the config types first, so that their own fields replace the ones
+        // with the same name in the schema.
+        let schema = schemars::schema_for!(NetworkConnectionWithState);
+        let json = serde_json::to_value(&schema).unwrap();
+        let defs = &json["$defs"];
+
+        let bond = &json["properties"]["bond"]["anyOf"][0]["$ref"];
+        assert_eq!(bond, "#/$defs/BondSettingsWithState");
+        let bridge = &json["properties"]["bridge"]["anyOf"][0]["$ref"];
+        assert_eq!(bridge, "#/$defs/BridgeSettingsWithState");
+        let ports = &defs["BondSettingsWithState"]["properties"]["portConnections"]["items"];
+        assert_eq!(ports["$ref"], "#/$defs/BondPortWithState");
+        let ports = &defs["BridgeSettingsWithState"]["properties"]["portConnections"]["items"];
+        assert_eq!(ports["$ref"], "#/$defs/BridgePortWithState");
+        for port in ["BondEthernetPortWithState", "BridgeBondPortWithState"] {
+            assert!(defs[port]["properties"].get("state").is_some(), "{port}");
+        }
     }
 }

@@ -1574,35 +1574,6 @@ impl ConnectionCollection {
     /// The ports of each bond and bridge are nested in its `portConnections` list, so only the
     /// root connections are at the top level.
     fn to_api(&self) -> Result<NetworkConnectionsCollection, NetworkStateError> {
-        let roots = self.to_api_roots()?;
-        Ok(NetworkConnectionsCollection(
-            roots.into_iter().map(|(_, root)| root).collect(),
-        ))
-    }
-
-    /// Converts the collection to its HTTP API representation, with the state of the connections.
-    ///
-    /// Only the root connections report their state: the nested ports are part of their
-    /// controller's representation.
-    fn to_api_with_state(
-        &self,
-    ) -> Result<NetworkConnectionsWithStateCollection, NetworkStateError> {
-        let roots = self.to_api_roots()?;
-        Ok(NetworkConnectionsWithStateCollection(
-            roots
-                .into_iter()
-                .map(|(conn, connection)| NetworkConnectionWithState {
-                    connection,
-                    state: conn.state,
-                })
-                .collect(),
-        ))
-    }
-
-    /// Converts the root connections, with their ports nested, to their HTTP API representation.
-    ///
-    /// Each one comes with the connection it was converted from.
-    fn to_api_roots(&self) -> Result<Vec<(&Connection, NetworkConnection)>, NetworkStateError> {
         let mut placed = HashSet::new();
         let mut roots = vec![];
 
@@ -1621,8 +1592,7 @@ impl ConnectionCollection {
                 }
             }
 
-            let root = self.to_api_tree(conn, &mut placed)?;
-            roots.push((conn, root));
+            roots.push(self.to_api_tree(conn, &mut placed)?);
         }
 
         // A loop of controllers is not reachable from any root. Report it anyway, starting at
@@ -1630,12 +1600,35 @@ impl ConnectionCollection {
         for conn in self.iter() {
             if !placed.contains(&conn.uuid) {
                 tracing::warn!("Connection {} belongs to a loop of controllers", conn.id);
-                let root = self.to_api_tree(conn, &mut placed)?;
-                roots.push((conn, root));
+                roots.push(self.to_api_tree(conn, &mut placed)?);
             }
         }
 
-        Ok(roots)
+        Ok(NetworkConnectionsCollection(roots))
+    }
+
+    /// Converts the collection to its HTTP API representation, with the state of the connections.
+    ///
+    /// The nested ports report their state too, as it is not the one of their controller (e.g., a
+    /// backup port of a bond is not active while the bond is). The state of each connection is
+    /// looked up by its ID, as the representation knows the connections by it.
+    fn to_api_with_state(
+        &self,
+    ) -> Result<NetworkConnectionsWithStateCollection, NetworkStateError> {
+        let mut states = HashMap::new();
+        for conn in self.iter() {
+            // The first one wins, as with [`NetworkState::get_connection`].
+            states.entry(conn.id.as_str()).or_insert(conn.state);
+        }
+        let state_of = |id: &str| states.get(id).copied().unwrap_or(ConnectionState::Unknown);
+
+        let roots = self.to_api()?.0;
+        Ok(NetworkConnectionsWithStateCollection(
+            roots
+                .into_iter()
+                .map(|conn| NetworkConnectionWithState::new(conn, &state_of))
+                .collect(),
+        ))
     }
 
     /// Converts a connection and, recursively, its ports to their HTTP API representation.
