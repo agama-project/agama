@@ -269,10 +269,10 @@ partition.size.max      #=> Y2Storage::DiskSize.Unlimited
 ## Partition ids and device mapper names
 
 The Agama proposal (not the AutoYaST one) sets some partition ids and device mapper names
-automatically in order to support the
-[Discoverable Partitions Specification](https://uapi-group.org/specifications/specs/discoverable_partitions_specification/)
-(DPS). Only the ids and names of the devices created by the proposal are set. Reused devices are never
-modified, and an `id` explicitly indicated in the profile is always respected.
+automatically in order to partially honor the [Discoverable Partitions Specification](https://uapi-group.org/specifications/specs/discoverable_partitions_specification/)
+(DPS) for the UKIs experiments, see [PED-17039](https://jira.suse.com/browse/PED-17039). Only the
+ids and names of the devices created by the proposal are set. Reused devices are never modified, and
+an `id` explicitly indicated in the profile is always respected.
 
 ### Partition ids
 
