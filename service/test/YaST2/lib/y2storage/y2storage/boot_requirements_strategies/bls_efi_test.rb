@@ -265,10 +265,10 @@ describe Y2Storage::BootRequirementsStrategies::BlsEfi do
       context "and /boot/efi and /boot are configured" do
         let(:configured) { { "/boot/efi" => 500.MiB, "/boot" => 1.GiB } }
 
-        it "sets the ESP id for /boot/efi and the XBOOTLDR id for /boot" do
+        it "sets the ESP id for /boot/efi and no specific id for /boot" do
           subject.needed_partitions(target)
           expect(configured_partition("/boot/efi").partition_id).to eq(esp_id)
-          expect(configured_partition("/boot").partition_id).to eq(xbootldr_id)
+          expect(configured_partition("/boot").partition_id).to be_nil
         end
 
         it "does not propose any partition" do
