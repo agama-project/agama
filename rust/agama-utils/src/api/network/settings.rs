@@ -55,13 +55,6 @@ impl NetworkConnectionsCollection {
     }
 }
 
-/// Collection of connections with their current state, as the system reports them.
-///
-/// Like [`NetworkConnectionsCollection`], it only holds the root connections.
-#[derive(Clone, Debug, Default, Serialize, Deserialize, JsonSchema, PartialEq)]
-#[schemars(rename = "NetworkConnectionsWithState")]
-pub struct NetworkConnectionsWithStateCollection(pub Vec<NetworkConnectionWithState>);
-
 /// Network settings for installation
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -604,18 +597,13 @@ pub struct NetworkConnection {
     /// Specifies whether the connection should be persisted or not
     #[serde(skip_serializing_if = "Option::is_none")]
     pub persistent: Option<bool>,
-}
-
-/// A connection as the system reports it, with its current state.
-///
-/// The state is not part of the configuration, so only the system information reports it. The
-/// ports nested in a controller do not report it.
-#[derive(Clone, Debug, Serialize, Deserialize, JsonSchema, PartialEq)]
-pub struct NetworkConnectionWithState {
-    #[serde(flatten)]
-    pub connection: NetworkConnection,
     /// Current state of the connection
-    pub state: ConnectionState,
+    ///
+    /// It is not a setting: only the system information reports it. It is never deserialized, so
+    /// the schema of the config (generated for deserializing) leaves it out and rejects a profile
+    /// that gives it, and so do the ports, as they deny unknown fields.
+    #[serde(skip_deserializing, skip_serializing_if = "Option::is_none")]
+    pub state: Option<ConnectionState>,
 }
 
 /// Sections that only some kinds of ports have (see [`port_type`]).
@@ -700,13 +688,16 @@ macro_rules! port_type {
             /// Specifies whether the connection should be persisted or not
             #[serde(skip_serializing_if = "Option::is_none")]
             pub persistent: Option<bool>,
+            /// Current state of the connection (see [`NetworkConnection::state`])
+            #[serde(skip_deserializing, skip_serializing_if = "Option::is_none")]
+            pub state: Option<ConnectionState>,
         }
 
         impl $name {
             /// Reports a connection as this kind of port, with the given sections.
             ///
             /// Its IP settings are dropped, as its controller holds them, and so are its sections:
-            /// the ones of the port are given.
+            /// the ones of the port are given. Its state is kept.
             fn from_connection(conn: NetworkConnection, $( $field: $type, )*) -> Self {
                 let NetworkConnection {
                     id,
@@ -731,6 +722,7 @@ macro_rules! port_type {
                     ieee_8021x,
                     autoconnect,
                     persistent,
+                    state,
                 } = conn;
 
                 Self {
@@ -745,6 +737,7 @@ macro_rules! port_type {
                     ieee_8021x,
                     autoconnect,
                     persistent,
+                    state,
                 }
             }
 

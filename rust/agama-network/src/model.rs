@@ -851,6 +851,8 @@ impl TryFrom<NetworkConnection> for Connection {
 impl TryFrom<Connection> for NetworkConnection {
     type Error = NetworkStateError;
 
+    /// Converts a connection to its HTTP API representation, without its state (see
+    /// [`NetworkConnection::state`]).
     fn try_from(conn: Connection) -> Result<Self, Self::Error> {
         let id = conn.clone().id;
         let custom_mac = conn.custom_mac_address.to_string();
@@ -1574,35 +1576,22 @@ impl ConnectionCollection {
     /// The ports of each bond and bridge are nested in its `portConnections` list, so only the
     /// root connections are at the top level.
     fn to_api(&self) -> Result<NetworkConnectionsCollection, NetworkStateError> {
-        let roots = self.to_api_roots()?;
-        Ok(NetworkConnectionsCollection(
-            roots.into_iter().map(|(_, root)| root).collect(),
-        ))
+        Ok(NetworkConnectionsCollection(self.to_api_roots(false)?))
     }
 
     /// Converts the collection to its HTTP API representation, with the state of the connections.
     ///
-    /// Only the root connections report their state: the nested ports are part of their
-    /// controller's representation.
-    fn to_api_with_state(
-        &self,
-    ) -> Result<NetworkConnectionsWithStateCollection, NetworkStateError> {
-        let roots = self.to_api_roots()?;
-        Ok(NetworkConnectionsWithStateCollection(
-            roots
-                .into_iter()
-                .map(|(conn, connection)| NetworkConnectionWithState {
-                    connection,
-                    state: conn.state,
-                })
-                .collect(),
-        ))
+    /// The nested ports report their state too, as it is not the one of their controller (e.g., a
+    /// backup port of a bond is not active while the bond is).
+    fn to_api_with_state(&self) -> Result<NetworkConnectionsCollection, NetworkStateError> {
+        Ok(NetworkConnectionsCollection(self.to_api_roots(true)?))
     }
 
     /// Converts the root connections, with their ports nested, to their HTTP API representation.
     ///
-    /// Each one comes with the connection it was converted from.
-    fn to_api_roots(&self) -> Result<Vec<(&Connection, NetworkConnection)>, NetworkStateError> {
+    /// * `with_state`: whether every connection, ports included, reports its state, which only
+    ///   the system information does.
+    fn to_api_roots(&self, with_state: bool) -> Result<Vec<NetworkConnection>, NetworkStateError> {
         let mut placed = HashSet::new();
         let mut roots = vec![];
 
@@ -1621,8 +1610,7 @@ impl ConnectionCollection {
                 }
             }
 
-            let root = self.to_api_tree(conn, &mut placed)?;
-            roots.push((conn, root));
+            roots.push(self.to_api_tree(conn, &mut placed, with_state)?);
         }
 
         // A loop of controllers is not reachable from any root. Report it anyway, starting at
@@ -1630,8 +1618,7 @@ impl ConnectionCollection {
         for conn in self.iter() {
             if !placed.contains(&conn.uuid) {
                 tracing::warn!("Connection {} belongs to a loop of controllers", conn.id);
-                let root = self.to_api_tree(conn, &mut placed)?;
-                roots.push((conn, root));
+                roots.push(self.to_api_tree(conn, &mut placed, with_state)?);
             }
         }
 
@@ -1642,14 +1629,18 @@ impl ConnectionCollection {
     ///
     /// * `conn`: connection to convert.
     /// * `placed`: connections converted so far, to not walk a loop of controllers forever.
+    /// * `with_state`: whether the connections report their state.
     fn to_api_tree(
         &self,
         conn: &Connection,
         placed: &mut HashSet<Uuid>,
+        with_state: bool,
     ) -> Result<NetworkConnection, NetworkStateError> {
         placed.insert(conn.uuid);
 
         let mut api_conn = NetworkConnection::try_from(conn.clone())?;
+        // The ports keep it (see `BondPort::from_connection` and `BridgePort::from_connection`).
+        api_conn.state = with_state.then_some(conn.state);
 
         if api_conn.controller_settings().is_none() {
             return Ok(api_conn);
@@ -1668,7 +1659,7 @@ impl ConnectionCollection {
             if placed.contains(&member.uuid) {
                 continue;
             }
-            let port = self.to_api_tree(member, placed)?;
+            let port = self.to_api_tree(member, placed, with_state)?;
             ports.push((member, port));
         }
 
