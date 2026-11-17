@@ -189,6 +189,8 @@
         <package name="alsa" arch="aarch64,x86_64,ppc64le,s390x,riscv64"/>
         <package name="alsa-utils" arch="aarch64,x86_64,ppc64le,s390x,riscv64"/>
         <package name="alsa-ucm-conf" arch="aarch64,x86_64,ppc64le,s390x,riscv64"/>
+        <!-- braille display support -->
+        <package name="brltty" arch="aarch64,x86_64,ppc64le,s390x,riscv64"/>
     </packages>
 
     <!-- common packages for openSUSE Tumbleweed and Leap distributions -->

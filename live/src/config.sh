@@ -94,6 +94,9 @@ systemctl enable setup-systemd-proxy-env.path
 test -f /usr/lib/systemd/system/gdm.service && systemctl enable gdm.service
 systemctl enable zramswap
 
+# braille display support for Orca, triggered on device hotplug via udev
+systemctl enable brltty.path
+
 # set the default target
 arch=$(uname -m)
 if [[ "$kiwi_profiles" == *MINI* ]]; then
