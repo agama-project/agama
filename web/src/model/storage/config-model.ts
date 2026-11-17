@@ -118,25 +118,6 @@ function isGrub2WithTpm(config: ConfigModel.Config): boolean {
   return bootloader === "grub2" && encryption.tpm === true;
 }
 
-function canChangeTargetDrive(config: ConfigModel.Config): boolean {
-  if (config.drives.length !== 1) return false;
-  if (config.mdRaids.length) return false;
-  if (config.volumeGroups.some((g) => g.name)) return false;
-
-  return !partitionable.isReusingPartitions(config.drives[0]);
-}
-
-function changeTargetDrive(config: ConfigModel.Config, targetName: string): ConfigModel.Config {
-  const oldName = config.drives[0].name;
-
-  if (oldName === targetName) return config;
-
-  config = partitionable.convertToDrive(config, oldName, { name: targetName });
-  config.volumeGroups.forEach((g) => (g.targetDevices = [targetName]));
-
-  return config;
-}
-
 export default {
   clone,
   usedMountPaths,
@@ -157,7 +138,5 @@ export default {
   volume,
   getBootloader,
   isGrub2WithTpm,
-  canChangeTargetDrive,
-  changeTargetDrive,
 };
 export type { ConfigModel, Data, Partitionable, DeviceCollection, Device, Volume };
