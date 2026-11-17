@@ -359,9 +359,6 @@ fi
 rpm -qa | grep ^libQt | xargs --no-run-if-empty rpm -e --nodeps
 
 ## removing drivers and firmware makes the Live ISO about 370MiB smaller
-#
-# Agama does not use sound, added by icewm dependencies
-rpm -e --nodeps alsa alsa-utils alsa-ucm-conf || true
 
 # driver and firmware cleanup
 # Note: openSUSE Tumbleweed Live completely removes firmware for some server
