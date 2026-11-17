@@ -37,7 +37,7 @@ const question: Question = {
     { id: "skip", label: "Skip" },
   ],
   defaultAction: "Retry",
-  data: { package: "foo", error_code: "INVALID" },
+  data: { package: "foo", error_code: "Invalid" },
 };
 
 const renderQuestion = () =>

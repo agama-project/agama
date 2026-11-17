@@ -625,14 +625,14 @@ mod tests {
 
         // The question data uses camelCase, as some producers do.
         let q = QuestionSpec::new("Failed to install the package", "packageProvideError")
-            .with_data(&[("errorCode", "INVALID")]);
+            .with_data(&[("errorCode", "Invalid")]);
 
         let rule = AnswerRule {
             text: Default::default(),
             class: Default::default(),
             data: Some(HashMap::from([(
                 "error_code".to_string(),
-                "INVALID".to_string(),
+                "Invalid".to_string(),
             )])),
             answer: answer.clone(),
         };
@@ -670,7 +670,7 @@ mod tests {
         };
 
         let q = QuestionSpec::new("Failed to install the package", "packageProvideError")
-            .with_data(&[("errorCode", "INVALID")]);
+            .with_data(&[("errorCode", "Invalid")]);
 
         // Same key (in both forms), but a different value.
         let rule_with_wrong_value = AnswerRule {
@@ -690,7 +690,7 @@ mod tests {
             class: Default::default(),
             data: Some(HashMap::from([(
                 "unknown_key".to_string(),
-                "INVALID".to_string(),
+                "Invalid".to_string(),
             )])),
             answer: answer.clone(),
         };
