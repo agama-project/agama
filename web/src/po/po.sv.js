@@ -3086,7 +3086,7 @@ export default {
     "Oväntat fel"
   ],
   "Unknown": [
-    "Okänt"
+    "Okänd"
   ],
   "Unknown error": [
     "Okänt fel"
