@@ -57,11 +57,6 @@ export type MoveToOtherDeviceProps = {
  * which is where the reader sees what there is to move to; a button that knows
  * the answer in advance is a button that has to explain itself before the
  * reader has asked anything.
- *
- * It is the page's {@link ChangeInstallationDisk} in a different place and
- * nothing more today. They are two components because they are heading apart:
- * that one is about where the installation goes, this one about where some part
- * of it goes, and only the first of those is the whole plan.
  */
 export default function MoveToOtherDevice({
   entry,

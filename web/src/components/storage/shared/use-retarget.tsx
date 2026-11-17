@@ -23,22 +23,162 @@
 import React from "react";
 import { sprintf } from "sprintf-js";
 import DeviceSelectorModal from "~/components/storage/DeviceSelectorModal";
-import { baseName } from "~/components/storage/utils";
+import { deviceBaseName, formattedPath } from "~/components/storage/utils";
 import { isDrive, isMd, isVolumeGroup } from "~/model/storage/device";
 import configModel from "~/model/storage/config-model";
 import { useConfigModel, useConvertDevice } from "~/hooks/model/storage/config-model";
 import { useAvailableDevices } from "~/hooks/model/system/storage";
-import { _, TranslatedString } from "~/i18n";
+import { _, n_, formatList, TranslatedString } from "~/i18n";
+import type { ConfigModel } from "~/model/storage/config-model";
 import type { Partitionable } from "~/model/storage/config-model";
 import type { Storage } from "~/model/system";
 
 type Retarget = {
-  /** What the act costs, where there is anything here to carry. */
-  note: TranslatedString | null;
+  /** The title that describes what is going to happen. */
+  title: React.ReactNode;
+  /** Further details about the consequences. */
+  description: React.ReactNode;
   /** Offers the reader the choice of device. */
   open: () => void;
   /** The choice itself, rendered by whatever offered it. */
   selector: React.ReactNode;
+};
+
+/**
+ * Returns a string describing what will be created as logical volumes when
+ * reusing a volume group, or `undefined` when no new partitions are being
+ * added.
+ *
+ * A plain function (not a component) because a React element's emptiness cannot
+ * be checked without rendering it, making it difficult for callers to decide
+ * whether to render anything at all (e.g. {@link Annotation} guards against no
+ * children to avoid displaying just an icon with no text)
+ */
+const reuseVgSideEffect = (
+  deviceConfig: ConfigModel.Drive | ConfigModel.MdRaid,
+): string | undefined => {
+  const paths = deviceConfig.partitions
+    .filter((p) => !p.name)
+    .map((p) => formattedPath(p.mountPath));
+
+  if (paths.length) {
+    return sprintf(
+      n_(
+        // TRANSLATORS: %s is a list of formatted mount points like '"/", "/var" and "swap"' (or a
+        // single mount point in the singular case).
+        "%s will be created as a logical volume",
+        "%s will be created as logical volumes",
+        paths.length,
+      ),
+      formatList(paths),
+    );
+  }
+};
+
+type DescriptionProps = {
+  modelDevice: ConfigModel.Drive | ConfigModel.MdRaid;
+  device: Storage.Device;
+};
+
+const Description = ({ modelDevice, device }: DescriptionProps) => {
+  const config = useConfigModel();
+  const volumeGroups = configModel.partitionable.filterVolumeGroups(config, modelDevice);
+  const isExplicitBoot = configModel.boot.hasExplicitDevice(config, modelDevice.name);
+  const isBoot = configModel.boot.hasDevice(config, modelDevice.name);
+  const hasPv = volumeGroups.length > 0;
+  const vgName = volumeGroups[0]?.vgName;
+  const devName = deviceBaseName(device, { truncate: true });
+
+  if (hasPv) {
+    if (volumeGroups.length > 1) {
+      if (isExplicitBoot) {
+        return sprintf(
+          // TRANSLATORS: %s is the name of the disk (eg. sda)
+          _("%s will still contain the configured LVM groups and any partition needed to boot"),
+          devName,
+        );
+      }
+
+      // TRANSLATORS: %s is the name of the disk (eg. sda)
+      return sprintf(_("The configured LVM groups will remain at %s"), devName);
+    }
+
+    if (isExplicitBoot) {
+      return sprintf(
+        // TRANSLATORS: %1$s is the name of the disk (eg. sda) and %2$s the name of the LVM
+        _("%1$s will still contain the LVM group '%2$s' and any partition needed to boot"),
+        devName,
+        vgName,
+      );
+    }
+
+    return sprintf(
+      // TRANSLATORS: %1$s is the name of the LVM and %2$s the name of the disk (eg. sda)
+      _("The LVM group '%1$s' will remain at %2$s"),
+      vgName,
+      devName,
+    );
+  }
+
+  if (isExplicitBoot) {
+    // TRANSLATORS: %s is the name of the disk (eg. sda)
+    return sprintf(_("Partitions needed for booting will remain at %s"), devName);
+  }
+
+  if (isBoot) {
+    return _("Partitions needed for booting will also be adapted");
+  }
+};
+
+type TitleProps = {
+  modelDevice: ConfigModel.Drive | ConfigModel.MdRaid;
+};
+
+const Title = ({ modelDevice }: TitleProps) => {
+  if (modelDevice.filesystem) {
+    // TRANSLATORS: %s is a formatted mount point like '"/home"'
+    return sprintf(_("Change the device to format as %s"), formattedPath(modelDevice.mountPath));
+  }
+
+  const newMountPaths = modelDevice.partitions.filter((p) => !p.name).map((p) => p.mountPath);
+  const hasMountPaths = newMountPaths.length > 0;
+
+  if (!hasMountPaths) {
+    return _("Change the device to configure");
+  }
+
+  if (newMountPaths.includes("/")) {
+    return _("Change the device to install the system");
+  }
+
+  return sprintf(
+    // TRANSLATORS: %s is a list of formatted mount points like '"/", "/var" and "swap"' (or a
+    // single mount point in the singular case).
+    _("Change the device to create %s"),
+    formatList(newMountPaths.map((p) => formattedPath(p))),
+  );
+};
+
+const targetDevices = (
+  deviceConfig: ConfigModel.Drive | ConfigModel.MdRaid,
+  config: ConfigModel.Config,
+  availableDevices: Storage.Device[],
+): Storage.Device[] => {
+  return availableDevices.filter((availableDevice) => {
+    if (deviceConfig.name === availableDevice.name) return true;
+
+    const availableDeviceConfig = configModel.findDeviceByName(config, availableDevice.name);
+
+    if (deviceConfig.filesystem) {
+      if (isVolumeGroup(availableDevice)) return false;
+      if (!availableDeviceConfig) return true;
+      return !configModel.partitionable.isUsed(config, availableDeviceConfig.name);
+    } else {
+      if (!availableDeviceConfig) return true;
+      if ("filesystem" in availableDeviceConfig) return !availableDeviceConfig.filesystem;
+      return true;
+    }
+  });
 };
 
 /**
@@ -60,59 +200,31 @@ type Retarget = {
  * <Button onClick={open}>{_("Use another device")}</Button>
  * {selector}
  */
-function useRetarget(entry: Partitionable.Device, device: Storage.Device | null): Retarget {
+function useRetarget(entry: Partitionable.Device, device: Storage.Device): Retarget {
   const config = useConfigModel();
-  const available = useAvailableDevices();
   const convertDevice = useConvertDevice();
+  const vgSelectionSideEffect = reuseVgSideEffect(entry);
+  const targets = targetDevices(entry, config, useAvailableDevices());
   const [isOpen, setIsOpen] = React.useState(false);
 
-  const name = baseName(entry.name);
-
-  /* Whether the plan builds anything here, which is not the same question as
-     whether this device has entries: a disk given whole to a volume group
-     carries an entry per partition being cleared off it and builds nothing. */
-  const plansContent =
-    Boolean(entry.filesystem) ||
-    configModel.partitionable.isAddingPartitions(entry) ||
-    configModel.partitionable.isReusingPartitions(entry);
-
-  /* Every device the configuration does not already hold, plus the one it is
-     on, which is how the dialog shows what is currently chosen. */
-  const taken = configModel
-    .devices(config)
-    .map((used) => used.name)
-    .filter((used) => used !== entry.name);
-  const targets = available.filter((candidate) => !taken.includes(candidate.name));
+  const vgEmptyStateTitle = (): TranslatedString | undefined => {
+    return entry.filesystem ? _("Volume groups cannot be formatted") : undefined;
+  };
 
   return {
-    note: plansContent
-      ? sprintf(
-          // TRANSLATORS: what happens to the plan when the reader picks a
-          // different device for it. %s is a device name, such as "sda".
-          _("Everything planned for %s moves to the device you pick."),
-          name,
-        )
-      : null,
+    title: <Title modelDevice={entry} />,
+    description: <Description modelDevice={entry} device={device} />,
     open: () => setIsOpen(true),
     selector: isOpen && (
       <DeviceSelectorModal
-        title={_("Use another device")}
-        intro={
-          plansContent
-            ? sprintf(
-                // TRANSLATORS: said above the list of devices to move the plan
-                // to. %s is a device name, such as "sda".
-                _("The plan stays as it is. Everything %s was going to hold moves."),
-                name,
-              )
-            : // TRANSLATORS: said above the list of devices to move the plan to,
-              // where the installer builds nothing on the current one.
-              _("The plan stays as it is.")
-        }
+        title={<Title modelDevice={entry} />}
+        intro={<Description modelDevice={entry} device={device} />}
         selected={device}
         disks={targets.filter(isDrive)}
         mdRaids={targets.filter(isMd)}
         volumeGroups={targets.filter(isVolumeGroup)}
+        sideEffects={{ volumeGroups: vgSelectionSideEffect }}
+        emptyStateTitles={{ volumeGroups: vgEmptyStateTitle() }}
         onCancel={() => setIsOpen(false)}
         onConfirm={([target]: Storage.Device[]) => {
           setIsOpen(false);

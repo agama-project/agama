@@ -26,8 +26,8 @@ import { sprintf } from "sprintf-js";
 import MenuButton, { MenuButtonItem } from "~/components/core/MenuButton";
 import RowMenuToggle from "~/components/storage/entries-table/RowMenuToggle";
 import NewVgMenuOption from "~/components/storage/NewVgMenuOption";
-import ChangeInstallationDisk from "~/components/storage/storage-page/ChangeInstallationDisk";
 import SpacePolicyMenuItem from "~/components/storage/entries-table/SpacePolicyMenuItem";
+import ChangeDeviceMenuItem from "~/components/storage/entries-table/ChangeDeviceMenuItem";
 import { useDeviceDetails } from "~/components/storage/shared/use-device-details";
 import { baseName } from "~/components/storage/utils";
 import configModel from "~/model/storage/config-model";
@@ -36,8 +36,9 @@ import {
   useDeleteDrive,
   useDeleteMdRaid,
 } from "~/hooks/model/storage/config-model";
-import { useCandidateDrives } from "~/hooks/model/system/storage";
+import { useRetarget } from "~/components/storage/shared/use-retarget";
 import { _ } from "~/i18n";
+import { useDevice } from "~/hooks/model/system/storage";
 import type { Partitionable } from "~/model/storage/config-model";
 import type { DetailsSubject } from "~/components/storage/shared/use-device-details";
 
@@ -108,9 +109,9 @@ export default function DriveMenu({ entry, subject }: DriveMenuProps): React.Rea
   const config = useConfigModel();
   const deleteDrive = useDeleteDrive();
   const deleteMdRaid = useDeleteMdRaid();
+  const device = useDevice(entry.name);
   const { openDetails } = useDeviceDetails();
-  const candidate = useCandidateDrives();
-  const [isChangingDisk, setIsChangingDisk] = React.useState(false);
+  const { title, description, open, selector } = useRetarget(entry, device);
   const withFlyouts = true;
 
   const name = baseName(entry.name);
@@ -142,28 +143,17 @@ export default function DriveMenu({ entry, subject }: DriveMenuProps): React.Rea
       ]
     : [];
 
-  const canChangeTarget =
-    location?.collection === "drives" &&
-    configModel.canChangeTargetDrive(config) &&
-    candidate.length > 1;
-
-  if (canChangeTarget) {
-    items.push(
-      <MenuButtonItem
-        key="change-disk"
-        // TRANSLATORS: description of the menu item that puts the whole
-        // installation on a different disk.
-        description={_("Choose a different disk to install the system")}
-        onClick={() => setIsChangingDisk(true)}
-      >
-        {/* TRANSLATORS: menu item that opens a choice of another disk to
-            install the system on. */}
-        {_("Change target disk…")}
-      </MenuButtonItem>,
-    );
-  }
-
   if (subject) {
+    items.push(
+      <ChangeDeviceMenuItem
+        key="change"
+        actionTitle={title}
+        actionDescription={description}
+        device={device}
+        modelDevice={entry}
+        openFn={open}
+      />,
+    );
     items.push(
       <SpacePolicyMenuItem
         key="space-policy"
@@ -205,7 +195,7 @@ export default function DriveMenu({ entry, subject }: DriveMenuProps): React.Rea
         customToggle={<RowMenuToggle label={label} />}
         items={items}
       />
-      {isChangingDisk && <ChangeInstallationDisk onClose={() => setIsChangingDisk(false)} />}
+      {selector}
     </>
   );
 }
