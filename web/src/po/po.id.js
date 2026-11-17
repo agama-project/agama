@@ -819,8 +819,8 @@ export default {
   "Copy to the clipboard": [
     "Salin ke papan klip"
   ],
-  "Could not authenticate against the server.": [
-    "Tidak dapat mengautentikasi terhadap server."
+  "Could not authenticate against the server": [
+    "Tidak dapat melakukan autentikasi ke server"
   ],
   "Could not log in": [
     "Tidak dapat masuk"
@@ -1170,15 +1170,6 @@ export default {
   "Enter a server URL": [
     "Masukkan URL server"
   ],
-  "Enter or Tab to add": [
-    "Masukkan atau tekan Tab untuk menambah"
-  ],
-  "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate": [
-    "Masukkan atau tekan Tab untuk menambah, Backspace atau Delete untuk menghapus, tombol panah untuk menavigasi"
-  ],
-  "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate entries, Escape to exit": [
-    "Masukkan atau tekan Tab untuk menambah, Backspace atau Delete untuk menghapus, tombol panah untuk menavigasi entri, Escape untuk keluar"
-  ],
   "Enter removes every value, Left arrow goes back to the text box.": [
     "Enter menghapus semua nilai, panah kiri kembali ke kotak teks."
   ],
@@ -1196,6 +1187,15 @@ export default {
   ],
   "Enter takes a value back to the text box, Delete removes it, arrow keys move between values.": [
     "Enter mengembalikan nilai ke kotak teks, Delete menghapusnya, tombol panah berpindah antarnilai."
+  ],
+  "Enter to add": [
+    "Tekan Enter untuk menambahkan"
+  ],
+  "Enter to add, Backspace or Delete to remove, arrow keys to navigate": [
+    "Tekan Enter untuk menambahkan, Backspace atau Delete untuk menghapus, tombol panah untuk berpindah"
+  ],
+  "Enter to add, Backspace or Delete to remove, arrow keys to navigate entries, Escape to exit": [
+    "Tekan Enter untuk menambahkan, Backspace atau Delete untuk menghapus, tombol panah untuk berpindah antarentri, Escape untuk keluar"
   ],
   "Ethernet": [
     "Ethernet"
@@ -1916,6 +1916,9 @@ export default {
   ],
   "No DASD devices found in this machine.": [
     "Tidak ada perangkat DASD yang ditemukan di mesin ini."
+  ],
+  "No IP configuration for this protocol": [
+    "Tidak ada konfigurasi IP untuk protokol ini"
   ],
   "No LVM volume groups are available for selection.": [
     "Tidak ada grup volume LVM yang tersedia untuk dipilih."
@@ -3302,9 +3305,6 @@ export default {
   ],
   "Using %s keyboard layout": [
     "Menggunakan tata letak keyboard %s"
-  ],
-  "Using [%s] keyboard layout": [
-    "Menggunakan tata letak keyboard [%s]"
   ],
   "Using a hashed password.": [
     "Menggunakan kata sandi yang dienkripsi."

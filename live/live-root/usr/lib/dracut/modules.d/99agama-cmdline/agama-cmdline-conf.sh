@@ -14,13 +14,13 @@ get_agama_args() {
 
   for _i in $CMDLINE; do
     case $_i in
-    LIBSTORAGE_* | YAST_* | Y2* | ZYPP_*)
-      _found=1
-      _env=1
-      ;;
-    agama* | live* | inst*)
-      _found=1
-      ;;
+      LIBSTORAGE_* | YAST_* | Y2* | ZYPP_*)
+        _found=1
+        _env=1
+        ;;
+      agama* | live* | inst*)
+        _found=1
+        ;;
     esac
 
     if [ -n "$_found" ]; then
@@ -28,10 +28,10 @@ get_agama_args() {
         # Set the variable as a boolean if there is no assignation
         _i="${_i}=1"
       fi
-      echo $_i >>"${TARGET}"
+      echo $_i >> "${TARGET}"
       if [ -n "$_env" ]; then
         _i=$(echo "$_i" | tr '[:lower:].-' '[:upper:]__')
-        echo $_i >>"${ENV_TARGET}"
+        echo $_i >> "${ENV_TARGET}"
       fi
     fi
     unset _found _env

@@ -5,10 +5,10 @@
 # found in the Rust and Ruby source code.
 
 if ! command -v agama &> /dev/null; then
-    echo "Warning: 'agama' command not found."
-    echo "You might need to build the project first or run this inside an environment with agama installed."
-    echo "Trying to continue anyway... you might see errors if it is completely missing."
-    echo
+  echo "Warning: 'agama' command not found."
+  echo "You might need to build the project first or run this inside an environment with agama installed."
+  echo "Trying to continue anyway... you might see errors if it is completely missing."
+  echo
 fi
 
 echo "1) Real scenario: 'load.retry' (agama-autoinstall/src/questions.rs)"

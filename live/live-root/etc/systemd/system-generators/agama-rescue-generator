@@ -44,7 +44,6 @@ for unit in \
   agama-welcome-issue.service \
   agama-url-issue.service \
   agama-certificate-issue.service \
-  agama-certificate-issue.path
-do
+  agama-certificate-issue.path; do
   ln -sf /dev/null "$early_dir/$unit"
 done

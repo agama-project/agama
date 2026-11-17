@@ -26,7 +26,7 @@
 #   rd.hcn.ip=<config>    - Create bonds with HCN-specific IP configuration
 #   rd.hcn.route=<config> - Create bonds with HCN-specific route configuration
 
-command -v getargs >/dev/null || . /lib/dracut-lib.sh
+command -v getargs > /dev/null || . /lib/dracut-lib.sh
 
 # Helper to read 4 bytes from device-tree and return hex string
 xdump4() {
@@ -65,7 +65,7 @@ get_dev_hcn() {
   hcnid=$(xdump4 "$dev/ibm,hcn-id")
   [ -z "$hcnid" ] && return 1
 
-  mode=$(tr -d '\0' <"$dev/ibm,hcn-mode" 2>/dev/null)
+  mode=$(tr -d '\0' < "$dev/ibm,hcn-mode" 2> /dev/null)
   ofpath=${dev#/proc/device-tree}
 
   # Wait for device to appear in sysfs. This might take time after migration.
@@ -74,7 +74,7 @@ get_dev_hcn() {
   # ofpathname can resolve a name for a device that is not in sysfs yet, and
   # such a name must not be taken as a valid result once the waiting is over.
   while :; do
-    devname=$(ofpathname -l "$ofpath" 2>/dev/null)
+    devname=$(ofpathname -l "$ofpath" 2> /dev/null)
     if [ -n "$devname" ] && [ -e "/sys/class/net/$devname" ]; then
       info "parse-hcn: device $devname ready for $ofpath"
       mac=$(get_mac "$dev")
@@ -224,7 +224,7 @@ fixup_nm_connections() {
   # First pass: build UUID to ID mapping for resolution
   for con in "$conn_dir"/*.nmconnection; do
     [ -e "$con" ] || continue
-    IFS='|' read -r id uuid ifname master controller mac <<EOF
+    IFS='|' read -r id uuid ifname master controller mac << EOF
 $(parse_nm_connection "$con")
 EOF
     [ -n "$uuid" ] && [ -n "$id" ] && uuid_map="$uuid_map $uuid:$id"
@@ -240,7 +240,7 @@ EOF
     found_master="" found_ifname=""
 
     # Extract connection details
-    IFS='|' read -r id uuid ifname master controller mac <<EOF
+    IFS='|' read -r id uuid ifname master controller mac << EOF
 $(parse_nm_connection "$con")
 EOF
 
@@ -482,89 +482,89 @@ for BONDNAME in $BOND_NAMES; do
     # static addresses fall back to the first bond only (see the *) branch).
     has_bond_ip=0
     case "$HCN_IP" in
-    *:bond[0-9]*) has_bond_ip=1 ;;
+      *:bond[0-9]*) has_bond_ip=1 ;;
     esac
     if [ $matched -eq 0 ] && [ $matched_other -eq 0 ] && [ $has_bond_ip -eq 0 ]; then
       case "$HCN_IP" in
-      dhcp | on | any | single-dhcp | dhcp6 | auto6 | ibft | either6 | link6)
-        # Method-only config (no fixed address): each bond obtains its own
-        # configuration independently, so apply it to every discovered bond.
-        info "parse-hcn: applying $HCN_IP to $BONDNAME"
-        NEW_ARGS="$NEW_ARGS ip=$BONDNAME:$HCN_IP"
-        ;;
-      *:dhcp | *:on | *:any | *:dhcp6 | *:auto6 | *:link6)
-        # Format: rd.hcn.ip=<interface>:{dhcp|on|any|dhcp6|auto6|link6}[:[<mtu>]]
-        # Method-only config with optional MTU: also applies to every bond.
-        # Extract optional MTU field (after the method, could be followed by more colons)
-        temp_ip=${HCN_IP}
-        # Count colons to determine if there are extra fields
-        colons=0
-        while [ "${temp_ip#*:}" != "$temp_ip" ]; do
-          colons=$((colons + 1))
-          temp_ip=${temp_ip#*:}
-        done
-        # Format: interface:method[:mtu]
-        # We need at least 1 colon (interface:method), optionally 2 for MTU
-        if [ "$colons" -ge 1 ]; then
-          info "parse-hcn: applying DHCP/auto config with optional MTU to $BONDNAME"
-          NEW_ARGS="$NEW_ARGS ip=$BONDNAME:${HCN_IP#*:}"
-        fi
-        ;;
-      *)
-        # Static IP configuration: a fixed address can belong to only one bond,
-        # so an unqualified static config falls back to the first bond only.
-        [ "$BONDNAME" = "$FIRST_BOND" ] || continue
-        # Count colons to determine format
-        # Standard format: rd.hcn.ip=<client-IP>:[<peer>]:<gateway-IP>:<netmask>:<client_hostname>:<interface>:{none|off|dhcp|on|any|dhcp6|auto6|ibft}[:[<dns1>][:<dns2>]]
-        # Minimum fields: client-IP:gateway:netmask:hostname:interface:method (5 colons)
-        # Extended: adds :dns1 and/or :dns2 (up to 7 colons)
-        temp_ip=${HCN_IP}
-        colons=0
-        while [ "${temp_ip#*:}" != "$temp_ip" ]; do
-          colons=$((colons + 1))
-          temp_ip=${temp_ip#*:}
-        done
+        dhcp | on | any | single-dhcp | dhcp6 | auto6 | ibft | either6 | link6)
+          # Method-only config (no fixed address): each bond obtains its own
+          # configuration independently, so apply it to every discovered bond.
+          info "parse-hcn: applying $HCN_IP to $BONDNAME"
+          NEW_ARGS="$NEW_ARGS ip=$BONDNAME:$HCN_IP"
+          ;;
+        *:dhcp | *:on | *:any | *:dhcp6 | *:auto6 | *:link6)
+          # Format: rd.hcn.ip=<interface>:{dhcp|on|any|dhcp6|auto6|link6}[:[<mtu>]]
+          # Method-only config with optional MTU: also applies to every bond.
+          # Extract optional MTU field (after the method, could be followed by more colons)
+          temp_ip=${HCN_IP}
+          # Count colons to determine if there are extra fields
+          colons=0
+          while [ "${temp_ip#*:}" != "$temp_ip" ]; do
+            colons=$((colons + 1))
+            temp_ip=${temp_ip#*:}
+          done
+          # Format: interface:method[:mtu]
+          # We need at least 1 colon (interface:method), optionally 2 for MTU
+          if [ "$colons" -ge 1 ]; then
+            info "parse-hcn: applying DHCP/auto config with optional MTU to $BONDNAME"
+            NEW_ARGS="$NEW_ARGS ip=$BONDNAME:${HCN_IP#*:}"
+          fi
+          ;;
+        *)
+          # Static IP configuration: a fixed address can belong to only one bond,
+          # so an unqualified static config falls back to the first bond only.
+          [ "$BONDNAME" = "$FIRST_BOND" ] || continue
+          # Count colons to determine format
+          # Standard format: rd.hcn.ip=<client-IP>:[<peer>]:<gateway-IP>:<netmask>:<client_hostname>:<interface>:{none|off|dhcp|on|any|dhcp6|auto6|ibft}[:[<dns1>][:<dns2>]]
+          # Minimum fields: client-IP:gateway:netmask:hostname:interface:method (5 colons)
+          # Extended: adds :dns1 and/or :dns2 (up to 7 colons)
+          temp_ip=${HCN_IP}
+          colons=0
+          while [ "${temp_ip#*:}" != "$temp_ip" ]; do
+            colons=$((colons + 1))
+            temp_ip=${temp_ip#*:}
+          done
 
-        if [ "$colons" -ge 5 ]; then
-          # Already has interface field, just need to replace it with bond name
-          # Extract fields: we need to replace the 6th field (interface) with BONDNAME
-          # Preserve any DNS fields that may follow
-          # shellcheck disable=SC2034
-          IFS=':' read -r f1 f2 f3 f4 f5 f6 f7 f8 f9 <<EOF
+          if [ "$colons" -ge 5 ]; then
+            # Already has interface field, just need to replace it with bond name
+            # Extract fields: we need to replace the 6th field (interface) with BONDNAME
+            # Preserve any DNS fields that may follow
+            # shellcheck disable=SC2034
+            IFS=':' read -r f1 f2 f3 f4 f5 f6 f7 f8 f9 << EOF
 $HCN_IP
 EOF
-          # Reconstruct with bond name as interface (f6 position)
-          # Note: f7 and beyond might be method:dns1:dns2 or just method
-          if [ -n "$f9" ]; then
-            # Has dns2 field
-            info "parse-hcn: applying static IP config with DNS1 and DNS2 to $BONDNAME"
-            NEW_ARGS="$NEW_ARGS ip=$f1:$f2:$f3:$f4:$f5:$BONDNAME:$f7:$f8:$f9"
-          elif [ -n "$f8" ]; then
-            # Has dns1 field
-            info "parse-hcn: applying static IP config with DNS1 to $BONDNAME"
-            NEW_ARGS="$NEW_ARGS ip=$f1:$f2:$f3:$f4:$f5:$BONDNAME:$f7:$f8"
-          elif [ -n "$f7" ]; then
-            # Standard format with method
-            info "parse-hcn: applying static IP config to $BONDNAME"
-            NEW_ARGS="$NEW_ARGS ip=$f1:$f2:$f3:$f4:$f5:$BONDNAME:$f7"
-          else
-            # Fallback - just interface name
-            NEW_ARGS="$NEW_ARGS ip=$f1:$f2:$f3:$f4:$f5:$BONDNAME"
+            # Reconstruct with bond name as interface (f6 position)
+            # Note: f7 and beyond might be method:dns1:dns2 or just method
+            if [ -n "$f9" ]; then
+              # Has dns2 field
+              info "parse-hcn: applying static IP config with DNS1 and DNS2 to $BONDNAME"
+              NEW_ARGS="$NEW_ARGS ip=$f1:$f2:$f3:$f4:$f5:$BONDNAME:$f7:$f8:$f9"
+            elif [ -n "$f8" ]; then
+              # Has dns1 field
+              info "parse-hcn: applying static IP config with DNS1 to $BONDNAME"
+              NEW_ARGS="$NEW_ARGS ip=$f1:$f2:$f3:$f4:$f5:$BONDNAME:$f7:$f8"
+            elif [ -n "$f7" ]; then
+              # Standard format with method
+              info "parse-hcn: applying static IP config to $BONDNAME"
+              NEW_ARGS="$NEW_ARGS ip=$f1:$f2:$f3:$f4:$f5:$BONDNAME:$f7"
+            else
+              # Fallback - just interface name
+              NEW_ARGS="$NEW_ARGS ip=$f1:$f2:$f3:$f4:$f5:$BONDNAME"
+            fi
+          elif [ "$colons" -lt 5 ]; then
+            # Pad with colons to reach standard ip= format (legacy behavior)
+            case $((5 - colons)) in
+              1) suffix=":" ;;
+              2) suffix="::" ;;
+              3) suffix=":::" ;;
+              4) suffix="::::" ;;
+              5) suffix=":::::" ;;
+              *) suffix="" ;;
+            esac
+            info "parse-hcn: applying static IP config to $BONDNAME (padded)"
+            NEW_ARGS="$NEW_ARGS ip=$HCN_IP${suffix}$BONDNAME:none"
           fi
-        elif [ "$colons" -lt 5 ]; then
-          # Pad with colons to reach standard ip= format (legacy behavior)
-          case $((5 - colons)) in
-          1) suffix=":" ;;
-          2) suffix="::" ;;
-          3) suffix=":::" ;;
-          4) suffix="::::" ;;
-          5) suffix=":::::" ;;
-          *) suffix="" ;;
-          esac
-          info "parse-hcn: applying static IP config to $BONDNAME (padded)"
-          NEW_ARGS="$NEW_ARGS ip=$HCN_IP${suffix}$BONDNAME:none"
-        fi
-        ;;
+          ;;
       esac
     fi
   done
@@ -601,7 +601,7 @@ EOF
     # No slave matched and no bond name present - apply to first bond
     has_bond_route=0
     case "$HCN_ROUTE" in
-    *:bond[0-9]*) has_bond_route=1 ;;
+      *:bond[0-9]*) has_bond_route=1 ;;
     esac
     if [ $matched -eq 0 ] && [ $matched_other -eq 0 ] && [ $has_bond_route -eq 0 ] && [ "$BONDNAME" = "$FIRST_BOND" ]; then
       temp_route=${HCN_ROUTE}

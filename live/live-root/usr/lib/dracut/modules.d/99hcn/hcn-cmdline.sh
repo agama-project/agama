@@ -30,7 +30,7 @@
 #     NetworkManager-config-initrd.service replacing "cat /proc/cmdline" with
 #     the "getcmdline" dracut function.
 
-command -v getargbool >/dev/null || . /lib/dracut-lib.sh
+command -v getargbool > /dev/null || . /lib/dracut-lib.sh
 
 # Device tree location and generated configuration file. Only overridden by the
 # test suite.
@@ -44,8 +44,8 @@ hcn_requested() {
   getargbool 1 rd.hcn || return 1
 
   getargbool 0 rd.hcn && return 0
-  getarg rd.hcn.ip= >/dev/null && return 0
-  getarg rd.hcn.route= >/dev/null && return 0
+  getarg rd.hcn.ip= > /dev/null && return 0
+  getarg rd.hcn.route= > /dev/null && return 0
 
   return 1
 }
