@@ -332,6 +332,12 @@ if rpm -q --whatprovides libyui-qt libyui-qt-pkg > /dev/null; then
 fi
 rpm -qa | grep ^libQt | xargs --no-run-if-empty rpm -e --nodeps
 
+# The live session runs as root, but PipeWire/WirePlumber refuse to run as
+# root (ConditionUser=!root in their systemd user units), so there is no
+# PulseAudio-compatible server available for speech-dispatcher to talk to.
+# Use ALSA directly instead, so Orca's speech output works in the live session.
+sed -i 's/^#\? *AudioOutputMethod .*/AudioOutputMethod "alsa"/' /etc/speech-dispatcher/speechd.conf
+
 ## removing drivers and firmware makes the Live ISO about 370MiB smaller
 
 # driver and firmware cleanup
