@@ -231,34 +231,15 @@ describe Y2Storage::BootRequirementsStrategies::BlsEfi do
       end
 
       context "and only /boot is configured" do
-        let(:configured) { { "/boot" => boot_size } }
+        let(:configured) { { "/boot" => 1.GiB } }
 
-        context "and the partition is big enough to be the ESP" do
-          let(:boot_size) { 1.GiB }
-
-          it "sets the ESP id" do
-            subject.needed_partitions(target)
-            expect(configured_partition("/boot").partition_id).to eq(esp_id)
-          end
-
-          it "does not propose any partition" do
-            expect(subject.needed_partitions(target)).to be_empty
-          end
+        it "sets the ESP id" do
+          subject.needed_partitions(target)
+          expect(configured_partition("/boot").partition_id).to eq(esp_id)
         end
 
-        context "and the partition is not big enough to be the ESP" do
-          let(:boot_size) { 100.MiB }
-
-          it "sets the XBOOTLDR id" do
-            subject.needed_partitions(target)
-            expect(configured_partition("/boot").partition_id).to eq(xbootldr_id)
-          end
-
-          it "proposes only an ESP partition at /efi" do
-            partitions = subject.needed_partitions(target)
-            expect(partitions.map(&:mount_point)).to eq(["/efi"])
-            expect(partitions.first.partition_id).to eq(esp_id)
-          end
+        it "does not propose any partition" do
+          expect(subject.needed_partitions(target)).to be_empty
         end
       end
 

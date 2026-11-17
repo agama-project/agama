@@ -447,13 +447,8 @@ describe Y2Storage::AgamaProposal do
         "systemd-boot and /efi"               => [
           Y2Storage::BootloaderType::SYSTEMD_BOOT, { "/efi" => [nil, :ESP] }, []
         ],
-        "systemd-boot and a big /boot"        => [
+        "systemd-boot and /boot"              => [
           Y2Storage::BootloaderType::SYSTEMD_BOOT, { "/boot" => [nil, :ESP] }, []
-        ],
-        "systemd-boot and a small /boot"      => [
-          Y2Storage::BootloaderType::SYSTEMD_BOOT,
-          { "/boot" => [nil, :XBOOTLDR, "100 MiB"] },
-          ["/efi"]
         ],
         "systemd-boot, /boot/efi and /boot"   => [
           Y2Storage::BootloaderType::SYSTEMD_BOOT,

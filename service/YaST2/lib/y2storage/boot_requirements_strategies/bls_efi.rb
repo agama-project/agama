@@ -95,7 +95,7 @@ module Y2Storage
 
         super
         planned_partitions_at("/boot").each do |planned|
-          planned.partition_id ||= boot_partition_id(planned)
+          planned.partition_id ||= boot_partition_id
         end
       end
 
@@ -106,17 +106,12 @@ module Y2Storage
       # * If there is an ESP at /efi, the partition is an XBOOTLDR partition.
       # * If there is an ESP at /boot/efi, no specific id is returned (the partition keeps the
       #   default one). Mounting the ESP at /boot/efi indicates a legacy setup without XBOOTLDR.
-      # * If there is no ESP at /efi or /boot/efi and the partition is big enough to be the ESP,
-      #   the partition is the ESP (the ESP would be proposed at /boot).
-      # * Otherwise, the partition is too small to be the ESP and it is an XBOOTLDR partition (the
-      #   ESP would be proposed at /efi).
+      # * Otherwise (no ESP at /efi or /boot/efi), the partition is the ESP.
       #
-      # @param planned [Planned::Partition]
       # @return [PartitionId, nil]
-      def boot_partition_id(planned)
+      def boot_partition_id
         return PartitionId::XBOOTLDR unless free_mountpoint?("/efi")
         return nil unless free_mountpoint?("/boot/efi")
-        return PartitionId::XBOOTLDR if min_planned_size(planned) < esp_min_size
 
         PartitionId::ESP
       end

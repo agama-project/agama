@@ -306,8 +306,7 @@ the id that the boot requirements checker would use if it had to create them:
   partition. A partition at `/boot` is a regular partition.
 * With the BLS bootloaders (systemd-boot, GRUB2 BLS), partitions at `/boot/efi` and `/efi` are `esp`
   partitions. A partition at `/boot` is `xbootldr` if there is a partition at `/efi`. If the ESP is at
-  `/boot/efi` (a legacy setup) it is a regular partition. If there is no ESP configured, it is `esp` if it
-  is big enough to be the ESP, otherwise `xbootldr`.
+  `/boot/efi` (a legacy setup) it is a regular partition. Otherwise, it is `esp`.
 
 A boot partition is only proposed if the profile does not configure its mount point, regardless of
 the id of the configured partitions. No mount point is used twice. The boot partitions are not
