@@ -27,6 +27,7 @@ import TruncatedDeviceName from "~/components/storage/TruncatedDeviceName";
 import { volumeGroupUsedFor, ExistingDataCell } from "~/components/storage/entries-table/cells";
 import { volumeGroupFacts } from "~/components/storage/utils/device";
 import { useDevice } from "~/hooks/model/system/storage";
+import configModel from "~/model/storage/config-model";
 import { _ } from "~/i18n";
 import type { ConfigModel } from "~/model/storage/config-model";
 import type { DetailsSubject } from "~/components/storage/shared/use-device-details";
@@ -56,6 +57,9 @@ export default function VolumeGroupRow({ group, subject }: VolumeGroupRowProps):
   // TRANSLATORS: said under the name of a volume group the installation
   // creates, in a list headed "Volume groups".
   const newMark = !group.name ? _("New") : undefined;
+  /* Only an existing group: the installation creates a new one even while it
+     holds no logical volume yet. */
+  const isIdle = !!group.name && !configModel.volumeGroup.usedMountPaths(group).length;
 
   return (
     <EntryRow
@@ -63,6 +67,7 @@ export default function VolumeGroupRow({ group, subject }: VolumeGroupRowProps):
       size={size}
       description={isGrouped ? newMark : description}
       usedFor={volumeGroupUsedFor(group)}
+      isIdle={isIdle}
       existingData={<ExistingDataCell config={group} device={device} />}
       menu={<VolumeGroupMenu group={group} subject={subject} />}
       subject={subject}
