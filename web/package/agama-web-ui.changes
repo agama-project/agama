@@ -1,11 +1,25 @@
 -------------------------------------------------------------------
-Fri Nov 13 09:00:00 UTC 2026 - Aaryan Pawar <pawararyan989@gmail.com>
+Wed Nov 18 09:00:00 UTC 2026 - Aaryan Pawar <pawararyan989@gmail.com>
 
 - Move the form to configure an LVM volume group to the new form
   stack. The disks are chosen from a list, or from a dialog showing
   their details (gh#agama-project/agama#4166).
 - Check the name of an LVM volume group against what LVM accepts
   (gh#agama-project/agama#2652).
+
+-------------------------------------------------------------------
+Mon Nov 16 08:50:23 UTC 2026 - Michal Filka <mfilka@suse.com>
+
+- bsc#1280086 (CVE-2026-87776)
+  - compression upgraded to 1.8.2
+
+-------------------------------------------------------------------
+Mon Nov 16 07:25:05 UTC 2026 - Michal Filka <mfilka@suse.com>
+
+- bsc#1286581 (CVE-2026-112944)
+  - launch-editor upgraded to 2.14.2
+- bsc#1283428 (CVE-2026-102422)
+  - shell-quote upgraded to 1.12.0
 
 -------------------------------------------------------------------
 Fri Nov  6 13:05:49 UTC 2026 - Ladislav Slezák <lslezak@suse.com>

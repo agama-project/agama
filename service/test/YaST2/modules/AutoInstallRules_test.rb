@@ -61,7 +61,6 @@ describe Yast::AutoInstallRules do
       expect(Yast::SCR).to receive(:Read).with(Yast::Path.new(".probe.bios")).and_return([])
       expect(Yast::SCR).to receive(:Read).with(Yast::Path.new(".probe.memory")).and_return([])
       allow(Yast::Arch).to receive(:architecture).and_return("x86_64")
-      expect(Yast::Kernel).to receive(:GetPackages).and_return([])
       expect(subject).to receive(:getNetwork).and_return("192.168.1.0")
       expect(subject).to receive(:getHostname).and_return("myhost")
       expect(Yast::SCR).to receive(:Read).with(Yast::Path.new(".etc.install_inf.XServer"))

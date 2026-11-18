@@ -840,8 +840,8 @@ export default {
   "Copy to the clipboard": [
     "Copia-ho al porta-retalls"
   ],
-  "Could not authenticate against the server.": [
-    "No s'ha pogut autenticar amb el servidor."
+  "Could not authenticate against the server": [
+    "No s'ha pogut autenticar amb el servidor"
   ],
   "Could not log in": [
     "No s'ha pogut iniciar la sessió."
@@ -1191,15 +1191,6 @@ export default {
   "Enter a server URL": [
     "Introduïu l'URL d'un servidor"
   ],
-  "Enter or Tab to add": [
-    "Premeu Retorn o Tabulador per afegir"
-  ],
-  "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate": [
-    "Retorn o Tabulador per afegir, Retrocés o Supr per suprimir, tecles de fletxa per navegar"
-  ],
-  "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate entries, Escape to exit": [
-    "Retorn o Tabulador per afegir, Retrocés o Supr per suprimir, tecles de fletxa per navegar per les entrades, Esc per sortir-ne"
-  ],
   "Enter removes every value, Left arrow goes back to the text box.": [
     "La tecla Retorn esborra tots els valors, la fletxa esquerra torna al quadre de text."
   ],
@@ -1217,6 +1208,15 @@ export default {
   ],
   "Enter takes a value back to the text box, Delete removes it, arrow keys move between values.": [
     "La tecla Retorn torna un valor al quadre de text, Supr el suprimeix i les tecles de fletxa permeten moure's entre els valors."
+  ],
+  "Enter to add": [
+    "Premeu Retorn per afegir"
+  ],
+  "Enter to add, Backspace or Delete to remove, arrow keys to navigate": [
+    "Retorn per afegir, Retrocés o Supr per suprimir, tecles de fletxa per navegar"
+  ],
+  "Enter to add, Backspace or Delete to remove, arrow keys to navigate entries, Escape to exit": [
+    "Retorn per afegir, Retrocés o Supr per suprimir, tecles de fletxa per navegar per les entrades, Esc per sortir-ne"
   ],
   "Ethernet": [
     "Xarxa amb fil"
@@ -1705,6 +1705,9 @@ export default {
   "Loading data...": [
     "Carregant dades..."
   ],
+  "Loading terminal": [
+    "Carregant el terminal"
+  ],
   "Loading the installation repositories...": [
     "Carregant els repositoris d'instal·lació..."
   ],
@@ -1943,6 +1946,9 @@ export default {
   ],
   "No DASD devices found in this machine.": [
     "No s'han trobat dispositius DASD en aquesta màquina."
+  ],
+  "No IP configuration for this protocol": [
+    "No hi ha configuració d'adreça IP per a aquest protocol."
   ],
   "No LVM volume groups are available for selection.": [
     "No hi ha grups de volums d'LVM disponibles per a la selecció."
@@ -3343,9 +3349,6 @@ export default {
   ],
   "Using %s keyboard layout": [
     "S'usa la disposició de teclat per a %s"
-  ],
-  "Using [%s] keyboard layout": [
-    "S'usa ls disposició de teclat per a [%s]"
   ],
   "Using a hashed password.": [
     "S'usa una contrasenya amb funció resum."

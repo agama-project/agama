@@ -17,7 +17,10 @@ CIMAGE=registry.opensuse.org/systemsmanagement/agama/devel/containers/opensuse/a
 # rename this if you test multiple things
 CNAME=agama
 
-test -f service/agama-yast.gemspec || { echo "You should run this from a git checkout of Agama"; exit 1; }
+test -f service/agama-yast.gemspec || {
+  echo "You should run this from a git checkout of Agama"
+  exit 1
+}
 
 # destroy the previous instance, can fail if there is no previous instance
 podman stop ${CNAME?} || : no problem if there was nothing to stop
@@ -63,4 +66,3 @@ set -x
 
 # Interactive shell in the container
 podman exec --tty --interactive ${CNAME?} bash
-

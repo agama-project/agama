@@ -127,6 +127,7 @@ translations:
         es: Estándar
         fi: Tavalinen
         fr: Standard
+        he: מערכת רגילה
         id: Standar
         it: Standard
         ja: 標準
@@ -137,7 +138,7 @@ translations:
         nl: Standaard
         pl: Standardowy
         pt_BR: Padrão
-        ru: Стандартная
+        ru: Стандартный
         sk: Štandardný
         sv: Standard
         tr: Standart
@@ -153,6 +154,7 @@ translations:
         es: Sistema estándar
         fi: Tavallinen järjestelmä
         fr: Système standard
+        he: מערכת רגילה
         id: Sistem standar
         it: Sistema standard
         ja: 標準システム
@@ -178,6 +180,7 @@ translations:
         es: Inmutable
         fi: Muuttumaton
         fr: Immuable
+        he: מערכת חסינה
         id: Immutable
         it: Immutabile
         ja: 不変型
@@ -202,6 +205,7 @@ translations:
         es: Sistema inmutable con actualizaciones atómicas
         fi: Muuttumaton järjestelmä atomisilla päivityksillä
         fr: Système immuable avec mises à jour atomiques
+        he: מערכת חסינה עם עדכונים שחלופיים
         id: Sistem immutable dengan pembaruan atomik
         it: Sistema immutabile con aggiornamenti atomici
         ja: 不可分な更新機能を持つ不変型システム
