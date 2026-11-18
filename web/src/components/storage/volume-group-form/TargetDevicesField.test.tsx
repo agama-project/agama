@@ -26,9 +26,9 @@ import { useAppForm } from "~/hooks/form";
 import { gib } from "~/components/storage/utils";
 import { defaultOptions } from "./fields";
 import { validate } from "./validations";
-import TargetDevicesField from "./TargetDevicesField";
 
 import type { Storage as System } from "~/model/system";
+import TargetDevicesField from "./TargetDevicesField";
 
 // The tables of the dialog show the content of each device, which looks for
 // the devices of the system.
@@ -212,6 +212,14 @@ describe("TargetDevicesField", () => {
     expect(list().queryByRole("option", { name: /sda/ })).not.toBeInTheDocument();
   });
 
+  it("does not search by what the options do not show", async () => {
+    const { user } = installerRender(<TestForm />);
+    // The option shows "sdb (10 GiB)": the path of the device is not part of it.
+    await user.type(screen.getByRole("combobox", { name: "Disks" }), "/dev/sdb");
+
+    expect(screen.queryByRole("option", { name: /sdb/ })).not.toBeInTheDocument();
+  });
+
   it("adds the devices chosen from the list", async () => {
     const { user } = installerRender(<TestForm />);
     await openList(user);
@@ -240,7 +248,7 @@ describe("TargetDevicesField", () => {
 
   it("asks for at least one disk once the form is submitted", async () => {
     const { user } = installerRender(<TestForm />);
-    expect(screen.queryByText("Select at least one disk.")).toBeNull();
+    expect(screen.queryByText("Select at least one disk.")).not.toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: "Submit" }));
 
@@ -253,7 +261,7 @@ describe("TargetDevicesField", () => {
       const { user } = installerRender(<TestForm devices={[]} />);
       await openList(user);
 
-      expect(screen.queryByRole("option", { name: /Browse with details/ })).toBeNull();
+      expect(screen.queryByRole("option", { name: /Browse with details/ })).not.toBeInTheDocument();
     });
   });
 

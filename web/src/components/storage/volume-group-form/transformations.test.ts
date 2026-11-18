@@ -19,10 +19,10 @@
  * find current contact information at www.suse.com.
  */
 
-import { buildPayload, toFormValues, usedVolumeGroupNames } from "./transformations";
 import type { ConfigModel } from "~/model/storage/config-model";
 import type { Storage as System } from "~/model/system";
 import type { FormFields } from "./fields";
+import { buildPayload, toFormValues, usedVolumeGroupNames } from "./transformations";
 
 const device = (name: string, sid: number): System.Device =>
   ({ sid, class: "drive", name }) as System.Device;

@@ -35,23 +35,15 @@ const sda: System.Device = {
   sid: 59,
   class: "drive",
   name: "/dev/sda",
-  description: "SDA drive",
-  drive: {
-    type: "disk",
-    model: "Micron 1100 SATA",
-    vendor: "Micron",
-    bus: "IDE",
-    busId: "",
-    transport: "usb",
-    drivers: ["ahci", "mmcblk"],
-    info: { boss: false, sdCard: true },
-  },
   block: {
     start: 1,
     size: gib(20),
-    encrypted: false,
-    systems: [],
     shrinking: { supported: false },
+    systems: [],
+  },
+  drive: {
+    type: "disk",
+    info: { boss: false, sdCard: false },
   },
 };
 
@@ -160,7 +152,7 @@ describe("VolumeGroupForm", () => {
       mockParams({ id: "7" });
       installerRender(<VolumeGroupForm />);
       screen.getByText("Go to storage page");
-      expect(screen.queryByRole("textbox", { name: "Name" })).toBeNull();
+      expect(screen.queryByRole("textbox", { name: "Name" })).not.toBeInTheDocument();
     });
   });
 
@@ -230,7 +222,7 @@ describe("VolumeGroupForm", () => {
       await removeDisk(user, "sda (20 GiB)");
       // Let's clean the default given name
       await user.clear(nameInput());
-      expect(screen.queryByText(/Enter a name/)).toBeNull();
+      expect(screen.queryByText(/Enter a name/)).not.toBeInTheDocument();
 
       await user.click(acceptButton());
       screen.getByText("Fix the errors below and try again");
@@ -241,15 +233,15 @@ describe("VolumeGroupForm", () => {
       await user.type(nameInput(), "root-vg");
       await user.click(acceptButton());
       screen.getByText("Fix the errors below and try again");
-      expect(screen.queryByText(/Enter a name/)).toBeNull();
+      expect(screen.queryByText(/Enter a name/)).not.toBeInTheDocument();
       screen.getByText(/Select at least one disk/);
 
       // Select sda again
       await addDisk(user, /sda/);
       await user.click(acceptButton());
-      expect(screen.queryByText("Fix the errors below and try again")).toBeNull();
-      expect(screen.queryByText(/Enter a name/)).toBeNull();
-      expect(screen.queryByText(/Select at least one disk/)).toBeNull();
+      expect(screen.queryByText("Fix the errors below and try again")).not.toBeInTheDocument();
+      expect(screen.queryByText(/Enter a name/)).not.toBeInTheDocument();
+      expect(screen.queryByText(/Select at least one disk/)).not.toBeInTheDocument();
       expect(mockAddVolumeGroup).toHaveBeenCalledTimes(1);
     });
 
@@ -372,7 +364,7 @@ describe("VolumeGroupForm", () => {
         screen.queryByText(
           /This volume group only occupies the space required by its logical volumes/,
         ),
-      ).toBeNull();
+      ).not.toBeInTheDocument();
     });
 
     it("performs basic validations", async () => {
@@ -392,7 +384,7 @@ describe("VolumeGroupForm", () => {
       // Enter a name already in use
       await user.type(nameInput(), "fakeHomeVg");
       await user.click(acceptButton());
-      expect(screen.queryByText(/Enter a name/)).toBeNull();
+      expect(screen.queryByText(/Enter a name/)).not.toBeInTheDocument();
       screen.getByText(/Enter a different name/);
     });
 
@@ -405,7 +397,7 @@ describe("VolumeGroupForm", () => {
 
     it("does not offer option for moving mount points", () => {
       installerRender(<VolumeGroupForm />);
-      expect(screen.queryByRole("checkbox", { name: MOVE_MOUNT_POINTS })).toBeNull();
+      expect(screen.queryByRole("checkbox", { name: MOVE_MOUNT_POINTS })).not.toBeInTheDocument();
     });
 
     it("triggers the hook for updating the volume group when user accepts changes", async () => {
@@ -427,7 +419,7 @@ describe("VolumeGroupForm", () => {
       await addDisk(user, /sdb/);
       await user.click(acceptButton());
 
-      expect(screen.queryByText(/Enter a different name/)).toBeNull();
+      expect(screen.queryByText(/Enter a different name/)).not.toBeInTheDocument();
       expect(mockEditVolumeGroup).toHaveBeenCalledWith("fakeRootVg", {
         vgName: "fakeRootVg",
         targetDevices: ["/dev/sda", "/dev/sdb"],

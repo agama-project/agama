@@ -19,11 +19,11 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useMemo } from "react";
+import React from "react";
 import { useNavigate, useParams } from "react-router";
 import { ActionGroup, Alert, Content, Flex, Form } from "@patternfly/react-core";
 import Page from "~/components/layout/Page";
-import { Icon } from "~/components/layout";
+import Icon from "~/components/layout/Icon";
 import ResourceNotFound from "~/components/core/ResourceNotFound";
 import Text from "~/components/core/Text";
 import { withFrozenQuery } from "~/components/form/with-frozen-query";
@@ -35,7 +35,7 @@ import {
   useEditVolumeGroup,
 } from "~/hooks/model/storage/config-model";
 import { STORAGE } from "~/routes/paths";
-import { _ } from "~/i18n";
+import { _, N_ } from "~/i18n";
 
 import TargetDevicesField from "./TargetDevicesField";
 import { useVolumeGroupConfig, useTargetDevices } from "./queries";
@@ -46,6 +46,22 @@ import { defaultOptions } from "./fields";
 import type { ConfigModel } from "~/model/storage/config-model";
 import type { Storage as System } from "~/model/system";
 import type { BreadcrumbProps } from "~/components/core/Breadcrumbs";
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const FUTURE = [
+  // TRANSLATORS: Option to decide which physical volumes create for an LVM
+  N_("As required by the logical volumes"),
+  // TRANSLATORS: Option to decide which physical volumes create for an LVM
+  N_("Use all available space"),
+  // TRANSLATORS: Explanation of the size option 'As required by the LVs'
+  N_(
+    "Physical volumes may be created on some of the chosen disks based on the logical volumes total size.",
+  ),
+  // TRANSLATORS: Explanation of the size option 'Use all available space'
+  N_("All the available space in the chosen disks will be used to create physical volumes."),
+  // TRANSLATORS: Label for the form element to configure LVM extent size
+  N_("Physical extent size"),
+];
 
 /**
  * Explanation for a volume group that only takes the space its logical volumes
@@ -70,11 +86,7 @@ function UseNeededHelperText() {
   );
 }
 
-/**
- * Query data frozen on mount to protect the form from mid-interaction refetches.
- *
- * @see withFrozenQuery
- */
+/** Data the volume group form is built from. */
 type VolumeGroupFormContentQuery = {
   config: ConfigModel.Config | null;
   volumeGroup: ConfigModel.VolumeGroup | null;
@@ -105,7 +117,7 @@ function VolumeGroupFormContent({ config, volumeGroup, devices }: VolumeGroupFor
   const editVolumeGroup = useEditVolumeGroup();
 
   // Names of the other volume groups: keeping its own name is not a duplicate.
-  const usedNames = useMemo(() => usedVolumeGroupNames(config, volumeGroup), [config, volumeGroup]);
+  const usedNames = usedVolumeGroupNames(config, volumeGroup);
 
   const { onSubmitAsync, AlertSubscribe, formSubmitHandler } = useFormSubmit<
     typeof defaultOptions.defaultValues

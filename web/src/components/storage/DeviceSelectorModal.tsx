@@ -21,7 +21,7 @@
  */
 
 import React, { useId, useState } from "react";
-import { castArray, first } from "radashi";
+import { castArray, first, sift } from "radashi";
 import { sprintf } from "sprintf-js";
 import {
   ButtonProps,
@@ -311,7 +311,7 @@ export default function DeviceSelectorModal({
   // when confirming.
   const initialDevice = isMultiple ? previousDevice : (previousDevice ?? first(shownDevices));
   const [selectedDevices, setSelectedDevices] = useState<Storage.Device[]>(
-    isMultiple ? previousDevices : initialDevice ? [initialDevice] : [],
+    isMultiple ? previousDevices : sift([initialDevice]),
   );
   const [activeTab, setActiveTab] = useState<TabKey>(() =>
     getInitialTab(shownTabs, tabLists, initialTab, initialDevice),

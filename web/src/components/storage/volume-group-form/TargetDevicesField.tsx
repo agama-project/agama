@@ -60,15 +60,19 @@ const TargetDevicesField = withForm({
   render: function Render({ form, devices }) {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-    const options = devices.map((device) => ({
-      value: device.name,
-      label: deviceLabel(device, { truncate: true }),
-      description: (
-        <Text textStyle={["fontSizeXs", "textColorSubtle"]}>{typeDescription(device)}</Text>
-      ),
-      // Searchable by what the option shows, and by the name of the device.
-      filterText: sift([device.name, deviceLabel(device), typeDescription(device)]).join(" "),
-    }));
+    const options = devices.map((device) => {
+      const label = deviceLabel(device, { truncate: true });
+      const description = typeDescription(device);
+
+      return {
+        value: device.name,
+        label,
+        description: <Text textStyle={["fontSizeXs", "textColorSubtle"]}>{description}</Text>,
+        // Searchable only by what the option renders, which is what sighted users
+        // see and screen reader users hear. The dialog has the rest of the details.
+        filterText: sift([label, description]).join(" "),
+      };
+    });
 
     return (
       <form.AppField name="targetDevices">

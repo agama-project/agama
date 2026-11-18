@@ -43,40 +43,49 @@ import type { FormFields, VolumeGroupNameFields, TargetDevicesFields } from "./f
  *
  * @see lvm(8)
  */
-const VG_NAME_CHARACTERS = /^[a-zA-Z0-9+_.-]+$/;
+const VG_NAME_REGEXP = /^[a-zA-Z0-9+_.-]+$/;
 
-function validateVolumeGroupName(
-  fields: FormFields,
-  usedNames: string[],
-): FieldsValidationResult<VolumeGroupNameFields> {
-  const { vgName } = fields;
+/** Longest name LVM accepts for a volume group. */
+const VG_NAME_MAX_LENGTH = 127;
 
+/**
+ * Checks the name of a volume group, returning the message of the first rule
+ * it breaks.
+ */
+function vgNameError(vgName: string, usedNames: string[]): string | undefined {
   const required = requiredString(vgName, _("Enter a name for the volume group."));
-  if (required) return { vgName: required };
+  if (required) return required;
 
-  if (!VG_NAME_CHARACTERS.test(vgName)) {
-    return {
-      // TRANSLATORS: error message, keep the quoted characters as they are
-      vgName: _(
-        "The name can only contain letters, digits and the characters '+', '_', '.' and '-'.",
-      ),
-    };
+  if (!VG_NAME_REGEXP.test(vgName)) {
+    // TRANSLATORS: error message, keep the quoted characters as they are
+    return _("The name can only contain letters, digits and the characters '+', '_', '.' and '-'.");
+  }
+
+  // Only ASCII characters get this far, so the length counts what LVM counts.
+  if (vgName.length > VG_NAME_MAX_LENGTH) {
+    // TRANSLATORS: error message, %d is replaced with the maximum number of characters.
+    return sprintf(_("The name cannot be longer than %d characters."), VG_NAME_MAX_LENGTH);
   }
 
   // LVM does not allow these, even though their characters are valid.
   if (vgName.startsWith("-") || vgName === "." || vgName === "..") {
     // TRANSLATORS: error message, keep '.' and '..' as they are
-    return { vgName: _("The name cannot begin with a hyphen or be '.' or '..'.") };
+    return _("The name cannot begin with a hyphen or be '.' or '..'.");
   }
 
   if (usedNames.includes(vgName)) {
-    return {
-      // TRANSLATORS: error message, %s is replaced with a volume group name, e.g. "system"
-      vgName: sprintf(_("Volume group '%s' already exists. Enter a different name."), vgName),
-    };
+    // TRANSLATORS: error message, %s is replaced with a volume group name, e.g. "system"
+    return sprintf(_("Volume group '%s' already exists. Enter a different name."), vgName);
   }
 
-  return {};
+  return undefined;
+}
+
+function validateVolumeGroupName(
+  fields: FormFields,
+  usedNames: string[],
+): FieldsValidationResult<VolumeGroupNameFields> {
+  return { vgName: vgNameError(fields.vgName, usedNames) };
 }
 
 function validateTargetDevices(fields: FormFields): FieldsValidationResult<TargetDevicesFields> {

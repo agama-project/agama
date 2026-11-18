@@ -19,8 +19,8 @@
  * find current contact information at www.suse.com.
  */
 
-import { validate } from "./validations";
 import type { FormFields } from "./fields";
+import { validate } from "./validations";
 
 const createBaseFields = (): FormFields => ({
   vgName: "system",
@@ -56,6 +56,21 @@ describe("validations", () => {
           expect(result?.fields?.vgName).toBe(NAME_CHARACTERS_ERROR);
         },
       );
+
+      it("accepts the longest name LVM accepts", () => {
+        const vgName = "a".repeat(127);
+        expect(validate({ ...createBaseFields(), vgName })).toBeUndefined();
+      });
+
+      it("returns error when the name is longer than LVM accepts", () => {
+        const result = validate({ ...createBaseFields(), vgName: "a".repeat(128) });
+        expect(result?.fields?.vgName).toBe("The name cannot be longer than 127 characters.");
+      });
+
+      it("reports the invalid characters of a name that is also too long", () => {
+        const result = validate({ ...createBaseFields(), vgName: `${"a".repeat(127)} ` });
+        expect(result?.fields?.vgName).toBe(NAME_CHARACTERS_ERROR);
+      });
 
       it.each(["-vg", "-", ".", ".."])("returns error for the name %j", (vgName) => {
         const result = validate({ ...createBaseFields(), vgName });
