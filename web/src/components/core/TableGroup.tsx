@@ -31,6 +31,11 @@ export type TableGroupProps = React.PropsWithChildren<{
   columnCount: number;
   /** The level of the title's heading, which the table's place in the page decides. */
   headingLevel?: TitleProps["headingLevel"];
+  /**
+   * Whether the title row is shown. Show it only when the table holds more
+   * than one group: a single one needs no name over it.
+   */
+  isTitleShown?: boolean;
 }>;
 
 /**
@@ -45,24 +50,30 @@ export type TableGroupProps = React.PropsWithChildren<{
  *   screen readers and browsers.
  *
  * The group itself is labelled by that heading.
+ *
+ * Without its title, the group is still there, so its rows keep their place,
+ * and focus, when the title comes and goes.
  */
 export default function TableGroup({
   title,
   columnCount,
   headingLevel: Heading = "h2",
+  isTitleShown = true,
   children,
 }: TableGroupProps) {
   const titleId = React.useId();
 
   return (
-    <Tbody className="agm-table-group" aria-labelledby={titleId}>
-      <Tr className="agm-table-group__title-row">
-        <Td colSpan={columnCount} className="agm-table-group__title-cell">
-          <Heading id={titleId} className="agm-table-group__title">
-            {title}
-          </Heading>
-        </Td>
-      </Tr>
+    <Tbody className="agm-table-group" aria-labelledby={isTitleShown ? titleId : undefined}>
+      {isTitleShown && (
+        <Tr className="agm-table-group__title-row">
+          <Td colSpan={columnCount} className="agm-table-group__title-cell">
+            <Heading id={titleId} className="agm-table-group__title">
+              {title}
+            </Heading>
+          </Td>
+        </Tr>
+      )}
       {children}
     </Tbody>
   );

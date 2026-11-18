@@ -37,6 +37,11 @@ export type VolumeGroupRowProps = {
   group: ConfigModel.VolumeGroup;
   /** Where it is written, which is how the panel is opened on it. */
   subject: DetailsSubject;
+  /**
+   * Whether the row sits under a title naming its kind, so the line under its
+   * name only needs to say whether the group is new.
+   */
+  isGrouped?: boolean;
 };
 
 /**
@@ -50,10 +55,13 @@ export type VolumeGroupRowProps = {
  * nothing of it on the machine yet. One that already exists is read like any
  * other entry: what the installer does to what it holds.
  */
-export default function VolumeGroupRow({ group, subject }: VolumeGroupRowProps): React.ReactNode {
+export default function VolumeGroupRow({
+  group,
+  subject,
+  isGrouped = false,
+}: VolumeGroupRowProps): React.ReactNode {
   const device = useDevice(group.name || "");
   const { size, description } = volumeGroupFacts(group, device);
-  const isGrouped = true;
   // TRANSLATORS: said under the name of a volume group the installation
   // creates, in a list headed "Volume groups".
   const newMark = !group.name ? _("New") : undefined;

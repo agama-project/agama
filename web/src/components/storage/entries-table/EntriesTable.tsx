@@ -181,21 +181,27 @@ export default function EntriesTable({ groupHeadingLevel }: EntriesTableProps): 
     return sortBy.direction === "asc" ? order : -order;
   });
 
+  /* One group per kind, in the configuration's order, titled only when there
+     is more than one kind. */
+  const groups = TYPE_ORDER.map((collection) => ({
+    collection,
+    rows: sorted.filter((row) => row.subject.collection === collection),
+  })).filter(({ rows }) => rows.length > 0);
+  const isGrouped = groups.length > 1;
+
   const renderRow = ({ subject, group, deviceName }: Row) =>
     group ? (
-      <VolumeGroupRow key={`vg-${group.vgName}`} group={group} subject={subject} />
+      <VolumeGroupRow
+        key={`vg-${group.vgName}`}
+        group={group}
+        subject={subject}
+        isGrouped={isGrouped}
+      />
     ) : (
       <DriveRow key={deviceName} name={deviceName} subject={subject} />
     );
 
   const columnCount = 4;
-
-  /* One body per kind, in the configuration's order, each starting with a row
-     whose heading names it. */
-  const groups = TYPE_ORDER.map((collection) => ({
-    collection,
-    rows: sorted.filter((row) => row.subject.collection === collection),
-  })).filter(({ rows }) => rows.length > 0);
 
   return (
     <div className="agm-entries-table" ref={list} onKeyDown={onKeyDown}>
@@ -221,6 +227,7 @@ export default function EntriesTable({ groupHeadingLevel }: EntriesTableProps): 
             title={groupTitle(collection, rows.length)}
             columnCount={columnCount}
             headingLevel={groupHeadingLevel}
+            isTitleShown={isGrouped}
           >
             {rows.map(renderRow)}
           </TableGroup>
