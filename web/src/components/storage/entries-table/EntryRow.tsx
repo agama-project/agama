@@ -96,7 +96,7 @@ export default function EntryRow({
               </React.Fragment>
             ))}
           </StackItem>
-          {description && <StackItem className="agm-entries-table__facts">{description}</StackItem>}
+          {description && <StackItem className="agm-row-note">{description}</StackItem>}
         </Stack>
       </Th>
       <Td dataLabel={columnName("usedFor")}>

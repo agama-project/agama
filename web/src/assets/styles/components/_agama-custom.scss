@@ -693,13 +693,6 @@ nav.agm-breadcrumb > ol > li > a {
   background-color: var(--agm-entries-table--band);
 }
 
-// What the entry is, read under the name: a fact about the name rather than a
-// column of its own.
-.agm-entries-table__facts {
-  font-size: var(--pf-t--global--font--size--body--sm);
-  color: var(--pf-t--global--text--color--subtle);
-}
-
 // Color lands on the mark, and never alone: every mark has a word beside it
 // saying the same thing. A shrink keeps its data, so its line is not colored
 // like a deletion, which is a different kind of news.
@@ -764,7 +757,7 @@ nav.agm-breadcrumb > ol > li > a {
   --pf-v6-c-table--cell--Color: var(--pf-t--global--text--color--disabled);
 }
 
-.agm-entries-table__row--idle .agm-entries-table__facts {
+.agm-entries-table__row--idle .agm-row-note {
   color: inherit;
 }
 
