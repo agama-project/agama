@@ -68,7 +68,7 @@ export default function EntryRow({
   menu,
   subject,
 }: EntryRowProps): React.ReactNode {
-  const { subject: open } = useDeviceDetails();
+  const { subject: open, keyOf } = useDeviceDetails();
   const isOpen =
     open !== null && open.collection === subject.collection && open.index === subject.index;
 
@@ -102,7 +102,9 @@ export default function EntryRow({
         </Stack>
       </Td>
       <Td dataLabel={columnName("existingData")}>{existingData}</Td>
-      <Td isActionCell dataLabel={columnName("actions")}>
+      {/* Named after the entry, so the panel can give focus back to this menu
+          when it closes. */}
+      <Td isActionCell dataLabel={columnName("actions")} data-entry-menu={keyOf(subject)}>
         {menu}
       </Td>
     </Tr>

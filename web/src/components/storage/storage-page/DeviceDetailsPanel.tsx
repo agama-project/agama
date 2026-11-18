@@ -99,7 +99,7 @@ export default function DeviceDetailsPanel({
   page,
   pinnedOffset,
 }: DeviceDetailsPanelProps): React.ReactNode {
-  const { subject, isStale, close } = useDeviceDetails();
+  const { subject, isStale, close, keyOf } = useDeviceDetails();
   const placement = usePlacement();
   const entry = useEntry(subject);
 
@@ -111,9 +111,19 @@ export default function DeviceDetailsPanel({
     if (isStale) close();
   }, [isStale, close]);
 
+  /* The menu of the entry's row, wherever the panel was opened from: after
+     adding a device or moving to another one inside the panel, the reader
+     lands on the entry they were last looking at. */
+  const key = subject && keyOf(subject);
+  const rowMenu = () =>
+    key
+      ? document.querySelector<HTMLElement>(`[data-entry-menu="${CSS.escape(key)}"] button`)
+      : null;
+
   return (
     <SidePanel
       id={DETAILS_PANEL_ID}
+      returnFocusTo={rowMenu}
       pinnedOffset={pinnedOffset}
       isOpen={isOpen}
       placement={placement}

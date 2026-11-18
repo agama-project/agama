@@ -79,6 +79,12 @@ export type SidePanelProps = {
    * reference never points at nothing.
    */
   id?: string;
+  /**
+   * Where focus goes when the panel closes, looked up at that moment. Without
+   * it, or where it finds nothing, focus goes back to what had it when the
+   * panel opened.
+   */
+  returnFocusTo?: () => HTMLElement | null;
 };
 
 /**
@@ -89,7 +95,8 @@ export type SidePanelProps = {
  * a reader who is not looking at the screen is decided here, once:
  *
  * - Opening it moves the reader into it, so what they asked for is what they
- *   are reading, and closing it puts them back on the control they left.
+ *   are reading, and closing it puts them back on the control they left, or
+ *   wherever the caller says the panel's subject lives on the page.
  * - Where it comes over the page, the page underneath is out of reach. A panel
  *   drawn on top of a page does not remove that page from the tab order on its
  *   own, so a reader tabbing out of the panel lands on controls they cannot
@@ -150,6 +157,7 @@ export default function SidePanel({
   children,
   id,
   pinnedOffset,
+  returnFocusTo,
 }: SidePanelProps): React.ReactNode {
   const [panel, setPanel] = React.useState<HTMLDivElement | null>(null);
   const titleId = React.useId();
@@ -202,13 +210,22 @@ export default function SidePanel({
   /* Where the reader was when they opened it, so closing it can put them back.
      Without this a reader who closes a panel is dropped at the top of the
      document with nothing to say what they just left. */
+  const returnTarget = React.useRef(returnFocusTo);
+
+  /* Kept from while the panel is open: by the time it closes, the caller may
+     have nothing left to point at, such as the subject it was showing. */
+  React.useEffect(() => {
+    if (isOpen) returnTarget.current = returnFocusTo;
+  });
+
   React.useEffect(() => {
     if (!isOpen) return;
 
     const opener = document.activeElement;
 
     return () => {
-      if (opener instanceof HTMLElement) opener.focus();
+      const target = returnTarget.current?.() || opener;
+      if (target instanceof HTMLElement) target.focus();
     };
   }, [isOpen]);
 
