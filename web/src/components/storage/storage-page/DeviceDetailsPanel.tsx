@@ -104,7 +104,6 @@ export default function DeviceDetailsPanel({
       subjectKey={key}
       pinnedOffset={pinnedOffset}
       isOpen={isOpen}
-      placement="overlay"
       onClose={close}
       title={entry && <DeviceDetailsHeading entry={entry} />}
       description={entry && entryDescription(entry)}

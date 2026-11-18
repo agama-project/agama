@@ -570,15 +570,9 @@ nav.agm-breadcrumb > ol > li > a {
   overflow: auto;
 }
 
-// The page keeps its edge where the panel stands beside it.
+// The panel keeps an edge against the page it covers.
 .agm-side-panel-frame__side {
   border-inline-start: 1px solid var(--pf-t--global--border--color--default);
-}
-
-// The wider the window, the less of it the panel needs: a panel has a width it
-// reads well at, and everything past that is spent on nothing.
-.agm-side-panel-frame__side--share {
-  max-width: 44rem;
 }
 
 // What the configuration is made of, under the summary of what it does. Where
