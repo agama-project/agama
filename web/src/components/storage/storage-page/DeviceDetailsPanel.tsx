@@ -124,6 +124,7 @@ export default function DeviceDetailsPanel({
     <SidePanel
       id={DETAILS_PANEL_ID}
       returnFocusTo={rowMenu}
+      subjectKey={key}
       pinnedOffset={pinnedOffset}
       isOpen={isOpen}
       placement={placement}

@@ -85,6 +85,12 @@ export type SidePanelProps = {
    * panel opened.
    */
   returnFocusTo?: () => HTMLElement | null;
+  /**
+   * What the panel is showing, such as a device name. A change while it is
+   * open moves the reader into it, as opening it does, so focus does not go
+   * with content that was replaced.
+   */
+  subjectKey?: string;
 };
 
 /**
@@ -158,6 +164,7 @@ export default function SidePanel({
   id,
   pinnedOffset,
   returnFocusTo,
+  subjectKey,
 }: SidePanelProps): React.ReactNode {
   const [panel, setPanel] = React.useState<HTMLDivElement | null>(null);
   const titleId = React.useId();
@@ -240,7 +247,7 @@ export default function SidePanel({
      slides out to one side and takes the panel with it. */
   React.useEffect(() => {
     if (isOpen && panel) panel.focus({ preventScroll: true });
-  }, [isOpen, panel]);
+  }, [isOpen, panel, subjectKey]);
 
   const region = (
     <div
