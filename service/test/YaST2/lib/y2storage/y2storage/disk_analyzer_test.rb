@@ -1,7 +1,7 @@
 #!/usr/bin/env rspec
 # frozen_string_literal: true
 
-# Copyright (c) [2016-2021] SUSE LLC
+# Copyright (c) [2016-2021, 2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -165,6 +165,19 @@ describe Y2Storage::DiskAnalyzer do
 
       it "includes all linux partitions" do
         expect(analyzer.linux_partitions("/dev/sda").map(&:basename)).to contain_exactly("sda2")
+      end
+    end
+
+    context "for a disk with partitions using the Discoverable Partitions Specification ids" do
+      let(:scenario) { "windows-pc-gpt" }
+
+      before do
+        fake_devicegraph.find_by_name("/dev/sda1").id = Y2Storage::PartitionId::LINUX_ROOT_X86_64
+        fake_devicegraph.find_by_name("/dev/sda2").id = Y2Storage::PartitionId::LINUX_HOME
+      end
+
+      it "includes those partitions" do
+        expect(analyzer.linux_partitions("/dev/sda").map(&:basename)).to contain_exactly("sda1", "sda2")
       end
     end
 

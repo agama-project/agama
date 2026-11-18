@@ -1,0 +1,15 @@
+---
+- disk:
+    name: /dev/sda
+    size: 50 GiB
+    partition_table: gpt
+    partitions:
+    - partition:
+        name: /dev/sda1
+        size: 10 GiB
+        id: linux_home
+        file_system: ext4
+        encryption:
+          type: luks2
+          name: /dev/mapper/home
+          password: "12345678"

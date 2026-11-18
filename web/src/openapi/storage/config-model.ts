@@ -26,7 +26,8 @@ export type FilesystemType =
   | "xfs";
 export type SpacePolicy = "delete" | "resize" | "keep" | "custom";
 export type PtableType = "gpt" | "msdos" | "dasd";
-export type PartitionId = "linux" | "swap" | "lvm" | "raid" | "esp" | "prep" | "bios_boot";
+export type PartitionId =
+  "linux" | "swap" | "lvm" | "raid" | "esp" | "prep" | "bios_boot" | "xbootldr";
 
 /**
  * Config model
@@ -48,7 +49,7 @@ export interface BootDevice {
   name?: string;
 }
 export interface Encryption {
-  password?: string;
+  password: string;
   tpm?: boolean;
 }
 export interface Drive {

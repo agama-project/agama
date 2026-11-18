@@ -53,8 +53,13 @@ jobs:
     steps:
 
     - name: Configure and refresh repositories
-      # disable unused repositories to have faster refresh
-      run: zypper modifyrepo -d repo-non-oss repo-openh264 repo-update && zypper ref
+      # disable unused repositories to have faster refresh and add the Agama devel repository, it
+      # includes the latest libstorage-ng (needed to support the partition ids from the
+      # Discoverable Partitions Specification)
+      run: |
+        zypper modifyrepo -d repo-non-oss repo-openh264 repo-update
+        zypper addrepo --refresh https://download.opensuse.org/repositories/systemsmanagement:/Agama:/Devel/openSUSE_Tumbleweed/systemsmanagement:Agama:Devel.repo
+        zypper --gpg-auto-import-keys ref
 
     - name: Install Ruby development files
       run: zypper --non-interactive install

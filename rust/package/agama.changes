@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Nov 17 11:30:16 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Add "linux_var" and "linux_var_tmp" to the partition ids in the
+  storage schemas and allow the "xbootldr" partition id in the storage
+  config and model (jsc#PED-17039).
+
+-------------------------------------------------------------------
 Mon Nov 16 08:23:59 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
 
 - Added "x-agama-translated" vendor flag to the openAPI

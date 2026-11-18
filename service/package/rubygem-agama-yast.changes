@@ -1,4 +1,20 @@
 -------------------------------------------------------------------
+Thu Nov 12 12:12:49 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Support the Discoverable Partitions Specification (DPS) in the
+  storage proposal (jsc#PED-17039):
+  - Create the partitions with the DPS partition id for their mount
+    point and use the DPS device mapper names (root, usr, home, srv,
+    var, tmp, swap) for their encryption.
+  - Set the LVM and RAID ids of the partitions used as physical
+    volumes and MD members.
+  - Set the ids of the partitions configured at /boot, /boot/efi and
+    /efi, and do not propose duplicated boot partitions.
+  - The AutoYaST proposal does not change, except that
+    "<use>linux</use>" also removes the partitions with a DPS id.
+- Require libstorage-ng 4.5.369 or newer.
+
+-------------------------------------------------------------------
 Tue Oct 27 16:04:15 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Drop the following dependencies by vendoring the parts that are
