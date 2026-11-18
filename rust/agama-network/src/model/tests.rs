@@ -58,7 +58,9 @@ fn bond_mut<'a>(
             }
             let ports = conn.bridge.as_mut()?.port_connections.as_mut()?;
             ports.iter_mut().find_map(|port| match port {
-                BridgePort::Bond(port) if port.id.as_deref() == Some(id) => Some(&mut port.bond),
+                BridgePort::Bond(port) if port.base.id.as_deref() == Some(id) => {
+                    Some(&mut port.bond)
+                }
                 _ => None,
             })
         })

@@ -315,8 +315,10 @@ fn test_ports_have_no_ip_settings() {
             port_connections: Some(vec![
                 name("eth0"),
                 BondPort::Ethernet(Box::new(BondEthernetPort {
-                    interface: Some("eth1".to_string()),
-                    ..Default::default()
+                    base: PortBase {
+                        interface: Some("eth1".to_string()),
+                        ..Default::default()
+                    },
                 })),
             ]),
             ..Default::default()
@@ -472,9 +474,11 @@ fn test_a_nested_port_without_an_id_is_named_after_its_interface() {
         id: "bond0".to_string(),
         bond: Some(BondSettings {
             port_connections: Some(vec![BondPort::Ethernet(Box::new(BondEthernetPort {
-                interface: Some("eth0".to_string()),
-                mtu: 9000,
-                ..Default::default()
+                base: PortBase {
+                    interface: Some("eth0".to_string()),
+                    mtu: 9000,
+                    ..Default::default()
+                },
             }))]),
             ..Default::default()
         }),
@@ -504,8 +508,10 @@ fn test_a_nested_port_without_an_id_updates_the_existing_connection() {
         id: "bond0".to_string(),
         bond: Some(BondSettings {
             port_connections: Some(vec![BondPort::Ethernet(Box::new(BondEthernetPort {
-                interface: Some("eth0".to_string()),
-                ..Default::default()
+                base: PortBase {
+                    interface: Some("eth0".to_string()),
+                    ..Default::default()
+                },
             }))]),
             ..Default::default()
         }),
@@ -528,8 +534,10 @@ fn test_a_nested_port_without_an_id_nor_an_interface_is_rejected() {
         id: "bond0".to_string(),
         bond: Some(BondSettings {
             port_connections: Some(vec![BondPort::Ethernet(Box::new(BondEthernetPort {
-                mtu: 9000,
-                ..Default::default()
+                base: PortBase {
+                    mtu: 9000,
+                    ..Default::default()
+                },
             }))]),
             ..Default::default()
         }),
@@ -562,9 +570,11 @@ fn test_a_port_given_by_id_keeps_its_interface() {
     let mut bond0 = find(&exposed(&state), "bond0");
     bond0.bond.as_mut().unwrap().port_connections = Some(vec![
         BondPort::Ethernet(Box::new(BondEthernetPort {
-            id: Some("eth0".to_string()),
-            mtu: 9000,
-            ..Default::default()
+            base: PortBase {
+                id: Some("eth0".to_string()),
+                mtu: 9000,
+                ..Default::default()
+            },
         })),
         name("eth1"),
     ]);
@@ -666,9 +676,11 @@ fn test_naming_a_port_nested_in_another_controller_is_rejected() {
             id: "bond0".to_string(),
             bond: Some(BondSettings {
                 port_connections: Some(vec![BondPort::Ethernet(Box::new(BondEthernetPort {
-                    id: Some("eth0".to_string()),
-                    interface: Some("eth0".to_string()),
-                    ..Default::default()
+                    base: PortBase {
+                        id: Some("eth0".to_string()),
+                        interface: Some("eth0".to_string()),
+                        ..Default::default()
+                    },
                 }))]),
                 ..Default::default()
             }),
@@ -718,8 +730,11 @@ fn test_a_loop_of_controllers_is_rejected() {
         interface: Some("br0".to_string()),
         bridge: Some(BridgeSettings {
             port_connections: Some(vec![BridgePort::Bond(Box::new(BridgeBondPort {
-                id: Some("bond0".to_string()),
-                interface: Some("bond0".to_string()),
+                base: PortBase {
+                    id: Some("bond0".to_string()),
+                    interface: Some("bond0".to_string()),
+                    ..Default::default()
+                },
                 bond: BondSettings {
                     port_connections: Some(vec![name("br0")]),
                     ..Default::default()
