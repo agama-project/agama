@@ -28,8 +28,7 @@ const createBaseFields = (): FormFields => ({
   moveMountPoints: true,
 });
 
-const NAME_CHARACTERS_ERROR =
-  "The name can only contain letters, digits and the characters '+', '_', '.' and '-'.";
+const NAME_CHARACTERS_ERROR = "The name has characters that are not allowed.";
 const NAME_START_ERROR = "The name cannot begin with a hyphen or be '.' or '..'.";
 
 describe("validations", () => {

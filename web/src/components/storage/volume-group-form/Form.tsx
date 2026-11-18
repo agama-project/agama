@@ -173,7 +173,13 @@ function VolumeGroupFormContent({ config, volumeGroup, devices }: VolumeGroupFor
         <AlertSubscribe form={form} />
 
         <form.AppField name="vgName">
-          {(field) => <field.TextField label={_("Name")} />}
+          {(field) => (
+            <field.TextField
+              label={_("Name")}
+              // TRANSLATORS: hint below the name of an LVM volume group, keep the quoted characters as they are
+              helperText={_("Use only letters, digits and the characters '+', '_', '.' and '-'.")}
+            />
+          )}
         </form.AppField>
 
         <TargetDevicesField form={form} devices={devices} />

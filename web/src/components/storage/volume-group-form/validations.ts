@@ -57,8 +57,8 @@ function vgNameError(vgName: string, usedNames: string[]): string | undefined {
   if (required) return required;
 
   if (!VG_NAME_REGEXP.test(vgName)) {
-    // TRANSLATORS: error message, keep the quoted characters as they are
-    return _("The name can only contain letters, digits and the characters '+', '_', '.' and '-'.");
+    // TRANSLATORS: error message for the name of an LVM volume group
+    return _("The name has characters that are not allowed.");
   }
 
   // Only ASCII characters get this far, so the length counts what LVM counts.

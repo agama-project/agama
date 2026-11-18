@@ -254,10 +254,23 @@ describe("VolumeGroupForm", () => {
           await user.type(nameInput(), name);
           await user.click(acceptButton());
 
-          await screen.findByText(/The name can only contain letters, digits/);
+          await screen.findByText("The name has characters that are not allowed.");
           expect(mockAddVolumeGroup).not.toHaveBeenCalled();
         },
       );
+
+      it("tells which characters the name can have, before and after it is refused", async () => {
+        const { user } = installerRender(<VolumeGroupForm />);
+        const hint = "Use only letters, digits and the characters '+', '_', '.' and '-'.";
+        screen.getByText(hint);
+
+        await user.clear(nameInput());
+        await user.type(nameInput(), "my vg");
+        await user.click(acceptButton());
+
+        await screen.findByText("The name has characters that are not allowed.");
+        screen.getByText(hint);
+      });
 
       it.each(["-vg", ".", ".."])("refuses the name %j", async (name) => {
         const { user } = installerRender(<VolumeGroupForm />);
