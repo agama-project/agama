@@ -114,10 +114,6 @@ export type EntriesTableProps = {
  * data, and the menu of actions. It starts in the configuration's order and can
  * be sorted by device name.
  *
- * Keyboard: arrow keys walk the entries, Up and Down from name to name and Left
- * and Right between a name and its menu. Every name and every menu stays a tab
- * stop.
- *
  * Two of PatternFly's defaults are turned off:
  *
  * - It calls a table a grid, which announces an interactive widget with a
@@ -128,49 +124,8 @@ export type EntriesTableProps = {
  */
 export default function EntriesTable({ groupHeadingLevel }: EntriesTableProps): React.ReactNode {
   const config = useConfigModel();
-  const list = React.useRef<HTMLDivElement>(null);
   /* Unsorted until a header is used. */
   const sortBy = null;
-
-  const onKeyDown = (event: React.KeyboardEvent) => {
-    /* Right and left move between an entry's name and its menu. Both stay tab
-       stops: this is a shortcut, not the only way to reach the menu. */
-    const row = (document.activeElement as HTMLElement | null)?.closest("tr");
-    if (row && (event.key === "ArrowRight" || event.key === "ArrowLeft")) {
-      const name = row.querySelector<HTMLElement>("[data-entry-name]");
-      const menu = row.querySelector<HTMLElement>("[data-entry-menu] button");
-      const target = event.key === "ArrowRight" ? menu : name;
-      const from = event.key === "ArrowRight" ? name : menu;
-      if (target && from === document.activeElement) {
-        event.preventDefault();
-        target.focus();
-      }
-      return;
-    }
-
-    const names = [...(list.current?.querySelectorAll<HTMLElement>("[data-entry-name]") || [])];
-    const at = names.indexOf(document.activeElement as HTMLElement);
-    if (at === -1) return;
-
-    const focusAt = (index: number) => {
-      const next = names[Math.max(0, Math.min(index, names.length - 1))];
-      if (!next) return;
-
-      event.preventDefault();
-      next.focus();
-    };
-
-    switch (event.key) {
-      case "ArrowDown":
-        return focusAt(at + 1);
-      case "ArrowUp":
-        return focusAt(at - 1);
-      case "Home":
-        return focusAt(0);
-      case "End":
-        return focusAt(names.length - 1);
-    }
-  };
 
   const rows = rowsOf(config);
   if (!rows.length) return null;
@@ -204,7 +159,7 @@ export default function EntriesTable({ groupHeadingLevel }: EntriesTableProps): 
   const columnCount = 4;
 
   return (
-    <div className="agm-entries-table" ref={list} onKeyDown={onKeyDown}>
+    <div className="agm-entries-table">
       <Table
         role="table"
         gridBreakPoint=""

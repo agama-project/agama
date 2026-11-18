@@ -73,11 +73,6 @@ export default function EntryRow({
     open !== null && open.collection === subject.collection && open.index === subject.index;
 
   return (
-    /* No handler of its own: the row opens because the name's link is
-       stretched over it, so mouse, keyboard and screen reader all meet the
-       same control. PatternFly's clickable look comes from its class rather
-       than from `isClickable`, which would also make the row itself a focus
-       stop with no role and handle keys meant for the menu. */
     <Tr
       className={css("agm-entries-table__row", isIdle && "agm-entries-table__row--idle")}
       isRowSelected={isOpen}
@@ -107,14 +102,7 @@ export default function EntryRow({
         </Stack>
       </Td>
       <Td dataLabel={columnName("existingData")}>{existingData}</Td>
-      {/* Above the stretched link: a click anywhere in this cell opens
-          nothing but the menu. */}
-      <Td
-        isActionCell
-        dataLabel={columnName("actions")}
-        className="agm-entries-table__menu"
-        data-entry-menu=""
-      >
+      <Td isActionCell dataLabel={columnName("actions")}>
         {menu}
       </Td>
     </Tr>

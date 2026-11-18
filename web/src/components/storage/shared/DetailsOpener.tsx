@@ -51,16 +51,7 @@ export default function DetailsOpener({ subject, children }: DetailsOpenerProps)
   const { addressOf } = useDeviceDetails();
 
   return (
-    <Link
-      to={addressOf(subject)}
-      replace
-      variant="link"
-      isInline
-      aria-controls={DETAILS_PANEL_ID}
-      /* So the list around it can walk its entries with the arrow keys without
-         knowing how any of them is drawn. */
-      data-entry-name=""
-    >
+    <Link to={addressOf(subject)} replace variant="link" isInline aria-controls={DETAILS_PANEL_ID}>
       {children}
     </Link>
   );
