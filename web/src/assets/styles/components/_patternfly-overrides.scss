@@ -431,13 +431,13 @@ label.pf-m-disabled + .pf-v6-c-check__description {
 // which is not the case for Agama tables. Hence this custom CSS to get the
 // visual feedback without the misleading affordance.
 //
-// A row titling a group of rows (agm-table__group-title-row) is not an entry,
+// A row titling a group of rows (agm-table-group__title-row) is not an entry,
 // so it never lights up.
-.pf-v6-c-table tbody tr:not(.agm-table__group-title-row):hover,
-.pf-v6-c-table tbody tr:not(.agm-table__group-title-row):focus-within,
+.pf-v6-c-table tbody tr:not(.agm-table-group__title-row):hover,
+.pf-v6-c-table tbody tr:not(.agm-table-group__title-row):focus-within,
 .pf-v6-c-table
   tbody
-  tr:not(.agm-table__group-title-row):has(.pf-v6-c-menu-toggle[aria-expanded="true"]) {
+  tr:not(.agm-table-group__title-row):has(.pf-v6-c-menu-toggle[aria-expanded="true"]) {
   background-color: var(--agm-t--action--background--color--hover);
 }
 

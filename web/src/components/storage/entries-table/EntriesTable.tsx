@@ -21,12 +21,12 @@
  */
 
 import React from "react";
-import { Table, Tbody, Td, Th, Thead, Tr } from "@patternfly/react-table";
+import { Table, Th, Thead, Tr } from "@patternfly/react-table";
+import TableGroup from "~/components/core/TableGroup";
 import { columnName } from "~/components/storage/entries-table/columns";
 import DriveRow from "~/components/storage/entries-table/DriveRow";
 import VolumeGroupRow from "~/components/storage/entries-table/VolumeGroupRow";
 import { baseName } from "~/components/storage/utils";
-import { css } from "@patternfly/react-styles";
 import { useConfigModel } from "~/hooks/model/storage/config-model";
 import { _, n_ } from "~/i18n";
 import type { TitleProps } from "@patternfly/react-core";
@@ -126,15 +126,11 @@ export type EntriesTableProps = {
  *   semantics exactly where the window is tightest. The table keeps its width
  *   instead and scrolls inside its own box.
  */
-export default function EntriesTable({
-  groupHeadingLevel: GroupHeading = "h2",
-}: EntriesTableProps): React.ReactNode {
+export default function EntriesTable({ groupHeadingLevel }: EntriesTableProps): React.ReactNode {
   const config = useConfigModel();
   const list = React.useRef<HTMLDivElement>(null);
   /* Unsorted until a header is used. */
   const sortBy = null;
-  const isGrouped = true;
-  const groupId = React.useId();
 
   const onKeyDown = (event: React.KeyboardEvent) => {
     /* Right and left move between an entry's name and its menu. Both stay tab
@@ -202,15 +198,7 @@ export default function EntriesTable({
   })).filter(({ rows }) => rows.length > 0);
 
   return (
-    <div
-      className={css(
-        "agm-entries-table",
-        isGrouped && "agm-entries-table--grouped",
-        isGrouped && "agm-entries-table--no-group-marks",
-      )}
-      ref={list}
-      onKeyDown={onKeyDown}
-    >
+    <div className="agm-entries-table" ref={list} onKeyDown={onKeyDown}>
       <Table
         role="table"
         gridBreakPoint=""
@@ -227,29 +215,16 @@ export default function EntriesTable({
             <Th screenReaderText={columnName("actions")} />
           </Tr>
         </Thead>
-        {isGrouped ? (
-          groups.map(({ collection, rows }) => (
-            <Tbody
-              key={collection}
-              className="agm-entries-table__group"
-              aria-labelledby={`${groupId}-${collection}`}
-            >
-              <Tr className="agm-table__group-title-row">
-                <Td colSpan={columnCount} className="agm-entries-table__group-header">
-                  <GroupHeading
-                    id={`${groupId}-${collection}`}
-                    className="agm-entries-table__group-title"
-                  >
-                    {groupTitle(collection, rows.length)}
-                  </GroupHeading>
-                </Td>
-              </Tr>
-              {rows.map(renderRow)}
-            </Tbody>
-          ))
-        ) : (
-          <Tbody>{sorted.map(renderRow)}</Tbody>
-        )}
+        {groups.map(({ collection, rows }) => (
+          <TableGroup
+            key={collection}
+            title={groupTitle(collection, rows.length)}
+            columnCount={columnCount}
+            headingLevel={groupHeadingLevel}
+          >
+            {rows.map(renderRow)}
+          </TableGroup>
+        ))}
       </Table>
     </div>
   );

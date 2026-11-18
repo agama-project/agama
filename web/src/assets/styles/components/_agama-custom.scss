@@ -601,96 +601,50 @@ nav.agm-breadcrumb > ol > li > a {
   --pf-v6-c-table--cell--first-last-child--PaddingInline: var(--pf-t--global--spacer--md);
 }
 
-// PLAYGROUND: in the grouped table, the row naming each group reads as a title
-// over its rows rather than as a row of its own: smaller and set apart by
-// weight, no rule under it, and more room above it than under it.
-.agm-entries-table .pf-v6-c-table tbody tr:has(> .agm-entries-table__group-header) {
+// A group of rows inside a table, under a title row naming it
+// (core/TableGroup). The title reads as a label over its rows rather than as a
+// row of its own: smaller and set apart by weight, no rule under it, and more
+// room above it than under it.
+.pf-v6-c-table {
+  --agm-table-group--indent: var(--pf-t--global--spacer--sm);
+}
+
+.pf-v6-c-table tr.agm-table-group__title-row {
   --pf-v6-c-table__tr--BorderBlockEndWidth: 0;
 }
 
-.agm-entries-table .pf-v6-c-table td.agm-entries-table__group-header {
-  padding-block-end: var(--pf-t--global--spacer--xs);
-  font-size: var(--pf-t--global--font--size--body--sm);
-  font-weight: var(--pf-t--global--font--weight--body--bold);
-  color: var(--pf-t--global--text--color--subtle);
+.pf-v6-c-table td.agm-table-group__title-cell {
+  --pf-v6-c-table--cell--PaddingBlockEnd: var(--pf-t--global--spacer--xs);
+  --pf-v6-c-table--cell--FontSize: var(--pf-t--global--font--size--body--sm);
+  --pf-v6-c-table--cell--FontWeight: var(--pf-t--global--font--weight--body--bold);
+  --pf-v6-c-table--cell--Color: var(--pf-t--global--text--color--subtle);
+
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
 
-// The kind's mark leads the title, centred on its capitals, in the title's
-// own colour so it adds recognition, not weight. A heading for navigation, it
-// still reads in the cell's type rather than a heading's own.
-.agm-entries-table__group-title {
+.pf-v6-c-table .agm-table-group + .agm-table-group td.agm-table-group__title-cell {
+  --pf-v6-c-table--cell--PaddingBlockStart: var(--pf-t--global--spacer--lg);
+}
+
+// A heading for navigation, it still reads in the cell's type rather than a
+// heading's own.
+.agm-table-group__title {
   font-family: inherit;
   font-weight: inherit;
-  display: inline-flex;
-  align-items: center;
-  gap: var(--pf-t--global--spacer--xs);
 }
 
-.agm-entries-table__group-title > svg {
-  inline-size: var(--agm-entries-table--group-mark);
-  block-size: var(--agm-entries-table--group-mark);
-  fill: currentcolor;
-}
-
-// The mark's box, and the room its title text starts after. The rows of a
-// group start their first column at the same place, so the names line up
-// under the title's words and the mark stands out at the edge.
-.agm-entries-table {
-  --agm-entries-table--group-mark: 1rem;
-  --agm-entries-table--group-indent: calc(
-    var(--agm-entries-table--group-mark) + var(--pf-t--global--spacer--xs)
-  );
-}
-
-.agm-entries-table
-  .pf-v6-c-table
-  .agm-entries-table__group
-  tr.agm-entries-table__row
-  > :first-child {
+// The rows under a title start their first column a bit further in, so they
+// read as held by it. The column's header moves with them, so it heads the
+// rows rather than the titles.
+.pf-v6-c-table
+  .agm-table-group:has(> .agm-table-group__title-row)
+  > tr:not(.agm-table-group__title-row)
+  > :first-child,
+.pf-v6-c-table:has(> .agm-table-group > .agm-table-group__title-row) > thead tr > :first-child {
   --edge: var(--pf-v6-c-table--cell--first-last-child--PaddingInline);
 
-  padding-inline-start: calc(var(--edge) + var(--agm-entries-table--group-indent));
-}
-
-// The header of that column moves with it, so it heads the names, not the
-// marks of the group titles.
-.agm-entries-table--grouped .pf-v6-c-table thead tr > :first-child {
-  --edge: var(--pf-v6-c-table--cell--first-last-child--PaddingInline);
-
-  padding-inline-start: calc(var(--edge) + var(--agm-entries-table--group-indent));
-}
-
-.agm-entries-table__group + .agm-entries-table__group td.agm-entries-table__group-header {
-  padding-block-start: var(--pf-t--global--spacer--lg);
-}
-
-// PLAYGROUND: the group titles on a faint band, tight around their words,
-// either fading from a soft tint of the secondary background to nothing, or
-// flat in that tint. The fade ends in transparency rather than in white, so
-// it blends into whatever the table sits on, dark themes included. The band
-// sets the groups apart by itself, so no room is added before it.
-.agm-entries-table--banded,
-.agm-entries-table--flat-band {
-  --agm-entries-table--band: color-mix(
-    in srgb,
-    var(--pf-t--global--background--color--secondary--default) 30%,
-    transparent
-  );
-}
-
-.agm-entries-table--banded .pf-v6-c-table td.agm-entries-table__group-header,
-.agm-entries-table--flat-band .pf-v6-c-table td.agm-entries-table__group-header {
-  padding-block: var(--pf-t--global--spacer--xs);
-}
-
-.agm-entries-table--banded .pf-v6-c-table td.agm-entries-table__group-header {
-  background: linear-gradient(var(--agm-entries-table--band), transparent);
-}
-
-.agm-entries-table--flat-band .pf-v6-c-table td.agm-entries-table__group-header {
-  background-color: var(--agm-entries-table--band);
+  padding-inline-start: calc(var(--edge) + var(--agm-table-group--indent));
 }
 
 // Color lands on the mark, and never alone: every mark has a word beside it
@@ -1100,10 +1054,4 @@ tr.agm-entries-table__row > :is(th, td):not(.agm-entries-table__menu) {
 
 .agm-details-section--band-flat > .agm-details-section__title.pf-v6-c-title {
   background: var(--agm-details-section--band);
-}
-
-// PLAYGROUND: without the marks before the group titles, the rows need only a
-// short indent to read as held by their group.
-.agm-entries-table.agm-entries-table--no-group-marks {
-  --agm-entries-table--group-indent: var(--pf-t--global--spacer--sm);
 }
