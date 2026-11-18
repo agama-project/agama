@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import { Table, Tbody, Th, Thead, Tr } from "@patternfly/react-table";
+import { Table, Tbody, Td, Th, Thead, Tr } from "@patternfly/react-table";
 import { columnName } from "~/components/storage/entries-table/columns";
 import DriveRow from "~/components/storage/entries-table/DriveRow";
 import VolumeGroupRow from "~/components/storage/entries-table/VolumeGroupRow";
@@ -29,6 +29,7 @@ import { baseName } from "~/components/storage/utils";
 import { css } from "@patternfly/react-styles";
 import { useConfigModel } from "~/hooks/model/storage/config-model";
 import { _, n_ } from "~/i18n";
+import type { TitleProps } from "@patternfly/react-core";
 import type { TranslatedString } from "~/i18n";
 import type { ConfigModel } from "~/model/storage/config-model";
 import type {
@@ -100,6 +101,11 @@ function compareRows(column: number, a: Row, b: Row): number {
   return byType || a.subject.index - b.subject.index;
 }
 
+export type EntriesTableProps = {
+  /** The level of the headings naming each group of rows. */
+  groupHeadingLevel?: TitleProps["headingLevel"];
+};
+
 /**
  * What the configuration is made of, under the summary of what it does.
  *
@@ -120,7 +126,9 @@ function compareRows(column: number, a: Row, b: Row): number {
  *   semantics exactly where the window is tightest. The table keeps its width
  *   instead and scrolls inside its own box.
  */
-export default function EntriesTable(): React.ReactNode {
+export default function EntriesTable({
+  groupHeadingLevel: GroupHeading = "h2",
+}: EntriesTableProps): React.ReactNode {
   const config = useConfigModel();
   const list = React.useRef<HTMLDivElement>(null);
   /* Unsorted until a header is used. */
@@ -187,7 +195,7 @@ export default function EntriesTable(): React.ReactNode {
   const columnCount = 4;
 
   /* One body per kind, in the configuration's order, each starting with a row
-     group header naming it. */
+     whose heading names it. */
   const groups = TYPE_ORDER.map((collection) => ({
     collection,
     rows: sorted.filter((row) => row.subject.collection === collection),
@@ -227,16 +235,14 @@ export default function EntriesTable(): React.ReactNode {
               aria-labelledby={`${groupId}-${collection}`}
             >
               <Tr>
-                <Th
-                  id={`${groupId}-${collection}`}
-                  scope="rowgroup"
-                  colSpan={columnCount}
-                  className="agm-entries-table__group-header"
-                >
-                  <span className="agm-entries-table__group-title">
+                <Td colSpan={columnCount} className="agm-entries-table__group-header">
+                  <GroupHeading
+                    id={`${groupId}-${collection}`}
+                    className="agm-entries-table__group-title"
+                  >
                     {groupTitle(collection, rows.length)}
-                  </span>
-                </Th>
+                  </GroupHeading>
+                </Td>
               </Tr>
               {rows.map(renderRow)}
             </Tbody>

@@ -608,7 +608,7 @@ nav.agm-breadcrumb > ol > li > a {
   --pf-v6-c-table__tr--BorderBlockEndWidth: 0;
 }
 
-.agm-entries-table .pf-v6-c-table th.agm-entries-table__group-header {
+.agm-entries-table .pf-v6-c-table td.agm-entries-table__group-header {
   padding-block-end: var(--pf-t--global--spacer--xs);
   font-size: var(--pf-t--global--font--size--body--sm);
   font-weight: var(--pf-t--global--font--weight--body--bold);
@@ -618,8 +618,11 @@ nav.agm-breadcrumb > ol > li > a {
 }
 
 // The kind's mark leads the title, centred on its capitals, in the title's
-// own colour so it adds recognition, not weight.
+// own colour so it adds recognition, not weight. A heading for navigation, it
+// still reads in the cell's type rather than a heading's own.
 .agm-entries-table__group-title {
+  font-family: inherit;
+  font-weight: inherit;
   display: inline-flex;
   align-items: center;
   gap: var(--pf-t--global--spacer--xs);
@@ -659,7 +662,7 @@ nav.agm-breadcrumb > ol > li > a {
   padding-inline-start: calc(var(--edge) + var(--agm-entries-table--group-indent));
 }
 
-.agm-entries-table__group + .agm-entries-table__group th.agm-entries-table__group-header {
+.agm-entries-table__group + .agm-entries-table__group td.agm-entries-table__group-header {
   padding-block-start: var(--pf-t--global--spacer--lg);
 }
 
@@ -677,16 +680,16 @@ nav.agm-breadcrumb > ol > li > a {
   );
 }
 
-.agm-entries-table--banded .pf-v6-c-table th.agm-entries-table__group-header,
-.agm-entries-table--flat-band .pf-v6-c-table th.agm-entries-table__group-header {
+.agm-entries-table--banded .pf-v6-c-table td.agm-entries-table__group-header,
+.agm-entries-table--flat-band .pf-v6-c-table td.agm-entries-table__group-header {
   padding-block: var(--pf-t--global--spacer--xs);
 }
 
-.agm-entries-table--banded .pf-v6-c-table th.agm-entries-table__group-header {
+.agm-entries-table--banded .pf-v6-c-table td.agm-entries-table__group-header {
   background: linear-gradient(var(--agm-entries-table--band), transparent);
 }
 
-.agm-entries-table--flat-band .pf-v6-c-table th.agm-entries-table__group-header {
+.agm-entries-table--flat-band .pf-v6-c-table td.agm-entries-table__group-header {
   background-color: var(--agm-entries-table--band);
 }
 
