@@ -44,7 +44,9 @@ pub struct Config {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::api::network::settings::{NetworkConnection, WirelessSettings}; // Import necessary types
+    use crate::api::network::settings::{
+        ConnectionBase, IpSettings, NetworkConnection, WirelessSettings,
+    }; // Import necessary types
     use crate::api::network::types::{ConnectivityState, Ipv4Method};
 
     #[test]
@@ -52,12 +54,18 @@ mod tests {
         // The `updated` config that will be merged into
         let mut updated = Config {
             connections: Some(NetworkConnectionsCollection(vec![NetworkConnection {
-                id: "eth0".to_string(),
-                method4: Some(Ipv4Method::Auto),
-                addresses: vec![],
-                nameservers: vec![],
-                dns_searchlist: vec![],
-                mtu: 1500,
+                base: ConnectionBase {
+                    id: "eth0".to_string(),
+                    mtu: 1500,
+                    ..Default::default()
+                },
+                ip: IpSettings {
+                    method4: Some(Ipv4Method::Auto),
+                    addresses: vec![],
+                    nameservers: vec![],
+                    dns_searchlist: vec![],
+                    ..Default::default()
+                },
                 ..Default::default()
             }])),
             state: Some(StateSettings {
@@ -72,22 +80,34 @@ mod tests {
         let original = Config {
             connections: Some(NetworkConnectionsCollection(vec![
                 NetworkConnection {
-                    id: "eth1".to_string(),
-                    method4: Some(Ipv4Method::Manual),
-                    addresses: vec!["192.168.1.10/24".parse().unwrap()],
-                    nameservers: vec!["8.8.8.8".parse().unwrap()],
-                    dns_searchlist: vec!["example.com".to_string()],
-                    mtu: 0, // default
+                    base: ConnectionBase {
+                        id: "eth1".to_string(),
+                        mtu: 0, // default
+                        ..Default::default()
+                    },
+                    ip: IpSettings {
+                        method4: Some(Ipv4Method::Manual),
+                        addresses: vec!["192.168.1.10/24".parse().unwrap()],
+                        nameservers: vec!["8.8.8.8".parse().unwrap()],
+                        dns_searchlist: vec!["example.com".to_string()],
+                        ..Default::default()
+                    },
                     ..Default::default()
                 },
                 NetworkConnection {
-                    id: "wifi0".to_string(),
-                    method4: Some(Ipv4Method::Auto),
-                    wireless: Some(WirelessSettings {
-                        ssid: "MyWiFi".to_string(),
-                        security: "wpa2".to_string(),
+                    base: ConnectionBase {
+                        id: "wifi0".to_string(),
+                        wireless: Some(WirelessSettings {
+                            ssid: "MyWiFi".to_string(),
+                            security: "wpa2".to_string(),
+                            ..Default::default()
+                        }),
                         ..Default::default()
-                    }),
+                    },
+                    ip: IpSettings {
+                        method4: Some(Ipv4Method::Auto),
+                        ..Default::default()
+                    },
                     ..Default::default()
                 },
             ])),
@@ -107,7 +127,7 @@ mod tests {
         // This means the vector is only replaced if the destination vector is empty.
         // Since updated.connections was not empty, it is NOT overwritten.
         assert_eq!(updated.connections.as_ref().unwrap().0.len(), 1);
-        assert_eq!(updated.connections.as_ref().unwrap().0[0].id, "eth0");
+        assert_eq!(updated.connections.as_ref().unwrap().0[0].base.id, "eth0");
 
         // Assertions for state (StateSettings has overwrite_none strategy)
         let merged_state = updated.state.unwrap();
@@ -118,17 +138,21 @@ mod tests {
 
         // Test with a list of connections
         let mut updated1 = Config {
-            connections: Some(NetworkConnectionsCollection(vec![NetworkConnection {
-                id: "eth1".to_string(),
-                ..Default::default()
-            }])),
+            connections: Some(NetworkConnectionsCollection(vec![NetworkConnection::from(
+                ConnectionBase {
+                    id: "eth1".to_string(),
+                    ..Default::default()
+                },
+            )])),
             state: None,
         };
         let original1 = Config {
-            connections: Some(NetworkConnectionsCollection(vec![NetworkConnection {
-                id: "eth0".to_string(),
-                ..Default::default()
-            }])), // empty vec
+            connections: Some(NetworkConnectionsCollection(vec![NetworkConnection::from(
+                ConnectionBase {
+                    id: "eth0".to_string(),
+                    ..Default::default()
+                },
+            )])), // empty vec
             state: None,
         };
         let original2 = original1.clone();
@@ -137,7 +161,7 @@ mod tests {
         assert_eq!(updated1.connections.as_ref().unwrap().0.len(), 1); // use the updated1 list
         let connections = updated1.connections.unwrap();
         let connection = connections.0.first().unwrap();
-        assert_eq!(&connection.id, "eth1");
+        assert_eq!(&connection.base.id, "eth1");
 
         // Test without a list of connections
         let mut updated2 = Config {
@@ -152,10 +176,12 @@ mod tests {
     fn test_merge_network_config_with_nones() {
         // Case 1: `updated` has Some, `original` has None -> `updated` should be preserved
         let mut updated = Config {
-            connections: Some(NetworkConnectionsCollection(vec![NetworkConnection {
-                id: "conn1".to_string(),
-                ..Default::default()
-            }])),
+            connections: Some(NetworkConnectionsCollection(vec![NetworkConnection::from(
+                ConnectionBase {
+                    id: "conn1".to_string(),
+                    ..Default::default()
+                },
+            )])),
             state: Some(StateSettings {
                 connectivity: Some(ConnectivityState::Full),
                 ..Default::default()
@@ -177,10 +203,12 @@ mod tests {
             state: None,
         };
         let original1 = Config {
-            connections: Some(NetworkConnectionsCollection(vec![NetworkConnection {
-                id: "conn2".to_string(),
-                ..Default::default()
-            }])),
+            connections: Some(NetworkConnectionsCollection(vec![NetworkConnection::from(
+                ConnectionBase {
+                    id: "conn2".to_string(),
+                    ..Default::default()
+                },
+            )])),
             state: Some(StateSettings {
                 wireless_enabled: Some(false),
                 ..Default::default()

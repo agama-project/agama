@@ -39,7 +39,7 @@ fn find(collection: &NetworkConnectionsCollection, id: &str) -> NetworkConnectio
     collection
         .flatten()
         .into_iter()
-        .find(|c| c.id == id)
+        .find(|c| c.base.id == id)
         .unwrap_or_else(|| panic!("{id} is missing from the collection"))
 }
 
@@ -53,7 +53,7 @@ fn bond_mut<'a>(
         .0
         .iter_mut()
         .find_map(|conn| {
-            if conn.id == id {
+            if conn.base.id == id {
                 return conn.bond.as_mut();
             }
             let ports = conn.bridge.as_mut()?.port_connections.as_mut()?;
@@ -76,7 +76,7 @@ fn bridge_mut<'a>(
     collection
         .0
         .iter_mut()
-        .find(|conn| conn.id == id)
+        .find(|conn| conn.base.id == id)
         .and_then(|conn| conn.bridge.as_mut())
         .unwrap_or_else(|| panic!("{id} is not a bridge"))
 }
@@ -136,7 +136,7 @@ fn port_ids(conn: &NetworkConnection) -> Vec<String> {
 
 /// Returns the sorted IDs of the root connections of an API collection.
 fn root_ids(collection: &NetworkConnectionsCollection) -> Vec<&str> {
-    let mut ids: Vec<&str> = collection.0.iter().map(|c| c.id.as_str()).collect();
+    let mut ids: Vec<&str> = collection.0.iter().map(|c| c.base.id.as_str()).collect();
     ids.sort_unstable();
     ids
 }
@@ -183,11 +183,13 @@ fn exposed(state: &NetworkState) -> NetworkConnectionsCollection {
 fn remove(state: &mut NetworkState, id: &str) {
     state
         .update_state(Config {
-            connections: Some(NetworkConnectionsCollection(vec![NetworkConnection {
-                id: id.to_string(),
-                status: Some(Status::Removed),
-                ..Default::default()
-            }])),
+            connections: Some(NetworkConnectionsCollection(vec![NetworkConnection::from(
+                ConnectionBase {
+                    id: id.to_string(),
+                    status: Some(Status::Removed),
+                    ..Default::default()
+                },
+            )])),
             ..Default::default()
         })
         .unwrap();

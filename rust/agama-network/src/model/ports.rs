@@ -116,14 +116,14 @@ impl<'a> PortResolver<'a> {
         let mut named = vec![];
 
         for conn in &incoming.0 {
-            if conn.id.is_empty() {
+            if conn.base.id.is_empty() {
                 // Only the ports can do without an ID.
                 return Err(NetworkStateError::MissingConnectionId);
             }
             self.visit(
                 Cow::Borrowed(conn),
                 None,
-                conn.id.clone(),
+                conn.base.id.clone(),
                 None,
                 conn.has_ignored_port_names(),
                 conn.ports(),
@@ -478,7 +478,7 @@ impl<'a> PortResolver<'a> {
             // often disabled the IP methods of the ports, so their IP settings are ignored instead
             // of rejected (they are cleared when linking it). A port on its way out does not get
             // any setting anyway.
-            if node.conn.status != Some(Status::Removed) && node.conn.has_ip_settings() {
+            if node.conn.base.status != Some(Status::Removed) && !node.conn.ip.is_empty() {
                 tracing::warn!(
                     "The IP settings of '{}' are ignored because it is a port of '{}'",
                     node.id,
@@ -614,10 +614,10 @@ fn default_ip_methods(
     method4: Ipv4Method,
     method6: Ipv6Method,
 ) {
-    if api_conn.is_none_or(|c| c.method4.is_none()) {
+    if api_conn.is_none_or(|c| c.ip.method4.is_none()) {
         conn.ip_config.method4 = Some(method4);
     }
-    if api_conn.is_none_or(|c| c.method6.is_none()) {
+    if api_conn.is_none_or(|c| c.ip.method6.is_none()) {
         conn.ip_config.method6 = Some(method6);
     }
 }

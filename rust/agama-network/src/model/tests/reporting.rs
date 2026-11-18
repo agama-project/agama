@@ -29,7 +29,7 @@ fn test_stacked_connections_are_all_exposed() {
     let exposed: NetworkConnectionsCollection = collection.try_into().unwrap();
 
     let all = exposed.flatten();
-    let mut ids: Vec<&str> = all.iter().map(|c| c.id.as_str()).collect();
+    let mut ids: Vec<&str> = all.iter().map(|c| c.base.id.as_str()).collect();
     ids.sort_unstable();
     assert_eq!(ids, ["bond0", "br0", "br0.100", "eth0", "eth1"]);
 }
@@ -71,7 +71,7 @@ fn test_removed_connections_are_not_nested() {
     let exposed: NetworkConnectionsCollection = collection.try_into().unwrap();
 
     assert_eq!(port_ids(&find(&exposed, "bond0")), ["eth0"]);
-    assert!(exposed.0.iter().any(|c| c.id == "eth1"));
+    assert!(exposed.0.iter().any(|c| c.base.id == "eth1"));
 }
 
 /// Only bonds and bridges expose their ports, so the members of any other kind of controller
@@ -104,7 +104,7 @@ fn test_the_system_info_reports_the_state_of_the_root_connections() {
         .connections
         .0
         .iter()
-        .map(|c| (c.connection.id.as_str(), c.state))
+        .map(|c| (c.connection.base.id.as_str(), c.state))
         .collect();
     assert_eq!(
         roots,
@@ -221,12 +221,12 @@ fn test_the_reported_controllers_list_their_ports_by_name_too() {
 
     let br0 = find(&reported, "br0");
     let bridge = br0.bridge.as_ref().unwrap();
-    assert_eq!(bridge.ports, Some(vec!["bond0".to_string()]));
+    assert_eq!(bridge.base.ports, Some(vec!["bond0".to_string()]));
     assert_eq!(bridge.port_connections.as_ref().unwrap().len(), 1);
 
     let bond0 = find(&reported, "bond0");
     assert_eq!(
-        bond0.bond.as_ref().unwrap().ports,
+        bond0.bond.as_ref().unwrap().base.ports,
         Some(vec!["eth0".to_string(), "eth1".to_string()])
     );
 }
@@ -237,8 +237,8 @@ fn test_ports_are_reported_without_ip_settings() {
     state.get_connection_mut("eth0").unwrap().ip_config.method4 = Some(Ipv4Method::Auto);
 
     let eth0 = find(&exposed(&state), "eth0");
-    assert!(!eth0.has_ip_settings());
-    assert_eq!(eth0.ignore_auto_dns, None);
+    assert!(eth0.ip.is_empty());
+    assert_eq!(eth0.ip.ignore_auto_dns, None);
 }
 
 /// Builds a state with a VLAN as a port of a bond.
@@ -268,7 +268,7 @@ fn test_any_kind_of_port_is_nested_in_its_controller() {
     let reported = exposed(&state);
     assert_eq!(root_ids(&reported), ["bond0"]);
     let bond = find(&reported, "bond0").bond.unwrap();
-    assert_eq!(bond.ports, Some(vec!["eth0.100".to_string()]));
+    assert_eq!(bond.base.ports, Some(vec!["eth0.100".to_string()]));
     let ports = bond.port_connections.unwrap();
     let [BondPort::Vlan(vlan)] = ports.as_slice() else {
         panic!("eth0.100 is not nested as a VLAN");
