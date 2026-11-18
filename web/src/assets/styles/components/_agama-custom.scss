@@ -749,22 +749,12 @@ nav.agm-breadcrumb > ol > li > a {
   border-block-end-color: var(--pf-v6-c-table__tr--BorderBlockEndColor);
 }
 
-// An entry the installation leaves out reads quieter, every cell of it: in the
-// lightest text colour the themes keep at AA contrast (4.5:1) on the page,
-// which they define for disabled text. PatternFly colours each cell itself,
-// so the row sets the colour its cells read.
+// An entry the installation leaves out reads quieter, every cell of it, in the
+// subtle text colour. Not the disabled one: the row changes background on
+// hover, focus and selection, and disabled text drops below AA contrast (4.5:1)
+// on those. PatternFly colours each cell itself, so the row sets the colour its
+// cells read.
 .agm-entries-table__row--idle {
-  --pf-v6-c-table--cell--Color: var(--pf-t--global--text--color--disabled);
-}
-
-.agm-entries-table__row--idle .agm-row-note {
-  color: inherit;
-}
-
-// Except under high contrast, where PatternFly's theme leaves disabled text
-// dim on purpose, as disabled controls need no contrast. Its subtle text keeps
-// the contrast that theme is for, and still reads quieter than the rest.
-:root.pf-v6-theme-high-contrast .agm-entries-table__row--idle {
   --pf-v6-c-table--cell--Color: var(--pf-t--global--text--color--subtle);
 }
 
