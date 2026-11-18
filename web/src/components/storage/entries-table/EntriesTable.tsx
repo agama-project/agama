@@ -234,7 +234,7 @@ export default function EntriesTable({
               className="agm-entries-table__group"
               aria-labelledby={`${groupId}-${collection}`}
             >
-              <Tr>
+              <Tr className="agm-table__group-title-row">
                 <Td colSpan={columnCount} className="agm-entries-table__group-header">
                   <GroupHeading
                     id={`${groupId}-${collection}`}
