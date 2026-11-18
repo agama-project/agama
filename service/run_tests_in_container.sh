@@ -12,7 +12,7 @@ if podman exec --workdir /checkout/service agama_ruby_tests rake test:unit; then
   echo "Tests passed"
 else
   set +x
-  echo "Tests failed"
+  echo "TESTS FAILED"
   echo "To get into container use:"
   echo "  podman attach agama_ruby_tests"
   echo "  cd /checkout"
