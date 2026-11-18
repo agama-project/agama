@@ -304,6 +304,7 @@ describe("SoftwarePage", () => {
             scope: "software",
             class: "loadSource",
             description: "Could not read the repositories",
+            details: "Failed to download https://download.opensuse.org/tumbleweed/repo/oss/",
           },
         ]);
       });
@@ -318,6 +319,13 @@ describe("SoftwarePage", () => {
         screen.getByRole("button", { name: /Try again/ });
         const link = screen.getByRole("link", { name: "Go to network settings" });
         expect(link).toHaveAttribute("href", "/network");
+      });
+
+      it("allows expanding technical details of the failure", async () => {
+        const { user } = installerRender(<SoftwarePage />);
+        const toggle = screen.getByText("Show technical details");
+        await user.click(toggle);
+        screen.getByText(/Failed to download https:\/\/download\.opensuse\.org/);
       });
     });
   });
