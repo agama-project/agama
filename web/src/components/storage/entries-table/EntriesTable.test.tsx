@@ -29,6 +29,7 @@ import EntriesTable from "~/components/storage/entries-table/EntriesTable";
 
 const mockConfig = jest.fn();
 const mockSystemDevice = jest.fn();
+const mockScrollsSideways = jest.fn();
 
 jest.mock("~/hooks/model/storage/config-model", () => ({
   ...jest.requireActual("~/hooks/model/storage/config-model"),
@@ -38,6 +39,11 @@ jest.mock("~/hooks/model/storage/config-model", () => ({
 jest.mock("~/hooks/model/system/storage", () => ({
   ...jest.requireActual("~/hooks/model/system/storage"),
   useDevice: (name: string) => mockSystemDevice(name),
+}));
+
+/* jsdom lays nothing out, so whether the table overflows its box is said here. */
+jest.mock("~/hooks/use-scrolls-sideways", () => ({
+  useScrollsSideways: () => mockScrollsSideways(),
 }));
 
 /* The row menus have their own tests; here only that each row has one. */
@@ -77,6 +83,7 @@ const row = (name: string) =>
 describe("EntriesTable", () => {
   beforeEach(() => {
     mockSystemDevice.mockReturnValue(null);
+    mockScrollsSideways.mockReturnValue(false);
   });
 
   it("renders nothing when the configuration holds no device", () => {
@@ -254,6 +261,28 @@ describe("EntriesTable", () => {
       installerRender(<EntriesTable />);
 
       within(row("system")).getByRole("button", { name: "Actions for system" });
+    });
+  });
+
+  describe("when it fits its box", () => {
+    it("is neither a region nor a Tab stop", () => {
+      mockConfig.mockReturnValue(config({ drives: [{ name: "/dev/sda", partitions: [] }] }));
+      installerRender(<EntriesTable />);
+
+      expect(screen.queryByRole("region")).toBeNull();
+      expect(table().parentElement).not.toHaveAttribute("tabindex");
+    });
+  });
+
+  describe("when it is wider than its box", () => {
+    it("scrolls in a region named after the table, reachable with Tab", () => {
+      mockScrollsSideways.mockReturnValue(true);
+      mockConfig.mockReturnValue(config({ drives: [{ name: "/dev/sda", partitions: [] }] }));
+      installerRender(<EntriesTable />);
+
+      const region = screen.getByRole("region", { name: "Devices of the installation" });
+      expect(region).toHaveAttribute("tabindex", "0");
+      expect(within(region).getByRole("table")).toBe(table());
     });
   });
 });

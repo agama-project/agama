@@ -20,14 +20,16 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
+import React, { useId, useState } from "react";
 import { Table, Th, Thead, Tr } from "@patternfly/react-table";
+import a11yStyles from "@patternfly/react-styles/css/utilities/Accessibility/accessibility";
 import TableGroup from "~/components/core/TableGroup";
 import { columnName } from "~/components/storage/entries-table/columns";
 import DriveRow from "~/components/storage/entries-table/DriveRow";
 import VolumeGroupRow from "~/components/storage/entries-table/VolumeGroupRow";
 import { baseName } from "~/components/storage/utils";
 import { useConfigModel } from "~/hooks/model/storage/config-model";
+import { useScrollsSideways } from "~/hooks/use-scrolls-sideways";
 import { _, n_ } from "~/i18n";
 import type { TitleProps } from "@patternfly/react-core";
 import type { TranslatedString } from "~/i18n";
@@ -121,9 +123,18 @@ export type EntriesTableProps = {
  * - It stacks each row into a block below a breakpoint, which drops the table
  *   semantics exactly where the window is tightest. The table keeps its width
  *   instead and scrolls inside its own box.
+ *
+ * While that box scrolls, it is a named region and a Tab stop of its own, so a
+ * keyboard reader can bring the hidden columns into view with the arrow keys.
+ * Tabbing between the row menus alone would scroll straight to the last
+ * column, past the ones in between, which hold only text. Once the table fits,
+ * the box is neither: a stop that scrolls nothing only lengthens the way.
  */
 export default function EntriesTable({ groupHeadingLevel }: EntriesTableProps): React.ReactNode {
   const config = useConfigModel();
+  const captionId = useId();
+  const [box, setBox] = useState<HTMLDivElement | null>(null);
+  const scrolls = useScrollsSideways(box);
   /* Unsorted until a header is used. */
   const sortBy = null;
 
@@ -163,15 +174,21 @@ export default function EntriesTable({ groupHeadingLevel }: EntriesTableProps): 
        the table scroll sideways on narrow screens. A table cannot scroll by
        itself, and making it scroll would break how some screen readers read
        it. */
-    <div className="agm-entries-table">
-      <Table
-        role="table"
-        gridBreakPoint=""
-        variant="compact"
-        // TRANSLATORS: names the list of the disks, RAID devices and volume
-        // groups the installation is made of.
-        aria-label={_("Devices of the installation")}
-      >
+    <div
+      ref={setBox}
+      className="agm-entries-table"
+      {...(scrolls && { role: "region", "aria-labelledby": captionId, tabIndex: 0 })}
+    >
+      <Table role="table" gridBreakPoint="" variant="compact">
+        {/* Read rather than shown: nothing on the page heads the table, and a
+            visible title would be a design change of its own. A plain caption
+            rather than PatternFly's Caption, whose types reject the id the
+            region needs to point at it (it passes it on all the same). */}
+        <caption id={captionId} className={a11yStyles.screenReader}>
+          {/* TRANSLATORS: names the list of the disks, RAID devices and volume
+              groups the installation is made of. */}
+          {_("Devices of the installation")}
+        </caption>
         <Thead>
           <Tr>
             <Th>{columnName("device")}</Th>
