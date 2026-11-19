@@ -1,8 +1,14 @@
 -------------------------------------------------------------------
-Mon Oct 19 14:14:07 UTC 2026 - Martin Vidner <mvidner@suse.com>
+Thu Nov 19 08:36:18 UTC 2026 - Martin Vidner <mvidner@suse.com>
 
 - Remove agama-integration-tests, keep just nodejs(engine)
   (jsc#PED-16992)
+
+-------------------------------------------------------------------
+Fri Nov 13 15:11:26 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- CC installation: Allow skipping registration when the
+  "inst.install_url" boot option is set (bsc#1289783)
 
 -------------------------------------------------------------------
 Mon Oct 12 12:59:34 UTC 2026 - Ladislav Slezák <lslezak@suse.com>

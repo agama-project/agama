@@ -52,15 +52,46 @@ describe Agama::Storage::Bootloader::Config do
 
   describe "#load_json" do
     it "loads config from given json" do
-      content = "{\"stopOnBootMenu\":true}"
+      content = "{\"stopOnBootMenu\":true,\"updateNvram\":true}"
       config.load_json(content)
       expect(config.stop_on_boot_menu).to eq true
+      expect(config.update_nvram).to eq true
     end
 
     it "remembers which keys are set" do
       content = "{\"timeout\":10}"
       config.load_json(content)
       expect(config.keys_to_export).to eq([:timeout])
+    end
+  end
+end
+
+describe Agama::Storage::Bootloader do
+  subject(:bootloader) { described_class.new(logger) }
+  let(:logger) { instance_double(Logger, info: nil, error: nil) }
+  let(:backend_bootloader) { double("Bootloader", name: "grub2-efi") }
+
+  before do
+    allow(::Bootloader::BootloaderFactory).to receive(:current).and_return(backend_bootloader)
+  end
+
+  describe "#write_config" do
+    context "when update_nvram is configured" do
+      before do
+        bootloader.config.load_json({ "updateNvram" => false }.to_json)
+      end
+
+      it "sets update_nvram on the bootloader if supported" do
+        expect(backend_bootloader).to receive(:respond_to?).with(:update_nvram=).and_return(true)
+        expect(backend_bootloader).to receive(:update_nvram=).with(false)
+        bootloader.write_config
+      end
+
+      it "logs that bootloader does not support NVRAM update if not supported" do
+        expect(backend_bootloader).to receive(:respond_to?).with(:update_nvram=).and_return(false)
+        expect(logger).to receive(:info).with("bootloader grub2-efi does not support NVRAM update")
+        bootloader.write_config
+      end
     end
   end
 end
