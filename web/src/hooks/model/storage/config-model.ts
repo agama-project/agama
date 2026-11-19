@@ -291,6 +291,35 @@ function useEditPartition(): EditPartitionFn {
   };
 }
 
+type MoveMountPathToPartitionFn = (
+  collection: Partitionable.CollectionName,
+  index: number,
+  data: Data.Partition,
+  initialMountPath?: string,
+) => void;
+
+/**
+ * Saves the partition with a mount path something else holds, taking it from
+ * that holder in the same write (see configModel.releaseMountPath). Pass the
+ * mount path the partition had when editing it; leave it out when adding.
+ */
+function useMoveMountPathToPartition(): MoveMountPathToPartitionFn {
+  const config = useConfigModel();
+  return (
+    collection: Partitionable.CollectionName,
+    index: number,
+    data: Data.Partition,
+    initialMountPath?: string,
+  ) => {
+    const released = data.mountPath ? configModel.releaseMountPath(config, data.mountPath) : config;
+    putStorageModel(
+      initialMountPath
+        ? configModel.partition.edit(released, collection, index, initialMountPath, data)
+        : configModel.partition.add(released, collection, index, data),
+    );
+  };
+}
+
 type DeletePartitionFn = (
   collection: Partitionable.CollectionName,
   index: number,
@@ -398,6 +427,7 @@ export {
   useAddPartition,
   useEditPartition,
   useDeletePartition,
+  useMoveMountPathToPartition,
   useSetEncryption,
   useSetFilesystem,
   useSetSpacePolicy,
