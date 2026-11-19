@@ -37,7 +37,7 @@ use aide::axum::ApiRouter;
 use anyhow::Context;
 use axum::{
     extract::Request as AxumRequest,
-    http::{Request, Response},
+    http::{HeaderValue, Request, Response},
     Router,
 };
 use clap::{Args, Parser, Subcommand};
@@ -108,6 +108,11 @@ struct ServeArgs {
     /// Dedicated MCP authentication token. Defaults to kernel command-line (inst.mcp.token) or a secure random token.
     #[arg(long)]
     mcp_token: Option<String>,
+
+    /// Enable CORS using the given value for the Access-Control-Allow-Origin header, e.g.,
+    /// "*" or "https://example.com" (disabled by default).
+    #[arg(long, value_name = "ORIGIN")]
+    enable_cors: Option<HeaderValue>,
 }
 
 impl ServeArgs {
@@ -367,7 +372,15 @@ async fn serve_command(args: ServeArgs) -> anyhow::Result<()> {
         .web_ui_dir
         .clone()
         .unwrap_or_else(|| PathBuf::from(DEFAULT_WEB_UI_DIR));
-    let service = web::service(config, events_tx, dbus, web_ui_dir, Some(mcp_mode)).await?;
+    let service = web::service(
+        config,
+        events_tx,
+        dbus,
+        web_ui_dir,
+        Some(mcp_mode),
+        args.enable_cors.clone(),
+    )
+    .await?;
     // TODO: Move elsewhere? Use a singleton? (It would be nice to use the same
     // generated self-signed certificate on both ports.)
     let ssl_acceptor = if let Ok(ssl_acceptor) = ssl_acceptor(&args.to_certificate()?) {
