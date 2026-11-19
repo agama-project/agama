@@ -124,11 +124,12 @@ export type EntriesTableProps = {
  *   semantics exactly where the window is tightest. The table keeps its width
  *   instead and scrolls inside its own box.
  *
- * While that box scrolls, it is a named region and a Tab stop of its own, so a
- * keyboard reader can bring the hidden columns into view with the arrow keys.
- * Tabbing between the row menus alone would scroll straight to the last
- * column, past the ones in between, which hold only text. Once the table fits,
- * the box is neither: a stop that scrolls nothing only lengthens the way.
+ * The box is always a region named after the table, so the landmark stays put
+ * whatever the width. While the table scrolls, the box is also a Tab stop, so
+ * a keyboard reader can bring the hidden columns into view with the arrow
+ * keys: tabbing between the row menus alone would scroll straight to the last
+ * column, past the ones in between. Once the table fits, the stop goes, since
+ * it would scroll nothing. Firefox does the same by itself; Chromium does not.
  */
 export default function EntriesTable({ groupHeadingLevel }: EntriesTableProps): React.ReactNode {
   const config = useConfigModel();
@@ -177,7 +178,9 @@ export default function EntriesTable({ groupHeadingLevel }: EntriesTableProps): 
     <div
       ref={setBox}
       className="agm-entries-table"
-      {...(scrolls && { role: "region", "aria-labelledby": captionId, tabIndex: 0 })}
+      role="region"
+      aria-labelledby={captionId}
+      tabIndex={scrolls ? 0 : undefined}
     >
       <Table role="table" gridBreakPoint="" variant="compact">
         {/* Read rather than shown: nothing on the page heads the table, and a

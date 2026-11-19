@@ -265,12 +265,13 @@ describe("EntriesTable", () => {
   });
 
   describe("when it fits its box", () => {
-    it("is neither a region nor a Tab stop", () => {
+    it("is still a region named after the table, but not a Tab stop", () => {
       mockConfig.mockReturnValue(config({ drives: [{ name: "/dev/sda", partitions: [] }] }));
       installerRender(<EntriesTable />);
 
-      expect(screen.queryByRole("region")).toBeNull();
-      expect(table().parentElement).not.toHaveAttribute("tabindex");
+      const region = screen.getByRole("region", { name: "Devices of the installation" });
+      expect(region).not.toHaveAttribute("tabindex");
+      expect(within(region).getByRole("table")).toBe(table());
     });
   });
 
