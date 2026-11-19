@@ -59,7 +59,8 @@ export default function DriveRow({ name, subject }: DriveRowProps): React.ReactN
   const entry = configModel.partitionable.findByName(config, name);
   const size = device?.block?.size ? deviceSize(device.block.size) : undefined;
   const fullDescription = device && driveDescription(device);
-  const isOnlyKind = subject.collection === "drives" && fullDescription === typeDescription(device);
+  const isOnlyKind =
+    !!device && subject.collection === "drives" && fullDescription === typeDescription(device);
   const description = isOnlyKind ? undefined : fullDescription;
 
   const groups = entry ? configModel.partitionable.filterVolumeGroups(config, entry) : [];
