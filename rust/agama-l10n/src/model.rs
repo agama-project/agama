@@ -43,6 +43,12 @@ use std::process::Command;
 /// tests.
 pub trait ModelAdapter: Send + 'static {
     /// Reads the system info.
+    ///
+    /// The underlying localization databases (locales, keymaps, and timezones)
+    /// are read concurrently using worker threads during model initialization,
+    /// waiting for all threads to complete before populating this struct. This
+    /// method returns the fully populated entries along with the current system
+    /// locale and keymap settings.
     fn read_system_info(&self) -> SystemInfo {
         let locales = self.locales_db().entries().clone();
         let keymaps = self.keymaps_db().entries().clone();
