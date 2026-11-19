@@ -190,6 +190,7 @@ software:
     - multimedia
     - office
     - cockpit
+    - cockpit-client
     - fips
     - name: selinux
       selected: true
