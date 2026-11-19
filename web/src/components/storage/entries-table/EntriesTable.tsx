@@ -190,10 +190,14 @@ export default function EntriesTable({ groupHeadingLevel }: EntriesTableProps): 
           {_("Devices of the installation")}
         </caption>
         <Thead>
+          {/* Wrapped rather than cut short. PatternFly makes a header it
+              truncates a Tab stop, for the tooltip with the rest of its text:
+              one more stop for the keyboard, and the full name only on
+              request. */}
           <Tr>
-            <Th>{columnName("device")}</Th>
-            <Th>{columnName("usedFor")}</Th>
-            <Th>{columnName("existingData")}</Th>
+            <Th modifier="wrap">{columnName("device")}</Th>
+            <Th modifier="wrap">{columnName("usedFor")}</Th>
+            <Th modifier="wrap">{columnName("existingData")}</Th>
             <Th screenReaderText={columnName("actions")} />
           </Tr>
         </Thead>
