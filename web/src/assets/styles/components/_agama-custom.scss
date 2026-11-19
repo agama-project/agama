@@ -339,6 +339,14 @@ nav.agm-breadcrumb > ol > li > a {
     calc(-1 * var(--agm-side-panel-frame--inset-inline-end));
 }
 
+// The page narrows with the window rather than growing to its widest content.
+// As a flex item the drawer's content would otherwise be as wide as whatever
+// it holds, and the drawer clips what spills over: a table meant to scroll in
+// its own box gets cut at the window's edge instead, with nothing to scroll.
+.agm-side-panel-frame > .pf-v6-c-drawer__main > .pf-v6-c-drawer__content {
+  min-width: 0;
+}
+
 .agm-side-panel-frame:not(:first-child) {
   --agm-side-panel-frame--inset-block-start: 0px;
 }
@@ -481,10 +489,11 @@ nav.agm-breadcrumb > ol > li > a {
 }
 
 // Opening the panel moves the reader into it, and a panel that takes focus
-// without showing where it went leaves a keyboard reader guessing.
+// without showing where it went leaves a keyboard reader guessing. Same ring
+// as every other focused element, drawn inside: the frame clips the outside.
 .agm-side-panel:focus-visible {
-  outline: 2px solid var(--pf-t--global--border--color--brand--default);
-  outline-offset: -2px;
+  outline: 3px solid var(--agm-t--focus--color, var(--agm-t--color--waterhole--50));
+  outline-offset: -3px;
 }
 
 .agm-side-panel__head {
@@ -580,6 +589,15 @@ nav.agm-breadcrumb > ol > li > a {
 // this scrolls: anything else crushes the alignment the table exists for.
 .agm-entries-table {
   overflow-x: auto;
+}
+
+// While it scrolls, the box is a Tab stop of its own (EntriesTable), and a
+// stop that does not show it has been reached leaves the reader guessing why
+// the arrow keys now move the table. Same ring as the side panel's, drawn
+// inside for the same reason.
+.agm-entries-table:focus-visible {
+  outline: 3px solid var(--agm-t--focus--color, var(--agm-t--color--waterhole--50));
+  outline-offset: -3px;
 }
 
 // One table, so its columns line up across categories by themselves and take
