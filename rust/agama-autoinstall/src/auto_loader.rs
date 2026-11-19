@@ -50,6 +50,20 @@ pub struct ConfigAutoLoader {
     insecure: bool,
 }
 
+fn is_location_available(url: &str) -> bool {
+    if let Some(path) = url.strip_prefix("file://") {
+        std::path::Path::new(path).is_file()
+    } else if let Some(rest) = url.strip_prefix("label://") {
+        if let Some((label, _path)) = rest.split_once('/') {
+            std::path::Path::new(&format!("/dev/disk/by-label/{label}")).exists()
+        } else {
+            false
+        }
+    } else {
+        true
+    }
+}
+
 impl ConfigAutoLoader {
     /// Builds a new loader.
     ///
@@ -126,6 +140,11 @@ impl ConfigAutoLoader {
     /// Loads configuration files from pre-defined locations.
     async fn load_predefined_config(&self, loader: ConfigLoader) -> anyhow::Result<()> {
         for url in PREDEFINED_LOCATIONS {
+            if !is_location_available(url) {
+                tracing::debug!("Predefined location {url} does not exist, skipping");
+                continue;
+            }
+
             match loader.load(url).await {
                 Ok(()) => {
                     tracing::info!("Configuration loaded from {url}");
