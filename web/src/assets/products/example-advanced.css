@@ -123,6 +123,18 @@
      See components/_patternfly-overrides for the background. */
   --agm-t--modal--actions--gap: 0.5rem;
 
+  /* The list of installer languages on the language and keyboard screen. It
+     shows as many columns as fit: a narrower column gives more of them, a
+     wider one fewer (unset, 10rem gives three at 1024x768). The names are what
+     that screen is about, so they are larger than body text; their size can be
+     set on its own. There is no role for their font family on purpose: each
+     name is written in its own language and script (Latin, Cyrillic, Georgian,
+     Chinese, Japanese...), so a typeface chosen for this list would cover some
+     names and fall back for others, mixing faces in one list. They follow the
+     body font, with the per-language families noted in the theming guide. */
+  --agm-t--language-list--column--width: 12rem;
+  --agm-t--language-list--font--size: 1.5rem;
+
   /* The terminal surface and the text drawn on it. Theme-independent on
      purpose: a console reads as a console in any theme, and these are the
      colors the shell and the programs running in it assume when they paint

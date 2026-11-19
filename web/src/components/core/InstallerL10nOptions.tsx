@@ -25,14 +25,15 @@
  * configure installer localization settings, with the option to copy them to
  * the product's localization settings.
  *
- * It supports multiple UI variants (language-only, keyboard-only, or both), and
- * manages both form and dialog state. To avoid scattering complex conditional
+ * It supports multiple UI variants (language-only, keyboard-only, or both). The
+ * single-setting ones open a dialog, managing its form and state; the one for
+ * both leads to the language and keyboard screen instead. To avoid scattering complex conditional
  * logic throughout the main component, the implementation is split into several
  * small internal components.
  */
 
 import React, { useReducer } from "react";
-import { useHref, useLocation } from "react-router";
+import { useHref, useLocation, useNavigate } from "react-router";
 import { Button, ButtonProps, Flex, FlexProps, Form } from "@patternfly/react-core";
 import { formOptions } from "@tanstack/react-form";
 import Popup from "~/components/core/Popup";
@@ -47,7 +48,7 @@ import { _ } from "~/i18n";
 
 import type { TranslatedString } from "~/i18n";
 import supportedLanguages from "~/languages.json";
-import { ROOT, L10N } from "~/routes/paths";
+import { ROOT, L10N, WELCOME } from "~/routes/paths";
 import { useProductInfo } from "~/hooks/model/config/product";
 import { useSystem } from "~/hooks/model/system";
 import { useStatus } from "~/hooks/model/status";
@@ -225,15 +226,17 @@ type InstallerL10nOptionsVariants = "all" | "language" | "keyboard";
 /**
  * Props passed to each toggle variant.
  */
+/**
+ * Which current values a toggle shows next to its icons: all of them, only the
+ * keymap, or none (false), in which case the accessible name comes from the
+ * button's aria-label.
+ */
+type ShowValues = boolean | "keymap";
+
 type ToggleProps = Pick<ButtonProps, "onClick"> & {
   language?: string;
   keymap?: string;
-  /**
-   * Whether to render the current values (language and keymap) next to the
-   * icons. When false, only the icons are shown and the accessible name comes
-   * from the button's aria-label.
-   */
-  showValues?: boolean;
+  showValues?: ShowValues;
 };
 
 type TextWithLinkToL10nProps = {
@@ -367,32 +370,6 @@ const DialogButtons = withForm({
   },
 });
 
-const AllSettingsDialog = withForm({
-  ...defaultOptions,
-  props: {} as DialogProps,
-  render: function Render({ form, isOpen, onCancel }) {
-    return (
-      <Popup
-        isOpen={isOpen}
-        variant="small"
-        onClose={onCancel}
-        title={_("Language and keyboard")}
-        actions={<DialogButtons form={form} onCancel={onCancel} />}
-      >
-        <Form id="installer-l10n" onSubmit={submitHandler(form)}>
-          <LanguageField form={form} />
-          <KeyboardField form={form} />
-          <ReuseSettingsField
-            form={form}
-            label={_("Use these same settings for the selected product")}
-            onLinkClick={onCancel}
-          />
-        </Form>
-      </Popup>
-    );
-  },
-});
-
 const LanguageOnlyDialog = withForm({
   ...defaultOptions,
   props: {} as DialogProps,
@@ -482,7 +459,7 @@ const LanguageOnlyToggle = ({ onClick, language, showValues }: ToggleProps) => {
       <Button onClick={onClick} aria-label={label} aria-haspopup="dialog" variant="plain">
         <CenteredContent>
           <LanguageIcon />
-          {showValues && language}
+          {showValues === true && language}
         </CenteredContent>
       </Button>
     </VisualTooltip>
@@ -505,22 +482,24 @@ const KeyboardOnlyToggle = ({ onClick, keymap, showValues }: ToggleProps) => {
   );
 };
 
-/** Toggle button for accessing both language and keyboard layout settings. */
+/**
+ * Toggle button leading to the language and keyboard screen. From a remote
+ * connection the keyboard cannot be changed there, so only the language shows.
+ */
 const AllSettingsToggle = ({ onClick, language, keymap, showValues }: ToggleProps) => {
-  if (!localConnection())
-    return <LanguageOnlyToggle onClick={onClick} language={language} showValues={showValues} />;
-
-  // TRANSLATORS: label for the button that opens the display language and
+  const isLocal = localConnection();
+  // TRANSLATORS: label for the button that leads to the display language and
   // keyboard layout settings
   const label = _("Language and Keyboard");
+
   return (
     <VisualTooltip content={label}>
-      <Button onClick={onClick} aria-label={label} aria-haspopup="dialog" variant="plain">
+      <Button onClick={onClick} aria-label={label} variant="plain">
         <CenteredContent>
           <LanguageIcon />
-          {showValues && language}
-          <KeyboardIcon />
-          {showValues && <code>{keymap}</code>}
+          {showValues === true && language}
+          {isLocal && <KeyboardIcon />}
+          {isLocal && showValues && <code>{keymap}</code>}
         </CenteredContent>
       </Button>
     </VisualTooltip>
@@ -530,8 +509,9 @@ const AllSettingsToggle = ({ onClick, language, keymap, showValues }: ToggleProp
 /**
  * Maps each dialog variant to its corresponding React component.
  */
-const dialogs: { [key in InstallerL10nOptionsVariants]: typeof AllSettingsDialog } = {
-  all: AllSettingsDialog,
+const dialogs: {
+  [key in Exclude<InstallerL10nOptionsVariants, "all">]: typeof KeyboardOnlyDialog;
+} = {
   language: LanguageOnlyDialog,
   keyboard: KeyboardOnlyDialog,
 };
@@ -548,30 +528,32 @@ const toggles: { [key in InstallerL10nOptionsVariants]: React.FC<ToggleProps> } 
 /**
  * Props for the main InstallerL10nOptions component.
  */
+export type { ShowValues };
+
 export type InstallerL10nOptionsProps = {
   /** Determines which dialog variant to render. */
   variant?: InstallerL10nOptionsVariants;
   /**
    * Optional render function for a custom button or UI element that opens the
-   * dialog. If not provided, a default toggle button will be rendered based on
+   * dialog or leads to the screen. If not provided, a default toggle button will be rendered based on
    * the selected variant.
    */
   toggle?: (props: ToggleProps) => JSX.Element;
   /**
-   * Whether the toggle should display the current values next to the icons.
-   * Defaults to false (icon-only) to save space in crowded headers.
+   * Which current values the toggle displays next to the icons: all of them
+   * (true), only the keymap ("keymap"), or none (false, the default, to save
+   * space in crowded headers).
    */
-  showValues?: boolean;
+  showValues?: ShowValues;
   /** Optional callback when the dialog is closed. */
   onClose?: () => void;
 };
 
 /**
- * Dialog for setting language and keyboard layout.
+ * Toggle for the installer language and keyboard layout.
  *
- * It supports different through its "variant" prop: language-only,
- * keyboard-only, or both.
- *
+ * Its "variant" prop picks what it offers: language-only or keyboard-only,
+ * each in a dialog, or both, on the language and keyboard screen.
  */
 export default function InstallerL10nOptions({
   variant = "all",
@@ -580,6 +562,7 @@ export default function InstallerL10nOptions({
   onClose,
 }: InstallerL10nOptionsProps) {
   const location = useLocation();
+  const navigate = useNavigate();
   const locales = useSystem()?.l10n?.locales ?? [];
   const { language, keymap, changeL10n } = useInstallerL10n();
   const { stage } = useStatus();
@@ -646,6 +629,22 @@ export default function InstallerL10nOptions({
   if (skip) return;
 
   const Toggle = toggle ?? toggles[variant];
+
+  // Both settings are changed on a screen of their own, which returns where the
+  // user came from once accepted.
+  if (variant === "all") {
+    return (
+      <Toggle
+        showValues={showValues}
+        language={supportedLanguages[language]}
+        keymap={keymap}
+        onClick={() =>
+          navigate(WELCOME.root, { state: { from: `${location.pathname}${location.search}` } })
+        }
+      />
+    );
+  }
+
   const Dialog = dialogs[variant];
 
   return (

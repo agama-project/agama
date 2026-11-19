@@ -81,6 +81,15 @@ export type HeaderProps = {
   hideSummaryLink?: boolean;
 
   /**
+   * Whether the leading "Installation" breadcrumb names the installation
+   * without linking to it.
+   *
+   * Set it on the screens a new installation starts with, which come before
+   * the main summary page and lead to it themselves.
+   */
+  unlinkSummary?: boolean;
+
+  /**
    * Content rendered at the trailing edge of the header, opposite the heading.
    *
    * A flexible container for any node (selectors, status indicators, menus,
@@ -98,12 +107,14 @@ export type HeaderProps = {
  *
  * Used when the header has no explicit title; the last breadcrumb item is the
  * current page and acts as the heading (h1). A leading "Installation" item
- * linking back to the main page is prepended unless `hideSummaryLink` is set.
+ * linking back to the main page is prepended unless `hideSummaryLink` is set,
+ * whether or not a product is selected yet.
  */
 function MainBreadcrumbs({
   breadcrumbs,
   hideSummaryLink,
-}: Pick<HeaderProps, "breadcrumbs" | "hideSummaryLink">) {
+  unlinkSummary,
+}: Pick<HeaderProps, "breadcrumbs" | "hideSummaryLink" | "unlinkSummary">) {
   const product = useProductInfo();
 
   // Assemble the breadcrumb items first, so rendering only needs to know that
@@ -111,11 +122,11 @@ function MainBreadcrumbs({
   const items: BreadcrumbProps[] = [];
 
   // Prepend the link back to the main summary page, unless hideSummaryLink is
-  // set or there is no product and breadcrumbs to accompany it.
-  if (product && breadcrumbs && !hideSummaryLink) {
+  // set or there are no breadcrumbs to accompany it.
+  if (breadcrumbs && !hideSummaryLink) {
     items.push({
       isEditorial: true,
-      path: ROOT.root,
+      path: unlinkSummary ? undefined : ROOT.root,
       // TRANSLATORS: First breadcrumb item, linking back to the main page
       // where the whole installation can be reviewed.
       label: _("Installation"),
@@ -144,11 +155,11 @@ function MainBreadcrumbs({
         <ProductLogo product={product} width="var(--agm-t--logo--size--header, 35px)" />
       </FlexItem>
       <Flex direction={{ default: "column" }} gap={{ default: "gapNone" }}>
-        {product && (
-          <Text textStyle="textColorSubtle" className={textStyles.fontSizeXs}>
-            {product.name}
-          </Text>
-        )}
+        {/* The line stays without a product, empty, so the header keeps its
+            height when one is picked. */}
+        <Text textStyle="textColorSubtle" className={textStyles.fontSizeXs} srHidden={!product}>
+          {product ? product.name : "\u00a0"}
+        </Text>
         <Breadcrumbs>
           {items.map((item, index) => (
             <Breadcrumbs.Item key={index} {...item} hideDivider={index === 0 || item.hideDivider} />
@@ -172,6 +183,7 @@ export default function Header({
   title,
   breadcrumbs,
   hideSummaryLink = false,
+  unlinkSummary = false,
   additionalContent,
   hideSkipToContent = false,
 }: HeaderProps): React.ReactNode {
@@ -196,7 +208,11 @@ export default function Header({
             {title}
           </Title>
         ) : (
-          <MainBreadcrumbs breadcrumbs={breadcrumbs} hideSummaryLink={hideSummaryLink} />
+          <MainBreadcrumbs
+            breadcrumbs={breadcrumbs}
+            hideSummaryLink={hideSummaryLink}
+            unlinkSummary={unlinkSummary}
+          />
         )}
       </MastheadMain>
       <MastheadContent>

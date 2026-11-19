@@ -23,18 +23,21 @@
 import React from "react";
 import {
   Divider,
+  Flex,
   FormGroup,
+  FormHelperText,
   MenuToggle,
   MenuToggleElement,
   Select,
   SelectList,
   SelectOption,
 } from "@patternfly/react-core";
+import Text from "~/components/core/Text";
 import FooterEntryOption, {
   FOOTER_ENTRY_VALUE,
 } from "~/components/form/primitives/FooterEntryOption";
 import { useComboboxKeyboard } from "~/hooks/use-combobox-keyboard";
-import { useFieldLabel } from "~/hooks/use-field-label";
+import { resolveAriaLabelProps, useFieldLabel } from "~/hooks/use-field-label";
 import { useFieldContext } from "~/hooks/form-contexts";
 
 import type { FieldLabelOptions } from "~/hooks/use-field-label";
@@ -47,18 +50,37 @@ export type DropdownOption<T> =
 type DropdownFieldProps<T> = FieldLabelOptions & {
   /** The field label. */
   label: React.ReactNode;
+  /**
+   * Whether the label is only read by screen readers, for a field whose label
+   * is already shown above it, e.g. as the title of a section it is the only
+   * field of.
+   */
+  isLabelVisuallyHidden?: boolean;
   /** The available options. */
   options: DropdownOption<T>[];
   /** An entry rendered last, offering something other than a value. */
   footerEntry?: FooterEntry;
-  /** Optional helper text shown below the select. */
+  /** Optional helper text shown below the select, e.g. a PatternFly `HelperText`. */
   helperText?: React.ReactNode;
+  /**
+   * Text shown in the closed field while no option is selected, prompting the
+   * user to pick one (e.g. "Select a product").
+   */
+  placeholder?: React.ReactNode;
+  /**
+   * Tallest the open list grows before its options scroll (e.g. "15rem"), so a
+   * long list does not run off the screen. The footer entry, if any, stays
+   * pinned at the foot of the list, always in reach.
+   */
+  maxMenuHeight?: string;
   isDisabled?: boolean;
   /**
    * Render prop for content that depends on the current value, such as
    * nested fields that appear when a specific option is selected.
    */
   children?: (value: T) => React.ReactNode;
+  /** Buttons shown next to the dropdown, acting on the picked value. */
+  actions?: React.ReactNode;
 };
 
 /**
@@ -70,6 +92,9 @@ type DropdownFieldProps<T> = FieldLabelOptions & {
  *
  * Supports a `footerEntry` for offering something beyond the listed values. It
  * is rendered after a divider, at the end of the list.
+ *
+ * Supports a `maxMenuHeight` for long lists: the options scroll past it while
+ * the footer entry stays visible at the foot of the list.
  *
  * ## Implementation note: PatternFly menu, not a native select
  *
@@ -112,14 +137,26 @@ type DropdownFieldProps<T> = FieldLabelOptions & {
  *     onSelect: openDeviceDialog,
  *   }}
  * />
+ *
+ * @example <caption>A long list that scrolls, keeping the footer entry visible</caption>
+ * <field.DropdownField
+ *   label={_("Product")}
+ *   options={productOptions}
+ *   maxMenuHeight="20rem"
+ *   footerEntry={{ label: _("Browse with details..."), onSelect: openDialog, opensDialog: true }}
+ * />
  */
 export default function DropdownField<T extends string>({
   label,
+  isLabelVisuallyHidden = false,
   options,
   footerEntry,
   helperText,
+  placeholder,
+  maxMenuHeight,
   isDisabled = false,
   children,
+  actions,
   "aria-label": ariaLabel,
   "aria-labelledby": ariaLabelledBy,
   labelPrefixedBy,
@@ -132,60 +169,99 @@ export default function DropdownField<T extends string>({
   });
   const { isOpen, setIsOpen, menuRef, getToggleRef, onToggleKeydown } = useComboboxKeyboard();
 
+  // Without a visible label element, the toggle points to the hidden one.
+  const toggleLabelProps = isLabelVisuallyHidden
+    ? resolveAriaLabelProps(labelProps, { "aria-labelledby": labelId })
+    : labelProps;
+
   const selectedOption = options.find(
     (opt) => !("divider" in opt) && opt.value === field.state.value,
   );
 
-  return (
-    <FormGroup fieldId={field.name} label={<span id={labelId}>{label}</span>}>
-      <Select
-        ref={menuRef}
-        isOpen={isOpen}
-        selected={field.state.value}
-        onSelect={(_, value) => {
-          setIsOpen(false);
-          if (value === FOOTER_ENTRY_VALUE) {
-            footerEntry.onSelect();
-            return;
-          }
-          if (typeof value === "string") field.handleChange(value as T);
-        }}
-        onOpenChange={setIsOpen}
-        onToggleKeydown={onToggleKeydown}
-        shouldFocusToggleOnSelect
-        toggle={(pfToggleRef: React.Ref<MenuToggleElement>) => (
-          <MenuToggle
-            id={field.name}
-            ref={getToggleRef(pfToggleRef)}
-            onClick={() => setIsOpen(!isOpen)}
-            isExpanded={isOpen}
-            aria-haspopup="listbox"
-            isDisabled={isDisabled}
-            {...labelProps}
-          >
-            {selectedOption && "label" in selectedOption ? selectedOption.label : field.state.value}
-          </MenuToggle>
+  const select = (
+    <Select
+      ref={menuRef}
+      isOpen={isOpen}
+      isScrollable={maxMenuHeight !== undefined}
+      maxMenuHeight={maxMenuHeight}
+      className={maxMenuHeight && "agm-field-option-menu"}
+      selected={field.state.value}
+      onSelect={(_, value) => {
+        setIsOpen(false);
+        if (value === FOOTER_ENTRY_VALUE) {
+          footerEntry.onSelect();
+          return;
+        }
+        if (typeof value === "string") field.handleChange(value as T);
+      }}
+      onOpenChange={setIsOpen}
+      onToggleKeydown={onToggleKeydown}
+      shouldFocusToggleOnSelect
+      toggle={(pfToggleRef: React.Ref<MenuToggleElement>) => (
+        <MenuToggle
+          id={field.name}
+          ref={getToggleRef(pfToggleRef)}
+          onClick={() => setIsOpen(!isOpen)}
+          isExpanded={isOpen}
+          isPlaceholder={!selectedOption && !field.state.value}
+          aria-haspopup="listbox"
+          isDisabled={isDisabled}
+          {...toggleLabelProps}
+        >
+          {selectedOption && "label" in selectedOption
+            ? selectedOption.label
+            : field.state.value || placeholder}
+        </MenuToggle>
+      )}
+    >
+      <SelectList>
+        {options.map((opt, i) =>
+          "divider" in opt ? (
+            <Divider key={`divider-${i}`} component="li" />
+          ) : (
+            <SelectOption
+              key={String(opt.value)}
+              value={opt.value}
+              description={opt.description}
+              isDisabled={opt.isDisabled}
+            >
+              {opt.label}
+            </SelectOption>
+          ),
         )}
-      >
-        <SelectList>
-          {options.map((opt, i) =>
-            "divider" in opt ? (
-              <Divider key={`divider-${i}`} component="li" />
-            ) : (
-              <SelectOption
-                key={String(opt.value)}
-                value={opt.value}
-                description={opt.description}
-                isDisabled={opt.isDisabled}
-              >
-                {opt.label}
-              </SelectOption>
-            ),
-          )}
-          {footerEntry && <FooterEntryOption entry={footerEntry} hasDivider={options.length > 0} />}
-        </SelectList>
-      </Select>
-      {helperText}
+        {footerEntry &&
+          (maxMenuHeight ? (
+            // Pinned to the foot of the scrolling list, so it draws its own
+            // separator rather than leaving one behind as the options scroll.
+            <FooterEntryOption
+              entry={footerEntry}
+              hasDivider={false}
+              className="agm-field-footer-entry"
+            />
+          ) : (
+            <FooterEntryOption entry={footerEntry} hasDivider={options.length > 0} />
+          ))}
+      </SelectList>
+    </Select>
+  );
+
+  return (
+    <FormGroup
+      fieldId={field.name}
+      label={isLabelVisuallyHidden ? undefined : <span id={labelId}>{label}</span>}
+    >
+      {isLabelVisuallyHidden && (
+        <Text id={labelId} srOnly>
+          {label}
+        </Text>
+      )}
+      {/* Always wrapped, so buttons showing up next to it do not recreate the
+          dropdown, which would lose the focus it holds or gets back. */}
+      <Flex alignItems={{ default: "alignItemsCenter" }} gap={{ default: "gapSm" }}>
+        {select}
+        {actions}
+      </Flex>
+      {helperText && <FormHelperText>{helperText}</FormHelperText>}
       {children?.(field.state.value)}
     </FormGroup>
   );

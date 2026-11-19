@@ -50,6 +50,7 @@ import DeployedCodeUpdate from "@icons/deployed_code_update.svg?component";
 import DeployedCodeAlert from "@icons/deployed_code_alert.svg?component";
 import Download from "@icons/download.svg?component";
 import EditSquare from "@icons/edit_square.svg?component";
+import SwapHoriz from "@icons/swap_horiz.svg?component";
 import Emergency from "@icons/emergency.svg?component";
 import Error from "@icons/error.svg?component";
 import ErrorFill from "@icons/error-fill.svg?component";
@@ -62,6 +63,9 @@ import HardDrive from "@icons/hard_drive.svg?component";
 import Info from "@icons/info.svg?component";
 import Keyboard from "@icons/keyboard.svg?component";
 import Language from "@icons/language.svg?component";
+import Lan from "@icons/lan.svg?component";
+// Not among Material Symbols: the "lan" one crossed out, as its "_off" ones are.
+import LanOff from "~/assets/icons/lan_off.svg?component";
 import ListAlt from "@icons/list_alt.svg?component";
 import ListAltCheck from "@icons/list_alt_check.svg?component";
 import Lock from "@icons/lock.svg?component";
@@ -72,7 +76,9 @@ import MoreHoriz from "@bolderIcons/more_horiz.svg?component";
 import MoreVert from "@bolderIcons/more_vert.svg?component";
 import NetworkWifi from "@icons/network_wifi.svg?component";
 import NetworkWifi1Bar from "@icons/network_wifi_1_bar.svg?component";
+import NetworkWifi2Bar from "@icons/network_wifi_2_bar.svg?component";
 import NetworkWifi3Bar from "@icons/network_wifi_3_bar.svg?component";
+import TextSnippet from "@icons/text_snippet.svg?component";
 import NotificationsActive from "@icons/notifications_active.svg?component";
 import Report from "@icons/report.svg?component";
 import RestartAlt from "@icons/restart_alt.svg?component";
@@ -80,6 +86,8 @@ import Routine from "@icons/routine.svg?component";
 import SearchOff from "@icons/search_off.svg?component";
 import SelectWindow from "@icons/select_window.svg?component";
 import SettingsEthernet from "@icons/settings_ethernet.svg?component";
+import SignalDisconnected from "@icons/signal_disconnected.svg?component";
+import SignalWifi4Bar from "@icons/signal_wifi_4_bar.svg?component";
 import Translate from "@icons/translate.svg?component";
 import UnfoldLess from "@icons/unfold_less.svg?component";
 import UnfoldMore from "@icons/unfold_more.svg?component";
@@ -87,6 +95,7 @@ import Warning from "@icons/warning.svg?component";
 import Visibility from "@icons/visibility.svg?component";
 import VisibilityOff from "@icons/visibility_off.svg?component";
 import Wifi from "@icons/wifi.svg?component";
+import WifiFind from "@icons/wifi_find.svg?component";
 import WifiOff from "@icons/wifi_off.svg?component";
 import MoreTime from "@icons/more_time.svg?component";
 import TaskAlt from "@icons/task_alt.svg?component";
@@ -120,6 +129,7 @@ const icons = {
   deployed_code_alert: DeployedCodeAlert,
   download: Download,
   edit_square: EditSquare,
+  swap_horiz: SwapHoriz,
   emergency: Emergency,
   error: Error,
   error_fill: ErrorFill,
@@ -132,6 +142,8 @@ const icons = {
   keyboard: Keyboard,
   keyboard_arrow_down: KeyboardArrowDown,
   language: Language,
+  lan: Lan,
+  lan_off: LanOff,
   list_alt: ListAlt,
   list_alt_check: ListAltCheck,
   lock: Lock,
@@ -143,7 +155,9 @@ const icons = {
   more_vert: MoreVert,
   network_wifi: NetworkWifi,
   network_wifi_1_bar: NetworkWifi1Bar,
+  network_wifi_2_bar: NetworkWifi2Bar,
   network_wifi_3_bar: NetworkWifi3Bar,
+  text_snippet: TextSnippet,
   notifications_ative: NotificationsActive,
   report: Report,
   restart_alt: RestartAlt,
@@ -151,6 +165,8 @@ const icons = {
   search_off: SearchOff,
   select_window: SelectWindow,
   settings_ethernet: SettingsEthernet,
+  signal_disconnected: SignalDisconnected,
+  signal_wifi_4_bar: SignalWifi4Bar,
   translate: Translate,
   unfold_less: UnfoldLess,
   unfold_more: UnfoldMore,
@@ -158,6 +174,7 @@ const icons = {
   visibility_off: VisibilityOff,
   warning: Warning,
   wifi: Wifi,
+  wifi_find: WifiFind,
   wifi_off: WifiOff,
   more_time: MoreTime,
   task_alt: TaskAlt,

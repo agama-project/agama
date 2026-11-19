@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2026] SUSE LLC
+ * Copyright (c) [2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -21,35 +21,24 @@
  */
 
 /**
- * Field definitions for the product selection form: types and defaults.
+ * Language and keyboard form fields: types and defaults.
+ *
+ * Both hold the id of the installer setting in use: the language tag (e.g.
+ * "de-DE") and the keymap (e.g. "de").
  */
 
 import { formOptions } from "@tanstack/react-form";
 
-import type { License, Product, Mode } from "~/model/system";
-
-/** Types */
-
-export type FormFields = {
-  selectedProduct?: Product;
-  selectedMode?: Mode;
-  acceptedLicenses: License["id"][];
+type FormFields = {
+  language: string;
+  keymap: string;
 };
 
-/** Default values */
-
-/**
- * Default values for all ProductSelectionForm fields.
- */
 const defaultValues: FormFields = {
-  selectedProduct: undefined,
-  selectedMode: undefined,
-  acceptedLicenses: [],
+  language: "",
+  keymap: "",
 };
 
-/**
- * Shared form options for ProductSelectionForm.
- */
-export const defaultOptions = formOptions({
-  defaultValues,
-});
+export const defaultOptions = formOptions({ defaultValues });
+
+export type { FormFields };

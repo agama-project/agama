@@ -21,88 +21,25 @@
  */
 
 import React from "react";
-import { isEmpty } from "radashi";
 import { useProgressTracking } from "~/hooks/use-progress-tracking";
 import { CONFIG_QUERY_KEY } from "~/hooks/model/config";
 import { useConfig } from "~/hooks/model/config";
 import { useIssues } from "~/hooks/model/issue";
 import Summary from "~/components/core/Summary";
 import Link from "~/components/core/Link";
-import Text from "~/components/core/Text";
-import Interpolate from "~/components/core/Interpolate";
+import ConfiguredAccounts, {
+  ConfiguredSshKeys,
+  getRootAuthType,
+  hasSshKeys,
+  isUserDefined,
+} from "~/components/users/ConfiguredAccounts";
 import { USER } from "~/routes/paths";
 import { _ } from "~/i18n";
 
 /**
- * Determines the root authentication method type.
- * @returns {"none"|"password"|"ssh"|"both"}
- */
-const getRootAuthType = (config) => {
-  if (!config.root) return "none";
-
-  const hasPassword = !isEmpty(config.root.password);
-  const hasSshKey = !isEmpty(config.root.sshPublicKey) || !isEmpty(config.root.sshPublicKeys);
-
-  if (hasPassword && hasSshKey) return "both";
-  if (hasPassword) return "password";
-  if (hasSshKey) return "ssh";
-  return "none";
-};
-
-const isUserDefined = (config) => {
-  if (!config.user) return false;
-  const { userName, fullName, password } = config.user;
-  return !isEmpty(userName) && !isEmpty(fullName) && !isEmpty(password);
-};
-
-/**
- * Renders "Public key provided for %s" with the account name in bold.
- * Used when only one of the two accounts has a public key configured.
- */
-const PublicKeyProvided = ({ user }) => (
-  // TRANSLATORS: %s is either "root" or a username like 'jdoe'
-  <Interpolate sentence={_("Public key provided for %s")}>
-    {() => <Text isBold>{user}</Text>}
-  </Interpolate>
-);
-
-/**
- * Renders "Using %s account" with the account name in bold.
- * Used in the summary value to show which accounts are configured.
- */
-const Account = ({ name }) => (
-  // TRANSLATORS: %s is either "root" or a username like 'jdoe'
-  <Interpolate sentence={_("Using %s account")}>{() => <Text isBold>{name}</Text>}</Interpolate>
-);
-
-/**
  * Renders which accounts, if any, are configured for login.
  */
-const Value = () => {
-  const config = useConfig();
-  const rootAuthType = getRootAuthType(config);
-  const hasRoot = rootAuthType !== "none";
-  const hasUser = isUserDefined(config);
-
-  // TRANSLATORS: shown when no user accounts are configured yet
-  if (!hasRoot && !hasUser) return _("Not configured yet");
-  if (hasRoot && !hasUser) return <Account name="root" />;
-
-  const userName = config.user.userName;
-
-  if (!hasRoot) return <Account name={userName} />;
-
-  // TRANSLATORS: first %s is a username like 'jdoe', second is "root"
-  return (
-    <Interpolate sentence={_("Using %s and %s accounts")}>
-      {[
-        () => <Text isBold>{userName}</Text>,
-        // eslint-disable-next-line i18next/no-literal-string
-        () => <Text isBold>root</Text>,
-      ]}
-    </Interpolate>
-  );
-};
+const Value = () => <ConfiguredAccounts config={useConfig()} />;
 
 /**
  * Renders a description highlighting public key configuration status.
@@ -113,29 +50,10 @@ const Value = () => {
  */
 const Description = () => {
   const config = useConfig();
-  const rootAuthType = getRootAuthType(config);
-  const hasRoot = rootAuthType !== "none";
-  const hasUser = isUserDefined(config);
-  const userHasSsh = !isEmpty(config.user?.sshPublicKey) || !isEmpty(config.user?.sshPublicKeys);
 
-  if (!hasRoot && !hasUser) return null;
+  if (hasSshKeys(config)) return <ConfiguredSshKeys config={config} />;
 
-  const rootHasSshKey = rootAuthType === "ssh" || rootAuthType === "both";
-  const userHasSshKey = hasUser && userHasSsh;
-
-  // TRANSLATORS: both user accounts have SSH public keys configured
-  if (rootHasSshKey && userHasSshKey) return _("Public key provided for both");
-
-  // TRANSLATORS: SSH public key is configured for a single account
-  const publicKeyProvided = _("Public key provided");
-
-  if (userHasSshKey && !hasRoot) return publicKeyProvided;
-  if (userHasSshKey && !rootHasSshKey) return <PublicKeyProvided user={config.user.userName} />;
-
-  if (rootHasSshKey && !hasUser) return publicKeyProvided;
-  if (rootHasSshKey && hasUser && !userHasSshKey) return <PublicKeyProvided user="root" />;
-
-  if (!hasUser && hasRoot && !rootHasSshKey) {
+  if (getRootAuthType(config) === "password" && !isUserDefined(config)) {
     // TRANSLATORS: warning when root account has no SSH public key configured
     return _("No public key provided, SSH login might be restricted");
   }

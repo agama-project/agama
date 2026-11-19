@@ -29,10 +29,13 @@ import Header, { HeaderProps } from "~/components/layout/Header";
 import Loading from "~/components/layout/Loading";
 import { MAIN_CONTENT_ID } from "~/components/core/SkipTo";
 import InstallerL10nOptions from "~/components/core/InstallerL10nOptions";
+import NetworkIndicator from "~/components/network/NetworkIndicator";
 import InstallerOptionsMenu from "~/components/core/InstallerOptionsMenu";
 import ProgressStatusMonitor from "~/components/core/ProgressStatusMonitor";
 import AppearanceSettings from "~/components/core/AppearanceSettings";
 import Questions from "~/components/questions/Questions";
+
+import type { ShowValues } from "~/components/core/InstallerL10nOptions";
 
 export type StandardLayoutProps = React.PropsWithChildren<
   HeaderProps & {
@@ -48,12 +51,19 @@ export type StandardLayoutProps = React.PropsWithChildren<
     showProgressMonitor?: boolean;
 
     /**
-     * Whether the localization selector in the header shows its current values
-     * (language and keyboard) next to the icons.
+     * Which current values the localization selector in the header shows next
+     * to its icons: all (language and keyboard), only the keymap, or none.
      *
-     * Default: `false` (icon-only, to save space in the header)
+     * Default: `"keymap"`, the keyboard in use, which matters whenever
+     * something is typed; the language is the one being read.
      */
-    showL10nValues?: boolean;
+    showL10nValues?: ShowValues;
+
+    /**
+     * Whether to leave the localization selector out of the header, on the
+     * page that already is about the installer language and keyboard.
+     */
+    hideL10nOptions?: boolean;
   }
 >;
 
@@ -62,22 +72,24 @@ export type StandardLayoutProps = React.PropsWithChildren<
  *
  * It composes the header's trailing content shared by every page: any
  * page-specific content first, followed by the tools always available (the
- * localization selector, the progress status monitor, the appearance settings
- * and the installer options menu).
+ * progress status monitor, the network state, the localization selector, the
+ * appearance settings and the installer options menu).
  */
 export default function StandardLayout({
   progress,
   children,
   additionalContent,
   showProgressMonitor = true,
-  showL10nValues = false,
+  showL10nValues = "keymap",
+  hideL10nOptions = false,
   ...headerProps
 }: StandardLayoutProps) {
   const headerContent = (
     <>
       {additionalContent}
       {showProgressMonitor && <ProgressStatusMonitor />}
-      <InstallerL10nOptions showValues={showL10nValues} />
+      <NetworkIndicator />
+      {!hideL10nOptions && <InstallerL10nOptions showValues={showL10nValues} />}
       <AppearanceSettings />
       <InstallerOptionsMenu hideLabel />
     </>

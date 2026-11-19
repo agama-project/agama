@@ -21,16 +21,22 @@
  */
 
 import React from "react";
-import { ProductSelectionPage } from "~/components/product";
+import { Navigate, useLocation } from "react-router";
 import { Route } from "~/types/routes";
-import { PRODUCT as PATHS } from "~/routes/paths";
+import { PRODUCT as PATHS, QUICK_SETUP } from "~/routes/paths";
+
+/** Product selection lives in Quick setup now, keeping the query (e.g. byUser). */
+const ToQuickSetup = () => {
+  const { search } = useLocation();
+  return <Navigate to={{ pathname: QUICK_SETUP.root, search }} replace />;
+};
 
 const routes = (): Route => ({
   path: PATHS.root,
   children: [
     {
       index: true,
-      element: <ProductSelectionPage />,
+      element: <ToQuickSetup />,
     },
   ],
 });

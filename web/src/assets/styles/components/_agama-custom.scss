@@ -15,6 +15,41 @@
   }
 }
 
+// Page actions that stick to the bottom only while the content scrolls under
+// them (see StickyActions). PatternFly draws the separator, shadow and surface
+// of a sticky section all the time; here only while stuck, so it otherwise
+// blends with the page.
+.agm-sticky-actions.pf-m-sticky-bottom {
+  &[data-stuck="false"] {
+    border-block-start-color: transparent;
+    background-color: transparent;
+    box-shadow: none;
+  }
+}
+
+// What tells StickyActions whether it is stuck: a mark taking a pixel at the
+// end of the content, as an empty one may not count as in view.
+.agm-sticky-actions-end {
+  block-size: 1px;
+  flex-shrink: 0;
+}
+
+// Fields reached with the keyboard scroll into view clear of the sticky form
+// actions, instead of behind them.
+.pf-v6-c-page__main:has(.agm-sticky-actions) {
+  scroll-padding-block-end: 8rem;
+}
+
+// Information beside the page content (see SystemInformationSection), kept in
+// view while the content scrolls. Only where it sits beside it: stacked below,
+// it would cover the content.
+@media (width >= 768px) {
+  .agm-sticky-aside {
+    position: sticky;
+    inset-block-start: var(--pf-t--global--spacer--md);
+  }
+}
+
 // Sticky category header inside the scrollable patterns list.
 .agm-sticky-category-header {
   position: sticky;
@@ -292,4 +327,44 @@ nav.agm-breadcrumb > ol > li > a {
 // the line short enough to stay comfortable to read on a wide screen.
 .agm-progress-detail {
   max-inline-size: 80ch;
+}
+
+// The installer languages in as many columns as fit, so the list stays short
+// and the keyboard field below stays in view at 1024x768, filled column by
+// column (see welcome-form/LanguageField). The field spans its column: sized
+// to its content, a multi-column list collapses into a single column.
+.agm-language-field {
+  justify-self: stretch;
+}
+
+.agm-language-list {
+  column-width: var(--agm-t--language-list--column--width, 10rem);
+  column-gap: var(--pf-t--global--spacer--lg);
+  // Cancels the space below the last row, which each item brings.
+  margin-block-end: calc(-1 * var(--pf-t--global--spacer--md));
+
+  > * {
+    break-inside: avoid;
+    margin-block-end: var(--pf-t--global--spacer--md);
+  }
+
+  // The names are what the screen is about, and there is room for them.
+  .pf-v6-c-radio__label {
+    font-size: var(--agm-t--language-list--font--size, var(--pf-t--global--font--size--lg));
+  }
+}
+
+// Buttons sitting in a line of text that act in place: the inline link look
+// without its underline, which tells a link apart.
+.agm-inline-action.pf-v6-c-button.pf-m-link.pf-m-inline {
+  --pf-v6-c-button--m-link--m-inline--TextDecorationLine: none;
+  --pf-v6-c-button--m-link--m-inline--hover--TextDecorationLine: none;
+  --pf-v6-c-button--m-link--m-inline--m-clicked--TextDecorationLine: none;
+}
+
+// A field spanning its column, for one holding content laid out by the room
+// there is (e.g. options side by side while they fit), which would otherwise
+// change with the width of whatever else the field shows.
+.agm-stretched-field > .pf-v6-c-form__group {
+  justify-self: stretch;
 }

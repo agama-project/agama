@@ -142,6 +142,9 @@ const FirstUserFields = withForm({
                     <PreservedValueField
                       preservedMessage={_("Using a hashed password.")}
                       isPreserving={usingHashedPassword}
+                      // TRANSLATORS: names the button to set a new password in
+                      // place of the hashed one
+                      changeButtonLabel={_("Change password")}
                       onEdit={() => form.setFieldValue("userUsingHashedPassword", false)}
                     >
                       <FirstUserPasswordFields form={form} labelPrefixedBy={legendId} />

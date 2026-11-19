@@ -68,7 +68,13 @@ export default function FieldNestedContent({
 }: FieldNestedContentProps) {
   return (
     <NestedContent margin={margin}>
-      <Flex direction={{ default: "column" }} gap={{ default: "gapXs" }}>
+      {/* Not wrapping: a wrapping column measures its content at its narrowest,
+          leaving room for a layout other than the one shown. */}
+      <Flex
+        direction={{ default: "column" }}
+        flexWrap={{ default: "nowrap" }}
+        gap={{ default: "gapXs" }}
+      >
         {children}
       </Flex>
     </NestedContent>
