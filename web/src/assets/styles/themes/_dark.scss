@@ -127,6 +127,9 @@
   --pf-t--global--background--color--primary--default: var(--agm-t--surface--color);
   --pf-t--global--background--color--secondary--default: var(--agm-t--surface--color--raised);
   --pf-t--global--background--color--floating--default: var(--agm-t--surface--color--floating);
+  // Sticky sections (e.g. page actions) lift like a raised surface, instead of
+  // PF's neutral gray that clashes with the pine ones.
+  --pf-t--global--background--color--sticky--default: var(--agm-t--surface--color--raised);
   --pf-t--global--background--color--control--default: var(--agm-t--surface--color--raised);
   --pf-t--global--border--color--default: var(--agm-t--border--color);
   --pf-t--global--border--color--subtle: var(--agm-t--border--color);

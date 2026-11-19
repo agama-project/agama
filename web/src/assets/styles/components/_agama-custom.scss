@@ -15,6 +15,41 @@
   }
 }
 
+// Page actions that stick to the bottom only while the content scrolls under
+// them (see StickyActions). PatternFly draws the separator, shadow and surface
+// of a sticky section all the time; here only while stuck, so it otherwise
+// blends with the page.
+.agm-sticky-actions.pf-m-sticky-bottom {
+  &[data-stuck="false"] {
+    border-block-start-color: transparent;
+    background-color: transparent;
+    box-shadow: none;
+  }
+}
+
+// What tells StickyActions whether it is stuck: a mark taking a pixel at the
+// end of the content, as an empty one may not count as in view.
+.agm-sticky-actions-end {
+  block-size: 1px;
+  flex-shrink: 0;
+}
+
+// Fields reached with the keyboard scroll into view clear of the sticky form
+// actions, instead of behind them.
+.pf-v6-c-page__main:has(.agm-sticky-actions) {
+  scroll-padding-block-end: 8rem;
+}
+
+// Information beside the page content (see SystemInformationSection), kept in
+// view while the content scrolls. Only where it sits beside it: stacked below,
+// it would cover the content.
+@media (width >= 768px) {
+  .agm-sticky-aside {
+    position: sticky;
+    inset-block-start: var(--pf-t--global--spacer--md);
+  }
+}
+
 // Sticky category header inside the scrollable patterns list.
 .agm-sticky-category-header {
   position: sticky;

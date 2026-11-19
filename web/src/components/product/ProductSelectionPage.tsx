@@ -253,6 +253,8 @@ const ProductSelectionContent = () => {
   return (
     <Page
       showL10nValues={!currentProduct}
+      // Nothing to go back to before the first product is selected.
+      hideSummaryLink={!currentProduct}
       breadcrumbs={[
         { label: <ProductSelectionTitle products={products} currentProduct={currentProduct} /> },
       ]}
