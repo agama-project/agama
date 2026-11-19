@@ -32,21 +32,15 @@ const issue = (description: string): Issue => ({
   scope: "storage",
 });
 
-const seeIssues = () => screen.getByRole("button", { name: "See issues" });
+const showIssues = () => screen.getByRole("button", { name: "Show issues…" });
 
 describe("FixableConfigInfo", () => {
-  it("says in one line how many issues there are, with a way to see them", () => {
+  it("says the configuration cannot be installed, with a way to see why", () => {
     installerRender(<FixableConfigInfo issues={[issue("No root"), issue("No swap")]} />);
 
     screen.getByText("Warning alert:");
-    const line = screen.getByText(/The configuration has 2 issues to fix/);
-    expect(line).toContainElement(seeIssues());
-  });
-
-  it("uses the singular for a single issue", () => {
-    installerRender(<FixableConfigInfo issues={[issue("No root")]} />);
-
-    screen.getByText(/The configuration has 1 issue to fix/);
+    screen.getByText("The configuration is not valid to install the system");
+    showIssues();
   });
 
   it("keeps the issues out of the page until they are asked for", () => {
@@ -59,12 +53,20 @@ describe("FixableConfigInfo", () => {
     const { user } = installerRender(
       <FixableConfigInfo issues={[issue("No root"), issue("No swap")]} />,
     );
-    await user.click(seeIssues());
+    await user.click(showIssues());
 
-    const popup = screen.getByRole("dialog", { name: "Issues to fix" });
+    const popup = screen.getByRole("dialog", { name: "Invalid storage configuration" });
+    within(popup).getByText("The configuration must be adapted to address the following issues.");
     const items = within(popup)
       .getAllByRole("listitem")
       .map((item) => item.textContent);
     expect(items).toEqual(["No root", "No swap"]);
+  });
+
+  it("uses the singular for a single issue", async () => {
+    const { user } = installerRender(<FixableConfigInfo issues={[issue("No root")]} />);
+    await user.click(showIssues());
+
+    screen.getByText("The configuration must be adapted to address the following issue.");
   });
 });

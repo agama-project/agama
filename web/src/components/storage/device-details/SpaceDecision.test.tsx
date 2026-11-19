@@ -58,13 +58,13 @@ describe("SpaceDecision", () => {
     screen.getByRole("button", { name: "Actions for all partitions" });
   });
 
-  it("offers the three actions safest first", async () => {
+  it("offers deleting, shrinking and keeping, in that order", async () => {
     const { user } = installerRender(<Example />);
 
     expect(await openItems(user)).toEqual([
-      "Keep all partitions",
-      "Shrink partitions if needed and possible",
       "Delete all partitions",
+      "Shrink partitions if needed and possible",
+      "Keep all partitions",
     ]);
   });
 
@@ -73,9 +73,9 @@ describe("SpaceDecision", () => {
 
     screen.getByRole("button", { name: "Actions for all logical volumes" });
     expect(await openItems(user)).toEqual([
-      "Keep all logical volumes",
-      "Shrink logical volumes if needed and possible",
       "Delete all logical volumes",
+      "Shrink logical volumes if needed and possible",
+      "Keep all logical volumes",
     ]);
   });
 

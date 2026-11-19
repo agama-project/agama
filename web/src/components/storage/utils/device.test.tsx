@@ -29,7 +29,7 @@ describe("volumeGroupFacts", () => {
   it("gives a group being created its kind marked as new, with no size", () => {
     expect(volumeGroupFacts({ vgName: "system" }, null)).toEqual({
       size: undefined,
-      description: "New LVM",
+      description: "New volume group",
     });
   });
 
@@ -42,14 +42,14 @@ describe("volumeGroupFacts", () => {
 
     expect(volumeGroupFacts({ vgName: "system", name: "/dev/system" }, device)).toEqual({
       size: "100 GiB",
-      description: "LVM",
+      description: "Volume group",
     });
   });
 
   it("gives only its kind to a group the machine does not have", () => {
     expect(volumeGroupFacts({ vgName: "system", name: "/dev/system" }, null)).toEqual({
       size: undefined,
-      description: "LVM",
+      description: "Volume group",
     });
   });
 });

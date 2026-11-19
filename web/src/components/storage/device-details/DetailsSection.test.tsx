@@ -36,15 +36,4 @@ describe("DetailsSection", () => {
     screen.getByRole("heading", { level: 3, name: "Current content" });
     screen.getByText("Nothing detected.");
   });
-
-  it("can show an icon before its title, out of what screen readers read", () => {
-    const { container } = plainRender(
-      <DetailsSection title="Current content">
-        <p>Nothing detected.</p>
-      </DetailsSection>,
-    );
-
-    screen.getByRole("heading", { level: 3, name: "Current content" });
-    expect(container.querySelector("svg")).toHaveAttribute("aria-hidden", "true");
-  });
 });

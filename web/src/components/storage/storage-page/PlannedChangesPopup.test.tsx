@@ -53,19 +53,19 @@ describe("PlannedChangesPopup", () => {
     screen.getByText("every change, in order");
   });
 
-  it("opens on the final layout", () => {
+  it("opens on the actions", () => {
     installerRender(<PlannedChangesPopup />);
+
+    expect(screen.getByRole("tab", { name: "Actions" })).toHaveAttribute("aria-selected", "true");
+  });
+
+  it("switches to the final layout when asked", async () => {
+    const { user } = installerRender(<PlannedChangesPopup />);
+    await user.click(screen.getByRole("tab", { name: "Final layout" }));
 
     expect(screen.getByRole("tab", { name: "Final layout" })).toHaveAttribute(
       "aria-selected",
       "true",
     );
-  });
-
-  it("switches to the actions when asked", async () => {
-    const { user } = installerRender(<PlannedChangesPopup />);
-    await user.click(screen.getByRole("tab", { name: "Actions" }));
-
-    expect(screen.getByRole("tab", { name: "Actions" })).toHaveAttribute("aria-selected", "true");
   });
 });

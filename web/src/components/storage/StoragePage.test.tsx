@@ -116,7 +116,14 @@ jest.mock("./FixableConfigInfo", () => ({
   fixableConfigTitle: () => "fixable config",
 }));
 jest.mock("./ConnectedDevicesMenu", () => () => <div>connected devices menu</div>);
-jest.mock("./storage-page/PlannedChangesPopup", () => () => <div>result</div>);
+/* The page's own parts, each tested on its own: here only whether they show. */
+jest.mock("./storage-page/TopLine", () => ({
+  __esModule: true,
+  default: () => <p>the configuration</p>,
+  TopResult: () => <p>the result line</p>,
+}));
+jest.mock("./entries-table/EntriesTable", () => () => null);
+jest.mock("./storage-page/GlobalActions", () => () => null);
 
 beforeEach(() => {
   mockUseReset.mockReturnValue(jest.fn());
@@ -126,281 +133,100 @@ beforeEach(() => {
   mockUseSystemDevice.mockReturnValue(null);
 });
 
+const configuration = () => screen.queryByText("the configuration");
+const resetButton = () =>
+  screen.queryByRole("button", { name: "Reset to the default configuration" });
+
 describe("if there are no devices", () => {
   beforeEach(() => {
     mockUseAvailableDevices.mockReturnValue([]);
   });
 
-  it("renders an option for activating iSCSI", () => {
+  it("says so, with a way to connect iSCSI targets", () => {
     installerRender(<StoragePage />);
-    expect(screen.queryByRole("link", { name: /iSCSI/ })).toBeInTheDocument();
+
+    screen.getByText("No devices found");
+    screen.getByRole("link", { name: "Connect to iSCSI targets" });
   });
 
-  it("does not render the configuration", () => {
+  it("does not show the configuration", () => {
     installerRender(<StoragePage />);
-    expect(screen.queryByText("what the configuration does")).not.toBeInTheDocument();
+
+    expect(configuration()).toBeNull();
   });
 
-  it("does not render the result", () => {
+  it("offers activating zFCP disks only where zFCP is supported", () => {
+    mockUseZFCPSystem.mockReturnValue(undefined);
+    const { unmount } = installerRender(<StoragePage />);
+    expect(screen.queryByRole("link", { name: "Activate zFCP disks" })).toBeNull();
+    unmount();
+
+    mockUseZFCPSystem.mockReturnValue({});
     installerRender(<StoragePage />);
-    expect(screen.queryByText("result")).not.toBeInTheDocument();
+    screen.getByRole("link", { name: "Activate zFCP disks" });
   });
 
-  describe("if zFCP is not supported", () => {
-    beforeEach(() => {
-      mockUseZFCPSystem.mockReturnValue(null);
-    });
+  it("offers managing DASD only where DASD is supported", () => {
+    mockUseDASDSystem.mockReturnValue(undefined);
+    const { unmount } = installerRender(<StoragePage />);
+    expect(screen.queryByRole("link", { name: /DASD/ })).toBeNull();
+    unmount();
 
-    it("does not render an option for activating zFCP", () => {
-      installerRender(<StoragePage />);
-      expect(screen.queryByRole("link", { name: /zFCP/ })).not.toBeInTheDocument();
-    });
-  });
-
-  describe("if DASD is not supported", () => {
-    beforeEach(() => {
-      mockUseDASDSystem.mockReturnValue(null);
-    });
-
-    it("does not render an option for activating DASD", () => {
-      installerRender(<StoragePage />);
-      expect(screen.queryByRole("link", { name: /DASD/ })).not.toBeInTheDocument();
-    });
-  });
-
-  describe("if zFCP is supported", () => {
-    beforeEach(() => {
-      mockUseZFCPSystem.mockReturnValue({});
-    });
-
-    it("renders an option for activating zFCP", () => {
-      installerRender(<StoragePage />);
-      expect(screen.queryByRole("link", { name: /zFCP/ })).toBeInTheDocument();
-    });
-  });
-
-  describe("if DASD is supported", () => {
-    beforeEach(() => {
-      mockUseDASDSystem.mockReturnValue({});
-    });
-
-    it("renders an option for activating DASD", () => {
-      installerRender(<StoragePage />);
-      expect(screen.queryByRole("link", { name: /DASD/ })).toBeInTheDocument();
-    });
+    mockUseDASDSystem.mockReturnValue({});
+    installerRender(<StoragePage />);
+    screen.getByRole("link", { name: /DASD/ });
   });
 });
 
-describe("if the UI does not support the current configuration (no model)", () => {
+describe("if there are devices", () => {
   beforeEach(() => {
     mockUseAvailableDevices.mockReturnValue([disk]);
-    mockUseConfigModel.mockReturnValue(null);
   });
 
-  describe("and there are unfixable config errors", () => {
+  describe("and the configuration has issues that cannot be fixed here", () => {
     beforeEach(() => {
       mockUseIssues.mockReturnValue([configUnfixableIssue]);
     });
 
-    it("renders a text explaining the settings are wrong", () => {
+    it("says the settings are invalid, with a way to reset them, instead of the configuration", () => {
       installerRender(<StoragePage />);
-      expect(screen.queryByText("Invalid storage settings")).toBeInTheDocument();
-    });
 
-    it("renders an option for resetting the config", () => {
-      installerRender(<StoragePage />);
-      expect(screen.queryByRole("button", { name: /Reset/ })).toBeInTheDocument();
-    });
-
-    it("does not render the configuration", () => {
-      installerRender(<StoragePage />);
-      expect(screen.queryByText("what the configuration does")).not.toBeInTheDocument();
-    });
-
-    it("does not render the result", () => {
-      installerRender(<StoragePage />);
-      expect(screen.queryByText("result")).not.toBeInTheDocument();
+      screen.getByText("Invalid storage settings");
+      expect(resetButton()).not.toBeNull();
+      expect(configuration()).toBeNull();
     });
   });
 
-  describe("and there are config errors but all of them are fixable", () => {
+  describe("and the configuration cannot be read here, nor a layout calculated", () => {
     beforeEach(() => {
-      mockUseIssues.mockReturnValue([configFixableIssue]);
+      mockUseConfigModel.mockReturnValue(null);
     });
 
-    it("renders a text explaining the settings are wrong", () => {
+    it("says the settings cannot be modified, with a way to reset them, instead of the configuration", () => {
       installerRender(<StoragePage />);
-      expect(screen.queryByText("Invalid storage settings")).toBeInTheDocument();
-    });
 
-    it("renders an option for resetting the config", () => {
-      installerRender(<StoragePage />);
-      expect(screen.queryByRole("button", { name: /Reset/ })).toBeInTheDocument();
-    });
-
-    it("does not render the configuration", async () => {
-      installerRender(<StoragePage />);
-      expect(screen.queryByText("what the configuration does")).not.toBeInTheDocument();
-    });
-
-    it("does not render the result", () => {
-      installerRender(<StoragePage />);
-      expect(screen.queryByText("result")).not.toBeInTheDocument();
+      screen.getByText("Unable to modify the settings");
+      expect(resetButton()).not.toBeNull();
+      expect(configuration()).toBeNull();
     });
   });
 
-  describe("and there are no config errors but the proposal failed", () => {
+  describe.each([
+    ["a layout was calculated", { actions: [] }, []],
+    ["the configuration has issues to fix", null, [configFixableIssue, proposalIssue]],
+    ["no layout could be calculated", null, [proposalIssue]],
+  ])("and %s", (_, proposal, issues) => {
     beforeEach(() => {
-      mockUseIssues.mockReturnValue([proposalIssue]);
-      mockUseProposal.mockReturnValue(null);
+      mockUseProposal.mockReturnValue(proposal);
+      mockUseIssues.mockReturnValue(issues);
     });
 
-    it("renders a text explaining the settings cannot be adjusted", () => {
+    it("shows the configuration under the result line", () => {
       installerRender(<StoragePage />);
-      expect(screen.queryByText("Unable to modify the settings")).toBeInTheDocument();
+
+      expect(configuration()).not.toBeNull();
+      screen.getByText("the result line");
+      expect(resetButton()).toBeNull();
     });
-
-    it("renders an option for resetting the config", () => {
-      installerRender(<StoragePage />);
-      expect(screen.queryByRole("button", { name: /Reset/ })).toBeInTheDocument();
-    });
-
-    it("does not render the configuration", () => {
-      installerRender(<StoragePage />);
-      expect(screen.queryByText("what the configuration does")).not.toBeInTheDocument();
-    });
-
-    it("does not render the result", () => {
-      installerRender(<StoragePage />);
-      expect(screen.queryByText("result")).not.toBeInTheDocument();
-    });
-  });
-
-  describe("and the proposal succeeded", () => {
-    beforeEach(() => {
-      mockUseIssues.mockReturnValue([]);
-      mockUseProposal.mockReturnValue({ devices: [], actions: [] });
-    });
-
-    it("renders an info block explaining the settings cannot be adjusted", () => {
-      installerRender(<StoragePage />);
-      expect(screen.queryByText("unsupported model info")).toBeInTheDocument();
-    });
-
-    it("does not render the configuration", () => {
-      installerRender(<StoragePage />);
-      expect(screen.queryByText("what the configuration does")).not.toBeInTheDocument();
-    });
-  });
-});
-
-describe("if the UI supports the configuration (there is a model)", () => {
-  beforeEach(() => {
-    mockUseAvailableDevices.mockReturnValue([disk]);
-    mockUseConfigModel.mockReturnValue({ drives: [] });
-  });
-
-  describe("and there are unfixable config errors", () => {
-    beforeEach(() => {
-      mockUseIssues.mockReturnValue([configUnfixableIssue]);
-    });
-
-    it("renders a text explaining the settings are wrong", () => {
-      installerRender(<StoragePage />);
-      expect(screen.queryByText("Invalid storage settings")).toBeInTheDocument();
-    });
-
-    it("renders an option for resetting the config", () => {
-      installerRender(<StoragePage />);
-      expect(screen.queryByRole("button", { name: /Reset/ })).toBeInTheDocument();
-    });
-
-    it("does not render the configuration", () => {
-      installerRender(<StoragePage />);
-      expect(screen.queryByText("what the configuration does")).not.toBeInTheDocument();
-    });
-
-    it("does not render the result", () => {
-      installerRender(<StoragePage />);
-      expect(screen.queryByText("result")).not.toBeInTheDocument();
-    });
-  });
-
-  describe("and there are config errors but all of them are fixable", () => {
-    beforeEach(() => {
-      mockUseIssues.mockReturnValue([configFixableIssue]);
-    });
-
-    it("renders an info block explaining the settings must be fixed", () => {
-      installerRender(<StoragePage />);
-      expect(screen.queryByText("fixable config info")).toBeInTheDocument();
-    });
-
-    it("renders the configuration", () => {
-      installerRender(<StoragePage />);
-      expect(screen.queryByText("what the configuration does")).toBeInTheDocument();
-    });
-
-    it("does not render the result", () => {
-      installerRender(<StoragePage />);
-      expect(screen.queryByText("result")).not.toBeInTheDocument();
-    });
-  });
-
-  describe("and there are no config errors but the proposal failed", () => {
-    beforeEach(() => {
-      mockUseIssues.mockReturnValue([proposalIssue]);
-      mockUseProposal.mockReturnValue(null);
-    });
-
-    it("renders an info block explaining the proposal failed", () => {
-      installerRender(<StoragePage />);
-      expect(screen.queryByText("proposal failed info")).toBeInTheDocument();
-    });
-
-    it("renders the configuration", () => {
-      installerRender(<StoragePage />);
-      expect(screen.queryByText("what the configuration does")).toBeInTheDocument();
-    });
-
-    it("does not render the result", () => {
-      installerRender(<StoragePage />);
-      expect(screen.queryByText("result")).not.toBeInTheDocument();
-    });
-  });
-
-  describe("and the proposal succeeded", () => {
-    beforeEach(() => {
-      mockUseIssues.mockReturnValue([]);
-      mockUseProposal.mockReturnValue({ devices: [], actions: [] });
-    });
-
-    it("renders the configuration", () => {
-      installerRender(<StoragePage />);
-      expect(screen.queryByText("what the configuration does")).toBeInTheDocument();
-    });
-
-    it("keeps the result out of the page until it is asked for", () => {
-      installerRender(<StoragePage />);
-      expect(screen.queryByText("result")).not.toBeInTheDocument();
-    });
-  });
-
-  it("reports what the configuration does", () => {
-    installerRender(<StoragePage />);
-    expect(screen.queryByText("what the configuration does")).toBeInTheDocument();
-  });
-});
-
-describe("if the UI does not support the configuration", () => {
-  beforeEach(() => {
-    mockUseAvailableDevices.mockReturnValue([disk]);
-    mockUseConfigModel.mockReturnValue(null);
-    mockUseProposal.mockReturnValue({ devices: [], actions: [] });
-  });
-
-  it("does not report what the configuration does", () => {
-    installerRender(<StoragePage />);
-    expect(screen.queryByText("what the configuration does")).not.toBeInTheDocument();
   });
 });
