@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
+import React, { useEffect, useId, useRef, useState } from "react";
 import {
   Button,
   Drawer,
@@ -147,12 +147,12 @@ export default function SidePanel({
   returnFocusTo,
   subjectKey,
 }: SidePanelProps): React.ReactNode {
-  const [panel, setPanel] = React.useState<HTMLDivElement | null>(null);
-  const titleId = React.useId();
-  const isPressOnBackdrop = React.useRef(false);
-  const frameId = React.useId();
+  const [panel, setPanel] = useState<HTMLDivElement | null>(null);
+  const titleId = useId();
+  const isPressOnBackdrop = useRef(false);
+  const frameId = useId();
   const isPinned = pinnedOffset !== undefined;
-  const [pinnedHeight, setPinnedHeight] = React.useState<number>();
+  const [pinnedHeight, setPinnedHeight] = useState<number>();
 
   /* Pinned, the panel fits what is in view: from where it starts, under what
      the page keeps in sight or lower while the page above has not scrolled
@@ -160,7 +160,7 @@ export default function SidePanel({
      beside it, whichever comes first. It is worked out again as the page
      scrolls, so the panel never sticks out of view and never makes the page
      longer, and nothing moves the page on the reader's behalf. */
-  React.useEffect(() => {
+  useEffect(() => {
     if (!isPinned) return;
 
     const frame = document.getElementById(frameId);
@@ -198,15 +198,15 @@ export default function SidePanel({
   /* Where the reader was when they opened it, so closing it can put them back.
      Without this a reader who closes a panel is dropped at the top of the
      document with nothing to say what they just left. */
-  const returnTarget = React.useRef(returnFocusTo);
+  const returnTarget = useRef(returnFocusTo);
 
   /* Kept from while the panel is open: by the time it closes, the caller may
      have nothing left to point at, such as the subject it was showing. */
-  React.useEffect(() => {
+  useEffect(() => {
     if (isOpen) returnTarget.current = returnFocusTo;
   });
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!isOpen) return;
 
     const opener = document.activeElement;
@@ -226,7 +226,7 @@ export default function SidePanel({
      ordinary way makes the browser scroll that box into view, and it scrolls to
      where the panel is laid out rather than to where it was moved: the page
      slides out to one side and takes the panel with it. */
-  React.useEffect(() => {
+  useEffect(() => {
     if (isOpen && panel) panel.focus({ preventScroll: true });
   }, [isOpen, panel, subjectKey]);
 

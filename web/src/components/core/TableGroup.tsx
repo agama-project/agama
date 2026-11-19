@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
+import React, { useId } from "react";
 import { Tbody, Td, Tr } from "@patternfly/react-table";
 import type { TitleProps } from "@patternfly/react-core";
 
@@ -61,7 +61,7 @@ export default function TableGroup({
   isTitleShown = true,
   children,
 }: TableGroupProps) {
-  const titleId = React.useId();
+  const titleId = useId();
 
   return (
     <Tbody className="agm-table-group" aria-labelledby={isTitleShown ? titleId : undefined}>

@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import MenuButton, { MenuButtonItem } from "~/components/core/MenuButton";
 import { Divider, MenuItemProps, MenuPopperProps } from "@patternfly/react-core";
@@ -192,7 +192,7 @@ export default function ConfigureDeviceMenu({
   /* A device picked from the system is one the reader wants to work with, so
      the panel opens on it. Only once the configuration holds it: an address
      naming an entry the configuration lacks reads as stale and is dropped. */
-  React.useEffect(() => {
+  useEffect(() => {
     if (!picked) return;
 
     const index = (config?.[picked.collection] || []).findIndex((e) => e.name === picked.name);
