@@ -339,6 +339,14 @@ nav.agm-breadcrumb > ol > li > a {
     calc(-1 * var(--agm-side-panel-frame--inset-inline-end));
 }
 
+// The page narrows with the window rather than growing to its widest content.
+// As a flex item the drawer's content would otherwise be as wide as whatever
+// it holds, and the drawer clips what spills over: a table meant to scroll in
+// its own box gets cut at the window's edge instead, with nothing to scroll.
+.agm-side-panel-frame > .pf-v6-c-drawer__main > .pf-v6-c-drawer__content {
+  min-width: 0;
+}
+
 .agm-side-panel-frame:not(:first-child) {
   --agm-side-panel-frame--inset-block-start: 0px;
 }
