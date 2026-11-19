@@ -148,18 +148,20 @@ impl Model {
 
             h_locales
                 .join()
-                .map_err(|_| service::Error::DatabaseThreadPanicked("locales"))?
-                .map_err(|e| service::Error::LocalesDatabaseRead(e.to_string()))?;
+                .map_err(|_| service::Error::DatabaseRead("locales thread panicked".to_string()))?
+                .map_err(|e| service::Error::DatabaseRead(format!("locales: {e}")))?;
 
             h_timezones
                 .join()
-                .map_err(|_| service::Error::DatabaseThreadPanicked("timezones"))?
-                .map_err(|e| service::Error::TimezonesDatabaseRead(e.to_string()))?;
+                .map_err(|_| service::Error::DatabaseRead("timezones thread panicked".to_string()))?
+                .map_err(|e| service::Error::DatabaseRead(format!("timezones: {e}")))?;
 
             if let Some(h) = h_keymaps {
                 h.join()
-                    .map_err(|_| service::Error::DatabaseThreadPanicked("keymaps"))?
-                    .map_err(|e| service::Error::KeymapsDatabaseRead(e.to_string()))?;
+                    .map_err(|_| {
+                        service::Error::DatabaseRead("keymaps thread panicked".to_string())
+                    })?
+                    .map_err(|e| service::Error::DatabaseRead(format!("keymaps: {e}")))?;
             }
 
             Ok(())

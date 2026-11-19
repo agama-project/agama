@@ -61,14 +61,8 @@ pub enum Error {
     Generic(#[from] anyhow::Error),
     #[error("There is no proposal for localization")]
     MissingProposal,
-    #[error("Failed to read locales database: {0}")]
-    LocalesDatabaseRead(String),
-    #[error("Failed to read timezones database: {0}")]
-    TimezonesDatabaseRead(String),
-    #[error("Failed to read keymaps database: {0}")]
-    KeymapsDatabaseRead(String),
-    #[error("Thread panicked while reading {0} database")]
-    DatabaseThreadPanicked(&'static str),
+    #[error("Failed to read localization database: {0}")]
+    DatabaseRead(String),
 }
 
 /// Builds and spawns the l10n service.
