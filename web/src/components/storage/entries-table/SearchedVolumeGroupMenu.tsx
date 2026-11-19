@@ -24,7 +24,7 @@ import React from "react";
 import { Divider } from "@patternfly/react-core";
 import { sprintf } from "sprintf-js";
 import MenuButton, { MenuButtonItem } from "~/components/core/MenuButton";
-import RowMenuToggle from "~/components/storage/entries-table/RowMenuToggle";
+import RowMenuToggle from "~/components/core/RowMenuToggle";
 import { useDeviceDetails } from "~/components/storage/shared/use-device-details";
 import { baseName } from "~/components/storage/utils";
 import configModel from "~/model/storage/config-model";

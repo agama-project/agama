@@ -25,7 +25,7 @@ import { Divider } from "@patternfly/react-core";
 import { useLocation, useNavigate } from "react-router";
 import { sprintf } from "sprintf-js";
 import MenuButton, { MenuButtonItem } from "~/components/core/MenuButton";
-import RowMenuToggle from "~/components/storage/entries-table/RowMenuToggle";
+import RowMenuToggle from "~/components/core/RowMenuToggle";
 import SearchedVolumeGroupMenu from "~/components/storage/entries-table/SearchedVolumeGroupMenu";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { generateEncodedPath } from "~/utils";

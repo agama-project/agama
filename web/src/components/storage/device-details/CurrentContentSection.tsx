@@ -35,7 +35,7 @@ import {
 } from "~/components/storage/device-details/current-content-summary";
 import Interpolate from "~/components/core/Interpolate";
 import MenuButton, { MenuButtonItem } from "~/components/core/MenuButton";
-import RowMenuToggle from "~/components/storage/entries-table/RowMenuToggle";
+import RowMenuToggle from "~/components/core/RowMenuToggle";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { generateEncodedPath } from "~/utils";
 import { useDeletePartition } from "~/hooks/model/storage/config-model";
