@@ -25,19 +25,18 @@ import { createPortal } from "react-dom";
 import { screen } from "@testing-library/react";
 import { Button } from "@patternfly/react-core";
 import { plainRender } from "~/test-utils";
-import SidePanel, { SidePanelPlacement } from "~/components/core/SidePanel";
+import SidePanel from "~/components/core/SidePanel";
 
 /**
  * The panel as a reader meets it: a page with a control that opens it, so
  * closing it has somewhere to put the focus back.
  */
-function Example({ placement = "overlay" }: { placement?: SidePanelPlacement }) {
+function Example() {
   const [isOpen, setIsOpen] = React.useState(false);
 
   return (
     <SidePanel
       isOpen={isOpen}
-      placement={placement}
       onClose={() => setIsOpen(false)}
       title="Result"
       description="What the installer will do"
@@ -98,14 +97,14 @@ describe("SidePanel", () => {
 
   describe("when it comes over the page", () => {
     it("puts the page it covers out of reach", async () => {
-      const { user } = plainRender(<Example placement="overlay" />);
+      const { user } = plainRender(<Example />);
       await user.click(opener());
 
       expect(opener().closest("[inert]")).not.toBeNull();
     });
 
     it("closes on a click on the backdrop", async () => {
-      const { user } = plainRender(<Example placement="overlay" />);
+      const { user } = plainRender(<Example />);
       await user.click(opener());
       await user.click(backdrop());
 
@@ -113,7 +112,7 @@ describe("SidePanel", () => {
     });
 
     it("stays open on a click inside it", async () => {
-      const { user } = plainRender(<Example placement="overlay" />);
+      const { user } = plainRender(<Example />);
       await user.click(opener());
       await user.click(screen.getByRole("button", { name: "Reformat" }));
 
@@ -121,7 +120,7 @@ describe("SidePanel", () => {
     });
 
     it("stays open on a click in a dialog or menu opened from it", async () => {
-      const { user } = plainRender(<Example placement="overlay" />);
+      const { user } = plainRender(<Example />);
       await user.click(opener());
       await user.click(screen.getByRole("button", { name: "Pick a disk" }));
 
@@ -129,29 +128,12 @@ describe("SidePanel", () => {
     });
 
     it("stays open when a press inside it is released on the backdrop", async () => {
-      const { user } = plainRender(<Example placement="overlay" />);
+      const { user } = plainRender(<Example />);
       await user.click(opener());
       await user.pointer([
         { keys: "[MouseLeft>]", target: screen.getByRole("button", { name: "Reformat" }) },
         { keys: "[/MouseLeft]", target: backdrop() },
       ]);
-
-      panel();
-    });
-  });
-
-  describe("when it stands beside the page", () => {
-    it("leaves the page usable", async () => {
-      const { user } = plainRender(<Example placement="share" />);
-      await user.click(opener());
-
-      expect(opener().closest("[inert]")).toBeNull();
-    });
-
-    it("stays open on a click beside it, where there is no backdrop", async () => {
-      const { user } = plainRender(<Example placement="share" />);
-      await user.click(opener());
-      await user.click(backdrop());
 
       panel();
     });

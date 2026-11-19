@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import MenuButton, { MenuButtonItem } from "~/components/core/MenuButton";
 import { Divider, MenuItemProps, MenuPopperProps } from "@patternfly/react-core";
@@ -38,6 +38,8 @@ import DeviceSelectorModal from "./DeviceSelectorModal";
 import { isDrive, isMd, isVolumeGroup } from "~/model/storage/device";
 import configModel from "~/model/storage/config-model";
 import { Icon } from "../layout";
+import { useDeviceDetails } from "~/components/storage/shared/use-device-details";
+import type { DetailsCollection } from "~/components/storage/shared/use-device-details";
 import type { Storage } from "~/model/system";
 import type { TranslatedString } from "~/i18n";
 
@@ -124,6 +126,9 @@ const AddDeviceMenuItem = ({
   );
 };
 
+/** An existing device just picked, until the configuration holds it. */
+type Picked = { collection: DetailsCollection; name: string };
+
 export type ConfigureDeviceMenuProps = {
   /** What the toggle says, where the offer needs naming for its surroundings. */
   label?: TranslatedString;
@@ -149,6 +154,8 @@ export default function ConfigureDeviceMenu({
   const closeDeviceSelector = () => setDeviceSelectorOpen(false);
 
   const navigate = useNavigate();
+  const { openDetails } = useDeviceDetails();
+  const [picked, setPicked] = useState<Picked | null>(null);
 
   const config = useConfigModel();
   const addDrive = useAddDrive();
@@ -166,12 +173,34 @@ export default function ConfigureDeviceMenu({
   const withLvm = !!allDevices.filter((d) => isVolumeGroup(d)).length;
 
   const addDevice = (device: Storage.Device) => {
-    if (isDrive(device)) addDrive({ name: device.name, spacePolicy: "keep" });
+    if (isDrive(device)) {
+      addDrive({ name: device.name, spacePolicy: "keep" });
+      setPicked({ collection: "drives", name: device.name });
+    }
 
-    if (isMd(device)) addMdRaid({ name: device.name, spacePolicy: "keep" });
+    if (isMd(device)) {
+      addMdRaid({ name: device.name, spacePolicy: "keep" });
+      setPicked({ collection: "mdRaids", name: device.name });
+    }
 
-    if (isVolumeGroup(device)) addVolumeGroup({ name: device.name, spacePolicy: "keep" }, false);
+    if (isVolumeGroup(device)) {
+      addVolumeGroup({ name: device.name, spacePolicy: "keep" }, false);
+      setPicked({ collection: "volumeGroups", name: device.name });
+    }
   };
+
+  /* A device picked from the system is one the reader wants to work with, so
+     the panel opens on it. Only once the configuration holds it: an address
+     naming an entry the configuration lacks reads as stale and is dropped. */
+  useEffect(() => {
+    if (!picked) return;
+
+    const index = (config?.[picked.collection] || []).findIndex((e) => e.name === picked.name);
+    if (index < 0) return;
+
+    setPicked(null);
+    openDetails({ collection: picked.collection, index });
+  }, [picked, config, openDetails]);
 
   const lvmDescription = allDevices.length
     ? _("Define a new LVM on top of one or several disks")

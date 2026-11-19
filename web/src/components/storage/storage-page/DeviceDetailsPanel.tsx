@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import SidePanel, { SidePanelPlacement } from "~/components/core/SidePanel";
+import SidePanel from "~/components/core/SidePanel";
 import DeviceDetailsHeading from "~/components/storage/device-details/DeviceDetailsHeading";
 import DeviceDetailsBody from "~/components/storage/device-details/DeviceDetailsBody";
 import DriveMenu from "~/components/storage/entries-table/DriveMenu";
@@ -29,30 +29,8 @@ import VolumeGroupMenu from "~/components/storage/entries-table/VolumeGroupMenu"
 import { useEntry } from "~/components/storage/device-details/entry";
 import { driveDescription, volumeGroupFacts } from "~/components/storage/utils/device";
 import { useDeviceDetails, DETAILS_PANEL_ID } from "~/components/storage/shared/use-device-details";
-import { useMediaQuery } from "~/hooks/use-media-query";
-import { EmptyState, EmptyStateBody } from "@patternfly/react-core";
-import { _ } from "~/i18n";
 import type { ConfigModel, Partitionable } from "~/model/storage/config-model";
 import type { Entry } from "~/components/storage/device-details/entry";
-
-/** PatternFly's `2xl`, from where there is room for the page and a panel both. */
-const WIDE = "(min-width: 90.625rem)";
-
-/**
- * How much of the window the panel takes, and what that leaves the page.
- *
- * Two bands. Wide enough for both, the two share the width and the page keeps
- * working; otherwise the panel comes over the page, which is where most readers
- * are.
- *
- * `2xl` rather than `xl`, which was tried first: a page sharing its width from
- * 1200px keeps the list of entries but crushes it, wrapping a row's every line
- * into three. Sharing has to leave the page usable, or it is an overlay that
- * also makes the page hard to read.
- */
-function usePlacement(): SidePanelPlacement {
-  return useMediaQuery(WIDE) ? "share" : "overlay";
-}
 
 /**
  * What the entry is, under its name, as its row says it under the name: a
@@ -99,8 +77,7 @@ export default function DeviceDetailsPanel({
   page,
   pinnedOffset,
 }: DeviceDetailsPanelProps): React.ReactNode {
-  const { subject, isStale, close } = useDeviceDetails();
-  const placement = usePlacement();
+  const { subject, isStale, close, keyOf } = useDeviceDetails();
   const entry = useEntry(subject);
 
   const isOpen = entry !== null;
@@ -111,12 +88,22 @@ export default function DeviceDetailsPanel({
     if (isStale) close();
   }, [isStale, close]);
 
+  /* The menu of the entry's row, wherever the panel was opened from: after
+     adding a device or moving to another one inside the panel, the reader
+     lands on the entry they were last looking at. */
+  const key = subject && keyOf(subject);
+  const rowMenu = () =>
+    key
+      ? document.querySelector<HTMLElement>(`[data-entry-menu="${CSS.escape(key)}"] button`)
+      : null;
+
   return (
     <SidePanel
       id={DETAILS_PANEL_ID}
+      returnFocusTo={rowMenu}
+      subjectKey={key}
       pinnedOffset={pinnedOffset}
       isOpen={isOpen}
-      placement={placement}
       onClose={close}
       title={entry && <DeviceDetailsHeading entry={entry} />}
       description={entry && entryDescription(entry)}
@@ -131,24 +118,6 @@ export default function DeviceDetailsPanel({
         ))
       }
       page={page}
-      /* Only where there is a list to pick from. On a plan of one device there
-         is nothing to select, and a third of a wide screen saying so reports an
-         absence the reader did not cause. */
-      placeholder={
-        <EmptyState
-          headingLevel="h2"
-          variant="sm"
-          // TRANSLATORS: said in the empty column beside the list, where no
-          // entry of the installation has been opened yet.
-          titleText={_("Nothing selected")}
-        >
-          <EmptyStateBody>
-            {/* TRANSLATORS: says what the empty column beside the list is
-                for. */}
-            {_("Pick an entry in the list to see and change what happens to it.")}
-          </EmptyStateBody>
-        </EmptyState>
-      }
     >
       {entry && subject && <DeviceDetailsBody entry={entry} subject={subject} />}
     </SidePanel>

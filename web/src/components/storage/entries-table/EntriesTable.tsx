@@ -21,14 +21,15 @@
  */
 
 import React from "react";
-import { Table, Tbody, Th, Thead, Tr } from "@patternfly/react-table";
+import { Table, Th, Thead, Tr } from "@patternfly/react-table";
+import TableGroup from "~/components/core/TableGroup";
 import { columnName } from "~/components/storage/entries-table/columns";
 import DriveRow from "~/components/storage/entries-table/DriveRow";
 import VolumeGroupRow from "~/components/storage/entries-table/VolumeGroupRow";
 import { baseName } from "~/components/storage/utils";
-import { css } from "@patternfly/react-styles";
 import { useConfigModel } from "~/hooks/model/storage/config-model";
 import { _, n_ } from "~/i18n";
+import type { TitleProps } from "@patternfly/react-core";
 import type { TranslatedString } from "~/i18n";
 import type { ConfigModel } from "~/model/storage/config-model";
 import type {
@@ -100,6 +101,11 @@ function compareRows(column: number, a: Row, b: Row): number {
   return byType || a.subject.index - b.subject.index;
 }
 
+export type EntriesTableProps = {
+  /** The level of the headings naming each group of rows. */
+  groupHeadingLevel?: TitleProps["headingLevel"];
+};
+
 /**
  * What the configuration is made of, under the summary of what it does.
  *
@@ -107,10 +113,6 @@ function compareRows(column: number, a: Row, b: Row): number {
  * the device, what the new system uses it for, what happens to its existing
  * data, and the menu of actions. It starts in the configuration's order and can
  * be sorted by device name.
- *
- * Keyboard: arrow keys walk the entries, Up and Down from name to name and Left
- * and Right between a name and its menu. Every name and every menu stays a tab
- * stop.
  *
  * Two of PatternFly's defaults are turned off:
  *
@@ -120,53 +122,10 @@ function compareRows(column: number, a: Row, b: Row): number {
  *   semantics exactly where the window is tightest. The table keeps its width
  *   instead and scrolls inside its own box.
  */
-export default function EntriesTable(): React.ReactNode {
+export default function EntriesTable({ groupHeadingLevel }: EntriesTableProps): React.ReactNode {
   const config = useConfigModel();
-  const list = React.useRef<HTMLDivElement>(null);
   /* Unsorted until a header is used. */
   const sortBy = null;
-  const isGrouped = true;
-  const groupId = React.useId();
-
-  const onKeyDown = (event: React.KeyboardEvent) => {
-    /* Right and left move between an entry's name and its menu. Both stay tab
-       stops: this is a shortcut, not the only way to reach the menu. */
-    const row = (document.activeElement as HTMLElement | null)?.closest("tr");
-    if (row && (event.key === "ArrowRight" || event.key === "ArrowLeft")) {
-      const name = row.querySelector<HTMLElement>("[data-entry-name]");
-      const menu = row.querySelector<HTMLElement>("[data-entry-menu] button");
-      const target = event.key === "ArrowRight" ? menu : name;
-      const from = event.key === "ArrowRight" ? name : menu;
-      if (target && from === document.activeElement) {
-        event.preventDefault();
-        target.focus();
-      }
-      return;
-    }
-
-    const names = [...(list.current?.querySelectorAll<HTMLElement>("[data-entry-name]") || [])];
-    const at = names.indexOf(document.activeElement as HTMLElement);
-    if (at === -1) return;
-
-    const focusAt = (index: number) => {
-      const next = names[Math.max(0, Math.min(index, names.length - 1))];
-      if (!next) return;
-
-      event.preventDefault();
-      next.focus();
-    };
-
-    switch (event.key) {
-      case "ArrowDown":
-        return focusAt(at + 1);
-      case "ArrowUp":
-        return focusAt(at - 1);
-      case "Home":
-        return focusAt(0);
-      case "End":
-        return focusAt(names.length - 1);
-    }
-  };
 
   const rows = rowsOf(config);
   if (!rows.length) return null;
@@ -177,32 +136,34 @@ export default function EntriesTable(): React.ReactNode {
     return sortBy.direction === "asc" ? order : -order;
   });
 
+  /* One group per kind, in the configuration's order, titled only when there
+     is more than one kind. */
+  const groups = TYPE_ORDER.map((collection) => ({
+    collection,
+    rows: sorted.filter((row) => row.subject.collection === collection),
+  })).filter(({ rows }) => rows.length > 0);
+  const isGrouped = groups.length > 1;
+
   const renderRow = ({ subject, group, deviceName }: Row) =>
     group ? (
-      <VolumeGroupRow key={`vg-${group.vgName}`} group={group} subject={subject} />
+      <VolumeGroupRow
+        key={`vg-${group.vgName}`}
+        group={group}
+        subject={subject}
+        isGrouped={isGrouped}
+      />
     ) : (
       <DriveRow key={deviceName} name={deviceName} subject={subject} />
     );
 
   const columnCount = 4;
 
-  /* One body per kind, in the configuration's order, each starting with a row
-     group header naming it. */
-  const groups = TYPE_ORDER.map((collection) => ({
-    collection,
-    rows: sorted.filter((row) => row.subject.collection === collection),
-  })).filter(({ rows }) => rows.length > 0);
-
   return (
-    <div
-      className={css(
-        "agm-entries-table",
-        isGrouped && "agm-entries-table--grouped",
-        isGrouped && "agm-entries-table--no-group-marks",
-      )}
-      ref={list}
-      onKeyDown={onKeyDown}
-    >
+    /* Keep this wrapper, and its class here rather than on the table: it lets
+       the table scroll sideways on narrow screens. A table cannot scroll by
+       itself, and making it scroll would break how some screen readers read
+       it. */
+    <div className="agm-entries-table">
       <Table
         role="table"
         gridBreakPoint=""
@@ -219,31 +180,17 @@ export default function EntriesTable(): React.ReactNode {
             <Th screenReaderText={columnName("actions")} />
           </Tr>
         </Thead>
-        {isGrouped ? (
-          groups.map(({ collection, rows }) => (
-            <Tbody
-              key={collection}
-              className="agm-entries-table__group"
-              aria-labelledby={`${groupId}-${collection}`}
-            >
-              <Tr>
-                <Th
-                  id={`${groupId}-${collection}`}
-                  scope="rowgroup"
-                  colSpan={columnCount}
-                  className="agm-entries-table__group-header"
-                >
-                  <span className="agm-entries-table__group-title">
-                    {groupTitle(collection, rows.length)}
-                  </span>
-                </Th>
-              </Tr>
-              {rows.map(renderRow)}
-            </Tbody>
-          ))
-        ) : (
-          <Tbody>{sorted.map(renderRow)}</Tbody>
-        )}
+        {groups.map(({ collection, rows }) => (
+          <TableGroup
+            key={collection}
+            title={groupTitle(collection, rows.length)}
+            columnCount={columnCount}
+            headingLevel={groupHeadingLevel}
+            isTitleShown={isGrouped}
+          >
+            {rows.map(renderRow)}
+          </TableGroup>
+        ))}
       </Table>
     </div>
   );

@@ -57,7 +57,7 @@ type Retarget = {
 const reuseVgSideEffect = (
   deviceConfig: ConfigModel.Drive | ConfigModel.MdRaid,
 ): string | undefined => {
-  const paths = deviceConfig.partitions
+  const paths = (deviceConfig.partitions || [])
     .filter((p) => !p.name)
     .map((p) => formattedPath(p.mountPath));
 

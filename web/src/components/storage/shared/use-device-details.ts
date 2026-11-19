@@ -167,6 +167,11 @@ function useDeviceDetails(): {
   /** Where a control that opens the panel on something should point. */
   addressOf: (subject: DetailsSubject) => To;
   /**
+   * The name the address gives an entry, such as `drives.vdb`. Unique on the
+   * page, so it also tells where an entry is drawn.
+   */
+  keyOf: (subject: DetailsSubject) => string | undefined;
+  /**
    * Opens it, for a control that cannot carry an address. A menu item is one:
    * it is a menu item wherever it appears, so it acts rather than links, and
    * the address it writes is the same one a link would have carried.
@@ -201,7 +206,9 @@ function useDeviceDetails(): {
 
   const close = () => setParams((next) => withDetails(next, undefined), SEARCH_PARAM_UPDATE);
 
-  return { subject, addressOf, openDetails, isStale: value !== null && !subject, close };
+  const keyOf = (subject: DetailsSubject) => toParam(config, subject);
+
+  return { subject, addressOf, keyOf, openDetails, isStale: value !== null && !subject, close };
 }
 
 export { useDeviceDetails, renamedGroupSearch, DETAILS_PANEL_ID };

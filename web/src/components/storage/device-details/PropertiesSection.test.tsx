@@ -53,7 +53,9 @@ describe("PropertiesSection", () => {
       />,
     );
 
-    expect(screen.getByRole("paragraph")).toHaveTextContent("Physical volumes on vda and vdb.");
+    expect(screen.getByRole("paragraph")).toHaveTextContent(
+      "LVM physical volumes will be added as partitions on vda and vdb.",
+    );
     screen.getByRole("link", { name: "vda" });
     screen.getByRole("link", { name: "vdb" });
   });

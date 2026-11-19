@@ -115,33 +115,35 @@ describe("Result", () => {
     expect(reports()).toEqual(["unknown"]);
   });
 
-  it("reports the result when a layout was calculated", () => {
+  /* Whenever the configuration can be read, the result, or the problem
+     finding one, is reported in the page's top line instead. */
+  it("leaves a calculated layout to the page's top line", () => {
     installerRender(<Result />);
 
-    expect(reports()).toEqual(["consequences"]);
+    expect(reports()).toEqual([]);
   });
 
-  it("reports the result when a layout was calculated for a configuration not editable here", () => {
+  it("leaves a calculated layout to the top line for a configuration not editable here", () => {
     mockConfigModel.mockReturnValue(null);
     installerRender(<Result />);
 
-    expect(reports()).toEqual(["consequences"]);
+    expect(reports()).toEqual([]);
   });
 
-  it("lists what to fix when the configuration has fixable issues", () => {
+  it("leaves the issues to fix to the top line", () => {
     mockProposal.mockReturnValue(null);
     mockIssues.mockReturnValue([issue("configNoRoot"), issue("proposal")]);
     installerRender(<Result />);
 
-    expect(reports()).toEqual(["fixable"]);
+    expect(reports()).toEqual([]);
   });
 
-  it("says the layout failed when the configuration has no issues but no layout came out", () => {
+  it("leaves a failed layout to the top line", () => {
     mockProposal.mockReturnValue(null);
     mockIssues.mockReturnValue([issue("proposal")]);
     installerRender(<Result />);
 
-    expect(reports()).toEqual(["failed"]);
+    expect(reports()).toEqual([]);
   });
 
   describe("when a change turns the report into another kind", () => {

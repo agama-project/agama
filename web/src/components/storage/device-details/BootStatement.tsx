@@ -50,7 +50,7 @@ export default function BootStatement({ entry }: BootStatementProps): React.Reac
 
   if (!config || !name || !configModel.boot.hasDevice(config, name)) return null;
 
-  const potentialReuse = entry.device.partitions.some((p) => isExistingBootPartition(p));
+  const potentialReuse = !!entry.device?.partitions?.some((p) => isExistingBootPartition(p));
   const sentence = potentialReuse
     ? configModel.boot.isDefault(config)
       ? // TRANSLATORS: The text in square brackets is a link to the boot setting.

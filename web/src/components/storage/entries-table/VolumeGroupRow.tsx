@@ -27,6 +27,7 @@ import TruncatedDeviceName from "~/components/storage/TruncatedDeviceName";
 import { volumeGroupUsedFor, ExistingDataCell } from "~/components/storage/entries-table/cells";
 import { volumeGroupFacts } from "~/components/storage/utils/device";
 import { useDevice } from "~/hooks/model/system/storage";
+import configModel from "~/model/storage/config-model";
 import { _ } from "~/i18n";
 import type { ConfigModel } from "~/model/storage/config-model";
 import type { DetailsSubject } from "~/components/storage/shared/use-device-details";
@@ -36,6 +37,11 @@ export type VolumeGroupRowProps = {
   group: ConfigModel.VolumeGroup;
   /** Where it is written, which is how the panel is opened on it. */
   subject: DetailsSubject;
+  /**
+   * Whether the row sits under a title naming its kind, so the line under its
+   * name only needs to say whether the group is new.
+   */
+  isGrouped?: boolean;
 };
 
 /**
@@ -49,13 +55,19 @@ export type VolumeGroupRowProps = {
  * nothing of it on the machine yet. One that already exists is read like any
  * other entry: what the installer does to what it holds.
  */
-export default function VolumeGroupRow({ group, subject }: VolumeGroupRowProps): React.ReactNode {
+export default function VolumeGroupRow({
+  group,
+  subject,
+  isGrouped = false,
+}: VolumeGroupRowProps): React.ReactNode {
   const device = useDevice(group.name || "");
   const { size, description } = volumeGroupFacts(group, device);
-  const isGrouped = true;
   // TRANSLATORS: said under the name of a volume group the installation
   // creates, in a list headed "Volume groups".
   const newMark = !group.name ? _("New") : undefined;
+  /* Only an existing group: the installation creates a new one even while it
+     holds no logical volume yet. */
+  const isIdle = !!group.name && !configModel.volumeGroup.usedMountPaths(group).length;
 
   return (
     <EntryRow
@@ -63,6 +75,7 @@ export default function VolumeGroupRow({ group, subject }: VolumeGroupRowProps):
       size={size}
       description={isGrouped ? newMark : description}
       usedFor={volumeGroupUsedFor(group)}
+      isIdle={isIdle}
       existingData={<ExistingDataCell config={group} device={device} />}
       menu={<VolumeGroupMenu group={group} subject={subject} />}
       subject={subject}

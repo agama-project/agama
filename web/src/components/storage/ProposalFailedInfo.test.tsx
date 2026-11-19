@@ -126,22 +126,6 @@ const mockFullConfigModel: ConfigModel.Config = {
   ],
 };
 
-const mockCreateNothingConfigModel: ConfigModel.Config = {
-  boot: { configure: false },
-  drives: [
-    {
-      name: "/dev/vdb",
-      partitions: [
-        {
-          name: "/dev/vdb1", // Has name, so it's not new
-          size: { default: false, min: 6430916608 },
-        },
-      ],
-    },
-  ],
-  volumeGroups: [],
-};
-
 const mockUseConfigModel = jest.fn();
 
 jest.mock("~/hooks/model/storage/config-model", () => ({
@@ -149,13 +133,19 @@ jest.mock("~/hooks/model/storage/config-model", () => ({
   useConfigModel: () => mockUseConfigModel(),
 }));
 
-const showMore = () => screen.getByRole("button", { name: "Show more about the storage layout" });
-const popup = () => screen.getByRole("dialog", { name: "Storage layout not calculated" });
+jest.mock("~/hooks/model/system/storage", () => ({
+  ...jest.requireActual("~/hooks/model/system/storage"),
+  useAvailableDevices: () => [],
+  useVolumeTemplates: () => [],
+}));
 
-/** Renders the alert and opens its popup, where the explanation is. */
+const showDetails = () =>
+  screen.getByRole("button", { name: "Show details about the failed storage calculation." });
+const popup = () => screen.getByRole("dialog", { name: "Failed to plan storage changes" });
+
 const renderOpen = async () => {
   const { user } = installerRender(<ProposalFailedInfo />);
-  await user.click(showMore());
+  await user.click(showDetails());
 };
 
 describe("ProposalFailedInfo", () => {
@@ -163,71 +153,55 @@ describe("ProposalFailedInfo", () => {
     mockUseConfigModel.mockReturnValue(mockFullConfigModel);
   });
 
-  it("says in one line that no layout can be calculated, with a way to learn more", () => {
+  it("says in one line that the configuration cannot be applied, with a way to learn more", () => {
     installerRender(<ProposalFailedInfo />);
 
     screen.getByText("Warning alert:");
-    const line = screen.getByText(/No storage layout can be calculated with the current settings/);
-    expect(line).toContainElement(showMore());
-    expect(showMore()).toHaveTextContent("Show more");
+    screen.getByText("The configuration cannot be applied");
+    expect(showDetails()).toHaveTextContent("Show details…");
   });
 
   it("keeps the explanation out of the page until it is asked for", () => {
     installerRender(<ProposalFailedInfo />);
 
-    expect(screen.queryByText(/It is not possible/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Applying the configuration implies/)).not.toBeInTheDocument();
   });
 
-  describe("when there are no new partitions or logical volumes", () => {
-    beforeEach(() => {
-      mockUseConfigModel.mockReturnValue(mockCreateNothingConfigModel);
-    });
-
-    it("explains it in general terms", async () => {
+  describe("when boot is configured", () => {
+    it("says the boot partition has to fit too, with the new mount paths and their sizes", async () => {
       await renderOpen();
-      within(popup()).getByText(
-        /It is not possible to install the system with the current configuration/,
+
+      const intro = within(popup()).getByText(
+        /Applying the configuration implies allocating the boot partition and also/,
       );
+      expect(intro).toHaveTextContent("/documents");
+      expect(intro).toHaveTextContent("swap");
     });
   });
 
-  describe("when there are new partitions or logical volumes", () => {
-    describe("and boot is configured", () => {
-      it("says the boot partition does not fit either", async () => {
-        await renderOpen();
-        within(popup()).getByText(
-          /It is not possible to allocate space for the boot partition and for/,
-        );
-      });
-
-      it("displays the mount paths with sizes", async () => {
-        await renderOpen();
-        // Should show mount paths for new partitions and logical volumes
-        within(popup()).getByText(/\/documents/);
-        within(popup()).getByText(/swap/);
-      });
+  describe("when boot is not configured", () => {
+    beforeEach(() => {
+      mockUseConfigModel.mockReturnValue({ ...mockFullConfigModel, boot: { configure: false } });
     });
 
-    describe("and boot is not configured", () => {
-      beforeEach(() => {
-        mockUseConfigModel.mockReturnValue({
-          ...mockFullConfigModel,
-          boot: { configure: false },
-        });
-      });
-
-      it("does not mention the boot partition", async () => {
-        await renderOpen();
-        within(popup()).getByText(/It is not possible to allocate space for/);
-        expect(within(popup()).queryByText(/boot partition/)).not.toBeInTheDocument();
-      });
-    });
-  });
-
-  describe("helper text", () => {
-    it("always shows adjustment guidance", async () => {
+    it("does not mention the boot partition", async () => {
       await renderOpen();
-      within(popup()).getByText(/Adjust the settings below/);
+
+      within(popup()).getByText(/Applying the configuration implies allocating/);
+      expect(within(popup()).queryByText(/boot partition/)).not.toBeInTheDocument();
     });
+  });
+
+  it("suggests what to adjust, ending with the partitions and their sizes", async () => {
+    await renderOpen();
+
+    within(popup()).getByText("Consider adjusting one or several of the following aspects.");
+    const items = within(popup())
+      .getAllByRole("listitem")
+      .map((item) => item.textContent);
+    expect(items).toEqual([
+      "Changing the way the partitions are distributed on the different disks.",
+      "Changing the partitions or adjusting its size limits.",
+    ]);
   });
 });
