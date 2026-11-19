@@ -27,7 +27,7 @@ import { sprintf } from "sprintf-js";
 import Link from "~/components/core/Link";
 import Text from "~/components/core/Text";
 import MenuButton, { MenuButtonItem } from "~/components/core/MenuButton";
-import RowMenuToggle from "~/components/storage/entries-table/RowMenuToggle";
+import RowMenuToggle from "~/components/core/RowMenuToggle";
 import MoveToOtherDevice from "~/components/storage/device-details/MoveToOtherDevice";
 import SummaryWithActions from "~/components/storage/device-details/SummaryWithActions";
 import { filesystemType, partitionIdLabel, sizeDescription } from "~/components/storage/utils";

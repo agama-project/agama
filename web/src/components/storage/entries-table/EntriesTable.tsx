@@ -27,7 +27,6 @@ import TableGroup from "~/components/core/TableGroup";
 import { columnName } from "~/components/storage/entries-table/columns";
 import DriveRow from "~/components/storage/entries-table/DriveRow";
 import VolumeGroupRow from "~/components/storage/entries-table/VolumeGroupRow";
-import { baseName } from "~/components/storage/utils";
 import { useConfigModel } from "~/hooks/model/storage/config-model";
 import { useScrollsSideways } from "~/hooks/use-scrolls-sideways";
 import { _, n_ } from "~/i18n";
@@ -40,19 +39,13 @@ import type {
 } from "~/components/storage/shared/use-device-details";
 
 /**
- * The order of the rows until sorted by device, which is the one the
- * configuration is built in: from what is defined down to the hardware it is
- * defined on.
+ * The order of the groups, which is the one the configuration is built in:
+ * from what is defined down to the hardware it is defined on.
  */
 const TYPE_ORDER: DetailsCollection[] = ["volumeGroups", "mdRaids", "drives"];
 
-/** The sortable column, by its position in the header. */
-const DEVICE_COLUMN = 0;
-
 type Row = {
   subject: DetailsSubject;
-  /** What the device column shows and sorts by. */
-  name: string;
   /** Set for a volume group, whose row reads the group itself. */
   group?: ConfigModel.VolumeGroup;
   /** Set for a disk or a RAID, as the model spells its name. */
@@ -62,13 +55,11 @@ type Row = {
 function rowsOf(config: ConfigModel.Config | null): Row[] {
   const groups: Row[] = (config?.volumeGroups || []).map((group, index) => ({
     subject: { collection: "volumeGroups", index },
-    name: group.vgName,
     group,
   }));
   const partitionables = (collection: "mdRaids" | "drives"): Row[] =>
     (config?.[collection] || []).map((device, index) => ({
       subject: { collection, index },
-      name: baseName(device.name),
       deviceName: device.name,
     }));
 
@@ -93,16 +84,6 @@ function groupTitle(collection: DetailsCollection, count: number): TranslatedStr
   }
 }
 
-function compareRows(column: number, a: Row, b: Row): number {
-  if (column === DEVICE_COLUMN) {
-    return a.name.localeCompare(b.name, undefined, { numeric: true });
-  }
-
-  const byType =
-    TYPE_ORDER.indexOf(a.subject.collection) - TYPE_ORDER.indexOf(b.subject.collection);
-  return byType || a.subject.index - b.subject.index;
-}
-
 export type EntriesTableProps = {
   /** The level of the headings naming each group of rows. */
   groupHeadingLevel?: TitleProps["headingLevel"];
@@ -113,8 +94,7 @@ export type EntriesTableProps = {
  *
  * A regular table, one row per entry, with the columns named in its header:
  * the device, what the new system uses it for, what happens to its existing
- * data, and the menu of actions. It starts in the configuration's order and can
- * be sorted by device name.
+ * data, and the menu of actions. The rows follow the configuration's order.
  *
  * Two of PatternFly's defaults are turned off:
  *
@@ -136,23 +116,15 @@ export default function EntriesTable({ groupHeadingLevel }: EntriesTableProps): 
   const captionId = useId();
   const [box, setBox] = useState<HTMLDivElement | null>(null);
   const scrolls = useScrollsSideways(box);
-  /* Unsorted until a header is used. */
-  const sortBy = null;
 
   const rows = rowsOf(config);
   if (!rows.length) return null;
-
-  const sorted = [...rows].sort((a, b) => {
-    if (!sortBy) return compareRows(-1, a, b);
-    const order = compareRows(sortBy.index, a, b);
-    return sortBy.direction === "asc" ? order : -order;
-  });
 
   /* One group per kind, in the configuration's order, titled only when there
      is more than one kind. */
   const groups = TYPE_ORDER.map((collection) => ({
     collection,
-    rows: sorted.filter((row) => row.subject.collection === collection),
+    rows: rows.filter((row) => row.subject.collection === collection),
   })).filter(({ rows }) => rows.length > 0);
   const isGrouped = groups.length > 1;
 
