@@ -159,6 +159,10 @@ export default function EntriesTable({ groupHeadingLevel }: EntriesTableProps): 
   const columnCount = 4;
 
   return (
+    /* Keep this wrapper, and its class here rather than on the table: it lets
+       the table scroll sideways on narrow screens. A table cannot scroll by
+       itself, and making it scroll would break how some screen readers read
+       it. */
     <div className="agm-entries-table">
       <Table
         role="table"
