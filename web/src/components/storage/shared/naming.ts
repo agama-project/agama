@@ -40,12 +40,6 @@
  * with this number on how many there are, and nothing makes them agree: raise
  * it past what the sentence has room for and the rest of the names are dropped
  * without a mark.
- *
- * `ConfigurationTitle` is the one place still written that way, because its
- * names are links rather than text and the list has to be punctuated around
- * them. It is safe, since it asks for one name or two by number and counts
- * anything else, but raising this past two leaves it counting while the rows
- * name. See `storage-main-page-naming-decision` in the notes.
  */
 const NAMES_PER_LINE = 2;
 
