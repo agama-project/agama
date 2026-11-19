@@ -1,4 +1,4 @@
-# Copyright (c) [2015] SUSE LLC
+# Copyright (c) [2015, 2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -17,6 +17,7 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "pathname"
 require "y2storage/boot_requirements_strategies/base"
 require "y2storage/partition_id"
 require "y2storage/filesystems/type"
@@ -34,6 +35,7 @@ module Y2Storage
 
       # @see Base#needed_partitions
       def needed_partitions(target)
+        assign_configured_boot_ids
         planned_partitions = super
         planned_partitions << efi_partition(target) if efi_missing?
         planned_partitions
@@ -97,6 +99,45 @@ module Y2Storage
 
       def efi_missing?
         free_mountpoint?("/boot/efi")
+      end
+
+      # Ids to be assigned to the partitions that are already planned for a boot mount point but
+      # that do not indicate a partition id
+      #
+      # An explicit partition id is never replaced.
+      #
+      # @return [Hash{String => PartitionId}] partition id for each mount point
+      def configured_boot_ids
+        { "/boot/efi" => PartitionId::ESP }
+      end
+
+      # Sets the partition id of the planned partitions mounted at a boot mount point and without
+      # partition id, see {#configured_boot_ids}.
+      #
+      # Nothing is done unless it is explicitly enabled, see {#assign_boot_ids?}. Reused partitions
+      # are ignored because their id does not change.
+      #
+      # This must be done before checking which boot partitions are missing because some of those
+      # checks rely on the partition id. The method is idempotent.
+      def assign_configured_boot_ids
+        return unless assign_boot_ids?
+
+        configured_boot_ids.each do |path, id|
+          planned_partitions_at(path).each { |planned| planned.partition_id ||= id }
+        end
+      end
+
+      # Planned partitions (not reused) to be mounted at the given path
+      #
+      # @param path [String]
+      # @return [Array<Planned::Partition>]
+      def planned_partitions_at(path)
+        cleanpath = Pathname.new(path).cleanpath
+
+        analyzer.planned_devices.select do |dev|
+          dev.is_a?(Planned::Partition) && !dev.reuse? && dev.mount_point &&
+            Pathname.new(dev.mount_point).cleanpath == cleanpath
+        end
       end
 
       # Whether the devicegraph contains a partition mounted at /boot/efi and

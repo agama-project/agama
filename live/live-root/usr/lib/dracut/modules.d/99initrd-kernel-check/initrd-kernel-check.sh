@@ -18,7 +18,7 @@ log="${LOG_FILE:-/run/initrd-kernel-check.log}"
 # print the value of the specified key from the specified os-release file,
 # the file is parsed, not sourced, to avoid executing any code from it
 get_os_value() {
-  sed -n -e "s/^$1=//p" "$2" 2>/dev/null | tail -n 1 | sed -e 's/^"\(.*\)"$/\1/' -e "s/^'\(.*\)'\$/\1/"
+  sed -n -e "s/^$1=//p" "$2" 2> /dev/null | tail -n 1 | sed -e 's/^"\(.*\)"$/\1/' -e "s/^'\(.*\)'\$/\1/"
 }
 
 # the output goes to the system console (see the service file) and to the                  log file

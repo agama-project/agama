@@ -1,4 +1,4 @@
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024, 2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -30,6 +30,7 @@ module Y2Storage
 
       # No extra /boot partition which is needed by grub2 only
       def needed_partitions(target)
+        assign_configured_boot_ids
         planned_partitions = []
         planned_partitions << efi_partition(target) if efi_missing?
         planned_partitions

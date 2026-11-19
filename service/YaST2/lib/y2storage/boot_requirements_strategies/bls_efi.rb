@@ -35,6 +35,7 @@ module Y2Storage
 
       # @see Base#needed_partitions
       def needed_partitions(target)
+        assign_configured_boot_ids
         planned_partitions = []
         planned_partitions << esp_partition(target) unless esp_configured?
         if !boot_configured? && xbootldr_needed?(planned_partitions)
@@ -72,12 +73,73 @@ module Y2Storage
 
       protected
 
+      # Ids to be assigned to the planned partitions without partition id that are mounted at
+      # a boot mount point, except for /boot (see {#assign_configured_boot_ids}).
+      #
+      # @see UEFI#configured_boot_ids
+      #
+      # @return [Hash{String => PartitionId}]
+      def configured_boot_ids
+        { "/boot/efi" => PartitionId::ESP, "/efi" => PartitionId::ESP }
+      end
+
+      # Sets the partition id of the planned partitions mounted at a boot mount point and without
+      # partition id.
+      #
+      # In addition to the ids set by the superclass, a partition mounted at /boot gets the id that
+      # the partition would have if it was automatically proposed, see {#boot_partition_id}.
+      #
+      # @see UEFI#assign_configured_boot_ids
+      def assign_configured_boot_ids
+        return unless assign_boot_ids?
+
+        super
+        planned_partitions_at("/boot").each do |planned|
+          planned.partition_id ||= boot_partition_id
+        end
+      end
+
+      # Id for a planned partition mounted at /boot
+      #
+      # It follows the logic used to propose the boot partitions:
+      #
+      # * If there is an ESP at /efi, the partition is an XBOOTLDR partition.
+      # * If there is an ESP at /boot/efi, no specific id is returned (the partition keeps the
+      #   default one). Mounting the ESP at /boot/efi indicates a legacy setup without XBOOTLDR.
+      # * Otherwise (no ESP at /efi or /boot/efi), the partition is the ESP.
+      #
+      # @return [PartitionId, nil]
+      def boot_partition_id
+        return PartitionId::XBOOTLDR unless free_mountpoint?("/efi")
+        return nil unless free_mountpoint?("/boot/efi")
+
+        PartitionId::ESP
+      end
+
+      # Whether there is something mounted at /efi or /boot/efi
+      #
+      # @return [Boolean]
+      def esp_mount_point_configured?
+        !free_mountpoint?("/efi") || !free_mountpoint?("/boot/efi")
+      end
+
       # Whether the ESP partition is already part of the initial configuration
+      #
+      # If the ids of the boot partitions are assigned (see {#assign_boot_ids?}), the partitions
+      # configured for /efi and /boot/efi are considered to be the ESP regardless of their
+      # partition id. The user is free to decide the id of a boot partition, no extra ESP is
+      # proposed (and no duplicated mount point is generated). Otherwise, only the partitions with
+      # the ESP id are considered.
+      #
+      # A partition configured for /boot is only considered to be the ESP if it has the ESP id
+      # (explicit or assigned, see {#boot_partition_id}), otherwise an ESP is still needed.
       #
       # @return [Boolean]
       def esp_configured?
-        # The mount point could be /boot, /efi or /boot/efi. Just check for any mount point.
-        !!(configured_esp_planned_partition || configured_esp_partition)
+        return true if configured_esp_planned_partition || configured_esp_partition
+        return false unless assign_boot_ids?
+
+        esp_mount_point_configured?
       end
 
       # Partition from the devicegraph configured to be used as ESP, if any

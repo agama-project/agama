@@ -27,7 +27,7 @@ if ! $MYDIR/setup-web.sh; then
   echo "Agama web client is NOT running."
 
   exit 3
-fi;
+fi
 
 # Services setup
 if ! $MYDIR/setup-services.sh; then
@@ -35,7 +35,7 @@ if ! $MYDIR/setup-services.sh; then
   echo "Agama services are NOT running."
 
   exit 2
-fi;
+fi
 
 # Start the installer.
 echo

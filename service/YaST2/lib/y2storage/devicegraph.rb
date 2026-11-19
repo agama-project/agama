@@ -621,25 +621,6 @@ module Y2Storage
       list
     end
 
-    # List of required (mandatory) storage features used by the devicegraph
-    #
-    # @return [StorageFeaturesList]
-    def required_used_features
-      used_features(required_only: true)
-    end
-
-    # List of optional storage features used by the devicegraph
-    #
-    # @return [StorageFeaturesList]
-    def optional_used_features
-      all = storage_used_features(Storage::UsedFeaturesDependencyType_SUGGESTED)
-      required = storage_used_features(Storage::UsedFeaturesDependencyType_REQUIRED)
-      # Using binary XOR in those bit fields to calculate the difference
-      list = StorageFeaturesList.from_bitfield(all ^ required)
-      list.concat(yast_commit_features)
-      list
-    end
-
     # List of features that correspond to aspects handled by Y2Storage (not coming
     # from libstorage-ng) and that need to be present in the target system either during
     # the storage commit phase or at a later stage. Ie. features needed in the target

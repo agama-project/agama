@@ -17,7 +17,7 @@ fi
 
 read -r cmdline < /proc/cmdline
 case "$cmdline" in
-  *inst.info=*|*agama.info=*)
+  *inst.info=* | *agama.info=*)
     mkdir -p "$normal_dir/multi-user.target.wants"
     ln -sf /etc/systemd/system/agama-info-cmdline.service "$normal_dir/multi-user.target.wants/agama-info-cmdline.service"
     ;;

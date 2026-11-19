@@ -1,7 +1,7 @@
 #!/usr/bin/env rspec
 # frozen_string_literal: true
 
-# Copyright (c) [2017-2019] SUSE LLC
+# Copyright (c) [2017-2019, 2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -180,6 +180,22 @@ describe Y2Storage::Proposal::AutoinstSpaceMaker do
           an_object_having_attributes(name: "/dev/sda1"),
           an_object_having_attributes(name: "/dev/sda2")
         )
+      end
+
+      context "and a partition has an id from the Discoverable Partitions Specification" do
+        let(:scenario) { "windows-pc-gpt" }
+
+        before do
+          fake_devicegraph.find_by_name("/dev/sda1").id = Y2Storage::PartitionId::LINUX_ROOT_X86_64
+        end
+
+        # Partitions with DPS ids are considered Linux partitions (see PartitionId::LINUX_SYSTEM_IDS)
+        it "removes that partition" do
+          devicegraph = subject.cleaned_devicegraph(fake_devicegraph, drives_map, planned_devices)
+          expect(devicegraph.partitions).to contain_exactly(
+            an_object_having_attributes(name: "/dev/sda2")
+          )
+        end
       end
 
       context "and a partition will be reused" do

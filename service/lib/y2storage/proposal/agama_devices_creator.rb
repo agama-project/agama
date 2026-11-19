@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2017-2025] SUSE LLC
+# Copyright (c) [2017-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -22,7 +22,8 @@
 require "y2storage/exceptions"
 require "y2storage/proposal/lvm_creator"
 require "y2storage/proposal/agama_md_creator"
-require "y2storage/proposal/partition_creator"
+require "y2storage/proposal/agama_partition_creator"
+require "y2storage/proposal/discoverable_encryption_name"
 
 module Y2Storage
   module Proposal
@@ -115,7 +116,27 @@ module Y2Storage
         # proposals. Let's re-evaluate over time.
         devicegraph.mount_points.each(&:adjust_mount_options)
 
+        assign_discoverable_encryption_names
+
         creator_result
+      end
+
+      # Sets the device mapper names defined by the Discoverable Partitions Specification
+      #
+      # Only the encryptions created by the proposal are considered. The names are assigned once all
+      # the devices are created because the automatic names are recalculated when the devicegraph
+      # changes (e.g., when a mount point is set).
+      #
+      # @see DiscoverableEncryptionName
+      # @see #process_devices
+      def assign_discoverable_encryption_names
+        names = DiscoverableEncryptionName.new
+
+        new_encryptions = devicegraph.encryptions.reject { |e| original_graph.find_device(e.sid) }
+        new_encryptions.each do |encryption|
+          name = names.for(encryption)
+          encryption.dm_table_name = name if name
+        end
       end
 
       # @see #process_devices
@@ -138,7 +159,7 @@ module Y2Storage
         distribution = space_result[:partitions_distribution]
 
         grow_and_reuse_devices(distribution)
-        self.creator_result = PartitionCreator.new(devicegraph).create_partitions(distribution)
+        self.creator_result = AgamaPartitionCreator.new(devicegraph).create_partitions(distribution)
       end
 
       # @see #process_devices
@@ -167,7 +188,7 @@ module Y2Storage
           raise NoDiskSpaceError, "Partitions cannot be allocated into #{devices.map(&:name)}"
         end
 
-        new_result = PartitionCreator.new(devicegraph).create_partitions(distribution)
+        new_result = AgamaPartitionCreator.new(devicegraph).create_partitions(distribution)
         self.creator_result = creator_result.merge(new_result)
       end
 

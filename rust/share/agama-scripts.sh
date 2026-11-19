@@ -27,13 +27,13 @@
 systemctl disable agama-scripts.service
 
 if [ ! -d "$SCRIPTS_DIR" ]; then
-    exit 0
+  exit 0
 fi
 
 SCRIPTS=$(find "$SCRIPTS_DIR" -maxdepth 1 -type f | sort)
 
 if [ -z "$SCRIPTS" ]; then
-    exit 0
+  exit 0
 fi
 
 LOG_DIR="$SCRIPTS_DIR/log"
@@ -42,6 +42,6 @@ mkdir -p "$LOG_DIR"
 IFS='
 '
 for script in $SCRIPTS; do
-    BASENAME=$(basename "$script")
-    ./"$script" > "$LOG_DIR/$BASENAME.log" 2>&1
+  BASENAME=$(basename "$script")
+  ./"$script" > "$LOG_DIR/$BASENAME.log" 2>&1
 done

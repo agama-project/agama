@@ -1,4 +1,4 @@
-# Copyright (c) [2015] SUSE LLC
+# Copyright (c) [2015, 2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -200,7 +200,7 @@ module Y2Storage
         region = new_region_with_size(free_space.region, planned_partition.size)
 
         partition = ptable.create_partition(slot.name, region, type)
-        partition.adapted_id = partition_id(planned_partition)
+        partition.adapted_id = partition_id(planned_partition, ptable)
         partition.boot = !!planned_partition.bootable if ptable.partition_boot_flag_supported?
         partition
       end
@@ -234,18 +234,23 @@ module Y2Storage
       # Returns the partition id that should be used for a new partition in
       # a specific partition table.
       #
+      # This method is a hook for subclasses that need to decide the id taking into account the
+      # partition table or other aspects of the planned partition.
+      #
       # @param planned_partition [Planned::Partition]
+      # @param _ptable [PartitionTables::Base] partition table in which the partition is created
       #
       # @return [PartitionId]
-      def partition_id(planned_partition)
-        partition_id = planned_partition.partition_id
-        return partition_id if partition_id
+      def partition_id(planned_partition, _ptable)
+        planned_partition.partition_id || default_partition_id(planned_partition)
+      end
 
-        if planned_partition.mount_point == "swap"
-          PartitionId::SWAP
-        else
-          PartitionId::LINUX
-        end
+      # Partition id to use if the id is not explicitly planned
+      #
+      # @param planned_partition [Planned::Partition]
+      # @return [PartitionId]
+      def default_partition_id(planned_partition)
+        (planned_partition.mount_point == "swap") ? PartitionId::SWAP : PartitionId::LINUX
       end
     end
   end

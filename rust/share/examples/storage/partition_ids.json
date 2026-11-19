@@ -1,0 +1,29 @@
+{
+  "storage": {
+    "drives": [
+      {
+        "ptableType": "gpt",
+        "partitions": [
+          {
+            "id": "esp",
+            "size": "512 MiB",
+            "filesystem": { "path": "/efi" }
+          },
+          {
+            "id": "xbootldr",
+            "size": "1 GiB",
+            "filesystem": { "path": "/boot" }
+          },
+          {
+            "search": { "condition": { "id": "linux_var" } },
+            "filesystem": { "path": "/var" }
+          },
+          {
+            "search": { "condition": { "id": "linux_root_x86_64" } },
+            "filesystem": { "path": "/" }
+          }
+        ]
+      }
+    ]
+  }
+}

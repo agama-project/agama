@@ -49,4 +49,4 @@ find . \
   -o \
   -name '*.rs' \
   -print |
-call_xgettext
+  call_xgettext

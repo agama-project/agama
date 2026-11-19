@@ -255,7 +255,9 @@ module Yast
       #
 
       @arch = Arch.architecture
-      @karch = Ops.get(Kernel.GetPackages, 0, "kernel-default")
+      # Not needed anymore. Use "kernel-default" to avoid dropping this ATTR (for compatibility
+      # reasons).
+      @karch = ["kernel-default"]
 
       Ops.set(@ATTR, "arch", @arch)
       Ops.set(@ATTR, "karch", @karch)
