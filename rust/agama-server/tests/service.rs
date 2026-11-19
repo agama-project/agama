@@ -75,8 +75,7 @@ async fn test_cors_header() -> Result<(), Box<dyn Error>> {
     // successful response
     let request = Request::builder()
         .uri("/api/ping")
-        .body(Body::empty())
-        .unwrap();
+        .body(Body::empty())?;
     let response = web_service.clone().oneshot(request).await.unwrap();
     assert_eq!(response.status(), StatusCode::OK);
     assert_eq!(response.headers()["access-control-allow-origin"], "*");
