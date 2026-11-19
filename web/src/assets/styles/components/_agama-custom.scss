@@ -489,10 +489,11 @@ nav.agm-breadcrumb > ol > li > a {
 }
 
 // Opening the panel moves the reader into it, and a panel that takes focus
-// without showing where it went leaves a keyboard reader guessing.
+// without showing where it went leaves a keyboard reader guessing. Same ring
+// as every other focused element, drawn inside: the frame clips the outside.
 .agm-side-panel:focus-visible {
-  outline: 2px solid var(--pf-t--global--border--color--brand--default);
-  outline-offset: -2px;
+  outline: 3px solid var(--agm-t--focus--color, var(--agm-t--color--waterhole--50));
+  outline-offset: -3px;
 }
 
 .agm-side-panel__head {
