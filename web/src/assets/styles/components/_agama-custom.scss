@@ -593,10 +593,11 @@ nav.agm-breadcrumb > ol > li > a {
 
 // While it scrolls, the box is a Tab stop of its own (EntriesTable), and a
 // stop that does not show it has been reached leaves the reader guessing why
-// the arrow keys now move the table.
+// the arrow keys now move the table. Same ring as the side panel's, drawn
+// inside for the same reason.
 .agm-entries-table:focus-visible {
-  outline: 2px solid var(--pf-t--global--border--color--brand--default);
-  outline-offset: -2px;
+  outline: 3px solid var(--agm-t--focus--color, var(--agm-t--color--waterhole--50));
+  outline-offset: -3px;
 }
 
 // One table, so its columns line up across categories by themselves and take
