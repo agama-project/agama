@@ -26,6 +26,25 @@ Image type:    $kiwi_type
 Source URL:    %SOURCEURL%
 EOF
 
+# create MOTD
+mkdir -p /etc/motd.d
+# the default documentation URL
+DOC_URL="https://agama-project.github.io"
+
+# read os-release in a subshell to avoid polluting the environment
+if [ "$(. /etc/os-release && echo "$ID")" = "sles" ]; then
+  # in SLES use the documentation URL from the os-release file if present
+  DOC_URL=$(. /etc/os-release && echo "${DOCUMENTATION_URL:-$DOC_URL}")
+fi
+cat << EOF > /etc/motd.d/40-agama
+
+Welcome to Agama installer!
+To interact with the installer use the "agama" command,
+see more details with "agama --help", or check the documentation at
+$DOC_URL
+
+EOF
+
 # for reproducible builds:
 echo -n > /var/log/alternatives.log
 sed -i 's/# AutoInstalled generated.*/# AutoInstalled generated in kiwi reproducible build/' /var/lib/zypp/AutoInstalled # drop timestamp
