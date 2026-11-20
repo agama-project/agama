@@ -24,7 +24,8 @@ import React from "react";
 import { screen, within } from "@testing-library/react";
 import { installerRender, mockNavigateFn } from "~/test-utils";
 import type { ConfigModel } from "~/model/storage/config-model";
-import TopLine from "~/components/storage/storage-page/TopLine";
+import type { Issue } from "~/model/issue";
+import TopLine, { TopResult } from "~/components/storage/storage-page/TopLine";
 
 const mockConfig = jest.fn();
 const mockReset = jest.fn();
@@ -38,6 +39,32 @@ jest.mock("~/hooks/model/config/storage", () => ({
   ...jest.requireActual("~/hooks/model/config/storage"),
   useReset: () => mockReset,
 }));
+
+const mockProposal = jest.fn();
+const mockIssues = jest.fn();
+
+jest.mock("~/hooks/model/proposal/storage", () => ({
+  ...jest.requireActual("~/hooks/model/proposal/storage"),
+  useProposal: () => mockProposal(),
+}));
+
+jest.mock("~/hooks/model/issue", () => ({
+  ...jest.requireActual("~/hooks/model/issue"),
+  useIssues: () => mockIssues(),
+}));
+
+jest.mock("~/components/storage/storage-page/Summary", () => () => <p>the summary</p>);
+jest.mock("~/components/storage/ProposalFailedInfo", () => ({
+  __esModule: true,
+  default: () => <p>the layout failed</p>,
+  proposalFailedTitle: () => "failed",
+}));
+
+const issue = (klass: string, description = klass): Issue => ({
+  class: klass,
+  description,
+  scope: "storage",
+});
 
 const config = (values: Partial<ConfigModel.Config> = {}): ConfigModel.Config => ({
   drives: [{ name: "/dev/sda" }],
@@ -134,5 +161,45 @@ describe("TopLine", () => {
 
       expect(mockReset).toHaveBeenCalled();
     });
+  });
+});
+
+describe("TopResult", () => {
+  beforeEach(() => {
+    mockProposal.mockReturnValue(null);
+    mockIssues.mockReturnValue([]);
+  });
+
+  it("summarizes the planned changes when there is a layout", () => {
+    mockProposal.mockReturnValue({ actions: [] });
+    installerRender(<TopResult />);
+
+    screen.getByText("the summary");
+  });
+
+  it("lists in a popup what to fix when there are issues the configuration can be fixed with", async () => {
+    mockIssues.mockReturnValue([
+      issue("configNoRoot", "No root"),
+      issue("configMissingPaths", "No swap"),
+      issue("proposal"),
+    ]);
+    const { user } = installerRender(<TopResult />);
+
+    screen.getByText("The configuration is not valid to install the system");
+    expect(screen.queryByText("the layout failed")).toBeNull();
+    await user.click(screen.getByRole("button", { name: "Show issues…" }));
+    const popup = screen.getByRole("dialog", { name: "Invalid storage configuration" });
+    const items = within(popup)
+      .getAllByRole("listitem")
+      .map((item) => item.textContent);
+    expect(items).toEqual(["No root", "No swap"]);
+  });
+
+  it("says the layout failed when that is the only problem", () => {
+    mockIssues.mockReturnValue([issue("proposal")]);
+    installerRender(<TopResult />);
+
+    screen.getByText("the layout failed");
+    expect(screen.queryByRole("button", { name: "Show issues…" })).toBeNull();
   });
 });
