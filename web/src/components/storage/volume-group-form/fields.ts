@@ -1,0 +1,61 @@
+/*
+ * Copyright (c) [2026] SUSE LLC
+ *
+ * All Rights Reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of version 2 of the GNU General Public License as published
+ * by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, contact SUSE LLC.
+ *
+ * To contact SUSE LLC about this file by physical or electronic mail, you may
+ * find current contact information at www.suse.com.
+ */
+
+import { formOptions } from "@tanstack/react-form";
+
+/** Form field types */
+
+type VolumeGroupNameFields = {
+  /** Name of the volume group (e.g., "system"). */
+  vgName: string;
+};
+
+type TargetDevicesFields = {
+  /**
+   * Names of the devices (drives and MD RAIDs) where the physical volumes of
+   * the volume group are created (e.g., ["/dev/sda", "/dev/sdb"]).
+   */
+  targetDevices: string[];
+};
+
+type MoveMountPointsFields = {
+  /**
+   * Whether the mount points currently configured at the target devices are
+   * moved to logical volumes of the volume group.
+   *
+   * Only used, and only rendered, when creating a new volume group.
+   */
+  moveMountPoints: boolean;
+};
+
+export type FormFields = VolumeGroupNameFields & TargetDevicesFields & MoveMountPointsFields;
+
+export type { VolumeGroupNameFields, TargetDevicesFields };
+
+/** Default values */
+
+const defaultValues: FormFields = {
+  vgName: "",
+  targetDevices: [],
+  moveMountPoints: true,
+};
+
+export const defaultOptions = formOptions({ defaultValues });

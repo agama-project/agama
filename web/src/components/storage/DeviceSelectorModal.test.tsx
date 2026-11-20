@@ -133,6 +133,111 @@ describe("DeviceSelectorModal", () => {
     screen.getByText(/Use the tabs to browse/);
   });
 
+  describe("tabs", () => {
+    it("does not render the tabs left out", () => {
+      installerRender(
+        <DeviceSelectorModal
+          tabs={["disks", "volumeGroups"]}
+          disks={[sda]}
+          mdRaids={[md0]}
+          volumeGroups={[vg0]}
+          title="Select"
+          onCancel={onCancelMock}
+          onConfirm={onConfirmMock}
+        />,
+      );
+      screen.getByRole("tab", { name: "Disks" });
+      screen.getByRole("tab", { name: "LVM" });
+      expect(screen.queryByRole("tab", { name: "RAID" })).not.toBeInTheDocument();
+      screen.getByText("Use the tabs to browse the available devices.");
+    });
+
+    it("renders the tabs in the same order whatever the order they are given in", () => {
+      installerRender(
+        <DeviceSelectorModal
+          tabs={["volumeGroups", "mdRaids", "disks"]}
+          disks={[sda]}
+          mdRaids={[md0]}
+          volumeGroups={[vg0]}
+          title="Select"
+          onCancel={onCancelMock}
+          onConfirm={onConfirmMock}
+        />,
+      );
+      expect(screen.getAllByRole("tab").map((tab) => tab.textContent)).toEqual([
+        "Disks",
+        "RAID",
+        "LVM",
+      ]);
+    });
+
+    it("renders the only tab left as content, with no tab bar", () => {
+      installerRender(
+        <DeviceSelectorModal
+          tabs={["disks"]}
+          disks={[sda, sdb]}
+          mdRaids={[md0]}
+          title="Select"
+          onCancel={onCancelMock}
+          onConfirm={onConfirmMock}
+        />,
+      );
+      expect(screen.queryByRole("tablist")).not.toBeInTheDocument();
+      expect(screen.queryByText(/Use the tabs to browse/)).not.toBeInTheDocument();
+      screen.getByRole("row", { name: /sda/ });
+      expect(screen.queryByRole("row", { name: /md0/ })).not.toBeInTheDocument();
+    });
+
+    it("ignores an initial tab that is not rendered", () => {
+      installerRender(
+        <DeviceSelectorModal
+          tabs={["disks", "volumeGroups"]}
+          initialTab="mdRaids"
+          disks={[sda]}
+          mdRaids={[md0]}
+          volumeGroups={[vg0]}
+          title="Select"
+          onCancel={onCancelMock}
+          onConfirm={onConfirmMock}
+        />,
+      );
+      expect(screen.getByRole("tab", { name: "Disks" })).toHaveAttribute("aria-selected", "true");
+    });
+
+    it("selects the first device of the rendered tabs when none is given", () => {
+      installerRender(
+        <DeviceSelectorModal
+          tabs={["volumeGroups"]}
+          disks={[sda]}
+          volumeGroups={[vg0]}
+          title="Select"
+          onCancel={onCancelMock}
+          onConfirm={onConfirmMock}
+        />,
+      );
+      screen.getByRole("button", { name: /Add vg0/ });
+    });
+
+    it("shows the side effects of the tab of the device picked, once the tab is rendered", async () => {
+      const { user } = installerRender(
+        <DeviceSelectorModal
+          tabs={["disks", "volumeGroups"]}
+          disks={[sda]}
+          volumeGroups={[vg0]}
+          selected={sda}
+          sideEffects={{ volumeGroups: "The volume group will be used." }}
+          title="Select"
+          onCancel={onCancelMock}
+          onConfirm={onConfirmMock}
+        />,
+      );
+      expect(screen.queryByText("The volume group will be used.")).not.toBeInTheDocument();
+      // Switching to the LVM tab picks its first device, which is not the given one.
+      await user.click(screen.getByRole("tab", { name: "LVM" }));
+      screen.getByText("The volume group will be used.");
+    });
+  });
+
   it("renders the intro content above the tabs", () => {
     installerRender(
       <DeviceSelectorModal
@@ -556,6 +661,211 @@ describe("DeviceSelectorModal", () => {
       await user.click(screen.getByRole("tab", { name: "LVM" }));
       screen.getByText("Choose a volume group");
       screen.getByRole("link", { name: "Create new VG" });
+    });
+  });
+
+  describe("selectionMode multiple", () => {
+    const rowCheckbox = (name: RegExp) =>
+      within(screen.getByRole("row", { name })).getByRole("checkbox");
+
+    beforeEach(() => {
+      onConfirmMock.mockClear();
+    });
+
+    it("lets the user pick devices with checkboxes", () => {
+      installerRender(
+        <DeviceSelectorModal
+          selectionMode="multiple"
+          disks={[sda, sdb]}
+          title="Select devices"
+          onCancel={onCancelMock}
+          onConfirm={onConfirmMock}
+        />,
+      );
+      expect(screen.queryAllByRole("radio")).toHaveLength(0);
+      expect(screen.getAllByRole("checkbox")).toHaveLength(2);
+    });
+
+    it("does not select any device on the user's behalf", () => {
+      installerRender(
+        <DeviceSelectorModal
+          selectionMode="multiple"
+          disks={[sda, sdb]}
+          title="Select devices"
+          onCancel={onCancelMock}
+          onConfirm={onConfirmMock}
+        />,
+      );
+      expect(rowCheckbox(/sda/)).not.toBeChecked();
+      expect(rowCheckbox(/sdb/)).not.toBeChecked();
+    });
+
+    it("starts with the given devices selected", () => {
+      installerRender(
+        <DeviceSelectorModal
+          selectionMode="multiple"
+          disks={[sda, sdb]}
+          selected={[sdb]}
+          title="Select devices"
+          onCancel={onCancelMock}
+          onConfirm={onConfirmMock}
+        />,
+      );
+      expect(rowCheckbox(/sda/)).not.toBeChecked();
+      expect(rowCheckbox(/sdb/)).toBeChecked();
+    });
+
+    it("opens the tab of the first given device", () => {
+      installerRender(
+        <DeviceSelectorModal
+          selectionMode="multiple"
+          disks={[sda]}
+          mdRaids={[md0]}
+          selected={[md0, sda]}
+          title="Select devices"
+          onCancel={onCancelMock}
+          onConfirm={onConfirmMock}
+        />,
+      );
+      expect(screen.getByRole("tab", { name: "RAID" })).toHaveAttribute("aria-selected", "true");
+    });
+
+    it("confirms the picked devices", async () => {
+      const { user } = installerRender(
+        <DeviceSelectorModal
+          selectionMode="multiple"
+          disks={[sda, sdb]}
+          title="Select devices"
+          onCancel={onCancelMock}
+          onConfirm={onConfirmMock}
+        />,
+      );
+      await user.click(rowCheckbox(/sdb/));
+      await user.click(rowCheckbox(/sda/));
+      await user.click(screen.getByRole("button", { name: "Accept" }));
+      expect(onConfirmMock).toHaveBeenCalledWith([sdb, sda]);
+    });
+
+    it("lets the user unselect a device", async () => {
+      const { user } = installerRender(
+        <DeviceSelectorModal
+          selectionMode="multiple"
+          disks={[sda, sdb]}
+          selected={[sda, sdb]}
+          title="Select devices"
+          onCancel={onCancelMock}
+          onConfirm={onConfirmMock}
+        />,
+      );
+      await user.click(rowCheckbox(/sda/));
+      await user.click(screen.getByRole("button", { name: "Accept" }));
+      expect(onConfirmMock).toHaveBeenCalledWith([sdb]);
+    });
+
+    it("keeps the selection when switching tabs, and confirms devices of every tab", async () => {
+      const { user } = installerRender(
+        <DeviceSelectorModal
+          selectionMode="multiple"
+          disks={[sda]}
+          mdRaids={[md0]}
+          title="Select devices"
+          onCancel={onCancelMock}
+          onConfirm={onConfirmMock}
+        />,
+      );
+      await user.click(rowCheckbox(/sda/));
+      await user.click(screen.getByRole("tab", { name: "RAID" }));
+      // Nothing is selected in the new tab on the user's behalf either
+      expect(rowCheckbox(/md0/)).not.toBeChecked();
+      await user.click(rowCheckbox(/md0/));
+      await user.click(screen.getByRole("tab", { name: "Disks" }));
+      expect(rowCheckbox(/sda/)).toBeChecked();
+      await user.click(screen.getByRole("button", { name: "Accept" }));
+      expect(onConfirmMock).toHaveBeenCalledWith([sda, md0]);
+    });
+
+    it("lets the user pick devices of the tabs rendered, leaving the others out", async () => {
+      const { user } = installerRender(
+        <DeviceSelectorModal
+          selectionMode="multiple"
+          tabs={["disks", "mdRaids"]}
+          disks={[sda]}
+          mdRaids={[md0]}
+          volumeGroups={[vg0]}
+          title="Select devices"
+          onCancel={onCancelMock}
+          onConfirm={onConfirmMock}
+        />,
+      );
+      expect(screen.queryByRole("tab", { name: "LVM" })).not.toBeInTheDocument();
+      await user.click(rowCheckbox(/sda/));
+      await user.click(screen.getByRole("tab", { name: "RAID" }));
+      await user.click(rowCheckbox(/md0/));
+      await user.click(screen.getByRole("button", { name: "Accept" }));
+      expect(onConfirmMock).toHaveBeenCalledWith([sda, md0]);
+    });
+
+    it("lets the user pick devices when a single tab is left, with no tab bar", async () => {
+      const { user } = installerRender(
+        <DeviceSelectorModal
+          selectionMode="multiple"
+          tabs={["disks"]}
+          disks={[sda, sdb]}
+          mdRaids={[md0]}
+          title="Select devices"
+          onCancel={onCancelMock}
+          onConfirm={onConfirmMock}
+        />,
+      );
+      expect(screen.queryByRole("tablist")).not.toBeInTheDocument();
+      expect(screen.getAllByRole("checkbox")).toHaveLength(2);
+      await user.click(rowCheckbox(/sdb/));
+      await user.click(screen.getByRole("button", { name: "Accept" }));
+      expect(onConfirmMock).toHaveBeenCalledWith([sdb]);
+    });
+
+    it("can be confirmed with no device selected", async () => {
+      const { user } = installerRender(
+        <DeviceSelectorModal
+          selectionMode="multiple"
+          disks={[sda]}
+          selected={[sda]}
+          title="Select devices"
+          onCancel={onCancelMock}
+          onConfirm={onConfirmMock}
+        />,
+      );
+      await user.click(rowCheckbox(/sda/));
+      expect(screen.getByRole("button", { name: "Accept" })).toBeEnabled();
+      await user.click(screen.getByRole("button", { name: "Accept" }));
+      expect(onConfirmMock).toHaveBeenCalledWith([]);
+    });
+
+    it("does not show the hint to select a device", () => {
+      installerRender(
+        <DeviceSelectorModal
+          selectionMode="multiple"
+          title="Select devices"
+          onCancel={onCancelMock}
+          onConfirm={onConfirmMock}
+        />,
+      );
+      expect(screen.queryByText("Select a device")).toBeNull();
+    });
+
+    it("does not show the side effects of the selection", () => {
+      installerRender(
+        <DeviceSelectorModal
+          selectionMode="multiple"
+          disks={[sda, sdb]}
+          selected={[sda]}
+          sideEffects={{ disks: "Something will happen" }}
+          title="Select devices"
+          onCancel={onCancelMock}
+          onConfirm={onConfirmMock}
+        />,
+      );
+      expect(screen.queryByText("Something will happen")).toBeNull();
     });
   });
 
