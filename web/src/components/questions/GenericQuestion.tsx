@@ -42,7 +42,7 @@ export default function GenericQuestion({
   const details = question.data?.details;
 
   return (
-    <QuestionDialog question={question} answerCallback={answerCallback} aria-label={_("Question")}>
+    <QuestionDialog question={question} answerCallback={answerCallback} title={question.title}>
       <Content component="p">{question.text}</Content>
       {details && <Content>{details}</Content>}
     </QuestionDialog>

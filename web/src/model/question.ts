@@ -22,6 +22,7 @@
 
 type Question = {
   id: number;
+  title: string;
   text: string;
   class: string;
   field: SelectionField | Field;

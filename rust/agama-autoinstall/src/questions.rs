@@ -25,6 +25,7 @@ use agama_lib::{
     questions::http_client::HTTPClient as QuestionsHTTPClient,
 };
 use agama_utils::api::question::QuestionSpec;
+use gettextrs::gettext;
 
 pub struct UserQuestions {
     questions: QuestionsHTTPClient,
@@ -37,16 +38,17 @@ impl UserQuestions {
         }
     }
 
-    /// Asks the user whether to retry loading the profile.
+    /// Asks the user whether to retry loading the profile or the script.
     pub async fn should_retry(
         &self,
         text: &str,
         error: &str,
         url: &str,
     ) -> anyhow::Result<Option<String>> {
+        let title = gettext("Failed to load the configuration");
         let localized_retry = gettextrs::gettext("Reload configuration");
         let localized_manual = gettextrs::gettext("Skip and configure manually");
-        let question = QuestionSpec::new(text, "loadConfigError")
+        let question = QuestionSpec::new(&title, text, "loadConfigError")
             .with_actions(&[
                 ("Retry", localized_retry.as_str()),
                 ("Manual", localized_manual.as_str()),
@@ -91,16 +93,20 @@ impl UserQuestions {
 
         let localized_continue = gettextrs::gettext("Continue");
         let localized_abort = gettextrs::gettext("Abort");
-        let question = QuestionSpec::new(&text, "autoyastUnsupported")
-            .with_actions(&[
-                ("Continue", localized_continue.as_str()),
-                ("Abort", localized_abort.as_str()),
-            ])
-            .with_default_action("Continue")
-            .with_data(&[
-                ("planned", planned.join(",").as_str()),
-                ("unsupported", unsupported.join(",").as_str()),
-            ]);
+        let question = QuestionSpec::new(
+            &gettext("Unsupported AutoYaST elements"),
+            &text,
+            "autoyastUnsupported",
+        )
+        .with_actions(&[
+            ("Continue", localized_continue.as_str()),
+            ("Abort", localized_abort.as_str()),
+        ])
+        .with_default_action("Continue")
+        .with_data(&[
+            ("planned", planned.join(",").as_str()),
+            ("unsupported", unsupported.join(",").as_str()),
+        ]);
 
         let question = self.questions.create_question(&question).await?;
         let answer = self.questions.get_answer(question.id).await?;

@@ -29,6 +29,7 @@ import StorageCommitErrorQuestion from "~/components/questions/StorageCommitErro
 const questionWithDetails: Question = {
   id: 1,
   class: "storageCommitError",
+  title: "Storage error",
   text: "Storage configuration could not be applied. Do you want to retry?",
   field: { type: FieldType.None },
   data: {
@@ -48,6 +49,7 @@ const questionWithDetails: Question = {
 const questionWithoutDetails: Question = {
   id: 2,
   class: "storageCommitError",
+  title: "Storage error",
   text: "Storage configuration could not be applied. Do you want to retry?",
   field: { type: FieldType.None },
   actions: [

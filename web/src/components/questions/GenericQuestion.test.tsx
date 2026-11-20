@@ -28,6 +28,7 @@ import GenericQuestion from "~/components/questions/GenericQuestion";
 
 const question: Question = {
   id: 1,
+  title: "Tests",
   text: "Do you write unit tests?",
   class: "unit-test",
   field: { type: FieldType.None },
@@ -41,6 +42,7 @@ const question: Question = {
 
 const questionWithDetails: Question = {
   id: 1,
+  title: "Error",
   text: "Failed to fetch the script. Do you want to retry?",
   class: "failed-script",
   field: { type: FieldType.None },

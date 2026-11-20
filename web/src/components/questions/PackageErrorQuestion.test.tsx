@@ -30,6 +30,7 @@ const answerFn = jest.fn();
 const question: Question = {
   id: 1,
   class: "packageProvideError",
+  title: "Package provide error",
   text: "Package download failed",
   field: { type: FieldType.None },
   actions: [

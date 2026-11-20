@@ -34,7 +34,8 @@ import { Product } from "~/model/system";
 const answerFn = jest.fn();
 const question: Question = {
   id: 1,
-  class: "question.password",
+  class: "questionPassword",
+  title: "Password",
   text: "Random question. Will you provide random password?",
   field: { type: FieldType.None },
   actions: [

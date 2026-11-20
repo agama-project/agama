@@ -29,6 +29,7 @@ import LoadConfigRetryQuestion from "~/components/questions/LoadConfigRetryQuest
 const question: Question = {
   id: 1,
   class: "retry",
+  title: "Configuration error",
   text: "It was not possible to load the configuration from http://wrong.config.file. It was unreachable or invalid. Do you want to try again?",
   field: { type: FieldType.String },
   data: {

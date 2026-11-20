@@ -51,10 +51,14 @@ impl install::Callback for Install {
             description
         );
 
-        let question = QuestionSpec::new(&description, "packageInstallError")
-            // TODO: add abort when it is properly handled in UI/backend
-            .with_action_ids(&[gettext_noop("Retry"), gettext_noop("Ignore")])
-            .with_data(&[("package", package_name.as_str())]);
+        let question = QuestionSpec::new(
+            &gettext("Package installation error"),
+            &description,
+            "packageInstallError",
+        )
+        // TODO: add abort when it is properly handled in UI/backend
+        .with_action_ids(&[gettext_noop("Retry"), gettext_noop("Ignore")])
+        .with_data(&[("package", package_name.as_str())]);
 
         let result = ask_software_question(&self.questions, question);
         let Ok(answer) = result else {
@@ -77,9 +81,13 @@ impl install::Callback for Install {
 
         let message = gettext("There was a problem running a package script.");
         let full_message = message + "\n\n" + &description;
-        let question = QuestionSpec::new(&full_message, "packageScriptProblem")
-            .with_action_ids(&[gettext_noop("Retry"), gettext_noop("Continue")])
-            .with_data(&[("details", &description)]);
+        let question = QuestionSpec::new(
+            &gettext("Package script error"),
+            &full_message,
+            "packageScriptProblem",
+        )
+        .with_action_ids(&[gettext_noop("Retry"), gettext_noop("Continue")])
+        .with_data(&[("details", &description)]);
 
         let result = ask_software_question(&self.questions, question);
         let Ok(answer) = result else {

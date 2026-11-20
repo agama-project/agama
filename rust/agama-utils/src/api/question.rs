@@ -223,6 +223,9 @@ impl Question {
 #[derive(Clone, Debug, Serialize, Deserialize, JsonSchema, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct QuestionSpec {
+    /// Question title.
+    #[serde(default = "default_question_title")]
+    pub title: String,
     /// Question text.
     pub text: String,
     /// Question class (e.g., "autoyastUnsupported"). It works as a hint for
@@ -245,13 +248,19 @@ pub struct QuestionSpec {
     pub data: HashMap<String, String>,
 }
 
+fn default_question_title() -> String {
+    gettext("Question")
+}
+
 impl QuestionSpec {
     /// Creates a new question specification.
     ///
+    /// * `title`: question title.
     /// * `text`: question text.
     /// * `class`: question class.
-    pub fn new(text: &str, class: &str) -> Self {
+    pub fn new(title: &str, text: &str, class: &str) -> Self {
         Self {
+            title: title.to_string(),
             text: text.to_string(),
             class: class.to_string(),
             field: QuestionField::None,
@@ -483,7 +492,7 @@ mod tests {
 
     #[test]
     fn test_string_question() {
-        let q = QuestionSpec::new("Please, enter a username", "username")
+        let q = QuestionSpec::new("User", "Please, enter a username", "username")
             .as_string()
             .with_action_ids(&["Next", "Cancel"]);
 
@@ -496,7 +505,7 @@ mod tests {
 
     #[test]
     fn test_password_question() {
-        let q = QuestionSpec::new("Decrypt the device", "luks")
+        let q = QuestionSpec::new("Encryption", "Decrypt the device", "luks")
             .as_password()
             .with_action_ids(&["Decrypt", "Skip"]);
 
@@ -509,9 +518,13 @@ mod tests {
 
     #[test]
     fn test_select_question() {
-        let q = QuestionSpec::new("There is a solver conflict...", "conflict")
-            .as_select(&[("opt1", "Option 1"), ("opt2", "Option 2")])
-            .with_action_ids(&["Decrypt", "Skip"]);
+        let q = QuestionSpec::new(
+            "Package conflict",
+            "There is a solver conflict...",
+            "conflict",
+        )
+        .as_select(&[("opt1", "Option 1"), ("opt2", "Option 2")])
+        .with_action_ids(&["Decrypt", "Skip"]);
 
         let q_str = serde_json::to_string_pretty(&q).unwrap();
         println!("{}", &q_str);
@@ -530,7 +543,7 @@ mod tests {
             value: None,
         };
 
-        let q = QuestionSpec::new("Please, enter a username", "username")
+        let q = QuestionSpec::new("User", "Please, enter a username", "username")
             .as_string()
             .with_data(&[("id", "1")])
             .with_action_ids(&["Next", "Cancel"]);
@@ -577,8 +590,8 @@ mod tests {
 
         // The question is created with its current class name only, the
         // mapping to the deprecated one is resolved internally.
-        let q =
-            QuestionSpec::new("Activate the LUKS device?", "luksActivation").with_yes_no_actions();
+        let q = QuestionSpec::new("LUKS", "Activate the LUKS device?", "luksActivation")
+            .with_yes_no_actions();
 
         // A rule using the old (deprecated) class still matches.
         let rule_by_deprecated_class = AnswerRule {
@@ -624,8 +637,12 @@ mod tests {
         };
 
         // The question data uses camelCase, as some producers do.
-        let q = QuestionSpec::new("Failed to install the package", "packageProvideError")
-            .with_data(&[("errorCode", "Invalid")]);
+        let q = QuestionSpec::new(
+            "Package installation failed",
+            "Failed to install the package",
+            "packageProvideError",
+        )
+        .with_data(&[("errorCode", "Invalid")]);
 
         let rule = AnswerRule {
             text: Default::default(),
@@ -647,8 +664,12 @@ mod tests {
         };
 
         // The question data uses snake_case, as some producers do.
-        let q = QuestionSpec::new("Failed to load the configuration", "loadConfigError")
-            .with_data(&[("original_value", "http://example.com/profile.json")]);
+        let q = QuestionSpec::new(
+            "Configuration failed",
+            "Failed to load the configuration",
+            "loadConfigError",
+        )
+        .with_data(&[("original_value", "http://example.com/profile.json")]);
 
         let rule = AnswerRule {
             text: Default::default(),
@@ -669,8 +690,12 @@ mod tests {
             value: None,
         };
 
-        let q = QuestionSpec::new("Failed to install the package", "packageProvideError")
-            .with_data(&[("errorCode", "Invalid")]);
+        let q = QuestionSpec::new(
+            "Package installatrion failed",
+            "Failed to install the package",
+            "packageProvideError",
+        )
+        .with_data(&[("errorCode", "Invalid")]);
 
         // Same key (in both forms), but a different value.
         let rule_with_wrong_value = AnswerRule {

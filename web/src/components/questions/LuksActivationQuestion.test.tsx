@@ -35,6 +35,7 @@ let question: Question;
 const questionMock: Question = {
   id: 1,
   class: "luksActivation",
+  title: "LUKS activation",
   text: "A Luks device found. Do you want to open it?",
   field: { type: FieldType.String },
   actions: [

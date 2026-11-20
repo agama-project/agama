@@ -53,6 +53,7 @@ jest.mock("~/api", () => ({
 const genericQuestion: Question = {
   id: 1,
   class: "generic",
+  title: "Question",
   text: "Do you write unit tests?",
   field: { type: FieldType.None },
   actions: [
@@ -66,6 +67,7 @@ const genericQuestion: Question = {
 const passwordQuestion: Question = {
   id: 2,
   class: "password",
+  title: "Password",
   text: "Please, introduce the password",
   field: { type: FieldType.Password },
   actions: [
@@ -78,6 +80,7 @@ const passwordQuestion: Question = {
 const luksActivationQuestion: Question = {
   id: 3,
   class: "luksActivation",
+  title: "LUKS activation",
   text: "Password to decrypt the device",
   field: { type: FieldType.Password },
   actions: [
@@ -90,6 +93,7 @@ const luksActivationQuestion: Question = {
 const loadConfigurationQuestion: Question = {
   id: 4,
   class: "loadConfigError",
+  title: "Configuration error",
   text: "Do you want to retry loading the configuration?",
   field: { type: FieldType.None },
   actions: [
@@ -102,6 +106,7 @@ const loadConfigurationQuestion: Question = {
 const storageCommitErrorQuestion: Question = {
   id: 5,
   class: "storageCommitError",
+  title: "Storage error",
   text: "Storage configuration could not be applied. Do you want to retry?",
   field: { type: FieldType.None },
   actions: [
