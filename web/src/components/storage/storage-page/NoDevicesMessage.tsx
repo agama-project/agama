@@ -60,20 +60,20 @@ export default function NoDevicesMessage(): React.ReactNode {
       <EmptyStateFooter>
         <Split hasGutter>
           <SplitItem>
-            <Link to={PATHS.iscsi.root} variant="link">
+            <Link to={PATHS.iscsi.root} variant="tertiary">
               {_("Connect to iSCSI targets")}
             </Link>
           </SplitItem>
           {zfcpSystem && (
             <SplitItem>
-              <Link to={PATHS.zfcp.root} variant="link">
+              <Link to={PATHS.zfcp.root} variant="tertiary">
                 {_("Activate zFCP disks")}
               </Link>
             </SplitItem>
           )}
           {dasdSystem && (
             <SplitItem>
-              <Link to={PATHS.dasd} variant="link">
+              <Link to={PATHS.dasd} variant="tertiary">
                 {_("Manage DASD devices")}
               </Link>
             </SplitItem>
