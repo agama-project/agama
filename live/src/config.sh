@@ -121,6 +121,9 @@ systemctl enable setup-systemd-proxy-env.path
 test -f /usr/lib/systemd/system/gdm.service && systemctl enable gdm.service
 systemctl enable zramswap
 
+# braille display support for Orca, triggered on device hotplug via udev
+systemctl enable brltty.path
+
 # set the default target
 arch=$(uname -m)
 if [[ "$kiwi_profiles" == *MINI* ]]; then
@@ -359,10 +362,13 @@ if rpm -q --whatprovides libyui-qt libyui-qt-pkg > /dev/null; then
 fi
 rpm -qa | grep ^libQt | xargs --no-run-if-empty rpm -e --nodeps
 
+# The live session runs as root, but PipeWire/WirePlumber refuse to run as
+# root (ConditionUser=!root in their systemd user units), so there is no
+# PulseAudio-compatible server available for speech-dispatcher to talk to.
+# Use ALSA directly instead, so Orca's speech output works in the live session.
+sed -i 's/^#\? *AudioOutputMethod .*/AudioOutputMethod "alsa"/' /etc/speech-dispatcher/speechd.conf
+
 ## removing drivers and firmware makes the Live ISO about 370MiB smaller
-#
-# Agama does not use sound, added by icewm dependencies
-rpm -e --nodeps alsa alsa-utils alsa-ucm-conf || true
 
 # driver and firmware cleanup
 # Note: openSUSE Tumbleweed Live completely removes firmware for some server
@@ -373,13 +379,14 @@ rpm -e --nodeps alsa alsa-utils alsa-ucm-conf || true
 du -h -s /lib/modules /lib/firmware
 
 # remove the multimedia drivers, use the default configuration files
-image-janitor driver-cleanup --delete --config-files /usr/share/image-janitor/module.list,/usr/share/image-janitor/module.list.extra
+image-janitor driver-cleanup --delete --config-files /usr/share/image-janitor/module.list,/usr/share/image-janitor/module.list.extra,/etc/image-janitor/module.list
 
 # remove the unused firmware (not referenced by kernel drivers)
 image-janitor fw-cleanup --delete
 
 # remove the tool, not needed anymore
 rpm -e image-janitor
+rm /etc/image-janitor/module.list
 du -h -s /lib/modules /lib/firmware
 
 ################################################################################
