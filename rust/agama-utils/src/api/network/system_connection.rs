@@ -421,3 +421,202 @@ pub struct SystemBondWirelessPort {
     /// Current state of the connection
     pub state: ConnectionState,
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_the_state_of_every_kind_of_port_is_read_and_written_back() {
+        let json = serde_json::json!({
+            "id": "br0",
+            "bridge": {
+                "stp": false,
+                "portConnections": [
+                    "eth9",
+                    { "id": "eth0", "port": { "priority": 16 }, "state": "activated" },
+                    {
+                        "id": "bond0",
+                        "bond": {
+                            "mode": "active-backup",
+                            "portConnections": [
+                                { "id": "eth1", "state": "activated" },
+                                { "id": "eth2", "state": "deactivated" },
+                                { "id": "br1", "bridge": { "portConnections": [] }, "state": "activating" },
+                                { "id": "eth3.10", "vlan": { "parent": "eth3", "id": 10 }, "state": "activated" }
+                            ]
+                        },
+                        "port": { "priority": 32 },
+                        "state": "activated"
+                    },
+                    {
+                        "id": "wlan0",
+                        "wireless": { "ssid": "agama", "security": "none", "mode": "infrastructure" },
+                        "state": "deactivated"
+                    }
+                ]
+            },
+            "state": "activated"
+        });
+        let conn: SystemNetworkConnection = serde_json::from_value(json.clone()).unwrap();
+
+        let bridge = conn.bridge.as_ref().unwrap();
+        assert_eq!(bridge.base.stp, Some(false));
+        let ports = bridge.port_connections.as_ref().unwrap();
+        let [SystemBridgePort::Name(_), SystemBridgePort::Ethernet(eth0), SystemBridgePort::Bond(bond0), SystemBridgePort::Wireless(wlan0)] =
+            ports.as_slice()
+        else {
+            panic!("unexpected ports: {ports:?}");
+        };
+        assert_eq!(eth0.state, ConnectionState::Activated);
+        assert_eq!(eth0.port.as_ref().unwrap().priority, Some(16));
+        assert_eq!(bond0.port.as_ref().unwrap().priority, Some(32));
+        assert_eq!(wlan0.state, ConnectionState::Deactivated);
+        let ports = bond0.bond.port_connections.as_ref().unwrap();
+        let [SystemBondPort::Ethernet(_), SystemBondPort::Ethernet(eth2), SystemBondPort::Bridge(br1), SystemBondPort::Vlan(_)] =
+            ports.as_slice()
+        else {
+            panic!("unexpected ports: {ports:?}");
+        };
+        assert_eq!(eth2.state, ConnectionState::Deactivated);
+        assert_eq!(br1.state, ConnectionState::Activating);
+
+        // Written back as it was read.
+        assert_eq!(serde_json::to_value(&conn).unwrap(), json);
+    }
+
+    #[test]
+    fn test_the_ports_with_state_reject_unknown_fields() {
+        for port in [
+            r#"{ "id": "eth0", "state": "activated", "unknown": true }"#,
+            r#"{ "id": "bond1", "bond": { "mode": "802.3ad" }, "state": "activated", "unknown": true }"#,
+            // Only the ports of a bridge have port settings.
+            r#"{ "id": "eth0", "port": { "priority": 32 }, "state": "activated" }"#,
+            // A port is a single kind of connection.
+            r#"{ "id": "bond1", "bond": { "mode": "802.3ad" }, "vlan": { "parent": "eth0", "id": 10 }, "state": "activated" }"#,
+            // A port has no IP settings.
+            r#"{ "id": "eth0", "method4": "auto", "state": "activated" }"#,
+        ] {
+            let json = format!(
+                r#"{{ "id": "bond0", "bond": {{ "mode": "802.3ad", "portConnections": [{port}] }}, "state": "activated" }}"#
+            );
+            assert!(
+                serde_json::from_str::<SystemNetworkConnection>(&json).is_err(),
+                "{port}"
+            );
+        }
+    }
+
+    #[test]
+    fn test_the_schema_with_state_documents_the_state_of_every_connection() {
+        let schema = schemars::schema_for!(SystemNetworkConnection);
+        let json = serde_json::to_value(&schema).unwrap();
+        let defs = json["$defs"].as_object().unwrap();
+
+        assert!(json["properties"].get("state").is_some());
+        assert_eq!(json["required"], serde_json::json!(["id", "state"]));
+        assert_eq!(json["additionalProperties"], false);
+        let bond = &json["properties"]["bond"]["anyOf"][0]["$ref"];
+        assert_eq!(bond, "#/$defs/SystemBondSettings");
+        let bridge = &json["properties"]["bridge"]["anyOf"][0]["$ref"];
+        assert_eq!(bridge, "#/$defs/SystemBridgeSettings");
+        let ports = &defs["SystemBondSettings"]["properties"]["portConnections"]["items"];
+        assert_eq!(ports["$ref"], "#/$defs/SystemBondPort");
+        let ports = &defs["SystemBridgeSettings"]["properties"]["portConnections"]["items"];
+        assert_eq!(ports["$ref"], "#/$defs/SystemBridgePort");
+        // Every port with state, but the port enums themselves.
+        let ports: Vec<_> = defs
+            .iter()
+            .filter(|(name, def)| {
+                name.starts_with("System") && name.ends_with("Port") && def.get("anyOf").is_none()
+            })
+            .collect();
+        assert_eq!(ports.len(), 10);
+        for (name, def) in ports {
+            assert!(def["properties"].get("state").is_some(), "{name}");
+            assert_eq!(def["additionalProperties"], false, "{name}");
+        }
+        // The shared parts are flattened, so they are not definitions of their own.
+        for part in ["ConnectionBase", "BondBase", "BridgeBase", "PortBase"] {
+            assert!(!defs.contains_key(part), "{part}");
+        }
+    }
+
+    /// Drops the descriptions, which tell the configuration and the system information apart.
+    fn without_descriptions(value: &serde_json::Value) -> serde_json::Value {
+        match value {
+            serde_json::Value::Object(map) => map
+                .iter()
+                .filter(|(key, _)| *key != "description")
+                .map(|(key, value)| (key.clone(), without_descriptions(value)))
+                .collect(),
+            serde_json::Value::Array(items) => items.iter().map(without_descriptions).collect(),
+            _ => value.clone(),
+        }
+    }
+
+    #[test]
+    fn test_the_system_types_mirror_the_config_ones() {
+        let config = serde_json::to_value(schemars::schema_for!(NetworkConnection)).unwrap();
+        let system = serde_json::to_value(schemars::schema_for!(SystemNetworkConnection)).unwrap();
+        let config_defs = config["$defs"].as_object().unwrap();
+        let system_defs = system["$defs"].as_object().unwrap();
+
+        // The configuration types that have a system twin, which only differs in the state and
+        // in referring to the system twins of the other types.
+        let twins: Vec<&String> = config_defs
+            .keys()
+            .filter(|name| system_defs.contains_key(&format!("System{name}")))
+            .collect();
+        assert_eq!(twins.len(), 14, "{twins:?}");
+        let to_system = |value: &serde_json::Value| {
+            let mut json = without_descriptions(value).to_string();
+            for name in &twins {
+                json = json.replace(
+                    &format!("\"#/$defs/{name}\""),
+                    &format!("\"#/$defs/System{name}\""),
+                );
+            }
+            serde_json::from_str::<serde_json::Value>(&json).unwrap()
+        };
+
+        let mut pairs = vec![("NetworkConnection", &config, &system)];
+        for name in &twins {
+            pairs.push((
+                name,
+                &config_defs[*name],
+                &system_defs[&format!("System{name}")],
+            ));
+        }
+        for (name, config, system) in pairs {
+            // The entries of `portConnections`: the same kinds of ports.
+            if let Some(kinds) = config.get("anyOf") {
+                assert_eq!(
+                    to_system(kinds),
+                    without_descriptions(&system["anyOf"]),
+                    "{name}"
+                );
+                continue;
+            }
+
+            let mut expected = to_system(&config["properties"]);
+            let mut required = config["required"].as_array().cloned().unwrap_or_default();
+            // The settings of a bond or a bridge are not a connection, so they have no state.
+            if !name.ends_with("Settings") {
+                expected["state"] = without_descriptions(&system["properties"]["state"]);
+                required.push(serde_json::json!("state"));
+            }
+            assert_eq!(
+                without_descriptions(&system["properties"]),
+                expected,
+                "{name}"
+            );
+            let system_required = system["required"].as_array().cloned().unwrap_or_default();
+            assert_eq!(system_required, required, "{name}");
+            assert_eq!(
+                system["additionalProperties"], config["additionalProperties"],
+                "{name}"
+            );
+        }
+    }
+}
