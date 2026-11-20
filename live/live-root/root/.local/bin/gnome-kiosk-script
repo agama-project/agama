@@ -36,6 +36,9 @@ done
 TOKEN=$(cat $TOKEN_FILE)
 sed -e "s/__HOMEPAGE__/http:\/\/localhost\/login?token=$TOKEN$LANG_QUERY/" $PREFS.template > $PREFS
 
+# Disable startup cache files (~19 MiB) to reduce COW writes and RAM usage
+export MOZ_DISABLE_STARTUPCACHE=1
+
 # Do not use --kiosk mode (see bsc#1236073) until SLE16 is updated to next ESR. For Firefox
 # 128.9 which is currently used the bug is valid, for >= 138 should be fixed.
 firefox --profile $HOME/.mozilla/firefox/profile

@@ -41,6 +41,49 @@ user_pref("browser.startup.couldRestoreSession.count", 0);
 // disable homepage override on updates
 user_pref("browser.startup.homepage_override.mstone", "ignore");
 
+// --- Zero disk caching & minimal SQLite churn ---
+user_pref("browser.cache.disk.enable", false);
+user_pref("browser.cache.disk_cache_ssl", false);
+user_pref("browser.cache.disk.capacity", 0);
+user_pref("browser.cache.offline.enable", false);
+user_pref("places.history.enabled", false);
+user_pref("browser.formfill.enable", false);
+user_pref("browser.sessionstore.interval", 3600000);
+user_pref("browser.pagethumbnails.capturing_disabled", true);
+user_pref("browser.chrome.site_icons", false);
+user_pref("browser.chrome.favicons", false);
+user_pref("extensions.getAddons.cache.enabled", false);
+
+// --- Collapse multi-process overhead (saves ~150-200 MiB RSS) ---
+user_pref("fission.autostart", false);
+user_pref("dom.ipc.processCount", 1);
+user_pref("dom.ipc.processCount.webIsolated", 1);
+user_pref("dom.ipc.processPrelaunch.enabled", false);
+user_pref("browser.tabs.remote.separatePrivilegedMozillaWebContentProcess", false);
+user_pref("extensions.webextensions.remote", false);
+
+// --- Cap in-memory caches & JS heap growth ---
+user_pref("browser.cache.memory.enable", true);
+user_pref("browser.cache.memory.capacity", 16384);
+user_pref("browser.cache.memory.max_entry_size", 2048);
+user_pref("browser.sessionhistory.max_total_viewers", 0);
+user_pref("browser.sessionhistory.max_entries", 2);
+user_pref("browser.tabs.unloadOnLowMemory", true);
+user_pref("network.http.max-connections", 32);
+user_pref("network.http.max-persistent-connections-per-server", 8);
+user_pref("image.cache.size", 1048576);
+user_pref("image.mem.decode_bytes_at_a_time", 16384);
+user_pref("media.memory_cache_max_size", 4096);
+user_pref("javascript.options.mem.high_water_mark", 32);
+
+// --- Disable unneeded kiosk subsystems ---
+user_pref("accessibility.force_disabled", 1);
+user_pref("pdfjs.disabled", true);
+user_pref("geo.enabled", false);
+user_pref("media.peerconnection.enabled", false);
+user_pref("webgl.disabled", true);
+user_pref("toolkit.cosmeticAnimations.enabled", false);
+
 // disable sending Firefox usage and telemetry data for increased privacy
 user_pref("datareporting.healthreport.uploadEnabled", false);
 user_pref("datareporting.usage.uploadEnabled", false);
