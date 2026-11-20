@@ -23,6 +23,7 @@
 use crate::profile::profile_service;
 use crate::profile::web::ProfileError;
 use crate::server::config_schema;
+use crate::web::docs::translated;
 use crate::web::error::{ProblemDetailsExt, ProblemDetailsResponse};
 use agama_lib::logs;
 use agama_manager::service::Error as ManagerError;
@@ -188,7 +189,9 @@ async fn get_status(State(state): State<ServerState>) -> Result<Json<Status>, Re
 }
 
 fn get_status_docs(op: TransformOperation) -> TransformOperation {
-    op.id("getInstallerStatus")
+    // task and progress step descriptions are translated
+    translated(op)
+        .id("getInstallerStatus")
         .summary("Get installer status")
         .description(
             "Returns the current status of the installation process, including the current \
@@ -218,7 +221,9 @@ async fn get_system(State(state): State<ServerState>) -> Result<Json<SystemInfo>
 }
 
 fn get_system_docs(op: TransformOperation) -> TransformOperation {
-    op.id("getSystemInfo")
+    // product, keymap, locale and addon texts are translated
+    translated(op)
+        .id("getSystemInfo")
         .summary("Get system information")
         .description(
             "Returns detailed information about the installation system including hardware \
@@ -397,7 +402,9 @@ async fn get_proposal(State(state): State<ServerState>) -> Result<Response, Resp
 }
 
 fn get_proposal_docs(op: TransformOperation) -> TransformOperation {
-    op.id("getInstallationProposal")
+    // e.g., the storage actions are translated
+    translated(op)
+        .id("getInstallationProposal")
         .summary("Get installation proposal")
         .description(
             "Returns the proposed configuration for the target system. The proposal is \
@@ -443,7 +450,9 @@ async fn get_issues(
 }
 
 fn get_issues_docs(op: TransformOperation) -> TransformOperation {
-    op.id("listIssues")
+    // the issue descriptions are translated
+    translated(op)
+        .id("listIssues")
         .summary("List issues")
         .description(
             "Returns the list of all current issues detected during the installation process. \
@@ -475,7 +484,9 @@ async fn get_questions(State(state): State<ServerState>) -> Result<Json<Vec<Ques
 }
 
 fn get_questions_docs(op: TransformOperation) -> TransformOperation {
-    op.id("listQuestions")
+    // question texts and action labels are translated
+    translated(op)
+        .id("listQuestions")
         .summary("List questions")
         .description(
             "Returns all pending questions that require user input. Questions represent \
@@ -604,7 +615,9 @@ async fn get_license(
 }
 
 fn get_license_docs(op: TransformOperation) -> TransformOperation {
-    op.id("getLicenseById")
+    // the license is returned in the current language
+    translated(op)
+        .id("getLicenseById")
         .summary("Get license by ID")
         .description(
             "Returns the content of a specific license. The license is always returned in \

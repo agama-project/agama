@@ -819,8 +819,8 @@ export default {
   "Copy to the clipboard": [
     "クリップボードにコピー"
   ],
-  "Could not authenticate against the server.": [
-    "サーバに対して認証できませんでした。"
+  "Could not authenticate against the server": [
+    "サーバに対して認証できませんでした"
   ],
   "Could not log in": [
     "ログインできませんでした"
@@ -1170,15 +1170,6 @@ export default {
   "Enter a server URL": [
     "サーバ URL を入力してください"
   ],
-  "Enter or Tab to add": [
-    "Enter キーまたは Tab キーで追加します"
-  ],
-  "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate": [
-    "Enter キーまたは Tab キーで追加、 Backspace キーまたは Delete キーで削除、矢印キーで項目間を移動します"
-  ],
-  "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate entries, Escape to exit": [
-    "Enter キーまたは Tab キーで追加、 Backspace キーまたは Delete キーで削除、矢印キーで項目間の移動、 Escape キーで終了します"
-  ],
   "Enter removes every value, Left arrow goes back to the text box.": [
     "Enter キーでそれぞれの値を削除, 左矢印キーでテキストボックスに戻ることができます。"
   ],
@@ -1196,6 +1187,15 @@ export default {
   ],
   "Enter takes a value back to the text box, Delete removes it, arrow keys move between values.": [
     "Enter キーを押すと値をテキストボックスに戻すことができます。 Delete キーで削除を、矢印キーで値の間を移動することができます。"
+  ],
+  "Enter to add": [
+    "Enter キーで追加します"
+  ],
+  "Enter to add, Backspace or Delete to remove, arrow keys to navigate": [
+    "Enter キーで追加、 Backspace キーまたは Delete キーで削除、矢印キーで項目間を移動します"
+  ],
+  "Enter to add, Backspace or Delete to remove, arrow keys to navigate entries, Escape to exit": [
+    "Enter キーで追加、 Backspace キーまたは Delete キーで削除、矢印キーで項目間の移動、 Escape キーで終了します"
   ],
   "Ethernet": [
     "イーサネット"
@@ -1680,6 +1680,9 @@ export default {
   "Loading data...": [
     "データを読み込んでいます..."
   ],
+  "Loading terminal": [
+    "端末を読み込んでいます"
+  ],
   "Loading the installation repositories...": [
     "インストール用リポジトリを読み込んでいます..."
   ],
@@ -1916,6 +1919,9 @@ export default {
   ],
   "No DASD devices found in this machine.": [
     "このマシンには DASD デバイスが見つかりませんでした。"
+  ],
+  "No IP configuration for this protocol": [
+    "このプロトコルに対して IP 設定を行いません"
   ],
   "No LVM volume groups are available for selection.": [
     "選択可能な LVM ボリュームグループがありません。"
@@ -3302,9 +3308,6 @@ export default {
   ],
   "Using %s keyboard layout": [
     "%s キーボードレイアウトを使用しています"
-  ],
-  "Using [%s] keyboard layout": [
-    "[%s] キーボードレイアウトを使用しています"
   ],
   "Using a hashed password.": [
     "ハッシュ化されたパスワードを使用します。"

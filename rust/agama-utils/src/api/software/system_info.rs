@@ -36,8 +36,7 @@ pub struct SystemInfo {
 }
 
 /// Repository specification.
-#[derive(Clone, Debug, Serialize, JsonSchema)]
-#[serde(rename_all = "camelCase")]
+#[derive(Clone, Debug, PartialEq)]
 pub struct Repository {
     /// Repository alias. It has to be unique.
     pub alias: String,
@@ -49,6 +48,8 @@ pub struct Repository {
     pub enabled: bool,
     /// Whether the repository is predefined (offline base repo, DUD repositories, etc.)
     pub predefined: bool,
+    /// Whether autorefresh is enabled for this repository
+    pub autorefresh: bool,
 }
 
 #[derive(Clone, Debug, Serialize, JsonSchema)]

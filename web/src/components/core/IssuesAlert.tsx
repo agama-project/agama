@@ -24,6 +24,7 @@ import React from "react";
 import { isEmpty } from "radashi";
 import { Alert, AlertProps, List, ListItem } from "@patternfly/react-core";
 import { _ } from "~/i18n";
+import ExpandableTechnicalSection from "~/components/questions/ExpandableTechnicalSection";
 
 import type { Issue } from "~/model/issue";
 
@@ -42,14 +43,22 @@ export default function IssuesAlert({ issues, actions }: IssuesAlertProps) {
   const props: Partial<AlertProps> = { isInline: true, variant: "warning", actionLinks: actions };
 
   if (issues.length === 1) {
-    return <Alert {...props} title={issues[0].description} />;
+    const issue = issues[0];
+    return (
+      <Alert {...props} title={issue.description}>
+        {issue.details && <ExpandableTechnicalSection text={issue.details} />}
+      </Alert>
+    );
   }
 
   return (
     <Alert {...props} title={_("You must fix these issues")}>
       <List>
         {issues.map((i, idx) => (
-          <ListItem key={idx}>{i.description}</ListItem>
+          <ListItem key={idx}>
+            {i.description}
+            {i.details && <ExpandableTechnicalSection text={i.details} />}
+          </ListItem>
         ))}
       </List>
     </Alert>

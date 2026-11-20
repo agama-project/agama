@@ -32,6 +32,13 @@ const genericIssue: Issue = {
   scope: "software",
 };
 
+const issueWithDetails: Issue = {
+  description: "An issue with details",
+  class: "loadSource",
+  scope: "software",
+  details: "Failed to download https://download.opensuse.org/repo/oss/",
+};
+
 const anotherIssue: Issue = {
   description: "Another issue",
   class: "generic",
@@ -54,6 +61,18 @@ describe("IssuesAlert", () => {
       installerRender(<IssuesAlert issues={[genericIssue]} />);
       expect(screen.queryByRole("list")).not.toBeInTheDocument();
     });
+
+    it("does not render technical details section when details are absent", () => {
+      installerRender(<IssuesAlert issues={[genericIssue]} />);
+      expect(screen.queryByText("Show technical details")).not.toBeInTheDocument();
+    });
+
+    it("renders technical details expandable section when details are present", async () => {
+      const { user } = installerRender(<IssuesAlert issues={[issueWithDetails]} />);
+      const toggle = screen.getByText("Show technical details");
+      await user.click(toggle);
+      screen.getByText(/Failed to download https:\/\/download\.opensuse\.org/);
+    });
   });
 
   describe("when there are multiple issues", () => {
@@ -62,6 +81,13 @@ describe("IssuesAlert", () => {
       screen.getByRole("heading", { name: /You must fix these issues/ });
       screen.getByText(genericIssue.description);
       screen.getByText(anotherIssue.description);
+    });
+
+    it("renders technical details for issues that have them", async () => {
+      const { user } = installerRender(<IssuesAlert issues={[genericIssue, issueWithDetails]} />);
+      const toggle = screen.getByText("Show technical details");
+      await user.click(toggle);
+      screen.getByText(/Failed to download https:\/\/download\.opensuse\.org/);
     });
   });
 });

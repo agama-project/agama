@@ -18,7 +18,16 @@ export type SearchAll = "*";
  * Search by device name
  */
 export type SearchName = string;
-export type DriveSearchCondition = SearchConditionName | SearchConditionSize;
+export type DriveSearchCondition =
+  | SearchConditionName
+  | SearchConditionSize
+  | SearchConditionDriver
+  | SearchConditionBoss
+  | SearchConditionFilesystem
+  | SearchConditionPartitions
+  | DriveSearchConditionAnd
+  | DriveSearchConditionOr
+  | DriveSearchConditionNot;
 export type SizeValue = SizeString | SizeBytes;
 /**
  * Human readable size.
@@ -28,6 +37,129 @@ export type SizeString = string;
  * Size in bytes.
  */
 export type SizeBytes = number;
+/**
+ * Shortcut to match by filesystem presence: "any" matches formatted devices, "none" matches unformatted ones.
+ */
+export type SearchFilesystemPresence = "any" | "none";
+/**
+ * Matches formatted devices whose file system satisfies the condition.
+ */
+export type FilesystemCondition =
+  | FilesystemConditionType
+  | FilesystemConditionLabel
+  | FilesystemConditionAnd
+  | FilesystemConditionOr
+  | FilesystemConditionNot;
+export type FilesystemTypeAny =
+  | "bcachefs"
+  | "btrfs"
+  | "exfat"
+  | "ext2"
+  | "ext3"
+  | "ext4"
+  | "f2fs"
+  | "jfs"
+  | "nfs"
+  | "nilfs2"
+  | "ntfs"
+  | "reiserfs"
+  | "swap"
+  | "tmpfs"
+  | "vfat"
+  | "xfs";
+/**
+ * Shortcut to match by partitions presence: "any" matches devices with at least one partition, "none" matches devices with no partitions.
+ */
+export type SearchPartitionsPresence = "any" | "none";
+/**
+ * Matches devices whose partitions satisfy the quantifier.
+ */
+export type PartitionsQuantifier =
+  | PartitionsQuantifierAny
+  | PartitionsQuantifierNone
+  | PartitionsQuantifierAll
+  | PartitionsQuantifierCount;
+/**
+ * Any partition id managed by libstorage-ng. Some ids are only valid for a given partition table type.
+ */
+export type PartitionId =
+  | "dos12"
+  | "dos16"
+  | "ntfs"
+  | "dos32"
+  | "extended"
+  | "diag"
+  | "prep"
+  | "swap"
+  | "linux"
+  | "irst"
+  | "lvm"
+  | "raid"
+  | "xbootldr"
+  | "esp"
+  | "bios_boot"
+  | "windows_basic_data"
+  | "microsoft_reserved"
+  | "linux_home"
+  | "linux_server_data"
+  | "linux_root_arm"
+  | "linux_root_aarch64"
+  | "linux_root_ppc32"
+  | "linux_root_ppc64be"
+  | "linux_root_ppc64le"
+  | "linux_root_riscv32"
+  | "linux_root_riscv64"
+  | "linux_root_s390"
+  | "linux_root_s390x"
+  | "linux_root_x86"
+  | "linux_root_x86_64"
+  | "linux_usr_arm"
+  | "linux_usr_aarch64"
+  | "linux_usr_ppc32"
+  | "linux_usr_ppc64be"
+  | "linux_usr_ppc64le"
+  | "linux_usr_riscv32"
+  | "linux_usr_riscv64"
+  | "linux_usr_s390"
+  | "linux_usr_s390x"
+  | "linux_usr_x86"
+  | "linux_usr_x86_64"
+  | "linux_var"
+  | "linux_var_tmp";
+export type PartitionSearchCondition =
+  | SearchConditionName
+  | SearchConditionSize
+  | SearchConditionPartitionNumber
+  | SearchConditionPartitionId
+  | SearchConditionFilesystem
+  | PartitionSearchConditionAnd
+  | PartitionSearchConditionOr
+  | PartitionSearchConditionNot;
+export type PartitionsCount = PartitionsCount1 & {
+  /**
+   * Optional condition; omit to count all partitions.
+   */
+  condition?:
+    | SearchConditionName
+    | SearchConditionSize
+    | SearchConditionPartitionNumber
+    | SearchConditionPartitionId
+    | SearchConditionFilesystem
+    | PartitionSearchConditionAnd
+    | PartitionSearchConditionOr
+    | PartitionSearchConditionNot;
+  /**
+   * Minimum number of matching partitions (must be >= 1).
+   */
+  min?: number;
+  /**
+   * Maximum number of matching partitions (must be >= 1).
+   */
+  max?: number;
+};
+export type PartitionsCount1 = {
+  [k: string]: unknown;
+};
 export type DriveSearchSort = DriveSearchSortCriterion | DriveSearchSortCriterion[];
 export type DriveSearchSortCriterion = DriveSearchSortCriterionShort | DriveSearchSortCriterionFull;
 export type DriveSearchSortCriterionShort = "name" | "size";
@@ -64,23 +196,6 @@ export type EncryptionPbkdFunction = "pbkdf2" | "argon2i" | "argon2id";
 export type EncryptionSwap =
   "protected_swap" | "secure_swap" | "random_swap" | "protectedSwap" | "secureSwap" | "randomSwap";
 export type FilesystemType = FilesystemTypeAny | FilesystemTypeBtrfs;
-export type FilesystemTypeAny =
-  | "bcachefs"
-  | "btrfs"
-  | "exfat"
-  | "ext2"
-  | "ext3"
-  | "ext4"
-  | "f2fs"
-  | "jfs"
-  | "nfs"
-  | "nilfs2"
-  | "ntfs"
-  | "reiserfs"
-  | "swap"
-  | "tmpfs"
-  | "vfat"
-  | "xfs";
 /**
  * How to mount the device.
  */
@@ -96,8 +211,6 @@ export type PartitionElement =
   | PartitionToDelete
   | PartitionToDeleteIfNeeded;
 export type PartitionSearch = SearchAll | SearchName | PartitionAdvancedSearch;
-export type PartitionSearchCondition =
-  SearchConditionName | SearchConditionSize | SearchConditionPartitionNumber;
 export type PartitionSearchSort = PartitionSearchSortCriterion | PartitionSearchSortCriterion[];
 export type PartitionSearchSortCriterion =
   PartitionSearchSortCriterionShort | PartitionSearchSortCriterionFull;
@@ -106,7 +219,8 @@ export type PartitionSearchSortCriterionShort = "name" | "size" | "number";
  * How to handle the section if the device is not found.
  */
 export type SearchCreatableActions = "skip" | "error" | "create";
-export type PartitionId = "linux" | "swap" | "lvm" | "raid" | "esp" | "prep" | "bios_boot";
+export type PartitionId1 =
+  "linux" | "swap" | "lvm" | "raid" | "esp" | "prep" | "bios_boot" | "xbootldr";
 export type Size = SizeValue | SizeTuple | SizeRange;
 /**
  * Lower size limit and optionally upper size limit.
@@ -126,7 +240,12 @@ export type DeletePartitionSearch = SearchAll | SearchName | DeletePartitionAdva
  */
 export type BaseName = string;
 export type VolumeGroupSearch = SearchAll | SearchName | VolumeGroupAdvancedSearch;
-export type VolumeGroupSearchCondition = SearchConditionName | SearchConditionSize;
+export type VolumeGroupSearchCondition =
+  | SearchConditionName
+  | SearchConditionSize
+  | VolumeGroupSearchConditionAnd
+  | VolumeGroupSearchConditionOr
+  | VolumeGroupSearchConditionNot;
 export type VolumeGroupSearchSort =
   VolumeGroupSearchSortCriterion | VolumeGroupSearchSortCriterion[];
 export type VolumeGroupSearchSortCriterion =
@@ -147,16 +266,29 @@ export type LogicalVolumeElement =
  */
 export type LogicalVolumeStripes = number;
 export type LogicalVolumeSearch = SearchAll | SearchName | LogicalVolumeAdvancedSearch;
-export type LogicalVolumeSearchCondition = SearchConditionName | SearchConditionSize;
+export type LogicalVolumeSearchCondition =
+  | SearchConditionName
+  | SearchConditionSize
+  | SearchConditionFilesystem
+  | LogicalVolumeSearchConditionAnd
+  | LogicalVolumeSearchConditionOr
+  | LogicalVolumeSearchConditionNot;
 export type LogicalVolumeSearchSort =
   LogicalVolumeSearchSortCriterion | LogicalVolumeSearchSortCriterion[];
 export type LogicalVolumeSearchSortCriterion =
   LogicalVolumeSearchSortCriterionShort | LogicalVolumeSearchSortCriterionFull;
-export type LogicalVolumeSearchSortCriterionShort = "name" | "size" | "number";
+export type LogicalVolumeSearchSortCriterionShort = "name" | "size";
 export type DeleteLogicalVolumeSearch = SearchAll | SearchName | DeleteLogicalVolumeAdvancedSearch;
 export type MdRaidElement = NonPartitionedMdRaid | PartitionedMdRaid;
 export type MdRaidSearch = SearchAll | SearchName | MdRaidAdvancedSearch;
-export type MdRaidSearchCondition = SearchConditionName | SearchConditionSize;
+export type MdRaidSearchCondition =
+  | SearchConditionName
+  | SearchConditionSize
+  | SearchConditionFilesystem
+  | SearchConditionPartitions
+  | MdRaidSearchConditionAnd
+  | MdRaidSearchConditionOr
+  | MdRaidSearchConditionNot;
 export type MdRaidSearchSort = MdRaidSearchSortCriterion | MdRaidSearchSortCriterion[];
 export type MdRaidSearchSortCriterion =
   MdRaidSearchSortCriterionShort | MdRaidSearchSortCriterionFull;
@@ -241,6 +373,175 @@ export interface SearchConditionSizeGreater {
 export interface SearchConditionSizeLess {
   less: SizeValue;
 }
+export interface SearchConditionDriver {
+  /**
+   * Matches devices handled by the given kernel driver, as reported by hwinfo. A device can be handled by several drivers; the condition matches if any of them is the given one. Do not confuse with driver_modules, which values usually use underscore (virtio-pci vs virtio_pci) and subfix (ahci vs ahci_mod).
+   */
+  driver: string;
+}
+export interface SearchConditionBoss {
+  /**
+   * Whether the device is a BOSS (Boot Optimized Storage Solution) device, a technology introduced by Dell. Use false to match any other device.
+   */
+  boss: boolean;
+}
+export interface SearchConditionFilesystem {
+  filesystem: SearchFilesystemPresence | FilesystemCondition;
+}
+export interface FilesystemConditionType {
+  type: FilesystemTypeAny;
+}
+export interface FilesystemConditionLabel {
+  /**
+   * File system label.
+   */
+  label: string;
+}
+export interface FilesystemConditionAnd {
+  /**
+   * Matches when all the nested conditions match.
+   *
+   * @minItems 2
+   */
+  and: [FilesystemCondition, FilesystemCondition, ...FilesystemCondition[]];
+}
+export interface FilesystemConditionOr {
+  /**
+   * Matches when any of the nested conditions matches.
+   *
+   * @minItems 2
+   */
+  or: [FilesystemCondition, FilesystemCondition, ...FilesystemCondition[]];
+}
+export interface FilesystemConditionNot {
+  /**
+   * Matches when the nested condition does not match.
+   */
+  not:
+    | FilesystemConditionType
+    | FilesystemConditionLabel
+    | FilesystemConditionAnd
+    | FilesystemConditionOr
+    | FilesystemConditionNot;
+}
+export interface SearchConditionPartitions {
+  partitions: SearchPartitionsPresence | PartitionsQuantifier;
+}
+export interface PartitionsQuantifierAny {
+  /**
+   * Matches when at least one partition satisfies the condition.
+   */
+  any:
+    | SearchConditionName
+    | SearchConditionSize
+    | SearchConditionPartitionNumber
+    | SearchConditionPartitionId
+    | SearchConditionFilesystem
+    | PartitionSearchConditionAnd
+    | PartitionSearchConditionOr
+    | PartitionSearchConditionNot;
+}
+export interface SearchConditionPartitionNumber {
+  /**
+   * Partition number (e.g., 1 for vda1).
+   */
+  number: number;
+}
+export interface SearchConditionPartitionId {
+  id: PartitionId;
+}
+export interface PartitionSearchConditionAnd {
+  /**
+   * Matches when all the nested conditions match.
+   *
+   * @minItems 2
+   */
+  and: [PartitionSearchCondition, PartitionSearchCondition, ...PartitionSearchCondition[]];
+}
+export interface PartitionSearchConditionOr {
+  /**
+   * Matches when any of the nested conditions matches.
+   *
+   * @minItems 2
+   */
+  or: [PartitionSearchCondition, PartitionSearchCondition, ...PartitionSearchCondition[]];
+}
+export interface PartitionSearchConditionNot {
+  /**
+   * Matches when the nested condition does not match.
+   */
+  not:
+    | SearchConditionName
+    | SearchConditionSize
+    | SearchConditionPartitionNumber
+    | SearchConditionPartitionId
+    | SearchConditionFilesystem
+    | PartitionSearchConditionAnd
+    | PartitionSearchConditionOr
+    | PartitionSearchConditionNot;
+}
+export interface PartitionsQuantifierNone {
+  /**
+   * Matches when no partition satisfies the condition.
+   */
+  none:
+    | SearchConditionName
+    | SearchConditionSize
+    | SearchConditionPartitionNumber
+    | SearchConditionPartitionId
+    | SearchConditionFilesystem
+    | PartitionSearchConditionAnd
+    | PartitionSearchConditionOr
+    | PartitionSearchConditionNot;
+}
+export interface PartitionsQuantifierAll {
+  /**
+   * Matches when there is at least one partition and all partitions satisfy the condition.
+   */
+  all:
+    | SearchConditionName
+    | SearchConditionSize
+    | SearchConditionPartitionNumber
+    | SearchConditionPartitionId
+    | SearchConditionFilesystem
+    | PartitionSearchConditionAnd
+    | PartitionSearchConditionOr
+    | PartitionSearchConditionNot;
+}
+export interface PartitionsQuantifierCount {
+  count: PartitionsCount;
+}
+export interface DriveSearchConditionAnd {
+  /**
+   * Matches when all the nested conditions match.
+   *
+   * @minItems 2
+   */
+  and: [DriveSearchCondition, DriveSearchCondition, ...DriveSearchCondition[]];
+}
+export interface DriveSearchConditionOr {
+  /**
+   * Matches when any of the nested conditions matches.
+   *
+   * @minItems 2
+   */
+  or: [DriveSearchCondition, DriveSearchCondition, ...DriveSearchCondition[]];
+}
+export interface DriveSearchConditionNot {
+  /**
+   * Matches when the nested condition does not match.
+   */
+  not:
+    | SearchConditionName
+    | SearchConditionSize
+    | SearchConditionDriver
+    | SearchConditionBoss
+    | SearchConditionFilesystem
+    | SearchConditionPartitions
+    | DriveSearchConditionAnd
+    | DriveSearchConditionOr
+    | DriveSearchConditionNot;
+}
 export interface DriveSearchSortCriterionFull {
   name?: SearchSortCriterionOrder;
   size?: SearchSortCriterionOrder;
@@ -319,6 +620,11 @@ export interface Filesystem {
    */
   mkfsExtraArguments?: string;
   /**
+   * @deprecated
+   * Deprecated in favor of mkfsExtraArguments
+   */
+  mkfsOptions?: string[];
+  /**
    * Options to add to the fourth field of fstab.
    */
   mountOptions?: string[];
@@ -358,7 +664,7 @@ export interface AdvancedPartitionsGenerator {
 export interface RegularPartition {
   search?: PartitionSearch;
   alias?: Alias;
-  id?: PartitionId;
+  id?: PartitionId1;
   size?: Size;
   encryption?: Encryption;
   filesystem?: Filesystem;
@@ -368,12 +674,6 @@ export interface PartitionAdvancedSearch {
   sort?: PartitionSearchSort;
   max?: SearchMax;
   ifNotFound?: SearchCreatableActions;
-}
-export interface SearchConditionPartitionNumber {
-  /**
-   * Partition number (e.g., 1 for vda1).
-   */
-  number: number;
 }
 export interface PartitionSearchSortCriterionFull {
   name?: SearchSortCriterionOrder;
@@ -427,6 +727,33 @@ export interface VolumeGroupAdvancedSearch {
   max?: SearchMax;
   ifNotFound?: SearchCreatableActions;
 }
+export interface VolumeGroupSearchConditionAnd {
+  /**
+   * Matches when all the nested conditions match.
+   *
+   * @minItems 2
+   */
+  and: [VolumeGroupSearchCondition, VolumeGroupSearchCondition, ...VolumeGroupSearchCondition[]];
+}
+export interface VolumeGroupSearchConditionOr {
+  /**
+   * Matches when any of the nested conditions matches.
+   *
+   * @minItems 2
+   */
+  or: [VolumeGroupSearchCondition, VolumeGroupSearchCondition, ...VolumeGroupSearchCondition[]];
+}
+export interface VolumeGroupSearchConditionNot {
+  /**
+   * Matches when the nested condition does not match.
+   */
+  not:
+    | SearchConditionName
+    | SearchConditionSize
+    | VolumeGroupSearchConditionAnd
+    | VolumeGroupSearchConditionOr
+    | VolumeGroupSearchConditionNot;
+}
 export interface VolumeGroupSearchSortCriterionFull {
   name?: SearchSortCriterionOrder;
   size?: SearchSortCriterionOrder;
@@ -475,6 +802,42 @@ export interface LogicalVolumeAdvancedSearch {
   sort?: LogicalVolumeSearchSort;
   max?: SearchMax;
   ifNotFound?: SearchCreatableActions;
+}
+export interface LogicalVolumeSearchConditionAnd {
+  /**
+   * Matches when all the nested conditions match.
+   *
+   * @minItems 2
+   */
+  and: [
+    LogicalVolumeSearchCondition,
+    LogicalVolumeSearchCondition,
+    ...LogicalVolumeSearchCondition[],
+  ];
+}
+export interface LogicalVolumeSearchConditionOr {
+  /**
+   * Matches when any of the nested conditions matches.
+   *
+   * @minItems 2
+   */
+  or: [
+    LogicalVolumeSearchCondition,
+    LogicalVolumeSearchCondition,
+    ...LogicalVolumeSearchCondition[],
+  ];
+}
+export interface LogicalVolumeSearchConditionNot {
+  /**
+   * Matches when the nested condition does not match.
+   */
+  not:
+    | SearchConditionName
+    | SearchConditionSize
+    | SearchConditionFilesystem
+    | LogicalVolumeSearchConditionAnd
+    | LogicalVolumeSearchConditionOr
+    | LogicalVolumeSearchConditionNot;
 }
 export interface LogicalVolumeSearchSortCriterionFull {
   name?: SearchSortCriterionOrder;
@@ -539,6 +902,35 @@ export interface MdRaidAdvancedSearch {
   sort?: MdRaidSearchSort;
   max?: SearchMax;
   ifNotFound?: SearchCreatableActions;
+}
+export interface MdRaidSearchConditionAnd {
+  /**
+   * Matches when all the nested conditions match.
+   *
+   * @minItems 2
+   */
+  and: [MdRaidSearchCondition, MdRaidSearchCondition, ...MdRaidSearchCondition[]];
+}
+export interface MdRaidSearchConditionOr {
+  /**
+   * Matches when any of the nested conditions matches.
+   *
+   * @minItems 2
+   */
+  or: [MdRaidSearchCondition, MdRaidSearchCondition, ...MdRaidSearchCondition[]];
+}
+export interface MdRaidSearchConditionNot {
+  /**
+   * Matches when the nested condition does not match.
+   */
+  not:
+    | SearchConditionName
+    | SearchConditionSize
+    | SearchConditionFilesystem
+    | SearchConditionPartitions
+    | MdRaidSearchConditionAnd
+    | MdRaidSearchConditionOr
+    | MdRaidSearchConditionNot;
 }
 export interface MdRaidSearchSortCriterionFull {
   name?: SearchSortCriterionOrder;

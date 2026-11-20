@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Nov 12 14:33:50 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Fix the URL of the openSUSE Tumbleweed update repository for ppc,
+  it pointed to the OSS repository (gh#agama-project/agama#4228).
+
+-------------------------------------------------------------------
 Wed Nov  4 07:48:14 UTC 2026 - Dominique Leuenberger <dimstar@opensuse.org>
 
 - Sync user patterns with Leap (boo#1267727).

@@ -340,6 +340,7 @@ impl ZyppServer {
                 url: repo.url,
                 enabled: repo.enabled,
                 priority: None,
+                autorefresh: repo.autorefresh,
             })
             .collect();
 
@@ -420,11 +421,16 @@ impl ZyppServer {
             .filter(|r| !aliases.contains(&r.alias))
             .collect();
         for repo in &to_add {
-            let result =
-                zypp.add_repository(&repo.alias, &repo.url, repo.priority, |percent, alias| {
+            let result = zypp.add_repository(
+                &repo.alias,
+                &repo.url,
+                repo.priority,
+                repo.autorefresh,
+                |percent, alias| {
                     tracing::info!("Adding repository {} ({}%)", alias, percent);
                     true
-                });
+                },
+            );
 
             if let Err(error) = result {
                 let message = format!("Could not add the repository {}", repo.alias);
@@ -461,6 +467,7 @@ impl ZyppServer {
             security,
         );
 
+        let repo_refresh_failed = result.is_err();
         if let Err(error) = result {
             let message = gettext("Could not read the repositories");
             issues
@@ -511,29 +518,29 @@ impl ZyppServer {
         }
 
         for (name, r#type, selection) in &state.resolvables.to_vec() {
-            match selection {
-                ResolvableSelection::AutoSelected { skip_if_missing } => {
-                    issues.software.append(&mut self.select_resolvable(
-                        zypp,
-                        name,
-                        *r#type,
-                        zypp_agama::ResolvableSelected::Installation,
-                        *skip_if_missing,
-                    ));
-                }
-                ResolvableSelection::Selected => {
-                    issues.software.append(&mut self.select_resolvable(
-                        zypp,
-                        name,
-                        *r#type,
-                        zypp_agama::ResolvableSelected::User,
-                        false,
-                    ));
-                }
+            let mut resolvable_issues = match selection {
+                ResolvableSelection::AutoSelected { skip_if_missing } => self.select_resolvable(
+                    zypp,
+                    name,
+                    *r#type,
+                    zypp_agama::ResolvableSelected::Installation,
+                    *skip_if_missing,
+                ),
+                ResolvableSelection::Selected => self.select_resolvable(
+                    zypp,
+                    name,
+                    *r#type,
+                    zypp_agama::ResolvableSelected::User,
+                    false,
+                ),
                 // the removal is handled in a separate iteration to unselect resolvables selected
                 // by dependencies
-                ResolvableSelection::Removed => {}
+                ResolvableSelection::Removed => vec![],
             };
+
+            if !repo_refresh_failed {
+                issues.software.append(&mut resolvable_issues);
+            }
         }
 
         if let Some(proposal) = l10n {

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2019] SUSE LLC
+# Copyright (c) [2019, 2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -68,6 +68,30 @@ describe Y2Storage::BootRequirementsStrategies::ZIPL do
         messages = subject.warnings.map(&:message)
         expect(messages).to include(/The grub boot loader cannot access the file system/)
       end
+    end
+  end
+
+  describe "#needed_partitions" do
+    using Y2Storage::Refinements::SizeCasts
+
+    let(:planned) do
+      ["/boot", "/boot/efi", "/efi"].map do |path|
+        planned_partition(mount_point: path, min_size: 500.MiB)
+      end
+    end
+
+    let(:analyzer) do
+      Y2Storage::BootRequirementsStrategies::Analyzer.new(fake_devicegraph, planned, "/dev/dasdc")
+    end
+
+    subject { described_class.new(fake_devicegraph, planned, "/dev/dasdc", true) }
+
+    it "does not set the partition id of the partitions configured at boot mount points" do
+      subject.needed_partitions(:desired)
+
+      # A nil id means that the strategy did not decide the id: the partition creator uses the default
+      # id (linux) when it creates the partition.
+      expect(planned.map(&:partition_id)).to all(be_nil)
     end
   end
 end

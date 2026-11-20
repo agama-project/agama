@@ -4,7 +4,7 @@
 DATE=$(date)
 # interpolation avoids line splitting in journalctl
 echo "Smoke test of installation via script, running at ${DATE}"
-for i in `seq 5`; do
+for i in $(seq 5); do
   echo Sleep $i of 5
   sleep 2
 done

@@ -1,4 +1,4 @@
-# Copyright (c) [2015] SUSE LLC
+# Copyright (c) [2015, 2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -45,13 +45,16 @@ module Y2Storage
     # @see #planned_devices
     # @see #boot_disk_name
     # @see #bootloader
+    # @see #assign_boot_ids
     def initialize(
-      devicegraph, planned_devices: [], boot_disk_name: nil, bootloader: BootloaderType::GRUB2
+      devicegraph, planned_devices: [], boot_disk_name: nil, bootloader: BootloaderType::GRUB2,
+      assign_boot_ids: false
     )
       @devicegraph = devicegraph
       @planned_devices = planned_devices
       @boot_disk_name = boot_disk_name
       @bootloader = bootloader
+      @assign_boot_ids = assign_boot_ids
     end
 
     # Partitions needed in order to be able to boot the system
@@ -122,12 +125,23 @@ module Y2Storage
     # @return [BootloaderType] type of bootloader that will be installed
     attr_reader :bootloader
 
+    # Whether the strategy has to set the id of the planned partitions without id that are mounted
+    # at boot mount points (/boot, /boot/efi and /efi), and to consider them for deciding which
+    # boot partitions are missing.
+    #
+    # @see BootRequirementsStrategies::UEFI#assign_configured_boot_ids
+    #
+    # @return [Boolean]
+    attr_reader :assign_boot_ids
+
     def arch
       @arch ||= StorageManager.instance.arch
     end
 
     def strategy
-      @strategy ||= strategy_class.new(devicegraph, planned_devices, boot_disk_name)
+      @strategy ||= strategy_class.new(
+        devicegraph, planned_devices, boot_disk_name, assign_boot_ids
+      )
     end
 
     # @see #strategy
