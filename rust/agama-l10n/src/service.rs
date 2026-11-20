@@ -330,3 +330,20 @@ impl MessageHandler<message::UpdateKeymap> for Service {
         Ok(())
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::test_utils::start_service;
+    use tokio::sync::broadcast;
+
+    #[tokio::test]
+    async fn test_get_locale() {
+        let (events_tx, _) = broadcast::channel(16);
+        let issues = issue::Service::starter(events_tx.clone()).start();
+        let service = start_service(events_tx, issues).await;
+
+        let locale = service.call(message::GetLocale).await.unwrap();
+        assert_eq!(locale, LocaleId::default());
+    }
+}

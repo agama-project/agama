@@ -163,3 +163,33 @@ impl ConfigAutoLoader {
         self.questions.should_retry(&msg, error, url).await
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_is_location_available_file() {
+        assert!(!is_location_available(
+            "file:///nonexistent_autoinst_12345.json"
+        ));
+
+        let temp_file = tempfile::NamedTempFile::new().unwrap();
+        let url = format!("file://{}", temp_file.path().display());
+        assert!(is_location_available(&url));
+    }
+
+    #[test]
+    fn test_is_location_available_label() {
+        assert!(!is_location_available(
+            "label://NONEXISTENT_OEM_12345/autoinst.json"
+        ));
+        assert!(!is_location_available("label://no_slash_in_url"));
+    }
+
+    #[test]
+    fn test_is_location_available_remote_fallback() {
+        assert!(is_location_available("http://mock.local/autoinst.json"));
+        assert!(is_location_available("ftp://mock.local/autoinst.json"));
+    }
+}
