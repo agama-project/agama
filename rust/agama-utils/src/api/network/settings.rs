@@ -195,7 +195,7 @@ impl BondSettings {
 }
 
 /// Bonding settings except the nested ports, which the configuration and the system information
-/// report differently.
+/// report differently (see [`BondSettings`] and [`SystemBondSettings`]).
 #[derive(Clone, Debug, Serialize, Deserialize, JsonSchema, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct BondBase {
@@ -255,7 +255,7 @@ impl BridgeSettings {
 }
 
 /// Bridge settings except the nested ports, which the configuration and the system information
-/// report differently.
+/// report differently (see [`BridgeSettings`] and [`SystemBridgeSettings`]).
 #[derive(Clone, Debug, Default, Serialize, Deserialize, JsonSchema, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct BridgeBase {
@@ -629,8 +629,9 @@ impl From<ConnectionBase> for NetworkConnection {
 /// Settings of a connection except its IP settings ([`IpSettings`]) and its `bond` and `bridge`
 /// sections, which hold the nested ports.
 ///
-/// The representations of the connections that report the ports differently can share these
-/// settings and add their own sections (see [`NetworkConnection`]).
+/// The configuration and the system information report the ports differently (see
+/// [`NetworkConnection`] and [`SystemNetworkConnection`]), so they share these settings and add
+/// their own sections.
 #[derive(Clone, Debug, Default, Serialize, Deserialize, JsonSchema, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct ConnectionBase {
@@ -746,11 +747,12 @@ pub struct NetworkConnectionWithState {
     pub state: ConnectionState,
 }
 
-/// Settings that every nested port has, whatever its kind.
+/// Settings that every nested port has, whatever its kind and whatever reports it.
 ///
 /// It is a connection without IP settings, as its controller holds the IP configuration, and
 /// without the sections that tell its kind. Each kind of port flattens it and adds its own
-/// sections (e.g., [`BondBondPort`]).
+/// sections, both in the configuration (e.g., [`BondBondPort`]) and in the system information
+/// (e.g., [`SystemBondBondPort`]).
 ///
 /// The ports reject unknown fields, so this struct must not flatten any other one: serde does not
 /// see the fields of a flattened struct that flattens another one, and the port would reject them
@@ -1216,7 +1218,7 @@ impl BondPort {
 /// Adds the deprecated `dnsSearchlist` alias to the schema of a connection.
 ///
 /// schemars ignores the serde aliases, as JSON Schema has no such concept.
-fn add_dns_searchlist_alias(schema: &mut schemars::Schema) {
+pub(super) fn add_dns_searchlist_alias(schema: &mut schemars::Schema) {
     let Some(properties) = schema.get_mut("properties").and_then(|p| p.as_object_mut()) else {
         return;
     };
