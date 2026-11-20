@@ -40,7 +40,7 @@ import { generatePath } from "react-router";
 import Text from "~/components/core/Text";
 import { Link, NestedContent, Page } from "~/components/core";
 import InstallationOnlySwitch from "~/components/network/InstallationOnlySwitch";
-import { Connection, Device } from "~/types/network";
+import { Connection, Device, portName } from "~/types/network";
 import { connectionBindingMode, formatIp } from "~/utils/network";
 import { NETWORK } from "~/routes/paths";
 import { useDevices, useWifiNetworks } from "~/hooks/model/system/network";
@@ -127,7 +127,9 @@ const BondDetails = ({ connection }: { connection: Connection }) => {
             <Flex direction={{ default: "column" }}>
               {isEmpty(connection.bond?.ports)
                 ? _("None set")
-                : connection.bond?.ports.map((port, idx) => <FlexItem key={idx}>{port}</FlexItem>)}
+                : connection.bond?.ports.map((port, idx) => (
+                    <FlexItem key={idx}>{portName(port)}</FlexItem>
+                  ))}
             </Flex>
           </DescriptionListDescription>
         </DescriptionListGroup>
@@ -177,7 +179,7 @@ const BridgeDetails = ({ connection }: { connection: Connection }) => {
               {isEmpty(connection.bridge.ports)
                 ? _("None set")
                 : connection.bridge?.ports.map((port, idx) => (
-                    <FlexItem key={idx}>{port}</FlexItem>
+                    <FlexItem key={idx}>{portName(port)}</FlexItem>
                   ))}
             </Flex>
           </DescriptionListDescription>
