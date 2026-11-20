@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Wed Nov 18 12:01:26 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Report the state of the ports nested in a bond or a bridge in the
+  network system information. Its connection types are renamed to
+  SystemNetworkConnection and SystemNetworkConnections in the
+  OpenAPI specification (gh#agama-project/agama#4255).
+
+-------------------------------------------------------------------
 Wed Nov 11 12:00:00 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
 
 - Enable autorefresh for extraRepositories and disable it for the
