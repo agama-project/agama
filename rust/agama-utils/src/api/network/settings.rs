@@ -1662,4 +1662,20 @@ mod tests {
         let read: NetworkConnection = serde_json::from_value(serialized).unwrap();
         assert_eq!(read, conn);
     }
+
+    #[test]
+    fn test_a_nested_port_does_not_take_the_state() {
+        for port in [
+            r#"{ "interface": "eth0", "state": "activated" }"#,
+            r#"{ "interface": "bond1", "bond": { "mode": "802.3ad" }, "state": "activated" }"#,
+        ] {
+            let json = format!(
+                r#"{{ "id": "bond0", "bond": {{ "mode": "802.3ad", "portConnections": [{port}] }} }}"#
+            );
+            assert!(
+                serde_json::from_str::<NetworkConnection>(&json).is_err(),
+                "{port}"
+            );
+        }
+    }
 }
