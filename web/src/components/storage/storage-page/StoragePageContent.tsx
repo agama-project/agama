@@ -27,10 +27,10 @@ import EntriesTable from "~/components/storage/entries-table/EntriesTable";
 import TopLine, { TopResult } from "~/components/storage/storage-page/TopLine";
 import { useElementSize } from "~/hooks/use-element-size";
 import GlobalActions from "~/components/storage/storage-page/GlobalActions";
-import Result from "~/components/storage/storage-page/Result";
+import StorageEmptyState from "~/components/storage/storage-page/StorageEmptyState";
+import useAnnounceResult from "~/components/storage/storage-page/use-announce-result";
 import { usePageState } from "~/components/storage/storage-page/use-page-state";
 import DeviceDetailsPanel from "~/components/storage/storage-page/DeviceDetailsPanel";
-import { useConfigModel } from "~/hooks/model/storage/config-model";
 
 /**
  * What the storage page shows, and where everything it needs is read.
@@ -47,14 +47,14 @@ import { useConfigModel } from "~/hooks/model/storage/config-model";
  * result, stays in view as the page scrolls, and scrolls on its own.
  */
 export default function StoragePageContent(): React.ReactNode {
-  const model = useConfigModel();
   const [resultNode, setResultNode] = React.useState<HTMLDivElement | null>(null);
   const { height: resultHeight = 0 } = useElementSize(resultNode);
   const state = usePageState();
+  useAnnounceResult();
 
-  /* Without a configuration to show, or where a state takes the whole page,
-     the page is only what Result says. */
-  if (!model || state.kind !== "page") return <Result />;
+  /* Where a state takes the whole page, the page is only that. Without a
+     model there is always such a state. */
+  if (state.kind !== "page") return <StorageEmptyState state={state} />;
 
   const devices = (
     <DeviceDetailsPanel
@@ -74,7 +74,6 @@ export default function StoragePageContent(): React.ReactNode {
 
   return (
     <>
-      <Result />
       {/* Kept in sight while the rest of the page scrolls: what every setting
           leads to. The same sticky section the software patterns page keeps
           its filter in. */}

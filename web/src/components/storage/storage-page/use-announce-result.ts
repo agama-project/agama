@@ -21,18 +21,12 @@
  */
 
 import React from "react";
-import { Flex } from "@patternfly/react-core";
-import FixableConfigInfo, { fixableConfigTitle } from "~/components/storage/FixableConfigInfo";
-import ProposalFailedInfo, { proposalFailedTitle } from "~/components/storage/ProposalFailedInfo";
-import UnsupportedModelInfo from "~/components/storage/UnsupportedModelInfo";
-import InvalidConfigMessage from "~/components/storage/storage-page/InvalidConfigMessage";
-import NoDevicesMessage from "~/components/storage/storage-page/NoDevicesMessage";
-import UnknownConfigMessage from "~/components/storage/storage-page/UnknownConfigMessage";
+import { proposalFailedTitle } from "~/components/storage/ProposalFailedInfo";
+import { fixableConfigTitle } from "~/components/storage/FixableConfigInfo";
+import { summaryOf } from "~/components/storage/storage-page/Consequences";
 import { usePageState } from "~/components/storage/storage-page/use-page-state";
 import { useIssues } from "~/hooks/model/issue";
 import { useProposal } from "~/hooks/model/proposal/storage";
-import { useConfigModel } from "~/hooks/model/storage/config-model";
-import { summaryOf } from "~/components/storage/storage-page/Consequences";
 import { useAnnounce } from "~/context/announcer";
 import type { TranslatedString } from "~/i18n";
 
@@ -62,23 +56,16 @@ function useAnnounceKind(kind: AlertKind | null, title: TranslatedString) {
 }
 
 /**
- * What the storage page reports about its configuration.
- *
- * Where a layout could be calculated, that is what the installer will do to
- * the disks, as plain text: an ordinary plan is not a notice, so alerts are
- * kept for the states that need the reader's attention. Those are the
- * configuration being invalid, unknown or unsupported, there being no devices
- * to install on, and the installer failing to find a layout.
+ * Says to screen readers what the page's top line reports when that turns from
+ * a plan into a problem or back. Only the states where the page is shown have
+ * such a line; the ones that replace the page are not a kind of alert.
  */
-export default function Result(): React.ReactNode {
-  const model = useConfigModel();
+export default function useAnnounceResult() {
   const proposal = useProposal();
   const issues = useIssues("storage");
   const configIssues = issues.filter((i) => i.class !== "proposal");
   const state = usePageState();
 
-  /* The states that replace the page have no alert to flip, so they are not
-     a kind of alert. */
   let kind: AlertKind | null = null;
   if (state.kind === "page") kind = proposal ? "success" : "problem";
 
@@ -90,21 +77,4 @@ export default function Result(): React.ReactNode {
   }
 
   useAnnounceKind(kind, title);
-
-  if (state.kind === "noDevices") return <NoDevicesMessage />;
-  if (state.kind === "invalid") return <InvalidConfigMessage issues={state.issues} />;
-  if (state.kind === "unknown") return <UnknownConfigMessage />;
-  /* The result, or the problem finding one, is reported in the page's top
-     line, which is there whenever the configuration can be read. */
-  if (proposal || model) return null;
-
-  /* A flex column rather than a stack, which takes the whole height of what
-     holds it: inside a column of its own, that leaves a gap under the alerts
-     and squeezes whatever comes after them. */
-  return (
-    <Flex direction={{ default: "column" }} gap={{ default: "gapMd" }}>
-      {configIssues.length ? <FixableConfigInfo issues={configIssues} /> : <ProposalFailedInfo />}
-      {!model && <UnsupportedModelInfo />}
-    </Flex>
-  );
 }
