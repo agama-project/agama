@@ -20,9 +20,7 @@
 
 //! Representation of the network settings
 
-use super::types::{
-    ConnectionState, ConnectivityState, DeviceState, DeviceType, Ipv4Method, Ipv6Method, Status,
-};
+use super::types::{ConnectivityState, DeviceState, DeviceType, Ipv4Method, Ipv6Method, Status};
 use crate::openapi::schemas;
 use cidr::IpInet;
 use merge::Merge;
@@ -54,13 +52,6 @@ impl NetworkConnectionsCollection {
         all
     }
 }
-
-/// Collection of connections with their current state, as the system reports them.
-///
-/// Like [`NetworkConnectionsCollection`], it only holds the root connections.
-#[derive(Clone, Debug, Default, Serialize, Deserialize, JsonSchema, PartialEq)]
-#[schemars(rename = "NetworkConnectionsWithState")]
-pub struct NetworkConnectionsWithStateCollection(pub Vec<NetworkConnectionWithState>);
 
 /// Network settings for installation
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
@@ -733,18 +724,6 @@ impl IpSettings {
             && self.dns_searchlist.is_empty()
             && self.ignore_auto_dns != Some(true)
     }
-}
-
-/// A connection as the system reports it, with its current state.
-///
-/// The state is not part of the configuration, so only the system information reports it. The
-/// ports nested in a controller do not report it.
-#[derive(Clone, Debug, Serialize, Deserialize, JsonSchema, PartialEq)]
-pub struct NetworkConnectionWithState {
-    #[serde(flatten)]
-    pub connection: NetworkConnection,
-    /// Current state of the connection
-    pub state: ConnectionState,
 }
 
 /// Settings that every nested port has, whatever its kind and whatever reports it.

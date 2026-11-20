@@ -92,11 +92,13 @@ fn test_members_of_other_controllers_stay_at_the_top_level() {
 }
 
 #[test]
-fn test_the_system_info_reports_the_state_of_the_root_connections() {
+fn test_the_system_info_reports_the_state_of_every_connection() {
     let mut state = stacked_state();
     for conn in state.connections.iter_mut() {
         conn.state = ConnectionState::Activated;
     }
+    // A backup port of an active bond is not active itself.
+    state.get_connection_mut("eth1").unwrap().state = ConnectionState::Deactivated;
 
     let info = SystemInfo::try_from(state).unwrap();
 
@@ -104,7 +106,7 @@ fn test_the_system_info_reports_the_state_of_the_root_connections() {
         .connections
         .0
         .iter()
-        .map(|c| (c.connection.base.id.as_str(), c.state))
+        .map(|c| (c.base.id.as_str(), c.state))
         .collect();
     assert_eq!(
         roots,
@@ -114,9 +116,16 @@ fn test_the_system_info_reports_the_state_of_the_root_connections() {
         ]
     );
 
-    // The nested ports are part of their controller, so they do not report it.
-    let json = serde_json::to_string(&info.connections).unwrap();
-    assert_eq!(json.matches("\"state\"").count(), roots.len());
+    // The nested ports report their own state, all the way down the stack.
+    let json = serde_json::to_value(&info.connections).unwrap();
+    let bond0 = &json[0]["bridge"]["portConnections"][0];
+    assert_eq!(bond0["id"], "bond0");
+    assert_eq!(bond0["state"], "activated");
+    let ports = &bond0["bond"]["portConnections"];
+    assert_eq!(ports[0]["id"], "eth0");
+    assert_eq!(ports[0]["state"], "activated");
+    assert_eq!(ports[1]["id"], "eth1");
+    assert_eq!(ports[1]["state"], "deactivated");
 }
 
 #[test]
