@@ -123,11 +123,11 @@ describe("Result", () => {
     expect(reports()).toEqual([]);
   });
 
-  it("leaves a calculated layout to the top line for a configuration not editable here", () => {
+  it("says the configuration is unknown when there is a layout but no model", () => {
     mockConfigModel.mockReturnValue(null);
     installerRender(<Result />);
 
-    expect(reports()).toEqual([]);
+    expect(reports()).toEqual(["unknown"]);
   });
 
   it("leaves the issues to fix to the top line", () => {

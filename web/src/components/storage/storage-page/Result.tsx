@@ -28,7 +28,7 @@ import UnsupportedModelInfo from "~/components/storage/UnsupportedModelInfo";
 import InvalidConfigMessage from "~/components/storage/storage-page/InvalidConfigMessage";
 import NoDevicesMessage from "~/components/storage/storage-page/NoDevicesMessage";
 import UnknownConfigMessage from "~/components/storage/storage-page/UnknownConfigMessage";
-import { useAvailableDevices } from "~/hooks/model/system/storage";
+import { usePageState } from "~/components/storage/storage-page/use-page-state";
 import { useIssues } from "~/hooks/model/issue";
 import { useProposal } from "~/hooks/model/proposal/storage";
 import { useConfigModel } from "~/hooks/model/storage/config-model";
@@ -61,39 +61,6 @@ function useAnnounceKind(kind: AlertKind | null, title: TranslatedString) {
   }, [kind, title, announce]);
 }
 
-/** Issue classes the configuration can still be edited with, here. */
-const FIXABLE = [
-  "configNoRoot",
-  "configMissingPaths",
-  "configOverusedPvTarget",
-  "configMisusedMdMember",
-  "configMisusedPv",
-  "proposal",
-];
-
-/** A state of the storage settings that takes the whole page. */
-type ReplacingState = "noDevices" | "invalid" | "unknown";
-
-/**
- * The state that takes the whole storage page instead of its configuration, or
- * nothing where the configuration can be shown: there are no devices to install
- * on, or the configuration is invalid or unknown here.
- */
-function useReplacingState(): ReplacingState | null {
-  const model = useConfigModel();
-  const availableDevices = useAvailableDevices();
-  const proposal = useProposal();
-  const issues = useIssues("storage");
-  const configIssues = issues.filter((i) => i.class !== "proposal");
-  const unfixableIssues = issues.filter((i) => !FIXABLE.includes(i.class));
-  const isModelEditable = model && !unfixableIssues.length;
-
-  if (availableDevices.length === 0) return "noDevices";
-  if (configIssues.length > 0 && !isModelEditable) return "invalid";
-  if (configIssues.length === 0 && !model && !proposal) return "unknown";
-  return null;
-}
-
 /**
  * What the storage page reports about its configuration.
  *
@@ -108,12 +75,12 @@ export default function Result(): React.ReactNode {
   const proposal = useProposal();
   const issues = useIssues("storage");
   const configIssues = issues.filter((i) => i.class !== "proposal");
-  const replacingState = useReplacingState();
+  const state = usePageState();
 
   /* The states that replace the page have no alert to flip, so they are not
      a kind of alert. */
   let kind: AlertKind | null = null;
-  if (!replacingState) kind = proposal ? "success" : "problem";
+  if (state.kind === "page") kind = proposal ? "success" : "problem";
 
   let title = proposalFailedTitle();
   if (proposal) {
@@ -124,9 +91,9 @@ export default function Result(): React.ReactNode {
 
   useAnnounceKind(kind, title);
 
-  if (replacingState === "noDevices") return <NoDevicesMessage />;
-  if (replacingState === "invalid") return <InvalidConfigMessage issues={configIssues} />;
-  if (replacingState === "unknown") return <UnknownConfigMessage />;
+  if (state.kind === "noDevices") return <NoDevicesMessage />;
+  if (state.kind === "invalid") return <InvalidConfigMessage issues={state.issues} />;
+  if (state.kind === "unknown") return <UnknownConfigMessage />;
   /* The result, or the problem finding one, is reported in the page's top
      line, which is there whenever the configuration can be read. */
   if (proposal || model) return null;
@@ -141,5 +108,3 @@ export default function Result(): React.ReactNode {
     </Flex>
   );
 }
-
-export { useReplacingState };

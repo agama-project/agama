@@ -27,7 +27,8 @@ import EntriesTable from "~/components/storage/entries-table/EntriesTable";
 import TopLine, { TopResult } from "~/components/storage/storage-page/TopLine";
 import { useElementSize } from "~/hooks/use-element-size";
 import GlobalActions from "~/components/storage/storage-page/GlobalActions";
-import Result, { useReplacingState } from "~/components/storage/storage-page/Result";
+import Result from "~/components/storage/storage-page/Result";
+import { usePageState } from "~/components/storage/storage-page/use-page-state";
 import DeviceDetailsPanel from "~/components/storage/storage-page/DeviceDetailsPanel";
 import { useConfigModel } from "~/hooks/model/storage/config-model";
 
@@ -49,11 +50,11 @@ export default function StoragePageContent(): React.ReactNode {
   const model = useConfigModel();
   const [resultNode, setResultNode] = React.useState<HTMLDivElement | null>(null);
   const { height: resultHeight = 0 } = useElementSize(resultNode);
-  const replacingState = useReplacingState();
+  const state = usePageState();
 
   /* Without a configuration to show, or where a state takes the whole page,
      the page is only what Result says. */
-  if (!model || replacingState) return <Result />;
+  if (!model || state.kind !== "page") return <Result />;
 
   const devices = (
     <DeviceDetailsPanel

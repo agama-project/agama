@@ -39,10 +39,12 @@ jest.mock("~/hooks/model/system/storage", () => ({
   useDevice: () => null,
 }));
 
+jest.mock("~/components/storage/storage-page/use-page-state", () => ({
+  usePageState: () => ({ kind: "page" }),
+}));
 jest.mock("~/components/storage/storage-page/Result", () => ({
   __esModule: true,
   default: () => null,
-  useReplacingState: () => null,
 }));
 /* The page's own line holds the settings; the report of what the configuration
    does is the result line kept in sight above it. */
