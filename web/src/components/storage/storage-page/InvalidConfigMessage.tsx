@@ -76,7 +76,7 @@ export default function InvalidConfigMessage({
             "You may want to discard those settings and start from scratch with a simple configuration.",
           )}
         </Content>
-        <Button variant="secondary" onClick={() => reset()}>
+        <Button variant="tertiary" onClick={() => reset()}>
           {_("Reset to the default configuration")}
         </Button>
       </EmptyStateFooter>
