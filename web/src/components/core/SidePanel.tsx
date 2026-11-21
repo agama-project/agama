@@ -255,7 +255,7 @@ export default function SidePanel({
           <h2 id={titleId} className="agm-side-panel__title">
             {title}
           </h2>
-          {description && <div className="agm-side-panel__description">{description}</div>}
+          {description && <div className="agm-row-note">{description}</div>}
         </FlexItem>
         <FlexItem>
           <Flex gap={{ default: "gapXs" }} flexWrap={{ default: "nowrap" }}>

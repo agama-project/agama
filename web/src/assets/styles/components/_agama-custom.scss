@@ -513,11 +513,6 @@ nav.agm-breadcrumb > ol > li > a {
   line-height: var(--pf-t--global--font--line-height--heading);
 }
 
-.agm-side-panel__description {
-  font-size: var(--pf-t--global--font--size--body--sm);
-  color: var(--pf-t--global--text--color--subtle);
-}
-
 // A device details section's content starts where its heading's words start,
 // after the section's icon, and its tables run edge to edge, so their columns
 // line up with the text above them instead of adding an indent of their own.
