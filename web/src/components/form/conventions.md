@@ -501,31 +501,31 @@ which TanStack Form exposes via `state.errorMap.onSubmit.form`. The form
 renders it as an inline alert at the top so the user knows what went wrong and
 can try again.
 
-### Exception: telling about a conflict before submitting
+### User aids are not validation
 
-The partition form tells the user as soon as they finish entering a mount
-point that is already assigned elsewhere in the configuration, rather than
-when they submit. A notice after the partition field names what holds it and
-how that is set up, and offers to assign the mount point to the chosen
-partition instead. It departs from the rule above for these reasons:
+Some text in a form helps the user with the value they entered instead of
+judging it: what "Default" means for a mount point ("XFS (default file system
+for "/home")"), the size it gets, or that the mount point is already assigned
+elsewhere in the configuration. These aids follow the value the user finished
+entering: they appear, change or go away when the user leaves the field or
+picks a suggestion, never while typing. They do not take the focus and do not
+mark the field invalid.
 
-- It does not judge the value. The mount point is well formed; what the user
-  cannot see from this form is that the rest of the configuration already
-  uses it.
-- It saves work. Waiting for submit lets the user fill in the rest of the
-  form before learning about it.
-- It does not interrupt. It appears when the user finishes entering the mount
-  point, never while typing, it does not take the focus, and the field is not
-  marked invalid.
-- It is not the error. Submitting still validates as usual and shows the
-  field's own error next to the notice, which stays as it was.
+Validation keeps its own timing. The error for a value that is wrong, or
+already in use, appears only on submit, next to any aid about the same value,
+which stays as it was. When the aid already explains the situation and how to
+resolve it, the error can be short.
 
-The offer is a checkbox and waits for the submit like any other field: the
-mount point is assigned here only when the form is accepted, and only if it is
-still the mount point the user chose it for.
+Example: the partition form. Once the user enters a mount point that is
+already assigned elsewhere, a notice after the partition field names what
+holds it and how that is set up, and offers a checkbox to discard those
+settings and assign the mount point to the chosen partition. The checkbox
+waits for the submit like any other field, and counts only for the mount point
+it was chosen for. On submit without it, the field shows "Already assigned to
+another device".
 
-Do not extend it to checks of the value itself, such as a required field or a
-wrong format: those wait for submit.
+Do not turn checks of the value itself, such as a required field or a wrong
+format, into aids: those are validation and wait for submit.
 
 ---
 
