@@ -63,6 +63,9 @@ function usedMountPaths(config: ConfigModel.Config): string[] {
  * - "existingPartition": the partition `partitionName`, reused on `deviceName`.
  * - "logicalVolume": a logical volume in the volume group `deviceName`.
  * - "device": the whole drive or RAID `deviceName`, formatted with it.
+ *
+ * Partitions and logical volumes also carry their `entry` in the config, to
+ * tell how they are set up.
  */
 type MountPathHolder =
   | {
@@ -70,6 +73,7 @@ type MountPathHolder =
       collection: Partitionable.CollectionName;
       index: number;
       deviceName: string;
+      entry: ConfigModel.Partition;
     }
   | {
       kind: "existingPartition";
@@ -77,8 +81,14 @@ type MountPathHolder =
       index: number;
       deviceName: string;
       partitionName: string;
+      entry: ConfigModel.Partition;
     }
-  | { kind: "logicalVolume"; index: number; deviceName: string }
+  | {
+      kind: "logicalVolume";
+      index: number;
+      deviceName: string;
+      entry: ConfigModel.LogicalVolume;
+    }
   | {
       kind: "device";
       collection: Partitionable.CollectionName;
@@ -100,14 +110,45 @@ function findMountPathHolder(
       const held = (device.partitions || []).find((p) => p.mountPath === mountPath);
       if (!held) continue;
       return held.name
-        ? { kind: "existingPartition", ...at, partitionName: held.name }
-        : { kind: "newPartition", ...at };
+        ? { kind: "existingPartition", ...at, partitionName: held.name, entry: held }
+        : { kind: "newPartition", ...at, entry: held };
     }
   }
 
-  const groups = config.volumeGroups || [];
-  const index = groups.findIndex((g) => volumeGroup.usedMountPaths(g).includes(mountPath));
-  return index === -1 ? null : { kind: "logicalVolume", index, deviceName: groups[index].vgName };
+  for (const [index, group] of (config.volumeGroups || []).entries()) {
+    const held = (group.logicalVolumes || []).find((l) => l.mountPath === mountPath);
+    if (held) return { kind: "logicalVolume", index, deviceName: group.vgName, entry: held };
+  }
+
+  return null;
+}
+
+/**
+ * Whether {@link releaseMountPath} can free the mount path from its holder: a
+ * partition or a logical volume can give it up; a whole formatted device
+ * cannot, since that would change what the device is used for.
+ */
+function canReleaseMountPath(
+  holder: MountPathHolder | null,
+): holder is Exclude<MountPathHolder, { kind: "device" }> {
+  return holder !== null && holder.kind !== "device";
+}
+
+/**
+ * Frees the mount path the same way the UI stops using what holds it: a new
+ * partition or logical volume is dropped, and a reused partition is left to
+ * the space decision of its device again. Returns the config unchanged when
+ * nothing holds the mount path or the holder cannot give it up.
+ */
+function releaseMountPath(config: ConfigModel.Config, mountPath: string): ConfigModel.Config {
+  const holder = findMountPathHolder(config, mountPath);
+  if (!canReleaseMountPath(holder)) return config;
+
+  if (holder.kind === "logicalVolume") {
+    return logicalVolume.remove(config, holder.deviceName, mountPath);
+  }
+
+  return partition.remove(config, holder.collection, holder.index, mountPath);
 }
 
 function isTargetDevice(config: ConfigModel.Config, deviceName: string): boolean {
@@ -177,6 +218,8 @@ export default {
   clone,
   usedMountPaths,
   findMountPathHolder,
+  canReleaseMountPath,
+  releaseMountPath,
   isTargetDevice,
   setEncryption,
   devices,
