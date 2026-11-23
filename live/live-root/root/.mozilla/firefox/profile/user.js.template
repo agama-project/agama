@@ -101,8 +101,21 @@ user_pref("network.http.max-connections", 32);
 user_pref("network.http.max-persistent-connections-per-server", 8);
 user_pref("image.cache.size", 524288);
 user_pref("image.mem.decode_bytes_at_a_time", 16384);
+user_pref("image.mem.surfacecache.max_size_kb", 16384);
+user_pref("image.mem.surfacecache.min_expiration_ms", 1000);
 user_pref("media.memory_cache_max_size", 4096);
-user_pref("javascript.options.mem.high_water_mark", 32);
+user_pref("javascript.options.mem.max", 128);
+user_pref("javascript.options.mem.high_water_mark", 24);
+user_pref("javascript.options.mem.gc_frequency", 40);
+
+// --- Cap WebRender picture tile memory and rendering rate ---
+user_pref("gfx.webrender.picture-tile-width", 256);
+user_pref("gfx.webrender.picture-tile-height", 256);
+user_pref("layout.frame_rate", 30);
+user_pref("general.smoothScroll", false);
+
+// --- Disable dedicated socket process (runs network in parent process) ---
+user_pref("network.process.enabled", false);
 
 // --- Disable unneeded kiosk subsystems ---
 user_pref("accessibility.force_disabled", 1);

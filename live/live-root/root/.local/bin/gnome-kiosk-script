@@ -48,6 +48,8 @@ sed -e "s/__HOMEPAGE__/http:\/\/localhost\/login?token=$TOKEN$LANG_QUERY/" "$PRO
 # Redirect caches to tmpfs to eliminate COW writes onto the root overlay
 export XDG_CACHE_HOME=/tmp/.cache
 export MOZ_DISABLE_STARTUPCACHE=1
+# Force disable Fission site isolation to collapse content processes and save memory
+export MOZ_FORCE_DISABLE_FISSION=1
 
 # Remove any stale lock files
 rm -f "$RUN_PROFILE/.parentlock" "$RUN_PROFILE/lock"
