@@ -23,6 +23,7 @@
 import { FILESYSTEM_ACTION, FILESYSTEM_TYPE, SIZE_MODE } from "./fields";
 import { validate } from "./validations";
 import type { PartitionFormData } from "./fields";
+import type { ConfigModel } from "~/model/storage/config-model";
 
 describe("validations", () => {
   describe("validate", () => {
@@ -41,6 +42,7 @@ describe("validations", () => {
       rangeMinSize: "",
       rangeMaxSize: "",
       expandMinSize: "",
+      reassignedMountPoint: "",
     });
 
     describe("mount point validation", () => {
@@ -98,6 +100,71 @@ describe("validations", () => {
         const result = validate(fields, usedMountPoints);
 
         expect(result?.fields?.mountPoint).toBeUndefined();
+      });
+    });
+
+    describe("when the mount point is already assigned elsewhere", () => {
+      const config: ConfigModel.Config = {
+        drives: [{ name: "/dev/sdb", mountPath: "/srv" }],
+        volumeGroups: [
+          {
+            vgName: "system",
+            targetDevices: [],
+            logicalVolumes: [{ mountPath: "/home" }],
+          },
+        ],
+      };
+      const used = ["/home", "/srv"];
+
+      it("returns an error for a mount point assigned elsewhere", () => {
+        const fields = createBaseFields();
+
+        expect(validate(fields, used, config)?.fields?.mountPoint).toBe(
+          "Select or enter a mount point that is not already assigned to another device",
+        );
+      });
+
+      it("returns the same error for a mount point submitted while still typing", () => {
+        const fields = { ...createBaseFields(), committedMountPoint: "/ho" };
+
+        expect(validate(fields, used, config)?.fields?.mountPoint).toBe(
+          "Select or enter a mount point that is not already assigned to another device",
+        );
+      });
+
+      it("passes when the user chose to assign that mount point here", () => {
+        const fields = { ...createBaseFields(), reassignedMountPoint: "/home" };
+
+        expect(validate(fields, used, config)).toBeUndefined();
+      });
+
+      it("does not pass when the choice was made for another mount point", () => {
+        const fields = { ...createBaseFields(), reassignedMountPoint: "/var" };
+
+        expect(validate(fields, used, config)?.fields?.mountPoint).toBeDefined();
+      });
+
+      it("does not pass while the mount point is still being typed", () => {
+        const fields = {
+          ...createBaseFields(),
+          committedMountPoint: "/var",
+          reassignedMountPoint: "/home",
+        };
+
+        expect(validate(fields, used, config)?.fields?.mountPoint).toBeDefined();
+      });
+
+      it("does not pass when a whole device holds the mount point", () => {
+        const fields = {
+          ...createBaseFields(),
+          mountPoint: "/srv",
+          committedMountPoint: "/srv",
+          reassignedMountPoint: "/srv",
+        };
+
+        expect(validate(fields, used, config)?.fields?.mountPoint).toBe(
+          "Select or enter a mount point that is not already assigned to another device",
+        );
       });
     });
 
