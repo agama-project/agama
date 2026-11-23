@@ -48,7 +48,7 @@ impl UserQuestions {
     ) -> anyhow::Result<Option<String>> {
         let localized_retry = gettextrs::gettext("Reload configuration");
         let localized_manual = gettextrs::gettext("Skip and configure manually");
-        let question = QuestionSpec::new(&title, text, "loadConfigError")
+        let question = QuestionSpec::new(title, text, "loadConfigError")
             .with_actions(&[
                 ("Retry", localized_retry.as_str()),
                 ("Manual", localized_manual.as_str()),
