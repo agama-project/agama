@@ -53,7 +53,7 @@ pub struct ConfigAutoLoader {
 /// Quickly checks for predefined locations if file or disk label exists
 ///
 /// This helps with optimizing the most common usage where predefined location is not used.
-/// It is especially useful for autoyast XML profiles as when attempt to load it, it calls
+/// It is especially useful for AutoYaST XML profiles as when attempt to load it, it calls
 /// legacy autoyast fetching in ruby which is slow.
 fn is_location_available(url: &str) -> bool {
     if let Some(path) = url.strip_prefix("file://") {
