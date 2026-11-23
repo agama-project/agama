@@ -35,7 +35,8 @@ import { _, formatList } from "~/i18n";
 import type { ConfigModel, MountPathHolder } from "~/model/storage/config-model";
 import type { Storage as System } from "~/model/system";
 
-type ReleasableHolder = Exclude<MountPathHolder, { kind: "device" }>;
+/** A holder that can give its mount point up: a partition or a logical volume. */
+export type ReleasableHolder = Exclude<MountPathHolder, { kind: "device" }>;
 
 /**
  * What else holds a mount point, when the mount point is taken.
@@ -43,7 +44,7 @@ type ReleasableHolder = Exclude<MountPathHolder, { kind: "device" }>;
  * @param usedMountPoints - Mount points other devices use.
  */
 export function mountPointHolder(
-  config: ConfigModel.Config | null,
+  config: ConfigModel.Config | null | undefined,
   usedMountPoints: string[],
   mountPoint: string,
 ): MountPathHolder | null {
@@ -59,27 +60,21 @@ export function holderTitle(mountPoint: string, holder: MountPathHolder) {
   switch (holder.kind) {
     case "newPartition":
       return sprintf(
-        // TRANSLATORS: title of a notice under the mount point field. %1$s is
-        // a mount point (e.g. "/home"), %2$s a disk (e.g. "sda"). No final
-        // period.
+        // TRANSLATORS: %1$s is a mount point, %2$s a disk (e.g. "sda").
         _("%1$s is already assigned to a new partition on %2$s"),
         mountPoint,
         baseName(holder.deviceName),
       );
     case "existingPartition":
       return sprintf(
-        // TRANSLATORS: title of a notice under the mount point field. %1$s is
-        // a mount point (e.g. "/home"), %2$s a partition (e.g. "sda2"). No
-        // final period.
+        // TRANSLATORS: %1$s is a mount point, %2$s a partition (e.g. "sda2").
         _("%1$s is already assigned to %2$s"),
         mountPoint,
         baseName(holder.partitionName),
       );
     case "logicalVolume":
       return sprintf(
-        // TRANSLATORS: title of a notice under the mount point field. %1$s is
-        // a mount point (e.g. "/home"), %2$s a volume group (e.g. "system").
-        // No final period.
+        // TRANSLATORS: %1$s is a mount point, %2$s a volume group (e.g. "system").
         _("%1$s is already assigned to a logical volume in %2$s"),
         mountPoint,
         holder.deviceName,
@@ -87,17 +82,13 @@ export function holderTitle(mountPoint: string, holder: MountPathHolder) {
     case "device":
       return holder.collection === "mdRaids"
         ? sprintf(
-            // TRANSLATORS: title of a notice under the mount point field. %1$s
-            // is a mount point (e.g. "/srv"), %2$s a RAID device (e.g. "md0").
-            // No final period.
+            // TRANSLATORS: %1$s is a mount point, %2$s a RAID device (e.g. "md0").
             _("%1$s is already assigned to the RAID %2$s"),
             mountPoint,
             baseName(holder.deviceName),
           )
         : sprintf(
-            // TRANSLATORS: title of a notice under the mount point field. %1$s
-            // is a mount point (e.g. "/srv"), %2$s a disk (e.g. "sdb"). No
-            // final period.
+            // TRANSLATORS: %1$s is a mount point, %2$s a disk (e.g. "sdb").
             _("%1$s is already assigned to the disk %2$s"),
             mountPoint,
             baseName(holder.deviceName),
@@ -118,8 +109,6 @@ function holderFilesystemAndSize(holder: ReleasableHolder, partition?: System.De
   const filesystem =
     (keepsData && currentType ? filesystemLabel(currentType) : undefined) ||
     (entry.filesystem && filesystemType(entry.filesystem)) ||
-    // TRANSLATORS: said where the installer has not been told which file
-    // system to use.
     _("default");
 
   let size: string;
@@ -128,8 +117,6 @@ function holderFilesystemAndSize(holder: ReleasableHolder, partition?: System.De
   } else if (entry.size) {
     size = sizeDescription(entry.size);
   } else {
-    // TRANSLATORS: said where the size of something the installer creates is
-    // left to it.
     size = _("decided by the installer");
   }
 
@@ -145,9 +132,7 @@ function holderFilesystemAndSize(holder: ReleasableHolder, partition?: System.De
 export function holderBasics(holder: ReleasableHolder, partition?: System.Device) {
   const { filesystem, size } = holderFilesystemAndSize(holder, partition);
   return sprintf(
-    // TRANSLATORS: in the notice saying a mount point is already assigned
-    // elsewhere, right after naming what it is assigned to: how that is set
-    // up now. %1$s is a file system (e.g. "XFS"), %2$s a size or size range
+    // TRANSLATORS: %1$s is a file system (e.g. "XFS"), %2$s a size or range
     // (e.g. "at least 5 GiB").
     _("Currently set up as %1$s, %2$s"),
     filesystem,
@@ -157,9 +142,9 @@ export function holderBasics(holder: ReleasableHolder, partition?: System.Device
 
 /**
  * The holder's other file system settings, as one line, or nothing when it
- * has none. Each is named as its field in the
- * form, with its value quoted. An existing partition that keeps its data
- * brings its own label and is not formatted, so it has no format arguments.
+ * has none. Each is named as its field in the form, with its value quoted. An
+ * existing partition that keeps its data brings its own label and is not
+ * formatted, so it has no format arguments.
  *
  * @param partition - The holder as it is on the machine, when it is an
  *   existing partition.
@@ -173,20 +158,16 @@ export function holderExtras(holder: ReleasableHolder, partition?: System.Device
 
   const setting = (name: string, value: string) =>
     sprintf(
-      // TRANSLATORS: a setting and its value, in the notice saying a mount
-      // point is already assigned elsewhere. %1$s is the setting's name as in its field (e.g. "Label"),
-      // %2$s its value (e.g. "home"). Use the quotes of your language.
+      // TRANSLATORS: a setting name and its value (e.g. Label "home"). Use the
+      // quotes of your language.
       _('%1$s "%2$s"'),
       name,
       value,
     );
 
   const settings = sift([
-    // TRANSLATORS: name of a setting, as the field that sets it.
     label && setting(_("Label"), label),
-    // TRANSLATORS: name of a setting, as the field that sets it.
     mountOptions.length > 0 && setting(_("Mount options"), mountOptions.join(",")),
-    // TRANSLATORS: name of a setting, as the field that sets it.
     formatArguments && setting(_("Additional format arguments"), formatArguments),
   ]);
 

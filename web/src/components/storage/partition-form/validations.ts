@@ -57,11 +57,11 @@ export function isReassigning(
   fields: FormFields,
   usedMountPoints: string[],
   config?: ConfigModel.Config | null,
-): boolean {
+) {
   const { mountPoint, committedMountPoint, reassignedMountPoint } = fields;
   if (reassignedMountPoint !== mountPoint || committedMountPoint !== mountPoint) return false;
 
-  const holder = mountPointHolder(config ?? null, usedMountPoints, mountPoint);
+  const holder = mountPointHolder(config, usedMountPoints, mountPoint);
   return configModel.canReleaseMountPath(holder);
 }
 

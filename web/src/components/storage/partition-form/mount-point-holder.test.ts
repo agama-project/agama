@@ -20,9 +20,9 @@
  * find current contact information at www.suse.com.
  */
 
-import { holderBasics, holderExtras, holderTitle, mountPointHolder } from "./mount-point-holder";
 import type { ConfigModel, MountPathHolder } from "~/model/storage/config-model";
 import type { Storage as System } from "~/model/system";
+import { holderBasics, holderExtras, holderTitle, mountPointHolder } from "./mount-point-holder";
 
 const GiB = 1024 ** 3;
 

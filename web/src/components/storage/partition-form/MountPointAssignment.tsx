@@ -22,35 +22,34 @@
 
 import React, { useEffect } from "react";
 import { Alert, Checkbox, Flex } from "@patternfly/react-core";
+import { sift } from "radashi";
 import { sprintf } from "sprintf-js";
 import Text from "~/components/core/Text";
+import { baseName } from "~/components/storage/utils";
 import { useAnnounce } from "~/context/announcer";
 import { withForm } from "~/hooks/form";
 import { useDevice } from "~/hooks/model/system/storage";
 import configModel from "~/model/storage/config-model";
 import { _ } from "~/i18n";
-
-import { baseName } from "~/components/storage/utils";
 import { defaultOptions, isReusingPartition } from "./fields";
 import { holderBasics, holderExtras, holderTitle } from "./mount-point-holder";
 
 import type { TranslatedString } from "~/i18n";
 import type { MountPathHolder } from "~/model/storage/config-model";
-
-type Holder = Parameters<typeof holderBasics>[0];
+import type { ReleasableHolder } from "./mount-point-holder";
 
 /**
  * How the holder is set up now, in small dimmed lines: file system and size
  * first, then any other settings it has. Reads an existing partition from the
  * machine.
  */
-function HolderSettings({ holder }: { holder: Holder }) {
+function HolderSettings({ holder }: { holder: ReleasableHolder }) {
   const device = useDevice(holder.kind === "existingPartition" ? holder.deviceName : "");
   const partition =
     holder.kind === "existingPartition"
       ? device?.partitions?.find((p) => p.name === holder.partitionName)
       : undefined;
-  const lines = [holderBasics(holder, partition), holderExtras(holder, partition)].filter(Boolean);
+  const lines = sift([holderBasics(holder, partition), holderExtras(holder, partition)]);
 
   return (
     <div>
@@ -63,7 +62,10 @@ function HolderSettings({ holder }: { holder: Holder }) {
   );
 }
 
-/** Says the notice once, when it appears, since it shows up behind the focus. */
+/**
+ * Says the notice once when it appears, so screen reader users learn about it
+ * without reading on.
+ */
 function Announce({ text }: { text: TranslatedString }) {
   const announce = useAnnounce();
   useEffect(() => {
@@ -82,20 +84,14 @@ function Announce({ text }: { text: TranslatedString }) {
 function assignLabel(mountPoint: string, partitionName: string) {
   return isReusingPartition(partitionName)
     ? sprintf(
-        // TRANSLATORS: option in the notice saying a mount point is already
-        // assigned elsewhere, whose current settings are listed above it.
-        // %1$s is the mount point (e.g. "/home"), %2$s the partition chosen in
-        // the form (e.g. "sda3").
+        // TRANSLATORS: %1$s is a mount point, %2$s a partition (e.g. "sda3").
         _("Discard the current settings and assign %1$s to %2$s"),
         mountPoint,
         baseName(partitionName),
       )
     : sprintf(
-        // TRANSLATORS: option in the notice saying a mount point is already
-        // assigned elsewhere, whose current settings are listed above it, when
-        // the form configures a partition to be created. "this" tells it apart
-        // from the partition the mount point is assigned to now. %s is the
-        // mount point (e.g. "/home").
+        // TRANSLATORS: %s is a mount point. "this" tells the partition being
+        // configured apart from the one the mount point is assigned to now.
         _("Discard the current settings and assign %s to this new partition"),
         mountPoint,
       );
@@ -113,10 +109,10 @@ type MountPointAssignmentProps = {
  *
  * It names what holds the mount point. When that is a partition or a logical
  * volume, it also tells how that is set up now and offers to discard those
- * settings and assign the mount point to the chosen partition. Like any other field, the choice applies
- * only when the form is accepted, and only for the mount point it was made
- * for. A whole disk or RAID cannot give its mount point up, so the notice
- * only asks for another one.
+ * settings and assign the mount point to the chosen partition. Like any other
+ * field, the choice applies only when the form is accepted, and only for the
+ * mount point it was made for. A whole disk or RAID cannot give its mount
+ * point up, so the notice only asks for another one.
  *
  * It is a user aid, not a validation error: the mount point field keeps its
  * own error, shown on submit as usual.
@@ -138,6 +134,8 @@ const MountPointAssignment = withForm({
               <form.Subscribe selector={(s) => s.values.name}>
                 {(partitionName) => (
                   <form.AppField name="reassignedMountPoint">
+                    {/* Not CheckboxField: the field holds the mount point
+                        the choice is made for, not a yes or no. */}
                     {(field) => (
                       <Checkbox
                         id={field.name}
@@ -153,13 +151,7 @@ const MountPointAssignment = withForm({
               </form.Subscribe>
             </Flex>
           ) : (
-            <p>
-              {
-                // TRANSLATORS: in the notice saying a mount point is already
-                // assigned to a whole disk or RAID.
-                _("Choose another mount point.")
-              }
-            </p>
+            <p>{_("Choose another mount point.")}</p>
           )}
         </Alert>
       </Flex>

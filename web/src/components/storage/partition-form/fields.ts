@@ -76,8 +76,8 @@ type AssignmentFields = {
   /**
    * The mount point the user chose to assign to this partition instead of
    * where it is assigned now, or an empty string. Holding the mount point
-   * rather than a yes or no ties the choice to it: entering another mount
-   * point leaves the choice behind.
+   * rather than a yes or no ties the choice to it: it never applies to
+   * another mount point, and it is still there if the user comes back to it.
    *
    * This is a control field, not part of the payload.
    */
