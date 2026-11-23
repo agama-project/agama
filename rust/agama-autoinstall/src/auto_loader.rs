@@ -50,6 +50,11 @@ pub struct ConfigAutoLoader {
     insecure: bool,
 }
 
+/// Quickly checks for predefined locations if file or disk label exists
+///
+/// This helps with optimizing the most common usage where predefined location is not used.
+/// It is especially useful for autoyast XML profiles as when attempt to load it, it calls
+/// legacy autoyast fetching in ruby which is slow.
 fn is_location_available(url: &str) -> bool {
     if let Some(path) = url.strip_prefix("file://") {
         std::path::Path::new(path).is_file()
@@ -181,14 +186,17 @@ mod tests {
 
     #[test]
     fn test_is_location_available_label() {
+        // sadly I failed to find way how to reliably test existing label in unit tests
         assert!(!is_location_available(
             "label://NONEXISTENT_OEM_12345/autoinst.json"
         ));
+        // no file specified, so always false
         assert!(!is_location_available("label://no_slash_in_url"));
     }
 
     #[test]
     fn test_is_location_available_remote_fallback() {
+        // it always succeed to just forward it to try location
         assert!(is_location_available("http://mock.local/autoinst.json"));
         assert!(is_location_available("ftp://mock.local/autoinst.json"));
     }
