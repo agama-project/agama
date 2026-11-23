@@ -149,7 +149,7 @@ export function holderBasics(holder: ReleasableHolder, partition?: System.Device
     // elsewhere, right after naming what it is assigned to: how that is set
     // up now. %1$s is a file system (e.g. "XFS"), %2$s a size or size range
     // (e.g. "at least 5 GiB").
-    _("Currently set up with %1$s, %2$s"),
+    _("Currently set up as %1$s, %2$s"),
     filesystem,
     size,
   );
