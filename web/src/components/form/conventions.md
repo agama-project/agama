@@ -501,6 +501,32 @@ which TanStack Form exposes via `state.errorMap.onSubmit.form`. The form
 renders it as an inline alert at the top so the user knows what went wrong and
 can try again.
 
+### Exception: telling about a conflict before submitting
+
+The partition form tells the user as soon as they finish entering a mount
+point that is already assigned elsewhere in the configuration, rather than
+when they submit. A notice between the mount point and the next field names
+what holds it and how that is set up, and offers to assign the mount point
+to this partition instead. It departs from the rule above for these reasons:
+
+- It does not judge the value. The mount point is well formed; what the user
+  cannot see from this form is that the rest of the configuration already
+  uses it.
+- It saves work. Waiting for submit lets the user fill in the rest of the
+  form before learning about it.
+- It does not interrupt. It appears when the user finishes entering the mount
+  point, never while typing, it does not take the focus, and the field is not
+  marked invalid.
+- It is not the error. Submitting still validates as usual and shows the
+  field's own error next to the notice, which stays as it was.
+
+The offer is a checkbox and waits for the submit like any other field: the
+mount point is assigned here only when the form is accepted, and only if it is
+still the mount point the user chose it for.
+
+Do not extend it to checks of the value itself, such as a required field or a
+wrong format: those wait for submit.
+
 ---
 
 ## Combining patterns
