@@ -277,6 +277,23 @@ describe("MultiSelectField", () => {
 
       within(entries()).getByRole("option", { name: "Ethernet 1" });
     });
+
+    it("keeps text naming nothing on offer while focus stays", async () => {
+      const { user } = installerRender(<TestForm />);
+      await user.type(combobox(), "nothing{Enter}");
+
+      expect(combobox()).toHaveValue("nothing");
+    });
+
+    it("clears text naming nothing on offer when focus leaves", async () => {
+      const { user } = installerRender(<TestForm defaultValues={["eth0"]} />);
+      await user.type(combobox(), "nothing");
+      await user.click(screen.getByRole("button", { name: "Other" }));
+
+      expect(combobox()).toHaveValue("");
+      expect(announcement()).toContain("nothing is not available.");
+      within(entries()).getByRole("option", { name: "Ethernet 0" });
+    });
   });
 
   describe("walking the list", () => {
@@ -555,13 +572,13 @@ describe("MultiSelectField", () => {
       expect(isInputPutAway()).toBe(false);
     });
 
-    it("keeps the text box when it still holds what was written", async () => {
+    it("puts the text box away once text naming nothing on offer is cleared", async () => {
       const { user } = installerRender(<TestForm defaultValues={["eth0"]} collapseInputOnBlur />);
       await user.type(combobox(), "nope");
       await user.click(screen.getByRole("button", { name: "Other" }));
 
-      expect(combobox()).toHaveValue("nope");
-      expect(isInputPutAway()).toBe(false);
+      expect(combobox()).toHaveValue("");
+      expect(isInputPutAway()).toBe(true);
     });
 
     it("renders the button emptying the field only while the field has focus", async () => {
