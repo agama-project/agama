@@ -34,6 +34,14 @@ impl Message for GetSystem {
     type Reply = SystemInfo;
 }
 
+/// Gets the current system locale.
+#[derive(Clone)]
+pub struct GetLocale;
+
+impl Message for GetLocale {
+    type Reply = LocaleId;
+}
+
 pub struct SetSystem<T> {
     pub config: T,
 }
