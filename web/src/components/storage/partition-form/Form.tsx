@@ -35,6 +35,7 @@ import {
   useConfigModel,
   useAddPartition,
   useEditPartition,
+  useMoveMountPathToPartition,
 } from "~/hooks/model/storage/config-model";
 import configModel from "~/model/storage/config-model";
 import { STORAGE } from "~/routes/paths";
@@ -43,6 +44,8 @@ import { _ } from "~/i18n";
 import MountPointField from "~/components/storage/shared/form/MountPointField";
 import SizeFields from "~/components/storage/shared/form/SizeFields";
 import PartitionFields from "./PartitionFields";
+import MountPointAssignment from "./MountPointAssignment";
+import { mountPointHolder } from "./mount-point-holder";
 import FilesystemAdditionalFields from "~/components/storage/shared/form/FilesystemAdditionalFields";
 import FilesystemFields from "./FilesystemFields";
 import {
@@ -52,7 +55,7 @@ import {
   useUnusedPartitions,
 } from "./queries";
 import { buildPayload, toFormValues, useSolvedSizes } from "./transformations";
-import { validate } from "./validations";
+import { isReassigning, validate } from "./validations";
 import { defaultOptions, isReusingPartition } from "./fields";
 
 import type { ConfigModel as ConfigModelType } from "~/model/storage/config-model";
@@ -134,6 +137,7 @@ function PartitionFormContent({
   const navigate = useNavigate();
   const addPartition = useAddPartition();
   const editPartition = useEditPartition();
+  const moveMountPathToPartition = useMoveMountPathToPartition();
 
   // Get used mount points for validation (excluding current when editing).
   // Memoized to maintain stable array reference for form validators.
@@ -158,7 +162,14 @@ function PartitionFormContent({
       }
 
       try {
-        if (initialPartition) {
+        if (isReassigning(values, usedMountPoints, config)) {
+          moveMountPathToPartition(
+            partitionableLocation.collection,
+            partitionableLocation.index,
+            payload,
+            initialPartition?.mountPath,
+          );
+        } else if (initialPartition) {
           editPartition(
             partitionableLocation.collection,
             partitionableLocation.index,
@@ -189,7 +200,7 @@ function PartitionFormContent({
       onSubmitAsync: async (ctx) => {
         // Field validation runs first. If it fails, TanStack Form surfaces
         // errors per field and onSubmitAsync (business logic) is not called.
-        const fieldErrors = validate(ctx.value, usedMountPoints);
+        const fieldErrors = validate(ctx.value, usedMountPoints, config);
         if (fieldErrors) return fieldErrors;
 
         // Business logic: payload building + API call.
@@ -221,6 +232,16 @@ function PartitionFormContent({
 
         {/* Mount point */}
         <MountPointField form={form} suggestions={unusedMountPoints} />
+
+        {/* What the mount point is already assigned to, if anything */}
+        <form.Subscribe selector={(s) => s.values.committedMountPoint}>
+          {(mountPoint) => {
+            const holder = mountPointHolder(config, usedMountPoints, mountPoint);
+            return (
+              holder && <MountPointAssignment form={form} mountPoint={mountPoint} holder={holder} />
+            );
+          }}
+        </form.Subscribe>
 
         {/* Partition */}
         <PartitionFields

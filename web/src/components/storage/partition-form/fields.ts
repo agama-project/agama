@@ -72,7 +72,23 @@ type PartitionFields = {
   name: string;
 };
 
-export type FormFields = MountPointFields & PartitionFields & FilesystemFields & SizeFields;
+type AssignmentFields = {
+  /**
+   * The mount point the user chose to assign to this partition instead of
+   * where it is assigned now, or an empty string. Holding the mount point
+   * rather than a yes or no ties the choice to it: entering another mount
+   * point leaves the choice behind.
+   *
+   * This is a control field, not part of the payload.
+   */
+  reassignedMountPoint: string;
+};
+
+export type FormFields = MountPointFields &
+  PartitionFields &
+  FilesystemFields &
+  SizeFields &
+  AssignmentFields;
 
 export type PartitionFormData = FormFields;
 
@@ -93,6 +109,7 @@ const defaultValues: FormFields = {
   rangeMinSize: "",
   rangeMaxSize: "",
   expandMinSize: "",
+  reassignedMountPoint: "",
 };
 
 export const defaultOptions = formOptions({ defaultValues });
