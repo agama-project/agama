@@ -22,6 +22,7 @@
 # RPM is no longer a runtime dependency of Agama. This still relies on `Yast::XML`
 # (yast2-xml), which stays a kept dependency for this reason.
 
+require "digest"
 require "erb"
 
 require "yast"
