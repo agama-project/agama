@@ -23,7 +23,6 @@
 import React from "react";
 import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
 import {
-  Content,
   DescriptionList,
   DescriptionListDescription,
   DescriptionListGroup,
@@ -32,6 +31,7 @@ import {
   StackItem,
 } from "@patternfly/react-core";
 import QuestionDialog from "~/components/questions/QuestionDialog";
+import QuestionText from "~/components/questions/QuestionText";
 import { _ } from "~/i18n";
 
 import type { TranslatedString } from "~/i18n";
@@ -70,9 +70,7 @@ export default function RegistrationCertificateQuestion({
     <QuestionDialog question={question} answerCallback={answerCallback} title={question.title}>
       <Stack hasGutter>
         <StackItem>
-          <Content component="p" isEditorial>
-            {question.text}
-          </Content>
+          <QuestionText text={question.text} isEditorial />
         </StackItem>
         <StackItem>
           <DescriptionList isHorizontal isCompact className={spacingStyles.mxLg}>

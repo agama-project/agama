@@ -23,6 +23,7 @@
 import React from "react";
 import { Content, Stack } from "@patternfly/react-core";
 import QuestionDialog from "~/components/questions/QuestionDialog";
+import QuestionText from "~/components/questions/QuestionText";
 import { _ } from "~/i18n";
 import type { AnswerCallback, Question } from "~/model/question";
 
@@ -51,7 +52,7 @@ export default function PackageErrorQuestion({
   return (
     <QuestionDialog question={question} answerCallback={answerCallback} title={question.title}>
       <Stack hasGutter>
-        <Content>{question.text}</Content>
+        <QuestionText text={question.text} />
         <Content>{warning}</Content>
       </Stack>
     </QuestionDialog>

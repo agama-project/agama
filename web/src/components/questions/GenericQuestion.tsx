@@ -21,8 +21,8 @@
  */
 
 import React from "react";
-import { Content } from "@patternfly/react-core";
 import QuestionDialog from "~/components/questions/QuestionDialog";
+import QuestionText from "~/components/questions/QuestionText";
 import TechnicalDetails from "~/components/questions/TechnicalDetails";
 import type { AnswerCallback, Question } from "~/model/question";
 import { _ } from "~/i18n";
@@ -53,7 +53,7 @@ export default function GenericQuestion({
       // element, which is the copy-to-clipboard button when there are details
       elementToFocus="#question-primary-action"
     >
-      <Content component="p">{question.text}</Content>
+      <QuestionText text={question.text} />
       <TechnicalDetails text={details} />
     </QuestionDialog>
   );

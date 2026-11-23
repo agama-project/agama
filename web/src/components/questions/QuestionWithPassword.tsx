@@ -21,9 +21,10 @@
  */
 
 import React, { useState } from "react";
-import { Content, FormGroup, Stack } from "@patternfly/react-core";
+import { FormGroup, Stack } from "@patternfly/react-core";
 import { InstallerL10nOptions, PasswordInput } from "~/components/core";
 import QuestionDialog from "~/components/questions/QuestionDialog";
+import QuestionText from "~/components/questions/QuestionText";
 import { _ } from "~/i18n";
 import type { AnswerCallback, Question } from "~/model/question";
 
@@ -52,7 +53,7 @@ export default function QuestionWithPassword({
       titleAddon={<InstallerL10nOptions variant="keyboard" />}
     >
       <Stack hasGutter>
-        <Content>{question.text}</Content>
+        <QuestionText text={question.text} />
         <QuestionDialog.Form>
           {/* TRANSLATORS: field label */}
           <FormGroup label={_("Password")} fieldId="password">
