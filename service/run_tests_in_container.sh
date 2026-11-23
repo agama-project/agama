@@ -2,6 +2,8 @@
 
 set -ex
 SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
+# ensure that it uses always the latest container
+podman pull registry.opensuse.org/yast/head/containers_tumbleweed/yast-ruby
 podman create -ti --rm --entrypoint '["sh", "-c"]' --name agama_ruby_tests -v $SCRIPT_DIR/..:/checkout registry.opensuse.org/yast/head/containers_tumbleweed/yast-ruby sh
 podman start agama_ruby_tests
 podman exec agama_ruby_tests zypper --non-interactive install yast2-iscsi-client yast2-bootloader ruby4.0-rubygem-eventmachine
