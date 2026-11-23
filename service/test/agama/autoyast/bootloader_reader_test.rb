@@ -89,5 +89,51 @@ describe Agama::AutoYaST::BootloaderReader do
         )
       end
     end
+
+    context "when loader_type is defined" do
+      let(:profile) do
+        { "bootloader" => { "loader_type" => loader_type } }
+      end
+
+      context "with 'grub2'" do
+        let(:loader_type) { "grub2" }
+
+        it "returns 'grub2' as type" do
+          expect(subject.read["bootloader"]).to include(
+            "type" => "grub2"
+          )
+        end
+      end
+
+      context "with 'grub2-efi'" do
+        let(:loader_type) { "grub2-efi" }
+
+        it "maps 'grub2-efi' to 'grub2'" do
+          expect(subject.read["bootloader"]).to include(
+            "type" => "grub2"
+          )
+        end
+      end
+
+      context "with 'systemd-boot'" do
+        let(:loader_type) { "systemd-boot" }
+
+        it "returns 'systemd-boot' as type" do
+          expect(subject.read["bootloader"]).to include(
+            "type" => "systemd-boot"
+          )
+        end
+      end
+
+      context "with 'none'" do
+        let(:loader_type) { "none" }
+
+        it "returns 'none' as type" do
+          expect(subject.read["bootloader"]).to include(
+            "type" => "none"
+          )
+        end
+      end
+    end
   end
 end

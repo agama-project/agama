@@ -27,6 +27,12 @@ impl Message for GetConfig {
     type Reply = bootloader::Config;
 }
 
+pub struct GetProposal;
+
+impl Message for GetProposal {
+    type Reply = Option<bootloader::Proposal>;
+}
+
 pub struct GetSystem;
 
 impl Message for GetSystem {

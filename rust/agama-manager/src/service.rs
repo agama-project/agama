@@ -848,6 +848,13 @@ impl MessageHandler<message::UpdateConfig> for Service {
 impl MessageHandler<message::GetProposal> for Service {
     /// It returns the current proposal, if any.
     async fn handle(&mut self, _message: message::GetProposal) -> Result<Option<Proposal>, Error> {
+        let bootloader = if self.is_storage_available().await? {
+            self.bootloader
+                .call(bootloader::message::GetProposal)
+                .await?
+        } else {
+            None
+        };
         let hostname = self.hostname.call(hostname::message::GetProposal).await?;
         let l10n = self.l10n.call(l10n::message::GetProposal).await?;
 
@@ -870,6 +877,7 @@ impl MessageHandler<message::GetProposal> for Service {
         };
 
         Ok(Some(Proposal {
+            bootloader,
             hostname,
             l10n,
             network,

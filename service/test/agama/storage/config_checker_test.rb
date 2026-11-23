@@ -59,6 +59,34 @@ describe Agama::Storage::ConfigChecker do
       end
     end
 
+    context "if the bootloader config is not valid" do
+      subject do
+        described_class.new(
+          config,
+          bootloader_config: bootloader_config,
+          product_config: product_config
+        )
+      end
+
+      let(:bootloader_config) do
+        Agama::Storage::BootloaderConfig.new.tap do |bc|
+          bc.type = Y2Storage::BootloaderType::SYSTEMD_BOOT
+        end
+      end
+
+      before do
+        allow(Bootloader::Systeminfo).to receive(:efi?).and_return(false)
+      end
+
+      it "includes the bootloader issues" do
+        issues = subject.issues
+        expect(issues).to include an_object_having_attributes(
+          kind:        Agama::Storage::IssueClasses::Config::WRONG_BOOTLOADER,
+          description: "The bootloader 'systemd-boot' cannot be installed on a non-EFI system."
+        )
+      end
+    end
+
     context "if a drive config is not valid" do
       let(:drives) do
         [

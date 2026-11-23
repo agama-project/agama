@@ -46,7 +46,7 @@ module Agama
         return if config.type
 
         config.type =
-          if bls_compliant_system?
+          if self.class.bls_compliant_system?
             kernel_bls_type || product_bls_type || DEFAULT_BLS_TYPE
           else
             DEFAULT_TYPE
@@ -75,7 +75,7 @@ module Agama
       # Whether the usage of a BLS-compliant bootloader is supported
       #
       # @return [Boolean]
-      def bls_compliant_system?
+      def self.bls_compliant_system?
         return false unless ::Bootloader::Systeminfo.efi?
 
         BLS_ARCHS.any? { |a| Yast::Arch.public_send(a) }
@@ -88,8 +88,8 @@ module Agama
 
       # Bootloader type indicated in the kernel options.
       #
-      # This is only used for the systemd-boot preview and will be dropped once the config allows
-      # changing the bootloader
+      # @deprecated This is only used for the systemd-boot preview and will soon be dropped now
+      #   that the configuration supports setting the bootloader type.
       #
       # @return [Y2Storage::BootloaderType, nil] nil if "systemd_boot_preview" kernel option is
       #   not set.

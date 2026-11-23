@@ -58,6 +58,9 @@ module Agama
         # The specified encryption method cannot be used
         WRONG_ENCRYPTION_METHOD  = :configWrongEncryptionMethod
 
+        # The specified bootloader cannot be used on this system
+        WRONG_BOOTLOADER         = :configWrongBootloader
+
         # A filesystem type is required but it was not specified
         NO_FILESYSTEM_TYPE       = :configNoFilesystemType
 

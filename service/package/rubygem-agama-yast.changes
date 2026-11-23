@@ -1,4 +1,15 @@
 -------------------------------------------------------------------
+Mon Nov 23 12:00:00 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Support setting the bootloader type (grub2, systemd-boot, none)
+  in the bootloader configuration.
+- Generate an issue if an unsupported bootloader type is chosen
+  (such as systemd-boot on a non-EFI system).
+- Expose the proposed bootloader type via D-Bus Proposal property.
+- Support loader_type in AutoYaST profiles.
+- Deprecate the inst.systemd_boot_preview kernel parameter.
+
+-------------------------------------------------------------------
 Thu Nov 12 12:12:49 UTC 2026 - José Iván López González <jlopez@suse.com>
 
 - Support the Discoverable Partitions Specification (DPS) in the

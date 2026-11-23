@@ -24,7 +24,7 @@ use crate::{
 };
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
-    api::bootloader::Config,
+    api::bootloader::{Config, Proposal},
     message::GetResolvables,
     BoxFuture, Resolvable,
 };
@@ -103,6 +103,12 @@ impl Actor for Service {
 impl MessageHandler<message::GetConfig> for Service {
     async fn handle(&mut self, _message: message::GetConfig) -> Result<Config, Error> {
         Ok(self.client.get_config().await?)
+    }
+}
+
+impl MessageHandler<message::GetProposal> for Service {
+    async fn handle(&mut self, _message: message::GetProposal) -> Result<Option<Proposal>, Error> {
+        Ok(self.client.get_proposal().await?)
     }
 }
 

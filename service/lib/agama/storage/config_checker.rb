@@ -22,6 +22,7 @@
 require "agama/config"
 require "agama/storage/bootloader_config"
 require "agama/storage/config_checkers/boot"
+require "agama/storage/config_checkers/bootloader"
 require "agama/storage/config_checkers/filesystems"
 require "agama/storage/config_checkers/drive"
 require "agama/storage/config_checkers/md_raid"
@@ -48,6 +49,7 @@ module Agama
         [
           filesystems_issues,
           boot_issues,
+          bootloader_issues,
           drives_issues,
           md_raids_issues,
           volume_groups_issues
@@ -70,6 +72,13 @@ module Agama
       # @return [Array<Issue>]
       def boot_issues
         ConfigCheckers::Boot.new(storage_config).issues
+      end
+
+      # Issues from bootloader config.
+      #
+      # @return [Array<Issue>]
+      def bootloader_issues
+        ConfigCheckers::Bootloader.new(bootloader_config).issues
       end
 
       # Issues related to the list of filesystems (mount paths)

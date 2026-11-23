@@ -145,6 +145,20 @@ describe Agama::AutoYaST::Converter do
       )
     end
 
+    context "when bootloader is defined" do
+      let(:profile_name) { "cloned.xml" }
+
+      it "exports the bootloader configuration" do
+        result = subject.to_agama(profile)
+        expect(result["bootloader"]).to include(
+          "type"              => "grub2",
+          "timeout"           => 8,
+          "updateNvram"       => true,
+          "extraKernelParams" => "splash=silent mitigations=auto quiet security=apparmor crashkernel=309M,high"
+        )
+      end
+    end
+
     xcontext "for valid AutoYaST profile" do
       let(:profile_name) { "cloned.xml" }
 

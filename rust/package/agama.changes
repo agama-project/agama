@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Nov 23 12:00:00 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Support setting the bootloader type (grub2, systemd-boot, none)
+  in the JSON configuration schema (bootloader.type).
+- Expose the proposed bootloader type in the proposal endpoint.
+
+-------------------------------------------------------------------
 Wed Nov 18 15:32:09 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
 
 - Added the "inst.cors=<origin>" boot option, its value is passed

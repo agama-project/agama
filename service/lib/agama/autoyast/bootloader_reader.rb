@@ -32,11 +32,15 @@ module Agama
       #
       # @return [Hash] Agama "bootloader" section
       def read
-        global = profile.fetch_as_hash("bootloader")
-          .fetch_as_hash("global")
-        return {} if global.empty?
+        bootloader_hash = profile.fetch_as_hash("bootloader")
+        global = bootloader_hash.fetch_as_hash("global")
+        loader_type = bootloader_hash["loader_type"]
+        return {} if global.empty? && loader_type.to_s.empty?
 
         bootloader = {}
+
+        type = convert_loader_type(loader_type)
+        bootloader["type"] = type if type
 
         if global["timeout"].is_a?(Integer)
           if global["timeout"] >= 0
@@ -55,6 +59,17 @@ module Agama
     private
 
       attr_reader :profile
+
+      def convert_loader_type(loader_type)
+        case loader_type
+        when "grub2", "grub2-efi"
+          "grub2"
+        when "systemd-boot"
+          "systemd-boot"
+        when "none"
+          "none"
+        end
+      end
     end
   end
 end

@@ -72,12 +72,14 @@ describe Agama::DBus::Storage::Manager do
     allow(backend).to receive(:bootloader_probed?).and_return(false)
     allow(backend).to receive(:available_bootloaders).and_return([])
     allow(backend).to receive(:bootloader_config).and_return({})
+    allow(backend).to receive(:bootloader_proposal).and_return(nil)
     allow(backend).to receive(:bootloader_packages).and_return([])
     allow(backend).to receive(:probe_bootloader)
     allow(bootloader).to receive(:config)
     allow(bootloader).to receive(:probed?).and_return(false)
     allow(bootloader).to receive(:probe)
     allow(bootloader).to receive(:packages).and_return([])
+    allow(bootloader).to receive(:proposal).and_return(nil)
     mock_storage(devicegraph: "empty-hd-50GiB.yaml")
   end
 
@@ -1419,6 +1421,28 @@ describe Agama::DBus::Storage::Manager do
             })
           end
         end
+      end
+    end
+  end
+
+  describe "#serialized_bootloader_proposal" do
+    context "when there is a bootloader proposal" do
+      before do
+        allow(backend).to receive(:bootloader_proposal).and_return({ type: "systemd-boot" })
+      end
+
+      it "returns the serialized proposal" do
+        expect(parse(subject.serialized_bootloader_proposal)).to eq({ type: "systemd-boot" })
+      end
+    end
+
+    context "when there is no bootloader proposal" do
+      before do
+        allow(backend).to receive(:bootloader_proposal).and_return(nil)
+      end
+
+      it "returns 'null'" do
+        expect(subject.serialized_bootloader_proposal).to eq("null")
       end
     end
   end

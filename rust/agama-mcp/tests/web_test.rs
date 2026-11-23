@@ -51,6 +51,7 @@ fn sample_system_info() -> SystemInfo {
 
 fn sample_proposal() -> Proposal {
     Proposal {
+        bootloader: None,
         hostname: None,
         l10n: None,
         network: Default::default(),

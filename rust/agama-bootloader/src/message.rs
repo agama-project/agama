@@ -19,13 +19,23 @@
 // find current contact information at www.suse.com.
 
 use crate::service;
-use agama_utils::{actor::Message, api::bootloader::Config, BoxFuture};
+use agama_utils::{
+    actor::Message,
+    api::bootloader::{Config, Proposal},
+    BoxFuture,
+};
 use serde_json::Value;
 
 pub struct GetConfig;
 
 impl Message for GetConfig {
     type Reply = Config;
+}
+
+pub struct GetProposal;
+
+impl Message for GetProposal {
+    type Reply = Option<Proposal>;
 }
 
 pub struct GetSystem;
