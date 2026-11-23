@@ -65,6 +65,11 @@ describe("mountPointHolder", () => {
     expect(mountPointHolder(config, [], "/home")).toBeNull();
   });
 
+  it("finds nothing when a whole device holds it, since it cannot give it up", () => {
+    const withDevice: ConfigModel.Config = { drives: [{ name: "/dev/sdb", mountPath: "/srv" }] };
+    expect(mountPointHolder(withDevice, ["/srv"], "/srv")).toBeNull();
+  });
+
   it("finds nothing without a config", () => {
     expect(mountPointHolder(null, ["/home"], "/home")).toBeNull();
   });
@@ -79,22 +84,6 @@ describe("holderTitle", () => {
     expect(
       holderTitle("/home", { kind: "logicalVolume", index: 0, deviceName: "system", entry: {} }),
     ).toBe("/home is already assigned to a logical volume in system");
-    expect(
-      holderTitle("/srv", {
-        kind: "device",
-        collection: "drives",
-        index: 1,
-        deviceName: "/dev/sdb",
-      }),
-    ).toBe("/srv is already assigned to the disk sdb");
-    expect(
-      holderTitle("/srv", {
-        kind: "device",
-        collection: "mdRaids",
-        index: 0,
-        deviceName: "/dev/md0",
-      }),
-    ).toBe("/srv is already assigned to the RAID md0");
   });
 });
 

@@ -39,7 +39,9 @@ import type { Storage as System } from "~/model/system";
 export type ReleasableHolder = Exclude<MountPathHolder, { kind: "device" }>;
 
 /**
- * What else holds a mount point, when the mount point is taken.
+ * What else holds a mount point, when the mount point is taken and its holder
+ * can give it up. A disk or RAID used as a whole cannot, so it is left to the
+ * mount point validation.
  *
  * @param usedMountPoints - Mount points other devices use.
  */
@@ -47,16 +49,18 @@ export function mountPointHolder(
   config: ConfigModel.Config | null | undefined,
   usedMountPoints: string[],
   mountPoint: string,
-): MountPathHolder | null {
+): ReleasableHolder | null {
   if (!config || !usedMountPoints.includes(mountPoint)) return null;
-  return configModel.findMountPathHolder(config, mountPoint);
+
+  const holder = configModel.findMountPathHolder(config, mountPoint);
+  return configModel.canReleaseMountPath(holder) ? holder : null;
 }
 
 /**
  * Says what a mount point is assigned to, one whole sentence per kind of
  * holder so each translates on its own.
  */
-export function holderTitle(mountPoint: string, holder: MountPathHolder) {
+export function holderTitle(mountPoint: string, holder: ReleasableHolder) {
   switch (holder.kind) {
     case "newPartition":
       return sprintf(
@@ -79,20 +83,6 @@ export function holderTitle(mountPoint: string, holder: MountPathHolder) {
         mountPoint,
         holder.deviceName,
       );
-    case "device":
-      return holder.collection === "mdRaids"
-        ? sprintf(
-            // TRANSLATORS: %1$s is a mount point, %2$s a RAID device (e.g. "md0").
-            _("%1$s is already assigned to the RAID %2$s"),
-            mountPoint,
-            baseName(holder.deviceName),
-          )
-        : sprintf(
-            // TRANSLATORS: %1$s is a mount point, %2$s a disk (e.g. "sdb").
-            _("%1$s is already assigned to the disk %2$s"),
-            mountPoint,
-            baseName(holder.deviceName),
-          );
   }
 }
 

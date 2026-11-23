@@ -29,13 +29,11 @@ import { baseName } from "~/components/storage/utils";
 import { useAnnounce } from "~/context/announcer";
 import { withForm } from "~/hooks/form";
 import { useDevice } from "~/hooks/model/system/storage";
-import configModel from "~/model/storage/config-model";
 import { _ } from "~/i18n";
 import { defaultOptions, isReusingPartition } from "./fields";
 import { holderBasics, holderExtras, holderTitle } from "./mount-point-holder";
 
 import type { TranslatedString } from "~/i18n";
-import type { MountPathHolder } from "~/model/storage/config-model";
 import type { ReleasableHolder } from "./mount-point-holder";
 
 /**
@@ -101,18 +99,17 @@ type MountPointAssignmentProps = {
   /** The mount point the user finished entering. */
   mountPoint: string;
   /** What that mount point is already assigned to. */
-  holder: MountPathHolder;
+  holder: ReleasableHolder;
 };
 
 /**
- * Notice for a mount point already assigned elsewhere in the configuration.
+ * Notice for a mount point already assigned elsewhere in the configuration,
+ * to a partition or a logical volume.
  *
- * It names what holds the mount point. When that is a partition or a logical
- * volume, it also tells how that is set up now and offers to discard those
- * settings and assign the mount point to the chosen partition. Like any other
- * field, the choice applies only when the form is accepted, and only for the
- * mount point it was made for. A whole disk or RAID cannot give its mount
- * point up, so the notice only asks for another one.
+ * It names what holds the mount point, tells how that is set up now, and
+ * offers to discard those settings and assign the mount point to the chosen
+ * partition. Like any other field, the choice applies only when the form is
+ * accepted, and only for the mount point it was made for.
  *
  * It is a user aid, not a validation error: the mount point field keeps its
  * own error, shown on submit as usual.
@@ -122,37 +119,30 @@ const MountPointAssignment = withForm({
   props: {} as MountPointAssignmentProps,
   render: function Render({ form, mountPoint, holder }) {
     const title = holderTitle(mountPoint, holder);
-    const canAssign = configModel.canReleaseMountPath(holder);
 
     return (
       <Flex>
         <Alert isInline variant="info" component="p" title={title}>
           <Announce text={title} />
-          {canAssign ? (
-            <Flex direction={{ default: "column" }} gap={{ default: "gapMd" }}>
-              <HolderSettings holder={holder} />
-              <form.Subscribe selector={(s) => s.values.name}>
-                {(partitionName) => (
-                  <form.AppField name="reassignedMountPoint">
-                    {/* Not CheckboxField: the field holds the mount point
+          <Flex direction={{ default: "column" }} gap={{ default: "gapMd" }}>
+            <HolderSettings holder={holder} />
+            <form.Subscribe selector={(s) => s.values.name}>
+              {(partitionName) => (
+                <form.AppField name="reassignedMountPoint">
+                  {/* Not CheckboxField: the field holds the mount point
                         the choice is made for, not a yes or no. */}
-                    {(field) => (
-                      <Checkbox
-                        id={field.name}
-                        label={assignLabel(mountPoint, partitionName)}
-                        isChecked={field.state.value === mountPoint}
-                        onChange={(_event, checked) =>
-                          field.handleChange(checked ? mountPoint : "")
-                        }
-                      />
-                    )}
-                  </form.AppField>
-                )}
-              </form.Subscribe>
-            </Flex>
-          ) : (
-            <p>{_("Choose another mount point.")}</p>
-          )}
+                  {(field) => (
+                    <Checkbox
+                      id={field.name}
+                      label={assignLabel(mountPoint, partitionName)}
+                      isChecked={field.state.value === mountPoint}
+                      onChange={(_event, checked) => field.handleChange(checked ? mountPoint : "")}
+                    />
+                  )}
+                </form.AppField>
+              )}
+            </form.Subscribe>
+          </Flex>
         </Alert>
       </Flex>
     );
