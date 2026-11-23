@@ -4,7 +4,9 @@
 # which is at the end of the chain and invokes this script.
 
 TOKEN_FILE=/run/agama/token
-PREFS=$HOME/.mozilla/firefox/profile/user.js
+PROFILE_TEMPLATE=$HOME/.mozilla/firefox/profile
+RUN_PROFILE=/tmp/firefox-profile
+PREFS=$RUN_PROFILE/user.js
 
 # read the system locale from EFI if present
 LANG_FILE=/sys/firmware/efi/efivars/PlatformLang-8be4df61-93ca-11d2-aa0d-00e098032b8c
@@ -33,15 +35,26 @@ until [ "$(curl --silent --output /dev/null --write-out "%{http_code}" --head ht
   sleep 0.1
 done
 
-TOKEN=$(cat $TOKEN_FILE)
-sed -e "s/__HOMEPAGE__/http:\/\/localhost\/login?token=$TOKEN$LANG_QUERY/" $PREFS.template > $PREFS
+mkdir -p "$RUN_PROFILE"
 
-# Disable startup cache files (~19 MiB) to reduce COW writes and RAM usage
+# Copy userChrome.css customization if present
+if [ ! -d "$RUN_PROFILE/chrome" ] && [ -d "$PROFILE_TEMPLATE/chrome" ]; then
+  cp -r "$PROFILE_TEMPLATE/chrome" "$RUN_PROFILE/"
+fi
+
+TOKEN=$(cat $TOKEN_FILE)
+sed -e "s/__HOMEPAGE__/http:\/\/localhost\/login?token=$TOKEN$LANG_QUERY/" "$PROFILE_TEMPLATE/user.js.template" > "$PREFS"
+
+# Redirect caches to tmpfs to eliminate COW writes onto the root overlay
+export XDG_CACHE_HOME=/tmp/.cache
 export MOZ_DISABLE_STARTUPCACHE=1
+
+# Remove any stale lock files
+rm -f "$RUN_PROFILE/.parentlock" "$RUN_PROFILE/lock"
 
 # Do not use --kiosk mode (see bsc#1236073) until SLE16 is updated to next ESR. For Firefox
 # 128.9 which is currently used the bug is valid, for >= 138 should be fixed.
-firefox --profile $HOME/.mozilla/firefox/profile
+firefox --profile "$RUN_PROFILE"
 
 sleep 1.0
 exec "$0" "$@"

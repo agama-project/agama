@@ -66,6 +66,17 @@ user_pref("browser.urlbar.suggest.quicksuggest.sponsored", false);
 user_pref("browser.urlbar.merino.enabled", false);
 user_pref("browser.urlbar.suggest.searches", false);
 
+// --- Disable SafeBrowsing, Remote Settings & CRLite downloads (saves ~40MB writes) ---
+user_pref("browser.safebrowsing.malware.enabled", false);
+user_pref("browser.safebrowsing.phishing.enabled", false);
+user_pref("browser.safebrowsing.downloads.enabled", false);
+user_pref("browser.safebrowsing.provider.google4.updateURL", "");
+user_pref("browser.safebrowsing.provider.google.updateURL", "");
+user_pref("browser.safebrowsing.provider.mozilla.updateURL", "");
+user_pref("services.settings.server", "");
+user_pref("security.remote_settings.crlite_filters.enabled", false);
+user_pref("security.pki.crlite_mode", 0);
+
 // --- Collapse multi-process overhead (saves ~150-200 MiB RSS) ---
 user_pref("fission.autostart", false);
 user_pref("dom.ipc.processCount", 1);
