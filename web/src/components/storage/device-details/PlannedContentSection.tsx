@@ -210,12 +210,8 @@ export default function PlannedContentSection({
       <SummaryWithActions
         summary={
           isVolumeGroup
-            ? // TRANSLATORS: said of an LVM volume group where the installation
-              // creates no logical volume yet, above a button to add one.
-              _("No logical volumes planned yet")
-            : // TRANSLATORS: said of a disk where the installation creates no
-              // partition yet, above a button to add one.
-              _("No partitions planned yet")
+            ? _("No new logical volumes planned yet.")
+            : _("No new partitions planned yet.")
         }
         actions={actions}
       />

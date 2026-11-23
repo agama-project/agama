@@ -25,50 +25,64 @@ import Link from "~/components/core/Link";
 import SummaryWithActions from "~/components/storage/device-details/SummaryWithActions";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { generateEncodedPath } from "~/utils";
+import { sprintf } from "sprintf-js";
+import { filesystemLabel } from "~/components/storage/utils";
+import CurrentContentSection, {
+  hasCurrentContent,
+} from "~/components/storage/device-details/CurrentContentSection";
 import { _ } from "~/i18n";
 import type { DeviceDetailsBodyProps } from "~/components/storage/device-details/DeviceDetailsBody";
 
 /**
- * A device the installation does not use yet: it says so, and offers the two
- * ways to start, partitioning it or giving it whole to one file system.
+ * A device the installation does not use yet: it says so, and offers severak
+ * ways to start, depending on the context.
  */
-export default function PartitionableNoContent({ subject }: DeviceDetailsBodyProps) {
+export default function PartitionableNoContent({ entry, subject }: DeviceDetailsBodyProps) {
   const params = {
     collection: subject.collection,
     index: String(subject.index),
   };
+  const isCurrentlyPartitioned = hasCurrentContent(entry);
+  const isCurrentlyFormatted = !!entry.device?.filesystem;
 
-  return (
-    <SummaryWithActions
-      // TRANSLATORS: said of a device the installation does not use yet.
-      summary={_("Not used by the installation yet")}
-      // TRANSLATORS: says how a device the installation does not use yet can be
-      // put to use.
-      detail={_("Add partitions to it, or format it whole for a single file system.")}
-      actions={
-        <>
-          <Link
-            to={generateEncodedPath(PATHS.addPartition, params)}
-            keepQuery
-            variant="link"
-            isInline
-          >
-            {_("Add partition")}
-          </Link>
-          <Link
-            to={generateEncodedPath(PATHS.formatDevice, params)}
-            keepQuery
-            variant="link"
-            isInline
-          >
-            {
-              // TRANSLATORS: offered on a device nothing is planned on yet:
-              // give the whole device to one file system, with no partitions.
-              _("Format device")
-            }
-          </Link>
-        </>
-      }
-    />
+  const summary = isCurrentlyPartitioned
+    ? _(
+        "Something about new partitions to be created during instalation, bla, mount any existing one or format the whole device.",
+      )
+    : isCurrentlyFormatted
+      ? sprintf(
+          // TRANSLATORS: %s is a filesystem type like "Ext4" or "Btrfs"
+          _(
+            "Define some partitions, format the whole device or mount the existing %s file system.",
+          ),
+          filesystemLabel(entry.device.filesystem.type),
+        )
+      : _("Define some partitions or format the whole device.");
+
+  const actions = (
+    <>
+      <Link to={generateEncodedPath(PATHS.addPartition, params)} keepQuery variant="link" isInline>
+        {_("Add partition")}
+      </Link>
+      <Link to={generateEncodedPath(PATHS.formatDevice, params)} keepQuery variant="link" isInline>
+        {isCurrentlyFormatted ? _("Format or mount") : _("Format device")}
+      </Link>
+    </>
   );
+
+  if (isCurrentlyPartitioned) {
+    return (
+      <>
+        <SummaryWithActions summary={summary} actions={actions} />
+        <CurrentContentSection
+          entry={entry}
+          subject={subject}
+          fixedDecision="keep"
+          withSummary={false}
+        />
+      </>
+    );
+  }
+
+  return <SummaryWithActions summary={summary} actions={actions} />;
 }

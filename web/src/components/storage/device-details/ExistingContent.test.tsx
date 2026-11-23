@@ -72,7 +72,7 @@ describe("ExistingContent", () => {
     });
 
     it("offers what it is given to do with it", () => {
-      plainRender(<ExistingContent entry={entry(device)} actions={<button>Mount</button>} />);
+      plainRender(<ExistingContent entry={entry(device)} />);
 
       screen.getByRole("button", { name: "Mount" });
     });
