@@ -512,8 +512,8 @@ picks a suggestion, never while typing. They do not take the focus and do not
 mark the field invalid.
 
 Validation keeps its own timing. The error for a value that is wrong, or
-already in use, appears only on submit, next to any aid about the same value,
-which stays as it was. When the aid already explains the situation and how to
+already in use, appears only on submit, alongside any aid about the same
+value, which stays as it was. When the aid already explains the situation and how to
 resolve it, the error can be short.
 
 Example: the partition form. Once the user enters a mount point that is
