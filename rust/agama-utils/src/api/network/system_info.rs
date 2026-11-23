@@ -20,19 +20,15 @@
 
 //! Representation of the network system information.
 //!
-//! The connections are the same tree as the configuration (see [`NetworkConnection`]), built from
-//! the same parts ([`ConnectionBase`], [`IpSettings`], [`BondBase`], [`BridgeBase`] and
+//! The connections are the same tree as the configuration (see [`config::NetworkConnection`]),
+//! built from the same parts ([`ConnectionBase`], [`IpSettings`], [`BondBase`], [`BridgeBase`] and
 //! [`PortBase`]), plus the current state of every connection, nested ports included. The state of
 //! a port is not the one of its controller (e.g., the backup port of an active bond is not active).
 //!
 //! The tree is built from the configuration one, looking up the state of each connection by its ID
-//! (see [`SystemNetworkConnection::new`]).
+//! (see [`NetworkConnection::new`]).
 
-use super::config::{
-    BondBondPort, BondBridgePort, BondEthernetPort, BondPort, BondSettings, BondVlanPort,
-    BondWirelessPort, BridgeBondPort, BridgeBridgePort, BridgeEthernetPort, BridgePort,
-    BridgeSettings, BridgeVlanPort, BridgeWirelessPort, NetworkConnection,
-};
+use super::config;
 use super::shared_types::{
     add_dns_searchlist_alias, BondBase, BridgeBase, BridgePortSettings, ConnectionBase, IpSettings,
     PortBase, VlanSettings, WirelessSettings,
@@ -51,17 +47,17 @@ use std::default::Default;
 pub struct SystemInfo {
     pub access_points: Vec<AccessPoint>, // networks or access_points shold be returned
     /// Connections to use in the installation, with their current state
-    pub connections: SystemNetworkConnectionsCollection,
+    pub connections: NetworkConnectionsCollection,
     pub devices: Vec<Device>,
     pub state: StateSettings,
 }
 
 /// Collection of connections with their current state, as the system reports them.
 ///
-/// Like [`NetworkConnectionsCollection`](super::NetworkConnectionsCollection), it only holds the root connections.
+/// Like [`config::NetworkConnectionsCollection`], it only holds the root connections.
 #[derive(Clone, Debug, Default, Serialize, Deserialize, JsonSchema, PartialEq)]
 #[schemars(rename = "SystemNetworkConnections")]
-pub struct SystemNetworkConnectionsCollection(pub Vec<SystemNetworkConnection>);
+pub struct NetworkConnectionsCollection(pub Vec<NetworkConnection>);
 
 /// Returns the state of the connection with the given ID.
 pub type StateOf<'a> = &'a dyn Fn(&str) -> ConnectionState;
@@ -86,34 +82,35 @@ impl PortBase {
 /// The state is not part of the configuration, so only the system information reports it, for
 /// every connection, nested ports included.
 #[derive(Clone, Debug, Serialize, Deserialize, JsonSchema, PartialEq)]
+#[schemars(rename = "SystemNetworkConnection")]
 #[schemars(deny_unknown_fields, transform = add_dns_searchlist_alias)]
-pub struct SystemNetworkConnection {
+pub struct NetworkConnection {
     #[serde(flatten)]
     pub base: ConnectionBase,
     #[serde(flatten)]
     pub ip: IpSettings,
     /// Bonding settings if part of a bond
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub bond: Option<SystemBondSettings>,
+    pub bond: Option<BondSettings>,
     /// Bridge settings if part of a bridge
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub bridge: Option<SystemBridgeSettings>,
+    pub bridge: Option<BridgeSettings>,
     /// Current state of the connection
     pub state: ConnectionState,
 }
 
-impl SystemNetworkConnection {
+impl NetworkConnection {
     /// Reports a connection and, recursively, its nested ports with their state.
     ///
     /// * `conn`: connection to report.
     /// * `state_of`: returns the state of the connection with the given ID.
-    pub fn new(conn: NetworkConnection, state_of: StateOf) -> Self {
+    pub fn new(conn: config::NetworkConnection, state_of: StateOf) -> Self {
         Self {
             state: state_of(&conn.base.id),
             base: conn.base,
             ip: conn.ip,
-            bond: conn.bond.map(|b| SystemBondSettings::new(b, state_of)),
-            bridge: conn.bridge.map(|b| SystemBridgeSettings::new(b, state_of)),
+            bond: conn.bond.map(|b| BondSettings::new(b, state_of)),
+            bridge: conn.bridge.map(|b| BridgeSettings::new(b, state_of)),
         }
     }
 }
@@ -121,23 +118,23 @@ impl SystemNetworkConnection {
 /// Bonding configuration with the state of the ports, as the system reports it.
 #[derive(Clone, Debug, Serialize, Deserialize, JsonSchema, PartialEq)]
 #[serde(rename_all = "camelCase")]
-#[schemars(deny_unknown_fields)]
-pub struct SystemBondSettings {
+#[schemars(rename = "SystemBondSettings", deny_unknown_fields)]
+pub struct BondSettings {
     #[serde(flatten)]
     pub base: BondBase,
     /// Ports of the controller, with their current state
     #[serde(skip_serializing_if = "Option::is_none", default)]
-    pub port_connections: Option<Vec<SystemBondPort>>,
+    pub port_connections: Option<Vec<BondPort>>,
 }
 
-impl SystemBondSettings {
-    fn new(settings: BondSettings, state_of: StateOf) -> Self {
+impl BondSettings {
+    fn new(settings: config::BondSettings, state_of: StateOf) -> Self {
         Self {
             base: settings.base,
             port_connections: settings.port_connections.map(|ports| {
                 ports
                     .into_iter()
-                    .map(|port| SystemBondPort::new(port, state_of))
+                    .map(|port| BondPort::new(port, state_of))
                     .collect()
             }),
         }
@@ -147,23 +144,23 @@ impl SystemBondSettings {
 /// Bridge configuration with the state of the ports, as the system reports it.
 #[derive(Clone, Debug, Serialize, Deserialize, JsonSchema, PartialEq)]
 #[serde(rename_all = "camelCase")]
-#[schemars(deny_unknown_fields)]
-pub struct SystemBridgeSettings {
+#[schemars(rename = "SystemBridgeSettings", deny_unknown_fields)]
+pub struct BridgeSettings {
     #[serde(flatten)]
     pub base: BridgeBase,
     /// Ports of the controller, with their current state
     #[serde(skip_serializing_if = "Option::is_none", default)]
-    pub port_connections: Option<Vec<SystemBridgePort>>,
+    pub port_connections: Option<Vec<BridgePort>>,
 }
 
-impl SystemBridgeSettings {
-    fn new(settings: BridgeSettings, state_of: StateOf) -> Self {
+impl BridgeSettings {
+    fn new(settings: config::BridgeSettings, state_of: StateOf) -> Self {
         Self {
             base: settings.base,
             port_connections: settings.port_connections.map(|ports| {
                 ports
                     .into_iter()
-                    .map(|port| SystemBridgePort::new(port, state_of))
+                    .map(|port| BridgePort::new(port, state_of))
                     .collect()
             }),
         }
@@ -172,65 +169,66 @@ impl SystemBridgeSettings {
 
 /// Entry of the `portConnections` list of a bridge, with the state of the port.
 ///
-/// Like [`BridgePort`], with the state of every port given as a connection.
+/// Like [`config::BridgePort`], with the state of every port given as a connection.
 #[derive(Clone, Debug, Serialize, Deserialize, JsonSchema, PartialEq)]
 #[serde(untagged)]
-pub enum SystemBridgePort {
+#[schemars(rename = "SystemBridgePort")]
+pub enum BridgePort {
     /// Interface name or ID of a connection, which reports no state.
     Name(String),
-    Ethernet(Box<SystemBridgeEthernetPort>),
-    Bond(Box<SystemBridgeBondPort>),
-    Bridge(Box<SystemBridgeBridgePort>),
-    Vlan(Box<SystemBridgeVlanPort>),
-    Wireless(Box<SystemBridgeWirelessPort>),
+    Ethernet(Box<BridgeEthernetPort>),
+    Bond(Box<BridgeBondPort>),
+    Bridge(Box<BridgeBridgePort>),
+    Vlan(Box<BridgeVlanPort>),
+    Wireless(Box<BridgeWirelessPort>),
 }
 
-impl SystemBridgePort {
-    fn new(port: BridgePort, state_of: StateOf) -> Self {
+impl BridgePort {
+    fn new(port: config::BridgePort, state_of: StateOf) -> Self {
         match port {
-            BridgePort::Name(name) => Self::Name(name),
-            BridgePort::Ethernet(port) => {
-                let BridgeEthernetPort { base, port } = *port;
-                Self::Ethernet(Box::new(SystemBridgeEthernetPort {
+            config::BridgePort::Name(name) => Self::Name(name),
+            config::BridgePort::Ethernet(port) => {
+                let config::BridgeEthernetPort { base, port } = *port;
+                Self::Ethernet(Box::new(BridgeEthernetPort {
                     state: base.state(state_of),
                     base,
                     port,
                 }))
             }
-            BridgePort::Bond(port) => {
-                let BridgeBondPort { base, bond, port } = *port;
-                Self::Bond(Box::new(SystemBridgeBondPort {
+            config::BridgePort::Bond(port) => {
+                let config::BridgeBondPort { base, bond, port } = *port;
+                Self::Bond(Box::new(BridgeBondPort {
                     state: base.state(state_of),
                     base,
-                    bond: SystemBondSettings::new(bond, state_of),
+                    bond: BondSettings::new(bond, state_of),
                     port,
                 }))
             }
-            BridgePort::Bridge(port) => {
-                let BridgeBridgePort { base, bridge, port } = *port;
-                Self::Bridge(Box::new(SystemBridgeBridgePort {
+            config::BridgePort::Bridge(port) => {
+                let config::BridgeBridgePort { base, bridge, port } = *port;
+                Self::Bridge(Box::new(BridgeBridgePort {
                     state: base.state(state_of),
                     base,
-                    bridge: SystemBridgeSettings::new(bridge, state_of),
+                    bridge: BridgeSettings::new(bridge, state_of),
                     port,
                 }))
             }
-            BridgePort::Vlan(port) => {
-                let BridgeVlanPort { base, vlan, port } = *port;
-                Self::Vlan(Box::new(SystemBridgeVlanPort {
+            config::BridgePort::Vlan(port) => {
+                let config::BridgeVlanPort { base, vlan, port } = *port;
+                Self::Vlan(Box::new(BridgeVlanPort {
                     state: base.state(state_of),
                     base,
                     vlan,
                     port,
                 }))
             }
-            BridgePort::Wireless(port) => {
-                let BridgeWirelessPort {
+            config::BridgePort::Wireless(port) => {
+                let config::BridgeWirelessPort {
                     base,
                     wireless,
                     port,
                 } = *port;
-                Self::Wireless(Box::new(SystemBridgeWirelessPort {
+                Self::Wireless(Box::new(BridgeWirelessPort {
                     state: base.state(state_of),
                     base,
                     wireless,
@@ -243,57 +241,58 @@ impl SystemBridgePort {
 
 /// Entry of the `portConnections` list of a bond, with the state of the port.
 ///
-/// Like [`BondPort`], with the state of every port given as a connection.
+/// Like [`config::BondPort`], with the state of every port given as a connection.
 #[derive(Clone, Debug, Serialize, Deserialize, JsonSchema, PartialEq)]
 #[serde(untagged)]
-pub enum SystemBondPort {
+#[schemars(rename = "SystemBondPort")]
+pub enum BondPort {
     /// Interface name or ID of a connection, which reports no state.
     Name(String),
-    Ethernet(Box<SystemBondEthernetPort>),
-    Bond(Box<SystemBondBondPort>),
-    Bridge(Box<SystemBondBridgePort>),
-    Vlan(Box<SystemBondVlanPort>),
-    Wireless(Box<SystemBondWirelessPort>),
+    Ethernet(Box<BondEthernetPort>),
+    Bond(Box<BondBondPort>),
+    Bridge(Box<BondBridgePort>),
+    Vlan(Box<BondVlanPort>),
+    Wireless(Box<BondWirelessPort>),
 }
 
-impl SystemBondPort {
-    fn new(port: BondPort, state_of: StateOf) -> Self {
+impl BondPort {
+    fn new(port: config::BondPort, state_of: StateOf) -> Self {
         match port {
-            BondPort::Name(name) => Self::Name(name),
-            BondPort::Ethernet(port) => {
-                let BondEthernetPort { base } = *port;
-                Self::Ethernet(Box::new(SystemBondEthernetPort {
+            config::BondPort::Name(name) => Self::Name(name),
+            config::BondPort::Ethernet(port) => {
+                let config::BondEthernetPort { base } = *port;
+                Self::Ethernet(Box::new(BondEthernetPort {
                     state: base.state(state_of),
                     base,
                 }))
             }
-            BondPort::Bond(port) => {
-                let BondBondPort { base, bond } = *port;
-                Self::Bond(Box::new(SystemBondBondPort {
+            config::BondPort::Bond(port) => {
+                let config::BondBondPort { base, bond } = *port;
+                Self::Bond(Box::new(BondBondPort {
                     state: base.state(state_of),
                     base,
-                    bond: SystemBondSettings::new(bond, state_of),
+                    bond: BondSettings::new(bond, state_of),
                 }))
             }
-            BondPort::Bridge(port) => {
-                let BondBridgePort { base, bridge } = *port;
-                Self::Bridge(Box::new(SystemBondBridgePort {
+            config::BondPort::Bridge(port) => {
+                let config::BondBridgePort { base, bridge } = *port;
+                Self::Bridge(Box::new(BondBridgePort {
                     state: base.state(state_of),
                     base,
-                    bridge: SystemBridgeSettings::new(bridge, state_of),
+                    bridge: BridgeSettings::new(bridge, state_of),
                 }))
             }
-            BondPort::Vlan(port) => {
-                let BondVlanPort { base, vlan } = *port;
-                Self::Vlan(Box::new(SystemBondVlanPort {
+            config::BondPort::Vlan(port) => {
+                let config::BondVlanPort { base, vlan } = *port;
+                Self::Vlan(Box::new(BondVlanPort {
                     state: base.state(state_of),
                     base,
                     vlan,
                 }))
             }
-            BondPort::Wireless(port) => {
-                let BondWirelessPort { base, wireless } = *port;
-                Self::Wireless(Box::new(SystemBondWirelessPort {
+            config::BondPort::Wireless(port) => {
+                let config::BondWirelessPort { base, wireless } = *port;
+                Self::Wireless(Box::new(BondWirelessPort {
                     state: base.state(state_of),
                     base,
                     wireless,
@@ -311,7 +310,8 @@ impl SystemBondPort {
 /// Port of a bridge that is an Ethernet connection, with its current state
 #[derive(Clone, Debug, Serialize, Deserialize, JsonSchema, PartialEq)]
 #[serde(deny_unknown_fields)]
-pub struct SystemBridgeEthernetPort {
+#[schemars(rename = "SystemBridgeEthernetPort")]
+pub struct BridgeEthernetPort {
     #[serde(flatten)]
     pub base: PortBase,
     /// Settings that this connection has because it is a port of a bridge
@@ -324,11 +324,12 @@ pub struct SystemBridgeEthernetPort {
 /// Port of a bridge that is a bond itself, with its current state and the one of its ports
 #[derive(Clone, Debug, Serialize, Deserialize, JsonSchema, PartialEq)]
 #[serde(deny_unknown_fields)]
-pub struct SystemBridgeBondPort {
+#[schemars(rename = "SystemBridgeBondPort")]
+pub struct BridgeBondPort {
     #[serde(flatten)]
     pub base: PortBase,
     /// Bonding settings
-    pub bond: SystemBondSettings,
+    pub bond: BondSettings,
     /// Settings that this connection has because it is a port of a bridge
     #[serde(skip_serializing_if = "Option::is_none")]
     pub port: Option<BridgePortSettings>,
@@ -339,11 +340,12 @@ pub struct SystemBridgeBondPort {
 /// Port of a bridge that is a bridge itself, with its current state and the one of its ports
 #[derive(Clone, Debug, Serialize, Deserialize, JsonSchema, PartialEq)]
 #[serde(deny_unknown_fields)]
-pub struct SystemBridgeBridgePort {
+#[schemars(rename = "SystemBridgeBridgePort")]
+pub struct BridgeBridgePort {
     #[serde(flatten)]
     pub base: PortBase,
     /// Bridge settings
-    pub bridge: SystemBridgeSettings,
+    pub bridge: BridgeSettings,
     /// Settings that this connection has because it is a port of a bridge
     #[serde(skip_serializing_if = "Option::is_none")]
     pub port: Option<BridgePortSettings>,
@@ -354,7 +356,8 @@ pub struct SystemBridgeBridgePort {
 /// Port of a bridge that is a VLAN, with its current state
 #[derive(Clone, Debug, Serialize, Deserialize, JsonSchema, PartialEq)]
 #[serde(deny_unknown_fields)]
-pub struct SystemBridgeVlanPort {
+#[schemars(rename = "SystemBridgeVlanPort")]
+pub struct BridgeVlanPort {
     #[serde(flatten)]
     pub base: PortBase,
     /// VLAN settings
@@ -369,7 +372,8 @@ pub struct SystemBridgeVlanPort {
 /// Port of a bridge that is a wireless connection, with its current state
 #[derive(Clone, Debug, Serialize, Deserialize, JsonSchema, PartialEq)]
 #[serde(deny_unknown_fields)]
-pub struct SystemBridgeWirelessPort {
+#[schemars(rename = "SystemBridgeWirelessPort")]
+pub struct BridgeWirelessPort {
     #[serde(flatten)]
     pub base: PortBase,
     /// Wireless settings
@@ -384,7 +388,8 @@ pub struct SystemBridgeWirelessPort {
 /// Port of a bond that is an Ethernet connection, with its current state
 #[derive(Clone, Debug, Serialize, Deserialize, JsonSchema, PartialEq)]
 #[serde(deny_unknown_fields)]
-pub struct SystemBondEthernetPort {
+#[schemars(rename = "SystemBondEthernetPort")]
+pub struct BondEthernetPort {
     #[serde(flatten)]
     pub base: PortBase,
     /// Current state of the connection
@@ -394,11 +399,12 @@ pub struct SystemBondEthernetPort {
 /// Port of a bond that is a bond itself, with its current state and the one of its ports
 #[derive(Clone, Debug, Serialize, Deserialize, JsonSchema, PartialEq)]
 #[serde(deny_unknown_fields)]
-pub struct SystemBondBondPort {
+#[schemars(rename = "SystemBondBondPort")]
+pub struct BondBondPort {
     #[serde(flatten)]
     pub base: PortBase,
     /// Bonding settings
-    pub bond: SystemBondSettings,
+    pub bond: BondSettings,
     /// Current state of the connection
     pub state: ConnectionState,
 }
@@ -406,11 +412,12 @@ pub struct SystemBondBondPort {
 /// Port of a bond that is a bridge, with its current state and the one of its ports
 #[derive(Clone, Debug, Serialize, Deserialize, JsonSchema, PartialEq)]
 #[serde(deny_unknown_fields)]
-pub struct SystemBondBridgePort {
+#[schemars(rename = "SystemBondBridgePort")]
+pub struct BondBridgePort {
     #[serde(flatten)]
     pub base: PortBase,
     /// Bridge settings
-    pub bridge: SystemBridgeSettings,
+    pub bridge: BridgeSettings,
     /// Current state of the connection
     pub state: ConnectionState,
 }
@@ -418,7 +425,8 @@ pub struct SystemBondBridgePort {
 /// Port of a bond that is a VLAN, with its current state
 #[derive(Clone, Debug, Serialize, Deserialize, JsonSchema, PartialEq)]
 #[serde(deny_unknown_fields)]
-pub struct SystemBondVlanPort {
+#[schemars(rename = "SystemBondVlanPort")]
+pub struct BondVlanPort {
     #[serde(flatten)]
     pub base: PortBase,
     /// VLAN settings
@@ -430,7 +438,8 @@ pub struct SystemBondVlanPort {
 /// Port of a bond that is a wireless connection, with its current state
 #[derive(Clone, Debug, Serialize, Deserialize, JsonSchema, PartialEq)]
 #[serde(deny_unknown_fields)]
-pub struct SystemBondWirelessPort {
+#[schemars(rename = "SystemBondWirelessPort")]
+pub struct BondWirelessPort {
     #[serde(flatten)]
     pub base: PortBase,
     /// Wireless settings
@@ -475,12 +484,12 @@ mod tests {
             },
             "state": "activated"
         });
-        let conn: SystemNetworkConnection = serde_json::from_value(json.clone()).unwrap();
+        let conn: NetworkConnection = serde_json::from_value(json.clone()).unwrap();
 
         let bridge = conn.bridge.as_ref().unwrap();
         assert_eq!(bridge.base.stp, Some(false));
         let ports = bridge.port_connections.as_ref().unwrap();
-        let [SystemBridgePort::Name(_), SystemBridgePort::Ethernet(eth0), SystemBridgePort::Bond(bond0), SystemBridgePort::Wireless(wlan0)] =
+        let [BridgePort::Name(_), BridgePort::Ethernet(eth0), BridgePort::Bond(bond0), BridgePort::Wireless(wlan0)] =
             ports.as_slice()
         else {
             panic!("unexpected ports: {ports:?}");
@@ -490,7 +499,7 @@ mod tests {
         assert_eq!(bond0.port.as_ref().unwrap().priority, Some(32));
         assert_eq!(wlan0.state, ConnectionState::Deactivated);
         let ports = bond0.bond.port_connections.as_ref().unwrap();
-        let [SystemBondPort::Ethernet(_), SystemBondPort::Ethernet(eth2), SystemBondPort::Bridge(br1), SystemBondPort::Vlan(_)] =
+        let [BondPort::Ethernet(_), BondPort::Ethernet(eth2), BondPort::Bridge(br1), BondPort::Vlan(_)] =
             ports.as_slice()
         else {
             panic!("unexpected ports: {ports:?}");
@@ -518,7 +527,7 @@ mod tests {
                 r#"{{ "id": "bond0", "bond": {{ "mode": "802.3ad", "portConnections": [{port}] }}, "state": "activated" }}"#
             );
             assert!(
-                serde_json::from_str::<SystemNetworkConnection>(&json).is_err(),
+                serde_json::from_str::<NetworkConnection>(&json).is_err(),
                 "{port}"
             );
         }
@@ -526,7 +535,7 @@ mod tests {
 
     #[test]
     fn test_the_schema_with_state_documents_the_state_of_every_connection() {
-        let schema = schemars::schema_for!(SystemNetworkConnection);
+        let schema = schemars::schema_for!(NetworkConnection);
         let json = serde_json::to_value(&schema).unwrap();
         let defs = json["$defs"].as_object().unwrap();
 

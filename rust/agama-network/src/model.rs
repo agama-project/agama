@@ -1618,7 +1618,9 @@ impl ConnectionCollection {
     /// backup port of a bond is not active while the bond is). The tree is the one of the
     /// configuration, and the state of each connection is looked up by its ID, as the
     /// representation knows the connections by it.
-    fn to_api_with_state(&self) -> Result<SystemNetworkConnectionsCollection, NetworkStateError> {
+    fn to_api_with_state(
+        &self,
+    ) -> Result<system_info::NetworkConnectionsCollection, NetworkStateError> {
         let mut states = HashMap::new();
         for conn in self.iter() {
             // The first one wins, as with [`NetworkState::get_connection`].
@@ -1627,10 +1629,10 @@ impl ConnectionCollection {
         let state_of = |id: &str| states.get(id).copied().unwrap_or(ConnectionState::Unknown);
 
         let roots = self.to_api()?.0;
-        Ok(SystemNetworkConnectionsCollection(
+        Ok(system_info::NetworkConnectionsCollection(
             roots
                 .into_iter()
-                .map(|conn| SystemNetworkConnection::new(conn, &state_of))
+                .map(|conn| system_info::NetworkConnection::new(conn, &state_of))
                 .collect(),
         ))
     }

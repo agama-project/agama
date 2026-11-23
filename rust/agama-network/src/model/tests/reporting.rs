@@ -166,7 +166,7 @@ fn test_the_system_info_connections_round_trip() {
 
     // A client reads the connections back, with the state of the nested ports.
     let json = serde_json::to_string(&info.connections).unwrap();
-    let read: SystemNetworkConnectionsCollection = serde_json::from_str(&json).unwrap();
+    let read: system_info::NetworkConnectionsCollection = serde_json::from_str(&json).unwrap();
 
     assert_eq!(read, info.connections);
 }

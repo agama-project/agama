@@ -21,14 +21,14 @@
 //! This module contains all Agama public types that might be available over
 //! the HTTP and WebSocket API.
 
-mod config;
+pub mod config;
 pub use config::*;
 mod proposal;
 pub use proposal::Proposal;
 pub mod schema;
 mod shared_types;
-mod system_info;
-pub use system_info::*;
+pub mod system_info;
+pub use system_info::SystemInfo;
 
 mod types;
 pub use shared_types::*;

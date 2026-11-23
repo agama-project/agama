@@ -134,7 +134,8 @@ pub struct WirelessSettings {
 }
 
 /// Bonding settings except the nested ports, which the configuration and the system information
-/// report differently (see [`BondSettings`] and [`SystemBondSettings`]).
+/// report differently (see [`config::BondSettings`](super::config::BondSettings) and
+/// [`system_info::BondSettings`](super::system_info::BondSettings)).
 #[derive(Clone, Debug, Serialize, Deserialize, JsonSchema, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct BondBase {
@@ -168,7 +169,8 @@ impl Default for BondBase {
 }
 
 /// Bridge settings except the nested ports, which the configuration and the system information
-/// report differently (see [`BridgeSettings`] and [`SystemBridgeSettings`]).
+/// report differently (see [`config::BridgeSettings`](super::config::BridgeSettings) and
+/// [`system_info::BridgeSettings`](super::system_info::BridgeSettings)).
 #[derive(Clone, Debug, Default, Serialize, Deserialize, JsonSchema, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct BridgeBase {
@@ -360,8 +362,9 @@ pub struct NetworkDevice {
 /// sections, which hold the nested ports.
 ///
 /// The configuration and the system information report the ports differently (see
-/// [`NetworkConnection`] and [`SystemNetworkConnection`]), so they share these settings and add
-/// their own sections.
+/// [`config::NetworkConnection`](super::config::NetworkConnection) and
+/// [`system_info::NetworkConnection`](super::system_info::NetworkConnection)), so they share
+/// these settings and add their own sections.
 #[derive(Clone, Debug, Default, Serialize, Deserialize, JsonSchema, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct ConnectionBase {
@@ -469,8 +472,9 @@ impl IpSettings {
 ///
 /// It is a connection without IP settings, as its controller holds the IP configuration, and
 /// without the sections that tell its kind. Each kind of port flattens it and adds its own
-/// sections, both in the configuration (e.g., [`BondBondPort`]) and in the system information
-/// (e.g., [`SystemBondBondPort`]).
+/// sections, both in the configuration (e.g.,
+/// [`config::BondBondPort`](super::config::BondBondPort)) and in the system information (e.g.,
+/// [`system_info::BondBondPort`](super::system_info::BondBondPort)).
 ///
 /// The ports reject unknown fields, so this struct must not flatten any other one: serde does not
 /// see the fields of a flattened struct that flattens another one, and the port would reject them
