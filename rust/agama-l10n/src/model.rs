@@ -43,6 +43,12 @@ use std::process::Command;
 /// tests.
 pub trait ModelAdapter: Send + 'static {
     /// Reads the system info.
+    ///
+    /// The underlying localization databases (locales, keymaps, and timezones)
+    /// are read concurrently using worker threads during model initialization,
+    /// waiting for all threads to complete before populating this struct. This
+    /// method returns the fully populated entries along with the current system
+    /// locale and keymap settings.
     fn read_system_info(&self) -> SystemInfo {
         let locales = self.locales_db().entries().clone();
         let keymaps = self.keymaps_db().entries().clone();
@@ -123,10 +129,11 @@ impl Model {
     }
 
     fn read(&mut self, locale: &LocaleId) -> Result<(), service::Error> {
-        self.reload_databases(&locale.language, true)
+        self.reload_databases(&locale.language)
     }
 
-    fn reload_databases(&mut self, lang: &str, load_keymaps: bool) -> Result<(), service::Error> {
+    fn reload_databases(&mut self, lang: &str) -> Result<(), service::Error> {
+        let load_keymaps = self.keymaps_db.is_empty();
         let locales_db = &mut self.locales_db;
         let timezones_db = &mut self.timezones_db;
         let keymaps_db = &mut self.keymaps_db;
@@ -142,18 +149,20 @@ impl Model {
 
             h_locales
                 .join()
-                .map_err(|_| service::Error::DatabaseThreadPanicked("locales"))?
-                .map_err(|e| service::Error::LocalesDatabaseRead(e.to_string()))?;
+                .map_err(|_| service::Error::DatabaseRead("locales thread panicked".to_string()))?
+                .map_err(|e| service::Error::DatabaseRead(format!("locales: {e}")))?;
 
             h_timezones
                 .join()
-                .map_err(|_| service::Error::DatabaseThreadPanicked("timezones"))?
-                .map_err(|e| service::Error::TimezonesDatabaseRead(e.to_string()))?;
+                .map_err(|_| service::Error::DatabaseRead("timezones thread panicked".to_string()))?
+                .map_err(|e| service::Error::DatabaseRead(format!("timezones: {e}")))?;
 
             if let Some(h) = h_keymaps {
                 h.join()
-                    .map_err(|_| service::Error::DatabaseThreadPanicked("keymaps"))?
-                    .map_err(|e| service::Error::KeymapsDatabaseRead(e.to_string()))?;
+                    .map_err(|_| {
+                        service::Error::DatabaseRead("keymaps thread panicked".to_string())
+                    })?
+                    .map_err(|e| service::Error::DatabaseRead(format!("keymaps: {e}")))?;
             }
 
             Ok(())
@@ -206,7 +215,7 @@ impl ModelAdapter for Model {
             .output()?;
 
         helpers::set_service_locale(&locale);
-        self.reload_databases(&locale.language, false)
+        self.reload_databases(&locale.language)
     }
 
     fn set_keymap(&mut self, keymap: KeymapId) -> Result<(), service::Error> {

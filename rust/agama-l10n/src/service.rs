@@ -61,14 +61,8 @@ pub enum Error {
     Generic(#[from] anyhow::Error),
     #[error("There is no proposal for localization")]
     MissingProposal,
-    #[error("Failed to read locales database: {0}")]
-    LocalesDatabaseRead(String),
-    #[error("Failed to read timezones database: {0}")]
-    TimezonesDatabaseRead(String),
-    #[error("Failed to read keymaps database: {0}")]
-    KeymapsDatabaseRead(String),
-    #[error("Thread panicked while reading {0} database")]
-    DatabaseThreadPanicked(&'static str),
+    #[error("Failed to read localization database: {0}")]
+    DatabaseRead(String),
 }
 
 /// Builds and spawns the l10n service.
@@ -334,5 +328,22 @@ impl MessageHandler<message::UpdateKeymap> for Service {
             .events
             .send(Event::SystemChanged { scope: Scope::L10n });
         Ok(())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::test_utils::start_service;
+    use tokio::sync::broadcast;
+
+    #[tokio::test]
+    async fn test_get_locale() {
+        let (events_tx, _) = broadcast::channel(16);
+        let issues = issue::Service::starter(events_tx.clone()).start();
+        let service = start_service(events_tx, issues).await;
+
+        let locale = service.call(message::GetLocale).await.unwrap();
+        assert_eq!(locale, LocaleId::default());
     }
 }

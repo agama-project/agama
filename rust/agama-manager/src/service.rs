@@ -279,7 +279,7 @@ impl Starter {
 
         let access = agama_access::Service::starter(self.events.clone()).start()?;
 
-        macro_rules! start_or_default {
+        macro_rules! get_or_start {
             ($field:expr, $starter:expr) => {
                 async {
                     match $field {
@@ -291,19 +291,19 @@ impl Starter {
         }
 
         let (bootloader, hostname, l10n, storage, iscsi, files, network, users) = tokio::try_join!(
-            start_or_default!(
+            get_or_start!(
                 self.bootloader,
                 bootloader::Service::starter(self.dbus.clone())
             ),
-            start_or_default!(
+            get_or_start!(
                 self.hostname,
                 hostname::Service::starter(self.events.clone(), issues.clone())
             ),
-            start_or_default!(
+            get_or_start!(
                 self.l10n,
                 l10n::Service::starter(self.events.clone(), issues.clone())
             ),
-            start_or_default!(
+            get_or_start!(
                 self.storage,
                 storage::Service::starter(
                     self.events.clone(),
@@ -312,19 +312,19 @@ impl Starter {
                     self.dbus.clone(),
                 )
             ),
-            start_or_default!(
+            get_or_start!(
                 self.iscsi,
                 iscsi::Service::starter(self.events.clone(), progress.clone(), self.dbus.clone(),)
             ),
-            start_or_default!(
+            get_or_start!(
                 self.files,
                 files::Service::starter(progress.clone(), self.questions.clone())
             ),
-            start_or_default!(
+            get_or_start!(
                 self.network,
                 network::Service::starter(self.events.clone(), progress.clone())
             ),
-            start_or_default!(
+            get_or_start!(
                 self.users,
                 users::Service::starter(self.events.clone(), issues.clone(), access.clone())
             ),
