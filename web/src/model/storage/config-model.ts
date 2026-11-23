@@ -55,6 +55,61 @@ function usedMountPaths(config: ConfigModel.Config): string[] {
   ];
 }
 
+/**
+ * What holds a mount path in the config, located the way the storage forms
+ * address it (`index` is the position in its collection):
+ *
+ * - "newPartition": a partition to be created on the device `deviceName`.
+ * - "existingPartition": the partition `partitionName`, reused on `deviceName`.
+ * - "logicalVolume": a logical volume in the volume group `deviceName`.
+ * - "device": the whole drive or RAID `deviceName`, formatted with it.
+ */
+type MountPathHolder =
+  | {
+      kind: "newPartition";
+      collection: Partitionable.CollectionName;
+      index: number;
+      deviceName: string;
+    }
+  | {
+      kind: "existingPartition";
+      collection: Partitionable.CollectionName;
+      index: number;
+      deviceName: string;
+      partitionName: string;
+    }
+  | { kind: "logicalVolume"; index: number; deviceName: string }
+  | {
+      kind: "device";
+      collection: Partitionable.CollectionName;
+      index: number;
+      deviceName: string;
+    };
+
+/** Finds what holds the given mount path, or null when nothing does. */
+function findMountPathHolder(
+  config: ConfigModel.Config,
+  mountPath: string,
+): MountPathHolder | null {
+  for (const collection of ["drives", "mdRaids"] as const) {
+    const devices = config[collection] || [];
+    for (const [index, device] of devices.entries()) {
+      const at = { collection, index, deviceName: device.name };
+      if (device.mountPath === mountPath) return { kind: "device", ...at };
+
+      const held = (device.partitions || []).find((p) => p.mountPath === mountPath);
+      if (!held) continue;
+      return held.name
+        ? { kind: "existingPartition", ...at, partitionName: held.name }
+        : { kind: "newPartition", ...at };
+    }
+  }
+
+  const groups = config.volumeGroups || [];
+  const index = groups.findIndex((g) => volumeGroup.usedMountPaths(g).includes(mountPath));
+  return index === -1 ? null : { kind: "logicalVolume", index, deviceName: groups[index].vgName };
+}
+
 function isTargetDevice(config: ConfigModel.Config, deviceName: string): boolean {
   const targetDevices = (config.volumeGroups || []).flatMap((v) => v.targetDevices || []);
   return targetDevices.includes(deviceName);
@@ -121,6 +176,7 @@ function isGrub2WithTpm(config: ConfigModel.Config): boolean {
 export default {
   clone,
   usedMountPaths,
+  findMountPathHolder,
   isTargetDevice,
   setEncryption,
   devices,
@@ -139,4 +195,4 @@ export default {
   getBootloader,
   isGrub2WithTpm,
 };
-export type { ConfigModel, Data, Partitionable, DeviceCollection, Device, Volume };
+export type { ConfigModel, Data, Partitionable, DeviceCollection, Device, Volume, MountPathHolder };
