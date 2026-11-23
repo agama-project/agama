@@ -20,6 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
+import { sift } from "radashi";
 import { sprintf } from "sprintf-js";
 import configModel from "~/model/storage/config-model";
 import {
@@ -29,7 +30,7 @@ import {
   filesystemType,
   sizeDescription,
 } from "~/components/storage/utils";
-import { _ } from "~/i18n";
+import { _, formatList } from "~/i18n";
 
 import type { ConfigModel, MountPathHolder } from "~/model/storage/config-model";
 import type { Storage as System } from "~/model/system";
@@ -105,47 +106,10 @@ export function holderTitle(mountPoint: string, holder: MountPathHolder) {
 }
 
 /**
- * Says what becomes of the holder once the mount point is assigned here, one
- * whole sentence per kind of holder.
+ * The holder's file system and size as they are now. An existing partition
+ * that keeps its data brings its own, so they are read from the machine.
  */
-export function holderOutcome(mountPoint: string, holder: ReleasableHolder) {
-  switch (holder.kind) {
-    case "newPartition":
-      return sprintf(
-        // TRANSLATORS: hint under the option to assign a mount point to this
-        // partition instead. %s is a disk (e.g. "sda"). No final period.
-        _("The new partition on %s will no longer be created"),
-        baseName(holder.deviceName),
-      );
-    case "existingPartition":
-      return sprintf(
-        // TRANSLATORS: hint under the option to assign a mount point to this
-        // partition instead. %1$s is a partition (e.g. "sda2"), %2$s a mount
-        // point (e.g. "/home"). No final period.
-        _("%1$s will no longer be used for %2$s"),
-        baseName(holder.partitionName),
-        mountPoint,
-      );
-    case "logicalVolume":
-      return sprintf(
-        // TRANSLATORS: hint under the option to assign a mount point to this
-        // partition instead. %s is a volume group (e.g. "system"). No final
-        // period.
-        _("The logical volume in %s will no longer be created"),
-        holder.deviceName,
-      );
-  }
-}
-
-/**
- * Says how the holder is set up now: its file system and size. An existing
- * partition that keeps its data brings its own, so they are read from the
- * machine.
- *
- * @param partition - The holder as it is on the machine, when it is an
- *   existing partition.
- */
-export function holderSetup(holder: ReleasableHolder, partition?: System.Device) {
+function holderFilesystemAndSize(holder: ReleasableHolder, partition?: System.Device) {
   const { entry } = holder;
   const isExisting = holder.kind === "existingPartition";
   const keepsData = isExisting && entry.filesystem?.reuse === true;
@@ -169,12 +133,62 @@ export function holderSetup(holder: ReleasableHolder, partition?: System.Device)
     size = _("decided by the installer");
   }
 
+  return { filesystem, size };
+}
+
+/**
+ * How the holder is set up now: its file system and size.
+ *
+ * @param partition - The holder as it is on the machine, when it is an
+ *   existing partition.
+ */
+export function holderBasics(holder: ReleasableHolder, partition?: System.Device) {
+  const { filesystem, size } = holderFilesystemAndSize(holder, partition);
   return sprintf(
     // TRANSLATORS: in the notice saying a mount point is already assigned
-    // elsewhere, how that is set up now. %1$s is a file system (e.g. "Btrfs"),
-    // %2$s a size or size range (e.g. "10 GiB - 20 GiB").
-    _("Currently: %1$s, %2$s"),
+    // elsewhere, right after naming what it is assigned to: how that is set
+    // up now. %1$s is a file system (e.g. "XFS"), %2$s a size or size range
+    // (e.g. "at least 5 GiB").
+    _("Currently set up with %1$s, %2$s"),
     filesystem,
     size,
   );
+}
+
+/**
+ * The holder's other file system settings, as one line, or nothing when it
+ * has none. Each is named as its field in the
+ * form, with its value quoted. An existing partition that keeps its data
+ * brings its own label and is not formatted, so it has no format arguments.
+ *
+ * @param partition - The holder as it is on the machine, when it is an
+ *   existing partition.
+ */
+export function holderExtras(holder: ReleasableHolder, partition?: System.Device) {
+  const filesystem = holder.entry.filesystem;
+  const keepsData = holder.kind === "existingPartition" && filesystem?.reuse === true;
+  const label = keepsData ? partition?.filesystem?.label : filesystem?.label;
+  const mountOptions = filesystem?.mountOptions ?? [];
+  const formatArguments = keepsData ? undefined : filesystem?.mkfsExtraArguments;
+
+  const setting = (name: string, value: string) =>
+    sprintf(
+      // TRANSLATORS: a setting and its value, in the notice saying a mount
+      // point is already assigned elsewhere. %1$s is the setting's name as in its field (e.g. "Label"),
+      // %2$s its value (e.g. "home"). Use the quotes of your language.
+      _('%1$s "%2$s"'),
+      name,
+      value,
+    );
+
+  const settings = sift([
+    // TRANSLATORS: name of a setting, as the field that sets it.
+    label && setting(_("Label"), label),
+    // TRANSLATORS: name of a setting, as the field that sets it.
+    mountOptions.length > 0 && setting(_("Mount options"), mountOptions.join(",")),
+    // TRANSLATORS: name of a setting, as the field that sets it.
+    formatArguments && setting(_("Additional format arguments"), formatArguments),
+  ]);
+
+  return settings.length > 0 ? formatList(settings, { type: "unit", style: "short" }) : undefined;
 }

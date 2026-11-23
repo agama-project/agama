@@ -23,29 +23,44 @@
 import React, { useEffect } from "react";
 import { Alert, Checkbox, Flex } from "@patternfly/react-core";
 import { sprintf } from "sprintf-js";
+import Text from "~/components/core/Text";
 import { useAnnounce } from "~/context/announcer";
 import { withForm } from "~/hooks/form";
 import { useDevice } from "~/hooks/model/system/storage";
 import configModel from "~/model/storage/config-model";
 import { _ } from "~/i18n";
 
-import type { TranslatedString } from "~/i18n";
-import { defaultOptions } from "./fields";
-import { holderOutcome, holderSetup, holderTitle } from "./mount-point-holder";
+import { baseName } from "~/components/storage/utils";
+import { defaultOptions, isReusingPartition } from "./fields";
+import { holderBasics, holderExtras, holderTitle } from "./mount-point-holder";
 
+import type { TranslatedString } from "~/i18n";
 import type { MountPathHolder } from "~/model/storage/config-model";
 
-type Holder = Parameters<typeof holderSetup>[0];
+type Holder = Parameters<typeof holderBasics>[0];
 
-/** How the holder is set up now, reading an existing partition from the machine. */
-function HolderSetup({ holder }: { holder: Holder }) {
+/**
+ * How the holder is set up now, in small dimmed lines: file system and size
+ * first, then any other settings it has. Reads an existing partition from the
+ * machine.
+ */
+function HolderSettings({ holder }: { holder: Holder }) {
   const device = useDevice(holder.kind === "existingPartition" ? holder.deviceName : "");
   const partition =
     holder.kind === "existingPartition"
       ? device?.partitions?.find((p) => p.name === holder.partitionName)
       : undefined;
+  const lines = [holderBasics(holder, partition), holderExtras(holder, partition)].filter(Boolean);
 
-  return <p>{holderSetup(holder, partition)}</p>;
+  return (
+    <div>
+      {lines.map((line) => (
+        <p key={line}>
+          <Text textStyle={["fontSizeXs", "fontFamilyMonospace", "textColorSubtle"]}>{line}</Text>
+        </p>
+      ))}
+    </div>
+  );
 }
 
 /** Says the notice once, when it appears, since it shows up behind the focus. */
@@ -55,6 +70,35 @@ function Announce({ text }: { text: TranslatedString }) {
     announce(text);
   }, [announce, text]);
   return null;
+}
+
+/**
+ * Offers to discard the holder's settings and assign the mount point to the
+ * partition the form configures, named as chosen in the form.
+ *
+ * @param partitionName - The chosen existing partition, or an empty string for
+ *   a new one.
+ */
+function assignLabel(mountPoint: string, partitionName: string) {
+  return isReusingPartition(partitionName)
+    ? sprintf(
+        // TRANSLATORS: option in the notice saying a mount point is already
+        // assigned elsewhere, whose current settings are listed above it.
+        // %1$s is the mount point (e.g. "/home"), %2$s the partition chosen in
+        // the form (e.g. "sda3").
+        _("Discard the current settings and assign %1$s to %2$s"),
+        mountPoint,
+        baseName(partitionName),
+      )
+    : sprintf(
+        // TRANSLATORS: option in the notice saying a mount point is already
+        // assigned elsewhere, whose current settings are listed above it, when
+        // the form configures a partition to be created. "this" tells it apart
+        // from the partition the mount point is assigned to now. %s is the
+        // mount point (e.g. "/home").
+        _("Discard the current settings and assign %s to this new partition"),
+        mountPoint,
+      );
 }
 
 type MountPointAssignmentProps = {
@@ -68,8 +112,8 @@ type MountPointAssignmentProps = {
  * Notice for a mount point already assigned elsewhere in the configuration.
  *
  * It names what holds the mount point. When that is a partition or a logical
- * volume, it also tells how it is set up now and offers to assign the mount
- * point to this partition instead. Like any other field, the choice applies
+ * volume, it also tells how that is set up now and offers to discard those
+ * settings and assign the mount point to the chosen partition. Like any other field, the choice applies
  * only when the form is accepted, and only for the mount point it was made
  * for. A whole disk or RAID cannot give its mount point up, so the notice
  * only asks for another one.
@@ -89,26 +133,25 @@ const MountPointAssignment = withForm({
         <Alert isInline variant="info" component="p" title={title}>
           <Announce text={title} />
           {canAssign ? (
-            <>
-              <HolderSetup holder={holder} />
-              <form.AppField name="reassignedMountPoint">
-                {(field) => (
-                  <Checkbox
-                    id={field.name}
-                    label={sprintf(
-                      // TRANSLATORS: option in the notice saying a mount point
-                      // is already assigned elsewhere. %s is the mount point
-                      // (e.g. "/home").
-                      _("Assign %s to this partition instead"),
-                      mountPoint,
+            <Flex direction={{ default: "column" }} gap={{ default: "gapMd" }}>
+              <HolderSettings holder={holder} />
+              <form.Subscribe selector={(s) => s.values.name}>
+                {(partitionName) => (
+                  <form.AppField name="reassignedMountPoint">
+                    {(field) => (
+                      <Checkbox
+                        id={field.name}
+                        label={assignLabel(mountPoint, partitionName)}
+                        isChecked={field.state.value === mountPoint}
+                        onChange={(_event, checked) =>
+                          field.handleChange(checked ? mountPoint : "")
+                        }
+                      />
                     )}
-                    description={holderOutcome(mountPoint, holder)}
-                    isChecked={field.state.value === mountPoint}
-                    onChange={(_event, checked) => field.handleChange(checked ? mountPoint : "")}
-                  />
+                  </form.AppField>
                 )}
-              </form.AppField>
-            </>
+              </form.Subscribe>
+            </Flex>
           ) : (
             <p>
               {
