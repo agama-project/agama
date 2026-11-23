@@ -27,10 +27,8 @@ mod proposal;
 pub use proposal::Proposal;
 pub mod schema;
 mod settings;
-mod system_connection;
-pub use system_connection::*;
 mod system_info;
-pub use system_info::SystemInfo;
+pub use system_info::*;
 
 mod types;
 pub use settings::*;
