@@ -22,14 +22,14 @@
 //! the HTTP and WebSocket API.
 
 mod config;
-pub use config::Config;
+pub use config::*;
 mod proposal;
 pub use proposal::Proposal;
 pub mod schema;
-mod settings;
+mod shared_types;
 mod system_info;
 pub use system_info::*;
 
 mod types;
-pub use settings::*;
+pub use shared_types::*;
 pub use types::*;

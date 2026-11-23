@@ -28,12 +28,14 @@
 //! The tree is built from the configuration one, looking up the state of each connection by its ID
 //! (see [`SystemNetworkConnection::new`]).
 
-use super::settings::{
-    add_dns_searchlist_alias, BondBase, BondBondPort, BondBridgePort, BondEthernetPort, BondPort,
-    BondSettings, BondVlanPort, BondWirelessPort, BridgeBase, BridgeBondPort, BridgeBridgePort,
-    BridgeEthernetPort, BridgePort, BridgePortSettings, BridgeSettings, BridgeVlanPort,
-    BridgeWirelessPort, ConnectionBase, IpSettings, NetworkConnection, PortBase, VlanSettings,
-    WirelessSettings,
+use super::config::{
+    BondBondPort, BondBridgePort, BondEthernetPort, BondPort, BondSettings, BondVlanPort,
+    BondWirelessPort, BridgeBondPort, BridgeBridgePort, BridgeEthernetPort, BridgePort,
+    BridgeSettings, BridgeVlanPort, BridgeWirelessPort, NetworkConnection,
+};
+use super::shared_types::{
+    add_dns_searchlist_alias, BondBase, BridgeBase, BridgePortSettings, ConnectionBase, IpSettings,
+    PortBase, VlanSettings, WirelessSettings,
 };
 use super::types::ConnectionState;
 use super::{AccessPoint, Device, StateSettings};
