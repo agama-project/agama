@@ -233,7 +233,16 @@ function PartitionFormContent({
         {/* Mount point */}
         <MountPointField form={form} suggestions={unusedMountPoints} />
 
-        {/* What the mount point is already assigned to, if anything */}
+        {/* Partition */}
+        <PartitionFields
+          form={form}
+          device={systemDevice}
+          availablePartitions={availablePartitions}
+        />
+
+        {/* What the mount point is already assigned to, if anything. After the
+            partition, so the offer names the one just chosen and comes next
+            for whoever moves on from the fields above. */}
         <form.Subscribe selector={(s) => s.values.committedMountPoint}>
           {(mountPoint) => {
             const holder = mountPointHolder(config, usedMountPoints, mountPoint);
@@ -242,13 +251,6 @@ function PartitionFormContent({
             );
           }}
         </form.Subscribe>
-
-        {/* Partition */}
-        <PartitionFields
-          form={form}
-          device={systemDevice}
-          availablePartitions={availablePartitions}
-        />
 
         {/* Size (only for new partitions) */}
         <form.Subscribe selector={(s) => s.values.name}>

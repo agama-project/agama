@@ -505,9 +505,9 @@ can try again.
 
 The partition form tells the user as soon as they finish entering a mount
 point that is already assigned elsewhere in the configuration, rather than
-when they submit. A notice between the mount point and the next field names
-what holds it and how that is set up, and offers to assign the mount point
-to this partition instead. It departs from the rule above for these reasons:
+when they submit. A notice after the partition field names what holds it and
+how that is set up, and offers to assign the mount point to the chosen
+partition instead. It departs from the rule above for these reasons:
 
 - It does not judge the value. The mount point is well formed; what the user
   cannot see from this form is that the rest of the configuration already
