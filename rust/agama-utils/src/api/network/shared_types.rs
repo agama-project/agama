@@ -21,9 +21,9 @@
 //! Types that the configuration and the system information share.
 //!
 //! Besides the general settings and the sections that both of them have (e.g., [`VlanSettings`]),
-//! it holds the parts that their connections are built from: [`ConnectionBase`], [`IpSettings`],
-//! [`BondBase`], [`BridgeBase`] and [`PortBase`]. Each one adds its own way of reporting the nested
-//! ports (see [`super::config`] and [`super::system_info`]).
+//! it holds the parts that their connections are built from: [`ConnectionCommon`],
+//! [`IpSettings`], [`BondCommon`], [`BridgeCommon`] and [`PortCommon`]. Each one adds its own way
+//! of reporting the nested ports (see [`super::config`] and [`super::system_info`]).
 
 use super::types::{ConnectivityState, DeviceState, DeviceType, Ipv4Method, Ipv6Method, Status};
 use crate::openapi::schemas;
@@ -138,7 +138,7 @@ pub struct WirelessSettings {
 /// [`system_info::BondSettings`](super::system_info::BondSettings)).
 #[derive(Clone, Debug, Serialize, Deserialize, JsonSchema, PartialEq)]
 #[serde(rename_all = "camelCase")]
-pub struct BondBase {
+pub struct BondCommon {
     /// Bonding mode
     #[schemars(extend("enum" = [
         "balance-rr", "active-backup", "balance-xor", "broadcast", "802.3ad", "balance-tlb",
@@ -158,7 +158,7 @@ pub struct BondBase {
     pub ports: Option<Vec<String>>,
 }
 
-impl Default for BondBase {
+impl Default for BondCommon {
     fn default() -> Self {
         Self {
             mode: "balance-rr".to_string(),
@@ -173,7 +173,7 @@ impl Default for BondBase {
 /// [`system_info::BridgeSettings`](super::system_info::BridgeSettings)).
 #[derive(Clone, Debug, Default, Serialize, Deserialize, JsonSchema, PartialEq)]
 #[serde(rename_all = "camelCase")]
-pub struct BridgeBase {
+pub struct BridgeCommon {
     /// Whether the Spanning Tree Protocol is enabled or not
     #[serde(skip_serializing_if = "Option::is_none")]
     pub stp: Option<bool>,
@@ -367,7 +367,7 @@ pub struct NetworkDevice {
 /// these settings and add their own sections.
 #[derive(Clone, Debug, Default, Serialize, Deserialize, JsonSchema, PartialEq)]
 #[serde(rename_all = "camelCase")]
-pub struct ConnectionBase {
+pub struct ConnectionCommon {
     /// Unique identifier for the network connection
     pub id: String,
     /// VLAN settings for the connection
@@ -410,7 +410,7 @@ pub struct ConnectionBase {
 /// IP settings of a connection.
 ///
 /// A port of a bond or a bridge cannot have them, as its controller holds the IP configuration, so
-/// the nested ports do not include them (see [`PortBase`]).
+/// the nested ports do not include them (see [`PortCommon`]).
 #[derive(Clone, Debug, Default, Serialize, Deserialize, JsonSchema, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct IpSettings {
@@ -481,7 +481,7 @@ impl IpSettings {
 /// as unknown.
 #[derive(Clone, Debug, Default, Serialize, Deserialize, JsonSchema, PartialEq)]
 #[serde(rename_all = "camelCase")]
-pub struct PortBase {
+pub struct PortCommon {
     /// Unique identifier for the network connection
     ///
     /// When it is omitted, the port refers to the connection bound to its interface, or
@@ -519,13 +519,13 @@ pub struct PortBase {
     pub persistent: Option<bool>,
 }
 
-impl PortBase {
+impl PortCommon {
     /// Takes the settings every port has from a connection.
     ///
     /// The IP settings are not part of it, and its `vlan` and `wireless` sections are dropped: the
     /// caller takes the ones its kind of port has before.
-    pub(super) fn from_connection(base: ConnectionBase) -> Self {
-        let ConnectionBase {
+    pub(super) fn from_connection(common: ConnectionCommon) -> Self {
+        let ConnectionCommon {
             id,
             vlan: _,
             wireless: _,
@@ -538,7 +538,7 @@ impl PortBase {
             ieee_8021x,
             autoconnect,
             persistent,
-        } = base;
+        } = common;
 
         Self {
             id: Some(id),
@@ -556,13 +556,13 @@ impl PortBase {
 
     /// Returns the settings of the connection the port stands for, with the given ID and
     /// sections, and without IP settings.
-    pub(super) fn to_connection_base(
+    pub(super) fn to_connection_common(
         &self,
         id: String,
         vlan: Option<VlanSettings>,
         wireless: Option<WirelessSettings>,
-    ) -> ConnectionBase {
-        ConnectionBase {
+    ) -> ConnectionCommon {
+        ConnectionCommon {
             id,
             vlan,
             wireless,

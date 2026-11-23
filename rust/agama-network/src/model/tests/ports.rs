@@ -29,7 +29,7 @@ fn test_updating_a_connection_keeps_its_uuid_and_unmodelled_settings() {
     let uuid = state.get_connection("eth0").unwrap().uuid;
 
     let mut update = find(&exposed(&state), "eth0");
-    update.base.mtu = 1500;
+    update.common.mtu = 1500;
     let collection = state
         .connection_collection_from(&NetworkConnectionsCollection(vec![update]))
         .unwrap();
@@ -117,7 +117,7 @@ fn test_dropping_a_port_removes_it() {
 fn set_port_names(connections: &mut NetworkConnectionsCollection, id: &str, names: &[&str]) {
     let bond = bond_mut(connections, id);
     bond.port_connections = None;
-    bond.base.ports = Some(names.iter().map(|n| n.to_string()).collect());
+    bond.common.ports = Some(names.iter().map(|n| n.to_string()).collect());
 }
 
 #[test]
@@ -181,7 +181,12 @@ fn test_the_reported_configuration_can_be_sent_back_with_both_lists() {
     let reported: NetworkConnectionsCollection = ConnectionCollection(state.connections.clone())
         .try_into()
         .unwrap();
-    assert!(find(&reported, "bond0").bond.unwrap().base.ports.is_some());
+    assert!(find(&reported, "bond0")
+        .bond
+        .unwrap()
+        .common
+        .ports
+        .is_some());
 
     apply(&mut state, reported);
 
@@ -203,7 +208,7 @@ fn test_port_connections_take_precedence_over_ports() {
     let mut state = stacked_state();
     let mut connections = exposed(&state);
     let bond0 = bond_mut(&mut connections, "bond0");
-    bond0.base.ports = Some(vec!["eth0".to_string(), "eth1".to_string()]);
+    bond0.common.ports = Some(vec!["eth0".to_string(), "eth1".to_string()]);
     bond0.port_connections = Some(vec![name("eth0")]);
     apply(&mut state, connections);
 
@@ -233,7 +238,7 @@ fn test_omitting_the_ports_of_a_controller_keeps_them() {
     let mut state = stacked_state();
     let mut br0 = find(&exposed(&state), "br0");
     br0.bridge.as_mut().unwrap().port_connections = None;
-    br0.bridge.as_mut().unwrap().base.stp = Some(false);
+    br0.bridge.as_mut().unwrap().common.stp = Some(false);
     apply(&mut state, NetworkConnectionsCollection(vec![br0]));
 
     for id in ["bond0", "eth0", "eth1"] {
@@ -310,7 +315,7 @@ fn test_a_port_can_be_moved_to_another_controller() {
 fn test_ports_have_no_ip_settings() {
     let state = NetworkState::default();
     let bond0 = NetworkConnection {
-        base: ConnectionBase {
+        common: ConnectionCommon {
             id: "bond0".to_string(),
             ..Default::default()
         },
@@ -318,7 +323,7 @@ fn test_ports_have_no_ip_settings() {
             port_connections: Some(vec![
                 name("eth0"),
                 BondPort::Ethernet(Box::new(BondEthernetPort {
-                    base: PortBase {
+                    common: PortCommon {
                         interface: Some("eth1".to_string()),
                         ..Default::default()
                     },
@@ -344,7 +349,7 @@ fn test_ports_have_no_ip_settings() {
 fn test_the_ip_settings_of_a_port_given_at_the_top_level_are_ignored() {
     let state = NetworkState::default();
     let eth0 = NetworkConnection {
-        base: ConnectionBase {
+        common: ConnectionCommon {
             id: "eth0".to_string(),
             interface: Some("eth0".to_string()),
             ..Default::default()
@@ -357,12 +362,12 @@ fn test_the_ip_settings_of_a_port_given_at_the_top_level_are_ignored() {
         ..Default::default()
     };
     let bond0 = NetworkConnection {
-        base: ConnectionBase {
+        common: ConnectionCommon {
             id: "bond0".to_string(),
             ..Default::default()
         },
         bond: Some(BondSettings {
-            base: BondBase {
+            common: BondCommon {
                 ports: Some(vec!["eth0".to_string()]),
                 ..Default::default()
             },
@@ -393,7 +398,7 @@ fn test_a_connection_joining_a_controller_by_name_loses_its_ip_settings() {
     state.add_connection(eth0).unwrap();
 
     let bond0 = NetworkConnection {
-        base: ConnectionBase {
+        common: ConnectionCommon {
             id: "bond0".to_string(),
             ..Default::default()
         },
@@ -415,7 +420,7 @@ fn test_a_connection_joining_a_controller_by_name_loses_its_ip_settings() {
 fn test_updating_a_single_connection_keeps_the_rest_of_the_stack() {
     let mut state = stacked_state();
     let mut vlan = find(&exposed(&state), "br0.100");
-    vlan.base.mtu = 1400;
+    vlan.common.mtu = 1400;
 
     state
         .update_state(Config {
@@ -465,7 +470,7 @@ fn test_a_port_given_by_name_is_taken_from_the_state() {
 fn test_an_unknown_port_is_created_as_an_ethernet_connection() {
     let state = NetworkState::default();
     let bond0 = NetworkConnection {
-        base: ConnectionBase {
+        common: ConnectionCommon {
             id: "bond0".to_string(),
             ..Default::default()
         },
@@ -492,13 +497,13 @@ fn test_an_unknown_port_is_created_as_an_ethernet_connection() {
 fn test_a_nested_port_without_an_id_is_named_after_its_interface() {
     let state = NetworkState::default();
     let bond0 = NetworkConnection {
-        base: ConnectionBase {
+        common: ConnectionCommon {
             id: "bond0".to_string(),
             ..Default::default()
         },
         bond: Some(BondSettings {
             port_connections: Some(vec![BondPort::Ethernet(Box::new(BondEthernetPort {
-                base: PortBase {
+                common: PortCommon {
                     interface: Some("eth0".to_string()),
                     mtu: 9000,
                     ..Default::default()
@@ -529,13 +534,13 @@ fn test_a_nested_port_without_an_id_updates_the_existing_connection() {
     state.add_connection(existing).unwrap();
 
     let bond0 = NetworkConnection {
-        base: ConnectionBase {
+        common: ConnectionCommon {
             id: "bond0".to_string(),
             ..Default::default()
         },
         bond: Some(BondSettings {
             port_connections: Some(vec![BondPort::Ethernet(Box::new(BondEthernetPort {
-                base: PortBase {
+                common: PortCommon {
                     interface: Some("eth0".to_string()),
                     ..Default::default()
                 },
@@ -558,13 +563,13 @@ fn test_a_nested_port_without_an_id_updates_the_existing_connection() {
 fn test_a_nested_port_without_an_id_nor_an_interface_is_rejected() {
     let state = NetworkState::default();
     let bond0 = NetworkConnection {
-        base: ConnectionBase {
+        common: ConnectionCommon {
             id: "bond0".to_string(),
             ..Default::default()
         },
         bond: Some(BondSettings {
             port_connections: Some(vec![BondPort::Ethernet(Box::new(BondEthernetPort {
-                base: PortBase {
+                common: PortCommon {
                     mtu: 9000,
                     ..Default::default()
                 },
@@ -583,7 +588,7 @@ fn test_a_nested_port_without_an_id_nor_an_interface_is_rejected() {
 #[test]
 fn test_a_connection_at_the_top_level_requires_an_id() {
     let state = NetworkState::default();
-    let eth0 = NetworkConnection::from(ConnectionBase {
+    let eth0 = NetworkConnection::from(ConnectionCommon {
         interface: Some("eth0".to_string()),
         ..Default::default()
     });
@@ -600,7 +605,7 @@ fn test_a_port_given_by_id_keeps_its_interface() {
     let mut bond0 = find(&exposed(&state), "bond0");
     bond0.bond.as_mut().unwrap().port_connections = Some(vec![
         BondPort::Ethernet(Box::new(BondEthernetPort {
-            base: PortBase {
+            common: PortCommon {
                 id: Some("eth0".to_string()),
                 mtu: 9000,
                 ..Default::default()
@@ -618,7 +623,7 @@ fn test_a_port_given_by_id_keeps_its_interface() {
 #[test]
 fn test_a_connection_given_twice_is_rejected() {
     let state = NetworkState::default();
-    let eth0 = NetworkConnection::from(ConnectionBase {
+    let eth0 = NetworkConnection::from(ConnectionCommon {
         id: "eth0".to_string(),
         interface: Some("eth0".to_string()),
         ..Default::default()
@@ -626,7 +631,7 @@ fn test_a_connection_given_twice_is_rejected() {
     let collection = NetworkConnectionsCollection(vec![
         eth0.clone(),
         NetworkConnection {
-            base: ConnectionBase {
+            common: ConnectionCommon {
                 id: "bond0".to_string(),
                 ..Default::default()
             },
@@ -646,18 +651,18 @@ fn test_a_connection_given_twice_is_rejected() {
 fn test_an_ambiguous_port_name_is_rejected() {
     let state = NetworkState::default();
     let collection = NetworkConnectionsCollection(vec![
-        NetworkConnection::from(ConnectionBase {
+        NetworkConnection::from(ConnectionCommon {
             id: "office".to_string(),
             interface: Some("eth0".to_string()),
             ..Default::default()
         }),
-        NetworkConnection::from(ConnectionBase {
+        NetworkConnection::from(ConnectionCommon {
             id: "home".to_string(),
             interface: Some("eth0".to_string()),
             ..Default::default()
         }),
         NetworkConnection {
-            base: ConnectionBase {
+            common: ConnectionCommon {
                 id: "bond0".to_string(),
                 ..Default::default()
             },
@@ -677,13 +682,13 @@ fn test_an_ambiguous_port_name_is_rejected() {
 fn test_a_port_claimed_by_two_controllers_is_rejected() {
     let state = NetworkState::default();
     let collection = NetworkConnectionsCollection(vec![
-        NetworkConnection::from(ConnectionBase {
+        NetworkConnection::from(ConnectionCommon {
             id: "eth0".to_string(),
             interface: Some("eth0".to_string()),
             ..Default::default()
         }),
         NetworkConnection {
-            base: ConnectionBase {
+            common: ConnectionCommon {
                 id: "bond0".to_string(),
                 ..Default::default()
             },
@@ -694,7 +699,7 @@ fn test_a_port_claimed_by_two_controllers_is_rejected() {
             ..Default::default()
         },
         NetworkConnection {
-            base: ConnectionBase {
+            common: ConnectionCommon {
                 id: "br0".to_string(),
                 ..Default::default()
             },
@@ -715,13 +720,13 @@ fn test_naming_a_port_nested_in_another_controller_is_rejected() {
     let state = NetworkState::default();
     let collection = NetworkConnectionsCollection(vec![
         NetworkConnection {
-            base: ConnectionBase {
+            common: ConnectionCommon {
                 id: "bond0".to_string(),
                 ..Default::default()
             },
             bond: Some(BondSettings {
                 port_connections: Some(vec![BondPort::Ethernet(Box::new(BondEthernetPort {
-                    base: PortBase {
+                    common: PortCommon {
                         id: Some("eth0".to_string()),
                         interface: Some("eth0".to_string()),
                         ..Default::default()
@@ -732,7 +737,7 @@ fn test_naming_a_port_nested_in_another_controller_is_rejected() {
             ..Default::default()
         },
         NetworkConnection {
-            base: ConnectionBase {
+            common: ConnectionCommon {
                 id: "br0".to_string(),
                 ..Default::default()
             },
@@ -756,7 +761,7 @@ fn test_naming_a_port_nested_in_another_controller_is_rejected() {
 fn test_a_controller_cannot_be_a_port_of_itself() {
     let state = NetworkState::default();
     let collection = NetworkConnectionsCollection(vec![NetworkConnection {
-        base: ConnectionBase {
+        common: ConnectionCommon {
             id: "bond0".to_string(),
             interface: Some("bond0".to_string()),
             ..Default::default()
@@ -777,14 +782,14 @@ fn test_a_controller_cannot_be_a_port_of_itself() {
 fn test_a_loop_of_controllers_is_rejected() {
     let state = NetworkState::default();
     let collection = NetworkConnectionsCollection(vec![NetworkConnection {
-        base: ConnectionBase {
+        common: ConnectionCommon {
             id: "br0".to_string(),
             interface: Some("br0".to_string()),
             ..Default::default()
         },
         bridge: Some(BridgeSettings {
             port_connections: Some(vec![BridgePort::Bond(Box::new(BridgeBondPort {
-                base: PortBase {
+                common: PortCommon {
                     id: Some("bond0".to_string()),
                     interface: Some("bond0".to_string()),
                     ..Default::default()

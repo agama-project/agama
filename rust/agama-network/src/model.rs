@@ -380,7 +380,7 @@ impl NetworkState {
                     user_config
                         .connections
                         .as_ref()
-                        .and_then(|c| c.0.iter().find(|cc| cc.base.id == conn.base.id))
+                        .and_then(|c| c.0.iter().find(|cc| cc.common.id == conn.common.id))
                         .map(|cc| conn != &cc)
                         .unwrap_or(true)
                 } else {
@@ -698,15 +698,15 @@ impl Connection {
         self.ip_config.method4 = conn.ip.method4;
         self.ip_config.method6 = conn.ip.method6;
 
-        if let Some(status) = conn.base.status {
+        if let Some(status) = conn.common.status {
             self.status = status;
         }
 
-        if let Some(autoconnect) = conn.base.autoconnect {
+        if let Some(autoconnect) = conn.common.autoconnect {
             self.autoconnect = autoconnect;
         }
 
-        if let Some(persistent) = conn.base.persistent {
+        if let Some(persistent) = conn.common.persistent {
             self.persistent = persistent;
         }
 
@@ -717,28 +717,28 @@ impl Connection {
         // A missing section means "do not touch the device settings", not "turn this into an
         // Ethernet connection". Changing the type of a connection requires removing it and
         // creating a new one.
-        if let Some(vlan_config) = &conn.base.vlan {
+        if let Some(vlan_config) = &conn.common.vlan {
             self.config = VlanConfig::try_from(vlan_config.clone())?.into();
         }
-        if let Some(wireless_config) = &conn.base.wireless {
+        if let Some(wireless_config) = &conn.common.wireless {
             self.config = WirelessConfig::try_from(wireless_config.clone())?.into();
         }
         if let Some(bond_config) = &conn.bond {
-            self.config = BondConfig::try_from(bond_config.base.clone())?.into();
+            self.config = BondConfig::try_from(bond_config.common.clone())?.into();
         }
         if let Some(bridge_config) = &conn.bridge {
-            self.config = BridgeConfig::try_from(bridge_config.base.clone())?.into();
+            self.config = BridgeConfig::try_from(bridge_config.common.clone())?.into();
         }
 
-        if let Some(ieee_8021x_config) = &conn.base.ieee_8021x {
+        if let Some(ieee_8021x_config) = &conn.common.ieee_8021x {
             self.ieee_8021x_config = Some(IEEE8021XConfig::try_from(ieee_8021x_config.clone())?);
         }
 
-        if let Some(mac) = &conn.base.mac_address {
+        if let Some(mac) = &conn.common.mac_address {
             self.mac_address = MacAddr6::from_str(mac).ok();
         }
 
-        if let Some(mac) = &conn.base.custom_mac_address {
+        if let Some(mac) = &conn.common.custom_mac_address {
             self.custom_mac_address = MacAddress::from_str(mac)
                 .map_err(|_| NetworkStateError::InvalidMacAddress(mac.to_string()))?;
         }
@@ -749,16 +749,16 @@ impl Connection {
         self.ip_config.gateway4 = conn.ip.gateway4;
         self.ip_config.gateway6 = conn.ip.gateway6;
         // Like the MTU, a port referred to by its ID only does not give its interface.
-        if conn.base.interface.is_some() {
-            self.interface = conn.base.interface.clone();
+        if conn.common.interface.is_some() {
+            self.interface = conn.common.interface.clone();
         }
 
         // An MTU of 0 means that it is not given, e.g. a port referred to by its interface only.
-        if conn.base.mtu != 0 {
-            self.mtu = conn.base.mtu;
+        if conn.common.mtu != 0 {
+            self.mtu = conn.common.mtu;
         }
 
-        if let Some(match_settings) = &conn.base.match_settings {
+        if let Some(match_settings) = &conn.common.match_settings {
             self.match_config = MatchConfig {
                 driver: match_settings.driver.clone(),
                 interface: match_settings.interface.clone(),
@@ -841,7 +841,7 @@ impl TryFrom<NetworkConnection> for Connection {
     type Error = NetworkStateError;
 
     fn try_from(conn: NetworkConnection) -> Result<Self, Self::Error> {
-        let mut connection = Connection::new(conn.base.id.clone(), conn.device_type());
+        let mut connection = Connection::new(conn.common.id.clone(), conn.device_type());
         connection.apply_settings(&conn)?;
 
         Ok(connection)
@@ -881,7 +881,7 @@ impl TryFrom<Connection> for NetworkConnection {
         });
 
         let mut connection = NetworkConnection {
-            base: ConnectionBase {
+            common: ConnectionCommon {
                 id,
                 status,
                 custom_mac_address,
@@ -909,7 +909,7 @@ impl TryFrom<Connection> for NetworkConnection {
 
         match conn.config {
             ConnectionConfig::Wireless(config) => {
-                connection.base.wireless = Some(WirelessSettings::try_from(config)?);
+                connection.common.wireless = Some(WirelessSettings::try_from(config)?);
             }
             ConnectionConfig::Bond(config) => {
                 connection.bond = Some(BondSettings::try_from(config)?);
@@ -918,7 +918,7 @@ impl TryFrom<Connection> for NetworkConnection {
                 connection.bridge = Some(BridgeSettings::try_from(config)?);
             }
             ConnectionConfig::Vlan(config) => {
-                connection.base.vlan = Some(VlanSettings::try_from(config)?);
+                connection.common.vlan = Some(VlanSettings::try_from(config)?);
             }
             _ => {}
         }
@@ -1787,10 +1787,10 @@ impl TryFrom<ConnectionConfig> for BondConfig {
     }
 }
 
-impl TryFrom<BondBase> for BondConfig {
+impl TryFrom<BondCommon> for BondConfig {
     type Error = NetworkStateError;
 
-    fn try_from(settings: BondBase) -> Result<Self, Self::Error> {
+    fn try_from(settings: BondCommon) -> Result<Self, Self::Error> {
         let mode = BondMode::try_from(settings.mode.as_str())
             .map_err(|_| NetworkStateError::InvalidBondMode(settings.mode))?;
         let mut options = BondOptions::default();
@@ -1807,7 +1807,7 @@ impl TryFrom<BondConfig> for BondSettings {
 
     fn try_from(bond: BondConfig) -> Result<Self, Self::Error> {
         Ok(BondSettings {
-            base: BondBase {
+            common: BondCommon {
                 mode: bond.mode.to_string(),
                 options: Some(bond.options.to_string()),
                 ..Default::default()
@@ -1839,10 +1839,10 @@ impl TryFrom<ConnectionConfig> for BridgeConfig {
     }
 }
 
-impl TryFrom<BridgeBase> for BridgeConfig {
+impl TryFrom<BridgeCommon> for BridgeConfig {
     type Error = NetworkStateError;
 
-    fn try_from(settings: BridgeBase) -> Result<Self, Self::Error> {
+    fn try_from(settings: BridgeCommon) -> Result<Self, Self::Error> {
         Ok(BridgeConfig {
             stp: settings.stp,
             priority: settings.priority,
@@ -1860,7 +1860,7 @@ impl TryFrom<BridgeConfig> for BridgeSettings {
 
     fn try_from(bridge: BridgeConfig) -> Result<Self, Self::Error> {
         Ok(BridgeSettings {
-            base: BridgeBase {
+            common: BridgeCommon {
                 stp: bridge.stp,
                 priority: bridge.priority,
                 forward_delay: bridge.forward_delay,

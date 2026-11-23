@@ -21,8 +21,8 @@
 //! Representation of the network settings
 
 use super::shared_types::{
-    add_dns_searchlist_alias, BondBase, BridgeBase, BridgePortSettings, ConnectionBase, IpSettings,
-    PortBase, StateSettings, VlanSettings, WirelessSettings,
+    add_dns_searchlist_alias, BondCommon, BridgeCommon, BridgePortSettings, ConnectionCommon,
+    IpSettings, PortCommon, StateSettings, VlanSettings, WirelessSettings,
 };
 use super::types::DeviceType;
 use merge::Merge;
@@ -85,7 +85,7 @@ pub struct NetworkSettings {
 #[schemars(deny_unknown_fields)]
 pub struct BondSettings {
     #[serde(flatten)]
-    pub base: BondBase,
+    pub common: BondCommon,
     /// Ports of the controller. When neither this list nor `ports` is given, the current ports
     /// are left alone.
     #[serde(skip_serializing_if = "Option::is_none", default)]
@@ -97,7 +97,7 @@ impl BondSettings {
     ///
     /// The `ports` list gets the name of every port (see [`PortRef::name`]).
     pub fn set_ports(&mut self, ports: Vec<BondPort>) {
-        self.base.ports = Some(port_names(&ports));
+        self.common.ports = Some(port_names(&ports));
         self.port_connections = Some(ports);
     }
 }
@@ -111,7 +111,7 @@ impl BondSettings {
 #[schemars(deny_unknown_fields)]
 pub struct BridgeSettings {
     #[serde(flatten)]
-    pub base: BridgeBase,
+    pub common: BridgeCommon,
     /// Ports of the controller. When neither this list nor `ports` is given, the current ports
     /// are left alone.
     #[serde(skip_serializing_if = "Option::is_none", default)]
@@ -123,7 +123,7 @@ impl BridgeSettings {
     ///
     /// The `ports` list gets the name of every port (see [`PortRef::name`]).
     pub fn set_ports(&mut self, ports: Vec<BridgePort>) {
-        self.base.ports = Some(port_names(&ports));
+        self.common.ports = Some(port_names(&ports));
         self.port_connections = Some(ports);
     }
 }
@@ -188,10 +188,10 @@ impl<'a> From<&'a BridgePort> for PortRef<'a> {
 ///
 /// It is a connection without IP settings, as its controller holds the IP configuration, but with
 /// the settings it has as a port. Each kind of port gives the settings that every port has
-/// ([`PortBase`]) and its own sections; the rest is written once here.
+/// ([`PortCommon`]) and its own sections; the rest is written once here.
 pub trait NestedPort: std::fmt::Debug {
     /// Settings that every port has.
-    fn base(&self) -> &PortBase;
+    fn common(&self) -> &PortCommon;
 
     /// Sections that only this kind of port has.
     fn sections(&self) -> PortSections<'_>;
@@ -201,12 +201,12 @@ pub trait NestedPort: std::fmt::Debug {
     /// When it is omitted, the port refers to the connection bound to its interface, or gets the
     /// interface name as its ID.
     fn id(&self) -> Option<&str> {
-        self.base().id.as_deref()
+        self.common().id.as_deref()
     }
 
     /// Network interface associated with the connection, if the port gives it.
     fn interface(&self) -> Option<&str> {
-        self.base().interface.as_deref()
+        self.common().interface.as_deref()
     }
 
     /// Settings that the connection has because it is a port of its controller, if it gives them.
@@ -224,7 +224,7 @@ pub trait NestedPort: std::fmt::Debug {
     fn to_connection(&self, id: String) -> NetworkConnection {
         let sections = self.sections();
         NetworkConnection {
-            base: self.base().to_connection_base(
+            common: self.common().to_connection_common(
                 id,
                 sections.vlan.cloned(),
                 sections.wireless.cloned(),
@@ -270,7 +270,7 @@ pub enum PortSettings<'a> {
 #[schemars(deny_unknown_fields, transform = add_dns_searchlist_alias)]
 pub struct NetworkConnection {
     #[serde(flatten)]
-    pub base: ConnectionBase,
+    pub common: ConnectionCommon,
     #[serde(flatten)]
     pub ip: IpSettings,
     /// Bonding settings if part of a bond
@@ -287,7 +287,7 @@ impl NetworkConnection {
     /// Which device type to use is inferred from the included settings. For instance, if it has
     /// wireless settings, it should be applied to a wireless device.
     pub fn device_type(&self) -> DeviceType {
-        if self.base.wireless.is_some() {
+        if self.common.wireless.is_some() {
             DeviceType::Wireless
         } else if self.bond.is_some() {
             DeviceType::Bond
@@ -299,11 +299,11 @@ impl NetworkConnection {
     }
 }
 
-impl From<ConnectionBase> for NetworkConnection {
+impl From<ConnectionCommon> for NetworkConnection {
     /// Returns a connection that is not a controller.
-    fn from(base: ConnectionBase) -> Self {
+    fn from(common: ConnectionCommon) -> Self {
         Self {
-            base,
+            common,
             ip: IpSettings::default(),
             bond: None,
             bridge: None,
@@ -312,7 +312,7 @@ impl From<ConnectionBase> for NetworkConnection {
 }
 
 // The ports of a bridge and of a bond, as the configuration gives them. Each kind is a connection
-// without IP settings ([`PortBase`]) with the section that tells its kind (none for an Ethernet
+// without IP settings ([`PortCommon`]) with the section that tells its kind (none for an Ethernet
 // port) and, for the ports of a bridge, its settings as a port. Unknown fields are rejected, so
 // that a setting that does not apply to the port is not silently ignored.
 
@@ -322,7 +322,7 @@ impl From<ConnectionBase> for NetworkConnection {
 #[serde(deny_unknown_fields)]
 pub struct BridgeEthernetPort {
     #[serde(flatten)]
-    pub base: PortBase,
+    pub common: PortCommon,
     /// Settings that this connection has because it is a port of a bridge
     #[serde(skip_serializing_if = "Option::is_none")]
     pub port: Option<BridgePortSettings>,
@@ -333,7 +333,7 @@ pub struct BridgeEthernetPort {
 #[serde(deny_unknown_fields)]
 pub struct BridgeBondPort {
     #[serde(flatten)]
-    pub base: PortBase,
+    pub common: PortCommon,
     /// Bonding settings
     pub bond: BondSettings,
     /// Settings that this connection has because it is a port of a bridge
@@ -346,7 +346,7 @@ pub struct BridgeBondPort {
 #[serde(deny_unknown_fields)]
 pub struct BridgeBridgePort {
     #[serde(flatten)]
-    pub base: PortBase,
+    pub common: PortCommon,
     /// Bridge settings
     pub bridge: BridgeSettings,
     /// Settings that this connection has because it is a port of a bridge
@@ -359,7 +359,7 @@ pub struct BridgeBridgePort {
 #[serde(deny_unknown_fields)]
 pub struct BridgeVlanPort {
     #[serde(flatten)]
-    pub base: PortBase,
+    pub common: PortCommon,
     /// VLAN settings
     pub vlan: VlanSettings,
     /// Settings that this connection has because it is a port of a bridge
@@ -372,7 +372,7 @@ pub struct BridgeVlanPort {
 #[serde(deny_unknown_fields)]
 pub struct BridgeWirelessPort {
     #[serde(flatten)]
-    pub base: PortBase,
+    pub common: PortCommon,
     /// Wireless settings
     pub wireless: WirelessSettings,
     /// Settings that this connection has because it is a port of a bridge
@@ -386,7 +386,7 @@ pub struct BridgeWirelessPort {
 #[serde(deny_unknown_fields)]
 pub struct BondEthernetPort {
     #[serde(flatten)]
-    pub base: PortBase,
+    pub common: PortCommon,
 }
 
 /// Port of a bond that is a bond itself
@@ -394,7 +394,7 @@ pub struct BondEthernetPort {
 #[serde(deny_unknown_fields)]
 pub struct BondBondPort {
     #[serde(flatten)]
-    pub base: PortBase,
+    pub common: PortCommon,
     /// Bonding settings
     pub bond: BondSettings,
 }
@@ -404,7 +404,7 @@ pub struct BondBondPort {
 #[serde(deny_unknown_fields)]
 pub struct BondBridgePort {
     #[serde(flatten)]
-    pub base: PortBase,
+    pub common: PortCommon,
     /// Bridge settings
     pub bridge: BridgeSettings,
 }
@@ -414,7 +414,7 @@ pub struct BondBridgePort {
 #[serde(deny_unknown_fields)]
 pub struct BondVlanPort {
     #[serde(flatten)]
-    pub base: PortBase,
+    pub common: PortCommon,
     /// VLAN settings
     pub vlan: VlanSettings,
 }
@@ -424,14 +424,14 @@ pub struct BondVlanPort {
 #[serde(deny_unknown_fields)]
 pub struct BondWirelessPort {
     #[serde(flatten)]
-    pub base: PortBase,
+    pub common: PortCommon,
     /// Wireless settings
     pub wireless: WirelessSettings,
 }
 
 impl NestedPort for BridgeEthernetPort {
-    fn base(&self) -> &PortBase {
-        &self.base
+    fn common(&self) -> &PortCommon {
+        &self.common
     }
 
     fn sections(&self) -> PortSections<'_> {
@@ -443,8 +443,8 @@ impl NestedPort for BridgeEthernetPort {
 }
 
 impl NestedPort for BridgeBondPort {
-    fn base(&self) -> &PortBase {
-        &self.base
+    fn common(&self) -> &PortCommon {
+        &self.common
     }
 
     fn sections(&self) -> PortSections<'_> {
@@ -457,8 +457,8 @@ impl NestedPort for BridgeBondPort {
 }
 
 impl NestedPort for BridgeBridgePort {
-    fn base(&self) -> &PortBase {
-        &self.base
+    fn common(&self) -> &PortCommon {
+        &self.common
     }
 
     fn sections(&self) -> PortSections<'_> {
@@ -471,8 +471,8 @@ impl NestedPort for BridgeBridgePort {
 }
 
 impl NestedPort for BridgeVlanPort {
-    fn base(&self) -> &PortBase {
-        &self.base
+    fn common(&self) -> &PortCommon {
+        &self.common
     }
 
     fn sections(&self) -> PortSections<'_> {
@@ -485,8 +485,8 @@ impl NestedPort for BridgeVlanPort {
 }
 
 impl NestedPort for BridgeWirelessPort {
-    fn base(&self) -> &PortBase {
-        &self.base
+    fn common(&self) -> &PortCommon {
+        &self.common
     }
 
     fn sections(&self) -> PortSections<'_> {
@@ -499,8 +499,8 @@ impl NestedPort for BridgeWirelessPort {
 }
 
 impl NestedPort for BondEthernetPort {
-    fn base(&self) -> &PortBase {
-        &self.base
+    fn common(&self) -> &PortCommon {
+        &self.common
     }
 
     fn sections(&self) -> PortSections<'_> {
@@ -509,8 +509,8 @@ impl NestedPort for BondEthernetPort {
 }
 
 impl NestedPort for BondBondPort {
-    fn base(&self) -> &PortBase {
-        &self.base
+    fn common(&self) -> &PortCommon {
+        &self.common
     }
 
     fn sections(&self) -> PortSections<'_> {
@@ -522,8 +522,8 @@ impl NestedPort for BondBondPort {
 }
 
 impl NestedPort for BondBridgePort {
-    fn base(&self) -> &PortBase {
-        &self.base
+    fn common(&self) -> &PortCommon {
+        &self.common
     }
 
     fn sections(&self) -> PortSections<'_> {
@@ -535,8 +535,8 @@ impl NestedPort for BondBridgePort {
 }
 
 impl NestedPort for BondVlanPort {
-    fn base(&self) -> &PortBase {
-        &self.base
+    fn common(&self) -> &PortCommon {
+        &self.common
     }
 
     fn sections(&self) -> PortSections<'_> {
@@ -548,8 +548,8 @@ impl NestedPort for BondVlanPort {
 }
 
 impl NestedPort for BondWirelessPort {
-    fn base(&self) -> &PortBase {
-        &self.base
+    fn common(&self) -> &PortCommon {
+        &self.common
     }
 
     fn sections(&self) -> PortSections<'_> {
@@ -590,29 +590,33 @@ impl BridgePort {
     pub fn from_connection(conn: NetworkConnection, port: Option<BridgePortSettings>) -> Self {
         // The IP settings are dropped, as its controller holds them.
         let NetworkConnection {
-            mut base,
+            mut common,
             ip: _,
             bond,
             bridge,
         } = conn;
-        let vlan = base.vlan.take();
-        let wireless = base.wireless.take();
-        let base = PortBase::from_connection(base);
+        let vlan = common.vlan.take();
+        let wireless = common.wireless.take();
+        let common = PortCommon::from_connection(common);
 
         if let Some(bond) = bond {
-            Self::Bond(Box::new(BridgeBondPort { base, bond, port }))
+            Self::Bond(Box::new(BridgeBondPort { common, bond, port }))
         } else if let Some(bridge) = bridge {
-            Self::Bridge(Box::new(BridgeBridgePort { base, bridge, port }))
+            Self::Bridge(Box::new(BridgeBridgePort {
+                common,
+                bridge,
+                port,
+            }))
         } else if let Some(vlan) = vlan {
-            Self::Vlan(Box::new(BridgeVlanPort { base, vlan, port }))
+            Self::Vlan(Box::new(BridgeVlanPort { common, vlan, port }))
         } else if let Some(wireless) = wireless {
             Self::Wireless(Box::new(BridgeWirelessPort {
-                base,
+                common,
                 wireless,
                 port,
             }))
         } else {
-            Self::Ethernet(Box::new(BridgeEthernetPort { base, port }))
+            Self::Ethernet(Box::new(BridgeEthernetPort { common, port }))
         }
     }
 }
@@ -646,25 +650,25 @@ impl BondPort {
     pub fn from_connection(conn: NetworkConnection) -> Self {
         // The IP settings are dropped, as its controller holds them.
         let NetworkConnection {
-            mut base,
+            mut common,
             ip: _,
             bond,
             bridge,
         } = conn;
-        let vlan = base.vlan.take();
-        let wireless = base.wireless.take();
-        let base = PortBase::from_connection(base);
+        let vlan = common.vlan.take();
+        let wireless = common.wireless.take();
+        let common = PortCommon::from_connection(common);
 
         if let Some(bond) = bond {
-            Self::Bond(Box::new(BondBondPort { base, bond }))
+            Self::Bond(Box::new(BondBondPort { common, bond }))
         } else if let Some(bridge) = bridge {
-            Self::Bridge(Box::new(BondBridgePort { base, bridge }))
+            Self::Bridge(Box::new(BondBridgePort { common, bridge }))
         } else if let Some(vlan) = vlan {
-            Self::Vlan(Box::new(BondVlanPort { base, vlan }))
+            Self::Vlan(Box::new(BondVlanPort { common, vlan }))
         } else if let Some(wireless) = wireless {
-            Self::Wireless(Box::new(BondWirelessPort { base, wireless }))
+            Self::Wireless(Box::new(BondWirelessPort { common, wireless }))
         } else {
-            Self::Ethernet(Box::new(BondEthernetPort { base }))
+            Self::Ethernet(Box::new(BondEthernetPort { common }))
         }
     }
 }
@@ -696,8 +700,11 @@ impl<'a> ControllerSettings<'a> {
         }
 
         match self {
-            Self::Bond(bond) => (bond.base.ports.as_deref(), refs(&bond.port_connections)),
-            Self::Bridge(bridge) => (bridge.base.ports.as_deref(), refs(&bridge.port_connections)),
+            Self::Bond(bond) => (bond.common.ports.as_deref(), refs(&bond.port_connections)),
+            Self::Bridge(bridge) => (
+                bridge.common.ports.as_deref(),
+                refs(&bridge.port_connections),
+            ),
         }
     }
 }
@@ -767,7 +774,7 @@ mod tests {
         // The `updated` config that will be merged into
         let mut updated = Config {
             connections: Some(NetworkConnectionsCollection(vec![NetworkConnection {
-                base: ConnectionBase {
+                common: ConnectionCommon {
                     id: "eth0".to_string(),
                     mtu: 1500,
                     ..Default::default()
@@ -793,7 +800,7 @@ mod tests {
         let original = Config {
             connections: Some(NetworkConnectionsCollection(vec![
                 NetworkConnection {
-                    base: ConnectionBase {
+                    common: ConnectionCommon {
                         id: "eth1".to_string(),
                         mtu: 0, // default
                         ..Default::default()
@@ -808,7 +815,7 @@ mod tests {
                     ..Default::default()
                 },
                 NetworkConnection {
-                    base: ConnectionBase {
+                    common: ConnectionCommon {
                         id: "wifi0".to_string(),
                         wireless: Some(WirelessSettings {
                             ssid: "MyWiFi".to_string(),
@@ -840,7 +847,7 @@ mod tests {
         // This means the vector is only replaced if the destination vector is empty.
         // Since updated.connections was not empty, it is NOT overwritten.
         assert_eq!(updated.connections.as_ref().unwrap().0.len(), 1);
-        assert_eq!(updated.connections.as_ref().unwrap().0[0].base.id, "eth0");
+        assert_eq!(updated.connections.as_ref().unwrap().0[0].common.id, "eth0");
 
         // Assertions for state (StateSettings has overwrite_none strategy)
         let merged_state = updated.state.unwrap();
@@ -852,7 +859,7 @@ mod tests {
         // Test with a list of connections
         let mut updated1 = Config {
             connections: Some(NetworkConnectionsCollection(vec![NetworkConnection::from(
-                ConnectionBase {
+                ConnectionCommon {
                     id: "eth1".to_string(),
                     ..Default::default()
                 },
@@ -861,7 +868,7 @@ mod tests {
         };
         let original1 = Config {
             connections: Some(NetworkConnectionsCollection(vec![NetworkConnection::from(
-                ConnectionBase {
+                ConnectionCommon {
                     id: "eth0".to_string(),
                     ..Default::default()
                 },
@@ -874,7 +881,7 @@ mod tests {
         assert_eq!(updated1.connections.as_ref().unwrap().0.len(), 1); // use the updated1 list
         let connections = updated1.connections.unwrap();
         let connection = connections.0.first().unwrap();
-        assert_eq!(&connection.base.id, "eth1");
+        assert_eq!(&connection.common.id, "eth1");
 
         // Test without a list of connections
         let mut updated2 = Config {
@@ -890,7 +897,7 @@ mod tests {
         // Case 1: `updated` has Some, `original` has None -> `updated` should be preserved
         let mut updated = Config {
             connections: Some(NetworkConnectionsCollection(vec![NetworkConnection::from(
-                ConnectionBase {
+                ConnectionCommon {
                     id: "conn1".to_string(),
                     ..Default::default()
                 },
@@ -917,7 +924,7 @@ mod tests {
         };
         let original1 = Config {
             connections: Some(NetworkConnectionsCollection(vec![NetworkConnection::from(
-                ConnectionBase {
+                ConnectionCommon {
                     id: "conn2".to_string(),
                     ..Default::default()
                 },
@@ -1010,8 +1017,8 @@ mod tests {
 
         // 1. Verify deserialization with the "match" key and all fields
         let conn: NetworkConnection = serde_json::from_str(json).unwrap();
-        assert!(conn.base.match_settings.is_some());
-        let match_settings = conn.base.match_settings.as_ref().unwrap();
+        assert!(conn.common.match_settings.is_some());
+        let match_settings = conn.common.match_settings.as_ref().unwrap();
         assert_eq!(match_settings.interface, vec!["eth0"]);
         assert_eq!(match_settings.driver, vec!["e1000e"]);
         assert_eq!(match_settings.path, vec!["pci-0000:00:1f.6"]);
@@ -1024,7 +1031,7 @@ mod tests {
 
         // 3. Verify second-pass deserialization preserves identical settings
         let conn2: NetworkConnection = serde_json::from_str(&serialized).unwrap();
-        assert_eq!(conn.base.match_settings, conn2.base.match_settings);
+        assert_eq!(conn.common.match_settings, conn2.common.match_settings);
     }
 
     #[test]
@@ -1061,7 +1068,7 @@ mod tests {
         let all = collection.flatten();
         let interfaces: Vec<_> = all
             .iter()
-            .map(|c| c.base.interface.as_deref().unwrap_or(&c.base.id))
+            .map(|c| c.common.interface.as_deref().unwrap_or(&c.common.id))
             .collect();
         // Ports given by name are not connections, so eth0, eth1 and eth2 are left out.
         assert_eq!(interfaces, ["br0", "bond0"]);
@@ -1112,14 +1119,14 @@ mod tests {
     #[test]
     fn test_set_ports_reports_both_lists() {
         let eth0 = BondEthernetPort {
-            base: PortBase {
+            common: PortCommon {
                 id: Some("Wired connection 1".to_string()),
                 interface: Some("eth0".to_string()),
                 ..Default::default()
             },
         };
         let eth1 = BondEthernetPort {
-            base: PortBase {
+            common: PortCommon {
                 id: Some("eth1".to_string()),
                 ..Default::default()
             },
@@ -1130,7 +1137,7 @@ mod tests {
             BondPort::Ethernet(Box::new(eth1)),
         ]);
         let bond0 = NetworkConnection {
-            base: ConnectionBase {
+            common: ConnectionCommon {
                 id: "bond0".to_string(),
                 ..Default::default()
             },
@@ -1185,7 +1192,7 @@ mod tests {
     #[test]
     fn test_a_port_stands_for_a_connection_without_ip_settings() {
         let port = BridgeEthernetPort {
-            base: PortBase {
+            common: PortCommon {
                 interface: Some("eth0".to_string()),
                 mtu: 9000,
                 ..Default::default()
@@ -1196,8 +1203,8 @@ mod tests {
             }),
         };
         let conn = port.to_connection("eth0".to_string());
-        assert_eq!(conn.base.id, "eth0");
-        assert_eq!(conn.base.mtu, 9000);
+        assert_eq!(conn.common.id, "eth0");
+        assert_eq!(conn.common.mtu, 9000);
         assert!(conn.ip.is_empty());
 
         let mut conn = conn;
@@ -1205,8 +1212,8 @@ mod tests {
         let BridgePort::Ethernet(port) = BridgePort::from_connection(conn, None) else {
             panic!("eth0 is not reported as an Ethernet port");
         };
-        assert_eq!(port.base.id.as_deref(), Some("eth0"));
-        assert_eq!(port.base.mtu, 9000);
+        assert_eq!(port.common.id.as_deref(), Some("eth0"));
+        assert_eq!(port.common.mtu, 9000);
         assert_eq!(port.port, None);
     }
 
@@ -1289,15 +1296,15 @@ mod tests {
         let [BondPort::Ethernet(eth0), BondPort::Wireless(wlan0)] = ports.as_slice() else {
             panic!("unexpected ports: {ports:?}");
         };
-        assert_eq!(eth0.base.mtu, 9000);
+        assert_eq!(eth0.common.mtu, 9000);
         assert_eq!(wlan0.wireless.ssid, "agama");
 
         let flattened = NetworkConnectionsCollection(vec![conn.clone()]).flatten();
-        let ids: Vec<_> = flattened.iter().map(|c| c.base.id.as_str()).collect();
+        let ids: Vec<_> = flattened.iter().map(|c| c.common.id.as_str()).collect();
         assert_eq!(ids, ["br0", "bond0", "eth0", "wlan0", "eth1.100"]);
-        assert_eq!(flattened[2].base.mtu, 9000);
-        assert!(flattened[3].base.wireless.is_some());
-        assert!(flattened[4].base.vlan.is_some());
+        assert_eq!(flattened[2].common.mtu, 9000);
+        assert!(flattened[3].common.wireless.is_some());
+        assert!(flattened[4].common.vlan.is_some());
 
         // Reported as it was given, so it can be sent back.
         let serialized = serde_json::to_value(&conn).unwrap();

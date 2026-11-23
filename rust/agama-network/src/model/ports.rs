@@ -116,14 +116,14 @@ impl<'a> PortResolver<'a> {
         let mut named = vec![];
 
         for conn in &incoming.0 {
-            if conn.base.id.is_empty() {
+            if conn.common.id.is_empty() {
                 // Only the ports can do without an ID.
                 return Err(NetworkStateError::MissingConnectionId);
             }
             self.visit(
                 Cow::Borrowed(conn),
                 None,
-                conn.base.id.clone(),
+                conn.common.id.clone(),
                 None,
                 conn.has_ignored_port_names(),
                 conn.ports(),
@@ -478,7 +478,7 @@ impl<'a> PortResolver<'a> {
             // often disabled the IP methods of the ports, so their IP settings are ignored instead
             // of rejected (they are cleared when linking it). A port on its way out does not get
             // any setting anyway.
-            if node.conn.base.status != Some(Status::Removed) && !node.conn.ip.is_empty() {
+            if node.conn.common.status != Some(Status::Removed) && !node.conn.ip.is_empty() {
                 tracing::warn!(
                     "The IP settings of '{}' are ignored because it is a port of '{}'",
                     node.id,
