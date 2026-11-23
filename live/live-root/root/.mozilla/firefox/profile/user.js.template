@@ -12,6 +12,9 @@ user_pref("browser.toolbars.bookmarks.visibility", "never");
 // disable sponsored new tab content
 user_pref("browser.newtabpage.activity-stream.showSponsored", false);
 user_pref("browser.newtabpage.activity-stream.showSponsoredTopSites", false);
+// disable new tabs preload or specific page as it aims to mainly single page usage
+user_pref("browser.newtab.preload", false);
+user_pref("browser.newtabpage.enabled", false);
 
 // Suppress first-run welcome page
 user_pref("trailhead.firstrun.didSeeAboutWelcome", true);
@@ -78,7 +81,7 @@ user_pref("services.settings.server", "");
 user_pref("security.remote_settings.crlite_filters.enabled", false);
 user_pref("security.pki.crlite_mode", 0);
 
-// --- Collapse multi-process overhead (saves ~150-200 MiB RSS) ---
+// --- Collapse multi-process overhead ---
 user_pref("fission.autostart", false);
 user_pref("dom.ipc.processCount", 1);
 user_pref("dom.ipc.processCount.webIsolated", 1);
