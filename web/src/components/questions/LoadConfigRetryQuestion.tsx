@@ -52,7 +52,7 @@ export default function RetryLoadConfigQuestion({
       value={url}
       hasForm
       variant="medium"
-      title={_("Cannot apply configuration")}
+      title={question.title}
     >
       <Stack hasGutter>
         <Content isEditorial>{question.text}</Content>

@@ -62,7 +62,7 @@ export default function LuksActivationQuestion({
       value={password}
       disabledActions={disabledActions}
       hasForm
-      title={_("Encrypted Device")}
+      title={question.title}
       elementToFocus="#luks-password"
       titleAddon={<InstallerL10nOptions variant="keyboard" />}
     >
@@ -71,7 +71,7 @@ export default function LuksActivationQuestion({
         <Content>{question.text}</Content>
         <QuestionDialog.Form>
           {/* TRANSLATORS: field label */}
-          <FormGroup label={_("Encryption Password")} fieldId="luks-password">
+          <FormGroup label={_("Encryption password")} fieldId="luks-password">
             <PasswordInput
               id="luks-password"
               value={password}

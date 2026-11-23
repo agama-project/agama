@@ -41,11 +41,11 @@ impl UserQuestions {
     /// Asks the user whether to retry loading the profile or the script.
     pub async fn should_retry(
         &self,
+        title: &str,
         text: &str,
         error: &str,
         url: &str,
     ) -> anyhow::Result<Option<String>> {
-        let title = gettext("Failed to load the configuration");
         let localized_retry = gettextrs::gettext("Reload configuration");
         let localized_manual = gettextrs::gettext("Skip and configure manually");
         let question = QuestionSpec::new(&title, text, "loadConfigError")
@@ -91,16 +91,16 @@ impl UserQuestions {
             .map(|e| e.key.as_str())
             .collect();
 
-        let localized_continue = gettextrs::gettext("Continue");
-        let localized_abort = gettextrs::gettext("Abort");
+        let localized_load = gettextrs::gettext("Load the profile");
+        let localized_skip = gettextrs::gettext("Skip");
         let question = QuestionSpec::new(
             &gettext("Unsupported AutoYaST elements"),
             &text,
             "autoyastUnsupported",
         )
         .with_actions(&[
-            ("Continue", localized_continue.as_str()),
-            ("Abort", localized_abort.as_str()),
+            ("Continue", localized_load.as_str()),
+            ("Abort", localized_skip.as_str()),
         ])
         .with_default_action("Continue")
         .with_data(&[

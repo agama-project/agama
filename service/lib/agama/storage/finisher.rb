@@ -218,17 +218,21 @@ module Agama
           logger.error "Bootloader installation failed: #{exception}"
           logger.error exception.backtrace.join("\n") if exception.backtrace
 
+          text = _(
+            "It was not possible to install the bootloader. You can try again or skip the " \
+            "bootloader installation completely. If you skip the bootloader installation " \
+            "your system might not boot."
+          )
+          data = {}
           details = exception.message.to_s.strip
-          details = _("Writing bootloader configuration failed.") if details.empty?
-          text = _("Bootloader installation failed. Do you want to retry, " \
-                   "skip or abort the installation?")
+          data["details"] = details unless details.empty?
 
           question = Question.new(
             qclass:         "bootloaderInstallError",
             text:           text,
-            options:        [:retry, :skip, :abort],
+            options:        [:retry, :skip],
             default_option: :skip,
-            data:           { "details" => details }
+            data:           data
           )
 
           answer = questions_client.ask(question)

@@ -182,16 +182,13 @@ impl Service {
             // TRANSLATORS: %s is replaced by the script name.
             let text = &gettext("Failed to retrieve the script %s. Do you want to try again?")
                 .replace("%s", script.name());
-            let question = QuestionSpec::new(
-                &gettext("Failed to retrieve a script"),
-                text,
-                "writeScriptError",
-            )
-            .with_yes_no_actions()
-            .with_data(&[
-                ("attempt", &attempt.to_string()),
-                ("details", &error.to_string()),
-            ]);
+            let question =
+                QuestionSpec::new(&gettext("Script fetching error"), text, "writeScriptError")
+                    .with_yes_no_actions()
+                    .with_data(&[
+                        ("attempt", &attempt.to_string()),
+                        ("details", &error.to_string()),
+                    ]);
             let answer = ask_question(&self.questions, question).await?;
             if answer.action == "No" {
                 return Ok(());
@@ -210,13 +207,12 @@ impl Service {
             // TRANSLATORS: %s is replaced by the script name.
             let text = &gettext("Failed to write the file %s. Do you want to try again?")
                 .replace("%s", &file.destination);
-            let question =
-                QuestionSpec::new(&gettext("Failed to write a file"), text, "writeFileError")
-                    .with_yes_no_actions()
-                    .with_data(&[
-                        ("attempt", &attempt.to_string()),
-                        ("details", &error.to_string()),
-                    ]);
+            let question = QuestionSpec::new(&gettext("File write error"), text, "writeFileError")
+                .with_yes_no_actions()
+                .with_data(&[
+                    ("attempt", &attempt.to_string()),
+                    ("details", &error.to_string()),
+                ]);
             let answer = ask_question(&self.questions, question).await?;
             if answer.action == "No" {
                 return Ok(());

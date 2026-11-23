@@ -75,11 +75,7 @@ export default function UnsupportedAutoYaST({
   const unsupported = question.data.unsupported ? question.data.unsupported.split(",") : [];
 
   return (
-    <QuestionDialog
-      question={question}
-      answerCallback={answerCallback}
-      title={_("Unsupported AutoYaST elements")}
-    >
+    <QuestionDialog question={question} answerCallback={answerCallback} title={question.title}>
       <Stack hasGutter>
         <Content>{_("Some of the elements in your AutoYaST profile are not supported.")}</Content>
         <Grid hasGutter>

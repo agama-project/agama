@@ -80,7 +80,7 @@ module Agama
           }
           QuestionWithPassword.new(
             qclass:         "luksActivation",
-            title:          _("LUKS activation"),
+            title:          _("Encrypted device"),
             text:           generate_text(data),
             options:        [:skip, :decrypt],
             default_option: :decrypt,

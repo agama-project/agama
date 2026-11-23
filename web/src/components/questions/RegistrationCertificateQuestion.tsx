@@ -67,11 +67,7 @@ export default function RegistrationCertificateQuestion({
   answerCallback: AnswerCallback;
 }): React.ReactNode {
   return (
-    <QuestionDialog
-      question={question}
-      answerCallback={answerCallback}
-      title={_("Registration certificate")}
-    >
+    <QuestionDialog question={question} answerCallback={answerCallback} title={question.title}>
       <Stack hasGutter>
         <StackItem>
           <Content component="p" isEditorial>

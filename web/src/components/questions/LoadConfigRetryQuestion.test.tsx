@@ -58,6 +58,12 @@ it("renders the question text", () => {
   screen.getByText(question.text);
 });
 
+it("renders the question title", async () => {
+  renderQuestion();
+
+  await screen.findByRole("dialog", { name: question.title });
+});
+
 it("renders the error output", () => {
   renderQuestion();
 

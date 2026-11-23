@@ -310,9 +310,9 @@ impl ZyppServer {
             }
 
             let text =
-                gettext("Packages download and installation failed. Would you like to retry?");
+                gettext("Packages download and installation failed. Would you like to try again?");
             let question_spec = QuestionSpec::new(
-                &gettext("Package installation failed"),
+                &gettext("Packages installation failed"),
                 &text,
                 "retryInstallation",
             )

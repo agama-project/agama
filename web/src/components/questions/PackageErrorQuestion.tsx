@@ -22,7 +22,6 @@
 
 import React from "react";
 import { Content, Stack } from "@patternfly/react-core";
-import { Icon } from "~/components/layout";
 import QuestionDialog from "~/components/questions/QuestionDialog";
 import { _ } from "~/i18n";
 import type { AnswerCallback, Question } from "~/model/question";
@@ -50,12 +49,7 @@ export default function PackageErrorQuestion({
         );
 
   return (
-    <QuestionDialog
-      question={question}
-      answerCallback={answerCallback}
-      title={_("Package installation failed")}
-      titleIconVariant={() => <Icon name="error" />}
-    >
+    <QuestionDialog question={question} answerCallback={answerCallback} title={question.title}>
       <Stack hasGutter>
         <Content>{question.text}</Content>
         <Content>{warning}</Content>

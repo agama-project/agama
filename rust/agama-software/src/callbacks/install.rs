@@ -79,14 +79,21 @@ impl install::Callback for Install {
     fn script_problem(&self, description: String) -> ProblemResponse {
         tracing::error!("Problem running install script: {}", description);
 
-        let message = gettext("There was a problem running a package script.");
+        let message = gettext(
+            "There was a problem running a package script. \
+             You can try running the script again or ignore the error and continue.",
+        );
         let full_message = message + "\n\n" + &description;
         let question = QuestionSpec::new(
             &gettext("Package script error"),
             &full_message,
             "packageScriptProblem",
         )
-        .with_action_ids(&[gettext_noop("Retry"), gettext_noop("Continue")])
+        .with_actions(&[
+            ("Retry", gettext_noop("Retry")),
+            // "Ignore" express better the intention
+            ("Continue", gettext_noop("Ignore")),
+        ])
         .with_data(&[("details", &description)]);
 
         let result = ask_software_question(&self.questions, question);

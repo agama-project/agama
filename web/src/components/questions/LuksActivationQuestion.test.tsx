@@ -112,6 +112,12 @@ describe("LuksActivationQuestion", () => {
     await screen.findByText(question.text);
   });
 
+  it("renders the question title", async () => {
+    renderQuestion();
+
+    await screen.findByRole("dialog", { name: question.title });
+  });
+
   describe("when it is the first attempt", () => {
     it("does not contain a warning", async () => {
       renderQuestion();
@@ -138,7 +144,7 @@ describe("LuksActivationQuestion", () => {
       it("calls the callback after setting both, answer and password", async () => {
         const { user } = renderQuestion();
 
-        const passwordInput = await screen.findByLabelText("Encryption Password");
+        const passwordInput = await screen.findByLabelText("Encryption password");
         await user.type(passwordInput, "notSecret");
         const skipButton = await screen.findByRole("button", { name: /Skip/ });
         await user.click(skipButton);
@@ -154,7 +160,7 @@ describe("LuksActivationQuestion", () => {
       it("calls the callback after setting both, answer and password", async () => {
         const { user } = renderQuestion();
 
-        const passwordInput = await screen.findByLabelText("Encryption Password");
+        const passwordInput = await screen.findByLabelText("Encryption password");
         await user.type(passwordInput, "notSecret");
         const decryptButton = await screen.findByRole("button", { name: /Decrypt/ });
         await user.click(decryptButton);
@@ -170,7 +176,7 @@ describe("LuksActivationQuestion", () => {
       it("calls the callback after setting both, answer and password", async () => {
         const { user } = renderQuestion();
 
-        const passwordInput = await screen.findByLabelText("Encryption Password");
+        const passwordInput = await screen.findByLabelText("Encryption password");
         await user.type(passwordInput, "notSecret{enter}");
 
         expect(question.answer).toEqual(

@@ -52,6 +52,12 @@ describe("UnsupportedAutoYaST", () => {
     mockQuestion = { ...question };
   });
 
+  it("renders the question title", async () => {
+    plainRender(<UnsupportedAutoYaST question={question} answerCallback={answerFn} />);
+
+    await screen.findByRole("dialog", { name: question.title });
+  });
+
   it("mentions the planned elements", () => {
     plainRender(<UnsupportedAutoYaST question={question} answerCallback={answerFn} />);
 
