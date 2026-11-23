@@ -57,6 +57,7 @@ user_pref("extensions.getAddons.cache.enabled", false);
 // --- Collapse helper processes ---
 user_pref("media.rdd-process.enabled", false);
 user_pref("media.utility-process.enabled", false);
+user_pref("media.utility-ffmpeg.enabled", false);
 user_pref("dom.ipc.forkserver.enable", false);
 
 // --- Disable QuickSuggest, Merino & Suggest SQLite churn (saves ~50MB writes) ---
@@ -82,6 +83,7 @@ user_pref("fission.autostart", false);
 user_pref("dom.ipc.processCount", 1);
 user_pref("dom.ipc.processCount.webIsolated", 1);
 user_pref("dom.ipc.processPrelaunch.enabled", false);
+user_pref("browser.tabs.remote.separatePrivilegedContentProcess", false);
 user_pref("browser.tabs.remote.separatePrivilegedMozillaWebContentProcess", false);
 user_pref("extensions.webextensions.remote", false);
 
