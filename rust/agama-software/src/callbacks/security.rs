@@ -264,7 +264,7 @@ impl security::Callback for Security {
             actual
         );
         let text = wrong_checksum_message(&file, &expected, &actual);
-        let question = QuestionSpec::new(&gettext("Unknown checksum"), &text, "unknownChecksum")
+        let question = QuestionSpec::new(&gettext("Wrong checksum"), &text, "wrongChecksum")
             .with_yes_no_actions();
         let result = ask_software_question(&self.questions, question);
         let Ok(answer) = result else {
