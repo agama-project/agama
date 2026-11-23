@@ -339,7 +339,7 @@ describe("FormattableDeviceForm", () => {
       const { user } = installerRender(<FormattableDeviceForm />);
       await user.type(screen.getByLabelText("Mount point"), "/data");
       await user.click(screen.getByRole("button", { name: "Accept" }));
-      await screen.findByText(/already assigned to another device/);
+      await screen.findByText("Already assigned to another device");
       expect(mockSetFilesystem).not.toHaveBeenCalled();
     });
 

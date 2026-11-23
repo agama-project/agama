@@ -89,9 +89,7 @@ describe("validations", () => {
         const result = validate(fields, usedMountPoints);
 
         expect(result).toBeDefined();
-        expect(result?.fields?.mountPoint).toBe(
-          "Select or enter a mount point that is not already assigned to another device",
-        );
+        expect(result?.fields?.mountPoint).toBe("Already assigned to another device");
       });
 
       it("does not return error when mount point is not in used list", () => {
@@ -116,11 +114,11 @@ describe("validations", () => {
       };
       const used = ["/home", "/srv"];
 
-      it("returns an error for a mount point assigned elsewhere", () => {
+      it("returns an error saying it is already assigned", () => {
         const fields = createBaseFields();
 
         expect(validate(fields, used, config)?.fields?.mountPoint).toBe(
-          "Select or enter a mount point that is not already assigned to another device",
+          "Already assigned to another device",
         );
       });
 
@@ -128,7 +126,7 @@ describe("validations", () => {
         const fields = { ...createBaseFields(), committedMountPoint: "/ho" };
 
         expect(validate(fields, used, config)?.fields?.mountPoint).toBe(
-          "Select or enter a mount point that is not already assigned to another device",
+          "Already assigned to another device",
         );
       });
 
@@ -154,7 +152,7 @@ describe("validations", () => {
         expect(validate(fields, used, config)?.fields?.mountPoint).toBeDefined();
       });
 
-      it("does not pass when a whole device holds the mount point", () => {
+      it("never passes when a whole device holds the mount point", () => {
         const fields = {
           ...createBaseFields(),
           mountPoint: "/srv",
@@ -163,7 +161,7 @@ describe("validations", () => {
         };
 
         expect(validate(fields, used, config)?.fields?.mountPoint).toBe(
-          "Select or enter a mount point that is not already assigned to another device",
+          "Already assigned to another device",
         );
       });
     });

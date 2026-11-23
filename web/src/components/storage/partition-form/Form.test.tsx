@@ -584,11 +584,11 @@ describe("PartitionForm", () => {
       });
     });
 
-    it("does not save without the choice", async () => {
+    it("does not save without the choice, with a short error", async () => {
       const { user } = installerRender(<PartitionForm />);
       await enterData(user);
       await user.click(screen.getByRole("button", { name: "Accept" }));
-      await screen.findByText(/not already assigned to another device/);
+      await screen.findByText("Already assigned to another device");
       screen.getByText("/data is already assigned to a logical volume in system", inForm);
       expect(mockAddPartition).not.toHaveBeenCalled();
       expect(mockMoveMountPath).not.toHaveBeenCalled();

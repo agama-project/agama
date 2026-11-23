@@ -513,13 +513,14 @@ mark the field invalid.
 
 Validation keeps its own timing. The error for a value that is wrong, or
 already in use, appears only on submit, alongside any aid about the same
-value, which stays as it was. When the aid already explains the situation and how to
-resolve it, the error can be short.
+value, which stays as it was. The error says what is wrong; how to resolve it
+is the aid's job.
 
 Example: the partition form. Once the user enters a mount point that is
-already assigned elsewhere, a notice after the partition field names what
-holds it and how that is set up, and offers a checkbox to discard those
-settings and assign the mount point to the chosen partition. The checkbox
+already assigned to another partition or a logical volume, a notice after the
+partition field names what holds it and how that is set up, and offers a
+checkbox to discard those settings and assign the mount point to the chosen
+partition. The checkbox
 waits for the submit like any other field, and counts only for the mount point
 it was chosen for. On submit without it, the field shows "Already assigned to
 another device".

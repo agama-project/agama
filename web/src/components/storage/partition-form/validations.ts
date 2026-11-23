@@ -37,7 +37,6 @@ import {
   validateMountPoint as validateMountPointValue,
   optionalFilesystemLabel,
 } from "~/components/storage/shared/form/validation-helpers";
-import configModel from "~/model/storage/config-model";
 import { FILESYSTEM_TYPE, FILESYSTEM_ACTION, SIZE_MODE, isReusingPartition } from "./fields";
 import { mountPointHolder } from "./mount-point-holder";
 import { _ } from "~/i18n";
@@ -61,8 +60,7 @@ export function isReassigning(
   const { mountPoint, committedMountPoint, reassignedMountPoint } = fields;
   if (reassignedMountPoint !== mountPoint || committedMountPoint !== mountPoint) return false;
 
-  const holder = mountPointHolder(config, usedMountPoints, mountPoint);
-  return configModel.canReleaseMountPath(holder);
+  return !!mountPointHolder(config, usedMountPoints, mountPoint);
 }
 
 function validateMountPoint(

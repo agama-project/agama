@@ -61,9 +61,7 @@ describe("validations", () => {
 
       it("returns error when the mount point is already used", () => {
         const result = validate({ ...createBaseFields(), mountPoint: "/home" }, ["/home"]);
-        expect(result?.fields?.mountPoint).toBe(
-          "Select or enter a mount point that is not already assigned to another device",
-        );
+        expect(result?.fields?.mountPoint).toBe("Already assigned to another device");
       });
     });
 
