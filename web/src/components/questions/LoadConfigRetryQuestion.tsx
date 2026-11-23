@@ -23,8 +23,8 @@
 import React, { useState } from "react";
 import { Content, FormGroup, Stack, TextInput } from "@patternfly/react-core";
 import Text from "~/components/core/Text";
-import ExpandableTechnicalSection from "~/components/questions/ExpandableTechnicalSection";
 import QuestionDialog from "~/components/questions/QuestionDialog";
+import TechnicalDetails from "~/components/questions/TechnicalDetails";
 import { _ } from "~/i18n";
 import type { AnswerCallback, Question } from "~/model/question";
 
@@ -73,7 +73,7 @@ export default function RetryLoadConfigQuestion({
             {_("Make sure the location is correct and the configuration is valid.")}
           </Text>
         </Content>
-        <ExpandableTechnicalSection text={error} />
+        <TechnicalDetails text={error} />
       </Stack>
     </QuestionDialog>
   );

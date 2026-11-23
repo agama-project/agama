@@ -41,10 +41,6 @@ jest.mock("~/components/questions/LoadConfigRetryQuestion", () => () => (
   <div>LoadConfigRetryQuestion mock</div>
 ));
 
-jest.mock("~/components/questions/StorageCommitErrorQuestion", () => () => (
-  <div>StorageCommitErrorQuestion mock</div>
-));
-
 jest.mock("~/api", () => ({
   ...jest.requireActual("~/api"),
   patchQuestion: (...args) => mockPatchQuestionFn(...args),
@@ -101,19 +97,6 @@ const loadConfigurationQuestion: Question = {
     { id: "no", label: "No" },
   ],
   defaultAction: "no",
-};
-
-const storageCommitErrorQuestion: Question = {
-  id: 5,
-  class: "storageCommitError",
-  title: "Storage error",
-  text: "Storage configuration could not be applied. Do you want to retry?",
-  field: { type: FieldType.None },
-  actions: [
-    { id: "retry", label: "Retry" },
-    { id: "cancel", label: "Cancel" },
-  ],
-  defaultAction: "cancel",
 };
 
 describe("Questions", () => {
@@ -192,17 +175,6 @@ describe("Questions", () => {
     it("renders a LoadConfigRetryQuestion component", () => {
       installerRender(<Questions />);
       screen.getByText("LoadConfigRetryQuestion mock");
-    });
-  });
-
-  describe("when there is a storage commit error question pending", () => {
-    beforeEach(() => {
-      mockQuestions([storageCommitErrorQuestion]);
-    });
-
-    it("renders a StorageCommitErrorQuestion component", () => {
-      installerRender(<Questions />);
-      screen.getByText("StorageCommitErrorQuestion mock");
     });
   });
 });

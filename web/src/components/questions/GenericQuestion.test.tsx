@@ -68,11 +68,24 @@ describe("GenericQuestion", () => {
     await screen.findByText(question.text);
   });
 
+  it("renders the question title", async () => {
+    renderQuestion();
+
+    await screen.findByRole("dialog", { name: question.title });
+  });
+
+  it("does not render a technical details block when there is no data.details", () => {
+    renderQuestion();
+
+    expect(screen.queryByText("Technical details")).not.toBeInTheDocument();
+  });
+
   describe("if there are details", () => {
-    it("renders the question details", async () => {
+    it("renders the question details in a technical details block", async () => {
       plainRender(<GenericQuestion question={questionWithDetails} answerCallback={answerFn} />);
 
       await screen.findByText(questionWithDetails.text);
+      await screen.findByText("Technical details");
       await screen.findByText(questionWithDetails.data.details);
     });
   });

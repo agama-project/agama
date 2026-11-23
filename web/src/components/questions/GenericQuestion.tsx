@@ -23,8 +23,9 @@
 import React from "react";
 import { Content } from "@patternfly/react-core";
 import QuestionDialog from "~/components/questions/QuestionDialog";
-import { _ } from "~/i18n";
+import TechnicalDetails from "~/components/questions/TechnicalDetails";
 import type { AnswerCallback, Question } from "~/model/question";
+import { _ } from "~/i18n";
 
 /**
  * Component for rendering generic questions
@@ -42,9 +43,15 @@ export default function GenericQuestion({
   const details = question.data?.details;
 
   return (
-    <QuestionDialog question={question} answerCallback={answerCallback} title={question.title}>
+    <QuestionDialog
+      question={question}
+      answerCallback={answerCallback}
+      title={question.title || _("Question")}
+      // the code block showing the details needs more room than the default width
+      variant={details ? "medium" : undefined}
+    >
       <Content component="p">{question.text}</Content>
-      {details && <Content>{details}</Content>}
+      <TechnicalDetails text={details} />
     </QuestionDialog>
   );
 }
