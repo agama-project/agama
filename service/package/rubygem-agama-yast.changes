@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Mon Nov 23 12:00:00 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Remove network-online.target dependency from agama.service
+  (gh#agama-project/agama#4217).
+- Run dbus-daemon directly as Type=exec in agama.service instead of
+  forking through Ruby agamactl wrapper.
+
+-------------------------------------------------------------------
 Thu Nov 12 12:12:49 UTC 2026 - José Iván López González <jlopez@suse.com>
 
 - Support the Discoverable Partitions Specification (DPS) in the
