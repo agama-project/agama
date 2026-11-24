@@ -49,6 +49,9 @@ export default function GenericQuestion({
       title={question.title || _("Question")}
       // the code block showing the details needs more room than the default width
       variant={details ? "medium" : undefined}
+      // without this, the modal defaults to focusing the first focusable
+      // element, which is the copy-to-clipboard button when there are details
+      elementToFocus="#question-primary-action"
     >
       <Content component="p">{question.text}</Content>
       <TechnicalDetails text={details} />
