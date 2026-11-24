@@ -240,142 +240,148 @@ export default function PlannedContentSection({
   }
 
   return (
-    <Stack hasGutter>
-      <StackItem>
-        <Table
-          role="table"
-          gridBreakPoint=""
-          variant="compact"
-          isStriped={isStriped}
-          {...tableProps({ hasVerticallyCenteredRows: true })}
-          // TRANSLATORS: names the list of what the installation will put on
-          // one of its entries.
-          aria-label={caption ? undefined : _("Planned content")}
-        >
-          {/* A plain caption rather than PatternFly's, which is styled as a
-              hint: this one reads like the sentences around the table, and
-              sits closer to its rows than to the text above. */}
-          {caption && (
-            <caption className={[alignmentStyles.textAlignStart, spacingStyles.pbSm].join(" ")}>
-              {caption}
-            </caption>
-          )}
-          {/* Read rather than hidden from sight: a column of sizes and a
-              column of file systems are told apart by what they are called,
-              and a reader who has to work that out from the values is being
-              asked to do the heading's job.
+    <Flex direction={{ default: "column" }} gap={{ default: "gapLg" }}>
+      {/* The footer is about the rows, so it stays closer to them than the
+          actions do. */}
+      <FlexItem>
+        <Stack hasGutter>
+          <StackItem>
+            <Table
+              role="table"
+              gridBreakPoint=""
+              variant="compact"
+              isStriped={isStriped}
+              {...tableProps({ hasVerticallyCenteredRows: true })}
+              // TRANSLATORS: names the list of what the installation will put on
+              // one of its entries.
+              aria-label={caption ? undefined : _("Planned content")}
+            >
+              {/* A plain caption rather than PatternFly's, which is styled as a
+                  hint: this one reads like the sentences around the table, and
+                  sits closer to its rows than to the text above. */}
+              {caption && (
+                <caption className={[alignmentStyles.textAlignStart, spacingStyles.pbSm].join(" ")}>
+                  {caption}
+                </caption>
+              )}
+              {/* Read rather than hidden from sight: a column of sizes and a
+                  column of file systems are told apart by what they are called,
+                  and a reader who has to work that out from the values is being
+                  asked to do the heading's job.
 
-              Each heading kept whole. PatternFly cuts one down to whatever
-              its column came out as, which shortens the one thing on the
-              row whose whole job is to be read. */}
-          <Thead>
-            <Tr>
-              <Th {...columnProps(COLUMNS.path)} modifier="nowrap">
-                {_("Path")}
-              </Th>
-              <Th {...columnProps(COLUMNS.filesystem)} modifier="nowrap">
-                {_("File system")}
-              </Th>
-              <Th {...columnProps(COLUMNS.action)} modifier="nowrap">
-                {_("Action")}
-              </Th>
-              <Th {...columnProps(COLUMNS.size)} modifier="nowrap">
-                {_("Size")}
-              </Th>
-              <Th>
-                {/* The column of menus has nothing to head: a heading over
-                    it names a column the reader can already see the point
-                    of, and takes the width the sizes beside it need. */}
-                <Text srOnly>{_("Options")}</Text>
-              </Th>
-            </Tr>
-          </Thead>
-          <Tbody>
-            {planned.map((part) => {
-              /* A partition already there brings its own file system and
+                  Each heading kept whole. PatternFly cuts one down to whatever
+                  its column came out as, which shortens the one thing on the
+                  row whose whole job is to be read. */}
+              <Thead>
+                <Tr>
+                  <Th {...columnProps(COLUMNS.path)} modifier="nowrap">
+                    {_("Path")}
+                  </Th>
+                  <Th {...columnProps(COLUMNS.filesystem)} modifier="nowrap">
+                    {_("File system")}
+                  </Th>
+                  <Th {...columnProps(COLUMNS.action)} modifier="nowrap">
+                    {_("Action")}
+                  </Th>
+                  <Th {...columnProps(COLUMNS.size)} modifier="nowrap">
+                    {_("Size")}
+                  </Th>
+                  <Th>
+                    {/* The column of menus has nothing to head: a heading over
+                        it names a column the reader can already see the point
+                        of, and takes the width the sizes beside it need. */}
+                    <Text srOnly>{_("Options")}</Text>
+                  </Th>
+                </Tr>
+              </Thead>
+              <Tbody>
+                {planned.map((part) => {
+                  /* A partition already there brings its own file system and
                  size, so they are read from the machine rather than from a
                  request the installer never has to satisfy. */
-              const source = part.name
-                ? entry.device?.partitions?.find((p) => p.name === part.name)
-                : undefined;
-              const keepsData = Boolean(part.name) && part.filesystem?.reuse === true;
+                  const source = part.name
+                    ? entry.device?.partitions?.find((p) => p.name === part.name)
+                    : undefined;
+                  const keepsData = Boolean(part.name) && part.filesystem?.reuse === true;
 
-              return (
-                <Tr key={label(part)}>
-                  <Th scope="row" {...columnProps(COLUMNS.path)}>
-                    {label(part)}
-                  </Th>
-                  <Td {...columnProps(COLUMNS.filesystem)}>
-                    {keepsData
-                      ? source?.filesystem?.type
-                      : part.filesystem && filesystemType(part.filesystem)}
-                  </Td>
-                  <Td {...columnProps(COLUMNS.action)}>
-                    {source
-                      ? sprintf(
-                          // TRANSLATORS: %s is the short-name of a partition, like sda3
-                          keepsData ? _("Mount %s") : _("Format %s"),
-                          baseName(source.name, { truncate: true }),
-                        )
-                      : isVolumeGroup
-                        ? // TRANSLATORS: "volume" refers to an LVM logical volume, try to keep it short
-                          _("Create volume")
-                        : _("Create partition")}
-                  </Td>
-                  <Td {...columnProps(COLUMNS.size)}>{sizeDescription(part.size)}</Td>
-                  <Td isActionCell>
-                    {/* Both acts name the thing by where it is mounted, so
-                        one asked for by id alone has neither until the form
-                        and the model calls learn to take an id. */}
-                    {part.mountPath && (
-                      <MenuButton
-                        menuProps={{
-                          "aria-label": sprintf(
-                            // TRANSLATORS: names the menu of things that can
-                            // be done to one thing the installation creates.
-                            // %s is where the new system mounts it.
-                            _("Actions for %s"),
-                            label(part),
-                          ),
-                          popperProps: { position: "end" },
-                        }}
-                        customToggle={
-                          <RowMenuToggle
-                            label={sprintf(_("Actions for %s"), label(part))}
-                            size="sm"
-                          />
-                        }
-                        items={[
-                          <MenuButtonItem key="edit" to={editPath(part)} keepQuery>
-                            {_("Edit")}
-                          </MenuButtonItem>,
-                          <MenuButtonItem
-                            key="delete"
-                            /* Dropping the plan for a partition that is
+                  return (
+                    <Tr key={label(part)}>
+                      <Th scope="row" {...columnProps(COLUMNS.path)}>
+                        {label(part)}
+                      </Th>
+                      <Td {...columnProps(COLUMNS.filesystem)}>
+                        {keepsData
+                          ? source?.filesystem?.type
+                          : part.filesystem && filesystemType(part.filesystem)}
+                      </Td>
+                      <Td {...columnProps(COLUMNS.action)}>
+                        {source
+                          ? sprintf(
+                              // TRANSLATORS: %s is the short-name of a partition, like sda3
+                              keepsData ? _("Mount %s") : _("Format %s"),
+                              baseName(source.name, { truncate: true }),
+                            )
+                          : isVolumeGroup
+                            ? // TRANSLATORS: "volume" refers to an LVM logical volume, try to keep it short
+                              _("Create volume")
+                            : _("Create partition")}
+                      </Td>
+                      <Td {...columnProps(COLUMNS.size)}>{sizeDescription(part.size)}</Td>
+                      <Td isActionCell>
+                        {/* Both acts name the thing by where it is mounted, so
+                            one asked for by id alone has neither until the form
+                            and the model calls learn to take an id. */}
+                        {part.mountPath && (
+                          <MenuButton
+                            menuProps={{
+                              "aria-label": sprintf(
+                                // TRANSLATORS: names the menu of things that can
+                                // be done to one thing the installation creates.
+                                // %s is where the new system mounts it.
+                                _("Actions for %s"),
+                                label(part),
+                              ),
+                              popperProps: { position: "end" },
+                            }}
+                            customToggle={
+                              <RowMenuToggle
+                                label={sprintf(_("Actions for %s"), label(part))}
+                                size="sm"
+                              />
+                            }
+                            items={[
+                              <MenuButtonItem key="edit" to={editPath(part)} keepQuery>
+                                {_("Edit")}
+                              </MenuButtonItem>,
+                              <MenuButtonItem
+                                key="delete"
+                                /* Dropping the plan for a partition that is
                                already there removes the plan, not the
                                partition, so it is not offered as a danger
                                and is not called a deletion. */
-                            isDanger={!source}
-                            onClick={() => remove(part.mountPath)}
-                          >
-                            {source ? _("Stop reusing") : _("Delete")}
-                          </MenuButtonItem>,
-                        ]}
-                      />
-                    )}
-                  </Td>
-                </Tr>
-              );
-            })}
-          </Tbody>
-        </Table>
-      </StackItem>
-      {footer && (
-        <StackItem>
-          <p>{footer}</p>
-        </StackItem>
-      )}
-      <StackItem>{actions}</StackItem>
-    </Stack>
+                                isDanger={!source}
+                                onClick={() => remove(part.mountPath)}
+                              >
+                                {source ? _("Stop reusing") : _("Delete")}
+                              </MenuButtonItem>,
+                            ]}
+                          />
+                        )}
+                      </Td>
+                    </Tr>
+                  );
+                })}
+              </Tbody>
+            </Table>
+          </StackItem>
+          {footer && (
+            <StackItem>
+              <p>{footer}</p>
+            </StackItem>
+          )}
+        </Stack>
+      </FlexItem>
+      <FlexItem>{actions}</FlexItem>
+    </Flex>
   );
 }

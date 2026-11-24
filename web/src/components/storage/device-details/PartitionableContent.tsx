@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import { Flex, FlexItem, Stack, StackItem } from "@patternfly/react-core";
+import { Flex, FlexItem } from "@patternfly/react-core";
 import Link from "~/components/core/Link";
 import PlannedContentSection from "~/components/storage/device-details/PlannedContentSection";
 import UsedByStatement from "~/components/storage/device-details/UsedByStatement";
@@ -109,16 +109,16 @@ export default function PartitionableContent({
   );
 
   return (
-    <Stack hasGutter>
+    <Flex direction={{ default: "column" }} gap={{ default: "gapLg" }}>
       {!!users.length && (
-        <StackItem>
+        <FlexItem>
           <p>
             <UsedByStatement entry={entry} />
           </p>
-        </StackItem>
+        </FlexItem>
       )}
       {hasPlanned && (
-        <StackItem>
+        <FlexItem>
           <PlannedContentSection
             entry={entry}
             subject={subject}
@@ -126,17 +126,17 @@ export default function PartitionableContent({
             footer={isBoot && <BootStatement entry={entry} />}
             extraActions={changeBoot}
           />
-        </StackItem>
+        </FlexItem>
       )}
       {!hasPlanned && isBoot && (
-        <StackItem>
+        <FlexItem>
           <p>
             <BootStatement entry={entry} />
           </p>
-        </StackItem>
+        </FlexItem>
       )}
       {!hasPlanned && (
-        <StackItem>
+        <FlexItem>
           <Flex gap={{ default: "gapLg" }} alignItems={{ default: "alignItemsCenter" }}>
             <FlexItem>
               <Link to={addPath} keepQuery variant="link" isInline>
@@ -145,8 +145,8 @@ export default function PartitionableContent({
             </FlexItem>
             {changeBoot && <FlexItem>{changeBoot}</FlexItem>}
           </Flex>
-        </StackItem>
+        </FlexItem>
       )}
-    </Stack>
+    </Flex>
   );
 }
