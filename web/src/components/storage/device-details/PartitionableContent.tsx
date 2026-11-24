@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import { Flex, FlexItem, List, ListItem } from "@patternfly/react-core";
+import { Flex, FlexItem, Stack, StackItem } from "@patternfly/react-core";
 import Link from "~/components/core/Link";
 import PlannedContentSection from "~/components/storage/device-details/PlannedContentSection";
 import UsedByStatement from "~/components/storage/device-details/UsedByStatement";
@@ -69,6 +69,17 @@ function plannedOn(entry: Entry): Planned[] {
   });
 }
 
+/**
+ * How the new system uses a disk it creates or reuses partitions on.
+ *
+ * Each role of the disk gets a paragraph of its own, always in the same order:
+ * giving room to volume groups, holding the partitions asked for, booting. They
+ * are not a list: the roles are not items of one kind, and the shape stays the
+ * same whether the disk plays one role or all of them.
+ *
+ * Adding a partition and changing the boot options share one line, with or
+ * without a table.
+ */
 export default function PartitionableContent({
   entry,
   subject,
@@ -76,52 +87,66 @@ export default function PartitionableContent({
   const config = useConfigModel();
   const systemDevices = useSystemDevices();
   const device = entry.config as Partitionable.Device;
-  const planned = plannedOn(entry);
+  const hasPlanned = plannedOn(entry).length > 0;
   const users = usersOf(config, systemDevices, device.name);
   const isBoot = configModel.boot.hasDevice(config, entry.config.name);
+  // TRANSLATORS: introduces the table of partitions planned on a disk.
+  const caption = _("Partitions from the following list will be configured during installation");
+
+  if (!users.length && !isBoot)
+    return <PlannedContentSection entry={entry} subject={subject} caption={caption} />;
 
   const addPath = generateEncodedPath(PATHS.addPartition, {
     collection: subject.collection,
     index: String(subject.index),
   });
 
-  const listed = <PlannedContentSection entry={entry} subject={subject} />;
-  if (!users.length && !isBoot) return listed;
+  const changeBoot = isBoot && (
+    <Link to={PATHS.editBootDevice} keepQuery variant="link" isInline>
+      {/* TRANSLATORS: link to the settings of how the new system boots. */}
+      {_("Change boot options")}
+    </Link>
+  );
 
   return (
-    <List>
+    <Stack hasGutter>
       {!!users.length && (
-        <ListItem>
-          <UsedByStatement entry={entry} />
-        </ListItem>
+        <StackItem>
+          <p>
+            <UsedByStatement entry={entry} />
+          </p>
+        </StackItem>
       )}
-      {!!planned.length && (
-        <ListItem>
-          <Flex direction={{ default: "column" }} gap={{ default: "gapSm" }}>
-            <FlexItem>
-              {_("Partitions from the following list will be configured during installation")}
-            </FlexItem>
-            <FlexItem>{listed}</FlexItem>
-          </Flex>
-        </ListItem>
+      {hasPlanned && (
+        <StackItem>
+          <PlannedContentSection
+            entry={entry}
+            subject={subject}
+            caption={caption}
+            footer={isBoot && <BootStatement entry={entry} />}
+            extraActions={changeBoot}
+          />
+        </StackItem>
       )}
-      {isBoot && (
-        <ListItem>
-          <BootStatement entry={entry} />
-        </ListItem>
+      {!hasPlanned && isBoot && (
+        <StackItem>
+          <p>
+            <BootStatement entry={entry} />
+          </p>
+        </StackItem>
       )}
-      {!planned.length && (
-        <ListItem>
-          <Flex direction={{ default: "column" }} gap={{ default: "gapSm" }}>
-            <FlexItem>{_("Additional partitions can be explicitly defined.")}</FlexItem>
+      {!hasPlanned && (
+        <StackItem>
+          <Flex gap={{ default: "gapSm" }} alignItems={{ default: "alignItemsCenter" }}>
             <FlexItem>
               <Link to={addPath} keepQuery variant="link" isInline>
                 {_("Add partition")}
               </Link>
             </FlexItem>
+            {changeBoot && <FlexItem>{changeBoot}</FlexItem>}
           </Flex>
-        </ListItem>
+        </StackItem>
       )}
-    </List>
+    </Stack>
   );
 }
