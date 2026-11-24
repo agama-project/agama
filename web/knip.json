@@ -1,0 +1,24 @@
+{
+  "$schema": "https://unpkg.com/knip@latest/jsonschema.json",
+  "entry": [
+    "scripts/**/*.js",
+    "share/po/**/*.js",
+    "src/**/*.test.{ts,tsx,js,jsx}",
+    "src/**/__mocks__/**/*.{ts,tsx,js,jsx}",
+    "src/setupTests.ts",
+    "src/test-utils.tsx"
+  ],
+  "project": ["src/**/*.{ts,tsx,js,jsx}"],
+  "ignore": [
+    "src/po/po.*.js"
+  ],
+  "ignoreBinaries": [
+    "eslint",
+    "stylelint",
+    "jest"
+  ],
+  "ignoreExportsUsedInFile": true,
+  "webpack": {
+    "config": ["webpack.config.js"]
+  }
+}

@@ -22,12 +22,49 @@ use fluent_uri::Uri;
 use merge::Merge;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
+use serde_json::Value;
+use strum::IntoEnumIterator;
 
 use crate::api::files::{
-    scripts::{InitScript, PostPartitioningScript, PostScript, PreScript},
+    file_source::resolve_url_field,
+    scripts::{InitScript, PostPartitioningScript, PostScript, PreScript, ScriptsGroup},
     user_file::UserFile,
-    FileSourceError, WithFileSource,
+    FileSourceError,
 };
+
+/// Resolves relative URLs in the "files" and "scripts" sections of a raw JSON profile, leaving
+/// every other key untouched (including keys this build doesn't recognize).
+///
+/// This is the JSON-only counterpart of walking the typed `files::Config`, used by callers that
+/// must treat the profile as opaque JSON instead of deserializing it into the typed `Config` (see
+/// API-COMPATIBILITY-POLICY.md).
+pub fn resolve_urls_in_value(
+    profile: &mut Value,
+    base_uri: &Uri<String>,
+) -> Result<(), FileSourceError> {
+    let Some(root) = profile.as_object_mut() else {
+        return Ok(());
+    };
+
+    if let Some(files) = root.get_mut("files").and_then(Value::as_array_mut) {
+        for file in files {
+            resolve_url_field(file, base_uri)?;
+        }
+    }
+
+    if let Some(scripts) = root.get_mut("scripts").and_then(Value::as_object_mut) {
+        for group in ScriptsGroup::iter() {
+            let key = group.to_string();
+            if let Some(list) = scripts.get_mut(&key).and_then(Value::as_array_mut) {
+                for script in list {
+                    resolve_url_field(script, base_uri)?;
+                }
+            }
+        }
+    }
+
+    Ok(())
+}
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize, Merge, JsonSchema)]
 #[schemars(rename = "files.Config")]
@@ -38,18 +75,6 @@ pub struct Config {
     #[serde(skip_serializing_if = "Option::is_none")]
     #[merge(strategy = merge::option::overwrite_none)]
     pub scripts: Option<ScriptsConfig>,
-}
-
-impl Config {
-    pub fn resolve_urls(&mut self, base_uri: &Uri<String>) -> Result<(), FileSourceError> {
-        resolve_urls_for(&mut self.files, base_uri)?;
-
-        if let Some(scripts) = &mut self.scripts {
-            scripts.resolve_urls(base_uri)?;
-        }
-
-        Ok(())
-    }
 }
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize, Merge, JsonSchema, PartialEq)]
@@ -82,29 +107,6 @@ impl ScriptsConfig {
             Some(self)
         }
     }
-
-    /// Resolve relative URLs in the scripts.
-    ///
-    /// * `base_uri`: The base URI to resolve relative URLs against.
-    pub fn resolve_urls(&mut self, base_uri: &Uri<String>) -> Result<(), FileSourceError> {
-        resolve_urls_for(&mut self.pre, base_uri)?;
-        resolve_urls_for(&mut self.post_partitioning, base_uri)?;
-        resolve_urls_for(&mut self.post, base_uri)?;
-        resolve_urls_for(&mut self.init, base_uri)?;
-        Ok(())
-    }
-}
-
-fn resolve_urls_for<T: WithFileSource>(
-    files: &mut Option<Vec<T>>,
-    base_uri: &Uri<String>,
-) -> Result<(), FileSourceError> {
-    if let Some(ref mut files) = files {
-        for file in files {
-            file.resolve_url(base_uri)?;
-        }
-    }
-    Ok(())
 }
 
 #[cfg(test)]
@@ -196,5 +198,123 @@ mod tests {
         assert_eq!(updated.scripts, updated_clone.scripts);
         // The inner fields of `updated.scripts` should not have changed.
         assert!(updated.scripts.as_ref().unwrap().post.is_none());
+    }
+
+    fn base_uri() -> Uri<String> {
+        Uri::parse("http://example.lan/profiles/")
+            .unwrap()
+            .to_owned()
+    }
+
+    #[test]
+    fn test_resolve_urls_in_value_resolves_relative_file_url() {
+        let mut profile = serde_json::json!({
+            "files": [
+                { "url": "file.txt", "destination": "/etc/foo" }
+            ]
+        });
+
+        resolve_urls_in_value(&mut profile, &base_uri()).unwrap();
+
+        assert_eq!(
+            profile["files"][0]["url"],
+            "http://example.lan/profiles/file.txt"
+        );
+        assert_eq!(profile["files"][0]["destination"], "/etc/foo");
+    }
+
+    #[test]
+    fn test_resolve_urls_in_value_leaves_absolute_url_untouched() {
+        let mut profile = serde_json::json!({
+            "files": [
+                { "url": "http://other.lan/file.txt", "destination": "/etc/foo" }
+            ]
+        });
+
+        resolve_urls_in_value(&mut profile, &base_uri()).unwrap();
+
+        assert_eq!(profile["files"][0]["url"], "http://other.lan/file.txt");
+    }
+
+    #[test]
+    fn test_resolve_urls_in_value_leaves_content_entries_untouched() {
+        let mut profile = serde_json::json!({
+            "files": [
+                { "content": "hello", "destination": "/etc/foo" }
+            ]
+        });
+        let original = profile.clone();
+
+        resolve_urls_in_value(&mut profile, &base_uri()).unwrap();
+
+        assert_eq!(profile, original);
+    }
+
+    #[test]
+    fn test_resolve_urls_in_value_resolves_scripts() {
+        let mut profile = serde_json::json!({
+            "scripts": {
+                "pre": [{ "name": "pre", "url": "pre.sh" }],
+                "postPartitioning": [{ "name": "pp", "url": "pp.sh" }],
+                "post": [{ "name": "post", "url": "post.sh" }],
+                "init": [{ "name": "init", "url": "init.sh" }],
+            }
+        });
+
+        resolve_urls_in_value(&mut profile, &base_uri()).unwrap();
+
+        assert_eq!(
+            profile["scripts"]["pre"][0]["url"],
+            "http://example.lan/profiles/pre.sh"
+        );
+        assert_eq!(
+            profile["scripts"]["postPartitioning"][0]["url"],
+            "http://example.lan/profiles/pp.sh"
+        );
+        assert_eq!(
+            profile["scripts"]["post"][0]["url"],
+            "http://example.lan/profiles/post.sh"
+        );
+        assert_eq!(
+            profile["scripts"]["init"][0]["url"],
+            "http://example.lan/profiles/init.sh"
+        );
+    }
+
+    #[test]
+    fn test_resolve_urls_in_value_preserves_unknown_fields() {
+        let mut profile = serde_json::json!({
+            "files": [
+                { "url": "file.txt", "destination": "/etc/foo" }
+            ],
+            "someFutureField": { "nested": "value" }
+        });
+
+        resolve_urls_in_value(&mut profile, &base_uri()).unwrap();
+
+        assert_eq!(profile["someFutureField"]["nested"], "value");
+    }
+
+    #[test]
+    fn test_resolve_urls_in_value_without_files_or_scripts_is_a_noop() {
+        let mut profile = serde_json::json!({ "hostname": { "static": "test" } });
+        let original = profile.clone();
+
+        resolve_urls_in_value(&mut profile, &base_uri()).unwrap();
+
+        assert_eq!(profile, original);
+    }
+
+    #[test]
+    fn test_resolve_urls_in_value_fails_on_invalid_url() {
+        let mut profile = serde_json::json!({
+            "files": [
+                { "url": "http://%zz", "destination": "/etc/foo" }
+            ]
+        });
+
+        let result = resolve_urls_in_value(&mut profile, &base_uri());
+
+        assert!(matches!(result, Err(FileSourceError::InvalidUrl(_, _))));
     }
 }

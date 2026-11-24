@@ -78,6 +78,7 @@ const MODE_TO_METHOD: Record<FormIpModeType, ConnectionMethod> = {
   [FormIpMode.AUTO]: ConnectionMethod.AUTO,
   [FormIpMode.ADVANCED_AUTO]: ConnectionMethod.AUTO,
   [FormIpMode.MANUAL]: ConnectionMethod.MANUAL,
+  [FormIpMode.DISABLED]: ConnectionMethod.DISABLED,
 };
 
 /**
@@ -85,6 +86,7 @@ const MODE_TO_METHOD: Record<FormIpModeType, ConnectionMethod> = {
  *
  * The presence of addresses affects the interpretation:
  * - `MANUAL` method → MANUAL
+ * - `DISABLED` method → DISABLED
  * - `AUTO` method with addresses → ADVANCED_AUTO
  * - `AUTO` method without addresses → AUTO
  * - `undefined` method with addresses → ADVANCED_AUTO (from system)
@@ -92,6 +94,7 @@ const MODE_TO_METHOD: Record<FormIpModeType, ConnectionMethod> = {
  */
 function inferIpMode(method: ConnectionMethod | undefined, addresses: string[]): FormIpModeType {
   if (method === ConnectionMethod.MANUAL) return FormIpMode.MANUAL;
+  if (method === ConnectionMethod.DISABLED) return FormIpMode.DISABLED;
 
   return addresses.length > 0 ? FormIpMode.ADVANCED_AUTO : FormIpMode.AUTO;
 }

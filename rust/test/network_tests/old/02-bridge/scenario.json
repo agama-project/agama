@@ -1,0 +1,24 @@
+{
+  "title": "Bridge with ports given by name",
+  "description": "Same as old/01-bond, with a bridge.",
+  "steps": [
+    {
+      "profile": "1-bridge.json",
+      "description": "Bridge with ports: [eth0, eth1]",
+      "expect": {
+        "connections": {
+          "br0": {
+            "controller": null,
+            "method4": "auto"
+          },
+          "eth0": {
+            "controller": "br0"
+          },
+          "eth1": {
+            "controller": "br0"
+          }
+        }
+      }
+    }
+  ]
+}

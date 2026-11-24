@@ -31,8 +31,8 @@ import {
 } from "@patternfly/react-core";
 import { _ } from "~/i18n";
 import { Icon } from "~/components/layout";
+import Interpolate from "~/components/core/Interpolate";
 import { useInstallerL10n } from "~/context/installerL10n";
-import { sprintf } from "sprintf-js";
 import { useKeyLock } from "~/hooks/use-key-lock";
 import { localConnection } from "~/utils";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
@@ -61,18 +61,17 @@ const KeymapReminder = () => {
 
   if (!localConnection()) return;
 
-  const [textStart, layout, textEnd] = sprintf(
-    // TRANSLATORS: Message to inform users which keyboard layout is active. %s
-    // will be replaced with the layout name (e.g., "de", "cn", "cz"). Keep
-    // square brackets around %s to apply special formatting in
-    // the UI.
-    _("Using [%s] keyboard layout"),
-    keymap,
-  ).split(/[[\]]/);
-
   return (
     <span>
-      {textStart} <code className={textStyles.fontWeightBold}>{layout}</code> {textEnd}
+      <Interpolate
+        sentence={
+          // TRANSLATORS: Message to inform users which keyboard layout is active.
+          // %s will be replaced with the layout name (e.g., "de", "cn", "cz").
+          _("Using %s keyboard layout")
+        }
+      >
+        {() => <code className={textStyles.fontWeightBold}>{keymap}</code>}
+      </Interpolate>
     </span>
   );
 };
@@ -87,11 +86,13 @@ const CapsLockReminder = () => {
 
   // TRANSLATORS: Warns users that CAPS LOCK is on.
   // Keep square brackets to apply special formatting in the UI.
-  const [textStart, capsLock, textEnd] = _("[CAPS LOCK] is on").split(/[[\]]/);
+  const sentence = _("[CAPS LOCK] is on");
 
   return (
     <span className={textStyles.textColorStatusDanger}>
-      {textStart} <b className={textStyles.fontWeightBold}>{capsLock}</b> {textEnd}
+      <Interpolate sentence={sentence}>
+        {(capsLock) => <b className={textStyles.fontWeightBold}>{capsLock}</b>}
+      </Interpolate>
     </span>
   );
 };

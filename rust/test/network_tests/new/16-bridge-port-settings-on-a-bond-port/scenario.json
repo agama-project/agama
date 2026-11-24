@@ -1,0 +1,18 @@
+{
+  "title": "Bridge port settings on a bond port",
+  "description": "Only the ports of a bridge have port settings.",
+  "steps": [
+    {
+      "profile": "1-bond-port-settings.json",
+      "description": "eth0 nested in a bond with port: { priority: 16 }",
+      "expect": {
+        "schema": "invalid",
+        "connections": {
+          "bond0": {
+            "removed": true
+          }
+        }
+      }
+    }
+  ]
+}

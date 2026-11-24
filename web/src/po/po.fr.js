@@ -3273,7 +3273,7 @@ export default {
     "Utilisation de %s comme serveur NTP"
   ],
   "Using %s keyboard layout": [
-    "Utilisation de la disposition du clavier [%s]"
+    "Utilisation de la disposition du clavier %s"
   ],
   "Using [%s] keyboard layout": [
     "Utilisation de la disposition du clavier [%s]"

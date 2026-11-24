@@ -25,7 +25,7 @@ import { Connection, NetworkConfig } from "~/types/network";
 import { Network, Proposal } from "~/model/proposal";
 import { Config } from "~/model/config";
 import { patchConfig } from "~/api";
-import { configQuery } from "../config";
+import { configQuery, extendedConfigQuery } from "../config";
 import { proposalQuery } from "../proposal";
 
 /**
@@ -83,6 +83,19 @@ const useConfig = (): NetworkConfig => {
   return data;
 };
 
+/**
+ * Network config extended with the current state, so it includes every known connection
+ * (without their runtime state).
+ */
+const useExtendedConfig = (): NetworkConfig => {
+  const { data } = useSuspenseQuery({
+    ...extendedConfigQuery,
+    select: (d: Config) => (d.network ? NetworkConfig.fromApi(d.network) : new NetworkConfig()),
+  });
+
+  return data;
+};
+
 const useConnections = (): Connection[] => {
   const { data } = useSuspenseQuery({
     ...proposalQuery,
@@ -97,4 +110,11 @@ const useConnection = (name: string) => {
   return connection;
 };
 
-export { useConnectionMutation, useConfigMutation, useConnection, useConnections, useConfig };
+export {
+  useConnectionMutation,
+  useConfigMutation,
+  useConnection,
+  useConnections,
+  useConfig,
+  useExtendedConfig,
+};

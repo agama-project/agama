@@ -1,11 +1,122 @@
 -------------------------------------------------------------------
-Sun Oct  4 16:25:30 UTC 2026 - Martin Pluskal <martin@pluskal.org>
+Wed Nov 18 16:25:30 UTC 2026 - Martin Pluskal <martin@pluskal.org>
 
 - Report the checksums correctly when asking the user to accept a file
   with a wrong digest. The question mixed up the expected and the
   found checksum and kept the Ruby gettext placeholders, so neither
   checksum nor the file name was shown at all
   (gh#agama-project/agama#2703).
+
+-------------------------------------------------------------------
+Wed Nov 18 12:01:26 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Report the state of the ports nested in a bond or a bridge in the
+  network system information. Its connection types are renamed to
+  SystemNetworkConnection and SystemNetworkConnections in the
+  OpenAPI specification (gh#agama-project/agama#4255).
+
+-------------------------------------------------------------------
+Wed Nov 11 12:00:00 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Enable autorefresh for extraRepositories and disable it for the
+  Full Live medium repository (bsc#1279856).
+
+-------------------------------------------------------------------
+Wed Nov 11 08:44:35 UTC 2026 - Clemens Famulla-Conrad <cfamullaconrad@suse.com>
+
+- Support the IPv6 address generation mode (ipv6.addr-gen-mode)
+  in network connections (bsc#1279546)
+
+-------------------------------------------------------------------
+Mon Nov  9 13:40:53 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Install the chrony-pool-empty package when using a custom
+  NTP configuration (bsc#1280027).
+
+-------------------------------------------------------------------
+Fri Nov  6 13:20:39 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Do not parse the Config object from the CLI, just treat it
+  as a generic JSON object (gh#agama-project/agama#4199).
+
+-------------------------------------------------------------------
+Fri Nov  6 10:29:26 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Offer only the products available on the current architecture,
+  honoring the "archs" of their definition (e.g., SLES for SAP was
+  offered on aarch64) (bsc#1289499, gh#agama-project/agama#4196).
+
+-------------------------------------------------------------------
+Fri Nov  6 10:28:26 UTC 2026 - Josef Reidinger <jreidinger@suse.cz>
+
+- Fix syntax of zypp.conf.d that is generated if onlyRequired is
+  set to true (bsc#1285975)
+
+-------------------------------------------------------------------
+Fri Nov  6 10:27:26 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- properly copy SSL certificates to target system (bsc#1283318)
+
+-------------------------------------------------------------------
+Wed Nov  4 18:03:24 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add forward-compatibility fallbacks to client-facing enums
+  (gh#agama-project/agama#3993).
+
+-------------------------------------------------------------------
+Wed Nov  4 14:19:07 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Keep the IP configuration of the Open vSwitch internal interface
+  when writing it to NetworkManager, fixing the migration of OVS
+  bridges from wicked (gh#agama-project/agama#4190).
+
+-------------------------------------------------------------------
+Fri Oct 30 16:23:39 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Fix scripts execution progress reporting (bsc#1285983,
+  gh#agama-project/agama#4116).
+
+-------------------------------------------------------------------
+Fri Oct 30 08:34:43 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Do not fail to read the hardware information when lshw reports
+  unescaped control characters in some strings (bsc#1271190).
+
+-------------------------------------------------------------------
+Mon Oct 26 17:54:08 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Allow nesting the ports of bonds and bridges in a new
+  "portConnections" list, so stacked setups can be read and
+  modified (gh#agama-project/agama#3995).
+- Deprecate the "ports" list of names. It keeps working, but it is
+  ignored when "portConnections" is given.
+- Allow port settings only on the ports nested in their
+  controller, and no IP settings on them.
+- Accept any kind of connection in "portConnections", as
+  NetworkManager does, but the port settings only on the ports
+  of a bridge.
+- Keep the settings not modelled by the API when updating a
+  connection.
+- Fix reading the path cost of bridge ports from NetworkManager.
+- Accept "link-local" as the IP method, as documented, which also
+  fixes the AutoYaST "autoip" boot protocol. "linkLocal" is still
+  accepted.
+- Generate the network part of the profile schema from the types
+  it is read into (network.schema.json).
+- Report the state of the connections only in the system
+  information, and not for the ports nested in their controller.
+
+-------------------------------------------------------------------
+Wed Oct 14 10:47:30 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Do not run RPM scriptlets when updating the agama-scripts package
+  (bsc#1285032).
+
+-------------------------------------------------------------------
+Tue Oct  6 15:51:28 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Fix storage model schema: request password attribute instead of
+  non-existent method attribute (gh#agama-project/agama#4038).
 
 -------------------------------------------------------------------
 Thu Oct  1 11:20:14 UTC 2026 - Knut Anderssen <kanderssen@suse.com>

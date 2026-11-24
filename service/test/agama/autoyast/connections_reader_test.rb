@@ -307,6 +307,38 @@ describe Agama::AutoYaST::ConnectionsReader do
       end
     end
 
+    context "when an interface is a port of a bond or a bridge" do
+      let(:interfaces) do
+        [
+          { "device" => "eth1", "bootproto" => "none" },
+          { "device" => "eth2", "bootproto" => "static", "ipaddr" => "192.168.1.2/24" },
+          { "device" => "bond0", "bootproto" => "none", "bonding_slave0" => "eth1" },
+          {
+            "device" => "br0", "bootproto" => "static", "ipaddr" => "192.168.1.1/24",
+            "bridge" => "yes", "bridge_ports" => "bond0 eth2"
+          }
+        ]
+      end
+
+      it "does not include any IP setting for the port" do
+        connections = subject.read["connections"]
+        ["eth1", "eth2", "bond0"].each do |id|
+          conn = connections.find { |c| c["id"] == id }
+          expect(conn.keys).to_not include(
+            "method4", "method6", "addresses", "nameservers", "dnsSearchList"
+          )
+        end
+      end
+
+      it "keeps the IP settings of the controller at the top" do
+        connections = subject.read["connections"]
+        conn = connections.find { |c| c["id"] == "br0" }
+        expect(conn["method4"]).to eq("manual")
+        expect(conn["addresses"].map(&:to_s)).to eq(["192.168.1.1/24"])
+        expect(conn).to include(dns)
+      end
+    end
+
     context "when there are bridge settings" do
       let(:eth0) do
         { "name" => "br0", "bridge" => "yes", "bridge_ports" => "eth1 eth2" }
@@ -339,7 +371,7 @@ describe Agama::AutoYaST::ConnectionsReader do
       end
     end
 
-    it "adds DNS settings to the connection" do
+    it "adds DNS settings to the connections that are not ports" do
       connections = subject.read["connections"]
       connections.each do |conn|
         expect(conn).to include(dns)

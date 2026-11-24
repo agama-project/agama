@@ -340,6 +340,7 @@ impl ZyppServer {
                 url: repo.url,
                 enabled: repo.enabled,
                 priority: None,
+                autorefresh: repo.autorefresh,
             })
             .collect();
 
@@ -420,11 +421,16 @@ impl ZyppServer {
             .filter(|r| !aliases.contains(&r.alias))
             .collect();
         for repo in &to_add {
-            let result =
-                zypp.add_repository(&repo.alias, &repo.url, repo.priority, |percent, alias| {
+            let result = zypp.add_repository(
+                &repo.alias,
+                &repo.url,
+                repo.priority,
+                repo.autorefresh,
+                |percent, alias| {
                     tracing::info!("Adding repository {} ({}%)", alias, percent);
                     true
-                });
+                },
+            );
 
             if let Err(error) = result {
                 let message = format!("Could not add the repository {}", repo.alias);
@@ -745,7 +751,7 @@ impl ZyppServer {
     fn modify_zypp_conf(&self) {
         // write only if different from default
         if self.only_required {
-            let contents = "# Use only hard dependencies as configured in installer\nsolver.onlyRequires = true\n";
+            let contents = "# Use only hard dependencies as configured in installer\n[main]\nsolver.onlyRequires = true\n";
             let path = self.install_dir.join("etc/zypp/zypp.conf.d/installer.conf");
             let write_result = std::fs::write(path.as_path(), contents);
             if write_result.is_err() {
