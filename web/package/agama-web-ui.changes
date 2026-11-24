@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Nov 24 16:59:01 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Handle the ports of bonds and bridges nested in their controller,
+  listing and editing them like any other connection
+  (gh#agama-project/agama#3996).
+
+-------------------------------------------------------------------
 Mon Nov 16 08:50:23 UTC 2026 - Michal Filka <mfilka@suse.com>
 
 - bsc#1280086 (CVE-2026-87776)

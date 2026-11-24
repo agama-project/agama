@@ -29,7 +29,7 @@ fn test_stacked_connections_are_all_exposed() {
     let exposed: NetworkConnectionsCollection = collection.try_into().unwrap();
 
     let all = exposed.flatten();
-    let mut ids: Vec<&str> = all.iter().map(|c| c.id.as_str()).collect();
+    let mut ids: Vec<&str> = all.iter().map(|c| c.common.id.as_str()).collect();
     ids.sort_unstable();
     assert_eq!(ids, ["bond0", "br0", "br0.100", "eth0", "eth1"]);
 }
@@ -71,7 +71,7 @@ fn test_removed_connections_are_not_nested() {
     let exposed: NetworkConnectionsCollection = collection.try_into().unwrap();
 
     assert_eq!(port_ids(&find(&exposed, "bond0")), ["eth0"]);
-    assert!(exposed.0.iter().any(|c| c.id == "eth1"));
+    assert!(exposed.0.iter().any(|c| c.common.id == "eth1"));
 }
 
 /// Only bonds and bridges expose their ports, so the members of any other kind of controller
@@ -92,11 +92,13 @@ fn test_members_of_other_controllers_stay_at_the_top_level() {
 }
 
 #[test]
-fn test_the_system_info_reports_the_state_of_the_root_connections() {
+fn test_the_system_info_reports_the_state_of_every_connection() {
     let mut state = stacked_state();
     for conn in state.connections.iter_mut() {
         conn.state = ConnectionState::Activated;
     }
+    // A backup port of an active bond is not active itself.
+    state.get_connection_mut("eth1").unwrap().state = ConnectionState::Deactivated;
 
     let info = SystemInfo::try_from(state).unwrap();
 
@@ -104,7 +106,7 @@ fn test_the_system_info_reports_the_state_of_the_root_connections() {
         .connections
         .0
         .iter()
-        .map(|c| (c.connection.id.as_str(), c.state))
+        .map(|c| (c.common.id.as_str(), c.state))
         .collect();
     assert_eq!(
         roots,
@@ -114,9 +116,87 @@ fn test_the_system_info_reports_the_state_of_the_root_connections() {
         ]
     );
 
-    // The nested ports are part of their controller, so they do not report it.
+    // The nested ports report their own state, all the way down the stack.
+    let json = serde_json::to_value(&info.connections).unwrap();
+    let bond0 = &json[0]["bridge"]["portConnections"][0];
+    assert_eq!(bond0["id"], "bond0");
+    assert_eq!(bond0["state"], "activated");
+    let ports = &bond0["bond"]["portConnections"];
+    assert_eq!(ports[0]["id"], "eth0");
+    assert_eq!(ports[0]["state"], "activated");
+    assert_eq!(ports[1]["id"], "eth1");
+    assert_eq!(ports[1]["state"], "deactivated");
+}
+
+#[test]
+fn test_the_system_info_reports_the_connections_as_the_config_plus_the_state() {
+    let mut state = stacked_state();
+    for conn in state.connections.iter_mut() {
+        conn.state = ConnectionState::Activated;
+    }
+    state.get_connection_mut("eth1").unwrap().state = ConnectionState::Deactivated;
+    let config = serde_json::to_value(exposed(&state)).unwrap();
+
+    let info = SystemInfo::try_from(state).unwrap();
+
+    // Dropping the state of every connection gives the config back.
+    fn drop_state(value: &mut serde_json::Value) {
+        match value {
+            serde_json::Value::Object(map) => {
+                map.remove("state");
+                map.values_mut().for_each(drop_state);
+            }
+            serde_json::Value::Array(items) => items.iter_mut().for_each(drop_state),
+            _ => {}
+        }
+    }
+    let mut json = serde_json::to_value(&info.connections).unwrap();
+    drop_state(&mut json);
+    assert_eq!(json, config);
+}
+
+#[test]
+fn test_the_system_info_connections_round_trip() {
+    let mut state = stacked_state();
+    for conn in state.connections.iter_mut() {
+        conn.state = ConnectionState::Activated;
+    }
+    state.get_connection_mut("eth1").unwrap().state = ConnectionState::Deactivated;
+    let info = SystemInfo::try_from(state).unwrap();
+
+    // A client reads the connections back, with the state of the nested ports.
     let json = serde_json::to_string(&info.connections).unwrap();
-    assert_eq!(json.matches("\"state\"").count(), roots.len());
+    let read: system_info::NetworkConnectionsCollection = serde_json::from_str(&json).unwrap();
+
+    assert_eq!(read, info.connections);
+}
+
+#[test]
+fn test_the_config_does_not_report_the_state_of_the_ports() {
+    let mut state = stacked_state();
+    for conn in state.connections.iter_mut() {
+        conn.state = ConnectionState::Activated;
+    }
+
+    let config = exposed(&state);
+
+    let json = serde_json::to_string(&config).unwrap();
+    assert!(!json.contains("\"state\""));
+}
+
+#[test]
+fn test_the_config_does_not_take_the_state_of_a_port() {
+    // The state is only reported by the system information: it is not a setting.
+    let result = serde_json::from_value::<NetworkConnectionsCollection>(serde_json::json!([{
+        "id": "bond0",
+        "interface": "bond0",
+        "bond": {
+            "mode": "active-backup",
+            "portConnections": [{ "id": "eth0", "interface": "eth0", "state": "activated" }]
+        }
+    }]));
+
+    assert!(result.is_err());
 }
 
 #[test]
@@ -221,12 +301,12 @@ fn test_the_reported_controllers_list_their_ports_by_name_too() {
 
     let br0 = find(&reported, "br0");
     let bridge = br0.bridge.as_ref().unwrap();
-    assert_eq!(bridge.ports, Some(vec!["bond0".to_string()]));
+    assert_eq!(bridge.common.ports, Some(vec!["bond0".to_string()]));
     assert_eq!(bridge.port_connections.as_ref().unwrap().len(), 1);
 
     let bond0 = find(&reported, "bond0");
     assert_eq!(
-        bond0.bond.as_ref().unwrap().ports,
+        bond0.bond.as_ref().unwrap().common.ports,
         Some(vec!["eth0".to_string(), "eth1".to_string()])
     );
 }
@@ -237,8 +317,8 @@ fn test_ports_are_reported_without_ip_settings() {
     state.get_connection_mut("eth0").unwrap().ip_config.method4 = Some(Ipv4Method::Auto);
 
     let eth0 = find(&exposed(&state), "eth0");
-    assert!(!eth0.has_ip_settings());
-    assert_eq!(eth0.ignore_auto_dns, None);
+    assert!(eth0.ip.is_empty());
+    assert_eq!(eth0.ip.ignore_auto_dns, None);
 }
 
 /// Builds a state with a VLAN as a port of a bond.
@@ -268,7 +348,7 @@ fn test_any_kind_of_port_is_nested_in_its_controller() {
     let reported = exposed(&state);
     assert_eq!(root_ids(&reported), ["bond0"]);
     let bond = find(&reported, "bond0").bond.unwrap();
-    assert_eq!(bond.ports, Some(vec!["eth0.100".to_string()]));
+    assert_eq!(bond.common.ports, Some(vec!["eth0.100".to_string()]));
     let ports = bond.port_connections.unwrap();
     let [BondPort::Vlan(vlan)] = ports.as_slice() else {
         panic!("eth0.100 is not nested as a VLAN");
