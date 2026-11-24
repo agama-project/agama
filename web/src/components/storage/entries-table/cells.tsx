@@ -285,7 +285,7 @@ const existingVgActions = (group: ConfigModel.VolumeGroup, device): TranslatedSt
   } else if (deleted > 0) {
     lines.push(
       sprintf(
-        n_("%d logical volumes will be deleted", "%d logical volumes will be deleted", deleted),
+        n_("%d logical volume will be deleted", "%d logical volumes will be deleted", deleted),
         deleted,
       ),
     );
