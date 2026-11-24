@@ -7,10 +7,10 @@ permissions:
 on:
   push:
     branches:
-      # run on every change in master, the action actually checks if there is
+      # run on every change in SLE-16.1, the action actually checks if there is
       # any change in the translations, if there is no change it does not upload
       # the files to Weblate so it should be OK to run it quite often
-      - master
+      - SLE-16.1
 
     paths:
       # run only if any file which can contain translatable strings is modified,
@@ -73,6 +73,8 @@ jobs:
           path: agama-weblate
           repository: ${{ github.repository_owner }}/agama-weblate
           token:  ${{ secrets.GH_TOKEN }}
+          # checkout the SLE-16.1 branch
+          ref: SLE-16.1
 
       - name: Configure Git user and email
         run: |
