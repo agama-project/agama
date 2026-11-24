@@ -52,7 +52,7 @@ export default function PartitionableContent({
   const systemDevices = useSystemDevices();
   const device = entry.config as Partitionable.Device;
   const hasPlanned = plannedOn(entry).length > 0;
-  const users = usersOf(config, systemDevices, device.name);
+  const isLvmSource = usersOf(config, systemDevices, device.name).length > 0;
   const isBoot = configModel.boot.hasDevice(config, entry.config.name);
 
   const changeBoot = isBoot && (
@@ -62,7 +62,7 @@ export default function PartitionableContent({
     </Link>
   );
 
-  const hasNothingToSay = !hasPlanned && !users.length && !isBoot;
+  const hasNothingToSay = !hasPlanned && !isLvmSource && !isBoot;
 
   return (
     <Flex direction={{ default: "column" }} gap={{ default: "gapSm" }}>
@@ -71,7 +71,7 @@ export default function PartitionableContent({
           <PlannedContentSection entry={entry} subject={subject} />
         </DetailsSectionPart>
       )}
-      {!!users.length && (
+      {isLvmSource && (
         <DetailsSectionPart>
           <p>
             <UsedByStatement entry={entry} />
