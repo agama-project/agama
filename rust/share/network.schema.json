@@ -1615,7 +1615,7 @@
       "type": "object"
     },
     "NetworkConnections": {
-      "description": "Collection of connections.\n\nIt only holds the root connections: the ports of a bond or a bridge are nested inside the\n`portConnections` list of their controller. Use [`Self::flatten`] to go through all of them.",
+      "description": "Collection of connections.\n\nIt only holds the root connections: the ports of a bond or a bridge are nested inside the\n`portConnections` list of their controller.\n\nWhere a connection is given decides its controller:\n\n* A connection at the top level has none. If it was a port, it is taken out of its controller\n  and its IP methods default to `auto`. To update a port and keep it where it is, give it\n  nested in its controller, together with the controllers above it.\n* A port dropped from the list of ports of its controller, and not given anywhere else, is\n  removed.\n* A controller that is not given keeps its ports, so an update does not need to include the\n  connections it does not change, as long as they are not ports of the ones it does.",
       "items": {
         "$ref": "#/$defs/NetworkConnection"
       },

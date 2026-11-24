@@ -48,7 +48,17 @@ pub struct Config {
 /// Collection of connections.
 ///
 /// It only holds the root connections: the ports of a bond or a bridge are nested inside the
-/// `portConnections` list of their controller. Use [`Self::flatten`] to go through all of them.
+/// `portConnections` list of their controller.
+///
+/// Where a connection is given decides its controller:
+///
+/// * A connection at the top level has none. If it was a port, it is taken out of its controller
+///   and its IP methods default to `auto`. To update a port and keep it where it is, give it
+///   nested in its controller, together with the controllers above it.
+/// * A port dropped from the list of ports of its controller, and not given anywhere else, is
+///   removed.
+/// * A controller that is not given keeps its ports, so an update does not need to include the
+///   connections it does not change, as long as they are not ports of the ones it does.
 #[derive(Clone, Debug, Default, Serialize, Deserialize, JsonSchema, PartialEq)]
 #[schemars(rename = "NetworkConnections")]
 pub struct NetworkConnectionsCollection(pub Vec<NetworkConnection>);
