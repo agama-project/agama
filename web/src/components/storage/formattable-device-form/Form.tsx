@@ -23,15 +23,25 @@
 import React, { useMemo } from "react";
 import { useParams, useNavigate } from "react-router";
 import { ActionGroup, Alert, Form } from "@patternfly/react-core";
+import { sprintf } from "sprintf-js";
 import Page from "~/components/layout/Page";
 import ResourceNotFound from "~/components/core/ResourceNotFound";
 import NestedContent from "~/components/core/NestedContent";
 import { withFrozenQuery } from "~/components/form/with-frozen-query";
 import { useAppForm, mergeFormDefaults } from "~/hooks/form";
 import { useFormSubmit } from "~/hooks/use-form-submit";
-import { useConfigModel, useSetFilesystem } from "~/hooks/model/storage/config-model";
+import {
+  useConfigModel,
+  useMoveMountPathToDevice,
+  useSetFilesystem,
+} from "~/hooks/model/storage/config-model";
+import MountPointAssignment from "~/components/storage/shared/form/MountPointAssignment";
+import {
+  isReassigning,
+  mountPointHolder,
+} from "~/components/storage/shared/form/mount-point-holder";
 import configModel from "~/model/storage/config-model";
-import { createPartitionableLocation } from "~/components/storage/utils";
+import { baseName, createPartitionableLocation } from "~/components/storage/utils";
 import { STORAGE } from "~/routes/paths";
 import { _ } from "~/i18n";
 
@@ -46,6 +56,29 @@ import { defaultOptions } from "./fields";
 import type { Partitionable } from "~/model/storage/config-model";
 import type { Storage as System } from "~/model/system";
 import type { BreadcrumbProps } from "~/components/core/Breadcrumbs";
+
+/**
+ * Offers to discard the settings of what holds the mount point and assign it
+ * to the disk or RAID the form formats.
+ *
+ * @param collection - Where the device is in the config ("drives" or
+ *   "mdRaids").
+ */
+function assignLabel(mountPoint: string, collection: string, deviceName: string) {
+  return collection === "mdRaids"
+    ? sprintf(
+        // TRANSLATORS: %1$s is a mount point, %2$s a RAID device (e.g. "md0").
+        _("Discard the current settings and assign %1$s to the RAID %2$s"),
+        mountPoint,
+        baseName(deviceName),
+      )
+    : sprintf(
+        // TRANSLATORS: %1$s is a mount point, %2$s a disk (e.g. "sdb").
+        _("Discard the current settings and assign %1$s to the disk %2$s"),
+        mountPoint,
+        baseName(deviceName),
+      );
+}
 
 /**
  * Query data frozen on mount to protect the form from mid-interaction
@@ -96,6 +129,7 @@ function FormattableDeviceFormContent({
   const { collection, index } = useParams();
   const navigate = useNavigate();
   const setFilesystem = useSetFilesystem();
+  const moveMountPathToDevice = useMoveMountPathToDevice();
 
   // Mount points already in use, excluding the current one when editing.
   const usedMountPoints = useMemo(() => {
@@ -117,7 +151,11 @@ function FormattableDeviceFormContent({
       }
 
       try {
-        setFilesystem(location.collection, location.index, payload);
+        if (isReassigning(values, usedMountPoints, config)) {
+          moveMountPathToDevice(location.collection, location.index, payload);
+        } else {
+          setFilesystem(location.collection, location.index, payload);
+        }
         navigate(-1);
         return { patched: true as const };
       } catch (error) {
@@ -130,7 +168,7 @@ function FormattableDeviceFormContent({
     ...mergeFormDefaults(defaultOptions, deviceModel ? toFormValues(deviceModel) : {}),
     validators: {
       onSubmitAsync: async (ctx) => {
-        const fieldErrors = validate(ctx.value, usedMountPoints);
+        const fieldErrors = validate(ctx.value, usedMountPoints, config);
         if (fieldErrors) return fieldErrors;
 
         return onSubmitAsync(ctx, form);
@@ -162,8 +200,30 @@ function FormattableDeviceFormContent({
         {/* Mount point */}
         <MountPointField form={form} suggestions={unusedMountPoints} />
 
-        {/* Filesystem */}
-        <FilesystemFields form={form} device={systemDevice} />
+        {/* Filesystem, with what the mount point is already assigned to, if
+            anything, right after the file system selector: the device is
+            fixed, so the mount point is the only choice it depends on. */}
+        <form.Subscribe selector={(s) => s.values.committedMountPoint}>
+          {(mountPoint) => {
+            const holder = mountPointHolder(config, usedMountPoints, mountPoint);
+            return (
+              <FilesystemFields
+                form={form}
+                device={systemDevice}
+                afterSelector={
+                  holder && (
+                    <MountPointAssignment
+                      form={form}
+                      mountPoint={mountPoint}
+                      holder={holder}
+                      label={assignLabel(mountPoint, collection, deviceModel?.name ?? "")}
+                    />
+                  )
+                }
+              />
+            );
+          }}
+        </form.Subscribe>
 
         {/* Filesystem additional settings (when checkbox is checked) */}
         <form.Subscribe selector={(s) => s.values.showMoreFilesystemSettings}>

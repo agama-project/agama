@@ -32,6 +32,7 @@ import type { ConfigModel } from "~/model/storage/config-model";
 Element.prototype.scrollTo = jest.fn();
 
 const mockSetFilesystem = jest.fn();
+const mockMoveMountPath = jest.fn();
 
 let mockSystemDevice: System.Device | undefined;
 let mockDeviceModel: ConfigModel.Drive;
@@ -42,6 +43,7 @@ jest.mock("~/hooks/model/storage/config-model", () => ({
   useMissingMountPaths: () => ["/", "/home", "/var", "swap"],
   usePartitionable: () => mockDeviceModel,
   useSetFilesystem: () => mockSetFilesystem,
+  useMoveMountPathToDevice: () => mockMoveMountPath,
 }));
 
 jest.mock("~/hooks/model/system/storage", () => ({
@@ -106,6 +108,78 @@ describe("FormattableDeviceForm", () => {
       mockSystemDevice = undefined;
       installerRender(<FormattableDeviceForm />);
       screen.getByText("Go to storage page");
+    });
+  });
+
+  describe("when the mount point is already assigned elsewhere", () => {
+    beforeEach(() => {
+      mockConfigModel = {
+        drives: [mockDeviceModel, { name: "/dev/vdb", mountPath: "/data", partitions: [] }],
+        volumeGroups: [
+          {
+            vgName: "system",
+            targetDevices: [],
+            logicalVolumes: [
+              {
+                mountPath: "/srv",
+                filesystem: { default: false, type: "btrfs" },
+                size: { default: false, min: 5 * 1024 * 1024 * 1024 },
+              },
+            ],
+          },
+        ],
+      };
+    });
+
+    // Excludes the live region, which repeats the notice's title when it
+    // appears.
+    const inForm = { ignore: "[aria-live], script, style" };
+
+    const enter = async (user, mountPoint: string) => {
+      await user.type(screen.getByLabelText("Mount point"), mountPoint);
+      await user.tab();
+    };
+
+    it("offers to assign it to the device, right after the file system", async () => {
+      const { user } = installerRender(<FormattableDeviceForm />);
+      await enter(user, "/srv");
+      screen.getByText("/srv is already assigned to a logical volume in system", inForm);
+      screen.getByText("Currently set up as Btrfs, at least 5 GiB");
+      const [takeOver, defineMore] = screen.getAllByRole("checkbox");
+      expect(takeOver).toHaveAccessibleName(
+        "Discard the current settings and assign /srv to the disk vdd",
+      );
+      expect(defineMore).toHaveAccessibleName(/Define more file system settings/);
+    });
+
+    it("says nothing when a whole device holds it", async () => {
+      const { user } = installerRender(<FormattableDeviceForm />);
+      await enter(user, "/data");
+      expect(screen.queryByText(/already assigned to/, inForm)).toBeNull();
+    });
+
+    it("does not save without the choice", async () => {
+      const { user } = installerRender(<FormattableDeviceForm />);
+      await enter(user, "/srv");
+      await user.click(screen.getByRole("button", { name: "Accept" }));
+      await screen.findByText("Already assigned to another device");
+      expect(mockSetFilesystem).not.toHaveBeenCalled();
+      expect(mockMoveMountPath).not.toHaveBeenCalled();
+    });
+
+    it("assigns it to the device when accepted with the choice", async () => {
+      const { user } = installerRender(<FormattableDeviceForm />);
+      await enter(user, "/srv");
+      await user.click(screen.getByRole("checkbox", { name: /Discard the current settings/ }));
+      await user.click(screen.getByRole("button", { name: "Accept" }));
+      await waitFor(() => {
+        expect(mockMoveMountPath).toHaveBeenCalledWith(
+          "drives",
+          0,
+          expect.objectContaining({ mountPath: "/srv" }),
+        );
+      });
+      expect(mockSetFilesystem).not.toHaveBeenCalled();
     });
   });
 

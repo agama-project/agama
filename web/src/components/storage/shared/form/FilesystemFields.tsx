@@ -39,6 +39,11 @@ type FilesystemFieldsProps = {
    * volume group's logical volumes).
    */
   reusedDevice?: System.Device;
+  /**
+   * Content shown between the file system selector and the option to define
+   * more file system settings, such as a notice about the mount point.
+   */
+  afterSelector?: React.ReactNode;
 };
 
 type FilesystemFieldsContentProps = FilesystemFieldsProps & {
@@ -79,6 +84,7 @@ const FilesystemFieldsContent = withForm({
   render: function Render({
     form,
     reusedDevice,
+    afterSelector,
     committedMountPoint,
     filesystem,
     filesystemAction,
@@ -143,6 +149,8 @@ const FilesystemFieldsContent = withForm({
           isFallback={isFallbackVolume}
         />
 
+        {afterSelector}
+
         <form.AppField name="showMoreFilesystemSettings">
           {(field) => (
             <field.CheckboxField
@@ -181,7 +189,7 @@ const FilesystemFields = withForm({
   props: {
     reusedDevice: undefined,
   } as FilesystemFieldsProps,
-  render: function Render({ form, reusedDevice }) {
+  render: function Render({ form, reusedDevice, afterSelector }) {
     return (
       <form.Subscribe
         selector={(s) => ({
@@ -194,6 +202,7 @@ const FilesystemFields = withForm({
           <FilesystemFieldsContent
             form={form}
             reusedDevice={reusedDevice}
+            afterSelector={afterSelector}
             committedMountPoint={committedMountPoint}
             filesystem={filesystem}
             filesystemAction={filesystemAction}

@@ -53,6 +53,7 @@ import {
   useDeletePartition,
   useMoveMountPathToPartition,
   useMoveMountPathToLogicalVolume,
+  useMoveMountPathToDevice,
   useSetFilesystem,
   useSetSpacePolicy,
   useConvertPartitionableToVolumeGroup,
@@ -1027,6 +1028,26 @@ describe("config-model hooks", () => {
       expect(saved.volumeGroups[0].logicalVolumes).toEqual([
         expect.objectContaining({ mountPath: "/home" }),
       ]);
+    });
+  });
+
+  describe("useMoveMountPathToDevice", () => {
+    it("takes the mount path from its holder and formats the device in one write", () => {
+      const config: ConfigModel.Config = {
+        drives: [{ name: "/dev/sda", partitions: [{ mountPath: "/srv" }] }, { name: "/dev/sdb" }],
+      };
+      queryClient.setQueryData([STORAGE_MODEL_QUERY_KEY], config);
+      const { result } = renderHook(() => useMoveMountPathToDevice(), { wrapper });
+
+      result.current("drives", 1, {
+        mountPath: "/srv",
+        filesystem: { type: "xfs" },
+      });
+
+      expect(mockPutStorageModel).toHaveBeenCalledTimes(1);
+      const saved = mockPutStorageModel.mock.calls[0][0];
+      expect(saved.drives[0].partitions).toEqual([]);
+      expect(saved.drives[1]).toMatchObject({ mountPath: "/srv" });
     });
   });
 
