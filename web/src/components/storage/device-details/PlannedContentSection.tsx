@@ -23,6 +23,8 @@
 import React from "react";
 import { Table, Tbody, Td, Th, Thead, Tr } from "@patternfly/react-table";
 import { Flex, FlexItem, Stack, StackItem } from "@patternfly/react-core";
+import alignmentStyles from "@patternfly/react-styles/css/utilities/Alignment/alignment";
+import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
 import { sprintf } from "sprintf-js";
 import Link from "~/components/core/Link";
 import Text from "~/components/core/Text";
@@ -250,20 +252,11 @@ export default function PlannedContentSection({
           // one of its entries.
           aria-label={caption ? undefined : _("Planned content")}
         >
-          {/* Read as ordinary text rather than as a hint: it leads into the
-              rows, the way the statements around the table do. A plain
-              caption, since PatternFly's Caption takes no style. */}
+          {/* A plain caption rather than PatternFly's, which is styled as a
+              hint: this one reads like the sentences around the table, and
+              sits closer to its rows than to the text above. */}
           {caption && (
-            <caption
-              className="pf-v6-c-table__caption"
-              style={
-                {
-                  "--pf-v6-c-table__caption--PaddingInlineStart": 0,
-                  "--pf-v6-c-table__caption--PaddingBlockStart": 0,
-                  "--pf-v6-c-table__caption--Color": "var(--pf-t--global--text--color--regular)",
-                } as React.CSSProperties
-              }
-            >
+            <caption className={[alignmentStyles.textAlignStart, spacingStyles.pbSm].join(" ")}>
               {caption}
             </caption>
           )}
