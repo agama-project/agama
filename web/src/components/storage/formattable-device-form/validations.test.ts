@@ -27,6 +27,7 @@ import type { FormattableDeviceFormData } from "./fields";
 const createBaseFields = (): FormattableDeviceFormData => ({
   mountPoint: "/home",
   committedMountPoint: "/home",
+  reassignedMountPoint: "",
   filesystem: FILESYSTEM_TYPE.AUTO,
   filesystemAction: FILESYSTEM_ACTION.REUSE,
   filesystemLabel: "",

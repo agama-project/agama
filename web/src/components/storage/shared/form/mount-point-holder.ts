@@ -34,6 +34,7 @@ import { _, formatList } from "~/i18n";
 
 import type { ConfigModel, MountPathHolder } from "~/model/storage/config-model";
 import type { Storage as System } from "~/model/system";
+import type { MountPointFields } from "./fields";
 
 /** A holder that can give its mount point up: a partition or a logical volume. */
 export type ReleasableHolder = Exclude<MountPathHolder, { kind: "device" }>;
@@ -54,6 +55,22 @@ export function mountPointHolder(
 
   const holder = configModel.findMountPathHolder(config, mountPoint);
   return configModel.canReleaseMountPath(holder) ? holder : null;
+}
+
+/**
+ * Whether the user chose to take the mount point over from where it is
+ * assigned now. The choice counts only for the mount point it was made for,
+ * which is also the one the user finished entering.
+ */
+export function isReassigning(
+  fields: MountPointFields,
+  usedMountPoints: string[],
+  config?: ConfigModel.Config | null,
+) {
+  const { mountPoint, committedMountPoint, reassignedMountPoint } = fields;
+  if (reassignedMountPoint !== mountPoint || committedMountPoint !== mountPoint) return false;
+
+  return !!mountPointHolder(config, usedMountPoints, mountPoint);
 }
 
 /**

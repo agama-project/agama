@@ -38,7 +38,7 @@ import {
   optionalFilesystemLabel,
 } from "~/components/storage/shared/form/validation-helpers";
 import { FILESYSTEM_TYPE, FILESYSTEM_ACTION, SIZE_MODE, isReusingPartition } from "./fields";
-import { mountPointHolder } from "./mount-point-holder";
+import { isReassigning } from "~/components/storage/shared/form/mount-point-holder";
 import { _ } from "~/i18n";
 import type {
   ValidationResult,
@@ -46,22 +46,6 @@ import type {
 } from "~/components/form/validation-helpers";
 import type { ConfigModel } from "~/model/storage/config-model";
 import type { FormFields, MountPointFields, FilesystemFields, SizeFields } from "./fields";
-
-/**
- * Whether the user chose to assign the mount point to this partition instead
- * of where it is assigned now. The choice counts only for the mount point it
- * was made for, which is also the one the user finished entering.
- */
-export function isReassigning(
-  fields: FormFields,
-  usedMountPoints: string[],
-  config?: ConfigModel.Config | null,
-) {
-  const { mountPoint, committedMountPoint, reassignedMountPoint } = fields;
-  if (reassignedMountPoint !== mountPoint || committedMountPoint !== mountPoint) return false;
-
-  return !!mountPointHolder(config, usedMountPoints, mountPoint);
-}
 
 function validateMountPoint(
   fields: FormFields,

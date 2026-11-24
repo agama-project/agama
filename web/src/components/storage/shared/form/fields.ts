@@ -96,6 +96,15 @@ export type MountPointFields = {
    * This is a control field, not part of the payload.
    */
   committedMountPoint: string;
+  /**
+   * The mount point the user chose to take over from where it is assigned
+   * now, or an empty string. Holding the mount point rather than a yes or no
+   * ties the choice to it: it never applies to another mount point, and it is
+   * still there if the user comes back to it.
+   *
+   * This is a control field, not part of the payload.
+   */
+  reassignedMountPoint: string;
 };
 
 export type FilesystemFields = {
@@ -150,6 +159,7 @@ export type SizeFields = {
 export const sharedDefaultValues: MountPointFields & FilesystemFields & SizeFields = {
   mountPoint: "",
   committedMountPoint: "",
+  reassignedMountPoint: "",
   filesystem: FILESYSTEM_TYPE.AUTO,
   filesystemAction: FILESYSTEM_ACTION.REUSE,
   filesystemLabel: "",

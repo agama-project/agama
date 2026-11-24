@@ -27,6 +27,7 @@ import type { LogicalVolumeFormData } from "./fields";
 const createBaseFields = (): LogicalVolumeFormData => ({
   mountPoint: "/home",
   committedMountPoint: "/home",
+  reassignedMountPoint: "",
   target: "",
   lvName: "home",
   filesystem: FILESYSTEM_TYPE.AUTO,

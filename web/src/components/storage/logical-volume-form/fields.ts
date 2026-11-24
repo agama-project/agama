@@ -96,6 +96,7 @@ export type LogicalVolumeFormData = FormFields;
 const defaultValues: FormFields = {
   mountPoint: "",
   committedMountPoint: "",
+  reassignedMountPoint: "",
   target: "",
   lvName: "",
   filesystem: FILESYSTEM_TYPE.AUTO,

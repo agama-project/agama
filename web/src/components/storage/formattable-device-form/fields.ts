@@ -48,6 +48,7 @@ export type FormattableDeviceFormData = FormFields;
 const defaultValues: FormFields = {
   mountPoint: "",
   committedMountPoint: "",
+  reassignedMountPoint: "",
   filesystem: FILESYSTEM_TYPE.AUTO,
   filesystemAction: FILESYSTEM_ACTION.REUSE,
   filesystemLabel: "",
