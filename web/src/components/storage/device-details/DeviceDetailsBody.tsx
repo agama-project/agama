@@ -42,7 +42,7 @@ import type { DetailsSubject } from "~/components/storage/shared/use-device-deta
 
 export type DeviceDetailsBodyProps = {
   entry: Entry;
-  /** Where the entry is written, which is what the acts on its parts need. */
+  /** Where the entry is in the storage configuration, used to add, edit or delete its parts. */
   subject: DetailsSubject;
 };
 

@@ -49,7 +49,7 @@ import type { Entry } from "~/components/storage/device-details/entry";
 import type { DetailsSubject } from "~/components/storage/shared/use-device-details";
 import type { ColumnLook } from "~/components/storage/shared/table-columns";
 
-/** One thing the new system gets here, whatever the entry calls its parts. */
+/** A partition or logical volume planned for the new system. */
 type Planned = ConfigModel.Partition | ConfigModel.LogicalVolume;
 
 /* How each column of the table looks, for its header and every cell under it.
@@ -63,20 +63,17 @@ const COLUMNS = {
 } satisfies Record<string, ColumnLook>;
 
 /**
- * The partition id, where the thing planned is a partition asked for by id.
- *
- * A logical volume has none: only a partition can be asked for by what it is
- * for rather than by where it is mounted.
+ * Returns the partition id, if any: some partitions (a BIOS boot one, for
+ * example) are requested by id instead of by mount point. Logical volumes
+ * have none.
  */
 function partitionId(part: Planned): ConfigModel.PartitionId | undefined {
   return "id" in part ? part.id : undefined;
 }
 
 /**
- * Everything the new system will have here, created or taken over.
- *
- * A device whose only plan is to mount a partition it already has is planning
- * something, and counting only what the installer creates said it was not.
+ * Returns what is planned on the entry, new or reused. Reused ones count too,
+ * so a device that only mounts an existing partition does not look empty.
  */
 function plannedOn(entry: Entry): Planned[] {
   const parts = entry.isVolumeGroup
@@ -92,14 +89,9 @@ function plannedOn(entry: Entry): Planned[] {
 }
 
 /**
- * What the reader calls one planned thing, which is where it will be mounted.
- *
- * The path bare rather than quoted: quotation marks hold a path apart from the
- * words around it, and a column of paths has no words around it to be held
- * apart from.
- *
- * One asked for by id has no path to be called by, so it is called what it is
- * for. See {@link partitionIdLabel} for the words and for changing them.
+ * Returns the text that names a planned item in the table: its mount point, or
+ * what it is for when requested by id (see {@link partitionIdLabel}). Paths go
+ * without quotes, since a column of them has no text around to set them apart.
  */
 function label(part: Planned): string {
   if (part.mountPath) return part.mountPath;
@@ -110,38 +102,32 @@ function label(part: Planned): string {
 
 export type PlannedContentSectionProps = {
   entry: Entry;
-  /** Where the entry is written, which is what the acts on its parts need. */
+  /** Where the entry is in the storage configuration, used to add, edit or delete its parts. */
   subject: DetailsSubject;
-  /**
-   * Whether the table shades every other row, on top of the lines between
-   * rows. Off by default.
-   */
+  /** Whether every other row of the table is shaded. Off by default. */
   isStriped?: boolean;
   /**
-   * What the table is, said above its rows. It also names the table for
-   * assistive technologies.
+   * Sentence shown above the rows to introduce the table. Screen readers also
+   * use it as the name of the table.
    */
   caption?: React.ReactNode;
-  /** A note about the rows as a whole, shown between the table and its actions. */
+  /** A note about the planned items as a whole, shown below the table. */
   footer?: React.ReactNode;
-  /** More ways to act on the device, shown right after adding to it. */
+  /** Additional actions, shown right after the one for adding an item. */
   extraActions?: React.ReactNode;
 };
 
 /**
- * What the new system will get on this entry.
+ * Table of what the user planned for the new system on a device: partitions on
+ * a disk, or logical volumes in a volume group.
  *
- * The plan rather than the outcome: what the reader asked the installer for
- * here, as against what it worked out, which the first view holds.
+ * It shows the plan as requested, not the final layout the installer computes
+ * from it.
  *
- * What has no row to live in is said above the view rather than here, among the
- * note's statements: a fact about the device and a list of what is planned on
- * it are two kinds of thing, and a view that opens the second with the first
- * reads as content that starts twice.
- *
- * Where nothing is planned, a line says so instead of a table of headings over
- * no rows, and the same ways to act follow it as follow a table, so they are
- * found in the same place either way.
+ * A line of actions follows the table: adding an item and, for disks, moving
+ * the plan to another device. When nothing is planned yet, a short sentence
+ * replaces the table, followed by the same actions, so they are always found
+ * in the same place.
  */
 export default function PlannedContentSection({
   entry,

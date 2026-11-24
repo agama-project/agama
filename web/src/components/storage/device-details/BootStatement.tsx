@@ -32,15 +32,10 @@ export type BootStatementProps = {
 };
 
 /**
- * That the machine will start from this device, and what that costs it.
- *
- * Says which partitions booting may take: existing ones when the device
- * already has a fitting one, new ones otherwise. The way to the boot options
- * is not part of the statement, so it can sit with the other ways to act on
- * the device.
- *
- * It decides for itself whether it has anything to say, so a view can list it
- * among its statements without working that out first.
+ * Says that the system boots from this device and which partitions that may
+ * need: an existing boot partition when the device has one, or new ones.
+ * Renders nothing when the system does not boot from it, and has no link to
+ * the boot options.
  */
 export default function BootStatement({ entry }: BootStatementProps): React.ReactNode {
   const config = useConfigModel();

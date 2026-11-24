@@ -38,24 +38,21 @@ import type { Entry } from "~/components/storage/device-details/entry";
 import type { ConfigModel, Partitionable } from "~/model/storage/config-model";
 import type { DeviceDetailsBodyProps } from "~/components/storage/device-details/DeviceDetailsBody";
 
-/** One thing the new system gets here, whatever the entry calls its parts. */
+/** A partition or logical volume planned for the new system. */
 type Planned = ConfigModel.Partition | ConfigModel.LogicalVolume;
 
 /**
- * The partition id, where the thing planned is a partition asked for by id.
- *
- * A logical volume has none: only a partition can be asked for by what it is
- * for rather than by where it is mounted.
+ * Returns the partition id, if any: some partitions (a BIOS boot one, for
+ * example) are requested by id instead of by mount point. Logical volumes
+ * have none.
  */
 function partitionId(part: Planned): ConfigModel.PartitionId | undefined {
   return "id" in part ? part.id : undefined;
 }
 
 /**
- * Everything the new system will have here, created or taken over.
- *
- * A device whose only plan is to mount a partition it already has is planning
- * something, and counting only what the installer creates said it was not.
+ * Returns what is planned on the entry, new or reused. Reused ones count too,
+ * so a device that only mounts an existing partition does not look empty.
  */
 function plannedOn(entry: Entry): Planned[] {
   const parts = entry.isVolumeGroup
@@ -71,15 +68,10 @@ function plannedOn(entry: Entry): Planned[] {
 }
 
 /**
- * How the new system uses a disk it creates or reuses partitions on.
- *
- * Each role of the disk gets a paragraph of its own, always in the same order:
- * giving room to volume groups, holding the partitions asked for, booting. They
- * are not a list: the roles are not items of one kind, and the shape stays the
- * same whether the disk plays one role or all of them.
- *
- * Adding a partition and changing the boot options share one line, with or
- * without a table.
+ * Explains how the new system uses a disk on which it creates or reuses
+ * partitions: one paragraph per role (LVM, requested partitions, booting), in
+ * that order, followed by one line of actions. Paragraphs rather than a list,
+ * since the roles are different kinds of information.
  */
 export default function PartitionableContent({
   entry,
