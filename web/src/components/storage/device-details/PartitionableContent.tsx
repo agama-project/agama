@@ -80,7 +80,6 @@ export default function PartitionableContent({
           <BootStatement entry={entry} />
         </DetailsSectionPart>
       )}
-      {/* Said in a line, not as a table of headings over no rows. */}
       {hasNothingToSay && (
         <DetailsSectionPart>
           <p>{_("No new partitions planned yet.")}</p>

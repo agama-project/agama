@@ -47,8 +47,6 @@ export type PlannedActionsProps = {
 export default function PlannedActions({ entry, subject, extraActions }: PlannedActionsProps) {
   const isVolumeGroup = entry.isVolumeGroup;
 
-  /* The forms address a volume group by its place in the configuration, as
-     they address a disk. */
   const addPath = isVolumeGroup
     ? generateEncodedPath(PATHS.volumeGroup.logicalVolume.add, { id: String(subject.index) })
     : generateEncodedPath(PATHS.addPartition, {
@@ -65,15 +63,13 @@ export default function PlannedActions({ entry, subject, extraActions }: Planned
       className={spacingStyles.mtSm}
     >
       <Divider />
-      {/* Moving the plan elsewhere sits at the far end: it acts on the whole
-          device, and keeps apart from adding to it. */}
+      {/* Moving acts on the whole device, so it sits apart, at the far end. */}
       <Flex
         gap={{ default: "gapLg" }}
         flexWrap={{ default: "wrap" }}
         alignItems={{ default: "alignItemsCenter" }}
       >
         <FlexItem>
-          {/* A link, since it leads to a form. */}
           <Link to={addPath} keepQuery variant="link" isInline>
             {addLabel}
           </Link>
