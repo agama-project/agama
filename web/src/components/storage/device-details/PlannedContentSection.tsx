@@ -22,8 +22,6 @@
 
 import React from "react";
 import { Table, Tbody, Td, Th, Thead, Tr } from "@patternfly/react-table";
-import alignmentStyles from "@patternfly/react-styles/css/utilities/Alignment/alignment";
-import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
 import { sprintf } from "sprintf-js";
 import Text from "~/components/core/Text";
 import MenuButton, { MenuButtonItem } from "~/components/core/MenuButton";
@@ -34,6 +32,7 @@ import {
   partitionIdLabel,
   sizeDescription,
 } from "~/components/storage/utils";
+import { useDetailsSectionTitleId } from "~/components/storage/device-details/DetailsSection";
 import { partitionId, plannedOn } from "~/components/storage/device-details/planned";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { generateEncodedPath } from "~/utils";
@@ -74,11 +73,6 @@ export type PlannedContentSectionProps = {
   subject: DetailsSubject;
   /** Whether every other row of the table is shaded. Off by default. */
   isStriped?: boolean;
-  /**
-   * Sentence shown above the rows to introduce the table. Screen readers also
-   * use it as the name of the table.
-   */
-  caption?: React.ReactNode;
 };
 
 /**
@@ -87,15 +81,20 @@ export type PlannedContentSectionProps = {
  *
  * It shows the plan as requested, not the final layout the installer computes
  * from it.
+ *
+ * Screen readers name the table after the title of the section it is in. If
+ * that title stops describing the table, give the table a visually hidden
+ * caption instead.
  */
 export default function PlannedContentSection({
   entry,
   subject,
   isStriped = false,
-  caption,
 }: PlannedContentSectionProps): React.ReactNode {
   const deletePartition = useDeletePartition();
   const deleteLogicalVolume = useDeleteLogicalVolume();
+
+  const titleId = useDetailsSectionTitleId();
 
   const isVolumeGroup = entry.isVolumeGroup;
   const group = entry.config as ConfigModel.VolumeGroup;
@@ -132,18 +131,11 @@ export default function PlannedContentSection({
       variant="compact"
       isStriped={isStriped}
       {...tableProps({ hasVerticallyCenteredRows: true })}
+      aria-labelledby={titleId}
       // TRANSLATORS: names the list of what the installation will put on
       // one of its entries.
-      aria-label={caption ? undefined : _("Planned content")}
+      aria-label={titleId ? undefined : _("Planned content")}
     >
-      {/* A plain caption rather than PatternFly's, which is styled as a
-          hint: this one reads like the sentences around the table, and
-          sits closer to its rows than to the text above. */}
-      {caption && (
-        <caption className={[alignmentStyles.textAlignStart, spacingStyles.pbSm].join(" ")}>
-          {caption}
-        </caption>
-      )}
       {/* Read rather than hidden from sight: a column of sizes and a
           column of file systems are told apart by what they are called,
           and a reader who has to work that out from the values is being

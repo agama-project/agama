@@ -54,8 +54,6 @@ export default function PartitionableContent({
   const hasPlanned = plannedOn(entry).length > 0;
   const users = usersOf(config, systemDevices, device.name);
   const isBoot = configModel.boot.hasDevice(config, entry.config.name);
-  // TRANSLATORS: introduces the table of partitions planned on a disk.
-  const caption = _("Partitions from the following list will be configured during installation");
 
   const changeBoot = isBoot && (
     <Link to={PATHS.editBootDevice} keepQuery variant="link" isInline>
@@ -70,7 +68,7 @@ export default function PartitionableContent({
     <Flex direction={{ default: "column" }} gap={{ default: "gapSm" }}>
       {hasPlanned && (
         <DetailsSectionPart>
-          <PlannedContentSection entry={entry} subject={subject} caption={caption} />
+          <PlannedContentSection entry={entry} subject={subject} />
         </DetailsSectionPart>
       )}
       {!!users.length && (

@@ -25,6 +25,7 @@ import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import type { ConfigModel } from "~/model/storage/config-model";
 import type { Entry } from "~/components/storage/device-details/entry";
+import DetailsSection from "~/components/storage/device-details/DetailsSection";
 import PlannedContentSection from "~/components/storage/device-details/PlannedContentSection";
 
 jest.mock("~/hooks/model/storage/config-model", () => ({
@@ -48,18 +49,20 @@ const home: ConfigModel.LogicalVolume = {
 };
 
 describe("PlannedContentSection", () => {
-  it("lists what is planned, with a generic name when given no caption", () => {
+  it("lists what is planned, with a generic name outside a section", () => {
     installerRender(<PlannedContentSection entry={group([home])} subject={subject} />);
 
     const table = screen.getByRole("table", { name: "Planned content" });
     expect(table).toHaveTextContent("/home");
   });
 
-  it("shows the caption it is given, which also names the table", () => {
+  it("takes its name from the title of the section it is in", () => {
     installerRender(
-      <PlannedContentSection entry={group([home])} subject={subject} caption="Volumes to create" />,
+      <DetailsSection title="Logical volumes for the new system">
+        <PlannedContentSection entry={group([home])} subject={subject} />
+      </DetailsSection>,
     );
 
-    screen.getByRole("table", { name: "Volumes to create" });
+    screen.getByRole("table", { name: "Logical volumes for the new system" });
   });
 });

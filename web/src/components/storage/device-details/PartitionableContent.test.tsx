@@ -62,7 +62,7 @@ const subject = { collection: "drives" as const, index: 0 };
 
 const lvmSentence = "New partitions may be added as LVM physical volumes for system.";
 const bootSentence = "Additional partitions to boot the system may be created if needed.";
-const tableName = "Partitions from the following list will be configured during installation";
+const tableName = "Planned content";
 
 describe("PartitionableContent", () => {
   afterEach(() => {
@@ -70,7 +70,7 @@ describe("PartitionableContent", () => {
     jest.restoreAllMocks();
   });
 
-  it("names the table of partitions after what it holds when the disk has no other role", () => {
+  it("shows the table of partitions alone when the disk has no other role", () => {
     installerRender(<PartitionableContent entry={withHome} subject={subject} />);
 
     screen.getByRole("table", { name: tableName });
