@@ -136,7 +136,7 @@ export default function DeviceDetailsBody({
       <Body>
         <Intro>{basicIntro}</Intro>
         <DetailsSection title={_("File system")}>
-          <PartitionableMountContent entry={entry} subject={subject} showName={false} />
+          <PartitionableMountContent entry={entry} subject={subject} />
         </DetailsSection>
         {isCurrentlyPartitioned && (
           <DetailsSection title={_("Current partitions")}>

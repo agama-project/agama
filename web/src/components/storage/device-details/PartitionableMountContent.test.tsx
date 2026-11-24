@@ -105,7 +105,6 @@ describe("PartitionableMountContent", () => {
       <PartitionableMountContent
         entry={entry({ mountPath: "/home", filesystem: { default: false, type: "ext4" } })}
         subject={subject}
-        showName={false}
       />,
     );
 

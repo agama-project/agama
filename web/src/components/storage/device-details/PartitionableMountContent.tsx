@@ -24,8 +24,6 @@ import React from "react";
 import { Button, Flex } from "@patternfly/react-core";
 import { sprintf } from "sprintf-js";
 import Link from "~/components/core/Link";
-import Interpolate from "~/components/core/Interpolate";
-import Text from "~/components/core/Text";
 import DetailsItem from "~/components/storage/device-details/DetailsItem";
 import { filesystemLabel, formattedPath } from "~/components/storage/utils";
 import configModel from "~/model/storage/config-model";
@@ -36,23 +34,7 @@ import { _ } from "~/i18n";
 import type { Partitionable } from "~/model/storage/config-model";
 import type { DeviceDetailsBodyProps } from "~/components/storage/device-details/DeviceDetailsBody";
 
-/**
- * A file system taking the whole device, as the installation uses it: either
- * the one already there, used as it is, or a new one.
- *
- * Offers to change how it is used, and to stop using the device for it, which
- * leaves the device with nothing planned.
- */
-export type PartitionableMountContentProps = DeviceDetailsBodyProps & {
-  /** Whether to say "file system", which a heading saying the same makes redundant. */
-  showName?: boolean;
-};
-
-export default function PartitionableMountContent({
-  entry,
-  subject,
-  showName = true,
-}: PartitionableMountContentProps) {
+export default function PartitionableMountContent({ entry, subject }: DeviceDetailsBodyProps) {
   const setFilesystem = useSetFilesystem();
   const config = entry.config as Partitionable.Device;
   const path = formattedPath(config.mountPath);
@@ -62,52 +44,26 @@ export default function PartitionableMountContent({
   const type = reuses ? entry.device?.filesystem?.type : config.filesystem?.type;
   const label = type && filesystemLabel(type);
 
-  const bold = () => <Text isBold>{label}</Text>;
-  const where = () => path;
-
   /* The type first and in bold, as where the file system is reported today. */
   let value: React.ReactNode;
   if (reuses) {
-    value = label ? (
-      <Interpolate
-        sentence={
-          showName
-            ? // TRANSLATORS: a file system on a whole device that the new system
-              // uses as it is. The first %s is its type, such as "Ext4", shown in
-              // bold, the second where it is mounted, such as "/home".
-              _("%s file system, used for %s")
-            : // TRANSLATORS: the same, under a heading that already says "File
-              // system".
-              _("%s, used for %s")
-        }
-      >
-        {[bold, where]}
-      </Interpolate>
-    ) : (
-      // TRANSLATORS: a file system on a whole device that the new system uses as
-      // it is. %s is where it is mounted, such as "/home".
-      sprintf(_("Used for %s"), path)
-    );
+    value = label
+      ? // TRANSLATORS: %1$s is a file system type ext4, %2$s is an escaped label name like "home"
+        // and %3$s is an escaped mount path like "/home"
+        sprintf(
+          _("The existing %1$s file system labeled %2$s will be mounted at %3$s."),
+          type,
+          formattedPath(label),
+          path,
+        )
+      : // TRANSLATORS: %1$s is a file system type ext4, %2$s is an escaped mount path like "/home"
+        sprintf(_("The existing %1$s file system will be mounted at %2$s."), type, path);
   } else {
-    value = label ? (
-      <Interpolate
-        sentence={
-          showName
-            ? // TRANSLATORS: a new file system on a whole device. The first %s is
-              // its type, such as "Ext4", shown in bold, the second where it is
-              // mounted, such as "/home".
-              _("%s file system for %s")
-            : // TRANSLATORS: the same, under a heading that already says "File
-              // system".
-              _("%s for %s")
-        }
-      >
-        {[bold, where]}
-      </Interpolate>
-    ) : (
-      // TRANSLATORS: a new file system on a whole device, of a type the installer
-      // chooses. %s is where it is mounted, such as "/home".
-      sprintf(_("For %s"), path)
+    value = sprintf(
+      // TRANSLATORS: %1$s is a file system type ext4, %2$s is an escaped mount path like "/home"
+      _("The device will be formatted as %1$s and mounted at %2$s."),
+      type,
+      path,
     );
   }
 
@@ -117,7 +73,7 @@ export default function PartitionableMountContent({
   });
 
   return (
-    <DetailsItem icon="hard_drive" value={value}>
+    <DetailsItem value={value}>
       <Flex gap={{ default: "gapMd" }} flexWrap={{ default: "wrap" }}>
         <Link to={editPath} keepQuery variant="link" isInline>
           {/* TRANSLATORS: changes how a file system on a whole device is used. */}
