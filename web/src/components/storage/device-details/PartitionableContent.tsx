@@ -76,7 +76,7 @@ export default function PartitionableContent({
   const config = useConfigModel();
   const systemDevices = useSystemDevices();
   const device = entry.config as Partitionable.Device;
-  const planned = plannedOn(entry).filter((p) => !p.name);
+  const planned = plannedOn(entry);
   const users = usersOf(config, systemDevices, device.name);
   const isBoot = configModel.boot.hasDevice(config, entry.config.name);
 
