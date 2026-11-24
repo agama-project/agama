@@ -56,9 +56,6 @@ export default function PlannedActions({ entry, subject, extraActions }: Planned
         index: String(subject.index),
       });
 
-  /* TRANSLATORS: adds one more thing for the new system to an entry of the
-     installation. "Partition" rather than "volume": what this adds to a disk is
-     a partition, and volume is the word the logical ones own. */
   const addLabel = isVolumeGroup ? _("Add logical volume") : _("Add partition");
 
   return (

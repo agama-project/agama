@@ -57,7 +57,6 @@ export default function PartitionableContent({
 
   const changeBoot = isBoot && (
     <Link to={PATHS.editBootDevice} keepQuery variant="link" isInline>
-      {/* TRANSLATORS: link to the settings of how the new system boots. */}
       {_("Change boot options")}
     </Link>
   );

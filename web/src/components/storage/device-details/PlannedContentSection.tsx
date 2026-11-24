@@ -133,8 +133,7 @@ export default function PlannedContentSection({
       isStriped={isStriped}
       {...tableProps({ hasVerticallyCenteredRows: true })}
       aria-labelledby={titleId}
-      // TRANSLATORS: names the list of what the installation will put on
-      // one of its entries.
+      // TRANSLATORS: name of a table of partitions or logical volumes for the new system
       aria-label={titleId ? undefined : _("Planned content")}
     >
       {/* Read rather than hidden from sight: a column of sizes and a
@@ -211,9 +210,7 @@ export default function PlannedContentSection({
                   <MenuButton
                     menuProps={{
                       "aria-label": sprintf(
-                        // TRANSLATORS: names the menu of things that can
-                        // be done to one thing the installation creates.
-                        // %s is where the new system mounts it.
+                        // TRANSLATORS: %s is a mount point, like /home
                         _("Actions for %s"),
                         label(part),
                       ),
