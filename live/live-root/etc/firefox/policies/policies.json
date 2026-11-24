@@ -1,0 +1,30 @@
+{
+  "policies": {
+    "DisableAppUpdate": true,
+    "DisableSystemAddonUpdate": true,
+    "ExtensionUpdate": false,
+    "DisableTelemetry": true,
+    "DisableFirefoxStudies": true,
+    "DisablePocket": true,
+    "DisableFeedbackCommands": true,
+    "FirefoxSuggest": {
+      "WebSuggestions": false,
+      "SponsoredSuggestions": false,
+      "ImproveSuggest": false,
+      "Locked": true
+    },
+    "Preferences": {
+      "browser.cache.disk.enable": { "Value": false, "Status": "locked" },
+      "browser.cache.disk.capacity": { "Value": 0, "Status": "locked" },
+      "browser.cache.offline.enable": { "Value": false, "Status": "locked" },
+      "browser.safebrowsing.malware.enabled": { "Value": false, "Status": "locked" },
+      "browser.safebrowsing.phishing.enabled": { "Value": false, "Status": "locked" },
+      "browser.safebrowsing.downloads.enabled": { "Value": false, "Status": "locked" },
+      "browser.safebrowsing.provider.google4.updateURL": { "Value": "", "Status": "locked" },
+      "browser.safebrowsing.provider.google.updateURL": { "Value": "", "Status": "locked" },
+      "security.remote_settings.crlite_filters.enabled": { "Value": false, "Status": "locked" },
+      "security.pki.crlite_mode": { "Value": 0, "Status": "locked" },
+      "services.settings.server": { "Value": "", "Status": "locked" }
+    }
+  }
+}

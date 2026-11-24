@@ -137,6 +137,9 @@ fi
 systemctl disable snapper-cleanup.timer
 systemctl disable snapper-timeline.timer
 
+# Disable iSCSI services at boot (started on-demand by Agama storage if needed)
+systemctl disable iscsid.service iscsiuio.service
+
 # Disable desktop file MIME cache updates (not needed in kiosk mode, saves ~2.8s at boot)
 systemctl mask update-desktop-database.service
 
