@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Nov 25 12:46:58 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Do not shrink partitions that are reported as not shrinkable
+  (e.g., partitions without detected content or locked encrypted
+  ones) when applying the resize space policy (bsc#1291458).
+
+-------------------------------------------------------------------
 Tue Nov 24 21:16:38 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
 
 - Fix support in Autoyast converter for bootloader updateNvram
