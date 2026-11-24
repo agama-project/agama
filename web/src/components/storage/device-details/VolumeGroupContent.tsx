@@ -21,7 +21,8 @@
  */
 
 import React from "react";
-import { Flex, FlexItem } from "@patternfly/react-core";
+import { Flex } from "@patternfly/react-core";
+import DetailsSectionPart from "~/components/storage/device-details/DetailsSectionPart";
 import PlannedActions from "~/components/storage/device-details/PlannedActions";
 import PlannedContentSection from "~/components/storage/device-details/PlannedContentSection";
 import { plannedOn } from "~/components/storage/device-details/planned";
@@ -38,13 +39,13 @@ export default function VolumeGroupContent({
      rows. */
   return (
     <Flex direction={{ default: "column" }} gap={{ default: "gapSm" }}>
-      <FlexItem className="agm-statement">
+      <DetailsSectionPart>
         {hasPlanned ? (
           <PlannedContentSection entry={entry} subject={subject} />
         ) : (
           <p>{_("No new logical volumes planned yet.")}</p>
         )}
-      </FlexItem>
+      </DetailsSectionPart>
       <PlannedActions entry={entry} subject={subject} />
     </Flex>
   );

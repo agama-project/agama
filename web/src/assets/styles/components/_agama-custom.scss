@@ -727,10 +727,10 @@ nav.agm-breadcrumb > ol > li > a {
   font-family: inherit;
 }
 
-// A dashed line between consecutive statements of the device sheet, lighter
+// A dashed line between consecutive parts of a device sheet section, lighter
 // than the solid one before its actions. The layout gap sets the space above
 // the line; the padding repeats it below.
-.agm-statement + .agm-statement {
+.agm-details-section__part + .agm-details-section__part {
   padding-block-start: var(--pf-t--global--spacer--sm);
   border-block-start: 1px dashed var(--pf-t--global--border--color--default);
 }

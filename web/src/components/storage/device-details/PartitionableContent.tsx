@@ -21,8 +21,9 @@
  */
 
 import React from "react";
-import { Flex, FlexItem } from "@patternfly/react-core";
+import { Flex } from "@patternfly/react-core";
 import Link from "~/components/core/Link";
+import DetailsSectionPart from "~/components/storage/device-details/DetailsSectionPart";
 import PlannedActions from "~/components/storage/device-details/PlannedActions";
 import PlannedContentSection from "~/components/storage/device-details/PlannedContentSection";
 import UsedByStatement from "~/components/storage/device-details/UsedByStatement";
@@ -68,29 +69,29 @@ export default function PartitionableContent({
   return (
     <Flex direction={{ default: "column" }} gap={{ default: "gapSm" }}>
       {!!users.length && (
-        <FlexItem className="agm-statement">
+        <DetailsSectionPart>
           <p>
             <UsedByStatement entry={entry} />
           </p>
-        </FlexItem>
+        </DetailsSectionPart>
       )}
       {hasPlanned && (
-        <FlexItem className="agm-statement">
+        <DetailsSectionPart>
           <PlannedContentSection entry={entry} subject={subject} caption={caption} />
-        </FlexItem>
+        </DetailsSectionPart>
       )}
       {isBoot && (
-        <FlexItem className="agm-statement">
+        <DetailsSectionPart>
           <p>
             <BootStatement entry={entry} />
           </p>
-        </FlexItem>
+        </DetailsSectionPart>
       )}
       {/* Said in a line, not as a table of headings over no rows. */}
       {hasNothingToSay && (
-        <FlexItem className="agm-statement">
+        <DetailsSectionPart>
           <p>{_("No new partitions planned yet.")}</p>
-        </FlexItem>
+        </DetailsSectionPart>
       )}
       <PlannedActions entry={entry} subject={subject} extraActions={changeBoot} />
     </Flex>
