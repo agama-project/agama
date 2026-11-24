@@ -208,7 +208,7 @@ export default function PlannedContentSection({
      it. */
   const actions = (
     <Flex
-      gap={{ default: "gapSm" }}
+      gap={{ default: "gapLg" }}
       flexWrap={{ default: "wrap" }}
       alignItems={{ default: "alignItemsCenter" }}
     >

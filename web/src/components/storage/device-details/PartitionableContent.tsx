@@ -137,7 +137,7 @@ export default function PartitionableContent({
       )}
       {!hasPlanned && (
         <StackItem>
-          <Flex gap={{ default: "gapSm" }} alignItems={{ default: "alignItemsCenter" }}>
+          <Flex gap={{ default: "gapLg" }} alignItems={{ default: "alignItemsCenter" }}>
             <FlexItem>
               <Link to={addPath} keepQuery variant="link" isInline>
                 {_("Add partition")}
