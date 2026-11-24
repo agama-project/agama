@@ -79,14 +79,40 @@ describe Agama::AutoYaST::BootloaderReader do
     end
 
     context "when update_nvram is defined" do
-      let(:global) do
-        { "update_nvram" => true }
+      context "with a boolean value" do
+        let(:global) do
+          { "update_nvram" => true }
+        end
+
+        it "returns a hash including the 'updateNvram'" do
+          expect(subject.read["bootloader"]).to include(
+            "updateNvram" => true
+          )
+        end
       end
 
-      it "returns a hash including the 'updateNvram'" do
-        expect(subject.read["bootloader"]).to include(
-          "updateNvram" => true
-        )
+      context "with string 'true'" do
+        let(:global) do
+          { "update_nvram" => "true" }
+        end
+
+        it "converts 'true' to boolean true" do
+          expect(subject.read["bootloader"]).to include(
+            "updateNvram" => true
+          )
+        end
+      end
+
+      context "with string 'false'" do
+        let(:global) do
+          { "update_nvram" => "false" }
+        end
+
+        it "converts 'false' to boolean false" do
+          expect(subject.read["bootloader"]).to include(
+            "updateNvram" => false
+          )
+        end
       end
     end
 

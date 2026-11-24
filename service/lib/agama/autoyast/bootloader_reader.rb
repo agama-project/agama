@@ -69,8 +69,15 @@ module Agama
         bootloader["extraKernelParams"] = global["append"] unless global["append"].to_s.empty?
       end
 
+      # In the AutoYaST schema, update_nvram is defined as STRING_BOOL ("true" | "false"):
+      # https://github.com/yast/yast-bootloader/blob/master/src/autoyast-rnc/bootloader.rnc
+      # Without config:type="boolean" in XML, YaST parses it as a String ("true" / "false"),
+      # while typed profiles or in-memory hashes provide a Boolean. We accept both and normalize
+      # to boolean true/false as required by Agama's schema.
       def add_update_nvram(bootloader, global)
-        bootloader["updateNvram"] = global["update_nvram"] unless global["update_nvram"].to_s.empty?
+        return if global["update_nvram"].to_s.empty?
+
+        bootloader["updateNvram"] = [true, "true"].include?(global["update_nvram"])
       end
 
       def convert_loader_type(loader_type)
