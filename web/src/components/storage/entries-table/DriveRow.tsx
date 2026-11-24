@@ -65,7 +65,10 @@ export default function DriveRow({ name, subject }: DriveRowProps): React.ReactN
 
   const groups = entry ? configModel.partitionable.filterVolumeGroups(config, entry) : [];
   const boots = configModel.boot.hasDevice(config, name);
-  const isIdle = !!entry && !configModel.partitionable.isUsed(config, name);
+  const isIdle =
+    !!entry &&
+    !configModel.partitionable.isUsed(config, name) &&
+    !configModel.boot.hasDevice(config, name);
   const usedFor = entry
     ? driveUsedFor(
         entry,
@@ -74,7 +77,7 @@ export default function DriveRow({ name, subject }: DriveRowProps): React.ReactN
         isIdle,
       )
     : [];
-  const existingData = entry && <ExistingDataCell config={entry} device={device} />;
+  const existingData = entry && <ExistingDataCell config={entry} device={device} isIdle={isIdle} />;
 
   return (
     <EntryRow

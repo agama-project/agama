@@ -233,23 +233,65 @@ function volumeGroupUsedFor(group: ConfigModel.VolumeGroup): React.ReactNode[] {
   return lines;
 }
 
-function isFormatted(partition: ConfigModel.Partition): boolean {
-  return partition.name && partition.mountPath && !partition.filesystem?.reuse;
+function isFormatted(vol: Volume): boolean {
+  return vol.name && vol.mountPath && !vol.filesystem?.reuse;
 }
 
-function mayShrink(partition: ConfigModel.Partition, device): boolean {
-  const devPart = device.partitions.find((p) => p.name === partition.name);
-  return devPart.block?.shrinking?.supported;
+function mayShrink(vol: Volume, device): boolean {
+  const devVols = "logicalVolumes" in device ? device.logicalVolumes : device.partitions;
+  const devVol = devVols.find((v) => v.name === vol.name);
+  return devVol.block?.shrinking?.supported;
 }
 
-/**
- * TODO: just a sketch
- */
 const existingVgActions = (group: ConfigModel.VolumeGroup, device): TranslatedString[] => {
-  /* Nothing on the drive today, nothing to say about what happens to it. */
+  /* Nothing on the VG today, nothing to say about what happens to it. */
   if (!device?.logicalVolumes?.length) return [];
 
-  return [_("TODO: what happens to existing LVs")];
+  const lvs = group?.logicalVolumes || [];
+  const formatLvs = lvs.filter((v) => isFormatted(v));
+  const toShrink = lvs.filter((v) => v.resizeIfNeeded);
+  const canShrink = toShrink.filter((v) => mayShrink(v, device)).length;
+  const deleted = lvs.filter((v) => v.delete).length;
+  const total = device.logicalVolumes.length;
+
+  const lines: TranslatedString[] = [];
+
+  if (formatLvs.length) {
+    lines.push(
+      n_(
+        "An existing logical volume will be formatted",
+        "%d existing logical volumes will be formatted",
+        formatLvs.length,
+      ),
+    );
+  }
+
+  if (canShrink === 1) {
+    lines.push(_("An existing logical volume may be shrunk"));
+  }
+
+  if (canShrink > 1) {
+    lines.push(_("Some existing logical volumes may be shrunk"));
+  }
+
+  if (deleted + formatLvs.length === total) {
+    lines.push(_("All volume group content will be deleted"));
+  } else if (!deleted && !formatLvs.length) {
+    if (canShrink) {
+      lines.push(_("The current data will be kept"));
+    } else {
+      lines.push(_("The current data and logical volumes will be kept"));
+    }
+  } else if (deleted > 0) {
+    lines.push(
+      sprintf(
+        n_("%d logical volumes will be deleted", "%d logical volumes will be deleted", deleted),
+        deleted,
+      ),
+    );
+  }
+
+  return lines;
 };
 
 /**
@@ -257,15 +299,18 @@ const existingVgActions = (group: ConfigModel.VolumeGroup, device): TranslatedSt
  * partitions after installation.
  */
 const existingDriveActions = (drive: Partitionable.Device, device): TranslatedString[] => {
-  /* Nothing on the drive today, nothing to say about what happens to it. */
-  if (!device?.partitions?.length) return [];
+  if (!device?.partitions?.length) {
+    if (drive.filesystem?.reuse) return [];
+
+    return [_("All disk content will be deleted")];
+  }
 
   const parts = drive?.partitions || [];
   const formatParts = parts.filter((p) => isFormatted(p));
   const toShrink = parts.filter((p) => p.resizeIfNeeded);
   const canShrink = toShrink.filter((p) => mayShrink(p, device)).length;
-  const deleted = parts.filter((p) => p.delete).length;
   const total = device.partitions.length;
+  const deleted = drive.filesystem ? total : parts.filter((p) => p.delete).length;
 
   const lines: TranslatedString[] = [];
 
@@ -314,14 +359,28 @@ const existingDriveActions = (drive: Partitionable.Device, device): TranslatedSt
 function ExistingDataCell({
   config,
   device,
+  isIdle = false,
 }: {
   config: Partitionable.Device | ConfigModel.VolumeGroup;
   device: System.Device | null;
+  isIdle?: boolean;
 }) {
   const isVolumeGroup = "vgName" in config;
   const lines = isVolumeGroup
     ? existingVgActions(config, device)
     : existingDriveActions(config, device);
+
+  if (isIdle) {
+    return (
+      <Text srOnly>
+        {
+          // TRANSLATORS: read by screen readers in the "Existing data" column
+          // for a device that is still not configured.
+          _("No actions planned yet.")
+        }
+      </Text>
+    );
+  }
 
   if (lines.length) {
     return (
