@@ -42,12 +42,12 @@ import type { DetailsSubject } from "~/components/storage/shared/use-device-deta
 
 export type DeviceDetailsBodyProps = {
   entry: Entry;
-  /** Where the entry is written, which is what the acts on its parts need. */
+  /** Where the entry is in the storage configuration, used to add, edit or delete its parts. */
   subject: DetailsSubject;
 };
 
 function Intro({ children }): React.ReactNode {
-  return <Text textStyle={["fontSizeSm", "textColorSubtle"]}>{children}</Text>;
+  return <Text textStyle={["fontSizeXs", "textColorSubtle"]}>{children}</Text>;
 }
 
 function Body({ children }): React.ReactNode {

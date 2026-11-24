@@ -21,54 +21,29 @@
  */
 
 import React from "react";
-import { Flex, FlexItem, List, ListItem } from "@patternfly/react-core";
+import { Flex } from "@patternfly/react-core";
 import Link from "~/components/core/Link";
+import DetailsSectionPart from "~/components/storage/device-details/DetailsSectionPart";
+import PlannedActions from "~/components/storage/device-details/PlannedActions";
 import PlannedContentSection from "~/components/storage/device-details/PlannedContentSection";
 import UsedByStatement from "~/components/storage/device-details/UsedByStatement";
 import BootStatement from "~/components/storage/device-details/BootStatement";
 import { STORAGE as PATHS } from "~/routes/paths";
-import { generateEncodedPath } from "~/utils";
 import configModel from "~/model/storage/config-model";
+import { plannedOn } from "~/components/storage/device-details/planned";
 import { usersOf } from "~/components/storage/shared/users";
 import { useConfigModel } from "~/hooks/model/storage/config-model";
 import { useFlattenDevices as useSystemDevices } from "~/hooks/model/system/storage";
 import { _ } from "~/i18n";
-import type { Entry } from "~/components/storage/device-details/entry";
-import type { ConfigModel, Partitionable } from "~/model/storage/config-model";
+import type { Partitionable } from "~/model/storage/config-model";
 import type { DeviceDetailsBodyProps } from "~/components/storage/device-details/DeviceDetailsBody";
 
-/** One thing the new system gets here, whatever the entry calls its parts. */
-type Planned = ConfigModel.Partition | ConfigModel.LogicalVolume;
-
 /**
- * The partition id, where the thing planned is a partition asked for by id.
- *
- * A logical volume has none: only a partition can be asked for by what it is
- * for rather than by where it is mounted.
+ * Explains how the new system uses a disk on which it creates or reuses
+ * partitions: the requested partitions first, then a paragraph for each other
+ * role (LVM, booting), followed by one line of actions. Paragraphs rather than
+ * a list, since the roles are different kinds of information.
  */
-function partitionId(part: Planned): ConfigModel.PartitionId | undefined {
-  return "id" in part ? part.id : undefined;
-}
-
-/**
- * Everything the new system will have here, created or taken over.
- *
- * A device whose only plan is to mount a partition it already has is planning
- * something, and counting only what the installer creates said it was not.
- */
-function plannedOn(entry: Entry): Planned[] {
-  const parts = entry.isVolumeGroup
-    ? (entry.config as ConfigModel.VolumeGroup).logicalVolumes || []
-    : (entry.config as Partitionable.Device).partitions || [];
-
-  return parts.filter((part) => {
-    /* A partition asked for by id and nothing else, a BIOS boot or a PReP
-       partition, is planned content too: it takes room and was asked for. */
-    if (configModel.volume.isNew(part)) return Boolean(part.mountPath || partitionId(part));
-    return Boolean(part.mountPath);
-  });
-}
-
 export default function PartitionableContent({
   entry,
   subject,
@@ -76,52 +51,47 @@ export default function PartitionableContent({
   const config = useConfigModel();
   const systemDevices = useSystemDevices();
   const device = entry.config as Partitionable.Device;
-  const planned = plannedOn(entry).filter((p) => !p.name);
-  const users = usersOf(config, systemDevices, device.name);
+  const hasPlanned = plannedOn(entry).length > 0;
+  const isLvmSource = usersOf(config, systemDevices, device.name).length > 0;
   const isBoot = configModel.boot.hasDevice(config, entry.config.name);
 
-  const addPath = generateEncodedPath(PATHS.addPartition, {
-    collection: subject.collection,
-    index: String(subject.index),
-  });
+  const changeBoot = isBoot && (
+    <Link to={PATHS.editBootDevice} keepQuery variant="link" isInline>
+      {/* TRANSLATORS: link to the settings of how the new system boots. */}
+      {_("Change boot options")}
+    </Link>
+  );
 
-  const listed = <PlannedContentSection entry={entry} subject={subject} />;
-  if (!users.length && !isBoot) return listed;
+  const hasNothingToSay = !hasPlanned && !isLvmSource && !isBoot;
 
   return (
-    <List>
-      {!!users.length && (
-        <ListItem>
-          <UsedByStatement entry={entry} />
-        </ListItem>
+    <Flex direction={{ default: "column" }} gap={{ default: "gapSm" }}>
+      {hasPlanned && (
+        <DetailsSectionPart>
+          <PlannedContentSection entry={entry} subject={subject} />
+        </DetailsSectionPart>
       )}
-      {!!planned.length && (
-        <ListItem>
-          <Flex direction={{ default: "column" }} gap={{ default: "gapSm" }}>
-            <FlexItem>
-              {_("Partitions from the following list will be configured during installation")}
-            </FlexItem>
-            <FlexItem>{listed}</FlexItem>
-          </Flex>
-        </ListItem>
+      {isLvmSource && (
+        <DetailsSectionPart>
+          <p>
+            <UsedByStatement entry={entry} />
+          </p>
+        </DetailsSectionPart>
       )}
       {isBoot && (
-        <ListItem>
-          <BootStatement entry={entry} />
-        </ListItem>
+        <DetailsSectionPart>
+          <p>
+            <BootStatement entry={entry} />
+          </p>
+        </DetailsSectionPart>
       )}
-      {!planned.length && (
-        <ListItem>
-          <Flex direction={{ default: "column" }} gap={{ default: "gapSm" }}>
-            <FlexItem>{_("Additional partitions can be explicitly defined.")}</FlexItem>
-            <FlexItem>
-              <Link to={addPath} keepQuery variant="link" isInline>
-                {_("Add partition")}
-              </Link>
-            </FlexItem>
-          </Flex>
-        </ListItem>
+      {/* Said in a line, not as a table of headings over no rows. */}
+      {hasNothingToSay && (
+        <DetailsSectionPart>
+          <p>{_("No new partitions planned yet.")}</p>
+        </DetailsSectionPart>
       )}
-    </List>
+      <PlannedActions entry={entry} subject={subject} extraActions={changeBoot} />
+    </Flex>
   );
 }

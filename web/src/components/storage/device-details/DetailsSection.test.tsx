@@ -23,7 +23,9 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
-import DetailsSection from "~/components/storage/device-details/DetailsSection";
+import DetailsSection, {
+  useDetailsSectionTitleId,
+} from "~/components/storage/device-details/DetailsSection";
 
 describe("DetailsSection", () => {
   it("heads its content one level under the panel title", () => {
@@ -35,5 +37,16 @@ describe("DetailsSection", () => {
 
     screen.getByRole("heading", { level: 3, name: "Current content" });
     screen.getByText("Nothing detected.");
+  });
+
+  it("lets its content refer to its title", () => {
+    const Named = () => <div role="region" aria-labelledby={useDetailsSectionTitleId()} />;
+    plainRender(
+      <DetailsSection title="Current content">
+        <Named />
+      </DetailsSection>,
+    );
+
+    screen.getByRole("region", { name: "Current content" });
   });
 });
