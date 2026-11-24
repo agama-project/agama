@@ -42,12 +42,17 @@ const group = (logicalVolumes: ConfigModel.LogicalVolume[]): Entry => ({
 
 const subject = { collection: "volumeGroups" as const, index: 0 };
 
+const home: ConfigModel.LogicalVolume = {
+  mountPath: "/home",
+  size: { default: false, min: 5 * 1024 ** 3 },
+};
+
 describe("PlannedContentSection", () => {
   it("says nothing is planned yet instead of showing a table with no rows", () => {
     installerRender(<PlannedContentSection entry={group([])} subject={subject} />);
 
     expect(screen.queryByRole("table")).toBeNull();
-    expect(screen.getByRole("paragraph")).toHaveTextContent("No logical volumes planned yet");
+    expect(screen.getByRole("paragraph")).toHaveTextContent("No new logical volumes planned yet.");
   });
 
   it("leads to the form of this very group, by its place in the configuration", async () => {
@@ -71,8 +76,32 @@ describe("PlannedContentSection", () => {
     );
     screen.getByRole("link", { name: "Add logical volume" });
 
-    rerender(<PlannedContentSection entry={group([{ mountPath: "/home" }])} subject={subject} />);
+    rerender(<PlannedContentSection entry={group([home])} subject={subject} />);
     screen.getByRole("table", { name: "Planned content" });
     screen.getByRole("link", { name: "Add logical volume" });
+  });
+
+  it("shows the caption it is given, which also names the table", () => {
+    installerRender(
+      <PlannedContentSection entry={group([home])} subject={subject} caption="Volumes to create" />,
+    );
+
+    screen.getByRole("table", { name: "Volumes to create" });
+  });
+
+  it("shows the footer and the extra actions it is given after the rows", () => {
+    installerRender(
+      <PlannedContentSection
+        entry={group([home])}
+        subject={subject}
+        footer="A note about the rows"
+        extraActions={<a href="#more">More</a>}
+      />,
+    );
+
+    const table = screen.getByRole("table");
+    const footer = screen.getByText("A note about the rows");
+    expect(table.compareDocumentPosition(footer)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
+    screen.getByRole("link", { name: "More" });
   });
 });

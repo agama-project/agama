@@ -24,6 +24,7 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import type { ConfigModel, Partitionable } from "~/model/storage/config-model";
+import type { Storage } from "~/model/system";
 import type { Entry } from "~/components/storage/device-details/entry";
 import BootStatement from "~/components/storage/device-details/BootStatement";
 
@@ -34,12 +35,12 @@ jest.mock("~/hooks/model/storage/config-model", () => ({
   useConfigModel: () => mockConfig(),
 }));
 
-const entry: Entry = {
+const entry = (device: Entry["device"] = null): Entry => ({
   config: { name: "/dev/vdd" } as Partitionable.Device,
-  device: null,
+  device,
   name: "vdd",
   isVolumeGroup: false,
-};
+});
 
 const config = (boot: ConfigModel.Config["boot"]): ConfigModel.Config => ({
   boot,
@@ -48,30 +49,38 @@ const config = (boot: ConfigModel.Config["boot"]): ConfigModel.Config => ({
   volumeGroups: [],
 });
 
-describe("BootStatement", () => {
-  it("says the disk boots the machine, chosen automatically, with a way to change it", () => {
-    mockConfig.mockReturnValue(
-      config({ configure: true, device: { default: true, name: "/dev/vdd" } }),
-    );
-    installerRender(<BootStatement entry={entry} />);
+const bootsFromDisk = config({ configure: true, device: { default: true, name: "/dev/vdd" } });
 
-    screen.getByRole("link", { name: "Automatically chosen" });
-    screen.getByText(/for booting/);
+describe("BootStatement", () => {
+  it("says new partitions may be created to boot the system", () => {
+    mockConfig.mockReturnValue(bootsFromDisk);
+    installerRender(<BootStatement entry={entry()} />);
+
+    screen.getByText("Additional partitions to boot the system may be created if needed.");
   });
 
-  it("says when the disk was chosen by hand", () => {
-    mockConfig.mockReturnValue(
-      config({ configure: true, device: { default: false, name: "/dev/vdd" } }),
-    );
-    installerRender(<BootStatement entry={entry} />);
+  it("says an existing partition may be used when the disk has one fit for booting", () => {
+    mockConfig.mockReturnValue(bootsFromDisk);
+    const disk = {
+      name: "/dev/vdd",
+      partitions: [{ name: "/dev/vdd1", partition: { efi: true } }],
+    } as Storage.Device;
+    installerRender(<BootStatement entry={entry(disk)} />);
 
-    screen.getByRole("link", { name: "Explicitly chosen" });
+    screen.getByText(/some existing partition may be used/);
+  });
+
+  it("leaves the way to the boot options to the view showing it", () => {
+    mockConfig.mockReturnValue(bootsFromDisk);
+    installerRender(<BootStatement entry={entry()} />);
+
+    expect(screen.queryByRole("link")).toBeNull();
   });
 
   it("says nothing when the disk does not boot the machine", () => {
     mockConfig.mockReturnValue(config({ configure: false }));
-    installerRender(<BootStatement entry={entry} />);
+    installerRender(<BootStatement entry={entry()} />);
 
-    expect(screen.queryByText(/for booting/)).toBeNull();
+    expect(screen.queryByText(/boot the system/)).toBeNull();
   });
 });
