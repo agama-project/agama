@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024-2025] SUSE LLC
+# Copyright (c) [2024-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -152,7 +152,7 @@ describe Y2Storage::AgamaProposal do
 
       let(:resize_info) do
         instance_double(
-          Y2Storage::ResizeInfo, resize_ok?: true,
+          Y2Storage::ResizeInfo, resize_ok?: true, reasons: [],
           min_size: Y2Storage::DiskSize::GiB(4), max_size: Y2Storage::DiskSize::GiB(35)
         )
       end

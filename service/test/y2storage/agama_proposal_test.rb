@@ -1333,7 +1333,7 @@ describe Y2Storage::AgamaProposal do
 
       let(:resize_info) do
         instance_double(
-          Y2Storage::ResizeInfo, resize_ok?: true,
+          Y2Storage::ResizeInfo, resize_ok?: true, reasons: [],
           min_size: Y2Storage::DiskSize::GiB(3), max_size: Y2Storage::DiskSize::GiB(35)
         )
       end
@@ -1514,6 +1514,31 @@ describe Y2Storage::AgamaProposal do
             devicegraph = proposal.propose
 
             expect(partition_size(devicegraph, "/dev/vda2")).to be < 20.GiB
+          end
+        end
+
+        context "if a partition has no content" do
+          let(:vda2_resize_info) { no_resize_info }
+
+          before do
+            probed = Y2Storage::StorageManager.instance.probed
+            probed.find_by_name("/dev/vda3").remove_descendants
+          end
+
+          it "does not shrink that partition" do
+            expect { proposal.propose }.to raise_error(Y2Storage::NoDiskSpaceError)
+
+            vda3 = Y2Storage::StorageManager.instance.probed.find_by_name("/dev/vda3")
+            expect(vda3.size).to eq 10.GiB
+          end
+
+          it "logs that the partition is not shrunk" do
+            logger = instance_double(Logger, debug: nil, info: nil)
+            allow_any_instance_of(Y2Storage::Proposal::SpaceSettingsBuilder)
+              .to receive(:log).and_return(logger)
+            expect(logger).to receive(:info).with(%r{Skip resizing /dev/vda3: NO_CONTENT})
+
+            expect { proposal.propose }.to raise_error(Y2Storage::NoDiskSpaceError)
           end
         end
 

@@ -19,12 +19,16 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "yast"
 require "y2storage/proposal_settings"
+require "agama/storage/device_shrinking"
 
 module Y2Storage
   module Proposal
     # Class to encapsulate the conversion from Agama config to ProposalSpaceSettings
     class SpaceSettingsBuilder
+      include Yast::Logger
+
       # @param config [Agama::Storage::Config]
       def initialize(config)
         @config = config
@@ -87,10 +91,29 @@ module Y2Storage
         configs = config_devices(config).select(&:found_device).select(&:size)
         # Resize actions contain information that is potentially useful for the SpaceMaker even
         # when they are only about growing and not shrinking
-        configs.map { |c| resize_action(c) }.compact
+        configs.map { |c| generate_resize_action(c) }.compact
       end
 
-      # @see #resize_actions
+      # Generates resize action for the given config, unless the device cannot be resized.
+      #
+      # The resize check is only done if there is an action to perform, in order to avoid
+      # needlessly asking libstorage-ng about the resize info of the device.
+      #
+      # @param dev [Agama::Storage::Configs::Partition, Agama::Storage::Configs::LogicalVolume]
+      # @return [Y2Storage::SpaceActions::Resize, nil]
+      def generate_resize_action(dev)
+        action = resize_action(dev)
+        return unless action
+
+        shrinking = Agama::Storage::DeviceShrinking.new(dev.found_device)
+        return action if shrinking.supported?
+
+        reasons = shrinking.unsupported_reasons.join(", ")
+        log.info "Skip resizing #{dev.found_device.name}: #{reasons}"
+        nil
+      end
+
+      # @see #generate_resize_action
       #
       # @param dev [Agama::Storage::Configs::Partition, Agama::Storage::Configs::LogicalVolume]
       # @return [Y2Storage::SpaceActions::Resize, nil]

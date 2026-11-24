@@ -97,7 +97,7 @@ module Agama
             else
               {
                 supported: false,
-                reasons:   shrinking.unsupported_reasons
+                reasons:   shrinking.unsupported_reasons_text
               }
             end
           end

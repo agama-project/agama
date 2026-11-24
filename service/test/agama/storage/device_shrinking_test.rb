@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -177,8 +177,59 @@ describe Agama::Storage::DeviceShrinking do
     context "if shrinking is supported" do
       let(:device_name) { "/dev/sda1" }
 
-      it "returns nl" do
+      it "returns nil" do
         expect(subject.unsupported_reasons).to be_nil
+      end
+    end
+
+    context "if the device has no content" do
+      let(:device_name) { "/dev/md0p1" }
+
+      it "returns :NO_CONTENT" do
+        expect(subject.unsupported_reasons).to contain_exactly(:NO_CONTENT)
+      end
+    end
+
+    context "if the device has no valid min size" do
+      let(:device_name) { "/dev/sda1" }
+      let(:min_size) { Y2Storage::DiskSize.zero }
+
+      it "returns :NO_MIN_SIZE" do
+        expect(subject.unsupported_reasons).to contain_exactly(:NO_MIN_SIZE)
+      end
+    end
+
+    context "if libstorage-ng reports reasons preventing shrinking" do
+      let(:device_name) { "/dev/md0p1" }
+      let(:reasons) { [:RB_FILESYSTEM_FULL, :RB_RESIZE_NOT_SUPPORTED_BY_DEVICE, :RB_NO_SHRINK] }
+
+      it "returns only the reasons that prevent shrinking" do
+        expect(subject.unsupported_reasons)
+          .to contain_exactly(:RB_FILESYSTEM_FULL, :RB_RESIZE_NOT_SUPPORTED_BY_DEVICE)
+      end
+    end
+
+    context "if libstorage-ng fails to check the device" do
+      let(:device_name) { "/dev/sda1" }
+
+      before do
+        allow(device).to receive(:resize_info).and_raise ::Storage::Exception
+      end
+
+      it "returns :NO_MIN_SIZE" do
+        expect(subject.unsupported_reasons).to contain_exactly(:NO_MIN_SIZE)
+      end
+    end
+  end
+
+  describe "#unsupported_reasons_text" do
+    let(:min_size) { Y2Storage::DiskSize.MiB(100) }
+
+    context "if shrinking is supported" do
+      let(:device_name) { "/dev/sda1" }
+
+      it "returns nil" do
+        expect(subject.unsupported_reasons_text).to be_nil
       end
     end
 
@@ -186,7 +237,7 @@ describe Agama::Storage::DeviceShrinking do
       let(:device_name) { "/dev/md0p1" }
 
       it "returns the list of reasons" do
-        expect(subject.unsupported_reasons).to contain_exactly(
+        expect(subject.unsupported_reasons_text).to contain_exactly(
           /a file system nor a storage system was detected/
         )
       end
@@ -200,7 +251,7 @@ describe Agama::Storage::DeviceShrinking do
       end
 
       it "returns a list with one generic reason" do
-        expect(subject.unsupported_reasons).to contain_exactly(
+        expect(subject.unsupported_reasons_text).to contain_exactly(
           /not supported by this device/
         )
       end
