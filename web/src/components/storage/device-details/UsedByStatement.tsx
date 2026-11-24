@@ -35,7 +35,8 @@ export type UsedByStatementProps = {
 };
 
 /**
- * Which other entries of the plan are built on this device, and the way to each.
+ * A paragraph naming the other entries of the plan built on this device, and
+ * the way to each.
  *
  * A disk given whole to a volume group holds nothing of its own, so where its
  * plan is decided is the one thing a reader opening it most needs told. A volume
@@ -54,12 +55,14 @@ export default function UsedByStatement({ entry }: UsedByStatementProps): React.
   if (users.length === 0) return null;
 
   return (
-    <Interpolate
-      // TRANSLATORS: says a disk gives room to one or more LVM volume groups. %s
-      // is their names, such as "system", each a link to its panel.
-      sentence={_("New partitions may be added as LVM physical volumes for %s.")}
-    >
-      {() => <RelatedNames items={users} />}
-    </Interpolate>
+    <p>
+      <Interpolate
+        // TRANSLATORS: says a disk gives room to one or more LVM volume groups. %s
+        // is their names, such as "system", each a link to its panel.
+        sentence={_("New partitions may be added as LVM physical volumes for %s.")}
+      >
+        {() => <RelatedNames items={users} />}
+      </Interpolate>
+    </p>
   );
 }

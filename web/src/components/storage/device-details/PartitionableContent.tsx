@@ -73,16 +73,12 @@ export default function PartitionableContent({
       )}
       {isLvmSource && (
         <DetailsSectionPart>
-          <p>
-            <UsedByStatement entry={entry} />
-          </p>
+          <UsedByStatement entry={entry} />
         </DetailsSectionPart>
       )}
       {isBoot && (
         <DetailsSectionPart>
-          <p>
-            <BootStatement entry={entry} />
-          </p>
+          <BootStatement entry={entry} />
         </DetailsSectionPart>
       )}
       {/* Said in a line, not as a table of headings over no rows. */}
