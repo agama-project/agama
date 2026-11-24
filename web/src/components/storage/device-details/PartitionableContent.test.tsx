@@ -90,12 +90,12 @@ describe("PartitionableContent", () => {
       expect(screen.queryByRole("link", { name: "Change boot options" })).toBeNull();
     });
 
-    it("puts the table of partitions after it", () => {
+    it("says so after the table of partitions", () => {
       installerRender(<PartitionableContent entry={withHome} subject={subject} />);
 
-      const sentence = screen.getByText(lvmSentence);
       const table = screen.getByRole("table", { name: tableName });
-      expect(sentence.compareDocumentPosition(table)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
+      const sentence = screen.getByText(lvmSentence);
+      expect(table.compareDocumentPosition(sentence)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
     });
   });
 
@@ -119,6 +119,18 @@ describe("PartitionableContent", () => {
       screen.getByRole("link", { name: "Add partition" });
       screen.getByRole("link", { name: "Change boot options" });
     });
+  });
+
+  it("puts the table first, then the LVM and boot sentences", () => {
+    mockUsers.mockReturnValue([{ name: "system" }]);
+    jest.spyOn(configModel.boot, "hasDevice").mockReturnValue(true);
+    installerRender(<PartitionableContent entry={withHome} subject={subject} />);
+
+    const table = screen.getByRole("table", { name: tableName });
+    const lvm = screen.getByText(lvmSentence);
+    const boot = screen.getByText(bootSentence);
+    expect(table.compareDocumentPosition(lvm)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
+    expect(lvm.compareDocumentPosition(boot)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
   });
 
   it("never says partitions can be added in a sentence of its own", () => {

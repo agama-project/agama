@@ -40,9 +40,9 @@ import type { DeviceDetailsBodyProps } from "~/components/storage/device-details
 
 /**
  * Explains how the new system uses a disk on which it creates or reuses
- * partitions: one paragraph per role (LVM, requested partitions, booting), in
- * that order, followed by one line of actions. Paragraphs rather than a list,
- * since the roles are different kinds of information.
+ * partitions: the requested partitions first, then a paragraph for each other
+ * role (LVM, booting), followed by one line of actions. Paragraphs rather than
+ * a list, since the roles are different kinds of information.
  */
 export default function PartitionableContent({
   entry,
@@ -68,16 +68,16 @@ export default function PartitionableContent({
 
   return (
     <Flex direction={{ default: "column" }} gap={{ default: "gapSm" }}>
+      {hasPlanned && (
+        <DetailsSectionPart>
+          <PlannedContentSection entry={entry} subject={subject} caption={caption} />
+        </DetailsSectionPart>
+      )}
       {!!users.length && (
         <DetailsSectionPart>
           <p>
             <UsedByStatement entry={entry} />
           </p>
-        </DetailsSectionPart>
-      )}
-      {hasPlanned && (
-        <DetailsSectionPart>
-          <PlannedContentSection entry={entry} subject={subject} caption={caption} />
         </DetailsSectionPart>
       )}
       {isBoot && (
