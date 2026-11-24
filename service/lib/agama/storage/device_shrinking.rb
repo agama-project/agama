@@ -90,6 +90,9 @@ module Agama
       attr_reader :device
 
       # Reasons preventing shrinking.
+      #
+      # NOTE: the reasons are documented in doc/shrinking_devices.md, keep it in sync with
+      # {SHRINKING_REASONS}, {RESIZE_REASONS} and {EXTRA_REASONS}.
       SHRINKING_REASONS = [
         :RB_SHRINK_NOT_SUPPORTED_BY_FILESYSTEM,
         :RB_SHRINK_NOT_SUPPORTED_BY_MULTIDEVICE_FILESYSTEM,
