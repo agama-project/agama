@@ -115,6 +115,15 @@ export type PlannedContentSectionProps = {
    * rows. Off by default.
    */
   isStriped?: boolean;
+  /**
+   * What the table is, said above its rows. It also names the table for
+   * assistive technologies.
+   */
+  caption?: React.ReactNode;
+  /** A note about the rows as a whole, shown between the table and its actions. */
+  footer?: React.ReactNode;
+  /** More ways to act on the device, shown right after adding to it. */
+  extraActions?: React.ReactNode;
 };
 
 /**
@@ -136,6 +145,9 @@ export default function PlannedContentSection({
   entry,
   subject,
   isStriped = false,
+  caption,
+  footer,
+  extraActions,
 }: PlannedContentSectionProps): React.ReactNode {
   const deletePartition = useDeletePartition();
   const deleteLogicalVolume = useDeleteLogicalVolume();
@@ -201,6 +213,7 @@ export default function PlannedContentSection({
       alignItems={{ default: "alignItemsCenter" }}
     >
       <FlexItem>{add}</FlexItem>
+      {extraActions && <FlexItem>{extraActions}</FlexItem>}
       {!isVolumeGroup && (
         <FlexItem align={{ default: "alignRight" }}>
           <MoveToOtherDevice entry={device} device={entry.device} />
@@ -235,8 +248,25 @@ export default function PlannedContentSection({
           {...tableProps({ hasVerticallyCenteredRows: true })}
           // TRANSLATORS: names the list of what the installation will put on
           // one of its entries.
-          aria-label={_("Planned content")}
+          aria-label={caption ? undefined : _("Planned content")}
         >
+          {/* Read as ordinary text rather than as a hint: it leads into the
+              rows, the way the statements around the table do. A plain
+              caption, since PatternFly's Caption takes no style. */}
+          {caption && (
+            <caption
+              className="pf-v6-c-table__caption"
+              style={
+                {
+                  "--pf-v6-c-table__caption--PaddingInlineStart": 0,
+                  "--pf-v6-c-table__caption--PaddingBlockStart": 0,
+                  "--pf-v6-c-table__caption--Color": "var(--pf-t--global--text--color--regular)",
+                } as React.CSSProperties
+              }
+            >
+              {caption}
+            </caption>
+          )}
           {/* Read rather than hidden from sight: a column of sizes and a
               column of file systems are told apart by what they are called,
               and a reader who has to work that out from the values is being
@@ -347,6 +377,11 @@ export default function PlannedContentSection({
           </Tbody>
         </Table>
       </StackItem>
+      {footer && (
+        <StackItem>
+          <p>{footer}</p>
+        </StackItem>
+      )}
       <StackItem>{actions}</StackItem>
     </Stack>
   );
