@@ -22,6 +22,7 @@
 
 import React from "react";
 import { Divider, Flex, FlexItem } from "@patternfly/react-core";
+import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
 import Link from "~/components/core/Link";
 import PlannedContentSection from "~/components/storage/device-details/PlannedContentSection";
 import UsedByStatement from "~/components/storage/device-details/UsedByStatement";
@@ -109,16 +110,16 @@ export default function PartitionableContent({
   );
 
   return (
-    <Flex direction={{ default: "column" }} gap={{ default: "gapLg" }}>
+    <Flex direction={{ default: "column" }} gap={{ default: "gapSm" }}>
       {!!users.length && (
-        <FlexItem>
+        <FlexItem className="agm-statement">
           <p>
             <UsedByStatement entry={entry} />
           </p>
         </FlexItem>
       )}
       {hasPlanned && (
-        <FlexItem>
+        <FlexItem className="agm-statement">
           <PlannedContentSection
             entry={entry}
             subject={subject}
@@ -129,16 +130,16 @@ export default function PartitionableContent({
         </FlexItem>
       )}
       {!hasPlanned && isBoot && (
-        <FlexItem>
+        <FlexItem className="agm-statement">
           <p>
             <BootStatement entry={entry} />
           </p>
         </FlexItem>
       )}
       {!hasPlanned && (
-        <FlexItem>
+        <FlexItem className={spacingStyles.mtSm}>
           {/* A line where reading the plan ends and acting on it starts, as
-              under a table of partitions. */}
+              under a table of partitions, with the same room above it. */}
           <Flex direction={{ default: "column" }} gap={{ default: "gapMd" }}>
             <Divider />
             <Flex gap={{ default: "gapLg" }} alignItems={{ default: "alignItemsCenter" }}>

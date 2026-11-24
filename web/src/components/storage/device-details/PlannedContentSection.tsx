@@ -22,7 +22,7 @@
 
 import React from "react";
 import { Table, Tbody, Td, Th, Thead, Tr } from "@patternfly/react-table";
-import { Divider, Flex, FlexItem, Stack, StackItem } from "@patternfly/react-core";
+import { Divider, Flex, FlexItem } from "@patternfly/react-core";
 import alignmentStyles from "@patternfly/react-styles/css/utilities/Alignment/alignment";
 import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
 import { sprintf } from "sprintf-js";
@@ -240,12 +240,12 @@ export default function PlannedContentSection({
   }
 
   return (
-    <Flex direction={{ default: "column" }} gap={{ default: "gapLg" }}>
+    <Flex direction={{ default: "column" }} gap={{ default: "gapMd" }}>
       {/* The footer is about the rows, so it stays closer to them than the
           actions do. */}
       <FlexItem>
-        <Stack hasGutter>
-          <StackItem>
+        <Flex direction={{ default: "column" }} gap={{ default: "gapSm" }}>
+          <FlexItem className="agm-statement">
             <Table
               role="table"
               gridBreakPoint=""
@@ -373,13 +373,13 @@ export default function PlannedContentSection({
                 })}
               </Tbody>
             </Table>
-          </StackItem>
+          </FlexItem>
           {footer && (
-            <StackItem>
+            <FlexItem className="agm-statement">
               <p>{footer}</p>
-            </StackItem>
+            </FlexItem>
           )}
-        </Stack>
+        </Flex>
       </FlexItem>
       {/* A line where reading the plan ends and acting on it starts. */}
       <FlexItem>

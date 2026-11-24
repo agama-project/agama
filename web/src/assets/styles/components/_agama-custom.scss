@@ -727,6 +727,14 @@ nav.agm-breadcrumb > ol > li > a {
   font-family: inherit;
 }
 
+// A dashed line between consecutive statements of the device sheet, lighter
+// than the solid one before its actions. The layout gap sets the space above
+// the line; the padding repeats it below.
+.agm-statement + .agm-statement {
+  padding-block-start: var(--pf-t--global--spacer--sm);
+  border-block-start: 1px dashed var(--pf-t--global--border--color--default);
+}
+
 // PLAYGROUND: a dot on the corner of a button, in the blue that marks
 // something new or informative rather than in the brand colour, saying there is something new
 // behind it since it was last opened. It sits outside the button, so the
