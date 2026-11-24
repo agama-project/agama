@@ -29,7 +29,7 @@ describe("TechnicalDetails", () => {
   it("renders a 'Technical details' heading and the given text", () => {
     plainRender(<TechnicalDetails text="Error: Something went wrong" />);
 
-    screen.getByText("Technical details");
+    screen.getByRole("figure", { name: "Technical details" });
     screen.getByText("Error: Something went wrong");
   });
 

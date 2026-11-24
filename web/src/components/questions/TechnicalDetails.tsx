@@ -20,15 +20,10 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useState } from "react";
-import {
-  ClipboardCopyButton,
-  CodeBlock,
-  CodeBlockCode,
-  Content,
-  Flex,
-} from "@patternfly/react-core";
+import React, { useId, useState } from "react";
+import { ClipboardCopyButton, CodeBlock, CodeBlockCode } from "@patternfly/react-core";
 import NestedContent from "~/components/core/NestedContent";
+import Text from "~/components/core/Text";
 import { _ } from "~/i18n";
 
 /**
@@ -42,6 +37,7 @@ import { _ } from "~/i18n";
  */
 export default function TechnicalDetails({ text }: { text?: string }): React.ReactNode {
   const [copied, setCopied] = useState(false);
+  const labelId = useId();
 
   if (!text) return null;
 
@@ -52,25 +48,30 @@ export default function TechnicalDetails({ text }: { text?: string }): React.Rea
 
   return (
     <NestedContent>
-      <Flex
-        justifyContent={{ default: "justifyContentSpaceBetween" }}
-        alignItems={{ default: "alignItemsCenter" }}
+      <CodeBlock
+        className="agm-technical-details"
+        role="figure"
+        aria-labelledby={labelId}
+        actions={
+          <>
+            {/* TRANSLATORS: label of the block showing a technical error message */}
+            <Text id={labelId} isBold>
+              {_("Technical details")}
+            </Text>
+            <ClipboardCopyButton
+              id="technical-details-copy-button"
+              aria-label={_("Copy to clipboard")}
+              onClick={onCopy}
+              onTooltipHidden={() => setCopied(false)}
+              exitDelay={copied ? 1500 : 600}
+              maxWidth="110px"
+              variant="plain"
+            >
+              {copied ? _("Copied") : _("Copy to clipboard")}
+            </ClipboardCopyButton>
+          </>
+        }
       >
-        {/* TRANSLATORS: heading for the block showing a technical error message */}
-        <Content component="h4">{_("Technical details")}</Content>
-        <ClipboardCopyButton
-          id="technical-details-copy-button"
-          aria-label={_("Copy to clipboard")}
-          onClick={onCopy}
-          onTooltipHidden={() => setCopied(false)}
-          exitDelay={copied ? 1500 : 600}
-          maxWidth="110px"
-          variant="plain"
-        >
-          {copied ? _("Copied") : _("Copy to clipboard")}
-        </ClipboardCopyButton>
-      </Flex>
-      <CodeBlock>
         <CodeBlockCode id="technical-details-code" className="mh-30dvh">
           {text}
         </CodeBlockCode>

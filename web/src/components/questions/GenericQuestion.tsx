@@ -21,6 +21,7 @@
  */
 
 import React from "react";
+import { Stack } from "@patternfly/react-core";
 import QuestionDialog from "~/components/questions/QuestionDialog";
 import QuestionText from "~/components/questions/QuestionText";
 import TechnicalDetails from "~/components/questions/TechnicalDetails";
@@ -53,8 +54,10 @@ export default function GenericQuestion({
       // element, which is the copy-to-clipboard button when there are details
       elementToFocus="#question-primary-action"
     >
-      <QuestionText text={question.text} />
-      <TechnicalDetails text={details} />
+      <Stack hasGutter>
+        <QuestionText text={question.text} />
+        <TechnicalDetails text={details} />
+      </Stack>
     </QuestionDialog>
   );
 }
