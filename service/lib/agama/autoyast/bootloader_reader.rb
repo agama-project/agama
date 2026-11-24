@@ -38,20 +38,10 @@ module Agama
         return {} if global.empty? && loader_type.to_s.empty?
 
         bootloader = {}
-
-        type = convert_loader_type(loader_type)
-        bootloader["type"] = type if type
-
-        if global["timeout"].is_a?(Integer)
-          if global["timeout"] >= 0
-            bootloader["timeout"] = global["timeout"]
-          else
-            bootloader["stopOnBootMenu"] = true
-          end
-        end
-
-        bootloader["extraKernelParams"] = global["append"] unless global["append"].to_s.empty?
-        bootloader["updateNvram"] = global["update_nvram"] unless global["update_nvram"].to_s.empty?
+        add_type(bootloader, loader_type)
+        add_timeout(bootloader, global)
+        add_kernel_params(bootloader, global)
+        add_update_nvram(bootloader, global)
 
         { "bootloader" => bootloader }
       end
@@ -59,6 +49,29 @@ module Agama
     private
 
       attr_reader :profile
+
+      def add_type(bootloader, loader_type)
+        type = convert_loader_type(loader_type)
+        bootloader["type"] = type if type
+      end
+
+      def add_timeout(bootloader, global)
+        return unless global["timeout"].is_a?(Integer)
+
+        if global["timeout"] >= 0
+          bootloader["timeout"] = global["timeout"]
+        else
+          bootloader["stopOnBootMenu"] = true
+        end
+      end
+
+      def add_kernel_params(bootloader, global)
+        bootloader["extraKernelParams"] = global["append"] unless global["append"].to_s.empty?
+      end
+
+      def add_update_nvram(bootloader, global)
+        bootloader["updateNvram"] = global["update_nvram"] unless global["update_nvram"].to_s.empty?
+      end
 
       def convert_loader_type(loader_type)
         case loader_type

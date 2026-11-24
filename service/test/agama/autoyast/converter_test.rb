@@ -154,7 +154,8 @@ describe Agama::AutoYaST::Converter do
           "type"              => "grub2",
           "timeout"           => 8,
           "updateNvram"       => true,
-          "extraKernelParams" => "splash=silent mitigations=auto quiet security=apparmor crashkernel=309M,high"
+          "extraKernelParams" => "splash=silent mitigations=auto quiet " \
+                                 "security=apparmor crashkernel=309M,high"
         )
       end
     end

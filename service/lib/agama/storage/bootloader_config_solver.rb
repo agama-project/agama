@@ -53,6 +53,19 @@ module Agama
           end
       end
 
+      # Archs in which a BLS-compliant bootloader is supported
+      BLS_ARCHS = [:x86_64, :i386, :aarch64, :arm, :riscv64].freeze
+      private_constant :BLS_ARCHS
+
+      # Whether the usage of a BLS-compliant bootloader is supported
+      #
+      # @return [Boolean]
+      def self.bls_compliant_system?
+        return false unless ::Bootloader::Systeminfo.efi?
+
+        BLS_ARCHS.any? { |a| Yast::Arch.public_send(a) }
+      end
+
     private
 
       # @return [Agama::Config]
@@ -67,19 +80,6 @@ module Agama
       # dual-booting, etc.).
       DEFAULT_BLS_TYPE = Y2Storage::BootloaderType::GRUB2
       private_constant :DEFAULT_BLS_TYPE
-
-      # Archs in which a BLS-compliant bootloader is supported
-      BLS_ARCHS = [:x86_64, :i386, :aarch64, :arm, :riscv64].freeze
-      private_constant :BLS_ARCHS
-
-      # Whether the usage of a BLS-compliant bootloader is supported
-      #
-      # @return [Boolean]
-      def self.bls_compliant_system?
-        return false unless ::Bootloader::Systeminfo.efi?
-
-        BLS_ARCHS.any? { |a| Yast::Arch.public_send(a) }
-      end
 
       # @return [Y2Storage::BootloaderType, nil]
       def product_bls_type

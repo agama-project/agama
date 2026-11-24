@@ -64,7 +64,7 @@ describe Agama::Storage::ConfigChecker do
         described_class.new(
           config,
           bootloader_config: bootloader_config,
-          product_config: product_config
+          product_config:    product_config
         )
       end
 
