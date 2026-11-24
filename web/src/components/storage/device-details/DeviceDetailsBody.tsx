@@ -25,7 +25,6 @@ import { Flex } from "@patternfly/react-core";
 import Text from "~/components/core/Text";
 import ExistingContent from "~/components/storage/device-details/ExistingContent";
 import DetailsSection from "~/components/storage/device-details/DetailsSection";
-import BootStatement from "~/components/storage/device-details/BootStatement";
 import CurrentContentSection, {
   hasCurrentContent,
 } from "~/components/storage/device-details/CurrentContentSection";
@@ -68,7 +67,7 @@ export default function DeviceDetailsBody({
   if (entry.isVolumeGroup) {
     if ((entry.config as ConfigModel.VolumeGroup).name) {
       const newLVsSection = (
-        <DetailsSection title={_("Logical volumes to create")}>
+        <DetailsSection title={_("Logical volumes for the new system")}>
           <VolumeGroupContent entry={entry} subject={subject} />
         </DetailsSection>
       );
@@ -155,20 +154,6 @@ export default function DeviceDetailsBody({
 
   const withPartitions = configModel.partitionable.isUsed(config, partitionable.name);
   if (withPartitions) {
-    const isBootDevice = configModel.boot.hasDevice(config, partitionable.name);
-    const partSections = (
-      <>
-        <DetailsSection title={_("Partitions to create")}>
-          <PartitionableContent entry={entry} subject={subject} />
-        </DetailsSection>
-        {isBootDevice && (
-          <DetailsSection title={_("Boot device")}>
-            <BootStatement entry={entry} />
-          </DetailsSection>
-        )}
-      </>
-    );
-
     if (isCurrentlyPartitioned) {
       return (
         <Body>
@@ -177,7 +162,9 @@ export default function DeviceDetailsBody({
               "Customize how the new system will use this disk, existing partitions can be deleted or reduced to make space for the new system or can be used by it.",
             )}
           </Intro>
-          {partSections}
+          <DetailsSection title={_("Partitions for the new system")}>
+            <PartitionableContent entry={entry} subject={subject} />
+          </DetailsSection>
           <DetailsSection title={_("Current partitions")}>
             <CurrentContentSection entry={entry} subject={subject} />
           </DetailsSection>
@@ -188,7 +175,9 @@ export default function DeviceDetailsBody({
     return (
       <Body>
         <Intro>{basicIntro}</Intro>
-        {partSections}
+        <DetailsSection title={_("Partitions for the new system")}>
+          <PartitionableContent entry={entry} subject={subject} />
+        </DetailsSection>
         <DetailsSection title={_("Current content")}>
           <ExistingContent entry={entry} isDeleted />
         </DetailsSection>

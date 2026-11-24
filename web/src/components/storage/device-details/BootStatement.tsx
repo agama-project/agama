@@ -23,7 +23,6 @@
 import React from "react";
 import Link from "~/components/core/Link";
 import Interpolate from "~/components/core/Interpolate";
-import DetailsItem from "~/components/storage/device-details/DetailsItem";
 import { STORAGE as PATHS } from "~/routes/paths";
 import configModel from "~/model/storage/config-model";
 import { useConfigModel } from "~/hooks/model/storage/config-model";
@@ -52,36 +51,20 @@ export default function BootStatement({ entry }: BootStatementProps): React.Reac
 
   const potentialReuse = !!entry.device?.partitions?.some((p) => isExistingBootPartition(p));
   const sentence = potentialReuse
-    ? configModel.boot.isDefault(config)
-      ? // TRANSLATORS: The text in square brackets is a link to the boot setting.
-        _(
-          "[Automatically chosen] for booting. Some existing partition may be used for that purpose if possible. Additional new ones may be created if needed.",
-        )
-      : // TRANSLATORS: The text in square brackets is a link to the boot setting.
-        _(
-          "[Explicitly chosen] for booting. Some existing partition may be used for that purpose if possible. Additional new ones may be created if needed.",
-        )
-    : configModel.boot.isDefault(config)
-      ? // TRANSLATORS: The text in square brackets is a link to the boot setting.
-        _(
-          "[Automatically chosen] for booting. Additional partitions may be created for that purpose if needed.",
-        )
-      : // TRANSLATORS: The text in square brackets is a link to the boot setting.
-        _(
-          "[Explicitly chosen] for booting. Additional partitions may be created for that purpose if needed.",
-        );
+    ? // TRANSLATORS: The text in square brackets is a link to the boot setting.
+      _(
+        "To boot the system, some existing partition may be used if possible and additional new partitions may be created. [Change boot options]",
+      )
+    : // TRANSLATORS: The text in square brackets is a link to the boot setting.
+      _("Additional partitions to boot the system may be created if needed. [Change boot options]");
 
   return (
-    <DetailsItem
-      value={
-        <Interpolate sentence={sentence}>
-          {(text) => (
-            <Link to={PATHS.editBootDevice} keepQuery variant="link" isInline>
-              {text}
-            </Link>
-          )}
-        </Interpolate>
-      }
-    />
+    <Interpolate sentence={sentence}>
+      {(text) => (
+        <Link to={PATHS.editBootDevice} keepQuery variant="link" isInline>
+          {text}
+        </Link>
+      )}
+    </Interpolate>
   );
 }

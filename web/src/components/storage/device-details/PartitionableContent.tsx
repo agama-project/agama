@@ -23,9 +23,9 @@
 import React from "react";
 import { Flex, FlexItem, List, ListItem } from "@patternfly/react-core";
 import Link from "~/components/core/Link";
-import SummaryWithActions from "~/components/storage/device-details/SummaryWithActions";
 import PlannedContentSection from "~/components/storage/device-details/PlannedContentSection";
 import UsedByStatement from "~/components/storage/device-details/UsedByStatement";
+import BootStatement from "~/components/storage/device-details/BootStatement";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { generateEncodedPath } from "~/utils";
 import configModel from "~/model/storage/config-model";
@@ -85,70 +85,43 @@ export default function PartitionableContent({
     index: String(subject.index),
   });
 
-  /* A link, since it leads to a form. */
-  const add = (
-    <Link to={addPath} keepQuery variant="link" isInline>
-      {_("Add partition")}
-    </Link>
-  );
-
-  /* Nothing listed yet: what the disk gets so far, then the way to add to it.
-     A volume group's partitions, or booting's, come first where the disk
-     gets them, since they are all it gets yet. */
-  if (!planned.length) {
-    if (users.length) {
-      return (
-        <SummaryWithActions
-          summary={<UsedByStatement entry={entry} />}
-          // TRANSLATORS: follows what a disk already gets, such as the partitions
-          // a volume group needs, above a button to add partitions.
-          detail={_("Add partitions to use the rest of the disk.")}
-          actions={add}
-        />
-      );
-    }
-
-    if (isBoot) {
-      return (
-        <SummaryWithActions
-          // TRANSLATORS: said of a disk the system boots from where nothing else
-          // is planned yet, above a button to add partitions.
-          summary={_("Used for booting only, no other partitions planned yet")}
-          actions={add}
-        />
-      );
-    }
-
-    return (
-      <Flex direction={{ default: "column" }} gap={{ default: "gapSm" }}>
-        {/* TRANSLATORS: offered on a disk that gets no partitions yet. */}
-        <FlexItem>{_("You can define partitions.")}</FlexItem>
-        <FlexItem>{add}</FlexItem>
-      </Flex>
-    );
-  }
-
-  /* Without a volume group to give room to, the list is all there is. */
   const listed = <PlannedContentSection entry={entry} subject={subject} />;
-  if (!users.length) return listed;
+  if (!users.length && !isBoot) return listed;
 
-  /* Two kinds of partitions to create, said side by side: those a volume
-     group needs, first, and those listed. */
   return (
     <List>
-      <ListItem>
-        <UsedByStatement entry={entry} />
-      </ListItem>
-      <ListItem>
-        <Flex direction={{ default: "column" }} gap={{ default: "gapSm" }}>
-          <FlexItem>
-            {/* TRANSLATORS: introduces the table of partitions the user asked
-                to create on a disk, next to those a volume group needs. */}
-            {_("Partitions from the following list")}
-          </FlexItem>
-          <FlexItem>{listed}</FlexItem>
-        </Flex>
-      </ListItem>
+      {!!users.length && (
+        <ListItem>
+          <UsedByStatement entry={entry} />
+        </ListItem>
+      )}
+      {!!planned.length && (
+        <ListItem>
+          <Flex direction={{ default: "column" }} gap={{ default: "gapSm" }}>
+            <FlexItem>
+              {_("Partitions from the following list will be configured during installation")}
+            </FlexItem>
+            <FlexItem>{listed}</FlexItem>
+          </Flex>
+        </ListItem>
+      )}
+      {isBoot && (
+        <ListItem>
+          <BootStatement entry={entry} />
+        </ListItem>
+      )}
+      {!planned.length && (
+        <ListItem>
+          <Flex direction={{ default: "column" }} gap={{ default: "gapSm" }}>
+            <FlexItem>{_("Additional partitions can be explicitly defined.")}</FlexItem>
+            <FlexItem>
+              <Link to={addPath} keepQuery variant="link" isInline>
+                {_("Add partition")}
+              </Link>
+            </FlexItem>
+          </Flex>
+        </ListItem>
+      )}
     </List>
   );
 }

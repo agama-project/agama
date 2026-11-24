@@ -275,16 +275,9 @@ function statusFor(
        the new file system in the note under it, where the request or the plan
        names one yet. */
     return {
-      // TRANSLATORS: what is to become of a partition already on the disk: it
-      // is emptied and given a new file system for the new system to mount. %s
-      // is where the new system mounts it, such as "/home".
+      // TRANSLATORS: %s is a mount point, such as "/home".
       text: sprintf(_("Format for %s"), path),
       destroys: true,
-      note: newFilesystem
-        ? // TRANSLATORS: read under "Format for /home": the new file
-          // system the partition gets. %s is a file system, such as "xfs".
-          sprintf(_("As %s"), newFilesystem)
-        : undefined,
     };
   }
 

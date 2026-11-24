@@ -30,7 +30,12 @@ import MenuButton, { MenuButtonItem } from "~/components/core/MenuButton";
 import RowMenuToggle from "~/components/core/RowMenuToggle";
 import MoveToOtherDevice from "~/components/storage/device-details/MoveToOtherDevice";
 import SummaryWithActions from "~/components/storage/device-details/SummaryWithActions";
-import { filesystemType, partitionIdLabel, sizeDescription } from "~/components/storage/utils";
+import {
+  baseName,
+  filesystemType,
+  partitionIdLabel,
+  sizeDescription,
+} from "~/components/storage/utils";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { generateEncodedPath } from "~/utils";
 import { columnProps, tableProps } from "~/components/storage/shared/table-columns";
@@ -51,6 +56,7 @@ type Planned = ConfigModel.Partition | ConfigModel.LogicalVolume;
 const COLUMNS = {
   path: {},
   filesystem: {},
+  action: {},
   size: { isEndAligned: true },
 } satisfies Record<string, ColumnLook>;
 
@@ -138,7 +144,7 @@ export default function PlannedContentSection({
   const group = entry.config as ConfigModel.VolumeGroup;
   const device = entry.config as Partitionable.Device;
 
-  const planned = plannedOn(entry).filter((p) => !p.name);
+  const planned = plannedOn(entry);
 
   /* The forms address a volume group by its place in the configuration, as
      they address a disk. */
@@ -247,6 +253,9 @@ export default function PlannedContentSection({
               <Th {...columnProps(COLUMNS.filesystem)} modifier="nowrap">
                 {_("File system")}
               </Th>
+              <Th {...columnProps(COLUMNS.action)} modifier="nowrap">
+                {_("Action")}
+              </Th>
               <Th {...columnProps(COLUMNS.size)} modifier="nowrap">
                 {_("Size")}
               </Th>
@@ -274,20 +283,23 @@ export default function PlannedContentSection({
                     {label(part)}
                   </Th>
                   <Td {...columnProps(COLUMNS.filesystem)}>
-                    {(keepsData
+                    {keepsData
                       ? source?.filesystem?.type
-                      : part.filesystem && filesystemType(part.filesystem)) ||
-                      // TRANSLATORS: said where the installer has not been
-                      // told which file system to use.
-                      _("default")}
+                      : part.filesystem && filesystemType(part.filesystem)}
                   </Td>
-                  <Td {...columnProps(COLUMNS.size)}>
-                    {part.size
-                      ? sizeDescription(part.size)
-                      : // TRANSLATORS: said where the size of something the
-                        // installer creates is left to it.
-                        _("decided by the installer")}
+                  <Td {...columnProps(COLUMNS.action)}>
+                    {source
+                      ? sprintf(
+                          // TRANSLATORS: %s is the short-name of a partition, like sda3
+                          keepsData ? _("Mount %s") : _("Format %s"),
+                          baseName(source.name, { truncate: true }),
+                        )
+                      : isVolumeGroup
+                        ? // TRANSLATORS: "volume" refers to an LVM logical volume, try to keep it short
+                          _("Create volume")
+                        : _("Create partition")}
                   </Td>
+                  <Td {...columnProps(COLUMNS.size)}>{sizeDescription(part.size)}</Td>
                   <Td isActionCell>
                     {/* Both acts name the thing by where it is mounted, so
                         one asked for by id alone has neither until the form
@@ -323,16 +335,7 @@ export default function PlannedContentSection({
                             isDanger={!source}
                             onClick={() => remove(part.mountPath)}
                           >
-                            {source
-                              ? // TRANSLATORS: offered on a partition the
-                                // installation takes over: leave it where
-                                // it is and stop giving it to the new
-                                // system.
-                                _("Stop reusing")
-                              : // TRANSLATORS: offered on something the
-                                // installation would create: take it out of
-                                // the plan.
-                                _("Delete")}
+                            {source ? _("Stop reusing") : _("Delete")}
                           </MenuButtonItem>,
                         ]}
                       />
@@ -344,11 +347,7 @@ export default function PlannedContentSection({
           </Tbody>
         </Table>
       </StackItem>
-      <StackItem>
-        {/* After the table rather than in the header: neither is urgent
-            enough to sit beside the device's name. */}
-        {actions}
-      </StackItem>
+      <StackItem>{actions}</StackItem>
     </Stack>
   );
 }
