@@ -28,11 +28,7 @@ import { sprintf } from "sprintf-js";
 import Text from "~/components/core/Text";
 import Icon from "~/components/layout/Icon";
 import SpaceDecision from "~/components/storage/device-details/SpaceDecision";
-import {
-  buildCurrentContentSummary,
-  sentenceGap,
-  summaryText,
-} from "~/components/storage/device-details/current-content-summary";
+import { buildCurrentContentSummary } from "~/components/storage/device-details/current-content-summary";
 import Interpolate from "~/components/core/Interpolate";
 import MenuButton, { MenuButtonItem } from "~/components/core/MenuButton";
 import RowMenuToggle from "~/components/core/RowMenuToggle";
@@ -569,7 +565,7 @@ export default function CurrentContentSection({
     });
   const kind = entry.isVolumeGroup ? "logicalVolumes" : "partitions";
   const built = buildCurrentContentSummary({ kind, parts });
-  const summary = built && summaryText(built);
+  const summary = built && built.sentence;
   const summaryId = React.useId();
 
   /* Said when the decisions change, so a screen reader user hears what their
@@ -591,17 +587,9 @@ export default function CurrentContentSection({
             <FlexItem>
               <Text id={summaryId}>
                 {built && (
-                  <>
-                    <Interpolate sentence={built.sentence}>
-                      {(amount) => <Text isBold>{amount}</Text>}
-                    </Interpolate>
-                    {built.details.map((detail) => (
-                      <React.Fragment key={detail}>
-                        {sentenceGap()}
-                        {detail}
-                      </React.Fragment>
-                    ))}
-                  </>
+                  <Interpolate sentence={summary}>
+                    {(amount) => <Text isBold>{amount}</Text>}
+                  </Interpolate>
                 )}
               </Text>
               {isDecidable && (

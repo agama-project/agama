@@ -24,7 +24,6 @@ import type { Decision } from "~/components/storage/device-details/partition-spa
 import type { ContentPart } from "~/components/storage/device-details/current-content-summary";
 import {
   buildCurrentContentSummary,
-  summaryText,
 } from "~/components/storage/device-details/current-content-summary";
 
 const GiB = 1024 ** 3;
@@ -44,7 +43,7 @@ const shrinkable = (name: string) =>
 
 /** The summary of some partitions, as plain text. */
 const summaryOf = (parts: ContentPart[]) =>
-  summaryText(buildCurrentContentSummary({ kind: "partitions", parts }));
+  buildCurrentContentSummary({ kind: "partitions", parts }).sentence;
 
 describe("buildCurrentContentSummary", () => {
   it("says nothing when the device holds nothing", () => {
@@ -120,27 +119,11 @@ describe("buildCurrentContentSummary", () => {
         "1 partition: it will be kept.",
       );
     });
-
-    it("names every mount point, the formatted ones first", () => {
-      const parts = [
-        part("vdd1", { reusedAs: '"/home"' }),
-        part("vdd2", { reusedAs: '"/docs"', formats: true }),
-        part("vdd3", { reusedAs: '"/srv"', formats: true }),
-        part("vdd4", { reusedAs: '"/var"', formats: true }),
-      ];
-
-      expect(buildCurrentContentSummary({ kind: "partitions", parts }).details).toEqual([
-        '"/docs", "/srv", and "/var" will be formatted.',
-        '"/home" will be mounted unchanged.',
-      ]);
-    });
   });
 
   it("speaks of logical volumes on a volume group", () => {
     expect(
-      summaryText(
-        buildCurrentContentSummary({ kind: "logicalVolumes", parts: given("delete", "a", "b") }),
-      ),
+      buildCurrentContentSummary({ kind: "logicalVolumes", parts: given("delete", "a", "b") }).sentence,
     ).toBe("2 logical volumes: all will be deleted.");
   });
 });
