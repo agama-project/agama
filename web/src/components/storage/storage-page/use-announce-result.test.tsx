@@ -21,10 +21,9 @@
  */
 
 import React from "react";
-import { screen } from "@testing-library/react";
 import { getAnnouncements, installerRender } from "~/test-utils";
 import type { Issue } from "~/model/issue";
-import Result from "~/components/storage/storage-page/Result";
+import useAnnounceResult from "~/components/storage/storage-page/use-announce-result";
 
 const mockConfigModel = jest.fn();
 const mockAvailableDevices = jest.fn();
@@ -52,9 +51,6 @@ jest.mock("~/hooks/model/issue", () => ({
 }));
 
 /* Each report is tested on its own. What matters here is which one is shown. */
-jest.mock("~/components/storage/storage-page/NoDevicesMessage", () => () => <p>no devices</p>);
-jest.mock("~/components/storage/storage-page/InvalidConfigMessage", () => () => <p>invalid</p>);
-jest.mock("~/components/storage/storage-page/UnknownConfigMessage", () => () => <p>unknown</p>);
 jest.mock("~/components/storage/storage-page/Consequences", () => ({
   __esModule: true,
   default: () => <p>consequences</p>,
@@ -70,14 +66,16 @@ jest.mock("~/components/storage/FixableConfigInfo", () => ({
   default: () => <p>fixable</p>,
   fixableConfigTitle: () => "There are issues to fix.",
 }));
-jest.mock("~/components/storage/UnsupportedModelInfo", () => () => <p>unsupported</p>);
 
 const issue = (klass: string): Issue => ({ description: klass, class: klass, scope: "storage" });
 
-/** Every report shown, in order. */
-const reports = () => screen.queryAllByRole("paragraph").map((p) => p.textContent);
+/** Only runs the hook: what it says is said through the announcer. */
+function Announcer() {
+  useAnnounceResult();
+  return null;
+}
 
-describe("Result", () => {
+describe("useAnnounceResult", () => {
   beforeEach(() => {
     mockConfigModel.mockReturnValue({ drives: [] });
     mockAvailableDevices.mockReturnValue([{ sid: 1 }]);
@@ -85,88 +83,35 @@ describe("Result", () => {
     mockIssues.mockReturnValue([]);
   });
 
-  it("says there are no devices when none is available", () => {
+  it("says nothing while a state replaces the page", () => {
+    const { rerender } = installerRender(<Announcer />);
     mockAvailableDevices.mockReturnValue([]);
-    installerRender(<Result />);
+    rerender(<Announcer />);
 
-    expect(reports()).toEqual(["no devices"]);
-  });
-
-  it("says the configuration is invalid when it has an issue that cannot be fixed here", () => {
-    mockIssues.mockReturnValue([issue("configNoRoot"), issue("somethingElse")]);
-    installerRender(<Result />);
-
-    expect(reports()).toEqual(["invalid"]);
-  });
-
-  it("says the configuration is invalid when it has issues and cannot be edited here", () => {
-    mockConfigModel.mockReturnValue(null);
-    mockIssues.mockReturnValue([issue("configNoRoot")]);
-    installerRender(<Result />);
-
-    expect(reports()).toEqual(["invalid"]);
-  });
-
-  it("says the configuration is unknown when there is neither a model nor a layout", () => {
-    mockConfigModel.mockReturnValue(null);
-    mockProposal.mockReturnValue(null);
-    installerRender(<Result />);
-
-    expect(reports()).toEqual(["unknown"]);
-  });
-
-  /* Whenever the configuration can be read, the result, or the problem
-     finding one, is reported in the page's top line instead. */
-  it("leaves a calculated layout to the page's top line", () => {
-    installerRender(<Result />);
-
-    expect(reports()).toEqual([]);
-  });
-
-  it("leaves a calculated layout to the top line for a configuration not editable here", () => {
-    mockConfigModel.mockReturnValue(null);
-    installerRender(<Result />);
-
-    expect(reports()).toEqual([]);
-  });
-
-  it("leaves the issues to fix to the top line", () => {
-    mockProposal.mockReturnValue(null);
-    mockIssues.mockReturnValue([issue("configNoRoot"), issue("proposal")]);
-    installerRender(<Result />);
-
-    expect(reports()).toEqual([]);
-  });
-
-  it("leaves a failed layout to the top line", () => {
-    mockProposal.mockReturnValue(null);
-    mockIssues.mockReturnValue([issue("proposal")]);
-    installerRender(<Result />);
-
-    expect(reports()).toEqual([]);
+    expect(getAnnouncements()).toEqual([]);
   });
 
   describe("when a change turns the report into another kind", () => {
     it("says nothing about the report it starts with", () => {
-      installerRender(<Result />);
+      installerRender(<Announcer />);
 
       expect(getAnnouncements()).toEqual([]);
     });
 
     it("says the problem once the layout can no longer be calculated", () => {
-      const { rerender } = installerRender(<Result />);
+      const { rerender } = installerRender(<Announcer />);
       mockProposal.mockReturnValue(null);
       mockIssues.mockReturnValue([issue("proposal")]);
-      rerender(<Result />);
+      rerender(<Announcer />);
 
       expect(getAnnouncements()).toEqual(["No layout can be calculated."]);
     });
 
     it("says what is left to fix once the configuration has issues", () => {
-      const { rerender } = installerRender(<Result />);
+      const { rerender } = installerRender(<Announcer />);
       mockProposal.mockReturnValue(null);
       mockIssues.mockReturnValue([issue("configNoRoot"), issue("proposal")]);
-      rerender(<Result />);
+      rerender(<Announcer />);
 
       expect(getAnnouncements()).toEqual(["There are issues to fix."]);
     });
@@ -174,18 +119,18 @@ describe("Result", () => {
     it("says the plan once a layout can be calculated again", () => {
       mockProposal.mockReturnValue(null);
       mockIssues.mockReturnValue([issue("proposal")]);
-      const { rerender } = installerRender(<Result />);
+      const { rerender } = installerRender(<Announcer />);
       mockProposal.mockReturnValue({ actions: [{}, {}, {}] });
       mockIssues.mockReturnValue([]);
-      rerender(<Result />);
+      rerender(<Announcer />);
 
       expect(getAnnouncements()).toEqual(["It takes 3 actions."]);
     });
 
     it("says nothing when only the number of actions changes", () => {
-      const { rerender } = installerRender(<Result />);
+      const { rerender } = installerRender(<Announcer />);
       mockProposal.mockReturnValue({ actions: [{}, {}, {}, {}, {}] });
-      rerender(<Result />);
+      rerender(<Announcer />);
 
       expect(getAnnouncements()).toEqual([]);
     });
@@ -193,9 +138,9 @@ describe("Result", () => {
     it("says nothing when one problem gives way to another", () => {
       mockProposal.mockReturnValue(null);
       mockIssues.mockReturnValue([issue("configNoRoot"), issue("proposal")]);
-      const { rerender } = installerRender(<Result />);
+      const { rerender } = installerRender(<Announcer />);
       mockIssues.mockReturnValue([issue("proposal")]);
-      rerender(<Result />);
+      rerender(<Announcer />);
 
       expect(getAnnouncements()).toEqual([]);
     });

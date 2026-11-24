@@ -39,10 +39,17 @@ jest.mock("~/hooks/model/system/storage", () => ({
   useDevice: () => null,
 }));
 
-jest.mock("~/components/storage/storage-page/Result", () => ({
+const mockPageState = jest.fn();
+jest.mock("~/components/storage/storage-page/use-page-state", () => ({
+  usePageState: () => mockPageState(),
+}));
+jest.mock("~/components/storage/storage-page/use-announce-result", () => ({
   __esModule: true,
-  default: () => null,
-  useReplacingState: () => null,
+  default: () => undefined,
+}));
+jest.mock("~/components/storage/storage-page/StorageEmptyState", () => ({
+  __esModule: true,
+  default: ({ state }) => <p>empty state: {state.kind}</p>,
 }));
 /* The page's own line holds the settings; the report of what the configuration
    does is the result line kept in sight above it. */
@@ -61,6 +68,27 @@ const report = () => screen.getByRole("button", { name: "what the configuration 
 const setting = () => screen.getByRole("button", { name: "boot disk" });
 
 describe("StoragePageContent", () => {
+  beforeEach(() => {
+    mockPageState.mockReturnValue({ kind: "page" });
+  });
+
+  describe.each([
+    { kind: "noDevices" },
+    { kind: "invalid", issues: [] },
+    { kind: "unknown", hasProposal: false },
+    { kind: "unknown", hasProposal: true },
+  ])("when the state is %j", (state) => {
+    it("shows the empty state instead of the page", () => {
+      mockPageState.mockReturnValue(state);
+      installerRender(<StoragePageContent />);
+
+      screen.getByText(`empty state: ${state.kind}`);
+      expect(screen.queryByRole("button", { name: "boot disk" })).toBeNull();
+      expect(screen.queryByRole("button", { name: "what the configuration does" })).toBeNull();
+      expect(screen.queryByText("entries")).toBeNull();
+    });
+  });
+
   it("reports what the configuration does before the page it is about", () => {
     installerRender(<StoragePageContent />);
 

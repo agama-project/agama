@@ -34,7 +34,7 @@ import { _ } from "~/i18n";
 
 /**
  * Shown instead of the page when the storage configuration is made of things
- * this interface cannot represent, and so cannot let the reader change.
+ * this interface cannot represent, and no layout could be calculated from it.
  */
 export default function UnknownConfigMessage(): React.ReactNode {
   const reset = useReset();
@@ -57,7 +57,7 @@ export default function UnknownConfigMessage(): React.ReactNode {
             "You may want to discard the current settings and start from scratch with a simple configuration.",
           )}
         </Content>
-        <Button variant="secondary" onClick={() => reset()}>
+        <Button variant="tertiary" onClick={() => reset()}>
           {_("Reset to the default configuration")}
         </Button>
       </EmptyStateFooter>

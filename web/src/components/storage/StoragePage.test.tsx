@@ -109,7 +109,6 @@ jest.mock("./ProposalFailedInfo", () => ({
   default: () => <div>proposal failed info</div>,
   proposalFailedTitle: () => "proposal failed",
 }));
-jest.mock("./UnsupportedModelInfo", () => () => <div>unsupported model info</div>);
 jest.mock("./FixableConfigInfo", () => ({
   __esModule: true,
   default: () => <div>fixable config info</div>,
