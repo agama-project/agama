@@ -24,12 +24,9 @@ import React from "react";
 import { Divider, Flex, FlexItem } from "@patternfly/react-core";
 import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
 import Link from "~/components/core/Link";
-import MoveToOtherDevice from "~/components/storage/device-details/MoveToOtherDevice";
-import { plannedOn } from "~/components/storage/device-details/planned";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { generateEncodedPath } from "~/utils";
 import { _ } from "~/i18n";
-import type { Partitionable } from "~/model/storage/config-model";
 import type { Entry } from "~/components/storage/device-details/entry";
 import type { DetailsSubject } from "~/components/storage/shared/use-device-details";
 
@@ -49,7 +46,6 @@ export type PlannedActionsProps = {
  */
 export default function PlannedActions({ entry, subject, extraActions }: PlannedActionsProps) {
   const isVolumeGroup = entry.isVolumeGroup;
-  const canMove = !isVolumeGroup && plannedOn(entry).length > 0;
 
   /* The forms address a volume group by its place in the configuration, as
      they address a disk. */
@@ -86,11 +82,6 @@ export default function PlannedActions({ entry, subject, extraActions }: Planned
           </Link>
         </FlexItem>
         {extraActions && <FlexItem>{extraActions}</FlexItem>}
-        {canMove && (
-          <FlexItem align={{ default: "alignRight" }}>
-            <MoveToOtherDevice entry={entry.config as Partitionable.Device} device={entry.device} />
-          </FlexItem>
-        )}
       </Flex>
     </Flex>
   );
