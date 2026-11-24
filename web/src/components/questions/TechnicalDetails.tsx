@@ -38,7 +38,6 @@ import { _ } from "~/i18n";
 export default function TechnicalDetails({ text }: { text?: string }): React.ReactNode {
   const [copied, setCopied] = useState(false);
   const labelId = useId();
-  const copyButtonId = useId();
 
   if (!text) return null;
 
@@ -60,7 +59,7 @@ export default function TechnicalDetails({ text }: { text?: string }): React.Rea
               {_("Technical details")}
             </Text>
             <ClipboardCopyButton
-              id={copyButtonId}
+              id={useId()}
               aria-label={_("Copy to clipboard")}
               onClick={onCopy}
               onTooltipHidden={() => setCopied(false)}
@@ -73,7 +72,7 @@ export default function TechnicalDetails({ text }: { text?: string }): React.Rea
           </>
         }
       >
-        <CodeBlockCode id={copyButtonId} className="mh-30dvh">
+        <CodeBlockCode id={useId()} className="mh-30dvh">
           {text}
         </CodeBlockCode>
       </CodeBlock>
