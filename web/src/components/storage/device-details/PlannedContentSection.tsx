@@ -22,7 +22,7 @@
 
 import React from "react";
 import { Table, Tbody, Td, Th, Thead, Tr } from "@patternfly/react-table";
-import { Flex, FlexItem, Stack, StackItem } from "@patternfly/react-core";
+import { Divider, Flex, FlexItem, Stack, StackItem } from "@patternfly/react-core";
 import alignmentStyles from "@patternfly/react-styles/css/utilities/Alignment/alignment";
 import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
 import { sprintf } from "sprintf-js";
@@ -381,7 +381,13 @@ export default function PlannedContentSection({
           )}
         </Stack>
       </FlexItem>
-      <FlexItem>{actions}</FlexItem>
+      {/* A line where reading the plan ends and acting on it starts. */}
+      <FlexItem>
+        <Flex direction={{ default: "column" }} gap={{ default: "gapMd" }}>
+          <Divider />
+          {actions}
+        </Flex>
+      </FlexItem>
     </Flex>
   );
 }

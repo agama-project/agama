@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import { Flex, FlexItem } from "@patternfly/react-core";
+import { Divider, Flex, FlexItem } from "@patternfly/react-core";
 import Link from "~/components/core/Link";
 import PlannedContentSection from "~/components/storage/device-details/PlannedContentSection";
 import UsedByStatement from "~/components/storage/device-details/UsedByStatement";
@@ -137,13 +137,18 @@ export default function PartitionableContent({
       )}
       {!hasPlanned && (
         <FlexItem>
-          <Flex gap={{ default: "gapLg" }} alignItems={{ default: "alignItemsCenter" }}>
-            <FlexItem>
-              <Link to={addPath} keepQuery variant="link" isInline>
-                {_("Add partition")}
-              </Link>
-            </FlexItem>
-            {changeBoot && <FlexItem>{changeBoot}</FlexItem>}
+          {/* A line where reading the plan ends and acting on it starts, as
+              under a table of partitions. */}
+          <Flex direction={{ default: "column" }} gap={{ default: "gapMd" }}>
+            <Divider />
+            <Flex gap={{ default: "gapLg" }} alignItems={{ default: "alignItemsCenter" }}>
+              <FlexItem>
+                <Link to={addPath} keepQuery variant="link" isInline>
+                  {_("Add partition")}
+                </Link>
+              </FlexItem>
+              {changeBoot && <FlexItem>{changeBoot}</FlexItem>}
+            </Flex>
           </Flex>
         </FlexItem>
       )}
