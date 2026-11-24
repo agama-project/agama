@@ -1450,6 +1450,96 @@ describe Y2Storage::AgamaProposal do
           end
         end
       end
+
+      context "when the config shrinks all the partitions if needed" do
+        let(:config_json) do
+          {
+            drives: [
+              {
+                search:     "/dev/vda",
+                partitions: [
+                  {
+                    filesystem: { type: "btrfs", path: "/" },
+                    size:       "25 GiB"
+                  },
+                  {
+                    search: "*",
+                    size:   { min: "0 KiB", max: "current" }
+                  }
+                ]
+              }
+            ]
+          }
+        end
+
+        # The partitions that can be resized, indexed by name. Any other partition (the BIOS boot
+        # one) cannot be resized.
+        let(:resize_infos) do
+          { "/dev/vda2" => vda2_resize_info, "/dev/vda3" => vda3_resize_info }
+        end
+
+        let(:vda2_resize_info) do
+          instance_double(
+            Y2Storage::ResizeInfo, resize_ok?: true, reasons: [],
+            min_size: Y2Storage::DiskSize.GiB(3), max_size: Y2Storage::DiskSize.GiB(35)
+          )
+        end
+
+        let(:vda3_resize_info) do
+          instance_double(
+            Y2Storage::ResizeInfo, resize_ok?: true, reasons: [],
+            min_size: Y2Storage::DiskSize.GiB(3), max_size: Y2Storage::DiskSize.GiB(35)
+          )
+        end
+
+        let(:no_resize_info) do
+          instance_double(
+            Y2Storage::ResizeInfo, resize_ok?: false, reasons: [:RB_RESIZE_NOT_SUPPORTED_BY_DEVICE],
+            min_size: Y2Storage::DiskSize.zero, max_size: Y2Storage::DiskSize.zero
+          )
+        end
+
+        before do
+          allow_any_instance_of(Y2Storage::Partition).to receive(:detect_resize_info) do |part|
+            resize_infos.fetch(part.name, no_resize_info)
+          end
+        end
+
+        def partition_size(devicegraph, name)
+          devicegraph.find_by_name(name).size
+        end
+
+        context "if a partition can be shrunk" do
+          it "shrinks the partition to make space for the new ones" do
+            devicegraph = proposal.propose
+
+            expect(partition_size(devicegraph, "/dev/vda2")).to be < 20.GiB
+          end
+        end
+
+        context "if a partition does not support shrinking" do
+          # The filesystem is full, so the partition cannot be shrunk
+          let(:vda2_resize_info) do
+            instance_double(
+              Y2Storage::ResizeInfo, resize_ok?: true,
+              reasons: [:RB_SHRINK_NOT_SUPPORTED_BY_FILESYSTEM, :RB_FILESYSTEM_FULL],
+              min_size: Y2Storage::DiskSize.GiB(20), max_size: Y2Storage::DiskSize.GiB(35)
+            )
+          end
+
+          it "does not shrink that partition" do
+            devicegraph = proposal.propose
+
+            expect(partition_size(devicegraph, "/dev/vda2")).to eq 20.GiB
+          end
+
+          it "shrinks the other partitions to make space for the new ones" do
+            devicegraph = proposal.propose
+
+            expect(partition_size(devicegraph, "/dev/vda3")).to be < 10.GiB
+          end
+        end
+      end
     end
   end
 end
