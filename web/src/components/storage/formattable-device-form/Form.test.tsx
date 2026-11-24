@@ -22,7 +22,7 @@
 
 import React from "react";
 import { screen, waitFor } from "@testing-library/react";
-import { installerRender, mockNavigateFn, mockParams } from "~/test-utils";
+import { installerRender, mockNavigateFn, mockParams, outsideLiveRegions } from "~/test-utils";
 import FormattableDeviceForm from "./Form";
 
 import type { Storage as System } from "~/model/system";
@@ -131,10 +131,6 @@ describe("FormattableDeviceForm", () => {
       };
     });
 
-    // Excludes the live region, which repeats the notice's title when it
-    // appears.
-    const inForm = { ignore: "[aria-live], script, style" };
-
     const enter = async (user, mountPoint: string) => {
       await user.type(screen.getByLabelText("Mount point"), mountPoint);
       await user.tab();
@@ -143,7 +139,10 @@ describe("FormattableDeviceForm", () => {
     it("offers to assign it to the device, right after the file system", async () => {
       const { user } = installerRender(<FormattableDeviceForm />);
       await enter(user, "/srv");
-      screen.getByText("/srv is already assigned to a logical volume in system", inForm);
+      screen.getByText(
+        "/srv is already assigned to a logical volume in system",
+        outsideLiveRegions,
+      );
       screen.getByText("Currently set up as Btrfs, at least 5 GiB");
       const [takeOver, defineMore] = screen.getAllByRole("checkbox");
       expect(takeOver).toHaveAccessibleName(
@@ -155,7 +154,7 @@ describe("FormattableDeviceForm", () => {
     it("says nothing when a whole device holds it", async () => {
       const { user } = installerRender(<FormattableDeviceForm />);
       await enter(user, "/data");
-      expect(screen.queryByText(/already assigned to/, inForm)).toBeNull();
+      expect(screen.queryByText(/already assigned to/, outsideLiveRegions)).toBeNull();
     });
 
     it("does not save without the choice", async () => {

@@ -538,6 +538,19 @@ const getAnnouncements = (): string[] =>
     .map((node) => node.textContent)
     .filter((text) => text !== "");
 
+/**
+ * Text query options that leave ARIA live regions out of the search.
+ *
+ * Use it when the same text is both shown and announced, so a query matches
+ * only what is on the page.
+ *
+ * @example
+ * ```ts
+ * screen.getByText("/home is already assigned to vda2", outsideLiveRegions);
+ * ```
+ */
+const outsideLiveRegions = { ignore: "[aria-live], script, style" };
+
 export {
   plainRender,
   installerRender,
@@ -552,6 +565,7 @@ export {
   resetLocalStorage,
   getColumnValues,
   getAnnouncements,
+  outsideLiveRegions,
   mockProgresses,
   mockStage,
   mockTasks,

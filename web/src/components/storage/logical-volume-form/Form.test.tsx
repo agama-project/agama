@@ -22,7 +22,7 @@
 
 import React from "react";
 import { screen, waitFor } from "@testing-library/react";
-import { installerRender, mockParams } from "~/test-utils";
+import { installerRender, mockParams, outsideLiveRegions } from "~/test-utils";
 
 // Mock scrollTo which is not available in jsdom
 Element.prototype.scrollTo = jest.fn();
@@ -245,10 +245,6 @@ describe("LogicalVolumeForm", () => {
       };
     });
 
-    // Excludes the live region, which repeats the notice's title when it
-    // appears.
-    const inForm = { ignore: "[aria-live], script, style" };
-
     const enterData = async (user) => {
       await user.type(screen.getByLabelText("Mount point"), "/data");
       await user.tab();
@@ -257,7 +253,7 @@ describe("LogicalVolumeForm", () => {
     it("tells what holds it and how, once the mount point is entered", async () => {
       const { user } = installerRender(<LogicalVolumeForm />);
       await enterData(user);
-      screen.getByText("/data is already assigned to a new partition on vda", inForm);
+      screen.getByText("/data is already assigned to a new partition on vda", outsideLiveRegions);
       screen.getByText("Currently set up as XFS, at least 5 GiB");
     });
 

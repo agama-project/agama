@@ -22,7 +22,7 @@
 
 import React from "react";
 import { screen, waitFor } from "@testing-library/react";
-import { installerRender, mockParams } from "~/test-utils";
+import { installerRender, mockParams, outsideLiveRegions } from "~/test-utils";
 import PartitionForm from "./Form";
 
 // Mock scrollTo which is not available in jsdom
@@ -538,10 +538,6 @@ describe("PartitionForm", () => {
       };
     });
 
-    // Excludes the live region, which repeats the notice's title when it
-    // appears.
-    const inForm = { ignore: "[aria-live], script, style" };
-
     const enterData = async (user) => {
       await user.type(screen.getByLabelText("Mount point"), "/data");
       await user.tab();
@@ -550,13 +546,16 @@ describe("PartitionForm", () => {
     it("says nothing while the mount point is being typed", async () => {
       const { user } = installerRender(<PartitionForm />);
       await user.type(screen.getByLabelText("Mount point"), "/data");
-      expect(screen.queryByText(/already assigned to/, inForm)).toBeNull();
+      expect(screen.queryByText(/already assigned to/, outsideLiveRegions)).toBeNull();
     });
 
     it("tells what holds it and how, once the mount point is entered", async () => {
       const { user } = installerRender(<PartitionForm />);
       await enterData(user);
-      screen.getByText("/data is already assigned to a logical volume in system", inForm);
+      screen.getByText(
+        "/data is already assigned to a logical volume in system",
+        outsideLiveRegions,
+      );
       screen.getByText("Currently set up as Btrfs, at least 5 GiB");
       screen.getByText('Label "data"');
     });
@@ -589,7 +588,10 @@ describe("PartitionForm", () => {
       await enterData(user);
       await user.click(screen.getByRole("button", { name: "Accept" }));
       await screen.findByText("Already assigned to another device");
-      screen.getByText("/data is already assigned to a logical volume in system", inForm);
+      screen.getByText(
+        "/data is already assigned to a logical volume in system",
+        outsideLiveRegions,
+      );
       expect(mockAddPartition).not.toHaveBeenCalled();
       expect(mockMoveMountPath).not.toHaveBeenCalled();
     });
@@ -618,7 +620,7 @@ describe("PartitionForm", () => {
       await user.clear(input);
       await user.type(input, "/srv");
       await user.tab();
-      expect(screen.queryByText(/already assigned to/, inForm)).toBeNull();
+      expect(screen.queryByText(/already assigned to/, outsideLiveRegions)).toBeNull();
 
       await user.click(screen.getByRole("button", { name: "Accept" }));
       await waitFor(() => {
