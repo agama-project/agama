@@ -30,6 +30,7 @@ Element.prototype.scrollTo = jest.fn();
 const mockNavigate = jest.fn();
 const mockAddLogicalVolume = jest.fn();
 const mockEditLogicalVolume = jest.fn();
+const mockMoveMountPath = jest.fn();
 
 const volumeGroupConfig = {
   name: "/dev/system",
@@ -54,6 +55,7 @@ let mockVolumeGroup: object | undefined;
 let mockAvailableLogicalVolumes: object[];
 let mockInitialLogicalVolume: object | null;
 let mockVolumeGroupConfig: object | null;
+let mockConfigModel: object;
 
 jest.mock("react-router", () => ({
   ...jest.requireActual("react-router"),
@@ -74,12 +76,14 @@ jest.mock("./transformations", () => ({
 }));
 
 jest.mock("~/hooks/model/storage/config-model", () => ({
-  useConfigModel: () => ({ drives: [], volumeGroups: [] }),
+  useConfigModel: () => mockConfigModel,
   useAddLogicalVolume: () => mockAddLogicalVolume,
   useEditLogicalVolume: () => mockEditLogicalVolume,
+  useMoveMountPathToLogicalVolume: () => mockMoveMountPath,
 }));
 
 jest.mock("~/hooks/model/system/storage", () => ({
+  useDevice: () => null,
   useVolumeTemplate: (mountPath: string) => {
     if (mountPath === "swap") {
       return {
@@ -121,6 +125,7 @@ describe("LogicalVolumeForm", () => {
     mockVolumeGroup = systemVolumeGroup;
     mockAvailableLogicalVolumes = [existingLogicalVolume];
     mockInitialLogicalVolume = null;
+    mockConfigModel = { drives: [], volumeGroups: [] };
   });
 
   describe("when the volume group config is missing", () => {
@@ -218,6 +223,90 @@ describe("LogicalVolumeForm", () => {
       await user.type(screen.getByLabelText("Mount point"), "/home");
       await user.tab();
       expect(screen.queryByText(/will be destroyed/)).not.toBeInTheDocument();
+    });
+  });
+
+  describe("when the mount point is already assigned elsewhere", () => {
+    beforeEach(() => {
+      mockConfigModel = {
+        drives: [
+          {
+            name: "/dev/vda",
+            partitions: [
+              {
+                mountPath: "/data",
+                filesystem: { default: false, type: "xfs" },
+                size: { default: false, min: 5 * 1024 * 1024 * 1024 },
+              },
+            ],
+          },
+        ],
+        volumeGroups: [],
+      };
+    });
+
+    // Excludes the live region, which repeats the notice's title when it
+    // appears.
+    const inForm = { ignore: "[aria-live], script, style" };
+
+    const enterData = async (user) => {
+      await user.type(screen.getByLabelText("Mount point"), "/data");
+      await user.tab();
+    };
+
+    it("tells what holds it and how, once the mount point is entered", async () => {
+      const { user } = installerRender(<LogicalVolumeForm />);
+      await enterData(user);
+      screen.getByText("/data is already assigned to a new partition on vda", inForm);
+      screen.getByText("Currently set up as XFS, at least 5 GiB");
+    });
+
+    it("offers to assign it to the logical volume being configured", async () => {
+      const { user } = installerRender(<LogicalVolumeForm />);
+      await enterData(user);
+      screen.getByRole("checkbox", {
+        name: "Discard the current settings and assign /data to this new logical volume",
+      });
+
+      await user.click(screen.getByLabelText("Logical volume"));
+      await user.click(screen.getByRole("option", { name: /data/ }));
+      screen.getByRole("checkbox", {
+        name: "Discard the current settings and assign /data to the logical volume data",
+      });
+    });
+
+    it("does not save without the choice", async () => {
+      const { user } = installerRender(<LogicalVolumeForm />);
+      await enterData(user);
+      await user.click(screen.getByRole("button", { name: "Accept" }));
+      await screen.findByText("Already assigned to another device");
+      expect(mockAddLogicalVolume).not.toHaveBeenCalled();
+      expect(mockMoveMountPath).not.toHaveBeenCalled();
+    });
+
+    it("comes after the name when the volume group is new", async () => {
+      mockVolumeGroup = undefined;
+      mockAvailableLogicalVolumes = [];
+      const { user } = installerRender(<LogicalVolumeForm />);
+      await enterData(user);
+      const name = screen.getByRole("textbox", { name: /Name/ });
+      const takeOver = screen.getByRole("checkbox", { name: /Discard the current settings/ });
+      expect(name.compareDocumentPosition(takeOver)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
+    });
+
+    it("assigns it here when accepted with the choice", async () => {
+      const { user } = installerRender(<LogicalVolumeForm />);
+      await enterData(user);
+      await user.click(screen.getByRole("checkbox", { name: /Discard the current settings/ }));
+      await user.click(screen.getByRole("button", { name: "Accept" }));
+      await waitFor(() => {
+        expect(mockMoveMountPath).toHaveBeenCalledWith(
+          0,
+          expect.objectContaining({ mountPath: "/data" }),
+          undefined,
+        );
+      });
+      expect(mockAddLogicalVolume).not.toHaveBeenCalled();
     });
   });
 

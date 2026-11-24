@@ -23,6 +23,7 @@
 import React, { useMemo } from "react";
 import { useParams, useNavigate } from "react-router";
 import { ActionGroup, Alert, Form } from "@patternfly/react-core";
+import { sprintf } from "sprintf-js";
 import Page from "~/components/layout/Page";
 import ResourceNotFound from "~/components/core/ResourceNotFound";
 import NestedContent from "~/components/core/NestedContent";
@@ -33,8 +34,10 @@ import {
   useConfigModel,
   useAddLogicalVolume,
   useEditLogicalVolume,
+  useMoveMountPathToLogicalVolume,
 } from "~/hooks/model/storage/config-model";
 import configModel from "~/model/storage/config-model";
+import { baseName } from "~/components/storage/utils";
 import { STORAGE } from "~/routes/paths";
 import { _ } from "~/i18n";
 
@@ -43,6 +46,11 @@ import SizeFields from "~/components/storage/shared/form/SizeFields";
 import FilesystemAdditionalFields from "~/components/storage/shared/form/FilesystemAdditionalFields";
 import LogicalVolumeSourceFields from "./LogicalVolumeSourceFields";
 import LogicalVolumeNameField from "./LogicalVolumeNameField";
+import MountPointAssignment from "~/components/storage/shared/form/MountPointAssignment";
+import {
+  isReassigning,
+  mountPointHolder,
+} from "~/components/storage/shared/form/mount-point-holder";
 import FilesystemFields from "./FilesystemFields";
 import {
   useVolumeGroupConfig,
@@ -63,6 +71,29 @@ import { defaultOptions, isReusingLogicalVolume } from "./fields";
 import type { ConfigModel as ConfigModelType } from "~/model/storage/config-model";
 import type { Storage as System } from "~/model/system";
 import type { BreadcrumbProps } from "~/components/core/Breadcrumbs";
+
+/**
+ * Offers to discard the settings of what holds the mount point and assign it
+ * to the logical volume the form configures, named as chosen in the form.
+ *
+ * @param target - The chosen existing logical volume, or an empty string for a
+ *   new one.
+ */
+function assignLabel(mountPoint: string, target: string) {
+  return isReusingLogicalVolume(target)
+    ? sprintf(
+        // TRANSLATORS: %1$s is a mount point, %2$s a logical volume (e.g. "data").
+        _("Discard the current settings and assign %1$s to the logical volume %2$s"),
+        mountPoint,
+        baseName(target),
+      )
+    : sprintf(
+        // TRANSLATORS: %s is a mount point. "this" tells the logical volume
+        // being configured apart from what the mount point is assigned to now.
+        _("Discard the current settings and assign %s to this new logical volume"),
+        mountPoint,
+      );
+}
 
 /**
  * Auto-fills the logical volume name from the committed mount point until the
@@ -131,6 +162,7 @@ function LogicalVolumeFormContent({
   const navigate = useNavigate();
   const addLogicalVolume = useAddLogicalVolume();
   const editLogicalVolume = useEditLogicalVolume();
+  const moveMountPathToLogicalVolume = useMoveMountPathToLogicalVolume();
 
   // Mount points already in use, excluding the current one when editing.
   const usedMountPoints = useMemo(() => {
@@ -148,7 +180,9 @@ function LogicalVolumeFormContent({
       const payload = buildPayload(values);
 
       try {
-        if (initialLogicalVolume) {
+        if (isReassigning(values, usedMountPoints, config)) {
+          moveMountPathToLogicalVolume(volumeGroupIndex, payload, initialLogicalVolume?.mountPath);
+        } else if (initialLogicalVolume) {
           editLogicalVolume(volumeGroupIndex, initialLogicalVolume.mountPath, payload);
         } else {
           addLogicalVolume(volumeGroupIndex, payload);
@@ -166,7 +200,7 @@ function LogicalVolumeFormContent({
     ...mergeFormDefaults(defaultOptions, toFormValues(initialLogicalVolume)),
     validators: {
       onSubmitAsync: async (ctx) => {
-        const fieldErrors = validate(ctx.value, usedMountPoints);
+        const fieldErrors = validate(ctx.value, usedMountPoints, config);
         if (fieldErrors) return fieldErrors;
 
         return onSubmitAsync(ctx, form);
@@ -177,6 +211,28 @@ function LogicalVolumeFormContent({
       onMount: ({ formApi }) => syncLvName(formApi),
     },
   });
+
+  /* What the mount point is already assigned to, if anything, offering to
+     assign it to the logical volume being configured. */
+  const assignment = (
+    <form.Subscribe
+      selector={(s) => ({ mountPoint: s.values.committedMountPoint, target: s.values.target })}
+    >
+      {({ mountPoint, target }) => {
+        const holder = mountPointHolder(config, usedMountPoints, mountPoint);
+        return (
+          holder && (
+            <MountPointAssignment
+              form={form}
+              mountPoint={mountPoint}
+              holder={holder}
+              label={assignLabel(mountPoint, target)}
+            />
+          )
+        );
+      }}
+    </form.Subscribe>
+  );
 
   return (
     <form.AppForm>
@@ -211,10 +267,19 @@ function LogicalVolumeFormContent({
           availableLogicalVolumes={availableLogicalVolumes}
         />
 
+        {/* With an existing volume group, the notice comes after the logical
+            volume choice, which it names. */}
+        {volumeGroup && assignment}
+
         {/* Logical volume name (only when creating a new logical volume) */}
         <form.Subscribe selector={(s) => s.values.target}>
           {(target) => !isReusingLogicalVolume(target) && <LogicalVolumeNameField form={form} />}
         </form.Subscribe>
+
+        {/* With a new volume group there is no logical volume to choose: the
+            notice comes after the name, so it is not placed right after the
+            mount point, where moving on with Tab would skip it. */}
+        {!volumeGroup && assignment}
 
         {/* Size (only when creating a new logical volume) */}
         <form.Subscribe selector={(s) => s.values.target}>
