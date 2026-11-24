@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
+import React, { createContext, useContext, useId } from "react";
 import { Flex, Title } from "@patternfly/react-core";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import {
@@ -28,6 +28,17 @@ import {
   useSectionIndent,
   useSectionTitle,
 } from "~/components/storage/storage-page/playground-switches";
+
+const TitleIdContext = createContext<string | undefined>(undefined);
+
+/**
+ * Returns the id of the title of the section the caller is in, or undefined
+ * outside any section. Useful to name something after the section, as in
+ * `aria-labelledby={useDetailsSectionTitleId()}`.
+ */
+export function useDetailsSectionTitleId() {
+  return useContext(TitleIdContext);
+}
 
 export type DetailsSectionProps = {
   /** What the section holds, such as "Current content". */
@@ -48,6 +59,7 @@ export type DetailsSectionProps = {
  * </DetailsSection>
  */
 export default function DetailsSection({ title, children }: DetailsSectionProps) {
+  const titleId = useId();
   // PLAYGROUND: how the title stands apart from what it holds, from the console.
   const titleStyle = useSectionTitle();
   const band = useSectionBand();
@@ -63,6 +75,7 @@ export default function DetailsSection({ title, children }: DetailsSectionProps)
       className={`agm-details-section agm-details-section--${titleStyle} agm-details-section--band-${band} agm-details-section--indent-${indent}`}
     >
       <Title
+        id={titleId}
         headingLevel="h3"
         size="md"
         className={`agm-details-section__title ${textStyles.textColorBrand}`}
@@ -74,7 +87,7 @@ export default function DetailsSection({ title, children }: DetailsSectionProps)
         gap={{ default: "gapMd" }}
         className="agm-details-section__content"
       >
-        {children}
+        <TitleIdContext.Provider value={titleId}>{children}</TitleIdContext.Provider>
       </Flex>
     </Flex>
   );
