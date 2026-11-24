@@ -21,14 +21,13 @@
  */
 
 import React from "react";
-import { Divider, Flex, FlexItem } from "@patternfly/react-core";
-import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
+import { Flex, FlexItem } from "@patternfly/react-core";
 import Link from "~/components/core/Link";
+import PlannedActions from "~/components/storage/device-details/PlannedActions";
 import PlannedContentSection from "~/components/storage/device-details/PlannedContentSection";
 import UsedByStatement from "~/components/storage/device-details/UsedByStatement";
 import BootStatement from "~/components/storage/device-details/BootStatement";
 import { STORAGE as PATHS } from "~/routes/paths";
-import { generateEncodedPath } from "~/utils";
 import configModel from "~/model/storage/config-model";
 import { plannedOn } from "~/components/storage/device-details/planned";
 import { usersOf } from "~/components/storage/shared/users";
@@ -57,20 +56,14 @@ export default function PartitionableContent({
   // TRANSLATORS: introduces the table of partitions planned on a disk.
   const caption = _("Partitions from the following list will be configured during installation");
 
-  if (!users.length && !isBoot)
-    return <PlannedContentSection entry={entry} subject={subject} caption={caption} />;
-
-  const addPath = generateEncodedPath(PATHS.addPartition, {
-    collection: subject.collection,
-    index: String(subject.index),
-  });
-
   const changeBoot = isBoot && (
     <Link to={PATHS.editBootDevice} keepQuery variant="link" isInline>
       {/* TRANSLATORS: link to the settings of how the new system boots. */}
       {_("Change boot options")}
     </Link>
   );
+
+  const hasNothingToSay = !hasPlanned && !users.length && !isBoot;
 
   return (
     <Flex direction={{ default: "column" }} gap={{ default: "gapSm" }}>
@@ -83,39 +76,23 @@ export default function PartitionableContent({
       )}
       {hasPlanned && (
         <FlexItem className="agm-statement">
-          <PlannedContentSection
-            entry={entry}
-            subject={subject}
-            caption={caption}
-            footer={isBoot && <BootStatement entry={entry} />}
-            extraActions={changeBoot}
-          />
+          <PlannedContentSection entry={entry} subject={subject} caption={caption} />
         </FlexItem>
       )}
-      {!hasPlanned && isBoot && (
+      {isBoot && (
         <FlexItem className="agm-statement">
           <p>
             <BootStatement entry={entry} />
           </p>
         </FlexItem>
       )}
-      {!hasPlanned && (
-        <FlexItem className={spacingStyles.mtSm}>
-          {/* A line where reading the plan ends and acting on it starts, as
-              under a table of partitions, with the same room above it. */}
-          <Flex direction={{ default: "column" }} gap={{ default: "gapMd" }}>
-            <Divider />
-            <Flex gap={{ default: "gapLg" }} alignItems={{ default: "alignItemsCenter" }}>
-              <FlexItem>
-                <Link to={addPath} keepQuery variant="link" isInline>
-                  {_("Add partition")}
-                </Link>
-              </FlexItem>
-              {changeBoot && <FlexItem>{changeBoot}</FlexItem>}
-            </Flex>
-          </Flex>
+      {/* Said in a line, not as a table of headings over no rows. */}
+      {hasNothingToSay && (
+        <FlexItem className="agm-statement">
+          <p>{_("No new partitions planned yet.")}</p>
         </FlexItem>
       )}
+      <PlannedActions entry={entry} subject={subject} extraActions={changeBoot} />
     </Flex>
   );
 }

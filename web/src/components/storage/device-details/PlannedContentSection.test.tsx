@@ -22,7 +22,7 @@
 
 import React from "react";
 import { screen } from "@testing-library/react";
-import { installerRender, mockNavigateFn } from "~/test-utils";
+import { installerRender } from "~/test-utils";
 import type { ConfigModel } from "~/model/storage/config-model";
 import type { Entry } from "~/components/storage/device-details/entry";
 import PlannedContentSection from "~/components/storage/device-details/PlannedContentSection";
@@ -48,37 +48,11 @@ const home: ConfigModel.LogicalVolume = {
 };
 
 describe("PlannedContentSection", () => {
-  it("says nothing is planned yet instead of showing a table with no rows", () => {
-    installerRender(<PlannedContentSection entry={group([])} subject={subject} />);
+  it("lists what is planned, with a generic name when given no caption", () => {
+    installerRender(<PlannedContentSection entry={group([home])} subject={subject} />);
 
-    expect(screen.queryByRole("table")).toBeNull();
-    expect(screen.getByRole("paragraph")).toHaveTextContent("No new logical volumes planned yet.");
-  });
-
-  it("leads to the form of this very group, by its place in the configuration", async () => {
-    const { user } = installerRender(
-      <PlannedContentSection
-        entry={group([])}
-        subject={{ collection: "volumeGroups", index: 2 }}
-      />,
-    );
-    await user.click(screen.getByRole("link", { name: "Add logical volume" }));
-
-    expect(mockNavigateFn).toHaveBeenCalledWith(
-      expect.objectContaining({ pathname: "/storage/volume-groups/2/logical-volumes/add" }),
-      expect.anything(),
-    );
-  });
-
-  it("offers the same way to add as under a table", () => {
-    const { rerender } = installerRender(
-      <PlannedContentSection entry={group([])} subject={subject} />,
-    );
-    screen.getByRole("link", { name: "Add logical volume" });
-
-    rerender(<PlannedContentSection entry={group([home])} subject={subject} />);
-    screen.getByRole("table", { name: "Planned content" });
-    screen.getByRole("link", { name: "Add logical volume" });
+    const table = screen.getByRole("table", { name: "Planned content" });
+    expect(table).toHaveTextContent("/home");
   });
 
   it("shows the caption it is given, which also names the table", () => {
@@ -87,21 +61,5 @@ describe("PlannedContentSection", () => {
     );
 
     screen.getByRole("table", { name: "Volumes to create" });
-  });
-
-  it("shows the footer and the extra actions it is given after the rows", () => {
-    installerRender(
-      <PlannedContentSection
-        entry={group([home])}
-        subject={subject}
-        footer="A note about the rows"
-        extraActions={<a href="#more">More</a>}
-      />,
-    );
-
-    const table = screen.getByRole("table");
-    const footer = screen.getByText("A note about the rows");
-    expect(table.compareDocumentPosition(footer)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
-    screen.getByRole("link", { name: "More" });
   });
 });
