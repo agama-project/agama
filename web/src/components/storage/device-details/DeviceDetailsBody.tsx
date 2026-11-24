@@ -47,7 +47,7 @@ export type DeviceDetailsBodyProps = {
 };
 
 function Intro({ children }): React.ReactNode {
-  return <Text textStyle={["fontSizeSm", "textColorSubtle"]}>{children}</Text>;
+  return <Text textStyle={["fontSizeXs", "textColorSubtle"]}>{children}</Text>;
 }
 
 function Body({ children }): React.ReactNode {
