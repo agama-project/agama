@@ -2,8 +2,11 @@
 Description=Agama Installer Service
 
 [Service]
-Type=forking
-ExecStart=/usr/bin/agamactl --daemon
+Type=exec
+ExecStartPre=/usr/bin/mkdir -p /run/agama
+ExecStartPre=/usr/bin/sh -c 'echo -n "unix:path=/run/agama/bus" > /run/agama/bus.address'
+ExecStart=/usr/bin/dbus-daemon --config-file=/usr/share/dbus-1/agama.conf --address=unix:path=/run/agama/bus --nofork --systemd-activation
+ExecStartPost=/usr/bin/sh -c 'echo $MAINPID > /run/agama/bus.pid'
 EnvironmentFile=-/run/agama/environment.conf
 PIDFile=/run/agama/bus.pid
 User=root
