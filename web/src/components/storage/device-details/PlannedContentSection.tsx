@@ -38,19 +38,17 @@ import {
   partitionIdLabel,
   sizeDescription,
 } from "~/components/storage/utils";
+import { partitionId, plannedOn } from "~/components/storage/device-details/planned";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { generateEncodedPath } from "~/utils";
 import { columnProps, tableProps } from "~/components/storage/shared/table-columns";
-import configModel from "~/model/storage/config-model";
 import { useDeleteLogicalVolume, useDeletePartition } from "~/hooks/model/storage/config-model";
 import { _ } from "~/i18n";
 import type { ConfigModel, Partitionable } from "~/model/storage/config-model";
 import type { Entry } from "~/components/storage/device-details/entry";
 import type { DetailsSubject } from "~/components/storage/shared/use-device-details";
 import type { ColumnLook } from "~/components/storage/shared/table-columns";
-
-/** A partition or logical volume planned for the new system. */
-type Planned = ConfigModel.Partition | ConfigModel.LogicalVolume;
+import type { Planned } from "~/components/storage/device-details/planned";
 
 /* How each column of the table looks, for its header and every cell under it.
    Sizes on the same edge, so a column of them is compared by looking down
@@ -61,32 +59,6 @@ const COLUMNS = {
   action: {},
   size: { isEndAligned: true },
 } satisfies Record<string, ColumnLook>;
-
-/**
- * Returns the partition id, if any: some partitions (a BIOS boot one, for
- * example) are requested by id instead of by mount point. Logical volumes
- * have none.
- */
-function partitionId(part: Planned): ConfigModel.PartitionId | undefined {
-  return "id" in part ? part.id : undefined;
-}
-
-/**
- * Returns what is planned on the entry, new or reused. Reused ones count too,
- * so a device that only mounts an existing partition does not look empty.
- */
-function plannedOn(entry: Entry): Planned[] {
-  const parts = entry.isVolumeGroup
-    ? (entry.config as ConfigModel.VolumeGroup).logicalVolumes || []
-    : (entry.config as Partitionable.Device).partitions || [];
-
-  return parts.filter((part) => {
-    /* A partition asked for by id and nothing else, a BIOS boot or a PReP
-       partition, is planned content too: it takes room and was asked for. */
-    if (configModel.volume.isNew(part)) return Boolean(part.mountPath || partitionId(part));
-    return Boolean(part.mountPath);
-  });
-}
 
 /**
  * Returns the text that names a planned item in the table: its mount point, or

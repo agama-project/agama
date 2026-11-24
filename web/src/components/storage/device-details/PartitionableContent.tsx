@@ -30,42 +30,13 @@ import BootStatement from "~/components/storage/device-details/BootStatement";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { generateEncodedPath } from "~/utils";
 import configModel from "~/model/storage/config-model";
+import { plannedOn } from "~/components/storage/device-details/planned";
 import { usersOf } from "~/components/storage/shared/users";
 import { useConfigModel } from "~/hooks/model/storage/config-model";
 import { useFlattenDevices as useSystemDevices } from "~/hooks/model/system/storage";
 import { _ } from "~/i18n";
-import type { Entry } from "~/components/storage/device-details/entry";
-import type { ConfigModel, Partitionable } from "~/model/storage/config-model";
+import type { Partitionable } from "~/model/storage/config-model";
 import type { DeviceDetailsBodyProps } from "~/components/storage/device-details/DeviceDetailsBody";
-
-/** A partition or logical volume planned for the new system. */
-type Planned = ConfigModel.Partition | ConfigModel.LogicalVolume;
-
-/**
- * Returns the partition id, if any: some partitions (a BIOS boot one, for
- * example) are requested by id instead of by mount point. Logical volumes
- * have none.
- */
-function partitionId(part: Planned): ConfigModel.PartitionId | undefined {
-  return "id" in part ? part.id : undefined;
-}
-
-/**
- * Returns what is planned on the entry, new or reused. Reused ones count too,
- * so a device that only mounts an existing partition does not look empty.
- */
-function plannedOn(entry: Entry): Planned[] {
-  const parts = entry.isVolumeGroup
-    ? (entry.config as ConfigModel.VolumeGroup).logicalVolumes || []
-    : (entry.config as Partitionable.Device).partitions || [];
-
-  return parts.filter((part) => {
-    /* A partition asked for by id and nothing else, a BIOS boot or a PReP
-       partition, is planned content too: it takes room and was asked for. */
-    if (configModel.volume.isNew(part)) return Boolean(part.mountPath || partitionId(part));
-    return Boolean(part.mountPath);
-  });
-}
 
 /**
  * Explains how the new system uses a disk on which it creates or reuses
