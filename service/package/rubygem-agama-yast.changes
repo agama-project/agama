@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Tue Nov 24 11:45:18 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add titles to questions (gh#agama-project/agama#2028,
+  gh#agama-project/agama#4278):
+- Adjust description and details for the bootloaderInstallError
+  question.
+
+-------------------------------------------------------------------
 Thu Nov 12 12:12:49 UTC 2026 - José Iván López González <jlopez@suse.com>
 
 - Support the Discoverable Partitions Specification (DPS) in the
