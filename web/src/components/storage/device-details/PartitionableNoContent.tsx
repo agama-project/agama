@@ -47,7 +47,7 @@ export default function PartitionableNoContent({ entry, subject }: DeviceDetails
 
   const summary = isCurrentlyPartitioned
     ? _(
-        "Something about new partitions to be created during instalation, bla, mount any existing one or format the whole device.",
+        "Define some partitions to be created, mounted or formatted during instalation, or set the device to be formatted with no partitions.",
       )
     : isCurrentlyFormatted
       ? sprintf(
