@@ -1,0 +1,21 @@
+{
+  "title": "A port nested in two bonds",
+  "description": "Rejected by the network service. Nothing is created.",
+  "steps": [
+    {
+      "profile": "1-nested-twice.json",
+      "description": "eth1 nested in bond0 and in bond1",
+      "expect": {
+        "error": "DuplicatedConnection",
+        "connections": {
+          "bond0": {
+            "removed": true
+          },
+          "bond1": {
+            "removed": true
+          }
+        }
+      }
+    }
+  ]
+}

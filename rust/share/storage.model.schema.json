@@ -45,7 +45,7 @@
     "encryption": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["method"],
+      "required": ["password"],
       "properties": {
         "password": { "type": "string" },
         "tpm": { "type": "boolean" }

@@ -1,0 +1,14 @@
+{
+  "network": {
+    "connections": [
+      {
+        "id": "eth0",
+        "interface": "eth0",
+        "port": {
+          "priority": 16,
+          "pathCost": 50
+        }
+      }
+    ]
+  }
+}

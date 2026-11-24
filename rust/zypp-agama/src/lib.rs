@@ -22,6 +22,7 @@ pub const SOLVER_TESTCASE_DIR: &str = "/run/agama/testcase";
 #[derive(Debug)]
 pub struct Repository {
     pub enabled: bool,
+    pub autorefresh: bool,
     pub url: String,
     pub alias: String,
     pub user_name: String,
@@ -266,6 +267,7 @@ impl Zypp {
                 };
                 let r_repo = Repository {
                     enabled: c_repo.enabled,
+                    autorefresh: c_repo.autorefresh,
                     url: string_from_ptr(c_repo.url),
                     alias: string_from_ptr(c_repo.alias),
                     user_name: string_from_ptr(c_repo.userName),
@@ -466,6 +468,7 @@ impl Zypp {
         alias: &str,
         url: &str,
         priority: Option<u32>,
+        autorefresh: bool,
         progress: F,
     ) -> ZyppResult<()>
     where
@@ -483,6 +486,7 @@ impl Zypp {
                 c_alias.as_ptr(),
                 c_url.as_ptr(),
                 priority.unwrap_or_default(),
+                autorefresh,
                 status_ptr,
                 cb,
                 &mut closure as *mut _ as *mut c_void,
@@ -837,6 +841,7 @@ mod tests {
             let zypp = Zypp::init_target(&root, progress_cb)?;
             let repos = zypp.list_repositories()?;
             assert!(repos.len() == 1);
+            assert!(repos[0].autorefresh);
         }
         {
             setup();

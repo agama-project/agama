@@ -25,7 +25,7 @@ use agama_lib::{
     profile::{ProfileHTTPClient, ProfileValidator, UnsupportedElement, ValidationOutcome},
     utils::FileFormat,
 };
-use agama_utils::api::{self, ProblemDetails};
+use agama_utils::api::{self, files, ProblemDetails};
 use agama_utils::make_long;
 use anyhow::{anyhow, Context};
 use clap::{Arg, ArgAction, ArgMatches, Command};
@@ -203,7 +203,7 @@ pub async fn run(sub_matches: &ArgMatches, opts: GlobalOpts) -> anyhow::Result<(
         Some(("show", matches)) => {
             let output = matches.get_one::<CliOutput>("output").cloned();
             let http_client = build_http_client(api_url, opts.insecure, true).await?;
-            let response: api::Config = http_client.get("/config").await?;
+            let response: serde_json::Value = http_client.get("/config").await?;
             let json = serde_json::to_string_pretty(&response)?;
             let destination = output.unwrap_or(CliOutput::Stdout);
             destination.write(&json)?;
@@ -239,7 +239,7 @@ pub async fn run(sub_matches: &ArgMatches, opts: GlobalOpts) -> anyhow::Result<(
         Some(("edit", matches)) => {
             let editor = matches.get_one::<String>("editor").cloned();
             let (http_client, ws) = build_clients(api_url, opts.insecure).await?;
-            let response: api::Config = http_client.get("/config").await?;
+            let response: serde_json::Value = http_client.get("/config").await?;
             let editor = editor
                 .or_else(|| std::env::var("EDITOR").ok())
                 .unwrap_or(DEFAULT_EDITOR.to_string());
@@ -347,8 +347,9 @@ async fn generate(
         return Err(e);
     }
 
-    let config = api::Config::from_json(&profile_json, &context.source)?;
-    let config_json = serde_json::to_string_pretty(&config)?;
+    let mut profile: serde_json::Value = serde_json::from_str(&profile_json)?;
+    files::resolve_urls_in_value(&mut profile, &context.source)?;
+    let config_json = serde_json::to_string_pretty(&profile)?;
 
     println!("{}", config_json);
 
@@ -411,7 +412,7 @@ async fn from_json_or_jsonnet(
 /// * `editor`: editor command.
 async fn edit(
     http_client: &BaseHTTPClient,
-    model: &api::Config,
+    model: &serde_json::Value,
     editor: &str,
 ) -> anyhow::Result<serde_json::Value> {
     let original = serde_json::to_string_pretty(model)?;

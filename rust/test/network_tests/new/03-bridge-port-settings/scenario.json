@@ -1,0 +1,29 @@
+{
+  "title": "Bridge port settings",
+  "description": "The settings a connection has as a port of a bridge go in port. A nested port may have an ID other than its interface.",
+  "steps": [
+    {
+      "profile": "1-bridge.json",
+      "description": "Bridge with eth0 (priority 16, path cost 50) and eth1 with the ID uplink",
+      "expect": {
+        "connections": {
+          "br0": {
+            "controller": null
+          },
+          "eth0": {
+            "controller": "br0",
+            "port": {
+              "priority": 16,
+              "pathCost": 50
+            }
+          },
+          "uplink": {
+            "controller": "br0",
+            "interface": "eth1",
+            "mtu": 9000
+          }
+        }
+      }
+    }
+  ]
+}
