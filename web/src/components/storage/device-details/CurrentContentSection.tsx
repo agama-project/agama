@@ -137,12 +137,17 @@ function PartitionMenu({
         ? [
             <MenuButtonItem
               key="edit"
+              icon={<Icon size="md" name="edit_square" />}
               to={generateEncodedPath(PATHS.editPartition, { ...at, partitionId: reusedAs })}
               keepQuery
             >
               {_("Modify how the partition is used")}
             </MenuButtonItem>,
-            <MenuButtonItem key="stop" onClick={() => deletePartition(collection, index, reusedAs)}>
+            <MenuButtonItem
+              key="stop"
+              icon={<Icon size="md" name="link_off" />}
+              onClick={() => deletePartition(collection, index, reusedAs)}
+            >
               {/* TRANSLATORS: on a partition the new system reuses: stop reusing it */}
               {_("Stop using")}
             </MenuButtonItem>,
@@ -150,6 +155,7 @@ function PartitionMenu({
         : [
             <MenuButtonItem
               key="reuse"
+              icon={<Icon size="md" name="create_new_folder" />}
               to={generateEncodedPath(PATHS.reusePartition, { ...at, deviceName: part.name })}
               keepQuery
               description={_("Used by the new system, keeping or deleting data.")}

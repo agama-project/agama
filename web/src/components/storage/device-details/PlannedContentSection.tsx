@@ -45,6 +45,7 @@ import type { Entry } from "~/components/storage/device-details/entry";
 import type { DetailsSubject } from "~/components/storage/shared/use-device-details";
 import type { ColumnLook } from "~/components/storage/shared/table-columns";
 import type { Planned } from "~/components/storage/device-details/planned";
+import Icon from "~/components/layout/Icon";
 
 /* Sizes are end-aligned, so they compare at a glance. */
 const COLUMNS = {
@@ -205,11 +206,17 @@ export default function PlannedContentSection({
                       <RowMenuToggle label={sprintf(_("Actions for %s"), label(part))} size="sm" />
                     }
                     items={[
-                      <MenuButtonItem key="edit" to={editPath(part)} keepQuery>
+                      <MenuButtonItem
+                        key="edit"
+                        icon={<Icon size="md" name="edit_square" />}
+                        to={editPath(part)}
+                        keepQuery
+                      >
                         {_("Edit")}
                       </MenuButtonItem>,
                       <MenuButtonItem
                         key="delete"
+                        icon={<Icon size="md" name={source ? "link_off" : "delete"} />}
                         /* For a reused partition, only the plan goes away. */
                         isDanger={!source}
                         onClick={() => remove(part.mountPath)}

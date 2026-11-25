@@ -41,6 +41,7 @@ import { _ } from "~/i18n";
 import { useDevice } from "~/hooks/model/system/storage";
 import type { Partitionable } from "~/model/storage/config-model";
 import type { DetailsSubject } from "~/components/storage/shared/use-device-details";
+import Icon from "~/components/layout/Icon";
 
 type RemoveDeviceMenuItemProps = {
   device: Partitionable.Device;
@@ -72,6 +73,7 @@ const RemoveDeviceMenuItem = ({ device, onClick }: RemoveDeviceMenuItemProps): R
   return (
     <MenuButtonItem
       key="delete"
+      icon={<Icon size="md" name="do_not_disturb_on" />}
       isDanger
       isDisabled={isDisabled}
       description={description}
@@ -124,6 +126,7 @@ export default function DriveMenu({ entry, subject }: DriveMenuProps): React.Rea
     ? [
         <MenuButtonItem
           key="open"
+          icon={<Icon size="md" name="right_panel_open" />}
           /* Named in full only for a reader who is told the item rather than
              shown it. On screen the menu hangs off the row it belongs to, and
              a name the reader can see beside the item is a name repeated. */

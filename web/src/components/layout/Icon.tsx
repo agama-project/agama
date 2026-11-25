@@ -42,11 +42,13 @@ import ChevronRight from "@icons/chevron_right.svg?component";
 import ClearAll from "@icons/clear_all.svg?component";
 import Close from "@icons/close.svg?component";
 import Compress from "@icons/compress.svg?component";
+import CreateNewFolder from "@icons/create_new_folder.svg?component";
 import Delete from "@icons/delete.svg?component";
 import DeployedCodeAlert from "@icons/deployed_code_alert.svg?component";
 import DeployedCodeUpdate from "@icons/deployed_code_update.svg?component";
 import DeviceHub from "@icons/device_hub.svg?component";
 import Dns from "@icons/dns.svg?component";
+import DoNotDisturbOn from "@icons/do_not_disturb_on.svg?component";
 import DoneAll from "@icons/done_all.svg?component";
 import Download from "@icons/download.svg?component";
 import DragIndicator from "@icons/drag_indicator.svg?component";
@@ -66,6 +68,8 @@ import Keyboard from "@icons/keyboard.svg?component";
 import KeyboardArrowDown from "@icons/keyboard_arrow_down.svg?component";
 import Language from "@icons/language.svg?component";
 import LastPage from "@icons/last_page.svg?component";
+import LibraryAdd from "@icons/library_add.svg?component";
+import LinkOff from "@icons/link_off.svg?component";
 import ListAlt from "@icons/list_alt.svg?component";
 import ListAltCheck from "@icons/list_alt_check.svg?component";
 import Lock from "@icons/lock.svg?component";
@@ -87,6 +91,7 @@ import Pending from "@icons/pending.svg?component";
 import PendingActions from "@icons/pending_actions.svg?component";
 import Report from "@icons/report.svg?component";
 import RestartAlt from "@icons/restart_alt.svg?component";
+import RightPanelOpen from "@icons/right_panel_open.svg?component";
 import RotateAuto from "@icons/rotate_auto.svg?component";
 import Routine from "@icons/routine.svg?component";
 import Schema from "@icons/schema.svg?component";
@@ -121,12 +126,17 @@ const icons = {
   backspace: Backspace,
   block: Block,
   change_circle: ChangeCircle,
+  create_new_folder: CreateNewFolder,
   device_hub: DeviceHub,
   check_circle: CheckCircle,
+  do_not_disturb_on: DoNotDisturbOn,
   last_page: LastPage,
+  library_add: LibraryAdd,
+  link_off: LinkOff,
   lock_open: LockOpen,
   network_node: NetworkNode,
   pending_actions: PendingActions,
+  right_panel_open: RightPanelOpen,
   schema: Schema,
   rotate_auto: RotateAuto,
   settings_backup_restore: SettingsBackupRestore,
