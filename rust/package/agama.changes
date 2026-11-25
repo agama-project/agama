@@ -1,4 +1,16 @@
 -------------------------------------------------------------------
+Wed Nov 25 15:34:30 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Make the wireless "mode" and "security" settings of a network
+  connection optional again in the profile, defaulting to
+  "infrastructure" and "none" as documented. The generated network
+  schema had made them required, and a profile without them failed
+  to load.
+- Accept the IEEE 802.1X settings of a network connection under the
+  "ieee-8021x" key in the profile schema too, as the profile already
+  did.
+
+-------------------------------------------------------------------
 Tue Nov 25 11:42:38 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Improve the questions API (gh#agama-project/agama#2028,
