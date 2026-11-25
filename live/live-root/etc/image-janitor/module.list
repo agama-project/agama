@@ -1,6 +1,9 @@
-# This is an extension of the module.list file specially for adding sound
-# drivers for Orca.
-#
+# This is an extension of the module.list file specially for Agama.
+
+# keep the nvmem drivers (https://bugzilla.suse.com/show_bug.cgi?id=1243350)
+kernel/drivers/nvmem/
+kernel/drivers/dma/fsl-edma.ko
+
 # The naive "kernel/sound/" wildcard pulled in ~50 MiB, almost entirely
 # because it kept kernel/sound/soc/ (Intel/AMD SOF DSP audio), which in turn
 # makes image-janitor's firmware cleanup keep the SOF firmware/topology

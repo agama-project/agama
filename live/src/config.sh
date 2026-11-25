@@ -388,7 +388,7 @@ sed -i 's/^#\? *AudioOutputMethod .*/AudioOutputMethod "alsa"/' /etc/speech-disp
 du -h -s /lib/modules /lib/firmware
 
 # remove the multimedia drivers, use the default configuration files
-image-janitor driver-cleanup --delete --config-files /usr/share/image-janitor/module.list,/usr/share/image-janitor/module.list.extra,/etc/image-janitor/module.list
+image-janitor driver-cleanup --delete --config-files /usr/share/image-janitor/module.list,/etc/image-janitor/module.list
 
 # remove the unused firmware (not referenced by kernel drivers)
 image-janitor fw-cleanup --delete
