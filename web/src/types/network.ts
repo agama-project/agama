@@ -306,6 +306,7 @@ type APIConnection = {
   method4?: string;
   method6?: string;
   wireless?: Wireless;
+  ieee8021x?: IEEE8021X;
   status: ConnectionStatus;
   state?: ConnectionState;
   persistent: boolean;
@@ -357,6 +358,14 @@ type Vlan = {
   flags?: VlanFlag[];
 };
 
+type IEEE8021X = {
+  eap: string[];
+  phase2Auth?: string;
+  identity?: string;
+  password?: string;
+  anonymousIdentity?: string;
+};
+
 type ConnectionOptions = {
   iface?: string;
   macAddress?: string;
@@ -368,6 +377,7 @@ type ConnectionOptions = {
   method4?: ConnectionMethod;
   method6?: ConnectionMethod;
   wireless?: Wireless;
+  ieee8021x?: IEEE8021X;
   bond?: Bond;
   bridge?: Bridge;
   vlan?: Vlan;
@@ -404,6 +414,7 @@ class Connection {
   bridge?: Bridge;
   vlan?: Vlan;
   wireless?: Wireless;
+  ieee8021x?: IEEE8021X;
   persistent: boolean;
 
   constructor(id: string, options?: ConnectionOptions) {
@@ -643,6 +654,7 @@ export type {
   Bond,
   Bridge,
   Vlan,
+  IEEE8021X,
   ConnectionBindingMode,
   ConnectionOptions,
   APIDevice,

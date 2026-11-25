@@ -58,11 +58,17 @@ const publicNetwork = {
   security: [],
 };
 
+const enterpriseNetwork = {
+  ...visibleNetwork,
+  ssid: "Enterprise Network",
+  security: ["WPA2", "802.1X"],
+};
+
 describe("WifiConnectionForm", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockUpdateConnection.mockResolvedValue(undefined);
-    mockUseWifiNetworks.mockReturnValue([visibleNetwork, publicNetwork]);
+    mockUseWifiNetworks.mockReturnValue([visibleNetwork, publicNetwork, enterpriseNetwork]);
   });
 
   it("renders an empty state when no networks are found", () => {
@@ -110,6 +116,47 @@ describe("WifiConnectionForm", () => {
       await waitFor(() => {
         expect(screen.getByRole("combobox", { name: "Security" })).toHaveValue("wpa-psk");
       });
+    });
+  });
+
+  describe("when an enterprise network is selected", () => {
+    it("pre-selects WPA & WPA2 Enterprise and renders its fields", async () => {
+      const { user } = installerRender(<WifiConnectionForm />);
+      await user.selectOptions(
+        screen.getByRole("combobox", { name: "Network" }),
+        "Enterprise Network",
+      );
+      await waitFor(() => {
+        expect(screen.getByRole("combobox", { name: "Security" })).toHaveValue("wpa-eap");
+      });
+      screen.getByRole("combobox", { name: "Authentication" });
+      expect(screen.queryByLabelText("WPA Password")).toBeNull();
+    });
+
+    it("submits the 802.1X settings", async () => {
+      const { user } = installerRender(<WifiConnectionForm />);
+      await user.selectOptions(
+        screen.getByRole("combobox", { name: "Network" }),
+        "Enterprise Network",
+      );
+      await user.type(screen.getByLabelText("User name"), "alice");
+      await user.type(screen.getByLabelText("Password"), "secret");
+      await user.click(screen.getByRole("button", { name: "Connect" }));
+      await waitFor(() => {
+        expect(mockUpdateConnection).toHaveBeenCalledWith(
+          expect.objectContaining({
+            wireless: expect.objectContaining({ ssid: "Enterprise Network", security: "wpa-eap" }),
+            ieee8021x: {
+              eap: ["peap"],
+              phase2Auth: "mschapv2",
+              identity: "alice",
+              password: "secret",
+            },
+          }),
+        );
+      });
+      const [connection] = mockUpdateConnection.mock.calls[0];
+      expect(connection.wireless.password).toBeUndefined();
     });
   });
 
