@@ -18,73 +18,88 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+use std::collections::HashMap;
+use zbus::zvariant::OwnedValue;
+
 use crate::{message, service::Service};
 use agama_utils::{
     actor::Handler,
-    dbus::{get_property, to_owned_hash},
+    dbus::{get_property, PropertiesMonitor},
 };
-use tokio_stream::StreamExt;
-use zbus::fdo::{PropertiesChangedStream, PropertiesProxy};
 
-#[derive(thiserror::Error, Debug)]
-pub enum Error {
-    #[error(transparent)]
-    DBus(#[from] zbus::Error),
-}
-
-pub struct Monitor {
-    handler: Handler<Service>,
-    stream: PropertiesChangedStream,
-}
-
-// Monitors the DBUS hostname service notifying the static or transient system hostname change
-// when them occurs
-//
-/// * `handler`: service handler to be monitorized.
-impl Monitor {
-    pub async fn new(handler: Handler<Service>) -> Result<Self, Error> {
-        let dbus = zbus::Connection::system().await?;
-        let proxy = PropertiesProxy::builder(&dbus)
-            .path("/org/freedesktop/hostname1")?
-            .destination("org.freedesktop.hostname1")?
-            .build()
-            .await?;
-        let stream = proxy
-            .receive_properties_changed()
-            .await
-            .map_err(Error::DBus)?;
-        Ok(Self { handler, stream })
+/// Handles changed D-Bus properties and updates the hostname service accordingly.
+pub async fn handle_changes(handler: &Handler<Service>, changes: HashMap<String, OwnedValue>) {
+    if let Ok(name) = get_property::<String>(&changes, "Hostname") {
+        let _ = handler.call(message::UpdateHostname { name }).await;
     }
+    if let Ok(name) = get_property::<String>(&changes, "StaticHostname") {
+        let _ = handler.call(message::UpdateStaticHostname { name }).await;
+    }
+}
 
-    pub async fn run(&mut self) {
-        while let Some(changes) = self.stream.next().await {
-            let Ok(args) = changes.args() else {
-                continue;
-            };
+/// Starts monitoring the D-Bus hostname service notifying static or transient hostname changes.
+pub async fn start(handler: Handler<Service>) -> Result<tokio::task::JoinHandle<()>, zbus::Error> {
+    let mut monitor =
+        PropertiesMonitor::new("org.freedesktop.hostname1", "/org/freedesktop/hostname1").await?;
 
-            let changes = args.changed_properties();
-            let Ok(changes) = to_owned_hash(changes) else {
-                continue;
-            };
-
-            if let Ok(name) = get_property::<String>(&changes, "Hostname") {
-                let _ = self.handler.call(message::UpdateHostname { name }).await;
-            }
-            if let Ok(name) = get_property::<String>(&changes, "StaticHostname") {
-                let _ = self
-                    .handler
-                    .call(message::UpdateStaticHostname { name })
-                    .await;
-            }
+    Ok(tokio::spawn(async move {
+        while let Some(changes) = monitor.next().await {
+            handle_changes(&handler, changes).await;
         }
-    }
+    }))
 }
 
-/// Spawns a Tokio task for the monitor.
-///
-/// * `monitor`: monitor to spawn.
-pub fn spawn(mut monitor: Monitor) {
-    tokio::spawn(async move {
-        monitor.run().await;
-    });
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::test_utils::start_service;
+    use agama_utils::{
+        api::{event::Event, scope::Scope},
+        issue,
+    };
+    use tokio::sync::broadcast;
+    use zbus::zvariant::Str;
+
+    #[tokio::test]
+    async fn test_handle_hostname_change() {
+        let (events_tx, mut events_rx) = broadcast::channel::<Event>(16);
+        let issues = issue::Service::starter(events_tx.clone()).start();
+        let handler = start_service(events_tx, issues).await;
+
+        let changes = HashMap::from([(
+            "Hostname".to_string(),
+            OwnedValue::from(Str::from_static("new-transient")),
+        )]);
+
+        handle_changes(&handler, changes).await;
+
+        let config = handler.call(message::GetConfig).await.unwrap();
+        assert_eq!(config.hostname, Some("new-transient".to_string()));
+
+        let event = events_rx.recv().await.unwrap();
+        assert!(matches!(
+            event,
+            Event::ProposalChanged {
+                scope: Scope::Hostname,
+            }
+        ));
+    }
+
+    #[tokio::test]
+    async fn test_handle_static_hostname_change() {
+        let (events_tx, _events_rx) = broadcast::channel::<Event>(16);
+        let issues = issue::Service::starter(events_tx.clone()).start();
+        let handler = start_service(events_tx, issues).await;
+
+        let changes = HashMap::from([(
+            "StaticHostname".to_string(),
+            OwnedValue::from(Str::from_static("new-static")),
+        )]);
+
+        handle_changes(&handler, changes).await;
+
+        let config = handler.call(message::GetConfig).await.unwrap();
+        assert_eq!(config.r#static, Some("new-static".to_string()));
+        assert_eq!(config.hostname, Some("new-static".to_string()));
+    }
 }

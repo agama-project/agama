@@ -12,7 +12,6 @@ gettext-rs = { workspace = true }
 regex = { workspace = true }
 thiserror = { workspace = true }
 tokio = { workspace = true }
-tokio-stream = { workspace = true }
 tracing = { workspace = true }
 zbus = { workspace = true }
 

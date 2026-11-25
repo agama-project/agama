@@ -106,7 +106,6 @@ dependencies = [
  "test-context",
  "thiserror 2.0.18",
  "tokio",
- "tokio-stream",
  "tracing",
  "zbus",
 ]
@@ -141,7 +140,6 @@ dependencies = [
  "test-context",
  "thiserror 2.0.18",
  "tokio",
- "tokio-stream",
  "tracing",
  "zbus",
 ]
@@ -497,6 +495,7 @@ dependencies = [
  "test-context",
  "thiserror 2.0.18",
  "tokio",
+ "tokio-stream",
  "tokio-test",
  "tracing",
  "tracing-journald",

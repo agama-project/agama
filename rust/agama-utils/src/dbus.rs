@@ -21,6 +21,8 @@
 //! Utilities to interact with D-Bus types.
 
 use std::collections::HashMap;
+use tokio_stream::StreamExt;
+use zbus::fdo::{PropertiesChangedStream, PropertiesProxy};
 use zvariant::{self, OwnedValue, Value};
 
 /// Nested hash to send to D-Bus.
@@ -80,6 +82,42 @@ pub fn to_owned_hash<T: ToString>(
         owned.insert(key.to_string(), value.try_into()?);
     }
     Ok(owned)
+}
+
+/// Monitors D-Bus property changes on a system service.
+pub struct PropertiesMonitor {
+    stream: PropertiesChangedStream,
+}
+
+impl PropertiesMonitor {
+    /// Creates a new monitor on the system bus for the given destination and path.
+    pub async fn new(destination: &'static str, path: &'static str) -> Result<Self, zbus::Error> {
+        let dbus = zbus::Connection::system().await?;
+        let proxy = PropertiesProxy::builder(&dbus)
+            .destination(destination)?
+            .path(path)?
+            .build()
+            .await?;
+        let stream = proxy.receive_properties_changed().await?;
+        Ok(Self { stream })
+    }
+
+    /// Returns the next map of changed properties, or `None` if the stream ended.
+    pub async fn next(&mut self) -> Option<HashMap<String, OwnedValue>> {
+        while let Some(changes) = self.stream.next().await {
+            let Ok(args) = changes.args() else {
+                continue;
+            };
+
+            let changes = args.changed_properties();
+            let Ok(changes) = to_owned_hash(changes) else {
+                continue;
+            };
+
+            return Some(changes);
+        }
+        None
+    }
 }
 
 #[cfg(test)]
