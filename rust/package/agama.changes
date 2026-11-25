@@ -1,5 +1,5 @@
 -------------------------------------------------------------------
-Wed Nov 25 12:00:00 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+Wed Nov 25 15:36:00 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
 
 - Filter out `live.password`, `inst.mcp.token`, sensitive boot
   parameters, and basic auth passwords in URLs from MCP server logs,
