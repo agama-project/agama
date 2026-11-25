@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Nov 25 15:36:17 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Export deprecated aliases for question answers and IEEE 802.1X
+  in OpenAPI schema (gh#agama-project/agama#4235).
+
+-------------------------------------------------------------------
 Wed Nov 25 15:34:30 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
 
 - Make the wireless "mode" and "security" settings of a network

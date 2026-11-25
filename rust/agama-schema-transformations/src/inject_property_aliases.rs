@@ -28,6 +28,9 @@ const ALIAS_PAIRS: &[(&str, &str)] = &[
     ("keymap", "keyboard"),
     ("sshPublicKeys", "sshPublicKey"),
     ("dnsSearchList", "dnsSearchlist"),
+    ("action", "answer"),
+    ("value", "password"),
+    ("ieee8021x", "ieee-8021x"),
 ];
 
 /// A schemars [`Transform`] that injects deprecated compatibility aliases into schemas
@@ -105,6 +108,9 @@ mod tests {
                 "keymap": { "type": "string" },
                 "sshPublicKeys": { "type": "array" },
                 "dnsSearchList": { "type": "array" },
+                "action": { "type": "string" },
+                "value": { "type": "string" },
+                "ieee8021x": { "type": "object" },
                 "l10n": { "$ref": "#/components/schemas/l10n.Config" },
                 "product": {},
                 "software": {}
@@ -133,6 +139,21 @@ mod tests {
         assert!(props.contains_key("keyboard"));
         assert!(props.contains_key("sshPublicKey"));
         assert!(props.contains_key("dnsSearchlist"));
+        assert!(props.contains_key("answer"));
+        assert_eq!(
+            props.get("answer").unwrap().get("deprecated"),
+            Some(&Value::Bool(true))
+        );
+        assert!(props.contains_key("password"));
+        assert_eq!(
+            props.get("password").unwrap().get("deprecated"),
+            Some(&Value::Bool(true))
+        );
+        assert!(props.contains_key("ieee-8021x"));
+        assert_eq!(
+            props.get("ieee-8021x").unwrap().get("deprecated"),
+            Some(&Value::Bool(true))
+        );
         assert!(props.contains_key("localization"));
         assert!(props.contains_key("$schema"));
     }
