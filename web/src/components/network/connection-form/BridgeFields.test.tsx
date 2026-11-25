@@ -51,9 +51,11 @@ jest.mock("~/hooks/model/system/network", () => ({
 function TestForm({
   defaultValues = {},
   isEditing = false,
+  excludedDevices = [],
 }: {
   defaultValues?: object;
   isEditing?: boolean;
+  excludedDevices?: string[];
 }) {
   const form = useAppForm({
     ...defaultOptions,
@@ -67,7 +69,7 @@ function TestForm({
 
   return (
     <form.AppForm>
-      <BridgeFields form={form} isEditing={isEditing} />
+      <BridgeFields form={form} isEditing={isEditing} excludedDevices={excludedDevices} />
     </form.AppForm>
   );
 }
@@ -80,6 +82,16 @@ describe("BridgeFields", () => {
     screen.getByRole("combobox", { name: "Bridge ports" });
     const stpSelector = await screen.findByLabelText("Spanning Tree Protocol (STP)");
     expect(stpSelector).toHaveTextContent("Default");
+  });
+
+  it("leaves the excluded devices out of the available ones", async () => {
+    const { user } = installerRender(<TestForm excludedDevices={["enp1s0"]} />);
+
+    await screen.findByRole("combobox", { name: "Bridge ports" });
+    await user.click(screen.getByRole("button", { name: "Show options" }));
+    const list = within(screen.getByRole("listbox", { name: "Bridge ports" }));
+    list.getByRole("option", { name: /enp2s0/ });
+    expect(list.queryByRole("option", { name: /enp1s0/ })).not.toBeInTheDocument();
   });
 
   it("displays bridge ports", async () => {

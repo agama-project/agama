@@ -1,5 +1,5 @@
 -------------------------------------------------------------------
-Tue Nov 24 11:47:08 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+Tue Nov 25 11:47:08 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Improve the questions presentation (gh#agama-project/agama#2028,
   gh#agama-project/agama#4278):
@@ -10,6 +10,20 @@ Tue Nov 24 11:47:08 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
   - Fix the "Organization" label in RegistrationCertificateQuestion.
   - Do not use icons on questions titles.
   - Use blank lines to split the text into paragraphs.
+
+-------------------------------------------------------------------
+Wed Nov 25 10:04:49 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Recognize a port of a bond or a bridge listed by its connection
+  id, not only by its interface name, and drop every IP setting,
+  including ignoreAutoDns, from a port (gh#agama-project/agama#3996).
+
+-------------------------------------------------------------------
+Tue Nov 24 16:59:01 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Handle the ports of bonds and bridges nested in their controller,
+  listing and editing them like any other connection
+  (gh#agama-project/agama#3996).
 
 -------------------------------------------------------------------
 Mon Nov 16 08:50:23 UTC 2026 - Michal Filka <mfilka@suse.com>
