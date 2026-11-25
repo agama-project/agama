@@ -57,16 +57,6 @@ jobs:
              osc
              ${{ inputs.install_packages }}
 
-      - name: Update obs-service-node_modules
-        # the version in Leap 16.1 does not support the "omit-optional" and
-        # "legacy-container" parameters used in the _service file, install
-        # the newer version from the openSUSE:Tools repository
-        if: contains(inputs.install_packages, 'obs-service-node_modules')
-        run: zypper --gpg-auto-import-keys addrepo --refresh
-             https://download.opensuse.org/repositories/openSUSE:/Tools/16.1/ openSUSE-Tools &&
-             zypper --gpg-auto-import-keys --non-interactive install
-             --from openSUSE-Tools --allow-vendor-change obs-service-node_modules
-
       - name: Git Checkout
         uses: actions/checkout@v7
         with:
