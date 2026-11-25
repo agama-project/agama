@@ -23,8 +23,9 @@
 import React, { useState } from "react";
 import { Content, FormGroup, Stack, TextInput } from "@patternfly/react-core";
 import Text from "~/components/core/Text";
-import ExpandableTechnicalSection from "~/components/questions/ExpandableTechnicalSection";
 import QuestionDialog from "~/components/questions/QuestionDialog";
+import QuestionText from "~/components/questions/QuestionText";
+import TechnicalDetails from "~/components/questions/TechnicalDetails";
 import { _ } from "~/i18n";
 import type { AnswerCallback, Question } from "~/model/question";
 
@@ -52,10 +53,10 @@ export default function RetryLoadConfigQuestion({
       value={url}
       hasForm
       variant="medium"
-      title={_("Cannot apply configuration")}
+      title={question.title}
     >
       <Stack hasGutter>
-        <Content isEditorial>{question.text}</Content>
+        <QuestionText text={question.text} isEditorial />
         <QuestionDialog.Form isWidthLimited={false}>
           {/* TRANSLATORS: field label for location of configuration file */}
           <FormGroup label={_("Location")} fieldId="location">
@@ -73,7 +74,7 @@ export default function RetryLoadConfigQuestion({
             {_("Make sure the location is correct and the configuration is valid.")}
           </Text>
         </Content>
-        <ExpandableTechnicalSection text={error} />
+        <TechnicalDetails text={error} />
       </Stack>
     </QuestionDialog>
   );

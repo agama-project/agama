@@ -43,7 +43,7 @@
 //! async fn use_questions_service() {
 //!     let (events_tx, _events_rx) = broadcast::channel(16);
 //!
-//!     let question = QuestionSpec::new("Please, enter a username", "username")
+//!     let question = QuestionSpec::new("User", "Please, enter a username", "username")
 //!        .as_string()
 //!        .with_actions(&[("next", "Next"), ("cancel", "Cancel")]);
 //!     let questions = question::start(events_tx).await.unwrap();

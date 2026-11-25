@@ -293,3 +293,12 @@ nav.agm-breadcrumb > ol > li > a {
 .agm-progress-detail {
   max-inline-size: 80ch;
 }
+
+// Technical details: the label sits on the left of the code block header and
+// the copy button on the right. PatternFly's header expects only actions, so it
+// pushes them all to the end.
+.agm-technical-details .pf-v6-c-code-block__actions {
+  flex: 1;
+  align-items: center;
+  justify-content: space-between;
+}

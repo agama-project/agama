@@ -412,3 +412,42 @@ label.pf-m-disabled + .pf-v6-c-check__description {
 .agm-field-option-menu .pf-v6-c-menu__list {
   scroll-padding-block-end: 4rem;
 }
+
+// Code blocks. The code area is a tint of the dialog surface rather than a
+// surface token of its own: in dark themes the secondary and floating surfaces
+// can be the same color, and a code block in a dialog would lose its body. The
+// header bar (shown when a code block has actions) gets a tint a little darker
+// than the code area, so header and code read as one block, and padding that
+// lines its content up with the code below. Mixing towards the text color
+// keeps the defaults working on any theme; the --agm-t--code-block--* roles let
+// a design pick its own colors.
+//
+// :root raises the specificity: PatternFly's code block styles load after
+// these (through the component import), so a bare class would lose.
+:root .pf-v6-c-code-block {
+  --pf-v6-c-code-block--BackgroundColor: var(
+    --agm-t--code-block--background--color,
+    color-mix(
+      in srgb,
+      var(--pf-t--global--background--color--floating--default) 94%,
+      var(--pf-t--global--text--color--regular)
+    )
+  );
+  --pf-v6-c-code-block__header--PaddingBlockStart: var(--pf-t--global--spacer--sm);
+  --pf-v6-c-code-block__header--PaddingBlockEnd: var(--pf-t--global--spacer--sm);
+  --pf-v6-c-code-block__header--PaddingInlineStart: var(--pf-t--global--spacer--md);
+
+  overflow: hidden;
+}
+
+:root .pf-v6-c-code-block__header {
+  align-items: center;
+  background-color: var(
+    --agm-t--code-block--header--background--color,
+    color-mix(
+      in srgb,
+      var(--pf-v6-c-code-block--BackgroundColor) 96%,
+      var(--pf-t--global--text--color--regular)
+    )
+  );
+}

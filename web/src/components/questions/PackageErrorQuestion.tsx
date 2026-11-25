@@ -22,8 +22,8 @@
 
 import React from "react";
 import { Content, Stack } from "@patternfly/react-core";
-import { Icon } from "~/components/layout";
 import QuestionDialog from "~/components/questions/QuestionDialog";
+import QuestionText from "~/components/questions/QuestionText";
 import { _ } from "~/i18n";
 import type { AnswerCallback, Question } from "~/model/question";
 
@@ -41,7 +41,7 @@ export default function PackageErrorQuestion({
   answerCallback: AnswerCallback;
 }): React.ReactNode {
   const warning =
-    question.class === "packageProvideError" && question.data.error_code === "INVALID"
+    question.class === "packageProvideError" && question.data.error_code === "Invalid"
       ? // TRANSLATORS: a special warning message for installing broken package
         _("Installing a broken package affects system stability and is a big security risk!")
       : // TRANSLATORS: a generic warning message, consequences of skipping a package installation
@@ -50,14 +50,9 @@ export default function PackageErrorQuestion({
         );
 
   return (
-    <QuestionDialog
-      question={question}
-      answerCallback={answerCallback}
-      title={_("Package installation failed")}
-      titleIconVariant={() => <Icon name="error" />}
-    >
+    <QuestionDialog question={question} answerCallback={answerCallback} title={question.title}>
       <Stack hasGutter>
-        <Content>{question.text}</Content>
+        <QuestionText text={question.text} />
         <Content>{warning}</Content>
       </Stack>
     </QuestionDialog>

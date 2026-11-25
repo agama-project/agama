@@ -158,6 +158,12 @@
   --agm-t--tooltip--background--color: #1d1d1d;
   --agm-t--tooltip--color: #fff;
 
+  /* Code blocks (e.g. technical details in dialogs): the code area and its
+     header bar. Unset, the area is a tint of the dialog surface and the bar a
+     slightly darker tint of the area. */
+  --agm-t--code-block--background--color: #f7f7f7;
+  --agm-t--code-block--header--background--color: #ececec;
+
   /* Alert / status variants (caution maps to PF "warning"). */
   --agm-t--status--info--color: #2453ff;
   --agm-t--status--caution--color: #9a6700;
@@ -189,6 +195,9 @@
   --agm-t--disabled--background--color: #2b2b2b;
   --agm-t--tooltip--background--color: #0f0f0f;
   --agm-t--tooltip--color: #efefef;
+
+  --agm-t--code-block--background--color: #242424;
+  --agm-t--code-block--header--background--color: #333;
 
   --agm-t--status--info--color: #81aefc;
   --agm-t--status--caution--color: #f0b429;

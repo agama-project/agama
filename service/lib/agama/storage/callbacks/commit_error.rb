@@ -19,6 +19,7 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "yast"
 require "agama/question"
 
 module Agama
@@ -26,6 +27,8 @@ module Agama
     module Callbacks
       # Callback for a storage commit error
       class CommitError
+        include Yast::I18n
+
         # Constructor
         #
         # @param questions_client [Agama::HTTP::Clients::Questions]
@@ -75,6 +78,7 @@ module Agama
 
           Question.new(
             qclass:         "storageCommitError",
+            title:          _("Storage error"),
             text:           text,
             options:        [:yes, :no],
             default_option: :no,

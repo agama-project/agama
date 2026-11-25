@@ -19,6 +19,7 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "yast"
 require "agama/question"
 require "y2storage"
 
@@ -27,6 +28,8 @@ module Agama
     module Callbacks
       # Callbacks for multipath activation
       class ActivateMultipath
+        include Yast::I18n
+
         # Constructor
         #
         # @param questions_client [Agama::HTTP::Clients::Questions]
@@ -68,6 +71,7 @@ module Agama
 
           Question.new(
             qclass:         "multipathActivation",
+            title:          _("Multipath activation"),
             text:           text,
             options:        [:yes, :no],
             default_option: :yes

@@ -1,5 +1,6 @@
 use agama_l10n::helpers::gettext_noop;
 use agama_utils::{actor::Handler, api::question::QuestionSpec, question};
+use gettextrs::gettext;
 use i18n_format::i18n_format;
 use zypp_agama::callbacks::security;
 
@@ -64,7 +65,7 @@ impl security::Callback for Security {
                 and integrity of the file cannot be verified. Use it anyway?"
             )
         };
-        let question = QuestionSpec::new(&text, "unsignedFile")
+        let question = QuestionSpec::new(&gettext("Unsigned file"), &text, "unsignedFile")
             .with_yes_no_actions()
             .with_data(&[("filename", file.as_str())]);
         let result = ask_software_question(&self.questions, question);
@@ -115,7 +116,7 @@ impl security::Callback for Security {
             &key_name,
             &human_fingerprint
         );
-        let question = QuestionSpec::new(&text, "importGpg")
+        let question = QuestionSpec::new(&gettext("Unknown GPG key"), &text, "importGpg")
             .with_action_ids(&[gettext_noop("Trust"), gettext_noop("Skip")])
             .with_data(&[
                 ("id", key_id.as_str()),
@@ -156,7 +157,7 @@ impl security::Callback for Security {
                 the following unknown GnuPG key: {key_id}. Use it anyway?"
             )
         };
-        let question = QuestionSpec::new(&text, "unknownGpg")
+        let question = QuestionSpec::new(&gettext("Unknown GPG key"), &text, "unknownGpg")
             .with_yes_no_actions()
             .with_data(&[("filename", file.as_str()), ("id", key_id.as_str())]);
         let result = ask_software_question(&self.questions, question);
@@ -198,9 +199,13 @@ impl security::Callback for Security {
                 Use it anyway?"
             )
         };
-        let question = QuestionSpec::new(&text, "gpgVerificationError")
-            .with_yes_no_actions()
-            .with_data(&[("filename", file.as_str())]);
+        let question = QuestionSpec::new(
+            &gettext("Signature check failed"),
+            &text,
+            "gpgVerificationError",
+        )
+        .with_yes_no_actions()
+        .with_data(&[("filename", file.as_str())]);
         let result = ask_software_question(&self.questions, question);
         let Ok(answer) = result else {
             tracing::warn!("Failed to ask question {:?}", result);
@@ -218,7 +223,8 @@ impl security::Callback for Security {
               although the file is part of the signed repository, the list of checksums \
               does not mention this file. Use it anyway?"
         );
-        let question = QuestionSpec::new(&text, "noDigest").with_yes_no_actions();
+        let question = QuestionSpec::new(&gettext("Missing checksum"), &text, "noDigest")
+            .with_yes_no_actions();
         let result = ask_software_question(&self.questions, question);
         let Ok(answer) = result else {
             tracing::warn!("Failed to ask question {:?}", result);
@@ -239,7 +245,8 @@ impl security::Callback for Security {
               unknown. This means that the origin and integrity of the file cannot be verified. \
               Use it anyway?"
         );
-        let question = QuestionSpec::new(&text, "unknownDigest").with_yes_no_actions();
+        let question = QuestionSpec::new(&gettext("Unknown checksum"), &text, "unknownDigest")
+            .with_yes_no_actions();
         let result = ask_software_question(&self.questions, question);
         let Ok(answer) = result else {
             tracing::warn!("Failed to ask question {:?}", result);
@@ -257,7 +264,8 @@ impl security::Callback for Security {
             actual
         );
         let text = wrong_checksum_message(&file, &expected, &actual);
-        let question = QuestionSpec::new(&text, "unknownDigest").with_yes_no_actions();
+        let question = QuestionSpec::new(&gettext("Wrong checksum"), &text, "wrongChecksum")
+            .with_yes_no_actions();
         let result = ask_software_question(&self.questions, question);
         let Ok(answer) = result else {
             tracing::warn!("Failed to ask question {:?}", result);
