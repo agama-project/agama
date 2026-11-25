@@ -21,8 +21,7 @@
 //! Utilities to interact with D-Bus types.
 
 use std::collections::HashMap;
-use zbus::{message::Type as MessageType, MatchRule, MessageStream};
-use zvariant::{self, OwnedObjectPath, OwnedValue, Value};
+use zvariant::{self, OwnedValue, Value};
 
 /// Nested hash to send to D-Bus.
 pub type NestedHash<'a> = HashMap<&'a str, HashMap<&'a str, zvariant::Value<'a>>>;
@@ -67,15 +66,6 @@ where
     }
 }
 
-#[macro_export]
-macro_rules! property_from_dbus {
-    ($self:ident, $field:ident, $key:expr, $dbus:ident, $type:ty) => {
-        if let Some(v) = get_optional_property($dbus, $key)? {
-            $self.$field = v;
-        }
-    };
-}
-
 /// Converts a hash map containing zbus non-owned values to hash map with owned ones.
 ///
 /// NOTE: we could follow a different approach like building our own type (e.g.
@@ -90,34 +80,6 @@ pub fn to_owned_hash<T: ToString>(
         owned.insert(key.to_string(), value.try_into()?);
     }
     Ok(owned)
-}
-
-/// Extracts the object ID from the path.
-///
-/// TODO: should we merge this feature with the "DeviceSid"?
-pub fn extract_id_from_path(path: &OwnedObjectPath) -> Result<u32, zvariant::Error> {
-    path.as_str()
-        .rsplit_once('/')
-        .and_then(|(_, id)| id.parse::<u32>().ok())
-        .ok_or_else(|| {
-            zvariant::Error::Message(format!("Could not extract the ID from {}", path.as_str()))
-        })
-}
-
-/// Returns a stream of properties changes.
-///
-/// It listens for changes in several objects that are related to a network device.
-pub async fn build_properties_changed_stream(
-    connection: &zbus::Connection,
-) -> Result<MessageStream, zbus::Error> {
-    let rule = MatchRule::builder()
-        .msg_type(MessageType::Signal)
-        .interface("org.freedesktop.DBus.Properties")?
-        .member("PropertiesChanged")?
-        .build();
-    // The third parameter corresponds to the max_queue. We rely on the default (64).
-    let stream = MessageStream::for_match_rule(rule, connection, None).await?;
-    Ok(stream)
 }
 
 #[cfg(test)]
