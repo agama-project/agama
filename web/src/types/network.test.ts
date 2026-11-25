@@ -33,6 +33,7 @@ import {
   isPort,
   portConnections,
   portsOf,
+  withoutIpSettings,
 } from "./network";
 import { CONNECTION_TYPE, isVirtual } from "~/utils/network";
 
@@ -192,11 +193,43 @@ describe("controllerConnection", () => {
     expect(controllerConnection(connections, ethernet("eth1"))?.id).toBe("bond0");
   });
 
+  it("finds the controller that lists a port by its connection id", () => {
+    const wired = new Connection("Wired connection 1", { iface: "eth0" });
+    const connections = [bond("bond0", ["Wired connection 1"])];
+
+    expect(controllerConnection(connections, wired)?.id).toBe("bond0");
+    expect(isPort(connections, wired)).toBe(true);
+  });
+
   it("returns undefined for a connection that is not a port", () => {
     const connections = [bridge("br0", [bond("bond0", [ethernet("eth0")])])];
 
     expect(controllerConnection(connections, ethernet("eth2"))).toBeUndefined();
     expect(controllerConnection(connections, ethernet("br0"))).toBeUndefined();
+  });
+});
+
+describe("withoutIpSettings", () => {
+  it("drops every IP setting, including ignoreAutoDns", () => {
+    const conn = Connection.fromApi({
+      id: "eth0",
+      interface: "eth0",
+      status: ConnectionStatus.UP,
+      method4: "manual",
+      addresses: ["192.168.1.2/24"],
+      nameservers: ["8.8.8.8"],
+      gateway4: "192.168.1.1",
+      ignoreAutoDns: true,
+      persistent: true,
+    });
+
+    const result = withoutIpSettings(conn);
+    expect(result).not.toHaveProperty("ignoreAutoDns");
+    expect(result.addresses).toEqual([]);
+    expect(result.nameservers).toEqual([]);
+    expect(result.gateway4).toBe("");
+    expect(result.method4).toBeUndefined();
+    expect(result.iface).toBe("eth0");
   });
 });
 
@@ -343,6 +376,15 @@ describe("NetworkConfig", () => {
       expect(config.connections.map((c) => c.id)).toEqual(["br0"]);
       const [bond0] = portConnections(config.connections[0]);
       expect(portsOf(bond0).map((p) => (typeof p === "string" ? p : p.id))).toEqual(["eth1"]);
+    });
+
+    it("drops a removed port listed by its connection id from its controller", () => {
+      const config = new NetworkConfig([bond("bond0", [ethernet("eth1"), "Wired connection 1"])]);
+      config.addOrUpdateConnection(
+        new Connection("Wired connection 1", { iface: "eth0", status: ConnectionStatus.DELETE }),
+      );
+
+      expect(portIds(config.connections[0])).toEqual(["eth1"]);
     });
 
     describe("when the config does not include the controllers of the connection", () => {
