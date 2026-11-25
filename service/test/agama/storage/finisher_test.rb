@@ -170,7 +170,7 @@ describe Agama::Storage::Finisher do
       it "asks the user what to do with the error details" do
         expect(questions_client).to receive(:ask) do |question|
           expect(question.qclass).to eq("bootloaderInstallError")
-          expect(question.options).to eq([:retry, :skip, :abort])
+          expect(question.options).to eq([:retry, :skip])
           expect(question.default_option).to eq(:skip)
           expect(question.data).to eq("details" => error.message)
           Agama::Answer.new(:skip)
@@ -204,15 +204,6 @@ describe Agama::Storage::Finisher do
           expect { subject.run }.to_not raise_error
         end
       end
-
-      context "and the user decides to abort" do
-        it "re-raises the error" do
-          allow(questions_client).to receive(:ask)
-            .and_return(Agama::Answer.new(:abort))
-
-          expect { subject.run }.to raise_error(error)
-        end
-      end
     end
 
     context "when bootloader write returns false" do
@@ -223,7 +214,7 @@ describe Agama::Storage::Finisher do
       it "asks the user what to do" do
         expect(questions_client).to receive(:ask) do |question|
           expect(question.qclass).to eq("bootloaderInstallError")
-          expect(question.options).to eq([:retry, :skip, :abort])
+          expect(question.options).to eq([:retry, :skip])
           expect(question.default_option).to eq(:skip)
           expect(question.data["details"]).to_not be_empty
           Agama::Answer.new(:skip)

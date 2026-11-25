@@ -21,10 +21,12 @@
  */
 
 import React from "react";
-import { Content } from "@patternfly/react-core";
+import { Stack } from "@patternfly/react-core";
 import QuestionDialog from "~/components/questions/QuestionDialog";
-import { _ } from "~/i18n";
+import QuestionText from "~/components/questions/QuestionText";
+import TechnicalDetails from "~/components/questions/TechnicalDetails";
 import type { AnswerCallback, Question } from "~/model/question";
+import { _ } from "~/i18n";
 
 /**
  * Component for rendering generic questions
@@ -42,9 +44,20 @@ export default function GenericQuestion({
   const details = question.data?.details;
 
   return (
-    <QuestionDialog question={question} answerCallback={answerCallback} aria-label={_("Question")}>
-      <Content component="p">{question.text}</Content>
-      {details && <Content>{details}</Content>}
+    <QuestionDialog
+      question={question}
+      answerCallback={answerCallback}
+      title={question.title || _("Question")}
+      // the code block showing the details needs more room than the default width
+      variant={details ? "medium" : undefined}
+      // without this, the modal defaults to focusing the first focusable
+      // element, which is the copy-to-clipboard button when there are details
+      elementToFocus="#question-primary-action"
+    >
+      <Stack hasGutter>
+        <QuestionText text={question.text} />
+        <TechnicalDetails text={details} />
+      </Stack>
     </QuestionDialog>
   );
 }

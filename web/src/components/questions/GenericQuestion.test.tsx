@@ -28,6 +28,7 @@ import GenericQuestion from "~/components/questions/GenericQuestion";
 
 const question: Question = {
   id: 1,
+  title: "Tests",
   text: "Do you write unit tests?",
   class: "unit-test",
   field: { type: FieldType.None },
@@ -41,6 +42,7 @@ const question: Question = {
 
 const questionWithDetails: Question = {
   id: 1,
+  title: "Error",
   text: "Failed to fetch the script. Do you want to retry?",
   class: "failed-script",
   field: { type: FieldType.None },
@@ -66,11 +68,24 @@ describe("GenericQuestion", () => {
     await screen.findByText(question.text);
   });
 
+  it("renders the question title", async () => {
+    renderQuestion();
+
+    await screen.findByRole("dialog", { name: question.title });
+  });
+
+  it("does not render a technical details block when there is no data.details", () => {
+    renderQuestion();
+
+    expect(screen.queryByText("Technical details")).not.toBeInTheDocument();
+  });
+
   describe("if there are details", () => {
-    it("renders the question details", async () => {
+    it("renders the question details in a technical details block", async () => {
       plainRender(<GenericQuestion question={questionWithDetails} answerCallback={answerFn} />);
 
       await screen.findByText(questionWithDetails.text);
+      await screen.findByText("Technical details");
       await screen.findByText(questionWithDetails.data.details);
     });
   });

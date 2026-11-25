@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Tue Nov 25 11:42:38 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Improve the questions API (gh#agama-project/agama#2028,
+  gh#agama-project/agama#4278):
+  - Add a title to each question.
+  - Fix the wrong checksum question which was using the wrong class
+    ID.
+
+-------------------------------------------------------------------
 Tue Nov 24 16:58:01 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
 
 - Report the state of the ports nested in a bond or a bridge in the
@@ -29,7 +38,7 @@ Wed Nov 18 15:32:09 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
 
 - Added the "inst.cors=<origin>" boot option, its value is passed
   to the "--enable-cors" option of the web server
- 
+
 -------------------------------------------------------------------
 Tue Nov 17 11:30:16 UTC 2026 - José Iván López González <jlopez@suse.com>
 
