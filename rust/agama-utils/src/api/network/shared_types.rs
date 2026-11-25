@@ -154,6 +154,21 @@ impl Default for WirelessSettings {
     }
 }
 
+/// Accepts the IEEE 802.1X settings under the "ieee8021x" key too, as serde does.
+///
+/// It is the camelCase key of the next versions, and schemars ignores the serde aliases.
+fn ieee_8021x_alias(schema: &mut schemars::Schema) {
+    let Some(properties) = schema
+        .get_mut("properties")
+        .and_then(|properties| properties.as_object_mut())
+    else {
+        return;
+    };
+    if let Some(settings) = properties.get("ieee-8021x").cloned() {
+        properties.insert("ieee8021x".to_string(), settings);
+    }
+}
+
 fn default_wireless_security() -> String {
     "none".to_string()
 }
@@ -396,6 +411,7 @@ pub struct NetworkDevice {
 /// these settings and add their own sections.
 #[derive(Clone, Debug, Default, Serialize, Deserialize, JsonSchema, PartialEq)]
 #[serde(rename_all = "camelCase")]
+#[schemars(transform = ieee_8021x_alias)]
 pub struct ConnectionCommon {
     /// Unique identifier for the network connection
     pub id: String,
@@ -426,7 +442,11 @@ pub struct ConnectionCommon {
     #[serde(skip_serializing_if = "is_zero", default)]
     pub mtu: u32,
     /// IEEE 802.1X settings
-    #[serde(rename = "ieee-8021x", skip_serializing_if = "Option::is_none")]
+    #[serde(
+        rename = "ieee-8021x",
+        alias = "ieee8021x",
+        skip_serializing_if = "Option::is_none"
+    )]
     pub ieee_8021x: Option<IEEE8021XSettings>,
     /// Specifies if the connection should automatically connect
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -510,6 +530,7 @@ impl IpSettings {
 /// as unknown.
 #[derive(Clone, Debug, Default, Serialize, Deserialize, JsonSchema, PartialEq)]
 #[serde(rename_all = "camelCase")]
+#[schemars(transform = ieee_8021x_alias)]
 pub struct PortCommon {
     /// Unique identifier for the network connection
     ///
@@ -538,7 +559,11 @@ pub struct PortCommon {
     #[serde(skip_serializing_if = "is_zero", default)]
     pub mtu: u32,
     /// IEEE 802.1X settings
-    #[serde(rename = "ieee-8021x", skip_serializing_if = "Option::is_none")]
+    #[serde(
+        rename = "ieee-8021x",
+        alias = "ieee8021x",
+        skip_serializing_if = "Option::is_none"
+    )]
     pub ieee_8021x: Option<IEEE8021XSettings>,
     /// Specifies if the connection should automatically connect
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -629,7 +654,7 @@ fn is_zero<T: PartialEq + From<u16>>(u: &T) -> bool {
 
 #[cfg(test)]
 mod tests {
-    use super::WirelessSettings;
+    use super::{ConnectionCommon, WirelessSettings};
 
     #[test]
     fn test_wireless_settings_defaults() {
@@ -643,5 +668,13 @@ mod tests {
                 ..Default::default()
             }
         );
+    }
+
+    #[test]
+    fn test_ieee_8021x_alias() {
+        let json = r#"{ "id": "eth0", "ieee8021x": { "eap": ["peap"], "identity": "user" } }"#;
+        let common: ConnectionCommon = serde_json::from_str(json).unwrap();
+        let settings = common.ieee_8021x.unwrap();
+        assert_eq!(settings.identity, Some("user".to_string()));
     }
 }

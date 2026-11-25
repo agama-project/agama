@@ -6,6 +6,8 @@ Wed Nov 25 13:43:27 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
   "infrastructure" and "none" as documented. The generated network
   schema had made them required, and a profile without them failed
   to load.
+- Accept the IEEE 802.1X settings of a network connection under the
+  "ieee8021x" key too, the camelCase one used by the next versions.
 
 -------------------------------------------------------------------
 Wed Nov 18 16:25:30 UTC 2026 - Martin Pluskal <martin@pluskal.org>
