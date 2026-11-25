@@ -18,53 +18,14 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::storage_client::proxies::{iscsi, ISCSIProxy};
+pub use crate::storage_client::monitor::Error;
+use crate::storage_client::{monitor::StorageMonitor, proxies::ISCSIProxy};
 use agama_utils::{
     actor::Handler,
-    api::{
-        event::{self, Event},
-        Progress, Scope,
-    },
+    api::{event, Scope},
     progress,
 };
-use serde::Deserialize;
-use tokio::sync::broadcast;
-use tokio_stream::StreamExt;
-use zbus::{fdo::PropertiesChanged, message, Connection, MatchRule, MessageStream};
-
-#[derive(thiserror::Error, Debug)]
-pub enum Error {
-    #[error(transparent)]
-    Progress(#[from] progress::service::Error),
-    #[error(transparent)]
-    Event(#[from] broadcast::error::SendError<Event>),
-    #[error(transparent)]
-    DBus(#[from] zbus::Error),
-    #[error(transparent)]
-    DBusConversion(#[from] zbus::zvariant::Error),
-    #[error(transparent)]
-    Json(#[from] serde_json::Error),
-}
-
-#[derive(Debug, Deserialize)]
-struct ProgressData {
-    pub size: usize,
-    pub steps: Vec<String>,
-    pub step: String,
-    pub index: usize,
-}
-
-impl From<ProgressData> for Progress {
-    fn from(data: ProgressData) -> Self {
-        Progress {
-            scope: Scope::ISCSI,
-            size: data.size,
-            steps: data.steps,
-            step: data.step,
-            index: data.index,
-        }
-    }
-}
+use zbus::Connection;
 
 pub struct Monitor {
     progress: Handler<progress::Service>,
@@ -85,63 +46,12 @@ impl Monitor {
         }
     }
 
-    async fn run(&self) -> Result<(), Error> {
+    pub async fn spawn(self) -> Result<tokio::task::JoinHandle<()>, Error> {
         let proxy = ISCSIProxy::new(&self.connection).await?;
-        let rule = MatchRule::builder()
-            .msg_type(message::Type::Signal)
-            .sender(proxy.inner().destination())?
-            .path(proxy.inner().path())?
-            .build();
-        let mut stream = MessageStream::for_match_rule(rule, &self.connection, None).await?;
-
-        while let Some(message) = stream.next().await {
-            let message = message?;
-
-            if let Some(signal) = PropertiesChanged::from_message(message.clone()) {
-                self.handle_properties_changed(signal)?;
-                continue;
-            }
-            if let Some(signal) = iscsi::ProgressChanged::from_message(message.clone()) {
-                self.handle_progress_changed(signal).await?;
-                continue;
-            }
-            if let Some(signal) = iscsi::ProgressFinished::from_message(message.clone()) {
-                self.handle_progress_finished(signal).await?;
-                continue;
-            }
-            tracing::warn!("Unmanaged iSCSI signal: {message:?}");
-        }
-
-        Ok(())
-    }
-
-    fn handle_properties_changed(&self, signal: PropertiesChanged) -> Result<(), Error> {
-        let args = signal.args()?;
-        if args.changed_properties().get("System").is_some() {
-            self.events.send(Event::SystemChanged {
-                scope: Scope::ISCSI,
-            })?;
-        }
-        Ok(())
-    }
-
-    async fn handle_progress_changed(&self, signal: iscsi::ProgressChanged) -> Result<(), Error> {
-        let args = signal.args()?;
-        let progress_data = serde_json::from_str::<ProgressData>(args.serialized_progress)?;
-        self.progress
-            .call(progress::message::SetProgress::new(progress_data.into()))
-            .await?;
-        Ok(())
-    }
-
-    async fn handle_progress_finished(
-        &self,
-        _signal: iscsi::ProgressFinished,
-    ) -> Result<(), Error> {
-        self.progress
-            .call(progress::message::Finish::new(Scope::ISCSI))
-            .await?;
-        Ok(())
+        let monitor = StorageMonitor::new(self.progress, self.events, Scope::ISCSI);
+        monitor
+            .spawn(&self.connection, proxy.inner(), "iSCSI")
+            .await
     }
 }
 
@@ -150,7 +60,7 @@ impl Monitor {
 /// * `monitor`: monitor to spawn.
 pub fn spawn(monitor: Monitor) -> Result<(), Error> {
     tokio::spawn(async move {
-        if let Err(e) = monitor.run().await {
+        if let Err(e) = monitor.spawn().await {
             tracing::error!("Error running the iSCSI monitor: {e:?}");
         }
     });

@@ -20,20 +20,20 @@
 
 use crate::storage_client::{
     self,
-    proxies::{zfcp, ZFCPProxy},
+    monitor::StorageMonitor,
+    proxies::{self, ZFCPProxy},
 };
 use agama_utils::{
     actor::Handler,
     api::{
         event::{self, Event},
-        Progress, Scope,
+        Scope,
     },
     issue, progress,
 };
-use serde::Deserialize;
 use tokio::sync::broadcast;
 use tokio_stream::StreamExt;
-use zbus::{fdo::PropertiesChanged, message, Connection, MatchRule, MessageStream};
+use zbus::{fdo::PropertiesChanged, Connection};
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
@@ -51,32 +51,13 @@ pub enum Error {
     Json(#[from] serde_json::Error),
     #[error(transparent)]
     StorageClient(#[from] storage_client::Error),
-}
-
-#[derive(Debug, Deserialize)]
-struct ProgressData {
-    pub size: usize,
-    pub steps: Vec<String>,
-    pub step: String,
-    pub index: usize,
-}
-
-impl From<ProgressData> for Progress {
-    fn from(data: ProgressData) -> Self {
-        Progress {
-            scope: Scope::ZFCP,
-            size: data.size,
-            steps: data.steps,
-            step: data.step,
-            index: data.index,
-        }
-    }
+    #[error(transparent)]
+    StorageMonitor(#[from] storage_client::monitor::Error),
 }
 
 pub struct Monitor {
-    progress: Handler<progress::Service>,
+    storage_monitor: StorageMonitor,
     issues: Handler<issue::Service>,
-    events: event::Sender,
     connection: Connection,
     storage_client: Handler<storage_client::Service>,
 }
@@ -90,9 +71,8 @@ impl Monitor {
         storage_client: Handler<storage_client::Service>,
     ) -> Self {
         Self {
-            progress,
+            storage_monitor: StorageMonitor::new(progress, events, Scope::ZFCP),
             issues,
-            events,
             connection,
             storage_client,
         }
@@ -100,12 +80,7 @@ impl Monitor {
 
     async fn run(&self) -> Result<(), Error> {
         let proxy = ZFCPProxy::new(&self.connection).await?;
-        let rule = MatchRule::builder()
-            .msg_type(message::Type::Signal)
-            .sender(proxy.inner().destination())?
-            .path(proxy.inner().path())?
-            .build();
-        let mut stream = MessageStream::for_match_rule(rule, &self.connection, None).await?;
+        let mut stream = proxies::proxy_signal_stream(&self.connection, proxy.inner()).await?;
 
         self.update_issues().await?;
 
@@ -116,12 +91,7 @@ impl Monitor {
                 self.handle_properties_changed(signal).await?;
                 continue;
             }
-            if let Some(signal) = zfcp::ProgressChanged::from_message(message.clone()) {
-                self.handle_progress_changed(signal).await?;
-                continue;
-            }
-            if let Some(signal) = zfcp::ProgressFinished::from_message(message.clone()) {
-                self.handle_progress_finished(signal).await?;
+            if self.storage_monitor.handle_message(&message).await? {
                 continue;
             }
             tracing::warn!("Unmanaged zFCP signal: {message:?}");
@@ -141,33 +111,15 @@ impl Monitor {
     }
 
     async fn handle_properties_changed(&self, signal: PropertiesChanged) -> Result<(), Error> {
+        self.storage_monitor.handle_properties_changed(&signal)?;
+
         let args = signal.args()?;
-        if args.changed_properties().get("System").is_some() {
-            self.events
-                .send(Event::SystemChanged { scope: Scope::ZFCP })?;
-        }
         if let Some(issues) = args.changed_properties().get("Issues").cloned() {
             let issues: String = issues.try_into()?;
             let issues = serde_json::from_str(issues.as_str())?;
             self.issues
                 .cast(issue::message::Set::new(Scope::ZFCP, issues))?;
         }
-        Ok(())
-    }
-
-    async fn handle_progress_changed(&self, signal: zfcp::ProgressChanged) -> Result<(), Error> {
-        let args = signal.args()?;
-        let progress_data = serde_json::from_str::<ProgressData>(args.progress)?;
-        self.progress
-            .call(progress::message::SetProgress::new(progress_data.into()))
-            .await?;
-        Ok(())
-    }
-
-    async fn handle_progress_finished(&self, _signal: zfcp::ProgressFinished) -> Result<(), Error> {
-        self.progress
-            .call(progress::message::Finish::new(Scope::ZFCP))
-            .await?;
         Ok(())
     }
 }

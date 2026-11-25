@@ -32,3 +32,16 @@ pub use dasd::DASDProxy;
 
 pub mod zfcp;
 pub use zfcp::ZFCPProxy;
+
+/// Creates a D-Bus signal MessageStream for a given storage proxy.
+pub async fn proxy_signal_stream(
+    connection: &zbus::Connection,
+    proxy: &zbus::Proxy<'_>,
+) -> Result<zbus::MessageStream, zbus::Error> {
+    let rule = zbus::MatchRule::builder()
+        .msg_type(zbus::message::Type::Signal)
+        .sender(proxy.destination())?
+        .path(proxy.path())?
+        .build();
+    zbus::MessageStream::for_match_rule(rule, connection, None).await
+}
