@@ -36,6 +36,9 @@ on:
       - products.d/**.yaml
       - products.d/**.yml
 
+      # this file as well
+      - .github/workflows/weblate-update-pot.yml
+
   # allow running manually
   workflow_dispatch:
 
@@ -47,12 +50,14 @@ jobs:
     runs-on: ubuntu-latest
 
     container:
-      image: registry.opensuse.org/opensuse/leap:16.1
+      # use the openSUSE Tumbleweed container because we need a newer GNU gettext which supports
+      # reading the TSX files (unfortunately Leap 16.1 contains an old one)
+      image: registry.opensuse.org/opensuse/tumbleweed:latest
 
     steps:
       - name: Configure and refresh repositories
         # disable unused repositories to have a faster refresh
-        run: zypper modifyrepo -d openSUSE:repo-openh264 && zypper ref
+        run: zypper modifyrepo -d repo-non-oss repo-openh264 && zypper ref
 
       - name: Install Default Ruby
         run: zypper --non-interactive install --no-recommends ruby
