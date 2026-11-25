@@ -81,7 +81,7 @@ export default function ExistingContent({ entry, isDeleted = false }: ExistingCo
       <p>
         {sprintf(
           // TRANSLATORS: %s is the name of an LVM volume group, like "system"
-          _("LVM physical volume for the volume group."),
+          _("LVM physical volume for the volume group %s."),
           formattedPath(baseName(group.name)),
         )}
       </p>
