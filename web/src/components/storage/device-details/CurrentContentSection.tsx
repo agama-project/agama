@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
+import React, { useEffect, useId, useRef } from "react";
 import { Table, Tbody, Td, Th, Thead, Tr } from "@patternfly/react-table";
 import { Button, Divider, Flex, FlexItem, Label } from "@patternfly/react-core";
 import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
@@ -548,7 +548,7 @@ export default function CurrentContentSection({
      another device, so every device starts closed. */
   const { hasSearchParamToken, toggleSearchParamToken } = useSearchParamTokens(EXPANDED);
   const expanded = hasSearchParamToken(CURRENT_CONTENT);
-  const contentId = React.useId();
+  const contentId = useId();
 
   const parts: ContentPart[] = rows
     .filter((row): row is System.Device => !isFreeSpace(row))
@@ -567,13 +567,13 @@ export default function CurrentContentSection({
   const kind = entry.isVolumeGroup ? "logicalVolumes" : "partitions";
   const built = buildCurrentContentSummary({ kind, parts });
   const summary = built && built.sentence;
-  const summaryId = React.useId();
+  const summaryId = useId();
 
   /* Said when the decisions change, so a screen reader user hears what their
      choice did to the device and not only that a button is now pressed. */
   const announce = useAnnounce();
-  const announcedSummary = React.useRef(summary);
-  React.useEffect(() => {
+  const announcedSummary = useRef(summary);
+  useEffect(() => {
     if (announcedSummary.current === summary) return;
     announcedSummary.current = summary;
     /* Dropping the markers leaves the text translated. */
