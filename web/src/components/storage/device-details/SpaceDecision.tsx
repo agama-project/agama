@@ -133,6 +133,7 @@ export default function SpaceDecision({
         <RowMenuToggle
           label={name}
           icon="home_storage_gear"
+          hasTooltip
           size="sm"
           className="agm-inline-menu-toggle"
           aria-describedby={describedBy}
