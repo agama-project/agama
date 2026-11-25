@@ -598,6 +598,16 @@ const portConnections = (connection: Connection): Connection[] =>
 const portName = (port: Port): string => (typeof port === "string" ? port : port.iface || port.id);
 
 /**
+ * Whether a port given by name refers to the given connection.
+ *
+ * The backend resolves such a name by interface name first and by connection id
+ * then, so a port may be listed by either of them, e.g. "Wired connection 1"
+ * for the connection bound to "eth0".
+ */
+const isNamedBy = (name: string, connection: Connection): boolean =>
+  name === connection.iface || name === connection.id;
+
+/**
  * Returns every connection in the given ones, ports included, each controller
  * before its ports.
  *
@@ -617,7 +627,7 @@ const controllerConnection = (
 ): Connection | undefined =>
   flattenConnections(connections).find((c) =>
     portsOf(c).some((p) =>
-      typeof p === "string" ? p === portName(connection) : p.id === connection.id,
+      typeof p === "string" ? isNamedBy(p, connection) : p.id === connection.id,
     ),
   );
 
@@ -636,14 +646,11 @@ const isPort = (connections: Connection[], connection: Connection): boolean =>
  */
 const withoutIpSettings = (connection: Connection): Connection => {
   const { id, ...options } = connection;
-  const conn = new Connection(id, {
-    ...options,
-    addresses: [],
-    nameservers: [],
-    dnsSearchList: [],
-    gateway4: "",
-    gateway6: "",
-  });
+  // The same settings `toApi` leaves out of a nested port. Some of them, like
+  // `ignoreAutoDns`, are not modelled by the class but kept as they came.
+  const settings: Record<string, unknown> = { ...options };
+  for (const key of IP_SETTINGS) delete settings[key];
+  const conn = new Connection(id, settings as ConnectionOptions);
   conn.method4 = undefined;
   conn.method6 = undefined;
   return conn;
@@ -758,13 +765,12 @@ const placeConnection = (
     // The config may hold the port nested in its controller or just listed
     // there by name. Either way, it is dropped from it.
     if (isPort(connections, connection)) {
-      const name = portName(connection);
       const dropName = (conns: Connection[]): Connection[] =>
         conns.map((c) => {
           if (!portsOf(c).length) return c;
 
           const ports = portsOf(c)
-            .filter((p) => typeof p !== "string" || p !== name)
+            .filter((p) => typeof p !== "string" || !isNamedBy(p, connection))
             .map((p) => (typeof p === "string" ? p : dropName([p])[0]));
           return withPorts(c, ports);
         });

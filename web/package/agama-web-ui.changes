@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Nov 25 10:04:49 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Recognize a port of a bond or a bridge listed by its connection
+  id, not only by its interface name, and drop every IP setting,
+  including ignoreAutoDns, from a port (gh#agama-project/agama#3996).
+
+-------------------------------------------------------------------
 Tue Nov 24 16:59:01 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
 
 - Handle the ports of bonds and bridges nested in their controller,
