@@ -5,13 +5,13 @@
 # in different products. This is intented to be called from systemd unit file
 # see live/live-root/root/.config/systemd/user/org.gnome.Kiosk@wayland.service.d/override.conf
 
-OPTS="";
+OPTS=""
 
 # We need to invoke gnome-kiosk with option --enable-vt-switch for versions >= 50.
 # Otherwise switching to virtual console will be blocked by default. bsc#1261932
 if gnome-kiosk --help 2> /dev/null | grep -q 'enable-vt-switch'; then
-    OPTS="--enable-vt-switch";
-fi;
+  OPTS="--enable-vt-switch"
+fi
 
 # run in unsafe mode to allow taking screenshots (additionally it allows DBus
 # introspection), as nothing else is running besides Agama and you need root

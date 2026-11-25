@@ -1,4 +1,41 @@
 -------------------------------------------------------------------
+Mon Nov 23 12:00:00 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Optimize live boot dependencies and background services
+  (gh#agama-project/agama#4217):
+  - Terminate Plymouth on GDM start to prevent plymouth-quit-wait
+    from blocking the graphical target.
+  - Mask update-desktop-database, systemd-hwdb-update, and
+    wtmpdb-update-boot services on live media; pre-compile udev hwdb
+    at image build time.
+  - Add agama-info-generator to link agama-info-cmdline only when
+    inst.info= or agama.info= is present on kernel cmdline.
+  - Drop blocking agama-certificate-wait service in favor of dynamic
+    agetty reload.
+  - Run live-free-space service asynchronously.
+  - Mask redundant maintenance timers (backup-rpmdb, backup-sysconfig,
+    logrotate, fstrim, wtmpdb-rotate) on live media.
+- Switch initrd dracut compression from xz to zstd -19 for faster
+  decompression.
+- Drop password_from_iso and tagmedia checks from live-password to
+  avoid seeking optical media during boot.
+
+-------------------------------------------------------------------
+Thu Nov 19 08:50:10 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Display MOTD with documentation link
+  (gh#agama-project/agama#2190)
+- Fixed displaying two "welcome" messages in the console
+
+-------------------------------------------------------------------
+Fri Nov  6 14:06:28 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Move the root filesystem image from /LiveOS to
+  /boot/<arch>/LiveOS directory, it is arch dependant (bsc#1280041)
+- Check that the loaded kernel, initrd and the live root image
+  match together
+
+-------------------------------------------------------------------
 Fri Nov  6 13:05:49 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
 
 - Use kernel-nvidia64kb package (bsc#1282794)

@@ -56,5 +56,5 @@ find . \
   -o \
   ! -name '*.test.tsx' \
   -name '*.tsx' |
-grep -vE "node_modules/|dist/|coverage/" | \
-call_xgettext
+  grep -vE "node_modules/|dist/|coverage/" |
+  call_xgettext

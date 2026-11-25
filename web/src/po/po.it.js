@@ -801,9 +801,6 @@ export default {
   "Copy to the clipboard": [
     "Copia negli Appunti"
   ],
-  "Could not authenticate against the server.": [
-    "Autenticazione non riuscita con il server."
-  ],
   "Could not log in": [
     "Impossibile accedere"
   ],
@@ -1142,15 +1139,6 @@ export default {
   ],
   "Enter a server URL": [
     "Inserire un URL di server"
-  ],
-  "Enter or Tab to add": [
-    "Invio o Tab per aggiungere"
-  ],
-  "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate": [
-    "Invio o Tab per aggiungere, Backspace o Canc per rimuovere, tasti di direzione per spostarsi"
-  ],
-  "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate entries, Escape to exit": [
-    "Invio o Tab per aggiungere, Backspace o Canc per rimuovere, tasti di direzione per spostarsi tra le voci, Esc per uscire"
   ],
   "Enter removes every value, Left arrow goes back to the text box.": [
     ""
@@ -3247,9 +3235,6 @@ export default {
   ],
   "Using %s keyboard layout": [
     "È in uso il layout di tastiera %s"
-  ],
-  "Using [%s] keyboard layout": [
-    "Utilizzo del layout di tastiera [%s]"
   ],
   "Using a hashed password.": [
     "Utilizzo di una password con hash."

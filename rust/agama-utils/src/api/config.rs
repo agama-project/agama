@@ -19,25 +19,15 @@
 // find current contact information at www.suse.com.
 
 use crate::api::{
-    access, bootloader,
-    files::{self, FileSourceError},
-    hostname, iscsi, l10n, network, ntp, proxy, question, s390, security,
+    access, bootloader, files, hostname, iscsi, l10n, network, ntp, proxy, question, s390,
+    security,
     software::{self, ProductConfig},
     storage, users,
 };
-use fluent_uri::Uri;
 use merge::Merge;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
-
-#[derive(thiserror::Error, Debug)]
-pub enum Error {
-    #[error("Failed to resolve relative URLs")]
-    ResolveURL(#[from] FileSourceError),
-    #[error("Failed to parse the configuration")]
-    JSON(#[from] serde_json::Error),
-}
 
 /// Profile definition for automated installation.
 #[skip_serializing_none]
@@ -93,18 +83,6 @@ pub struct Config {
 }
 
 impl Config {
-    /// Reads install settings from a JSON string, resolving relative URLs in the contents.
-    ///
-    /// - `json`: JSON string.
-    /// - `base_uri`: base URI.
-    pub fn from_json(json: &str, base_uri: &Uri<String>) -> Result<Self, Error> {
-        let mut config: Self = serde_json::from_str(json)?;
-        if let Some(files) = &mut config.files {
-            files.resolve_urls(base_uri)?;
-        }
-        Ok(config)
-    }
-
     /// Creates a default configuration for the given product.
     pub fn with_product(product_id: String) -> Self {
         Self {
@@ -131,8 +109,7 @@ mod tests {
         let manifest_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
         let full_example = manifest_dir.join("../share/examples/config_full.json");
         let contents = std::fs::read_to_string(&full_example).expect("read config_full.json");
-        let base_uri = Uri::try_from("file:///".to_string()).unwrap();
-        let config = Config::from_json(&contents, &base_uri).expect("deserialize Config");
+        let config: Config = serde_json::from_str(&contents).expect("deserialize Config");
 
         assert!(config.bootloader.is_some());
         assert!(config.hostname.is_some());
@@ -156,8 +133,7 @@ mod tests {
         let manifest_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
         let full_example = manifest_dir.join("../share/examples/config_full.json");
         let contents = std::fs::read_to_string(&full_example).expect("read config_full.json");
-        let base_uri = Uri::try_from("file:///".to_string()).unwrap();
-        let config = Config::from_json(&contents, &base_uri).expect("deserialize Config");
+        let config: Config = serde_json::from_str(&contents).expect("deserialize Config");
 
         let serialized = serde_json::to_value(&config).expect("serialize config");
         let nulls = find_null_paths(&serialized);

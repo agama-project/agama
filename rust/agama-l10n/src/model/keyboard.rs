@@ -60,6 +60,11 @@ impl KeymapsDatabase {
         &self.keymaps
     }
 
+    /// Determines whether the database is empty.
+    pub fn is_empty(&self) -> bool {
+        self.keymaps.is_empty()
+    }
+
     // Set the locales entries.
     fn set_entries(&mut self, keymaps: Vec<Keymap>) {
         self.keymaps = keymaps;
@@ -124,5 +129,15 @@ mod tests {
         assert_eq!(keymaps[0].description.to_string(), "English (US)");
         assert_eq!(keymaps[1].description.to_string(), "German");
         assert_eq!(keymaps[2].description.to_string(), "Spanish");
+    }
+
+    #[test]
+    fn test_is_empty() {
+        let db = KeymapsDatabase::new();
+        assert!(db.is_empty());
+
+        let entries = vec![Keymap::new("us".parse().unwrap(), "English (US)")];
+        let db = KeymapsDatabase::with_entries(&entries);
+        assert!(!db.is_empty());
     }
 }

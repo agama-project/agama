@@ -9,14 +9,14 @@ set -eu
 # datadir=%{_datadir}
 
 if [ "${1-}" = --system ]; then
-    SRCDIR=.
-    DESTDIR=""
-    datadir=/usr/share
+  SRCDIR=.
+  DESTDIR=""
+  datadir=/usr/share
 fi
 
 # install regular file, with mode 644 (not an executable with mode 755)
 install6() {
-    install -m 0644 "$@"
+  install -m 0644 "$@"
 }
 
 install6 -D -t "${DESTDIR}${datadir}"/agama/products.d "${SRCDIR}"/*.yaml

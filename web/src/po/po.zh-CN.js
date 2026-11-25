@@ -780,9 +780,6 @@ export default {
   "Copy to the clipboard": [
     "复制到剪贴板"
   ],
-  "Could not authenticate against the server.": [
-    "无法向服务器完成身份验证。"
-  ],
   "Could not log in": [
     "无法登录"
   ],
@@ -1124,15 +1121,6 @@ export default {
   ],
   "Enter a server URL": [
     "输入服务器 URL"
-  ],
-  "Enter or Tab to add": [
-    "按 Enter 或 Tab 可添加条目"
-  ],
-  "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate": [
-    "按 Enter 或 Tab 键可添加条目，按 Backspace 或 Delete 键可去除条目，按方向键可切换条目"
-  ],
-  "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate entries, Escape to exit": [
-    "按 Enter 或 Tab 键可添加条目，按 Backspace 或 Delete 键可去除条目，按方向键可切换条目，按 Escape 键可退出"
   ],
   "Enter removes every value, Left arrow goes back to the text box.": [
     ""
@@ -3209,9 +3197,6 @@ export default {
   ],
   "Using %s keyboard layout": [
     "使用 %s 键盘布局"
-  ],
-  "Using [%s] keyboard layout": [
-    "使用 [%s] 键盘布局"
   ],
   "Using a hashed password.": [
     "正在使用经过哈希处理的口令。"

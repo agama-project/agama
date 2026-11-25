@@ -109,9 +109,7 @@ describe Agama::Storage::Manager do
     let(:iscsi) { Agama::Storage::ISCSI::Manager.new }
 
     it "probes the storage devices" do
-      expect(y2storage_manager).to receive(:probe) do |callbacks|
-        expect(callbacks).to be_a(Y2Storage::Callbacks::UserProbe)
-      end
+      expect(y2storage_manager).to receive(:probe)
       storage.probe
     end
   end

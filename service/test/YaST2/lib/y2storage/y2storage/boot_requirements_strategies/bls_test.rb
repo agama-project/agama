@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2025] SUSE LLC
+# Copyright (c) [2025, 2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -44,6 +44,46 @@ describe Y2Storage::BootRequirementsStrategies::BLS do
     it "does not return own /boot partition" do
       ret = subject.needed_partitions(target)
       expect(ret.any? { |p| p.mount_point == "/boot" }).to eq(false)
+    end
+
+    context "when a partition is configured at /boot/efi" do
+      subject { described_class.new(fake_devicegraph, planned, "/dev/sda1", assign_ids) }
+
+      let(:assign_ids) { true }
+
+      let(:analyzer) do
+        Y2Storage::BootRequirementsStrategies::Analyzer.new(fake_devicegraph, planned, "/dev/sda1")
+      end
+
+      let(:planned) { [planned_partition(mount_point: "/boot/efi", partition_id: id)] }
+
+      context "and it has no id" do
+        let(:id) { nil }
+
+        it "sets the ESP id" do
+          subject.needed_partitions(target)
+          expect(planned.first.partition_id).to eq(Y2Storage::PartitionId::ESP)
+        end
+      end
+
+      context "and the ids of the boot partitions are not assigned" do
+        let(:assign_ids) { false }
+        let(:id) { nil }
+
+        it "does not set the id" do
+          subject.needed_partitions(target)
+          expect(planned.first.partition_id).to be_nil
+        end
+      end
+
+      context "and it has an explicit id" do
+        let(:id) { Y2Storage::PartitionId::LINUX }
+
+        it "does not change the id" do
+          subject.needed_partitions(target)
+          expect(planned.first.partition_id).to eq(Y2Storage::PartitionId::LINUX)
+        end
+      end
     end
   end
 end

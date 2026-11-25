@@ -50,6 +50,25 @@ pub struct ConfigAutoLoader {
     insecure: bool,
 }
 
+/// Quickly checks for predefined locations if file or disk label exists
+///
+/// This helps with optimizing the most common usage where predefined location is not used.
+/// It is especially useful for AutoYaST XML profiles as when attempt to load it, it calls
+/// legacy autoyast fetching in ruby which is slow.
+fn is_location_available(url: &str) -> bool {
+    if let Some(path) = url.strip_prefix("file://") {
+        std::path::Path::new(path).is_file()
+    } else if let Some(rest) = url.strip_prefix("label://") {
+        if let Some((label, _path)) = rest.split_once('/') {
+            std::path::Path::new(&format!("/dev/disk/by-label/{label}")).exists()
+        } else {
+            false
+        }
+    } else {
+        true
+    }
+}
+
 impl ConfigAutoLoader {
     /// Builds a new loader.
     ///
@@ -126,6 +145,11 @@ impl ConfigAutoLoader {
     /// Loads configuration files from pre-defined locations.
     async fn load_predefined_config(&self, loader: ConfigLoader) -> anyhow::Result<()> {
         for url in PREDEFINED_LOCATIONS {
+            if !is_location_available(url) {
+                tracing::debug!("Predefined location {url} does not exist, skipping");
+                continue;
+            }
+
             match loader.load(url).await {
                 Ok(()) => {
                     tracing::info!("Configuration loaded from {url}");
@@ -142,5 +166,38 @@ impl ConfigAutoLoader {
             "Configuration cannot be applied because it is invalid or could not be reached.",
         );
         self.questions.should_retry(&msg, error, url).await
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_is_location_available_file() {
+        assert!(!is_location_available(
+            "file:///nonexistent_autoinst_12345.json"
+        ));
+
+        let temp_file = tempfile::NamedTempFile::new().unwrap();
+        let url = format!("file://{}", temp_file.path().display());
+        assert!(is_location_available(&url));
+    }
+
+    #[test]
+    fn test_is_location_available_label() {
+        // sadly I failed to find way how to reliably test existing label in unit tests
+        assert!(!is_location_available(
+            "label://NONEXISTENT_OEM_12345/autoinst.json"
+        ));
+        // no file specified, so always false
+        assert!(!is_location_available("label://no_slash_in_url"));
+    }
+
+    #[test]
+    fn test_is_location_available_remote_fallback() {
+        // it always succeed to just forward it to try location
+        assert!(is_location_available("http://mock.local/autoinst.json"));
+        assert!(is_location_available("ftp://mock.local/autoinst.json"));
     }
 }

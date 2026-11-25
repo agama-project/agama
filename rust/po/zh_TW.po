@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-25 21:33+0000\n"
+"POT-Creation-Date: 2026-11-12 20:22+0000\n"
 "PO-Revision-Date: 2026-07-27 04:12+0000\n"
 "Last-Translator: Grace Yu <grace.yu@excel-gits.com>\n"
 "Language-Team: Chinese (Taiwan) <https://l10n.opensuse.org/projects/agama/"
@@ -33,7 +33,7 @@ msgstr "重新載入組態"
 msgid "Skip and configure manually"
 msgstr "跳過並手動設定"
 
-#: agama-autoinstall/src/questions.rs:77 agama-cli/src/config.rs:371
+#: agama-autoinstall/src/questions.rs:77 agama-cli/src/config.rs:372
 msgid "Found unsupported elements in the AutoYaST profile:"
 msgstr ""
 
@@ -387,7 +387,7 @@ msgstr "編輯器指令 (如果需要，可包含額外引數)"
 msgid "It is not a valid JSON file"
 msgstr "這不是有效的 JSON 檔案"
 
-#: agama-cli/src/config.rs:434
+#: agama-cli/src/config.rs:435
 msgid "Ignoring the changes because the editor was closed with an error code."
 msgstr "由於編輯器關閉時傳回了錯誤代碼，將忽略變更。"
 
@@ -555,6 +555,11 @@ msgstr "問詢"
 msgid "Security"
 msgstr "安全性"
 
+#. TRANSLATORS: fallback for a scope not known to this client version
+#: agama-cli/src/monitor/ui.rs:77 agama-cli/src/monitor/ui/summary.rs:106
+msgid "Unknown"
+msgstr ""
+
 #: agama-cli/src/monitor/ui/content.rs:64
 msgid "Installation complete."
 msgstr "安裝已完成。"
@@ -621,6 +626,12 @@ msgstr "位置"
 msgid "Value"
 msgstr "值"
 
+#: agama-cli/src/monitor/ui/question.rs:413
+msgid ""
+"This question needs a kind of answer this client version does not support. "
+"Choosing an action below might not answer it as intended."
+msgstr ""
+
 #: agama-cli/src/monitor/ui/summary.rs:47
 msgid "Host: "
 msgstr "主機： "
@@ -670,7 +681,7 @@ msgstr "正在設定"
 msgid "Finished"
 msgstr "已完成"
 
-#: agama-cli/src/monitor/ui/summary.rs:118
+#: agama-cli/src/monitor/ui/summary.rs:119
 msgid "Not selected yet"
 msgstr "尚未選取"
 
@@ -775,119 +786,119 @@ msgstr "無法擷取程序檔 %s。是否要重試？"
 msgid "Failed to write the file %s. Do you want to try again?"
 msgstr "無法寫入檔案 %s。是否要重試？"
 
-#: agama-manager/src/actions.rs:79
+#: agama-manager/src/actions.rs:78
 msgid "Prepare the system"
 msgstr "準備系統"
 
-#: agama-manager/src/actions.rs:80
+#: agama-manager/src/actions.rs:79
 msgid "Install software"
 msgstr "安裝軟體"
 
-#: agama-manager/src/actions.rs:81
+#: agama-manager/src/actions.rs:80
 msgid "Configure the system"
 msgstr "設定系統"
 
-#: agama-manager/src/actions.rs:95
+#: agama-manager/src/actions.rs:94
 msgid "Preparing storage"
 msgstr "正在準備儲存空間"
 
-#: agama-manager/src/actions.rs:113
+#: agama-manager/src/actions.rs:112
 msgid "Running post-partitioning scripts"
 msgstr "正在執行磁碟分割後程序檔"
 
-#: agama-manager/src/actions.rs:138
+#: agama-manager/src/actions.rs:137
 msgid "Installing software"
 msgstr "正在安裝軟體"
 
-#: agama-manager/src/actions.rs:176
+#: agama-manager/src/actions.rs:175
 msgid "Configuring the system"
 msgstr "正在設定系統"
 
-#: agama-manager/src/actions.rs:248
+#: agama-manager/src/actions.rs:250
 msgid "Finishing installation"
 msgstr "完成安裝"
 
-#: agama-manager/src/actions.rs:277
+#: agama-manager/src/actions.rs:279
 msgid "Finalize installation"
 msgstr "完成安裝"
 
-#: agama-manager/src/actions.rs:352
+#: agama-manager/src/actions.rs:354
 msgid "Storing questions settings"
 msgstr "正在儲存問詢設定"
 
-#: agama-manager/src/actions.rs:363
+#: agama-manager/src/actions.rs:365
 msgid "Importing user files and scripts"
 msgstr "正在輸入使用者檔案和程序檔"
 
-#: agama-manager/src/actions.rs:377
+#: agama-manager/src/actions.rs:379
 msgid "Running user pre-installation scripts"
 msgstr "正在執行使用者預先安裝程序檔"
 
-#: agama-manager/src/actions.rs:392
+#: agama-manager/src/actions.rs:394
 msgid "Storing security settings"
 msgstr "正在儲存安全性設定"
 
-#: agama-manager/src/actions.rs:402
+#: agama-manager/src/actions.rs:404
 msgid "Configuring remote access"
 msgstr "正在設定遠端存取"
 
-#: agama-manager/src/actions.rs:412
+#: agama-manager/src/actions.rs:414
 msgid "Setting up the hostname"
 msgstr "正在設定主機名稱"
 
-#: agama-manager/src/actions.rs:422
+#: agama-manager/src/actions.rs:425
 msgid "Setting up the network proxy"
 msgstr "正在設定網路代理"
 
-#: agama-manager/src/actions.rs:433
+#: agama-manager/src/actions.rs:436
 msgid "Setting up NTP"
 msgstr "正在設定 NTP"
 
-#: agama-manager/src/actions.rs:443
+#: agama-manager/src/actions.rs:446
 msgid "Storing localization settings"
 msgstr "正在儲存本土化設定"
 
-#: agama-manager/src/actions.rs:453
+#: agama-manager/src/actions.rs:456
 msgid "Storing users settings"
 msgstr "正在儲存使用者設定"
 
-#: agama-manager/src/actions.rs:563
+#: agama-manager/src/actions.rs:569
 msgid "Configuring iSCSI devices"
 msgstr "正在設定 iSCSI 裝置"
 
-#: agama-manager/src/actions.rs:588
+#: agama-manager/src/actions.rs:594
 msgid "Configuring zFCP devices"
 msgstr "正在設定 zFCP 裝置"
 
-#: agama-manager/src/actions.rs:614
+#: agama-manager/src/actions.rs:620
 msgid "Configuring DASD devices"
 msgstr "正在設定 DASD 裝置"
 
-#: agama-manager/src/actions.rs:640
+#: agama-manager/src/actions.rs:646
 msgid "Setting up the network"
 msgstr "正在設定網路"
 
-#: agama-manager/src/actions.rs:670
+#: agama-manager/src/actions.rs:675
 msgid "Preparing the storage proposal"
 msgstr "正在準備儲存建議"
 
-#: agama-manager/src/actions.rs:700
+#: agama-manager/src/actions.rs:705
 msgid "Storing bootloader settings"
 msgstr "正在儲存開機載入程式設定"
 
-#: agama-manager/src/actions.rs:734
+#: agama-manager/src/actions.rs:739
 msgid "Preparing the software proposal"
 msgstr "正在準備軟體建議"
 
-#: agama-manager/src/actions.rs:764
+#: agama-manager/src/actions.rs:769
 msgid "Configuring SELinux"
 msgstr "正在設定 SELinux"
 
-#: agama-network/src/service.rs:511
+#: agama-network/src/service.rs:163
 msgid "Writing network configuration"
 msgstr "正在寫入網路組態"
 
-#: agama-network/src/service.rs:512
+#: agama-network/src/service.rs:164
 msgid "Syncing the network service state"
 msgstr "正在同步網路服務狀態"
 
@@ -952,7 +963,7 @@ msgstr "指紋為 {2} 的金鑰 {0} ({1}) 未知。是否信任該金鑰？"
 msgid "Skip"
 msgstr "跳過"
 
-#: agama-software/src/service.rs:295
+#: agama-software/src/service.rs:297
 msgid ""
 "Due to an internal error, it was not possible to create a software proposal."
 msgstr "由於出現內部錯誤，無法建立軟體建議。"
@@ -965,52 +976,52 @@ msgstr "正在啟動套件安裝程序"
 msgid "Packages download and installation failed. Would you like to retry?"
 msgstr "無法下載和安裝套件。是否要重試？"
 
-#: agama-software/src/zypp_server.rs:367
+#: agama-software/src/zypp_server.rs:368
 msgid "Updating the list of repositories"
 msgstr "正在更新儲存庫清單"
 
-#: agama-software/src/zypp_server.rs:368
+#: agama-software/src/zypp_server.rs:369
 msgid "Refreshing metadata from the repositories"
 msgstr "正在重新整理來自儲存庫的中繼資料"
 
-#: agama-software/src/zypp_server.rs:369
+#: agama-software/src/zypp_server.rs:370
 msgid "Calculating the software proposal"
 msgstr "正在計算軟體建議"
 
-#: agama-software/src/zypp_server.rs:372
+#: agama-software/src/zypp_server.rs:373
 msgid "Registering the system"
 msgstr "正在註冊系統"
 
 #. TRANSLATORS: %s is the alias of the repository.
-#: agama-software/src/zypp_server.rs:445
+#: agama-software/src/zypp_server.rs:451
 msgid "Could not remove the repository %s"
 msgstr "無法移除儲存庫 %s"
 
-#: agama-software/src/zypp_server.rs:465
+#: agama-software/src/zypp_server.rs:471
 msgid "Could not read the repositories"
 msgstr "無法讀取儲存庫"
 
-#: agama-software/src/zypp_server.rs:501
+#: agama-software/src/zypp_server.rs:507
 msgid ""
 "Failed to find the product in the repositories. You might need to register "
 "the system."
 msgstr "在儲存庫中未找到該產品。您可能需要註冊系統。"
 
-#: agama-software/src/zypp_server.rs:504
+#: agama-software/src/zypp_server.rs:510
 msgid "Failed to find the product in the repositories."
 msgstr "在儲存庫中未找到該產品。"
 
-#: agama-software/src/zypp_server.rs:567
+#: agama-software/src/zypp_server.rs:573
 msgid "There are conflicts in the software selection"
 msgstr "軟體選擇存在衝突"
 
 #. TRANSLATORS: the first %s is the kind of resolvable (e.g., "package")
 #. and the second %s is the name of the resolvable.
-#: agama-software/src/zypp_server.rs:594
+#: agama-software/src/zypp_server.rs:600
 msgid "Could not select %s '%s' for installation"
 msgstr "無法選取 %s '%s' 進行安裝"
 
-#: agama-software/src/zypp_server.rs:1012
+#: agama-software/src/zypp_server.rs:1018
 msgid "Failed to register the system"
 msgstr "無法註冊系統"
 
@@ -1023,39 +1034,43 @@ msgstr "必須定義一個使用者、設定 root 密碼或 SSH 公用金鑰"
 msgid "First user information is incomplete"
 msgstr "首個使用者資訊不完整"
 
-#: agama-utils/src/api/problem_details.rs:120
+#: agama-utils/src/api/problem_details.rs:129
 msgid "Schema validation failed"
 msgstr "綱要驗證失敗"
 
-#: agama-utils/src/api/problem_details.rs:122
+#: agama-utils/src/api/problem_details.rs:131
 msgid "The provided configuration does not match the required schema"
 msgstr "提供的組態與所需綱要不符"
 
-#: agama-utils/src/api/problem_details.rs:131
+#: agama-utils/src/api/problem_details.rs:140
 msgid "Invalid JSON"
 msgstr "無效 JSON"
 
-#: agama-utils/src/api/problem_details.rs:139
+#: agama-utils/src/api/problem_details.rs:148
 msgid "Internal server error"
 msgstr "內部伺服器錯誤"
 
-#: agama-utils/src/api/problem_details.rs:147
+#: agama-utils/src/api/problem_details.rs:156
 msgid "Unauthorized"
 msgstr "未授權"
 
 #: agama-utils/src/api/problem_details.rs:205
+msgid "An error occurred that this client version doesn't recognize"
+msgstr ""
+
+#: agama-utils/src/api/problem_details.rs:221
 msgid "Error:"
 msgstr "錯誤："
 
-#: agama-utils/src/api/problem_details.rs:208
+#: agama-utils/src/api/problem_details.rs:224
 msgid "Details:"
 msgstr "詳細資料："
 
-#: agama-utils/src/api/question.rs:346 agama-utils/src/question/start.rs:48
+#: agama-utils/src/api/question.rs:347 agama-utils/src/question/start.rs:48
 msgid "No"
 msgstr "否"
 
-#: agama-utils/src/api/question.rs:346 agama-utils/src/question/start.rs:48
+#: agama-utils/src/api/question.rs:347 agama-utils/src/question/start.rs:48
 msgid "Yes"
 msgstr "是"
 

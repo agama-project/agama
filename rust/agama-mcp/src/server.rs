@@ -23,21 +23,30 @@
 use crate::error::{BackendError, Error};
 use crate::mode::McpMode;
 use crate::tools::{
-    filter_system_resource, tool_error, tool_success, validate_config_schema, AnswerQuestionArgs,
-    GetConfigSchemaArgs, GetLogsArgs, GetSystemArgs, ProposalOutcome, SetConfigArgs,
+    filter_system_resource, format_progress_report, has_pre_scripts, tool_error, tool_success,
+    validate_config_schema, AnswerQuestionArgs, GetConfigSchemaArgs, GetLogsArgs, GetSystemArgs,
+    ProposalOutcome, SetConfigArgs, WaitProgressArgs,
 };
 use agama_utils::actor::Handler;
+use agama_utils::api::event::{self, Event};
 use agama_utils::api::question::{self, Question};
 use agama_utils::api::status::Stage;
-use agama_utils::api::{status::Status, Action, Config, IssueWithScope, Proposal, SystemInfo};
+use agama_utils::api::{
+    status::Status, Action, Config, FinishMethod, IssueWithScope, Proposal, SystemInfo,
+};
 use agama_utils::progress;
 use agama_utils::question as question_service;
 use async_trait::async_trait;
 use rmcp::handler::server::wrapper::Parameters;
 use rmcp::model::{CallToolResult, Implementation, ServerCapabilities, ServerConfig};
 use rmcp::{tool, tool_handler, tool_router, ServerHandler};
-use serde_json::json;
 use std::sync::Arc;
+use std::time::Duration;
+use tokio::sync::broadcast;
+
+const DEFAULT_WAIT_TIMEOUT_SECS: u64 = 60;
+const MIN_WAIT_TIMEOUT_SECS: u64 = 1;
+const MAX_WAIT_TIMEOUT_SECS: u64 = 300;
 
 /// Backend trait abstracting interactions with the Agama installer state machine.
 #[async_trait]
@@ -70,12 +79,21 @@ pub trait McpBackend: Send + Sync {
         action: String,
         value: Option<String>,
     ) -> Result<(), BackendError>;
+
+    /// Triggers the system reboot action.
+    async fn reboot(&self) -> Result<(), BackendError>;
+
+    /// Subscribes to the live event bus if supported by the backend.
+    fn subscribe_events(&self) -> Option<event::Receiver> {
+        None
+    }
 }
 
 /// Production MCP backend connected to live Agama Manager and Questions actors.
 struct AgamaBackend {
     manager: Handler<agama_manager::Service>,
     questions: Handler<question_service::Service>,
+    events: event::Sender,
 }
 
 #[async_trait]
@@ -117,6 +135,15 @@ impl McpBackend for AgamaBackend {
             .await?)
     }
 
+    async fn reboot(&self) -> Result<(), BackendError> {
+        Ok(self
+            .manager
+            .call(agama_manager::message::RunAction::new(Action::Finish(
+                FinishMethod::Reboot,
+            )))
+            .await?)
+    }
+
     async fn get_progress(&self) -> Result<Status, BackendError> {
         Ok(self.manager.call(progress::message::GetStatus).await?)
     }
@@ -136,6 +163,10 @@ impl McpBackend for AgamaBackend {
             .questions
             .call(question_service::message::Answer { id, answer })
             .await?)
+    }
+
+    fn subscribe_events(&self) -> Option<event::Receiver> {
+        Some(self.events.subscribe())
     }
 }
 
@@ -157,15 +188,43 @@ impl McpServer {
     pub fn new(
         manager: Handler<agama_manager::Service>,
         questions: Handler<question_service::Service>,
+        events: event::Sender,
         mode: McpMode,
     ) -> Self {
-        let backend = AgamaBackend { manager, questions };
+        let backend = AgamaBackend {
+            manager,
+            questions,
+            events,
+        };
         Self::with_backend(Arc::new(backend), mode)
     }
 
     /// Returns the current operating mode.
     pub fn mode(&self) -> McpMode {
         self.mode
+    }
+
+    async fn fetch_pending_questions(&self) -> Vec<Question> {
+        match self.backend.get_questions().await {
+            Ok(questions) => questions
+                .into_iter()
+                .filter(|q| q.answer.is_none())
+                .collect(),
+            Err(err) => {
+                tracing::warn!("Failed to retrieve questions: {err}");
+                Vec::new()
+            }
+        }
+    }
+
+    async fn progress_report_tool_result(
+        &self,
+        status: &Status,
+        detail_message: Option<&str>,
+    ) -> Result<CallToolResult, Error> {
+        let pending = self.fetch_pending_questions().await;
+        let report = format_progress_report(status, pending, detail_message);
+        Ok(tool_success(serde_json::to_string_pretty(&report)?))
     }
 
     /// Queries Agama's hardware probe engines to map the physical state of the machine.
@@ -265,6 +324,12 @@ impl McpServer {
             }
         };
 
+        if !self.mode.allows_install() && has_pre_scripts(&config) {
+            return Ok(tool_error(
+                "Pre-installation scripts ('scripts.pre') are not permitted in configuration-only mode (inst.mcp=config) becase they execute arbitrary shell commands.",
+            ));
+        }
+
         if let Err(e) = self.backend.set_config(config).await {
             return Ok(tool_error(format!(
                 "Failed to apply configuration state: {e}"
@@ -308,7 +373,7 @@ impl McpServer {
     /// Locks the state machine and triggers disk format and software deployment.
     #[tool(
         name = "commit_install",
-        description = "Locks the state machine and triggers the disk format and software deployment. Disabled in configuration mode (returns 403 Forbidden)."
+        description = "Locks the state machine and triggers the disk format and software deployment. Disabled in configuration mode (returns 403 Forbidden). Once triggered, monitor progress with the event-driven 'wait_progress' tool."
     )]
     pub async fn commit_install(&self) -> Result<CallToolResult, Error> {
         if !self.mode.allows_install() {
@@ -320,7 +385,37 @@ impl McpServer {
         }
 
         Ok(tool_success(
-            "Installation committed and started. Monitor progress using the 'get_progress' tool.",
+            "Installation committed and started. Monitor progress using the 'wait_progress' tool (recommended) or 'get_progress'.",
+        ))
+    }
+
+    /// Reboots the machine into the installed system. Collect logs with 'get_logs' beforehand; the MCP session terminates upon reboot.
+    #[tool(
+        name = "reboot",
+        description = "Reboots the machine into the installed system. Collect logs with 'get_logs' in advance; the MCP server and installer session terminate immediately upon reboot. Only available in 'full' mode."
+    )]
+    pub async fn reboot(&self) -> Result<CallToolResult, Error> {
+        if !self.mode.allows_install() {
+            return Err(Error::Forbidden);
+        }
+
+        let status = match self.backend.get_progress().await {
+            Ok(s) => s,
+            Err(e) => return Ok(tool_error(format!("Failed to retrieve status: {e}"))),
+        };
+
+        if status.stage == Stage::Installing {
+            return Ok(tool_error(
+                "Cannot reboot while installation is in progress. Wait for installation to finish or fail.",
+            ));
+        }
+
+        if let Err(e) = self.backend.reboot().await {
+            return Ok(tool_error(format!("Failed to trigger reboot: {e}")));
+        }
+
+        Ok(tool_success(
+            "Reboot initiated. The system is restarting into the installed OS. The MCP session is terminating.",
         ))
     }
 
@@ -336,48 +431,107 @@ impl McpServer {
             Err(e) => return Ok(tool_error(format!("Failed to retrieve progress: {e}"))),
         };
 
-        let pending_questions = match self.backend.get_questions().await {
-            Ok(questions) => questions
-                .into_iter()
-                .filter(|q| q.answer.is_none())
-                .collect(),
-            Err(err) => {
-                tracing::warn!("Failed to retrieve questions for progress: {err}");
-                Vec::new()
-            }
-        };
+        self.progress_report_tool_result(&status, None).await
+    }
 
-        let percent = match status.stage {
-            Stage::Configuring => 0.0,
-            Stage::Finished => 100.0,
-            Stage::Failed | Stage::Unknown => 0.0,
-            Stage::Installing => {
-                if status.progresses.is_empty() {
-                    50.0
-                } else {
-                    let total: f64 = status
-                        .progresses
-                        .iter()
-                        .map(|p| (p.index as f64 / p.size.max(1) as f64) * 100.0)
-                        .sum();
-                    (total / (status.progresses.len() as f64)).clamp(0.0, 100.0)
+    /// Waits for an installation event or progress update.
+    /// Blocks until an interactive question arises, installation completes or fails,
+    /// or the timeout elapses (default 60s). Avoids repeated polling overhead.
+    #[tool(
+        name = "wait_progress",
+        description = "Waits for an installation event or progress update. Blocks until an interactive question arises, installation finishes, installation fails, or the timeout elapses (default 60s). Avoids repeated polling overhead."
+    )]
+    pub async fn wait_progress(
+        &self,
+        Parameters(args): Parameters<WaitProgressArgs>,
+    ) -> Result<CallToolResult, Error> {
+        let timeout_secs = args
+            .timeout_seconds
+            .unwrap_or(DEFAULT_WAIT_TIMEOUT_SECS)
+            .clamp(MIN_WAIT_TIMEOUT_SECS, MAX_WAIT_TIMEOUT_SECS);
+        let deadline = tokio::time::Instant::now() + Duration::from_secs(timeout_secs);
+
+        // 1. Subscribe to events FIRST before querying status to prevent missing state transitions
+        let mut receiver_opt = self.backend.subscribe_events();
+
+        // 2. Initial state check: if an actionable condition already exists, return immediately
+        let status = match self.backend.get_progress().await {
+            Ok(s) => s,
+            Err(e) => return Ok(tool_error(format!("Failed to retrieve progress: {e}"))),
+        };
+        let pending = self.fetch_pending_questions().await;
+
+        if !pending.is_empty()
+            || status.stage == Stage::Finished
+            || status.stage == Stage::Failed
+            || (status.stage == Stage::Configuring && status.tasks.is_empty())
+        {
+            let report = format_progress_report(&status, pending, None);
+            return Ok(tool_success(serde_json::to_string_pretty(&report)?));
+        }
+
+        // 3. Actively waiting: listen for events until deadline
+        loop {
+            let now = tokio::time::Instant::now();
+            if now >= deadline {
+                break;
+            }
+            let remaining = deadline - now;
+
+            if let Some(ref mut rx) = receiver_opt {
+                tokio::select! {
+                    _ = tokio::time::sleep(remaining) => {
+                        break;
+                    }
+                    event_res = rx.recv() => {
+                        match event_res {
+                            Ok(Event::QuestionAdded { id }) => {
+                                let msg = format!("Question {id} pending. Call 'answer_question'.");
+                                return self.progress_report_tool_result(&status, Some(&msg)).await;
+                            }
+                            Ok(Event::StageChanged { stage }) if stage == Stage::Finished || stage == Stage::Failed => {
+                                let current_status = self.backend.get_progress().await.unwrap_or_else(|_| status.clone());
+                                return self.progress_report_tool_result(&current_status, None).await;
+                            }
+                            Ok(Event::TaskFinished { remaining: 0, .. }) | Ok(Event::ProposalChanged { .. }) => {
+                                let current_status = self.backend.get_progress().await.unwrap_or_else(|_| status.clone());
+                                if current_status.tasks.is_empty() {
+                                    return self.progress_report_tool_result(&current_status, None).await;
+                                }
+                            }
+                            Ok(_) => {
+                                // Progress or task events: keep waiting
+                            }
+                            Err(broadcast::error::RecvError::Lagged(_)) => {
+                                // Channel buffer overflowed: clear backlog, re-read state, and then continue with events.
+                                while rx.try_recv().is_ok() {}
+                                let current_status = self.backend.get_progress().await.unwrap_or_default();
+                                if current_status.stage == Stage::Finished
+                                    || current_status.stage == Stage::Failed
+                                    || (current_status.stage == Stage::Configuring && current_status.tasks.is_empty())
+                                {
+                                    break;
+                                }
+                                let pending = self.fetch_pending_questions().await;
+                                if !pending.is_empty() {
+                                    return self.progress_report_tool_result(&current_status, None).await;
+                                }
+                            }
+                            Err(broadcast::error::RecvError::Closed) => {
+                                break;
+                            }
+                        }
+                    }
                 }
+            } else {
+                tokio::time::sleep(remaining).await;
+                break;
             }
-        };
+        }
 
-        let report = json!({
-            "stage": status.stage,
-            "percent": percent,
-            "isFinished": status.stage == Stage::Finished,
-            "isFailed": status.stage == Stage::Failed,
-            "tasks": status.tasks,
-            "progresses": status.progresses,
-            "hasPendingQuestions": !pending_questions.is_empty(),
-            "pendingQuestions": pending_questions,
-        });
-
-        let formatted = serde_json::to_string_pretty(&report)?;
-        Ok(tool_success(formatted))
+        // 4. Timeout elapsed or channel closed: return state-derived report with next steps
+        let latest_status = self.backend.get_progress().await.unwrap_or(status);
+        self.progress_report_tool_result(&latest_status, None).await
     }
 
     /// Retrieves specific subsets of system logs directly from journalctl.

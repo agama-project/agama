@@ -19,7 +19,6 @@
 
 require "yast"
 require "storage"
-require "y2packager/repository"
 require "y2storage/disk_size"
 require "y2storage/blk_device"
 require "y2storage/lvm_pv"
@@ -155,7 +154,6 @@ module Y2Storage
     # @return [Boolean]
     def available_device?(device)
       !contain_mounted_filesystem?(device) &&
-        !contain_installation_repository?(device) &&
         !device.name.match?(/^\/dev\/ram\d+$/)
     end
 
@@ -321,80 +319,6 @@ module Y2Storage
     # @return [Boolean]
     def mounted_filesystem?(filesystem)
       filesystem.active_mount_point?
-    end
-
-    # Checks whether a device contains an installation repository
-    #
-    # A device contains an installation repository if the device or any of its descendant devices
-    # is included in the list of devices from the installation repository URI. For example, if the
-    # URI is "hd:/subdir?device=/dev/sda1", then "/dev/sda" contains an installation repository.
-    #
-    # @param device [BlkDevice]
-    # @return [Boolean]
-    def contain_installation_repository?(device)
-      repositories_names = repositories_devices.map(&:name)
-
-      all_devices_from_device(device).any? { |d| repositories_names.include?(d.name) }
-    end
-
-    # All blk devices defined from a device, including the given device
-    # (e.g., a disk and all its partitions)
-    #
-    # Note that when a device contains a partition being used as LVM PV, all LVM LVs are included.
-    #
-    # @param device [BlkDevice]
-    # @return [Array<BlkDevice>]
-    def all_devices_from_device(device)
-      devices = device.descendants.select { |d| d.is?(:blk_device) }
-      devices.prepend(device)
-    end
-
-    # Devices whose name is indicated in the URI of the installation repositories
-    #
-    # @return [Array<BlkDevice>]
-    def repositories_devices
-      return @repositories_devices if @repositories_devices
-
-      devices = repositories_device_names.map { |n| devicegraph.find_by_any_name(n) }.compact
-
-      @repositories_devices = devices
-    end
-
-    # Device names indicated in the URI of the installation repositories
-    #
-    # @see #local_repositories
-    #
-    # @return [Array<String>]
-    def repositories_device_names
-      return @repositories_device_names if @repositories_device_names
-
-      names = local_repositories.flat_map { |r| repository_device_names(r) }.uniq
-
-      @repositories_device_names = names
-    end
-
-    # TODO: This method should be moved to Y2Packager::Repository class
-    #
-    # Device names indicated in the URI of an installation repository
-    #
-    # For example:
-    #   "hd:/subdir?device=/dev/sda1&filesystem=reiserfs" => ["/dev/sda1"]
-    #   "dvd:/?devices=/dev/sda,/dev/sdb" => ["/dev/sda", "/dev/sdb"]
-    #
-    # @param repository [Y2Packager::Repository]
-    # @return [Array<String>]
-    def repository_device_names(repository)
-      match_data = repository.url.to_s.match(/.*devices?=([^&]*)/)
-      return [] unless match_data
-
-      match_data[1].split(",").map(&:strip)
-    end
-
-    # Local repositories used during installation
-    #
-    # @return [Array<Y2Packager::Repository>]
-    def local_repositories
-      Y2Packager::Repository.all.select(&:local?)
     end
 
     # Current architecture

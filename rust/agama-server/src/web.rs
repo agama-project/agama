@@ -34,6 +34,7 @@ use agama_mcp::McpMode;
 use agama_utils::api::event;
 use agama_utils::question;
 use aide::axum::ApiRouter;
+use axum::http::HeaderValue;
 
 mod auth;
 mod config;
@@ -55,12 +56,15 @@ use std::path::Path;
 /// * `dbus`: D-Bus connection.
 /// * `web_ui_dir`: public directory containing the web UI.
 /// * `mcp_mode`: optional MCP mode override; if None, parsed from the kernel command-line.
+/// * `cors_origin`: value of the `Access-Control-Allow-Origin` header (`*` for any origin);
+///   CORS is disabled if `None`.
 pub async fn service<P>(
     config: ServiceConfig,
     events: event::Sender,
     dbus: zbus::Connection,
     web_ui_dir: P,
     mcp_mode: Option<McpMode>,
+    cors_origin: Option<HeaderValue>,
 ) -> Result<ApiRouter, Error>
 where
     P: AsRef<Path>,
@@ -77,11 +81,12 @@ where
     let mut builder = MainServiceBuilder::new(events.clone(), web_ui_dir)
         .add_service("/", server)
         .add_service("/terminal", terminal_service())
-        .with_config(config);
+        .with_config(config)
+        .with_cors(cors_origin);
 
     if mode.is_enabled() {
         tracing::info!("Mounting Agama MCP server in {} mode at /mcp", mode);
-        let mcp_server = agama_mcp::McpServer::new(manager, questions, mode);
+        let mcp_server = agama_mcp::McpServer::new(manager, questions, events.clone(), mode);
         let mcp_router = agama_mcp::web::mcp_router(mcp_server);
         builder = builder.with_mcp_service(mcp_router);
     }
