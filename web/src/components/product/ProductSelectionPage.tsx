@@ -473,10 +473,7 @@ const ProductFormLabel = ({ products, currentProduct }: ProductSelectionContextP
 
   // No product selected yet (multiple products available)
   if (!currentProduct) {
-    return sprintf(
-      n_("Choose a product", "Choose from %d available products", availableProductCount),
-      availableProductCount,
-    );
+    return sprintf(_("Choose from %d available products"), availableProductCount);
   }
 
   // Switching from existing product (without modes)
