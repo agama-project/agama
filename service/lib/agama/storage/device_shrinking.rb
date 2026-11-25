@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -60,13 +60,25 @@ module Agama
 
       # Reasons because the device cannot be shrunk.
       #
-      # @return [Array<String>, nil] nil if the device can be shrunk.
+      # The reasons are symbols that are never translated, so they can be used, for example, for
+      # logging. See {#unsupported_reasons_text} for the texts.
+      #
+      # @return [Array<Symbol>, nil] nil if the device can be shrunk. E.g., [:NO_CONTENT] or
+      #   [:RB_SHRINK_NOT_SUPPORTED_BY_FILESYSTEM, :RB_MIN_SIZE_FOR_PARTITION].
       def unsupported_reasons
         return nil if supported?
 
+        extra_reasons + shrinking_reasons + resize_reasons
+      end
+
+      # Texts of the reasons because the device cannot be shrunk.
+      #
+      # @return [Array<String>, nil] nil if the device can be shrunk.
+      def unsupported_reasons_text
+        return nil if supported?
+
         [
-          content_reason_text,
-          min_size_reason_text,
+          extra_reasons_text,
           shrinking_reasons_text,
           resize_reasons_text
         ].flatten.compact
@@ -78,6 +90,9 @@ module Agama
       attr_reader :device
 
       # Reasons preventing shrinking.
+      #
+      # NOTE: the reasons are documented in doc/shrinking_devices.md, keep it in sync with
+      # {SHRINKING_REASONS}, {RESIZE_REASONS} and {EXTRA_REASONS}.
       SHRINKING_REASONS = [
         :RB_SHRINK_NOT_SUPPORTED_BY_FILESYSTEM,
         :RB_SHRINK_NOT_SUPPORTED_BY_MULTIDEVICE_FILESYSTEM,
@@ -101,6 +116,10 @@ module Agama
         :RB_PASSWORD_REQUIRED
       ].freeze
       private_constant :RESIZE_REASONS
+
+      # Reasons preventing shrinking that are not reported by libstorage-ng but detected by Agama.
+      EXTRA_REASONS = [:NO_CONTENT, :NO_MIN_SIZE].freeze
+      private_constant :EXTRA_REASONS
 
       # Whether the device has some content.
       #
@@ -148,24 +167,38 @@ module Agama
         []
       end
 
-      # Text of the reason preventing to shrink because there is no content.
+      # Extra reasons preventing to shrink.
       #
-      # @return [String, nil] nil if there is content or there is any other reasons.
-      def content_reason_text
-        return nil if content? || reasons?
+      # An extra reason is only given if libstorage-ng does not report any reason.
+      #
+      # @return [Array<Symbol>] Subset of {EXTRA_REASONS}.
+      def extra_reasons
+        return [] if reasons?
 
-        _("Neither a file system nor a storage system was detected on the device. In case the " \
-          "device does contain a file system or a storage system that is not supported, resizing " \
-          "will most likely cause data loss.")
+        EXTRA_REASONS.select do |reason|
+          case reason
+          when :NO_CONTENT
+            !content?
+          when :NO_MIN_SIZE
+            !min_size?
+          end
+        end
       end
 
-      # Text of the reason preventing to shrink because there is no valid minimum size.
+      # Texts of the extra reasons preventing to shrink.
       #
-      # @return [String, nil] nil if there is a minimum size or there is any other reasons.
-      def min_size_reason_text
-        return nil if min_size? || reasons?
-
-        _("Shrinking is not supported by this device")
+      # @return [Array<String>]
+      def extra_reasons_text
+        extra_reasons.map do |reason|
+          case reason
+          when :NO_CONTENT
+            _("Neither a file system nor a storage system was detected on the device. In case " \
+              "the device does contain a file system or a storage system that is not supported, " \
+              "resizing will most likely cause data loss.")
+          when :NO_MIN_SIZE
+            _("Shrinking is not supported by this device")
+          end
+        end
       end
 
       # Text of the reasons proventing to shrink.

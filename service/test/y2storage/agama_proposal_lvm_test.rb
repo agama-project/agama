@@ -378,7 +378,7 @@ describe Y2Storage::AgamaProposal do
 
       let(:resize_info) do
         instance_double(
-          Y2Storage::ResizeInfo, resize_ok?: true,
+          Y2Storage::ResizeInfo, resize_ok?: true, reasons: [],
           min_size: Y2Storage::DiskSize::GiB(3), max_size: Y2Storage::DiskSize::GiB(35)
         )
       end

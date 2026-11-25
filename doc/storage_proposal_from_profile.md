@@ -151,6 +151,10 @@ Both *min* and *max* sizes admit "current" as a valid size value in the JSON pro
 value stands for the current size of the volume. Using "current" is useful for growing or shrinking
 a device.
 
+Note that a device that cannot be shrunk is never shrunk by the proposal, even if the size says so.
+See "Usage in the proposal" in [shrinking_devices.md](shrinking_devices.md) for the cases in which
+shrinking is automatically skipped.
+
 The config conversion knows nothing about the current size of a volume, so it simply replaces
 "current" values by `nil`.
 

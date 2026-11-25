@@ -60,7 +60,9 @@ describe Y2Storage::AgamaProposal do
     let(:scenario) { "disks.yaml" }
 
     let(:resize_info) do
-      instance_double(Y2Storage::ResizeInfo, resize_ok?: true, min_size: 5.GiB, max_size: 10.GiB)
+      instance_double(
+        Y2Storage::ResizeInfo, resize_ok?: true, reasons: [], min_size: 5.GiB, max_size: 10.GiB
+      )
     end
 
     let(:config_json) do
