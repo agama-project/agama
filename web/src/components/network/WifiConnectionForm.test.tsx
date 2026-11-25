@@ -22,7 +22,7 @@
 
 import React from "react";
 import { screen, waitFor } from "@testing-library/react";
-import { installerRender, mockNavigateFn } from "~/test-utils";
+import { getAnnouncements, installerRender, mockNavigateFn } from "~/test-utils";
 import WifiConnectionForm from "./WifiConnectionForm";
 import { WifiNetworkStatus } from "~/types/network";
 
@@ -117,6 +117,20 @@ describe("WifiConnectionForm", () => {
         expect(screen.getByRole("combobox", { name: "Security" })).toHaveValue("wpa-psk");
       });
     });
+
+    it("announces the warning of Enterprise once the security selector is left", async () => {
+      const { user } = installerRender(<WifiConnectionForm />);
+      await user.selectOptions(
+        screen.getByRole("combobox", { name: "Network" }),
+        "Visible Network",
+      );
+      await user.selectOptions(screen.getByRole("combobox", { name: "Security" }), "wpa-eap");
+      expect(getAnnouncements()).toEqual([]);
+      await user.tab();
+      expect(getAnnouncements()).toContain(
+        "The identity of the network cannot be verified. Connect only if you trust it.",
+      );
+    });
   });
 
   describe("when an enterprise network is selected", () => {
@@ -131,6 +145,19 @@ describe("WifiConnectionForm", () => {
       });
       screen.getByRole("combobox", { name: "Authentication" });
       expect(screen.queryByLabelText("WPA Password")).toBeNull();
+    });
+
+    it("warns that the identity of the network cannot be verified", async () => {
+      const { user } = installerRender(<WifiConnectionForm />);
+      await user.selectOptions(
+        screen.getByRole("combobox", { name: "Network" }),
+        "Enterprise Network",
+      );
+      expect(screen.getByRole("combobox", { name: "Security" })).toHaveAccessibleDescription(
+        expect.stringContaining(
+          "The identity of the network cannot be verified. Connect only if you trust it.",
+        ),
+      );
     });
 
     it("submits the 802.1X settings", async () => {

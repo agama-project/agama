@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useEffect, useReducer } from "react";
+import React, { useEffect, useId, useReducer, useRef } from "react";
 import { isEmpty } from "radashi";
 import {
   ActionGroup,
@@ -31,10 +31,13 @@ import {
   FormGroup,
   FormSelect,
   FormSelectOption,
+  HelperText,
+  HelperTextItem,
 } from "@patternfly/react-core";
 import Icon from "~/components/layout/Icon";
 import { PasswordInput } from "~/components/core";
 import Page from "~/components/layout/Page";
+import FieldNestedContent from "~/components/form/FieldNestedContent";
 import { Connection, IEEE8021X, WifiNetwork, Wireless } from "~/types/network";
 import { useWifiNetworks } from "~/hooks/model/system/network";
 import { useConnectionMutation } from "~/hooks/model/config/network";
@@ -45,6 +48,7 @@ import { PATHS } from "~/routes/network";
 import { _ } from "~/i18n";
 import { wifiSecurityLabel } from "~/utils/network";
 import { SYSTEM_QUERY_KEY } from "~/hooks/model/system";
+import { useAnnounce } from "~/context/announcer";
 
 const securityOptions = ["none", "wpa-psk", "wpa-eap"];
 
@@ -121,6 +125,9 @@ function WifiConnectionFormContent() {
   const networks = useWifiNetworks();
   const [form, dispatch] = useReducer(formReducer, initialState);
   const { mutateAsync: updateConnection } = useConnectionMutation();
+  const announce = useAnnounce();
+  const securityHintId = useId();
+  const switchedToEnterprise = useRef(false);
 
   useEffect(() => {
     if (!isEmpty(networks) && !form.ssid) {
@@ -131,6 +138,10 @@ function WifiConnectionFormContent() {
   const network = networks.find((n) => n.ssid === form.ssid);
   const isPublicNetwork = isEmpty(network?.security);
   const isEnterprise = form.security === "wpa-eap";
+  // TRANSLATORS: hint shown below the Wi-Fi security selector when WPA Enterprise is selected
+  const unverifiedNetworkHint = _(
+    "The identity of the network cannot be verified. Connect only if you trust it.",
+  );
 
   const accept = async (e) => {
     e.preventDefault();
@@ -180,7 +191,16 @@ function WifiConnectionFormContent() {
             id="security"
             aria-label={_("Security")}
             value={form.security}
-            onChange={(_, v) => dispatch({ type: "SET_SECURITY", security: v })}
+            aria-describedby={isEnterprise ? securityHintId : undefined}
+            onChange={(_, v) => {
+              switchedToEnterprise.current = v === "wpa-eap";
+              dispatch({ type: "SET_SECURITY", security: v });
+            }}
+            onBlur={() => {
+              // A description added while focused is usually not read, so it is announced instead
+              if (switchedToEnterprise.current) announce(unverifiedNetworkHint);
+              switchedToEnterprise.current = false;
+            }}
           >
             {securityOptions.map((security) => (
               <FormSelectOption
@@ -190,6 +210,13 @@ function WifiConnectionFormContent() {
               />
             ))}
           </FormSelect>
+          {isEnterprise && (
+            <FieldNestedContent>
+              <HelperText id={securityHintId}>
+                <HelperTextItem variant="warning">{unverifiedNetworkHint}</HelperTextItem>
+              </HelperText>
+            </FieldNestedContent>
+          )}
         </FormGroup>
       )}
       {form.security === "wpa-psk" && (

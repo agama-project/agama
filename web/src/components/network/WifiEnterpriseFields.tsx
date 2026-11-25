@@ -21,14 +21,7 @@
  */
 
 import React from "react";
-import {
-  Alert,
-  Content,
-  FormGroup,
-  FormSelect,
-  FormSelectOption,
-  TextInput,
-} from "@patternfly/react-core";
+import { FormGroup, FormSelect, FormSelectOption, TextInput } from "@patternfly/react-core";
 import { isEmpty, listify } from "radashi";
 import { FormValidationError, PasswordInput } from "~/components/core";
 import LabelText from "~/components/form/LabelText";
@@ -64,16 +57,6 @@ type EapMethod = keyof typeof eapOptions;
 export const defaultEnterpriseSettings: IEEE8021X = {
   eap: ["peap"],
   phase2Auth: eapOptions.peap.phase2Auth[0].value,
-};
-
-const UnverifiedServerAlert = () => {
-  return (
-    <Alert isInline title={_("Server certificate will not be verified")} variant="warning">
-      <Content component="p">
-        {_("Make sure you trust this network before sending your credentials.")}
-      </Content>
-    </Alert>
-  );
 };
 
 type WifiEnterpriseFieldsProps = {
@@ -162,7 +145,6 @@ export default function WifiEnterpriseFields({
           onChange={(_, v) => update({ anonymousIdentity: v || undefined })}
         />
       </FormGroup>
-      <UnverifiedServerAlert />
     </>
   );
 }

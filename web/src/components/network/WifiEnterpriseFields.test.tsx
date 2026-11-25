@@ -77,11 +77,4 @@ describe("WifiEnterpriseFields", () => {
     expect(screen.getByRole("combobox", { name: "Authentication" })).toHaveValue("peap");
     screen.getByRole("option", { name: "GTC" });
   });
-
-  it("warns that the server certificate will not be verified", () => {
-    installerRender(
-      <WifiEnterpriseFields value={defaultEnterpriseSettings} onChange={mockOnChange} />,
-    );
-    screen.getByText("Server certificate will not be verified");
-  });
 });
