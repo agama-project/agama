@@ -38,7 +38,7 @@ import Icon from "~/components/layout/Icon";
 import { PasswordInput } from "~/components/core";
 import Page from "~/components/layout/Page";
 import FieldNestedContent from "~/components/form/FieldNestedContent";
-import { Connection, IEEE8021X, WifiNetwork, Wireless } from "~/types/network";
+import { Connection, IEEE8021X, WifiNetwork, Wireless, WirelessSecurity } from "~/types/network";
 import { useWifiNetworks } from "~/hooks/model/system/network";
 import { useConnectionMutation } from "~/hooks/model/config/network";
 import WifiNetworksSelector from "./WifiNetworksSelector";
@@ -50,9 +50,9 @@ import { wifiSecurityLabel } from "~/utils/network";
 import { SYSTEM_QUERY_KEY } from "~/hooks/model/system";
 import { useAnnounce } from "~/context/announcer";
 
-const securityOptions = ["none", "wpa-psk", "wpa-eap"];
+const securityOptions: WirelessSecurity[] = ["none", "wpa-psk", "wpa-eap"];
 
-const securityFrom = (supported: string[]) => {
+const securityFrom = (supported: string[]): WirelessSecurity => {
   if (supported.includes("802.1X") && !supported.includes("PSK")) return "wpa-eap";
   if (supported.includes("WPA2")) return "wpa-psk";
   if (supported.includes("WPA1")) return "wpa-psk";
@@ -71,7 +71,7 @@ const PublicNetworkAlert = () => {
 
 type FormState = {
   ssid: string;
-  security: string;
+  security: WirelessSecurity | "";
   password: string;
   ieee8021x: IEEE8021X;
   showErrors: boolean;
@@ -88,7 +88,7 @@ const initialState: FormState = {
 type FormAction =
   | { type: "INITIALIZE"; networks: WifiNetwork[] }
   | { type: "SET_SSID"; ssid: string; networks: WifiNetwork[] }
-  | { type: "SET_SECURITY"; security: string }
+  | { type: "SET_SECURITY"; security: WirelessSecurity }
   | { type: "SET_PASSWORD"; password: string }
   | { type: "SET_IEEE8021X"; ieee8021x: IEEE8021X }
   | { type: "SHOW_ERRORS" };
@@ -194,7 +194,7 @@ function WifiConnectionFormContent() {
             aria-describedby={isEnterprise ? securityHintId : undefined}
             onChange={(_, v) => {
               switchedToEnterprise.current = v === "wpa-eap";
-              dispatch({ type: "SET_SECURITY", security: v });
+              dispatch({ type: "SET_SECURITY", security: v as WirelessSecurity });
             }}
             onBlur={() => {
               // A description added while focused is usually not read, so it is announced instead

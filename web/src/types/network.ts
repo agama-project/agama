@@ -74,6 +74,19 @@ enum ApSecurityFlags {
  */
 type ConnectionBindingMode = "none" | "iface" | "mac";
 
+/**
+ * The security of a wireless connection, as named by NetworkManager
+ *  - "none":                No encryption or WEP.
+ *  - "owe":                 Opportunistic Wireless Encryption.
+ *  - "ieee8021x":           Dynamic WEP.
+ *  - "wpa-psk":             WPA2 + WPA3 Personal.
+ *  - "sae":                 WPA3 Personal only.
+ *  - "wpa-eap":             WPA2 + WPA3 Enterprise.
+ *  - "wpa-eap-suite-b-192": WPA3 Enterprise only.
+ */
+type WirelessSecurity =
+  "none" | "owe" | "ieee8021x" | "wpa-psk" | "sae" | "wpa-eap" | "wpa-eap-suite-b-192";
+
 enum BondMode {
   BALANCE_ROUND_ROBIN = "balance-rr",
   ACTIVE_BACKUP = "active-backup",
@@ -316,7 +329,7 @@ type APIConnection = {
 type WirelessOptions = {
   ssid?: string;
   password?: string;
-  security?: string;
+  security?: WirelessSecurity;
   hidden?: boolean;
   mode?: string;
 };
@@ -324,7 +337,7 @@ type WirelessOptions = {
 class Wireless {
   ssid: string;
   password?: string;
-  security?: string;
+  security?: WirelessSecurity;
   hidden?: boolean = false;
   mode: string = "infrastructure";
 
@@ -667,4 +680,5 @@ export type {
   Route,
   APIRoute,
   WifiNetwork,
+  WirelessSecurity,
 };

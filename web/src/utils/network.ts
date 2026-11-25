@@ -36,6 +36,7 @@ import {
   IPAddress,
   Route,
   SecurityProtocols,
+  WirelessSecurity,
 } from "~/types/network";
 import { _, N_, formatNumber } from "~/i18n";
 import type { MarkedString, TranslatedString } from "~/i18n";
@@ -75,7 +76,7 @@ const connectionStateLabel = (state: ConnectionState): TranslatedString =>
 /**
  * Translatable labels for Wi-Fi security protocols.
  */
-const WIFI_SECURITY_LABELS: Record<string, MarkedString> = {
+const WIFI_SECURITY_LABELS: Partial<Record<WirelessSecurity, MarkedString>> = {
   // TRANSLATORS: WiFi authentication mode
   none: N_("None"),
   // TRANSLATORS: WiFi authentication mode
@@ -88,7 +89,7 @@ const WIFI_SECURITY_LABELS: Record<string, MarkedString> = {
  * Returns the translated label for a Wi-Fi security protocol, or the protocol itself when it
  * has no label.
  */
-const wifiSecurityLabel = (security = ""): string =>
+const wifiSecurityLabel = (security: WirelessSecurity): string =>
   WIFI_SECURITY_LABELS[security] ? _(WIFI_SECURITY_LABELS[security]) : security;
 
 /**
