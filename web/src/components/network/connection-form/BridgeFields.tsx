@@ -59,6 +59,8 @@ const stpOptions = () => [
 
 type BridgeFieldsProps = {
   isEditing?: boolean;
+  /** Names of the devices that cannot be a port, besides the loopback. */
+  excludedDevices?: string[];
 };
 
 /**
@@ -73,10 +75,12 @@ const BridgeFields = withForm({
   ...defaultOptions,
   props: {
     isEditing: false,
+    excludedDevices: [],
   } as BridgeFieldsProps,
-  render: function Render({ form, isEditing }) {
+  render: function Render({ form, isEditing, excludedDevices }) {
     const devices = useDevices();
-    const availableDevices = devices.filter((d) => d.name !== "lo");
+    const excluded = new Set(["lo", ...excludedDevices]);
+    const availableDevices = devices.filter((d) => !excluded.has(d.name));
 
     return (
       <>

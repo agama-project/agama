@@ -1,0 +1,41 @@
+{
+  "title": "Move a port to another bond",
+  "description": "A port left out of one controller and listed by another one is moved, not deleted.",
+  "steps": [
+    {
+      "profile": "1-bond.json",
+      "description": "Bond with ports: [eth0, eth1]",
+      "expect": {
+        "connections": {
+          "bond0": {
+            "controller": null,
+            "method4": "auto"
+          },
+          "eth0": {
+            "controller": "bond0"
+          },
+          "eth1": {
+            "controller": "bond0"
+          }
+        }
+      }
+    },
+    {
+      "profile": "2-move-eth1-to-bond1.json",
+      "description": "bond0 with ports: [eth0], new bond1 with ports: [eth1]",
+      "expect": {
+        "connections": {
+          "eth0": {
+            "controller": "bond0"
+          },
+          "eth1": {
+            "controller": "bond1"
+          },
+          "bond1": {
+            "controller": null
+          }
+        }
+      }
+    }
+  ]
+}

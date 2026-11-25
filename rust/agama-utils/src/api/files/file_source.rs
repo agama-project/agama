@@ -19,15 +19,18 @@
 // find current contact information at www.suse.com.
 
 use agama_transfer::{Error as TransferError, Transfer};
-use fluent_uri::{resolve::ResolveError, Uri, UriRef};
+use fluent_uri::{resolve::ResolveError, ParseError, Uri, UriRef};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
+use serde_json::Value;
 use std::{fs::OpenOptions, io::Write, os::unix::fs::OpenOptionsExt, path::Path};
 
 #[derive(Debug, thiserror::Error)]
 pub enum FileSourceError {
     #[error("Could not resolve the URL: {0}")]
     ResolveUrlError(String, #[source] ResolveError),
+    #[error("Invalid URL: {0}")]
+    InvalidUrl(String, #[source] ParseError),
     #[error("Transfer error: {0}")]
     TransferFailed(#[from] TransferError),
     #[error("I/O error: {0}")]
@@ -94,22 +97,37 @@ impl FileSource {
     }
 }
 
-/// Implements an API to work with a file source.
-pub trait WithFileSource: Clone {
-    /// File source.
-    fn file_source(&self) -> &FileSource;
+/// Resolves the "url" field of a raw JSON object in place, leaving everything else untouched.
+///
+/// Mirrors [`FileSource::resolve_url`], but works directly on a JSON object instead of requiring
+/// the whole profile to be deserialized into typed structs.
+///
+/// Does nothing if `entry` is not an object or has no string `"url"` field (e.g., a `"content"`
+/// entry).
+///
+/// * `entry`: JSON value to process.
+/// * `base`: base URL to resolve the "url" against.
+pub fn resolve_url_field(entry: &mut Value, base: &Uri<String>) -> Result<(), FileSourceError> {
+    let Some(obj) = entry.as_object_mut() else {
+        return Ok(());
+    };
+    let Some(Value::String(url)) = obj.get("url") else {
+        return Ok(());
+    };
 
-    /// Mutable file source.
-    fn file_source_mut(&mut self) -> &mut FileSource;
+    let url_ref =
+        UriRef::parse(url.as_str()).map_err(|e| FileSourceError::InvalidUrl(url.clone(), e))?;
 
-    /// Returns a clone using an absolute URL for the file source.
-    ///
-    /// * `base`: base URL.
-    fn resolve_url(&mut self, base: &Uri<String>) -> Result<(), FileSourceError> {
-        let source = self.file_source_mut();
-        *source = source.resolve_url(base)?;
-        Ok(())
+    if url_ref.has_scheme() {
+        return Ok(());
     }
+
+    let resolved = url_ref
+        .resolve_against(base)
+        .map_err(|e| FileSourceError::ResolveUrlError(url.clone(), e))?;
+
+    obj.insert("url".to_string(), Value::String(resolved.to_string()));
+    Ok(())
 }
 
 #[cfg(test)]

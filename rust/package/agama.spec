@@ -216,17 +216,11 @@ echo $PATH
 %pre -n agama-autoinstall
 %service_add_pre agama-autoinstall.service
 
-%pre -n agama-scripts
-%service_add_pre agama-scripts.service
-
 %post
 %service_add_post agama-web-server.service agama-proxy-setup.service
 
 %post -n agama-autoinstall
 %service_add_post agama-autoinstall.service
-
-%post -n agama-scripts
-%service_add_post agama-scripts.service
 
 %preun
 %service_del_preun agama-web-server.service agama-proxy-setup.service
@@ -234,17 +228,11 @@ echo $PATH
 %preun -n agama-autoinstall
 %service_del_preun agama-autoinstall.service
 
-%preun -n agama-scripts
-%service_del_preun agama-scripts.service
-
 %postun
 %service_del_postun_with_restart agama-web-server.service agama-proxy-setup.service
 
 %postun -n agama-autoinstall
 %service_del_postun_with_restart agama-autoinstall.service
-
-%postun -n agama-scripts
-%service_del_postun_with_restart agama-scripts.service
 
 %files -f agama.lang
 %doc README.md
@@ -264,6 +252,7 @@ echo $PATH
 %dir %{_datadir}/agama/schema
 %{_datadir}/agama/schema/dasd.schema.json
 %{_datadir}/agama/schema/iscsi.schema.json
+%{_datadir}/agama/schema/network.schema.json
 %{_datadir}/agama/schema/profile.schema.json
 %{_datadir}/agama/schema/software.schema.json
 %{_datadir}/agama/schema/storage.schema.json

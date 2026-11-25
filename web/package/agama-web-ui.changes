@@ -1,11 +1,54 @@
 -------------------------------------------------------------------
-Wed Oct 21 14:54:08 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+Thu Nov 12 12:00:25 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Handle the ports of bonds and bridges nested in their controller,
+  listing and editing them like any other connection
+  (gh#agama-project/agama#3996).
+
+-------------------------------------------------------------------
+Thu Nov  5 12:11:29 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
 
 - Do not crash when unexpected square brackets are present in the
   translation. Fixes crash in the first user configuration dialog
   when using the French, Catalan or Brazilian Portuguese languages
   (bsc#1286560)
 - Fixed the translations which caused the crash above
+
+-------------------------------------------------------------------
+Tue Oct 28 06:00:48 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Allow disabling the IPv4 or the IPv6 configuration of a
+  connection, and keep it disabled when editing a connection that
+  already has it (bsc#1288233, gh#agama-project/agama#3994).
+
+-------------------------------------------------------------------
+Mon Oct 26 17:54:08 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Update the configured connection when connecting, disconnecting
+  or deleting it from the connections table, instead of sending the
+  state reported by the system (gh#agama-project/agama#3995).
+
+-------------------------------------------------------------------
+Wed Oct  7 11:50:47 UTC 2026 - Martin Vidner <mvidner@suse.com>
+
+- web dependencies: move those not needed for run time or building
+  to optionalDependencies (bsc#1278985)
+- web dependencies: use knip in CI to detect unused dependencies
+  and files (jlopez)
+
+-------------------------------------------------------------------
+Tue Sep 29 16:45:27 UTC 2026 - Martin Pluskal <martin@pluskal.org>
+
+- Do not fail saving a form with "CancelledError" when the
+  configuration is refetched while the save waits for it
+  (bsc#1283098).
+
+-------------------------------------------------------------------
+Wed Sep 23 17:43:07 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Keep the focus in the field the user moved to after using a
+  selector, so typed text is not lost (bsc#1282513,
+  gh#agama-project/agama#3982).
 
 -------------------------------------------------------------------
 Tue Sep 22 14:54:01 UTC 2026 - David Diaz <dgonzalez@suse.com>

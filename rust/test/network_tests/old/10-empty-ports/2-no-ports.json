@@ -1,0 +1,15 @@
+{
+  "network": {
+    "connections": [
+      {
+        "id": "br0",
+        "interface": "br0",
+        "method4": "auto",
+        "bridge": {
+          "stp": true,
+          "ports": []
+        }
+      }
+    ]
+  }
+}

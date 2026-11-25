@@ -32,7 +32,7 @@ jobs:
     runs-on: ubuntu-latest
 
     container:
-      image: registry.opensuse.org/opensuse/leap:16.0
+      image: registry.opensuse.org/opensuse/leap:16.1
 
     steps:
 
