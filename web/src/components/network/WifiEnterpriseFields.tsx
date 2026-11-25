@@ -29,7 +29,7 @@ import {
   FormSelectOption,
   TextInput,
 } from "@patternfly/react-core";
-import { isEmpty } from "radashi";
+import { isEmpty, listify } from "radashi";
 import { FormValidationError, PasswordInput } from "~/components/core";
 import { IEEE8021X } from "~/types/network";
 import { _ } from "~/i18n";
@@ -107,8 +107,8 @@ export default function WifiEnterpriseFields({
             update({ eap: [v], phase2Auth: eapOptions[v as EapMethod].phase2Auth[0].value })
           }
         >
-          {Object.entries(eapOptions).map(([value, { label }]) => (
-            <FormSelectOption key={value} value={value} label={label} />
+          {listify(eapOptions, (method, { label }) => (
+            <FormSelectOption key={method} value={method} label={label} />
           ))}
         </FormSelect>
       </FormGroup>
@@ -119,8 +119,8 @@ export default function WifiEnterpriseFields({
           value={value.phase2Auth}
           onChange={(_, v) => update({ phase2Auth: v })}
         >
-          {eapOptions[eap].phase2Auth.map(({ value, label }) => (
-            <FormSelectOption key={value} value={value} label={label} />
+          {eapOptions[eap].phase2Auth.map((option) => (
+            <FormSelectOption key={option.value} {...option} />
           ))}
         </FormSelect>
       </FormGroup>
