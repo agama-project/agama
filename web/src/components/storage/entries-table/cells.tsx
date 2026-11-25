@@ -24,6 +24,7 @@ import React from "react";
 import { Stack, StackItem } from "@patternfly/react-core";
 import { sprintf } from "sprintf-js";
 import { formattedPath } from "~/components/storage/utils";
+import { useFlattenDevices as useSystemDevices } from "~/hooks/model/system/storage";
 import Interpolate from "~/components/core/Interpolate";
 import Text from "~/components/core/Text";
 import { NAMES_PER_LINE } from "~/components/storage/shared/naming";
@@ -298,11 +299,23 @@ const existingVgActions = (group: ConfigModel.VolumeGroup, device): TranslatedSt
  * This considers only the case in which the drive contains partitions initially and will contain
  * partitions after installation.
  */
-const existingDriveActions = (drive: Partitionable.Device, device): TranslatedString[] => {
+const existingDriveActions = (
+  drive: Partitionable.Device,
+  device,
+  systemDevices,
+): TranslatedString[] => {
   if (!device?.partitions?.length) {
-    if (drive.filesystem?.reuse) return [];
+    if (drive.filesystem?.reuse) return [_("The current data will be kept")];
 
-    return [_("All disk content will be deleted")];
+    const withFs = !!device.filesystem;
+    const withLvm = systemDevices.some((d) => d.volumeGroup?.physicalVolumes.includes(device.sid));
+    const withRaid = systemDevices.some((d) => d.md?.devices.includes(device.sid));
+
+    if (withFs || withLvm || withRaid) {
+      return [_("All disk content will be deleted")];
+    }
+
+    return [];
   }
 
   const parts = drive?.partitions || [];
@@ -365,10 +378,11 @@ function ExistingDataCell({
   device: System.Device | null;
   isIdle?: boolean;
 }) {
+  const systemDevices = useSystemDevices();
   const isVolumeGroup = "vgName" in config;
   const lines = isVolumeGroup
     ? existingVgActions(config, device)
-    : existingDriveActions(config, device);
+    : existingDriveActions(config, device, systemDevices);
 
   if (isIdle) {
     return (

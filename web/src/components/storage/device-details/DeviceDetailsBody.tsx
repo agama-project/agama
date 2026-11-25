@@ -77,7 +77,7 @@ export default function DeviceDetailsBody({
           <Body>
             <Intro>
               {_(
-                "Define logical volumes for the new system, existing volumes can be deleted or reduced to make space for the new system or can be used by it.",
+                "Define the logical volumes, existing volumes can be deleted or reduced to make space for the new system or can be used by it.",
               )}
             </Intro>
             {newLVsSection}
@@ -159,7 +159,7 @@ export default function DeviceDetailsBody({
         <Body>
           <Intro>
             {_(
-              "Customize how the new system will use this disk, existing partitions can be deleted or reduced to make space for the new system or can be used by it.",
+              "Customize how this disk will be used, existing partitions can be deleted or reduced to make space for the new system or can be used by it.",
             )}
           </Intro>
           <DetailsSection title={_("Partitions for the new system")}>

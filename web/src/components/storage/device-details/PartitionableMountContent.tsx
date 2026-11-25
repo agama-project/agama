@@ -50,19 +50,14 @@ export default function PartitionableMountContent({ entry, subject }: DeviceDeta
     value = label
       ? // TRANSLATORS: %1$s is a file system type ext4, %2$s is an escaped label name like "home"
         // and %3$s is an escaped mount path like "/home"
-        sprintf(
-          _("The existing %1$s file system labeled %2$s will be mounted at %3$s."),
-          type,
-          formattedPath(label),
-          path,
-        )
-      : // TRANSLATORS: %1$s is a file system type ext4, %2$s is an escaped mount path like "/home"
-        sprintf(_("The existing %1$s file system will be mounted at %2$s."), type, path);
+        sprintf(_("The existing %1$s file system will be mounted at %2$s."), label, path)
+      : // TRANSLATORS: %s is an escaped mount path like "/home"
+        sprintf(_("The existing file system will be mounted at %s."), path);
   } else {
     value = sprintf(
       // TRANSLATORS: %1$s is a file system type ext4, %2$s is an escaped mount path like "/home"
       _("The device will be formatted as %1$s and mounted at %2$s."),
-      type,
+      label,
       path,
     );
   }

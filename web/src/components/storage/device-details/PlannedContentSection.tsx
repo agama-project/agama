@@ -30,6 +30,7 @@ import {
   baseName,
   filesystemType,
   partitionIdLabel,
+  formattedPath,
   sizeDescription,
 } from "~/components/storage/utils";
 import { useDetailsSectionTitleId } from "~/components/storage/device-details/DetailsSection";
@@ -194,8 +195,11 @@ export default function PlannedContentSection({
                       baseName(source.name, { truncate: true }),
                     )
                   : isVolumeGroup
-                    ? // TRANSLATORS: "volume" refers to an LVM logical volume, try to keep it short
-                      _("Create volume")
+                    ? sprintf(
+                        // TRANSLATORS: refers to an LVM logical volume, %s is its name
+                        _("Create volume %s"),
+                        formattedPath((part as ConfigModel.LogicalVolume).lvName),
+                      )
                     : _("Create partition")}
               </Td>
               <Td {...columnProps(COLUMNS.size)}>{sizeDescription(part.size)}</Td>
