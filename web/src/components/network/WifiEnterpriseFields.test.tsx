@@ -53,7 +53,7 @@ describe("WifiEnterpriseFields", () => {
   it.each([
     ["User name", "identity"],
     ["Password", "password"],
-    ["Anonymous identity", "anonymousIdentity"],
+    ["Anonymous identity (optional)", "anonymousIdentity"],
   ])("does not keep an empty %s", async (label, key) => {
     const { user } = installerRender(
       <WifiEnterpriseFields

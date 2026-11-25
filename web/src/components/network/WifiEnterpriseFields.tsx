@@ -31,6 +31,7 @@ import {
 } from "@patternfly/react-core";
 import { isEmpty, listify } from "radashi";
 import { FormValidationError, PasswordInput } from "~/components/core";
+import LabelText from "~/components/form/LabelText";
 import { IEEE8021X } from "~/types/network";
 import { _ } from "~/i18n";
 
@@ -143,8 +144,18 @@ export default function WifiEnterpriseFields({
         />
         <FormValidationError message={passwordError && _("Password is required.")} />
       </FormGroup>
-      {/* TRANSLATORS: outer identity sent before the secure tunnel is established */}
-      <FormGroup fieldId="anonymousIdentity" label={_("Anonymous identity")}>
+      <FormGroup
+        fieldId="anonymousIdentity"
+        label={
+          // TRANSLATORS: label suffix indicating an optional field.
+          <LabelText suffix={_("(optional)")}>
+            {
+              // TRANSLATORS: outer identity sent before the secure tunnel is established
+              _("Anonymous identity")
+            }
+          </LabelText>
+        }
+      >
         <TextInput
           id="anonymousIdentity"
           value={value.anonymousIdentity ?? ""}
