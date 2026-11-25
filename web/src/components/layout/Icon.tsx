@@ -61,6 +61,8 @@ import FileJson from "@icons/file_json.svg?component";
 import Fingerprint from "@icons/fingerprint.svg?component";
 import Globe from "@icons/globe.svg?component";
 import HardDrive from "@icons/hard_drive.svg?component";
+import HomeStorage from "@icons/home_storage.svg?component";
+import HomeStorageGear from "@icons/home_storage_gear.svg?component";
 import HourglassDisabled from "@icons/hourglass_disabled.svg?component";
 import Info from "@icons/info.svg?component";
 import Inventory2 from "@icons/inventory_2.svg?component";
@@ -109,7 +111,6 @@ import UnfoldLess from "@icons/unfold_less.svg?component";
 import UnfoldMore from "@icons/unfold_more.svg?component";
 import Visibility from "@icons/visibility.svg?component";
 import VisibilityOff from "@icons/visibility_off.svg?component";
-import WandStars from "@icons/wand_stars.svg?component";
 import Warning from "@icons/warning.svg?component";
 import Wifi from "@icons/wifi.svg?component";
 import WifiOff from "@icons/wifi_off.svg?component";
@@ -130,6 +131,8 @@ const icons = {
   device_hub: DeviceHub,
   check_circle: CheckCircle,
   do_not_disturb_on: DoNotDisturbOn,
+  home_storage: HomeStorage,
+  home_storage_gear: HomeStorageGear,
   last_page: LastPage,
   library_add: LibraryAdd,
   link_off: LinkOff,
@@ -195,7 +198,6 @@ const icons = {
   unfold_more: UnfoldMore,
   visibility: Visibility,
   visibility_off: VisibilityOff,
-  wand_stars: WandStars,
   warning: Warning,
   wifi: Wifi,
   wifi_off: WifiOff,

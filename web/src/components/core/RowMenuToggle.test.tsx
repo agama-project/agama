@@ -41,11 +41,11 @@ describe("RowMenuToggle", () => {
   });
 
   it("draws the given icon instead", () => {
-    plainRender(<RowMenuToggle label="Change" icon="wand_stars" />);
+    plainRender(<RowMenuToggle label="Change" icon="home_storage_gear" />);
     const button = screen.getByRole("button", { name: "Change" });
     expect(button.querySelector("[data-icon-name]")).toHaveAttribute(
       "data-icon-name",
-      "wand_stars",
+      "home_storage_gear",
     );
   });
 
