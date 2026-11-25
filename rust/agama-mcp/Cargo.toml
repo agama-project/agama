@@ -11,6 +11,7 @@ agama-manager = { workspace = true }
 agama-utils = { workspace = true }
 async-trait = { workspace = true }
 axum = { workspace = true }
+regex = { workspace = true }
 rmcp = { version = "3.5", features = ["server", "macros", "transport-streamable-http-server", "transport-streamable-http-server-session"] }
 schemars = { workspace = true }
 serde = { workspace = true }

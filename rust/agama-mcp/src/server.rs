@@ -534,10 +534,10 @@ impl McpServer {
         self.progress_report_tool_result(&latest_status, None).await
     }
 
-    /// Retrieves specific subsets of system logs directly from journalctl.
+    /// Retrieves specific subsets of system logs directly from journalctl. Sensitive parameters such as `live.password` are filtered out.
     #[tool(
         name = "get_logs",
-        description = "Retrieves specific subsets of system logs directly from journalctl to prevent overwhelming the AI context window. Allows specifying log scope and line count."
+        description = "Retrieves specific subsets of system logs directly from journalctl to prevent overwhelming the AI context window. Sensitive parameters such as 'live.password' are filtered. Allows specifying log scope and line count."
     )]
     pub async fn get_logs(
         &self,
