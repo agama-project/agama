@@ -1,0 +1,135 @@
+default namespace = "http://www.suse.com/1.0/yast2ns"
+
+include "common.rnc"
+
+console_shutdown = element console_shutdown { STRING }
+cracklib_dict_path = element cracklib_dict_path { STRING }
+cwd_in_root_path = element cwd_in_root_path { STRING }
+cwd_in_user_path = element cwd_in_user_path { STRING }
+disable_restart_on_update = element disable_restart_on_update { STRING }
+disable_stop_on_removal = element disable_stop_on_removal { STRING }
+extra_services = element extra_services { STRING }
+selinux_mode = element selinux_mode { "permissive" | "enforcing" | "disabled" }
+# Major Linux Security Module to be activated after installation
+lsm_select = element lsm_select { "apparmor" | "selinux" | "none" }
+displaymanager_remote_access = element displaymanager_remote_access { STRING }
+displaymanager_root_login_remote = element displaymanager_root_login_remote { STRING }
+displaymanager_shutdown = element displaymanager_shutdown { STRING }
+displaymanager_xserver_tcp_port_6000_open = element displaymanager_xserver_tcp_port_6000_open { STRING }
+enable_sysrq = element enable_sysrq { STRING }
+encryption = element encryption { STRING }
+fail_delay = element fail_delay { STRING }
+faillog_auth = element faillog_auth { STRING }
+faillog_enab = element faillog_enab { STRING }
+gid_max = element gid_max { STRING }
+gid_min = element gid_min { STRING }
+group_encryption = element group_encryption { STRING }
+sec_ip_forward = element ip_forward { STRING }
+ip_tcp_syncookies = element ip_tcp_syncookies { STRING }
+ipv6_forward = element ipv6_forward { STRING }
+kdm_shutdown = element kdm_shutdown { STRING }
+lastlog_enab = element lastlog_enab { STRING }
+obscure_checks_enab = element obscure_checks_enab { STRING }
+pass_max_days = element pass_max_days { STRING }
+pass_max_len = element pass_max_len { STRING }
+pass_min_days = element pass_min_days { STRING }
+pass_min_len = element pass_min_len { STRING }
+pass_warn_age = element pass_warn_age { STRING }
+passwd_encryption = element passwd_encryption { STRING }
+passwd_remember_history = element passwd_remember_history { STRING }
+passwd_use_cracklib = element passwd_use_cracklib { STRING }
+passwd_use_pwquality = element passwd_use_pwquality { STRING }
+permission_security = element permission_security { STRING }
+run_updatedb_as = element run_updatedb_as { STRING }
+runlevel3_extra_services = element runlevel3_extra_services { STRING }
+runlevel3_mandatory_services = element runlevel3_mandatory_services { STRING }
+runlevel5_extra_services = element runlevel5_extra_services { STRING }
+runlevel5_mandatory_services = element runlevel5_mandatory_services { STRING }
+smtpd_listen_remote = element smtpd_listen_remote { STRING }
+security_policy = element security_policy {
+    MAP,
+    (
+      element policy { STRING } &
+      element action { "none" | "scan" | "remediate" }?
+    )
+}
+syslog_on_no_error = element syslog_on_no_error { STRING }
+system_gid_max = element system_gid_max { STRING }
+system_gid_min = element system_gid_min { STRING }
+system_uid_max = element system_uid_max { STRING }
+system_uid_min = element system_uid_min { STRING }
+sys_gid_max = element sys_gid_max { STRING }
+sys_gid_min = element sys_gid_min { STRING }
+sys_uid_max = element sys_uid_max { STRING }
+sys_uid_min = element sys_uid_min { STRING }
+systohc = element systohc { STRING }
+uid_max = element uid_max { STRING }
+uid_min = element uid_min { STRING }
+hibernate_system = element hibernate_system  { STRING }
+kernel.sysrq = element kernel.sysrq  { STRING }
+mandatory_services = element mandatory_services  { STRING }
+net.ipv4.ip_forward = element net.ipv4.ip_forward  { STRING }
+net.ipv4.tcp_syncookies = element net.ipv4.tcp_syncookies { STRING }
+net.ipv6.conf.all.forwarding = element net.ipv6.conf.all.forwarding { STRING }
+y2_security =
+  console_shutdown
+  | cracklib_dict_path
+  | cwd_in_root_path
+  | cwd_in_user_path
+  | disable_restart_on_update
+  | disable_stop_on_removal
+  | extra_services
+  | selinux_mode
+  | lsm_select
+  | displaymanager_remote_access
+  | displaymanager_root_login_remote
+  | displaymanager_xserver_tcp_port_6000_open
+  | enable_sysrq
+  | passwd_encryption
+  | fail_delay
+  | faillog_enab
+  | gid_max
+  | gid_min
+  | ip_tcp_syncookies
+  | ipv6_forward
+  | kdm_shutdown
+  | lastlog_enab
+  | obscure_checks_enab
+  | pass_max_days
+  | pass_max_len
+  | pass_min_days
+  | pass_min_len
+  | pass_warn_age
+  | passwd_use_cracklib
+  | passwd_use_pwquality
+  | permission_security
+  | run_updatedb_as
+  | runlevel3_extra_services
+  | runlevel3_mandatory_services
+  | runlevel5_extra_services
+  | runlevel5_mandatory_services
+  | security_policy
+  | smtpd_listen_remote
+  | syslog_on_no_error
+  | system_gid_max
+  | system_gid_min
+  | system_uid_max
+  | system_uid_min
+  | sys_gid_max
+  | sys_gid_min
+  | sys_uid_max
+  | sys_uid_min
+  | systohc
+  | uid_max
+  | uid_min
+  | hibernate_system
+  | kernel.sysrq
+  | mandatory_services
+  | net.ipv4.ip_forward
+  | net.ipv4.tcp_syncookies
+  | net.ipv6.conf.all.forwarding
+  | group_encryption
+  | sec_ip_forward
+  | displaymanager_shutdown
+  | passwd_remember_history
+security = element security { MAP, y2_security* }

@@ -1,0 +1,34 @@
+default namespace = "http://www.suse.com/1.0/yast2ns"
+namespace config = "http://www.suse.com/1.0/configns"
+namespace a = "http://relaxng.org/ns/compatibility/annotations/1.0"
+
+include "common.rnc"
+
+## to be overriden if included
+#start = element profile { host }
+
+host =
+  element host {
+    MAP,
+    hosts?
+  }
+
+hosts =
+  element hosts {
+    LIST,
+    hosts_entry*
+  }
+
+hosts_entry =
+  element hosts_entry {
+    MAP,
+    (
+      element host_address { STRING } &
+# we do not declare "names =, name =" because the conflict potential is big
+      element names {
+      LIST,
+        element name { STRING } +
+      }
+    )
+  }
+

@@ -1,0 +1,16 @@
+default namespace = "http://www.suse.com/1.0/yast2ns"
+namespace config = "http://www.suse.com/1.0/configns"
+namespace a = "http://relaxng.org/ns/compatibility/annotations/1.0"
+
+include "common.rnc"
+
+pxe = element pxe {
+    MAP,
+    (
+      element pxe_localboot { BOOLEAN }? &
+      element pxelinux-config { STRING }? &
+      element tftp-server { STRING }? &
+      element pxelinux-dir { STRING }?
+    )
+}
+

@@ -1,0 +1,346 @@
+default namespace = "http://www.suse.com/1.0/yast2ns"
+namespace a = "http://relaxng.org/ns/compatibility/annotations/1.0"
+namespace config = "http://www.suse.com/1.0/configns"
+
+include "common.rnc"
+
+## networking
+networking =
+  element networking {
+    MAP,
+    (
+      element setup_before_proposal { BOOLEAN }? &
+      element start_immediately { BOOLEAN }? &
+      element keep_install_network { BOOLEAN }? &
+      element virt_bridge_proposal { BOOLEAN }? &
+      element backend { STRING }? &
+      ipv6? &
+      managed? &
+      strict_IP_check_timeout? &
+      interfaces? &
+      modules? &
+      dhcp_options? &
+      routing? &
+      dns? &
+      s390-devices? &
+      net-udev?
+    )
+  }
+
+managed =
+  element managed { BOOLEAN }
+
+ipv6 =
+  element ipv6 { BOOLEAN }
+
+strict_IP_check_timeout =
+  element strict_IP_check_timeout { INTEGER }
+
+#
+# INTERFACES
+#
+
+interfaces =
+  element interfaces {
+    LIST,
+    interface*
+  }
+
+interface =
+  element (interface | listentry) {
+    MAP,
+    (
+      element device { STRING }? &	#overloaded
+      element name { STRING }? &
+      element description { STRING }? &
+
+      lladdr? &
+      bootproto? &
+      startmode? &
+      ifplugd_priority? &
+          # ignored, present for backward compatibility
+      usercontrol? &
+      dhclient_set_hostname? &
+
+      # address
+      ipaddr? &
+      prefixlen? &
+      remote_ipaddr? &
+      element netmask { STRING }? &	#overloaded
+      element bonding_master { STRING }? &
+      element bonding_slave0 { STRING }? &
+      element bonding_slave1 { STRING }? &
+      element bonding_slave2 { STRING }? &
+      element bonding_slave3 { STRING }? &
+      element bonding_slave4 { STRING }? &
+      element bonding_slave5 { STRING }? &
+      element bonding_slave6 { STRING }? &
+      element bonding_slave7 { STRING }? &
+      element bonding_slave8 { STRING }? &
+      element bonding_slave9 { STRING }? &
+      element bonding_module_opts { STRING }? &
+      element aliases        { Anything }? &
+      broadcast? &
+      network? &
+
+      # link
+      mtu? &
+      ethtool_options? &
+
+      wireless? &
+      wifi_settings? &
+
+      bridge_settings? &
+      vlan_settings? &
+
+      dhclient_set_down_link? &
+      dhclient_set_default_route? &
+
+      element zone { STRING }? &
+      element firewall { STRING_ATTR, ("yes" | "no") }?
+    )
+  }
+
+
+s390-devices =
+  element s390-devices {
+    LIST,
+    device+
+  }
+
+device =
+  element (device | listentry) {
+    MAP,
+    (
+      element type { STRING }? &
+      element layer2 { BOOLEAN}? &
+      element chanids { STRING }? &
+      # ignored, present for backward compatibility
+      element portname { STRING }? &
+      element protocol { STRING }? &
+      element router { STRING }?
+    )
+  }
+
+
+net-udev =
+  element net-udev {
+    LIST,
+    rule+
+  }
+
+rule =
+  element (rule | listentry) {
+    MAP,
+    (
+      element rule { STRING }? &
+      element value { STRING }? &
+      element name { STRING }?
+    )
+  }
+
+remote_ipaddr = element remote_ipaddr { STRING }
+bootproto = element bootproto { STRING }
+broadcast = element broadcast { STRING }
+dhclient_set_down_link = element dhclient_set_down_link { STRING }
+dhclient_set_default_route = element dhclient_set_default_route { STRING_ATTR, ("yes" | "no") }
+lladdr = element lladdr { STRING }
+ipaddr = element ipaddr { STRING }
+prefixlen = element prefixlen { STRING }
+usercontrol = element usercontrol { STRING }
+dhclient_set_hostname = element dhclient_set_hostname { STRING }
+mtu = element mtu { STRING }
+ethtool_options = element ethtool_options { STRING }
+ifplugd_priority = element ifplugd_priority { STRING }
+network = element network { STRING }
+startmode = element startmode { STRING }
+wireless = element wireless { STRING } #?
+
+
+wifi_settings = (
+  wireless_auth_mode? &
+  wireless_ap? &
+  wireless_bitrate? &
+  wireless_ca_cert? &
+  wireless_channel? &
+  wireless_client_cert? &
+  wireless_client_key? &
+  wireless_client_key_password? &
+  wireless_default_key? &
+  wireless_eap_auth? &
+  wireless_eap_mode? &
+  wireless_essid? &
+  wireless_frequency? &
+  wireless_key? &
+  wireless_key_0? &
+  wireless_key_1? &
+  wireless_key_2? &
+  wireless_key_3? &
+  wireless_key_length? &
+  wireless_mode? &
+  wireless_nick? &
+  wireless_nwid? &
+  wireless_peap_version? &
+  wireless_power? &
+  wireless_wpa_anonid? &
+  wireless_wpa_identity? &
+  wireless_wpa_password? &
+  wireless_wpa_psk?
+)
+
+wireless_auth_mode = element wireless_auth_mode { STRING }
+wireless_ap = element wireless_ap { STRING }
+wireless_bitrate = element wireless_bitrate { STRING }
+wireless_ca_cert = element wireless_ca_cert { STRING }
+wireless_channel = element wireless_channel { STRING }
+wireless_client_cert = element wireless_client_cert { STRING }
+wireless_client_key = element wireless_client_key { STRING }
+wireless_client_key_password = element wireless_client_key_password { STRING }
+wireless_default_key = element wireless_default_key { STRING }
+wireless_eap_auth = element wireless_eap_auth { STRING }
+wireless_eap_mode = element wireless_eap_mode { STRING }
+wireless_essid = element wireless_essid { STRING }
+wireless_frequency = element wireless_frequency { STRING }
+wireless_key = element wireless_key { STRING }
+wireless_key_1 = element wireless_key_1 { STRING }
+wireless_key_0 = element wireless_key_0 { STRING }
+wireless_key_2 = element wireless_key_2 { STRING }
+wireless_key_3 = element wireless_key_3 { STRING }
+wireless_key_length = element wireless_key_length { STRING }
+wireless_mode = element wireless_mode { STRING }
+wireless_nick = element wireless_nick { STRING }
+wireless_nwid = element wireless_nwid { STRING }
+wireless_peap_version = element wireless_peap_version { STRING }
+wireless_power = element wireless_power { STRING }
+wireless_wpa_anonid = element wireless_wpa_anonid { STRING }
+wireless_wpa_identity = element wireless_wpa_identity { STRING }
+wireless_wpa_password = element wireless_wpa_password { STRING }
+wireless_wpa_psk = element wireless_wpa_psk { STRING }
+
+#
+# Bridge
+#
+bridge_settings = (
+  element bridge               { STRING_ATTR, ("yes" | "no") }? &
+  element bridge_ports         { STRING }? &
+  element bridge_stp           { STRING_ATTR, ("on" | "off") }? &
+  element bridge_forward_delay { STRING }? &
+  # backward compatibility (bsc#1180944)
+  element bridge_forwarddelay  { STRING }?
+)
+
+#
+# VLAN
+#
+vlan_settings = (
+  element etherdevice { STRING }? &
+  element vlan_id     { STRING }?
+)
+
+#
+# MODULES
+#
+
+modules =
+  element modules {
+    LIST,
+    module_entry+
+  }
+module_entry =
+  element (module_entry | listentry) {
+    MAP,
+    (
+      element ccw_chan_ids { STRING }? &
+      element ccw_chan_num { STRING }? &
+      element device { STRING } &	# overloaded
+      element module { STRING }? &	# likely overloaded
+      element options { STRING }? 	# overloaded
+    )
+  }
+
+#
+# DHCP_OPTIONS
+#
+
+dhcp_options =
+  element dhcp_options {
+    MAP,
+    (
+      dhclient_additional_options? &
+      dhclient_client_id? &
+      dhclient_hostname_option?
+    )
+  }
+dhclient_additional_options = element dhclient_additional_options { STRING }
+dhclient_client_id = element dhclient_client_id { STRING }
+dhclient_hostname_option = element dhclient_hostname_option { STRING }
+
+#
+# ROUTING
+#
+
+routing =
+  element routing {
+    MAP,
+    (
+      element ip_forward   { BOOLEAN }? &
+      element ipv4_forward { BOOLEAN }? &
+      element ipv6_forward { BOOLEAN }? &
+      routes?
+    )
+  }
+
+routes =
+  element routes {
+    LIST,
+    route+
+  }
+route =
+  element (route | listentry) {
+    MAP,
+    (
+      destination &
+      element netmask { STRING }? &	#overloaded
+      element device { STRING }? &	#overloaded
+      gateway ? &
+      extrapara ?
+    )
+  }
+destination = element destination { STRING }
+gateway = element gateway { STRING }
+extrapara = element extrapara { STRING }
+
+#
+# DNS (fqdn + resolver)
+#
+dns =
+  element dns {
+    MAP,
+    (
+      dhcp_hostname ? &
+      # ignored, present for backward compatibility
+      write_hostname ? &
+      resolv_conf_policy ? &
+      hostname ? &
+      domain ? &
+      nameservers ? &
+      searchlist ?
+    )
+  }
+dhcp_hostname = element dhcp_hostname { BOOLEAN }
+write_hostname = element write_hostname { BOOLEAN }
+resolv_conf_policy = element resolv_conf_policy { STRING }
+hostname = element hostname { STRING }
+domain = element domain { STRING }
+nameservers =
+  element nameservers {
+    LIST,
+    nameserver+
+  }
+nameserver = element nameserver { STRING }
+searchlist =
+  element searchlist {
+    LIST,
+    search+
+  }
+search = element search { STRING }

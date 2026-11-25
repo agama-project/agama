@@ -1,0 +1,27 @@
+# Declaration of classes for the UI
+#
+# Do not confuse with classes-use.rn[cg]
+# which describes the use of classes in a profile
+
+default namespace = "http://www.suse.com/1.0/yast2ns"
+namespace config = "http://www.suse.com/1.0/configns"
+
+include "common.rnc"
+
+autoinstall = element autoinstall { MAP, classes }
+classes =
+  element classes {
+    LIST,
+    class+
+  }
+class =
+  element class {
+    description&
+    name&
+    order
+  }
+description = element description { STRING }
+name = element name { STRING }
+order = element order { INTEGER }
+
+start = autoinstall

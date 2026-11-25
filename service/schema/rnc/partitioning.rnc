@@ -1,0 +1,254 @@
+default namespace = "http://www.suse.com/1.0/yast2ns"
+namespace a = "http://relaxng.org/ns/compatibility/annotations/1.0"
+namespace config = "http://www.suse.com/1.0/configns"
+
+include "common.rnc"
+
+partitioning =
+  element partitioning {
+    LIST,
+    drive*
+  }
+drive =
+  element drive {
+    MAP,
+    (
+      element device     { STRING }? &
+      element initialize { BOOLEAN }? &
+      element is_lvm_vg  { BOOLEAN }? &
+      element lvm2       { BOOLEAN }? &
+      element keep_unknown_lv  { BOOLEAN }? &
+      element pesize     { STRING }? &
+      element type       { SYMBOL }? &
+      element use        { STRING }? &
+      element imsmdriver { SYMBOL }? &
+      element disklabel  { STRING }? &
+      element enable_snapshots { BOOLEAN }? &
+      skip_list? &
+      partitions? &
+      raid_options? &
+      bcache_options? &
+      btrfs_options?
+    )
+  }
+
+skip_list =
+  element skip_list {
+    LIST,
+    skip_entry*
+  }
+skip_entry =
+  element listentry {
+    MAP,
+    (
+      element skip_key	{ STRING } &
+      element skip_value	{ STRING } &
+      ( element skip_if_less_than { BOOLEAN }
+        | element skip_if_more_than { BOOLEAN } )? &
+      element skip_if_equal { BOOLEAN }?
+    )
+  }
+
+prefer_remove =
+  element prefer_remove { BOOLEAN }
+partitions =
+  element partitions {
+    LIST,
+    partition*
+  }
+y2_partition =
+  part_create
+  | part_crypt
+  | part_crypt_fs
+  | part_crypt_method
+  | part_crypt_key
+  | part_crypt_pbkdf
+  | part_crypt_label
+  | part_crypt_cipher
+  | part_crypt_key_size
+  | part_crypt_pervasive_apqns
+  | part_crypt_pervasive_key_type
+  | part_filesystem
+  | part_format
+  | part_fs_options
+  | part_fstopt
+  | part_label
+  | part_uuid
+  | part_loop_fs
+  | part_lv_name
+  | part_lvm_group
+  | part_mkfs_options
+  | part_mount
+  | part_mountby
+  | part_filesystem_id
+  | part_partition_id
+  | part_partition_nr
+  | part_partition_type
+  | part_resize
+  | part_raid_type
+  | part_region
+  | part_size
+  | part_stripes
+  | part_stripesize
+  | part_pool
+  | part_used_pool
+  | part_subvolumes_prefix
+  | device_order
+  | raid_name
+  | raid_options
+  | subvolumes
+  | create_subvolumes
+  | bcache_backing_for
+  | bcache_caching_for
+  | btrfs_name
+  | quotas
+
+partition = element partition {
+  MAP,
+  y2_partition*
+}
+part_create =
+  element create { BOOLEAN }
+part_crypt = element crypt { STRING }
+part_crypt_fs =
+  element crypt_fs { BOOLEAN }
+part_crypt_method =
+  element crypt_method { SYMBOL }
+part_crypt_key = element crypt_key { STRING }
+part_crypt_pbkdf = element crypt_pbkdf { SYMBOL }
+part_crypt_label = element crypt_label { STRING }
+part_crypt_cipher = element crypt_cipher { STRING }
+part_crypt_key_size = element crypt_key_size { INTEGER }
+part_crypt_pervasive_apqns =
+  element crypt_pervasive_apqns {
+    LIST,
+    element crypt_pervasive_apqn { STRING }
+  }
+part_crypt_pervasive_key_type = element crypt_pervasive_key_type { STRING_ATTR, ("CCA-AESCIPHER" | "CCA-AESDATA") }
+part_filesystem =
+  element filesystem { SYMBOL }
+part_format =
+  element format { BOOLEAN }
+part_subvolumes_prefix =
+  element subvolumes_prefix { STRING }
+part_fs_options =
+  element fs_options {
+    MAP,
+    (
+      opt_blocksize? &
+      opt_block_size? &
+      opt_bytes_per_inode? &
+      opt_format? &
+      opt_hash? &
+      opt_inode_align? &
+      opt_max_inode_space? &
+      opt_raid? &
+      opt_reserved_blocks?
+    )
+  }
+
+fs_option = MAP, (option_str, option_value )
+blank_option = MAP, (option_blank, option_str, option_value )
+opt_block_size = element opt_block_size { fs_option }
+opt_blocksize = element opt_blocksize { fs_option }
+opt_bytes_per_inode =
+  element opt_bytes_per_inode { fs_option }
+opt_format =
+  element opt_format { blank_option }
+opt_hash = element opt_hash { blank_option }
+opt_inode_align = element opt_inode_align { fs_option }
+opt_max_inode_space =
+  element opt_max_inode_space { fs_option }
+opt_raid = element opt_raid { fs_option }
+opt_reserved_blocks =
+  element opt_reserved_blocks { fs_option }
+raid_name = element raid_name { STRING }
+
+raid_options = element raid_options { MAP, (persistent_superblock? & chunk_size? & parity_algorithm? & raid_type? & device_order? & raid_name?) }
+persistent_superblock = element persistent_superblock { BOOLEAN }
+raid_type = element raid_type { STRING }
+chunk_size = element chunk_size { STRING }
+parity_algorithm = element parity_algorithm { STRING }
+device_order = element device_order {
+    LIST,
+    element device { STRING }*
+}
+
+cache_mode = element cache_mode { STRING_ATTR, ("writethrough" | "writeback" | "writearound" | "none") }
+bcache_options = element bcache_options { MAP, (cache_mode?) }
+
+btrfs_name = element btrfs_name { STRING }
+# jsc#SLE-7742: add support for Btrfs subvolumes quotas
+quotas = element quotas { BOOLEAN }
+
+btrfs_options = element btrfs_options { MAP, (data_raid_level? & metadata_raid_level?) }
+data_raid_level = element data_raid_level { STRING }
+metadata_raid_level = element metadata_raid_level { STRING }
+
+subvolumes = element subvolumes {
+    LIST,
+    subvolume*
+}
+
+# keep backward compatibility with listentry when subvolumes use generic list items
+subvolume =
+  element (subvolume | listentry ) { STRING } | subvolume_full
+
+subvolume_full =
+  element (subvolume | listentry) {
+    MAP,
+    (
+      element path { STRING } &
+      # FATE#320342: add support to enable copy-on-write for Btrfs subvolumes
+      element copy_on_write { BOOLEAN }? &
+      # jsc#SLE-7742: add support for Btrfs subvolumes quotas
+      element referenced_limit { STRING }?
+    )
+  }
+
+create_subvolumes =
+  element create_subvolumes { BOOLEAN }
+
+part_fstopt = element fstopt { STRING }
+part_label = element label { STRING }
+part_uuid = element uuid { STRING }
+part_loop_fs =
+  element loop_fs { BOOLEAN }
+part_mkfs_options = element mkfs_options { STRING }
+part_mount = element mount { STRING }
+part_mountby =
+  element mountby { SYMBOL }
+option_blank =
+  element option_blank { BOOLEAN }
+option_str = element option_str { STRING }
+option_value = element option_value { STRING }
+part_raid_type = element raid_type { STRING }
+part_partition_nr =
+  element partition_nr { INTEGER }
+part_partition_type = element partition_type { STRING_ATTR, "primary" }
+part_partition_id =
+  element partition_id { INTEGER }
+part_filesystem_id =
+  element filesystem_id { INTEGER }
+part_stripes =
+  element stripes { INTEGER }
+part_stripesize =
+  element stripesize { INTEGER }
+part_pool = element pool { BOOLEAN }
+part_used_pool = element used_pool { STRING }
+part_region =
+  element region {
+    LIST,
+    region_entry+
+  }
+region_entry =
+  element region_entry { INTEGER }
+part_size = element size { STRING }
+part_lv_name = element lv_name { STRING }
+part_lvm_group = element lvm_group { STRING }
+part_resize = element resize { BOOLEAN }
+bcache_backing_for = element bcache_backing_for { STRING }
+bcache_caching_for = element bcache_caching_for {
+  LIST,
+  element listentry { STRING }*
+}

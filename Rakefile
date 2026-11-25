@@ -83,13 +83,42 @@ def package_translations
      "--owner=root --group=root --mtime=#{Shellwords.escape(mtime)} po/*.po")
 end
 
+# "/foo/agama/service/agama-yast-10.devel201.gem" -> "10.devel201"
+def gem_version(gem_filename)
+  gem_filename.sub(/\.gem$/, "").sub(/.*-/, "")
+end
+
 def package_agama_yast_spec(gem_filename)
-  # "/foo/agama/service/agama-yast-10.devel201.gem" -> "10.devel201"
-  version = gem_filename.sub(/\.gem$/, "").sub(/.*-/, "")
+  version = gem_version(gem_filename)
 
   spec_text = File.read("agama-yast.spec.in")
   spec_text.gsub!("@VERSION@", version)
   File.write(File.join(package_dir, "agama-yast.spec"), spec_text)
+end
+
+# Prepares the sources of the agama-autoyast-schema package: generates the spec file
+# from the template and creates the tarball with the RNC files.
+#
+# @param gem_filename [String] the agama-yast gem, used to get the package version
+def package_agama_autoyast_schema(gem_filename)
+  version = gem_version(gem_filename)
+  schema_dir = File.expand_path("schema", Dir.pwd)
+  name = "agama-autoyast-schema"
+
+  spec_text = File.read("#{name}.spec.in")
+  spec_text.gsub!("@VERSION@", version)
+  File.write(File.join(package_dir, "#{name}.spec"), spec_text)
+
+  # The tarball name must match the Source0 tag in the spec file and the top level
+  # directory must match the "%setup -n" option.
+  tarball = File.join(package_dir, "#{name}-#{version}.tar.xz")
+  Dir.chdir(schema_dir) do
+    # see package_translations for the explanation of the tar options
+    mtime = `git show -s --format=%ci`.chomp
+    sh("LC_ALL=C tar -c -J -f #{Shellwords.escape(tarball)} --format=gnu --sort=name " \
+       "--owner=root --group=root --mtime=#{Shellwords.escape(mtime)} " \
+       "--transform=#{Shellwords.escape("s,^,#{name}-#{version}/,")} Makefile rnc/*.rnc")
+  end
 end
 
 Yast::Tasks.configuration do |conf|
@@ -141,6 +170,7 @@ task package: [] do
     FileUtils.mv(gem, package_dir)
 
     package_agama_yast_spec(gem)
+    package_agama_autoyast_schema(gem)
 
     package_translations
   end

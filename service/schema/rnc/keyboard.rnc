@@ -1,0 +1,23 @@
+default namespace = "http://www.suse.com/1.0/yast2ns"
+namespace a = "http://relaxng.org/ns/compatibility/annotations/1.0"
+namespace config = "http://www.suse.com/1.0/configns"
+
+include "common.rnc"
+
+keyboard = element keyboard { MAP, (keyboard_values? & keymap?) }
+keymap = element keymap { STRING }
+
+
+keyboard_values =
+  element keyboard_values {
+      MAP,
+      (
+        element capslock { BOOLEAN }? &
+        element delay    { STRING }? &
+        element discaps  { BOOLEAN }? &
+        element numlock  { STRING }? &
+        element rate     { STRING }? &
+        element scrlock  { BOOLEAN }? &
+        element tty      { STRING }?
+      )
+  }

@@ -1,0 +1,84 @@
+default namespace = "http://www.suse.com/1.0/yast2ns"
+namespace a = "http://relaxng.org/ns/compatibility/annotations/1.0"
+namespace config = "http://www.suse.com/1.0/configns"
+
+include "common.rnc"
+
+optiontags =
+  job-sheets
+  | enable
+  | index
+  | option
+  | ac97_clock
+  | ac97_quirk
+  | joystick
+  | isapnp
+usertags =
+  encrypted
+  | user_password
+  | username
+  | fullname
+  | gid
+  | grouplist
+  | home
+  | password_settings
+  | shell
+  | uid
+lvmtags = lvm_name | pesize | logical_volumes
+grouptags = gid | group_password | groupname | userlist
+# This is to solve conflict between diffeent resources having same tag
+options =
+  element options {
+    attribute config:type { text }?,
+    (text | optiontags)*
+  }
+user = element user { (STRING | usertags)* }
+lvm_group = element lvm_group { (STRING | lvmtags)* }
+group = element group { (STRING | grouptags)* }
+
+tftp-server = element tftp-server { start_tftpd, tftp_directory }
+start_tftpd =
+  element start_tftpd { BOOLEAN }
+tftp_directory = element tftp_directory { STRING }
+
+proxy =
+  element proxy {
+    MAP,
+    (enabled, ftp_proxy, http_proxy, no_proxy, proxy_password, proxy_user)
+  }
+enabled =
+  element enabled { BOOLEAN }
+ftp_proxy = element ftp_proxy { STRING }
+http_proxy = element http_proxy { STRING }
+no_proxy = element no_proxy { STRING }
+proxy_password = element proxy_password { STRING }
+proxy_user = element proxy_user { STRING }
+
+lvm2 |= notAllowed
+nisplus |= notAllowed
+partitioning_advanced |= notAllowed
+vendor_id |= notAllowed
+
+# These elements are not referenced anywhere,
+# which is probably a bug:
+#  cups-state
+#  | snd_index
+#  | encryption
+#  | profile
+#  | unknown-state
+#  | keep_partition_id
+#  | printers
+#  | kernel_parameters
+#  | start_inetd
+#  | lprng-state
+#  | keep_partition_fsys
+#  | forename
+#  | ownppd
+#  | device_ieee
+#  | prefer_remove
+#  | config
+#  | keep_partition_nr
+#  | create_remote_queue
+#  | faillog_auth
+#  | snd_enable
+#  | new

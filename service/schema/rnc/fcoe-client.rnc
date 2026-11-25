@@ -1,0 +1,51 @@
+default namespace = "http://www.suse.com/1.0/yast2ns"
+namespace a = "http://relaxng.org/ns/compatibility/annotations/1.0"
+namespace config = "http://www.suse.com/1.0/configns"
+
+include "common.rnc"
+
+fcoe-client =
+  element fcoe-client {
+    MAP,
+    (
+      fcoe_cfg? &
+      fcoe_interfaces? &
+      fcoe_service_start?
+    )
+  }
+
+
+fcoe_cfg = element fcoe_cfg {
+      MAP,
+      (
+        element DEBUG { STRING_ATTR, ("yes" | "no") } &
+        element USE_SYSLOG { STRING_ATTR, ("yes" | "no") }
+      )
+}
+
+fcoe_interfaces = element interfaces {
+      LIST,
+      element (interface | listentry) {
+        MAP,
+        (
+          element dev_name { STRING } &
+          element mac_addr { STRING } &
+          element device   { STRING } &
+          element vlan_interface { STRING } &
+          element fcoe_vlan { STRING } &
+          element fcoe_enable { STRING_ATTR, ("yes" | "no") } &
+          element dcb_required { STRING_ATTR, ("yes" | "no") } &
+          element auto_vlan { STRING_ATTR, ("yes" | "no") } &
+          element dcb_capable { STRING_ATTR, ("yes" | "no") } &
+          element cfg_device { STRING }
+        )
+      }*
+}
+
+fcoe_service_start = element service_start {
+      MAP,
+      (
+        element fcoe { BOOLEAN } &
+        element lldpad { BOOLEAN }
+      )
+}

@@ -1,0 +1,43 @@
+default namespace = "http://www.suse.com/1.0/yast2ns"
+namespace a = "http://relaxng.org/ns/compatibility/annotations/1.0"
+namespace config = "http://www.suse.com/1.0/configns"
+
+include "common.rnc"
+
+audit-laf = element audit-laf {
+    MAP,
+    (
+      element auditd {
+        MAP,
+        (
+          element action_mail_acct { STRING }? &
+          element admin_space_left { STRING }? &
+          element admin_space_left_action { STRING }? &
+          element disk_error_action { STRING }? &
+          element disk_full_action  { STRING }? &
+          element disp_qos          { STRING }? &
+          element dispatcher        { STRING }? &
+          element flush             { STRING }? &
+          element freq              { STRING }? &
+          element log_file          { STRING }? &
+          element log_format        { STRING }? &
+          element log_group         { STRING }? &
+          element max_log_file      { STRING }? &
+          element max_log_file_action { STRING }? &
+          element name_format       { STRING }? &
+          element num_logs          { STRING }? &
+          element priority_boost    { STRING }? &
+          element space_left        { STRING }? &
+          element space_left_action { STRING }? &
+          element tcp_client_max_idle { STRING }? &
+          element tcp_client_ports  { STRING }? &
+          element tcp_listen_port   { STRING }? &
+          element tcp_listen_queue  { STRING }? &
+          element tcp_max_per_addr  { STRING }?
+        )
+      }? &
+      element rules { STRING }?
+    )
+}
+
+

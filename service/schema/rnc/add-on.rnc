@@ -1,0 +1,96 @@
+default namespace = "http://www.suse.com/1.0/yast2ns"
+namespace a = "http://relaxng.org/ns/compatibility/annotations/1.0"
+namespace config = "http://www.suse.com/1.0/configns"
+
+include "common.rnc"
+
+add-on =
+  element add-on {
+      MAP,
+      (
+        add_on_products* &
+        add_on_others*
+      )
+  }
+listentry =
+  element listentry {
+     MAP,
+     (
+       media_url & # here it is mandatory
+       product? &
+       name? &
+       alias? &
+       product_dir? &
+       ask_on_error? &
+       confirm_license? &
+       priority? &
+       element signature-handling {
+          MAP,
+          (
+            element accept_unsigned_file { BOOLEAN }? &
+            element accept_file_without_checksum { BOOLEAN }? &
+            element accept_verification_failed { BOOLEAN }? &
+            element accept_unknown_gpg_key {
+                MAP,
+                (
+                  element all { BOOLEAN }? &
+                  element keys {
+                      LIST,
+                      element keyid { STRING }*
+                  }?
+                )
+            }? &
+            element accept_non_trusted_gpg_key {
+                MAP,
+                (
+                  element all { BOOLEAN }? &
+                  element keys {
+                      LIST,
+                      element keyid { STRING }*
+                  }?
+                )
+            }? &
+            element import_gpg_key {
+                MAP,
+                (
+                  element all { BOOLEAN }? &
+                  element keys {
+                      LIST,
+                      element keyid { STRING }*
+                  }?
+                )
+            }?
+          )
+       }?
+     )
+  }
+media_url = element media_url { STRING }
+product = element product { STRING }
+name = element name { STRING }
+alias = element alias { STRING }
+product_dir = element product_dir { STRING }
+ask_on_error = element ask_on_error { BOOLEAN }
+confirm_license = element confirm_license { BOOLEAN }
+priority = element priority { INTEGER }
+#
+# Describes all Add-On products which have to be added
+# while and after the installation.
+#
+add_on_products =
+  element add_on_products {
+     LIST,
+     listentry*
+  }
+#
+# Describes all Add-Ons which are not Add-On-Products or Base-Products.
+# Usually custom or 3rd party repositories.
+#
+# Add-On products and other user defined repos will be split in order to
+#  1. keep a better overview about the repos
+#  2. ensure backward compatibility
+#
+add_on_others =
+  element add_on_others {
+     LIST,
+     listentry*
+  }

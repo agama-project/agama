@@ -1,0 +1,13 @@
+default namespace = "http://www.suse.com/1.0/yast2ns"
+namespace config = "http://www.suse.com/1.0/configns"
+namespace a = "http://relaxng.org/ns/compatibility/annotations/1.0"
+
+backup =
+  element backup {
+    MAP,
+    (
+      element modified { BOOLEAN }? &
+      element remove_old { BOOLEAN }? &
+      element sysconfig { BOOLEAN }?
+    )
+}

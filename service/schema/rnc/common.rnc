@@ -1,0 +1,74 @@
+default namespace = "http://www.suse.com/1.0/yast2ns"
+namespace config = "http://www.suse.com/1.0/configns"
+namespace a = "http://relaxng.org/ns/compatibility/annotations/1.0"
+datatypes xsd = "http://www.w3.org/2001/XMLSchema-datatypes"
+
+# Single hash comments #  become <!-- XML comments-->
+# Double hash comments ## are preserved in .rng as <a:documentation>
+
+## Defined data-types
+
+BOOLEAN |=
+  (
+    ## Historically we used config:type
+    ## but it is unnecessarily long to type and read.
+    ## Shorter variants are allowed.
+    # This could be expressed also as
+    # 'attribute ( t | type | config:type ) { "boolean" }'
+    # but libxml2-2.9.7 xmllint considers it incorrect schema :-(
+    ( attribute t           { "boolean" } |
+      attribute type        { "boolean" } |
+      attribute config:type { "boolean" } ),
+    ( "true" | "false" )
+  )
+
+INTEGER |=
+  (
+    ( attribute t           { "integer" } |
+      attribute type        { "integer" } |
+      attribute config:type { "integer" } ),
+    xsd:integer
+  )
+
+# Usage: foo = element foo { STRING_ATTR, ( "bar" | "baz") }
+STRING_ATTR |=
+    ( attribute t           { "string" } |
+      attribute type        { "string" } |
+      attribute config:type { "string" } ) ?
+
+STRING |=
+  (
+    STRING_ATTR,
+    text
+  )
+
+SYMBOL |=
+  (
+    (
+      attribute t           { "symbol" } |
+      attribute type        { "symbol" } |
+      attribute config:type { "symbol" } ),
+    text
+  )
+
+LIST |=
+  (
+      attribute t           { "list" } |
+      attribute type        { "list" } |
+      attribute config:type { "list" }
+  )
+
+MAP |=
+  (
+      attribute t           { "map" } |
+      attribute type        { "map" } |
+      attribute config:type { "map" }
+  ) ?
+
+# this is useful for testing
+Anything |=
+  (
+    attribute * { text }
+  | text
+  | element * { Anything }
+  )*

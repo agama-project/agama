@@ -1,0 +1,35 @@
+# This describes a part of the autoinstallation profile.
+#
+# Do not confuse with classes-decl.rn[cg] which declares
+# the classes for the UI.
+default namespace = "http://www.suse.com/1.0/yast2ns"
+namespace a = "http://relaxng.org/ns/compatibility/annotations/1.0"
+namespace config = "http://www.suse.com/1.0/configns"
+
+include "common.rnc"
+
+classes =
+element classes {
+    LIST,
+    class*
+}
+
+class =
+element class {
+    MAP,
+    (
+      class_name &
+      configuration &
+      element dont_merge {
+          LIST,
+          element element { STRING }*
+      }?
+    )
+}
+
+class_name =
+element class_name { STRING }
+configuration =
+element configuration { STRING }
+
+

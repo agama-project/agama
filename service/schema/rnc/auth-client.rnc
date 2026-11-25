@@ -1,0 +1,8 @@
+default namespace = "http://www.suse.com/1.0/yast2ns"
+
+include "common.rnc"
+
+auth-client = element auth-client {
+    MAP,
+    element conf_json  { STRING }?
+}

@@ -1,0 +1,125 @@
+# <!ELEMENT group (gid, group_password, groupname, userlist)>
+
+default namespace = "http://www.suse.com/1.0/yast2ns"
+namespace a = "http://relaxng.org/ns/compatibility/annotations/1.0"
+namespace config = "http://www.suse.com/1.0/configns"
+
+include "common.rnc"
+
+login_settings = element login_settings {
+  MAP,
+  (
+    element autologin_user { STRING }? &
+    element password_less_login { BOOLEAN }?
+  )
+}
+
+groups =
+  element groups {
+    LIST,
+    gr_group*
+  }
+
+# TODO: "group_password" is no longer supported by YaST. We should remove it
+# along with "encrypted" from the schema at some point.
+gr_group = element group {
+  MAP,
+  (
+    encrypted? &
+    element group_password { STRING }? &
+    element groupname      { STRING }? &
+    element userlist       { STRING }? &
+    element gid            { STRING }?
+  )
+}
+
+# TODO: groups, no_groups and skel are not longer read by AutoYaST (see
+# https://github.com/yast/yast-users/pull/306) or documented (see
+# https://github.com/SUSE/doc-sle/pull/901). We should remove them from the
+# schema at some point. We cannot do it yet because the attributes are still
+# exported (export uses old code not yet converted to Y2Users), but that
+# limitation should disappear at some point.
+user_defaults =
+  element user_defaults {
+    MAP,
+    (
+      expire? &
+      ud_group? &
+      ud_groups? &
+      home? &
+      inactive? &
+      no_groups? &
+      shell? &
+      skel? &
+      umask?
+    )
+  }
+
+# by default, AutoYaST exports list entries as 'listentry'
+authorized_key =
+  element authorized_key { STRING } | element listentry { STRING }
+
+authorized_keys =
+  element authorized_keys {
+    LIST,
+    authorized_key*
+}
+
+expire = element expire { STRING }
+ud_group = element group { STRING }
+ud_groups = element groups { STRING }
+inactive = element inactive { STRING }
+no_groups = element no_groups { BOOLEAN }
+shell = element shell { STRING }
+skel = element skel { STRING }
+umask = element umask { STRING }
+user = element user {
+  MAP,
+  (
+    encrypted? &
+    fullname? &
+    surname? &
+    u_forename? &
+    u_gid? &
+    home? &
+    home_btrfs_subvolume? &
+    shell? &
+    uid? &
+    user_password? &
+    username? &
+    u_group? &
+    u_groups? &
+    password_settings? &
+    authorized_keys?
+  )
+}
+encrypted = element encrypted { BOOLEAN }
+fullname = element fullname { STRING }
+u_forename = element forename { STRING }
+surname = element surname { STRING }
+u_gid = element gid { STRING }
+home = element home { STRING }
+home_btrfs_subvolume = element home_btrfs_subvolume { BOOLEAN }
+user_password = element user_password { STRING }
+username = element username { STRING }
+uid = element uid { STRING }
+u_group = element group { STRING }
+u_groups = element groups { STRING }
+
+password_settings = element password_settings {
+  MAP,
+  (
+    element expire { STRING }? &
+    element flag   { STRING }? &
+    element inact  { STRING }? &
+    element max    { STRING }? &
+    element min    { STRING }? &
+    element warn   { STRING }?
+  )
+}
+
+users =
+  element users {
+    LIST,
+    user*
+  }

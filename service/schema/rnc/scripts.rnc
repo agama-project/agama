@@ -1,0 +1,102 @@
+default namespace = "http://www.suse.com/1.0/yast2ns"
+namespace config = "http://www.suse.com/1.0/configns"
+namespace a = "http://relaxng.org/ns/compatibility/annotations/1.0"
+
+include "common.rnc"
+
+scripts =
+element scripts { 
+  MAP,
+  (
+    chroot-scripts? &
+    post-scripts? &
+    pre-scripts? &
+    init-scripts? &
+    postpartitioning-scripts?
+  )
+}
+
+chroot-scripts =
+element chroot-scripts {
+    LIST,
+    autoinstall-chroot-script+
+}
+post-scripts =
+element post-scripts {
+    LIST,
+    autoinstall-script+
+}
+pre-scripts =
+element pre-scripts {
+    LIST,
+    autoinstall-script+
+}
+init-scripts =
+element init-scripts {
+    LIST,
+    autoinstall-init-script+
+}
+postpartitioning-scripts =
+element postpartitioning-scripts {
+    LIST,
+    autoinstall-script+
+}
+
+
+# script is overloaded
+autoinstall-script = element script {
+  MAP,
+  (
+    filename? &
+    interpreter? & 
+    element location { STRING }? &
+    source? &
+    debug? &
+    feedback? &
+    feedback_type? &
+    param-list? &
+    rerun? &
+    element notification { STRING }?
+  )
+}
+
+autoinstall-init-script = element script {
+  MAP,
+  (
+    debug? &
+    filename? &
+    element location { STRING }? &
+    source?
+  )
+}
+
+autoinstall-chroot-script = element script {
+  MAP,
+  (
+    chrooted? &
+    filename? &
+    interpreter? &
+    element location { STRING }? &
+    source? &
+    debug? &
+    feedback? &
+    feedback_type? &
+    param-list? &
+    rerun? &
+    element notification { STRING }?
+  )
+}
+
+param-list = element param-list {
+  LIST,
+  element param { STRING }*
+  }
+
+chrooted = element chrooted { BOOLEAN }
+debug = element debug { BOOLEAN }
+feedback = element feedback { BOOLEAN }
+feedback_type = element feedback_type { STRING }
+filename = element filename { STRING }
+interpreter = element interpreter { STRING }
+rerun = element rerun { BOOLEAN }
+source = element source { STRING }

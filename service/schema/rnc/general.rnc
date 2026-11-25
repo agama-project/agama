@@ -1,0 +1,174 @@
+default namespace = "http://www.suse.com/1.0/yast2ns"
+namespace config = "http://www.suse.com/1.0/configns"
+namespace a = "http://relaxng.org/ns/compatibility/annotations/1.0"
+
+include "common.rnc"
+
+general = element general { 
+    MAP,
+    (
+      element mode {
+        MAP,
+        (
+          element activate_systemd_default_target   { BOOLEAN }? &
+          element confirm                           { BOOLEAN }? &
+          element confirm_base_product_license      { BOOLEAN }? &
+          element final_halt                        { BOOLEAN }? &
+          element final_reboot                      { BOOLEAN }? &
+          element final_restart_services            { BOOLEAN }? &
+          element forceboot                         { BOOLEAN }? &
+          element halt                              { BOOLEAN }? &
+          element max_systemd_wait                  { INTEGER }? &
+          element ntp_sync_time_before_installation { STRING }? &
+          element second_stage                      { BOOLEAN }?
+        )
+      }? &
+      ask-list? &
+      semi-automatic? &
+      minimal-configuration? &
+      signature-handling? &
+      element self_update { BOOLEAN }? &
+      element self_update_url { STRING }? &
+      element proposals {
+          LIST,
+          element proposal { STRING }*
+      }? &
+      element storage {
+          MAP,
+          element start_multipath { BOOLEAN }?
+      }? &
+      element wait {
+          MAP,
+          (
+            element pre-modules {
+                LIST,
+                module*
+            }? &
+            element post-modules {
+                LIST,
+                module*
+            }?
+          )
+      }? &
+      cio_ignore?
+    )
+}
+ask-list = element ask-list { LIST, ask* }
+ask = element ask { MAP, (ask_question? & ask_default? & ask_help? & ask_title? & ask_type? & ask_password? & ask_path? & ask_pathlist? & ask_stage? & ask_selection? & ask_file? & ask_dialog? & ask_element? & ask_width? & ask_height? & ask_frametitle? & ask_script? & ask_timeout? & ask_ok_label? & ask_back_label? & ask_default_value_script? ) }
+ask_question = element question { STRING }
+ask_default = element default { STRING }
+ask_help = element help { STRING }
+ask_title = element title { STRING }
+ask_type = element type { STRING_ATTR, ( "symbol" | "integer" | "boolean" | "string" | "static_text" ) }
+ask_password = element password { BOOLEAN }
+ask_path = element path { STRING }
+ask_stage = element stage { STRING_ATTR, ( "cont" | "initial" ) }
+ask_selection = element selection { LIST, ask_selection_entry+ }
+ask_selection_entry = element entry { MAP, ( ask_entry_value & ask_entry_label ) }
+ask_file = element file { STRING }
+ask_entry_value = element value { STRING }
+ask_entry_label = element label { STRING }
+ask_dialog = element dialog { INTEGER }
+ask_element = element element { INTEGER }
+ask_width = element width { INTEGER }
+ask_height = element height { INTEGER }
+ask_frametitle = element frametitle { STRING }
+ask_timeout = element timeout { INTEGER }
+ask_pathlist =  element pathlist {
+    LIST,
+    ask_path*
+}
+ask_ok_label = element ok_label { STRING }
+ask_back_label = element back_label { STRING }
+
+semi-automatic = element semi-automatic { LIST, semi-automatic-modules* }
+# allow here both module which is original one and also semi-automatic_entry from documenation (bsc#1183512)
+semi-automatic-modules = element semi-automatic_entry | module { STRING_ATTR, ( "networking" | "partitioning" | "scc" ) }
+
+minimal-configuration = element minimal-configuration { BOOLEAN }
+
+signature-handling = element signature-handling { MAP, ( accept_unsigned_file? & accept_file_without_checksum? & accept_verification_failed? & accept_unknown_gpg_key? & import_gpg_key? & accept_non_trusted_gpg_key? ) }
+accept_unsigned_file = element accept_unsigned_file { BOOLEAN }
+accept_file_without_checksum = element accept_file_without_checksum { BOOLEAN }
+accept_verification_failed = element accept_verification_failed { BOOLEAN }
+accept_unknown_gpg_key = element accept_unknown_gpg_key { BOOLEAN }
+accept_non_trusted_gpg_key = element accept_non_trusted_gpg_key { BOOLEAN }
+import_gpg_key = element import_gpg_key { BOOLEAN }
+
+ask_script = element script {
+    MAP,
+    (
+      element filename       { STRING }? &
+      element interpreter    { STRING }? &
+      element location       { STRING }? &
+      element source         { STRING }? &
+      element debug          { BOOLEAN }? &
+      element feedback       { BOOLEAN }? &
+      element feedback_type  { STRING }? &
+      ask-param-list? &
+      element rerun          { BOOLEAN }? &
+      element notification   { STRING }? &
+      element environment    { BOOLEAN }? &
+      element rerun_on_error { BOOLEAN }?
+    )
+}
+
+ask_default_value_script = element default_value_script {
+    MAP,
+    (
+      element filename       { STRING }? &
+      element interpreter    { STRING }? &
+      element location       { STRING }? &
+      element source         { STRING }? &
+      element debug          { BOOLEAN }? &
+      element feedback       { BOOLEAN }? &
+      element feedback_type  { STRING }? &
+      ask-param-list? &
+      element rerun          { BOOLEAN }? &
+      element notification   { STRING }?
+    )
+}
+
+ask-param-list = element param-list {
+  LIST,
+  element param { STRING }*
+}
+
+confirm =
+  element confirm { BOOLEAN }
+final_halt =
+  element final_halt { BOOLEAN }
+final_reboot =
+  element final_reboot { BOOLEAN }
+forceboot =
+  element forceboot { BOOLEAN }
+ntp_sync_time_before_installation =
+  element ntp_sync_time_before_installation {STRING}
+halt =
+  element halt { BOOLEAN }
+second_stage =
+  element second_stage { BOOLEAN }
+
+module = element module {
+  MAP,
+  (
+    element name { STRING }? &
+    element sleep {
+        MAP,
+        (
+          element time { INTEGER }? &
+          element feedback { BOOLEAN }?
+        )
+    }? &
+    element script {
+        MAP,
+        (
+          element debug { BOOLEAN }? &
+          element source { STRING }?
+        )
+    }
+  )
+}
+
+cio_ignore =
+  element cio_ignore { BOOLEAN }

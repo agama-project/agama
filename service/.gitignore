@@ -1,6 +1,9 @@
 *.gem
 # the spec file is generated
 /package/rubygem*.spec
+/package/agama-autoyast-schema.spec
+/package/agama-autoyast-schema-*.tar.xz
+/package/agama-yast.spec
 *.rbc
 /.config
 /coverage/

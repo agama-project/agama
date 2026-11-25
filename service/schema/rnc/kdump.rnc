@@ -1,0 +1,63 @@
+default namespace = "http://www.suse.com/1.0/yast2ns"
+namespace a = "http://relaxng.org/ns/compatibility/annotations/1.0"
+namespace config = "http://www.suse.com/1.0/configns"
+
+include "common.rnc"
+
+kdump =
+  element kdump {
+    MAP,
+    (
+      (kdump_crash_kernel_value | kdump_crash_kernel_list)? &
+      # parameter specify crashkernel value for xen hypervisor
+      (kdump_crash_xen_kernel_value | kdump_crash_xen_kernel_list)? &
+      kdump_add_crash_kernel? &
+      kdump_general?
+    )
+}
+
+kdump_crash_kernel_value = element crash_kernel { STRING }
+kdump_crash_xen_kernel_value = element crash_xen_kernel { STRING }
+kdump_crash_kernel_list = element crash_kernel {
+  LIST,
+  kdump_crash_kernel_entry+
+}
+kdump_crash_xen_kernel_list = element crash_xen_kernel {
+  LIST,
+  kdump_crash_kernel_entry+
+}
+kdump_crash_kernel_entry = element listentry { STRING }
+kdump_add_crash_kernel = element add_crash_kernel { BOOLEAN }
+
+kdump_general = element general {
+  MAP,
+  (
+    element KDUMP_KERNELVER { STRING }? &
+    element KDUMP_CPUS { STRING }? &
+    element KDUMP_COMMANDLINE { STRING }? &
+    element KDUMP_COMMANDLINE_APPEND { STRING }? &
+    element KDUMP_AUTO_RESIZE { STRING }? &
+    element KDUMP_CONTINUE_ON_ERROR { STRING }? &
+    element KDUMP_REQUIRED_PROGRAMS { STRING }? &
+    element KDUMP_PRESCRIPT { STRING }? &
+    element KDUMP_POSTSCRIPT { STRING }? &
+    element KDUMP_NETCONFIG { STRING }? &
+    element KDUMP_NET_TIMEOUT { STRING }? &
+    element KEXEC_OPTIONS { STRING }? &
+    element KDUMP_RUNLEVEL { STRING }? &
+    element KDUMP_IMMEDIATE_REBOOT { STRING }? &
+    element KDUMP_TRANSFER { STRING }? &
+    element KDUMP_SAVEDIR { STRING }? &
+    element KDUMP_KEEP_OLD_DUMPS { STRING }? &
+    element KDUMP_FREE_DISK_SIZE { STRING }? &
+    element KDUMP_VERBOSE { STRING }? &
+    element KDUMP_DUMPLEVEL { STRING }? &
+    element KDUMP_DUMPFORMAT { STRING }? &
+    element KDUMP_SMTP_SERVER { STRING }? &
+    element KDUMP_SMTP_USER { STRING }? &
+    element KDUMP_SMTP_PASSWORD { STRING }? &
+    element KDUMP_NOTIFICATION_TO { STRING }? &
+    element KDUMP_NOTIFICATION_CC { STRING }? &
+    element KDUMP_HOST_KEY { STRING }?
+  )
+}

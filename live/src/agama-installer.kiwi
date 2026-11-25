@@ -129,7 +129,7 @@
         <package name="checkmedia"/>
         <package name="libtss2-tcti-device0"/>
         <package name="jq"/>
-        <package name="yast2-schema"/>
+        <package name="agama-autoyast-schema"/>
         <package name="qrencode"/>
         <package name="qemu-guest-agent" arch="aarch64,x86_64,ppc64le,s390x,riscv64"/>
         <package name="aaa_base-extras"/>

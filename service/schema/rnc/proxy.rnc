@@ -1,0 +1,18 @@
+default namespace = "http://www.suse.com/1.0/yast2ns"
+namespace a = "http://relaxng.org/ns/compatibility/annotations/1.0"
+namespace config = "http://www.suse.com/1.0/configns"
+
+include "common.rnc"
+
+proxy = element proxy { 
+  MAP,
+  (
+    element enabled     { BOOLEAN }? &
+    element ftp_proxy   { STRING }? &
+    element http_proxy  { STRING }? &
+    element https_proxy { STRING }? &
+    element no_proxy    { STRING }? &
+    element proxy_password { STRING }? &
+    element proxy_user     { STRING }?
+  )
+}

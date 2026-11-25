@@ -1,0 +1,29 @@
+default namespace = "http://www.suse.com/1.0/yast2ns"
+namespace a = "http://relaxng.org/ns/compatibility/annotations/1.0"
+namespace config = "http://www.suse.com/1.0/configns"
+
+include "common.rnc"
+
+configuration_management = element configuration_management {
+  MAP,
+  (
+    element type { STRING }? &
+    element master { STRING }? &
+    element auth_attempts { INTEGER }? &
+    element auth_time_out { INTEGER }? &
+    element enable_services { BOOLEAN }? &
+    element formulas_roots { LIST, formulas_root* }? &
+    element states_roots { LIST, states_root* }? &
+    element pillar_root { STRING }? &
+    element pillar_url { STRING }? &
+    element keys_url { STRING }? &
+    element states_url { STRING }? &
+    element modules_url { LIST, modules_url* }? &
+    element enabled_states { LIST, enabled_state* }?
+  )
+}
+
+formulas_root = element (path | listentry) { STRING }
+states_root = element (path | listentry) { STRING }
+modules_url = element (url | listentry) { STRING }
+enabled_state = element (state | listentry) { STRING }

@@ -1,0 +1,81 @@
+default namespace = "http://www.suse.com/1.0/yast2ns"
+namespace a = "http://relaxng.org/ns/compatibility/annotations/1.0"
+namespace config = "http://www.suse.com/1.0/configns"
+
+include "common.rnc"
+
+# runlevel legacy schema
+
+runlevel_service_name   = element service_name   { STRING }
+runlevel_service_status = element service_status { STRING }
+runlevel_service_start  = element service_start  { STRING }
+runlevel_service_stop   = element service_stop   { STRING }
+
+runlevel_service =
+  element service {
+     attribute config:type { text }?   &
+       runlevel_service_name?          &
+       runlevel_service_start?         &
+       runlevel_service_stop?          &
+       runlevel_service_status?
+  }
+
+runlevel_services =
+  element services {
+    attribute config:type { "list" }?,
+    runlevel_service*
+  }
+
+runlevel_default = element \default { STRING }
+
+runlevel_content = element runlevel { MAP, (runlevel_default? & runlevel_services?) }
+
+# current services-manager schema
+
+# by default, AutoYast exports list entries as 'listentry'
+service = element service { STRING } | element listentry { STRING }
+
+sm_enable =
+  element enable {
+    LIST,
+    service*
+  }
+
+sm_disable =
+  element disable {
+    LIST,
+    service*
+  }
+
+sm_on_demand =
+  element on_demand {
+    LIST,
+    service*
+  }
+
+new_services_list =
+  element services {
+    MAP,
+    (
+      sm_disable? &
+      sm_enable? &
+      sm_on_demand?
+    )
+  }
+
+old_services_list =
+  element services {
+    LIST,
+    service*
+  }
+
+services =
+  old_services_list | new_services_list
+
+default_target = element default_target { STRING }
+
+services_manager_content = default_target? & services?
+
+services-manager =
+  element services-manager { MAP, services_manager_content } |
+  element runlevel         { MAP, runlevel_content         }

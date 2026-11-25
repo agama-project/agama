@@ -1,0 +1,18 @@
+default namespace = "http://www.suse.com/1.0/yast2ns"
+namespace config = "http://www.suse.com/1.0/configns"
+namespace a = "http://relaxng.org/ns/compatibility/annotations/1.0"
+
+include "common.rnc"
+include "includes.rnc"
+
+include "classes-use.rnc"
+
+any_content = any_element* & text
+any_element = element * - (classes | runlevel | add-on | audit-laf | auth-client | bootloader | configuration_management | fcoe-client | host | kdump | keyboard | networking | language | ntp-client | proxy | remote | suse_register | security | services-manager | timezone | users | user_defaults | groups | login_settings | backup | deploy_image | files | general | general | pxe | partitioning | report | scripts | software | ssh_import | upgrade) { any_attribute*, any_content }
+any_attribute = attribute * { text }
+
+profile = element profile {
+   classes? & audit-laf? & auth-client? & configuration_management? & fcoe-client? & host? & keyboard? & networking? & language? & ntp-client? & proxy? & suse_register? & security? & services-manager? & timezone? & user_defaults? & groups? & login_settings? & users? & files? & scripts? & add-on? & bootloader? & kdump? & backup? & deploy_image? & general? & pxe? & partitioning? & report? & software? & ssh_import? & upgrade? & any_content?
+}
+
+start = profile

@@ -1,0 +1,135 @@
+#
+# this rnc describes the autoyast rules syntax.
+# The rules file is always named "rules.xml" in
+# the directory "rules/".
+# The rules are not part of the autoyast profile.
+# It's a seperate file.
+#
+
+default namespace = "http://www.suse.com/1.0/yast2ns"
+namespace a = "http://relaxng.org/ns/compatibility/annotations/1.0"
+namespace config = "http://www.suse.com/1.0/configns"
+
+include "common.rnc"
+
+autoinstall =
+element autoinstall {
+    MAP,
+    rules
+}
+
+rules =
+element rules {
+    LIST,
+    rule*
+}
+
+rule =
+element rule {
+    MAP,
+    (
+      (
+        y2_match_to+ | (y2_match_to* & dialog)
+      ) &
+      result &
+      operator?
+    )
+}
+
+y2_match_to =
+    arch
+    | board
+    | board_vendor
+    | custom1
+    | custom2
+    | custom3
+    | custom4
+    | custom5
+    | disksize
+    | domain
+    | hostname
+    | hostaddress
+    | hostid
+    | efi
+    | karch
+    | linux
+    | installed_product
+    | installed_product_version
+    | mac
+    | memsize
+    | network
+    | others
+    | product
+    | product_vendor
+    | totaldisk
+    | xserver
+
+arch                      = element arch                      { MAP, (match_text & match_type?) }
+board                     = element board                     { MAP, (match_text & match_type?) }
+board_vendor              = element board_vendor              { MAP, (match_text & match_type?) }
+custom1                   = element custom1                   { MAP, (match_text & match_type? & script) }
+custom2                   = element custom2                   { MAP, (match_text & match_type? & script) }
+custom3                   = element custom3                   { MAP, (match_text & match_type? & script) }
+custom4                   = element custom4                   { MAP, (match_text & match_type? & script) }
+custom5                   = element custom5                   { MAP, (match_text & match_type? & script) }
+disksize                  = element disksize                  { MAP, (match_text & match_type?) }
+domain                    = element domain                    { MAP, (match_text & match_type?) }
+efi                       = element efi                       { MAP, (match_text & match_type?) }
+hostname                  = element hostname                  { MAP, (match_text & match_type?) }
+hostaddress               = element hostaddress               { MAP, (match_text & match_type?) }
+hostid                    = element hostid                    { MAP, (match_text & match_type?) }
+installed_product         = element installed_product         { MAP, (match_text & match_type?) }
+installed_product_version = element installed_product_version { MAP, (match_text & match_type?) }
+karch                     = element karch                     { MAP, (match_text & match_type?) }
+linux                     = element linux                     { MAP, (match_text & match_type?) }
+mac                       = element mac                       { MAP, (match_text & match_type?) }
+memsize                   = element memsize                   { MAP, (match_text & match_type?) }
+network                   = element network                   { MAP, (match_text & match_type?) }
+others                    = element others                    { MAP, (match_text & match_type?) }
+product                   = element product                   { MAP, (match_text & match_type?) }
+product_vendor            = element product_vendor            { MAP, (match_text & match_type?) }
+totaldisk                 = element totaldisk                 { MAP, (match_text & match_type?) }
+xserver                   = element xserver                   { MAP, (match_text & match_type?) }
+
+match_type =
+element match_type { STRING_ATTR, ("greater" | "exact" | "lower" | "range" | "regex") }
+match_text =
+element match { STRING }
+script =
+element script { STRING }
+
+result =
+element result {
+    MAP,
+    (
+      profile &
+      element dont_merge {
+          LIST,
+          element element { STRING }*
+      }? &
+      continue?
+    )
+}
+
+dialog =
+element dialog {
+    element dialog_nr { INTEGER }? &
+    element element { INTEGER }? &
+    element title { STRING }? &
+    element question { STRING }? &
+    element timeout { INTEGER }? &
+    element conflicts {
+        LIST,
+        element (element | listentry) { INTEGER }*
+    }?
+}
+
+profile =
+element profile { STRING }
+continue =
+element continue { BOOLEAN }
+
+operator =
+element operator { STRING_ATTR, ("or" | "and") }
+
+start = autoinstall

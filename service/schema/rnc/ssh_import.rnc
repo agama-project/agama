@@ -1,0 +1,14 @@
+default namespace = "http://www.suse.com/1.0/yast2ns"
+namespace config = "http://www.suse.com/1.0/configns"
+namespace a = "http://relaxng.org/ns/compatibility/annotations/1.0"
+
+include "common.rnc"
+
+ssh_import = element ssh_import {
+    MAP,
+    (
+      element import { BOOLEAN }? &
+      element copy_config { BOOLEAN }? &
+      element device { STRING }?
+    )
+}

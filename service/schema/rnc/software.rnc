@@ -1,0 +1,65 @@
+default namespace = "http://www.suse.com/1.0/yast2ns"
+namespace config = "http://www.suse.com/1.0/configns"
+namespace a = "http://relaxng.org/ns/compatibility/annotations/1.0"
+
+include "common.rnc"
+
+software =
+  element software {
+    MAP,
+    (
+      kernel? &
+      packages? &
+      post-packages? &
+      post-patterns? &
+      remove-packages? &
+      patterns? &
+      remove-patterns? &
+      products? &
+      remove-products? &
+      element do_online_update { BOOLEAN }? &
+      element install_recommended { BOOLEAN }? &
+      element instsource {STRING}?
+    )
+  }
+patterns =
+  element patterns {
+    LIST,
+    element (pattern | listentry) { STRING }+
+  }
+kernel = element kernel { STRING }
+post-packages =
+  element post-packages {
+    LIST,
+    element (package | listentry) {STRING}+
+  }
+post-patterns =
+  element post-patterns {
+    LIST,
+    element (pattern | listentry) {STRING}+
+  }
+packages =
+  element packages {
+    LIST,
+    element (package | listentry) {STRING}+
+  }
+remove-packages =
+  element remove-packages {
+    LIST,
+    element (package | listentry) {STRING}+
+  }
+remove-patterns =
+  element remove-patterns {
+    LIST,
+    element (pattern | listentry) {STRING}+
+  }
+products =
+  element products {
+    LIST,
+    element (product | listentry) {STRING}+
+  }
+remove-products =
+  element remove-products {
+    LIST,
+    element (product | listentry) {STRING}+
+  }

@@ -1,0 +1,20 @@
+# <!ELEMENT default (#PCDATA)>
+
+default namespace = "http://www.suse.com/1.0/yast2ns"
+namespace a = "http://relaxng.org/ns/compatibility/annotations/1.0"
+namespace config = "http://www.suse.com/1.0/configns"
+
+include "common.rnc"
+
+report = element report { MAP, (errors? & messages? & warnings? & yesno_messages?) }
+errors = element errors { MAP, (log? & show? & timeout?) }
+yesno_messages = element yesno_messages { MAP, (log? & show? & timeout?) }
+messages = element messages { MAP, (log? & show? & timeout?) }
+warnings = element warnings { MAP, (log? & show? & timeout?) }
+# <!ELEMENT location (#PCDATA)>
+log =
+  element log { BOOLEAN }
+show =
+  element show { BOOLEAN }
+timeout =
+  element timeout { INTEGER }
