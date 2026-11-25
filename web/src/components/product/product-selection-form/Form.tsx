@@ -166,10 +166,7 @@ const ProductFormLabel = ({ products, currentProduct }: ProductFormLabelProps) =
   }
 
   if (!currentProduct) {
-    return sprintf(
-      n_("Choose a product", "Choose from %d available products", availableProductCount),
-      availableProductCount,
-    );
+    return sprintf(_("Choose from %d available products"), availableProductCount);
   }
 
   if (!currentHasModes) {
