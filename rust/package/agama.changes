@@ -1,4 +1,14 @@
 -------------------------------------------------------------------
+Wed Nov 25 02:40:30 UTC 2026 - Balsa Asanovic <balsaasanovic95@gmail.com>
+
+- Read the password of 802.1X connections (e.g., WPA2-Enterprise)
+  from NetworkManager, so it is not lost when Agama writes the
+  connection again (gh#agama-project/agama#4290).
+- Do not set the "phase1-peaplabel" 802.1X property when it is
+  disabled, as NetworkManager refuses to activate the connection
+  with a "0" value (gh#agama-project/agama#4290).
+
+-------------------------------------------------------------------
 Mon Nov 23 12:00:00 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
 
 - Start agama-web-server after NetworkManager instead of waiting

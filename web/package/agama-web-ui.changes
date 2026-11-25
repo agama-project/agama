@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Wed Nov 25 02:40:30 UTC 2026 - Balsa Asanovic <balsaasanovic95@gmail.com>
+
+- Allow connecting to WPA2-Enterprise Wi-Fi networks using PEAP or
+  TTLS with a user name and a password (gh#agama-project/agama#4290).
+- Show the label of the Wi-Fi security in the connection details
+  instead of its raw value (e.g., "wpa-psk").
+
+-------------------------------------------------------------------
 Mon Nov 16 08:50:23 UTC 2026 - Michal Filka <mfilka@suse.com>
 
 - bsc#1280086 (CVE-2026-87776)
