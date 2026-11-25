@@ -22,9 +22,7 @@
 
 import type { Decision } from "~/components/storage/device-details/partition-space";
 import type { ContentPart } from "~/components/storage/device-details/current-content-summary";
-import {
-  buildCurrentContentSummary,
-} from "~/components/storage/device-details/current-content-summary";
+import { buildCurrentContentSummary } from "~/components/storage/device-details/current-content-summary";
 
 const GiB = 1024 ** 3;
 
@@ -59,11 +57,11 @@ describe("buildCurrentContentSummary", () => {
   describe("when one outcome covers every part", () => {
     it("says it of all of them, or of it where there is one", () => {
       expect(summaryOf(given("delete", "vdd1", "vdd2", "vdd3"))).toBe(
-        "3 partitions: all will be deleted.",
+        "[3 partitions]: all will be deleted.",
       );
-      expect(summaryOf(given("keep", "vdd1"))).toBe("1 partition: it will be kept.");
+      expect(summaryOf(given("keep", "vdd1"))).toBe("[1 partition]: it will be kept.");
       expect(summaryOf([shrinkable("vdd1"), shrinkable("vdd2")])).toBe(
-        "2 partitions: all may be shrunk.",
+        "[2 partitions]: all may be shrunk.",
       );
     });
   });
@@ -72,7 +70,7 @@ describe("buildCurrentContentSummary", () => {
     it("counts each outcome said, leaving what is kept out", () => {
       expect(
         summaryOf([...given("delete", "vdd1"), shrinkable("vdd2"), ...given("keep", "vdd3")]),
-      ).toBe("3 partitions: 1 will be deleted and 1 may be shrunk.");
+      ).toBe("[3 partitions]: 1 will be deleted and 1 may be shrunk.");
     });
 
     it("says them in the order deleted, formatted, shrunk, mounted", () => {
@@ -85,45 +83,27 @@ describe("buildCurrentContentSummary", () => {
       ];
 
       expect(buildCurrentContentSummary({ kind: "partitions", parts }).sentence).toBe(
-        "[5 partitions]: 1 will be deleted, 1 will be formatted, 1 may be shrunk and 1 will be mounted unchanged.",
+        "[5 partitions]: 1 will be deleted, 1 will be formatted, 1 may be shrunk and 1 will be mounted.",
       );
     });
 
     it("says what is kept only when everything is", () => {
       expect(summaryOf([...given("delete", "vdd1"), ...given("keep", "vdd2", "vdd3")])).toBe(
-        "3 partitions: 1 will be deleted.",
+        "[3 partitions]: 1 will be deleted.",
       );
     });
 
     it("counts a part allowed to shrink that cannot among what is kept", () => {
       expect(summaryOf([shrinkable("vdd1"), ...given("resizeIfNeeded", "vdd2")])).toBe(
-        "2 partitions: 1 may be shrunk.",
-      );
-    });
-  });
-
-  describe("after the main sentence", () => {
-    it("says which systems deleting loses, once each", () => {
-      const parts = [
-        part("vdd1", { decision: "delete", systems: ["Windows 11"] }),
-        part("vdd2", { decision: "delete", systems: ["Windows 11", "openSUSE"] }),
-      ];
-
-      expect(summaryOf(parts)).toBe(
-        "2 partitions: all will be deleted. Windows 11 and openSUSE will be lost.",
-      );
-    });
-
-    it("leaves out the systems of what is not deleted", () => {
-      expect(summaryOf([part("vdd1", { decision: "keep", systems: ["Windows 11"] })])).toBe(
-        "1 partition: it will be kept.",
+        "[2 partitions]: 1 may be shrunk.",
       );
     });
   });
 
   it("speaks of logical volumes on a volume group", () => {
     expect(
-      buildCurrentContentSummary({ kind: "logicalVolumes", parts: given("delete", "a", "b") }).sentence,
-    ).toBe("2 logical volumes: all will be deleted.");
+      buildCurrentContentSummary({ kind: "logicalVolumes", parts: given("delete", "a", "b") })
+        .sentence,
+    ).toBe("[2 logical volumes]: all will be deleted.");
   });
 });

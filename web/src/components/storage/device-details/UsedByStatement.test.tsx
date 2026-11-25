@@ -57,7 +57,7 @@ describe("UsedByStatement", () => {
     mockConfig.mockReturnValue(config(["/dev/vdd"]));
     installerRender(<UsedByStatement entry={entry} />);
 
-    screen.getByText(/Partitions needed as physical volumes for/);
+    screen.getByText(/New partitions may be added as LVM physical volumes for/);
     screen.getByRole("link", { name: "system" });
   });
 
