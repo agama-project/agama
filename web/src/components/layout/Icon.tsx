@@ -44,6 +44,7 @@ import Close from "@icons/close.svg?component";
 import Compress from "@icons/compress.svg?component";
 import CreateNewFolder from "@icons/create_new_folder.svg?component";
 import Delete from "@icons/delete.svg?component";
+import DeleteSweep from "@icons/delete_sweep.svg?component";
 import DeployedCodeAlert from "@icons/deployed_code_alert.svg?component";
 import DeployedCodeUpdate from "@icons/deployed_code_update.svg?component";
 import DeviceHub from "@icons/device_hub.svg?component";
@@ -128,6 +129,7 @@ const icons = {
   block: Block,
   change_circle: ChangeCircle,
   create_new_folder: CreateNewFolder,
+  delete_sweep: DeleteSweep,
   device_hub: DeviceHub,
   check_circle: CheckCircle,
   do_not_disturb_on: DoNotDisturbOn,

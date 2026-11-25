@@ -23,6 +23,7 @@
 import React from "react";
 import { sprintf } from "sprintf-js";
 import { MenuButtonItem } from "~/components/core/MenuButton";
+import Icon from "~/components/layout/Icon";
 import { deviceSize, isExistingBootPartition } from "~/components/storage/utils";
 import { useConfigModel, useSetSpacePolicy } from "~/hooks/model/storage/config-model";
 import configModel from "~/model/storage/config-model";
@@ -86,6 +87,12 @@ function decisionLabel(decision: Decision): TranslatedString {
       return _("Delete");
   }
 }
+
+const DECISION_ICONS = {
+  keep: "lock",
+  resizeIfNeeded: "compress",
+  delete: "delete_sweep",
+} as const;
 
 function meaning(decision: Decision, partition: System.Device): TranslatedString {
   switch (decision) {
@@ -273,6 +280,7 @@ function usePartitionSpaceItems({
     return (
       <MenuButtonItem
         key={decision}
+        icon={<Icon size="md" name={DECISION_ICONS[decision]} />}
         isSelected={decision === current}
         isDanger={decision === "delete"}
         isAriaDisabled={refused}

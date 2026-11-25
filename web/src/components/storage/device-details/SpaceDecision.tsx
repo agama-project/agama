@@ -26,8 +26,11 @@ import RowMenuToggle from "~/components/core/RowMenuToggle";
 import { useSetSpacePolicy } from "~/hooks/model/storage/config-model";
 import { _, TranslatedString } from "~/i18n";
 import type { ConfigModel, DeviceCollection } from "~/model/storage/config-model";
+import Icon from "~/components/layout/Icon";
 
 const POLICIES: ConfigModel.SpacePolicy[] = ["delete", "resize", "keep"];
+
+const ICONS = { delete: "delete_sweep", resize: "compress", keep: "lock" } as const;
 
 /** The title of each item. */
 function label(
@@ -138,6 +141,7 @@ export default function SpaceDecision({
       items={POLICIES.map((value) => (
         <MenuButtonItem
           key={value}
+          icon={<Icon size="md" name={ICONS[value]} />}
           isDanger={value === "delete"}
           description={meaning(value, isVolumeGroup)}
           onClick={() => choose(value)}
