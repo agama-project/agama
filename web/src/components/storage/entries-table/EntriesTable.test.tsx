@@ -39,6 +39,7 @@ jest.mock("~/hooks/model/storage/config-model", () => ({
 jest.mock("~/hooks/model/system/storage", () => ({
   ...jest.requireActual("~/hooks/model/system/storage"),
   useDevice: (name: string) => mockSystemDevice(name),
+  useFlattenDevices: () => [],
 }));
 
 /* jsdom lays nothing out, so whether the table overflows its box is said here. */
@@ -195,7 +196,20 @@ describe("EntriesTable", () => {
 
     it("says the current data is kept when nothing on it changes", () => {
       mockConfig.mockReturnValue(
-        config({ drives: [{ name: "/dev/sda", partitions: [{ name: "/dev/sda1" }] }] }),
+        config({
+          drives: [
+            {
+              name: "/dev/sda",
+              partitions: [
+                {
+                  name: "/dev/sda1",
+                  mountPath: "/data",
+                  filesystem: { reuse: true, default: false },
+                },
+              ],
+            },
+          ],
+        }),
       );
       mockSystemDevice.mockImplementation((name) =>
         name === "/dev/sda"
