@@ -34,16 +34,22 @@ static PARAM_FILTER_REGEX: LazyLock<Regex> = LazyLock::new(|| {
 });
 
 static URL_PASSWORD_REGEX: LazyLock<Regex> = LazyLock::new(|| {
-    Regex::new(r#"(://[^:/\s@]+:)[^@/\s]+(@)"#).expect("valid regex for filtering URL passwords")
+    Regex::new(r#"(://[^:/\s@]+:)[^/\s]*(@)"#).expect("valid regex for filtering URL passwords")
 });
 
-/// Filters sensitive parameters (such as `live.password`, `inst.mcp.token`, boot passwords)
-/// and credentials in URLs from log output, replacing password and secret values with `<FILTERED>`
-/// to prevent credential leakage.
+static QUERY_CRED_REGEX: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r#"(?i)([?&](?:password|passwd|token)=)[^&\s"'`\r\n]*"#)
+        .expect("valid regex for filtering query credentials")
+});
+
+/// Filters sensitive parameters (such as `live.password`, `inst.mcp.token`, boot passwords),
+/// credentials in query strings, and credentials in URLs from log output, replacing password and
+/// secret values with `<FILTERED>` to prevent credential leakage.
 pub(crate) fn filter_logs(logs: &str) -> String {
     let sanitized_params = PARAM_FILTER_REGEX.replace_all(logs, "${1}<FILTERED>");
-    URL_PASSWORD_REGEX
-        .replace_all(&sanitized_params, "${1}<FILTERED>${2}")
+    let sanitized_urls = URL_PASSWORD_REGEX.replace_all(&sanitized_params, "${1}<FILTERED>${2}");
+    QUERY_CRED_REGEX
+        .replace_all(&sanitized_urls, "${1}<FILTERED>")
         .into_owned()
 }
 
@@ -209,7 +215,27 @@ mod tests {
         let expected = "inst.auto=http://admin:<FILTERED>@server.com/profile.json proxy=http://proxyuser:<FILTERED>@proxy:8080";
         assert_eq!(filter_logs(input), expected);
 
+        // Passwords containing '@'
+        let input_at = "http://joe:p@ss@server.com/path";
+        let expected_at = "http://joe:<FILTERED>@server.com/path";
+        assert_eq!(filter_logs(input_at), expected_at);
+
         let input_no_creds = "inst.auto=http://server.com:8080/profile.json";
         assert_eq!(filter_logs(input_no_creds), input_no_creds);
+    }
+
+    #[test]
+    fn test_filter_logs_query_credentials() {
+        let input_smb = "smb://server/share?username=joe&password=s3cret";
+        let expected_smb = "smb://server/share?username=joe&password=<FILTERED>";
+        assert_eq!(filter_logs(input_smb), expected_smb);
+
+        let input_token = "https://server/repo?token=s3cret";
+        let expected_token = "https://server/repo?token=<FILTERED>";
+        assert_eq!(filter_logs(input_token), expected_token);
+
+        let input_passwd = "smb://server/share?foo=1&passwd=s3cret&bar=2";
+        let expected_passwd = "smb://server/share?foo=1&passwd=<FILTERED>&bar=2";
+        assert_eq!(filter_logs(input_passwd), expected_passwd);
     }
 }

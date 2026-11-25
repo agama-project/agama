@@ -116,7 +116,13 @@ Kernel boot arguments and systemd services log the kernel command line containin
 
 ### Solution: Unconditional Log Parameter Filtering
 
-`get_logs` unconditionally filters sensitive boot parameters (such as `live.password`, `live.password_hash`, `rd.live.password`, `inst.mcp.token`, `inst.password`, `vncpassword`, `sshpassword`, `rd.luks.key`, `regcode`) and basic auth passwords embedded in URLs, replacing them with `<FILTERED>` across all operating modes (both `config` and `full`). AI agents never need access to host credentials or remote passwords.
+`get_logs` unconditionally filters sensitive parameters across all operating modes (both `config` and `full`), replacing their values with `<FILTERED>`. This covers:
+- Agama boot parameters (`live.password`, `live.password_hash`, `inst.mcp.token`).
+- Common linuxrc and dracut boot credentials (`inst.password`, `vncpassword`, `sshpassword`, `rd.live.password`, `rd.luks.key`, `regcode`).
+- Basic authentication credentials in URLs (e.g. `http://user:pass@host`), including passwords containing `@`.
+- Credentials in query strings (e.g. `smb://server/share?username=joe&password=secret`, `?token=secret`).
+
+AI agents never need access to host credentials or remote passwords.
 
 ### Threat: Boundary Bypass via Agent Introspection
 
