@@ -40,6 +40,17 @@
           ],
           "description": "IEEE 802.1X settings"
         },
+        "ieee8021x": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/IEEE8021XSettings"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "IEEE 802.1X settings"
+        },
         "interface": {
           "description": "Network interface associated with the connection",
           "type": [
@@ -135,6 +146,17 @@
           ],
           "description": "IEEE 802.1X settings"
         },
+        "ieee8021x": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/IEEE8021XSettings"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "IEEE 802.1X settings"
+        },
         "interface": {
           "description": "Network interface associated with the connection",
           "type": [
@@ -216,6 +238,17 @@
           ]
         },
         "ieee-8021x": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/IEEE8021XSettings"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "IEEE 802.1X settings"
+        },
+        "ieee8021x": {
           "anyOf": [
             {
               "$ref": "#/$defs/IEEE8021XSettings"
@@ -389,6 +422,17 @@
           ],
           "description": "IEEE 802.1X settings"
         },
+        "ieee8021x": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/IEEE8021XSettings"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "IEEE 802.1X settings"
+        },
         "interface": {
           "description": "Network interface associated with the connection",
           "type": [
@@ -474,6 +518,17 @@
           ]
         },
         "ieee-8021x": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/IEEE8021XSettings"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "IEEE 802.1X settings"
+        },
+        "ieee8021x": {
           "anyOf": [
             {
               "$ref": "#/$defs/IEEE8021XSettings"
@@ -573,6 +628,17 @@
           ]
         },
         "ieee-8021x": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/IEEE8021XSettings"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "IEEE 802.1X settings"
+        },
+        "ieee8021x": {
           "anyOf": [
             {
               "$ref": "#/$defs/IEEE8021XSettings"
@@ -689,6 +755,17 @@
           ],
           "description": "IEEE 802.1X settings"
         },
+        "ieee8021x": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/IEEE8021XSettings"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "IEEE 802.1X settings"
+        },
         "interface": {
           "description": "Network interface associated with the connection",
           "type": [
@@ -781,6 +858,17 @@
           ]
         },
         "ieee-8021x": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/IEEE8021XSettings"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "IEEE 802.1X settings"
+        },
+        "ieee8021x": {
           "anyOf": [
             {
               "$ref": "#/$defs/IEEE8021XSettings"
@@ -1010,6 +1098,17 @@
           ],
           "description": "IEEE 802.1X settings"
         },
+        "ieee8021x": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/IEEE8021XSettings"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "IEEE 802.1X settings"
+        },
         "interface": {
           "description": "Network interface associated with the connection",
           "type": [
@@ -1106,6 +1205,17 @@
           ]
         },
         "ieee-8021x": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/IEEE8021XSettings"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "IEEE 802.1X settings"
+        },
+        "ieee8021x": {
           "anyOf": [
             {
               "$ref": "#/$defs/IEEE8021XSettings"
@@ -1500,6 +1610,17 @@
           ],
           "description": "IEEE 802.1X settings"
         },
+        "ieee8021x": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/IEEE8021XSettings"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "IEEE 802.1X settings"
+        },
         "ignoreAutoDns": {
           "description": "Specifies whether to ignore automatically assigned DNS settings",
           "type": [
@@ -1784,6 +1905,7 @@
           "type": "boolean"
         },
         "mode": {
+          "default": "infrastructure",
           "description": "Wireless network mode",
           "enum": [
             "infrastructure",
@@ -1817,6 +1939,7 @@
           "type": "integer"
         },
         "security": {
+          "default": "none",
           "description": "Security method/key management",
           "enum": [
             "none",
@@ -1846,9 +1969,7 @@
         }
       },
       "required": [
-        "security",
-        "ssid",
-        "mode"
+        "ssid"
       ],
       "type": "object"
     }
