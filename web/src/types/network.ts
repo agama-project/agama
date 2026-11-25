@@ -156,6 +156,7 @@ enum SecurityProtocols {
   WEP = "WEP",
   WPA = "WPA1",
   RSN = "WPA2",
+  PSK = "PSK",
   _8021X = "802.1X",
 }
 

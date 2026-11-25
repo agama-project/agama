@@ -53,7 +53,7 @@ import { useAnnounce } from "~/context/announcer";
 const securityOptions = ["none", "wpa-psk", "wpa-eap"];
 
 const securityFrom = (supported: string[]) => {
-  if (supported.includes("802.1X")) return "wpa-eap";
+  if (supported.includes("802.1X") && !supported.includes("PSK")) return "wpa-eap";
   if (supported.includes("WPA2")) return "wpa-psk";
   if (supported.includes("WPA1")) return "wpa-psk";
   return "none";

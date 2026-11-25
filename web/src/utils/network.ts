@@ -413,6 +413,9 @@ const securityFromFlags = (
   if (rsnFlags > 0) {
     security.push(SecurityProtocols.RSN);
   }
+  if (wpaFlags & ApSecurityFlags.KEY_MGMT_PSK || rsnFlags & ApSecurityFlags.KEY_MGMT_PSK) {
+    security.push(SecurityProtocols.PSK);
+  }
   if (wpaFlags & ApSecurityFlags.KEY_MGMT_8021_X || rsnFlags & ApSecurityFlags.KEY_MGMT_8021_X) {
     security.push(SecurityProtocols._8021X);
   }

@@ -239,7 +239,16 @@ describe("deviceLinkRank", () => {
 describe("securityFromFlags", () => {
   it("returns an array with the supported security protocols", () => {
     expect(securityFromFlags(0, 0, 0)).toEqual([]);
-    expect(securityFromFlags(3, 392, 0)).toEqual([SecurityProtocols.WPA]);
+    expect(securityFromFlags(3, 392, 0)).toEqual([SecurityProtocols.WPA, SecurityProtocols.PSK]);
+    expect(securityFromFlags(1, 0, 0x288)).toEqual([
+      SecurityProtocols.RSN,
+      SecurityProtocols._8021X,
+    ]);
+    expect(securityFromFlags(1, 0, 0x388)).toEqual([
+      SecurityProtocols.RSN,
+      SecurityProtocols.PSK,
+      SecurityProtocols._8021X,
+    ]);
   });
 });
 

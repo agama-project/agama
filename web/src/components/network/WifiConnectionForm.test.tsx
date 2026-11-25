@@ -48,7 +48,7 @@ const visibleNetwork = {
   deviceName: "wlan0",
   status: WifiNetworkStatus.NOT_CONFIGURED,
   hwAddress: "00:EB:D8:17:6B:56",
-  security: ["WPA2"],
+  security: ["WPA2", "PSK"],
   strength: 85,
 };
 
@@ -64,11 +64,22 @@ const enterpriseNetwork = {
   security: ["WPA2", "802.1X"],
 };
 
+const mixedNetwork = {
+  ...visibleNetwork,
+  ssid: "Mixed Network",
+  security: ["WPA2", "PSK", "802.1X"],
+};
+
 describe("WifiConnectionForm", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockUpdateConnection.mockResolvedValue(undefined);
-    mockUseWifiNetworks.mockReturnValue([visibleNetwork, publicNetwork, enterpriseNetwork]);
+    mockUseWifiNetworks.mockReturnValue([
+      visibleNetwork,
+      publicNetwork,
+      enterpriseNetwork,
+      mixedNetwork,
+    ]);
   });
 
   it("renders an empty state when no networks are found", () => {
@@ -116,6 +127,12 @@ describe("WifiConnectionForm", () => {
       await waitFor(() => {
         expect(screen.getByRole("combobox", { name: "Security" })).toHaveValue("wpa-psk");
       });
+    });
+
+    it("pre-selects WPA & WPA2 Personal when the network supports Enterprise too", async () => {
+      const { user } = installerRender(<WifiConnectionForm />);
+      await user.selectOptions(screen.getByRole("combobox", { name: "Network" }), "Mixed Network");
+      expect(screen.getByRole("combobox", { name: "Security" })).toHaveValue("wpa-psk");
     });
 
     it("announces the warning of Enterprise once the security selector is left", async () => {
