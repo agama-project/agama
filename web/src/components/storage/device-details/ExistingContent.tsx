@@ -33,6 +33,11 @@ export type ExistingContentProps = {
   isDeleted?: boolean;
 };
 
+/**
+ * A paragraph saying what is on a device today (a file system, a part of a
+ * volume group or of a RAID, or nothing) and whether the installation deletes
+ * it.
+ */
 export default function ExistingContent({ entry, isDeleted = false }: ExistingContentProps) {
   const systemDevices = useSystemDevices();
   const device = entry.device;
@@ -113,7 +118,5 @@ export default function ExistingContent({ entry, isDeleted = false }: ExistingCo
     );
   }
 
-  // TRANSLATORS: said of a device where nothing was found: no partitions, no
-  // file system, no volume group or RAID.
   return <p>{_("No content detected.")}</p>;
 }

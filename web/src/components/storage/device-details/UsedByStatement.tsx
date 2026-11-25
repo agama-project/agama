@@ -35,15 +35,9 @@ export type UsedByStatementProps = {
 };
 
 /**
- * A paragraph naming the other entries of the plan built on this device, and
- * the way to each.
- *
- * A disk given whole to a volume group holds nothing of its own, so where its
- * plan is decided is the one thing a reader opening it most needs told. A volume
- * group is the top of its own stack and has nobody above it, so it says nothing.
- *
- * It decides for itself whether it has anything to say, so a view can list it
- * among its statements without working that out first.
+ * A paragraph naming the LVM volume groups that may take room from this disk,
+ * each a link to its panel. Renders nothing for a volume group, or for a disk
+ * no volume group uses.
  */
 export default function UsedByStatement({ entry }: UsedByStatementProps): React.ReactNode {
   const config = useConfigModel();
