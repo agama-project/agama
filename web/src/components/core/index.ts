@@ -21,7 +21,6 @@
  */
 
 export { default as ChangeProductOption } from "./ChangeProductOption";
-export { default as FormLabel } from "./FormLabel";
 export { default as FormValidationError } from "./FormValidationError";
 export { default as EmailInput } from "./EmailInput";
 export { default as InstallationFinished } from "./InstallationFinished";
@@ -41,7 +40,6 @@ export { default as Link } from "./Link";
 export { default as SelectWrapper } from "./SelectWrapper";
 export { default as NestedContent } from "./NestedContent";
 export { default as SubtleContent } from "./SubtleContent";
-export { default as MenuHeader } from "./MenuHeader";
 export { default as SkipTo } from "./SkipTo";
 export { default as Annotation } from "./Annotation";
 export { default as SwitchEnhanced } from "./SwitchEnhanced";
