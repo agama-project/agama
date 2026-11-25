@@ -40,9 +40,8 @@ export type PlannedActionsProps = {
 
 /**
  * The line of actions on what the user planned for a device: adding a
- * partition or logical volume and, for a disk with something planned, moving
- * the plan to another device. A divider above it marks where reading ends and
- * acting starts.
+ * partition or logical volume, plus any extra actions given. A divider above
+ * it marks where reading ends and acting starts.
  */
 export default function PlannedActions({ entry, subject, extraActions }: PlannedActionsProps) {
   const isVolumeGroup = entry.isVolumeGroup;
@@ -63,7 +62,6 @@ export default function PlannedActions({ entry, subject, extraActions }: Planned
       className={spacingStyles.mtSm}
     >
       <Divider />
-      {/* Moving acts on the whole device, so it sits apart, at the far end. */}
       <Flex
         gap={{ default: "gapLg" }}
         flexWrap={{ default: "wrap" }}
