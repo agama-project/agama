@@ -86,7 +86,7 @@ impl MatchSettings {
 }
 
 /// Wireless configuration
-#[derive(Clone, Debug, Default, Serialize, Deserialize, JsonSchema, PartialEq)]
+#[derive(Clone, Debug, Serialize, Deserialize, JsonSchema, PartialEq)]
 #[serde(rename_all = "camelCase")]
 #[schemars(deny_unknown_fields)]
 pub struct WirelessSettings {
@@ -94,6 +94,7 @@ pub struct WirelessSettings {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub password: Option<String>,
     /// Security method/key management
+    #[serde(default = "default_wireless_security")]
     #[schemars(extend("enum" = [
         "none", "owe", "ieee8021x", "wpa-psk", "sae", "wpa-eap", "wpa-eap-suite-b-192"
     ]))]
@@ -101,6 +102,7 @@ pub struct WirelessSettings {
     /// SSID of the wireless network
     pub ssid: String,
     /// Wireless network mode
+    #[serde(default = "default_wireless_mode")]
     #[schemars(extend("enum" = ["infrastructure", "adhoc", "mesh", "ap"]))]
     pub mode: String,
     /// Frequency band of the wireless network
@@ -131,6 +133,33 @@ pub struct WirelessSettings {
     /// Indicates whether Protected Management Frames must be enabled for the connection
     #[serde(skip_serializing_if = "is_zero", default)]
     pub pmf: i32,
+}
+
+impl Default for WirelessSettings {
+    fn default() -> Self {
+        Self {
+            password: None,
+            security: default_wireless_security(),
+            ssid: String::new(),
+            mode: default_wireless_mode(),
+            band: None,
+            channel: 0,
+            bssid: None,
+            hidden: false,
+            group_algorithms: vec![],
+            pairwise_algorithms: vec![],
+            wpa_protocol_versions: vec![],
+            pmf: 0,
+        }
+    }
+}
+
+fn default_wireless_security() -> String {
+    "none".to_string()
+}
+
+fn default_wireless_mode() -> String {
+    "infrastructure".to_string()
 }
 
 /// Bonding settings except the nested ports, which the configuration and the system information
@@ -596,4 +625,23 @@ pub(super) fn add_dns_searchlist_alias(schema: &mut schemars::Schema) {
 
 fn is_zero<T: PartialEq + From<u16>>(u: &T) -> bool {
     *u == T::from(0)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::WirelessSettings;
+
+    #[test]
+    fn test_wireless_settings_defaults() {
+        let settings: WirelessSettings = serde_json::from_str(r#"{ "ssid": "MyWiFi" }"#).unwrap();
+        assert_eq!(settings.mode, "infrastructure");
+        assert_eq!(settings.security, "none");
+        assert_eq!(
+            settings,
+            WirelessSettings {
+                ssid: "MyWiFi".to_string(),
+                ..Default::default()
+            }
+        );
+    }
 }

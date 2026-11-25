@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Wed Nov 25 13:43:27 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Make the wireless "mode" and "security" settings of a network
+  connection optional again in the profile, defaulting to
+  "infrastructure" and "none" as documented. The generated network
+  schema had made them required, and a profile without them failed
+  to load.
+
+-------------------------------------------------------------------
 Wed Nov 18 16:25:30 UTC 2026 - Martin Pluskal <martin@pluskal.org>
 
 - Report the checksums correctly when asking the user to accept a file

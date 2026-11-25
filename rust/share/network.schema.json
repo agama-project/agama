@@ -1784,6 +1784,7 @@
           "type": "boolean"
         },
         "mode": {
+          "default": "infrastructure",
           "description": "Wireless network mode",
           "enum": [
             "infrastructure",
@@ -1817,6 +1818,7 @@
           "type": "integer"
         },
         "security": {
+          "default": "none",
           "description": "Security method/key management",
           "enum": [
             "none",
@@ -1846,9 +1848,7 @@
         }
       },
       "required": [
-        "security",
-        "ssid",
-        "mode"
+        "ssid"
       ],
       "type": "object"
     }
