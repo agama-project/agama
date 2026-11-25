@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Nov 24 12:50:01 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Disable self-update for SLE 16.1 QU1 and later (bsc#1291592).
+
+-------------------------------------------------------------------
 Thu Nov  5 12:11:29 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
 
 - Use kernel-nvidia64kb package (bsc#1282794)
