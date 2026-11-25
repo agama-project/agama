@@ -54,12 +54,15 @@ export default function PartitionableMountContent({ entry, subject }: DeviceDeta
       : // TRANSLATORS: %s is an escaped mount path like "/home"
         sprintf(_("The existing file system will be mounted at %s."), path);
   } else {
-    value = sprintf(
-      // TRANSLATORS: %1$s is a file system type ext4, %2$s is an escaped mount path like "/home"
-      _("The device will be formatted as %1$s and mounted at %2$s."),
-      label,
-      path,
-    );
+    value = label
+      ? sprintf(
+          // TRANSLATORS: %1$s is a file system type ext4, %2$s is an escaped mount path like "/home"
+          _("The device will be formatted as %1$s and mounted at %2$s."),
+          label,
+          path,
+        )
+      : // TRANSLATORS: %s is an escaped mount path like "/home"
+        sprintf(_("The device will be formatted and mounted at %s."), path);
   }
 
   const editPath = generateEncodedPath(PATHS.formatDevice, {

@@ -63,6 +63,17 @@ describe("PartitionableMountContent", () => {
     screen.getByText(/The device will be formatted as Ext4 and mounted at .*\/home/);
   });
 
+  it("leaves the type out when the installer chooses it", () => {
+    installerRender(
+      <PartitionableMountContent
+        entry={entry({ mountPath: "/home", filesystem: { default: true } })}
+        subject={subject}
+      />,
+    );
+
+    screen.getByText(/The device will be formatted and mounted at .*\/home/);
+  });
+
   it("names the file system there now when it is used as it is", () => {
     installerRender(
       <PartitionableMountContent
