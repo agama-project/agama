@@ -19,13 +19,13 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require_relative "../../../test_helper"
+require_relative "../../test_helper"
 require "agama/storage/bootloader_config"
-require "agama/storage/config_checkers/bootloader"
+require "agama/storage/bootloader_config_checker"
 require "agama/storage/issue_classes"
 require "y2storage/bootloader_type"
 
-describe Agama::Storage::ConfigCheckers::Bootloader do
+describe Agama::Storage::BootloaderConfigChecker do
   subject { described_class.new(bootloader_config) }
 
   let(:bootloader_config) do
