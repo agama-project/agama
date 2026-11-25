@@ -189,6 +189,30 @@
   white-space: normal;
 }
 
+// An item with an icon lines its description up with the label, not with the
+// icon, which PatternFly leaves outside the row holding both. A subgrid keeps
+// the icon in a column of its own, whatever size the theme gives it.
+.pf-v6-c-menu__item:has(> .pf-v6-c-menu__item-main > .pf-v6-c-menu__item-icon) {
+  --pf-v6-hidden-visible--visible--Display: grid;
+  grid-template-columns: auto 1fr auto;
+  column-gap: var(--pf-v6-c-menu__item-main--ColumnGap);
+
+  > .pf-v6-c-menu__item-main {
+    display: grid;
+    grid-column: 1 / -1;
+    grid-template-columns: subgrid;
+  }
+
+  // Centred on the label, rather than sitting on the text's baseline.
+  .pf-v6-c-menu__item-icon {
+    display: flex;
+  }
+
+  > .pf-v6-c-menu__item-description {
+    grid-column: 2 / -1;
+  }
+}
+
 .pf-v6-c-button {
   // Buttons follow the same controls role as text inputs and selects (see
   // tokens/_semantic.scss), so a product retunes --agm-t--control--border-radius
