@@ -122,6 +122,16 @@ test -f /usr/lib/systemd/system/gdm.service && systemctl enable gdm.service
 systemctl enable zramswap
 
 # braille display support for Orca, triggered on device hotplug via udev
+#
+# /run/brltty is the default writable-directory, but /run is mounted as
+# nodev, so brltty cannot create the device file it needs there. Use
+# /var/lib/brltty instead.
+sed -i -E 's|^#?(writable-directory)[[:space:]]+.*|\1 /var/lib/brltty|' /etc/brltty.conf
+# the SUSE default authenticates BrlAPI clients (e.g. Orca) via polkit, but
+# polkit is not part of this image. The graphical session Orca runs in is
+# always the root account (see /var/lib/AccountsService/users/root), so
+# authenticate by Unix user instead, which needs no extra daemon.
+sed -i -E 's|^#?(api-parameters Auth)=.*|\1=user:root|' /etc/brltty.conf
 systemctl enable brltty.path
 
 # set the default target
