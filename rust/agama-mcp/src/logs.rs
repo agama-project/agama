@@ -34,8 +34,7 @@ static PARAM_FILTER_REGEX: LazyLock<Regex> = LazyLock::new(|| {
 });
 
 static URL_PASSWORD_REGEX: LazyLock<Regex> = LazyLock::new(|| {
-    Regex::new(r#"(://[^:/\s@]+:)[^@/\s]+(@)"#)
-        .expect("valid regex for filtering URL passwords")
+    Regex::new(r#"(://[^:/\s@]+:)[^@/\s]+(@)"#).expect("valid regex for filtering URL passwords")
 });
 
 /// Filters sensitive parameters (such as `live.password`, `inst.mcp.token`, boot passwords)
