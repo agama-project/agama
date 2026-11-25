@@ -28,11 +28,7 @@ import { sprintf } from "sprintf-js";
 import Text from "~/components/core/Text";
 import Icon from "~/components/layout/Icon";
 import SpaceDecision from "~/components/storage/device-details/SpaceDecision";
-import {
-  buildCurrentContentSummary,
-  sentenceGap,
-  summaryText,
-} from "~/components/storage/device-details/current-content-summary";
+import { buildCurrentContentSummary } from "~/components/storage/device-details/current-content-summary";
 import Interpolate from "~/components/core/Interpolate";
 import MenuButton, { MenuButtonItem } from "~/components/core/MenuButton";
 import RowMenuToggle from "~/components/core/RowMenuToggle";
@@ -84,12 +80,9 @@ function rowsOf(entry: Entry): Row[] {
 }
 
 /**
- * Whether this entry has anything on it today, which is whether the view has
- * anything to say.
+ * Whether the device will contain partitions or logical volumes.
  *
- * Asked by whoever offers the view rather than answered inside it. A view whose
- * whole answer is that there is nothing costs a reader a click to learn
- * nothing, and an empty disk or a volume group being defined would carry one.
+ * TODO: this is COMPLETELY misplaced here.
  */
 export function hasCurrentContent(entry: Entry): boolean {
   return rowsOf(entry).length > 0;
@@ -278,16 +271,9 @@ function statusFor(
        the new file system in the note under it, where the request or the plan
        names one yet. */
     return {
-      // TRANSLATORS: what is to become of a partition already on the disk: it
-      // is emptied and given a new file system for the new system to mount. %s
-      // is where the new system mounts it, such as "/home".
+      // TRANSLATORS: %s is a mount point, such as "/home".
       text: sprintf(_("Format for %s"), path),
       destroys: true,
-      note: newFilesystem
-        ? // TRANSLATORS: read under "Format for /home": the new file
-          // system the partition gets. %s is a file system, such as "xfs".
-          sprintf(_("As %s"), newFilesystem)
-        : undefined,
     };
   }
 
@@ -446,20 +432,25 @@ function PartitionRow({
 function disclosureLabel(isVolumeGroup: boolean, expanded: boolean, count: number): string {
   if (isVolumeGroup) {
     return expanded
-      ? // TRANSLATORS: hides the list of the logical volumes a volume group
-        // holds today.
-        n_("Hide logical volume details", "Hide logical volumes details", count)
-      : // TRANSLATORS: shows the list of the logical volumes a volume group
-        // holds today, where what happens to each can be seen and changed.
-        n_("Show logical volume details", "Show logical volumes details", count);
+      ? n_(
+          "Hide details of the existing logical volume",
+          "Hide details of the existing logical volumes",
+          count,
+        )
+      : n_(
+          "Show details of the existing logical volume",
+          "Show details of the existing logical volumes",
+          count,
+        );
   }
 
   return expanded
-    ? // TRANSLATORS: hides the list of the partitions a disk holds today.
-      n_("Hide partition details", "Hide partitions details", count)
-    : // TRANSLATORS: shows the list of the partitions a disk holds today, where
-      // what happens to each can be seen and changed.
-      n_("Show partition details", "Show partitions details", count);
+    ? n_("Hide details of the existing partition", "Hide details of the existing partitions", count)
+    : n_(
+        "Show details of the existing partition",
+        "Show details of the existing partitions",
+        count,
+      );
 }
 
 export type CurrentContentSectionProps = {
@@ -471,6 +462,10 @@ export type CurrentContentSectionProps = {
    * rows. Off by default.
    */
   isStriped?: boolean;
+  /**
+   * Whether there is a sentence previous to the table summarizing its content.
+   */
+  withSummary?: boolean;
   /**
    * What happens to every partition, where it does not depend on a space
    * option: "keep" on a device the installation does not use, "delete" on one
@@ -522,6 +517,7 @@ export default function CurrentContentSection({
   entry,
   subject,
   isStriped = false,
+  withSummary = true,
   fixedDecision,
 }: CurrentContentSectionProps): React.ReactNode {
   const manager = useDevicesManager();
@@ -569,7 +565,7 @@ export default function CurrentContentSection({
     });
   const kind = entry.isVolumeGroup ? "logicalVolumes" : "partitions";
   const built = buildCurrentContentSummary({ kind, parts });
-  const summary = built && summaryText(built);
+  const summary = built && built.sentence;
   const summaryId = React.useId();
 
   /* Said when the decisions change, so a screen reader user hears what their
@@ -587,40 +583,26 @@ export default function CurrentContentSection({
       {/* Only where there is something to sum up. */}
       {rows.some((row) => !isFreeSpace(row)) && (
         <>
-          {/* The summary first, with the menu acting on all of it right
-              after, where reading ends: in the same line of text, so it lines
-              up with the words and wraps with the last of them. */}
-          <FlexItem>
-            {/* How much there is in bold, then what becomes of it, then what
-                there is more to say, a sentence each. */}
-            <Text id={summaryId}>
-              {built && (
-                <>
-                  <Interpolate sentence={built.sentence}>
+          {withSummary && (
+            <FlexItem>
+              <Text id={summaryId}>
+                {built && (
+                  <Interpolate sentence={summary}>
                     {(amount) => <Text isBold>{amount}</Text>}
                   </Interpolate>
-                  {built.details.map((detail) => (
-                    <React.Fragment key={detail}>
-                      {sentenceGap()}
-                      {detail}
-                    </React.Fragment>
-                  ))}
-                </>
+                )}
+              </Text>
+              {isDecidable && (
+                <SpaceDecision
+                  collection={subject.collection}
+                  index={subject.index}
+                  policy={entry.config.spacePolicy || "keep"}
+                  someReused={someReused}
+                  describedBy={summaryId}
+                />
               )}
-            </Text>
-            {isDecidable && (
-              <SpaceDecision
-                collection={subject.collection}
-                index={subject.index}
-                policy={entry.config.spacePolicy || "keep"}
-                someReused={someReused}
-                describedBy={summaryId}
-              />
-            )}
-          </FlexItem>
-          {/* On a line of its own, so its caret sits right above what it opens.
-              The summary is its description, for whoever lands on it without
-              reading the line above. */}
+            </FlexItem>
+          )}
           <FlexItem>
             <Button
               variant="link"

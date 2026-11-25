@@ -57,7 +57,7 @@ export default function UsedByStatement({ entry }: UsedByStatementProps): React.
     <Interpolate
       // TRANSLATORS: says a disk gives room to one or more LVM volume groups. %s
       // is their names, such as "system", each a link to its panel.
-      sentence={_("Partitions needed as physical volumes for %s.")}
+      sentence={_("New partitions may be added as LVM physical volumes for %s.")}
     >
       {() => <RelatedNames items={users} />}
     </Interpolate>

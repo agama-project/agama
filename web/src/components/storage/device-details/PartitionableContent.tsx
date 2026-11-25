@@ -21,54 +21,29 @@
  */
 
 import React from "react";
-import { Flex, FlexItem, List, ListItem } from "@patternfly/react-core";
+import { Flex } from "@patternfly/react-core";
 import Link from "~/components/core/Link";
-import SummaryWithActions from "~/components/storage/device-details/SummaryWithActions";
+import DetailsSectionPart from "~/components/storage/device-details/DetailsSectionPart";
+import PlannedActions from "~/components/storage/device-details/PlannedActions";
 import PlannedContentSection from "~/components/storage/device-details/PlannedContentSection";
 import UsedByStatement from "~/components/storage/device-details/UsedByStatement";
+import BootStatement from "~/components/storage/device-details/BootStatement";
 import { STORAGE as PATHS } from "~/routes/paths";
-import { generateEncodedPath } from "~/utils";
 import configModel from "~/model/storage/config-model";
+import { plannedOn } from "~/components/storage/device-details/planned";
 import { usersOf } from "~/components/storage/shared/users";
 import { useConfigModel } from "~/hooks/model/storage/config-model";
 import { useFlattenDevices as useSystemDevices } from "~/hooks/model/system/storage";
 import { _ } from "~/i18n";
-import type { Entry } from "~/components/storage/device-details/entry";
-import type { ConfigModel, Partitionable } from "~/model/storage/config-model";
+import type { Partitionable } from "~/model/storage/config-model";
 import type { DeviceDetailsBodyProps } from "~/components/storage/device-details/DeviceDetailsBody";
 
-/** One thing the new system gets here, whatever the entry calls its parts. */
-type Planned = ConfigModel.Partition | ConfigModel.LogicalVolume;
-
 /**
- * The partition id, where the thing planned is a partition asked for by id.
- *
- * A logical volume has none: only a partition can be asked for by what it is
- * for rather than by where it is mounted.
+ * Explains how the new system uses a disk on which it creates or reuses
+ * partitions: the requested partitions first, then a paragraph for each other
+ * role (LVM, booting), followed by one line of actions. Paragraphs rather than
+ * a list, since the roles are different kinds of information.
  */
-function partitionId(part: Planned): ConfigModel.PartitionId | undefined {
-  return "id" in part ? part.id : undefined;
-}
-
-/**
- * Everything the new system will have here, created or taken over.
- *
- * A device whose only plan is to mount a partition it already has is planning
- * something, and counting only what the installer creates said it was not.
- */
-function plannedOn(entry: Entry): Planned[] {
-  const parts = entry.isVolumeGroup
-    ? (entry.config as ConfigModel.VolumeGroup).logicalVolumes || []
-    : (entry.config as Partitionable.Device).partitions || [];
-
-  return parts.filter((part) => {
-    /* A partition asked for by id and nothing else, a BIOS boot or a PReP
-       partition, is planned content too: it takes room and was asked for. */
-    if (configModel.volume.isNew(part)) return Boolean(part.mountPath || partitionId(part));
-    return Boolean(part.mountPath);
-  });
-}
-
 export default function PartitionableContent({
   entry,
   subject,
@@ -76,79 +51,47 @@ export default function PartitionableContent({
   const config = useConfigModel();
   const systemDevices = useSystemDevices();
   const device = entry.config as Partitionable.Device;
-  const planned = plannedOn(entry).filter((p) => !p.name);
-  const users = usersOf(config, systemDevices, device.name);
+  const hasPlanned = plannedOn(entry).length > 0;
+  const isLvmSource = usersOf(config, systemDevices, device.name).length > 0;
   const isBoot = configModel.boot.hasDevice(config, entry.config.name);
 
-  const addPath = generateEncodedPath(PATHS.addPartition, {
-    collection: subject.collection,
-    index: String(subject.index),
-  });
-
-  /* A link, since it leads to a form. */
-  const add = (
-    <Link to={addPath} keepQuery variant="link" isInline>
-      {_("Add partition")}
+  const changeBoot = isBoot && (
+    <Link to={PATHS.editBootDevice} keepQuery variant="link" isInline>
+      {/* TRANSLATORS: link to the settings of how the new system boots. */}
+      {_("Change boot options")}
     </Link>
   );
 
-  /* Nothing listed yet: what the disk gets so far, then the way to add to it.
-     A volume group's partitions, or booting's, come first where the disk
-     gets them, since they are all it gets yet. */
-  if (!planned.length) {
-    if (users.length) {
-      return (
-        <SummaryWithActions
-          summary={<UsedByStatement entry={entry} />}
-          // TRANSLATORS: follows what a disk already gets, such as the partitions
-          // a volume group needs, above a button to add partitions.
-          detail={_("Add partitions to use the rest of the disk.")}
-          actions={add}
-        />
-      );
-    }
+  const hasNothingToSay = !hasPlanned && !isLvmSource && !isBoot;
 
-    if (isBoot) {
-      return (
-        <SummaryWithActions
-          // TRANSLATORS: said of a disk the system boots from where nothing else
-          // is planned yet, above a button to add partitions.
-          summary={_("Used for booting only, no other partitions planned yet")}
-          actions={add}
-        />
-      );
-    }
-
-    return (
-      <Flex direction={{ default: "column" }} gap={{ default: "gapSm" }}>
-        {/* TRANSLATORS: offered on a disk that gets no partitions yet. */}
-        <FlexItem>{_("You can define partitions.")}</FlexItem>
-        <FlexItem>{add}</FlexItem>
-      </Flex>
-    );
-  }
-
-  /* Without a volume group to give room to, the list is all there is. */
-  const listed = <PlannedContentSection entry={entry} subject={subject} />;
-  if (!users.length) return listed;
-
-  /* Two kinds of partitions to create, said side by side: those a volume
-     group needs, first, and those listed. */
   return (
-    <List>
-      <ListItem>
-        <UsedByStatement entry={entry} />
-      </ListItem>
-      <ListItem>
-        <Flex direction={{ default: "column" }} gap={{ default: "gapSm" }}>
-          <FlexItem>
-            {/* TRANSLATORS: introduces the table of partitions the user asked
-                to create on a disk, next to those a volume group needs. */}
-            {_("Partitions from the following list")}
-          </FlexItem>
-          <FlexItem>{listed}</FlexItem>
-        </Flex>
-      </ListItem>
-    </List>
+    <Flex direction={{ default: "column" }} gap={{ default: "gapSm" }}>
+      {hasPlanned && (
+        <DetailsSectionPart>
+          <PlannedContentSection entry={entry} subject={subject} />
+        </DetailsSectionPart>
+      )}
+      {isLvmSource && (
+        <DetailsSectionPart>
+          <p>
+            <UsedByStatement entry={entry} />
+          </p>
+        </DetailsSectionPart>
+      )}
+      {isBoot && (
+        <DetailsSectionPart>
+          <p>
+            <BootStatement entry={entry} />
+          </p>
+        </DetailsSectionPart>
+      )}
+      {/* Said in a line, not as a table of headings over no rows. */}
+      {hasNothingToSay && (
+        <DetailsSectionPart>
+          <p>{_("No new partitions planned yet.")}</p>
+        </DetailsSectionPart>
+      )}
+      <PlannedActions entry={entry} subject={subject} extraActions={changeBoot} />
+    </Flex>
   );
 }

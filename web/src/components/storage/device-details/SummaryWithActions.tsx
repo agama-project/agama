@@ -73,7 +73,7 @@ export default function SummaryWithActions({ summary, detail, actions }: Summary
     <Flex direction={{ default: "column" }} gap={{ default: "gapMd" }}>
       <FlexItem>
         <p>
-          <Text isBold>{summary}</Text>
+          <Text>{summary}</Text>
         </p>
         {detail && <p>{detail}</p>}
       </FlexItem>

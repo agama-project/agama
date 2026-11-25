@@ -143,16 +143,17 @@ export default function DriveMenu({ entry, subject }: DriveMenuProps): React.Rea
       ]
     : [];
 
+  items.push(
+    <ChangeDeviceMenuItem
+      key="change"
+      actionTitle={title}
+      device={device}
+      modelDevice={entry}
+      openFn={open}
+    />,
+  );
+
   if (subject) {
-    items.push(
-      <ChangeDeviceMenuItem
-        key="change"
-        actionTitle={title}
-        device={device}
-        modelDevice={entry}
-        openFn={open}
-      />,
-    );
     items.push(
       <SpacePolicyMenuItem
         key="space-policy"

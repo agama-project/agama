@@ -21,12 +21,32 @@
  */
 
 import React from "react";
+import { Flex } from "@patternfly/react-core";
+import DetailsSectionPart from "~/components/storage/device-details/DetailsSectionPart";
+import PlannedActions from "~/components/storage/device-details/PlannedActions";
 import PlannedContentSection from "~/components/storage/device-details/PlannedContentSection";
+import { plannedOn } from "~/components/storage/device-details/planned";
+import { _ } from "~/i18n";
 import type { DeviceDetailsBodyProps } from "~/components/storage/device-details/DeviceDetailsBody";
 
 export default function VolumeGroupContent({
   entry,
   subject,
 }: DeviceDetailsBodyProps): React.ReactNode {
-  return <PlannedContentSection entry={entry} subject={subject} />;
+  const hasPlanned = plannedOn(entry).length > 0;
+
+  /* Nothing planned yet: said in a line, not as a table of headings over no
+     rows. */
+  return (
+    <Flex direction={{ default: "column" }} gap={{ default: "gapSm" }}>
+      <DetailsSectionPart>
+        {hasPlanned ? (
+          <PlannedContentSection entry={entry} subject={subject} />
+        ) : (
+          <p>{_("No new logical volumes planned yet.")}</p>
+        )}
+      </DetailsSectionPart>
+      <PlannedActions entry={entry} subject={subject} />
+    </Flex>
+  );
 }

@@ -21,9 +21,7 @@
  */
 
 import { sprintf } from "sprintf-js";
-import { unique } from "radashi";
-import { _, n_, formatList } from "~/i18n";
-import { markerText } from "~/components/core/Interpolate";
+import { n_ } from "~/i18n";
 import type { TranslatedString } from "~/i18n";
 import type { Decision } from "~/components/storage/device-details/partition-space";
 
@@ -257,16 +255,16 @@ function mainSentence(kind: ContentKind, counts: Counts): TranslatedString {
             // system unchanged, its data kept. %1$d is how many there are; keep
             // the brackets.
             n_(
-              "[%1$d logical volume]: it will be mounted unchanged.",
-              "[%1$d logical volumes]: all will be mounted unchanged.",
+              "[%1$d logical volume]: it will be mounted.",
+              "[%1$d logical volumes]: all will be mounted.",
               total,
             )
           : // TRANSLATORS: summary: every partition is used by the new system
             // unchanged, its data kept. %1$d is how many there are; keep the
             // brackets.
             n_(
-              "[%1$d partition]: it will be mounted unchanged.",
-              "[%1$d partitions]: all will be mounted unchanged.",
+              "[%1$d partition]: it will be mounted.",
+              "[%1$d partitions]: all will be mounted.",
               total,
             ),
         counts,
@@ -279,16 +277,16 @@ function mainSentence(kind: ContentKind, counts: Counts): TranslatedString {
           // system unchanged, the rest kept. %1$d is how many there are, %2$d
           // how many are mounted; keep the brackets.
           n_(
-            "[%1$d logical volume]: %2$d will be mounted unchanged.",
-            "[%1$d logical volumes]: %2$d will be mounted unchanged.",
+            "[%1$d logical volume]: %2$d will be mounted.",
+            "[%1$d logical volumes]: %2$d will be mounted.",
             total,
           )
         : // TRANSLATORS: summary: some partitions are used by the new system
           // unchanged, the rest kept. %1$d is how many there are, %2$d how many
           // are mounted; keep the brackets.
           n_(
-            "[%1$d partition]: %2$d will be mounted unchanged.",
-            "[%1$d partitions]: %2$d will be mounted unchanged.",
+            "[%1$d partition]: %2$d will be mounted.",
+            "[%1$d partitions]: %2$d will be mounted.",
             total,
           ),
       counts,
@@ -349,16 +347,16 @@ function mainSentence(kind: ContentKind, counts: Counts): TranslatedString {
           // is how many there are, then how many are deleted and how many used
           // unchanged; keep the brackets.
           n_(
-            "[%1$d logical volume]: %2$d will be deleted and %3$d will be mounted unchanged.",
-            "[%1$d logical volumes]: %2$d will be deleted and %3$d will be mounted unchanged.",
+            "[%1$d logical volume]: %2$d will be deleted and %3$d will be mounted.",
+            "[%1$d logical volumes]: %2$d will be deleted and %3$d will be mounted.",
             total,
           )
         : // TRANSLATORS: summary of the partitions of a disk. %1$d is how many
           // there are, then how many are deleted and how many used unchanged;
           // keep the brackets.
           n_(
-            "[%1$d partition]: %2$d will be deleted and %3$d will be mounted unchanged.",
-            "[%1$d partitions]: %2$d will be deleted and %3$d will be mounted unchanged.",
+            "[%1$d partition]: %2$d will be deleted and %3$d will be mounted.",
+            "[%1$d partitions]: %2$d will be deleted and %3$d will be mounted.",
             total,
           ),
       counts,
@@ -395,16 +393,16 @@ function mainSentence(kind: ContentKind, counts: Counts): TranslatedString {
           // is how many there are, then how many are formatted and how many used
           // unchanged; keep the brackets.
           n_(
-            "[%1$d logical volume]: %2$d will be formatted and %3$d will be mounted unchanged.",
-            "[%1$d logical volumes]: %2$d will be formatted and %3$d will be mounted unchanged.",
+            "[%1$d logical volume]: %2$d will be formatted and %3$d will be mounted.",
+            "[%1$d logical volumes]: %2$d will be formatted and %3$d will be mounted.",
             total,
           )
         : // TRANSLATORS: summary of the partitions of a disk. %1$d is how many
           // there are, then how many are formatted and how many used unchanged;
           // keep the brackets.
           n_(
-            "[%1$d partition]: %2$d will be formatted and %3$d will be mounted unchanged.",
-            "[%1$d partitions]: %2$d will be formatted and %3$d will be mounted unchanged.",
+            "[%1$d partition]: %2$d will be formatted and %3$d will be mounted.",
+            "[%1$d partitions]: %2$d will be formatted and %3$d will be mounted.",
             total,
           ),
       counts,
@@ -418,16 +416,16 @@ function mainSentence(kind: ContentKind, counts: Counts): TranslatedString {
           // is how many there are, then how many may be shrunk and how many are
           // used unchanged; keep the brackets.
           n_(
-            "[%1$d logical volume]: %2$d may be shrunk and %3$d will be mounted unchanged.",
-            "[%1$d logical volumes]: %2$d may be shrunk and %3$d will be mounted unchanged.",
+            "[%1$d logical volume]: %2$d may be shrunk and %3$d will be mounted.",
+            "[%1$d logical volumes]: %2$d may be shrunk and %3$d will be mounted.",
             total,
           )
         : // TRANSLATORS: summary of the partitions of a disk. %1$d is how many
           // there are, then how many may be shrunk and how many are used
           // unchanged; keep the brackets.
           n_(
-            "[%1$d partition]: %2$d may be shrunk and %3$d will be mounted unchanged.",
-            "[%1$d partitions]: %2$d may be shrunk and %3$d will be mounted unchanged.",
+            "[%1$d partition]: %2$d may be shrunk and %3$d will be mounted.",
+            "[%1$d partitions]: %2$d may be shrunk and %3$d will be mounted.",
             total,
           ),
       counts,
@@ -465,16 +463,16 @@ function mainSentence(kind: ContentKind, counts: Counts): TranslatedString {
           // is how many there are, then how many are deleted, formatted and
           // used unchanged; keep the brackets.
           n_(
-            "[%1$d logical volume]: %2$d will be deleted, %3$d will be formatted and %4$d will be mounted unchanged.",
-            "[%1$d logical volumes]: %2$d will be deleted, %3$d will be formatted and %4$d will be mounted unchanged.",
+            "[%1$d logical volume]: %2$d will be deleted, %3$d will be formatted and %4$d will be mounted.",
+            "[%1$d logical volumes]: %2$d will be deleted, %3$d will be formatted and %4$d will be mounted.",
             total,
           )
         : // TRANSLATORS: summary of the partitions of a disk. %1$d is how many
           // there are, then how many are deleted, formatted and used unchanged;
           // keep the brackets.
           n_(
-            "[%1$d partition]: %2$d will be deleted, %3$d will be formatted and %4$d will be mounted unchanged.",
-            "[%1$d partitions]: %2$d will be deleted, %3$d will be formatted and %4$d will be mounted unchanged.",
+            "[%1$d partition]: %2$d will be deleted, %3$d will be formatted and %4$d will be mounted.",
+            "[%1$d partitions]: %2$d will be deleted, %3$d will be formatted and %4$d will be mounted.",
             total,
           ),
       counts,
@@ -488,16 +486,16 @@ function mainSentence(kind: ContentKind, counts: Counts): TranslatedString {
           // is how many there are, then how many are deleted, may be shrunk and
           // are used unchanged; keep the brackets.
           n_(
-            "[%1$d logical volume]: %2$d will be deleted, %3$d may be shrunk and %4$d will be mounted unchanged.",
-            "[%1$d logical volumes]: %2$d will be deleted, %3$d may be shrunk and %4$d will be mounted unchanged.",
+            "[%1$d logical volume]: %2$d will be deleted, %3$d may be shrunk and %4$d will be mounted.",
+            "[%1$d logical volumes]: %2$d will be deleted, %3$d may be shrunk and %4$d will be mounted.",
             total,
           )
         : // TRANSLATORS: summary of the partitions of a disk. %1$d is how many
           // there are, then how many are deleted, may be shrunk and are used
           // unchanged; keep the brackets.
           n_(
-            "[%1$d partition]: %2$d will be deleted, %3$d may be shrunk and %4$d will be mounted unchanged.",
-            "[%1$d partitions]: %2$d will be deleted, %3$d may be shrunk and %4$d will be mounted unchanged.",
+            "[%1$d partition]: %2$d will be deleted, %3$d may be shrunk and %4$d will be mounted.",
+            "[%1$d partitions]: %2$d will be deleted, %3$d may be shrunk and %4$d will be mounted.",
             total,
           ),
       counts,
@@ -511,16 +509,16 @@ function mainSentence(kind: ContentKind, counts: Counts): TranslatedString {
           // is how many there are, then how many are formatted, may be shrunk
           // and are used unchanged; keep the brackets.
           n_(
-            "[%1$d logical volume]: %2$d will be formatted, %3$d may be shrunk and %4$d will be mounted unchanged.",
-            "[%1$d logical volumes]: %2$d will be formatted, %3$d may be shrunk and %4$d will be mounted unchanged.",
+            "[%1$d logical volume]: %2$d will be formatted, %3$d may be shrunk and %4$d will be mounted.",
+            "[%1$d logical volumes]: %2$d will be formatted, %3$d may be shrunk and %4$d will be mounted.",
             total,
           )
         : // TRANSLATORS: summary of the partitions of a disk. %1$d is how many
           // there are, then how many are formatted, may be shrunk and are used
           // unchanged; keep the brackets.
           n_(
-            "[%1$d partition]: %2$d will be formatted, %3$d may be shrunk and %4$d will be mounted unchanged.",
-            "[%1$d partitions]: %2$d will be formatted, %3$d may be shrunk and %4$d will be mounted unchanged.",
+            "[%1$d partition]: %2$d will be formatted, %3$d may be shrunk and %4$d will be mounted.",
+            "[%1$d partitions]: %2$d will be formatted, %3$d may be shrunk and %4$d will be mounted.",
             total,
           ),
       counts,
@@ -534,70 +532,20 @@ function mainSentence(kind: ContentKind, counts: Counts): TranslatedString {
         // how many there are, then how many are deleted, formatted, may be
         // shrunk and are used unchanged; keep the brackets.
         n_(
-          "[%1$d logical volume]: %2$d will be deleted, %3$d will be formatted, %4$d may be shrunk and %5$d will be mounted unchanged.",
-          "[%1$d logical volumes]: %2$d will be deleted, %3$d will be formatted, %4$d may be shrunk and %5$d will be mounted unchanged.",
+          "[%1$d logical volume]: %2$d will be deleted, %3$d will be formatted, %4$d may be shrunk and %5$d will be mounted.",
+          "[%1$d logical volumes]: %2$d will be deleted, %3$d will be formatted, %4$d may be shrunk and %5$d will be mounted.",
           total,
         )
       : // TRANSLATORS: summary of the partitions of a disk. %1$d is how many
         // there are, then how many are deleted, formatted, may be shrunk and
         // are used unchanged; keep the brackets.
         n_(
-          "[%1$d partition]: %2$d will be deleted, %3$d will be formatted, %4$d may be shrunk and %5$d will be mounted unchanged.",
-          "[%1$d partitions]: %2$d will be deleted, %3$d will be formatted, %4$d may be shrunk and %5$d will be mounted unchanged.",
+          "[%1$d partition]: %2$d will be deleted, %3$d will be formatted, %4$d may be shrunk and %5$d will be mounted.",
+          "[%1$d partitions]: %2$d will be deleted, %3$d will be formatted, %4$d may be shrunk and %5$d will be mounted.",
           total,
         ),
     counts,
   );
-}
-
-/**
- * The sentences after the main one: the systems deleting loses, then where
- * the formatted and the unchanged parts are mounted, every one named.
- */
-function detailSentences(parts: ContentPart[]): TranslatedString[] {
-  const withOutcome = (outcome: Outcome) => parts.filter((part) => outcomeOf(part) === outcome);
-  const lost = unique(withOutcome("delete").flatMap((part) => part.systems));
-  const formatted = withOutcome("format").map((part) => part.reusedAs);
-  const mounted = withOutcome("mount").map((part) => part.reusedAs);
-  const sentences: TranslatedString[] = [];
-
-  if (lost.length) {
-    sentences.push(
-      sprintf(
-        // TRANSLATORS: follows the summary of a disk or volume group when what
-        // is deleted holds operating systems. %s is their names, such as
-        // "Windows 11" or "Windows 11 and openSUSE".
-        n_("%s will be lost.", "%s will be lost.", lost.length),
-        formatList(lost),
-      ),
-    );
-  }
-
-  if (formatted.length) {
-    sentences.push(
-      sprintf(
-        // TRANSLATORS: follows the summary of a disk or volume group: where the
-        // new system mounts what is formatted. %s is mount points, such as
-        // "/home" or "/home and /srv".
-        n_("%s will be formatted.", "%s will be formatted.", formatted.length),
-        formatList(formatted),
-      ),
-    );
-  }
-
-  if (mounted.length) {
-    sentences.push(
-      sprintf(
-        // TRANSLATORS: follows the summary of a disk or volume group: where the
-        // new system mounts what it uses unchanged. %s is mount points, such as
-        // "/home" or "/home and /srv".
-        n_("%s will be mounted unchanged.", "%s will be mounted unchanged.", mounted.length),
-        formatList(mounted),
-      ),
-    );
-  }
-
-  return sentences;
 }
 
 export type CurrentContentSummary = {
@@ -607,8 +555,6 @@ export type CurrentContentSummary = {
    * deleted.", for showing it in bold.
    */
   sentence: TranslatedString;
-  /** What there is more to say, a sentence each: systems lost, mount points. */
-  details: TranslatedString[];
 };
 
 /**
@@ -647,27 +593,5 @@ export function buildCurrentContentSummary({
     mounted: count("mount"),
   };
 
-  return { sentence: mainSentence(kind, counts), details: detailSentences(parts) };
-}
-
-/**
- * What goes between two sentences that follow each other, as the language
- * writes it: a space in most languages, nothing in some, such as Chinese or
- * Japanese.
- */
-export function sentenceGap(): string {
-  // TRANSLATORS: two sentences that follow each other in one paragraph, %1$s
-  // the first and %2$s the second. Keep the space between them if your
-  // language separates sentences with one, and leave it out if it does not.
-  return sprintf(_("%1$s %2$s"), "", "");
-}
-
-/**
- * The summary as plain text, such as for announcing it: the main sentence as
- * it reads once rendered, then the details, each sentence after the other as
- * the language writes them.
- */
-export function summaryText({ sentence, details }: CurrentContentSummary): TranslatedString {
-  /* Every piece is translated already: this only puts them side by side. */
-  return [markerText(sentence), ...details].join(sentenceGap()) as TranslatedString;
+  return { sentence: mainSentence(kind, counts) };
 }

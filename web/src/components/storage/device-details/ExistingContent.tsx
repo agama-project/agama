@@ -21,12 +21,8 @@
  */
 
 import React from "react";
-import { Flex, FlexItem } from "@patternfly/react-core";
 import { sprintf } from "sprintf-js";
-import Interpolate from "~/components/core/Interpolate";
-import Text from "~/components/core/Text";
-import DetailsItem from "~/components/storage/device-details/DetailsItem";
-import { baseName, filesystemLabel } from "~/components/storage/utils";
+import { baseName, formattedPath, filesystemLabel } from "~/components/storage/utils";
 import { useFlattenDevices as useSystemDevices } from "~/hooks/model/system/storage";
 import { _ } from "~/i18n";
 import type { Entry } from "~/components/storage/device-details/entry";
@@ -35,118 +31,85 @@ export type ExistingContentProps = {
   entry: Entry;
   /** Whether the installation deletes what is on the device. */
   isDeleted?: boolean;
-  /** Controls offered under the item, such as mounting the file system. */
-  actions?: React.ReactNode;
 };
 
-/**
- * What a device without partitions holds today, as one item: a file system on
- * the whole device, its membership of an LVM volume group or a RAID, or a line
- * saying nothing was found.
- *
- * Where the installation deletes it, it is followed by "Delete", the way the
- * partitions table says it.
- *
- * @example
- * <ExistingContent entry={entry} isDeleted />
- * // Ext4 file system  Delete
- */
-/* The same color as the partitions table, so a loss reads the same in both. */
-const DESTROYS_CLASS = "agm-entries-table__cost--destroys";
-
-/**
- * What is there now, followed by "Delete" where the installation removes it,
- * the way the partitions table says it.
- */
-function Fact({ isDeleted, children }: React.PropsWithChildren<{ isDeleted: boolean }>) {
-  if (!isDeleted) return children;
-
-  return (
-    <>
-      {children}{" "}
-      {/* TRANSLATORS: follows what is on the disk today, such as "Ext4 file
-          system": it is removed, and everything on it lost. */}
-      <span className={DESTROYS_CLASS}>{_("to be deleted")}</span>
-    </>
-  );
-}
-
-export default function ExistingContent({
-  entry,
-  isDeleted = false,
-  actions,
-}: ExistingContentProps) {
+export default function ExistingContent({ entry, isDeleted = false }: ExistingContentProps) {
   const systemDevices = useSystemDevices();
   const device = entry.device;
-
-  const controls = actions && <FlexItem>{actions}</FlexItem>;
 
   if (device?.filesystem) {
     const type = filesystemLabel(device.filesystem.type);
 
-    /* The type first and in bold, since it is what tells one file system from
-       another. One line, with what can be done to it right after: the
-       section's icon already marks what the line is about. */
+    if (isDeleted) {
+      return (
+        <p>
+          {sprintf(
+            // TRANSLATORS: %s is a filesystem type like "Ext4" or "Btrfs"
+            _("%s file system: it will be deleted and its data lost."),
+            type,
+          )}
+        </p>
+      );
+    }
+
     return (
-      <Flex gap={{ default: "gapSm" }} alignItems={{ default: "alignItemsBaseline" }}>
-        <FlexItem>
-          <Fact isDeleted={isDeleted}>
-            <Interpolate
-              // TRANSLATORS: a file system found on a whole device. %s is its
-              // type, such as "Ext4", shown in bold.
-              sentence={_("%s file system")}
-            >
-              {() => <Text isBold>{type}</Text>}
-            </Interpolate>
-          </Fact>
-        </FlexItem>
-        {controls}
-      </Flex>
+      <p>
+        {
+          // TRANSLATORS: %s is a filesystem type like "Ext4" or "Btrfs"
+          sprintf(_("%s file system."), type)
+        }
+      </p>
     );
   }
 
   const group =
     device && systemDevices.find((d) => d.volumeGroup?.physicalVolumes.includes(device.sid));
   if (group) {
+    if (isDeleted) {
+      return (
+        <p>
+          {sprintf(
+            // TRANSLATORS: %s is the name of an LVM volume group, like "system"
+            _("LVM physical volume: the whole volume group %s will be deleted and its data lost."),
+            formattedPath(baseName(group.name)),
+          )}
+        </p>
+      );
+    }
+
     return (
-      <DetailsItem
-        icon="stacks"
-        // TRANSLATORS: names the volume management a device takes part in.
-        name={_("LVM")}
-        value={
-          <Fact isDeleted={isDeleted}>
-            {
-              // TRANSLATORS: what a device is today. %s is the name of the LVM
-              // volume group it belongs to, such as "system".
-              sprintf(_("physical volume of %s"), baseName(group.name))
-            }
-          </Fact>
-        }
-      >
-        {controls}
-      </DetailsItem>
+      <p>
+        {sprintf(
+          // TRANSLATORS: %s is the name of an LVM volume group, like "system"
+          _("LVM physical volume for the volume group."),
+          formattedPath(baseName(group.name)),
+        )}
+      </p>
     );
   }
 
   const raid = device && systemDevices.find((d) => d.md?.devices.includes(device.sid));
   if (raid) {
+    if (isDeleted) {
+      return (
+        <p>
+          {sprintf(
+            // TRANSLATORS: %s is the name of an MD RAID, like "md0".
+            _("Part of a RAID: the whole RAID %s will be deleted and its data lost."),
+            formattedPath(baseName(raid.name)),
+          )}
+        </p>
+      );
+    }
+
     return (
-      <DetailsItem
-        icon="dns"
-        // TRANSLATORS: names the RAID a device takes part in.
-        name={_("RAID")}
-        value={
-          <Fact isDeleted={isDeleted}>
-            {
-              // TRANSLATORS: what a device is today. %s is the name of the RAID
-              // it belongs to, such as "md0".
-              sprintf(_("member of %s"), baseName(raid.name))
-            }
-          </Fact>
-        }
-      >
-        {controls}
-      </DetailsItem>
+      <p>
+        {sprintf(
+          // TRANSLATORS: %s is the name of an MD RAID, like "md0".
+          _("Part of the RAID %s."),
+          formattedPath(baseName(raid.name)),
+        )}
+      </p>
     );
   }
 

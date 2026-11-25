@@ -22,11 +22,12 @@
 
 import React from "react";
 import { Flex } from "@patternfly/react-core";
+import Text from "~/components/core/Text";
+import ExistingContent from "~/components/storage/device-details/ExistingContent";
 import DetailsSection from "~/components/storage/device-details/DetailsSection";
-import BootStatement from "~/components/storage/device-details/BootStatement";
-import UsedPartitionableCurrent from "~/components/storage/device-details/UsedPartitionableCurrent";
-import UnusedPartitionableCurrent from "~/components/storage/device-details/UnusedPartitionableCurrent";
-import VolumeGroupCurrent from "~/components/storage/device-details/VolumeGroupCurrent";
+import CurrentContentSection, {
+  hasCurrentContent,
+} from "~/components/storage/device-details/CurrentContentSection";
 import PropertiesSection from "~/components/storage/device-details/PropertiesSection";
 import PartitionableContent from "~/components/storage/device-details/PartitionableContent";
 import PartitionableNoContent from "~/components/storage/device-details/PartitionableNoContent";
@@ -41,106 +42,172 @@ import type { DetailsSubject } from "~/components/storage/shared/use-device-deta
 
 export type DeviceDetailsBodyProps = {
   entry: Entry;
-  /** Where the entry is written, which is what the acts on its parts need. */
+  /** Where the entry is in the storage configuration, used to add, edit or delete its parts. */
   subject: DetailsSubject;
 };
 
-/**
- * What one entry of the plan holds, read top to bottom as time moving forwards.
- */
+function Intro({ children }): React.ReactNode {
+  return <Text textStyle={["fontSizeXs", "textColorSubtle"]}>{children}</Text>;
+}
+
+function Body({ children }): React.ReactNode {
+  return (
+    <Flex direction={{ default: "column" }} gap={{ default: "gapLg" }}>
+      {children}
+    </Flex>
+  );
+}
+
 export default function DeviceDetailsBody({
   entry,
   subject,
 }: DeviceDetailsBodyProps): React.ReactNode {
   const config = useConfigModel();
-  const part = entry.isVolumeGroup ? null : (entry.config as Partitionable.Device);
-  const isUsedPartitionable = part && configModel.partitionable.isUsed(config, part.name);
-  const isMountedPartitionable = part && !!part.mountPath;
 
-  /* A volume group the system does not have yet has nothing on it today: what
-     it starts from is the disks it takes its room from. */
-  const isNewVolumeGroup = entry.isVolumeGroup && !(entry.config as ConfigModel.VolumeGroup).name;
-
-  /* A file system the new system takes as it is changes nothing on the device:
-     what is there now is what will be there, so it is said once. */
-  if (isMountedPartitionable && part.filesystem?.reuse === true) {
-    return (
-      // TRANSLATORS: heading of a device's panel where the new system uses what
-      // is on the device as it is.
-      <DetailsSection title={_("Content")}>
-        <PartitionableMountContent entry={entry} subject={subject} />
-      </DetailsSection>
-    );
-  }
-
-  /* Named after what it holds rather than after when, since not everything a
-     device takes part in is new content. */
-  let newContentTitle: string;
   if (entry.isVolumeGroup) {
-    // TRANSLATORS: heading of the part of a volume group's panel listing the
-    // logical volumes the installation creates in it.
-    newContentTitle = _("Logical volumes to create");
-  } else if (isMountedPartitionable) {
-    // TRANSLATORS: heading of the part of a device's panel about a file system
-    // that takes the whole device.
-    newContentTitle = _("File system");
-  } else if (isUsedPartitionable) {
-    // TRANSLATORS: heading of the part of a device's panel listing the
-    // partitions the installation creates on it.
-    newContentTitle = _("Partitions to create");
-  } else {
-    // TRANSLATORS: heading of the part of a device's panel about how the
-    // installation uses the device, where it does not use it yet.
-    newContentTitle = _("Usage");
-  }
+    if ((entry.config as ConfigModel.VolumeGroup).name) {
+      const newLVsSection = (
+        <DetailsSection title={_("Logical volumes for the new system")}>
+          <VolumeGroupContent entry={entry} subject={subject} />
+        </DetailsSection>
+      );
 
-  /* Booting is a concern of its own: the partitions it needs may be created
-     or already there, so it is not part of what the device gets created. */
-  const isBootDevice = !!part && configModel.boot.hasDevice(config, part.name);
+      if (hasCurrentContent(entry)) {
+        return (
+          <Body>
+            <Intro>
+              {_(
+                "Define the logical volumes, existing volumes can be deleted or reduced to make space for the new system or can be used by it.",
+              )}
+            </Intro>
+            {newLVsSection}
+            <DetailsSection title={_("Current logical volumes")}>
+              <CurrentContentSection entry={entry} subject={subject} />
+            </DetailsSection>
+          </Body>
+        );
+      }
 
-  return (
-    <Flex direction={{ default: "column" }} gap={{ default: "gapLg" }}>
-      {/* A group being created has nothing on it today: what defines it comes
-          first instead. */}
-      {isNewVolumeGroup ? (
-        // TRANSLATORS: heading of the part of a volume group's panel saying
-        // what defines it: the disks it takes its room from, its name and how
-        // it uses those disks.
+      return (
+        <Body>
+          <Intro>{_("Define logical volumes for the new system.")}</Intro>
+          {newLVsSection}
+          <DetailsSection title={_("Current logical volumes")}>
+            <p>{_("No logical volumes detected.")}</p>
+          </DetailsSection>
+        </Body>
+      );
+    }
+
+    return (
+      <Body>
+        <Intro>
+          {_("Customize how the new volume group will be created and define its logical volumes.")}
+        </Intro>
         <DetailsSection title={_("Properties")}>
           <PropertiesSection entry={entry} subject={subject} />
         </DetailsSection>
-      ) : (
-        // TRANSLATORS: heading of the part of a device's panel saying what is
-        // on the device now, before installing.
-        <DetailsSection title={_("Current content")}>
-          {!entry.isVolumeGroup && isUsedPartitionable && (
-            <UsedPartitionableCurrent entry={entry} subject={subject} />
-          )}
-          {!entry.isVolumeGroup && !isUsedPartitionable && (
-            <UnusedPartitionableCurrent entry={entry} subject={subject} />
-          )}
-          {entry.isVolumeGroup && <VolumeGroupCurrent entry={entry} subject={subject} />}
+        <DetailsSection title={_("Logical volumes")}>
+          <VolumeGroupContent entry={entry} subject={subject} />
         </DetailsSection>
-      )}
-      <DetailsSection title={newContentTitle}>
-        {!entry.isVolumeGroup && isMountedPartitionable && (
-          <PartitionableMountContent entry={entry} subject={subject} showName={false} />
+      </Body>
+    );
+  }
+
+  const partitionable = entry.config as Partitionable.Device;
+  const isCurrentlyPartitioned = hasCurrentContent(entry);
+  const basicIntro = _(
+    "Customize how the system will use this disk, any current content may be affected.",
+  );
+
+  if (partitionable.mountPath) {
+    if (partitionable.filesystem?.reuse === true) {
+      return (
+        <Body>
+          <Intro>{basicIntro}</Intro>
+          <DetailsSection title={_("File system")}>
+            <PartitionableMountContent entry={entry} subject={subject} />
+          </DetailsSection>
+        </Body>
+      );
+    }
+
+    return (
+      <Body>
+        <Intro>{basicIntro}</Intro>
+        <DetailsSection title={_("File system")}>
+          <PartitionableMountContent entry={entry} subject={subject} />
+        </DetailsSection>
+        {isCurrentlyPartitioned && (
+          <DetailsSection title={_("Current partitions")}>
+            <CurrentContentSection entry={entry} subject={subject} fixedDecision="delete" />
+          </DetailsSection>
         )}
-        {!entry.isVolumeGroup && !isMountedPartitionable && isUsedPartitionable && (
+        {!isCurrentlyPartitioned && (
+          <DetailsSection title={_("Current content")}>
+            <ExistingContent entry={entry} isDeleted />
+          </DetailsSection>
+        )}
+      </Body>
+    );
+  }
+
+  const withPartitions = configModel.partitionable.isUsed(config, partitionable.name);
+  if (withPartitions) {
+    if (isCurrentlyPartitioned) {
+      return (
+        <Body>
+          <Intro>
+            {_(
+              "Customize how this disk will be used, existing partitions can be deleted or reduced to make space for the new system or can be used by it.",
+            )}
+          </Intro>
+          <DetailsSection title={_("Partitions for the new system")}>
+            <PartitionableContent entry={entry} subject={subject} />
+          </DetailsSection>
+          <DetailsSection title={_("Current partitions")}>
+            <CurrentContentSection entry={entry} subject={subject} />
+          </DetailsSection>
+        </Body>
+      );
+    }
+
+    return (
+      <Body>
+        <Intro>{basicIntro}</Intro>
+        <DetailsSection title={_("Partitions for the new system")}>
           <PartitionableContent entry={entry} subject={subject} />
-        )}
-        {!entry.isVolumeGroup && !isMountedPartitionable && !isUsedPartitionable && (
-          <PartitionableNoContent entry={entry} subject={subject} />
-        )}
-        {entry.isVolumeGroup && <VolumeGroupContent entry={entry} subject={subject} />}
-      </DetailsSection>
-      {isBootDevice && (
-        // TRANSLATORS: heading of the part of a disk's panel shown when the
-        // machine starts from that disk.
-        <DetailsSection title={_("Boot device")}>
-          <BootStatement entry={entry} />
         </DetailsSection>
-      )}
-    </Flex>
+        <DetailsSection title={_("Current content")}>
+          <ExistingContent entry={entry} isDeleted />
+        </DetailsSection>
+      </Body>
+    );
+  }
+
+  // If the workflow reached this point, then no usage is defined yet
+  // (not used for booting, for creating partitions neither for mounting/formatting
+
+  if (isCurrentlyPartitioned || entry.device?.filesystem) {
+    return (
+      <Body>
+        <Intro>{basicIntro}</Intro>
+        <DetailsSection title={_("Usage")}>
+          <PartitionableNoContent entry={entry} subject={subject} />
+        </DetailsSection>
+      </Body>
+    );
+  }
+
+  return (
+    <Body>
+      <Intro>{basicIntro}</Intro>
+      <DetailsSection title={_("Usage")}>
+        <PartitionableNoContent entry={entry} subject={subject} />
+      </DetailsSection>
+      <DetailsSection title={_("Current content")}>
+        <ExistingContent entry={entry} />
+      </DetailsSection>
+    </Body>
   );
 }
