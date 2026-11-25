@@ -28,7 +28,6 @@ const GiB = 1024 ** 3;
 
 const part = (name: string, values: Partial<ContentPart> = {}): ContentPart => ({
   name,
-  systems: [],
   ...values,
 });
 

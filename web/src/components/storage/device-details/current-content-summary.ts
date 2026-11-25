@@ -29,8 +29,6 @@ import type { Decision } from "~/components/storage/device-details/partition-spa
 export type ContentPart = {
   /** Short name, such as "vdd4". */
   name: string;
-  /** Operating systems found on it. */
-  systems: string[];
   /** Where the new system uses it, if it does. No space decision reaches it then. */
   reusedAs?: string;
   /** Whether the new system formats it, losing its data, rather than mounting it as it is. */

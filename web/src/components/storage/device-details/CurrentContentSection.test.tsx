@@ -36,15 +36,6 @@ jest.mock("~/context/announcer", () => ({
   useAnnounce: () => mockAnnounce,
 }));
 
-/* Nothing the installer has worked out yet: every part reads as deleted. */
-jest.mock("~/components/storage/shared/use-devices-manager", () => ({
-  useDevicesManager: () => ({
-    stagingDevice: () => undefined,
-    hasNewFilesystem: () => false,
-    resizedDevices: () => [],
-  }),
-}));
-
 jest.mock("~/components/storage/device-details/partition-space", () => ({
   ...jest.requireActual("~/components/storage/device-details/partition-space"),
   usePartitionSpaceItems: () => [],

@@ -42,13 +42,11 @@ import {
   recoverableBy,
   usePartitionSpaceItems,
 } from "~/components/storage/device-details/partition-space";
-import { useDevicesManager } from "~/components/storage/shared/use-devices-manager";
 import { baseName, deviceSize, formattedPath } from "~/components/storage/utils";
 import { useSearchParamTokens } from "~/hooks/use-search-param-state";
 import { columnProps, tableProps } from "~/components/storage/shared/table-columns";
 import { CURRENT_CONTENT, EXPANDED } from "~/components/storage/ui-state-params";
 import { _, n_ } from "~/i18n";
-import type DevicesManager from "~/model/storage/devices-manager";
 import type { Decision } from "~/components/storage/device-details/partition-space";
 import type { ContentPart } from "~/components/storage/device-details/current-content-summary";
 import type { ConfigModel, DeviceCollection, Partitionable } from "~/model/storage/config-model";
@@ -210,7 +208,6 @@ function statusFor(
   decision: Decision | undefined,
   reusedAs: string | undefined,
   formats: boolean,
-  newFilesystem: string | undefined,
   canShrink: boolean,
   recoverable: number | undefined,
 ): Status | undefined {
@@ -286,13 +283,11 @@ function isFormatted(request?: ConfigModel.Partition | ConfigModel.LogicalVolume
 
 function PartitionRow({
   part,
-  manager,
   entries,
   decision,
   menu,
 }: {
   part: System.Device;
-  manager: DevicesManager;
   entries: (ConfigModel.Partition | ConfigModel.LogicalVolume)[];
   /** What is allowed to happen here, however it came to be allowed. */
   decision?: Decision;
@@ -303,25 +298,15 @@ function PartitionRow({
   const reusedAs = request?.mountPath;
   const systems = part.block?.systems || [];
   const size = part.block?.size;
-  const staged = manager.stagingDevice(part.sid);
   const canShrink = part.block?.shrinking?.supported === true;
   /* Read from the request, not the plan: the table shows what was asked for. */
   const formats = isFormatted(request);
-  /* The request, or the plan when the request leaves it to the installer. */
-  const newFilesystem = formats ? request?.filesystem?.type || staged?.filesystem?.type : undefined;
   const currentContent =
     part.filesystem?.type ||
     part.description ||
     // TRANSLATORS: said of a partition whose content is not recognized.
     _("unrecognized");
-  const status = statusFor(
-    decision,
-    reusedAs,
-    formats,
-    newFilesystem,
-    canShrink,
-    recoverableBy(part),
-  );
+  const status = statusFor(decision, reusedAs, formats, canShrink, recoverableBy(part));
 
   return (
     <Tr>
@@ -427,7 +412,6 @@ export default function CurrentContentSection({
   withSummary = true,
   fixedDecision,
 }: CurrentContentSectionProps): React.ReactNode {
-  const manager = useDevicesManager();
   const rows = rowsOf(entry);
   /* The device rule for every partition. Undefined when each one has its own
      decision; an unset rule keeps everything. */
@@ -459,7 +443,6 @@ export default function CurrentContentSection({
       const reusedAs = request?.mountPath;
       return {
         name: baseName(row.name),
-        systems: row.block?.systems || [],
         reusedAs: reusedAs && formattedPath(reusedAs),
         formats: isFormatted(request),
         recoverable: recoverableBy(row),
@@ -591,7 +574,6 @@ export default function CurrentContentSection({
                   <PartitionRow
                     key={row.sid}
                     part={row}
-                    manager={manager}
                     entries={entries}
                     decision={decision}
                     menu={
