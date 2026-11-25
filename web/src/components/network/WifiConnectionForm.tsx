@@ -35,23 +35,21 @@ import {
 import Icon from "~/components/layout/Icon";
 import { PasswordInput } from "~/components/core";
 import Page from "~/components/layout/Page";
-import { Connection, WifiNetwork, Wireless } from "~/types/network";
+import { Connection, IEEE8021X, WifiNetwork, Wireless } from "~/types/network";
 import { useWifiNetworks } from "~/hooks/model/system/network";
 import { useConnectionMutation } from "~/hooks/model/config/network";
 import WifiNetworksSelector from "./WifiNetworksSelector";
+import WifiEnterpriseFields, { defaultEnterpriseSettings } from "./WifiEnterpriseFields";
 import { useNavigate } from "react-router";
 import { PATHS } from "~/routes/network";
-import { N_, _ } from "~/i18n";
+import { _ } from "~/i18n";
+import { wifiSecurityLabel } from "~/utils/network";
 import { SYSTEM_QUERY_KEY } from "~/hooks/model/system";
 
-const securityOptions = [
-  // TRANSLATORS: WiFi authentication mode
-  { value: "none", label: N_("None") },
-  // TRANSLATORS: WiFi authentication mode
-  { value: "wpa-psk", label: N_("WPA & WPA2 Personal") },
-];
+const securityOptions = ["none", "wpa-psk", "wpa-eap"];
 
 const securityFrom = (supported: string[]) => {
+  if (supported.includes("802.1X")) return "wpa-eap";
   if (supported.includes("WPA2")) return "wpa-psk";
   if (supported.includes("WPA1")) return "wpa-psk";
   return "none";
@@ -71,41 +69,52 @@ type FormState = {
   ssid: string;
   security: string;
   password: string;
+  ieee8021x: IEEE8021X;
+};
+
+const initialState: FormState = {
+  ssid: "",
+  security: "",
+  password: "",
+  ieee8021x: defaultEnterpriseSettings,
 };
 
 type FormAction =
   | { type: "INITIALIZE"; networks: WifiNetwork[] }
   | { type: "SET_SSID"; ssid: string; networks: WifiNetwork[] }
   | { type: "SET_SECURITY"; security: string }
-  | { type: "SET_PASSWORD"; password: string };
+  | { type: "SET_PASSWORD"; password: string }
+  | { type: "SET_IEEE8021X"; ieee8021x: IEEE8021X };
 
 const formReducer = (state: FormState, action: FormAction): FormState => {
   switch (action.type) {
     case "INITIALIZE": {
       const network = action.networks[0];
       return network
-        ? { ssid: network.ssid, security: securityFrom(network.security), password: "" }
+        ? { ...initialState, ssid: network.ssid, security: securityFrom(network.security) }
         : state;
     }
     case "SET_SSID": {
       const network = action.networks.find((n) => n.ssid === action.ssid);
       return {
+        ...initialState,
         ssid: action.ssid,
         security: network ? securityFrom(network.security) : "",
-        password: "",
       };
     }
     case "SET_SECURITY":
       return { ...state, security: action.security };
     case "SET_PASSWORD":
       return { ...state, password: action.password };
+    case "SET_IEEE8021X":
+      return { ...state, ieee8021x: action.ieee8021x };
   }
 };
 
 function WifiConnectionFormContent() {
   const navigate = useNavigate();
   const networks = useWifiNetworks();
-  const [form, dispatch] = useReducer(formReducer, { ssid: "", security: "", password: "" });
+  const [form, dispatch] = useReducer(formReducer, initialState);
   const { mutateAsync: updateConnection } = useConnectionMutation();
 
   useEffect(() => {
@@ -116,6 +125,7 @@ function WifiConnectionFormContent() {
 
   const network = networks.find((n) => n.ssid === form.ssid);
   const isPublicNetwork = isEmpty(network?.security);
+  const isEnterprise = form.security === "wpa-eap";
 
   const accept = async (e) => {
     e.preventDefault();
@@ -123,9 +133,10 @@ function WifiConnectionFormContent() {
       wireless: new Wireless({
         ssid: form.ssid,
         security: form.security || "none",
-        password: form.password,
+        password: isEnterprise ? undefined : form.password,
         hidden: false,
       }),
+      ieee8021x: isEnterprise ? form.ieee8021x : undefined,
     });
     updateConnection(nextConnection);
     navigate(PATHS.root);
@@ -162,9 +173,9 @@ function WifiConnectionFormContent() {
           >
             {securityOptions.map((security) => (
               <FormSelectOption
-                key={security.value}
-                value={security.value}
-                label={_(security.label)}
+                key={security}
+                value={security}
+                label={wifiSecurityLabel(security)}
               />
             ))}
           </FormSelect>
@@ -181,6 +192,12 @@ function WifiConnectionFormContent() {
             onChange={(_, v) => dispatch({ type: "SET_PASSWORD", password: v })}
           />
         </FormGroup>
+      )}
+      {isEnterprise && (
+        <WifiEnterpriseFields
+          value={form.ieee8021x}
+          onChange={(v) => dispatch({ type: "SET_IEEE8021X", ieee8021x: v })}
+        />
       )}
       <ActionGroup>
         <Page.Submit form="wifiConnectionForm">

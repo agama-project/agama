@@ -301,7 +301,7 @@ pub fn merge_dbus_connections<'a>(
 ) -> Result<NestedHash<'a>, zvariant::Error> {
     // FIXME: it should contain all the sections and attributes which can be absent and known by
     // agama in order to allow the user to remove them otherwise the original value will be kept
-    let handled_by_agama: Vec<&str> = vec!["interface-name", "mac-address"];
+    let handled_by_agama: Vec<&str> = vec!["interface-name", "mac-address", "phase1-peaplabel"];
 
     let mut merged = HashMap::with_capacity(original.len());
     for (key, orig_section) in original {
@@ -1589,10 +1589,10 @@ fn ieee_8021x_config_to_dbus(config: &IEEE8021XConfig) -> HashMap<&str, zvariant
     if let Some(peap_version) = &config.peap_version {
         ieee_8021x_config.insert("phase1-peapver", peap_version.into());
     }
-    ieee_8021x_config.insert(
-        "phase1-peaplabel",
-        if config.peap_label { "1" } else { "0" }.into(),
-    );
+    // NetworkManager rejects "0" when activating the connection, so it is only set when enabled.
+    if config.peap_label {
+        ieee_8021x_config.insert("phase1-peaplabel", "1".into());
+    }
 
     ieee_8021x_config
 }
@@ -2586,6 +2586,27 @@ mod test {
         let ethernet = merged.get(ETHERNET_KEY).unwrap();
         assert_eq!(ethernet.get("assigned-mac-address"), Some(&Value::from("")));
         assert_eq!(ethernet.get("mtu"), Some(&Value::from(0_u32)));
+
+        Ok(())
+    }
+
+    #[test]
+    fn test_merged_connections_drop_disabled_peap_label() -> anyhow::Result<()> {
+        let mut original = OwnedNestedHash::new();
+        let connection = HashMap::from([hi("id", "wlan0")?, hi("type", WIRELESS_KEY)?]);
+        let ieee_8021x = HashMap::from([hi("identity", "alice")?, hi("phase1-peaplabel", "0")?]);
+        original.insert("connection".to_string(), connection);
+        original.insert(super::IEEE_8021X_KEY.to_string(), ieee_8021x);
+
+        let updated = Connection {
+            ieee_8021x_config: Some(IEEE8021XConfig::default()),
+            ..Default::default()
+        };
+        let updated = connection_to_dbus(&updated, None, semver::Version::new(1, 50, 0));
+
+        let merged = merge_dbus_connections(&original, &updated)?;
+        let ieee_8021x = merged.get(super::IEEE_8021X_KEY).unwrap();
+        assert_eq!(ieee_8021x.get("phase1-peaplabel"), None);
 
         Ok(())
     }

@@ -42,7 +42,7 @@ import { Link, NestedContent } from "~/components/core";
 import Page from "~/components/layout/Page";
 import InstallationOnlySwitch from "~/components/network/InstallationOnlySwitch";
 import { Connection, Device } from "~/types/network";
-import { connectionBindingMode, formatIp } from "~/utils/network";
+import { connectionBindingMode, formatIp, wifiSecurityLabel } from "~/utils/network";
 import { NETWORK } from "~/routes/paths";
 import { useDevices, useWifiNetworks } from "~/hooks/model/system/network";
 import { isEmpty } from "radashi";
@@ -80,7 +80,9 @@ const NetworkDetails = ({ connection }: { connection: Connection }) => {
         </DescriptionListGroup>
         <DescriptionListGroup>
           <DescriptionListTerm>{_("Security")}</DescriptionListTerm>
-          <DescriptionListDescription>{connection.wireless.security}</DescriptionListDescription>
+          <DescriptionListDescription>
+            {wifiSecurityLabel(connection.wireless.security)}
+          </DescriptionListDescription>
         </DescriptionListGroup>
         {network && (
           <>

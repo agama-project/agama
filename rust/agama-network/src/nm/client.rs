@@ -234,7 +234,7 @@ impl<'a> NetworkManagerClient<'a> {
                         connection.state = *state;
                     }
 
-                    Self::add_secrets(&mut connection.config, &proxy).await?;
+                    Self::add_secrets(&mut connection, &proxy).await?;
                     connection.flags = flags;
                     connection.persistent = flags == 0;
 
@@ -519,26 +519,42 @@ impl<'a> NetworkManagerClient<'a> {
     ///
     /// TODO: add support for more security protocols.
     pub async fn add_secrets(
-        config: &mut ConnectionConfig,
+        connection: &mut Connection,
         proxy: &ConnectionProxy<'_>,
     ) -> Result<(), NmError> {
-        let ConnectionConfig::Wireless(ref mut wireless) = config else {
-            return Ok(());
-        };
-
-        if wireless.security == SecurityProtocol::WPA2 {
-            match proxy.get_secrets("802-11-wireless-security").await {
-                Ok(secrets) => {
-                    if let Some(secret) = secrets.get("802-11-wireless-security") {
-                        wireless.password = get_optional_property(secret, "psk")?;
-                    }
-                }
-                Err(_) => {
-                    tracing::error!("Could not read connection secrets");
-                }
+        if let ConnectionConfig::Wireless(ref mut wireless) = connection.config {
+            if wireless.security == SecurityProtocol::WPA2 {
+                wireless.password =
+                    Self::get_secret(proxy, "802-11-wireless-security", "psk").await?;
             }
         }
+
+        if let Some(ref mut ieee_8021x) = connection.ieee_8021x_config {
+            ieee_8021x.password = Self::get_secret(proxy, "802-1x", "password").await?;
+        }
         Ok(())
+    }
+
+    /// Reads a secret from the given setting of a connection.
+    ///
+    /// * `proxy`: connection proxy.
+    /// * `setting`: name of the setting holding the secret.
+    /// * `key`: name of the secret.
+    async fn get_secret(
+        proxy: &ConnectionProxy<'_>,
+        setting: &str,
+        key: &str,
+    ) -> Result<Option<String>, NmError> {
+        match proxy.get_secrets(setting).await {
+            Ok(secrets) => match secrets.get(setting) {
+                Some(secret) => Ok(get_optional_property(secret, key)?),
+                None => Ok(None),
+            },
+            Err(_) => {
+                tracing::error!("Could not read connection secrets");
+                Ok(None)
+            }
+        }
     }
 }
 

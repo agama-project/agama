@@ -73,6 +73,25 @@ const connectionStateLabel = (state: ConnectionState): TranslatedString =>
   _(CONNECTION_STATE_LABELS[state]);
 
 /**
+ * Translatable labels for Wi-Fi security protocols.
+ */
+const WIFI_SECURITY_LABELS: Record<string, MarkedString> = {
+  // TRANSLATORS: WiFi authentication mode
+  none: N_("None"),
+  // TRANSLATORS: WiFi authentication mode
+  "wpa-psk": N_("WPA & WPA2 Personal"),
+  // TRANSLATORS: WiFi authentication mode
+  "wpa-eap": N_("WPA & WPA2 Enterprise"),
+};
+
+/**
+ * Returns the translated label for a Wi-Fi security protocol, or the protocol itself when it
+ * has no label.
+ */
+const wifiSecurityLabel = (security = ""): string =>
+  WIFI_SECURITY_LABELS[security] ? _(WIFI_SECURITY_LABELS[security]) : security;
+
+/**
  * Translatable labels for device states.
  */
 const DEVICE_STATE_LABELS: Record<DeviceState, MarkedString> = {
@@ -581,4 +600,5 @@ export {
   isValidIpPrefix,
   securityFromFlags,
   stringToIPInt,
+  wifiSecurityLabel,
 };
