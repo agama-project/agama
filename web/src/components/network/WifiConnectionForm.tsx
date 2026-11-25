@@ -70,6 +70,7 @@ type FormState = {
   security: string;
   password: string;
   ieee8021x: IEEE8021X;
+  showErrors: boolean;
 };
 
 const initialState: FormState = {
@@ -77,6 +78,7 @@ const initialState: FormState = {
   security: "",
   password: "",
   ieee8021x: defaultEnterpriseSettings,
+  showErrors: false,
 };
 
 type FormAction =
@@ -84,7 +86,8 @@ type FormAction =
   | { type: "SET_SSID"; ssid: string; networks: WifiNetwork[] }
   | { type: "SET_SECURITY"; security: string }
   | { type: "SET_PASSWORD"; password: string }
-  | { type: "SET_IEEE8021X"; ieee8021x: IEEE8021X };
+  | { type: "SET_IEEE8021X"; ieee8021x: IEEE8021X }
+  | { type: "SHOW_ERRORS" };
 
 const formReducer = (state: FormState, action: FormAction): FormState => {
   switch (action.type) {
@@ -108,6 +111,8 @@ const formReducer = (state: FormState, action: FormAction): FormState => {
       return { ...state, password: action.password };
     case "SET_IEEE8021X":
       return { ...state, ieee8021x: action.ieee8021x };
+    case "SHOW_ERRORS":
+      return { ...state, showErrors: true };
   }
 };
 
@@ -129,6 +134,12 @@ function WifiConnectionFormContent() {
 
   const accept = async (e) => {
     e.preventDefault();
+
+    if (isEnterprise && [form.ieee8021x.identity, form.ieee8021x.password].some(isEmpty)) {
+      dispatch({ type: "SHOW_ERRORS" });
+      return;
+    }
+
     const nextConnection = new Connection(form.ssid, {
       wireless: new Wireless({
         ssid: form.ssid,
@@ -196,6 +207,7 @@ function WifiConnectionFormContent() {
       {isEnterprise && (
         <WifiEnterpriseFields
           value={form.ieee8021x}
+          showErrors={form.showErrors}
           onChange={(v) => dispatch({ type: "SET_IEEE8021X", ieee8021x: v })}
         />
       )}

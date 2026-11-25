@@ -29,7 +29,8 @@ import {
   FormSelectOption,
   TextInput,
 } from "@patternfly/react-core";
-import { PasswordInput } from "~/components/core";
+import { isEmpty } from "radashi";
+import { FormValidationError, PasswordInput } from "~/components/core";
 import { IEEE8021X } from "~/types/network";
 import { _ } from "~/i18n";
 
@@ -77,14 +78,21 @@ const UnverifiedServerAlert = () => {
 type WifiEnterpriseFieldsProps = {
   value: IEEE8021X;
   onChange: (value: IEEE8021X) => void;
+  showErrors?: boolean;
 };
 
 /**
  * Fields for the 802.1X (WPA Enterprise) authentication of a Wi-Fi network
  */
-export default function WifiEnterpriseFields({ value, onChange }: WifiEnterpriseFieldsProps) {
+export default function WifiEnterpriseFields({
+  value,
+  onChange,
+  showErrors,
+}: WifiEnterpriseFieldsProps) {
   const eap = value.eap[0] as EapMethod;
   const update = (changes: Partial<IEEE8021X>) => onChange({ ...value, ...changes });
+  const identityError = showErrors && isEmpty(value.identity);
+  const passwordError = showErrors && isEmpty(value.password);
 
   return (
     <>
@@ -118,16 +126,20 @@ export default function WifiEnterpriseFields({ value, onChange }: WifiEnterprise
         <TextInput
           id="identity"
           value={value.identity ?? ""}
-          onChange={(_, v) => update({ identity: v })}
+          validated={identityError ? "error" : "default"}
+          onChange={(_, v) => update({ identity: v || undefined })}
         />
+        <FormValidationError message={identityError && _("User name is required.")} />
       </FormGroup>
       <FormGroup fieldId="password" label={_("Password")}>
         <PasswordInput
           id="password"
           name="password"
           value={value.password ?? ""}
-          onChange={(_, v) => update({ password: v })}
+          validated={passwordError ? "error" : "default"}
+          onChange={(_, v) => update({ password: v || undefined })}
         />
+        <FormValidationError message={passwordError && _("Password is required.")} />
       </FormGroup>
       {/* TRANSLATORS: outer identity sent before the secure tunnel is established */}
       <FormGroup fieldId="anonymousIdentity" label={_("Anonymous identity")}>

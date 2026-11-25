@@ -50,16 +50,20 @@ describe("WifiEnterpriseFields", () => {
     expect(mockOnChange).toHaveBeenCalledWith({ eap: ["ttls"], phase2Auth: "pap" });
   });
 
-  it("does not keep an empty anonymous identity", async () => {
+  it.each([
+    ["User name", "identity"],
+    ["Password", "password"],
+    ["Anonymous identity", "anonymousIdentity"],
+  ])("does not keep an empty %s", async (label, key) => {
     const { user } = installerRender(
       <WifiEnterpriseFields
-        value={{ ...defaultEnterpriseSettings, anonymousIdentity: "a" }}
+        value={{ ...defaultEnterpriseSettings, [key]: "a" }}
         onChange={mockOnChange}
       />,
     );
-    await user.clear(screen.getByLabelText("Anonymous identity"));
+    await user.clear(screen.getByLabelText(label));
     expect(mockOnChange).toHaveBeenCalledWith(
-      expect.not.objectContaining({ anonymousIdentity: expect.anything() }),
+      expect.not.objectContaining({ [key]: expect.anything() }),
     );
   });
 

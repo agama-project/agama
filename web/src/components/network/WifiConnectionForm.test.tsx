@@ -158,6 +158,19 @@ describe("WifiConnectionForm", () => {
       const [connection] = mockUpdateConnection.mock.calls[0];
       expect(connection.wireless.password).toBeUndefined();
     });
+
+    it("requires the user name and the password", async () => {
+      const { user } = installerRender(<WifiConnectionForm />);
+      await user.selectOptions(
+        screen.getByRole("combobox", { name: "Network" }),
+        "Enterprise Network",
+      );
+      await user.type(screen.getByLabelText("User name"), "alice");
+      await user.click(screen.getByRole("button", { name: "Connect" }));
+      screen.getByText("Password is required.");
+      expect(screen.queryByText("User name is required.")).not.toBeInTheDocument();
+      expect(mockUpdateConnection).not.toHaveBeenCalled();
+    });
   });
 
   describe("when the form is submitted", () => {
