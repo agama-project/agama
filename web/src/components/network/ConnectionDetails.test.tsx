@@ -30,6 +30,8 @@ import {
   ConnectionState,
   Device,
   DeviceState,
+  WifiNetwork,
+  Wireless,
 } from "~/types/network";
 import { CONNECTION_TYPE } from "~/utils/network";
 
@@ -85,6 +87,7 @@ const networkDevices = () => mockNetworkDevices;
 jest.mock("~/hooks/model/system/network", () => ({
   ...jest.requireActual("~/hooks/model/system/network"),
   useDevices: () => networkDevices(),
+  useWifiNetworks: (): WifiNetwork[] => [],
 }));
 
 describe("ConnectionDetails", () => {
@@ -176,6 +179,29 @@ describe("ConnectionDetails", () => {
       );
       const section = screen.getByRole("region", { name: "Settings" });
       within(section).getByText("Connection is bound to device enp1s0.");
+    });
+  });
+
+  describe("Network details", () => {
+    it("renders the label of the Wi-Fi security", () => {
+      const connection = new Connection("wlan0", {
+        wireless: new Wireless({ ssid: "Office", security: "wpa-eap" }),
+      });
+      installerRender(<ConnectionDetails connection={connection} />);
+      const section = screen.getByRole("region", { name: "Network" });
+
+      within(section).getByText("Office");
+      within(section).getByText("WPA & WPA2 Enterprise");
+    });
+
+    it("renders the Wi-Fi security as it is when it has no label", () => {
+      const connection = new Connection("wlan0", {
+        wireless: new Wireless({ ssid: "Office", security: "sae" }),
+      });
+      installerRender(<ConnectionDetails connection={connection} />);
+      const section = screen.getByRole("region", { name: "Network" });
+
+      within(section).getByText("sae");
     });
   });
 

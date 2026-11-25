@@ -42,17 +42,11 @@ import WifiNetworksSelector from "./WifiNetworksSelector";
 import WifiEnterpriseFields, { defaultEnterpriseSettings } from "./WifiEnterpriseFields";
 import { useNavigate } from "react-router";
 import { PATHS } from "~/routes/network";
-import { N_, _ } from "~/i18n";
+import { _ } from "~/i18n";
+import { wifiSecurityLabel } from "~/utils/network";
 import { SYSTEM_QUERY_KEY } from "~/hooks/model/system";
 
-const securityOptions = [
-  // TRANSLATORS: WiFi authentication mode
-  { value: "none", label: N_("None") },
-  // TRANSLATORS: WiFi authentication mode
-  { value: "wpa-psk", label: N_("WPA & WPA2 Personal") },
-  // TRANSLATORS: WiFi authentication mode
-  { value: "wpa-eap", label: N_("WPA & WPA2 Enterprise") },
-];
+const securityOptions = ["none", "wpa-psk", "wpa-eap"];
 
 const securityFrom = (supported: string[]) => {
   if (supported.includes("802.1X")) return "wpa-eap";
@@ -179,9 +173,9 @@ function WifiConnectionFormContent() {
           >
             {securityOptions.map((security) => (
               <FormSelectOption
-                key={security.value}
-                value={security.value}
-                label={_(security.label)}
+                key={security}
+                value={security}
+                label={wifiSecurityLabel(security)}
               />
             ))}
           </FormSelect>
