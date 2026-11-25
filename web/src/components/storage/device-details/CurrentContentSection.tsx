@@ -29,7 +29,7 @@ import Text from "~/components/core/Text";
 import Icon from "~/components/layout/Icon";
 import SpaceDecision from "~/components/storage/device-details/SpaceDecision";
 import { buildCurrentContentSummary } from "~/components/storage/device-details/current-content-summary";
-import Interpolate from "~/components/core/Interpolate";
+import Interpolate, { markerText } from "~/components/core/Interpolate";
 import MenuButton, { MenuButtonItem } from "~/components/core/MenuButton";
 import RowMenuToggle from "~/components/core/RowMenuToggle";
 import { STORAGE as PATHS } from "~/routes/paths";
@@ -56,6 +56,7 @@ import type { Entry } from "~/components/storage/device-details/entry";
 import type { DetailsSubject } from "~/components/storage/shared/use-device-details";
 import type { Storage as System } from "~/model/system";
 import type { ColumnLook } from "~/components/storage/shared/table-columns";
+import type { TranslatedString } from "~/i18n";
 
 type FreeSpace = System.UnusedSlot;
 type Row = System.Device | FreeSpace;
@@ -575,7 +576,8 @@ export default function CurrentContentSection({
   React.useEffect(() => {
     if (announcedSummary.current === summary) return;
     announcedSummary.current = summary;
-    if (summary) announce(summary);
+    /* Dropping the markers leaves the text translated. */
+    if (summary) announce(markerText(summary) as TranslatedString);
   }, [summary, announce]);
 
   return (
