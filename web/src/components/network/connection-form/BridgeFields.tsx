@@ -58,6 +58,8 @@ const stpOptions = () => [
 
 type BridgeFieldsProps = {
   isEditing?: boolean;
+  /** Names of the devices that cannot be a port, besides the loopback. */
+  excludedDevices?: string[];
 };
 
 /**
@@ -72,8 +74,9 @@ const BridgeFields = withForm({
   ...defaultOptions,
   props: {
     isEditing: false,
+    excludedDevices: [],
   } as BridgeFieldsProps,
-  render: function Render({ form, isEditing }) {
+  render: function Render({ form, isEditing, excludedDevices }) {
     return (
       <>
         <form.AppField name="bridgeIface">
@@ -97,6 +100,7 @@ const BridgeFields = withForm({
         <PortsField
           form={form}
           name="bridgePorts"
+          excludedDevices={excludedDevices}
           controllerField="bridgeIface"
           label={
             // TRANSLATORS: label for the bridge ports field.

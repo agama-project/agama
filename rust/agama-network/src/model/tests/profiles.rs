@@ -79,16 +79,19 @@ fn test_a_stacked_profile_is_applied_and_reported_back_nested() {
     assert_eq!(root_ids(&reported), ["br0", "br0.100"]);
 
     let bridge = find(&reported, "br0").bridge.unwrap();
-    assert_eq!(bridge.max_age, Some(20));
+    assert_eq!(bridge.common.max_age, Some(20));
 
     // The bond is a port of the bridge and a controller of the two NICs at once.
     let bond0 = find(&reported, "bond0");
     assert_eq!(port_ids(&find(&reported, "br0")), ["bond0"]);
     assert_eq!(port_ids(&bond0), ["eth0", "eth1"]);
-    assert_eq!(bond0.bond.as_ref().unwrap().mode, "802.3ad");
-    assert_eq!(find(&reported, "eth0").mtu, 9000);
+    assert_eq!(bond0.bond.as_ref().unwrap().common.mode, "802.3ad");
+    assert_eq!(find(&reported, "eth0").common.mtu, 9000);
 
-    assert_eq!(find(&reported, "br0.100").vlan.unwrap().parent, "br0");
+    assert_eq!(
+        find(&reported, "br0.100").common.vlan.unwrap().parent,
+        "br0"
+    );
 }
 
 #[test]
@@ -97,7 +100,7 @@ fn test_a_nested_profile_gives_the_same_result_as_ports_given_by_name() {
     let normalized = |state: NetworkState| {
         let mut reported = exposed(&state);
         let bond = bond_mut(&mut reported, "bond0");
-        let options = BondOptions::try_from(bond.options.take().unwrap().as_str()).unwrap();
+        let options = BondOptions::try_from(bond.common.options.take().unwrap().as_str()).unwrap();
         (reported, options)
     };
 
@@ -131,8 +134,12 @@ fn test_editing_a_stacked_profile_keeps_the_settings_of_the_ports() {
 
     // What the web UI does: read the whole config, change one connection and write it back.
     let mut reported = exposed(&state);
-    let br0 = reported.0.iter_mut().find(|c| c.id == "br0").unwrap();
-    br0.addresses = vec!["192.168.1.200/24".parse().unwrap()];
+    let br0 = reported
+        .0
+        .iter_mut()
+        .find(|c| c.common.id == "br0")
+        .unwrap();
+    br0.ip.addresses = vec!["192.168.1.200/24".parse().unwrap()];
 
     state
         .update_state(Config {

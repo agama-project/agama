@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Nov 25 10:04:49 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Fix support in Autoyast converter for bootloader updateNvram
+  conversion
+
+-------------------------------------------------------------------
 Mon Nov 23 12:00:00 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
 
 - Remove network-online.target dependency from agama.service
