@@ -33,6 +33,7 @@ use agama_utils::{
     progress,
     question::{self, ask_question},
 };
+use gettextrs::gettext;
 use tokio::process;
 
 #[derive(thiserror::Error, Debug)]
@@ -147,7 +148,9 @@ impl ScriptsRunner {
             "Running the script '{}' failed. Do you want to try again?",
             script.name()
         );
-        let mut question = QuestionSpec::new(&text, "retryScript").with_yes_no_actions();
+        let mut question =
+            QuestionSpec::new(&gettext("Failed to run a script"), &text, "retryScript")
+                .with_yes_no_actions();
 
         if let Error::Script { status, stderr } = error {
             let exit_status = status

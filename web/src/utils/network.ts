@@ -36,6 +36,7 @@ import {
   IPAddress,
   Route,
   SecurityProtocols,
+  portName,
 } from "~/types/network";
 import { _, N_, formatNumber } from "~/i18n";
 import type { MarkedString, TranslatedString } from "~/i18n";
@@ -450,7 +451,7 @@ const controllerOf = (name: string, connections: Connection[]): string | undefin
   const port = connectionForName(name, connections);
   const names = sift([name, port?.iface, port?.id]);
   const controller = connections.find((c) =>
-    (c.bond?.ports ?? c.bridge?.ports)?.some((p) => names.includes(p)),
+    (c.bond?.ports ?? c.bridge?.ports)?.some((p) => names.includes(portName(p))),
   );
 
   return controller && (controller.iface || controller.id);

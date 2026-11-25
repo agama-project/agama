@@ -380,7 +380,7 @@ impl NetworkState {
                     user_config
                         .connections
                         .as_ref()
-                        .and_then(|c| c.0.iter().find(|cc| cc.id == conn.id))
+                        .and_then(|c| c.0.iter().find(|cc| cc.common.id == conn.common.id))
                         .map(|cc| conn != &cc)
                         .unwrap_or(true)
                 } else {
@@ -695,70 +695,70 @@ impl Connection {
     ///
     /// * `conn`: settings to apply.
     pub fn apply_settings(&mut self, conn: &NetworkConnection) -> Result<(), NetworkStateError> {
-        self.ip_config.method4 = conn.method4;
-        self.ip_config.method6 = conn.method6;
+        self.ip_config.method4 = conn.ip.method4;
+        self.ip_config.method6 = conn.ip.method6;
 
-        if let Some(status) = conn.status {
+        if let Some(status) = conn.common.status {
             self.status = status;
         }
 
-        if let Some(autoconnect) = conn.autoconnect {
+        if let Some(autoconnect) = conn.common.autoconnect {
             self.autoconnect = autoconnect;
         }
 
-        if let Some(persistent) = conn.persistent {
+        if let Some(persistent) = conn.common.persistent {
             self.persistent = persistent;
         }
 
-        if let Some(ignore_auto_dns) = conn.ignore_auto_dns {
+        if let Some(ignore_auto_dns) = conn.ip.ignore_auto_dns {
             self.ip_config.ignore_auto_dns = ignore_auto_dns;
         }
 
         // A missing section means "do not touch the device settings", not "turn this into an
         // Ethernet connection". Changing the type of a connection requires removing it and
         // creating a new one.
-        if let Some(vlan_config) = &conn.vlan {
+        if let Some(vlan_config) = &conn.common.vlan {
             self.config = VlanConfig::try_from(vlan_config.clone())?.into();
         }
-        if let Some(wireless_config) = &conn.wireless {
+        if let Some(wireless_config) = &conn.common.wireless {
             self.config = WirelessConfig::try_from(wireless_config.clone())?.into();
         }
         if let Some(bond_config) = &conn.bond {
-            self.config = BondConfig::try_from(bond_config.clone())?.into();
+            self.config = BondConfig::try_from(bond_config.common.clone())?.into();
         }
         if let Some(bridge_config) = &conn.bridge {
-            self.config = BridgeConfig::try_from(bridge_config.clone())?.into();
+            self.config = BridgeConfig::try_from(bridge_config.common.clone())?.into();
         }
 
-        if let Some(ieee_8021x_config) = &conn.ieee_8021x {
+        if let Some(ieee_8021x_config) = &conn.common.ieee_8021x {
             self.ieee_8021x_config = Some(IEEE8021XConfig::try_from(ieee_8021x_config.clone())?);
         }
 
-        if let Some(mac) = &conn.mac_address {
+        if let Some(mac) = &conn.common.mac_address {
             self.mac_address = MacAddr6::from_str(mac).ok();
         }
 
-        if let Some(mac) = &conn.custom_mac_address {
+        if let Some(mac) = &conn.common.custom_mac_address {
             self.custom_mac_address = MacAddress::from_str(mac)
                 .map_err(|_| NetworkStateError::InvalidMacAddress(mac.to_string()))?;
         }
 
-        self.ip_config.addresses = conn.addresses.clone();
-        self.ip_config.nameservers = conn.nameservers.clone();
-        self.ip_config.dns_searchlist = conn.dns_searchlist.clone();
-        self.ip_config.gateway4 = conn.gateway4;
-        self.ip_config.gateway6 = conn.gateway6;
+        self.ip_config.addresses = conn.ip.addresses.clone();
+        self.ip_config.nameservers = conn.ip.nameservers.clone();
+        self.ip_config.dns_searchlist = conn.ip.dns_searchlist.clone();
+        self.ip_config.gateway4 = conn.ip.gateway4;
+        self.ip_config.gateway6 = conn.ip.gateway6;
         // Like the MTU, a port referred to by its ID only does not give its interface.
-        if conn.interface.is_some() {
-            self.interface = conn.interface.clone();
+        if conn.common.interface.is_some() {
+            self.interface = conn.common.interface.clone();
         }
 
         // An MTU of 0 means that it is not given, e.g. a port referred to by its interface only.
-        if conn.mtu != 0 {
-            self.mtu = conn.mtu;
+        if conn.common.mtu != 0 {
+            self.mtu = conn.common.mtu;
         }
 
-        if let Some(match_settings) = &conn.match_settings {
+        if let Some(match_settings) = &conn.common.match_settings {
             self.match_config = MatchConfig {
                 driver: match_settings.driver.clone(),
                 interface: match_settings.interface.clone(),
@@ -841,7 +841,7 @@ impl TryFrom<NetworkConnection> for Connection {
     type Error = NetworkStateError;
 
     fn try_from(conn: NetworkConnection) -> Result<Self, Self::Error> {
-        let mut connection = Connection::new(conn.id.clone(), conn.device_type());
+        let mut connection = Connection::new(conn.common.id.clone(), conn.device_type());
         connection.apply_settings(&conn)?;
 
         Ok(connection)
@@ -881,30 +881,35 @@ impl TryFrom<Connection> for NetworkConnection {
         });
 
         let mut connection = NetworkConnection {
-            id,
-            status,
-            method4,
-            method6,
-            gateway4,
-            gateway6,
-            nameservers,
-            dns_searchlist,
-            ignore_auto_dns,
-            custom_mac_address,
-            mac_address,
-            interface,
-            addresses,
-            mtu,
-            ieee_8021x,
-            autoconnect,
-            persistent,
-            match_settings,
+            common: ConnectionCommon {
+                id,
+                status,
+                custom_mac_address,
+                mac_address,
+                interface,
+                mtu,
+                ieee_8021x,
+                autoconnect,
+                persistent,
+                match_settings,
+                ..Default::default()
+            },
+            ip: IpSettings {
+                method4,
+                method6,
+                gateway4,
+                gateway6,
+                nameservers,
+                dns_searchlist,
+                ignore_auto_dns,
+                addresses,
+            },
             ..Default::default()
         };
 
         match conn.config {
             ConnectionConfig::Wireless(config) => {
-                connection.wireless = Some(WirelessSettings::try_from(config)?);
+                connection.common.wireless = Some(WirelessSettings::try_from(config)?);
             }
             ConnectionConfig::Bond(config) => {
                 connection.bond = Some(BondSettings::try_from(config)?);
@@ -913,7 +918,7 @@ impl TryFrom<Connection> for NetworkConnection {
                 connection.bridge = Some(BridgeSettings::try_from(config)?);
             }
             ConnectionConfig::Vlan(config) => {
-                connection.vlan = Some(VlanSettings::try_from(config)?);
+                connection.common.vlan = Some(VlanSettings::try_from(config)?);
             }
             _ => {}
         }
@@ -1574,35 +1579,6 @@ impl ConnectionCollection {
     /// The ports of each bond and bridge are nested in its `portConnections` list, so only the
     /// root connections are at the top level.
     fn to_api(&self) -> Result<NetworkConnectionsCollection, NetworkStateError> {
-        let roots = self.to_api_roots()?;
-        Ok(NetworkConnectionsCollection(
-            roots.into_iter().map(|(_, root)| root).collect(),
-        ))
-    }
-
-    /// Converts the collection to its HTTP API representation, with the state of the connections.
-    ///
-    /// Only the root connections report their state: the nested ports are part of their
-    /// controller's representation.
-    fn to_api_with_state(
-        &self,
-    ) -> Result<NetworkConnectionsWithStateCollection, NetworkStateError> {
-        let roots = self.to_api_roots()?;
-        Ok(NetworkConnectionsWithStateCollection(
-            roots
-                .into_iter()
-                .map(|(conn, connection)| NetworkConnectionWithState {
-                    connection,
-                    state: conn.state,
-                })
-                .collect(),
-        ))
-    }
-
-    /// Converts the root connections, with their ports nested, to their HTTP API representation.
-    ///
-    /// Each one comes with the connection it was converted from.
-    fn to_api_roots(&self) -> Result<Vec<(&Connection, NetworkConnection)>, NetworkStateError> {
         let mut placed = HashSet::new();
         let mut roots = vec![];
 
@@ -1621,8 +1597,7 @@ impl ConnectionCollection {
                 }
             }
 
-            let root = self.to_api_tree(conn, &mut placed)?;
-            roots.push((conn, root));
+            roots.push(self.to_api_tree(conn, &mut placed)?);
         }
 
         // A loop of controllers is not reachable from any root. Report it anyway, starting at
@@ -1630,12 +1605,36 @@ impl ConnectionCollection {
         for conn in self.iter() {
             if !placed.contains(&conn.uuid) {
                 tracing::warn!("Connection {} belongs to a loop of controllers", conn.id);
-                let root = self.to_api_tree(conn, &mut placed)?;
-                roots.push((conn, root));
+                roots.push(self.to_api_tree(conn, &mut placed)?);
             }
         }
 
-        Ok(roots)
+        Ok(NetworkConnectionsCollection(roots))
+    }
+
+    /// Converts the collection to its HTTP API representation, with the state of the connections.
+    ///
+    /// The nested ports report their state too, as it is not the one of their controller (e.g., a
+    /// backup port of a bond is not active while the bond is). The tree is the one of the
+    /// configuration, and the state of each connection is looked up by its ID, as the
+    /// representation knows the connections by it.
+    fn to_api_with_state(
+        &self,
+    ) -> Result<system_info::NetworkConnectionsCollection, NetworkStateError> {
+        let mut states = HashMap::new();
+        for conn in self.iter() {
+            // The first one wins, as with [`NetworkState::get_connection`].
+            states.entry(conn.id.as_str()).or_insert(conn.state);
+        }
+        let state_of = |id: &str| states.get(id).copied().unwrap_or(ConnectionState::Unknown);
+
+        let roots = self.to_api()?.0;
+        Ok(system_info::NetworkConnectionsCollection(
+            roots
+                .into_iter()
+                .map(|conn| system_info::NetworkConnection::new(conn, &state_of))
+                .collect(),
+        ))
     }
 
     /// Converts a connection and, recursively, its ports to their HTTP API representation.
@@ -1788,10 +1787,10 @@ impl TryFrom<ConnectionConfig> for BondConfig {
     }
 }
 
-impl TryFrom<BondSettings> for BondConfig {
+impl TryFrom<BondCommon> for BondConfig {
     type Error = NetworkStateError;
 
-    fn try_from(settings: BondSettings) -> Result<Self, Self::Error> {
+    fn try_from(settings: BondCommon) -> Result<Self, Self::Error> {
         let mode = BondMode::try_from(settings.mode.as_str())
             .map_err(|_| NetworkStateError::InvalidBondMode(settings.mode))?;
         let mut options = BondOptions::default();
@@ -1808,8 +1807,11 @@ impl TryFrom<BondConfig> for BondSettings {
 
     fn try_from(bond: BondConfig) -> Result<Self, Self::Error> {
         Ok(BondSettings {
-            mode: bond.mode.to_string(),
-            options: Some(bond.options.to_string()),
+            common: BondCommon {
+                mode: bond.mode.to_string(),
+                options: Some(bond.options.to_string()),
+                ..Default::default()
+            },
             ..Default::default()
         })
     }
@@ -1837,10 +1839,10 @@ impl TryFrom<ConnectionConfig> for BridgeConfig {
     }
 }
 
-impl TryFrom<BridgeSettings> for BridgeConfig {
+impl TryFrom<BridgeCommon> for BridgeConfig {
     type Error = NetworkStateError;
 
-    fn try_from(settings: BridgeSettings) -> Result<Self, Self::Error> {
+    fn try_from(settings: BridgeCommon) -> Result<Self, Self::Error> {
         Ok(BridgeConfig {
             stp: settings.stp,
             priority: settings.priority,
@@ -1858,13 +1860,15 @@ impl TryFrom<BridgeConfig> for BridgeSettings {
 
     fn try_from(bridge: BridgeConfig) -> Result<Self, Self::Error> {
         Ok(BridgeSettings {
-            stp: bridge.stp,
-            priority: bridge.priority,
-            forward_delay: bridge.forward_delay,
-            hello_time: bridge.hello_time,
-            max_age: bridge.max_age,
-            // Filled in by ConnectionCollection::to_api, which can see the other connections.
-            ports: None,
+            common: BridgeCommon {
+                stp: bridge.stp,
+                priority: bridge.priority,
+                forward_delay: bridge.forward_delay,
+                hello_time: bridge.hello_time,
+                max_age: bridge.max_age,
+                // Filled in by ConnectionCollection::to_api, which can see the other connections.
+                ports: None,
+            },
             port_connections: None,
         })
     }

@@ -40,6 +40,11 @@ module Agama
     # @return [String]
     attr_reader :qclass
 
+    # Title of the question
+    #
+    # @return [String]
+    attr_reader :title
+
     # Text of the question
     #
     # @return [String]
@@ -76,6 +81,7 @@ module Agama
         answer = Answer.from_api(hash["answer"]) if hash["answer"]
         question = new(
           qclass:         hash["class"],
+          title:          hash["title"],
           text:           hash["text"],
           options:        hash["actions"].map { |a| a["id"].to_sym },
           default_option: hash["defaultAction"]&.to_sym,
@@ -89,9 +95,11 @@ module Agama
     end
 
     # rubocop:disable Metrics/ParameterLists
-    def initialize(qclass:, text:, options:, default_option: nil, data: {}, answer: nil, field: nil)
+    def initialize(qclass:, text:, options:, title: nil, default_option: nil, data: {},
+      answer: nil, field: nil)
       @id = nil
       @qclass = qclass
+      @title = title
       @text = text
       @options = options
       @default_option = default_option
@@ -118,6 +126,7 @@ module Agama
         "defaultAction" => @default_option.to_s,
         "data"          => @data
       }
+      question["title"] = @title if @title
 
       question["field"] = { "type" => @field } if @field
       question

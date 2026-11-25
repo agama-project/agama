@@ -21,6 +21,7 @@
 use crate::{ConfigLoader, UserQuestions};
 use agama_lib::http::BaseHTTPClient;
 use anyhow::anyhow;
+use gettextrs::gettext;
 
 /// List of pre-defined locations for profiles.
 const PREDEFINED_LOCATIONS: [&str; 9] = [
@@ -165,7 +166,8 @@ impl ConfigAutoLoader {
         let msg = gettextrs::gettext(
             "Configuration cannot be applied because it is invalid or could not be reached.",
         );
-        self.questions.should_retry(&msg, error, url).await
+        let title = gettext("Configuration error");
+        self.questions.should_retry(&title, &msg, error, url).await
     }
 }
 

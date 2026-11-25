@@ -162,6 +162,7 @@ export default function QuestionDialog({
   const actions = (
     <>
       <Popup.PrimaryAction
+        id="question-primary-action"
         isDisabled={disabledActions.includes(primary.id)}
         {...(hasForm ? { type: "submit", form: formId } : { onClick: () => answer(primary.id) })}
       >

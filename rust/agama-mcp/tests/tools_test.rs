@@ -109,6 +109,7 @@ fn sample_question() -> Question {
     Question {
         id: 1,
         spec: QuestionSpec {
+            title: "GPG signature failed".to_string(),
             text: "Cannot verify GPG signature. Import key?".to_string(),
             class: "importGpg".to_string(),
             field: QuestionField::None,

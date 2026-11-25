@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import { screen } from "@testing-library/react";
+import { screen, within } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import { useAppForm } from "~/hooks/form";
 import { defaultOptions } from "./fields";
@@ -51,9 +51,11 @@ jest.mock("~/hooks/model/system/network", () => ({
 function TestForm({
   defaultValues = {},
   isEditing = false,
+  excludedDevices = [],
 }: {
   defaultValues?: object;
   isEditing?: boolean;
+  excludedDevices?: string[];
 }) {
   const form = useAppForm({
     ...defaultOptions,
@@ -67,7 +69,7 @@ function TestForm({
 
   return (
     <form.AppForm>
-      <BondFields form={form} isEditing={isEditing} />
+      <BondFields form={form} isEditing={isEditing} excludedDevices={excludedDevices} />
     </form.AppForm>
   );
 }
@@ -80,6 +82,16 @@ describe("BondFields", () => {
     await screen.findByLabelText("Bond options");
     await screen.findByText("Bond ports");
     screen.getByRole("combobox", { name: "Bond ports" });
+  });
+
+  it("leaves the excluded devices out of the available ones", async () => {
+    const { user } = installerRender(<TestForm excludedDevices={["enp1s0"]} />);
+
+    await screen.findByRole("combobox", { name: "Bond ports" });
+    await user.click(screen.getByRole("button", { name: "Show options" }));
+    const list = within(screen.getByRole("listbox", { name: "Bond ports" }));
+    list.getByRole("option", { name: /enp2s0/ });
+    expect(list.queryByRole("option", { name: /enp1s0/ })).not.toBeInTheDocument();
   });
 
   it("displays bond ports", async () => {

@@ -72,6 +72,12 @@ type PortsFieldProps = {
    * same on every field, so the dialog cannot name itself.
    */
   dialogTitle: TranslatedString;
+  /**
+   * Names of the devices that cannot be a port, besides the loopback and the
+   * controller itself, e.g. the ones of its own controllers, which would make
+   * a loop.
+   */
+  excludedDevices?: string[];
 };
 
 /**
@@ -97,7 +103,14 @@ const PortsField = withForm({
   ...defaultOptions,
   // Only carries the prop types: every caller passes them all.
   props: {} as PortsFieldProps,
-  render: function Render({ form, name, controllerField, label, dialogTitle }) {
+  render: function Render({
+    form,
+    name,
+    controllerField,
+    label,
+    dialogTitle,
+    excludedDevices = [],
+  }) {
     const devices = useDevices();
     const connections = useConnections();
     const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -109,8 +122,11 @@ const PortsField = withForm({
             {(field) => {
               const ports = field.state.value;
               // The loopback is never a port of anything, and a controller is
-              // not a port of itself.
-              const available = devices.filter((d) => !isLoopback(d) && d.name !== controllerIface);
+              // neither a port of itself nor of the ones it is a port of.
+              const available = devices.filter(
+                (d) =>
+                  !isLoopback(d) && d.name !== controllerIface && !excludedDevices.includes(d.name),
+              );
               // The controller being edited is not worth mentioning: the user
               // is looking at its own list of ports.
               const portOf = (device: Device) => {

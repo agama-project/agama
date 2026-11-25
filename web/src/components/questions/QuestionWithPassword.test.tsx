@@ -34,7 +34,8 @@ import { Product } from "~/model/system";
 const answerFn = jest.fn();
 const question: Question = {
   id: 1,
-  class: "question.password",
+  class: "questionPassword",
+  title: "Random password",
   text: "Random question. Will you provide random password?",
   field: { type: FieldType.None },
   actions: [
@@ -105,6 +106,12 @@ describe("QuestionWithPassword", () => {
     renderQuestion();
 
     screen.getByText(question.text);
+  });
+
+  it("renders the question title", async () => {
+    renderQuestion();
+
+    await screen.findByRole("dialog", { name: question.title });
   });
 
   it("allows opening the installer keymap settings", async () => {

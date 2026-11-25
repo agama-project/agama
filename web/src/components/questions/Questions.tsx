@@ -28,7 +28,6 @@ import PackageErrorQuestion from "~/components/questions/PackageErrorQuestion";
 import UnsupportedAutoYaST from "~/components/questions/UnsupportedAutoYaST";
 import RegistrationCertificateQuestion from "~/components/questions/RegistrationCertificateQuestion";
 import LoadConfigRetryQuestion from "~/components/questions/LoadConfigRetryQuestion";
-import StorageCommitErrorQuestion from "~/components/questions/StorageCommitErrorQuestion";
 import { useQuestions, useQuestionsChanges } from "~/hooks/model/question";
 import { patchQuestion } from "~/api";
 import { FieldType } from "~/model/question";
@@ -81,10 +80,8 @@ export default function Questions(): React.ReactNode {
     QuestionComponent = LoadConfigRetryQuestion;
   }
 
-  // special popup for storage commit errors
-  if (questionClass === "storageCommitError") {
-    QuestionComponent = StorageCommitErrorQuestion;
-  }
+  // storageCommitError just needs the text and a technical details block,
+  // which GenericQuestion already provides via data.details
 
   return <QuestionComponent question={currentQuestion} answerCallback={answerQuestion} />;
 }

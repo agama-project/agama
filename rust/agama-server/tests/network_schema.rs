@@ -270,10 +270,46 @@ async fn test_connections_do_not_accept_the_state() {
 }
 
 #[tokio::test]
+async fn test_nested_ports_do_not_accept_the_state() {
+    let profile = connections(json!([{
+        "id": "bond0",
+        "bond": {
+            "portConnections": [{ "interface": "eth0", "state": "activated" }]
+        }
+    }]));
+    assert!(matches!(
+        validate(profile).await,
+        ValidationOutcome::NotValid(_)
+    ));
+}
+
+#[tokio::test]
 async fn test_controller_is_not_accepted_anymore() {
     let profile = connections(json!([{ "id": "eth0", "controller": "bond0" }]));
     assert!(matches!(
         validate(profile).await,
         ValidationOutcome::NotValid(_)
     ));
+}
+
+#[tokio::test]
+async fn test_wireless_mode_and_security_are_optional() {
+    let profile = connections(json!([{ "id": "wifi", "wireless": { "ssid": "agama" } }]));
+    assert!(matches!(validate(profile).await, ValidationOutcome::Valid));
+}
+
+#[tokio::test]
+async fn test_ieee_8021x_settings_take_both_keys() {
+    let settings = json!({ "eap": ["peap"], "identity": "user", "password": "secret" });
+    for key in ["ieee8021x", "ieee-8021x"] {
+        let profile = connections(json!([
+            { "id": "eth0", key: settings },
+            { "id": "bond0", "bond": { "mode": "active-backup", "portConnections": [{ "interface": "eth1", key: settings }] } }
+        ]));
+        let outcome = validate(profile).await;
+        assert!(
+            matches!(outcome, ValidationOutcome::Valid),
+            "{key}: {outcome:?}"
+        );
+    }
 }

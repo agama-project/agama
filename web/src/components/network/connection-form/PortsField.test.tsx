@@ -77,7 +77,13 @@ jest.mock("~/hooks/model/system/network", () => ({
   useConnections: () => mockConnections,
 }));
 
-function TestForm({ defaultValues = {} }: { defaultValues?: object }) {
+function TestForm({
+  defaultValues = {},
+  excludedDevices,
+}: {
+  defaultValues?: object;
+  excludedDevices?: string[];
+}) {
   const form = useAppForm({
     ...defaultOptions,
     defaultValues: {
@@ -110,6 +116,7 @@ function TestForm({ defaultValues = {} }: { defaultValues?: object }) {
           controllerField="bondIface"
           label={_("Bond ports")}
           dialogTitle={_("Select bond ports")}
+          excludedDevices={excludedDevices}
         />
         <button type="submit">Submit</button>
       </form>
@@ -167,6 +174,13 @@ describe("PortsField", () => {
     await openList(user);
     deviceOption("enp1s0");
     deviceOption("enp2s0");
+  });
+
+  it("does not offer the excluded devices", async () => {
+    const { user } = installerRender(<TestForm excludedDevices={["enp2s0"]} />);
+    await openList(user);
+    deviceOption("enp1s0");
+    expect(list().queryByRole("option", { name: /enp2s0/ })).not.toBeInTheDocument();
   });
 
   it("tells the devices apart by their hardware identifier", async () => {

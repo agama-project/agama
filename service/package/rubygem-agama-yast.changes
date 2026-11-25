@@ -1,5 +1,5 @@
 -------------------------------------------------------------------
-Mon Nov 23 12:00:00 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+Mon Nov 25 12:00:00 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
 
 - Support setting the bootloader type (grub2, systemd-boot, none)
   in the bootloader configuration.
@@ -8,6 +8,28 @@ Mon Nov 23 12:00:00 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
 - Expose the proposed bootloader type via D-Bus Proposal property.
 - Support loader_type in AutoYaST profiles.
 - Deprecate the inst.systemd_boot_preview kernel parameter.
+
+-------------------------------------------------------------------
+Tue Nov 25 11:45:18 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add titles to questions (gh#agama-project/agama#2028,
+  gh#agama-project/agama#4278):
+- Adjust description and details for the bootloaderInstallError
+  question.
+
+-------------------------------------------------------------------
+Wed Nov 25 10:04:49 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Fix support in Autoyast converter for bootloader updateNvram
+  conversion
+
+-------------------------------------------------------------------
+Mon Nov 23 12:00:00 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Remove network-online.target dependency from agama.service
+  (gh#agama-project/agama#4217).
+- Run dbus-daemon directly as Type=exec in agama.service instead of
+  forking through Ruby agamactl wrapper.
 
 -------------------------------------------------------------------
 Thu Nov 12 12:12:49 UTC 2026 - José Iván López González <jlopez@suse.com>

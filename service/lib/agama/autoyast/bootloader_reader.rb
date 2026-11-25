@@ -43,6 +43,7 @@ module Agama
         add_kernel_params(bootloader, global)
         add_update_nvram(bootloader, global)
 
+
         { "bootloader" => bootloader }
       end
 

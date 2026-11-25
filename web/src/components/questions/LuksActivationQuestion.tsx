@@ -21,9 +21,10 @@
  */
 
 import React, { useState } from "react";
-import { Alert as PFAlert, Content, FormGroup, Stack } from "@patternfly/react-core";
+import { Alert as PFAlert, FormGroup, Stack } from "@patternfly/react-core";
 import { InstallerL10nOptions, PasswordInput } from "~/components/core";
 import QuestionDialog from "~/components/questions/QuestionDialog";
+import QuestionText from "~/components/questions/QuestionText";
 import { _ } from "~/i18n";
 import type { AnswerCallback, Question } from "~/model/question";
 
@@ -62,16 +63,16 @@ export default function LuksActivationQuestion({
       value={password}
       disabledActions={disabledActions}
       hasForm
-      title={_("Encrypted Device")}
+      title={question.title}
       elementToFocus="#luks-password"
       titleAddon={<InstallerL10nOptions variant="keyboard" />}
     >
       <Stack hasGutter>
         <Alert attempt={question.data?.attempt} />
-        <Content>{question.text}</Content>
+        <QuestionText text={question.text} />
         <QuestionDialog.Form>
           {/* TRANSLATORS: field label */}
-          <FormGroup label={_("Encryption Password")} fieldId="luks-password">
+          <FormGroup label={_("Encryption password")} fieldId="luks-password">
             <PasswordInput
               id="luks-password"
               value={password}
