@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Nov 24 21:16:38 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Fix support in Autoyast converter for bootloader updateNvram
+  conversion
+
+-------------------------------------------------------------------
 Thu Nov  5 12:11:29 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Fix support for AutoYaST classes adding the missing dependency on
