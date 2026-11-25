@@ -61,7 +61,7 @@ jobs:
         run: |
           zypper --non-interactive install --no-recommends diffutils git gettext-tools npm-default yast2-devtools which
           # openSUSE Leap 16.1 does not contain all needed Ruby gems, install them as gems
-          gem install --no-format-exec gettext yast-ruby
+          gem install --no-format-exec gettext yast-rake
 
       - name: Checkout Agama sources
         uses: actions/checkout@v7
