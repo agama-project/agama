@@ -85,7 +85,7 @@ impl Client {
 
     async fn call_action(&self, action: &str) -> Result<(), Error> {
         self.storage_client
-            .call(message::CallAction::new(action))
+            .call(message::CallAction::new(action.to_string()))
             .await?;
         Ok(())
     }

@@ -515,13 +515,13 @@ impl Service {
             .await?;
         if let Some(locale) = config.locale {
             self.software
-                .cast(software::message::SetLocale::new(locale.as_str()))?;
+                .cast(software::message::SetLocale::new(locale.clone()))?;
             self.storage
-                .cast(storage::message::SetLocale::new(locale.as_str()))?;
+                .cast(storage::message::SetLocale::new(locale.clone()))?;
             self.users
-                .cast(users::message::SetLocale::new(locale.as_str()))?;
+                .cast(users::message::SetLocale::new(locale.clone()))?;
             if let Some(s390) = &self.s390 {
-                s390.cast(s390::message::SetLocale::new(locale.as_str()))?;
+                s390.cast(s390::message::SetLocale::new(locale.clone()))?;
             }
 
             let lang: LanguageTag = locale.as_str().try_into().map_err(licenses::Error::from)?;

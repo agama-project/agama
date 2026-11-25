@@ -20,8 +20,8 @@
 
 use crate::service;
 use agama_utils::{
-    actor::Message,
     api::{storage::Config, Issue},
+    define_message,
     products::ProductSpec,
     BoxFuture,
 };
@@ -32,105 +32,14 @@ pub mod dasd;
 pub mod iscsi;
 pub mod zfcp;
 
-pub struct CallAction {
-    pub action: String,
-}
+define_message!(CallAction { action: String } -> ());
 
-impl CallAction {
-    pub fn new(action: &str) -> Self {
-        Self {
-            action: action.to_string(),
-        }
-    }
-}
-
-impl Message for CallAction {
-    type Reply = ();
-}
-
-pub struct SetStorageConfig {
-    pub product: Arc<RwLock<ProductSpec>>,
-    pub config: Option<Config>,
-}
-
-impl SetStorageConfig {
-    pub fn new(product: Arc<RwLock<ProductSpec>>, config: Option<Config>) -> Self {
-        Self { product, config }
-    }
-}
-
-impl Message for SetStorageConfig {
-    type Reply = BoxFuture<Result<(), service::Error>>;
-}
-
-pub struct GetStorageConfig;
-
-impl Message for GetStorageConfig {
-    type Reply = Option<Config>;
-}
-
-pub struct GetSystem;
-
-impl Message for GetSystem {
-    type Reply = Option<serde_json::Value>;
-}
-
-pub struct GetProposal;
-
-impl Message for GetProposal {
-    type Reply = Option<serde_json::Value>;
-}
-
-pub struct GetIssues;
-
-impl Message for GetIssues {
-    type Reply = Vec<Issue>;
-}
-
-pub struct GetConfigFromModel {
-    pub model: serde_json::Value,
-}
-
-impl GetConfigFromModel {
-    pub fn new(model: serde_json::Value) -> Self {
-        Self { model }
-    }
-}
-
-impl Message for GetConfigFromModel {
-    type Reply = Option<Config>;
-}
-
-pub struct GetConfigModel;
-
-impl Message for GetConfigModel {
-    type Reply = Option<serde_json::Value>;
-}
-
-pub struct SolveConfigModel {
-    pub model: serde_json::Value,
-}
-
-impl SolveConfigModel {
-    pub fn new(model: serde_json::Value) -> Self {
-        Self { model }
-    }
-}
-
-impl Message for SolveConfigModel {
-    type Reply = Option<serde_json::Value>;
-}
-
-pub struct SetLocale {
-    pub locale: String,
-}
-
-impl SetLocale {
-    pub fn new(locale: String) -> Self {
-        Self { locale }
-    }
-}
-
-impl Message for SetLocale {
-    type Reply = ();
-}
+define_message!(SetStorageConfig { product: Arc<RwLock<ProductSpec>>, config: Option<Config> } -> BoxFuture<Result<(), service::Error>>);
+define_message!(GetStorageConfig -> Option<Config>);
+define_message!(GetSystem -> Option<serde_json::Value>);
+define_message!(GetProposal -> Option<serde_json::Value>);
+define_message!(GetIssues -> Vec<Issue>);
+define_message!(GetConfigFromModel { model: serde_json::Value } -> Option<Config>);
+define_message!(GetConfigModel -> Option<serde_json::Value>);
+define_message!(SolveConfigModel { model: serde_json::Value } -> Option<serde_json::Value>);
+define_message!(SetLocale { locale: String } -> ());

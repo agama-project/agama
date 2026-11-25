@@ -18,75 +18,22 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use agama_utils::{actor::Message, api::security::Config};
+use agama_utils::{api::security::Config, define_message};
 use openssl::x509::X509;
 
-#[derive(Clone)]
-pub struct GetConfig;
+define_message!(GetConfig -> Config);
+define_message!(SetConfig<T> { config: Option<T> } -> ());
 
-impl Message for GetConfig {
-    type Reply = Config;
-}
+define_message!(
+    /// Message to check an SSL certificate.
+    CheckCertificate {
+        certificate: X509,
+        name: String,
+    } -> bool
+);
 
-pub struct SetConfig<T> {
-    pub config: Option<T>,
-}
-
-impl<T: Send + 'static> Message for SetConfig<T> {
-    type Reply = ();
-}
-
-impl<T> SetConfig<T> {
-    pub fn new(config: Option<T>) -> Self {
-        Self { config }
-    }
-}
-
-/// Message to check an SSL certificate.
-pub struct CheckCertificate {
-    pub certificate: X509,
-    pub name: String,
-}
-
-impl CheckCertificate {
-    /// Creates the message.
-    ///
-    /// * `certificate`: X509 certificate.
-    /// * `name`: certificate name. It is used as the filename (without the extension) when
-    ///   importing the certificate.
-    pub fn new(certificate: X509, name: &str) -> Self {
-        Self {
-            certificate,
-            name: name.to_string(),
-        }
-    }
-}
-
-impl Message for CheckCertificate {
-    type Reply = bool;
-}
-
-/// Execute actions at the end of the installation.
-#[derive(Clone)]
-pub struct Finish;
-
-impl Message for Finish {
-    type Reply = ();
-}
-
-#[derive(Clone)]
-pub struct SetLocale {
-    pub locale: String,
-}
-
-impl SetLocale {
-    pub fn new(locale: &str) -> Self {
-        Self {
-            locale: locale.to_string(),
-        }
-    }
-}
-
-impl Message for SetLocale {
-    type Reply = ();
-}
+define_message!(
+    /// Execute actions at the end of the installation.
+    Finish -> ()
+);
+define_message!(SetLocale { locale: String } -> ());

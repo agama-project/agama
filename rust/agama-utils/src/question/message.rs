@@ -19,75 +19,36 @@
 // find current contact information at www.suse.com.
 
 use crate::{
-    actor::Message,
-    api::question::{self, Config, Question},
+    api::question::{Answer as QuestionAnswer, Config, Question, QuestionSpec},
+    define_message,
 };
 
-/// Gets questions configuration (policy, pre-defined answers, etc.).
-pub struct GetConfig;
+define_message!(
+    /// Gets questions configuration (policy, pre-defined answers, etc.).
+    GetConfig -> Option<Config>
+);
 
-impl Message for GetConfig {
-    type Reply = Option<Config>;
-}
+define_message!(
+    /// Sets questions configuration (policy, pre-defined answers, etc.).
+    SetConfig { config: Option<Config> } -> ()
+);
 
-/// Sets questions configuration (policy, pre-defined answers, etc.).
-pub struct SetConfig {
-    pub config: Option<Config>,
-}
+define_message!(
+    /// Gets the list of questions.
+    Get -> Vec<Question>
+);
 
-impl SetConfig {
-    pub fn new(config: Option<Config>) -> Self {
-        Self { config }
-    }
+define_message!(
+    /// Asks a question, adding it to the list of questions.
+    Ask { question: QuestionSpec } -> Question
+);
 
-    pub fn with(config: Config) -> Self {
-        Self {
-            config: Some(config),
-        }
-    }
-}
+define_message!(
+    /// Answers a question, updating its current representation.
+    Answer { id: u32, answer: QuestionAnswer } -> ()
+);
 
-impl Message for SetConfig {
-    type Reply = ();
-}
-
-/// Gets the list of questions.
-pub struct Get;
-
-impl Message for Get {
-    type Reply = Vec<question::Question>;
-}
-
-/// Asks a question, adding it to the list of questions.
-pub struct Ask {
-    pub question: question::QuestionSpec,
-}
-
-impl Ask {
-    pub fn new(question: question::QuestionSpec) -> Self {
-        Self { question }
-    }
-}
-
-impl Message for Ask {
-    type Reply = Question;
-}
-
-/// Answers a question, updating its current representation.
-pub struct Answer {
-    pub id: u32,
-    pub answer: question::Answer,
-}
-
-impl Message for Answer {
-    type Reply = ();
-}
-
-/// Removes a question from the list.
-pub struct Delete {
-    pub id: u32,
-}
-
-impl Message for Delete {
-    type Reply = ();
-}
+define_message!(
+    /// Removes a question from the list.
+    Delete { id: u32 } -> ()
+);

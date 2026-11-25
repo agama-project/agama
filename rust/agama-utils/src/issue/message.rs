@@ -21,12 +21,9 @@
 use crate::actor::Message;
 use crate::api::issue::{Issue, IssueMap};
 use crate::api::Scope;
+use crate::define_message;
 
-pub struct Get;
-
-impl Message for Get {
-    type Reply = IssueMap;
-}
+define_message!(Get -> IssueMap);
 
 // FIXME: consider an alternative approach to avoid pub(crate),
 // making it only visible to the service.

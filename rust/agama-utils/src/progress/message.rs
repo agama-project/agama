@@ -23,133 +23,19 @@ use crate::api::progress::Progress;
 use crate::api::scope::Scope;
 use crate::api::status::Stage;
 use crate::api::Status;
+use crate::define_message;
 
-pub struct GetStatus;
+define_message!(GetStatus -> Status);
+define_message!(GetProgress -> Vec<Progress>);
+define_message!(SetProgress { progress: Progress } -> ());
+define_message!(Start { scope: Scope, size: usize, step: String } -> ());
+define_message!(StartWithSteps { scope: Scope, steps: Vec<String> } -> ());
+define_message!(Next { scope: Scope } -> ());
+define_message!(NextWithStep { scope: Scope, step: String } -> ());
 
-impl Message for GetStatus {
-    type Reply = Status;
-}
-
-pub struct GetProgress;
-
-impl Message for GetProgress {
-    type Reply = Vec<Progress>;
-}
-
-pub struct SetProgress {
-    pub progress: Progress,
-}
-
-impl SetProgress {
-    pub fn new(progress: Progress) -> Self {
-        Self { progress }
-    }
-}
-
-impl Message for SetProgress {
-    type Reply = ();
-}
-
-pub struct Start {
-    pub scope: Scope,
-    pub size: usize,
-    pub step: String,
-}
-
-impl Start {
-    pub fn new(scope: Scope, size: usize, step: &str) -> Self {
-        Self {
-            scope,
-            size,
-            step: step.to_string(),
-        }
-    }
-}
-
-impl Message for Start {
-    type Reply = ();
-}
-
-pub struct StartWithSteps {
-    pub scope: Scope,
-    pub steps: Vec<String>,
-}
-
-impl StartWithSteps {
-    pub fn new(scope: Scope, steps: Vec<String>) -> Self {
-        Self { scope, steps }
-    }
-}
-
-impl Message for StartWithSteps {
-    type Reply = ();
-}
-
-pub struct Next {
-    pub scope: Scope,
-}
-
-impl Next {
-    pub fn new(scope: Scope) -> Self {
-        Self { scope }
-    }
-}
-
-impl Message for Next {
-    type Reply = ();
-}
-
-pub struct NextWithStep {
-    pub scope: Scope,
-    pub step: String,
-}
-
-impl NextWithStep {
-    pub fn new(scope: Scope, step: &str) -> Self {
-        Self {
-            scope,
-            step: step.to_string(),
-        }
-    }
-}
-
-impl Message for NextWithStep {
-    type Reply = ();
-}
-
-pub struct Finish {
-    pub scope: Scope,
-}
-
-impl Finish {
-    pub fn new(scope: Scope) -> Self {
-        Self { scope }
-    }
-}
-
-impl Message for Finish {
-    type Reply = ();
-}
-
-pub struct SetStage {
-    pub stage: Stage,
-}
-
-impl SetStage {
-    pub fn new(stage: Stage) -> Self {
-        Self { stage }
-    }
-}
-
-impl Message for SetStage {
-    type Reply = ();
-}
-
-pub struct GetStage;
-
-impl Message for GetStage {
-    type Reply = Stage;
-}
+define_message!(Finish { scope: Scope } -> ());
+define_message!(SetStage { stage: Stage } -> ());
+define_message!(GetStage -> Stage);
 
 /// Determines whether the progress is empty.
 ///

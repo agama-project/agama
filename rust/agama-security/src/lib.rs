@@ -133,7 +133,10 @@ mod tests {
         // Check the certificate
         let valid = ctx
             .handler
-            .call(message::CheckCertificate::new(cert, "registration"))
+            .call(message::CheckCertificate::new(
+                cert,
+                "registration".to_string(),
+            ))
             .await?;
 
         assert!(valid);
@@ -182,7 +185,10 @@ mod tests {
         // Check the certificate
         let valid = ctx
             .handler
-            .call(message::CheckCertificate::new(cert, "registration"))
+            .call(message::CheckCertificate::new(
+                cert,
+                "registration".to_string(),
+            ))
             .await?;
 
         assert!(valid);
@@ -225,7 +231,10 @@ mod tests {
         // Check the certificate
         let valid = ctx
             .handler
-            .call(message::CheckCertificate::new(cert, "registration"))
+            .call(message::CheckCertificate::new(
+                cert,
+                "registration".to_string(),
+            ))
             .await?;
 
         assert!(!valid);
@@ -268,7 +277,10 @@ mod tests {
         // Check the certificate (first time)
         let valid = ctx
             .handler
-            .call(message::CheckCertificate::new(cert.clone(), "registration"))
+            .call(message::CheckCertificate::new(
+                cert.clone(),
+                "registration".to_string(),
+            ))
             .await?;
 
         assert!(valid);
@@ -276,7 +288,10 @@ mod tests {
         // Check the certificate again (should be remembered)
         let valid_again = ctx
             .handler
-            .call(message::CheckCertificate::new(cert, "registration"))
+            .call(message::CheckCertificate::new(
+                cert,
+                "registration".to_string(),
+            ))
             .await?;
 
         assert!(valid_again);

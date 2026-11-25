@@ -20,92 +20,24 @@
 
 use agama_locale_data::{KeymapId, LocaleId};
 use agama_utils::{
-    actor::Message,
     api::{
         self,
         l10n::{Proposal, SystemInfo},
     },
+    define_message,
 };
 
-#[derive(Clone)]
-pub struct GetSystem;
+define_message!(GetSystem -> SystemInfo);
 
-impl Message for GetSystem {
-    type Reply = SystemInfo;
-}
+define_message!(
+    /// Gets the current system locale.
+    GetLocale -> LocaleId
+);
 
-/// Gets the current system locale.
-#[derive(Clone)]
-pub struct GetLocale;
-
-impl Message for GetLocale {
-    type Reply = LocaleId;
-}
-
-pub struct SetSystem<T> {
-    pub config: T,
-}
-
-impl<T: Send + 'static> Message for SetSystem<T> {
-    type Reply = ();
-}
-
-impl<T> SetSystem<T> {
-    pub fn new(config: T) -> Self {
-        Self { config }
-    }
-}
-
-pub struct GetConfig;
-
-impl Message for GetConfig {
-    type Reply = api::l10n::Config;
-}
-
-pub struct SetConfig<T> {
-    pub config: Option<T>,
-}
-
-impl<T: Send + 'static> Message for SetConfig<T> {
-    type Reply = ();
-}
-
-impl<T> SetConfig<T> {
-    pub fn new(config: Option<T>) -> Self {
-        Self { config }
-    }
-
-    pub fn with(config: T) -> Self {
-        Self {
-            config: Some(config),
-        }
-    }
-}
-
-pub struct GetProposal;
-
-impl Message for GetProposal {
-    type Reply = Option<Proposal>;
-}
-
-pub struct Install;
-
-impl Message for Install {
-    type Reply = ();
-}
-
-pub struct UpdateKeymap {
-    pub keymap: KeymapId,
-}
-
-impl Message for UpdateKeymap {
-    type Reply = ();
-}
-
-pub struct UpdateLocale {
-    pub locale: LocaleId,
-}
-
-impl Message for UpdateLocale {
-    type Reply = ();
-}
+define_message!(SetSystem<T> { config: T } -> ());
+define_message!(GetConfig -> api::l10n::Config);
+define_message!(SetConfig<T> { config: Option<T> } -> ());
+define_message!(GetProposal -> Option<Proposal>);
+define_message!(Install -> ());
+define_message!(UpdateKeymap { keymap: KeymapId } -> ());
+define_message!(UpdateLocale { locale: LocaleId } -> ());

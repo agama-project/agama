@@ -20,45 +20,12 @@
 
 use crate::service;
 use agama_utils::{
-    actor::Message,
     api::{Issue, RawConfig},
-    BoxFuture,
+    define_message, BoxFuture,
 };
 
-pub struct Probe;
-
-impl Message for Probe {
-    type Reply = ();
-}
-
-pub struct GetSystem;
-
-impl Message for GetSystem {
-    type Reply = Option<serde_json::Value>;
-}
-
-pub struct GetConfig;
-
-impl Message for GetConfig {
-    type Reply = Option<RawConfig>;
-}
-
-pub struct GetIssues;
-
-impl Message for GetIssues {
-    type Reply = Vec<Issue>;
-}
-
-pub struct SetConfig {
-    pub config: Option<RawConfig>,
-}
-
-impl SetConfig {
-    pub fn new(config: Option<RawConfig>) -> Self {
-        Self { config }
-    }
-}
-
-impl Message for SetConfig {
-    type Reply = BoxFuture<Result<(), service::Error>>;
-}
+define_message!(Probe -> ());
+define_message!(GetSystem -> Option<serde_json::Value>);
+define_message!(GetConfig -> Option<RawConfig>);
+define_message!(GetIssues -> Vec<Issue>);
+define_message!(SetConfig { config: Option<RawConfig> } -> BoxFuture<Result<(), service::Error>>);

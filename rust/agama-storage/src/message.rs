@@ -22,6 +22,7 @@ use crate::client;
 use agama_utils::{
     actor::Message,
     api::{storage::Config, Issue},
+    define_message,
     products::ProductSpec,
     BoxFuture,
 };
@@ -29,90 +30,17 @@ use serde_json::Value;
 use std::sync::Arc;
 use tokio::sync::RwLock;
 
-#[derive(Clone)]
-pub struct Activate;
-
-impl Message for Activate {
-    type Reply = ();
-}
-
-#[derive(Clone)]
-pub struct Probe;
-
-impl Message for Probe {
-    type Reply = ();
-}
-
-#[derive(Clone)]
-pub struct Install;
-
-impl Message for Install {
-    type Reply = ();
-}
-
-#[derive(Clone)]
-pub struct Finish;
-
-impl Message for Finish {
-    type Reply = ();
-}
-
-#[derive(Clone)]
-pub struct Umount;
-
-impl Message for Umount {
-    type Reply = ();
-}
-
-#[derive(Clone)]
-pub struct GetSystem;
-
-impl Message for GetSystem {
-    type Reply = Option<Value>;
-}
-
-#[derive(Clone)]
-pub struct GetConfig;
-
-impl Message for GetConfig {
-    type Reply = Option<Config>;
-}
-
-#[derive(Clone)]
-pub struct GetConfigFromModel {
-    pub model: Value,
-}
-
-impl GetConfigFromModel {
-    pub fn new(model: Value) -> Self {
-        Self { model }
-    }
-}
-
-impl Message for GetConfigFromModel {
-    type Reply = Option<Config>;
-}
-
-#[derive(Clone)]
-pub struct GetConfigModel;
-
-impl Message for GetConfigModel {
-    type Reply = Option<Value>;
-}
-
-#[derive(Clone)]
-pub struct GetProposal;
-
-impl Message for GetProposal {
-    type Reply = Option<Value>;
-}
-
-#[derive(Clone)]
-pub struct GetIssues;
-
-impl Message for GetIssues {
-    type Reply = Vec<Issue>;
-}
+define_message!(Activate -> ());
+define_message!(Probe -> ());
+define_message!(Install -> ());
+define_message!(Finish -> ());
+define_message!(Umount -> ());
+define_message!(GetSystem -> Option<Value>);
+define_message!(GetConfig -> Option<Config>);
+define_message!(GetConfigFromModel { model: Value } -> Option<Config>);
+define_message!(GetConfigModel -> Option<Value>);
+define_message!(GetProposal -> Option<Value>);
+define_message!(GetIssues -> Vec<Issue>);
 
 #[derive(Clone)]
 pub struct SetConfig {
@@ -137,34 +65,5 @@ impl Message for SetConfig {
     type Reply = BoxFuture<Result<(), client::Error>>;
 }
 
-#[derive(Clone)]
-pub struct SolveConfigModel {
-    pub model: Value,
-}
-
-impl SolveConfigModel {
-    pub fn new(model: Value) -> Self {
-        Self { model }
-    }
-}
-
-impl Message for SolveConfigModel {
-    type Reply = Option<Value>;
-}
-
-#[derive(Clone)]
-pub struct SetLocale {
-    pub locale: String,
-}
-
-impl SetLocale {
-    pub fn new(locale: &str) -> Self {
-        Self {
-            locale: locale.to_string(),
-        }
-    }
-}
-
-impl Message for SetLocale {
-    type Reply = ();
-}
+define_message!(SolveConfigModel { model: Value } -> Option<Value>);
+define_message!(SetLocale { locale: String } -> ());

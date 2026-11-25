@@ -35,7 +35,7 @@ impl install::Callback for Install {
         // just ignore issues with reporting progress
         let _ = self
             .progress
-            .cast(progress::message::NextWithStep::new(Scope::Software, &msg));
+            .cast(progress::message::NextWithStep::new(Scope::Software, msg));
     }
 
     fn package_problem(

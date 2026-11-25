@@ -18,81 +18,14 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use agama_utils::{
-    actor::Message,
-    api::{self},
-};
+use agama_utils::{api, define_message};
 
 use crate::PasswordCheckResult;
 
-#[derive(Clone)]
-pub struct SetSystem<T> {
-    pub system: Option<T>,
-}
-
-impl<T: Send + 'static> Message for SetSystem<T> {
-    type Reply = ();
-}
-
-pub struct GetConfig;
-
-impl Message for GetConfig {
-    type Reply = api::users::Config;
-}
-
-pub struct SetConfig<T> {
-    pub config: Option<T>,
-}
-
-impl<T> SetConfig<T> {
-    pub fn new(config: Option<T>) -> Self {
-        Self { config }
-    }
-}
-
-impl<T: Send + 'static> Message for SetConfig<T> {
-    type Reply = ();
-}
-
-pub struct GetProposal;
-
-impl Message for GetProposal {
-    type Reply = Option<api::users::Config>;
-}
-
-pub struct Install;
-
-impl Message for Install {
-    type Reply = ();
-}
-
-#[derive(Clone)]
-pub struct SetLocale {
-    pub locale: String,
-}
-
-impl SetLocale {
-    pub fn new(locale: &str) -> Self {
-        Self {
-            locale: locale.to_string(),
-        }
-    }
-}
-
-impl Message for SetLocale {
-    type Reply = ();
-}
-
-pub struct CheckPassword {
-    pub password: String,
-}
-
-impl CheckPassword {
-    pub fn new(password: String) -> Self {
-        CheckPassword { password }
-    }
-}
-
-impl Message for CheckPassword {
-    type Reply = PasswordCheckResult;
-}
+define_message!(SetSystem<T> { system: Option<T> } -> ());
+define_message!(GetConfig -> api::users::Config);
+define_message!(SetConfig<T> { config: Option<T> } -> ());
+define_message!(GetProposal -> Option<api::users::Config>);
+define_message!(Install -> ());
+define_message!(SetLocale { locale: String } -> ());
+define_message!(CheckPassword { password: String } -> PasswordCheckResult);

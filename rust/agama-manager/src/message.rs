@@ -19,147 +19,63 @@
 // find current contact information at www.suse.com.
 
 use agama_utils::{
-    actor::Message,
     api::{manager::LicenseContent, Action, Config, IssueMap, Proposal, SystemInfo},
+    define_message,
 };
 use serde_json::Value;
 
-/// Gets the information of the underlying system.
-#[derive(Debug)]
-pub struct GetSystem;
+define_message!(
+    /// Gets the information of the underlying system.
+    GetSystem -> SystemInfo
+);
 
-impl Message for GetSystem {
-    type Reply = SystemInfo;
-}
+define_message!(
+    /// Gets the full config.
+    ///
+    /// It includes user and default values.
+    GetExtendedConfig -> Config
+);
 
-/// Gets the full config.
-///
-/// It includes user and default values.
-#[derive(Debug)]
-pub struct GetExtendedConfig;
+define_message!(
+    /// Gets the current config set by the user.
+    GetConfig -> Config
+);
 
-impl Message for GetExtendedConfig {
-    type Reply = Config;
-}
+define_message!(
+    /// Replaces the config.
+    SetConfig { config: Config } -> ()
+);
 
-/// Gets the current config set by the user.
-#[derive(Debug)]
-pub struct GetConfig;
+define_message!(
+    /// Updates the config.
+    UpdateConfig { config: Config } -> ()
+);
 
-impl Message for GetConfig {
-    type Reply = Config;
-}
+define_message!(
+    /// Gets the proposal.
+    GetProposal -> Option<Proposal>
+);
 
-/// Replaces the config.
-#[derive(Debug)]
-pub struct SetConfig {
-    pub config: Config,
-}
+define_message!(
+    /// Gets the installation issues.
+    GetIssues -> IssueMap
+);
 
-impl SetConfig {
-    pub fn new(config: Config) -> Self {
-        Self { config }
-    }
-}
+define_message!(GetLicense { id: String } -> Option<LicenseContent>);
 
-impl Message for SetConfig {
-    type Reply = ();
-}
+define_message!(
+    /// Runs the given action.
+    RunAction { action: Action } -> ()
+);
 
-/// Updates the config.
-#[derive(Debug)]
-pub struct UpdateConfig {
-    pub config: Config,
-}
+define_message!(
+    // Gets the storage model.
+    GetStorageModel -> Option<Value>
+);
 
-impl UpdateConfig {
-    pub fn new(config: Config) -> Self {
-        Self { config }
-    }
-}
+define_message!(
+    // Sets the storage model.
+    SetStorageModel { model: Value } -> ()
+);
 
-impl Message for UpdateConfig {
-    type Reply = ();
-}
-
-/// Gets the proposal.
-#[derive(Debug)]
-pub struct GetProposal;
-
-impl Message for GetProposal {
-    type Reply = Option<Proposal>;
-}
-
-/// Gets the installation issues.
-pub struct GetIssues;
-
-impl Message for GetIssues {
-    type Reply = IssueMap;
-}
-
-pub struct GetLicense {
-    pub id: String,
-}
-
-impl Message for GetLicense {
-    type Reply = Option<LicenseContent>;
-}
-
-impl GetLicense {
-    pub fn new(id: String) -> Self {
-        Self { id }
-    }
-}
-
-/// Runs the given action.
-#[derive(Debug)]
-pub struct RunAction {
-    pub action: Action,
-}
-
-impl RunAction {
-    pub fn new(action: Action) -> Self {
-        Self { action }
-    }
-}
-
-impl Message for RunAction {
-    type Reply = ();
-}
-
-// Gets the storage model.
-pub struct GetStorageModel;
-
-impl Message for GetStorageModel {
-    type Reply = Option<Value>;
-}
-
-// Sets the storage model.
-pub struct SetStorageModel {
-    pub model: Value,
-}
-
-impl SetStorageModel {
-    pub fn new(model: Value) -> Self {
-        Self { model }
-    }
-}
-
-impl Message for SetStorageModel {
-    type Reply = ();
-}
-
-#[derive(Clone)]
-pub struct SolveStorageModel {
-    pub model: Value,
-}
-
-impl SolveStorageModel {
-    pub fn new(model: Value) -> Self {
-        Self { model }
-    }
-}
-
-impl Message for SolveStorageModel {
-    type Reply = Option<Value>;
-}
+define_message!(SolveStorageModel { model: Value } -> Option<Value>);

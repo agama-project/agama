@@ -20,65 +20,13 @@
 
 use crate::{client::DiscoverResult, service};
 use agama_utils::{
-    actor::Message,
     api::iscsi::{Config, DiscoverConfig},
-    BoxFuture,
+    define_message, BoxFuture,
 };
 use serde_json::Value;
 
-pub struct Discover {
-    pub config: DiscoverConfig,
-}
-
-impl Discover {
-    pub fn new(config: DiscoverConfig) -> Self {
-        Self { config }
-    }
-}
-
-impl Message for Discover {
-    type Reply = DiscoverResult;
-}
-
-pub struct GetSystem;
-
-impl Message for GetSystem {
-    type Reply = Option<Value>;
-}
-
-pub struct GetConfig;
-
-impl Message for GetConfig {
-    type Reply = Option<Config>;
-}
-
-pub struct SetConfig {
-    pub config: Option<Config>,
-}
-
-impl SetConfig {
-    pub fn new(config: Option<Config>) -> Self {
-        Self { config }
-    }
-}
-
-impl Message for SetConfig {
-    type Reply = BoxFuture<Result<(), service::Error>>;
-}
-
-#[derive(Clone)]
-pub struct SetLocale {
-    pub locale: String,
-}
-
-impl SetLocale {
-    pub fn new(locale: &str) -> Self {
-        Self {
-            locale: locale.to_string(),
-        }
-    }
-}
-
-impl Message for SetLocale {
-    type Reply = ();
-}
+define_message!(Discover { config: DiscoverConfig } -> DiscoverResult);
+define_message!(GetSystem -> Option<Value>);
+define_message!(GetConfig -> Option<Config>);
+define_message!(SetConfig { config: Option<Config> } -> BoxFuture<Result<(), service::Error>>);
+define_message!(SetLocale { locale: String } -> ());

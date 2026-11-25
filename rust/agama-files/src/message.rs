@@ -19,68 +19,16 @@
 // find current contact information at www.suse.com.
 
 use agama_utils::{
-    actor::Message,
     api::files::{scripts::ScriptsGroup, Config},
+    define_message,
 };
 
-#[derive(Clone)]
-pub struct SetConfig {
-    pub config: Option<Config>,
-}
+define_message!(SetConfig { config: Option<Config> } -> ());
 
-impl Message for SetConfig {
-    type Reply = ();
-}
+define_message!(
+    /// Run scripts of the given group.
+    RunScripts { group: ScriptsGroup } -> bool
+);
 
-impl SetConfig {
-    pub fn new(config: Option<Config>) -> Self {
-        Self { config }
-    }
-
-    pub fn with(config: Config) -> Self {
-        Self {
-            config: Some(config),
-        }
-    }
-}
-
-/// Run scripts of the given group.
-#[derive(Clone)]
-pub struct RunScripts {
-    pub group: ScriptsGroup,
-}
-
-impl RunScripts {
-    pub fn new(group: ScriptsGroup) -> Self {
-        RunScripts { group }
-    }
-}
-
-/// It returns true if any script ran; false otherwise.
-impl Message for RunScripts {
-    type Reply = bool;
-}
-
-#[derive(Clone)]
-pub struct Finish;
-
-impl Message for Finish {
-    type Reply = ();
-}
-
-#[derive(Clone)]
-pub struct SetLocale {
-    pub locale: String,
-}
-
-impl SetLocale {
-    pub fn new(locale: &str) -> Self {
-        Self {
-            locale: locale.to_string(),
-        }
-    }
-}
-
-impl Message for SetLocale {
-    type Reply = ();
-}
+define_message!(Finish -> ());
+define_message!(SetLocale { locale: String } -> ());

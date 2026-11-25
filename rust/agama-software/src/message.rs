@@ -21,6 +21,7 @@
 use agama_utils::{
     actor::Message,
     api::software::{Config, Proposal, SystemInfo},
+    define_message,
     products::ProductSpec,
 };
 use std::sync::Arc;
@@ -28,32 +29,9 @@ use tokio::sync::RwLock;
 
 use crate::Resolvable;
 
-#[derive(Clone)]
-pub struct GetSystem;
-
-impl Message for GetSystem {
-    type Reply = SystemInfo;
-}
-
-pub struct SetSystem<T> {
-    pub config: T,
-}
-
-impl<T: Send + 'static> Message for SetSystem<T> {
-    type Reply = ();
-}
-
-impl<T> SetSystem<T> {
-    pub fn new(config: T) -> Self {
-        Self { config }
-    }
-}
-
-pub struct GetConfig;
-
-impl Message for GetConfig {
-    type Reply = Config;
-}
+define_message!(GetSystem -> SystemInfo);
+define_message!(SetSystem<T> { config: T } -> ());
+define_message!(GetConfig -> Config);
 
 pub struct SetConfig<T> {
     pub config: Option<T>,
@@ -77,74 +55,12 @@ impl<T> SetConfig<T> {
     }
 }
 
-pub struct GetProposal;
-
-impl Message for GetProposal {
-    type Reply = Option<Proposal>;
-}
-
-pub struct Install;
-
-impl Message for Install {
-    type Reply = ();
-}
-
-pub struct Probe;
-
-impl Message for Probe {
-    type Reply = ();
-}
-
-pub struct Finish;
-
-impl Message for Finish {
-    type Reply = ();
-}
+define_message!(GetProposal -> Option<Proposal>);
+define_message!(Install -> ());
+define_message!(Probe -> ());
+define_message!(Finish -> ());
 
 // Sets a resolvables list
-pub struct SetResolvables {
-    pub id: String,
-    pub resolvables: Vec<Resolvable>,
-}
-
-impl SetResolvables {
-    pub fn new(id: String, resolvables: Vec<Resolvable>) -> Self {
-        Self { id, resolvables }
-    }
-}
-
-impl Message for SetResolvables {
-    type Reply = ();
-}
-
-#[derive(Clone)]
-pub struct SetLocale {
-    pub locale: String,
-}
-
-impl SetLocale {
-    pub fn new(locale: &str) -> Self {
-        Self {
-            locale: locale.to_string(),
-        }
-    }
-}
-
-impl Message for SetLocale {
-    type Reply = ();
-}
-
-#[derive(Clone)]
-pub struct IsPatternSelected {
-    pub name: String,
-}
-
-impl Message for IsPatternSelected {
-    type Reply = bool;
-}
-
-impl IsPatternSelected {
-    pub fn new(name: String) -> Self {
-        Self { name }
-    }
-}
+define_message!(SetResolvables { id: String, resolvables: Vec<Resolvable> } -> ());
+define_message!(SetLocale { locale: String } -> ());
+define_message!(IsPatternSelected { name: String } -> bool);

@@ -20,79 +20,17 @@
 
 use crate::service::Error;
 use agama_utils::{
-    actor::Message,
     api::{
         s390::{Config, SystemInfo},
         RawConfig,
     },
-    BoxFuture,
+    define_message, BoxFuture,
 };
 
-pub struct ProbeDASD;
-
-impl Message for ProbeDASD {
-    type Reply = ();
-}
-
-pub struct ProbeZFCP;
-
-impl Message for ProbeZFCP {
-    type Reply = ();
-}
-
-pub struct GetSystem;
-
-impl Message for GetSystem {
-    type Reply = SystemInfo;
-}
-
-pub struct GetConfig;
-
-impl Message for GetConfig {
-    type Reply = Config;
-}
-
-pub struct SetZFCPConfig {
-    pub config: Option<RawConfig>,
-}
-
-impl SetZFCPConfig {
-    pub fn new(config: Option<RawConfig>) -> Self {
-        Self { config }
-    }
-}
-
-impl Message for SetZFCPConfig {
-    type Reply = BoxFuture<Result<(), Error>>;
-}
-
-pub struct SetDASDConfig {
-    pub config: Option<RawConfig>,
-}
-
-impl SetDASDConfig {
-    pub fn new(config: Option<RawConfig>) -> Self {
-        Self { config }
-    }
-}
-
-impl Message for SetDASDConfig {
-    type Reply = BoxFuture<Result<(), Error>>;
-}
-
-#[derive(Clone)]
-pub struct SetLocale {
-    pub locale: String,
-}
-
-impl SetLocale {
-    pub fn new(locale: &str) -> Self {
-        Self {
-            locale: locale.to_string(),
-        }
-    }
-}
-
-impl Message for SetLocale {
-    type Reply = ();
-}
+define_message!(ProbeDASD -> ());
+define_message!(ProbeZFCP -> ());
+define_message!(GetSystem -> SystemInfo);
+define_message!(GetConfig -> Config);
+define_message!(SetZFCPConfig { config: Option<RawConfig> } -> BoxFuture<Result<(), Error>>);
+define_message!(SetDASDConfig { config: Option<RawConfig> } -> BoxFuture<Result<(), Error>>);
+define_message!(SetLocale { locale: String } -> ());

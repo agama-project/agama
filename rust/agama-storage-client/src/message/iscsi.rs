@@ -19,44 +19,9 @@
 // find current contact information at www.suse.com.
 
 use crate::service;
-use agama_utils::{actor::Message, api::iscsi, BoxFuture};
+use agama_utils::{api::iscsi, define_message, BoxFuture};
 
-pub struct Discover {
-    pub config: iscsi::DiscoverConfig,
-}
-
-impl Discover {
-    pub fn new(config: iscsi::DiscoverConfig) -> Self {
-        Self { config }
-    }
-}
-
-impl Message for Discover {
-    type Reply = u32;
-}
-
-pub struct GetSystem;
-
-impl Message for GetSystem {
-    type Reply = Option<serde_json::Value>;
-}
-
-pub struct GetConfig;
-
-impl Message for GetConfig {
-    type Reply = Option<iscsi::Config>;
-}
-
-pub struct SetConfig {
-    pub config: Option<iscsi::Config>,
-}
-
-impl SetConfig {
-    pub fn new(config: Option<iscsi::Config>) -> Self {
-        Self { config }
-    }
-}
-
-impl Message for SetConfig {
-    type Reply = BoxFuture<Result<(), service::Error>>;
-}
+define_message!(Discover { config: iscsi::DiscoverConfig } -> u32);
+define_message!(GetSystem -> Option<serde_json::Value>);
+define_message!(GetConfig -> Option<iscsi::Config>);
+define_message!(SetConfig { config: Option<iscsi::Config> } -> BoxFuture<Result<(), service::Error>>);

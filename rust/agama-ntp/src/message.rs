@@ -18,45 +18,9 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use agama_utils::actor::Message;
+use agama_utils::{api::ntp::Config, define_message};
 
-pub struct GetConfig;
-
-impl Message for GetConfig {
-    type Reply = Option<agama_utils::api::ntp::Config>;
-}
-
-#[derive(Clone, Debug)]
-pub struct SetConfig<T> {
-    pub config: Option<T>,
-}
-
-impl<T> SetConfig<T> {
-    pub fn new(config: Option<T>) -> Self {
-        Self { config }
-    }
-}
-
-impl<T: Send + 'static> Message for SetConfig<T> {
-    type Reply = ();
-}
-
-pub struct Finish;
-
-impl Message for Finish {
-    type Reply = ();
-}
-
-pub struct SetLocale {
-    pub locale: String,
-}
-
-impl SetLocale {
-    pub fn new(locale: String) -> Self {
-        Self { locale }
-    }
-}
-
-impl Message for SetLocale {
-    type Reply = ();
-}
+define_message!(GetConfig -> Option<Config>);
+define_message!(SetConfig<T> { config: Option<T> } -> ());
+define_message!(Finish -> ());
+define_message!(SetLocale { locale: String } -> ());
