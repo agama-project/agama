@@ -438,6 +438,25 @@ async fn test_get_logs_tool() -> TestResult {
     Ok(())
 }
 
+#[tokio::test]
+async fn test_get_logs_in_config_mode_filters_live_password() -> TestResult {
+    let backend = Arc::new(MockBackend::default());
+    let server = McpServer::with_backend(backend, McpMode::Config);
+
+    let res = server
+        .get_logs(Parameters(GetLogsArgs {
+            log_type: Some("installer".to_string()),
+            lines: Some(10),
+        }))
+        .await?;
+
+    let text = get_text(&res);
+    assert!(!text.is_empty());
+    // Verify that raw live passwords are never present
+    assert!(!text.contains("live.password=nots3cr3t"));
+    Ok(())
+}
+
 fn ensure_test_schema() {
     let manifest_dir = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"));
     let schema_file = manifest_dir.join("../out/schemas/config.schema.json");
