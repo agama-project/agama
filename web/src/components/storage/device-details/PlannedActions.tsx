@@ -39,9 +39,8 @@ export type PlannedActionsProps = {
 };
 
 /**
- * The line of actions on what the user planned for a device: adding a
- * partition or logical volume, plus any extra actions given. A divider above
- * it marks where reading ends and acting starts.
+ * The actions on what the user planned for a device: adding a partition or
+ * logical volume, plus any extra actions given.
  */
 export default function PlannedActions({ entry, subject, extraActions }: PlannedActionsProps) {
   const isVolumeGroup = entry.isVolumeGroup;

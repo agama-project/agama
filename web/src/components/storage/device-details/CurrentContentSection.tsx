@@ -377,13 +377,9 @@ export type CurrentContentSectionProps = {
   entry: Entry;
   /** Where the entry is written, which is what the space decision acts on. */
   subject: DetailsSubject;
-  /**
-   * Whether every other row is shaded. Off by default.
-   */
+  /** Whether every other row is shaded. Off by default. */
   isStriped?: boolean;
-  /**
-   * Whether a summary sentence comes before the table.
-   */
+  /** Whether a summary sentence comes before the table. */
   withSummary?: boolean;
   /**
    * What happens to every partition, where it does not depend on a space

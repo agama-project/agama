@@ -34,9 +34,7 @@ export type ExistingContentProps = {
 };
 
 /**
- * A paragraph saying what is on a device today (a file system, a part of a
- * volume group or of a RAID, or nothing) and whether the installation deletes
- * it.
+ * Says what is on a device today and whether the installation deletes it.
  */
 export default function ExistingContent({ entry, isDeleted = false }: ExistingContentProps) {
   const systemDevices = useSystemDevices();

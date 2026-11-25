@@ -35,9 +35,8 @@ export type UsedByStatementProps = {
 };
 
 /**
- * A paragraph naming the LVM volume groups that may take room from this disk,
- * each a link to its panel. Renders nothing for a volume group, or for a disk
- * no volume group uses.
+ * Names the LVM volume groups that may take room from this disk, each a link
+ * to its panel. Renders nothing otherwise.
  */
 export default function UsedByStatement({ entry }: UsedByStatementProps): React.ReactNode {
   const config = useConfigModel();

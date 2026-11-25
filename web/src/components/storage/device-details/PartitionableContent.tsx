@@ -39,10 +39,8 @@ import type { Partitionable } from "~/model/storage/config-model";
 import type { DeviceDetailsBodyProps } from "~/components/storage/device-details/DeviceDetailsBody";
 
 /**
- * Explains how the new system uses a disk on which it creates or reuses
- * partitions: the requested partitions first, then a paragraph for each other
- * role (LVM, booting), followed by one line of actions. Paragraphs rather than
- * a list, since the roles are different kinds of information.
+ * How the new system uses a disk it partitions: the requested partitions, a
+ * paragraph for each other role (LVM, booting), and the actions.
  */
 export default function PartitionableContent({
   entry,

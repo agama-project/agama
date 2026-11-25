@@ -34,12 +34,9 @@ export type SummaryWithActionsProps = {
 };
 
 /**
- * A short statement in a section of the device panel, for sections with little
- * or nothing to list yet, followed by the ways to act on it.
- *
- * The statement is a paragraph, not a heading, since the section already has
- * one. It is not a centered empty state either: the actions stay at the start
- * of the line, where every other section has them.
+ * A short statement for a section with little or nothing to list yet,
+ * followed by the ways to act on it. A paragraph rather than a centered empty
+ * state, so the actions stay where every other section has them.
  *
  * @example
  * <SummaryWithActions
