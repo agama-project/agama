@@ -204,15 +204,6 @@ describe Agama::Storage::Finisher do
           expect { subject.run }.to_not raise_error
         end
       end
-
-      context "and the user decides to abort" do
-        it "re-raises the error" do
-          allow(questions_client).to receive(:ask)
-            .and_return(Agama::Answer.new(:abort))
-
-          expect { subject.run }.to raise_error(error)
-        end
-      end
     end
 
     context "when bootloader write returns false" do

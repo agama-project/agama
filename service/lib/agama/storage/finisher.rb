@@ -190,8 +190,6 @@ module Agama
             retry
           when :skip
             nil
-          when :abort
-            raise
           end
         end
 
