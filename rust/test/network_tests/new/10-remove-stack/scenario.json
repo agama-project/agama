@@ -1,0 +1,65 @@
+{
+  "title": "Remove a whole stack",
+  "description": "Removing br0 removes everything below it. The VLAN on top of br0 is not a port, so it is kept (with a warning in the log about its missing parent).",
+  "steps": [
+    {
+      "profile": "1-ha-stack.json",
+      "description": "The HA stack of new/04-ha-stack",
+      "expect": {
+        "connections": {
+          "eth0": {
+            "controller": "bond0",
+            "mtu": 9000
+          },
+          "eth1": {
+            "controller": "bond0"
+          },
+          "bond0": {
+            "controller": "br0",
+            "port": {
+              "priority": 24,
+              "pathCost": 200
+            }
+          },
+          "br0": {
+            "controller": null,
+            "method4": "manual",
+            "addresses": [
+              "192.168.1.100/24"
+            ]
+          },
+          "br0.100": {
+            "controller": null,
+            "method4": "manual",
+            "addresses": [
+              "10.100.0.10/24"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "profile": "2-remove-br0.json",
+      "description": "br0 with status: removed",
+      "expect": {
+        "connections": {
+          "br0": {
+            "removed": true
+          },
+          "bond0": {
+            "removed": true
+          },
+          "eth0": {
+            "removed": true
+          },
+          "eth1": {
+            "removed": true
+          },
+          "br0.100": {
+            "controller": null
+          }
+        }
+      }
+    }
+  ]
+}

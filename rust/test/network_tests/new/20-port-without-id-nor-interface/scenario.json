@@ -1,0 +1,18 @@
+{
+  "title": "A nested port without an ID nor an interface",
+  "description": "Rejected by the network service: there is no way to tell which connection it is. Nothing is created.",
+  "steps": [
+    {
+      "profile": "1-no-name.json",
+      "description": "A nested port with only an MTU",
+      "expect": {
+        "error": "MissingPortId",
+        "connections": {
+          "bond0": {
+            "removed": true
+          }
+        }
+      }
+    }
+  ]
+}

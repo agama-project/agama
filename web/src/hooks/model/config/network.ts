@@ -21,11 +21,11 @@
  */
 
 import { useSuspenseQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Connection, NetworkConfig } from "~/types/network";
+import { Connection, NetworkConfig, flattenConnections } from "~/types/network";
 import { Network, Proposal } from "~/model/proposal";
 import { Config } from "~/model/config";
 import { patchConfig } from "~/api";
-import { configQuery } from "../config";
+import { configQuery, extendedConfigQuery } from "../config";
 import { proposalQuery } from "../proposal";
 
 /**
@@ -39,8 +39,12 @@ const useConnectionMutation = () => {
     mutationFn: async (newConnection: Connection) => {
       const currentConfig = (await queryClient.fetchQuery(configQuery)) || {};
       const networkConfig = NetworkConfig.fromApi(currentConfig.network || {});
+      // The config only holds what was changed, so the controllers of a port
+      // may not be there. The extended config has them all.
+      const extendedConfig = (await queryClient.fetchQuery(extendedConfigQuery)) || {};
+      const known = NetworkConfig.fromApi(extendedConfig.network || {}).connections;
 
-      networkConfig.addOrUpdateConnection(newConnection);
+      networkConfig.addOrUpdateConnection(newConnection, known);
 
       const config: Config = { ...currentConfig, network: networkConfig.toApi() };
       return patchConfig(config);
@@ -71,12 +75,31 @@ const useConfigMutation = () => {
   return useMutation(query);
 };
 
+/**
+ * Every connection but the removed ones, including the ports nested in bonds
+ * and bridges. The ports of a removed controller go away with it.
+ */
 const selectConnections = (data: Network.Proposal): Connection[] =>
-  data.connections.filter((c) => c.status !== "removed").map((c) => Connection.fromApi(c));
+  flattenConnections(
+    data.connections.filter((c) => c.status !== "removed").map((c) => Connection.fromApi(c)),
+  ).filter((c) => c.status !== "removed");
 
 const useConfig = (): NetworkConfig => {
   const { data } = useSuspenseQuery({
     ...configQuery,
+    select: (d: Config) => (d.network ? NetworkConfig.fromApi(d.network) : new NetworkConfig()),
+  });
+
+  return data;
+};
+
+/**
+ * Network config extended with the current state, so it includes every known connection
+ * (without their runtime state).
+ */
+const useExtendedConfig = (): NetworkConfig => {
+  const { data } = useSuspenseQuery({
+    ...extendedConfigQuery,
     select: (d: Config) => (d.network ? NetworkConfig.fromApi(d.network) : new NetworkConfig()),
   });
 
@@ -97,4 +120,11 @@ const useConnection = (name: string) => {
   return connection;
 };
 
-export { useConnectionMutation, useConfigMutation, useConnection, useConnections, useConfig };
+export {
+  useConnectionMutation,
+  useConfigMutation,
+  useConnection,
+  useConnections,
+  useConfig,
+  useExtendedConfig,
+};

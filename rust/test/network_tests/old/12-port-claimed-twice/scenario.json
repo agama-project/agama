@@ -1,0 +1,21 @@
+{
+  "title": "A port listed by two bonds",
+  "description": "Rejected by the network service. Nothing is created.",
+  "steps": [
+    {
+      "profile": "1-claimed-twice.json",
+      "description": "eth1 listed by bond0 and bond1",
+      "expect": {
+        "error": "PortAlreadyClaimed",
+        "connections": {
+          "bond0": {
+            "removed": true
+          },
+          "bond1": {
+            "removed": true
+          }
+        }
+      }
+    }
+  ]
+}

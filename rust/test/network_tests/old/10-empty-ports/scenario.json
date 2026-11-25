@@ -1,0 +1,37 @@
+{
+  "title": "Empty the list of ports",
+  "description": "An empty list means that the controller has no ports: the current ones are deleted.",
+  "steps": [
+    {
+      "profile": "1-bridge.json",
+      "description": "Bridge with ports: [eth0, eth1]",
+      "expect": {
+        "connections": {
+          "eth0": {
+            "controller": "br0"
+          },
+          "eth1": {
+            "controller": "br0"
+          }
+        }
+      }
+    },
+    {
+      "profile": "2-no-ports.json",
+      "description": "Same bridge with ports: []",
+      "expect": {
+        "connections": {
+          "br0": {
+            "controller": null
+          },
+          "eth0": {
+            "removed": true
+          },
+          "eth1": {
+            "removed": true
+          }
+        }
+      }
+    }
+  ]
+}

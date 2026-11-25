@@ -738,7 +738,7 @@ bool is_package_selected(Zypp *zypp, const char *tag, Status *status) noexcept {
 }
 
 void add_repository(struct Zypp *zypp, const char *alias, const char *url,
-                    unsigned priority, struct Status *status,
+                    unsigned priority, bool autorefresh, struct Status *status,
                     ZyppProgressCallback callback, void *user_data) noexcept {
   std::string message("Adding repository: ");
   message.append(alias);
@@ -757,6 +757,7 @@ void add_repository(struct Zypp *zypp, const char *alias, const char *url,
     zypp_repo.setBaseUrl(zypp::Url(url));
     zypp_repo.setAlias(alias);
     zypp_repo.setPriority(priority);
+    zypp_repo.setAutorefresh(autorefresh);
 
     zypp->repo_manager->addRepository(zypp_repo, zypp_callback);
     STATUS_OK(status);
@@ -853,6 +854,7 @@ struct RepositoryList list_repositories(struct Zypp *zypp,
   for (auto iter = zypp_repos.begin(); iter != zypp_repos.end(); ++iter) {
     struct Repository *new_repo = repos + res_i++;
     new_repo->enabled = iter->enabled();
+    new_repo->autorefresh = iter->autorefresh();
     new_repo->url = strdup(iter->url().asString().c_str());
     new_repo->alias = strdup(iter->alias().c_str());
     new_repo->userName = strdup(iter->asUserString().c_str());

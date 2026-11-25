@@ -7,10 +7,10 @@ permissions:
 on:
   push:
     branches:
-      # run on every change in master, the action actually checks if there is
+      # run on every change in SLE-16.1, the action actually checks if there is
       # any change in the translations, if there is no change it does not upload
       # the files to Weblate so it should be OK to run it quite often
-      - master
+      - SLE-16.1
 
     paths:
       # run only if any file which can contain translatable strings is modified,
@@ -47,7 +47,7 @@ jobs:
     runs-on: ubuntu-latest
 
     container:
-      image: registry.opensuse.org/opensuse/leap:16.0
+      image: registry.opensuse.org/opensuse/leap:16.1
 
     steps:
       - name: Configure and refresh repositories
@@ -59,8 +59,9 @@ jobs:
 
       - name: Install tools
         run: |
-          RUBY_VERSION=$(ruby -e "puts RbConfig::CONFIG['ruby_version']")
-          zypper --non-interactive install --no-recommends diffutils git gettext-tools npm-default "rubygem(ruby:$RUBY_VERSION:yast-rake)" "rubygem(ruby:$RUBY_VERSION:gettext)" yast2-devtools which
+          zypper --non-interactive install --no-recommends diffutils git gettext-tools npm-default yast2-devtools which
+          # openSUSE Leap 16.1 does not contain all needed Ruby gems, install them as gems
+          gem install --no-format-exec gettext yast-rake
 
       - name: Checkout Agama sources
         uses: actions/checkout@v7
@@ -73,6 +74,8 @@ jobs:
           path: agama-weblate
           repository: ${{ github.repository_owner }}/agama-weblate
           token:  ${{ secrets.GH_TOKEN }}
+          # checkout the SLE-16.1 branch
+          ref: SLE-16.1
 
       - name: Configure Git user and email
         run: |

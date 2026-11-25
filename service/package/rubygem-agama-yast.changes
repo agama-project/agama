@@ -5,10 +5,17 @@ Tue Nov 24 21:16:38 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
   conversion
 
 -------------------------------------------------------------------
-Wed Sep 23 09:30:35 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+Thu Nov  5 12:11:29 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Fix support for AutoYaST classes adding the missing dependency on
   xsltproc (bsc#1282368).
+
+-------------------------------------------------------------------
+Mon Sep 28 12:00:00 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Do not give IP or DNS settings to the interfaces that AutoYaST
+  lists as ports of a bond or a bridge, as their controller holds
+  the IP configuration (gh#agama-project/agama#3995).
 
 -------------------------------------------------------------------
 Mon Sep 21 14:16:54 UTC 2026 - Ancor Gonzalez Sosa <ancor@suse.com>

@@ -1,7 +1,13 @@
 -------------------------------------------------------------------
-Thu Oct  1 08:44:34 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+Thu Nov  5 12:11:29 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
 
 - Use kernel-nvidia64kb package (bsc#1282794)
+
+-------------------------------------------------------------------
+Mon Oct 19 11:38:02 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Do not try to enable the spice-vdagentd service because it is
+  already activated via socket (gh#agama-project/agama#4104).
 
 -------------------------------------------------------------------
 Thu Sep 10 18:49:38 UTC 2026 - Lubos Kocman <lubos.kocman@suse.com>
