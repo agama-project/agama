@@ -89,7 +89,9 @@ export default function WifiEnterpriseFields({
   onChange,
   showErrors,
 }: WifiEnterpriseFieldsProps) {
-  const eap = value.eap[0] as EapMethod;
+  const eap = (
+    Object.hasOwn(eapOptions, value.eap[0]) ? value.eap[0] : defaultEnterpriseSettings.eap[0]
+  ) as EapMethod;
   const update = (changes: Partial<IEEE8021X>) => onChange({ ...value, ...changes });
   const identityError = showErrors && isEmpty(value.identity);
   const passwordError = showErrors && isEmpty(value.password);
