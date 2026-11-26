@@ -84,6 +84,29 @@ function sourceFor(vol: Planned, entry: Entry): Storage.Device | undefined {
   return undefined;
 }
 
+/** What the installation does with a planned item. */
+function action(vol: Planned, entry: Entry) {
+  const source = sourceFor(vol, entry);
+  const keepsData = Boolean(vol.name) && vol.filesystem?.reuse === true;
+
+  if (source) {
+    const name = formattedPath(baseName(source.name, { truncate: true }));
+
+    // TRANSLATORS: %s is the short-name of a partition, like sda3
+    if (keepsData) return sprintf(_("Mount %s"), name);
+
+    // TRANSLATORS: %s is the short-name of a partition, like sda3
+    return sprintf(_("Format %s"), name);
+  }
+
+  if (entry.isVolumeGroup) {
+    // TRANSLATORS: refers to an LVM logical volume, %s is its escaped name
+    return sprintf(_("Create %s"), formattedPath((vol as ConfigModel.LogicalVolume).lvName));
+  }
+
+  return _("Create");
+}
+
 export type PlannedContentSectionProps = {
   entry: Entry;
   /** Where the entry is in the storage configuration, used to edit or delete its parts. */
@@ -190,21 +213,7 @@ export default function PlannedContentSection({
                   : vol.filesystem && filesystemType(vol.filesystem)}
               </Td>
               <Td {...columnProps(COLUMNS.size)}>{sizeDescription(vol.size)}</Td>
-              <Td {...columnProps(COLUMNS.action)}>
-                {source
-                  ? sprintf(
-                      // TRANSLATORS: %s is the short-name of a partition, like sda3
-                      keepsData ? _("Mount %s") : _("Format %s"),
-                      formattedPath(baseName(source.name, { truncate: true })),
-                    )
-                  : isVolumeGroup
-                    ? sprintf(
-                        // TRANSLATORS: refers to an LVM logical volume, %s is its escaped name
-                        _("Create %s"),
-                        formattedPath((vol as ConfigModel.LogicalVolume).lvName),
-                      )
-                    : _("Create")}
-              </Td>
+              <Td {...columnProps(COLUMNS.action)}>{action(vol, entry)}</Td>
               <Td isActionCell>
                 {/* Edit and delete need a mount point: items requested by id get no menu. */}
                 {vol.mountPath && (
