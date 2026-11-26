@@ -146,7 +146,7 @@ export default function SidePanel({
   returnFocusTo,
   subjectKey,
 }: SidePanelProps): React.ReactNode {
-  const [panel, setPanel] = useState<HTMLDivElement | null>(null);
+  const [panel, setPanel] = useState<HTMLElement | null>(null);
   const titleId = useId();
   const isPressOnBackdrop = useRef(false);
   const frameId = useId();
@@ -227,9 +227,8 @@ export default function SidePanel({
   }, [isOpen, panel, subjectKey]);
 
   const region = (
-    <div
+    <section
       ref={setPanel}
-      role="region"
       aria-labelledby={titleId}
       tabIndex={-1}
       className="agm-side-panel"
@@ -241,6 +240,7 @@ export default function SidePanel({
       }}
     >
       <Flex
+        component="header"
         className="agm-side-panel__head"
         justifyContent={{ default: "justifyContentSpaceBetween" }}
         alignItems={{ default: "alignItemsFlexStart" }}
@@ -251,7 +251,7 @@ export default function SidePanel({
           <h2 id={titleId} className="agm-side-panel__title">
             {title}
           </h2>
-          {description && <div className="agm-row-note">{description}</div>}
+          {description && <p className="agm-row-note">{description}</p>}
         </FlexItem>
         <FlexItem>
           <Flex gap={{ default: "gapXs" }} flexWrap={{ default: "nowrap" }}>
@@ -271,7 +271,7 @@ export default function SidePanel({
         </FlexItem>
       </Flex>
       <div className="agm-side-panel__body">{children}</div>
-    </div>
+    </section>
   );
 
   /* The backdrop is drawn over the drawer's only child, so that is what
