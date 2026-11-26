@@ -21,25 +21,12 @@
  */
 
 /**
- * How many things a line names before it counts them instead.
+ * How many things a line names before counting them instead, as in "system
+ * and data" versus "3 LVM volume groups".
  *
- * Everywhere the page refers to several things at once it follows one rule:
- * name them while naming is worth more than counting, then give a number. A
- * name is something the reader made or recognizes, and "2 LVM volume groups" is
- * arithmetic.
- *
- * How many a line can afford depends on how much room it has and how much else
- * it is already saying, so this is a starting point rather than a law: two is
- * defensible everywhere, and a line that wants three or one says so where it is
- * written. They are all here so that the set can be looked at together, which is
- * the only way to tell whether one of them is wrong.
- *
- * The separators and the conjunction between the names belong to the language,
- * so a line reading this writes one sentence with a single hole in it and fills
- * that hole with `formatList`. A sentence with a hole per name has to agree
- * with this number on how many there are, and nothing makes them agree: raise
- * it past what the sentence has room for and the rest of the names are dropped
- * without a mark.
+ * Lines name them in a single `%s` filled with `formatList`, so the language
+ * sets the separators. A sentence with a placeholder per name would silently
+ * drop names past its own count.
  */
 const NAMES_PER_LINE = 2;
 

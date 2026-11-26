@@ -196,8 +196,7 @@ export default function LvmPage() {
       editVolumeGroup(volumeGroup.vgName, data);
     }
 
-    /* Back to the page as it was left, with an open panel on the group still
-       open on it, under its new name if it was renamed. */
+    /* Back to the page as it was, the panel following a renamed group. */
     const search = volumeGroup
       ? renamedGroupSearch(location.search, volumeGroup.vgName, name)
       : location.search;

@@ -31,8 +31,7 @@ import { PROPOSAL_QUERY_KEY } from "~/hooks/model/proposal";
 import { _ } from "~/i18n";
 
 /**
- * Where the overview's Storage card leads: what the new system will be
- * installed on, and everything the reader can change about it.
+ * The storage page: what the new system is installed on, and how.
  */
 export default function StoragePage(): React.ReactNode {
   const zfcpIssues = useIssues("zfcp");

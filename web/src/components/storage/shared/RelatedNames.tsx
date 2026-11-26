@@ -26,18 +26,26 @@ import { formatListToParts } from "~/i18n";
 import type { Related } from "~/components/storage/shared/users";
 
 export type RelatedNamesProps = {
+  /** The entries to name, in order. */
   items: Related[];
 };
 
 /**
- * Other entries of the plan, named in a sentence, each a way to itself.
+ * A list of related storage entries inside a sentence, such as the disks a
+ * volume group takes room from. Each name links to its panel when the entry is
+ * in the configuration, and stays plain text otherwise. The separators come
+ * from the language (`Intl.ListFormat`).
  *
- * Naming something a reader can go to without offering the way there leaves
- * them to find it by hand in a list they may have to close this panel to see.
- *
- * The separators and the conjunction belong to the language, so the list is
- * punctuated by `Intl.ListFormat` and its pieces are put back around the names
- * rather than joined with a comma of ours.
+ * @example
+ * // "LVM physical volumes will be added as partitions on vdb and vdc.",
+ * // with "vdb" linking to its panel and "vdc" plain text.
+ * <Interpolate sentence={_("LVM physical volumes will be added as partitions on %s.")}>
+ *   {() => (
+ *     <RelatedNames
+ *       items={[{ name: "vdb", subject: { collection: "drives", index: 0 } }, { name: "vdc" }]}
+ *     />
+ *   )}
+ * </Interpolate>
  */
 export default function RelatedNames({ items }: RelatedNamesProps): React.ReactNode {
   const parts = formatListToParts(items.map((item) => item.name));
@@ -53,7 +61,7 @@ export default function RelatedNames({ items }: RelatedNamesProps): React.ReactN
         at += 1;
         const item = items[at];
 
-        /* Named and no more where there is no panel for it to lead to. */
+        /* Plain text when there is no panel to open. */
         if (!item.subject) return <React.Fragment key={index}>{item.name}</React.Fragment>;
 
         return (

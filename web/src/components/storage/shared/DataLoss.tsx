@@ -24,7 +24,7 @@ import React from "react";
 import Text from "~/components/core/Text";
 
 type DataLossProps = React.PropsWithChildren<{
-  /** Whether the text is also shown bold. Off by default: the color sets it apart. */
+  /** Whether the text is also bold. Defaults to false, since the color sets it apart. */
   isBold?: boolean;
 }>;
 

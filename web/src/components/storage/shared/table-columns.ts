@@ -24,42 +24,30 @@ import { css } from "@patternfly/react-styles";
 import alignmentStyles from "@patternfly/react-styles/css/utilities/Alignment/alignment";
 import type { TdProps } from "@patternfly/react-table";
 
-/**
- * How one column of a storage table looks, said once for the header cell and
- * every cell under it.
- */
+/** The look of a storage table column, for its header and body cells. */
 export type ColumnLook = {
-  /**
-   * A rule on the column's starting side, from the header down, setting it
-   * apart from the columns before it. Drawn by PatternFly on the inline start,
-   * so it stays on the correct side in right-to-left languages.
-   */
+  /** Whether a rule separates the column from the previous one. */
   hasBorderBefore?: boolean;
-  /** Whether the content sits at the end of the cell, as sizes do. */
+  /** Whether the content is end aligned, as for sizes. */
   isEndAligned?: boolean;
   /**
-   * How the column takes its width and wraps, as PatternFly's table cells
-   * understand it: `fitContent` for a column as narrow as its content and kept
-   * on one line, `nowrap` for one kept on one line at any width.
+   * How the column takes its width: `fitContent` for as narrow as its content,
+   * on one line, and `nowrap` for one line at any width.
    */
   modifier?: TdProps["modifier"];
 };
 
-/** How a storage table looks as a whole. */
+/** The look of a storage table. */
 export type TableLook = {
-  /** A rule under the header row, setting the column names apart from the rows. */
+  /** Whether a rule separates the header row from the body. */
   hasHeaderRule?: boolean;
-  /**
-   * Whether the cells of every row are centered vertically in it, rather than
-   * placed at its top, for rows where some cells hold more than one line.
-   */
+  /** Whether row cells are centered vertically, for rows with multi-line cells. */
   hasVerticallyCenteredRows?: boolean;
 };
 
 /**
- * The props that give a storage table its look: no rule under its last row,
- * since whatever follows the table already sets it apart, and, where asked for,
- * a rule under its header row and cells centered vertically in their rows.
+ * The props of a storage table: no rule under its last row, and optionally a
+ * rule under the header and vertically centered cells.
  *
  * @example
  * <Table variant="compact" {...tableProps({ hasHeaderRule: true })}>
@@ -78,11 +66,8 @@ export function tableProps({
 }
 
 /**
- * The props that give a header cell or a body cell its column's look.
- *
- * A table defines its columns' looks in one place and spreads these on its
- * `Th` and `Td` cells, so a border, an alignment or a width rule is declared
- * once per column rather than repeated, and forgotten, on some of its cells.
+ * The props of a header or body cell, from the look of its column, so each
+ * column look is declared once.
  *
  * @example
  * const COLUMNS = {

@@ -25,8 +25,7 @@ import type { IconProps } from "~/components/layout/Icon";
 import type { ConfigModel } from "~/model/storage/config-model";
 
 /**
- * The icon for how the machine is set to boot, so every place that shows the
- * boot setting marks it the same way.
+ * The icon of the boot setting, the same wherever it is shown:
  *
  * - Not configured: a blocked sign.
  * - Chosen by the installer: a turning arrow with an A.

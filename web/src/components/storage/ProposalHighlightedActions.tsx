@@ -52,21 +52,9 @@ function deletion(systems: string[], partitions: number): TranslatedString | nul
 }
 
 /**
- * What the plan makes smaller, in the words for the things it makes smaller.
- *
- * Shrinking a partition and shrinking a logical volume are the same act on two
- * different kinds of thing, and a reader looking for theirs knows it by its
- * kind. Only where both are shrunk are they named together, because that is the
- * only case where neither word alone is true.
- *
- * The count is of everything shrunk, not of the kind named. Where the kinds are
- * mixed the clause names both, so the number has to cover both; and where they
- * are not, there is only one kind to count.
- *
- * Anything that is neither falls in with the mixed case rather than inventing a
- * third wording for it. A shrunken RAID is not a partition, but it is sharing
- * the sentence with things that are, and "partitions and logical volumes" is
- * the phrase this already has for a plan whose parts do not go by one word.
+ * The sentence about what the plan shrinks: partitions, logical volumes, or
+ * both when mixed, which also covers other devices such as a RAID. The count
+ * always covers everything shrunk.
  */
 function resize(systems: string[], devices: System.Device[]): TranslatedString | null {
   if (!devices.length) return null;
@@ -122,8 +110,7 @@ function resize(systems: string[], devices: System.Device[]): TranslatedString |
         );
   }
 
-  /* Both kinds at once, which takes two or more of them: the singular is here
-     for the languages that still need a form for it, not because it can show. */
+  /* Mixed kinds mean two or more; the singular is for languages that need it. */
   return systems.length
     ? sprintf(
         n_(

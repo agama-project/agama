@@ -64,21 +64,16 @@ const DeviceCustomDetails = ({
 }) => {
   const device = toDevice(item);
 
-  /* What the installer does to the device, where it does anything: the device
-     is not there yet, or it is there and gets a new file system. Said in words
-     under the details rather than marked, so a reader is not left working out
-     what a colored mark on a row means. */
+  /* Said in words under the details rather than with a colored mark. */
   const change = (): TranslatedString | null => {
     if (!device) return null;
     // FIXME New PVs over a disk is not detected as new.
     if (!devicesManager.existInSystem(device)) {
-      // TRANSLATORS: reads under the details of a device that does not exist yet
-      // and that the installer creates.
+      // TRANSLATORS: a device the installer creates
       return _("Newly created");
     }
     if (devicesManager.hasNewFilesystem(device)) {
-      // TRANSLATORS: reads under the details of a device that already exists and
-      // that the installer formats, which destroys what is on it.
+      // TRANSLATORS: an existing device the installer formats, losing its data
       return _("Reformatted");
     }
 
@@ -119,8 +114,7 @@ const DeviceCustomSize = ({
       {isResized && (
         <div className="agm-row-note">
           {
-            // TRANSLATORS: reads under the size a device ends up with, where %s
-            // is the size it has today (e.g., 3.00 GiB).
+            // TRANSLATORS: %s is the current size of a device, such as "3.00 GiB"
             sprintf(_("Shrunk from %s"), deviceSize(sizeBefore))
           }
         </div>

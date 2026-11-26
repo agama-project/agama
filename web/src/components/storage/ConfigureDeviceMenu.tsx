@@ -136,15 +136,7 @@ export type ConfigureDeviceMenuProps = {
   popperProps?: MenuPopperProps;
 };
 
-/**
- * Menu that provides options for users to configure storage drives
- *
- * Both of its props exist because the same offer is made in two places that
- * differ about how it reads. On a page listing what is already configured it is
- * "More devices"; where the summary offers it as one of two ways on, it names
- * what it adds. And a toggle at the end of a row wants its menu growing back
- * over the page rather than off the edge of it.
- */
+/** Menu that provides options for users to configure storage drives. */
 export default function ConfigureDeviceMenu({
   label = _("More devices"),
   popperProps = { position: "left" },
@@ -189,9 +181,8 @@ export default function ConfigureDeviceMenu({
     }
   };
 
-  /* A device picked from the system is one the reader wants to work with, so
-     the panel opens on it. Only once the configuration holds it: an address
-     naming an entry the configuration lacks reads as stale and is dropped. */
+  /* Opens the panel on a picked device, once the configuration holds it:
+     before that, the address would be dropped as stale. */
   useEffect(() => {
     if (!picked) return;
 
@@ -213,8 +204,7 @@ export default function ConfigureDeviceMenu({
           "aria-label": _("Configure device menu"),
           popperProps,
         }}
-        /* Bordered, as any control that opens something on the page is, so it
-           is not taken for a link to another page. */
+        /* Bordered, so it does not look like a link to another page. */
         toggleProps={{ variant: "default", icon: <Icon name="add_circle" /> }}
         items={[
           <AddDeviceMenuItem

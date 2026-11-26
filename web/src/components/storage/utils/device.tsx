@@ -83,8 +83,7 @@ const volumeGroupContentDescription = (device: System.Device): string => {
   const lv_names = device.logicalVolumes.map((l) => baseName(l.name));
 
   return sprintf(
-    // TRANSLATORS: what an existing LVM volume group holds. %s is the names of
-    // its logical volumes, such as "home" or "home, root and swap".
+    // TRANSLATORS: %s is a list of logical volume names, such as "home, root and swap"
     n_("Volume %s", "Volumes %s", lv_names.length),
     formatList(lv_names),
   );
@@ -136,13 +135,7 @@ const filesystemLabels = (device: System.Device): string[] => {
   return label ? [label] : [];
 };
 
-/**
- * What a drive is, in a few words: its vendor model where the machine reports
- * one, its kind of device otherwise.
- *
- * The model names the disk the way its owner knows it, so it is preferred over
- * the generic kind.
- */
+/** A short description of a drive: its model, or its kind when the model is unknown. */
 const driveDescription = (device: System.Device): string | undefined => {
   const model = device.drive?.model;
   if (model && model.length) return model;
@@ -151,13 +144,8 @@ const driveDescription = (device: System.Device): string | undefined => {
 };
 
 /**
- * What the list and the device panel say about an LVM volume group beside and
- * under its name, the way they say a disk's size and model.
- *
- * Its kind under its name, as a disk says "Disk", marked as new when the
- * installation creates it, so a group already on the machine and one still to
- * be made can be told apart at a glance. Its size beside the name where the
- * machine has it: a group being created has none until its volumes are made.
+ * The size and description shown with the name of an LVM volume group, as for
+ * a disk. A group the installation creates is marked as new and has no size.
  */
 const volumeGroupFacts = (
   group: ConfigModel.VolumeGroup,

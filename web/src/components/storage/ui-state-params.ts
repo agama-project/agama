@@ -40,16 +40,15 @@
  * tells them apart here, and does not reach the URL.
  */
 
-/** Proposal page: sections currently expanded, as a set of tokens. */
+/** Storage page: expanded sections, as a set of tokens. */
 const EXPANDED = "expanded";
 
-/** Storage page: what the panel beside the page is showing. */
+/** Storage page: the entry the panel shows. */
 const DEVICE_DETAILS = "device";
 
 /**
- * Storage page: the token of {@link EXPANDED} saying the panel's list of what
- * its device holds today is open. Belongs to the panel: it goes whenever the
- * panel closes or moves to another device.
+ * Storage page: the {@link EXPANDED} token for the expanded current content of
+ * the panel device, dropped when the panel closes or changes device.
  */
 const CURRENT_CONTENT = "content";
 
